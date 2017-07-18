@@ -38,6 +38,12 @@
 	file_lines_scanf(__FILE__, __LINE__, NULL, 1,\
 			(path), (fmt), ## __VA_ARGS__)
 
+#define SAFE_READ_MEMINFO(item) \
+       ({long tst_rval; \
+        SAFE_FILE_LINES_SCANF("/proc/meminfo", item " %ld", \
+                        &tst_rval); \
+        tst_rval;})
+
 #define FILE_PRINTF(path, fmt, ...) \
 	file_printf(__FILE__, __LINE__, \
 		    (path), (fmt), ## __VA_ARGS__)

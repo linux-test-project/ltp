@@ -1,7 +1,7 @@
 #ifndef _MEM_H
 #define _MEM_H
 #include "config.h"
-#include "test.h"
+#include "tst_test.h"
 
 #if defined(__powerpc__) || defined(__powerpc64__)
 #define MAXNODES		256
@@ -84,16 +84,13 @@ void mount_mem(char *name, char *fs, char *options, char *path, char *path_new);
 void umount_mem(char *path, char *path_new);
 
 /* shared */
-unsigned int get_a_numa_node(void (*cleanup_fn)(void));
+unsigned int get_a_numa_node(void);
 int  path_exist(const char *path, ...);
-long read_meminfo(char *item);
 void set_sys_tune(char *sys_file, long tune, int check);
 long get_sys_tune(char *sys_file);
-void cleanup(void);
-void setup(void);
 
 void update_shm_size(size_t *shm_size);
 
 /* MMAP */
-int range_is_mapped(void (*cleanup_fn) (void), unsigned long low, unsigned long high);
+int range_is_mapped(unsigned long low, unsigned long high);
 #endif
