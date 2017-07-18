@@ -1,27 +1,19 @@
 /*
+ * Copyright (c) International Business Machines  Corp., 2004
+ * Copyright (c) Linux Test Project, 2004-2017
  *
- *   Copyright (c) International Business Machines  Corp., 2004
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
  */
 
 /*
- * NAME
- *	hugeshmctl01.c
- *
  * DESCRIPTION
  *	hugeshmctl01 - test the IPC_STAT, IPC_SET and IPC_RMID commands as
  *		   they are used with shmctl()
@@ -44,31 +36,14 @@
  *	    issue a PASS message
  *	call cleanup
  *
- * USAGE:  <for command-line>
- *  hugeshmctl01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
  * HISTORY
  *	03/2001 - Written by Wayne Boyer
  *	04/2004 - Updated by Robbie Williamson
- *
- * RESTRICTIONS
- *	none
  */
 
 #include <limits.h>
-#include "test.h"
-#include "safe_macros.h"
 #include "mem.h"
 #include "hugetlb.h"
-
-char *TCID = "hugeshmctl01";
-int TST_TOTAL = 4;
 
 #define FIRST		0
 #define SECOND		1
@@ -93,67 +68,54 @@ static void func_rmid(void);
 static void *set_shmat(void);
 
 static long hugepages = 128;
-static option_t options[] = {
-	{"s:", &sflag, &nr_opt},
+
+static struct tst_option options[] = {
+	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
 };
 
-struct test_case_t {
+struct tcase {
 	int cmd;
 	void (*func_test) (void);
 	void (*func_setup) (void);
-} TC[] = {
-	{
-	IPC_STAT, func_stat, stat_setup}, {
-	IPC_STAT, func_stat, stat_setup}, {
-	IPC_SET, func_set, set_setup}, {
-	IPC_RMID, func_rmid, NULL}
+} tcases[] = {
+	{IPC_STAT, func_stat, stat_setup},
+	{IPC_STAT, func_stat, stat_setup},
+	{IPC_SET,  func_set,  set_setup},
+	{IPC_RMID, func_rmid, NULL}
 };
 
-int main(int ac, char **av)
+static void test_hugeshmctl(void)
 {
-	int lc, i;
+	unsigned int i;
 
-	tst_parse_opts(ac, av, options, NULL);
+	/* initialize stat_time */
+	stat_time = FIRST;
 
-	if (sflag)
-		hugepages = SAFE_STRTOL(NULL, nr_opt, 0, LONG_MAX);
+	/*
+	 * Create a shared memory segment with read and write
+	 * permissions.  Do this here instead of in setup()
+	 * so that looping (-i) will work correctly.
+	 */
+	shm_id_1 = shmget(shmkey, shm_size,
+			SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
+	if (shm_id_1 == -1)
+		tst_brk(TBROK | TERRNO, "shmget #main");
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		/* initialize stat_time */
-		stat_time = FIRST;
-
+	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
 		/*
-		 * Create a shared memory segment with read and write
-		 * permissions.  Do this here instead of in setup()
-		 * so that looping (-i) will work correctly.
+		 * if needed, set up any required conditions by
+		 * calling the appropriate setup function
 		 */
-		shm_id_1 = shmget(shmkey, shm_size,
-				  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
-		if (shm_id_1 == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "shmget #main");
+		if (tcases[i].func_setup != NULL)
+			(*tcases[i].func_setup) ();
 
-		for (i = 0; i < TST_TOTAL; i++) {
-			/*
-			 * if needed, set up any required conditions by
-			 * calling the appropriate setup function
-			 */
-			if (TC[i].func_setup != NULL)
-				(*TC[i].func_setup) ();
-
-			if (shmctl(shm_id_1, TC[i].cmd, &buf) == -1) {
-				tst_resm(TFAIL | TERRNO, "shmctl #main");
-				continue;
-			}
-			(*TC[i].func_test) ();
+		if (shmctl(shm_id_1, tcases[i].cmd, &buf) == -1) {
+			tst_res(TFAIL | TERRNO, "shmctl #main");
+			continue;
 		}
+		(*tcases[i].func_test) ();
 	}
-	cleanup();
-	tst_exit();
 }
 
 /*
@@ -167,7 +129,7 @@ void *set_shmat(void)
 
 	rval = shmat(shm_id_1, 0, 0);
 	if (rval == (void *)-1)
-		tst_brkm(TBROK | TERRNO, cleanup, "set shmat");
+		tst_brk(TBROK | TERRNO, "set shmat");
 
 	return rval;
 }
@@ -183,7 +145,15 @@ static void stat_setup(void)
 	void *test;
 	pid_t pid;
 	sigset_t newmask, oldmask;
+	struct sigaction sa;
 
+	memset (&sa, '\0', sizeof(sa));
+	sa.sa_handler = sighandler;
+	sa.sa_flags = 0;
+	TEST(sigaction(SIGUSR1, &sa, NULL));
+	if (TEST_RETURN == -1)
+		tst_brk(TBROK | TRERRNO,
+				"SIGSEGV signal setup failed");
 	/*
 	 * The first time through, let the children attach the memory.
 	 * The second time through, attach the memory first and let
@@ -211,12 +181,10 @@ static void stat_setup(void)
 	sigemptyset(&newmask);
 	sigaddset(&newmask, SIGUSR1);
 	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "block SIGUSR1 error");
+		tst_brk(TBROK | TERRNO, "block SIGUSR1 error");
 
 	for (i = 0; i < N_ATTACH; i++) {
-		switch (pid = fork()) {
-		case -1:
-			tst_brkm(TBROK | TERRNO, cleanup, "fork");
+		switch (pid = SAFE_FORK()) {
 		case 0:
 			test = (stat_time == FIRST) ? set_shmat() : set_shared;
 
@@ -230,19 +198,19 @@ static void stat_setup(void)
 			 */
 			rval = sigsuspend(&oldmask);
 			if (rval != -1)
-				tst_brkm(TBROK | TERRNO, cleanup, "sigsuspend");
+				tst_brk(TBROK | TERRNO, "sigsuspend");
 
 			/*
 			 * don't have to block SIGUSR1 any more,
 			 * recover the mask
 			 */
 			if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
-				tst_brkm(TBROK | TERRNO, cleanup,
+				tst_brk(TBROK | TERRNO,
 					 "child sigprocmask");
 
 			/* now we're back - detach the memory and exit */
 			if (shmdt(test) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
+				tst_brk(TBROK | TERRNO,
 					 "shmdt in stat_setup()");
 			exit(0);
 		default:
@@ -253,7 +221,7 @@ static void stat_setup(void)
 
 	/* parent doesn't have to block SIGUSR1, recover the mask */
 	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
-		tst_brkm(TBROK, cleanup, "parent sigprocmask");
+		tst_brk(TBROK, "parent sigprocmask");
 
 	usleep(250000);
 }
@@ -271,12 +239,12 @@ static void func_stat(void)
 	pid = getpid();
 
 	if (buf.shm_cpid != pid) {
-		tst_resm(TFAIL, "creator pid is incorrect");
+		tst_res(TFAIL, "creator pid is incorrect");
 		goto fail;
 	}
 
 	if (buf.shm_segsz != shm_size) {
-		tst_resm(TFAIL, "segment size is incorrect");
+		tst_res(TFAIL, "segment size is incorrect");
 		goto fail;
 	}
 
@@ -287,18 +255,18 @@ static void func_stat(void)
 	 * that memory so the attaches equal N_ATTACH + stat_time (1).
 	 */
 	if (buf.shm_nattch != N_ATTACH + stat_time) {
-		tst_resm(TFAIL, "# of attaches is incorrect - %lu",
+		tst_res(TFAIL, "# of attaches is incorrect - %lu",
 			 (unsigned long)buf.shm_nattch);
 		goto fail;
 	}
 
 	/* use MODE_MASK to make sure we are comparing the last 9 bits */
 	if ((buf.shm_perm.mode & MODE_MASK) != ((SHM_RW) & MODE_MASK)) {
-		tst_resm(TFAIL, "segment mode is incorrect");
+		tst_res(TFAIL, "segment mode is incorrect");
 		goto fail;
 	}
 
-	tst_resm(TPASS, "pid, size, # of attaches and mode are correct "
+	tst_res(TPASS, "pid, size, # of attaches and mode are correct "
 		 "- pass #%d", stat_time);
 
 fail:
@@ -320,13 +288,19 @@ static void stat_cleanup(void)
 	/* wake up the childern so they can detach the memory and exit */
 	for (i = 0; i < N_ATTACH; i++)
 		if (kill(pid_arr[i], SIGUSR1) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "kill with SIGUSR1");
+			tst_brk(TBROK | TERRNO, "kill with SIGUSR1");
 
 	/* remove the parent's shared memory the second time through */
 	if (stat_time == SECOND)
 		if (shmdt(set_shared) == -1)
-			tst_resm(TBROK | TERRNO, "shmdt in stat_cleanup()");
+			tst_res(TBROK | TERRNO, "shmdt in stat_cleanup()");
 	stat_time++;
+}
+
+static void sighandler(int sig)
+{
+	if (sig != SIGUSR1)
+		tst_res(TFAIL, "received unexpected signal %d", sig);
 }
 
 /*
@@ -348,21 +322,21 @@ static void func_set(void)
 {
 	/* first stat the shared memory to get the new data */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-		tst_resm(TBROK | TERRNO, "shmctl in func_set()");
+		tst_res(TBROK | TERRNO, "shmctl in func_set()");
 		return;
 	}
 
 	if ((buf.shm_perm.mode & MODE_MASK) != ((SHM_RW | NEWMODE) & MODE_MASK)) {
-		tst_resm(TFAIL, "new mode is incorrect");
+		tst_res(TFAIL, "new mode is incorrect");
 		return;
 	}
 
 	if (save_time >= buf.shm_ctime) {
-		tst_resm(TFAIL, "change time is incorrect");
+		tst_res(TFAIL, "change time is incorrect");
 		return;
 	}
 
-	tst_resm(TPASS, "new mode and change time are correct");
+	tst_res(TPASS, "new mode and change time are correct");
 }
 
 /*
@@ -372,48 +346,46 @@ static void func_rmid(void)
 {
 	/* Do another shmctl() - we should get EINVAL */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) != -1)
-		tst_brkm(TBROK, cleanup, "shmctl in func_rmid() "
+		tst_brk(TBROK, "shmctl in func_rmid() "
 			 "succeeded unexpectedly");
 	if (errno != EINVAL)
-		tst_resm(TFAIL | TERRNO, "shmctl in func_rmid() failed "
+		tst_res(TFAIL | TERRNO, "shmctl in func_rmid() failed "
 			 "unexpectedly - expect errno=EINVAL, got");
 	else
-		tst_resm(TPASS, "shmctl in func_rmid() failed as expected, "
+		tst_res(TPASS, "shmctl in func_rmid() failed as expected, "
 			 "shared memory appears to be removed");
 	shm_id_1 = -1;
-}
-
-static void sighandler(int sig)
-{
-	if (sig != SIGUSR1)
-		tst_resm(TFAIL, "received unexpected signal %d", sig);
 }
 
 void setup(void)
 {
 	long hpage_size;
 
-	tst_require_root();
 	check_hugepage();
-	tst_sig(FORK, sighandler, cleanup);
-	tst_tmpdir();
+	if (nr_opt)
+		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
-	hpage_size = read_meminfo("Hugepagesize:") * 1024;
+	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	shm_size = hpage_size * hugepages / 2;
 	update_shm_size(&shm_size);
-	shmkey = getipckey(cleanup);
-
-	TEST_PAUSE;
+	shmkey = getipckey();
 }
 
 void cleanup(void)
 {
 	rm_shm(shm_id_1);
-
 	set_sys_tune("nr_hugepages", orig_hugepages, 0);
-
-	tst_rmdir();
 }
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.forks_child = 1,
+	.needs_tmpdir = 1,
+	.options = options,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = test_hugeshmctl,
+};
