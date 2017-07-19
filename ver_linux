@@ -63,7 +63,10 @@ ifconfig --version 2>&1 | grep tools | awk \
 'NR==1{print "Net-tools             ", $NF}'
 
 ip -V 2>&1 | awk \
-'NR==1{print "iproute2             ", $NF}'
+'NR==1{print "iproute2              ", $NF}'
+
+ping -V 2>&1 | awk \
+'NR==1{print "iputils               ", $NF}'
 
 # Kbd needs 'loadkeys -h',
 loadkeys -h 2>&1 | awk \
