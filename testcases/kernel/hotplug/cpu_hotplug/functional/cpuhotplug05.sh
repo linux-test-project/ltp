@@ -128,7 +128,7 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 	for i in $(seq 3 8); do
 		field_online=$(get_field "$online_status" "$i")
 
-		if [ "$field_online" != "0.0" ]; then
+		if [ "$field_online" != "0.00" ]; then
 			check_passed=1
 			break
 		fi
