@@ -56,7 +56,7 @@ static long clone_child(void)
 {
 	TEST(ltp_clone(flags, newnet, NULL, CHILD_STACK_SIZE, child_stack));
 
-	if (TEST_RETURN == -1 && TTERRNO == EINVAL)
+	if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL)
 		tst_brk(TCONF, "CLONE_NEWNET not supported, CONFIG_NET_NS?");
 
 	if (TEST_RETURN == -1)
