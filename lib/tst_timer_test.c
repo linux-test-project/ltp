@@ -266,7 +266,7 @@ void do_timer_test(long long usec, unsigned int nsamples)
 	unsigned int discard = compute_discard(nsamples);
 	unsigned int keep_samples = nsamples - discard;
 	long long threshold = compute_threshold(usec, keep_samples);
-	unsigned int i;
+	int i;
 	int failed = 0;
 
 	tst_res(TINFO,
@@ -274,7 +274,7 @@ void do_timer_test(long long usec, unsigned int nsamples)
 		scall, usec, nsamples, 1.00 * threshold / (keep_samples));
 
 	cur_sample = 0;
-	for (i = 0; i < nsamples; i++) {
+	for (i = 0; i < (int)nsamples; i++) {
 		if (sample(CLOCK_MONOTONIC, usec)) {
 			tst_res(TINFO, "sampling function failed, exitting");
 			return;
@@ -285,7 +285,7 @@ void do_timer_test(long long usec, unsigned int nsamples)
 
 	write_to_file();
 
-	for (i = 0; samples[i] > 10 * usec && i < nsamples; i++) {
+	for (i = 0; samples[i] > 10 * usec && i < (int)nsamples; i++) {
 		if (samples[i] <= 3 * monotonic_resolution)
 			break;
 	}
@@ -295,9 +295,9 @@ void do_timer_test(long long usec, unsigned int nsamples)
 			i, samples[0], samples[i-1]);
 	}
 
-	for (i = nsamples - 1; samples[i] < usec; i--);
+	for (i = nsamples - 1; samples[i] < usec && i > -1; i--);
 
-	if (i < nsamples - 1) {
+	if (i < (int)nsamples - 1) {
 		tst_res(TFAIL, "%s woken up early %u times range: [%lli,%lli]",
 			scall, nsamples - 1 - i,
 			samples[i+1], samples[nsamples-1]);
@@ -308,7 +308,7 @@ void do_timer_test(long long usec, unsigned int nsamples)
 
 	trunc_mean = 0;
 
-	for (i = discard; i < nsamples; i++)
+	for (i = discard; i < (int)nsamples; i++)
 		trunc_mean += samples[i];
 
 	tst_res(TINFO,
