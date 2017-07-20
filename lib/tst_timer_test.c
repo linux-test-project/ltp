@@ -22,6 +22,7 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
+#include "tst_clocks.h"
 #include "tst_timer_test.h"
 
 #define MAX_SAMPLES 500
