@@ -1,6 +1,6 @@
 #!/bin/sh
 
-output="linux_syscall_numbers.h"
+output="syscalls.h"
 rm -f "${output}".[1-9]*
 output_pid="${output}.$$"
 
@@ -27,8 +27,8 @@ cat << EOF > "${output_pid}"
  * Licensed under the GPLv2 or later, see the COPYING file.
  */
 
-#ifndef __LINUX_SYSCALL_NUMBERS_H__
-#define __LINUX_SYSCALL_NUMBERS_H__
+#ifndef __LAPI_SYSCALLS_H__
+#define __LAPI_SYSCALLS_H__
 
 #include <errno.h>
 #include <sys/syscall.h>
@@ -123,6 +123,6 @@ printf "Combining them all ... "
 for arch in $(cat "${srcdir}/order") _footer ; do
 	cat "${output_pid}.${arch}"
 done >> "${output_pid}"
-mv "${output_pid}" "${output}"
+mv "${output_pid}" "../${output}"
 rm -f "${output_pid}"*
 echo "OK!"

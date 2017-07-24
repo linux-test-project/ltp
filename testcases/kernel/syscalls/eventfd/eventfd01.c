@@ -59,7 +59,7 @@
 
 #include "test.h"
 #define CLEANUP cleanup
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #ifdef HAVE_LIBAIO_H
 #include <libaio.h>

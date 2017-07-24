@@ -56,7 +56,7 @@
 #include <inttypes.h>
 #include <limits.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "safe_macros.h"
 
 #ifndef AT_FDCWD

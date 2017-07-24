@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "ltp_signal.h"
 #include "tst_sig_proc.h"
 #include "tst_test.h"

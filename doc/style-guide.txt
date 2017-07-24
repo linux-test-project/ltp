@@ -109,7 +109,7 @@ the testcase occurred.
 8. Don't roll your own syscall numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Header +linux_syscall_numbers.h+ exists for this purpose and does a pretty
+Header +lapi/syscalls.h+ exists for this purpose and does a pretty
 dang good job.
 
 9. Keep errors as short and sweet as possible

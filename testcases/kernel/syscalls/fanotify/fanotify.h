@@ -39,7 +39,7 @@
 /* fanotify(7) wrappers */
 
 #include <stdint.h>
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 static int fanotify_init(unsigned int flags, unsigned int event_f_flags)
 {

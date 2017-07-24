@@ -51,7 +51,7 @@
 #include <fcntl.h>
 #include <sys/utsname.h>
 #include <unistd.h>
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if defined (__powerpc64__) || (__powerpc__)
 static void setup();

@@ -17,7 +17,7 @@
 #include <errno.h>
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #define TEST_FILE_1 "copy_file_range_ltp01.txt"
 #define TEST_FILE_2 "copy_file_range_ltp02.txt"

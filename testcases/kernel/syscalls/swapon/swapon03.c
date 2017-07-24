@@ -37,7 +37,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "swaponoff.h"
 #include "libswapon.h"
 

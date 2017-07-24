@@ -33,7 +33,7 @@
 #include <string.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "lapi/rt_sigaction.h"
 
 char *TCID = "rt_sigaction02";
