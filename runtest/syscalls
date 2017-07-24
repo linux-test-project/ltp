@@ -705,6 +705,7 @@ msgsnd06 msgsnd06
 msync01 msync01
 msync02 msync02
 msync03 msync03
+msync04 msync04
 
 munlock01 munlock01
 munlock02 munlock02
