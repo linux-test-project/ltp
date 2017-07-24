@@ -25,10 +25,6 @@ include $(top_srcdir)/include/mk/functions.mk
 
 APICMDS_DIR	:= $(abs_top_builddir)/tools/apicmds
 
-TKI_DIR		:= testcases/kernel/include
-
-LSN_H		:= $(abs_top_builddir)/$(TKI_DIR)/linux_syscall_numbers.h
-
 LIBLTP_DIR	:= $(abs_top_builddir)/lib
 
 LIBLTP		:= $(LIBLTP_DIR)/libltp.a
@@ -39,17 +35,11 @@ $(APICMDS_DIR)/tst_kvercmp: $(APICMDS_DIR)
 $(LIBLTP): $(LIBLTP_DIR)
 	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/lib/Makefile" all
 
-$(LSN_H): $(abs_top_builddir)/$(TKI_DIR)
-	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/$(TKI_DIR)/Makefile" all
-
-MAKE_DEPS	:= $(LIBLTP) $(LSN_H)
-
-# For linux_syscall_numbers.h
-CPPFLAGS	+= -I$(abs_top_builddir)/$(TKI_DIR)
+MAKE_DEPS	:= $(LIBLTP)
 
 INSTALL_DIR	:= testcases/bin
 
 LDLIBS		+= -lltp
 
-$(APICMDS_DIR) $(LIBLTP_DIR) $(abs_top_builddir)/$(TKI_DIR): %:
+$(APICMDS_DIR) $(LIBLTP_DIR): %:
 	mkdir -p "$@"
