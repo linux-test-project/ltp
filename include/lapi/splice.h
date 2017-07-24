@@ -22,7 +22,7 @@
 #define SPLICE_H
 
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if !defined(HAVE_SPLICE)
 ssize_t splice(int fd_in, loff_t *off_in, int fd_out,

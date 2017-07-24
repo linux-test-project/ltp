@@ -23,7 +23,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "libswapon.h"
 
 static void setup(void);

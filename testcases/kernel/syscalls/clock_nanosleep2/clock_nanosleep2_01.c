@@ -26,7 +26,7 @@
 #include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #define NSEC_IN_SEC 1000000000
 

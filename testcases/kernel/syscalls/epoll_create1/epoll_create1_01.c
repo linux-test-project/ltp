@@ -32,7 +32,7 @@
 #include <sys/epoll.h>
 #include "tst_test.h"
 #include "lapi/epoll.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 static void verify_epoll_create1(void)
 {

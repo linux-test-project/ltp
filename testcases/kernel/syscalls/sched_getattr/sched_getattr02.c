@@ -35,7 +35,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "lapi/sched.h"
 
 char *TCID = "sched_getattr02";

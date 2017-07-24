@@ -22,7 +22,7 @@
 
 #include "tst_test.h"
 #include "clone_platform.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "lapi/namespaces_constants.h"
 
 static void *child_stack;

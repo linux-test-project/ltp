@@ -58,7 +58,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "ltp_signal.h"
 
 #define SFD_NONBLOCK O_NONBLOCK
