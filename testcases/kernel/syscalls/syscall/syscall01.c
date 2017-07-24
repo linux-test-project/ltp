@@ -28,7 +28,7 @@
 #include <sys/types.h>
 
 #include "tst_test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 static void verify_getpid(void)
 {

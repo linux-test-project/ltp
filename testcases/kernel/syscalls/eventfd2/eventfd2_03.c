@@ -36,7 +36,7 @@
 #include <inttypes.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "eventfd2_03";
 int TST_TOTAL = 1;

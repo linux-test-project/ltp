@@ -21,7 +21,7 @@
 #include <sys/types.h>
 #include <mqueue.h>
 #include "../libclone/libclone.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "safe_macros.h"
 #include "test.h"
 

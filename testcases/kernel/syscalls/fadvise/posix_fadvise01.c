@@ -43,7 +43,7 @@
 
 #include "test.h"
 
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #ifndef _FILE_OFFSET_BITS
 #define _FILE_OFFSET_BITS 32
 #endif

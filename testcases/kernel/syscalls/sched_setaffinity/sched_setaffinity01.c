@@ -41,7 +41,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "sched_setaffinity.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "sched_setaffinity01";
 

@@ -92,7 +92,7 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #ifndef SYNC_FILE_RANGE_WAIT_BEFORE
 #define SYNC_FILE_RANGE_WAIT_BEFORE 1

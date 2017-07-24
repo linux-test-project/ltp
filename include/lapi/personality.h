@@ -30,7 +30,7 @@
 #endif
 
 #ifndef HAVE_SYS_PERSONALITY_H
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 static int personality(unsigned long persona)
 {

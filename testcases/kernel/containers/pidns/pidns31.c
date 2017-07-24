@@ -53,7 +53,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <mqueue.h>
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "pidns_helper.h"
 #include "test.h"
 

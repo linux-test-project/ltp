@@ -27,7 +27,7 @@
 #include <sys/syscall.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "timer_getoverrun01";
 int TST_TOTAL = 1;
