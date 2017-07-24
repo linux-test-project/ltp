@@ -25,4 +25,7 @@ cve-2016-7117:	LDLIBS += -lrt
 cve-2014-0196:  CFLAGS += -pthread
 cve-2014-0196:  LDLIBS += -lrt -lutil
 
+cve-2017-2671:	CFLAGS += -pthread
+cve-2017-2671:	LDLIBS += -lrt
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
