@@ -362,6 +362,7 @@
 /getsid/getsid02
 /getsockname/getsockname01
 /getsockopt/getsockopt01
+/getsockopt/getsockopt02
 /gettid/gettid01
 /gettimeofday/gettimeofday01
 /gettimeofday/gettimeofday02

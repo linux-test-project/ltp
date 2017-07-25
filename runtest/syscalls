@@ -434,6 +434,7 @@ getsid02 getsid02
 getsockname01 getsockname01
 
 getsockopt01 getsockopt01
+getsockopt02 getsockopt02
 
 gettid01 gettid01
 
