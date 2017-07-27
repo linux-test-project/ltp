@@ -117,11 +117,13 @@ static void cleanup_ipc(void)
 	if (ipc_fd > 0 && close(ipc_fd))
 		tst_res(TWARN | TERRNO, "close(ipc_fd) failed");
 
-	if (!access(shm_path, F_OK) && unlink(shm_path))
+	if (shm_path[0] && !access(shm_path, F_OK) && unlink(shm_path))
 		tst_res(TWARN | TERRNO, "unlink(%s) failed", shm_path);
 
-	msync((void*)results, size, MS_SYNC);
-	munmap((void*)results, size);
+	if (results) {
+		msync((void*)results, size, MS_SYNC);
+		munmap((void*)results, size);
+	}
 }
 
 void tst_reinit(void)
