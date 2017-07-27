@@ -675,6 +675,8 @@ static void do_setup(int argc, char *argv[])
 	if (!tst_test->tid)
 		tst_test->tid = get_tid(argv);
 
+	parse_opts(argc, argv);
+
 	if (tst_test->needs_root && geteuid() != 0)
 		tst_brk(TCONF, "Test needs to be run as root");
 
@@ -688,8 +690,6 @@ static void do_setup(int argc, char *argv[])
 		tst_test->needs_device = 1;
 		tst_test->format_device = 1;
 	}
-
-	parse_opts(argc, argv);
 
 	setup_ipc();
 
