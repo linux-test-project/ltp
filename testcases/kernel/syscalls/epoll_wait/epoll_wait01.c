@@ -200,34 +200,39 @@ static void verify_epollio(void)
 {
 	char write_buf[] = "Testing";
 	char read_buf[sizeof(write_buf)];
+	uint32_t events = EPOLLIN | EPOLLOUT;
 
 	SAFE_WRITE(cleanup, 1, fds[1], write_buf, sizeof(write_buf));
 
-	TEST(epoll_wait(epfd, epevs, 3, -1));
+	while (events) {
+		int events_matched = 0;
 
-	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL | TTERRNO, "epoll_wait() epollio failed");
-		goto end;
-	}
+		TEST(epoll_wait(epfd, epevs, 3, -1));
 
-	if (TEST_RETURN != 2) {
-		tst_resm(TFAIL, "epoll_wait() returned %li, expected 2",
-			 TEST_RETURN);
-		goto end;
-	}
+		if (TEST_RETURN <= 0) {
+			tst_resm(TFAIL | TTERRNO, "epoll_wait() returned %i",
+				 TEST_RETURN);
+			goto end;
+		}
 
-	if (!has_event(epevs, 2, fds[0], EPOLLIN)) {
-		dump_epevs(epevs, 2);
-		tst_resm(TFAIL, "epoll_wait() expected %d and EPOLLIN %x",
-			 fds[0], EPOLLIN);
-		goto end;
-	}
+		if ((events & EPOLLIN) &&
+		    has_event(epevs, 2, fds[0], EPOLLIN)) {
+			events_matched++;
+			events &= ~EPOLLIN;
+		}
 
-	if (!has_event(epevs, 2, fds[1], EPOLLOUT)) {
-		dump_epevs(epevs, 2);
-		tst_resm(TFAIL, "epoll_wait() expected %d and EPOLLOUT %x",
-			 fds[1], EPOLLOUT);
-		goto end;
+		if ((events & EPOLLOUT) &&
+		    has_event(epevs, 2, fds[1], EPOLLOUT)) {
+			events_matched++;
+			events &= ~EPOLLOUT;
+		}
+
+		if (TEST_RETURN != events_matched) {
+			tst_resm(TFAIL,
+				 "epoll_wait() returned unexpected events");
+			dump_epevs(epevs, 2);
+			goto end;
+		}
 	}
 
 	tst_resm(TPASS, "epoll_wait() epollio");

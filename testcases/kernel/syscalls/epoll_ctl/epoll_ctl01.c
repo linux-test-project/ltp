@@ -85,41 +85,43 @@ static int has_event(struct epoll_event *epvs, int len,
 static void check_epoll_ctl(int opt, int exp_num)
 {
 	int res;
-
+	unsigned int events;
 	char write_buf[] = "test";
 	char read_buf[sizeof(write_buf)];
+	struct epoll_event res_evs[2];
 
-	struct epoll_event res_evs[2] = {
-		{.events = 0, .data.fd = 0},
-		{.events = 0, .data.fd = 0}
-	};
+	events = EPOLLIN;
+	if (exp_num == 2)
+		events |= EPOLLOUT;
 
 	SAFE_WRITE(1, fd[1], write_buf, sizeof(write_buf));
 
-	res = epoll_wait(epfd, res_evs, 2, -1);
-	if (res == -1)
-		tst_brk(TBROK | TERRNO, "epoll_wait() fails");
+	while (events) {
+		int events_matched = 0;
+		bzero(res_evs, sizeof(res_evs));
 
-	if (res != exp_num) {
-		tst_res(TFAIL, "epoll_wait() returns %i, expected %i",
-			res, exp_num);
-		goto end;
-	}
-
-	if (exp_num == 1) {
-		if (!has_event(res_evs, 2, fd[0], EPOLLIN) ||
-		    !has_event(res_evs, 2, 0, 0)) {
-			tst_res(TFAIL, "epoll_wait() fails to "
-				"get expected fd and event");
+		res = epoll_wait(epfd, res_evs, 2, -1);
+		if (res <= 0) {
+			tst_res(TFAIL | TERRNO, "epoll_wait() returned %i",
+				res);
 			goto end;
 		}
-	}
 
-	if (exp_num == 2) {
-		if (!has_event(res_evs, 2, fd[0], EPOLLIN) ||
-		    !has_event(res_evs, 2, fd[1], EPOLLOUT)) {
-			tst_res(TFAIL, "epoll_wait() fails to "
-				"get expected fd and event");
+		if ((events & EPOLLIN) &&
+		    has_event(res_evs, 2, fd[0], EPOLLIN)) {
+			events_matched++;
+			events &= ~EPOLLIN;
+		}
+
+		if ((events & EPOLLOUT) &&
+		    has_event(res_evs, 2, fd[1], EPOLLOUT)) {
+			events_matched++;
+			events &= ~EPOLLOUT;
+		}
+
+		if (res != events_matched) {
+			tst_res(TFAIL,
+				"epoll_wait() returned unexpected events");
 			goto end;
 		}
 	}
