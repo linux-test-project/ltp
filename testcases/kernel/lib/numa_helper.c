@@ -34,7 +34,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "numa_helper.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 unsigned long get_max_node(void)
 {

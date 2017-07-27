@@ -21,7 +21,7 @@
 
 #include <sys/types.h>
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if !defined(HAVE_RENAMEAT2)
 int renameat2(int olddirfd, const char *oldpath, int newdirfd,

@@ -20,7 +20,7 @@
 #define __READLINKAT_H__
 
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "lapi/fcntl.h"
 
 #ifndef HAVE_READLINKAT

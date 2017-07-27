@@ -42,7 +42,7 @@
 #include <string.h>
 #include "config.h"
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "safe_macros.h"
 
 #define CHILD_STACK_SIZE (1024*1024)

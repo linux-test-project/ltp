@@ -21,7 +21,7 @@
 #define TEE_H
 
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if !defined(HAVE_TEE)
 ssize_t tee(int fd_in, int fd_out, size_t len, unsigned int flags)

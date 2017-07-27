@@ -66,15 +66,4 @@ FILTER_OUT_DIRS		+= containers controllers device-drivers fs io ipc mem \
 				sched security timers
 endif
 
-MAKE_DEPS		:= include/linux_syscall_numbers.h
-
-include:
-	mkdir -p "$@"
-
-linux-syscall-numbers-clean:: include
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" clean
-
-include/linux_syscall_numbers.h: include
-	$(MAKE) -C $^ -f "$(abs_srcdir)/$^/Makefile" all
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

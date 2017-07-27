@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if !defined(HAVE_EPOLL_PWAIT)
 int epoll_pwait(int epfd, struct epoll_event *events, int maxevents,

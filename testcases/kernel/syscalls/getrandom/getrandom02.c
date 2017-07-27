@@ -28,7 +28,7 @@
  */
 
 #include "lapi/getrandom.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "tst_test.h"
 
 static int modes[] = { 0, GRND_RANDOM, GRND_NONBLOCK,

@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
 #else
 #if defined USE_OWNIMPL
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 int signalfd(int fd, const sigset_t * mask, int flags)
 {
 	/* Taken from GLIBC. */

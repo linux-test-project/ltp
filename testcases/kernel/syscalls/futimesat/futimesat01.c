@@ -34,7 +34,7 @@
 #include <signal.h>
 #include "test.h"
 #include "safe_macros.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #define TEST_CASES 5
 #ifndef AT_FDCWD

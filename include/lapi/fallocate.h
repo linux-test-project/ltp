@@ -22,7 +22,7 @@
 #include "config.h"
 #include "lapi/abisize.h"
 #include "lapi/seek.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #ifndef FALLOC_FL_KEEP_SIZE
 # define FALLOC_FL_KEEP_SIZE 0x01

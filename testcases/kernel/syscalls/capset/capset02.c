@@ -81,7 +81,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 /**************************************************************************/
 /*                                                                        */

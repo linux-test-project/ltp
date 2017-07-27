@@ -45,7 +45,7 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "inotify.h"
 #include "safe_macros.h"
 

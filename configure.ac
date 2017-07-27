@@ -37,10 +37,12 @@ AC_CHECK_HEADERS([ \
     mm.h \
     pthread.h \
     sys/xattr.h \
+    sys/personality.h \
     linux/genetlink.h \
     linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
+    linux/personality.h \
     sys/epoll.h \
     sys/inotify.h \
     sys/fanotify.h \
@@ -132,8 +134,7 @@ fi
 
 AC_CONFIG_SUBDIRS([utils/ffsb-6.0-rc2])
 
-AC_CONFIG_COMMANDS([linux_syscall_headers.h],
-		   [cd testcases/kernel/include; ./regen.sh])
+AC_CONFIG_COMMANDS([syscalls.h], [cd include/lapi/syscalls; ./regen.sh])
 
 # END testsuites knobs
 LTP_CHECK_FORTIFY_SOURCE
@@ -194,5 +195,6 @@ LTP_CHECK_SYNC_ADD_AND_FETCH
 LTP_CHECK_BUILTIN_CLEAR_CACHE
 LTP_CHECK_MMSGHDR
 LTP_CHECK_UNAME_DOMAINNAME
+LTP_CHECK_PERSONALITY
 
 AC_OUTPUT

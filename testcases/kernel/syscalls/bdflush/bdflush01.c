@@ -83,7 +83,7 @@
 #include <sys/stat.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "bdflush01";
 int testno;

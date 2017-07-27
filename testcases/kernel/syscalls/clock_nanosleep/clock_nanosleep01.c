@@ -22,7 +22,7 @@
 
 #include <limits.h>
 
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "tst_sig_proc.h"
 #include "tst_timer.h"
 #include "tst_test.h"

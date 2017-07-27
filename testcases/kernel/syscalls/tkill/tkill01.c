@@ -49,7 +49,7 @@
 #include <sys/types.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "tkill01";
 int testno;
