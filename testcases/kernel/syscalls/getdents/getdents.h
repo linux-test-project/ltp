@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 /*
  * See fs/compat.c struct compat_linux_dirent

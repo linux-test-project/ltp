@@ -45,7 +45,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if __NR_cacheflush != __LTP__NR_INVALID_SYSCALL
 #include <asm/cachectl.h>

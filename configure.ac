@@ -132,8 +132,7 @@ fi
 
 AC_CONFIG_SUBDIRS([utils/ffsb-6.0-rc2])
 
-AC_CONFIG_COMMANDS([linux_syscall_headers.h],
-		   [cd testcases/kernel/include; ./regen.sh])
+AC_CONFIG_COMMANDS([syscalls.h], [cd include/lapi/syscalls; ./regen.sh])
 
 # END testsuites knobs
 LTP_CHECK_FORTIFY_SOURCE

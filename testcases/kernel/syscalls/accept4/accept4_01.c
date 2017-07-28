@@ -33,7 +33,7 @@
 
 #include "test.h"
 #include "lapi/fcntl.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #define PORT_NUM 33333
 

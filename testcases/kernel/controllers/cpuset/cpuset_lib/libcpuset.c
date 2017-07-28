@@ -48,7 +48,7 @@
 #include "cpuset.h"
 #include "common.h"
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "config.h"
 #if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>

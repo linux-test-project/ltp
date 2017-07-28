@@ -45,7 +45,7 @@
 #include <sys/mount.h>
 #include <sys/syscall.h>
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "fanotify.h"
 #include "safe_macros.h"
 

@@ -21,7 +21,7 @@
 
 #include <sys/types.h>
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #if !defined(HAVE_ENUM_KCMP_TYPE)
 

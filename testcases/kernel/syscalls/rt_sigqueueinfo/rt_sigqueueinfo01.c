@@ -49,7 +49,7 @@
 #include <string.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "rt_sigqueueinfo01";
 int testno;

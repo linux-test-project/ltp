@@ -25,7 +25,7 @@
 
 #include "tst_test.h"
 #include "clone_platform.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 static pid_t ptid, ctid, tgid;
 static void *child_stack;

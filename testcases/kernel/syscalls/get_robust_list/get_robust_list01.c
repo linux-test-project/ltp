@@ -51,7 +51,7 @@
 #include <stdlib.h>
 
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "get_robust_list01";
 int TST_TOTAL = 5;

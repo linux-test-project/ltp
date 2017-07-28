@@ -61,7 +61,7 @@
 
 #include "test.h"
 #include "lapi/fcntl.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #define IN_CLOEXEC O_CLOEXEC
 

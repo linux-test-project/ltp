@@ -58,7 +58,7 @@
 #include <numaif.h>
 #endif
 #include "test.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 #include "include_j_h.h"
 #include "common_j_h.c"
 #include "numa_helper.h"

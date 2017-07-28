@@ -26,7 +26,7 @@
 #include "../utils/include_j_h.h"
 #include "../utils/common_j_h.c"
 #include <limits.h>
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #define SUCCEED_OR_DIE(syscall, message, ...)				 \
 	(errno = 0,							 \

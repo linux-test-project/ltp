@@ -20,7 +20,7 @@
 
 #include <time.h>
 #include "config.h"
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #ifdef HAVE_SYS_TIMERFD_H
 #include <sys/timerfd.h>

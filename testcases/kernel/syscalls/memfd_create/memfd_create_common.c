@@ -30,7 +30,7 @@
 #include "lapi/fcntl.h"
 #include "lapi/memfd.h"
 
-#include "linux_syscall_numbers.h"
+#include "lapi/syscalls.h"
 
 #include "memfd_create_common.h"
 
