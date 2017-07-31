@@ -128,12 +128,13 @@ Before you start you should read following documents:
 * `doc/test-writing-guidelines.txt`
 * `doc/build-system-guide.txt`
 
-these two should contain all information needed for modifying or creating LTP
-testcases. If something is not covered there don't hesitate to ask on the LTP
-mailing list.
+There is also a step-by-step tutorial:
 
-Also note that these documents are available online at:
+* `doc/c-test-tutorial-simple.txt`
+
+If something is not covered there don't hesitate to ask on the LTP mailing
+list. Also note that these documents are available online at:
 
 https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines
-
 https://github.com/linux-test-project/ltp/wiki/BuildSystem
+https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
