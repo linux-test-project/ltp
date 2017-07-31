@@ -7,6 +7,7 @@ cve-2014-0196 cve-2014-0196
 cve-2015-0235 gethostbyname_r01
 cve-2015-7550 keyctl02
 cve-2016-4470 keyctl01.sh
+cve-2015-3290 cve-2015-3290
 cve-2016-4997 cve-2016-4997
 cve-2016-5195 dirtyc0w
 cve-2016-7042 cve-2016-7042
