@@ -669,6 +669,9 @@ static void do_setup(int argc, char *argv[])
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
 
+	if (tst_test->tconf_msg)
+		tst_brk(TCONF, "%s", tst_test->tconf_msg);
+
 	assert_test_fn();
 
 	if (tst_test->sample)
