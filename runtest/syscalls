@@ -496,6 +496,7 @@ io_submit01 io_submit01
 keyctl01 keyctl01
 keyctl02 keyctl02
 keyctl03 keyctl03
+keyctl04 keyctl04
 
 kcmp01 kcmp01
 kcmp02 kcmp02
