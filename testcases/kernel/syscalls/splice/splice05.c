@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "tst_test.h"
+#include "lapi/splice.h"
 #include "splice.h"
 
 #define PIPE_MAX (64*1024)
