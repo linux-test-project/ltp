@@ -26,7 +26,7 @@
 #if !defined(HAVE_TEE)
 ssize_t tee(int fd_in, int fd_out, size_t len, unsigned int flags)
 {
-	return ltp_syscall(__NR_tee, fd_in, fd_out, len, flags);
+	return tst_syscall(__NR_tee, fd_in, fd_out, len, flags);
 }
 #endif
 

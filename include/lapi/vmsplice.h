@@ -30,7 +30,7 @@
 ssize_t vmsplice(int fd, const struct iovec *iov,
 	         unsigned long nr_segs, unsigned int flags)
 {
-	return ltp_syscall(__NR_vmsplice, fd, iov, nr_segs, flags);
+	return tst_syscall(__NR_vmsplice, fd, iov, nr_segs, flags);
 }
 #endif
 
