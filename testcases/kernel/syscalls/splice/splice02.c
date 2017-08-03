@@ -19,17 +19,7 @@
 /*                                                                            */
 /******************************************************************************/
 /******************************************************************************/
-/*                                                                            */
-/* File:        splice02.c                                                    */
-/*                                                                            */
 /* Description: This tests the splice() syscall                               */
-/*                                                                            */
-/* Usage:  <for command-line>                                                 */
-/* echo "Test splice()" > <outfile>; splice02 <outfile>                       */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   splice02                                                      */
 /******************************************************************************/
 #define _GNU_SOURCE
 
@@ -38,54 +28,30 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 #include "lapi/splice.h"
-
-char *TCID = "splice02";
-int TST_TOTAL = 1;
-
-static void cleanup(void)
-{
-	tst_rmdir();
-}
-
-static void setup(void)
-{
-	if ((tst_kvercmp(2, 6, 17)) < 0) {
-		tst_brkm(TCONF, cleanup, "This test can only run on kernels "
-			"that are 2.6.17 or higher");
-	}
-
-	TEST_PAUSE;
-	tst_tmpdir();
-}
 
 #define SPLICE_SIZE (64*1024)
 
-int main(int ac, char **av)
+static void splice_test(void)
 {
 	int fd;
 
-	setup();
-
-	if (ac < 2) {
-		tst_brkm(TFAIL, NULL, "%s failed - Usage: %s outfile", TCID,
-			 av[0]);
-	}
-
-	fd = SAFE_OPEN(cleanup, av[1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = SAFE_OPEN("splice02-temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
 	TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
 	if (TEST_RETURN < 0) {
-		tst_resm(TFAIL, "splice failed - errno = %d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+		tst_res(TFAIL, "splice failed - errno = %d : %s",
+			TEST_ERRNO, strerror(TEST_ERRNO));
 	} else {
-		tst_resm(TPASS, "splice() system call Passed");
+		tst_res(TPASS, "splice() system call Passed");
 	}
 
-	SAFE_CLOSE(cleanup, fd);
-
-	cleanup();
-	tst_exit();
+	SAFE_CLOSE(fd);
 }
+
+static struct tst_test test = {
+	.test_all = splice_test,
+	.needs_tmpdir = 1,
+	.min_kver = "2.6.17",
+};
