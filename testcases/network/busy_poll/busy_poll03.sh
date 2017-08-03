@@ -49,7 +49,7 @@ trap "tst_brkm TBROK 'test interrupted'" INT
 for x in 50 0; do
 	tst_resm TINFO "set low latency busy poll to $x per socket"
 	set_busy_poll $x
-	tst_netload -H $(tst_ipaddr rhost) -d res_$x -b $x -U
+	tst_netload -H $(tst_ipaddr rhost) -d res_$x -b $x -T udp
 done
 
 poll_cmp=$(( 100 - ($(cat res_50) * 100) / $(cat res_0) ))

@@ -348,7 +348,7 @@ tst_netload()
 	local s_opts=
 
 	OPTIND=0
-	while getopts :a:H:d:n:N:r:R:b:t:Ufe: opt; do
+	while getopts :a:H:d:n:N:r:R:b:t:T:fe: opt; do
 		case "$opt" in
 		a) c_num="$OPTARG" ;;
 		H) c_opts="${c_opts}-H $OPTARG " ;;
@@ -359,7 +359,7 @@ tst_netload()
 		R) s_replies="$OPTARG" ;;
 		b) cs_opts="${cs_opts}-b $OPTARG " ;;
 		t) cs_opts="${cs_opts}-t $OPTARG " ;;
-		U) cs_opts="${cs_opts}-U " ;;
+		T) cs_opts="${cs_opts}-T $OPTARG " ;;
 		f) cs_opts="${cs_opts}-f " ;;
 
 		e) expect_res="$OPTARG" ;;

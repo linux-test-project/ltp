@@ -38,7 +38,7 @@ do_test()
 	IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-100 1000 65000}"
 
 	for p in $IPSEC_SIZE_ARRAY; do
-		tst_netload -H $(tst_ipaddr rhost) -U -n $p -N $p \
+		tst_netload -H $(tst_ipaddr rhost) -T udp -n $p -N $p \
 			-r $client_requests
 	done
 }
