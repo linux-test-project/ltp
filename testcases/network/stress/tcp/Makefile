@@ -24,6 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= tcp_ipsec.sh
+INSTALL_TARGETS		:= tcp_ipsec.sh \
+			   tcp_ipsec_vti.sh
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
