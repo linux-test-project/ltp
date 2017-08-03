@@ -33,6 +33,7 @@ udp4_ipsec32 udp_ipsec.sh -p esp -a sha512 -e camellia -m transport -s "100 1000
 udp4_ipsec33 udp_ipsec.sh -p esp -a sha512 -e camellia -m tunnel -s "100 1000 65426"
 udp4_ipsec34 udp_ipsec.sh -p esp -a rmd160 -e serpent -m transport -s "100 1000 65446"
 udp4_ipsec35 udp_ipsec.sh -p esp -a rmd160 -e serpent -m tunnel -s "100 1000 65426"
+udp4_ipsec36 udp_ipsec.sh -p esp -m beet -s "100 1000 65446"
 
 udp6_ipsec01 udp_ipsec.sh -6 -s "100 1000 65527"
 udp6_ipsec02 udp_ipsec.sh -6 -p ah -m transport -s "100 1000 65503"
@@ -69,6 +70,7 @@ udp6_ipsec32 udp_ipsec.sh -6 -p esp -a sha512 -e camellia -m transport -s "100 1
 udp6_ipsec33 udp_ipsec.sh -6 -p esp -a sha512 -e camellia -m tunnel -s "100 1000 65527"
 udp6_ipsec34 udp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m transport -s "100 1000 65478"
 udp6_ipsec35 udp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s "100 1000 65527"
+udp6_ipsec36 udp_ipsec.sh -6 -p esp -m beet -s "100 1000 65478"
 
 udp4_ipsec_vti01 udp_ipsec_vti.sh -p ah -m tunnel -s "100 1000 65463"
 udp4_ipsec_vti02 udp_ipsec_vti.sh -p esp -m tunnel -s "100 1000 65450"

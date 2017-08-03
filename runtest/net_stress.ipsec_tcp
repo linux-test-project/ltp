@@ -33,6 +33,7 @@ tcp4_ipsec32 tcp_ipsec.sh -p esp -a sha512 -e camellia -m transport -s "100 1000
 tcp4_ipsec33 tcp_ipsec.sh -p esp -a sha512 -e camellia -m tunnel -s "100 1000 65535"
 tcp4_ipsec34 tcp_ipsec.sh -p esp -a rmd160 -e serpent -m transport -s "100 1000 65535"
 tcp4_ipsec35 tcp_ipsec.sh -p esp -a rmd160 -e serpent -m tunnel -s "100 1000 65535"
+tcp4_ipsec36 tcp_ipsec.sh -p esp -m beet -s "100 1000 65535"
 
 tcp6_ipsec01 tcp_ipsec.sh -6 -s "100 1000 65535"
 tcp6_ipsec02 tcp_ipsec.sh -6 -p ah -m transport -s "100 1000 65535"
@@ -69,6 +70,7 @@ tcp6_ipsec32 tcp_ipsec.sh -6 -p esp -a sha512 -e camellia -m transport -s "100 1
 tcp6_ipsec33 tcp_ipsec.sh -6 -p esp -a sha512 -e camellia -m tunnel -s "100 1000 65535"
 tcp6_ipsec34 tcp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m transport -s "100 1000 65535"
 tcp6_ipsec35 tcp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s "100 1000 65535"
+tcp6_ipsec36 tcp_ipsec.sh -6 -p esp -m beet -s "100 1000 65535"
 
 tcp4_ipsec_vti01 tcp_ipsec_vti.sh -p ah -m tunnel -s "100 1000 65535"
 tcp4_ipsec_vti02 tcp_ipsec_vti.sh -p esp -m tunnel -s "100 1000 65535"

@@ -52,6 +52,7 @@ icmp4-uni-basic22 icmp-uni-basic.sh -A rfc4309_256 -p esp_aead -m tunnel -s "10 
 icmp4-uni-basic23 icmp-uni-basic.sh -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
 icmp4-uni-basic24 icmp-uni-basic.sh -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
 icmp4-uni-basic25 icmp-uni-basic.sh -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
+icmp4-uni-basic26 icmp-uni-basic.sh -p esp -m beet -s "10 100 1000 10000 65470"
 
 icmp6-uni-basic01 icmp-uni-basic.sh -6 -s "10 100 1000 10000 65527"
 icmp6-uni-basic02 icmp-uni-basic.sh -6 -p ah -m transport -s "10 100 1000 10000 65503"
@@ -78,6 +79,7 @@ icmp6-uni-basic22 icmp-uni-basic.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s "
 icmp6-uni-basic23 icmp-uni-basic.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
 icmp6-uni-basic24 icmp-uni-basic.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
 icmp6-uni-basic25 icmp-uni-basic.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
+icmp6-uni-basic26 icmp-uni-basic.sh -6 -p esp -m beet -s "10 100 1000 10000 65490"
 
 icmp4-uni-vti01 icmp-uni-vti.sh -p ah -a sha256 -m tunnel -S fffffffe -k 1 -s "10 100 1000 10000 65463"
 icmp4-uni-vti02 icmp-uni-vti.sh -p esp -a sha512 -e des -m tunnel -S fffffffe -k 2 -s "10 100 1000 10000 65450"
