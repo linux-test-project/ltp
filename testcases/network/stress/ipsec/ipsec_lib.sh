@@ -275,3 +275,43 @@ tst_ipsec_vti()
 		tst_rhost_run -s -c "$ipx po add dir in tmpl $i_dir $p $m $mrk"
 	fi
 }
+
+# Setup vti/vti6 interface for IPsec tunneling
+# The function sets variables:
+#  * tst_vti - vti interface name,
+#  * ip_loc_tun - local IP address on vti interface
+#  * ip_rmt_tun - remote IP address
+tst_ipsec_setup_vti()
+{
+	if_loc=$(tst_iface)
+	if_rmt=$(tst_iface rhost)
+
+	ip_loc=$(tst_ipaddr)
+	ip_rmt=$(tst_ipaddr rhost)
+
+	tst_vti="ltp_vti0"
+
+	tst_resm TINFO "Test vti$TST_IPV6 + IPsec[$IPSEC_PROTO/$IPSEC_MODE]"
+
+	tst_ipsec_vti lhost $ip_loc $ip_rmt $tst_vti
+	tst_ipsec_vti rhost $ip_rmt $ip_loc $tst_vti
+
+	local mask=
+	if [ "$TST_IPV6" ]; then
+		ip_loc_tun="${IPV6_NET32_UNUSED}::1";
+		ip_rmt_tun="${IPV6_NET32_UNUSED}::2";
+		mask=64
+		ROD ip -6 route add ${IPV6_NET32_UNUSED}::/$mask dev $tst_vti
+	else
+		ip_loc_tun="${IPV4_NET16_UNUSED}.1.1";
+		ip_rmt_tun="${IPV4_NET16_UNUSED}.1.2";
+		mask=30
+		ROD ip route add ${IPV4_NET16_UNUSED}.1.0/$mask dev $tst_vti
+	fi
+
+	tst_resm TINFO "Add IPs to vti tunnel, " \
+		       "loc: $ip_loc_tun/$mask, rmt: $ip_rmt_tun/$mask"
+
+	ROD ip a add $ip_loc_tun/$mask dev $tst_vti nodad
+	tst_rhost_run -s -c "ip a add $ip_rmt_tun/$mask dev $tst_vti"
+}
