@@ -43,6 +43,10 @@
 # define KEYCTL_SETPERM 5
 #endif
 
+#ifndef KEYCTL_UNLINK
+# define KEYCTL_UNLINK 9
+#endif
+
 #ifndef KEY_SPEC_THREAD_KEYRING
 # define KEY_SPEC_THREAD_KEYRING -1
 #endif
