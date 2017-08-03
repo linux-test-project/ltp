@@ -31,12 +31,8 @@ iam=`whoami`
 tvar=${MACHTYPE%-*}
 tvar=${tvar#*-}
 
-if [ "$tvar" = "redhat" -o "$tvar" = "redhat-linux" ]
-then
-CRON_ALLOW="/etc/cron.allow"
-else
-CRON_ALLOW="/var/spool/cron/allow"
-fi
+CRON_ALLOW="/etc/cron.allow /var/spool/cron/allow"
+CRON_ALLOW_STR="$(echo $CRON_ALLOW | sed 's/ / \& /')"
 
 TEST_USER1="ca_user1"
 TEST_USER1_HOME="/home/$TEST_USER1"
@@ -51,7 +47,9 @@ do_setup() {
 	#move any files that may get in the way
 	rm /tmp/cron_allow_test > /dev/null 2>&1
 	rm /tmp/cron_allow_test1 > /dev/null 2>&1
-	mv $CRON_ALLOW $CRON_ALLOW.old > /dev/null 2>&1
+	for f in $CRON_ALLOW; do
+	    mv $f $f.old > /dev/null 2>&1
+	done
 
 	#remove users for clean enviroment
     su $TEST_USER1 -c "crontab -r"
@@ -91,8 +89,10 @@ do_cleanup(){
         rm -rf /home/$TEST_USER2
 	userdel $TEST_USER1
 	userdel $TEST_USER2
-	rm $CRON_ALLOW
-	mv $CRON_ALLOW.old $CRON_ALLOW > /dev/null 2>&1
+	for f in $CRON_ALLOW; do
+	    rm $$f
+	    mv $f.old $f > /dev/null 2>&1
+	done
 	rm /tmp/cron_allow_test >/dev/null 2>&1
 }
 
@@ -103,10 +103,10 @@ run_test() {
 
 if [ $iam = $TEST_USER1 ]
 then
-	echo "TEST: $CRON_ALLOW should only allow those in the file to
+	echo "TEST: $CRON_ALLOW_STR should only allow those in the file to
 run cron jobs."
 
-	echo "(1) TEST THAT PERSON IN $CRON_ALLOW IS ABLE TO RUN JOB."
+	echo "(1) TEST THAT PERSON IN $CRON_ALLOW_STR IS ABLE TO RUN JOB."
 
 	echo "backup crontab...."
     crontab -l | grep '^[^#]' > /tmp/crontab-cronallow-save-$iam
@@ -143,7 +143,7 @@ fi
 
 if [ $iam = $TEST_USER2 ]
 then
-        echo "(2) TEST THAT PERSON NOT IN $CRON_ALLOW IS NOT ABLE TO RUN JOB."
+        echo "(2) TEST THAT PERSON NOT IN $CRON_ALLOW_STR IS NOT ABLE TO RUN JOB."
 
 		echo "backup crontab...."
     	crontab -l | grep '^[^#]' > /tmp/crontab-cronallow-save-$iam
@@ -184,7 +184,9 @@ fi
 if [ $iam = "root" ]
 then
 	do_setup
-	echo $TEST_USER1 > $CRON_ALLOW
+	for f in $CRON_ALLOW; do
+	    echo $TEST_USER1 > $f
+	done
 	EXIT_CODE=0
 	su $TEST_USER1 -c "$0"
 	if [ $? != 0 ]
