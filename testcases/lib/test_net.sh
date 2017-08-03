@@ -335,7 +335,7 @@ tst_netload()
 	local rfile="tst_netload.res"
 	local expect_res="pass"
 	local ret=0
-
+	local type=
 	# common options for client and server
 	local cs_opts=
 
@@ -359,7 +359,8 @@ tst_netload()
 		R) s_replies="$OPTARG" ;;
 		b) cs_opts="${cs_opts}-b $OPTARG " ;;
 		t) cs_opts="${cs_opts}-t $OPTARG " ;;
-		T) cs_opts="${cs_opts}-T $OPTARG " ;;
+		T) cs_opts="${cs_opts}-T $OPTARG "
+		   type="$OPTARG" ;;
 		f) cs_opts="${cs_opts}-f " ;;
 		e) expect_res="$OPTARG" ;;
 		*) tst_brkm TBROK "tst_netload: unknown option: $OPTARG" ;;
@@ -383,8 +384,16 @@ tst_netload()
 
 	tst_resm TINFO "check that server port in 'LISTEN' state"
 	local sec_waited=
+
+	local sock_cmd=
+	if [ "$type" = "sctp" ]; then
+		sock_cmd="netstat -naS | grep $port | grep -q LISTEN"
+	else
+		sock_cmd="ss -ldutn | grep -q $port"
+	fi
+
 	for sec_waited in $(seq 1 600); do
-		tst_rhost_run -c "ss -ldutn | grep -q $port" && break
+		tst_rhost_run -c "$sock_cmd" && break
 		if [ $sec_waited -eq 600 ]; then
 			tst_rhost_run -c "ss -dutnp | grep $port"
 			tst_brkm TFAIL "server not in LISTEN state"
