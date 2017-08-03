@@ -27,7 +27,6 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 LINK_NUM=${LINK_NUM:-0}
 DO_IPSEC=${DO_IPSEC:-false}
-IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 10000 65507}"
 [ -n "$IPSEC_MODE" -a -n "$IPSEC_PROTO" ] && DO_IPSEC=true || DO_IPSEC=false
 
 # Test description
@@ -55,6 +54,8 @@ if $DO_IPSEC ; then
 	tst_ipsec lhost $lhost_addr $rhost_addr
 	tst_ipsec rhost $rhost_addr $lhost_addr
 fi
+
+PING_MAX="$IPSEC_REQUESTS"
 
 tst_ping $lhost_ifname $rhost_addr $IPSEC_SIZE_ARRAY
 if [ $? -ne 0 ]; then

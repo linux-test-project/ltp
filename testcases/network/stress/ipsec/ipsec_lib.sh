@@ -30,7 +30,10 @@ AALGO="sha1"
 # Compression algorithm
 CALGO="deflate"
 
-while getopts "hl:m:p:s:S:k:A:e:a:c:6" opt; do
+IPSEC_REQUESTS="500"
+IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 2000 10000 65000}"
+
+while getopts "hl:m:p:s:S:k:A:e:a:c:r:6" opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
@@ -45,6 +48,7 @@ while getopts "hl:m:p:s:S:k:A:e:a:c:6" opt; do
 		echo "e x      Encryption algorithm"
 		echo "a x      Authentication algorithm"
 		echo "c x      Compression algorithm"
+		echo "r x      Num of requests, PING_MAX or netstress' '-r' opt"
 		echo "6        run over IPv6"
 		exit 0
 	;;
@@ -58,6 +62,7 @@ while getopts "hl:m:p:s:S:k:A:e:a:c:6" opt; do
 	e) EALGO=$OPTARG ;;
 	a) AALGO=$OPTARG ;;
 	c) CALGO=$OPTARG ;;
+	r) IPSEC_REQUESTS="$OPTARG" ;;
 	6) # skip, test_net library already processed it
 	;;
 	*) tst_brkm TBROK "unknown option: $opt" ;;

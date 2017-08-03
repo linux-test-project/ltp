@@ -24,7 +24,7 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 do_setup()
 {
-	IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 10000 65507}"
+	PING_MAX="$IPSEC_REQUESTS"
 
 	if_loc=$(tst_iface)
 	if_rmt=$(tst_iface rhost)

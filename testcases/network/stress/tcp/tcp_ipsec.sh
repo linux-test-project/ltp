@@ -20,7 +20,6 @@ TCID=tcp_ipsec
 TST_TOTAL=3
 TST_CLEANUP="tst_ipsec_cleanup"
 
-client_requests=10000
 max_requests=10
 
 . ipsec_lib.sh
@@ -36,11 +35,9 @@ do_setup()
 
 do_test()
 {
-	IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-100 1000 65000}"
-
 	for p in $IPSEC_SIZE_ARRAY; do
 		tst_netload -H $(tst_ipaddr rhost) -n $p -N $p \
-			-r $client_requests -R $max_requests
+			-r $IPSEC_REQUESTS -R $max_requests
 	done
 }
 
