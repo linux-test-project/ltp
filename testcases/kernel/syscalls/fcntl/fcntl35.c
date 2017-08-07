@@ -45,19 +45,23 @@
 #include "tst_test.h"
 
 static int pipe_max_unpriv;
-static int test_max_unpriv = 4096;
+static int test_max_unpriv;
+static int test_max_priv;
 static struct passwd *pw;
 static struct tcase {
-	int exp_sz;
+	int *exp_sz;
 	int exp_usr;
 	char *des;
 } tcases[] = {
-	{4096, 1, "an unprivileged user"},
-	{65536, 0, "a privileged user"}
+	{&test_max_unpriv, 1, "an unprivileged user"},
+	{&test_max_priv, 0, "a privileged user"}
 };
 
 static void setup(void)
 {
+	test_max_unpriv = getpagesize();
+	test_max_priv = test_max_unpriv * 16;
+
 	if (!access("/proc/sys/fs/pipe-max-size", F_OK)) {
 		SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-size", "%d",
 				&pipe_max_unpriv);
@@ -115,7 +119,7 @@ static void do_test(unsigned int n)
 		if (tc->exp_usr)
 			SAFE_SETUID(pw->pw_uid);
 
-		verify_pipe_size(tc->exp_sz, tc->des);
+		verify_pipe_size(*tc->exp_sz, tc->des);
 	}
 
 	tst_reap_children();
