@@ -53,7 +53,7 @@ static int maptypes[] = {
 static char *mapname(int maptype)
 {
 	switch (maptype) {
-	case MAP_PRIVATE: return "MAP_SHARED";
+	case MAP_PRIVATE: return "MAP_PRIVATE";
 	case MAP_PRIVATE | MAP_POPULATE: return "MAP_PRIVATE | MAP_POPULATE";
 	case MAP_SHARED: return "MAP_SHARED";
 	default:
