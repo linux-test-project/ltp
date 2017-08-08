@@ -1,6 +1,10 @@
 # Tests which check for vulnerabilities by CVE number
+cve-2011-0999 thp01 -I 120
+cve-2011-2183 ksm05 -I 10
+cve-2011-2496 vma03
 cve-2012-0957 cve-2012-0957
 cve-2014-0196 cve-2014-0196
+cve-2015-0235 gethostbyname_r01
 cve-2016-4997 cve-2016-4997
 cve-2016-5195 dirtyc0w
 cve-2016-7117 cve-2016-7117
