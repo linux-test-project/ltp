@@ -154,5 +154,6 @@ static void check_swapping(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
+	.forks_child = 1,
 	.test_all = test_swapping,
 };
