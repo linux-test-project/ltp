@@ -72,5 +72,6 @@
 /vma/vma02
 /vma/vma03
 /vma/vma04
+/vma/vma05_vdso
 /vmtests/data_space
 /vmtests/stack_space

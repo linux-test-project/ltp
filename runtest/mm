@@ -89,6 +89,7 @@ vma01 vma01
 vma02 vma02
 vma03 vma03
 vma04 vma04
+vma05 vma05.sh
 
 overcommit_memory01 overcommit_memory
 overcommit_memory02 overcommit_memory -R 0
