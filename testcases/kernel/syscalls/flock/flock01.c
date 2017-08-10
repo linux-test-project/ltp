@@ -69,6 +69,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <sys/file.h>
+#include <fcntl.h>
 #include "test.h"
 
 void setup(void);
