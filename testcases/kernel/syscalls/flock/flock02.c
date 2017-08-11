@@ -75,6 +75,7 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
 #include "test.h"
