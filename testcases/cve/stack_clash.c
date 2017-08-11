@@ -47,7 +47,7 @@
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
 
-static unsigned long PAGE_SIZE;
+static unsigned long page_size;
 static unsigned long PAGE_MASK;
 static unsigned long GAP_PAGES = 256;
 static unsigned long THRESHOLD;
@@ -66,7 +66,7 @@ void exhaust_stack_into_sigsegv(void)
 	exhaust_stack_into_sigsegv();
 }
 
-#define MAPPED_LEN PAGE_SIZE
+#define MAPPED_LEN page_size
 static unsigned long mapped_addr;
 
 void segv_handler(int sig, siginfo_t *info, void *data LTP_ATTRIBUTE_UNUSED)
@@ -150,7 +150,7 @@ void do_child(void)
 	stack_t signal_stack;
 	struct sigaction segv_sig = {.sa_sigaction = segv_handler, .sa_flags = SA_ONSTACK|SA_SIGINFO};
 	void *map;
-	unsigned long gap = GAP_PAGES * PAGE_SIZE;
+	unsigned long gap = GAP_PAGES * page_size;
 	struct rlimit rlimit;
 
 	rlimit.rlim_cur = rlimit.rlim_max = RLIM_INFINITY;
@@ -200,8 +200,8 @@ void setup(void)
 {
 	char buf[4096], *p;
 
-	PAGE_SIZE = sysconf(_SC_PAGESIZE);
-	PAGE_MASK = ~(PAGE_SIZE - 1);
+	page_size = sysconf(_SC_PAGESIZE);
+	PAGE_MASK = ~(page_size - 1);
 
 	buf[4095] = '\0';
 	SAFE_FILE_SCANF("/proc/cmdline", "%4095[^\n]", buf);
@@ -214,7 +214,7 @@ void setup(void)
 		tst_res(TINFO, "stack_guard_gap = %ld", GAP_PAGES);
 	}
 
-	THRESHOLD = (GAP_PAGES - 1) * PAGE_SIZE;
+	THRESHOLD = (GAP_PAGES - 1) * page_size;
 
 	{
 		volatile int *a = alloca(128);
