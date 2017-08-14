@@ -34,11 +34,38 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="keyctl"
 . tst_test.sh
 
+check_keyctl()
+{
+	local nosup
+	for op in $@; do
+		nosup=0
+
+		if ! keyctl 2>&1 | grep -q "keyctl $op"; then
+			nosup=1
+		fi
+
+		if [ "$op" = "request2" ]; then
+			local key=`keyctl request2 user debug:foo bar`
+			if [ $? -ne 0 ]; then
+				nosup=1
+			fi
+		fi
+
+		if [ "$op" = "unlink" ]; then
+			if ! keyctl unlink $key @s; then
+				nosup=1
+			fi
+		fi
+
+		if [ $nosup -ne 0 ]; then
+			tst_brk TCONF "keyctl operation $op not supported"
+		fi
+	done
+}
+
 setup()
 {
-	if tst_kvcmp -le 2.6.33; then
-		tst_brk TCONF "Kernel newer than 2.6.33 is needed"
-	fi
+	check_keyctl negate request2 show unlink
 
 	PATH_KEYSTAT="/proc/key-users"
 	PATH_KEYQUOTA="/proc/sys/kernel/keys/root_maxbytes"
