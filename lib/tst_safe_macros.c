@@ -17,6 +17,11 @@
 
 #define _GNU_SOURCE
 #include <unistd.h>
+#include <errno.h>
+#include "config.h"
+#ifdef HAVE_SYS_FANOTIFY_H
+# include <sys/fanotify.h>
+#endif
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_safe_macros.h"
@@ -46,4 +51,27 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid)
 	}
 
 	return pgid;
+}
+
+int safe_fanotify_init(const char *file, const int lineno,
+	unsigned int flags, unsigned int event_f_flags)
+{
+	int rval;
+
+#ifdef HAVE_SYS_FANOTIFY_H
+	rval = fanotify_init(flags, event_f_flags);
+
+	if (rval == -1) {
+		if (errno == ENOSYS) {
+			tst_brk(TCONF,
+				"fanotify is not configured in this kernel.");
+		}
+		tst_brk(TBROK | TERRNO,
+			"%s:%d: fanotify_init() failed", file, lineno);
+	}
+#else
+	tst_brk(TCONF, "Header <sys/fanotify.h> is not present");
+#endif /* HAVE_SYS_FANOTIFY_H */
+
+	return rval;
 }
