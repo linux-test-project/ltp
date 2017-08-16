@@ -1121,6 +1121,7 @@
 /fanotify/fanotify05
 /fanotify/fanotify06
 /fanotify/fanotify07
+/fanotify/fanotify08
 /perf_event_open/perf_event_open01
 /perf_event_open/perf_event_open02
 /memfd_create/memfd_create01
