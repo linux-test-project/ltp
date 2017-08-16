@@ -38,13 +38,9 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/syscall.h>
-#include "test.h"
-#include "lapi/syscalls.h"
+#include <stdlib.h>
+#include "tst_test.h"
 #include "fanotify.h"
-#include "safe_macros.h"
-
-char *TCID = "fanotify03";
-int TST_TOTAL = 3;
 
 #if defined(HAVE_SYS_FANOTIFY_H)
 #include <sys/fanotify.h>
@@ -55,10 +51,9 @@ int TST_TOTAL = 3;
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
-static void setup(void);
-static void cleanup(void);
-
 #define BUF_SIZE 256
+#define TST_TOTAL 3
+
 static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static volatile int fd_notify;
@@ -92,6 +87,7 @@ static void generate_events(void)
 
 static void child_handler(int tmp)
 {
+	(void)tmp;
 	/*
 	 * Close notification fd so that we cannot block while reading
 	 * from it
@@ -109,18 +105,16 @@ static void run_child(void)
 	child_action.sa_flags = SA_NOCLDSTOP;
 
 	if (sigaction(SIGCHLD, &child_action, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brk(TBROK | TERRNO,
 			 "sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
 
-	switch (child_pid = fork()) {
-	case 0:
+	child_pid = SAFE_FORK();
+	if (child_pid == 0) {
 		/* Child will generate events now */
 		close(fd_notify);
 		generate_events();
 		exit(0);
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 	}
 }
 
@@ -133,171 +127,148 @@ static void check_child(void)
 	sigemptyset(&child_action.sa_mask);
 	child_action.sa_flags = SA_NOCLDSTOP;
 	if (sigaction(SIGCHLD, &child_action, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brk(TBROK | TERRNO,
 			 "sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
 	if (waitpid(-1, &child_ret, 0) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
+		tst_brk(TBROK | TERRNO,
 				 "waitpid(-1, &child_ret, 0) failed");
 	}
 
 	if (WIFSIGNALED(child_ret)) {
-		tst_resm(TFAIL, "child exited due to signal %d",
+		tst_res(TFAIL, "child exited due to signal %d",
 			 WTERMSIG(child_ret));
 	} else if (WIFEXITED(child_ret)) {
 		if (WEXITSTATUS(child_ret) == 0)
-			tst_resm(TPASS, "child exited correctly");
+			tst_res(TPASS, "child exited correctly");
 		else
-			tst_resm(TFAIL, "child exited with status %d",
+			tst_res(TFAIL, "child exited with status %d",
 				 WEXITSTATUS(child_ret));
 	} else {
-		tst_resm(TFAIL, "child exited for unknown reason (status %d)",
+		tst_res(TFAIL, "child exited for unknown reason (status %d)",
 			 child_ret);
 	}
 }
 
-int main(int ac, char **av)
+void test01(void)
 {
-	int lc;
-	int fd_notify_backup = -1;
+	int tst_count, fd_notify_backup = -1;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	int ret, len = 0, i = 0, test_num = 0;
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		int ret, len = 0, i = 0, test_num = 0;
-
-		if (fd_notify_backup == -1) {
-			fd_notify_backup = dup(fd_notify);
-			if (fd_notify_backup < 0)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "dup(%d) failed", fd_notify);
-		}
-		run_child();
-
-		tst_count = 0;
-
-		event_set[tst_count] = FAN_OPEN_PERM;
-		event_resp[tst_count++] = FAN_ALLOW;
-		event_set[tst_count] = FAN_ACCESS_PERM;
-		event_resp[tst_count++] = FAN_DENY;
-
-		/* tst_count + 1 is for checking child return value */
-		if (TST_TOTAL != tst_count + 1) {
-			tst_brkm(TBROK, cleanup,
-				 "TST_TOTAL and tst_count do not match");
-		}
-		tst_count = 0;
-
-		/*
-		 * check events
-		 */
-		while (test_num < TST_TOTAL && fd_notify != -1) {
-			struct fanotify_event_metadata *event;
-
-			if (i == len) {
-				/* Get more events */
-				ret = read(fd_notify, event_buf + len,
-					   EVENT_BUF_LEN - len);
-				if (fd_notify == -1)
-					break;
-				if (ret < 0) {
-					tst_brkm(TBROK, cleanup,
-						 "read(%d, buf, %zu) failed",
-						 fd_notify, EVENT_BUF_LEN);
-				}
-				len += ret;
-			}
-
-			event = (struct fanotify_event_metadata *)&event_buf[i];
-			if (!(event->mask & event_set[test_num])) {
-				tst_resm(TFAIL,
-					 "get event: mask=%llx (expected %llx) "
-					 "pid=%u fd=%u",
-					 (unsigned long long)event->mask,
-					 event_set[test_num],
-					 (unsigned)event->pid, event->fd);
-			} else if (event->pid != child_pid) {
-				tst_resm(TFAIL,
-					 "get event: mask=%llx pid=%u "
-					 "(expected %u) fd=%u",
-					 (unsigned long long)event->mask,
-					 (unsigned)event->pid,
-					 (unsigned)child_pid,
-					 event->fd);
-			} else {
-				tst_resm(TPASS,
-					    "get event: mask=%llx pid=%u fd=%u",
-					    (unsigned long long)event->mask,
-					    (unsigned)event->pid, event->fd);
-			}
-			/* Write response to permission event */
-			if (event_set[test_num] & FAN_ALL_PERM_EVENTS) {
-				struct fanotify_response resp;
-
-				resp.fd = event->fd;
-				resp.response = event_resp[test_num];
-				SAFE_WRITE(cleanup, 1, fd_notify, &resp,
-					   sizeof(resp));
-			}
-			event->mask &= ~event_set[test_num];
-			/* No events left in current mask? Go for next event */
-			if (event->mask == 0) {
-				i += event->event_len;
-				close(event->fd);
-			}
-			test_num++;
-		}
-		for (; test_num < TST_TOTAL - 1; test_num++) {
-			tst_resm(TFAIL, "didn't get event: mask=%llx",
-				 event_set[test_num]);
-
-		}
-		check_child();
-		/* We got SIGCHLD while running, resetup fd_notify */
-		if (fd_notify == -1) {
-			fd_notify = fd_notify_backup;
-			fd_notify_backup = -1;
-		}
+	if (fd_notify_backup == -1) {
+		fd_notify_backup = dup(fd_notify);
+		if (fd_notify_backup < 0)
+			tst_brk(TBROK | TERRNO,
+				 "dup(%d) failed", fd_notify);
 	}
+	run_child();
 
-	cleanup();
-	tst_exit();
+	tst_count = 0;
+
+	event_set[tst_count] = FAN_OPEN_PERM;
+	event_resp[tst_count++] = FAN_ALLOW;
+	event_set[tst_count] = FAN_ACCESS_PERM;
+	event_resp[tst_count++] = FAN_DENY;
+
+	/* tst_count + 1 is for checking child return value */
+	if (TST_TOTAL != tst_count + 1) {
+		tst_brk(TBROK,
+			 "TST_TOTAL and tst_count do not match");
+	}
+	tst_count = 0;
+
+	/*
+	 * check events
+	 */
+	while (test_num < TST_TOTAL && fd_notify != -1) {
+		struct fanotify_event_metadata *event;
+
+		if (i == len) {
+			/* Get more events */
+			ret = read(fd_notify, event_buf + len,
+				   EVENT_BUF_LEN - len);
+			if (fd_notify == -1)
+				break;
+			if (ret < 0) {
+				tst_brk(TBROK,
+					 "read(%d, buf, %zu) failed",
+					 fd_notify, EVENT_BUF_LEN);
+			}
+			len += ret;
+		}
+
+		event = (struct fanotify_event_metadata *)&event_buf[i];
+		if (!(event->mask & event_set[test_num])) {
+			tst_res(TFAIL,
+				 "get event: mask=%llx (expected %llx) "
+				 "pid=%u fd=%u",
+				 (unsigned long long)event->mask,
+				 event_set[test_num],
+				 (unsigned)event->pid, event->fd);
+		} else if (event->pid != child_pid) {
+			tst_res(TFAIL,
+				 "get event: mask=%llx pid=%u "
+				 "(expected %u) fd=%u",
+				 (unsigned long long)event->mask,
+				 (unsigned)event->pid,
+				 (unsigned)child_pid,
+				 event->fd);
+		} else {
+			tst_res(TPASS,
+				    "get event: mask=%llx pid=%u fd=%u",
+				    (unsigned long long)event->mask,
+				    (unsigned)event->pid, event->fd);
+		}
+		/* Write response to permission event */
+		if (event_set[test_num] & FAN_ALL_PERM_EVENTS) {
+			struct fanotify_response resp;
+
+			resp.fd = event->fd;
+			resp.response = event_resp[test_num];
+			SAFE_WRITE(1, fd_notify, &resp,
+				   sizeof(resp));
+		}
+		event->mask &= ~event_set[test_num];
+		/* No events left in current mask? Go for next event */
+		if (event->mask == 0) {
+			i += event->event_len;
+			close(event->fd);
+		}
+		test_num++;
+	}
+	for (; test_num < TST_TOTAL - 1; test_num++) {
+		tst_res(TFAIL, "didn't get event: mask=%llx",
+			 event_set[test_num]);
+
+	}
+	check_child();
+	/* We got SIGCHLD while running, resetup fd_notify */
+	if (fd_notify == -1) {
+		fd_notify = fd_notify_backup;
+		fd_notify_backup = -1;
+	}
 }
 
 static void setup(void)
 {
 	int fd;
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
 	sprintf(fname, "fname_%d", getpid());
-	fd = SAFE_OPEN(cleanup, fname, O_CREAT | O_RDWR, 0644);
-	SAFE_WRITE(cleanup, 1, fd, fname, 1);
-	SAFE_CLOSE(cleanup, fd);
+	fd = SAFE_OPEN(fname, O_CREAT | O_RDWR, 0644);
+	SAFE_WRITE(1, fd, fname, 1);
+	SAFE_CLOSE(fd);
 
-	if ((fd_notify = fanotify_init(FAN_CLASS_CONTENT, O_RDONLY)) < 0) {
-		if (errno == ENOSYS) {
-			tst_brkm(TCONF, cleanup,
-				 "fanotify is not configured in this kernel.");
-		} else {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "fanotify_init failed");
-		}
-	}
+	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS_PERM |
 			    FAN_OPEN_PERM, AT_FDCWD, fname) < 0) {
 		if (errno == EINVAL) {
-			tst_brkm(TCONF | TERRNO, cleanup,
+			tst_brk(TCONF | TERRNO,
 				 "CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
 				 "configured in kernel?");
 		} else {
-			tst_brkm(TBROK | TERRNO, cleanup,
+			tst_brk(TBROK | TERRNO,
 				 "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS_PERM | "
 				 "FAN_OPEN_PERM, AT_FDCWD, %s) failed.", fd_notify, fname);
 		}
@@ -307,17 +278,18 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (fd_notify > 0 && close(fd_notify))
-		tst_resm(TWARN | TERRNO, "close(%d) failed", fd_notify);
-
-	tst_rmdir();
+	if (fd_notify > 0)
+		SAFE_CLOSE(fd_notify);
 }
+
+static struct tst_test test = {
+	.test_all = test01,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+	.needs_root = 1
+};
 
 #else
-
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "system doesn't have required fanotify support");
-}
-
+	TST_TEST_TCONF("system doesn't have required fanotify support");
 #endif

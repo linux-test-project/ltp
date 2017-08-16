@@ -119,14 +119,7 @@ static int setup_instance(void)
 {
 	int fd;
 
-	if ((fd = fanotify_init(FAN_CLASS_CONTENT, O_RDONLY)) < 0) {
-		if (errno == ENOSYS) {
-			tst_brk(TCONF,
-				"fanotify is not configured in this kernel.");
-		} else {
-			tst_brk(TBROK | TERRNO, "fanotify_init failed");
-		}
-	}
+	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
 	if (fanotify_mark(fd, FAN_MARK_ADD, FAN_ACCESS_PERM, AT_FDCWD,
 			  fname) < 0) {
