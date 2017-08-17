@@ -49,7 +49,7 @@
 static int fildes;
 static char *addr;
 
-static int page_check(void)
+static void page_check(void)
 {
 	int i = 1;
 	int flag = 0;
@@ -70,8 +70,9 @@ static int page_check(void)
 	pm = open("/proc/self/pagemap", O_RDONLY);
 	if (pm == -1) {
 		if ((errno == EPERM) && (geteuid() != 0)) {
-			tst_brk(TCONF | TERRNO,
+			tst_res(TCONF | TERRNO,
 				"don't have permission to open dev pagemap");
+			return;
 		} else {
 			tst_brk(TFAIL | TERRNO, "pen dev pagemap failed");
 		}
@@ -98,14 +99,14 @@ static int page_check(void)
 
 	close(pm);
 
-	if (flag)
-		return 1;
-
-	return 0;
+	if (!flag)
+		tst_res(TINFO, "All pages are present");
 }
 
 void verify_mmap(void)
 {
+	unsigned int i;
+
 	addr = mmap(NULL, MMAPSIZE, PROT_READ | PROT_WRITE,
 		    MAP_PRIVATE | MAP_POPULATE, fildes, 0);
 
@@ -114,11 +115,18 @@ void verify_mmap(void)
 		return;
 	}
 
-	if (page_check())
-		tst_res(TFAIL, "Not all pages are present");
-	else
-		tst_res(TPASS, "Functionality of mmap() successful");
+	page_check();
 
+	for (i = 0; i < MMAPSIZE; i++) {
+		if (addr[i]) {
+			tst_res(TFAIL, "Non-zero byte at offset %i", i);
+			goto unmap;
+		}
+	}
+
+	tst_res(TPASS, "File mapped properly");
+
+unmap:
 	SAFE_MUNMAP(addr, MMAPSIZE);
 }
 
