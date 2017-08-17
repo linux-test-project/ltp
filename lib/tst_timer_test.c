@@ -335,6 +335,17 @@ void do_timer_test(long long usec, unsigned int nsamples)
 
 static void parse_timer_opts(void);
 
+static int set_latency(void)
+{
+        int fd, latency = 0;
+
+        fd = open("/dev/cpu_dma_latency", O_WRONLY);
+        if (fd < 0)
+                return fd;
+
+        return write(fd, &latency, sizeof(latency));
+}
+
 static void timer_setup(void)
 {
 	struct timespec t;
@@ -364,6 +375,9 @@ static void timer_setup(void)
 	parse_timer_opts();
 
 	samples = SAFE_MALLOC(sizeof(long long) * MAX(MAX_SAMPLES, sample_cnt));
+
+	if (set_latency() < 0)
+		tst_res(TINFO, "Failed to set zero latency constraint: %m");
 
 	if (setup)
 		setup();
