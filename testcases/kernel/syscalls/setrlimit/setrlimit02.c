@@ -32,9 +32,6 @@ static struct tcase {
 	struct rlimit *rlim;
 	int exp_errno;
 } tcases[] = {
-#if !defined(UCLINUX)
-	{RLIMIT_NOFILE, (void *)-1, EFAULT},
-#endif
 	{-1, &rlim, EINVAL},
 	{RLIMIT_NOFILE, &rlim, EPERM}
 };
