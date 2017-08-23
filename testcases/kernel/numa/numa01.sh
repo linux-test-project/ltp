@@ -32,10 +32,11 @@
 #               Test #9: Verifies numa_node_size api                         #
 #               Test #10:Verifies Migratepages                               #
 #               Test #11:Verifies hugepage alloacted on specified node       #
+#               Test #12:Verifies THP memory allocated on preferred node     #
 #                                                                            #
 ##############################################################################
 
-TST_CNT=11
+TST_CNT=12
 TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
@@ -456,6 +457,46 @@ test11()
 	done
 
 	tst_res TPASS "NUMA local node hugepage memory allocated"
+}
+
+# Verification of THP memory allocated on preferred node
+test12()
+{
+	Mem_curr=0
+
+	if ! grep -q '\[always\]' /sys/kernel/mm/transparent_hugepage/enabled; then
+		tst_res TCONF "THP is not supported/enabled"
+		return
+	fi
+
+	COUNTER=1
+	for node in $nodes_list; do
+
+		if [ $COUNTER -eq $total_nodes ]; then   #wrap up for last node
+			Preferred_node=$(echo $nodes_list | cut -d ' ' -f 1)
+		else
+			# always next node is preferred node
+			Preferred_node=$(echo $nodes_list | cut -d ' ' -f $((COUNTER+1)))
+		fi
+
+		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa alloc_2HPSZ_THP &
+		pid=$!
+
+		wait_for_support_numa $pid
+
+		Mem_curr=$(echo "$(extract_numastat_p $pid $Preferred_node) * 1024" |bc)
+		if [ $(echo "$Mem_curr < $HPAGE_SIZE * 2" |bc ) -eq 1 ]; then
+			tst_res TFAIL \
+				"NUMA memory allocated in node$Preferred_node is less than expected"
+			kill -CONT $pid >/dev/null 2>&1
+			return
+		fi
+
+		COUNTER=$((COUNTER+1))
+		kill -CONT $pid >/dev/null 2>&1
+	done
+
+	tst_res TPASS "NUMA preferred node policy verified with THP enabled"
 }
 
 tst_run

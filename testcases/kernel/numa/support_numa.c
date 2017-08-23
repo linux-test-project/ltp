@@ -53,6 +53,7 @@ static void help(void)
 	printf("Input:	Describe input arguments to this program\n");
 	printf("	argv[1] == \"alloc_1MB\" then allocate 1MB of memory\n");
 	printf("	argv[1] == \"alloc_1MB_shared\" then allocate 1MB of share memory\n");
+	printf("	argv[1] == \"alloc_2HPSZ_THP\" then allocate 2HUGE PAGE SIZE of THP memory\n");
 	printf("        argv[1] == \"alloc_1huge_page\" then allocate 1HUGE PAGE SIZE of memory\n");
 	printf("        argv[1] == \"pause\" then pause the program to catch sigint\n");
 	printf("Exit:	On failure - Exits with non-zero value\n");
@@ -138,6 +139,24 @@ int main(int argc, char *argv[])
 		munmap(buf, sb.st_size);
 		close(fd);
 		remove(TEST_SFILE);
+	} else if (!strcmp(argv[1], "alloc_2HPSZ_THP")) {
+		ssize_t size = 2 * read_hugepagesize();
+		if (size == 0)
+			exit(1);
+
+		buf = mmap(NULL, size, PROT_READ | PROT_WRITE,
+				MAP_PRIVATE | MAP_ANONYMOUS,
+				-1, 0);
+		if (buf == MAP_FAILED) {
+			perror("mmap failed");
+			exit(1);
+		}
+
+		memset(buf, 'a', size);
+
+		raise(SIGSTOP);
+
+		munmap(buf, size);
 	} else if (!strcmp(argv[1], "alloc_1huge_page")) {
 		hpsz = read_hugepagesize();
 		if (hpsz == 0)
