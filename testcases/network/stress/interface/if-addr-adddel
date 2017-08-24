@@ -18,20 +18,13 @@
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
 TST_TOTAL=2
-TCID=if-addr-adddel
 
-. if-lib.sh
-
-TST_CLEANUP="do_cleanup"
+TST_CLEANUP="netstress_cleanup"
 
 # The interval of the check interface activity
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
 
-do_cleanup()
-{
-	cleanup
-	restore_ipaddr
-}
+. test_net_stress.sh
 
 test_body()
 {
@@ -88,7 +81,7 @@ test_body()
 			return
 		fi
 
-		check_connectivity $cnt || return
+		check_connectivity_interval $cnt || return
 
 		cnt=$(($cnt + 1))
 
@@ -122,7 +115,7 @@ test_body()
 	tst_resm TPASS "Test is finished correctly"
 }
 
-setup
+netstress_setup
 
 tst_check_cmds ifconfig
 

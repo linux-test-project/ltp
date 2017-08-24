@@ -18,11 +18,12 @@
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
 TST_TOTAL=2
-TCID=if-updown
 
-. if-lib.sh
+TST_CLEANUP="netstress_cleanup"
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
+
+. test_net_stress.sh
 
 test_body()
 {
@@ -59,7 +60,7 @@ test_body()
 			return
 		fi
 
-		check_connectivity $cnt restore_ip || return
+		check_connectivity_interval $cnt restore_ip || return
 
 		cnt=$(($cnt + 1))
 	done
@@ -67,7 +68,7 @@ test_body()
 	tst_resm TPASS "Test is finished correctly"
 }
 
-setup
+netstress_setup
 
 tst_check_cmds ifconfig
 

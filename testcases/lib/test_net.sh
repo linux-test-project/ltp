@@ -500,6 +500,7 @@ tst_ping()
 	local src_iface="${1:-$(tst_iface)}"
 	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift $(( $# >= 2 ? 2 : 0 ))
 	local msg_sizes="$*"
+	local msg="tst_ping IPv${TST_IPV6:-4} iface $src_iface, msg_size"
 	local ret=0
 
 	# ping cmd use 56 as default message size
@@ -508,9 +509,9 @@ tst_ping()
 			-s $size -i 0 > /dev/null 2>&1
 		ret=$?
 		if [ $ret -eq 0 ]; then
-			tst_resm TINFO "tst_ping IPv${TST_IPV6:-4} msg_size $size pass"
+			tst_resm TINFO "$msg $size: pass"
 		else
-			tst_resm TINFO "tst_ping IPv${TST_IPV6:-4} msg_size $size fail"
+			tst_resm TINFO "$msg $size: fail"
 			break
 		fi
 	done

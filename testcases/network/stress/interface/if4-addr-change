@@ -21,11 +21,11 @@ TST_TOTAL=1
 TCID=if4-addr-change
 TST_CLEANUP="do_cleanup"
 
-. test_net.sh
-
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
 # Maximum host portion of the IPv4 address on the local host
 LHOST_IPV4_HOST_MAX="254"
+
+. test_net.sh
 
 do_cleanup()
 {

@@ -18,14 +18,14 @@
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
 TST_TOTAL=2
-TCID=if-mtu-change
-
-. if-lib.sh
 
 TST_CLEANUP="do_cleanup"
 
 # The interval of the mtu change [second]
 CHANGE_INTERVAL=${CHANGE_INTERVAL:-5}
+
+. test_net_stress.sh
+
 # The array of the value which MTU is changed into sequentially
 # 552 - net.ipv4.route.min_pmtu
 CHANGE_VALUES="784 1142 552 1500 552 1500 552 748 552 1142 1500"
@@ -35,7 +35,7 @@ saved_mtu=
 
 do_cleanup()
 {
-	cleanup
+	netstress_cleanup
 	if [ "$saved_mtu" ]; then
 		ip li set $(tst_iface) mtu $saved_mtu
 		tst_rhost_run -c "ip li set $(tst_iface rhost) mtu $saved_mtu"
@@ -59,7 +59,7 @@ test_body()
 	local iface_rmt=$(tst_iface rhost)
 	[ "$TST_IPV6" ] && local netmask=64 || local netmask=16
 
-	tst_resm TINFO "'$cmd_name changes MTU $MTU_CHANGE_TIMES times " \
+	tst_resm TINFO "'$cmd_name changes MTU $MTU_CHANGE_TIMES times" \
 	               "every $CHANGE_INTERVAL seconds"
 
 	make_background_tcp_traffic
@@ -98,7 +98,7 @@ test_body()
 	done
 }
 
-setup
+netstress_setup
 
 tst_check_cmds ifconfig
 
