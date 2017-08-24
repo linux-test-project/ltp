@@ -120,6 +120,8 @@ check_connectivity_interval()
 # IP: server IP; Default value is $(tst_ipaddr).
 make_background_tcp_traffic()
 {
+	pgrep -x netstress > /dev/null && return
+
 	local ip="${1:-$(tst_ipaddr)}"
 	local port=$(tst_get_unused_port ipv${ipver} stream)
 

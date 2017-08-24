@@ -62,8 +62,6 @@ test_body()
 	tst_resm TINFO "'$cmd_name changes MTU $MTU_CHANGE_TIMES times" \
 	               "every $CHANGE_INTERVAL seconds"
 
-	make_background_tcp_traffic
-
 	mtu_array_len=$(echo $CHANGE_VALUES | wc -w)
 	local cnt=0
 	while [ $cnt -lt $MTU_CHANGE_TIMES ]; do
@@ -72,6 +70,8 @@ test_body()
 		cnt=$(($cnt + 1))
 		mtu=$(echo $CHANGE_VALUES | cut -d ' ' -f $field)
 		[ $cnt -eq $MTU_CHANGE_TIMES ] && mtu="$saved_mtu"
+
+		make_background_tcp_traffic
 
 		tst_resm TINFO "set MTU to $mtu $cnt/$MTU_CHANGE_TIMES"
 		local ret=0
@@ -92,9 +92,6 @@ test_body()
 		tst_sleep $CHANGE_INTERVAL
 
 		EXPECT_PASS tst_ping $(tst_ipaddr) $(tst_ipaddr rhost) "1 1000 65507"
-
-		# Check the background TCP traffic
-		pgrep -x netstress > /dev/null || make_background_tcp_traffic
 	done
 }
 

@@ -57,10 +57,10 @@ test_body()
 		return
 	fi
 
-	make_background_tcp_traffic
-
 	local cnt=1
 	while [ $cnt -le $NS_TIMES ]; do
+		make_background_tcp_traffic
+
 		case $cmd_type in
 		rt_cmd) route -A $inet add ${new_rt}${opt_rt} dev $iface ;;
 		ip_cmd) ip route add ${new_rt}${opt_rt} dev $iface ;;
@@ -80,9 +80,6 @@ test_body()
 		fi
 
 		check_connectivity_interval $cnt || return
-
-		# Check the background TCP traffic
-		pgrep -x netstress > /dev/null || make_background_tcp_traffic
 
 		cnt=$(($cnt + 1))
 	done

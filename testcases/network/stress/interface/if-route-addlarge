@@ -54,8 +54,6 @@ test_body()
 		return
 	fi
 
-	make_background_tcp_traffic
-
 	local x=1
 	local y=1
 	local cnt=1
@@ -68,6 +66,7 @@ test_body()
 	fi
 
 	while [ $cnt -le $ROUTE_TOTAL ]; do
+		make_background_tcp_traffic
 
 		if [ "$TST_IPV6" ]; then
 			local hex_x=$(printf '%x' $x)
@@ -87,9 +86,6 @@ test_body()
 		fi
 
 		check_connectivity_interval $cnt || return
-
-		# Check the background TCP traffic
-		pgrep -x netstress > /dev/null || make_background_tcp_traffic
 
 		cnt=$(($cnt + 1))
 		y=$(($y + 1))

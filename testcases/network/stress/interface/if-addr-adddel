@@ -53,10 +53,9 @@ test_body()
 		return
 	fi
 
-	make_background_tcp_traffic
-
 	local cnt=1
 	while [ $cnt -le $NS_TIMES ]; do
+		make_background_tcp_traffic
 
 		case $cmd_type in
 		if_cmd)
@@ -84,9 +83,6 @@ test_body()
 		check_connectivity_interval $cnt || return
 
 		cnt=$(($cnt + 1))
-
-		# Check the background TCP traffic
-		pgrep -x netstress > /dev/null || make_background_tcp_traffic
 
 		case $cmd_type in
 		if_cmd)
