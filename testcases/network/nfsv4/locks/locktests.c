@@ -31,6 +31,7 @@
 
 int MAXLEN = 64;
 int MAXTEST = 10;
+int rc = 0;
 extern int maxClients;
 extern int fdServeur;
 
@@ -309,11 +310,14 @@ void rapport(clnt)
 	    ("\n%s number : %d - Remote clients: %d local client 1 - Total client %d - Total concurent tests: %d\n",
 	     eType, clnt, maxClients, maxClients + 1, totalClients);
 	printf("%s number running test successfully :\n", eType);
-	for (i = 0; i < MAXTEST; i++)
+	for (i = 0; i < MAXTEST; i++) {
+        if (TOTAL_RESULTAT_OK[i] != totalClients)
+            rc = 1;
+
 		printf("%d %s of %d successfully ran test : %s\n",
 		       TOTAL_RESULTAT_OK[i], eType, totalClients,
 		       LISTE_NOMS_TESTS[i]);
-
+    }
 }
 
 int serverSendLocal()
@@ -1111,5 +1115,5 @@ int main(int argc, char **argv)
 	}
 	clean();
 
-	return 0;
+	return rc;
 }
