@@ -45,6 +45,7 @@
 #include "config.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>

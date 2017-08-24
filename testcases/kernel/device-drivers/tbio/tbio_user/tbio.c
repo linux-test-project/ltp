@@ -46,6 +46,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <linux/kernel.h>
 #include <unistd.h>
