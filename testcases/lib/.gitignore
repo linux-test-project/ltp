@@ -4,3 +4,6 @@
 /tst_rod
 /tst_kvcmp
 /tst_device
+/tst_net_iface_prefix
+/tst_net_ip_prefix
+/tst_net_vars
