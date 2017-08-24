@@ -48,12 +48,19 @@ while [ $cnt -lt $NS_TIMES ]; do
 
 	[ $num -eq $RHOST_IPV4_HOST ] && continue
 
-	# Change IPv4 address
-	lhost_ipv4addr="${IPV4_NETWORK}.${num}"
+	# check prefix and fix values for prefix != 24
+	add_to_net=
+	if [ $IPV4_LPREFIX -lt 8 -o $IPV4_LPREFIX -ge 32 ] ; then
+		tst_brkm TCONF "test must be with prefix >= 8 and prefix < 32 ($IPV4_LPREFIX)"
+	elif [ $IPV4_LPREFIX -lt 16 ]; then # N.x.x.num
+		add_to_net=".0.1"
+	elif [ $IPV4_LPREFIX -lt 24 ]; then # N.N.x.num
+		add_to_net=".1"
+	fi
 
-	ifconfig $(tst_iface) $lhost_ipv4addr netmask 255.255.255.0 \
-		broadcast 255.255.255.255 || \
-		tst_brkm TFAIL "Failed to change into ${lhost_ipv4addr}"
+	# Change IPv4 address
+	ROD ifconfig $(tst_iface) ${IPV4_LNETWORK}${add_to_net}.${num} netmask \
+		$IPV4_LNETMASK broadcast $IPV4_LBROADCAST
 
 	cnt=$(($cnt + 1))
 
