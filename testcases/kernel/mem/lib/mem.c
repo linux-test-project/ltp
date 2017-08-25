@@ -261,7 +261,8 @@ static void check(char *path, long int value)
 	SAFE_FILE_SCANF(fullpath, "%ld", &actual_val);
 
 	if (actual_val != value)
-		tst_res(TFAIL, "%s is not %ld.", path, value);
+		tst_res(TFAIL, "%s is not %ld but %ld.", path, value,
+			actual_val);
 	else
 		tst_res(TPASS, "%s is %ld.", path, actual_val);
 }
@@ -522,21 +523,20 @@ void create_same_memory(int size, int num, int unit)
 	SAFE_FILE_PRINTF(PATH_KSM "sleep_millisecs", "0");
 
 	resume_ksm_children(child, num);
+	stop_ksm_children(child, num);
 	group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
 
-	stop_ksm_children(child, num);
 	resume_ksm_children(child, num);
+	stop_ksm_children(child, num);
 	group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
 
-	stop_ksm_children(child, num);
 	resume_ksm_children(child, num);
+	stop_ksm_children(child, num);
 	group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
 
-	stop_ksm_children(child, num);
 	resume_ksm_children(child, num);
-	group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
-
 	stop_ksm_children(child, num);
+	group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
 
 	tst_res(TINFO, "KSM unmerging...");
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
@@ -548,7 +548,7 @@ void create_same_memory(int size, int num, int unit)
 	SAFE_FILE_PRINTF(PATH_KSM "run", "0");
 	final_group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 
-	while (waitpid(-1, &status, WUNTRACED | WCONTINUED) > 0)
+	while (waitpid(-1, &status, 0) > 0)
 		if (WEXITSTATUS(status) != 0)
 			tst_res(TFAIL, "child exit status is %d",
 				 WEXITSTATUS(status));
