@@ -27,9 +27,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tst_test.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 
-#define TMPDIR "/tmp"
+#include "tst_test.h"
 
 static char exp_buf[PATH_MAX];
 static char buffer[PATH_MAX];
@@ -42,6 +43,38 @@ static struct t_case {
 	{NULL, 0},
 	{NULL, PATH_MAX}
 };
+
+static int dir_exists(const char *dirpath)
+{
+	struct stat sb;
+
+	if (!stat(dirpath, &sb) && S_ISDIR(sb.st_mode))
+		return 1;
+
+	return 0;
+}
+
+static const char *get_tmpdir_path(void)
+{
+	char *tmpdir = "/tmp";
+
+	if (dir_exists(tmpdir))
+		goto done;
+
+	/* fallback to $TMPDIR */
+	tmpdir = getenv("TMPDIR");
+	if (!tmpdir)
+		tst_brk(TBROK | TERRNO, "Failed to get $TMPDIR");
+
+	if (tmpdir[0] != '/')
+		tst_brk(TBROK, "$TMPDIR must be an absolute path");
+
+	if (!dir_exists(tmpdir))
+		tst_brk(TBROK | TERRNO, "TMPDIR '%s' doesn't exist", tmpdir);
+
+done:
+	return tmpdir;
+}
 
 static void verify_getcwd(unsigned int n)
 {
@@ -71,9 +104,11 @@ end:
 
 static void setup(void)
 {
-	SAFE_CHDIR(TMPDIR);
+	const char *tmpdir = get_tmpdir_path();
 
-	if (!realpath(TMPDIR, exp_buf))
+	SAFE_CHDIR(tmpdir);
+
+	if (!realpath(tmpdir, exp_buf))
 		tst_brk(TBROK | TERRNO, "realpath() failed");
 
 	tst_res(TINFO, "Expected path '%s'", exp_buf);
