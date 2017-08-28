@@ -102,15 +102,15 @@ int readFromServer(char *message);
 int serverSendClient(int n);
 
 
-enum etat_t     {
+enum state_t     {
                 CLEAN,
                 RDONLY,
-                RESULTAT,
+                RESULT,
                 WRONLY,
                 SELECT,
                 LOCK,
                 SYNC,
-                FIN,
+                END,
                 READLOCK,
                 WRITELOCK,
                 BYTELOCK,
@@ -119,13 +119,13 @@ enum etat_t     {
 };
 
 /* Public data */
-struct donneesPub {
+struct dataPub {
     /* Number of clients */
     int nclnt;
     /* List of master to slave pipes */
     int **lclnt;
     /* Slave to master pipe */
-    int maitre[2];
+    int master[2];
     /* Thread list */
     pthread_t *lthreads;
     /* test file name */
@@ -137,14 +137,14 @@ struct donneesPub {
 };
 
 /* private data */
-struct donneesPriv {
+struct dataPriv {
     /* thread number */
     int whoami;
 };
 
-struct donneesFils{
-    struct donneesPub *dp;
-    struct donneesPriv *dpr;
+struct dataChild{
+    struct dataPub *dp;
+    struct dataPriv *dpr;
 };
 
 
@@ -159,7 +159,7 @@ struct s_test {
 
 
 
-int configureServeur(int  max);
+int configureServer(int  max);
 int configureClient(char *s);
 
 #endif

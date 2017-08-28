@@ -7,8 +7,8 @@
 
 int maxClients;
 int *fdClient;
-char *serveur;
-int fdServeur;
+char *server_name;
+int fdServer;
 extern char message[M_SIZE];
 
 int serverReceiveClient(int c)
@@ -41,7 +41,7 @@ int clientReceiveNet(void)
 	return 0;
 }
 
-int setupConnectionServeur(void)
+int setupConnectionServer(void)
 {
 	struct sockaddr_in local;
 	int c;
@@ -119,12 +119,12 @@ int setupClients(int type, char *fname, int nThread)
 	return 0;
 }
 
-int configureServeur(int max)
+int configureServer(int max)
 {
 	maxClients = max;
 	fdClient = malloc(sizeof(int) * max);
 
-	setupConnectionServeur();
+	setupConnectionServer();
 
 	return 0;
 }
@@ -135,13 +135,13 @@ int setupConnectionClient(void)
 	struct hostent *server;
 	struct sockaddr_in serv_addr;
 
-	if (!(server = gethostbyname(serveur))) {
+	if (!(server = gethostbyname(server_name))) {
 		printf("erreur DNS\n");
 		return 1;
 	}
 
-	fdServeur = socket(AF_INET, SOCK_STREAM, 0);
-	if (fdServeur < 0) {
+	fdServer = socket(AF_INET, SOCK_STREAM, 0);
+	if (fdServer < 0) {
 		perror("socket");
 		return 1;
 	}
@@ -149,7 +149,7 @@ int setupConnectionClient(void)
 	serv_addr.sin_addr = *(struct in_addr *)server->h_addr;
 	serv_addr.sin_port = htons(PORT);
 	serv_addr.sin_family = AF_INET;
-	if (connect(fdServeur, (struct sockaddr *)&serv_addr, sizeof(serv_addr))
+	if (connect(fdServer, (struct sockaddr *)&serv_addr, sizeof(serv_addr))
 	    < 0) {
 		perror("connect");
 		return 1;
@@ -167,7 +167,7 @@ int readFromServer(char *message)
 	r = 0;
 	s = 0;
 	while (s < M_SIZE) {
-		r = read(fdServeur, tmp, M_SIZE - s);
+		r = read(fdServer, tmp, M_SIZE - s);
 		/* Loop until we have a complete message */
 		strncpy(message + s, tmp, r);
 		s += r;
@@ -195,7 +195,7 @@ int getConfiguration(int *type, char *fname, int *nThread)
 
 int configureClient(char *s)
 {
-	serveur = s;
+	server_name = s;
 	setupConnectionClient();
 	return 0;
 }
