@@ -97,7 +97,7 @@ int terminerProcess(int a)
 	exit(a);
 }
 
-int (*load) ();
+int (*load) (void);
 
 struct donneesPub dp;
 
@@ -172,7 +172,7 @@ void validationResultats(int n)
 	}
 }
 
-int initTest()
+int initTest(void)
 {
 
 	P("Maitre ouvre %s\n", dp.fname);
@@ -237,13 +237,13 @@ void cleanClient(struct donneesFils *df)
 	free(df);
 }
 
-void clean()
+void clean(void)
 {
 	free(dp.lthreads);
 	free(dp.lclnt);
 }
 
-int loadProcess()
+int loadProcess(void)
 {
 	int i;
 	struct donneesFils *df;
@@ -278,7 +278,7 @@ void selectTest(int n, struct s_test *test)
 }
 
 /* Final test report */
-void rapport(clnt)
+void rapport(int clnt)
 {
 	int i;
 	int totalClients;
@@ -294,7 +294,7 @@ void rapport(clnt)
 
 }
 
-int serverSendLocal()
+int serverSendLocal(void)
 {
 	int i;
 	/* Synchronize slave processes */
@@ -306,12 +306,12 @@ int serverSendLocal()
 
 }
 
-void serverSendNet()
+void serverSendNet(void)
 {
 	writeToAllClients(message);
 }
 
-int serverReceiveNet()
+int serverReceiveNet(void)
 {
 	int i, c;
 	for (c = 0; c < maxClients; c++) {
@@ -322,7 +322,7 @@ int serverReceiveNet()
 	return 0;
 }
 
-int serverReceiveLocal()
+int serverReceiveLocal(void)
 {
 	int i;
 	for (i = 0; i < dp.nclnt; i++)
@@ -330,26 +330,26 @@ int serverReceiveLocal()
 	return 0;
 }
 
-int clientReceiveLocal()
+int clientReceiveLocal(void)
 {
 	read(esclaveLecteur, message, M_SIZE);
 	return 0;
 }
 
-int clientSend()
+int clientSend(void)
 {
 	write(esclaveEcrivain, message, M_SIZE);
 	return 0;
 }
 
-int serverSend()
+int serverSend(void)
 {
 	serverSendNet();
 	serverSendLocal();
 	return 0;
 }
 
-int serverReceive()
+int serverReceive(void)
 {
 	serverReceiveNet();
 	serverReceiveLocal();
@@ -480,7 +480,7 @@ int getResults(int ntest)
 /* In the case of a network use, the master of the client application si only
  * a 'repeater' of information. It resends server-master instructions to its own slaves.
  */
-void maitreClient()
+void maitreClient(void)
 {
 	fd_set fdread;
 	struct timeval tv;
@@ -566,7 +566,7 @@ void maitreClient()
 
 }
 
-void maitre()
+void maitre(void)
 {
 	int i, n, bl;
 	int clnt;
@@ -718,7 +718,7 @@ void maitre()
 
 			/* close and open file */
 			close(dp.fd);
-			initTest(dp);
+			initTest();
 			etat = SELECT;
 			continue;
 		case FIN:
@@ -939,7 +939,7 @@ char *nextArg(int argc, char **argv, int *i)
 	return NULL;
 }
 
-int usage()
+int usage(void)
 {
 	printf("locktest -n <number of process> -f <test file> [-T]\n");
 	printf("Number of child process must be higher than 1\n");

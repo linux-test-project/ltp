@@ -35,13 +35,13 @@ int serverSendClient(int n)
 	return write(fdClient[n], message, M_SIZE);
 }
 
-int clientReceiveNet()
+int clientReceiveNet(void)
 {
 	readFromServer(message);
 	return 0;
 }
 
-int setupConnectionServeur()
+int setupConnectionServeur(void)
 {
 	struct sockaddr_in local;
 	int c;
@@ -86,7 +86,7 @@ int writeToClient(int c, char *message)
 	return write(fdClient[c], message, 512);
 }
 
-int serverCloseConnection()
+int serverCloseConnection(void)
 {
 	int c;
 	for (c = 0; c < maxClients; c++)
@@ -129,7 +129,7 @@ int configureServeur(int max)
 	return 0;
 }
 
-int setupConnectionClient()
+int setupConnectionClient(void)
 {
 
 	struct hostent *server;
