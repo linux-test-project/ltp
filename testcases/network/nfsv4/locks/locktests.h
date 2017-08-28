@@ -90,7 +90,7 @@
 
 #define M_SIZE 512
 
-int writeToAllClients(char *foo);//#define DEBUG
+int writeToAllClients(char *foo);
 
 int serverReceiveNet();
 int clientReceiveNet();
@@ -118,36 +118,26 @@ enum etat_t     {
                 BYTELOCK_WRITE
 };
 
-/* Donnees communes aà tous les processu */
 /* Public data */
 struct donneesPub {
-    /* Nombre de clients */
     /* Number of clients */
     int nclnt;
-    /* Liste des clients (liste des tubes)*/
     /* List of master to slave pipes */
     int **lclnt;
-    /* Tube de communication avec le maitre */
     /* Slave to master pipe */
     int maitre[2];
-    /* Liste des threads */
     /* Thread list */
     pthread_t *lthreads;
-    /* nom du fichier test */
     /* test file name */
     char *fname;
-    /* descripteur du fichier test */
     /* test file file-descriptor */
     int fd;
-    /* Affichage des messages d'erreur */
     /* Detailed error messages */
     int verbose;
 };
 
-/* Donnees privees aux processus */
 /* private data */
 struct donneesPriv {
-    /* Numero de thread. */
     /* thread number */
     int whoami;
 };
