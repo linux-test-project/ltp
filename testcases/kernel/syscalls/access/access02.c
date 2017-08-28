@@ -38,6 +38,7 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <paths.h>
 #include "tst_test.h"
 
 #define FNAME_F	"file_f"
@@ -187,7 +188,7 @@ static void setup(void)
 	SAFE_TOUCH(FNAME_R, 0444, NULL);
 	SAFE_TOUCH(FNAME_W, 0222, NULL);
 	SAFE_TOUCH(FNAME_X, 0555, NULL);
-	SAFE_FILE_PRINTF(FNAME_X, "#!/bin/sh\n");
+	SAFE_FILE_PRINTF(FNAME_X, "#!%s\n", _PATH_BSHELL);
 
 	SAFE_SYMLINK(FNAME_F, SNAME_F);
 	SAFE_SYMLINK(FNAME_R, SNAME_R);
