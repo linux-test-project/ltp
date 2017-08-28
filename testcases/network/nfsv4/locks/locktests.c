@@ -943,8 +943,6 @@ int usage(void)
 {
 	printf("locktest -n <number of process> -f <test file> [-T]\n");
 	printf("Number of child process must be higher than 1\n");
-	printf("\n");
-	printf("Send bugs to vincent.roqueta@ext.bull.net\n");
 	exit(0);
 	return 0;
 }
