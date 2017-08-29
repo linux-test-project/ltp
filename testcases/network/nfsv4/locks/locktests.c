@@ -278,8 +278,9 @@ void selectTest(int n, struct s_test *test)
 }
 
 /* Final test report */
-void report(int clnt)
+int report(int clnt)
 {
+	int rc = 0;
 	int i;
 	int totalClients;
 	totalClients = clnt * (maxClients + 1);
@@ -287,11 +288,15 @@ void report(int clnt)
 	    ("\n%s number : %d - Remote clients: %d local client 1 - Total client %d - Total concurent tests: %d\n",
 	     eType, clnt, maxClients, maxClients + 1, totalClients);
 	printf("%s number running test successfully :\n", eType);
-	for (i = 0; i < MAXTEST; i++)
+	for (i = 0; i < MAXTEST; i++) {
+		if (TOTAL_RESULT_OK[i] != totalClients)
+			rc = 1;
+
 		printf("%d %s of %d successfully ran test : %s\n",
 		       TOTAL_RESULT_OK[i], eType, totalClients,
 		       LIST_NAMES_TESTS[i]);
-
+    }
+    return rc;
 }
 
 int serverSendLocal(void)
@@ -566,7 +571,7 @@ void masterClient(void)
 
 }
 
-void master(void)
+int master(void)
 {
 	int i, n, bl;
 	int clnt;
@@ -735,7 +740,7 @@ void master(void)
 		break;
 	}
 
-	report(clnt);
+	return report(clnt);
 }
 
 /* Slave process/thread */
@@ -949,6 +954,7 @@ int usage(void)
 
 int main(int argc, char **argv)
 {
+	int rc = 0;
 	int i, nThread = 0;
 	char *tmp;
 	int type = 0;
@@ -1017,13 +1023,12 @@ int main(int argc, char **argv)
 	LIST_RESULTS = LIST_RESULTS_PROCESS;
 	initialize(nThread);
 	if (server) {
-		master();
-
+		rc = master();
 	} else {
 		masterClient();
 		free(dp.fname);
 	}
 	clean();
 
-	return 0;
+	return rc;
 }
