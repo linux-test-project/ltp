@@ -19,9 +19,51 @@
 #define KEYCTL_H__
 
 #include "config.h"
-#ifdef HAVE_LINUX_KEYCTL_H
-# include <linux/keyctl.h>
-#endif /* HAVE_LINUX_KEYCTL_H */
+#ifdef HAVE_KEYUTILS_H
+# include <keyutils.h>
+#else
+# ifdef HAVE_LINUX_KEYCTL_H
+#  include <linux/keyctl.h>
+# endif /* HAVE_LINUX_KEYCTL_H */
+# include <stdarg.h>
+# include <stdint.h>
+# include "lapi/syscalls.h"
+typedef int32_t key_serial_t;
+
+static inline key_serial_t add_key(const char *type,
+				   const char *description,
+				   const void *payload,
+				   size_t plen,
+				   key_serial_t ringid)
+{
+	return tst_syscall(__NR_add_key,
+		type, description, payload, plen, ringid);
+}
+
+static inline key_serial_t request_key(const char *type,
+				       const char *description,
+				       const char *callout_info,
+				       key_serial_t destringid)
+{
+	return tst_syscall(__NR_request_key,
+		type, description, callout_info, destringid);
+}
+
+static inline long keyctl(int cmd, ...)
+{
+	va_list va;
+	unsigned long arg2, arg3, arg4, arg5;
+
+	va_start(va, cmd);
+	arg2 = va_arg(va, unsigned long);
+	arg3 = va_arg(va, unsigned long);
+	arg4 = va_arg(va, unsigned long);
+	arg5 = va_arg(va, unsigned long);
+	va_end(va);
+
+	return tst_syscall(__NR_keyctl, cmd, arg2, arg3, arg4, arg5);
+}
+#endif /* HAVE_KEYUTILS_H */
 
 #ifndef KEYCTL_GET_KEYRING_ID
 # define KEYCTL_GET_KEYRING_ID 0
