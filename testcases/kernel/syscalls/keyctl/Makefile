@@ -18,9 +18,9 @@
 
 top_srcdir		?= ../../../..
 
-keyctl02: LDLIBS	+=-lpthread $(KEYUTILS_LIBS)
-keyctl03: LDLIBS	+=$(KEYUTILS_LIBS)
-
 include $(top_srcdir)/include/mk/testcases.mk
+
+LDLIBS	+= $(KEYUTILS_LIBS)
+keyctl02: LDLIBS	+= -lpthread
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

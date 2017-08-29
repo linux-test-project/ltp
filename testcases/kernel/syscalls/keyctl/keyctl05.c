@@ -37,12 +37,11 @@
  *    laid out the crash may not actually occur.
  */
 
+#include <errno.h>
 #include <stdlib.h>
-#include "tst_test.h"
-#include "lapi/syscalls.h"
-#include "lapi/keyctl.h"
 
-typedef int32_t key_serial_t;
+#include "tst_test.h"
+#include "lapi/keyctl.h"
 
 #define KEY_POS_WRITE	0x04000000
 #define KEY_POS_ALL	0x3f000000
@@ -89,7 +88,7 @@ static const char x509_cert[] =
 
 static void new_session_keyring(void)
 {
-	TEST(tst_syscall(__NR_keyctl, KEYCTL_JOIN_SESSION_KEYRING, NULL));
+	TEST(keyctl(KEYCTL_JOIN_SESSION_KEYRING, NULL));
 	if (TEST_RETURN < 0)
 		tst_brk(TBROK | TTERRNO, "failed to join new session keyring");
 }
@@ -101,8 +100,7 @@ static void test_update_nonupdatable(const char *type,
 
 	new_session_keyring();
 
-	TEST(tst_syscall(__NR_add_key, type, "desc", payload, plen,
-			 KEY_SPEC_SESSION_KEYRING));
+	TEST(add_key(type, "desc", payload, plen, KEY_SPEC_SESSION_KEYRING));
 	if (TEST_RETURN < 0) {
 		if (TEST_ERRNO == ENODEV) {
 			tst_res(TCONF, "kernel doesn't support key type '%s'",
@@ -130,7 +128,7 @@ static void test_update_nonupdatable(const char *type,
 	 * Non-updatable keys don't start with write permission, so we must
 	 * explicitly grant it.
 	 */
-	TEST(tst_syscall(__NR_keyctl, KEYCTL_SETPERM, keyid, KEY_POS_ALL));
+	TEST(keyctl(KEYCTL_SETPERM, keyid, KEY_POS_ALL));
 	if (TEST_RETURN != 0) {
 		tst_res(TBROK | TTERRNO,
 			"failed to grant write permission to '%s' key", type);
@@ -138,7 +136,7 @@ static void test_update_nonupdatable(const char *type,
 	}
 
 	tst_res(TINFO, "Try to update the '%s' key...", type);
-	TEST(tst_syscall(__NR_keyctl, KEYCTL_UPDATE, keyid, payload, plen));
+	TEST(keyctl(KEYCTL_UPDATE, keyid, payload, plen));
 	if (TEST_RETURN == 0) {
 		tst_res(TBROK,
 			"updating '%s' key unexpectedly succeeded", type);
@@ -165,8 +163,8 @@ static void test_update_setperm_race(void)
 
 	new_session_keyring();
 
-	TEST(tst_syscall(__NR_add_key, "user", "desc", payload, sizeof(payload),
-			 KEY_SPEC_SESSION_KEYRING));
+	TEST(add_key("user", "desc", payload, sizeof(payload),
+		KEY_SPEC_SESSION_KEYRING));
 	if (TEST_RETURN < 0) {
 		tst_res(TBROK | TTERRNO, "failed to add 'user' key");
 		return;
@@ -178,7 +176,7 @@ static void test_update_setperm_race(void)
 
 		for (i = 0; i < 10000; i++) {
 			perm ^= KEY_POS_WRITE;
-			TEST(syscall(__NR_keyctl, KEYCTL_SETPERM, keyid, perm));
+			TEST(keyctl(KEYCTL_SETPERM, keyid, perm));
 			if (TEST_RETURN != 0)
 				tst_brk(TBROK | TTERRNO, "setperm failed");
 		}
@@ -187,8 +185,7 @@ static void test_update_setperm_race(void)
 
 	tst_res(TINFO, "Try to update the 'user' key...");
 	for (i = 0; i < 10000; i++) {
-		TEST(tst_syscall(__NR_keyctl, KEYCTL_UPDATE, keyid,
-				 payload, sizeof(payload)));
+		TEST(keyctl(KEYCTL_UPDATE, keyid, payload, sizeof(payload)));
 		if (TEST_RETURN != 0 && TEST_ERRNO != EACCES) {
 			tst_res(TBROK | TTERRNO, "failed to update 'user' key");
 			return;

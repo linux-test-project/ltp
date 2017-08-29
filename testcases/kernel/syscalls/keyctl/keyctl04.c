@@ -26,29 +26,25 @@
  * keyring was leaked).
  */
 
-#include "tst_test.h"
-#include "lapi/syscalls.h"
-#include "lapi/keyctl.h"
+#include <errno.h>
 
-typedef int32_t key_serial_t;
+#include "tst_test.h"
+#include "lapi/keyctl.h"
 
 static void do_test(void)
 {
 	key_serial_t tid_keyring;
 
-	TEST(tst_syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
-			 KEY_SPEC_THREAD_KEYRING, 1));
+	TEST(keyctl(KEYCTL_GET_KEYRING_ID, KEY_SPEC_THREAD_KEYRING, 1));
 	if (TEST_RETURN < 0)
 		tst_brk(TBROK | TTERRNO, "failed to create thread keyring");
 	tid_keyring = TEST_RETURN;
 
-	TEST(tst_syscall(__NR_keyctl, KEYCTL_SET_REQKEY_KEYRING,
-			 KEY_REQKEY_DEFL_THREAD_KEYRING));
+	TEST(keyctl(KEYCTL_SET_REQKEY_KEYRING, KEY_REQKEY_DEFL_THREAD_KEYRING));
 	if (TEST_RETURN < 0)
 		tst_brk(TBROK | TTERRNO, "failed to set reqkey keyring");
 
-	TEST(tst_syscall(__NR_keyctl, KEYCTL_GET_KEYRING_ID,
-			 KEY_SPEC_THREAD_KEYRING, 0));
+	TEST(keyctl(KEYCTL_GET_KEYRING_ID, KEY_SPEC_THREAD_KEYRING, 0));
 	if (TEST_RETURN < 0)
 		tst_brk(TBROK | TTERRNO, "failed to get thread keyring ID");
 	if (TEST_RETURN == tid_keyring)
