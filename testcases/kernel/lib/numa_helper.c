@@ -65,7 +65,7 @@ static void get_nodemask_allnodes(nodemask_t * nodemask, unsigned long max_node)
 	struct stat st;
 
 	memset(nodemask, 0, nodemask_size);
-	for (i = 0; i < max_node; i++) {
+	for (i = 0; i < (int)max_node; i++) {
 		sprintf(fn, "/sys/devices/system/node/node%d", i);
 		if (stat(fn, &st) == 0)
 			nodemask_set(nodemask, i);
@@ -100,7 +100,7 @@ static int filter_nodemask_mem(nodemask_t * nodemask, unsigned long max_node)
 	 * old libnuma/kernel don't have MPOL_F_MEMS_ALLOWED, so let's assume
 	 * that we can use any node with memory > 0
 	 */
-	for (i = 0; i < max_node; i++) {
+	for (i = 0; i < (int)max_node; i++) {
 		if (!nodemask_isset(nodemask, i))
 			continue;
 		if (numa_node_size64(i, NULL) <= 0)
@@ -112,7 +112,7 @@ static int filter_nodemask_mem(nodemask_t * nodemask, unsigned long max_node)
 
 static int cpumask_has_cpus(char *cpumask, size_t len)
 {
-	int j;
+	unsigned int j;
 	for (j = 0; j < len; j++)
 		if (cpumask[j] == '\0')
 			return 0;
@@ -131,7 +131,7 @@ static void filter_nodemask_cpu(nodemask_t * nodemask, unsigned long max_node)
 	size_t len;
 	int i, ret;
 
-	for (i = 0; i < max_node; i++) {
+	for (i = 0; i < (int)max_node; i++) {
 		if (!nodemask_isset(nodemask, i))
 			continue;
 		sprintf(fn, "/sys/devices/system/node/node%d/cpumap", i);
@@ -200,7 +200,7 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 		if ((flag & NH_CPUS) == NH_CPUS)
 			filter_nodemask_cpu(nodemask, max_node);
 
-		for (i = 0; i < max_node; i++) {
+		for (i = 0; i < (int)max_node; i++) {
 			if (nodemask_isset(nodemask, i)) {
 				if (nodes)
 					(*nodes)[*num_nodes] = i;
