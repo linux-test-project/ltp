@@ -17,7 +17,7 @@
 #    with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-top_srcdir		?= ../../..
+top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
