@@ -709,12 +709,12 @@ int main(int argc, char **argv)
 			for (i = 0; i < MAXTEST; i++)
 				run_test(i);
 		} else {
-			if (test_num >= MAXTEST) {
+			if (test_num > MAXTEST) {
 				tst_brkm(TBROK, NULL, "Invalid test number %i",
 					 test_num);
 			}
 
-			run_test(test_num);
+			run_test(test_num-1);
 		}
 	} while (!run_once);
 
