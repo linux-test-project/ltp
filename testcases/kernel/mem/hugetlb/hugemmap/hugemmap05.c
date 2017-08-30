@@ -64,8 +64,11 @@ static char path_sys_sz_huge[BUFSIZ];
 #define SHM_HUGETLB 04000
 #endif
 
+#define MOUNT_DIR "hugemmap05"
+#define TEST_FILE MOUNT_DIR "/file"
+
 static unsigned long long shmmax;
-static char mount_dir[BUFSIZ], tst_file[BUFSIZ], path[BUFSIZ], pathover[BUFSIZ];
+static char *path, *pathover;
 static int key = -1, shmid = -1, fd = -1;
 static int mounted, restore_shmmax, restore_nr_hgpgs, restore_overcomm_hgpgs;
 static long hugepagesize, nr_hugepages, nr_overcommit_hugepages;
@@ -94,7 +97,7 @@ static void test_overcommit(void)
 		shmid = SAFE_SHMGET(key, (length / 2 * hugepagesize),
 				 SHM_HUGETLB | IPC_CREAT | SHM_R | SHM_W);
 	} else {
-		fd = SAFE_OPEN(tst_file, O_CREAT | O_RDWR, 0755);
+		fd = SAFE_OPEN(TEST_FILE, O_CREAT | O_RDWR, 0755);
 		addr = SAFE_MMAP(ADDR, (length / 2 * hugepagesize),
 				 PROTECTION, FLAGS, fd, 0);
 	}
@@ -167,7 +170,7 @@ static void test_overcommit(void)
 	} else {
 		SAFE_MUNMAP(addr, (length / 2 * hugepagesize));
 		SAFE_CLOSE(fd);
-		SAFE_UNLINK(tst_file);
+		SAFE_UNLINK(TEST_FILE);
 	}
 
 	tst_res(TPASS, "hugepages overcommit test pass");
@@ -176,15 +179,14 @@ static void test_overcommit(void)
 static void cleanup(void)
 {
 	if (opt_shmid) {
-		shmctl(shmid, IPC_RMID, NULL);
+		SAFE_SHMCTL(shmid, IPC_RMID, NULL);
 	} else {
-		close(fd);
-		unlink(tst_file);
+		SAFE_CLOSE(fd);
+		SAFE_UNLINK(TEST_FILE);
 	}
 
-	/* XXX (garrcoop): memory leak. */
 	if (mounted)
-		tst_umount(mount_dir);
+		tst_umount(MOUNT_DIR);
 
 	if (restore_nr_hgpgs) {
 		tst_res(TINFO, "restore nr_hugepages to %ld.", nr_hugepages);
@@ -208,12 +210,11 @@ static void setup(void)
 	init_sys_sz_paths();
 
 	if (opt_sysfs) {
-		strncpy(path, path_sys_sz_huge, strlen(path_sys_sz_huge) + 1);
-		strncpy(pathover, path_sys_sz_over,
-			strlen(path_sys_sz_over) + 1);
+		path = path_sys_sz_huge;
+		pathover = path_sys_sz_over;
 	} else {
-		strncpy(path, PATH_PROC_HUGE, strlen(PATH_PROC_HUGE) + 1);
-		strncpy(pathover, PATH_PROC_OVER, strlen(PATH_PROC_OVER) + 1);
+		path = PATH_PROC_HUGE;
+		pathover = PATH_PROC_OVER;
 	}
 
 	if (opt_alloc) {
@@ -250,10 +251,8 @@ static void setup(void)
 	SAFE_FILE_PRINTF(pathover, "%ld", size);
 	restore_overcomm_hgpgs = 1;
 
-	/* XXX (garrcoop): memory leak. */
-	sprintf(mount_dir, "%s/hugemmap05", tst_get_tmpdir());
-	SAFE_MKDIR(mount_dir, 0700);
-	SAFE_MOUNT(NULL, mount_dir, "hugetlbfs", 0, NULL);
+	SAFE_MKDIR(MOUNT_DIR, 0700);
+	SAFE_MOUNT(NULL, MOUNT_DIR, "hugetlbfs", 0, NULL);
 	mounted = 1;
 
 	if (opt_shmid) {
@@ -261,9 +260,6 @@ static void setup(void)
 		key = ftok(PATH_MEMINFO, strlen(PATH_MEMINFO));
 		if (key == -1)
 			tst_brk(TBROK | TERRNO, "ftok");
-	} else {
-		/* XXX (garrcoop): memory leak. */
-		sprintf(tst_file, "%s/hugemmap05/file", tst_get_tmpdir());
 	}
 }
 
