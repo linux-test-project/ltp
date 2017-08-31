@@ -121,7 +121,6 @@
 #define FAILED       (-1)	/* return status for all funcs indicating failure   */
 #define SUCCESS      0		/* return status for all routines indicating success */
 
-#define MAXTEST      6		/* total number of testcase in this program          */
 #define BRKSZ        512*1024	/* program data space allocation value          */
 
 static volatile int wait_thread;	/* used to wake up sleeping threads    */
@@ -706,10 +705,10 @@ int main(int argc, char **argv)
 
 	do {
 		if (!test_num) {
-			for (i = 0; i < MAXTEST; i++)
+			for (i = 0; i < ARRAY_SIZE(test_ptr); i++)
 				run_test(i);
 		} else {
-			if (test_num > MAXTEST) {
+			if (test_num > ARRAY_SIZE(test_ptr)) {
 				tst_brkm(TBROK, NULL, "Invalid test number %i",
 					 test_num);
 			}
