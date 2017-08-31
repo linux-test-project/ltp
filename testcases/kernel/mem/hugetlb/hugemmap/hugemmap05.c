@@ -178,9 +178,10 @@ static void test_overcommit(void)
 
 static void cleanup(void)
 {
-	if (opt_shmid) {
+	if (opt_shmid && shmid != -1)
 		SAFE_SHMCTL(shmid, IPC_RMID, NULL);
-	} else {
+
+	if (!opt_shmid && fd != -1) {
 		SAFE_CLOSE(fd);
 		SAFE_UNLINK(TEST_FILE);
 	}
