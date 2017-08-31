@@ -58,6 +58,11 @@ static int acquire_device(int argc, char *argv[])
 	if (!device)
 		return 1;
 
+	if (tst_clear_device(device)) {
+		tst_release_device(device);
+		return 1;
+	}
+
 	printf("%s", device);
 
 	return 0;

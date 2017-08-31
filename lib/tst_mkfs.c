@@ -18,6 +18,7 @@
 #include "test.h"
 #include "ltp_priv.h"
 #include "tst_mkfs.h"
+#include "tst_device.h"
 
 #define OPTS_MAX 32
 
@@ -74,6 +75,9 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 	}
 
 	argv[pos] = NULL;
+
+	if (tst_clear_device(dev))
+		tst_brkm(TBROK, cleanup_fn, "tst_clear_device() failed");
 
 	tst_resm(TINFO, "Formatting %s with %s opts='%s' extra opts='%s'",
 	         dev, fs_type, fs_opts_str, extra_opt ? extra_opt : "");

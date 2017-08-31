@@ -34,4 +34,14 @@ extern struct tst_device *tst_device;
  */
 int tst_umount(const char *path);
 
+/*
+ * Clears a first few blocks of the device. This is needed when device has
+ * already been formatted with a filesystems, subset of mkfs.foo utils aborts
+ * the operation if it finds a filesystem signature there.
+ *
+ * Note that this is called from tst_mkfs() automatically, so you probably will
+ * not need to use this from the test yourself.
+ */
+int tst_clear_device(const char *dev);
+
 #endif	/* TST_DEVICE_H__ */

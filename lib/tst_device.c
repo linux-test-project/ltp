@@ -245,15 +245,8 @@ const char *tst_acquire_device__(unsigned int size)
 
 		ltp_dev_size = ltp_dev_size/1024/1024;
 
-		if (acq_dev_size <= ltp_dev_size) {
-			if (tst_fill_file(dev, 0, 1024, 512)) {
-				tst_resm(TWARN | TERRNO,
-					 "Failed to clear the first 512k of %s",
-					 dev);
-			}
-
+		if (acq_dev_size <= ltp_dev_size)
 			return dev;
-		}
 
 		tst_resm(TINFO, "Skipping $LTP_DEV size %"PRIu64"MB, requested size %uMB",
 				ltp_dev_size, acq_dev_size);
@@ -317,6 +310,16 @@ int tst_release_device(const char *dev)
 	device_acquired = 0;
 
 	return ret;
+}
+
+int tst_clear_device(const char *dev)
+{
+	if (tst_fill_file(dev, 0, 1024, 512)) {
+		tst_resm(TWARN, "Failed to clear 512k block on %s", dev);
+		return 1;
+	}
+
+	return 0;
 }
 
 int tst_umount(const char *path)
