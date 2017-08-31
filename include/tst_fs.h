@@ -146,6 +146,10 @@ int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
  */
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 
+/*
+ * Returns NULL-terminated array of kernel-supported filesystems.
+ */
+const char **tst_get_supported_fs_types(void);
 
 #ifdef TST_TEST_H__
 static inline long tst_fs_type(const char *path)
