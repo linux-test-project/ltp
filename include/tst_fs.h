@@ -151,6 +151,11 @@ int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
  */
 const char **tst_get_supported_fs_types(void);
 
+/*
+ * Creates and writes to files on given path until write fails with ENOSPC
+ */
+void tst_fill_fs(const char *path, int verbose);
+
 #ifdef TST_TEST_H__
 static inline long tst_fs_type(const char *path)
 {
