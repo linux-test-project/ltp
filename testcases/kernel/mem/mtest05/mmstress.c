@@ -631,7 +631,8 @@ static void run_test(unsigned int i)
 int main(int argc, char **argv)
 {
 	static char *version_info = "mmstress V1.00 04/17/2001";
-	int ch, i;
+	int ch;
+	unsigned int i;
 	int test_num = 0;
 	int test_time = 0;
 	int run_once = TRUE;
@@ -708,7 +709,7 @@ int main(int argc, char **argv)
 			for (i = 0; i < ARRAY_SIZE(test_ptr); i++)
 				run_test(i);
 		} else {
-			if (test_num > ARRAY_SIZE(test_ptr)) {
+			if (test_num > (int)ARRAY_SIZE(test_ptr)) {
 				tst_brkm(TBROK, NULL, "Invalid test number %i",
 					 test_num);
 			}
