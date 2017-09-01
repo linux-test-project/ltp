@@ -123,6 +123,15 @@ struct tst_test {
 	int format_device:1;
 	int mount_device:1;
 	int needs_rofs:1;
+	/*
+	 * If set the test function will be executed for all available
+	 * filesystems and the current filesytem type would be set in the
+	 * tst_device->fs_type.
+	 *
+	 * The test setup and cleanup are executed before/after __EACH__ call
+	 * to the test function.
+	 */
+	int all_filesystems:1;
 
 	/* Minimal device size in megabytes */
 	unsigned int dev_min_size;

@@ -679,6 +679,20 @@ static void assert_test_fn(void)
 		tst_brk(TBROK, "You can define tcnt only for test()");
 }
 
+static void prepare_device(void)
+{
+	if (tst_test->format_device) {
+		SAFE_MKFS(tdev.dev, tdev.fs_type, tst_test->dev_fs_opts,
+			  tst_test->dev_extra_opt);
+	}
+
+	if (tst_test->mount_device) {
+		SAFE_MOUNT(tdev.dev, tst_test->mntpoint, tdev.fs_type,
+			   tst_test->mnt_flags, tst_test->mnt_data);
+		mntpoint_mounted = 1;
+	}
+}
+
 static void do_setup(int argc, char *argv[])
 {
 	if (!tst_test)
@@ -710,6 +724,9 @@ static void do_setup(int argc, char *argv[])
 		tst_test->format_device = 1;
 	}
 
+	if (tst_test->all_filesystems)
+		tst_test->needs_device = 1;
+
 	setup_ipc();
 
 	if (needs_tmpdir() && !tst_tmpdir_created())
@@ -718,8 +735,8 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->mntpoint)
 		SAFE_MKDIR(tst_test->mntpoint, 0777);
 
-	if ((tst_test->needs_rofs || tst_test->mount_device) &&
-	    !tst_test->mntpoint) {
+	if ((tst_test->needs_rofs || tst_test->mount_device ||
+	     tst_test->all_filesystems) && !tst_test->mntpoint) {
 		tst_brk(TBROK, "tst_test->mntpoint must be set!");
 	}
 
@@ -753,17 +770,8 @@ static void do_setup(int argc, char *argv[])
 		else
 			tdev.fs_type = tst_dev_fs_type();
 
-		if (tst_test->format_device) {
-			SAFE_MKFS(tdev.dev, tdev.fs_type,
-			          tst_test->dev_fs_opts,
-				  tst_test->dev_extra_opt);
-		}
-
-		if (tst_test->mount_device) {
-			SAFE_MOUNT(tdev.dev, tst_test->mntpoint, tdev.fs_type,
-				   tst_test->mnt_flags, tst_test->mnt_data);
-			mntpoint_mounted = 1;
-		}
+		if (!tst_test->all_filesystems)
+			prepare_device();
 	}
 
 	if (tst_test->resource_files)
@@ -859,6 +867,11 @@ static void add_paths(void)
 	free(new_path);
 }
 
+static void heartbeat(void)
+{
+	kill(getppid(), SIGUSR1);
+}
+
 static void testrun(void)
 {
 	unsigned int i = 0;
@@ -886,8 +899,7 @@ static void testrun(void)
 			break;
 
 		run_tests();
-
-		kill(getppid(), SIGUSR1);
+		heartbeat();
 	}
 
 	do_test_cleanup();
@@ -960,22 +972,12 @@ void tst_set_timeout(int timeout)
 	if (getpid() == lib_pid)
 		alarm(results->timeout);
 	else
-		kill(getppid(), SIGUSR1);
+		heartbeat();
 }
 
-void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
+static int fork_testrun(void)
 {
 	int status;
-
-	lib_pid = getpid();
-	tst_test = self;
-
-	do_setup(argc, argv);
-
-	TCID = tid;
-
-	SAFE_SIGNAL(SIGALRM, alarm_handler);
-	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
 
 	if (tst_test->timeout)
 		tst_set_timeout(tst_test->timeout);
@@ -1001,7 +1003,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	SAFE_SIGNAL(SIGINT, SIG_DFL);
 
 	if (WIFEXITED(status) && WEXITSTATUS(status))
-		do_exit(WEXITSTATUS(status));
+		return WEXITSTATUS(status);
 
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
 		tst_res(TINFO, "If you are running on slow machine, "
@@ -1012,5 +1014,62 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	if (WIFSIGNALED(status))
 		tst_brk(TBROK, "Test killed by %s!", tst_strsig(WTERMSIG(status)));
 
-	do_exit(0);
+	return 0;
+}
+
+static int run_tcases_per_fs(void)
+{
+	int ret = 0;
+	unsigned int i;
+	const char *const *filesystems = tst_get_supported_fs_types();
+
+	if (!filesystems[0])
+		tst_brk(TCONF, "There are no supported filesystems");
+
+	for (i = 0; filesystems[i]; i++) {
+		tdev.fs_type = filesystems[i];
+
+		prepare_device();
+
+		ret = fork_testrun();
+
+		if (mntpoint_mounted) {
+			tst_umount(tst_test->mntpoint);
+			mntpoint_mounted = 0;
+		}
+
+		if (ret == TCONF) {
+			update_results(ret);
+			continue;
+		}
+
+		if (ret == 0)
+			continue;
+
+		do_exit(ret);
+	}
+
+	return ret;
+}
+
+void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
+{
+	int ret;
+
+	lib_pid = getpid();
+	tst_test = self;
+
+	do_setup(argc, argv);
+
+	TCID = tid;
+
+	SAFE_SIGNAL(SIGALRM, alarm_handler);
+	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
+
+	if (tst_test->all_filesystems)
+		ret = run_tcases_per_fs();
+	else
+		ret = fork_testrun();
+
+	do_exit(ret);
 }
