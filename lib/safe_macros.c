@@ -699,6 +699,23 @@ int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
 	return rval;
 }
 
+static const char *const fuse_fs_types[] = {
+	"exfat",
+	"ntfs",
+};
+
+static int is_fuse(const char *fs_type)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(fuse_fs_types); i++) {
+		if (!strcmp(fuse_fs_types[i], fs_type))
+			return 1;
+	}
+
+	return 0;
+}
+
 int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	       const char *source, const char *target,
 	       const char *filesystemtype, unsigned long mountflags,
@@ -707,6 +724,28 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	int rval;
 
 	rval = mount(source, target, filesystemtype, mountflags, data);
+
+	/*
+	 * The FUSE filesystem executes mount.fuse helper, which tries to
+	 * execute corresponding binary name which is encoded at the start of
+	 * the source string and separated by # from the device name.
+         *
+	 * The mount helpers are called mount.$fs_type.
+	 */
+	if (rval == -1 && errno == ENODEV && is_fuse(filesystemtype)) {
+		char buf[1024];
+		int ret;
+
+		tst_resm(TINFO, "Trying FUSE...");
+		snprintf(buf, sizeof(buf), "mount.%s '%s' '%s'",
+			 filesystemtype, source, target);
+
+		ret = tst_system(buf);
+		if (WIFEXITED(ret) && WEXITSTATUS(ret) == 0)
+			return 0;
+
+		errno = ENODEV;
+	}
 
 	if (rval == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn,
