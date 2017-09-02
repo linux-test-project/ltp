@@ -48,7 +48,7 @@
 #include "tst_safe_stdio.h"
 
 static unsigned long page_size;
-static unsigned long PAGE_MASK;
+static unsigned long page_mask;
 static unsigned long GAP_PAGES = 256;
 static unsigned long THRESHOLD;
 static int STACK_GROWSDOWN;
@@ -169,7 +169,7 @@ void do_child(void)
 	else
 		mapped_addr = stack_addr + gap;
 
-	mapped_addr &= PAGE_MASK;
+	mapped_addr &= page_mask;
 	map = SAFE_MMAP((void *)mapped_addr, MAPPED_LEN,
 			PROT_READ|PROT_WRITE,
 			MAP_ANON|MAP_PRIVATE|MAP_FIXED, -1, 0);
@@ -201,7 +201,7 @@ void setup(void)
 	char buf[4096], *p;
 
 	page_size = sysconf(_SC_PAGESIZE);
-	PAGE_MASK = ~(page_size - 1);
+	page_mask = ~(page_size - 1);
 
 	buf[4095] = '\0';
 	SAFE_FILE_SCANF("/proc/cmdline", "%4095[^\n]", buf);
