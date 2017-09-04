@@ -66,7 +66,8 @@
 #define XATTR_TEST_KEY "user.testkey"
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE 20
-#define FNAME "setxattr01testfile"
+#define MNTPOINT "mntpoint"
+#define FNAME MNTPOINT"/setxattr01testfile"
 
 static char long_key[XATTR_NAME_LEN];
 static char *long_value;
@@ -165,8 +166,6 @@ static void verify_setxattr(unsigned int i)
 
 static void setup(void)
 {
-	SAFE_TOUCH(FNAME, 0644, NULL);
-
 	snprintf(long_key, 6, "%s", "user.");
 	memset(long_key + 5, 'k', XATTR_NAME_LEN - 5);
 	long_key[XATTR_NAME_LEN - 1] = '\0';
@@ -174,12 +173,17 @@ static void setup(void)
 	long_value = SAFE_MALLOC(XATTR_SIZE_MAX + 2);
 	memset(long_value, 'v', XATTR_SIZE_MAX + 2);
 	long_value[XATTR_SIZE_MAX + 1] = '\0';
+
+	SAFE_TOUCH(FNAME, 0644, NULL);
 }
 
 static struct tst_test test = {
 	.setup = setup,
 	.test = verify_setxattr,
 	.tcnt = ARRAY_SIZE(tc),
+	.mntpoint = MNTPOINT,
+	.mount_device = 1,
+	.all_filesystems = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
