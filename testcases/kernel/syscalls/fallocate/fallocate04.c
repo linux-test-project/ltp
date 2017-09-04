@@ -34,18 +34,14 @@
 #include "lapi/fallocate.h"
 
 static int fd;
-static const char fname[] = "fallocate04.txt";
 static size_t block_size;
 static size_t buf_size;
 
+#define MNTPOINT "fallocate"
+#define FNAME MNTPOINT "/fallocate.txt"
 #define NUM_OF_BLOCKS	3
 
 static char *verbose;
-
-static void cleanup(void)
-{
-	SAFE_CLOSE(fd);
-}
 
 static void get_blocksize(void)
 {
@@ -75,13 +71,6 @@ static void fill_tst_buf(char buf[])
 
 	for (i = 0; i < NUM_OF_BLOCKS; ++i)
 		memset(buf + i * block_size, 'a' + i, block_size);
-}
-
-static void setup(void)
-{
-	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
-
-	get_blocksize();
 }
 
 static void check_file_data(const char exp_buf[], size_t size)
@@ -299,13 +288,26 @@ static void test05(void)
 	tst_res(TPASS, "test-case succeeded");
 }
 
-static void run(void)
+static void (*tcases[])(void) = {
+	test01, test02, test03, test04, test05
+};
+
+static void run(unsigned int i)
 {
-	test01();
-	test02();
-	test03();
-	test04();
-	test05();
+	tcases[i]();
+}
+
+static void setup(void)
+{
+	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0700);
+
+	get_blocksize();
+}
+
+static void cleanup(void)
+{
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 }
 
 static struct tst_option opts[] = {
@@ -315,8 +317,13 @@ static struct tst_option opts[] = {
 
 static struct tst_test test = {
 	.options = opts,
-	.setup = setup,
 	.cleanup = cleanup,
-	.test_all = run,
+	.setup = setup,
+	.test = run,
+	.tcnt = ARRAY_SIZE(tcases),
+	.mount_device = 1,
+	.mntpoint = MNTPOINT,
+	.all_filesystems = 1,
 	.needs_tmpdir = 1,
+	.needs_root = 1,
 };
