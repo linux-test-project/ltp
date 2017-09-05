@@ -99,9 +99,12 @@ static int test1(void)
 		tst_brkm(TBROK, NULL, "uid mismatch");
 	}
 
+	 /* grantpt() is a no-op in bionic. */
+#ifndef __BIONIC__
 	if (st.st_mode != (S_IFCHR | S_IRUSR | S_IWUSR | S_IWGRP)) {
 		tst_brkm(TBROK, NULL, "mode mismatch (mode=%o)", st.st_mode);
 	}
+#endif
 
 	slavefd = open(slavename, O_RDWR);
 	if (slavefd >= 0) {
