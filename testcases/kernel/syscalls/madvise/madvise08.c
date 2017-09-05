@@ -49,10 +49,12 @@
 #define CORE_FILTER "/proc/self/coredump_filter"
 #define YCOUNT 0x500L
 #define FMEMSIZE (YCOUNT + 0x2L)
+#define CORENAME_MAX_SIZE 512
 
 static int dfd;
 static void *fmem;
-static char *cpattern;
+static char cpattern[CORENAME_MAX_SIZE];
+static int restore_cpattern;
 
 static void setup(void)
 {
@@ -80,7 +82,8 @@ static void setup(void)
 	if (!(0x1 & filter))
 		tst_brk(TCONF, "Anonymous private memory is not dumpable.");
 
-	SAFE_FILE_SCANF(CORE_PATTERN, "%m[^\n]", &cpattern);
+	SAFE_FILE_SCANF(CORE_PATTERN, "%s[^\n]", cpattern);
+	restore_cpattern = 1;
 	tst_res(TINFO, "System core pattern is '%s'", cpattern);
 
 	SAFE_GETCWD(cwd, sizeof(cwd));
@@ -108,10 +111,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (cpattern)
+	if (restore_cpattern)
 		SAFE_FILE_PRINTF(CORE_PATTERN, "%s", cpattern);
-
-	free(cpattern);
 
 	if (fmem)
 		SAFE_MUNMAP(fmem, FMEMSIZE);
