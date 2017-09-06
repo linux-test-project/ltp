@@ -36,12 +36,12 @@
 static char filename[40];
 static int fd;
 
-void setup(void)
+static void setup(void)
 {
 	sprintf(filename, "creat01.%d", getpid());
 }
 
-struct tcase {
+static struct tcase {
 	int mode;
 } tcases[] = {
 	{0644},

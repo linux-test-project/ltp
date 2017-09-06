@@ -68,7 +68,7 @@ static void verify_creat(unsigned int i)
 		child_fn(i);
 }
 
-void setup(void)
+static void setup(void)
 {
 	struct passwd *pw;
 	int fd;
