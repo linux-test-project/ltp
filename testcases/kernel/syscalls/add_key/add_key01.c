@@ -24,28 +24,18 @@
  *	      Manas Kumar Nayak maknayak@in.ibm.com>
  */
 
-#include "config.h"
-#ifdef HAVE_LINUX_KEYCTL_H
-# include <linux/keyctl.h>
-#endif
+#include <errno.h>
+
 #include "tst_test.h"
-#include "lapi/syscalls.h"
+#include "lapi/keyctl.h"
 
 static void verify_add_key(void)
 {
-#ifdef HAVE_LINUX_KEYCTL_H
-
-	TEST(tst_syscall(__NR_add_key, "keyring", "wjkey", NULL, 0,
-	                 KEY_SPEC_THREAD_KEYRING));
-
+	TEST(add_key("keyring", "wjkey", NULL, 0, KEY_SPEC_THREAD_KEYRING));
 	if (TEST_RETURN == -1)
 		tst_res(TFAIL | TTERRNO, "add_key call failed");
 	else
 		tst_res(TPASS, "add_key call succeeded");
-
-#else
-	tst_brk(TCONF, "linux/keyctl.h was missing upon compilation.");
-#endif /* HAVE_LINUX_KEYCTL_H */
 }
 
 static struct tst_test test = {
