@@ -31,7 +31,6 @@ AC_PROG_YACC
 AC_PREFIX_DEFAULT(/opt/ltp)
 
 AC_CHECK_HEADERS([ \
-    dmapi.h \
     ifaddrs.h \
     libaio.h \
     mm.h \
@@ -44,7 +43,6 @@ AC_CHECK_HEADERS([ \
     sys/epoll.h \
     sys/inotify.h \
     sys/fanotify.h \
-    sys/jfsdmapi.h \
     sys/prctl.h \
 ])
 

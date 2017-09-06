@@ -77,9 +77,6 @@
    you don't. */
 #undef HAVE_DECL_PTRACE_SETOPTIONS
 
-/* Define to 1 if you have the <dmapi.h> header file. */
-#undef HAVE_DMAPI_H
-
 /* Define to 1 if you have the <ifaddrs.h> header file. */
 #define HAVE_IFADDRS_H 1
 
@@ -199,9 +196,6 @@
 
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 #define HAVE_SYS_INOTIFY_H 1
-
-/* Define to 1 if you have the <sys/jfsdmapi.h> header file. */
-#undef HAVE_SYS_JFSDMAPI_H
 
 /* Define to 1 if you have the <sys/prctl.h> header file. */
 #undef HAVE_SYS_PRCTL_H
