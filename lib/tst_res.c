@@ -91,6 +91,7 @@ static void tst_condense(int tnum, int ttype, const char *tmesg);
 static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg);
 
 static int T_exitval = 0;	/* exit value used by tst_exit() */
+static int passed_cnt;
 static int T_mode = VERBOSE;	/* flag indicating print mode: VERBOSE, */
 				/* NOPASS, DISCARD */
 
@@ -165,6 +166,9 @@ static void tst_res__(const char *file, const int lineno, int ttype,
 	 * value (used by tst_exit()).
 	 */
 	T_exitval |= ttype_result;
+
+	if (ttype_result == TPASS)
+		passed_cnt++;
 
 	check_env();
 
@@ -390,7 +394,12 @@ void tst_exit(void)
 
 	tst_flush();
 
-	exit(T_exitval & ~TINFO);
+	T_exitval &= ~TINFO;
+
+	if (T_exitval == TCONF && passed_cnt)
+		T_exitval &= ~TCONF;
+
+	exit(T_exitval);
 }
 
 pid_t tst_fork(void)

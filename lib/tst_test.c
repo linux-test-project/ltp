@@ -561,7 +561,7 @@ static void do_exit(int ret)
 		if (results->failed)
 			ret |= TFAIL;
 
-		if (results->skipped)
+		if (results->skipped && !results->passed)
 			ret |= TCONF;
 
 		if (results->warnings)
