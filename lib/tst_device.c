@@ -48,7 +48,8 @@ static int device_acquired;
 
 static const char *dev_variants[] = {
 	"/dev/loop%i",
-	"/dev/loop/%i"
+	"/dev/loop/%i",
+	"/dev/block/loop%i"
 };
 
 static int set_dev_path(int dev)
