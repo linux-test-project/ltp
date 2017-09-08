@@ -171,14 +171,9 @@ link04 link04
 link05 link05
 # multi links (EMLINK) negative test
 lseek01 lseek01
-# Basic test for lseek(2)
 lseek02 lseek02
-# Negative test for lseek(2)
-lseek03 lseek03
-# Negative test for lseek(2) whence
-lseek04 lseek04
-# Negative test for lseek(2) of a fifo
-lseek05 lseek05
+lseek07 lseek07
+lseek11 lseek11
 # Negative test for lseek(2) of a pipe
 lstat02 lstat02
 # Basic test for lstat(2)
