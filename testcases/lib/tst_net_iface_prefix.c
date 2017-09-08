@@ -57,7 +57,7 @@ static int read_iface_prefix(const char *ip_str, int is_ipv6)
 	uint8_t family = is_ipv6 ? AF_INET6 : AF_INET;
 
 	char buf[16384];
-	int len;
+	unsigned int len;
 
 	struct {
 		struct nlmsghdr nlhdr;
