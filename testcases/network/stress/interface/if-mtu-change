@@ -21,10 +21,10 @@ TST_TOTAL=2
 
 TST_CLEANUP="do_cleanup"
 
+. test_net_stress.sh
+
 # The interval of the mtu change [second]
 CHANGE_INTERVAL=${CHANGE_INTERVAL:-5}
-
-. test_net_stress.sh
 
 # The array of the value which MTU is changed into sequentially
 # 552 - net.ipv4.route.min_pmtu

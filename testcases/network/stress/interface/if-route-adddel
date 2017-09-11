@@ -21,9 +21,9 @@ TST_TOTAL=2
 
 TST_CLEANUP="netstress_cleanup"
 
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
-
 . test_net_stress.sh
+
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
 
 test_body()
 {

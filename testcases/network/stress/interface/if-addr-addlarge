@@ -21,10 +21,10 @@ TST_TOTAL=2
 
 TST_CLEANUP="netstress_cleanup"
 
+. test_net_stress.sh
+
 # The interval of the check interface activity
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IP_TOTAL / 20))}
-
-. test_net_stress.sh
 
 test_body()
 {
