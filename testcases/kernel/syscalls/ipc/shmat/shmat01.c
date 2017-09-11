@@ -69,8 +69,21 @@ static void *expected_addr(void *in_addr, void *out_addr)
 	return ALIGN_DOWN(in_addr);
 }
 
-static void do_child(int *in_addr)
+static void do_child(int *in_addr, int expect_crash)
 {
+	if (expect_crash) {
+		/*
+		 * Crash is expected, avoid dumping corefile.
+		 * 1 is a special value, that disables core-to-pipe.
+		 * At the same time it is small enough value for
+		 * core-to-file, so it skips creating cores as well.
+		*/
+		struct rlimit r;
+
+		r.rlim_cur = 1;
+		r.rlim_max = 1;
+		SAFE_SETRLIMIT(RLIMIT_CORE, &r);
+	}
 	*in_addr = 10;
 
 	exit(0);
@@ -121,7 +134,7 @@ static void verify_shmat(unsigned int n)
 
 	pid = SAFE_FORK();
 	if (!pid)
-		do_child(addr);
+		do_child(addr, tc->exp_status == SIGSEGV);
 	else
 		SAFE_WAITPID(pid, &status, 0);
 
