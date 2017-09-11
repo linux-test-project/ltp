@@ -68,9 +68,9 @@ while [ $cnt -lt $NS_TIMES ]; do
 	[ $(($cnt % $CHECK_INTERVAL)) -ne 0 ] && continue
 
 	tst_resm TINFO "ping $(tst_ipaddr):$(tst_ipaddr rhost) ${cnt}/$NS_TIMES"
-	EXPECT_PASS tst_ping
+	tst_ping
 done
 
-EXPECT_PASS tst_ping
+tst_ping
 
 tst_exit

@@ -87,11 +87,6 @@ check_connectivity()
 	tst_resm TINFO "ping through $src_iface iface to ${dst_addr}$cnt_msg"
 
 	tst_ping $src_iface $dst_addr
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "$src_iface is broken"
-		return 1
-	fi
-	return 0
 }
 
 # check_connectivity_interval CNT [RESTORE] [SRC_IFACE] [DST_ADDR]

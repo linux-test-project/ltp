@@ -27,6 +27,6 @@ tst_resm TINFO "Sending ICMPv4 with wrong version field for $NS_DURATION sec"
 
 tst_icmp -t $NS_DURATION -s "0 100 500 1000 1472" -v
 
-EXPECT_PASS tst_ping
+tst_ping
 
 tst_exit

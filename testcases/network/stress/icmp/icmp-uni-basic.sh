@@ -58,10 +58,5 @@ fi
 PING_MAX="$IPSEC_REQUESTS"
 
 tst_ping $lhost_ifname $rhost_addr $IPSEC_SIZE_ARRAY
-if [ $? -ne 0 ]; then
-	tst_resm TFAIL "Checked IPv${TST_IPV6:-4} $IPSEC_PROTO $IPSEC_MODE"
-else
-	tst_resm TPASS "Checked IPv${TST_IPV6:-4} $IPSEC_PROTO $IPSEC_MODE"
-fi
 
 tst_exit
