@@ -826,7 +826,7 @@ static struct tst_option options[] = {
 	{"r:", &rarg, "-r x     Number of client requests"},
 	{"n:", &narg, "-n x     Client message size"},
 	{"N:", &Narg, "-N x     Server message size"},
-	{"T:", &Targ, "-T x     Reply timeout in microsec."},
+	{"m:", &Targ, "-m x     Reply timeout in microsec."},
 	{"d:", &rpath, "-d x     x is a path to file where result is saved\n"},
 
 	{"R:", &Rarg, "Server:\n-R x     x requests after which conn.closed"},
