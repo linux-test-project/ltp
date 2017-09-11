@@ -29,7 +29,7 @@ TST_NEEDS_CMDS="gdb /bin/cat"
 
 simple_test()
 {
-	gdb /bin/cat -ex "run /etc/passwd" -ex quit
+	gdb /bin/cat -ex "run /etc/passwd" -ex quit < /dev/null
 	RC=$?
 	if [ $RC -eq 0 ] ; then
 		tst_res TPASS "gdb attached to process and completed run"
