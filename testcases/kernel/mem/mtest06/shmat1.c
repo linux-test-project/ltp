@@ -109,7 +109,7 @@ int done_shmat = 0;		/* disallow read and writes before shmat      */
 /*									      */
 /******************************************************************************/
 static void sig_handler(int signal,	/* signal number, set to handle SIGALRM       */
-			int code, struct ucontext *ut)
+			int code, ucontext_t *ut)
 {				/* contains pointer to sigcontext structure   */
 #ifdef __i386__
 	unsigned long except;	/* exception type.                            */
