@@ -451,9 +451,9 @@ tst_netload()
 		sock_cmd="ss -ldutn | grep -q $port"
 	fi
 
-	for sec_waited in $(seq 1 600); do
+	for sec_waited in $(seq 1 1200); do
 		tst_rhost_run -c "$sock_cmd" && break
-		if [ $sec_waited -eq 600 ]; then
+		if [ $sec_waited -eq 1200 ]; then
 			tst_rhost_run -c "ss -dutnp | grep $port"
 			tst_brkm TFAIL "server not in LISTEN state"
 		fi
