@@ -504,9 +504,9 @@ tst_ping()
 			-s $size -i 0 > /dev/null 2>&1
 		ret=$?
 		if [ $ret -eq 0 ]; then
-			tst_resm TINFO "$msg $size: pass"
+			tst_resm TPASS "$msg $size: pass"
 		else
-			tst_resm TINFO "$msg $size: fail"
+			tst_resm TFAIL "$msg $size: fail"
 			break
 		fi
 	done
