@@ -25,6 +25,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_safe_macros.h"
+#include "lapi/personality.h"
 
 int safe_setpgid(const char *file, const int lineno, pid_t pid, pid_t pgid)
 {
@@ -74,4 +75,17 @@ int safe_fanotify_init(const char *file, const int lineno,
 #endif /* HAVE_SYS_FANOTIFY_H */
 
 	return rval;
+}
+
+int safe_personality(const char *filename, unsigned int lineno,
+		    unsigned long persona)
+{
+	int prev_persona = personality(persona);
+
+	if (prev_persona < 0) {
+		tst_brk_(filename, lineno, TBROK | TERRNO,
+			 "persona(%ld) failed", persona);
+	}
+
+	return prev_persona;
 }

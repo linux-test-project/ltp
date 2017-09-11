@@ -443,4 +443,9 @@ int safe_fanotify_init(const char *file, const int lineno,
 #define SAFE_FANOTIFY_INIT(fan, mode)  \
 	safe_fanotify_init(__FILE__, __LINE__, (fan), (mode))
 
+int safe_personality(const char *filename, unsigned int lineno,
+		    unsigned long persona);
+#define SAFE_PERSONALITY(persona) safe_personality(__FILE__, __LINE__, persona)
+
+
 #endif /* SAFE_MACROS_H__ */
