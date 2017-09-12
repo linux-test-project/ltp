@@ -129,7 +129,9 @@ static void verify_shmat(unsigned int n)
 	}
 
 	if (expected_addr(*tc->shmaddr, addr) != addr) {
-		tst_res(TFAIL, "shared memory address was not correct");
+		tst_res(TFAIL,
+			"shared memory address %p is not correct, expected %p",
+			addr, expected_addr(*tc->shmaddr, addr));
 		goto end;
 	}
 
