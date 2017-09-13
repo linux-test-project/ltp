@@ -879,9 +879,9 @@ void update_shm_size(size_t * shm_size)
 {
 	size_t shmmax;
 
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &shmmax);
+	SAFE_FILE_SCANF(PATH_SHMMAX, "%zu", &shmmax);
 	if (*shm_size > shmmax) {
-		tst_res(TINFO, "Set shm_size to shmmax: %ld", shmmax);
+		tst_res(TINFO, "Set shm_size to shmmax: %zu", shmmax);
 		*shm_size = shmmax;
 	}
 }
