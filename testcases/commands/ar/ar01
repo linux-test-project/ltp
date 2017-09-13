@@ -277,9 +277,9 @@ test14()
 	file1_mtime2=$(ar -tv lib.a | grep file1.in)
 
 	if [ "$file0_mtime1" = "$file0_mtime2" ]; then
-		tst_res TFAIL "ar updated modified file0 (-u)"
+		tst_res TFAIL "ar haven't updated modified file0 (-u)"
 	else
-		tst_res TPASS "ar haven't updated modified file0 (-u)"
+		tst_res TPASS "ar updated modified file0 (-u)"
 	fi
 
 	if [ "$file1_mtime1" = "$file1_mtime2" ]; then
