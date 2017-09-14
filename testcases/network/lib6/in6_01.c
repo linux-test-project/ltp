@@ -40,8 +40,8 @@ static struct {
 	{ "::ffff:10.0.0.1", 1 },
 	{ "::fffe:10.0.0.1", 0 },
 	{ "::7fff:10.0.0.1", 0 },
-	{ "0:0:0:0:0:0:ffff:0a001", 0 },
-	{ "0:0:1:0:0:0:ffff:0a001", 0 },
+	{ "0:0:0:0:0:0:ffff:a001", 0 },
+	{ "0:0:1:0:0:0:ffff:a001", 0 },
 };
 
 #define MAPSIZE (sizeof(maptab)/sizeof(maptab[0]))
