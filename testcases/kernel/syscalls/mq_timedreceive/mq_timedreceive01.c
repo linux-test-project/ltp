@@ -172,7 +172,7 @@ static void do_test(unsigned int i)
 	}
 
 	if (tc->len != TEST_RETURN) {
-		tst_res(TFAIL, "mq_timedreceive wrong length %ld, expected %d",
+		tst_res(TFAIL, "mq_timedreceive wrong length %ld, expected %zu",
 			TEST_RETURN, tc->len);
 		return;
 	}
@@ -192,7 +192,7 @@ static void do_test(unsigned int i)
 		}
 	}
 
-	tst_res(TPASS, "mq_timedreceive returned %ld, priority %u, length: %lu",
+	tst_res(TPASS, "mq_timedreceive returned %ld, priority %u, length: %zu",
 			TEST_RETURN, prio, len);
 }
 

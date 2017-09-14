@@ -216,7 +216,7 @@ static void do_test(unsigned int i)
 		}
 	}
 
-	tst_res(TPASS, "mq_timedreceive returned %ld, priority %u, length: %lu",
+	tst_res(TPASS, "mq_timedreceive returned %ld, priority %u, length: %zu",
 			TEST_RETURN, prio, len);
 }
 

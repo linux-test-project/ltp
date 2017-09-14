@@ -68,7 +68,7 @@ void verify_preadv(unsigned int n)
 	}
 
 	if (TEST_RETURN != tc->size) {
-		tst_res(TFAIL, "Preadv(2) read %li bytes, expected %li",
+		tst_res(TFAIL, "Preadv(2) read %li bytes, expected %zi",
 			 TEST_RETURN, tc->size);
 		return;
 	}
@@ -89,7 +89,7 @@ void verify_preadv(unsigned int n)
 		return;
 	}
 
-	tst_res(TPASS, "Preadv(2) read %li bytes successfully "
+	tst_res(TPASS, "Preadv(2) read %zi bytes successfully "
 		 "with content '%c' expectedly", tc->size, tc->content);
 }
 

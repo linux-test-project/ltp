@@ -84,7 +84,7 @@ void segv_handler(int sig, siginfo_t *info, void *data LTP_ATTRIBUTE_UNUSED)
 		diff = mapped_addr - fault_addr;
 
 	tst_res(TINFO,
-		"mmap = [%lx, %lx), addr = %lx, diff = %lx, THRESHOLD = %lx",
+		"mmap = [%lx, %lx), addr = %lx, diff = %zx, THRESHOLD = %lx",
 		mapped_addr, mmap_end, fault_addr, diff, THRESHOLD);
 	if (diff < 0 || (unsigned long)diff < THRESHOLD)
 		_exit(EXIT_FAILURE);

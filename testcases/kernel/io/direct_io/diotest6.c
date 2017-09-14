@@ -129,7 +129,7 @@ int runtest(int fd_r, int fd_w, int childnum, int action)
 		}
 		n = writev(fd_w, iov_w, nvector);
 		if (n < (bufsize * nvector)) {
-			tst_resm(TFAIL | TERRNO, "writev failed, ret = %ld", n);
+			tst_resm(TFAIL | TERRNO, "writev failed, ret = %zd", n);
 			goto err;
 		}
 		if (action == READ_DIRECT) {
@@ -147,7 +147,7 @@ int runtest(int fd_r, int fd_w, int childnum, int action)
 		}
 		n = readv(fd_r, iov_r, nvector);
 		if (n < (bufsize * nvector)) {
-			tst_resm(TFAIL | TERRNO, "readv failed, ret = %ld", n);
+			tst_resm(TFAIL | TERRNO, "readv failed, ret = %zd", n);
 			goto err;
 		}
 		if (vbufcmp(iov_w, iov_r, nvector) != 0) {

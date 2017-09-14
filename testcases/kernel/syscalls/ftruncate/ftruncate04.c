@@ -154,8 +154,8 @@ static void ftruncate_expect_success(int fd, off_t offset, const char *msg)
 
 	if (sb.st_size != offset) {
 		tst_resm(TFAIL,
-			 "ftruncate() to %zu bytes succeded but fstat() reports size %zu",
-			 offset, sb.st_size);
+			 "ftruncate() to %li bytes succeded but fstat() reports size %li",
+			 (long)offset, (long)sb.st_size);
 		return;
 	}
 

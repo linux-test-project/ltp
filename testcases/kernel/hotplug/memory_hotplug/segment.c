@@ -588,13 +588,13 @@ static int show_one_segment(segment_t * segp, bool header)
 		puts(segment_header);
 
 	if (segp->seg_start != MAP_FAILED) {
-		printf("%c 0x%p 0x%012lx 0x%012lx  %s  %s %s\n",
+		printf("%c 0x%p 0x%012zx 0x%012lx  %s  %s %s\n",
 		       seg_type[segp->seg_type],
 		       segp->seg_start,
 		       segp->seg_length,
 		       segp->seg_offset, protection, share, name);
 	} else {
-		printf("%c *** not-mapped *** 0x%012lx 0x%012lx  %s  %s %s\n",
+		printf("%c *** not-mapped *** 0x%012zx 0x%012lx  %s  %s %s\n",
 		       seg_type[segp->seg_type],
 		       segp->seg_length,
 		       segp->seg_offset, protection, share, name);
@@ -943,7 +943,7 @@ int segment_location(char *name, range_t * range)
 		node = get_node(apage);
 		if (node < 0) {
 			fprintf(stderr, "\n%s:  "
-				"failed to get node for segment %s, offset 0x%lx\n",
+				"failed to get node for segment %s, offset 0x%x\n",
 				gcp->program_name, name, SEG_OFFSET(segp,
 								    apage));
 			return SEG_ERR;

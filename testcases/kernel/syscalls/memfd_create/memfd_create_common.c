@@ -187,8 +187,8 @@ void *check_mmap(const char *file, const int lineno, void *addr, size_t length,
 	p = safe_mmap(file, lineno, addr, length, prot, flags, fd, offset);
 
 	tst_res_(file, lineno, TPASS,
-		"mmap(%p, %zu, %i, %i, %i, %zi) succeeded", addr,
-		length, prot, flags, fd, offset);
+		"mmap(%p, %zu, %i, %i, %i, %li) succeeded", addr,
+		length, prot, flags, fd, (long)offset);
 
 	return p;
 }
@@ -199,22 +199,22 @@ void check_mmap_fail(const char *file, const int lineno, void *addr,
 	if (mmap(addr, length, prot, flags, fd, offset) != MAP_FAILED) {
 		safe_munmap(file, lineno, NULL, addr, length);
 		tst_res_(file, lineno, TFAIL,
-			"mmap(%p, %zu, %i, %i, %i, %zi) succeeded unexpectedly",
-			addr, length, prot, flags, fd, offset);
+			"mmap(%p, %zu, %i, %i, %i, %li) succeeded unexpectedly",
+			addr, length, prot, flags, fd, (long)offset);
 
 		return;
 	}
 
 	tst_res_(file, lineno, TPASS | TERRNO,
-		"mmap(%p, %zu, %i, %i, %i, %zi) failed as expected",
-		addr, length, prot, flags, fd, offset);
+		"mmap(%p, %zu, %i, %i, %i, %li) failed as expected",
+		addr, length, prot, flags, fd, (long)offset);
 }
 
 void check_munmap(const char *file, const int lineno, void *p, size_t length)
 {
 	safe_munmap(file, lineno, NULL, p, length);
 
-	tst_res_(file, lineno, TPASS, "munmap(%p, %ld) succeeded", p, length);
+	tst_res_(file, lineno, TPASS, "munmap(%p, %zu) succeeded", p, length);
 }
 
 void check_mfd_has_seals(const char *file, const int lineno, int fd, int seals)
@@ -235,10 +235,10 @@ void check_mprotect(const char *file, const int lineno, void *addr,
 {
 	if (mprotect(addr, length, prot) < 0) {
 		tst_brk_(file, lineno, TFAIL | TERRNO,
-			"mprotect(%p, %ld, %d) failed", addr, length, prot);
+			"mprotect(%p, %zu, %d) failed", addr, length, prot);
 	}
 
-	tst_res_(file, lineno, TPASS, "mprotect(%p, %ld, %d) succeeded", addr,
+	tst_res_(file, lineno, TPASS, "mprotect(%p, %zu, %d) succeeded", addr,
 		length, prot);
 }
 
@@ -313,7 +313,7 @@ void check_mfd_readable(const char *filename, const int lineno, int fd)
 	void *p;
 
 	safe_read(filename, lineno, NULL, 1, fd, buf, sizeof(buf));
-	tst_res_(filename, lineno, TPASS, "read(%d, %s, %ld) succeeded", fd,
+	tst_res_(filename, lineno, TPASS, "read(%d, %s, %zu) succeeded", fd,
 		buf, sizeof(buf));
 
 	/* verify PROT_READ *is* allowed */
@@ -455,13 +455,13 @@ void check_mfd_growable_by_write(const char *filename, const int lineno, int fd)
 
 	if (pwrite(fd, buf, sizeof(buf), 0) != sizeof(buf)) {
 		tst_res_(filename, lineno, TFAIL | TERRNO,
-			"pwrite(%d, %s, %ld, %d) failed",
+			"pwrite(%d, %s, %zu, %d) failed",
 			fd, buf, sizeof(buf), 0);
 
 		return;
 	}
 
-	tst_res_(filename, lineno, TPASS, "pwrite(%d, %s, %ld, %d) succeeded",
+	tst_res_(filename, lineno, TPASS, "pwrite(%d, %s, %zu, %d) succeeded",
 		fd, buf, sizeof(buf), 0);
 
 	check_mfd_size(filename, lineno, fd, MFD_DEF_SIZE * 8);
@@ -474,12 +474,12 @@ void check_mfd_non_growable_by_write(const char *filename, const int lineno,
 
 	if (pwrite(fd, buf, sizeof(buf), 0) == sizeof(buf)) {
 		tst_res_(filename, lineno, TFAIL,
-			"pwrite(%d, %s, %ld, %d) didn't fail as expected",
+			"pwrite(%d, %s, %zu, %d) didn't fail as expected",
 			fd, buf, sizeof(buf), 0);
 
 		return;
 	}
 
-	tst_res_(filename, lineno, TPASS, "pwrite(%d, %s, %ld, %d) succeeded",
+	tst_res_(filename, lineno, TPASS, "pwrite(%d, %s, %zu, %d) succeeded",
 		fd, buf, sizeof(buf), 0);
 }

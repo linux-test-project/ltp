@@ -87,7 +87,7 @@ int safe_shmget(const char *file, const int lineno, key_t key, size_t size,
 
 	rval = shmget(key, size, shmflg);
 	if (rval == -1) {
-		tst_brk(TBROK | TERRNO, "%s:%d: shmget(%i, %li, %x) failed",
+		tst_brk(TBROK | TERRNO, "%s:%d: shmget(%i, %zu, %x) failed",
 			file, lineno, (int)key, size, shmflg);
 	}
 

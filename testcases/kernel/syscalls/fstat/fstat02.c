@@ -72,8 +72,8 @@ static void verify(void)
 	}
 
 	if (stat_buf.st_size != FILE_SIZE) {
-		tst_resm(TINFO, "stat_buf.st_size = %zu expected %i",
-		         stat_buf.st_size, FILE_SIZE);
+		tst_resm(TINFO, "stat_buf.st_size = %li expected %i",
+		         (long)stat_buf.st_size, FILE_SIZE);
 		fail++;
 	}
 

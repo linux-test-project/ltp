@@ -68,7 +68,7 @@ static void verify_pwritev(unsigned int n)
 	}
 
 	if (TEST_RETURN != tc->size) {
-		tst_res(TFAIL, "pwritev() wrote %li bytes, expected %li",
+		tst_res(TFAIL, "pwritev() wrote %li bytes, expected %zi",
 			 TEST_RETURN, tc->size);
 		return;
 	}
@@ -91,7 +91,7 @@ static void verify_pwritev(unsigned int n)
 		return;
 	}
 
-	tst_res(TPASS, "writev() wrote %li bytes successfully "
+	tst_res(TPASS, "writev() wrote %zi bytes successfully "
 		 "with content 'a' expectedly ", tc->size);
 }
 

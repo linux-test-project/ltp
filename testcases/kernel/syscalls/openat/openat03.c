@@ -92,11 +92,11 @@ void test01(void)
 	write_file(fd);
 
 	SAFE_FSTAT(cleanup, fd, &st);
-	tst_resm(TINFO, "file size is '%zu'", st.st_size);
+	tst_resm(TINFO, "file size is '%li'", (long)st.st_size);
 
 	if (st.st_size != blocks_num * size) {
-		tst_resm(TFAIL, "not expected size: '%zu' != '%zu'",
-			 st.st_size, blocks_num * size);
+		tst_resm(TFAIL, "not expected size: '%li' != '%zu'",
+			 (long)st.st_size, blocks_num * size);
 		SAFE_CLOSE(cleanup, fd);
 		return;
 	}
