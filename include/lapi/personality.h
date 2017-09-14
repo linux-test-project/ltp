@@ -27,4 +27,8 @@
 # define UNAME26 0x0020000
 #endif
 
+#ifndef READ_IMPLIES_EXEC
+# define READ_IMPLIES_EXEC 0x0400000
+#endif
+
 #endif	/* PERSONALITY_H */
