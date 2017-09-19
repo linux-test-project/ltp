@@ -62,7 +62,7 @@ close_file_write()
 
 init()
 {
-	service auditd status > /dev/null 2>&1
+	systemctl status auditd > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
 		log=/var/log/messages
 	else
