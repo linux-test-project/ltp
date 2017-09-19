@@ -57,7 +57,7 @@ static long clone_child(void)
 	TEST(ltp_clone(flags, newnet, NULL, CHILD_STACK_SIZE, child_stack));
 
 	if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL)
-		tst_brk(TCONF, "CLONE_NEWNET not supported, CONFIG_NET_NS?");
+		tst_brk(TCONF, "CONFIG_NET_NS was disabled");
 
 	if (TEST_RETURN == -1)
 		tst_brk(TBROK | TTERRNO, "clone(CLONE_NEWNET) failed");
@@ -100,4 +100,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
+	.min_kver = "2.6.24",
 };
