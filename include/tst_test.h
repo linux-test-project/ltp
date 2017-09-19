@@ -124,6 +124,7 @@ struct tst_test {
 	int needs_checkpoints:1;
 	int format_device:1;
 	int mount_device:1;
+	int needs_rofs:1;
 
 	/* Minimal device size in megabytes */
 	unsigned int dev_min_size;

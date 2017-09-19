@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
@@ -42,7 +43,7 @@ struct tst_test *tst_test;
 static int iterations = 1;
 static float duration = -1;
 static pid_t main_pid, lib_pid;
-static int device_mounted;
+static int mntpoint_mounted;
 
 struct results {
 	int passed;
@@ -708,7 +709,32 @@ static void do_setup(int argc, char *argv[])
 	if (needs_tmpdir() && !tst_tmpdir_created())
 		tst_tmpdir();
 
-	if (tst_test->needs_device) {
+	if (tst_test->mntpoint)
+		SAFE_MKDIR(tst_test->mntpoint, 0777);
+
+	if ((tst_test->needs_rofs || tst_test->mount_device) &&
+	    !tst_test->mntpoint) {
+		tst_brk(TBROK, "tst_test->mntpoint must be set!");
+	}
+
+	if (tst_test->needs_rofs) {
+		/* If we failed to mount read-only tmpfs. Fallback to
+		 * using a device with empty read-only filesystem.
+		 */
+		if (mount(NULL, tst_test->mntpoint, "tmpfs", MS_RDONLY, NULL)) {
+			tst_res(TINFO | TERRNO, "Can't mount tmpfs read-only"
+				" at %s, setting up a device instead\n",
+				tst_test->mntpoint);
+			tst_test->mount_device = 1;
+			tst_test->needs_device = 1;
+			tst_test->format_device = 1;
+			tst_test->mnt_flags = MS_RDONLY;
+		} else {
+			mntpoint_mounted = 1;
+		}
+	}
+
+	if (tst_test->needs_device && !mntpoint_mounted) {
 		tdev.dev = tst_acquire_device_(NULL, tst_test->dev_min_size);
 
 		if (!tdev.dev)
@@ -728,16 +754,9 @@ static void do_setup(int argc, char *argv[])
 		}
 
 		if (tst_test->mount_device) {
-
-			if (!tst_test->mntpoint) {
-				tst_brk(TBROK,
-					"tst_test->mntpoint must be set!");
-			}
-
-			SAFE_MKDIR(tst_test->mntpoint, 0777);
 			SAFE_MOUNT(tdev.dev, tst_test->mntpoint, tdev.fs_type,
 				   tst_test->mnt_flags, tst_test->mnt_data);
-			device_mounted = 1;
+			mntpoint_mounted = 1;
 		}
 	}
 
@@ -758,7 +777,7 @@ static void do_test_setup(void)
 
 static void do_cleanup(void)
 {
-	if (device_mounted)
+	if (mntpoint_mounted)
 		tst_umount(tst_test->mntpoint);
 
 	if (tst_test->needs_device && tdev.dev)
