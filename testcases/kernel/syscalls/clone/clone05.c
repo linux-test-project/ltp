@@ -99,5 +99,5 @@ static int child_fn(void *unused __attribute__((unused)))
 	}
 
 	child_exited = 1;
-	exit(1);
+	_exit(1);
 }

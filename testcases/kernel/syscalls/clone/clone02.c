@@ -270,8 +270,8 @@ static int child_fn(void)
 
 	if (test_VM() == 0 && test_FILES() == 0 && test_FS() == 0 &&
 	    test_SIG() == 0)
-		exit(0);
-	exit(1);
+		_exit(0);
+	_exit(1);
 }
 
 static int parent_test1(void)
