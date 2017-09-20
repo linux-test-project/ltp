@@ -264,14 +264,14 @@ test13()
 test14()
 {
 	ROD touch file0.in
-	ROD ar -cr lib.a file0.in $TST_DATAROOT/file1.in
+	ROD ar -crU lib.a file0.in $TST_DATAROOT/file1.in
 
 	file0_mtime1=$(ar -tv lib.a | grep file0.in)
 	file1_mtime1=$(ar -tv lib.a | grep file1.in)
 
 	touch -c -t $(date --date='next day' +"%Y%m%d%H%M") file0.in
 
-	ROD ar -ru lib.a file0.in $TST_DATAROOT/file1.in
+	ROD ar -ruU lib.a file0.in $TST_DATAROOT/file1.in
 
 	file0_mtime2=$(ar -tv lib.a | grep file0.in)
 	file1_mtime2=$(ar -tv lib.a | grep file1.in)

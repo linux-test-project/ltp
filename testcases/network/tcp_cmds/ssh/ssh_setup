@@ -35,6 +35,18 @@ do_setup()
 	fi
 
 	echo "$TEST_USER:$TEST_USER_PASSWD" | chpasswd
+	if [ $? -ne 0 ]; then
+		/usr/bin/expect<<-EOF
+		spawn passwd $TEST_USER
+		sleep 1
+		expect "password:"
+		send "$TEST_USER_PASSWD\n"
+		sleep 1
+		expect "password:"
+		send "$TEST_USER_PASSWD\n"
+		expect eof
+		EOF
+	fi
 
 	# create users home diretory (SLES 8 does not do this, even when
 	# specified in adduser)
