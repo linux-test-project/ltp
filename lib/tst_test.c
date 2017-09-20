@@ -29,6 +29,7 @@
 #include "tst_test.h"
 #include "tst_device.h"
 #include "lapi/futex.h"
+#include "lapi/syscalls.h"
 #include "tst_ansi_color.h"
 #include "tst_timer_test.h"
 
@@ -276,7 +277,13 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
 {
 	print_result(file, lineno, ttype, fmt, va);
 
-	if (getpid() == main_pid)
+	/*
+	 * The getpid implementation in some C library versions may cause cloned
+	 * test threads to show the same pid as their parent when CLONE_VM is
+	 * specified but CLONE_THREAD is not. Use direct syscall to avoid
+	 * cleanup running in the child.
+	 */
+	if (syscall(SYS_getpid) == main_pid)
 		do_test_cleanup();
 
 	if (getpid() == lib_pid)
