@@ -27,6 +27,4 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CFLAGS			+= -D_GNU_SOURCE
 
-INSTALL_TARGETS		:= test_mount
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
