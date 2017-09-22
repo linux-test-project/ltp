@@ -669,10 +669,10 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 
 # Init LHOST and RHOST addresses if run test over 2 nodes
 if [[ ! -z $RHOST ]]; then
-	tst_add_ipaddr
-	tst_add_ipaddr rhost
 	tst_init_iface
 	tst_init_iface rhost
+	tst_add_ipaddr
+	tst_add_ipaddr rhost
 	tst_wait_ipv6_dad
 fi
 
