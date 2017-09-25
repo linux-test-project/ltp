@@ -25,18 +25,19 @@
 
 export TCID="${TCID:-$(basename $0)}"
 
-# using variables IPV4_NET16_UNUSED and various functions
 . test_net.sh
+
+ipver=${TST_IPV6:-4}
 
 # Netmask of for the tested network
 IPV4_NETMASK="255.255.255.0"
 IPV4_NETMASK_NUM=24
 
-# Prefix of the Multicast Address
+# Multicast address and it's prefix
 MCAST_IPV4_ADDR_PREFIX="224.10"
-# Multicast Address
 MCAST_IPV4_ADDR="${MCAST_IPV4_ADDR_PREFIX}.10.1"
-ipver=${TST_IPV6:-4}
+MCAST_IPV6_ADDR_PREFIX="ff0e::1111"
+MCAST_IPV6_ADDR="${MCAST_IPV6_ADDR_PREFIX}:1"
 
 # Setup for tests using netstress.
 netstress_setup()
