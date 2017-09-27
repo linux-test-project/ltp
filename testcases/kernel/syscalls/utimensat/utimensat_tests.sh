@@ -32,7 +32,11 @@ fi
 
 # Starting with 4.8.0 operations on immutable files return EPERM instead of
 # EACCES.
-if tst_kvcmp -lt "4.8.0"; then
+# This patch has also been merged to stable 4.4 with
+# b3b4283 ("vfs: move permission checking into notify_change() for utimes(NULL)")
+if tst_kvcmp -ge "4.4.27" -a -lt "4.5.0"; then
+	imaccess=EPERM
+elif tst_kvcmp -lt "4.4.27"; then
 	imaccess=EACCES
 else
 	imaccess=EPERM
