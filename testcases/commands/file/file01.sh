@@ -88,7 +88,8 @@ do_test()
 			    "[pP]ython script text executable";;
 	 9) file_test in.m4 "M4 macro processor script, ASCII text" \
 			    "ASCII M4 macro language pre-processor text";;
-	10) file_test in "ELF .*-bit $TEST_ARCH executable, .*";;
+	10) file_test in "ELF .*-bit $TEST_ARCH executable, .*" \
+			 "ELF .*-bit $TEST_ARCH shared object, .*";;
 	11) file_test in.ar "current ar archive";;
 	12) file_test in.tar "tar archive";;
 	13) file_test in.tar.gz "gzip compressed data, .*";;
