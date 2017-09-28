@@ -103,8 +103,8 @@ do_test()
 
         incr_tst_count
         if [ $TST_COUNT -le $NUMLOOPS ]; then
-            tst_resm TINFO "Sleeping 60 seconds to avoid hitting max. connections setting for service"
-            sleep 60
+            tst_resm TINFO "Sleeping 80 seconds to avoid hitting max. connections setting for service"
+            sleep 80
         fi
     done
 }

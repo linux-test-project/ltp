@@ -75,6 +75,7 @@ int main(int argc, char *argv[], char *env[])
 	i = (unsigned int)strtol(argv[3], NULL, 10);
 	j = 0;
 	while (i-- > 0) {
+		sp->s_port++;
 		switch (pid = fork()) {
 		case 0:
 			snprintf(echo_struc[j].resultfile,
@@ -228,6 +229,12 @@ echofile(struct servent *sp, struct addrinfo *ai, char *resultfile,
 #else
 	sa.sin_port = port;
 #endif
+	if (bind(s,(sa_t *) & sa, sizeof(sa)) < 0 ) {
+		tst_resm(TBROK, "Failed to bind socket (pid=%d)",
+			 pid);
+		cleanup(s);
+		tst_exit();
+	}
 
 	if (connect(s, (sa_t *) & sa, sizeof(sa)) == -1) {
 		tst_resm(TBROK | TERRNO,
