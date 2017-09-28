@@ -64,7 +64,7 @@ ftrace_userstacktrace_test()
 			exc_page_fault_enable=`cat $EXC_PAGE_FAULT_ENABLE`
 			echo 1 > $EXC_PAGE_FAULT_ENABLE
 		else
-			mm_page_fault_enable=`cat MM_PAGE_FAULT_ENABLE`
+			mm_page_fault_enable=`cat $MM_PAGE_FAULT_ENABLE`
 			echo 1 > $MM_PAGE_FAULT_ENABLE
 		fi
 	done
