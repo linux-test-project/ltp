@@ -8,6 +8,8 @@ LDLIBS			+= -lltp
 test08: CFLAGS+=-pthread
 test09: CFLAGS+=-pthread
 test15: CFLAGS+=-pthread
+test16: CFLAGS+=-pthread
+test16: LDLIBS+=-lrt
 
 ifeq ($(ANDROID),1)
 FILTER_OUT_MAKE_TARGETS	+= test08
