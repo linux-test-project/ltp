@@ -32,6 +32,7 @@
 
 #include <sys/time.h>
 #include <time.h>
+#include "tst_atomic.h"
 
 #ifndef CLOCK_MONOTONIC_RAW
 # define CLOCK_MONOTONIC_RAW CLOCK_MONOTONIC
