@@ -174,6 +174,16 @@ static void test_efault(void)
 
 	fd = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT, 0666);
 
+	TEST(pwrite(fd, NULL, 0, 0));
+
+	if (TEST_RETURN == 0) {
+		tst_res(TPASS, "pwrite succeeded as expected with count = 0");
+	} else {
+		tst_res(TFAIL, "pwrite failed unexpectedly; "
+			"return: %ld with errno %d (%s)",
+			TEST_RETURN, TEST_ERRNO, tst_strerrno(TEST_ERRNO));
+	}
+
 	TEST(pwrite(fd, buf, K1, 0));
 
 	print_test_result(TEST_ERRNO, EFAULT);

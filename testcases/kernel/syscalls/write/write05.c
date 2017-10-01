@@ -91,6 +91,15 @@ static void verify_write(void)
 	if (fd < 0)
 		tst_res(TFAIL, "creating a new file failed");
 
+//block2.1:
+	if (write(fd, NULL, 0) != 0) {
+		tst_res(TFAIL, "write() with nsize 0 in a "
+				"valid fd failed with errno: %d, "
+				"but should have succeeded", errno);
+	} else {
+		tst_res(TPASS, "succeeded as expected with nsize = 0");
+	}
+//block2.2"
 	if (write(fd, bad_addr, 10) != -1) {
 		tst_res(TFAIL, "write() on an invalid buffer "
 			"succeeded, but should have failed");
@@ -99,8 +108,8 @@ static void verify_write(void)
 			tst_res(TFAIL, "write() returned illegal "
 				 "errno: expected EFAULT, got %d",
 				 errno);
-			}
-			tst_res(TPASS, "received EFAULT as expected.");
+		}
+		tst_res(TPASS, "received EFAULT as expected.");
 	}
 	tst_res(TINFO, "Exit Block 2");
 
