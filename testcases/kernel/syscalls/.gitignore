@@ -716,6 +716,8 @@
 /pwrite/pwrite01_64
 /pwrite/pwrite02
 /pwrite/pwrite02_64
+/pwrite/pwrite03
+/pwrite/pwrite03_64
 /pwrite/pwrite04
 /pwrite/pwrite04_64
 /pwritev/pwritev01
@@ -1123,6 +1125,7 @@
 /waitpid/waitpid12
 /waitpid/waitpid13
 /write/write01
+/write/write02
 /write/write03
 /write/write04
 /write/write05
