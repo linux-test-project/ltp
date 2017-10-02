@@ -46,6 +46,8 @@ AC_CHECK_HEADERS([ \
     sys/prctl.h \
 ])
 
+AC_CHECK_FUNCS([profil])
+
 # Tools knobs
 
 # Expect

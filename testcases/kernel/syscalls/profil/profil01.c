@@ -27,6 +27,11 @@
 #include <sys/types.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "config.h"
+
+char *TCID = "profil01";
+
+#if HAVE_PROFIL
 
 #define PROFIL_TIME 5
 
@@ -36,7 +41,6 @@
  * just in case compiler put call to get_pc() below "data shuffling" code */
 #define PROFIL_BUFLEN (32*1024)
 
-char *TCID = "profil01";
 int TST_TOTAL = 1;
 
 static volatile sig_atomic_t profil_done;
@@ -124,3 +128,9 @@ int main(int ac, char *av[])
 
 	tst_exit();
 }
+#else /* systems without profil() */
+int main(void)
+{
+        tst_brkm(TCONF, NULL, "system doesn't have profil() support");
+}
+#endif
