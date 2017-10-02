@@ -491,6 +491,9 @@ static void parse_opts(int argc, char *argv[])
 			parse_topt(topts_len, opt, optarg);
 		}
 	}
+
+	if (optind < argc)
+		tst_brk(TBROK, "Unexpected argument(s) '%s'...", argv[optind]);
 }
 
 int tst_parse_int(const char *str, int *val, int min, int max)
