@@ -191,9 +191,7 @@ void setup(void)
 	/* Set limit low, argument is # bytes */
 	rlp.rlim_cur = rlp.rlim_max = 2 * BUFSIZ;
 
-	if (setrlimit(RLIMIT_FSIZE, &rlp) == -1)
-		tst_brkm(TBROK, cleanup,
-			 "Cannot set max. file size using setrlimit");
+	SAFE_SETRLIMIT(cleanup, RLIMIT_FSIZE, &rlp);
 
 	/* Creat/open a temporary file under above directory */
 	if ((fildes = open(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE)) == -1) {
