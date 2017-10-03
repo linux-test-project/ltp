@@ -132,8 +132,7 @@ static void setup(void)
 	addr2 = addr1 + 1;
 
 	/* addr3 is outside the address space of the process */
-	if (getrlimit(RLIMIT_DATA, &rl) < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "getrlimit failed");
+	SAFE_GETRLIMIT(NULL, RLIMIT_DATA, &rl);
 	addr3 = (char *)rl.rlim_max;
 
 #if !defined(UCLINUX)

@@ -140,10 +140,7 @@ static void setup4(struct test_case_t *tc)
 {
 	struct rlimit as_lim;
 
-	if (getrlimit(RLIMIT_AS, &as_lim) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "getrlimit(RLIMIT_AS) failed");
-	}
+	SAFE_GETRLIMIT(cleanup, RLIMIT_AS, &as_lim);
 
 	tc->addr = global_pointer;
 	tc->len = as_lim.rlim_cur - (rlim_t)global_pointer + pagesize;

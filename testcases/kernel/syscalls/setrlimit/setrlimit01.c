@@ -194,8 +194,7 @@ static void test2(void)
  */
 static void test3(void)
 {
-	if (getrlimit(RLIMIT_NPROC, &save_rlim) < 0)
-		tst_brkm(TBROK, cleanup, "getrlimit failed, errno: %d", errno);
+	SAFE_GETRLIMIT(cleanup, RLIMIT_NPROC, &save_rlim);
 
 	rlim.rlim_cur = 10;
 	rlim.rlim_max = 10;

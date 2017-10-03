@@ -43,6 +43,7 @@
 #include <inttypes.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #ifndef BSIZE
 #define BSIZE  BBSIZE
@@ -159,9 +160,7 @@ void setup(void)
 	/*if ((ulim_sz=ulimit(3,0)) == -1)
 	   tst_brkm(TBROK|TERRNO, cleanup, "ulimit(3,0) failed"); */
 
-	if (getrlimit(RLIMIT_DATA, &lim) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "getrlimit(RLIMIT_DATA,%p) failed", &lim);
+	SAFE_GETRLIMIT(cleanup, RLIMIT_DATA, &lim);
 	ulim_sz = lim.rlim_cur;
 
 	/*
