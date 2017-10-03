@@ -181,8 +181,7 @@ void setup(void)
 
 	SAFE_SETEUID(cleanup, 0);
 
-	if (fchown(fd, -1, 0) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
+	SAFE_FCHOWN(cleanup, fd, -1, 0);
 
 	SAFE_FCHMOD(cleanup, fd, NEW_PERMS);
 
