@@ -80,6 +80,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 #define EXP_RET_VAL	0
@@ -170,10 +171,7 @@ static int test_functionality(uid_t exp_rgid, uid_t exp_egid, uid_t exp_sgid)
 	uid_t cur_rgid, cur_egid, cur_sgid;
 
 	/* Get current real, effective and saved group id */
-	if (getresgid(&cur_rgid, &cur_egid, &cur_sgid) == -1) {
-		tst_brkm(TBROK, cleanup, "getresgid() failed");
-
-	}
+	SAFE_GETRESGID(cleanup, &cur_rgid, &cur_egid, &cur_sgid);
 
 	if ((cur_rgid == exp_rgid) && (cur_egid == exp_egid)
 	    && (cur_sgid == exp_sgid)) {
