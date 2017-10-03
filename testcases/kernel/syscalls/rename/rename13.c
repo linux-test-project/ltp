@@ -65,6 +65,7 @@
 #include <errno.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -179,10 +180,7 @@ void setup(void)
 	oldino = buf1.st_ino;
 
 	/* link the "new" file to the "old" file */
-	if (link(fname, mname) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "link from %s to %s failed!", fname, mname);
-	}
+	SAFE_LINK(cleanup, fname, mname);
 }
 
 /*
