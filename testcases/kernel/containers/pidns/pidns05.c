@@ -49,6 +49,7 @@
 #include <errno.h>
 #include "pidns_helper.h"
 #include "test.h"
+#include "safe_macros.h"
 
 #define INIT_PID	1
 #define CINIT_PID	1
@@ -230,9 +231,7 @@ int main(int argc, char *argv[])
 
 	pid = getpid();
 	pgid = getpgid(pid);
-	ret = pipe(fd);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "pipe failed");
+	SAFE_PIPE(NULL, fd);
 
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID,
 				   create_nested_container, (void *)&count));
