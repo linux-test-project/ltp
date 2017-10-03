@@ -164,13 +164,9 @@ int main(int ac, char **av)
 				 "for renaming a %s", TC[i].desc);
 		}
 		/* reset things in case we are looping */
-		if (rename(mname, fname) == -1) {
-			tst_brkm(TBROK, cleanup, "file rename failed");
-		}
+		SAFE_RENAME(cleanup, mname, fname);
 
-		if (rename(mdir, fdir) == -1) {
-			tst_brkm(TBROK, cleanup, "directory rename failed");
-		}
+		SAFE_RENAME(cleanup, mdir, fdir);
 	}
 
 	cleanup();

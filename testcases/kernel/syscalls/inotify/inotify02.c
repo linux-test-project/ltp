@@ -117,11 +117,7 @@ int main(int ac, char **av)
 		strcpy(event_set[tst_count].name, FILE_NAME1);
 		tst_count++;
 
-		if (rename(FILE_NAME1, FILE_NAME2) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "rename(%s, %s) failed",
-				 FILE_NAME1, FILE_NAME2);
-		}
+		SAFE_RENAME(cleanup, FILE_NAME1, FILE_NAME2);
 		event_set[tst_count].mask = IN_MOVED_FROM;
 		strcpy(event_set[tst_count].name, FILE_NAME1);
 		tst_count++;
@@ -135,10 +131,7 @@ int main(int ac, char **av)
 		}
 
 		snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);
-		if (rename(fname1, fname2) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "rename(%s, %s) failed", fname1, fname2);
-		}
+		SAFE_RENAME(cleanup, fname1, fname2);
 		event_set[tst_count].mask = IN_MOVE_SELF;
 		strcpy(event_set[tst_count].name, "");
 		tst_count++;
@@ -155,15 +148,9 @@ int main(int ac, char **av)
 		 * 2.6.25. See comment below.
 		 */
 		snprintf(fname3, BUF_SIZE, "%s.rename2", fname1);
-		if (rename(fname2, fname3) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "rename(%s, %s) failed", fname2, fname3);
-		}
+		SAFE_RENAME(cleanup, fname2, fname3);
 
-		if (rename(fname3, fname1) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "rename(%s, %s) failed", fname3, fname1);
-		}
+		SAFE_RENAME(cleanup, fname3, fname1);
 		event_set[tst_count].mask = IN_MOVE_SELF;
 		strcpy(event_set[tst_count].name, "");
 		tst_count++;
