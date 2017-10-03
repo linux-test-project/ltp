@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "test.h"
+#include "safe_macros.h"
 
 /* Set from parse_opts.c: */
 char *child_args;		/* Arguments to child when -C is used */
@@ -152,11 +153,7 @@ void maybe_run_child(void (*child) (), const char *fmt, ...)
 
 		va_end(ap);
 		free(args);
-		if (chdir(child_dir) < 0) {
-			tst_brkm(TBROK, NULL,
-				 "Could not change to %s for child", child_dir);
-			return;
-		}
+		SAFE_CHDIR(NULL, child_dir);
 
 		(*child) ();
 		tst_resm(TWARN, "Child function returned unexpectedly");

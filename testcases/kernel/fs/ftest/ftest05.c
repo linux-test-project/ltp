@@ -63,6 +63,7 @@
 #include <inttypes.h>
 #include <sys/param.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "libftest.h"
 
 char *TCID = "ftest05";
@@ -137,9 +138,7 @@ static void setup(void)
 
 	mkdir(fuss, 0755);
 
-	if (chdir(fuss) < 0) {
-		tst_brkm(TBROK | TERRNO, NULL, "\tCan't chdir(%s)", fuss);
-	}
+	SAFE_CHDIR(NULL, fuss);
 
 	/*
 	 * Default values for run conditions.

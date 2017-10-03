@@ -63,6 +63,7 @@
 #include <sys/syscall.h>
 #include <sched.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define FLAG_ALL (CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|SIGCHLD)
 #define FLAG_NONE SIGCHLD
@@ -250,15 +251,7 @@ static void test_cleanup(void)
 {
 
 	/* Restore parent's working directory */
-	if (chdir(cwd_parent) == -1) {
-		/*
-		 * we have to exit here
-		 *
-		 * XXX (garrcoop): why???
-		 */
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "chdir() failed in test_cleanup()");
-	}
+	SAFE_CHDIR(cleanup, cwd_parent);
 
 }
 

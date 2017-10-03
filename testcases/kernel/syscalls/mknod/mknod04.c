@@ -80,6 +80,7 @@
 #include <sys/stat.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define LTPUSER		"nobody"
 #define MODE_RWX	S_IFIFO | S_IRWXU | S_IRWXG | S_IRWXO
@@ -281,10 +282,7 @@ void setup(void)
 	mygid = getgid();
 
 	/* Change directory to DIR_TEMP */
-	if (chdir(DIR_TEMP) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to change to %s directory", DIR_TEMP);
-	}
+	SAFE_CHDIR(cleanup, DIR_TEMP);
 }
 
 /*
