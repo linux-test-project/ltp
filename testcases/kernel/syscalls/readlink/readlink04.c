@@ -123,8 +123,7 @@ static void setup(void)
 		tst_brkm(TBROK, cleanup, "getpwname() failed");
 
 	/* make the tmp directory belong to bin */
-	if (chown(tmp_dir, pwent->pw_uid, pwent->pw_gid) == -1)
-		tst_brkm(TBROK, cleanup, "chown() failed");
+	SAFE_CHOWN(cleanup, tmp_dir, pwent->pw_uid, pwent->pw_gid);
 
 	if (chmod(tmp_dir, 0711) != 0)
 		tst_brkm(TBROK|TERRNO, cleanup, "chmod(%s) failed", tmp_dir);

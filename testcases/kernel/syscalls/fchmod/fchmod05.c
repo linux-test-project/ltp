@@ -195,9 +195,7 @@ void setup(void)
 			 "Couldn't change supplementary group Id: %s",
 			 strerror(errno));
 
-	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
-		tst_brkm(TBROK, cleanup, "Couldn't change owner of testdir: %s",
-			 strerror(errno));
+	SAFE_CHOWN(cleanup, TESTDIR, nobody_u->pw_uid, bin_group->gr_gid);
 
 	/* change to nobody:nobody */
 	if (setegid(nobody_u->pw_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)

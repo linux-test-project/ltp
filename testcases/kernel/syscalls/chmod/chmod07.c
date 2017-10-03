@@ -184,8 +184,7 @@ void setup(void)
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 TESTFILE, FILE_MODE);
 	SAFE_CLOSE(cleanup, fd);
-	if (chown(TESTFILE, user1_uid, group1_gid) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "chown(%s) failed", TESTFILE);
+	SAFE_CHOWN(cleanup, TESTFILE, user1_uid, group1_gid);
 
 	SAFE_SETGID(cleanup, group1_gid);
 }

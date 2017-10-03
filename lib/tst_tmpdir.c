@@ -271,11 +271,7 @@ void tst_tmpdir(void)
 		return;
 	}
 
-	if (chown(TESTDIR, -1, getgid()) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL,
-			 "chown(%s, -1, %d) failed", TESTDIR, getgid());
-		return;
-	}
+	SAFE_CHOWN(NULL, TESTDIR, -1, getgid());
 
 	SAFE_CHMOD(NULL, TESTDIR, DIR_MODE);
 

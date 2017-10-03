@@ -193,9 +193,7 @@ void setup(void)
 			 TESTFILE, FILE_MODE, errno, strerror(errno));
 	}
 
-	if (chown(TESTFILE, user1_uid, group1_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", TESTFILE);
-	}
+	SAFE_CHOWN(cleanup, TESTFILE, user1_uid, group1_gid);
 
 	/* Set the effective gid of the process to that of user */
 	SAFE_SETGID(cleanup, group1_gid);

@@ -202,9 +202,7 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "setgroups to nobody's gid failed");
 
-	if (chown(TESTDIR, nobody_u->pw_uid, bin_group->gr_gid) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "chowning testdir to nobody:bin failed");
+	SAFE_CHOWN(cleanup, TESTDIR, nobody_u->pw_uid, bin_group->gr_gid);
 
 	/* change to nobody:nobody */
 	if (setegid(nobody_u->pw_gid) == -1 || seteuid(nobody_u->pw_uid) == -1)

@@ -233,9 +233,7 @@ void setup(void)
 	 * user and the test process.
 	 */
 	SAFE_MKDIR(cleanup, DIR_TEMP, MODE_RWX);
-	if (chown(DIR_TEMP, user1_uid, group2_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", DIR_TEMP);
-	}
+	SAFE_CHOWN(cleanup, DIR_TEMP, user1_uid, group2_gid);
 
 	/*
 	 * Verify that test directory created with expected permission modes
