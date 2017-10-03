@@ -384,10 +384,7 @@ static void setup(void)
 	fd = SAFE_CREAT(cleanup, T_REG_EMPTY, 0644);
 	close(fd);
 
-	ret = link(T_REG, T_LINK_REG);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Hard link %s -> %s failed",
-			 T_REG, T_LINK_REG);
+	ret = SAFE_LINK(cleanup, T_REG, T_LINK_REG);
 
 	ret = symlink(T_REG, T_SYMLINK_REG);
 	if (ret == -1)
