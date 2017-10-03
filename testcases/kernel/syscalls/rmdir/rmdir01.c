@@ -63,6 +63,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -103,10 +104,7 @@ int main(int ac, char **av)
 		/* Initialize the test directory name */
 
 		/* create a directory */
-		if (mkdir(tstdir, PERMS) == -1) {
-			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
-				 tstdir, PERMS);
-		}
+		SAFE_MKDIR(cleanup, tstdir, PERMS);
 		/* call rmdir using TEST macro */
 
 		TEST(rmdir(tstdir));

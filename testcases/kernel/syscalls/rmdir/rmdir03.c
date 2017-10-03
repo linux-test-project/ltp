@@ -132,10 +132,7 @@ int main(int ac, char **av)
 				 "tmp directory %s found!", tstdir1);
 		}
 		/* create a directory */
-		if (mkdir(tstdir1, PERMS) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "Couldnot create directory %s", tstdir1);
-		}
+		SAFE_MKDIR(cleanup, tstdir1, PERMS);
 		if (stat(tstdir1, &buf1) == -1) {
 			perror("stat");
 			tst_brkm(TBROK, cleanup, "failed to stat directory %s "
@@ -150,10 +147,7 @@ int main(int ac, char **av)
 
 		}
 		/* create a sub directory under tstdir1 */
-		if (mkdir(tstdir2, PERMS) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "Could not create directory %s", tstdir2);
-		}
+		SAFE_MKDIR(cleanup, tstdir2, PERMS);
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
@@ -172,15 +166,9 @@ int main(int ac, char **av)
 
 //test2:       $
 		/* create the a directory with 0700 permits */
-		if (mkdir(tstdir3, 0700) == -1) {
-			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
-				 tstdir3, PERMS);
-		}
+		SAFE_MKDIR(cleanup, tstdir3, 0700);
 		/* create the a directory with 0700 permits */
-		if (mkdir(tstdir4, 0777) == -1) {
-			tst_brkm(TBROK, cleanup, "mkdir(%s, %#o) Failed",
-				 tstdir4, PERMS);
-		}
+		SAFE_MKDIR(cleanup, tstdir4, 0777);
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");

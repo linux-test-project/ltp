@@ -72,6 +72,7 @@
 #include <errno.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -207,9 +208,7 @@ void setup(void)
 	f_oldino = buf1.st_ino;
 
 	/* create "old" directory */
-	if (mkdir(fdir, 00770) == -1) {
-		tst_brkm(TBROK, cleanup, "Could not create directory %s", fdir);
-	}
+	SAFE_MKDIR(cleanup, fdir, 00770);
 
 	if (stat(fdir, &buf1) == -1) {
 		tst_brkm(TBROK, cleanup, "failed to stat directory %s"

@@ -228,9 +228,7 @@ void setup(void)
 	 * specified mode permissions, with uid/gid set to that of guest
 	 * user and the test process.
 	 */
-	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	}
+	SAFE_MKDIR(cleanup, DIR_TEMP, MODE_RWX);
 	if (chown(DIR_TEMP, user1_uid, group2_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", DIR_TEMP);
 	}

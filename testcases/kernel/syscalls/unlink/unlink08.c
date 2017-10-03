@@ -117,6 +117,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup(void);
 void cleanup(void);
@@ -278,11 +279,7 @@ int unwrite_dir_setup(int flag)
 	int fd;
 
 	if (!flag) {		/* initial setup */
-		if (mkdir("unwrite_dir", 0777) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "mkdir(unwrite_dir, 0777) failed, errno:%d %s",
-				 errno, strerror(errno));
-		}
+		SAFE_MKDIR(cleanup, "unwrite_dir", 0777);
 
 		if ((fd = creat("unwrite_dir/file", 0777)) == -1) {
 			tst_brkm(TBROK, cleanup,
@@ -327,11 +324,7 @@ int unsearch_dir_setup(int flag)
 	int fd;
 
 	if (!flag) {		/* initial setup */
-		if (mkdir("unsearch_dir", 0777) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "mkdir(unsearch_dir, 0777) failed, errno:%d %s",
-				 errno, strerror(errno));
-		}
+		SAFE_MKDIR(cleanup, "unsearch_dir", 0777);
 
 		if ((fd = creat("unsearch_dir/file", 0777)) == -1) {
 			tst_brkm(TBROK, cleanup,
@@ -373,11 +366,7 @@ int unsearch_dir_setup(int flag)
  ******************************************************************/
 int dir_setup(int flag)
 {
-	if (mkdir("regdir", 0777) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "mkdir(unwrite_dir, 0777) failed, errno:%d %s",
-			 errno, strerror(errno));
-	}
+	SAFE_MKDIR(cleanup, "regdir", 0777);
 	return 0;
 }
 

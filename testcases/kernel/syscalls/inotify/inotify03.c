@@ -183,10 +183,7 @@ static void setup(void)
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
-	if (mkdir(mntpoint, DIR_MODE) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "mkdir(%s, %#o) failed",
-			 mntpoint, DIR_MODE);
-	}
+	SAFE_MKDIR(cleanup, mntpoint, DIR_MODE);
 
 	/* Call mount(2) */
 	tst_resm(TINFO, "mount %s to %s fs_type=%s", device, mntpoint, fs_type);

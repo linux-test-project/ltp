@@ -188,9 +188,7 @@ void setup(void)
 	 * mode permissions and change the gid of test directory to that of
 	 * guest user.
 	 */
-	if (mkdir(TESTDIR, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", TESTDIR);
-	}
+	SAFE_MKDIR(cleanup, TESTDIR, MODE_RWX);
 
 	if (setgroups(1, &nobody_u->pw_gid) == -1)
 		tst_brkm(TBROK, cleanup,

@@ -279,9 +279,7 @@ int setup1(void)
 	int fd;			/* file handle for testfile */
 
 	/* Creat a test directory */
-	if (mkdir(DIR_TEMP, MODE_RWX) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", DIR_TEMP);
-	}
+	SAFE_MKDIR(cleanup, DIR_TEMP, MODE_RWX);
 
 	/* Creat a test file under above test directory */
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1) {

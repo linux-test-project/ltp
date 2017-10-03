@@ -229,8 +229,7 @@ static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 	int fd;
 
 	/* create a test directory */
-	if (mkdir(DIR_TEMP, MODE_RWX) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mkdir failed");
+	SAFE_MKDIR(cleanup, DIR_TEMP, MODE_RWX);
 
 	/* create a file under test directory */
 	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1)

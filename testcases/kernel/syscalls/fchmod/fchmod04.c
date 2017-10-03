@@ -170,9 +170,7 @@ void setup(void)
 	 * Create a test directory under temporary directory with specified
 	 * mode permissios and open it for reading/writing.
 	 */
-	if (mkdir(TESTDIR, DIR_MODE) < 0) {
-		tst_brkm(TBROK, cleanup, "mkdir(2) of %s failed", TESTDIR);
-	}
+	SAFE_MKDIR(cleanup, TESTDIR, DIR_MODE);
 	if ((fd = open(TESTDIR, O_RDONLY)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_RDONLY) failed, errno=%d : %s",

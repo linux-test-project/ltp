@@ -118,6 +118,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -149,11 +150,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		if (mkdir(fname, 0777) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "mkdir(%s) Failure. errno=%d : %s", fname,
-				 errno, strerror(errno));
-		}
+		SAFE_MKDIR(cleanup, fname, 0777);
 		/*
 		 * Call rmdir(2)
 		 */

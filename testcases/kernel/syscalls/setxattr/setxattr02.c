@@ -58,6 +58,7 @@
 # include <sys/xattr.h>
 #endif
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "setxattr02";
 
@@ -203,9 +204,7 @@ static void setup(void)
 			 FILENAME);
 	close(fd);
 
-	if (mkdir(DIRNAME, 0644) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create test dir(%s) failed",
-			 DIRNAME);
+	SAFE_MKDIR(cleanup, DIRNAME, 0644);
 
 	if (symlink(FILENAME, SYMLINK) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create symlink(%s->%s)"
