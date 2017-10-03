@@ -295,9 +295,8 @@ void setup1(void)
 	struct timeval timeout;
 	int n;
 
-	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "socket setup failed");
+	s = SAFE_SOCKET(cleanup, tdat[testno].domain, tdat[testno].type,
+			tdat[testno].proto);
 	if (tdat[testno].type == SOCK_STREAM) {
 		if (tdat[testno].domain == PF_INET) {
 			SAFE_CONNECT(cleanup, s, (struct sockaddr *)&sin1,

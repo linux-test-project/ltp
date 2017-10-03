@@ -52,6 +52,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "bind01";
 int testno;
@@ -174,10 +175,8 @@ void cleanup(void)
 
 void setup0(void)
 {
-	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
-	if (s < 0)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "socket() failed for bind test %d", testno);
+	s = SAFE_SOCKET(cleanup, tdat[testno].domain, tdat[testno].type,
+		        tdat[testno].proto);
 }
 
 void cleanup0(void)
