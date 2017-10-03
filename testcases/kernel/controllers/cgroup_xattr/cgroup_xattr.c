@@ -237,10 +237,7 @@ static void cleanup(void)
 	for (i = 0; i < cgrp_opt_num; ++i) {
 		if (cgrp_opt[i].subdir) {
 			SAFE_CHDIR(NULL, cgrp_opt[i].dir);
-			if (rmdir(subdir_name) == -1) {
-				tst_brkm(TBROK | TERRNO, NULL,
-					"Can't remove dir");
-			}
+			SAFE_RMDIR(NULL, subdir_name);
 			SAFE_CHDIR(NULL, "..");
 		}
 		if (cgrp_opt[i].mounted) {

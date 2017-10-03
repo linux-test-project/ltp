@@ -52,6 +52,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "creat08";
 int TST_TOTAL = 1;
@@ -441,9 +442,7 @@ static void cleanup(void)
 	if (unlink(nosetgid_A) == -1) {
 		tst_resm(TBROK, "unlink %s failed", nosetgid_A);
 	}
-	if (rmdir(DIR_A) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "rmdir %s failed", DIR_A);
-	}
+	SAFE_RMDIR(NULL, DIR_A);
 	if (unlink(setgid_B) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed", setgid_B);
 	}
@@ -454,9 +453,7 @@ static void cleanup(void)
 	if (unlink(nosetgid_B) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed", nosetgid_B);
 	}
-	if (rmdir(DIR_B) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "rmdir %s failed", DIR_B);
-	}
+	SAFE_RMDIR(NULL, DIR_B);
 
 	tst_rmdir();
 }

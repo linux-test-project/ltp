@@ -169,10 +169,7 @@ int main(int ac, char **av)
 		}
 
 		/* remove the new directory */
-		if (rmdir(mdir) == -1) {
-			tst_brkm(TBROK, cleanup, "Couldn't remove directory %s",
-				 mdir);
-		}
+		SAFE_RMDIR(cleanup, mdir);
 	}
 
 	cleanup();

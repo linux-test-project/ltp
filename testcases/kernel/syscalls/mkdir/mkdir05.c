@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <pwd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -102,9 +103,7 @@ int main(int ac, char **av)
 		tst_resm(TPASS, "mkdir() functionality is correct");
 
 		/* clean up things in case we are looping */
-		if (rmdir(tstdir1) == -1) {
-			tst_brkm(TBROK, cleanup, "could not remove directory");
-		}
+		SAFE_RMDIR(cleanup, tstdir1);
 
 	}
 

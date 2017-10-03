@@ -179,10 +179,7 @@ static void test_enoent(void)
 	SAFE_MKDIR(cleanup, TEST_DIR, DIR_MODE);
 
 	fd = SAFE_OPEN(cleanup, TEST_DIR, O_DIRECTORY);
-	if (rmdir(TEST_DIR) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "rmdir(%s) failed", TEST_DIR);
-	}
+	SAFE_RMDIR(cleanup, TEST_DIR);
 
 	if (longsyscall)
 		getdents64(fd, &dir64, sizeof(dir64));

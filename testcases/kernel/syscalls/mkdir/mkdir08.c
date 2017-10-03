@@ -117,6 +117,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -159,11 +160,7 @@ int main(int ac, char **av)
 		} else {
 			tst_resm(TPASS, "mkdir(%s) returned %ld", fname,
 				 TEST_RETURN);
-			if (rmdir(fname) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "rmdir(%s) Failed, errno=%d : %s",
-					 fname, errno, strerror(errno));
-			}
+			SAFE_RMDIR(cleanup, fname);
 		}
 
 	}
