@@ -77,6 +77,7 @@ char *TCID = "ioperm02";
 #include <sys/io.h>
 #include <pwd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define NUM_BYTES 3
 #define TURN_ON 1
@@ -179,9 +180,7 @@ int setup1(void)
 void cleanup1(void)
 {
 	/* reset user as root */
-	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, NULL, "Failed to set uid as root");
-	}
+	SAFE_SETEUID(NULL, 0);
 }
 
 /* setup() - performs all ONE TIME setup for this test */
@@ -237,6 +236,7 @@ void cleanup(void)
 #else /* __i386__ */
 
 #include "test.h"
+#include "safe_macros.h"
 
 int TST_TOTAL = 0;
 

@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 #include <pwd.h>
 
 char *TCID = "chroot01";
@@ -98,8 +99,7 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "getpwnam(\"nobody\") failed");
 
-	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "seteuid to nobody failed");
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -108,8 +108,7 @@ void setup(void)
 
 void cleanup(void)
 {
-	if (seteuid(0) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "setuid(0) failed");
+	SAFE_SETEUID(NULL, 0);
 
 	tst_rmdir();
 }

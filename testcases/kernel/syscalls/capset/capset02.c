@@ -81,6 +81,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "lapi/syscalls.h"
 
 /**************************************************************************/
@@ -251,9 +252,7 @@ void test_setup(int i, char *argv0)
 			if (ltpuser == NULL)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "getpwnam failed");
-			if (seteuid(ltpuser->pw_uid) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "seteuid failed");
+			SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 		}
 		break;

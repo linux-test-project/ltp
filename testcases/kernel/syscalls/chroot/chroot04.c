@@ -48,6 +48,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include "test.h"
+#include "safe_macros.h"
 #include <pwd.h>
 
 char *TCID = "chroot04";
@@ -114,9 +115,7 @@ void setup(void)
 	}
 
 	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, cleanup, "seteuid to nobody failed");
-	}
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 }
 

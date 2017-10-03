@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "readlink04";
 int TST_TOTAL = 1;
@@ -150,14 +151,12 @@ static void setup(void)
 	if ((pwent = getpwnam("nobody")) == NULL)
 		tst_brkm(TBROK, cleanup, "getpwname() failed for nobody");
 
-	if (seteuid(pwent->pw_uid) == -1)
-		tst_brkm(TBROK, cleanup, "seteuid() failed for nobody");
+	SAFE_SETEUID(cleanup, pwent->pw_uid);
 }
 
 static void cleanup(void)
 {
-	if (seteuid(0) == -1)
-		tst_brkm(TBROK, NULL, "failed to set process id to root");
+	SAFE_SETEUID(NULL, 0);
 
 	tst_rmdir();
 }

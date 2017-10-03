@@ -171,9 +171,7 @@ void setup(void)
 	if (ltpuser == NULL)
 		tst_brkm(TBROK | TERRNO, NULL, "getpwnam(\"nobody\") failed");
 	SAFE_SETEGID(NULL, ltpuser->pw_gid);
-	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "seteuid(%d) failed",
-			 ltpuser->pw_uid);
+	SAFE_SETEUID(NULL, ltpuser->pw_uid);
 
 	/* Create a test file under temporary directory */
 	if ((fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE)) == -1)
@@ -181,8 +179,7 @@ void setup(void)
 			 "open(%s, O_RDWR|O_CREAT, %o) failed", TESTFILE,
 			 FILE_MODE);
 
-	if (seteuid(0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "seteuid(0) failed");
+	SAFE_SETEUID(cleanup, 0);
 
 	if (fchown(fd, -1, 0) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
@@ -190,8 +187,7 @@ void setup(void)
 	if (fchmod(fd, NEW_PERMS) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "fchmod failed");
 
-	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "seteuid to nobody failed");
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 	SAFE_CLOSE(cleanup, fd);
 }

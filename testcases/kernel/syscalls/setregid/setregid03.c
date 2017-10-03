@@ -30,6 +30,7 @@
 #include <sys/wait.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 TCID_DEFINE(setregid03);
@@ -104,8 +105,7 @@ int main(int ac, char **av)
 		if (SETREGID(NULL, sys.gr_gid, bin.gr_gid) == -1)
 			tst_brkm(TBROK, NULL, "Initial setregid failed");
 
-		if (seteuid(nobody.pw_uid) == -1)
-			tst_brkm(TBROK, NULL, "Initial seteuid failed");
+		SAFE_SETEUID(NULL, nobody.pw_uid);
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, NULL, "fork failed");

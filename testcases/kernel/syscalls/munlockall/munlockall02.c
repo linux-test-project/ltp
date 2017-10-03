@@ -70,6 +70,7 @@
 #include <pwd.h>
 #include <sys/mman.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -126,10 +127,7 @@ void setup(void)
 		tst_brkm(TBROK, NULL, "\"nobody\"user not present");
 	}
 
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, NULL, "seteuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-	}
+	SAFE_SETEUID(NULL, ltpuser->pw_uid);
 
 	TEST_PAUSE;
 }

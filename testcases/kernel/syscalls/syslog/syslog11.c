@@ -71,6 +71,7 @@
 #include <linux/unistd.h>
 #include <sys/syscall.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define UNEXP_RET_VAL	-1
 
@@ -176,10 +177,7 @@ int setup1(void)
 void cleanup1(void)
 {
 	/* Change effective user id to root */
-	if (seteuid(0) == -1) {
-		tst_brkm(TBROK, NULL, "seteuid failed to set the effective"
-			 " uid to root");
-	}
+	SAFE_SETEUID(NULL, 0);
 }
 
 /*

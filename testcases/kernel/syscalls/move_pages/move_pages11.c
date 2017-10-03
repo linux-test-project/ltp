@@ -59,6 +59,7 @@
 #include <errno.h>
 #include <pwd.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "move_pages_support.h"
 
 #define TEST_PAGES 2
@@ -210,10 +211,7 @@ void setup(void)
 		tst_brkm(TBROK, NULL, "'nobody' user not present");
 	}
 
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK, NULL, "setting uid to %d failed",
-			 ltpuser->pw_uid);
-	}
+	SAFE_SETEUID(NULL, ltpuser->pw_uid);
 
 	/* Pause if that option was specified
 	 * TEST_PAUSE contains the code to fork the test with the -c option.

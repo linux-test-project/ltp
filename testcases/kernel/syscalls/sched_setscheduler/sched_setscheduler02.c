@@ -88,9 +88,7 @@ int main(int ac, char **av)
 		if (pid == 0) {	/* child */
 			param.sched_priority = 1;
 
-			if (seteuid(nobody_uid) == -1) {
-				tst_brkm(TBROK, cleanup, "seteuid() failed");
-			}
+			SAFE_SETEUID(cleanup, nobody_uid);
 
 			TEST(sched_setscheduler(pid, SCHED_FIFO, &param));
 
@@ -116,9 +114,7 @@ int main(int ac, char **av)
 			}
 		}
 
-		if (seteuid(0) == -1) {
-			tst_brkm(TBROK, cleanup, "seteuid(0) failed");
-		}
+		SAFE_SETEUID(cleanup, 0);
 	}
 	cleanup();
 	tst_exit();

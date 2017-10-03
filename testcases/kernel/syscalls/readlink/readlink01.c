@@ -72,6 +72,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TESTFILE	"testfile"
 #define SYMFILE		"slink_file"
@@ -158,9 +159,7 @@ void setup(void)
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
 		tst_brkm(TBROK, cleanup, "getpwname(nobody_uid) failed ");
 	}
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "seteuid to nobody failed");
-	}
+	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 

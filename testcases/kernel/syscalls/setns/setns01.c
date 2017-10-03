@@ -141,8 +141,7 @@ static void setup3(struct testcase_t *t, int i)
 
 static void setup4(struct testcase_t *t, int i)
 {
-	if (seteuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "seteuid failed");
+	SAFE_SETEUID(NULL, ltpuser->pw_uid);
 
 	t->fd = ns_fds[i];
 	t->ns_type = ns_types[i];
@@ -150,8 +149,7 @@ static void setup4(struct testcase_t *t, int i)
 
 static void cleanup4(struct testcase_t *t)
 {
-	if (seteuid(0) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "seteuid restore failed");
+	SAFE_SETEUID(NULL, 0);
 }
 
 static void test_setns(struct testcase_t *t)

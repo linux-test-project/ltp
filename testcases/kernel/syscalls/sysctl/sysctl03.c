@@ -61,6 +61,7 @@
  *	Test must be run as root.
  */
 #include "test.h"
+#include "safe_macros.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -146,10 +147,7 @@ int main(int ac, char **av)
 		}
 
 		/* set process ID to "ltpuser1" */
-		if (seteuid(ltpuser->pw_uid) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "seteuid() failed, errno %d", errno);
-		}
+		SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 		if ((pid = FORK_OR_VFORK()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() failed");
@@ -182,9 +180,7 @@ int main(int ac, char **av)
 		}
 
 		/* set process ID back to root */
-		if (seteuid(0) == -1) {
-			tst_brkm(TBROK, cleanup, "seteuid() failed");
-		}
+		SAFE_SETEUID(cleanup, 0);
 	}
 	cleanup();
 	tst_exit();
