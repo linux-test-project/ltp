@@ -226,8 +226,7 @@ static void cleanup(void)
 
 	int i;
 	for (i = 0; i < odir_num; ++i) {
-		if (closedir(odir[i]) == -1)
-			tst_brkm(TBROK, NULL, "Failed to close dir\n");
+		SAFE_CLOSEDIR(NULL, odir[i]);
 	}
 
 	char *cwd = tst_get_tmpdir();
