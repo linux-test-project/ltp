@@ -76,15 +76,13 @@ void *thread_fn_01(void *arg)
 
 	for (i = 0; i < writes_num; ++i) {
 		lck.l_type = F_WRLCK;
-		if (fcntl(fd, F_OFD_SETLKW, &lck) == -1)
-			tst_brk(TBROK | TERRNO, "fcntl() failed");
+		SAFE_FCNTL(fd, F_OFD_SETLKW, &lck);
 
 		SAFE_LSEEK(fd, 0, SEEK_END);
 		SAFE_WRITE(1, fd, buf, write_size);
 
 		lck.l_type = F_UNLCK;
-		if (fcntl(fd, F_OFD_SETLKW, &lck) == -1)
-			tst_brk(TBROK | TERRNO, "fcntl() failed");
+		SAFE_FCNTL(fd, F_OFD_SETLKW, &lck);
 
 		sched_yield();
 	}
