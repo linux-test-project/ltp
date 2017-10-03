@@ -81,6 +81,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define LTPUSER		"nobody"
 #define LTPGRP		"users"
@@ -182,8 +183,7 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
 			 TESTFILE, FILE_MODE);
-	if (close(fd) == -1)
-		tst_brkm(TBROK, cleanup, "close(%s) failed", TESTFILE);
+	SAFE_CLOSE(cleanup, fd);
 	if (chown(TESTFILE, user1_uid, group1_gid) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "chown(%s) failed", TESTFILE);
 

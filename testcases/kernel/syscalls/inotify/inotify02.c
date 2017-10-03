@@ -40,6 +40,7 @@
 #include <sys/syscall.h>
 #include <limits.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "lapi/syscalls.h"
 #include "inotify.h"
 
@@ -114,10 +115,7 @@ int main(int ac, char **av)
 		strcpy(event_set[tst_count].name, FILE_NAME1);
 		tst_count++;
 
-		if (close(fd) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "close(%s) failed", FILE_NAME1);
-		}
+		SAFE_CLOSE(cleanup, fd);
 		event_set[tst_count].mask = IN_CLOSE_WRITE;
 		strcpy(event_set[tst_count].name, FILE_NAME1);
 		tst_count++;

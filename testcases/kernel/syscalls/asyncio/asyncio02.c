@@ -97,6 +97,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define FLAG O_RDWR | O_CREAT | O_TRUNC	/* Flags used when opening temp tile */
 #define MODE  0777		/* Mode to open file with */
@@ -238,9 +239,7 @@ int testrun(int flag, int bytes, int ti)
 	 *      Attempt to close the file which also flushes the buffers.
 	 */
 
-	if (close(fildes) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "close() failed");
-	}
+	SAFE_CLOSE(cleanup, fildes);
 
 	ret = OK;
 

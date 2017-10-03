@@ -87,6 +87,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define MODE_RWX	(S_IRWXU | S_IRWXG | S_IRWXO)
 #define PERMS		043777
@@ -226,11 +227,7 @@ void cleanup(void)
 {
 
 	/* Close the test directory opened in the setup() */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, NULL,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTDIR, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fd);
 
 	setegid(0);
 	seteuid(0);

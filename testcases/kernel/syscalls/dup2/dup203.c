@@ -49,6 +49,7 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup(void);
 void cleanup(void);
@@ -90,13 +91,11 @@ int main(int ac, char **av)
 		if (write(fd1, filename1, strlen(filename1)) == -1)
 			tst_brkm(TBROK, cleanup, "filename1: write(2) failed");
 
-		if (close(fd0) == -1)
-			tst_brkm(TBROK, cleanup, "close(2) fd0 failed");
+		SAFE_CLOSE(cleanup, fd0);
 		if ((fd0 = open(filename0, O_RDONLY)) == -1)
 			tst_brkm(TBROK, cleanup, "open(2) on filename0 failed");
 
-		if (close(fd1) == -1)
-			tst_brkm(TBROK, cleanup, "close(2) fd1 failed");
+		SAFE_CLOSE(cleanup, fd1);
 		if ((fd1 = open(filename1, O_RDONLY)) == -1)
 			tst_brkm(TBROK, cleanup, "open(2) on filename1 failed");
 
@@ -145,9 +144,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Cannot create second file");
 		}
 
-		if (close(fd2) == -1) {
-			tst_brkm(TBROK, cleanup, "close(2) fd_closed failed");
-		}
+		SAFE_CLOSE(cleanup, fd2);
 
 		TEST(dup2(fd0, fd2));
 

@@ -81,6 +81,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
@@ -194,9 +195,7 @@ void setup(void)
 	if (seteuid(ltpuser->pw_uid) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "seteuid to nobody failed");
 
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "closing %s failed",
-			 TESTFILE);
+	SAFE_CLOSE(cleanup, fd);
 }
 
 void cleanup(void)

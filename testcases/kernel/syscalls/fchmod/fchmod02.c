@@ -81,6 +81,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define LTPUSER		"nobody"
 #define LTPGRP		"users"
@@ -213,10 +214,7 @@ void cleanup(void)
 {
 
 	/* Close the testfile created in the setup() */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, NULL, "close(%s) Failed, errno=%d : %s",
-			 TESTFILE, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fd);
 
 	tst_rmdir();
 

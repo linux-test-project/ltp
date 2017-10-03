@@ -76,6 +76,7 @@
 #include <sys/mman.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEMPFILE	"mmapfile"
 
@@ -269,10 +270,7 @@ void cleanup(void)
 	}
 
 	/* Close the temporary file */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, NULL, "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fildes);
 
 	tst_rmdir();
 }

@@ -82,6 +82,7 @@
 #include <signal.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEMP_FILE1	"tmp_file1"
 #define TEMP_FILE2	"tmp_file2"
@@ -249,10 +250,7 @@ int setup2(void)
 	}
 
 	/* Close the temporary file created above */
-	if (close(fd2) < 0) {
-		tst_brkm(TBROK, cleanup, "close(%s) Failed, errno=%d : %s:",
-			 TEMP_FILE2, errno, strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fd2);
 
 	return 0;
 }

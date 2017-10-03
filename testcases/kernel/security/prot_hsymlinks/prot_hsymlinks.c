@@ -554,8 +554,7 @@ static int try_open(const char *name, int mode)
 	if (fd == -1)
 		return fd;
 
-	if (close(fd) == -1)
-		tst_brkm(TBROK, cleanup, "Can't close file: %s", name);
+	SAFE_CLOSE(cleanup, fd);
 
 	return 0;
 }

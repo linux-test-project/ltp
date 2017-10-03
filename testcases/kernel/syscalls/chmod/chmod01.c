@@ -76,6 +76,7 @@
 #include <signal.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"
@@ -152,8 +153,7 @@ void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) failed",
 			 TESTFILE, FILE_MODE);
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", TESTFILE);
+	SAFE_CLOSE(cleanup, fd);
 
 }
 

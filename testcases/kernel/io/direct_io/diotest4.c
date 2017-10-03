@@ -70,6 +70,7 @@
 #include "diotest_routines.h"
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "diotest4";	/* Test program identifier.    */
 int TST_TOTAL = 17;		/* Total number of test conditions */
@@ -329,10 +330,7 @@ int main(int argc, char *argv[])
 	/* Test-7: Closed file descriptor */
 	offset = 4096;
 	count = bufsize;
-	if (close(fd) < 0) {
-		tst_brkm(TBROK, cleanup, "can't close fd %d: %s", fd,
-			 strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fd);
 	ret = runtest_f(fd, buf2, offset, count, EBADF, 7, "closed fd");
 	testcheck_end(ret, &failed, &fail_count, "Closed file descriptor");
 	total++;

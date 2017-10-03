@@ -93,6 +93,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEST_FILE       "testfile"
 
@@ -232,9 +233,7 @@ void setup(void)
 void cleanup(void)
 {
 
-	if (close(fildes) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
-			 TEST_FILE);
+	SAFE_CLOSE(cleanup, fildes);
 
 	tst_rmdir();
 

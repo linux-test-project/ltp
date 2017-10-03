@@ -87,6 +87,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define MODE_RWX        S_IRWXU | S_IRWXG | S_IRWXO
 #define FILE_MODE       S_IRUSR | S_IRGRP | S_IROTH
@@ -290,11 +291,7 @@ int setup1(void)
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE1, errno, strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fd);
 
 	/* Modify mode permissions on test directory */
 	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
@@ -316,11 +313,7 @@ int setup2(void)
 			 "open(%s, O_RDWR|O_CREAT, 0666) failed, errno=%d : %s",
 			 TEST_FILE1, errno, strerror(errno));
 	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "close(%s) Failed, errno=%d : %s",
-			 TEST_FILE2, errno, strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fd);
 
 	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
 		tst_brkm(TBROK, cleanup,
@@ -365,10 +358,7 @@ int setup3(void)
 			 "open(2) on t_file failed, errno=%d : %s",
 			 errno, strerror(errno));
 	}
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, cleanup, "close(t_file) Failed, errno=%d : %s",
-			 errno, strerror(errno));
-	}
+	SAFE_CLOSE(cleanup, fd);
 	return 0;
 }
 

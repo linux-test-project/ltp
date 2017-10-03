@@ -67,6 +67,7 @@
 #include <sys/ioctl.h>
 #include <sys/termios.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define	CNUL	0
 
@@ -183,8 +184,7 @@ int main(int ac, char **av)
 		 */
 		if (ioctl(parentfd, TCSETA, &save_io) == -1)
 			tst_resm(TINFO, "ioctl restore failed in main");
-		if (close(parentfd) == -1)
-			tst_brkm(TBROK, cleanup, "close() failed in main");
+		SAFE_CLOSE(cleanup, parentfd);
 
 		closed = 1;
 	}
@@ -443,8 +443,7 @@ static void setup(void)
 			 "do_parent_setup");
 
 	/* Close the device */
-	if (close(fd) == -1)
-		tst_brkm(TBROK, cleanup, "close failed in setup");
+	SAFE_CLOSE(cleanup, fd);
 
 	/* Set up the signal handlers */
 	act.sa_handler = (void *)sigterm_handler;

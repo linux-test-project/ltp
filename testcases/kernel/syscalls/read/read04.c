@@ -51,6 +51,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void cleanup(void);
 void setup(void);
@@ -103,9 +104,7 @@ int main(int ac, char **av)
 		}
 		tst_resm(TPASS, "functionality of read() is correct");
 
-		if (close(rfild) == -1) {
-			tst_brkm(TBROK, cleanup, "close() failed");
-		}
+		SAFE_CLOSE(cleanup, rfild);
 	}
 
 	cleanup();

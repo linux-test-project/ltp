@@ -154,8 +154,7 @@ int main(int ac, char **av)
 
 		} while (rval > 0);
 
-		if (close(fd) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "Directory close failed");
+		SAFE_CLOSE(cleanup, fd);
 	
 		check_flags();
 	}

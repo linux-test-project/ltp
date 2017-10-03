@@ -57,6 +57,7 @@
 #include <sys/mman.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 #define TEST_USER       "nobody"
@@ -199,8 +200,7 @@ static void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
 	if ((fd = open(TEST_FILE1, O_RDWR | O_CREAT, 0666)) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
+	SAFE_CLOSE(cleanup, fd);
 
 	/* become root once more */
 	if (seteuid(0) == -1)
@@ -236,8 +236,7 @@ static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 	if ((fd = open(TEST_FILE2, O_RDWR | O_CREAT, 0666)) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "open failed");
 
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
+	SAFE_CLOSE(cleanup, fd);
 
 	/* create a symlink of testfile */
 	if (symlink(TEST_FILE2, SFILE2) < 0) {
@@ -298,9 +297,7 @@ static void setup_enotdir(int pos LTP_ATTRIBUTE_UNUSED)
 		tst_brkm(TBROK | TERRNO, cleanup, "open(2) %s failed", TFILE3);
 	}
 
-	if (close(fd) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "close(2) %s failed", TFILE3);
-	}
+	SAFE_CLOSE(cleanup, fd);
 }
 
 /*

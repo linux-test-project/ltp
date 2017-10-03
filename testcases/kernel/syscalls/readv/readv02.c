@@ -47,6 +47,7 @@
 #include <errno.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define	K_1	1024
 #define	M_1	K_1 * K_1
@@ -212,9 +213,7 @@ void setup(void)
 		}
 	}
 
-	if (close(fd[0]) < 0) {
-		tst_brkm(TBROK, cleanup, "close failed: errno = %d", errno);
-	}
+	SAFE_CLOSE(cleanup, fd[0]);
 
 	if ((fd[0] = open(f_name, O_RDONLY, 0666)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: fname = %s, "

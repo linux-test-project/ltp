@@ -80,6 +80,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define DIR_MODE 	S_IRWXU | S_IRWXG | S_IRWXO
 #define PERMS		01777	/*
@@ -190,11 +191,7 @@ void cleanup(void)
 {
 
 	/* Close the test directory opened during setup() */
-	if (close(fd) == -1) {
-		tst_brkm(TBROK, NULL,
-			 "close(%s) Failed, errno=%d : %s",
-			 TESTDIR, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fd);
 
 	tst_rmdir();
 

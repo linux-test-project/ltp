@@ -72,6 +72,7 @@
 #include <fcntl.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEMPFILE	"pread_file"
 #define K1              1024
@@ -290,10 +291,7 @@ void cleanup(void)
 	}
 
 	/* Close the temporary file created in setup2 */
-	if (close(fd1) < 0) {
-		tst_brkm(TBROK, NULL, "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fd1);
 
 	tst_rmdir();
 

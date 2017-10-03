@@ -282,8 +282,7 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 	time_end_usec = now.tv_sec * 1000000 + now.tv_usec;
 	*usec = time_end_usec - time_start_usec;
 
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close failed");
+	SAFE_CLOSE(cleanup, fd);
 }
 
 static void test_readahead(void)

@@ -119,6 +119,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -150,8 +151,7 @@ int main(int ac, char **av)
 				 "dup(%d) read side of syspipe returned %ld",
 				 fd[0], TEST_RETURN);
 
-			if (close(TEST_RETURN) == -1)
-				tst_brkm(TBROK, cleanup, "close failed");
+			SAFE_CLOSE(cleanup, TEST_RETURN);
 		}
 
 		TEST(dup(fd[1]));
@@ -165,9 +165,7 @@ int main(int ac, char **av)
 				 fd[1], TEST_RETURN);
 
 
-			if (close(TEST_RETURN) == -1)
-				tst_brkm(TBROK | TTERRNO, cleanup,
-					 "close failed");
+			SAFE_CLOSE(cleanup, TEST_RETURN);
 		}
 
 	}

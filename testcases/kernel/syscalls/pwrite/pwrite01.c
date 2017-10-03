@@ -78,6 +78,7 @@
 #include <inttypes.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define _XOPEN_SOURCE 500
 #define TEMPFILE	"pwrite_file"
@@ -328,10 +329,7 @@ void cleanup(void)
 	}
 
 	/* Close the temporary file */
-	if (close(fildes) < 0) {
-		tst_brkm(TBROK, NULL, "close() on %s Failed, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
+	SAFE_CLOSE(NULL, fildes);
 
 	tst_rmdir();
 

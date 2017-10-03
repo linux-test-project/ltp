@@ -78,6 +78,7 @@
 #include <signal.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
@@ -238,9 +239,7 @@ int setup1(void)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "open(%s, O_RDWR|O_CREAT, %o) failed",
 			 TESTFILE1, FILE_MODE);
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
-			 TESTFILE1);
+	SAFE_CLOSE(cleanup, fd);
 
 	/* Set setuid/setgid bits on the test file created */
 	if (chmod(TESTFILE1, NEW_PERMS1) == -1)
@@ -268,9 +267,7 @@ int setup2(void)
 	/* Set setgid bit on the test file created */
 	if (fchmod(fd, NEW_PERMS2) != 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "fchmod failed");
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed",
-			 TESTFILE2);
+	SAFE_CLOSE(cleanup, fd);
 	return 0;
 }
 

@@ -42,6 +42,7 @@
 #include <sys/syscall.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "lapi/syscalls.h"
 #include "inotify.h"
 
@@ -211,8 +212,7 @@ static void setup(void)
 	}
 
 	/* close the file we have open */
-	if (close(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "close(%s) failed", fname);
+	SAFE_CLOSE(cleanup, fd);
 
 	fd_notify = myinotify_init();
 
