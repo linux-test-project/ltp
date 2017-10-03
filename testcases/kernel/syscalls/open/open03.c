@@ -64,10 +64,8 @@ int main(int ac, char **av)
 				 "open(%s, O_RDWR|O_CREAT,0700) returned %ld",
 				 fname, TEST_RETURN);
 
-			if (close(fd) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "close(%s) failed", fname);
-			else SAFE_UNLINK(cleanup, fname);
+			SAFE_CLOSE(cleanup, fd);
+			SAFE_UNLINK(cleanup, fname);
 		}
 	}
 
