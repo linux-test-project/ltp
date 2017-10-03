@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include "test.h"
+#include "safe_macros.h"
 #include <time.h>
 
 #define BLOCKSIZE 8192
@@ -138,8 +139,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS, "fsync succeeded in an "
 				 "acceptable amount of time");
 
-		if (ftruncate(fd, 0) == -1)
-			tst_brkm(TBROK, cleanup, "ftruncate failed");
+		SAFE_FTRUNCATE(cleanup, fd, 0);
 	}
 
 	sync();

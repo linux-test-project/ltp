@@ -91,8 +91,7 @@ static void setup(void)
 	if (fd == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "open");
 
-	if (ftruncate(fd, file_len) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "ftruncate");
+	SAFE_FTRUNCATE(cleanup, fd, file_len);
 
 	TEST_PAUSE;
 }
