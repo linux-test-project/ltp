@@ -190,8 +190,7 @@ int create_server(void)
 			 strerror(errno));
 		return -1;
 	}
-	if (getsockname(sockfd, (struct sockaddr *)&sin1, &slen) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "getsockname failed");
+	SAFE_GETSOCKNAME(cleanup, sockfd, (struct sockaddr *)&sin1, &slen);
 
 	child_pid = FORK_OR_VFORK();
 	if (child_pid < 0) {
