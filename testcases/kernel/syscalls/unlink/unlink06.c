@@ -117,6 +117,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void create_file();
@@ -210,9 +211,5 @@ void cleanup(void)
  ******************************************************************/
 void create_file(void)
 {
-	if (mkfifo(Fname, 0777) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "mkfifo(%s, 0777) failed errno:%d %s\n", Fname,
-			 errno, strerror(errno));
-	}
+	SAFE_MKFIFO(cleanup, Fname, 0777);
 }

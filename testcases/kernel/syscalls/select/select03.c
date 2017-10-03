@@ -48,6 +48,7 @@
 #include <sys/stat.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define FILENAME	"select03"
 
@@ -113,10 +114,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	if (mkfifo(FILENAME, 0777) == -1) {
-		tst_brkm(TBROK, cleanup, "mkfifo(%s, 0777) failed, errno=%d",
-			 FILENAME, errno);
-	}
+	SAFE_MKFIFO(cleanup, FILENAME, 0777);
 
 	if ((Fd = open(FILENAME, O_RDWR)) == -1) {
 		tst_brkm(TBROK, cleanup, "open(%s, O_RDWR) failed, errno=%d",
