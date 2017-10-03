@@ -279,8 +279,6 @@ int fill_mem(char *c_ptr, int c1, int c2)
 
 long l_seek(int fdesc, long offset, int whence)
 {
-	if (lseek(fdesc, offset, whence) < 0) {
-		tst_brkm(TBROK, cleanup, "lseek Failed : errno = %d", errno);
-	}
+	SAFE_LSEEK(cleanup, fdesc, offset, whence);
 	return 0;
 }

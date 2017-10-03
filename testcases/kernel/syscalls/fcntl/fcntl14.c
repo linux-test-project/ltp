@@ -48,6 +48,7 @@
 #include <sys/wait.h>
 #include <inttypes.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define SKIP 0x0c00
 #if SKIP == F_RDLCK || SKIP== F_WRLCK
@@ -786,8 +787,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 			tst_brkm(TBROK, cleanup, "write() failed");
 
 		if (seek) {
-			if (lseek(fd, seek, 0) < 0)
-				tst_brkm(TBROK, cleanup, "lseek() failed");
+			SAFE_LSEEK(cleanup, fd, seek, 0);
 		}
 
 		thiscase = &testcases[test];

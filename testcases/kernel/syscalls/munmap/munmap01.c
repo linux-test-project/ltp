@@ -75,6 +75,7 @@
 #include <sys/mman.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEMPFILE	"mmapfile"
 
@@ -181,10 +182,7 @@ void setup(void)
 	 * move the file pointer to maplength position from the beginning
 	 * of the file.
 	 */
-	if (lseek(fildes, map_len, SEEK_SET) == -1) {
-		tst_brkm(TBROK, cleanup, "lseek() fails on %s, errno=%d : %s",
-			 TEMPFILE, errno, strerror(errno));
-	}
+	SAFE_LSEEK(cleanup, fildes, map_len, SEEK_SET);
 
 	/* Write one byte into temporary file */
 	if (write(fildes, "a", 1) != 1) {
