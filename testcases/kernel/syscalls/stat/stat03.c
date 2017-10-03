@@ -291,9 +291,7 @@ int setup1(void)
 	SAFE_CLOSE(cleanup, fd);
 
 	/* Modify mode permissions on test directory */
-	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	SAFE_CHMOD(cleanup, DIR_TEMP, FILE_MODE);
 	return 0;
 }
 

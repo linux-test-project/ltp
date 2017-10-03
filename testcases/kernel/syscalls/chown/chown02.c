@@ -242,9 +242,7 @@ int setup1(void)
 	SAFE_CLOSE(cleanup, fd);
 
 	/* Set setuid/setgid bits on the test file created */
-	if (chmod(TESTFILE1, NEW_PERMS1) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "chmod(%s, ..) failed",
-			 TESTFILE1);
+	SAFE_CHMOD(cleanup, TESTFILE1, NEW_PERMS1);
 	return 0;
 }
 

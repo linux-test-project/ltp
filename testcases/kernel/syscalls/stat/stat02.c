@@ -77,6 +77,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 #define TESTFILE	"testfile"
@@ -207,10 +208,7 @@ void setup(void)
 	}
 
 	/* Modify mode permissions on the testfile */
-	if (chmod(TESTFILE, NEW_MODE) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "chmodding %s failed",
-			 TESTFILE);
-	}
+	SAFE_CHMOD(cleanup, TESTFILE, NEW_MODE);
 
 	/* Get the uid/gid of the process */
 	user_id = getuid();

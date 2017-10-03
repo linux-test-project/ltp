@@ -71,6 +71,7 @@
 #include <fcntl.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "ltp_priv.h"
 #include "lapi/futex.h"
 
@@ -276,11 +277,7 @@ void tst_tmpdir(void)
 		return;
 	}
 
-	if (chmod(TESTDIR, DIR_MODE) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL,
-			 "chmod(%s, %#o) failed", TESTDIR, DIR_MODE);
-		return;
-	}
+	SAFE_CHMOD(NULL, TESTDIR, DIR_MODE);
 
 	if (getcwd(test_start_work_dir, sizeof(test_start_work_dir)) == NULL) {
 		tst_resm(TINFO, "Failed to record test working dir");

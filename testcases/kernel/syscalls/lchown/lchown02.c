@@ -240,10 +240,7 @@ static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 	SAFE_SYMLINK(cleanup, TEST_FILE2, SFILE2);
 
 	/* modify mode permissions on test directory */
-	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "chmod(2) %s failed",
-			 DIR_TEMP);
-	}
+	SAFE_CHMOD(cleanup, DIR_TEMP, FILE_MODE);
 }
 
 /*

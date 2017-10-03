@@ -232,9 +232,7 @@ void setup(void)
 	if (chown(DIR_TEMP, user1_uid, group2_gid) < 0) {
 		tst_brkm(TBROK, cleanup, "chown(2) of %s failed", DIR_TEMP);
 	}
-	if (chmod(DIR_TEMP, MODE_SGID) < 0) {
-		tst_brkm(TBROK, cleanup, "chmod(2) of %s failed", DIR_TEMP);
-	}
+	SAFE_CHMOD(cleanup, DIR_TEMP, MODE_SGID);
 
 	/*
 	 * Verify that test directory created with expected permission modes

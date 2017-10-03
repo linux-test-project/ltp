@@ -81,10 +81,7 @@ int main(int ac, char **av)
 		/*
 		 * generate sequence of events
 		 */
-		if (chmod(fname, 0755) < 0) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "chmod(%s, 0755) failed", fname);
-		}
+		SAFE_CHMOD(cleanup, fname, 0755);
 		event_set[tst_count] = IN_ATTRIB;
 		tst_count++;
 

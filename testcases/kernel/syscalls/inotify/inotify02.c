@@ -95,10 +95,7 @@ int main(int ac, char **av)
 		/*
 		 * generate sequence of events
 		 */
-		if (chmod(".", 0755) < 0) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "chmod(\".\", 0755) failed");
-		}
+		SAFE_CHMOD(cleanup, ".", 0755);
 		event_set[tst_count].mask = IN_ISDIR | IN_ATTRIB;
 		strcpy(event_set[tst_count].name, "");
 		tst_count++;
