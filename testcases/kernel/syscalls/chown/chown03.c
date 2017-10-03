@@ -184,8 +184,7 @@ void setup(void)
 	if (fchown(fd, -1, 0) < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "fchown failed");
 
-	if (fchmod(fd, NEW_PERMS) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "fchmod failed");
+	SAFE_FCHMOD(cleanup, fd, NEW_PERMS);
 
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
