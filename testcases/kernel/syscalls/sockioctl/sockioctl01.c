@@ -40,6 +40,7 @@
 #include <net/if.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "sockioctl01";
 int testno;
@@ -235,10 +236,7 @@ static void setup2(void)
 static void setup3(void)
 {
 	setup2();
-	if (ioctl(s, SIOCGIFCONF, &ifc) < 0) {
-		tst_brkm(TBROK, cleanup, "socket setup failed: %s",
-			 strerror(errno));
-	}
+	SAFE_IOCTL(cleanup, s, SIOCGIFCONF, &ifc);
 	ifr = *(struct ifreq *)ifc.ifc_buf;
 }
 

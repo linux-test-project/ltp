@@ -370,9 +370,7 @@ static int do_parent_setup(void)
 	closed = 0;
 
 	/* flush tty queues to remove old output */
-	if (ioctl(pfd, TCFLSH, 2) < 0)
-		tst_brkm(TBROK, cleanup, "ioctl TCFLSH failed : "
-			 "errno = %d", errno);
+	SAFE_IOCTL(cleanup, pfd, TCFLSH, 2);
 	return pfd;
 }
 
@@ -438,9 +436,7 @@ static void setup(void)
 			 "setup(), errno = %d", devname, errno);
 
 	/* Save the current device information - to be restored in cleanup() */
-	if (ioctl(fd, TCGETA, &save_io) < 0)
-		tst_brkm(TBROK, cleanup, "TCGETA ioctl failed in "
-			 "do_parent_setup");
+	SAFE_IOCTL(cleanup, fd, TCGETA, &save_io);
 
 	/* Close the device */
 	SAFE_CLOSE(cleanup, fd);
