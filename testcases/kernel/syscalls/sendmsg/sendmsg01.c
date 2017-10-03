@@ -48,6 +48,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "sendmsg01";
 int testno;
@@ -665,8 +666,7 @@ static void setup5(void)
 			 strerror(errno));
 	}
 
-	if (connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0)
-		tst_brkm(TBROK, cleanup, "connect failed: %s", strerror(errno));
+	SAFE_CONNECT(cleanup, s, (struct sockaddr *)&sin1, sizeof(sin1));
 
 	/* slight change destination (port) so connect() is to different
 	 * 5-tuple than already connected

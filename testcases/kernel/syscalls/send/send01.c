@@ -42,6 +42,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "send01";
 int testno;
@@ -328,8 +329,7 @@ static void setup1(void)
 	s = socket(tdat[testno].domain, tdat[testno].type, tdat[testno].proto);
 	if (s < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "socket setup failed");
-	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "connect failed");
+	SAFE_CONNECT(cleanup, s, (const struct sockaddr *)&sin1, sizeof(sin1));
 }
 
 static void cleanup1(void)

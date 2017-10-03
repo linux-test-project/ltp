@@ -256,10 +256,7 @@ int create_server(void)
 			 strerror(errno));
 		return -1;
 	}
-	if (connect(s, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
-		tst_brkm(TBROK, cleanup, "call to connect() failed: %s",
-			 strerror(errno));
-	}
+	SAFE_CONNECT(cleanup, s, (struct sockaddr *)&sin1, sizeof(sin1));
 	return s;
 
 }

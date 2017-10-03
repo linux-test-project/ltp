@@ -53,6 +53,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "connect01";
 int testno;
@@ -216,9 +217,7 @@ void cleanup1(void)
 void setup2(void)
 {
 	setup1();		/* get a socket in s */
-	if (connect(s, (const struct sockaddr *)&sin1, sizeof(sin1)) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "socket setup failed connect test %d", testno);
+	SAFE_CONNECT(cleanup, s, (const struct sockaddr *)&sin1, sizeof(sin1));
 }
 
 pid_t start_server(struct sockaddr_in *sin0)
