@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 #define INVAL_USER		 (USHRT_MAX-2)
@@ -84,9 +85,7 @@ static void setup(void)
 	if (ltpuser == NULL)
 		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
 
-	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	TEST_PAUSE;
 }

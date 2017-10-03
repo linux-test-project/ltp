@@ -66,8 +66,7 @@ static void verify_hugeshmat(void)
 
 	switch (pid = SAFE_FORK()) {
 	case 0:
-		if (setuid(ltp_uid) == -1)
-			tst_brk(TBROK | TERRNO, "setuid");
+		SAFE_SETUID(ltp_uid);
 
 		addr = shmat(shm_id_1, NULL, 0);
 		if (addr != (void *)-1) {

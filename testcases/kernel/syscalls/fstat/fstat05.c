@@ -206,9 +206,7 @@ void setup(void)
 		signal(siglist[i], &sighandler);
 
 	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "setuid(%d) failed",
-			 ltpuser->pw_uid);
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	tst_tmpdir();
 

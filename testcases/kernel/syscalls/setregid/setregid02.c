@@ -137,11 +137,7 @@ static void setup(void)
 		tst_brkm(TBROK, NULL, "getpwnam(\"nobody\") failed");
 
 	SAFE_SETGID(NULL, ltpuser->pw_gid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL,
-			 "setuid failed to to set the effective uid to %d",
-			 ltpuser->pw_uid);
-	}
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	root = get_group_by_name("root");
 	ltpgroup = get_group_by_gid(ltpuser->pw_gid);

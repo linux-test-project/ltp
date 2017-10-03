@@ -28,6 +28,7 @@
 #include <stdlib.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 #define FAILED  1
@@ -169,8 +170,7 @@ static void setup(void)
 	bin = *(getpwnam("bin"));
 	UID16_CHECK(bin.pw_uid, setreuid, cleanup);
 
-	if (setuid(nobody.pw_uid) < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "setuid() to nobody failed");
+	SAFE_SETUID(NULL, nobody.pw_uid);
 
 	TEST_PAUSE;
 }

@@ -85,8 +85,7 @@ static void test_hugeshmctl(void)
 	switch (pid = SAFE_FORK()) {
 	case 0:
 		/* set the user ID of the child to the non root user */
-		if (setuid(ltp_uid) == -1)
-			tst_brk(TBROK | TERRNO, "setuid");
+		SAFE_SETUID(ltp_uid);
 		do_child();
 		exit(0);
 	default:

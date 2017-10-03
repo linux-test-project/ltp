@@ -182,9 +182,7 @@ static void test_invalid_perm(void)
 		ltpuser = getpwnam(nobody_uid);
 		if (ltpuser == NULL)
 			tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
-		if (setuid(ltpuser->pw_uid) == -1)
-			tst_brkm(TBROK | TERRNO, NULL,
-				 "setuid(%u) failed", ltpuser->pw_uid);
+		SAFE_SETUID(NULL, ltpuser->pw_uid);
 		TEST(ltp_syscall(__NR_migrate_pages, parent_pid,
 			     sane_max_node, sane_old_nodes, sane_new_nodes));
 		ret |= check_ret(-1);
