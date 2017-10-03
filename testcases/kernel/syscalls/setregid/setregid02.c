@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 TCID_DEFINE(setregid02);
@@ -135,11 +136,7 @@ static void setup(void)
 	if (ltpuser == NULL)
 		tst_brkm(TBROK, NULL, "getpwnam(\"nobody\") failed");
 
-	if (setgid(ltpuser->pw_gid) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL,
-			 "setgid failed to set the effective gid to %d",
-			 ltpuser->pw_gid);
-	}
+	SAFE_SETGID(NULL, ltpuser->pw_gid);
 	if (setuid(ltpuser->pw_uid) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "setuid failed to to set the effective uid to %d",

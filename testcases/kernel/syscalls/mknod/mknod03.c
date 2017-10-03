@@ -265,10 +265,7 @@ void setup(void)
 	 * Set the effective group id and user id of the test process
 	 * to that of guest user (nobody)
 	 */
-	if (setgid(group1_gid) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to set process gid to that of ltp user");
-	}
+	SAFE_SETGID(cleanup, group1_gid);
 	if (setreuid(-1, user1_uid) < 0) {
 		tst_brkm(TBROK, cleanup,
 			 "Unable to set process uid to that of ltp user");

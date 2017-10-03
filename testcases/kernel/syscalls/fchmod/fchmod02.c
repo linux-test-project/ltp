@@ -198,9 +198,7 @@ void setup(void)
 	}
 
 	/* Set the effective gid of the process to that of user */
-	if (setgid(group1_gid) < 0) {
-		tst_brkm(TBROK, cleanup, "setgid(2) to %d failed", group1_gid);
-	}
+	SAFE_SETGID(cleanup, group1_gid);
 }
 
 /*

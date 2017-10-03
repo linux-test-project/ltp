@@ -187,9 +187,7 @@ void setup(void)
 	if (chown(TESTFILE, user1_uid, group1_gid) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "chown(%s) failed", TESTFILE);
 
-	if (setgid(group1_gid) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "setgid(%d) failed",
-			 group1_gid);
+	SAFE_SETGID(cleanup, group1_gid);
 }
 
 void cleanup(void)
