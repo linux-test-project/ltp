@@ -118,7 +118,9 @@ int main(int argc, char **argv)
 						 "flock() PASSED in acquiring shared lock on "
 						 "Share Locked file");
 				exit(0);
-			} else SAFE_WAIT(cleanup, &status);
+			} else {
+				SAFE_WAIT(cleanup, &status);
+			}
 
 			pid = FORK_OR_VFORK();
 			if (pid == -1)
