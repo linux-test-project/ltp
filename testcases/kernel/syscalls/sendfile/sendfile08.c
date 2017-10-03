@@ -67,10 +67,7 @@ int main(int argc, char *argv[])
 		if (TEST_RETURN == -1)
 			tst_brkm(TBROK | TTERRNO, cleanup, "sendfile() failed");
 
-		ret = lseek(out_fd, 0, SEEK_SET);
-		if (ret == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "lseek %s failed",
-				 out_file);
+		ret = SAFE_LSEEK(cleanup, out_fd, 0, SEEK_SET);
 		ret = read(out_fd, buf, BUFSIZ);
 		if (ret == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "read %s failed",
