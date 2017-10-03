@@ -170,9 +170,7 @@ void setup(void)
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
 		tst_brkm(TBROK | TERRNO, NULL, "getpwnam(\"nobody\") failed");
-	if (setegid(ltpuser->pw_gid) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "setegid(%d) failed",
-			 ltpuser->pw_gid);
+	SAFE_SETEGID(NULL, ltpuser->pw_gid);
 	if (seteuid(ltpuser->pw_uid) == -1)
 		tst_brkm(TBROK | TERRNO, NULL, "seteuid(%d) failed",
 			 ltpuser->pw_uid);
