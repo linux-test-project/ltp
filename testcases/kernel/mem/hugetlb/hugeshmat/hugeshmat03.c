@@ -81,8 +81,7 @@ static void verify_hugeshmat(void)
 		}
 		break;
 	default:
-		if (waitpid(pid, &status, 0) == -1)
-			tst_brk(TBROK | TERRNO, "waitpid");
+		SAFE_WAITPID(pid, &status, 0);
 	}
 }
 

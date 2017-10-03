@@ -48,6 +48,7 @@
 #include <sys/stat.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "lapi/syscalls.h"
 
 struct testcase_t {
@@ -162,8 +163,7 @@ static void makechild(struct testcase_t *t, void (*childfn)(void))
 static void wait4child(pid_t pid)
 {
 	int status;
-	if (waitpid(pid, &status, 0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, pid, &status, 0);
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "child returns %d", status);
 }

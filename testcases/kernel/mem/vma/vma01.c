@@ -131,8 +131,7 @@ static void check_vma(void)
 		}
 		exit(255);
 	default:
-		if (waitpid(-1, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, -1, &status, 0);
 		if (!WIFEXITED(status))
 			tst_brkm(TBROK, cleanup, "child exited abnormally.");
 		check_status(WEXITSTATUS(status));

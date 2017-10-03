@@ -359,8 +359,7 @@ static void cma_test_invalid_perm(void)
 		cma_free_params(params);
 		exit(ret);
 	default:
-		if (waitpid(child_pid, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, child_pid, &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 	}

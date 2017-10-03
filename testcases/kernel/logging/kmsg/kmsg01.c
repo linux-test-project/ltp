@@ -234,8 +234,7 @@ static int timed_read_kmsg(int fd, int timeout_sec)
 	/* child is blocked, kill it */
 	if (TEST_RETURN == -2)
 		kill(child, SIGTERM);
-	if (waitpid(child, &status, 0) == -1)
-		tst_brk(TBROK | TERRNO, "waitpid");
+	SAFE_WAITPID(child, &status, 0);
 	if (WIFEXITED(status)) {
 		if (WEXITSTATUS(status) == 0) {
 			return 0;

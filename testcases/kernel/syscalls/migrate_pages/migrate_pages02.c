@@ -217,8 +217,7 @@ static void test_migrate_current_process(int node1, int node2, int cap_sys_nice)
 		munmap(testp2, getpagesize());
 		exit(ret);
 	default:
-		if (waitpid(child, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, child, &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 		if (cap_sys_nice)
@@ -295,8 +294,7 @@ static void test_migrate_other_process(int node1, int node2, int cap_sys_nice)
 		if (write(pages_migrated[1], &tmp, 1) != 1)
 			tst_brkm(TBROK | TERRNO, NULL, "write #2 failed");
 
-		if (waitpid(child, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, child, &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 		close(child_ready[0]);

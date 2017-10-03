@@ -79,16 +79,14 @@ int main(int argc, char **argv)
 		}
 
 		/* wait until child_invoke reads from child_alloc's VM */
-		if (waitpid(pids[1], &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, pids[1], &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 1 returns %d", status);
 
 		/* child_alloc is free to exit now */
 		safe_semop(semid, 0, 1);
 
-		if (waitpid(pids[0], &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, pids[0], &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 0 returns %d", status);
 	}

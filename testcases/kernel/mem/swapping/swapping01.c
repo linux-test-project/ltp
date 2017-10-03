@@ -120,8 +120,7 @@ static void check_swapping(void)
 	long swap_free_now, swapped;
 
 	/* wait child stop */
-	if (waitpid(pid, &status, WUNTRACED) == -1)
-		tst_brk(TBROK | TERRNO, "waitpid");
+	SAFE_WAITPID(pid, &status, WUNTRACED);
 	if (!WIFSTOPPED(status))
 		tst_brk(TBROK, "child was not stopped.");
 
@@ -148,8 +147,7 @@ static void check_swapping(void)
 		 swapped / 1024);
 	kill(pid, SIGCONT);
 	/* wait child exit */
-	if (waitpid(pid, &status, 0) == -1)
-		tst_brk(TBROK | TERRNO, "waitpid");
+	SAFE_WAITPID(pid, &status, 0);
 }
 
 static struct tst_test test = {

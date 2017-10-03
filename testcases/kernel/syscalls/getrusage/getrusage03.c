@@ -112,8 +112,7 @@ static void inherit_fork(void)
 		break;
 	}
 
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
 	check_return(WEXITSTATUS(status), "initial.self ~= child.self",
 		     "initial.self !~= child.self");
 }
@@ -142,8 +141,7 @@ static void inherit_fork2(void)
 		break;
 	}
 
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
 	check_return(WEXITSTATUS(status), "child.children == 0",
 		     "child.children != 0");
 }
@@ -171,8 +169,7 @@ static void fork_malloc(void)
 		break;
 	}
 
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
 	check_return(WEXITSTATUS(status), "initial.self + 50MB ~= child.self",
 		     "initial.self + 50MB !~= child.self");
 }
@@ -198,8 +195,7 @@ static void grandchild_maxrss(void)
 		break;
 	}
 
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
 	if (WEXITSTATUS(status) != 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "child exit status is not 0");
 
@@ -241,8 +237,7 @@ static void zombie(void)
 	else
 		tst_resm(TFAIL, "initial.children !~= pre_wait.children");
 
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
 	if (WEXITSTATUS(status) != 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "child exit status is not 0");
 

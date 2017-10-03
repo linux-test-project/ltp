@@ -57,8 +57,7 @@ static void test_hugeshmget(void)
 		exit(0);
 	default:
 		/* wait for the child to return */
-		if (waitpid(pid, &status, 0) == -1)
-			tst_brk(TBROK | TERRNO, "waitpid");
+		SAFE_WAITPID(pid, &status, 0);
 	}
 }
 

@@ -71,8 +71,7 @@ static void test_cpuset(void)
 	snprintf(buf, BUFSIZ, "%d", nodes[1]);
 	write_cpuset_files(CPATH_NEW, "mems", buf);
 
-	if (waitpid(child, &status, WUNTRACED | WCONTINUED) == -1)
-		tst_brk(TBROK | TERRNO, "waitpid");
+	SAFE_WAITPID(child, &status, WUNTRACED | WCONTINUED);
 	if (WEXITSTATUS(status) != 0) {
 		tst_res(TFAIL, "child exit status is %d", WEXITSTATUS(status));
 		return;

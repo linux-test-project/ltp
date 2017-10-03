@@ -92,16 +92,14 @@ int main(int argc, char **argv)
 
 		/* wait until child_write writes into
 		 * child_init_and_verify's VM */
-		if (waitpid(pids[1], &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, pids[1], &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 1 returns %d", status);
 
 		/* signal child_init_and_verify to verify its VM now */
 		safe_semop(semid, 0, 1);
 
-		if (waitpid(pids[0], &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, pids[0], &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child 0 returns %d", status);
 	}

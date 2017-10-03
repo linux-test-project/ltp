@@ -51,6 +51,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define	PIPEWRTCNT	100	/* must be an even number */
 
@@ -119,8 +120,7 @@ int main(int ac, char **av)
 
 		/* parent */
 
-		if (waitpid(fork_1, &wtstatus, 0) == -1)
-			tst_brkm(TBROK, cleanup, "waitpid failed");
+		SAFE_WAITPID(cleanup, fork_1, &wtstatus, 0);
 		if (WIFEXITED(wtstatus) && WEXITSTATUS(wtstatus) != 0) {
 			tst_brkm(TBROK, cleanup, "child exited abnormally");
 		}
@@ -146,8 +146,7 @@ int main(int ac, char **av)
 
 		/* parent */
 
-		if (waitpid(fork_2, &wtstatus, 0) == -1)
-			tst_brkm(TBROK, cleanup, "waitpid failed");
+		SAFE_WAITPID(cleanup, fork_2, &wtstatus, 0);
 		if (WEXITSTATUS(wtstatus) != 0) {
 			tst_brkm(TBROK, cleanup, "problem detected in child, "
 				 "wait status %d, errno = %d", wtstatus, errno);

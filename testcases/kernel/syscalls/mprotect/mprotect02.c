@@ -96,8 +96,7 @@ int main(int ac, char **av)
 			exit(255);
 		}
 
-		if (waitpid(pid, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid failed");
+		SAFE_WAITPID(cleanup, pid, &status, 0);
 		if (!WIFEXITED(status))
 			tst_brkm(TBROK, cleanup, "child exited abnormally "
 				 "with status: %d", status);
@@ -127,9 +126,7 @@ int main(int ac, char **av)
 				exit(0);
 			}
 
-			if (waitpid(pid, &status, 0) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "waitpid failed");
+			SAFE_WAITPID(cleanup, pid, &status, 0);
 
 			if (WIFEXITED(status) &&
 			    WEXITSTATUS(status) == 0)

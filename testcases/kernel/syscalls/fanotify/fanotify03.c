@@ -130,10 +130,7 @@ static void check_child(void)
 		tst_brk(TBROK | TERRNO,
 			 "sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
-	if (waitpid(-1, &child_ret, 0) < 0) {
-		tst_brk(TBROK | TERRNO,
-				 "waitpid(-1, &child_ret, 0) failed");
-	}
+	SAFE_WAITPID(-1, &child_ret, 0);
 
 	if (WIFSIGNALED(child_ret)) {
 		tst_res(TFAIL, "child exited due to signal %d",

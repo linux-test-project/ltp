@@ -60,6 +60,7 @@
 #include "ipcshm.h"
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "safe_macros.h"
 
 char *TCID = "shmctl03";
 int shm_id_1 = -1;
@@ -110,9 +111,7 @@ int main(int ac, char **av)
 		do_child();
 	} else {
 		/* wait for the child to return */
-		if (waitpid(pid, NULL, 0) == -1) {
-			tst_brkm(TBROK, cleanup, "waitpid failed");
-		}
+		SAFE_WAITPID(cleanup, pid, NULL, 0);
 
 		/* if it exists, remove the shared memory resource */
 		rm_shm(shm_id_1);

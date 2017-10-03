@@ -162,8 +162,7 @@ static void test2(void)
 	}
 
 	/* parent */
-	if (waitpid(pid, &status, 0) == -1)
-		tst_brkm(TBROK, cleanup, "waitpid() failed");
+	SAFE_WAITPID(cleanup, pid, &status, 0);
 
 	switch (WEXITSTATUS(status)) {
 	case 0:

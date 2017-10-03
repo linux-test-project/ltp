@@ -121,8 +121,7 @@ static int fork_test(void)
 		case 0:
 			exit(0);
 		default:
-			if (waitpid(-1, NULL, 0) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+			SAFE_WAITPID(cleanup, -1, NULL, 0);
 
 			if (prev_failed > 0 && i >= LARGE) {
 				tst_resm(TFAIL, "Fork succeeds incorrectly");

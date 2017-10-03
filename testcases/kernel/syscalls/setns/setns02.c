@@ -150,8 +150,7 @@ static void test_flag(int clone_flag, int ns_flag, int (*fn) (void *arg))
 	if (ret == -1)
 		tst_brkm(TBROK|TERRNO, cleanup, "ltp_clone");
 
-	if (waitpid(ret, &status, 0) == -1)
-		tst_brkm(TBROK|TERRNO, cleanup, "waitpid");
+	SAFE_WAITPID(cleanup, ret, &status, 0);
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		tst_resm(TFAIL, "child returns %d", status);
 	else

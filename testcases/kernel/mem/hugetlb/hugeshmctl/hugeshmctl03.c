@@ -89,8 +89,7 @@ static void test_hugeshmctl(void)
 		do_child();
 		exit(0);
 	default:
-		if (waitpid(pid, &status, 0) == -1)
-			tst_brk(TBROK | TERRNO, "waitpid");
+		SAFE_WAITPID(pid, &status, 0);
 	}
 }
 

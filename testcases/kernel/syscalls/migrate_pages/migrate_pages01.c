@@ -189,8 +189,7 @@ static void test_invalid_perm(void)
 		ret |= check_errno(EPERM);
 		exit(ret);
 	default:
-		if (waitpid(child_pid, &status, 0) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "waitpid");
+		SAFE_WAITPID(cleanup, child_pid, &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 			tst_resm(TFAIL, "child returns %d", status);
 	}
