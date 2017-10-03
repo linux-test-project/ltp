@@ -71,6 +71,7 @@
 #include <sys/wait.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "alarm07";
 int TST_TOTAL = 1;
@@ -121,9 +122,7 @@ int main(int ac, char **av)
 			}
 		} else {
 			/* Wait for child to complete execution */
-			if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			SAFE_WAIT(cleanup, &status);
 			if (!WIFEXITED(status) ||
 			    WEXITSTATUS(status) != 0)
 				tst_brkm(TBROK | TERRNO, cleanup,

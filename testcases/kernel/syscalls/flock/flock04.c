@@ -76,6 +76,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup(void);
 void cleanup(void);
@@ -117,9 +118,7 @@ int main(int argc, char **argv)
 						 "flock() PASSED in acquiring shared lock on "
 						 "Share Locked file");
 				exit(0);
-			} else if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			} else SAFE_WAIT(cleanup, &status);
 
 			pid = FORK_OR_VFORK();
 			if (pid == -1)

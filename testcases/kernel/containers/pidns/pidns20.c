@@ -48,6 +48,7 @@
 #include <stdio.h>
 #include "pidns_helper.h"
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "pidns20";
 int TST_TOTAL = 1;
@@ -189,9 +190,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* collect exit status of child */
-	if (wait(&status) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "wait failed");
-	}
+	SAFE_WAIT(NULL, &status);
 
 	if (WIFSIGNALED(status)) {
 		if (WTERMSIG(status) == SIGUSR1)

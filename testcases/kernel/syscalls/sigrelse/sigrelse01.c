@@ -291,8 +291,7 @@ static void parent(void)
 	/*
 	 * child is now releasing signals, wait and check exit value
 	 */
-	if (wait(&term_stat) < 0)
-		tst_brkm(TBROK | TERRNO, getout, "wait() failed");
+	SAFE_WAIT(getout, &term_stat);
 
 	/* check child's signal exit value */
 	if ((sig = CHILD_SIG(term_stat)) != 0)

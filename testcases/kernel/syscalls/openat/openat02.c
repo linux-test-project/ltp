@@ -172,8 +172,7 @@ void testfunc_cloexec(void)
 
 	SAFE_CLOSE(cleanup, TEST_RETURN);
 
-	if (wait(&status) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "wait() failed");
+	SAFE_WAIT(cleanup, &status);
 
 	if (WIFEXITED(status)) {
 		switch ((int8_t)WEXITSTATUS(status)) {

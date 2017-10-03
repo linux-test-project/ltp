@@ -98,6 +98,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -160,9 +161,7 @@ int main(int ac, char **av)
 					 "alarm(100), fork, alarm(0) parent's alarm returned %ld",
 					 TEST_RETURN);
 			}
-			if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			SAFE_WAIT(cleanup, &status);
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL, "see failures reported above");
 

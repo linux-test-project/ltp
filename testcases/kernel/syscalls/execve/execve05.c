@@ -44,6 +44,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #undef DEBUG			/* change this to #define if needed */
 
@@ -144,9 +145,7 @@ int main(int ac, char **av)
 #ifdef DEBUG
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
-			if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			SAFE_WAIT(cleanup, &status);
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL, "child exited abnormally");
 
@@ -169,9 +168,7 @@ int main(int ac, char **av)
 #ifdef DEBUG
 			tst_resm(TINFO, "Main - started pid %d", pid);
 #endif
-			if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			SAFE_WAIT(cleanup, &status);
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL, "child exited abnormally");
 

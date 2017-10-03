@@ -71,6 +71,7 @@
 #include <sys/wait.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -107,9 +108,7 @@ int main(int ac, char **av)
 				exit(1);
 			exit(0);
 		} else {
-			if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			SAFE_WAIT(cleanup, &status);
 			if (!WIFEXITED(status) ||
 			    WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL, "getpid() returned "

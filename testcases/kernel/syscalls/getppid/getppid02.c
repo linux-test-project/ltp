@@ -44,6 +44,7 @@
 #include <err.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "getppid02";
 int TST_TOTAL = 1;
@@ -81,9 +82,7 @@ int main(int ac, char **av)
 				       "value match\n");
 			exit(0);
 		} else {
-			if (wait(&status) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "wait failed");
+			SAFE_WAIT(cleanup, &status);
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_resm(TFAIL,
 					 "getppid functionality incorrect");
