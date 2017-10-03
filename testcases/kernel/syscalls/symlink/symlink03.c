@@ -313,11 +313,7 @@ int setup2(void)
 	}
 	SAFE_CLOSE(cleanup, fd);
 
-	if (symlink(TEST_FILE2, SYM_FILE2) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "symlink() Fails to create %s in setup2, error=%d",
-			 SYM_FILE2, errno);
-	}
+	SAFE_SYMLINK(cleanup, TEST_FILE2, SYM_FILE2);
 	return 0;
 }
 

@@ -161,9 +161,7 @@ static void setup(void)
 	}
 	SAFE_CLOSE(cleanup, fd);
 
-	if (symlink(TESTFILE, SFILE) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "symlink failed");
-	}
+	SAFE_SYMLINK(cleanup, TESTFILE, SFILE);
 }
 
 static void cleanup(void)

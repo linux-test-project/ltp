@@ -206,9 +206,7 @@ static void setup(void)
 
 	SAFE_MKDIR(cleanup, DIRNAME, 0644);
 
-	if (symlink(FILENAME, SYMLINK) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create symlink(%s->%s)"
-			 " failed", SYMLINK, FILENAME);
+	SAFE_SYMLINK(cleanup, FILENAME, SYMLINK);
 
 	if (mknod(FIFO, S_IFIFO | 0777, 0) == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Create FIFO(%s) failed",

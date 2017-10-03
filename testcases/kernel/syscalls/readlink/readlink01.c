@@ -178,10 +178,7 @@ void setup(void)
 	}
 
 	/* Create a symlink of testfile under temporary directory */
-	if (symlink(TESTFILE, SYMFILE) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "symlink(%s, %s) failed",
-			 TESTFILE, SYMFILE);
-	}
+	SAFE_SYMLINK(cleanup, TESTFILE, SYMFILE);
 }
 
 /*

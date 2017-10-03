@@ -167,8 +167,7 @@ static void setupfunc_test1(void)
 	if (fd1 < 0)
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
 
-	if (symlink(file1, file2) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file1, file2);
 
 	strcpy(TC[0].filename, file2);
 }
@@ -181,8 +180,7 @@ static void setupfunc_test2(void)
 	sprintf(file2, "open03.4.%d", getpid());
 	SAFE_MKDIR(cleanup, file1, 00700);
 
-	if (symlink(file1, file2) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file1, file2);
 
 	strcpy(TC[1].filename, file2);
 }
@@ -198,11 +196,9 @@ static void setupfunc_test3(void)
 	if (fd2 < 0)
 		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
 
-	if (symlink(file1, file2) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file1, file2);
 
-	if (symlink(file2, file3) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file2, file3);
 
 	strcpy(TC[2].filename, file3);
 }
@@ -216,11 +212,9 @@ static void setupfunc_test4(void)
 	sprintf(file3, "open03.10.%d", getpid());
 	SAFE_MKDIR(cleanup, file1, 00700);
 
-	if (symlink(file1, file2) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file1, file2);
 
-	if (symlink(file2, file3) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file2, file3);
 
 	strcpy(TC[3].filename, file3);
 }
@@ -233,8 +227,7 @@ static void setupfunc_test5(void)
 	sprintf(file2, "open12.4.%d", getpid());
 	SAFE_MKDIR(cleanup, file1, 00700);
 
-	if (symlink(file1, file2) < 0)
-		tst_brkm(TBROK, cleanup, "symlink(2) failed: errno: %d", errno);
+	SAFE_SYMLINK(cleanup, file1, file2);
 
 	strcpy(TC[4].filename, file2);
 	strcat(TC[4].filename, "/");

@@ -136,10 +136,7 @@ static void setup(void)
 	if (close(fd))
 		tst_brkm(TBROK|TERRNO, cleanup, "close(%s) failed", TESTFILE);
 
-	if (symlink(TESTFILE, SYMFILE) < 0) {
-		tst_brkm(TBROK|TERRNO, cleanup, "symlink(%s, %s) failed",
-		         TESTFILE, SYMFILE);
-	}
+	SAFE_SYMLINK(cleanup, TESTFILE, SYMFILE);
 
 	/* set up the expected return value from the readlink() call */
 	exp_val = strlen(TESTFILE);

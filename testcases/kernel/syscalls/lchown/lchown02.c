@@ -207,8 +207,7 @@ static void setup_eperm(int pos LTP_ATTRIBUTE_UNUSED)
 		tst_resm(TBROK | TERRNO, "setuid(0) failed");
 
 	/* create symling to testfile */
-	if (symlink(TEST_FILE1, SFILE1) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "symlink failed");
+	SAFE_SYMLINK(cleanup, TEST_FILE1, SFILE1);
 
 	/* back to the user nobody */
 	if (seteuid(ltpuser->pw_uid) == -1)
@@ -238,10 +237,7 @@ static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
 	SAFE_CLOSE(cleanup, fd);
 
 	/* create a symlink of testfile */
-	if (symlink(TEST_FILE2, SFILE2) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup, "symlink(2) %s to %s failed",
-			 TEST_FILE2, SFILE2);
-	}
+	SAFE_SYMLINK(cleanup, TEST_FILE2, SFILE2);
 
 	/* modify mode permissions on test directory */
 	if (chmod(DIR_TEMP, FILE_MODE) < 0) {
