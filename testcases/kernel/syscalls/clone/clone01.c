@@ -30,6 +30,7 @@
 #include <sched.h>
 #include <sys/wait.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "clone_platform.h"
 
 static void setup(void);
@@ -58,10 +59,7 @@ int main(int ac, char **av)
 	if (TEST_RETURN == -1)
 		tst_resm(TFAIL | TTERRNO, "clone failed");
 
-	child_pid = wait(&status);
-	if (child_pid == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "wait failed, status: %d",
-			 status);
+	child_pid = SAFE_WAIT(cleanup, &status);
 
 	if (TEST_RETURN == child_pid)
 		tst_resm(TPASS, "clone returned %ld", TEST_RETURN);
