@@ -154,10 +154,7 @@ void test01(void)
 	int ret, len = 0, i = 0, test_num = 0;
 
 	if (fd_notify_backup == -1) {
-		fd_notify_backup = dup(fd_notify);
-		if (fd_notify_backup < 0)
-			tst_brk(TBROK | TERRNO,
-				 "dup(%d) failed", fd_notify);
+		fd_notify_backup = SAFE_DUP(fd_notify);
 	}
 	run_child();
 
