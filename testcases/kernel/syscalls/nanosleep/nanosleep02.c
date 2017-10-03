@@ -36,6 +36,7 @@
 #include <inttypes.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "nanosleep02";
 int TST_TOTAL = 1;
@@ -92,10 +93,7 @@ int main(int ac, char **av)
 		sleep(1);
 
 		/* Now send signal to child */
-		if (kill(cpid, SIGINT) < 0) {
-			tst_brkm(TBROK, NULL,
-				 "kill() fails send signal to child");
-		}
+		SAFE_KILL(NULL, cpid, SIGINT);
 
 		tst_record_childstatus(NULL, cpid);
 	}

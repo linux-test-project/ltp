@@ -78,6 +78,7 @@
 #include <sys/wait.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "vfork02";
 int TST_TOTAL = 1;
@@ -185,10 +186,7 @@ void setup(void)
 	}
 
 	/* Send the signal SIGUSR1 to itself so that SIGUSR1 is pending */
-	if (kill(getpid(), SIGUSR1) == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "Fails to send the signal to the parent process");
-	}
+	SAFE_KILL(cleanup, getpid(), SIGUSR1);
 
 	/* If SIGUSR1 is not pending in the parent, fail */
 	if (sigpending(&PendSig) == -1) {

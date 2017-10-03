@@ -180,9 +180,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Enqueue SIGUSR1 in pending signal queue of container */
-	if (kill(cpid, SIGUSR1) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "kill() failed");
-	}
+	SAFE_KILL(NULL, cpid, SIGUSR1);
 
 	tst_resm(TINFO, "parent: signalled SIGUSR1 to container");
 	if (write(parent_cinit[1], "p:go", 5) != 5) {

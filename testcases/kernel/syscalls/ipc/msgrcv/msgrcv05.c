@@ -56,6 +56,7 @@
  */
 
 #include "test.h"
+#include "safe_macros.h"
 
 #include "ipcmsg.h"
 
@@ -116,8 +117,7 @@ int main(int ac, char **av)
 			TST_PROCESS_STATE_WAIT(cleanup, c_pid, 'S');
 
 			/* send a signal that must be caught to the child */
-			if (kill(c_pid, SIGHUP) == -1)
-				tst_brkm(TBROK, cleanup, "kill failed");
+			SAFE_KILL(cleanup, c_pid, SIGHUP);
 
 			waitpid(c_pid, NULL, 0);
 		}

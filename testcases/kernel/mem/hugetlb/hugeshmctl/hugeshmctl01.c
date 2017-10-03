@@ -287,8 +287,7 @@ static void stat_cleanup(void)
 
 	/* wake up the childern so they can detach the memory and exit */
 	for (i = 0; i < N_ATTACH; i++)
-		if (kill(pid_arr[i], SIGUSR1) == -1)
-			tst_brk(TBROK | TERRNO, "kill with SIGUSR1");
+		SAFE_KILL(pid_arr[i], SIGUSR1);
 
 	/* remove the parent's shared memory the second time through */
 	if (stat_time == SECOND)

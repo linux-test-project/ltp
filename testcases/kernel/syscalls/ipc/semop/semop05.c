@@ -64,6 +64,7 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "safe_macros.h"
 
 char *TCID = "semop05";
 int TST_TOTAL = 4;
@@ -160,10 +161,7 @@ int main(int ac, char **av)
 					/* remove the semaphore resource */
 					rm_sema(sem_id_1);
 				} else {
-					if (kill(pid, SIGHUP) == -1) {
-						tst_brkm(TBROK, cleanup,
-							 "kill failed");
-					}
+					SAFE_KILL(cleanup, pid, SIGHUP);
 				}
 
 				/* let the child carry on */

@@ -128,8 +128,7 @@ static void kill_all_children(void)
 	int j, status;
 
 	for (j = 0; j < NCHILD; j++) {
-		if (kill(pid_arr[j], SIGKILL) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "child kill failed");
+		SAFE_KILL(cleanup, pid_arr[j], SIGKILL);
 	}
 
 	/*
