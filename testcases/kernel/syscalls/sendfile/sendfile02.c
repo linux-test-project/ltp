@@ -57,6 +57,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #ifndef OFF_T
 #define OFF_T off_t
@@ -107,9 +108,7 @@ void do_sendfile(OFF_T offset, int i)
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
 	}
-	if (stat(in_file, &sb) < 0) {
-		tst_brkm(TBROK, cleanup, "stat failed: %d", errno);
-	}
+	SAFE_STAT(cleanup, in_file, &sb);
 
 	if ((before_pos = lseek(in_fd, 0, SEEK_CUR)) < 0) {
 		tst_brkm(TBROK, cleanup,

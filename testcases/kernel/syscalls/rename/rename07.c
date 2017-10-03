@@ -125,11 +125,7 @@ void setup(void)
 
 	SAFE_MKDIR(cleanup, fdir, 00770);
 
-	if (stat(fdir, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
-			 "in rename()", fdir);
-
-	}
+	SAFE_STAT(cleanup, fdir, &buf1);
 
 	/* save "old"'s dev and ino */
 	olddev = buf1.st_dev;
@@ -137,11 +133,7 @@ void setup(void)
 
 	SAFE_TOUCH(cleanup, mname, 0700, NULL);
 
-	if (stat(mname, &buf2) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat file %s in rename()",
-			 mname);
-
-	}
+	SAFE_STAT(cleanup, mname, &buf2);
 
 	/* save "new"'s dev and ino */
 	olddev1 = buf2.st_dev;

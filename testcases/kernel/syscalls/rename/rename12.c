@@ -196,10 +196,7 @@ void setup(void)
 	/* create a directory */
 	SAFE_MKDIR(cleanup, fdir, PERMS);
 
-	if (stat(fdir, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat directory %s", fdir);
-
-	}
+	SAFE_STAT(cleanup, fdir, &buf1);
 
 	/* set the sticky bit */
 	if (chmod(fdir, buf1.st_mode | S_ISVTX) != 0) {

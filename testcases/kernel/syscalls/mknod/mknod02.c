@@ -244,9 +244,7 @@ void setup(void)
 	 * Verify that test directory created with expected permission modes
 	 * and ownerships.
 	 */
-	if (stat(DIR_TEMP, &buf) < 0) {
-		tst_brkm(TBROK, cleanup, "stat(2) of %s failed", DIR_TEMP);
-	}
+	SAFE_STAT(cleanup, DIR_TEMP, &buf);
 
 	/* Verify modes of test directory */
 	if (buf.st_mode & S_ISGID) {

@@ -84,10 +84,7 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (stat(tstdir1, &buf) == -1) {
-			tst_brkm(TBROK, cleanup, "failed to stat the "
-				 "new directory");
-		}
+		SAFE_STAT(cleanup, tstdir1, &buf);
 		/* check the owner */
 		if (buf.st_uid != geteuid()) {
 			tst_resm(TFAIL, "mkdir() FAILED to set owner ID"

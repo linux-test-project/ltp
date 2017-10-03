@@ -115,9 +115,7 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
 	}
-	if (stat(in_file, &sb) < 0) {
-		tst_brkm(TBROK, cleanup, "stat failed: %d", errno);
-	}
+	SAFE_STAT(cleanup, in_file, &sb);
 
 	if (pass_unmapped_buffer) {
 		SAFE_MUNMAP(cleanup, protected_buffer,

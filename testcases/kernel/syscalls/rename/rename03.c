@@ -130,11 +130,7 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (stat(TC[i].name2, &buf2) == -1) {
-				tst_brkm(TBROK, cleanup, "stat of %s "
-					 "failed", TC[i].desc);
-
-			}
+			SAFE_STAT(cleanup, TC[i].name2, &buf2);
 
 			/*
 			 * verify the new file or directory is the
@@ -201,11 +197,7 @@ void setup2(void)
 {
 	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 
-	if (stat(fname, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat file %s"
-			 "in rename()", fname);
-
-	}
+	SAFE_STAT(cleanup, fname, &buf1);
 
 	/* save original file's dev and ino */
 	f_olddev = buf1.st_dev;
@@ -215,11 +207,7 @@ void setup2(void)
 
 	/* create "old" directory */
 	SAFE_MKDIR(cleanup, fdir, 00770);
-	if (stat(fdir, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
-			 "in rename()", fdir);
-
-	}
+	SAFE_STAT(cleanup, fdir, &buf1);
 
 	d_olddev = buf1.st_dev;
 	d_oldino = buf1.st_ino;

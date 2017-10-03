@@ -133,11 +133,7 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (stat(TC[i].name2, &buf1) == -1) {
-				tst_brkm(TBROK, cleanup, "stat of %s "
-					 "failed", TC[i].desc);
-
-			}
+			SAFE_STAT(cleanup, TC[i].name2, &buf1);
 
 			/*
 			 * verify the new file or directory is the
@@ -194,11 +190,7 @@ void setup(void)
 
 	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 
-	if (stat(fname, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat file %s"
-			 "in setup()", fname);
-
-	}
+	SAFE_STAT(cleanup, fname, &buf1);
 
 	f_olddev = buf1.st_dev;
 	f_oldino = buf1.st_ino;
@@ -206,11 +198,7 @@ void setup(void)
 	/* create "old" directory */
 	SAFE_MKDIR(cleanup, fdir, 00770);
 
-	if (stat(fdir, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat directory %s"
-			 "in setup()", fname);
-
-	}
+	SAFE_STAT(cleanup, fdir, &buf1);
 
 	d_olddev = buf1.st_dev;
 	d_oldino = buf1.st_ino;

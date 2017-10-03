@@ -141,11 +141,7 @@ void setup(void)
 		tst_brkm(TBROK, cleanup, "tmp directory %s found!", fdir);
 	}
 	SAFE_MKDIR(cleanup, fdir, 00770);
-	if (stat(fdir, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
-			 "in rename()", fdir);
-
-	}
+	SAFE_STAT(cleanup, fdir, &buf1);
 	/* save "old"'s dev and ino */
 	olddev = buf1.st_dev;
 	oldino = buf1.st_ino;
@@ -156,11 +152,7 @@ void setup(void)
 	}
 	SAFE_MKDIR(cleanup, mdir, 00770);
 
-	if (stat(mdir, &buf2) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat directory %s "
-			 "in rename()", mdir);
-
-	}
+	SAFE_STAT(cleanup, mdir, &buf2);
 
 	/* save "new"'s dev and ino */
 	olddev1 = buf2.st_dev;

@@ -264,8 +264,7 @@ int test_rwflag(int i, int cnt)
 		snprintf(file, PATH_MAX, "%ssetuid_test", path_name);
 		SAFE_FILE_PRINTF(cleanup, file, "TEST FILE");
 
-		if (stat(file, &file_stat) < 0)
-			tst_brkm(TBROK, cleanup, "stat for setuid_test failed");
+		SAFE_STAT(cleanup, file, &file_stat);
 
 		if (file_stat.st_mode != SUID_MODE &&
 		    chmod(file, SUID_MODE) < 0)

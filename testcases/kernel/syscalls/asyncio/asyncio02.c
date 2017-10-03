@@ -248,9 +248,7 @@ int testrun(int flag, int bytes, int ti)
 	 *  same as the number of bytes in the file.
 	 */
 
-	if (stat(filename, &buffer) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "stat() failed");
-	}
+	SAFE_STAT(cleanup, filename, &buffer);
 
 	if (buffer.st_size != (off_t) (bytes * WRITES)) {
 		ret = (int)buffer.st_size;

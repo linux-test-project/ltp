@@ -114,18 +114,10 @@ int main(int ac, char **av)
 		}
 
 		/* check the existence of "new", and get the status */
-		if (stat(mname, &buf2) == -1) {
-			tst_brkm(TBROK, cleanup, "failed to stat file "
-				 "%s in rename()", mname);
-
-		}
+		SAFE_STAT(cleanup, mname, &buf2);
 
 		/* check the existence of "old", and get the status */
-		if (stat(fname, &buf1) == -1) {
-			tst_brkm(TBROK, cleanup, "failed to stat file "
-				 "%s in rename()", fname);
-
-		}
+		SAFE_STAT(cleanup, fname, &buf1);
 
 		/* verify the new file is the same as the original */
 		if (buf2.st_dev != olddev || buf2.st_ino != oldino) {
@@ -169,11 +161,7 @@ void setup(void)
 
 	SAFE_TOUCH(cleanup, fname, 0700, NULL);
 
-	if (stat(fname, &buf1) == -1) {
-		tst_brkm(TBROK, cleanup, "failed to stat file %s"
-			 "in rename()", fname);
-
-	}
+	SAFE_STAT(cleanup, fname, &buf1);
 
 	/* save the dev and inode */
 	olddev = buf1.st_dev;
