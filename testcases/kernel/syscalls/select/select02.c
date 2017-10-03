@@ -47,6 +47,7 @@
 #include <sys/time.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 static void setup(void);
 
@@ -104,9 +105,7 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	if (pipe(Fd) == -1) {
-		tst_brkm(TBROK, NULL, "pipe(&Fd) failed, errno=%d", errno);
-	}
+	SAFE_PIPE(NULL, Fd);
 
 	FD_ZERO(&saved_Readfds);
 	FD_ZERO(&saved_Writefds);

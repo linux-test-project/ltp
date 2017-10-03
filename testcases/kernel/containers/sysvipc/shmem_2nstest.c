@@ -45,6 +45,7 @@
 #include <sys/shm.h>
 #include <libclone.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "ipcns_helper.h"
 
 #define TESTKEY    124426L
@@ -132,10 +133,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* Using PIPE's to sync between containers and Parent */
-	if (pipe(p1) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "pipe1 error");
-	if (pipe(p2) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "pipe2 error");
+	SAFE_PIPE(NULL, p1);
+	SAFE_PIPE(NULL, p2);
 
 	if (strcmp(argv[1], "clone") == 0) {
 		use_clone = T_CLONE;

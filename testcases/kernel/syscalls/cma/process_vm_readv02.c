@@ -56,8 +56,7 @@ int main(int argc, char **argv)
 		tst_count = 0;
 		len = strlen(tst_string);
 
-		if (pipe(pipe_fd) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup, "pipe");
+		SAFE_PIPE(cleanup, pipe_fd);
 
 		/* the start of child_alloc and child_invoke is already
 		 * synchronized via pipe */

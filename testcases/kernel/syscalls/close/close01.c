@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void cleanup(void);
 void setup(void);
@@ -72,9 +73,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "can't dup the file des");
 
-		if (pipe(pipefildes) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup, "can't open pipe");
-		}
+		SAFE_PIPE(cleanup, pipefildes);
 
 		for (i = 0; i < TST_TOTAL; i++) {
 

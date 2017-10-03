@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "setrlimit01";
 int TST_TOTAL = 1;
@@ -124,8 +125,7 @@ static void test2(void)
 	 */
 	int pipefd[2];
 	fflush(stdout);
-	if (pipe(pipefd) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "pipe creation failed");
+	SAFE_PIPE(NULL, pipefd);
 
 	/*
 	 * Spawn a child process, and reduce the filesize to

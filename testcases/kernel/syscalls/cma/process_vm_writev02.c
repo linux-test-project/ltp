@@ -66,8 +66,7 @@ int main(int argc, char **argv)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		if (pipe(pipe_fd) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup, "pipe");
+		SAFE_PIPE(cleanup, pipe_fd);
 
 		/* the start of child_init_and_verify and child_write is
 		 * already synchronized via pipe */

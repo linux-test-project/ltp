@@ -184,8 +184,7 @@ void setup(void)
 
 	tst_tmpdir();
 
-	if (pipe(fd) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "pipe failed");
+	SAFE_PIPE(cleanup, fd);
 }
 
 void cleanup(void)

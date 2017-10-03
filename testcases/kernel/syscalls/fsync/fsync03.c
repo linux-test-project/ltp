@@ -47,6 +47,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup(void);
 void cleanup(void);
@@ -122,9 +123,7 @@ void setup(void)
 	/* make a temporary directory and cd to it */
 	tst_tmpdir();
 
-	if (pipe(fd) < 0) {
-		tst_brkm(TBROK, cleanup, "pipe call failed");
-	}
+	SAFE_PIPE(cleanup, fd);
 
 	pfd = fd[1];
 }
