@@ -178,11 +178,7 @@ void setup(void)
 		tst_brkm(TBROK, cleanup, "getgrnam failed");
 	group1_gid = ltpgroup->gr_gid;
 
-	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %#o) failed",
-			 TESTFILE, FILE_MODE);
+	fd = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 	SAFE_CLOSE(cleanup, fd);
 	SAFE_CHOWN(cleanup, TESTFILE, user1_uid, group1_gid);
 

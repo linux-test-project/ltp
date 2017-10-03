@@ -779,9 +779,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 	fail = 0;
 
 	for (test = start; test < end; test++) {
-		fd = open(tmpname, file_flag, file_mode);
-		if (fd < 0)
-			tst_brkm(TBROK, cleanup, "open() failed");
+		fd = SAFE_OPEN(cleanup, tmpname, file_flag, file_mode);
 
 		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write() failed");
@@ -1017,9 +1015,8 @@ int main(int ac, char **av)
 		 * argument used for WHENCE (negative value)
 		 */
 
-		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (fd < 0)
-			tst_brkm(TBROK, cleanup, "open failed");
+		fd = SAFE_OPEN(cleanup, tmpname, O_CREAT | O_RDWR | O_TRUNC,
+			       0777);
 
 		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write failed");
@@ -1055,9 +1052,8 @@ int main(int ac, char **av)
 		 * additional data is appended to end of file and a new
 		 * process attempts to lock new data
 		 */
-		fd = open(tmpname, O_CREAT | O_RDWR | O_TRUNC, 0777);
-		if (fd < 0)
-			tst_brkm(TBROK, cleanup, "open failed");
+		fd = SAFE_OPEN(cleanup, tmpname, O_CREAT | O_RDWR | O_TRUNC,
+			       0777);
 
 		if (write(fd, FILEDATA, 10) < 0)
 			tst_brkm(TBROK, cleanup, "write failed");

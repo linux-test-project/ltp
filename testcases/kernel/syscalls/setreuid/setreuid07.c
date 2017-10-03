@@ -36,6 +36,7 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "compat_16.h"
 
 TCID_DEFINE(setreuid07);
@@ -176,10 +177,7 @@ static void setup(void)
 	sprintf(testfile, "setreuid07file%d.tst", getpid());
 
 	/* Create test file */
-	fd = open(testfile, O_CREAT | O_RDWR, 0644);
-	if (fd < 0)
-		tst_brkm(TBROK | TERRNO,
-			cleanup, "cannot create test file");
+	fd = SAFE_OPEN(cleanup, testfile, O_CREAT | O_RDWR, 0644);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

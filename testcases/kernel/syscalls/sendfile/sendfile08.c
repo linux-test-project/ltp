@@ -109,13 +109,9 @@ static void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "Write %s failed", in_file);
 	close(in_fd);
 
-	in_fd = open(in_file, O_RDONLY);
-	if (in_fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Open %s failed", in_file);
+	in_fd = SAFE_OPEN(cleanup, in_file, O_RDONLY);
+	out_fd = SAFE_OPEN(cleanup, out_file, O_TRUNC | O_CREAT | O_RDWR, 0777);
 
-	out_fd = open(out_file, O_TRUNC | O_CREAT | O_RDWR, 0777);
-	if (out_fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Open %s failed", out_file);
 	ret = write(out_fd, TEST_MSG_OUT, strlen(TEST_MSG_OUT));
 	if (ret == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "Write %s failed", out_file);

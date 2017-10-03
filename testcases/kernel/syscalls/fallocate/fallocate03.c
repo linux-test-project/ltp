@@ -96,6 +96,7 @@
 #include <sys/utsname.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "lapi/fallocate.h"
 
 #define BLOCKS_WRITTEN 12
@@ -164,9 +165,7 @@ void setup(void)
 	tst_tmpdir();
 
 	sprintf(fname, "tfile_sparse_%d", getpid());
-	fd = open(fname, O_RDWR | O_CREAT, 0700);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open(%s) failed", fname);
+	fd = SAFE_OPEN(cleanup, fname, O_RDWR | O_CREAT, 0700);
 	get_blocksize(fd);
 	populate_file();
 	file_seek(BLOCKS_WRITTEN + HOLE_SIZE_IN_BLOCKS);	/* create holes */

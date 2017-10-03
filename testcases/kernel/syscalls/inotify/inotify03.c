@@ -196,11 +196,7 @@ static void setup(void)
 	mount_flag = 1;
 
 	sprintf(fname, "%s/tfile_%d", mntpoint, getpid());
-	fd = open(fname, O_RDWR | O_CREAT, 0700);
-	if (fd == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
-	}
+	fd = SAFE_OPEN(cleanup, fname, O_RDWR | O_CREAT, 0700);
 
 	ret = write(fd, fname, 1);
 	if (ret == -1) {

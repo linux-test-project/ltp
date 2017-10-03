@@ -166,12 +166,8 @@ static void runtest(void)
 	for (i = 0; i < nchild; i++) {
 		test_name[0] = 'a' + i;
 		test_name[1] = '\0';
-		fd = open(test_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
-
-		if (fd < 0) {
-			tst_brkm(TBROK | TERRNO, NULL,
-				 "\tError creating %s/%s.", fuss, test_name);
-		}
+		fd = SAFE_OPEN(NULL, test_name, O_RDWR | O_CREAT | O_TRUNC,
+			       0666);
 
 		if ((child = fork()) == 0) {
 			dotest(nchild, i, fd);

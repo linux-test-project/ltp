@@ -203,12 +203,7 @@ void setup(void)
 			 strerror(errno));
 
 	/* Open the test directory for reading */
-	fd = open(TESTDIR, O_RDONLY);
-	if (fd == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDONLY) failed, errno=%d : %s",
-			 TESTDIR, errno, strerror(errno));
-	}
+	fd = SAFE_OPEN(cleanup, TESTDIR, O_RDONLY);
 }
 
 /*

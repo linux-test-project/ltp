@@ -57,6 +57,7 @@
 
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs */
+#include "safe_macros.h"
 
 #ifdef DEBUG
 #define dbg(x...)	printf(x);
@@ -137,9 +138,7 @@ int main(int argc, char *argv[])
 	write_to_file(mysharesfile, "w", myshares);
 	dbg("Default task's initial shares = %u", myshares);
 
-	fd = open("./myfifo", 0);
-	if (fd == -1)
-		tst_brkm(TBROK, cleanup, "Could not open fifo to synchronizae");
+	fd = SAFE_OPEN(cleanup, "./myfifo", 0);
 
 	read(fd, &ch, 1);	/* To fire all the tasks up at the same time */
 

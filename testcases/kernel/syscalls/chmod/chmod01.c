@@ -148,11 +148,7 @@ void setup(void)
 
 	tst_tmpdir();
 
-	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+	fd = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 	SAFE_CLOSE(cleanup, fd);
 
 }

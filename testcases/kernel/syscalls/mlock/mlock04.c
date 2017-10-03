@@ -87,9 +87,7 @@ static void setup(void)
 {
 	tst_tmpdir();
 
-	fd = open(testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open");
+	fd = SAFE_OPEN(cleanup, testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
 	SAFE_FTRUNCATE(cleanup, fd, file_len);
 

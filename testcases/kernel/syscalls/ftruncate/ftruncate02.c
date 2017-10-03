@@ -75,6 +75,7 @@
 #include <signal.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TESTFILE	"testfile"	/* file under test */
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
@@ -253,11 +254,7 @@ void setup(void)
 		tst_buff[i] = 'a';
 	}
 	/* open a file for reading/writing */
-	fd = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
-	if (fd == -1)
-		tst_brkm(TBROK, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+	fd = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 
 	/* Write to the file 1k data from the buffer */
 	while (write_len < FILE_SIZE) {

@@ -71,6 +71,7 @@
 #include <sys/file.h>
 #include <fcntl.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup(void);
 void cleanup(void);
@@ -154,9 +155,7 @@ void setup(void)
 	sprintf(filename, "flock01.%d", getpid());
 
 	/* creating temporary file */
-	fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0644);
-	if (fd < 0)
-		tst_brkm(TBROK, tst_rmdir, "creating a new file failed");
+	fd = SAFE_OPEN(tst_rmdir, filename, O_CREAT | O_TRUNC | O_RDWR, 0644);
 }
 
 /*

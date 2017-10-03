@@ -48,6 +48,7 @@
 #include <errno.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
 #include "libftest.h"
 
 char *TCID = "ftest04";
@@ -120,11 +121,7 @@ static void setup(void)
 		sprintf(filename, "%s/ftest04.%d", getcwd(wdbuf, MAXPATHLEN),
 			getpid());
 
-	fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
-	if (fd < 0) {
-		tst_brkm(TBROK, NULL, "Error %d creating file %s", errno,
-			 filename);
-	}
+	fd = SAFE_OPEN(NULL, filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	close(fd);
 
 	/*
@@ -151,14 +148,7 @@ static void runtest(void)
 
 	for (i = 0; i < nchild; i++) {
 		if ((child = fork()) == 0) {
-			fd = open(filename, O_RDWR);
-			if (fd < 0) {
-				tst_brkm(TBROK,
-					 NULL,
-					 "\tTest[%d]: error %d openning %s.",
-					 i,
-					 errno, filename);
-			}
+			fd = SAFE_OPEN(NULL, filename, O_RDWR);
 			dotest(nchild, i, fd);
 			close(fd);
 			tst_exit();

@@ -36,6 +36,7 @@
 #include <errno.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "mincore02";
 int TST_TOTAL = 1;
@@ -72,11 +73,8 @@ static void setup(void)
 	memset(buf, 42, size);
 	vec = malloc((size + page_size - 1) / page_size);
 	
-	fd = open("mincore02", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	if (fd == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-		         "Unable to create temporary file");
-	}
+	fd = SAFE_OPEN(cleanup, "mincore02", O_CREAT | O_RDWR,
+		       S_IRUSR | S_IWUSR);
 
 	/* fill the temporary file with two pages of data */
 	if (write(fd, buf, size) < 0) {

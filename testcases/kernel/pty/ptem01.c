@@ -36,6 +36,7 @@
 
 /** LTP Port **/
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "ptem01";		/* Test program identifier.    */
 int TST_TOTAL = 6;		/* Total number of test cases. */
@@ -58,10 +59,7 @@ int test1(void)
 	struct termio termio;
 	struct termios termios;
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -140,10 +138,7 @@ int test2(void)
 	struct winsize wsz1 = { 24, 80, 5, 10 };
 	struct winsize wsz2 = { 60, 100, 11, 777 };
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -221,10 +216,7 @@ int test3(void)
 	int masterfd, slavefd;
 	char *slavename;
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -272,10 +264,7 @@ int test4(void)
 	int masterfd, slavefd, slavefd2, slavefd3;
 	char *slavename;
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -396,10 +385,7 @@ int test6(void)
 	char *slavename;
 	struct termios termios;
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {

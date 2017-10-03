@@ -361,10 +361,7 @@ static int do_parent_setup(void)
 {
 	int pfd;
 
-	pfd = open(parenttty, O_RDWR, 0777);
-	if (pfd < 0)
-		tst_brkm(TBROK, cleanup, "Could not open %s in "
-			 "do_parent_setup(), errno = %d", parenttty, errno);
+	pfd = SAFE_OPEN(cleanup, parenttty, O_RDWR, 0777);
 
 	/* unset the closed flag */
 	closed = 0;
@@ -430,10 +427,7 @@ static void setup(void)
 	struct sigaction act;
 
 	/* XXX: TERRNO required all over the place */
-	fd = open(devname, O_RDWR, 0777);
-	if (fd < 0)
-		tst_brkm(TBROK, NULL, "Could not open %s in "
-			 "setup(), errno = %d", devname, errno);
+	fd = SAFE_OPEN(NULL, devname, O_RDWR, 0777);
 
 	/* Save the current device information - to be restored in cleanup() */
 	SAFE_IOCTL(cleanup, fd, TCGETA, &save_io);

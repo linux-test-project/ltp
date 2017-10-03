@@ -85,9 +85,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		fd = open(TESTFILE, O_RDWR);
-		if (fd == -1)
-			tst_brkm(TBROK | TERRNO, NULL, "open %s", TESTFILE);
+		fd = SAFE_OPEN(NULL, TESTFILE, O_RDWR);
 
 		/*
 		 * The pgoff is counted in 4K units and must be page-aligned,

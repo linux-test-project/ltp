@@ -33,6 +33,7 @@
 #include <time.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 int rtc_fd = -1;
 char *TCID = "rtc01";
@@ -228,10 +229,7 @@ int main(int argc, char *argv[])
 	if (access(rtc_dev, F_OK) == -1)
 		tst_brkm(TCONF, NULL, "couldn't find rtc device '%s'", rtc_dev);
 
-	rtc_fd = open(rtc_dev, O_RDONLY);
-
-	if (rtc_fd < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "couldn't open %s", rtc_dev);
+	rtc_fd = SAFE_OPEN(NULL, rtc_dev, O_RDONLY);
 
 	/*Read and alarm tests */
 	read_alarm_test();

@@ -35,6 +35,7 @@
 
 /** LTP Port **/
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "hangup01";	/* Test program identifier.    */
 int TST_TOTAL = 5;		/* Total number of test cases. */
@@ -213,9 +214,7 @@ int main(int argc, char **argv)
 	pid_t childpid;
 
 /*--------------------------------------------------------------------*/
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0)
-		tst_brkm(TBROK | TERRNO, NULL, "open %s", MASTERCLONE);
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL)

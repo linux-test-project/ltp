@@ -211,9 +211,7 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 	off_t offset = 0;
 	struct timeval now;
 
-	fd = open(fname, O_RDONLY);
-	if (fd < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "Failed to open %s", fname);
+	fd = SAFE_OPEN(cleanup, fname, O_RDONLY);
 
 	if (do_readahead) {
 		cached_start = get_cached_size();

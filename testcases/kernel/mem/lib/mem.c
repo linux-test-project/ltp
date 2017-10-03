@@ -686,9 +686,7 @@ void read_cpuset_files(char *prefix, char *filename, char *retbuf)
 		if (errno == ENOENT) {
 			snprintf(path, BUFSIZ, "%s/cpuset.%s",
 				 prefix, filename);
-			fd = open(path, O_RDONLY);
-			if (fd == -1)
-				tst_brk(TBROK | TERRNO, "open %s", path);
+			fd = SAFE_OPEN(path, O_RDONLY);
 		} else
 			tst_brk(TBROK | TERRNO, "open %s", path);
 	}
@@ -713,9 +711,7 @@ void write_cpuset_files(char *prefix, char *filename, char *buf)
 		if (errno == ENOENT) {
 			snprintf(path, BUFSIZ, "%s/cpuset.%s",
 				 prefix, filename);
-			fd = open(path, O_WRONLY);
-			if (fd == -1)
-				tst_brk(TBROK | TERRNO, "open %s", path);
+			fd = SAFE_OPEN(path, O_WRONLY);
 		} else
 			tst_brk(TBROK | TERRNO, "open %s", path);
 	}

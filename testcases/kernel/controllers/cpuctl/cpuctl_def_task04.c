@@ -61,6 +61,7 @@
 
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs */
+#include "safe_macros.h"
 
 #define TIME_INTERVAL	100	/* Time interval in seconds */
 #define NUM_INTERVALS	2	/* How many iterations of TIME_INTERVAL */
@@ -154,9 +155,7 @@ int main(int argc, char *argv[])
 	mygroup_shares = 100;
 	write_to_file(mysharesfile, "w", mygroup_shares);
 
-	fd = open("./myfifo", 0);
-	if (fd == -1)
-		tst_brkm(TBROK, cleanup, "Could not open fifo synchronize");
+	fd = SAFE_OPEN(cleanup, "./myfifo", 0);
 
 	read(fd, &ch, 1);	/* Block task here to synchronize */
 

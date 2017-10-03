@@ -100,6 +100,7 @@
 #include <sys/utsname.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "lapi/fallocate.h"
 #include "lapi/fcntl.h"
 
@@ -145,18 +146,12 @@ void setup(void)
 	tst_tmpdir();
 
 	sprintf(fname_mode1, "tfile_mode1_%d", getpid());
-	fd_mode1 = open(fname_mode1, O_RDWR | O_CREAT, 0700);
-	if (fd_mode1 == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open(%s, O_RDWR) failed",
-			 fname_mode1);
+	fd_mode1 = SAFE_OPEN(cleanup, fname_mode1, O_RDWR | O_CREAT, 0700);
 	get_blocksize(fd_mode1);
 	populate_files(fd_mode1);
 
 	sprintf(fname_mode2, "tfile_mode2_%d", getpid());
-	fd_mode2 = open(fname_mode2, O_RDWR | O_CREAT, 0700);
-	if (fd_mode2 == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "open(%s, O_RDWR) failed",
-			 fname_mode2);
+	fd_mode2 = SAFE_OPEN(cleanup, fname_mode2, O_RDWR | O_CREAT, 0700);
 	populate_files(fd_mode2);
 }
 

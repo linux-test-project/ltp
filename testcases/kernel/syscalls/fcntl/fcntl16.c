@@ -46,6 +46,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -451,10 +452,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 	/* loop through all test cases */
 	for (test = start; test < end; test++) {
 		/* open a temp file to lock */
-		fd = open(tmpname, file_flag, file_mode);
-		if (fd < 0) {
-			tst_brkm(TBROK, cleanup, "open failed");
-		}
+		fd = SAFE_OPEN(cleanup, tmpname, file_flag, file_mode);
 
 		/* write some dummy data to the file */
 		(void)write(fd, FILEDATA, 10);

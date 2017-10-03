@@ -37,6 +37,7 @@
 
 /** LTP Port **/
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "pty01";		/* Test program identifier.    */
 int TST_TOTAL = 5;		/* Total number of test cases. */
@@ -78,10 +79,7 @@ static int test1(void)
 	struct stat st;
 	char buf[TESTSIZE];
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK | TERRNO, NULL, MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -115,10 +113,7 @@ static int test1(void)
 		tst_brkm(TBROK | TERRNO, NULL, "unlockpt() failed");
 	}
 
-	slavefd = open(slavename, O_RDWR);
-	if (slavefd < 0) {
-		tst_brkm(TBROK, NULL, "Could not open %s", slavename);
-	}
+	slavefd = SAFE_OPEN(NULL, slavename, O_RDWR);
 
 	/*
 	 * test writing to the master / reading from the slave
@@ -202,10 +197,7 @@ static void test2(void)
 	char *slavename;
 	char c;
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK | TERRNO, NULL, MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -220,10 +212,7 @@ static void test2(void)
 		tst_brkm(TBROK | TERRNO, NULL, "unlockpt() call failed");
 	}
 
-	slavefd = open(slavename, O_RDWR);
-	if (slavefd < 0) {
-		tst_brkm(TBROK | TERRNO, NULL, "Could not open %s", slavename);
-	}
+	slavefd = SAFE_OPEN(NULL, slavename, O_RDWR);
 
 	/*
 	 * close pty fds.  See what happens when we close the master
@@ -264,10 +253,7 @@ static void test3(void)
 {
 	int masterfd;		/* master pty fd */
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	if (ioctl(masterfd, TIOCGWINSZ, NULL) == 0) {
 		tst_brkm(TFAIL | TERRNO, NULL,
@@ -288,10 +274,7 @@ static void test4(void)
 	int slavefd3;
 	char *slavename;
 
-	masterfd = open(MASTERCLONE, O_RDWR);
-	if (masterfd < 0) {
-		tst_brkm(TBROK, NULL, "%s", MASTERCLONE);
-	}
+	masterfd = SAFE_OPEN(NULL, MASTERCLONE, O_RDWR);
 
 	slavename = ptsname(masterfd);
 	if (slavename == NULL) {
@@ -306,10 +289,7 @@ static void test4(void)
 		tst_brkm(TBROK | TERRNO, NULL, "unlockpt() call failed");
 	}
 
-	slavefd = open(slavename, O_RDWR);
-	if (slavefd < 0) {
-		tst_brkm(TBROK | TERRNO, NULL, "Could not open %s", slavename);
-	}
+	slavefd = SAFE_OPEN(NULL, slavename, O_RDWR);
 
 	slavefd2 = open(slavename, O_RDWR);
 	if (slavefd < 0) {

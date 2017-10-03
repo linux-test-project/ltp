@@ -103,6 +103,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "fork04";
 
@@ -241,12 +242,7 @@ void parent_environment(void)
 	int ret;
 	char *var;
 
-	fildes = open(OUTPUT_FILE, O_RDWR);
-	if (fildes == -1) {
-		tst_brkm(TBROK, cleanup,
-			 "fork() test. Parent open of temporary file failed. errno %d (%s)\n",
-			 errno, strerror(errno));
-	}
+	fildes = SAFE_OPEN(cleanup, OUTPUT_FILE, O_RDWR);
 	for (index = 0; index < NUMBER_OF_ENVIRON; index++) {
 		ret = read(fildes, tmp_line, MAX_LINE_LENGTH);
 		if (ret == 0) {

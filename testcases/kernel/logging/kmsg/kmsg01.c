@@ -65,9 +65,7 @@
 static int inject_msg(const char *msg)
 {
 	int f;
-	f = open("/dev/kmsg", O_WRONLY);
-	if (f < 0)
-		tst_brk(TBROK | TERRNO, "failed to open /dev/kmsg");
+	f = SAFE_OPEN("/dev/kmsg", O_WRONLY);
 	TEST(write(f, msg, strlen(msg)));
 	SAFE_CLOSE(f);
 	errno = TEST_ERRNO;
@@ -93,9 +91,7 @@ static int find_msg(int fd, const char *text_to_find, char *buf, int bufsize,
 	char msg[MAX_MSGSIZE + 1];
 
 	if (fd < 0) {
-		f = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-		if (f < 0)
-			tst_brk(TBROK, "failed to open /dev/kmsg");
+		f = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 	} else {
 		f = fd;
 	}
@@ -251,9 +247,7 @@ static void test_read_nonblock(void)
 	int fd;
 
 	tst_res(TINFO, "TEST: nonblock read");
-	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-	if (fd < 0)
-		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
+	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 	TEST(timed_read_kmsg(fd, READ_TIMEOUT));
 	if (TEST_RETURN == -1 && TEST_ERRNO == EAGAIN)
@@ -269,9 +263,7 @@ static void test_read_block(void)
 	int fd;
 
 	tst_res(TINFO, "TEST: blocking read");
-	fd = open("/dev/kmsg", O_RDONLY);
-	if (fd < 0)
-		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
+	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY);
 
 	TEST(timed_read_kmsg(fd, READ_TIMEOUT));
 	if (TEST_RETURN == -2)
@@ -287,9 +279,7 @@ static void test_partial_read(void)
 	int fd;
 
 	tst_res(TINFO, "TEST: partial read");
-	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-	if (fd < 0)
-		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
+	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 	TEST(read(fd, msg, 1));
 	if (TEST_RETURN < 0)
@@ -365,9 +355,7 @@ static void test_read_returns_first_message(void)
 	 * NUM_READ_RETRY attempts, report TWARN */
 	tst_res(TINFO, "TEST: mult. readers will get same first message");
 	while (j) {
-		fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-		if (fd < 0)
-			tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
+		fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 		for (i = 0; i < NUM_READ_MSGS; i++) {
 			if (find_msg(-1, "", msg, sizeof(msg), 1) != 0)
@@ -420,9 +408,7 @@ static void test_messages_overwritten(void)
 	 * We know first message is overwritten when its seqno changes */
 	tst_res(TINFO, "TEST: read returns EPIPE when messages get "
 		"overwritten");
-	fd = open("/dev/kmsg", O_RDONLY | O_NONBLOCK);
-	if (fd < 0)
-		tst_brk(TBROK|TERRNO, "failed to open /dev/kmsg");
+	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 	if (find_msg(-1, "", msg, sizeof(msg), 1) == 0
 		&& get_msg_fields(msg, NULL, &first_seqno) == 0) {

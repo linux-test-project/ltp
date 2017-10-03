@@ -42,6 +42,7 @@
 #include <errno.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #include "lapi/syscalls.h"
 #ifndef _FILE_OFFSET_BITS
@@ -144,12 +145,7 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	fd = open(fname, O_RDONLY);
-	if (fd < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "Unable to open a file(\"%s\") for test: %s\n",
-			 fname, strerror(errno));
-	}
+	fd = SAFE_OPEN(cleanup, fname, O_RDONLY);
 }
 
 /*

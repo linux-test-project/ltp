@@ -373,9 +373,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	/* Create test files */
-	fd = open(T_REG, O_WRONLY | O_CREAT, 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create %s failed", T_REG);
+	fd = SAFE_OPEN(cleanup, T_REG, O_WRONLY | O_CREAT, 0644);
 	ret = write(fd, T_MSG, sizeof(T_MSG));
 	if (ret == -1) {
 		close(fd);

@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "mprotect01";
 int TST_TOTAL = 3;
@@ -136,9 +137,7 @@ static void setup2(struct test_case *self)
 
 static void setup3(struct test_case *self)
 {
-	fd = open("/etc/passwd", O_RDONLY);
-	if (fd < 0)
-		tst_brkm(TBROK, cleanup, "open failed");
+	fd = SAFE_OPEN(cleanup, "/etc/passwd", O_RDONLY);
 	
 	self->len = getpagesize();
 

@@ -137,10 +137,7 @@ void setup(void)
 	tst_tmpdir();
 
 	/* Create a testfile under temporary directory */
-	fildes = open(TEST_FILE, O_RDWR | O_CREAT, 0666);
-	if (fildes == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, 0666) failed", TEST_FILE);
+	fildes = SAFE_OPEN(cleanup, TEST_FILE, O_RDWR | O_CREAT, 0666);
 
 	SAFE_CLOSE(cleanup, fildes);
 }

@@ -51,6 +51,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 #include <pwd.h>
 #include "compat_16.h"
 
@@ -202,9 +203,7 @@ void setup(void)
 	sprintf(testfile, "setresuid04file%d.tst", getpid());
 
 	/* Create test file */
-	fd = open(testfile, O_CREAT | O_RDWR, 0644);
-	if (fd < 0)
-		tst_brkm(TBROK, cleanup, "cannot creat test file");
+	fd = SAFE_OPEN(cleanup, testfile, O_CREAT | O_RDWR, 0644);
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 

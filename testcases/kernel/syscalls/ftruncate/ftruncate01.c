@@ -75,6 +75,7 @@
 #include <inttypes.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define TESTFILE	"testfile"	/* file under test */
 #define FILE_MODE	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
@@ -170,11 +171,7 @@ void setup(void)
 	}
 
 	/* open a file for reading/writing */
-	fildes = open(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
-	if (fildes == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT, %o) failed",
-			 TESTFILE, FILE_MODE);
+	fildes = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 
 	/* Write to the file 1k data from the buffer */
 	while (c_total < FILE_SIZE) {
