@@ -53,6 +53,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "dup202";
 int TST_TOTAL = 3;
@@ -113,14 +114,10 @@ int main(int ac, char **av)
 			}
 
 			/* stat the original file */
-			if (fstat(ofd, &oldbuf) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "fstat #1 failed");
+			SAFE_FSTAT(cleanup, ofd, &oldbuf);
 
 			/* stat the duped file */
-			if (fstat(*TC[i].nfd, &newbuf) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "fstat #2 failed");
+			SAFE_FSTAT(cleanup, *TC[i].nfd, &newbuf);
 
 			if (oldbuf.st_mode != newbuf.st_mode)
 				tst_resm(TFAIL, "original and dup "

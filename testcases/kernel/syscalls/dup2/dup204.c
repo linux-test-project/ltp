@@ -84,12 +84,8 @@ int main(int ac, char **av)
 				continue;
 			}
 
-			if (fstat(fd[i], &oldbuf) == -1)
-				tst_brkm(TBROK, cleanup, "fstat() #1 "
-					 "failed");
-			if (fstat(nfd[i], &newbuf) == -1)
-				tst_brkm(TBROK, cleanup, "fstat() #2 "
-					 "failed");
+			SAFE_FSTAT(cleanup, fd[i], &oldbuf);
+			SAFE_FSTAT(cleanup, nfd[i], &newbuf);
 
 			if (oldbuf.st_ino != newbuf.st_ino)
 				tst_resm(TFAIL, "original and duped "
