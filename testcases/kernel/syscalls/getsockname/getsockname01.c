@@ -52,6 +52,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "getsockname01";
 int testno;
@@ -172,10 +173,7 @@ void setup1(void)
 		tst_brkm(TBROK, cleanup, "socket setup failed for getsockname "
 			 "test %d: %s", testno, strerror(errno));
 	}
-	if (bind(s, (struct sockaddr *)&sin0, sizeof(sin0)) < 0) {
-		tst_brkm(TBROK, cleanup, "socket bind failed for getsockname "
-			 "test %d: %s", testno, strerror(errno));
-	}
+	SAFE_BIND(cleanup, s, (struct sockaddr *)&sin0, sizeof(sin0));
 	sinlen = sizeof(fsin1);
 }
 

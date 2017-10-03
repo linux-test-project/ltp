@@ -153,11 +153,8 @@ static void setup3(int i)
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "socket setup failed for getpeername test %d", i);
 	}
-	if (bind(test_cases[i].sockfd, (struct sockaddr *)&server_addr,
-		 sizeof(server_addr)) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "socket bind failed for getpeername test %d", i);
-	}
+	SAFE_BIND(cleanup, test_cases[i].sockfd,
+		  (struct sockaddr *)&server_addr, sizeof(server_addr));
 }
 
 static void setup4(int i)
