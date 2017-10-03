@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "fork10";
 int TST_TOTAL = 1;
@@ -72,11 +73,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		fildes = creat(fnamebuf, 0600);
-		if (fildes < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "Parent: cannot open %s for " "write",
-				 fnamebuf);
+		fildes = SAFE_CREAT(cleanup, fnamebuf, 0600);
 		write(fildes, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n", 27);
 		close(fildes);
 

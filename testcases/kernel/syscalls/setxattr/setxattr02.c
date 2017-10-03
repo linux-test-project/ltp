@@ -187,9 +187,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	/* Test for xattr support */
-	fd = creat("testfile", 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create testfile failed");
+	fd = SAFE_CREAT(cleanup, "testfile", 0644);
 	close(fd);
 	if (setxattr("testfile", "user.test", "test", 4, XATTR_CREATE) == -1)
 		if (errno == ENOTSUP)
@@ -198,10 +196,7 @@ static void setup(void)
 	unlink("testfile");
 
 	/* Create test files */
-	fd = creat(FILENAME, 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-			 FILENAME);
+	fd = SAFE_CREAT(cleanup, FILENAME, 0644);
 	close(fd);
 
 	SAFE_MKDIR(cleanup, DIRNAME, 0644);

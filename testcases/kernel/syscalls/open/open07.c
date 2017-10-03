@@ -163,9 +163,7 @@ static void setupfunc_test1(void)
 
 	sprintf(file1, "open03.1.%d", getpid());
 	sprintf(file2, "open03.2.%d", getpid());
-	fd1 = creat(file1, 00700);
-	if (fd1 < 0)
-		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
+	fd1 = SAFE_CREAT(cleanup, file1, 00700);
 
 	SAFE_SYMLINK(cleanup, file1, file2);
 
@@ -192,9 +190,7 @@ static void setupfunc_test3(void)
 	sprintf(file1, "open03.5.%d", getpid());
 	sprintf(file2, "open03.6.%d", getpid());
 	sprintf(file3, "open03.7.%d", getpid());
-	fd2 = creat(file1, 00700);
-	if (fd2 < 0)
-		tst_brkm(TBROK, cleanup, "creat(2) failed: errno: %d", errno);
+	fd2 = SAFE_CREAT(cleanup, file1, 00700);
 
 	SAFE_SYMLINK(cleanup, file1, file2);
 

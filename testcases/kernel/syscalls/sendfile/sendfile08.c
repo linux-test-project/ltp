@@ -34,6 +34,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define TEST_MSG_IN "world"
 #define TEST_MSG_OUT "hello"
@@ -101,9 +102,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	in_fd = creat(in_file, 0700);
-	if (in_fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create %s failed", in_file);
+	in_fd = SAFE_CREAT(cleanup, in_file, 0700);
 
 	ret = write(in_fd, TEST_MSG_IN, strlen(TEST_MSG_IN));
 	if (ret == -1)

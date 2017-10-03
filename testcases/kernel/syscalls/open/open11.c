@@ -74,6 +74,7 @@
 #include <string.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "open11";
 
@@ -382,10 +383,7 @@ static void setup(void)
 	}
 	close(fd);
 
-	fd = creat(T_REG_EMPTY, 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create %s failed",
-			 T_REG_EMPTY);
+	fd = SAFE_CREAT(cleanup, T_REG_EMPTY, 0644);
 	close(fd);
 
 	ret = link(T_REG, T_LINK_REG);

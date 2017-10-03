@@ -84,10 +84,7 @@ int main(int ac, char **av)
 
 		/* establish first free file */
 		sprintf(filname, "fork09.%d", mypid);
-		first = creat(filname, 0660);
-		if (first == -1)
-			tst_brkm(TBROK, cleanup, "Cannot open first file %s, "
-				 "errno = %d", filname, errno);
+		first = SAFE_CREAT(cleanup, filname, 0660);
 		close(first);
 
 		tst_resm(TINFO, "first file descriptor is %d ", first);

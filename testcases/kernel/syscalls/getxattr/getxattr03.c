@@ -42,6 +42,7 @@
 # include <sys/xattr.h>
 #endif
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "getxattr03";
 
@@ -88,9 +89,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	/* Test for xattr support and set attr value */
-	fd = creat(TESTFILE, 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create %s failed", TESTFILE);
+	fd = SAFE_CREAT(cleanup, TESTFILE, 0644);
 	close(fd);
 
 	if (setxattr(TESTFILE, XATTR_TEST_KEY, XATTR_TEST_VALUE,

@@ -49,6 +49,7 @@
 #include <unistd.h>
 
 #include "test.h"
+#include "safe_macros.h"
 #include "tst_kernel.h"
 
 char *TCID = "vma03";
@@ -131,9 +132,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fd = creat(TESTFILE, 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "creat %s", TESTFILE);
+	fd = SAFE_CREAT(NULL, TESTFILE, 0644);
 	close(fd);
 
 	TEST_PAUSE;

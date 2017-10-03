@@ -143,9 +143,7 @@ static void setup(void)
 	 * ENOTDIR if the argument is not a directory.
 	 */
 	(void)sprintf(fname, "tfile_%d", getpid());
-	fd = creat(fname, 0777);
-	if (fd == -1)
-		tst_brkm(TBROK, cleanup, "Failed to creat a temp file");
+	fd = SAFE_CREAT(cleanup, fname, 0777);
 
 #if !defined(UCLINUX)
 	bad_addr = mmap(0, 1, PROT_NONE,

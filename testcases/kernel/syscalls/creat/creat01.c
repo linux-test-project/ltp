@@ -53,10 +53,7 @@ static void verify_creat(unsigned int i)
 	struct stat buf;
 	char c;
 
-	fd = creat(filename, tcases[i].mode);
-
-	if (fd == -1)
-		tst_brk(TBROK | TERRNO, "creat() failed");
+	fd = SAFE_CREAT(filename, tcases[i].mode);
 
 	SAFE_STAT(filename, &buf);
 

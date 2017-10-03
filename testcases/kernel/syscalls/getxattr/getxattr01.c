@@ -48,6 +48,7 @@
 # include <sys/xattr.h>
 #endif
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "getxattr01";
 
@@ -142,10 +143,7 @@ static void setup(void)
 
 	/* Create test file and setup initial xattr */
 	snprintf(filename, BUFSIZ, "getxattr01testfile");
-	fd = creat(filename, 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-			 filename);
+	fd = SAFE_CREAT(cleanup, filename, 0644);
 	close(fd);
 	if (setxattr(filename, XATTR_TEST_KEY, XATTR_TEST_VALUE,
 		     strlen(XATTR_TEST_VALUE), XATTR_CREATE) == -1) {

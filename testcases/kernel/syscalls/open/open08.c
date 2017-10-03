@@ -148,9 +148,7 @@ static void setup(void)
 
 	sprintf(filename, "open3.%d", getpid());
 
-	fildes = creat(filename, 0600);
-	if (fildes == -1)
-		tst_brkm(TBROK, cleanup, "Can't creat %s", filename);
+	fildes = SAFE_CREAT(cleanup, filename, 0600);
 
 	close(fildes);
 

@@ -50,6 +50,7 @@
 #include <linux/fs.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "setxattr03";
 
@@ -167,9 +168,7 @@ static void setup(void)
 	tst_tmpdir();
 
 	/* Test for xattr support */
-	fd = creat("testfile", 0644);
-	if (fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create testfile failed");
+	fd = SAFE_CREAT(cleanup, "testfile", 0644);
 	close(fd);
 	if (setxattr("testfile", "user.test", "test", 4, XATTR_CREATE) == -1)
 		if (errno == ENOTSUP)
@@ -178,18 +177,12 @@ static void setup(void)
 	unlink("testfile");
 
 	/* Create test files and set file immutable or append-only */
-	immu_fd = creat(IMMU_FILE, 0644);
-	if (immu_fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-			 IMMU_FILE);
+	immu_fd = SAFE_CREAT(cleanup, IMMU_FILE, 0644);
 	if (set_immutable_on(immu_fd))
 		tst_brkm(TBROK | TERRNO, cleanup, "Set %s immutable failed",
 			 IMMU_FILE);
 
-	append_fd = creat(APPEND_FILE, 0644);
-	if (append_fd == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Create test file(%s) failed",
-			 APPEND_FILE);
+	append_fd = SAFE_CREAT(cleanup, APPEND_FILE, 0644);
 	if (set_append_on(append_fd))
 		tst_brkm(TBROK | TERRNO, cleanup, "Set %s append-only failed",
 			 APPEND_FILE);
