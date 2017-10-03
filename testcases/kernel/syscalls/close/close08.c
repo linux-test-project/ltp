@@ -115,6 +115,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
 
 void setup();
 void cleanup();
@@ -150,10 +151,7 @@ int main(int ac, char **av)
 				 TEST_RETURN);
 		}
 
-		if (unlink(fname) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "unlink(%s) failed", fname);
-		}
+		SAFE_UNLINK(cleanup, fname);
 	}
 
 	cleanup();

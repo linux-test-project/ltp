@@ -122,9 +122,7 @@ int main(int ac, char **av)
 		/* clean up things in case we are looping */
 		SAFE_MUNMAP(cleanup, addr, strlen(buf));
 		SAFE_CLOSE(cleanup, fd);
-		if (unlink(file1) == -1) {
-			tst_brkm(TBROK, cleanup, "unlink failed");
-		}
+		SAFE_UNLINK(cleanup, file1);
 	}
 
 	cleanup();

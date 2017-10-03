@@ -256,10 +256,7 @@ int testrun(int flag, int bytes, int ti)
 		ret = (int)buffer.st_size;
 	}
 
-	if (unlink(filename) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "unlink(%s) failed",
-			 filename);
-	}
+	SAFE_UNLINK(cleanup, filename);
 
 	return ret;
 

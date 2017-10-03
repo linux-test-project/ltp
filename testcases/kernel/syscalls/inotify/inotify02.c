@@ -146,10 +146,7 @@ int main(int ac, char **av)
 		strcpy(event_set[tst_count].name, "");
 		tst_count++;
 
-		if (unlink(FILE_NAME2) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "unlink(%s) failed", FILE_NAME2);
-		}
+		SAFE_UNLINK(cleanup, FILE_NAME2);
 		event_set[tst_count].mask = IN_DELETE;
 		strcpy(event_set[tst_count].name, FILE_NAME2);
 		tst_count++;

@@ -31,6 +31,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -66,9 +67,7 @@ int main(int ac, char **av)
 			if (close(fd) == -1)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "close(%s) failed", fname);
-			else if (unlink(fname) == -1)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "unlink(%s) failed", fname);
+			else SAFE_UNLINK(cleanup, fname);
 		}
 	}
 

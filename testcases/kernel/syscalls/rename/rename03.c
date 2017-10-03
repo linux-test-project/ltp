@@ -164,9 +164,7 @@ int main(int ac, char **av)
 		/* reset things in case we are looping */
 
 		/* unlink the new file */
-		if (unlink(mname) == -1) {
-			tst_brkm(TBROK, cleanup, "unlink() failed");
-		}
+		SAFE_UNLINK(cleanup, mname);
 
 		/* remove the new directory */
 		SAFE_RMDIR(cleanup, mdir);

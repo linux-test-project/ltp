@@ -236,10 +236,7 @@ void setup(void)
  */
 void cleanup(void)
 {
-	if (unlink(f_name) < 0) {
-		tst_brkm(TBROK, NULL, "unlink FAILED: file %s, errno %d",
-			 f_name, errno);
-	}
+	SAFE_UNLINK(NULL, f_name);
 	tst_rmdir();
 
 }

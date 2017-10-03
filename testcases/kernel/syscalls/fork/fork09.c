@@ -47,6 +47,7 @@
 #include <errno.h>
 #include <unistd.h>		/* for _SC_OPEN_MAX */
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "fork09";
 int TST_TOTAL = 1;
@@ -91,9 +92,7 @@ int main(int ac, char **av)
 
 		tst_resm(TINFO, "first file descriptor is %d ", first);
 
-		if (unlink(filname) == -1)
-			tst_brkm(TBROK, cleanup, "Cannot unlink file %s, "
-				 "errno = %d", filname, errno);
+		SAFE_UNLINK(cleanup, filname);
 
 		/*
 		 * now open all the files for the test

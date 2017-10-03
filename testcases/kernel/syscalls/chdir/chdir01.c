@@ -107,9 +107,7 @@ int main(int ac, char **av)
 		else
 			tst_resm(TPASS, "failed as expected with ENOTDIR");
 
-		if (unlink(filname) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "Couldn't remove file");
+		SAFE_UNLINK(cleanup, filname);
 
 		SAFE_CHDIR(cleanup, "..");
 

@@ -443,16 +443,9 @@ static void cleanup(void)
 		tst_resm(TBROK, "unlink %s failed", nosetgid_A);
 	}
 	SAFE_RMDIR(NULL, DIR_A);
-	if (unlink(setgid_B) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed", setgid_B);
-	}
-	if (unlink(root_setgid_B) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed",
-			 root_setgid_B);
-	}
-	if (unlink(nosetgid_B) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "unlink %s failed", nosetgid_B);
-	}
+	SAFE_UNLINK(NULL, setgid_B);
+	SAFE_UNLINK(NULL, root_setgid_B);
+	SAFE_UNLINK(NULL, nosetgid_B);
 	SAFE_RMDIR(NULL, DIR_B);
 
 	tst_rmdir();
