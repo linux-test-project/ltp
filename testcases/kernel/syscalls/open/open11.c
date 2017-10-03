@@ -396,9 +396,7 @@ static void setup(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "Symlink %s -> %s failed",
 			 T_REG, T_SYMLINK_REG);
 
-	ret = mkdir(T_DIR, 0755);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mkdir %s failed", T_DIR);
+	ret = SAFE_MKDIR(cleanup, T_DIR, 0755);
 
 	ret = symlink(T_DIR, T_SYMLINK_DIR);
 	if (ret == -1)
