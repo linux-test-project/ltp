@@ -386,17 +386,11 @@ static void setup(void)
 
 	ret = SAFE_LINK(cleanup, T_REG, T_LINK_REG);
 
-	ret = symlink(T_REG, T_SYMLINK_REG);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Symlink %s -> %s failed",
-			 T_REG, T_SYMLINK_REG);
+	ret = SAFE_SYMLINK(cleanup, T_REG, T_SYMLINK_REG);
 
 	ret = SAFE_MKDIR(cleanup, T_DIR, 0755);
 
-	ret = symlink(T_DIR, T_SYMLINK_DIR);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Symlink %s -> %s failed",
-			 T_DIR, T_SYMLINK_DIR);
+	ret = SAFE_SYMLINK(cleanup, T_DIR, T_SYMLINK_DIR);
 
 	ret = mknod(T_DEV, S_IFCHR, makedev(1, 5));
 	if (ret == -1)
