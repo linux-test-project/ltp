@@ -384,13 +384,10 @@ static void setup(void)
 	fd = SAFE_CREAT(cleanup, T_REG_EMPTY, 0644);
 	close(fd);
 
-	ret = SAFE_LINK(cleanup, T_REG, T_LINK_REG);
-
-	ret = SAFE_SYMLINK(cleanup, T_REG, T_SYMLINK_REG);
-
-	ret = SAFE_MKDIR(cleanup, T_DIR, 0755);
-
-	ret = SAFE_SYMLINK(cleanup, T_DIR, T_SYMLINK_DIR);
+	SAFE_LINK(cleanup, T_REG, T_LINK_REG);
+	SAFE_SYMLINK(cleanup, T_REG, T_SYMLINK_REG);
+	SAFE_MKDIR(cleanup, T_DIR, 0755);
+	SAFE_SYMLINK(cleanup, T_DIR, T_SYMLINK_DIR);
 
 	ret = mknod(T_DEV, S_IFCHR, makedev(1, 5));
 	if (ret == -1)
