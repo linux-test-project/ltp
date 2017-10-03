@@ -120,9 +120,7 @@ int main(int ac, char **av)
 		}
 
 		/* clean up things in case we are looping */
-		if (munmap(addr, strlen(buf)) == -1) {
-			tst_brkm(TBROK, cleanup, "munamp failed");
-		}
+		SAFE_MUNMAP(cleanup, addr, strlen(buf));
 		SAFE_CLOSE(cleanup, fd);
 		if (unlink(file1) == -1) {
 			tst_brkm(TBROK, cleanup, "unlink failed");

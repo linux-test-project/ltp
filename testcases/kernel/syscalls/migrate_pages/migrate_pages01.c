@@ -117,8 +117,7 @@ static void test_invalid_mem(void)
 	check_ret(-1);
 	check_errno(EFAULT);
 
-	if (munmap(p, getpagesize()) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
+	SAFE_MUNMAP(cleanup, p, getpagesize());
 	tst_resm(TINFO, "test_invalid_mem unmmaped");
 	TEST(ltp_syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
 	check_ret(-1);

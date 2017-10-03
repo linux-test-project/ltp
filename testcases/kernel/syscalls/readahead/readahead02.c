@@ -273,8 +273,7 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 	if (!do_readahead)
 		*cached = get_cached_size();
 
-	if (munmap(p, fsize) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "munmap failed");
+	SAFE_MUNMAP(cleanup, p, fsize);
 
 	*read_bytes = get_bytes_read() - read_bytes_start;
 	if (gettimeofday(&now, NULL) == -1)

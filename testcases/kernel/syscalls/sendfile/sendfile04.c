@@ -57,6 +57,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #ifndef OFF_T
 #define OFF_T off_t
@@ -119,9 +120,8 @@ void do_sendfile(int prot, int pass_unmapped_buffer)
 	}
 
 	if (pass_unmapped_buffer) {
-		if (munmap(protected_buffer, sizeof(*protected_buffer)) < 0) {
-			tst_brkm(TBROK, cleanup, "munmap failed: %d", errno);
-		}
+		SAFE_MUNMAP(cleanup, protected_buffer,
+			    sizeof(*protected_buffer));
 	}
 
 	TEST(sendfile(out_fd, in_fd, protected_buffer, sb.st_size));

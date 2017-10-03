@@ -53,6 +53,7 @@
 #include <signal.h>
 #include <string.h>
 #include "test.h"
+#include "safe_macros.h"
 
 #define DISTANT_MMAP_SIZE (64*1024*1024)
 #define OPT_MISSING(prog, opt) do { \
@@ -347,8 +348,7 @@ int main(int argc, char **argv)
 		MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	if (distant_area == (void *)-1)
 		tst_brkm(TBROK | TERRNO, NULL, "distant_area: mmap()");
-	if (munmap(distant_area, (size_t) DISTANT_MMAP_SIZE) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "distant_area: munmap()");
+	SAFE_MUNMAP(NULL, distant_area, (size_t)DISTANT_MMAP_SIZE);
 	distant_area += DISTANT_MMAP_SIZE / 2;
 
 	if (verbose_print)

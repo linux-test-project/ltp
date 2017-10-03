@@ -264,10 +264,7 @@ void cleanup(void)
 	map_len = map_len - page_sz;
 
 	/* unmap the portion of the region of the file left unmapped */
-	if (munmap(addr, map_len) < 0) {
-		tst_brkm(TBROK, NULL,
-			 "munmap() fails to unmap portion of mapped region");
-	}
+	SAFE_MUNMAP(NULL, addr, map_len);
 
 	/* Close the temporary file */
 	SAFE_CLOSE(NULL, fildes);

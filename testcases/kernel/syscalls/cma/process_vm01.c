@@ -396,8 +396,7 @@ static void cma_test_invalid_protection(void)
 	cma_check_ret(-1, TEST_RETURN);
 	cma_check_errno(EFAULT);
 
-	if (munmap(p, getpagesize()) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
+	SAFE_MUNMAP(cleanup, p, getpagesize());
 
 	cma_free_params(sane_params);
 }

@@ -51,6 +51,7 @@
 #include <string.h>
 
 #include "test.h"
+#include "safe_macros.h"
 
 #define MAPS_FILE "/proc/self/maps"
 
@@ -155,8 +156,7 @@ static void create_bighole(void)
 		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
 	memset(t, 'a', ps);
 	p = t + 3 * ps;
-	if (munmap(t, 9 * ps) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "munmap");
+	SAFE_MUNMAP(cleanup, t, 9 * ps);
 }
 
 static void *get_end_addr(void *addr_s)
