@@ -107,10 +107,7 @@ static void setup(void)
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	SAFE_MKDIR(cleanup, MNTPOINT, 0755);
-	if (mount(device, MNTPOINT, fs_type, 0, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
 	mount_flag = 1;
 	SAFE_TOUCH(cleanup, TEST_EROFS, 0644, NULL);
 
@@ -152,10 +149,8 @@ static void test_eloop(void)
 
 static void test_erofs(void)
 {
-	if (mount(device, MNTPOINT, fs_type, MS_REMOUNT | MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_REMOUNT | MS_RDONLY,
+		   NULL);
 
 	TEST(rename(TEST_EROFS, TEST_NEW_EROFS));
 	check_and_print(EROFS);
@@ -163,10 +158,7 @@ static void test_erofs(void)
 	if (TEST_RETURN == 0)
 		SAFE_UNLINK(cleanup, TEST_NEW_EROFS);
 
-	if (mount(device, MNTPOINT, fs_type, MS_REMOUNT, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "remount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_REMOUNT, NULL);
 }
 
 static void test_emlink(void)

@@ -199,10 +199,7 @@ void setup(void)
 	/*
 	 * mount a read-only file system for test EROFS
 	 */
-	if (mount(device, MNT_POINT, fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNT_POINT, fs_type, MS_RDONLY, NULL);
 	mount_flag = 1;
 
 	memset(long_path, 'a', PATH_MAX+1);

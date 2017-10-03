@@ -122,10 +122,7 @@ static void setup(void)
 	tst_mkfs(cleanup, dev, fs_type, NULL, NULL);
 
 	SAFE_MKDIR(cleanup, MNT_POINT, 0644);
-	if (mount(dev, MNT_POINT, fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", dev);
-	}
+	SAFE_MOUNT(cleanup, dev, MNT_POINT, fs_type, MS_RDONLY, NULL);
 	mount_flag = 1;
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");

@@ -119,17 +119,12 @@ static void setup(void)
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	SAFE_MKDIR(cleanup, "test_dir/mntpoint", DIR_MODE);
-	if (mount(device, "test_dir/mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, "test_dir/mntpoint", fs_type, MS_RDONLY,
+		   NULL);
 	mount_flag_dir = 1;
 
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
-	if (mount(device, "mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, MS_RDONLY, NULL);
 	mount_flag_cur = 1;
 }
 

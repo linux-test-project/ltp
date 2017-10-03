@@ -113,8 +113,7 @@ void setup(void)
 
 	if (!Hopt)
 		Hopt = tst_get_tmpdir();
-	if (mount("none", Hopt, "hugetlbfs", 0, NULL) < 0)
-		tst_brk(TBROK | TERRNO, "mount failed on %s", Hopt);
+	SAFE_MOUNT("none", Hopt, "hugetlbfs", 0, NULL);
 
 	if (nr_opt)
 		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);

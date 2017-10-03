@@ -129,10 +129,7 @@ static void setup(void)
 
 	/* mount a read-only file system for EROFS test */
 	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
-	if (mount(device, MNT_POINT, fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNT_POINT, fs_type, MS_RDONLY, NULL);
 	mount_flag = 1;
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");

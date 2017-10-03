@@ -109,10 +109,7 @@ static void setup(void)
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, TEST_EROFS, DIR_MODE);
-	if (mount(device, TEST_EROFS, fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, TEST_EROFS, fs_type, MS_RDONLY, NULL);
 	mount_flag = 1;
 }
 

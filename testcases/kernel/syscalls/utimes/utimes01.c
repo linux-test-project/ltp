@@ -141,20 +141,14 @@ static void setup(void)
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
-	if (mount(device, MNTPOINT, fs_type, 0, NULL) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			"mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
 	mount_flag = 1;
 	SAFE_TOUCH(cleanup, TESTFILE3, FILE_MODE, NULL);
 	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
 	SAFE_CHOWN(cleanup, TESTFILE3, ltpuser->pw_uid,
 		ltpuser->pw_gid);
-	if (mount(device, MNTPOINT, fs_type,
-			MS_REMOUNT | MS_RDONLY, NULL) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			"mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_REMOUNT | MS_RDONLY,
+		   NULL);
 
 	ltpuser = SAFE_GETPWNAM(cleanup, LTPUSER1);
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);

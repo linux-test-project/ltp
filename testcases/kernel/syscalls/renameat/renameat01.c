@@ -184,17 +184,11 @@ static void setup(void)
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIRMODE);
-	if (mount(device, MNTPOINT, fs_type, 0, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			"mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
 	mount_flag = 1;
 	SAFE_TOUCH(cleanup, TESTFILE5, FILEMODE, NULL);
-	if (mount(device, MNTPOINT, fs_type,
-			MS_REMOUNT | MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			"mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_REMOUNT | MS_RDONLY,
+		   NULL);
 
 	SAFE_MKDIR(cleanup, TESTDIR3, DIRMODE);
 	max_subdirs = tst_fs_fill_subdirs(cleanup, "testemlinkdir");

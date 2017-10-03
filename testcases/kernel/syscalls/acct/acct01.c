@@ -152,20 +152,14 @@ static void setup(void)
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
-	if (mount(device, "mntpoint", fs_type, 0, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, 0, NULL);
 	mount_flag = 1;
 
 	/* Create a file in the file system, then remount it as read-only */
 	fd = SAFE_CREAT(cleanup, TEST_FILE8, 0644);
 	SAFE_CLOSE(cleanup, fd);
-	if (mount(device, "mntpoint", fs_type,
-		  MS_REMOUNT | MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type,
+		   MS_REMOUNT | MS_RDONLY, NULL);
 }
 
 static void acct_verify(int i)

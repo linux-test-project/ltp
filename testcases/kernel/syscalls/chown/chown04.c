@@ -172,10 +172,7 @@ static void setup(void)
 	SAFE_TOUCH(cleanup, TEST_FILE2, 0666, NULL);
 
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
-	if (mount(device, "mntpoint", fs_type, MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, MS_RDONLY, NULL);
 	mount_flag = 1;
 
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);

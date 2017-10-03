@@ -69,9 +69,7 @@ int main(int argc, char *argv[])
 
 		tst_count = 0;
 
-		if (mount(device, mntpoint_src, fs_type, 0, NULL) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "mount %s failed",
-				 mntpoint_src);
+		SAFE_MOUNT(cleanup, device, mntpoint_src, fs_type, 0, NULL);
 
 		TEST(mount(mntpoint_src, mntpoint_des, fs_type, MS_MOVE, NULL));
 
@@ -138,13 +136,11 @@ static void setup(void)
 	 * Turn current dir into a private mount point being a parent
 	 * mount which is required by move mount.
 	 */
-	if (mount(path_name, path_name, "none", MS_BIND, NULL) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "bind mount failed");
+	SAFE_MOUNT(cleanup, path_name, path_name, "none", MS_BIND, NULL);
 
 	mount_flag = 1;
 
-	if (mount("none", path_name, "none", MS_PRIVATE, NULL) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "mount private failed");
+	SAFE_MOUNT(cleanup, "none", path_name, "none", MS_PRIVATE, NULL);
 
 	snprintf(mntpoint_src, PATH_MAX, "%s/%s", path_name, MNTPOINT_SRC);
 	snprintf(mntpoint_des, PATH_MAX, "%s/%s", path_name, MNTPOINT_DES);

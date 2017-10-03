@@ -106,8 +106,7 @@ void setup(void)
 	if (dflag) {
 		tst_mkfs(NULL, device, fstype, NULL, NULL);
 
-		if (mount(device, mntpoint_src, fstype, 0, NULL) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "mount failed");
+		SAFE_MOUNT(cleanup, device, mntpoint_src, fstype, 0, NULL);
 	}
 
 	SAFE_FILE_PRINTF(cleanup, file_src, "TEST FILE");

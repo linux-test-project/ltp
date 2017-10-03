@@ -401,10 +401,7 @@ static void setup(void)
 			tst_mkfs(NULL, device, "ext3", NULL, NULL);
 		}
 
-		if (mount(device, MNT_POINT, "ext3", 0, NULL) < 0) {
-			tst_brkm(TBROK | TERRNO, NULL,
-				 "mount device:%s failed", device);
-		}
+		SAFE_MOUNT(NULL, device, MNT_POINT, "ext3", 0, NULL);
 		mount_flag = 1;
 	}
 

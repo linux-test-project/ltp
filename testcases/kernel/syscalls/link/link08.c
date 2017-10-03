@@ -145,18 +145,12 @@ static void setup(void)
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
-	if (mount(device, MNT_POINT, fs_type, 0, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNT_POINT, fs_type, 0, NULL);
 	mount_flag = 1;
 
 	SAFE_TOUCH(cleanup, TEST_FILE2, 0644, NULL);
-	if (mount(device, MNT_POINT, fs_type,
-		  MS_REMOUNT | MS_RDONLY, NULL) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "mount device:%s failed", device);
-	}
+	SAFE_MOUNT(cleanup, device, MNT_POINT, fs_type,
+		   MS_REMOUNT | MS_RDONLY, NULL);
 }
 
 static void cleanup(void)
