@@ -241,10 +241,7 @@ static void cleanup(void)
 			SAFE_CHDIR(NULL, "..");
 		}
 		if (cgrp_opt[i].mounted) {
-			if (umount(cgrp_opt[i].dir) == -1) {
-				tst_brkm(TBROK | TERRNO, NULL,
-					"Can't unmount: %s", cgrp_opt[i].dir);
-			}
+			SAFE_UMOUNT(NULL, cgrp_opt[i].dir);
 		}
 	}
 
