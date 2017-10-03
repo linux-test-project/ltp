@@ -206,10 +206,7 @@ void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* set the HZ from sysconf */
-	hz = sysconf(_SC_CLK_TCK);
-	if (hz == -1) {
-		tst_brkm(TBROK, NULL, "Failed to read the HZ from sysconf\n");
-	}
+	hz = SAFE_SYSCONF(NULL, _SC_CLK_TCK);
 
 	TEST_PAUSE;
 
