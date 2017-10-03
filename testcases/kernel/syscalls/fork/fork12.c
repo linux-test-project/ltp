@@ -44,6 +44,7 @@
 #include <errno.h>
 #include <string.h>
 #include "test.h"
+#include "safe_macros.h"
 
 char *TCID = "fork12";
 int TST_TOTAL = 1;
@@ -73,11 +74,7 @@ int main(int ac, char **av)
 				exit(0);
 			}
 			forks++;
-			ret = waitpid(-1, &status, WNOHANG);
-			if (ret < 0)
-				tst_brkm(TBROK, cleanup,
-					 "waitpid failed %d: %s\n", errno,
-					 strerror(errno));
+			ret = SAFE_WAITPID(cleanup, -1, &status, WNOHANG);
 			if (ret > 0) {
 				/* a child may be killed by OOM killer */
 				if (WTERMSIG(status) == SIGKILL)
