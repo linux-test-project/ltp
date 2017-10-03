@@ -141,10 +141,8 @@ static void setup(void)
 
 	/* Switch to nobody user for correct error code collection */
 	ltpuser = getpwnam(nobody_uid);
-	if (setgid(ltpuser->pw_gid) == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "setgid(%d) failed",
-			 ltpuser->pw_gid);
-	} else SAFE_SETUID(NULL, ltpuser->pw_uid);
+	SAFE_SETGID(NULL, ltpuser->pw_gid);
+	SAFE_SETUID(NULL, ltpuser->pw_uid);
 
 	tst_tmpdir();
 
