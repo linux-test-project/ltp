@@ -93,6 +93,7 @@ static void setup_ipc(void)
 	ipc_fd = open(shm_path, O_CREAT | O_EXCL | O_RDWR, 0600);
 	if (ipc_fd < 0)
 		tst_brk(TBROK | TERRNO, "open(%s)", shm_path);
+	SAFE_CHMOD(shm_path, 0666);
 
 	SAFE_FTRUNCATE(ipc_fd, size);
 
