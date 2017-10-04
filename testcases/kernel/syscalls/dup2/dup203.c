@@ -144,7 +144,9 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "Cannot create second file");
 		}
 
-		SAFE_CLOSE(cleanup, fd2);
+		/* SAFE_CLOSE() sets the fd to -1 avoid it here */
+		rval = fd2;
+		SAFE_CLOSE(cleanup, rval);
 
 		TEST(dup2(fd0, fd2));
 
