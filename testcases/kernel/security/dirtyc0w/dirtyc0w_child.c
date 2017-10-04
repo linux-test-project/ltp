@@ -104,7 +104,10 @@ int main(void)
 	int fd;
 	struct stat st;
 
+	tst_reinit();
+
 	SAFE_SIGNAL(SIGUSR1, sighandler);
+	TST_CHECKPOINT_WAKE(0);
 
 	/* Open it read only and map */
 	fd = SAFE_OPEN(FNAME, O_RDONLY);

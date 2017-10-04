@@ -81,6 +81,7 @@ void dirtyc0w_test(void)
 		SAFE_EXECLP("dirtyc0w_child", "dirtyc0w_child", NULL);
 	}
 
+	TST_CHECKPOINT_WAIT(0);
 	for (i = 0; i < 100; i++)  {
 		usleep(10000);
 
@@ -104,6 +105,7 @@ void dirtyc0w_test(void)
 
 static struct tst_test test = {
 	.needs_tmpdir = 1,
+	.needs_checkpoints = 1,
 	.forks_child = 1,
 	.needs_root = 1,
 	.setup = setup,
