@@ -26,11 +26,6 @@ INSTALL_TARGETS		:= move_pages.sh
 
 MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*[0-9].c))
 
-# linux_syscall_numbers.h is forcing move_pages_support.o to complain about
-# cleanup being undefined [and when defined] unused. Let's just skip this
-# warning...
-move_pages_support.o: CFLAGS += -Wno-unused-function
-
 $(MAKE_TARGETS): %: %.o move_pages_support.o
 
 LDLIBS			+= -lpthread -lrt

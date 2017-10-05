@@ -20,15 +20,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-#
-# gcc complains about unused functions / variables when HAS_NUMA_H isn't
-# defined, so let's just skip the warning. It's nothing more than a few extra
-# variables and functions allocated on the stack, so meh... no harm, no foul.
-#
-ifeq ($(NUMA_LIBS),)
-CPPFLAGS		+= -Wno-unused
-endif
-
 CPPFLAGS		+= -I$(abs_srcdir)/../utils/
 
 include $(top_srcdir)/testcases/kernel/include/lib.mk

@@ -23,9 +23,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 MAKE_TARGETS		:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*[0-9].c))
 $(MAKE_TARGETS): %: %.o migrate_pages_common.o
 
-ifeq ($(NUMA_LIBS),)
-CPPFLAGS		+= -Wno-unused
-endif
 CPPFLAGS		+= -I$(abs_srcdir)/../utils/
 
 include $(top_srcdir)/testcases/kernel/include/lib.mk
