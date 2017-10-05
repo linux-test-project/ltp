@@ -218,8 +218,13 @@ static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
 
 /* mips */
 #elif defined(__mips__) && __WORDSIZE == 32
+#if __BYTE_ORDER == __BIG_ENDIAN
 	return ltp_syscall(__NR_sync_file_range, fd, 0, (int)(offset >> 32),
 		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+	return ltp_syscall(__NR_sync_file_range, fd, 0, (int)offset,
+		(int)(offset >> 32), (int)nbytes, (int)(nbytes >> 32), flags);
+#endif
 
 /* other */
 #else
