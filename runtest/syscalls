@@ -464,6 +464,8 @@ ioctl04      ioctl04
 ioctl05      ioctl05
 ioctl06      ioctl06
 
+ioctl07      ioctl07
+
 inotify_init1_01 inotify_init1_01
 inotify_init1_02 inotify_init1_02
 
