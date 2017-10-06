@@ -36,6 +36,7 @@ usage()
 	echo "  -T    IPsec TCP stress tests"
 	echo "  -U    IPsec UDP stress tests"
 	echo "  -D    IPsec DCCP stress tests"
+	echo "  -S    IPsec SCTP stress tests"
 	echo "  -R    route stress tests"
 	echo "  -M    multicast stress tests"
 	echo "  -F    network features tests (TFO, vxlan, etc.)"
@@ -47,7 +48,7 @@ usage()
 	echo "  -h    print this help"
 }
 
-while getopts 6mnrstaebcdiTUDRMFf:qQVvh OPTION
+while getopts 6mnrstaebcdiTUDSRMFf:qQVvh OPTION
 do
 	case $OPTION in
 	6) TEST_CASES="$TEST_CASES net.ipv6 net.ipv6_lib";;
@@ -65,6 +66,7 @@ do
 	T) TEST_CASES="$TEST_CASES net_stress.ipsec_tcp";;
 	U) TEST_CASES="$TEST_CASES net_stress.ipsec_udp";;
 	D) TEST_CASES="$TEST_CASES net_stress.ipsec_dccp";;
+	S) TEST_CASES="$TEST_CASES net_stress.ipsec_sctp";;
 	R) TEST_CASES="$TEST_CASES net_stress.route";;
 	M) TEST_CASES="$TEST_CASES net_stress.multicast";;
 	F) TEST_CASES="$TEST_CASES net.features";;
