@@ -135,10 +135,10 @@ check_result()
                 TOTAL_SUM=$(( $TOTAL_SUM + $i ))
             done
             if [ $TOTAL_SUM -eq $LSUM ]; then
-                tst_resm TINFO "Success rdist in $c_ruser@$c_rhost "
+                tst_resm TINFO "Success rdist in $c_ruser@$c_rhost"
                 rsh -n -l $c_ruser $c_rhost "rm -rf $FILES"
             else
-                end_testcase "Wrong sum doing rdist in $curr_ruser@$curr_rhost"
+                end_testcase "Wrong sum doing rdist in $c_ruser@$c_rhost"
             fi
        done
    done
