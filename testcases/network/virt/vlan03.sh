@@ -31,12 +31,7 @@ virt_type="vlan"
 . test_net.sh
 . virt_lib.sh
 
-cleanup()
-{
-	cleanup_vifaces
-	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
-}
-TST_CLEANUP="cleanup"
+TST_CLEANUP="virt_cleanup_rmt"
 
 if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"
@@ -59,10 +54,12 @@ for n in $(seq 1 3); do
 	tst_resm TINFO "networks with the same VLAN ID must work"
 	virt_setup "id 4094 $p" "id 4094 $p"
 	virt_compare_netperf
+	virt_cleanup_rmt
 
 	tst_resm TINFO "different VLAN ID shall not work together"
 	virt_setup "id 4093 $p" "id 4094 $p"
 	virt_compare_netperf "fail"
+	virt_cleanup_rmt
 done
 
 tst_exit

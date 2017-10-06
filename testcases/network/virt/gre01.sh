@@ -30,12 +30,7 @@ virt_type="gre"
 
 . virt_lib.sh
 
-cleanup()
-{
-	cleanup_vifaces
-	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
-}
-TST_CLEANUP="cleanup"
+TST_CLEANUP="virt_cleanup_rmt"
 
 if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"

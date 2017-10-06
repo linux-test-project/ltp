@@ -32,12 +32,7 @@ vxlan_dst_addr="uni"
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}
 [ "$VIRT_PERF_THRESHOLD" -lt 160 ] && VIRT_PERF_THRESHOLD=160
 
-cleanup()
-{
-	cleanup_vifaces
-	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
-}
-TST_CLEANUP="cleanup"
+TST_CLEANUP="virt_cleanup_rmt"
 
 if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"
@@ -47,6 +42,7 @@ tst_resm TINFO "the same VNI must work"
 # VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
 vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE" "id 0xFFFFFE"
 virt_compare_netperf
+virt_cleanup_rmt
 
 tst_resm TINFO "different VNI shall not work together"
 vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE" "id 0xFFFFFD"

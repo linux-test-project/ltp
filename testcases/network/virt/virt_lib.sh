@@ -94,6 +94,12 @@ cleanup_vifaces()
 	done
 }
 
+virt_cleanup_rmt()
+{
+	cleanup_vifaces
+	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
+}
+
 TST_CLEANUP="cleanup_vifaces"
 trap "tst_brkm TBROK 'test interrupted'" INT
 
@@ -189,7 +195,7 @@ virt_add_delete_test()
 virt_setup()
 {
 	local opt="$1"
-	local opt_r="$2"
+	local opt_r="${2:-$1}"
 
 	tst_resm TINFO "setup local ${virt_type} with '$opt'"
 	virt_add ltp_v0 $opt || \
@@ -213,6 +219,9 @@ virt_setup()
 
 	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
 	tst_rhost_run -s -c "ip addr add ${ip_virt_remote}/24 dev ltp_v0"
+
+	ROD_SILENT "sysctl -q net.ipv6.conf.ltp_v0.accept_dad=0"
+	tst_rhost_run -s -c "sysctl -q net.ipv6.conf.ltp_v0.accept_dad=0"
 
 	ROD_SILENT "ip li set up ltp_v0"
 	tst_rhost_run -s -c "ip li set up ltp_v0"
@@ -258,23 +267,21 @@ virt_compare_netperf()
 	local ret1="pass"
 	local ret2="pass"
 	local expect_res="${1:-pass}"
+	local opts="$2"
 
-	tst_netload -H $ip_virt_remote -a $clients_num -R $max_requests \
+	tst_netload -H $ip_virt_remote -a $clients_num -R $max_requests $opts \
 		-r $client_requests -d res_ipv4 -e $expect_res || ret1="fail"
 
-	tst_netload -H ${ip6_virt_remote}%ltp_v0 -a $clients_num \
+	tst_netload -H ${ip6_virt_remote}%ltp_v0 -a $clients_num $opts \
 		-R $max_requests -r $client_requests -d res_ipv6 \
 		-e $expect_res || ret2="fail"
-
-	ROD_SILENT "ip link delete ltp_v0"
-	tst_rhost_run -s -c "ip link delete ltp_v0"
 
 	[ "$ret1" = "fail" -o "$ret2" = "fail" ] && return
 
 	local vt="$(cat res_ipv4)"
 	local vt6="$(cat res_ipv6)"
 
-	tst_netload -H $ip_remote -a $clients_num -R $max_requests \
+	tst_netload -H $ip_remote -a $clients_num -R $max_requests $opts \
 		-r $client_requests -d res_ipv4
 
 	local lt="$(cat res_ipv4)"
