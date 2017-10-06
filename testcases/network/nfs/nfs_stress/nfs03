@@ -42,11 +42,10 @@ make_subdirs()
 
 touch_files()
 {
-	tst_resm TINFO "create files [0 - $DIR_NUM]/file$DIR_NUM[0 - $FILE_NUM]"
 	for j in $(seq 0 $DIR_NUM); do
 		cd dir$j
 		for k in $(seq 0 $FILE_NUM); do
-			ROD \>file$j$k
+			ROD touch file$j$k
 		done
 		cd ..
 	done
@@ -54,7 +53,6 @@ touch_files()
 
 rm_files()
 {
-	tst_resm TINFO "rm files [0 - $DIR_NUM]/file$DIR_NUM[0 - $FILE_NUM]"
 	for j in $(seq 0 $DIR_NUM); do
 		cd dir$j
 		for k in $(seq 0 $FILE_NUM); do
@@ -70,7 +68,7 @@ do_test()
 
 	tst_resm TINFO "creating dir1 subdirectories & files"
 	ROD mkdir -p dir1
-	ROD cd dir1
+	cd dir1
 	make_subdirs
 	touch_files &
 	pid1=$!
@@ -78,18 +76,18 @@ do_test()
 
 	tst_resm TINFO "creating dir2 subdirectories & files"
 	ROD mkdir -p dir2
-	ROD cd dir2
+	cd dir2
 	make_subdirs
 	touch_files &
 	pid2=$!
 
 	tst_resm TINFO "cd dir1 & removing files"
-	ROD cd ../dir1
+	cd ../dir1
 	wait $pid1
 	rm_files &
 
 	tst_resm TINFO "cd dir2 & removing files"
-	ROD cd ../dir2
+	cd ../dir2
 	wait $pid2
 	rm_files &
 
