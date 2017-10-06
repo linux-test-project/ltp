@@ -18,17 +18,6 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= ipvlan01.sh \
-			   geneve01.sh \
-			   gre01.sh \
-			   macvlan01.sh \
-			   macvtap01.sh \
-			   virt_lib.sh \
-			   vlan01.sh \
-			   vlan02.sh \
-			   vlan03.sh \
-			   vxlan01.sh \
-			   vxlan02.sh \
-			   vxlan03.sh \
+INSTALL_TARGETS		:= *.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -37,6 +37,9 @@ vlan03 vlan03.sh
 macvlan01 macvlan01.sh
 macvtap01 macvtap01.sh
 
+macsec01 macsec01.sh
+macsec02 macsec02.sh
+
 ipvlan01 ipvlan01.sh
 
 gre_ipv4_01 gre01.sh
