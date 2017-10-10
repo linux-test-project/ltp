@@ -99,10 +99,12 @@ static void setup_ipc(void)
 	results = SAFE_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, ipc_fd, 0);
 
 	/* Checkpoints needs to be accessible from processes started by exec() */
-	if (tst_test->needs_checkpoints)
+	if (tst_test->needs_checkpoints) {
 		sprintf(ipc_path, IPC_ENV_VAR "=%s", shm_path);
-	else
+		putenv(ipc_path);
+	} else {
 		SAFE_UNLINK(shm_path);
+	}
 
 	SAFE_CLOSE(ipc_fd);
 
@@ -130,13 +132,13 @@ static void cleanup_ipc(void)
 
 void tst_reinit(void)
 {
-	const char *path = getenv("LTP_IPC_PATH");
+	const char *path = getenv(IPC_ENV_VAR);
 	size_t size = getpagesize();
 	int fd;
 	void *ptr;
 
 	if (!path)
-		tst_brk(TBROK, "LTP_IPC_PATH is not defined");
+		tst_brk(TBROK, IPC_ENV_VAR" is not defined");
 
 	if (access(path, F_OK))
 		tst_brk(TBROK, "File %s does not exist!", path);
