@@ -24,9 +24,6 @@
 
 #include <stdarg.h>
 
-/* declared in tst_tmpdir.c */
-const char *tst_get_startwd(void);
-
 /*
  * This is the default temporary directory used by tst_tmpdir().
  *

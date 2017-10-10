@@ -50,4 +50,7 @@ char *tst_get_tmpdir(void);
  */
 int tst_tmpdir_created(void);
 
+/* declared in tst_tmpdir.c */
+const char *tst_get_startwd(void);
+
 #endif	/* OLD_TMPDIR_H__ */
