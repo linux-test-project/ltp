@@ -37,6 +37,5 @@
         tst_safe_checkpoint_wait(__FILE__, __LINE__, NULL, id, 0);
 
 extern const char *tst_ipc_path;
-extern char *const tst_ipc_envp[];
 
 #endif /* TST_CHECKPOINT__ */

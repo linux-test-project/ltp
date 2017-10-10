@@ -65,7 +65,6 @@ extern unsigned int tst_max_futexes;
 
 static char ipc_path[1024];
 const char *tst_ipc_path = ipc_path;
-char *const tst_ipc_envp[] = {ipc_path, NULL};
 
 static char shm_path[1024];
 
