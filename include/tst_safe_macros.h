@@ -447,5 +447,12 @@ int safe_personality(const char *filename, unsigned int lineno,
 		    unsigned long persona);
 #define SAFE_PERSONALITY(persona) safe_personality(__FILE__, __LINE__, persona)
 
+#define SAFE_SETENV(name, value, overwrite) do {		\
+	if (setenv(name, value, overwrite)) {			\
+		tst_brk_(__FILE__, __LINE__, TBROK | TERRNO,	\
+			"setenv(%s, %s, %d) failed",		\
+			name, value, overwrite);		\
+	}							\
+	} while (0)
 
 #endif /* SAFE_MACROS_H__ */
