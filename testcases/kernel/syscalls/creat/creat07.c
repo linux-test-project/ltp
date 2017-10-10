@@ -38,9 +38,7 @@ static void verify_creat(void)
 
 	pid = SAFE_FORK();
 	if (pid == 0) {
-		char *av[] = {TEST_APP, NULL};
-		(void)execve(TEST_APP, av, tst_ipc_envp);
-		perror("execve failed");
+		SAFE_EXECLP(TEST_APP, TEST_APP, NULL);
 		exit(1);
 	}
 
