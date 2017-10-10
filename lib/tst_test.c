@@ -32,6 +32,7 @@
 #include "lapi/futex.h"
 #include "lapi/syscalls.h"
 #include "tst_ansi_color.h"
+#include "tst_safe_stdio.h"
 #include "tst_timer_test.h"
 
 #include "old_resource.h"
@@ -841,12 +842,30 @@ static unsigned long long get_time_ms(void)
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
+static void add_paths(void)
+{
+	char *old_path = getenv("PATH");
+	const char *start_dir;
+	char *new_path;
+
+	start_dir = tst_get_startwd();
+
+	if (old_path)
+		SAFE_ASPRINTF(&new_path, "%s::%s", old_path, start_dir);
+	else
+		SAFE_ASPRINTF(&new_path, "::%s", start_dir);
+
+	SAFE_SETENV("PATH", new_path, 1);
+	free(new_path);
+}
+
 static void testrun(void)
 {
 	unsigned int i = 0;
 	unsigned long long stop_time = 0;
 	int cont = 1;
 
+	add_paths();
 	do_test_setup();
 
 	if (duration > 0)
