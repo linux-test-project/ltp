@@ -923,12 +923,27 @@ then.
 If '.format_device' flag is set the device is formatted with a filesystem as
 well. You can use '.dev_fs_type' to override the default filesystem type if
 needed and pass additional options to mkfs via '.dev_fs_opts' and
-'.dev_extra_opt' pointers.
+'.dev_extra_opt' pointers. Note that '.format_device' implies '.needs_device'
+there is no need to set both.
 
 If '.mount_device' is set, the device is mounted at '.mntpoint' which is used
 to pass a directory name that will be created and used as mount destination.
 You can pass additional flags and data to the mount command via '.mnt_flags'
-and '.mnt_data' pointers.
+and '.mnt_data' pointers. Note that '.mount_device' implies '.needs_device'
+and '.format_device' so there is no need to set the later two.
+
+If '.needs_rofs' is set, read-only filesystem is mounted at '.mntpoint' this
+one is supposed to be used for 'EROFS' tests.
+
+If '.all_filesystems' is set the test function is executed for all supported
+filesystems. Supported filesystems are detected based on existence of the
+'mkfs.$fs' helper and on kernel support to mount it. For each supported
+filesystem the 'tst_device.fs_type' is set to the currently tested fs type, if
+'.format_device' is set the device is formatted as well, if '.mount_device' is
+set it's mounted at '.mntpoint'. Also the test timeout is reset for each
+execution of the test fuction. This flag is expected to be used for filesystem
+related syscalls that are at least partly implemented in the filesystem
+specific code e.g. fallocate().
 
 [source,c]
 -------------------------------------------------------------------------------
