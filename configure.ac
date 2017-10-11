@@ -44,9 +44,13 @@ AC_CHECK_HEADERS([ \
     sys/inotify.h \
     sys/fanotify.h \
     sys/prctl.h \
+    sys/ustat.h \
 ])
 
-AC_CHECK_FUNCS([profil])
+AC_CHECK_FUNCS([ \
+    profil \
+    ustat \
+])
 
 # Tools knobs
 

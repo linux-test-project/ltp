@@ -21,15 +21,22 @@
 
 #include <unistd.h>
 #include <errno.h>
-#include <sys/ustat.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include "config.h"
 #include "test.h"
 #include "safe_macros.h"
 
+char *TCID = "ustat01";
+
+#ifdef HAVE_USTAT
+# ifdef HAVE_SYS_USTAT_H
+#  include <sys/ustat.h>
+# endif
+
 static void setup(void);
 
-char *TCID = "ustat01";
 int TST_TOTAL = 1;
 
 static dev_t dev_num;
@@ -79,3 +86,9 @@ static void setup(void)
 
 	dev_num = buf.st_dev;
 }
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "system doesn't have ustat() support");
+}
+#endif
