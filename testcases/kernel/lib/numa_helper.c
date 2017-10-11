@@ -39,20 +39,9 @@
 unsigned long get_max_node(void)
 {
 	unsigned long max_node = 0;
-#if HAVE_NUMA_H
-#if !defined(LIBNUMA_API_VERSION) || LIBNUMA_API_VERSION < 2
-	max_node = NUMA_NUM_NODES;
-	/*
-	 * NUMA_NUM_NODES is not reliable, libnuma >=2 is looking
-	 * at /proc/self/status to figure out correct number.
-	 * If buffer is not large enough get_mempolicy will fail with EINVAL.
-	 */
-	if (max_node < 1024)
-		max_node = 1024;
-#else
+#if HAVE_NUMA_H && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	max_node = numa_max_possible_node() + 1;
 #endif
-#endif /* HAVE_NUMA_H */
 	return max_node;
 }
 
@@ -209,7 +198,7 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 		}
 	} while (0);
 	free(nodemask);
-#endif
+#endif /* HAVE_NUMA_H */
 	return ret;
 }
 
