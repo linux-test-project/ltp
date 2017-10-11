@@ -162,10 +162,9 @@ void oom(int testcase, int lite, int retcode, int allow_sigkill)
 	}
 }
 
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 static void set_global_mempolicy(int mempolicy)
 {
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	int num_nodes, *nodes;
 	int ret;
@@ -203,8 +202,10 @@ static void set_global_mempolicy(int mempolicy)
 		if (set_mempolicy(mempolicy, nmask, MAXNODES) == -1)
 			tst_brk(TBROK|TERRNO, "set_mempolicy");
 	}
-#endif
 }
+#else
+static void set_global_mempolicy(int mempolicy LTP_ATTRIBUTE_UNUSED) { }
+#endif
 
 void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 {
@@ -562,8 +563,7 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	unsigned long length;
 	unsigned long pagesize;
 
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 #endif
 
@@ -588,8 +588,7 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 			tst_brk(TBROK|TERRNO, "madvise");
 #endif
 
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 		clean_node(nmask);
 		set_node(nmask, nodes[i]);
 		/*

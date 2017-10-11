@@ -16,6 +16,7 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "config.h"
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -35,8 +36,7 @@ long get_page_size(void)
  */
 void free_pages(void **pages, unsigned int num)
 {
-
-#if HAVE_NUMA_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	int i;
 	size_t onepage = get_page_size();
 
@@ -111,7 +111,7 @@ int alloc_pages_linear(void **pages, unsigned int num)
 {
 	int nodes[num];
 
-#if HAVE_NUMA_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	unsigned int i;
 	unsigned int n = 0;
 	int num_allowed_nodes;
@@ -168,7 +168,7 @@ int alloc_pages_on_node(void **pages, unsigned int num, int node)
 void
 verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
 {
-#if HAVE_NUMA_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	unsigned int i;
 	int which_node;
 	int ret;
@@ -214,7 +214,7 @@ verify_pages_on_nodes(void **pages, int *status, unsigned int num, int *nodes)
  */
 void verify_pages_linear(void **pages, int *status, unsigned int num)
 {
-#if HAVE_NUMA_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	unsigned int i;
 	unsigned int n = 0;
 	int nodes[num];
@@ -269,7 +269,7 @@ void verify_pages_on_node(void **pages, int *status, unsigned int num, int node)
  */
 int alloc_shared_pages_on_node(void **pages, unsigned int num, int node)
 {
-#if HAVE_NUMA_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	char *shared;
 	unsigned int i;
 	int nodes[num];
@@ -392,7 +392,7 @@ void free_sem(sem_t * sem, int num)
  */
 void check_config(unsigned int min_nodes)
 {
-#if HAVE_NUMA_H && HAVE_NUMAIF_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	int num_allowed_nodes;
 	int ret;
 

@@ -36,4 +36,4 @@ int get_allowed_nodes(int flag, int count, ...);
 void nh_dump_nodes(void);
 int is_numa(void (*cleanup_fn)(void), int flag, int min_nodes);
 
-#endif
+#endif /* NUMA_HELPER_H */

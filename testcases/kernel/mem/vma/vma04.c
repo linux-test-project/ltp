@@ -53,8 +53,7 @@
 char *TCID = "vma04";
 int TST_TOTAL = 5;
 
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MPOL_CONSTANTS && \
-	defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 
 static unsigned long pagesize;
 static int opt_node;
@@ -325,9 +324,9 @@ static void usage(void)
 	printf("  -n      Number of NUMA nodes\n");
 }
 
-#else /* no NUMA */
+#else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "no NUMA development packages installed.");
+	tst_brkm(TCONF, NULL, "test requires libnuma >= 2 and it's development packages");
 }
 #endif

@@ -20,16 +20,20 @@
  * the GNU General Public License for more details.
  */
 
+#include "config.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
+
 #include "numa_helper.h"
 #include "mem.h"
 
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 
 static void verify_oom(void)
 {
@@ -85,5 +89,5 @@ static struct tst_test test = {
 };
 
 #else
-	TST_TEST_TCONF("no NUMA development packages installed.");
+	TST_TEST_TCONF("test requires libnuma >= 2 and it's development packages");
 #endif

@@ -23,11 +23,14 @@
  */
 
 #include <stdio.h>
+
 #include "config.h"
 #include "tst_res_flags.h"
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
 
-/* Shortcut because the test requires numa and mempolicy support. */
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_LINUX_MEMPOLICY_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
@@ -493,10 +496,10 @@ int main(int argc, char *argv[])
 	return 0;
 
 }
-#else /* ! (HAVE_NUMA_H && HAVE_NUMAIF_H) */
+#else
 int main(void)
 {
-	printf("System doesn't have required numa support.\n");
+	fprintf(stderr, "test requires libnuma >= 2 and it's development packages\n");
 	return TCONF;
 }
-#endif /* HAVE_NUMA_H && HAVE_NUMAIF_H */
+#endif

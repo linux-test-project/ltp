@@ -23,6 +23,9 @@
 #include "config.h"
 #include <stdio.h>
 #include <sys/wait.h>
+#if HAVE_NUMA_H
+#include <numa.h>
+#endif
 #if HAVE_NUMAIF_H
 #include <numaif.h>
 #endif
@@ -30,8 +33,7 @@
 #include "mem.h"
 #include "numa_helper.h"
 
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H \
-	&& HAVE_MPOL_CONSTANTS
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 volatile int end;
 static int *nodes;
 static int nnodes;
@@ -186,6 +188,6 @@ static struct tst_test test = {
 	.min_kver = "2.6.32",
 };
 
-#else /* no NUMA */
-	TST_TEST_TCONF("no NUMA development packages installed.");
+#else
+	TST_TEST_TCONF("test requires libnuma >= 2 and it's development packages");
 #endif

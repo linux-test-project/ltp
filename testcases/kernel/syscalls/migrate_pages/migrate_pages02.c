@@ -45,6 +45,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
+
 #include "config.h"
 #include "test.h"
 #include "safe_macros.h"
@@ -65,7 +66,9 @@
 char *TCID = "migrate_pages02";
 int TST_TOTAL = 1;
 
-#if defined(__NR_migrate_pages) && HAVE_NUMA_H && HAVE_NUMAIF_H
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2 \
+	&& defined(__NR_migrate_pages)
+
 static const char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;
 static int *nodes, nodeA, nodeB;
@@ -397,10 +400,10 @@ static void cleanup(void)
 	free(nodes);
 }
 
-#else /* __NR_migrate_pages */
+#else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "System doesn't support __NR_migrate_pages"
-		 " or libnuma is not available");
+	tst_brkm(TCONF, NULL, "System doesn't support __NR_migrate_pages or "
+		 "libnuma or libnuma development packages are not available");
 }
 #endif

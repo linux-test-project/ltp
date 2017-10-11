@@ -57,6 +57,7 @@
 #if HAVE_NUMAIF_H
 #include <numaif.h>
 #endif
+
 #include "test.h"
 #include "lapi/syscalls.h"
 #include "include_j_h.h"
@@ -66,8 +67,7 @@
 char *TCID = "get_mempolicy01";
 int TST_TOTAL = 1;
 
-#if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_MPOL_CONSTANTS && \
-	defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 
 #define MEM_LENGTH	(4 * 1024 * 1024)
 
@@ -311,9 +311,10 @@ static void setup(void)
 	TEST_PAUSE;
 	tst_tmpdir();
 }
+
 #else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "System doesn't have required numa support");
+	tst_brkm(TCONF, NULL, "test requires libnuma >= 2 and it's development packages");
 }
 #endif

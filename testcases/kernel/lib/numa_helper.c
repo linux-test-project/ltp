@@ -39,13 +39,13 @@
 unsigned long get_max_node(void)
 {
 	unsigned long max_node = 0;
-#if HAVE_NUMA_H && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
 	max_node = numa_max_possible_node() + 1;
 #endif
 	return max_node;
 }
 
-#if HAVE_NUMA_H
+#ifdef HAVE_LIBNUMA
 static void get_nodemask_allnodes(nodemask_t * nodemask, unsigned long max_node)
 {
 	unsigned long nodemask_size = max_node / 8;
@@ -63,7 +63,7 @@ static void get_nodemask_allnodes(nodemask_t * nodemask, unsigned long max_node)
 
 static int filter_nodemask_mem(nodemask_t * nodemask, unsigned long max_node)
 {
-#if MPOL_F_MEMS_ALLOWED
+#ifdef MPOL_F_MEMS_ALLOWED
 	unsigned long nodemask_size = max_node / 8;
 	memset(nodemask, 0, nodemask_size);
 	/*
@@ -134,7 +134,7 @@ static void filter_nodemask_cpu(nodemask_t * nodemask, unsigned long max_node)
 	}
 	free(cpumask);
 }
-#endif /* HAVE_NUMA_H */
+#endif /* HAVE_LIBNUMA */
 
 /*
  * get_allowed_nodes_arr - get number and array of available nodes
@@ -152,7 +152,7 @@ static void filter_nodemask_cpu(nodemask_t * nodemask, unsigned long max_node)
 int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 {
 	int ret = 0;
-#if HAVE_NUMA_H
+#ifdef HAVE_LIBNUMA
 	int i;
 	nodemask_t *nodemask = NULL;
 #endif
@@ -160,7 +160,7 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 	if (nodes)
 		*nodes = NULL;
 
-#if HAVE_NUMA_H
+#ifdef HAVE_LIBNUMA
 	unsigned long max_node, nodemask_size;
 
 	if (numa_available() == -1)
@@ -198,7 +198,7 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes)
 		}
 	} while (0);
 	free(nodemask);
-#endif /* HAVE_NUMA_H */
+#endif /* HAVE_LIBNUMA */
 	return ret;
 }
 

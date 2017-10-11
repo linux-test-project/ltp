@@ -50,6 +50,7 @@
 #include "test.h"
 #include "lapi/syscalls.h"
 #include "config.h"
+
 #if HAVE_LINUX_MEMPOLICY_H
 #include <linux/mempolicy.h>
 
