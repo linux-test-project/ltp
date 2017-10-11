@@ -47,25 +47,25 @@
 
 #define _XOPEN_SOURCE 600
 
-#include "test.h"
-#include "config.h"
-
-char *TCID = "aio01";
-int TST_TOTAL = 6;
-
-#ifdef HAVE_LIBAIO_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
 #include <errno.h>
-#include <libaio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+
+#include "test.h"
+#include "config.h"
+
+char *TCID = "aio01";
+int TST_TOTAL = 6;
+
+#ifdef HAVE_LIBAIO
+#include <libaio.h>
 
 static void help(void);
 static void setup(void);
@@ -413,14 +413,11 @@ static void cleanup(void)
 	close(fd);
 	io_queue_release(io_ctx);
 	tst_rmdir();
-
 }
 
 #else
-
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "libaio missing");
+	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
 }
-
 #endif

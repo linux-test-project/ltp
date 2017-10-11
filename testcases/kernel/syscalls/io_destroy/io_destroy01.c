@@ -21,6 +21,9 @@
 /* Porting from Crackerjack to LTP is done
    by Masatake YAMATO <yamato@redhat.com> */
 
+#include <errno.h>
+#include <string.h>
+
 #include "config.h"
 #include "test.h"
 
@@ -28,10 +31,8 @@ char *TCID = "io_destroy01";
 
 int TST_TOTAL = 1;
 
-#ifdef HAVE_LIBAIO_H
+#ifdef HAVE_LIBAIO
 #include <libaio.h>
-#include <errno.h>
-#include <string.h>
 
 static void cleanup(void)
 {
@@ -99,9 +100,10 @@ int main(int argc, char *argv[])
 	cleanup();
 	tst_exit();
 }
+
 #else
-int main(int argc, char *argv[])
+int main(void)
 {
-	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
+	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
 }
 #endif

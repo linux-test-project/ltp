@@ -37,7 +37,7 @@
 #include <string.h>
 #include <errno.h>
 
-#if HAVE_LIBAIO_H
+#ifdef HAVE_LIBAIO
 
 #define AIO_MAXIO 32
 #define AIO_BLKSIZE (64*1024)
@@ -237,5 +237,4 @@ int test_main(void)
 
 	return status;
 }
-
 #endif

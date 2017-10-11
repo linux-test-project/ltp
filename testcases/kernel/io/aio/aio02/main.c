@@ -6,16 +6,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "test.h"
+
 #include "config.h"
+#include "test.h"
 
 #define TEST_NAME "aio_tio"
 
 char *TCID = "aio02/" TEST_NAME;
 int TST_TOTAL = 0;
 
-#if HAVE_LIBAIO_H
-
+#ifdef HAVE_LIBAIO
 #include <libaio.h>
 
 int test_main(void);
@@ -32,6 +32,6 @@ int main(void)
 #else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "libaio missing");
+	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
 }
 #endif

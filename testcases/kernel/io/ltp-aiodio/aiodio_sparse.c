@@ -35,10 +35,16 @@
 #include <limits.h>
 #include <getopt.h>
 
-#include <libaio.h>
 
+#include "config.h"
 #include "test.h"
 #include "safe_macros.h"
+
+char *TCID = "aiodio_sparse";
+int TST_TOTAL = 1;
+
+#ifdef HAVE_LIBAIO
+#include <libaio.h>
 
 #define NUM_CHILDREN 1000
 
@@ -48,9 +54,6 @@ int fd;
 static void setup(void);
 static void cleanup(void);
 static void usage(void);
-
-char *TCID = "aiodio_sparse";
-int TST_TOTAL = 1;
 
 #include "common_sparse.h"
 
@@ -325,3 +328,10 @@ static void cleanup(void)
 
 	tst_rmdir();
 }
+
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
+}
+#endif

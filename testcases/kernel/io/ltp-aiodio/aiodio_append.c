@@ -32,9 +32,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <libaio.h>
-
+#include "config.h"
 #include "test.h"
+
+char *TCID = "aiodio_append";
+
+#ifdef HAVE_LIBAIO
+#include <libaio.h>
 
 #define NUM_CHILDREN 8
 
@@ -174,3 +178,9 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
+}
+#endif

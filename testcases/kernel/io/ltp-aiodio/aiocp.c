@@ -38,8 +38,7 @@
 #include "config.h"
 #include "tst_res_flags.h"
 
-#if HAVE_LIBAIO_H
-
+#ifdef HAVE_LIBAIO
 #include <libaio.h>
 
 #define AIO_BLKSIZE	(64*1024)
@@ -600,11 +599,9 @@ int main(int argc, char *const *argv)
  */
 
 #else
-
 int main(void)
 {
-	fprintf(stderr, "System doesn't have libaio support.\n");
+	fprintf(stderr, "test requires libaio and it's development packages\n");
 	return TCONF;
 }
-
 #endif

@@ -61,14 +61,13 @@
 #define CLEANUP cleanup
 #include "lapi/syscalls.h"
 
-#ifdef HAVE_LIBAIO_H
-#include <libaio.h>
-#endif
-
-static void setup(void);
-
 TCID_DEFINE(eventfd01);
 int TST_TOTAL = 15;
+
+#ifdef HAVE_LIBAIO
+#include <libaio.h>
+
+static void setup(void);
 
 static int myeventfd(unsigned int initval, int flags)
 {
@@ -727,3 +726,10 @@ static void cleanup(void)
 {
 	tst_rmdir();
 }
+
+#else
+int main(void)
+{
+	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
+}
+#endif

@@ -20,14 +20,15 @@
 /* Porting from Crackerjack to LTP is done
    by Masatake YAMATO <yamato@redhat.com> */
 
-#include "config.h"
-#include "tst_test.h"
-
-#ifdef HAVE_LIBAIO_H
-#include <libaio.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+
+#include "config.h"
+#include "tst_test.h"
+
+#ifdef HAVE_LIBAIO
+#include <libaio.h>
 
 static io_context_t ctx;
 static io_context_t invalid_ctx;
@@ -139,5 +140,5 @@ static struct tst_test test = {
 };
 
 #else
-	TST_TEST_TCONF("libaio.h was mission upon compilation");
+	TST_TEST_TCONF("test requires libaio and it's development packages");
 #endif
