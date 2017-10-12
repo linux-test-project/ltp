@@ -34,7 +34,9 @@
 #include <mntent.h>
 #include <sys/select.h>
 #include <sys/mount.h>
+
 #include "config.h"
+#include "tst_res_flags.h"
 
 #if HAVE_LIBAIO_H
 
@@ -602,7 +604,7 @@ int main(int argc, char *const *argv)
 int main(void)
 {
 	fprintf(stderr, "System doesn't have libaio support.\n");
-	return 1;
+	return TCONF;
 }
 
 #endif
