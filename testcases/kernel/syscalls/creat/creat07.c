@@ -38,7 +38,7 @@ static void verify_creat(void)
 
 	pid = SAFE_FORK();
 	if (pid == 0) {
-		SAFE_EXECLP(TEST_APP, TEST_APP, NULL);
+		SAFE_EXECL(TEST_APP, TEST_APP, NULL);
 		exit(1);
 	}
 
