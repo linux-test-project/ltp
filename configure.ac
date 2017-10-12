@@ -35,6 +35,7 @@ AC_CHECK_HEADERS([ \
     libaio.h \
     linux/can.h \
     linux/genetlink.h \
+    linux/keyctl.h \
     linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
@@ -184,7 +185,6 @@ LTP_CHECK_SPLICE
 LTP_CHECK_VMSPLICE
 LTP_CHECK_TIMERFD
 LTP_CHECK_IOVEC
-LTP_CHECK_KEYCTL
 LTP_CHECK_LINUXRANDOM
 LTP_CHECK_IF_LINK
 LTP_CHECK_KCMP
