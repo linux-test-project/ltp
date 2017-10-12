@@ -81,6 +81,10 @@ static inline long keyctl(int cmd, ...)
 # define KEYCTL_UPDATE 2
 #endif
 
+#ifndef KEYCTL_REVOKE
+# define KEYCTL_REVOKE 3
+#endif
+
 #ifndef KEYCTL_SETPERM
 # define KEYCTL_SETPERM 5
 #endif
@@ -89,12 +93,28 @@ static inline long keyctl(int cmd, ...)
 # define KEYCTL_UNLINK 9
 #endif
 
+#ifndef KEYCTL_READ
+# define KEYCTL_READ 11
+#endif
+
 #ifndef KEY_SPEC_THREAD_KEYRING
 # define KEY_SPEC_THREAD_KEYRING -1
 #endif
 
+#ifndef KEY_SPEC_PROCESS_KEYRING
+# define KEY_SPEC_PROCESS_KEYRING -2
+#endif
+
 #ifndef KEY_SPEC_SESSION_KEYRING
 # define KEY_SPEC_SESSION_KEYRING -3
+#endif
+
+#ifndef KEY_SPEC_USER_KEYRING
+# define KEY_SPEC_USER_KEYRING -4
+#endif
+
+#ifndef KEY_SPEC_USER_SESSION_KEYRING
+# define KEY_SPEC_USER_SESSION_KEYRING -5
 #endif
 
 #ifndef KEY_REQKEY_DEFL_THREAD_KEYRING
