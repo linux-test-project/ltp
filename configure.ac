@@ -33,18 +33,18 @@ AC_PREFIX_DEFAULT(/opt/ltp)
 AC_CHECK_HEADERS([ \
     ifaddrs.h \
     libaio.h \
-    mm.h \
-    pthread.h \
-    sys/xattr.h \
     linux/genetlink.h \
     linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
+    mm.h \
+    pthread.h \
     sys/epoll.h \
-    sys/inotify.h \
     sys/fanotify.h \
+    sys/inotify.h \
     sys/prctl.h \
     sys/ustat.h \
+    sys/xattr.h \
 ])
 
 AC_CHECK_FUNCS([ \
