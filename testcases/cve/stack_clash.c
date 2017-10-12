@@ -256,7 +256,7 @@ void stack_clash_test(void)
 		}
 	}
 
-	tst_brk(TBROK, "child did not exit gracefully");
+	tst_brk(TBROK, "Child %s", tst_strstatus(status));
 }
 
 static struct tst_test test = {

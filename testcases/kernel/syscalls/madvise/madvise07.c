@@ -91,10 +91,15 @@ static void run(void)
 	}
 
 	SAFE_WAITPID(pid, &status, 0);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGBUS)
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGBUS) {
 		tst_res(TPASS, "Received SIGBUS after accessing poisoned page");
-	else if (WIFEXITED(status) && WEXITSTATUS(status) == TBROK)
-		tst_res(TBROK, "Child exited abnormally");
+		return;
+	}
+
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+		return;
+
+	tst_res(TFAIL, "Child %s", tst_strstatus(status));
 }
 
 static struct tst_test test = {

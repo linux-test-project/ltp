@@ -305,8 +305,8 @@ retry:
 		goto retry;
 	}
 
-	if (WIFEXITED(status) && WEXITSTATUS(status))
-		tst_brk(TBROK, "Child exitted unexpectedly");
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+		tst_brk(TBROK, "Child %s", tst_strstatus(status));
 }
 
 static void setup(void)

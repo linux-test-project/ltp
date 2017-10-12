@@ -48,16 +48,12 @@ static void test_setrlimit(void)
 		SAFE_EXECLP("/bin/true", "/bin/true", NULL);
 	SAFE_WAITPID(child, &status, 0);
 
-	if (WIFEXITED(status)) {
-		if ((WEXITSTATUS(status) == 0))
-			tst_res(TPASS, "child process completed OK");
-		else
-			tst_res(TFAIL, "child process exited with %d",
-				WEXITSTATUS(status));
-	} else if (WIFSIGNALED(status)) {
-		tst_res(TFAIL, "child exited with signal %s",
-			tst_strsig(WTERMSIG(status)));
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+		tst_res(TPASS, "child process completed OK");
+		return;
 	}
+
+	tst_res(TFAIL, "child %s", tst_strstatus(status));
 }
 
 static struct tst_test test = {

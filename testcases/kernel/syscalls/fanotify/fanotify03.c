@@ -132,19 +132,10 @@ static void check_child(void)
 	}
 	SAFE_WAITPID(-1, &child_ret, 0);
 
-	if (WIFSIGNALED(child_ret)) {
-		tst_res(TFAIL, "child exited due to signal %d",
-			 WTERMSIG(child_ret));
-	} else if (WIFEXITED(child_ret)) {
-		if (WEXITSTATUS(child_ret) == 0)
-			tst_res(TPASS, "child exited correctly");
-		else
-			tst_res(TFAIL, "child exited with status %d",
-				 WEXITSTATUS(child_ret));
-	} else {
-		tst_res(TFAIL, "child exited for unknown reason (status %d)",
-			 child_ret);
-	}
+	if (WIFEXITED(child_ret) && WEXITSTATUS(child_ret) == 0)
+		tst_res(TPASS, "child exited correctly");
+	else
+		tst_res(TFAIL, "child %s", tst_strstatus(child_ret));
 }
 
 void test01(void)
