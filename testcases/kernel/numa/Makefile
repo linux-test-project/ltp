@@ -20,7 +20,7 @@ top_srcdir		:= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -D_GNU_SOURCE -DNUMA_VERSION1_COMPATIBILITY
+CPPFLAGS		+= -D_GNU_SOURCE
 
 LDLIBS 			+= $(NUMA_LIBS)
 

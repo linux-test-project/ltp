@@ -22,7 +22,7 @@ LIBKERNTEST_SRCDIR	:= $(KERNEL_SRCDIR)/lib
 KERNEL_DIR		:= $(abs_top_builddir)/testcases/kernel
 LIBKERNTEST_DIR		:= $(KERNEL_DIR)/lib
 LIBKERNTEST		:= $(LIBKERNTEST_DIR)/libkerntest.a
-CPPFLAGS		+= $(NUMA_CPPFLAGS) -I$(KERNEL_SRCDIR)/include
+CPPFLAGS		+= -I$(KERNEL_SRCDIR)/include
 LDLIBS			+= -lkerntest -lltp $(NUMA_LIBS)
 LDFLAGS			+= -L$(LIBKERNTEST_DIR)
 

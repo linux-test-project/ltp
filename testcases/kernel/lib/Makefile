@@ -22,7 +22,8 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-CPPFLAGS		+= $(NUMA_CPPFLAGS) -I$(abs_srcdir)/../include \
+CPPFLAGS		+= -DNUMA_VERSION1_COMPATIBILITY \
+			   -I$(abs_srcdir)/../include \
 			   -I$(abs_builddir)/../include
 INTERNAL_LIB		:= libkerntest.a
 
