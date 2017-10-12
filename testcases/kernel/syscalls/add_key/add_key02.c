@@ -30,6 +30,8 @@
  * can, in the hope of catching one.  We also test with the "user" key type for
  * good measure, although it was one of the types that failed with EINVAL rather
  * than dereferencing NULL.
+ *
+ * This has been assigned CVE-2017-15274.
  */
 
 #include <errno.h>
