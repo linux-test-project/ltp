@@ -110,7 +110,9 @@ tst_check_iproute()
 netns_setup()
 {
 	tst_require_root
-	tst_check_cmds ip
+	tst_check_cmds ip modprobe
+
+	modprobe veth > /dev/null 2>&1
 
 	case "$1" in
 	ns_exec)
