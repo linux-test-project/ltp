@@ -29,8 +29,7 @@
  */
 
 #include "config.h"
-#if HAVE_NUMA_H && HAVE_LINUX_MEMPOLICY_H && HAVE_NUMAIF_H
-#include <linux/mempolicy.h>
+#if HAVE_NUMA_H && HAVE_NUMAIF_H
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
