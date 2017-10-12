@@ -24,6 +24,8 @@
 
 #include <stdio.h>
 #include "config.h"
+#include "tst_res_flags.h"
+
 /* Shortcut because the test requires numa and mempolicy support. */
 #if HAVE_NUMA_H && HAVE_NUMAIF_H && HAVE_LINUX_MEMPOLICY_H
 #include <sys/types.h>
@@ -495,6 +497,6 @@ int main(int argc, char *argv[])
 int main(void)
 {
 	printf("System doesn't have required numa support.\n");
-	return 0;
+	return TCONF;
 }
 #endif /* HAVE_NUMA_H && HAVE_NUMAIF_H */
