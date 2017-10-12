@@ -139,6 +139,9 @@ struct sock_info {
 	int timeout;
 };
 
+static char *zcopy;
+static int send_flags = MSG_NOSIGNAL;
+
 static void init_socket_opts(int sd)
 {
 	if (busy_poll >= 0)
@@ -150,6 +153,8 @@ static void init_socket_opts(int sd)
 			SAFE_SETSOCKOPT_INT(sd, IPPROTO_TCP,
 					    TCP_FASTOPEN_CONNECT, 1);
 		}
+		if (client_mode && zcopy)
+			SAFE_SETSOCKOPT_INT(sd, SOL_SOCKET, SO_ZEROCOPY, 1);
 	break;
 	case TYPE_DCCP:
 		SAFE_SETSOCKOPT_INT(sd, SOL_DCCP, DCCP_SOCKOPT_SERVICE,
@@ -199,13 +204,25 @@ static int sock_recv_poll(char *buf, int size, struct sock_info *i)
 			break;
 		}
 
-		if (ret == 0) {
-			errno = ETIME;
+		if (ret != 1) {
+			if (!errno)
+				errno = ETIME;
 			break;
 		}
 
-		if (ret != 1 || !(pfd.revents & POLLIN))
+		if (!(pfd.revents & POLLIN)) {
+			if (pfd.revents & POLLERR) {
+				int err = 0;
+				socklen_t err_len = sizeof(err);
+
+				getsockopt(i->fd, SOL_SOCKET, SO_ERROR,
+					   &err, &err_len);
+				if (!err)
+					continue;
+				errno = err;
+			}
 			break;
+		}
 
 		errno = 0;
 		len = recvfrom(i->fd, buf, size, MSG_DONTWAIT,
@@ -270,7 +287,7 @@ static int client_connect_send(const char *msg, int size)
 
 	if (fastopen_api) {
 		/* Replaces connect() + send()/write() */
-		SAFE_SENDTO(1, cfd, msg, size, MSG_FASTOPEN | MSG_NOSIGNAL,
+		SAFE_SENDTO(1, cfd, msg, size, send_flags | MSG_FASTOPEN,
 			remote_addrinfo->ai_addr, remote_addrinfo->ai_addrlen);
 	} else {
 		if (local_addrinfo)
@@ -279,9 +296,8 @@ static int client_connect_send(const char *msg, int size)
 		/* old TCP API */
 		SAFE_CONNECT(cfd, remote_addrinfo->ai_addr,
 			     remote_addrinfo->ai_addrlen);
-		SAFE_SEND(1, cfd, msg, size, MSG_NOSIGNAL);
+		SAFE_SEND(1, cfd, msg, size, send_flags);
 	}
-
 	return cfd;
 }
 
@@ -358,7 +374,7 @@ send:
 		if (max_rand_msg_len)
 			make_client_request(client_msg, &cln_len, &srv_len);
 
-		SAFE_SEND(1, inf.fd, client_msg, cln_len, MSG_NOSIGNAL);
+		SAFE_SEND(1, inf.fd, client_msg, cln_len, send_flags);
 
 		if (client_recv(buf, srv_len, &inf)) {
 			err = errno;
@@ -559,20 +575,20 @@ void *server_fn(void *cfd)
 		switch (send_type) {
 		case 0:
 			SAFE_SEND(1, inf.fd, send_msg, send_msg_len,
-				  MSG_NOSIGNAL);
+				  send_flags);
 			if (proto_type != TYPE_SCTP)
 				++send_type;
 			break;
 		case 1:
 			SAFE_SENDTO(1, inf.fd, send_msg, send_msg_len,
-				    MSG_NOSIGNAL, (struct sockaddr *)&inf.raddr,
+				    send_flags, (struct sockaddr *)&inf.raddr,
 				    inf.raddr_len);
 			++send_type;
 			break;
 		default:
 			iov[0].iov_len = send_msg_len - 1;
 			msg.msg_namelen = inf.raddr_len;
-			SAFE_SENDMSG(send_msg_len, inf.fd, &msg, MSG_NOSIGNAL);
+			SAFE_SENDMSG(send_msg_len, inf.fd, &msg, send_flags);
 			send_type = start_send_type;
 			break;
 		}
@@ -636,8 +652,13 @@ static void server_init(void)
 			tfo_queue_size);
 	}
 
+	if (zcopy)
+		SAFE_SETSOCKOPT_INT(sfd, SOL_SOCKET, SO_ZEROCOPY, 1);
+
 	SAFE_LISTEN(sfd, max_queue_len);
+
 	tst_res(TINFO, "Listen on the socket '%d', port '%s'", sfd, tcp_port);
+
 }
 
 static void server_cleanup(void)
@@ -843,6 +864,8 @@ static void setup(void)
 		tst_res(TINFO, "TCP %s is using %s TCP API.",
 			(client_mode) ? "client" : "server",
 			(fastopen_api) ? "Fastopen" : "old");
+		if (zcopy)
+			send_flags |= MSG_ZEROCOPY;
 		check_tfo_value();
 	break;
 	case TYPE_UDP:
@@ -887,7 +910,8 @@ static struct tst_option options[] = {
 	{"S:", &source_addr, "-S x     Source address to bind"},
 	{"g:", &tcp_port, "-g x     x - server port"},
 	{"b:", &barg, "-b x     x - low latency busy poll timeout"},
-	{"T:", &type, "-T x     tcp (default), udp, dccp, sctp\n"},
+	{"T:", &type, "-T x     tcp (default), udp, dccp, sctp"},
+	{"z", &zcopy, "-z       enable SO_ZEROCOPY\n"},
 
 	{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
 	{"l", &client_mode, "-l       Become client, default is server"},

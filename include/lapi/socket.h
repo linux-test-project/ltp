@@ -21,12 +21,20 @@
 
 #include <sys/socket.h>
 
+#ifndef MSG_ZEROCOPY
+# define MSG_ZEROCOPY	0x4000000 /* Use user data in kernel path */
+#endif
+
 #ifndef MSG_FASTOPEN
 # define MSG_FASTOPEN	0x20000000 /* Send data in TCP SYN */
 #endif
 
 #ifndef SO_BUSY_POLL
 # define SO_BUSY_POLL	46
+#endif
+
+#ifndef SO_ZEROCOPY
+# define SO_ZEROCOPY	60
 #endif
 
 #ifndef SOCK_DCCP
