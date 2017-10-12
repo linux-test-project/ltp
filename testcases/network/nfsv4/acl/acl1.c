@@ -19,7 +19,7 @@
 #include "config.h"
 #include "tst_res_flags.h"
 
-#ifdef HAVE_SYS_ACL_H
+#ifdef HAVE_LIBACL
 
 #include <sys/acl.h>
 
@@ -365,11 +365,10 @@ int main(int argc, char *argv[])
 	showstats();
 	return 1;
 }
-
 #else
 int main(void)
 {
 	printf("The acl library was missing upon compilation.\n");
 	return TCONF;
 }
-#endif /* HAVE_SYS_ACL_H */
+#endif /* HAVE_LIBACL */
