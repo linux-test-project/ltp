@@ -186,6 +186,12 @@ extern int TEST_ERRNO;
  */
 const char *tst_strerrno(int err);
 const char *tst_strsig(int sig);
+/*
+ * Returns string describing status as returned by wait().
+ *
+ * BEWARE: Not thread safe.
+ */
+const char *tst_strstatus(int status);
 
 void tst_set_timeout(int timeout);
 

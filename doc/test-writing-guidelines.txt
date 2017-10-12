@@ -449,6 +449,15 @@ translate 'errno' values to strings is preferred. You should not use the
 
 [source,c]
 -------------------------------------------------------------------------------
+const char *tst_strstatus(int status);
+-------------------------------------------------------------------------------
+
+Returns string describing the status as returned by 'wait()'.
+
+WARNING: This funciton is not thread safe.
+
+[source,c]
+-------------------------------------------------------------------------------
 void tst_set_timeout(unsigned int timeout);
 -------------------------------------------------------------------------------
 
