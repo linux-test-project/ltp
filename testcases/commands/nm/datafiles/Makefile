@@ -15,7 +15,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 INSTALL_DIR		:= testcases/data/nm01
-INSTALL_TARTGETS	:= f1 f2 f3 lib.a
+INSTALL_TARGETS		:= f1 f2 f3 lib.a
 MAKE_TARGETS		+= f1 f2 f3 lib.a
 
 lib.a: f1.o f2.o f3.o
