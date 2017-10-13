@@ -169,8 +169,8 @@ else
 		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 		    $LTPTMP/tst_mail.res)
 	else
-		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDelivery(Subsys|System)")}' \
-		    $LTPTMP/tst_mail.res)
+		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5,
+		    "MailDelivery(Subsys|System|Syst)")}' $LTPTMP/tst_mail.res)
 	fi
 
 	##################################################################
@@ -250,8 +250,8 @@ else
 		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3, "Mailer-Daemon")}' \
 		    $LTPTMP/tst_mail.res)
 	else
-		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5, "MailDelivery(Subsys|System)")}' \
-		    $LTPTMP/tst_mail.res)
+		RC1=$(awk '/^>N/ {IGNORECASE=1; print match($3 $4 $5,
+		    "MailDelivery(Subsys|System|Syst)")}' $LTPTMP/tst_mail.res)
 	fi
 	##################################################################
 	# In this testcase, mail will get "Returnedmail:", while mailx will
