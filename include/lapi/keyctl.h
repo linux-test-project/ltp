@@ -65,12 +65,35 @@ static inline long keyctl(int cmd, ...)
 }
 #endif /* HAVE_KEYUTILS_H */
 
-#ifndef KEYCTL_GET_KEYRING_ID
-# define KEYCTL_GET_KEYRING_ID 0
+/* special process keyring shortcut IDs */
+#ifndef KEY_SPEC_THREAD_KEYRING
+# define KEY_SPEC_THREAD_KEYRING -1
 #endif
 
-#ifndef KEYCTL_SET_REQKEY_KEYRING
-# define KEYCTL_SET_REQKEY_KEYRING 14
+#ifndef KEY_SPEC_PROCESS_KEYRING
+# define KEY_SPEC_PROCESS_KEYRING -2
+#endif
+
+#ifndef KEY_SPEC_SESSION_KEYRING
+# define KEY_SPEC_SESSION_KEYRING -3
+#endif
+
+#ifndef KEY_SPEC_USER_KEYRING
+# define KEY_SPEC_USER_KEYRING -4
+#endif
+
+
+#ifndef KEY_SPEC_USER_SESSION_KEYRING
+# define KEY_SPEC_USER_SESSION_KEYRING -5
+#endif
+/* request-key default keyrings */
+#ifndef KEY_REQKEY_DEFL_THREAD_KEYRING
+# define KEY_REQKEY_DEFL_THREAD_KEYRING 1
+#endif
+
+/* keyctl commands */
+#ifndef KEYCTL_GET_KEYRING_ID
+# define KEYCTL_GET_KEYRING_ID 0
 #endif
 
 #ifndef KEYCTL_JOIN_SESSION_KEYRING
@@ -97,28 +120,8 @@ static inline long keyctl(int cmd, ...)
 # define KEYCTL_READ 11
 #endif
 
-#ifndef KEY_SPEC_THREAD_KEYRING
-# define KEY_SPEC_THREAD_KEYRING -1
-#endif
-
-#ifndef KEY_SPEC_PROCESS_KEYRING
-# define KEY_SPEC_PROCESS_KEYRING -2
-#endif
-
-#ifndef KEY_SPEC_SESSION_KEYRING
-# define KEY_SPEC_SESSION_KEYRING -3
-#endif
-
-#ifndef KEY_SPEC_USER_KEYRING
-# define KEY_SPEC_USER_KEYRING -4
-#endif
-
-#ifndef KEY_SPEC_USER_SESSION_KEYRING
-# define KEY_SPEC_USER_SESSION_KEYRING -5
-#endif
-
-#ifndef KEY_REQKEY_DEFL_THREAD_KEYRING
-# define KEY_REQKEY_DEFL_THREAD_KEYRING 1
+#ifndef KEYCTL_SET_REQKEY_KEYRING
+# define KEYCTL_SET_REQKEY_KEYRING 14
 #endif
 
 #endif	/* KEYCTL_H__ */
