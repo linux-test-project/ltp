@@ -22,9 +22,9 @@
  *
  */
 
+#include <asm/types.h>
 #include <linux/random.h>
 #include <stdlib.h>
-#include "tst_safe_stdio.h"
 #include "tst_test.h"
 
 static char *s_fuzz;
