@@ -118,6 +118,6 @@ int main(int argc, char *argv[])
 #else
 int main(void)
 {
-	tst_brkm(TCONF, "test requires libcrypto and openssl development packages");
+	tst_brkm(TCONF, NULL, "test requires libcrypto and openssl development packages");
 }
 #endif
