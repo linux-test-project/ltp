@@ -32,6 +32,7 @@ AC_PREFIX_DEFAULT(/opt/ltp)
 
 AC_CHECK_HEADERS([ \
     ifaddrs.h \
+    keyutils.h \
     libaio.h \
     linux/can.h \
     linux/genetlink.h \

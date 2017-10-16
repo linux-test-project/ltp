@@ -19,12 +19,14 @@
 #define KEYCTL_H__
 
 #include "config.h"
-#ifdef HAVE_KEYUTILS_H
+
+#if defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS)
 # include <keyutils.h>
 #else
 # ifdef HAVE_LINUX_KEYCTL_H
 #  include <linux/keyctl.h>
 # endif /* HAVE_LINUX_KEYCTL_H */
+
 # include <stdarg.h>
 # include <stdint.h>
 # include "lapi/syscalls.h"
@@ -63,7 +65,7 @@ static inline long keyctl(int cmd, ...)
 
 	return tst_syscall(__NR_keyctl, cmd, arg2, arg3, arg4, arg5);
 }
-#endif /* HAVE_KEYUTILS_H */
+#endif /* defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS) */
 
 /* special process keyring shortcut IDs */
 #ifndef KEY_SPEC_THREAD_KEYRING
