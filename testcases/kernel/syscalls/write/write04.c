@@ -51,152 +51,126 @@
 #include <setjmp.h>
 #include <errno.h>
 #include <string.h>
-#include "test.h"
+#include <stdio.h>
+#include "tst_test.h"
 
 #define PIPE_SIZE_TEST getpagesize()
 
 void alarm_handler();
-void setup();
-void cleanup();
-
-char *TCID = "write04";
-int TST_TOTAL = 1;
 
 char fifo[100] = "fifo";
 static sigjmp_buf jmp;
 int rfd, wfd;
 
-int main(int argc, char **argv)
+static void verify_write(void)
 {
-	int lc;
-
 	struct stat buf;
 	int fail;
 	int cnt;
 	char wbuf[17 * PIPE_SIZE_TEST];
 	struct sigaction sigptr;	/* set up signal handler */
 
-	tst_parse_opts(argc, argv, NULL, NULL);
+	if (mknod(fifo, S_IFIFO | 0777, 0) < 0)
+		tst_res(TBROK | TERRNO, "mknod() failed, errno: %d", errno);
 
-	/* global setup */
-	setup();
+	if (stat(fifo, &buf) != 0)
+		tst_res(TBROK | TERRNO, "stat() failed, errno: %d", errno);
+
+	if ((buf.st_mode & S_IFIFO) == 0)
+		tst_res(TBROK | TERRNO, "Mode does not indicate fifo file");
+
+#if 0
+	sigset(SIGALRM, alarm_handler);
+#endif
+	sigptr.sa_handler = (void (*)(int signal))alarm_handler;
+	sigfillset(&sigptr.sa_mask);
+	sigptr.sa_flags = 0;
+	sigaddset(&sigptr.sa_mask, SIGALRM);
+	if (sigaction(SIGALRM, &sigptr, NULL) == -1)
+		tst_res(TBROK | TERRNO, "sigaction(): Failed");
+
+//block1:
+	tst_res(TINFO, "Enter block 1: test for EAGAIN in write()");
+	fail = 0;
+
+	(void)memset((void *)wbuf, 'A', 17 * PIPE_SIZE_TEST);
 
 	/*
-	 * The following loop checks looping state if -i option given
+	 * open the read end of the pipe
 	 */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		if (mknod(fifo, S_IFIFO | 0777, 0) < 0) {
-			tst_resm(TBROK, "mknod() failed, errno: %d", errno);
-			cleanup();
-		}
-		if (stat(fifo, &buf) != 0) {
-			tst_resm(TBROK, "stat() failed, errno: %d", errno);
-			cleanup();
-		}
-		if ((buf.st_mode & S_IFIFO) == 0) {
-			tst_resm(TBROK, "Mode does not indicate fifo file");
-			cleanup();
-		}
-#if 0
-		sigset(SIGALRM, alarm_handler);
-#endif
-		sigptr.sa_handler = (void (*)(int signal))alarm_handler;
-		sigfillset(&sigptr.sa_mask);
-		sigptr.sa_flags = 0;
-		sigaddset(&sigptr.sa_mask, SIGALRM);
-		if (sigaction(SIGALRM, &sigptr, NULL) == -1) {
-			tst_resm(TBROK, "sigaction(): Failed");
-			cleanup();
-		}
-//block1:
-		tst_resm(TINFO, "Enter block 1: test for EAGAIN in write()");
-		fail = 0;
-
-		(void)memset((void *)wbuf, 'A', 17 * PIPE_SIZE_TEST);
-
-		/*
-		 * open the read end of the pipe
-		 */
-		if (sigsetjmp(jmp, 1)) {
-			tst_resm(TBROK, "Error reading fifo, read blocked");
-			fail = 1;
-		}
-		(void)alarm(10);	/* set alarm for 10 seconds */
-		rfd = open(fifo, O_RDONLY | O_NONBLOCK);
-		(void)alarm(0);
-		if (rfd < 0) {
-			tst_resm(TBROK, "open() for reading the pipe failed");
-			fail = 1;
-		}
-
-		/*
-		 * open the write end of the pipe
-		 */
-		if (sigsetjmp(jmp, 1)) {
-			tst_resm(TBROK, "setjmp() failed");
-			cleanup();
-		}
-		(void)alarm(10);	/* set alarm for 10 seconds */
-		wfd = open(fifo, O_WRONLY | O_NONBLOCK);
-		(void)alarm(0);
-		if (wfd < 0) {
-			tst_resm(TBROK, "open() for writing the pipe failed");
-			fail = 1;
-		}
-
-		/*
-		 * attempt to fill the pipe with some data
-		 */
-		if (sigsetjmp(jmp, 1)) {
-			tst_resm(TBROK, "sigsetjmp() failed");
-			fail = 1;
-		}
-		(void)alarm(10);
-		cnt = write(wfd, wbuf, 17 * PIPE_SIZE_TEST);
-		(void)alarm(0);
-		if (cnt == 17 * PIPE_SIZE_TEST) {
-			tst_resm(TBROK, "Error reading fifo, nozero read");
-			fail = 1;
-		}
-
-		/*
-		 * Now that the fifo is full try and send some more
-		 */
-		if (sigsetjmp(jmp, 1)) {
-			tst_resm(TBROK, "sigsetjmp() failed");
-			fail = 1;
-		}
-		(void)alarm(10);
-		cnt = write(wfd, wbuf, 8 * PIPE_SIZE_TEST);
-		(void)alarm(0);
-		if (cnt != -1) {
-			tst_resm(TBROK, "write() failed to fail when pipe "
-				 "is full");
-			fail = 1;
-		} else {
-			if (errno != EAGAIN) {
-				tst_resm(TBROK, "write set bad errno, expected "
-					 "EAGAIN, got %d", errno);
-				fail = 1;
-			}
-			tst_resm(TINFO, "read() succeded in setting errno to "
-				 "EAGAIN");
-		}
-		if (fail) {
-			tst_resm(TFAIL, "Block 1 FAILED");
-		} else {
-			tst_resm(TPASS, "Block 1 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 1");
-
-		/* unlink fifo in case we are looping. */
-		unlink(fifo);
+	if (sigsetjmp(jmp, 1)) {
+		tst_res(TBROK | TERRNO, "Error reading fifo, read blocked");
+		fail = 1;
 	}
-	cleanup();
-	tst_exit();
+	(void)alarm(10);	/* set alarm for 10 seconds */
+	rfd = open(fifo, O_RDONLY | O_NONBLOCK);
+	(void)alarm(0);
+	if (rfd < 0) {
+		tst_res(TBROK | TERRNO, "open() for reading the pipe failed");
+		fail = 1;
+	}
+
+	/*
+	 * open the write end of the pipe
+	 */
+	if (sigsetjmp(jmp, 1))
+		tst_res(TBROK | TERRNO, "setjmp() failed");
+
+	(void)alarm(10);	/* set alarm for 10 seconds */
+	wfd = open(fifo, O_WRONLY | O_NONBLOCK);
+	(void)alarm(0);
+	if (wfd < 0) {
+		tst_res(TBROK | TERRNO, "open() for writing the pipe failed");
+		fail = 1;
+	}
+
+	/*
+	 * attempt to fill the pipe with some data
+	 */
+	if (sigsetjmp(jmp, 1)) {
+		tst_res(TBROK | TERRNO, "sigsetjmp() failed");
+		fail = 1;
+	}
+	(void)alarm(10);
+	cnt = write(wfd, wbuf, 17 * PIPE_SIZE_TEST);
+	(void)alarm(0);
+	if (cnt == 17 * PIPE_SIZE_TEST) {
+		tst_res(TBROK | TERRNO, "Error reading fifo, nozero read");
+		fail = 1;
+	}
+
+	/*
+	 * Now that the fifo is full try and send some more
+	 */
+	if (sigsetjmp(jmp, 1)) {
+		tst_res(TBROK | TERRNO, "sigsetjmp() failed");
+		fail = 1;
+	}
+	(void)alarm(10);
+	cnt = write(wfd, wbuf, 8 * PIPE_SIZE_TEST);
+	(void)alarm(0);
+	if (cnt != -1) {
+		tst_res(TBROK | TERRNO, "write() failed to fail when pipe "
+			"is full");
+		fail = 1;
+	} else {
+		if (errno != EAGAIN) {
+			tst_res(TBROK, "write set bad errno, expected "
+				"EAGAIN, got %d", errno);
+			fail = 1;
+		}
+		tst_res(TINFO, "write() succeded in setting errno to "
+			"EAGAIN");
+	}
+	if (fail) {
+		tst_res(TFAIL, "Block 1 FAILED");
+	} else {
+		tst_res(TPASS, "Block 1 PASSED");
+	}
+	tst_res(TINFO, "Exit block 1");
+
+	/* unlink fifo in case we are looping. */
+	unlink(fifo);
 }
 
 void alarm_handler(void)
@@ -208,32 +182,24 @@ void alarm_handler(void)
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -i option.
-	 * You want to make sure you do this before you create your temporary
-	 * directory.
-	 */
-	TEST_PAUSE;
-
-	/* Create a unique temporary directory and chdir() to it. */
-	tst_tmpdir();
-
 	/* create a temporary filename */
 	sprintf(fifo, "%s.%d", fifo, getpid());
-
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-
-	close(rfd);
-	close(wfd);
+	if (rfd > 0)
+		SAFE_CLOSE(rfd);
+	if (wfd > 0)
+		SAFE_CLOSE(wfd);
 	unlink(fifo);
-	tst_rmdir();
-
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_write,
+};
