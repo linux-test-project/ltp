@@ -86,9 +86,14 @@ static inline long keyctl(int cmd, ...)
 #ifndef KEY_SPEC_USER_SESSION_KEYRING
 # define KEY_SPEC_USER_SESSION_KEYRING -5
 #endif
+
 /* request-key default keyrings */
 #ifndef KEY_REQKEY_DEFL_THREAD_KEYRING
 # define KEY_REQKEY_DEFL_THREAD_KEYRING 1
+#endif
+
+#ifndef KEY_REQKEY_DEFL_DEFAULT
+# define KEY_REQKEY_DEFL_DEFAULT	0
 #endif
 
 /* keyctl commands */
@@ -122,6 +127,10 @@ static inline long keyctl(int cmd, ...)
 
 #ifndef KEYCTL_SET_REQKEY_KEYRING
 # define KEYCTL_SET_REQKEY_KEYRING 14
+#endif
+
+#ifndef KEYCTL_SET_TIMEOUT
+# define KEYCTL_SET_TIMEOUT 15
 #endif
 
 #endif	/* KEYCTL_H__ */

@@ -1,43 +1,39 @@
 /*
-* Copyright (c) 2016 Fujitsu Ltd.
-* Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it would be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-* You should have received a copy of the GNU General Public License
-* alone with this program.
+ * Copyright (c) 2016 Fujitsu Ltd.
+ * Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
+ *
+ * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it would be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * You should have received a copy of the GNU General Public License
+ * alone with this program.
 */
 
 /*
-* Test Name: request_key02
-*
-* Description:
-* 1) request_key(2) fails if no matching key was found.
-* 2) request_key(2) fails if A revoked key was found.
-* 3) request_key(2) fails if An expired key was found.
-*
-* Expected Result:
-* 1) request_key(2) should return -1 and set errno to ENOKEY.
-* 2) request_key(2) should return -1 and set errno to EKEYREVOKED.
-* 3) request_key(2) should return -1 and set errno to EKEYEXPIRED.
-*
-*/
+ * Test Name: request_key02
+ *
+ * Description:
+ * 1) request_key(2) fails if no matching key was found.
+ * 2) request_key(2) fails if A revoked key was found.
+ * 3) request_key(2) fails if An expired key was found.
+ *
+ * Expected Result:
+ * 1) request_key(2) should return -1 and set errno to ENOKEY.
+ * 2) request_key(2) should return -1 and set errno to EKEYREVOKED.
+ * 3) request_key(2) should return -1 and set errno to EKEYEXPIRED.
+ */
 
-#include "config.h"
 #include <errno.h>
-#include <sys/types.h>
-#ifdef HAVE_KEYUTILS_H
-# include <keyutils.h>
-#endif
-#include "tst_test.h"
 
-#ifdef HAVE_KEYUTILS_H
+#include "tst_test.h"
+#include "lapi/keyctl.h"
 
 static int key1;
 static int key2;
@@ -111,9 +107,3 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_request_key,
 };
-
-#else
-
-TST_TEST_TCONF("keyutils.h was missing at compilation");
-
-#endif /* HAVE_LINUX_KEYCTL_H */
