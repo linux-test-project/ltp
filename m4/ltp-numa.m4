@@ -39,9 +39,6 @@ exit(1);
 		AC_SUBST(NUMA_LIBS, "-lnuma")
 		AC_DEFINE(HAVE_NUMA_V2, 1, [Define to 1 if you have libnuma and it's headers version >= 2 installed.])
 
-		AC_CHECK_LIB(numa, numa_alloc_onnode, [
-			AC_DEFINE(HAVE_NUMA_ALLOC_ONNODE, 1, [Define to 1 if you have `numa_alloc_onnode' function.])
-		])
 		AC_CHECK_LIB(numa, numa_move_pages, [
 			AC_DEFINE(HAVE_NUMA_MOVE_PAGES, 1, [Define to 1 if you have `numa_move_pages' function.])
 		])

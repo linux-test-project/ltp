@@ -125,9 +125,6 @@
 /* 2.6 version of swapon/swapoff */
 #define HAVE_NEW_SWAPONOFF 1
 
-/* Define to 1 if you have the `numa_alloc_onnode' function. */
-#undef HAVE_NUMA_ALLOC_ONNODE
-
 /* Define to 1 if you have the <numa.h> header file. */
 #undef HAVE_NUMA_H
 

@@ -63,7 +63,7 @@ void free_pages(void **pages, unsigned int num)
 int alloc_pages_on_nodes(void **pages, unsigned int num, int *nodes)
 {
 	int i;
-#if HAVE_NUMA_ALLOC_ONNODE
+#ifdef HAVE_NUMA_V2
 	size_t onepage = get_page_size();
 #endif
 
@@ -74,7 +74,7 @@ int alloc_pages_on_nodes(void **pages, unsigned int num, int *nodes)
 	for (i = 0; i < num; i++) {
 		char *page;
 
-#if HAVE_NUMA_ALLOC_ONNODE
+#ifdef HAVE_NUMA_V2
 		pages[i] = numa_alloc_onnode(onepage, nodes[i]);
 #endif
 		if (pages[i] == NULL) {
