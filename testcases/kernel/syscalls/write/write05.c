@@ -57,146 +57,107 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
-#include "test.h"
+#include "tst_test.h"
 
-void setup(void);
-void cleanup(void);
-
-char *TCID = "write05";
-int TST_TOTAL = 1;
 char filename[100];
 int fd;
 
 char *bad_addr = 0;
 
-int main(int argc, char **argv)
+static void verify_write(void)
 {
-	int lc;
-
 	char pbuf[BUFSIZ];
 	int pipefildes[2];
 	int status, pid;
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	/* global setup */
-	setup();
-
-	/* The following loop checks looping state if -i option given */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
 //block1:
-		tst_resm(TINFO, "Enter Block 1: test with bad fd");
-		if (write(-1, pbuf, 1) != -1) {
-			tst_resm(TFAIL, "write of invalid fd passed");
-		} else {
-			if (errno != EBADF) {
-				tst_resm(TFAIL, "expected EBADF got %d", errno);
-			}
-			tst_resm(TPASS, "received EBADF as expected.");
+	tst_res(TINFO, "Enter Block 1: test with bad fd");
+	if (write(-1, pbuf, 1) != -1) {
+		tst_res(TFAIL, "write of invalid fd passed");
+	} else {
+		if (errno != EBADF) {
+			tst_res(TFAIL, "expected EBADF got %d", errno);
 		}
-		tst_resm(TINFO, "Exit Block 1");
+		tst_res(TPASS, "received EBADF as expected.");
+	}
+	tst_res(TINFO, "Exit Block 1");
 
 //block2:
-		tst_resm(TINFO, "Enter Block 2: test with a bad address");
-		fd = creat(filename, 0644);
-		if (fd < 0) {
-			tst_resm(TFAIL, "creating a new file failed");
-			cleanup();
-		}
-		if (write(fd, bad_addr, 10) != -1) {
-			tst_resm(TFAIL, "write() on an invalid buffer "
-				 "succeeded, but should have failed");
-			cleanup();
-		} else {
-			if (errno != EFAULT) {
-				tst_resm(TFAIL, "write() returned illegal "
-					 "errno: expected EFAULT, got %d",
-					 errno);
-				cleanup();
+	tst_res(TINFO, "Enter Block 2: test with a bad address");
+	fd = creat(filename, 0644);
+	if (fd < 0)
+		tst_res(TFAIL, "creating a new file failed");
+
+	if (write(fd, bad_addr, 10) != -1) {
+		tst_res(TFAIL, "write() on an invalid buffer "
+			"succeeded, but should have failed");
+	} else {
+		if (errno != EFAULT) {
+			tst_res(TFAIL, "write() returned illegal "
+				 "errno: expected EFAULT, got %d",
+				 errno);
 			}
-			tst_resm(TPASS, "received EFAULT as expected.");
-		}
-		tst_resm(TINFO, "Exit Block 2");
+			tst_res(TPASS, "received EFAULT as expected.");
+	}
+	tst_res(TINFO, "Exit Block 2");
 
 //block3:
-		tst_resm(TINFO, "Enter Block 3: test with invalid pipe");
-		if ((pid = FORK_OR_VFORK()) == 0) {	/* child */
-			if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-				tst_resm(TINFO, "signal failed");
-			}
-			if (pipe(pipefildes) == -1) {
-				tst_brkm(TBROK, NULL, "can't open pipe");
+	tst_res(TINFO, "Enter Block 3: test with invalid pipe");
+	if ((pid = fork()) == 0) {	/* child */
+		if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+			tst_res(TINFO, "signal failed");
+		}
+		if (pipe(pipefildes) == -1) {
+			tst_brk(TBROK | TERRNO, "can't open pipe");
+			exit(errno);
+		}
+		close(pipefildes[0]);
+		if (write(pipefildes[1], pbuf, 1) != -1) {
+			tst_res(TFAIL, "write on read-closed pipe succeeded");
+			exit(-1);
+		} else {
+			if (errno != EPIPE) {
+				tst_res(TFAIL, "write() failed to set"
+					" errno to EPIPE, got: %d",
+					errno);
 				exit(errno);
 			}
-			close(pipefildes[0]);
-			if (write(pipefildes[1], pbuf, 1) != -1) {
-				tst_resm(TFAIL, "write on read-closed"
-					 "pipe succeeded");
-				exit(-1);
-			} else {
-				if (errno != EPIPE) {
-					tst_resm(TFAIL, "write() failed to set"
-						 " errno to EPIPE, got: %d",
-						 errno);
-					exit(errno);
-				}
-				exit(0);
-			}
-		} else {
-			if (pid < 0) {
-				tst_resm(TFAIL, "Fork failed");
-			}
-			wait(&status);
-			if (WIFSIGNALED(status) &&
-				WTERMSIG(status) == SIGPIPE) {
-				tst_resm(TFAIL, "child set SIGPIPE in exit");
+			exit(0);
+		}
+	} else {
+		if (pid < 0) {
+			tst_res(TFAIL, "Fork failed");
+		}
+		wait(&status);
+		if (WIFSIGNALED(status) &&
+			WTERMSIG(status) == SIGPIPE) {
+			tst_res(TFAIL, "child set SIGPIPE in exit");
 			} else if (WEXITSTATUS(status) != 0) {
-				tst_resm(TFAIL, "exit status from child "
+				tst_res(TFAIL, "exit status from child "
 					 "expected 0 got %d", status >> 8);
 			} else {
-				tst_resm(TPASS, "received EPIPE as expected.");
+				tst_res(TPASS, "received EPIPE as expected.");
 			}
-			tst_resm(TINFO, "Exit Block 3");
-		}
-		close(fd);
+		tst_res(TINFO, "Exit Block 3");
 	}
-	cleanup();
-	tst_exit();
+	SAFE_CLOSE(fd);
 }
 
 /*
  * setup()
  *	performs all ONE TIME setup for this test
  */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	/* Pause if that option was specified
-	 * TEST_PAUSE contains the code to fork the test with the -i option.
-	 * You want to make sure you do this before you create your temporary
-	 * directory.
-	 */
-	TEST_PAUSE;
-
-	/* Create a unique temporary directory and chdir() to it. */
-	tst_tmpdir();
-
 	sprintf(filename, "write05.%d", getpid());
 
 	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
+			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	if (bad_addr == MAP_FAILED)
 		printf("mmap failed\n");
-	}
-
 }
 
 /*
@@ -204,13 +165,19 @@ void setup(void)
  *	performs all ONE TIME cleanup for this test at
  *	completion or premature exit
  */
-void cleanup(void)
+static void cleanup(void)
 {
-
 	/* Close the file descriptor befor removing the file */
-	close(fd);
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 
 	unlink(filename);
-	tst_rmdir();
-
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_write,
+};
