@@ -53,7 +53,7 @@
 char *TCID = "vma04";
 int TST_TOTAL = 5;
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
 
 static unsigned long pagesize;
 static int opt_node;

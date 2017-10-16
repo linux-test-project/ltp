@@ -30,7 +30,7 @@
 #include "numa_helper.h"
 #include "tst_test.h"
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
 
 #define MEM_LENGTH (4 * 1024 * 1024)
 

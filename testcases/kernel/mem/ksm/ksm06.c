@@ -42,8 +42,7 @@
 #include "mem.h"
 #include "numa_helper.h"
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2 \
-	&& HAVE_LINUX_MEMPOLICY_H
+#if defined(HAVE_NUMA_V2) && defined(HAVE_LINUX_MEMPOLICY_H)
 
 static int run = -1;
 static int sleep_millisecs = -1;

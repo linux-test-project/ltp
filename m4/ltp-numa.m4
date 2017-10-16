@@ -27,9 +27,17 @@ AC_DEFUN([LTP_CHECK_SYSCALL_NUMA], [
 	AC_CHECK_LIB(numa, numa_available, [have_libnuma=yes])
 	AC_CHECK_HEADERS([numa.h numaif.h], [], [have_numa_headers=no])
 
-	if test "x$have_libnuma" = "xyes" -a "x$have_numa_headers" != "xno"; then
+	AC_RUN_IFELSE([AC_LANG_PROGRAM([
+#include <numa.h>
+		], [
+#if LIBNUMA_API_VERSION < 2
+exit(1);
+#endif
+		])], [have_numa_headers_v2=yes])
+
+	if test "x$have_libnuma" = "xyes" -a "x$have_numa_headers" != "xno" -a "x$have_numa_headers_v2" = "xyes"; then
 		AC_SUBST(NUMA_LIBS, "-lnuma")
-		AC_DEFINE(HAVE_LIBNUMA, 1, [Define to 1 if you have libnuma and it's headers installed.])
+		AC_DEFINE(HAVE_NUMA_V2, 1, [Define to 1 if you have libnuma and it's headers version >= 2 installed.])
 
 		AC_CHECK_LIB(numa, numa_alloc_onnode, [
 			AC_DEFINE(HAVE_NUMA_ALLOC_ONNODE, 1, [Define to 1 if you have `numa_alloc_onnode' function.])

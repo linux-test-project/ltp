@@ -67,7 +67,7 @@
 char *TCID = "get_mempolicy01";
 int TST_TOTAL = 1;
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
 
 #define MEM_LENGTH	(4 * 1024 * 1024)
 

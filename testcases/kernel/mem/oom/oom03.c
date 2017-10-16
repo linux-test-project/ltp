@@ -33,7 +33,7 @@
 #include "numa_helper.h"
 #include "mem.h"
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
 
 static void verify_oom(void)
 {

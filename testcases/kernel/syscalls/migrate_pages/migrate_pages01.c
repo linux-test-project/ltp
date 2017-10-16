@@ -55,8 +55,7 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2 \
-	&& defined(__NR_migrate_pages)
+#if defined(HAVE_NUMA_V2) && defined(__NR_migrate_pages)
 
 static unsigned long *sane_old_nodes;
 static unsigned long *sane_new_nodes;

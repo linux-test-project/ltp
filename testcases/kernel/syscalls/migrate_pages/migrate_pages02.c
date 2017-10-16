@@ -66,8 +66,7 @@
 char *TCID = "migrate_pages02";
 int TST_TOTAL = 1;
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2 \
-	&& defined(__NR_migrate_pages)
+#if defined(HAVE_NUMA_V2) && defined(__NR_migrate_pages)
 
 static const char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;

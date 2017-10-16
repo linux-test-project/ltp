@@ -51,8 +51,7 @@
 char *TCID = "cpuset_syscall_test";
 int TST_TOTAL = 1;
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2 \
-	&& defined(HAVE_LINUX_MEMPOLICY_H)
+#ifdef defined(HAVE_NUMA_V2) && defined(HAVE_LINUX_MEMPOLICY_H)
 
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"

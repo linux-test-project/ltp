@@ -62,8 +62,7 @@
 #include "mem.h"
 #include "ksm_common.h"
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2 \
-	&& HAVE_LINUX_MEMPOLICY_H
+#if defined(HAVE_NUMA_V2) && defined(HAVE_LINUX_MEMPOLICY_H)
 
 static void verify_ksm(void)
 {

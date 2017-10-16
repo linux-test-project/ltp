@@ -33,7 +33,8 @@
 #include "mem.h"
 #include "numa_helper.h"
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
+
 volatile int end;
 static int *nodes;
 static int nnodes;

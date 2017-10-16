@@ -49,7 +49,7 @@
 char *TCID = "vma02";
 int TST_TOTAL = 1;
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
 
 static unsigned long pagesize;
 static int opt_node;

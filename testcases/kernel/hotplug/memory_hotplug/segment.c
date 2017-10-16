@@ -32,7 +32,8 @@
 #include <numa.h>
 #endif
 
-#if HAVE_LIBNUMA && defined(LIBNUMA_API_VERSION) && LIBNUMA_API_VERSION >= 2
+#ifdef HAVE_NUMA_V2
+
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
