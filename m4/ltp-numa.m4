@@ -38,9 +38,5 @@ exit(1);
 	if test "x$have_libnuma" = "xyes" -a "x$have_numa_headers" != "xno" -a "x$have_numa_headers_v2" = "xyes"; then
 		AC_SUBST(NUMA_LIBS, "-lnuma")
 		AC_DEFINE(HAVE_NUMA_V2, 1, [Define to 1 if you have libnuma and it's headers version >= 2 installed.])
-
-		AC_CHECK_LIB(numa, numa_move_pages, [
-			AC_DEFINE(HAVE_NUMA_MOVE_PAGES, 1, [Define to 1 if you have `numa_move_pages' function.])
-		])
 	fi
 ])

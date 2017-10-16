@@ -43,7 +43,7 @@
 #include "move_pages_support.h"
 #include "lapi/mmap.h"
 
-#if HAVE_NUMA_MOVE_PAGES
+#ifdef HAVE_NUMA_V2
 
 #define LOOPS	1000
 #define PATH_MEMINFO	"/proc/meminfo"
@@ -267,5 +267,5 @@ static struct tst_test test = {
 };
 
 #else
-	TST_TEST_TCONF("move_pages support not found");
+	TST_TEST_TCONF("test requires libnuma >= 2 and it's development packages");
 #endif

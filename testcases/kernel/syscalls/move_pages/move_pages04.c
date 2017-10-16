@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
 	setup();
 
-#if HAVE_NUMA_MOVE_PAGES
+#ifdef HAVE_NUMA_V2
 	unsigned int i;
 	int lc;
 	unsigned int from_node;
@@ -150,7 +150,7 @@ err_free_pages:
 		free_pages(pages, TEST_PAGES);
 	}
 #else
-	tst_resm(TCONF, "move_pages support not found.");
+	tst_resm(TCONF, "test requires libnuma >= 2 and it's development packages");
 #endif
 
 	cleanup();
