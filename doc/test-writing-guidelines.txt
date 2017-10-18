@@ -454,7 +454,7 @@ const char *tst_strstatus(int status);
 
 Returns string describing the status as returned by 'wait()'.
 
-WARNING: This funciton is not thread safe.
+WARNING: This function is not thread safe.
 
 [source,c]
 -------------------------------------------------------------------------------

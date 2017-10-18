@@ -68,7 +68,7 @@ int main(void)
 	/*
 	 * Check to make sure that 'value_ptr' that was passed to
 	 * pthread_join() and the pthread_exit() return code that
-	 * was used in the thread funciton are the same.
+	 * was used in the thread function are the same.
 	 */
 	if (value_ptr != RETURN_CODE) {
 		printf("Test FAILED: pthread_join() did not return the "

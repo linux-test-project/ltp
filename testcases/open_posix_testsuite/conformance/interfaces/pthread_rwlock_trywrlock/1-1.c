@@ -7,7 +7,7 @@
  * Test pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock)
  *
  * The function shall apply a write lock like the pthread_rwlock_wrlock(), with the exception
- * that the funciton shall fail if any thread currently holds rwlock(for reading and writing).
+ * that the function shall fail if any thread currently holds rwlock(for reading and writing).
  *
  * Steps:
  * 1.  Initialize a pthread_rwlock_t object 'rwlock' with pthread_rwlock_init()

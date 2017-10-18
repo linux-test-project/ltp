@@ -29,7 +29,7 @@
 pthread_key_t key;
 int dest_cnt;
 
-/* Destructor funciton */
+/* Destructor function */
 void dest_func(void *p)
 {
 	dest_cnt++;
@@ -57,7 +57,7 @@ int main(void)
 {
 	pthread_t new_th;
 
-	/* Inialize the destructor flag */
+	/* Initialize the destructor flag */
 	dest_cnt = 0;
 
 	/* Create a key with a destructor function */

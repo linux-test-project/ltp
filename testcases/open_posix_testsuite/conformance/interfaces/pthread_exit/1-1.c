@@ -64,7 +64,7 @@ int main(void)
 	}
 
 	/* Check to make sure that 'value_ptr' that was passed to pthread_join() and the
-	 * pthread_exit() return code that was used in the thread funciton are the same. */
+	 * pthread_exit() return code that was used in the thread function are the same. */
 	if ((long)value_ptr != RETURN_CODE) {
 		printf
 		    ("Test FAILED: pthread_exit() could not pass the return value of the thread in 'value_ptr' to pthread_join().\n");
