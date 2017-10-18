@@ -24,6 +24,4 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-FILTER_OUT_DIRS		:= $(if $(AIO_LIBS),,aio ltp-aiodio)
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
