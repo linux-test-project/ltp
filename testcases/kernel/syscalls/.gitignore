@@ -706,6 +706,7 @@
 /ptrace/ptrace03
 /ptrace/ptrace04
 /ptrace/ptrace05
+/ptrace/ptrace07
 /ptrace/simple_tracer
 /pwrite/f
 /pwrite/pwrite01
