@@ -133,9 +133,7 @@ static int child_clone_parent(void *arg LTP_ATTRIBUTE_UNUSED)
 
 static void test_clone_tid(int t)
 {
-	pid_t child;
-
-	child = clone_child(&test_cases[t]);
+	clone_child(&test_cases[t]);
 	tst_reap_children();
 }
 
@@ -206,11 +204,22 @@ static void test_clone_thread(int t)
 
 		clone_child(&test_cases[t]);
 
-		if (syscall(SYS_futex, &ctid, FUTEX_WAIT, -1, &timeout))
-			tst_res(TFAIL | TERRNO, "futex failed");
-		else
-			tst_res(TPASS, "futex exit on ctid change");
-
+		if (syscall(SYS_futex, &ctid, FUTEX_WAIT, -1, &timeout)) {
+			/*
+			 * futex here is racing with clone() above.
+			 * Which means we can get EWOULDBLOCK if
+			 * ctid has been already changed by clone()
+			 * before we make the call. As long as ctid
+			 * changes we should not report error when
+			 * futex returns EWOULDBLOCK.
+			 */
+			if (errno != EWOULDBLOCK || ctid == -1) {
+				tst_res(TFAIL | TERRNO,
+					"futex failed, ctid: %d", ctid);
+				_exit(0);
+			}
+		}
+		tst_res(TPASS, "futex exit on ctid change, ctid: %d", ctid);
 		_exit(0);
 	}
 
