@@ -51,7 +51,6 @@
 #define NUM_READ_MSGS 3
 #define NUM_READ_RETRY 10
 #define NUM_OVERWRITE_MSGS 1024
-#define READ_TIMEOUT 5000000
 #define PRINTK "/proc/sys/kernel/printk"
 #define CONSOLE_LOGLEVEL_QUIET   4
 
@@ -252,7 +251,7 @@ static void test_read_nonblock(void)
 	tst_res(TINFO, "TEST: nonblock read");
 	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
-	TEST(timed_read_kmsg(fd, READ_TIMEOUT));
+	TEST(timed_read_kmsg(fd, 5000000));
 	if (TEST_RETURN == -1 && TEST_ERRNO == EAGAIN)
 		tst_res(TPASS, "non-block read returned EAGAIN");
 	else
@@ -268,7 +267,7 @@ static void test_read_block(void)
 	tst_res(TINFO, "TEST: blocking read");
 	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY);
 
-	TEST(timed_read_kmsg(fd, READ_TIMEOUT));
+	TEST(timed_read_kmsg(fd, 500000));
 	if (TEST_RETURN == -2)
 		tst_res(TPASS, "read blocked");
 	else
