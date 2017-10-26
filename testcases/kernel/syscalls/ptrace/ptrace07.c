@@ -42,6 +42,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <sys/uio.h>
+#include <sys/wait.h>
 
 #include "config.h"
 #include "ptrace.h"
