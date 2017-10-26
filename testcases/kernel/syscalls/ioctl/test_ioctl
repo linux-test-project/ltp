@@ -26,7 +26,7 @@ export TST_COUNT=0
 has_tty()
 {
     if command -v stty >/dev/null 2>&1; then
-        stty --file=$1 > /dev/null
+        stty -F $1 > /dev/null
         if [ $? -ne 0 ]; then
             return 0
         fi
