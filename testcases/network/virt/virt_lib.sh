@@ -29,14 +29,12 @@
 #          solve it.
 
 ip_local=$(tst_ipaddr)
-ip_virt_local="192.168.124.1"
-ip6_virt_local="fe80::381c:c0ff:fea8:7c01"
-mac_virt_local="3A:1C:C0:A8:7C:01"
+ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
+ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"
 
 ip_remote=$(tst_ipaddr rhost)
-ip_virt_remote="192.168.124.2"
-ip6_virt_remote="fe80::381c:c0ff:fea8:7c02"
-mac_virt_remote="3A:1C:C0:A8:7C:02"
+ip_virt_remote="$(TST_IPV6= tst_ipaddr_un rhost)"
+ip6_virt_remote="$(TST_IPV6=6 tst_ipaddr_un rhost)"
 
 # Max performance loss (%) for virtual devices during network load
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
@@ -204,18 +202,8 @@ virt_setup()
 	tst_resm TINFO "setup rhost ${virt_type} with '$opt_r'"
 	virt_add_rhost "$opt_r"
 
-	case $virt_type in
-	gre|ip6gre)
-		# We can't set hwaddr to GRE tunnel, add IPv6 link local
-		# addresses manually.
-		ROD_SILENT "ip addr add ${ip6_virt_local}/64 dev ltp_v0"
-		tst_rhost_run -s -c "ip ad add ${ip6_virt_remote}/64 dev ltp_v0"
-	;;
-	*)
-		ROD_SILENT "ip li set ltp_v0 address $mac_virt_local"
-		tst_rhost_run -s -c "ip li set ltp_v0 address $mac_virt_remote"
-	;;
-	esac
+	ROD_SILENT "ip addr add ${ip6_virt_local}/64 dev ltp_v0 nodad"
+	tst_rhost_run -s -c "ip ad add ${ip6_virt_remote}/64 dev ltp_v0 nodad"
 
 	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
 	tst_rhost_run -s -c "ip addr add ${ip_virt_remote}/24 dev ltp_v0"
@@ -272,7 +260,7 @@ virt_compare_netperf()
 	tst_netload -H $ip_virt_remote -a $clients_num -R $max_requests $opts \
 		-r $client_requests -d res_ipv4 -e $expect_res || ret1="fail"
 
-	tst_netload -H ${ip6_virt_remote}%ltp_v0 -a $clients_num $opts \
+	tst_netload -H ${ip6_virt_remote} -a $clients_num $opts \
 		-R $max_requests -r $client_requests -d res_ipv6 \
 		-e $expect_res || ret2="fail"
 
