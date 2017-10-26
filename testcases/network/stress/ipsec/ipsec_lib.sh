@@ -240,6 +240,8 @@ tst_ipsec_vti()
 	local key="key $VTI_KEY"
 	local mrk="mark $VTI_KEY"
 	local type="type vti$TST_IPV6"
+	local d="dev $(tst_iface)"
+	local rd="dev $(tst_iface rhost)"
 
 	ip li add type vti help 2>&1 | grep -q vti || \
 		tst_brkm TCONF "iproute doesn't support 'vti'"
@@ -253,7 +255,7 @@ tst_ipsec_vti()
 	cleanup_vti=$vti
 
 	if [ $target = lhost ]; then
-		ROD ip li add $vti $type local $src remote $dst $key
+		ROD ip li add $vti $type local $src remote $dst $key $d
 		ROD ip li set $vti up
 
 		local spi_1="spi 0x$SPI"
@@ -264,7 +266,7 @@ tst_ipsec_vti()
 		ROD $ipx po add dir in tmpl $i_dir $p $m $mrk
 	elif [ $target = rhost ]; then
 		tst_rhost_run -s -c \
-			"ip li add $vti $type local $src remote $dst $key"
+			"ip li add $vti $type local $src remote $dst $key $rd"
 		tst_rhost_run -s -c "ip li set $vti up"
 
 		local spi_1="spi 0x$(( $SPI + 1 ))"
