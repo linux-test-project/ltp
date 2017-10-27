@@ -25,7 +25,6 @@ TST_TOTAL=1
 
 virt_type="vxlan"
 start_id=16700000
-virt_count=5000
 
 . test_net.sh
 . virt_lib.sh

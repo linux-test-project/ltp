@@ -44,13 +44,12 @@ clients_num=2
 client_requests=500000
 max_requests=20
 
-while getopts :hsx:i:r:c:R:p:n:t:d:6 opt; do
+while getopts :hsi:r:c:R:p:n:t:d:6 opt; do
 	case "$opt" in
 	h)
 		echo "Usage:"
 		echo "h        help"
 		echo "s        use ssh to run remote cmds"
-		echo "x n      n is a number of interfaces for tc1 and tc2"
 		echo "i n      start ID to use"
 		echo "r n      client requests for TCP performance test"
 		echo "c n      clients run concurrently in TCP perf"
@@ -63,7 +62,6 @@ while getopts :hsx:i:r:c:R:p:n:t:d:6 opt; do
 		exit 0
 	;;
 	s) TST_USE_SSH=1 ;;
-	x) virt_count=$OPTARG ;;
 	i) start_id=$OPTARG ;;
 	c) clients_num=$OPTARG ;;
 	r) client_requests=$OPTARG ;;
@@ -156,9 +154,9 @@ virt_add_rhost()
 virt_multiple_add_test()
 {
 	local opt="$@"
-	local max=$(($start_id + $virt_count - 1))
+	local max=$(($start_id + $NS_TIMES - 1))
 
-	tst_resm TINFO "add $virt_count $virt_type, then delete"
+	tst_resm TINFO "add $NS_TIMES $virt_type, then delete"
 
 	for i in $(seq $start_id $max); do
 		virt_add ltp_v$i id $i $opt || \
@@ -177,9 +175,9 @@ virt_multiple_add_test()
 virt_add_delete_test()
 {
 	local opt="$@"
-	local max=$(($virt_count - 1))
+	local max=$(($NS_TIMES - 1))
 
-	tst_resm TINFO "add/del $virt_type $virt_count times"
+	tst_resm TINFO "add/del $virt_type $NS_TIMES times"
 
 	for i in $(seq 0 $max); do
 		virt_add ltp_v0 $opt || \
@@ -350,8 +348,6 @@ virt_netperf_msg_sizes()
 virt_test_01()
 {
 	start_id=${start_id:-"1"}
-	virt_count=${virt_count:-"400"}
-
 	local opts=${1:-""}
 	local n=0
 
@@ -368,7 +364,7 @@ virt_test_01()
 
 		virt_multiple_add_test "$p"
 
-		start_id=$(($start_id + $virt_count))
+		start_id=$(($start_id + $NS_TIMES))
 	done
 }
 
@@ -378,8 +374,6 @@ virt_test_01()
 virt_test_02()
 {
 	start_id=${start_id:-"1"}
-	virt_count=${virt_count:-"500"}
-
 	local opts=${1:-""}
 	local n=0
 
@@ -396,7 +390,7 @@ virt_test_02()
 
 		virt_add_delete_test "$p"
 
-		start_id=$(($start_id + $virt_count))
+		start_id=$(($start_id + $NS_TIMES))
 	done
 }
 
