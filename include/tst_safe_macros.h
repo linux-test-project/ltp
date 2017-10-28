@@ -66,7 +66,7 @@ static inline int safe_dup(const char *file, const int lineno,
 #define SAFE_DUP(oldfd) \
 	safe_dup(__FILE__, __LINE__, (oldfd))
 
-#define	SAFE_GETCWD(buf, size) \
+#define SAFE_GETCWD(buf, size) \
 	safe_getcwd(__FILE__, __LINE__, NULL, (buf), (size))
 
 #define SAFE_GETPWNAM(name) \

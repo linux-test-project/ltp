@@ -67,7 +67,7 @@ int safe_open(const char *file, const int lineno,
 int safe_pipe(const char *file, const int lineno,
               void (*cleanup_fn)(void), int fildes[2]);
 
-ssize_t	safe_read(const char *file, const int lineno,
+ssize_t safe_read(const char *file, const int lineno,
                   void (*cleanup_fn)(void), char len_strict, int fildes,
                   void *buf, size_t nbyte);
 
@@ -110,7 +110,7 @@ int safe_symlink(const char *file, const int lineno,
                  void (cleanup_fn)(void), const char *oldpath,
                  const char *newpath);
 
-ssize_t	safe_write(const char *file, const int lineno,
+ssize_t safe_write(const char *file, const int lineno,
                    void (cleanup_fn)(void), char len_strict, int fildes,
                    const void *buf, size_t nbyte);
 
