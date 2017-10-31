@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <poll.h>
 #include <time.h>
@@ -33,6 +34,7 @@
 #include <errno.h>
 
 #include "lapi/posix_clocks.h"
+#include "lapi/tcp.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_pthread.h"
 #include "tst_test.h"
@@ -51,15 +53,6 @@ static const int min_msg_len = 5;
 #endif
 #ifndef DCCP_SOCKOPT_SERVICE
 #define DCCP_SOCKOPT_SERVICE	2
-#endif
-
-/* TCP server requiers */
-#ifndef TCP_FASTOPEN
-#define TCP_FASTOPEN	23
-#endif
-
-#ifndef TCP_FASTOPEN_CONNECT
-#define TCP_FASTOPEN_CONNECT	30	/* Attempt FastOpen with connect */
 #endif
 
 #ifndef SO_BUSY_POLL
