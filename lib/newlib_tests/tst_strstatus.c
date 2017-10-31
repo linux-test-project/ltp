@@ -26,7 +26,7 @@ static struct tcase {
 	int status;
 	const char *str;
 } tcases[] = {
-	{0x0100, "exitted with 1"},
+	{0x0100, "exited with 1"},
 	{0x0001, "killed by SIGHUP"},
 	{0x137f, "is stopped"},
 	{0xffff, "is resumed"},

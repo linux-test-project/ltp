@@ -25,7 +25,7 @@ static char buf[32];
 
 const char *exited(int status)
 {
-	snprintf(buf, sizeof(buf), "exitted with %i", WEXITSTATUS(status));
+	snprintf(buf, sizeof(buf), "exited with %i", WEXITSTATUS(status));
 
 	return buf;
 }

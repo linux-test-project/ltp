@@ -146,10 +146,10 @@ refork:
 		for (i = 1; i <= kidid; ++i) {
 			wait(&status);
 			if (status == 0) {
-				tst_resm(TPASS, "child %d exitted successfully",
+				tst_resm(TPASS, "child %d exited successfully",
 					 i);
 			} else {
-				tst_resm(TFAIL, "child %d exitted with bad "
+				tst_resm(TFAIL, "child %d exited with bad "
 					 "status", i);
 			}
 		}

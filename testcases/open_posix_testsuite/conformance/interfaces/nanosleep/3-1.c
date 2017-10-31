@@ -9,7 +9,7 @@
  * - Start nanosleep() in a child process
  * - Send a signal to the child process and have the handler exit with
  *   success; if the handler is not called, return 0
- * - In the parent, if the child exitted success, return success.
+ * - In the parent, if the child exited success, return success.
  */
 #include <stdio.h>
 #include <time.h>

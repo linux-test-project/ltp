@@ -326,7 +326,7 @@ static void check_child_status(pid_t pid, int status)
 	}
 
 	if (!(WIFEXITED(status)))
-		tst_brk(TBROK, "Child (%i) exitted abnormaly", pid);
+		tst_brk(TBROK, "Child (%i) exited abnormaly", pid);
 
 	ret = WEXITSTATUS(status);
 	switch (ret) {

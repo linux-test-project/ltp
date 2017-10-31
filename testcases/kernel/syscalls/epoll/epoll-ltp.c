@@ -157,7 +157,7 @@ do {					\
 	} else { /* Must have been signaled */					\
 		(result) = (errval);						\
 		if (WIFSIGNALED(kid_status))						\
-			tst_resm(TFAIL, "Protected function test exitted due to signal %d (%s)", \
+			tst_resm(TFAIL, "Protected function test exited due to signal %d (%s)", \
 				WTERMSIG(kid_status), strsignal(WTERMSIG(kid_status)));	\
 		}								\
 	}									\
@@ -187,7 +187,7 @@ do {					\
 	} else { /* Must have been signaled */					\
 		kid_status = (errval);						\
 		if (WIFSIGNALED(kid_status))					\
-			tst_resm(TFAIL, "Protected function test exitted due to signal %d (%s)", \
+			tst_resm(TFAIL, "Protected function test exited due to signal %d (%s)", \
 						WTERMSIG(kid_status), strsignal(WTERMSIG(kid_status))); \
 	}									\
 }										\
