@@ -265,7 +265,9 @@ static inline int tst_fzsync_pair_wait(struct tst_fzsync_pair *pair,
 			;
 	}
 
-	return !tst_atomic_load(&pair->exit);
+	/* Only exit if we have done the same amount of work as the other thread */
+	return !tst_atomic_load(&pair->exit) ||
+	  tst_atomic_load(other_cntr) <= tst_atomic_load(our_cntr);
 }
 
 static inline int tst_fzsync_wait_a(struct tst_fzsync_pair *pair)
