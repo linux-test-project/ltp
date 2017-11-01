@@ -65,6 +65,11 @@ static inline long keyctl(int cmd, ...)
 
 	return tst_syscall(__NR_keyctl, cmd, arg2, arg3, arg4, arg5);
 }
+
+static inline key_serial_t keyctl_join_session_keyring(const char *name) {
+	return keyctl(KEYCTL_JOIN_SESSION_KEYRING, name);
+}
+
 #endif /* defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS) */
 
 /* special process keyring shortcut IDs */

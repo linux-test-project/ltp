@@ -505,6 +505,7 @@ keyctl04 keyctl04
 keyctl05 keyctl05
 keyctl06 keyctl06
 keyctl07 keyctl07
+keyctl08 keyctl08
 
 kcmp01 kcmp01
 kcmp02 kcmp02
