@@ -19,7 +19,7 @@ Following are tentative Testcases to be included into LTP-Containers in future:
 NAME						TENTATIVE-TIME
 =================================================================================
 PID NAMESPACES					(NEAR FUTURE)
-NETWROK NAMESPACES				(NEAR FUTURE)
+NETWORK NAMESPACES				(NEAR FUTURE)
 POSIX IPC NAMESPACES				(NEAR FUTURE)
 TTY+CONSOLE+DEVPTS NAMESPACES			(NEAR FUTURE)
 PROC+SYSFS ISOLATION				(NEAR FUTURE)

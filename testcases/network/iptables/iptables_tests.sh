@@ -36,7 +36,7 @@ init()
 	if [ $? -ne 0 ]; then
 		iptables -L > tst_iptables.out 2>&1
 		if [ $? -ne 0 ]; then
-			tst_brkm TBROK "no iptables support in kenrel."
+			tst_brkm TBROK "no iptables support in kernel."
 		fi
 	fi
 

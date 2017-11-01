@@ -406,7 +406,7 @@ static inline sighandler_t safe_signal(const char *file, const int lineno,
 #define SAFE_EXECL(file, arg, ...) do {				\
        execl((file), (arg), ##__VA_ARGS__);			\
        tst_brk_(__FILE__, __LINE__, TBROK | TERRNO,		\
-                "execlp(%s, %s, ...) failed", file, arg); 	\
+                "execl(%s, %s, ...) failed", file, arg); 	\
        } while (0)
 
 int safe_getpriority(const char *file, const int lineno, int which, id_t who);

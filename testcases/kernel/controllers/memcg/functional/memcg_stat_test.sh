@@ -21,7 +21,7 @@
 ################################################################################
 #
 # File :        memcg_stat_test.sh
-# Description:  Tests memroy.stat.
+# Description:  Tests memory.stat.
 # Author:       Peng Haitao <penght@cn.fujitsu.com>
 # History:      2012/01/16 - Created.
 #

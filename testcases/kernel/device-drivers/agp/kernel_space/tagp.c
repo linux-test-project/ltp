@@ -216,7 +216,7 @@ static int tagp_ioctl(struct inode *ino, struct file *f,
 	case TEST_GENERIC_FREE_GATT_TABLE:
 		rc = test_agp_generic_free_gatt_table();
 		break;
-	case TEST_GENERIC_INSERT_MEMROY:
+	case TEST_GENERIC_INSERT_MEMORY:
 		rc = test_agp_generic_insert_memory();
 		break;
 	case TEST_GENERIC_ALLOC_BY_TYPE:

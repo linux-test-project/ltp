@@ -249,7 +249,7 @@ int main()
 		printf("Success on agp_generic_free_gatt_table\n");
 
 	/* make test calls for agp_generic_insert_memory */
-	if (ki_generic(tagp_fd, TEST_GENERIC_INSERT_MEMROY))
+	if (ki_generic(tagp_fd, TEST_GENERIC_INSERT_MEMORY))
 		printf("Fail on agp_generic_insert_memory\n");
 	else
 		printf("Success on agp_generic_insert_memory\n");

@@ -6,7 +6,7 @@
 # 4.you should have fs-bench utility (http://h2np.net/tools/fs-bench-0.2.tar.gz)
 # 5.results will be copied to /tmp/log and /tmp/log1 files
 
-#DESCRIPTION: This testscript creates a jffs2 file system type and tests the filesytem test
+#DESCRIPTION: This testscript creates a jffs2 file system type and tests the filesystem test
 #and places the log in the log directory.The file system test actually creates a tree of large
 #directories and performs the delete and random delete operations as per the filesystem stress
 #algorithim and gives a report of real time ,user time,system time taken to perform the file

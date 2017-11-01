@@ -822,7 +822,7 @@ Aligns the x to be next multiple of a. The a must be power of 2.
 2.2.12 Filesystem type detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some tests are known to fail on certain filesytems (you cannot swap on TMPFS,
+Some tests are known to fail on certain filesystems (you cannot swap on TMPFS,
 there are unimplemented 'fcntl()' etc.).
 
 If your test needs to be skipped on certain filesystems, use the interface
