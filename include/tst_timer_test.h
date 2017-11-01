@@ -37,7 +37,7 @@
     }
 
     struct tst_test test = {
-	.tid = "syscall_name()",
+	.scall = "syscall_name()",
 	.sample = sample,
     };
 

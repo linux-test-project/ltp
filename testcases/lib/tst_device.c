@@ -27,7 +27,6 @@
 extern struct tst_test *tst_test;
 
 static struct tst_test test = {
-	.tid = "tst_device"
 };
 
 static void print_help(void)

@@ -41,6 +41,7 @@
 
 struct tst_test *tst_test;
 
+static const char *tid;
 static int iterations = 1;
 static float duration = -1;
 static pid_t main_pid, lib_pid;
@@ -77,7 +78,7 @@ static void setup_ipc(void)
 
 	if (access("/dev/shm", F_OK) == 0) {
 		snprintf(shm_path, sizeof(shm_path), "/dev/shm/ltp_%s_%d",
-		         tst_test->tid, getpid());
+		         tid, getpid());
 	} else {
 		char *tmpdir;
 
@@ -86,7 +87,7 @@ static void setup_ipc(void)
 
 		tmpdir = tst_get_tmpdir();
 		snprintf(shm_path, sizeof(shm_path), "%s/ltp_%s_%d",
-		         tmpdir, tst_test->tid, getpid());
+		         tmpdir, tid, getpid());
 		free(tmpdir);
 	}
 
@@ -688,11 +689,10 @@ static void do_setup(int argc, char *argv[])
 
 	assert_test_fn();
 
+	tid = get_tid(argv);
+
 	if (tst_test->sample)
 		tst_test = tst_timer_test_setup(tst_test);
-
-	if (!tst_test->tid)
-		tst_test->tid = get_tid(argv);
 
 	parse_opts(argc, argv);
 
@@ -972,7 +972,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	do_setup(argc, argv);
 
-	TCID = tst_test->tid;
+	TCID = tid;
 
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);

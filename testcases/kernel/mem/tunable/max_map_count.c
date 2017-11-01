@@ -208,7 +208,6 @@ static void max_map_count_test(void)
 }
 
 static struct tst_test test = {
-	.tid = "max_map_count",
 	.needs_root = 1,
 	.forks_child = 1,
 	.setup = setup,

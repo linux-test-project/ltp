@@ -77,7 +77,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "epoll_wait()",
+	.scall = "epoll_wait()",
 	.sample = sample_fn,
 	.setup = setup,
 	.cleanup = cleanup,

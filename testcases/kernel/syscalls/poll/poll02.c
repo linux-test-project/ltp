@@ -64,7 +64,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "poll()",
+	.scall = "poll()",
 	.sample = sample_fn,
 	.setup = setup,
 	.cleanup = cleanup,

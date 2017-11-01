@@ -52,6 +52,6 @@ int sample_fn(int clk_id, long long usec)
 }
 
 static struct tst_test test = {
-	.tid = "futex_wait()",
+	.scall = "futex_wait()",
 	.sample = sample_fn,
 };

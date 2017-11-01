@@ -47,6 +47,6 @@ int sample_fn(int clk_id, long long usec)
 }
 
 static struct tst_test test = {
-	.tid = "nanosleep()",
+	.scall = "nanosleep()",
 	.sample = sample_fn,
 };

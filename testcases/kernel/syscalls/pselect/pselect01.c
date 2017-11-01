@@ -44,6 +44,6 @@ int sample_fn(int clk_id, long long usec)
 }
 
 static struct tst_test test = {
-	.tid = "pselect()",
+	.scall = "pselect()",
 	.sample = sample_fn,
 };

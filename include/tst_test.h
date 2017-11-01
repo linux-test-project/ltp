@@ -105,8 +105,6 @@ int tst_parse_long(const char *str, long *val, long min, long max);
 int tst_parse_float(const char *str, float *val, float min, float max);
 
 struct tst_test {
-	/* test id usually the same as test filename without file suffix */
-	const char *tid;
 	/* number of tests available in test() function */
 	unsigned int tcnt;
 
@@ -149,6 +147,9 @@ struct tst_test {
 
 	void (*test)(unsigned int test_nr);
 	void (*test_all)(void);
+
+	/* Syscall name used by the timer measurement library */
+	const char *scall;
 
 	/* Sampling function for timer measurement testcases */
 	int (*sample)(int clk_id, long long usec);

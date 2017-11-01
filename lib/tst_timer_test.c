@@ -459,10 +459,10 @@ struct tst_test *tst_timer_test_setup(struct tst_test *timer_test)
 {
 	setup = timer_test->setup;
 	cleanup = timer_test->cleanup;
-	scall = timer_test->tid;
+	scall = timer_test->scall;
 	sample = timer_test->sample;
 
-	timer_test->tid = NULL;
+	timer_test->scall = NULL;
 	timer_test->setup = timer_setup;
 	timer_test->cleanup = timer_cleanup;
 	timer_test->test = timer_test_fn;

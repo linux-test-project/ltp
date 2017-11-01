@@ -97,7 +97,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.tid = "ksm06",
 	.needs_root = 1,
 	.options = ksm_options,
 	.setup = setup,
