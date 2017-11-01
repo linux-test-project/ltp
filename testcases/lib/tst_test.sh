@@ -28,6 +28,7 @@ export TST_WARN=0
 export TST_CONF=0
 export TST_COUNT=1
 export TST_ITERATIONS=1
+export TST_TMPDIR_RHOST=0
 
 . tst_ansi_color.sh
 
@@ -49,6 +50,7 @@ tst_do_exit()
 	if [ "$TST_NEEDS_TMPDIR" = 1 -a -n "$TST_TMPDIR" ]; then
 		cd "$LTPROOT"
 		rm -r "$TST_TMPDIR"
+		[ "$TST_TMPDIR_RHOST" = 1 ] && tst_cleanup_rhost
 	fi
 
 	if [ $TST_FAIL -gt 0 ]; then

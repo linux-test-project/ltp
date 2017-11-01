@@ -24,6 +24,7 @@
 export LTP_RET_VAL=0
 export TST_COUNT=1
 export TST_LIB_LOADED=1
+export TST_TMPDIR_RHOST=0
 
 . tst_ansi_color.sh
 
@@ -135,6 +136,7 @@ tst_rmdir()
 	if [ -n "$TST_TMPDIR" ]; then
 		cd "$LTPROOT"
 		rm -r "$TST_TMPDIR"
+		[ "$TST_TMPDIR_RHOST" = 1 ] && tst_cleanup_rhost
 	fi
 }
 

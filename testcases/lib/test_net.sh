@@ -577,6 +577,11 @@ tst_set_sysctl()
 	tst_rhost_run $safe -c "sysctl -qw $add_opt $name=$value"
 }
 
+tst_cleanup_rhost()
+{
+	tst_rhost_run -c "rm -rf $TST_TMPDIR"
+}
+
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
@@ -669,3 +674,10 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 
 # More information about network parameters can be found
 # in the following document: testcases/network/stress/README
+
+if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
+	tst_tmpdir
+	tst_rhost_run -c "mkdir -p $TST_TMPDIR"
+	tst_rhost_run -c "chmod 777 $TST_TMPDIR"
+	export TST_TMPDIR_RHOST=1
+fi
