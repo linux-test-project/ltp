@@ -390,6 +390,11 @@ tst_wait_ipv6_dad()
 	done
 }
 
+tst_dump_rhost_cmd()
+{
+	tst_rhost_run -c "cat $TST_TMPDIR/bg.cmd"
+}
+
 # Run network load test, see 'netstress -h' for option description
 tst_netload()
 {
@@ -442,7 +447,7 @@ tst_netload()
 	s_opts="${cs_opts}${s_opts}-R $s_replies -g $port"
 
 	tst_resm TINFO "run server 'netstress $s_opts'"
-	tst_rhost_run -s -b -c "netstress $s_opts"
+	tst_rhost_run -s -B -c "netstress $s_opts"
 
 	tst_resm TINFO "check that server port in 'LISTEN' state"
 	local sec_waited=
@@ -457,6 +462,7 @@ tst_netload()
 	for sec_waited in $(seq 1 1200); do
 		tst_rhost_run -c "$sock_cmd" && break
 		if [ $sec_waited -eq 1200 ]; then
+			tst_dump_rhost_cmd
 			tst_rhost_run -c "ss -dutnp | grep $port"
 			tst_brkm TFAIL "server not in LISTEN state"
 		fi
@@ -468,12 +474,14 @@ tst_netload()
 	tst_rhost_run -c "pkill -9 netstress\$"
 
 	if [ "$expect_ret" -ne "$ret" ]; then
+		tst_dump_rhost_cmd
 		cat tst_netload.log
 		tst_brkm TFAIL "expected '$expect_res' but ret: '$ret'"
 	fi
 
 	if [ "$ret" -eq 0 ]; then
 		if [ ! -f $rfile ]; then
+			tst_dump_rhost_cmd
 			cat tst_netload.log
 			tst_brkm TFAIL "can't read $rfile"
 		fi
