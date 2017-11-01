@@ -20,6 +20,7 @@
 
 TCID=macsec02
 TST_TOTAL=16
+TST_NEEDS_TMPDIR=1
 
 virt_type="macsec"
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-100}
@@ -29,7 +30,7 @@ VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-100}
 
 cleanup()
 {
-	virt_cleanup_rmt
+	virt_cleanup
 	tst_ipsec_cleanup
 }
 TST_CLEANUP="cleanup"

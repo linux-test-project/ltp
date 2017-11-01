@@ -27,6 +27,7 @@ max_requests=3
 
 TST_TOTAL=1
 TCID="tcp_fastopen"
+TST_NEEDS_TMPDIR=1
 
 . test_net.sh
 
@@ -71,7 +72,6 @@ fi
 
 trap "tst_brkm TBROK 'test interrupted'" INT
 TST_CLEANUP="cleanup"
-tst_tmpdir
 
 tst_resm TINFO "using old TCP API and set tcp_fastopen to '0'"
 tst_netload -H $(tst_ipaddr rhost) -a $clients_num -r $client_requests \

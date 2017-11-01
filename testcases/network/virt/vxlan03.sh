@@ -25,6 +25,7 @@
 
 TCID=vxlan03
 TST_TOTAL=4
+TST_NEEDS_TMPDIR=1
 
 virt_type="vxlan"
 start_id=16700000
@@ -42,7 +43,7 @@ vxlan_dst_addr="uni"
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}
 [ "$VIRT_PERF_THRESHOLD" -lt 160 ] && VIRT_PERF_THRESHOLD=160
 
-TST_CLEANUP="virt_cleanup_rmt"
+TST_CLEANUP="virt_cleanup"
 
 if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"

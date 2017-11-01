@@ -25,13 +25,14 @@
 
 TCID=vlan03
 TST_TOTAL=6
+TST_NEEDS_TMPDIR=1
 
 virt_type="vlan"
 
 . test_net.sh
 . virt_lib.sh
 
-TST_CLEANUP="virt_cleanup_rmt"
+TST_CLEANUP="virt_cleanup"
 
 if [ -z $ip_local -o -z $ip_remote ]; then
 	tst_brkm TBROK "you must specify IP address"

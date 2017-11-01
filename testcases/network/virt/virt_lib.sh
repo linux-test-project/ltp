@@ -96,6 +96,12 @@ virt_cleanup_rmt()
 	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
 }
 
+virt_cleanup()
+{
+	virt_cleanup_rmt
+	[ "$TST_NEEDS_TMPDIR" = 1 ] && tst_rmdir
+}
+
 TST_CLEANUP="cleanup_vifaces"
 trap "tst_brkm TBROK 'test interrupted'" INT
 

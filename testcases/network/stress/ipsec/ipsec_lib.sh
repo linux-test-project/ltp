@@ -119,6 +119,8 @@ tst_ipsec_cleanup()
 		ip li del $cleanup_vti 2>/dev/null
 		tst_rhost_run -c "ip li del $cleanup_vti 2>/dev/null"
 	fi
+
+	[ "$TST_NEEDS_TMPDIR" = 1 ] && tst_rmdir
 }
 
 ipsec_set_algoline()

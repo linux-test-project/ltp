@@ -19,6 +19,7 @@
 TCID=dccp01
 TST_TOTAL=3
 TST_CLEANUP="cleanup"
+TST_NEEDS_TMPDIR=1
 
 . test_net.sh
 
@@ -30,7 +31,6 @@ cleanup()
 setup()
 {
 	tst_require_root
-	tst_tmpdir
 }
 
 test_run()

@@ -19,6 +19,7 @@
 
 TST_TOTAL=1
 TCID="busy_poll02"
+TST_NEEDS_TMPDIR=1
 
 . test_net.sh
 . busy_poll_lib.sh
@@ -37,8 +38,6 @@ set_busy_poll()
 	ROD_SILENT sysctl -q -w net.core.busy_poll=$value
 	tst_rhost_run -s -c "sysctl -q -w net.core.busy_poll=$value"
 }
-
-tst_tmpdir
 
 busy_poll_old="$(cat /proc/sys/net/core/busy_poll)"
 rbusy_poll_old=$(tst_rhost_run -c 'cat /proc/sys/net/core/busy_poll')

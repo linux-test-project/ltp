@@ -19,6 +19,7 @@
 TCID=dctcp01
 TST_TOTAL=1
 TST_CLEANUP="cleanup"
+TST_NEEDS_TMPDIR=1
 def_alg="cubic"
 prev_alg=
 
@@ -55,8 +56,6 @@ setup()
 	if [ $? -ne 0 ]; then
 		tst_brkm TCONF "netem doesn't support ECN"
 	fi
-
-	tst_tmpdir
 
 	prev_alg="$(sysctl -n net.ipv4.tcp_congestion_control)"
 }

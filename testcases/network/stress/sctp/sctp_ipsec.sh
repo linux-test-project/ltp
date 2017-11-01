@@ -18,6 +18,7 @@
 
 TCID=sctp_ipsec
 TST_TOTAL=3
+TST_NEEDS_TMPDIR=1
 TST_CLEANUP="tst_ipsec_cleanup"
 
 . ipsec_lib.sh

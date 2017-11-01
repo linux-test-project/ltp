@@ -18,6 +18,7 @@
 
 TCID=tcp_ipsec_vti
 TST_TOTAL=3
+TST_NEEDS_TMPDIR=1
 TST_CLEANUP="tst_ipsec_cleanup"
 
 max_requests=10
