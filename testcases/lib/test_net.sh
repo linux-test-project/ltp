@@ -53,9 +53,9 @@ init_ltp_netspace()
 # Run command on remote host.
 # Options:
 # -b run in background
+# -B run in background and save output to $TST_TMPDIR/bg.cmd
 # -s safe option, if something goes wrong, will exit with TBROK
 # -c specify command to run
-
 tst_rhost_run()
 {
 	local pre_cmd=
@@ -64,13 +64,15 @@ tst_rhost_run()
 	local user="root"
 	local cmd=
 	local safe=0
+	local bg=
 
 	OPTIND=0
 
-	while getopts :bsc:u: opt; do
+	while getopts :bBsc:u: opt; do
 		case "$opt" in
-		b) [ "$TST_USE_NETNS" ] && pre_cmd="" || pre_cmd="nohup"
-		   post_cmd=" > /dev/null 2>&1 &"
+		b|B) [ "$TST_USE_NETNS" ] && pre_cmd= || pre_cmd="nohup"
+		   [ "$opt" = b ] && bg="/dev/null" || bg="$TST_TMPDIR/bg.cmd"
+		   post_cmd=" > $bg 2>&1 &"
 		   out="1> /dev/null"
 		;;
 		s) safe=1 ;;
