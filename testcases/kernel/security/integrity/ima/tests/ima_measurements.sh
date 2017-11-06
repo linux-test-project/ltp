@@ -76,7 +76,7 @@ test01()
 test02()
 {
 	# Modify test.txt
-	echo $($date) - file modified >> test.txt
+	echo $(date) - file modified >> test.txt
 
 	# Calculating the sha1sum of test.txt should add
 	# the new measurement to the measurement list
