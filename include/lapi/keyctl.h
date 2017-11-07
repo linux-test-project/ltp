@@ -124,6 +124,10 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEYCTL_SETPERM 5
 #endif
 
+#ifndef KEYCTL_CLEAR
+# define KEYCTL_CLEAR 7
+#endif
+
 #ifndef KEYCTL_UNLINK
 # define KEYCTL_UNLINK 9
 #endif
