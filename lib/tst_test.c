@@ -180,7 +180,7 @@ static void print_result(const char *file, const int lineno, int ttype,
 {
 	char buf[1024];
 	char *str = buf;
-	int ret, size = sizeof(buf);
+	int ret, size = sizeof(buf), ssize;
 	const char *str_errno = NULL;
 	const char *res;
 
@@ -226,14 +226,21 @@ static void print_result(const char *file, const int lineno, int ttype,
 	str += ret;
 	size -= ret;
 
+	ssize = size - 2;
 	ret = vsnprintf(str, size, fmt, va);
-	str += ret;
-	size -= ret;
-
-	if (str_errno) {
+	str += MIN(ret, ssize);
+	size -= MIN(ret, ssize);
+	if (ret >= ssize) {
+		tst_res_(file, lineno, TWARN,
+				"Next message is too long and truncated:");
+	} else if (str_errno) {
+		ssize = size - 2;
 		ret = snprintf(str, size, ": %s", str_errno);
-		str += ret;
-		size -= ret;
+		str += MIN(ret, ssize);
+		size -= MIN(ret, ssize);
+		if (ret >= ssize)
+			tst_res_(file, lineno, TWARN,
+				"Next message is too long and truncated:");
 	}
 
 	snprintf(str, size, "\n");
