@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "lapi/netinet_in.h"
 #include "lapi/posix_clocks.h"
 #include "lapi/socket.h"
 #include "lapi/tcp.h"
@@ -42,10 +43,6 @@
 
 static const int max_msg_len = (1 << 16) - 1;
 static const int min_msg_len = 5;
-
-#ifndef IPPROTO_DCCP
-#define IPPROTO_DCCP		33
-#endif
 
 #ifndef DCCP_SOCKOPT_SERVICE
 #define DCCP_SOCKOPT_SERVICE	2
