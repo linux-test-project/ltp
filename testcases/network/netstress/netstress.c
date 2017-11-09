@@ -21,6 +21,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <linux/dccp.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -33,6 +34,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "lapi/dccp.h"
 #include "lapi/netinet_in.h"
 #include "lapi/posix_clocks.h"
 #include "lapi/socket.h"
@@ -43,10 +45,6 @@
 
 static const int max_msg_len = (1 << 16) - 1;
 static const int min_msg_len = 5;
-
-#ifndef DCCP_SOCKOPT_SERVICE
-#define DCCP_SOCKOPT_SERVICE	2
-#endif
 
 enum {
 	SERVER_HOST = 0,
