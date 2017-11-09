@@ -65,12 +65,12 @@
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <errno.h>
-#include <sys/shm.h>
 
 #include "diotest_routines.h"
 
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/mmap.h"
 
 char *TCID = "diotest4";	/* Test program identifier.    */
 int TST_TOTAL = 17;		/* Total number of test conditions */
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
 	int fd, newfd;
 	int i, l_fail = 0, fail_count = 0, total = 0;
 	int failed = 0;
-	int shmsz = SHMLBA;
+	int shmsz = MMAP_GRANULARITY;
 	int pagemask = ~(sysconf(_SC_PAGE_SIZE) - 1);
 	char *buf0, *buf1, *buf2;
 	caddr_t shm_base;

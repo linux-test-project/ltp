@@ -71,4 +71,12 @@
 # define MADV_FREE	8
 #endif
 
+#ifdef HAVE_SYS_SHM_H
+# include <sys/shm.h>
+# define MMAP_GRANULARITY SHMLBA
+#else
+# include <unistd.h>
+# define MMAP_GRANULARITY getpagesize()
+#endif /* HAVE_SYS_SHM_H */
+
 #endif /* LAPI_MMAP_H__ */

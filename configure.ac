@@ -47,6 +47,7 @@ AC_CHECK_HEADERS([ \
     sys/fanotify.h \
     sys/inotify.h \
     sys/prctl.h \
+    sys/shm.h \
     sys/ustat.h \
     sys/xattr.h \
 ])
