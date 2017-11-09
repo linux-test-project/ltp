@@ -34,6 +34,7 @@
 #include <errno.h>
 
 #include "lapi/posix_clocks.h"
+#include "lapi/socket.h"
 #include "lapi/tcp.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_pthread.h"
@@ -42,26 +43,12 @@
 static const int max_msg_len = (1 << 16) - 1;
 static const int min_msg_len = 5;
 
-#ifndef SOCK_DCCP
-#define SOCK_DCCP		6
-#endif
 #ifndef IPPROTO_DCCP
 #define IPPROTO_DCCP		33
 #endif
-#ifndef SOL_DCCP
-#define SOL_DCCP		269
-#endif
+
 #ifndef DCCP_SOCKOPT_SERVICE
 #define DCCP_SOCKOPT_SERVICE	2
-#endif
-
-#ifndef SO_BUSY_POLL
-#define SO_BUSY_POLL	46
-#endif
-
-/* TCP client requiers */
-#ifndef MSG_FASTOPEN
-#define MSG_FASTOPEN	0x20000000 /* Send data in TCP SYN */
 #endif
 
 enum {

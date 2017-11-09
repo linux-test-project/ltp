@@ -19,8 +19,26 @@
 #ifndef __LAPI_SOCKET_H__
 #define __LAPI_SOCKET_H__
 
+#include <sys/socket.h>
+
+#ifndef MSG_FASTOPEN
+# define MSG_FASTOPEN	0x20000000 /* Send data in TCP SYN */
+#endif
+
+#ifndef SO_BUSY_POLL
+# define SO_BUSY_POLL	46
+#endif
+
+#ifndef SOCK_DCCP
+# define SOCK_DCCP		6
+#endif
+
 #ifndef SOCK_CLOEXEC
 # define SOCK_CLOEXEC 02000000
+#endif
+
+#ifndef SOL_DCCP
+# define SOL_DCCP		269
 #endif
 
 #endif /* __LAPI_SOCKET_H__ */
