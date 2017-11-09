@@ -51,7 +51,6 @@ static int nr_iovecs;
 static long bufsz;
 static int pipe_fd[2];
 static pid_t pids[2];
-static int semid;
 
 static void gen_random_arr(int *arr, int arr_sz);
 static void child_alloc(int *bufsz_arr);
@@ -103,7 +102,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "child 1 returns %d", status);
 
 		/* child_alloc is free to exit now */
-		safe_semop(semid, 0, 1);
+		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
 
 		SAFE_WAITPID(cleanup, pids[0], &status, 0);
 		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
@@ -157,7 +156,7 @@ static void child_alloc(int *bufsz_arr)
 	SAFE_CLOSE(tst_exit, pipe_fd[1]);
 
 	/* wait until child_invoke is done reading from our VM */
-	safe_semop(semid, 0, -1);
+	TST_SAFE_CHECKPOINT_WAIT(cleanup, 0);
 }
 
 static long *fetch_remote_addrs(void)
@@ -255,7 +254,8 @@ static void setup(void)
 	tst_brkm(TCONF, NULL, "process_vm_readv does not exist "
 		 "on your system");
 #endif
-	semid = init_sem(1);
+	tst_tmpdir();
+	TST_CHECKPOINT_INIT(cleanup);
 	srand(time(NULL));
 
 	TEST_PAUSE;
@@ -263,7 +263,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	clean_sem(semid);
+	tst_rmdir();
 }
 
 static void help(void)
