@@ -43,10 +43,10 @@ int TST_TOTAL = 1;
 #ifdef __ia64__
 # define HIGH_ADDR (void *)(0xa000000000000000UL)
 #else
-# define HIGH_ADDR (void *)(1L << 53)
+# define HIGH_ADDR (void *)(-page_size)
 #endif
 
-static long map_sz;
+static long page_size;
 
 static void setup(void);
 static void cleanup(void);
@@ -70,12 +70,12 @@ int main(int ac, char **av)
 		fd = SAFE_OPEN(cleanup, "testfile", O_RDWR | O_CREAT, 0666);
 
 		/* Attempt to mmap into highmem addr, should get ENOMEM */
-		addr = mmap(HIGH_ADDR, map_sz, PROT_READ,
+		addr = mmap(HIGH_ADDR, page_size, PROT_READ,
 			    MAP_SHARED | MAP_FIXED, fd, 0);
 		if (addr != MAP_FAILED) {
 			tst_resm(TFAIL, "mmap into high region "
 				 "succeeded unexpectedly");
-			munmap(addr, map_sz);
+			munmap(addr, page_size);
 			close(fd);
 			continue;
 		}
@@ -102,7 +102,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	map_sz = getpagesize();
+	page_size = getpagesize();
 
 	TEST_PAUSE;
 }
