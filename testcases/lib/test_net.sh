@@ -401,7 +401,7 @@ tst_netload()
 	local rfile="tst_netload.res"
 	local expect_res="pass"
 	local ret=0
-	local type=
+	local type="tcp"
 	# common options for client and server
 	local cs_opts=
 
@@ -456,7 +456,7 @@ tst_netload()
 	if [ "$type" = "sctp" ]; then
 		sock_cmd="netstat -naS | grep $port | grep -q LISTEN"
 	else
-		sock_cmd="ss -ldutn | grep -q $port"
+		sock_cmd="ss -ln$(echo $type | head -c1) | grep -q $port"
 	fi
 
 	for sec_waited in $(seq 1 1200); do
