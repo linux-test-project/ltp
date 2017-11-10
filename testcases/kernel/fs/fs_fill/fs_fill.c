@@ -41,12 +41,20 @@ struct worker {
 
 static void *worker(void *p)
 {
+	int ret;
 	struct worker *w = p;
 	DIR *d;
 	struct dirent *ent;
 	char file[PATH_MAX];
 
-	SAFE_MKDIR(w->dir, 0700);
+	ret = mkdir(w->dir, 0700);
+	if (ret == -1) {
+		if (errno != ENOSPC)
+			tst_brk(TBROK | TERRNO, "mkdir()");
+
+		tst_res(TINFO | TERRNO, "mkdir()");
+		return NULL;
+	}
 
 	while (run) {
 		tst_fill_fs(w->dir, 0);

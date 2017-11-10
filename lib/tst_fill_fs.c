@@ -40,7 +40,14 @@ void tst_fill_fs(const char *path, int verbose)
 		if (verbose)
 			tst_res(TINFO, "Creating file %s size %zu", file, len);
 
-		fd = SAFE_OPEN(file, O_WRONLY | O_CREAT, 0700);
+		fd = open(file, O_WRONLY | O_CREAT, 0700);
+		if (fd == -1) {
+			if (errno != ENOSPC)
+				tst_brk(TBROK | TERRNO, "open()");
+
+			tst_res(TINFO | TERRNO, "open()");
+			return;
+		}
 
 		while (len) {
 			ret = write(fd, buf, MIN(len, sizeof(buf)));
