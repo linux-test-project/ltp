@@ -438,7 +438,10 @@ tst_netload()
 	local expect_ret=0
 	[ "$expect_res" != "pass" ] && expect_ret=1
 
-	local port="$(tst_rhost_run -c 'tst_get_unused_port ipv6 stream')"
+	local ptype="stream"
+	[ "$type" = "udp" ] && ptype="dgram"
+
+	local port=$(tst_rhost_run -c "tst_get_unused_port ipv6 $ptype")
 	[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
 
 	tst_rhost_run -c "pkill -9 netstress\$"
