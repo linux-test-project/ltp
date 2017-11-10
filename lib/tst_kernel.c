@@ -34,8 +34,10 @@ int tst_kernel_bits(void)
 	/*
 	 * ARM64 (aarch64) defines 32-bit compatibility modes as
 	 * armv8l and armv8b (little and big endian).
+	 * s390x is 64bit but not contain 64 in the words.
 	 */
-	if (!strcmp(buf.machine, "armv8l") || !strcmp(buf.machine, "armv8b"))
+	if (!strcmp(buf.machine, "armv8l") || !strcmp(buf.machine, "armv8b")
+			|| !strcmp(buf.machine, "s390x"))
 		kernel_bits = 64;
 
 	tst_resm(TINFO, "uname.machine=%s kernel is %ibit",
