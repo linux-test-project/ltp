@@ -115,11 +115,6 @@ static int check_event(struct input_event *iev, int event, int code, int value)
 	return iev->type == event && iev->code == code && iev->value == value;
 }
 
-static int check_event_code(struct input_event *iev, int event, int code)
-{
-	return iev->type == event && iev->code == code;
-}
-
 static void read_events(void)
 {
 	int rd = read(fd2, events, sizeof(events));
@@ -151,11 +146,6 @@ static struct input_event *next_event(void)
 	return &events[ev_iter++];
 }
 
-static int check_sync_event(void)
-{
-	return check_event_code(next_event(), EV_SYN, SYN_REPORT);
-}
-
 static int parse_autorepeat_config(struct input_event *iev)
 {
 	if (!check_event_code(iev, EV_REP, REP_DELAY)) {
@@ -177,13 +167,13 @@ static int parse_key(struct input_event *iev)
 {
 	int autorep_count = 0;
 
-	if (!check_event(iev, EV_KEY, KEY_X, 1) || !check_sync_event()) {
+	if (!check_event(iev, EV_KEY, KEY_X, 1) || !check_sync_event(next_event())) {
 		tst_resm(TFAIL, "Didn't get expected key press for KEY_X");
 		return 0;
 	}
 
 	iev = next_event();
-	while (check_event(iev, EV_KEY, KEY_X, 2) && check_sync_event()) {
+	while (check_event(iev, EV_KEY, KEY_X, 2) && check_sync_event(next_event())) {
 		autorep_count++;
 		iev = next_event();
 	}
@@ -195,7 +185,7 @@ static int parse_key(struct input_event *iev)
 		return 0;
 	}
 
-	if (!check_event(iev, EV_KEY, KEY_X, 0) || !check_sync_event()) {
+	if (!check_event(iev, EV_KEY, KEY_X, 0) || !check_sync_event(next_event())) {
 		tst_resm(TFAIL,
 			 "Didn't get expected key release for KEY_X");
 		return 0;
@@ -210,7 +200,7 @@ static int parse_key(struct input_event *iev)
 static int check_events(void)
 {
 	struct input_event *iev;
-	int ret;
+	int ret = 0;
 	int rep_config_done = 0;
 	int rep_keys_done = 0;
 

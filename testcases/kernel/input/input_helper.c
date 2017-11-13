@@ -229,11 +229,31 @@ void destroy_device(int fd)
 		unload_uinput();
 }
 
-int no_events_queued(int fd)
+int check_event_code(struct input_event *iev, int event, int code)
+{
+	return iev->type == event && iev->code == code;
+}
+
+int check_sync_event(struct input_event *iev)
+{
+	return check_event_code(iev, EV_SYN, SYN_REPORT);
+}
+
+/*
+ * the value of stray_sync_event:
+ * 0: EV_SYN/SYN_REPORT events should not be received in /dev/input/eventX
+ * 1: EV_SYN/SYN_REPORT events may be received in /dev/input/eventX
+ * On an old kernel(before v3.7.0), EV_SYN/SYN_REPORT events are always
+ * received even though we send empty moves.
+ */
+int no_events_queued(int fd, int stray_sync_event)
 {
 	struct pollfd fds = {.fd = fd, .events = POLLIN};
-	int ret, res;
+	int ret, res, sync_event_ignored;
 	struct input_event ev;
+
+	if (tst_kvercmp(3, 7, 0) < 0 && stray_sync_event)
+		sync_event_ignored = 1;
 
 	ret = poll(&fds, 1, 30);
 
@@ -241,9 +261,15 @@ int no_events_queued(int fd)
 		res = read(fd, &ev, sizeof(ev));
 
 		if (res == sizeof(ev)) {
-			tst_resm(TINFO,
-			         "Unexpected ev type=%i code=%i value=%i",
-			         ev.type, ev.code, ev.value);
+			if (sync_event_ignored && check_sync_event(&ev)) {
+				ret = 0;
+				tst_resm(TINFO,
+					 "Ignoring stray sync event (known problem)");
+			} else {
+				tst_resm(TINFO,
+					 "Unexpected ev type=%i code=%i value=%i",
+					 ev.type, ev.code, ev.value);
+			}
 		}
 	}
 

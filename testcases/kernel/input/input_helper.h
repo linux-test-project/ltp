@@ -29,6 +29,8 @@ int open_uinput(void);
 void create_device(int fd);
 void setup_mouse_events(int fd);
 void destroy_device(int fd);
-int no_events_queued(int fd);
+int check_event_code(struct input_event *iev, int event, int code);
+int check_sync_event(struct input_event *iev);
+int no_events_queued(int fd, int stray_sync_event);
 
 #endif /* INPUT_HELPER_H */

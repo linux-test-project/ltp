@@ -57,7 +57,7 @@ int main(int ac, char **av)
 		case -1:
 			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 		default:
-			if (no_events_queued(fd2))
+			if (no_events_queued(fd2, 1))
 				tst_resm(TPASS,
 					"No data received in /dev/inputX");
 			else
