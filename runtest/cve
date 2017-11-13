@@ -20,6 +20,7 @@ cve-2017-6951 cve-2017-6951
 cve-2017-7308 setsockopt02
 cve-2017-7472 keyctl04
 cve-2017-12192 keyctl07
+cve-2017-12193 add_key04
 cve-2017-15274 add_key02
 cve-2017-15299 request_key03 -b cve-2017-15299
 cve-2017-15537 ptrace07
