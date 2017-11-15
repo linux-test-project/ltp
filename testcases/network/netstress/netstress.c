@@ -105,6 +105,7 @@ static int clients_num;
 static char *tcp_port		= "61000";
 static char *server_addr	= "localhost";
 static int busy_poll		= -1;
+static int max_etime_cnt = 12; /* ~30 sec max timeout if no connection */
 
 enum {
 	TYPE_TCP = 0,
@@ -123,8 +124,8 @@ static uint32_t service_code = 0xffff;
 /* server socket */
 static int sfd;
 
-/* how long a client must wait for the server's reply, microsec */
-static long wait_timeout = 60000000L;
+/* how long a client must wait for the server's reply */
+static int wait_timeout = 60000;
 
 /* in the end test will save time result in this file */
 static char *rpath = "tfo_result";
@@ -184,7 +185,8 @@ static void do_cleanup(void)
 }
 TST_DECLARE_ONCE_FN(cleanup, do_cleanup)
 
-static int sock_recv_poll(int fd, char *buf, int buf_size, int offset)
+static int sock_recv_poll(int fd, char *buf, int buf_size, int offset,
+			  int *timeout)
 {
 	struct pollfd pfd;
 	pfd.fd = fd;
@@ -193,7 +195,7 @@ static int sock_recv_poll(int fd, char *buf, int buf_size, int offset)
 
 	while (1) {
 		errno = 0;
-		int ret = poll(&pfd, 1, wait_timeout / 1000);
+		int ret = poll(&pfd, 1, *timeout);
 		if (ret == -1) {
 			if (errno == EINTR)
 				continue;
@@ -216,19 +218,22 @@ static int sock_recv_poll(int fd, char *buf, int buf_size, int offset)
 		if (len == -1 && errno == EINTR)
 			continue;
 
+		if (len == 0)
+			errno = ESHUTDOWN;
+
 		break;
 	}
 
 	return len;
 }
 
-static int client_recv(int *fd, char *buf)
+static int client_recv(int *fd, char *buf, int *etime_cnt, int *timeout)
 {
 	int len, offset = 0;
 
 	while (1) {
 		errno = 0;
-		len = sock_recv_poll(*fd, buf, server_msg_size, offset);
+		len = sock_recv_poll(*fd, buf, server_msg_size, offset, timeout);
 
 		/* socket closed or msg is not valid */
 		if (len < 1 || (offset + len) > server_msg_size ||
@@ -249,6 +254,15 @@ static int client_recv(int *fd, char *buf)
 		/* recv last msg, close socket */
 		if (buf[0] == start_fin_byte)
 			break;
+		return 0;
+	}
+
+	if (errno == ETIME && sock_type != SOCK_STREAM) {
+		if (++(*etime_cnt) > max_etime_cnt)
+			tst_brk(TFAIL, "protocol timeout: %dms", *timeout);
+		/* Increase timeout in poll up to 3.2 sec */
+		if (*timeout < 3000)
+			*timeout <<= 1;
 		return 0;
 	}
 
@@ -279,8 +293,9 @@ static int client_connect_send(const char *msg, int size)
 void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 {
 	char buf[server_msg_size];
-	int cfd, i = 0;
+	int cfd, i = 0, etime_cnt = 0;
 	intptr_t err = 0;
+	int timeout = wait_timeout;
 
 	/* connect & send requests */
 	cfd = client_connect_send(client_msg, client_msg_size);
@@ -289,7 +304,7 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 		goto out;
 	}
 
-	if (client_recv(&cfd, buf)) {
+	if (client_recv(&cfd, buf, &etime_cnt, &timeout)) {
 		err = errno;
 		goto out;
 	}
@@ -305,7 +320,7 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 				goto out;
 			}
 
-			if (client_recv(&cfd, buf)) {
+			if (client_recv(&cfd, buf, &etime_cnt, &timeout)) {
 				err = errno;
 				break;
 			}
@@ -320,7 +335,7 @@ send:
 
 		SAFE_SEND(1, cfd, client_msg, client_msg_size, MSG_NOSIGNAL);
 
-		if (client_recv(&cfd, buf)) {
+		if (client_recv(&cfd, buf, &etime_cnt, &timeout)) {
 			err = errno;
 			break;
 		}
@@ -458,6 +473,7 @@ void *server_fn(void *cfd)
 {
 	int client_fd = (intptr_t) cfd;
 	int num_requests = 0, offset = 0;
+	int timeout = wait_timeout;
 	/* Reply will be constructed from first client request */
 	char send_msg[max_msg_len];
 	int send_msg_size = 0;
@@ -470,7 +486,7 @@ void *server_fn(void *cfd)
 
 	while (1) {
 		recv_len = sock_recv_poll(client_fd, recv_msg,
-			max_msg_len, offset);
+			max_msg_len, offset, &timeout);
 
 		if (recv_len == 0)
 			break;
@@ -726,7 +742,7 @@ static void setup(void)
 		tst_brk(TBROK, "Invalid server msg size '%s'", Narg);
 	if (tst_parse_int(qarg, &tfo_queue_size, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid TFO queue size '%s'", qarg);
-	if (tst_parse_long(Targ, &wait_timeout, 0L, LONG_MAX))
+	if (tst_parse_int(Targ, &wait_timeout, 0, INT_MAX))
 		tst_brk(TBROK, "Invalid wait timeout '%s'", Targ);
 	if (tst_parse_int(barg, &busy_poll, 0, INT_MAX))
 		tst_brk(TBROK, "Invalid busy poll timeout'%s'", barg);
@@ -756,6 +772,10 @@ static void setup(void)
 		net.run		= client_run;
 		net.cleanup	= client_cleanup;
 
+		if (proto_type == TYPE_DCCP || proto_type == TYPE_UDP) {
+			tst_res(TINFO, "max timeout errors %d", max_etime_cnt);
+			wait_timeout = 100;
+		}
 		check_tw_reuse();
 	} else {
 		tst_res(TINFO, "max requests '%d'",
