@@ -130,8 +130,6 @@ static int wait_timeout = 60000;
 /* in the end test will save time result in this file */
 static char *rpath = "tfo_result";
 
-static char *verbose;
-
 static char *narg, *Narg, *qarg, *rarg, *Rarg, *aarg, *Targ, *barg, *targ;
 
 /* common structure for TCP/UDP server and TCP/UDP client */
@@ -246,11 +244,6 @@ static int client_recv(int *fd, char *buf, int *etime_cnt, int *timeout)
 		if (buf[offset - 1] != end_byte)
 			continue;
 
-		if (verbose) {
-			tst_res_hexd(TINFO, buf, offset,
-				"msg recv from sock %d:", *fd);
-		}
-
 		/* recv last msg, close socket */
 		if (buf[0] == start_fin_byte)
 			break;
@@ -328,11 +321,6 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 		}
 
 send:
-		if (verbose) {
-			tst_res_hexd(TINFO, client_msg, client_msg_size,
-				"try to send msg[%d]", i);
-		}
-
 		SAFE_SEND(1, cfd, client_msg, client_msg_size, MSG_NOSIGNAL);
 
 		if (client_recv(&cfd, buf, &etime_cnt, &timeout)) {
@@ -509,11 +497,6 @@ void *server_fn(void *cfd)
 		if (recv_msg[0] == start_fin_byte)
 			goto out;
 
-		if (verbose) {
-			tst_res_hexd(TINFO, recv_msg, offset,
-				"msg recv from sock %d:", client_fd);
-		}
-
 		/* if we send reply for the first time, construct it here */
 		if (send_msg[0] != start_byte) {
 			send_msg_size = parse_client_request(recv_msg);
@@ -644,13 +627,6 @@ static void server_run(void)
 
 		if (client_fd == -1)
 			tst_brk(TBROK, "Can't create client socket");
-
-		if (verbose) {
-			char addr_buf[INET6_ADDRSTRLEN];
-			tst_res(TINFO, "conn: port '%d', addr '%s'",
-				addr6.sin6_port, inet_ntop(AF_INET6,
-				&addr6.sin6_addr, addr_buf, INET6_ADDRSTRLEN));
-		}
 
 		server_thread_add(client_fd);
 	}
@@ -832,7 +808,6 @@ static void do_test(void)
 }
 
 static struct tst_option options[] = {
-	{"v", &verbose, "-v       Verbose"},
 	{"f", &fastopen_api, "-f       Use TFO API, default is old API"},
 	{"t:", &targ, "-t x     Set tcp_fastopen value"},
 
