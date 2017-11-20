@@ -70,8 +70,6 @@
 #include <errno.h>
 #include <stdint.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
 
 #include "tst_test.h"
 #include "tst_safe_pthread.h"
@@ -86,7 +84,6 @@
 #define SPEW_SIGNALS
 
 static pthread_t *thread_id;	/* Spawned thread */
-static int semid = -1;
 
 static void my_yield(void)
 {
@@ -192,20 +189,10 @@ int allocate_free(int scheme)
 
 void *alloc_mem(void *threadnum)
 {
-	struct sembuf sop[1];
 	int err;
 
 	/* waiting for other threads starting */
-	sop[0].sem_num = 0;
-	sop[0].sem_op = 0;
-	sop[0].sem_flg = 0;
-	TEST(semop(semid, sop, 1));
-	if (TEST_RETURN == -1 && TEST_ERRNO != EIDRM) {
-		tst_res(TBROK | TTERRNO,
-			"Thread [%d] failed to wait on semaphore",
-			(int)(uintptr_t)threadnum);
-		return (void *)-1;
-	}
+	TST_CHECKPOINT_WAIT(0);
 
 	/* thread N will use growth scheme N mod 4 */
 	err = allocate_free(((uintptr_t)threadnum) % 4);
@@ -218,28 +205,15 @@ void *alloc_mem(void *threadnum)
 
 static void stress_malloc(void)
 {
-	struct sembuf sop[1];
 	int thread_index;
-
-	sop[0].sem_num = 0;
-	sop[0].sem_op = 1;
-	sop[0].sem_flg = 0;
-	TEST(semop(semid, sop, 1));
-	if (TEST_RETURN == -1)
-		tst_res(TBROK | TTERRNO, "Failed to initialize semaphore");
 
 	for (thread_index = 0; thread_index < NUM_THREADS; thread_index++) {
 		SAFE_PTHREAD_CREATE(&thread_id[thread_index], NULL, alloc_mem,
 				    (void *)(uintptr_t)thread_index);
 	}
 
-	/* kick off all the waiting threads */
-	sop[0].sem_num = 0;
-	sop[0].sem_op = -1;
-	sop[0].sem_flg = 0;
-	TEST(semop(semid, sop, 1));
-	if (TEST_RETURN == -1)
-		tst_res(TBROK | TTERRNO, "Failed to wakeup all threads");
+	/* Wake up all threads */
+	TST_CHECKPOINT_WAKE2(0, NUM_THREADS);
 
 	/* wait for all threads to finish */
 	for (thread_index = 0; thread_index < NUM_THREADS; thread_index++) {
@@ -258,20 +232,10 @@ static void stress_malloc(void)
 static void setup(void)
 {
 	thread_id = SAFE_MALLOC(sizeof(pthread_t) * NUM_THREADS);
-
-	semid = semget(IPC_PRIVATE, 1, IPC_CREAT | 0666);
-	if (semid < 0)
-		tst_res(TBROK | TTERRNO, "Semaphore creation failed");
 }
 
 static void cleanup(void)
 {
-	if (semid >= 0) {
-		TEST(semctl(semid, 0, IPC_RMID));
-		if (TEST_RETURN == -1)
-			tst_res(TWARN|TTERRNO, "Failed to destroy semaphore");
-	}
-
 	if (thread_id) {
 		free(thread_id);
 		thread_id = NULL;
@@ -279,6 +243,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.needs_checkpoints = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = stress_malloc,
