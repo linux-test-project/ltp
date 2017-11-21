@@ -55,7 +55,7 @@ fi
 if [ ! -e "bin.sm" ] ; then
 	cnt=0
 	while [ $cnt -lt 5 ] ; do
-		gzip -1 -c ascii.sm >> "bin.sm"
+		gzip -1 -c -n ascii.sm >> "bin.sm"
 		cnt=$(($cnt + 1))
 	done
 fi
