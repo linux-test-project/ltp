@@ -32,7 +32,7 @@ check_cpufreq_sysfs_files() {
 	for cpu in $(seq 0 "${total_cpus}" )
 	do
 		cpufiles=$(find /sys/devices/system/cpu/cpu"${cpu}"/cpufreq/ \
-			-name "*" -type f)
+			-name "*" -type f -perm /400)
 		for files in ${cpufiles}
 		do
 			cat ${files} >/dev/null 2>&1
