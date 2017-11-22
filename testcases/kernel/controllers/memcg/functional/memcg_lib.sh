@@ -78,7 +78,7 @@ TST_CLEANUP=cleanup
 shmmax_setup()
 {
 	shmmax=`cat /proc/sys/kernel/shmmax`
-	if [ $shmmax -lt $HUGEPAGESIZE ]; then
+	if [ $(echo "$shmmax < $HUGEPAGESIZE" |bc) -eq 1 ]; then
 		ROD echo "$HUGEPAGESIZE" \> /proc/sys/kernel/shmmax
 	fi
 }
