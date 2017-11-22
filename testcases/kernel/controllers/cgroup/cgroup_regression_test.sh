@@ -170,26 +170,32 @@ test_2()
 #---------------------------------------------------------------------------
 test_3()
 {
+	local cpu_subsys_path
+
 	if [ ! -e /proc/sched_debug ]; then
 		tst_resm TCONF "CONFIG_SCHED_DEBUG is not enabled"
 		return
 	fi
 
-	grep -q -w "cpu" /proc/cgroups
-	if [ $? -ne 0 ]; then
+	if grep -q -w "cpu" /proc/cgroups ; then
+		cpu_subsys_path=$(grep -w cpu /proc/mounts | awk '{ print $2 }')
+	else
 		tst_resm TCONF "CONFIG_CGROUP_SCHED is not enabled"
 		return
 	fi
 
 	# Run the test for 30 secs
-	mount -t cgroup -o cpu xxx cgroup/
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "Failed to mount cpu subsys"
-		failed=1
-		return
+	if [ -z "$cpu_subsys_path" ]; then
+		mount -t cgroup -o cpu xxx cgroup/
+		if [ $? -ne 0 ]; then
+			tst_resm TFAIL "Failed to mount cpu subsys"
+			failed=1
+			return
+		fi
+		cpu_subsys_path=cgroup
 	fi
 
-	./test_3_1.sh &
+	./test_3_1.sh $cpu_subsys_path &
 	pid1=$!
 	./test_3_2.sh &
 	pid2=$!
@@ -204,8 +210,9 @@ test_3()
 		tst_resm TPASS "no kernel bug was found"
 	fi
 
-	rmdir cgroup/* 2> /dev/null
-	umount cgroup/
+	rmdir $cpu_subsys_path/* 2> /dev/null
+
+	umount cgroup/ 2> /dev/null
 }
 
 #---------------------------------------------------------------------------
@@ -372,23 +379,30 @@ test_6()
 #---------------------------------------------------------------------------
 test_7_1()
 {
-	mount -t cgroup -o $subsys xxx cgroup/
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "failed to mount $subsys"
-		failed=1
-		return
+	subsys_path=$(grep -w $subsys /proc/mounts | cut -d ' ' -f 2)
+	if [ -z "$subsys_path" ]; then
+		mount -t cgroup -o $subsys xxx cgroup/
+		if [ $? -ne 0 ]; then
+			tst_resm TFAIL "failed to mount $subsys"
+			failed=1
+			return
+		fi
+		subsys_path=cgroup
 	fi
 
-	mkdir cgroup/0
-	sleep 100 < cgroup/0 &	# add refcnt to this dir
-	rmdir cgroup/0
+	mkdir $subsys_path/0
+	sleep 100 < $subsys_path/0 &	# add refcnt to this dir
+	rmdir $subsys_path/0
 
 	# remount with new subsystems added
 	# since 2.6.28, this remount will fail
-	mount -t cgroup -o remount xxx cgroup/ 2> /dev/null
-	/bin/kill -SIGTERM $!
-	wait $!
-	umount cgroup/
+
+	if [ "$subsys_path" = "cgroup" ]; then
+		mount -t cgroup -o remount xxx cgroup/ 2> /dev/null
+		/bin/kill -SIGTERM $!
+		wait $!
+		umount cgroup/
+	fi
 }
 
 test_7_2()
