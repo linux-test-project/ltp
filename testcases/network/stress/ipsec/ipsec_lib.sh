@@ -168,6 +168,9 @@ ipsec_try()
 		echo "$output" | grep -q \
 			'RTNETLINK answers: Function not implemented' && \
 			tst_brkm TCONF "'$@': not implemented"
+		echo "$output" | grep -q \
+			'RTNETLINK answers: Operation not supported' && \
+			tst_brkm TCONF "'$@': not supported (maybe missing 'ip${TST_IPV6}_vti' kernel module)"
 		tst_brkm TBROK "$@ failed: $output"
 	fi
 }
@@ -257,7 +260,7 @@ tst_ipsec_vti()
 	cleanup_vti=$vti
 
 	if [ $target = lhost ]; then
-		ROD ip li add $vti $type local $src remote $dst $key $d
+		ipsec_try ip li add $vti $type local $src remote $dst $key $d
 		ROD ip li set $vti up
 
 		local spi_1="spi 0x$SPI"
