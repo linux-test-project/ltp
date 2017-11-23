@@ -34,6 +34,7 @@
 static volatile int run;
 static unsigned int nthreads;
 static int enospc_cnt;
+static struct worker *workers;
 
 struct worker {
 	char dir[PATH_MAX];
@@ -41,20 +42,10 @@ struct worker {
 
 static void *worker(void *p)
 {
-	int ret;
 	struct worker *w = p;
 	DIR *d;
 	struct dirent *ent;
 	char file[PATH_MAX];
-
-	ret = mkdir(w->dir, 0700);
-	if (ret == -1) {
-		if (errno != ENOSPC)
-			tst_brk(TBROK | TERRNO, "mkdir()");
-
-		tst_res(TINFO | TERRNO, "mkdir()");
-		return NULL;
-	}
 
 	while (run) {
 		tst_fill_fs(w->dir, 0);
@@ -84,16 +75,12 @@ static void *worker(void *p)
 
 static void testrun(void)
 {
-	struct worker workers[nthreads];
 	pthread_t threads[nthreads];
 	unsigned int i, ms;
 
 	run = 1;
-	for (i = 0; i < nthreads; i++) {
-		snprintf(workers[i].dir, sizeof(workers[i].dir),
-			 MNTPOINT "/thread%i", i + 1);
+	for (i = 0; i < nthreads; i++)
 		SAFE_PTHREAD_CREATE(&threads[i], NULL, worker, &workers[i]);
-	}
 
 	for (ms = 0; ; ms++) {
 		usleep(1000);
@@ -114,9 +101,23 @@ static void testrun(void)
 
 static void setup(void)
 {
+	unsigned int i;
+
 	nthreads = tst_ncpus_conf() + 2;
+	workers = SAFE_MALLOC(sizeof(struct worker) * nthreads);
+
+	for (i = 0; i < nthreads; i++) {
+		snprintf(workers[i].dir, sizeof(workers[i].dir),
+			 MNTPOINT "/thread%i", i + 1);
+		SAFE_MKDIR(workers[i].dir, 0700);
+	}
 
 	tst_res(TINFO, "Running %i writer threads", nthreads);
+}
+
+static void cleanup(void)
+{
+	free(workers);
 }
 
 static struct tst_test test = {
@@ -126,5 +127,6 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.setup = setup,
+	.cleanup = cleanup,
 	.test_all = testrun,
 };
