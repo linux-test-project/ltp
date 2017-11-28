@@ -32,6 +32,12 @@
 #define SAFE_SETSOCKOPT(fd, level, optname, optval, optlen) \
 	safe_setsockopt(__FILE__, __LINE__, fd, level, optname, optval, optlen)
 
+#define SAFE_SETSOCKOPT_INT(fd, l, n, val) \
+	do { \
+		int v = val; \
+		safe_setsockopt(__FILE__, __LINE__, fd, l, n, &v, sizeof(v)); \
+	} while (0)
+
 #define SAFE_SEND(strict, sockfd, buf, len, flags) \
 	safe_send(__FILE__, __LINE__, strict, sockfd, buf, len, flags)
 
