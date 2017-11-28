@@ -74,7 +74,7 @@ udp6_ipsec36 udp_ipsec.sh -6 -p esp -m beet -s "100 1000 65478"
 
 udp4_ipsec_vti01 udp_ipsec_vti.sh -p ah -m tunnel -s "100 1000 65463"
 udp4_ipsec_vti02 udp_ipsec_vti.sh -p esp -m tunnel -s "100 1000 65450"
-udp4_ipsec_vti03 udp_ipsec_vti.sh -p comp -m tunnel -s "100 1000 65000"
+udp4_ipsec_vti03 udp_ipsec_vti.sh -p comp -m tunnel -s 1500
 udp4_ipsec_vti04 udp_ipsec_vti.sh -A rfc4106_128 -p esp_aead -m tunnel -s "100 1000 65450"
 udp4_ipsec_vti05 udp_ipsec_vti.sh -A rfc4106_192 -p esp_aead -m tunnel -s "100 1000 65450"
 udp4_ipsec_vti06 udp_ipsec_vti.sh -A rfc4106_256 -p esp_aead -m tunnel -s "100 1000 65450"
@@ -92,7 +92,7 @@ udp4_ipsec_vti17 udp_ipsec_vti.sh -p esp -a rmd160 -e serpent -m tunnel -s "100 
 
 udp6_ipsec_vti01 udp_ipsec_vti.sh -6 -p ah -m tunnel -s "100 1000 65527"
 udp6_ipsec_vti02 udp_ipsec_vti.sh -6 -p esp -m tunnel -s "100 1000 65527"
-udp6_ipsec_vti03 udp_ipsec_vti.sh -6 -p comp -m tunnel -s "100 1000 65000"
+udp6_ipsec_vti03 udp_ipsec_vti.sh -6 -p comp -m tunnel -s 1500
 udp6_ipsec_vti04 udp_ipsec_vti.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s "100 1000 65527"
 udp6_ipsec_vti05 udp_ipsec_vti.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s "100 1000 65527"
 udp6_ipsec_vti06 udp_ipsec_vti.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s "100 1000 65527"

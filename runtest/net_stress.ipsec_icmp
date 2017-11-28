@@ -97,6 +97,7 @@ icmp4-uni-vti13 icmp-uni-vti.sh -A rfc4309_256 -p esp_aead -m tunnel -s "10 100 
 icmp4-uni-vti14 icmp-uni-vti.sh -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
 icmp4-uni-vti15 icmp-uni-vti.sh -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
 icmp4-uni-vti16 icmp-uni-vti.sh -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
+icmp4-uni-vti17 icmp-uni-vti.sh -p comp -m tunnel -s 1500
 
 icmp6-uni-vti01 icmp-uni-vti.sh -6 -p ah -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65527"
 icmp6-uni-vti02 icmp-uni-vti.sh -6 -p esp -a sha256 -e des3_ede -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65527"
@@ -114,3 +115,5 @@ icmp6-uni-vti13 icmp-uni-vti.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s "10 1
 icmp6-uni-vti14 icmp-uni-vti.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
 icmp6-uni-vti15 icmp-uni-vti.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
 icmp6-uni-vti16 icmp-uni-vti.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
+icmp6-uni-vti17 icmp-uni-vti.sh -6 -p comp -m tunnel -s 1500
+
