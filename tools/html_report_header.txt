@@ -49,6 +49,7 @@
       <td bgcolor="Silver"><strong>Initiation-Status</strong></td>
       <td bgcolor="Silver"><strong>Duration</strong></td>
       <td bgcolor="Silver"><strong>Termination-type</strong></td>
+      <td bgcolor="Silver"><strong>Result</strong></td>
       <td bgcolor="Silver"><strong>Termination-id</strong></td>
       <td bgcolor="Silver"><strong>Core-File</strong></td>
       <td bgcolor="Silver"><strong>cutime</strong></td>
