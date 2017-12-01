@@ -30,7 +30,6 @@
  * 	test must be run at root
  */
 
-#include "mem.h"
 #include "hugetlb.h"
 
 #define SIZE	(1024 * 1024 * 1024)
@@ -84,9 +83,9 @@ static void shared_hugepage(void)
 
 static void setup(void)
 {
-	long mem_total, hpage_size;
+	long mem_total, hpage_size, orig_hugepages;
 
-	check_hugepage();
+	orig_hugepages = save_nr_hugepages();
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
 	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", (long)SIZE);
@@ -98,7 +97,6 @@ static void setup(void)
 	if (new_shmmax < SIZE)
 		tst_brk(TCONF,	"shmmax too low, have: %ld", new_shmmax);
 
-	orig_hugepages = get_sys_tune("nr_hugepages");
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	hugepages = (orig_hugepages * hpage_size + SIZE) / hpage_size;
@@ -107,7 +105,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	set_sys_tune("nr_hugepages", orig_hugepages, 0);
+	restore_nr_hugepages();
 	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", orig_shmmax);
 }
 

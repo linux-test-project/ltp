@@ -36,7 +36,6 @@
  *
  */
 
-#include "mem.h"
 #include "hugetlb.h"
 
 static long page_size;
@@ -47,8 +46,7 @@ static long hugepages;
 
 void setup(void)
 {
-	check_hugepage();
-	orig_hugepages = get_sys_tune("nr_hugepages");
+	save_nr_hugepages();
 	page_size = getpagesize();
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
@@ -58,7 +56,7 @@ void setup(void)
 
 void cleanup(void)
 {
-	set_sys_tune("nr_hugepages", orig_hugepages, 0);
+	restore_nr_hugepages();
 }
 
 void shm_test(int size)

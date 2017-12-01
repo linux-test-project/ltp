@@ -29,7 +29,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "mem.h"
 #include "hugetlb.h"
 #include "tst_safe_sysv_ipc.h"
 #include "tst_test.h"
@@ -206,8 +205,8 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	hugepagesize = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	check_hugepage();
+	hugepagesize = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	init_sys_sz_paths();
 
 	if (opt_sysfs) {

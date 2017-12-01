@@ -37,8 +37,6 @@
 #include <pwd.h>
 #include <limits.h>
 #include "hugetlb.h"
-#include "mem.h"
-#include "hugetlb.h"
 
 #if __WORDSIZE == 64
 #define NADDR	0x10000000eef	/* a 64bit non alligned address value */
@@ -93,11 +91,10 @@ void setup(void)
 {
 	long hpage_size;
 
-	check_hugepage();
+	save_nr_hugepages();
 	if (nr_opt)
 		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
 
-	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
@@ -116,7 +113,7 @@ void setup(void)
 void cleanup(void)
 {
 	rm_shm(shm_id_2);
-	set_sys_tune("nr_hugepages", orig_hugepages, 0);
+	restore_nr_hugepages();
 }
 
 static struct tst_test test = {

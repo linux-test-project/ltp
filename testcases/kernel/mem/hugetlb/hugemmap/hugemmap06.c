@@ -35,7 +35,6 @@
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <stdio.h>
-#include "mem.h"
 #include "hugetlb.h"
 #include "lapi/mmap.h"
 
@@ -52,10 +51,9 @@ struct mp {
 
 static void setup(void)
 {
-	check_hugepage();
+	save_nr_hugepages();
 
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
-	orig_hugepages = get_sys_tune("nr_hugepages");
 
 	hugepages = (ARSZ + 1) * LOOP;
 
@@ -67,7 +65,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	set_sys_tune("nr_hugepages", orig_hugepages, 0);
+	restore_nr_hugepages();
 }
 
 static void *thr(void *arg)

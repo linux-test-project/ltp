@@ -25,7 +25,6 @@
 
 #include <limits.h>
 #include "hugetlb.h"
-#include "mem.h"
 #include "hugetlb.h"
 
 static size_t shm_size;
@@ -68,11 +67,10 @@ static void setup(void)
 {
 	long hpage_size;
 
-	check_hugepage();
+	save_nr_hugepages();
 	if (nr_opt)
 		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
 
-	orig_hugepages = get_sys_tune("nr_hugepages");
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
@@ -89,7 +87,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	rm_shm(shm_id_1);
-	set_sys_tune("nr_hugepages", orig_hugepages, 0);
+	restore_nr_hugepages();
 }
 
 static struct tst_test test = {
