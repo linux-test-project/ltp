@@ -74,7 +74,6 @@ pid_is_valid()
 kill_pid()
 {
     PID=$1
-    disown $PID
     kill -9 $PID > /dev/null 2>&1
 }
 
