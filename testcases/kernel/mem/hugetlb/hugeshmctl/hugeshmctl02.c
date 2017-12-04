@@ -99,7 +99,7 @@ static void setup(void)
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
-	shm_size = hpage_size * hugepages / 2;
+	shm_size = hpage_size * (hugepages / 2);
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 
