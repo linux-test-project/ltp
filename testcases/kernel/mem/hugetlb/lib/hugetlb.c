@@ -26,7 +26,6 @@
  *
  *	The library contains the following routines:
  *
- *	check_hugepage()
  *	getipckey()
  *	getuserid()
  *	rm_shm()
@@ -41,12 +40,6 @@
 #include "hugetlb.h"
 
 static long orig_hugepages = -1;
-
-void check_hugepage(void)
-{
-	if (access(PATH_HUGEPAGES, F_OK))
-		tst_brk(TCONF, "Huge page is not supported.");
-}
 
 long save_nr_hugepages(void)
 {

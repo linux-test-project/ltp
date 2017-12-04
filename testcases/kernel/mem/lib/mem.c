@@ -347,6 +347,12 @@ static void verify(char **memory, char value, int proc,
 	free(s);
 }
 
+void check_hugepage(void)
+{
+	if (access(PATH_HUGEPAGES, F_OK))
+		tst_brk(TCONF, "Huge page is not supported.");
+}
+
 void write_memcg(void)
 {
 	SAFE_FILE_PRINTF(MEMCG_LIMIT, "%ld", TESTMEM);

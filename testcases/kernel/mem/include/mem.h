@@ -56,8 +56,10 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages);
 
 /* HUGETLB */
 
+#define PATH_HUGEPAGES		"/sys/kernel/mm/hugepages/"
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
 
+void check_hugepage(void);
 void write_memcg(void);
 
 /* cpuset/memcg */
