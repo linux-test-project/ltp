@@ -30,4 +30,16 @@ do {\
 	} \
 } while (0)
 
+#define SAFE_FUNC(op) \
+({ \
+	int ret = (op); \
+	if (ret == -1) { \
+		printf("Test %s unresolved: got %i (%s) on line %i\n  %s\n", \
+			__FILE__, ret, strerror(errno), __LINE__, #op); \
+		fflush(stdout); \
+		exit(PTS_UNRESOLVED); \
+	} \
+	ret; \
+})
+
 #endif
