@@ -160,8 +160,8 @@ static int count_hardware_counters(void)
 	for (i = 0; i < MAX_CTRS; i++) {
 		fdarry[i] = perf_event_open(&hw_event, 0, -1, -1, 0);
 		if (fdarry[i] == -1) {
-			if (errno == ENOENT) {
-				tst_brkm(TCONF, cleanup,
+			if (errno == ENOENT || errno == ENODEV) {
+				tst_brkm(TCONF | TERRNO, cleanup,
 				         "PERF_COUNT_HW_INSTRUCTIONS not supported");
 			}
 			tst_brkm(TBROK | TERRNO, cleanup,
