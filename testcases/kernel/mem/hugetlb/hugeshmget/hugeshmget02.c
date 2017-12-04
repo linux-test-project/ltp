@@ -97,7 +97,8 @@ void setup(void)
 
 	shmkey = getipckey();
 	shmkey2 = shmkey + 1;
-	shm_id_1 = shmget(shmkey, shm_size, IPC_CREAT | IPC_EXCL | SHM_RW);
+	shm_id_1 = shmget(shmkey, shm_size,
+			  SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
 	if (shm_id_1 == -1)
 		tst_brk(TBROK | TERRNO, "shmget #setup");
 }
