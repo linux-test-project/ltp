@@ -249,6 +249,7 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
 	sigset_t sigs, oldmask;
 	siginfo_t si;
 	pid_t child[2];
+	int status;
 
 	signo = SIGRTMIN + 1;
 
@@ -267,6 +268,10 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo)
 	/* Run a child that will wake us up */
 	child[0] = create_sig_proc(0, signo, 1);
 	child[1] = create_sig_proc(0, signo + 1, 1);
+
+	/* Ensure that the signals have been sent */
+	waitpid(child[0], &status, 0);
+	waitpid(child[1], &status, 0);
 
 	TEST(sigwaitinfo(&sigs, &si, NULL));
 	REPORT_SUCCESS_COND(signo, 0, si.si_pid == child[0]
