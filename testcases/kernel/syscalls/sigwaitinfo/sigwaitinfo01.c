@@ -358,8 +358,27 @@ void test_bad_address(swi_func sigwaitinfo, int signo)
 
 void test_bad_address2(swi_func sigwaitinfo, int signo)
 {
-	TEST(sigwaitinfo((void *)1, NULL, NULL));
-	REPORT_SUCCESS(-1, EFAULT);
+	pid_t pid;
+	int status;
+
+	switch (pid = fork()) {
+	case -1:
+		tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
+	case 0:
+		signal(SIGSEGV, SIG_DFL);
+		TEST(sigwaitinfo((void *)1, NULL, NULL));
+
+		_exit(0);
+		break;
+	default:
+		break;
+	}
+
+	SUCCEED_OR_DIE(waitpid, "waitpid failed", pid, &status, 0);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV)
+		tst_resm(TPASS, "Test passed");
+	else
+		tst_resm(TFAIL, "Unrecognised child exit code");
 }
 
 void test_bad_address3(swi_func sigwaitinfo, int signo)
