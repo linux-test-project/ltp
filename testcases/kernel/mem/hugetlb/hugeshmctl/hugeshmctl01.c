@@ -46,7 +46,7 @@
 
 #define FIRST		0
 #define SECOND		1
-#define N_ATTACH	4
+#define N_ATTACH	4U
 #define NEWMODE		0066
 
 static size_t shm_size;
@@ -138,7 +138,7 @@ void *set_shmat(void)
  */
 static void stat_setup(void)
 {
-	int i;
+	unsigned int i;
 	void *test;
 	pid_t pid;
 
@@ -237,7 +237,8 @@ fail:
  */
 static void stat_cleanup(void)
 {
-	int i, status;
+	unsigned int i;
+	int status;
 
 	/* wake up the childern so they can detach the memory and exit */
 	TST_CHECKPOINT_WAKE2(1, N_ATTACH);
