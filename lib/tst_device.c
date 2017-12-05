@@ -289,7 +289,7 @@ const char *tst_acquire_device_(void (cleanup_fn)(void), unsigned int size)
 	const char *device;
 
 	if (device_acquired) {
-		tst_brkm(TBROK, cleanup_fn, "Device allready acquired");
+		tst_brkm(TBROK, cleanup_fn, "Device already acquired");
 		return NULL;
 	}
 
@@ -317,7 +317,7 @@ int tst_release_device(const char *dev)
 		return 0;
 
 	/*
-	 * Loop device was created -> we need to deatch it.
+	 * Loop device was created -> we need to detach it.
 	 *
 	 * The file image is deleted in tst_rmdir();
 	 */

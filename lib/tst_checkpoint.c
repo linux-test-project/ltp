@@ -44,7 +44,7 @@ void tst_checkpoint_init(const char *file, const int lineno,
 
 	if (tst_futexes) {
 		tst_brkm(TBROK, cleanup_fn,
-		         "%s: %d checkopoints allready initialized",
+		         "%s: %d checkpoints already initialized",
 		         file, lineno);
 		return;
 	}

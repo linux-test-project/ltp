@@ -116,7 +116,7 @@ int tst_fs_fill_hardlinks_(void (*cleanup) (void), const char *dir);
  * If limit is hit the maximal number of subdirectories is returned and the
  * @dir is filled with subdirectories in format "testdir%i" where i belongs to
  * [0, limit - 2) interval (because each newly created dir has two links
- * allready the '.' and link from parent dir).
+ * already the '.' and link from parent dir).
  *
  * If no limit is hit or mkdir() failed with ENOSPC or EDQUOT zero is returned
  * previously created directories are removed.
