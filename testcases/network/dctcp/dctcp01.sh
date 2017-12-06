@@ -49,7 +49,7 @@ setup()
 	fi
 
 	tst_require_root
-	tst_check_cmds ip sysctl tc
+	tst_check_cmds sysctl tc
 
 	tst_resm TINFO "emulate congestion with packet loss 0.03% and ECN"
 	tc qdisc add dev $(tst_iface) root netem loss 0.03% ecn > /dev/null 2>&1

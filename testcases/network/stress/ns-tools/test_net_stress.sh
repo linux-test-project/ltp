@@ -43,7 +43,7 @@ MCAST_IPV6_ADDR="${MCAST_IPV6_ADDR_PREFIX}:1"
 netstress_setup()
 {
 	tst_require_root
-	tst_check_cmds ip pgrep pkill
+	tst_check_cmds pgrep pkill
 	trap "tst_brkm TBROK 'test interrupted'" INT
 }
 

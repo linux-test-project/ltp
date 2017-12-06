@@ -23,6 +23,9 @@
 
 init_ltp_netspace()
 {
+	tst_check_cmds ip
+	tst_require_root
+
 	local pid=
 
 	if [ ! -f /var/run/netns/ltp_ns ]; then
@@ -352,6 +355,9 @@ tst_add_ipaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_restore_ipaddr()
 {
+	tst_check_cmds ip
+	tst_require_root
+
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
 
