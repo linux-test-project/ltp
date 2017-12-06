@@ -40,7 +40,6 @@ netstress_setup()
 {
 	TST_NEEDS_ROOT=1
 	tst_test_cmds pgrep pkill
-	trap "tst_brk TBROK 'test interrupted'" INT
 }
 
 # Cleanup for tests using netstress.

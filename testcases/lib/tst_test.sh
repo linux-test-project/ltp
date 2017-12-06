@@ -35,6 +35,9 @@ export TST_LIB_LOADED=1
 
 . tst_ansi_color.sh
 
+# default trap function
+trap "tst_brk TBROK 'test interrupted'" INT
+
 _tst_do_exit()
 {
 	local ret=0
