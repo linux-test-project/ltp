@@ -22,6 +22,7 @@
 #define MKNODAT_H
 
 #include <sys/types.h>
+#include "config.h"
 #include "lapi/syscalls.h"
 
 #if !defined(HAVE_MKNODAT)
