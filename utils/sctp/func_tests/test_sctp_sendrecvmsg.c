@@ -61,7 +61,7 @@ int TST_CNT = 0;
 
 /* RCVBUF value, and indirectly RWND*2 */
 #define SMALL_RCVBUF 3000
-#define SMALL_MAXSEG 100
+#define SMALL_MAXSEG 500
 /* This is extra data length to ensure rwnd closes */
 #define RWND_SLOP    100
 static char *fillmsg = NULL;

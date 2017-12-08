@@ -77,7 +77,7 @@ int TST_CNT = 0;
 #define SMALL_RCVBUF 3000
 
 /* MAX segment size */
-#define SMALL_MAXSEG 100
+#define SMALL_MAXSEG 500
 
 /* RWND_SLOP is the extra data that fills up the rwnd */
 #define RWND_SLOP 100
