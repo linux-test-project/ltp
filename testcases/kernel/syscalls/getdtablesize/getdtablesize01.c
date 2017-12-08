@@ -54,7 +54,7 @@ int TST_TOTAL = 1;
 
 int main(void)
 {
-	int table_size, loop, fd, count = 0;
+	int table_size, fd = 0, count = 0;
 	int max_val_opfiles;
 	struct rlimit rlp;
 
@@ -80,15 +80,16 @@ int main(void)
 
 	tst_resm(TINFO,
 		 "Checking Max num of files that can be opened by a process.Should be: RLIMIT_NOFILE - 1");
-	for (loop = 1; loop <= max_val_opfiles; loop++) {
+	for (;;) {
 		fd = open("/etc/hosts", O_RDONLY);
+
+		if (fd == -1)
+			break;
+		count = fd;
+
 #ifdef DEBUG
 		printf("Opened file num %d\n", fd);
 #endif
-		if (fd == -1)
-			break;
-		else
-			count = fd;
 	}
 
 //Now the max files opened should be RLIMIT_NOFILE - 1 , why ? read getdtablesize man page
@@ -97,6 +98,8 @@ int main(void)
 		close(count);
 	if (count == (max_val_opfiles - 1))
 		tst_resm(TPASS, "%d = %d", count, (max_val_opfiles - 1));
+	else if (fd < 0 && errno == ENFILE)
+		tst_brkm(TCONF, cleanup, "Reached maximum number of open files for the system");
 	else
 		tst_resm(TFAIL, "%d != %d", count, (max_val_opfiles - 1));
 
