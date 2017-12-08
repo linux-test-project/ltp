@@ -1227,6 +1227,7 @@ sigrelse01 sigrelse01
 
 sigsuspend01 sigsuspend01
 
+sigwaitinfo01 sigwaitinfo01
 
 socket01 socket01
 socket02 socket02
