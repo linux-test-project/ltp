@@ -6,27 +6,11 @@ matrix:
         # normal native in-tree builds
         - os: linux
           env: BUILD="native" INSTALL_PACKAGES="$BUILD"
-          compiler: gcc-4.9
-          addons:
-              apt:
-                  sources: ['ubuntu-toolchain-r-test']
-                  packages: ['gcc-4.9']
-
-        - os: linux
-          env: BUILD="native" INSTALL_PACKAGES="$BUILD"
           compiler: gcc-5
           addons:
               apt:
                   sources: ['ubuntu-toolchain-r-test']
                   packages: ['gcc-5']
-
-        - os: linux
-          env: BUILD="native" INSTALL_PACKAGES="$BUILD"
-          compiler: gcc-6
-          addons:
-              apt:
-                  sources: ['ubuntu-toolchain-r-test']
-                  packages: ['gcc-6']
 
         - os: linux
           env: BUILD="native" INSTALL_PACKAGES="$BUILD"
@@ -87,6 +71,21 @@ matrix:
                   sources: ['ubuntu-toolchain-r-test']
                   packages: ['gcc-7']
 
+        # cross-compile ARM builds
+        - os: linux
+          env: BUILD="cross" INSTALL_PACKAGES="$BUILD"
+          compiler: arm-linux-gnueabihf-gcc
+          addons:
+              apt:
+                  packages: ['gcc-arm-linux-gnueabihf', 'libc6-dev-armhf-cross']
+
+        - os: linux
+          env: BUILD="cross" INSTALL_PACKAGES="$BUILD"
+          compiler: aarch64-linux-gnu-gcc
+          addons:
+              apt:
+                  packages: ['gcc-aarch64-linux-gnu', 'libc6-dev-arm64-cross']
+
 notifications:
     email:
         secure: "b/xcA/K5OyQvPPnd0PRahTH5LJu8lgz8goGHvhXpHo+ZPsPgTDXNFo5cX9fSOkMuFKeoW8iGl0wOgK2+ptc8mbYDw277K4RFIHRHeV/KIoE1EzjQnEFiL8J0oHCAvDj12o0AXeriTyY9gICXKbR31Br6Zh5eKViDJe2OAGeHeDU="
@@ -95,7 +94,7 @@ before_install:
     # installing / removing dependencies
     - if [ "$INSTALL_PACKAGES" = "" ]; then
           sudo apt remove $(cat .travis.packages_native | grep -v -e 'libc6' -e 'libc6-dev' -e 'linux-libc-dev' -e 'libacl1')
-      ; else
+      ; elif [ "$INSTALL_PACKAGES" != "cross" ]; then
           sudo apt install -qq $(cat .travis.packages_native)
       ; fi
 
