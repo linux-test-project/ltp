@@ -65,6 +65,7 @@ int main(void)
 {
 	char tmpfname[256];
 	int fd;
+	struct aiocb *aiocb_list[BUF_NB];
 	struct aiocb *aiocb;
 	struct sigaction action;
 	int i;
@@ -121,7 +122,11 @@ int main(void)
 		aiocb->aio_sigevent.sigev_value.sival_ptr = aiocb;
 		aiocb->aio_reqprio = 0;
 
-		if (aio_write(aiocb) == -1) {
+		aiocb_list[i] = aiocb;
+	}
+
+	for (i = 0; i < BUF_NB; i++) {
+		if (aio_write(aiocb_list[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 			       i, strerror(errno));
 			return PTS_FAIL;
