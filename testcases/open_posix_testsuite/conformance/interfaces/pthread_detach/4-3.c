@@ -47,12 +47,8 @@
 
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
+#include "safe_helpers.h"
 
-#define SAFE(op) \
-	do {\
-		if ((op) == -1) \
-			UNRESOLVED(errno, "unexpected failure"); \
-	} while (0)
 #define RUN_TIME_USEC (2*1000*1000)
 #define SIGNALS_WITHOUT_DELAY 100
 #ifndef VERBOSE
@@ -80,11 +76,11 @@ struct thestruct {
 #endif
 };
 
-unsigned long current_time_usec()
+unsigned long long current_time_usec()
 {
 	struct timeval now;
-	SAFE(gettimeofday(&now, NULL));
-	return now.tv_sec * 1000000 + now.tv_usec;
+	SAFE_FUNC(gettimeofday(&now, NULL));
+	return now.tv_sec * 1000000LL + now.tv_usec;
 }
 
 /* the following function keeps on sending the signal to the process */
@@ -128,6 +124,7 @@ static void *sendsig(void *arg)
 
 static void sighdl1(int sig)
 {
+	(void)sig;
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig1))
 		UNRESOLVED(errno, "Sem_post in signal handler 1");
@@ -162,6 +159,7 @@ static void *test(void *arg)
 	int ret = 0;
 	pthread_t child;
 
+	(void)arg;
 	/* We block the signal SIGUSR1 for this THREAD */
 	ret = pthread_sigmask(SIG_BLOCK, &usersigs, NULL);
 	if (ret != 0)
@@ -289,12 +287,12 @@ void main_loop()
 	int ret;
 	int status;
 	pid_t child;
-	unsigned long usec_start, usec;
+	unsigned long long usec_start, usec;
 	unsigned long child_count_sig;
 
 	usec_start = current_time_usec();
 	do {
-		SAFE(pipe(stat_pipe));
+		SAFE_FUNC(pipe(stat_pipe));
 
 		child_count++;
 		count_ope += NSCENAR;
@@ -303,7 +301,7 @@ void main_loop()
 		if (child == 0) {
 			close(stat_pipe[0]);
 			do_child();
-			SAFE(write(stat_pipe[1], &count_sig,
+			SAFE_FUNC(write(stat_pipe[1], &count_sig,
 				   sizeof(count_sig)));
 			close(stat_pipe[1]);
 			pthread_exit(0);
@@ -311,7 +309,7 @@ void main_loop()
 			exit(0);
 		}
 		close(stat_pipe[1]);
-		SAFE(read(stat_pipe[0], &child_count_sig, sizeof(count_sig)));
+		SAFE_FUNC(read(stat_pipe[0], &child_count_sig, sizeof(count_sig)));
 		close(stat_pipe[0]);
 		count_sig += child_count_sig;
 
