@@ -103,4 +103,4 @@ before_install:
           sudo apt install -qq $(cat .travis.packages_i386)
       ; fi
 
-script: ./build.sh $BUILD
+script: ./build.sh -t $BUILD -c $CC
