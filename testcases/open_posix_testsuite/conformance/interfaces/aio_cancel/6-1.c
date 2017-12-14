@@ -71,7 +71,7 @@ int main(void)
 	/* create AIO req */
 
 	for (i = 0; i < BUF_NB; i++) {
-		aiocb[i] = malloc(sizeof(struct aiocb));
+		aiocb[i] = calloc(1, sizeof(struct aiocb));
 		if (aiocb[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
 			       strerror(errno));
