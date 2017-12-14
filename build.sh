@@ -29,6 +29,16 @@ build_native()
 	build_in_tree
 }
 
+build_cross()
+{
+	local host="${CC%-gcc}"
+	[ -n "$host" ] || \
+		{ echo "Missing CC variable, pass it with -c option." >&2; exit 1; }
+
+	echo "===== cross-compile ${host} in-tree build into $PREFIX ====="
+	build_in_tree "--host=$host" CROSS_COMPILE="${host}-"
+}
+
 build_out_tree()
 {
 	local tree="$PWD"
@@ -99,6 +109,7 @@ Options:
 
 BUILD TYPES:
 32       32-bit in-tree build
+cross    cross-compile in-tree build (requires set compiler via -c switch)
 native   native in-tree build
 out      out-of-tree build
 EOF
@@ -114,6 +125,7 @@ while getopts "c:hp:t:" opt; do
 	p) PREFIX="$OPTARG";;
 	t) case "$OPTARG" in
 		32) build="build_32";;
+		cross) build="build_cross";;
 		native) build="build_native";;
 		out) build="build_out_tree";;
 		*) echo "Wrong build type '$OPTARG'" >&2; usage; exit 1;;
