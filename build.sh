@@ -43,7 +43,8 @@ build_out_tree()
 	make autotools
 
 	cd $build
-	if ! $tree/configure $CONFIGURE_OPTS; then
+	echo "=== configure ==="
+	if ! $tree/configure $CONFIGURE_OPTS_OUT_TREE; then
 		echo "== ERROR: configure failed, config.log =="
 		cat config.log
 		exit 1
