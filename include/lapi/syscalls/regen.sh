@@ -96,7 +96,7 @@ for arch in $(cat "${srcdir}/order") ; do
 
 	) &
 
-	: $(( jobs += 1 ))
+	jobs=$(( jobs + 1 ))
 	if [ ${jobs} -ge ${max_jobs} ] ; then
 		wait || exit 1
 		jobs=0
