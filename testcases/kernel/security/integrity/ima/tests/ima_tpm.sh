@@ -1,70 +1,57 @@
 #!/bin/sh
+# Copyright (c) 2009 IBM Corporation
+# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Mimi Zohar, zohar@ibm.vnet.ibm.com
+#
+# Verify the boot and PCR aggregates.
 
-################################################################################
-##                                                                            ##
-## Copyright (C) 2009 IBM Corporation                                         ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-################################################################################
-#
-# File :        ima_tpm.sh
-#
-# Description:  This file verifies the boot and PCR aggregates
-#
-# Author:       Mimi Zohar, zohar@ibm.vnet.ibm.com
-#
-# Return        - zero on success
-#               - non zero on failure. return value from commands ($RC)
-################################################################################
-export TST_TOTAL=3
-export TCID="ima_tpm"
+TST_NEEDS_CMDS="ima_boot_aggregate ima_measure"
+TST_CNT=3
 
-init()
+. ima_setup.sh
+
+test1()
 {
-	tst_check_cmds ima_boot_aggregate ima_measure
-}
+	tst_res TINFO "verify boot aggregate"
 
-# Function:     test01
-# Description   - Verify boot aggregate value is correct
-test01()
-{
-	zero="0000000000000000000000000000000000000000"
+	local zero="0000000000000000000000000000000000000000"
+	local tpm_bios="$SECURITYFS/tpm0/binary_bios_measurements"
+	local ima_measurements="$ASCII_MEASUREMENTS"
+	local boot_aggregate boot_hash ima_hash line
 
 	# IMA boot aggregate
-	ima_measurements=$SECURITYFS/ima/ascii_runtime_measurements
 	read line < $ima_measurements
-	ima_aggr=$(expr substr "${line}" 49 40)
+	ima_hash=$(expr substr "${line}" 49 40)
 
-	# verify TPM is available and enabled.
-	tpm_bios=$SECURITYFS/tpm0/binary_bios_measurements
 	if [ ! -f "$tpm_bios" ]; then
-		tst_brkm TCONF "TPM not builtin kernel, or TPM not enabled"
+		tst_res TINFO "TPM not builtin kernel, or TPM not enabled"
 
-		if [ "${ima_aggr}" = "${zero}" ]; then
-			tst_resm TPASS "bios boot aggregate is 0."
+		if [ "${ima_hash}" = "${zero}" ]; then
+			tst_res TPASS "bios boot aggregate is 0"
 		else
-			tst_resm TFAIL "bios boot aggregate is not 0."
+			tst_res TFAIL "bios boot aggregate is not 0"
 		fi
 	else
 		boot_aggregate=$(ima_boot_aggregate $tpm_bios)
-		boot_aggr=$(expr substr $boot_aggregate 16 40)
-		if [ "x${ima_aggr}" = "x${boot_aggr}" ]; then
-			tst_resm TPASS "bios aggregate matches IMA boot aggregate."
+		boot_hash=$(expr substr $boot_aggregate 16 40)
+		if [ "${ima_hash}" = "${boot_hash}" ]; then
+			tst_res TPASS "bios aggregate matches IMA boot aggregate"
 		else
-			tst_resm TFAIL "bios aggregate does not match IMA boot aggregate."
+			tst_res TFAIL "bios aggregate does not match IMA boot aggregate"
 		fi
 	fi
 }
@@ -74,64 +61,53 @@ test01()
 # the PCR values from /sys/devices.
 validate_pcr()
 {
-	ima_measurements=$SECURITYFS/ima/binary_runtime_measurements
-	aggregate_pcr=$(ima_measure $ima_measurements --validate)
-	dev_pcrs=$1
-	RC=0
+	tst_res TINFO "verify PCR (Process Control Register)"
 
-	while read line ; do
+	local ima_measurements="$BINARY_MEASUREMENTS"
+	local aggregate_pcr="$(ima_measure $ima_measurements --validate)"
+	local dev_pcrs="$1"
+	local ret=0
+
+	while read line; do
 		pcr=$(expr substr "${line}" 1 6)
 		if [ "${pcr}" = "PCR-10" ]; then
 			aggr=$(expr substr "${aggregate_pcr}" 26 59)
 			pcr=$(expr substr "${line}" 9 59)
-			[ "${pcr}" = "${aggr}" ] || RC=$?
+			[ "${pcr}" = "${aggr}" ] || ret=$?
 		fi
 	done < $dev_pcrs
-	return $RC
+	return $ret
 }
 
-# Function:     test02
-# Description	- Verify ima calculated aggregate PCR values matches
-#		  actual PCR value.
-test02()
+test2()
 {
+	tst_res TINFO "verify PCR values"
 
-	# Would be nice to know where the PCRs are located.  Is this safe?
-	PCRS_PATH=$(find /$SYSFS/devices/ | grep pcrs)
+	# Would be nice to know where the PCRs are located. Is this safe?
+	local pcrs_path="$(find $SYSFS/devices/ | grep pcrs)"
 	if [ $? -eq 0 ]; then
-		validate_pcr $PCRS_PATH
+		validate_pcr $pcrs_path
 		if [ $? -eq 0 ]; then
-			tst_resm TPASS "aggregate PCR value matches real PCR value."
+			tst_res TPASS "aggregate PCR value matches real PCR value"
 		else
-			tst_resm TFAIL "aggregate PCR value does not match real PCR value."
+			tst_res TFAIL "aggregate PCR value does not match real PCR value"
 		fi
 	else
-		tst_resm TFAIL "TPM not enabled, no PCR value to validate"
+		tst_res TCONF "TPM not enabled, no PCR value to validate"
 	fi
 }
 
-# Function:     test03
-# Description 	- Verify template hash value for IMA entry is correct.
-test03()
+test3()
 {
+	tst_res TINFO "verify template hash value"
 
-	ima_measurements=$SECURITYFS/ima/binary_runtime_measurements
-	aggregate_pcr=$(ima_measure $ima_measurements --verify --validate) > /dev/null
+	local ima_measurements="$BINARY_MEASUREMENTS"
+	ima_measure $ima_measurements --verify --validate
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "verified IMA template hash values."
+		tst_res TPASS "verified IMA template hash values"
 	else
-		tst_resm TFAIL "error verifing IMA template hash values."
+		tst_res TFAIL "error verifing IMA template hash values"
 	fi
 }
 
-. ima_setup.sh
-
-setup
-TST_CLEANUP=cleanup
-
-init
-test01
-test02
-test03
-
-tst_exit
+tst_run

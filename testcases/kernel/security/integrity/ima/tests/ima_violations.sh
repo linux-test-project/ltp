@@ -1,44 +1,47 @@
 #!/bin/sh
-################################################################################
-##                                                                            ##
-## Copyright (C) 2009 IBM Corporation                                         ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-################################################################################
+# Copyright (c) 2009 IBM Corporation
+# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
 #
-# File :        ima_violations.sh
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
 #
-# Description:  This file tests ToMToU and open_writer violations invalidate
-#		the PCR and are logged.
+# This program is distributed in the hope that it would be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Author:       Mimi Zohar, zohar@ibm.vnet.ibm.com
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Return        - zero on success
-#               - non zero on failure. return value from commands ($RC)
-################################################################################
+# Author: Mimi Zohar, zohar@ibm.vnet.ibm.com
+#
+# Test whether ToMToU and open_writer violations invalidatethe PCR and are logged.
 
-export TST_TOTAL=3
-export TCID="ima_violations"
+TST_SETUP="setup"
+TST_CNT=3
+
+. ima_setup.sh
+. daemonlib.sh
+
+setup()
+{
+	FILE="test.txt"
+	IMA_VIOLATIONS="$SECURITYFS/ima/violations"
+	LOG="/var/log/messages"
+
+	if status_daemon auditd; then
+		LOG="/var/log/audit/audit.log"
+	fi
+	[ -f "$LOG" ] || \
+		tst_brk TBROK "log $LOG does not exist (bug in detection?)"
+	tst_res TINFO "using log $LOG"
+}
 
 open_file_read()
 {
-	exec 3< $1
-	if [ $? -ne 0 ]; then
-		exit 1
-	fi
+	exec 3< $FILE || exit 1
 }
 
 close_file_read()
@@ -48,11 +51,8 @@ close_file_read()
 
 open_file_write()
 {
-	exec 4> $1
-	if [ $? -ne 0 ]; then
-		exit 1
-	echo 'testing, testing, ' >&4
-	fi
+	exec 4> $FILE || exit 1
+	echo 'test writing' >&4
 }
 
 close_file_write()
@@ -60,103 +60,95 @@ close_file_write()
 	exec 4>&-
 }
 
-init()
+get_count()
 {
-	service auditd status > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		log=/var/log/messages
-	else
-		log=/var/log/audit/audit.log
-		tst_resm TINFO "requires integrity auditd patch"
-	fi
-
-	ima_violations=$SECURITYFS/ima/violations
+	local search="$1"
+	echo $(grep -c "${search}.*${FILE}" $LOG)
 }
 
-# Function:     test01
-# Description	- Verify open writers violation
-test01()
+validate()
 {
-	read num_violations < $ima_violations
+	local num_violations="$1"
+	local count="$2"
+	local search="$3"
+	local max_attempt=3
+	local count2 i num_violations_new
 
-	TMPFN=test.txt
-	open_file_write $TMPFN
-	open_file_read $TMPFN
+	for i in $(seq 1 $max_attempt); do
+		read num_violations_new < $IMA_VIOLATIONS
+		count2="$(get_count $search)"
+		if [ $(($num_violations_new - $num_violations)) -gt 0 ]; then
+			if [ $count2 -gt $count ]; then
+				tst_res TPASS "$search violation added"
+				return
+			else
+				tst_res TINFO "$search not found in $LOG ($i/$max_attempt attempt)..."
+				tst_sleep 1s
+			fi
+		else
+			tst_res TFAIL "$search violation not added"
+			return
+		fi
+	done
+	tst_res TFAIL "$search not found in $LOG"
+}
+
+test1()
+{
+	tst_res TINFO "verify open writers violation"
+
+	local search="open_writers"
+	local count num_violations
+
+	read num_violations < $IMA_VIOLATIONS
+	count="$(get_count $search)"
+
+	open_file_write
+	open_file_read
 	close_file_read
 	close_file_write
-	read num_violations_new < $ima_violations
-	num=$(($(expr $num_violations_new - $num_violations)))
-	if [ $num -gt 0 ]; then
-		tail $log | grep test.txt | grep -q 'open_writers'
-		if [ $? -eq 0 ]; then
-			tst_resm TPASS "open_writers violation added(test.txt)"
-		else
-			tst_resm TFAIL "(message ratelimiting?)"
-		fi
-	else
-		tst_resm TFAIL "open_writers violation not added(test.txt)"
-	fi
+
+	validate $num_violations $count $search
 }
 
-# Function:     test02
-# Description   - Verify ToMToU violation
-test02()
+test2()
 {
-	read num_violations < $ima_violations
+	tst_res TINFO "verify ToMToU violation"
 
-	TMPFN=test.txt
-	open_file_read $TMPFN
-	open_file_write $TMPFN
+	local search="ToMToU"
+	local count num_violations
+
+	read num_violations < $IMA_VIOLATIONS
+	count="$(get_count $search)"
+
+	open_file_read
+	open_file_write
 	close_file_write
 	close_file_read
-	read num_violations_new < $ima_violations
-	num=$(($(expr $num_violations_new - $num_violations)))
-	if [ $num -gt 0 ]; then
-		tail $log | grep test.txt | grep -q 'ToMToU'
-		if [ $? -eq 0 ]; then
-			tst_resm TPASS "ToMToU violation added(test.txt)"
-		else
-			tst_resm TFAIL "(message ratelimiting?)"
-		fi
-	else
-		tst_resm TFAIL "ToMToU violation not added(test.txt)"
-	fi
+
+	validate $num_violations $count $search
 }
 
-# Function:     test03
-# Description 	- verify open_writers using mmapped files
-test03()
+test3()
 {
-	read num_violations < $ima_violations
+	tst_res TINFO "verify open_writers using mmapped files"
 
-	TMPFN=test.txtb
-	echo 'testing testing ' > $TMPFN
-	ima_mmap $TMPFN & p1=$!
-	sleep 1		# got to wait for ima_mmap to mmap the file
-	open_file_read $TMPFN
-	read num_violations_new < $ima_violations
-	num=$(($(expr $num_violations_new - $num_violations)))
-	if [ $num -gt 0 ]; then
-		tail $log | grep test.txtb | grep -q 'open_writers'
-		if [ $? -eq 0 ]; then
-			tst_resm TPASS "mmapped open_writers violation added(test.txtb)"
-		else
-			tst_resm TFAIL "(message ratelimiting?)"
-		fi
-	else
-		tst_resm TFAIL "mmapped open_writers violation not added(test.txtb)"
-	fi
+	local search="open_writers"
+	local count num_violations
+
+	read num_violations < $IMA_VIOLATIONS
+	count="$(get_count $search)"
+
+	echo 'testing testing' > $FILE
+
+	ima_mmap $FILE &
+	# wait for violations appear in logs
+	tst_sleep 1s
+
+	open_file_read
 	close_file_read
+
+	validate $num_violations $count $search
 }
 
-. ima_setup.sh
-
-setup
-TST_CLEANUP=cleanup
-
-init
-test01
-test02
-test03
-
-tst_exit
+tst_run
