@@ -60,6 +60,14 @@
 #define IFF_MULTI_QUEUE	0x0100
 #endif
 
+#ifndef IFF_NAPI
+#define IFF_NAPI       0x0010
+#endif
+
+#ifndef IFF_NAPI_FRAGS
+#define IFF_NAPI_FRAGS 0x0020
+#endif
+
 char *TCID = "ioctl03";
 int TST_TOTAL = 1;
 
@@ -84,7 +92,9 @@ static struct {
 	IFF_NO_PI, "NO_PI"}, {
 	IFF_ONE_QUEUE, "ONE_QUEUE"}, {
 	IFF_VNET_HDR, "VNET_HDR"}, {
-	IFF_MULTI_QUEUE, "MULTI_QUEUE"}
+	IFF_MULTI_QUEUE, "MULTI_QUEUE"}, {
+	IFF_NAPI, "IFF_NAPI"}, {
+	IFF_NAPI_FRAGS, "IFF_NAPI_FRAGS"}
 };
 
 int main(void)
