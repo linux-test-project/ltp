@@ -692,10 +692,10 @@ main()
     fi
 
     # Blacklist or skip tests if a SKIPFILE was specified with -S
-    if [ -n "$SKIPFILE" ]
-    then
-        for file in $( cat $SKIPFILE ); do
-            sed -i "/^$file[ \t]/d" ${TMP}/alltests
+    if [ -n "${SKIPFILE}" ]; then
+        for test_name in $(awk '{print $1}' "${SKIPFILE}"); do
+            case "${test_name}" in \#*) continue;; esac
+            sed -i "/\<${test_name}\>/c\\${test_name} exit 32;" alltests
         done
     fi
 
