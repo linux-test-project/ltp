@@ -65,7 +65,7 @@ uintptr_t Beg_brk_val;
 int main(int ac, char **av)
 {
 	int lc;
-	int incr;
+	unsigned int incr;
 	uintptr_t nbrkpt;		/* new brk point value */
 	uintptr_t cur_brk_val;	/* current size returned by sbrk */
 	uintptr_t aft_brk_val;	/* current size returned by sbrk */
