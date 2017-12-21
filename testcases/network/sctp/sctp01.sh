@@ -31,16 +31,17 @@ cleanup()
 setup()
 {
 	tst_require_root
+	TST_NETLOAD_MAX_SRV_REPLIES=3
 }
 
 test_run()
 {
 	tst_resm TINFO "compare TCP/SCTP performance"
 
-	tst_netload -H $(tst_ipaddr rhost) -a 3 -R 3 -T tcp
+	tst_netload -H $(tst_ipaddr rhost) -T tcp
 	local res0="$(cat tst_netload.res)"
 
-	tst_netload -H $(tst_ipaddr rhost) -a 3 -R 3 -T sctp
+	tst_netload -H $(tst_ipaddr rhost) -T sctp
 	local res1="$(cat tst_netload.res)"
 
 	local per=$(( $res0 * 100 / $res1 - 100 ))
