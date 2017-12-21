@@ -36,7 +36,7 @@ do_test()
 {
 	for p in $IPSEC_SIZE_ARRAY; do
 		tst_netload -H $(tst_ipaddr rhost) -T sctp -n $p -N $p \
-			-r $IPSEC_REQUESTS
+			-r $IPSEC_REQUESTS -S $(tst_ipaddr)
 	done
 }
 

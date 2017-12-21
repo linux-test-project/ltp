@@ -41,7 +41,7 @@ test_run()
 	tst_netload -H $(tst_ipaddr rhost) -T tcp
 	local res0="$(cat tst_netload.res)"
 
-	tst_netload -H $(tst_ipaddr rhost) -T sctp
+	tst_netload -S $(tst_ipaddr) -H $(tst_ipaddr rhost) -T sctp
 	local res1="$(cat tst_netload.res)"
 
 	local per=$(( $res0 * 100 / $res1 - 100 ))

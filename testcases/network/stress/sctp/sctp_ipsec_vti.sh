@@ -27,7 +27,7 @@ do_test()
 {
 	for p in $IPSEC_SIZE_ARRAY; do
 		tst_netload -H $ip_rmt_tun -T sctp -n $p -N $p \
-			-r $IPSEC_REQUESTS
+			-r $IPSEC_REQUESTS -S $ip_loc_tun
 	done
 }
 
