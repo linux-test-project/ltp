@@ -17,7 +17,7 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 TCID=sctp01
-TST_TOTAL=3
+TST_TOTAL=4
 TST_CLEANUP="cleanup"
 TST_NEEDS_TMPDIR=1
 
@@ -36,12 +36,14 @@ setup()
 
 test_run()
 {
+	local opts="$@"
+
 	tst_resm TINFO "compare TCP/SCTP performance"
 
-	tst_netload -H $(tst_ipaddr rhost) -T tcp
+	tst_netload -H $(tst_ipaddr rhost) -T tcp $opts
 	local res0="$(cat tst_netload.res)"
 
-	tst_netload -S $(tst_ipaddr) -H $(tst_ipaddr rhost) -T sctp
+	tst_netload -S $(tst_ipaddr) -H $(tst_ipaddr rhost) -T sctp $opts
 	local res1="$(cat tst_netload.res)"
 
 	local per=$(( $res0 * 100 / $res1 - 100 ))
@@ -55,5 +57,6 @@ test_run()
 
 setup
 test_run
+test_run -A 65000
 
 tst_exit
