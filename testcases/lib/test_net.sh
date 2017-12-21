@@ -402,6 +402,8 @@ tst_netload()
 	local expect_res="pass"
 	local ret=0
 	local type="tcp"
+	local hostopt=
+	local setup_srchost=0
 	# common options for client and server
 	local cs_opts=
 
@@ -414,15 +416,19 @@ tst_netload()
 	local s_opts=
 
 	OPTIND=0
-	while getopts :a:H:d:n:N:r:R:b:t:T:fFe:m: opt; do
+	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A: opt; do
 		case "$opt" in
 		a) c_num="$OPTARG" ;;
-		H) c_opts="${c_opts}-H $OPTARG " ;;
+		H) c_opts="${c_opts}-H $OPTARG "
+		   hostopt="$OPTARG" ;;
 		d) rfile="$OPTARG" ;;
 		n) c_opts="${c_opts}-n $OPTARG " ;;
 		N) c_opts="${c_opts}-N $OPTARG " ;;
 		r) c_requests="$OPTARG" ;;
+		A) c_opts="${c_opts}-A $OPTARG " ;;
 		R) s_replies="$OPTARG" ;;
+		S) c_opts="${c_opts}-S $OPTARG "
+		   setup_srchost=1 ;;
 		b) cs_opts="${cs_opts}-b $OPTARG " ;;
 		t) cs_opts="${cs_opts}-t $OPTARG " ;;
 		T) cs_opts="${cs_opts}-T $OPTARG "
@@ -435,6 +441,8 @@ tst_netload()
 		esac
 	done
 	OPTIND=0
+
+	[ "$setup_srchost" = 1 ] && s_opts="${s_opts}-S $hostopt "
 
 	local expect_ret=0
 	[ "$expect_res" != "pass" ] && expect_ret=1
