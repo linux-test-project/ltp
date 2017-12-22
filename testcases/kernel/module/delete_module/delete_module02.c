@@ -33,12 +33,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <limits.h>
-#if HAVE_LINUX_MODULE_H
-#include <linux/module.h>
-#else
-/* As per http://tomoyo.sourceforge.jp/cgi-bin/lxr/source/include/linux/moduleparam.h?a=ppc#L17 ... */
-#define MODULE_NAME_LEN	( 64 - sizeof(unsigned long) )
-#endif
+
 #include <sys/mman.h>
 #include "test.h"
 #include "safe_macros.h"
@@ -47,6 +42,12 @@
 #define NULLMODNAME	""
 #define BASEMODNAME	"dummy"
 #define LONGMODNAMECHAR	'm'	/* Arbitrarily selected */
+
+/*
+ * From kernel internal headers: include/linux/module.h
+ * include/linux/moduleparam.h
+ */
+#define MODULE_NAME_LEN	( 64 - sizeof(unsigned long) )
 
 char *TCID = "delete_module02";
 
