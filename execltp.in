@@ -307,7 +307,7 @@ def main():
 
     if len(args) == 0:
         # Default to scenarios also used by runltp.
-        fd = open(os.path.join(ltpdir, 'scenario-groups/default'), 'r')
+        fd = open(os.path.join(ltpdir, 'scenario_groups/default'), 'r')
         try:
             args = fd.readlines()
         finally:
