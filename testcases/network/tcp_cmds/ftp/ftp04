@@ -32,14 +32,9 @@ setup()
 {
 	TEST_USER=root
 
-	tvar=${MACHTYPE%-*}
-	tvar=${tvar#*-}
+	ftpusers="/etc/ftpusers"
+	[ -f "$ftpusers" ] || ftpusers="/etc/vsftpd/ftpusers"
 
-	if [ $tvar = "redhat" -o $tvar = "redhat-linux" ]; then
-		ftpusers="/etc/vsftpd/ftpusers"
-	else
-		ftpusers="/etc/ftpusers"
-	fi
 	echo "Verifying test user $TEST_USER is in ${ftpusers} database..."
 	FTPUSERS=$(awk "/$TEST_USER/" ${ftpusers})
 	if [ -z "$FTPUSERS" ] ; then
