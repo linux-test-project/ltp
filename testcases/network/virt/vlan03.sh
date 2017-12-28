@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2017 Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -54,7 +54,7 @@ for n in $(seq 1 3); do
 
 	tst_resm TINFO "networks with the same VLAN ID must work"
 	virt_setup "id 4094 $p" "id 4094 $p"
-	virt_compare_netperf
+	virt_netperf_msg_sizes
 	virt_cleanup_rmt
 
 	tst_resm TINFO "different VLAN ID shall not work together"
