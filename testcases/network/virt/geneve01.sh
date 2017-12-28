@@ -47,6 +47,7 @@ virt_cleanup_rmt
 
 tst_resm TINFO "different VNI shall not work together"
 vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE" "id 0xFFFFFD"
+virt_minimize_timeout
 virt_compare_netperf "fail"
 
 tst_exit

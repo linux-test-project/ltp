@@ -64,6 +64,7 @@ for n in $(seq 1 2); do
 
 	tst_resm TINFO "different VNI shall not work together"
 	vxlan_setup_subnet_$vxlan_dst_addr "id 0xFFFFFE $p" "id 0xFFFFFD $p"
+	virt_minimize_timeout
 	virt_compare_netperf "fail"
 	virt_cleanup_rmt
 done

@@ -59,6 +59,7 @@ for n in $(seq 1 3); do
 
 	tst_resm TINFO "different VLAN ID shall not work together"
 	virt_setup "id 4093 $p" "id 4094 $p"
+	virt_minimize_timeout
 	virt_compare_netperf "fail"
 	virt_cleanup_rmt
 done

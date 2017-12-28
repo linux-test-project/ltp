@@ -73,6 +73,10 @@ virt_cleanup_rmt()
 {
 	cleanup_vifaces
 	tst_rhost_run -c "ip link delete ltp_v0 2>/dev/null"
+	if [ "$virt_tcp_syn" ]; then
+		sysctl -q net.ipv4.tcp_syn_retries=$virt_tcp_syn
+		virt_tcp_syn=
+	fi
 }
 
 virt_cleanup()
@@ -197,6 +201,20 @@ virt_setup()
 
 	ROD_SILENT "ip li set up ltp_v0"
 	tst_rhost_run -s -c "ip li set up ltp_v0"
+}
+
+virt_tcp_syn=
+virt_minimize_timeout()
+{
+	local mac_loc="$(cat /sys/class/net/ltp_v0/address)"
+	local mac_rmt="$(tst_rhost_run -c 'cat /sys/class/net/ltp_v0/address')"
+
+	ROD_SILENT "ip ne replace $ip_virt_remote lladdr \
+		    $mac_rmt nud permanent dev ltp_v0"
+	tst_rhost_run -s -c "ip ne replace $ip_virt_local lladdr \
+			     $mac_loc nud permanent dev ltp_v0"
+	virt_tcp_syn=$(sysctl -n net.ipv4.tcp_syn_retries)
+	ROD sysctl -q net.ipv4.tcp_syn_retries=1
 }
 
 vxlan_setup_subnet_uni()
