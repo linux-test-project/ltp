@@ -106,7 +106,7 @@ virt_add()
 
 	case $virt_type in
 	vxlan|geneve)
-		ip li add $vname type $virt_type $opt
+		ip li add $vname type $virt_type $opt dev $(tst_iface)
 	;;
 	gre|ip6gre)
 		ip -f inet$TST_IPV6 tu add $vname mode $virt_type $opt
@@ -122,7 +122,8 @@ virt_add_rhost()
 	local opt=""
 	case $virt_type in
 	vxlan|geneve)
-		[ "$vxlan_dstport" -eq 1 ] && opt="dstport 0"
+		opt="dev $(tst_iface rhost)"
+		[ "$vxlan_dstport" -eq 1 ] && opt="$opt dstport 0"
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
 	;;
 	gre|ip6gre)
@@ -227,8 +228,8 @@ vxlan_setup_subnet_multi()
 		grp="group 239.$b1.$b2.$b3"
 	fi
 
-	local opt="$1 $grp dev $(tst_iface)"
-	local opt_r="$2 $grp dev $(tst_iface rhost)"
+	local opt="$1 $grp"
+	local opt_r="$2 $grp"
 
 	virt_setup "$opt" "$opt_r"
 }
