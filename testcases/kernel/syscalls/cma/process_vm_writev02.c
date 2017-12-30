@@ -121,7 +121,7 @@ static void child_init_and_verify(void)
 	/* passing addr of string "foo" via pipe */
 	SAFE_CLOSE(tst_exit, pipe_fd[0]);
 	snprintf(buf, bufsz, "%p", foo);
-	SAFE_WRITE(tst_exit, 1, pipe_fd[1], buf, strlen(buf));
+	SAFE_WRITE(tst_exit, 1, pipe_fd[1], buf, strlen(buf) + 1);
 	SAFE_CLOSE(tst_exit, pipe_fd[1]);
 
 	/* wait until child_write() is done writing to our VM */

@@ -152,7 +152,7 @@ static void child_alloc(int *bufsz_arr)
 	/* passing addr via pipe */
 	SAFE_CLOSE(tst_exit, pipe_fd[0]);
 	snprintf(buf, BUFSIZ, "%p", (void *)foo);
-	SAFE_WRITE(tst_exit, 1, pipe_fd[1], buf, strlen(buf));
+	SAFE_WRITE(tst_exit, 1, pipe_fd[1], buf, strlen(buf) + 1);
 	SAFE_CLOSE(tst_exit, pipe_fd[1]);
 
 	/* wait until child_invoke is done reading from our VM */
