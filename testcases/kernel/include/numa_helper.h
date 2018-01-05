@@ -20,11 +20,11 @@
 #define NUMA_HELPER_H
 
 #include "config.h"
-#if HAVE_NUMA_H
-#include <numa.h>
+#ifdef HAVE_NUMA_H
+# include <numa.h>
 #endif
-#if HAVE_NUMAIF_H
-#include <numaif.h>
+#ifdef HAVE_NUMAIF_H
+# include <numaif.h>
 #endif
 
 #define NH_MEMS (1 << 0)

@@ -35,18 +35,11 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-#if HAVE_NUMAIF_H
-#include <numaif.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
 
-#include "config.h"
 #include "test.h"
 #include "safe_macros.h"
 #include "lapi/syscalls.h"
@@ -66,7 +59,7 @@
 char *TCID = "migrate_pages02";
 int TST_TOTAL = 1;
 
-#if defined(HAVE_NUMA_V2) && defined(__NR_migrate_pages)
+#ifdef HAVE_NUMA_V2
 
 static const char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;

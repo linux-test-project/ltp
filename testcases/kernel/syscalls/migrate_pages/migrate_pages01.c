@@ -30,18 +30,12 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-#if HAVE_NUMAIF_H
-#include <numaif.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <pwd.h>
-#include "config.h"
+
 #include "test.h"
 #include "safe_macros.h"
 #include "lapi/syscalls.h"
@@ -55,7 +49,7 @@ option_t options[] = {
 	{NULL, NULL, NULL}
 };
 
-#if defined(HAVE_NUMA_V2) && defined(__NR_migrate_pages)
+#ifdef HAVE_NUMA_V2
 
 static unsigned long *sane_old_nodes;
 static unsigned long *sane_new_nodes;
