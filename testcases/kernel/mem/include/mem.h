@@ -2,6 +2,7 @@
 #define _MEM_H
 #include "config.h"
 #include "tst_test.h"
+#include "ksm_helper.h"
 
 #if defined(__powerpc__) || defined(__powerpc64__)
 #define MAXNODES		256
@@ -41,8 +42,6 @@ void oom(int testcase, int lite, int retcode, int allow_sigkill);
 void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
 
 /* KSM */
-
-#define PATH_KSM		"/sys/kernel/mm/ksm/"
 
 void create_same_memory(int size, int num, int unit);
 void save_max_page_sharing(void);

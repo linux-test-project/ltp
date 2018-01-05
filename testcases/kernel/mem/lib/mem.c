@@ -268,33 +268,6 @@ static void check(char *path, long int value)
 		tst_res(TPASS, "%s is %ld.", path, actual_val);
 }
 
-static void wait_ksmd_full_scan(void)
-{
-	unsigned long full_scans, at_least_one_full_scan;
-	int count = 0;
-
-	SAFE_FILE_SCANF(PATH_KSM "full_scans", "%lu", &full_scans);
-	/*
-	 * The current scan is already in progress so we can't guarantee that
-	 * the get_user_pages() is called on every existing rmap_item if we
-	 * only waited for the remaining part of the scan.
-	 *
-	 * The actual merging happens after the unstable tree has been built so
-	 * we need to wait at least two full scans to guarantee merging, hence
-	 * wait full_scans to increment by 3 so that at least two full scans
-	 * will run.
-	 */
-	at_least_one_full_scan = full_scans + 3;
-	while (full_scans < at_least_one_full_scan) {
-		sleep(1);
-		count++;
-		SAFE_FILE_SCANF(PATH_KSM "full_scans", "%lu", &full_scans);
-	}
-
-	tst_res(TINFO, "ksm daemon takes %ds to run two full scans",
-		count);
-}
-
 static void final_group_check(int run, int pages_shared, int pages_sharing,
 			  int pages_volatile, int pages_unshared,
 			  int sleep_millisecs, int pages_to_scan)
