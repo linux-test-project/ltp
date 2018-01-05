@@ -26,3 +26,4 @@ cve-2017-15299 request_key03 -b cve-2017-15299
 cve-2017-15537 ptrace07
 cve-2017-15951 request_key03 -b cve-2017-15951
 cve-2017-1000364 stack_clash
+cve-2017-5754 meltdown
