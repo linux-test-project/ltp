@@ -43,9 +43,6 @@
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
-#define KEY_POS_WRITE	0x04000000
-#define KEY_POS_ALL	0x3f000000
-
 /*
  * A valid payload for the "asymmetric" key type.  This is an x509 certificate
  * in DER format, generated using:
