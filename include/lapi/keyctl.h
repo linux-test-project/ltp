@@ -99,6 +99,10 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEY_REQKEY_DEFL_THREAD_KEYRING 1
 #endif
 
+#ifndef KEY_REQKEY_DEFL_SESSION_KEYRING
+# define KEY_REQKEY_DEFL_SESSION_KEYRING 3
+#endif
+
 #ifndef KEY_REQKEY_DEFL_DEFAULT
 # define KEY_REQKEY_DEFL_DEFAULT	0
 #endif
