@@ -36,4 +36,6 @@ ifneq (,$(filter $(HOST_CPU),x86 x86_64))
 meltdown: CFLAGS += -msse2
 endif
 
+cve-2017-17052:	CFLAGS += -pthread
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

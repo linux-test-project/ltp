@@ -28,3 +28,4 @@ cve-2017-15951 request_key03 -b cve-2017-15951
 cve-2017-17807 request_key04
 cve-2017-1000364 stack_clash
 cve-2017-5754 meltdown
+cve-2017-17052 cve-2017-17052
