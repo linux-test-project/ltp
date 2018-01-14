@@ -44,15 +44,12 @@
 #endif
 #include <errno.h>
 #include <string.h>
-#include "test.h"
-#include "lapi/syscalls.h"
+#include "tst_test.h"
 #include "inotify.h"
-#include "safe_macros.h"
-
-char *TCID = "inotify04";
-int TST_TOTAL = 4;
 
 #if defined(HAVE_SYS_INOTIFY_H)
+
+int TST_TOTAL = 4;
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
@@ -86,79 +83,63 @@ static void cleanup(void)
 {
 
 	if (reap_wd_dir && myinotify_rm_watch(fd_notify, wd_dir) == -1)
-		tst_resm(TWARN,
-			 "inotify_rm_watch(%d, %d) [1] failed", fd_notify,
-			 wd_dir);
+		tst_res(TWARN,
+			"inotify_rm_watch(%d, %d) [1] failed", fd_notify,
+			wd_dir);
 
 	if (reap_wd_file && myinotify_rm_watch(fd_notify, wd_file) == -1)
-		tst_resm(TWARN,
-			 "inotify_rm_watch(%d, %d) [2] failed", fd_notify,
-			 wd_file);
+		tst_res(TWARN,
+			"inotify_rm_watch(%d, %d) [2] failed", fd_notify,
+			wd_file);
 
 	if (fd_notify > 0 && close(fd_notify))
-		tst_resm(TWARN, "close(%d) [1] failed", fd_notify);
+		tst_res(TWARN, "close(%d) [1] failed", fd_notify);
 
 	if (wd_dir > 0 && close(wd_dir))
-		tst_resm(TWARN, "close(%d) [2] failed", wd_dir);
+		tst_res(TWARN, "close(%d) [2] failed", wd_dir);
 
 	if (wd_file > 0 && close(wd_file))
-		tst_resm(TWARN, "close(%d) [3] failed", wd_file);
-
-	tst_rmdir();
+		tst_res(TWARN, "close(%d) [3] failed", wd_file);
 }
 
 static void setup(void)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
 	fd_notify = myinotify_init();
 	if (fd_notify == -1) {
 		if (errno == ENOSYS) {
-			tst_brkm(TCONF, cleanup,
-				 "inotify is not configured in this kernel.");
+			tst_brk(TCONF,
+				"inotify is not configured in this kernel.");
 		} else {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "inotify_init failed");
+			tst_brk(TBROK | TERRNO,
+				"inotify_init failed");
 		}
 	}
 
-	SAFE_MKDIR(cleanup, TEST_DIR, 00700);
+	SAFE_MKDIR(TEST_DIR, 00700);
 
-	close(SAFE_CREAT(cleanup, TEST_FILE, 00600));
+	close(SAFE_CREAT(TEST_FILE, 00600));
 
 	wd_dir = myinotify_add_watch(fd_notify, TEST_DIR, IN_ALL_EVENTS);
 	if (wd_dir == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "inotify_add_watch(%d, \"%s\", IN_ALL_EVENTS) [1] failed",
-			 fd_notify, TEST_DIR);
+		tst_brk(TBROK | TERRNO,
+			"inotify_add_watch(%d, \"%s\", IN_ALL_EVENTS) [1] failed",
+			fd_notify, TEST_DIR);
 	}
 	reap_wd_dir = 1;
 
 	wd_file = myinotify_add_watch(fd_notify, TEST_FILE, IN_ALL_EVENTS);
 	if (wd_file == -1)
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "inotify_add_watch(%d, \"%s\", IN_ALL_EVENTS) [2] failed",
-			 fd_notify, TEST_FILE);
+		tst_brk(TBROK | TERRNO,
+			"inotify_add_watch(%d, \"%s\", IN_ALL_EVENTS) [2] failed",
+			fd_notify, TEST_FILE);
 	reap_wd_file = 1;
 }
 
-int main(int argc, char **argv)
+void verify_inotify(void)
 {
-	int i, test_num, len;
+	int i = 0, test_num = 0, len;
 
-	i = 0;
-	test_num = 0;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	tst_count = 0;
+	int tst_count = 0;
 
 	rmdir(TEST_DIR);
 	event_set[tst_count].mask = IN_DELETE_SELF;
@@ -190,14 +171,14 @@ int main(int argc, char **argv)
 	tst_count++;
 
 	if (tst_count != TST_TOTAL)
-		tst_brkm(TBROK, cleanup,
-			 "tst_count and TST_TOTAL are not equal");
+		tst_brk(TBROK,
+			"tst_count and TST_TOTAL are not equal");
 
 	tst_count = 0;
 
 	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
 	if (len == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "read failed");
+		tst_brk(TBROK | TERRNO, "read failed");
 
 	reap_wd_dir = 0;
 	reap_wd_file = 0;
@@ -208,61 +189,63 @@ int main(int argc, char **argv)
 		if (test_num >= TST_TOTAL) {
 			if (tst_kvercmp(2, 6, 25) < 0
 			    && event_set[TST_TOTAL - 1].mask == event->mask)
-				tst_resm(TWARN,
-					 "This may be kernel bug. "
-					 "Before kernel 2.6.25, a kernel bug "
-					 "meant that the kernel code that was "
-					 "intended to coalesce successive identical "
-					 "events (i.e., the two most recent "
-					 "events could potentially be coalesced "
-					 "if the older had not yet been read) "
-					 "instead checked if the most recent event "
-					 "could be coalesced with the oldest "
-					 "unread event. This has been fixed by commit"
-					 "1c17d18e3775485bf1e0ce79575eb637a94494a2.");
-			tst_resm(TFAIL,
-				 "got unnecessary event: "
-				 "wd=%d mask=%x cookie=%u len=%u "
-				 "name=\"%.*s\"", event->wd, event->mask,
-				 event->cookie, event->len, event->len, event->name);
+				tst_res(TWARN,
+					"This may be kernel bug. "
+					"Before kernel 2.6.25, a kernel bug "
+					"meant that the kernel code that was "
+					"intended to coalesce successive identical "
+					"events (i.e., the two most recent "
+					"events could potentially be coalesced "
+					"if the older had not yet been read) "
+					"instead checked if the most recent event "
+					"could be coalesced with the oldest "
+					"unread event. This has been fixed by commit"
+					"1c17d18e3775485bf1e0ce79575eb637a94494a2.");
+			tst_res(TFAIL,
+				"got unnecessary event: "
+				"wd=%d mask=%x cookie=%u len=%u "
+				"name=\"%.*s\"", event->wd, event->mask,
+				event->cookie, event->len, event->len, event->name);
 
 		} else if ((event_set[test_num].mask == event->mask)
 			   &&
 			   (!strncmp
 			    (event_set[test_num].name, event->name,
 			     event->len))) {
-			tst_resm(TPASS,
-				 "got event: wd=%d mask=%x "
-				 "cookie=%u len=%u name=\"%.*s\"",
-				 event->wd, event->mask, event->cookie,
-				 event->len, event->len, event->name);
+			tst_res(TPASS,
+				"got event: wd=%d mask=%x "
+				"cookie=%u len=%u name=\"%.*s\"",
+				event->wd, event->mask, event->cookie,
+				event->len, event->len, event->name);
 
 		} else {
-			tst_resm(TFAIL, "got event: wd=%d mask=%x "
-				 "(expected %x) cookie=%u len=%u "
-				 "name=\"%.*s\" (expected \"%s\") %d",
-				 event->wd, event->mask,
-				 event_set[test_num].mask,
-				 event->cookie, event->len,
-				 event->len, event->name,
-				 event_set[test_num].name,
-				 strncmp(event_set[test_num].name, event->name, event->len));
+			tst_res(TFAIL, "got event: wd=%d mask=%x "
+				"(expected %x) cookie=%u len=%u "
+				"name=\"%.*s\" (expected \"%s\") %d",
+				event->wd, event->mask,
+				event_set[test_num].mask,
+				event->cookie, event->len,
+				event->len, event->name,
+				event_set[test_num].name,
+				strncmp(event_set[test_num].name, event->name, event->len));
 		}
 		test_num++;
 		i += EVENT_SIZE + event->len;
 	}
 
 	for (; test_num < TST_TOTAL; test_num++) {
-		tst_resm(TFAIL, "didn't get event: mask=%x ",
-			 event_set[test_num].mask);
+		tst_res(TFAIL, "didn't get event: mask=%x ",
+			event_set[test_num].mask);
 	}
+}
 
-	cleanup();
-	tst_exit();
-}
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_inotify,
+};
+
 #else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");
-}
+	TST_TEST_TCONF("system doesn't have required inotify support");
 #endif /* defined(HAVE_SYS_INOTIFY_H) */

@@ -37,25 +37,19 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/syscall.h>
-#include "test.h"
-#include "safe_macros.h"
-#include "lapi/syscalls.h"
+#include "tst_test.h"
 #include "inotify.h"
 
 #if defined(HAVE_SYS_INOTIFY_H)
 #include <sys/inotify.h>
+
+#define TST_TOTAL 7
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
 #define EVENT_SIZE  (sizeof (struct inotify_event))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * (EVENT_SIZE + 16))
-
-char *TCID = "inotify01";
-int TST_TOTAL = 7;
-
-static void setup(void);
-static void cleanup(void);
 
 #define BUF_SIZE 256
 static char fname[BUF_SIZE];
@@ -67,160 +61,141 @@ static unsigned int event_set[EVENT_MAX];
 
 static char event_buf[EVENT_BUF_LEN];
 
-int main(int ac, char **av)
+void verify_inotify(void)
 {
-	int lc;
+	int tst_count = 0;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	/*
+	 * generate sequence of events
+	 */
+	SAFE_CHMOD(fname, 0755);
+	event_set[tst_count] = IN_ATTRIB;
+	tst_count++;
 
-	setup();
+	if ((fd = open(fname, O_RDONLY)) == -1) {
+		tst_brk(TBROK | TERRNO,
+			"open(%s, O_RDWR|O_CREAT,0700) failed", fname);
+	}
+	event_set[tst_count] = IN_OPEN;
+	tst_count++;
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+	if (read(fd, buf, BUF_SIZE) == -1) {
+		tst_brk(TBROK | TERRNO,
+			"read(%d, buf, %d) failed", fd, BUF_SIZE);
+	}
+	event_set[tst_count] = IN_ACCESS;
+	tst_count++;
 
-		/*
-		 * generate sequence of events
-		 */
-		SAFE_CHMOD(cleanup, fname, 0755);
-		event_set[tst_count] = IN_ATTRIB;
-		tst_count++;
+	SAFE_CLOSE(fd);
+	event_set[tst_count] = IN_CLOSE_NOWRITE;
+	tst_count++;
 
-		if ((fd = open(fname, O_RDONLY)) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
-		}
-		event_set[tst_count] = IN_OPEN;
-		tst_count++;
+	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
+		tst_brk(TBROK,
+			"open(%s, O_RDWR|O_CREAT,0700) failed", fname);
+	}
+	event_set[tst_count] = IN_OPEN;
+	tst_count++;
 
-		if (read(fd, buf, BUF_SIZE) == -1) {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "read(%d, buf, %d) failed", fd, BUF_SIZE);
-		}
-		event_set[tst_count] = IN_ACCESS;
-		tst_count++;
+	if (write(fd, buf, BUF_SIZE) == -1) {
+		tst_brk(TBROK,
+			"write(%d, %s, 1) failed", fd, fname);
+	}
+	event_set[tst_count] = IN_MODIFY;
+	tst_count++;
 
-		SAFE_CLOSE(cleanup, fd);
-		event_set[tst_count] = IN_CLOSE_NOWRITE;
-		tst_count++;
+	SAFE_CLOSE(fd);
+	event_set[tst_count] = IN_CLOSE_WRITE;
+	tst_count++;
 
-		if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
-		}
-		event_set[tst_count] = IN_OPEN;
-		tst_count++;
+	if (TST_TOTAL != tst_count) {
+		tst_brk(TBROK,
+			"TST_TOTAL and tst_count are not equal");
+	}
+	tst_count = 0;
 
-		if (write(fd, buf, BUF_SIZE) == -1) {
-			tst_brkm(TBROK, cleanup,
-				 "write(%d, %s, 1) failed", fd, fname);
-		}
-		event_set[tst_count] = IN_MODIFY;
-		tst_count++;
-
-		SAFE_CLOSE(cleanup, fd);
-		event_set[tst_count] = IN_CLOSE_WRITE;
-		tst_count++;
-
-		if (TST_TOTAL != tst_count) {
-			tst_brkm(TBROK, cleanup,
-				 "TST_TOTAL and tst_count are not equal");
-		}
-		tst_count = 0;
-
-		/*
-		 * get list on events
-		 */
-		int len, i = 0, test_num = 0;
-		if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
-			tst_brkm(TBROK, cleanup,
-				 "read(%d, buf, %zu) failed",
-				 fd_notify, EVENT_BUF_LEN);
-
-		}
-
-		/*
-		 * check events
-		 */
-		while (i < len) {
-			struct inotify_event *event;
-			event = (struct inotify_event *)&event_buf[i];
-			if (test_num >= TST_TOTAL) {
-				tst_resm(TFAIL,
-					 "get unnecessary event: wd=%d mask=%x "
-					 "cookie=%u len=%u",
-					 event->wd, event->mask,
-					 event->cookie, event->len);
-			} else if (event_set[test_num] == event->mask) {
-				if (event->cookie != 0) {
-					tst_resm(TFAIL,
-						 "get event: wd=%d mask=%x "
-						 "cookie=%u (expected 0) len=%u",
-						 event->wd, event->mask,
-						 event->cookie, event->len);
-				} else {
-					tst_resm(TPASS, "get event: wd=%d "
-						 "mask=%x cookie=%u len=%u",
-						 event->wd, event->mask,
-						 event->cookie, event->len);
-				}
-
-			} else {
-				tst_resm(TFAIL, "get event: wd=%d mask=%x "
-					 "(expected %x) cookie=%u len=%u",
-					 event->wd, event->mask,
-					 event_set[test_num],
-					 event->cookie, event->len);
-			}
-			test_num++;
-			i += EVENT_SIZE + event->len;
-		}
-		for (; test_num < TST_TOTAL; test_num++) {
-			tst_resm(TFAIL, "didn't get event: mask=%x",
-				 event_set[test_num]);
-
-		}
+	/*
+	 * get list on events
+	 */
+	int len, i = 0, test_num = 0;
+	if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) < 0) {
+		tst_brk(TBROK,
+			"read(%d, buf, %zu) failed",
+			fd_notify, EVENT_BUF_LEN);
 
 	}
 
-	cleanup();
-	tst_exit();
+	/*
+	 * check events
+	 */
+	while (i < len) {
+		struct inotify_event *event;
+		event = (struct inotify_event *)&event_buf[i];
+		if (test_num >= TST_TOTAL) {
+			tst_res(TFAIL,
+				"get unnecessary event: wd=%d mask=%x "
+				"cookie=%u len=%u",
+				event->wd, event->mask,
+				event->cookie, event->len);
+		} else if (event_set[test_num] == event->mask) {
+			if (event->cookie != 0) {
+				tst_res(TFAIL,
+					"get event: wd=%d mask=%x "
+					"cookie=%u (expected 0) len=%u",
+					event->wd, event->mask,
+					event->cookie, event->len);
+			} else {
+				tst_res(TPASS, "get event: wd=%d "
+					"mask=%x cookie=%u len=%u",
+					event->wd, event->mask,
+					event->cookie, event->len);
+			}
+
+		} else {
+			tst_res(TFAIL, "get event: wd=%d mask=%x "
+				"(expected %x) cookie=%u len=%u",
+				event->wd, event->mask,
+				event_set[test_num],
+				event->cookie, event->len);
+		}
+		test_num++;
+		i += EVENT_SIZE + event->len;
+	}
+	for (; test_num < TST_TOTAL; test_num++) {
+		tst_res(TFAIL, "didn't get event: mask=%x",
+			event_set[test_num]);
+
+	}
 }
 
 static void setup(void)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
 	sprintf(fname, "tfile_%d", getpid());
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "open(%s, O_RDWR|O_CREAT,0700) failed", fname);
+		tst_brk(TBROK | TERRNO,
+			"open(%s, O_RDWR|O_CREAT,0700) failed", fname);
 	}
 	if ((write(fd, fname, 1)) == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "write(%d, %s, 1) failed",
-			 fd, fname);
+		tst_brk(TBROK | TERRNO, "write(%d, %s, 1) failed",
+			fd, fname);
 	}
 
 	/* close the file we have open */
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 	if ((fd_notify = myinotify_init()) < 0) {
 		if (errno == ENOSYS) {
-			tst_brkm(TCONF, cleanup,
-				 "inotify is not configured in this kernel.");
+			tst_brk(TCONF,
+				"inotify is not configured in this kernel.");
 		} else {
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "inotify_init failed");
+			tst_brk(TBROK | TERRNO,
+				"inotify_init failed");
 		}
 	}
 
 	if ((wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS)) < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
-			 fd_notify, fname);
+		tst_brk(TBROK | TERRNO,
+			"inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
+			fd_notify, fname);
 		reap_wd = 1;
 	};
 
@@ -229,25 +204,22 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (reap_wd && myinotify_rm_watch(fd_notify, wd) < 0) {
-		tst_resm(TWARN | TERRNO, "inotify_rm_watch (%d, %d) failed",
-			 fd_notify, wd);
+		tst_res(TWARN | TERRNO, "inotify_rm_watch (%d, %d) failed",
+			fd_notify, wd);
 
 	}
 
 	if (fd_notify > 0 && close(fd_notify))
-		tst_resm(TWARN, "close(%d) failed", fd_notify);
-
-	tst_rmdir();
+		tst_res(TWARN, "close(%d) failed", fd_notify);
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_inotify,
+};
 
 #else
-
-char *TCID = "inotify01";
-int TST_TOTAL = 0;
-
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "system doesn't have required inotify support");
-}
-
+	TST_TEST_TCONF("system doesn't have required inotify support");
 #endif
