@@ -63,7 +63,7 @@ static char buf[BUF_SIZE];
 static int fd, fd_notify;
 static int wd, reap_wd;
 
-static int event_set[EVENT_MAX];
+static unsigned int event_set[EVENT_MAX];
 
 static char event_buf[EVENT_BUF_LEN];
 
