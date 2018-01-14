@@ -478,6 +478,7 @@ inotify03 inotify03
 inotify04 inotify04
 inotify05 inotify05
 inotify06 inotify06
+inotify07 inotify07
 
 fanotify01 fanotify01
 fanotify02 fanotify02
