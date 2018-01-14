@@ -17,7 +17,7 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
-# This is a wrapper for locktorture kernel module. The test requiers
+# This is a wrapper for locktorture kernel module. The test requires
 # that kernel configured with CONFIG_LOCK_TORTURE_TEST. It runs locktorture
 # module using particular options and then inspects dmesg output for module's
 # test results. For more information, please read Linux Documentation:

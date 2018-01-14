@@ -18,7 +18,7 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 # One of the possible ways to test RCU is to use rcutorture kernel module.
-# The test requiers that kernel configured with CONFIG_RCU_TORTURE_TEST.
+# The test requires that kernel configured with CONFIG_RCU_TORTURE_TEST.
 # It runs rcutorture module using particular options and then inspects
 # dmesg output for module's test results.
 # For more information, please read Linux Documentation: RCU/torture.txt
