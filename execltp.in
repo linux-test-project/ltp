@@ -309,7 +309,7 @@ def main():
         # Default to scenarios also used by runltp.
         fd = open(os.path.join(ltpdir, 'scenario_groups/default'), 'r')
         try:
-            args = fd.readlines()
+            args = [l.strip() for l in fd.readlines()]
         finally:
             fd.close()
 
