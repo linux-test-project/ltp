@@ -152,3 +152,16 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_chroot(const char *file, const int lineno, const char *path)
+{
+	int rval;
+
+	rval = chroot(path);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "chroot(%s) failed", path);
+	}
+
+	return rval;
+}

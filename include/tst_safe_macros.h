@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2015 Linux Test Project
+ * Copyright (c) 2010-2018 Linux Test Project
  * Copyright (c) 2011-2015 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -47,6 +47,10 @@
 
 #define SAFE_CREAT(pathname, mode) \
 	safe_creat(__FILE__, __LINE__, NULL, (pathname), (mode))
+
+#define SAFE_CHROOT(path) \
+	safe_chroot(__FILE__, __LINE__, (path))
+int safe_chroot(const char *file, const int lineno, const char *path);
 
 #define SAFE_DIRNAME(path) \
 	safe_dirname(__FILE__, __LINE__, NULL, (path))
