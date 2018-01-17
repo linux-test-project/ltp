@@ -300,7 +300,7 @@ static void test_fn(void *f0(void *), void *f1(void *),
 	struct param p2[thread_cnt];
 	unsigned char buf[write_size];
 
-	tst_res(TINFO, msg);
+	tst_res(TINFO, "%s", msg);
 
 	if (tst_fill_file(fname, 1, write_size, thread_cnt + 1))
 		tst_brk(TBROK, "Failed to create tst file");
