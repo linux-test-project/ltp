@@ -50,11 +50,12 @@
 #include <unistd.h>
 
 #include "../libcontrollers/libcontrollers.h"
+#include "test.h"		/* LTP harness APIs */
 
-char *TCID = "cpu_controller_latency_tests";
+char *TCID = "cpu_controller_latency_test";
 int TST_TOTAL = 2;
 
-void sighandler(int i)
+void sighandler(int i LTP_ATTRIBUTE_UNUSED)
 {
 	exit(0);
 }
@@ -64,13 +65,14 @@ int main(int argc, char *argv[])
 	char mytaskfile[FILENAME_MAX];
 	int test_num;
 
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	/* TODO (garrcoop): add error handling. */
 	sigemptyset(&newaction.sa_mask);
 	sigaddset(&newaction.sa_mask, SIGUSR1);
 	newaction.sa_handler = &sighandler;
-	sigaction(SIGUSR1, &newaction, &oldaction);
+	if (sigaction(SIGUSR1, &newaction, NULL) != 0)
+		errx(1, "%s sigaction", TCID);
 
 	if (argc < 2 || argc > 3) {
 		errx(EINVAL, "TBROK\t Invalid #args received from script"

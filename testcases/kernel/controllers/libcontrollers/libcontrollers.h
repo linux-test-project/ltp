@@ -14,7 +14,8 @@
 /*                                                                            */
 /* You should have received a copy of the GNU General Public License          */
 /* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
+/* Foundation, Inc.,							      */
+/* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA		      */
 /*                                                                            */
 /******************************************************************************/
 
@@ -42,35 +43,20 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef PATH_MAX
-char fullpath[PATH_MAX];
-#else
-char fullpath[1024]; /* Guess */
-#endif
+extern char fullpath[];
 
-int FLAG;
-volatile int timer_expired;
+extern int FLAG;
+extern volatile int timer_expired;
 
-int retval;
+extern int retval;
+extern char target[];
 
-unsigned int num_line;//??
-
-unsigned int current_shares;
-
-unsigned int total_shares;
-
-unsigned int *shares_pointer;//??
-
-char target[LINE_MAX];
-
-struct dirent 	*dir_pointer;
+extern struct dirent	*dir_pointer;
 
 enum{
 	GET_SHARES	=1,
 	GET_TASKS
 };
-
-static inline void error_function(char *msg1, char *msg2);
 
 int read_shares_file(char *filepath);
 

@@ -70,10 +70,12 @@
 #define NUM_SETS	4	/* How many share values (with same ratio) */
 #define MULTIPLIER   	10	/* Rate at which share value gets multiplied */
 
-char *TCID = "cpu_controller_tests";
+char *TCID = "cpuctl_def_task01";
 int TST_TOTAL = 1;
 pid_t scriptpid;
 char path[FILENAME_MAX] = "/dev/cpuctl";
+unsigned int total_shares;
+unsigned int *shares_pointer;
 
 extern void cleanup(void)
 {
@@ -102,7 +104,7 @@ int main(int argc, char *argv[])
 	time_t current_time, prev_time, delta_time;
 	unsigned long int myshares = 2, baseshares = 1000;
 	unsigned int fmyshares, num_tasks;
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	num_cpus = 0;
 	test_num = 0;
@@ -112,7 +114,8 @@ int main(int argc, char *argv[])
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
-	sigaction(SIGALRM, &newaction, &oldaction);
+	if (sigaction(SIGALRM, &newaction, NULL) != 0)
+		errx(1, "%s sigaction", TCID);
 
 	/* Check if all parameters passed are correct */
 	if ((argc < 5) || ((my_group_num = atoi(argv[1])) <= 0) ||

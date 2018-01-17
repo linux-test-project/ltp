@@ -66,11 +66,14 @@
 #define TIME_INTERVAL	30	/* Time interval in seconds */
 #define NUM_INTERVALS	2	/* How many iterations of TIME_INTERVAL */
 
-char *TCID = "cpu_controller_test06";
+char *TCID = "cpuctl_def_task03";
 int TST_TOTAL = 3;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
-extern void cleanup(void)
+unsigned int total_shares;
+unsigned int *shares_pointer;
+
+void cleanup(void)
 {
 	kill(scriptpid, SIGUSR1);	/* Inform the shell to do cleanup */
 	/* Report exit status */
@@ -99,7 +102,7 @@ int main(int argc, char *argv[])
 	struct rusage cpu_usage;
 	time_t current_time, prev_time, delta_time;
 	unsigned int fmyshares, num_tasks;
-	struct sigaction newaction, oldaction;
+	struct sigaction newaction;
 
 	mygroup_num = -1;
 	num_cpus = 0;
@@ -110,7 +113,8 @@ int main(int argc, char *argv[])
 	sigemptyset(&newaction.sa_mask);
 	newaction.sa_handler = signal_handler_alarm;
 	newaction.sa_flags = 0;
-	sigaction(SIGALRM, &newaction, &oldaction);
+	if (sigaction(SIGALRM, &newaction, NULL) != 0)
+		errx(1, "%s sigaction", TCID);
 
 	/* Collect the parameters passed by the script */
 	group_num_p = getenv("GROUP_NUM");
