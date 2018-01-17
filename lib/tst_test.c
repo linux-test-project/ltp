@@ -580,6 +580,9 @@ static void do_exit(int ret)
 		printf("skipped  %d\n", results->skipped);
 		printf("warnings %d\n", results->warnings);
 
+		if (results->passed && ret == TCONF)
+			ret = 0;
+
 		if (results->failed)
 			ret |= TFAIL;
 
