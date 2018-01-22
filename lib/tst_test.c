@@ -24,7 +24,6 @@
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/time.h>
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
@@ -34,6 +33,8 @@
 #include "tst_ansi_color.h"
 #include "tst_safe_stdio.h"
 #include "tst_timer_test.h"
+#include "tst_clocks.h"
+#include "tst_timer.h"
 
 #include "old_resource.h"
 #include "old_device.h"
@@ -853,11 +854,12 @@ static void run_tests(void)
 
 static unsigned long long get_time_ms(void)
 {
-	struct timeval tv;
+	struct timespec ts;
 
-	gettimeofday(&tv, NULL);
+	if (tst_clock_gettime(CLOCK_MONOTONIC, &ts))
+		tst_brk(TBROK | TERRNO, "tst_clock_gettime()");
 
-	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	return tst_timespec_to_ms(ts);
 }
 
 static void add_paths(void)
