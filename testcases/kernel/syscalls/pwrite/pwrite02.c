@@ -35,20 +35,16 @@
 
 #include <errno.h>
 #include <unistd.h>
-#include <fcntl.h>
+#include <string.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 
 #define TEMPFILE	"pwrite_file"
 #define K1		1024
 
-TCID_DEFINE(pwrite02);
-
 static char write_buf[K1];
 
 static void setup(void);
-static void cleanup(void);
 
 static void test_espipe(void);
 static void test_einval(void);
@@ -66,25 +62,9 @@ static void (*testfunc[])(void) = {
 #endif
 };
 
-int TST_TOTAL = ARRAY_SIZE(testfunc);
-
-int main(int ac, char **av)
+static void verify_pwrite(unsigned int i)
 {
-	int i, lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++)
-			(*testfunc[i])();
-	}
-
-	cleanup();
-	tst_exit();
+	(*testfunc[i])();
 }
 
 /*
@@ -111,16 +91,10 @@ static void sighandler(int sig)
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
 	/* see the comment in the sighandler() function */
 	/* call signal() to trap the signal generated */
 	if (signal(SIGXFSZ, sighandler) == SIG_ERR)
-		tst_brkm(TBROK, cleanup, "signal() failed");
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
+		tst_brk(TBROK | TERRNO, "signal() failed");
 
 	memset(write_buf, 'a', K1);
 }
@@ -128,17 +102,17 @@ static void setup(void)
 static void print_test_result(int err, int exp_errno)
 {
 	if (err == 0) {
-		tst_resm(TFAIL, "call succeeded unexpectedly");
+		tst_res(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
 
 	if (err == exp_errno) {
-		tst_resm(TPASS, "pwrite failed as expected: %d - %s",
-			 err, strerror(err));
+		tst_res(TPASS, "pwrite failed as expected: %d - %s",
+			err, tst_strerrno(err));
 	} else {
-		tst_resm(TFAIL, "pwrite failed unexpectedly; expected: %d - %s"
-			 "return: %d - %s", exp_errno, strerror(exp_errno),
-			 err, strerror(err));
+		tst_res(TFAIL, "pwrite failed unexpectedly; expected: %d - %s"
+			"return: %d - %s", exp_errno, tst_strerrno(exp_errno),
+			err, tst_strerrno(err));
 	}
 }
 
@@ -146,28 +120,28 @@ static void test_espipe(void)
 {
 	int pipe_fds[2];
 
-	SAFE_PIPE(cleanup, pipe_fds);
+	SAFE_PIPE(pipe_fds);
 
 	TEST(pwrite(pipe_fds[1], write_buf, K1, 0));
 
-	print_test_result(errno, ESPIPE);
+	print_test_result(TEST_ERRNO, ESPIPE);
 
-	SAFE_CLOSE(cleanup, pipe_fds[0]);
-	SAFE_CLOSE(cleanup, pipe_fds[1]);
+	SAFE_CLOSE(pipe_fds[0]);
+	SAFE_CLOSE(pipe_fds[1]);
 }
 
 static void test_einval(void)
 {
 	int fd;
 
-	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDWR | O_CREAT, 0666);
+	fd = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT, 0666);
 
 	/* the specified offset was invalid */
 	TEST(pwrite(fd, write_buf, K1, -1));
 
-	print_test_result(errno, EINVAL);
+	print_test_result(TEST_ERRNO, EINVAL);
 
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 }
 
 static void test_ebadf1(void)
@@ -176,20 +150,20 @@ static void test_ebadf1(void)
 
 	TEST(pwrite(fd, write_buf, K1, 0));
 
-	print_test_result(errno, EBADF);
+	print_test_result(TEST_ERRNO, EBADF);
 }
 
 static void test_ebadf2(void)
 {
 	int fd;
 
-	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDONLY | O_CREAT, 0666);
+	fd = SAFE_OPEN(TEMPFILE, O_RDONLY | O_CREAT, 0666);
 
 	TEST(pwrite(fd, write_buf, K1, 0));
 
-	print_test_result(errno, EBADF);
+	print_test_result(TEST_ERRNO, EBADF);
 
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 }
 
 #if !defined(UCLINUX)
@@ -198,17 +172,29 @@ static void test_efault(void)
 	int fd;
 	char *buf = sbrk(0);
 
-	fd = SAFE_OPEN(cleanup, TEMPFILE, O_RDWR | O_CREAT, 0666);
+	fd = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT, 0666);
+
+	TEST(pwrite(fd, NULL, 0, 0));
+
+	if (TEST_RETURN == 0) {
+		tst_res(TPASS, "pwrite succeeded as expected with count = 0");
+	} else {
+		tst_res(TFAIL, "pwrite failed unexpectedly; "
+			"return: %ld with errno %d (%s)",
+			TEST_RETURN, TEST_ERRNO, tst_strerrno(TEST_ERRNO));
+	}
 
 	TEST(pwrite(fd, buf, K1, 0));
 
-	print_test_result(errno, EFAULT);
+	print_test_result(TEST_ERRNO, EFAULT);
 
-	SAFE_CLOSE(cleanup, fd);
+	SAFE_CLOSE(fd);
 }
 #endif
 
-static void cleanup(void)
-{
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.test = verify_pwrite,
+	.tcnt = ARRAY_SIZE(testfunc),
+};
