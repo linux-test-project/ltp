@@ -708,6 +708,9 @@ static int is_fuse(const char *fs_type)
 {
 	unsigned int i;
 
+	if (!fs_type)
+		return 0;
+
 	for (i = 0; i < ARRAY_SIZE(fuse_fs_types); i++) {
 		if (!strcmp(fuse_fs_types[i], fs_type))
 			return 1;
