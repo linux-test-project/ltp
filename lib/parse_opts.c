@@ -39,12 +39,13 @@
 #include <sys/signal.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/time.h>
+#include <time.h>
 #include <stdint.h>
 
 #include "test.h"
 #include "ltp_priv.h"
 #include "usctest.h"
+#include "tst_clocks.h"
 
 #ifndef UNIT_TEST
 #define UNIT_TEST	0
@@ -467,16 +468,13 @@ int usc_global_setup_hook(void)
 
 #define USECS_PER_SEC	1000000	/* microseconds per second */
 
-/***********************************************************************
- * Returns current time in microseconds since 1970.
- ***********************************************************************/
 static uint64_t get_current_time(void)
 {
-	struct timeval curtime;
+	struct timespec ts;
 
-	gettimeofday(&curtime, NULL);
+	tst_clock_gettime(CLOCK_MONOTONIC, &ts);
 
-	return (((uint64_t) curtime.tv_sec) * USECS_PER_SEC) + curtime.tv_usec;
+	return (((uint64_t) ts.tv_sec) * USECS_PER_SEC) + ts.tv_nsec / 1000;
 }
 
 /***********************************************************************
