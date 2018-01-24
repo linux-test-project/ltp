@@ -47,7 +47,7 @@ static void cleanup(void)
 		tst_module_unload(NULL, module_name);
 }
 
-void setup(int argc, char *argv[])
+void setup(void)
 {
 	tst_require_root();
 
@@ -105,9 +105,9 @@ static void test_run(void)
 	}
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
-	setup(argc, argv);
+	setup();
 
 	test_run();
 
