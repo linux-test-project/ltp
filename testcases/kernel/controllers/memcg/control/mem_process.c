@@ -81,7 +81,7 @@ void touch_memory(char *p)
 		p[i] = 0xef;
 }
 
-void mem_map()
+void mem_map(void)
 {
 	static char *p;
 
@@ -101,7 +101,7 @@ void mem_map()
 /*
  * done: retrieve instructions from the named pipe
  */
-char action()
+char action(void)
 {
 	char ch;
 	int fd;
