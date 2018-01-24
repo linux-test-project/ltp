@@ -128,10 +128,7 @@ int fsxgoodfd = 0;
 FILE *fsxlogf = NULL;
 int badoff = -1;
 
-void vwarnc(code, fmt, ap)
-int code;
-const char *fmt;
-va_list ap;
+void vwarnc(int code,const char *fmt, va_list ap)
 {
 	fprintf(stderr, "fsx: ");
 	if (fmt != NULL) {
@@ -913,7 +910,7 @@ void dotruncate(unsigned size)
 	}
 }
 
-void writefileimage()
+void writefileimage(void)
 {
 	ssize_t iret;
 	int fd = get_fd();
@@ -1038,8 +1035,7 @@ void test(void)
 		docloseopen();
 }
 
-void cleanup(sig)
-int sig;
+void cleanup(int sig)
 {
 	if (sig)
 		prt("signal %d\n", sig);
