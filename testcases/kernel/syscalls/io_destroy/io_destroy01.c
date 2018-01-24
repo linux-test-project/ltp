@@ -1,7 +1,7 @@
 /*
- *
  *   Copyright (c) Crackerjack Project., 2007
  *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
+ *   Copyright (c) 2017 Xiao Yang <yangx.jy@cn.fujitsu.com>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,91 +19,46 @@
  */
 
 /* Porting from Crackerjack to LTP is done
-   by Masatake YAMATO <yamato@redhat.com> */
+ * by Masatake YAMATO <yamato@redhat.com>
+ *
+ * Description:
+ * io_destroy(2) fails and returns -EINVAL if ctx is invalid.
+ */
 
 #include <errno.h>
 #include <string.h>
-
 #include "config.h"
-#include "test.h"
-
-char *TCID = "io_destroy01";
-
-int TST_TOTAL = 1;
+#include "tst_test.h"
 
 #ifdef HAVE_LIBAIO
 #include <libaio.h>
 
-static void cleanup(void)
+static void verify_io_destroy(void)
 {
-}
-
-static void setup(void)
-{
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
-  DESCRIPTION
-       io_destroy  removes  the asynchronous I/O context from the list of I/O
-       contexts and then destroys it.  io_destroy can also  cancel  any  out-
-       standing asynchronous I/O actions on ctx and block on completion.
-
- RETURN VALUE
-       io_destroy returns 0 on success.
-
- ERRORS
-       EINVAL The AIO context specified by ctx is invalid.
-*/
-
-#define EXP_RET (-EINVAL)
-
-int main(int argc, char *argv[])
-{
-	int lc;
-
 	io_context_t ctx;
 
 	memset(&ctx, 0xff, sizeof(ctx));
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		TEST(io_destroy(ctx));
-
-		switch (TEST_RETURN) {
-		case 0:
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-			break;
-		case EXP_RET:
-			tst_resm(TPASS, "expected failure - "
-				 "returned value = %ld : %s", TEST_RETURN,
-				 strerror(-TEST_RETURN));
-			break;
-		case -ENOSYS:
-			tst_resm(TCONF, "io_cancel returned ENOSYS");
-			break;
-		default:
-			tst_resm(TFAIL, "unexpected returned value - %s (%i) - "
-				 "expected %s (%i)", strerror(-TEST_RETURN),
-				 (int)TEST_RETURN, strerror(-EXP_RET), EXP_RET);
-			break;
-		}
+	TEST(io_destroy(ctx));
+	if (TEST_RETURN == 0) {
+		tst_res(TFAIL, "io_destroy() succeeded unexpectedly");
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	if (TEST_RETURN == -EINVAL) {
+		tst_res(TPASS,
+			"io_destroy() failed as expected, returned -EINVAL");
+	} else {
+		tst_res(TFAIL, "io_destroy() failed unexpectedly, "
+			"returned -%s expected -EINVAL",
+			tst_strerrno(-TEST_RETURN));
+	}
 }
 
+static struct tst_test test = {
+	.test_all = verify_io_destroy,
+};
+
 #else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
-}
+	TST_TEST_TCONF("test requires libaio and it's development packages");
 #endif
