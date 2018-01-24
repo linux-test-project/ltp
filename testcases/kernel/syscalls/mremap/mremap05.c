@@ -53,7 +53,7 @@ struct test_case_t {
 	size_t old_size;	/* in pages */
 	size_t new_size;	/* in pages */
 	int flags;
-	const const char *msg;
+	const char *msg;
 	void *exp_ret;
 	int exp_errno;
 	char *ret;
