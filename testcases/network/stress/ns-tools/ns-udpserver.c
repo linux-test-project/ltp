@@ -138,7 +138,7 @@ void set_signal_flag(int type)
  * Return value:
  *  None
  */
-void respond_to_client(sock_fd)
+void respond_to_client(int sock_fd)
 {
 	char *msgbuf;		/* Pointer to the message */
 	size_t msgbuf_size;	/* size of msgbuf */
