@@ -29,7 +29,7 @@
 #   on a single socket, then receiving a large number of General Query
 #
 # Setup:
-#   See ltp-yyyymmdd/testcases/network/stress/README
+#   See testcases/network/stress/README
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>

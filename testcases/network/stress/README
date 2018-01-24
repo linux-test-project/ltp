@@ -37,7 +37,7 @@ Installation
 
 Like the other network tests, the remote host must have the LTP installed
 in the same exact location as the local host have. Please refer the `Detailed
-Installation 5.' section in ltp-yyyymmdd/INSTALL.
+Installation 5.' section in INSTALL.
 
 
 
@@ -45,8 +45,8 @@ Execution
 =========
 
 To run the network stress testcases, use network.sh script, located in
-ltp-yyyymmdd/testscripts directory. For documentation about using network.sh
-see ltp-yyyymmdd/INSTALL and ltp-yyyymmdd/testcases/network/README.md
+testscripts directory. For documentation about using network.sh see INSTALL
+and testcases/network/README.md
 
 Unfortunately some stress tests still depend on rsh for accessing remote host, even
 you decide to use SSH or network namespaces with network.sh.
@@ -56,7 +56,7 @@ Please refer the `Environment Variable' section of this document.
 The behaviour of network stress tests is configurable with environment
 variables, described below.
 
-Two command lists is prepared in ltp-yyyymmdd/runtest directory.
+Two command lists is prepared in runtest directory.
 
   network_stress.whole	   : 118 kinds 615 tests
   network_stress.selected  :  33 kinds 103 tests
@@ -73,9 +73,9 @@ Running the tests using network_stress.whole takes about 20 days. Therefore,
 network_stress.selected is prepared. However, it takes 3 days using
 network_stress.selected. If you reduce the time, you should choose the
 testcase and prepare your own command lists. The detail of testcases
-are written in ltp-yyyymmdd/doc/testcases/network_stress.txt.  Or you can
-reduce the time by configuring the test behavior with the environment
-variable (See `Environment Variable' section)
+are written in doc/testcases/network_stress.txt. Or you can reduce the time
+by configuring the test behavior with the environment variable
+(See `Environment Variable' section).
 
 
 

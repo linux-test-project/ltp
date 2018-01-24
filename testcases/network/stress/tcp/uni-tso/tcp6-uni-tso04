@@ -30,7 +30,7 @@
 #     - IPsec(ESP), transport mode
 #
 # Setup:
-#   See ltp-yyyymmdd/testcases/network/stress/README
+#   See testcases/network/stress/README
 #
 # Author:
 #   Mitsuru Chinen <mitch@jp.ibm.com>
