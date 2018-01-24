@@ -13,9 +13,7 @@
 #define BYTES 64
 #define LINES 16384
 
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
 	int i, fd, mac;
 	int offset = 0;
