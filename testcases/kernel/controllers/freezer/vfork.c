@@ -88,7 +88,7 @@ void kill_child(void)
 
 }
 
-void child_cleanup()
+void child_cleanup(void)
 {
 	close(psync[0]);
 	tst_exit();
@@ -129,7 +129,7 @@ void sleepy_time(void)
 	} while (1);
 }
 
-void usage()
+void usage(void)
 {
 	tst_resm(TBROK, "usage: %s [-f [FILE]] [-s [NUM]] [-p] [NUM]\n\n"
 		 "\t-f FILE\t\tFile to output trace data to.\n"
