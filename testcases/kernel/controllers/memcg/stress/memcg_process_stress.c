@@ -37,7 +37,7 @@ unsigned long memsize;
 char **pages;
 int nr_page;
 
-void touch_memory()
+void touch_memory(void)
 {
 	int i;
 
