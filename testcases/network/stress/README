@@ -54,29 +54,7 @@ Instead of rsh, you can use ssh to set the environment variable LTP_RSH.
 Please refer the `Environment Variable' section of this document.
 
 The behaviour of network stress tests is configurable with environment
-variables, described below.
-
-Two command lists is prepared in runtest directory.
-
-  network_stress.whole	   : 118 kinds 615 tests
-  network_stress.selected  :  33 kinds 103 tests
-  network_stress.interface :  13 kinds  27 tests
-  network_stress.route     :  12 kinds  22 tests
-  network_stress.broken_ip :  11 kinds  11 tests
-  network_stress.icmp      :   6 kinds  42 tests
-  network_stress.udp       :   8 kinds  56 tests
-  network_stress.tcp       :  22 kinds 308 tests
-  network_stress.multicast :  24 kinds  24 tests
-  network_stress.appl      :  22 kinds  22 tests
-
-Running the tests using network_stress.whole takes about 20 days. Therefore,
-network_stress.selected is prepared. However, it takes 3 days using
-network_stress.selected. If you reduce the time, you should choose the
-testcase and prepare your own command lists. The detail of testcases
-are written in doc/testcases/network_stress.txt. Or you can reduce the time
-by configuring the test behavior with the environment variable
-(See `Environment Variable' section).
-
+variables (See `Environment Variable' section).
 
 
 Attention for HTTP/FTP stress tests
