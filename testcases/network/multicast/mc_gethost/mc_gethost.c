@@ -21,9 +21,7 @@
 #define LOG_PERROR 0
 #endif
 
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
 	unsigned char b_addr[IN6ADDRSZ];
 	struct hostent *host;
