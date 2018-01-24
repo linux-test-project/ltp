@@ -71,7 +71,7 @@ int TST_TOTAL = 2;
 pid_t scriptpid;
 char path[] = "/dev/cpuctl";
 
-extern void cleanup()
+extern void cleanup(void)
 {
 	kill(scriptpid, SIGUSR1);	/* Inform the shell to do cleanup */
 	tst_exit();		/* Report exit status */
