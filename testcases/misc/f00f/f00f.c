@@ -52,7 +52,7 @@ void sigill(int sig)
 	tst_exit();
 }
 
-int main()
+int main(void)
 {
 	signal(SIGILL, sigill);
 	tst_resm(TINFO, "Testing for proper f00f instruction handling.");
@@ -73,7 +73,7 @@ int main()
 
 #else /* __i386__ */
 
-int main()
+int main(void)
 {
 	tst_brkm(TCONF, NULL, "f00f bug test only for i386");
 }
