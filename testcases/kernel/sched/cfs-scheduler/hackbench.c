@@ -92,7 +92,7 @@ static void barf(const char *msg)
 	exit(1);
 }
 
-static void print_usage_exit()
+static void print_usage_exit(void)
 {
 	printf
 	    ("Usage: hackbench [-pipe] <num groups> [process|thread] [loops]\n");
