@@ -53,15 +53,14 @@
 
 void noprintf(char *string, ...)
 {
+	(void) string;
 }
 
 /* Read contents of FILE *fp. Write each line to socket, then
    read line back from socket and write to standard output.
    Return to caller when done */
 
-void str_cli(fp, sockfd)
-register FILE *fp;
-register int sockfd;
+void str_cli(FILE *fp, int sockfd)
 {
 	int n;
 	char sendline[MAXLINE], recvline[MAXLINE + 1];
