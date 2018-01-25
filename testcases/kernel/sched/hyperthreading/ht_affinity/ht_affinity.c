@@ -46,7 +46,7 @@ len - length in bytes of the bitmask pointed to by user_mask_ptr.
 #define AFFINITY_NAME "affinity"
 #define PROCFS_PATH "/proc/"
 
-int HT_SetAffinity()
+int HT_SetAffinity(void)
 {
 	unsigned int mask;
 	pid_t pid;
@@ -145,7 +145,7 @@ unsigned long get_porc_affinity(pid_t pid)
 	return atol(buf);
 }
 
-int HT_GetAffinity()
+int HT_GetAffinity(void)
 {
 	unsigned int mask[2], mask1[2];
 	pid_t pid;
@@ -177,7 +177,7 @@ int HT_GetAffinity()
 		return 0;
 }
 
-int HT_InheritAffinity()
+int HT_InheritAffinity(void)
 {
 	unsigned int mask[2];
 	pid_t pid;
@@ -211,7 +211,7 @@ int HT_InheritAffinity()
 }
 
 // return 0 means Pass, return 1 means Fail
-int main(int argc, char *argv[])
+int main(void)
 {
 
 #if (!defined __i386__ && !defined __x86_64__)
