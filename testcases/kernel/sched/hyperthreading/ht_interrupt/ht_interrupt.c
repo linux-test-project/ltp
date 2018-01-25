@@ -24,7 +24,7 @@ int TST_TOTAL = 1;
 
 #define INTERRUPT_NAME	"/proc/interrupts"
 
-int HT_InterruptDistribution()
+int HT_InterruptDistribution(void)
 {
 	FILE *pFile;
 	int ci[32], cj[32];
@@ -91,7 +91,7 @@ int HT_InterruptDistribution()
 }
 
 // return 0 means Pass, return 1 means Fail.
-int main(int argc, char *argv[])
+int main(void)
 {
 	tst_resm(TINFO, "Begin: HyperThreading Interrupt");
 
