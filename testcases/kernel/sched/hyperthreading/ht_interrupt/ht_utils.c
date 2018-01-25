@@ -41,7 +41,7 @@ int is_cmdline_para(const char *para)
 	return 0;
 }
 
-int is_ht_kernel()
+int is_ht_kernel(void)
 {
 	FILE *fp;
 
@@ -59,7 +59,7 @@ int is_ht_kernel()
 	return 0;
 }
 
-int is_ht_cpu()
+int is_ht_cpu(void)
 {
 	/*Number of logic processor in a physical processor */
 	int smp_num_siblings = -1;
@@ -79,7 +79,7 @@ int is_ht_cpu()
 	}
 }
 
-int is_ht_enabled()
+int is_ht_enabled(void)
 {
 	int cpu_map[MAX_CPU_NUM];
 	/*A bit-map shows whether a 'logic' processor has ht flag */
@@ -176,7 +176,7 @@ int is_ht_enabled()
 // return 1 means ht is not enabled,
 // return 2 means CPU is not support ht,
 // return 3 mean kernel is not support ht.
-int check_ht_capability()
+int check_ht_capability(void)
 {
 	int result;
 
@@ -201,7 +201,7 @@ int check_ht_capability()
 
 char buf[256];
 
-int get_cpu_count()
+int get_cpu_count(void)
 {
 	FILE *pfile;
 	int count;
