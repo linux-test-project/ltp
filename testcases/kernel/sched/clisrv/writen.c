@@ -25,10 +25,7 @@
 /* Write "n" bytes to a descriptor
    Use instead of write() when fd is a stream socket. */
 
-int writen(fd, ptr, nbytes)
-register int fd;
-register char *ptr;
-register int nbytes;
+int writen(int fd, char *ptr, int nbytes)
 {
 	int nleft, nwritten;
 
