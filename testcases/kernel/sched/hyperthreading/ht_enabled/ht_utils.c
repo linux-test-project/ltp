@@ -19,7 +19,7 @@
 
 char buffer[BUFF_SIZE];
 
-int is_ht_cpu()
+int is_ht_cpu(void)
 {
 	/*Number of logic processor in a physical processor */
 	int smp_num_siblings = -1;
@@ -41,7 +41,7 @@ int is_ht_cpu()
 
 /*return 0 means Pass,
 return 1 means ht is not enabled*/
-int check_ht_capability()
+int check_ht_capability(void)
 {
 	int result;
 	if (is_ht_cpu()) {
@@ -61,7 +61,7 @@ int check_ht_capability()
 
 char buf[256];
 
-int get_cpu_count()
+int get_cpu_count(void)
 {
 	FILE *pfile;
 	int count;
