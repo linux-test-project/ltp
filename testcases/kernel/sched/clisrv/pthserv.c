@@ -53,8 +53,7 @@ int sockfd;
 /* Read a stream socket one line at a time and write each line back
    to sender. Return when connection is terminated */
 
-int str_echo(sockfd)
-int sockfd;
+int str_echo(int sockfd)
 {
 	int n, testint;
 	char line[MAXLINE];
@@ -95,6 +94,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in cli_addr, serv_addr;
 	pname = argv[0];
 
+	(void) argc;
 	prtln();
 	/* Open inet stream socket */
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
