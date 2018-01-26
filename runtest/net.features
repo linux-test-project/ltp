@@ -2,6 +2,9 @@
 # Stress tests for various network features
 #
 
+bind_noport01 bind_noport01.sh
+bind_noport01_ipv6 bind_noport01.sh -6
+
 busy_poll01 busy_poll01.sh
 busy_poll01_ipv6 busy_poll01.sh -6
 

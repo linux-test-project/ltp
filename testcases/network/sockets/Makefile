@@ -24,7 +24,7 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= ltpSockets.sh
+INSTALL_TARGETS		:= *.sh
 
 LDLIBS			+= -lpthread
 
