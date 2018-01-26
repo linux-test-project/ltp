@@ -41,6 +41,9 @@ ssize_t safe_sendto(const char *file, const int lineno, char len_strict,
 		    int sockfd, const void *buf, size_t len, int flags,
 		    const struct sockaddr *dest_addr, socklen_t addrlen);
 
+ssize_t safe_sendmsg(const char *file, const int lineno, size_t msg_len,
+		  int sockfd, const struct msghdr *msg, int flags);
+
 int safe_bind(const char *file, const int lineno, void (cleanup_fn)(void),
 	      int socket, const struct sockaddr *address,
 	      socklen_t address_len);

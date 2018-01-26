@@ -149,6 +149,28 @@ ssize_t safe_sendto(const char *file, const int lineno, char len_strict,
 	return rval;
 }
 
+ssize_t safe_sendmsg(const char *file, const int lineno, size_t len,
+		     int sockfd, const struct msghdr *msg, int flags)
+{
+	ssize_t rval;
+
+	rval = sendmsg(sockfd, msg, flags);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: sendmsg(%d, %p, %d) failed",
+			 file, lineno, sockfd, msg, flags);
+	}
+
+	if (!len && (size_t)rval != len) {
+		tst_brkm(TBROK, NULL,
+			 "%s:%d: sendmsg(%d, %p, %d) ret(%zd) != len(%zu)",
+			 file, lineno, sockfd, msg, flags, rval, len);
+	}
+
+	return rval;
+}
+
 int safe_bind(const char *file, const int lineno, void (cleanup_fn)(void),
 	      int socket, const struct sockaddr *address,
 	      socklen_t address_len)
