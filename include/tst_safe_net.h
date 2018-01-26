@@ -26,8 +26,14 @@
 
 #include "safe_net_fn.h"
 
+#define TST_GETSOCKPORT(sockfd) \
+	tst_getsockport(__FILE__, __LINE__, sockfd)
+
 #define SAFE_SOCKET(domain, type, protocol) \
 	safe_socket(__FILE__, __LINE__, NULL, domain, type, protocol)
+
+#define SAFE_GETSOCKOPT(fd, level, optname, optval, optlen) \
+	safe_getsockopt(__FILE__, __LINE__, fd, level, optname, optval, optlen)
 
 #define SAFE_SETSOCKOPT(fd, level, optname, optval, optlen) \
 	safe_setsockopt(__FILE__, __LINE__, fd, level, optname, optval, optlen)

@@ -28,8 +28,13 @@
 char *tst_sock_addr(const struct sockaddr *sa, socklen_t salen, char *res,
 		    size_t len);
 
+int tst_getsockport(const char *file, const int lineno, int sockfd);
+
 int safe_socket(const char *file, const int lineno, void (cleanup_fn)(void),
 		int domain, int type, int protocol);
+
+int safe_getsockopt(const char *file, const int lineno, int sockfd, int level,
+		    int optname, void *optval, socklen_t *optlen);
 
 int safe_setsockopt(const char *file, const int lineno, int sockfd, int level,
 		    int optname, const void *optval, socklen_t optlen);

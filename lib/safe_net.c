@@ -81,6 +81,29 @@ char *tst_sock_addr(const struct sockaddr *sa, socklen_t salen, char *res,
 	}
 }
 
+int tst_getsockport(const char *file, const int lineno, int sockfd)
+{
+	struct sockaddr_storage ss;
+	socklen_t addrlen = sizeof(ss);
+	struct sockaddr *sa = (struct sockaddr *)&ss;
+
+	safe_getsockname(file, lineno, NULL, sockfd, sa, &addrlen);
+
+	switch (sa->sa_family) {
+	case AF_INET: {
+		struct sockaddr_in *sin = (struct sockaddr_in *)sa;
+
+		return ntohs(sin->sin_port);
+	}
+	case AF_INET6: {
+		struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)sa;
+
+		return ntohs(sin6->sin6_port);
+	} }
+
+	return -1;
+}
+
 int safe_socket(const char *file, const int lineno, void (cleanup_fn)(void),
 		int domain, int type, int protocol)
 {
@@ -93,6 +116,21 @@ int safe_socket(const char *file, const int lineno, void (cleanup_fn)(void),
 			 "%s:%d: socket(%d, %d, %d) failed", file, lineno,
 			 domain, type, protocol);
 	}
+
+	return rval;
+}
+
+int safe_getsockopt(const char *file, const int lineno, int sockfd, int level,
+		    int optname, void *optval, socklen_t *optlen)
+{
+	int rval = getsockopt(sockfd, level, optname, optval, optlen);
+
+	if (!rval)
+		return 0;
+
+	tst_brkm(TBROK | TERRNO, NULL,
+		 "%s:%d: getsockopt(%d, %d, %d, %p, %p) failed",
+		 file, lineno, sockfd, level, optname, optval, optlen);
 
 	return rval;
 }
