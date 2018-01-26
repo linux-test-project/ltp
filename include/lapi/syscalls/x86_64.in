@@ -154,6 +154,7 @@ munlockall 152
 vhangup 153
 modify_ldt 154
 pivot_root 155
+_sysctl 156
 prctl 157
 arch_prctl 158
 adjtimex 159

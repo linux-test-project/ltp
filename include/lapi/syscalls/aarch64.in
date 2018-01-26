@@ -257,3 +257,4 @@ kcmp 272
 getrandom 278
 memfd_create 279
 copy_file_range 285
+_sysctl 1078

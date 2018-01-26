@@ -1,3 +1,4 @@
+_sysctl 149
 openat 275
 mkdirat (__NR_openat + 1)
 mknodat (__NR_openat + 2)

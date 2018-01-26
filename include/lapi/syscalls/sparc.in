@@ -252,6 +252,7 @@ sched_get_priority_min 247
 sched_rr_get_interval 248
 nanosleep 249
 mremap 250
+_sysctl 251
 getsid 252
 fdatasync 253
 nfsservctl 254

@@ -118,6 +118,7 @@ readv 1146
 writev 1147
 pread64 1148
 pwrite64 1149
+_sysctl 1150
 mmap 1151
 munmap 1152
 mlock 1153
