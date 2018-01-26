@@ -804,7 +804,6 @@ sysconf01 sysconf01
 sysctl01 sysctl01
 sysctl03 sysctl03
 sysctl04 sysctl04
-sysctl05 sysctl05
 
 sysfs01 sysfs01
 sysfs02 sysfs02
