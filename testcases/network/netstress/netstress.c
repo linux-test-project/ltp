@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "lapi/udp.h"
 #include "lapi/dccp.h"
 #include "lapi/netinet_in.h"
 #include "lapi/posix_clocks.h"
@@ -91,6 +92,7 @@ static int max_etime_cnt = 12; /* ~30 sec max timeout if no connection */
 enum {
 	TYPE_TCP = 0,
 	TYPE_UDP,
+	TYPE_UDP_LITE,
 	TYPE_DCCP,
 	TYPE_SCTP
 };
@@ -142,13 +144,25 @@ static void init_socket_opts(int sd)
 	if (busy_poll >= 0)
 		SAFE_SETSOCKOPT_INT(sd, SOL_SOCKET, SO_BUSY_POLL, busy_poll);
 
-	if (proto_type == TYPE_DCCP) {
+	switch (proto_type) {
+	case TYPE_TCP:
+		if (client_mode && fastopen_sapi) {
+			SAFE_SETSOCKOPT_INT(sd, IPPROTO_TCP,
+					    TCP_FASTOPEN_CONNECT, 1);
+		}
+	break;
+	case TYPE_DCCP:
 		SAFE_SETSOCKOPT_INT(sd, SOL_DCCP, DCCP_SOCKOPT_SERVICE,
-			service_code);
+				    service_code);
+	break;
+	case TYPE_UDP_LITE:
+		/* set checksum for header and partially for payload */
+		SAFE_SETSOCKOPT_INT(sd, SOL_UDPLITE, UDPLITE_SEND_CSCOV,
+				    init_srv_msg_len >> 1);
+		SAFE_SETSOCKOPT_INT(sd, SOL_UDPLITE, UDPLITE_RECV_CSCOV,
+				    init_srv_msg_len >> 2);
+	break;
 	}
-
-	if (client_mode && fastopen_sapi)
-		SAFE_SETSOCKOPT_INT(sd, IPPROTO_TCP, TCP_FASTOPEN_CONNECT, 1);
 }
 
 static void do_cleanup(void)
@@ -612,7 +626,7 @@ static void server_init(void)
 
 	freeaddrinfo(local_addrinfo);
 
-	if (proto_type == TYPE_UDP)
+	if (sock_type == SOCK_DGRAM)
 		return;
 
 	init_socket_opts(sfd);
@@ -730,6 +744,8 @@ static void set_protocol_type(void)
 		proto_type = TYPE_TCP;
 	else if (!strcmp(type, "udp"))
 		proto_type = TYPE_UDP;
+	else if (!strcmp(type, "udp_lite"))
+		proto_type = TYPE_UDP_LITE;
 	else if (!strcmp(type, "dccp"))
 		proto_type = TYPE_DCCP;
 	else if (!strcmp(type, "sctp"))
@@ -795,7 +811,10 @@ static void setup(void)
 		net.run		= client_run;
 		net.cleanup	= client_cleanup;
 
-		if (proto_type == TYPE_DCCP || proto_type == TYPE_UDP) {
+		switch (proto_type) {
+		case TYPE_DCCP:
+		case TYPE_UDP:
+		case TYPE_UDP_LITE:
 			tst_res(TINFO, "max timeout errors %d", max_etime_cnt);
 			wait_timeout = 100;
 		}
@@ -812,6 +831,7 @@ static void setup(void)
 			net.cleanup	= server_cleanup;
 		break;
 		case TYPE_UDP:
+		case TYPE_UDP_LITE:
 			net.run		= server_run_udp;
 			net.cleanup	= NULL;
 		break;
@@ -829,6 +849,12 @@ static void setup(void)
 		tst_res(TINFO, "using UDP");
 		fastopen_api = fastopen_sapi = NULL;
 		sock_type = SOCK_DGRAM;
+	break;
+	case TYPE_UDP_LITE:
+		tst_res(TINFO, "using UDP Lite");
+		fastopen_api = fastopen_sapi = NULL;
+		sock_type = SOCK_DGRAM;
+		protocol = IPPROTO_UDPLITE;
 	break;
 	case TYPE_DCCP:
 		tst_res(TINFO, "DCCP %s", (client_mode) ? "client" : "server");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
+ * Copyright (c) 2018 Oracle and/or its affiliates.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,17 +15,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LAPI_IN_H__
-#define LAPI_IN_H__
+#ifndef LAPI_UDP_H__
+#define LAPI_UDP_H__
 
-#include <netinet/in.h>
+#include <netinet/udp.h>
 
-#ifndef IPPROTO_DCCP
-#define IPPROTO_DCCP		33
+#ifndef UDPLITE_SEND_CSCOV
+# define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent) */
+#endif
+#ifndef UDPLITE_RECV_CSCOV
+# define UDPLITE_RECV_CSCOV   11 /* receiver partial coverage (threshold ) */
 #endif
 
-#ifndef IPPROTO_UDPLITE
-# define IPPROTO_UDPLITE	136 /* UDP-Lite (RFC 3828) */
-#endif
-
-#endif	/* LAPI_IN_H__ */
+#endif	/* LAPI_UDP_H__ */
