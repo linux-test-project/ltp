@@ -143,7 +143,7 @@ static void setup(void)
 	SAFE_WRITE(1, fd, buf, BUF_SIZE);
 	SAFE_CLOSE(fd);
 
-	fd_notify = syscall(__NR_inotify_init1, O_NONBLOCK);
+	fd_notify = myinotify_init1(O_NONBLOCK);
 	if (fd_notify < 0) {
 		if (errno == ENOSYS) {
 			tst_brk(TCONF,

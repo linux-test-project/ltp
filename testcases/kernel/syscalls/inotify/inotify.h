@@ -40,6 +40,9 @@
 	tst_syscall(__NR_inotify_init1, 0)
 #endif
 
+#define myinotify_init1(flags) \
+	tst_syscall(__NR_inotify_init1, flags)
+
 #define	myinotify_add_watch(fd, pathname, mask)	\
 	tst_syscall(__NR_inotify_add_watch, fd, pathname, mask)
 
