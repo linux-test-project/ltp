@@ -17,7 +17,7 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 TCID=udp_ipsec
-TST_TOTAL=3
+TST_TOTAL=6
 TST_NEEDS_TMPDIR=1
 TST_CLEANUP="tst_ipsec_cleanup"
 
@@ -35,13 +35,14 @@ do_setup()
 do_test()
 {
 	for p in $IPSEC_SIZE_ARRAY; do
-		tst_netload -H $(tst_ipaddr rhost) -T udp -n $p -N $p \
+		tst_netload -H $(tst_ipaddr rhost) -T $1 -n $p -N $p \
 			-r $IPSEC_REQUESTS
 	done
 }
 
 do_setup
 
-do_test
+do_test udp
+do_test udp_lite
 
 tst_exit

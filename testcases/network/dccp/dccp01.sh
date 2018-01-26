@@ -33,23 +33,31 @@ setup()
 	tst_require_root
 }
 
-test_run()
+compare()
 {
-	tst_resm TINFO "compare UDP/DCCP performance"
-
-	tst_netload -H $(tst_ipaddr rhost) -T udp
-	local res0="$(cat tst_netload.res)"
-
-	tst_netload -H $(tst_ipaddr rhost) -T dccp
-	local res1="$(cat tst_netload.res)"
-
 	local per=$(( $res0 * 100 / $res1 - 100 ))
 
 	if [ "$per" -gt "100" -o "$per" -lt "-100" ]; then
-		tst_resm TFAIL "dccp performance $per %"
+		tst_resm TFAIL "$1 performance $per %"
 	else
-		tst_resm TPASS "dccp performance $per % in range -100 ... 100 %"
+		tst_resm TPASS "$1 performance $per % in range -100 ... 100 %"
 	fi
+}
+
+test_run()
+{
+	tst_resm TINFO "compare UDP/DCCP/UDP-Lite performance"
+
+	tst_netload -H $(tst_ipaddr rhost) -T udp
+	res0="$(cat tst_netload.res)"
+
+	tst_netload -H $(tst_ipaddr rhost) -T dccp
+	res1="$(cat tst_netload.res)"
+	compare DCCP
+
+	tst_netload -H $(tst_ipaddr rhost) -T udp_lite
+	res1="$(cat tst_netload.res)"
+	compare UDP-Lite
 }
 
 setup

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2016-2018 Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -17,7 +17,7 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 
-TST_TOTAL=1
+TST_TOTAL=2
 TCID="busy_poll03"
 TST_NEEDS_TMPDIR=1
 
@@ -45,18 +45,24 @@ rbusy_poll_old=$(tst_rhost_run -c 'cat /proc/sys/net/core/busy_poll')
 TST_CLEANUP="cleanup"
 trap "tst_brkm TBROK 'test interrupted'" INT
 
-for x in 50 0; do
-	tst_resm TINFO "set low latency busy poll to $x per socket"
-	set_busy_poll $x
-	tst_netload -H $(tst_ipaddr rhost) -d res_$x -b $x -T udp
-done
+do_test()
+{
+	for x in 50 0; do
+		tst_resm TINFO "set low latency busy poll to $x per $1 socket"
+		set_busy_poll $x
+		tst_netload -H $(tst_ipaddr rhost) -d res_$x -b $x -T $1
+	done
 
-poll_cmp=$(( 100 - ($(cat res_50) * 100) / $(cat res_0) ))
+	poll_cmp=$(( 100 - ($(cat res_50) * 100) / $(cat res_0) ))
 
-if [ "$poll_cmp" -lt 1 ]; then
-	tst_resm TFAIL "busy poll result is '$poll_cmp' %"
-else
-	tst_resm TPASS "busy poll increased performance by '$poll_cmp' %"
-fi
+	if [ "$poll_cmp" -lt 1 ]; then
+		tst_resm TFAIL "busy poll result is '$poll_cmp' %"
+	else
+		tst_resm TPASS "busy poll increased performance by '$poll_cmp' %"
+	fi
+}
+
+do_test udp
+do_test udp_lite
 
 tst_exit
