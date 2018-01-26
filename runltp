@@ -78,7 +78,7 @@ setup()
     }
     export LTPROOT=${PWD}
     export TMPBASE="/tmp"
-    export PATH="${PATH}:${LTPROOT}/testcases/bin"
+    export PATH="${PATH}:${LTPROOT}/testcases/bin:${LTPROOT}/bin"
 
     export LTP_DEV_FS_TYPE="ext2"
 
