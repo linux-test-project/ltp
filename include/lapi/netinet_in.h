@@ -28,4 +28,8 @@
 # define IPPROTO_UDPLITE	136 /* UDP-Lite (RFC 3828) */
 #endif
 
+#ifndef IP_BIND_ADDRESS_NO_PORT
+# define IP_BIND_ADDRESS_NO_PORT	24
+#endif
+
 #endif	/* LAPI_IN_H__ */

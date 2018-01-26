@@ -279,6 +279,25 @@ static int client_recv(char *buf, int srv_msg_len, struct sock_info *i)
 	return (errno) ? -1 : 0;
 }
 
+static int bind_no_port;
+static void bind_before_connect(int sd)
+{
+	if (!local_addrinfo)
+		return;
+
+	if (bind_no_port)
+		SAFE_SETSOCKOPT_INT(sd, SOL_IP, IP_BIND_ADDRESS_NO_PORT, 1);
+
+	SAFE_BIND(sd, local_addrinfo->ai_addr, local_addrinfo->ai_addrlen);
+
+	if (bind_no_port && proto_type != TYPE_SCTP) {
+		int port = TST_GETSOCKPORT(sd);
+
+		if (port)
+			tst_brk(TFAIL, "port not zero after bind(): %d", port);
+	}
+}
+
 static int client_connect_send(const char *msg, int size)
 {
 	int cfd = SAFE_SOCKET(family, sock_type, protocol);
@@ -290,9 +309,7 @@ static int client_connect_send(const char *msg, int size)
 		SAFE_SENDTO(1, cfd, msg, size, send_flags | MSG_FASTOPEN,
 			remote_addrinfo->ai_addr, remote_addrinfo->ai_addrlen);
 	} else {
-		if (local_addrinfo)
-			SAFE_BIND(cfd, local_addrinfo->ai_addr,
-				  local_addrinfo->ai_addrlen);
+		bind_before_connect(cfd);
 		/* old TCP API */
 		SAFE_CONNECT(cfd, remote_addrinfo->ai_addr,
 			     remote_addrinfo->ai_addrlen);
@@ -817,6 +834,10 @@ static void setup(void)
 	set_protocol_type();
 
 	if (client_mode) {
+		if (source_addr && tst_kvercmp(4, 2, 0) >= 0) {
+			bind_no_port = 1;
+			tst_res(TINFO, "IP_BIND_ADDRESS_NO_PORT is used");
+		}
 		tst_res(TINFO, "connection: addr '%s', port '%s'",
 			server_addr, tcp_port);
 		tst_res(TINFO, "client max req: %d", client_max_requests);
