@@ -57,9 +57,6 @@
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
-static void setup(void);
-static void cleanup(void);
-
 unsigned int fanotify_prio[] = {
 	FAN_CLASS_PRE_CONTENT,
 	FAN_CLASS_CONTENT,
@@ -71,7 +68,6 @@ unsigned int fanotify_prio[] = {
 
 #define BUF_SIZE 256
 static char fname[BUF_SIZE];
-static int fd;
 static int fd_notify[FANOTIFY_PRIORITIES][GROUPS_PER_PRIO];
 
 static char event_buf[EVENT_BUF_LEN];
@@ -127,12 +123,8 @@ static void cleanup_fanotify_groups(void)
 
 	for (p = 0; p < FANOTIFY_PRIORITIES; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
-			if (fd_notify[p][i] && fd_notify[p][i] != -1) {
-				if (close(fd_notify[p][i]) == -1)
-					tst_res(TWARN, "close(%d) failed",
-						 fd_notify[p][i]);
-				fd_notify[p][i] = 0;
-			}
+			if (fd_notify[p][i] > 0)
+				SAFE_CLOSE(fd_notify[p][i]);
 		}
 	}
 }
@@ -167,9 +159,7 @@ void test01(void)
 	/*
 	 * generate sequence of events
 	 */
-	fd = SAFE_OPEN(fname, O_RDWR);
-	SAFE_WRITE(1, fd, fname, strlen(fname));
-	SAFE_CLOSE(fd);
+	SAFE_FILE_PRINTF(fname, "1");
 
 	/* First verify all groups without ignore mask got the event */
 	for (i = 0; i < GROUPS_PER_PRIO; i++) {
@@ -193,9 +183,11 @@ void test01(void)
 			tst_res(TFAIL, "group %d got more than one "
 				 "event (%d > %d)", i, ret,
 				 event->event_len);
-		} else
+		} else {
 			verify_event(i, event);
-		close(event->fd);
+		}
+		if (event->fd != FAN_NOFD)
+			SAFE_CLOSE(event->fd);
 	}
 	for (p = 1; p < FANOTIFY_PRIORITIES; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
@@ -203,6 +195,8 @@ void test01(void)
 			if (ret > 0) {
 				tst_res(TFAIL, "group %d got event",
 					 p*GROUPS_PER_PRIO + i);
+				if (event->fd != FAN_NOFD)
+					SAFE_CLOSE(event->fd);
 			} else if (ret == 0) {
 				tst_brk(TBROK, "zero length "
 					 "read from fanotify fd");
@@ -221,16 +215,12 @@ void test01(void)
 static void setup(void)
 {
 	SAFE_MKDIR(MOUNT_NAME, 0755);
-	SAFE_MOUNT(MOUNT_NAME, MOUNT_NAME, NULL, MS_BIND, NULL);
+	SAFE_MOUNT(MOUNT_NAME, MOUNT_NAME, "none", MS_BIND, NULL);
 	mount_created = 1;
 	SAFE_CHDIR(MOUNT_NAME);
 
 	sprintf(fname, "tfile_%d", getpid());
-	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
-	SAFE_WRITE(1, fd, fname, 1);
-
-	/* close the file we have open */
-	SAFE_CLOSE(fd);
+	SAFE_FILE_PRINTF(fname, "1");
 }
 
 static void cleanup(void)

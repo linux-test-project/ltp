@@ -218,7 +218,8 @@ void test01(void)
 		/* No events left in current mask? Go for next event */
 		if (event->mask == 0) {
 			i += event->event_len;
-			close(event->fd);
+			if (event->fd != FAN_NOFD)
+				SAFE_CLOSE(event->fd);
 		}
 		test_num++;
 	}
@@ -237,12 +238,8 @@ void test01(void)
 
 static void setup(void)
 {
-	int fd;
-
 	sprintf(fname, "fname_%d", getpid());
-	fd = SAFE_OPEN(fname, O_CREAT | O_RDWR, 0644);
-	SAFE_WRITE(1, fd, fname, 1);
-	SAFE_CLOSE(fd);
+	SAFE_FILE_PRINTF(fname, "1");
 
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
