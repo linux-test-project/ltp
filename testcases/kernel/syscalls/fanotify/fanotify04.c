@@ -147,7 +147,8 @@ static void verify_event(int mask)
 	} else {
 		tst_res(TPASS, "event generated properly for type %o", mask);
 	}
-	close(event->fd);
+	if (event->fd != FAN_NOFD)
+		SAFE_CLOSE(event->fd);
 }
 
 static void do_open_test(char *file, int flag, int mask)
@@ -174,7 +175,8 @@ static void verify_no_event(void)
 		tst_res(TFAIL, "seen unexpected event (mask %llx)",
 			 (unsigned long long)event->mask);
 		/* Cleanup fd from the event */
-		close(event->fd);
+		if (event->fd != FAN_NOFD)
+			SAFE_CLOSE(event->fd);
 	} else if (errno != EAGAIN) {
 		tst_res(TFAIL | TERRNO, "read(%d, buf, %zu) failed", fd_notify,
 			 EVENT_BUF_LEN);

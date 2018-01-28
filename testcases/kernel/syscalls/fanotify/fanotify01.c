@@ -285,7 +285,8 @@ pass:
 		 * invalidate it so that we don't check it again
 		 * unnecessarily
 		 */
-		close(event->fd);
+		if (event->fd >= 0)
+			SAFE_CLOSE(event->fd);
 		event->fd = -2;
 		event->mask &= ~event_set[test_num];
 		/* No events left in current mask? Go for next event */
@@ -312,10 +313,7 @@ pass:
 static void setup(void)
 {
 	sprintf(fname, "tfile_%d", getpid());
-	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
-	SAFE_WRITE(1, fd, fname, 1);
-	/* close the file we have open */
-	SAFE_CLOSE(fd);
+	SAFE_FILE_PRINTF(fname, "1");
 
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 }

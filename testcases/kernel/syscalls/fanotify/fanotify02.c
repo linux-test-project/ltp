@@ -194,7 +194,8 @@ void test01(void)
 		/* No events left in current mask? Go for next event */
 		if (event->mask == 0) {
 			i += event->event_len;
-			close(event->fd);
+			if (event->fd != FAN_NOFD)
+				SAFE_CLOSE(event->fd);
 		}
 		test_num++;
 	}
