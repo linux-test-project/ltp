@@ -28,11 +28,11 @@ AC_DEFUN([LTP_CHECK_SYSCALL_NUMA], [
 	AC_CHECK_HEADERS([numa.h numaif.h], [], [have_numa_headers=no])
 
 	if test "x$have_numa_headers" != "xno"; then
-		AC_RUN_IFELSE([AC_LANG_PROGRAM([
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 #include <numa.h>
 		], [
 #if LIBNUMA_API_VERSION < 2
-exit(1);
+# error Required numa headers >= 2
 #endif
 		])], [have_numa_headers_v2=yes])
 	fi
