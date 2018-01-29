@@ -94,7 +94,7 @@ before_install:
     # installing / removing dependencies
     - if [ "$INSTALL_PACKAGES" = "" ]; then
           sudo apt remove $(cat .travis.packages_native | grep -v -e 'libc6' -e 'libc6-dev' -e 'linux-libc-dev' -e 'libacl1')
-      ; elif [ "$INSTALL_PACKAGES" != "cross" ]; then
+      ; else
           sudo apt install -qq $(cat .travis.packages_native)
       ; fi
 
