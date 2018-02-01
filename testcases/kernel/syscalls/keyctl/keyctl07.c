@@ -106,6 +106,9 @@ static void do_test(void)
 		return;
 	}
 
+	if (WIFEXITED(status) && WEXITSTATUS(status) == TCONF)
+		tst_brk(TCONF, "syscall not implemented");
+
 	tst_brk(TBROK, "Child %s", tst_strstatus(status));
 }
 
