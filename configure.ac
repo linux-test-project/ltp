@@ -83,6 +83,14 @@ else
     AC_SUBST([WITH_EXPECT],["no"])
 fi
 
+# Numa
+AC_ARG_WITH([numa],
+  AC_HELP_STRING([--without-numa],
+    [without numa support (default=yes)]),
+  [with_numa=no],
+  [with_numa=yes]
+)
+
 # Perl
 AC_ARG_WITH([perl],
   [AC_HELP_STRING([--with-perl],
@@ -157,7 +165,9 @@ LTP_CHECK_SELINUX
 LTP_CHECK_SIGNAL
 LTP_CHECK_SYSCALL_EVENTFD
 LTP_CHECK_SYSCALL_MODIFY_LDT
+if test "x$with_numa" = xyes; then
 LTP_CHECK_SYSCALL_NUMA
+fi
 LTP_CHECK_SYSCALL_QUOTACTL
 LTP_CHECK_SYSCALL_SIGNALFD
 LTP_CHECK_SYSCALL_UNSHARE
