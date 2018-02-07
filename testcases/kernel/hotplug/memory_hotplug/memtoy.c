@@ -497,7 +497,7 @@ int main(int argc, char *argv[])
 #else
 int main(void)
 {
-	fprintf(stderr, "test requires libnuma >= 2 and it's development packages\n");
+	fprintf(stderr, NUMA_ERROR_MSG "\n");
 	return TCONF;
 }
 #endif

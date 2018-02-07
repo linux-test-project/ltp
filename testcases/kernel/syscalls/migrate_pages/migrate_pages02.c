@@ -395,7 +395,6 @@ static void cleanup(void)
 #else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "System doesn't support __NR_migrate_pages or "
-		 "libnuma or libnuma development packages are not available");
+	tst_brkm(TCONF, NULL, NUMA_ERROR_MSG);
 }
 #endif

@@ -186,7 +186,7 @@ err_free_pages:
 		free_shared_pages(pages, TEST_PAGES);
 	}
 #else
-	tst_resm(TCONF, "test requires libnuma >= 2 and it's development packages");
+	tst_resm(TCONF, NUMA_ERROR_MSG);
 #endif
 
 	cleanup();

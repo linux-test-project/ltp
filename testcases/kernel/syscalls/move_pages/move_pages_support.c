@@ -409,6 +409,6 @@ void check_config(unsigned int min_nodes)
 		tst_brkm(TCONF, NULL, "2.6.18 or greater kernel required");
 	}
 #else
-	tst_brkm(TCONF, NULL, "NUMA support not provided");
+	tst_brkm(TCONF, NULL, NUMA_ERROR_MSG);
 #endif
 }

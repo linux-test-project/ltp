@@ -327,6 +327,6 @@ static void usage(void)
 #else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "test requires libnuma >= 2 and it's development packages");
+	tst_brkm(TCONF, NULL, NUMA_ERROR_MSG);
 }
 #endif
