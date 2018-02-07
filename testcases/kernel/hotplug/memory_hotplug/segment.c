@@ -28,9 +28,6 @@
  */
 
 #include "config.h"
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
 
 #ifdef HAVE_NUMA_V2
 
