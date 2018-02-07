@@ -86,7 +86,7 @@ fi
 # Numa
 AC_ARG_WITH([numa],
   AC_HELP_STRING([--without-numa],
-    [without numa support (default=yes)]),
+    [without numa support (default=no)]),
   [with_numa=no],
   [with_numa=yes]
 )
