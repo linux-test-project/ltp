@@ -184,13 +184,8 @@ void test_get_mempolicy(void)
 		ret = 1;
 		return;
 	}
-#if HAVE_DECL_MPOL_F_MEMS_ALLOWED
 	ret = get_mempolicy(NULL, bitmask_mask(nmask), bitmask_nbits(nmask), 0,
 			    MPOL_F_MEMS_ALLOWED);
-#else
-	tst_resm(TCONF, "don't have MPOL_F_MEMS_ALLOWED");
-	ret = TCONF;
-#endif
 
 	bitmask_displaylist(str, 256, nmask);
 	puts(str);
