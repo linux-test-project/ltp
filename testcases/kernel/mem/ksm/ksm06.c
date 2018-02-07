@@ -28,12 +28,6 @@
 #include <limits.h>
 #include <errno.h>
 #include <fcntl.h>
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-#if HAVE_NUMAIF_H
-#include <numaif.h>
-#endif
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -42,7 +36,8 @@
 #include "mem.h"
 #include "numa_helper.h"
 
-#if defined(HAVE_NUMA_V2) && defined(HAVE_LINUX_MEMPOLICY_H)
+#ifdef HAVE_NUMA_V2
+#include <numaif.h>
 
 static int run = -1;
 static int sleep_millisecs = -1;

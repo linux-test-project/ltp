@@ -50,19 +50,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-#if HAVE_NUMAIF_H
-#include <numaif.h>
-#endif
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 #include "mem.h"
 #include "ksm_common.h"
 
-#if defined(HAVE_NUMA_V2) && defined(HAVE_LINUX_MEMPOLICY_H)
+#ifdef HAVE_NUMA_V2
+#include <numaif.h>
 
 static void verify_ksm(void)
 {

@@ -39,19 +39,14 @@
 #include <sys/shm.h>
 #include <sys/syscall.h>
 #include <inttypes.h>
-#if HAVE_NUMA_H
-#include <numa.h>
-#endif
-#if HAVE_NUMAIF_H
-#include <numaif.h>
-#endif
 
 #include "test.h"
 
 char *TCID = "cpuset_syscall_test";
 int TST_TOTAL = 1;
 
-#if defined(HAVE_NUMA_V2) && defined(HAVE_LINUX_MEMPOLICY_H)
+#ifdef HAVE_NUMA_V2
+#include <numaif.h>
 
 #include "../cpuset_lib/cpuset.h"
 #include "../cpuset_lib/bitmask.h"
