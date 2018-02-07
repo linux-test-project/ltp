@@ -23,7 +23,7 @@
  */
 
 #define _XOPEN_SOURCE 500	/* need to see pread() */
-#define _BSD_SOURCE 1		/* need to see syscall() */
+#define _DEFAULT_SOURCE 1	/* need to see syscall() */
 #include <unistd.h>
 
 #include <ctype.h>
