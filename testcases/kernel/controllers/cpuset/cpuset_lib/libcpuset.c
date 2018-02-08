@@ -22,8 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
-#define _XOPEN_SOURCE 500	/* need to see pread() */
-#define _DEFAULT_SOURCE 1	/* need to see syscall() */
+#define _GNU_SOURCE	/* need to see pread() and syscall() */
 #include <unistd.h>
 
 #include <ctype.h>
