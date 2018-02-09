@@ -85,9 +85,7 @@ struct epoll_event
 } EPOLL_PACKED;
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
 
 /* Creates an epoll instance.  Returns an fd for the new instance.
    The "size" parameter is a hint specifying the number of file
@@ -116,8 +114,6 @@ extern int epoll_ctl (int __epfd, int __op, int __fd,
 extern int epoll_wait (int __epfd, struct epoll_event *__events,
 		       int __maxevents, int __timeout) __THROW;
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif /* sys/epoll.h */
