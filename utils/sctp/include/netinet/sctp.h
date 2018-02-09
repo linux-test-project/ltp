@@ -37,7 +37,9 @@
 #include <linux/types.h>
 #include <sys/socket.h>
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef __s32 sctp_assoc_t;
 
@@ -862,6 +864,8 @@ int sctp_recvmsg(int s, void *msg, size_t len, struct sockaddr *from,
 /* Return the address length for an address family. */
 int sctp_getaddrlen(sa_family_t family);
 
-__END_DECLS
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __linux_sctp_h__ */
