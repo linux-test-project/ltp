@@ -742,9 +742,7 @@
 /readdir/readdir21
 /readlink/creat_slink
 /readlink/readlink01
-/readlink/readlink02
 /readlink/readlink03
-/readlink/readlink04
 /readlinkat/readlinkat01
 /readlinkat/readlinkat02
 /readv/readv01

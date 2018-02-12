@@ -195,7 +195,7 @@ readdir01 readdir01
 # write multiple files and try to find them with readdir
 #    TEST CASES
 # 	1.) Create n files and check that readdir() finds n files
-readlink02 readlink02
+readlink01 readlink01
 # Basic test for readlink(2)
 rename02 rename02
 # Basic test for rename(2)
