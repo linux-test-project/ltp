@@ -304,13 +304,13 @@ tst_run()
 
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
 		if [ -z ${TST_TMPDIR} ]; then
-			tst_brk "Use TST_NEEDS_TMPDIR must be set for TST_NEEDS_DEVICE"
+			tst_brk TBROK "Use TST_NEEDS_TMPDIR must be set for TST_NEEDS_DEVICE"
 		fi
 
 		TST_DEVICE=$(tst_device acquire)
 
 		if [ -z "$TST_DEVICE" ]; then
-			tst_brk "Failed to acquire device"
+			tst_brk TBROK "Failed to acquire device"
 		fi
 
 		TST_DEVICE_FLAG=1
