@@ -162,5 +162,5 @@ int main(int argc, char *argv[])
 	for (i = 0; args[i]; i++)
 		fprintf(sin, "%s ", args[i]);
 
-	return pclose(sin);
+	return !!pclose(sin);
 }
