@@ -225,8 +225,9 @@ tst_timeout()
 
 ROD_SILENT()
 {
-	$@ > /dev/null 2>&1
+	local tst_out=$($@ 2>&1)
 	if [ $? -ne 0 ]; then
+		echo "$tst_out"
 		tst_brkm TBROK "$@ failed"
 	fi
 }
