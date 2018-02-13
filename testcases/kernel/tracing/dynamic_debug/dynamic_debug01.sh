@@ -153,7 +153,9 @@ ddebug_test()
 
 cleanup()
 {
-	FLAGS_SET=$(awk -v emp="$EMPTY_FLAG" '$3 != emp' $DYNDEBUG_STATEMENTS)
+	if [ -e "$DYNDEBUG_STATEMENTS" ]; then
+		FLAGS_SET=$(awk -v emp="$EMPTY_FLAG" '$3 != emp' $DYNDEBUG_STATEMENTS)
+	fi
 	if [ "$FLAGS_SET" ] ; then
 		FLAG_PREFIX=$([ $NEW_INTERFACE -eq 1 ] && echo "" || echo "+")
 		/bin/echo "$FLAGS_SET" | while read -r FLAG_LINE ; do
@@ -163,7 +165,7 @@ cleanup()
 				> "$DEBUGFS_CONTROL"
 		done
 	fi
-	if [ $DEBUGFS_WAS_MOUNTED -eq 0 ] ; then
+	if [ $DEBUGFS_WAS_MOUNTED -eq 0 -a -n "$DEBUGFS_PATH" ] ; then
 		tst_umount "$DEBUGFS_PATH"
 	fi
 }
