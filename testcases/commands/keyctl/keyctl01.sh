@@ -113,7 +113,7 @@ do_test()
 			tst_sleep 50ms
 		fi
 
-		((maxkeysz -= 4))
+		maxkeysz=$((maxkeysz - 4))
 	done
 
 	if [ $quota_excd -eq 0 ]; then
