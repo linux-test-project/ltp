@@ -199,8 +199,6 @@ readlink02 readlink02
 # Basic test for readlink(2)
 rename02 rename02
 # Basic test for rename(2)
-rmdir05 rmdir05
-# rmdir(2) test for errno(s) EINVAL, EMLINK, EFAULT
 sbrk01 sbrk01
 # Basic test for sbrk(2)
 select01 select01
