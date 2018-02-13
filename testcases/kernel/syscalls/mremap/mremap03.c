@@ -84,7 +84,8 @@
 
 char *TCID = "mremap03";
 int TST_TOTAL = 1;
-char *addr;			/* addr of memory mapped region */
+static char *bad_addr;
+static char *addr;		/* addr of memory mapped region */
 int memsize;			/* memory mapped size */
 int newsize;			/* new size of virtual memory block */
 
@@ -111,7 +112,7 @@ int main(int ac, char **av)
 		 * virtual address was not mapped.
 		 */
 		errno = 0;
-		addr = mremap(addr, memsize, newsize, MREMAP_MAYMOVE);
+		addr = mremap(bad_addr, memsize, newsize, MREMAP_MAYMOVE);
 		TEST_ERRNO = errno;
 
 		/* Check for the return value of mremap() */
@@ -173,7 +174,7 @@ void setup(void)
 	 * Set the old virtual address point to some address
 	 * which is not mapped.
 	 */
-	addr = (char *)get_high_address();
+	bad_addr = (char *)get_high_address();
 }
 
 /*
