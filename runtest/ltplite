@@ -666,7 +666,6 @@ rmdir01 rmdir01
 rmdir02 rmdir02
 rmdir03 rmdir03
 rmdir03A symlink01 -T rmdir03
-rmdir04 rmdir04
 rmdir05 rmdir05
 
 sbrk01 sbrk01
