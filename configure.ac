@@ -116,6 +116,14 @@ if test "x$with_python" = xyes; then
 else
     AC_SUBST([WITH_PYTHON],["no"])
 fi
+
+# TI RPC
+AC_ARG_WITH([tirpc],
+  AC_HELP_STRING([--without-tirpc],
+    [without libtirpc support (default=no)]),
+  [with_tirpc=no],
+  [with_tirpc=yes]
+)
 # END tools knobs
 
 # Testsuites knobs
@@ -189,7 +197,9 @@ LTP_CHECK_RENAMEAT2
 LTP_CHECK_FALLOCATE
 LTP_CHECK_SYSCALL_FCNTL
 LTP_CHECK_SYSCALL_PERF_EVENT_OPEN
+if test "x$with_tirpc" = xyes; then
 LTP_CHECK_TIRPC
+fi
 LTP_CHECK_TEE
 LTP_CHECK_SPLICE
 LTP_CHECK_VMSPLICE
