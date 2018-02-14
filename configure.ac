@@ -13,6 +13,8 @@ AC_CONFIG_FILES([ \
     execltp \
 ])
 
+AM_MAINTAINER_MODE([enable])
+
 AM_CONDITIONAL(CROSS_COMPILATION, test x$cross_compiling = xyes)
 
 AC_CANONICAL_HOST
