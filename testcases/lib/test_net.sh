@@ -503,11 +503,14 @@ tst_ping()
 	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift $(( $# >= 2 ? 2 : 0 ))
 	local msg_sizes="$*"
 	local msg="tst_ping IPv${TST_IPV6:-4} iface $src_iface, msg_size"
+	local cmd="ping$TST_IPV6"
 	local ret=0
+
+	tst_check_cmds $cmd
 
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do
-		ping$TST_IPV6 -I $src_iface -c $PING_MAX $dst_addr \
+		$cmd -I $src_iface -c $PING_MAX $dst_addr \
 			-s $size -i 0 > /dev/null 2>&1
 		ret=$?
 		if [ $ret -eq 0 ]; then
