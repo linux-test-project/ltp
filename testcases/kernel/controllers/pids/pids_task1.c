@@ -56,5 +56,7 @@ int main(int argc, char **argv)
 		perror("fork() failed");
 		return 1;
 	}
+	if (newpid == 0)
+		pause();
 	return 0;
 }
