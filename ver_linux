@@ -16,6 +16,11 @@ if [ $? = 1 ]; then
 fi
 
 uname -a
+
+echo
+echo '/proc/cmdline'
+cat /proc/cmdline
+
 echo ' '
 
 echo "Gnu C                 " `gcc --version 2>/dev/null | head -n 1`
