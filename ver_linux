@@ -7,21 +7,24 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin:$PATH
 echo 'If some fields are empty or look unusual you may have an old version.'
 echo 'Compare to the current minimal requirements in Documentation/Changes.'
-echo ' '
 
+echo
+echo "`ls /etc/*release`"
 cat /etc/*release 2> /dev/null
 if [ $? = 1 ]; then
    echo '/etc/issue:'
    cat /etc/issue 2> /dev/null
 fi
 
+echo
+echo 'uname:'
 uname -a
 
 echo
 echo '/proc/cmdline'
 cat /proc/cmdline
 
-echo ' '
+echo
 
 echo "Gnu C                 " `gcc --version 2>/dev/null | head -n 1`
 
