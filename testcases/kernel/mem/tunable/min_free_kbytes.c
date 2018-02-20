@@ -39,8 +39,8 @@
 #define MAP_SIZE (1UL<<20)
 
 volatile int end;
-static unsigned long default_tune;
-static unsigned long orig_overcommit;
+static long default_tune = -1;
+static long orig_overcommit = -1;
 static unsigned long total_mem;
 
 static void test_tune(unsigned long overcommit_policy);
@@ -221,8 +221,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	set_sys_tune("min_free_kbytes", default_tune, 0);
-	set_sys_tune("overcommit_memory", orig_overcommit, 0);
+	if (default_tune != -1)
+		set_sys_tune("min_free_kbytes", default_tune, 0);
+	if (orig_overcommit != -1)
+		set_sys_tune("overcommit_memory", orig_overcommit, 0);
 }
 
 static struct tst_test test = {

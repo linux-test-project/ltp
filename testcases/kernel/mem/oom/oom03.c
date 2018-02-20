@@ -35,6 +35,8 @@
 
 #ifdef HAVE_NUMA_V2
 
+static int memcg_mounted;
+
 static void verify_oom(void)
 {
 #if __WORDSIZE == 32
@@ -71,12 +73,15 @@ static void setup(void)
 	overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 1, 1);
 	mount_mem("memcg", "cgroup", "memory", MEMCG_PATH, MEMCG_PATH_NEW);
+	memcg_mounted = 1;
 }
 
 static void cleanup(void)
 {
-	set_sys_tune("overcommit_memory", overcommit, 0);
-	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
+	if (overcommit != -1)
+		set_sys_tune("overcommit_memory", overcommit, 0);
+	if (memcg_mounted)
+		umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
 }
 
 static struct tst_test test = {

@@ -81,8 +81,8 @@ static struct tst_option options[] = {
 	{NULL, NULL, NULL}
 };
 
-static long old_overcommit_memory;
-static long old_overcommit_ratio;
+static long old_overcommit_memory = -1;
+static long old_overcommit_ratio = -1;
 static long overcommit_ratio;
 static long sum_total;
 static long free_total;
@@ -136,8 +136,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	set_sys_tune("overcommit_memory", old_overcommit_memory, 0);
-	set_sys_tune("overcommit_ratio", old_overcommit_ratio, 0);
+	if (old_overcommit_memory != -1)
+		set_sys_tune("overcommit_memory", old_overcommit_memory, 0);
+	if (old_overcommit_ratio != -1)
+		set_sys_tune("overcommit_ratio", old_overcommit_ratio, 0);
 }
 
 static void overcommit_memory_test(void)

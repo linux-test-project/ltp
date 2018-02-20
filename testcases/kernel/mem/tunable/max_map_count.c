@@ -53,8 +53,8 @@
 #define MAP_COUNT_DEFAULT	1024
 #define MAX_MAP_COUNT		65536L
 
-static long old_max_map_count;
-static long old_overcommit;
+static long old_max_map_count = -1;
+static long old_overcommit = -1;
 static struct utsname un;
 
 static void setup(void)
@@ -73,8 +73,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	set_sys_tune("overcommit_memory", old_overcommit, 0);
-	set_sys_tune("max_map_count", old_max_map_count, 0);
+	if (old_overcommit != -1)
+		set_sys_tune("overcommit_memory", old_overcommit, 0);
+	if (old_max_map_count != -1)
+		set_sys_tune("max_map_count", old_max_map_count, 0);
 }
 
 /* This is a filter to exclude map entries which aren't accounted

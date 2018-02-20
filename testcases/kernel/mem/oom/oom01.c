@@ -55,7 +55,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	set_sys_tune("overcommit_memory", overcommit, 0);
+	if (overcommit != -1)
+		set_sys_tune("overcommit_memory", overcommit, 0);
 }
 
 static struct tst_test test = {
