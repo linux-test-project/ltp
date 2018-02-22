@@ -255,8 +255,6 @@ uname01 uname01
 # Basic test for uname(2)
 unlink05 unlink05
 # Basic test for unlink(2)
-unlink06 unlink06
-# unlink(2) of a FIFO
 unlink07 unlink07
 # unlink(2) negative testcases
 unlink08 unlink08
