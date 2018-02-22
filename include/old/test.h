@@ -63,6 +63,7 @@
 #include "old_device.h"
 #include "old_tmpdir.h"
 #include "tst_minmax.h"
+#include "tst_get_bad_addr.h"
 
 /*
  * Ensure that NUMSIGS is defined.
@@ -202,9 +203,6 @@ extern int tst_count;
 
 /* lib/tst_sig.c */
 void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
-
-/* lib/get_high_address.c */
-char *get_high_address(void);
 
 /* lib/self_exec.c */
 void maybe_run_child(void (*child)(), const char *fmt, ...);

@@ -74,12 +74,13 @@
 TCID_DEFINE(lchown02);
 int TST_TOTAL = 7;
 
+static void setup(void);
+static void cleanup(void);
 static void setup_eperm(int pos);
 static void setup_eacces(int pos);
 static void setup_enotdir(int pos);
 static void setup_longpath(int pos);
 static void setup_efault(int pos);
-static void setup_highaddress(int pos);
 
 static char path[PATH_MAX + 2];
 
@@ -93,7 +94,6 @@ struct test_case_t {
 static struct test_case_t test_cases[] = {
 	{SFILE1, "Process is not owner/root", EPERM, setup_eperm},
 	{SFILE2, "Search permission denied", EACCES, setup_eacces},
-	{NULL, "Address beyond address space", EFAULT, setup_highaddress},
 	{NULL, "Unaccessible address space", EFAULT, setup_efault},
 	{path, "Pathname too long", ENAMETOOLONG, setup_longpath},
 	{SFILE3, "Path contains regular file", ENOTDIR, setup_enotdir},
@@ -102,9 +102,6 @@ static struct test_case_t test_cases[] = {
 };
 
 static struct passwd *ltpuser;
-
-static void setup(void);
-static void cleanup(void);
 
 int main(int argc, char *argv[])
 {
@@ -252,26 +249,7 @@ static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
  */
 static void setup_efault(int pos)
 {
-	char *bad_addr = 0;
-
-	bad_addr = mmap(NULL, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, -1, 0);
-
-	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
-
-	test_cases[pos].pathname = bad_addr;
-}
-
-/*
- * setup_efault() -- setup for a test condition where lchown(2) returns -1 and
- *                   sets errno to EFAULT.
- *
- * Use ltp function get_high_address() to compute high address.
- */
-static void setup_highaddress(int pos)
-{
-	test_cases[pos].pathname = get_high_address();
+	test_cases[pos].pathname = tst_get_bad_addr(cleanup);
 }
 
 /*

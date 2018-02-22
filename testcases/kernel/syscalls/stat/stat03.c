@@ -103,7 +103,6 @@ char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
 char Longpathname[PATH_MAX + 2];
-char High_address_node[64];
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
@@ -111,15 +110,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	int (*setupfunc) ();
 } Test_cases[] = {
-	{
-	TEST_FILE1, "No Search permissions to process", EACCES, setup1},
-#if !defined(UCLINUX)
-	{
-	High_address_node, "Address beyond address space", EFAULT, no_setup},
-	{
-	(char *)-1, "Negative address", EFAULT, no_setup},
-#endif
-	{
+	{TEST_FILE1, "No Search permissions to process", EACCES, setup1}, {
+	NULL, "Invalid address", EFAULT, no_setup}, {
 	Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup}, {
 	"", "Pathname is empty", ENOENT, no_setup}, {
 	TEST_FILE2, "Path contains regular file", ENOTDIR, setup2}, {
@@ -128,8 +120,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "stat03";
 int TST_TOTAL = ARRAY_SIZE(Test_cases);
-
-char *bad_addr = 0;
 
 void setup();			/* Main setup function for the tests */
 void cleanup();			/* cleanup function for the test */
@@ -157,12 +147,6 @@ int main(int ac, char **av)
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			file_name = Test_cases[ind].pathname;
 			test_desc = Test_cases[ind].desc;
-
-#if !defined(UCLINUX)
-			if (file_name == High_address_node) {
-				file_name = (char *)get_high_address();
-			}
-#endif
 
 			/*
 			 * Call stat(2) to test different test conditions.
@@ -237,17 +221,10 @@ void setup(void)
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-#if !defined(UCLINUX)
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-	Test_cases[2].pathname = bad_addr;
-#endif
-
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		if (!Test_cases[ind].pathname)
+			Test_cases[ind].pathname = tst_get_bad_addr(cleanup);
 		Test_cases[ind].setupfunc();
 	}
 }

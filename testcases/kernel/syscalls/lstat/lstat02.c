@@ -59,10 +59,10 @@
 static char longpathname[PATH_MAX + 2];
 static char elooppathname[sizeof(TEST_ELOOP) * 43] = ".";
 
-#if !defined(UCLINUX)
+static void setup(void);
+static void lstat_verify(int);
+static void cleanup(void);
 static void bad_addr_setup(int);
-static void high_address_setup(int);
-#endif
 
 static struct test_case_t {
 	char *pathname;
@@ -71,10 +71,7 @@ static struct test_case_t {
 } test_cases[] = {
 	{TEST_EACCES, EACCES, NULL},
 	{TEST_ENOENT, ENOENT, NULL},
-#if !defined(UCLINUX)
 	{NULL, EFAULT, bad_addr_setup},
-	{NULL, EFAULT, high_address_setup},
-#endif
 	{longpathname, ENAMETOOLONG, NULL},
 	{TEST_ENOTDIR, ENOTDIR, NULL},
 	{elooppathname, ELOOP, NULL},
@@ -82,10 +79,6 @@ static struct test_case_t {
 
 char *TCID = "lstat02";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
-
-static void setup(void);
-static void lstat_verify(int);
-static void cleanup(void);
 
 int main(int ac, char **av)
 {
@@ -138,27 +131,21 @@ static void setup(void)
 	 */
 	for (i = 0; i < 43; i++)
 		strcat(elooppathname, TEST_ELOOP);
+
+	for (i = 0; i < TST_TOTAL; i++) {
+		if (test_cases[i].setup)
+			test_cases[i].setup(i);
+	}
 }
 
-#if !defined(UCLINUX)
 static void bad_addr_setup(int i)
 {
-	test_cases[i].pathname = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
-					   MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	test_cases[i].pathname = tst_get_bad_addr(cleanup);
 }
-
-static void high_address_setup(int i)
-{
-	test_cases[i].pathname = (char *)get_high_address();
-}
-#endif
 
 static void lstat_verify(int i)
 {
 	struct stat stat_buf;
-
-	if (test_cases[i].setup != NULL)
-		test_cases[i].setup(i);
 
 	TEST(lstat(test_cases[i].pathname, &stat_buf));
 

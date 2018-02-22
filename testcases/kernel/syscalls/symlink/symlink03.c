@@ -103,8 +103,6 @@
 char *TCID = "symlink03";
 int TST_TOTAL = 1;
 
-char *bad_addr = 0;
-
 int no_setup();
 int setup1();			/* setup function to test symlink for EACCES */
 int setup2();			/* setup function to test symlink for EEXIST */
@@ -121,18 +119,11 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	int (*setupfunc) ();
 } Test_cases[] = {
-	{
-	TEST_FILE1, SYM_FILE1, "No Search permissions to process",
+	{TEST_FILE1, SYM_FILE1, "No Search permissions to process",
 		    EACCES, setup1}, {
 	TEST_FILE2, SYM_FILE2, "Specified symlink already exists",
-		    EEXIST, setup2},
-#if !defined(UCLINUX)
-	{
-	TESTFILE, High_address_node, "Address beyond address space",
-		    EFAULT, no_setup},
-#endif
-	{
-	TESTFILE, (char *)-1, "Negative address", EFAULT, no_setup}, {
+		    EEXIST, setup2}, {
+	TESTFILE, NULL, "Invalid address", EFAULT, no_setup}, {
 	TESTFILE, Longpathname, "Symlink path too long", ENAMETOOLONG,
 		    longpath_setup}, {
 	TESTFILE, "", "Symlink Pathname is empty", ENOENT, no_setup}, {
@@ -171,11 +162,7 @@ int main(int ac, char **av)
 			test_file = Test_cases[ind].file;
 			sym_file = Test_cases[ind].link;
 			test_desc = Test_cases[ind].desc;
-#if !defined(UCLINUX)
-			if (sym_file == High_address_node) {
-				sym_file = (char *)get_high_address();
-			}
-#endif
+
 			/*
 			 * Call symlink(2) to test different test conditions.
 			 * verify that it fails with -1 return value and sets
@@ -241,17 +228,10 @@ void setup(void)
 
 	tst_tmpdir();
 
-#if !defined(UCLINUX)
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-	Test_cases[3].link = bad_addr;
-#endif
-
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		if (!Test_cases[ind].link)
+			Test_cases[ind].link = tst_get_bad_addr(cleanup);
 		Test_cases[ind].setupfunc();
 	}
 }

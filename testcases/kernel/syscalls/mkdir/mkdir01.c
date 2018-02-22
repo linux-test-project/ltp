@@ -116,7 +116,7 @@ void setup();
 void cleanup();
 
 char *TCID = "mkdir01";
-int TST_TOTAL = 2;
+int TST_TOTAL = 1;
 
 char *bad_addr = 0;
 
@@ -161,37 +161,6 @@ int main(int ac, char **av)
 				 "mkdir - path argument pointing below allocated address space succeeded unexpectedly.");
 
 		}
-#if !defined(UCLINUX)
-		/*
-		 * TEST CASE: 2
-		 * mkdir() call with pointer above allocated address space.
-		 */
-
-		/* Call mkdir(2) */
-		TEST(mkdir(get_high_address(), 0777));
-
-		/* check return code */
-		if (TEST_RETURN == -1) {
-		}
-
-		if (TEST_RETURN == -1) {
-			if (TEST_ERRNO == EFAULT) {
-				tst_resm(TPASS,
-					 "mkdir - path argument pointing above allocated address space failed as expected with errno %d : %s",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL,
-					 "mkdir - path argument pointing above allocated address space failed with errno %d : %s but expected %d (EFAULT)",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO), EFAULT);
-			}
-		} else {
-			tst_resm(TFAIL,
-				 "mkdir - path argument pointing above allocated address space succeeded unexpectedly.");
-
-		}
-#endif /* if !defined(UCLINUX) */
 
 	}
 
@@ -212,11 +181,7 @@ void setup(void)
 	/* Create a temporary directory and make it current. */
 	tst_tmpdir();
 
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
+	bad_addr = tst_get_bad_addr(cleanup);
 }
 
 /***************************************************************

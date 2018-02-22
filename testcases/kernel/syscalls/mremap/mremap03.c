@@ -92,7 +92,6 @@ int newsize;			/* new size of virtual memory block */
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 
-#if !defined(UCLINUX)
 int main(int ac, char **av)
 {
 	int lc;
@@ -174,7 +173,7 @@ void setup(void)
 	 * Set the old virtual address point to some address
 	 * which is not mapped.
 	 */
-	bad_addr = (char *)get_high_address();
+	bad_addr = tst_get_bad_addr(cleanup);
 }
 
 /*
@@ -187,13 +186,3 @@ void cleanup(void)
 	/* Exit the program */
 
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */

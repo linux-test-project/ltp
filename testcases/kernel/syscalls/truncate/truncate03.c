@@ -76,10 +76,7 @@ static struct test_case_t {
 } test_cases[] = {
 	{ TEST_FILE1, TRUNC_LEN, EACCES },
 	{ TEST_FILE2, TRUNC_LEN, ENOTDIR },
-#if !defined(UCLINUX)
 	{ NULL, TRUNC_LEN, EFAULT },
-	{ (char *)-1, TRUNC_LEN, EFAULT },
-#endif
 	{ long_pathname, TRUNC_LEN, ENAMETOOLONG },
 	{ "", TRUNC_LEN, ENOENT },
 	{ TEST_DIR1, TRUNC_LEN, EISDIR },
@@ -117,9 +114,9 @@ int main(int ac, char **av)
 void setup(void)
 {
 	struct passwd *ltpuser;
-	char *bad_addr;
 	struct rlimit rlim;
 	sigset_t signalset;
+	int n;
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -135,14 +132,6 @@ void setup(void)
 	SAFE_TOUCH(cleanup, TEST_FILE1, NEW_MODE, NULL);
 
 	SAFE_TOUCH(cleanup, "t_file", FILE_MODE, NULL);
-
-#if !defined(UCLINUX)
-	test_cases[2].pathname = (char *)get_high_address();
-
-	bad_addr = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	test_cases[3].pathname = bad_addr;
-#endif
 
 	memset(long_pathname, 'a', PATH_MAX + 1);
 
@@ -162,6 +151,12 @@ void setup(void)
 	TEST(sigprocmask(SIG_BLOCK, &signalset, NULL));
 	if (TEST_RETURN != 0)
 		tst_brkm(TBROK | TTERRNO, cleanup, "sigprocmask");
+
+	for (n = 0; n < TST_TOTAL; n++) {
+		if (!test_cases[n].pathname)
+			test_cases[n].pathname = tst_get_bad_addr(cleanup);
+	}
+
 }
 
 void truncate_verify(struct test_case_t *tc)

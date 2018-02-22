@@ -93,7 +93,6 @@ int setup3();			/* setup function to test mknod for ENOTDIR */
 int longpath_setup();		/* setup function to test mknod for ENAMETOOLONG */
 int no_setup();			/* simply returns 0 to the caller */
 char Longpathname[PATH_MAX + 2];
-char High_address_node[64];
 
 struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	char *pathname;
@@ -101,15 +100,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	int (*setupfunc) ();
 } Test_cases[] = {
-	{
-	"tnode_1", "Specified node already exists", EEXIST, setup1},
-#if !defined(UCLINUX)
-	{
-	(char *)-1, "Negative address", EFAULT, no_setup}, {
-	High_address_node, "Address beyond address space", EFAULT,
-		    no_setup},
-#endif
-	{
+	{"tnode_1", "Specified node already exists", EEXIST, setup1}, {
+	NULL, "Invalid address", EFAULT, no_setup}, {
 	"testdir_2/tnode_2", "Non-existent file", ENOENT, no_setup}, {
 	"", "Pathname is empty", ENOENT, no_setup}, {
 	Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup}, {
@@ -119,12 +111,6 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 
 char *TCID = "mknod06";
 int TST_TOTAL = ARRAY_SIZE(Test_cases);
-#if !defined(UCLINUX)
-extern char *get_high_address();
-#else
-#endif
-
-char *bad_addr = 0;
 
 void setup();			/* setup function for the tests */
 void cleanup();			/* cleanup function for the tests */
@@ -151,12 +137,6 @@ int main(int ac, char **av)
 		for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
 			node_name = Test_cases[ind].pathname;
 			test_desc = Test_cases[ind].desc;
-
-#if !defined(UCLINUX)
-			if (node_name == High_address_node) {
-				node_name = get_high_address();
-			}
-#endif
 
 			/*
 			 * Call mknod(2) to test different test conditions.
@@ -217,16 +197,10 @@ void setup(void)
 	/* Make a temp dir and cd to it */
 	tst_tmpdir();
 
-#if !defined(UCLINUX)
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-	Test_cases[2].pathname = bad_addr;
-#endif
 	/* call individual setup functions */
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		if (!Test_cases[ind].pathname)
+			Test_cases[ind].pathname = tst_get_bad_addr(cleanup);
 		Test_cases[ind].setupfunc();
 	}
 }

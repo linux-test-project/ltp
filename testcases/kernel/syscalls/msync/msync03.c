@@ -57,10 +57,7 @@ static int fd;
 static char *addr1;
 static char *addr2;
 static char *addr3;
-
-#if !defined(UCLINUX)
 static char *addr4;
-#endif
 
 static size_t page_sz;
 
@@ -74,9 +71,7 @@ static struct test_case_t {
 	{ &addr1, INV_SYNC, EINVAL },
 	{ &addr2, MS_SYNC, EINVAL },
 	{ &addr3, MS_SYNC, EINVAL },
-#if !defined(UCLINUX)
 	{ &addr4, MS_SYNC, ENOMEM },
-#endif
 };
 
 static void msync_verify(struct test_case_t *tc);
@@ -135,10 +130,8 @@ static void setup(void)
 	SAFE_GETRLIMIT(NULL, RLIMIT_DATA, &rl);
 	addr3 = (char *)rl.rlim_max;
 
-#if !defined(UCLINUX)
 	/* memory pointed to by addr4 was not mapped */
-	addr4 = get_high_address();
-#endif
+	addr4 = sbrk(0) + (4 * page_sz);
 }
 
 static void msync_verify(struct test_case_t *tc)

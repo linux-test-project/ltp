@@ -50,12 +50,7 @@
 static void setup(void);
 static void cleanup(void);
 
-#if !defined(UCLINUX)
-extern char *get_high_address();
-int TST_TOTAL = 6;
-#else
-int TST_TOTAL = 4;
-#endif
+int TST_TOTAL = 5;
 
 char *TCID = "rmdir05";
 
@@ -119,7 +114,6 @@ int main(int argc, char **argv)
 		 * TEST CASE: 4
 		 * path argument points below the minimum allocated address space
 		 */
-#if !defined(UCLINUX)
 		TEST(rmdir(bad_addr));
 
 		if (TEST_RETURN == -1) {
@@ -144,34 +138,6 @@ int main(int argc, char **argv)
 
 		/*
 		 * TEST CASE: 5
-		 * path argument points above the maximum allocated address space
-		 */
-
-		TEST(rmdir(get_high_address()));
-
-		if (TEST_RETURN == -1) {
-		}
-
-		if (TEST_RETURN == -1) {
-			if (TEST_ERRNO == EFAULT) {
-				tst_resm(TPASS,
-					 "rmdir() - path argument points above the maximum allocated address space failed as expected with errno %d : %s",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL,
-					 "rmdir() - path argument points above the maximum allocated address space failed with errno %d : %s but expected %d (EFAULT)",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO), EFAULT);
-			}
-		} else {
-			tst_resm(TFAIL,
-				 "rmdir() - path argument points above the maximum allocated address space succeeded unexpectedly.");
-		}
-#endif
-
-		/*
-		 * TEST CASE: 6
 		 * able to remove a directory
 		 */
 
@@ -220,13 +186,7 @@ void setup(void)
 	/* Create a unique directory name. */
 	sprintf(dir_name, "./dir_%d", getpid());
 
-#if !defined(UCLINUX)
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-#endif
+	bad_addr = tst_get_bad_addr(cleanup);
 }
 
 void cleanup(void)

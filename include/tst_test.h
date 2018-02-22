@@ -40,6 +40,7 @@
 #include "tst_clone.h"
 #include "tst_kernel.h"
 #include "tst_minmax.h"
+#include "tst_get_bad_addr.h"
 
 /*
  * Reports testcase result.

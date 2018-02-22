@@ -51,12 +51,7 @@
 #include "test.h"
 #include "safe_macros.h"
 
-static char *bad_addr = 0;
-
 static char longpath[PATH_MAX + 2];
-#if !defined(UCLINUX)
-char high_addr[64];
-#endif
 
 struct test_case_t {
 	char *file1;
@@ -73,10 +68,7 @@ struct test_case_t {
 	{"regfile/file", "path contains a regular file", "nefile", "nefile",
 	 ENOTDIR},
 	{longpath, "pathname too long", "nefile", "nefile", ENAMETOOLONG},
-#if !defined(UCLINUX)
-	{high_addr, "address beyond address space", "nefile", "nefile", EFAULT},
-#endif
-	{(char *)-1, "negative address", "nefile", "nefile", EFAULT},
+	{NULL, "invalid address", "nefile", "nefile", EFAULT},
 	/* second path is invalid */
 	{"regfile", "regfile", "", "empty string", ENOENT},
 	{"regfile", "regfile", "neefile/file",
@@ -84,11 +76,7 @@ struct test_case_t {
 	{"regfile", "regfile", "file/file",
 		    "path contains a regular file", ENOENT},
 	{"regfile", "regfile", longpath, "pathname too long", ENAMETOOLONG},
-#if !defined(UCLINUX)
-	{"regfile", "regfile", high_addr,
-		    "address beyond address space", EFAULT},
-#endif
-	{"regfile", "regfile", (char *)-1, "negative address", EFAULT},
+	{"regfile", "regfile", NULL, "invalid address", EFAULT},
 	/* two existing files */
 	{"regfile", "regfile", "regfile2", "regfile2", EEXIST},
 };
@@ -121,14 +109,6 @@ int main(int ac, char **av)
 			fname2 = test_cases[i].file2;
 			desc2 = test_cases[i].desc2;
 
-#if !defined(UCLINUX)
-			if (fname1 == high_addr)
-				fname1 = get_high_address();
-
-			if (fname2 == high_addr)
-				fname2 = get_high_address();
-#endif
-
 			TEST(link(fname1, fname2));
 
 			if (TEST_RETURN == -1) {
@@ -160,23 +140,28 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	int n;
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
 
 	tst_tmpdir();
 
-#if !defined(UCLINUX)
-	bad_addr = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
-	                     MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	test_cases[6].file1 = bad_addr;
-	test_cases[12].file2 = bad_addr;
-#endif
-
 	memset(longpath, 'a', PATH_MAX+1);
 	SAFE_TOUCH(cleanup, "regfile", 0777, NULL);
 	SAFE_TOUCH(cleanup, "regfile2", 0777, NULL);
 	SAFE_MKDIR(cleanup, "dir", 0777);
+
+	void *bad_addr = tst_get_bad_addr(cleanup);
+
+	for (n = 0; n < TST_TOTAL; n++) {
+		if (!test_cases[n].file1)
+			test_cases[n].file1 = bad_addr;
+
+		if (!test_cases[n].file2)
+			test_cases[n].file2 = bad_addr;
+	}
 }
 
 static void cleanup(void)

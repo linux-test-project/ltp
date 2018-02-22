@@ -123,12 +123,8 @@
 void setup();
 void cleanup();
 
-extern char *get_high_address();
-
 char *TCID = "unlink07";
 int TST_TOTAL = 6;
-
-char *bad_addr = 0;
 
 int longpath_setup();
 int no_setup();
@@ -146,21 +142,11 @@ struct test_case_t {
 	"nonexistfile", "non-existent file", ENOENT, no_setup}, {
 	"", "path is empty string", ENOENT, no_setup}, {
 	"nefile/file", "path contains a non-existent file",
-		    ENOENT, no_setup},
-#if !defined(UCLINUX)
-	{
-	High_address, "address beyond address space", EFAULT, no_setup},
-#endif
-	{
+		    ENOENT, no_setup}, {
 	"file/file", "path contains a regular file",
-		    ENOTDIR, filepath_setup},
-#if !defined(UCLINUX)
-	{
-	High_address, "address beyond address space", EFAULT, no_setup},
-#endif
-	{
+		    ENOTDIR, filepath_setup}, {
 	Longpathname, "pathname too long", ENAMETOOLONG, longpath_setup}, {
-	(char *)-1, "negative address", EFAULT, no_setup}, {
+	NULL, "invalid address", EFAULT, no_setup}, {
 	NULL, NULL, 0, no_setup}
 };
 
@@ -196,10 +182,6 @@ int main(int ac, char **av)
 			fname = Test_cases[ind].pathname;
 			desc = Test_cases[ind].desc;
 
-#if !defined(UCLINUX)
-			if (fname == High_address)
-				fname = get_high_address();
-#endif
 			/*
 			 *  Call unlink(2)
 			 */
@@ -245,13 +227,9 @@ void setup(void)
 
 	tst_tmpdir();
 
-	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmap failed");
-	}
-	Test_cases[7].pathname = bad_addr;
-
 	for (ind = 0; Test_cases[ind].desc != NULL; ind++) {
+		if (!Test_cases[ind].pathname)
+			Test_cases[ind].pathname = tst_get_bad_addr(cleanup);
 		Test_cases[ind].setupfunc();
 	}
 
