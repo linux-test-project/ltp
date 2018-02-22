@@ -365,8 +365,6 @@ virt_test_01()
 		virt_check_cmd virt_add ltp_v0 id 0 $p || continue
 
 		virt_multiple_add_test "$p"
-
-		start_id=$(($start_id + $NS_TIMES))
 	done
 }
 
