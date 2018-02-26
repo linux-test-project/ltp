@@ -107,12 +107,24 @@ int tst_getsockport(const char *file, const int lineno, int sockfd)
 int safe_socket(const char *file, const int lineno, void (cleanup_fn)(void),
 		int domain, int type, int protocol)
 {
-	int rval;
+	int rval, ttype;
 
 	rval = socket(domain, type, protocol);
 
 	if (rval < 0) {
-		tst_brkm(TBROK | TERRNO, cleanup_fn,
+		switch (errno) {
+		case EPROTONOSUPPORT:
+		case ESOCKTNOSUPPORT:
+		case EOPNOTSUPP:
+		case EPFNOSUPPORT:
+		case EAFNOSUPPORT:
+			ttype = TCONF;
+			break;
+		default:
+			ttype = TBROK;
+		}
+
+		tst_brkm(ttype | TERRNO, cleanup_fn,
 			 "%s:%d: socket(%d, %d, %d) failed", file, lineno,
 			 domain, type, protocol);
 	}
