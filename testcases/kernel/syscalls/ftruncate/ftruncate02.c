@@ -99,7 +99,7 @@ int main(int ac, char **av)
 	off_t file_length2;	/* test file length */
 	off_t file_length1;	/* test file length */
 	int rbytes, i;		/* bytes read from testfile */
-	int read_len = 0;	/* total no. of bytes read from testfile */
+	int read_len;		/* total no. of bytes read from testfile */
 	int err_flag = 0;	/* error indicator flag */
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -109,6 +109,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		tst_count = 0;
+		read_len = 0;
 
 		/*
 		 * Call ftruncate(2) to truncate a test file to a
