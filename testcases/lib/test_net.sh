@@ -459,7 +459,9 @@ tst_netload()
 	tst_rhost_run -c "netstress $s_opts" > tst_netload.log 2>&1
 	if [ $? -ne 0 ]; then
 		cat tst_netload.log
-		tst_brkm TFAIL "server failed"
+		local ttype="TFAIL"
+		grep -e 'CONF:' tst_netload.log && ttype="TCONF"
+		tst_brkm $ttype "server failed"
 	fi
 
 	local port=$(tst_rhost_run -s -c "cat $TST_TMPDIR/netstress_port")
