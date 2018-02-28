@@ -383,8 +383,8 @@ pids_6_100 pids.sh 6 100 0
 pids_7_10 pids.sh 7 10 5
 pids_7_50 pids.sh 7 50 10
 pids_7_100 pids.sh 7 100 10
-pids_7_100 pids.sh 7 500 50
-pids_7_100 pids.sh 7 1000 100
+pids_7_500 pids.sh 7 500 50
+pids_7_1000 pids.sh 7 1000 100
 pids_8_2 pids.sh 8 2 0
 pids_8_10 pids.sh 8 10 0
 pids_8_50 pids.sh 8 50 0
