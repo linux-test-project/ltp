@@ -12,9 +12,7 @@
 #  the GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#
+#  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 # Author: Masatake YAMATO <yamato@redhat.com>
 # Technique used here is suggested by Ngie Cooper <yaneurabeya@gmail.com>
@@ -56,16 +54,17 @@ SRCS			?= $(wildcard $(abs_srcdir)/*.c)
 
 MAKE_TARGETS		:= $(notdir $(patsubst %.c,%,$(SRCS)))
 MAKE_TARGETS_OBJS_WO_COMPAT_16	:= $(addsuffix .o,$(MAKE_TARGETS))
-
-ifneq ($(TST_COMPAT_16_SYSCALL),no)
 MAKE_TARGETS		+= $(addsuffix _16,$(MAKE_TARGETS))
-endif
 
 # XXX (garrcoop): This code should be put in question as it cannot be applied
 # (no .h file, no TST_USE_NEWER64_SYSCALL def).
 DEF_16			:= TST_USE_COMPAT16_SYSCALL
 
+ifneq ($(COMPAT_TST_16_H),1)
 COMPAT_16_H		:= $(abs_srcdir)/../utils/compat_16.h
+else
+COMPAT_16_H     := $(abs_srcdir)/../utils/compat_tst_16.h
+endif
 
 ifneq ($(wildcard $(COMPAT_16_H)),)
 HAS_COMPAT_16		:= 1
