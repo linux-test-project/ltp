@@ -33,7 +33,7 @@ int main(void)
 
 	void *pa;
 	size_t size = 1024;
-	int flag;
+	int flag = ~0;
 	int fd;
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_21_1_%d", getpid());
@@ -49,10 +49,6 @@ int main(void)
 		printf("Error at ftruncate(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-
-	flag = MAP_SHARED;
-	while (flag == MAP_SHARED || flag == MAP_PRIVATE || flag == MAP_FIXED)
-		flag++;
 
 	pa = mmap(NULL, size, PROT_READ | PROT_WRITE, flag, fd, 0);
 	if (pa == MAP_FAILED && errno == EINVAL) {
