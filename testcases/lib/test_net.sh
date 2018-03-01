@@ -392,7 +392,7 @@ tst_wait_ipv6_dad()
 
 tst_dump_rhost_cmd()
 {
-	tst_rhost_run -c "cat $TST_TMPDIR/bg.cmd"
+	tst_rhost_run -c "cat $TST_TMPDIR/netstress.log"
 }
 
 # Run network load test, see 'netstress -h' for option description
@@ -447,39 +447,17 @@ tst_netload()
 	local expect_ret=0
 	[ "$expect_res" != "pass" ] && expect_ret=1
 
-	local ptype="stream"
-	[ "$type" = "udp" ] && ptype="dgram"
-
-	local port=$(tst_rhost_run -c "tst_get_unused_port ipv6 $ptype")
-	[ $? -ne 0 ] && tst_brkm TBROK "failed to get unused port"
-
 	tst_rhost_run -c "pkill -9 netstress\$"
-
-	c_opts="${cs_opts}${c_opts}-a $c_num -r $c_requests -d $rfile -g $port"
-	s_opts="${cs_opts}${s_opts}-R $s_replies -g $port"
-
+	s_opts="${cs_opts}${s_opts}-R $s_replies -B $TST_TMPDIR"
 	tst_resm TINFO "run server 'netstress $s_opts'"
-	tst_rhost_run -s -B -c "netstress $s_opts"
-
-	tst_resm TINFO "check that server port in 'LISTEN' state"
-	local sec_waited=
-
-	local sock_cmd=
-	if [ "$type" = "sctp" ]; then
-		sock_cmd="netstat -naS | grep $port | grep -q LISTEN"
-	else
-		sock_cmd="ss -ln$(echo $type | head -c1) | grep -q $port"
+	tst_rhost_run -c "netstress $s_opts" > tst_netload.log 2>&1
+	if [ $? -ne 0 ]; then
+		cat tst_netload.log
+		tst_brkm TFAIL "server failed"
 	fi
 
-	for sec_waited in $(seq 1 1200); do
-		tst_rhost_run -c "$sock_cmd" && break
-		if [ $sec_waited -eq 1200 ]; then
-			tst_dump_rhost_cmd
-			tst_rhost_run -c "ss -dutnp | grep $port"
-			tst_brkm TFAIL "server not in LISTEN state"
-		fi
-		tst_sleep 100ms
-	done
+	local port=$(tst_rhost_run -s -c "cat $TST_TMPDIR/netstress_port")
+	c_opts="${cs_opts}${c_opts}-a $c_num -r $c_requests -d $rfile -g $port"
 
 	tst_resm TINFO "run client 'netstress -l $c_opts'"
 	netstress -l $c_opts > tst_netload.log 2>&1 || ret=1

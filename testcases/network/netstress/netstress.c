@@ -83,9 +83,10 @@ static int max_rand_msg_len;
 static int server_max_requests	= 3;
 static int client_max_requests	= 10;
 static int clients_num;
-static char *tcp_port		= "61000";
+static char *tcp_port;
 static char *server_addr	= "localhost";
 static char *source_addr;
+static char *server_bg;
 static int busy_poll		= -1;
 static int max_etime_cnt = 12; /* ~30 sec max timeout if no connection */
 
@@ -112,6 +113,8 @@ static int wait_timeout = 60000;
 
 /* in the end test will save time result in this file */
 static char *rpath = "tfo_result";
+static char *port_path = "netstress_port";
+static char *log_path = "netstress.log";
 
 static char *narg, *Narg, *qarg, *rarg, *Rarg, *aarg, *Targ, *barg, *targ,
 	    *Aarg;
@@ -644,6 +647,9 @@ static void server_init(void)
 	hints.ai_socktype = sock_type;
 	hints.ai_flags = AI_PASSIVE;
 
+	if (!source_addr && !tcp_port)
+		tcp_port = "0";
+
 	if (source_addr && !strchr(source_addr, ':'))
 		SAFE_ASPRINTF(&src_addr, "::ffff:%s", source_addr);
 	setup_addrinfo(src_addr ? src_addr : source_addr, tcp_port,
@@ -658,6 +664,14 @@ static void server_init(void)
 	SAFE_BIND(sfd, local_addrinfo->ai_addr, local_addrinfo->ai_addrlen);
 
 	freeaddrinfo(local_addrinfo);
+
+	int port = TST_GETSOCKPORT(sfd);
+
+	tst_res(TINFO, "bind to port %d", port);
+	if (server_bg) {
+		SAFE_CHDIR(server_bg);
+		SAFE_FILE_PRINTF(port_path, "%d", port);
+	}
 
 	if (sock_type == SOCK_DGRAM)
 		return;
@@ -674,8 +688,7 @@ static void server_init(void)
 
 	SAFE_LISTEN(sfd, max_queue_len);
 
-	tst_res(TINFO, "Listen on the socket '%d', port '%s'", sfd, tcp_port);
-
+	tst_res(TINFO, "Listen on the socket '%d'", sfd);
 }
 
 static void server_cleanup(void)
@@ -683,8 +696,28 @@ static void server_cleanup(void)
 	SAFE_CLOSE(sfd);
 }
 
+static void move_to_background(void)
+{
+	if (SAFE_FORK())
+		exit(0);
+
+	SAFE_SETSID();
+
+	close(STDIN_FILENO);
+	SAFE_OPEN("/dev/null", O_RDONLY);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
+
+	int fd = SAFE_OPEN(log_path, O_CREAT | O_TRUNC | O_RDONLY, 00444);
+
+	SAFE_DUP(fd);
+}
+
 static void server_run_udp(void)
 {
+	if (server_bg)
+		move_to_background();
+
 	pthread_t p_id = server_thread_add(sfd);
 
 	SAFE_PTHREAD_JOIN(p_id, NULL);
@@ -692,6 +725,9 @@ static void server_run_udp(void)
 
 static void server_run(void)
 {
+	if (server_bg)
+		move_to_background();
+
 	/* IPv4 source address will be mapped to IPv6 address */
 	struct sockaddr_in6 addr6;
 	socklen_t addr_size = sizeof(addr6);
@@ -946,11 +982,13 @@ static struct tst_option options[] = {
 
 	{"R:", &Rarg, "Server:\n-R x     x requests after which conn.closed"},
 	{"q:", &qarg, "-q x     x - TFO queue"},
+	{"B:", &server_bg, "-B x     run in background, x - process directory"},
 	{NULL, NULL, NULL}
 };
 
 static struct tst_test test = {
 	.test_all = do_test,
+	.forks_child = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.options = options
