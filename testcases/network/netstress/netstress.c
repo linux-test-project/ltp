@@ -936,13 +936,19 @@ static void setup(void)
 		sock_type = SOCK_DGRAM;
 		protocol = IPPROTO_UDPLITE;
 	break;
-	case TYPE_DCCP:
+	case TYPE_DCCP: {
+		/* dccp module can be blacklisted, load it manually */
+		static const char * const argv[] = {"modprobe", "dccp", NULL};
+
+		if (tst_run_cmd(argv, NULL, NULL, 1))
+			tst_res(TWARN, "Failed to load DCCP module");
+
 		tst_res(TINFO, "DCCP %s", (client_mode) ? "client" : "server");
 		fastopen_api = fastopen_sapi = NULL;
 		sock_type = SOCK_DCCP;
 		protocol = IPPROTO_DCCP;
 		service_code = htonl(service_code);
-	break;
+	} break;
 	case TYPE_SCTP:
 		tst_res(TINFO, "SCTP %s", (client_mode) ? "client" : "server");
 		fastopen_api = fastopen_sapi = NULL;
