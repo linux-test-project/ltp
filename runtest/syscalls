@@ -1170,8 +1170,6 @@ settimeofday02 settimeofday02
 
 setuid01 setuid01
 setuid01_16 setuid01_16
-setuid02 setuid02
-setuid02_16 setuid02_16
 setuid03 setuid03
 setuid03_16 setuid03_16
 setuid04 setuid04

@@ -12,12 +12,15 @@
 #  the GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program;  if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#  along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
+
+#for compat_16.mk uses the compat_16_tst.h
+COMPAT_TST_16_H		:= 1
+
 include $(abs_srcdir)/../utils/compat_16.mk
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
