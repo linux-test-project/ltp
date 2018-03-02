@@ -173,8 +173,8 @@ static void cleanup(void)
 
 	}
 
-	if (fd_notify > 0 && close(fd_notify) == -1)
-		tst_res(TWARN, "close(%d) failed", fd_notify);
+	if (fd_notify > 0)
+		SAFE_CLOSE(fd_notify);
 }
 
 static struct tst_test test = {
