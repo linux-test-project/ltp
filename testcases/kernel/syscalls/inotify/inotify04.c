@@ -81,7 +81,6 @@ static struct tst_kern_exv kvers[] = {
 
 static void cleanup(void)
 {
-
 	if (reap_wd_dir && myinotify_rm_watch(fd_notify, wd_dir) == -1)
 		tst_res(TWARN,
 			"inotify_rm_watch(%d, %d) [1] failed", fd_notify,
@@ -94,12 +93,6 @@ static void cleanup(void)
 
 	if (fd_notify > 0 && close(fd_notify))
 		tst_res(TWARN, "close(%d) [1] failed", fd_notify);
-
-	if (wd_dir > 0 && close(wd_dir))
-		tst_res(TWARN, "close(%d) [2] failed", wd_dir);
-
-	if (wd_file > 0 && close(wd_file))
-		tst_res(TWARN, "close(%d) [3] failed", wd_file);
 }
 
 static void setup(void)
