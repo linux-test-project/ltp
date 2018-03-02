@@ -55,10 +55,6 @@
 
 char names[FILES][PATH_MAX];
 
-static void cleanup(void)
-{
-}
-
 static void setup(void)
 {
 	int i;
@@ -105,15 +101,14 @@ static void verify_inotify(void)
 	tst_res(TPASS, "kernel survived inotify beating");
 
 	/* Kill the child creating / deleting files and wait for it */
-	kill(pid, SIGKILL);
-	wait(NULL);
+	SAFE_KILL(pid, SIGKILL);
+	SAFE_WAIT(NULL);
 }
 
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = verify_inotify,
 };
 
