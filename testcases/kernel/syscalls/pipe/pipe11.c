@@ -198,7 +198,8 @@ void do_child_uclinux(void)
  */
 void setup(void)
 {
-	int i, j;
+	int i;
+	unsigned int j;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
@@ -230,9 +231,8 @@ void setup(void)
 	j = 0;
 	for (i = 0; i < szcharbuf;) {
 		wrbuf[i++] = rawchars[j++];
-		if (j >= sizeof(rawchars)) {
+		if (j >= sizeof(rawchars))
 			j = 0;
-		}
 	}
 }
 

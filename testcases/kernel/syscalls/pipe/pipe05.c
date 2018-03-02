@@ -59,7 +59,7 @@ void sig11_handler(int sig);
 
 int main(int ac, char **av)
 {
-	int lc;
+	volatile int lc;
 	struct sigaction sa, osa;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -120,7 +120,7 @@ void setup(void)
 /******************************************************************
  * sig11_handler() - our segfault recover hack
  ******************************************************************/
-void sig11_handler(int sig)
+void sig11_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	longjmp(sig11_recover, 1);
 }

@@ -235,7 +235,7 @@ void c2func(void)
 			tst_resm(TBROK | TERRNO, "[child 2] pipe write failed");
 }
 
-void alarmfunc(int sig)
+void alarmfunc(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	/* for some reason tst_brkm doesn't seem to work in a signal handler */
 	tst_brkm(TFAIL, cleanup, "one or more children did't die in 60 second "

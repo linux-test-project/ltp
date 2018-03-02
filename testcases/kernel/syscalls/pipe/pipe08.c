@@ -98,6 +98,8 @@ int main(int ac, char **av)
 		 * sent
 		 */
 		written = write(pipefd[1], wrbuf, length);
+		if (written > 0)
+			tst_brkm(TBROK, cleanup, "write succeeded unexpectedly");
 	}
 	cleanup();
 	tst_exit();

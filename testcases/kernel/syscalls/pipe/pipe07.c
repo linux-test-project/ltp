@@ -129,7 +129,7 @@ static void record_open_fds(void)
 		if (fd == dir_fd)
 			continue;
 
-		if (rec_fds_max >= ARRAY_SIZE(rec_fds)) {
+		if (rec_fds_max >= (int)ARRAY_SIZE(rec_fds)) {
 			tst_brkm(TBROK, cleanup,
 			         "Too much file descriptors open");
 		}
