@@ -220,8 +220,8 @@ void cleanup(void)
 	/* Close the test directory opened in the setup() */
 	SAFE_CLOSE(NULL, fd);
 
-	setegid(0);
-	seteuid(0);
+	SAFE_SETEGID(NULL, 0);
+	SAFE_SETEUID(NULL, 0);
 
 	tst_rmdir();
 

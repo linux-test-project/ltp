@@ -83,7 +83,7 @@ int fd;				/* file descriptor for testfile */
 char *TCID = "fchmod07";
 int TST_TOTAL = 8;		/* Total number of test conditions */
 
-int Modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
+mode_t Modes[] = { 0, 07, 070, 0700, 0777, 02777, 04777, 06777 };
 
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
@@ -93,7 +93,7 @@ int main(int ac, char **av)
 	struct stat stat_buf;	/* stat(2) struct contents */
 	int lc;
 	int ind;		/* counter variable for chmod(2) tests */
-	int mode;		/* file mode permission */
+	mode_t mode;		/* file mode permission */
 
 	TST_TOTAL = sizeof(Modes) / sizeof(int);
 
