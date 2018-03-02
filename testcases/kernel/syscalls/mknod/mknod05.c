@@ -171,7 +171,7 @@ int main(int ac, char **av)
 	}
 
 	/* change the directory back to temporary directory */
-	chdir("..");
+	SAFE_CHDIR(cleanup, "..");
 
 	/*
 	 * Invoke cleanup() to delete the test directories created
