@@ -8,7 +8,6 @@ language: c
 
 matrix:
     include:
-
         ### native builds ###
         - os: linux
           env: BUILD="native" INSTALL_PACKAGES="$BUILD"
@@ -94,6 +93,7 @@ notifications:
         secure: "b/xcA/K5OyQvPPnd0PRahTH5LJu8lgz8goGHvhXpHo+ZPsPgTDXNFo5cX9fSOkMuFKeoW8iGl0wOgK2+ptc8mbYDw277K4RFIHRHeV/KIoE1EzjQnEFiL8J0oHCAvDj12o0AXeriTyY9gICXKbR31Br6Zh5eKViDJe2OAGeHeDU="
 
 before_install:
+    - sudo apt update --option Acquire::Retries=100 --option Acquire::http::Timeout="60"
     # installing / removing dependencies
     - if [ "$INSTALL_PACKAGES" = "" ]; then
           sudo apt remove $(cat .travis.packages_native | grep -v -e 'libc6' -e 'libc6-dev' -e 'linux-libc-dev' -e 'libacl1')
