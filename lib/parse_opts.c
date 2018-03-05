@@ -563,7 +563,6 @@ static void usc_recressive_func(int cnt, int max, struct usc_bigstack_t bstack)
 }
 
 #if UNIT_TEST
-#include <time.h>
 
 /******************************************************************************
  * UNIT TEST CODE

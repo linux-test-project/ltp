@@ -34,7 +34,6 @@
 #include <sys/timers.h>
 #else
 #include <sys/stat.h>
-#include <time.h>
 #include <sys/time.h>
 #include <sys/ipc.h>
 #endif

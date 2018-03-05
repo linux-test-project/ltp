@@ -34,7 +34,6 @@
 #include <tirpc/rpc/xdr.h>
 #include <tirpc/rpc/svc.h>
 #include <errno.h>
-#include <time.h>
 
 //Standard define
 #define PROCNUM 1
