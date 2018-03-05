@@ -28,9 +28,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <tirpc/rpc/rpc.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include "lapi/rpc.h"
 
 //Standard define
 #define PINGPROC 1

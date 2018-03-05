@@ -19,7 +19,7 @@
 #ifndef __LIBRPC_H__
 #define __LIBRPC_H__
 
-#include <rpc/xdr.h>
+#include "lapi/rpc.h"
 
 struct data {
 	long address;

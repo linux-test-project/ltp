@@ -22,4 +22,5 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INTERNAL_LIB		:= librpc01.a
 
+include $(top_srcdir)/testcases/network/rpc/rpc-tirpc/tests_pack/Makefile.inc
 include $(top_srcdir)/include/mk/lib.mk

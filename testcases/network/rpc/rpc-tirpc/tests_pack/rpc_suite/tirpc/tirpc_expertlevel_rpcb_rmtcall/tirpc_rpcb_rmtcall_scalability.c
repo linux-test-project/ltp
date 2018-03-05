@@ -29,12 +29,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
-#include <tirpc/netconfig.h>
-#include <tirpc/rpc/rpc.h>
-#include <tirpc/rpc/types.h>
-#include <tirpc/rpc/xdr.h>
-#include <tirpc/rpc/svc.h>
 #include <errno.h>
+#include "lapi/rpc.h"
 
 //Standard define
 #define PROCNUM 1

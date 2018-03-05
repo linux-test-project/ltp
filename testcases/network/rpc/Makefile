@@ -26,8 +26,4 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= *.sh
 
-ifeq ($(TIRPC_LIBS),)
-FILTER_OUT_DIRS		+= rpc-tirpc
-endif
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

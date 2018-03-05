@@ -28,9 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <rpc/rpc.h>
-#include <rpc/types.h>
-#include <rpc/xdr.h>
+#include "lapi/rpc.h"
 
 //Standard define
 #define CALCPROC 10000

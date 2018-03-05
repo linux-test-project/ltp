@@ -27,13 +27,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <tirpc/rpc/rpc.h>
-#include <tirpc/netconfig.h>
 #include <netinet/in.h>
-#include <tirpc/rpc/svc.h>
 #include <errno.h>
 #include <unistd.h>
 #include "librpc-tirpc.h"
+#include "lapi/rpc.h"
 
 #define PROCNUM 1
 #define VERSNUM 1

@@ -29,8 +29,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <tirpc/rpc/rpc.h>
 #include <netdb.h>
+#include "lapi/rpc.h"
 
 //Standard define
 #define PROCNUM 1

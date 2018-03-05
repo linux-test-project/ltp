@@ -27,16 +27,12 @@
 */
 
 #include <stdio.h>
-#include <tirpc/netconfig.h>
 #include <sys/socket.h>
-#include <tirpc/rpc/rpc.h>
-#include <tirpc/rpc/types.h>
-#include <tirpc/rpc/xdr.h>
-#include <tirpc/rpc/svc.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include "librpc-tirpc.h"
+#include "lapi/rpc.h"
 
 #define VERSNUM 1
 #define PROCSIMPLEPING	1

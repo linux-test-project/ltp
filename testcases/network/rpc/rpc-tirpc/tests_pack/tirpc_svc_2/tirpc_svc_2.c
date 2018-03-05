@@ -26,13 +26,9 @@
 */
 
 #include <stdio.h>
-#include <tirpc/netconfig.h>
 #include <sys/socket.h>
-#include <tirpc/rpc/rpc.h>
-#include <tirpc/rpc/types.h>
-#include <tirpc/rpc/xdr.h>
-#include <tirpc/rpc/svc.h>
 #include <errno.h>
+#include "lapi/rpc.h"
 
 //Standard define
 #define VERSNUM 1
