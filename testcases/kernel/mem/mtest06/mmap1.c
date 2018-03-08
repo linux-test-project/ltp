@@ -62,6 +62,8 @@
 	usage(prog); \
 } while (0)
 
+#define TEST_FILENAME "ashfile"
+
 static int verbose_print = 0;
 static char *volatile map_address;
 static jmp_buf jmpbuf;
@@ -109,13 +111,14 @@ static void sig_handler_mapped(int signal, siginfo_t * info, void *ut)
 
 int mkfile(int size)
 {
-	char template[] = "/tmp/ashfileXXXXXX";
 	int fd, i;
 
-	if ((fd = mkstemp(template)) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "mkstemp() failed");
+	fd = open(TEST_FILENAME,  O_RDWR | O_CREAT, 0600);
+	if (fd < 0)
+		tst_brkm(TBROK | TERRNO, NULL, "open for %s failed",
+			 TEST_FILENAME);
 
-	unlink(template);
+	unlink(TEST_FILENAME);
 
 	for (i = 0; i < size; i++)
 		if (write(fd, "a", 1) == -1)
@@ -375,6 +378,8 @@ int main(int argc, char **argv)
 		}
 	}
 
+	tst_tmpdir();
+
 	for (;;) {
 		if ((fd = mkfile(file_size)) == -1)
 			tst_brkm(TBROK, NULL,
@@ -415,6 +420,8 @@ int main(int argc, char **argv)
 
 		close(fd);
 	}
+
+	tst_rmdir();
 
 	exit(0);
 }
