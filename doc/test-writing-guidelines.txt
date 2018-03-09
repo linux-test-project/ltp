@@ -1324,6 +1324,48 @@ common.h:9: FAIL: check failed
 test.c:8: INFO: do_action(arg) failed
 -------------------------------------------------------------------------------
 
+2.2.24 Tainted kernels
+^^^^^^^^^^^^^^^^^^^^^^
+
+If you need to detect, if a testcase triggers a kernel warning, bug or oops,
+the following can be used to detect TAINT_W or TAINT_D:
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+#include "tst_taint.h"
+
+void setup(void)
+{
+	...
+	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
+	...
+}
+...
+void run(void)
+{
+	...
+	if (tst_taint_check() == 0)
+		tst_res(TPASS, "kernel is not tainted");
+	else
+		tst_res(TFAIL, "kernel is tainted");
+}
+-------------------------------------------------------------------------------
+
+You have to call tst_taint_init() with non-zero flags first, preferably during
+setup(). The function will generate a TCONF if the requested flags are not
+fully supported on the running kernel, and TBROK if either a zero mask was
+supplied or if the kernel is already tainted before executing the test.
+
+Then you can call tst_taint_check() during run(), which returns 0 or the 
+tainted flags set in /proc/sys/kernel/tainted as specified earlier.
+
+Depending on your kernel version, not all tainted-flags will be supported.
+
+For reference to tainted kernels, see kernel documentation:
+Documentation/admin-guide/tainted-kernels.rst or
+https://www.kernel.org/doc/html/latest/admin-guide/tainted-kernels.html
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
