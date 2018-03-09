@@ -380,7 +380,7 @@ pid_t safe_fork(const char *filename, unsigned int lineno)
 	if (!tst_test->forks_child)
 		tst_brk(TBROK, "test.forks_child must be set!");
 
-	fflush(stdout);
+	tst_flush();
 
 	pid = fork();
 	if (pid < 0)
