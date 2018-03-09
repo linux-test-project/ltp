@@ -89,3 +89,20 @@ int safe_personality(const char *filename, unsigned int lineno,
 
 	return prev_persona;
 }
+
+int safe_sigaction(const char *file, const int lineno,
+                   int signum, const struct sigaction *act,
+                   struct sigaction *oldact)
+{
+	int rval;
+
+	rval = sigaction(signum, act, oldact);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"sigaction(%s (%d), %p, %p) failed",
+			tst_strsig(signum), signum, act, oldact);
+	}
+
+	return rval;
+}
