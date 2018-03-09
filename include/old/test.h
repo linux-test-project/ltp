@@ -102,7 +102,7 @@
 #ifdef UCLINUX
 # define FORK_OR_VFORK			tst_vfork
 # define MAP_PRIVATE_EXCEPT_UCLINUX	0
-/* tst_flush() + vfork() */
+/* tst_old_flush() + vfork() */
 pid_t tst_vfork(void);
 #else
 # define FORK_OR_VFORK			tst_fork
@@ -176,10 +176,10 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 
 void tst_require_root(void);
 void tst_exit(void) LTP_ATTRIBUTE_NORETURN;
-void tst_flush(void);
+void tst_old_flush(void);
 
 /*
- * tst_flush() + fork
+ * tst_old_flush() + fork
  * NOTE: tst_fork() will reset T_exitval to 0 for child process.
  */
 pid_t tst_fork(void);

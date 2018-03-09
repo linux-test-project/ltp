@@ -57,7 +57,7 @@ int main(void)
 	TEST_ERRNO = EPERM;
 	TEST_RETURN = EINVAL;
 	tst_resm(TINFO | TRERRNO, "test");
-	tst_flush();
+	tst_old_flush();
 
 	/* restore stdout */
 	TEST(dup2(stdout_fd, fileno(stdout)));

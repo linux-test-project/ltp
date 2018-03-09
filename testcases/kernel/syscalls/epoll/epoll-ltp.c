@@ -142,7 +142,7 @@ do {					\
 	pid_t kid_pid;			\
 	int kid_status;			\
 					\
-	tst_flush();			\
+	tst_old_flush();			\
 	kid_pid = FORK_OR_VFORK();	\
 	if (kid_pid == 0) {
 
@@ -176,7 +176,7 @@ do {					\
 	pid_t kid_pid;								\
 	int kid_status;								\
 										\
-	tst_flush();								\
+	tst_old_flush();								\
 	kid_pid = FORK_OR_VFORK();						\
 	if (kid_pid == 0) { /* Run the function */				\
 		return fn(epoll_fd);						\

@@ -228,7 +228,7 @@ void stat_setup(void)
 		 */
 		set_shared = set_shmat();
 
-	tst_flush();
+	tst_old_flush();
 	for (stat_i = 0; stat_i < N_ATTACH; stat_i++) {
 		pid = FORK_OR_VFORK();
 		if (pid == -1)

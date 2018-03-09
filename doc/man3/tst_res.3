@@ -39,7 +39,7 @@ tst_resm_hexd \- Print result message, including specified buffer in hexadecimal
 .sp
 tst_brkm \- Print result message and break remaining test cases
 .sp
-tst_flush \- Print any messages pending because of CONDENSE mode, and flush output stream
+tst_old_flush \- Print any messages pending because of CONDENSE mode, and flush output stream
 .sp
 tst_exit \- Exit test with a meaningful exit value
 .sp
@@ -56,7 +56,7 @@ char *\fItmesg, [arg ...]\fR)
 \fBvoid tst_brkm(int \fIttype\fB, void (*\fIfunc\fB)(), char *\fItmesg,
 [arg ...]\fR)
 .P
-\fBvoid tst_flush()
+\fBvoid tst_old_flush()
 .P
 \fBvoid tst_exit()
 .P
@@ -180,7 +180,7 @@ after all results have been printed.  If \fBtst_brk()\fR is called with a
 first reported result.  \fBtst_brk()\fR takes the \fIfname\fR argument
 whereas \fBtst_brkm()\fR does not.
 .P
-\fBtst_flush()\fR is used to print any results pending because of
+\fBtst_old_flush()\fR is used to print any results pending because of
 \fBCONDENSE\fR or \fBNOPASS\fR modes (described below), and flushes the
 output stream.
 .P

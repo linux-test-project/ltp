@@ -245,7 +245,7 @@ static void tst_condense(int tnum, int ttype, const char *tmesg)
 	Buffered = TRUE;
 }
 
-void tst_flush(void)
+void tst_old_flush(void)
 {
 	NO_NEWLIB_ASSERT("Unknown", 0);
 
@@ -399,7 +399,7 @@ void tst_exit(void)
 
 	pthread_mutex_lock(&tmutex);
 
-	tst_flush();
+	tst_old_flush();
 
 	T_exitval &= ~TINFO;
 
@@ -415,7 +415,7 @@ pid_t tst_fork(void)
 
 	NO_NEWLIB_ASSERT("Unknown", 0);
 
-	tst_flush();
+	tst_old_flush();
 
 	child = fork();
 	if (child == 0)
@@ -460,7 +460,7 @@ pid_t tst_vfork(void)
 {
 	NO_NEWLIB_ASSERT("Unknown", 0);
 
-	tst_flush();
+	tst_old_flush();
 	return vfork();
 }
 

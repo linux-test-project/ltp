@@ -219,10 +219,10 @@ static void cleanup(void)
 
 	/*
 	 * Kernels 3.7 can crash while unmounting cgroups with xattr,
-	 * call tst_flush() to make sure all buffered data written
+	 * call tst_old_flush() to make sure all buffered data written
 	 * before it happens
 	 */
-	tst_flush();
+	tst_old_flush();
 
 	int i;
 	for (i = 0; i < odir_num; ++i) {

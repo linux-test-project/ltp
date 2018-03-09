@@ -110,7 +110,7 @@ int main(int ac, char **av)
 
 		/* fork off the children */
 		tst_resm(TINFO, "Forking %d children", Nforks);
-		tst_flush();
+		tst_old_flush();
 		for (forks = 0; forks < Nforks; forks++) {
 			pid1 = fork();
 			if (pid1 == 0) {

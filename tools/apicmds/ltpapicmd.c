@@ -34,8 +34,6 @@
  *                          break remaining test cases
  *              tst_res   - Print result message, including file contents
  *              tst_resm  - Print result message
- *              tst_flush - Print any messages pending because of CONDENSE mode,
- *                          and flush output stream
  *              tst_exit  - Exit test with a meaningful exit value
  *
  *              These are the minimum set of functions or commands required to
@@ -332,8 +330,6 @@ int main(int argc, char *argv[])
 		apicmd_resm(argc, argv);
 	} else if (strcmp(cmd_name, "tst_exit") == 0) {
 		tst_exit();
-	} else if (strcmp(cmd_name, "tst_flush") == 0) {
-		tst_flush();
 	} else if (strcmp(cmd_name, "tst_ncpus") == 0) {
 		printf("%li\n", tst_ncpus());
 	} else if (strcmp(cmd_name, "tst_ncpus_conf") == 0) {

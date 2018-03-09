@@ -140,7 +140,7 @@ int main(int ac, char **av)
 			tst_brkm(TINFO, cleanup, "Creation of segment failed");
 		}
 
-		tst_flush();
+		tst_old_flush();
 		if ((pid = FORK_OR_VFORK()) == 0) {
 			val = read_segment(0);
 			exit(1);

@@ -1,7 +1,6 @@
 tst_brk
 tst_brkm
 tst_exit
-tst_flush
 tst_get_unused_port
 tst_ncpus
 tst_ncpus_conf
