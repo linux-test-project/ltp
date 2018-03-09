@@ -465,6 +465,18 @@ Allows for setting timeout per test iteration dymanically in the test setup(),
 the timeout is specified in seconds. There are a few testcases whose runtime
 can vary arbitrarily, these can disable timeouts by setting it to -1.
 
+[source,c]
+------------------------------------------------------------------------------
+void tst_flush(void);
+-------------------------------------------------------------------------------
+
+Flush output streams, handling errors appropriately.
+
+This function is rarely needed when you have to flush the output streams
+before calling 'fork()' or 'clone()'. Note that the 'SAFE_FORK()' calls this
+function automatically. See 3.4 FILE buffers and fork() for explanation why is
+this needed.
+
 2.2.3 Test temporary directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

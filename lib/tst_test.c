@@ -1085,3 +1085,18 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	do_exit(ret);
 }
+
+
+void tst_flush(void)
+{
+	int rval;
+
+	rval = fflush(stderr);
+	if (rval != 0)
+		tst_brk(TBROK | TERRNO, "fflush(stderr) failed");
+
+	rval = fflush(stderr);
+	if (rval != 0)
+		tst_brk(TBROK | TERRNO, "fflush(stdout) failed");
+
+}
