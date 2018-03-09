@@ -96,15 +96,15 @@ static void verify_times(void)
 	if (times(&buf1) == -1)
 		tst_brk(TBROK | TERRNO, "times()");
 
-	if (buf1.tms_utime != 0)
+	if (buf1.tms_utime > 5)
 		tst_res(TFAIL, "buf1.tms_utime = %li", buf1.tms_utime);
 	else
-		tst_res(TPASS, "buf1.tms_utime = 0");
+		tst_res(TPASS, "buf1.tms_utime <= 5");
 
-	if (buf1.tms_stime != 0)
+	if (buf1.tms_stime > 5)
 		tst_res(TFAIL, "buf1.tms_stime = %li", buf1.tms_stime);
 	else
-		tst_res(TPASS, "buf1.tms_stime = 0");
+		tst_res(TPASS, "buf1.tms_stime <= 5");
 
 	generate_utime();
 	generate_stime();
