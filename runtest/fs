@@ -69,6 +69,10 @@ fs_di fs_di -d $TMPDIR
 # Was not sure why it should reside in runtest/crashme and won´t get tested ever
 proc01 proc01 -m 128
 
+read_all_dev read_all -d /dev -q -r 10
+read_all_proc read_all -d /proc -q -r 10
+read_all_sys read_all -d /sys -q -r 10
+
 #Run the File System Race Condition Check tests as well
 fs_racer fs_racer.sh -t 5
 
