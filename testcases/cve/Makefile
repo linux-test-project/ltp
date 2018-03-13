@@ -34,6 +34,8 @@ meltdown: CFLAGS += -I$(abs_srcdir)/../realtime/include
 
 ifneq (,$(filter $(HOST_CPU),x86 x86_64))
 meltdown: CFLAGS += -msse2
+else
+FILTER_OUT_MAKE_TARGETS	+= cve-2017-17053
 endif
 
 cve-2017-17052:	CFLAGS += -pthread
