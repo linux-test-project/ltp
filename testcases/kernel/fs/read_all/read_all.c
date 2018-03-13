@@ -243,7 +243,7 @@ static int worker_run(struct worker *self)
 	}
 
 	queue_destroy(q, 1);
-	fflush(stderr);
+	tst_flush();
 	return 0;
 }
 
