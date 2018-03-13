@@ -346,10 +346,10 @@ static void tst_print(const char *tcid, int tnum, int ttype, const char *tmesg)
 	}
 
 	if (ttype & TRERRNO) {
+		err = TEST_RETURN < 0 ? -(int)TEST_RETURN : (int)TEST_RETURN;
 		size += snprintf(message + size, sizeof(message) - size,
 				 ": TEST_RETURN=%s(%i): %s",
-				 tst_strerrno(TEST_RETURN), (int)TEST_RETURN,
-				 strerror(TEST_RETURN));
+				 tst_strerrno(err), err, strerror(err));
 	}
 
 	if (size + 1 >= sizeof(message)) {

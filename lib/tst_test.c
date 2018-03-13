@@ -215,6 +215,11 @@ static void print_result(const char *file, const int lineno, int ttype,
 	if (ttype & TTERRNO)
 		str_errno = tst_strerrno(TEST_ERRNO);
 
+	if (ttype & TRERRNO) {
+		ret = TEST_RETURN < 0 ? -(int)TEST_RETURN : (int)TEST_RETURN;
+		str_errno = tst_strerrno(ret);
+	}
+
 	ret = snprintf(str, size, "%s:%i: ", file, lineno);
 	str += ret;
 	size -= ret;
