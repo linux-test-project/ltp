@@ -941,7 +941,7 @@ static void setup(void)
 		static const char * const argv[] = {"modprobe", "dccp", NULL};
 
 		if (tst_run_cmd(argv, NULL, NULL, 1))
-			tst_res(TWARN, "Failed to load DCCP module");
+			tst_brk(TCONF, "Failed to load DCCP module");
 
 		tst_res(TINFO, "DCCP %s", (client_mode) ? "client" : "server");
 		fastopen_api = fastopen_sapi = NULL;
