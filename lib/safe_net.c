@@ -221,6 +221,29 @@ ssize_t safe_sendmsg(const char *file, const int lineno, size_t len,
 	return rval;
 }
 
+ssize_t safe_recvmsg(const char *file, const int lineno, size_t len,
+		     int sockfd, struct msghdr *msg, int flags)
+{
+	ssize_t rval;
+
+	rval = recvmsg(sockfd, msg, flags);
+
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: recvmsg(%d, %p, %d) failed",
+			 file, lineno, sockfd, msg, flags);
+	}
+
+	if (len && (size_t)rval != len) {
+		tst_brkm(TBROK, NULL,
+			 "%s:%d: recvmsg(%d, %p, %d) ret(%zd) != len(%zu)",
+			 file, lineno, sockfd, msg, flags, rval, len);
+	}
+
+	return rval;
+
+}
+
 int safe_bind(const char *file, const int lineno, void (cleanup_fn)(void),
 	      int socket, const struct sockaddr *address,
 	      socklen_t address_len)
