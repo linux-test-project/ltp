@@ -200,7 +200,7 @@ ssize_t safe_sendmsg(const char *file, const int lineno, size_t len,
 			 file, lineno, sockfd, msg, flags);
 	}
 
-	if (!len && (size_t)rval != len) {
+	if (len && (size_t)rval != len) {
 		tst_brkm(TBROK, NULL,
 			 "%s:%d: sendmsg(%d, %p, %d) ret(%zd) != len(%zu)",
 			 file, lineno, sockfd, msg, flags, rval, len);
