@@ -44,3 +44,4 @@ wc01 wc01.sh
 keyctl01 keyctl01.sh
 gdb01 gdb01.sh
 unshare01 unshare01.sh
+sysctl01 sysctl01.sh
