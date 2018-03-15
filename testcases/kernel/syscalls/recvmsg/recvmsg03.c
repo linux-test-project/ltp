@@ -30,6 +30,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include "tst_safe_net.h"
 
 #include "tst_test.h"
 
@@ -125,12 +126,7 @@ static void server(void)
 
 	TST_CHECKPOINT_WAKE(0);
 
-	TEST(recvmsg(sock_fd2, &msg, 0));
-	if (TEST_RETURN == -1) {
-		tst_brk(TBROK | TTERRNO,
-		"recvmsg() failed to recvice data from client");
-	}
-
+	SAFE_RECVMSG(0, sock_fd2, &msg, 0);
 	if (msg.msg_namelen != sizeof(from_addr)) {
 		tst_res(TFAIL, "msg_namelen was set to %u incorrectly, "
 			"expected %lu", msg.msg_namelen, sizeof(from_addr));
