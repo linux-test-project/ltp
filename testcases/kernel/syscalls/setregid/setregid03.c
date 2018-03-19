@@ -41,7 +41,7 @@ static gid_t neg_one = -1;
 /* flag to tell parent if child passed or failed. */
 static int flag;
 
-struct group users, sys, root, bin;
+struct group nobody_gr, daemon_gr, root_gr, bin_gr;
 struct passwd nobody;
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -57,27 +57,28 @@ struct test_data_t {
 	char *test_msg;
 } test_data[] = {
 	{
-	&sys.gr_gid, &bin.gr_gid, &pass, &sys, &bin,
-		    "After setregid(sys, bin),"}, {
-	&neg_one, &sys.gr_gid, &pass, &sys, &sys, "After setregid(-1, sys)"},
-	{
-	&neg_one, &bin.gr_gid, &pass, &sys, &bin, "After setregid(-1, bin),"},
-	{
-	&bin.gr_gid, &neg_one, &pass, &bin, &bin, "After setregid(bin, -1),"},
-	{
-	&neg_one, &neg_one, &pass, &bin, &bin, "After setregid(-1, -1),"}, {
-	&neg_one, &bin.gr_gid, &pass, &bin, &bin, "After setregid(-1, bin),"},
-	{
-	&bin.gr_gid, &neg_one, &pass, &bin, &bin, "After setregid(bin, -1),"},
-	{
-	&bin.gr_gid, &bin.gr_gid, &pass, &bin, &bin,
+	&daemon_gr.gr_gid, &bin_gr.gr_gid, &pass, &daemon_gr, &bin_gr,
+		    "After setregid(daemon, bin),"}, {
+	&neg_one, &daemon_gr.gr_gid, &pass, &daemon_gr, &daemon_gr,
+		    "After setregid(-1, daemon)"}, {
+	&neg_one, &bin_gr.gr_gid, &pass, &daemon_gr, &bin_gr,
+		    "After setregid(-1, bin),"}, {
+	&bin_gr.gr_gid, &neg_one, &pass, &bin_gr, &bin_gr,
+		    "After setregid(bin, -1),"}, {
+	&neg_one, &neg_one, &pass, &bin_gr, &bin_gr,
+		    "After setregid(-1, -1),"}, {
+	&neg_one, &bin_gr.gr_gid, &pass, &bin_gr, &bin_gr,
+		    "After setregid(-1, bin),"}, {
+	&bin_gr.gr_gid, &neg_one, &pass, &bin_gr, &bin_gr,
+		    "After setregid(bin, -1),"}, {
+	&bin_gr.gr_gid, &bin_gr.gr_gid, &pass, &bin_gr, &bin_gr,
 		    "After setregid(bin, bin),"}, {
-	&sys.gr_gid, &neg_one, &fail, &bin, &bin, "After setregid(sys, -1)"},
-	{
-	&neg_one, &sys.gr_gid, &fail, &bin, &bin, "After setregid(-1, sys)"},
-	{
-	&sys.gr_gid, &sys.gr_gid, &fail, &bin, &bin,
-		    "After setregid(sys, sys)"},};
+	&daemon_gr.gr_gid, &neg_one, &fail, &bin_gr, &bin_gr,
+		    "After setregid(daemon, -1)"}, {
+	&neg_one, &daemon_gr.gr_gid, &fail, &bin_gr, &bin_gr,
+		    "After setregid(-1, daemon)"}, {
+	&daemon_gr.gr_gid, &daemon_gr.gr_gid, &fail, &bin_gr, &bin_gr,
+		    "After setregid(daemon, daemon)"},};
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
 
@@ -102,7 +103,7 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		/* set the appropriate ownership values */
-		if (SETREGID(NULL, sys.gr_gid, bin.gr_gid) == -1)
+		if (SETREGID(NULL, daemon_gr.gr_gid, bin_gr.gr_gid) == -1)
 			tst_brkm(TBROK, NULL, "Initial setregid failed");
 
 		SAFE_SETEUID(NULL, nobody.pw_uid);
@@ -191,11 +192,11 @@ static void setup(void)
 		tst_brkm(TBROK, NULL, "%s must be a valid group", #group); \
 	} \
 	GID16_CHECK(junk->gr_gid, setregid, NULL); \
-	group = *(junk); \
+	group ## _gr = *(junk); \
 } while (0)
 
-	GET_GID(users);
-	GET_GID(sys);
+	GET_GID(nobody);
+	GET_GID(daemon);
 	GET_GID(bin);
 
 	TEST_PAUSE;

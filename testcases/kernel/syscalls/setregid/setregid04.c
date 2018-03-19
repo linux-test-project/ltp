@@ -35,7 +35,7 @@ TCID_DEFINE(setregid04);
 
 static gid_t neg_one = -1;
 
-static struct group users_gr, daemon_gr, root_gr, bin_gr;
+static struct group nobody_gr, daemon_gr, root_gr, bin_gr;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -52,8 +52,8 @@ struct test_data_t {
 	{
 	&root_gr.gr_gid, &root_gr.gr_gid, &root_gr, &root_gr,
 		    "After setregid(root, root),"}, {
-	&users_gr.gr_gid, &neg_one, &users_gr, &root_gr,
-		    "After setregid(users, -1)"}, {
+	&nobody_gr.gr_gid, &neg_one, &nobody_gr, &root_gr,
+		    "After setregid(nobody, -1)"}, {
 	&root_gr.gr_gid, &neg_one, &root_gr, &root_gr,
 		    "After setregid(root,-1),"}, {
 	&neg_one, &neg_one, &root_gr, &root_gr,
@@ -62,12 +62,12 @@ struct test_data_t {
 		    "After setregid(-1, root)"}, {
 	&root_gr.gr_gid, &neg_one, &root_gr, &root_gr,
 		    "After setregid(root, -1),"}, {
-	&daemon_gr.gr_gid, &users_gr.gr_gid, &daemon_gr, &users_gr,
-		    "After setregid(daemon, users)"}, {
-	&neg_one, &neg_one, &daemon_gr, &users_gr,
+	&daemon_gr.gr_gid, &nobody_gr.gr_gid, &daemon_gr, &nobody_gr,
+		    "After setregid(daemon, nobody)"}, {
+	&neg_one, &neg_one, &daemon_gr, &nobody_gr,
 		    "After setregid(-1, -1)"}, {
-	&neg_one, &users_gr.gr_gid, &daemon_gr, &users_gr,
-		    "After setregid(-1, users)"}
+	&neg_one, &nobody_gr.gr_gid, &daemon_gr, &nobody_gr,
+		    "After setregid(-1, nobody)"}
 };
 
 int TST_TOTAL = sizeof(test_data) / sizeof(test_data[0]);
@@ -123,7 +123,7 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	SAFE_GETGROUP(root);
-	SAFE_GETGROUP(users);
+	SAFE_GETGROUP(nobody);
 	SAFE_GETGROUP(daemon);
 	SAFE_GETGROUP(bin);
 
