@@ -35,11 +35,8 @@ setup()
 	ftpusers="/etc/ftpusers"
 	[ -f "$ftpusers" ] || ftpusers="/etc/vsftpd/ftpusers"
 
-	echo "Verifying test user $TEST_USER is in ${ftpusers} database..."
-	FTPUSERS=$(awk "/$TEST_USER/" ${ftpusers})
-	if [ -z "$FTPUSERS" ] ; then
-		tst_brkm TBROK "$TEST_USER not found in $ftpusers exiting 0 ..."
-	fi
+	grep -q ^${TEST_USER}$ $ftpusers || \
+		tst_brkm TCONF "user '$TEST_USER' not found in $ftpusers file"
 }
 
 do_test()
