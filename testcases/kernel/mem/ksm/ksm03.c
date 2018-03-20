@@ -59,6 +59,8 @@
 #include "mem.h"
 #include "ksm_common.h"
 
+static int memcg_mounted;
+
 static void verify_ksm(void)
 {
 	write_memcg();
@@ -79,6 +81,7 @@ static void setup(void)
 	save_max_page_sharing();
 	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
 	mount_mem("memcg", "cgroup", "memory", MEMCG_PATH, MEMCG_PATH_NEW);
+	memcg_mounted = 1;
 }
 
 static void cleanup(void)
@@ -89,7 +92,8 @@ static void cleanup(void)
 
 	restore_max_page_sharing();
 
-	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
+	if (memcg_mounted)
+		umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
 }
 
 static struct tst_test test = {

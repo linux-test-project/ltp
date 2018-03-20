@@ -59,6 +59,9 @@
 #ifdef HAVE_NUMA_V2
 #include <numaif.h>
 
+static int cpuset_mounted;
+static int memcg_mounted;
+
 static void verify_ksm(void)
 {
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
@@ -90,8 +93,10 @@ static void cleanup(void)
 
 	restore_max_page_sharing();
 
-	umount_mem(CPATH, CPATH_NEW);
-	umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
+	if (cpuset_mounted)
+		umount_mem(CPATH, CPATH_NEW);
+	if (memcg_mounted)
+		umount_mem(MEMCG_PATH, MEMCG_PATH_NEW);
 }
 
 static void setup(void)
@@ -109,7 +114,9 @@ static void setup(void)
 	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
 
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
+	cpuset_mounted = 1;
 	mount_mem("memcg", "cgroup", "memory", MEMCG_PATH, MEMCG_PATH_NEW);
+	memcg_mounted = 1;
 }
 
 static struct tst_test test = {
