@@ -250,6 +250,15 @@ void save_max_page_sharing(void)
 
 void restore_max_page_sharing(void)
 {
+	/*
+	 * Documentation/vm/ksm.txt states that the minimum
+	 * value for max_page_sharing is 2, so on
+	 * max_page_sharing != 0 after save_max_page_sharing()
+	 * returns.
+	 */
+	if (!max_page_sharing)
+		return;
+
 	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
 	        FILE_PRINTF(PATH_KSM "max_page_sharing",
 	                         "%d", max_page_sharing);
