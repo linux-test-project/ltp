@@ -23,6 +23,8 @@ EOF
 
     if [ -f /etc/init.d/crond ]; then
         cron=crond
+    elif [ -f /etc/sysconfig/crond ]; then
+        cron=crond
     else
         # SUSE
         cron=cron
@@ -41,7 +43,9 @@ EOF
 SetupKdump ()
 {
     echo "Start kdump daemon."
-    /etc/init.d/kdump restart
+    if [ -x "/etc/init.d/kdump" ]; then
+        /etc/init.d/kdump restart
+    fi
 
     echo "Enable kdump daemon by default."
     # Red Hat and SUSE.
@@ -52,8 +56,12 @@ SetupKdump ()
     elif [ -x "/sbin/update-rc.d" ]; then
         /sbin/update-rc.d kdump defaults
     fi
-}
 
+    # Ubuntu
+    if [ -x "/etc/init.d/kdump-tools" ]; then
+        /etc/init.d/kdump-tools restart
+    fi
+}
 
 PrepareVerify ()
 {
@@ -116,7 +124,11 @@ PrepareVerify ()
         COREDIR=/mnt"${COREDIR}"
     fi
 
-    vmcore=$(ls -t "${COREDIR}"/*/vmcore* 2>/dev/null | head -1)
+    if [ `cut -d'"' -f2 /etc/os-release | head -1` == "Ubuntu" ]; then
+        vmcore=$(ls -t "${COREDIR}"/*/dump* 2>/dev/null | head -1)
+    else
+        vmcore=$(ls -t "${COREDIR}"/*/vmcore* 2>/dev/null | head -1)
+    fi
 }
 
 VerifyTest ()

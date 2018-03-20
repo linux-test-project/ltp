@@ -311,6 +311,8 @@ int lkdtm_module_init(void)
 	switch (cpoint) {
 	case INT_HARDWARE_ENTRY:
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 32)
+
 #ifdef USE_SYMBOL_NAME
 
 #ifdef __powerpc__
@@ -323,6 +325,22 @@ int lkdtm_module_init(void)
 		lkdtm_lookup_name("__do_IRQ", (void (*)(void))jp_do_irq);
 
 #endif /* USE_SYMBOL_NAME */
+
+#else
+
+#ifdef USE_SYMBOL_NAME
+
+#ifdef __powerpc__
+		lkdtm_symbol_name(".do_IRQ", (void (*)(void))jp_do_irq);
+#else
+		lkdtm_symbol_name("do_IRQ", (void (*)(void))jp_do_irq);
+#endif /*__powerpc__*/
+
+#else /* USE_SYMBOL_NAME */
+		lkdtm_lookup_name("do_IRQ", (void (*)(void))jp_do_irq);
+
+#endif /* USE_SYMBOL_NAME */
+#endif
 		break;
 
 	case INT_HW_IRQ_EN:
