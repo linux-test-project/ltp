@@ -3,8 +3,6 @@ access01 access01
 # Basic test for access(2) using F_OK, R_OK, W_OK and X_OK arguments.
 access03 access03
 # EFAULT error testing for access(2)
-alarm01 alarm01
-# Basic test for alarm(2)
 alarm02 alarm02
 # Boundary Value Test for alarm(2)
 #    TEST CASES
