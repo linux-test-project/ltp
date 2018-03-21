@@ -152,13 +152,11 @@ int main(int argc, char *argv[])
 	else
 		get_in_addr(ip_str, &ip);
 
-	if (is_ipv6) {
-		print_svar_change("LHOST_IFACES", iface);
+	print_svar_change(is_rhost ? "RHOST_IFACES" : "LHOST_IFACES", iface);
+	if (is_ipv6)
 		print_ivar(is_rhost ? "IPV6_RPREFIX" : "IPV6_LPREFIX", prefix);
-	} else {
-		print_svar_change("RHOST_IFACES", iface);
+	else
 		print_ivar(is_rhost ? "IPV4_RPREFIX" : "IPV4_LPREFIX", prefix);
-	}
 
 	exit(EXIT_SUCCESS);
 }
