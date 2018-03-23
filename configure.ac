@@ -36,6 +36,7 @@ AC_CHECK_HEADERS([ \
     ifaddrs.h \
     keyutils.h \
     linux/can.h \
+    linux/dccp.h \
     linux/genetlink.h \
     linux/keyctl.h \
     linux/if_packet.h \

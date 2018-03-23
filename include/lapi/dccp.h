@@ -18,7 +18,9 @@
 #ifndef LAPI_DCCP_H__
 #define LAPI_DCCP_H__
 
-#include <linux/dccp.h>
+#ifdef HAVE_LINUX_DCCP_H
+# include <linux/dccp.h>
+#endif
 
 #ifndef DCCP_SOCKOPT_SERVICE
 # define DCCP_SOCKOPT_SERVICE	2
