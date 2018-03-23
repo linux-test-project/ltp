@@ -98,9 +98,7 @@ static void setup(void)
 
 	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
 		if (tcases[i].exp_errno == EFAULT) {
-			tcases[i].dir = SAFE_MMAP(0, 1, PROT_NONE,
-			                          MAP_PRIVATE | MAP_ANONYMOUS,
-			                          0, 0);
+			tcases[i].dir = tst_get_bad_addr(NULL);
 		}
 	}
 
