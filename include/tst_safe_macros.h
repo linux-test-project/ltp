@@ -109,6 +109,18 @@ static inline int safe_dup(const char *file, const int lineno,
 #define SAFE_SETUID(uid) \
 	safe_setuid(__FILE__, __LINE__, NULL, (uid))
 
+int safe_setregid(const char *file, const int lineno,
+		  gid_t rgid, gid_t egid);
+
+#define SAFE_SETREGID(rgid, egid) \
+	safe_setregid(__FILE__, __LINE__, (rgid), (egid))
+
+int safe_setreuid(const char *file, const int lineno,
+		  uid_t ruid, uid_t euid);
+
+#define SAFE_SETREUID(ruid, euid) \
+	safe_setreuid(__FILE__, __LINE__, (ruid), (euid))
+
 #define SAFE_GETRESUID(ruid, euid, suid) \
 	safe_getresuid(__FILE__, __LINE__, NULL, (ruid), (euid), (suid))
 

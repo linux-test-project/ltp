@@ -90,6 +90,38 @@ int safe_personality(const char *filename, unsigned int lineno,
 	return prev_persona;
 }
 
+int safe_setregid(const char *file, const int lineno,
+		  gid_t rgid, gid_t egid)
+{
+	int rval;
+
+	rval = setregid(rgid, egid);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "setregid(%li, %li) failed",
+			 (long)rgid, (long)egid);
+	}
+
+	return rval;
+}
+
+
+int safe_setreuid(const char *file, const int lineno,
+		  uid_t ruid, uid_t euid)
+{
+	int rval;
+
+	rval = setreuid(ruid, euid);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "setreuid(%li, %li) failed",
+			 (long)ruid, (long)euid);
+	}
+
+	return rval;
+}
+
+
 int safe_sigaction(const char *file, const int lineno,
                    int signum, const struct sigaction *act,
                    struct sigaction *oldact)
