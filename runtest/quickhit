@@ -175,8 +175,6 @@ lseek11 lseek11
 # Negative test for lseek(2) of a pipe
 lstat02 lstat02
 # Basic test for lstat(2)
-mkdir08 mkdir08
-# Basic test for mkdir(2)
 qmm01 mmap001 -m 1
 # Basic mmap() test.
 open03 open03

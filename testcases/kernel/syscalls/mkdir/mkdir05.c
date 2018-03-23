@@ -1,6 +1,5 @@
-/*
- * Copyright (c) International Business Machines  Corp., 2001
- *  07/2001 Ported by Wayne Boyer
+/* Copyright (c) International Business Machines  Corp., 2001
+ * 07/2001 Ported by Wayne Boyer
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,137 +12,65 @@
  * the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * DESCRIPTION
- *	This test will verify the mkdir(2) syscall basic functionality
+/* DESCRIPTION
+ * This test will verify the mkdir(2) creates a new directory successfully and
+ * it is owned by the effective UID and GID of the process.
  */
 
 #include <errno.h>
-#include <string.h>
-#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <pwd.h>
-#include "test.h"
-#include "safe_macros.h"
-
-void setup();
-void cleanup();
+#include "tst_test.h"
 
 #define PERMS		0777
+#define TESTDIR		"testdir"
 
-char *TCID = "mkdir05";
-int TST_TOTAL = 1;
-
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-
-char tstdir1[100];
-
-int main(int ac, char **av)
+static void verify_mkdir(void)
 {
-	int lc;
 	struct stat buf;
 
-	/*
-	 * parse standard options
-	 */
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	/*
-	 * perform global setup for test
-	 */
-	setup();
-
-	/*
-	 * check looping state if -i option given
-	 */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		/*
-		 * TEST mkdir() base functionality
-		 */
-
-		/* Initialize the test directory name */
-		sprintf(tstdir1, "tstdir1.%d", getpid());
-
-		/* Call mkdir(2) using the TEST macro */
-		TEST(mkdir(tstdir1, PERMS));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL, "mkdir(%s, %#o) Failed",
-				 tstdir1, PERMS);
-			continue;
-		}
-
-		SAFE_STAT(cleanup, tstdir1, &buf);
-		/* check the owner */
-		if (buf.st_uid != geteuid()) {
-			tst_resm(TFAIL, "mkdir() FAILED to set owner ID"
-				 " as process's effective ID");
-			continue;
-		}
-		/* check the group ID */
-		if (buf.st_gid != getegid()) {
-			tst_resm(TFAIL, "mkdir() failed to set group ID"
-				 " as the process's group ID");
-			continue;
-		}
-		tst_resm(TPASS, "mkdir() functionality is correct");
-
-		/* clean up things in case we are looping */
-		SAFE_RMDIR(cleanup, tstdir1);
-
+	TEST(mkdir(TESTDIR, PERMS));
+	if (TEST_RETURN == -1) {
+		tst_res(TFAIL | TTERRNO, "mkdir() Failed");
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	SAFE_STAT(TESTDIR, &buf);
+
+	if (buf.st_uid != geteuid()) {
+		tst_res(TFAIL, "mkdir() FAILED to set owner ID "
+			"as process's effective ID");
+		return;
+	}
+
+	if (buf.st_gid != getegid()) {
+		tst_res(TFAIL, "mkdir() failed to set group ID "
+			"as the process's group ID");
+		return;
+	}
+
+	tst_res(TPASS, "mkdir() functionality is correct");
+
+	SAFE_RMDIR(TESTDIR);
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
 void setup(void)
 {
-	tst_require_root();
+	struct passwd *pw;
 
-	ltpuser = getpwnam(nobody_uid);
-	if (setuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setuid");
-	}
+	pw = SAFE_GETPWNAM("nobody");
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/* Create a temporary directory and make it current. */
-	tst_tmpdir();
+	SAFE_SETUID(pw->pw_uid);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- */
-void cleanup(void)
-{
-
-	/*
-	 * Remove the temporary directory.
-	 */
-	tst_rmdir();
-
-	/*
-	 * Exit with return code appropriate for results.
-	 */
-
-}
+static struct tst_test test = {
+	.test_all = verify_mkdir,
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.setup = setup,
+};
