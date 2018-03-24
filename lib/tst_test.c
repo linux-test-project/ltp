@@ -1044,6 +1044,8 @@ static int run_tcases_per_fs(void)
 		tst_brk(TCONF, "There are no supported filesystems");
 
 	for (i = 0; filesystems[i]; i++) {
+
+		tst_res(TINFO, "Testing on %s", filesystems[i]);
 		tdev.fs_type = filesystems[i];
 
 		prepare_device();
