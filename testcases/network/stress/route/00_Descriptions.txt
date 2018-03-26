@@ -1,10 +1,6 @@
-route4-change-dst01
-	Verify the kernel is not crashed when the destination of an IPv4 route
-	is changed frequently by route command
-
-route4-change-dst02
-	Verify the kernel is not crashed when the destination of an IPv4 route
-	is changed frequently by ip command
+route{4,6}-change-dst
+	Verify the IPv4/IPv6 is not broken when ip command changes route
+	destination many times
 
 route4-change-gw01
 	Verify the kernel is not crashed when the gateway of an IPv4 route is
@@ -34,14 +30,6 @@ route4-rmmod02
 	Verify the kernel is not crashed when IPv4 route is add by ip command
 	then it is deleted by the removing network driver
 
-
-route6-change-dst01
-	Verify the kernel is not crashed when the destination of an IPv6 route
-	is changed frequently by route command
-
-route6-change-dst02
-	Verify the kernel is not crashed when the destination of an IPv6 route
-	is changed frequently by ip command
 
 route6-change-gw01
 	Verify the kernel is not crashed when the gateway of an IPv6 route is
