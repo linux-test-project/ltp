@@ -56,6 +56,7 @@ int TST_TOTAL = ARRAY_SIZE(testfunc);
 static volatile int sig_caught;
 static sigjmp_buf env;
 static unsigned int copy_sz;
+typedef void (*func_ptr_t)(void);
 
 int main(int ac, char **av)
 {
@@ -190,6 +191,22 @@ static void clear_cache(void *start, int len)
 }
 
 /*
+ * To check for the ABI version, because ppc64le can technically use
+ * function descriptors.
+ */
+#if defined(__powerpc64__) && (!defined(_CALL_ELF) || _CALL_ELF < 2)
+#define USE_FUNCTION_DESCRIPTORS
+#endif
+
+#ifdef USE_FUNCTION_DESCRIPTORS
+typedef struct {
+	uintptr_t entry;
+	uintptr_t toc;
+	uintptr_t env;
+} func_descr_t;
+#endif
+
+/*
  * Copy page where &exec_func resides. Also try to copy subsequent page
  * in case exec_func is close to page boundary.
  */
@@ -197,10 +214,20 @@ static void *get_func(void *mem)
 {
 	uintptr_t page_sz = getpagesize();
 	uintptr_t page_mask = ~(page_sz - 1);
-	uintptr_t func_page_offset = (uintptr_t)&exec_func & (page_sz - 1);
-	void *func_copy_start = mem + func_page_offset;
-	void *page_to_copy = (void *)((uintptr_t)&exec_func & page_mask);
+	uintptr_t func_page_offset;
+	void *func_copy_start, *page_to_copy;
 	void *mem_start = mem;
+
+#ifdef USE_FUNCTION_DESCRIPTORS
+	func_descr_t *opd =  (func_descr_t *)&exec_func;
+	func_page_offset = (uintptr_t)opd->entry & (page_sz - 1);
+	func_copy_start = mem + func_page_offset;
+	page_to_copy = (void *)((uintptr_t)opd->entry & page_mask);
+#else
+	func_page_offset = (uintptr_t)&exec_func & (page_sz - 1);
+	func_copy_start = mem + func_page_offset;
+	page_to_copy = (void *)((uintptr_t)&exec_func & page_mask);
+#endif
 
 	/* copy 1st page, if it's not present something is wrong */
 	if (!page_present(page_to_copy)) {
@@ -228,7 +255,7 @@ static void *get_func(void *mem)
 
 static void testfunc_protexec(void)
 {
-	void (*func)(void);
+	func_ptr_t func;
 	void *p;
 
 	sig_caught = 0;
@@ -236,7 +263,13 @@ static void testfunc_protexec(void)
 	p = SAFE_MMAP(cleanup, 0, copy_sz, PROT_READ | PROT_WRITE,
 		 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
+#ifdef USE_FUNCTION_DESCRIPTORS
+	func_descr_t opd;
+	opd.entry = (uintptr_t)get_func(p);
+	func = (func_ptr_t)&opd;
+#else
 	func = get_func(p);
+#endif
 
 	/* Change the protection to PROT_EXEC. */
 	TEST(mprotect(p, copy_sz, PROT_EXEC));
