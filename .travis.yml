@@ -95,7 +95,7 @@ notifications:
 before_install:
     # travis-ci/travis-ci#9112: Remove MongoDB repository which expired key often causes build failures
     - sudo rm -fv /etc/apt/sources.list.d/mongodb*
-    - sudo apt-get -qq update
+    - sudo apt update --option Acquire::Retries=100 --option Acquire::http::Timeout="60"
 
     # installing / removing dependencies
     - if [ "$INSTALL_PACKAGES" = "" ]; then
