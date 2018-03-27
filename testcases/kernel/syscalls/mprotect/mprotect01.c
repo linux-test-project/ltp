@@ -137,8 +137,8 @@ static void setup2(struct test_case *self)
 
 static void setup3(struct test_case *self)
 {
-	fd = SAFE_OPEN(cleanup, "/etc/passwd", O_RDONLY);
-	
+	fd = SAFE_OPEN(cleanup, "/dev/zero", O_RDONLY);
+
 	self->len = getpagesize();
 
 	/*
