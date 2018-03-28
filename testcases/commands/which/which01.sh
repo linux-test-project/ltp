@@ -39,21 +39,22 @@ setup()
 
 which_verify()
 {
-	until [ -z "$1" ]
-	do
+	local IFS i j
+	IFS="$IFS_FIRST_LEVEL"
+	for i in $1; do
 		found="no"
-		for i in $1; do
-			if grep -q "$i" temp; then
+		IFS="$IFS_SECOND_LEVEL"
+		for j in $i; do
+			if grep -F -q "$j" temp; then
 				found="yes"
 			fi
 		done
 		if [ "$found" != "yes" ]; then
-			echo "'$1' not found in:"
+			echo "'$i' not found in:"
 			cat temp
 			echo
 			return 1
 		fi
-		shift
 	done
 }
 
@@ -94,14 +95,16 @@ which_test()
 	tst_res TPASS "'${which_cmd}' passed."
 }
 
+IFS_FIRST_LEVEL='^'
+IFS_SECOND_LEVEL='|'
 do_test()
 {
 	case $1 in
-	1) which_test "" "pname" "$PWD/pname ./pname";;
-	2) which_test "--all" "pname" "$PWD/bin/pname" "$PWD/pname";;
-	3) which_test "-a" "pname" "$PWD/bin/pname ./bin/pname" "$PWD/pname ./pname";;
-	4) which_test "--read-alias" "pname" "pname='pname -i'" "$PWD/pname";;
-	5) which_test "-i" "pname" "pname='pname -i'" "$PWD/pname";;
+	1) which_test "" "pname" "$PWD/pname|./pname";;
+	2) which_test "-all" "pname" "$PWD/bin/pname|./bin/pname^$PWD/pname|./pname";;
+	3) which_test "-a" "pname" "$PWD/bin/pname|./bin/pname^$PWD/pname|./pname";;
+	4) which_test "--read-alias" "pname" "pname='pname -i'^$PWD/pname";;
+	5) which_test "-i" "pname" "pname='pname -i'^$PWD/pname";;
 	6) alias which='which --read-alias';
 	   which_test "--skip-alias" "pname" "$PWD/pname";
 	   unalias which;;
