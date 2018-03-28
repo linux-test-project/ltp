@@ -22,6 +22,7 @@
 /nfsv4/locks/locktests
 /rpc/basic_tests/rpc01/rpc1
 /rpc/basic_tests/rpc01/rpc_server
+/sctp/sctp_big_chunk
 /sockets/ltpClient
 /sockets/ltpServer
 /stress/ns-tools/ns-icmp_redirector

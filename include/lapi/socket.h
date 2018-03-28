@@ -45,6 +45,10 @@
 # define SOCK_CLOEXEC 02000000
 #endif
 
+#ifndef SOL_SCTP
+# define SOL_SCTP	132
+#endif
+
 #ifndef SOL_UDPLITE
 # define SOL_UDPLITE		136 /* UDP-Lite (RFC 3828) */
 #endif
