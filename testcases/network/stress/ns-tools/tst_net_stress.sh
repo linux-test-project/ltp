@@ -1,7 +1,7 @@
 #!/bin/sh
-# Copyright (c) International Business Machines  Corp., 2006
+# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2015-2017 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) International Business Machines  Corp., 2006
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -23,12 +23,7 @@
 # NOTE: More information about network variables can be found
 # in tst_net.sh and testcases/network/stress/README.
 
-export TCID="${TCID:-$(basename $0)}"
-
-TST_USE_LEGACY_API=1
 . tst_net.sh
-
-ipver=${TST_IPV6:-4}
 
 # Netmask of for the tested network
 IPV4_NETMASK="255.255.255.0"
@@ -43,9 +38,9 @@ MCAST_IPV6_ADDR="${MCAST_IPV6_ADDR_PREFIX}:1"
 # Setup for tests using netstress.
 netstress_setup()
 {
-	tst_require_root
+	TST_NEEDS_ROOT=1
 	tst_check_cmds pgrep pkill
-	trap "tst_brkm TBROK 'test interrupted'" INT
+	trap "tst_brk TBROK 'test interrupted'" INT
 }
 
 # Cleanup for tests using netstress.
@@ -86,7 +81,7 @@ check_connectivity()
 
 	[ -n "$cnt" ] && cnt_msg=" (step $cnt)"
 
-	tst_resm TINFO "ping through $src_iface iface to ${dst_addr}$cnt_msg"
+	tst_res TINFO "ping through $src_iface iface to ${dst_addr}$cnt_msg"
 
 	tst_ping $src_iface $dst_addr
 }
@@ -124,4 +119,20 @@ make_background_tcp_traffic()
 
 	netstress -R 3 -g $port > /dev/null 2>&1 &
 	tst_rhost_run -b -c "netstress -l -H $ip -g $port"
+}
+
+test_if_ip()
+{
+	case $1 in
+	1) test_body 'if_cmd';;
+	2) test_body 'ip_cmd';;
+	esac
+}
+
+test_rt_ip()
+{
+	case $1 in
+	1) test_body 'rt_cmd';;
+	2) test_body 'ip_cmd';;
+	esac
 }

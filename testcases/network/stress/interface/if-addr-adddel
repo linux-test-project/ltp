@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2005
 #
@@ -17,11 +18,11 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TST_TOTAL=2
-
+TST_CNT=2
+TST_SETUP="netstress_setup"
 TST_CLEANUP="netstress_cleanup"
-
-. test_net_stress.sh
+TST_TESTFUNC="test_if_ip"
+. tst_net_stress.sh
 
 # The interval of the check interface activity
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
@@ -33,7 +34,7 @@ test_body()
 	case $cmd_type in
 	if_cmd) local cmd_name='ifconfig' ;;
 	ip_cmd) local cmd_name='ip' ;;
-	*) tst_brkm TBROK "Unknown test parameter '$cmd_type'"
+	*) tst_brk TBROK "Unknown test parameter '$cmd_type'"
 	esac
 
 	local num=$(($(od -A n -t u1 -N 1 /dev/random) * 253 / 255 + 2 ))
@@ -46,10 +47,10 @@ test_body()
 		local netmask=24
 	fi
 
-	tst_resm TINFO "'$cmd_name' add/del IPv$ipver '$new_ip' $NS_TIMES times"
+	tst_res TINFO "'$cmd_name' add/del IPv$ipver '$new_ip' $NS_TIMES times"
 
 	if ! restore_ipaddr; then
-		tst_resm TBROK "Failed to set default IP addresses"
+		tst_res TBROK "Failed to set default IP addresses"
 		return
 	fi
 
@@ -69,14 +70,14 @@ test_body()
 		esac
 
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "command failed to add $new_ip to $iface"
+			tst_res TFAIL "command failed to add $new_ip to $iface"
 			return
 		fi
 
 		ip addr show $iface | grep -q $new_ip
 		if [ $? -ne 0 ]; then
 			ip addr show $iface
-			tst_resm TFAIL "$new_ip not configured"
+			tst_res TFAIL "$new_ip not configured"
 			return
 		fi
 
@@ -96,26 +97,20 @@ test_body()
 		esac
 
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL " delete command failed".
+			tst_res TFAIL "delete command failed"
 			return
 		fi
 
 		ip addr show $iface | grep -q $new_ip
 		if [ $? -eq 0 ]; then
 			ip addr show $iface
-			tst_resm TFAIL "Failed to remove '$new_ip' address"
+			tst_res TFAIL "Failed to remove '$new_ip' address"
 			return
 		fi
 	done
 
-	tst_resm TPASS "Test is finished correctly"
+	tst_res TPASS "Test is finished correctly"
 }
 
-netstress_setup
-
 tst_check_cmds ifconfig
-
-test_body 'if_cmd'
-test_body 'ip_cmd'
-
-tst_exit
+tst_run

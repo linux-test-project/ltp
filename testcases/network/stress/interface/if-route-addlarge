@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2005
 #
@@ -17,11 +18,11 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TST_TOTAL=2
-
+TST_CNT=2
+TST_SETUP="netstress_setup"
 TST_CLEANUP="netstress_cleanup"
-
-. test_net_stress.sh
+TST_TESTFUNC="test_rt_ip"
+. tst_net_stress.sh
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($ROUTE_TOTAL / 20))}
 
@@ -32,7 +33,7 @@ test_body()
 	case $cmd_type in
 	rt_cmd) local cmd_name='route' ;;
 	ip_cmd) local cmd_name='ip' ;;
-	*) tst_brkm TBROK "Unknown test parameter '$cmd_type'"
+	*) tst_brk TBROK "Unknown test parameter '$cmd_type'"
 	esac
 
 	local iface=$(tst_iface)
@@ -47,10 +48,10 @@ test_body()
 		esac
 	fi
 
-	tst_resm TINFO "'$cmd_name' add IPv$ipver $ROUTE_TOTAL routes"
+	tst_res TINFO "'$cmd_name' add IPv$ipver $ROUTE_TOTAL routes"
 
 	if ! restore_ipaddr; then
-		tst_resm TBROK "Failed to set default IP addresses"
+		tst_res TBROK "Failed to set default IP addresses"
 		return
 	fi
 
@@ -61,7 +62,7 @@ test_body()
 	[ "$TST_IPV6" ] && local xymax=65535 || xymax=254
 
 	if [ $ROUTE_TOTAL -gt $((xymax * xymax)) ]; then
-		tst_resm TWARN "set ROUTE_TOTAL to $xymax * $xymax"
+		tst_res TWARN "set ROUTE_TOTAL to $xymax * $xymax"
 		ROUTE_TOTAL=$((xymax * xymax))
 	fi
 
@@ -81,7 +82,7 @@ test_body()
 		ip_cmd) ip route add ${new_rt}${opt_rt} dev $iface ;;
 		esac
 		if [ $? -ne 0 ]; then
-			tst_resm TFAIL "Can't add route $new_rt to $iface"
+			tst_res TFAIL "Can't add route $new_rt to $iface"
 			return
 		fi
 
@@ -93,19 +94,13 @@ test_body()
 			y=1
 			x=$(($x + 1))
 			if [ $x -gt $xymax ]; then
-				tst_brkm TBROK "Too large $ROUTE_TOTAL"
+				tst_brk TBROK "Too large $ROUTE_TOTAL"
 			fi
 		fi
 	done
 
-	tst_resm TPASS "Test is finished correctly"
+	tst_res TPASS "Test is finished correctly"
 }
 
-netstress_setup
-
 tst_check_cmds route
-
-test_body 'rt_cmd'
-test_body 'ip_cmd'
-
-tst_exit
+tst_run

@@ -1,6 +1,6 @@
 #!/bin/sh
+# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines  Corp., 2006
-# Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -21,8 +21,15 @@
 
 . mcast-lib.sh
 
-tst_resm TINFO "joining $MCASTNUM_HEAVY IPv$ipver multicast groups on a single socket"
+do_setup()
+{
+	mcast_setup $MCASTNUM_HEAVY
+}
 
-mcast_setup $MCASTNUM_HEAVY
-do_multicast_test_multiple_join $MCASTNUM_HEAVY
-tst_exit
+do_test()
+{
+	tst_res TINFO "joining $MCASTNUM_HEAVY IPv$ipver multicast groups on a single socket"
+	do_multicast_test_multiple_join $MCASTNUM_HEAVY
+}
+
+tst_run

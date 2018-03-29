@@ -1,6 +1,6 @@
 #!/bin/sh
+# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines  Corp., 2006
-# Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -21,8 +21,15 @@
 
 . mcast-lib.sh
 
-tst_resm TINFO "joining and leaving the same IPv$ipver multicast group with a different source filters on $MCASTNUM_NORMAL sockets in $NS_TIMES times"
+do_setup()
+{
+	mcast_setup $MCASTNUM_NORMAL
+}
 
-mcast_setup $MCASTNUM_NORMAL
-do_multicast_test_join_leave $MCASTNUM_NORMAL true
-tst_exit
+do_test()
+{
+	tst_res TINFO "joining and leaving the same IPv$ipver multicast group with a different source filters on $MCASTNUM_NORMAL sockets in $NS_TIMES times"
+	do_multicast_test_join_leave $MCASTNUM_NORMAL true
+}
+
+tst_run

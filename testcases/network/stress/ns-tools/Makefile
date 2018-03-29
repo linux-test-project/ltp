@@ -29,7 +29,7 @@ INSTALL_TARGETS		:= check_envval get_ifname initialize_if set_ipv4addr \
 			   check_icmpv6_connectivity check_netem check_setkey \
 			   create_file find_portbundle killall_icmp_traffic \
 			   killall_tcp_traffic killall_udp_traffic output_ipsec_conf \
-			   ns-echoclient test_net_stress.sh
+			   ns-echoclient tst_net_stress.sh
 
 FILTER_OUT_MAKE_TARGETS	:= ns-common
 
