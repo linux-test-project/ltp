@@ -19,7 +19,8 @@
 TCID=ipneigh01
 NUMLOOPS=${NUMLOOPS:-50}
 TST_TOTAL=2
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 do_setup()
 {

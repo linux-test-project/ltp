@@ -84,16 +84,17 @@ if [ "$OPTIND" -eq 1 ]; then
 	usage
 	exit 1
 fi
+shift $(($OPTIND - 1))
 
 TST_TOTAL=1
 TCID="network_settings"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 # Reset variables.
 # Don't break the tests which are using 'testcases/lib/cmdlib.sh'
-export TCID=
-export TST_LIB_LOADED=
+unset TCID TST_LIB_LOADED TST_USE_LEGACY_API
 
 rm -f $CMDFILE
 

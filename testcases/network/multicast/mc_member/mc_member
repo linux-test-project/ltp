@@ -33,7 +33,8 @@ TCID=mc_member
 TST_TOTAL=1
 TST_COUNT=1
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 setup()
 {

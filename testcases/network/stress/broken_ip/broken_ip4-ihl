@@ -21,7 +21,8 @@
 TCID=broken_ip4-ihl01
 TST_TOTAL=1
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 tst_resm TINFO "Sending ICMPv4 with wrong header len field for $NS_DURATION sec"
 

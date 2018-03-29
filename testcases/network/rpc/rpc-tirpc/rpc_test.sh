@@ -62,6 +62,7 @@ while getopts s:c:e:h arg; do
 		h) usage ;;
 	esac
 done
+shift $(($OPTIND - 1))
 
 if [ ! -z "$SERVER" ]; then
 	if `echo "$SERVER" | grep -e '^tirpc'`; then
@@ -82,7 +83,8 @@ TST_TOTAL=1
 TST_COUNT=1
 TST_CLEANUP=cleanup
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 if [ ! -z "$SERVER" ]; then
 	$SERVER $PROGNUMNOSVC &

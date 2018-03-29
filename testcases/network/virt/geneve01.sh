@@ -27,7 +27,8 @@ start_id=16700000
 # that is why using here 'vxlan_*' library functions.
 vxlan_dst_addr="uni"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 . virt_lib.sh
 
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}

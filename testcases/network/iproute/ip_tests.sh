@@ -24,7 +24,8 @@ TST_CLEANUP=cleanup
 TST_TOTAL=6
 TCID="ip_tests"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 rm_dummy=
 

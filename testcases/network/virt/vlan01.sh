@@ -24,7 +24,8 @@ TST_TOTAL=9
 
 virt_type="vlan"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 . virt_lib.sh
 
 p0="protocol 802.1Q"

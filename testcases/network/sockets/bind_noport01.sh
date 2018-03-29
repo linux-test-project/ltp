@@ -18,7 +18,8 @@ TST_TOTAL=1
 TCID="bind_noport"
 TST_NEEDS_TMPDIR=1
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 cleanup()
 {

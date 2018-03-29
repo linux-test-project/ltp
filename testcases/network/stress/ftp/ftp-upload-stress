@@ -23,7 +23,8 @@ TCID=ftp-upload-stress
 TST_TOTAL=2
 TST_CLEANUP="cleanup"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 # Big file size to upload (byte)
 UPLOAD_BIGFILESIZE=${UPLOAD_BIGFILESIZE:-2147483647}  # 2GB - 1

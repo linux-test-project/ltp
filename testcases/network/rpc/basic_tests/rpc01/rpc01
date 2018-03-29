@@ -19,7 +19,8 @@ TCID="rpc01"
 TST_TOTAL=6
 TST_CLEANUP=do_cleanup
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 NUMLOOPS=${NUMLOOPS:=3}
 DATAFILES=${DATAFILES:="file.1 file.2"}

@@ -22,7 +22,8 @@ TCID=dns-stress
 TST_TOTAL=2
 TST_CLEANUP="cleanup"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 # Minimum host ID in the zone file.
 # The ID is used as the host portion of the address

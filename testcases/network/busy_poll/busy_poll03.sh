@@ -21,7 +21,8 @@ TST_TOTAL=2
 TCID="busy_poll03"
 TST_NEEDS_TMPDIR=1
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 . busy_poll_lib.sh
 
 cleanup()

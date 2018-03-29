@@ -21,11 +21,12 @@
 #
 # Library for all network/stress/ tests.
 # NOTE: More information about network variables can be found
-# in test_net.sh and testcases/network/stress/README.
+# in tst_net.sh and testcases/network/stress/README.
 
 export TCID="${TCID:-$(basename $0)}"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 ipver=${TST_IPV6:-4}
 

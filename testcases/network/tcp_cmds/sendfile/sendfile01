@@ -102,7 +102,8 @@ do_cleanup()
 	tst_rmdir
 }
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 do_setup
 do_test

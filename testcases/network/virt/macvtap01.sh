@@ -24,7 +24,8 @@ TST_TOTAL=4
 
 virt_type="macvtap"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 . virt_lib.sh
 
 options="mode private,mode vepa,mode bridge,mode passthru"

@@ -17,7 +17,8 @@
 TST_TOTAL=10
 TCID="ping02"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 do_setup()
 {

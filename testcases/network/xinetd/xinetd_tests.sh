@@ -20,7 +20,8 @@ TST_TOTAL=2
 TST_CLEANUP="cleanup"
 
 . daemonlib.sh
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 setup()
 {

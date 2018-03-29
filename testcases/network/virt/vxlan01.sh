@@ -25,7 +25,8 @@ TST_TOTAL=5
 virt_type="vxlan"
 start_id=16700000
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 . virt_lib.sh
 
 options="l2miss l3miss,norsc nolearning noproxy,\

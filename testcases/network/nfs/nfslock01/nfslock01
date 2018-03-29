@@ -26,7 +26,8 @@ TST_TOTAL=1
 TST_CLEANUP="nfs_cleanup"
 
 . nfs_lib.sh
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 LUSER=${LUSER:=root}
 

@@ -32,7 +32,8 @@ EXECUTABLES=${EXECUTABLES:-"mc_verify_opts mc_verify_opts_error"}
 TCID=mc_opts
 TST_TOTAL=1
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 COUNT=1
 while [ $COUNT -le 10 ]; do

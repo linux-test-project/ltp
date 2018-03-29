@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2016-2017 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2016-2018 Petr Vorel <pvorel@suse.cz>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -19,12 +19,87 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 
-[ -z "$TST_LIB_LOADED" ] && . test.sh
+TST_OPTS="6$TST_OPTS"
+TST_PARSE_ARGS_CALLER="$TST_PARSE_ARGS"
+TST_PARSE_ARGS="tst_net_parse_args"
+TST_USAGE_CALLER="$TST_USAGE"
+TST_USAGE="tst_net_usage"
+TST_SETUP_CALLER="$TST_SETUP"
+TST_SETUP="tst_net_setup"
+
+# Blank for an IPV4 test; 6 for an IPV6 test.
+TST_IPV6=${TST_IPV6:-}
+
+tst_net_parse_args()
+{
+	case $1 in
+	6) TST_IPV6=6;;
+	*) $TST_PARSE_ARGS_CALLER "$1" "$2";;
+	esac
+}
+
+tst_net_read_opts()
+{
+	local OPTIND
+	while getopts "$TST_OPTS" opt; do
+		$TST_PARSE_ARGS "$opt"
+	done
+}
+
+tst_net_usage()
+{
+	if [ -n "$TST_USAGE_CALLER" ]; then
+		$TST_USAGE_CALLER
+	else
+		echo "Usage: $0 [-6]"
+		echo "OPTIONS"
+	fi
+	echo "-6      IPv6 tests"
+}
+
+tst_net_remote_tmpdir()
+{
+	[ "$TST_NEEDS_TMPDIR" = 1 ] || return
+	[ -n "$TST_USE_LEGACY_API" ] && tst_tmpdir
+	tst_rhost_run -c "mkdir -p $TST_TMPDIR"
+	tst_rhost_run -c "chmod 777 $TST_TMPDIR"
+	export TST_TMPDIR_RHOST=1
+}
+
+tst_net_setup()
+{
+	ipver=${TST_IPV6:-4}
+	tst_net_remote_tmpdir
+	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
+}
+
+if [ -z "$TST_LIB_LOADED" ]; then
+	[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
+fi
+
+if [ -n "$TST_USE_LEGACY_API" ]; then
+	tst_net_read_opts $*
+	ipver=${TST_IPV6:-4}
+fi
+
+# old vs. new API compatibility layer
+tst_res_()
+{
+	[ -z "$TST_USE_LEGACY_API" ] && tst_res $@ || tst_resm $@
+}
+tst_brk_()
+{
+	[ -z "$TST_USE_LEGACY_API" ] && tst_brk $@ || tst_brkm $@
+}
+tst_require_root_()
+{
+	[ -z "$TST_USE_LEGACY_API" ] && TST_NEEDS_ROOT=1 || tst_require_root
+}
 
 init_ltp_netspace()
 {
 	tst_check_cmds ip
-	tst_require_root
+	tst_require_root_
 
 	local pid=
 
@@ -81,7 +156,7 @@ tst_rhost_run()
 		s) safe=1 ;;
 		c) cmd="$OPTARG" ;;
 		u) user="$OPTARG" ;;
-		*) tst_brkm TBROK "tst_rhost_run: unknown option: $OPTARG" ;;
+		*) tst_brk_ TBROK "tst_rhost_run: unknown option: $OPTARG" ;;
 		esac
 	done
 
@@ -89,8 +164,8 @@ tst_rhost_run()
 
 	if [ -z "$cmd" ]; then
 		[ "$safe" -eq 1 ] && \
-			tst_brkm TBROK "tst_rhost_run: command not defined"
-		tst_resm TWARN "tst_rhost_run: command not defined"
+			tst_brk_ TBROK "tst_rhost_run: command not defined"
+		tst_res_ TWARN "tst_rhost_run: command not defined"
 		return 1
 	fi
 
@@ -110,7 +185,7 @@ tst_rhost_run()
 	if [ $ret -eq 1 ]; then
 		output=$(echo "$output" | sed 's/RTERR//')
 		[ "$safe" -eq 1 ] && \
-			tst_brkm TBROK "'$cmd' failed on '$RHOST': '$output'"
+			tst_brk_ TBROK "'$cmd' failed on '$RHOST': '$output'"
 	fi
 
 	[ -z "$out" -a -n "$output" ] && echo "$output"
@@ -122,9 +197,9 @@ EXPECT_RHOST_PASS()
 {
 	tst_rhost_run -c "$*" > /dev/null
 	if [ $? -eq 0 ]; then
-		tst_resm TPASS "$* passed as expected"
+		tst_res_ TPASS "$* passed as expected"
 	else
-		tst_resm TFAIL "$* failed unexpectedly"
+		tst_res_ TFAIL "$* failed unexpectedly"
 	fi
 }
 
@@ -132,9 +207,9 @@ EXPECT_RHOST_FAIL()
 {
 	tst_rhost_run -c "$* 2> /dev/null"
 	if [ $? -ne 0 ]; then
-		tst_resm TPASS "$* failed as expected"
+		tst_res_ TPASS "$* failed as expected"
 	else
-		tst_resm TFAIL "$* passed unexpectedly"
+		tst_res_ TFAIL "$* passed unexpectedly"
 	fi
 }
 
@@ -199,23 +274,6 @@ tst_iface()
 	link_num="$(( $link_num + 1 ))"
 	echo "$(tst_get_ifaces $type)" | awk '{ print $'"$link_num"' }'
 }
-
-# Blank for an IPV4 test; 6 for an IPV6 test.
-TST_IPV6=
-
-tst_read_opts()
-{
-	OPTIND=0
-	while getopts ":6" opt; do
-		case "$opt" in
-		6)
-			TST_IPV6=6;;
-		esac
-	done
-	OPTIND=0
-}
-
-tst_read_opts $*
 
 # Get IP address
 # tst_ipaddr [TYPE]
@@ -302,7 +360,7 @@ tst_init_iface()
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
 	local iface="$(tst_iface $type $link_num)"
-	tst_resm TINFO "initialize '$type' '$iface' interface"
+	tst_res_ TINFO "initialize '$type' '$iface' interface"
 
 	if [ "$type" = "lhost" ]; then
 		ip xfrm policy flush || return $?
@@ -340,12 +398,12 @@ tst_add_ipaddr()
 	local iface=$(tst_iface $type $link_num)
 
 	if [ $type = "lhost" ]; then
-		tst_resm TINFO "set local addr $(tst_ipaddr)/$mask"
+		tst_res_ TINFO "set local addr $(tst_ipaddr)/$mask"
 		ip addr add $(tst_ipaddr)/$mask dev $iface
 		return $?
 	fi
 
-	tst_resm TINFO "set remote addr $(tst_ipaddr rhost)/$mask"
+	tst_res_ TINFO "set remote addr $(tst_ipaddr rhost)/$mask"
 	tst_rhost_run -c "ip addr add $(tst_ipaddr rhost)/$mask dev $iface"
 }
 
@@ -356,7 +414,7 @@ tst_add_ipaddr()
 tst_restore_ipaddr()
 {
 	tst_check_cmds ip
-	tst_require_root
+	tst_require_root_
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -390,7 +448,7 @@ tst_wait_ipv6_dad()
 		[ $ret -ne 0 -a $? -ne 0 ] && return
 
 		[ $(($i % 10)) -eq 0 ] && \
-			tst_resm TINFO "wait for IPv6 DAD completion $((i / 10))/5 sec"
+			tst_res_ TINFO "wait for IPv6 DAD completion $((i / 10))/5 sec"
 
 		tst_sleep 100ms
 	done
@@ -443,7 +501,7 @@ tst_netload()
 		f) cs_opts="${cs_opts}-f " ;;
 		F) cs_opts="${cs_opts}-F " ;;
 		e) expect_res="$OPTARG" ;;
-		*) tst_brkm TBROK "tst_netload: unknown option: $OPTARG" ;;
+		*) tst_brk_ TBROK "tst_netload: unknown option: $OPTARG" ;;
 		esac
 	done
 	OPTIND=0
@@ -455,37 +513,37 @@ tst_netload()
 
 	tst_rhost_run -c "pkill -9 netstress\$"
 	s_opts="${cs_opts}${s_opts}-R $s_replies -B $TST_TMPDIR"
-	tst_resm TINFO "run server 'netstress $s_opts'"
+	tst_res_ TINFO "run server 'netstress $s_opts'"
 	tst_rhost_run -c "netstress $s_opts" > tst_netload.log 2>&1
 	if [ $? -ne 0 ]; then
 		cat tst_netload.log
 		local ttype="TFAIL"
 		grep -e 'CONF:' tst_netload.log && ttype="TCONF"
-		tst_brkm $ttype "server failed"
+		tst_brk_ $ttype "server failed"
 	fi
 
 	local port=$(tst_rhost_run -s -c "cat $TST_TMPDIR/netstress_port")
 	c_opts="${cs_opts}${c_opts}-a $c_num -r $c_requests -d $rfile -g $port"
 
-	tst_resm TINFO "run client 'netstress -l $c_opts'"
+	tst_res_ TINFO "run client 'netstress -l $c_opts'"
 	netstress -l $c_opts > tst_netload.log 2>&1 || ret=1
 	tst_rhost_run -c "pkill -9 netstress\$"
 
 	if [ "$expect_ret" -ne "$ret" ]; then
 		tst_dump_rhost_cmd
 		cat tst_netload.log
-		tst_brkm TFAIL "expected '$expect_res' but ret: '$ret'"
+		tst_brk_ TFAIL "expected '$expect_res' but ret: '$ret'"
 	fi
 
 	if [ "$ret" -eq 0 ]; then
 		if [ ! -f $rfile ]; then
 			tst_dump_rhost_cmd
 			cat tst_netload.log
-			tst_brkm TFAIL "can't read $rfile"
+			tst_brk_ TFAIL "can't read $rfile"
 		fi
-		tst_resm TPASS "netstress passed, time spent '$(cat $rfile)' ms"
+		tst_res_ TPASS "netstress passed, time spent '$(cat $rfile)' ms"
 	else
-		tst_resm TPASS "netstress failed as expected"
+		tst_res_ TPASS "netstress failed as expected"
 	fi
 
 	return $ret
@@ -516,9 +574,9 @@ tst_ping()
 			-s $size -i 0 > /dev/null 2>&1
 		ret=$?
 		if [ $ret -eq 0 ]; then
-			tst_resm TPASS "$msg $size: pass"
+			tst_res_ TPASS "$msg $size: pass"
 		else
-			tst_resm TFAIL "$msg $size: fail"
+			tst_res_ TFAIL "$msg $size: fail"
 			break
 		fi
 	done
@@ -558,9 +616,9 @@ tst_icmp()
 		ns-icmpv${ver}_sender -s $size $opts
 		ret=$?
 		if [ $ret -eq 0 ]; then
-			tst_resm TPASS "'ns-icmpv${ver}_sender -s $size $opts' pass"
+			tst_res_ TPASS "'ns-icmpv${ver}_sender -s $size $opts' pass"
 		else
-			tst_resm TFAIL "'ns-icmpv${ver}_sender -s $size $opts' fail"
+			tst_res_ TFAIL "'ns-icmpv${ver}_sender -s $size $opts' fail"
 			break
 		fi
 	done
@@ -597,7 +655,7 @@ tst_cleanup_rhost()
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
 export PASSWD="${PASSWD:-}"
-# Don't use it in new tests, use tst_rhost_run() from test_net.sh instead.
+# Don't use it in new tests, use tst_rhost_run() from tst_net.sh instead.
 export LTP_RSH="${LTP_RSH:-rsh -n}"
 
 # Test Links
@@ -644,10 +702,10 @@ if [ -z "$TST_PARSE_VARIABLES" ]; then
 	eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
 		$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
 
-	tst_resm TINFO "Network config (local -- remote):"
-	tst_resm TINFO "$LHOST_IFACES -- $RHOST_IFACES"
-	tst_resm TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
-	tst_resm TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
+	tst_res_ TINFO "Network config (local -- remote):"
+	tst_res_ TINFO "$LHOST_IFACES -- $RHOST_IFACES"
+	tst_res_ TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
+	tst_res_ TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
 	export TST_PARSE_VARIABLES="yes"
 fi
 
@@ -686,9 +744,4 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 # More information about network parameters can be found
 # in the following document: testcases/network/stress/README
 
-if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
-	tst_tmpdir
-	tst_rhost_run -c "mkdir -p $TST_TMPDIR"
-	tst_rhost_run -c "chmod 777 $TST_TMPDIR"
-	export TST_TMPDIR_RHOST=1
-fi
+[ -n "$TST_USE_LEGACY_API" ] && tst_net_remote_tmpdir

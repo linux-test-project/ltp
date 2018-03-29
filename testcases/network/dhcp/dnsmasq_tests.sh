@@ -22,7 +22,8 @@ TST_TOTAL=1
 TCID="dnsmasq"
 dhcp_name="dnsmasq"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 . dhcp_lib.sh
 
 start_dhcp()

@@ -29,7 +29,8 @@
 TCID=mc_cmds
 TST_TOTAL=1
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 knob="net.ipv4.icmp_echo_ignore_broadcasts"
 knob_changed=

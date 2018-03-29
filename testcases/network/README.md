@@ -68,7 +68,7 @@ Testcases and network tools must be in PATH, e.g.:
 ```sh
 export PATH=/opt/ltp/testcases/bin:/usr/bin:$PATH
 ```
-Default values for all LTP network variables are set in testcases/lib/test_net.sh.
+Default values for all LTP network variables are set in testcases/lib/tst_net.sh.
 If you need to override some parameters please export them before test run or
 specify them when running ltp-pan or testscripts/network.sh.
 
@@ -79,7 +79,7 @@ To run the test type the following:
 TEST_VARS ./network.sh OPTIONS
 ```
 Where
-* TEST_VARS - non-default network parameters (see testcases/lib/test_net.sh), they
+* TEST_VARS - non-default network parameters (see testcases/lib/tst_net.sh), they
   could be exported before test run;
 * OPTIONS - test group(s), use '-h' to see available ones.
 

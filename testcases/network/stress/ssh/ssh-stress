@@ -24,7 +24,8 @@ TCID=ssh-stress
 TST_TOTAL=3
 TST_CLEANUP="cleanup"
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 # Temporary directory to store sshd setting or ssh key
 # Note: ssh doesn't work when those directory is under /tmp.

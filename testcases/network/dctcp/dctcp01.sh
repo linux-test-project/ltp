@@ -23,7 +23,8 @@ TST_NEEDS_TMPDIR=1
 def_alg="cubic"
 prev_alg=
 
-. test_net.sh
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 set_cong_alg()
 {

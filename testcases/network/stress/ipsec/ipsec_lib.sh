@@ -19,8 +19,6 @@
 #
 #######################################################################
 
-. test_net.sh
-
 # Authenticated encryption with associated data
 AEALGO="rfc4106_128"
 # Encryption algorithm
@@ -63,11 +61,14 @@ while getopts "hl:m:p:s:S:k:A:e:a:c:r:6" opt; do
 	a) AALGO=$OPTARG ;;
 	c) CALGO=$OPTARG ;;
 	r) IPSEC_REQUESTS="$OPTARG" ;;
-	6) # skip, test_net library already processed it
-	;;
+	6) TST_IPV6=6 ;;
 	*) tst_brkm TBROK "unknown option: $opt" ;;
 	esac
 done
+shift $(($OPTIND - 1))
+
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 get_key()
 {
