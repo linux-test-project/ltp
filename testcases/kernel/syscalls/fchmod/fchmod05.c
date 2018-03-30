@@ -88,10 +88,9 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "fchmod.h"
 
-#define MODE_RWX	(S_IRWXU | S_IRWXG | S_IRWXO)
-#define PERMS		043777
-#define TESTDIR		"testdir"
+#define PERMS_GID		043777
 
 int fd;				/* file descriptor for test directory */
 char *TCID = "fchmod05";
@@ -119,7 +118,7 @@ int main(int ac, char **av)
 		 * to set setgid bit on TESTDIR.
 		 */
 
-		TEST(fchmod(fd, PERMS));
+		TEST(fchmod(fd, PERMS_GID));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "fchmod(%d, %#o) Failed, errno=%d : %s",
@@ -136,14 +135,14 @@ int main(int ac, char **av)
 				 TESTDIR, TEST_ERRNO);
 		}
 		dir_mode = stat_buf.st_mode;
-		if ((PERMS & ~S_ISGID) != dir_mode) {
+		if ((PERMS_GID & ~S_ISGID) != dir_mode) {
 			tst_resm(TFAIL, "%s: Incorrect modes 0%03o, "
 				 "Expected 0%03o",
-				 TESTDIR, dir_mode, PERMS & ~S_ISGID);
+				 TESTDIR, dir_mode, PERMS_GID & ~S_ISGID);
 		} else {
 			tst_resm(TPASS, "Functionality of fchmod(%d, "
 				 "%#o) successful", fd,
-				 PERMS & ~S_ISGID);
+				 PERMS_GID & ~S_ISGID);
 		}
 	}
 
@@ -188,7 +187,7 @@ void setup(void)
 	 * mode permissions and change the gid of test directory to that of
 	 * guest user.
 	 */
-	SAFE_MKDIR(cleanup, TESTDIR, MODE_RWX);
+	SAFE_MKDIR(cleanup, TESTDIR, DIR_MODE);
 
 	if (setgroups(1, &nobody_u->pw_gid) == -1)
 		tst_brkm(TBROK, cleanup,

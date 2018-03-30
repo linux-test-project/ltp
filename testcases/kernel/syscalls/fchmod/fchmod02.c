@@ -82,15 +82,10 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "fchmod.h"
 
 #define LTPUSER		"nobody"
 #define LTPGRP		"users"
-#define FILE_MODE 	S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define PERMS		01777	/*
-				 * Mode permissions of test file with sticky
-				 * bit set.
-				 */
-#define TESTFILE	"testfile"
 
 int fd;				/* file descriptor variable */
 char *TCID = "fchmod02";

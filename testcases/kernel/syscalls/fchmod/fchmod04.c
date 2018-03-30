@@ -81,13 +81,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-
-#define DIR_MODE 	S_IRWXU | S_IRWXG | S_IRWXO
-#define PERMS		01777	/*
-				 * Mode permissions of test directory with
-				 * sticky bit set.
-				 */
-#define TESTDIR		"testdir_4"
+#include "fchmod.h"
 
 int fd;				/* file descriptor for test directory */
 char *TCID = "fchmod04";
