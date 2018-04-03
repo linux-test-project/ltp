@@ -86,15 +86,12 @@ if [ "$OPTIND" -eq 1 ]; then
 fi
 shift $(($OPTIND - 1))
 
-TST_TOTAL=1
-TCID="network_settings"
-
-TST_USE_LEGACY_API=1
+TST_NO_DEFAULT_RUN=1
 . tst_net.sh
 
 # Reset variables.
 # Don't break the tests which are using 'testcases/lib/cmdlib.sh'
-unset TCID TST_LIB_LOADED TST_USE_LEGACY_API
+unset TST_ID TST_LIB_LOADED TST_NO_DEFAULT_RUN
 
 rm -f $CMDFILE
 
