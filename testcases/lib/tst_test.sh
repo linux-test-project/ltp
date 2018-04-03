@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) Linux Test Project, 2014-2017
+# Copyright (c) Linux Test Project, 2014-2018
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -371,41 +371,11 @@ tst_run()
 	tst_do_exit
 }
 
-if TST_TEST_PATH=$(which $0) 2>/dev/null; then
-	if ! grep -q tst_run "$TST_TEST_PATH"; then
-		tst_brk TBROK "Test $0 must call tst_run!"
-	fi
-fi
-
 if [ -z "$TST_ID" ]; then
 	filename=$(basename $0)
 	TST_ID=${filename%%.*}
 fi
 export TST_ID="$TST_ID"
-
-if [ -z "$TST_TESTFUNC" ]; then
-	tst_brk TBROK "TST_TESTFUNC is not defined"
-fi
-
-if [ -n "$TST_CNT" ]; then
-	if ! tst_is_int "$TST_CNT"; then
-		tst_brk TBROK "TST_CNT must be integer"
-	fi
-
-	if [ "$TST_CNT" -le 0 ]; then
-		tst_brk TBROK "TST_CNT must be > 0"
-	fi
-fi
-
-if [ -n "$TST_POS_ARGS" ]; then
-	if ! tst_is_int "$TST_POS_ARGS"; then
-		tst_brk TBROK "TST_POS_ARGS must be integer"
-	fi
-
-	if [ "$TST_POS_ARGS" -le 0 ]; then
-		tst_brk TBROK "TST_POS_ARGS must be > 0"
-	fi
-fi
 
 if [ -z "$LTPROOT" ]; then
 	export LTPROOT="$PWD"
@@ -414,24 +384,56 @@ else
 	export TST_DATAROOT="$LTPROOT/testcases/data/$TST_ID"
 fi
 
-TST_ARGS="$@"
-
-while getopts ":hi:$TST_OPTS" tst_name; do
-	case $tst_name in
-	'h') TST_PRINT_HELP=1;;
-	*);;
-	esac
-done
-
-shift $((OPTIND - 1))
-
-if [ -n "$TST_POS_ARGS" ]; then
-	if [ -z "$TST_PRINT_HELP" -a $# -ne "$TST_POS_ARGS" ]; then
-		tst_brk TBROK "Invalid number of positional paramters:"\
-			      "have ($@) $#, expected ${TST_POS_ARGS}"
+if [ -z "$TST_NO_DEFAULT_RUN" ]; then
+	if TST_TEST_PATH=$(which $0) 2>/dev/null; then
+		if ! grep -q tst_run "$TST_TEST_PATH"; then
+			tst_brk TBROK "Test $0 must call tst_run!"
+		fi
 	fi
-else
-	if [ -z "$TST_PRINT_HELP" -a $# -ne 0 ]; then
-		tst_brk TBROK "Unexpected positional arguments '$@'"
+
+	if [ -z "$TST_TESTFUNC" ]; then
+		tst_brk TBROK "TST_TESTFUNC is not defined"
+	fi
+
+	if [ -n "$TST_CNT" ]; then
+		if ! tst_is_int "$TST_CNT"; then
+			tst_brk TBROK "TST_CNT must be integer"
+		fi
+
+		if [ "$TST_CNT" -le 0 ]; then
+			tst_brk TBROK "TST_CNT must be > 0"
+		fi
+	fi
+
+	if [ -n "$TST_POS_ARGS" ]; then
+		if ! tst_is_int "$TST_POS_ARGS"; then
+			tst_brk TBROK "TST_POS_ARGS must be integer"
+		fi
+
+		if [ "$TST_POS_ARGS" -le 0 ]; then
+			tst_brk TBROK "TST_POS_ARGS must be > 0"
+		fi
+	fi
+
+	TST_ARGS="$@"
+
+	while getopts ":hi:$TST_OPTS" tst_name; do
+		case $tst_name in
+		'h') TST_PRINT_HELP=1;;
+		*);;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ -n "$TST_POS_ARGS" ]; then
+		if [ -z "$TST_PRINT_HELP" -a $# -ne "$TST_POS_ARGS" ]; then
+			tst_brk TBROK "Invalid number of positional paramters:"\
+					  "have ($@) $#, expected ${TST_POS_ARGS}"
+		fi
+	else
+		if [ -z "$TST_PRINT_HELP" -a $# -ne 0 ]; then
+			tst_brk TBROK "Unexpected positional arguments '$@'"
+		fi
 	fi
 fi
