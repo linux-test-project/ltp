@@ -299,8 +299,6 @@ finished:
 		SAFE_FREE(pcom);
 
 	}
-	pthread_cancel(sig_hand);
-	pthread_join(sig_hand, NULL);
 	SAFE_FREE(tabcom);
 	SAFE_FREE(threads);
 	tst_rmdir();
