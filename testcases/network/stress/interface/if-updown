@@ -18,48 +18,34 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TST_CNT=2
-TST_SETUP="netstress_setup"
-TST_TESTFUNC="test_if_ip"
-. tst_net_stress.sh
+IF_CMD='ifconfig'
+TST_CLEANUP="if_cleanup_restore"
+. if-lib.sh
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
 
-do_cleanup()
-{
-	netstress_cleanup
-	restore_ipaddr
-}
-
 test_body()
 {
-	local cmd_type=$1
-
-	case $cmd_type in
-	if_cmd) local cmd_name='ifconfig' ;;
-	ip_cmd) local cmd_name='ip' ;;
-	*) tst_brk TBROK "Unknown test parameter '$cmd_type'"
-	esac
-
+	local cmd="$CMD"
 	local iface=$(tst_iface)
 
-	tst_res TINFO "'$cmd_name ups/downs $iface $IF_UPDOWN_TIMES times"
+	tst_res TINFO "'$cmd' ups/downs $iface $IF_UPDOWN_TIMES times"
 	tst_res TINFO "check connectivity interval is $CHECK_INTERVAL"
 
 	local cnt=1
 	while [ $cnt -le $IF_UPDOWN_TIMES ]; do
-		case $cmd_type in
-		if_cmd) ifconfig $iface down ;;
-		ip_cmd) ip link set $iface down ;;
+		case $cmd in
+		ifconfig) ifconfig $iface down ;;
+		ip) ip link set $iface down ;;
 		esac
 		if [ $? -ne 0 ]; then
 			tst_res TFAIL "Failed to down $iface"
 			return
 		fi
 
-		case $cmd_type in
-		if_cmd) ifconfig $iface up ;;
-		ip_cmd) ip link set $iface up ;;
+		case $cmd in
+		ifconfig) ifconfig $iface up ;;
+		ip) ip link set $iface up ;;
 		esac
 		if [ $? -ne 0 ]; then
 			tst_res TFAIL "Failed to up $iface"
@@ -74,6 +60,4 @@ test_body()
 	tst_res TPASS "Test is finished correctly"
 }
 
-tst_check_cmds ifconfig
-TST_CLEANUP="do_cleanup"
 tst_run

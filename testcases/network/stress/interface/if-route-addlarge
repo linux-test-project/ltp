@@ -18,37 +18,24 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TST_CNT=2
-TST_SETUP="netstress_setup"
-TST_CLEANUP="netstress_cleanup"
-TST_TESTFUNC="test_rt_ip"
-. tst_net_stress.sh
+IF_CMD='route'
+. if-lib.sh
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($ROUTE_TOTAL / 20))}
 
 test_body()
 {
-	local cmd_type=$1
-
-	case $cmd_type in
-	rt_cmd) local cmd_name='route' ;;
-	ip_cmd) local cmd_name='ip' ;;
-	*) tst_brk TBROK "Unknown test parameter '$cmd_type'"
-	esac
-
+	local cmd="$CMD"
 	local iface=$(tst_iface)
 	local inet="inet$TST_IPV6"
 	local opt_rt=
 	if [ "$TST_IPV6" ]; then
 		opt_rt="/64"
-	else
-		case $cmd_type in
-		rt_cmd) ;;
-		ip_cmd) opt_rt='/32' ;;
-		esac
+	elif [ "$cmd" = "ip" ]; then
+		opt_rt='/32'
 	fi
 
-	tst_res TINFO "'$cmd_name' add IPv$ipver $ROUTE_TOTAL routes"
+	tst_res TINFO "'$cmd' add IPv$ipver $ROUTE_TOTAL routes"
 
 	if ! restore_ipaddr; then
 		tst_res TBROK "Failed to set default IP addresses"
@@ -77,9 +64,9 @@ test_body()
 			local new_rt=${IPV4_NET16_UNUSED}.$x.$y
 		fi
 
-		case $cmd_type in
-		rt_cmd) route -A $inet add ${new_rt}${opt_rt} dev $iface ;;
-		ip_cmd) ip route add ${new_rt}${opt_rt} dev $iface ;;
+		case $cmd in
+		route) route -A $inet add ${new_rt}${opt_rt} dev $iface ;;
+		ip) ip route add ${new_rt}${opt_rt} dev $iface ;;
 		esac
 		if [ $? -ne 0 ]; then
 			tst_res TFAIL "Can't add route $new_rt to $iface"
@@ -102,5 +89,4 @@ test_body()
 	tst_res TPASS "Test is finished correctly"
 }
 
-tst_check_cmds route
 tst_run

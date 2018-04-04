@@ -18,11 +18,10 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TST_CNT=2
+IF_CMD='ifconfig'
 TST_SETUP="do_setup"
 TST_CLEANUP="do_cleanup"
-TST_TESTFUNC="test_if_ip"
-. tst_net_stress.sh
+. if-lib.sh
 
 # The interval of the mtu change [second]
 CHANGE_INTERVAL=${CHANGE_INTERVAL:-5}
@@ -36,38 +35,28 @@ saved_mtu=
 do_setup()
 {
 	[ "$TST_IPV6" ] && CHANGE_VALUES=$CHANGE6_VALUES
-	netstress_setup
-	tst_check_cmds ifconfig
+	if_setup
 	saved_mtu="$(cat /sys/class/net/$(tst_iface)/mtu)"
 }
 
 do_cleanup()
 {
-	netstress_cleanup
+	if_cleanup_restore
 	if [ "$saved_mtu" ]; then
 		ip li set $(tst_iface) mtu $saved_mtu
 		tst_rhost_run -c "ip li set $(tst_iface rhost) mtu $saved_mtu"
 	fi
-	tst_restore_ipaddr
-	tst_restore_ipaddr rhost
-	tst_wait_ipv6_dad
 }
 
 test_body()
 {
-	local cmd_type=$1
-
-	case $cmd_type in
-	if_cmd) local cmd_name='ifconfig' ;;
-	ip_cmd) local cmd_name='ip' ;;
-	*) tst_brk TBROK "Unknown test parameter '$cmd_type'"
-	esac
+	local cmd="$CMD"
 
 	local iface=$(tst_iface)
 	local iface_rmt=$(tst_iface rhost)
 	[ "$TST_IPV6" ] && local netmask=64 || local netmask=16
 
-	tst_res TINFO "'$cmd_name changes MTU $MTU_CHANGE_TIMES times" \
+	tst_res TINFO "'$cmd' changes MTU $MTU_CHANGE_TIMES times" \
 	               "every $CHANGE_INTERVAL seconds"
 
 	mtu_array_len=$(echo $CHANGE_VALUES | wc -w)
@@ -83,11 +72,11 @@ test_body()
 
 		tst_res TINFO "set MTU to $mtu $cnt/$MTU_CHANGE_TIMES"
 		local ret=0
-		case $cmd_type in
-		if_cmd) ifconfig $iface mtu $mtu || ret=1
+		case $cmd in
+		ifconfig) ifconfig $iface mtu $mtu || ret=1
 			tst_rhost_run -c "ifconfig $iface_rmt mtu $mtu"
 		;;
-		ip_cmd) ip link set $iface mtu $mtu || ret=1
+		ip) ip link set $iface mtu $mtu || ret=1
 			tst_rhost_run -c "ip link set $iface_rmt mtu $mtu"
 		;;
 		esac

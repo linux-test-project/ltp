@@ -18,25 +18,15 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TST_CNT=2
-TST_SETUP="netstress_setup"
-TST_CLEANUP="netstress_cleanup"
-TST_TESTFUNC="test_if_ip"
-. tst_net_stress.sh
+IF_CMD='ifconfig'
+. if-lib.sh
 
 # The interval of the check interface activity
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
 
 test_body()
 {
-	local cmd_type=$1
-
-	case $cmd_type in
-	if_cmd) local cmd_name='ifconfig' ;;
-	ip_cmd) local cmd_name='ip' ;;
-	*) tst_brk TBROK "Unknown test parameter '$cmd_type'"
-	esac
-
+	local cmd="$CMD"
 	local num=$(($(od -A n -t u1 -N 1 /dev/random) * 253 / 255 + 2 ))
 	local iface=$(tst_iface)
 	if [ "$TST_IPV6" ]; then
@@ -47,7 +37,7 @@ test_body()
 		local netmask=24
 	fi
 
-	tst_res TINFO "'$cmd_name' add/del IPv$ipver '$new_ip' $NS_TIMES times"
+	tst_res TINFO "'$cmd' add/del IPv$ipver '$new_ip' $NS_TIMES times"
 
 	if ! restore_ipaddr; then
 		tst_res TBROK "Failed to set default IP addresses"
@@ -58,15 +48,15 @@ test_body()
 	while [ $cnt -le $NS_TIMES ]; do
 		make_background_tcp_traffic
 
-		case $cmd_type in
-		if_cmd)
+		case $cmd in
+		ifconfig)
 			if [ "$TST_IPV6" ]; then
 				ifconfig $iface add $new_ip/$netmask
 			else
 				ifconfig $iface:1 $new_ip netmask 255.255.255.0
 			fi
 		;;
-		ip_cmd) ip addr add $new_ip/$netmask dev $iface ;;
+		ip) ip addr add $new_ip/$netmask dev $iface ;;
 		esac
 
 		if [ $? -ne 0 ]; then
@@ -85,19 +75,19 @@ test_body()
 
 		cnt=$(($cnt + 1))
 
-		case $cmd_type in
-		if_cmd)
+		case $cmd in
+		ifconfig)
 			if [ "$TST_IPV6" ]; then
 				ifconfig $iface del $new_ip/$netmask
 			else
 				ifconfig $iface:1 down
 			fi
 		;;
-		ip_cmd) ip addr del $new_ip/$netmask dev $iface ;;
+		ip) ip addr del $new_ip/$netmask dev $iface ;;
 		esac
 
 		if [ $? -ne 0 ]; then
-			tst_res TFAIL "delete command failed"
+			tst_res TFAIL " delete command failed".
 			return
 		fi
 
@@ -112,5 +102,4 @@ test_body()
 	tst_res TPASS "Test is finished correctly"
 }
 
-tst_check_cmds ifconfig
 tst_run
