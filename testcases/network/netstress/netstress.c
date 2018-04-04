@@ -165,13 +165,16 @@ static void init_socket_opts(int sd)
 		SAFE_SETSOCKOPT_INT(sd, SOL_DCCP, DCCP_SOCKOPT_SERVICE,
 				    service_code);
 	break;
-	case TYPE_UDP_LITE:
+	case TYPE_UDP_LITE: {
+		int cscov = init_srv_msg_len >> 1;
+
+		if (cscov < 8)
+			cscov = 8;
+		tst_res(TINFO, "UDP-Lite send cscov is %d", cscov);
 		/* set checksum for header and partially for payload */
-		SAFE_SETSOCKOPT_INT(sd, SOL_UDPLITE, UDPLITE_SEND_CSCOV,
-				    init_srv_msg_len >> 1);
-		SAFE_SETSOCKOPT_INT(sd, SOL_UDPLITE, UDPLITE_RECV_CSCOV,
-				    init_srv_msg_len >> 2);
-	break;
+		SAFE_SETSOCKOPT_INT(sd, SOL_UDPLITE, UDPLITE_SEND_CSCOV, cscov);
+		SAFE_SETSOCKOPT_INT(sd, SOL_UDPLITE, UDPLITE_RECV_CSCOV, 8);
+	} break;
 	}
 }
 
