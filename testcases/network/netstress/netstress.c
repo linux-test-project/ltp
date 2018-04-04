@@ -89,6 +89,7 @@ static char *source_addr;
 static char *server_bg;
 static int busy_poll		= -1;
 static int max_etime_cnt = 12; /* ~30 sec max timeout if no connection */
+static int max_pmtu_err = 10;
 
 enum {
 	TYPE_TCP = 0,
@@ -139,6 +140,7 @@ struct sock_info {
 	struct sockaddr_storage raddr;
 	socklen_t raddr_len;
 	int etime_cnt;
+	int pmtu_err_cnt;
 	int timeout;
 };
 
@@ -255,8 +257,15 @@ static int client_recv(char *buf, int srv_msg_len, struct sock_info *i)
 		/* socket closed or msg is not valid */
 		if (len < 1 || (offset + len) > srv_msg_len ||
 		   (buf[0] != start_byte && buf[0] != start_fin_byte)) {
-			if (!errno)
+			/* packet too big message, resend with new pmtu */
+			if (errno == EMSGSIZE) {
+				if (++(i->pmtu_err_cnt) < max_pmtu_err)
+					return 0;
+				tst_brk(TFAIL, "too many pmtu errors %d",
+					i->pmtu_err_cnt);
+			} else if (!errno) {
 				errno = ENOMSG;
+			}
 			break;
 		}
 		offset += len;
@@ -357,6 +366,7 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 	inf.raddr_len = sizeof(inf.raddr);
 	inf.etime_cnt = 0;
 	inf.timeout = wait_timeout;
+	inf.pmtu_err_cnt = 0;
 
 	make_client_request(client_msg, &cln_len, &srv_len);
 
