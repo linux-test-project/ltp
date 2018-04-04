@@ -18,8 +18,8 @@
 #ifndef LAPI_SCTP_H__
 #define LAPI_SCTP_H__
 
-#ifdef HAVE_LINUX_SCTP_H
-# include <linux/sctp.h>
+#ifdef HAVE_NETINET_SCTP_H
+# include <netinet/sctp.h>
 #endif
 
 #ifndef SCTP_SOCKOPT_BINDX_ADD
