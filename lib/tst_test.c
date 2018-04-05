@@ -638,6 +638,7 @@ static int needs_tmpdir(void)
 {
 	return tst_test->needs_tmpdir ||
 	       tst_test->needs_device ||
+	       tst_test->mntpoint ||
 	       tst_test->resource_files ||
 	       tst_test->needs_checkpoints;
 }
