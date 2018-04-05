@@ -98,6 +98,7 @@ virt_add()
 	vlan|vxlan)
 		[ -z "$opt" ] && opt="id 4094"
 		[ "$vxlan_dstport" -eq 1 ] && opt="dstport 0 $opt"
+		[ "$virt_type" = "vxlan" ] && opt="$opt dev $(tst_iface)"
 	;;
 	geneve)
 		[ -z "$opt" ] && opt="id 4094 remote $(tst_ipaddr rhost)"
@@ -110,7 +111,7 @@ virt_add()
 
 	case $virt_type in
 	vxlan|geneve)
-		ip li add $vname type $virt_type $opt dev $(tst_iface)
+		ip li add $vname type $virt_type $opt
 	;;
 	gre|ip6gre)
 		ip -f inet$TST_IPV6 tu add $vname mode $virt_type $opt
@@ -126,7 +127,7 @@ virt_add_rhost()
 	local opt=""
 	case $virt_type in
 	vxlan|geneve)
-		opt="dev $(tst_iface rhost)"
+		[ "$virt_type" = "vxlan" ] && opt="dev $(tst_iface rhost)"
 		[ "$vxlan_dstport" -eq 1 ] && opt="$opt dstport 0"
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
 	;;
