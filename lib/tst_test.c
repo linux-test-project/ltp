@@ -696,11 +696,43 @@ static void assert_test_fn(void)
 		tst_brk(TBROK, "You can define tcnt only for test()");
 }
 
+static int prepare_and_mount_ro_fs(const char *dev,
+                                   const char *mntpoint,
+                                   const char *fs_type)
+{
+	char buf[PATH_MAX];
+
+	if (mount(dev, mntpoint, fs_type, 0, NULL)) {
+		tst_res(TINFO | TERRNO, "Can't mount %s at %s (%s)",
+			dev, mntpoint, fs_type);
+		return 1;
+	}
+
+	mntpoint_mounted = 1;
+
+	snprintf(buf, sizeof(buf), "%s/dir/", mntpoint);
+	SAFE_MKDIR(buf, 0777);
+
+	snprintf(buf, sizeof(buf), "%s/file", mntpoint);
+	SAFE_FILE_PRINTF(buf, "file content");
+	SAFE_CHMOD(buf, 0777);
+
+	SAFE_MOUNT(dev, mntpoint, fs_type, MS_REMOUNT | MS_RDONLY, NULL);
+
+	return 0;
+}
+
 static void prepare_device(void)
 {
 	if (tst_test->format_device) {
 		SAFE_MKFS(tdev.dev, tdev.fs_type, tst_test->dev_fs_opts,
 			  tst_test->dev_extra_opt);
+	}
+
+	if (tst_test->needs_rofs) {
+		prepare_and_mount_ro_fs(tdev.dev, tst_test->mntpoint,
+		                        tdev.fs_type);
+		return;
 	}
 
 	if (tst_test->mount_device) {
@@ -759,18 +791,13 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->needs_rofs) {
 		/* If we failed to mount read-only tmpfs. Fallback to
-		 * using a device with empty read-only filesystem.
+		 * using a device with read-only filesystem.
 		 */
-		if (mount(NULL, tst_test->mntpoint, "tmpfs", MS_RDONLY, NULL)) {
-			tst_res(TINFO | TERRNO, "Can't mount tmpfs read-only"
-				" at %s, setting up a device instead\n",
-				tst_test->mntpoint);
-			tst_test->mount_device = 1;
+		if (prepare_and_mount_ro_fs(NULL, tst_test->mntpoint, "tmpfs")) {
+			tst_res(TINFO, "Can't mount tmpfs read-only, "
+			        "falling back to block device...");
 			tst_test->needs_device = 1;
 			tst_test->format_device = 1;
-			tst_test->mnt_flags = MS_RDONLY;
-		} else {
-			mntpoint_mounted = 1;
 		}
 	}
 
