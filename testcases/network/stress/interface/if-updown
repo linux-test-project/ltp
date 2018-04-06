@@ -19,11 +19,15 @@
 
 TST_TOTAL=2
 
-TST_CLEANUP="netstress_cleanup"
-
 . test_net_stress.sh
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
+
+do_cleanup()
+{
+	netstress_cleanup
+	restore_ipaddr
+}
 
 test_body()
 {
@@ -71,6 +75,7 @@ test_body()
 netstress_setup
 
 tst_check_cmds ifconfig
+TST_CLEANUP="if_cleanup_restore"
 
 test_body 'if_cmd'
 test_body 'ip_cmd'
