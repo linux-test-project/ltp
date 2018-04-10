@@ -726,6 +726,8 @@
 /pwritev/pwritev01_64
 /pwritev/pwritev02
 /pwritev/pwritev02_64
+/pwritev/pwritev03
+/pwritev/pwritev03_64
 /quotactl/quotactl01
 /quotactl/quotactl02
 /quotactl/quotactl03
