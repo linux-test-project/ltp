@@ -67,13 +67,8 @@ COMPAT_16_H     := $(abs_srcdir)/../utils/compat_tst_16.h
 endif
 
 ifneq ($(wildcard $(COMPAT_16_H)),)
-HAS_COMPAT_16		:= 1
-
 $(MAKE_TARGETS_OBJS_WO_COMPAT_16): $(COMPAT_16_H)
 .INTERMEDIATE: $(MAKE_TARGETS_OBJS_WO_COMPAT_16)
-
-else
-HAS_COMPAT_16		:= 0
 endif
 
 %_16: CPPFLAGS += -D$(DEF_16)=1
