@@ -7,7 +7,6 @@ file01 file01.sh
 tar01  tar_tests.sh
 cron cron_tests.sh
 logrotate export TCdat=$LTPROOT/testcases/bin; logrotate_tests.sh
-mail export TCdat=$LTPROOT/testcases/bin; mail_tests.sh
 cpio01 cpio_tests.sh
 unzip01 unzip01.sh
 gzip01 gzip_tests.sh
