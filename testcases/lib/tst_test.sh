@@ -102,7 +102,7 @@ tst_res()
 
 	tst_inc_res "$res"
 
-	printf "$TCID $TST_COUNT "
+	printf "$TST_ID $TST_COUNT "
 	tst_print_colored $res "$res: "
 	echo "$@"
 }
