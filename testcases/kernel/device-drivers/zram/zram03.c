@@ -173,6 +173,31 @@ static void cleanup(void)
 		tst_resm(TWARN | TERRNO, "system(rmmod zram) failed");
 }
 
+static void print_io_stat(void)
+{
+	char filename[BUFSIZ];
+	char  val1[BUFSIZ], val2[BUFSIZ], val3[BUFSIZ], val4[BUFSIZ];
+
+	sprintf(filename, "%s/io_stat", PATH_ZRAM);
+	SAFE_FILE_SCANF(cleanup, filename, "%s %s %s %s",
+			val1, val2, val3, val4);
+	tst_resm(TINFO, "%s is %s %s %s %s", filename,
+			val1, val2, val3, val4);
+}
+
+static void print_mm_stat(void)
+{
+	char filename[BUFSIZ];
+	char  val1[BUFSIZ], val2[BUFSIZ], val3[BUFSIZ], val4[BUFSIZ];
+	char  val5[BUFSIZ], val6[BUFSIZ], val7[BUFSIZ];
+
+	sprintf(filename, "%s/mm_stat", PATH_ZRAM);
+	SAFE_FILE_SCANF(cleanup, filename, "%s %s %s %s %s %s %s",
+			val1, val2, val3, val4, val5, val6, val7);
+	tst_resm(TINFO, "%s is %s %s %s %s %s %s %s", filename,
+			val1, val2, val3, val4, val5, val6, val7);
+}
+
 static void print(char *string)
 {
 	char filename[BUFSIZ], value[BUFSIZ];
@@ -185,11 +210,7 @@ static void print(char *string)
 static void dump_info(void)
 {
 	print("initstate");
-	print("compr_data_size");
-	print("orig_data_size");
 	print("disksize");
-	print("mem_used_total");
-	print("num_reads");
-	print("num_writes");
-	print("zero_pages");
+	print_mm_stat();
+	print_io_stat();
 }
