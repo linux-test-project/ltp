@@ -73,8 +73,8 @@ TST_USE_LEGACY_API=1
 get_key()
 {
 	local bits=$1
-	local xdg_num=$(( $bits / 4 ))
-	echo "0x$(tr -dc "[:xdigit:]" < /dev/urandom | head -c$xdg_num)"
+	local bytes=$(( $bits / 8))
+	echo "0x$(hexdump -vn $bytes -e '1/1 "%02x"' /dev/urandom)"
 }
 
 case $AEALGO in
