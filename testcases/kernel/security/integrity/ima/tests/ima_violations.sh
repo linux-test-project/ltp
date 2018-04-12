@@ -21,6 +21,7 @@
 
 TST_SETUP="setup"
 TST_CNT=3
+TST_NEEDS_DEVICE=1
 
 . ima_setup.sh
 . daemonlib.sh
@@ -149,6 +150,9 @@ test3()
 	close_file_read
 
 	validate $num_violations $count $search
+
+	# wait for ima_mmap to exit, so we can umount
+	tst_sleep 2s
 }
 
 tst_run

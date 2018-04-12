@@ -22,6 +22,7 @@
 TST_NEEDS_CMDS="awk"
 TST_SETUP="setup"
 TST_CNT=3
+TST_NEEDS_DEVICE=1
 
 . ima_setup.sh
 

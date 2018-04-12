@@ -28,6 +28,7 @@ TST_NEEDS_ROOT=1
 
 SYSFS="/sys"
 UMOUNT=
+FS_TYPE="ext3"
 
 mount_helper()
 {
@@ -39,13 +40,28 @@ mount_helper()
 	[ -n "$dir" ] && { echo "$dir"; return; }
 
 	if ! mkdir -p $default_dir; then
-		tst_brk TBROK "Failed to create $default_dir"
+		tst_brk TBROK "failed to create $default_dir"
 	fi
 	if ! mount -t $type $type $default_dir; then
-		tst_brk TBROK "Failed to mount $type"
+		tst_brk TBROK "failed to mount $type"
 	fi
 	UMOUNT="$default_dir $UMOUNT"
 	echo $default_dir
+}
+
+mount_loop_device()
+{
+	local ret
+
+	tst_check_cmds mkfs.$FS_TYPE
+	tst_mkfs $FS_TYPE $TST_DEVICE
+	ROD_SILENT mkdir -p mntpoint
+	mount ${TST_DEVICE} mntpoint
+	ret=$?
+	if [ $ret -ne 0 ]; then
+		tst_brk TBROK "failed to mount device (mount exit = $ret)"
+	fi
+	cd mntpoint
 }
 
 ima_setup()
@@ -57,6 +73,11 @@ ima_setup()
 	ASCII_MEASUREMENTS="$IMA_DIR/ascii_runtime_measurements"
 	BINARY_MEASUREMENTS="$IMA_DIR/binary_runtime_measurements"
 
+	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
+		tst_res TINFO "\$TMPDIR is on tmpfs => run on loop device"
+		mount_loop_device
+	fi
+
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
 
@@ -66,4 +87,15 @@ ima_cleanup()
 	for dir in $UMOUNT; do
 		umount $dir
 	done
+
+	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
+		cd $TST_TMPDIR
+		tst_umount $TST_DEVICE
+	fi
 }
+
+# loop device is needed to use only for tmpfs
+TMPDIR="${TMPDIR:-/tmp}"
+if [ "$(df -T $TMPDIR | tail -1 | awk '{print $2}')" != "tmpfs" -a -n "$TST_NEEDS_DEVICE" ]; then
+	unset TST_NEEDS_DEVICE
+fi
