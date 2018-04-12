@@ -59,7 +59,7 @@ tst_net_usage()
 
 tst_net_remote_tmpdir()
 {
-	[ "$TST_NEEDS_TMPDIR" = 1 ] || return
+	[ "$TST_NEEDS_TMPDIR" = 1 ] || return 0
 	[ -n "$TST_USE_LEGACY_API" ] && tst_tmpdir
 	tst_rhost_run -c "mkdir -p $TST_TMPDIR"
 	tst_rhost_run -c "chmod 777 $TST_TMPDIR"
@@ -744,4 +744,6 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 # More information about network parameters can be found
 # in the following document: testcases/network/stress/README
 
-[ -n "$TST_USE_LEGACY_API" ] && tst_net_remote_tmpdir
+if [ -n "$TST_USE_LEGACY_API" ]; then
+	tst_net_remote_tmpdir
+fi
