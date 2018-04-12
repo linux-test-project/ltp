@@ -471,8 +471,8 @@ tst_netload()
 	# common options for client and server
 	local cs_opts=
 
-	local c_num="${TST_NETLOAD_CLN_NUMBER:-2}"
-	local c_requests="${TST_NETLOAD_CLN_REQUESTS:-500000}"
+	local c_num="$TST_NETLOAD_CLN_NUMBER"
+	local c_requests="$TST_NETLOAD_CLN_REQUESTS"
 	local c_opts=
 
 	# number of server replies after which TCP connection is closed
@@ -709,6 +709,8 @@ if [ -z "$TST_PARSE_VARIABLES" ]; then
 	export TST_PARSE_VARIABLES="yes"
 fi
 
+export TST_NETLOAD_CLN_REQUESTS="${TST_NETLOAD_CLN_REQUESTS:-10000}"
+export TST_NETLOAD_CLN_NUMBER="${TST_NETLOAD_CLN_NUMBER:-2}"
 export HTTP_DOWNLOAD_DIR="${HTTP_DOWNLOAD_DIR:-/var/www/html}"
 export FTP_DOWNLOAD_DIR="${FTP_DOWNLOAD_DIR:-/var/ftp}"
 export FTP_UPLOAD_DIR="${FTP_UPLOAD_DIR:-/var/ftp/pub}"
