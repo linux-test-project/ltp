@@ -106,6 +106,7 @@ static void verify_inotify(void)
 }
 
 static struct tst_test test = {
+	.timeout = 600,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.setup = setup,
