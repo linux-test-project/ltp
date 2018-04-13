@@ -118,7 +118,7 @@ tst_brk()
 
 ROD_SILENT()
 {
-	local tst_out=$(tst_rod $@ 2>&1)
+	local tst_out="$(tst_rod $@ 2>&1)"
 	if [ $? -ne 0 ]; then
 		echo "$tst_out"
 		tst_brk TBROK "$@ failed"
