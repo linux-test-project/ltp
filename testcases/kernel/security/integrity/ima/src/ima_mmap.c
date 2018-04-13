@@ -25,6 +25,8 @@
 char *TCID = "ima_mmap";
 int TST_TOTAL = 1;
 
+#define SLEEP_AFTER_CLOSE 3
+
 int main(int argc, char *argv[])
 {
 	int fd;
@@ -47,7 +49,10 @@ int main(int argc, char *argv[])
 		return (-1);
 	}
 	close(fd);
-	sleep(30);
+
+	tst_resm(TINFO, "sleep %ds", SLEEP_AFTER_CLOSE);
+	sleep(SLEEP_AFTER_CLOSE);
+
 	if (munmap(file, 1024) < 0) {
 		perror("unmap");
 		return (-1);
