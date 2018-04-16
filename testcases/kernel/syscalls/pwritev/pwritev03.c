@@ -39,7 +39,8 @@
 
 static char *initbuf, *preadbuf;
 static int fd;
-static long blksz, org_off;
+static off_t blk_off, zero_off;
+static ssize_t blksz;
 
 static struct iovec wr_iovec[] = {
 	{NULL, 0},
@@ -51,9 +52,9 @@ static struct tcase {
 	off_t *offset;
 	ssize_t *size;
 } tcases[] = {
-	{1, &org_off, &blksz},
-	{2, &org_off, &blksz},
-	{1, &blksz, &blksz},
+	{1, &zero_off, &blksz},
+	{2, &zero_off, &blksz},
+	{1, &blk_off, &blksz},
 };
 
 static void verify_direct_pwritev(unsigned int n)
@@ -100,9 +101,19 @@ static void verify_direct_pwritev(unsigned int n)
 
 static void setup(void)
 {
-	int dev_fd = SAFE_OPEN(tst_device->dev, O_RDWR);
-	SAFE_IOCTL(dev_fd, BLKSSZGET, &blksz);
+	int dev_fd, ret;
+	
+	dev_fd = SAFE_OPEN(tst_device->dev, O_RDWR);
+	SAFE_IOCTL(dev_fd, BLKSSZGET, &ret);
 	SAFE_CLOSE(dev_fd);
+
+	if (ret <= 0)
+		tst_brk(TBROK, "BLKSSZGET returned invalid block size %i", ret);
+
+	tst_res(TINFO, "Using block size %i", ret);
+
+	blksz = ret;
+	blk_off = ret;
 
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT | O_DIRECT, 0644);
 

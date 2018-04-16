@@ -37,7 +37,8 @@
 #define FNAME	MNTPOINT"/file"
 
 static int fd;
-static long blksz, org_off;
+static off_t blk_off, zero_off;
+static ssize_t blksz;
 static char *pop_buf;
 
 static struct iovec rd_iovec[] = {
@@ -51,9 +52,9 @@ static struct tcase {
 	ssize_t *size;
 	char content;
 } tcases[] = {
-	{1, &org_off, &blksz, 0x61},
-	{2, &org_off, &blksz, 0x61},
-	{1, &blksz, &blksz, 0x62},
+	{1, &zero_off, &blksz, 0x61},
+	{2, &zero_off, &blksz, 0x61},
+	{1, &blk_off, &blksz, 0x62},
 };
 
 static void verify_direct_preadv(unsigned int n)
@@ -101,9 +102,19 @@ static void verify_direct_preadv(unsigned int n)
 
 static void setup(void)
 {
-	int dev_fd = SAFE_OPEN(tst_device->dev, O_RDWR);
-	SAFE_IOCTL(dev_fd, BLKSSZGET, &blksz);
+	int dev_fd, ret;
+
+	dev_fd = SAFE_OPEN(tst_device->dev, O_RDWR);
+	SAFE_IOCTL(dev_fd, BLKSSZGET, &ret);
 	SAFE_CLOSE(dev_fd);
+
+	if (ret <= 0)
+		tst_brk(TBROK, "BLKSSZGET returned invalid block size %i", ret);
+
+	tst_res(TINFO, "Using block size %i", ret);
+
+	blksz = ret;
+	blk_off = ret;
 
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT | O_DIRECT, 0644);
 
