@@ -201,18 +201,18 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 	safe_readdir(__FILE__, __LINE__, NULL, (dirp))
 
 #define SAFE_IOCTL(fd, request, ...)                         \
-	({int ret = ioctl(fd, request, ##__VA_ARGS__);       \
-	  ret < 0 ?                                          \
+	({int tst_ret_ = ioctl(fd, request, ##__VA_ARGS__);  \
+	  tst_ret_ < 0 ?                                     \
 	   tst_brk(TBROK | TERRNO,                           \
 	            "ioctl(%i,%s,...) failed", fd, #request) \
-	 : ret;})
+	 : tst_ret_;})
 
 #define SAFE_FCNTL(fd, cmd, ...)                            \
-	({int ret = fcntl(fd, cmd, ##__VA_ARGS__);          \
-	  ret == -1 ?                                       \
+	({int tst_ret_ = fcntl(fd, cmd, ##__VA_ARGS__);     \
+	  tst_ret_ == -1 ?                                  \
 	   tst_brk(TBROK | TERRNO,                          \
 	            "fcntl(%i,%s,...) failed", fd, #cmd), 0 \
-	 : ret;})
+	 : tst_ret_;})
 
 /*
  * following functions are inline because the behaviour may depend on
