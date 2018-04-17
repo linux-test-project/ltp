@@ -251,7 +251,7 @@ tst_run()
 	if [ -n "$TST_TEST_PATH" ]; then
 		for tst_i in $(grep TST_ "$TST_TEST_PATH" | sed 's/.*TST_//; s/[="} \t\/:`].*//'); do
 			case "$tst_i" in
-			SETUP|CLEANUP|TESTFUNC|ID|CNT);;
+			SETUP|CLEANUP|TESTFUNC|ID|CNT|MIN_KVER);;
 			OPTS|USAGE|PARSE_ARGS|POS_ARGS);;
 			NEEDS_ROOT|NEEDS_TMPDIR|NEEDS_DEVICE|DEVICE);;
 			NEEDS_CMDS|NEEDS_MODULE|MODPATH|DATAROOT);;
@@ -289,6 +289,11 @@ tst_run()
 	fi
 
 	tst_check_cmds $TST_NEEDS_CMDS
+
+	if [ -n "$TST_MIN_KVER" ]; then
+		tst_kvcmp -lt "$TST_MIN_KVER" && \
+			tst_brk TCONF "test requires kernel $TST_MIN_KVER+"
+	fi
 
 	if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
 		if [ -z "$TMPDIR" ]; then
