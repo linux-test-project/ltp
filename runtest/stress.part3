@@ -350,7 +350,6 @@ mlockall01 mlockall01
 mlockall02 mlockall02
 mlockall03 mlockall03
 
-mkdir01 mkdir01
 mkdir02 mkdir02
 mkdir03 mkdir03
 mkdir04 mkdir04
