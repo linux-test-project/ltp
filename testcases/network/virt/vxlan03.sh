@@ -33,9 +33,10 @@ start_id=16700000
 # Destination address, can be unicast or multicast address
 vxlan_dst_addr="uni"
 
+. virt_lib.sh
+
 TST_USE_LEGACY_API=1
 . tst_net.sh
-. virt_lib.sh
 
 # In average cases (with small packets less then 150 bytes) VxLAN slower
 # by 10-30%. If hosts are too close to each other, e.g. connected to the same

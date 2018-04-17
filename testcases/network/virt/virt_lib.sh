@@ -28,18 +28,6 @@
 #          them in cleanup function. See "start_vni" variable which can
 #          solve it.
 
-ip_local=$(tst_ipaddr)
-ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
-ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"
-
-ip_remote=$(tst_ipaddr rhost)
-ip_virt_remote="$(TST_IPV6= tst_ipaddr_un rhost)"
-ip6_virt_remote="$(TST_IPV6=6 tst_ipaddr_un rhost)"
-
-# Max performance loss (%) for virtual devices during network load
-VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
-vxlan_dstport=0
-
 while getopts :hi:d:6 opt; do
 	case "$opt" in
 	h)
@@ -59,6 +47,23 @@ while getopts :hi:d:6 opt; do
 	;;
 	esac
 done
+
+shift $(($OPTIND - 1))
+
+TST_USE_LEGACY_API=1
+. tst_net.sh
+
+ip_local=$(tst_ipaddr)
+ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
+ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"
+
+ip_remote=$(tst_ipaddr rhost)
+ip_virt_remote="$(TST_IPV6= tst_ipaddr_un rhost)"
+ip6_virt_remote="$(TST_IPV6=6 tst_ipaddr_un rhost)"
+
+# Max performance loss (%) for virtual devices during network load
+VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
+vxlan_dstport=0
 
 cleanup_vifaces()
 {
