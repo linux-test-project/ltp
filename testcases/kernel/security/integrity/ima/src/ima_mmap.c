@@ -14,48 +14,49 @@
  * Open and mmap a file and sleep. Another process will open the
  * mmapped file in read mode, resulting in a open_writer violation.
  */
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include "test.h"
 
-char *TCID = "ima_mmap";
-int TST_TOTAL = 1;
+#include "tst_test.h"
 
 #define SLEEP_AFTER_CLOSE 3
+#define MMAPSIZE 1024
 
-int main(int argc, char *argv[])
+static char *filename;
+static void *file;
+static int fd;
+
+static struct tst_option options[] = {
+	{"f:", &filename,
+	 "-f file  File to mmap"},
+	{NULL, NULL, NULL}
+};
+
+static void cleanup(void)
 {
-	int fd;
-	void *file;
-	char *filename;
+	if (file)
+		SAFE_MUNMAP(file, MMAPSIZE);
 
-	if (argc != 2)
-		printf("%s: filename\n", argv[1]);
-	filename = argv[1];
+	if (fd > 0)
+		SAFE_CLOSE(fd);
+}
 
-	fd = open(filename, O_CREAT | O_RDWR, S_IRWXU);
-	if (fd < 0) {
-		perror("open");
-		return (-1);
-	}
+static void run(void)
+{
+	if (!filename)
+		tst_brk(TBROK, "Usage: %s -f filename", TCID);
 
-	file = mmap(NULL, 1024, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (file == (void *)-1) {
-		perror("mmap");
-		return (-1);
-	}
-	close(fd);
+	fd = SAFE_OPEN(filename, O_CREAT | O_RDWR, S_IRWXU);
 
-	tst_resm(TINFO, "sleep %ds", SLEEP_AFTER_CLOSE);
+	file = SAFE_MMAP(NULL, MMAPSIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	SAFE_CLOSE(fd);
+
+	tst_res(TINFO, "sleep %ds", SLEEP_AFTER_CLOSE);
 	sleep(SLEEP_AFTER_CLOSE);
 
-	if (munmap(file, 1024) < 0) {
-		perror("unmap");
-		return (-1);
-	}
-	tst_exit();
+	tst_res(TPASS, "test completed");
 }
+
+static struct tst_test test = {
+	.options = options,
+	.test_all = run,
+	.cleanup = cleanup,
+};
