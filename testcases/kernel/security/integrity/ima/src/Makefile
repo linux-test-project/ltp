@@ -24,6 +24,6 @@ top_srcdir		?= ../../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS			+= $(CRYPTO_LIBS) -ldl
+ima_boot_aggregate: LDLIBS += $(CRYPTO_LIBS) -ldl
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
