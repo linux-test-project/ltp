@@ -384,6 +384,8 @@
 /inotify/inotify04
 /inotify/inotify05
 /inotify/inotify06
+/inotify/inotify07
+/inotify/inotify08
 /inotify_init/inotify_init1_01
 /inotify_init/inotify_init1_02
 /io_cancel/io_cancel01
