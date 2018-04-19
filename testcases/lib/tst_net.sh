@@ -126,8 +126,6 @@ init_ltp_netspace()
 
 	tst_restore_ipaddr
 	tst_restore_ipaddr rhost
-
-	tst_wait_ipv6_dad
 }
 
 # Run command on remote host.
@@ -389,9 +387,10 @@ tst_add_ipaddr()
 {
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
-	local mask
+	local mask dad
 
 	if [ "$TST_IPV6" ]; then
+		dad="nodad"
 		[ "$type" = "lhost" ] && mask=$IPV6_LPREFIX || mask=$IPV6_RPREFIX
 	else
 		[ "$type" = "lhost" ] && mask=$IPV4_LPREFIX || mask=$IPV4_RPREFIX
@@ -401,12 +400,12 @@ tst_add_ipaddr()
 
 	if [ $type = "lhost" ]; then
 		tst_res_ TINFO "set local addr $(tst_ipaddr)/$mask"
-		ip addr add $(tst_ipaddr)/$mask dev $iface
+		ip addr add $(tst_ipaddr)/$mask dev $iface $dad
 		return $?
 	fi
 
 	tst_res_ TINFO "set remote addr $(tst_ipaddr rhost)/$mask"
-	tst_rhost_run -c "ip addr add $(tst_ipaddr rhost)/$mask dev $iface"
+	tst_rhost_run -c "ip addr add $(tst_ipaddr rhost)/$mask dev $iface $dad"
 }
 
 # tst_restore_ipaddr [TYPE] [LINK]
