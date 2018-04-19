@@ -903,13 +903,15 @@ static void setup(void)
 		net.cleanup	= client_cleanup;
 
 		switch (proto_type) {
+		case TYPE_TCP:
+			check_tw_reuse();
+			break;
 		case TYPE_DCCP:
 		case TYPE_UDP:
 		case TYPE_UDP_LITE:
 			tst_res(TINFO, "max timeout errors %d", max_etime_cnt);
 			wait_timeout = 100;
 		}
-		check_tw_reuse();
 	} else {
 		tst_res(TINFO, "max requests '%d'",
 			server_max_requests);
