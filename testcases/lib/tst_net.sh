@@ -103,7 +103,7 @@ init_ltp_netspace()
 
 	local pid=
 
-	if [ ! -f /var/run/netns/ltp_ns ]; then
+	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD ns_create net,mnt)"
 		mkdir -p /var/run/netns
@@ -112,6 +112,8 @@ init_ltp_netspace()
 		ROD ns_exec $pid net,mnt mount -t sysfs none /sys
 		ROD ns_ifmove ltp_ns_veth1 $pid
 		ROD ns_exec $pid net,mnt ip li set lo up
+	elif [ -n "$LTP_NETNS" ]; then
+		tst_res_ TINFO "using not default LTP netns: '$LTP_NETNS'"
 	fi
 
 	LHOST_IFACES="${LHOST_IFACES:-ltp_ns_veth2}"
