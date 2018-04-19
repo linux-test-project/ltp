@@ -53,17 +53,9 @@ load_policy()
 	exec 2>/dev/null 4>$IMA_POLICY
 	[ $? -eq 0 ] || exit 1
 
-	cat $1 |
-	while read line; do
-		if [ "${line#\#}" = "${line}" ]; then
-			echo "$line" >&4 2> /dev/null
-			if [ $? -ne 0 ]; then
-				exec 4>&-
-				return 1
-			fi
-		fi
-	done
+	cat $1 >&4 2> /dev/null
 	ret=$?
+	exec 4>&-
 
 	[ $ret -eq 0 ] && \
 		tst_res TINFO "IMA policy updated, please reboot after testing to restore settings"
