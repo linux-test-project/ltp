@@ -33,7 +33,7 @@ do_test()
 {
 	ITERATIONS=${ITERATIONS:=50000}
 	tst_resm TINFO "starting fsx-linux -N $ITERATIONS..."
-	fsx-linux -N $ITERATIONS testfile 2>&1 > fsx-out.log
+	fsx-linux -N $ITERATIONS testfile > fsx-out.log 2>&1
 	if [ "$?" -ne 0 ]; then
 		tst_resm TFAIL "Errors have resulted from this test"
 		cat fsx-out.log
