@@ -60,8 +60,8 @@ do_test()
     while [ $TST_COUNT -lt $NUMLOOPS ]; do
 
         if rhost_addr=$(host $RHOST); then
-            rhost_addr=$(echo "$rhost_addr" | awk -F, '{print $NF}') 2>&1 >/dev/null
-            if ! host $rhost_addr 2>&1 >/dev/null; then
+            rhost_addr=$(echo "$rhost_addr" | awk -F, '{print $NF}') >/dev/null 2>&1
+            if ! host $rhost_addr >/dev/null 2>&1; then
                 end_testcase "reverse lookup with host failed"
             fi
 
