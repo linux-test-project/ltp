@@ -78,7 +78,7 @@ do_setup()
 		tst_brkm TCONF "[ losetup.1 ] Failed to find an available loopback device -- is the required support compiled in your kernel?"
 	fi
 
-	if ! losetup $LOOP_DEV $TMP/tacl/blkext3 2>&1 > /dev/null; then
+	if ! losetup $LOOP_DEV $TMP/tacl/blkext3 > /dev/null 2>&1; then
 		echo ""
 		tst_brkm TCONF "[ losetup.2 ] Failed to setup the device."
 	fi
