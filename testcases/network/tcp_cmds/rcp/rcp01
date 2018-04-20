@@ -55,7 +55,7 @@ do_setup()
 
     exists awk rcp rsh sum
 
-    if ! rsh -n -l root $RHOST mkdir -p $TCtmp 2>&1 1>/dev/null; then
+    if ! rsh -n -l root $RHOST mkdir -p $TCtmp >/dev/null 2>&1; then
         end_testcase "Remote mkdir failed"
     fi
 
@@ -83,7 +83,7 @@ do_test()
         rsh -n -l root $RHOST "rm -f $TCtmp/$j"
         sleep $SLEEPTIME
 
-        if [ "$SUM1 = $SUM2" ]; then
+        if [ "$SUM1" = "$SUM2" ]; then
             tst_resm TINFO "rcp $TCdat/$j $RHOST:$TCtmp/$j successful"
         else
             end_testcase "FAILED: wrong sum in transfer to $RHOST"
@@ -96,7 +96,7 @@ do_test()
     for j in $FILES; do
 
         tst_resm TINFO "remote copying $RHOST:$TCdat/$j to $TCtmp/$j"
-        if ! rcp $RHOST:$TCdat/$j $TCtmp/$j 2>&1 1>/dev/null; then
+        if ! rcp $RHOST:$TCdat/$j $TCtmp/$j >/dev/null 2>&1; then
             tst_resm TFAIL "Failed to rcp file."; continue
         fi
 
