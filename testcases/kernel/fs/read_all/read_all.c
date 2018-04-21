@@ -265,23 +265,14 @@ static void spawn_workers(void)
 static void stop_workers(void)
 {
 	const char stop_code[1] = { '\0' };
-	int i, stop_attempts;
+	int i;
 
 	if (!workers)
 		return;
 
 	for (i = 0; i < worker_count; i++) {
-		stop_attempts = 0xffff;
-		if (workers[i].q) {
-			while (!queue_push(workers[i].q, stop_code)) {
-				if (--stop_attempts < 0) {
-					tst_brk(TBROK,
-						"Worker %d is stalled",
-						workers[i].pid);
-					break;
-				}
-			}
-		}
+		if (workers[i].q)
+			TST_RETRY_FUNC(queue_push(workers[i].q, stop_code), 1);
 	}
 
 	for (i = 0; i < worker_count; i++) {
@@ -292,33 +283,15 @@ static void stop_workers(void)
 	}
 }
 
-static void sched_work(const char *path)
-{
-	static int cur;
-	int push_attempts = 0, pushed;
-
-	while (1) {
-		pushed = queue_push(workers[cur].q, path);
-
-		if (++cur >= worker_count)
-			cur = 0;
-
-		if (pushed)
-			break;
-
-		if (++push_attempts > worker_count) {
-			usleep(100);
-			push_attempts = 0;
-		}
-	}
-}
-
 static void rep_sched_work(const char *path, int rep)
 {
-	int i;
+	int i, j;
 
-	for (i = 0; i < rep; i++)
-		sched_work(path);
+	for (i = j = 0; i < rep; i++, j++) {
+		if (j >= worker_count)
+			j = 0;
+		TST_RETRY_FUNC(queue_push(workers[j].q, path), 1);
+	}
 }
 
 static void setup(void)
