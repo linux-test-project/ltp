@@ -22,9 +22,12 @@
 #
 # This is a basic ar command test.
 #
+AR="${AR:=ar}"
 TST_CNT=17
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
+TST_NEEDS_CMDS="$AR"
+
 . tst_test.sh
 
 test1()
