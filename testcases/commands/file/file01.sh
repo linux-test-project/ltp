@@ -28,6 +28,8 @@ TST_CNT=20
 TST_SETUP=setup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
+TST_NEEDS_CMDS="readelf"
+
 . tst_test.sh
 
 setup()
