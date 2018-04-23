@@ -213,7 +213,7 @@ static void read_test(const char *path)
 	count = read(fd, buf, sizeof(buf) - 1);
 	if (count > 0 && verbose) {
 		sanitize_str(buf, count);
-		tst_res(TINFO, "read(%s, buf) = %ld, buf = %s",
+		tst_res(TINFO, "read(%s, buf) = %zi, buf = %s",
 			path, count, buf);
 	} else if (!count && verbose) {
 		tst_res(TINFO, "read(%s) = EOF", path);
