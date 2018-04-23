@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ################################################################################
@@ -41,17 +42,17 @@ class TestPi2(Log):
 		count=0
 		flag=True
 		for line in self.read():
-			 if exp1.search(line) and  exp2.search(prev_line)and exp3.search(prev_line):
-        	  	       list=prev_line.split(" ")
-	               	       if int(list[4])<= 9900:
-			       		count+=1
+			if exp1.search(line) and exp2.search(prev_line) and exp3.search(prev_line):
+				list=prev_line.split(" ")
+				if int(list[4])<= 9900:
+					count+=1
 					flag=True
-			       elif count == 0:
+				elif count == 0:
 					return False
 
 
 
-			 prev_line=line
+		prev_line=line
 		if count>=2:
 			return True
 		else:
@@ -66,4 +67,4 @@ def main():
 	sys.exit("Result: %s " % (["FAIL", "PASS"][log.eval()]))
 
 if __name__ == "__main__":
-    main()
+	main()

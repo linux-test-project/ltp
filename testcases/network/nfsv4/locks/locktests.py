@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # This script aims to help to run locktests with several clients.
 #
 # Report bugs to Vincent ROQUETA : vincent.roqueta@ext.bull.net
@@ -38,8 +38,8 @@ class Machine:
         self.do()
 
     def printc(self):
-        print "->"+self.command
-        print "\n"
+        print("->"+self.command)
+        print("\n")
 
 class Client(Machine):
 
@@ -95,27 +95,27 @@ class Serveur(Machine):
         self.unexport(unexportDir)
         self.rmdir(unexportDir)
 def usage():
-        print "\n"
-        print "usage:"
-        print "locktests.py <-n process -f testfile ><--setup -s fs_server> -c host1, host2, host3 ... "
-        print "--setup : setup the configuration, deploy test on other test machines; This option also requires -c and -s"
-        print "-c <machine>     : host list to deploy/run/clean the test"
-        print "-s <machine>     : NFS server to use to setup the test"
-        print "-n <num>         : number of processes each test machine will lauch to perform the test"
-        print "-f <file>        : test file. This must be the same on each machine"
-	print " "
-        print "Example :"
-        print "========="
-        print "*Setup machines for testing"
-        print "./locktests.py --setup -c testmachine1 testmachine2 testmachine3 -s my_nfs_server:/"
-        print "\n"
-        print "*Run test on testmachine1,testmachine2 with 50 process on each machine using /mnt/nfsv4/testfile"
-        print "./locktests.py -n 50 -f /mnt/nfsv4/testfile -c testmachine1 testmachine2"
-        print "\n"
-        print "_________________________________"
-        print "Vincent ROQUETA - Bull SA - 2005\n"
+		print("\n")
+		print("usage:")
+		print("locktests.py <-n process -f testfile ><--setup -s fs_server> -c host1, host2, host3 ... ")
+		print("--setup : setup the configuration, deploy test on other test machines; This option also requires -c and -s")
+		print("-c <machine>     : host list to deploy/run/clean the test")
+		print("-s <machine>     : NFS server to use to setup the test")
+		print("-n <num>         : number of processes each test machine will lauch to perform the test")
+		print("-f <file>        : test file. This must be the same on each machine")
+		print(" ")
+		print("Example :")
+		print("=========")
+		print("*Setup machines for testing")
+		print("./locktests.py --setup -c testmachine1 testmachine2 testmachine3 -s my_nfs_server:/")
+		print("\n")
+		print("*Run test on testmachine1,testmachine2 with 50 process on each machine using /mnt/nfsv4/testfile")
+		print("./locktests.py -n 50 -f /mnt/nfsv4/testfile -c testmachine1 testmachine2")
+		print("\n")
+		print("_________________________________")
+		print("Vincent ROQUETA - Bull SA - 2005\n")
 
-        return 0
+		return 0
 
 
 
@@ -124,14 +124,14 @@ def setup():
     fichier=SRC_PATH+"/"+SRC
     commande=""
     for i in clients:
-        print "Setting up machine "+i
+        print("Setting up machine "+i)
         c=Client(i)
         c.mkdir(path)
         c.cp(fichier, path)
         c.install(path)
         c.isomount(NFS4_PATH)
     #Setup localhost
-    print "Setting up localhost"
+    print("Setting up localhost")
     commande="make; mkdir -p "+NFS4_PATH+" ; mount -t nfs4 "+NFS4_SERVER+" "+NFS4_PATH+" &"
     os.system(commande)
 
@@ -159,7 +159,7 @@ def clean():
 
 
 args=sys.argv[1:]
-rge=range(len(args))
+rge=list(range(len(args)))
 a=""
 r=True
 s=False
@@ -213,17 +213,17 @@ if s:
     if (not c) or (not nfsServer):
         usage()
         sys.exit(1)
-    print "Setup"
-    print NFS4_SERVER
+    print("Setup")
+    print(NFS4_SERVER)
     setup()
-    print "Setup complete"
+    print("Setup complete")
 
 if r:
     if (not c) or (not f) or (not n):
         usage()
         sys.exit(1)
 
-    print "Running test"
+    print("Running test")
     run()
 
 

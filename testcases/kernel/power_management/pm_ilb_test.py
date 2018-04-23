@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ''' This Python script interprets interrupt values.
     Validates Ideal load balancer runs in same package where workload is running
 '''
@@ -36,7 +36,7 @@ def main(argv=None):
         if is_hyper_threaded():
             set_sched_smt_power(options.smt_level)
         map_cpuid_pkgid()
-        print "INFO: Created table mapping cpu to package"
+        print("INFO: Created table mapping cpu to package")
         background="no"
         duration=120
         pinned="yes"
@@ -49,8 +49,8 @@ def main(argv=None):
             reset_schedsmt()
         return(status)
 
-    except Exception, details:
-        print "INFO: Idle Load Balancer test failed", details
+    except Exception as details:
+        print("INFO: Idle Load Balancer test failed", details)
         return(1)
 
 if __name__ == "__main__":

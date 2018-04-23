@@ -1,6 +1,7 @@
+#!/usr/bin/python3
 from random_gen import *
 from optparse import OptionParser
-import commands
+import subprocess
 import os
 import random
 

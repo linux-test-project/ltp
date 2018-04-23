@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 '''
 	Access Control Lists testing based on newpynfs framework
 	Aurelien Charbon - Bull SA

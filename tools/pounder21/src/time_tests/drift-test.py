@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Time Drift Script
 #		Periodically checks and displays time drift
@@ -24,7 +24,7 @@
 
 # Usage: drift-test.py [-s] [ntp_server [sleep_time]]
 
-import commands
+import subprocess
 import sys
 import string
 import time
@@ -52,9 +52,9 @@ if sleep_time == 0:
 
 #set time
 if (set_time == 1):
-	cmd = commands.getoutput('/usr/sbin/ntpdate -ub ' + server)
+	cmd = subprocess.getoutput('/usr/sbin/ntpdate -ub ' + server)
 
-cmd = commands.getoutput('/usr/sbin/ntpdate -uq ' + server)
+cmd = subprocess.getoutput('/usr/sbin/ntpdate -uq ' + server)
 line = string.split(cmd)
 
 #parse original offset
@@ -65,7 +65,7 @@ datestr = time.strftime("%d %b %Y %H:%M:%S", start_time)
 
 time.sleep(1)
 while 1:
-	cmd = commands.getoutput('/usr/sbin/ntpdate -uq ' + server)
+	cmd = subprocess.getoutput('/usr/sbin/ntpdate -uq ' + server)
 	line = string.split(cmd)
 
 	#parse offset
@@ -81,9 +81,9 @@ while 1:
 	drift =  delta_offset / delta_time * 1000000
 
 	#print output
-	print time.strftime("%d %b %H:%M:%S",now_time),
-	print "	offset:", now_offset ,
-	print "	drift:", drift ,"ppm"
+	print(time.strftime("%d %b %H:%M:%S",now_time), end=' ')
+	print("	offset:", now_offset, end=' ')
+	print("	drift:", drift ,"ppm")
 	sys.stdout.flush()
 
 	#sleep

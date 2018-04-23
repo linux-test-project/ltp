@@ -1,9 +1,10 @@
+#!/usr/bin/python3
 '''
 	Access Control Lists testing based on newpynfs framework
 	Aurelien Charbon - Bull SA
 '''
 from random_gen import *
-import commands
+import subprocess
 import os
 import threading
 import time
@@ -15,18 +16,18 @@ t_alphabet=len(alphabet)
 def test_acl_default(path):
 
 # set default acl on the test directory
-	u = commands.getoutput('mkdir ' + path + "/" + testdir)
-	u = commands.getoutput('getfacl ' + path + "/" + testdir)
+	u = subprocess.getoutput('mkdir ' + path + "/" + testdir)
+	u = subprocess.getoutput('getfacl ' + path + "/" + testdir)
 	acl=[]
-	for i in range (len(splitedresult)-1)
+	for i in range (len(splitedresult)-1):
 		splitedline = splitedresult[i].split('::')
 		name = splitedline[0]
 		entry = splitedline[1]
 		acl.append(name,entry)
 # create a file in this directory
-	u = commands.getoutput('touch ' + path + "/" + testdir + testfile)
+	u = subprocess.getoutput('touch ' + path + "/" + testdir + testfile)
 # get the file's ACL and verify
-	u = commands.getoutput('getfacl ' + path + "/" + testdir + testfile)
+	u = subprocess.getoutput('getfacl ' + path + "/" + testdir + testfile)
 	splitedresult = u.split('\n')
 	acl2=[]
 	for i in range (len(splitedresult)-1):
@@ -37,10 +38,10 @@ def test_acl_default(path):
 
 	result_final = True
 	while i < len(acl2):
-		result = False:
-		while j < len(acl2) and result = False:
+		result = False
+		while j < len(acl2) and result == False:
 			if acl2[i] == acl[j]:
-			result = True
+				result = True
 		if result == False:
 			result_final = False
 
@@ -55,29 +56,28 @@ def test_acl_long():
 	for test_file in test.fList:
 		for user in test.uList:
 			mode = test.createRandomMode()
-			u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + test_file)
+			u = subprocess.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + test_file)
 	t1=time.time()
-	print t1-t0
+	print(t1-t0)
 
 def test_nfs_acl():
-	print "test acl 10000\n"
+	print("test acl 10000\n")
 	test = RandomGen()
 	f = open('/tmp/acl-result-10000','w')
-
-        path = '/mnt/nfs/test-acl'
+	path = '/mnt/nfs/test-acl'
 	for i in range(10000):
-		print "test avec " + str(i) + " ACE"
+		print("test avec " + str(i) + " ACE")
 		test.getUserList()
 		testfile = 'testfile' + str(i)
-		u = commands.getoutput('touch ' + path + "/" + testfile)
+		u = subprocess.getoutput('touch ' + path + "/" + testfile)
 		t0=time.time()
-                for j in range(i):
+		for j in range(i):
 			user = test.uList.pop()
 			mode = test.createRandomMode()
-                        u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
-		t1=time.time()
-                f.write(str(i) + "\t" + str(t1-t0)+"\n")
-        f.close()
+			u = subprocess.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
+			t1=time.time()
+			f.write(str(i) + "\t" + str(t1-t0)+"\n")
+			f.close()
 
 
 def test_nfs_getfacl():
@@ -85,27 +85,27 @@ def test_nfs_getfacl():
 	test = RandomGen()
 
 	path = '/mnt/nfs/test-acl' # NFS mounted directory
-	u = commands.getoutput('rm ' + path + "/*")	# clean directory
-	print "test acl getfacl\n"
+	u = subprocess.getoutput('rm ' + path + "/*")	# clean directory
+	print("test acl getfacl\n")
 	f = open('/tmp/acl-result-getfacl','w')
 	for i in range(37):
 
 		test.getUserList()
 		testfile = 'testfile' + str(i)
 
-		u = commands.getoutput('touch ' + path + "/" + testfile)
-		print "setfacl " + str(i) + " " + u
+		u = subprocess.getoutput('touch ' + path + "/" + testfile)
+		print("setfacl " + str(i) + " " + u)
 		for j in range(i):
 			user = test.uList.pop()
 			mode = test.createRandomMode()
-                        u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
+			u = subprocess.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
 
 		t1=time.time()
-		u = commands.getoutput('getfacl ' + path + "/" + testfile)
-		print "getfacl - " + str(i) + u + "\n"
+		u = subprocess.getoutput('getfacl ' + path + "/" + testfile)
+		print("getfacl - " + str(i) + u + "\n")
 		t2=time.time()
 		f.write(str(i) + "\t" + str(t2-t1)+"\n")
-	f.close()
+		f.close()
 
 
 def main():
@@ -113,7 +113,7 @@ def main():
 	path = '/mnt/nfs/test-acl'
 	test = RandomGen()
 	test.getFileList(path)
-	print test.fList
+	print(test.fList)
 main()
 
 

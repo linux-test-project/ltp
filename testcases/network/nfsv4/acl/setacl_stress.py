@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 '''
 	Access Control Lists stressing script
 	To lauch on the first client
@@ -6,7 +7,7 @@
 
 from random_gen import *
 from optparse import OptionParser
-import commands
+import subprocess
 import os
 import random
 

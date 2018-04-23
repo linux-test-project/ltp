@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ################################################################################
@@ -38,16 +39,13 @@ class TestPi1(Log):
 		exp3=re.compile("[1-9]\d{2,3}")
 		flag=False
 		for line in self.read():
-			 if exp1.search(line) and  exp2.search(prev_line)and exp3.search(prev_line):
-        	  	       list=prev_line.split(" ")
-	               	       if int(list[4])< 9900:
-			       		flag=True
-			       else:
+			if exp1.search(line) and  exp2.search(prev_line)and exp3.search(prev_line):
+				list=prev_line.split(" ")
+				if int(list[4])< 9900:
+					flag=True
+				else:
 					flag=False
-
-
-
-			 prev_line=line
+			prev_line=line
 		return flag
 
 def main():

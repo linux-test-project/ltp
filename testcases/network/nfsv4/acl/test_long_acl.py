@@ -1,10 +1,11 @@
+#!/usr/bin/python3
 '''
 	Access Control Lists testing based on newpynfs framework
 	Aurelien Charbon - Bull SA
 '''
 from random_gen import *
 from optparse import OptionParser
-import commands
+import subprocess
 import os
 import threading
 import time
@@ -19,20 +20,20 @@ def test_longacl(l,path):
 	# mesures sur le getfacl
 	test = RandomGen()
 
-	u = commands.getoutput('rm ' + path + "/*")	# clean directory
-	print "test acl getfacl\n"
+	u = subprocess.getoutput('rm ' + path + "/*")	# clean directory
+	print("test acl getfacl\n")
 	for i in range(l):
 		test.getUserList()
 		testfile = 'testfile' + str(i)
-		u = commands.getoutput('touch ' + path + "/" + testfile)
-		print "setfacl with " + str(i) + " entries\n " + u
+		u = subprocess.getoutput('touch ' + path + "/" + testfile)
+		print("setfacl with " + str(i) + " entries\n " + u)
 		for j in range(i):
 			user = test.uList.pop()
 			mode = test.createRandomMode()
-                        u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
-	                if u != "":
-                                print "setfacl -m u:" + user + ':' + mode + " " + path + "/" + testfile
-                                print u
+			u = subprocess.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + testfile)
+			if u != "":
+				print("setfacl -m u:" + user + ':' + mode + " " + path + "/" + testfile)
+				print(u)
 def main():
 	parser = OptionParser()
 	parser.add_option("-l", "--length", dest="length",type="int",help="max lentgh of ACL")

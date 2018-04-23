@@ -1,4 +1,5 @@
-import commands
+#!/usr/bin/python3
+import subprocess
 import random
 import re
 
@@ -30,20 +31,20 @@ class RandomGen(object):
 	def createUser(self,username):
 		group = self.gList[random.randint(0,len(self.gList)-1)][0]
 		opts = "-g" + group + " -p" + "1pilot" + " -m " + username
-		u = commands.getoutput('/usr/sbin/useradd '+ opts)
+		u = subprocess.getoutput('/usr/sbin/useradd '+ opts)
 		if u != "":
-			print "create user " + username + "failed" + u
+			print("create user " + username + "failed" + u)
 
 	def createFile(self,path,n):
 		for i in range(n):
 			fName = 'file' + str(i)
-			u = commands.getoutput('touch ' + path + '/'+ fName)
+			u = subprocess.getoutput('touch ' + path + '/'+ fName)
 			self.fList.append(fName)
 
 	def createGroup(self, grpname, gid):
-		u = commands.getoutput('/usr/sbin/groupadd -g' + gid + " " + grpname)
+		u = subprocess.getoutput('/usr/sbin/groupadd -g' + gid + " " + grpname)
 		if u != "":
-			print u
+			print(u)
 
 	def createNGroup(self, n):
 		for i in range(n):
@@ -61,13 +62,13 @@ class RandomGen(object):
 	""" clean all users created to do the tests """
 	def cleanUsers(self):
 		for name in self.uList:
-			u = commands.getoutput('/usr/sbin/userdel -r '+ name)
+			u = subprocess.getoutput('/usr/sbin/userdel -r '+ name)
 		self.uList = []
 
 	""" clean all users created to do the tests """
 	def cleanGroups(self):
 		for name in self.gList:
-			u = commands.getoutput('/usr/sbin/groupdel '+ name[0])
+			u = subprocess.getoutput('/usr/sbin/groupdel '+ name[0])
 		self.gList = []
 
 	""" Retrieve the list of user from /etc/passwd file """
@@ -86,7 +87,7 @@ class RandomGen(object):
 		f.close()
 
 	def getFileList(self,path):
-		u = commands.getoutput('ls ' + path)
+		u = subprocess.getoutput('ls ' + path)
 		tmp = u.split('\n')
 		for i in range (len(tmp)-1):
 			NameOK = re.match("file",tmp[i])
@@ -142,10 +143,10 @@ class RandomGen(object):
 		f.close()
 
 	def printUserList(self):
-		print self.uList
+		print(self.uList)
 
 	def printGroupList(self):
-		print self.gList
+		print(self.gList)
 
 	""" Create a random name of random length """
 	def createOneNameRandomLength(self,maxlength):
@@ -196,12 +197,12 @@ class RandomGen(object):
 	def createRandomMode(self):
 		out_str = ""
 		while (out_str == ""):
-                        if random.randint(0,1) == 1:
-			        out_str += 'x'
-		        if random.randint(0,1) == 1:
-			        out_str += 'w'
-		        if random.randint(0,1) == 1:
-			        out_str += 'r'
+				if random.randint(0,1) == 1:
+					out_str += 'x'
+				if random.randint(0,1) == 1:
+					out_str += 'w'
+				if random.randint(0,1) == 1:
+					out_str += 'r'
 		return out_str
 
 	""" Create a random ACL operation (delete / remove / modify on user / group ) """
@@ -211,19 +212,19 @@ class RandomGen(object):
 		file = self.fList[random.randint(0,len(self.fList)-1)]
 		if a == 1:	# creation/modification
 			user = self.uList[random.randint(0,len(self.uList)-1)]
-			u = commands.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + file)
+			u = subprocess.getoutput('setfacl -m u:' + user + ':' + mode + " " + path + "/" + file)
 
 		if a == 2:	# with group
 			group = self.gList[random.randint(0,len(self.gList)-1)][0]
-			u = commands.getoutput('setfacl -m g:' + group + ':' + mode + " " + path + "/" + file)
+			u = subprocess.getoutput('setfacl -m g:' + group + ':' + mode + " " + path + "/" + file)
 
 		if a == 3:	# deletation
 			user = self.uList[random.randint(0,len(self.uList)-1)]
-			u = commands.getoutput('setfacl -x u:' + user + " " + path + "/" + file)
+			u = subprocess.getoutput('setfacl -x u:' + user + " " + path + "/" + file)
 
 		if a == 4:	# with group
 			group = self.gList[random.randint(0,len(self.gList)-1)][0]
-			u = commands.getoutput('setfacl -x g:' + group + " " + path + "/" + file)
+			u = subprocess.getoutput('setfacl -x g:' + group + " " + path + "/" + file)
 
 		# request on a unexisting group
 		'''if a == 5:

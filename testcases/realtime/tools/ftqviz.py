@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 #      Filename: ftqviz.py
 #        Author: Darren Hart <dvhltc@us.ibm.com>
@@ -37,7 +37,7 @@ NS_PER_US = 1000
 
 def smooth(x, wlen):
     if x.size < wlen:
-        raise ValueError, "Input vector needs to be bigger than window size."
+        raise ValueError("Input vector needs to be bigger than window size.")
 
     # reflect the signal to avoid transients... ?
     s = r_[2*x[0]-x[wlen:1:-1], x, 2*x[-1]-x[-1:-wlen:-1]]
@@ -62,8 +62,8 @@ def smooth_fft(timefile, countfile, sample_hz, wlen):
     # same factor
     ns_per_sample = NS_PER_S / sample_hz
 
-    print "Interpolated Sample Rate: ", sample_hz, " HZ"
-    print "Hamming Window Length: ", wlen
+    print("Interpolated Sample Rate: ", sample_hz, " HZ")
+    print("Hamming Window Length: ", wlen)
 
     t = fromfile(timefile, dtype=int64, sep='\n')
     x = fromfile(countfile, dtype=int64, sep='\n')
@@ -83,7 +83,7 @@ def smooth_fft(timefile, countfile, sample_hz, wlen):
     # smooth the signal (low pass filter)
     try:
         y = smooth(xi, wlen)
-    except ValueError, e:
+    except ValueError as e:
         exit(e)
 
     # generate the fft
@@ -121,7 +121,7 @@ def smooth_fft(timefile, countfile, sample_hz, wlen):
 
 
 def usage():
-        print "usage: "+argv[0]+" -t times-file -c counts-file [-s SAMPLING_HZ] [-w WINDOW_LEN] [-h]"
+        print("usage: "+argv[0]+" -t times-file -c counts-file [-s SAMPLING_HZ] [-w WINDOW_LEN] [-h]")
 
 
 if __name__=='__main__':
@@ -143,7 +143,7 @@ if __name__=='__main__':
             usage()
             exit()
         if o == "-s":
-            sample_hz = long(a)
+            sample_hz = int(a)
         if o == "-t":
             times_file = a
         if o == "-w":

@@ -1,3 +1,3 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 print("This is a test.")

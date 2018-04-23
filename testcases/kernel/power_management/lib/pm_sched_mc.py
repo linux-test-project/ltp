@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ''' Reusable functions related to sched mc FVT are put together
 '''
 
@@ -30,8 +30,8 @@ def clear_dmesg():
     '''
     try:
         os.system('dmesg -c >/dev/null')
-    except OSError, e:
-        print 'Clearing dmesg failed', e
+    except OSError as e:
+        print('Clearing dmesg failed', e)
         sys.exit(1)
 
 def count_num_cpu():
@@ -44,8 +44,8 @@ def count_num_cpu():
             if line.startswith('processor'):
                 cpu_count += 1
         cpuinfo.close()
-    except IOError, e:
-        print "Could not get cpu count", e
+    except IOError as e:
+        print("Could not get cpu count", e)
         sys.exit(1)
 
 def count_num_sockets():
@@ -61,8 +61,8 @@ def count_num_sockets():
             if socket_id not in socket_list:
                 socket_list.append(socket_id)
                 socket_count = socket_count + 1
-    except Exception, details:
-        print "INFO: Failed to get number of sockets in system", details
+    except Exception as details:
+        print("INFO: Failed to get number of sockets in system", details)
         sys.exit(1)
 
 def is_multi_socket():
@@ -74,7 +74,7 @@ def is_multi_socket():
         else:
             return 0
     except Exception:
-        print "Failed to check if system is multi socket system"
+        print("Failed to check if system is multi socket system")
         sys.exit(1)
 
 def is_hyper_threaded():
@@ -94,7 +94,7 @@ def is_hyper_threaded():
         else:
             return 0
     except Exception:
-        print "Failed to check if system is hyper-threaded"
+        print("Failed to check if system is hyper-threaded")
         sys.exit(1)
 
 def is_multi_core():
@@ -124,7 +124,7 @@ def is_multi_core():
         file_cpuinfo.close()
         return multi_core
     except Exception:
-        print "Failed to check if system is multi core system"
+        print("Failed to check if system is multi core system")
         sys.exit(1)
 
 def get_hyper_thread_count():
@@ -142,7 +142,7 @@ def get_hyper_thread_count():
                 break
         return( int( siblings[1] ) / int( cpu_cores[1] ) )
     except Exception:
-        print "Failed to check if system is hyper-threaded"
+        print("Failed to check if system is hyper-threaded")
         sys.exit(1)
 
 def map_cpuid_pkgid():
@@ -158,17 +158,17 @@ def map_cpuid_pkgid():
                 core_file += '/topology/core_id'
                 core_id = open(core_file).read().rstrip()
                 cpu_phy_id = open(phy_pkg_file).read().rstrip()
-                if not cpu_phy_id in cpu_map.keys():
+                if not cpu_phy_id in list(cpu_map.keys()):
                     core_info = {}
                 else:
                     core_info = cpu_map[cpu_phy_id]
-                if not core_id in core_info.keys():
+                if not core_id in list(core_info.keys()):
                     core_info[core_id] = [i]
                 else:
                     core_info[core_id].append(i)
                 cpu_map[cpu_phy_id] = core_info
-        except Exception, details:
-            print "Package, core & cpu map table creation failed", e
+        except Exception as details:
+            print("Package, core & cpu map table creation failed", e)
             sys.exit(1)
     else:
         for i in range(0, cpu_count):
@@ -176,12 +176,12 @@ def map_cpuid_pkgid():
                 phy_pkg_file = '/sys/devices/system/cpu/cpu%s' %i
                 phy_pkg_file += '/topology/physical_package_id'
                 cpu_phy_id = open(phy_pkg_file).read().rstrip()
-                if not cpu_phy_id in cpu_map.keys():
+                if not cpu_phy_id in list(cpu_map.keys()):
                     cpu_map[cpu_phy_id] = [i]
                 else:
                     cpu_map[cpu_phy_id].append(i)
-            except IOError, e:
-                print "Mapping of CPU to pkg id failed", e
+            except IOError as e:
+                print("Mapping of CPU to pkg id failed", e)
                 sys.exit(1)
 
 
@@ -197,8 +197,8 @@ def generate_sibling_list():
 
             if not thread_ids in siblings_list:
                 siblings_list.append(thread_ids)
-    except Exception, details:
-        print "Exception in generate_siblings_list", details
+    except Exception as details:
+        print("Exception in generate_siblings_list", details)
         sys.exit(1)
 
 def get_siblings(cpu_id):
@@ -215,8 +215,8 @@ def get_siblings(cpu_id):
                             cpus += j
                     return cpus
         return cpus
-    except Exception, details:
-        print "Exception in get_siblings", details
+    except Exception as details:
+        print("Exception in get_siblings", details)
         sys.exit(1)
 
 def get_proc_data(stats_list):
@@ -229,8 +229,8 @@ def get_proc_data(stats_list):
                 data = line.split()
                 stats_list[data[0]] = data
         file_procstat.close()
-    except OSError, e:
-        print "Could not read statistics", e
+    except OSError as e:
+        print("Could not read statistics", e)
         sys.exit(1)
 
 def get_proc_loc_count(loc_stats):
@@ -246,8 +246,8 @@ def get_proc_loc_count(loc_stats):
                     loc_stats.append(data[i+1])
                 file_procstat.close()
                 return
-    except Exception, details:
-        print "Could not read interrupt statistics", details
+    except Exception as details:
+        print("Could not read interrupt statistics", details)
         sys.exit(1)
 
 
@@ -260,9 +260,9 @@ def set_sched_mc_power(sched_mc_level):
             % sched_mc_level)
 
         get_proc_data(stats_start)
-    except OSError, e:
-        print "Could not set sched_mc_power_savings to", sched_mc_level, e
-	sys.exit(1)
+    except OSError as e:
+        print("Could not set sched_mc_power_savings to", sched_mc_level, e)
+    sys.exit(1)
 
 def set_sched_smt_power(sched_smt_level):
     ''' Routine to set sched_smt_power_savings to required level
@@ -273,9 +273,9 @@ def set_sched_smt_power(sched_smt_level):
             % sched_smt_level)
 
         get_proc_data(stats_start)
-    except OSError, e:
-        print "Could not set sched_smt_power_savings to", sched_smt_level, e
-	sys.exit(1)
+    except OSError as e:
+        print("Could not set sched_smt_power_savings to", sched_smt_level, e)
+    sys.exit(1)
 
 def set_timer_migration_interface(value):
     ''' Set value of timer migration interface to a value
@@ -284,8 +284,8 @@ def set_timer_migration_interface(value):
     try:
         os.system('echo %s > \
             /proc/sys/kernel/timer_migration 2>/dev/null' % value)
-    except OSError, e:
-        print "Could not set timer_migration to ", value, e
+    except OSError as e:
+        print("Could not set timer_migration to ", value, e)
         sys.exit(1)
 
 def get_job_count(stress, workload, sched_smt):
@@ -308,8 +308,8 @@ def get_job_count(stress, workload, sched_smt):
             threads = 1
             duration = 180
         return threads
-    except Exception, details:
-        print "get job count failed ", details
+    except Exception as details:
+        print("get job count failed ", details)
         sys.exit(1)
 
 def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
@@ -328,7 +328,7 @@ def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
                 workload_file = file_name
                 break
         if workload_file == "":
-            print "INFO: ebizzy benchmark not found"
+            print("INFO: ebizzy benchmark not found")
             os.chdir(olddir)
             sys.exit(1)
         get_proc_data(stats_start)
@@ -346,21 +346,21 @@ def trigger_ebizzy (sched_smt, stress, duration, background, pinned):
                         % (threads, duration))
 
             if succ == 0:
-                print "INFO: ebizzy workload triggerd"
+                print("INFO: ebizzy workload triggerd")
                 os.chdir(olddir)
                 #Commented bcoz it doesnt make sense to capture it when workload triggered
                 #in background
                 #get_proc_loc_count(intr_stop)
                 #get_proc_data(stats_stop)
             else:
-                print "INFO: ebizzy workload triggerd failed"
+                print("INFO: ebizzy workload triggerd failed")
                 os.chdir(olddir)
                 sys.exit(1)
-        except Exception, details:
-            print "Ebizzy workload trigger failed ", details
+        except Exception as details:
+            print("Ebizzy workload trigger failed ", details)
             sys.exit(1)
-    except Exception, details:
-        print "Ebizzy workload trigger failed ", details
+    except Exception as details:
+        print("Ebizzy workload trigger failed ", details)
         sys.exit(1)
 
 def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
@@ -385,7 +385,7 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
         if workload_file != "":
             benchmark_path = path
         else:
-            print "INFO: kernbench benchmark not found"
+            print("INFO: kernbench benchmark not found")
             os.chdir(olddir)
             sys.exit(1)
 
@@ -398,8 +398,8 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
         if linux_source_dir != "":
             os.chdir(linux_source_dir)
         else:
-            print "INFO: Linux kernel source not found in /root. Workload\
-               Kernbench cannot be executed"
+            print("INFO: Linux kernel source not found in /root. Workload\
+               Kernbench cannot be executed")
             sys.exit(1)
 
         get_proc_data(stats_start)
@@ -428,10 +428,10 @@ def trigger_kernbench (sched_smt, stress, background, pinned, perf_test):
                     time.sleep(240)
                     stop_wkld("kernbench")
 
-        print "INFO: Workload kernbench triggerd"
+        print("INFO: Workload kernbench triggerd")
         os.chdir(olddir)
-    except Exception, details:
-        print "Workload kernbench trigger failed ", details
+    except Exception as details:
+        print("Workload kernbench trigger failed ", details)
         sys.exit(1)
 
 def trigger_workld(sched_smt, workload, stress, duration, background, pinned, perf_test):
@@ -443,8 +443,8 @@ def trigger_workld(sched_smt, workload, stress, duration, background, pinned, pe
             trigger_ebizzy (sched_smt, stress, duration, background, pinned)
         if workload == "kernbench":
             trigger_kernbench (sched_smt, stress, background, pinned, perf_test)
-    except Exception, details:
-        print "INFO: Trigger workload failed", details
+    except Exception as details:
+        print("INFO: Trigger workload failed", details)
         sys.exit(1)
 
 def generate_report():
@@ -472,29 +472,29 @@ def generate_report():
         stats_percentage[l] = percentage_list
 
     for i in range(0, len(cpu_labels)):
-        print >> debugfile, cpu_labels[i], '\t',
-    print >> debugfile
+        print(cpu_labels[i], '\t', end=' ', file=debugfile)
+    print(file=debugfile)
     for l in sorted(stats_stop.keys()):
-        print >> debugfile, l, '\t',
+        print(l, '\t', end=' ', file=debugfile)
         for i in range(1, len(stats_stop[l])):
-            print >> debugfile, stats_stop[l][i], '\t',
-        print >> debugfile
+            print(stats_stop[l][i], '\t', end=' ', file=debugfile)
+        print(file=debugfile)
 
     for i in range(0, len(cpu_labels)):
-        print >> reportfile, cpu_labels[i], '\t',
-    print >> reportfile
+        print(cpu_labels[i], '\t', end=' ', file=reportfile)
+    print(file=reportfile)
     for l in sorted(stats_percentage.keys()):
-        print >> reportfile, l, '\t',
+        print(l, '\t', end=' ', file=reportfile)
         for i in range(1, len(stats_percentage[l])):
-            print >> reportfile, " %3.4f" % stats_percentage[l][i],
-        print >> reportfile
+            print(" %3.4f" % stats_percentage[l][i], end=' ', file=reportfile)
+        print(file=reportfile)
 
     #Now get the package ID information
     try:
-        print >> debugfile, "cpu_map: ", cpu_map
+        print("cpu_map: ", cpu_map, file=debugfile)
         keyvalfile = open('/procstat/keyval', 'a')
-        print >> keyvalfile, "nr_packages=%d" % len(cpu_map)
-        print >> keyvalfile, "system-idle=%3.4f" % (stats_percentage['cpu'][4])
+        print("nr_packages=%d" % len(cpu_map), file=keyvalfile)
+        print("system-idle=%3.4f" % (stats_percentage['cpu'][4]), file=keyvalfile)
         for pkg in sorted(cpu_map.keys()):
             if is_hyper_threaded():
                 for core in sorted(cpu_map[pkg].keys()):
@@ -511,20 +511,20 @@ def generate_report():
                     total_idle += stats_stop["cpu%d" % cpu][4]
                     for i in range(1, len(stats_stop["cpu%d" % cpu])):
                         total += stats_stop["cpu%d" % cpu][i]
-            print >> reportfile, "Package: ", pkg, "Idle %3.4f%%" \
-	        % (float(total_idle)*100/total)
-            print >> keyvalfile, "package-%s=%3.4f" % \
-		(pkg, (float(total_idle)*100/total))
-    except Exception, details:
-        print "Generating utilization report failed: ", details
+            print("Package: ", pkg, "Idle %3.4f%%" \
+	        % (float(total_idle)*100/total), file=reportfile)
+            print("package-%s=%3.4f" % \
+		(pkg, (float(total_idle)*100/total)), file=keyvalfile)
+    except Exception as details:
+        print("Generating utilization report failed: ", details)
         sys.exit(1)
 
     #Add record delimiter '\n' before closing these files
-    print >> debugfile
+    print(file=debugfile)
     debugfile.close()
-    print >> reportfile
+    print(file=reportfile)
     reportfile.close()
-    print >> keyvalfile
+    print(file=keyvalfile)
     keyvalfile.close()
 
 def generate_loc_intr_report():
@@ -537,17 +537,17 @@ def generate_loc_intr_report():
         get_proc_loc_count(intr_stop)
 
         reportfile = open('/procstat/cpu-loc_interrupts', 'a')
-        print >> reportfile, "=============================================="
-        print >> reportfile, "     Local timer interrupt stats              "
-        print >> reportfile, "=============================================="
+        print("==============================================", file=reportfile)
+        print("     Local timer interrupt stats              ", file=reportfile)
+        print("==============================================", file=reportfile)
 
         for i in range(0, cpu_count):
             intr_stop[i] =  int(intr_stop[i]) - int(intr_start[i])
-            print >> reportfile, "CPU%s: %s" %(i, intr_stop[i])
-        print >> reportfile
+            print("CPU%s: %s" %(i, intr_stop[i]), file=reportfile)
+        print(file=reportfile)
         reportfile.close()
-    except Exception, details:
-        print "Generating interrupt report failed: ", details
+    except Exception as details:
+        print("Generating interrupt report failed: ", details)
         sys.exit(1)
 
 def record_loc_intr_count():
@@ -560,8 +560,8 @@ def record_loc_intr_count():
             intr_stat_timer_0.append(intr_stop[i])
         intr_start = []
         intr_stop = []
-    except Exception, details:
-        print "INFO: Record interrupt statistics when timer_migration=0",details
+    except Exception as details:
+        print("INFO: Record interrupt statistics when timer_migration=0",details)
 
 def expand_range(range_val):
     '''
@@ -578,8 +578,8 @@ def expand_range(range_val):
                 for j in range(int(hyphen_values[0]), int(hyphen_values[1])+1):
                     ids_list.append(j)
         return(ids_list)
-    except Exception, details:
-        print "INFO: expand_pkg_grps failed ", details
+    except Exception as details:
+        print("INFO: expand_pkg_grps failed ", details)
 
 def is_quad_core():
     '''
@@ -596,8 +596,8 @@ def is_quad_core():
                     return(1)
                 else:
                     return(0)
-    except IOError, e:
-        print "Failed to get cpu core information", e
+    except IOError as e:
+        print("Failed to get cpu core information", e)
         sys.exit(1)
 
 def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
@@ -628,7 +628,7 @@ def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
                                 # in different cores of same package
                                 #if sched_smt_level > 0 :
                                     #return 1
-	else:
+        else:
             for pkg in sorted(cpu_map.keys()):
                 pkg_cpus = cpu_map[pkg]
                 if len(cpu_group) == len(pkg_cpus):
@@ -640,8 +640,8 @@ def validate_cpugrp_map(cpu_group, sched_mc_level, sched_smt_level):
 
         return(1)
 
-    except Exception, details:
-        print "Exception in validate_cpugrp_map: ", details
+    except Exception as details:
+        print("Exception in validate_cpugrp_map: ", details)
         sys.exit(1)
 
 
@@ -680,8 +680,8 @@ def verify_sched_domain_dmesg(sched_mc_level, sched_smt_level):
             return(0)
         else:
             return(1)
-    except Exception, details:
-        print "Reading dmesg failed", details
+    except Exception as details:
+        print("Reading dmesg failed", details)
         sys.exit(1)
 
 def get_cpu_utilization(cpu):
@@ -692,8 +692,8 @@ def get_cpu_utilization(cpu):
             if cpu == stats_percentage[l][0]:
                 return stats_percentage[l][1]
         return -1
-    except Exception, details:
-        print "Exception in get_cpu_utilization", details
+    except Exception as details:
+        print("Exception in get_cpu_utilization", details)
         sys.exit(1)
 
 def validate_cpu_consolidation(stress, work_ld, sched_mc_level, sched_smt_level):
@@ -737,7 +737,7 @@ def validate_cpu_consolidation(stress, work_ld, sched_mc_level, sched_smt_level)
                     if stats_percentage[l][1] > 70:
                         cpus_utilized.append(int(cpu_id[1]))
             cpus_utilized.sort()
-        print "INFO: CPU's utilized ", cpus_utilized
+        print("INFO: CPU's utilized ", cpus_utilized)
 
         # If length of CPU's utilized is not = number of jobs exit with 1
         if len(cpus_utilized) < threads:
@@ -746,11 +746,11 @@ def validate_cpu_consolidation(stress, work_ld, sched_mc_level, sched_smt_level)
         status = validate_cpugrp_map(cpus_utilized, sched_mc_level, \
             sched_smt_level)
         if status == 1:
-            print "INFO: CPUs utilized is not in same package or core"
+            print("INFO: CPUs utilized is not in same package or core")
 
         return(status)
-    except Exception, details:
-        print "Exception in validate_cpu_consolidation: ", details
+    except Exception as details:
+        print("Exception in validate_cpu_consolidation: ", details)
         sys.exit(1)
 
 def get_cpuid_max_intr_count():
@@ -780,13 +780,13 @@ def get_cpuid_max_intr_count():
                 diff = second_highest - intr_stop[i]
                 ''' Threshold of difference has to be manipulated '''
                 if diff < 10000:
-                    print "INFO: Diff in interrupt count is below threshold"
+                    print("INFO: Diff in interrupt count is below threshold")
                     cpus_utilized = []
                     return cpus_utilized
-        print "INFO: Interrupt count in other CPU's low as expected"
+        print("INFO: Interrupt count in other CPU's low as expected")
         return cpus_utilized
-    except Exception, details:
-        print "Exception in get_cpuid_max_intr_count: ", details
+    except Exception as details:
+        print("Exception in get_cpuid_max_intr_count: ", details)
         sys.exit(1)
 
 def validate_ilb (sched_mc_level, sched_smt_level):
@@ -799,8 +799,8 @@ def validate_ilb (sched_mc_level, sched_smt_level):
 
         status = validate_cpugrp_map(cpus_utilized, sched_mc_level, sched_smt_level)
         return status
-    except Exception, details:
-        print "Exception in validate_ilb: ", details
+    except Exception as details:
+        print("Exception in validate_ilb: ", details)
         sys.exit(1)
 
 def reset_schedmc():
@@ -809,8 +809,8 @@ def reset_schedmc():
     try:
         os.system('echo 0 > \
             /sys/devices/system/cpu/sched_mc_power_savings 2>/dev/null')
-    except OSError, e:
-        print "Could not set sched_mc_power_savings to 0", e
+    except OSError as e:
+        print("Could not set sched_mc_power_savings to 0", e)
         sys.exit(1)
 
 def reset_schedsmt():
@@ -819,8 +819,8 @@ def reset_schedsmt():
     try:
         os.system('echo 0 > \
             /sys/devices/system/cpu/sched_smt_power_savings 2>/dev/null')
-    except OSError, e:
-        print "Could not set sched_smt_power_savings to 0", e
+    except OSError as e:
+        print("Could not set sched_smt_power_savings to 0", e)
         sys.exit(1)
 
 def stop_wkld(work_ld):
@@ -830,6 +830,6 @@ def stop_wkld(work_ld):
         os.system('pkill %s 2>/dev/null' %work_ld)
         if work_ld == "kernbench":
             os.system('pkill make 2>/dev/null')
-    except OSError, e:
-        print "Exception in stop_wkld", e
+    except OSError as e:
+        print("Exception in stop_wkld", e)
         sys.exit(1)

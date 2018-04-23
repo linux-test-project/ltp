@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ''' This Python script validates sched domain information in dmesg
     with information in sysfs topology
 '''
@@ -43,10 +43,10 @@ def main(argv=None):
                 reset_schedsmt()
                 return(status)
         else:
-            print "INFO: Invalid arguments given"
+            print("INFO: Invalid arguments given")
             return 1
-    except Exception, details:
-        print "INFO: sched domain test failed: ", details
+    except Exception as details:
+        print("INFO: sched domain test failed: ", details)
         return(1)
 
 # Run test based on the command line arguments

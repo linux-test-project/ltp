@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ''' This Python script interprets various sched stats values.
     Validates cpu consolidation for given sched_mc_power_saving value
 '''
@@ -79,7 +79,7 @@ def main(argv=None):
             generate_report()
             status = validate_cpu_consolidation("partial", work_ld, options.mc_value, options.smt_value)
             if status == 0:
-                print "INFO: Consolidation worked sched_smt &(/) sched_mc is set"
+                print("INFO: Consolidation worked sched_smt &(/) sched_mc is set")
                 #Disable sched_smt & sched_mc interface values
                 if options.vary_mc_smt and options.mc_value > 0:
                     set_sched_mc_power(0)
@@ -107,8 +107,8 @@ def main(argv=None):
                 else:
                     return(1)
             else:
-                print "INFO: CPU consolidation failed when sched_mc &(/) \
-sched_smt was enabled. This is pre-requisite to proceed"
+                print("INFO: CPU consolidation failed when sched_mc &(/) \
+sched_smt was enabled. This is pre-requisite to proceed")
                 return(status)
         else:
             #The else part of the code validates behaviour of sched_mc
@@ -118,7 +118,7 @@ sched_smt was enabled. This is pre-requisite to proceed"
             if is_hyper_threaded():
                 set_sched_smt_power(options.smt_value)
             map_cpuid_pkgid()
-            print "INFO: Created table mapping cpu to package"
+            print("INFO: Created table mapping cpu to package")
             background="no"
             duration=60
             pinned ="no"
@@ -135,8 +135,8 @@ sched_smt was enabled. This is pre-requisite to proceed"
             if is_hyper_threaded():
                 reset_schedsmt()
             return(status)
-    except Exception, details:
-        print "INFO: CPU consolidation failed", details
+    except Exception as details:
+        print("INFO: CPU consolidation failed", details)
         return(1)
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 """
     An LTP [execution and] parsing wrapper.
 
@@ -146,7 +146,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
                 while True:
 
-                    line = line_iterator.next()
+                    line = next(line_iterator)
 
                     if line.startswith(end_output):
 
@@ -161,7 +161,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
 
                         while True:
 
-                            line = line_iterator.next()
+                            line = next(line_iterator)
 
                             match = tag_re.match(line)
 
@@ -177,7 +177,7 @@ def parse_ltp_results(exec_log, output_log, verbose=0):
             except StopIteration:
                 pass
 
-            for k in context.keys():
+            for k in list(context.keys()):
                 if k not in search_tags:
                     raise ResultsParseException('Leftover token in search '
                                                 'keys: %s' % k)
@@ -219,7 +219,7 @@ def print_context(output_dest, header, testsuite_context):
 
     output_dest.write('\n'.join(['', '=' * 40, header, '-' * 40, '']))
 
-    for test, context in testsuite_context.items():
+    for test, context in list(testsuite_context.items()):
         output_dest.write('<output test="%s">\n%s\n</output>\n' %
                           (test, context.strip()))
 
@@ -302,7 +302,7 @@ def main():
     if not opts.summary_mode and not opts.verbose:
         parser.error('You cannot suppress summary output and disable '
                      'verbosity.')
-    elif opts.summary_mode not in range(3):
+    elif opts.summary_mode not in list(range(3)):
         parser.error('--summary-mode must be a value between 0 and 2.')
 
     if len(args) == 0:

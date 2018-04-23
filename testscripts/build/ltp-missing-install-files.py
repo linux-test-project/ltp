@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 #    Script for determining items missing from LTP install based on the output
 #    log provided by runltp[lite.sh].
@@ -111,6 +111,6 @@ for logfile in logfiles:
         fd.close()
 
     if len(missing_ents):
-        print "\n".join(["%s: %s" % (os.path.basename(logfile), i) for i in ["Tag | App"] + missing_ents])
+        print("\n".join(["%s: %s" % (os.path.basename(logfile), i) for i in ["Tag | App"] + missing_ents]))
     elif opts.verbose:
-        print "%s: CONGRATULATIONS -- no missing files found!" % os.path.basename(logfile)
+        print("%s: CONGRATULATIONS -- no missing files found!" % os.path.basename(logfile))
