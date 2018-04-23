@@ -40,7 +40,7 @@ wc_test()
 
 	eval $wc_cmd > temp 2>&1
 	if [ $? -ne 0 ]; then
-		grep -q -E "unknown option|invalid option" temp
+		grep -q -E "unknown option|invalid option|unrecognized option" temp
 		if [ $? -eq 0 ]; then
 			tst_res TCONF "$wc_cmd not supported."
 		else
