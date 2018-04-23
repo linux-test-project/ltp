@@ -97,10 +97,11 @@ init()
 		 return $RC
 	fi
 
-	# check if commands tst_*, logrotate, awk exists.
+	# check if commands tst_*, logrotate, awk and file exists.
 	chk_ifexists INIT tst_resm  || return $RC
 	chk_ifexists INIT logrotate || return $RC
 	chk_ifexists INIT awk       || return $RC
+	chk_ifexists INIT file      || return $RC
 
 	return $RC
 }
