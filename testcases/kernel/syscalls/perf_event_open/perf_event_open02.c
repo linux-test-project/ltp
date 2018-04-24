@@ -64,6 +64,7 @@ The -v flag makes it print out the values of each counter.
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <linux/types.h>
+#include <sched.h>
 
 #if HAVE_PERF_EVENT_ATTR
 # include <linux/perf_event.h>
@@ -286,6 +287,12 @@ static void verify(void)
 	unsigned long long vtsum = 0, vhsum = 0;
 	int i;
 	double ratio;
+	struct sched_param sparam = {.sched_priority = 1};
+
+	if (sched_setscheduler(0, SCHED_FIFO, &sparam)) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "sched_setscheduler(0, SCHED_FIFO, ...) failed");
+	}
 
 	if (prctl(PR_TASK_PERF_EVENTS_ENABLE) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
@@ -297,6 +304,12 @@ static void verify(void)
 	if (prctl(PR_TASK_PERF_EVENTS_DISABLE) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "prctl(PR_TASK_PERF_EVENTS_DISABLE) failed");
+	}
+
+	sparam.sched_priority = 0;
+	if (sched_setscheduler(0, SCHED_OTHER, &sparam)) {
+		tst_brkm(TBROK | TERRNO, cleanup,
+			 "sched_setscheduler(0, SCHED_OTHER, ...) failed");
 	}
 
 	if (read(tsk0, &vt0, sizeof(vt0)) != sizeof(vt0)) {
