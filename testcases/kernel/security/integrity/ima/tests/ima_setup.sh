@@ -64,6 +64,21 @@ mount_loop_device()
 	cd mntpoint
 }
 
+print_ima_config()
+{
+	local config="/boot/config-$(uname -r)"
+	local i
+
+	tst_res TINFO "/proc/cmdline: $(cat /proc/cmdline)"
+
+	if [ -r "$config" ]; then
+		tst_res TINFO "IMA kernel config:"
+		for i in $(grep ^CONFIG_IMA $config); do
+			tst_res TINFO "$i"
+		done
+	fi
+}
+
 ima_setup()
 {
 	SECURITYFS="$(mount_helper securityfs $SYSFS/kernel/security)"
@@ -72,6 +87,8 @@ ima_setup()
 	[ -d "$IMA_DIR" ] || tst_brk TCONF "IMA not enabled in kernel"
 	ASCII_MEASUREMENTS="$IMA_DIR/ascii_runtime_measurements"
 	BINARY_MEASUREMENTS="$IMA_DIR/binary_runtime_measurements"
+
+	print_ima_config
 
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
 		tst_res TINFO "\$TMPDIR is on tmpfs => run on loop device"
