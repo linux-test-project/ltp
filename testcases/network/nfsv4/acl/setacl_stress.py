@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 '''
 	Access Control Lists stressing script
 	To lauch on the first client

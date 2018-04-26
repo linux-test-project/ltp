@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 #      Filename: ftqviz.py
 #        Author: Darren Hart <dvhltc@us.ibm.com>

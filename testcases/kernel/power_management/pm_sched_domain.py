@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ''' This Python script validates sched domain information in dmesg
     with information in sysfs topology
 '''

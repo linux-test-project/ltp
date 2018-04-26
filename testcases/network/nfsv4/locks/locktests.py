@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # This script aims to help to run locktests with several clients.
 #
 # Report bugs to Vincent ROQUETA : vincent.roqueta@ext.bull.net

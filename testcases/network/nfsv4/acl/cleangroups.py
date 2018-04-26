@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 from random_gen import *
 from optparse import OptionParser
 import subprocess

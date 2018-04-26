@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ''' This Python script interprets interrupt values.
     Validates Ideal load balancer runs in same package where workload is running
 '''

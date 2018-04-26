@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ''' Reusable functions related to sched mc FVT are put together
 '''
 

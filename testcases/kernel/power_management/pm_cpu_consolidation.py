@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ''' This Python script interprets various sched stats values.
     Validates cpu consolidation for given sched_mc_power_saving value
 '''
