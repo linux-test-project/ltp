@@ -84,8 +84,8 @@ do_test()
 	 7) file_test in.pl "[pP]erl script, ASCII text executable" \
 			    "[pP]erl script text executable" \
 			    "a /usr/bin/perl script text";;
-	 8) file_test in.py "[pP]ython script, ASCII text executable" \
-			    "[pP]ython script text executable";;
+	 8) file_test in.py "[pP]ython3\{0,1\} script, ASCII text executable" \
+			    "[pP]ython3\{0,1\} script text executable";;
 	 9) file_test in.m4 "M4 macro processor script, ASCII text" \
 			    "ASCII M4 macro language pre-processor text";;
 	10) file_test in "ELF .*-bit $TEST_ARCH executable, .*" \
