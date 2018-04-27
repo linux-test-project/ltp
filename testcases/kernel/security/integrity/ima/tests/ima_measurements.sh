@@ -37,6 +37,8 @@ setup()
 	DIGEST_INDEX=
 	grep -q "ima-ng" $ASCII_MEASUREMENTS && DIGEST_INDEX=1
 	grep -q "ima-sig" $ASCII_MEASUREMENTS && DIGEST_INDEX=2
+
+	tst_res TINFO "IMA measurement tests assume tcb policy to be loaded (ima_policy=tbc)"
 }
 
 # TODO: find support for rmd128 rmd256 rmd320 wp256 wp384 tgr128 tgr160
