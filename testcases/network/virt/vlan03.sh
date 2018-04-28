@@ -29,8 +29,6 @@ TST_NEEDS_TMPDIR=1
 
 virt_type="vlan"
 
-TST_USE_LEGACY_API=1
-. tst_net.sh
 . virt_lib.sh
 
 TST_CLEANUP="virt_cleanup"

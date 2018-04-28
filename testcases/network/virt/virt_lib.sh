@@ -1,5 +1,6 @@
 #!/bin/sh
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -28,19 +29,8 @@
 #          them in cleanup function. See "start_vni" variable which can
 #          solve it.
 
-ip_local=$(tst_ipaddr)
-ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
-ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"
-
-ip_remote=$(tst_ipaddr rhost)
-ip_virt_remote="$(TST_IPV6= tst_ipaddr_un rhost)"
-ip6_virt_remote="$(TST_IPV6=6 tst_ipaddr_un rhost)"
-
-# Max performance loss (%) for virtual devices during network load
-VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
-vxlan_dstport=0
-
-while getopts :hi:d:6 opt; do
+virt_lib_parse_args()
+{
 	case "$opt" in
 	h)
 		echo "Usage:"
@@ -52,13 +42,29 @@ while getopts :hi:d:6 opt; do
 	;;
 	i) start_id=$OPTARG ;;
 	d) vxlan_dst_addr=$OPTARG ;;
-	6) # skip, test_net library already processed it
-	;;
 	*)
 		tst_brkm TBROK "unknown option: $opt"
 	;;
 	esac
-done
+}
+
+TST_OPTS="hi:d:"
+TST_PARSE_ARGS=virt_lib_parse_args
+
+TST_USE_LEGACY_API=1
+. tst_net.sh
+
+ip_local=$(tst_ipaddr)
+ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
+ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"
+
+ip_remote=$(tst_ipaddr rhost)
+ip_virt_remote="$(TST_IPV6= tst_ipaddr_un rhost)"
+ip6_virt_remote="$(TST_IPV6=6 tst_ipaddr_un rhost)"
+
+# Max performance loss (%) for virtual devices during network load
+VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-80}
+vxlan_dstport=0
 
 cleanup_vifaces()
 {

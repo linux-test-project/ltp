@@ -26,8 +26,6 @@ TST_TOTAL=1
 virt_type="vxlan"
 start_id=16700000
 
-TST_USE_LEGACY_API=1
-. tst_net.sh
 . virt_lib.sh
 
 [ "$TST_IPV6" ] && mult_addr="ff02::abc" || mult_addr="239.1.1.1"
