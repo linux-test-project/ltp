@@ -328,6 +328,9 @@ static void setup(void)
 
 	tst_require_root();
 
+	if (access("/proc/swaps", F_OK))
+		tst_brkm(TCONF, NULL, "swap not supported by kernel");
+
 	tst_tmpdir();
 
 	switch ((fs_type = tst_fs_type(cleanup, "."))) {
