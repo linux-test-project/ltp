@@ -19,7 +19,7 @@
 #
 # Verify that measurements are added to the measurement list based on policy.
 
-TST_NEEDS_CMDS="awk"
+TST_NEEDS_CMDS="awk cut"
 TST_SETUP="setup"
 TST_CNT=3
 TST_NEEDS_DEVICE=1
@@ -28,64 +28,122 @@ TST_NEEDS_DEVICE=1
 
 setup()
 {
-	DEFAULT_DIGEST_OLD_FORMAT="sha1"
 	TEST_FILE="$PWD/test.txt"
 
 	POLICY="$IMA_DIR/policy"
 	[ -f "$POLICY" ] || tst_res TINFO "not using default policy"
 
 	DIGEST_INDEX=
-	grep -q "ima-ng" $ASCII_MEASUREMENTS && DIGEST_INDEX=1
-	grep -q "ima-sig" $ASCII_MEASUREMENTS && DIGEST_INDEX=2
+
+	local template="$(tail -1 $ASCII_MEASUREMENTS | cut -d' ' -f 3)"
+	local i
+
+	# https://www.kernel.org/doc/html/latest/security/IMA-templates.html#use
+	case "$template" in
+	ima|ima-ng|ima-sig) DIGEST_INDEX=4 ;;
+	*)
+		# using ima_template_fmt kernel parameter
+		local IFS="|"
+		i=4
+		for word in $template; do
+			if [ "$word" = 'd' -o "$word" = 'd-ng' ]; then
+				DIGEST_INDEX=$i
+				break
+			fi
+			i=$((i+1))
+		done
+	esac
+
+	[ -z "$DIGEST_INDEX" ] && tst_brk TCONF \
+		"Cannot find digest index (template: '$template')"
 
 	tst_res TINFO "IMA measurement tests assume tcb policy to be loaded (ima_policy=tcb)"
 }
 
 # TODO: find support for rmd128 rmd256 rmd320 wp256 wp384 tgr128 tgr160
-compute_hash()
+compute_digest()
 {
-	local digest="$1"
+	local algorithm="$1"
 	local file="$2"
+	local digest
 
-	hash="$(${digest}sum $file 2>/dev/null | cut -f1 -d ' ')"
-	[ -n "$hash" ] && { echo $hash; return; }
+	digest="$(${algorithm}sum $file 2>/dev/null | cut -f1 -d ' ')"
+	if [ -n "$digest" ]; then
+		echo "$digest"
+		return 0
+	fi
 
-	hash="$(openssl $digest $file 2>/dev/null | cut -f2 -d ' ')"
-	[ -n "$hash" ] && { echo $hash; return; }
+	digest="$(openssl $algorithm $file 2>/dev/null | cut -f2 -d ' ')"
+	if [ -n "$digest" ]; then
+		echo "$digest"
+		return 0
+	fi
 
 	# uncommon ciphers
-	local arg="$digest"
-	case "$digest" in
+	local arg="$algorithm"
+	case "$algorithm" in
 	tgr192) arg="tiger" ;;
 	wp512) arg="whirlpool" ;;
 	esac
 
-	hash="$(rhash --$arg $file 2>/dev/null | cut -f1 -d ' ')"
-	[ -n "$hash" ] && { echo $hash; return; }
+	digest="$(rdigest --$arg $file 2>/dev/null | cut -f1 -d ' ')"
+	if [ -n "$digest" ]; then
+		echo "$digest"
+		return 0
+	fi
+	return 1
 }
 
 ima_check()
 {
-	local digest="$DEFAULT_DIGEST_OLD_FORMAT"
-	local hash expected_hash line
+	local delimiter=':'
+	local algorithm digest expected_digest line
 
 	# need to read file to get updated $ASCII_MEASUREMENTS
 	cat $TEST_FILE > /dev/null
 
 	line="$(grep $TEST_FILE $ASCII_MEASUREMENTS | tail -1)"
-	[ -n "$line" ] || tst_res TFAIL "cannot find measurement for '$TEST_FILE'"
+	if [ -z "$line" ]; then
+		tst_res TFAIL "cannot find measurement record for '$TEST_FILE'"
+		return
+	fi
+	tst_res TINFO "measurement record: '$line'"
 
-	[ "$DIGEST_INDEX" ] && digest="$(echo "$line" | awk '{print $(NF-'$DIGEST_INDEX')}' | cut -d ':' -f 1)"
-	hash="$(echo "$line" | awk '{print $(NF-1)}' | cut -d ':' -f 2)"
+	digest=$(echo "$line" | cut -d' ' -f $DIGEST_INDEX)
+	if [ -z "$digest" ]; then
+		tst_res TFAIL "cannot find digest (index: $DIGEST_INDEX)"
+		return
+	fi
 
-	tst_res TINFO "computing hash for $digest digest"
-	expected_hash="$(compute_hash $digest $TEST_FILE)" || \
-		{ tst_res TCONF "cannot compute hash for '$digest' digest"; return; }
-
-	if [ "$hash" = "$expected_hash" ]; then
-		tst_res TPASS "correct hash found"
+	if [ "${digest#*$delimiter}" != "$digest" ]; then
+		algorithm=$(echo "$digest" | cut -d $delimiter -f 1)
+		digest=$(echo "$digest" | cut -d $delimiter -f 2)
 	else
-		tst_res TFAIL "hash not found"
+		case "${#digest}" in
+		32) algorithm="md5" ;;
+		40) algorithm="sha1" ;;
+		*)
+			tst_res TFAIL "algorithm must be either md5 or sha1 (digest: '$digest')"
+			return ;;
+		esac
+	fi
+	if [ -z "$algorithm" ]; then
+		tst_res TFAIL "cannot find algorithm"
+		return
+	fi
+	if [ -z "$digest" ]; then
+		tst_res TFAIL "cannot find digest"
+		return
+	fi
+
+	tst_res TINFO "computing digest for $algorithm algorithm"
+	expected_digest="$(compute_digest $algorithm $TEST_FILE)" || \
+		tst_brk TCONF "cannot compute digest for $algorithm algorithm"
+
+	if [ "$digest" = "$expected_digest" ]; then
+		tst_res TPASS "correct digest found"
+	else
+		tst_res TFAIL "digest not found"
 	fi
 }
 
