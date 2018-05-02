@@ -377,7 +377,8 @@ tst_run()
 }
 
 if [ -z "$TST_ID" ]; then
-	filename=$(basename $0)
+	filename=$(basename $0) || \
+		tst_brk TCONF "Failed to set TST_ID from \$0 ('$0'), fix it with setting TST_ID before sourcing tst_test.sh"
 	TST_ID=${filename%%.*}
 fi
 export TST_ID="$TST_ID"
