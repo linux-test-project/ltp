@@ -34,7 +34,7 @@ IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 2000 10000 65000}"
 
 ipsec_lib_parse_args()
 {
-	case "$opt" in
+	case "$1" in
 	h)
 		echo "Usage:"
 		echo "h        help"
@@ -52,18 +52,18 @@ ipsec_lib_parse_args()
 		echo "6        run over IPv6"
 		exit 0
 	;;
-	l) LINK_NUM=$OPTARG ;;
-	m) IPSEC_MODE=$OPTARG ;;
-	p) IPSEC_PROTO=$OPTARG ;;
-	s) IPSEC_SIZE_ARRAY="$OPTARG" ;;
-	S) SPI=$OPTARG ;;
-	k) VTI_KEY=$OPTARG ;;
-	A) AEALGO=$OPTARG ;;
-	e) EALGO=$OPTARG ;;
-	a) AALGO=$OPTARG ;;
-	c) CALGO=$OPTARG ;;
-	r) IPSEC_REQUESTS="$OPTARG" ;;
-	*) tst_brkm TBROK "unknown option: $opt" ;;
+	l) LINK_NUM=$2 ;;
+	m) IPSEC_MODE=$2 ;;
+	p) IPSEC_PROTO=$2 ;;
+	s) IPSEC_SIZE_ARRAY="$2" ;;
+	S) SPI=$2 ;;
+	k) VTI_KEY=$2 ;;
+	A) AEALGO=$2 ;;
+	e) EALGO=$2 ;;
+	a) AALGO=$2 ;;
+	c) CALGO=$2 ;;
+	r) IPSEC_REQUESTS="$2" ;;
+	*) tst_brkm TBROK "unknown option: $1" ;;
 	esac
 }
 
