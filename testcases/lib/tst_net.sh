@@ -42,7 +42,7 @@ tst_net_read_opts()
 {
 	local OPTIND
 	while getopts "$TST_OPTS" opt; do
-		$TST_PARSE_ARGS "$opt"
+		$TST_PARSE_ARGS "$opt" "$OPTARG"
 	done
 }
 
