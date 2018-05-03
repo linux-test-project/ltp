@@ -180,7 +180,8 @@ static void alloc_free_huge_on_node(unsigned int node, size_t size)
 
 static void setup(void)
 {
-	int memfree, ret;
+	int ret;
+	long memfree;
 
 	check_config(TEST_NODES);
 
@@ -194,8 +195,8 @@ static void setup(void)
 	pgsz = (int)get_page_size();
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "Hugepagesize: %d", &hpsz);
 
-	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "MemFree: %d", &memfree);
-	tst_res(TINFO, "Free RAM %d kB", memfree);
+	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "MemFree: %ld", &memfree);
+	tst_res(TINFO, "Free RAM %ld kB", memfree);
 
 	if (4 * hpsz > memfree)
 		tst_brk(TBROK, "Not enough free RAM");
