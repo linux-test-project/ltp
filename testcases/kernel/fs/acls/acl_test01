@@ -112,6 +112,7 @@ do_setup()
 		setenforce 0
 	fi
 
+	userdel $TEST_USER1 > /dev/null 2>&1
 	useradd -d $TEST_USER1_HOMEDIR -m -g $TEST_USER1_GROUP $TEST_USER1 -s /bin/sh
 	if [ $? -ne 0 ]; then
 		tst_brkm TBROK "Could not add test user $TEST_USER1."
