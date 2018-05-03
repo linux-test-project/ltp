@@ -31,7 +31,7 @@
 
 virt_lib_parse_args()
 {
-	case "$opt" in
+	case "$1" in
 	h)
 		echo "Usage:"
 		echo "h        help"
@@ -40,10 +40,10 @@ virt_lib_parse_args()
 		echo "6        run over IPv6"
 		exit 0
 	;;
-	i) start_id=$OPTARG ;;
-	d) vxlan_dst_addr=$OPTARG ;;
+	i) start_id=$2 ;;
+	d) vxlan_dst_addr=$2 ;;
 	*)
-		tst_brkm TBROK "unknown option: $opt"
+		tst_brkm TBROK "unknown option: $1"
 	;;
 	esac
 }
