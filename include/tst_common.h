@@ -56,13 +56,10 @@
 		if (tst_ret_ == ERET)					\
 			break;						\
 		if (tst_delay_ < MAX_DELAY * 1000000) {			\
-			tst_res(TINFO,					\
-				#FUNC" returned %i, retrying"		\
-				" in %ius", tst_ret_, tst_delay_);	\
 			usleep(tst_delay_);				\
 			tst_delay_ *= 2;				\
 		} else {						\
-			tst_brk(TBROK, #FUNC" failed");			\
+			tst_brk(TBROK, #FUNC" timed out");		\
 		}							\
 	}								\
 	ERET;								\
