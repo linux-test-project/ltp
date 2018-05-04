@@ -1366,6 +1366,12 @@ For reference to tainted kernels, see kernel documentation:
 Documentation/admin-guide/tainted-kernels.rst or
 https://www.kernel.org/doc/html/latest/admin-guide/tainted-kernels.html
 
+2.2.25 Checksums
+^^^^^^^^^^^^^^^^
+
+CRC32c checksum generation is supported by LTP. In order to use it, the
+test should include "tst_checksum.h" header, then can call tst_crc32c().
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
