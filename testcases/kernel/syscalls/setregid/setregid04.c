@@ -116,6 +116,15 @@ int main(int ac, char **av)
 	} \
 	GROUPNAME ## _gr = *(getgrnam(#GROUPNAME));
 
+#define SAFE_GETGROUP_FALLBACK(GROUPNAME, GROUPNAME2)	\
+	if (getgrnam(#GROUPNAME) != NULL) \
+		GROUPNAME ## _gr = *(getgrnam(#GROUPNAME)); \
+	else if (getgrnam(#GROUPNAME2) != NULL) { \
+		GROUPNAME ## _gr = *(getgrnam(#GROUPNAME2)); \
+		tst_resm(TINFO, "`" #GROUPNAME "' group not found, trying fallback `" #GROUPNAME2 "' group"); \
+	} else \
+		tst_brkm(TBROK, NULL, "Couldn't find neither`" #GROUPNAME "' `" #GROUPNAME2 "' nor group");
+
 static void setup(void)
 {
 	tst_require_root();
@@ -123,7 +132,7 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	SAFE_GETGROUP(root);
-	SAFE_GETGROUP(nobody);
+	SAFE_GETGROUP_FALLBACK(nobody, nogroup);
 	SAFE_GETGROUP(daemon);
 	SAFE_GETGROUP(bin);
 

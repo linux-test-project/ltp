@@ -195,7 +195,20 @@ static void setup(void)
 	group ## _gr = *(junk); \
 } while (0)
 
-	GET_GID(nobody);
+#define GET_GID_FALLBACK(group, group2) do { \
+	junk = getgrnam(#group); \
+	if (junk == NULL) { \
+		tst_resm(TINFO, "%s not found, trying fallback %s", #group, #group2); \
+		junk = getgrnam(#group2); \
+		if (junk == NULL) { \
+			tst_brkm(TBROK, NULL, "%s or %s must be a valid group", #group, #group2); \
+		} \
+	} \
+	GID16_CHECK(junk->gr_gid, setregid, NULL); \
+	group ## _gr = *(junk); \
+} while (0)
+
+	GET_GID_FALLBACK(nobody, nogroup);
 	GET_GID(daemon);
 	GET_GID(bin);
 
