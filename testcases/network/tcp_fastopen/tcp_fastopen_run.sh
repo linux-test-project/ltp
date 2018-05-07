@@ -20,8 +20,9 @@
 
 TST_NETLOAD_MAX_SRV_REPLIES=3
 
-while getopts :hr:n:R:6 opt; do
-	case "$opt" in
+tcp_fastopen_parse_args()
+{
+	case "$1" in
 	h)
 		echo "Usage:"
 		echo "h        help"
@@ -29,16 +30,17 @@ while getopts :hr:n:R:6 opt; do
 		echo "6        run over IPv6"
 		exit 0
 	;;
-	R) TST_NETLOAD_MAX_SRV_REPLIES=$OPTARG ;;
-	6) TST_IPV6=6 ;;
-	*) tst_brkm TBROK "unknown option: $opt" ;;
+	R) TST_NETLOAD_MAX_SRV_REPLIES=$2 ;;
+	*) tst_brkm TBROK "unknown option: $1" ;;
 	esac
-done
-shift $(($OPTIND - 1))
+}
 
 TST_TOTAL=1
 TCID="tcp_fastopen"
 TST_NEEDS_TMPDIR=1
+
+TST_OPTS="hr:n:R:"
+TST_PARSE_ARGS=tcp_fastopen_parse_args
 
 TST_USE_LEGACY_API=1
 . tst_net.sh
