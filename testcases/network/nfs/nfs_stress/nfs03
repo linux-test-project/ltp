@@ -25,8 +25,6 @@ TST_TOTAL=1
 TST_CLEANUP="nfs03_cleanup"
 
 . nfs_lib.sh
-TST_USE_LEGACY_API=1
-. tst_net.sh
 
 DIR_NUM=${DIR_NUM:-"100"}
 FILE_NUM=${FILE_NUM:-"100"}

@@ -20,9 +20,6 @@ NFILES=${NFILES:=1000}
 SOCKET_TYPE="${SOCKET_TYPE:-udp}"
 NFS_TYPE=${NFS_TYPE:=nfs}
 
-TST_OPTS=":hv:t:"
-TST_PARSE_ARGS=nfs_parse_args
-
 nfs_parse_args()
 {
 	case "$1" in
@@ -34,11 +31,17 @@ nfs_parse_args()
 		echo "6        run over IPv6"
 		exit 0
 	;;
-	v) VERSION=$OPTARG;;
-	t) SOCKET_TYPE=$OPTARG;;
+	v) VERSION=$2;;
+	t) SOCKET_TYPE=$2;;
 	*) tst_brkm TBROK "unknown option: $1"
 	esac
 }
+
+TST_OPTS="hv:t:"
+TST_PARSE_ARGS=nfs_parse_args
+
+TST_USE_LEGACY_API=1
+. tst_net.sh
 
 get_socket_type()
 {
