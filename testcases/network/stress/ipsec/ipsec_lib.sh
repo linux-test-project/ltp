@@ -41,7 +41,7 @@ ipsec_lib_parse_args()
 		echo "l n      n is the number of test link when tests run"
 		echo "m x      x is ipsec mode, could be transport / tunnel"
 		echo "p x      x is ipsec protocol, could be ah / esp / comp"
-		echo "s x      x is icmp messge size array"
+		echo "s x      x is icmp message size array"
 		echo "S n      n is IPsec SPI value"
 		echo "k x      key for vti interface"
 		echo "A x      Authenticated encryption with associated data algorithm"

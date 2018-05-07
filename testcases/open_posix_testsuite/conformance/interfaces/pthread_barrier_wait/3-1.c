@@ -17,7 +17,7 @@
  * 2. Main create a child thread
  * 3. Child thread call pthread_barrier_wait(), should block
  * 4. While child thread is blocking, send SIGUSR1 to child
- * 5. The signal handler did nothing just print a messge
+ * 5. The signal handler did nothing just print a message
  * 6. After return from the signal handler, child should resume blocking
  * 7. Main call pthread_barrier_wait(), child and main should all return
  *    from pthread_barrier_wait()
