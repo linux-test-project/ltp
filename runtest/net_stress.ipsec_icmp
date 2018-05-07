@@ -27,93 +27,93 @@
 # IPsec compression: same message size but different content will result in different data size
 # after compression. So we just use a large enough message size(65000) for testing
 
-icmp4-uni-basic01 icmp-uni-basic.sh -s "10 100 1000 10000 65507"
-icmp4-uni-basic02 icmp-uni-basic.sh -p ah -m transport -s "10 100 1000 10000 65483"
-icmp4-uni-basic03 icmp-uni-basic.sh -p ah -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-basic04 icmp-uni-basic.sh -p esp -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic05 icmp-uni-basic.sh -p esp -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic06 icmp-uni-basic.sh -p comp -m transport -s "10 100 1000 10000 65000"
-icmp4-uni-basic07 icmp-uni-basic.sh -p comp -m tunnel -s "10 100 1000 10000 65000"
-icmp4-uni-basic08 icmp-uni-basic.sh -A rfc4106_128 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic09 icmp-uni-basic.sh -A rfc4106_192 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic10 icmp-uni-basic.sh -A rfc4106_256 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic11 icmp-uni-basic.sh -A rfc4309_128 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic12 icmp-uni-basic.sh -A rfc4309_192 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic13 icmp-uni-basic.sh -A rfc4309_256 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic14 icmp-uni-basic.sh -A rfc4543_128 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic15 icmp-uni-basic.sh -A rfc4543_192 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic16 icmp-uni-basic.sh -A rfc4543_256 -p esp_aead -m transport -s "10 100 1000 10000 65470"
-icmp4-uni-basic17 icmp-uni-basic.sh -A rfc4106_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic18 icmp-uni-basic.sh -A rfc4106_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic19 icmp-uni-basic.sh -A rfc4106_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic20 icmp-uni-basic.sh -A rfc4309_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic21 icmp-uni-basic.sh -A rfc4309_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic22 icmp-uni-basic.sh -A rfc4309_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic23 icmp-uni-basic.sh -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic24 icmp-uni-basic.sh -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic25 icmp-uni-basic.sh -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65450"
-icmp4-uni-basic26 icmp-uni-basic.sh -p esp -m beet -s "10 100 1000 10000 65470"
+icmp4-uni-basic01 icmp-uni-basic.sh -s 10:100:1000:10000:65507
+icmp4-uni-basic02 icmp-uni-basic.sh -p ah -m transport -s 10:100:1000:10000:65483
+icmp4-uni-basic03 icmp-uni-basic.sh -p ah -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-basic04 icmp-uni-basic.sh -p esp -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic05 icmp-uni-basic.sh -p esp -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic06 icmp-uni-basic.sh -p comp -m transport -s 10:100:1000:10000:65000
+icmp4-uni-basic07 icmp-uni-basic.sh -p comp -m tunnel -s 10:100:1000:10000:65000
+icmp4-uni-basic08 icmp-uni-basic.sh -A rfc4106_128 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic09 icmp-uni-basic.sh -A rfc4106_192 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic10 icmp-uni-basic.sh -A rfc4106_256 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic11 icmp-uni-basic.sh -A rfc4309_128 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic12 icmp-uni-basic.sh -A rfc4309_192 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic13 icmp-uni-basic.sh -A rfc4309_256 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic14 icmp-uni-basic.sh -A rfc4543_128 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic15 icmp-uni-basic.sh -A rfc4543_192 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic16 icmp-uni-basic.sh -A rfc4543_256 -p esp_aead -m transport -s 10:100:1000:10000:65470
+icmp4-uni-basic17 icmp-uni-basic.sh -A rfc4106_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic18 icmp-uni-basic.sh -A rfc4106_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic19 icmp-uni-basic.sh -A rfc4106_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic20 icmp-uni-basic.sh -A rfc4309_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic21 icmp-uni-basic.sh -A rfc4309_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic22 icmp-uni-basic.sh -A rfc4309_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic23 icmp-uni-basic.sh -A rfc4543_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic24 icmp-uni-basic.sh -A rfc4543_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic25 icmp-uni-basic.sh -A rfc4543_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65450
+icmp4-uni-basic26 icmp-uni-basic.sh -p esp -m beet -s 10:100:1000:10000:65470
 
-icmp6-uni-basic01 icmp-uni-basic.sh -6 -s "10 100 1000 10000 65527"
-icmp6-uni-basic02 icmp-uni-basic.sh -6 -p ah -m transport -s "10 100 1000 10000 65503"
-icmp6-uni-basic03 icmp-uni-basic.sh -6 -p ah -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic04 icmp-uni-basic.sh -6 -p esp -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic05 icmp-uni-basic.sh -6 -p esp -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic06 icmp-uni-basic.sh -6 -p comp -m transport -s "10 100 1000 10000 65000"
-icmp6-uni-basic07 icmp-uni-basic.sh -6 -p comp -m tunnel -s "10 100 1000 10000 65000"
-icmp6-uni-basic08 icmp-uni-basic.sh -6 -A rfc4106_128 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic09 icmp-uni-basic.sh -6 -A rfc4106_192 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic10 icmp-uni-basic.sh -6 -A rfc4106_256 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic11 icmp-uni-basic.sh -6 -A rfc4309_128 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic12 icmp-uni-basic.sh -6 -A rfc4309_192 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic13 icmp-uni-basic.sh -6 -A rfc4309_256 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic14 icmp-uni-basic.sh -6 -A rfc4543_128 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic15 icmp-uni-basic.sh -6 -A rfc4543_192 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic16 icmp-uni-basic.sh -6 -A rfc4543_256 -p esp_aead -m transport -s "10 100 1000 10000 65490"
-icmp6-uni-basic17 icmp-uni-basic.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic18 icmp-uni-basic.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic19 icmp-uni-basic.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic20 icmp-uni-basic.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic21 icmp-uni-basic.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic22 icmp-uni-basic.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic23 icmp-uni-basic.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic24 icmp-uni-basic.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic25 icmp-uni-basic.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-basic26 icmp-uni-basic.sh -6 -p esp -m beet -s "10 100 1000 10000 65490"
+icmp6-uni-basic01 icmp-uni-basic.sh -6 -s 10:100:1000:10000:65527
+icmp6-uni-basic02 icmp-uni-basic.sh -6 -p ah -m transport -s 10:100:1000:10000:65503
+icmp6-uni-basic03 icmp-uni-basic.sh -6 -p ah -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic04 icmp-uni-basic.sh -6 -p esp -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic05 icmp-uni-basic.sh -6 -p esp -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic06 icmp-uni-basic.sh -6 -p comp -m transport -s 10:100:1000:10000:65000
+icmp6-uni-basic07 icmp-uni-basic.sh -6 -p comp -m tunnel -s 10:100:1000:10000:65000
+icmp6-uni-basic08 icmp-uni-basic.sh -6 -A rfc4106_128 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic09 icmp-uni-basic.sh -6 -A rfc4106_192 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic10 icmp-uni-basic.sh -6 -A rfc4106_256 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic11 icmp-uni-basic.sh -6 -A rfc4309_128 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic12 icmp-uni-basic.sh -6 -A rfc4309_192 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic13 icmp-uni-basic.sh -6 -A rfc4309_256 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic14 icmp-uni-basic.sh -6 -A rfc4543_128 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic15 icmp-uni-basic.sh -6 -A rfc4543_192 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic16 icmp-uni-basic.sh -6 -A rfc4543_256 -p esp_aead -m transport -s 10:100:1000:10000:65490
+icmp6-uni-basic17 icmp-uni-basic.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic18 icmp-uni-basic.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic19 icmp-uni-basic.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic20 icmp-uni-basic.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic21 icmp-uni-basic.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic22 icmp-uni-basic.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic23 icmp-uni-basic.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic24 icmp-uni-basic.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic25 icmp-uni-basic.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-basic26 icmp-uni-basic.sh -6 -p esp -m beet -s 10:100:1000:10000:65490
 
-icmp4-uni-vti01 icmp-uni-vti.sh -p ah -a sha256 -m tunnel -S fffffffe -k 1 -s "10 100 1000 10000 65463"
-icmp4-uni-vti02 icmp-uni-vti.sh -p esp -a sha512 -e des -m tunnel -S fffffffe -k 2 -s "10 100 1000 10000 65450"
-icmp4-uni-vti03 icmp-uni-vti.sh -p esp -a rmd160 -e cast5 -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65463"
-icmp4-uni-vti04 icmp-uni-vti.sh -p esp -e blowfish -m tunnel -S fffffffe -k 3 -s "10 100 1000 10000 65463"
-icmp4-uni-vti05 icmp-uni-vti.sh -p esp -a sha512 -e twofish -m tunnel -S fffffffe -k 0x7fffffff -s "10 100 1000 10000 65463"
-icmp4-uni-vti06 icmp-uni-vti.sh -p esp -a sha384 -e camellia -m tunnel -S fffffffe -k 0x80000000 -s "10 100 1000 10000 65463"
-icmp4-uni-vti07 icmp-uni-vti.sh -p esp -a sha512 -e serpent -m tunnel -S fffffffe -k 0xffff -s "10 100 1000 10000 65463"
-icmp4-uni-vti08 icmp-uni-vti.sh -A rfc4106_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti09 icmp-uni-vti.sh -A rfc4106_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti10 icmp-uni-vti.sh -A rfc4106_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti11 icmp-uni-vti.sh -A rfc4309_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti12 icmp-uni-vti.sh -A rfc4309_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti13 icmp-uni-vti.sh -A rfc4309_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti14 icmp-uni-vti.sh -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti15 icmp-uni-vti.sh -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
-icmp4-uni-vti16 icmp-uni-vti.sh -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65463"
+icmp4-uni-vti01 icmp-uni-vti.sh -p ah -a sha256 -m tunnel -S fffffffe -k 1 -s 10:100:1000:10000:65463
+icmp4-uni-vti02 icmp-uni-vti.sh -p esp -a sha512 -e des -m tunnel -S fffffffe -k 2 -s 10:100:1000:10000:65450
+icmp4-uni-vti03 icmp-uni-vti.sh -p esp -a rmd160 -e cast5 -m tunnel -S fffffffe -k 0xffffffff -s 10:100:1000:10000:65463
+icmp4-uni-vti04 icmp-uni-vti.sh -p esp -e blowfish -m tunnel -S fffffffe -k 3 -s 10:100:1000:10000:65463
+icmp4-uni-vti05 icmp-uni-vti.sh -p esp -a sha512 -e twofish -m tunnel -S fffffffe -k 0x7fffffff -s 10:100:1000:10000:65463
+icmp4-uni-vti06 icmp-uni-vti.sh -p esp -a sha384 -e camellia -m tunnel -S fffffffe -k 0x80000000 -s 10:100:1000:10000:65463
+icmp4-uni-vti07 icmp-uni-vti.sh -p esp -a sha512 -e serpent -m tunnel -S fffffffe -k 0xffff -s 10:100:1000:10000:65463
+icmp4-uni-vti08 icmp-uni-vti.sh -A rfc4106_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti09 icmp-uni-vti.sh -A rfc4106_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti10 icmp-uni-vti.sh -A rfc4106_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti11 icmp-uni-vti.sh -A rfc4309_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti12 icmp-uni-vti.sh -A rfc4309_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti13 icmp-uni-vti.sh -A rfc4309_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti14 icmp-uni-vti.sh -A rfc4543_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti15 icmp-uni-vti.sh -A rfc4543_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
+icmp4-uni-vti16 icmp-uni-vti.sh -A rfc4543_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65463
 icmp4-uni-vti17 icmp-uni-vti.sh -p comp -m tunnel -s 1000
 
-icmp6-uni-vti01 icmp-uni-vti.sh -6 -p ah -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65527"
-icmp6-uni-vti02 icmp-uni-vti.sh -6 -p esp -a sha256 -e des3_ede -m tunnel -S fffffffe -k 0xffffffff -s "10 100 1000 10000 65527"
-icmp6-uni-vti03 icmp-uni-vti.sh -6 -p esp -a sha512 -e cast5 -m tunnel -S fffffffe -k 1 -s "10 100 1000 10000 65527"
-icmp6-uni-vti04 icmp-uni-vti.sh -6 -p esp -a rmd160 -e blowfish -m tunnel -S fffffffe -k 0x80000000 -s "10 100 1000 10000 65527"
-icmp6-uni-vti05 icmp-uni-vti.sh -6 -p esp -e twofish -m tunnel -S fffffffe -k 0xffff -s "10 100 1000 10000 65527"
-icmp6-uni-vti06 icmp-uni-vti.sh -6 -p esp -a sha512 -e camellia -m tunnel -S fffffffe -k 0x7fffffff -s "10 100 1000 10000 65527"
-icmp6-uni-vti07 icmp-uni-vti.sh -6 -p esp -a sha384 -e serpent -m tunnel -S ffffffff -k 0x11111111 -s "10 100 1000 10000 65527"
-icmp6-uni-vti08 icmp-uni-vti.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti09 icmp-uni-vti.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti10 icmp-uni-vti.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti11 icmp-uni-vti.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti12 icmp-uni-vti.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti13 icmp-uni-vti.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti14 icmp-uni-vti.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti15 icmp-uni-vti.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
-icmp6-uni-vti16 icmp-uni-vti.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s "10 100 1000 10000 65527"
+icmp6-uni-vti01 icmp-uni-vti.sh -6 -p ah -m tunnel -S fffffffe -k 0xffffffff -s 10:100:1000:10000:65527
+icmp6-uni-vti02 icmp-uni-vti.sh -6 -p esp -a sha256 -e des3_ede -m tunnel -S fffffffe -k 0xffffffff -s 10:100:1000:10000:65527
+icmp6-uni-vti03 icmp-uni-vti.sh -6 -p esp -a sha512 -e cast5 -m tunnel -S fffffffe -k 1 -s 10:100:1000:10000:65527
+icmp6-uni-vti04 icmp-uni-vti.sh -6 -p esp -a rmd160 -e blowfish -m tunnel -S fffffffe -k 0x80000000 -s 10:100:1000:10000:65527
+icmp6-uni-vti05 icmp-uni-vti.sh -6 -p esp -e twofish -m tunnel -S fffffffe -k 0xffff -s 10:100:1000:10000:65527
+icmp6-uni-vti06 icmp-uni-vti.sh -6 -p esp -a sha512 -e camellia -m tunnel -S fffffffe -k 0x7fffffff -s 10:100:1000:10000:65527
+icmp6-uni-vti07 icmp-uni-vti.sh -6 -p esp -a sha384 -e serpent -m tunnel -S ffffffff -k 0x11111111 -s 10:100:1000:10000:65527
+icmp6-uni-vti08 icmp-uni-vti.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti09 icmp-uni-vti.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti10 icmp-uni-vti.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti11 icmp-uni-vti.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti12 icmp-uni-vti.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti13 icmp-uni-vti.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti14 icmp-uni-vti.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti15 icmp-uni-vti.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
+icmp6-uni-vti16 icmp-uni-vti.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s 10:100:1000:10000:65527
 icmp6-uni-vti17 icmp-uni-vti.sh -6 -p comp -m tunnel -s 1000
 

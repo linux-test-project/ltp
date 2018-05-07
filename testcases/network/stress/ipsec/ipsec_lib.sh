@@ -30,7 +30,7 @@ AALGO="sha1"
 CALGO="deflate"
 
 IPSEC_REQUESTS="500"
-IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10 100 1000 2000 10000 65000}"
+IPSEC_SIZE_ARRAY="${IPSEC_SIZE_ARRAY:-10:100:1000:2000:10000:65000}"
 
 ipsec_lib_parse_args()
 {
@@ -41,7 +41,7 @@ ipsec_lib_parse_args()
 		echo "l n      n is the number of test link when tests run"
 		echo "m x      x is ipsec mode, could be transport / tunnel"
 		echo "p x      x is ipsec protocol, could be ah / esp / comp"
-		echo "s x      x is icmp message size array"
+		echo "s x      x is icmp message size array (items separated by ':')"
 		echo "S n      n is IPsec SPI value"
 		echo "k x      key for vti interface"
 		echo "A x      Authenticated encryption with associated data algorithm"
@@ -65,6 +65,14 @@ ipsec_lib_parse_args()
 	r) IPSEC_REQUESTS="$2" ;;
 	*) tst_brkm TBROK "unknown option: $1" ;;
 	esac
+
+	local IFS=":"
+	local tmp="$IPSEC_SIZE_ARRAY"
+	local p
+	for p in $IPSEC_SIZE_ARRAY; do
+		tmp="$p "
+	done
+	IPSEC_SIZE_ARRAY="$tmp"
 }
 
 TST_OPTS="hl:m:p:s:S:k:A:e:a:c:r:"
