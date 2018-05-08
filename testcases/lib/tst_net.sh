@@ -78,7 +78,7 @@ if [ -z "$TST_LIB_LOADED" ]; then
 fi
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
-	tst_net_read_opts $*
+	tst_net_read_opts "$@"
 	ipver=${TST_IPV6:-4}
 fi
 
