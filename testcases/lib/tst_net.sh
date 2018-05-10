@@ -255,6 +255,8 @@ tst_get_hwaddrs()
 # LINK: link number starting from 0. Default value is '0'.
 tst_hwaddr()
 {
+	tst_check_cmds awk
+
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
 	local hwaddrs=
@@ -269,6 +271,8 @@ tst_hwaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_iface()
 {
+	tst_check_cmds awk
+
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
 	link_num="$(( $link_num + 1 ))"
