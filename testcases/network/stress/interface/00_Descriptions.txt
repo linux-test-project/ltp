@@ -12,11 +12,15 @@ if-addr-adddel
 
 if-addr-addlarge
 	Verify the IPv4/IPv6 connectivity is not broken when ip/ifconifg
-	creates many addresses.
+	creates many addresses
 
 if-route-adddel
 	Verify the IPv4/IPv6 connectivity is not broken when the ip/route adds,
 	then and deletes an IPv4/IPv6 route many times
+
+if-route-addlarge
+	Verify the IPv4/IPv6 connectivity is not broken when the ip/route
+	creates many routes
 
 if-mtu-change
 	Verify the IPv4/IPv6 connectivity is not broken when ip/ifconfig
