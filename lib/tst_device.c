@@ -268,7 +268,7 @@ const char *tst_acquire_device__(unsigned int size)
 				ltp_dev_size, acq_dev_size);
 	}
 
-	if (tst_fill_file(DEV_FILE, 0, 1024, 1024 * acq_dev_size)) {
+	if (tst_fill_file(DEV_FILE, 0, 1024 * 1024, acq_dev_size)) {
 		tst_resm(TWARN | TERRNO, "Failed to create " DEV_FILE);
 		return NULL;
 	}
