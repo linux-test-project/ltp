@@ -71,6 +71,11 @@
 # define MADV_FREE	8
 #endif
 
+#ifndef MADV_WIPEONFORK
+# define MADV_WIPEONFORK 18
+# define MADV_KEEPONFORK 19
+#endif
+
 #ifdef HAVE_SYS_SHM_H
 # include <sys/shm.h>
 # define MMAP_GRANULARITY SHMLBA
