@@ -356,8 +356,8 @@ virt_netperf_msg_sizes()
 # OPTIONS - different options separated by comma.
 virt_test_01()
 {
-	start_id=${start_id:-"1"}
-	local opts=${1:-""}
+	start_id="${start_id:-1}"
+	local opts="${1:-}"
 	local n=0
 
 	while true; do
@@ -380,8 +380,8 @@ virt_test_01()
 # OPTIONS - different options separated by comma.
 virt_test_02()
 {
-	start_id=${start_id:-"1"}
-	local opts=${1:-""}
+	start_id="${start_id:-1}"
+	local opts="${1:-}"
 	local n=0
 
 	while true; do
