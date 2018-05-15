@@ -37,7 +37,9 @@ setup()
 
 test_run()
 {
-	local opts="$@"
+	local opts
+
+	opts="$@"
 
 	tst_resm TINFO "compare TCP/SCTP performance"
 
