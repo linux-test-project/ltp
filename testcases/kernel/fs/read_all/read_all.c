@@ -50,6 +50,7 @@
 #include <fnmatch.h>
 #include <semaphore.h>
 #include <ctype.h>
+#include <pwd.h>
 
 #include "tst_test.h"
 
@@ -88,6 +89,7 @@ static long worker_count;
 static char *str_max_workers;
 static long max_workers = 15;
 static struct worker *workers;
+static char *drop_privs;
 
 static struct tst_option options[] = {
 	{"v", &verbose,
@@ -104,6 +106,8 @@ static struct tst_option options[] = {
 	 "-w count Set the worker count limit, the default is 15."},
 	{"W:", &str_worker_count,
 	 "-W count Override the worker count. Ignores (-w) and the processor count."},
+	{"p", &drop_privs,
+	 "-p       Drop privileges; switch to the nobody user."},
 	{NULL, NULL, NULL}
 };
 
@@ -247,6 +251,24 @@ static int worker_run(struct worker *self)
 	return 0;
 }
 
+static void maybe_drop_privs(void)
+{
+	struct passwd *nobody;
+
+	if (!drop_privs)
+		return;
+
+	nobody = SAFE_GETPWNAM("nobody");
+
+	TEST(setgid(nobody->pw_gid));
+	if (TEST_RETURN < 0 && TEST_ERRNO != EPERM)
+		tst_brk(TBROK | TTERRNO, "Failed to use nobody gid");
+
+	TEST(setuid(nobody->pw_uid));
+	if (TEST_RETURN < 0 && TEST_ERRNO != EPERM)
+		tst_brk(TBROK | TTERRNO, "Failed to use nobody uid");
+}
+
 static void spawn_workers(void)
 {
 	int i;
@@ -257,8 +279,10 @@ static void spawn_workers(void)
 	for (i = 0; i < worker_count; i++) {
 		wa[i].q = queue_init();
 		wa[i].pid = SAFE_FORK();
-		if (!wa[i].pid)
+		if (!wa[i].pid) {
+			maybe_drop_privs();
 			exit(worker_run(wa + i));
+		}
 	}
 }
 
