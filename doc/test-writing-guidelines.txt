@@ -489,7 +489,6 @@ IMPORTANT: Close all file descriptors (that point to files in test temporary
 	   or in the test 'cleanup()' otherwise the test may break temporary
 	   directory removal on NFS (look for "NFS silly rename").
 
-[[2.2.4]]
 2.2.4 Safe macros
 ^^^^^^^^^^^^^^^^^
 
@@ -661,7 +660,6 @@ To avoid that you should use 'SAFE_FORK()'.
 IMPORTANT: You have to set the '.forks_child' flag in the test structure
            if your testcase forks.
 
-[[2.2.8]]
 2.2.8 Doing the test in the child process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
