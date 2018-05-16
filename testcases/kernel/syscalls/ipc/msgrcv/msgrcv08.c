@@ -47,11 +47,13 @@ const char *TCID = "msgrcv08";
 const int TST_TOTAL = 1;
 
 #if __WORDSIZE == 32
-
+#ifdef __GLIBC__
 struct msgbuf {
 	long mtype;     /* message type, must be > 0 */
 	char mtext[16]; /* message data */
 };
+#else
+#endif
 
 static void msr(int msqid)
 {
