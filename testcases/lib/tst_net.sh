@@ -484,6 +484,10 @@ tst_netload()
 	local s_replies="${TST_NETLOAD_MAX_SRV_REPLIES:-500000}"
 	local s_opts=
 
+	if [ ! "$TST_NEEDS_TMPDIR" = 1 ]; then
+		tst_brk_ TBROK "Using tst_netload requires setting TST_NEEDS_TMPDIR=1"
+	fi
+
 	OPTIND=0
 	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A: opt; do
 		case "$opt" in
