@@ -247,6 +247,8 @@ _tst_rescmp()
 tst_run()
 {
 	local _tst_i
+	local _tst_data
+	local _tst_max
 	local _tst_name
 
 	if [ -n "$TST_TEST_PATH" ]; then
@@ -256,7 +258,7 @@ tst_run()
 			OPTS|USAGE|PARSE_ARGS|POS_ARGS);;
 			NEEDS_ROOT|NEEDS_TMPDIR|NEEDS_DEVICE|DEVICE);;
 			NEEDS_CMDS|NEEDS_MODULE|MODPATH|DATAROOT);;
-			IPV6);;
+			IPV6|TEST_DATA|TEST_DATA_IFS);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done
@@ -351,32 +353,45 @@ tst_run()
 
 	#TODO check that test reports some results for each test function call
 	while [ $TST_ITERATIONS -gt 0 ]; do
-		if [ -n "$TST_CNT" ]; then
-			if type ${TST_TESTFUNC}1 > /dev/null 2>&1; then
-				for _tst_i in $(seq $TST_CNT); do
-					local _tst_res=$(_tst_resstr)
-					$TST_TESTFUNC$_tst_i
-					_tst_rescmp "$_tst_res"
-					TST_COUNT=$((TST_COUNT+1))
-				done
-			else
-				for _tst_i in $(seq $TST_CNT); do
-					local _tst_res=$(_tst_resstr)
-					$TST_TESTFUNC $_tst_i
-					_tst_rescmp "$_tst_res"
-					TST_COUNT=$((TST_COUNT+1))
-				done
-			fi
+		if [ -n "$TST_TEST_DATA" ]; then
+			tst_check_cmds cut tr wc
+			_tst_max=$(( $(echo $TST_TEST_DATA | tr -cd "$TST_TEST_DATA_IFS" | wc -c) +1))
+			for _tst_i in $(seq $_tst_max); do
+				_tst_data="$(echo "$TST_TEST_DATA" | cut -d"$TST_TEST_DATA_IFS" -f$_tst_i)"
+				_tst_run_tests "$_tst_data"
+			done
 		else
-			local _tst_res=$(_tst_resstr)
-			$TST_TESTFUNC
-			_tst_rescmp "$_tst_res"
-			TST_COUNT=$((TST_COUNT+1))
+			_tst_run_tests
 		fi
 		TST_ITERATIONS=$((TST_ITERATIONS-1))
 	done
 
 	_tst_do_exit
+}
+
+_tst_run_tests()
+{
+	local _tst_data="$1"
+	local _tst_i
+
+	for _tst_i in $(seq ${TST_CNT:-1}); do
+		if type ${TST_TESTFUNC}1 > /dev/null 2>&1; then
+			_tst_run_test "$TST_TESTFUNC$_tst_i" $_tst_i "$_tst_data"
+		else
+			_tst_run_test "$TST_TESTFUNC" $_tst_i "$_tst_data"
+		fi
+	done
+}
+
+_tst_run_test()
+{
+	local _tst_res=$(_tst_resstr)
+	local _tst_fnc="$1"
+	shift
+
+	$_tst_fnc "$@"
+	_tst_rescmp "$_tst_res"
+	TST_COUNT=$((TST_COUNT+1))
 }
 
 if [ -z "$TST_ID" ]; then
@@ -403,6 +418,8 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 	if [ -z "$TST_TESTFUNC" ]; then
 		tst_brk TBROK "TST_TESTFUNC is not defined"
 	fi
+
+	TST_TEST_DATA_IFS="${TST_TEST_DATA_IFS:- }"
 
 	if [ -n "$TST_CNT" ]; then
 		if ! tst_is_int "$TST_CNT"; then

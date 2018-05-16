@@ -1442,20 +1442,23 @@ TST_CNT=2
 
 test1()
 {
-	tst_res TPASS "Test 1 passed"
+	tst_res TPASS "Test $1 passed"
 }
 
 test2()
 {
-	tst_res TPASS "Test 2 passed"
+	tst_res TPASS "Test $1 passed"
 }
 
 tst_run
+# output:
+# foo 1 TPASS: Test 1 passed
+# foo 2 TPASS: Test 2 passed
 -------------------------------------------------------------------------------
 
 If '$TST_CNT' is set, the test library looks if there are functions named
 '$\{TST_TESTFUNC\}1', ..., '$\{TST_TESTFUNC\}$\{TST_CNT\}' and if these are
-found they are executed one by one.
+found they are executed one by one. The test number is passed to it in the '$1'.
 
 [source,sh]
 -------------------------------------------------------------------------------
@@ -1471,17 +1474,79 @@ TST_CNT=2
 do_test()
 {
 	case $1 in
-	1) tst_res TPASS "Test 1 passed";;
-	2) tst_res TPASS "Test 2 passed";;
+	1) tst_res TPASS "Test $1 passed";;
+	2) tst_res TPASS "Test $1 passed";;
 	esac
 }
 
 tst_run
+# output:
+# foo 1 TPASS: Test 1 passed
+# foo 2 TPASS: Test 2 passed
 -------------------------------------------------------------------------------
 
 Otherwise, if '$TST_CNT' is set but there is no '$\{TST_TESTFUNC\}1', etc.,
 the '$TST_TESTFUNC' is executed '$TST_CNT' times and the test number is passed
 to it in the '$1'.
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Example test with tests in a single function, using $TST_TEST_DATA and
+# $TST_TEST_DATA_IFS
+#
+
+TST_TESTFUNC=do_test
+TST_TEST_DATA="foo:bar:d dd"
+TST_TEST_DATA_IFS=":"
+. tst_test.sh
+
+do_test()
+{
+	tst_res TPASS "Test $1 passed with data '$2'"
+}
+
+tst_run
+# output:
+# foo 1 TPASS: Test 1 passed with data 'foo'
+# foo 2 TPASS: Test 1 passed with data 'bar'
+# foo 3 TPASS: Test 1 passed with data 'd dd'
+-------------------------------------------------------------------------------
+
+It's possible to pass data for function with '$TST_TEST_DATA'. Optional
+'$TST_TEST_DATA_IFS' is used for splitting, default value is space.
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
+#
+# Example test with tests in a single function, using $TST_TEST_DATA and $TST_CNT
+#
+
+TST_TESTFUNC=do_test
+TST_CNT=2
+TST_TEST_DATA="foo bar"
+. tst_test.sh
+
+do_test()
+{
+	case $1 in
+	1) tst_res TPASS "Test $1 passed with data '$2'";;
+	2) tst_res TPASS "Test $1 passed with data '$2'";;
+	esac
+}
+
+tst_run
+# output:
+# foo 1 TPASS: Test 1 passed with data 'foo'
+# foo 2 TPASS: Test 2 passed with data 'foo'
+# foo 3 TPASS: Test 1 passed with data 'bar'
+# foo 4 TPASS: Test 2 passed with data 'bar'
+-------------------------------------------------------------------------------
+
+'$TST_TEST_DATA' can be used with '$TST_CNT'. If '$TST_TEST_DATA_IFS' not specified,
+space as default value is used. Of course, it's possible to use separate functions.
 
 2.3.2 Library variables
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -1587,8 +1652,8 @@ these can be listed with passing help '-h' option to any test.
 The function that prints the usage is passed in '$TST_USAGE', the help for
 the options implemented in the library is appended when usage is printed.
 
-Lastly the fucntion '$PARSE_ARGS' is called with the option name in '$1' and,
-if option has argument, its value in '$2'.
+Lastly the fucntion '$PARSE_ARGS' is called with the option name in the '$1'
+and, if option has argument, its value in the '$2'.
 
 [source,sh]
 -------------------------------------------------------------------------------
