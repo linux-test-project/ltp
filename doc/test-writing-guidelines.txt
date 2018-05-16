@@ -466,7 +466,7 @@ the timeout is specified in seconds. There are a few testcases whose runtime
 can vary arbitrarily, these can disable timeouts by setting it to -1.
 
 [source,c]
-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 void tst_flush(void);
 -------------------------------------------------------------------------------
 
