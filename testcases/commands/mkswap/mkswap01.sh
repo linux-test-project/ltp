@@ -37,25 +37,14 @@ setup()
 	DEVICE_SIZE=$((($real_size/$PAGE_SIZE * $PAGE_SIZE)/1024))
 }
 
-wait_for_file()
+check_for_file()
 {
 	local path="$1"
-	local retries=10
 
-	if [ -z "$path" ]; then
+	if [ -z "$path" -o -e "$path" ]; then
 		return
 	fi
-
-	while [ $retries -gt 0 ]; do
-		if [ -e "$path" ]; then
-			return
-		fi
-		tst_res TINFO "Waiting for $path to appear"
-		retries=$((retries - 1))
-		tst_sleep 10ms
-	done
-
-	tst_res TINFO "The file $path haven't appeared"
+	return 1
 }
 
 mkswap_verify()
@@ -75,7 +64,7 @@ mkswap_verify()
 		local pagesize=$PAGE_SIZE
 	fi
 
-	wait_for_file "$dev_file"
+	TST_RETRY_FUNC "check_for_file $dev_file" 0
 
 	swapon $swapfile 2>/dev/null
 
