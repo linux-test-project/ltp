@@ -42,6 +42,8 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <linux/magic.h>
+#include <sys/vfs.h>
 #include "config.h"
 #include "test.h"
 #include "safe_macros.h"
@@ -186,6 +188,23 @@ static void create_testfile(void)
 	free(tmp);
 }
 
+static void check_testfile(void)
+{
+	int fd;
+	int ret;
+	struct statfs sb;
+	fd = open(testfile, O_RDONLY);
+	ret = fstatfs(fd, &sb);
+	if (ret < 0)
+	{
+		tst_resm(TWARN, "Cannot detect %s locating file system", testfile);
+	}
+	if (sb.f_type == TMPFS_MAGIC)
+	{
+		tst_brkm(TCONF, NULL, "%s is locating on tmpfs which does not support readahead", testfile);
+	}
+	close(fd);
+}
 
 /* read_testfile - mmap testfile and read every page.
  * This functions measures how many I/O and time it takes to fully
@@ -383,6 +402,7 @@ static void setup(void)
 
 	pagesize = getpagesize();
 	create_testfile();
+	check_testfile();
 }
 
 static void cleanup(void)
