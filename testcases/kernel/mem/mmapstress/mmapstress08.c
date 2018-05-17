@@ -81,7 +81,6 @@ extern long sysconf(int name);
 		local_flag = FAILED;
 		anyfail();
 	}
-	mmapaddr = 0;
 	/* burn level 2 ptes by spacing mmaps 4Meg apart */
 	/* This should switch to large anonymous swap space granularity */
 	for (i = 0; i < GRAN_NUMBER; i++) {
