@@ -154,6 +154,48 @@ EXPECT_FAIL()
 	fi
 }
 
+TST_RETRY_FN_EXP_BACKOFF()
+{
+	local tst_fun=$1
+	local tst_exp=$2
+	local tst_sec=$(expr $3 \* 1000000)
+	local tst_delay=1
+
+	if [ $# -ne 3 ]; then
+		tst_brk TBROK "TST_RETRY_FN_EXP_BACKOFF expects 3 parameters"
+	fi
+
+	if ! tst_is_int "$tst_sec"; then
+		tst_brk TBROK "TST_RETRY_FN_EXP_BACKOFF: tst_sec must be integer ('$tst_sec')"
+	fi
+
+	while true; do
+		$tst_fun
+		if [ "$?" = "$tst_exp" ]; then
+			break
+		fi
+
+		if [ $tst_delay -lt $tst_sec ]; then
+			tst_sleep ${tst_delay}us
+			tst_delay=$((tst_delay*2))
+		else
+			tst_brk TBROK "\"$tst_fun\" timed out"
+		fi
+	done
+
+	return $tst_exp
+}
+
+TST_RETRY_FUNC()
+{
+	if [ $# -ne 2 ]; then
+		tst_brk TBROK "TST_RETRY_FUNC expects 2 parameters"
+	fi
+
+	TST_RETRY_FN_EXP_BACKOFF "$1" "$2" 1
+	return $2
+}
+
 tst_umount()
 {
 	local device="$1"
@@ -259,6 +301,7 @@ tst_run()
 			NEEDS_ROOT|NEEDS_TMPDIR|NEEDS_DEVICE|DEVICE);;
 			NEEDS_CMDS|NEEDS_MODULE|MODPATH|DATAROOT);;
 			IPV6|IPVER|TEST_DATA|TEST_DATA_IFS);;
+			RETRY_FUNC|RETRY_FN_EXP_BACKOFF);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done

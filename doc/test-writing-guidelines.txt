@@ -1709,6 +1709,32 @@ that can sleep for defined amount of seconds, milliseconds or microseconds.
 tst_sleep 100ms
 -------------------------------------------------------------------------------
 
+Retry a function in limited time
+++++++++++++++++++++++++++++++++
+
+Sometimes LTP test needs retrying a function for many times to get success.
+This achievement makes that possible via keeping it retrying if the return
+value of the function is NOT as we expected. After exceeding a limited time,
+test will break from the retries immediately.
+
+[source,c]
+-------------------------------------------------------------------------------
+# retry function in 1 second
+TST_RETRY_FUNC(FUNC, EXPECTED_RET)
+
+# retry function in N second
+TST_RETRY_FN_EXP_BACKOFF(FUNC, EXPECTED_RET, N)
+-------------------------------------------------------------------------------
+
+[source,sh]
+-------------------------------------------------------------------------------
+# retry function in 1 second
+TST_RETRY_FUNC "FUNC arg1 arg2 ..." "EXPECTED_RET"
+
+# retry function in N second
+TST_RETRY_FN_EXP_BACKOFF "FUNC arg1 arg2 ..." "EXPECTED_RET" "N"
+-------------------------------------------------------------------------------
+
 Checking for integers
 +++++++++++++++++++++
 
