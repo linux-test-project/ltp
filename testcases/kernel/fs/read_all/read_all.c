@@ -51,6 +51,7 @@
 #include <semaphore.h>
 #include <ctype.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include "tst_test.h"
 
@@ -257,6 +258,12 @@ static void maybe_drop_privs(void)
 
 	if (!drop_privs)
 		return;
+
+	TEST(setgroups(0, NULL));
+	if (TEST_RETURN < 0 && TEST_ERRNO != EPERM) {
+		tst_brk(TBROK | TTERRNO,
+			"Failed to clear suplementary group set");
+	}
 
 	nobody = SAFE_GETPWNAM("nobody");
 
