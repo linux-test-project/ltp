@@ -40,7 +40,7 @@ usage_and_exit()
 }
 
 if [ "$#" -ne "1" ]; then
-    usage_and_exit "Invalid number of paramters"
+    usage_and_exit "Invalid number of parameters"
 fi
 
 # Move a task from group to group

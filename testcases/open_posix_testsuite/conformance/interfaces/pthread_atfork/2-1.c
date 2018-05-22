@@ -11,7 +11,7 @@
  * handler address(es) may be set to NULL.
  *
  * STEPS:
- * 1. Call pthread_atfork() with all NULL paramters
+ * 1. Call pthread_atfork() with all NULL parameters
  * 2. Check to make sure the function returns success
  *
  */

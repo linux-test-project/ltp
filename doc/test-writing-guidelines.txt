@@ -1594,7 +1594,7 @@ if option has argument, its value in '$2'.
 -------------------------------------------------------------------------------
 #!/bin/sh
 #
-# Optional test positional paramters
+# Optional test positional parameters
 #
 
 TST_POS_ARGS=3

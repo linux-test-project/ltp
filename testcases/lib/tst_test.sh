@@ -433,7 +433,7 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 
 	if [ -n "$TST_POS_ARGS" ]; then
 		if [ -z "$TST_PRINT_HELP" -a $# -ne "$TST_POS_ARGS" ]; then
-			tst_brk TBROK "Invalid number of positional paramters:"\
+			tst_brk TBROK "Invalid number of positional parameters:"\
 					  "have ($@) $#, expected ${TST_POS_ARGS}"
 		fi
 	else
