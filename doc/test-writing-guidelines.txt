@@ -1567,8 +1567,8 @@ EOF
 parse_args()
 {
 	case $1 in
-	a) ALTERNATIVE=1
-	f) MODE="$2"
+	a) ALTERNATIVE=1;;
+	f) MODE="$2";;
 	esac
 }
 
