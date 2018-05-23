@@ -37,10 +37,10 @@ mcast_setup4()
 	[ "$igmp_max_memberships" -gt 5459 ] && tst_res TWARN \
 		"\$1 shouldn't be set higher than 5459 as it's used to set /proc/sys/net/ipv4/igmp_max_memberships"
 
-	ROD sysctl -qw net.ipv4.igmp_max_memberships=$igmp_max_memberships
-	ROD sysctl -qw net.ipv4.igmp_max_msf=10
-	ROD sysctl -qw net.ipv4.conf.$(tst_iface).force_igmp_version=0
-	ROD sysctl -qw net.ipv4.conf.all.force_igmp_version=0
+	ROD sysctl -q -w net.ipv4.igmp_max_memberships=$igmp_max_memberships
+	ROD sysctl -q -w net.ipv4.igmp_max_msf=10
+	ROD sysctl -q -w net.ipv4.conf.$(tst_iface).force_igmp_version=0
+	ROD sysctl -q -w net.ipv4.conf.all.force_igmp_version=0
 }
 
 mcast_setup6()
@@ -52,9 +52,9 @@ mcast_setup6()
 	SYSCTL_FORCE_MLD_VERSION=$(sysctl -b net.ipv6.conf.$(tst_iface).force_mld_version)
 	SYSCTL_MLD_MAX_MSF=$(sysctl -b net.ipv6.mld_max_msf)
 
-	ROD sysctl -qw net.ipv6.conf.all.force_mld_version=0
-	ROD sysctl -qw net.ipv6.conf.$(tst_iface).force_mld_version=0
-	ROD sysctl -qw net.ipv6.mld_max_msf=$default_mld_max_msf
+	ROD sysctl -q -w net.ipv6.conf.all.force_mld_version=0
+	ROD sysctl -q -w net.ipv6.conf.$(tst_iface).force_mld_version=0
+	ROD sysctl -q -w net.ipv6.mld_max_msf=$default_mld_max_msf
 }
 
 mcast_setup()
@@ -74,17 +74,17 @@ mcast_setup()
 
 mcast_cleanup4()
 {
-	[ -n "$SYSFS_IGMP_MAX_MEMBERSHIPS" ] && sysctl -qw net.ipv4.igmp_max_memberships=$SYSFS_IGMP_MAX_MEMBERSHIPS
-	[ -n "$SYSFS_IGMP_MAX_MSF" ] && sysctl -qw net.ipv4.igmp_max_msf=$SYSFS_IGMP_MAX_MSF
-	[ -n "$SYSFS_FORCE_IGMP_VERSION" ] && sysctl -qw net.ipv4.conf.$(tst_iface).force_igmp_version=$SYSFS_FORCE_IGMP_VERSION
-	[ -n "$SYSFS_ALL_FORCE_IGMP_VERSION" ] && sysctl -qw net.ipv4.conf.all.force_igmp_version=$SYSFS_ALL_FORCE_IGMP_VERSION
+	[ -n "$SYSFS_IGMP_MAX_MEMBERSHIPS" ] && sysctl -q -w net.ipv4.igmp_max_memberships=$SYSFS_IGMP_MAX_MEMBERSHIPS
+	[ -n "$SYSFS_IGMP_MAX_MSF" ] && sysctl -q -w net.ipv4.igmp_max_msf=$SYSFS_IGMP_MAX_MSF
+	[ -n "$SYSFS_FORCE_IGMP_VERSION" ] && sysctl -q -w net.ipv4.conf.$(tst_iface).force_igmp_version=$SYSFS_FORCE_IGMP_VERSION
+	[ -n "$SYSFS_ALL_FORCE_IGMP_VERSION" ] && sysctl -q -w net.ipv4.conf.all.force_igmp_version=$SYSFS_ALL_FORCE_IGMP_VERSION
 }
 
 mcast_cleanup6()
 {
-	[ -n "$SYSCTL_ALL_FORCE_MLD_VERSION" ] && sysctl -qw net.ipv6.conf.all.force_mld_version=$SYSCTL_ALL_FORCE_MLD_VERSION
-	[ -n "$SYSCTL_FORCE_MLD_VERSION" ] && sysctl -qw net.ipv6.conf.$(tst_iface).force_mld_version=$SYSCTL_FORCE_MLD_VERSION
-	[ -n "$SYSCTL_MLD_MAX_MSF" ] && sysctl -qw net.ipv6.mld_max_msf=$SYSCTL_MLD_MAX_MSF
+	[ -n "$SYSCTL_ALL_FORCE_MLD_VERSION" ] && sysctl -q -w net.ipv6.conf.all.force_mld_version=$SYSCTL_ALL_FORCE_MLD_VERSION
+	[ -n "$SYSCTL_FORCE_MLD_VERSION" ] && sysctl -q -w net.ipv6.conf.$(tst_iface).force_mld_version=$SYSCTL_FORCE_MLD_VERSION
+	[ -n "$SYSCTL_MLD_MAX_MSF" ] && sysctl -q -w net.ipv6.mld_max_msf=$SYSCTL_MLD_MAX_MSF
 }
 
 mcast_cleanup()
