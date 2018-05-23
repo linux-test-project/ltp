@@ -2,7 +2,8 @@
 #
 # PLEASE READ THE README FILE IN /tcp_cmds BEFORE RUNNING THESE.
 #
-ipneigh01 ipneigh01.sh
+ipneigh01_arp ipneigh01.sh -c arp
+ipneigh01_ip ipneigh01.sh -c ip
 arping01 arping01.sh
 clockdiff01 clockdiff01.sh
 ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
