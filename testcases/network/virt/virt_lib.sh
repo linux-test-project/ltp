@@ -54,6 +54,8 @@ TST_PARSE_ARGS=virt_lib_parse_args
 TST_USE_LEGACY_API=1
 . tst_net.sh
 
+[ -n "$TST_IPV6" -a "$virt_type" = "gre" ] && virt_type="ip6gre"
+
 ip_local=$(tst_ipaddr)
 ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
 ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"

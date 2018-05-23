@@ -25,8 +25,6 @@ TST_TOTAL=1
 TST_NEEDS_TMPDIR=1
 
 virt_type="gre"
-[ "$TST_IPV6" ] && virt_type="ip6gre"
-
 . virt_lib.sh
 
 TST_CLEANUP="virt_cleanup"
