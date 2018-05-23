@@ -643,12 +643,12 @@ tst_set_sysctl()
 	[ "$TST_USE_NETNS" = "yes" ] && add_opt="-e"
 
 	if [ "$safe" ]; then
-		ROD sysctl -qw $name=$value
+		ROD sysctl -q -w $name=$value
 	else
-		sysctl -qw $name=$value
+		sysctl -q -w $name=$value
 	fi
 
-	tst_rhost_run $safe -c "sysctl -qw $add_opt $name=$value"
+	tst_rhost_run $safe -c "sysctl -q -w $add_opt $name=$value"
 }
 
 tst_cleanup_rhost()
