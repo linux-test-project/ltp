@@ -349,7 +349,7 @@ tst_run()
 	#TODO check that test reports some results for each test function call
 	while [ $TST_ITERATIONS -gt 0 ]; do
 		if [ -n "$TST_CNT" ]; then
-			if type test1 > /dev/null 2>&1; then
+			if type ${TST_TESTFUNC}1 > /dev/null 2>&1; then
 				for tst_i in $(seq $TST_CNT); do
 					local res=$(tst_resstr)
 					$TST_TESTFUNC$tst_i
