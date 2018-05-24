@@ -260,6 +260,10 @@ tst_run()
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done
+
+		for _tst_i in $(grep _tst_ "$TST_TEST_PATH" | sed 's/.*_tst_//; s/[="} \t\/:`].*//'); do
+			tst_res TWARN "Private variable or function _tst_$_tst_i used!"
+		done
 	fi
 
 	OPTIND=1
