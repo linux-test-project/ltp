@@ -86,7 +86,7 @@ cleanup()
 		rmdir ${root_cpuset_dir}/testdir
 	fi
 
-	if [ -n ${cpu_exclusive_value} -a ${cpu_exclusive_value} -ne 1 ]; then
+	if [ "$cpu_exclusive_value" != 1 ]; then
 		# Need to flush, or may be output:
 		# "write error: Device or resource busy"
 		sync
