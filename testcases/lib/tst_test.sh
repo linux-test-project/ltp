@@ -88,7 +88,7 @@ _tst_inc_res()
 	TWARN) TST_WARN=$((TST_WARN+1));;
 	TCONF) TST_CONF=$((TST_CONF+1));;
 	TINFO) ;;
-	*) tst_brk TBROK "Invalid resm type '$1'";;
+	*) tst_brk TBROK "Invalid res type '$1'";;
 	esac
 }
 
