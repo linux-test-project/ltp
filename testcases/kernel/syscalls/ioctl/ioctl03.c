@@ -80,7 +80,7 @@ static void verify_features(void)
 
 	int netfd = open("/dev/net/tun", O_RDWR);
 	if (netfd == -1) {
-		if (errno == ENODEV)
+		if (errno == ENODEV || errno == ENOENT)
 			tst_brk(TCONF, "TUN support is missing?");
 
 		tst_brk(TBROK | TERRNO, "opening /dev/net/tun failed");
