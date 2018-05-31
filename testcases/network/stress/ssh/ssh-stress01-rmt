@@ -53,10 +53,7 @@ done
 # Disconnect all ssh connection
 all_conn=$(ps auxw | grep -Fv grep | \
 	grep "ssh[[:blank:]].*${ssh_config}" | awk '{print $2}')
-
-for ssh_pid in "$all_conn"; do
-	kill $ssh_pid
-done
+kill $all_conn
 
 # Check the connectivity again
 ssh -$ip_ver -F $ssh_config $server_ipaddr \
