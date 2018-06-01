@@ -88,7 +88,7 @@ do_test()
 
 		$DEL_CMD || tst_brk TFAIL "fail to delete entry"
 
-		$SHOW_CMD | grep -q "${rhost}.*$(tst_hwaddr rhost)" && \
+		$SHOW_CMD | grep -q "$(tst_ipaddr rhost).*$(tst_hwaddr rhost)" && \
 			tst_brk TFAIL "'$DEL_CMD' failed, entry has " \
 				"$(tst_hwaddr rhost)' $i/$NUMLOOPS"
 	done
