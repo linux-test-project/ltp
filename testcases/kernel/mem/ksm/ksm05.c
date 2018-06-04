@@ -52,7 +52,7 @@
 
 #ifdef HAVE_MADV_MERGEABLE
 
-static int ksm_run_orig;
+static int ksm_run_orig = -1;
 static void sighandler(int sig);
 
 static void test_ksm(void)
@@ -107,7 +107,8 @@ static void setup(void)
 static void cleanup(void)
 {
 	/* restore /sys/kernel/mm/ksm/run value */
-	FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
+	if (ksm_run_orig > 0)
+		FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
 }
 
 static struct tst_test test = {
