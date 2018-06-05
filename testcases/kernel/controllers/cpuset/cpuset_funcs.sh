@@ -186,19 +186,19 @@ cpuset_set()
 
 	if [ "$path" != "$CPUSET" ]; then
 		if [ "$cpus" != "-" ]; then
-			/bin/echo $cpus > $path/cpus
+			/bin/echo $cpus > $path/cpuset.cpus
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
 		fi
 
-		/bin/echo $mems > $path/mems
+		/bin/echo $mems > $path/cpuset.mems
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
 	fi
 
-	/bin/echo $load_balance > $path/sched_load_balance
+	/bin/echo $load_balance > $path/cpuset.sched_load_balance
 	if [ $? -ne 0 ]; then
 		return 1
 	fi

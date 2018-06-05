@@ -207,7 +207,7 @@ general_memory_spread_test()
 		return 1
 	fi
 
-	/bin/echo "$is_spread" > "$cpusetpath/memory_spread_page" 2> $CPUSET_TMP/stderr
+	/bin/echo "$is_spread" > "$cpusetpath/cpuset.memory_spread_page" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set spread value failed."

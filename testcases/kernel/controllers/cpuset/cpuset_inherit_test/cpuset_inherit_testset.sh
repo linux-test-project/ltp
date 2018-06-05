@@ -105,7 +105,7 @@ test_cpus()
 	cfile_name="cpus"
 	while read cpus result
 	do
-		inherit_test "$CPUSET/1/cpus" "$cpus" "$result"
+		inherit_test "$CPUSET/1/cpuset.cpus" "$cpus" "$result"
 	done <<- EOF
 		NULL					EMPTY
 		0					EMPTY
@@ -119,7 +119,7 @@ test_mems()
 	cfile_name="mems"
 	while read mems result
 	do
-		inherit_test "$CPUSET/1/mems" "$mems" "$result"
+		inherit_test "$CPUSET/1/cpuset.mems" "$mems" "$result"
 	done <<- EOF
 		NULL					EMPTY
 		0					EMPTY
@@ -137,7 +137,7 @@ test_three_result_similar_flags()
 		cfile_name="$filename"
 		while read flags result
 		do
-			inherit_test "$CPUSET/1/$filename" "$flags" "$result"
+			inherit_test "$CPUSET/1/cpuset.$filename" "$flags" "$result"
 		done <<- EOF
 			0	0
 			1	0
@@ -154,7 +154,7 @@ test_spread_flags()
 		cfile_name="$filename"
 		while read flags result
 		do
-			inherit_test "$CPUSET/1/$filename" "$flags" "$result"
+			inherit_test "$CPUSET/1/cpuset.$filename" "$flags" "$result"
 		done <<- EOF
 			0	0
 			1	1
@@ -168,7 +168,7 @@ test_sched_load_balance_flag()
 	cfile_name="sched_load_balance"
 	while read flag result
 	do
-		inherit_test "$CPUSET/1/sched_load_balance" "$flag" "$result"
+		inherit_test "$CPUSET/1/cpuset.sched_load_balance" "$flag" "$result"
 	done <<- EOF
 		0	1
 		1	1
@@ -181,7 +181,7 @@ test_domain()
 	cfile_name="sched_relax_domain_level"
 	while read domain_level result
 	do
-		inherit_test "$CPUSET/1/sched_relax_domain_level" "$domain_level" "$result"
+		inherit_test "$CPUSET/1/cpuset.sched_relax_domain_level" "$domain_level" "$result"
 	done <<- EOF
 		-1	-1
 		0	-1
