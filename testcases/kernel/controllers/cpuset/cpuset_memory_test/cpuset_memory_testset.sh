@@ -345,7 +345,7 @@ test11()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/2/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/2/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group2's memory_migrate failed."
@@ -384,7 +384,7 @@ talk2memory_test_for_case_12_13()
 	echo $1 > "$2/tasks"
 	/bin/kill -s SIGUSR1 $1
 
-	echo 0 > "$2/mems" || return 1
+	echo 0 > "$2/cpuset.mems" || return 1
 	sleep 1
 	/bin/kill -s SIGUSR1 $1
 	sleep 1
@@ -432,7 +432,7 @@ test13()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/0/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/0/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group's memory_migrate failed."
@@ -543,7 +543,7 @@ test15()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/2/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/2/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group2's memory_migrate failed."
@@ -599,7 +599,7 @@ test16()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/2/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/2/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group2's memory_migrate failed."
@@ -618,7 +618,7 @@ test16()
 
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
-		echo 1 > "$CPUSET/1/memory_migrate"
+		echo 1 > "$CPUSET/1/cpuset.memory_migrate"
 		sleep 1
 		/bin/kill -s SIGUSR2 $testpid
 		sleep 1
@@ -666,7 +666,7 @@ test17()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/2/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/2/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group2's memory_migrate failed."
@@ -684,7 +684,7 @@ test17()
 
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
-		echo 0 > "$CPUSET/1/mems"
+		echo 0 > "$CPUSET/1/cpuset.mems"
 		sleep 1
 		/bin/kill -s SIGUSR2 $testpid
 		sleep 1
@@ -734,7 +734,7 @@ test18()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/1/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/1/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group1's memory_migrate failed."
@@ -748,7 +748,7 @@ test18()
 		return 1
 	fi
 
-	echo 1 > "$CPUSET/2/memory_migrate" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/2/cpuset.memory_migrate" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "set general group2's memory_migrate failed."
@@ -766,7 +766,7 @@ test18()
 
 		echo $testtid > "$CPUSET/2/tasks"
 		sleep 1
-		echo 0 > "$CPUSET/1/mems"
+		echo 0 > "$CPUSET/1/cpuset.mems"
 		sleep 1
 		/bin/kill -s SIGUSR2 $testpid
 		sleep 1

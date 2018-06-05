@@ -102,10 +102,10 @@ base_op_test()
 
 test_cpus()
 {
-	cfile_name="cpus"
+	cfile_name="cpuset.cpus"
 	while read cpus result
 	do
-		base_op_test "$CPUSET/1/cpus" "$cpus" "$result"
+		base_op_test "$CPUSET/1/cpuset.cpus" "$cpus" "$result"
 	done <<- EOF
 		NULL					EMPTY
 		0					0
@@ -124,23 +124,23 @@ test_cpus()
 	# while read cpus result
 
 	if [ $nr_cpus -ge 3 ]; then
-		base_op_test "$CPUSET/1/cpus" "0,1-$((nr_cpus-2)),$((nr_cpus-1))" "0-$((nr_cpus-1))"
-		base_op_test "$CPUSET/1/cpus" "0,1-$((nr_cpus-2))," "0-$((nr_cpus-2))"
+		base_op_test "$CPUSET/1/cpuset.cpus" "0,1-$((nr_cpus-2)),$((nr_cpus-1))" "0-$((nr_cpus-1))"
+		base_op_test "$CPUSET/1/cpuset.cpus" "0,1-$((nr_cpus-2))," "0-$((nr_cpus-2))"
 	fi
 
 	if tst_kvcmp -lt "3.0 RHEL6:2.6.32"; then
-		base_op_test "$CPUSET/1/cpus" "0-" "WRITE_ERROR"
+		base_op_test "$CPUSET/1/cpuset.cpus" "0-" "WRITE_ERROR"
 	else
-		base_op_test "$CPUSET/1/cpus" "0-" "0"
+		base_op_test "$CPUSET/1/cpuset.cpus" "0-" "0"
 	fi
 }
 
 test_mems()
 {
-	cfile_name="mems"
+	cfile_name="cpuset.mems"
 	while read mems result
 	do
-		base_op_test "$CPUSET/1/mems" "$mems" "$result"
+		base_op_test "$CPUSET/1/cpuset.mems" "$mems" "$result"
 	done <<- EOF
 		NULL					EMPTY
 		0					0
@@ -159,14 +159,14 @@ test_mems()
 	# while read mems result
 
 	if [ $nr_mems -ge 3 ]; then
-		base_op_test "$CPUSET/1/mems" "0,1-$((nr_mems-2)),$((nr_mems-1))" "0-$((nr_mems-1))"
-		base_op_test "$CPUSET/1/mems" "0,1-$((nr_mems-2))," "0-$((nr_mems-2))"
+		base_op_test "$CPUSET/1/cpuset.mems" "0,1-$((nr_mems-2)),$((nr_mems-1))" "0-$((nr_mems-1))"
+		base_op_test "$CPUSET/1/cpuset.mems" "0,1-$((nr_mems-2))," "0-$((nr_mems-2))"
 	fi
 
 	if tst_kvcmp -lt "3.0 RHEL6:2.6.32"; then
-		base_op_test "$CPUSET/1/mems" "0-" "WRITE_ERROR"
+		base_op_test "$CPUSET/1/cpuset.mems" "0-" "WRITE_ERROR"
 	else
-		base_op_test "$CPUSET/1/mems" "0-" "0"
+		base_op_test "$CPUSET/1/cpuset.mems" "0-" "0"
 	fi
 }
 
@@ -176,10 +176,10 @@ test_flags()
 			memory_migrate memory_spread_page memory_spread_slab \
 			sched_load_balance memory_pressure_enabled
 	do
-		cfile_name="$filename"
+		cfile_name="cpuset.$filename"
 		while read flags result
 		do
-			base_op_test "$CPUSET/$filename" "$flags" "$result"
+			base_op_test "$CPUSET/cpuset.$filename" "$flags" "$result"
 		done <<- EOF
 			0	0
 			1	1
@@ -219,10 +219,10 @@ attach_task_test()
 	fi
 
 	if [ "$cpus" != "NULL" ]; then
-		echo $cpus > "$CPUSET/sub_cpuset/cpus"
+		echo $cpus > "$CPUSET/sub_cpuset/cpuset.cpus"
 	fi
 	if [ "$mems" != "NULL" ]; then
-		echo $mems > "$CPUSET/sub_cpuset/mems"
+		echo $mems > "$CPUSET/sub_cpuset/cpuset.mems"
 	fi
 
 	cat /dev/zero > /dev/null &
@@ -264,8 +264,8 @@ test_readonly_cfiles()
 {
 	for filename in cpus mems memory_pressure
 	do
-		cfile_name="$filename(READONLY)"
-		base_op_test "$CPUSET/$filename" "0" "WRITE_ERROR"
+		cfile_name="cpuset.$filename(READONLY)"
+		base_op_test "$CPUSET/cpuset.$filename" "0" "WRITE_ERROR"
 	done # for filename in readonly cfiles
 }
 
