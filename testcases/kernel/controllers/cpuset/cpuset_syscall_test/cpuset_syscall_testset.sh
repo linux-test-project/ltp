@@ -57,14 +57,14 @@ do_syscall_test()
 		tst_resm TFAIL "mkdir -p $TEST_CPUSET fail."
 		return 1
 	fi
-	echo "$1" > "$TEST_CPUSET/cpus"
+	echo "$1" > "$TEST_CPUSET/cpuset.cpus"
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "set $TEST_CPUSET/cpus as $1 fail."
+		tst_resm TFAIL "set $TEST_CPUSET/cupset.cpus as $1 fail."
 		return 1
 	fi
-	echo "$2" > "$TEST_CPUSET/mems"
+	echo "$2" > "$TEST_CPUSET/cpuset.mems"
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "set $TEST_CPUSET/mems as $2 fail."
+		tst_resm TFAIL "set $TEST_CPUSET/cpuset.mems as $2 fail."
 		return 1
 	fi
 	cpuset_syscall_test $3 >"$TEST_OUTPUT" &

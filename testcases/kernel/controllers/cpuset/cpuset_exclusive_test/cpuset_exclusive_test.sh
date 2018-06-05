@@ -35,186 +35,186 @@ exit_status=0
 # Case 1-9 test cpus
 test1()
 {
-	echo 0 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 0 > "$CPUSET/father/child/cpu_exclusive" || return 1
+	echo 0 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
 
-	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.cpu_exclusive") || return 1
 }
 
 test2()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 0 > "$CPUSET/father/child/cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
 
-	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.cpu_exclusive") || return 1
 }
 
 test3()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
 
-	test 1 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
+	test 1 = $(cat "$CPUSET/father/child/cpuset.cpu_exclusive") || return 1
 }
 
 test4()
 {
-	echo 0 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" 2> /dev/null && return 1
+	echo 0 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" 2> /dev/null && return 1
 
-	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.cpu_exclusive") || return 1
 }
 
 test5()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
-	echo 0 > "$CPUSET/father/cpu_exclusive" 2> /dev/null && return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
+	echo 0 > "$CPUSET/father/cpuset.cpu_exclusive" 2> /dev/null && return 1
 
-	test 1 = $(cat "$CPUSET/father/cpu_exclusive") || return 1
+	test 1 = $(cat "$CPUSET/father/cpuset.cpu_exclusive") || return 1
 }
 
 test6()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/cpus" || return 1
-	echo 0 > "$CPUSET/father/child/cpus" || return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.cpus" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.cpus" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo 1 > "$CPUSET/father/other/cpus" || return 1
+	echo 1 > "$CPUSET/father/other/cpuset.cpus" || return 1
 
-	test 0 = $(cat "$CPUSET/father/child/cpus") || return 1
-	test 1 = $(cat "$CPUSET/father/other/cpus") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.cpus") || return 1
+	test 1 = $(cat "$CPUSET/father/other/cpuset.cpus") || return 1
 }
 
 test7()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/cpus" || return 1
-	echo 0 > "$CPUSET/father/child/cpus" || return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.cpus" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.cpus" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo "0-1" > "$CPUSET/father/other/cpus" 2> /dev/null && return 1
+	echo "0-1" > "$CPUSET/father/other/cpuset.cpus" 2> /dev/null && return 1
 
-	test 0 = $(cat "$CPUSET/father/child/cpus") || return 1
-	test -z $(cat "$CPUSET/father/other/cpus") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.cpus") || return 1
+	test -z $(cat "$CPUSET/father/other/cpuset.cpus") || return 1
 }
 
 test8()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/cpus" || return 1
-	echo 0 > "$CPUSET/father/child/cpus" || return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.cpus" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.cpus" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo 1 > "$CPUSET/father/other/cpus" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" || return 1
+	echo 1 > "$CPUSET/father/other/cpuset.cpus" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" || return 1
 
-	test 1 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
+	test 1 = $(cat "$CPUSET/father/child/cpuset.cpu_exclusive") || return 1
 }
 
 test9()
 {
-	echo 1 > "$CPUSET/father/cpu_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/cpus" || return 1
-	echo 0 > "$CPUSET/father/child/cpus" || return 1
+	echo 1 > "$CPUSET/father/cpuset.cpu_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.cpus" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.cpus" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo "0-1" > "$CPUSET/father/other/cpus" || return 1
-	echo 1 > "$CPUSET/father/child/cpu_exclusive" 2> /dev/null && return 1
+	echo "0-1" > "$CPUSET/father/other/cpuset.cpus" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.cpu_exclusive" 2> /dev/null && return 1
 
-	test 0 = $(cat "$CPUSET/father/child/cpu_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.cpu_exclusive") || return 1
 }
 
 # The following cases test mems
 
 test10()
 {
-	echo 0 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 0 > "$CPUSET/father/child/mem_exclusive" || return 1
+	echo 0 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
 
-	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.mem_exclusive") || return 1
 }
 
 test11()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 0 > "$CPUSET/father/child/mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
 
-	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.mem_exclusive") || return 1
 }
 
 test12()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
 
-	test 1 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
+	test 1 = $(cat "$CPUSET/father/child/cpuset.mem_exclusive") || return 1
 }
 
 test13()
 {
-	echo 0 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" 2> /dev/null && return 1
+	echo 0 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" 2> /dev/null && return 1
 
-	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.mem_exclusive") || return 1
 }
 
 test14()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
-	echo 0 > "$CPUSET/father/mem_exclusive" 2> /dev/null && return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
+	echo 0 > "$CPUSET/father/cpuset.mem_exclusive" 2> /dev/null && return 1
 
-	test 1 = $(cat "$CPUSET/father/mem_exclusive") || return 1
+	test 1 = $(cat "$CPUSET/father/cpuset.mem_exclusive") || return 1
 }
 
 test15()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/mems" || return 1
-	echo 0 > "$CPUSET/father/child/mems" || return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.mems" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.mems" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo 1 > "$CPUSET/father/other/mems" || return 1
+	echo 1 > "$CPUSET/father/other/cpuset.mems" || return 1
 
-	test 0 = $(cat "$CPUSET/father/child/mems") || return 1
-	test 1 = $(cat "$CPUSET/father/other/mems") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.mems") || return 1
+	test 1 = $(cat "$CPUSET/father/other/cpuset.mems") || return 1
 }
 
 test16()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/mems" || return 1
-	echo 0 > "$CPUSET/father/child/mems" || return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.mems" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.mems" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo "0-1" > "$CPUSET/father/other/mems" 2> /dev/null && return 1
+	echo "0-1" > "$CPUSET/father/other/cpuset.mems" 2> /dev/null && return 1
 
-	test 0 = $(cat "$CPUSET/father/child/mems") || return 1
-	test -z $(cat "$CPUSET/father/other/mems") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.mems") || return 1
+	test -z $(cat "$CPUSET/father/other/cpuset.mems") || return 1
 }
 
 test17()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/mems" || return 1
-	echo 0 > "$CPUSET/father/child/mems" || return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.mems" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.mems" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo 1 > "$CPUSET/father/other/mems" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" || return 1
+	echo 1 > "$CPUSET/father/other/cpuset.mems" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" || return 1
 
-	test 1 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
+	test 1 = $(cat "$CPUSET/father/child/cpuset.mem_exclusive") || return 1
 }
 
 test18()
 {
-	echo 1 > "$CPUSET/father/mem_exclusive" || return 1
-	echo "0-1" > "$CPUSET/father/mems" || return 1
-	echo 0 > "$CPUSET/father/child/mems" || return 1
+	echo 1 > "$CPUSET/father/cpuset.mem_exclusive" || return 1
+	echo "0-1" > "$CPUSET/father/cpuset.mems" || return 1
+	echo 0 > "$CPUSET/father/child/cpuset.mems" || return 1
 	mkdir "$CPUSET/father/other" || return 1
-	echo "0-1" > "$CPUSET/father/other/mems" || return 1
-	echo 1 > "$CPUSET/father/child/mem_exclusive" 2> /dev/null && return 1
+	echo "0-1" > "$CPUSET/father/other/cpuset.mems" || return 1
+	echo 1 > "$CPUSET/father/child/cpuset.mem_exclusive" 2> /dev/null && return 1
 
-	test 0 = $(cat "$CPUSET/father/child/mem_exclusive") || return 1
+	test 0 = $(cat "$CPUSET/father/child/cpuset.mem_exclusive") || return 1
 }
 
 for i in $(seq 1 $TST_TOTAL)

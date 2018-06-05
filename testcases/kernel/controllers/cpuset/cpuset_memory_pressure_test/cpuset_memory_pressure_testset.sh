@@ -43,7 +43,7 @@ usemem=$((py_mem - 20))
 
 test1()
 {
-	echo 0 > "$CPUSET/memory_pressure_enabled" 2> $CPUSET_TMP/stderr
+	echo 0 > "$CPUSET/cpuset.memory_pressure_enabled" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "Closing memory_pressure_enabled failed."
@@ -53,7 +53,7 @@ test1()
 	local i
 	for i in $(seq 0 9)
 	do
-		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
+		if [ $(cat "$CPUSET/cpuset.memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "Memory_pressure had memory pressure rate."
 			return 1
 		fi
@@ -62,7 +62,7 @@ test1()
 
 test2()
 {
-	echo 0 > "$CPUSET/memory_pressure_enabled" 2> $CPUSET_TMP/stderr
+	echo 0 > "$CPUSET/cpuset.memory_pressure_enabled" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "Closing memory_pressure_enabled failed."
@@ -74,7 +74,7 @@ test2()
 	local i
 	for i in $(seq 0 9)
 	do
-		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
+		if [ $(cat "$CPUSET/cpuset.memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "Memory_pressure had memory pressure rate."
 			return 1
 		fi
@@ -83,7 +83,7 @@ test2()
 
 test3()
 {
-	echo 1 > "$CPUSET/memory_pressure_enabled" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/cpuset.memory_pressure_enabled" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "Opening memory_pressure_enabled failed."
@@ -100,11 +100,11 @@ test3()
 	local i
 	for i in $(seq 0 9)
 	do
-		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
+		if [ $(cat "$CPUSET/cpuset.memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure had memory pressure rate."
 			return 1
 		fi
-		if [ $(cat "$CPUSET/sub_cpuset/memory_pressure") -ne 0 ]; then
+		if [ $(cat "$CPUSET/sub_cpuset/cpuset.memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "sub group's memory_pressure had memory pressure rate."
 			return 1
 		fi
@@ -114,7 +114,7 @@ test3()
 
 test4()
 {
-	echo 1 > "$CPUSET/memory_pressure_enabled" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/cpuset.memory_pressure_enabled" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "Opening memory_pressure_enabled failed."
@@ -147,11 +147,11 @@ test4()
 	local i
 	for i in $(seq 0 9)
 	do
-		if [ $(cat "$CPUSET/memory_pressure") -ne 0 ]; then
+		if [ $(cat "$CPUSET/cpuset.memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure had memory pressure rate."
 			return 1
 		fi
-		if [ $(cat "$CPUSET/sub_cpuset/memory_pressure") -eq 0 ]; then
+		if [ $(cat "$CPUSET/sub_cpuset/cpuset.memory_pressure") -eq 0 ]; then
 			tst_resm TFAIL "sub group's memory_pressure didn't have memory pressure rate."
 			return 1
 		fi
@@ -160,7 +160,7 @@ test4()
 
 test5()
 {
-	echo 1 > "$CPUSET/memory_pressure_enabled" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/cpuset.memory_pressure_enabled" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "Opening memory_pressure_enabled failed."
@@ -178,11 +178,11 @@ test5()
 	local i
 	for i in $(seq 0 9)
 	do
-		if [ $(cat "$CPUSET/memory_pressure") -eq 0 ]; then
+		if [ $(cat "$CPUSET/cpuset.memory_pressure") -eq 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure didn't have memory pressure rate."
 			return 1
 		fi
-		if [ $(cat "$CPUSET/sub_cpuset/memory_pressure") -ne 0 ]; then
+		if [ $(cat "$CPUSET/sub_cpuset/cpuset.memory_pressure") -ne 0 ]; then
 			tst_resm TFAIL "sub group's memory_pressure had memory pressure rate."
 			return 1
 		fi
@@ -191,7 +191,7 @@ test5()
 
 test6()
 {
-	echo 1 > "$CPUSET/memory_pressure_enabled" 2> $CPUSET_TMP/stderr
+	echo 1 > "$CPUSET/cpuset.memory_pressure_enabled" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "Opening memory_pressure_enabled failed."
@@ -224,11 +224,11 @@ test6()
 	local i
 	for i in $(seq 0 9)
 	do
-		if [ $(cat "$CPUSET/memory_pressure") -eq 0 ]; then
+		if [ $(cat "$CPUSET/cpuset.memory_pressure") -eq 0 ]; then
 			tst_resm TFAIL "root group's memory_pressure didn't have memory pressure rate."
 			return 1
 		fi
-		if [ $(cat "$CPUSET/sub_cpuset/memory_pressure") -eq 0 ]; then
+		if [ $(cat "$CPUSET/sub_cpuset/cpuset.memory_pressure") -eq 0 ]; then
 			tst_resm TFAIL "sub group's memory_pressure didn't have memory pressure rate."
 			return 1
 		fi
