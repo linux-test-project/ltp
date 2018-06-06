@@ -28,7 +28,7 @@ do_setup()
 
 do_test()
 {
-	tst_res TINFO "joining $MCASTNUM_HEAVY IPv$ipver multicast groups on a single socket"
+	tst_res TINFO "joining $MCASTNUM_HEAVY IPv$TST_IPVER multicast groups on a single socket"
 	do_multicast_test_multiple_join $MCASTNUM_HEAVY
 }
 

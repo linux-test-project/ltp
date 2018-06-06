@@ -286,8 +286,8 @@ virt_compare_netperf()
 
 	case "$virt_type" in
 	vxlan|geneve)
-		tst_resm TINFO "IP4 $virt_type over IP$ipver slower by $per %"
-		tst_resm TINFO "IP6 $virt_type over IP$ipver slower by $per6 %"
+		tst_resm TINFO "IP4 $virt_type over IP$TST_IPVER slower by $per %"
+		tst_resm TINFO "IP6 $virt_type over IP$TST_IPVER slower by $per6 %"
 	;;
 	*)
 		tst_resm TINFO "IP4 $virt_type slower by $per %"
@@ -416,8 +416,6 @@ vxlan|geneve)
 	ip li add type vxlan help 2>&1 | grep -q dstport && vxlan_dstport=1
 ;;
 esac
-
-ipver=${TST_IPV6:-'4'}
 
 tst_check_cmds "ip"
 

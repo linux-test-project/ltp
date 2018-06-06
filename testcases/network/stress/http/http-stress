@@ -35,8 +35,7 @@ setup()
 {
 	tst_require_root
 
-	ipver=${TST_IPV6:-'4'}
-	tst_resm TINFO "run over IPv$ipver"
+	tst_resm TINFO "run over IPv$TST_IPVER"
 
 	trap "tst_brkm TBROK 'test interrupted'" INT
 

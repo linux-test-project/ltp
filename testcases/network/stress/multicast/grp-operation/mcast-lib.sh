@@ -61,7 +61,7 @@ mcast_setup()
 {
 	local max="$1"
 
-	MCAST_LCMD="ns-mcast_join -f $ipver -I $(tst_iface)"
+	MCAST_LCMD="ns-mcast_join -f $TST_IPVER -I $(tst_iface)"
 
 	local cmd="ns-igmp_querier"
 	[ "$TST_IPV6" ] && cmd="ns-icmpv6_sender"

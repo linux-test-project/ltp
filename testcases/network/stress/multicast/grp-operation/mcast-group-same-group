@@ -28,7 +28,7 @@ do_setup()
 
 do_test()
 {
-	tst_res TINFO "joining and leaving the same IPv$ipver multicast group on $MCASTNUM_NORMAL sockets in $NS_TIMES times"
+	tst_res TINFO "joining and leaving the same IPv$TST_IPVER multicast group on $MCASTNUM_NORMAL sockets in $NS_TIMES times"
 	do_multicast_test_join_leave $MCASTNUM_NORMAL
 }
 

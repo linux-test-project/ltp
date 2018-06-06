@@ -37,7 +37,7 @@ test_body()
 		local netmask=24
 	fi
 
-	tst_res TINFO "'$cmd' add/del IPv$ipver '$new_ip' $NS_TIMES times"
+	tst_res TINFO "'$cmd' add/del IPv$TST_IPVER '$new_ip' $NS_TIMES times"
 
 	if ! restore_ipaddr; then
 		tst_res TBROK "Failed to set default IP addresses"

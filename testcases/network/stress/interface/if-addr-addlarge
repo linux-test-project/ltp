@@ -31,7 +31,7 @@ test_body()
 	local iface=$(tst_iface)
 	[ "$TST_IPV6" ] && local netmask=64 || local netmask=16
 
-	tst_res TINFO "'$cmd' add $IP_TOTAL IPv$ipver addresses"
+	tst_res TINFO "'$cmd' add $IP_TOTAL IPv$TST_IPVER addresses"
 	tst_res TINFO "check interval that $iface is working: $CHECK_INTERVAL"
 
 	if ! restore_ipaddr; then

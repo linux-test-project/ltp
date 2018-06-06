@@ -115,7 +115,7 @@ make_background_tcp_traffic()
 	pgrep -x netstress > /dev/null && return
 
 	local ip="${1:-$(tst_ipaddr)}"
-	local port=$(tst_get_unused_port ipv${ipver} stream)
+	local port=$(tst_get_unused_port ipv${TST_IPVER} stream)
 
 	netstress -R 3 -g $port > /dev/null 2>&1 &
 	tst_rhost_run -b -c "netstress -l -H $ip -g $port"

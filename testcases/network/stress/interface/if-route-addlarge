@@ -35,7 +35,7 @@ test_body()
 		opt_rt='/32'
 	fi
 
-	tst_res TINFO "'$cmd' add IPv$ipver $ROUTE_TOTAL routes"
+	tst_res TINFO "'$cmd' add IPv$TST_IPVER $ROUTE_TOTAL routes"
 
 	if ! restore_ipaddr; then
 		tst_res TBROK "Failed to set default IP addresses"

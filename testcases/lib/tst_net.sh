@@ -69,7 +69,6 @@ tst_net_remote_tmpdir()
 
 tst_net_setup()
 {
-	ipver=${TST_IPV6:-4}
 	tst_net_remote_tmpdir
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
@@ -80,7 +79,6 @@ fi
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_read_opts "$@"
-	ipver=${TST_IPV6:-4}
 fi
 
 # old vs. new API compatibility layer
