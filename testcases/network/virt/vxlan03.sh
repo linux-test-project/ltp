@@ -26,6 +26,8 @@
 TCID=vxlan03
 TST_TOTAL=4
 TST_NEEDS_TMPDIR=1
+TST_OPTS="hi:d:"
+TST_PARSE_ARGS=virt_lib_parse_args
 
 virt_type="vxlan"
 start_id=16700000

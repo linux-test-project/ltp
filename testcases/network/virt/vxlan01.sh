@@ -21,6 +21,8 @@
 
 TCID=vxlan01
 TST_TOTAL=5
+TST_OPTS="hi:d:"
+TST_PARSE_ARGS=virt_lib_parse_args
 
 virt_type="vxlan"
 start_id=16700000
