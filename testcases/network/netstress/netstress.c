@@ -952,11 +952,11 @@ static void setup(void)
 		protocol = IPPROTO_UDPLITE;
 	break;
 	case TYPE_DCCP: {
-		/* dccp module can be blacklisted, load it manually */
-		static const char * const argv[] = {"modprobe", "dccp", NULL};
+		/* dccp* modules can be blacklisted, load them manually */
+		const char * const argv[] = {"modprobe", "dccp_ipv6", NULL};
 
 		if (tst_run_cmd(argv, NULL, NULL, 1))
-			tst_brk(TCONF, "Failed to load DCCP module");
+			tst_brk(TCONF, "Failed to load dccp_ipv6 module");
 
 		tst_res(TINFO, "DCCP %s", (client_mode) ? "client" : "server");
 		fastopen_api = fastopen_sapi = NULL;
