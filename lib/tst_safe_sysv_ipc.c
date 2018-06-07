@@ -23,6 +23,24 @@
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 
+/*
+ * The IPC_STAT, IPC_SET and IPC_RMID can return either 0 or -1.
+ *
+ * Linux specific cmds either returns -1 on failure or positive integer
+ * either index into an kernel array or shared primitive indentifier.
+ */
+static int ret_check(int cmd, int ret)
+{
+	switch (cmd) {
+	case IPC_STAT:
+	case IPC_SET:
+	case IPC_RMID:
+		return ret != 0;
+	default:
+		return ret == -1;
+	}
+}
+
 int safe_msgget(const char *file, const int lineno, key_t key, int msgflg)
 {
 	int rval;
@@ -72,10 +90,12 @@ int safe_msgctl(const char *file, const int lineno, int msqid, int cmd,
 	int rval;
 
 	rval = msgctl(msqid, cmd, buf);
-	if (rval == -1) {
-		tst_brk(TBROK | TERRNO, "%s:%d: msgctl(%i, %i, %p) failed",
-			file, lineno, msqid, cmd, buf);
+	if (ret_check(cmd, rval)) {
+		tst_brk(TBROK | TERRNO,
+			"%s:%d: msgctl(%i, %i, %p) = %i failed",
+			file, lineno, msqid, cmd, buf, rval);
 	}
+
 
 	return rval;
 }
@@ -127,9 +147,10 @@ int safe_shmctl(const char *file, const int lineno, int shmid, int cmd,
 	int rval;
 
 	rval = shmctl(shmid, cmd, buf);
-	if (rval == -1) {
-		tst_brk(TBROK | TERRNO, "%s:%d: shmctl(%i, %i, %p) failed",
-			file, lineno, shmid, cmd, buf);
+	if (ret_check(cmd, rval)) {
+		tst_brk(TBROK | TERRNO,
+			"%s:%d: shmctl(%i, %i, %p) = %i failed",
+			file, lineno, shmid, cmd, buf, rval);
 	}
 
 	return rval;
