@@ -1,153 +1,155 @@
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-/*
- * NAME
- *	msgctl01.c
- *
- * DESCRIPTION
- *	msgctl01 - create a message queue, then issue the IPC_STAT command
- *		   and RMID commands to test the functionality
- *
- * ALGORITHM
- *	create a message queue
- *	loop if that option was specified
- *	call msgctl() with the IPC_STAT command
- *	check the return code
- *	  if failure, issue a FAIL message and break remaining tests
- *	otherwise,
- *	  if doing functionality testing
- *	  	if the max number of bytes on the queue is > 0,
- *			issue a PASS message
- *		otherwise
- *			issue a FAIL message
- *	  else issue a PASS message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  msgctl01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
+ * Copyright (c) International Business Machines  Corp., 2001
  *	03/2001 - Written by Wayne Boyer
+ * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
  *
- * RESTRICTIONS
- *	none
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software  Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
-#include "test.h"
-
-#include "ipcmsg.h"
-
-char *TCID = "msgctl01";
-int TST_TOTAL = 1;
-
-int msg_q_1 = -1;		/* to hold the message queue id */
-
-struct msqid_ds qs_buf;
-
-int main(int ac, char **av)
-{
-	int lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * Get the msqid_ds structure values for the queue
-		 */
-
-		TEST(msgctl(msg_q_1, IPC_STAT, &qs_buf));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "msgctl() call failed");
-		} else {
-			if (qs_buf.msg_qbytes > 0) {
-				tst_resm(TPASS, "qs_buf.msg_qbytes is"
-					 " a positive value");
-			} else {
-				tst_resm(TFAIL, "qs_buf.msg_qbytes did"
-					 " not change");
-			}
-		}
-
-		/*
-		 * clean up things in case we are looping
-		 */
-		qs_buf.msg_qbytes = 0x0000;
-	}
-
-	cleanup();
-
-	tst_exit();
-}
 
 /*
- * setup() - performs all the ONE TIME setup for this test.
+ * Test that IPC_STAT command succeeds and the the buffer is filled with
+ * correct data.
  */
-void setup(void)
+#include <errno.h>
+
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
+
+static int msg_id = -1;
+static time_t creat_time;
+static key_t msgkey;
+static uid_t uid;
+static gid_t gid;
+unsigned short mode = 0660;
+
+static void verify_msgctl(void)
 {
+	struct msqid_ds buf;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	memset(&buf, 'a', sizeof(buf));
+	TEST(msgctl(msg_id, IPC_STAT, &buf));
 
-	TEST_PAUSE;
+	if (TEST_RETURN != 0) {
+		tst_res(TFAIL | TTERRNO, "msgctl() returned %li", TEST_RETURN);
+		return;
+	}
 
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See ../lib/libipc.c for more information.
-	 */
-	tst_tmpdir();
+	tst_res(TPASS, "msgctl(IPC_STAT)");
 
-	/* get a message key */
-	msgkey = getipckey();
+	if (buf.msg_stime == 0)
+		tst_res(TPASS, "msg_stime = 0");
+	else
+		tst_res(TFAIL, "msg_stime = %lu", (unsigned long)buf.msg_stime);
 
-	/* make sure the initial # of bytes is 0 in our buffer */
-	qs_buf.msg_qbytes = 0x0000;
+	if (buf.msg_rtime == 0)
+		tst_res(TPASS, "msg_rtime = 0");
+	else
+		tst_res(TFAIL, "msg_rtime = %lu", (unsigned long)buf.msg_rtime);
 
-	/* now we have a key, so let's create a message queue */
-	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue");
+	if (buf.msg_ctime <= creat_time && buf.msg_ctime >= creat_time - 2) {
+		tst_res(TPASS, "msg_ctime = %lu, expected %lu",
+			(unsigned long)buf.msg_ctime, (unsigned long)creat_time);
+	} else {
+		tst_res(TFAIL, "msg_ctime = %lu, expected %lu",
+			(unsigned long)buf.msg_ctime, (unsigned long)creat_time);
+	}
+
+	if (buf.msg_qnum == 0)
+		tst_res(TPASS, "msg_qnum = 0");
+	else
+		tst_res(TFAIL, "msg_qnum = %li", (long)buf.msg_qnum);
+
+	if (buf.msg_qbytes > 0)
+		tst_res(TPASS, "msg_qbytes = %li", (long)buf.msg_qbytes);
+	else
+		tst_res(TFAIL, "msg_qbytes = %li", (long)buf.msg_qbytes);
+
+	if (buf.msg_lspid == 0)
+		tst_res(TPASS, "msg_lspid = 0");
+	else
+		tst_res(TFAIL, "msg_lspid = %u", (unsigned)buf.msg_lspid);
+
+	if (buf.msg_lrpid == 0)
+		tst_res(TPASS, "msg_lrpid = 0");
+	else
+		tst_res(TFAIL, "msg_lrpid = %u", (unsigned)buf.msg_lrpid);
+
+	if (buf.msg_perm.__key == msgkey) {
+		tst_res(TPASS, "msg_perm.__key == %u", (unsigned)msgkey);
+	} else {
+		tst_res(TFAIL, "msg_perm.__key == %u, expected %u",
+			(unsigned)buf.msg_perm.__key, (unsigned)msgkey);
+	}
+
+	if (buf.msg_perm.uid == uid) {
+		tst_res(TPASS, "msg_perm.uid = %u", (unsigned)uid);
+	} else {
+		tst_res(TFAIL, "msg_perm.uid = %u, expected %u",
+			(unsigned)buf.msg_perm.uid, (unsigned)uid);
+	}
+
+	if (buf.msg_perm.gid == gid) {
+		tst_res(TPASS, "msg_perm.gid = %u", (unsigned)gid);
+	} else {
+		tst_res(TFAIL, "msg_perm.gid = %u, expected %u",
+			(unsigned)buf.msg_perm.gid, (unsigned)gid);
+	}
+
+	if (buf.msg_perm.cuid == uid) {
+		tst_res(TPASS, "msg_perm.cuid = %u", (unsigned)uid);
+	} else {
+		tst_res(TFAIL, "msg_perm.cuid = %u, expected %u",
+			(unsigned)buf.msg_perm.cuid, (unsigned)uid);
+	}
+
+	if (buf.msg_perm.cgid == gid) {
+		tst_res(TPASS, "msg_perm.cgid = %u", (unsigned)gid);
+	} else {
+		tst_res(TFAIL, "msg_perm.cgid = %u, expected %u",
+			(unsigned)buf.msg_perm.cgid, (unsigned)gid);
+	}
+
+	if ((buf.msg_perm.mode & MODE_MASK) == (mode & MODE_MASK)) {
+		tst_res(TPASS, "msg_perm.mode = 0%ho", mode & MODE_MASK);
+	} else {
+		tst_res(TFAIL, "msg_perm.mode = 0%ho, expected %hx",
+			buf.msg_perm.mode, (mode & MODE_MASK));
 	}
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
+static void setup(void)
 {
-	/* if it exists, remove the message queue */
-	rm_queue(msg_q_1);
+	msgkey = GETIPCKEY();
 
-	tst_rmdir();
+	msg_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW | mode);
+	time(&creat_time);
 
+	uid = geteuid();
+	gid = getegid();
 }
+
+static void cleanup(void)
+{
+	if (msg_id > 0)
+		SAFE_MSGCTL(msg_id, IPC_RMID, NULL);
+}
+
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_msgctl,
+	.needs_tmpdir = 1
+};
