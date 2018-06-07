@@ -13,7 +13,7 @@ TST_MIN_KVER="3.18"
 
 cleanup()
 {
-	tc qdisc del dev $(tst_iface) root netem loss 0.03% ecn
+	tc qdisc del dev $(tst_iface) root netem loss 0.5% ecn
 
 	tcp_cc_cleanup
 }
@@ -22,8 +22,9 @@ setup()
 {
 	tcp_cc_setup
 
-	tst_res TINFO "emulate congestion with packet loss 0.03% and ECN"
-	tc qdisc add dev $(tst_iface) root netem loss 0.03% ecn > /dev/null 2>&1
+	tst_res TINFO "emulate congestion with packet loss 0.5% and ECN"
+	tc qdisc add dev $(tst_iface) root netem loss 0.5% ecn > /dev/null 2>&1
+
 	if [ $? -ne 0 ]; then
 		tst_brkm TCONF "netem doesn't support ECN"
 	fi
