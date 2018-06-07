@@ -69,7 +69,7 @@ static void run(void)
 
 	tst_res(TPASS | TERRNO, "fallocate() on full FS");
 
-	ret = fallocate(fd, FALLOC_FL_PUNCH_HOLE, 0, FALLOCATE_SIZE);
+	ret = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, FALLOCATE_SIZE);
 	if (ret == -1) {
 		if (errno == EOPNOTSUPP)
 			tst_brk(TCONF, "fallocate(FALLOC_FL_PUNCH_HOLE)");
