@@ -4,6 +4,9 @@
 bbr01 bbr01.sh
 bbr01_ipv6 bbr01.sh -6
 
+bbr02 bbr02.sh
+bbr02_ipv6 bbr02.sh -6
+
 bind_noport01 bind_noport01.sh
 bind_noport01_ipv6 bind_noport01.sh -6
 
