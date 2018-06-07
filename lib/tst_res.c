@@ -55,6 +55,7 @@
 
 long TEST_RETURN;
 int TEST_ERRNO;
+void *TST_RET_PTR;
 
 #define VERBOSE      1
 #define NOPASS       3
