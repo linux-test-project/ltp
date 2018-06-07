@@ -9,6 +9,8 @@ TST_NEEDS_CMDS="sysctl tc"
 . tst_net.sh
 
 def_alg="cubic"
+prev_qlen=
+prev_queue=
 prev_alg=
 
 set_cong_alg()
@@ -21,13 +23,49 @@ set_cong_alg()
 
 tcp_cc_cleanup()
 {
+	local rmt_dev="dev $(tst_iface rhost)"
+
 	[ "$prev_cong_ctl" ] && \
 		tst_set_sysctl net.ipv4.tcp_congestion_control $prev_alg
+
+	[ "$prev_qlen" ] && \
+		tst_rhost_run -c "ip li set txqueuelen $prev_qlen $rmt_dev"
+
+	[ "$prev_queue" ] && \
+		tst_rhost_run -c "tc qdisc replace $rmt_dev root $prev_queue"
 }
 
 tcp_cc_setup()
 {
 	prev_alg="$(sysctl -n net.ipv4.tcp_congestion_control)"
+}
+
+tcp_cc_set_qdisc()
+{
+	local qdisc="$1"
+	local qlen="${2:-1000}"
+	local rmt_dev="$(tst_iface rhost)"
+
+	tst_res TINFO "set qdisc on $(tst_iface rhost) to $qdisc len $qlen"
+
+	[ -z "$prev_qlen" ] && \
+		prev_qlen=$(tst_rhost_run -s -c \
+			    "cat /sys/class/net/$rmt_dev/tx_queue_len")
+	tst_rhost_run -s -c "ip link set txqueuelen $qlen dev $rmt_dev"
+
+	[ -z "$prev_queue" ] && \
+		prev_queue=$(tst_rhost_run -s -c \
+			     "tc qdisc show dev $rmt_dev | head -1" | \
+			     cut -f2 -d' ')
+	[ "$qdisc" = "$prev_queue" ] && return 0
+
+	tst_rhost_run -c "tc qdisc replace dev $rmt_dev root $qdisc" >/dev/null
+	if [ $? -ne 0 ]; then
+		tst_res TCONF "$qdisc qdisc not supported"
+		return 1
+	fi
+
+	return 0
 }
 
 tcp_cc_test01()
