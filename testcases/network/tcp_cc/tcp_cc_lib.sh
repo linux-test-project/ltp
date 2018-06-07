@@ -35,6 +35,21 @@ tcp_cc_cleanup()
 		tst_rhost_run -c "tc qdisc replace $rmt_dev root $prev_queue"
 }
 
+tcp_cc_check_support()
+{
+	local proc_cc="/proc/sys/net/ipv4/tcp_available_congestion_control"
+	local alg="$1"
+
+	modprobe tcp_$alg > /dev/null 2>&1
+	grep -q $alg $proc_cc || tst_brk TCONF "Local host doesn't support $alg"
+
+	if [ -z "$TST_USE_NETNS" ]; then
+		tst_rhost_run -c "modprobe tcp_$alg" > /dev/null 2>&1
+		tst_rhost_run -c "grep -q $alg $proc_cc" || \
+			tst_brk TCONF "Remote host doesn't support $alg"
+	fi
+}
+
 tcp_cc_setup()
 {
 	prev_alg="$(sysctl -n net.ipv4.tcp_congestion_control)"

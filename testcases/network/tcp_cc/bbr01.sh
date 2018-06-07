@@ -18,6 +18,7 @@ cleanup()
 
 setup()
 {
+	tcp_cc_check_support bbr
 	tcp_cc_setup
 
 	tst_res TINFO "emulate congestion with packet loss 0.5%"

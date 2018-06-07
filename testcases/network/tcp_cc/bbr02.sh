@@ -21,6 +21,7 @@ cleanup()
 
 setup()
 {
+	tcp_cc_check_support bbr
 	tcp_cc_setup
 
 	local emu_opts="delay 5ms 1ms 20% loss 0.3% ecn corrupt \
