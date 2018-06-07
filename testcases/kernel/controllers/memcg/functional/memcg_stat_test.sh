@@ -34,14 +34,14 @@ TST_TOTAL=8
 # Test cache
 testcase_1()
 {
-	test_mem_stat "--shm -k 3" $PAGESIZE $PAGESIZE "cache" $PAGESIZE false
+	test_mem_stat "--shm -k 3" $PAGESIZES $PAGESIZES "cache" $PAGESIZES false
 }
 
 # Test mapped_file
 testcase_2()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE \
-		"mapped_file" $PAGESIZE false
+	test_mem_stat "--mmap-file" $PAGESIZES $PAGESIZES \
+		"mapped_file" $PAGESIZES false
 }
 
 # Test unevictable with MAP_LOCKED

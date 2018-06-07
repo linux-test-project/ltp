@@ -34,28 +34,28 @@ TST_TOTAL=4
 # Test disable moving charges
 testcase_1()
 {
-	test_move_charge "--mmap-anon" $PAGESIZE $PAGESIZE 0 0 0 $PAGESIZE 0
+	test_move_charge "--mmap-anon" $PAGESIZES $PAGESIZES 0 0 0 $PAGESIZES 0
 }
 
 # Test move anon
 testcase_2()
 {
-	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZE \
-		$((PAGESIZE*3)) 1 $PAGESIZE 0 0 $((PAGESIZE*2))
+	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZES \
+		$((PAGESIZES*3)) 1 $PAGESIZES 0 0 $((PAGESIZES*2))
 }
 
 # Test move file
 testcase_3()
 {
-	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZE \
-		$((PAGESIZE*3)) 2 0 $((PAGESIZE*2)) $PAGESIZE 0
+	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZES \
+		$((PAGESIZES*3)) 2 0 $((PAGESIZES*2)) $PAGESIZES 0
 }
 
 # Test move anon and file
 testcase_4()
 {
-	test_move_charge "--mmap-anon --shm" $PAGESIZE \
-		$((PAGESIZE*2)) 3 $PAGESIZE $PAGESIZE 0 0
+	test_move_charge "--mmap-anon --shm" $PAGESIZES \
+		$((PAGESIZES*2)) 3 $PAGESIZES $PAGESIZES 0 0
 }
 
 run_tests

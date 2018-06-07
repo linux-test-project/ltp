@@ -34,6 +34,9 @@ if [ $? -ne 0 ]; then
 	tst_brkm TBROK "getconf PAGESIZE failed"
 fi
 
+# Post 4.16 kernel updates stat in batch (> 32 pages) every time
+PAGESIZES=$(( $PAGESIZE * 33 ))
+
 HUGEPAGESIZE=$(awk '/Hugepagesize/ {print $2}' /proc/meminfo)
 [ -z $HUGEPAGESIZE ] && HUGEPAGESIZE=0
 HUGEPAGESIZE=$(( $HUGEPAGESIZE * 1024 ))
@@ -404,18 +407,18 @@ test_subgroup()
 	echo $1 > memory.limit_in_bytes
 	echo $2 > subgroup/memory.limit_in_bytes
 
-	tst_resm TINFO "Running memcg_process --mmap-anon -s $PAGESIZE"
-	memcg_process --mmap-anon -s $PAGESIZE &
+	tst_resm TINFO "Running memcg_process --mmap-anon -s $PAGESIZES"
+	memcg_process --mmap-anon -s $PAGESIZES &
 	TST_CHECKPOINT_WAIT 0
 
-	warmup $! $PAGESIZE
+	warmup $! $PAGESIZES
 	if [ $? -ne 0 ]; then
 		return
 	fi
 
 	echo $! > tasks
-	signal_memcg_process $! $PAGESIZE
-	check_mem_stat "rss" $PAGESIZE
+	signal_memcg_process $! $PAGESIZES
+	check_mem_stat "rss" $PAGESIZES
 
 	cd subgroup
 	echo $! > tasks

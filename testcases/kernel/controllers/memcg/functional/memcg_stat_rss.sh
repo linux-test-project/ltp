@@ -33,7 +33,7 @@ TST_TOTAL=10
 # Test the management and counting of memory
 testcase_1()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE "rss" $PAGESIZE false
+	test_mem_stat "--mmap-anon" $PAGESIZES $PAGESIZES "rss" $PAGESIZES false
 }
 
 testcase_2()
@@ -49,17 +49,17 @@ testcase_3()
 testcase_4()
 {
 	test_mem_stat "--mmap-anon --mmap-file --shm" \
-		$PAGESIZE $((PAGESIZE*3)) "rss" $PAGESIZE false
+		$PAGESIZES $((PAGESIZES*3)) "rss" $PAGESIZES false
 }
 
 testcase_5()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE "rss" $PAGESIZE false
+	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES false
 }
 
 testcase_6()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZE $PAGESIZE "rss" $PAGESIZE true
+	test_mem_stat "--mmap-anon" $PAGESIZES $PAGESIZES "rss" $PAGESIZES true
 }
 
 testcase_7()
@@ -75,12 +75,12 @@ testcase_8()
 testcase_9()
 {
 	test_mem_stat "--mmap-anon --mmap-file --shm" \
-		$PAGESIZE $((PAGESIZE*3)) "rss" $PAGESIZE true
+		$PAGESIZES $((PAGESIZES*3)) "rss" $PAGESIZES true
 }
 
 testcase_10()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE "rss" $PAGESIZE true
+	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES true
 }
 
 shmmax_setup
