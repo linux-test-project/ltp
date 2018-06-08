@@ -38,7 +38,9 @@ zram_max_streams="2"
 # not support mem suffixes, in some newer kernels, they use
 # memparse() which supports mem suffixes. So here we just use
 # bytes to make sure everything works correctly.
-zram_sizes="107374182400" # 100GB
+# Calculate memory to use for zram (200% of ram)
+totalmem=`free | grep -e "^Mem:" | sed -e 's/^Mem: *//' -e 's/  *.*//'`
+zram_sizes=$(((totalmem * 2 / ${dev_num}) * 1024))
 zram_mem_limits="1M"
 
 TST_CLEANUP="zram_cleanup"
