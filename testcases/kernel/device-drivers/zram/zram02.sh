@@ -39,7 +39,7 @@ zram_max_streams="2"
 # memparse() which supports mem suffixes. So here we just use
 # bytes to make sure everything works correctly.
 # Calculate memory to use for zram (200% of ram)
-totalmem=`free | grep -e "^Mem:" | sed -e 's/^Mem: *//' -e 's/  *.*//'`
+totalmem=``LC_ALL=C free | grep -e "^Mem:" | sed -e 's/^Mem: *//' -e 's/  *.*//'`
 zram_sizes=$(((totalmem * 2 / ${dev_num}) * 1024))
 zram_mem_limits="1M"
 
