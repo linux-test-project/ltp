@@ -40,7 +40,7 @@ zram_max_streams="2"
 # bytes to make sure everything works correctly.
 # Calculate memory to use for zram (200% of ram)
 totalmem=`LC_ALL=C free | grep -e "^Mem:" | sed -e 's/^Mem: *//' -e 's/  *.*//'`
-zram_sizes=$(((totalmem * 2 / ${dev_num}) * 1024))
+zram_sizes=$(((totalmem * 2 / $dev_num) * 1024))
 zram_mem_limits="1M"
 
 TST_CLEANUP="zram_cleanup"
