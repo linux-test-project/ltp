@@ -121,3 +121,5 @@ if [ $? -eq "0" ]; then
 else
 	echo ltp-pan reported FAIL
 fi
+
+rm -rf $TMPDIR
