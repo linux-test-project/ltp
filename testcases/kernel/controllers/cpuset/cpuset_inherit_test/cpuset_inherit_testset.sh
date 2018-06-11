@@ -28,7 +28,7 @@ export TST_COUNT=1
 
 . cpuset_funcs.sh
 
-check
+check 1 1
 
 nr_cpus=$NR_CPUS
 nr_mems=$N_NODES
