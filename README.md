@@ -42,6 +42,49 @@ $ git clone https://github.com/linux-test-project/ltp.git
 $ cd ltp
 $ make autotools
 $ ./configure
+```
+
+Now you can continue either with compiling and running a single test or with
+compiling and installing the whole testsuite.
+
+Shortcut to running a single test
+---------------------------------
+
+If you need to execute a single test you actually does not need to compile
+whole LTP, if you want to run a syscall testcase following should work.
+
+```
+$ cd testcases/kernel/syscalls/foo
+$ make
+$ PATH=$PATH:$PWD ./foo01
+```
+
+Shell testcases are a bit more complicated since these need a path to a shell
+library as well as to compiled binary helpers, but generally following should
+work.
+
+```
+$ cd testcases/lib
+$ make
+$ cd ../commands/foo
+$ PATH=$PATH:$PWD:$PWD/../../lib/ ./foo01.sh
+```
+
+Open Posix Testsuite has it's own build system which needs Makefiles to be
+generated first, then compilation should work in subdirectories as well.
+
+```
+$ cd testcases/open_posix_testsuite/
+$ make generate-makefiles
+$ cd conformance/interfaces/foo
+$ make
+$ ./foo_1-1.run-test
+```
+
+Compiling and installing all testcases
+--------------------------------------
+
+```
 $ make
 $ make install
 ```
