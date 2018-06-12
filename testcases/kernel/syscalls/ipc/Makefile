@@ -22,7 +22,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 LIBDIR			:= lib
 LIBNEWDIR		:= libnewipc
-FILTER_OUT_DIRS		:= $(LIBDIR) $(LIBNEWDIR) msgctl
+FILTER_OUT_DIRS		:= $(LIBDIR) $(LIBNEWDIR)
 LIB			:= $(LIBDIR)/libipc.a $(LIBDIR)/libmsgctl.a
 
 $(LIBDIR):
