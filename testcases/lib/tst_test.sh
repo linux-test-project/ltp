@@ -156,7 +156,7 @@ EXPECT_FAIL()
 
 TST_RETRY_FN_EXP_BACKOFF()
 {
-	local tst_fun=$1
+	local tst_fun="$1"
 	local tst_exp=$2
 	local tst_sec=$(expr $3 \* 1000000)
 	local tst_delay=1
