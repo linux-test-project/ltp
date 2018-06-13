@@ -51,14 +51,18 @@ char *TCID = "readahead02";
 int TST_TOTAL = 1;
 
 #if defined(__NR_readahead)
-static const char testfile[] = "testfile";
+static char testfile[PATH_MAX] = "testfile";
 static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
 static const char meminfo_fname[] = "/proc/meminfo";
 static size_t testfile_size = 64 * 1024 * 1024;
 static int opt_fsize;
 static char *opt_fsizestr;
 static int pagesize;
+static const char *fs_type;
+static const char *device;
+static int mount_flag;
 
+#define MNTPOINT        "mntpoint"
 #define MIN_SANE_READAHEAD (4u * 1024u)
 
 option_t options[] = {
@@ -382,12 +386,37 @@ static void setup(void)
 	ltp_syscall(__NR_readahead, 0, 0, 0);
 
 	pagesize = getpagesize();
+
+	if (tst_fs_type(cleanup, ".") == TST_TMPFS_MAGIC) {
+		tst_resm(TINFO, "TMPFS detected, creating loop device");
+
+		fs_type = tst_dev_fs_type();
+		device = tst_acquire_device(cleanup);
+		if (!device) {
+			tst_brkm(TCONF, cleanup,
+				"Failed to obtain block device");
+		}
+
+		tst_mkfs(cleanup, device, fs_type, NULL, NULL);
+
+		SAFE_MKDIR(cleanup, MNTPOINT, 0755);
+		SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
+		mount_flag = 1;
+
+		sprintf(testfile, MNTPOINT"/testfile");
+	}
 	create_testfile();
 }
 
 static void cleanup(void)
 {
 	unlink(testfile);
+	if (mount_flag && tst_umount(MNTPOINT) < 0)
+		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
+
+	if (device)
+		tst_release_device(device);
+
 	tst_rmdir();
 }
 
