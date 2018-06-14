@@ -115,6 +115,7 @@ tst_ipsec_setup()
 {
 	# Configure SAD/SPD
 	if [ -n "$IPSEC_MODE" -a -n "$IPSEC_PROTO" ]; then
+		tst_resm TINFO "IPsec[$IPSEC_PROTO/$IPSEC_MODE]"
 		tst_ipsec lhost $(tst_ipaddr) $(tst_ipaddr rhost)
 		tst_ipsec rhost $(tst_ipaddr rhost) $(tst_ipaddr)
 	fi

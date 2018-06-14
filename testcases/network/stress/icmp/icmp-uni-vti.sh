@@ -26,7 +26,7 @@ do_test()
 {
 	PING_MAX="$IPSEC_REQUESTS"
 
-	tst_resm TINFO "Sending ICMP messages..."
+	tst_resm TINFO "Sending ICMP messages"
 	tst_ping $tst_vti $ip_rmt_tun $IPSEC_SIZE_ARRAY
 }
 

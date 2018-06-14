@@ -25,23 +25,11 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 . ipsec_lib.sh
 
-# Test description
-tst_resm TINFO "Sending ICMP messages with the following conditions"
-tst_resm TINFO "- Version of IP is IPv${TST_IPV6:-4}"
-tst_resm TINFO "- Size of packets are ( $IPSEC_SIZE_ARRAY )"
-
-if [ -n "$IPSEC_MODE" -a -n "$IPSEC_PROTO" ]; then
-	case $IPSEC_PROTO in
-	ah)	tst_resm TINFO "- IPsec [ AH / $IPSEC_MODE ]" ;;
-	esp)	tst_resm TINFO "- IPsec [ ESP / $IPSEC_MODE ]" ;;
-	comp)	tst_resm TINFO "- IPcomp [ $IPSEC_MODE ]" ;;
-	esac
-fi
-
 tst_ipsec_setup
 
 PING_MAX="$IPSEC_REQUESTS"
 
+tst_resm TINFO "Sending ICMP messages"
 tst_ping $(tst_iface) $(tst_ipaddr rhost) $IPSEC_SIZE_ARRAY
 
 tst_exit
