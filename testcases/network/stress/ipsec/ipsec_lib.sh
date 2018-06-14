@@ -111,6 +111,15 @@ cleanup_vti=
 ALG=
 ALGR=
 
+tst_ipsec_setup()
+{
+	# Configure SAD/SPD
+	if [ -n "$IPSEC_MODE" -a -n "$IPSEC_PROTO" ]; then
+		tst_ipsec lhost $(tst_ipaddr) $(tst_ipaddr rhost)
+		tst_ipsec rhost $(tst_ipaddr rhost) $(tst_ipaddr)
+	fi
+}
+
 # tst_ipsec_cleanup: flush ipsec state and policy rules
 tst_ipsec_cleanup()
 {
