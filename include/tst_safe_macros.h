@@ -30,6 +30,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <grp.h>
 
 #include "safe_macros_fn.h"
 
@@ -430,6 +431,11 @@ int safe_sigaction(const char *file, const int lineno,
 int safe_getpriority(const char *file, const int lineno, int which, id_t who);
 #define SAFE_GETPRIORITY(which, who) \
 	safe_getpriority(__FILE__, __LINE__, (which), (who))
+
+struct group *safe_getgrnam(const char *file, const int lineno,
+			    const char *name);
+#define SAFE_GETGRNAM(name) \
+	safe_getgrnam(__FILE__, __LINE__, (name))
 
 int safe_setxattr(const char *file, const int lineno, const char *path,
             const char *name, const void *value, size_t size, int flags);
