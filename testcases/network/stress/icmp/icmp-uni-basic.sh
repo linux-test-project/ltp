@@ -25,8 +25,6 @@ TST_CLEANUP="tst_ipsec_cleanup"
 
 . ipsec_lib.sh
 
-LINK_NUM=${LINK_NUM:-0}
-
 # Test description
 tst_resm TINFO "Sending ICMP messages with the following conditions"
 tst_resm TINFO "- Version of IP is IPv${TST_IPV6:-4}"
@@ -40,17 +38,10 @@ if [ -n "$IPSEC_MODE" -a -n "$IPSEC_PROTO" ]; then
 	esac
 fi
 
-# name of interface of the local/remote host
-lhost_ifname=$(tst_iface lhost $LINK_NUM)
-rhost_ifname=$(tst_iface rhost $LINK_NUM)
-
-lhost_addr=$(tst_ipaddr)
-rhost_addr=$(tst_ipaddr rhost)
-
 tst_ipsec_setup
 
 PING_MAX="$IPSEC_REQUESTS"
 
-tst_ping $lhost_ifname $rhost_addr $IPSEC_SIZE_ARRAY
+tst_ping $(tst_iface) $(tst_ipaddr rhost) $IPSEC_SIZE_ARRAY
 
 tst_exit
