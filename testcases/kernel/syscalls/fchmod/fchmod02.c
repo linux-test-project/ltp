@@ -54,9 +54,7 @@ static void setup(void)
 	struct group *ltpgroup;
 
 	ltpuser = SAFE_GETPWNAM(LTPUSER);
-	ltpgroup = getgrnam(LTPGRP);
-	if (ltpgroup == NULL)
-		tst_brk(TBROK, "%s not in /etc/group", LTPGRP);
+	ltpgroup = SAFE_GETGRNAM(LTPGRP);
 
 	fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 	SAFE_CHOWN(TESTFILE, ltpuser->pw_uid, ltpgroup->gr_gid);
