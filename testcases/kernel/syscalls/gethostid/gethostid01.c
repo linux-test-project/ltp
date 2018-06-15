@@ -239,6 +239,10 @@ int main(int ac, char **av)
 
 void setup(void)
 {
+	char path[2048];
+
+	if (tst_get_path("hostid", path, sizeof(path)))
+		tst_brkm(TCONF, NULL, "Couldn't find hostid in $PATH");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
