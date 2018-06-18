@@ -537,6 +537,13 @@ static ssize_t sys_path(struct device *dev,
 }
 static DEVICE_ATTR(path, S_IRUSR, sys_path, NULL);
 
+static ssize_t sys_acpi_disabled(struct device *dev,
+				    struct device_attribute *attr, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "%d", acpi_disabled);
+}
+static DEVICE_ATTR(acpi_disabled, S_IRUSR, sys_acpi_disabled, NULL);
+
 static ssize_t sys_tcase(struct device *dev,
 	struct device_attribute *attr,  const char *buf, size_t count)
 {
@@ -616,8 +623,16 @@ int init_module(void)
 		goto err4;
 	}
 
+	err = device_create_file(&tdev, &dev_attr_acpi_disabled);
+	if (err) {
+		prk_err("Can't create sysfs file 'acpi_disabled'");
+		goto err5;
+	}
+
 	return 0;
 
+err5:
+	device_remove_file(&tdev, &dev_attr_path);
 err4:
 	device_remove_file(&tdev, &dev_attr_tcase);
 err3:
