@@ -175,11 +175,12 @@ static void advice_test(unsigned int i)
 	TEST(madvise(*(tc->addr), st.st_size, tc->advice));
 	if (TEST_RETURN == -1) {
 		if (TEST_ERRNO == tc->exp_errno) {
-			tst_res(TPASS | TTERRNO, "failed as expected");
+			tst_res(TPASS | TTERRNO, "%s failed as expected", tc->name);
 		} else {
 			tst_res(TFAIL | TTERRNO,
-					"failed unexpectedly; expected - %d : %s",
-					tc->exp_errno, tst_strerrno(TFAIL | TTERRNO));
+					"%s failed unexpectedly; expected - %d : %s",
+					tc->name, tc->exp_errno,
+					tst_strerrno(TFAIL | TTERRNO));
 		}
 	} else {
 		tst_res(TFAIL, "madvise succeeded unexpectedly");
