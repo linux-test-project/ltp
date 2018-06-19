@@ -37,6 +37,7 @@ static void run(void)
 {
 	char buf[FALLOCATE_SIZE];
 	ssize_t ret;
+	const char *tested_flags="fallocate(FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE)";
 
 	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT);
 
@@ -72,11 +73,11 @@ static void run(void)
 	ret = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, FALLOCATE_SIZE);
 	if (ret == -1) {
 		if (errno == EOPNOTSUPP)
-			tst_brk(TCONF, "fallocate(FALLOC_FL_PUNCH_HOLE)");
+			tst_brk(TCONF, tested_flags);
 
-		tst_brk(TBROK | TERRNO, "fallocate(FALLOC_FL_PUNCH_HOLE)");
+		tst_brk(TBROK | TERRNO, tested_flags);
 	}
-	tst_res(TPASS, "fallocate(FALLOC_FL_PUNCH_HOLE)");
+	tst_res(TPASS, tested_flags);
 
 	ret = write(fd, buf, 10);
 	if (ret == -1)
