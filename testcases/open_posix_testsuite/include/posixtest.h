@@ -43,3 +43,7 @@
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
+
+#define LTP_ATTRIBUTE_NORETURN		__attribute__((noreturn))
+#define LTP_ATTRIBUTE_UNUSED		__attribute__((unused))
+#define LTP_ATTRIBUTE_UNUSED_RESULT	__attribute__((warn_unused_result))
