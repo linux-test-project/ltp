@@ -121,7 +121,8 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "sigprocmask() Failed "
 					 "to get previous signal mask "
 					 "of process");
-			} else if (sigset2.__val[0] != sigset1.__val[0]) {
+			} else if (memcmp(&sigset1, &sigset2,
+				   sizeof(unsigned long))) {
 				tst_resm(TFAIL, "sigsuspend failed to "
 					 "preserve signal mask");
 			} else {
