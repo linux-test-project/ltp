@@ -42,7 +42,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <errno.h>
-#include <values.h>
+#include <limits.h>
 
 /*****	LTP Port	*****/
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 /*--------------------------------------------------------------*/
 	blenter();
 
-	i = llabs(MININT) + (long long)MININT;
+	i = llabs(INT_MIN) + (long long)INT_MIN;
 
 	if (i != 0) {
 		fprintf(temp, "abs of minimum integer failed.");
