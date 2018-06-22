@@ -8,11 +8,14 @@
 
 cleanup()
 {
-	sysctl -q -w net.core.busy_read=$busy_read_old
-	sysctl -q -w net.core.busy_poll=$busy_poll_old
-
-	tst_rhost_run -c "sysctl -q -w net.core.busy_read=$rbusy_read_old"
-	tst_rhost_run -c "sysctl -q -w net.core.busy_poll=$rbusy_poll_old"
+	[ -n "$busy_read_old" ] && \
+		sysctl -q -w net.core.busy_read=$busy_read_old
+	[ -n "$busy_poll_old" ] && \
+		sysctl -q -w net.core.busy_poll=$busy_poll_old
+	[ -n "$rbusy_read_old" ] && \
+		tst_rhost_run -c "sysctl -q -w net.core.busy_read=$rbusy_read_old"
+	[ -n "$rbusy_poll_old" ] && \
+		tst_rhost_run -c "sysctl -q -w net.core.busy_poll=$rbusy_poll_old"
 }
 
 set_busy_poll()

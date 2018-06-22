@@ -10,8 +10,10 @@ TST_TEST_DATA="udp udp_lite"
 
 cleanup()
 {
-	sysctl -q -w net.core.busy_poll=$busy_poll_old
-	tst_rhost_run -c "sysctl -q -w net.core.busy_poll=$rbusy_poll_old"
+	[ -n "$busy_poll_old" ] && \
+		sysctl -q -w net.core.busy_poll=$busy_poll_old
+	[ -n "$rbusy_poll_old" ] && \
+		tst_rhost_run -c "sysctl -q -w net.core.busy_poll=$rbusy_poll_old"
 }
 
 set_busy_poll()
