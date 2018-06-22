@@ -78,7 +78,7 @@ static void test_ksm(void)
 		ptr = SAFE_MEMALIGN(ps, ps);
 		if (madvise(ptr, ps, MADV_MERGEABLE) < 0)
 			tst_brk(TBROK | TERRNO, "madvise");
-		*(char *)NULL = 0;	/* SIGSEGV occurs as expected. */
+		*(volatile char *)NULL = 0; /* SIGSEGV occurs as expected. */
 	}
 	SAFE_WAITPID(pid, &status, WUNTRACED | WCONTINUED);
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
