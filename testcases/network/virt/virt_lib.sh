@@ -328,8 +328,7 @@ virt_macsec_setup()
 
 virt_netperf_msg_sizes()
 {
-	local sizes="${@:-100 1000 2000 10000}"
-	client_requests=20000
+	local sizes="100 1000 2000 10000"
 
 	for s in $sizes; do
 		virt_compare_netperf pass "-n $s -N $s"
