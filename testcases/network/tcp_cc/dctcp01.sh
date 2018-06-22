@@ -27,7 +27,7 @@ setup()
 	tc qdisc add dev $(tst_iface) root netem loss 0.5% ecn > /dev/null 2>&1
 
 	if [ $? -ne 0 ]; then
-		tst_brkm TCONF "netem doesn't support ECN"
+		tst_brk TCONF "netem doesn't support ECN"
 	fi
 }
 
