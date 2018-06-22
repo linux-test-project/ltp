@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+# for more stable results set to a single thread
+TST_NETLOAD_CLN_NUMBER=1
+
 if tst_kvcmp -lt "3.11"; then
 	tst_brkm TCONF "test must be run with kernel 3.11 or newer"
 fi
