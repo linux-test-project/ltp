@@ -8,34 +8,10 @@
 # with enabled frame encryption and replay protection, compare
 # performance with similar IPsec configuration on master interface.
 
-virt_type="macsec"
-VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-100}
-IPSEC_MODE="transport"
 IPSEC_PROTO="esp_aead"
 EALGO="aes"
+MACSEC_LIB_SETUP="replay on window 300 encrypt on protect on"
 
-TST_NEEDS_TMPDIR=1
-TST_TESTFUNC=virt_netperf_msg_sizes
-TST_SETUP=do_setup
-TST_CLEANUP=do_cleanup
-. ipsec_lib.sh
-. virt_lib.sh
-
-do_setup()
-{
-	ipsec_lib_setup
-
-	tst_res TINFO "setup IPsec $IPSEC_MODE/$IPSEC_PROTO $EALGO"
-	tst_ipsec lhost $(tst_ipaddr) $(tst_ipaddr rhost)
-	tst_ipsec rhost $(tst_ipaddr rhost) $(tst_ipaddr)
-
-	virt_macsec_setup "replay on window 300 encrypt on protect on"
-}
-
-do_cleanup()
-{
-	virt_cleanup
-	tst_ipsec_cleanup
-}
+. macsec_lib.sh
 
 tst_run

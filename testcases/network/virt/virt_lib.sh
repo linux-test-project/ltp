@@ -320,33 +320,6 @@ virt_check_cmd()
 	return 0
 }
 
-# virt_macsec_setup [OPTIONS]
-# OPTIONS - [ cipher { default | gcm-aes-128 } ] [ encrypt { on | off } ]
-#           [ protect { on | off } ] [ replay { on | off } ] [ window WINDOW ]
-#           [ validate { strict | check | disabled } ]
-virt_macsec_setup()
-{
-	local keyid0=01
-	local keyid1=02
-	local sa=0
-	local h0=$(tst_hwaddr)
-	local h1=$(tst_hwaddr rhost)
-	local cmd="ip macsec add ltp_v0"
-	local key0="01234567890123456789012345678901"
-	local key1="98765432109876543210987612343434"
-
-	virt_setup "icvlen 16 encodingsa $sa $@"
-
-	ROD $cmd tx sa $sa pn 100 on key $keyid0 $key0
-	ROD $cmd rx address $h1 port 1
-	ROD $cmd rx address $h1 port 1 sa $sa pn 100 on key $keyid1 $key1
-
-	tst_rhost_run -s -c "$cmd tx sa $sa pn 100 on key $keyid1 $key1"
-	tst_rhost_run -s -c "$cmd rx address $h0 port 1"
-	tst_rhost_run -s -c \
-		"$cmd rx address $h0 port 1 sa $sa pn 100 on key $keyid0 $key0"
-}
-
 virt_netperf_msg_sizes()
 {
 	local sizes="100 1000 2000 10000"
