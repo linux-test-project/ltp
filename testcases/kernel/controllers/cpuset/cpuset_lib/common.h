@@ -51,7 +51,7 @@
 		start = 1;						\
 									\
 	snprintf(fullpath, sizeof(fullpath), "%s%s", basepath,		\
-		p_relpath + start);					\
+		 &p_relpath[start]);					\
 	pathlen = strlen(fullpath);					\
 									\
 	if ((dp = opendir(fullpath)) == NULL)				\
