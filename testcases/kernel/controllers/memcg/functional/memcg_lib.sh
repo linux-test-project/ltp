@@ -80,6 +80,8 @@ TST_CLEANUP=cleanup
 
 shmmax_setup()
 {
+	tst_check_cmds bc
+
 	shmmax=`cat /proc/sys/kernel/shmmax`
 	if [ $(echo "$shmmax < $HUGEPAGESIZE" |bc) -eq 1 ]; then
 		ROD echo "$HUGEPAGESIZE" \> /proc/sys/kernel/shmmax
