@@ -232,6 +232,9 @@ do
 		;;
 	esac
 done
+
+tests[$index]=1
+
 i=0
 while [ $i -lt $index ]; do
 	find_test "$profile" ${tests[$i]} ${tests[$((i+1))]}
