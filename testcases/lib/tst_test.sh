@@ -364,7 +364,7 @@ tst_run()
 
 		TST_DEVICE=$(tst_device acquire)
 
-		if [ -z "$TST_DEVICE" ]; then
+		if [ ! -b "$TST_DEVICE" -o $? -ne 0 ]; then
 			tst_brk TBROK "Failed to acquire device"
 		fi
 
