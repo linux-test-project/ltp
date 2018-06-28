@@ -1167,7 +1167,7 @@ const char *const cmd[] = { "ls", "-l", NULL };
 
 [source,c]
 -------------------------------------------------------------------------------
-#include "tst_test.h"
+#include "tst_timer.h"
 
 void tst_timer_check(clockid_t clk_id);
 
@@ -1180,6 +1180,8 @@ struct timespec tst_timer_elapsed(void);
 long long tst_timer_elapsed_ms(void);
 
 long long tst_timer_elapsed_us(void);
+
+int tst_timer_expired_ms(long long ms);
 -------------------------------------------------------------------------------
 
 The 'tst_timer_check()' function checks if specified 'clk_id' is suppored and
@@ -1196,9 +1198,46 @@ call to 'tst_timer_start()'.
 The 'tst_timer_elapsed*()' returns time difference between the timer start and
 last timer stop in several formats and units.
 
+The 'tst_timer_expired_ms()' function checks if the timer started by
+'tst_timer_start()' has been running longer than ms miliseconds. The function
+returns non-zero if timer has expired and zero otherwise.
+
 IMPORTANT: The timer functions use 'clock_gettime()' internally which needs to
            be linked with '-lrt' on older glibc. Please do not forget to add
 	   'LDLIBS+=-lrt' in Makefile.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+#include "tst_timer.h"
+
+static void setup(void)
+{
+	...
+	tst_timer_check(CLOCK_MONOTONIC);
+	...
+}
+
+static void run(void)
+{
+	...
+	tst_timer_start(CLOCK_MONOTONIC);
+	...
+	while (!tst_timer_expired_ms(5000)) {
+		...
+	}
+	...
+}
+
+sturct tst_test test = {
+	...
+	.setup = setup,
+	.test_all = run,
+	...
+};
+-------------------------------------------------------------------------------
+
+Expiration timer example usage.
 
 [source,c]
 -------------------------------------------------------------------------------

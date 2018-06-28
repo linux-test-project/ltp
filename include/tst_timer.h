@@ -252,6 +252,14 @@ void tst_timer_check(clockid_t clk_id);
 void tst_timer_start(clockid_t clk_id);
 
 /*
+ * Returns true if timer started by tst_timer_start() has been running for
+ * longer than ms seconds.
+ *
+ * @ms: Time interval in miliseconds.
+ */
+int tst_timer_expired_ms(long long ms);
+
+/*
  * Marks timer end time.
  */
 void tst_timer_stop(void);

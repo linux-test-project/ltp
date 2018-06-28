@@ -77,6 +77,16 @@ void tst_timer_start(clockid_t clk_id)
 		tst_resm(TWARN | TERRNO, "tst_clock_gettime() failed");
 }
 
+int tst_timer_expired_ms(long long ms)
+{
+	struct timespec cur_time;
+
+	if (tst_clock_gettime(clock_id, &cur_time))
+		tst_resm(TWARN | TERRNO, "tst_clock_gettime() failed");
+
+	return tst_timespec_diff_ms(cur_time, start_time) >= ms;
+}
+
 void tst_timer_stop(void)
 {
 	if (tst_clock_gettime(clock_id, &stop_time))
