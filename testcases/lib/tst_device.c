@@ -31,8 +31,8 @@ static struct tst_test test = {
 
 static void print_help(void)
 {
-	printf("\nUsage: tst_device acquire [size]\n");
-	printf("   or: tst_device release /path/to/device\n\n");
+	fprintf(stderr, "\nUsage: tst_device acquire [size]\n");
+	fprintf(stderr, "   or: tst_device release /path/to/device\n\n");
 }
 
 static int acquire_device(int argc, char *argv[])
