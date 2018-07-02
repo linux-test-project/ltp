@@ -78,6 +78,19 @@ tst_net_setup()
 
 [ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
 
+if [ "$TST_PARSE_ARGS_CALLER" = "$TST_PARSE_ARGS" ]; then
+	tst_res TWARN "TST_PARSE_ARGS_CALLER same as TST_PARSE_ARGS, unset it ($TST_PARSE_ARGS)"
+	unset TST_PARSE_ARGS_CALLER
+fi
+if [ "$TST_SETUP_CALLER" = "$TST_SETUP" ]; then
+	tst_res TWARN "TST_SETUP_CALLER same as TST_SETUP, unset it ($TST_SETUP)"
+	unset TST_SETUP_CALLER
+fi
+if [ "$TST_USAGE_CALLER" = "$TST_USAGE" ]; then
+	tst_res TWARN "TST_USAGE_CALLER same as TST_USAGE, unset it ($TST_USAGE)"
+	unset TST_USAGE_CALLER
+fi
+
 if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_read_opts "$@"
 fi
