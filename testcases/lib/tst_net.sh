@@ -19,6 +19,9 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 
+[ -n "$TST_LIB_NET_LOADED" ] && return 0
+TST_LIB_NET_LOADED=1
+
 TST_OPTS="6$TST_OPTS"
 TST_PARSE_ARGS_CALLER="$TST_PARSE_ARGS"
 TST_PARSE_ARGS="tst_net_parse_args"
@@ -73,9 +76,7 @@ tst_net_setup()
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
 
-if [ -z "$TST_LIB_LOADED" ]; then
-	[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
-fi
+[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_read_opts "$@"
