@@ -87,4 +87,4 @@ period of the test run.
 
 * System may hang if incorrect partition information is provided for
 dumping, like specifying a partition which does not exist, specifying a
-parition label which does not exist. This is not ltp kdump bug.
+partition label which does not exist. This is not ltp kdump bug.
