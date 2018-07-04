@@ -28,7 +28,7 @@ export TST_COUNT=1
 
 . cpuset_funcs.sh
 
-check
+check 2 1
 
 exit_status=0
 
