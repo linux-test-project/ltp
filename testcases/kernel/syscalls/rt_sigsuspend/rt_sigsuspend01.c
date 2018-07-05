@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
+#include <string.h>
 
 #include "test.h"
 #include "lapi/syscalls.h"
@@ -91,7 +92,8 @@ int main(int ac, char **av)
 			if (TEST_RETURN == -1) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "rt_sigprocmask failed");
-			} else if (set1.__val[0] != set2.__val[0]) {
+			} else if (memcmp(&set1, &set2,
+				   sizeof(unsigned long))) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "rt_sigsuspend failed to "
 					 "preserve signal mask");

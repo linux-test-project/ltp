@@ -33,17 +33,17 @@ TST_TOTAL=3
 # Test that group and subgroup have no relationship
 testcase_1()
 {
-	test_subgroup $PAGESIZE $((2*PAGESIZE))
+	test_subgroup $PAGESIZES $((2*PAGESIZES))
 }
 
 testcase_2()
 {
-	test_subgroup $PAGESIZE $PAGESIZE
+	test_subgroup $PAGESIZES $PAGESIZES
 }
 
 testcase_3()
 {
-	test_subgroup $PAGESIZE 0
+	test_subgroup $PAGESIZES 0
 }
 
 run_tests

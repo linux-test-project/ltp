@@ -101,7 +101,11 @@ before_install:
     - if [ -f /tmp/ubuntu-toolchain-r-test*.list ]; then
           sudo cp -v /tmp/ubuntu-toolchain-r-test*.list /etc/apt/sources.list.d/
       ; fi
-    - sudo apt update --option Acquire::Retries=100 --option Acquire::http::Timeout="60"
+
+    # workaround apt related for error:
+    # Err:6 http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty InRelease
+    # The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 1E9377A2BA9EF27F
+    - sudo apt update -o Acquire::Retries=100 -o Acquire::http::Timeout="60" -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true
 
     # installing / removing dependencies
     - if [ "$INSTALL_PACKAGES" = "" ]; then

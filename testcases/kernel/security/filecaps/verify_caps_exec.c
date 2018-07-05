@@ -186,7 +186,7 @@ static int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 				 "got a bad seqno (c=%d, s=%d, seqno=%d)", c, s,
 				 seqno);
 		}
-		p = index(buf, '.');
+		p = strchr(buf, '.');
 		if (!p)
 			tst_brkm(TFAIL, NULL,
 				 "got a bad message from print_caps\n");

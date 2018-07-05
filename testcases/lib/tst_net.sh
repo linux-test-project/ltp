@@ -1,23 +1,11 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) 2016-2018 Petr Vorel <pvorel@suse.cz>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
-#
+
+[ -n "$TST_LIB_NET_LOADED" ] && return 0
+TST_LIB_NET_LOADED=1
 
 TST_OPTS="6$TST_OPTS"
 TST_PARSE_ARGS_CALLER="$TST_PARSE_ARGS"
@@ -73,8 +61,19 @@ tst_net_setup()
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
 
-if [ -z "$TST_LIB_LOADED" ]; then
-	[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
+[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
+
+if [ "$TST_PARSE_ARGS_CALLER" = "$TST_PARSE_ARGS" ]; then
+	tst_res TWARN "TST_PARSE_ARGS_CALLER same as TST_PARSE_ARGS, unset it ($TST_PARSE_ARGS)"
+	unset TST_PARSE_ARGS_CALLER
+fi
+if [ "$TST_SETUP_CALLER" = "$TST_SETUP" ]; then
+	tst_res TWARN "TST_SETUP_CALLER same as TST_SETUP, unset it ($TST_SETUP)"
+	unset TST_SETUP_CALLER
+fi
+if [ "$TST_USAGE_CALLER" = "$TST_USAGE" ]; then
+	tst_res TWARN "TST_USAGE_CALLER same as TST_USAGE, unset it ($TST_USAGE)"
+	unset TST_USAGE_CALLER
 fi
 
 if [ -n "$TST_USE_LEGACY_API" ]; then

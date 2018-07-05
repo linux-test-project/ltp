@@ -21,6 +21,8 @@
 # This is a LTP test library for shell.
 #
 
+[ -n "$TST_LIB_LOADED" ] && return 0
+
 export TST_PASS=0
 export TST_FAIL=0
 export TST_BROK=0
@@ -29,6 +31,7 @@ export TST_CONF=0
 export TST_COUNT=1
 export TST_ITERATIONS=1
 export TST_TMPDIR_RHOST=0
+export TST_LIB_LOADED=1
 
 . tst_ansi_color.sh
 
