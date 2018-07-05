@@ -16,7 +16,7 @@ cpuctl_testN.c
 These are the tasks to run for cpu controller testing.
 The tasks have been automated in the sense that they can assign themselves to
 the appropriate group, can modify their group shares, can migrate etc.
-Each task runs for an interval TIME_INTERVAL seconds and eports the total time
+Each task runs for an interval TIME_INTERVAL seconds and reports the total time
 it could run on all cpus in an interval of INTERVAL seconds. (for convinience
 calculate cpu time is given in % and seconds both).
 A task can call a library routine from libcontrollers library to calculate
@@ -33,7 +33,7 @@ This file contains the functions which do setup for the test. It creates a
 /dev/cpuctl directory, mounts cgroup filesystem on it with cpu. It then creates
 a number(n) of groups in /dev/cpuctl. The cleanup function does a complete cleanup
 of the system.
-(*However most of the error scenarios ahve been tested for a sane cleanup, still if
+(*However most of the error scenarios have been tested for a sane cleanup, still if
 sometime it is unable to do it justt manualy execute the commands written in cleanup
 function)
 
