@@ -37,6 +37,7 @@ AC_CHECK_HEADERS([ \
     keyutils.h \
     linux/can.h \
     linux/dccp.h \
+    linux/cryptouser.h \
     linux/genetlink.h \
     linux/keyctl.h \
     linux/if_packet.h \
