@@ -132,7 +132,7 @@ ON THE TODO LIST
   - Butterfly seek option: test will seek block
     start/end/start+1/end-1/.../end-1/start+1/end/start
   - Ping-Pong seek option: test will seek block start/end/start/end/etc...
-  - min seek: force a minimum seek disktance during any IO access
+  - min seek: force a minimum seek distance during any IO access
   - max seek: force a maximum seek distance during any IO access
   - add metric for the average response time for all IOs
   - implement flock for filesystem testing on clusters
