@@ -58,6 +58,3 @@ Notes:
 3) number of loops is initialized to 500 (ability to view cpus loading)
 
 4) these tests have been started on ia64 and ia32 architectures.
-
-
-
