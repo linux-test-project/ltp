@@ -60,12 +60,12 @@ static void verify_msgget(struct tcase *tc)
 {
 	TEST(msgget(*tc->key, tc->flags));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "msgget() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_err) {
+	if (TST_ERR == tc->exp_err) {
 		tst_res(TPASS | TTERRNO, "msgget() failed as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO, "msgget() failed unexpectedly,"

@@ -110,7 +110,7 @@ static void verify_fn(unsigned int i)
 
 	TEST(sched_setscheduler(*cases[i].pid, cases[i].policy,
 					cases[i].sched_param));
-	if (TEST_RETURN)
+	if (TST_RET)
 		tst_res(TFAIL | TTERRNO, "case[%d] expected: %d, got: ",
 			i + 1, cases[i].error);
 	else

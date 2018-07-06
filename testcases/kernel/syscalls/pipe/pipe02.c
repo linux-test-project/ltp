@@ -58,7 +58,7 @@ static void verify_pipe(void)
 #endif
 
 	TEST(pipe(fd));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL|TERRNO, "pipe() failed");
 		return;
 	}

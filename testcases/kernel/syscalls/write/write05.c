@@ -71,12 +71,12 @@ static void verify_write(unsigned int i)
 
 	TEST(write(*tc->fd, *tc->buf, tc->size));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "write() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_errno) {
+	if (TST_ERR != tc->exp_errno) {
 		tst_res(TFAIL | TTERRNO,
 			"write() failed unexpectedly, expected %s",
 			tst_strerrno(tc->exp_errno));

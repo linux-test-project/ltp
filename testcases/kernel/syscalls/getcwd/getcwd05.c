@@ -32,7 +32,7 @@ static void run(unsigned int i)
 		TESTPTR(getcwd(NULL, 0));
 	}
 
-	if (TEST_ERRNO != ENOENT) {
+	if (TST_ERR != ENOENT) {
 		tst_res(TFAIL | TTERRNO, "returned unexpected errno");
 		fail = 1;
 	}

@@ -38,12 +38,12 @@ static void verify_request_key(void)
 {
 
 	TEST(request_key("keyring", "ltp", NULL, KEY_REQKEY_DEFL_DEFAULT));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "request_key() failed");
 		return;
 	}
 
-	if (TEST_RETURN != key)
+	if (TST_RET != key)
 		tst_res(TFAIL, "serial number mismatched");
 	else
 		tst_res(TPASS, "request_key() succeed");

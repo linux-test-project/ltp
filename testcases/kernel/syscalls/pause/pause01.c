@@ -29,9 +29,9 @@ static void do_child(void)
 	TST_CHECKPOINT_WAKE(0);
 
 	TEST(pause());
-	if (TEST_RETURN != -1)
+	if (TST_RET != -1)
 		tst_res(TFAIL, "pause() succeeded unexpectedly");
-	else if (TEST_ERRNO == EINTR)
+	else if (TST_ERR == EINTR)
 		tst_res(TPASS, "pause() interrupted with EINTR");
 	else
 		tst_res(TFAIL | TTERRNO, "pause() unexpected errno");

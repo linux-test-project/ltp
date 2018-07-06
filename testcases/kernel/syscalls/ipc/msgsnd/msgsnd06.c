@@ -41,12 +41,12 @@ static struct buf {
 static void verify_msgsnd(void)
 {
 	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, 0));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "msgsnd() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == EIDRM) {
+	if (TST_ERR == EIDRM) {
 		tst_res(TPASS | TTERRNO, "msgsnd() failed as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO,

@@ -38,21 +38,21 @@ static key_serial_t create_keyring(const char *description)
 {
 	TEST(add_key("keyring", description, NULL, 0,
 		     KEY_SPEC_PROCESS_KEYRING));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_brk(TBROK | TTERRNO,
 			"unable to create keyring '%s'", description);
 	}
-	return TEST_RETURN;
+	return TST_RET;
 }
 
 static key_serial_t get_keyring_id(key_serial_t special_id)
 {
 	TEST(keyctl(KEYCTL_GET_KEYRING_ID, special_id, 1));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_brk(TBROK | TTERRNO,
 			"unable to get ID of keyring %d", special_id);
 	}
-	return TEST_RETURN;
+	return TST_RET;
 }
 
 static void do_test(void)

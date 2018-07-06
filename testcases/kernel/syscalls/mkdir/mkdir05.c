@@ -35,7 +35,7 @@ static void verify_mkdir(void)
 	struct stat buf;
 
 	TEST(mkdir(TESTDIR, PERMS));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "mkdir() Failed");
 		return;
 	}

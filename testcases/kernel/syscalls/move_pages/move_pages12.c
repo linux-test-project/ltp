@@ -87,7 +87,7 @@ static void do_child(void)
 
 		TEST(numa_move_pages(ppid, test_pages,
 			pages, nodes, status, MPOL_MF_MOVE_ALL));
-		if (TEST_RETURN) {
+		if (TST_RET) {
 			tst_res(TFAIL | TTERRNO, "move_pages failed");
 			break;
 		}
@@ -166,9 +166,9 @@ static void alloc_free_huge_on_node(unsigned int node, size_t size)
 	}
 
 	TEST(mlock(mem, size));
-	if (TEST_RETURN) {
+	if (TST_RET) {
 		SAFE_MUNMAP(mem, size);
-		if (TEST_ERRNO == ENOMEM || TEST_ERRNO == EAGAIN)
+		if (TST_ERR == ENOMEM || TST_ERR == EAGAIN)
 			tst_brk(TCONF, "Cannot lock huge pages");
 		tst_brk(TBROK | TTERRNO, "mlock failed");
 	}

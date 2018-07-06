@@ -36,14 +36,14 @@ static void test_readlink(void)
 	int exp_val = strlen(TESTFILE);
 
 	TEST(readlink(SYMFILE, buffer, sizeof(buffer)));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "readlink() on %s failed", SYMFILE);
 		return;
 	}
 
-	if (TEST_RETURN != exp_val) {
+	if (TST_RET != exp_val) {
 		tst_res(TFAIL, "readlink() returned value %ld "
-			"did't match, Expected %d", TEST_RETURN, exp_val);
+			"did't match, Expected %d", TST_RET, exp_val);
 		return;
 	}
 

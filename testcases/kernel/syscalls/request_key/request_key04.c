@@ -37,44 +37,44 @@ static void do_test(void)
 	int saved_errno;
 
 	TEST(keyctl(KEYCTL_JOIN_SESSION_KEYRING, NULL));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to join new session keyring");
 
 	TEST(keyctl(KEYCTL_SETPERM, KEY_SPEC_SESSION_KEYRING,
 		    KEY_POS_SEARCH|KEY_POS_READ|KEY_POS_VIEW));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_brk(TBROK | TTERRNO,
 			"failed to set permissions on session keyring");
 	}
 
 	TEST(keyctl(KEYCTL_SET_REQKEY_KEYRING,
 		    KEY_REQKEY_DEFL_SESSION_KEYRING));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_brk(TBROK | TTERRNO,
 			"failed to set request-key default keyring");
 	}
 
 	TEST(keyctl(KEYCTL_READ, KEY_SPEC_SESSION_KEYRING,
 		    &keyid, sizeof(keyid)));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to read from session keyring");
-	if (TEST_RETURN != 0)
+	if (TST_RET != 0)
 		tst_brk(TBROK, "session keyring is not empty");
 
 	TEST(request_key("user", "desc", "callout_info", 0));
-	if (TEST_RETURN != -1)
+	if (TST_RET != -1)
 		tst_brk(TBROK, "request_key() unexpectedly succeeded");
-	saved_errno = TEST_ERRNO;
+	saved_errno = TST_ERR;
 
 	TEST(keyctl(KEYCTL_READ, KEY_SPEC_SESSION_KEYRING,
 		    &keyid, sizeof(keyid)));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to read from session keyring");
-	if (TEST_RETURN != 0)
+	if (TST_RET != 0)
 		tst_brk(TFAIL, "added key to keyring without permission");
 
-	TEST_ERRNO = saved_errno;
-	if (TEST_ERRNO == EACCES) {
+	TST_ERR = saved_errno;
+	if (TST_ERR == EACCES) {
 		tst_res(TPASS, "request_key() failed with EACCES as expected");
 	} else {
 		tst_res(TBROK | TTERRNO,

@@ -94,10 +94,10 @@ void verify_inotify(void)
 
 	tst_res(TINFO, "umount %s", tst_device->dev);
 	TEST(tst_umount(mntpoint));
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_brk(TBROK, "umount(2) Failed "
 			"while unmounting errno = %d : %s",
-			TEST_ERRNO, strerror(TEST_ERRNO));
+			TST_ERR, strerror(TST_ERR));
 	}
 	mount_flag = 0;
 
@@ -192,7 +192,7 @@ static void cleanup(void)
 
 	if (mount_flag) {
 		TEST(tst_umount(mntpoint));
-		if (TEST_RETURN != 0)
+		if (TST_RET != 0)
 			tst_res(TWARN | TTERRNO, "umount(%s) failed",
 				mntpoint);
 	}

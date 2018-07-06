@@ -34,13 +34,13 @@ static void verify_setrlimit(void)
 	pid = SAFE_FORK();
 	if (!pid) {
 		TEST(setrlimit(RLIMIT_NOFILE, (void *) -1));
-		if (TEST_RETURN != -1) {
+		if (TST_RET != -1) {
 			tst_res(TFAIL, "setrlimit()  succeeded unexpectedly");
 			exit(0);
 		}
 
 		/* Usually, setrlimit() should return EFAULT */
-		if (TEST_ERRNO == EFAULT) {
+		if (TST_ERR == EFAULT) {
 			tst_res(TPASS | TTERRNO,
 				"setrlimit() failed as expected");
 		} else {

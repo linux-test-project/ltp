@@ -36,7 +36,7 @@ static void verify_setuid(void)
 	UID16_CHECK(uid, setuid);
 
 	TEST(SETUID(uid));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO, "setuid(%d) failed", uid);
 	else
 		tst_res(TPASS, "setuid(%d) successfully", uid);

@@ -39,7 +39,7 @@ static void verify_msgctl(void)
 
 	TEST(msgctl(msg_id, IPC_SET, &buf));
 
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO, "msgctl(IPC_SET) failed");
 		return;
 	}

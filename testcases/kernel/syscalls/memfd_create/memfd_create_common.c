@@ -129,8 +129,8 @@ int mfd_flags_available(const char *filename, const int lineno,
 		unsigned int flags)
 {
 	TEST(sys_memfd_create("dummy_call", flags));
-	if (TEST_RETURN < 0) {
-		if (TEST_ERRNO != EINVAL) {
+	if (TST_RET < 0) {
+		if (TST_ERR != EINVAL) {
 			tst_brk_(filename, lineno, TBROK | TTERRNO,
 					"memfd_create() failed");
 		}
@@ -138,7 +138,7 @@ int mfd_flags_available(const char *filename, const int lineno,
 		return 0;
 	}
 
-	SAFE_CLOSE(TEST_RETURN);
+	SAFE_CLOSE(TST_RET);
 
 	return 1;
 }
@@ -377,8 +377,8 @@ void check_mfd_non_writeable(const char *filename, const int lineno,
 
 	/* verify write() fails */
 	TEST(write(fd, "data", 4));
-	if (TEST_RETURN < 0) {
-		if (TEST_ERRNO != EPERM) {
+	if (TST_RET < 0) {
+		if (TST_ERR != EPERM) {
 			tst_brk_(filename, lineno, TFAIL | TTERRNO,
 				"write() didn't fail as expected");
 		}

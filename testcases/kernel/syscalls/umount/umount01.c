@@ -38,13 +38,13 @@ static void verify_umount(void)
 
 	TEST(umount(MNTPOINT));
 
-	if (TEST_RETURN != 0 && TEST_ERRNO == EBUSY) {
+	if (TST_RET != 0 && TST_ERR == EBUSY) {
 		tst_res(TINFO, "umount() Failed with EBUSY "
 			"possibly some daemon (gvfsd-trash) "
 			"is probing newly mounted dirs");
 	}
 
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO, "umount() Failed");
 		return;
 	}

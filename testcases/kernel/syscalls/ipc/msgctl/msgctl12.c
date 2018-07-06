@@ -45,10 +45,10 @@ static void verify_msgctl(unsigned int i)
 {
 	TEST(msgctl(*tc[i].msg_id,  tc[i].cmd, tc[i].buf));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL,
 			 "msgctl() test %s failed with errno: "
-			 "%d", tc[i].name, TEST_ERRNO);
+			 "%d", tc[i].name, TST_ERR);
 	}
 
 	tst_res(TPASS, "msgctl() test %s succeeded", tc[i].name);

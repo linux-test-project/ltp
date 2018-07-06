@@ -62,14 +62,14 @@ void verify_preadv(unsigned int n)
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 
 	TEST(preadv(fd, rd_iovec, tc->count, tc->offset));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_res(TFAIL | TTERRNO, "Preadv(2) failed");
 		return;
 	}
 
-	if (TEST_RETURN != tc->size) {
+	if (TST_RET != tc->size) {
 		tst_res(TFAIL, "Preadv(2) read %li bytes, expected %zi",
-			 TEST_RETURN, tc->size);
+			 TST_RET, tc->size);
 		return;
 	}
 

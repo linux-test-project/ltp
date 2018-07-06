@@ -52,13 +52,13 @@ static void verify_unlink(unsigned int n)
 	struct test_case_t *tc = &tcases[n];
 
 	TEST(unlink(tc->name));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "unlink(<%s>) succeeded unexpectedly",
 			tc->desc);
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_errno) {
+	if (TST_ERR == tc->exp_errno) {
 		tst_res(TPASS | TTERRNO, "unlink(<%s>) failed as expected",
 			tc->desc);
 	} else {

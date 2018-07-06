@@ -68,12 +68,12 @@ static void cleanup(void)
 static void verify_sendto(void)
 {
 	TEST(sendto(sockfd, NULL, 1, 0, (struct sockaddr *) &sa, sizeof(sa)));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "sendto(fd, NULL, ...) succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == EFAULT) {
+	if (TST_ERR == EFAULT) {
 		tst_res(TPASS | TTERRNO,
 			"sendto(fd, NULL, ...) failed expectedly");
 		return;

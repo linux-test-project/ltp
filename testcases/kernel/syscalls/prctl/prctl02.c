@@ -30,12 +30,12 @@ static void verify_prctl(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TEST(prctl(tc->option, tc->arg2));
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TFAIL, "prctl() succeeded unexpectedly");
 		return;
 	}
 
-	if (tc->exp_errno == TEST_ERRNO) {
+	if (tc->exp_errno == TST_ERR) {
 		tst_res(TPASS | TTERRNO, "prctl() failed as expected");
 	} else {
 		tst_res(TPASS | TTERRNO, "prctl() failed unexpectedly, expected %s",

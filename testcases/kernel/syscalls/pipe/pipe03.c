@@ -31,13 +31,13 @@ static void verify_pipe(void)
 	char buf[2];
 
 	TEST(pipe(fd));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "pipe() failed unexpectedly");
 		return;
 	}
 
 	TEST(write(fd[0], "A", 1));
-	if (TEST_RETURN == -1 && errno == EBADF) {
+	if (TST_RET == -1 && errno == EBADF) {
 		tst_res(TPASS | TTERRNO, "expected failure writing "
 			"to read end of pipe");
 	} else {
@@ -46,7 +46,7 @@ static void verify_pipe(void)
 	}
 
 	TEST(read(fd[1], buf, 1));
-	if (TEST_RETURN == -1 && errno == EBADF) {
+	if (TST_RET == -1 && errno == EBADF) {
 		tst_res(TPASS | TTERRNO, "expected failure reading "
 			"from write end of pipe");
 	} else {

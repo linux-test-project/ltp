@@ -140,7 +140,7 @@ static void test_advice_willneed(void)
 	tst_res(TINFO, "SwapCached (before madvise): %ld", swapcached_start);
 
 	TEST(madvise(target, CHUNK_SZ, MADV_WILLNEED));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_brk(TBROK | TERRNO, "madvise failed");
 
 	do {

@@ -28,7 +28,7 @@ static void verify_pwrite(void)
 {
 	TEST(pwrite(fd, NULL, 0, 0));
 
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO,
 			"pwrite() should have succeeded with ret=0");
 		return;

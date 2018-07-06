@@ -94,13 +94,13 @@ static void verify_rmdir(unsigned int n)
 
 	TEST(rmdir(tc->dir));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "rmdir() succeeded unexpectedly (%li)",
-			TEST_RETURN);
+			TST_RET);
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_errno) {
+	if (TST_ERR == tc->exp_errno) {
 		tst_res(TPASS | TTERRNO, "rmdir() failed as expected");
 		return;
 	}

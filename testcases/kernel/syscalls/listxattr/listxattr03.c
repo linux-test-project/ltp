@@ -57,12 +57,12 @@ static void verify_listxattr(unsigned int n)
 	const char *name = filename[n];
 
 	TEST(listxattr(name, NULL, 0));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "listxattr() failed");
 		return;
 	}
 
-	if (check_suitable_buf(name, TEST_RETURN))
+	if (check_suitable_buf(name, TST_RET))
 		tst_res(TPASS, "listxattr() succeed with suitable buffer");
 	else
 		tst_res(TFAIL, "listxattr() failed with small buffer");

@@ -56,7 +56,7 @@ static void verify_socketpair(unsigned int n)
 
 	TEST(socketpair(PF_UNIX, tc->type, 0, fds));
 
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_brk(TFAIL | TTERRNO, "socketpair() failed");
 
 	for (i = 0; i < 2; i++) {

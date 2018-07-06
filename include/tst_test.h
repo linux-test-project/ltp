@@ -195,6 +195,13 @@ void tst_reinit(void);
 extern long TEST_RETURN;
 extern int TEST_ERRNO;
 
+/* 
+ * This is a temporary workaround. Remove this and rename the variables in the
+ * definition above after everything has been migrated to the new test library.
+ */
+#define TST_RET TEST_RETURN
+#define TST_ERR TEST_ERRNO
+
 extern void *TST_RET_PTR;
 
 #define TESTPTR(SCALL) \

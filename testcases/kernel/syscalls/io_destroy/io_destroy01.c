@@ -40,18 +40,18 @@ static void verify_io_destroy(void)
 	memset(&ctx, 0xff, sizeof(ctx));
 
 	TEST(io_destroy(ctx));
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TFAIL, "io_destroy() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_RETURN == -EINVAL) {
+	if (TST_RET == -EINVAL) {
 		tst_res(TPASS,
 			"io_destroy() failed as expected, returned -EINVAL");
 	} else {
 		tst_res(TFAIL, "io_destroy() failed unexpectedly, "
 			"returned -%s expected -EINVAL",
-			tst_strerrno(-TEST_RETURN));
+			tst_strerrno(-TST_RET));
 	}
 }
 

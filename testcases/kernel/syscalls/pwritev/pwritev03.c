@@ -65,14 +65,14 @@ static void verify_direct_pwritev(unsigned int n)
 	SAFE_PWRITE(1, fd, initbuf, blksz * 2, 0);
 
 	TEST(pwritev(fd, wr_iovec, tc->count, *tc->offset));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_res(TFAIL | TTERRNO, "pwritev(O_DIRECT) fails");
 		return;
 	}
 
-	if (TEST_RETURN != *tc->size) {
+	if (TST_RET != *tc->size) {
 		tst_res(TFAIL, "pwritev(O_DIRECT) wrote %li bytes, expected %zi",
-			 TEST_RETURN, *tc->size);
+			 TST_RET, *tc->size);
 		return;
 	}
 

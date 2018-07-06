@@ -133,15 +133,15 @@ static void do_test(unsigned int i)
 		}
 	}
 
-	if (TEST_RETURN != tc->exp_ret) {
+	if (TST_RET != tc->exp_ret) {
 		tst_res(TFAIL | TTERRNO, "returned %ld, expected %d,"
-			" expected errno: %s (%d)", TEST_RETURN,
+			" expected errno: %s (%d)", TST_RET,
 			tc->exp_ret, tst_strerrno(tc->exp_err), tc->exp_err);
 		return;
 	}
 
 	tst_res(TPASS, "returned %s (%ld)",
-		tst_strerrno(TEST_RETURN), TEST_RETURN);
+		tst_strerrno(TST_RET), TST_RET);
 }
 
 static struct tst_test test = {

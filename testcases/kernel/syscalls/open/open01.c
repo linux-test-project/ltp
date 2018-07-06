@@ -59,7 +59,7 @@ static void verify_open(unsigned int n)
 	struct stat buf;
 
 	TEST(open(tc->filename, tc->flag, tc->mode));
-	fd = TEST_RETURN;
+	fd = TST_RET;
 	if (fd == -1) {
 		tst_res(TFAIL, "Cannot open a file");
 		return;

@@ -163,7 +163,7 @@ static void verify_quota(unsigned int n)
 	struct t_case *tc = &tcases[n];
 
 	TEST(quotactl(tc->cmd, tst_device->dev, test_id, tc->addr));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "quotactl() failed to %s", tc->des);
 		return;
 	}
