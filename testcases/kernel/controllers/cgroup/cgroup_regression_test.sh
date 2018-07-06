@@ -182,9 +182,9 @@ test_3()
 	fi
 
 	# Run the test for 30 secs
-	mount -t cgroup -o cpu xxx cgroup/
+	mount -t cgroup -o cpu,cpuacct xxx cgroup/
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "Failed to mount cpu subsys"
+		tst_resm TFAIL "Failed to mount cpu,cpuacct subsys"
 		failed=1
 		return
 	fi
@@ -262,18 +262,26 @@ test_5()
 	subsys1=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
 	subsys2=`tail -n 2 /proc/cgroups | head -1 | awk '{ print $1 }'`
 
-	mount -t cgroup -o $subsys1,$subsys2 xxx cgroup/
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "mount $subsys1 and $subsys2 failed"
+	# This test should fail
+	mount -t cgroup -o $subsys1,$subsys2 xxx cgroup/ 2> /dev/null
+	if [ $? -eq 0 ]; then
+		tst_resm TFAIL "mount $subsys1,$subsys2 should fail"
+		umount cgroup/
 		failed=1
 		return
 	fi
 
-	# This 2nd mount should fail
-	mount -t cgroup -o $subsys1 xxx cgroup/ 2> /dev/null
-	if [ $? -eq 0 ]; then
-		tst_resm TFAIL "mount $subsys1 should fail"
-		umount cgroup/
+	# Following two tests should succeed
+	mount -t cgroup -o $subsys1 subsys1 cgroup/
+	if [ $? -ne 0 ]; then
+		tst_resm TFAIL "mount $subsys1 failed"
+		failed=1
+		return
+	fi
+
+	mount -t cgroup -o $subsys2 subsys2 cgroup/
+	if [ $? -ne 0 ]; then
+		tst_resm TFAIL "mount $subsys2 failed"
 		failed=1
 		return
 	fi
@@ -297,6 +305,7 @@ test_5()
 	/bin/kill -SIGTERM $! > /dev/null
 	wait $!
 	rmdir cgroup/0
+	umount cgroup/
 	umount cgroup/
 }
 
