@@ -12,7 +12,7 @@ Where :
 The benchmark will be performed on given device with
 reiserfs and ext2. Then results will be compared.
 
-The relults directory : ./results
+The results directory : ./results
 The comparision *.html and *.txt files in ./results/html
 
 Warning : All info will be erased on device.

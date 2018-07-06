@@ -15,4 +15,4 @@ scheduling behavior when threads has realtime priority.
 pi_test - Test Priority Inheritence.
 
 robust_test - This suite is not proper to exist in PTS, since
-the work of adding Robust Mutex to POSIX is still on going.
+the work of adding Robust Mutex to POSIX is still ongoing.

@@ -82,9 +82,9 @@ directory shows where you are in the test run. When the "Test run
 complete" entry appears in that file, you're done. Verbose log can be
 found at /tmp/kdump.log.
 
-* The test machine would be unavailabe for any other work during the
+* The test machine would be unavailable for any other work during the
 period of the test run.
 
 * System may hang if incorrect partition information is provided for
 dumping, like specifying a partition which does not exist, specifying a
-parition label which does not exist. This is not ltp kdump bug.
+partition label which does not exist. This is not ltp kdump bug.
