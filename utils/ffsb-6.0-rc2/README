@@ -59,7 +59,7 @@ filesystems), num_threadgroups (number of threadgroups), and time
 directio   - each call to open will be made using O_DIRECT
 alignio    - aligns all block operations for random reads and writes
              on 4k boundaries.
-bufferedio - currently ignorred: it is intended to use libc
+bufferedio - currently ignored: it is intended to use libc
              fread,rwrite, instead of just unix read and write calls
 verbose    - currently ignored
 
@@ -136,7 +136,7 @@ reads  - read() calls with an overall amount and a blocksize
 
 	 If random_read is specified, then the each individual blocks
          will be read starting from a random point with the file, and
-         this will continune until the entire amount specifed has been
+         this will continue until the entire amount specified has been
          read.  This offset of each random block will be totally
          random to the byte level, unless the "alignio" global parameter
          is on, and then the reads will be 4096 byte aligned.  This is
@@ -156,7 +156,7 @@ writes - write() calls with an overall amount and blocksize
 
 	 If random_write is specified, then the each individual blocks
          will be written starting from a random point with the file, and
-         this will continune until the entire amount specifed has been
+         this will continue until the entire amount specified has been
          written out.  This offset of each random block will be totally
          random to the byte level, unless the "alignio" global parameter
          is on, and then the writes will be 4096 byte aligned.  This
@@ -195,7 +195,7 @@ Running the benchmark:
 There are three phases to running the benchmark, aging, fileset
 creates, and the benchmark phase.
 
-The create phase is carried out across all filesystems simultanously
+The create phase is carried out across all filesystems simultaneously
 with one dedicated thread per filesystem.
 
 After the create phase, sync() is called to ensure all dirty data gets
