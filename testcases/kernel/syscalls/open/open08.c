@@ -44,8 +44,8 @@
  *	   open(2) should fail with EACCES.
  *
  *	6. Attempt to pass an invalid pathname with an address pointing outside
- *	   the address space of the process, as the argument to open(), and
- *	   expect to get EFAULT.
+ *	   the accessible address space of the process, as the argument to open(),
+ *	   and expect to get EFAULT.
  */
 
 #define _GNU_SOURCE		/* for O_DIRECTORY */
@@ -58,6 +58,7 @@
 #include <signal.h>
 #include <pwd.h>
 #include "tst_test.h"
+#include "tst_get_bad_addr.h"
 
 static char *existing_fname = "open08_testfile";
 static char *toolong_fname = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
@@ -101,17 +102,6 @@ void verify_open(unsigned int i)
 	}
 }
 
-static void *get_invalid_addr(void)
-{
-	char *bad_addr;
-	int len = 2 * 1024 * 1024;
-
-	bad_addr = SAFE_MMAP(0, len, PROT_READ|PROT_WRITE,
-		MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	SAFE_MUNMAP(bad_addr, len);
-	return bad_addr + len/2;
-}
-
 static void setup(void)
 {
 	int fildes;
@@ -130,7 +120,7 @@ static void setup(void)
 	fildes = SAFE_CREAT(existing_fname, 0600);
 	close(fildes);
 
-	unmapped_fname = get_invalid_addr();
+	unmapped_fname = tst_get_bad_addr(NULL);
 }
 
 static struct tst_test test = {
