@@ -32,6 +32,7 @@ TST_TESTFUNC=do_test
 TST_POS_ARGS=3
 TST_USAGE=usage
 TST_NEEDS_ROOT=1
+TST_NEEDS_CMDS="killall"
 
 . tst_test.sh
 
