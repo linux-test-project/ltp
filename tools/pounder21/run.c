@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
 		retcode = process_dir(argv[1]);
 	} else {
 		if (is_executable(argv[1])) {
-			c = rindex(argv[1], '/');
+			c = strrchr(argv[1], '/');
 			c++;
 
 			// Start the test
@@ -495,7 +495,7 @@ static pid_t spawn_test(char *fname)
 			 getenv("POUNDER_LOGDIR"), fname);
 
 		fd = strlen(buf2);
-		for (tmp = (index(buf2, '|') - buf2); tmp < fd; tmp++) {
+		for (tmp = (strchr(buf2, '|') - buf2); tmp < fd; tmp++) {
 			if (buf2[tmp] == '/') {
 				buf2[tmp] = '-';
 			} else if (buf2[tmp] == '|') {
@@ -541,7 +541,7 @@ static pid_t spawn_test(char *fname)
 		snprintf(buf2, TEST_PATH_LEN, "%s/%s", buf, fname);
 
 		// find the location of the last slash
-		last_slash = rindex(buf2, '/');
+		last_slash = strrchr(buf2, '/');
 
 		if (last_slash != NULL) {
 			// copy the filename part into a new buffer

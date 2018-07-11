@@ -78,14 +78,14 @@ int main(int argc, char *argv[])
 	out = stdout;
 
 	if (use_max_failures) {
-		progname = rindex(argv[3], '/');
+		progname = strrchr(argv[3], '/');
 		if (progname == NULL) {
 			progname = argv[3];
 		} else {
 			progname++;
 		}
 	} else {
-		progname = rindex(argv[1], '/');
+		progname = strrchr(argv[1], '/');
 		if (progname == NULL) {
 			progname = argv[1];
 		} else {
