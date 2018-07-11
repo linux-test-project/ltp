@@ -83,6 +83,7 @@ create_subgroup()
 setup()
 {
     tst_require_root
+    tst_check_cmds killall
 
     if [ ! -f /proc/cgroups ]; then
         tst_brkm TCONF "Kernel does not support for control groups"
