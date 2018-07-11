@@ -22,9 +22,8 @@
 echo "Running in:"
 #rm -f print_caps
 #cp $LTPROOT/testcases/bin/print_caps .
-#FIFOFILE="$LTPROOT/testcases/bin/caps_fifo"
-TMP=${TMP:=/tmp}
-FIFOFILE="$TMP/caps_fifo"
+FIFOFILE="${TMPDIR:=/tmp}/caps_fifo"
+export FIFOFILE
 rm -f $FIFOFILE
 mkfifo $FIFOFILE
 chmod 777 $FIFOFILE

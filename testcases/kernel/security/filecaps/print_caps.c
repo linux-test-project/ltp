@@ -37,7 +37,7 @@
 #include <sys/capability.h>
 #endif
 
-#define FIFOFILE "/tmp/caps_fifo"
+#include "filecaps_common.h"
 
 int main(int argc, char *argv[])
 {
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	fd = open(FIFOFILE, O_WRONLY);
+	fd = open(get_caps_fifo(), O_WRONLY);
 	if (!fd) {
 		perror("print_caps: open fifo");
 		exit(2);

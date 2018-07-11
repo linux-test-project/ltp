@@ -43,6 +43,7 @@
 #endif
 #include <sys/prctl.h>
 #include "test.h"
+#include "filecaps_common.h"
 
 #define TSTPATH "print_caps"
 char *TCID = "filecaps";
@@ -119,22 +120,21 @@ static int perms_test(void)
 	return ret;
 }
 
-#define FIFOFILE "/tmp/caps_fifo"
 static void create_fifo(void)
 {
 	int ret;
 
-	ret = mkfifo(FIFOFILE, S_IRWXU | S_IRWXG | S_IRWXO);
+	ret = mkfifo(get_caps_fifo(), S_IRWXU | S_IRWXG | S_IRWXO);
 	if (ret == -1 && errno != EEXIST)
 		tst_brkm(TFAIL | TERRNO, NULL, "failed creating %s\n",
-			 FIFOFILE);
+			 get_caps_fifo());
 }
 
 static void write_to_fifo(const char *buf)
 {
 	int fd;
 
-	fd = open(FIFOFILE, O_WRONLY);
+	fd = open(get_caps_fifo(), O_WRONLY);
 	write(fd, buf, strlen(buf));
 	close(fd);
 }
@@ -144,7 +144,7 @@ static void read_from_fifo(char *buf)
 	int fd;
 
 	memset(buf, 0, 200);
-	fd = open(FIFOFILE, O_RDONLY);
+	fd = open(get_caps_fifo(), O_RDONLY);
 	if (fd < 0)
 		tst_brkm(TFAIL | TERRNO, NULL, "Failed opening fifo\n");
 	read(fd, buf, 199);
