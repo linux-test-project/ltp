@@ -34,6 +34,9 @@ if [ $? -ne 0 ]; then
 	tst_brkm TBROK "getconf PAGESIZE failed"
 fi
 
+# Check for dependencies
+tst_check_cmds killall
+
 # Post 4.16 kernel updates stat in batch (> 32 pages) every time
 PAGESIZES=$(( $PAGESIZE * 33 ))
 
