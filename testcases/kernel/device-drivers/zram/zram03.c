@@ -40,6 +40,9 @@ char *TCID = "zram03";
 int TST_TOTAL = 1;
 
 #define PATH_ZRAM	"/sys/block/zram0"
+#define OBSOLETE_ZRAM_FILE	"/sys/block/zram0/num_reads"
+#define PATH_ZRAM_STAT	"/sys/block/zram0/stat"
+#define PATH_ZRAM_MM_STAT	"/sys/block/zram0/mm_stat"
 #define SIZE		(512 * 1024 * 1024L)
 #define DEVICE		"/dev/zram0"
 
@@ -182,14 +185,49 @@ static void print(char *string)
 	tst_resm(TINFO, "%s is %s", filename, value);
 }
 
+static void print_stat(char *nread, char *nwrite)
+{
+	char nread_val[BUFSIZ], nwrite_val[BUFSIZ];
+
+	SAFE_FILE_SCANF(cleanup, PATH_ZRAM_STAT, "%s %*s %*s %*s %s",
+			nread_val, nwrite_val);
+	tst_resm(TINFO, "%s from %s is %s", nread, PATH_ZRAM_STAT,
+		 nread_val);
+	tst_resm(TINFO, "%s from %s is %s", nwrite, PATH_ZRAM_STAT,
+		 nwrite_val);
+}
+
+static void print_mm_stat(char *orig, char *compr, char *mem, char *zero)
+{
+	char orig_val[BUFSIZ], compr_val[BUFSIZ];
+	char mem_val[BUFSIZ], zero_val[BUFSIZ];
+
+	SAFE_FILE_SCANF(cleanup, PATH_ZRAM_MM_STAT, "%s %s %s %*s %*s %s",
+			orig_val, compr_val, mem_val, zero_val);
+	tst_resm(TINFO, "%s from %s is %s", orig, PATH_ZRAM_MM_STAT,
+		 orig_val);
+	tst_resm(TINFO, "%s from %s is %s", compr, PATH_ZRAM_MM_STAT,
+		compr_val);
+	tst_resm(TINFO, "%s from %s is %s", mem, PATH_ZRAM_MM_STAT,
+		 mem_val);
+	tst_resm(TINFO, "%s from %s is %s", zero, PATH_ZRAM_MM_STAT,
+		 zero_val);
+}
+
 static void dump_info(void)
 {
 	print("initstate");
-	print("compr_data_size");
-	print("orig_data_size");
 	print("disksize");
-	print("mem_used_total");
-	print("num_reads");
-	print("num_writes");
-	print("zero_pages");
+	if (!access(OBSOLETE_ZRAM_FILE, F_OK)) {
+		print("orig_data_size");
+		print("compr_data_size");
+		print("mem_used_total");
+		print("zero_pages");
+		print("num_reads");
+		print("num_writes");
+	} else {
+		print_mm_stat("orig_data_size", "compr_data_size",
+			      "mem_used_total", "zero/same_pages");
+		print_stat("num_reads", "num_writes");
+	}
 }
