@@ -1734,6 +1734,20 @@ passed directly to the script in '$1', '$2', ..., '$n'.
 2.3.4 Usefull library functions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Retrieving configuration variables
+++++++++++++++++++++++++++++++++++
+
+You may need to retrieve configuration values such as PAGESIZE, there is
+'getconf' but as some system may not have it, you are advised to use
+'tst_getconf' instead. Note that it implements subset of 'getconf'
+system variables used by the testcases only.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# retrieve PAGESIZE
+pagesize=`tst_getconf PAGESIZE`
+-------------------------------------------------------------------------------
+
 Sleeping for subsecond intervals
 ++++++++++++++++++++++++++++++++
 
