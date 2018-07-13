@@ -29,7 +29,7 @@ setup()
 {
 	UUID=`uuidgen`
 
-	PAGE_SIZE=`getconf PAGE_SIZE`
+	PAGE_SIZE=`tst_getconf PAGESIZE`
 
 	# Here get the size of the device and align it down to be the
 	# multiple of $PAGE_SIZE and use that as the size for testing.

@@ -73,7 +73,7 @@ du_test()
 }
 
 block_size=512
-page_size=$(getconf PAGESIZE)
+page_size=$(tst_getconf PAGESIZE)
 if [ "$page_size" -lt 1024 ]; then
 	tst_brk TBROK "Page size < 1024"
 fi

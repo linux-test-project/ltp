@@ -29,9 +29,9 @@ if [ "x$(grep -w memory /proc/cgroups | cut -f4)" != "x1" ]; then
 	tst_brkm TCONF "Kernel does not support the memory resource controller"
 fi
 
-PAGESIZE=$(getconf PAGESIZE)
+PAGESIZE=$(tst_getconf PAGESIZE)
 if [ $? -ne 0 ]; then
-	tst_brkm TBROK "getconf PAGESIZE failed"
+	tst_brkm TBROK "tst_getconf PAGESIZE failed"
 fi
 
 # Check for dependencies

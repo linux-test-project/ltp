@@ -75,7 +75,7 @@ check_for_support_numa()
 setup()
 {
 	export MB=$((1024*1024))
-	export PAGE_SIZE=$(getconf PAGE_SIZE)
+	export PAGE_SIZE=$(tst_getconf PAGESIZE)
 	export HPAGE_SIZE=$(awk '/Hugepagesize:/ {print $2}' /proc/meminfo)
 
 	total_nodes=0

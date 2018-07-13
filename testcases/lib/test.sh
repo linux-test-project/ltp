@@ -421,9 +421,9 @@ fi
 if [ "$TST_NEEDS_CHECKPOINTS" = "1" ]; then
 	LTP_IPC_PATH="/dev/shm/ltp_${TCID}_$$"
 
-	LTP_IPC_SIZE=$(getconf PAGESIZE)
+	LTP_IPC_SIZE=$(tst_getconf PAGESIZE)
 	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "getconf PAGESIZE failed"
+		tst_brkm TBROK "tst_getconf PAGESIZE failed"
 	fi
 
 	ROD_SILENT dd if=/dev/zero of="$LTP_IPC_PATH" bs="$LTP_IPC_SIZE" count=1
