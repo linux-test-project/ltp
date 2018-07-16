@@ -1,0 +1,23 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:65986:65994">
+    The function will compare not more than n bytes from the array pointed to
+    by s1 to the array pointed to by s2. Upon succesful completion, function
+    will return an integer greater than 0, if possibly null-terminated array
+    pointed to by s1 is greater than the possibly null-terminated array
+    pointed to by s2.
+  <assertion>
+  <assertion id="2" tag="ref:XBD7:65986:65994">
+    The function will compare not more than n bytes from the array pointed to
+    by s1 to the array pointed to by s2. Upon succesful completion, function
+    will return an integer equal to 0, if possibly null-terminated array
+    pointed to by s1 is equal to the possibly null-terminated array
+    pointed to by s2.
+  <assertion>
+  <assertion id="3" tag="ref:XBD7:65986:65994">
+    The function will compare not more than n bytes from the array pointed to
+    by s1 to the array pointed to by s2. Upon succesful completion, function
+    will return an integer less than 0, if possibly null-terminated array
+    pointed to by s1 is less than the possibly null-terminated array
+    pointed to by s2.
+  <assertion>
+<assertions>
