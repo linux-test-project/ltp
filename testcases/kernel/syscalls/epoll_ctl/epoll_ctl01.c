@@ -135,7 +135,7 @@ end:
 static void opera_epoll_ctl(int opt, int fd, struct epoll_event *epvs)
 {
 	TEST(epoll_ctl(epfd, opt, fd, epvs));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "epoll_ctl() fails with op %i", opt);
 }
 

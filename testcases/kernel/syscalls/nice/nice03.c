@@ -39,12 +39,12 @@ static void nice_test(void)
 
 	TEST(nice(NICEINC));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "nice(%d) returned -1", NICEINC);
 		return;
 	}
 
-	if (TEST_ERRNO) {
+	if (TST_ERR) {
 		tst_res(TFAIL | TTERRNO, "nice(%d) failed", NICEINC);
 		return;
 	}

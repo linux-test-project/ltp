@@ -87,12 +87,12 @@ static void verify_kcmp(unsigned int n)
 	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
 		  *(test->fd1), *(test->fd2)));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "kcmp() succeeded unexpectedly");
 		return;
 	}
 
-	if (test->exp_errno == TEST_ERRNO) {
+	if (test->exp_errno == TST_ERR) {
 		tst_res(TPASS | TTERRNO, "kcmp() returned the expected value");
 		return;
 	}

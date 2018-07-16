@@ -59,13 +59,13 @@ static void verify_getcwd(unsigned int n)
 
 	errno = 0;
 	res = getcwd(tc->buf, tc->size);
-	TEST_ERRNO = errno;
+	TST_ERR = errno;
 	if (res) {
 		tst_res(TFAIL, "getcwd() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_err) {
+	if (TST_ERR != tc->exp_err) {
 		tst_res(TFAIL | TTERRNO, "getcwd() failed unexpectedly, expected %s",
 			tst_strerrno(tc->exp_err));
 		return;

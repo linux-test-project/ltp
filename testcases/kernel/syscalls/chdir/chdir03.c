@@ -47,12 +47,12 @@ void verify_chdir(void)
 
 		TEST(chdir(DIRNAME));
 
-		if (TEST_RETURN != -1) {
+		if (TST_RET != -1) {
 			tst_res(TFAIL, "chdir() succeeded unexpectedly");
 			return;
 		}
 
-		if (TEST_ERRNO != EACCES) {
+		if (TST_ERR != EACCES) {
 			tst_res(TFAIL | TTERRNO,
 				"chdir() should fail with EACCES");
 			return;

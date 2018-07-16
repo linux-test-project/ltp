@@ -40,15 +40,15 @@ static void verify_write(void)
 
 	for (i = BUFSIZ; i > 0; i--) {
 		TEST(write(fd, buf, i));
-		if (TEST_RETURN == -1) {
+		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO, "write failed");
 			return;
 		}
 
-		if (TEST_RETURN != i) {
+		if (TST_RET != i) {
 			badcount++;
 			tst_res(TINFO, "write() returned %ld, expected %d",
-				TEST_RETURN, i);
+				TST_RET, i);
 		}
 	}
 

@@ -42,12 +42,12 @@ static struct buf {
 static void verify_msgget(void)
 {
 	TEST(msgget(msgkey, IPC_CREAT | MSG_RW));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgget() failed");
 		return;
 	}
 
-	queue_id = TEST_RETURN;
+	queue_id = TST_RET;
 
 	SAFE_MSGSND(queue_id, &snd_buf, MSGSIZE, 0);
 

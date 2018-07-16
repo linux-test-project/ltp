@@ -63,20 +63,20 @@ static void verify_add_key(unsigned int i)
 	TEST(add_key(tcases[i].type,
 		"abc:def", NULL, tcases[i].plen, KEY_SPEC_PROCESS_KEYRING));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL,
 			"add_key() with key type '%s' unexpectedly succeeded",
 			tcases[i].type);
 		return;
 	}
 
-	if (TEST_ERRNO == EFAULT) {
+	if (TST_ERR == EFAULT) {
 		tst_res(TPASS, "received expected EFAULT with key type '%s'",
 			tcases[i].type);
 		return;
 	}
 
-	if (TEST_ERRNO == ENODEV) {
+	if (TST_ERR == ENODEV) {
 		tst_res(TCONF, "kernel doesn't support key type '%s'",
 			tcases[i].type);
 		return;
@@ -87,7 +87,7 @@ static void verify_add_key(unsigned int i)
 	 * no asymmetric key parsers registered.  In that case, attempting to
 	 * add a key of type asymmetric will fail with EBADMSG.
 	 */
-	if (TEST_ERRNO == EBADMSG && !strcmp(tcases[i].type, "asymmetric")) {
+	if (TST_ERR == EBADMSG && !strcmp(tcases[i].type, "asymmetric")) {
 		tst_res(TCONF, "no asymmetric key parsers are registered");
 		return;
 	}

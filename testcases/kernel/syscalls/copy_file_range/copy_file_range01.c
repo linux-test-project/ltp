@@ -176,14 +176,14 @@ static void test_one(size_t len, loff_t *off_in, loff_t *off_out)
 	do {
 		TEST(tst_syscall(__NR_copy_file_range, fd_in, off_in, fd_out,
 			off_out, to_copy, 0));
-		if (TEST_RETURN == -1) {
+		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO, "copy_file_range() failed");
 			SAFE_CLOSE(fd_in);
 			SAFE_CLOSE(fd_out);
 			return;
 		}
 
-		to_copy -= TEST_RETURN;
+		to_copy -= TST_RET;
 	} while (to_copy > 0);
 
 	ret = check_file_content(TEST_FILE_1, TEST_FILE_2,

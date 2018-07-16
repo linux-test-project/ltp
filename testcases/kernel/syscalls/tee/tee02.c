@@ -66,14 +66,14 @@ static void tee_verify(unsigned int n)
 
 	TEST(tee(*(tc->fdin), *(tc->fdout), TEE_TEST_LEN, 0));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "tee() returned %ld, "
-			"expected -1, errno:%d", TEST_RETURN,
+			"expected -1, errno:%d", TST_RET,
 			tc->exp_errno);
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_errno) {
+	if (TST_ERR != tc->exp_errno) {
 		tst_res(TFAIL | TTERRNO,
 			"tee() failed unexpectedly; expected: %d - %s",
 			tc->exp_errno, tst_strerrno(tc->exp_errno));

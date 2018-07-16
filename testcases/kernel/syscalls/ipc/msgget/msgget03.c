@@ -39,10 +39,10 @@ static key_t msgkey;
 static void verify_msgget(void)
 {
 	TEST(msgget(msgkey + maxmsgs, IPC_CREAT | IPC_EXCL));
-	if (TEST_RETURN != -1)
+	if (TST_RET != -1)
 		tst_res(TFAIL, "msgget() succeeded unexpectedly");
 
-	if (TEST_ERRNO == ENOSPC) {
+	if (TST_ERR == ENOSPC) {
 		tst_res(TPASS | TTERRNO, "msgget() failed as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO, "msgget() failed unexpectedly,"

@@ -75,7 +75,7 @@ static void access_test(struct tcase *tc, const char *user)
 
 	TEST(access(tc->pathname, tc->mode));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "access(%s, %s) as %s failed",
 			tc->pathname, tc->name, user);
 		return;
@@ -90,7 +90,7 @@ static void access_test(struct tcase *tc, const char *user)
 		 */
 		TEST(stat(tc->targetname, &stat_buf));
 
-		if (TEST_RETURN == -1) {
+		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO, "stat(%s) as %s failed",
 				tc->targetname, user);
 			return;
@@ -105,14 +105,14 @@ static void access_test(struct tcase *tc, const char *user)
 		 */
 		TEST(open(tc->targetname, O_RDONLY));
 
-		if (TEST_RETURN == -1) {
+		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO,
 				"open %s with O_RDONLY as %s failed",
 				tc->targetname, user);
 			return;
 		}
 
-		SAFE_CLOSE(TEST_RETURN);
+		SAFE_CLOSE(TST_RET);
 
 		break;
 	case W_OK:
@@ -123,14 +123,14 @@ static void access_test(struct tcase *tc, const char *user)
 		 */
 		TEST(open(tc->targetname, O_WRONLY));
 
-		if (TEST_RETURN == -1) {
+		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO,
 				"open %s with O_WRONLY as %s failed",
 				tc->targetname, user);
 			return;
 		}
 
-		SAFE_CLOSE(TEST_RETURN);
+		SAFE_CLOSE(TST_RET);
 
 		break;
 	case X_OK:
@@ -143,7 +143,7 @@ static void access_test(struct tcase *tc, const char *user)
 
 		TEST(system(command));
 
-		if (TEST_RETURN != 0) {
+		if (TST_RET != 0) {
 			tst_res(TFAIL | TTERRNO, "execute %s as %s failed",
 				tc->targetname, user);
 			return;

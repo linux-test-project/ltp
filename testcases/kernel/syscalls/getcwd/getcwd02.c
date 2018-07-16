@@ -83,7 +83,7 @@ static void verify_getcwd(unsigned int n)
 
 	errno = 0;
 	res = getcwd(tc->buf, tc->size);
-	TEST_ERRNO = errno;
+	TST_ERR = errno;
 	if (!res) {
 		tst_res(TFAIL | TTERRNO, "getcwd() failed");
 		goto end;

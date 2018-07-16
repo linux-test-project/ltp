@@ -51,13 +51,13 @@ static void dosetuid(void)
 	int tst_fd;
 
 	TEST(tst_fd = open(FILENAME, O_RDWR));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "open() succeeded unexpectedly");
 		close(tst_fd);
 		return;
 	}
 
-	if (TEST_ERRNO == EACCES)
+	if (TST_ERR == EACCES)
 		tst_res(TPASS, "open() returned errno EACCES");
 	else
 		tst_res(TFAIL | TTERRNO, "open() returned unexpected errno");

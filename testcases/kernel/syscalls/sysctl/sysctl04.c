@@ -59,12 +59,12 @@ static void verify_sysctl(unsigned int n)
 	};
 
 	TEST(tst_syscall(__NR__sysctl, &args));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "sysctl(2) succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_err) {
+	if (TST_ERR == tc->exp_err) {
 		tst_res(TPASS | TTERRNO, "Got expected error");
 	} else {
 		tst_res(TFAIL | TTERRNO, "Got unexpected error, expected %s",

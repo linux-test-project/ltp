@@ -51,14 +51,14 @@ static void verify_fcntl(void)
 {
 	TEST(fcntl(fd, F_GETFD, 0));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "fcntl(%s, F_GETFD, 0) failed",
 			fname);
 		return;
 	}
 
 	tst_res(TPASS, "fcntl(%s, F_GETFD, 0) returned %ld",
-		fname, TEST_RETURN);
+		fname, TST_RET);
 }
 
 static void setup(void)

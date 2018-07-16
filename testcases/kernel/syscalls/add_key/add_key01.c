@@ -32,7 +32,7 @@
 static void verify_add_key(void)
 {
 	TEST(add_key("keyring", "wjkey", NULL, 0, KEY_SPEC_THREAD_KEYRING));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO, "add_key call failed");
 	else
 		tst_res(TPASS, "add_key call succeeded");

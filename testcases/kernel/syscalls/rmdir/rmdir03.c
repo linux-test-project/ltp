@@ -57,13 +57,13 @@ static void do_rmdir(unsigned int n)
 	struct testcase *tc = &tcases[n];
 
 	TEST(rmdir(tc->subdir));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "rmdir() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != EACCES) {
-		if (tc->dir_mode & S_ISVTX && TEST_ERRNO == EPERM)
+	if (TST_ERR != EACCES) {
+		if (tc->dir_mode & S_ISVTX && TST_ERR == EPERM)
 			tst_res(TPASS | TTERRNO, "rmdir() got expected errno");
 		else
 			tst_res(TFAIL | TTERRNO, "expected EPERM, but got");

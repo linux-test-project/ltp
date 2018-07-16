@@ -42,12 +42,12 @@ void verify_fchdir(void)
 {
 	TEST(fchdir(fd));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "fchdir() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != EACCES) {
+	if (TST_ERR != EACCES) {
 		tst_res(TFAIL | TTERRNO, "fchdir() should fail with EACCES");
 		return;
 	}

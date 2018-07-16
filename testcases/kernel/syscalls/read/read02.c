@@ -84,18 +84,18 @@ static void verify_read(unsigned int n)
 
 	TEST(read(*tc->fd, *tc->buf, tc->count));
 
-	if (*tc->fd == fd4 && TEST_RETURN >= 0) {
+	if (*tc->fd == fd4 && TST_RET >= 0) {
 		tst_res(TPASS,
 			"O_DIRECT unaligned reads fallbacks to buffered I/O");
 		return;
 	}
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "read() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_error) {
+	if (TST_ERR == tc->exp_error) {
 		tst_res(TPASS | TTERRNO, "read() failed as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO, "read() failed unexpectedly, "

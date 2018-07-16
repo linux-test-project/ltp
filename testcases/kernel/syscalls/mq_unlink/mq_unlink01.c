@@ -104,12 +104,12 @@ static void do_test(unsigned int i)
 
 	/* test */
 	TEST(mq_unlink(tc->qname));
-	if (TEST_ERRNO != tc->err || TEST_RETURN != tc->ret) {
+	if (TST_ERR != tc->err || TST_RET != tc->ret) {
 		tst_res(TFAIL | TTERRNO, "mq_unlink returned %ld, expected %d,"
-			" expected errno %s (%d)", TEST_RETURN,
+			" expected errno %s (%d)", TST_RET,
 			tc->ret, tst_strerrno(tc->err), tc->err);
 	} else {
-		tst_res(TPASS | TTERRNO, "mq_unlink returned %ld", TEST_RETURN);
+		tst_res(TPASS | TTERRNO, "mq_unlink returned %ld", TST_RET);
 	}
 
 EXIT:

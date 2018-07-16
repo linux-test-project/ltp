@@ -93,7 +93,7 @@ static void utimes_verify(unsigned int i)
 
 	TEST(utimes(tc->pathname, tc->times));
 
-	if (TEST_ERRNO == tc->exp_errno) {
+	if (TST_ERR == tc->exp_errno) {
 		tst_res(TPASS | TTERRNO, "utimes() worked as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO,
@@ -101,7 +101,7 @@ static void utimes_verify(unsigned int i)
 			tc->exp_errno, tst_strerrno(tc->exp_errno));
 	}
 
-	if (TEST_ERRNO == 0 && utimes(tc->pathname, tmp_tv) == -1)
+	if (TST_ERR == 0 && utimes(tc->pathname, tmp_tv) == -1)
 		tst_brk(TBROK | TERRNO, "utimes() failed.");
 }
 

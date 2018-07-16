@@ -76,17 +76,17 @@ static void verify_readlink(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TEST(readlink(tc->link, tc->buf, tc->buf_size));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "readlink() sueeeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_errno) {
+	if (TST_ERR != tc->exp_errno) {
 		tst_res(TFAIL | TTERRNO,
 			"readlink() failed unexpectedly; expected: %d - %s, got",
 			tc->exp_errno, tst_strerrno(tc->exp_errno));
 
-		if (tc->exp_errno == ENOENT && TEST_ERRNO == EINVAL) {
+		if (tc->exp_errno == ENOENT && TST_ERR == EINVAL) {
 			tst_res(TWARN | TTERRNO,
 				"It may be a Kernel Bug, see the patch:"
 				"http://git.kernel.org/linus/1fa1e7f6");

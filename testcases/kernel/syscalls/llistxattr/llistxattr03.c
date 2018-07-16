@@ -56,12 +56,12 @@ static void verify_llistxattr(unsigned int n)
 	const char *name = filename[n];
 
 	TEST(llistxattr(name, NULL, 0));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "llistxattr() failed");
 		return;
 	}
 
-	if (check_suitable_buf(name, TEST_RETURN))
+	if (check_suitable_buf(name, TST_RET))
 		tst_res(TPASS, "llistxattr() succeed with suitable buffer");
 	else
 		tst_res(TFAIL, "llistxattr() failed with small buffer");

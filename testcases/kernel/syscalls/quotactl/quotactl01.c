@@ -191,7 +191,7 @@ static void verify_quota(unsigned int n)
 	fmt_buf = 0;
 
 	TEST(quotactl(tc->cmd, tst_device->dev, *tc->id, tc->addr));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "quotactl failed to %s", tc->des);
 		return;
 	}

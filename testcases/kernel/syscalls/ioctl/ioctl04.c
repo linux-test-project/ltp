@@ -52,13 +52,13 @@ static void verify_ioctl(void)
 
 	TEST(mount(tst_device->dev, "mntpoint", tst_device->fs_type, 0, NULL));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "Mounting RO device RW succeeded");
 		tst_umount("mntpoint");
 		goto next;
 	}
 
-	if (TEST_ERRNO == EACCES) {
+	if (TST_ERR == EACCES) {
 		tst_res(TPASS | TERRNO, "Mounting RO device RW failed");
 		goto next;
 	}
@@ -69,7 +69,7 @@ static void verify_ioctl(void)
 next:
 	TEST(mount(tst_device->dev, "mntpoint", tst_device->fs_type, MS_RDONLY, NULL));
 
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TPASS, "Mounting RO device RO works");
 		tst_umount("mntpoint");
 	} else {

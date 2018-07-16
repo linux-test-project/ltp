@@ -73,17 +73,17 @@ static void verify_lgetxattr(void)
 	char buf[size];
 
 	TEST(lgetxattr("symlink", SECURITY_KEY2, buf, size));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "lgetxattr() failed");
 		goto next;
 	}
 
-	if (TEST_RETURN != strlen(VALUE2)) {
+	if (TST_RET != strlen(VALUE2)) {
 		tst_res(TFAIL, "lgetxattr() got unexpected value size");
 		goto next;
 	}
 
-	if (!strncmp(buf, VALUE2, TEST_RETURN))
+	if (!strncmp(buf, VALUE2, TST_RET))
 		tst_res(TPASS, "lgetxattr() got expected value");
 	else
 		tst_res(TFAIL, "lgetxattr() got unexpected value");
@@ -91,12 +91,12 @@ static void verify_lgetxattr(void)
 next:
 	TEST(lgetxattr("symlink", SECURITY_KEY1, buf, size));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "lgetxattr() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == ENODATA) {
+	if (TST_ERR == ENODATA) {
 		tst_res(TPASS | TTERRNO, "lgetxattr() failed as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO, "lgetxattr() failed unexpectedly,"

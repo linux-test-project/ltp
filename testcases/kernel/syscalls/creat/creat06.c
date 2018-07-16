@@ -109,12 +109,12 @@ static void verify_creat(unsigned int i)
 	if (tcases[i].cleanup != NULL)
 		tcases[i].cleanup();
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tcases[i].error) {
+	if (TST_ERR == tcases[i].error) {
 		tst_res(TPASS | TTERRNO, "got expected failure");
 		return;
 	}

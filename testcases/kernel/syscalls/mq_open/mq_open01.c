@@ -261,36 +261,36 @@ static void do_test(unsigned int i)
 	}
 
 	if (tc->ret == 0) {
-		if (TEST_RETURN < 0) {
+		if (TST_RET < 0) {
 			tst_res(TFAIL | TTERRNO, "%s wrong return code: %ld",
-				tc->desc, TEST_RETURN);
+				tc->desc, TST_RET);
 		} else {
 			tst_res(TPASS | TTERRNO, "%s returned: %ld",
-				tc->desc, TEST_RETURN);
+				tc->desc, TST_RET);
 		}
 
 		goto CLEANUP;
 	}
 
-	if (TEST_ERRNO != tc->err) {
+	if (TST_ERR != tc->err) {
 		tst_res(TFAIL | TTERRNO, "%s expected errno: %d",
-			tc->desc, TEST_ERRNO);
+			tc->desc, TST_ERR);
 		goto CLEANUP;
 	}
 
-	if (TEST_RETURN != tc->ret) {
+	if (TST_RET != tc->ret) {
 		tst_res(TFAIL | TTERRNO, "%s wrong return code: %ld",
-			tc->desc, TEST_RETURN);
+			tc->desc, TST_RET);
 	} else {
 		tst_res(TPASS | TTERRNO, "%s returned: %ld",
-			tc->desc, TEST_RETURN);
+			tc->desc, TST_RET);
 	}
 
 CLEANUP:
 	if (tc->cleanup)
 		tc->cleanup();
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		if (fd > 0)
 			SAFE_CLOSE(fd);
 		mq_unlink(qname);

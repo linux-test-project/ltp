@@ -39,15 +39,15 @@ static void verify_umask(void)
 
 	for (mskval = 0000; mskval < 01000; mskval++) {
 		TEST(umask(mskval));
-		if (TEST_RETURN < 0 || TEST_RETURN > 0777) {
+		if (TST_RET < 0 || TST_RET > 0777) {
 			tst_brk(TFAIL, "umask(%o) result outside range %ld",
-				mskval, TEST_RETURN);
+				mskval, TST_RET);
 		}
 
-		if (mskval > 0000 && TEST_RETURN != mskval - 1) {
+		if (mskval > 0000 && TST_RET != mskval - 1) {
 			failflag = 1;
 			tst_res(TFAIL, "umask(%o) returned %ld, expected %d",
-				mskval, TEST_RETURN, mskval - 1);
+				mskval, TST_RET, mskval - 1);
 		}
 
 		fd = SAFE_CREAT("testfile", 0777);

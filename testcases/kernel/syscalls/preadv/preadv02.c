@@ -88,12 +88,12 @@ static void verify_preadv(unsigned int n)
 
 	TEST(preadv(*tc->fd, tc->name, tc->count, tc->offset));
 
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TFAIL, "preadv() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_err) {
+	if (TST_ERR == tc->exp_err) {
 		tst_res(TPASS | TTERRNO, "preadv() failed as expected");
 		return;
 	}

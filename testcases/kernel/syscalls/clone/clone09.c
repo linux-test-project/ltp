@@ -56,13 +56,13 @@ static long clone_child(void)
 {
 	TEST(ltp_clone(flags, newnet, NULL, CHILD_STACK_SIZE, child_stack));
 
-	if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL)
+	if (TST_RET == -1 && TST_ERR == EINVAL)
 		tst_brk(TCONF, "CONFIG_NET_NS was disabled");
 
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "clone(CLONE_NEWNET) failed");
 
-	return TEST_RETURN;
+	return TST_RET;
 }
 
 static void do_test(void)

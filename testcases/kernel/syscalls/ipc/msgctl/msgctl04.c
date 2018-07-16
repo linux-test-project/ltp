@@ -62,12 +62,12 @@ static void verify_msgctl(unsigned int i)
 {
 	TEST(msgctl(*(tc[i].msg_id), tc[i].cmd, tc[i].buf));
 
-	if (TEST_RETURN != -1) {
-		tst_res(TFAIL, "msgctl() returned %li", TEST_RETURN);
+	if (TST_RET != -1) {
+		tst_res(TFAIL, "msgctl() returned %li", TST_RET);
 		return;
 	}
 
-	if (TEST_ERRNO == tc[i].error) {
+	if (TST_ERR == tc[i].error) {
 		tst_res(TPASS | TTERRNO, "msgctl(%i, %i, %p)",
 			*tc[i].msg_id, tc[i].cmd, tc[i].buf);
 		return;

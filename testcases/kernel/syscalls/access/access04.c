@@ -72,12 +72,12 @@ static void access_test(struct tcase *tc, const char *user)
 {
 	TEST(access(tc->pathname, tc->mode));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "access as %s succeeded unexpectedly", user);
 		return;
 	}
 
-	if (tc->exp_errno != TEST_ERRNO) {
+	if (tc->exp_errno != TST_ERR) {
 		tst_res(TFAIL | TTERRNO,
 			"access as %s should fail with %s",
 			user, tst_strerrno(tc->exp_errno));

@@ -28,7 +28,7 @@ static void verify_write(void)
 {
 	TEST(write(fd, NULL, 0));
 
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO,
 			"write() should have succeeded with ret=0");
 		return;

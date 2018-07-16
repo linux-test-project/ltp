@@ -62,7 +62,7 @@ static void verify_llistxattr(void)
 	char buf[64];
 
 	TEST(llistxattr(SYMLINK, buf, sizeof(buf)));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "llistxattr() failed");
 		return;
 	}

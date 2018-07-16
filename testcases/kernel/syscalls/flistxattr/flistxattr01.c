@@ -62,7 +62,7 @@ static void verify_flistxattr(void)
 	char buf[64];
 
 	TEST(flistxattr(fd, buf, sizeof(buf)));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "flistxattr() failed");
 		return;
 	}
