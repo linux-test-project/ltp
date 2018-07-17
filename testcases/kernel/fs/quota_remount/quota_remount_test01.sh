@@ -58,6 +58,16 @@ if [ ! -d /proc/sys/fs/quota ]; then
         exit 0
 fi
 
+if ! command -v quotacheck > /dev/null 2>&1; then
+	tst_resm TCONF "'quotacheck' not found"
+	exit 0
+fi
+
+if ! command -v quotaon > /dev/null 2>&1; then
+	tst_resm TCONF "'quotaon' not found"
+	exit 0
+fi
+
 die()
 {
 	echo >&2 $2
