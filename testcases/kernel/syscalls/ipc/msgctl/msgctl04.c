@@ -96,13 +96,13 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (msg_id1 > 0)
+	if (msg_id1 >= 0)
 		SAFE_MSGCTL(msg_id1, IPC_RMID, NULL);
 
-	if (msg_id2 > 0)
+	if (msg_id2 >= 0)
 		SAFE_MSGCTL(msg_id2, IPC_RMID, NULL);
 
-	if (msg_id3 > 0) {
+	if (msg_id3 >= 0) {
 		SAFE_SETEUID(0);
 		SAFE_MSGCTL(msg_id3, IPC_RMID, NULL);
 	}

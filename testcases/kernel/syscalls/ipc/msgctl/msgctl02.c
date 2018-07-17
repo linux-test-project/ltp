@@ -72,7 +72,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (msg_id > 0)
+	if (msg_id >= 0)
 		SAFE_MSGCTL(msg_id, IPC_RMID, NULL);
 }
 

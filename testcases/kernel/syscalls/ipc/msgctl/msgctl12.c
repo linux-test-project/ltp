@@ -25,7 +25,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
-static int msg_q;
+static int msg_q = -1;
 static int index_q;
 static struct msginfo msginfo_buf;
 static struct msqid_ds msgqid_buf;
@@ -62,7 +62,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (msg_q > 0)
+	if (msg_q >= 0)
 		SAFE_MSGCTL(msg_q, IPC_RMID, NULL);
 }
 
