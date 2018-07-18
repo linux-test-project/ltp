@@ -108,12 +108,18 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 		tst_brkm TBROK "SAR output file is empty"
 	fi
 
-	for i in $(seq 3 8); do
-		field=$(get_field "$offline_status" "$i")
-		if [ "$field" != "0.00" ]; then
-			tst_brkm TBROK "Field $i is '$field', '0.00' expected"
-		fi
-	done
+	cpu_field=$(get_field "$offline_status" "2")
+	if [ "${cpu_field}" = "CPU" ]; then
+		# Since sysstat-11.7.1, sar/sadf didn't display offline CPU
+		tst_resm TINFO "SAR didn't display offline CPU"
+	else
+		for i in $(seq 3 8); do
+			field=$(get_field "$offline_status" "$i")
+			if [ "$field" != "0.00" ]; then
+				tst_brkm TBROK "Field $i is '$field', '0.00' expected"
+			fi
+		done
+	fi
 
 	# Online the CPU
 	if ! online_cpu ${CPU_TO_TEST}; then
