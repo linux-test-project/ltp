@@ -1,0 +1,10 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:28732:28732">
+    The feof function shall test the end-of-file indicator for the stream
+    pointed to by argument and the function shall return non-zero if and
+    only if the end-of-file indicator is set for stream.
+  </assertion>
+  <assertion id="2" tag="ref:XBD7:28733:28733">
+    If the stream is valid, feof function shall not change the setting of errno.
+  </assertion>
+</assertions>
