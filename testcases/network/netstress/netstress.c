@@ -837,6 +837,8 @@ static void set_protocol_type(void)
 		proto_type = TYPE_DCCP;
 	else if (!strcmp(type, "sctp"))
 		proto_type = TYPE_SCTP;
+	else
+		tst_brk(TBROK, "Invalid proto_type: '%s'", type);
 }
 
 static void setup(void)
