@@ -1,0 +1,13 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:66022:66030">
+    The function will copy not more than n bytes (bytes that follow a NUL
+    character are not copied) from the array pointed to by s1 to the array
+    pointed to by s2. And it will return s2.
+  <assertion>
+  <assertion id="2" tag="ref:XBD7:66024:66025">
+    If the array pointed to by s1 is a string that is shorter than n bytes,
+    NUL characters willl be appended to the copy in the array pointed to
+    by s2, until n bytes in all are written.
+  <assertion>
+<assertions>
+
