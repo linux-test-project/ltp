@@ -100,7 +100,7 @@ static int has_kernel_support(const char *fs_type)
 	return 1;
 }
 
-static int is_supported(const char *fs_type)
+int tst_fs_is_supported(const char *fs_type)
 {
 	return has_kernel_support(fs_type) && has_mkfs(fs_type);
 }
@@ -110,7 +110,7 @@ const char **tst_get_supported_fs_types(void)
 	unsigned int i, j = 0;
 
 	for (i = 0; fs_type_whitelist[i]; i++) {
-		if (is_supported(fs_type_whitelist[i]))
+		if (tst_fs_is_supported(fs_type_whitelist[i]))
 			fs_types[j++] = fs_type_whitelist[i];
 	}
 

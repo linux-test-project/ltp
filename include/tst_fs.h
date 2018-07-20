@@ -147,6 +147,12 @@ int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 
 /*
+ * Return 1 if a specified fiilsystem is supported
+ * Return 0 if a specified fiilsystem isn't supported
+ */
+int tst_fs_is_supported(const char *fs_type);
+
+/*
  * Returns NULL-terminated array of kernel-supported filesystems.
  */
 const char **tst_get_supported_fs_types(void);
