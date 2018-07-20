@@ -195,11 +195,11 @@ zram_swapoff()
 
 zram_makefs()
 {
-	tst_check_cmds mkfs which
+	tst_check_cmds mkfs
 	local i=0
 	for fs in $zram_filesystems; do
 		# if requested fs not supported default it to ext2
-		which mkfs.$fs > /dev/null 2>&1 || fs=ext2
+		tst_supported_fs $fs 2> /dev/null || fs=ext2
 
 		tst_resm TINFO "make $fs filesystem on /dev/zram$i"
 		mkfs.$fs /dev/zram$i > err.log 2>&1
