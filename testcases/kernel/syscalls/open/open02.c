@@ -63,13 +63,13 @@ static void verify_open(unsigned int n)
 
 	TEST(open(tc->filename, tc->flag, 0444));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "open(%s) succeeded unexpectedly",
 			tc->filename);
 		return;
 	}
 
-	if (tc->exp_errno != TEST_ERRNO) {
+	if (tc->exp_errno != TST_ERR) {
 		tst_res(TFAIL | TTERRNO,
 			"open() should fail with %s",
 			tst_strerrno(tc->exp_errno));

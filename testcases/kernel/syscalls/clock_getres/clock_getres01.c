@@ -59,8 +59,8 @@ static void do_test(unsigned int i)
 {
 	TEST(clock_getres(tcase[i].clk_id, tcase[i].res));
 
-	if (TEST_RETURN != tcase[i].ret) {
-		if (TEST_ERRNO == EINVAL) {
+	if (TST_RET != tcase[i].ret) {
+		if (TST_ERR == EINVAL) {
 			tst_res(TCONF, "clock_getres(%s, ...) NO SUPPORTED", tcase[i].name);
 			return;
 		}
@@ -69,10 +69,10 @@ static void do_test(unsigned int i)
 		return;
 	}
 
-	if (TEST_ERRNO != tcase[i].err) {
+	if (TST_ERR != tcase[i].err) {
 		tst_res(TFAIL,
 			"clock_getres(%s, ...) failed unexpectedly: %s, expected: %s",
-			tcase[i].name, tst_strerrno(TEST_ERRNO), tst_strerrno(tcase[i].err));
+			tcase[i].name, tst_strerrno(TST_ERR), tst_strerrno(tcase[i].err));
 		return;
 	}
 

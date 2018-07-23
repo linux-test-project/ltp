@@ -52,10 +52,10 @@ static void verify_fsync(void)
 
 		TEST(fsync(fd));
 
-		if (TEST_RETURN == -1)
+		if (TST_RET == -1)
 			tst_res(TFAIL | TTERRNO, "fsync failed");
 		else
-			tst_res(TPASS, "fsync() returned %ld", TEST_RETURN);
+			tst_res(TPASS, "fsync() returned %ld", TST_RET);
 	}
 }
 

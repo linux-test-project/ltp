@@ -42,7 +42,7 @@ static void verify_pollout(void)
 
 	TEST(poll(outfds, 1, -1));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "poll() POLLOUT failed");
 		return;
 	}
@@ -68,7 +68,7 @@ static void verify_pollin(void)
 
 	TEST(poll(infds, 1, -1));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "poll() POLLIN failed");
 		goto end;
 	}

@@ -46,10 +46,10 @@ static void verify_getrandom(void)
 	SAFE_SETRLIMIT(RLIMIT_NOFILE, &lnew);
 
 	TEST(tst_syscall(__NR_getrandom, buf, 100, 0));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO, "getrandom failed");
 	else
-		tst_res(TPASS, "getrandom returned %ld", TEST_RETURN);
+		tst_res(TPASS, "getrandom returned %ld", TST_RET);
 
 	SAFE_SETRLIMIT(RLIMIT_NOFILE, &lold);
 }

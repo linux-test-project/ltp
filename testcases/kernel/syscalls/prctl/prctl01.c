@@ -17,7 +17,7 @@ static void verify_prctl(void)
 	int get_sig = 0;
 
 	TEST(prctl(PR_SET_PDEATHSIG, SIGUSR2));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "prctl(PR_SET_PDEATHSIG) failed");
 		return;
 	}
@@ -25,7 +25,7 @@ static void verify_prctl(void)
 	tst_res(TPASS, "prctl(PR_SET_PDEATHSIG) succeeded");
 
 	TEST(prctl(PR_GET_PDEATHSIG, &get_sig));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "prctl(PR_GET_PDEATHSIG) failed");
 		return;
 	}

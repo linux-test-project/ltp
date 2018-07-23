@@ -45,7 +45,7 @@ static void do_test(void)
 	request_key("keyring", "foo", "bar", KEY_SPEC_THREAD_KEYRING);
 
 	TEST(keyctl(KEYCTL_UNLINK, key, KEY_SPEC_SESSION_KEYRING));
-	if (TEST_RETURN)
+	if (TST_RET)
 		tst_res(TFAIL | TTERRNO, "keyctl unlink failed");
 	else
 		tst_res(TPASS, "Bug not reproduced");

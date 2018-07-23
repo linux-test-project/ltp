@@ -50,21 +50,21 @@ static void verify_fcntl(void)
 {
 	TEST(fcntl(fd, F_GETFL, 0));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "fcntl(%s, F_GETFL, 0) failed",
 			fname);
 		return;
 	}
 
-	if ((TEST_RETURN & O_ACCMODE) != O_RDWR) {
+	if ((TST_RET & O_ACCMODE) != O_RDWR) {
 		tst_res(TFAIL, "fcntl(%s, F_GETFL, 0) returned wrong "
 			"access mode %li, expected %i", fname,
-			TEST_RETURN & O_ACCMODE, O_RDWR);
+			TST_RET & O_ACCMODE, O_RDWR);
 		return;
 	}
 
 	tst_res(TPASS, "fcntl(%s, F_GETFL, 0) returned %lx",
-		fname, TEST_RETURN);
+		fname, TST_RET);
 }
 
 static void setup(void)

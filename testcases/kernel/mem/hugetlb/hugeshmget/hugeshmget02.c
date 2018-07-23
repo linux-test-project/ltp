@@ -66,12 +66,12 @@ static void test_hugeshmget(unsigned int i)
 
 	TEST(shmget(*(tcases[i].skey), tcases[i].size_coe * shm_size,
 					tcases[i].flags));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "shmget succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tcases[i].error) {
+	if (TST_ERR != tcases[i].error) {
 		tst_res(TFAIL | TTERRNO,
 			"shmget failed unexpectedly, expected %s",
 			tst_strerrno(tcases[i].error));

@@ -83,12 +83,12 @@ static void verify_pwritev(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TEST(pwritev(*tc->fd, tc->name, tc->count, tc->offset));
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TFAIL, "pwritev() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_err) {
+	if (TST_ERR == tc->exp_err) {
 		tst_res(TPASS | TTERRNO, "pwritev() failed as expected");
 		return;
 	}

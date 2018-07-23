@@ -61,7 +61,7 @@ static void verify_listxattr(void)
 	char buf[64];
 
 	TEST(listxattr(TESTFILE, buf, sizeof(buf)));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "listxattr() failed");
 		return;
 	}

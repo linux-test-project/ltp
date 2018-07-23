@@ -91,13 +91,13 @@ static void child_alloc(int testcase, int lite, int threads)
 	for (i = 0; i < threads; i++) {
 		TEST(pthread_create(&th[i], NULL, child_alloc_thread,
 			(void *)((long)testcase)));
-		if (TEST_RETURN) {
+		if (TST_RET) {
 			tst_res(TINFO | TRERRNO, "pthread_create");
 			/*
 			 * Keep going if thread other than first fails to
 			 * spawn due to lack of resources.
 			 */
-			if (i == 0 || TEST_RETURN != EAGAIN)
+			if (i == 0 || TST_RET != EAGAIN)
 				goto out;
 		}
 	}

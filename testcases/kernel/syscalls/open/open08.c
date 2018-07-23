@@ -86,19 +86,19 @@ void verify_open(unsigned int i)
 	TEST(open(*tcases[i].fname, tcases[i].flags,
 		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tcases[i].error) {
+	if (TST_ERR == tcases[i].error) {
 		tst_res(TPASS, "expected failure - "
-				"errno = %d : %s", TEST_ERRNO,
-				strerror(TEST_ERRNO));
+				"errno = %d : %s", TST_ERR,
+				strerror(TST_ERR));
 	} else {
 		tst_res(TFAIL, "unexpected error - %d : %s - "
-				"expected %d", TEST_ERRNO,
-				strerror(TEST_ERRNO), tcases[i].error);
+				"expected %d", TST_ERR,
+				strerror(TST_ERR), tcases[i].error);
 	}
 }
 

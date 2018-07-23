@@ -36,18 +36,18 @@ static void do_test(void)
 	key_serial_t tid_keyring;
 
 	TEST(keyctl(KEYCTL_GET_KEYRING_ID, KEY_SPEC_THREAD_KEYRING, 1));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to create thread keyring");
-	tid_keyring = TEST_RETURN;
+	tid_keyring = TST_RET;
 
 	TEST(keyctl(KEYCTL_SET_REQKEY_KEYRING, KEY_REQKEY_DEFL_THREAD_KEYRING));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to set reqkey keyring");
 
 	TEST(keyctl(KEYCTL_GET_KEYRING_ID, KEY_SPEC_THREAD_KEYRING, 0));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to get thread keyring ID");
-	if (TEST_RETURN == tid_keyring)
+	if (TST_RET == tid_keyring)
 		tst_res(TPASS, "thread keyring was not leaked");
 	else
 		tst_res(TFAIL, "thread keyring was leaked!");

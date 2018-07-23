@@ -67,13 +67,13 @@ static void mkdirat_verify(unsigned int i)
 
 	TEST(mkdirat(*test->dirfd, test->pathname, 0777));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "mkdirat() succeeded unexpectedly (%li)",
-			TEST_RETURN);
+			TST_RET);
 		return;
 	}
 
-	if (TEST_ERRNO == test->exp_errno) {
+	if (TST_ERR == test->exp_errno) {
 		tst_res(TPASS | TTERRNO, "mkdirat() failed as expected");
 		return;
 	}

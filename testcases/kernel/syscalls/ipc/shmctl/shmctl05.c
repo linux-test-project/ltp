@@ -85,9 +85,9 @@ static void do_test(void)
 			/* This is the system call that crashed */
 			TEST(syscall(__NR_remap_file_pages, addr, 4096,
 				     0, 0, 0));
-		} while (TEST_RETURN == 0);
+		} while (TST_RET == 0);
 
-		if (TEST_ERRNO != EIDRM && TEST_ERRNO != EINVAL) {
+		if (TST_ERR != EIDRM && TST_ERR != EINVAL) {
 			tst_brk(TBROK | TTERRNO,
 				"Unexpected remap_file_pages() error");
 		}

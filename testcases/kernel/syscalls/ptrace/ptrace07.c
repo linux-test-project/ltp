@@ -113,19 +113,19 @@ static void do_test(void)
 	sched_yield();
 
 	TEST(ptrace(PTRACE_ATTACH, pid, 0, 0));
-	if (TEST_RETURN != 0)
+	if (TST_RET != 0)
 		tst_brk(TBROK | TTERRNO, "PTRACE_ATTACH failed");
 
 	SAFE_WAITPID(pid, NULL, 0);
 	TEST(ptrace(PTRACE_GETREGSET, pid, NT_X86_XSTATE, &iov));
-	if (TEST_RETURN != 0) {
-		if (TEST_ERRNO == EIO)
+	if (TST_RET != 0) {
+		if (TST_ERR == EIO)
 			tst_brk(TCONF, "GETREGSET/SETREGSET is unsupported");
 
-		if (TEST_ERRNO == EINVAL)
+		if (TST_ERR == EINVAL)
 			tst_brk(TCONF, "NT_X86_XSTATE is unsupported");
 
-		if (TEST_ERRNO == ENODEV)
+		if (TST_ERR == ENODEV)
 			tst_brk(TCONF, "CPU doesn't support XSAVE instruction");
 
 		tst_brk(TBROK | TTERRNO,
@@ -143,9 +143,9 @@ static void do_test(void)
 	 * below in either case) is present.
 	 */
 	TEST(ptrace(PTRACE_SETREGSET, pid, NT_X86_XSTATE, &iov));
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TINFO, "PTRACE_SETREGSET with reserved bits succeeded");
-	} else if (TEST_ERRNO == EINVAL) {
+	} else if (TST_ERR == EINVAL) {
 		tst_res(TINFO,
 			"PTRACE_SETREGSET with reserved bits failed with EINVAL");
 	} else {
@@ -154,7 +154,7 @@ static void do_test(void)
 	}
 
 	TEST(ptrace(PTRACE_CONT, pid, 0, 0));
-	if (TEST_RETURN != 0)
+	if (TST_RET != 0)
 		tst_brk(TBROK | TTERRNO, "PTRACE_CONT failed");
 
 	okay = true;

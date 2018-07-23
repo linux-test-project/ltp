@@ -56,15 +56,15 @@ void run(void)
 
 	for (i = 0; i < ATTEMPTS; ++i) {
 		TEST(tst_crypto_add_alg(&ses, &a));
-		if (TEST_RETURN && TEST_RETURN == -ENOENT) {
+		if (TST_RET && TST_RET == -ENOENT) {
 			tst_brk(TCONF | TRERRNO,
 				"pcrypt, hmac, sha256, cbc or aes not supported");
 		}
-		if (TEST_RETURN && TEST_RETURN != -EEXIST)
+		if (TST_RET && TST_RET != -EEXIST)
 			tst_brk(TBROK | TRERRNO, "add_alg");
 
 		TEST(tst_crypto_del_alg(&ses, &a));
-		if (TEST_RETURN)
+		if (TST_RET)
 			tst_brk(TBROK | TRERRNO, "del_alg");
 	}
 

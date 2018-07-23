@@ -160,8 +160,8 @@ static void do_test(unsigned int i)
 	if (*tc->fd == fd)
 		cleanup_queue(fd);
 
-	if (TEST_RETURN < 0) {
-		if (tc->err != TEST_ERRNO)
+	if (TST_RET < 0) {
+		if (tc->err != TST_ERR)
 			tst_res(TFAIL | TTERRNO,
 				"mq_timedreceive failed unexpectedly, expected %s",
 				tst_strerrno(tc->err));
@@ -171,9 +171,9 @@ static void do_test(unsigned int i)
 		return;
 	}
 
-	if (tc->len != TEST_RETURN) {
+	if (tc->len != TST_RET) {
 		tst_res(TFAIL, "mq_timedreceive wrong length %ld, expected %zu",
-			TEST_RETURN, tc->len);
+			TST_RET, tc->len);
 		return;
 	}
 
@@ -193,7 +193,7 @@ static void do_test(unsigned int i)
 	}
 
 	tst_res(TPASS, "mq_timedreceive returned %ld, priority %u, length: %zu",
-			TEST_RETURN, prio, len);
+			TST_RET, prio, len);
 }
 
 static struct tst_test test = {

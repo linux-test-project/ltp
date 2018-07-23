@@ -71,14 +71,14 @@ static void test_partially_valid_iovec(int initial_file_offset)
 	off_after = (long) SAFE_LSEEK(fd, 0, SEEK_CUR);
 
 	/* bad errno */
-	if (TEST_RETURN == -1 && TEST_ERRNO != EFAULT) {
+	if (TST_RET == -1 && TST_ERR != EFAULT) {
 		tst_res(TFAIL | TTERRNO, "unexpected errno");
 		SAFE_CLOSE(fd);
 		return;
 	}
 
 	/* nothing has been written */
-	if (TEST_RETURN == -1 && TEST_ERRNO == EFAULT) {
+	if (TST_RET == -1 && TST_ERR == EFAULT) {
 		tst_res(TINFO, "got EFAULT");
 		/* initial file content remains untouched */
 		SAFE_LSEEK(fd, 0, SEEK_SET);
@@ -100,8 +100,8 @@ static void test_partially_valid_iovec(int initial_file_offset)
 	}
 
 	/* writev() wrote more bytes than bytes preceding invalid iovec */
-	tst_res(TINFO, "writev() has written %ld bytes", TEST_RETURN);
-	if (TEST_RETURN > (long) wr_iovec[0].iov_len) {
+	tst_res(TINFO, "writev() has written %ld bytes", TST_RET);
+	if (TST_RET > (long) wr_iovec[0].iov_len) {
 		tst_res(TFAIL, "writev wrote more than expected");
 		SAFE_CLOSE(fd);
 		return;
@@ -109,19 +109,19 @@ static void test_partially_valid_iovec(int initial_file_offset)
 
 	/* file content matches written bytes */
 	SAFE_LSEEK(fd, initial_file_offset, SEEK_SET);
-	SAFE_READ(1, fd, tmp, TEST_RETURN);
-	if (memcmp(tmp, wr_iovec[0].iov_base, TEST_RETURN) == 0) {
+	SAFE_READ(1, fd, tmp, TST_RET);
+	if (memcmp(tmp, wr_iovec[0].iov_base, TST_RET) == 0) {
 		tst_res(TPASS, "file has expected content");
 	} else {
 		tst_res(TFAIL, "file has unexpected content");
-		tst_res_hexd(TFAIL, wr_iovec[0].iov_base, TEST_RETURN,
+		tst_res_hexd(TFAIL, wr_iovec[0].iov_base, TST_RET,
 				"expected:");
-		tst_res_hexd(TFAIL, tmp, TEST_RETURN,
+		tst_res_hexd(TFAIL, tmp, TST_RET,
 				"actual file content:");
 	}
 
 	/* file offset has been updated according to written bytes */
-	if (off_after == initial_file_offset + TEST_RETURN)
+	if (off_after == initial_file_offset + TST_RET)
 		tst_res(TPASS, "offset at %ld as expected", off_after);
 	else
 		tst_res(TFAIL, "offset unexpected %ld", off_after);

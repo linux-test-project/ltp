@@ -70,6 +70,9 @@ const char *tst_ipc_path = ipc_path;
 
 static char shm_path[1024];
 
+int TST_ERR;
+long TST_RET;
+
 static void do_cleanup(void);
 static void do_exit(int ret) __attribute__ ((noreturn));
 
@@ -213,10 +216,10 @@ static void print_result(const char *file, const int lineno, int ttype,
 		str_errno = tst_strerrno(errno);
 
 	if (ttype & TTERRNO)
-		str_errno = tst_strerrno(TEST_ERRNO);
+		str_errno = tst_strerrno(TST_ERR);
 
 	if (ttype & TRERRNO) {
-		ret = TEST_RETURN < 0 ? -(int)TEST_RETURN : (int)TEST_RETURN;
+		ret = TST_RET < 0 ? -(int)TST_RET : (int)TST_RET;
 		str_errno = tst_strerrno(ret);
 	}
 

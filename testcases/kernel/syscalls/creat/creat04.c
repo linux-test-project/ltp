@@ -48,13 +48,13 @@ static void child_fn(unsigned int i)
 
 	TEST(creat(tcases[i].fname, 0444));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		SAFE_UNLINK(tcases[i].fname);
 		tst_res(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != EACCES) {
+	if (TST_ERR != EACCES) {
 		tst_res(TFAIL | TTERRNO, "Expected EACCES");
 		return;
 	}

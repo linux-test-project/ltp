@@ -55,21 +55,21 @@ static void verify_fcntl(unsigned int n)
 
 	TEST(fcntl(fd, F_DUPFD, min_fd));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "fcntl(%s, F_DUPFD, %i) failed",
 			fname, min_fd);
 		return;
 	}
 
-	if (TEST_RETURN < min_fd) {
+	if (TST_RET < min_fd) {
 		tst_res(TFAIL, "fcntl(%s, F_DUPFD, %i) returned %ld < %i",
-			fname, min_fd, TEST_RETURN, min_fd);
+			fname, min_fd, TST_RET, min_fd);
 	}
 
 	tst_res(TPASS, "fcntl(%s, F_DUPFD, %i) returned %ld",
-		fname, min_fd, TEST_RETURN);
+		fname, min_fd, TST_RET);
 
-	SAFE_CLOSE(TEST_RETURN);
+	SAFE_CLOSE(TST_RET);
 }
 
 static void setup(void)

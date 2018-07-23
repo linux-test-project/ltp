@@ -54,11 +54,11 @@ static void verify_getrandom(unsigned int n)
 
 	TEST(tst_syscall(__NR_getrandom, buf, sizes[n], 0));
 
-	if (TEST_RETURN != sizes[n]) {
+	if (TST_RET != sizes[n]) {
 		tst_res(TFAIL | TTERRNO, "getrandom returned %li, expected %u",
-			TEST_RETURN, sizes[n]);
+			TST_RET, sizes[n]);
 	} else {
-		tst_res(TPASS, "getrandom returned %ld", TEST_RETURN);
+		tst_res(TPASS, "getrandom returned %ld", TST_RET);
 	}
 }
 

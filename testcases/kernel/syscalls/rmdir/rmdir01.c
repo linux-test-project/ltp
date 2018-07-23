@@ -34,7 +34,7 @@ static void verify_rmdir(void)
 	SAFE_MKDIR(TESTDIR, 0777);
 
 	TEST(rmdir(TESTDIR));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "rmdir(%s) failed", TESTDIR);
 		return;
 	}

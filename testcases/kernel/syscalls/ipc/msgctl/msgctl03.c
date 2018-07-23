@@ -32,7 +32,7 @@ static void verify_msgctl(void)
 	msg_q = SAFE_MSGGET(IPC_PRIVATE, MSG_RW);
 
 	TEST(msgctl(msg_q, IPC_RMID, NULL));
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO, "msgctl(IPC_RMID) failed");
 		return;
 	}
@@ -40,11 +40,11 @@ static void verify_msgctl(void)
 	tst_res(TPASS, "msgctl(IPC_RMID)");
 
 	TEST(msgctl(msg_q, IPC_STAT, &buf));
-	if (TEST_ERRNO == EINVAL) {
+	if (TST_ERR == EINVAL) {
 		tst_res(TPASS | TTERRNO, "msgctl(IPC_STAT)");
 	} else {
 		tst_res(TFAIL | TTERRNO,
-			"msgctl(IPC_STAT) returned %li", TEST_RETURN);
+			"msgctl(IPC_STAT) returned %li", TST_RET);
 	}
 }
 

@@ -81,7 +81,7 @@ static void setup(void)
 	events[1].data.fd = fd[1];
 
 	TEST(epoll_ctl(epfd, EPOLL_CTL_ADD, fd[0], &events[0]));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_brk(TFAIL | TTERRNO, "epoll_ctl() fails to init");
 }
 
@@ -102,12 +102,12 @@ static void verify_epoll_ctl(unsigned int n)
 	struct testcase *tc = &tcases[n];
 
 	TEST(epoll_ctl(*tc->epfds, tc->opt, *tc->fds,  tc->ts_event));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "epoll_ctl() succeeds unexpectedly");
 		return;
 	}
 
-	if (tc->exp_err == TEST_ERRNO) {
+	if (tc->exp_err == TST_ERR) {
 		tst_res(TPASS | TTERRNO, "epoll_ctl() fails as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO,

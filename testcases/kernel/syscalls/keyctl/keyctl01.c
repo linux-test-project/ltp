@@ -35,24 +35,24 @@ static void do_test(void)
 	key_serial_t key;
 
 	TEST(keyctl(KEYCTL_GET_KEYRING_ID, KEY_SPEC_USER_SESSION_KEYRING));
-	if (TEST_RETURN != -1)
+	if (TST_RET != -1)
 		tst_res(TPASS, "KEYCTL_GET_KEYRING_ID succeeded");
 	else
 		tst_res(TFAIL | TTERRNO, "KEYCTL_GET_KEYRING_ID failed");
 
 	for (key = INT32_MAX; key > INT32_MIN; key--) {
 		TEST(keyctl(KEYCTL_READ, key));
-		if (TEST_RETURN == -1 && TEST_ERRNO == ENOKEY)
+		if (TST_RET == -1 && TST_ERR == ENOKEY)
 			break;
 	}
 
 	TEST(keyctl(KEYCTL_REVOKE, key));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "KEYCTL_REVOKE succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != ENOKEY) {
+	if (TST_ERR != ENOKEY) {
 		tst_res(TFAIL | TTERRNO, "KEYCTL_REVOKE failed unexpectedly");
 		return;
 	}

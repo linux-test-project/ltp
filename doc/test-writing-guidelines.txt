@@ -413,7 +413,7 @@ Printf-like function to report test result, it's mostly used with ttype:
 |==============================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
-'errno', 'TEST_ERRNO' respectively.
+'errno', 'TST_ERR' respectively.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ Printf-like function to report error and exit the test, it can be used with ttyp
 |============================================================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
-'errno', 'TEST_ERRNO' respectively.
+'errno', 'TST_ERR' respectively.
 
 [source,c]
 -------------------------------------------------------------------------------

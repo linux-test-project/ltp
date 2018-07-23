@@ -147,12 +147,12 @@ static void test_in6_is_addr_v4mapped(void)
 				"\"%s\" is not a valid IPv6 address",
 				maptab[i].addr);
 		TEST(IN6_IS_ADDR_V4MAPPED(in6.s6_addr));
-		if (maptab[i].ismap == TEST_RETURN)
+		if (maptab[i].ismap == TST_RET)
 			tst_res(TINFO, "IN6_IS_ADDR_V4MAPPED(\"%s\") %ld",
-				maptab[i].addr, TEST_RETURN);
+				maptab[i].addr, TST_RET);
 		else {
 			tst_res(TFAIL, "IN6_IS_ADDR_V4MAPPED(\"%s\") %ld",
-				maptab[i].addr, TEST_RETURN);
+				maptab[i].addr, TST_RET);
 			return;
 		}
 	}

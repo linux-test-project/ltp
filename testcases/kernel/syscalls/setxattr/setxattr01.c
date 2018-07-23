@@ -136,13 +136,13 @@ static void verify_setxattr(unsigned int i)
 {
 	TEST(setxattr(FNAME, tc[i].key, *tc[i].value, tc[i].size, tc[i].flags));
 
-	if (TEST_RETURN == -1 && TEST_ERRNO == EOPNOTSUPP)
+	if (TST_RET == -1 && TST_ERR == EOPNOTSUPP)
 		tst_brk(TCONF, "setxattr() not supported");
 
 	if (!tc[i].exp_err) {
-		if (TEST_RETURN) {
+		if (TST_RET) {
 			tst_res(TFAIL | TTERRNO,
-				"setxattr() failed with %li", TEST_RETURN);
+				"setxattr() failed with %li", TST_RET);
 			return;
 		}
 
@@ -150,12 +150,12 @@ static void verify_setxattr(unsigned int i)
 		return;
 	}
 
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TFAIL, "setxattr() passed unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc[i].exp_err) {
+	if (TST_ERR != tc[i].exp_err) {
 		tst_res(TFAIL | TTERRNO, "setxattr() should fail with %s",
 			tst_strerrno(tc[i].exp_err));
 		return;

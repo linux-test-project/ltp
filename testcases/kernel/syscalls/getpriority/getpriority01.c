@@ -45,21 +45,21 @@ static void verify_getpriority(unsigned int n)
 
 	TEST(getpriority(tc->which, 0));
 
-	if (TEST_ERRNO != 0) {
+	if (TST_ERR != 0) {
 		tst_res(TFAIL | TTERRNO, "getpriority(%d, 0) failed",
 			tc->which);
 		return;
 	}
 
-	if (TEST_RETURN < tc->min || TEST_RETURN > tc->max) {
+	if (TST_RET < tc->min || TST_RET > tc->max) {
 		tst_res(TFAIL, "getpriority(%d, 0) returned %ld, "
 			"expected in the range of [%d, %d]",
-			tc->which, TEST_RETURN, tc->min, tc->max);
+			tc->which, TST_RET, tc->min, tc->max);
 		return;
 	}
 
 	tst_res(TPASS, "getpriority(%d, 0) returned %ld",
-		tc->which, TEST_RETURN);
+		tc->which, TST_RET);
 }
 
 static struct tst_test test = {

@@ -35,12 +35,12 @@ static void verify_umount(void)
 {
 	TEST(umount(MNTPOINT));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "umount() succeeds unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != EPERM) {
+	if (TST_ERR != EPERM) {
 		tst_res(TFAIL | TTERRNO, "umount() should fail with EPERM");
 		return;
 	}

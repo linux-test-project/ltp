@@ -43,14 +43,14 @@ static void run(void)
 	}
 
 	TEST(wait4(pid, &status, 0, &rusage));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TERRNO, "wait4() failed");
 		return;
 	}
 
-	if (TEST_RETURN != pid) {
+	if (TST_RET != pid) {
 		tst_res(TFAIL, "waitpid() returned wrong pid %li, expected %i",
-		        TEST_RETURN, pid);
+			TST_RET, pid);
 	} else {
 		tst_res(TPASS, "waitpid() returned correct pid %i", pid);
 	}

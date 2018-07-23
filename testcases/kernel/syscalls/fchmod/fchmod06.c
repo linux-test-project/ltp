@@ -51,20 +51,20 @@ static void verify_fchmod(unsigned int i)
 
 	TEST(fchmod(*tc->fd, tc->mode));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "fchmod() passed unexpectedly (%li)",
-		        TEST_RETURN);
+			TST_RET);
 		return;
 	}
 
-	if (TEST_ERRNO == tcases[i].exp_errno) {
+	if (TST_ERR == tcases[i].exp_errno) {
 		tst_res(TPASS | TTERRNO, "fchmod() failed expectedly");
 		return;
 	}
 
 	tst_res(TFAIL | TTERRNO,
 	        "fchmod() failed unexpectedly, expected %i - %s",
-	        TEST_ERRNO, tst_strerrno(TEST_ERRNO));
+		TST_ERR, tst_strerrno(TST_ERR));
 }
 
 static void setup(void)

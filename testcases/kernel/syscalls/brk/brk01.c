@@ -45,7 +45,7 @@ void verify_brk(void)
 
 		TEST(brk((void *)new_brk));
 
-		if (TEST_RETURN == -1) {
+		if (TST_RET == -1) {
 			tst_res(TFAIL | TERRNO, "brk() failed");
 			return;
 		}

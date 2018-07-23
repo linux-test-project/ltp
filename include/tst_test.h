@@ -188,12 +188,12 @@ void tst_reinit(void);
 #define TEST(SCALL) \
 	do { \
 		errno = 0; \
-		TEST_RETURN = SCALL; \
-		TEST_ERRNO = errno; \
+		TST_RET = SCALL; \
+		TST_ERR = errno; \
 	} while (0)
 
-extern long TEST_RETURN;
-extern int TEST_ERRNO;
+extern long TST_RET;
+extern int TST_ERR;
 
 extern void *TST_RET_PTR;
 
@@ -201,7 +201,7 @@ extern void *TST_RET_PTR;
 	do { \
 		errno = 0; \
 		TST_RET_PTR = (void*)SCALL; \
-		TEST_ERRNO = errno; \
+		TST_ERR = errno; \
 	} while (0)
 
 /*

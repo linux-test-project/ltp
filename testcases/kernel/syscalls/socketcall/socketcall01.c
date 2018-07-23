@@ -49,15 +49,15 @@ void verify_socketcall(unsigned int i)
 {
 	TEST(socketcall(TC[i].call, TC[i].args));
 
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_res(TFAIL | TTERRNO, "socketcall() for %s failed with %li",
-			TC[i].desc, TEST_RETURN);
+			TC[i].desc, TST_RET);
 		return;
 	}
 
 	tst_res(TPASS, "socketcall() for %s", TC[i].desc);
 
-	SAFE_CLOSE(TEST_RETURN);
+	SAFE_CLOSE(TST_RET);
 }
 
 static struct tst_test test = {

@@ -88,13 +88,13 @@ static void verify_memfd_create_errno(unsigned int n)
 	}
 
 	TEST(sys_memfd_create(tc->memfd_name, tc->flags));
-	if (TEST_ERRNO != tc->memfd_create_exp_err)
+	if (TST_ERR != tc->memfd_create_exp_err)
 		tst_brk(TFAIL, "test '%s'", tc->descr);
 	else
 		tst_res(TPASS, "test '%s'", tc->descr);
 
-	if (TEST_RETURN > 0)
-		SAFE_CLOSE(TEST_RETURN);
+	if (TST_RET > 0)
+		SAFE_CLOSE(TST_RET);
 }
 
 static struct tst_test test = {

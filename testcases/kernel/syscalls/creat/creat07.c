@@ -46,12 +46,12 @@ static void verify_creat(void)
 
 	TEST(creat(TEST_APP, O_WRONLY));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "creat() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == ETXTBSY)
+	if (TST_ERR == ETXTBSY)
 		tst_res(TPASS, "creat() received EXTBSY");
 	else
 		tst_res(TFAIL | TTERRNO, "creat() failed unexpectedly");

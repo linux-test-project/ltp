@@ -62,18 +62,18 @@ static void verify_socketpair(unsigned int n)
 
 	TEST(socketpair(tc->domain, tc->type, tc->proto, tc->sv));
 
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		SAFE_CLOSE(fds[0]);
 		SAFE_CLOSE(fds[1]);
 	}
 
-	if (TEST_RETURN != tc->retval) {
+	if (TST_RET != tc->retval) {
 		tst_res(TFAIL, "%s returned %ld (expected %d)",
-		        tc->desc, TEST_RETURN, tc->retval);
+			tc->desc, TST_RET, tc->retval);
 		return;
 	}
 
-	if (TEST_ERRNO != tc->experrno) {
+	if (TST_ERR != tc->experrno) {
 		tst_res(TFAIL | TTERRNO, "expected %s(%d)",
 		        tst_strerrno(tc->experrno), tc->experrno);
 		return;

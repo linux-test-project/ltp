@@ -189,11 +189,11 @@ static void do_test(unsigned int i)
 
 	tc->test(i, p);
 
-	if (TEST_RETURN >= 0) {
+	if (TST_RET >= 0) {
 		/* Check policy of the allocated memory */
 		TEST(get_mempolicy(&policy, getnodemask->maskp,
 				   getnodemask->size, p, MPOL_F_ADDR));
-		if (TEST_RETURN < 0) {
+		if (TST_RET < 0) {
 			tst_res(TFAIL | TTERRNO, "get_mempolicy failed");
 			return;
 		}
@@ -216,12 +216,12 @@ static void do_test(unsigned int i)
 		}
 	}
 
-	if (TEST_RETURN != tc->ret) {
+	if (TST_RET != tc->ret) {
 		tst_res(TFAIL, "wrong return code: %ld, expected: %d",
-			TEST_RETURN, tc->ret);
+			TST_RET, tc->ret);
 		fail = 1;
 	}
-	if (TEST_RETURN == -1 && TEST_ERRNO != tc->err) {
+	if (TST_RET == -1 && TST_ERR != tc->err) {
 		tst_res(TFAIL | TTERRNO, "expected errno: %s, got",
 			tst_strerrno(tc->err));
 		fail = 1;

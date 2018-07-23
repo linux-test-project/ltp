@@ -102,8 +102,8 @@ static int set_advice(char *addr, int size, int advise)
 {
 	TEST(madvise(addr, size, advise));
 
-	if (TEST_RETURN == -1) {
-		if (TEST_ERRNO == EINVAL) {
+	if (TST_RET == -1) {
+		if (TST_ERR == EINVAL) {
 			tst_res(TCONF, "madvise(%p, %d, 0x%x) is not supported",
 			addr, size, advise);
 		} else {

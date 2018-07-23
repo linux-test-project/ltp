@@ -183,8 +183,8 @@ static void advice_test(unsigned int i)
 	}
 
 	TEST(madvise(*(tc->addr), st.st_size, tc->advice));
-	if (TEST_RETURN == -1) {
-		if (TEST_ERRNO == tc->exp_errno) {
+	if (TST_RET == -1) {
+		if (TST_ERR == tc->exp_errno) {
 			tst_res(TPASS | TTERRNO, "%s failed as expected", tc->name);
 		} else {
 			tst_res(TFAIL | TTERRNO,

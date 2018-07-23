@@ -111,7 +111,7 @@ static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 		mmap_sz[i].addr = addr;
 
 		TEST(pthread_create(&tid[i], NULL, thr, &mmap_sz[i]));
-		if (TEST_RETURN)
+		if (TST_RET)
 			tst_brk(TBROK | TRERRNO,
 					"pthread_create failed");
 
@@ -128,7 +128,7 @@ static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 
 	for (i = 0; i < ARSZ; ++i) {
 		TEST(pthread_join(tid[i], NULL));
-		if (TEST_RETURN)
+		if (TST_RET)
 			tst_brk(TBROK | TRERRNO,
 					"pthread_join failed");
 	}

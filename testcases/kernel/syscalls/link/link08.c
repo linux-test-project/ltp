@@ -62,13 +62,13 @@ static void link_verify(unsigned int i)
 
 	TEST(link(tc->oldpath, tc->newpath));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "link() succeeded unexpectedly (%li)",
-		        TEST_RETURN);
+			TST_RET);
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_errno) {
+	if (TST_ERR == tc->exp_errno) {
 		tst_res(TPASS | TTERRNO, "link() failed as expected");
 		return;
 	}
