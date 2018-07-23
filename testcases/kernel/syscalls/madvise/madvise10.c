@@ -103,8 +103,13 @@ static int set_advice(char *addr, int size, int advise)
 	TEST(madvise(addr, size, advise));
 
 	if (TEST_RETURN == -1) {
-		tst_res(TFAIL | TTERRNO, "madvise(%p, %d, 0x%x)",
+		if (TEST_ERRNO == EINVAL) {
+			tst_res(TCONF, "madvise(%p, %d, 0x%x) is not supported",
 			addr, size, advise);
+		} else {
+			tst_res(TFAIL | TTERRNO, "madvise(%p, %d, 0x%x)",
+			addr, size, advise);
+		}
 
 		return 1;
 	}
@@ -175,5 +180,4 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test = test_madvise,
 	.setup = setup,
-	.min_kver = "4.14",
 };
