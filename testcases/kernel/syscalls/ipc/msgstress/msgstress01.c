@@ -41,7 +41,7 @@
 #include "ipcmsg.h"
 #include "../lib/libmsgctl.h"
 
-char *TCID = "msgctl08";
+char *TCID = "msgstress01";
 int TST_TOTAL = 1;
 
 #ifndef CONFIG_COLDFIRE

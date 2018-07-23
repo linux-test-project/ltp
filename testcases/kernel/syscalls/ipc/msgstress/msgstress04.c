@@ -21,7 +21,7 @@
 
 /*
  * Get and manipulate a message queue.
- * Same as msgctl09 but gets the actual msgmni value under procfs.
+ * Same as msgstress02 but gets the actual msgmni value under procfs.
  */
 
 #define _XOPEN_SOURCE 500
@@ -40,7 +40,7 @@
 #include "ipcmsg.h"
 #include "../lib/libmsgctl.h"
 
-char *TCID = "msgctl11";
+char *TCID = "msgstress04";
 int TST_TOTAL = 1;
 
 #define MAXNREPS	1000
