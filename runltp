@@ -944,9 +944,9 @@ main()
            else
               echo "Cannot Gunzip TAR File: ./$TAR_FILE_NAME"
            fi
-           if [ -e /usr/bin/mutt ] ; then                          ## This is a better mail client than others
+           if which mutt >/dev/null 2>&1; then
               echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
-              mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" $EMAIL_TO < /dev/null
+              mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" -- $EMAIL_TO < /dev/null
               if [ $? -eq 0 ]; then
                  echo "Reports Successfully mailed to: $EMAIL_TO"
               else
