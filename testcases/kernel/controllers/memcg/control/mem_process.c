@@ -61,7 +61,7 @@ void process_options(int argc, char **argv)
 				errx(2, "invalid -m usage");
 			break;
 		default:
-			errx(2, "invalid option specifed");
+			errx(2, "invalid option specified");
 		}
 	}
 

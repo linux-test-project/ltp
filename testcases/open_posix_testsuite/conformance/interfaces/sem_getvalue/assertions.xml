@@ -3,7 +3,7 @@
 sem_getvalue will update the location referenced by sval to have the value
 of the semaphore referenced by sem without effecting the state of the
 semaphore.  The updated value represents an actual semaphore value that
-occured at some unspecifed time during the call.
+occured at some unspecified time during the call.
   </assertion>
   <assertion id="2" tag="ref:XSH6TC2:39749:39751">
 When semaphore is locked, then the value returned by sem_getvalue is zero or

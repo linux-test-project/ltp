@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 3 ]; then
-	echo "Usgae: ./tst_kvercmp.sh r1 r2 r3"
+	echo "Usage: ./tst_kvercmp.sh r1 r2 r3"
 	exit 1
 fi
 
