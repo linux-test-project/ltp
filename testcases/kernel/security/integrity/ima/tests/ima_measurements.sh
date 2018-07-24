@@ -202,7 +202,7 @@ test3()
 
 	# Default policy does not measure user files
 	tst_res TINFO "verify not measuring user files"
-	tst_test_cmds sudo
+	tst_check_cmds sudo
 
 	if ! id $user >/dev/null 2>/dev/null; then
 		tst_res TCONF "missing system user $user (wrong installation)"

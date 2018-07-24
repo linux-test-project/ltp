@@ -86,7 +86,7 @@ validate_pcr()
 test2()
 {
 	tst_res TINFO "verify PCR values"
-	tst_test_cmds evmctl
+	tst_check_cmds evmctl
 
 	tst_res TINFO "evmctl version: $(evmctl --version)"
 
