@@ -246,7 +246,7 @@ tst_mkfs()
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
 }
 
-tst_check_cmds()
+tst_test_cmds()
 {
 	local cmd
 	for cmd in $*; do
@@ -339,7 +339,7 @@ tst_run()
 		fi
 	fi
 
-	tst_check_cmds $TST_NEEDS_CMDS
+	tst_test_cmds $TST_NEEDS_CMDS
 
 	if [ -n "$TST_MIN_KVER" ]; then
 		tst_kvcmp -lt "$TST_MIN_KVER" && \
@@ -400,7 +400,7 @@ tst_run()
 	#TODO check that test reports some results for each test function call
 	while [ $TST_ITERATIONS -gt 0 ]; do
 		if [ -n "$TST_TEST_DATA" ]; then
-			tst_check_cmds cut tr wc
+			tst_test_cmds cut tr wc
 			_tst_max=$(( $(echo $TST_TEST_DATA | tr -cd "$TST_TEST_DATA_IFS" | wc -c) +1))
 			for _tst_i in $(seq $_tst_max); do
 				_tst_data="$(echo "$TST_TEST_DATA" | cut -d"$TST_TEST_DATA_IFS" -f$_tst_i)"

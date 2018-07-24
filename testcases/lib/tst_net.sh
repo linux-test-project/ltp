@@ -96,7 +96,7 @@ tst_require_root_()
 
 init_ltp_netspace()
 {
-	tst_check_cmds ip
+	tst_test_cmds ip
 	tst_require_root_
 
 	local pid=
@@ -253,7 +253,7 @@ tst_get_hwaddrs()
 # LINK: link number starting from 0. Default value is '0'.
 tst_hwaddr()
 {
-	tst_check_cmds awk
+	tst_test_cmds awk
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -269,7 +269,7 @@ tst_hwaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_iface()
 {
-	tst_check_cmds awk
+	tst_test_cmds awk
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -416,7 +416,7 @@ tst_add_ipaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_restore_ipaddr()
 {
-	tst_check_cmds ip
+	tst_test_cmds ip
 	tst_require_root_
 
 	local type="${1:-lhost}"
@@ -573,7 +573,7 @@ tst_ping()
 	local cmd="ping$TST_IPV6"
 	local ret=0
 
-	tst_check_cmds $cmd
+	tst_test_cmds $cmd
 
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do

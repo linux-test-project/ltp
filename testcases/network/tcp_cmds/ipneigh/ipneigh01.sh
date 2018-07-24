@@ -45,7 +45,7 @@ do_setup()
 		;;
 	esac
 
-	tst_check_cmds $CMD ping$TST_IPV6
+	tst_test_cmds $CMD ping$TST_IPV6
 }
 
 usage()

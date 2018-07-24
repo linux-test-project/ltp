@@ -22,7 +22,7 @@ TST_USE_LEGACY_API=1
 . tst_net.sh
 
 tst_require_root
-tst_check_cmds arping
+tst_test_cmds arping
 
 timeout="10"
 ip_addr=$(tst_ipaddr rhost)

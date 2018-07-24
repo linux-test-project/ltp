@@ -34,7 +34,7 @@ init()
 	tst_resm TINFO "inititalizing tests"
 	tst_require_root
 	tst_tmpdir
-	tst_check_cmds cat awk diff
+	tst_test_cmds cat awk diff
 
 	iface=ltp_dummy
 	lsmod | grep -q dummy || rm_dummy=1

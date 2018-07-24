@@ -61,7 +61,7 @@ fi
 
 
 # TEST CASE #2
-tst_check_cmds ifconfig
+tst_test_cmds ifconfig
 $NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK 2>/dev/null
 if [ $? -ne 0 ]; then
 	tst_resm TPASS "controlling device over ioctl"

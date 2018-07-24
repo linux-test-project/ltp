@@ -58,7 +58,7 @@ TST_CLEANUP="zram_cleanup"
 
 zram_fill_fs()
 {
-	tst_check_cmds dd free awk
+	tst_test_cmds dd free awk
 	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
 
 	for i in $(seq 0 $(($dev_num - 1))); do

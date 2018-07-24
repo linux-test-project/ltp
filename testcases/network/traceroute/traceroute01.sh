@@ -32,7 +32,7 @@ setup()
 	tst_resm TINFO "traceroute version:"
 	tst_resm TINFO $(traceroute --version 2>&1)
 
-	tst_check_cmds traceroute
+	tst_test_cmds traceroute
 	tst_tmpdir
 }
 

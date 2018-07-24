@@ -30,7 +30,7 @@ THREAD_NUM=${THREAD_NUM:-"8"}
 
 . nfs_lib.sh
 
-tst_check_cmds make gcc
+tst_test_cmds make gcc
 
 nfs_setup
 

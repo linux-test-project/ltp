@@ -30,7 +30,7 @@ urldir="$2"
 filename="$3"
 filesize="$4"
 
-tst_check_cmds curl
+tst_test_cmds curl
 
 cleanup()
 {

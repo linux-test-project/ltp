@@ -33,7 +33,7 @@
 
 setup()
 {
-	tst_check_cmds ssh01_s1
+	tst_test_cmds ssh01_s1
 	export TEST_USER="ssh_usr1"
 }
 

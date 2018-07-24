@@ -38,7 +38,7 @@ stop_dhcp()
 init()
 {
 	tst_require_root
-	tst_check_cmds cat $dhcp_name awk ip pgrep pkill dhclient
+	tst_test_cmds cat $dhcp_name awk ip pgrep pkill dhclient
 
 	lsmod | grep -q '^veth ' && veth_loaded=yes || veth_loaded=no
 

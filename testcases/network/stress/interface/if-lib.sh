@@ -36,7 +36,7 @@ if_setup()
 		tst_brk TBROK "Missing or wrong -c parameter: '$CMD', use 'ip' or '$IF_CMD'"
 	fi
 
-	tst_check_cmds "$CMD"
+	tst_test_cmds "$CMD"
 	netstress_setup
 	TST_CLEANUP="${TST_CLEANUP:-netstress_cleanup}"
 }

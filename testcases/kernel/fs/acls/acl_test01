@@ -64,7 +64,7 @@ fi
 do_setup()
 {
 	tst_require_root
-	tst_check_cmds setfacl
+	tst_test_cmds setfacl
 
 	if ! ( test -d $TMP/tacl || mkdir -m 777 $TMP/tacl) ; then
 		tst_brkm TBROK "Failed to create $TMP/tacl directory."

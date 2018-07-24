@@ -58,7 +58,7 @@ get_socket_type()
 
 nfs_setup()
 {
-	tst_check_cmds mount exportfs
+	tst_test_cmds mount exportfs
 
 	tst_tmpdir
 

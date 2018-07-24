@@ -24,7 +24,7 @@ do_setup()
 	export TEST_USER_PASSWD="now_this_is_a_good_ltp_test_password"
 	export TEST_USER_HOMEDIR="/home/$TEST_USER"
 
-	tst_check_cmds expect ssh useradd userdel
+	tst_test_cmds expect ssh useradd userdel
 
 	# erase user if he/she already exists, so we can have a clean env
 	do_cleanup

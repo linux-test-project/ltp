@@ -35,7 +35,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check for dependencies
-tst_check_cmds killall
+tst_test_cmds killall
 
 # Post 4.16 kernel updates stat in batch (> 32 pages) every time
 PAGESIZES=$(( $PAGESIZE * 33 ))
@@ -83,7 +83,7 @@ TST_CLEANUP=cleanup
 
 shmmax_setup()
 {
-	tst_check_cmds bc
+	tst_test_cmds bc
 
 	shmmax=`cat /proc/sys/kernel/shmmax`
 	if [ $(echo "$shmmax < $HUGEPAGESIZE" |bc) -eq 1 ]; then

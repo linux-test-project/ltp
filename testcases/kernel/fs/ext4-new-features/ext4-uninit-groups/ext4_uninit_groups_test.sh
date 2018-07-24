@@ -114,7 +114,7 @@ ext4_test_uninit_groups()
 # main
 ext4_setup
 
-tst_check_cmds ffsb
+tst_test_cmds ffsb
 
 ORLOV=( "orlov" "oldalloc" )
 DELALLOC=( "delalloc" "nodelalloc" )

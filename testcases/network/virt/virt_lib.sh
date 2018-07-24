@@ -51,7 +51,7 @@ virt_lib_setup()
 	;;
 	esac
 
-	tst_check_cmds "ip"
+	tst_test_cmds "ip"
 
 	virt_add ltp_v0 || \
 		tst_brk TCONF "iproute2 or kernel doesn't support $virt_type"
@@ -247,7 +247,7 @@ vxlan_setup_subnet_uni()
 
 vxlan_setup_subnet_multi()
 {
-	tst_check_cmds "od"
+	tst_test_cmds "od"
 	local b1=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
 	local b2=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
 	local b3=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))

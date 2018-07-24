@@ -102,7 +102,7 @@ gen_fs_tree "$MAKE_FILE_SYS_DIR" 1
 # Make ISO9660 file system with different options.
 # Mount the ISO9660 file system with different mount options.
 
-tst_check_cmds mkisofs
+tst_test_cmds mkisofs
 
 for mkisofs_opt in \
 	" " \
