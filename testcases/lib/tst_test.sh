@@ -246,14 +246,40 @@ tst_mkfs()
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
 }
 
+tst_cmd_available()
+{
+	if type command > /dev/null 2>&1; then
+		command -v $1 > /dev/null 2>&1 || return 1
+	else
+		which $1 > /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			return 0
+		elif [ $? -eq 127 ]; then
+			tst_brk TCONF "missing which command"
+		else
+			return 1
+		fi
+	fi
+}
+
 tst_test_cmds()
 {
 	local cmd
 	for cmd in $*; do
-		if ! command -v $cmd > /dev/null 2>&1; then
-			tst_brk TCONF "'$cmd' not found"
+		tst_cmd_available $cmd || tst_brk TCONF "'$cmd' not found"
+	done
+}
+
+tst_check_cmds()
+{
+	local cmd
+	for cmd; do
+		if ! tst_cmd_available $cmd; then
+			tst_res TCONF "'$cmd' not found"
+			return 1
 		fi
 	done
+	return 0
 }
 
 tst_is_int()

@@ -1627,6 +1627,23 @@ existence each of them and exits the test with 'TCONF' on first misssing.
 Alternatively the 'tst_test_cmds()' function can be used to do the same on
 runtime, since sometimes we need to the check at runtime too.
 
+'tst_check_cmds()' can be used for requirements just for a particular test
+as it doesn't exit (it issues 'tst_res TCONF'). Expected usage is:
+...
+
+TST_TESTFUNC=do_test
+. tst_test.sh
+
+do_test()
+{
+	tst_check_cmds cmd || return
+	cmd --foo
+	...
+}
+
+tst_run
+...
+
 Locating kernel modules
 +++++++++++++++++++++++
 
