@@ -8,3 +8,4 @@
 /tst_net_ip_prefix
 /tst_net_vars
 /tst_getconf
+/tst_supported_fs
