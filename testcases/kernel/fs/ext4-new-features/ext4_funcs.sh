@@ -45,6 +45,9 @@ ext4_setup()
 		tst_brkm TCONF "tests need a big block device(5G-10G)"
 	else
 		export EXT4_DEV=$LTP_BIG_DEV
+		if mount | cut -d' ' -f1 | grep -q ^$EXT4_DEV$; then
+			tst_brkm TBROK "$EXT4_DEV should be umounted before test"
+		fi
 	fi
 
 	tst_tmpdir
