@@ -71,7 +71,7 @@ ext4_test_nsec_timestamps()
 
 	mkfs.ext3 -I 256 $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "failed to create ext4 filesystem"
+		tst_resm TFAIL "failed to create ext3 filesystem"
 		return
 	fi
 
@@ -100,8 +100,7 @@ ext4_test_nsec_timestamps()
 	nsec_ctime=`ext4_file_time mnt_point/tmp_file ctime nsec`
 
 	# Test nanosecond
-	if [ $nsec_atime -eq 0 -a $nsec_mtime -eq 0 -a $nsec_ctime -eq 0 ]
-	then
+	if [ $nsec_atime -eq 0 -a $nsec_mtime -eq 0 -a $nsec_ctime -eq 0 ]; then
 		tst_resm TFAIL "The timestamp is not nanosecond(nsec_atime: $nsec_atime, nsec_mtime: $nsec_mtime, nsec_ctime: $nsec_ctime)"
 		tst_mount mnt_point
 		return
