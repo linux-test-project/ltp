@@ -139,7 +139,7 @@ ext4_test_nsec_timestamps()
 
 	nsec_atime2=`ext4_file_time mnt_point/tmp_file atime nsec`
 	nsec_mtime2=`ext4_file_time mnt_point/tmp_file mtime nsec`
-	nsec_ctime2=`ext4_file_time mnt_point/tmp_file mtime nsec`
+	nsec_ctime2=`ext4_file_time mnt_point/tmp_file ctime nsec`
 
 	if [ $nsec_atime -ne $nsec_atime2 -o $nsec_ctime -ne $nsec_ctime2 -o \
 	     $nsec_mtime -ne $nsec_mtime2 ]; then
