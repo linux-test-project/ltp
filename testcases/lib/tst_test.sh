@@ -342,7 +342,7 @@ tst_run()
 
 	OPTIND=1
 
-	while getopts "hi:$TST_OPTS" _tst_name $TST_ARGS; do
+	while getopts ":hi:$TST_OPTS" _tst_name $TST_ARGS; do
 		case $_tst_name in
 		'h') tst_usage; exit 0;;
 		'i') TST_ITERATIONS=$OPTARG;;
