@@ -157,7 +157,6 @@ static void setup(void)
 
 	file1 = SAFE_MMAP(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	file2 = SAFE_MMAP(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	SAFE_MUNMAP(file2 + st.st_size - pagesize, pagesize);
 	file3 = SAFE_MMAP(0, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	shared_anon = SAFE_MMAP(0, MAP_SIZE, PROT_READ, MAP_SHARED |
 			MAP_ANONYMOUS, -1, 0);
@@ -167,6 +166,8 @@ static void setup(void)
 	ptr_addr = SAFE_MALLOC(st.st_size);
 	tmp_addr = (void*)LTP_ALIGN((long)ptr_addr, pagesize);
 
+	/* unmap as last step to avoid subsequent mmap(s) pick same address */
+	SAFE_MUNMAP(file2 + st.st_size - pagesize, pagesize);
 	SAFE_CLOSE(fd);
 
 	tcases_filter();
