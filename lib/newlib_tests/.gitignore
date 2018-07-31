@@ -20,3 +20,5 @@ tst_res_hexd
 tst_strstatus
 test17
 tst_expiration_timer
+test_exec
+test_exec_child

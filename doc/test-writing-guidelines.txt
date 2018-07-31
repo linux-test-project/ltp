@@ -692,6 +692,46 @@ The 'tst_reap_children()' function makes the process wait for all of its
 children and exits with 'tst_brk(TBROK, ...)' if any of them returned
 a non zero exit code.
 
+.Using tst_res() from binaries started by exec()
+[source,c]
+-------------------------------------------------------------------------------
+/* test.c */
+#define _GNU_SOURCE
+#include <stdlib.h>
+#include "tst_test.h"
+
+static void do_test(void)
+{
+	char *const argv[] = {"test_exec_child", NULL};
+
+	execvpe(argv[0], argv, environ);
+
+	tst_res(TBROK | TERRNO, "EXEC!");
+}
+
+static struct tst_test test = {
+	.test_all = do_test,
+	.child_needs_reinit = 1,
+};
+
+/* test_exec_child.c */
+#define TST_NO_DEFAULT_MAIN
+#include "tst_test.h"
+
+int main(void)
+{
+	tst_reinit();
+	tst_res(TPASS, "Child passed!");
+	return 0;
+}
+-------------------------------------------------------------------------------
+
+The 'tst_res()' function can be also used from binaries started by 'exec()',
+the parent test process has to set the '.child_needs_reinit' flag so that the
+library prepares for it and has to make sure the 'LTP_IPC_PATH' environment
+vairiable is passed down, then the very fist thing the program has to call in
+'main()' is 'tst_reinit()' that sets up the IPC.
+
 2.2.9 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

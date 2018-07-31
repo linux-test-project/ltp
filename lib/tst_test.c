@@ -105,7 +105,7 @@ static void setup_ipc(void)
 	results = SAFE_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, ipc_fd, 0);
 
 	/* Checkpoints needs to be accessible from processes started by exec() */
-	if (tst_test->needs_checkpoints) {
+	if (tst_test->needs_checkpoints || tst_test->child_needs_reinit) {
 		sprintf(ipc_path, IPC_ENV_VAR "=%s", shm_path);
 		putenv(ipc_path);
 	} else {
@@ -141,7 +141,6 @@ void tst_reinit(void)
 	const char *path = getenv(IPC_ENV_VAR);
 	size_t size = getpagesize();
 	int fd;
-	void *ptr;
 
 	if (!path)
 		tst_brk(TBROK, IPC_ENV_VAR" is not defined");
@@ -151,8 +150,8 @@ void tst_reinit(void)
 
 	fd = SAFE_OPEN(path, O_RDWR);
 
-	ptr = SAFE_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	tst_futexes = (char*)ptr + sizeof(struct results);
+	results = SAFE_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	tst_futexes = (char*)results + sizeof(struct results);
 	tst_max_futexes = (size - sizeof(struct results))/sizeof(futex_t);
 
 	SAFE_CLOSE(fd);
