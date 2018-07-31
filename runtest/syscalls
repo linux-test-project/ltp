@@ -281,6 +281,10 @@ fcntl36_64 fcntl36_64
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
 
+fgetxattr01 fgetxattr01
+fgetxattr02 fgetxattr02
+fgetxattr03 fgetxattr03
+
 flistxattr01 flistxattr01
 flistxattr02 flistxattr02
 flistxattr03 flistxattr03
