@@ -340,4 +340,5 @@ sched_getattr 352
 renameat2 354
 getrandom 355
 memfd_create 356
+execveat 358
 copy_file_range 377
