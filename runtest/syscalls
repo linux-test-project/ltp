@@ -356,7 +356,6 @@ getcwd01 getcwd01
 getcwd02 getcwd02
 getcwd03 getcwd03
 getcwd04 getcwd04
-getcwd05 getcwd05
 
 getdents01 getdents01
 getdents02 getdents02
@@ -903,6 +902,8 @@ readlinkat02 readlinkat02
 readv01 readv01
 readv02 readv02
 readv03 readv03
+
+realpath01 realpath01
 
 reboot01 reboot01
 reboot02 reboot02

@@ -34,4 +34,4 @@ cve-2017-16939 cve-2017-16939
 cve-2017-17053 cve-2017-17053
 cve-2017-18075 pcrypt_aead01
 cve-2018-5803 sctp_big_chunk
-cve-2018-1000001 getcwd05
+cve-2018-1000001 realpath01
