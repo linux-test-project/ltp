@@ -92,6 +92,13 @@ static void do_test(void)
 				"Unexpected remap_file_pages() error");
 		}
 		tst_fzsync_wait_a(&fzsync_pair);
+
+		/*
+		 * Ensure that a shm segment will actually be destroyed.
+		 * This call may fail on recent kernels (v4.0+) because
+		 * remap_file_pages() already unmapped the shm segment.
+		 */
+		shmdt(addr);
 	}
 
 	tst_res(TPASS, "didn't crash");
