@@ -40,7 +40,10 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/vfs.h>
 #include "posixtest.h"
+
+#define TYPE_TMPFS_MAGIC	0x01021994
 
 int main(void)
 {
@@ -54,10 +57,22 @@ int main(void)
 	pid_t child;
 	int i, exit_val;
 
+	struct statfs buf;
+
 	page_size = sysconf(_SC_PAGE_SIZE);
 
 	/* mmap will create a partial page */
 	len = page_size / 2;
+
+	if (statfs("/tmp", &buf)) {
+		printf("Error at statfs(): %s\n", strerror(errno));
+		return PTS_UNRESOLVED;
+	}
+
+	if (buf.f_type == TYPE_TMPFS_MAGIC) {
+		printf("From mmap(2) manpage, skip known bug on tmpfs\n");
+		return PTS_UNTESTED;
+	}
 
 	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_5_%d", getpid());
 	child = fork();
