@@ -1,0 +1,31 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:47404:47409">
+    The function will map the error number accessed through the symbol errno to
+    a language-dependent error message, which will be written to the standard
+    error stream as follows:
+        • First (if s is not a null pointer and the character pointed to by s
+          is not the null byte), the string pointed to by s followed by a
+          'colon' and a 'space'.
+        • Then an error message string followed by a 'newline'.
+  <assertion>
+  <assertion id="2" tag="ref:XBD7:47410:47411">
+    The contents of the error message strings will be the same as those returned
+    by strerror( ) with argument errno.
+  <assertion>
+  <assertion id="3" tag="ref:XBD7:47412:47414">
+    The function will mark for update the last data modification and last file
+    status change timestamps of the file associated with the standard error
+    stream at some time between its successful completion and exit( ),
+    abort( ), or the completion of fflush( ) or fclose( ) on stderr.
+  <assertion>
+  <assertion id="4" tag="ref:XBD7:47415:47415">
+    The function will not change the orientation of the standard error stream.
+  <assertion>
+  <assertion id="5" tag="ref:XBD7:47416:47417">
+    On error, perror( ) will set the error indicator for the stream to which
+    stderr points, and shall set errno to indicate the error.
+  <assertion>
+  <assertion id="6" tag="ref:XBD7:47422:47422">
+    The function will not return a value.
+  <assertion>
+<assertions>

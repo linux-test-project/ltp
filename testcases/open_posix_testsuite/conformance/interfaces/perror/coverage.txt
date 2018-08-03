@@ -1,0 +1,12 @@
+This file defines the coverage for the perror() function testing.
+
+	Assertion	Status
+	1			YES
+	2			YES
+	3			YES
+	4			YES
+	5			NO*
+	6			YES
+
+	* Hard to test assertions
+
