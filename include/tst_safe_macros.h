@@ -461,6 +461,16 @@ int safe_removexattr(const char *file, const int lineno, const char *path,
 #define SAFE_REMOVEXATTR(path, name) \
 	safe_removexattr(__FILE__, __LINE__, (path), (name))
 
+int safe_lremovexattr(const char *file, const int lineno, const char *path,
+		const char *name);
+#define SAFE_LREMOVEXATTR(path, name) \
+	safe_lremovexattr(__FILE__, __LINE__, (path), (name))
+
+int safe_fremovexattr(const char *file, const int lineno, int fd,
+		const char *name);
+#define SAFE_FREMOVEXATTR(fd, name) \
+	safe_fremovexattr(__FILE__, __LINE__, (fd), (name))
+
 int safe_fsync(const char *file, const int lineno, int fd);
 #define SAFE_FSYNC(fd) safe_fsync(__FILE__, __LINE__, (fd))
 

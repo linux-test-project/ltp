@@ -924,6 +924,48 @@ int safe_removexattr(const char *file, const int lineno, const char *path,
 	return rval;
 }
 
+int safe_lremovexattr(const char *file, const int lineno, const char *path,
+		const char *name)
+{
+	int rval;
+
+	rval = lremovexattr(path, name);
+
+	if (rval) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				"%s:%d: no xattr support in fs or mounted "
+				"without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: lremovexattr() failed",
+			file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_fremovexattr(const char *file, const int lineno, int fd,
+		const char *name)
+{
+	int rval;
+
+	rval = fremovexattr(fd, name);
+
+	if (rval) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				"%s:%d: no xattr support in fs or mounted "
+				"without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: fremovexattr() failed",
+			file, lineno);
+	}
+
+	return rval;
+}
+
 int safe_fsync(const char *file, const int lineno, int fd)
 {
 	int rval;

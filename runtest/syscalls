@@ -163,6 +163,9 @@ fallocate03 fallocate03
 fallocate04 fallocate04
 fallocate05 fallocate05
 
+fsetxattr01 fsetxattr01
+fsetxattr02 fsetxattr02
+
 #posix_fadvise test cases
 posix_fadvise01                      posix_fadvise01
 posix_fadvise01_64                posix_fadvise01_64
@@ -277,6 +280,10 @@ fcntl36_64 fcntl36_64
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
+
+fgetxattr01 fgetxattr01
+fgetxattr02 fgetxattr02
+fgetxattr03 fgetxattr03
 
 flistxattr01 flistxattr01
 flistxattr02 flistxattr02
