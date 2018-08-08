@@ -283,7 +283,8 @@ static int client_recv(char *buf, int srv_msg_len, struct sock_info *i)
 
 	if (errno == ETIME && sock_type != SOCK_STREAM) {
 		if (++(i->etime_cnt) > max_etime_cnt)
-			tst_brk(TFAIL, "protocol timeout: %dms", i->timeout);
+			tst_brk(TFAIL, "client requests timeout %d times, last timeout %dms",
+				i->etime_cnt, i->timeout);
 		/* Increase timeout in poll up to 3.2 sec */
 		if (i->timeout < 3000)
 			i->timeout <<= 1;
@@ -911,7 +912,9 @@ static void setup(void)
 		case TYPE_DCCP:
 		case TYPE_UDP:
 		case TYPE_UDP_LITE:
-			tst_res(TINFO, "max timeout errors %d", max_etime_cnt);
+			if (max_etime_cnt >= client_max_requests)
+				max_etime_cnt = client_max_requests - 1;
+			tst_res(TINFO, "maximum allowed timeout errors %d", max_etime_cnt);
 			wait_timeout = 100;
 		}
 	} else {
