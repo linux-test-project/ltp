@@ -1,0 +1,9 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:31672:31673">
+    The function will cause the space pointed to by ptr to be deallocated.
+  <assertion>
+  <assertion id="2" tag="ref:XBD7:31673:31673">
+    If ptr is null pointer
+        No action will ocuur.
+  <assertion>
+<assertions>
