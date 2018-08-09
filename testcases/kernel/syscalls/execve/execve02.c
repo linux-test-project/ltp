@@ -1,23 +1,23 @@
 /*
- * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2018 Linux Test Project
  * Copyright (c) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) International Business Machines  Corp., 2001
  *
  *  07/2001 Ported by Wayne Boyer
  *  21/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  *
- * This program is free software;  you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -31,25 +31,17 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 #include <errno.h>
-#include <libgen.h>
 #include <pwd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "test.h"
-#include "safe_macros.h"
-
-char *TCID = "execve02";
-int TST_TOTAL = 1;
+#include "tst_test.h"
 
 #define TEST_APP "execve_child"
 #define USER_NAME "nobody"
-
-static void setup(void);
-static void cleanup(void);
 
 static uid_t nobody_uid;
 
@@ -57,68 +49,53 @@ static void do_child(void)
 {
 	char *argv[2] = {TEST_APP, NULL};
 
-	SAFE_SETEUID(NULL, nobody_uid);
+	SAFE_SETEUID(nobody_uid);
 
-	TEST(execve(TEST_APP, argv, NULL));
+	/* Use environ:
+	 *     Inherit a copy of parent's environment
+	 *     for tst_reinit() in execve_child.c
+	 */
+	TEST(execve(TEST_APP, argv, environ));
 
-	if (!TEST_RETURN)
-		tst_brkm(TFAIL, NULL, "execve() passed unexpectedly");
+	if (!TST_RET)
+		tst_brk(TFAIL, "execve() passed unexpectedly");
 
-	if (TEST_ERRNO != EACCES) {
-		tst_brkm(TFAIL | TTERRNO, NULL,
-		         "execve() failed unexpectedly");
-	}
+	if (TST_ERR != EACCES)
+		tst_brk(TFAIL | TERRNO, "execve() failed unexpectedly");
 
-	tst_resm(TPASS | TTERRNO, "execve() failed expectedly");
-	tst_exit();
+	tst_res(TPASS | TERRNO, "execve() failed expectedly");
+
+	exit(0);
 }
 
-int main(int ac, char **av)
+static void verify_execve(void)
 {
-	int lc;
-	pid_t pid;
+	pid_t pid = SAFE_FORK();
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		if ((pid = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
-
-		if (pid == 0)
-			do_child();
-
-		tst_record_childstatus(cleanup, pid);
-	}
-
-	cleanup();
-	tst_exit();
+	if (pid == 0)
+		do_child();
 }
 
 static void setup(void)
 {
-	char path[PATH_MAX];
 	struct passwd *pwd;
 
-	tst_require_root();
+	SAFE_CHMOD(TEST_APP, 0700);
 
-	if (tst_get_path(TEST_APP, path, sizeof(path))) {
-		tst_brkm(TBROK, NULL,
-		         "Couldn't found "TEST_APP" binary in $PATH");
-	}
-
-	tst_tmpdir();
-
-	SAFE_CP(tst_rmdir, path, ".");
-	SAFE_CHMOD(cleanup, TEST_APP, 0700);
-
-	pwd = SAFE_GETPWNAM(tst_rmdir, USER_NAME);
+	pwd = SAFE_GETPWNAM(USER_NAME);
 	nobody_uid = pwd->pw_uid;
 }
 
-void cleanup(void)
-{
-	tst_rmdir();
-}
+static const char *const resource_files[] = {
+	TEST_APP,
+	NULL,
+};
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.forks_child = 1,
+	.child_needs_reinit = 1,
+	.setup = setup,
+	.resource_files = resource_files,
+	.test_all = verify_execve,
+};
