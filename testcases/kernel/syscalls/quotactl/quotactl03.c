@@ -78,10 +78,10 @@ static void verify_quota(void)
 	}
 
 	if (TST_ERR != ENOENT) {
-		tst_res(TFAIL | TTERRNO, "quotaclt() failed unexpectedly with"
+		tst_res(TFAIL | TTERRNO, "quotactl() failed unexpectedly with"
 			" %s expected ENOENT", tst_strerrno(TST_ERR));
 	} else {
-		tst_res(TPASS, "quotaclt() failed with ENOENT as expected");
+		tst_res(TPASS, "quotactl() failed with ENOENT as expected");
 	}
 }
 
