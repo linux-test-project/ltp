@@ -48,13 +48,14 @@
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE 20
 
+#define MNTPOINT "mntpoint"
 #define OFFSET    11
 #define FILENAME "fsetxattr02testfile"
 #define DIRNAME  "fsetxattr02testdir"
 #define SYMLINK  "fsetxattr02symlink"
-#define FIFO     "fsetxattr02fifo"
-#define CHR      "fsetxattr02chr"
-#define BLK      "fsetxattr02blk"
+#define FIFO     MNTPOINT"/fsetxattr02fifo"
+#define CHR      MNTPOINT"/fsetxattr02chr"
+#define BLK      MNTPOINT"/fsetxattr02blk"
 #define SOCK     "fsetxattr02sock"
 
 struct test_case {
@@ -139,6 +140,8 @@ static struct test_case tc[] = {
 
 static void verify_fsetxattr(unsigned int i)
 {
+	const char *fname = strstr(tc[i].fname, "fsetxattr02") + OFFSET;
+
 	/* some tests might require existing keys for each iteration */
 	if (tc[i].needskeyset) {
 		SAFE_FSETXATTR(tc[i].fd, tc[i].key, tc[i].value, tc[i].size,
@@ -157,21 +160,19 @@ static void verify_fsetxattr(unsigned int i)
 		if (TST_RET) {
 			tst_res(TFAIL | TTERRNO,
 				"fsetxattr(2) on %s failed with %li",
-				tc[i].fname + OFFSET, TST_RET);
+				fname, TST_RET);
 			return;
 		}
 
 		/* this is needed for subsequent iterations */
 		SAFE_FREMOVEXATTR(tc[i].fd, tc[i].key);
 
-		tst_res(TPASS, "fsetxattr(2) on %s passed",
-				tc[i].fname + OFFSET);
+		tst_res(TPASS, "fsetxattr(2) on %s passed", fname);
 		return;
 	}
 
 	if (TST_RET == 0) {
-		tst_res(TFAIL, "fsetxattr(2) on %s passed unexpectedly",
-				tc[i].fname + OFFSET);
+		tst_res(TFAIL, "fsetxattr(2) on %s passed unexpectedly", fname);
 		return;
 	}
 
@@ -180,8 +181,7 @@ static void verify_fsetxattr(unsigned int i)
 	if (tc[i].exp_err != TST_ERR) {
 		tst_res(TFAIL | TTERRNO,
 				"fsetxattr(2) on %s should have failed with %s",
-				tc[i].fname + OFFSET,
-				tst_strerrno(tc[i].exp_err));
+				fname, tst_strerrno(tc[i].exp_err));
 		return;
 	}
 
@@ -189,8 +189,7 @@ static void verify_fsetxattr(unsigned int i)
 	if (tc[i].needskeyset)
 		SAFE_FREMOVEXATTR(tc[i].fd, tc[i].key);
 
-	tst_res(TPASS | TTERRNO, "fsetxattr(2) on %s failed",
-			tc[i].fname + OFFSET);
+	tst_res(TPASS | TTERRNO, "fsetxattr(2) on %s failed", fname);
 }
 
 static void setup(void)
@@ -247,7 +246,8 @@ static struct tst_test test = {
 	.test = verify_fsetxattr,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
-	.needs_tmpdir = 1,
+	.needs_devfs = 1,
+	.mntpoint = MNTPOINT,
 	.needs_root = 1,
 };
 
