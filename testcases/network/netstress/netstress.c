@@ -993,7 +993,7 @@ static struct tst_option options[] = {
 	{"S:", &source_addr, "-S x     Source address to bind"},
 	{"g:", &tcp_port, "-g x     x - server port"},
 	{"b:", &barg, "-b x     x - low latency busy poll timeout"},
-	{"T:", &type, "-T x     tcp (default), udp, dccp, sctp"},
+	{"T:", &type, "-T x     tcp (default), udp, udp_lite, dccp, sctp"},
 	{"z", &zcopy, "-z       enable SO_ZEROCOPY\n"},
 
 	{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
