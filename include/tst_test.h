@@ -41,6 +41,7 @@
 #include "tst_kernel.h"
 #include "tst_minmax.h"
 #include "tst_get_bad_addr.h"
+#include "tst_path_has_mnt_flags.h"
 
 /*
  * Reports testcase result.

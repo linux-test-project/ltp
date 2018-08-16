@@ -36,6 +36,7 @@
 #include "old_tmpdir.h"
 #include "tst_minmax.h"
 #include "tst_get_bad_addr.h"
+#include "tst_path_has_mnt_flags.h"
 
 /*
  * Ensure that NUMSIGS is defined.
@@ -207,18 +208,6 @@ unsigned short tst_get_unused_port(void (cleanup_fn)(void),
  */
 const char *tst_strsig(int sig);
 const char *tst_strerrno(int err);
-
-/* lib/tst_path_has_mnt_flags.c
- *
- * Check whether a path is on a filesystem that is mounted with
- * specified flags
- * @path: path to file, if path is NULL tst_tmpdir is used.
- * @flags: NULL or NULL terminated array of mount flags
- *
- * Return: 0..n - number of flags matched
- */
-int tst_path_has_mnt_flags(void (cleanup_fn)(void),
-		const char *path, const char *flags[]);
 
 #ifdef TST_USE_COMPAT16_SYSCALL
 #define TCID_BIT_SUFFIX "_16"
