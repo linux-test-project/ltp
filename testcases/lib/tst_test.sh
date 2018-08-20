@@ -202,6 +202,22 @@ TST_RETRY_FUNC()
 	return $2
 }
 
+TST_RTNL_CHK()
+{
+	local msg1="RTNETLINK answers: Function not implemented"
+	local msg2="RTNETLINK answers: Operation not supported"
+	local output="$($@ 2>&1 || echo 'LTP_ERR')"
+	local msg
+
+	echo "$output" | grep -q "LTP_ERR" || return 0
+
+	for msg in "$msg1" "$msg2"; do
+		echo "$output" | grep -q "$msg" && tst_brk TCONF "'$@': $msg"
+	done
+
+	tst_brk TBROK "$@ failed: $output"
+}
+
 tst_umount()
 {
 	local device="$1"
