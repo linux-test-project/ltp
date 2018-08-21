@@ -336,4 +336,5 @@ kcmp 341
 renameat2 345
 getrandom 347
 memfd_create 348
+mlock2 356
 copy_file_range 357

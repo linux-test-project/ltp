@@ -296,4 +296,5 @@ prlimit64 1325
 renameat2 1338
 getrandom 1339
 memfd_create 1340
+mlock2 1346
 copy_file_range 1347

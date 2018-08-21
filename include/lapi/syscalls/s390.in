@@ -332,4 +332,5 @@ renameat2 347
 getrandom 349
 memfd_create 350
 execveat 354
+mlock2 374
 copy_file_range 375

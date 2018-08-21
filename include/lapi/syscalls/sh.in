@@ -364,4 +364,5 @@ fanotify_mark 368
 prlimit64 369
 kcmp 378
 memfd_create 385
+mlock2 390
 copy_file_range 391
