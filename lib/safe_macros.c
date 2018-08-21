@@ -1006,3 +1006,31 @@ int safe_mknod(const char *file, const int lineno, const char *pathname,
 
 	return rval;
 }
+
+int safe_mlock(const char *file, const int lineno, const void *addr,
+	size_t len)
+{
+	int rval;
+
+	rval = mlock(addr, len);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: mlock() failed", file, lineno);
+	}
+
+	return rval;
+}
+
+int safe_munlock(const char *file, const int lineno, const void *addr,
+	size_t len)
+{
+	int rval;
+
+	rval = munlock(addr, len);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: munlock() failed", file, lineno);
+	}
+
+	return rval;
+}

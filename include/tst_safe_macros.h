@@ -482,6 +482,14 @@ int safe_mknod(const char *file, const int lineno, const char *pathname,
 #define SAFE_MKNOD(pathname, mode, dev) \
 	safe_mknod(__FILE__, __LINE__, (pathname), (mode), (dev))
 
+int safe_mlock(const char *file, const int lineno, const char *addr,
+	size_t len);
+#define SAFE_MLOCK(addr, len) safe_mlock(__FILE__, __LINE__, (addr), (len))
+
+int safe_munlock(const char *file, const int lineno, const char *addr,
+	size_t len);
+#define SAFE_MUNLOCK(addr, len) safe_munlock(__FILE__, __LINE__, (addr), (len))
+
 int safe_fanotify_init(const char *file, const int lineno,
 	unsigned int flags, unsigned int event_f_flags);
 #define SAFE_FANOTIFY_INIT(fan, mode)  \
