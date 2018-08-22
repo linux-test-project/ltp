@@ -49,6 +49,7 @@
 #include <fcntl.h>
 #include "tst_test.h"
 #include "lapi/execveat.h"
+#include "lapi/fcntl.h"
 
 #define OVL_MNT "ovl"
 #define TEST_APP "execveat_child"
