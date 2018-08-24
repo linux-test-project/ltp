@@ -87,7 +87,7 @@ static void do_child(void)
 
 		TEST(numa_move_pages(ppid, test_pages,
 			pages, nodes, status, MPOL_MF_MOVE_ALL));
-		if (TST_RET) {
+		if (TST_RET < 0) {
 			tst_res(TFAIL | TTERRNO, "move_pages failed");
 			break;
 		}
