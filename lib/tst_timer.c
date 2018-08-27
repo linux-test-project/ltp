@@ -1,29 +1,13 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include <errno.h>
 
-#include "test.h"
+#define TST_NO_DEFAULT_MAIN
+
+#include "tst_test.h"
 #include "tst_timer.h"
 #include "tst_clocks.h"
 #include "lapi/posix_clocks.h"
@@ -59,13 +43,13 @@ void tst_timer_check(clockid_t clk_id)
 {
 	if (tst_clock_gettime(clk_id, &start_time)) {
 		if (errno == EINVAL) {
-			tst_brkm(TCONF, NULL,
+			tst_brk(TCONF,
 			         "Clock id %s(%u) not supported by kernel",
 				 clock_name(clk_id), clk_id);
 			return;
 		}
 
-		tst_brkm(TBROK | TERRNO, NULL, "tst_clock_gettime() failed");
+		tst_brk(TBROK | TERRNO, "tst_clock_gettime() failed");
 	}
 }
 
@@ -74,7 +58,7 @@ void tst_timer_start(clockid_t clk_id)
 	clock_id = clk_id;
 
 	if (tst_clock_gettime(clock_id, &start_time))
-		tst_resm(TWARN | TERRNO, "tst_clock_gettime() failed");
+		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
 }
 
 int tst_timer_expired_ms(long long ms)
@@ -82,7 +66,7 @@ int tst_timer_expired_ms(long long ms)
 	struct timespec cur_time;
 
 	if (tst_clock_gettime(clock_id, &cur_time))
-		tst_resm(TWARN | TERRNO, "tst_clock_gettime() failed");
+		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
 
 	return tst_timespec_diff_ms(cur_time, start_time) >= ms;
 }
@@ -90,7 +74,7 @@ int tst_timer_expired_ms(long long ms)
 void tst_timer_stop(void)
 {
 	if (tst_clock_gettime(clock_id, &stop_time))
-		tst_resm(TWARN | TERRNO, "tst_clock_gettime() failed");
+		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
 }
 
 struct timespec tst_timer_elapsed(void)
