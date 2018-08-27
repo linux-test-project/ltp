@@ -25,14 +25,18 @@
  */
 
 #define _GNU_SOURCE
-#include <stdlib.h>
+#include <unistd.h>
 #include "tst_test.h"
 
 static void do_test(void)
 {
 	char *const argv[] = {"test_exec_child", NULL};
+	char path[4096];
 
-	execvpe(argv[0], argv, environ);
+	if (tst_get_path("test_exec_child", path, sizeof(path)))
+		tst_brk(TCONF, "Couldn't find test_exec_child in $PATH");
+
+	execve(path, argv, environ);
 
 	tst_res(TBROK | TERRNO, "EXEC!");
 }
