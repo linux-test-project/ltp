@@ -1002,7 +1002,7 @@ static struct tst_option options[] = {
 	{"r:", &rarg, "-r x     Number of client requests"},
 	{"n:", &narg, "-n x     Client message size"},
 	{"N:", &Narg, "-N x     Server message size"},
-	{"m:", &Targ, "-m x     Reply timeout in microsec."},
+	{"m:", &Targ, "-m x     Receive timeout in milliseconds (not used by UDP/DCCP client)"},
 	{"d:", &rpath, "-d x     x is a path to file where result is saved"},
 	{"A:", &Aarg, "-A x     x max payload length (generated randomly)\n"},
 
