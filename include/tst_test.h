@@ -217,6 +217,7 @@ const char *tst_strsig(int sig);
  */
 const char *tst_strstatus(int status);
 
+unsigned int tst_timeout_remaining(void);
 void tst_set_timeout(int timeout);
 
 #ifndef TST_NO_DEFAULT_MAIN

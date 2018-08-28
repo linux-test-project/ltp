@@ -47,6 +47,7 @@ static int iterations = 1;
 static float duration = -1;
 static pid_t main_pid, lib_pid;
 static int mntpoint_mounted;
+static struct timespec tst_start_time; /* valid only for test pid */
 
 struct results {
 	int passed;
@@ -916,6 +917,9 @@ static void add_paths(void)
 
 static void heartbeat(void)
 {
+	if (tst_clock_gettime(CLOCK_MONOTONIC, &tst_start_time))
+		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
+
 	kill(getppid(), SIGUSR1);
 }
 
@@ -925,6 +929,7 @@ static void testrun(void)
 	unsigned long long stop_time = 0;
 	int cont = 1;
 
+	heartbeat();
 	add_paths();
 	do_test_setup();
 
@@ -990,6 +995,21 @@ static void sigint_handler(int sig LTP_ATTRIBUTE_UNUSED)
 		WRITE_MSG("Sending SIGKILL to test process...\n");
 		kill(-test_pid, SIGKILL);
 	}
+}
+
+unsigned int tst_timeout_remaining(void)
+{
+	static struct timespec now;
+	unsigned int elapsed;
+
+	if (tst_clock_gettime(CLOCK_MONOTONIC, &now))
+		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
+
+	elapsed = (tst_timespec_diff_ms(now, tst_start_time) + 500) / 1000;
+	if (results->timeout > elapsed)
+		return results->timeout - elapsed;
+
+	return 0;
 }
 
 void tst_set_timeout(int timeout)

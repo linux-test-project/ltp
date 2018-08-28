@@ -324,6 +324,9 @@ overriden by setting '.timeout' in the test structure or by calling
 time may vary arbitrarily, for these timeout can be disabled by setting it to
 -1.
 
+Test can find out how much time (in seconds) is remaining to timeout,
+by calling 'tst_timeout_remaining()'.
+
 A word about the cleanup() callback
 +++++++++++++++++++++++++++++++++++
 
