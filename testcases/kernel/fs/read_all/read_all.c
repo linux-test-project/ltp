@@ -40,6 +40,7 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <lapi/fnmatch.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <dirent.h>
