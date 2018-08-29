@@ -730,7 +730,6 @@ munlock01 munlock01
 munlock02 munlock02
 
 munlockall01 munlockall01
-munlockall02 munlockall02
 
 munmap01 munmap01
 munmap02 munmap02
