@@ -168,7 +168,12 @@ netns_setup()
 	ipv6)
 		IFCONF_IN6_ARG="inet6 add"
 		IP0=$6; IP1=$7;
-		tping="ping6"; NETMASK=64
+		if which ping6 >/dev/null 2>&1; then
+		    tping="ping6"
+		else
+		    tping="ping -6"
+		fi
+		NETMASK=64
 		;;
 	*)
 		tst_brkm TBROK "second argument must be an ip version (ipv4|ipv6)"
