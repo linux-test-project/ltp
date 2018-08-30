@@ -40,6 +40,7 @@ run_trace()
 {
 	local opts="$@"
 	local ip=$(tst_ipaddr rhost)
+	local pattern="^[ ]+1[ ]+$ip([ ]+[0-9]+[.][0-9]+ ms){3}"
 
 	# According to man pages, default sizes:
 	local bytes=60
@@ -55,11 +56,10 @@ run_trace()
 		tst_resm TPASS "traceroute use $bytes bytes"
 	fi
 
-	tail -1 out.log | grep -qE "^[ ]+1[ ]+$ip([ ]+[0-9]+[.][0-9]+ ms){3}"
+	tail -1 out.log | grep -qE "$pattern"
 	if [ $? -ne 0 ]; then
 		cat out.log
-		tst_resm TFAIL "^[ ]+1[ ]+$ip([ ]+[0-9]+[.][0-9]+ ms){3}' "
-			"pattern not found in log"
+		tst_resm TFAIL "pattern '$pattern' not found in log"
 	else
 		tst_resm TPASS "traceroute test completed with 1 hop"
 	fi
