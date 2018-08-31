@@ -352,6 +352,7 @@ static void check_child_status(pid_t pid, int status)
 	case TBROK:
 	case TCONF:
 		tst_brk(ret, "Reported by child (%i)", pid);
+	break;
 	default:
 		tst_brk(TBROK, "Invalid child (%i) exit value %i", pid, ret);
 	}
@@ -493,6 +494,7 @@ static void parse_opts(int argc, char *argv[])
 		case '?':
 			print_help();
 			tst_brk(TBROK, "Invalid option");
+		break;
 		case 'h':
 			print_help();
 			exit(0);
