@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "tst_kvercmp.h"
 #include "tst_test.h"
 #include "tst_safe_net.h"
 
@@ -37,16 +38,28 @@ void run(void)
 
 	/*
 	 * Once a STREAM UNIX domain socket has been bound, it can't be
-	 * rebound. Expected error is EINVAL.
+	 * rebound.
 	 */
 	if (bind(sock1, (struct sockaddr *)&sun, sizeof(sun)) == 0) {
 		tst_res(TFAIL, "re-binding of socket succeeded");
 		return;
 	}
 
-	if (errno != EINVAL) {
-		tst_res(TFAIL | TERRNO, "expected EINVAL");
-		return;
+	/*
+	 * The behavious diverse according to kernel version
+	 * for v4.10 or later, the expected error is EADDRINUSE,
+	 * otherwise EINVAL.
+	 */
+	if (tst_kvercmp(4, 10, 0) < 0) {
+		if (errno != EINVAL) {
+			tst_res(TFAIL | TERRNO, "expected EINVAL");
+			return;
+		}
+	} else {
+		if (errno != EADDRINUSE) {
+			tst_res(TFAIL | TERRNO, "expected EADDRINUSE");
+			return;
+		}
 	}
 
 	sock2 = SAFE_SOCKET(PF_UNIX, SOCK_STREAM, 0);
