@@ -1034,3 +1034,17 @@ int safe_munlock(const char *file, const int lineno, const void *addr,
 
 	return rval;
 }
+
+int safe_mincore(const char *file, const int lineno, void *start,
+	size_t length, unsigned char *vec)
+{
+	int rval;
+
+	rval = mincore(start, length, vec);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, NULL,
+			 "%s:%d: mincore() failed", file, lineno);
+	}
+
+	return rval;
+}

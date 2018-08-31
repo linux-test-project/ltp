@@ -490,6 +490,11 @@ int safe_munlock(const char *file, const int lineno, const char *addr,
 	size_t len);
 #define SAFE_MUNLOCK(addr, len) safe_munlock(__FILE__, __LINE__, (addr), (len))
 
+int safe_mincore(const char *file, const int lineno, void *start,
+	size_t length, unsigned char *vec);
+#define SAFE_MINCORE(start, length, vec) \
+	safe_mincore(__FILE__, __LINE__, (start), (length), (vec))
+
 int safe_fanotify_init(const char *file, const int lineno,
 	unsigned int flags, unsigned int event_f_flags);
 #define SAFE_FANOTIFY_INIT(fan, mode)  \
