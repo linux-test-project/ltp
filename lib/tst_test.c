@@ -727,6 +727,20 @@ static int prepare_and_mount_ro_fs(const char *dev,
 	return 0;
 }
 
+static void prepare_and_mount_dev_fs(const char *mntpoint)
+{
+	const char *flags[] = {"nodev", NULL};
+	int mounted_nodev;
+
+	mounted_nodev = tst_path_has_mnt_flags(NULL, flags);
+	if (mounted_nodev) {
+		tst_res(TINFO, "tmpdir isn't suitable for creating devices, "
+			"mounting tmpfs without nodev on %s", mntpoint);
+		SAFE_MOUNT(NULL, mntpoint, "tmpfs", 0, NULL);
+		mntpoint_mounted = 1;
+	}
+}
+
 static void prepare_device(void)
 {
 	if (tst_test->format_device) {
@@ -789,10 +803,20 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->mntpoint)
 		SAFE_MKDIR(tst_test->mntpoint, 0777);
 
-	if ((tst_test->needs_rofs || tst_test->mount_device ||
-	     tst_test->all_filesystems) && !tst_test->mntpoint) {
+	if ((tst_test->needs_devfs || tst_test->needs_rofs ||
+	     tst_test->mount_device || tst_test->all_filesystems) &&
+	     !tst_test->mntpoint) {
 		tst_brk(TBROK, "tst_test->mntpoint must be set!");
 	}
+
+	if (!!tst_test->needs_rofs + !!tst_test->needs_devfs +
+	    !!tst_test->needs_device > 1) {
+		tst_brk(TBROK,
+			"Two or more of needs_{rofs, devfs, device} are set");
+	}
+
+	if (tst_test->needs_devfs)
+		prepare_and_mount_dev_fs(tst_test->mntpoint);
 
 	if (tst_test->needs_rofs) {
 		/* If we failed to mount read-only tmpfs. Fallback to

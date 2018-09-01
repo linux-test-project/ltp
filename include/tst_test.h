@@ -129,6 +129,7 @@ struct tst_test {
 	int mount_device:1;
 	int needs_rofs:1;
 	int child_needs_reinit:1;
+	int needs_devfs:1;
 	/*
 	 * If set the test function will be executed for all available
 	 * filesystems and the current filesytem type would be set in the
