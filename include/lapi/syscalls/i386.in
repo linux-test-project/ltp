@@ -343,3 +343,4 @@ memfd_create 356
 execveat 358
 mlock2 376
 copy_file_range 377
+statx 383
