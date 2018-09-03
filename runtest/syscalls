@@ -1501,3 +1501,4 @@ copy_file_range01 copy_file_range01
 
 statx01 statx01
 statx02 statx02
+statx03 statx03
