@@ -570,30 +570,6 @@ main()
       INSTANCES="$INSTANCES -O ${TMP}"
     }
 
-    [ "$RUN_NETEST" -eq 1 ] && \
-    {
-        [ -z "$RHOST" ] || [ -z "$PASSWD" ] && \
-        {
-            [ -z "$RHOST" ] && \
-            {
-                printf "INFO: Enter RHOST = 'name of the remote host machine'"
-                printf "\n-> "
-                read RHOST
-            }
-
-            [ -z "$PASSWD" ] && \
-            {
-                printf "\nINFO: "
-                printf "Enter PASSWD = 'root passwd of the remote host machine'"
-                printf "\n-> "
-                read PASSWD
-            }
-            export RHOST=$RHOST
-            export PASSWD=$PASSWD
-            echo "WARNING: security of $RHOST may be compromised"
-        }
-    }
-
     # If user does not provide a command file select a default set of testcases
     # to execute.
     if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]; then
