@@ -1500,3 +1500,4 @@ memfd_create04 memfd_create04
 copy_file_range01 copy_file_range01
 
 statx01 statx01
+statx02 statx02
