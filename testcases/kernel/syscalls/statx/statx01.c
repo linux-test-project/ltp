@@ -90,7 +90,7 @@ static void test_normal_file(void)
 			buff.stx_mode, MODE);
 
 
-	if (buff.stx_blocks > 0 && buff.stx_blocks <= 128)
+	if (buff.stx_blocks <= buff.stx_blksize/512)
 		tst_res(TPASS, "stx_blocks(%"PRIu64") is valid",
 			buff.stx_blocks);
 	else
