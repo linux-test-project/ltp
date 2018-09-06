@@ -206,12 +206,13 @@ TST_RTNL_CHK()
 {
 	local msg1="RTNETLINK answers: Function not implemented"
 	local msg2="RTNETLINK answers: Operation not supported"
+	local msg3="RTNETLINK answers: Protocol not supported"
 	local output="$($@ 2>&1 || echo 'LTP_ERR')"
 	local msg
 
 	echo "$output" | grep -q "LTP_ERR" || return 0
 
-	for msg in "$msg1" "$msg2"; do
+	for msg in "$msg1" "$msg2" "$msg3"; do
 		echo "$output" | grep -q "$msg" && tst_brk TCONF "'$@': $msg"
 	done
 
