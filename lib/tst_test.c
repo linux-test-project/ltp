@@ -745,7 +745,7 @@ static void prepare_device(void)
 {
 	if (tst_test->format_device) {
 		SAFE_MKFS(tdev.dev, tdev.fs_type, tst_test->dev_fs_opts,
-			  tst_test->dev_extra_opt);
+			  tst_test->dev_extra_opts);
 	}
 
 	if (tst_test->needs_rofs) {

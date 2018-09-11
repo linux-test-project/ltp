@@ -24,12 +24,13 @@
 
 void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 	       const char *dev, const char *fs_type,
-	       const char *const fs_opts[], const char *extra_opt)
+	       const char *const fs_opts[], const char *const extra_opts[])
 {
 	int i, pos = 1, ret;
 	char mkfs[64];
 	const char *argv[OPTS_MAX] = {mkfs};
 	char fs_opts_str[1024] = "";
+	char extra_opts_str[1024] = "";
 
 	if (!dev) {
 		tst_brkm(TBROK, cleanup_fn,
@@ -64,13 +65,19 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	argv[pos++] = dev;
 
-	if (extra_opt) {
-		argv[pos++] = extra_opt;
+	if (extra_opts) {
+		for (i = 0; extra_opts[i]; i++) {
+			argv[pos++] = extra_opts[i];
 
-		if (pos + 1 > OPTS_MAX) {
-			tst_brkm(TBROK, cleanup_fn,
-			         "%s:%d: Too much mkfs options", file, lineno);
-			return;
+			if (pos + 1 > OPTS_MAX) {
+				tst_brkm(TBROK, cleanup_fn,
+				         "%s:%d: Too much mkfs options", file, lineno);
+				return;
+			}
+
+			if (i)
+				strcat(extra_opts_str, " ");
+			strcat(extra_opts_str, extra_opts[i]);
 		}
 	}
 
@@ -80,7 +87,7 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 		tst_brkm(TBROK, cleanup_fn, "tst_clear_device() failed");
 
 	tst_resm(TINFO, "Formatting %s with %s opts='%s' extra opts='%s'",
-	         dev, fs_type, fs_opts_str, extra_opt ? extra_opt : "");
+	         dev, fs_type, fs_opts_str, extra_opts_str);
 	ret = tst_run_cmd(cleanup_fn, argv, "/dev/null", NULL, 1);
 
 	switch (ret) {

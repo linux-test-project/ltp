@@ -980,7 +980,7 @@ then.
 If '.format_device' flag is set the device is formatted with a filesystem as
 well. You can use '.dev_fs_type' to override the default filesystem type if
 needed and pass additional options to mkfs via '.dev_fs_opts' and
-'.dev_extra_opt' pointers. Note that '.format_device' implies '.needs_device'
+'.dev_extra_opts' pointers. Note that '.format_device' implies '.needs_device'
 there is no need to set both.
 
 If '.mount_device' is set, the device is mounted at '.mntpoint' which is used
@@ -1055,9 +1055,10 @@ The fs options 'fs_opts' should either be 'NULL' if there are none, or a
 'NULL' terminated array of strings such as:
 +const char *const opts[] = {"-b", "1024", NULL}+.
 
-The extra option 'extra_opt' should either be 'NULL' if there is none, or a
-string such as '"102400"'; 'extra_opt' will be passed after device name. e.g:
-+mkfs -t ext4 -b 1024 /dev/sda1 102400+ in this case.
+The extra options 'extra_opts' should either be 'NULL' if there are none, or a
+'NULL' terminated array of strings such as +{"102400", NULL}+; 'extra_opts'
+will be passed after device name. e.g: +mkfs -t ext4 -b 1024 /dev/sda1 102400+
+in this case.
 
 2.2.16 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

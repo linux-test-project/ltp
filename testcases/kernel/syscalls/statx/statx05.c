@@ -101,6 +101,6 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MOUNT_POINT,
 	.dev_fs_type = "ext4",
-	.dev_extra_opt = "-O encrypt",
+	.dev_extra_opts = (const char *const[]){"-O encrypt", NULL},
 	.dev_min_size = 512,
 };

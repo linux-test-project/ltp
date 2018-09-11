@@ -148,7 +148,7 @@ struct tst_test {
 
 	/* Options passed to SAFE_MKFS() when format_device is set */
 	const char *const *dev_fs_opts;
-	const char *dev_extra_opt;
+	const char *const *dev_extra_opts;
 
 	/* Device mount options, used if mount_device is set */
 	const char *mntpoint;
