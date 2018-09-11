@@ -21,7 +21,7 @@ static struct tcase {
 	char *str;
 	unsigned int sec;
 } tcases[] = {
-	{"UINT_MAX", UINT_MAX},
+	{"INT_MAX", INT_MAX},
 	{"UINT_MAX/2", UINT_MAX/2},
 	{"UINT_MAX/4", UINT_MAX/4},
 };
