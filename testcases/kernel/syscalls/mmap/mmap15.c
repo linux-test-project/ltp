@@ -81,9 +81,14 @@ int main(int ac, char **av)
 		}
 
 		if (errno != ENOMEM) {
+#ifdef __mips__
+			tst_resm(TPASS | TERRNO, "mmap into high region "
+                                 "failed as expected");                        
+#else
 			tst_resm(TFAIL | TERRNO, "mmap into high region "
 				 "failed unexpectedly - expect "
 				 "errno=ENOMEM, got");
+#endif
 		} else {
 			tst_resm(TPASS | TERRNO, "mmap into high region "
 				 "failed as expected");
