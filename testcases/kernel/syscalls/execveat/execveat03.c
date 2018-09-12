@@ -30,7 +30,7 @@
  *     can't be found. The solution could use d_find_any_alias() instead of
  *     d_find_alias().
  *
- *     Starting with kernel 4.14, this case fails, execveat shell
+ *     Starting with kernel 4.14, this case fails, execveat shall
  *     returns EINVAL.
  *
  *     This has been fixed by:
