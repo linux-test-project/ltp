@@ -30,9 +30,12 @@
  *     can't be found. The solution could use d_find_any_alias() instead of
  *     d_find_alias().
  *
- *     From kernel 4.14, this case is expected fails, execveat shell
- *     return EINVAL.
+ *     Starting with kernel 4.14, this case fails, execveat shell
+ *     returns EINVAL.
  *
+ *     This has been fixed by:
+ *       355139a8dba4 ("cap_inode_getsecurity: use d_find_any_alias()
+ *                      instead of d_find_alias()")
  */
 
 #define _GNU_SOURCE
