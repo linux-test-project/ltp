@@ -23,6 +23,7 @@
  * Minimum kernel version required is 4.11.
  */
 
+#define _GNU_SOURCE
 #include "tst_test.h"
 #include "lapi/fs.h"
 #include <stdlib.h>

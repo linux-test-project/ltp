@@ -26,6 +26,8 @@
  *
  * Minimum Kernel version required is 4.11.
  */
+
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include "tst_test.h"

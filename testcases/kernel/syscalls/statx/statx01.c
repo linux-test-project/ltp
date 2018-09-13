@@ -33,6 +33,8 @@
  * predefined values.
  * Minimum kernel version required is 4.11.
  */
+
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/sysmacros.h>

@@ -19,8 +19,11 @@
  * Minimum kernel version required is 4.11.
  */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "tst_test.h"
 #include "lapi/fs.h"
 #include "lapi/stat.h"
