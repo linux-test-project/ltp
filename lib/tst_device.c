@@ -313,7 +313,7 @@ int tst_release_device(const char *dev)
 {
 	int ret;
 
-	if (getenv("LTP_DEV"))
+	if (!device_acquired)
 		return 0;
 
 	/*
