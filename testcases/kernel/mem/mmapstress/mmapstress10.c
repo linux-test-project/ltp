@@ -887,7 +887,7 @@ int fileokay(char *file, uchar_t * expbuf)
 {
 	if (!leavefile)
 		(void)unlink(filename);
-	exit(1);
+	_exit(1);
 }
 
 void clean_mapper(int sig)
@@ -895,14 +895,14 @@ void clean_mapper(int sig)
 	if (fd_mapper)
 		close(fd_mapper);
 	munmap(maddr_mapper, mapsize_mapper);
-	exit(0);
+	_exit(0);
 }
 
 void clean_writer(int sig)
 {
 	if (fd_writer)
 		close(fd_writer);
-	exit(0);
+	_exit(0);
 }
 
 unsigned int initrand(void)
