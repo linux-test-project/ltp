@@ -172,6 +172,9 @@ struct tst_test {
 
 	/* NULL terminated array of resource file names */
 	const char *const *resource_files;
+
+	/* NULL terminated array of needed kernel drivers */
+	const char * const *needs_drivers;
 };
 
 /*

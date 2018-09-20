@@ -23,4 +23,12 @@
  */
 int tst_kernel_bits(void);
 
+/**
+ * Checks support for the kernel driver.
+ *
+ * @param name The name of the driver.
+ * @return Returns 0 if the kernel has the driver or modprobe is missing.
+ */
+int tst_check_driver(const char *name);
+
 #endif	/* TST_KERNEL_H__ */

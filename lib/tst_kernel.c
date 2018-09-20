@@ -45,3 +45,12 @@ int tst_kernel_bits(void)
 
 	return kernel_bits;
 }
+
+int tst_check_driver(const char *name)
+{
+	const char * const argv[] = { "modprobe", "-n", name, NULL };
+	int res = tst_run_cmd_(NULL, argv, "/dev/null", "/dev/null", 1);
+
+	/* 255 - it looks like modprobe not available */
+	return (res == 255) ? 0 : res;
+}
