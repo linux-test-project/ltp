@@ -840,6 +840,27 @@ int safe_getpriority(const char *file, const int lineno, int which, id_t who)
 	return rval;
 }
 
+ssize_t safe_getxattr(const char *file, const int lineno, const char *path,
+		      const char *name, void *value, size_t size)
+{
+	ssize_t rval;
+
+	rval = getxattr(path, name, value, size);
+
+	if (rval == -1) {
+		if (errno == ENOTSUP) {
+			tst_brkm(TCONF, NULL,
+				 "%s:%d: no xattr support in fs or mounted "
+				 "without user_xattr option", file, lineno);
+		}
+
+		tst_brkm(TBROK | TERRNO, NULL, "%s:%d: getxattr() failed",
+			 file, lineno);
+	}
+
+	return rval;
+}
+
 int safe_setxattr(const char *file, const int lineno, const char *path,
 		  const char *name, const void *value, size_t size, int flags)
 {
