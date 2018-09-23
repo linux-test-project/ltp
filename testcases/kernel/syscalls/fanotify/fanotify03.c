@@ -138,15 +138,33 @@ static void check_child(void)
 		tst_res(TFAIL, "child %s", tst_strstatus(child_ret));
 }
 
+static void setup_mark(void)
+{
+	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
+
+	if (fanotify_mark(fd_notify, FAN_MARK_ADD,
+			  FAN_ACCESS_PERM | FAN_OPEN_PERM,
+			  AT_FDCWD, fname) < 0) {
+		if (errno == EINVAL) {
+			tst_brk(TCONF | TERRNO,
+				"CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
+				"configured in kernel?");
+		} else {
+			tst_brk(TBROK | TERRNO,
+				"fanotify_mark (%d, FAN_MARK_ADD, "
+				"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
+				"AT_FDCWD, %s) failed.",
+				fd_notify, fname);
+		}
+	}
+}
+
 void test01(void)
 {
-	int tst_count, fd_notify_backup = -1;
-
+	int tst_count;
 	int ret, len = 0, i = 0, test_num = 0;
 
-	if (fd_notify_backup == -1) {
-		fd_notify_backup = SAFE_DUP(fd_notify);
-	}
+	setup_mark();
 	run_child();
 
 	tst_count = 0;
@@ -229,33 +247,15 @@ void test01(void)
 
 	}
 	check_child();
-	/* We got SIGCHLD while running, resetup fd_notify */
-	if (fd_notify == -1) {
-		fd_notify = fd_notify_backup;
-		fd_notify_backup = -1;
-	}
+
+	if (fd_notify > 0)
+		SAFE_CLOSE(fd_notify);
 }
 
 static void setup(void)
 {
 	sprintf(fname, "fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
-
-	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
-
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS_PERM |
-			    FAN_OPEN_PERM, AT_FDCWD, fname) < 0) {
-		if (errno == EINVAL) {
-			tst_brk(TCONF | TERRNO,
-				 "CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
-				 "configured in kernel?");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				 "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS_PERM | "
-				 "FAN_OPEN_PERM, AT_FDCWD, %s) failed.", fd_notify, fname);
-		}
-	}
-
 }
 
 static void cleanup(void)
