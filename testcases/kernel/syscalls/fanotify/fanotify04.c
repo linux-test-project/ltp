@@ -1,24 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Started by Jan Kara <jack@suse.cz>
  *
@@ -77,14 +59,16 @@ static void check_mark(char *file, unsigned long long flag, char *flagstr,
 		       int expect, void (*test_event)(char *))
 {
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD | flag, FAN_OPEN, AT_FDCWD,
-			    file) != expect) {
+			  file) != expect) {
 		tst_res(TFAIL,
-		    "fanotify_mark (%d, FAN_MARK_ADD | %s, FAN_OPEN, AT_FDCWD, "
-		    "'%s') %s", fd_notify, flagstr, file, expect_str_fail(expect));
+			"fanotify_mark (%d, FAN_MARK_ADD | %s, FAN_OPEN, "
+			"AT_FDCWD, '%s') %s", fd_notify, flagstr, file,
+			expect_str_fail(expect));
 	} else {
 		tst_res(TPASS,
-		    "fanotify_mark (%d, FAN_MARK_ADD | %s, FAN_OPEN, AT_FDCWD, "
-		    "'%s') %s", fd_notify, flagstr, file, expect_str_pass(expect));
+			"fanotify_mark (%d, FAN_MARK_ADD | %s, FAN_OPEN, "
+			"AT_FDCWD, '%s') %s", fd_notify, flagstr, file,
+			expect_str_pass(expect));
 
 		/* If we expected failure there's nothing to clean up */
 		if (expect == -1)
@@ -94,11 +78,11 @@ static void check_mark(char *file, unsigned long long flag, char *flagstr,
 			test_event(file);
 
 		if (fanotify_mark(fd_notify, FAN_MARK_REMOVE | flag,
-				    FAN_OPEN, AT_FDCWD, file) < 0) {
+				  FAN_OPEN, AT_FDCWD, file) < 0) {
 			tst_brk(TBROK | TERRNO,
-			    "fanotify_mark (%d, FAN_MARK_REMOVE | %s, "
-			    "FAN_OPEN, AT_FDCWD, '%s') failed",
-			    fd_notify, flagstr, file);
+				"fanotify_mark (%d, FAN_MARK_REMOVE | %s, "
+				"FAN_OPEN, AT_FDCWD, '%s') failed",
+				fd_notify, flagstr, file);
 		}
 	}
 }
@@ -137,13 +121,13 @@ static void verify_event(int mask)
 
 	if (event->mask != FAN_OPEN) {
 		tst_res(TFAIL, "got unexpected event %llx",
-			 (unsigned long long)event->mask);
+			(unsigned long long)event->mask);
 	} else if (fstat(event->fd, &st) < 0) {
 		tst_res(TFAIL, "failed to stat event->fd (%s)",
-			 strerror(errno));
+			strerror(errno));
 	} else if ((int)(st.st_mode & S_IFMT) != mask) {
 		tst_res(TFAIL, "event->fd points to object of different type "
-			 "(%o != %o)", st.st_mode & S_IFMT, mask);
+			"(%o != %o)", st.st_mode & S_IFMT, mask);
 	} else {
 		tst_res(TPASS, "event generated properly for type %o", mask);
 	}
@@ -173,13 +157,13 @@ static void verify_no_event(void)
 
 		event = (struct fanotify_event_metadata *)&event_buf[len];
 		tst_res(TFAIL, "seen unexpected event (mask %llx)",
-			 (unsigned long long)event->mask);
+			(unsigned long long)event->mask);
 		/* Cleanup fd from the event */
 		if (event->fd != FAN_NOFD)
 			SAFE_CLOSE(event->fd);
 	} else if (errno != EAGAIN) {
 		tst_res(TFAIL | TERRNO, "read(%d, buf, %zu) failed", fd_notify,
-			 EVENT_BUF_LEN);
+			EVENT_BUF_LEN);
 	} else {
 		tst_res(TPASS, "No event as expected");
 	}
@@ -208,27 +192,27 @@ void test01(void)
 
 	/* Verify FAN_MARK_FLUSH destroys all inode marks */
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD,
-			    FAN_OPEN, AT_FDCWD, fname) < 0) {
+			  FAN_OPEN, AT_FDCWD, fname) < 0) {
 		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_ADD, FAN_OPEN, "
-		    "AT_FDCWD, '%s') failed", fd_notify, fname);
+			"fanotify_mark (%d, FAN_MARK_ADD, FAN_OPEN, "
+			"AT_FDCWD, '%s') failed", fd_notify, fname);
 	}
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD,
-			    FAN_OPEN | FAN_ONDIR, AT_FDCWD, dir) < 0) {
+			  FAN_OPEN | FAN_ONDIR, AT_FDCWD, dir) < 0) {
 		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_ADD, FAN_OPEN | "
-		    "FAN_ONDIR, AT_FDCWD, '%s') failed", fd_notify,
-		    dir);
+			"fanotify_mark (%d, FAN_MARK_ADD, FAN_OPEN | "
+			"FAN_ONDIR, AT_FDCWD, '%s') failed", fd_notify,
+			dir);
 	}
 	open_file(fname);
 	verify_event(S_IFREG);
 	open_dir(dir);
 	verify_event(S_IFDIR);
 	if (fanotify_mark(fd_notify, FAN_MARK_FLUSH,
-			    0, AT_FDCWD, ".") < 0) {
+			  0, AT_FDCWD, ".") < 0) {
 		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_FLUSH, 0, "
-		    "AT_FDCWD, '.') failed", fd_notify);
+			"fanotify_mark (%d, FAN_MARK_FLUSH, 0, "
+			"AT_FDCWD, '.') failed", fd_notify);
 	}
 
 	open_dir(dir);
@@ -250,7 +234,7 @@ static void setup(void)
 	SAFE_MKDIR(dir, 0755);
 
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | FAN_NONBLOCK,
-			O_RDONLY);
+					O_RDONLY);
 }
 
 static void cleanup(void)
