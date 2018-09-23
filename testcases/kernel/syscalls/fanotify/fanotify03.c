@@ -1,24 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Started by Jan Kara <jack@suse.cz>
  *
@@ -106,7 +88,7 @@ static void run_child(void)
 
 	if (sigaction(SIGCHLD, &child_action, NULL) < 0) {
 		tst_brk(TBROK | TERRNO,
-			 "sigaction(SIGCHLD, &child_action, NULL) failed");
+			"sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
 
 	child_pid = SAFE_FORK();
@@ -128,7 +110,7 @@ static void check_child(void)
 	child_action.sa_flags = SA_NOCLDSTOP;
 	if (sigaction(SIGCHLD, &child_action, NULL) < 0) {
 		tst_brk(TBROK | TERRNO,
-			 "sigaction(SIGCHLD, &child_action, NULL) failed");
+			"sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
 	SAFE_WAITPID(-1, &child_ret, 0);
 
@@ -177,7 +159,7 @@ void test01(void)
 	/* tst_count + 1 is for checking child return value */
 	if (TST_TOTAL != tst_count + 1) {
 		tst_brk(TBROK,
-			 "TST_TOTAL and tst_count do not match");
+			"TST_TOTAL and tst_count do not match");
 	}
 	tst_count = 0;
 
@@ -195,8 +177,8 @@ void test01(void)
 				break;
 			if (ret < 0) {
 				tst_brk(TBROK,
-					 "read(%d, buf, %zu) failed",
-					 fd_notify, EVENT_BUF_LEN);
+					"read(%d, buf, %zu) failed",
+					fd_notify, EVENT_BUF_LEN);
 			}
 			len += ret;
 		}
@@ -204,24 +186,24 @@ void test01(void)
 		event = (struct fanotify_event_metadata *)&event_buf[i];
 		if (!(event->mask & event_set[test_num])) {
 			tst_res(TFAIL,
-				 "get event: mask=%llx (expected %llx) "
-				 "pid=%u fd=%u",
-				 (unsigned long long)event->mask,
-				 event_set[test_num],
-				 (unsigned)event->pid, event->fd);
+				"got event: mask=%llx (expected %llx) "
+				"pid=%u fd=%d",
+				(unsigned long long)event->mask,
+				event_set[test_num],
+				(unsigned)event->pid, event->fd);
 		} else if (event->pid != child_pid) {
 			tst_res(TFAIL,
-				 "get event: mask=%llx pid=%u "
-				 "(expected %u) fd=%u",
-				 (unsigned long long)event->mask,
-				 (unsigned)event->pid,
-				 (unsigned)child_pid,
-				 event->fd);
+				"got event: mask=%llx pid=%u "
+				"(expected %u) fd=%d",
+				(unsigned long long)event->mask,
+				(unsigned)event->pid,
+				(unsigned)child_pid,
+				event->fd);
 		} else {
 			tst_res(TPASS,
-				    "get event: mask=%llx pid=%u fd=%u",
-				    (unsigned long long)event->mask,
-				    (unsigned)event->pid, event->fd);
+				"got event: mask=%llx pid=%u fd=%d",
+				(unsigned long long)event->mask,
+				(unsigned)event->pid, event->fd);
 		}
 		/* Write response to permission event */
 		if (event_set[test_num] & FAN_ALL_PERM_EVENTS) {
@@ -243,7 +225,7 @@ void test01(void)
 	}
 	for (; test_num < TST_TOTAL - 1; test_num++) {
 		tst_res(TFAIL, "didn't get event: mask=%llx",
-			 event_set[test_num]);
+			event_set[test_num]);
 
 	}
 	check_child();
