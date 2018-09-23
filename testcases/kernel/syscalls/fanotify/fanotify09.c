@@ -1,24 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 CTERA Networks.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 or any later of the GNU General Public License
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Started by Amir Goldstein <amir73il@gmail.com>
  *
@@ -71,8 +53,8 @@ static void create_fanotify_groups(void)
 
 	for (i = 0; i < NUM_GROUPS; i++) {
 		fd_notify[i] = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF |
-						FAN_NONBLOCK,
-						O_RDONLY);
+						  FAN_NONBLOCK,
+						  O_RDONLY);
 
 		/* Add mount mark for each group without MODIFY event */
 		ret = fanotify_mark(fd_notify[i],
@@ -81,9 +63,9 @@ static void create_fanotify_groups(void)
 				    AT_FDCWD, ".");
 		if (ret < 0) {
 			tst_brk(TBROK | TERRNO,
-				 "fanotify_mark(%d, FAN_MARK_ADD | "
-				 "FAN_MARK_MOUNT, FAN_MODIFY, AT_FDCWD,"
-				 " '.') failed", fd_notify[i]);
+				"fanotify_mark(%d, FAN_MARK_ADD | "
+				"FAN_MARK_MOUNT, FAN_MODIFY, AT_FDCWD,"
+				" '.') failed", fd_notify[i]);
 		}
 		/*
 		 * Add inode mark on parent for each group with MODIFY
@@ -98,10 +80,10 @@ static void create_fanotify_groups(void)
 				    FAN_MODIFY | onchild, AT_FDCWD, ".");
 		if (ret < 0) {
 			tst_brk(TBROK | TERRNO,
-				 "fanotify_mark(%d, FAN_MARK_ADD, "
-				 "FAN_MODIFY%s, AT_FDCWD, '.') failed",
-				 fd_notify[i],
-				 onchild ? " | FAN_EVENT_ON_CHILD" : "");
+				"fanotify_mark(%d, FAN_MARK_ADD, "
+				"FAN_MODIFY%s, AT_FDCWD, '.') failed",
+				fd_notify[i],
+				onchild ? " | FAN_EVENT_ON_CHILD" : "");
 		}
 	}
 }
@@ -119,19 +101,19 @@ static void cleanup_fanotify_groups(void)
 static void verify_event(int group, struct fanotify_event_metadata *event)
 {
 	if (event->mask != FAN_MODIFY) {
-		tst_res(TFAIL, "group %d get event: mask %llx (expected %llx) "
-			 "pid=%u fd=%u", group, (unsigned long long)event->mask,
-			 (unsigned long long)FAN_MODIFY,
-			 (unsigned)event->pid, event->fd);
+		tst_res(TFAIL, "group %d got event: mask %llx (expected %llx) "
+			"pid=%u fd=%d", group, (unsigned long long)event->mask,
+			(unsigned long long)FAN_MODIFY,
+			(unsigned)event->pid, event->fd);
 	} else if (event->pid != getpid()) {
-		tst_res(TFAIL, "group %d get event: mask %llx pid=%u "
-			 "(expected %u) fd=%u", group,
-			 (unsigned long long)event->mask, (unsigned)event->pid,
-			 (unsigned)getpid(), event->fd);
+		tst_res(TFAIL, "group %d got event: mask %llx pid=%u "
+			"(expected %u) fd=%d", group,
+			(unsigned long long)event->mask, (unsigned)event->pid,
+			(unsigned)getpid(), event->fd);
 	} else {
-		tst_res(TPASS, "group %d get event: mask %llx pid=%u fd=%u",
-			 group, (unsigned long long)event->mask,
-			 (unsigned)event->pid, event->fd);
+		tst_res(TPASS, "group %d got event: mask %llx pid=%u fd=%d",
+			group, (unsigned long long)event->mask,
+			(unsigned)event->pid, event->fd);
 	}
 }
 
@@ -155,20 +137,20 @@ void test01(void)
 			tst_res(TFAIL, "first group did not get event");
 		} else {
 			tst_brk(TBROK | TERRNO,
-				 "reading fanotify events failed");
+				"reading fanotify events failed");
 		}
 	}
 	if (ret < (int)FAN_EVENT_METADATA_LEN) {
 		tst_brk(TBROK,
-			 "short read when reading fanotify "
-			 "events (%d < %d)", ret,
-			 (int)EVENT_BUF_LEN);
+			"short read when reading fanotify "
+			"events (%d < %d)", ret,
+			(int)EVENT_BUF_LEN);
 	}
 	event = (struct fanotify_event_metadata *)event_buf;
 	if (ret > (int)event->event_len) {
 		tst_res(TFAIL, "first group got more than one "
-			 "event (%d > %d)", ret,
-			 event->event_len);
+			"event (%d > %d)", ret,
+			event->event_len);
 	} else {
 		verify_event(0, event);
 	}
