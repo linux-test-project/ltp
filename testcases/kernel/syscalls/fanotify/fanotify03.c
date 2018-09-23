@@ -32,6 +32,8 @@
 #define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
+/* Size large enough to hold a reasonable amount of expected event objects */
+#define EVENT_SET_MAX 16
 
 #define BUF_SIZE 256
 #define TST_TOTAL 3
@@ -42,27 +44,48 @@ static volatile int fd_notify;
 
 static pid_t child_pid;
 
-static unsigned long long event_set[EVENT_MAX];
-static unsigned int event_resp[EVENT_MAX];
-
 static char event_buf[EVENT_BUF_LEN];
+static int support_perm_events;
+
+struct event {
+	unsigned long long mask;
+	unsigned int response;
+};
 
 static struct tcase {
 	const char *tname;
 	struct fanotify_mark_type mark;
+	unsigned long long mask;
+	int event_count;
+	struct event event_set[EVENT_SET_MAX];
 } tcases[] = {
 	{
 		"inode mark permission events",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_OPEN_PERM | FAN_ACCESS_PERM, 2,
+		{
+			{FAN_OPEN_PERM, FAN_ALLOW},
+			{FAN_ACCESS_PERM, FAN_DENY}
+		}
 	},
 	{
 		"mount mark permission events",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_OPEN_PERM | FAN_ACCESS_PERM, 2,
+		{
+			{FAN_OPEN_PERM, FAN_ALLOW},
+			{FAN_ACCESS_PERM, FAN_DENY}
+		}
 	},
 	{
 		"filesystem mark permission events",
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
-	},
+		FAN_OPEN_PERM | FAN_ACCESS_PERM, 2,
+		{
+			{FAN_OPEN_PERM, FAN_ALLOW},
+			{FAN_ACCESS_PERM, FAN_DENY}
+		}
+	}
 };
 
 static void generate_events(void)
@@ -145,8 +168,7 @@ static int setup_mark(unsigned int n)
 
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
-			  FAN_ACCESS_PERM | FAN_OPEN_PERM,
+	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag, tc->mask,
 			  AT_FDCWD, fname) < 0) {
 		if (errno == EINVAL && mark->flag == FAN_MARK_FILESYSTEM) {
 			tst_res(TCONF,
@@ -163,6 +185,12 @@ static int setup_mark(unsigned int n)
 				"AT_FDCWD, %s) failed.",
 				fd_notify, mark->name, fname);
 		}
+	} else {
+		/*
+		 * To distinguish between perm event not supported and
+		 * filesystem mark not supported.
+		 */
+		support_perm_events = 1;
 	}
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
@@ -171,32 +199,22 @@ static int setup_mark(unsigned int n)
 
 static void test_fanotify(unsigned int n)
 {
-	int tst_count;
 	int ret, len = 0, i = 0, test_num = 0;
+	struct tcase *tc = &tcases[n];
+	struct event *event_set = tc->event_set;
 
 	if (setup_mark(n) != 0)
 		return;
 
 	run_child();
 
-	tst_count = 0;
-
-	event_set[tst_count] = FAN_OPEN_PERM;
-	event_resp[tst_count++] = FAN_ALLOW;
-	event_set[tst_count] = FAN_ACCESS_PERM;
-	event_resp[tst_count++] = FAN_DENY;
-
-	/* tst_count + 1 is for checking child return value */
-	if (TST_TOTAL != tst_count + 1) {
-		tst_brk(TBROK,
-			"TST_TOTAL and tst_count do not match");
-	}
-	tst_count = 0;
-
 	/*
-	 * check events
+	 * Process events
+	 *
+	 * tc->count + 1 is to accommodate for checking the child process
+	 * return value
 	 */
-	while (test_num < TST_TOTAL && fd_notify != -1) {
+	while (test_num < tc->event_count + 1 && fd_notify != -1) {
 		struct fanotify_event_metadata *event;
 
 		if (i == len) {
@@ -214,12 +232,16 @@ static void test_fanotify(unsigned int n)
 		}
 
 		event = (struct fanotify_event_metadata *)&event_buf[i];
-		if (!(event->mask & event_set[test_num])) {
+		/* Permission events cannot be merged, so the event mask
+		 * reported should exactly match the event mask within the
+		 * event set.
+		 */
+		if (event->mask != event_set[test_num].mask) {
 			tst_res(TFAIL,
 				"got event: mask=%llx (expected %llx) "
 				"pid=%u fd=%d",
 				(unsigned long long)event->mask,
-				event_set[test_num],
+				event_set[test_num].mask,
 				(unsigned)event->pid, event->fd);
 		} else if (event->pid != child_pid) {
 			tst_res(TFAIL,
@@ -235,29 +257,30 @@ static void test_fanotify(unsigned int n)
 				(unsigned long long)event->mask,
 				(unsigned)event->pid, event->fd);
 		}
-		/* Write response to permission event */
-		if (event_set[test_num] & FAN_ALL_PERM_EVENTS) {
+
+		/* Write response to the permission event */
+		if (event_set[test_num].mask & FAN_ALL_PERM_EVENTS) {
 			struct fanotify_response resp;
 
 			resp.fd = event->fd;
-			resp.response = event_resp[test_num];
-			SAFE_WRITE(1, fd_notify, &resp,
-				   sizeof(resp));
+			resp.response = event_set[test_num].response;
+			SAFE_WRITE(1, fd_notify, &resp, sizeof(resp));
 		}
-		event->mask &= ~event_set[test_num];
-		/* No events left in current mask? Go for next event */
-		if (event->mask == 0) {
-			i += event->event_len;
-			if (event->fd != FAN_NOFD)
-				SAFE_CLOSE(event->fd);
-		}
+
+		i += event->event_len;
+
+		if (event->fd != FAN_NOFD)
+			SAFE_CLOSE(event->fd);
+
 		test_num++;
 	}
-	for (; test_num < TST_TOTAL - 1; test_num++) {
+
+	for (; test_num < tc->event_count; test_num++) {
 		tst_res(TFAIL, "didn't get event: mask=%llx",
-			event_set[test_num]);
+			event_set[test_num].mask);
 
 	}
+
 	check_child();
 
 	if (fd_notify > 0)
