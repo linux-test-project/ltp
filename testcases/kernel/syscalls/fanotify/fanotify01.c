@@ -1,24 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Started by Jan Kara <jack@suse.cz>
  *
@@ -67,9 +49,9 @@ void test01(void)
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS | FAN_MODIFY |
 			    FAN_CLOSE | FAN_OPEN, AT_FDCWD, fname) < 0) {
 		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | "
-		    "FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
-		    "failed", fd_notify, fname);
+			"fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | "
+			"FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
+			"failed", fd_notify, fname);
 	}
 
 	/*
@@ -119,12 +101,12 @@ void test01(void)
 
 	/* Ignore access events */
 	if (fanotify_mark(fd_notify,
-			    FAN_MARK_ADD | FAN_MARK_IGNORED_MASK,
-			    FAN_ACCESS, AT_FDCWD, fname) < 0) {
+			  FAN_MARK_ADD | FAN_MARK_IGNORED_MASK,
+			  FAN_ACCESS, AT_FDCWD, fname) < 0) {
 		tst_brk(TBROK | TERRNO,
-		     "fanotify_mark (%d, FAN_MARK_ADD | "
-		     "FAN_MARK_IGNORED_MASK, FAN_ACCESS, "
-		     "AT_FDCWD, %s) failed", fd_notify, fname);
+			"fanotify_mark (%d, FAN_MARK_ADD | "
+			"FAN_MARK_IGNORED_MASK, FAN_ACCESS, "
+			"AT_FDCWD, %s) failed", fd_notify, fname);
 	}
 
 	fd = SAFE_OPEN(fname, O_RDWR);
@@ -172,11 +154,11 @@ void test01(void)
 			    FAN_MARK_ADD | FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY,
 			    FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
 		tst_brk(TBROK | TERRNO,
-		     "fanotify_mark (%d, FAN_MARK_ADD | "
-		     "FAN_MARK_IGNORED_MASK | "
-		     "FAN_MARK_IGNORED_SURV_MODIFY, FAN_OPEN | "
-		     "FAN_CLOSE, AT_FDCWD, %s) failed", fd_notify,
-		     fname);
+			"fanotify_mark (%d, FAN_MARK_ADD | "
+			"FAN_MARK_IGNORED_MASK | "
+			"FAN_MARK_IGNORED_SURV_MODIFY, FAN_OPEN | "
+			"FAN_CLOSE, AT_FDCWD, %s) failed", fd_notify,
+			fname);
 	}
 
 	/* This event should be ignored */
@@ -199,13 +181,13 @@ void test01(void)
 
 	/* Now remove open and close from ignored mask */
 	if (fanotify_mark(fd_notify,
-			    FAN_MARK_REMOVE | FAN_MARK_IGNORED_MASK,
-			    FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
+			  FAN_MARK_REMOVE | FAN_MARK_IGNORED_MASK,
+			  FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
 		tst_brk(TBROK | TERRNO,
-		     "fanotify_mark (%d, FAN_MARK_REMOVE | "
-		     "FAN_MARK_IGNORED_MASK, FAN_OPEN | "
-		     "FAN_CLOSE, AT_FDCWD, %s) failed", fd_notify,
-		     fname);
+			"fanotify_mark (%d, FAN_MARK_REMOVE | "
+			"FAN_MARK_IGNORED_MASK, FAN_OPEN | "
+			"FAN_CLOSE, AT_FDCWD, %s) failed", fd_notify,
+			fname);
 	}
 
 	SAFE_CLOSE(fd);
@@ -219,8 +201,8 @@ void test01(void)
 
 	if (TST_TOTAL != tst_count) {
 		tst_brk(TBROK,
-			 "TST_TOTAL (%d) and tst_count (%d) are not "
-			 "equal", TST_TOTAL, tst_count);
+			"TST_TOTAL (%d) and tst_count (%d) are not "
+			"equal", TST_TOTAL, tst_count);
 	}
 	tst_count = 0;
 
@@ -233,51 +215,51 @@ void test01(void)
 		event = (struct fanotify_event_metadata *)&event_buf[i];
 		if (test_num >= TST_TOTAL) {
 			tst_res(TFAIL,
-				 "get unnecessary event: mask=%llx "
-				 "pid=%u fd=%u",
-				 (unsigned long long)event->mask,
-				 (unsigned)event->pid, event->fd);
+				"got unnecessary event: mask=%llx "
+				"pid=%u fd=%d",
+				(unsigned long long)event->mask,
+				(unsigned)event->pid, event->fd);
 		} else if (!(event->mask & event_set[test_num])) {
 			tst_res(TFAIL,
-				 "get event: mask=%llx (expected %llx) "
-				 "pid=%u fd=%u",
-				 (unsigned long long)event->mask,
-				 event_set[test_num],
-				 (unsigned)event->pid, event->fd);
+				"got event: mask=%llx (expected %llx) "
+				"pid=%u fd=%d",
+				(unsigned long long)event->mask,
+				event_set[test_num],
+				(unsigned)event->pid, event->fd);
 		} else if (event->pid != getpid()) {
 			tst_res(TFAIL,
-				 "get event: mask=%llx pid=%u "
-				 "(expected %u) fd=%u",
-				 (unsigned long long)event->mask,
-				 (unsigned)event->pid,
-				 (unsigned)getpid(),
-				 event->fd);
+				"got event: mask=%llx pid=%u "
+				"(expected %u) fd=%d",
+				(unsigned long long)event->mask,
+				(unsigned)event->pid,
+				(unsigned)getpid(),
+				event->fd);
 		} else {
 			if (event->fd == -2)
 				goto pass;
 			ret = read(event->fd, buf, BUF_SIZE);
 			if (ret != (int)strlen(fname)) {
 				tst_res(TFAIL,
-					 "cannot read from returned fd "
-					 "of event: mask=%llx pid=%u "
-					 "fd=%u ret=%d (errno=%d)",
-					 (unsigned long long)event->mask,
-					 (unsigned)event->pid,
-					 event->fd, ret, errno);
+					"cannot read from returned fd "
+					"of event: mask=%llx pid=%u "
+					"fd=%d ret=%d (errno=%d)",
+					(unsigned long long)event->mask,
+					(unsigned)event->pid,
+					event->fd, ret, errno);
 			} else if (memcmp(buf, fname, strlen(fname))) {
 				tst_res(TFAIL,
-					 "wrong data read from returned fd "
-					 "of event: mask=%llx pid=%u "
-					 "fd=%u",
-					 (unsigned long long)event->mask,
-					 (unsigned)event->pid,
-					 event->fd);
+					"wrong data read from returned fd "
+					"of event: mask=%llx pid=%u "
+					"fd=%d",
+					(unsigned long long)event->mask,
+					(unsigned)event->pid,
+					event->fd);
 			} else {
 pass:
 				tst_res(TPASS,
-				    "get event: mask=%llx pid=%u fd=%u",
-				    (unsigned long long)event->mask,
-				    (unsigned)event->pid, event->fd);
+					"got event: mask=%llx pid=%u fd=%d",
+					(unsigned long long)event->mask,
+					(unsigned)event->pid, event->fd);
 			}
 		}
 		/*
@@ -297,16 +279,16 @@ pass:
 	}
 	for (; test_num < TST_TOTAL; test_num++) {
 		tst_res(TFAIL, "didn't get event: mask=%llx",
-			 event_set[test_num]);
+			event_set[test_num]);
 
 	}
 	/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
 	if (fanotify_mark(fd_notify, FAN_MARK_REMOVE, FAN_ACCESS | FAN_MODIFY |
 			    FAN_CLOSE | FAN_OPEN, AT_FDCWD, fname) < 0) {
 		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_REMOVE, FAN_ACCESS | "
-		    "FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
-		    "failed", fd_notify, fname);
+			"fanotify_mark (%d, FAN_MARK_REMOVE, FAN_ACCESS | "
+			"FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
+			"failed", fd_notify, fname);
 	}
 }
 
