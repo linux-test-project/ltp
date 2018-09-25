@@ -53,6 +53,7 @@
 #include "tst_test.h"
 #include "lapi/execveat.h"
 #include "lapi/fcntl.h"
+#include "execveat.h"
 
 #define OVL_MNT "ovl"
 #define TEST_APP "execveat_child"
@@ -81,15 +82,6 @@ static void verify_execveat(void)
 	pid = SAFE_FORK();
 	if (pid == 0)
 		do_child();
-}
-
-static void check_execveat(void)
-{
-	int ret;
-
-	ret = execveat(-1, "", NULL, NULL, AT_EMPTY_PATH);
-	if (ret == -1 && errno == EINVAL)
-		tst_brk(TCONF, "execveat() not supported");
 }
 
 static void setup(void)

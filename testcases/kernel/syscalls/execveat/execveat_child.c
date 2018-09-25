@@ -24,7 +24,7 @@
 
 /*
  * execveat_child.c
- * dummy program which is used by execveat01.c testcase
+ * dummy program which is used by execveat01.c and execveat03.c testcases
  */
 
 #define TST_NO_DEFAULT_MAIN
