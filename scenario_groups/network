@@ -9,7 +9,6 @@ net.nfs
 net.rpc_tests
 net.tirpc_tests
 net.sctp
-network_commands
 net_stress.appl
 net_stress.broken_ip
 net_stress.interface
