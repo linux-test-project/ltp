@@ -1,9 +1,0 @@
-su01 export TCbin=$LTPROOT/testcases/bin;su01
-#cron01 cron01
-cron02 cron02
-cron_deny01 cron_deny01
-cron_allow01 cron_allow01
-cron_dirs_checks01 cron_dirs_checks01
-at_deny01 at_deny01
-at_allow01 at_allow01
-acl_test01 acl_test01

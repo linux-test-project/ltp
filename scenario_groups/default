@@ -17,7 +17,6 @@ filecaps
 cap_bounds
 fcntl-locktests
 connectors
-admin_tools
 timers
 power_management_tests
 numa
