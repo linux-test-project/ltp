@@ -172,11 +172,9 @@ sethostname 170
 setdomainname 171
 iopl 172
 ioperm 173
-create_module 174
 init_module 175
 delete_module 176
 get_kernel_syms 177
-query_module 178
 quotactl 179
 nfsservctl 180
 getpmsg 181

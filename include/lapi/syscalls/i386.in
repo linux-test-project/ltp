@@ -125,7 +125,6 @@ modify_ldt 123
 adjtimex 124
 mprotect 125
 sigprocmask 126
-create_module 127
 init_module 128
 delete_module 129
 get_kernel_syms 130
@@ -163,7 +162,6 @@ mremap 163
 setresuid 164
 getresuid 165
 vm86 166
-query_module 167
 poll 168
 nfsservctl 169
 setresgid 170

@@ -125,7 +125,6 @@ modify_ldt 123
 adjtimex 124
 mprotect 125
 sigprocmask 126
-create_module 127
 init_module 128
 delete_module 129
 get_kernel_syms 130
@@ -162,7 +161,6 @@ nanosleep 162
 mremap 163
 setresuid 164
 getresuid 165
-query_module 166
 poll 167
 nfsservctl 168
 setresgid 169

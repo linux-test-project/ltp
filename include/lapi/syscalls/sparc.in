@@ -186,7 +186,6 @@ flistxattr 180
 removexattr 181
 lremovexattr 182
 sigpending 183
-query_module 184
 setpgid 185
 fremovexattr 186
 tkill 187
@@ -223,7 +222,6 @@ clone 217
 ioprio_get 218
 adjtimex 219
 sigprocmask 220
-create_module 221
 delete_module 222
 get_kernel_syms 223
 getpgid 224
