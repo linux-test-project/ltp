@@ -54,4 +54,16 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 
 #endif /* HAVE_SYS_FANOTIFY_H */
 
+#ifndef FAN_MARK_INODE
+#define FAN_MARK_INODE		0
+#endif
+
+struct fanotify_mark_type {
+	unsigned int flag;
+	const char * name;
+};
+
+#define INIT_FANOTIFY_MARK_TYPE(t) \
+	{ FAN_MARK_ ## t, "FAN_MARK_" #t }
+
 #endif /* __FANOTIFY_H__ */
