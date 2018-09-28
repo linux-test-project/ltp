@@ -838,6 +838,9 @@ preadv02_64 preadv02_64
 preadv03 preadv03
 preadv03_64 preadv03_64
 
+preadv201 preadv201
+preadv201_64 preadv201_64
+
 profil01 profil01
 
 process_vm_readv01 process_vm01 -r
