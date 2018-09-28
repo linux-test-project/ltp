@@ -258,4 +258,5 @@ getrandom 278
 memfd_create 279
 mlock2 284
 copy_file_range 285
+preadv2 286
 _sysctl 1078

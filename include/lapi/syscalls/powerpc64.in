@@ -347,4 +347,5 @@ getrandom 359
 memfd_create 360
 mlock2 378
 copy_file_range 379
+preadv2 380
 statx 383

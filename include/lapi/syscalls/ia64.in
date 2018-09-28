@@ -298,3 +298,4 @@ getrandom 1339
 memfd_create 1340
 mlock2 1346
 copy_file_range 1347
+preadv2 1348
