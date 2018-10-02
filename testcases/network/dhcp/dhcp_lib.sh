@@ -1,6 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
 #
 # Author:       Alexey Kodanev alexey.kodanev@oracle.com
 
@@ -12,6 +13,7 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="cat $dhcp_name awk ip pgrep pkill dhclient"
 
 . tst_net.sh
+. daemonlib.sh
 
 iface0="ltp_veth0"
 iface1="ltp_veth1"
@@ -89,10 +91,11 @@ cleanup()
 
 test01()
 {
+	local wicked
+
 	tst_res TINFO "starting DHCPv$TST_IPVER server on $iface0"
 
 	start_dhcp$TST_IPV6
-
 	sleep 1
 
 	if [ "$(pgrep '$dhcp_name')" ]; then
@@ -100,6 +103,12 @@ test01()
 		tst_brk TBROK "Failed to start $dhcp_name"
 	fi
 
+	if [ $HAVE_SYSTEMCTL -eq 1 ] && \
+		systemctl --no-pager -p Id show network.service | grep -q Id=wicked.service; then
+		tst_res TINFO "temporarily disabling wicked"
+		wicked=1
+		systemctl disable wicked
+	fi
 	tst_res TINFO "starting dhclient -$TST_IPVER $iface1"
 	dhclient -$TST_IPVER $iface1 || tst_brk TBROK "dhclient failed"
 
@@ -110,6 +119,11 @@ test01()
 	else
 		tst_res TFAIL "'$ip_addr_check' not configured by DHCPv$TST_IPVER"
 		print_dhcp_log
+	fi
+
+	if [ "$wicked" ]; then
+		tst_res TINFO "reenabling wicked"
+		systemctl enable wicked
 	fi
 
 	stop_dhcp
