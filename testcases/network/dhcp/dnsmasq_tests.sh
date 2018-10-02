@@ -1,6 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
 #
 # Author: Alexey Kodanev alexey.kodanev@oracle.com
 
@@ -10,7 +11,7 @@ dhcp_name="dnsmasq"
 
 common_opt="--no-hosts --no-resolv --dhcp-authoritative \
 	--log-facility=./tst_dnsmasq.log --interface=$iface0 \
-	--dhcp-leasefile=tst_dnsmasq.lease --conf-file= "
+	--dhcp-leasefile=tst_dnsmasq.lease --port=0 --conf-file= "
 
 start_dhcp()
 {
