@@ -41,4 +41,9 @@ print_dhcp_log()
 	cat tst_dnsmasq.log
 }
 
+print_dhcp_version()
+{
+	dnsmasq --version | head -2
+}
+
 tst_run

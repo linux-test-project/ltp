@@ -93,6 +93,9 @@ test01()
 {
 	local wicked
 
+	tst_res TINFO "testing DHCP server $dhcp_name: $(print_dhcp_version)"
+	tst_res TINFO "using DHCP client: $(dhclient --version 2>&1)"
+
 	tst_res TINFO "starting DHCPv$TST_IPVER server on $iface0"
 
 	start_dhcp$TST_IPV6
