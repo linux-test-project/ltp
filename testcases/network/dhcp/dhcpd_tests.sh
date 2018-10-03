@@ -32,11 +32,6 @@ start_dhcpd()
 {
 	touch tst_hdcpd.lease
 	dhcpd -lf tst_hdcpd.lease -$TST_IPVER $iface0 > tst_dhcpd.err 2>&1
-	if [ $? -ne 0 ]; then
-		cat tst_dhcpd.err
-		tst_brk TBROK "Failed to start dhcpd"
-	fi
-
 }
 
 start_dhcp()

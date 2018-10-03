@@ -99,6 +99,11 @@ test01()
 	tst_res TINFO "starting DHCPv$TST_IPVER server on $iface0"
 
 	start_dhcp$TST_IPV6
+	if [ $? -ne 0 ]; then
+		print_dhcp_log
+		tst_brk TBROK "Failed to start $dhcp_name"
+	fi
+
 	sleep 1
 
 	if [ "$(pgrep '$dhcp_name')" ]; then
