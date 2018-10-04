@@ -134,8 +134,12 @@ static void setup(void)
 		tst_brk(TBROK | TERRNO, "acl_from_text() failed");
 
 	res = acl_set_file(TEST_FILE, ACL_TYPE_ACCESS, acl);
-	if (res == -1)
+	if (res == -1) {
+		if (errno == EOPNOTSUPP)
+			tst_brk(TCONF | TERRNO, "acl_set_file()");
+
 		tst_brk(TBROK | TERRNO, "acl_set_file(%s) failed", TEST_FILE);
+	}
 
 	/* The default value of max_user_namespaces is set to 0 on some distros,
 	 * We need to change the default value to call unshare().
