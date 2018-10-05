@@ -1,46 +1,36 @@
 #!/bin/sh
-# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2015-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 VERSION=${VERSION:=3}
 NFILES=${NFILES:=1000}
 SOCKET_TYPE="${SOCKET_TYPE:-udp}"
 NFS_TYPE=${NFS_TYPE:=nfs}
 
+nfs_usage()
+{
+	echo "-t x    Socket type, tcp or udp, default is udp"
+	echo "-v x    NFS version, default is '3'"
+}
+
 nfs_parse_args()
 {
 	case "$1" in
-	h)
-		echo "Usage:"
-		echo "h        help"
-		echo "t x      socket type, tcp or udp, default is udp"
-		echo "v x      NFS version, default is '3'"
-		echo "6        run over IPv6"
-		exit 0
-	;;
 	v) VERSION=$2;;
 	t) SOCKET_TYPE=$2;;
-	*) tst_brkm TBROK "unknown option: $1"
 	esac
 }
 
-TST_OPTS="hv:t:"
+TST_OPTS="v:t:"
 TST_PARSE_ARGS=nfs_parse_args
+TST_USAGE=nfs_usage
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_ROOT=1
+TST_NEEDS_CMDS="${TST_NEEDS_CMDS:-mount exportfs}"
+TST_SETUP="${TST_SETUP:-nfs_setup}"
+TST_CLEANUP="${TST_CLEANUP:-nfs_cleanup}"
 
-TST_USE_LEGACY_API=1
 . tst_net.sh
 
 get_socket_type()
@@ -58,13 +48,9 @@ get_socket_type()
 
 nfs_setup()
 {
-	tst_test_cmds mount exportfs
-
-	tst_tmpdir
-
 	# Check if current filesystem is NFS
 	if [ "$(stat -f . | grep "Type: nfs")" ]; then
-		tst_brkm TCONF "Cannot run nfs-stress test on mounted NFS"
+		tst_brk TCONF "Cannot run nfs-stress test on mounted NFS"
 	fi
 
 	local i
@@ -76,7 +62,7 @@ nfs_setup()
 	local mount_dir
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
-		tst_resm TINFO "setup NFSv$i, socket type $type"
+		tst_res TINFO "setup NFSv$i, socket type $type"
 
 		local_dir="$TST_TMPDIR/$i/$n"
 		remote_dir="$TST_TMPDIR/$i/$type"
@@ -99,8 +85,8 @@ nfs_setup()
 		fi
 
 
-		tst_resm TINFO "Mounting NFS '$mount_dir'"
-		tst_resm TINFO "to '$local_dir' with options '$opts'"
+		tst_res TINFO "Mounting NFS '$mount_dir'"
+		tst_res TINFO "to '$local_dir' with options '$opts'"
 
 		ROD mount -t nfs $opts $mount_dir $local_dir
 
@@ -114,7 +100,7 @@ nfs_setup()
 
 nfs_cleanup()
 {
-	tst_resm TINFO "Cleaning up testcase"
+	tst_res TINFO "Cleaning up testcase"
 	cd $LTPROOT
 
 	local i

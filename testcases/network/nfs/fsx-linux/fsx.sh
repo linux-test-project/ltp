@@ -1,47 +1,28 @@
 #!/bin/sh
-# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2016-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
 #
 #  PURPOSE: Runs the fsx-linux tool with a 50000 iterations setting to
 #	    attempt to uncover the "doread:read input/output" error
 #	    received if the latest NFS patches for 2.4.17 from Trond
 #	    are not applied. http://nfs.sf.net
 
-TCID=nfsx
-TST_TOTAL=1
-TST_CLEANUP="nfs_cleanup"
+TST_TESTFUNC="do_test"
 
 . nfs_lib.sh
 
 do_test()
 {
 	ITERATIONS=${ITERATIONS:=50000}
-	tst_resm TINFO "starting fsx-linux -N $ITERATIONS..."
+	tst_res TINFO "starting fsx-linux -N $ITERATIONS..."
 	fsx-linux -N $ITERATIONS testfile > fsx-out.log 2>&1
 	if [ "$?" -ne 0 ]; then
-		tst_resm TFAIL "Errors have resulted from this test"
+		tst_res TFAIL "Errors have resulted from this test"
 		cat fsx-out.log
 	else
-		tst_resm TPASS "fsx-linux test passed"
+		tst_res TPASS "fsx-linux test passed"
 	fi
 }
 
-nfs_setup
-
-do_test
-
-tst_exit
+tst_run
