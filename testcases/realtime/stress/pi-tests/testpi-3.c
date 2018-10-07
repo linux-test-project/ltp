@@ -139,7 +139,7 @@ void *func_nonrt(void *arg)
 			}
 		}
 		pthread_mutex_unlock(&glob_mutex);
-		pthread_yield();
+		sched_yield();
 	}
 	return NULL;
 }
@@ -241,7 +241,7 @@ void *func_noise(void *arg)
 				pthread_mutex_unlock(&(pthr->mutex));
 			}
 		}
-		pthread_yield();
+		sched_yield();
 	}
 	return NULL;
 }
