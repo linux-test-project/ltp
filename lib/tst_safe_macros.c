@@ -144,6 +144,7 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 {
 	struct group *rval;
 
+	errno = 0;
 	rval = getgrnam(name);
 	if (rval == NULL) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
