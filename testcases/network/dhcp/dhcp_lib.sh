@@ -67,11 +67,19 @@ dhcp_lib_setup()
 	tst_res TINFO "add $ip_addr to $iface0"
 	ip addr add $ip_addr dev $iface0 || \
 		tst_brk TBROK "failed to add ip address"
+
+	if [ ! -d "$lease_dir" ]; then
+		mkdir -p $lease_dir
+		lease_dir_added=1
+	fi
 }
 
 dhcp_lib_cleanup()
 {
 	[ -z "$veth_loaded" ] && return
+
+	[ "$lease_dir_added" = 1 ] && rm -rf $lease_dir
+	rm -f $lease_file
 
 	stop_dhcp
 

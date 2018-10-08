@@ -10,6 +10,15 @@
 dhcp_name="dhcpd"
 
 . dhcp_lib.sh
+TST_SETUP="setup_dhcp"
+lease_dir="/var/lib/misc"
+lease_file="$lease_dir/dhcpd.leases_tst"
+
+setup_dhcp()
+{
+	[ "$TST_IPV6" ] && lease="$lease_dir/dhcpd6.leases_tst"
+	dhcp_lib_setup
+}
 
 setup_dhcpd_conf()
 {
@@ -30,8 +39,8 @@ setup_dhcpd_conf()
 
 start_dhcpd()
 {
-	touch tst_hdcpd.lease
-	dhcpd -lf tst_hdcpd.lease -$TST_IPVER $iface0 > tst_dhcpd.err 2>&1
+	touch $lease_file
+	dhcpd -lf $lease_file -$TST_IPVER $iface0 > tst_dhcpd.err 2>&1
 }
 
 start_dhcp()
@@ -67,6 +76,7 @@ start_dhcp6()
 cleanup_dhcp()
 {
 	[ -f dhcpd.conf ] && mv dhcpd.conf $DHCPD_CONF
+	rm -f $lease_file
 }
 
 print_dhcp_log()

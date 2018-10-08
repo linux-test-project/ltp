@@ -9,9 +9,15 @@ dhcp_name="dnsmasq"
 
 . dhcp_lib.sh
 
+log="/var/log/dnsmasq.tst.log"
+
+lease_dir="/var/lib/misc"
+tst_selinux_enabled && lease_dir="/var/lib/dnsmasq"
+lease_file="$lease_dir/dnsmasq.tst.leases"
+
 common_opt="--no-hosts --no-resolv --dhcp-authoritative \
-	--log-facility=./tst_dnsmasq.log --interface=$iface0 \
-	--dhcp-leasefile=tst_dnsmasq.lease --port=0 --conf-file= "
+	--log-facility=$log --interface=$iface0 \
+	--dhcp-leasefile=$lease_file --port=0 --conf-file= "
 
 start_dhcp()
 {
@@ -33,12 +39,12 @@ start_dhcp6()
 
 cleanup_dhcp()
 {
-	rm -f tst_dnsmasq.log
+	rm -f $log
 }
 
 print_dhcp_log()
 {
-	cat tst_dnsmasq.log
+	cat $log
 }
 
 print_dhcp_version()
