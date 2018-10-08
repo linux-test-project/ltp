@@ -441,6 +441,10 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 #define SAFE_GETGRNAM(name) \
 	safe_getgrnam(__FILE__, __LINE__, (name))
 
+struct group *safe_getgrgid(const char *file, const int lineno, gid_t gid);
+#define SAFE_GETGRGID(gid) \
+	safe_getgrgid(__FILE__, __LINE__, (gid))
+
 ssize_t safe_getxattr(const char *file, const int lineno, const char *path,
 	const char *name, void *value, size_t size);
 #define SAFE_GETXATTR(path, name, value, size) \

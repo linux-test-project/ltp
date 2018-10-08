@@ -153,6 +153,20 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 	return rval;
 }
 
+struct group *safe_getgrgid(const char *file, const int lineno, gid_t gid)
+{
+	struct group *rval;
+
+	errno = 0;
+	rval = getgrgid(gid);
+	if (rval == NULL) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"getgrgid(%li) failed", (long)gid);
+	}
+
+	return rval;
+}
+
 int safe_chroot(const char *file, const int lineno, const char *path)
 {
 	int rval;
