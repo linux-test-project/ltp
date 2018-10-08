@@ -152,6 +152,9 @@ static void setup(void)
 	SAFE_MKDIR(TESTDIR_FLAGGED, 0777);
 	SAFE_MKDIR(TESTDIR_UNFLAGGED, 0777);
 
+	if (!strcmp(tst_device->fs_type, "btrfs") && tst_kvercmp(4, 13, 0) < 0)
+		tst_brk(TCONF, "Btrfs statx() supported since 4.13");
+
 	caid_flags_setup();
 }
 
