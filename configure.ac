@@ -45,6 +45,7 @@ AC_CHECK_HEADERS([ \
     linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
+    linux/membarrier.h \
     mm.h \
     netinet/sctp.h \
     pthread.h \
