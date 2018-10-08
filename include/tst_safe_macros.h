@@ -441,6 +441,11 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 #define SAFE_GETGRNAM(name) \
 	safe_getgrnam(__FILE__, __LINE__, (name))
 
+struct group *safe_getgrnam_fallback(const char *file, const int lineno,
+		const char *name, const char *fallback);
+#define SAFE_GETGRNAM_FALLBACK(name, fallback) \
+	safe_getgrnam_fallback(__FILE__, __LINE__, (name), (fallback))
+
 struct group *safe_getgrgid(const char *file, const int lineno, gid_t gid);
 #define SAFE_GETGRGID(gid) \
 	safe_getgrgid(__FILE__, __LINE__, (gid))

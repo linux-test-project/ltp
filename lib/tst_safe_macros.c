@@ -154,6 +154,23 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 	return rval;
 }
 
+struct group *safe_getgrnam_fallback(const char *file, const int lineno,
+				     const char *name, const char *fallback)
+{
+	struct group *rval;
+
+	errno = 0;
+	rval = getgrnam(name);
+	if (rval == NULL) {
+		tst_res_(file, lineno, TINFO,
+			 "getgrnam(%s) failed - try fallback %s",
+			 name, fallback);
+		rval = safe_getgrnam(file, lineno, fallback);
+	}
+
+	return rval;
+}
+
 struct group *safe_getgrgid(const char *file, const int lineno, gid_t gid)
 {
 	struct group *rval;
