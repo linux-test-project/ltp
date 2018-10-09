@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 						 "unexpected pid returned");
 				} else {
 					tst_resm(TPASS,
-						 "recieved expected pid");
+						 "received expected pid");
 				}
 
 				nsig = WTERMSIG(status);
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 					tst_resm(TFAIL, "waitpid error: "
 						 "unexpected signal returned");
 				} else {
-					tst_resm(TPASS, "recieved expected "
+					tst_resm(TPASS, "received expected "
 						 "signal");
 				}
 
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 						 "unexpected exit number "
 						 "returned");
 				} else {
-					tst_resm(TPASS, "recieved expected "
+					tst_resm(TPASS, "received expected "
 						 "exit value");
 				}
 			}

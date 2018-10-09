@@ -66,7 +66,7 @@ int broken = 1;			/* broken should be 0 when test completes properly */
 static void child_signal_handler(int sig, siginfo_t * si, void *unused)
 {
 	if (si->si_signo != SIGUSR1)
-		tst_resm(TBROK, "cinit: recieved %s unexpectedly!",
+		tst_resm(TBROK, "cinit: received %s unexpectedly!",
 			 strsignal(si->si_signo));
 	else
 		tst_resm(TPASS, "cinit: user function is called as expected");

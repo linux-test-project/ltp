@@ -103,7 +103,7 @@ int main(void)
 		printf("Test FAILED: Kill request timed out\n");
 		return PTS_FAIL;
 	} else if (handler_called == 0) {
-		printf("Test FAILED: Thread did not recieve or handle\n");
+		printf("Test FAILED: Thread did not received or handle\n");
 		return PTS_FAIL;
 	}
 

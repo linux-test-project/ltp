@@ -14,7 +14,7 @@
  *    created by fork(2).
  * 3) PR_GET_CHILD_SUBREAPER can get the setting of PR_SET_CHILD_SUBREAPER.
  *
- * These flags was added by kenrel commit ebec18a6d3aa:
+ * These flags was added by kernel commit ebec18a6d3aa:
  * "prctl: add PR_{SET,GET}_CHILD_SUBREAPER to allow simple process supervision"
  */
 

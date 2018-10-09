@@ -38,7 +38,7 @@ int main(void)
 
 	prioceiling = sched_get_priority_min(SCHED_FIFO);
 
-	/* Set the prioceiling of an unintialized mutex attr. */
+	/* Set the prioceiling of an uninitialized mutex attr. */
 	if ((ret = pthread_mutexattr_setprioceiling(&mta, prioceiling)) == 0) {
 		printf
 		    ("Test PASSED: *Note: Returned 0 instead of EINVAL when passed an uninitialized mutex attribute object to pthread_mutexattr_setprioceiling, but standard says 'may' fail.\n");

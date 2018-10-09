@@ -199,7 +199,7 @@ void do_child(void)
 	int exno = 1;
 
 	sleep(300);
-	tst_resm(TINFO, "Child never recieved a signal");
+	tst_resm(TINFO, "Child never received a signal");
 	exit(exno);
 }
 

@@ -41,7 +41,7 @@
  * - The contained TYPE class represents the objects stored in the tree.
  *   It has to support the copy constructor and the assignment operator (opr)
  * - cmp is a functor used to define the order of objects of class TYPE:
- *   This class has to support an operator() that recieves two objects from
+ *   This class has to support an operator() that receives two objects from
  *   the TYPE class and returns a negative, 0, or a positive integer,
  *   depending on the comparison result.
  *

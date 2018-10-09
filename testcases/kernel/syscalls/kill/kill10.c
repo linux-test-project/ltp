@@ -329,7 +329,7 @@ void setup(void)
 			    ("%d: Master pausing for Managers to check in (%d/%d)\n",
 			     mypid, pgrps_ready, num_pgrps);
 		/*
-		 * We might recieve the signal from the (last manager) before
+		 * We might receive the signal from the (last manager) before
 		 * we issue a pause. In that case we might hang even if we have
 		 * all the managers reported in. So set an alarm so that we can
 		 * wake up.
@@ -704,7 +704,7 @@ void fork_procs(int procs_left)
 				if (debug_flag >= 8)
 					printf("%d: child pausing\n", mypid);
 				/*
-				 * If we have already recieved the signal, we dont
+				 * If we have already received the signal, we dont
 				 * want to pause for it !
 				 */
 				while (!signal_parents_flag) {
