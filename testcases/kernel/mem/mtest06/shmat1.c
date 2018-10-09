@@ -99,13 +99,13 @@ int done_shmat = 0;		/* disallow read and writes before shmat      */
 /* Function:	sig_handler						      */
 /*									      */
 /* Description:	handle SIGALRM raised by set_timer(), SIGALRM is raised when  */
-/*		the timer expires. If any other signal is recived exit the    */
+/*		the timer expires. If any other signal is received exit the   */
 /*		test.							      */
 /*									      */
 /* Input:	signal - signal number, intrested in SIGALRM!		      */
 /*									      */
-/* Return:	exit -1 if unexpected signal is recived			      */
-/*		exit 0 if SIGALRM is recieved			              */
+/* Return:	exit -1 if unexpected signal is received		      */
+/*		exit 0 if SIGALRM is received			              */
 /*									      */
 /******************************************************************************/
 static void sig_handler(int signal,	/* signal number, set to handle SIGALRM       */

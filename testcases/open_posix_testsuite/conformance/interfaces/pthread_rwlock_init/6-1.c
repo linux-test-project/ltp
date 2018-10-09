@@ -39,7 +39,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	/* Re-intialize without destroying it first */
+	/* Re-initialize without destroying it first */
 	rc = pthread_rwlock_init(&rwlock, NULL);
 
 	/* Cleanup */

@@ -296,7 +296,7 @@ int main(int argc, char **argv)
 		} else {
 			switch (nlhdr->nlmsg_type) {
 			case NLMSG_ERROR:
-				fprintf(stderr, "err message recieved.\n");
+				fprintf(stderr, "err message received.\n");
 				exit(1);
 				break;
 			case NLMSG_DONE:

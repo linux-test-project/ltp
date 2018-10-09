@@ -32,7 +32,7 @@
     process allowed for enough time for the child process to complete execution
     and get to the "return 2" line at the very end of the child's code, but the
     parent didn't allow for any time in which the child may have been suspended.
-    Because the child did recieve the signal that the parent later sent before
+    Because the child did receive the signal that the parent later sent before
     the child finished executing, that had to have meant that the child was
     suspended for a while during it's execution.
 

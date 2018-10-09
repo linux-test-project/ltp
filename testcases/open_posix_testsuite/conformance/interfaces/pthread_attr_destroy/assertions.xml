@@ -4,7 +4,7 @@
 
    int pthread_attr_destroy(pthread_attr_t *attr)
 
-  destorys a thread attributes object.  An implementation may cause
+  destroys a thread attributes object.  An implementation may cause
   pthread_attr_destroy() to set 'attr' to an implementation-defined invalid
   value.
   </assertion>

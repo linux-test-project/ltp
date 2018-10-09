@@ -25,7 +25,7 @@
  *      signal (thread1) and the other that sends the signal (thread2). Before
  *      sending the signal, the thread2 waits for thread1 to initialize, notes
  *      the time and sends pthread_kill signal to thread1. thread2, which has
- *      defined a handler for the signal, notes the time it recieves the signal.
+ *      defined a handler for the signal, notes the time it receives the signal.
  *      The maximum and the minimum latency is reported.
  *
  *

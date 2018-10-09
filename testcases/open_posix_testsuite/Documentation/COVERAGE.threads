@@ -77,7 +77,7 @@ pthread_key_create		YES		MED
 pthread_key_delete		YES		MED
 pthread_mutexattr_getpshared	YES		LOW
 pthread_mutexattr_setpshared	YES		LOW
-pthread_rwlock_destory		YES		LOW
+pthread_rwlock_destroy		YES		LOW
 pthread_rwlock_init		YES		LOW
 pthread_rwlock_rdlock		YES		LOW
 pthread_rwlock_timedrdlock	YES		LOW
@@ -86,7 +86,7 @@ pthread_rwlock_tryrdlock	YES		LOW
 pthread_rwlock_trywrlock	YES		LOW
 pthread_rwlock_unlock		YES		LOW
 pthread_rwlock_wrlock		YES		LOW
-pthread_rwlockattr_destory	YES		LOW
+pthread_rwlockattr_destroy	YES		LOW
 pthread_rwlockattr_getpshared	YES		LOW
 pthread_setspecific		YES		MED
 */

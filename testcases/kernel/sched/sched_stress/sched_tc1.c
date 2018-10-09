@@ -192,7 +192,7 @@ void process_file(char *filename)
 +---------------------------------------------------------------------*/
 void signal_handler(int signal)
 {
-	printf("signal recieved is %d\n", signal);
+	printf("signal received is %d\n", signal);
 	if (signal == SIGUSR1) {
 		signaled++;
 		if (debug)

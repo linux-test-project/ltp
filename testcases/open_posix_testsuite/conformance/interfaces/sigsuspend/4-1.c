@@ -20,7 +20,7 @@
     the child return to the parent process with:
     - a return value of 1 if the original signal mask was not restored, or
     - a return value of 0 if the original signal mask was successfully restored.
- 4. Finally from the parent, return a PTS_PASS if recieved the return value of the child was not
+ 4. Finally from the parent, return a PTS_PASS if received the return value of the child was not
     a 1.
 
 */

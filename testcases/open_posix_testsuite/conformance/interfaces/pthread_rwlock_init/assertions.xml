@@ -24,7 +24,7 @@
   </assertion>
 
   <assertion id="5" tag="ref:XSH6:34718:34722">
-  ptread_rwlock_init( ) function shall fail if:
+  pthread_rwlock_init( ) function shall fail if:
   [EAGAIN] The system lacked the necessary resources (other than memory) to initialize
   another read-write lock.
   [ENOMEM] Insufficient memory exists to initialize the read-write lock.

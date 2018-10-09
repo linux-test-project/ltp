@@ -5,7 +5,7 @@ To run the test case simply enter the user_space directory, type make
 to compile the program, and run ./test_mod in this case, or whatver
 you have named your program. However, the test kernel module must be
 loaded before the test case can work. If the module is not loaded you
-will recieve an error when attempting to open the module.
+will receive an error when attempting to open the module.
 
 Enter the kernel_space directory, and again type make to compile the
 module. After successful compilation use the load script to load the

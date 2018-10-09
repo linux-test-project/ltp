@@ -29,7 +29,7 @@ func/pi_perf			pi_perf -c 200
 # Default=20 us
 func/pthread_kill_latency	pthread_kill_latency -c 20
 
-# Pass if all treads get preempted within max loops.
+# Pass if all threads get preempted within max loops.
 # Default max=1
 func/prio-preempt		prio-preempt -c 1
 

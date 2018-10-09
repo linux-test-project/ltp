@@ -322,7 +322,7 @@ void free_shared_pages(void **pages, unsigned int num)
  * @num - no. of semaphores to create
  *
  * Allocate and initialize semaphores in a shared memory area, so that
- * the semaphore can be used accross processes.
+ * the semaphore can be used across processes.
  *
  * RETURNS:
  * Array of initialized semaphores.

@@ -40,7 +40,7 @@ int main(void)
 	 * it is joinable. */
 	ret = pthread_create(&new_th, NULL, a_thread_func, NULL);
 	if (ret) {
-		fprintf(stderr, "ptread_create(): %s\n", strerror(ret));
+		fprintf(stderr, "pthread_create(): %s\n", strerror(ret));
 		return PTS_UNRESOLVED;
 	}
 

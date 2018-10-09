@@ -7,7 +7,7 @@
  * Test pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock)
  *
  *	It may fail if:
- *	[EINVAL] rwlock does not refer to an intialized read-write lock object
+ *	[EINVAL] rwlock does not refer to an initialized read-write lock object
  *
  * Steps:
  * 1. Call pthread_rwlock_trywrlock with an uninitialized rwlock object
