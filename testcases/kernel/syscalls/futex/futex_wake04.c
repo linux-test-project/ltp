@@ -176,7 +176,7 @@ static void wakeup_thread2(void)
 	}
 
 	while (wait_for_threads(2))
-		usleep(100);
+		usleep(1000);
 
 	futex_wake(futex2, 1, 0);
 
