@@ -18,7 +18,6 @@
 
 TST_SETUP="${TST_SETUP:-virt_lib_setup}"
 TST_CLEANUP="${TST_CLEANUP:-cleanup_vifaces}"
-trap "tst_brk TBROK 'test interrupted'" INT
 
 virt_lib_usage()
 {
