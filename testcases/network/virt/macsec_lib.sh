@@ -12,6 +12,7 @@ TST_NEEDS_TMPDIR=1
 TST_TESTFUNC=virt_netperf_msg_sizes
 TST_SETUP=macsec_lib_setup
 TST_CLEANUP=macsec_lib_cleanup
+TST_NEEDS_DRIVERS="macsec"
 . ipsec_lib.sh
 . virt_lib.sh
 
