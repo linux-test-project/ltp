@@ -345,6 +345,7 @@ sched_getattr 356
 renameat2 357
 getrandom 359
 memfd_create 360
+membarrier 365
 mlock2 378
 copy_file_range 379
 preadv2 380
