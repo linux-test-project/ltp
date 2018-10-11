@@ -40,7 +40,7 @@ setup_dhcpd_conf()
 start_dhcpd()
 {
 	touch $lease_file
-	dhcpd -lf $lease_file -$TST_IPVER $iface0 > tst_dhcpd.err 2>&1
+	dhcpd -lf $lease_file -$TST_IPVER $iface0 > $log 2>&1
 }
 
 start_dhcp()
@@ -77,11 +77,6 @@ cleanup_dhcp()
 {
 	[ -f dhcpd.conf ] && mv dhcpd.conf $DHCPD_CONF
 	rm -f $lease_file
-}
-
-print_dhcp_log()
-{
-	cat tst_dhcpd.err
 }
 
 print_dhcp_version()

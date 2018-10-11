@@ -38,6 +38,8 @@ stop_dhcp()
 
 dhcp_lib_setup()
 {
+	[ -z "$log" ] && log="$PWD/$(basename $0 '.sh').log"
+
 	if [ $TST_IPV6 ]; then
 		ip_addr="fd00:1:1:2::12/64"
 		ip_addr_check="fd00:1:1:2::100/64"
@@ -96,6 +98,11 @@ dhcp_lib_cleanup()
 	[ $veth_added ] && ip li del $iface0
 
 	[ "$veth_loaded" = "no" ] && lsmod | grep -q '^veth ' && rmmod veth
+}
+
+print_dhcp_log()
+{
+	[ -f "$log" ] && cat $log
 }
 
 test01()

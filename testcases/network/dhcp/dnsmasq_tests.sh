@@ -42,11 +42,6 @@ cleanup_dhcp()
 	rm -f $log
 }
 
-print_dhcp_log()
-{
-	cat $log
-}
-
 print_dhcp_version()
 {
 	dnsmasq --version | head -2
