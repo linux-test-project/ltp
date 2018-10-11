@@ -34,6 +34,7 @@ export TST_TMPDIR_RHOST=0
 export TST_LIB_LOADED=1
 
 . tst_ansi_color.sh
+. tst_security.sh
 
 # default trap function
 trap "tst_brk TBROK 'test interrupted'" INT
@@ -79,6 +80,10 @@ _tst_do_exit()
 
 	if [ $TST_CONF -gt 0 ]; then
 		ret=$((ret|32))
+	fi
+
+	if [ $TST_BROK -gt 0 -o $TST_FAIL -gt 0 -o $TST_WARN -gt 0 ]; then
+		_tst_check_security_modules
 	fi
 
 	echo
@@ -376,6 +381,11 @@ _tst_setup_timer()
 	_tst_setup_timer_pid=$!
 }
 
+_tst_require_root()
+{
+	[ "$(id -ru)" != 0 ] && tst_brk TCONF "Must be super/root for this test!"
+}
+
 tst_run()
 {
 	local _tst_i
@@ -386,6 +396,7 @@ tst_run()
 	if [ -n "$TST_TEST_PATH" ]; then
 		for _tst_i in $(grep TST_ "$TST_TEST_PATH" | sed 's/.*TST_//; s/[="} \t\/:`].*//'); do
 			case "$_tst_i" in
+			DISABLE_APPARMOR|DISABLE_SELINUX);;
 			SETUP|CLEANUP|TESTFUNC|ID|CNT|MIN_KVER);;
 			OPTS|USAGE|PARSE_ARGS|POS_ARGS);;
 			NEEDS_ROOT|NEEDS_TMPDIR|TMPDIR|NEEDS_DEVICE|DEVICE);;
@@ -421,11 +432,10 @@ tst_run()
 		tst_brk TBROK "Number of iterations (-i) must be > 0"
 	fi
 
-	if [ "$TST_NEEDS_ROOT" = 1 ]; then
-		if [ "$(id -ru)" != 0 ]; then
-			tst_brk TCONF "Must be super/root for this test!"
-		fi
-	fi
+	[ "$TST_NEEDS_ROOT" = 1 ] && _tst_require_root
+
+	[ "$TST_DISABLE_APPARMOR" = 1 ] && tst_disable_apparmor
+	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
 
 	tst_test_cmds $TST_NEEDS_CMDS
 	tst_test_drivers $TST_NEEDS_DRIVERS
