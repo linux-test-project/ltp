@@ -17,6 +17,7 @@ splice 291
 tee 293
 vmsplice 294
 memfd_create 340
+membarrier 343
 mlock2 345
 copy_file_range 346
 preadv2 347
