@@ -19,7 +19,6 @@ fcntl-locktests
 connectors
 timers
 power_management_tests
-numa
 hugetlb
 commands
 hyperthreading
