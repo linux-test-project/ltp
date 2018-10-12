@@ -960,8 +960,8 @@ renameat202 renameat202 -i 10
 request_key01 request_key01
 request_key02 request_key02
 request_key03 request_key03
-cve-2017-6951 cve-2017-6951
 request_key04 request_key04
+request_key05 request_key05
 
 rmdir01 rmdir01
 rmdir02 rmdir02
@@ -1187,7 +1187,7 @@ setsid01 setsid01
 
 setsockopt01 setsockopt01
 setsockopt02 setsockopt02
-cve-2016-4997 cve-2016-4997
+setsockopt03 setsockopt03
 
 settimeofday01 settimeofday01
 settimeofday02 settimeofday02
@@ -1205,7 +1205,7 @@ setxattr03 setxattr03
 
 shmat01 shmat01
 shmat02 shmat02
-cve-2017-5669 cve-2017-5669
+shmat03 shmat03
 
 shmctl01 shmctl01
 shmctl02 shmctl02
@@ -1400,7 +1400,7 @@ umask01 umask01
 uname01 uname01
 uname02 uname02
 uname03 uname03
-cve-2012-0957 cve-2012-0957
+uname04 uname04
 
 unlink01 symlink01 -T unlink01
 unlink05 unlink05
