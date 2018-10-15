@@ -24,6 +24,7 @@ commands
 hyperthreading
 kernel_misc
 fs_ext4
+pipes
 can
 cpuhotplug
 net.ipv6_lib
