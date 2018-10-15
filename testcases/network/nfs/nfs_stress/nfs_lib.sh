@@ -46,6 +46,47 @@ get_socket_type()
 	done
 }
 
+nfs_setup_server()
+{
+	local export_cmd="exportfs -i -o no_root_squash,rw *:$remote_dir"
+
+	if [ -n "$LTP_NETNS" ]; then
+		if [ ! -d $remote_dir ]; then
+			mkdir -p $remote_dir
+			ROD $export_cmd
+		fi
+		return
+	fi
+
+	if ! tst_rhost_run -c "test -d $remote_dir"; then
+		tst_rhost_run -s -c "mkdir -p $remote_dir; $export_cmd"
+	fi
+}
+
+nfs_mount()
+{
+	local host_type=rhost
+	local mount_dir
+
+	[ -n "$LTP_NETNS" ] && host_type=
+
+	if [ $TST_IPV6 ]; then
+		mount_dir="[$(tst_ipaddr $host_type)]:$remote_dir"
+	else
+		mount_dir="$(tst_ipaddr $host_type):$remote_dir"
+	fi
+
+	local mnt_cmd="mount -t nfs $opts $mount_dir $local_dir"
+
+	tst_res TINFO "Mounting NFS: $mnt_cmd"
+	if [ -n "$LTP_NETNS" ]; then
+		tst_rhost_run -s -c "$mnt_cmd"
+		return
+	fi
+
+	ROD $mnt_cmd
+}
+
 nfs_setup()
 {
 	# Check if current filesystem is NFS
@@ -60,35 +101,19 @@ nfs_setup()
 	local local_dir
 	local remote_dir
 	local mount_dir
+
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
 		tst_res TINFO "setup NFSv$i, socket type $type"
 
 		local_dir="$TST_TMPDIR/$i/$n"
 		remote_dir="$TST_TMPDIR/$i/$type"
-
 		mkdir -p $local_dir
 
-		tst_rhost_run -c "test -d $remote_dir"
-		if [ "$?" -ne 0  ]; then
-			tst_rhost_run -s -c "mkdir -p $remote_dir"
-			tst_rhost_run -s -c "exportfs -i -o no_root_squash,rw \
-				*:$remote_dir"
-		fi
+		nfs_setup_server
 
 		opts="-o proto=$type,vers=$i"
-
-		if [ $TST_IPV6 ]; then
-			mount_dir="[$(tst_ipaddr rhost)]:$remote_dir"
-		else
-			mount_dir="$(tst_ipaddr rhost):$remote_dir"
-		fi
-
-
-		tst_res TINFO "Mounting NFS '$mount_dir'"
-		tst_res TINFO "to '$local_dir' with options '$opts'"
-
-		ROD mount -t nfs $opts $mount_dir $local_dir
+		nfs_mount
 
 		n=$(( n + 1 ))
 	done
