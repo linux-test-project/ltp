@@ -78,6 +78,8 @@
 #include <sys/time.h>
 #include <sys/param.h>
 #include <sys/signal.h>
+#include <sys/statfs.h>
+#include <sys/vfs.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
@@ -367,7 +369,8 @@ int main(int argc, char **argv)
 	int stop = 0;		/* loop stopper if set */
 
 	unsigned long curr_size = 0;	/* BUG:14136 (keep track of file size) */
-	const unsigned long ext2_limit = 2147483647;	/* BUG:14136 (2GB ext2 filesize limit) */
+	unsigned long fs_limit = 2147483647; /* BUG:14136 (filesystem size limit is 2G by default) */
+	struct statfs fsbuf;
 
 	int tmp;
 	char chr;
@@ -1360,6 +1363,16 @@ no whole file checking will be performed!\n", Progname, TagName,
 #endif
 	}
 
+	if (statfs(auto_dir, &fsbuf) == -1) {
+		fprintf(stderr, "%s%s: Unable to get the info of mounted "
+			"filesystem that includes dir %s\n",
+			Progname, TagName, auto_dir);
+		exit(1);
+	}
+
+	/* Compare two values and use the smaller one as limit */
+	fs_limit = MIN(fsbuf.f_bsize * fsbuf.f_bavail / num_files, fs_limit);
+
 	/*
 	 * This is the main iteration loop.
 	 * Each iteration, all files can  be opened, written to,
@@ -1476,14 +1489,14 @@ no whole file checking will be performed!\n", Progname, TagName,
 			 * if we are dealing with a FIFO file.
 			 */
 
-			/* BUG:14136 (don't go past ext2's filesize limit) */
+			/* BUG:14136 (don't go past filesystem size limit) */
 			curr_size = file_size(fd);
-			if (curr_size + grow_incr >= ext2_limit) {
+			if (curr_size + grow_incr >= fs_limit) {
 				lkfile(fd, LOCK_UN, LKLVL1);	/* release lock */
 				close(fd);
 				sprintf(reason,
 					"Reached %ld filesize which is almost %ld limit.",
-					curr_size, ext2_limit);
+					curr_size, fs_limit);
 				stop = 1;
 				continue;
 			}
