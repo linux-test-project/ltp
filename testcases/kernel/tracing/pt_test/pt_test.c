@@ -20,6 +20,9 @@
 #include <stdio.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "config.h"
+
+#ifdef HAVE_STRUCT_PERF_EVENT_MMAP_PAGE_AUX_HEAD
 
 #define PAGESIZE 4096
 #define INTEL_PT_MEMSIZE (17*PAGESIZE)
@@ -157,3 +160,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 };
+
+#else
+TST_TEST_TCONF("missing aux_* fields in struct perf_event_mmap_page");
+#endif /* HAVE_STRUCT_PERF_EVENT_MMAP_PAGE_AUX_HEAD */
