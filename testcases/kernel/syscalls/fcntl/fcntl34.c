@@ -28,6 +28,7 @@
 #include "lapi/fcntl.h"
 #include "tst_safe_pthread.h"
 #include "tst_test.h"
+#include "fcntl_common.h"
 
 static int thread_cnt;
 static const int max_thread_cnt = 32;
@@ -76,13 +77,13 @@ void *thread_fn_01(void *arg)
 
 	for (i = 0; i < writes_num; ++i) {
 		lck.l_type = F_WRLCK;
-		SAFE_FCNTL(fd, F_OFD_SETLKW, &lck);
+		my_fcntl(fd, F_OFD_SETLKW, &lck);
 
 		SAFE_LSEEK(fd, 0, SEEK_END);
 		SAFE_WRITE(1, fd, buf, write_size);
 
 		lck.l_type = F_UNLCK;
-		SAFE_FCNTL(fd, F_OFD_SETLKW, &lck);
+		my_fcntl(fd, F_OFD_SETLKW, &lck);
 
 		sched_yield();
 	}
