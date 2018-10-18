@@ -109,11 +109,11 @@ int main(int argc, char *argv[])
 	if (pthread_mutexattr_init(&mutexattr) != 0) {
 		printf("Failed to init mutexattr\n");
 	}
-	if (pthread_mutexattr_setrobust_np(&mutexattr, PTHREAD_MUTEX_ROBUST_NP)
+	if (pthread_mutexattr_setrobust(&mutexattr, PTHREAD_MUTEX_ROBUST)
 	    != 0) {
 		printf("Can't set mutexattr robust\n");
 	}
-	if (pthread_mutexattr_getrobust_np(&mutexattr, &robust) != 0) {
+	if (pthread_mutexattr_getrobust(&mutexattr, &robust) != 0) {
 		printf("Can't get mutexattr robust\n");
 	} else {
 		printf("robust in mutexattr is %d\n", robust);

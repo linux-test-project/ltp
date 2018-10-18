@@ -127,7 +127,7 @@ testpi-5.c:
    twice.
 
 testpi-6.c:
-- Uses robust mutex lock (PTHREAD_MUTEX_ROBUST_NP) and uses test-skeleton for
+- Uses robust mutex lock (PTHREAD_MUTEX_ROBUST) and uses test-skeleton for
   other things.
 
 testpi-7.c:

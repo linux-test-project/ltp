@@ -14,8 +14,7 @@ fi
 ])
 
 AC_DEFUN([REALTIME_CHECK_ROBUST_APIS],[
-	AC_CHECK_DECLS([pthread_mutexattr_getrobust_np, pthread_mutexattr_setrobust_np],[],[has_robust="no"],[[#define _GNU_SOURCE
-#include <pthread.h>]])
+	AC_CHECK_DECLS([pthread_mutexattr_getrobust, pthread_mutexattr_setrobust],[],[has_robust="no"],[[#include <pthread.h>]])
 	AC_MSG_CHECKING([for pthread_mutexattr_*robust* APIs])
 if test "x$has_robust" != "xno"; then
 	AC_MSG_RESULT(yes)
