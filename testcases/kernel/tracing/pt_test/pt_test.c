@@ -18,6 +18,7 @@
 #include <sched.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 #include "config.h"
