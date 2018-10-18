@@ -756,3 +756,14 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_remote_tmpdir
 fi
+
+if ! tst_cmd_available ping6; then
+	ping6()
+	{
+		ping -6 $@
+	}
+	if [ -z "$ping6_warn_printed" ]; then
+		tst_res_ TINFO "ping6 binary/symlink is missing, using workaround. Please, report missing ping6 to your distribution."
+		export ping6_warn_printed=1
+	fi
+fi
