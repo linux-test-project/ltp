@@ -72,10 +72,7 @@ do_test()
 	tst_res TINFO "cd dir2 & removing files"
 	cd ../dir2
 	wait $pid2
-	rm_files &
-
-	# wait for all background processes to complete execution
-	wait
+	rm_files
 
 	tst_res TPASS "test done"
 }
