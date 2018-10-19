@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 		dotest_iteration(i*(MSGMNI / maxnprocs));
 	}
 
-	tst_resm(TPASS, "msgctl11 ran successfully!");
+	tst_resm(TPASS, "Test ran successfully!");
 
 	cleanup();
 	tst_exit();

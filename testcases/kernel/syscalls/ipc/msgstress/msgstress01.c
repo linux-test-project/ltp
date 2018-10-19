@@ -193,7 +193,7 @@ int main(int argc, char **argv)
 			 count, nprocs);
 	}
 
-	tst_resm(TPASS, "msgctl08 ran successfully!");
+	tst_resm(TPASS, "Test ran successfully!");
 
 	cleanup();
 	tst_exit();
