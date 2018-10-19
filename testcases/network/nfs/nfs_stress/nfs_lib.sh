@@ -17,8 +17,8 @@ nfs_usage()
 nfs_parse_args()
 {
 	case "$1" in
-	v) VERSION=$2;;
-	t) SOCKET_TYPE=$2;;
+	v) VERSION="$(echo $2 | tr ',' ' ')";;
+	t) SOCKET_TYPE="$(echo $2 | tr ',' ' ')";;
 	esac
 }
 
