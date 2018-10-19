@@ -9,9 +9,16 @@
 #           resides.  A PASS is if the test completes.
 
 TST_TESTFUNC="do_test"
+TST_CLEANUP="do_cleanup"
 . nfs_lib.sh
 
 THREAD_NUM=${THREAD_NUM:-"2"}
+
+do_cleanup()
+{
+	[ -n "$pids" ] && kill -9 $pids
+	nfs_cleanup
+}
 
 do_test()
 {
@@ -27,14 +34,10 @@ do_test()
 
 	tst_res TINFO "waiting for pids:$pids"
 	for p in $pids; do
-		wait $p
-		if [ $? -ne 0 ]; then
-			kill -9 $pids
-			tst_brk TFAIL "fsstress process failed"
-		else
-			tst_res TINFO "fsstress '$p' completed"
-		fi
+		wait $p || tst_brk TFAIL "fsstress process failed"
+		tst_res TINFO "fsstress '$p' completed"
 	done
+	pids=
 
 	tst_res TPASS "all fsstress processes completed on '$n' NFS mounts"
 }
