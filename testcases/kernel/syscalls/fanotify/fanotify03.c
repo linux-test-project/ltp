@@ -37,6 +37,7 @@
 
 #define BUF_SIZE 256
 #define TST_TOTAL 3
+#define TEST_APP "fanotify_child"
 
 static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
@@ -62,28 +63,31 @@ static struct tcase {
 	{
 		"inode mark permission events",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
-		FAN_OPEN_PERM | FAN_ACCESS_PERM, 2,
+		FAN_OPEN_PERM | FAN_ACCESS_PERM, 3,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_ACCESS_PERM, FAN_DENY}
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_PERM, FAN_DENY}
 		}
 	},
 	{
 		"mount mark permission events",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
-		FAN_OPEN_PERM | FAN_ACCESS_PERM, 2,
+		FAN_OPEN_PERM | FAN_ACCESS_PERM, 3,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_ACCESS_PERM, FAN_DENY}
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_PERM, FAN_DENY}
 		}
 	},
 	{
 		"filesystem mark permission events",
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
-		FAN_OPEN_PERM | FAN_ACCESS_PERM, 2,
+		FAN_OPEN_PERM | FAN_ACCESS_PERM, 3,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_ACCESS_PERM, FAN_DENY}
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_PERM, FAN_DENY}
 		}
 	}
 };
@@ -91,9 +95,10 @@ static struct tcase {
 static void generate_events(void)
 {
 	int fd;
+	char *const argv[] = {TEST_APP, NULL};
 
 	/*
-	 * generate sequence of events
+	 * Generate sequence of events
 	 */
 	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
 		exit(1);
@@ -106,6 +111,9 @@ static void generate_events(void)
 
 	if (close(fd) == -1)
 		exit(4);
+
+	if (execve(TEST_APP, argv, environ) != -1)
+		exit(5);
 }
 
 static void child_handler(int tmp)
@@ -133,6 +141,7 @@ static void run_child(void)
 	}
 
 	child_pid = SAFE_FORK();
+
 	if (child_pid == 0) {
 		/* Child will generate events now */
 		close(fd_notify);
@@ -163,37 +172,43 @@ static void check_child(void)
 
 static int setup_mark(unsigned int n)
 {
+	unsigned int i = 0;
 	struct tcase *tc = &tcases[n];
 	struct fanotify_mark_type *mark = &tc->mark;
-
-	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
-
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag, tc->mask,
-			  AT_FDCWD, fname) < 0) {
-		if (errno == EINVAL && mark->flag == FAN_MARK_FILESYSTEM) {
-			tst_res(TCONF,
-				"FAN_MARK_FILESYSTEM not supported in kernel?");
-			return -1;
-		} else if (errno == EINVAL) {
-			tst_brk(TCONF | TERRNO,
-				"CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
-				"configured in kernel?");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark (%d, FAN_MARK_ADD | %s, "
-				"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
-				"AT_FDCWD, %s) failed.",
-				fd_notify, mark->name, fname);
-		}
-	} else {
-		/*
-		 * To distinguish between perm event not supported and
-		 * filesystem mark not supported.
-		 */
-		support_perm_events = 1;
-	}
+	char *const files[] = {fname, TEST_APP};
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
+	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
+
+	for (; i < ARRAY_SIZE(files); i++) {
+		if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
+				  tc->mask, AT_FDCWD, files[i]) < 0) {
+			if (errno == EINVAL && 
+				mark->flag == FAN_MARK_FILESYSTEM) {
+				tst_res(TCONF,
+					"FAN_MARK_FILESYSTEM not supported in "
+					"kernel?");
+				return -1;
+			} else if (errno == EINVAL) {
+				tst_brk(TCONF | TERRNO,
+					"CONFIG_FANOTIFY_ACCESS_PERMISSIONS "
+					"not configured in kernel?");
+			} else {
+				tst_brk(TBROK | TERRNO,
+					"fanotify_mark (%d, FAN_MARK_ADD | %s, "
+					"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
+					"AT_FDCWD, %s) failed.",
+					fd_notify, mark->name, fname);
+			}
+		} else {
+			/*
+			 * To distinguish between perm event not supported and
+			 * filesystem mark not supported.
+			 */
+			support_perm_events = 1;
+		}
+	}
+
 	return 0;
 }
 
@@ -299,14 +314,19 @@ static void cleanup(void)
 		SAFE_CLOSE(fd_notify);
 }
 
+static const char *const resource_files[] = {
+	TEST_APP,
+	NULL
+};
+
 static struct tst_test test = {
 	.test = test_fanotify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_tmpdir = 1,
 	.forks_child = 1,
-	.needs_root = 1
+	.needs_root = 1,
+	.resource_files = resource_files
 };
 
 #else
