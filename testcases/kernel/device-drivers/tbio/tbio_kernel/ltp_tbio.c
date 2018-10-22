@@ -562,8 +562,8 @@ module_init(tbio_init);
 
 static void tbio_exit(void)
 {
-	blk_cleanup_queue(tbio_dev.q);
 	del_gendisk(tbio_dev.gd);
+	blk_cleanup_queue(tbio_dev.q);
 	put_disk(tbio_dev.gd);
 	unregister_blkdev(TBIO_MAJOR, DEVICE_NAME);
 	vfree(tbio_dev.data);
