@@ -757,7 +757,7 @@ if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_remote_tmpdir
 fi
 
-if ! tst_cmd_available ping6; then
+if [ -z "$TST_USE_LEGACY_API" ] && ! tst_cmd_available ping6; then
 	ping6()
 	{
 		ping -6 $@
