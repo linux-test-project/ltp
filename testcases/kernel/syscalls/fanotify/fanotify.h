@@ -64,6 +64,19 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #ifndef FAN_MARK_FILESYSTEM
 #define FAN_MARK_FILESYSTEM	0x00000100
 #endif
+#ifndef FAN_OPEN_EXEC_PERM
+#define FAN_OPEN_EXEC_PERM	0x00040000
+#endif
+
+/*
+ * FAN_ALL_PERM_EVENTS has been deprecated, so any new permission events
+ * are not to be added to it. To cover the instance where a new permission
+ * event is defined, we create a new macro that is to include all
+ * permission events. Any new permission events should be added to this
+ * macro.
+ */
+#define LTP_ALL_PERM_EVENTS	(FAN_OPEN_PERM | FAN_OPEN_EXEC_PERM | \
+				 FAN_ACCESS_PERM)
 
 struct fanotify_mark_type {
 	unsigned int flag;

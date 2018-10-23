@@ -47,12 +47,18 @@ static pid_t child_pid;
 
 static char event_buf[EVENT_BUF_LEN];
 static int support_perm_events;
+static int support_exec_events;
 
 struct event {
 	unsigned long long mask;
 	unsigned int response;
 };
 
+/*
+ * Ensure to keep the first FAN_OPEN_EXEC_PERM test case before the first
+ * MARK_TYPE(FILESYSTEM) in order to allow for correct detection between
+ * exec events not supported and filesystem marks not supported.
+ */
 static struct tcase {
 	const char *tname;
 	struct fanotify_mark_type mark;
@@ -61,7 +67,7 @@ static struct tcase {
 	struct event event_set[EVENT_SET_MAX];
 } tcases[] = {
 	{
-		"inode mark permission events",
+		"inode mark, FAN_OPEN_PERM | FAN_ACCESS_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_OPEN_PERM | FAN_ACCESS_PERM, 3,
 		{
@@ -71,7 +77,16 @@ static struct tcase {
 		}
 	},
 	{
-		"mount mark permission events",
+		"inode mark, FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM events",
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM, 2,
+		{
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY}
+		}
+	},
+	{
+		"mount mark, FAN_OPEN_PERM | FAN_ACCESS_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN_PERM | FAN_ACCESS_PERM, 3,
 		{
@@ -81,7 +96,16 @@ static struct tcase {
 		}
 	},
 	{
-		"filesystem mark permission events",
+		"mount mark, FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM events",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM, 2,
+		{
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY}
+		}
+	},
+	{
+		"filesystem mark, FAN_OPEN_PERM | FAN_ACCESS_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 		FAN_OPEN_PERM | FAN_ACCESS_PERM, 3,
 		{
@@ -89,7 +113,16 @@ static struct tcase {
 			{FAN_ACCESS_PERM, FAN_DENY},
 			{FAN_OPEN_PERM, FAN_DENY}
 		}
-	}
+	},
+	{
+		"filesystem mark, FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM events",
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+		FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM, 2,
+		{
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY}
+		}
+	},
 };
 
 static void generate_events(void)
@@ -183,8 +216,15 @@ static int setup_mark(unsigned int n)
 	for (; i < ARRAY_SIZE(files); i++) {
 		if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
 				  tc->mask, AT_FDCWD, files[i]) < 0) {
-			if (errno == EINVAL && 
-				mark->flag == FAN_MARK_FILESYSTEM) {
+			if (errno == EINVAL &&
+				(tc->mask & FAN_OPEN_EXEC_PERM && 
+				 !support_exec_events)) {
+				tst_res(TCONF,
+					"FAN_OPEN_EXEC_PERM not supported in "
+					"kernel?");
+				return -1;
+			} else if (errno == EINVAL &&
+					mark->flag == FAN_MARK_FILESYSTEM) {
 				tst_res(TCONF,
 					"FAN_MARK_FILESYSTEM not supported in "
 					"kernel?");
@@ -195,17 +235,20 @@ static int setup_mark(unsigned int n)
 					"not configured in kernel?");
 			} else {
 				tst_brk(TBROK | TERRNO,
-					"fanotify_mark (%d, FAN_MARK_ADD | %s, "
+					"fanotify_mark(%d, FAN_MARK_ADD | %s, "
 					"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
 					"AT_FDCWD, %s) failed.",
 					fd_notify, mark->name, fname);
 			}
 		} else {
 			/*
-			 * To distinguish between perm event not supported and
-			 * filesystem mark not supported.
+			 * To distinguish between perm not supported, exec
+			 * events not supported and filesystem mark not
+			 * supported.
 			 */
 			support_perm_events = 1;
+			if (tc->mask & FAN_OPEN_EXEC_PERM)
+				support_exec_events = 1;
 		}
 	}
 
@@ -274,7 +317,7 @@ static void test_fanotify(unsigned int n)
 		}
 
 		/* Write response to the permission event */
-		if (event_set[test_num].mask & FAN_ALL_PERM_EVENTS) {
+		if (event_set[test_num].mask & LTP_ALL_PERM_EVENTS) {
 			struct fanotify_response resp;
 
 			resp.fd = event->fd;
