@@ -71,6 +71,9 @@ int main(int argc, char **argv)
 
 	for (signum = start_signum; signum <= end_signum; signum++) {
 
+		if (signum >= __SIGRTMIN && signum < SIGRTMIN)
+			continue;
+
 		switch (child = fork()) {
 		case -1:
 			tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
