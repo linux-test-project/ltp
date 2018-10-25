@@ -194,8 +194,11 @@ static void test_update_setperm_race(void)
 
 static void do_test(unsigned int i)
 {
-	/* two 0 bytes is accepted as a dns_resolver key payload */
-	static char zeroes[2];
+	/*
+	 * We need to pass check in dns_resolver_preparse(),
+	 * give it dummy server list request.
+	 */
+	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00 };
 
 	switch (i) {
 	case 0:
@@ -203,8 +206,8 @@ static void do_test(unsigned int i)
 					 x509_cert, sizeof(x509_cert));
 		break;
 	case 1:
-		test_update_nonupdatable("dns_resolver",
-					 zeroes, sizeof(zeroes));
+		test_update_nonupdatable("dns_resolver", dns_res_payload,
+			sizeof(dns_res_payload));
 		break;
 	case 2:
 		test_update_setperm_race();
