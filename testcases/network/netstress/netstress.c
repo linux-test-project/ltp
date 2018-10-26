@@ -100,6 +100,7 @@ enum {
 };
 static uint proto_type;
 static char *type;
+static char *dev;
 static int sock_type = SOCK_STREAM;
 static int protocol;
 static int family = AF_INET6;
@@ -151,6 +152,10 @@ static void init_socket_opts(int sd)
 {
 	if (busy_poll >= 0)
 		SAFE_SETSOCKOPT_INT(sd, SOL_SOCKET, SO_BUSY_POLL, busy_poll);
+
+	if (dev)
+		SAFE_SETSOCKOPT(sd, SOL_SOCKET, SO_BINDTODEVICE, dev,
+				strlen(dev) + 1);
 
 	switch (proto_type) {
 	case TYPE_TCP:
@@ -994,7 +999,8 @@ static struct tst_option options[] = {
 	{"g:", &tcp_port, "-g x     x - server port"},
 	{"b:", &barg, "-b x     x - low latency busy poll timeout"},
 	{"T:", &type, "-T x     tcp (default), udp, udp_lite, dccp, sctp"},
-	{"z", &zcopy, "-z       enable SO_ZEROCOPY\n"},
+	{"z", &zcopy, "-z       enable SO_ZEROCOPY"},
+	{"D:", &dev, "-d x     bind to device x\n"},
 
 	{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
 	{"l", &client_mode, "-l       Become client, default is server"},
