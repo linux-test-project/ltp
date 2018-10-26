@@ -487,7 +487,7 @@ tst_netload()
 	fi
 
 	OPTIND=0
-	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A: opt; do
+	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A:D: opt; do
 		case "$opt" in
 		a) c_num="$OPTARG" ;;
 		H) c_opts="${c_opts}-H $OPTARG "
@@ -508,6 +508,7 @@ tst_netload()
 		f) cs_opts="${cs_opts}-f " ;;
 		F) cs_opts="${cs_opts}-F " ;;
 		e) expect_res="$OPTARG" ;;
+		D) cs_opts="${cs_opts}-D $OPTARG " ;;
 		*) tst_brk_ TBROK "tst_netload: unknown option: $OPTARG" ;;
 		esac
 	done

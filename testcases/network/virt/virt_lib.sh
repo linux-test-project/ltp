@@ -271,11 +271,11 @@ virt_compare_netperf()
 	local expect_res="${1:-pass}"
 	local opts="$2"
 
-	tst_netload -H $ip_virt_remote $opts -d res_ipv4 -e $expect_res || \
-		ret1="fail"
+	tst_netload -H $ip_virt_remote $opts -d res_ipv4 -e $expect_res \
+		-D ltp_v0 || ret1="fail"
 
-	tst_netload -H ${ip6_virt_remote} $opts -d res_ipv6 -e $expect_res || \
-		ret2="fail"
+	tst_netload -H ${ip6_virt_remote} $opts -d res_ipv6 -e $expect_res \
+		-D ltp_v0 || ret2="fail"
 
 	[ "$ret1" = "fail" -o "$ret2" = "fail" ] && return
 
