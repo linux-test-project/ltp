@@ -392,9 +392,6 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 	}
 
 	for (i = 1; i < client_max_requests; ++i) {
-		if (proto_type == TYPE_UDP)
-			goto send;
-
 		if (inf.fd == -1) {
 			inf.fd = client_connect_send(client_msg, cln_len);
 			if (inf.fd == -1) {
@@ -409,7 +406,6 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 			continue;
 		}
 
-send:
 		if (max_rand_msg_len)
 			make_client_request(client_msg, &cln_len, &srv_len);
 
