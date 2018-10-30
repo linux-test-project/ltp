@@ -1698,7 +1698,7 @@ int call_receive_iovec_boundary_checks(
 	if (test_verbose)
 		printf("con_receive_iovec_boundary_checks(niov = %d)"
 		       " // iov_max = %d\n",
-		       callp->call_niov, iovec_max());
+		       (int) callp->call_niov, (int) iovec_max());
 	return con_receive_iovec_boundary_checks(conp, tn, callp->call_niov);
 }
 
@@ -1717,7 +1717,7 @@ int call_receive_iovec_boundary_checks_peeking(
 	if (test_verbose)
 		printf("con_receive_iovec_boundary_checks_peeking(niov = %d)"
 		       " // iov_max = %d\n",
-		       callp->call_niov, iovec_max());
+		       (int) callp->call_niov, (int) iovec_max());
 	return con_receive_iovec_boundary_checks_peeking(conp, tn,
 							 callp->call_niov);
 }
@@ -1742,7 +1742,8 @@ int call_receive_file_descriptor(
 		       "controllen_delta = %ld)\n",
 		       (callp->call_cloexec_flag & MSG_CMSG_CLOEXEC) ?
 					"MSG_CMSG_CLOEXEC" : "0",
-		       callp->call_some_data, callp->call_controllen_delta);
+		       callp->call_some_data,
+		       (long) callp->call_controllen_delta);
 	return con_receive_file_descriptor(conp, tn, callp->call_cloexec_flag,
 					   callp->call_some_data,
 					   callp->call_controllen_delta);
@@ -1878,7 +1879,7 @@ void tst_parse_opt(int argc, char *argv[])
 		if (strcmp(arg, "-v") == 0)
 			++test_verbose;
 		else {
-			fprintf(stderr, "usage: %s [-v]\n");
+			fprintf(stderr, "usage: %s [-v]\n", prog_name);
 			exit(1);
 		}
 	}
