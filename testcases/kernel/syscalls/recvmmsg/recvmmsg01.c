@@ -20,7 +20,11 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/in.h>
+
+// #define RECVMMSG_USE_SCTP
+#ifdef RECVMMSG_USE_SCTP
 #include <netinet/sctp.h>
+#endif
 
 #include "test.h"
 #include "safe_macros.h"
@@ -341,6 +345,12 @@ int call_message_too_long_to_fit_might_discard_bytes(
 	call_message_too_long_to_fit_might_discard_bytes_t *callp,
 	con_t *conp, int tn);
 
+void call_empty_datagram_received_as_empty_datagram_init(
+	call_empty_datagram_received_as_empty_datagram_t *callp);
+int call_empty_datagram_received_as_empty_datagram(
+	call_empty_datagram_received_as_empty_datagram_t *callp,
+	con_t *conp, int tn);
+
 void call_receive_waits_for_message_init(
 	call_receive_waits_for_message_t *callp);
 int call_receive_waits_for_message(
@@ -355,12 +365,6 @@ void call_receive_returns_what_is_available_init(
 	call_receive_returns_what_is_available_t *callp);
 int call_receive_returns_what_is_available(
 	call_receive_returns_what_is_available_t *callp, con_t *conp, int tn);
-
-void call_empty_datagram_received_as_empty_datagram_init(
-	call_empty_datagram_received_as_empty_datagram_t *callp);
-int call_empty_datagram_received_as_empty_datagram(
-	call_empty_datagram_received_as_empty_datagram_t *callp,
-	con_t *conp, int tn);
 
 int con_receive_iovec_boundary_checks(con_t *conp, int tn, size_t niov);
 int con_receive_iovec_boundary_checks_peeking(con_t *conp, int tn, size_t niov);
@@ -945,10 +949,6 @@ int con_empty_datagram_received_as_empty_datagram(con_t *conp, int tn)
  //
 
 call_empty_datagram_received_as_empty_datagram_t edraed_0;
-call_receive_waits_for_message_t rwfm_0;
-call_receiver_doesnt_wait_for_messages_t rdwfm_0;
-call_receive_returns_what_is_available_t rwis_0;
-call_message_too_long_to_fit_might_discard_bytes_t mtltfmdb_0, mtltfmdb_1;
 call_receive_iovec_boundary_checks_t ribc_0, ribc_1, ribc_2, ribc_3,
 				     ribc_4, ribc_5, ribc_6, ribc_7;
 call_receive_iovec_boundary_checks_peeking_t ribcp_0, ribcp_1, ribcp_2, ribcp_3,
@@ -957,13 +957,18 @@ call_receive_file_descriptor_t rfd_0, rfd_1, rfd_2, rfd_3,
 			       rfd_4, rfd_5, rfd_6, rfd_7,
 			       rfd_8, rfd_9, rfd_10, rfd_11,
 			       rfd_12, rfd_13, rfd_14, rfd_15;
+call_message_too_long_to_fit_might_discard_bytes_t mtltfmdb_1;
+
+#ifdef RECVMMSG_USE_SCTP
+call_message_too_long_to_fit_might_discard_bytes_t mtltfmdb_0;
+call_receive_waits_for_message_t rwfm_0;
+call_receiver_doesnt_wait_for_messages_t rdwfm_0;
+call_receive_returns_what_is_available_t rwis_0;
+#endif
 
 call_t *call_tests[] = {
 	(call_t *) &edraed_0,
-	(call_t *) &rwfm_0,
-	(call_t *) &rdwfm_0,
-	(call_t *) &rwis_0,
-	(call_t *) &mtltfmdb_0, (call_t *) &mtltfmdb_1,
+	(call_t *) &mtltfmdb_1,
 	(call_t *) &ribc_0, (call_t *) &ribc_1,
 	(call_t *) &ribc_2, (call_t *) &ribc_3,
 	(call_t *) &ribc_4, (call_t *) &ribc_5,
@@ -980,6 +985,12 @@ call_t *call_tests[] = {
 	(call_t *) &rfd_10, (call_t *) &rfd_11,
 	(call_t *) &rfd_12, (call_t *) &rfd_13,
 	(call_t *) &rfd_14, (call_t *) &rfd_15,
+#ifdef RECVMMSG_USE_SCTP
+	(call_t *) &mtltfmdb_0,
+	(call_t *) &rwfm_0,
+	(call_t *) &rdwfm_0,
+	(call_t *) &rwis_0,
+#endif
 };
 
 void tests_wrap(void)
@@ -987,12 +998,15 @@ void tests_wrap(void)
 	size_t iov_max = iovec_max();
 
 	call_empty_datagram_received_as_empty_datagram_init(&edraed_0);
+
+#ifdef RECVMMSG_USE_SCTP
 	call_receive_waits_for_message_init(&rwfm_0);
 	call_receiver_doesnt_wait_for_messages_init(&rdwfm_0);
 	call_receive_returns_what_is_available_init(&rwis_0);
-
 	call_message_too_long_to_fit_might_discard_bytes_init(&mtltfmdb_0,
 							      SOCK_SEQPACKET);
+#endif
+
 	call_message_too_long_to_fit_might_discard_bytes_init(&mtltfmdb_1,
 							      SOCK_DGRAM);
 
@@ -1193,6 +1207,44 @@ void tests_run(void)
 	assert(!error);					
 	con_deinit(&con);
 
+	 //  Get the socketpair tests that returned TEST_CLOEXEC_FLAG
+	 //  and run them sequentially to ensure there are no issues with
+	 //  the connection sharing.
+
+	n_selected = tests_select(call_do_con_init_socketpair, call_tests,
+				  call_tests_selected,
+				  N_TESTS, TEST_CLOEXEC_FLAG);
+	if (test_verbose > 1)
+		printf("\nRunning %d TEST_CLOEXEC_FLAG socketpair() "
+		       "tests sharing a connection:\n",
+		       n_selected);
+	con_init_socketpair(&con);
+	for (int i = 0; i < n_selected; ++i) {
+		callp = call_tests_selected[i];
+		int error = call_go(callp, &con);
+		assert(error == TEST_CLOEXEC_FLAG);
+	}
+	con_deinit(&con);
+
+	 //  Now run them with recvmmsg(2)
+
+	for (int sendmulti = 0; sendmulti <= 1; ++sendmulti) {
+		if (test_verbose > 1)
+			printf("\nRunning %d TEST_CLOEXEC_FLAG socketpair() "
+			       "tests with a single recvmmsg(2) call "
+			       "and %s:\n", n_selected,
+			       sendmulti ? "a single sendmmsg(2) call"
+					 : "multiple sendmsg(2) calls");
+		con_init_socketpair(&con);
+		con_make_vectored(&con, sendmulti > 0, n_selected,
+				  call_tests_selected, smc_vec, rmc_vec);
+		callp = call_tests_selected[0];
+		error = call_go(callp, &con);
+		assert(error == TEST_CLOEXEC_FLAG);
+		con_deinit(&con);
+	}
+
+#ifdef RECVMMSG_USE_SCTP //{
 	 //  Select the SOCK_SEQPACKET tests, run them sequentially sharing
 	 //  the connection to ensure there are no issues sharing it.
 
@@ -1296,43 +1348,7 @@ void tests_run(void)
 		assert(!error);					
 		con_deinit(&con);
 	}
-
-	 //  Get the socketpair tests that returned TEST_CLOEXEC_FLAG
-	 //  and run them sequentially to ensure there are no issues with
-	 //  the connection sharing.
-
-	n_selected = tests_select(call_do_con_init_socketpair, call_tests,
-				  call_tests_selected,
-				  N_TESTS, TEST_CLOEXEC_FLAG);
-	if (test_verbose > 1)
-		printf("\nRunning %d TEST_CLOEXEC_FLAG socketpair() "
-		       "tests sharing a connection:\n",
-		       n_selected);
-	con_init_socketpair(&con);
-	for (int i = 0; i < n_selected; ++i) {
-		callp = call_tests_selected[i];
-		int error = call_go(callp, &con);
-		assert(error == TEST_CLOEXEC_FLAG);
-	}
-	con_deinit(&con);
-
-	 //  Now run them with recvmmsg(2)
-
-	for (int sendmulti = 0; sendmulti <= 1; ++sendmulti) {
-		if (test_verbose > 1)
-			printf("\nRunning %d TEST_CLOEXEC_FLAG socketpair() "
-			       "tests with a single recvmmsg(2) call "
-			       "and %s:\n", n_selected,
-			       sendmulti ? "a single sendmmsg(2) call"
-					 : "multiple sendmsg(2) calls");
-		con_init_socketpair(&con);
-		con_make_vectored(&con, sendmulti > 0, n_selected,
-				  call_tests_selected, smc_vec, rmc_vec);
-		callp = call_tests_selected[0];
-		error = call_go(callp, &con);
-		assert(error == TEST_CLOEXEC_FLAG);
-		con_deinit(&con);
-	}
+#endif //}
 }
 
  //}
@@ -1590,6 +1606,9 @@ void con_init_dgram(con_t *conp)
 
 void con_init_with_type(con_t *conp, int type)
 {
+#ifndef RECVMMSG_USE_SCTP
+	assert(type != SOCK_SEQPACKET);
+#endif
 	int protocol = (type == SOCK_SEQPACKET) ? IPPROTO_SCTP : 0;
 	int server = socket(PF_INET, type, protocol);
 	if (server < 0)
@@ -1761,6 +1780,25 @@ int call_message_too_long_to_fit_might_discard_bytes(
 							callp->call_type);
 }
 
+void call_empty_datagram_received_as_empty_datagram_init(
+	call_empty_datagram_received_as_empty_datagram_t *callp)
+{
+	call_base_init(&callp->call_base, call_do_con_init_dgram,
+		       (calltest_t)
+		       call_empty_datagram_received_as_empty_datagram);
+}
+int call_empty_datagram_received_as_empty_datagram(
+	call_empty_datagram_received_as_empty_datagram_t *callp,
+	con_t *conp, int tn)
+{
+	print_nest(tn);
+	if (test_verbose)
+		printf("con_empty_datagram_received_as_empty_datagram()\n");
+	return con_empty_datagram_received_as_empty_datagram(conp, tn);
+}
+
+#ifdef RECVMMSG_USE_SCTP //{
+
 void call_receive_waits_for_message_init(
 	call_receive_waits_for_message_t *callp)
 {
@@ -1806,22 +1844,7 @@ int call_receive_returns_what_is_available(
 	return con_receive_returns_what_is_available(conp, tn);
 }
 
-void call_empty_datagram_received_as_empty_datagram_init(
-	call_empty_datagram_received_as_empty_datagram_t *callp)
-{
-	call_base_init(&callp->call_base, call_do_con_init_dgram,
-		       (calltest_t)
-		       call_empty_datagram_received_as_empty_datagram);
-}
-int call_empty_datagram_received_as_empty_datagram(
-	call_empty_datagram_received_as_empty_datagram_t *callp,
-	con_t *conp, int tn)
-{
-	print_nest(tn);
-	if (test_verbose)
-		printf("con_empty_datagram_received_as_empty_datagram()\n");
-	return con_empty_datagram_received_as_empty_datagram(conp, tn);
-}
+#endif //}
 
  //}
  //{	Miscellaneous supporting code is in this section.
