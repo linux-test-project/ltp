@@ -21,7 +21,7 @@ top_srcdir		?= ../../../..
 include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -I$(abs_srcdir)/../utils
-CFLAGS			= -g
+CFLAGS			= -g -std=c99
 LDLIBS			+= -lpthread
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
