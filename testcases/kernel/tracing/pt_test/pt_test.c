@@ -14,7 +14,6 @@
  * kconfig requirement: CONFIG_PERF_EVENTS
  */
 
-#include <linux/perf_event.h>
 #include <sched.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,6 +23,7 @@
 #include "config.h"
 
 #ifdef HAVE_STRUCT_PERF_EVENT_MMAP_PAGE_AUX_HEAD
+# include <linux/perf_event.h>
 
 #define PAGESIZE 4096
 #define INTEL_PT_MEMSIZE (17*PAGESIZE)
