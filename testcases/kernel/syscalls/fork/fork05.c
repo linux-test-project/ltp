@@ -104,6 +104,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include "lapi/syscalls.h"
 #include "test.h"
 
 char *TCID = "fork05";
@@ -130,18 +131,10 @@ struct modify_ldt_ldt_s {
 
 static int a = 42;
 
-static void modify_ldt(int, struct modify_ldt_ldt_s *, int);
-asm("	.text\n\
-	.type modify_ldt,@function \n\
-modify_ldt: \n\
-	push   %ebx \n\
-	mov    0x10(%esp,1),%edx \n\
-	mov    0xc(%esp,1),%ecx \n\
-	mov    0x8(%esp,1),%ebx \n\
-	mov    $0x7b,%eax \n\
-	int    $0x80 \n\
-	pop    %ebx \n\
-	ret");
+static void modify_ldt(int func, struct modify_ldt_ldt_s *ptr, int bytecount)
+{
+	ltp_syscall(__NR_modify_ldt, func, ptr, bytecount);
+}
 
 int main(void)
 {
