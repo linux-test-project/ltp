@@ -81,6 +81,12 @@ ipsec_lib_setup()
 	cleanup_vti=
 	ALG=
 	ALGR=
+
+	if [ -n "$IPSEC_MODE" ]; then
+		tst_net_run "tst_check_drivers xfrm_user" || \
+			tst_brk TCONF "xfrm_user driver not available on lhost or rhost"
+		cleanup_xfrm=1
+	fi
 }
 
 TST_OPTS="l:m:p:s:S:k:A:e:a:c:r:"
@@ -110,6 +116,8 @@ tst_ipsec_setup()
 # tst_ipsec_cleanup: flush ipsec state and policy rules
 tst_ipsec_cleanup()
 {
+	[ -z "$cleanup_xfrm" ] && return
+
 	ip xfrm state flush
 	ip xfrm policy flush
 	tst_rhost_run -c "ip xfrm state flush && ip xfrm policy flush"
