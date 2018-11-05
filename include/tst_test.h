@@ -42,6 +42,7 @@
 #include "tst_minmax.h"
 #include "tst_get_bad_addr.h"
 #include "tst_path_has_mnt_flags.h"
+#include "tst_sys_conf.h"
 
 /*
  * Reports testcase result.
@@ -175,6 +176,12 @@ struct tst_test {
 
 	/* NULL terminated array of needed kernel drivers */
 	const char * const *needs_drivers;
+
+	/*
+	 * NULL terminated array of (/proc, /sys) files to save
+	 * before setup and restore after cleanup
+	 */
+	const char * const *save_restore;
 };
 
 /*

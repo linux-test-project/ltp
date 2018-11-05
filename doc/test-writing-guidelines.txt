@@ -1468,6 +1468,43 @@ first missing driver.
 Since it relies on modprobe command, the check will be skipped if the command
 itself is not available on the system.
 
+2.2.27 Saving & restoring /proc|sys values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+LTP library can be instructed to save and restore value of specified
+(/proc|sys) files. This is achieved by initialized tst_test struct
+field 'save_restore'. It is a NULL terminated array of strings where
+each string represents a file, whose value is saved at the beginning
+and restored at the end of the test. Only first line of a specified
+file is saved and restored.
+
+Pathnames can be optionally prefixed to specify how strictly (during
+'store') are handled files that don't exist:
+  (no prefix) - test ends with TCONF
+  '?'         - test prints info message and continues
+  '!'         - test ends with TBROK
+
+'restore' is always strict and will TWARN if it encounters any error.
+
+Example:
+
+static const char *save_restore[] = {
+	"/proc/sys/kernel/core_pattern",
+	NULL,
+};
+
+static void setup(void)
+{
+	FILE_PRINTF("/proc/sys/kernel/core_pattern", "/mypath");
+}
+
+static struct tst_test test = {
+	...
+	.setup = setup,
+	.save_restore = save_restore,
+};
+
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

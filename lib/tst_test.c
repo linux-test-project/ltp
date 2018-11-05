@@ -35,6 +35,7 @@
 #include "tst_timer_test.h"
 #include "tst_clocks.h"
 #include "tst_timer.h"
+#include "tst_sys_conf.h"
 
 #include "old_resource.h"
 #include "old_device.h"
@@ -809,6 +810,15 @@ static void do_setup(int argc, char *argv[])
 	if (needs_tmpdir() && !tst_tmpdir_created())
 		tst_tmpdir();
 
+	if (tst_test->save_restore) {
+		const char * const *name = tst_test->save_restore;
+
+		while (*name) {
+			tst_sys_conf_save(*name);
+			name++;
+		}
+	}
+
 	if (tst_test->mntpoint)
 		SAFE_MKDIR(tst_test->mntpoint, 0777);
 
@@ -884,6 +894,9 @@ static void do_cleanup(void)
 		tst_futexes = NULL;
 		tst_rmdir();
 	}
+
+	if (tst_test->save_restore)
+		tst_sys_conf_restore(0);
 
 	cleanup_ipc();
 }
