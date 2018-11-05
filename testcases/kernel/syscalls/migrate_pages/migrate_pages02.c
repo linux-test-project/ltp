@@ -107,13 +107,14 @@ static int migrate_to_node(pid_t pid, int node)
 	TEST(tst_syscall(__NR_migrate_pages, pid, max_node, old_nodes,
 		new_nodes));
 	if (TST_RET != 0) {
-		if (TST_RET < 0)
+		if (TST_RET < 0) {
 			tst_res(TFAIL | TERRNO, "migrate_pages failed "
 				 "ret: %ld, ", TST_RET);
-		else
+			print_mem_stats(pid, node);
+		} else {
 			tst_res(TINFO, "migrate_pages could not migrate all "
 				 "pages, not migrated: %ld", TST_RET);
-		print_mem_stats(pid, node);
+		}
 	}
 	free(old_nodes);
 	free(new_nodes);
