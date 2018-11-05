@@ -32,9 +32,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "tst_timer.h"
 
-static struct tst_fzsync_pair fzsync_pair = TST_FZSYNC_PAIR_INIT;
-
-static pthread_t thrd;
+static struct tst_fzsync_pair fzsync_pair;
 
 /*
  * Thread 2: repeatedly remove the shm ID and reallocate it again for a
@@ -44,54 +42,49 @@ static void *thrproc(void *unused)
 {
 	int id = SAFE_SHMGET(0xF00F, 4096, IPC_CREAT|0700);
 
-	for (;;) {
-		if (!tst_fzsync_wait_b(&fzsync_pair))
-			break;
+	while (tst_fzsync_run_b(&fzsync_pair)) {
+		tst_fzsync_start_race_b(&fzsync_pair);
 		SAFE_SHMCTL(id, IPC_RMID, NULL);
 		id = SAFE_SHMGET(0xF00F, 4096, IPC_CREAT|0700);
-		if (!tst_fzsync_wait_b(&fzsync_pair))
-			break;
+		tst_fzsync_end_race_b(&fzsync_pair);
 	}
 	return unused;
 }
 
 static void setup(void)
 {
-	tst_timer_check(CLOCK_MONOTONIC);
-
 	/* Skip test if either remap_file_pages() or SysV IPC is unavailable */
 	tst_syscall(__NR_remap_file_pages, NULL, 0, 0, 0, 0);
 	tst_syscall(__NR_shmctl, 0xF00F, IPC_RMID, NULL);
 
-	SAFE_PTHREAD_CREATE(&thrd, NULL, thrproc, NULL);
+	tst_fzsync_pair_init(&fzsync_pair);
 }
 
 static void do_test(void)
 {
-	tst_timer_start(CLOCK_MONOTONIC);
-
 	/*
 	 * Thread 1: repeatedly attach a shm segment, then remap it until the ID
 	 * seems to have been removed by the other process.
 	 */
-	while (!tst_timer_expired_ms(5000)) {
+	tst_fzsync_pair_reset(&fzsync_pair, thrproc);
+	while (tst_fzsync_run_a(&fzsync_pair)) {
 		int id;
 		void *addr;
 
 		id = SAFE_SHMGET(0xF00F, 4096, IPC_CREAT|0700);
 		addr = SAFE_SHMAT(id, NULL, 0);
-		tst_fzsync_wait_a(&fzsync_pair);
+		tst_fzsync_start_race_a(&fzsync_pair);
 		do {
 			/* This is the system call that crashed */
 			TEST(syscall(__NR_remap_file_pages, addr, 4096,
 				     0, 0, 0));
 		} while (TST_RET == 0);
+		tst_fzsync_end_race_a(&fzsync_pair);
 
 		if (TST_ERR != EIDRM && TST_ERR != EINVAL) {
 			tst_brk(TBROK | TTERRNO,
 				"Unexpected remap_file_pages() error");
 		}
-		tst_fzsync_wait_a(&fzsync_pair);
 
 		/*
 		 * Ensure that a shm segment will actually be destroyed.
@@ -106,10 +99,7 @@ static void do_test(void)
 
 static void cleanup(void)
 {
-	if (thrd) {
-		tst_fzsync_pair_exit(&fzsync_pair);
-		SAFE_PTHREAD_JOIN(thrd, NULL);
-	}
+	tst_fzsync_pair_cleanup(&fzsync_pair);
 	shmctl(0xF00F, IPC_RMID, NULL);
 }
 
