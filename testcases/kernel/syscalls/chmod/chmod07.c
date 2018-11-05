@@ -1,20 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 /*
@@ -31,43 +17,6 @@
  * Expected Result:
  *  chmod() should return value 0 on success and succeeds to set sticky bit
  *  on the specified file.
- *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *   	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *   	Verify the Functionality of system call
- *      if successful,
- *      	Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  chmod07 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS:
- *  This test should be run by 'super-user' (root) only.
- *
  */
 
 #include <stdio.h>
@@ -80,112 +29,63 @@
 #include <grp.h>
 #include <pwd.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 
-#define LTPUSER		"nobody"
-#define LTPGRP		"users"
-#define FILE_MODE 	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
-#define PERMS		01777	/*
-				 * Mode permissions of test file with sticky
-				 * bit set.
-				 */
+#define FILE_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define PERMS		01777	/* Permissions with sticky bit set. */
 #define TESTFILE	"testfile"
 
-char *TCID = "chmod07";
-int TST_TOTAL = 1;
-
-void setup();			/* Main setup function for the test */
-void cleanup();			/* Main cleanup function for the test */
-
-int main(int ac, char **av)
+void test_chmod(void)
 {
-	struct stat stat_buf;	/* stat(2) struct contents */
-	int lc;
+	struct stat stat_buf;
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		/*
-		 * Call chmod(2) with specified mode argument
-		 * (sticky-bit set) on testfile.
-		 */
-		TEST(chmod(TESTFILE, PERMS));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "chmod(%s, %#o) failed",
-				 TESTFILE, PERMS);
-			continue;
-		}
-		/*
-		 * Get the testfile information using
-		 * stat(2).
-		 */
-		if (stat(TESTFILE, &stat_buf) == -1)
-			tst_brkm(TFAIL | TTERRNO, cleanup,
-				 "stat failed");
-
-		/* Check for expected mode permissions */
-		if ((stat_buf.st_mode & PERMS) == PERMS)
-			tst_resm(TPASS, "Functionality of "
-				 "chmod(%s, %#o) successful",
-				 TESTFILE, PERMS);
-		else
-			tst_resm(TFAIL, "%s: Incorrect modes 0%03o; "
-				 "expected 0%03o", TESTFILE,
-				 stat_buf.st_mode, PERMS);
+	/*
+	 * Call chmod(2) with specified mode argument
+	 * (sticky-bit set) on testfile.
+	 */
+	TEST(chmod(TESTFILE, PERMS));
+	if (TST_RET == -1) {
+		tst_brk(TFAIL | TTERRNO, "chmod(%s, %#o) failed",
+				TESTFILE, PERMS);
 	}
 
-	cleanup();
-	tst_exit();
+	if (stat(TESTFILE, &stat_buf) == -1) {
+		tst_brk(TFAIL | TTERRNO, "stat failed");
+	}
+
+	/* Check for expected mode permissions */
+	if ((stat_buf.st_mode & PERMS) == PERMS) {
+		tst_res(TPASS, "Functionality of chmod(%s, %#o) successful",
+				TESTFILE, PERMS);
+	} else {
+		tst_res(TFAIL, "%s: Incorrect modes 0%03o; expected 0%03o",
+				TESTFILE, stat_buf.st_mode, PERMS);
+	}
 }
 
-/*
- * void
- * setup() - performs all ONE TIME setup for this test.
- *  Create a temporary directory and change directory to it.
- *  Create a test file under temporary directory and close it
- *  Change the ownership of test file to that of "ltpuser1" user.
- */
 void setup(void)
 {
-	struct passwd *ltpuser;	/* password struct for ltpuser1 */
-	struct group *ltpgroup;	/* group struct for ltpuser1 */
-	int fd;			/* file descriptor variable */
-	gid_t group1_gid;	/* user and process group id's */
+	struct passwd *ltpuser;
+	struct group *ltpgroup;
+	int fd;
+	gid_t group1_gid;
 	uid_t user1_uid;
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_require_root();
-
-	tst_tmpdir();
-
-	/* Get the uid of guest user - ltpuser1 */
-	if ((ltpuser = getpwnam(LTPUSER)) == NULL)
-		tst_brkm(TBROK, cleanup, "getpwnam failed");
+	ltpuser = SAFE_GETPWNAM("nobody");
 	user1_uid = ltpuser->pw_uid;
 
-	/* Get the group id of guest user - ltpuser1 */
-	if ((ltpgroup = getgrnam(LTPGRP)) == NULL)
-		tst_brkm(TBROK, cleanup, "getgrnam failed");
+	ltpgroup = SAFE_GETGRNAM_FALLBACK("users", "daemon");
 	group1_gid = ltpgroup->gr_gid;
 
-	fd = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
-	SAFE_CLOSE(cleanup, fd);
-	SAFE_CHOWN(cleanup, TESTFILE, user1_uid, group1_gid);
-
-	SAFE_SETGID(cleanup, group1_gid);
+	fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
+	SAFE_CLOSE(fd);
+	SAFE_CHOWN(TESTFILE, user1_uid, group1_gid);
+	SAFE_SETGID(group1_gid);
 }
 
-void cleanup(void)
-{
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.test_all = test_chmod,
+};
