@@ -44,8 +44,6 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
 /* KSM */
 
 void create_same_memory(int size, int num, int unit);
-void save_max_page_sharing(void);
-void restore_max_page_sharing(void);
 void test_ksm_merge_across_nodes(unsigned long nr_pages);
 
 /* THP */

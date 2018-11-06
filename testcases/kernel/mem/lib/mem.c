@@ -239,31 +239,6 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 
 /* KSM */
 
-static int max_page_sharing;
-
-void save_max_page_sharing(void)
-{
-	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
-		SAFE_FILE_SCANF(PATH_KSM "max_page_sharing",
-				"%d", &max_page_sharing);
-}
-
-void restore_max_page_sharing(void)
-{
-	/*
-	 * Documentation/vm/ksm.txt states that the minimum
-	 * value for max_page_sharing is 2, so on
-	 * max_page_sharing != 0 after save_max_page_sharing()
-	 * returns.
-	 */
-	if (!max_page_sharing)
-		return;
-
-	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
-	        FILE_PRINTF(PATH_KSM "max_page_sharing",
-	                         "%d", max_page_sharing);
-}
-
 static void check(char *path, long int value)
 {
 	char fullpath[BUFSIZ];
