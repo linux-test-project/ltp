@@ -20,8 +20,6 @@
 #include "tst_test.h"
 #include "tst_sys_conf.h"
 
-static char orig[1024];
-
 static const char * const save_restore[] = {
 	"?/proc/nonexistent",
 	"!/proc/sys/kernel/numa_balancing",
@@ -31,7 +29,6 @@ static const char * const save_restore[] = {
 
 static void setup(void)
 {
-	SAFE_FILE_SCANF("/proc/sys/kernel/core_pattern", "%s", orig);
 	SAFE_FILE_PRINTF("/proc/sys/kernel/core_pattern", "changed");
 	tst_sys_conf_dump();
 }

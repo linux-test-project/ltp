@@ -29,7 +29,6 @@ int tst_sys_conf_save_str(const char *path, const char *value)
 	strncpy(n->path, path, sizeof(n->path));
 	strncpy(n->value, value, sizeof(n->value));
 
-	/* add new entry at the beginning, right after 'c' */
 	n->next = save_restore_data;
 	save_restore_data = n;
 
