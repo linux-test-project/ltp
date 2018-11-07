@@ -5,9 +5,9 @@
 #
 # Author:       Alexey Kodanev alexey.kodanev@oracle.com
 
-TST_SETUP="init"
+TST_SETUP="dhcp_lib_setup"
+TST_CLEANUP="dhcp_lib_cleanup"
 TST_TESTFUNC="test01"
-TST_CLEANUP="cleanup"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="cat $dhcp_name awk ip pgrep pkill dhclient"
@@ -36,7 +36,7 @@ stop_dhcp()
 	[ "$(pgrep -x $dhcp_name)" ] && return 1 || return 0
 }
 
-init()
+dhcp_lib_setup()
 {
 	if [ $TST_IPV6 ]; then
 		ip_addr="fd00:1:1:2::12/64"
@@ -69,7 +69,7 @@ init()
 		tst_brk TBROK "failed to add ip address"
 }
 
-cleanup()
+dhcp_lib_cleanup()
 {
 	[ -z "$veth_loaded" ] && return
 
