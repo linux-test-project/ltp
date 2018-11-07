@@ -26,6 +26,8 @@
 
 #include "tst_test.h"
 
+static void *bad_addr;
+
 static void verify_setrlimit(void)
 {
 	int status;
@@ -33,7 +35,7 @@ static void verify_setrlimit(void)
 
 	pid = SAFE_FORK();
 	if (!pid) {
-		TEST(setrlimit(RLIMIT_NOFILE, (void *) -1));
+		TEST(setrlimit(RLIMIT_NOFILE, bad_addr));
 		if (TST_RET != -1) {
 			tst_res(TFAIL, "setrlimit()  succeeded unexpectedly");
 			exit(0);
@@ -67,7 +69,13 @@ static void verify_setrlimit(void)
 	tst_res(TBROK, "child %s", tst_strstatus(status));
 }
 
+static void setup(void)
+{
+	bad_addr = tst_get_bad_addr(NULL);
+}
+
 static struct tst_test test = {
 	.test_all = verify_setrlimit,
 	.forks_child = 1,
+	.setup = setup,
 };
