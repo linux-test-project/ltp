@@ -80,6 +80,9 @@ static inline int safe_dup(const char *file, const int lineno,
 #define SAFE_GETRUSAGE(who, usage) \
 	safe_getrusage(__FILE__, __LINE__, NULL, (who), (usage))
 
+#define SAFE_GETTIMEOFDAY(tv, tz) \
+	safe_gettimeofday(__FILE__, __LINE__, NULL, (tv), (tz))
+
 #define SAFE_MALLOC(size) \
 	safe_malloc(__FILE__, __LINE__, NULL, (size))
 

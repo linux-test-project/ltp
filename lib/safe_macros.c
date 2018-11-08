@@ -126,9 +126,9 @@ struct passwd *safe_getpwnam(const char *file, const int lineno,
 	return rval;
 }
 
-int
-safe_getrusage(const char *file, const int lineno, void (*cleanup_fn) (void),
-	       int who, struct rusage *usage)
+int safe_getrusage(const char *file, const int lineno,
+		   void (*cleanup_fn) (void),
+		   int who, struct rusage *usage)
 {
 	int rval;
 
@@ -139,6 +139,19 @@ safe_getrusage(const char *file, const int lineno, void (*cleanup_fn) (void),
 			 file, lineno, who, usage);
 	}
 
+	return rval;
+}
+
+int safe_gettimeofday(const char *file, const int lineno,
+		      void (*cleanup_fn) (void),
+		      struct timeval *tv, struct timezone *tz)
+{
+	int rval = gettimeofday(tv, tz);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: gettimeofday(%p,%p) failed",
+			 file, lineno, tv, tz);
+	}
 	return rval;
 }
 

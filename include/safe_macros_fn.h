@@ -48,6 +48,10 @@ struct passwd* safe_getpwnam(const char *file, const int lineno,
 int safe_getrusage(const char *file, const int lineno,
                    void (*cleanup_fn)(void), int who, struct rusage *usage);
 
+int safe_gettimeofday(const char *file, const int lineno,
+		      void (*cleanup_fn) (void),
+		      struct timeval *tv, struct timezone *tz);
+
 void* safe_malloc(const char *file, const int lineno,
                   void (*cleanup_fn)(void), size_t size);
 
