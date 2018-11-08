@@ -319,6 +319,9 @@ fork14 fork14
 
 fpathconf01 fpathconf01
 
+fremovexattr01 fremovexattr01
+fremovexattr02 fremovexattr02
+
 fstat01 fstat01
 fstat01_64 fstat01_64
 fstat02 fstat02
