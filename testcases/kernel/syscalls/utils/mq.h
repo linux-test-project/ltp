@@ -74,7 +74,7 @@ static void cleanup_queue(mqd_t fd)
 
 	memset(&mqstat, 0, sizeof(mqstat));
 	if (mq_getattr(fd, &mqstat) == -1) {
-		tst_brk(TWARN, "mq_getattr() failed");
+		tst_brk(TBROK|TERRNO, "mq_getattr() failed");
 		return;
 	}
 
