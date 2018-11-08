@@ -65,4 +65,7 @@
 	ERET;								\
 })
 
+#define BUILD_BUG_ON(condition) \
+	do { ((void)sizeof(char[1 - 2 * !!(condition)])); } while (0)
+
 #endif /* TST_COMMON_H__ */
