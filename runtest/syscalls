@@ -582,6 +582,8 @@ llseek01 llseek01
 llseek02 llseek02
 llseek03 llseek03
 
+lremovexattr01 lremovexattr01
+
 lseek01 lseek01
 lseek02 lseek02
 lseek07 lseek07
