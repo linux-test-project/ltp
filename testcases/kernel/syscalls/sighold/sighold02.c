@@ -55,16 +55,6 @@
 # define NSIG _NSIG
 #endif
 
-/* Needed for NPTL */
-#define SIGCANCEL 32
-#define SIGTIMER 33
-
-/* Reserved in Android's bionic libc */
-#ifdef __ANDROID__
-# define SIGLIBCORE 34
-# define SIGDEBUGGERD 35
-#endif
-
 /* ensure NUMSIGS is defined */
 #ifndef NUMSIGS
 # define NUMSIGS NSIG
@@ -83,17 +73,14 @@ static int sigs_map[NUMSIGS];
 
 static int skip_sig(int sig)
 {
+	if (sig >= __SIGRTMIN && sig < SIGRTMIN)
+		return 1;
+
 	switch (sig) {
 	case SIGCHLD:
 	case SIGKILL:
 	case SIGALRM:
 	case SIGSTOP:
-	case SIGCANCEL:
-	case SIGTIMER:
-#ifdef __ANDROID__
-	case SIGLIBCORE:
-	case SIGDEBUGGERD:
-#endif
 		return 1;
 	default:
 		return 0;
