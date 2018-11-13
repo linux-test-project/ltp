@@ -1,112 +1,63 @@
 /******************************************************************************/
 /* Copyright (c) Crackerjack Project., 2007                                   */
 /*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software Foundation,   */
-/* Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           */
-/*                                                                            */
 /* History:     Porting from Crackerjack to LTP is done by                    */
 /*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
 /******************************************************************************/
 
-/******************************************************************************/
-/* Description: This tests the rt_sigsuspend() syscall.                       */
-/******************************************************************************/
+/*
+ * Description: This tests the rt_sigsuspend() syscall.
+ *
+ * Waits for SIGALRM in rt_sigsuspend() then checks that process mask wasn't
+ * modified.
+ */
 
-#include <stdio.h>
 #include <signal.h>
 #include <errno.h>
-#include <string.h>
 
-#include "test.h"
+#include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "lapi/rt_sigaction.h"
-
-char *TCID = "rt_sigsuspend01";
-int TST_TOTAL = 1;
-
-static void cleanup(void)
-{
-	tst_rmdir();
-}
-
-static void setup(void)
-{
-	TEST_PAUSE;
-	tst_tmpdir();
-}
+#include "lapi/safe_rt_signal.h"
 
 static void sig_handler(int sig)
 {
+	(void) sig;
 }
 
-int main(int ac, char **av)
+static void verify_rt_sigsuspend(void)
 {
 	sigset_t set, set1, set2;
-	int lc;
+	struct sigaction act = {.sa_handler = sig_handler};
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	if (sigemptyset(&set) < 0)
+		tst_brk(TFAIL | TERRNO, "sigemptyset failed");
 
-	setup();
+	SAFE_RT_SIGACTION(SIGALRM, &act, NULL, SIGSETSIZE);
 
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
+	SAFE_RT_SIGPROCMASK(0, NULL, &set1, SIGSETSIZE);
 
-		tst_count = 0;
+	alarm(1);
 
-		if (sigemptyset(&set) < 0)
-			tst_brkm(TFAIL | TERRNO, cleanup, "sigemptyset failed");
-		struct sigaction act, oact;
-		memset(&act, 0, sizeof(act));
-		memset(&oact, 0, sizeof(oact));
-		act.sa_handler = sig_handler;
+	TEST(tst_syscall(__NR_rt_sigsuspend, &set, SIGSETSIZE));
 
-		TEST(ltp_rt_sigaction(SIGALRM, &act, &oact, SIGSETSIZE));
-		if (TEST_RETURN == -1)
-			tst_brkm(TFAIL | TTERRNO, cleanup,
-				 "rt_sigaction failed");
+	alarm(0);
 
-		TEST(ltp_syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0,
-			     &set1, SIGSETSIZE));
-		if (TEST_RETURN == -1)
-			tst_brkm(TFAIL | TTERRNO, cleanup,
-				 "rt_sigprocmask failed");
+	if (TST_RET != -1)
+		tst_brk(TFAIL, "rt_sigsuspend returned %ld", TST_RET);
 
-		TEST(alarm(5));
-		int result;
-		TEST(result = ltp_syscall(__NR_rt_sigsuspend, &set,
-			SIGSETSIZE));
-		TEST(alarm(0));
-		if (result == -1 && TEST_ERRNO != EINTR) {
-			TEST(ltp_syscall(__NR_rt_sigprocmask, SIG_UNBLOCK, 0,
-				&set2, SIGSETSIZE));
-			if (TEST_RETURN == -1) {
-				tst_brkm(TFAIL | TTERRNO, cleanup,
-					 "rt_sigprocmask failed");
-			} else if (memcmp(&set1, &set2,
-				   sizeof(unsigned long))) {
-				tst_brkm(TFAIL | TTERRNO, cleanup,
-					 "rt_sigsuspend failed to "
-					 "preserve signal mask");
-			} else {
-				tst_resm(TPASS, "rt_sigsuspend PASSED");
-			}
-		} else {
-			tst_resm(TFAIL | TTERRNO, "rt_sigsuspend failed");
-		}
+	if (TST_ERR != EINTR)
+		tst_brk(TFAIL | TTERRNO, "rt_sigsuspend() failed unexpectedly");
 
-	}
+	tst_res(TPASS, "rt_sigsuspend() returned with -1 and EINTR");
 
-	cleanup();
+	SAFE_RT_SIGPROCMASK(0, NULL, &set2, SIGSETSIZE);
 
-	tst_exit();
+	if (memcmp(&set1, &set2, sizeof(unsigned long)))
+		tst_res(TFAIL, "signal mask not preserved");
+	else
+		tst_res(TPASS, "signal mask preserved");
 }
+
+static struct tst_test test = {
+	.test_all = verify_rt_sigsuspend,
+};
