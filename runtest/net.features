@@ -60,3 +60,5 @@ geneve01 geneve01.sh
 geneve01_ipv6 geneve01.sh -6
 
 sit01 sit01.sh
+
+mpls01 mpls01.sh
