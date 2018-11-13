@@ -116,10 +116,13 @@ virt_add()
 		[ -z "$opt" ] && \
 			opt="remote $(tst_ipaddr rhost) dev $(tst_iface)"
 	;;
+	sit)
+		[ -z "$opt" ] && opt="remote $(tst_ipaddr rhost) local $(tst_ipaddr)"
+	;;
 	esac
 
 	case $virt_type in
-	vxlan|geneve)
+	vxlan|geneve|sit)
 		ip li add $vname type $virt_type $opt
 	;;
 	gre|ip6gre)
@@ -139,6 +142,9 @@ virt_add_rhost()
 		[ "$virt_type" = "vxlan" ] && opt="dev $(tst_iface rhost)"
 		[ "$vxlan_dstport" -eq 1 ] && opt="$opt dstport 0"
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
+	;;
+	sit)
+		tst_rhost_run -s -c "ip link add ltp_v0 type $virt_type $@"
 	;;
 	gre|ip6gre)
 		tst_rhost_run -s -c "ip -f inet$TST_IPV6 tu add ltp_v0 \
