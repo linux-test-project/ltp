@@ -177,6 +177,12 @@ __attribute__ ((optimize("Os"))) __attribute__((used)) restore_rt(void)
 }
 #endif
 
+#ifdef TST_TEST_H__
+# define TST_SYSCALL tst_syscall
+#else
+# define TST_SYSCALL ltp_syscall
+#endif
+
 /* This is a wrapper for __NR_rt_sigaction syscall.
  * act/oact values of INVAL_SA_PTR is used to pass
  * an invalid pointer to syscall(__NR_rt_sigaction)
@@ -232,11 +238,11 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 
 
 #ifdef __sparc__
-	ret = ltp_syscall(__NR_rt_sigaction, signum,
+	ret = TST_SYSCALL(__NR_rt_sigaction, signum,
 			kact_p, koact_p,
 			stub, sigsetsize);
 #else
-	ret = ltp_syscall(__NR_rt_sigaction, signum,
+	ret = TST_SYSCALL(__NR_rt_sigaction, signum,
 			kact_p, koact_p,
 			sigsetsize);
 #endif
