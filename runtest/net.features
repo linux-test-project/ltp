@@ -64,3 +64,6 @@ sit01 sit01.sh
 mpls01 mpls01.sh
 mpls02 mpls02.sh
 mpls02_ipv6 mpls02.sh -6
+mpls03 mpls03.sh
+mpls03_ipv6 mpls03.sh -6
+

@@ -22,6 +22,17 @@ mpls_cleanup()
 	[ -n "$rpf_rmt" ] && tst_rhost_run -s -c "sysctl -q net.ipv4.conf.all.rp_filter=$rpf_rmt"
 }
 
+mpls_virt_cleanup()
+{
+	ip route del $ip_virt_remote/32 dev ltp_v0 > /dev/null 2>&1
+	ip route del $ip6_virt_remote/128 dev ltp_v0 > /dev/null 2>&1
+	tst_rhost_run -c "ip route del $ip_virt_local/32 dev ltp_v0" > /dev/null
+	tst_rhost_run -c "ip route del $ip6_virt_local/128 dev ltp_v0" > /dev/null
+
+	virt_cleanup
+	mpls_cleanup
+}
+
 mpls_setup()
 {
 	local label="$1"
@@ -37,4 +48,51 @@ mpls_setup()
 	rpf_rmt="$(tst_rhost_run -c 'sysctl -n net.ipv4.conf.all.rp_filter')"
 
 	tst_set_sysctl net.ipv4.conf.all.rp_filter 2 safe
+}
+
+mpls_setup_tnl()
+{
+	local ip_loc="$1"
+	local ip_rmt="$2"
+	local label="$3"
+	local mask
+
+	echo "$ip_loc" | grep -q ':' && mask=128 || mask=32
+
+	ROD ip route add $ip_rmt/$mask encap mpls $label dev ltp_v0
+	ROD ip -f mpls route add $((label + 1)) dev lo
+
+	tst_rhost_run -s -c "ip route add $ip_loc/$mask encap mpls $((label + 1)) dev ltp_v0"
+	tst_rhost_run -s -c "ip -f mpls route add $label dev lo"
+}
+mpls_virt_setup()
+{
+	mpls_setup 62
+
+	virt_lib_setup
+
+	tst_res TINFO "test $virt_type with MPLS"
+	virt_setup "local $(tst_ipaddr) remote $(tst_ipaddr rhost) dev $(tst_iface)" \
+		   "local $(tst_ipaddr rhost) remote $(tst_ipaddr) dev $(tst_iface rhost)"
+
+	mpls_setup_tnl $ip_virt_local $ip_virt_remote 60
+	mpls_setup_tnl $ip6_virt_local $ip6_virt_remote 50
+
+	tst_set_sysctl net.mpls.conf.ltp_v0.input 1 safe
+}
+
+mpls_virt_test()
+{
+	local type=$2
+	local max_size=10000
+
+	if [ "$type" = "icmp" ]; then
+		tst_ping $ip_virt_local $ip_virt_remote 10 100 1000 2000 $max_size
+		tst_ping $ip6_virt_local $ip6_virt_remote 10 100 1000 2000 $max_size
+	else
+		tst_netload -S $ip_virt_local -H $ip_virt_remote -T $type -n 10 -N 10
+		tst_netload -S $ip6_virt_local -H $ip6_virt_remote -T $type -n 10 -N 10
+		tst_netload -S $ip_virt_local -H $ip_virt_remote -T $type -A $max_size
+		tst_netload -S $ip6_virt_local -H $ip6_virt_remote -T $type -A $max_size
+	fi
 }
