@@ -24,7 +24,7 @@ int convert;
 static void usage(char *prog_name, int status)
 {
 	fprintf(stderr, USAGE, prog_name);
-	exit(1);
+	exit(status);
 }
 
 static void checkopt(int argc, char **argv)
