@@ -29,8 +29,7 @@ static void usage(char *prog_name, int status)
 
 static void checkopt(int argc, char **argv)
 {
-	char c = '\0';
-	int optc = 0;
+	int c, optc = 0;
 
 	while ((c = getopt(argc, argv, "ahs")) != -1) {
 		switch (c) {
