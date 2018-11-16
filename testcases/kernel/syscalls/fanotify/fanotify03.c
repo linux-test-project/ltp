@@ -47,6 +47,20 @@ static unsigned int event_resp[EVENT_MAX];
 
 static char event_buf[EVENT_BUF_LEN];
 
+static struct tcase {
+	const char *tname;
+	struct fanotify_mark_type mark;
+} tcases[] = {
+	{
+		"inode mark permission events",
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+	},
+	{
+		"mount mark permission events",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+	},
+};
+
 static void generate_events(void)
 {
 	int fd;
@@ -120,11 +134,14 @@ static void check_child(void)
 		tst_res(TFAIL, "child %s", tst_strstatus(child_ret));
 }
 
-static void setup_mark(void)
+static void setup_mark(unsigned int n)
 {
+	struct tcase *tc = &tcases[n];
+	struct fanotify_mark_type *mark = &tc->mark;
+
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD,
+	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
 			  FAN_ACCESS_PERM | FAN_OPEN_PERM,
 			  AT_FDCWD, fname) < 0) {
 		if (errno == EINVAL) {
@@ -133,20 +150,22 @@ static void setup_mark(void)
 				"configured in kernel?");
 		} else {
 			tst_brk(TBROK | TERRNO,
-				"fanotify_mark (%d, FAN_MARK_ADD, "
+				"fanotify_mark (%d, FAN_MARK_ADD | %s, "
 				"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
 				"AT_FDCWD, %s) failed.",
-				fd_notify, fname);
+				fd_notify, mark->name, fname);
 		}
 	}
+
+	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 }
 
-void test01(void)
+static void test_fanotify(unsigned int n)
 {
 	int tst_count;
 	int ret, len = 0, i = 0, test_num = 0;
 
-	setup_mark();
+	setup_mark(n);
 	run_child();
 
 	tst_count = 0;
@@ -247,7 +266,8 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.test_all = test01,
+	.test = test_fanotify,
+	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
