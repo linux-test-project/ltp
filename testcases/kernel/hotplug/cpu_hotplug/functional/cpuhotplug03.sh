@@ -119,12 +119,15 @@ until [ $LOOP_COUNT -gt $HOTPLUG03_LOOPS ]; do
 	sleep 1
 
 	# Verify at least one process has migrated to the new CPU
-	ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop
+	# Since procps v3.3.15, we need to accurately select command name
+	# by -C option, because procps cannot trucate normal command name
+	# to 15 characters by default).
+	ps -o psr -o command --no-headers -C cpuhotplug_do_s
 	if [ $? -ne 0 ]; then
 		tst_brkm TBROK "No cpuhotplug_do_spin_loop processes \
 			found on any processor"
 	fi
-	NUM=`ps -o psr -o command --no-headers -C cpuhotplug_do_spin_loop \
+	NUM=`ps -o psr -o command --no-headers -C cpuhotplug_do_s \
 		| sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" \
 		| wc -l`
 	if [ $NUM -lt 1 ]; then
