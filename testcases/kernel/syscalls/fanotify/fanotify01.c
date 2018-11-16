@@ -44,6 +44,10 @@ static struct tcase {
 		"mount mark events",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 	},
+	{
+		"filesystem mark events",
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+	},
 };
 
 static char fname[BUF_SIZE];
@@ -68,6 +72,11 @@ static void test_fanotify(unsigned int n)
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
 			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
 			  AT_FDCWD, fname) < 0) {
+		if (errno == EINVAL && mark->flag == FAN_MARK_FILESYSTEM) {
+			tst_res(TCONF,
+				"FAN_MARK_FILESYSTEM not supported in kernel?");
+			return;
+		}
 		tst_brk(TBROK | TERRNO,
 			"fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | %s | "
 			"FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
