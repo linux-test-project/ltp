@@ -26,6 +26,7 @@ static void sig_handler(int sig)
 
 static void verify_rt_sigsuspend(void)
 {
+	int i;
 	sigset_t set, set1, set2;
 	struct sigaction act = {.sa_handler = sig_handler};
 
@@ -51,11 +52,13 @@ static void verify_rt_sigsuspend(void)
 	tst_res(TPASS, "rt_sigsuspend() returned with -1 and EINTR");
 
 	SAFE_RT_SIGPROCMASK(0, NULL, &set2, SIGSETSIZE);
-
-	if (memcmp(&set1, &set2, sizeof(unsigned long)))
-		tst_res(TFAIL, "signal mask not preserved");
-	else
-		tst_res(TPASS, "signal mask preserved");
+	for (i = 1; i < SIGRTMAX; i++) {
+		if (i >= __SIGRTMIN && i < SIGRTMIN)
+			continue;
+		if (sigismember(&set1, i) != sigismember(&set2, i))
+			tst_brk(TFAIL, "signal mask not preserved");
+	}
+	tst_res(TPASS, "signal mask preserved");
 }
 
 static struct tst_test test = {
