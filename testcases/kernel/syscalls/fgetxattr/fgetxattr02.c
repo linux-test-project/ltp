@@ -54,14 +54,15 @@
 #define XATTR_TEST_VALUE "this is a test value"
 #define XATTR_TEST_VALUE_SIZE 20
 
+#define MNTPOINT "mntpoint"
 #define OFFSET    11
 #define FILENAME "fgetxattr02testfile"
 #define DIRNAME  "fgetxattr02testdir"
 #define SYMLINK  "fgetxattr02symlink"
 #define SYMLINKF "fgetxattr02symlinkfile"
-#define FIFO     "fgetxattr02fifo"
-#define CHR      "fgetxattr02chr"
-#define BLK      "fgetxattr02blk"
+#define FIFO     MNTPOINT"/fgetxattr02fifo"
+#define CHR      MNTPOINT"/fgetxattr02chr"
+#define BLK      MNTPOINT"/fgetxattr02blk"
 #define SOCK     "fgetxattr02sock"
 
 struct test_case {
@@ -159,6 +160,8 @@ static struct test_case tc[] = {
 
 static void verify_fgetxattr(unsigned int i)
 {
+	const char *fname = strstr(tc[i].fname, "fgetxattr02") + OFFSET;
+
 	TEST(fgetxattr(tc[i].fd, tc[i].key, tc[i].ret_value, tc[i].size));
 
 	if (TST_RET == -1 && TST_ERR == EOPNOTSUPP)
@@ -168,11 +171,11 @@ static void verify_fgetxattr(unsigned int i)
 
 		if (tc[i].exp_ret == TST_RET) {
 			tst_res(TPASS, "fgetxattr(2) on %s passed",
-					tc[i].fname + OFFSET);
+					fname);
 		} else {
 			tst_res(TFAIL,
 				"fgetxattr(2) on %s passed unexpectedly %ld",
-				tc[i].fname + OFFSET, TST_RET);
+				fname, TST_RET);
 		}
 
 		if (strncmp(tc[i].ret_value, XATTR_TEST_VALUE,
@@ -182,7 +185,7 @@ static void verify_fgetxattr(unsigned int i)
 		}
 
 		tst_res(TPASS, "fgetxattr(2) on %s got the right value",
-				tc[i].fname + OFFSET);
+				fname);
 	}
 
 	/*
@@ -195,12 +198,11 @@ static void verify_fgetxattr(unsigned int i)
 
 	if (tc[i].exp_err == TST_ERR) {
 		tst_res(TPASS | TTERRNO, "fgetxattr(2) on %s passed",
-				tc[i].fname + OFFSET);
+				fname);
 		return;
 	}
 
-	tst_res(TFAIL | TTERRNO, "fgetxattr(2) failed on %s",
-			tc[i].fname + OFFSET);
+	tst_res(TFAIL | TTERRNO, "fgetxattr(2) failed on %s", fname);
 }
 
 static void setup(void)
@@ -268,7 +270,8 @@ static struct tst_test test = {
 	.test = verify_fgetxattr,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
-	.needs_tmpdir = 1,
+	.needs_devfs = 1,
+	.mntpoint = MNTPOINT,
 	.needs_root = 1,
 };
 
