@@ -81,9 +81,9 @@ cleanup()
 
 check_id()
 {
-	local act_id=$1
-	local exp_id=$2
-	local cmd=$3
+	local act_id="$1"
+	local exp_id="$2"
+	local cmd="$3"
 
 	if [ ${act_id} -ne ${exp_id} ]; then
 		tst_res TFAIL "$cmd got wrong uid/gid"
@@ -94,9 +94,9 @@ check_id()
 
 check_mount()
 {
-	local tst_dir=$1
-	local exp_stat=$2
-	local cmd=$3
+	local tst_dir="$1"
+	local exp_stat="$2"
+	local cmd="$3"
 
 	case ${exp_stat} in
 	unmounted)
@@ -120,9 +120,9 @@ check_mount()
 
 unshare_test()
 {
-	local unshare_opts=$1
-	local verify_cmd=$2
-	local exp_result=$3
+	local unshare_opts="$1"
+	local verify_cmd="$2"
+	local exp_result="$3"
 
 	local unshare_cmd="unshare ${unshare_opts} ${verify_cmd}"
 
