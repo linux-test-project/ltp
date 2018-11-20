@@ -1,0 +1,9 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:64866:64870">
+    The function will locate the first occurrence of c (converted to a char)
+    in the string pointed to by s. The terminating NUL character is
+    considered to be part of the string. Upon completion, the function will
+    return a pointer to the byte, or a null pointer if the byte was not found.
+  <assertion>
+<assertions>
+
