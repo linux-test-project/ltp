@@ -1504,6 +1504,41 @@ static struct tst_test test = {
 	.save_restore = save_restore,
 };
 
+2.2.28 Parsing kernel .config
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Generally testcases should attempt to autodetect as much kernel features as
+possible based on the currently running kernel. We do have tst_check_driver()
+to check if functionality that could be compiled as kernel module is present
+on the system, disabled syscalls can be detected by checking for 'ENOSYS'
+errno etc.
+
+However in rare cases core kernel features couldn't be detected based on the
+kernel userspace API and we have to resort to kernel .config parsing.
+
+For this cases the test should set the 'NULL' terminated needs_kconfig array
+of kernel config options required for the test. The config option can be
+specified either as plain "CONFIG_FOO" in which case it's sufficient for the
+test continue if it's set to any value (typically =y or =m). Or with a value
+as "CONFIG_FOO=bar" in which case the value has to match as well. The test is
+aborted with 'TCONF' if any of the required options were not set.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static const char *kconfigs[] = {
+	"CONFIG_X86_INTEL_UMIP",
+	NULL
+};
+
+static struct tst_test test = {
+	...
+	.needs_kconfigs = kconfigs,
+	...
+};
+-------------------------------------------------------------------------------
+
 
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

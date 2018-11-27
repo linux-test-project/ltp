@@ -1,0 +1,4 @@
+# Wrong number of page table levels
+CONFIG_MMU=y
+CONFIG_EXT4_FS=m
+CONFIG_PGTABLE_LEVELS=44

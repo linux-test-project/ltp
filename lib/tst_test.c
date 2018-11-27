@@ -36,6 +36,7 @@
 #include "tst_clocks.h"
 #include "tst_timer.h"
 #include "tst_sys_conf.h"
+#include "tst_kconfig.h"
 
 #include "old_resource.h"
 #include "old_device.h"
@@ -769,6 +770,9 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->tconf_msg)
 		tst_brk(TCONF, "%s", tst_test->tconf_msg);
+
+	if (tst_test->needs_kconfigs)
+		tst_kconfig_check(tst_test->needs_kconfigs);
 
 	assert_test_fn();
 

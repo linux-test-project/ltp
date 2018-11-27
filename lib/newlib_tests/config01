@@ -1,0 +1,4 @@
+# Test should PASS in this case
+CONFIG_MMU=y
+CONFIG_EXT4_FS=m
+CONFIG_PGTABLE_LEVELS=4

@@ -186,6 +186,12 @@ struct tst_test {
 	 * before setup and restore after cleanup
 	 */
 	const char * const *save_restore;
+
+	/*
+	 * NULL terminated array of kernel config options required for the
+	 * test.
+	 */
+	const char *const *needs_kconfigs;
 };
 
 /*
