@@ -154,6 +154,10 @@ test01()
 	tst_resm TINFO "Test #1: 1. rotate /var/log/tst_logfile file."
 	tst_resm TINFO "Test #1: 2. compresses it."
 
+	# Check if syslog group exists
+	local group="syslog"
+	grep -q $group /etc/group || group="root"
+
 	# create config file.
 	cat >$LTPTMP/tst_logrotate.conf <<-EOF
 	#****** Begin Config file *******
@@ -164,7 +168,7 @@ test01()
 	compress
 
 	/var/log/tst_logfile {
-		su root syslog
+		su root $group
 		rotate 5
 		weekly
 	}
