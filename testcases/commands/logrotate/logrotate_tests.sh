@@ -208,7 +208,7 @@ test01()
 			$LTPTMP/tst_logrotate.out   > $LTPTMP/tst_logrotate.err 2>&1 || RC=$?
 		if [ $RC -ne 0 ]
 		then
-			tst_res TFAIL > $LTPTMP/tst_logrotate.err 2>&1 \
+			tst_res TFAIL $LTPTMP/tst_logrotate.err \
 				"Test #1: logrotate command failed. Reason:"
 		else
 			# Check if compressed log file is created.
