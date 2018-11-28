@@ -54,6 +54,10 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 
 #endif /* HAVE_SYS_FANOTIFY_H */
 
+#ifndef FAN_REPORT_TID
+#define FAN_REPORT_TID		0x00000100
+#endif
+
 #ifndef FAN_MARK_INODE
 #define FAN_MARK_INODE		0
 #endif
