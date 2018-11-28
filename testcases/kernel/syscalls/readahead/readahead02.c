@@ -286,6 +286,8 @@ static void test_readahead(void)
 		 */
 		if (cached_ra * 1024 > testfile_size / 2)
 			tst_res(TPASS, "using cache as expected");
+		else if (!cached_ra)
+			tst_res(TFAIL, "readahead failed to use any cache");
 		else
 			tst_res(TWARN, "using less cache than expected");
 	} else {
