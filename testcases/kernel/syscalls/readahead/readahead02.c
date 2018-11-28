@@ -16,7 +16,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +24,7 @@
 #include <fcntl.h>
 #include "config.h"
 #include "tst_test.h"
+#include "tst_timer.h"
 #include "lapi/syscalls.h"
 
 static char testfile[PATH_MAX] = "testfile";
@@ -130,17 +130,15 @@ static void create_testfile(void)
  * @cached: returns cached kB from /proc/meminfo
  */
 static int read_testfile(int do_readahead, const char *fname, size_t fsize,
-			 unsigned long *read_bytes, long *usec,
+			 unsigned long *read_bytes, long long *usec,
 			 unsigned long *cached)
 {
 	int fd;
 	size_t i = 0;
 	long read_bytes_start;
 	unsigned char *p, tmp;
-	unsigned long time_start_usec, time_end_usec;
 	unsigned long cached_start, max_ra_estimate = 0;
 	off_t offset = 0;
-	struct timeval now;
 
 	fd = SAFE_OPEN(fname, O_RDONLY);
 
@@ -180,9 +178,7 @@ static int read_testfile(int do_readahead, const char *fname, size_t fsize,
 			tst_res(TFAIL, "offset has changed to: %lu", offset);
 	}
 
-	if (gettimeofday(&now, NULL) == -1)
-		tst_brk(TBROK | TERRNO, "gettimeofday failed");
-	time_start_usec = now.tv_sec * 1000000 + now.tv_usec;
+	tst_timer_start(CLOCK_MONOTONIC);
 	read_bytes_start = get_bytes_read();
 
 	p = SAFE_MMAP(NULL, fsize, PROT_READ, MAP_SHARED | MAP_POPULATE, fd, 0);
@@ -201,10 +197,9 @@ static int read_testfile(int do_readahead, const char *fname, size_t fsize,
 	SAFE_MUNMAP(p, fsize);
 
 	*read_bytes = get_bytes_read() - read_bytes_start;
-	if (gettimeofday(&now, NULL) == -1)
-		tst_brk(TBROK | TERRNO, "gettimeofday failed");
-	time_end_usec = now.tv_sec * 1000000 + now.tv_usec;
-	*usec = time_end_usec - time_start_usec;
+
+	tst_timer_stop();
+	*usec = tst_timer_elapsed_us();
 
 	SAFE_CLOSE(fd);
 	return 0;
@@ -213,7 +208,7 @@ static int read_testfile(int do_readahead, const char *fname, size_t fsize,
 static void test_readahead(void)
 {
 	unsigned long read_bytes, read_bytes_ra;
-	long usec, usec_ra;
+	long long usec, usec_ra;
 	unsigned long cached_max, cached_low, cached, cached_ra;
 	char proc_io_fname[128];
 	int ret;
@@ -259,8 +254,8 @@ static void test_readahead(void)
 	else
 		cached_ra = 0;
 
-	tst_res(TINFO, "read_testfile(0) took: %ld usec", usec);
-	tst_res(TINFO, "read_testfile(1) took: %ld usec", usec_ra);
+	tst_res(TINFO, "read_testfile(0) took: %lli usec", usec);
+	tst_res(TINFO, "read_testfile(1) took: %lli usec", usec_ra);
 	if (has_file(proc_io_fname, 0)) {
 		tst_res(TINFO, "read_testfile(0) read: %ld bytes", read_bytes);
 		tst_res(TINFO, "read_testfile(1) read: %ld bytes",
