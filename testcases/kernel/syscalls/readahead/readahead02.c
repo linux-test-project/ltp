@@ -44,19 +44,6 @@ static struct tst_option options[] = {
 	{NULL, NULL, NULL}
 };
 
-static int check_ret(long expected_ret)
-{
-	if (expected_ret == TST_RET) {
-		tst_res(TPASS, "expected ret success - "
-			"returned value = %ld", TST_RET);
-		return 0;
-	}
-	tst_res(TFAIL | TTERRNO, "unexpected failure - "
-		"returned value = %ld, expected: %ld",
-		TST_RET, expected_ret);
-	return 1;
-}
-
 static int has_file(const char *fname, int required)
 {
 	struct stat buf;
@@ -142,9 +129,9 @@ static void create_testfile(void)
  * @usec: returns how many microsecond it took to go over fsize bytes
  * @cached: returns cached kB from /proc/meminfo
  */
-static void read_testfile(int do_readahead, const char *fname, size_t fsize,
-			  unsigned long *read_bytes, long *usec,
-			  unsigned long *cached)
+static int read_testfile(int do_readahead, const char *fname, size_t fsize,
+			 unsigned long *read_bytes, long *usec,
+			 unsigned long *cached)
 {
 	int fd;
 	size_t i = 0;
@@ -162,8 +149,8 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 		do {
 			TEST(readahead(fd, offset, fsize - offset));
 			if (TST_RET != 0) {
-				check_ret(0);
-				break;
+				SAFE_CLOSE(fd);
+				return TST_ERR;
 			}
 
 			/* estimate max readahead size based on first call */
@@ -220,6 +207,7 @@ static void read_testfile(int do_readahead, const char *fname, size_t fsize,
 	*usec = time_end_usec - time_start_usec;
 
 	SAFE_CLOSE(fd);
+	return 0;
 }
 
 static void test_readahead(void)
@@ -228,6 +216,8 @@ static void test_readahead(void)
 	long usec, usec_ra;
 	unsigned long cached_max, cached_low, cached, cached_ra;
 	char proc_io_fname[128];
+	int ret;
+
 	sprintf(proc_io_fname, "/proc/%u/io", getpid());
 
 	/* find out how much can cache hold if we read whole file */
@@ -249,8 +239,21 @@ static void test_readahead(void)
 	drop_caches();
 	cached_low = get_cached_size();
 	tst_res(TINFO, "read_testfile(1)");
-	read_testfile(1, testfile, testfile_size, &read_bytes_ra,
-		      &usec_ra, &cached_ra);
+	ret = read_testfile(1, testfile, testfile_size, &read_bytes_ra,
+		            &usec_ra, &cached_ra);
+
+	if (ret == EINVAL) {
+		tst_res(TCONF, "readahead not supported on %s",
+			tst_device->fs_type);
+		return;
+	}
+
+	if (ret) {
+		tst_res(TFAIL | TTERRNO, "readahead failed on %s",
+			tst_device->fs_type);
+		return;
+	}
+
 	if (cached_ra > cached_low)
 		cached_ra = cached_ra - cached_low;
 	else
