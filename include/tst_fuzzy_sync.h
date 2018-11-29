@@ -70,6 +70,9 @@
 #ifndef TST_FUZZY_SYNC_H__
 #define TST_FUZZY_SYNC_H__
 
+/* how much of exec time is sampling allowed to take */
+#define SAMPLING_SLICE 0.5f
+
 /** Some statistics for a variable */
 struct tst_fzsync_stat {
 	float avg;
@@ -582,17 +585,21 @@ static inline void tst_fzsync_wait_b(struct tst_fzsync_pair *pair)
 static inline int tst_fzsync_run_a(struct tst_fzsync_pair *pair)
 {
 	int exit = 0;
+	float rem_p = 1 - tst_timeout_remaining() / pair->exec_time_start;
 
-	if (pair->exec_time_p
-	    < 1 - tst_timeout_remaining() / pair->exec_time_start) {
+	if ((pair->exec_time_p * SAMPLING_SLICE < rem_p)
+		&& (pair->sampling > 0)) {
+		tst_res(TINFO, "Stopped sampling at %d (out of %d) samples, "
+			"sampling time reached 50%% of the total time limit",
+			pair->exec_loop, pair->min_samples);
+		pair->sampling = 0;
+		tst_fzsync_pair_info(pair);
+	}
+
+	if (pair->exec_time_p < rem_p) {
 		tst_res(TINFO,
 			"Exceeded execution time, requesting exit");
 		exit = 1;
-
-		if (pair->sampling > 0) {
-			tst_res(TWARN,
-				"Still sampling, consider increasing LTP_TIMEOUT_MUL");
-		}
 	}
 
 	if (++pair->exec_loop > pair->exec_loops) {
