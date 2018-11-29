@@ -1,0 +1,5 @@
+This file defines the coverage for the strncpy() function testing.
+
+	Assertion	Status
+	1			YES
+	2			YES
