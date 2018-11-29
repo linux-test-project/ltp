@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <pwd.h>
 
 #include "tst_test.h"
 #include "lapi/syscalls.h"
@@ -52,6 +53,8 @@ static void *test_pages[N_PAGES];
 static int num_nodes, max_node;
 static int *nodes;
 static unsigned long *new_nodes[2];
+static const char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
 
 static void setup(void)
 {
@@ -68,6 +71,8 @@ static void setup(void)
 		tst_brk(TCONF, "requires NUMA with at least %d node",
 			TEST_NODES);
 	}
+
+	ltpuser = SAFE_GETPWNAM(nobody_uid);
 
 	max_node = LTP_ALIGN(get_max_node(), sizeof(unsigned long) * 8);
 	nodemask_size = max_node / 8;
@@ -125,6 +130,7 @@ static void migrate_test(void)
 {
 	int loop, i, ret;
 
+	SAFE_SETEUID(ltpuser->pw_uid);
 	for (loop = 0; loop < N_LOOPS; loop++) {
 		i = loop % 2;
 		ret = tst_syscall(__NR_migrate_pages, 0, max_node,
@@ -134,6 +140,7 @@ static void migrate_test(void)
 			return;
 		}
 	}
+	SAFE_SETEUID(0);
 
 	tst_res(TPASS, "migrate_pages() passed");
 }
