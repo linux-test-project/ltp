@@ -38,12 +38,13 @@ mpls_setup()
 	local label="$1"
 
 	ROD modprobe -a $TST_NEEDS_DRIVERS
+	tst_rhost_run -s -c "modprobe -a $TST_NEEDS_DRIVERS"
+
 	ROD sysctl -q net.mpls.conf.$(tst_iface).input=1
 	tst_set_sysctl net.mpls.conf.lo.input 1 safe
 	tst_set_sysctl net.mpls.platform_labels $label safe
 	rpf_loc="$(sysctl -n net.ipv4.conf.all.rp_filter)"
 
-	tst_rhost_run -s -c "modprobe -a $TST_NEEDS_DRIVERS"
 	tst_rhost_run -s -c "sysctl -q net.mpls.conf.$(tst_iface rhost).input=1"
 	rpf_rmt="$(tst_rhost_run -c 'sysctl -n net.ipv4.conf.all.rp_filter')"
 
