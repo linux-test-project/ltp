@@ -62,7 +62,7 @@ _tst_do_exit()
 
 	if [ -n "$_tst_setup_timer_pid" ]; then
 		kill $_tst_setup_timer_pid 2>/dev/null
-		wait $_tst_setup_timer_pid
+		wait $_tst_setup_timer_pid 2>/dev/null
 	fi
 
 	if [ $TST_FAIL -gt 0 ]; then
