@@ -41,6 +41,7 @@ trap "tst_brk TBROK 'test interrupted'" INT
 _tst_do_exit()
 {
 	local ret=0
+	TST_DO_EXIT=1
 
 	if [ -n "$TST_SETUP_STARTED" -a -n "$TST_CLEANUP" -a \
 	     -z "$TST_NO_CLEANUP" ]; then
@@ -122,6 +123,11 @@ tst_brk()
 {
 	local res=$1
 	shift
+
+	if [ "$TST_DO_EXIT" = 1 ]; then
+		tst_res TWARN "$@"
+		return
+	fi
 
 	tst_res "$res" "$@"
 	_tst_do_exit

@@ -1561,6 +1561,9 @@ able to clean up correctly even in this situation. The easiest solution for
 this is to keep track of what was initialized and act accordingly in the
 cleanup.
 
+WARNING: Similar to the C library, calling tst_brk() in the $TST_CLEANUP does
+         not exit the test and 'TBROK' is converted to 'TWARN'.
+
 Notice also the 'tst_run' function called at the end of the test that actually
 starts the test.
 
