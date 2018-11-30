@@ -59,6 +59,11 @@ _tst_do_exit()
 		[ "$TST_TMPDIR_RHOST" = 1 ] && tst_cleanup_rhost
 	fi
 
+	if [ -n "$_tst_setup_timer_pid" ]; then
+		kill $_tst_setup_timer_pid 2>/dev/null
+		wait $_tst_setup_timer_pid
+	fi
+
 	if [ $TST_FAIL -gt 0 ]; then
 		ret=$((ret|1))
 	fi
@@ -347,6 +352,24 @@ _tst_rescmp()
 	fi
 }
 
+
+_tst_setup_timer()
+{
+	LTP_TIMEOUT_MUL=${LTP_TIMEOUT_MUL:-1}
+
+	local sec=$((300 * LTP_TIMEOUT_MUL))
+	local h=$((sec / 3600))
+	local m=$((sec / 60 % 60))
+	local s=$((sec % 60))
+	local pid=$$
+
+	tst_res TINFO "timeout per run is ${h}h ${m}m ${s}s"
+
+	sleep $sec && tst_res TBROK "test killed, timeout!" && kill -9 -$pid &
+
+	_tst_setup_timer_pid=$!
+}
+
 tst_run()
 {
 	local _tst_i
@@ -405,6 +428,8 @@ tst_run()
 		tst_kvcmp -lt "$TST_MIN_KVER" && \
 			tst_brk TCONF "test requires kernel $TST_MIN_KVER+"
 	fi
+
+	_tst_setup_timer
 
 	if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
 		if [ -z "$TMPDIR" ]; then
