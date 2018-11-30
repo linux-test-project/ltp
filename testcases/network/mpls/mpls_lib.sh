@@ -37,8 +37,7 @@ mpls_setup()
 {
 	local label="$1"
 
-	ROD modprobe -a $TST_NEEDS_DRIVERS
-	tst_rhost_run -s -c "modprobe -a $TST_NEEDS_DRIVERS"
+	tst_net_run -s "modprobe -a $TST_NEEDS_DRIVERS"
 
 	ROD sysctl -q net.mpls.conf.$(tst_iface).input=1
 	tst_set_sysctl net.mpls.conf.lo.input 1 safe
