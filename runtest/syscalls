@@ -439,6 +439,7 @@ getresuid03 getresuid03
 
 getrlimit01 getrlimit01
 getrlimit02 getrlimit02
+getrlimit03 getrlimit03
 
 get_mempolicy01 get_mempolicy01
 get_robust_list01 get_robust_list01
