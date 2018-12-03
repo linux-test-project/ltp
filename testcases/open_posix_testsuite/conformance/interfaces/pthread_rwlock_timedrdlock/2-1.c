@@ -43,7 +43,7 @@
 
 static pthread_rwlock_t rwlock;
 static int thread_state;
-static int currsec1, currsec2;
+static time_t currsec1, currsec2;
 static int expired;
 
 static void *fn_rd(void *arg)

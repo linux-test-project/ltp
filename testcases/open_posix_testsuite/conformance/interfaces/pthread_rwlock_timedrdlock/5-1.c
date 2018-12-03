@@ -35,7 +35,7 @@
 
 #define TIMEOUT 1
 static int thread_state;
-static int currsec1;
+static time_t currsec1;
 static int expired;
 
 static void *fn_rd_1(void *arg)
