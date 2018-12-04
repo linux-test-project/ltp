@@ -17,9 +17,12 @@
 #include <sys/types.h>
 #include <net/if.h>
 #include <linux/if_packet.h>
+#include <string.h>
 
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
+#include "lapi/if_packet.h"
+#include "lapi/namespaces_constants.h"
 
 static struct tst_fzsync_pair pair;
 static int fd;
@@ -64,7 +67,9 @@ void *binder(void *unused)
 void run(void)
 {
 	int fanout_val = PACKET_FANOUT_ROLLOVER, index;
-	struct ifreq ifr = { 0 };
+	struct ifreq ifr;
+
+	memset(&ifr, 0, sizeof(struct ifreq));
 
 	tst_fzsync_pair_reset(&pair, binder);
 	while (tst_fzsync_run_a(&pair)) {
