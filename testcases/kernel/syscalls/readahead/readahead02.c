@@ -35,8 +35,9 @@
 #include "lapi/syscalls.h"
 
 static char testfile[PATH_MAX] = "testfile";
-static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
-static const char meminfo_fname[] = "/proc/meminfo";
+#define DROP_CACHES_FNAME "/proc/sys/vm/drop_caches"
+#define MEMINFO_FNAME "/proc/meminfo"
+#define PROC_IO_FNAME "/proc/self/io"
 static size_t testfile_size = 64 * 1024 * 1024;
 static char *opt_fsizestr;
 static int pagesize;
@@ -83,41 +84,25 @@ static int has_file(const char *fname, int required)
 
 static void drop_caches(void)
 {
-	SAFE_FILE_PRINTF(drop_caches_fname, "1");
-}
-
-static unsigned long parse_entry(const char *fname, const char *entry)
-{
-	FILE *f;
-	long value = -1;
-	int ret;
-	char *line = NULL;
-	size_t linelen;
-
-	f = fopen(fname, "r");
-	if (f) {
-		do {
-			ret = getline(&line, &linelen, f);
-			if (sscanf(line, entry, &value) == 1)
-				break;
-		} while (ret != -1);
-		fclose(f);
-	}
-	return value;
+	SAFE_FILE_PRINTF(DROP_CACHES_FNAME, "1");
 }
 
 static unsigned long get_bytes_read(void)
 {
-	char fname[128];
-	char entry[] = "read_bytes: %lu";
-	sprintf(fname, "/proc/%u/io", getpid());
-	return parse_entry(fname, entry);
+	unsigned long ret;
+
+	SAFE_FILE_LINES_SCANF(PROC_IO_FNAME, "read_bytes: %lu", &ret);
+
+	return ret;
 }
 
 static unsigned long get_cached_size(void)
 {
-	char entry[] = "Cached: %lu";
-	return parse_entry(meminfo_fname, entry);
+	unsigned long ret;
+
+	SAFE_FILE_LINES_SCANF(MEMINFO_FNAME, "Cached: %lu", &ret);
+
+	return ret;
 }
 
 static void create_testfile(int use_overlay)
@@ -234,13 +219,10 @@ static void test_readahead(unsigned int n)
 	unsigned long read_bytes, read_bytes_ra;
 	long long usec, usec_ra;
 	unsigned long cached_high, cached_low, cached, cached_ra;
-	char proc_io_fname[128];
 	int ret;
 	struct tcase *tc = &tcases[n];
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
-
-	sprintf(proc_io_fname, "/proc/%u/io", getpid());
 
 	if (tc->use_overlay && !ovl_mounted) {
 		tst_res(TCONF,
@@ -294,7 +276,7 @@ static void test_readahead(unsigned int n)
 
 	tst_res(TINFO, "read_testfile(0) took: %lli usec", usec);
 	tst_res(TINFO, "read_testfile(1) took: %lli usec", usec_ra);
-	if (has_file(proc_io_fname, 0)) {
+	if (has_file(PROC_IO_FNAME, 0)) {
 		tst_res(TINFO, "read_testfile(0) read: %ld bytes", read_bytes);
 		tst_res(TINFO, "read_testfile(1) read: %ld bytes",
 			read_bytes_ra);
@@ -304,7 +286,7 @@ static void test_readahead(unsigned int n)
 		else
 			tst_res(TFAIL, "readahead failed to save any I/O");
 	} else {
-		tst_res(TCONF, "Your system doesn't have /proc/pid/io,"
+		tst_res(TCONF, "Your system doesn't have /proc/self/io,"
 			" unable to determine read bytes during test");
 	}
 
@@ -356,8 +338,8 @@ static void setup(void)
 	if (opt_fsizestr)
 		testfile_size = SAFE_STRTOL(opt_fsizestr, 1, INT_MAX);
 
-	has_file(drop_caches_fname, 1);
-	has_file(meminfo_fname, 1);
+	has_file(DROP_CACHES_FNAME, 1);
+	has_file(MEMINFO_FNAME, 1);
 
 	/* check if readahead is supported */
 	tst_syscall(__NR_readahead, 0, 0, 0);
