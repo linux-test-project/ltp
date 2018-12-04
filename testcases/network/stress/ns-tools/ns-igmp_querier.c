@@ -433,6 +433,11 @@ void send_query(struct igmp_info *info_p)
 				(struct sockaddr *)&to,
 				sizeof(struct sockaddr_in));
 		if (retval != query_size) {
+			if (errno == ENOBUFS) {
+				sleep(1);
+				continue;
+			}
+			
 			if (catch_sighup)
 				break;
 			else
