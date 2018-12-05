@@ -323,6 +323,8 @@ setgid 214
 setfsuid 215
 setfsgid 216
 newfstatat 293
+process_vm_readv 340
+process_vm_writev 341
 kcmp 343
 sched_setattr 345
 sched_getattr 346

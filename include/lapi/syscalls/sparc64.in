@@ -306,6 +306,8 @@ recvmmsg 328
 fanotify_init 329
 fanotify_mark 330
 prlimit64 331
+process_vm_readv 338
+process_vm_writev 339
 kcmp 341
 renameat2 345
 getrandom 347
