@@ -42,7 +42,7 @@
 #include "config.h"
 #include "test.h"
 #include "safe_macros.h"
-#include "process_vm.h"
+#include "lapi/syscalls.h"
 
 struct process_vm_params {
 	int len;
@@ -103,20 +103,10 @@ static void setup(char *argv[])
 			 " at the same time.");
 	else if (rflag) {
 		TCID = TCID_readv;
-#if defined(__NR_process_vm_readv)
 		cma_test_params = cma_test_params_read;
-#else
-		tst_brkm(TCONF, NULL, "process_vm_readv does not"
-			 " exist on your system.");
-#endif
 	} else if (wflag) {
 		TCID = TCID_writev;
-#if defined(__NR_process_vm_writev)
 		cma_test_params = cma_test_params_write;
-#else
-		tst_brkm(TCONF, NULL, "process_vm_writev does not"
-			 " exist on your system.");
-#endif
 	} else
 		tst_brkm(TBROK, NULL, "Parameter missing, required -r or -w.");
 	TEST_PAUSE;
@@ -134,18 +124,20 @@ static void help(void)
 
 static void cma_test_params_read(struct process_vm_params *params)
 {
-	TEST(test_process_vm_readv(params->pid,
-				   params->lvec, params->liovcnt,
-				   params->rvec, params->riovcnt,
-				   params->flags));
+	TEST(ltp_syscall(__NR_process_vm_readv,
+			 params->pid,
+			 params->lvec, params->liovcnt,
+			 params->rvec, params->riovcnt,
+			 params->flags));
 }
 
 static void cma_test_params_write(struct process_vm_params *params)
 {
-	TEST(test_process_vm_writev(params->pid,
-				    params->lvec, params->liovcnt,
-				    params->rvec, params->riovcnt,
-				    params->flags));
+	TEST(ltp_syscall(__NR_process_vm_writev,
+			 params->pid,
+			 params->lvec, params->liovcnt,
+			 params->rvec, params->riovcnt,
+			 params->flags));
 }
 
 static int cma_check_ret(long expected_ret, long act_ret)
