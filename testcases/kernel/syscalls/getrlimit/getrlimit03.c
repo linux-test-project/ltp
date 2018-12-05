@@ -44,10 +44,12 @@
 #define __NR_getrlimit_ulong_str	"__NR_getrlimit"
 #endif
 
+#ifndef HAVE_STRUCT_RLIMIT64
 struct rlimit64 {
 	uint64_t rlim_cur;
 	uint64_t rlim_max;
 };
+#endif
 const uint64_t RLIM_INFINITY_U64 = UINT64_MAX;
 
 static int getrlimit_u64(int resource, struct rlimit64 *rlim)
