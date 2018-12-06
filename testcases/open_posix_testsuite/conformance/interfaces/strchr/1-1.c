@@ -25,7 +25,6 @@
  *	-Repeat the above all steps for given number of iterations.
 */
 
-#define _XOPEN_SOURCE 700
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
