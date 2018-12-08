@@ -15,7 +15,6 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#include <sys/signal.h>
 #include <sys/uio.h>
 #include <sys/file.h>
 #include <sys/socket.h>
@@ -24,7 +23,6 @@
 
 #include "tst_test.h"
 #include "tst_safe_pthread.h"
-#include "tst_fuzzy_sync.h"
 
 #ifdef HAVE_NETINET_SCTP_H
 #define	RUN_SCTP_TESTS	1
@@ -51,18 +49,14 @@
  * receive message test, some can only be bundled with their own kind.
  */
 
-#define TEST_HAS_MULTIPLE_RECVMSG	(-1)	/* can't be bundled at all */
-#define TEST_CLOEXEC_FLAG		(-2)	/* bundle these together */
-#define TEST_NEEDS_SLEEP_IN_SENDER	(-3)	/* bundle these together */
+#define KIND_HAS_MULTIPLE_RECVMSG	(-1)	/* can't be bundled at all */
+#define KIND_CLOEXEC_FLAG		(-2)	/* bundle these together */
+#define KIND_NEEDS_SLEEP_IN_SENDER	(-3)	/* bundle these together */
 
 struct ctlmsgfd {
 	struct cmsghdr	cmf_cmsg;
 	int		cmf_fdspace;  /* padding in cmf_cmsg implies fd might */
 				      /* not be here, might be in cmf_cmsg! */
-};
-
-struct thread_call {
-	pthread_t	 tc_thr;
 };
 
 /*
@@ -72,7 +66,7 @@ struct thread_call {
  */
 
 struct sendmsg_call {
-	struct thread_call smc_thread_call;  /* must be first: inherits from */
+	pthread_t	   smc_pthr;		/* must be first */
 	int		   smc_sockfd;
 	struct msghdr	  *smc_msg;
 	int		   smc_flags;
@@ -86,7 +80,7 @@ struct sendmsg_call {
  */
 
 struct sendmmsg_call {
-	struct thread_call smmc_thread_call; /*  must be first: inherits from */
+	pthread_t	   smmc_pthr;		/* must be first */
 	int		   smmc_sockfd;
 	unsigned	   smmc_vlen;
 	struct mmsghdr	  *smmc_smm;
@@ -185,8 +179,8 @@ static void tests_run_all_sock_sepacket_with_n_repeat(void);
 
 static void sleep_ms(long ms);
 
-static void thread_call(struct thread_call *tcp, void *(*func)(void *));
-static void thread_join(struct thread_call *tcp);
+static void thread_call(pthread_t *pthr, void *(*func)(void *));
+static void thread_join(pthread_t pthr);
 
 static int test_number_get(void);
 
@@ -195,14 +189,10 @@ static void subtest_nest(void);
 static void subtest_unnest(void);
 static bool subtest_show(void);
 
-static bool mem_is_equal(void *a, void *b, size_t size);
 static bool mem_is_zero(void *a, size_t size);
 
 static void sockaddr_in_init(struct sockaddr_in *sinp, sa_family_t family,
 			     in_port_t port, uint32_t ip);
-static void sockaddr_in_init_to_zero(struct sockaddr_in *sinp);
-
-static int errno_value_is_error(int e);
 
 static size_t iovec_max(void);
 static void iovec_init(struct iovec *iovecp, void *base, size_t len);
@@ -229,8 +219,8 @@ static void sendmmsg_init(struct sendmmsg_call *smmcp, int sockfd,
 			  unsigned vlen, struct mmsghdr *smm, int flags,
 			  bool call_sendmmsg, bool sender_sleeps);
 
-static void ctlmsgfd_init(struct ctlmsgfd *cmfp, int fd);
-static void ctlmsgfd_init_to_zero(struct ctlmsgfd *cmfp);
+static void ctlmsgfd_init(struct ctlmsgfd *cmfp);
+static void ctlmsgfd_init_fd(struct ctlmsgfd *cmfp, int fd);
 static int ctlmsgfd_get_fd(struct ctlmsgfd *cmfp);
 
 static void con_init(struct con *conp, int client, int server,
@@ -307,12 +297,7 @@ static int con_empty_datagram_received_as_empty_datagram(struct con *conp,
  */
 
 #define	test_assert(expr) 						\
-	do {								\
-		if (! (expr)) {						\
-			tst_res(TBROK, "%s", #expr);			\
-			exit(1);					\
-		}							\
-	} while (0)
+	((expr) ? (void)0: tst_brk(TBROK, "%s", #expr))
 
 /*
  * ensure() tests something that shouldn't fail
@@ -514,7 +499,7 @@ struct call call_tests[] = {
 	 .call_controllen_delta	= -(ssize_t) (sizeof(struct ctlmsgfd) - 1)},
 };
 
-#define N_TESTS		(sizeof(call_tests) / sizeof(call_tests[0]))
+#define N_TESTS		ARRAY_SIZE(call_tests)
 #define	call_tests_end	(&call_tests[N_TESTS])
 
 int test_verbose = 0;	/* 1 a bit verbose, 2 more verbose */
@@ -611,7 +596,7 @@ static int con_receive_iovec_boundary_checks(struct con *conp,
 	if (received < 0)
 		tst_res(TBROK, "recmsg or recvmmsg");
 	ensure(tn, (size_t) received == sizeof(client_data));
-	ensure(tn, mem_is_equal(client_data, server_data, received));
+	ensure(tn, !memcmp(client_data, server_data, received));
 
 	if (test_verbose || subtest_show())
 		tst_res(TINFO, "con_receive_iovec_boundary_checks(niov = %d)"
@@ -656,9 +641,9 @@ static int con_receive_iovec_boundary_checks_peeking(struct con *conp,
 	struct msghdr server_recv;
 	msghdr_init(&server_recv, NULL, server_iov, niov, 0);
 
-	thread_call(&smc.smc_thread_call, (void *(*)(void *)) sendmsg_call);
+	thread_call(&smc.smc_pthr, (void *(*)(void *)) sendmsg_call);
 	ssize_t received = recvmsg(conp->con_server, &server_recv, MSG_PEEK);
-	thread_join(&smc.smc_thread_call);
+	thread_join(smc.smc_pthr);
 
 	if (niov > iov_max) {
 		ensure(tn, smc.smc_value == -1);
@@ -672,7 +657,7 @@ static int con_receive_iovec_boundary_checks_peeking(struct con *conp,
 		if (received < 0)
 			tst_res(TBROK, "recvmsg");
 		ensure(tn, (size_t) received == sizeof(client_data));
-		ensure(tn, mem_is_equal(client_data, server_data, received));
+		ensure(tn, !memcmp(client_data, server_data, received));
 	}
 
 	received = recvmsg(conp->con_server, &server_recv, 0);
@@ -688,8 +673,8 @@ static int con_receive_iovec_boundary_checks_peeking(struct con *conp,
 		if (received < 0)
 			tst_res(TBROK, "recvmsg");
 		ensure(tn, (size_t) received == sizeof(client_data));
-		ensure(tn, mem_is_equal(client_data, server_data, received));
-		errno = TEST_HAS_MULTIPLE_RECVMSG;
+		ensure(tn, !memcmp(client_data, server_data, received));
+		errno = KIND_HAS_MULTIPLE_RECVMSG;
 	}
 
 	if (test_verbose || subtest_show())
@@ -724,7 +709,7 @@ static int con_receive_file_descriptor(struct con *conp, int tn,
 	int pipe_write = pipefd[1];
 
 	struct ctlmsgfd client_ctlmsgfd;
-	ctlmsgfd_init(&client_ctlmsgfd, pipe_write);
+	ctlmsgfd_init_fd(&client_ctlmsgfd, pipe_write);
 
 	struct iovec client_iov;
 	char server_data = 0;
@@ -753,7 +738,7 @@ static int con_receive_file_descriptor(struct con *conp, int tn,
 	sendmsg_call_init(&smc, conp->con_client, &client_send, 0);
 
 	struct ctlmsgfd server_ctlmsgfd;
-	ctlmsgfd_init_to_zero(&server_ctlmsgfd);
+	ctlmsgfd_init(&server_ctlmsgfd);
 
 	struct msghdr server_recv;
 	msghdr_init_with_control(&server_recv, NULL, server_iovp, server_iovlen,
@@ -812,7 +797,7 @@ static int con_receive_file_descriptor(struct con *conp, int tn,
 			some_data,
 			(long) controllen_delta);
 	if (cloexec_flag)
-		return TEST_CLOEXEC_FLAG;	/* can not mix flags */
+		return KIND_CLOEXEC_FLAG;	/* can not mix flags */
 	return 0;
 }
 
@@ -853,20 +838,20 @@ static int con_message_too_long_to_fit_discards_bytes(struct con *conp, int tn)
 	iovec_init(&server_iov, server_data, half);
 
 	struct sockaddr_in client_sin;
-	sockaddr_in_init_to_zero(&client_sin);
+	memset(&client_sin, 0, sizeof(client_sin));
 	struct msghdr server_recv;
 	msghdr_init(&server_recv, &client_sin, &server_iov, 1, 0);
 
-	thread_call(&smc.smc_thread_call, (void *(*)(void *)) sendmsg_call);
+	thread_call(&smc.smc_pthr, (void *(*)(void *)) sendmsg_call);
 	ssize_t received = recvmsg(conp->con_server, &server_recv, 0);
-	thread_join(&smc.smc_thread_call);
+	thread_join(smc.smc_pthr);
 
 	if (received < 0)
 		tst_res(TBROK, "recvmsg");
 
 	ensure(tn, (size_t) received == half);
 	ensure(tn, server_data[half] == GUARD_CHAR);
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base, half));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base, half));
 	ensure(tn, server_recv.msg_flags & MSG_TRUNC);
 
 	/*
@@ -877,9 +862,9 @@ static int con_message_too_long_to_fit_discards_bytes(struct con *conp, int tn)
 
 	sendmsg_call_init(&smc, conp->con_client, &client_send, 0);
 
-	thread_call(&smc.smc_thread_call, (void *(*)(void *)) sendmsg_call);
+	thread_call(&smc.smc_pthr, (void *(*)(void *)) sendmsg_call);
 	received = recvmsg(conp->con_server, &server_recv, MSG_TRUNC);
-	thread_join(&smc.smc_thread_call);
+	thread_join(smc.smc_pthr);
 
 	if (received < 0)
 		tst_res(TBROK, "recvmsg");
@@ -900,11 +885,11 @@ static int con_message_too_long_to_fit_discards_bytes(struct con *conp, int tn)
 	ensure(tn, (size_t) received == total);
 	ensure(tn, server_data[half] == GUARD_CHAR);
 	ensure(tn, ! (server_recv.msg_flags & MSG_EOR));
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base, half));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base, half));
 
 	if (test_verbose || subtest_show())
 		tst_res(TINFO, "con_message_too_long_to_fit_discards_bytes");
-	return TEST_HAS_MULTIPLE_RECVMSG;
+	return KIND_HAS_MULTIPLE_RECVMSG;
 }
 
 /*
@@ -946,20 +931,20 @@ static int con_message_too_long_to_fit_doesnt_discard_bytes(struct con *conp,
 	iovec_init(&server_iov, server_data, half);
 
 	struct sockaddr_in client_sin;
-	sockaddr_in_init_to_zero(&client_sin);
+	memset(&client_sin, 0, sizeof(client_sin));
 	struct msghdr server_recv;
 	msghdr_init(&server_recv, &client_sin, &server_iov, 1, 0);
 
-	thread_call(&smc.smc_thread_call, (void *(*)(void *)) sendmsg_call);
+	thread_call(&smc.smc_pthr, (void *(*)(void *)) sendmsg_call);
 	ssize_t received = recvmsg(conp->con_server, &server_recv, 0);
-	thread_join(&smc.smc_thread_call);
+	thread_join(smc.smc_pthr);
 
 	if (received < 0)
 		tst_res(TBROK, "recvmsg");
 
 	ensure(tn, (size_t) received == half);
 	ensure(tn, server_data[half] == GUARD_CHAR);
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base, half));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base, half));
 	ensure(tn, server_recv.msg_flags == 0);
 
 	/*
@@ -970,9 +955,9 @@ static int con_message_too_long_to_fit_doesnt_discard_bytes(struct con *conp,
 
 	sendmsg_call_init(&smc, conp->con_client, &client_send, 0);
 
-	thread_call(&smc.smc_thread_call, (void *(*)(void *)) sendmsg_call);
+	thread_call(&smc.smc_pthr, (void *(*)(void *)) sendmsg_call);
 	received = recvmsg(conp->con_server, &server_recv, MSG_TRUNC);
-	thread_join(&smc.smc_thread_call);
+	thread_join(smc.smc_pthr);
 
 	if (received < 0)
 		tst_res(TBROK, "recvmsg");
@@ -993,12 +978,12 @@ static int con_message_too_long_to_fit_doesnt_discard_bytes(struct con *conp,
 	ensure(tn, (size_t) received == half);
 	ensure(tn, server_data[half] == GUARD_CHAR);
 	ensure(tn, server_recv.msg_flags & MSG_EOR);
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base + half, half));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base + half, half));
 
 	if (test_verbose || subtest_show())
 		tst_res(TINFO,
 			"con_message_too_long_to_fit_doesnt_discard_bytes");
-	return TEST_HAS_MULTIPLE_RECVMSG;
+	return KIND_HAS_MULTIPLE_RECVMSG;
 }
 
 /*
@@ -1031,7 +1016,7 @@ static int con_receive_waits_for_message(struct con *conp, int tn)
 	iovec_init(&server_iov, server_data, total);
 
 	struct sockaddr_in client_sin;
-	sockaddr_in_init_to_zero(&client_sin);
+	memset(&client_sin, 0, sizeof(client_sin));
 	struct msghdr server_recv;
 	msghdr_init(&server_recv, &client_sin, &server_iov, 1, 0);
 
@@ -1046,12 +1031,12 @@ static int con_receive_waits_for_message(struct con *conp, int tn)
 
 	ensure(tn, (size_t) received == total);
 	ensure(tn, server_data[total] == GUARD_CHAR);
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base, total));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base, total));
 	ensure(tn, server_recv.msg_flags & MSG_EOR);
 
 	if (test_verbose || subtest_show())
 		tst_res(TINFO, "con_receive_waits_for_message()");
-	return TEST_NEEDS_SLEEP_IN_SENDER;
+	return KIND_NEEDS_SLEEP_IN_SENDER;
 }
 
 /*
@@ -1086,30 +1071,30 @@ static int con_receiver_doesnt_wait_for_messages(struct con *conp, int tn)
 	iovec_init(&server_iov, server_data, total);
 
 	struct sockaddr_in client_sin;
-	sockaddr_in_init_to_zero(&client_sin);
+	memset(&client_sin, 0, sizeof(client_sin));
 	struct msghdr server_recv;
 	memset(&server_recv, 0, sizeof(server_recv));
 	msghdr_init(&server_recv, &client_sin, &server_iov, 1, 0);
 
-	thread_call(&smc.smc_thread_call,
+	thread_call(&smc.smc_pthr,
 		    (void *(*)(void *)) sendmsg_call_after_sleep);
 	ssize_t received = recvmsg(conp->con_server,
 				   &server_recv, MSG_DONTWAIT);
 	ensure(tn, received == -1 && (errno == EAGAIN || errno == EWOULDBLOCK));
 	received = recvmsg(conp->con_server, &server_recv, 0);	/* now wait */
-	thread_join(&smc.smc_thread_call);
+	thread_join(smc.smc_pthr);
 
 	if (received < 0)
 		tst_res(TBROK, "recvmsg");
 
 	ensure(tn, (size_t) received == total);
 	ensure(tn, server_data[total] == GUARD_CHAR);
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base, total));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base, total));
 	ensure(tn, server_recv.msg_flags & MSG_EOR);
 
 	if (test_verbose || subtest_show())
 		tst_res(TINFO, "con_receiver_doesnt_wait_for_messages()");
-	return TEST_HAS_MULTIPLE_RECVMSG;
+	return KIND_HAS_MULTIPLE_RECVMSG;
 }
 
 /*
@@ -1142,7 +1127,7 @@ static int con_receive_returns_what_is_available(struct con *conp, int tn)
 	iovec_init(&server_iov, server_data, twice);
 
 	struct sockaddr_in client_sin;
-	sockaddr_in_init_to_zero(&client_sin);
+	memset(&client_sin, 0, sizeof(client_sin));
 	struct msghdr server_recv;
 	msghdr_init(&server_recv, &client_sin, &server_iov, 1, 0);
 
@@ -1158,7 +1143,7 @@ static int con_receive_returns_what_is_available(struct con *conp, int tn)
 	ensure(tn, (size_t) received == total);
 	ensure(tn, server_data[total] == GUARD_CHAR);
 	ensure(tn, server_data[twice] == GUARD_CHAR);
-	ensure(tn, mem_is_equal(server_data, client_iov.iov_base, total));
+	ensure(tn, !memcmp(server_data, client_iov.iov_base, total));
 	ensure(tn, server_recv.msg_flags & MSG_EOR);
 
 	if (test_verbose || subtest_show())
@@ -1192,7 +1177,7 @@ static int con_empty_datagram_received_as_empty_datagram(struct con *conp,
 	iovec_init(&server_iov, server_data, 1);
 
 	struct sockaddr_in client_sin;
-	sockaddr_in_init_to_zero(&client_sin);
+	memset(&client_sin, 0, sizeof(client_sin));
 	struct msghdr server_recv;
 	msghdr_init(&server_recv, &client_sin, &server_iov, 1, 0);
 
@@ -1211,7 +1196,7 @@ static int con_empty_datagram_received_as_empty_datagram(struct con *conp,
 	if (test_verbose || subtest_show())
 		tst_res(TINFO,
 			"con_empty_datagram_received_as_empty_datagram()");
-	return TEST_NEEDS_SLEEP_IN_SENDER;
+	return KIND_NEEDS_SLEEP_IN_SENDER;
 }
 
 /*
@@ -1397,15 +1382,15 @@ static void tests_run_all_ocloexec_flag(void)
 	struct recvmsg_call *rmc_vec[max_tests];
 
 	/*
-	 * Get the socketpair tests that returned TEST_CLOEXEC_FLAG
+	 * Get the socketpair tests that returned KIND_CLOEXEC_FLAG
 	 * and run them sequentially to ensure there are no issues with
 	 * the connection sharing.
 	 */
 
 	int n_selected = tests_select(con_init_socketpair,
 				      call_tests_selected,
-				      TEST_CLOEXEC_FLAG);
-	tst_res(TINFO, "Running %d TEST_CLOEXEC_FLAG socketpair() "
+				      KIND_CLOEXEC_FLAG);
+	tst_res(TINFO, "Running %d KIND_CLOEXEC_FLAG socketpair() "
 		"tests sharing a connection:\n", n_selected);
 	con_init_socketpair(&con);
 	int i;
@@ -1413,7 +1398,7 @@ static void tests_run_all_ocloexec_flag(void)
 	for (i = 0; i < n_selected; ++i) {
 		callp = call_tests_selected[i];
 		int error = call_go(callp, &con);
-		test_assert(error == TEST_CLOEXEC_FLAG);
+		test_assert(error == KIND_CLOEXEC_FLAG);
 	}
 	con_deinit(&con);
 
@@ -1423,7 +1408,7 @@ static void tests_run_all_ocloexec_flag(void)
 
 	int sendmulti;
 	for (sendmulti = 0; sendmulti <= 1; ++sendmulti) {
-		tst_res(TINFO, "Running %d TEST_CLOEXEC_FLAG "
+		tst_res(TINFO, "Running %d KIND_CLOEXEC_FLAG "
 			"socketpair() tests with a single recvmmsg(2) "
 			"call and %s:\n", n_selected,
 			sendmulti ? "a single sendmmsg(2) call"
@@ -1433,7 +1418,7 @@ static void tests_run_all_ocloexec_flag(void)
 				  call_tests_selected, smc_vec, rmc_vec);
 		callp = call_tests_selected[0];
 		error = call_go(callp, &con);
-		test_assert(error == TEST_CLOEXEC_FLAG);
+		test_assert(error == KIND_CLOEXEC_FLAG);
 		con_deinit(&con);
 	}
 }
@@ -1579,67 +1564,11 @@ static void tests_run_all_sock_sepacket_with_n_repeat(void)
 	}
 }
 
-/*
- *	The LTP coding convention is for main() not to be provided by
- *	the test programs, for easier debugging you might want to use
- *	this main() function (for easier testing instead of having to go
- *	find the LTP library code that the LTP provided main() function
- *	uses).
- *
- *	If you want to use this main() function add this #define:
- *		#define TST_NO_DEFAULT_MAIN
- *	Prior to this #include:
- *		#include "tst_test.h"
- *	at the start of this file.
- *
- *	Another reason you might want to do this is to pass one or more:
- *		-v
- *	to the test program to increse its verbosity level, alternatively
- *	you can initialize test_verbose to a non-zero value and recompile.
- */
-
-#ifdef TST_NO_DEFAULT_MAIN
-
-static void tst_parse_opt(int argc, char *argv[]);
-
-int main(int argc, char *argv[])
-{
-	tst_parse_opt(argc, argv);
-	tests_setup();
-	tests_run();
-	exit(ensure_failures > 0 ? 1 : 0);
-}
-
-static void tst_parse_opt(int argc, char *argv[])
-{
-	prog_name = argv[0];
-	char *lasts = strrchr(prog_name, '/');
-	if (lasts)
-		prog_name = lasts + 1;
-	TCID = prog_name;
-	while (--argc >= 1) {
-		char *arg = *++argv;
-		if (strcmp(arg, "-v") == 0)
-			++test_verbose;
-		else {
-			fprintf(stderr, "usage: %s [-v]\n", prog_name);
-			exit(1);
-		}
-	}
-}
-
-#else
-
-static void tests_cleanup(void);
-static void tests_cleanup(void) {}
-
 static struct tst_test test = {
 	.setup = tests_setup,
-	.cleanup = tests_cleanup,
+	.cleanup = NULL,
 	.test_all = tests_run,
 };
-
-#endif
 
 /*
  *	Utility functions and mechanism for test combinations and for
@@ -1747,7 +1676,7 @@ static void con_add_send_recv_calls_vec(struct con *conp,
 		subtest_nest();
 		struct call *callp = conp->con_call_vec[i];
 		int error = call_go(callp, conp);
-		test_assert(!errno_value_is_error(error));
+		test_assert(error <= 0); /* not an error, see KIND_* defines */
 		subtest_unnest();
 	}
 }
@@ -1794,7 +1723,7 @@ static void con_sendmmsg_recvmmsg(struct con *conp, size_t n,
 		      smm, sflags, conp->con_call_sendmmsg,
 		      waitforone || timeout || conp->con_sender_sleeps);
 
-	thread_call(&smmc.smmc_thread_call, (void *(*)(void *)) sendmmsg_call);
+	thread_call(&smmc.smmc_pthr, (void *(*)(void *)) sendmmsg_call);
 
 	int nrecv;
 	if (!waitforone && !timeout) {
@@ -1826,7 +1755,7 @@ static void con_sendmmsg_recvmmsg(struct con *conp, size_t n,
 		} while (nleft > 0);
 	}
 
-	thread_join(&smmc.smmc_thread_call);
+	thread_join(smmc.smmc_pthr);
 
 	int nsent = smmc.smmc_value;
 	test_assert((size_t) nsent == n);
@@ -1918,11 +1847,11 @@ static void con_add_send_recv_calls(struct con *conp, struct sendmsg_call *smcp,
 		return;
 	}
 
-	thread_call(&smcp->smc_thread_call, (void *(*)(void *))
+	thread_call(&smcp->smc_pthr, (void *(*)(void *))
 		    (sender_sleeps ? sendmsg_call_after_sleep : sendmsg_call));
 	struct timespec pretv, postv;
 	if (sender_sleeps)
-		tst_fzsync_time(&pretv);
+		clock_gettime(CLOCK_MONOTONIC, &pretv);
 	ssize_t val = recvmsg(conp->con_server, rmcp->rmc_msg, rmcp->rmc_flags);
 	if (val < 0)
 		rmcp->rmc_errno = errno;
@@ -1935,7 +1864,7 @@ static void con_add_send_recv_calls(struct con *conp, struct sendmsg_call *smcp,
 		 * for at least half as long as the sender sleeps is good
 		 * enough to ensure that scheduling noise doesn't affect test.
 		 */
-		tst_fzsync_time(&postv);
+		clock_gettime(CLOCK_MONOTONIC, &postv);
 		unsigned long long pre = pretv.tv_sec * 1000 * 1000 * 1000;
 		pre += pretv.tv_nsec;
 		unsigned long long pos = postv.tv_sec * 1000 * 1000 * 1000;
@@ -1944,17 +1873,12 @@ static void con_add_send_recv_calls(struct con *conp, struct sendmsg_call *smcp,
 	}
 
 	rmcp->rmc_value = val;
-	thread_join(&smcp->smc_thread_call);
+	thread_join(smcp->smc_pthr);
 }
 
 /*
  *	Miscellaneous supporting code is in this section.
  */
-
-static int errno_value_is_error(int e)
-{
-	return e > 0;  /* negative values are not errors, see non_error_errno */
-}
 
 static void sleep_ms(long ms)
 {
@@ -2013,11 +1937,6 @@ static bool subtest_show(void)
  * compare that memory is equal, makes the output of various ensure() nicer
  */
 
-static bool mem_is_equal(void *a, void *b, size_t size)
-{
-	return !memcmp(a, b, size);
-}
-
 static bool mem_is_zero(void *a, size_t size)
 {
 	unsigned char set = 0;
@@ -2027,14 +1946,14 @@ static bool mem_is_zero(void *a, size_t size)
 	return !set;
 }
 
-static void thread_call(struct thread_call *tcp, void *(*func)(void *))
+static void thread_call(pthread_t *pthr, void *(*func)(void *))
 {
-	SAFE_PTHREAD_CREATE(&tcp->tc_thr, NULL, func, tcp);
+	SAFE_PTHREAD_CREATE(pthr, NULL, func, pthr);
 }
 
-static void thread_join(struct thread_call *tcp)
+static void thread_join(pthread_t pthr)
 {
-	SAFE_PTHREAD_JOIN(tcp->tc_thr, NULL);
+	SAFE_PTHREAD_JOIN(pthr, NULL);
 }
 
 static void sendmmsg_init(struct sendmmsg_call *smmcp, int sockfd,
@@ -2058,15 +1977,10 @@ static void sendmmsg_init(struct sendmmsg_call *smmcp, int sockfd,
 static void sockaddr_in_init(struct sockaddr_in *sinp, sa_family_t family,
 			     in_port_t port, uint32_t ip)
 {
-	sockaddr_in_init_to_zero(sinp);
+	memset(sinp, 0, sizeof(struct sockaddr));
 	sinp->sin_family = family;
 	sinp->sin_port = htons(port);
 	sinp->sin_addr.s_addr = htonl(ip);
-}
-
-static void sockaddr_in_init_to_zero(struct sockaddr_in *sinp)
-{
-	memset(sinp, 0, sizeof(*sinp));
 }
 
 static size_t iovec_max(void)
@@ -2148,18 +2062,18 @@ static void *sendmsg_call_after_sleep(struct sendmsg_call *smcp)
 	return sendmsg_call(smcp);
 }
 
-static void ctlmsgfd_init(struct ctlmsgfd *cmfp, int fd)
+static void ctlmsgfd_init(struct ctlmsgfd *cmfp)
 {
 	memset(cmfp, 0, sizeof(*cmfp));
+}
+
+static void ctlmsgfd_init_fd(struct ctlmsgfd *cmfp, int fd)
+{
+	ctlmsgfd_init(cmfp);
 	cmfp->cmf_cmsg.cmsg_len = sizeof(*cmfp);
         cmfp->cmf_cmsg.cmsg_level = SOL_SOCKET;
         cmfp->cmf_cmsg.cmsg_type = SCM_RIGHTS;
 	*(int *) CMSG_DATA(&cmfp->cmf_cmsg) = fd;
-}
-
-static void ctlmsgfd_init_to_zero(struct ctlmsgfd *cmfp)
-{
-	memset(cmfp, 0, sizeof(*cmfp));
 }
 
 static int ctlmsgfd_get_fd(struct ctlmsgfd *cmfp)
