@@ -31,8 +31,6 @@
 * The test fails if a signal handler does not work as expected.
 */
 
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
 
 #include <stdarg.h>
 #include <stdio.h>

@@ -18,7 +18,6 @@
  * 2. Compare whether st_atime has been updated.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <stdlib.h>

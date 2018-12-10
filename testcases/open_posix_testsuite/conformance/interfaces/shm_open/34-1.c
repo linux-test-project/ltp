@@ -13,7 +13,6 @@
 
 /* FIXME : ambiguite de la spec */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <sys/mman.h>

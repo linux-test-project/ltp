@@ -10,7 +10,6 @@
  * set the process-shared attribute in an initialized attributes object referenced by attr.
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

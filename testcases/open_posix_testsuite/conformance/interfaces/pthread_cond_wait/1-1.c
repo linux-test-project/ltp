@@ -10,7 +10,6 @@
  *   by the calling thread or undefined behavior results.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdlib.h>

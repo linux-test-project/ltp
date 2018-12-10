@@ -23,7 +23,6 @@
  *	- call aio_return to get the aiocb status (number of bytes written)
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>

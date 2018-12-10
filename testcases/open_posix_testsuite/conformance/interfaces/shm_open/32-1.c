@@ -14,7 +14,6 @@
  * open it.
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>

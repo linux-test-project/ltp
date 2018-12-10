@@ -27,7 +27,6 @@
  *    and check that change wasn't written.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <stdlib.h>

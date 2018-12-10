@@ -18,7 +18,6 @@
  * 4. Main call pthread_barrier_wait(), child and main should all return
  *    from pthread_barrier_wait()
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

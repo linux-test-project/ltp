@@ -12,7 +12,6 @@
  * does not have permission to set the scheduling parameters for the specified
  * process, or does not have the appropriate privilege to invoke schedparam().
  */
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sched.h>
 #include <errno.h>

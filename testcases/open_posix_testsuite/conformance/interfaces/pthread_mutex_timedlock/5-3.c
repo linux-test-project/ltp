@@ -21,7 +21,6 @@
  *
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <time.h>
 #include <pthread.h>

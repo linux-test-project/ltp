@@ -16,11 +16,6 @@
  *  3. Check that the shared memory object is zero length using fstat.
  */
 
-/* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base
-   interface */
-#define _XOPEN_SOURCE 600
-
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>

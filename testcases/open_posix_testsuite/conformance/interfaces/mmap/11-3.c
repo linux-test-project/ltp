@@ -17,7 +17,6 @@
  *    beyond the end of the object, should get SIGBUS.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <sys/mman.h>
 #include <sys/types.h>

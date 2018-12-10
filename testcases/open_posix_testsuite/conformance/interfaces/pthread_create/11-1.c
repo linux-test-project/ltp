@@ -16,7 +16,6 @@
   * clock_gettime() since the thread has executed some time.
   */
 
-#define _XOPEN_SOURCE 600
 #include <unistd.h>
 #include <pthread.h>
 #include <stdio.h>

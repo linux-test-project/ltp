@@ -17,7 +17,6 @@
  * belongs to root. This test can not be run by root.
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sched.h>
 #include <errno.h>

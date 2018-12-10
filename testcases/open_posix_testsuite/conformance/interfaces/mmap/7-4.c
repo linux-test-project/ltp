@@ -25,7 +25,6 @@
  * 6. Check whether the change in step 3 is visible to the child.
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

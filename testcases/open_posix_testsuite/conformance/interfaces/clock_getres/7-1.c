@@ -9,7 +9,6 @@
  * The clock chosen for this test is CLOCK_PROCESS_CPUTIME_ID.
  */
 
-#define _XOPEN_SOURCE 600
 #include <unistd.h>
 #include <stdio.h>
 #include <time.h>

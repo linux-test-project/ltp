@@ -17,7 +17,6 @@
  *    is triggered.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <sys/mman.h>
 #include <sys/types.h>

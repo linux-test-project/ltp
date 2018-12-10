@@ -24,13 +24,6 @@
  *
  */
 
-#define _POSIX_C_SOURCE 200112L
-
-/* Some routines are part of the XSI Extensions */
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-#endif
-
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>

@@ -40,12 +40,6 @@
  *     mark b as true then broadcast c until all threads are terminated.
  */
 
-#define _POSIX_C_SOURCE 200112L
-
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-#endif
-
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>

@@ -16,7 +16,6 @@
  3. Verify that sigpause returns -1 and sets errno to EINTR.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdio.h>

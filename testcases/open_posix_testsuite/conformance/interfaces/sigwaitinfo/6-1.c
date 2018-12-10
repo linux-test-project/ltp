@@ -15,7 +15,6 @@
 
  */
 
-#define _XOPEN_SOURCE 600
 #define _XOPEN_REALTIME 1
 #define SIGTOTEST SIGUSR1
 

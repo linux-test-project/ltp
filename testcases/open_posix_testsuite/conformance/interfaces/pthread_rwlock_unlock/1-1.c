@@ -24,7 +24,6 @@
  * 7.  Main thread unlock the read lock, the 'rwlock' is in unlocked state
  * 8.  Child thread should get the lock for writing.
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

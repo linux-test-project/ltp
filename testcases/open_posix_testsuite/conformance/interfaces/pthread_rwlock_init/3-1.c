@@ -14,7 +14,6 @@
  * 2.  Loop for COUNT time: lock for reading, unlock, lock for writing, unlock;
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdio.h>

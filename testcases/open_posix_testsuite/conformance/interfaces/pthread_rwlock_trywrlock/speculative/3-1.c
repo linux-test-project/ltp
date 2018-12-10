@@ -13,7 +13,6 @@
  * 1. Call pthread_rwlock_trywrlock with an uninitialized rwlock object
  * 2. Test for the return code.  It may be EINVAL or 0.
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
