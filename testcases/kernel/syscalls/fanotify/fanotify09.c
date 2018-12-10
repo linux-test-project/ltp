@@ -216,7 +216,7 @@ static void test_fanotify(unsigned int n)
 		ret = read(fd_notify[i], event_buf, FAN_EVENT_METADATA_LEN);
 		if (ret > 0) {
 			tst_res(TFAIL, "group %d got event", i);
-			verify_event(0, event, FAN_CLOSE_NOWRITE);
+			verify_event(i, event, FAN_CLOSE_NOWRITE);
 			if (event->fd != FAN_NOFD)
 				SAFE_CLOSE(event->fd);
 			continue;
