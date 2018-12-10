@@ -15,7 +15,6 @@
  *            Test needed to do something as opposed to idle sleep to
  *            get the CPU time to increase.
  */
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>

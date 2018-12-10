@@ -11,7 +11,6 @@
  * After sighold is called on an invalid signal, sigignore() should
  * return -1 and set errno to EINVAL
  */
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <signal.h>

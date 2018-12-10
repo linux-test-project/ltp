@@ -31,13 +31,6 @@
  *      -> free memory
  */
 
- /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
- /* We need XSI conformance for memory limitation */
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/

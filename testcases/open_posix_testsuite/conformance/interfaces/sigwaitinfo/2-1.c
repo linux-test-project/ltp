@@ -19,7 +19,6 @@
  - call sigwaitinfo() and verify that it returns SIGRTMIN
  */
 
-#define _XOPEN_SOURCE 600
 #define _XOPEN_REALTIME 1
 
 #include <signal.h>

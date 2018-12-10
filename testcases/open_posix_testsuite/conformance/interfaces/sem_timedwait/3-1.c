@@ -11,7 +11,6 @@
  * sem_timedwait call will immediately lock again.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <sys/stat.h>
 #include <sys/types.h>

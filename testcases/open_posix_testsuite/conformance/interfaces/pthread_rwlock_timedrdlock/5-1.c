@@ -21,7 +21,6 @@
  * 5.  The thread call pthread_rwlock_timedrdlock(). Should _NOT_ get ETIMEDOUT.
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

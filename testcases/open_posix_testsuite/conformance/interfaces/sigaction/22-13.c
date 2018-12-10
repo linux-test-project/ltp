@@ -26,7 +26,6 @@
      otherwise exit -1.
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

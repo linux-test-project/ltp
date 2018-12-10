@@ -16,7 +16,6 @@
  * 4. Call sigrelse on SIGABRT.
  * 5. Verify that the handler gets called this time.
  */
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

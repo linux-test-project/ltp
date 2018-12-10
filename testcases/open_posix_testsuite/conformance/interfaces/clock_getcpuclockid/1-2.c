@@ -13,7 +13,6 @@
  * permission, the clock ID of this clock shall be returned in clock_id.
  *
  */
-#define _XOPEN_SOURCE 600
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>

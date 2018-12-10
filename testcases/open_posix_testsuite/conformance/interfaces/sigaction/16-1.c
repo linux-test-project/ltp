@@ -23,11 +23,8 @@
  *
  */
 
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
 
 /* This test tests for an XSI feature */
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdarg.h>

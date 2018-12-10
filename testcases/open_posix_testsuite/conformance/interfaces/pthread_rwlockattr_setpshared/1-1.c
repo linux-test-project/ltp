@@ -16,7 +16,6 @@
  * 5.  Get the attribute and test whether the setting in step 4 is correct.
  *
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include "posixtest.h"

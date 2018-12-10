@@ -26,7 +26,6 @@
  *	6. Parent and Child should not block on pthread_barrier_wait()
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -29,8 +29,6 @@
 * The test fails if the function is not called
 */
 
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
 
 #include <pthread.h>
 #include <stdarg.h>

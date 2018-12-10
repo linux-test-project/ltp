@@ -13,11 +13,6 @@
  * The test use mmap to check the object is open for reading.
  */
 
-/* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base
-   interface */
-#define _XOPEN_SOURCE 600
-
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>

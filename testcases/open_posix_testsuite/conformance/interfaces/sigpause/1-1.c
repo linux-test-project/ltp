@@ -18,7 +18,6 @@
     then the test has failed, else it passed.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdio.h>

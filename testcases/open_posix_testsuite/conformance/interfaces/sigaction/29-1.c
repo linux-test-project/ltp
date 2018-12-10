@@ -31,11 +31,8 @@
 * The test fails if the signals are not delivered in FIFO order.
 */
 
-/* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
 
 /* This test uses some XSI features */
-//#define _XOPEN_SOURCE 600
 
 /******************************************************************************/
 /*************************** standard includes ********************************/

@@ -17,7 +17,6 @@
  - Verify that sigaltstack() returns -1 and sets errno to [ENOMEM].
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

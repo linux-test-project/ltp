@@ -22,7 +22,6 @@
       that we defined in the main() function.
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

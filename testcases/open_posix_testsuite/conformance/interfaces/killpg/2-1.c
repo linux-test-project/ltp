@@ -9,7 +9,6 @@
  returns success, then we pass.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

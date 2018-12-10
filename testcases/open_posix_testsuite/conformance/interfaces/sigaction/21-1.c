@@ -4,7 +4,6 @@
   a child process not transforming into a zombie after death.
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

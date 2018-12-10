@@ -17,7 +17,6 @@
  *    passes even if 0 is returned.
  *
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

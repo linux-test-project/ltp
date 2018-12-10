@@ -11,7 +11,6 @@
  * by sem.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <errno.h>

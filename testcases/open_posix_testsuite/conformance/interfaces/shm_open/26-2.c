@@ -21,7 +21,6 @@
  */
 
 /* getpwent() is part of XSI option */
-#define _XOPEN_SOURCE 600
 
 #include <sys/mman.h>
 #include <sys/stat.h>

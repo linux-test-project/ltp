@@ -28,7 +28,6 @@
  *    read the byte from the position modified at step 1-c and check.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <stdlib.h>

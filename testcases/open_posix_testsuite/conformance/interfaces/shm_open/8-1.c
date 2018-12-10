@@ -21,7 +21,6 @@
  */
 
 /* mkstemp is an XOPEN extension. */
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <sys/mman.h>

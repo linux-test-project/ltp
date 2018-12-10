@@ -19,7 +19,6 @@
  * 3. Child thread call pthread_barrier_wait(), should block
  * 4. Main call pthread_barrier_init()
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

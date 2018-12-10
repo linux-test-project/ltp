@@ -18,7 +18,6 @@
  *	- read 256 bytes using aio_read
  */
 
-#define _XOPEN_SOURCE 600
 #include <sys/stat.h>
 #include <aio.h>
 #include <errno.h>

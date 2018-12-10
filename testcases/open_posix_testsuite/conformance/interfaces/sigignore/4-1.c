@@ -7,7 +7,6 @@
  *
  * Simply, if sigignore returns a 0 here, test passes.
  */
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <signal.h>

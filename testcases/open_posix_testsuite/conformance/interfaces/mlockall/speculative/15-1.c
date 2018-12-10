@@ -13,7 +13,6 @@
  * It is a may assertion.
  */
 
-#define _XOPEN_SOURCE 600
 #include <sys/mman.h>
 #include <stdio.h>
 #include <unistd.h>

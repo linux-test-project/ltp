@@ -15,7 +15,6 @@
  * 1.  Initialize a pthread_rwlock_t object 'rwlock' with pthread_rwlock_init()
  * 2.  Create a child thread, the thread lock 'rwlock' for reading, shall not block.
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

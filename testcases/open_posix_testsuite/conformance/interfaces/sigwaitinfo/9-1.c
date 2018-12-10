@@ -15,7 +15,6 @@
     4. Call sigwaitinfo() and verify that it returns the signal SIGTOTEST.
  */
 
-#define _XOPEN_SOURCE 600
 #define _XOPEN_REALTIME 1
 #define SIGTOTEST SIGUSR1
 

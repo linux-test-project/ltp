@@ -8,7 +8,6 @@
  * If len is zero, mmap() shall fail and no mapping shall be established.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <stdlib.h>

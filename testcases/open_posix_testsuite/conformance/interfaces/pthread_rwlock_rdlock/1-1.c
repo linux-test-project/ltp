@@ -23,7 +23,6 @@
  * 6.  Create child thread to read lock 'rwlock', should block
  * 7.  Main thread unlock 'rwlock'
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

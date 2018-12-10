@@ -15,7 +15,6 @@
  * 2. Main destroy the barrier
  * 3. Repeat step 1,2 for N times
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

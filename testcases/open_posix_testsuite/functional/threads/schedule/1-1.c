@@ -19,7 +19,6 @@
  *    and preempted low priority thread
  */
 
-#define _XOPEN_SOURCE 600
 #include "affinity.h"
 #include <pthread.h>
 #include <stdlib.h>

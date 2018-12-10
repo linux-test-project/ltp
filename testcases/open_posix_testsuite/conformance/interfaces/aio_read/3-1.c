@@ -18,7 +18,6 @@
  *	- check error and return codes using previous aiocb
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
