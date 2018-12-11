@@ -253,6 +253,10 @@ test_4()
 #---------------------------------------------------------------------------
 test_5()
 {
+	local mounted
+	local failing
+	local mntpoint
+
 	lines=`cat /proc/cgroups | wc -l`
 	if [ $lines -le 2 ]; then
 		tst_resm TCONF "require at least 2 cgroup subsystems"
@@ -262,31 +266,51 @@ test_5()
 	subsys1=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
 	subsys2=`tail -n 2 /proc/cgroups | head -1 | awk '{ print $1 }'`
 
-	mount -t cgroup -o $subsys1,$subsys2 xxx cgroup/
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "mount $subsys1 and $subsys2 failed"
-		failed=1
-		return
+	# Accounting here for the fact that the chosen subsystems could
+	# have been already previously mounted at boot time: in such a
+	# case we must skip the initial co-mount step (which would
+	# fail anyway) and properly re-organize the $mntpoint and
+	# $failing params to be used in the following expected-to-fail
+	# mount action. Note that the subsysN name itself will be listed
+	# amongst mounts options.
+	cat /proc/mounts | grep cgroup | grep -q $subsys1 && mounted=$subsys1
+	[ -z "$mounted" ] && cat /proc/mounts | grep cgroup | grep -q $subsys2 && mounted=$subsys2
+	if [ -z "$mounted" ]; then
+		mntpoint=cgroup
+		failing=$subsys1
+		mount -t cgroup -o $subsys1,$subsys2 xxx $mntpoint/
+		if [ $? -ne 0 ]; then
+			tst_resm TFAIL "mount $subsys1 and $subsys2 failed"
+			failed=1
+			return
+		fi
+	else
+		# Use the pre-esistent mountpoint as $mntpoint and use a
+		# co-mount with $failing: this way the 2nd mount will
+		# also fail (as expected) in this 'mirrored' configuration.
+		mntpoint=$(cat /proc/mounts | grep cgroup | grep $mounted | awk '{ print $2 }')
+		failing=$subsys1,$subsys2
 	fi
 
-	# This 2nd mount should fail
-	mount -t cgroup -o $subsys1 xxx cgroup/ 2> /dev/null
+	# This 2nd mount has been properly configured to fail
+	mount -t cgroup -o $failing xxx $mntpoint/ 2> /dev/null
 	if [ $? -eq 0 ]; then
-		tst_resm TFAIL "mount $subsys1 should fail"
-		umount cgroup/
+		tst_resm TFAIL "mount $failing should fail"
+		# Do NOT unmount pre-existent mountpoints...
+		[ -z "$mounted" ] && umount $mntpoint
 		failed=1
 		return
 	fi
 
-	mkdir cgroup/0
+	mkdir $mntpoint/0
 	# Otherwise we can't attach task
 	if [ "$subsys1" = cpuset -o "$subsys2" = cpuset ]; then
-		echo 0 > cgroup/0/cpuset.cpus 2> /dev/null
-		echo 0 > cgroup/0/cpuset.mems 2> /dev/null
+		echo 0 > $mntpoint/0/cpuset.cpus 2> /dev/null
+		echo 0 > $mntpoint/0/cpuset.mems 2> /dev/null
 	fi
 
 	sleep 100 &
-	echo $! > cgroup/0/tasks
+	echo $! > $mntpoint/0/tasks
 
 	check_kernel_bug
 	if [ $? -eq 1 ]; then
@@ -296,8 +320,9 @@ test_5()
 	# clean up
 	/bin/kill -SIGTERM $! > /dev/null
 	wait $!
-	rmdir cgroup/0
-	umount cgroup/
+	rmdir $mntpoint/0
+	# Do NOT unmount pre-existent mountpoints...
+	[ -z "$mounted" ] && umount $mntpoint
 }
 
 #---------------------------------------------------------------------------
