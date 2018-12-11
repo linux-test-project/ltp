@@ -33,9 +33,9 @@
 #endif
 
 /** @private */
-ssize_t safe_netlink_send(const char *file, const int lineno,
-			  int fd, const struct nlmsghdr *nh,
-			  const void *payload)
+static inline ssize_t safe_netlink_send(const char *file, const int lineno,
+					int fd, const struct nlmsghdr *nh,
+					const void *payload)
 {
 	struct sockaddr_nl sa = { .nl_family = AF_NETLINK };
 	struct iovec iov[2] = {
@@ -68,8 +68,9 @@ ssize_t safe_netlink_send(const char *file, const int lineno,
 	safe_netlink_send(__FILE__, __LINE__, fd, nl_header, payload)
 
 /** @private */
-ssize_t safe_netlink_recv(const char *file, const int lineno,
-			  int fd, char *nl_headers_buf, size_t buf_len)
+static inline ssize_t safe_netlink_recv(const char *file, const int lineno,
+					int fd, char *nl_headers_buf,
+					size_t buf_len)
 {
 	struct iovec iov = { nl_headers_buf, buf_len };
 	struct sockaddr_nl sa;
