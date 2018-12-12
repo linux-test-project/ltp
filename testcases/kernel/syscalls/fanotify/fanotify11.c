@@ -61,6 +61,10 @@ void test01(unsigned int i)
 	int fd_notify;
 	int tgid = getpid();
 
+	tst_res(TINFO, "Test #%u: %s FAN_REPORT_TID: tgid=%d, tid=%d, event.pid=%d",
+			i, (tcases[i] & FAN_REPORT_TID) ? "with" : "without",
+			tgid, tid, event.pid);
+
 	fd_notify = fanotify_init(tcases[i], 0);
 	if (fd_notify < 0) {
 		if (errno == EINVAL && (tcases[i] & FAN_REPORT_TID)) {
@@ -80,9 +84,7 @@ void test01(unsigned int i)
 	SAFE_PTHREAD_CREATE(&p_id, NULL, thread_create_file, NULL);
 
 	SAFE_READ(0, fd_notify, &event, sizeof(struct fanotify_event_metadata));
-	tst_res(TINFO, "%s FAN_REPORT_TID: tgid=%d, tid=%d, event.pid=%d",
-			(tcases[i] & FAN_REPORT_TID) ? "with" : "without",
-			tgid, tid, event.pid);
+
 	if ((tcases[i] & FAN_REPORT_TID) && event.pid == tid)
 		tst_res(TPASS, "event.pid == tid");
 	else if (!(tcases[i] & FAN_REPORT_TID) && event.pid == tgid)
@@ -96,8 +98,16 @@ void test01(unsigned int i)
 	SAFE_PTHREAD_JOIN(p_id, NULL);
 }
 
+static void setup(void)
+{
+	int fd;
+
+	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
+	SAFE_CLOSE(fd);
+}
 
 static struct tst_test test = {
+	.setup = setup,
 	.test = test01,
 	.tcnt =  ARRAY_SIZE(tcases),
 	.needs_tmpdir = 1,
