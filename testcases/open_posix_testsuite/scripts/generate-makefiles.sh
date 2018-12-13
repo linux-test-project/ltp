@@ -16,6 +16,8 @@
 # Ngie Cooper, June 2010
 #
 
+readonly buildonly_compiler_args="-c"
+
 generate_locate_test_makefile() {
 
 	local maketype=$1; shift
@@ -31,6 +33,7 @@ generate_locate_test_makefile() {
 
 generate_makefile() {
 
+	local link_libs=
 	local make_rule_prereq_cache=
 	local make_copy_prereq_cache=
 	local prereq_cache=
@@ -190,6 +193,13 @@ run.sh:
 EOF
 	fi
 
+	# Only pass along libraries to link if `-c` was not specified in `$compiler_args`.
+	if [ "$compiler_args" = "$buildonly_compiler_args" ]; then
+		link_libs=false
+	else
+		link_libs=true
+	fi
+
 	# Produce _awesome_ target rules for everything that needs it.
 	for prereq in ${make_rule_prereq_cache}; do
 
@@ -210,7 +220,10 @@ EOF
 			;;
 		esac
 
-		COMPILE_STR="\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file \$(LDLIBS)"
+		COMPILE_STR="\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file"
+		if $link_libs; then
+			COMPILE_STR="$COMPILE_STR \$(LDLIBS)"
+		fi
 
 		cat >> "$makefile.3" <<EOF
 $bin_file: \$(srcdir)/$c_file
@@ -306,7 +319,7 @@ if [ -f "$CONFIG_MK" ]; then
 fi
 
 # For the generic cases.
-generate_locate_test_makefile buildonly '.test' '-c'
+generate_locate_test_makefile buildonly '.test' "$buildonly_compiler_args"
 generate_locate_test_makefile runnable '.run-test'
 generate_locate_test_makefile test-tools ''
 
