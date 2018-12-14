@@ -82,7 +82,7 @@ int sys_support = 0;
 
 void cleanup(void);
 void setup(void);
-static inline int getcpu(unsigned int *, unsigned int *, void *);
+static inline int get_cpu(unsigned int *, unsigned int *, void *);
 unsigned int set_cpu_affinity(void);
 unsigned int get_nodeid(unsigned int);
 unsigned int max_cpuid(size_t, cpu_set_t *);
@@ -124,7 +124,7 @@ int main(int ac, char **av)
 #ifdef __i386__
 		node_set = get_nodeid(cpu_set);
 #endif
-		TEST(getcpu(&cpu_id, &node_id, NULL));
+		TEST(get_cpu(&cpu_id, &node_id, NULL));
 		if (TEST_RETURN == 0) {
 			if (cpu_id != cpu_set) {
 				tst_resm(TFAIL, "getcpu() returned wrong value"
@@ -157,10 +157,10 @@ int main(int ac, char **av)
 }
 
 /*
- * getcpu() - calls the system call
+ * get_cpu() - calls the system call
  */
-static inline int getcpu(unsigned *cpu_id, unsigned *node_id,
-			 void *cache_struct)
+static inline int get_cpu(unsigned *cpu_id, unsigned *node_id,
+			  void *cache_struct)
 {
 #if defined(__i386__)
 	return syscall(318, cpu_id, node_id, cache_struct);
