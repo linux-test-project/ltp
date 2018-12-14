@@ -61,10 +61,7 @@ int main(void)
         sample_str_1 = random_string(i);
         num_bytes = rand() % i;
 
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wstringop-truncation"
         ret_str = strncpy(sample_str_2, sample_str_1, num_bytes);
-        #pragma GCC diagnostic pop
 
         sample_str_2[num_bytes] = '\0';
         sample_str_1[num_bytes] = '\0';
