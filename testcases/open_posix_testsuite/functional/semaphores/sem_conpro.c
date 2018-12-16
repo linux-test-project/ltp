@@ -94,7 +94,7 @@ int *consumer(buf_t * buf)
 	pthread_exit(0);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int shared = 1;
 	int occupied_value = BUF_SIZE;
