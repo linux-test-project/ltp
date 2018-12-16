@@ -15,6 +15,7 @@
 #include <string.h>
 #endif
 #include <stdio.h>
+#include "posixtest.h"
 
 #ifdef __linux__
 
@@ -47,7 +48,7 @@ int mounted_noatime(const char *path)
 {
 	struct mntent *mnt;
 	int prefix_max = 0, prefix;
-	int has_noatime;
+	int has_noatime = 0;
 	FILE *f;
 
 	f = setmntent("/proc/mounts", "r");
@@ -85,7 +86,7 @@ int mounted_noatime(const char *path)
 	return (_statfs.f_flags & MNT_NOATIME);
 }
 #else
-int mounted_noatime(const char *path)
+int mounted_noatime(const char *path LTP_ATTRIBUTE_UNUSED)
 {
 	return 0;
 }

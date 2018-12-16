@@ -66,13 +66,13 @@ static void test_with_key_type(const char *type, const char *payload,
 	bool info_only;
 
 	TEST(keyctl(KEYCTL_JOIN_SESSION_KEYRING, NULL));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to join new session keyring");
 
 	TEST(add_key(type, "desc", payload, strlen(payload),
 		     KEY_SPEC_SESSION_KEYRING));
-	if (TEST_RETURN < 0 && TEST_ERRNO != EINVAL) {
-		if (TEST_ERRNO == ENODEV) {
+	if (TST_RET < 0 && TST_ERR != EINVAL) {
+		if (TST_ERR == ENODEV) {
 			tst_res(TCONF, "kernel doesn't support key type '%s'",
 				type);
 			return;
@@ -108,14 +108,14 @@ static void test_with_key_type(const char *type, const char *payload,
 			usleep(rand() % 1024);
 			TEST(add_key(type, "desc", payload, strlen(payload),
 				     KEY_SPEC_SESSION_KEYRING));
-			if (TEST_RETURN < 0 && TEST_ERRNO != EINVAL &&
-			    TEST_ERRNO != ENOKEY && TEST_ERRNO != EDQUOT) {
+			if (TST_RET < 0 && TST_ERR != EINVAL &&
+			    TST_ERR != ENOKEY && TST_ERR != EDQUOT) {
 				tst_brk(TBROK | TTERRNO,
 					"unexpected error adding key of type '%s'",
 					type);
 			}
 			TEST(keyctl(KEYCTL_CLEAR, KEY_SPEC_SESSION_KEYRING));
-			if (TEST_RETURN < 0) {
+			if (TST_RET < 0) {
 				tst_brk(TBROK | TTERRNO,
 					"unable to clear keyring");
 			}
@@ -128,8 +128,8 @@ static void test_with_key_type(const char *type, const char *payload,
 		for (i = 0; i < 5000 * effort; i++) {
 			TEST(request_key(type, "desc", "callout_info",
 					 KEY_SPEC_SESSION_KEYRING));
-			if (TEST_RETURN < 0 && TEST_ERRNO != ENOKEY &&
-			    TEST_ERRNO != ENOENT && TEST_ERRNO != EDQUOT) {
+			if (TST_RET < 0 && TST_ERR != ENOKEY &&
+			    TST_ERR != ENOENT && TST_ERR != EDQUOT) {
 				tst_brk(TBROK | TTERRNO,
 					"unexpected error requesting key of type '%s'",
 					type);

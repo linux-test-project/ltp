@@ -25,7 +25,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
-static int msg_q;
+static int msg_q = -1;
 static int index_q;
 static struct msginfo msginfo_buf;
 static struct msqid_ds msgqid_buf;
@@ -45,10 +45,10 @@ static void verify_msgctl(unsigned int i)
 {
 	TEST(msgctl(*tc[i].msg_id,  tc[i].cmd, tc[i].buf));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL,
 			 "msgctl() test %s failed with errno: "
-			 "%d", tc[i].name, TEST_ERRNO);
+			 "%d", tc[i].name, TST_ERR);
 	}
 
 	tst_res(TPASS, "msgctl() test %s succeeded", tc[i].name);
@@ -62,7 +62,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (msg_q > 0)
+	if (msg_q >= 0)
 		SAFE_MSGCTL(msg_q, IPC_RMID, NULL);
 }
 

@@ -21,7 +21,6 @@
  * 4.  Child thread initialize the spin lock when main holds the lock
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

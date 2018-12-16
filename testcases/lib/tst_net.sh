@@ -96,7 +96,7 @@ tst_require_root_()
 
 init_ltp_netspace()
 {
-	tst_check_cmds ip
+	tst_test_cmds ip
 	tst_require_root_
 
 	local pid=
@@ -253,7 +253,7 @@ tst_get_hwaddrs()
 # LINK: link number starting from 0. Default value is '0'.
 tst_hwaddr()
 {
-	tst_check_cmds awk
+	tst_test_cmds awk
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -269,7 +269,7 @@ tst_hwaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_iface()
 {
-	tst_check_cmds awk
+	tst_test_cmds awk
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -416,7 +416,7 @@ tst_add_ipaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_restore_ipaddr()
 {
-	tst_check_cmds ip
+	tst_test_cmds ip
 	tst_require_root_
 
 	local type="${1:-lhost}"
@@ -487,7 +487,7 @@ tst_netload()
 	fi
 
 	OPTIND=0
-	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A: opt; do
+	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A:D: opt; do
 		case "$opt" in
 		a) c_num="$OPTARG" ;;
 		H) c_opts="${c_opts}-H $OPTARG "
@@ -508,6 +508,7 @@ tst_netload()
 		f) cs_opts="${cs_opts}-f " ;;
 		F) cs_opts="${cs_opts}-F " ;;
 		e) expect_res="$OPTARG" ;;
+		D) cs_opts="${cs_opts}-D $OPTARG " ;;
 		*) tst_brk_ TBROK "tst_netload: unknown option: $OPTARG" ;;
 		esac
 	done
@@ -573,7 +574,7 @@ tst_ping()
 	local cmd="ping$TST_IPV6"
 	local ret=0
 
-	tst_check_cmds $cmd
+	tst_test_cmds $cmd
 
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do
@@ -755,4 +756,15 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_remote_tmpdir
+fi
+
+if [ -z "$TST_USE_LEGACY_API" ] && ! tst_cmd_available ping6; then
+	ping6()
+	{
+		ping -6 $@
+	}
+	if [ -z "$ping6_warn_printed" ]; then
+		tst_res_ TINFO "ping6 binary/symlink is missing, using workaround. Please, report missing ping6 to your distribution."
+		export ping6_warn_printed=1
+	fi
 fi

@@ -91,8 +91,6 @@ static void cleanup(void)
 		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
 
-	restore_max_page_sharing();
-
 	if (cpuset_mounted)
 		umount_mem(CPATH, CPATH_NEW);
 	if (memcg_mounted)
@@ -110,7 +108,6 @@ static void setup(void)
 		SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "1");
 	}
 
-	save_max_page_sharing();
 	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
 
 	mount_mem("cpuset", "cpuset", NULL, CPATH, CPATH_NEW);
@@ -125,6 +122,7 @@ static struct tst_test test = {
 	.options = ksm_options,
 	.setup = setup,
 	.cleanup = cleanup,
+	.save_restore = save_restore,
 	.test_all = verify_ksm,
 	.min_kver = "2.6.32",
 };

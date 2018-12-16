@@ -32,12 +32,12 @@
 static void verify_setuid(void)
 {
 	TEST(SETUID(ROOT_USER));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL | TTERRNO, "setuid() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == EPERM)
+	if (TST_ERR == EPERM)
 		tst_res(TPASS, "setuid() returned errno EPERM");
 	else
 		tst_res(TFAIL | TTERRNO, "setuid() returned unexpected errno");

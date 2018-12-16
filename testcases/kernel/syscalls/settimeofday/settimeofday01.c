@@ -64,6 +64,7 @@
 #define	VAL_SEC		100
 #define	VAL_MSEC	100
 #define ACCEPTABLE_DELTA	500	/* in milli-seconds */
+#define USEC_PER_SEC    1000000L
 
 char *TCID = "settimeofday01";
 int TST_TOTAL = 1;
@@ -92,6 +93,8 @@ int main(int argc, char **argv)
 		gettimeofday(&tp, NULL);
 		tp.tv_sec += VAL_SEC;
 		tp.tv_usec += VAL_MSEC;
+		if (tp.tv_usec >= USEC_PER_SEC)
+			tp.tv_usec = VAL_MSEC;
 
 		TEST(settimeofday(&tp, NULL));
 		if (TEST_RETURN == -1) {

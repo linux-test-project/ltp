@@ -7,7 +7,7 @@
  */
 
 /*
- * Test case vrifies sem_destroy shall destroy on intialized semaphore
+ * Test case verifies sem_destroy shall destroy on initialized semaphore
  * upon which no threads are currently blocked.
  */
 

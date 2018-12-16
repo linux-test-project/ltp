@@ -37,7 +37,7 @@ static void add_test_key(const char *description)
 {
 	TEST(add_key("user", description, "payload", 7,
 		     KEY_SPEC_PROCESS_KEYRING));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "Failed to add test key");
 }
 
@@ -51,7 +51,7 @@ static void do_test(void)
 	memset(key_ids, 0, sizeof(key_ids));
 	TEST(keyctl(KEYCTL_READ, KEY_SPEC_PROCESS_KEYRING,
 		    (char *)key_ids, sizeof(key_serial_t)));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "KEYCTL_READ failed");
 
 	/*
@@ -63,9 +63,9 @@ static void do_test(void)
 	if (key_ids[1] != 0)
 		tst_brk(TFAIL, "KEYCTL_READ overran the buffer");
 
-	if (TEST_RETURN != sizeof(key_ids)) {
+	if (TST_RET != sizeof(key_ids)) {
 		tst_brk(TFAIL, "KEYCTL_READ returned %ld but expected %zu",
-			TEST_RETURN, sizeof(key_ids));
+			TST_RET, sizeof(key_ids));
 	}
 
 	tst_res(TPASS,

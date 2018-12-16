@@ -59,7 +59,7 @@ static int get_cpu_baseinfo(void)
 	/* get cpuinfo */
 	while (fgets(buf, sizeof(buf), fp) != NULL) {
 		istr = strtok_r(buf, "\t", &saveptr);
-		valstr = index(saveptr, ':');
+		valstr = strchr(saveptr, ':');
 		if (valstr == NULL)
 			continue;
 		valstr++;

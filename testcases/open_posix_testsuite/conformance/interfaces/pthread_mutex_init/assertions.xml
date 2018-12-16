@@ -14,14 +14,14 @@
   </assertion>
   <assertion id="2" tag="ref:XSH6:33640:33645">
   Upon successful initialization, the state of the mutex becomes initialized
-  and unlocked.  Attempting to initialize an already intialized mutex
+  and unlocked.  Attempting to initialize an already initialized mutex
   results in undefined behavior.
   </assertion>
   <assertion id="3" tag="ref:XSH6:33646:33649">
   In cases where default mutex attributes are appropriate, the macro
   PTHREAD_MUTEX_INITIALIZER can be used to intiailize mutexes that are
   statically allocated.  The effect shall be equivilant to dynamic
-  intialization by a call to pthread_mutex_init() with paramter 'attr'
+  initialization by a call to pthread_mutex_init() with paramter 'attr'
   specified as NULL, except that no error checks are performed.
   </assertion>
   <assertion id="4" tag="ref:XSH6:33651:33651">
@@ -31,14 +31,14 @@
   It SHALL fail if:
 
   -[EAGAIN] The system lacked the neccessary resources (other than memory)
-  to intialize another mutex.
+  to initialize another mutex.
   -[ENOMEM] Insufficient memory exists to initialize the mutex.
  -[EPERM] The caller does not have the privilage to perform the operation.
 
   It MAY fail if:
 
   -[EBUSY] The implementation has detected an attempt to reinitialize the
-   object referenced by 'mutex', a previously intialized, but not yet
+   object referenced by 'mutex', a previously initialized, but not yet
    destroyed, mutex.
   -[EINVAL] The value specified by 'attr' is invalid.
 

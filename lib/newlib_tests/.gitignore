@@ -19,4 +19,8 @@ tst_safe_fileops
 tst_res_hexd
 tst_strstatus
 test17
+test18
+test19
 tst_expiration_timer
+test_exec
+test_exec_child

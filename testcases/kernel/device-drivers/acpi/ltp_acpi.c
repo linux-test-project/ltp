@@ -34,6 +34,7 @@ static const char dev_result[]	= "/sys/devices/" ACPI_TEST_NAME "/result";
 static const char dev_path[]	= "/sys/devices/" ACPI_TEST_NAME "/path";
 static const char dev_str[]	= "/sys/devices/" ACPI_TEST_NAME "/str";
 static const char dev_tcase[]	= "/sys/devices/" ACPI_TEST_NAME "/tcase";
+static const char dev_acpi_disabled[] = "/sys/devices/" ACPI_TEST_NAME "/acpi_disabled";
 static const char module_name[]	= "ltp_acpi_cmds.ko";
 static int module_loaded;
 
@@ -141,6 +142,8 @@ static void test_run(void)
 
 int main(int argc, char *argv[])
 {
+	int acpi_disabled;
+
 	tst_parse_opts(argc, argv, NULL, NULL);
 
 	tst_require_root();
@@ -154,6 +157,10 @@ int main(int argc, char *argv[])
 
 	tst_module_load(NULL, module_name, NULL);
 	module_loaded = 1;
+
+	SAFE_FILE_SCANF(cleanup, dev_acpi_disabled, "%d", &acpi_disabled);
+	if (acpi_disabled)
+		tst_brkm(TCONF, cleanup, "ACPI is disabled on the system");
 
 	test_run();
 

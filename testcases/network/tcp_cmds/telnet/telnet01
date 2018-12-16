@@ -25,7 +25,7 @@ TST_USE_LEGACY_API=1
 
 setup()
 {
-	tst_check_cmds telnet expect
+	tst_test_cmds telnet expect
 
 	if [ -z $RUSER ]; then
 		RUSER=root

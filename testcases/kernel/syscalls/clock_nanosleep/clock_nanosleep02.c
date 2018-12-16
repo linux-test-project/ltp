@@ -34,9 +34,9 @@ int sample_fn(int clk_id, long long usec)
 	tst_timer_stop();
 	tst_timer_sample();
 
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TERRNO,
-			"nanosleep() returned %li", TEST_RETURN);
+			"nanosleep() returned %li", TST_RET);
 		return 1;
 	}
 

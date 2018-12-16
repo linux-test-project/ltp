@@ -13,7 +13,6 @@
     the real or saved set-user-ID of the receiving process.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

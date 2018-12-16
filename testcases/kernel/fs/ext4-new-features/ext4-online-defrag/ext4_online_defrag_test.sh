@@ -35,7 +35,7 @@ FILE=1
 DIR=2
 FILESYSTEM=3
 
-tst_check_cmds e4defrag
+tst_test_cmds e4defrag
 E4DEFRAG=`which e4defrag`
 
 age_filesystem()
@@ -161,7 +161,7 @@ ext4_test_online_defrag()
 # main
 ext4_setup
 
-tst_check_cmds ffsb
+tst_test_cmds ffsb
 
 DEFRAG=( $FILE $DIR $FILESYSTEM )
 AGING=( $EMPTY $SMALL $LARGE )

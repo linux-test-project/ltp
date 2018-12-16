@@ -53,13 +53,13 @@ static void verify_getpriority(unsigned int n)
 
 	TEST(getpriority(tc->which, tc->who));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "getpriority(%d, %d) succeeds unexpectedly, "
-			       "returned %li", tc->which, tc->who, TEST_RETURN);
+			       "returned %li", tc->which, tc->who, TST_RET);
 		return;
 	}
 
-	if (tc->exp_errno != TEST_ERRNO) {
+	if (tc->exp_errno != TST_ERR) {
 		tst_res(TFAIL | TTERRNO,
 			"getpriority(%d, %d) should fail with %s",
 			tc->which, tc->who, tst_strerrno(tc->exp_errno));

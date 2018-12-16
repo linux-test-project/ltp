@@ -32,15 +32,6 @@
  * -> The child checks that it owns the mutex; then it leaves.
  */
 
- /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
- /* We need the XSI extention for the mutex attributes
-    and the mkstemp() routine */
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-#endif
-
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>

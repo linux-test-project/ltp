@@ -130,17 +130,17 @@ static void test_writev(unsigned int i)
 
 	TEST(writev(*(tcase->pfd), *(tcase->piovec), tcase->iovcnt));
 
-	ret = (TEST_RETURN == tcase->exp_ret);
-	if (TEST_RETURN < 0 || tcase->exp_ret < 0) {
-		ret &= (TEST_ERRNO == tcase->exp_errno);
+	ret = (TST_RET == tcase->exp_ret);
+	if (TST_RET < 0 || tcase->exp_ret < 0) {
+		ret &= (TST_ERR == tcase->exp_errno);
 		tst_res((ret ? TPASS : TFAIL),
 			"%s, expected: %d (%s), got: %ld (%s)", tcase->desc,
 			tcase->exp_ret, tst_strerrno(tcase->exp_errno),
-			TEST_RETURN, tst_strerrno(TEST_ERRNO));
+			TST_RET, tst_strerrno(TST_ERR));
 	} else {
 		tst_res((ret ? TPASS : TFAIL),
 			"%s, expected: %d, got: %ld", tcase->desc,
-			tcase->exp_ret, TEST_RETURN);
+			tcase->exp_ret, TST_RET);
 	}
 }
 

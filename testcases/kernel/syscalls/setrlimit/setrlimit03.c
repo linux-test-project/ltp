@@ -50,12 +50,12 @@ static void verify_setrlimit(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TEST(setrlimit(RLIMIT_NOFILE, tc->rlimt));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_err) {
+	if (TST_ERR != tc->exp_err) {
 		tst_res(TFAIL | TTERRNO, "setrlimit() should fail with %s, got",
 			tst_strerrno(tc->exp_err));
 	} else {

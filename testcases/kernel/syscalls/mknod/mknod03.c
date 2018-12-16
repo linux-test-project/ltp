@@ -142,14 +142,11 @@ int main(int ac, char **av)
 			fflag = 0;
 		}
 
-		/* Verify mode permissions of node */
-		if (!(buf.st_mode & S_ISGID)) {
-			tst_resm(TFAIL,
-				 "%s: Incorrect modes, setgid bit not "
-				 "set", node_name);
-			/* unset flag as functionality fails */
-			fflag = 0;
-		}
+		/*
+		 * Skip S_ISGID check
+		 * 0fa3ecd87848 ("Fix up non-directory creation in SGID directories")
+		 * clears S_ISGID for files created by non-group members
+		 */
 
 		/* Verify group ID */
 		if (buf.st_gid != group2_gid) {

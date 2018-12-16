@@ -186,7 +186,6 @@ flistxattr 180
 removexattr 181
 lremovexattr 182
 sigpending 183
-query_module 184
 setpgid 185
 fremovexattr 186
 tkill 187
@@ -223,7 +222,6 @@ clone 217
 ioprio_get 218
 adjtimex 219
 sigprocmask 220
-create_module 221
 delete_module 222
 get_kernel_syms 223
 getpgid 224
@@ -332,8 +330,14 @@ recvmmsg 328
 fanotify_init 329
 fanotify_mark 330
 prlimit64 331
+process_vm_readv 338
+process_vm_writev 339
 kcmp 341
 renameat2 345
 getrandom 347
 memfd_create 348
+membarrier 351
+execveat 350
+mlock2 356
 copy_file_range 357
+preadv2 358

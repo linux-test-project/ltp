@@ -109,7 +109,7 @@ done
 
 LOOP_COUNT=1
 
-tst_check_cmds perl
+tst_test_cmds perl
 
 if [ $(get_present_cpus_num) -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"

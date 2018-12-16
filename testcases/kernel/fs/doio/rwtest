@@ -344,7 +344,7 @@ do
 
 			# check if blks is a number, else set a default value for blks
 			default_sz=1000000
-			if [ $blks -eq $blks 2> /dev/null ]
+			if [ $blks -eq $blks 2> /dev/null -a $blks -gt 0 ]
 			then
 
 				case $(uname) in

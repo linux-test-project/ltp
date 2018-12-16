@@ -464,9 +464,9 @@ static void run(void)
 
 	TEST(sys_statx(0, NULL, 0, 0, &statxbuf));
 
-	if (TEST_RETURN == 0)
+	if (TST_RET == 0)
 		tst_res(TFAIL, "statx thinks it can stat NULL");
-	else if (TEST_ERRNO == EFAULT)
+	else if (TST_ERR == EFAULT)
 		tst_res(TPASS, "statx set errno to EFAULT as expected");
 	else
 		tst_res(TFAIL | TERRNO, "statx set errno to some unexpected value");
@@ -478,8 +478,8 @@ static struct tst_test test = {
 };
 --------------------------------------------------------------------------------
 
-The +TEST+ macro sets +TEST_RETURN+ to the return value of +tst_statx()+ and
-+TEST_ERRNO+ to the value of +errno+ immediately after the functions
+The +TEST+ macro sets +TST_RET+ to the return value of +tst_statx()+ and
++TST_ERR+ to the value of +errno+ immediately after the functions
 return. This is mainly just for convenience, although it potentially could
 have other uses.
 
@@ -487,10 +487,10 @@ We check whether the return value indicates success and if it doesn't also
 check the value of +errno+. The last call to +tst_res+ includes +TERRNO+,
 which will print the current error number and associated description in
 addition to the message we have provided. Note that it uses the current value
-of +errno+ not +TEST_ERRNO+.
+of +errno+ not +TST_ERR+.
 
 What we should have done in the example above is use +TTERRNO+ which takes the
-value of +TEST_ERRNO+.
+value of +TST_ERR+.
 
 If we try to run the test on a kernel where +statx+ does not exist, then
 +tst_syscall+ will cause it to fail gracefully with +TCONF+. Where +TCONF+
@@ -588,15 +588,15 @@ static void run(void)
 	struct statx statxbuf = { 0 };
 
 	TEST(sys_statx(0, NULL, 0, 0, &statxbuf));
-	if (TEST_RETURN == 0)
+	if (TST_RET == 0)
 		tst_res(TFAIL, "statx thinks it can stat NULL");
-	else if (TEST_ERRNO == EFAULT)
+	else if (TST_ERR == EFAULT)
 		tst_res(TPASS, "statx set errno to EFAULT as expected");
 	else
 		tst_res(TFAIL | TERRNO, "statx set errno to some unexpected value");
 
 	TEST(sys_statx(AT_FDCWD, FNAME, 0, STATX_BASIC_STATS, &statxbuf));
-	if (TEST_RETURN == 0)
+	if (TST_RET == 0)
 		tst_res(TPASS, "It returned zero so it must have worked!");
 	else
 		tst_res(TFAIL | TERRNO, "statx can not stat a basic file");
@@ -658,7 +658,7 @@ static void run(void)
         ...
 
 	TEST(sys_statx(AT_FDCWD, LNAME, 0, STATX_BASIC_STATS, &statxbuf));
-	if (TEST_RETURN == 0)
+	if (TST_RET == 0)
 		tst_res(TPASS, "It returned zero so it must have worked!");
 	else
 		tst_res(TFAIL | TERRNO, "statx can not stat a basic file");
@@ -736,9 +736,9 @@ static void run_stat_null(void)
 	struct statx statxbuf = { 0 };
 
 	TEST(sys_statx(0, NULL, 0, 0, &statxbuf));
-	if (TEST_RETURN == 0)
+	if (TST_RET == 0)
 		tst_res(TFAIL, "statx thinks it can stat NULL");
-	else if (TEST_ERRNO == EFAULT)
+	else if (TST_ERR == EFAULT)
 		tst_res(TPASS, "statx set errno to EFAULT as expected");
 	else
 		tst_res(TFAIL | TERRNO, "statx set errno to some unexpected value");
@@ -749,7 +749,7 @@ static void run_stat_symlink(void)
 	struct statx statxbuf = { 0 };
 
 	TEST(sys_statx(AT_FDCWD, LNAME, 0, STATX_BASIC_STATS, &statxbuf));
-	if (TEST_RETURN == 0)
+	if (TST_RET == 0)
 		tst_res(TPASS, "It returned zero so it must have worked!");
 	else
 		tst_res(TFAIL | TERRNO, "statx can not stat a basic file");

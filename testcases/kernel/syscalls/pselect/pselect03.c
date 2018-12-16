@@ -39,8 +39,8 @@ static void verify_pselect(void)
 	FD_SET(fd, &readfds);
 
 	TEST(pselect(fd, &readfds, 0, 0, &tv, NULL));
-	if (TEST_RETURN >= 0)
-		tst_res(TPASS, "pselect() succeeded retval=%li", TEST_RETURN);
+	if (TST_RET >= 0)
+		tst_res(TPASS, "pselect() succeeded retval=%li", TST_RET);
 	else
 		tst_res(TFAIL | TTERRNO, "pselect() failed unexpectedly");
 }

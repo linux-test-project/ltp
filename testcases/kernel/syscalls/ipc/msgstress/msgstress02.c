@@ -39,7 +39,7 @@
 #include "ipcmsg.h"
 #include "../lib/libmsgctl.h"
 
-char *TCID = "msgctl09";
+char *TCID = "msgstress02";
 int TST_TOTAL = 1;
 
 #define MAXNREPS	1000
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
 			 count, nprocs);
 	}
 
-	tst_resm(TPASS, "msgctl09 ran successfully!");
+	tst_resm(TPASS, "Test ran successfully!");
 
 	cleanup();
 	tst_exit();

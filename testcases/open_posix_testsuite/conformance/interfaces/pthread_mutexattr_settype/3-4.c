@@ -22,7 +22,6 @@
  *
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdio.h>
@@ -48,7 +47,7 @@ int main(void)
 
 	/* Initialize the mutex with that attribute obj. */
 	if (pthread_mutex_init(&mutex, &mta) != 0) {
-		perror("Error intializing the mutex.\n");
+		perror("Error initializing the mutex.\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -70,12 +69,12 @@ int main(void)
 	}
 
 	if (pthread_mutex_destroy(&mutex)) {
-		perror("Error at pthread_mutex_destory().\n");
+		perror("Error at pthread_mutex_destroy().\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (pthread_mutexattr_destroy(&mta)) {
-		perror("Error at pthread_mutexattr_destory().\n");
+		perror("Error at pthread_mutexattr_destroy().\n");
 		return PTS_UNRESOLVED;
 	}
 

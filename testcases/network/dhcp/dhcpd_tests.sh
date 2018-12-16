@@ -1,31 +1,14 @@
 #!/bin/sh
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 # Author:       Alexey Kodanev alexey.kodanev@oracle.com
 
-TST_CLEANUP=cleanup
-TST_TOTAL=1
-TCID="dhcpd"
 dhcp_name="dhcpd"
 
-TST_USE_LEGACY_API=1
-. tst_net.sh
 . dhcp_lib.sh
 
 setup_dhcpd_conf()
@@ -35,24 +18,20 @@ setup_dhcpd_conf()
 	elif [ -f /etc/dhcp/dhcpd.conf ]; then
 		DHCPD_CONF="/etc/dhcp/dhcpd.conf"
 	else
-		tst_brkm TBROK "failed to find dhcpd.conf"
+		tst_brk TBROK "failed to find dhcpd.conf"
 	fi
 
 	mv $DHCPD_CONF dhcpd.conf
-	[ $? -ne 0 ] && tst_brkm TBROK "failed to backup dhcpd.conf"
+	[ $? -ne 0 ] && tst_brk TBROK "failed to backup dhcpd.conf"
 
 	mv tst_dhcpd.conf $DHCPD_CONF
-	[ $? -ne 0 ] && tst_brkm TBROK "failed to create dhcpd.conf"
+	[ $? -ne 0 ] && tst_brk TBROK "failed to create dhcpd.conf"
 }
 
 start_dhcpd()
 {
-	dhcpd -$ipv $iface0 > tst_dhcpd.err 2>&1
-	if [ $? -ne 0 ]; then
-		cat tst_dhcpd.err
-		tst_brkm TBROK "Failed to start dhcpd"
-	fi
-
+	touch tst_hdcpd.lease
+	dhcpd -lf tst_hdcpd.lease -$TST_IPVER $iface0 > tst_dhcpd.err 2>&1
 }
 
 start_dhcp()
@@ -95,6 +74,9 @@ print_dhcp_log()
 	cat tst_dhcpd.err
 }
 
-init
-test01
-tst_exit
+print_dhcp_version()
+{
+	dhcpd --version 2>&1
+}
+
+tst_run

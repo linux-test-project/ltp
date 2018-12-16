@@ -26,7 +26,7 @@ static void verify_fchmod(void)
 		mode = (mode_t)modes[ind];
 
 		TEST(fchmod(fd, mode));
-		if (TEST_RETURN == -1)
+		if (TST_RET == -1)
 			tst_res(TFAIL | TTERRNO, "fchmod() failed unexpectly");
 
 		SAFE_FSTAT(fd, &stat_buf);

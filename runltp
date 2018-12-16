@@ -570,77 +570,34 @@ main()
       INSTANCES="$INSTANCES -O ${TMP}"
     }
 
-    [ "$RUN_NETEST" -eq 1 ] && \
-    {
-        [ -z "$RHOST" ] || [ -z "$PASSWD" ] && \
-        {
-            [ -z "$RHOST" ] && \
-            {
-                printf "INFO: Enter RHOST = 'name of the remote host machine'"
-                printf "\n-> "
-                read RHOST
-            }
-
-            [ -z "$PASSWD" ] && \
-            {
-                printf "\nINFO: "
-                printf "Enter PASSWD = 'root passwd of the remote host machine'"
-                printf "\n-> "
-                read PASSWD
-            }
-            export RHOST=$RHOST
-            export PASSWD=$PASSWD
-            echo "WARNING: security of $RHOST may be compromised"
-        }
-    }
-
     # If user does not provide a command file select a default set of testcases
     # to execute.
-    if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]
-    then
-        cat <<-EOF >&1
+    if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]; then
 
-    INFO: no command files were provided. Will execute the following
-          runtest scenario files:
-
-`cat $LTPROOT/scenario_groups/default | tr '\012' ' '`
-
-	EOF
-
-	SCENARIO_LISTS="$LTPROOT/scenario_groups/default"
+        SCENARIO_LISTS="$LTPROOT/scenario_groups/default"
         if [ "$RUN_NETEST" -eq 1 ]; then
-            SCENARIO_LISTS="$SCENARIO_LISTS $LTPROOT/scenario_groups/network"
+            SCENARIO_LISTS="$LTPROOT/scenario_groups/network"
         fi
 
-    # DO NOT INDENT/DEDENT!
-        if [ -n "$SCENARIO_LISTS" ]; then
-            # Insurance to make sure that the first element in the pipe
-            # completed successfully.
-            cat_ok_sentinel=$TMP/cat_ok.$$
-	    (cat $SCENARIO_LISTS && touch "$cat_ok_sentinel") | \
-                while read scenfile; do
+        cat <<-EOF >&1
+INFO: no command files were provided. Executing following runtest scenario files:
+`cat $SCENARIO_LISTS | tr '\012' ' '`
 
-                    scenfile=${LTPROOT}/runtest/$scenfile
+EOF
+        cat_ok_sentinel=$TMP/cat_ok.$$
+        touch "$cat_ok_sentinel"
+        cat $SCENARIO_LISTS | while read scenfile; do
+            scenfile=${LTPROOT}/runtest/$scenfile
+            [ -f "$scenfile" ] || continue
 
-                    # Skip over non-existent scenario files; things are
-                    # robust enough now that the build will fail if these
-                    # files don't exist.
-                    [ -f "$scenfile" ] || continue
-
-                    cat $scenfile >> "$TMP/alltests" || {
-                        echo "FATAL: unable to append to command file"
-                        rm -Rf "$TMP"
-                        rm -f "$cat_ok_sentinel"
-                        exit 1
-                    }
-
-                done
-
-            rm -f "$cat_ok_sentinel"
-
-        fi
-    # ^^DO NOT INDENT/DEDENT!^^
-
+            cat $scenfile >> "$TMP/alltests" || {
+                echo "FATAL: unable to append to command file"
+                rm -Rf "$TMP"
+                rm -f "$cat_ok_sentinel"
+                exit 1
+            }
+        done
+        rm -f "$cat_ok_sentinel"
     fi
 
     [ -n "$CMDFILES" ] && \
@@ -890,78 +847,73 @@ main()
 
     fi
 
-    if [ "$ALT_EMAIL_OUT" -eq 1 ] ; then                      ## User wants reports to be e-mailed
-       if [ [ ! "$HTMLFILE_NAME" ] -o [ ! "$OUTPUTFILE_NAME" ] -o [ ! "$LOGFILE_NAME" ] ] ; then
-          ##User does not have output/logs/html-output, nothing to be mailed in this situation
-          echo "Nothing to be mailed here...."
-       else
-           TAR_FILE_NAME=LTP_RUN_$version_date$DEFAULT_FILE_NAME_GENERATION_TIME.tar
-           if [ "$HTMLFILE_NAME" ] ; then                          ## HTML file Exists
-              if [ "$ALT_HTML_OUT" -ne 1 ] ; then                  ## The HTML file path is absolute and not $LTPROOT/output
-                 mkdir -p $LTPROOT/output                          ## We need to create this Directory
-                 cp $HTMLFILE_NAME $LTPROOT/output/
-              fi
-           fi
-           if [ "$OUTPUTFILE_NAME" ] ; then                        ## Output file exists
-              if [ "$ALT_DIR_OUT" -ne 1 ] ; then                   ## The Output file path is absolute and not $LTPROOT/output
-                 mkdir -p $LTPROOT/output                          ## We need to create this Directory
-                 cp $OUTPUTFILE_NAME $LTPROOT/output/
-              fi
-           fi
-           if [ "$LOGFILE_NAME" ] ; then                           ## Log file exists
-              if [ "$ALT_DIR_RES" -ne 1 ] ; then                   ## The Log file path is absolute and not $LTPROOT/results
-                 mkdir -p $LTPROOT/results                         ## We need to create this Directory
-                 cp $LOGFILE_NAME $LTPROOT/results/
-              fi
-           fi
-           if [ -d $LTPROOT/output ] ; then
-              tar -cf  ./$TAR_FILE_NAME $LTPROOT/output
-              if [ $? -eq 0 ]; then
-                 echo "Created TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/output"
-              else
-                 echo "Cannot Create TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/output"
-              fi
-           fi
-           if [ -d $LTPROOT/results ] ; then
-              tar -uf ./$TAR_FILE_NAME $LTPROOT/results
-              if [ $? -eq 0 ]; then
-                 echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/results"
-              else
-                 echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/results"
-              fi
-           fi
-           if [ -e $LTPROOT/nohup.out ] ; then                     ## If User would have Chosen nohup to do ltprun
-              tar -uf ./$TAR_FILE_NAME $LTPROOT/nohup.out
-              if [ $? -eq 0 ]; then
-                 echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/nohup.out"
-              else
-                 echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/nohup.out"
-              fi
-           fi
-           gzip ./$TAR_FILE_NAME                                     ## gzip this guy
-           if [ $? -eq 0 ]; then
-              echo "Gunzipped TAR File: ./$TAR_FILE_NAME"
-           else
-              echo "Cannot Gunzip TAR File: ./$TAR_FILE_NAME"
-           fi
-           if [ -e /usr/bin/mutt ] ; then                          ## This is a better mail client than others
-              echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
-              mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" $EMAIL_TO < /dev/null
-              if [ $? -eq 0 ]; then
-                 echo "Reports Successfully mailed to: $EMAIL_TO"
-              else
-                 echo "Reports cannot be mailed to: $EMAIL_TO"
-              fi
-           else ## Use our Ageold mail program
-              echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
-              uuencode ./$TAR_FILE_NAME.gz $TAR_FILE_NAME.gz | mail  $EMAIL_TO -s "LTP Reports on $test_start_time"
-              if [ $? -eq 0 ]; then
-                 echo "Reports Successfully mailed to: $EMAIL_TO"
-              else
-                 echo "Reports cannot be mailed to: $EMAIL_TO"
-              fi
-           fi
-       fi
+    if [ "$ALT_EMAIL_OUT" -eq 1 ] ; then                    ## User wants reports to be e-mailed
+        TAR_FILE_NAME=LTP_RUN_$version_date$DEFAULT_FILE_NAME_GENERATION_TIME.tar
+        if [ "$HTMLFILE_NAME" ] ; then                      ## HTML file Exists
+            if [ "$ALT_HTML_OUT" -ne 1 ] ; then             ## The HTML file path is absolute and not $LTPROOT/output
+                mkdir -p $LTPROOT/output                    ## We need to create this Directory
+                cp $HTMLFILE_NAME $LTPROOT/output/
+            fi
+        fi
+        if [ "$OUTPUTFILE_NAME" ] ; then                    ## Output file exists
+            if [ "$ALT_DIR_OUT" -ne 1 ] ; then              ## The Output file path is absolute and not $LTPROOT/output
+                mkdir -p $LTPROOT/output                    ## We need to create this Directory
+                cp $OUTPUTFILE_NAME $LTPROOT/output/
+            fi
+        fi
+        if [ "$LOGFILE_NAME" ] ; then                       ## Log file exists
+            if [ "$ALT_DIR_RES" -ne 1 ] ; then              ## The Log file path is absolute and not $LTPROOT/results
+                mkdir -p $LTPROOT/results                   ## We need to create this Directory
+                cp $LOGFILE_NAME $LTPROOT/results/
+            fi
+        fi
+        if [ -d $LTPROOT/output ] ; then
+            tar -cf  ./$TAR_FILE_NAME $LTPROOT/output
+            if [ $? -eq 0 ]; then
+                echo "Created TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/output"
+            else
+                echo "Cannot Create TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/output"
+            fi
+        fi
+        if [ -d $LTPROOT/results ] ; then
+            tar -uf ./$TAR_FILE_NAME $LTPROOT/results
+            if [ $? -eq 0 ]; then
+                echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/results"
+            else
+                echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/results"
+            fi
+        fi
+        if [ -e $LTPROOT/nohup.out ] ; then                 ## If User would have Chosen nohup to do ltprun
+            tar -uf ./$TAR_FILE_NAME $LTPROOT/nohup.out
+            if [ $? -eq 0 ]; then
+                echo "Updated TAR File: ./$TAR_FILE_NAME successfully, added $LTPROOT/nohup.out"
+            else
+                echo "Cannot Update TAR File: ./$TAR_FILE_NAME for adding $LTPROOT/nohup.out"
+            fi
+        fi
+        gzip ./$TAR_FILE_NAME                               ## gzip this guy
+        if [ $? -eq 0 ]; then
+            echo "Gunzipped TAR File: ./$TAR_FILE_NAME"
+        else
+            echo "Cannot Gunzip TAR File: ./$TAR_FILE_NAME"
+        fi
+        if which mutt >/dev/null 2>&1; then
+            echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
+            mutt -a ./$TAR_FILE_NAME.gz -s "LTP Reports on $test_start_time" -- $EMAIL_TO < /dev/null
+            if [ $? -eq 0 ]; then
+                echo "Reports Successfully mailed to: $EMAIL_TO"
+            else
+                echo "Reports cannot be mailed to: $EMAIL_TO"
+            fi
+        else ## Use our Ageold mail program
+            echo "Starting mailing reports to: $EMAIL_TO, file: ./$TAR_FILE_NAME.gz"
+            uuencode ./$TAR_FILE_NAME.gz $TAR_FILE_NAME.gz | mail  $EMAIL_TO -s "LTP Reports on $test_start_time"
+            if [ $? -eq 0 ]; then
+                echo "Reports Successfully mailed to: $EMAIL_TO"
+            else
+                echo "Reports cannot be mailed to: $EMAIL_TO"
+            fi
+        fi
     fi
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test end time: $(date)" ; }

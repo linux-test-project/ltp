@@ -125,7 +125,6 @@ cacheflush 123
 adjtimex 124
 mprotect 125
 sigprocmask 126
-create_module 127
 init_module 128
 delete_module 129
 get_kernel_syms 130
@@ -163,7 +162,6 @@ mremap 163
 setresuid 164
 getresuid 165
 vm86 166
-query_module 167
 poll 168
 nfsservctl 169
 setresgid 170
@@ -362,6 +360,11 @@ accept4 366
 fanotify_init 367
 fanotify_mark 368
 prlimit64 369
+process_vm_readv 376
+process_vm_writev 377
 kcmp 378
 memfd_create 385
+execveat 387
+mlock2 390
 copy_file_range 391
+preadv2 392

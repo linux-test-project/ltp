@@ -59,7 +59,7 @@ static void verify_sysctl(unsigned int n)
 	};
 
 	TEST(tst_syscall(__NR__sysctl, &args));
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO, "sysctl() failed unexpectedly");
 		return;
 	}

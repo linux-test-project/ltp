@@ -1,0 +1,7 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:65884:65891">
+    The function will compute the number of bytes in the string to which s points,
+    not including the terminating NUL character. and will return the length of s.
+  <assertion>
+<assertions>
+

@@ -127,7 +127,7 @@ testpi-5.c:
    twice.
 
 testpi-6.c:
-- Uses robust mutex lock (PTHREAD_MUTEX_ROBUST_NP) and uses test-skeleton for
+- Uses robust mutex lock (PTHREAD_MUTEX_ROBUST) and uses test-skeleton for
   other things.
 
 testpi-7.c:
@@ -168,7 +168,7 @@ func/pthread_kill_latency testcases :
 ====================================
 pthread_kill_latency.c:
 - Measures the latency involved in sending a signal to a thread using
-  pthread_kill.  Two threads are created - the one that recieves the signal
+  pthread_kill.  Two threads are created - the one that receives the signal
   (thread1) and other that sends signal (thread2).  Before sending the signal,
   the thread2 waits for thread1 to initialize, notes the time and sends
   pthread_kill signal to thread1.  Thread2, which has defined a handler for the

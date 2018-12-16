@@ -20,7 +20,6 @@
  * 5.  Child thread check its state in the signal handler.
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

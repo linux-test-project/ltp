@@ -22,9 +22,6 @@
 #include "tst_test.h"
 #include "fchmod.h"
 
-#define LTPUSER		"nobody"
-#define LTPGRP		"users"
-
 static int fd;
 
 static void verify_fchmod(void)
@@ -33,7 +30,7 @@ static void verify_fchmod(void)
 	mode_t file_mode;
 
 	TEST(fchmod(fd, PERMS));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO, "fchmod() failed unexpectly");
 
 	SAFE_FSTAT(fd, &stat_buf);
@@ -53,8 +50,8 @@ static void setup(void)
 	struct passwd *ltpuser;
 	struct group *ltpgroup;
 
-	ltpuser = SAFE_GETPWNAM(LTPUSER);
-	ltpgroup = SAFE_GETGRNAM(LTPGRP);
+	ltpuser = SAFE_GETPWNAM("nobody");
+	ltpgroup = SAFE_GETGRNAM_FALLBACK("users", "daemon");
 
 	fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 	SAFE_CHOWN(TESTFILE, ltpuser->pw_uid, ltpgroup->gr_gid);

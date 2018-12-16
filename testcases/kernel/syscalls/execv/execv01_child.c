@@ -1,40 +1,39 @@
 /*
- * Copyright (C) 2015 Cyril Hrubis chrubis@suse.cz
+ * Copyright (c) 2018 Linux Test Project
+ * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *    AUTHOR		: William Roske
+ *    CO-PILOT		: Dave Fenner
+ *    DATE STARTED	: 06/01/02
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "test.h"
-
-char *TCID = "execv01_child";
+#define TST_NO_DEFAULT_MAIN
+#include "tst_test.h"
 
 int main(int argc, char *argv[])
 {
+	tst_reinit();
+
 	if (argc != 2)
-		tst_brkm(TFAIL, NULL, "argc is %d, expected 2", argc);
+		tst_brk(TFAIL, "argc is %d, expected 2", argc);
 
-	if (strcmp(argv[1], "canary")) {
-		tst_brkm(TFAIL, NULL, "argv[1] is %s, expected 'canary'",
-		         argv[1]);
-	}
+	if (strcmp(argv[1], "canary"))
+		tst_brk(TFAIL, "argv[1] is %s, expected 'canary'", argv[1]);
 
-	tst_resm(TPASS, "%s executed", argv[0]);
-	tst_exit();
+	tst_res(TPASS, "%s executed", argv[0]);
+
+	return 0;
 }

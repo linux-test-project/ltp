@@ -52,7 +52,7 @@ setup()
 	local ret
 
 	if [ -n "$FS_TYPE" ]; then
-		tst_check_cmds mkfs.${FS_TYPE}
+		tst_test_cmds mkfs.${FS_TYPE}
 	fi
 
 	tst_mkfs ${FS_TYPE} ${TST_DEVICE}

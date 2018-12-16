@@ -57,12 +57,12 @@ static void verify_umount(unsigned int n)
 
 	TEST(umount(tc->mntpoint));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "umount() succeeds unexpectedly");
 		return;
 	}
 
-	if (tc->exp_errno != TEST_ERRNO) {
+	if (tc->exp_errno != TST_ERR) {
 		tst_res(TFAIL | TTERRNO, "umount() should fail with %s",
 			tst_strerrno(tc->exp_errno));
 		return;

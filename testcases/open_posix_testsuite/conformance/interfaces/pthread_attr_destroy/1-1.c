@@ -6,7 +6,7 @@
  * source tree.
 
  *  Test that pthread_attr_destroy()
- *  shall destory a thread attributes object.  An implementation may cause
+ *  shall destroy a thread attributes object.  An implementation may cause
  *  pthread_attr_destroy() to set 'attr' to an implementation-defined invalid
  *  value.
  *

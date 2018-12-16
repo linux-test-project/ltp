@@ -1,24 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  * Started by Jan Kara <jack@suse.cz>
  *
@@ -65,6 +47,24 @@ static unsigned int event_resp[EVENT_MAX];
 
 static char event_buf[EVENT_BUF_LEN];
 
+static struct tcase {
+	const char *tname;
+	struct fanotify_mark_type mark;
+} tcases[] = {
+	{
+		"inode mark permission events",
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+	},
+	{
+		"mount mark permission events",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+	},
+	{
+		"filesystem mark permission events",
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+	},
+};
+
 static void generate_events(void)
 {
 	int fd;
@@ -106,7 +106,7 @@ static void run_child(void)
 
 	if (sigaction(SIGCHLD, &child_action, NULL) < 0) {
 		tst_brk(TBROK | TERRNO,
-			 "sigaction(SIGCHLD, &child_action, NULL) failed");
+			"sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
 
 	child_pid = SAFE_FORK();
@@ -128,7 +128,7 @@ static void check_child(void)
 	child_action.sa_flags = SA_NOCLDSTOP;
 	if (sigaction(SIGCHLD, &child_action, NULL) < 0) {
 		tst_brk(TBROK | TERRNO,
-			 "sigaction(SIGCHLD, &child_action, NULL) failed");
+			"sigaction(SIGCHLD, &child_action, NULL) failed");
 	}
 	SAFE_WAITPID(-1, &child_ret, 0);
 
@@ -138,15 +138,45 @@ static void check_child(void)
 		tst_res(TFAIL, "child %s", tst_strstatus(child_ret));
 }
 
-void test01(void)
+static int setup_mark(unsigned int n)
 {
-	int tst_count, fd_notify_backup = -1;
+	struct tcase *tc = &tcases[n];
+	struct fanotify_mark_type *mark = &tc->mark;
 
+	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
+
+	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
+			  FAN_ACCESS_PERM | FAN_OPEN_PERM,
+			  AT_FDCWD, fname) < 0) {
+		if (errno == EINVAL && mark->flag == FAN_MARK_FILESYSTEM) {
+			tst_res(TCONF,
+				"FAN_MARK_FILESYSTEM not supported in kernel?");
+			return -1;
+		} else if (errno == EINVAL) {
+			tst_brk(TCONF | TERRNO,
+				"CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
+				"configured in kernel?");
+		} else {
+			tst_brk(TBROK | TERRNO,
+				"fanotify_mark (%d, FAN_MARK_ADD | %s, "
+				"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
+				"AT_FDCWD, %s) failed.",
+				fd_notify, mark->name, fname);
+		}
+	}
+
+	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
+	return 0;
+}
+
+static void test_fanotify(unsigned int n)
+{
+	int tst_count;
 	int ret, len = 0, i = 0, test_num = 0;
 
-	if (fd_notify_backup == -1) {
-		fd_notify_backup = SAFE_DUP(fd_notify);
-	}
+	if (setup_mark(n) != 0)
+		return;
+
 	run_child();
 
 	tst_count = 0;
@@ -159,7 +189,7 @@ void test01(void)
 	/* tst_count + 1 is for checking child return value */
 	if (TST_TOTAL != tst_count + 1) {
 		tst_brk(TBROK,
-			 "TST_TOTAL and tst_count do not match");
+			"TST_TOTAL and tst_count do not match");
 	}
 	tst_count = 0;
 
@@ -177,8 +207,8 @@ void test01(void)
 				break;
 			if (ret < 0) {
 				tst_brk(TBROK,
-					 "read(%d, buf, %zu) failed",
-					 fd_notify, EVENT_BUF_LEN);
+					"read(%d, buf, %zu) failed",
+					fd_notify, EVENT_BUF_LEN);
 			}
 			len += ret;
 		}
@@ -186,24 +216,24 @@ void test01(void)
 		event = (struct fanotify_event_metadata *)&event_buf[i];
 		if (!(event->mask & event_set[test_num])) {
 			tst_res(TFAIL,
-				 "get event: mask=%llx (expected %llx) "
-				 "pid=%u fd=%u",
-				 (unsigned long long)event->mask,
-				 event_set[test_num],
-				 (unsigned)event->pid, event->fd);
+				"got event: mask=%llx (expected %llx) "
+				"pid=%u fd=%d",
+				(unsigned long long)event->mask,
+				event_set[test_num],
+				(unsigned)event->pid, event->fd);
 		} else if (event->pid != child_pid) {
 			tst_res(TFAIL,
-				 "get event: mask=%llx pid=%u "
-				 "(expected %u) fd=%u",
-				 (unsigned long long)event->mask,
-				 (unsigned)event->pid,
-				 (unsigned)child_pid,
-				 event->fd);
+				"got event: mask=%llx pid=%u "
+				"(expected %u) fd=%d",
+				(unsigned long long)event->mask,
+				(unsigned)event->pid,
+				(unsigned)child_pid,
+				event->fd);
 		} else {
 			tst_res(TPASS,
-				    "get event: mask=%llx pid=%u fd=%u",
-				    (unsigned long long)event->mask,
-				    (unsigned)event->pid, event->fd);
+				"got event: mask=%llx pid=%u fd=%d",
+				(unsigned long long)event->mask,
+				(unsigned)event->pid, event->fd);
 		}
 		/* Write response to permission event */
 		if (event_set[test_num] & FAN_ALL_PERM_EVENTS) {
@@ -225,37 +255,19 @@ void test01(void)
 	}
 	for (; test_num < TST_TOTAL - 1; test_num++) {
 		tst_res(TFAIL, "didn't get event: mask=%llx",
-			 event_set[test_num]);
+			event_set[test_num]);
 
 	}
 	check_child();
-	/* We got SIGCHLD while running, resetup fd_notify */
-	if (fd_notify == -1) {
-		fd_notify = fd_notify_backup;
-		fd_notify_backup = -1;
-	}
+
+	if (fd_notify > 0)
+		SAFE_CLOSE(fd_notify);
 }
 
 static void setup(void)
 {
 	sprintf(fname, "fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
-
-	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
-
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_ACCESS_PERM |
-			    FAN_OPEN_PERM, AT_FDCWD, fname) < 0) {
-		if (errno == EINVAL) {
-			tst_brk(TCONF | TERRNO,
-				 "CONFIG_FANOTIFY_ACCESS_PERMISSIONS not "
-				 "configured in kernel?");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				 "fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS_PERM | "
-				 "FAN_OPEN_PERM, AT_FDCWD, %s) failed.", fd_notify, fname);
-		}
-	}
-
 }
 
 static void cleanup(void)
@@ -265,7 +277,8 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.test_all = test01,
+	.test = test_fanotify,
+	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,

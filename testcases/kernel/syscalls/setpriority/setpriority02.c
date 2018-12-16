@@ -73,15 +73,15 @@ static void setpriority_test(struct tcase *tc)
 
 	TEST(setpriority(tc->which, tc->who, tc->prio));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL,
 			"setpriority(%d, %d, %d) %ssucceeds unexpectedly "
 			"returned %ld", tc->which, tc->who, tc->prio, desc,
-			TEST_RETURN);
+			TST_RET);
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_errno) {
+	if (TST_ERR != tc->exp_errno) {
 		tst_res(TFAIL | TTERRNO,
 			"setpriority(%d, %d, %d) %sshould fail with %s",
 			tc->which, tc->who, tc->prio, desc,

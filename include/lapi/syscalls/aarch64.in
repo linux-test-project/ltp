@@ -253,8 +253,14 @@ clock_adjtime 266
 syncfs 267
 setns 268
 sendmmsg 269
+process_vm_readv 270
+process_vm_writev 271
 kcmp 272
 getrandom 278
 memfd_create 279
+membarrier 283
+execveat 281
+mlock2 284
 copy_file_range 285
+preadv2 286
 _sysctl 1078

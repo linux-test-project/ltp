@@ -87,18 +87,18 @@ int main(void)
 		sprintf(mygroup, "%s", mygroup_p);
 	} else {
 		tst_brkm(TBROK, cleanup,
-			 "invalid parameters recieved from script\n");
+			 "invalid parameters received from script\n");
 	}
 
 	/* XXX (garrcoop): this section really needs error handling. */
 
-	/* Signal handling for SIGUSR1 recieved from script */
+	/* Signal handling for SIGUSR1 received from script */
 	sigemptyset(&newaction1.sa_mask);
 	newaction1.sa_handler = signal_handler_sigusr1;
 	newaction1.sa_flags = 0;
 	sigaction(SIGUSR1, &newaction1, &oldaction1);
 
-	/* Signal handling for SIGUSR2 recieved from script */
+	/* Signal handling for SIGUSR2 received from script */
 	sigemptyset(&newaction2.sa_mask);
 	newaction2.sa_handler = signal_handler_sigusr2;
 	newaction2.sa_flags = 0;

@@ -50,7 +50,7 @@ static void verify_clock_nanosleep2(void)
 
 	TEST(clock_nanosleep2(CLOCK_TO_USE, TIMER_ABSTIME, &ts, NULL));
 
-	if (TEST_RETURN)
+	if (TST_RET)
 		tst_res(TFAIL | TTERRNO, "clock_nanosleep2() failed");
 	else
 		tst_res(TPASS, "clock_nanosleep2() passed");

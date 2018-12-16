@@ -34,8 +34,6 @@ do_cleanup()
 	tst_wait_ipv6_dad
 }
 
-trap "tst_brk TBROK 'test interrupted'" INT
-
 test_body()
 {
 	local cnt=0

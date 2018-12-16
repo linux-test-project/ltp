@@ -32,13 +32,6 @@
  * -> We could additionally lock each mutex after init, and unlock before destroy.
  */
 
- /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
- /* We enable the following line to have mutex attributes defined */
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/

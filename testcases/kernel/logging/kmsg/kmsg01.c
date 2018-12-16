@@ -70,8 +70,8 @@ static int inject_msg(const char *msg)
 	f = SAFE_OPEN("/dev/kmsg", O_WRONLY);
 	TEST(write(f, msg, strlen(msg)));
 	SAFE_CLOSE(f);
-	errno = TEST_ERRNO;
-	return TEST_RETURN;
+	errno = TST_ERR;
+	return TST_RET;
 }
 
 /*
@@ -100,18 +100,18 @@ static int find_msg(int fd, const char *text_to_find, char *buf, int bufsize,
 
 	while (1) {
 		TEST(read(f, msg, MAX_MSGSIZE));
-		if (TEST_RETURN < 0) {
-			if (TEST_ERRNO == EAGAIN)
+		if (TST_RET < 0) {
+			if (TST_ERR == EAGAIN)
 				/* there are no more messages */
 				break;
-			else if (TEST_ERRNO == EPIPE)
+			else if (TST_ERR == EPIPE)
 				/* current message was overwritten */
 				continue;
 			else
 				tst_brk(TBROK|TTERRNO, "err reading /dev/kmsg");
-		} else if (TEST_RETURN < bufsize) {
+		} else if (TST_RET < bufsize) {
 			/* lines from kmsg are not NULL terminated */
-			msg[TEST_RETURN] = '\0';
+			msg[TST_RET] = '\0';
 			if (strstr(msg, text_to_find) != NULL) {
 				strncpy(buf, msg, bufsize);
 				msg_found = 1;
@@ -210,10 +210,10 @@ static int timed_read_kmsg(int fd, long timeout_usec)
 			if (write(pipefd[1], "", 1) == -1)
 				tst_brk(TBROK|TERRNO, "write to pipe");
 			TEST(read(fd, msg, MAX_MSGSIZE));
-			if (TEST_RETURN == 0)
+			if (TST_RET == 0)
 				break;
-			if (TEST_RETURN == -1 && TEST_ERRNO != EPIPE) {
-				ret = TEST_ERRNO;
+			if (TST_RET == -1 && TST_ERR != EPIPE) {
+				ret = TST_ERR;
 				break;
 			}
 		}
@@ -226,11 +226,11 @@ static int timed_read_kmsg(int fd, long timeout_usec)
 	/* parent reads pipe until it reaches eof or until read times out */
 	do {
 		TEST(timed_read(pipefd[0], timeout_usec));
-	} while (TEST_RETURN > 0);
+	} while (TST_RET > 0);
 	SAFE_CLOSE(pipefd[0]);
 
 	/* child is blocked, kill it */
-	if (TEST_RETURN == -2)
+	if (TST_RET == -2)
 		kill(child, SIGTERM);
 	SAFE_WAITPID(child, &status, 0);
 	if (WIFEXITED(status)) {
@@ -252,11 +252,11 @@ static void test_read_nonblock(void)
 	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 	TEST(timed_read_kmsg(fd, 5000000));
-	if (TEST_RETURN == -1 && TEST_ERRNO == EAGAIN)
+	if (TST_RET == -1 && TST_ERR == EAGAIN)
 		tst_res(TPASS, "non-block read returned EAGAIN");
 	else
 		tst_res(TFAIL|TTERRNO, "non-block read returned: %ld",
-			TEST_RETURN);
+			TST_RET);
 	SAFE_CLOSE(fd);
 }
 
@@ -268,10 +268,10 @@ static void test_read_block(void)
 	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY);
 
 	TEST(timed_read_kmsg(fd, 500000));
-	if (TEST_RETURN == -2)
+	if (TST_RET == -2)
 		tst_res(TPASS, "read blocked");
 	else
-		tst_res(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
+		tst_res(TFAIL|TTERRNO, "read returned: %ld", TST_RET);
 	SAFE_CLOSE(fd);
 }
 
@@ -284,10 +284,10 @@ static void test_partial_read(void)
 	fd = SAFE_OPEN("/dev/kmsg", O_RDONLY | O_NONBLOCK);
 
 	TEST(read(fd, msg, 1));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_res(TPASS|TTERRNO, "read failed as expected");
 	else
-		tst_res(TFAIL, "read returned: %ld", TEST_RETURN);
+		tst_res(TFAIL, "read returned: %ld", TST_RET);
 	SAFE_CLOSE(fd);
 }
 
@@ -369,10 +369,10 @@ static void test_read_returns_first_message(void)
 
 		TEST(read(fd, msg, sizeof(msg)));
 		SAFE_CLOSE(fd);
-		if (TEST_RETURN != -1)
+		if (TST_RET != -1)
 			break;
 
-		if (TEST_ERRNO == EPIPE)
+		if (TST_ERR == EPIPE)
 			tst_res(TINFO, "msg overwritten, retrying");
 		else
 			tst_res(TFAIL|TTERRNO, "read failed");
@@ -438,16 +438,16 @@ static void test_messages_overwritten(void)
 
 	/* first message is overwritten, so this next read should fail */
 	TEST(read(fd, msg, sizeof(msg)));
-	if (TEST_RETURN == -1 && TEST_ERRNO == EPIPE)
+	if (TST_RET == -1 && TST_ERR == EPIPE)
 		tst_res(TPASS, "read failed with EPIPE as expected");
 	else
-		tst_res(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
+		tst_res(TFAIL|TTERRNO, "read returned: %ld", TST_RET);
 
 	/* seek position is updated to the next available record */
 	tst_res(TINFO, "TEST: Subsequent reads() will return available "
 		"records again");
 	if (find_msg(fd, "", msg, sizeof(msg), 1) != 0)
-		tst_res(TFAIL|TTERRNO, "read returned: %ld", TEST_RETURN);
+		tst_res(TFAIL|TTERRNO, "read returned: %ld", TST_RET);
 	else
 		tst_res(TPASS, "after EPIPE read returned next record");
 
@@ -459,10 +459,10 @@ static int read_msg_seqno(int fd, unsigned long *seqno)
 	char msg[MAX_MSGSIZE];
 
 	TEST(read(fd, msg, sizeof(msg)));
-	if (TEST_RETURN == -1 && TEST_ERRNO != EPIPE)
+	if (TST_RET == -1 && TST_ERR != EPIPE)
 		tst_brk(TBROK|TTERRNO, "failed to read /dev/kmsg");
 
-	if (TEST_ERRNO == EPIPE)
+	if (TST_ERR == EPIPE)
 		return -1;
 
 	if (get_msg_fields(msg, NULL, seqno) != 0) {

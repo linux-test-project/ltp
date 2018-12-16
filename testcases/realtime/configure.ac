@@ -38,27 +38,6 @@ else
 fi
 
 REALTIME_CHECK_PRIO_INHERIT
-
-if test "x$has_priority_inherit" = xyes; then
-
-	AC_MSG_CHECKING([for pthread mutex attr protocol functions])
-	AC_TRY_COMPILE([
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <pthread.h>],[int main(void) {
-	pthread_mutexattr_t attr;
-	(void) pthread_mutexattr_getprotocol(&attr, (void*) NULL);
-	(void) pthread_mutexattr_setprotocol(&attr, 0);
-	return 0;
-}],[has_pthread_mutexattr_protocol_functions="yes"])
-fi
-if test "x$has_pthread_mutexattr_protocol_functions" = "xyes" ; then
-	AC_DEFINE(HAS_PTHREAD_MUTEXATTR_PROTOCOL_FUNCTIONS,1,[Define to 1 if you have the pthread_mutexattr protocol APIs])
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
 REALTIME_CHECK_ROBUST_APIS
 
 LTP_CHECK_EXP10

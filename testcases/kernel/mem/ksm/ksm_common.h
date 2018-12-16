@@ -46,3 +46,8 @@ static inline void parse_ksm_options(char *str_size, int *size,
 				"the remainder of division of size by unit is "
 				"not zero.");
 }
+
+static const char * const save_restore[] = {
+	"?/sys/kernel/mm/ksm/max_page_sharing",
+	NULL,
+};

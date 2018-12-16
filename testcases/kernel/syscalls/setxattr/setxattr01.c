@@ -41,6 +41,10 @@
  *    setxattr(2) should return -1 and set errno to EEXIST
  * 7. Replace attr value with XATTR_REPLACE flag being set,
  *    setxattr(2) should succeed
+ * 8. Create new attr whose key length is zero,
+ *    setxattr(2) should return -1 and set errno to ERANGE
+ * 9. Create new attr whose key is NULL,
+ *    setxattr(2) should return -1 and set errno to EFAULT
  */
 
 #include "config.h"
@@ -79,10 +83,11 @@ struct test_case {
 	size_t size;
 	int flags;
 	int exp_err;
+	int keyneeded;
 };
 struct test_case tc[] = {
 	{			/* case 00, invalid flags */
-	 .key = long_key,
+	 .key = XATTR_TEST_KEY,
 	 .value = &xattr_value,
 	 .size = XATTR_TEST_VALUE_SIZE,
 	 .flags = ~0,
@@ -122,6 +127,7 @@ struct test_case tc[] = {
 	 .size = XATTR_TEST_VALUE_SIZE,
 	 .flags = XATTR_CREATE,
 	 .exp_err = EEXIST,
+	 .keyneeded = 1,
 	 },
 	{			/* case 06, replace existing attribute */
 	 .key = XATTR_TEST_KEY,
@@ -129,43 +135,77 @@ struct test_case tc[] = {
 	 .size = XATTR_TEST_VALUE_SIZE,
 	 .flags = XATTR_REPLACE,
 	 .exp_err = 0,
+	 .keyneeded = 1,
+	},
+	{			/* case 07, zero length key */
+	 .key = "",
+	 .value = &xattr_value,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = ERANGE,
+	},
+	{			/* case 08, NULL key */
+	 .value = &xattr_value,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EFAULT,
 	},
 };
 
 static void verify_setxattr(unsigned int i)
 {
+	/* some tests might require existing keys for each iteration */
+	if (tc[i].keyneeded) {
+		SAFE_SETXATTR(FNAME, tc[i].key, tc[i].value, tc[i].size,
+				XATTR_CREATE);
+	}
+
 	TEST(setxattr(FNAME, tc[i].key, *tc[i].value, tc[i].size, tc[i].flags));
 
-	if (TEST_RETURN == -1 && TEST_ERRNO == EOPNOTSUPP)
-		tst_brk(TCONF, "setxattr() not supported");
+	if (TST_RET == -1 && TST_ERR == EOPNOTSUPP)
+		tst_brk(TCONF, "setxattr(2) not supported");
+
+	/* success */
 
 	if (!tc[i].exp_err) {
-		if (TEST_RETURN) {
+		if (TST_RET) {
 			tst_res(TFAIL | TTERRNO,
-				"setxattr() failed with %li", TEST_RETURN);
+				"setxattr(2) failed with %li", TST_RET);
 			return;
 		}
 
-		tst_res(TPASS, "setxattr() passed");
+		/* this is needed for subsequent iterations */
+		SAFE_REMOVEXATTR(FNAME, tc[i].key);
+
+		tst_res(TPASS, "setxattr(2) passed");
+
 		return;
 	}
 
-	if (TEST_RETURN == 0) {
-		tst_res(TFAIL, "setxattr() passed unexpectedly");
+	if (TST_RET == 0) {
+		tst_res(TFAIL, "setxattr(2) passed unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc[i].exp_err) {
-		tst_res(TFAIL | TTERRNO, "setxattr() should fail with %s",
+	/* error */
+
+	if (tc[i].exp_err != TST_ERR) {
+		tst_res(TFAIL | TTERRNO, "setxattr(2) should fail with %s",
 			tst_strerrno(tc[i].exp_err));
 		return;
 	}
 
-	tst_res(TPASS | TTERRNO, "setxattr() failed");
+	/* key might have been added AND test might have failed, remove it */
+	if (tc[i].keyneeded)
+		SAFE_REMOVEXATTR(FNAME, tc[i].key);
+
+	tst_res(TPASS | TTERRNO, "setxattr(2) failed");
 }
 
 static void setup(void)
 {
+	size_t i = 0;
+
 	snprintf(long_key, 6, "%s", "user.");
 	memset(long_key + 5, 'k', XATTR_NAME_LEN - 5);
 	long_key[XATTR_NAME_LEN - 1] = '\0';
@@ -175,6 +215,11 @@ static void setup(void)
 	long_value[XATTR_SIZE_MAX + 1] = '\0';
 
 	SAFE_TOUCH(FNAME, 0644, NULL);
+
+	for (i = 0; i < ARRAY_SIZE(tc); i++) {
+		if (!tc[i].key)
+			tc[i].key = tst_get_bad_addr(NULL);
+	}
 }
 
 static struct tst_test test = {

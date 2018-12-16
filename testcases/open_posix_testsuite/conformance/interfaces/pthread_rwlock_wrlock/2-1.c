@@ -19,7 +19,6 @@
  * 7. main thread unlock 'rwlock', sig_thread should get the lock
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

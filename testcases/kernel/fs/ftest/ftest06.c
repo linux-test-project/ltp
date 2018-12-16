@@ -100,7 +100,7 @@ static char *fstyp;
 int main(int ac, char *av[])
 {
 	int pid, child, status, count, k, j;
-	char name[3];
+	char name[MAXPATHLEN];
 
 	int lc;
 

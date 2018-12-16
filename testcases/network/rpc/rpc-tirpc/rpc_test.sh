@@ -65,10 +65,9 @@ done
 shift $(($OPTIND - 1))
 
 if [ ! -z "$SERVER" ]; then
-	if `echo "$SERVER" | grep -e '^tirpc'`; then
+	CLEANER="rpc_cleaner"
+	if echo "$SERVER" | grep -q '^tirpc'; then
 		CLEANER="tirpc_cleaner"
-	else
-		CLEANER="rpc_cleaner"
 	fi
 fi
 

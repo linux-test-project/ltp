@@ -136,7 +136,7 @@ void dump_proc_self_maps(void)
 	tst_run_cmd(cmd, NULL, NULL, 0);
 }
 
-void preallocate_stack(unsigned long required)
+void __attribute__((noinline)) preallocate_stack(unsigned long required)
 {
 	volatile char *garbage;
 

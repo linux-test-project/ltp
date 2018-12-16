@@ -1,20 +1,22 @@
 /*
+ * Copyright (c) 2018 Linux Test Project
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
+ *  21/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -49,22 +51,13 @@
  *	6.	Attempt to execve(2) a zero length file with executable
  *		permissions - fails with ENOEXEC.
  *
- * USAGE:  <for command-line>
- *  execve03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	test #5 will fail with ETXTBSY not EACCES if the test is run as root
  */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -72,141 +65,95 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <stdio.h>
+#include <unistd.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 
-char *TCID = "execve03";
-int fileHandle = 0;
+static char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
+static char long_fname[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
+static char no_dir[] = "testdir";
+static char test_name3[1024];
+static char test_name5[1024];
+static char test_name6[1024];
 
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-
-#ifndef UCLINUX
-void *bad_addr = NULL;
-#endif
-
-void setup(void);
-void cleanup(void);
-
-char long_file[] =
-    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
-char no_dir[] = "testdir";
-char test_name3[1000];
-char test_name5[1000];
-char test_name6[1000];
-
-struct test_case_t {
-	char *tname;		/* the command name to pass to execve() */
+static struct tcase {
+	char *tname;
 	int error;
-} TC[] = {
+} tcases[] = {
 	/* the file name is greater than VFS_MAXNAMELEN - ENAMTOOLONG */
-	{
-	long_file, ENAMETOOLONG},
-	    /* the filename does not exist - ENOENT */
-	{
-	no_dir, ENOENT},
-	    /* the path contains a directory name which doesn't exist - ENOTDIR */
-	{
-	test_name3, ENOTDIR},
-#if !defined(UCLINUX)
-	    /* the filename isn't part of the process address space - EFAULT */
-	{
-	(char *)-1, EFAULT},
-#endif
-	    /* the filename does not have execute permission - EACCES */
-	{
-	test_name5, EACCES},
-	    /* the file is zero length with execute permissions - ENOEXEC */
-	{
-	test_name6, ENOEXEC}
+	{long_fname, ENAMETOOLONG},
+	/* the filename does not exist - ENOENT */
+	{no_dir, ENOENT},
+	/* the path contains a directory name which doesn't exist - ENOTDIR */
+	{test_name3, ENOTDIR},
+	/* the filename isn't part of the process address space - EFAULT */
+	{NULL, EFAULT},
+	/* the filename does not have execute permission - EACCES */
+	{test_name5, EACCES},
+	/* the file is zero length with execute permissions - ENOEXEC */
+	{test_name6, ENOEXEC}
 };
 
-int TST_TOTAL = ARRAY_SIZE(TC);
-
-int main(int ac, char **av)
-{
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-
-			TEST(execve(TC[i].tname, av, NULL));
-
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-				continue;
-			}
-
-			if (TEST_ERRNO == TC[i].error)
-				tst_resm(TPASS | TTERRNO,
-					 "execve failed as expected");
-			else
-				tst_resm(TFAIL | TTERRNO,
-					 "execve failed unexpectedly; expected "
-					 "%d - %s",
-					 TC[i].error, strerror(TC[i].error));
-		}
-	}
-	cleanup();
-
-	tst_exit();
-}
-
-void setup(void)
+static void setup(void)
 {
 	char *cwdname = NULL;
+	unsigned i;
 	int fd;
-
-	tst_require_root();
 
 	umask(0);
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	ltpuser = SAFE_GETPWNAM(nobody_uid);
 
-	TEST_PAUSE;
+	SAFE_SETGID(ltpuser->pw_gid);
 
-	ltpuser = SAFE_GETPWNAM(NULL, nobody_uid);
+	cwdname = SAFE_GETCWD(cwdname, 0);
 
-	SAFE_SETGID(NULL, ltpuser->pw_gid);
+	sprintf(test_name5, "%s/fake", cwdname);
 
-	tst_tmpdir();
+	fd = SAFE_CREAT(test_name5, 0444);
+	SAFE_CLOSE(fd);
 
-	cwdname = SAFE_GETCWD(cleanup, cwdname, 0);
-
-	sprintf(test_name5, "%s/fake.%d", cwdname, getpid());
-
-	fileHandle = SAFE_CREAT(cleanup, test_name5, 0444);
-
-	sprintf(test_name3, "%s/fake.%d", test_name5, getpid());
+	sprintf(test_name3, "%s/fake", test_name5);
 
 	/* creat() and close a zero length file with executeable permission */
-	sprintf(test_name6, "%s/execve03.%d", cwdname, getpid());
+	sprintf(test_name6, "%s/execve03", cwdname);
 
-	fd = SAFE_CREAT(cleanup, test_name6, 0755);
-	fd = SAFE_CLOSE(cleanup, fd);
-#ifndef UCLINUX
-	bad_addr = SAFE_MMAP(cleanup, NULL, 1, PROT_NONE,
-			     MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	TC[3].tname = bad_addr;
-#endif
+	fd = SAFE_CREAT(test_name6, 0755);
+	SAFE_CLOSE(fd);
+
+	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
+		if (!tcases[i].tname)
+			tcases[i].tname = tst_get_bad_addr(NULL);
+	}
 }
 
-void cleanup(void)
+static void verify_execve(unsigned int i)
 {
-#ifndef UCLINUX
-	SAFE_MUNMAP(NULL, bad_addr, 1);
-#endif
-	SAFE_CLOSE(NULL, fileHandle);
+	struct tcase *tc = &tcases[i];
+	char *argv[2] = {tc->tname, NULL};
 
-	tst_rmdir();
+	TEST(execve(tc->tname, argv, NULL));
 
+	if (TST_RET != -1) {
+		tst_res(TFAIL, "call succeeded unexpectedly");
+		return;
+	}
+
+	if (TST_ERR == tc->error) {
+		tst_res(TPASS | TTERRNO, "execve failed as expected");
+		return;
+	}
+
+	tst_res(TFAIL | TTERRNO, "execve failed unexpectedly; expected %s",
+		strerror(tc->error));
 }
+
+static struct tst_test test = {
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_execve,
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+	.child_needs_reinit = 1,
+	.setup = setup,
+};

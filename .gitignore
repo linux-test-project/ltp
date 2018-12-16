@@ -21,6 +21,7 @@ autom4te.cache
 /config.mk
 /config.status
 /config.sub
+/conf*/
 /install-sh
 /missing
 /include/config.h

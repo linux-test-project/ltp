@@ -17,16 +17,11 @@
  * objects is not NLOOP, the test failed. In other case the test is unresolved.
  */
 
-/* ftruncate was formerly an XOPEN extension. We define _XOPEN_SOURCE here to
-   avoid warning if the implementation does not program ftruncate as a base
-   interface */
-
 /* adam.li: 2004-04-30: Rewrite the test case. The idea is that with
    O_CREAT and O_EXCL specified, to shm_open() a object can only success
    once, although multiple processes might open with the same name at the
    same time.
  */
-#define _XOPEN_SOURCE 600
 
 #include <errno.h>
 #include <fcntl.h>

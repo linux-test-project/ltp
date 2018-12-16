@@ -11,7 +11,6 @@
  * Test that sched_getscheduler() sets errno == EPERM when the requesting
  * process does not have permission
  */
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sched.h>
 #include <errno.h>

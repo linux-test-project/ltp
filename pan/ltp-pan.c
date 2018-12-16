@@ -130,6 +130,9 @@ static char *test_out_dir = NULL;	/* dir to buffer output to */
 zoo_t zoofile;
 static char *reporttype = NULL;
 
+/* Common format string for ltp-pan results */
+#define ResultFmt	"%-50s %-10.10s"
+
 /* zoolib */
 int rec_signal;			/* received signal */
 int send_signal;		/* signal to send */
@@ -350,9 +353,9 @@ int main(int argc, char **argv)
 			fprintf(logfile, "Test Start Time: %s\n", s);
 			fprintf(logfile,
 				"-----------------------------------------\n");
-			fprintf(logfile, "%-30.20s %-10.10s %-10.10s\n",
+			fprintf(logfile, ResultFmt" %-10.10s\n",
 				"Testcase", "Result", "Exit Value");
-			fprintf(logfile, "%-30.20s %-10.10s %-10.10s\n",
+			fprintf(logfile, ResultFmt" %-10.10s\n",
 				"--------", "------", "------------");
 		}
 		fflush(logfile);
@@ -825,7 +828,7 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
 						}
 
 						fprintf(logfile,
-							"%-30.30s %-10.10s %-5d\n",
+							ResultFmt" %-5d\n",
 							running[i].cmd->name,
 							result_str,
 							w);
@@ -1104,7 +1107,7 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
 				if (termid != 0)
 					++ * failcnt;
 
-				fprintf(logfile, "%-30.30s %-10.10s %-5d\n",
+				fprintf(logfile, ResultFmt" %-5d\n",
 					colle->name,
 					((termid != 0) ? "FAIL" : "PASS"),
 					termid);

@@ -75,7 +75,7 @@ int child_fn(void *arg)
 	siginfo_t info;
 	struct timespec timeout;
 	pid_t pid, ppid;
-	int cinit_no = *((int *)arg);
+	intptr_t cinit_no = (intptr_t)arg;
 
 	/* Set process id and parent pid */
 	pid = getpid();
@@ -176,7 +176,6 @@ static void setup(void)
 int main(int argc, char *argv[])
 {
 	int status;
-	int *cinit_no = malloc(sizeof(int));
 	pid_t cpid1, cpid2;
 
 	setup();
@@ -186,18 +185,11 @@ int main(int argc, char *argv[])
 		tst_resm(TBROK, "parent: pipe creation failed");
 	}
 
-	/* container creation on PID namespace */
-	if (!cinit_no) {
-		tst_resm(TBROK, "memory allocation failed.");
-	}
-
 	/* Create container 1 */
-	*cinit_no = 1;
-	cpid1 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, cinit_no);
+	cpid1 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, (void*)(intptr_t)1);
 
 	/* Create container 2 */
-	*cinit_no = 2;
-	cpid2 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, cinit_no);
+	cpid2 = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_fn, (void*)(intptr_t)2);
 	if (cpid1 < 0 || cpid2 < 0) {
 		tst_resm(TBROK, "parent: clone() failed.");
 	}

@@ -76,14 +76,17 @@ static void setup(void)
 	tst_tmpdir();
 
 	SAFE_FILE_SCANF(NULL, PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
-	SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%d", 1);
+
+	if (orig_hugepages <= 0)
+		SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%d", 1);
 
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
+	if (orig_hugepages <= 0)
+		SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
 
 	tst_rmdir();
 }
@@ -173,7 +176,7 @@ static void wakeup_thread2(void)
 	}
 
 	while (wait_for_threads(2))
-		usleep(100);
+		usleep(1000);
 
 	futex_wake(futex2, 1, 0);
 

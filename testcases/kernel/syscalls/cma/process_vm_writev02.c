@@ -30,7 +30,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
-#include "process_vm.h"
+#include "lapi/syscalls.h"
 
 char *TCID = "process_vm_writev02";
 int TST_TOTAL = 1;
@@ -171,7 +171,8 @@ static void child_write(void)
 	remote.iov_len = bufsz;
 
 	tst_resm(TINFO, "child 2: write to the same memory location.");
-	TEST(test_process_vm_writev(pids[0], &local, 1, &remote, 1, 0));
+	TEST(ltp_syscall(__NR_process_vm_writev, pids[0], &local,
+			 1, &remote, 1, 0));
 	if (TEST_RETURN != bufsz)
 		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
 }
@@ -180,14 +181,13 @@ static void setup(void)
 {
 	tst_require_root();
 
+	/* Just a sanity check of the existence of syscall */
+	ltp_syscall(__NR_process_vm_writev, getpid(), NULL, 0, NULL, 0, 0);
+
 	bufsz =
 	    sflag ? SAFE_STRTOL(NULL, sz_opt, 1, LONG_MAX - PADDING_SIZE * 2)
 	    : 100000;
 
-#if !defined(__NR_process_vm_readv)
-	tst_brkm(TCONF, NULL, "process_vm_writev does not exist "
-		 "on your system");
-#endif
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(cleanup);
 

@@ -19,7 +19,6 @@
   * EPERM. It is implementation defined.
   */
 
-#define _XOPEN_SOURCE 600
 #include <sys/types.h>
 #include <errno.h>
 #include <pwd.h>

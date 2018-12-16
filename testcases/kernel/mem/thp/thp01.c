@@ -78,7 +78,7 @@ static void thp_test(void)
 			args[bst->mid] = NULL;
 
 			TEST(execvp("true", args));
-			if (TEST_ERRNO != E2BIG)
+			if (TST_ERR != E2BIG)
 				tst_brk(TBROK | TTERRNO, "execvp(\"true\", ...)");
 			bst->left = prev_left;
 			bst->right = bst->mid;
@@ -98,7 +98,7 @@ static void thp_test(void)
 	if (pid == 0) {
 		args[bst->left] = NULL;
 		TEST(execvp("true", args));
-		if (TEST_ERRNO != E2BIG)
+		if (TST_ERR != E2BIG)
 			tst_brk(TBROK | TTERRNO, "execvp(\"true\", ...)");
 		exit(0);
 	}

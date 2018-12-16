@@ -9,8 +9,12 @@ echo 'If some fields are empty or look unusual you may have an old version.'
 echo 'Compare to the current minimal requirements in Documentation/Changes.'
 
 echo
-echo "`ls /etc/*release`"
+echo "`ls /etc/*release 2> /dev/null`"
 cat /etc/*release 2> /dev/null
+if [ $? = 1 ]; then
+   echo "`ls /usr/lib/*release 2> /dev/null`"
+   cat /usr/lib/*release 2> /dev/null
+fi
 if [ $? = 1 ]; then
    echo '/etc/issue:'
    cat /etc/issue 2> /dev/null
@@ -96,5 +100,9 @@ echo 'free reports:'
 free
 
 echo
-echo '/proc/cpuinfo'
-cat /proc/cpuinfo
+echo 'cpuinfo:'
+if which lscpu > /dev/null 2>&1; then
+	lscpu
+else
+	cat /proc/cpuinfo
+fi

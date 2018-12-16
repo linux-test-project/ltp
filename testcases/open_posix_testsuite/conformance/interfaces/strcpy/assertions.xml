@@ -1,0 +1,7 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:65034:65040">
+    The function will copy the string pointed to by s1 (including the
+    terminating NUL character) into the array pointed to by s2. And
+    it will return s2.
+  <assertion>
+<assertions>

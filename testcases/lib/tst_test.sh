@@ -35,9 +35,13 @@ export TST_LIB_LOADED=1
 
 . tst_ansi_color.sh
 
+# default trap function
+trap "tst_brk TBROK 'test interrupted'" INT
+
 _tst_do_exit()
 {
 	local ret=0
+	TST_DO_EXIT=1
 
 	if [ -n "$TST_SETUP_STARTED" -a -n "$TST_CLEANUP" -a \
 	     -z "$TST_NO_CLEANUP" ]; then
@@ -54,6 +58,11 @@ _tst_do_exit()
 		cd "$LTPROOT"
 		rm -r "$TST_TMPDIR"
 		[ "$TST_TMPDIR_RHOST" = 1 ] && tst_cleanup_rhost
+	fi
+
+	if [ -n "$_tst_setup_timer_pid" ]; then
+		kill $_tst_setup_timer_pid 2>/dev/null
+		wait $_tst_setup_timer_pid 2>/dev/null
 	fi
 
 	if [ $TST_FAIL -gt 0 ]; then
@@ -114,6 +123,11 @@ tst_brk()
 {
 	local res=$1
 	shift
+
+	if [ "$TST_DO_EXIT" = 1 ]; then
+		tst_res TWARN "$@"
+		return
+	fi
 
 	tst_res "$res" "$@"
 	_tst_do_exit
@@ -199,6 +213,23 @@ TST_RETRY_FUNC()
 	return $2
 }
 
+TST_RTNL_CHK()
+{
+	local msg1="RTNETLINK answers: Function not implemented"
+	local msg2="RTNETLINK answers: Operation not supported"
+	local msg3="RTNETLINK answers: Protocol not supported"
+	local output="$($@ 2>&1 || echo 'LTP_ERR')"
+	local msg
+
+	echo "$output" | grep -q "LTP_ERR" || return 0
+
+	for msg in "$msg1" "$msg2" "$msg3"; do
+		echo "$output" | grep -q "$msg" && tst_brk TCONF "'$@': $msg"
+	done
+
+	tst_brk TBROK "$@ failed: $output"
+}
+
 tst_umount()
 {
 	local device="$1"
@@ -246,14 +277,52 @@ tst_mkfs()
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
 }
 
-tst_check_cmds()
+tst_cmd_available()
+{
+	if type command > /dev/null 2>&1; then
+		command -v $1 > /dev/null 2>&1 || return 1
+	else
+		which $1 > /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			return 0
+		elif [ $? -eq 127 ]; then
+			tst_brk TCONF "missing which command"
+		else
+			return 1
+		fi
+	fi
+}
+
+tst_test_cmds()
 {
 	local cmd
 	for cmd in $*; do
-		if ! command -v $cmd > /dev/null 2>&1; then
-			tst_brk TCONF "'$cmd' not found"
+		tst_cmd_available $cmd || tst_brk TCONF "'$cmd' not found"
+	done
+}
+
+tst_check_cmds()
+{
+	local cmd
+	for cmd; do
+		if ! tst_cmd_available $cmd; then
+			tst_res TCONF "'$cmd' not found"
+			return 1
 		fi
 	done
+	return 0
+}
+
+tst_test_drivers()
+{
+	[ $# -eq 0 ] && return 0
+
+	local drv
+
+	drv="$(tst_check_drivers $@ 2>&1)"
+
+	[ $? -ne 0 ] && tst_brk TCONF "$drv driver not available"
+	return 0
 }
 
 tst_is_int()
@@ -289,6 +358,24 @@ _tst_rescmp()
 	fi
 }
 
+
+_tst_setup_timer()
+{
+	LTP_TIMEOUT_MUL=${LTP_TIMEOUT_MUL:-1}
+
+	local sec=$((300 * LTP_TIMEOUT_MUL))
+	local h=$((sec / 3600))
+	local m=$((sec / 60 % 60))
+	local s=$((sec % 60))
+	local pid=$$
+
+	tst_res TINFO "timeout per run is ${h}h ${m}m ${s}s"
+
+	sleep $sec && tst_res TBROK "test killed, timeout!" && kill -9 -$pid &
+
+	_tst_setup_timer_pid=$!
+}
+
 tst_run()
 {
 	local _tst_i
@@ -301,8 +388,9 @@ tst_run()
 			case "$_tst_i" in
 			SETUP|CLEANUP|TESTFUNC|ID|CNT|MIN_KVER);;
 			OPTS|USAGE|PARSE_ARGS|POS_ARGS);;
-			NEEDS_ROOT|NEEDS_TMPDIR|NEEDS_DEVICE|DEVICE);;
+			NEEDS_ROOT|NEEDS_TMPDIR|TMPDIR|NEEDS_DEVICE|DEVICE);;
 			NEEDS_CMDS|NEEDS_MODULE|MODPATH|DATAROOT);;
+			NEEDS_DRIVERS);;
 			IPV6|IPVER|TEST_DATA|TEST_DATA_IFS);;
 			RETRY_FUNC|RETRY_FN_EXP_BACKOFF);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
@@ -316,7 +404,7 @@ tst_run()
 
 	OPTIND=1
 
-	while getopts "hi:$TST_OPTS" _tst_name $TST_ARGS; do
+	while getopts ":hi:$TST_OPTS" _tst_name $TST_ARGS; do
 		case $_tst_name in
 		'h') tst_usage; exit 0;;
 		'i') TST_ITERATIONS=$OPTARG;;
@@ -339,12 +427,15 @@ tst_run()
 		fi
 	fi
 
-	tst_check_cmds $TST_NEEDS_CMDS
+	tst_test_cmds $TST_NEEDS_CMDS
+	tst_test_drivers $TST_NEEDS_DRIVERS
 
 	if [ -n "$TST_MIN_KVER" ]; then
 		tst_kvcmp -lt "$TST_MIN_KVER" && \
 			tst_brk TCONF "test requires kernel $TST_MIN_KVER+"
 	fi
+
+	_tst_setup_timer
 
 	if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
 		if [ -z "$TMPDIR" ]; then
@@ -400,7 +491,7 @@ tst_run()
 	#TODO check that test reports some results for each test function call
 	while [ $TST_ITERATIONS -gt 0 ]; do
 		if [ -n "$TST_TEST_DATA" ]; then
-			tst_check_cmds cut tr wc
+			tst_test_cmds cut tr wc
 			_tst_max=$(( $(echo $TST_TEST_DATA | tr -cd "$TST_TEST_DATA_IFS" | wc -c) +1))
 			for _tst_i in $(seq $_tst_max); do
 				_tst_data="$(echo "$TST_TEST_DATA" | cut -d"$TST_TEST_DATA_IFS" -f$_tst_i)"

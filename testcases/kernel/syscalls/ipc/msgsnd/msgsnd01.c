@@ -41,7 +41,7 @@ static void verify_msgsnd(void)
 	struct msqid_ds qs_buf;
 
 	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, 0));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgsnd() failed");
 		return;
 	}

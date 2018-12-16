@@ -14,7 +14,6 @@
  *     attribute is set as the default value PTHREAD_PROCESS_PRIVATE.
  *
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include "posixtest.h"

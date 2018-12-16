@@ -36,7 +36,7 @@ TST_USE_LEGACY_API=1
 
 do_setup()
 {
-	tst_check_cmds netstat pgrep
+	tst_test_cmds netstat pgrep
 
 	OCTET=$(ps -ewf | grep [m]c_commo | wc -l | awk '{print $1}')
 	GROUP_ADDR=224.0.0.$OCTET

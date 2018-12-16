@@ -90,12 +90,12 @@ void run(unsigned int i)
 	if (tc[i].cleanup)
 		tc[i].cleanup();
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "chmod succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc[i].exp_errno) {
+	if (TST_ERR == tc[i].exp_errno) {
 		tst_res(TPASS | TTERRNO, "chmod failed as expected");
 	} else {
 		tst_res(TFAIL | TTERRNO, "chmod failed unexpectedly; "

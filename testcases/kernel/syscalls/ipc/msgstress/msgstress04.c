@@ -21,7 +21,7 @@
 
 /*
  * Get and manipulate a message queue.
- * Same as msgctl09 but gets the actual msgmni value under procfs.
+ * Same as msgstress02 but gets the actual msgmni value under procfs.
  */
 
 #define _XOPEN_SOURCE 500
@@ -40,7 +40,7 @@
 #include "ipcmsg.h"
 #include "../lib/libmsgctl.h"
 
-char *TCID = "msgctl11";
+char *TCID = "msgstress04";
 int TST_TOTAL = 1;
 
 #define MAXNREPS	1000
@@ -176,14 +176,14 @@ int main(int argc, char **argv)
 	} else {
 		for (i = 0; i < (MSGMNI / maxnprocs); i++) {
 			nprocs = maxnprocs;
-			dotest_iteration(i*(MSGMNI / maxnprocs));
+			dotest_iteration(i * maxnprocs);
 		}
 
 		nprocs = MSGMNI % maxnprocs;
-		dotest_iteration(i*(MSGMNI / maxnprocs));
+		dotest_iteration(i * maxnprocs);
 	}
 
-	tst_resm(TPASS, "msgctl11 ran successfully!");
+	tst_resm(TPASS, "Test ran successfully!");
 
 	cleanup();
 	tst_exit();

@@ -41,6 +41,8 @@
 #include "tst_kernel.h"
 #include "tst_minmax.h"
 #include "tst_get_bad_addr.h"
+#include "tst_path_has_mnt_flags.h"
+#include "tst_sys_conf.h"
 
 /*
  * Reports testcase result.
@@ -127,6 +129,8 @@ struct tst_test {
 	int format_device:1;
 	int mount_device:1;
 	int needs_rofs:1;
+	int child_needs_reinit:1;
+	int needs_devfs:1;
 	/*
 	 * If set the test function will be executed for all available
 	 * filesystems and the current filesytem type would be set in the
@@ -145,7 +149,7 @@ struct tst_test {
 
 	/* Options passed to SAFE_MKFS() when format_device is set */
 	const char *const *dev_fs_opts;
-	const char *dev_extra_opt;
+	const char *const *dev_extra_opts;
 
 	/* Device mount options, used if mount_device is set */
 	const char *mntpoint;
@@ -169,6 +173,15 @@ struct tst_test {
 
 	/* NULL terminated array of resource file names */
 	const char *const *resource_files;
+
+	/* NULL terminated array of needed kernel drivers */
+	const char * const *needs_drivers;
+
+	/*
+	 * NULL terminated array of (/proc, /sys) files to save
+	 * before setup and restore after cleanup
+	 */
+	const char * const *save_restore;
 };
 
 /*
@@ -188,12 +201,12 @@ void tst_reinit(void);
 #define TEST(SCALL) \
 	do { \
 		errno = 0; \
-		TEST_RETURN = SCALL; \
-		TEST_ERRNO = errno; \
+		TST_RET = SCALL; \
+		TST_ERR = errno; \
 	} while (0)
 
-extern long TEST_RETURN;
-extern int TEST_ERRNO;
+extern long TST_RET;
+extern int TST_ERR;
 
 extern void *TST_RET_PTR;
 
@@ -201,7 +214,7 @@ extern void *TST_RET_PTR;
 	do { \
 		errno = 0; \
 		TST_RET_PTR = (void*)SCALL; \
-		TEST_ERRNO = errno; \
+		TST_ERR = errno; \
 	} while (0)
 
 /*
@@ -216,6 +229,7 @@ const char *tst_strsig(int sig);
  */
 const char *tst_strstatus(int status);
 
+unsigned int tst_timeout_remaining(void);
 void tst_set_timeout(int timeout);
 
 #ifndef TST_NO_DEFAULT_MAIN

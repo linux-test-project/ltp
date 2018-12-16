@@ -67,7 +67,7 @@ static void test_ksm(void)
 	sa.sa_handler = sighandler;
 	sa.sa_flags = 0;
 	TEST(sigaction(SIGSEGV, &sa, NULL));
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_brk(TBROK | TRERRNO,
 				"SIGSEGV signal setup failed");
 

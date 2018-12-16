@@ -28,7 +28,6 @@
        error margin.
  */
 
-#define _XOPEN_SOURCE 600
 #define _XOPEN_REALTIME 1
 
 #define TIMERSIGNAL SIGUSR1

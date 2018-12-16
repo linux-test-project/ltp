@@ -18,7 +18,6 @@
  *       and largefile support turned on.
  */
 
-#define _XOPEN_SOURCE 600
 
 /* Turn on large file support, has no effect on 64 bit archs */
 #define _FILE_OFFSET_BITS 64

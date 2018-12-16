@@ -164,9 +164,11 @@ int main(int argc, char **argv)
 
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE_ALL);
-		if (ret != 0) {
+		if (ret < 0) {
 			tst_resm(TFAIL|TERRNO, "move_pages failed");
 			goto err_kill_child;
+		} else if (ret > 0) {
+			tst_resm(TINFO, "move_pages() returned %d\n", ret);
 		}
 
 		verify_pages_on_node(pages, status, TEST_PAGES, to_node);

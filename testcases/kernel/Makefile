@@ -38,6 +38,7 @@ ifneq ($(UCLINUX),1)
 SUBDIRS			+= connectors \
 			   containers \
 			   controllers \
+			   crypto \
 			   device-drivers \
 			   firmware \
 			   fs \
@@ -53,7 +54,6 @@ SUBDIRS			+= connectors \
 			   security \
 			   timers \
 			   tracing \
-			   module \
 
 ifeq ($(WITH_POWER_MANAGEMENT_TESTSUITE),yes)
 SUBDIRS			+= power_management

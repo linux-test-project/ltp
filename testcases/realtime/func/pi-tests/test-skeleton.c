@@ -109,8 +109,12 @@ int main(int argc, char **argv)
 
 	signal(SIGALRM, timeout_handler);
 	alarm(TIMEOUT);
-	termpid = TEMP_FAILURE_RETRY(waitpid(pid, &status, 0));
-	if (-1 == termpid) {
+
+	do {
+		termpid = waitpid(pid, &status, 0);
+	} while (termpid == -1 && errno == EINTR);
+
+	if (termpid == -1) {
 		printf("\n Waiting for test program failed, Exiting \n");
 		exit(1);
 	}

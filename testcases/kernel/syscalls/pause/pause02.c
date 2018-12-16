@@ -96,7 +96,7 @@ int main(int ac, char **av)
 		if (WIFSIGNALED(status)) {
 			switch (WTERMSIG(status)) {
 			case SIGALRM:
-				tst_resm(TFAIL, "Timeout: SIGINT wasn't recieved by child");
+				tst_resm(TFAIL, "Timeout: SIGINT wasn't received by child");
 			break;
 			default:
 				tst_resm(TFAIL, "Child killed by signal");

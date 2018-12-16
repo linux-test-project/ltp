@@ -56,15 +56,10 @@ ext4_test_sec_timestamps()
 	if [ $atime -ne 0 -o $mtime -ne 0 -o $ctime -ne 0 ]; then
 		tst_resm TFAIL "Timestamp is not second(atime: $atime, mtime: \
 				$mtime, ctime: $ctime)"
-		umount mnt_point
+		tst_umount mnt_point
 		return
 	fi
-
-	umount mnt_point
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return
-	fi
+	tst_umount mnt_point
 
 	tst_resm TPASS "Ext4 nanosecond timestamps test with 128 inode size pass"
 }
@@ -76,7 +71,7 @@ ext4_test_nsec_timestamps()
 
 	mkfs.ext3 -I 256 $EXT4_DEV >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "failed to create ext4 filesystem"
+		tst_resm TFAIL "failed to create ext3 filesystem"
 		return
 	fi
 
@@ -105,10 +100,9 @@ ext4_test_nsec_timestamps()
 	nsec_ctime=`ext4_file_time mnt_point/tmp_file ctime nsec`
 
 	# Test nanosecond
-	if [ $nsec_atime -eq 0 -a $nsec_mtime -eq 0 -a $nsec_ctime -eq 0 ]
-	then
+	if [ $nsec_atime -eq 0 -a $nsec_mtime -eq 0 -a $nsec_ctime -eq 0 ]; then
 		tst_resm TFAIL "The timestamp is not nanosecond(nsec_atime: $nsec_atime, nsec_mtime: $nsec_mtime, nsec_ctime: $nsec_ctime)"
-		umount mnt_point
+		tst_mount mnt_point
 		return
 	fi
 
@@ -122,15 +116,11 @@ ext4_test_nsec_timestamps()
 			than the current time we got.(sec_atime: $sec_atime, \
 			sec_mtime: $sec_mtime, sec_ctime: $sec_ctime, \
 			cur_time[s]: $sec)"
-		umount mnt_point
+		tst_umount mnt_point
 		return
 	fi
 
-	umount mnt_point
-	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "failed to umount ext4 filesystem"
-		return
-	fi
+	tst_umount mnt_point
 
 	# Test mount to ext3 and then mount back to ext4
 	mount -t ext3 $EXT4_DEV mnt_point
@@ -138,7 +128,7 @@ ext4_test_nsec_timestamps()
 		tst_resm TFAIL "failed to mount to ext3"
 		return
 	fi
-	umount mnt_point
+	tst_umount mnt_point
 
 	mount -t ext4 $EXT4_DEV mnt_point
 	if [ $? -ne 0 ]; then
@@ -148,7 +138,7 @@ ext4_test_nsec_timestamps()
 
 	nsec_atime2=`ext4_file_time mnt_point/tmp_file atime nsec`
 	nsec_mtime2=`ext4_file_time mnt_point/tmp_file mtime nsec`
-	nsec_ctime2=`ext4_file_time mnt_point/tmp_file mtime nsec`
+	nsec_ctime2=`ext4_file_time mnt_point/tmp_file ctime nsec`
 
 	if [ $nsec_atime -ne $nsec_atime2 -o $nsec_ctime -ne $nsec_ctime2 -o \
 	     $nsec_mtime -ne $nsec_mtime2 ]; then
@@ -156,11 +146,11 @@ ext4_test_nsec_timestamps()
 			unexpected. Before[atime mtime ctime]: $nsec_atime \
 			$nsec_mtime $nsec_ctime, After[atime mtime ctime]: \
 			$nsec_atime2 $nsec_mtime2 $nsec_ctime2)"
-		umount mnt_point
+		tst_umount mnt_point
 		return
 	fi
 
-	umount mnt_point
+	tst_umount mnt_point
 	tst_resm TPASS "Ext4 nanosecond timestamps test with 256 inode size pass"
 }
 

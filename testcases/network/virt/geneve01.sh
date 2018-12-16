@@ -7,6 +7,7 @@
 TST_NEEDS_TMPDIR=1
 TST_OPTS="hi:d:"
 TST_PARSE_ARGS=virt_lib_parse_args
+TST_NEEDS_DRIVERS="geneve"
 
 virt_type="geneve"
 start_id=16700000

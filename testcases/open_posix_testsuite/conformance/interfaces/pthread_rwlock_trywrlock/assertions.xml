@@ -18,7 +18,7 @@
 	the lock or a writer with the appropriate priority was blocked on it.
 
 	It may fail if:
-	[EINVAL] rwlock does not refer to an intialized read-write lock object
+	[EINVAL] rwlock does not refer to an initialized read-write lock object
 
 	It shall not return EINTR.
    </assertion>

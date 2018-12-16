@@ -20,7 +20,6 @@
    2. The ss_size member of the hanlder_s is equal to that of original_s.
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

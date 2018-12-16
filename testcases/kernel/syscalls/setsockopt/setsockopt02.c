@@ -97,9 +97,9 @@ static int create_skbuf(unsigned int sizeof_priv)
 
 	sk = SAFE_SOCKET(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 	TEST(setsockopt(sk, SOL_PACKET, PACKET_VERSION, &ver, sizeof(ver)));
-	if (TEST_RETURN && TEST_ERRNO == EINVAL)
+	if (TST_RET && TST_ERR == EINVAL)
 		tst_brk(TCONF | TTERRNO, "TPACKET_V3 not supported");
-	if (TEST_RETURN)
+	if (TST_RET)
 		tst_brk(TBROK | TTERRNO, "setsockopt(sk, SOL_PACKET, PACKET_VERSION, TPACKET_V3)");
 
 	return setsockopt(sk, SOL_PACKET, PACKET_RX_RING, &req, sizeof(req));
@@ -108,7 +108,7 @@ static int create_skbuf(unsigned int sizeof_priv)
 static void good_size(void)
 {
 	TEST(create_skbuf(512));
-	if (TEST_RETURN)
+	if (TST_RET)
 		tst_brk(TBROK | TTERRNO, "Can't create ring buffer with good settings");
 
 	tst_res(TPASS, "Can create ring buffer with good settinegs");
@@ -117,9 +117,9 @@ static void good_size(void)
 static void bad_size(void)
 {
 	TEST(create_skbuf(3U << 30));
-	if (TEST_RETURN && TEST_ERRNO != EINVAL)
+	if (TST_RET && TST_ERR != EINVAL)
 		tst_brk(TBROK | TTERRNO, "Unexpected setsockopt() error");
-	if (TEST_RETURN)
+	if (TST_RET)
 		tst_res(TPASS | TTERRNO, "Refused bad tp_sizeof_priv value");
 	else
 		tst_res(TFAIL, "Allowed bad tp_sizeof_priv value");

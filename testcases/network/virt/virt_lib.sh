@@ -18,7 +18,6 @@
 
 TST_SETUP="${TST_SETUP:-virt_lib_setup}"
 TST_CLEANUP="${TST_CLEANUP:-cleanup_vifaces}"
-trap "tst_brk TBROK 'test interrupted'" INT
 
 virt_lib_usage()
 {
@@ -51,7 +50,7 @@ virt_lib_setup()
 	;;
 	esac
 
-	tst_check_cmds "ip"
+	tst_test_cmds "ip"
 
 	virt_add ltp_v0 || \
 		tst_brk TCONF "iproute2 or kernel doesn't support $virt_type"
@@ -117,10 +116,13 @@ virt_add()
 		[ -z "$opt" ] && \
 			opt="remote $(tst_ipaddr rhost) dev $(tst_iface)"
 	;;
+	sit)
+		[ -z "$opt" ] && opt="remote $(tst_ipaddr rhost) local $(tst_ipaddr)"
+	;;
 	esac
 
 	case $virt_type in
-	vxlan|geneve)
+	vxlan|geneve|sit)
 		ip li add $vname type $virt_type $opt
 	;;
 	gre|ip6gre)
@@ -140,6 +142,9 @@ virt_add_rhost()
 		[ "$virt_type" = "vxlan" ] && opt="dev $(tst_iface rhost)"
 		[ "$vxlan_dstport" -eq 1 ] && opt="$opt dstport 0"
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
+	;;
+	sit)
+		tst_rhost_run -s -c "ip link add ltp_v0 type $virt_type $@"
 	;;
 	gre|ip6gre)
 		tst_rhost_run -s -c "ip -f inet$TST_IPV6 tu add ltp_v0 \
@@ -247,7 +252,7 @@ vxlan_setup_subnet_uni()
 
 vxlan_setup_subnet_multi()
 {
-	tst_check_cmds "od"
+	tst_test_cmds "od"
 	local b1=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
 	local b2=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
 	local b3=$(($(od -An -d -N1 /dev/urandom) % 254 + 1))
@@ -272,11 +277,11 @@ virt_compare_netperf()
 	local expect_res="${1:-pass}"
 	local opts="$2"
 
-	tst_netload -H $ip_virt_remote $opts -d res_ipv4 -e $expect_res || \
-		ret1="fail"
+	tst_netload -H $ip_virt_remote $opts -d res_ipv4 -e $expect_res \
+		-D ltp_v0 || ret1="fail"
 
-	tst_netload -H ${ip6_virt_remote} $opts -d res_ipv6 -e $expect_res || \
-		ret2="fail"
+	tst_netload -H ${ip6_virt_remote} $opts -d res_ipv6 -e $expect_res \
+		-D ltp_v0 || ret2="fail"
 
 	[ "$ret1" = "fail" -o "$ret2" = "fail" ] && return
 

@@ -84,15 +84,15 @@ static void do_child(const struct test_case *test)
 	SAFE_CLOSE(fd2);
 	SAFE_CLOSE(fd3);
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "kcmp() failed unexpectedly");
 		return;
 	}
 
-	if ((test->exp_different && TEST_RETURN == 0)
-		|| (test->exp_different == 0 && TEST_RETURN)) {
+	if ((test->exp_different && TST_RET == 0)
+		|| (test->exp_different == 0 && TST_RET)) {
 		tst_res(TFAIL, "kcmp() returned %lu instead of %d",
-			TEST_RETURN, test->exp_different);
+			TST_RET, test->exp_different);
 		return;
 	}
 

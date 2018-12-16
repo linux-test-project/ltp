@@ -20,7 +20,6 @@
  *	get an ETIMEOUT error.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdio.h>
@@ -43,7 +42,7 @@
 
 static pthread_rwlock_t rwlock;
 static int thread_state;
-static int currsec1, currsec2;
+static time_t currsec1, currsec2;
 static int expired;
 
 static void *fn_rd(void *arg)

@@ -66,24 +66,24 @@ static void if_nametoindex_test(void)
 		}
 
 		TEST(if_nametoindex(test_case[i].name));
-		if (!TEST_RETURN != !test_case[i].nonzero) {
+		if (!TST_RET != !test_case[i].nonzero) {
 			tst_res(TFAIL, "if_nametoindex(%s) %ld [should be %szero]",
-					test_case[i].name, TEST_RETURN,
+					test_case[i].name, TST_RET,
 					test_case[i].nonzero ? "non" : "");
 			return;
 		}
-		if (TEST_RETURN) {
-			pifn = if_indextoname(TEST_RETURN, ifname);
+		if (TST_RET) {
+			pifn = if_indextoname(TST_RET, ifname);
 			if (!pifn || strcmp(test_case[i].name, pifn)) {
 				tst_res(TFAIL,
 					"if_nametoindex(%s) %ld doesn't match if_indextoname(%ld) '%s'",
-					test_case[i].name, TEST_RETURN,
-					TEST_RETURN, pifn ? pifn : "");
+					test_case[i].name, TST_RET,
+					TST_RET, pifn ? pifn : "");
 				return;
 			}
 		}
 		tst_res(TINFO, "if_nametoindex(%s) %ld",
-			test_case[i].name, TEST_RETURN);
+			test_case[i].name, TST_RET);
 	}
 
 	tst_res(TPASS, "if_nametoindex() test succeeded");
@@ -95,11 +95,11 @@ static int sub_if_indextoname_test(unsigned int if_index)
 	unsigned int idx;
 
 	TEST((ifname == if_indextoname(if_index, ifname)));
-	if (!TEST_RETURN) {
-		if (TEST_ERRNO != ENXIO) {
+	if (!TST_RET) {
+		if (TST_ERR != ENXIO) {
 			tst_res(TFAIL,
 				"if_indextoname(%d) returns %ld but errno %d != ENXIO",
-				if_index, TEST_RETURN, TEST_ERRNO);
+				if_index, TST_RET, TST_ERR);
 			return 0;
 		}
 		tst_res(TINFO, "if_indextoname(%d) returns NULL", if_index);
@@ -176,7 +176,7 @@ static void if_nameindex_test(void)
 	pini = if_nameindex();
 	if (pini == NULL) {
 		tst_res(TFAIL, "if_nameindex() returns NULL, errno %d (%s)",
-			TEST_ERRNO, strerror(TEST_ERRNO));
+			TST_ERR, strerror(TST_ERR));
 		return;
 	}
 	for (i = 0; pini[i].if_index; ++i) {

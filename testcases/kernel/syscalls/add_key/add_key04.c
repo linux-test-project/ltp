@@ -49,7 +49,7 @@ static void do_test(void)
 	int status;
 
 	TEST(keyctl(KEYCTL_JOIN_SESSION_KEYRING, NULL));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "failed to join new session keyring");
 
 	if (SAFE_FORK() == 0) {
@@ -61,7 +61,7 @@ static void do_test(void)
 			sprintf(description, "keyring%d", i);
 			TEST(add_key("keyring", description, NULL, 0,
 				     KEY_SPEC_SESSION_KEYRING));
-			if (TEST_RETURN < 0) {
+			if (TST_RET < 0) {
 				tst_brk(TBROK | TTERRNO,
 					"unable to create keyring %d", i);
 			}
@@ -69,7 +69,7 @@ static void do_test(void)
 
 		TEST(add_key("user", "userkey", payload, sizeof(payload),
 			     KEY_SPEC_SESSION_KEYRING));
-		if (TEST_RETURN < 0)
+		if (TST_RET < 0)
 			tst_brk(TBROK | TTERRNO, "unable to create user key");
 
 		exit(0);

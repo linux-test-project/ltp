@@ -1,46 +1,36 @@
 #!/bin/sh
-# Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2015-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 VERSION=${VERSION:=3}
 NFILES=${NFILES:=1000}
 SOCKET_TYPE="${SOCKET_TYPE:-udp}"
 NFS_TYPE=${NFS_TYPE:=nfs}
 
+nfs_usage()
+{
+	echo "-t x    Socket type, tcp or udp, default is udp"
+	echo "-v x    NFS version, default is '3'"
+}
+
 nfs_parse_args()
 {
 	case "$1" in
-	h)
-		echo "Usage:"
-		echo "h        help"
-		echo "t x      socket type, tcp or udp, default is udp"
-		echo "v x      NFS version, default is '3'"
-		echo "6        run over IPv6"
-		exit 0
-	;;
-	v) VERSION=$2;;
-	t) SOCKET_TYPE=$2;;
-	*) tst_brkm TBROK "unknown option: $1"
+	v) VERSION="$(echo $2 | tr ',' ' ')";;
+	t) SOCKET_TYPE="$(echo $2 | tr ',' ' ')";;
 	esac
 }
 
-TST_OPTS="hv:t:"
+TST_OPTS="v:t:"
 TST_PARSE_ARGS=nfs_parse_args
+TST_USAGE=nfs_usage
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_ROOT=1
+TST_NEEDS_CMDS="${TST_NEEDS_CMDS:-mount exportfs}"
+TST_SETUP="${TST_SETUP:-nfs_setup}"
+TST_CLEANUP="${TST_CLEANUP:-nfs_cleanup}"
 
-TST_USE_LEGACY_API=1
 . tst_net.sh
 
 get_socket_type()
@@ -56,15 +46,52 @@ get_socket_type()
 	done
 }
 
+nfs_setup_server()
+{
+	local export_cmd="exportfs -i -o no_root_squash,rw *:$remote_dir"
+
+	if [ -n "$LTP_NETNS" ]; then
+		if [ ! -d $remote_dir ]; then
+			mkdir -p $remote_dir
+			ROD $export_cmd
+		fi
+		return
+	fi
+
+	if ! tst_rhost_run -c "test -d $remote_dir"; then
+		tst_rhost_run -s -c "mkdir -p $remote_dir; $export_cmd"
+	fi
+}
+
+nfs_mount()
+{
+	local host_type=rhost
+	local mount_dir
+
+	[ -n "$LTP_NETNS" ] && host_type=
+
+	if [ $TST_IPV6 ]; then
+		mount_dir="[$(tst_ipaddr $host_type)]:$remote_dir"
+	else
+		mount_dir="$(tst_ipaddr $host_type):$remote_dir"
+	fi
+
+	local mnt_cmd="mount -t nfs $opts $mount_dir $local_dir"
+
+	tst_res TINFO "Mounting NFS: $mnt_cmd"
+	if [ -n "$LTP_NETNS" ]; then
+		tst_rhost_run -s -c "$mnt_cmd"
+		return
+	fi
+
+	ROD $mnt_cmd
+}
+
 nfs_setup()
 {
-	tst_check_cmds mount exportfs
-
-	tst_tmpdir
-
 	# Check if current filesystem is NFS
 	if [ "$(stat -f . | grep "Type: nfs")" ]; then
-		tst_brkm TCONF "Cannot run nfs-stress test on mounted NFS"
+		tst_brk TCONF "Cannot run nfs-stress test on mounted NFS"
 	fi
 
 	local i
@@ -74,35 +101,19 @@ nfs_setup()
 	local local_dir
 	local remote_dir
 	local mount_dir
+
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
-		tst_resm TINFO "setup NFSv$i, socket type $type"
+		tst_res TINFO "setup NFSv$i, socket type $type"
 
 		local_dir="$TST_TMPDIR/$i/$n"
 		remote_dir="$TST_TMPDIR/$i/$type"
-
 		mkdir -p $local_dir
 
-		tst_rhost_run -c "test -d $remote_dir"
-		if [ "$?" -ne 0  ]; then
-			tst_rhost_run -s -c "mkdir -p $remote_dir"
-			tst_rhost_run -s -c "exportfs -i -o no_root_squash,rw \
-				*:$remote_dir"
-		fi
+		nfs_setup_server
 
 		opts="-o proto=$type,vers=$i"
-
-		if [ $TST_IPV6 ]; then
-			mount_dir="[$(tst_ipaddr rhost)]:$remote_dir"
-		else
-			mount_dir="$(tst_ipaddr rhost):$remote_dir"
-		fi
-
-
-		tst_resm TINFO "Mounting NFS '$mount_dir'"
-		tst_resm TINFO "to '$local_dir' with options '$opts'"
-
-		ROD mount -t nfs $opts $mount_dir $local_dir
+		nfs_mount
 
 		n=$(( n + 1 ))
 	done
@@ -114,7 +125,7 @@ nfs_setup()
 
 nfs_cleanup()
 {
-	tst_resm TINFO "Cleaning up testcase"
+	tst_res TINFO "Cleaning up testcase"
 	cd $LTPROOT
 
 	local i

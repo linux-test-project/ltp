@@ -64,7 +64,7 @@ static void setpriority_test(struct tcase *tc)
 	for (new_prio = -20; new_prio < 20; new_prio++) {
 		TEST(setpriority(tc->which, *tc->who, new_prio));
 
-		if (TEST_RETURN != 0) {
+		if (TST_RET != 0) {
 			tst_res(TFAIL | TTERRNO,
 				"setpriority(%d, %d, %d) failed",
 				tc->which, *tc->who, new_prio);

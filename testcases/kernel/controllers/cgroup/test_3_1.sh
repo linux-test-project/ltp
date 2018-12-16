@@ -23,9 +23,11 @@
 ################################################################################
 
 trap exit SIGUSR1
+
+path=$1
+
 for ((; ;))
 {
-	mkdir cgroup/0
-	rmdir cgroup/0
+	mkdir $path/0
+	rmdir $path/0
 }
-

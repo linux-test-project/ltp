@@ -1,199 +1,104 @@
 /*
+ * Copyright (c) 2018 Linux Test Project
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
+ *  21/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
  * NAME
- * 	execve05.c
+ *	execve05.c
  *
  * DESCRIPTION
- * 	This testcase tests the basic functionality of the execve(2) system
+ *	This testcase tests the basic functionality of the execve(2) system
  *	call.
  *
  * ALGORITHM
- *	This program also gets the names "test1", and "test2". This tests
- *	the functionality of the execve(2) system call by spawning a few
- *	children, each of which would execute "test1/test2" executables, and
- *	finally the parent ensures that they terminated correctly.
+ *	This tests the functionality of the execve(2) system call by spawning
+ *	a few children, each of which would execute "execve_child" simultaneously,
+ *	and finally the parent ensures that they terminated correctly.
  *
  * USAGE
- *	execve05 20 test1 test2 4
- *
- * RESTRICTIONS
- * 	This program does not follow the LTP format - *PLEASE FIX*
+ *	execve05 -i 5 -n 20
  */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include "test.h"
-#include "safe_macros.h"
+#include <pwd.h>
 
-#undef DEBUG			/* change this to #define if needed */
+#include "tst_test.h"
 
-void setup(void);
-void cleanup(void);
+#define TEST_APP "execve_child"
 
-char *TCID = "execve05";
-int TST_TOTAL = 1;
+static int nchild = 8;
 
-int iterations;
-char *fname1;
-char *fname2;
-char *prog;
-char *av[6];
-char *ev[1];
+static char *opt_nchild;
+static struct tst_option exe_options[] = {
+	{"n:", &opt_nchild, "-n    numbers of children"},
+	{NULL, NULL, NULL}
+};
 
-void usage(void)
+static const char *const resource_files[] = {
+	TEST_APP,
+	NULL,
+};
+
+static void do_child(void)
 {
-	tst_brkm(TBROK, NULL, "usage: %s <iters> <fname1> <fname2> <count>",
-		 TCID);
+	char *argv[3] = {TEST_APP, "canary", NULL};
+
+	TST_CHECKPOINT_WAIT(0);
+
+	TEST(execve(TEST_APP, argv, environ));
+	tst_res(TFAIL | TERRNO, "execve() returned unexpected errno");
 }
 
-int main(int ac, char **av)
+static void verify_execve(void)
 {
-	char iter[20];
-	int count, i, nchild, status;
-	pid_t pid;
+	int i;
 
-	int lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	if (ac != 5)
-		usage();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		prog = av[0];
-		iterations = atoi(av[1]);
-		fname1 = av[2];
-		fname2 = av[3];
-		count = atoi(av[4]);
-#ifdef DEBUG
-		tst_resm(TINFO, "Entered %s %d %s %s %d -- pid = %d", prog,
-			 iterations, fname1, fname2, count, getpid());
-#endif
-
-		if (iterations == 0) {
-			tst_resm(TPASS, "Test DONE, pid %d, -- %s %d %s %s",
-				 getpid(), prog, iterations, fname1, fname2);
-			tst_exit();
-		}
-
-		if (!count) {
-			sprintf(iter, "%d", iterations - 1);
-			av[0] = fname1;
-			av[1] = iter;
-			av[2] = fname1;
-			av[3] = fname2;
-			av[4] = "0";
-			av[5] = 0;
-			ev[0] = 0;
-#ifdef DEBUG
-			tst_resm(TINFO, "doing execve(%s, av, ev)", fname1);
-			tst_resm(TINFO, "av[0,1,2,3,4] = %s, %s, %s, %s, %s",
-				 av[0], av[1], av[2], av[3], av[4]);
-#endif
-			(void)execve(fname1, av, ev);
-			tst_resm(TFAIL, "Execve fail, %s, errno=%d", fname1,
-				 errno);
-		}
-
-		nchild = count * 2;
-
-		sprintf(iter, "%d", iterations);
-		for (i = 0; i < count; i++) {
-
-			pid = FORK_OR_VFORK();
-			if (pid == -1) {
-				perror("fork failed");
-				exit(1);
-			} else if (pid == 0) {
-				av[0] = fname1;
-				av[1] = iter;
-				av[2] = fname1;
-				av[3] = fname2;
-				av[4] = "0";
-				av[5] = 0;
-				ev[0] = 0;
-				(void)execve(fname1, av, ev);
-				perror("execve failed");
-				exit(2);
-			}
-#ifdef DEBUG
-			tst_resm(TINFO, "Main - started pid %d", pid);
-#endif
-			SAFE_WAIT(cleanup, &status);
-			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-				tst_resm(TFAIL, "child exited abnormally");
-
-			pid = FORK_OR_VFORK();
-			if (pid == -1) {
-				perror("Fork failed");
-				exit(1);
-			} else if (pid == 0) {
-				av[0] = fname2;
-				av[1] = iter;
-				av[2] = fname2;
-				av[3] = fname1;
-				av[4] = "0";
-				av[5] = 0;
-				ev[0] = 0;
-				execve(fname2, av, ev);
-				perror("execve failed");
-				exit(2);
-			}
-#ifdef DEBUG
-			tst_resm(TINFO, "Main - started pid %d", pid);
-#endif
-			SAFE_WAIT(cleanup, &status);
-			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-				tst_resm(TFAIL, "child exited abnormally");
-
-		}
-
-		if (wait(&status) != -1)
-			tst_brkm(TBROK, cleanup,
-				 "leftover children haven't exited yet");
-
+	for (i = 0; i < nchild; i++) {
+		if (SAFE_FORK() == 0)
+			do_child();
 	}
-	cleanup();
 
-	tst_exit();
+	TST_CHECKPOINT_WAKE2(0, nchild);
 }
 
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	umask(0);
+	if (opt_nchild)
+		nchild = SAFE_STRTOL(opt_nchild, 1, INT_MAX);
 }
 
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = verify_execve,
+	.options = exe_options,
+	.forks_child = 1,
+	.child_needs_reinit = 1,
+	.needs_checkpoints = 1,
+	.resource_files = resource_files,
+	.setup = setup,
+};

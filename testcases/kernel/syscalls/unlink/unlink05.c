@@ -59,7 +59,7 @@ static void verify_unlink(unsigned int n)
 	tc->setupfunc(fname);
 
 	TEST(unlink(fname));
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "unlink(%s) failed", tc->desc);
 		return;
 	}

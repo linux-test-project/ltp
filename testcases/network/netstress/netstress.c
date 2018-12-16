@@ -100,6 +100,7 @@ enum {
 };
 static uint proto_type;
 static char *type;
+static char *dev;
 static int sock_type = SOCK_STREAM;
 static int protocol;
 static int family = AF_INET6;
@@ -151,6 +152,10 @@ static void init_socket_opts(int sd)
 {
 	if (busy_poll >= 0)
 		SAFE_SETSOCKOPT_INT(sd, SOL_SOCKET, SO_BUSY_POLL, busy_poll);
+
+	if (dev)
+		SAFE_SETSOCKOPT(sd, SOL_SOCKET, SO_BINDTODEVICE, dev,
+				strlen(dev) + 1);
 
 	switch (proto_type) {
 	case TYPE_TCP:
@@ -283,7 +288,8 @@ static int client_recv(char *buf, int srv_msg_len, struct sock_info *i)
 
 	if (errno == ETIME && sock_type != SOCK_STREAM) {
 		if (++(i->etime_cnt) > max_etime_cnt)
-			tst_brk(TFAIL, "protocol timeout: %dms", i->timeout);
+			tst_brk(TFAIL, "client requests timeout %d times, last timeout %dms",
+				i->etime_cnt, i->timeout);
 		/* Increase timeout in poll up to 3.2 sec */
 		if (i->timeout < 3000)
 			i->timeout <<= 1;
@@ -386,9 +392,6 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 	}
 
 	for (i = 1; i < client_max_requests; ++i) {
-		if (proto_type == TYPE_UDP)
-			goto send;
-
 		if (inf.fd == -1) {
 			inf.fd = client_connect_send(client_msg, cln_len);
 			if (inf.fd == -1) {
@@ -403,7 +406,6 @@ void *client_fn(LTP_ATTRIBUTE_UNUSED void *arg)
 			continue;
 		}
 
-send:
 		if (max_rand_msg_len)
 			make_client_request(client_msg, &cln_len, &srv_len);
 
@@ -837,6 +839,8 @@ static void set_protocol_type(void)
 		proto_type = TYPE_DCCP;
 	else if (!strcmp(type, "sctp"))
 		proto_type = TYPE_SCTP;
+	else
+		tst_brk(TBROK, "Invalid proto_type: '%s'", type);
 }
 
 static void setup(void)
@@ -909,7 +913,9 @@ static void setup(void)
 		case TYPE_DCCP:
 		case TYPE_UDP:
 		case TYPE_UDP_LITE:
-			tst_res(TINFO, "max timeout errors %d", max_etime_cnt);
+			if (max_etime_cnt >= client_max_requests)
+				max_etime_cnt = client_max_requests - 1;
+			tst_res(TINFO, "maximum allowed timeout errors %d", max_etime_cnt);
 			wait_timeout = 100;
 		}
 	} else {
@@ -988,8 +994,9 @@ static struct tst_option options[] = {
 	{"S:", &source_addr, "-S x     Source address to bind"},
 	{"g:", &tcp_port, "-g x     x - server port"},
 	{"b:", &barg, "-b x     x - low latency busy poll timeout"},
-	{"T:", &type, "-T x     tcp (default), udp, dccp, sctp"},
-	{"z", &zcopy, "-z       enable SO_ZEROCOPY\n"},
+	{"T:", &type, "-T x     tcp (default), udp, udp_lite, dccp, sctp"},
+	{"z", &zcopy, "-z       enable SO_ZEROCOPY"},
+	{"D:", &dev, "-d x     bind to device x\n"},
 
 	{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
 	{"l", &client_mode, "-l       Become client, default is server"},
@@ -997,7 +1004,7 @@ static struct tst_option options[] = {
 	{"r:", &rarg, "-r x     Number of client requests"},
 	{"n:", &narg, "-n x     Client message size"},
 	{"N:", &Narg, "-N x     Server message size"},
-	{"m:", &Targ, "-m x     Reply timeout in microsec."},
+	{"m:", &Targ, "-m x     Receive timeout in milliseconds (not used by UDP/DCCP client)"},
 	{"d:", &rpath, "-d x     x is a path to file where result is saved"},
 	{"A:", &Aarg, "-A x     x max payload length (generated randomly)\n"},
 

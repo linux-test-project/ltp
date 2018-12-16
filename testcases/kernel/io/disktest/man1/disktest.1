@@ -604,7 +604,7 @@ This will dump 1024 bytes of data to stdout starting at LBA 25.
 .RE
 File I/O
 .RS
-Distest can be used to perform filesystem IO testing.  There is some setup required for this however.  Disktest will not automatically create a file on the filesystem.  Therefore, a file must be initialized.  This is only required for read only testing.  Write and read/write testing will create the file if not already created.  Also note, that when creating a file using random I/O, all the LBAs in the file may not be written.  This can cause disktest to show an error if a request is made to a file to an LBA that has not been previously written.  The follwing is an example to initialize a file for filesystem IO testing.
+Distest can be used to perform filesystem IO testing.  There is some setup required for this however.  Disktest will not automatically create a file on the filesystem.  Therefore, a file must be initialized.  This is only required for read only testing.  Write and read/write testing will create the file if not already created.  Also note, that when creating a file using random I/O, all the LBAs in the file may not be written.  This can cause disktest to show an error if a request is made to a file to an LBA that has not been previously written.  The following is an example to initialize a file for filesystem IO testing.
 
 disktest -w -pl -N200000 -B128k test.fil
 

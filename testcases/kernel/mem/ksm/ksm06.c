@@ -50,6 +50,11 @@ static struct tst_option ksm_options[] = {
 	{NULL, NULL, NULL}
 };
 
+static const char * const save_restore[] = {
+	"?/sys/kernel/mm/ksm/max_page_sharing",
+	NULL,
+};
+
 static void test_ksm(void)
 {
 	if (n_opt)
@@ -64,8 +69,6 @@ static void setup(void)
 {
 	if (access(PATH_KSM "merge_across_nodes", F_OK) == -1)
 		tst_brk(TCONF, "no merge_across_nodes sysfs knob");
-
-	save_max_page_sharing();
 
 	if (!is_numa(NULL, NH_MEMS, 2))
 		tst_brk(TCONF, "The case needs a NUMA system.");
@@ -90,8 +93,6 @@ static void cleanup(void)
 
 	if (run != -1)
 		FILE_PRINTF(PATH_KSM "run", "%d", run);
-
-	restore_max_page_sharing();
 }
 
 static struct tst_test test = {
@@ -99,6 +100,7 @@ static struct tst_test test = {
 	.options = ksm_options,
 	.setup = setup,
 	.cleanup = cleanup,
+	.save_restore = save_restore,
 	.test_all = test_ksm,
 };
 

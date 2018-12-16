@@ -21,7 +21,6 @@
  * 7.  Main thread unlock 'rwlock'
  * 8.  Child got the lock
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

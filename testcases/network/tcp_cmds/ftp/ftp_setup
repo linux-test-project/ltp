@@ -26,7 +26,7 @@ do_setup()
 	export TEST_USER_ENCRYPTED_PASSWD="42VmxaOByKwlA"
 	export TEST_USER_HOMEDIR="/home/$TEST_USER"
 
-	tst_check_cmds awk expect ftp useradd userdel vsftpd
+	tst_test_cmds awk expect ftp useradd userdel vsftpd
 
 	for vsftp_confdir in /etc/vsftpd /etc; do
 		if [ -r "$vsftp_confdir/vsftpd.conf" ]; then

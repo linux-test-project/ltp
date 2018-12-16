@@ -37,9 +37,9 @@ static void verify_getrandom(unsigned int n)
 {
 	TEST(tst_syscall(__NR_getrandom, NULL, 100, modes[n]));
 
-	if (TEST_RETURN == -1) {
+	if (TST_RET == -1) {
 		tst_res(TPASS | TTERRNO, "getrandom returned %ld",
-			TEST_RETURN);
+			TST_RET);
 	} else {
 		tst_res(TFAIL | TTERRNO, "getrandom failed");
 	}

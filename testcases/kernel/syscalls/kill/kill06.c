@@ -120,7 +120,7 @@ int main(int ac, char **av)
 			TEST(kill(-getpgrp(), TEST_SIG));
 			sleep(300);
 
-			tst_resm(TINFO, "%d never recieved a"
+			tst_resm(TINFO, "%d never received a"
 				 " signal", getpid());
 			exit(exno);
 		} else {
@@ -162,7 +162,7 @@ void do_child(void)
 
 	sleep(299);
 
-	tst_resm(TINFO, "%d never recieved a" " signal", getpid());
+	tst_resm(TINFO, "%d never received a" " signal", getpid());
 	exit(exno);
 }
 

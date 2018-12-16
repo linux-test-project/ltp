@@ -38,7 +38,7 @@ do_setup()
 
 	PING_CMD=ping${TST_IPV6}
 
-	tst_check_cmds $PING_CMD
+	tst_test_cmds $PING_CMD
 }
 
 do_test()

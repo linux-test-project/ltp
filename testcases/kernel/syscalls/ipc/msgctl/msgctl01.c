@@ -42,8 +42,8 @@ static void verify_msgctl(void)
 	memset(&buf, 'a', sizeof(buf));
 	TEST(msgctl(msg_id, IPC_STAT, &buf));
 
-	if (TEST_RETURN != 0) {
-		tst_res(TFAIL | TTERRNO, "msgctl() returned %li", TEST_RETURN);
+	if (TST_RET != 0) {
+		tst_res(TFAIL | TTERRNO, "msgctl() returned %li", TST_RET);
 		return;
 	}
 
@@ -143,7 +143,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (msg_id > 0)
+	if (msg_id >= 0)
 		SAFE_MSGCTL(msg_id, IPC_RMID, NULL);
 }
 

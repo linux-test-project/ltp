@@ -11,7 +11,6 @@
    permissions which should come up with denial access.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <sys/types.h>
 #include <pwd.h>

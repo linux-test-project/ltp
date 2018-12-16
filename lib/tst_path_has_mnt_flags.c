@@ -25,7 +25,7 @@
  * Check whether a path is on a filesystem that is mounted with
  * specified flags.
  */
-int tst_path_has_mnt_flags(void (cleanup_fn)(void),
+int tst_path_has_mnt_flags_(void (cleanup_fn)(void),
 		const char *path, const char *flags[])
 {
 	struct mntent *mnt;

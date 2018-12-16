@@ -21,7 +21,6 @@
  *	- call aio_return again, return status should be -1
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>

@@ -606,7 +606,7 @@ static int show_one_segment(segment_t * segp, bool header)
 }
 
 /*
- * segment_show() -- show specifed segment, or all, if none specified.
+ * segment_show() -- show specified segment, or all, if none specified.
  */
 int segment_show(char *name)
 {

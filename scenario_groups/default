@@ -17,17 +17,13 @@ filecaps
 cap_bounds
 fcntl-locktests
 connectors
-admin_tools
 timers
 power_management_tests
-numa
 hugetlb
 commands
 hyperthreading
 kernel_misc
-modules
 fs_ext4
-pipes
 can
 cpuhotplug
 net.ipv6_lib

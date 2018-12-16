@@ -16,7 +16,6 @@
  * 2.  Re-initialize it again without destroying it first.
  *
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,7 +38,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	/* Re-intialize without destroying it first */
+	/* Re-initialize without destroying it first */
 	rc = pthread_rwlock_init(&rwlock, NULL);
 
 	/* Cleanup */

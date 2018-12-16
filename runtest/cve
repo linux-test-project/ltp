@@ -2,13 +2,13 @@
 cve-2011-0999 thp01 -I 120
 cve-2011-2183 ksm05 -I 10
 cve-2011-2496 vma03
-cve-2012-0957 cve-2012-0957
+cve-2012-0957 uname04
 cve-2014-0196 cve-2014-0196
 cve-2015-0235 gethostbyname_r01
 cve-2015-7550 keyctl02
 cve-2016-4470 keyctl01.sh
 cve-2015-3290 cve-2015-3290
-cve-2016-4997 cve-2016-4997
+cve-2016-4997 setsockopt03
 cve-2016-5195 dirtyc0w
 cve-2016-7042 cve-2016-7042
 cve-2016-7117 cve-2016-7117
@@ -16,8 +16,8 @@ cve-2016-9604 keyctl08
 cve-2016-10044 cve-2016-10044
 cve-2017-2618 cve-2017-2618
 cve-2017-2671 cve-2017-2671
-cve-2017-5669 cve-2017-5669
-cve-2017-6951 cve-2017-6951
+cve-2017-5669 shmat03
+cve-2017-6951 request_key05
 cve-2017-7308 setsockopt02
 cve-2017-7472 keyctl04
 cve-2017-12192 keyctl07
@@ -25,6 +25,7 @@ cve-2017-12193 add_key04
 cve-2017-15274 add_key02
 cve-2017-15299 request_key03 -b cve-2017-15299
 cve-2017-15537 ptrace07
+cve-2017-15649 fanout01
 cve-2017-15951 request_key03 -b cve-2017-15951
 cve-2017-17807 request_key04
 cve-2017-1000364 stack_clash
@@ -32,5 +33,6 @@ cve-2017-5754 meltdown
 cve-2017-17052 cve-2017-17052
 cve-2017-16939 cve-2017-16939
 cve-2017-17053 cve-2017-17053
+cve-2017-18075 pcrypt_aead01
 cve-2018-5803 sctp_big_chunk
-cve-2018-1000001 getcwd05
+cve-2018-1000001 realpath01

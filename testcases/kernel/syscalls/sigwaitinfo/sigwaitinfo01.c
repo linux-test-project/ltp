@@ -371,19 +371,40 @@ void test_bad_address2(swi_func sigwaitinfo, int signo)
 		tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
 	case 0:
 		signal(SIGSEGV, SIG_DFL);
+
+		/*
+		 * depending on glibc implementation we should
+		 * either crash or get EFAULT
+		 */
 		TEST(sigwaitinfo((void *)1, NULL, NULL));
 
-		_exit(0);
+		if (TEST_RETURN == -1 && TEST_ERRNO == EFAULT)
+			_exit(0);
+
+		tst_resm(TINFO | TTERRNO, "swi_func returned: %ld",
+			TEST_RETURN);
+		_exit(1);
 		break;
 	default:
 		break;
 	}
 
 	SUCCEED_OR_DIE(waitpid, "waitpid failed", pid, &status, 0);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV)
+
+	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV)
+		|| (WIFEXITED(status) && WEXITSTATUS(status) == 0)) {
 		tst_resm(TPASS, "Test passed");
-	else
-		tst_resm(TFAIL, "Unrecognised child exit code");
+		return;
+	}
+
+	if (WIFEXITED(status)) {
+		tst_resm(TFAIL, "Unrecognised child exit code: %d",
+			WEXITSTATUS(status));
+	}
+	if (WIFSIGNALED(status)) {
+		tst_resm(TFAIL, "Unrecognised child termsig: %d",
+			WTERMSIG(status));
+	}
 }
 
 void test_bad_address3(swi_func sigwaitinfo, int signo)

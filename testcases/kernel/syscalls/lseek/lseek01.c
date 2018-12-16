@@ -57,15 +57,15 @@ static void verify_lseek(unsigned int n)
 	memset(read_buf, 0, sizeof(read_buf));
 
 	TEST(lseek(fd, tc->off, tc->whence));
-	if (TEST_RETURN == (off_t) -1) {
+	if (TST_RET == (off_t) -1) {
 		tst_res(TFAIL | TTERRNO, "lseek(%s, %ld, %s) failed", TFILE,
 			tc->off, tc->wname);
 		return;
 	}
 
-	if (TEST_RETURN != tc->exp_off) {
+	if (TST_RET != tc->exp_off) {
 		tst_res(TFAIL, "lseek(%s, %ld, %s) returned %ld, expected %ld",
-			TFILE, tc->off, tc->wname, TEST_RETURN, tc->exp_off);
+			TFILE, tc->off, tc->wname, TST_RET, tc->exp_off);
 		return;
 	}
 

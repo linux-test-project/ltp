@@ -324,6 +324,9 @@ overriden by setting '.timeout' in the test structure or by calling
 time may vary arbitrarily, for these timeout can be disabled by setting it to
 -1.
 
+Test can find out how much time (in seconds) is remaining to timeout,
+by calling 'tst_timeout_remaining()'.
+
 A word about the cleanup() callback
 +++++++++++++++++++++++++++++++++++
 
@@ -413,7 +416,7 @@ Printf-like function to report test result, it's mostly used with ttype:
 |==============================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
-'errno', 'TEST_ERRNO' respectively.
+'errno', 'TST_ERR' respectively.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -429,7 +432,7 @@ Printf-like function to report error and exit the test, it can be used with ttyp
 |============================================================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
-'errno', 'TEST_ERRNO' respectively.
+'errno', 'TST_ERR' respectively.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -692,6 +695,50 @@ The 'tst_reap_children()' function makes the process wait for all of its
 children and exits with 'tst_brk(TBROK, ...)' if any of them returned
 a non zero exit code.
 
+.Using tst_res() from binaries started by exec()
+[source,c]
+-------------------------------------------------------------------------------
+/* test.c */
+#define _GNU_SOURCE
+#include <unistd.h>
+#include "tst_test.h"
+
+static void do_test(void)
+{
+	char *const argv[] = {"test_exec_child", NULL};
+	char path[4096];
+
+	if (tst_get_path("test_exec_child", path, sizeof(path)))
+		tst_brk(TCONF, "Couldn't find test_exec_child in $PATH");
+
+	execve(path, argv, environ);
+
+	tst_res(TBROK | TERRNO, "EXEC!");
+}
+
+static struct tst_test test = {
+	.test_all = do_test,
+	.child_needs_reinit = 1,
+};
+
+/* test_exec_child.c */
+#define TST_NO_DEFAULT_MAIN
+#include "tst_test.h"
+
+int main(void)
+{
+	tst_reinit();
+	tst_res(TPASS, "Child passed!");
+	return 0;
+}
+-------------------------------------------------------------------------------
+
+The 'tst_res()' function can be also used from binaries started by 'exec()',
+the parent test process has to set the '.child_needs_reinit' flag so that the
+library prepares for it and has to make sure the 'LTP_IPC_PATH' environment
+vairiable is passed down, then the very fist thing the program has to call in
+'main()' is 'tst_reinit()' that sets up the IPC.
+
 2.2.9 Fork() and Parent-child synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -933,7 +980,7 @@ then.
 If '.format_device' flag is set the device is formatted with a filesystem as
 well. You can use '.dev_fs_type' to override the default filesystem type if
 needed and pass additional options to mkfs via '.dev_fs_opts' and
-'.dev_extra_opt' pointers. Note that '.format_device' implies '.needs_device'
+'.dev_extra_opts' pointers. Note that '.format_device' implies '.needs_device'
 there is no need to set both.
 
 If '.mount_device' is set, the device is mounted at '.mntpoint' which is used
@@ -1008,9 +1055,10 @@ The fs options 'fs_opts' should either be 'NULL' if there are none, or a
 'NULL' terminated array of strings such as:
 +const char *const opts[] = {"-b", "1024", NULL}+.
 
-The extra option 'extra_opt' should either be 'NULL' if there is none, or a
-string such as '"102400"'; 'extra_opt' will be passed after device name. e.g:
-+mkfs -t ext4 -b 1024 /dev/sda1 102400+ in this case.
+The extra options 'extra_opts' should either be 'NULL' if there are none, or a
+'NULL' terminated array of strings such as +{"102400", NULL}+; 'extra_opts'
+will be passed after device name. e.g: +mkfs -t ext4 -b 1024 /dev/sda1 102400+
+in this case.
 
 2.2.16 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1409,6 +1457,54 @@ https://www.kernel.org/doc/html/latest/admin-guide/tainted-kernels.html
 CRC32c checksum generation is supported by LTP. In order to use it, the
 test should include "tst_checksum.h" header, then can call tst_crc32c().
 
+2.2.26 Checking kernel for the driver support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests may need specific kernel drivers, either compiled in, or built
+as a module. If .need_drivers points to a NULL-terminated array of kernel
+module names these are all checked and the test exits with TCONF on the
+first missing driver.
+
+Since it relies on modprobe command, the check will be skipped if the command
+itself is not available on the system.
+
+2.2.27 Saving & restoring /proc|sys values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+LTP library can be instructed to save and restore value of specified
+(/proc|sys) files. This is achieved by initialized tst_test struct
+field 'save_restore'. It is a NULL terminated array of strings where
+each string represents a file, whose value is saved at the beginning
+and restored at the end of the test. Only first line of a specified
+file is saved and restored.
+
+Pathnames can be optionally prefixed to specify how strictly (during
+'store') are handled files that don't exist:
+  (no prefix) - test ends with TCONF
+  '?'         - test prints info message and continues
+  '!'         - test ends with TBROK
+
+'restore' is always strict and will TWARN if it encounters any error.
+
+Example:
+
+static const char *save_restore[] = {
+	"/proc/sys/kernel/core_pattern",
+	NULL,
+};
+
+static void setup(void)
+{
+	FILE_PRINTF("/proc/sys/kernel/core_pattern", "/mypath");
+}
+
+static struct tst_test test = {
+	...
+	.setup = setup,
+	.save_restore = save_restore,
+};
+
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1464,6 +1560,9 @@ The '$TST_CLEANUP' may be called even in the middle of the setup and must be
 able to clean up correctly even in this situation. The easiest solution for
 this is to keep track of what was initialized and act accordingly in the
 cleanup.
+
+WARNING: Similar to the C library, calling tst_brk() in the $TST_CLEANUP does
+         not exit the test and 'TBROK' is converted to 'TWARN'.
 
 Notice also the 'tst_run' function called at the end of the test that actually
 starts the test.
@@ -1603,6 +1702,7 @@ simply by setting right '$TST_NEEDS_FOO'.
 | 'TST_NEEDS_CMDS'   | String with command names that has to be present for
                        the test (see below).
 | 'TST_NEEDS_MODULE' | Test module name needed for the test (see below).
+| 'TST_NEEDS_DRIVERS'| Checks kernel drivers support for the test.
 |=============================================================================
 
 Checking for presence of commands
@@ -1624,8 +1724,25 @@ TST_NEEDS_CMDS="modinfo modprobe"
 Setting '$TST_NEEDS_CMDS' to a string listing required commands will check for
 existence each of them and exits the test with 'TCONF' on first misssing.
 
-Alternatively the 'tst_check_cmds()' function can be used to do the same on
+Alternatively the 'tst_test_cmds()' function can be used to do the same on
 runtime, since sometimes we need to the check at runtime too.
+
+'tst_check_cmds()' can be used for requirements just for a particular test
+as it doesn't exit (it issues 'tst_res TCONF'). Expected usage is:
+...
+
+TST_TESTFUNC=do_test
+. tst_test.sh
+
+do_test()
+{
+	tst_check_cmds cmd || return
+	cmd --foo
+	...
+}
+
+tst_run
+...
 
 Locating kernel modules
 +++++++++++++++++++++++
@@ -1733,6 +1850,20 @@ passed directly to the script in '$1', '$2', ..., '$n'.
 
 2.3.4 Usefull library functions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Retrieving configuration variables
+++++++++++++++++++++++++++++++++++
+
+You may need to retrieve configuration values such as PAGESIZE, there is
+'getconf' but as some system may not have it, you are advised to use
+'tst_getconf' instead. Note that it implements subset of 'getconf'
+system variables used by the testcases only.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# retrieve PAGESIZE
+pagesize=`tst_getconf PAGESIZE`
+-------------------------------------------------------------------------------
 
 Sleeping for subsecond intervals
 ++++++++++++++++++++++++++++++++

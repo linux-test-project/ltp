@@ -103,6 +103,10 @@
 # define AT_SYMLINK_NOFOLLOW 0x100
 #endif
 
+#ifndef AT_EMPTY_PATH
+# define AT_EMPTY_PATH 0x1000
+#endif
+
 #ifndef AT_REMOVEDIR
 # define AT_REMOVEDIR 0x200
 #endif

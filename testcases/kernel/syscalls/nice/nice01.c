@@ -39,13 +39,13 @@ static void verify_nice(void)
 
 	TEST(nice(NICEINC));
 
-	if (TEST_RETURN != (orig_nice + NICEINC)) {
+	if (TST_RET != (orig_nice + NICEINC)) {
 		tst_res(TFAIL | TTERRNO, "nice(%d) returned %li, expected %i",
-		        NICEINC, TEST_RETURN, orig_nice + NICEINC);
+			NICEINC, TST_RET, orig_nice + NICEINC);
 		return;
 	}
 
-	if (TEST_ERRNO) {
+	if (TST_ERR) {
 		tst_res(TFAIL | TTERRNO, "nice(%d) failed", NICEINC);
 		return;
 	}
@@ -61,7 +61,7 @@ static void verify_nice(void)
 	tst_res(TPASS, "nice(%d) passed", NICEINC);
 
 	TEST(nice(-NICEINC));
-	if (TEST_ERRNO)
+	if (TST_ERR)
 		tst_brk(TBROK | TERRNO, "nice(-NICEINC) failed");
 }
 

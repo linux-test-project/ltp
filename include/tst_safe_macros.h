@@ -441,6 +441,20 @@ struct group *safe_getgrnam(const char *file, const int lineno,
 #define SAFE_GETGRNAM(name) \
 	safe_getgrnam(__FILE__, __LINE__, (name))
 
+struct group *safe_getgrnam_fallback(const char *file, const int lineno,
+		const char *name, const char *fallback);
+#define SAFE_GETGRNAM_FALLBACK(name, fallback) \
+	safe_getgrnam_fallback(__FILE__, __LINE__, (name), (fallback))
+
+struct group *safe_getgrgid(const char *file, const int lineno, gid_t gid);
+#define SAFE_GETGRGID(gid) \
+	safe_getgrgid(__FILE__, __LINE__, (gid))
+
+ssize_t safe_getxattr(const char *file, const int lineno, const char *path,
+	const char *name, void *value, size_t size);
+#define SAFE_GETXATTR(path, name, value, size) \
+	safe_getxattr(__FILE__, __LINE__, (path), (name), (value), (size))
+
 int safe_setxattr(const char *file, const int lineno, const char *path,
             const char *name, const void *value, size_t size, int flags);
 #define SAFE_SETXATTR(path, name, value, size, flags) \
@@ -461,6 +475,16 @@ int safe_removexattr(const char *file, const int lineno, const char *path,
 #define SAFE_REMOVEXATTR(path, name) \
 	safe_removexattr(__FILE__, __LINE__, (path), (name))
 
+int safe_lremovexattr(const char *file, const int lineno, const char *path,
+		const char *name);
+#define SAFE_LREMOVEXATTR(path, name) \
+	safe_lremovexattr(__FILE__, __LINE__, (path), (name))
+
+int safe_fremovexattr(const char *file, const int lineno, int fd,
+		const char *name);
+#define SAFE_FREMOVEXATTR(fd, name) \
+	safe_fremovexattr(__FILE__, __LINE__, (fd), (name))
+
 int safe_fsync(const char *file, const int lineno, int fd);
 #define SAFE_FSYNC(fd) safe_fsync(__FILE__, __LINE__, (fd))
 
@@ -471,6 +495,19 @@ int safe_mknod(const char *file, const int lineno, const char *pathname,
 	mode_t mode, dev_t dev);
 #define SAFE_MKNOD(pathname, mode, dev) \
 	safe_mknod(__FILE__, __LINE__, (pathname), (mode), (dev))
+
+int safe_mlock(const char *file, const int lineno, const char *addr,
+	size_t len);
+#define SAFE_MLOCK(addr, len) safe_mlock(__FILE__, __LINE__, (addr), (len))
+
+int safe_munlock(const char *file, const int lineno, const char *addr,
+	size_t len);
+#define SAFE_MUNLOCK(addr, len) safe_munlock(__FILE__, __LINE__, (addr), (len))
+
+int safe_mincore(const char *file, const int lineno, void *start,
+	size_t length, unsigned char *vec);
+#define SAFE_MINCORE(start, length, vec) \
+	safe_mincore(__FILE__, __LINE__, (start), (length), (vec))
 
 int safe_fanotify_init(const char *file, const int lineno,
 	unsigned int flags, unsigned int event_f_flags);

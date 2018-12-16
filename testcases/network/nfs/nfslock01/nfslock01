@@ -1,19 +1,7 @@
 #!/bin/sh
-# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2016-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #  PURPOSE:
 #           Two processes open FLOCK_IDATA file simultaneously
@@ -21,9 +9,8 @@
 #           and fill them with '0's and '1's. After they find eof, the
 #           datafiles are compared.
 
-TCID=nfslock
-TST_TOTAL=1
-TST_CLEANUP="nfs_cleanup"
+TST_SETUP="do_setup"
+TST_TESTFUNC="do_test"
 
 . nfs_lib.sh
 
@@ -33,50 +20,46 @@ do_setup()
 {
 	nfs_setup
 
-	tst_resm TINFO "creating test files"
+	tst_res TINFO "creating test files"
 	ROD nfs_flock_dgen flock_data 63 16384 0
 	ROD nfs_flock_dgen flock_odata 63 16384 1
 
 	[ "$(wc -c flock_data | awk '{print $1}')" -ne 1048576 ] && \
-		tst_brkm TBROK "could not create 'flock_data'"
+		tst_brk TBROK "could not create 'flock_data'"
 
 	[ "$(wc -c flock_odata | awk '{print $1}')" -ne 1048576 ] && \
-		tst_brkm TBROK "could not create 'flock_odata'"
+		tst_brk TBROK "could not create 'flock_odata'"
 }
 
 do_test()
 {
-	tst_resm TINFO "Testing locking"
+	tst_res TINFO "Testing locking"
 
 	ROD cp flock_data flock_idata
 
-	tst_resm TINFO "locking 'flock_idata' file and writing data"
+	tst_res TINFO "locking 'flock_idata' file and writing data"
 
 	nfs_flock 0 flock_idata &
 	local pids=$!
 	nfs_flock 1 flock_idata &
 	pids="$pids $!"
 
-	tst_resm TINFO "waiting for pids: $pids"
+	tst_res TINFO "waiting for pids: $pids"
 	for p in $pids; do
 		wait $p
 		if [ $? -ne 0 ]; then
-			tst_brkm TFAIL "nfs_lock process failed"
+			tst_brk TFAIL "nfs_lock process failed"
 		else
-			tst_resm TINFO "$p completed"
+			tst_res TINFO "$p completed"
 		fi
 	done
 
 	diff flock_odata flock_idata
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "content is different"
+		tst_res TFAIL "content is different"
 	else
-		tst_resm TPASS "content is the same"
+		tst_res TPASS "content is the same"
 	fi
 }
 
-do_setup
-
-do_test
-
-tst_exit
+tst_run

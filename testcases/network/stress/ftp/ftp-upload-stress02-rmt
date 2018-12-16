@@ -25,7 +25,7 @@ TST_CLEANUP="cleanup"
 
 . test.sh
 
-tst_check_cmds killall
+tst_test_cmds killall
 
 server_ipaddr="$1"
 urldir="$2"

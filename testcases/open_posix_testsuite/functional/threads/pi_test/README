@@ -28,26 +28,6 @@ watchdog timer to kill the pi mutex tests if they fail.
 For different tests, there are different result analysis methods. The
 following two sections will describe this in detail.
 
-Robust Mutex Tests
-------------------------
-The tests are under <rtnptl-tests>/robust_test directory.
-
-rt-nptl supports 'robust' behavior, there will be two robust modes,
-one is PTHREAD_MUTEX_ROBUST_NP mode, the other is
-PTHREAD_MUTEX_ROBUST_SUN_NP mode. When the owner of a mutex dies in
-the first mode, the waiter will set the mutex to ENOTRECOVERABLE
-state, while in the second mode, the waiter needs to call
-pthread_mutex_setconsistency_np to change the state manually.
-
-The tests with name robust*-sun are used to test the
-PTHREAD_MUTEX_ROBUST_NP mode, other tests with name robust*-mode2 are
-used to test the PTHREAD_MUTEX_ROBUST_SUN_NP mode. Please refer to the
-description in the tests for the detailed information.
-
-Using run.sh under <rtnptl-tests>/robust_test to run the robust mutex
-tests automatically, the PASS or FAIL result can be obtained from the
-stdout.
-
 Priority Inheritance Mutex Tests
 --------------------------
 The tests are under <rtnptl-tests>/pi_test directory.

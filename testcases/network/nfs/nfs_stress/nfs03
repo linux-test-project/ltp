@@ -1,28 +1,12 @@
 #! /bin/sh
-# Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2015-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-#  DESCRIPTION: This script sets up the NFS directories in the remote machine
-#               and runs the LTP's filesystem test: fs_inod.
-#
 # Created by: Robbie Williamson (robbiew@us.ibm.com)
 
-TCID="nfs03"
-TST_TOTAL=1
 TST_CLEANUP="nfs03_cleanup"
+TST_SETUP="nfs03_setup"
+TST_TESTFUNC="do_test"
 
 . nfs_lib.sh
 
@@ -33,7 +17,7 @@ ORIG_NFSD=
 
 make_subdirs()
 {
-	tst_resm TINFO "make '$DIR_NUM' directories"
+	tst_res TINFO "make '$DIR_NUM' directories"
 	for i in $(seq 0 $DIR_NUM); do
 		ROD mkdir -p dir$i
 	done
@@ -63,9 +47,9 @@ rm_files()
 
 do_test()
 {
-	tst_resm TINFO "Multiple processes creating and deleting files"
+	tst_res TINFO "Multiple processes creating and deleting files"
 
-	tst_resm TINFO "creating dir1 subdirectories & files"
+	tst_res TINFO "creating dir1 subdirectories & files"
 	ROD mkdir -p dir1
 	cd dir1
 	make_subdirs
@@ -73,34 +57,31 @@ do_test()
 	pid1=$!
 	cd ..
 
-	tst_resm TINFO "creating dir2 subdirectories & files"
+	tst_res TINFO "creating dir2 subdirectories & files"
 	ROD mkdir -p dir2
 	cd dir2
 	make_subdirs
 	touch_files &
 	pid2=$!
 
-	tst_resm TINFO "cd dir1 & removing files"
+	tst_res TINFO "cd dir1 & removing files"
 	cd ../dir1
 	wait $pid1
 	rm_files &
 
-	tst_resm TINFO "cd dir2 & removing files"
+	tst_res TINFO "cd dir2 & removing files"
 	cd ../dir2
 	wait $pid2
-	rm_files &
+	rm_files
 
-	# wait for all background processes to complete execution
-	wait
-
-	tst_resm TPASS "test done"
+	tst_res TPASS "test done"
 }
 
 nfs03_setup()
 {
 	nfs_setup
 
-	tst_resm TINFO "Setting server side nfsd count to $THREAD_NUM"
+	tst_res TINFO "Setting server side nfsd count to $THREAD_NUM"
 	ORIG_NFSD=$(tst_rhost_run -s -c 'ps -ef | grep -w nfsd | grep -v grep | wc -l')
 	tst_rhost_run -s -c "rpc.nfsd $THREAD_NUM"
 }
@@ -111,8 +92,4 @@ nfs03_cleanup()
 	nfs_cleanup
 }
 
-nfs03_setup
-
-do_test
-
-tst_exit
+tst_run

@@ -107,7 +107,7 @@ int main(int ac, char **av)
 		/*
 		 * Attempt to expand the existing mapped
 		 * memory region (memsize) by newsize limits
-		 * using mremap() should fail as specifed old
+		 * using mremap() should fail as specified old
 		 * virtual address was not mapped.
 		 */
 		errno = 0;

@@ -45,10 +45,10 @@ static void verify_read(void)
 
 	TEST(read(fd, buf, SIZE));
 
-	if (TEST_RETURN == -1)
+	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO, "read(2) failed");
 	else
-		tst_res(TPASS, "read(2) returned %ld", TEST_RETURN);
+		tst_res(TPASS, "read(2) returned %ld", TST_RET);
 }
 
 static void setup(void)

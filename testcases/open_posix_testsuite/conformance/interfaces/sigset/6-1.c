@@ -16,7 +16,6 @@
  4. Verify that SIGCHLD is pending.
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

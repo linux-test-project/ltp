@@ -71,7 +71,11 @@ setup()
 		CONFIG_FILE="/etc/syslog-ng/syslog-ng.conf"
 	elif [ "$SYSLOG_DAEMON" = "rsyslog" ]; then
 		CONFIG_FILE="/etc/rsyslog.conf"
-		if grep -q -r '^\$ModLoad[[:space:]]*imjournal' /etc/rsyslog.conf /etc/rsyslog.d/ ; then
+		# To cope with systemd-journal, we are looking for either:
+		#   $ModLoad imjournal
+		#   module(load="imjournal"...)
+		# in rsyslog config, and using those settings.
+		if grep -qri '^[^#].*load.*imjournal' /etc/rsyslog.conf /etc/rsyslog.d/ ; then
 			systemd_journal=$(grep -Ehoi "^[^#].*(imjournal|workdirectory).*" -r /etc/rsyslog.conf /etc/rsyslog.d/)
 			RSYSLOG_CONFIG=$(cat <<EOF
 $systemd_journal

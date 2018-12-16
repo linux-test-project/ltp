@@ -145,6 +145,7 @@ static void do_test(void)
 static void setup(void)
 {
 	const char *fs_opts[3] = {"-b", "1024", NULL};
+	const char *extra_opts[] = {"10240", NULL};
 
 	tst_sig(FORK, DEF_HANDLER, NULL);
 	tst_require_root();
@@ -159,7 +160,7 @@ static void setup(void)
 	device = tst_acquire_device(cleanup);
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
-	tst_mkfs(cleanup, device, fs_type, fs_opts, "10240");
+	tst_mkfs(cleanup, device, fs_type, fs_opts, extra_opts);
 
 	SAFE_MKDIR(cleanup, MNTPOINT, 0755);
 	/*

@@ -69,14 +69,14 @@ static void verify_direct_preadv(unsigned int n)
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 
 	TEST(preadv(fd, rd_iovec, tc->count, *tc->offset));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_res(TFAIL | TTERRNO, "preadv(O_DIRECT) fails");
 		return;
 	}
 
-	if (TEST_RETURN != *tc->size) {
+	if (TST_RET != *tc->size) {
 		tst_res(TFAIL, "preadv(O_DIRECT) read %li bytes, expected %zi",
-			 TEST_RETURN, *tc->size);
+			 TST_RET, *tc->size);
 		return;
 	}
 

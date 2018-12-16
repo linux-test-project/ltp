@@ -36,13 +36,13 @@ int sample_fn(int clk_id, long long usec)
 	tst_timer_stop();
 	tst_timer_sample();
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "futex_wait() returned %li, expected -1",
-		         TEST_RETURN);
+			TST_RET);
 		return 1;
 	}
 
-	if (TEST_ERRNO != ETIMEDOUT) {
+	if (TST_ERR != ETIMEDOUT) {
 		tst_res(TFAIL | TTERRNO, "expected errno=%s",
 		        tst_strerrno(ETIMEDOUT));
 		return 1;

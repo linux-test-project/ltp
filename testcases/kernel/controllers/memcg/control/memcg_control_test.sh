@@ -41,7 +41,7 @@ export TST_COUNT=0
 export TMP=${TMP:-/tmp}
 cd $TMP
 
-PAGE_SIZE=$(getconf PAGESIZE)
+PAGE_SIZE=$(tst_getconf PAGESIZE)
 
 TOT_MEM_LIMIT=$PAGE_SIZE
 ACTIVE_MEM_LIMIT=$PAGE_SIZE

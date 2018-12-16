@@ -103,10 +103,12 @@ int main(int argc, char **argv)
 		ret =
 		    numa_move_pages(0, TEST_PAGES, pages, nodes, status,
 				    MPOL_MF_MOVE);
-		if (ret != 0) {
+		if (ret < 0) {
 			tst_resm(TFAIL|TERRNO, "move_pages failed");
 			free_pages(pages, TEST_PAGES);
 			continue;
+		} else if (ret > 0) {
+			tst_resm(TINFO, "move_pages() returned %d\n", ret);
 		}
 
 		for (i = 0; i < TEST_PAGES; i++)

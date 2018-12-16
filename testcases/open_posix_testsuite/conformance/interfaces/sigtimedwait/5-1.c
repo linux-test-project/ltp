@@ -24,7 +24,6 @@
     4. Verify that sigtimedwait() returns a -1.
  */
 
-#define _XOPEN_SOURCE 600
 #define _XOPEN_REALTIME 1
 
 #define TIMERSIGNAL SIGUSR1

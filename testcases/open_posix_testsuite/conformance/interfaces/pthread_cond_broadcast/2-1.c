@@ -11,7 +11,6 @@
  *   own the mutex with which it called pthread_cond_wait().
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <stdlib.h>

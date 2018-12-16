@@ -23,7 +23,6 @@
  *	9. Child should get the write lock.
  */
 
-#define _XOPEN_SOURCE 600
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>

@@ -53,7 +53,7 @@ mount_loop_device()
 {
 	local ret
 
-	tst_check_cmds mkfs.$FS_TYPE
+	tst_test_cmds mkfs.$FS_TYPE
 	tst_mkfs $FS_TYPE $TST_DEVICE
 	ROD_SILENT mkdir -p mntpoint
 	mount ${TST_DEVICE} mntpoint

@@ -102,7 +102,7 @@ gen_fs_tree "$MAKE_FILE_SYS_DIR" 1
 # Make ISO9660 file system with different options.
 # Mount the ISO9660 file system with different mount options.
 
-tst_check_cmds mkisofs
+tst_test_cmds mkisofs
 
 for mkisofs_opt in \
 	" " \
@@ -110,8 +110,8 @@ for mkisofs_opt in \
 	"-hfs -D" \
 	" -R " \
 	"-R -J" \
-	"-f -l -D -J -L -R" \
-	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -L -R"
+	"-f -l -D -J -allow-leading-dots -R" \
+	"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -allow-leading-dots -R"
 do
 	rm -f isofs.iso
 	mkisofs -o isofs.iso -quiet $mkisofs_opt $MAKE_FILE_SYS_DIR 2> /dev/null

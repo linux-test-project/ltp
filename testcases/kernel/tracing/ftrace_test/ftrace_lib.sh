@@ -100,7 +100,9 @@ restore_old_setting()
 
 	echo nop > current_tracer
 	echo 0 > events/enable
-	echo 0 > tracing_max_latency 2> /dev/null
+	if [ -e tracing_max_latency ]; then
+		echo 0 > tracing_max_latency
+	fi
 
 	if [ -e tracing_cpumask ]; then
 		echo $old_tracing_cpumask > tracing_cpumask

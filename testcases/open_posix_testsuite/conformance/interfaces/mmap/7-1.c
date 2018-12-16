@@ -24,7 +24,6 @@
  * 6. Check whether the modification has taken effect.
  */
 
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -24,13 +24,12 @@ int convert;
 static void usage(char *prog_name, int status)
 {
 	fprintf(stderr, USAGE, prog_name);
-	exit(1);
+	exit(status);
 }
 
 static void checkopt(int argc, char **argv)
 {
-	char c = '\0';
-	int optc = 0;
+	int c, optc = 0;
 
 	while ((c = getopt(argc, argv, "ahs")) != -1) {
 		switch (c) {

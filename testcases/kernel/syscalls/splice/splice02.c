@@ -40,9 +40,9 @@ static void splice_test(void)
 	fd = SAFE_OPEN("splice02-temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
 	TEST(splice(STDIN_FILENO, NULL, fd, NULL, SPLICE_SIZE, 0));
-	if (TEST_RETURN < 0) {
+	if (TST_RET < 0) {
 		tst_res(TFAIL, "splice failed - errno = %d : %s",
-			TEST_ERRNO, strerror(TEST_ERRNO));
+			TST_ERR, strerror(TST_ERR));
 	} else {
 		tst_res(TPASS, "splice() system call Passed");
 	}

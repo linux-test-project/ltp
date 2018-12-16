@@ -125,7 +125,6 @@ modify_ldt 123
 adjtimex 124
 mprotect 125
 sigprocmask 126
-create_module 127
 init_module 128
 delete_module 129
 get_kernel_syms 130
@@ -162,7 +161,6 @@ nanosleep 162
 mremap 163
 setresuid 164
 getresuid 165
-query_module 166
 poll 167
 nfsservctl 168
 setresgid 169
@@ -341,10 +339,17 @@ recvmsg 342
 recvmmsg 343
 accept4 344
 syscalls 345
+process_vm_readv  351
+process_vm_writev 352
 kcmp 354
 sched_setattr 355
 sched_getattr 356
 renameat2 357
 getrandom 359
 memfd_create 360
+membarrier 365
+execveat 362
+mlock2 378
 copy_file_range 379
+preadv2 380
+statx 383

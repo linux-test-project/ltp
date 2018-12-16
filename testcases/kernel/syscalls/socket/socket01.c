@@ -57,19 +57,19 @@ static void verify_socket(unsigned int n)
 	struct test_case_t *tc = &tdat[n];
 
 	TEST(fd = socket(tc->domain, tc->type, tc->proto));
-	if (TEST_RETURN >= 0)
-		TEST_RETURN = 0;
+	if (TST_RET >= 0)
+		TST_RET = 0;
 
 	if (fd > 0)
 		SAFE_CLOSE(fd);
 
-	if (TEST_RETURN != tc->retval) {
+	if (TST_RET != tc->retval) {
 		tst_res(TFAIL, "%s returned %d (expected %d)",
 			tc->desc, fd, tc->retval);
 		return;
 	}
 
-	if (TEST_ERRNO != tc->experrno) {
+	if (TST_ERR != tc->experrno) {
 		tst_res(TFAIL | TTERRNO, "expected %s(%d)",
 		        tst_strerrno(tc->experrno), tc->experrno);
 		return;

@@ -47,9 +47,6 @@ done
 
 */
 
-/* This utility should compile on any POSIX-conformant implementation. */
-#define _POSIX_C_SOURCE 200112L
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

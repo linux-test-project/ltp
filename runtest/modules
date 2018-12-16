@@ -1,5 +1,0 @@
-#DESCRIPTION:2.6.x kernel module tests
-delete_module01 delete_module01
-delete_module02 delete_module02
-delete_module03 delete_module03
-

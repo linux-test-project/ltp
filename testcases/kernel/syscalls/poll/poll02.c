@@ -41,8 +41,8 @@ int sample_fn(int clk_id, long long usec)
 	tst_timer_stop();
 	tst_timer_sample();
 
-	if (TEST_RETURN != 0) {
-		tst_res(TFAIL | TTERRNO, "poll() returned %li", TEST_RETURN);
+	if (TST_RET != 0) {
+		tst_res(TFAIL | TTERRNO, "poll() returned %li", TST_RET);
 		return 1;
 	}
 

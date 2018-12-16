@@ -15,7 +15,6 @@
  *	3. Attempt to destroy it while it is still locked.
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>

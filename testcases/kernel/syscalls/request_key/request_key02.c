@@ -54,12 +54,12 @@ static void verify_request_key(unsigned int n)
 	struct test_case *tc = tcases + n;
 
 	TEST(request_key("keyring", tc->des, NULL, *tc->id));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "request_key() succeed unexpectly");
 		return;
 	}
 
-	if (TEST_ERRNO == tc->exp_err) {
+	if (TST_ERR == tc->exp_err) {
 		tst_res(TPASS | TTERRNO, "request_key() failed expectly");
 		return;
 	}

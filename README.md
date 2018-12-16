@@ -22,6 +22,9 @@ http://lists.linux.it/listinfo/ltp
 The git repository is located at GitHub at:
 https://github.com/linux-test-project/ltp
 
+The patchwork instance is at:
+https://patchwork.ozlabs.org/project/ltp/list/
+
 Warning!
 ========
 
@@ -178,6 +181,8 @@ There is also a step-by-step tutorial:
 If something is not covered there don't hesitate to ask on the LTP mailing
 list. Also note that these documents are available online at:
 
-https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines
-https://github.com/linux-test-project/ltp/wiki/BuildSystem
-https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
+* https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines
+* https://github.com/linux-test-project/ltp/wiki/BuildSystem
+* https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
+
+Although we accept GitHub pull requests, the preferred way is sending patches to our mailing list.

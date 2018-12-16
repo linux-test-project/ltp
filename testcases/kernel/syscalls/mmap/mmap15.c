@@ -80,10 +80,9 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if (errno != ENOMEM) {
+		if (errno != ENOMEM && errno != EINVAL) {
 			tst_resm(TFAIL | TERRNO, "mmap into high region "
-				 "failed unexpectedly - expect "
-				 "errno=ENOMEM, got");
+				 "failed unexpectedly");
 		} else {
 			tst_resm(TPASS | TERRNO, "mmap into high region "
 				 "failed as expected");

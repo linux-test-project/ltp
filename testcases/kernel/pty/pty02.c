@@ -25,27 +25,39 @@
  */
 
 #include <stdlib.h>
+#include <errno.h>
 #include <termio.h>
 
 #include "tst_test.h"
+#include "lapi/termbits.h"
 
 static void do_test(void)
 {
-	struct termios io = { .c_lflag = EXTPROC | ICANON };
+	struct termios io;
 	int ptmx, pts;
 	char c = 'A';
 	int nbytes;
 
 	ptmx = SAFE_OPEN("/dev/ptmx", O_WRONLY);
 
-	if (tcsetattr(ptmx, TCSANOW, &io) != 0)
+	if (tcgetattr(ptmx, &io) != 0)
+		tst_brk(TBROK | TERRNO, "tcgetattr() failed");
+
+	io.c_lflag = EXTPROC | ICANON;
+
+	TEST(tcsetattr(ptmx, TCSANOW, &io));
+	if (TST_RET == -1) {
+		if (TST_ERR == EINVAL)
+			tst_brk(TCONF, "tcsetattr(, , EXTPROC | ICANON) is not supported");
 		tst_brk(TBROK | TERRNO, "tcsetattr() failed");
+	}
 
 	if (unlockpt(ptmx) != 0)
 		tst_brk(TBROK | TERRNO, "unlockpt() failed");
 
 	pts = SAFE_OPEN(ptsname(ptmx), O_RDONLY);
-	SAFE_WRITE(1, ptmx, &c, 1);
+	/* write newline to ptmx to avoid read() on pts to block */
+	SAFE_WRITE(1, ptmx, "A\n", 2);
 	SAFE_READ(1, pts, &c, 1);
 
 	tst_res(TINFO, "Calling FIONREAD, this will hang in n_tty_ioctl() if the bug is present...");

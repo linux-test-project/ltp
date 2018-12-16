@@ -19,7 +19,7 @@
   <assertion id="4" tag="ref:XSH6:33657:33661">
   pthread_mutex_destroy() may fail if:
 
-  -[EBUSY] The implementation has detected an attempt to destory the
+  -[EBUSY] The implementation has detected an attempt to destroy the
   object referenced by 'mutex' while it is locked or referenced.
   -[EINVAL] The value specified by 'mutex' is invalid.
 

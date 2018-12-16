@@ -54,7 +54,7 @@ char *TCID = "chroot01";
 int TST_TOTAL = 1;
 int fail;
 
-char path[] = "/tmp";
+char *path;
 
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
@@ -94,6 +94,7 @@ void setup(void)
 	tst_require_root();
 
 	tst_tmpdir();
+	path = tst_get_tmpdir();
 
 	if ((ltpuser = getpwnam(nobody_uid)) == NULL)
 		tst_brkm(TBROK | TERRNO, cleanup,
@@ -110,5 +111,6 @@ void cleanup(void)
 {
 	SAFE_SETEUID(NULL, 0);
 
+	free(path);
 	tst_rmdir();
 }

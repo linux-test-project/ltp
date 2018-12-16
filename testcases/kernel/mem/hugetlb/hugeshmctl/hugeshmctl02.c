@@ -72,12 +72,12 @@ static void test_hugeshmctl(void)
 
 	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
 		TEST(shmctl(*(tcases[i].shmid), tcases[i].cmd, tcases[i].sbuf));
-		if (TEST_RETURN != -1) {
+		if (TST_RET != -1) {
 			tst_res(TFAIL, "shmctl succeeded "
 					"unexpectedly");
 			continue;
 		}
-		if (TEST_ERRNO == tcases[i].error) {
+		if (TST_ERR == tcases[i].error) {
 			tst_res(TPASS | TTERRNO, "shmctl failed "
 					"as expected");
 		} else {

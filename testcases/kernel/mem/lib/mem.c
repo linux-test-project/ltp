@@ -91,13 +91,13 @@ static void child_alloc(int testcase, int lite, int threads)
 	for (i = 0; i < threads; i++) {
 		TEST(pthread_create(&th[i], NULL, child_alloc_thread,
 			(void *)((long)testcase)));
-		if (TEST_RETURN) {
+		if (TST_RET) {
 			tst_res(TINFO | TRERRNO, "pthread_create");
 			/*
 			 * Keep going if thread other than first fails to
 			 * spawn due to lack of resources.
 			 */
-			if (i == 0 || TEST_RETURN != EAGAIN)
+			if (i == 0 || TST_RET != EAGAIN)
 				goto out;
 		}
 	}
@@ -238,31 +238,6 @@ void testoom(int mempolicy, int lite, int retcode, int allow_sigkill)
 }
 
 /* KSM */
-
-static int max_page_sharing;
-
-void save_max_page_sharing(void)
-{
-	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
-		SAFE_FILE_SCANF(PATH_KSM "max_page_sharing",
-				"%d", &max_page_sharing);
-}
-
-void restore_max_page_sharing(void)
-{
-	/*
-	 * Documentation/vm/ksm.txt states that the minimum
-	 * value for max_page_sharing is 2, so on
-	 * max_page_sharing != 0 after save_max_page_sharing()
-	 * returns.
-	 */
-	if (!max_page_sharing)
-		return;
-
-	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
-	        FILE_PRINTF(PATH_KSM "max_page_sharing",
-	                         "%d", max_page_sharing);
-}
 
 static void check(char *path, long int value)
 {

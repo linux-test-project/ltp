@@ -1,59 +1,45 @@
 #!/bin/sh
-# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2016-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2003
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #  PURPOSE: Runs fsstress over an NFS mount point for a specified amount
 #           of time. The purpose of this test is to stress the NFS kernel
 #           code and possibly the underlying filesystem where the export
 #           resides.  A PASS is if the test completes.
 
-TCID=nfs06
-TST_TOTAL=1
-TST_CLEANUP="nfs_cleanup"
-
+TST_TESTFUNC="do_test"
+TST_CLEANUP="do_cleanup"
 . nfs_lib.sh
+
+THREAD_NUM=${THREAD_NUM:-"2"}
+
+do_cleanup()
+{
+	[ -n "$pids" ] && kill -9 $pids
+	nfs_cleanup
+}
 
 do_test()
 {
-	tst_resm TINFO "Starting fsstress processes on NFS mounts"
+	tst_res TINFO "Starting fsstress processes on NFS mounts"
 
 	local n=0
 	local pids
 	for i in $VERSION; do
-		fsstress -l 1 -d $TST_TMPDIR/$i/$n -n 1000 -p 10 -r -c > /dev/null &
+		fsstress -l 1 -d $TST_TMPDIR/$i/$n -n 1000 -p $THREAD_NUM -r -c > /dev/null &
 		pids="$pids $!"
 		n=$(( n + 1 ))
 	done
 
-	tst_resm TINFO "waiting for pids:$pids"
+	tst_res TINFO "waiting for pids:$pids"
 	for p in $pids; do
-		wait $p
-		if [ $? -ne 0 ]; then
-			kill -9 $pids
-			tst_brkm TFAIL "fsstress process failed"
-		else
-			tst_resm TINFO "fsstress '$p' completed"
-		fi
+		wait $p || tst_brk TFAIL "fsstress process failed"
+		tst_res TINFO "fsstress '$p' completed"
 	done
+	pids=
 
-	tst_resm TPASS "all fsstress processes completed on '$n' NFS mounts"
+	tst_res TPASS "all fsstress processes completed on '$n' NFS mounts"
 }
 
-nfs_setup
-
-do_test
-
-tst_exit
+tst_run

@@ -242,7 +242,7 @@ test_body()
 	    ;;
 	esac
 	if [ $? -ne 0 ]; then
-	    tst_resm TFAIL "Cannot delte the route to ${ADDDEL_ROUTE}"
+	    tst_resm TFAIL "Cannot delete the route to ${ADDDEL_ROUTE}"
 	    return 1
 	fi
 

@@ -45,7 +45,7 @@ int main(void)
 
 	/* Destory the mutex object */
 	if ((rc = pthread_mutex_destroy(&mutex)) != 0) {
-		fprintf(stderr, "Fail to destory the mutex, rc=%d\n", rc);
+		fprintf(stderr, "Fail to destroy the mutex, rc=%d\n", rc);
 		return PTS_UNRESOLVED;
 	}
 

@@ -19,7 +19,6 @@
  *	- check data is effectively read (ignoring aio_lio_opcode)
  */
 
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>

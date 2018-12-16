@@ -94,13 +94,13 @@ static void splice_verify(unsigned int n)
 	TEST(splice(*(tc->fdin), tc->offin, *(tc->fdout),
 		tc->offout, SPLICE_TEST_LEN, 0));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "splice() returned %ld expected %s",
-			TEST_RETURN, tst_strerrno(tc->exp_errno));
+			TST_RET, tst_strerrno(tc->exp_errno));
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_errno) {
+	if (TST_ERR != tc->exp_errno) {
 		tst_res(TFAIL | TTERRNO,
 			"splice() failed unexpectedly; expected: %d - %s",
 			tc->exp_errno, tst_strerrno(tc->exp_errno));

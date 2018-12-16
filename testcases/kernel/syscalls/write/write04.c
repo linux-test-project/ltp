@@ -45,12 +45,12 @@ static void verify_write(void)
 
 	TEST(write(wfd, wbuf, sizeof(wbuf)));
 
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "write() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != EAGAIN) {
+	if (TST_ERR != EAGAIN) {
 		tst_res(TFAIL | TTERRNO,
 			"write() failed unexpectedly, expected EAGAIN");
 		return;

@@ -154,7 +154,8 @@ int main(int ac, char **av)
 	tst_parse_opts(ac, av, options, &help);
 
 	if (!lflag) {
-		path = strdup("/tmp");
+		tst_tmpdir();
+		path = tst_get_tmpdir();
 	}
     /***************************************************************
      * perform global setup for test
@@ -221,7 +222,10 @@ void setup(void)
  ***************************************************************/
 void cleanup(void)
 {
-
+	if (!lflag) {
+		tst_rmdir();
+		free(path);
+	}
 }
 
 /***************************************************************

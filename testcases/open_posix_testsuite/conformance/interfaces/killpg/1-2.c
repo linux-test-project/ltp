@@ -18,7 +18,6 @@
  *
  */
 
-#define _XOPEN_SOURCE 600
 #define SIGTOTEST SIGUSR1
 
 #include <signal.h>

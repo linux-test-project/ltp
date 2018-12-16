@@ -45,18 +45,18 @@ static void verify_failure(unsigned int nr, io_context_t *ctx, int init_val, lon
 		memset(ctx, init_val, sizeof(*ctx));
 
 	TEST(io_setup(nr, ctx));
-	if (TEST_RETURN == 0) {
+	if (TST_RET == 0) {
 		tst_res(TFAIL, "io_setup() passed unexpectedly");
 		io_destroy(*ctx);
 		return;
 	}
 
-	if (TEST_RETURN == -exp_err) {
+	if (TST_RET == -exp_err) {
 		tst_res(TPASS, "io_setup() failed as expected, returned -%s",
 			tst_strerrno(exp_err));
 	} else {
 		tst_res(TFAIL, "io_setup() failed unexpectedly, returned -%s "
-			"expected -%s", tst_strerrno(-TEST_RETURN),
+			"expected -%s", tst_strerrno(-TST_RET),
 			tst_strerrno(exp_err));
 	}
 }
@@ -66,9 +66,9 @@ static void verify_success(unsigned int nr, io_context_t *ctx, int init_val)
 	memset(ctx, init_val, sizeof(*ctx));
 
 	TEST(io_setup(nr, ctx));
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL, "io_setup() failed unexpectedly with %li (%s)",
-			TEST_RETURN, tst_strerrno(-TEST_RETURN));
+			TST_RET, tst_strerrno(-TST_RET));
 		return;
 	}
 

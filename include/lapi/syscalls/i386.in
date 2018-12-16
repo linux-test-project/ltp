@@ -125,7 +125,6 @@ modify_ldt 123
 adjtimex 124
 mprotect 125
 sigprocmask 126
-create_module 127
 init_module 128
 delete_module 129
 get_kernel_syms 130
@@ -163,7 +162,6 @@ mremap 163
 setresuid 164
 getresuid 165
 vm86 166
-query_module 167
 poll 168
 nfsservctl 169
 setresgid 170
@@ -334,10 +332,17 @@ recvmmsg 337
 fanotify_init 338
 fanotify_mark 339
 prlimit64 340
+process_vm_readv 347
+process_vm_writev 348
 kcmp 349
 sched_setattr 351
 sched_getattr 352
 renameat2 354
 getrandom 355
 memfd_create 356
+execveat 358
+membarrier 375
+mlock2 376
 copy_file_range 377
+preadv2 378
+statx 383

@@ -49,10 +49,10 @@ static void try_to_read_negative_key(void)
 	 */
 	TEST(request_key("user", "description", "callout_info",
 			 KEY_SPEC_PROCESS_KEYRING));
-	if (TEST_RETURN != -1)
+	if (TST_RET != -1)
 		tst_brk(TBROK, "request_key() unexpectedly succeeded");
 
-	if (TEST_ERRNO != ENOKEY && TEST_ERRNO != ENOENT) {
+	if (TST_ERR != ENOKEY && TST_ERR != ENOENT) {
 		tst_brk(TBROK | TTERRNO,
 			"request_key() failed with unexpected error");
 	}
@@ -60,11 +60,11 @@ static void try_to_read_negative_key(void)
 	/* Get the ID of the negative key by reading the keyring */
 	TEST(keyctl(KEYCTL_READ, KEY_SPEC_PROCESS_KEYRING,
 		    &key_id, sizeof(key_id)));
-	if (TEST_RETURN < 0)
+	if (TST_RET < 0)
 		tst_brk(TBROK | TTERRNO, "KEYCTL_READ unexpectedly failed");
-	if (TEST_RETURN != sizeof(key_id)) {
+	if (TST_RET != sizeof(key_id)) {
 		tst_brk(TBROK, "KEYCTL_READ returned %ld but expected %zu",
-			TEST_RETURN, sizeof(key_id));
+			TST_RET, sizeof(key_id));
 	}
 
 	/*
@@ -73,11 +73,11 @@ static void try_to_read_negative_key(void)
 	 */
 	tst_res(TINFO, "trying to read from the negative key...");
 	TEST(keyctl(KEYCTL_READ, key_id, buffer, sizeof(buffer)));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_brk(TFAIL,
 			"KEYCTL_READ on negative key unexpectedly succeeded");
 	}
-	if (TEST_ERRNO != ENOKEY) {
+	if (TST_ERR != ENOKEY) {
 		tst_brk(TFAIL | TTERRNO,
 			"KEYCTL_READ on negative key failed with unexpected error");
 	}

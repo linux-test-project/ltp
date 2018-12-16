@@ -9,10 +9,6 @@ trace_sched01		trace_sched -c 1
 hackbench01 hackbench 50 process 1000
 hackbench02 hackbench 20 thread 1000
 
-sched_setattr01 sched_setattr01
-sched_getattr01 sched_getattr01
-sched_getattr02 sched_getattr02
-
 sched_cli_serv run_sched_cliserv.sh
 # Run this stress test for 2 minutes
 sched_stress sched_stress.sh

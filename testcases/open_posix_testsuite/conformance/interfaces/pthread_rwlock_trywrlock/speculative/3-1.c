@@ -7,13 +7,12 @@
  * Test pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock)
  *
  *	It may fail if:
- *	[EINVAL] rwlock does not refer to an intialized read-write lock object
+ *	[EINVAL] rwlock does not refer to an initialized read-write lock object
  *
  * Steps:
  * 1. Call pthread_rwlock_trywrlock with an uninitialized rwlock object
  * 2. Test for the return code.  It may be EINVAL or 0.
  */
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

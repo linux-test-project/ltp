@@ -12,7 +12,7 @@
  *
  * Test that after returning from a signal handler, the reader will continue
  * to wait with timedrdlock as long as the specified 'timeout' does not expire (the
- * time spent in signal handler is longer than the specifed 'timeout').
+ * time spent in signal handler is longer than the specified 'timeout').
  *
  * Steps:
  * 1. main thread  create and write lock 'rwlock'
@@ -26,7 +26,6 @@
  *
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

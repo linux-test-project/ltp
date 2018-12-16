@@ -12,9 +12,6 @@ Please report any problems on the forum (see on top of this file)
 You may want to add -DVERBOSE=2 to have verbose tests,
 or -DVERBOSE=0 to have silent tests (for batchs for example).
 
-You may add -DWITHOUT_XOPEN to disable the XSI features
-from the tests. Some of the tests won't work with this option.
-
 You may want to add -DSCALABILITY_FACTOR=X, where X is an integer,
 to change the stress programs load (default is 1).
 

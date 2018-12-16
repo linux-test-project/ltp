@@ -32,7 +32,7 @@ int main(void)
 	int prioceiling, ret;
 	pthread_mutexattr_t mta;
 
-	/* Get the prioceiling of an unintialized mutex attr. */
+	/* Get the prioceiling of an uninitialized mutex attr. */
 	if ((ret = pthread_mutexattr_getprioceiling(&mta, &prioceiling)) == 0) {
 		printf
 		    ("Test PASSED: *Note: Returned 0 instead of EINVAL when passed an uninitialized mutex attribute object to pthread_mutexattr_getprioceiling, but standard says 'may' fail.\n");

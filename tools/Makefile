@@ -24,8 +24,6 @@ top_srcdir		?= ..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-FILTER_OUT_DIRS		:= pounder21
-
 INSTALL_TARGETS		:= *.awk *.pl *.sh html_report_header.txt
 
 INSTALL_DIR		:= bin

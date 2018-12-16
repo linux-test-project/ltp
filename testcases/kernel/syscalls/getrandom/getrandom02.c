@@ -63,13 +63,13 @@ static void verify_getrandom(unsigned int n)
 
 	do {
 		TEST(tst_syscall(__NR_getrandom, buf, sizeof(buf), modes[n]));
-	} while ((modes[n] & GRND_NONBLOCK) && TEST_RETURN == -1
-		  && TEST_ERRNO == EAGAIN);
+	} while ((modes[n] & GRND_NONBLOCK) && TST_RET == -1
+		  && TST_ERR == EAGAIN);
 
-	if (!check_content(buf, TEST_RETURN))
+	if (!check_content(buf, TST_RET))
 		tst_res(TFAIL | TTERRNO, "getrandom failed");
 	else
-		tst_res(TPASS, "getrandom returned %ld", TEST_RETURN);
+		tst_res(TPASS, "getrandom returned %ld", TST_RET);
 }
 
 static struct tst_test test = {

@@ -28,13 +28,6 @@
 
  */
 
- /* We are testing conformance to IEEE Std 1003.1, 2003 Edition */
-#define _POSIX_C_SOURCE 200112L
-
- /* We need the XSI extention for the mutex attributes */
-#ifndef WITHOUT_XOPEN
-#define _XOPEN_SOURCE	600
-#endif
 /********************************************************************************************/
 /****************************** standard includes *****************************************/
 /********************************************************************************************/
@@ -94,15 +87,6 @@
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
-
-#ifdef WITHOUT_XOPEN
-/* We define those to avoid compilation errors, but they won't be used */
-#define PTHREAD_MUTEX_DEFAULT 0
-#define PTHREAD_MUTEX_NORMAL 0
-#define PTHREAD_MUTEX_ERRORCHECK 0
-#define PTHREAD_MUTEX_RECURSIVE 0
-
-#endif
 
 struct _scenar {
 	int m_type;		/* Mutex type to use */

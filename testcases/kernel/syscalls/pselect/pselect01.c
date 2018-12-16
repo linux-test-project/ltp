@@ -34,9 +34,9 @@ int sample_fn(int clk_id, long long usec)
 	tst_timer_stop();
 	tst_timer_sample();
 
-	if (TEST_RETURN != 0) {
+	if (TST_RET != 0) {
 		tst_res(TFAIL | TTERRNO,
-			"pselect() returned %li on timeout", TEST_RETURN);
+			"pselect() returned %li on timeout", TST_RET);
 		return 1;
 	}
 

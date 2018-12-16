@@ -22,7 +22,6 @@
  * Also see pthread_cond_destroy 4-1.
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

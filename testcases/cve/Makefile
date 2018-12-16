@@ -19,6 +19,8 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CFLAGS			+= -D_GNU_SOURCE
 
+stack_clash:	CFLAGS += -fno-optimize-sibling-calls
+
 cve-2016-7042:	LDLIBS += $(KEYUTILS_LIBS)
 
 cve-2016-7117:	CFLAGS += -pthread

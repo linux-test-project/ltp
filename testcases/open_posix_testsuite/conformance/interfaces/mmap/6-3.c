@@ -26,7 +26,6 @@
  * Please refer to IEEE_1003.1-2001. 2.8.3.3 Memory Protection.
  */
 
-#define _XOPEN_SOURCE 600
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>

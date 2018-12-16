@@ -14,7 +14,6 @@
  * The invalid signal passed to sigrelse() depends on the argument
  * passed to this program.
  */
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <signal.h>

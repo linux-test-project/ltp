@@ -231,13 +231,24 @@ static int acpi_traverse_from_root(void)
 
 /* first found device with _STR */
 static acpi_handle dev_handle;
+static int acpi_hw_reduced;
 
 static int acpi_init(void)
 {
 	acpi_status status;
 	acpi_handle parent_handle;
-
+	struct acpi_table_fadt *fadt;
+	struct acpi_table_header *table;
 	struct acpi_device_info *dev_info;
+
+	status = acpi_get_table(ACPI_SIG_FADT, 0, &table);
+	if (ACPI_SUCCESS(status)) {
+		fadt = (struct acpi_table_fadt *)table;
+		if (fadt->flags & ACPI_FADT_HW_REDUCED)
+			acpi_hw_reduced = 1;
+	}
+	if (acpi_hw_reduced)
+		prk_alert("Detected the Hardware-reduced ACPI mode");
 
 	prk_alert("TEST -- acpi_get_handle ");
 	status = acpi_get_handle(NULL, "\\_SB", &parent_handle);
@@ -312,6 +323,10 @@ static int acpi_test_event_handler(void)
 	acpi_status status;
 
 	prk_alert("TEST -- acpi_install_fixed_event_handler");
+	if (acpi_hw_reduced) {
+		prk_alert("Skipped due to the HW-reduced mode");
+		return 0;
+	}
 	status = acpi_install_fixed_event_handler(ACPI_EVENT_POWER_BUTTON,
 		ltp_test_power_button_ev_handler, NULL);
 
@@ -352,6 +367,10 @@ static int acpi_global_lock(void)
 	u32 global_lock = 0;
 
 	prk_alert("TEST -- acpi_acquire_global_lock ");
+	if (acpi_hw_reduced) {
+		prk_alert("Skipped due to the HW-reduced mode");
+		return 0;
+	}
 	status = acpi_acquire_global_lock(ACPI_EC_UDELAY_GLK, &global_lock);
 	if (acpi_failure(status, "acpi_acquire_global_lock"))
 		return 1;
@@ -448,6 +467,10 @@ static int acpi_test_register(void)
 	acpi_status status;
 
 	prk_alert("TEST -- acpi_read_bit_register");
+	if (acpi_hw_reduced) {
+		prk_alert("Skipped due to the HW-reduced mode");
+		return 0;
+	}
 	/*
 	 * ACPICA: Remove obsolete Flags parameter.
 	 * http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;
@@ -537,6 +560,13 @@ static ssize_t sys_path(struct device *dev,
 }
 static DEVICE_ATTR(path, S_IRUSR, sys_path, NULL);
 
+static ssize_t sys_acpi_disabled(struct device *dev,
+				    struct device_attribute *attr, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "%d", acpi_disabled);
+}
+static DEVICE_ATTR(acpi_disabled, S_IRUSR, sys_acpi_disabled, NULL);
+
 static ssize_t sys_tcase(struct device *dev,
 	struct device_attribute *attr,  const char *buf, size_t count)
 {
@@ -616,8 +646,16 @@ int init_module(void)
 		goto err4;
 	}
 
+	err = device_create_file(&tdev, &dev_attr_acpi_disabled);
+	if (err) {
+		prk_err("Can't create sysfs file 'acpi_disabled'");
+		goto err5;
+	}
+
 	return 0;
 
+err5:
+	device_remove_file(&tdev, &dev_attr_path);
 err4:
 	device_remove_file(&tdev, &dev_attr_tcase);
 err3:

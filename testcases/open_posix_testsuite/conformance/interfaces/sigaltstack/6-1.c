@@ -18,7 +18,6 @@
    stack and verify that the ss_flags member of the obtained alternate signal stack is SS_ONSTACK.
 */
 
-#define _XOPEN_SOURCE 600
 
 #include <signal.h>
 #include <stdio.h>

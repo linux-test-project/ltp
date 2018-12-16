@@ -90,12 +90,12 @@ static void verify_pwrite(unsigned int i)
 
 	TEST(pwrite(*tc->fd, tc->buf, BS, tc->off));
 
-	if (TEST_RETURN >= 0) {
+	if (TST_RET >= 0) {
 		tst_res(TFAIL, "call succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_errno) {
+	if (TST_ERR != tc->exp_errno) {
 		tst_res(TFAIL | TTERRNO,
 			"pwrite failed unexpectedly, expected %s",
 			tst_strerrno(tc->exp_errno));

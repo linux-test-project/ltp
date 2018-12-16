@@ -1,5 +1,6 @@
 /tst_sleep
 /tst_random
+/tst_check_drivers
 /tst_checkpoint
 /tst_rod
 /tst_kvcmp
@@ -7,3 +8,5 @@
 /tst_net_iface_prefix
 /tst_net_ip_prefix
 /tst_net_vars
+/tst_getconf
+/tst_supported_fs

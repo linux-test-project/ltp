@@ -20,7 +20,6 @@
  * 6. After return from the signal handler, the child thread should continue as normal
  */
 
-#define _XOPEN_SOURCE 600
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

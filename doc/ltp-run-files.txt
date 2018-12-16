@@ -75,9 +75,6 @@ other filesystem or disk type tests
  - isofs.sh
  - sysfs.sh
 
-LTP Stress tests
- - ltpstress.sh
-
 AIO/DIO filesystem tests
  - ltp-aiodio.sh
 

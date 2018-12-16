@@ -62,12 +62,12 @@ static void verify_lgetxattr(unsigned int n)
 	char buf[tc->size];
 
 	TEST(lgetxattr(tc->path, SECURITY_KEY, buf, sizeof(buf)));
-	if (TEST_RETURN != -1) {
+	if (TST_RET != -1) {
 		tst_res(TFAIL, "lgetxattr() succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO != tc->exp_err) {
+	if (TST_ERR != tc->exp_err) {
 		tst_res(TFAIL | TTERRNO, "lgetxattr() failed unexpectedlly, "
 			"expected %s", tst_strerrno(tc->exp_err));
 	} else {

@@ -1,4 +1,0 @@
-#!/bin/sh
-echo simpleD running....
-sleep 100
-exit  $?

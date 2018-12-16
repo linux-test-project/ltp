@@ -71,13 +71,13 @@ static void verify_lseek(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TEST(lseek(*tc->fd, (off_t) 1, tc->whence));
-	if (TEST_RETURN != (off_t) -1) {
+	if (TST_RET != (off_t) -1) {
 		tst_res(TFAIL, "lseek(%d, 1, %d) succeeded unexpectedly",
 			*tc->fd, tc->whence);
 			return;
 	}
 
-	if (TEST_ERRNO == tc->exp_err) {
+	if (TST_ERR == tc->exp_err) {
 		tst_res(TPASS | TTERRNO, "lseek(%d, 1, %d) failed as expected",
 			*tc->fd, tc->whence);
 	} else {
