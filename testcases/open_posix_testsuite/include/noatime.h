@@ -79,7 +79,7 @@ int mounted_noatime(const char *path)
 	struct statfs _statfs;
 
 	if (statfs(path, &_statfs) == -1) {
-		printf("statfs for %s failed: %s", strerror(errno));
+		printf("statfs for %s failed: %s", path, strerror(errno));
 		return -1;
 	}
 
