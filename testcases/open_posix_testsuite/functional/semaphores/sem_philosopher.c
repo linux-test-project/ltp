@@ -114,7 +114,7 @@ int philosopher(void *ID)
 	pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	pthread_t phi[PH_NUM];
 	int PhID[PH_NUM];

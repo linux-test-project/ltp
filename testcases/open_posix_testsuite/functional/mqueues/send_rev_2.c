@@ -105,7 +105,7 @@ int *receive_2(void *mq)
 	pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 
 	mqd_t mq1 = 0, mq2 = 0;

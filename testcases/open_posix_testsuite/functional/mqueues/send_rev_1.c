@@ -25,7 +25,7 @@
 #define MSG_SIZE	128
 #define MAX_MSG		3
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	struct mq_attr mqstat, attr;
 	char r_msg_ptr[MAX_MSG][MSG_SIZE];

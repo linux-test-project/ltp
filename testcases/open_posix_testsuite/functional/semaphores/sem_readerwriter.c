@@ -105,7 +105,7 @@ int *writer(void *ID)
 	pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	pthread_t rea[READ_NUM], wri[WRITE_NUM];
 	int ReadID[READ_NUM], WriteID[WRITE_NUM];

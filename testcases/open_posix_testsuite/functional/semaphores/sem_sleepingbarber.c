@@ -135,7 +135,7 @@ void *customers(void *ID)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	pthread_t bar, cus[CUS_NUM];
 	int shared = 0;
