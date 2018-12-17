@@ -41,6 +41,7 @@
 #define TST_F2FS_MAGIC     0xF2F52010
 #define TST_NILFS_MAGIC    0x3434
 #define TST_EXOFS_MAGIC    0x5DF5
+#define TST_OVERLAYFS_MAGIC 0x794c7630
 
 enum {
 	TST_BYTES = 1,
