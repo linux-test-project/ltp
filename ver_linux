@@ -19,6 +19,10 @@ if [ $? = 1 ]; then
    echo '/etc/issue:'
    cat /etc/issue 2> /dev/null
 fi
+if [ $? = 1 ]; then
+	echo 'lsb_release -a'
+	lsb_release -a 2> /dev/null
+fi
 
 echo
 echo 'uname:'
