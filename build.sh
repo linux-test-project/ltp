@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
 # Script for travis builds.
 #
 # TODO: Implement comparison of installed files. List of installed files can
@@ -16,7 +16,7 @@ CONFIGURE_OPTS_IN_TREE="--with-open-posix-testsuite --with-realtime-testsuite"
 # TODO: open posix testsuite is currently broken in out-tree-build. Enable it once it's fixed.
 CONFIGURE_OPTS_OUT_TREE="--with-realtime-testsuite"
 MAKE_OPTS="-j$(getconf _NPROCESSORS_ONLN)"
-CC=
+CC=gcc
 
 build_32()
 {
@@ -152,4 +152,12 @@ while getopts "c:ho:p:t:" opt; do
 done
 
 cd `dirname $0`
+
+echo "=== ver_linux ==="
+./ver_linux
+echo
+
+echo "=== compiler version ==="
+$CC --version
+
 eval build_$build $tree
