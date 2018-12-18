@@ -59,6 +59,7 @@ dhcp_lib_setup()
 	stop_dhcp || tst_brk TBROK "Failed to stop dhcp server"
 
 	dhclient_lease="/var/lib/dhclient/dhclient${TST_IPV6}.leases"
+	[ -f $dhclient_lease ] || dhclient_lease="/var/lib/dhcp/dhclient${TST_IPV6}.leases"
 	if [ -f $dhclient_lease ]; then
 		tst_res TINFO "backup dhclient${TST_IPV6}.leases"
 		mv $dhclient_lease .
