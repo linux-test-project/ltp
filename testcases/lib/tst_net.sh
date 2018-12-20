@@ -626,11 +626,12 @@ tst_ping()
 	local src_iface="${1:-$(tst_iface)}"
 	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift $(( $# >= 2 ? 2 : 0 ))
 	local msg_sizes="$*"
-	local msg="tst_ping IPv${TST_IPV6:-4} iface $src_iface, msg_size"
-	local cmd="ping$TST_IPV6"
+	local msg="tst_ping $dst_addr iface $src_iface, msg_size"
+	local cmd="ping"
 	local ret=0
 
 	tst_test_cmds $cmd
+	echo "$dst_addr" | grep -q ':' && cmd="ping6"
 
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do
