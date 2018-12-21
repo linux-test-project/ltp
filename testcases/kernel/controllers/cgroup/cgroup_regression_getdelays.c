@@ -1,14 +1,11 @@
-/* getdelays.c
- *
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
  * Utility to get per-pid and per-tgid delay accounting statistics
  * Also illustrates usage of the taskstats interface
  *
  * Copyright (C) Shailabh Nagar, IBM Corp. 2005
  * Copyright (C) Balbir Singh, IBM Corp. 2006
  * Copyright (c) Jay Lan, SGI. 2006
- *
- * Compile with
- *	gcc -I/usr/src/linux/include getdelays.c -o getdelays
  */
 
 #include <stdio.h>
@@ -173,14 +170,14 @@ int get_family_id(int sd)
 		char buf[256];
 	} ans;
 
-	int id = 0, rc;
+	int id = 0;
 	struct nlattr *na;
 	int rep_len;
 
 	strcpy(name, TASKSTATS_GENL_NAME);
-	rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY,
-		      CTRL_ATTR_FAMILY_NAME, (void *)name,
-		      strlen(TASKSTATS_GENL_NAME) + 1);
+	send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY,
+		 CTRL_ATTR_FAMILY_NAME, (void *)name,
+		 strlen(TASKSTATS_GENL_NAME) + 1);
 
 	rep_len = recv(sd, &ans, sizeof(ans), 0);
 	if (ans.n.nlmsg_type == NLMSG_ERROR ||
@@ -414,8 +411,6 @@ int main(int argc, char *argv[])
 	}
 
 	do {
-		int i;
-
 		rep_len = recv(nl_sd, &msg, sizeof(msg), 0);
 		PRINTF("received %d bytes\n", rep_len);
 
@@ -439,7 +434,6 @@ int main(int argc, char *argv[])
 
 		na = (struct nlattr *)GENLMSG_DATA(&msg);
 		len = 0;
-		i = 0;
 		while (len < rep_len) {
 			len += NLA_ALIGN(na->nla_len);
 			switch (na->nla_type) {
