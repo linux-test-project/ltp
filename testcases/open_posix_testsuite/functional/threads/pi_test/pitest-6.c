@@ -227,7 +227,7 @@ void *thread_tb(void *arg)
 	return NULL;
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
 	cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	pthread_mutexattr_t mutex_attr;
