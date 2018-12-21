@@ -99,6 +99,8 @@ set_affinity:
 }
 
 #else
+#include <errno.h>
+
 static int set_affinity_single(void)
 {
 	errno = ENOSYS;
