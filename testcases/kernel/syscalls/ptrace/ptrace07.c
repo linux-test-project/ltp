@@ -153,12 +153,32 @@ static void do_test(void)
 			"PTRACE_SETREGSET failed with unexpected error");
 	}
 
-	TEST(ptrace(PTRACE_CONT, pid, 0, 0));
+	/*
+	 * It is possible for test child 'pid' to crash on AMD
+	 * systems (e.g. AMD Opteron(TM) Processor 6234) with
+	 * older kernels. This causes tracee to stop and sleep
+	 * in ptrace_stop(). Without resuming the tracee, the
+	 * test hangs at do_test()->tst_reap_children() called
+	 * by the library. Use detach here, so we don't need to
+	 * worry about potential stops after this point.
+	 */
+	TEST(ptrace(PTRACE_DETACH, pid, 0, 0));
 	if (TST_RET != 0)
-		tst_brk(TBROK | TTERRNO, "PTRACE_CONT failed");
+		tst_brk(TBROK | TTERRNO, "PTRACE_DETACH failed");
+
+	/* If child 'pid' crashes, only report it as info. */
+	SAFE_WAITPID(pid, &status, 0);
+	if (WIFEXITED(status)) {
+		tst_res(TINFO, "test child %d exited, retcode: %d",
+			pid, WEXITSTATUS(status));
+	}
+	if (WIFSIGNALED(status)) {
+		tst_res(TINFO, "test child %d exited, termsig: %d",
+			pid, WTERMSIG(status));
+	}
 
 	okay = true;
-	for (i = 0; i < num_cpus + 1; i++) {
+	for (i = 0; i < num_cpus; i++) {
 		SAFE_WAIT(&status);
 		okay &= (WIFEXITED(status) && WEXITSTATUS(status) == 0);
 	}
