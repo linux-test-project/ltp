@@ -615,7 +615,7 @@ tst_netload()
 
 # tst_ping [IFACE] [DST ADDR] [MESSAGE SIZE ARRAY]
 # Check icmp connectivity
-# IFACE: source interface name
+# IFACE: source interface name or IP address
 # DST ADDR: destination IPv4 or IPv6 address
 # MESSAGE SIZE ARRAY: message size array
 tst_ping()
@@ -626,12 +626,12 @@ tst_ping()
 	local src_iface="${1:-$(tst_iface)}"
 	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift $(( $# >= 2 ? 2 : 0 ))
 	local msg_sizes="$*"
-	local msg="tst_ping $dst_addr iface $src_iface, msg_size"
+	local msg="tst_ping $dst_addr iface/saddr $src_iface, msg_size"
 	local cmd="ping"
 	local ret=0
 
-	tst_test_cmds $cmd
 	echo "$dst_addr" | grep -q ':' && cmd="ping6"
+	tst_test_cmds $cmd
 
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do
