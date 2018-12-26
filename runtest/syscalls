@@ -1534,5 +1534,6 @@ statx03 statx03
 statx04 statx04
 statx05 statx05
 statx06 statx06
+statx07 statx07
 
 membarrier01 membarrier01
