@@ -29,8 +29,8 @@
 #define _GNU_SOURCE
 #include <sched.h>
 
-#ifndef LTP_SCHED_SETAFFINITY_H
-#define LTP_SCHED_SETAFFINITY_H
+#ifndef LTP_CPUSET_H
+#define LTP_CPUSET_H
 
 #ifndef CPU_ALLOC
 #define CPU_ALLOC(ncpus) malloc(sizeof(cpu_set_t)); \
@@ -56,4 +56,4 @@ if (ncpus > CPU_SETSIZE) { \
 #define CPU_SET_S(cpu, size, mask) CPU_SET(cpu, mask)
 #endif
 
-#endif /* LTP_SCHED_SETAFFINITY_H */
+#endif /* LTP_CPUSET_H */
