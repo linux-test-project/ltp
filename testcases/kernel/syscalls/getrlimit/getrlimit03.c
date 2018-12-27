@@ -158,10 +158,18 @@ static void run(unsigned int resource)
 			      "rlim_max"))
 		return;
 
+	tst_res(TPASS, "__NR_prlimit64(%d) and %s(%d) gave consistent results",
+		resource, __NR_getrlimit_ulong_str, resource);
+
 #if SIGNED_GETRLIMIT
 	errno = 0;
 	ret_l = getrlimit_long(resource, &rlim_l);
 	errno_l = errno;
+	if (errno_l == ENOSYS) {
+		tst_res(TCONF | TERRNO,
+			"__NR_getrlimit(%d) not implemented", __NR_getrlimit);
+		return;
+	}
 
 	if (compare_retval(resource, ret_u64, errno_u64, ret_l, errno_l,
 			   "__NR_getrlimit") ||
@@ -170,10 +178,10 @@ static void run(unsigned int resource)
 	    compare_u64_long(resource, rlim_u64.rlim_max, rlim_l.rlim_max,
 			     "rlim_max"))
 		return;
-#endif
 
-	tst_res(TPASS, "getrlimit(%u) was consistent during all syscalls",
-		resource);
+	tst_res(TPASS, "__NR_prlimit64(%d) and __NR_getrlimit(%d) gave "
+		"consistent results", resource, resource);
+#endif
 }
 
 static struct tst_test test = {
