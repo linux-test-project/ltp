@@ -56,4 +56,8 @@ if (ncpus > CPU_SETSIZE) { \
 #define CPU_SET_S(cpu, size, mask) CPU_SET(cpu, mask)
 #endif
 
+#ifndef CPU_ISSET_S
+#define CPU_ISSET_S(cpu, size, mask) CPU_ISSET(cpu, mask)
+#endif
+
 #endif /* LTP_CPUSET_H */
