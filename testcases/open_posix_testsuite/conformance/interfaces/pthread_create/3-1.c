@@ -71,8 +71,9 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
+	struct timespec thread_create_ts = {0, 10000000};
 	while (!sem)
-		usleep(10000);
+		nanosleep(&thread_create_ts, NULL);
 
 	ret = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	if (ret) {

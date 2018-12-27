@@ -95,6 +95,7 @@ void *thr_func(void *arg)
 
 int main(void)
 {
+	struct timespec completion_wait_ts = {0, 100000};
 	int i;
 	pthread_t thread[THREAD_NUM];
 	pthread_mutexattr_t ma;
@@ -124,7 +125,7 @@ int main(void)
 		}
 	}
 	while (start_num < THREAD_NUM)	/* waiting for all threads started */
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 
 	sleep(1);
 

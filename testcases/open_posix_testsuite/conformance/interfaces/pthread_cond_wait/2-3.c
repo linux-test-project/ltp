@@ -283,6 +283,7 @@ int main(void)
 		UNRESOLVED(errno, "Unable to init sem B");
 	}
 
+	struct timespec wait_ts = {0, 100000};
 	for (i = 0; i < (sizeof(scenar) / sizeof(scenar[0])); i++) {
 #if VERBOSE > 1
 		output("Starting test for %s\n", scenar[i].descr);
@@ -382,9 +383,7 @@ int main(void)
 		}
 
 		sched_yield();
-#ifndef WITHOUT_XOPEN
-		usleep(100);
-#endif
+		nanosleep(&wait_ts, NULL);
 
 		ret = pthread_mutex_unlock(&(data.mtx));
 		if (ret != 0) {

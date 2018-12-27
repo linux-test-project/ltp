@@ -74,6 +74,8 @@ void *func(void *parm)
 	/* Loopd M times to acquire the mutex, increase the value,
 	   and then release the mutex. */
 
+	struct timespec lock_wait_ts = {0, 1000000};
+
 	for (i = 0; i < LOOPS; ++i) {
 		rc = pthread_mutex_lock(&mutex);
 		if (rc != 0) {
@@ -85,7 +87,7 @@ void *func(void *parm)
 		tmp = value;
 		tmp = tmp + 1;
 		fprintf(stderr, "Thread(0x%p) holds the mutex\n", (void *)self);
-		usleep(1000);	/* delay the increasement operation */
+		nanosleep(&lock_wait_ts, NULL);	/* delay the increasement operation */
 		value = tmp;
 
 		rc = pthread_mutex_unlock(&mutex);

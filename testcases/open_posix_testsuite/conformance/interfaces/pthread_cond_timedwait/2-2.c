@@ -78,6 +78,7 @@ int main(void)
 {
 	pthread_t thread1;
 	void *th_ret;
+	struct timespec thread_start_ts = {0, 100000};
 
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
 		fprintf(stderr, "Fail to initialize mutex\n");
@@ -94,7 +95,7 @@ int main(void)
 	}
 
 	while (!t1_start)	/* wait for thread1 started */
-		usleep(100);
+		nanosleep(&thread_start_ts, NULL);
 
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */
 	if (pthread_mutex_lock(&td.mutex) != 0) {

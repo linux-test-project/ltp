@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "posixtest.h"
@@ -47,6 +48,7 @@ static void sigrt1_handler()
 
 static int do_test(int num_aiocbs, size_t buf_size)
 {
+	struct timespec processing_completion_ts = {0, 10000000};
 	char tmpfname[256];
 	int fd;
 	struct aiocb *aiocbs[num_aiocbs];
@@ -160,7 +162,7 @@ static int do_test(int num_aiocbs, size_t buf_size)
 
 	/* Wait for list processing completion */
 	while (!received_all)
-		usleep(10000);
+		nanosleep(&processing_completion_ts, NULL);
 
 	/* Check return values and errors */
 	err = PTS_PASS;
@@ -178,7 +180,7 @@ static int do_test(int num_aiocbs, size_t buf_size)
 
 err4:
 	while (!received_all)
-		usleep(10000);
+		nanosleep(&processing_completion_ts, NULL);
 err3:
 	for (i = 0; i < num_aiocbs; i++)
 		free(aiocbs[i]);

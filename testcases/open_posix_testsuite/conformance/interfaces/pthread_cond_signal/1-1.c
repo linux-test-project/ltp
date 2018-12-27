@@ -79,6 +79,7 @@ void *thr_func(void *arg)
 
 int main(void)
 {
+	struct timespec completion_wait_ts = {0, 100000};
 	int i, rc;
 	struct sigaction act;
 
@@ -98,7 +99,7 @@ int main(void)
 		}
 	}
 	while (start_num < THREAD_NUM)	/* waiting for all threads started */
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 
 	/* Acquire the mutex to make sure that all waiters are currently
 	   blocked on pthread_cond_wait */
@@ -147,7 +148,7 @@ int main(void)
 				"Main failed to signal the condition\n");
 			exit(PTS_UNRESOLVED);
 		}
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 	}
 
 	/* join all secondary threads */

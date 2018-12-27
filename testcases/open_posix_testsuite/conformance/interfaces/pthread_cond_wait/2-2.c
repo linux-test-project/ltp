@@ -266,6 +266,7 @@ int main(void)
 	pthread_t child_th;
 
 	long pshared, monotonic, cs, mf;
+	struct timespec wait_ts = {0, 100000};
 
 	output_init();
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
@@ -547,6 +548,7 @@ int main(void)
 		}
 
 		if (td->ctrl == 1) {	/* The child is inside the cond wait */
+
 			ret = pthread_cond_signal(&(td->cnd));
 			if (ret != 0) {
 				UNRESOLVED(ret,
@@ -554,7 +556,7 @@ int main(void)
 			}
 
 			/* Let the child leave the wait function if something is broken */
-			usleep(100);
+			nanosleep(&wait_ts, NULL);
 
 			if (td->ctrl != 1) {
 				FAILED

@@ -29,7 +29,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
+
 #include "posixtest.h"
 
 #define TNAME "aio_return/4-1.c"
@@ -42,6 +44,7 @@ int main(void)
 	struct aiocb aiocb;
 	struct aiocb aiocb2;
 	int fd, retval;
+	struct timespec completion_wait_ts = {0, 10000000};
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
@@ -71,7 +74,7 @@ int main(void)
 	}
 
 	do {
-		usleep(10000);
+		nanosleep(&completion_wait_ts, NULL);
 		retval = aio_error(&aiocb);
 	} while (retval == EINPROGRESS);
 

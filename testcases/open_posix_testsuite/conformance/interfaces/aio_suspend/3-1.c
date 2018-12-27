@@ -27,6 +27,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <time.h>
 #include <aio.h>
 
 #include "posixtest.h"
@@ -44,6 +45,7 @@ int main(void)
 	int fd;
 	struct aiocb aiocb[NAIOCB];
 	const struct aiocb *list[NENT];
+	struct timespec processing_completion_ts = {0, 10000000};
 	int i;
 	int ret;
 
@@ -87,7 +89,7 @@ int main(void)
 
 	for (i = 0; i < NAIOCB; ++i) {
 		do {
-			usleep(10000);
+			nanosleep(&processing_completion_ts, NULL);
 			ret = aio_error(&aiocb[i]);
 		} while (ret == EINPROGRESS);
 		if (aio_return(&aiocb[i]) == -1) {
