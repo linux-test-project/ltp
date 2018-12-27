@@ -28,6 +28,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <aio.h>
+#include <time.h>
 
 #include "posixtest.h"
 
@@ -38,6 +39,7 @@ int main(void)
 	char tmpfname[256];
 #define BUF_SIZE 1024
 	char buf[BUF_SIZE];
+	struct timespec processing_completion_ts = {0, 10000000};
 	int fd, err;
 	struct aiocb aiocb;
 
@@ -72,7 +74,7 @@ int main(void)
 		return PTS_FAIL;
 	case AIO_NOTCANCELED:
 		do {
-			usleep(10000);
+			nanosleep(&processing_completion_ts, NULL);
 			err = aio_error(&aiocb);
 		} while (err == EINPROGRESS);
 	}

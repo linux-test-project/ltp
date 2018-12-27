@@ -75,6 +75,7 @@ void *thr_func(void *arg)
 
 int main(void)
 {
+	struct timespec completion_wait_ts = {0, 100000};
 	int i, rc;
 	struct sigaction act;
 
@@ -94,7 +95,7 @@ int main(void)
 		}
 	}
 	while (start_num < THREAD_NUM)	/* waiting for all threads started */
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 
 	/* Setup alarm handler */
 	act.sa_handler = alarm_handler;
@@ -114,7 +115,7 @@ int main(void)
 			printf("Test FAILED\n");
 			exit(PTS_FAIL);
 		}
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 	}
 
 	for (i = 0; i < THREAD_NUM; i++) {

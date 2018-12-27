@@ -28,8 +28,9 @@ static sem_t sem;
 
 static void cleanup_func(LTP_ATTRIBUTE_UNUSED void *unused)
 {
+	struct timespec cleanup_ts = {0, SLEEP_MS*1000000};
 	do {
-		usleep(SLEEP_MS*1000);
+		nanosleep(&cleanup_ts, NULL);
 		thread_sleep_time += SLEEP_MS;
 	} while (after_cancel == 0 && thread_sleep_time < TIMEOUT_MS);
 }
@@ -37,13 +38,14 @@ static void cleanup_func(LTP_ATTRIBUTE_UNUSED void *unused)
 static void *thread_func(LTP_ATTRIBUTE_UNUSED void *unused)
 {
 	int waited_for_cancel_ms = 0;
+	struct timespec cancel_wait_ts = {0, SLEEP_MS*1000000};
 
 	SAFE_PFUNC(pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL));
 	pthread_cleanup_push(cleanup_func, NULL);
 
 	SAFE_FUNC(sem_post(&sem));
 	while (waited_for_cancel_ms < TIMEOUT_MS) {
-		usleep(SLEEP_MS*1000);
+		nanosleep(&cancel_wait_ts, NULL);
 		waited_for_cancel_ms += SLEEP_MS;
 	}
 

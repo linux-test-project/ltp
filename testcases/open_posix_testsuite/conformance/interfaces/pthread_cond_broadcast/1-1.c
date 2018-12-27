@@ -63,6 +63,7 @@ static void *thr_func(void *arg)
 
 int main(void)
 {
+	struct timespec completion_wait_ts = {0, 100000};
 	int i, rc;
 	pthread_t thread[THREAD_NUM];
 
@@ -83,7 +84,7 @@ int main(void)
 	}
 
 	while (start_num < THREAD_NUM)
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 
 	/*
 	 * Acquire the mutex to make sure that all waiters are currently

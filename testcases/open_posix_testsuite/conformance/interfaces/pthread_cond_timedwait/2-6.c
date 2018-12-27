@@ -199,6 +199,7 @@ int main(void)
 	pthread_t th;
 
 	long altclk_ok, pshared_ok;
+	struct timespec processing_completion_ts = {0, 100000};
 
 	struct {
 		char altclk;	/* Want to use alternative clock */
@@ -381,9 +382,7 @@ int main(void)
 		}
 
 		sched_yield();
-#ifndef WITHOUT_XOPEN
-		usleep(100);
-#endif
+		nanosleep(&processing_completion_ts, NULL);
 
 		ret = pthread_mutex_unlock(&(data.mtx));
 		if (ret != 0) {

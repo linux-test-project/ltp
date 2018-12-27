@@ -11,19 +11,26 @@
  * the GNU General Public License for more details.
  */
 
+#include <time.h>
+
 #ifdef __linux__
 # include <errno.h>
 # include <string.h>
+
 int tst_process_state_wait3(pid_t pid, const char state,
-	unsigned long maxwait_ms)
+	long maxwait_s)
 {
 	char proc_path[128], cur_state;
 	int wait_step_ms = 10;
-	unsigned long waited_ms = 0;
+	struct timespec wait_step_ts;
+	long iteration, max_iterations = (maxwait_s * 1000) / wait_step_ms;
+
+	wait_step_ts.tv_sec = 0;
+	wait_step_ts.tv_nsec = wait_step_ms * 1000000;
 
 	snprintf(proc_path, sizeof(proc_path), "/proc/%i/stat", pid);
 
-	for (;;) {
+	for (iteration = 0; iteration < max_iterations; iteration++) {
 		FILE *f = fopen(proc_path, "r");
 
 		if (!f) {
@@ -43,20 +50,21 @@ int tst_process_state_wait3(pid_t pid, const char state,
 		if (state == cur_state)
 			return 0;
 
-		usleep(wait_step_ms * 1000);
-		waited_ms += wait_step_ms;
-
-		if (waited_ms >= maxwait_ms) {
-			fprintf(stderr, "Reached max wait time\n");
-			return 1;
-		}
+		nanosleep(&wait_step_ts, NULL);
 	}
+	fprintf(stderr, "Reached max wait time\n");
+	return 1;
 }
 #else
 int tst_process_state_wait3(pid_t pid, const char state,
-	unsigned long maxwait_ms)
+	long maxwait_s)
 {
-	usleep(maxwait_ms * 1000);
+	struct timespec maxwait_ts;
+
+	maxwait_ts.tv_sec = maxwait_s;
+	maxwait_ts.tv_nsec = 0;
+
+	nanosleep(&maxwait_ts, NULL);
 	return 0;
 }
 #endif

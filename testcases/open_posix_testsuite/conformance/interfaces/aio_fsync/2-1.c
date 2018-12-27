@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <aio.h>
+#include <time.h>
 
 #include "posixtest.h"
 
@@ -29,6 +30,7 @@ int main(void)
 	int fd, ret;
 	struct aiocb aiocb_write;
 	struct aiocb aiocb_fsync;
+	struct timespec processing_completion_ts = {0, 10000000};
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
@@ -64,7 +66,7 @@ int main(void)
 
 	/* wait for aio_fsync */
 	do {
-		usleep(10000);
+		nanosleep(&processing_completion_ts, NULL);
 		ret = aio_error(&aiocb_fsync);
 	} while (ret == EINPROGRESS);
 

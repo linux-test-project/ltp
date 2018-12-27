@@ -15,6 +15,7 @@
 
 #include <signal.h>
 #include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 #include "posixtest.h"
 
@@ -28,6 +29,7 @@ static void handler(int signo)
 int main(void)
 {
 	struct sigaction act;
+	struct timespec signal_wait_ts = {0, 100000000};
 
 	act.sa_handler = handler;
 	act.sa_flags = 0;
@@ -50,7 +52,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	usleep(100000);
+	nanosleep(&signal_wait_ts, NULL);
 
 	if (handler_called) {
 		printf("FAIL: Signal was not blocked\n");

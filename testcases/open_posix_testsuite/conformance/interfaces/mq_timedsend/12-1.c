@@ -148,12 +148,13 @@ int main(void)
 	if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
 		error_and_exit(ret, "pthread_barrier_wait start");
 
+	struct timespec completion_wait_ts = {0, SIGNAL_DELAY_MS*1000000};
 	while (i < TIMEOUT*1000 && mq_timedsend_errno < 0) {
 		/* signal thread while it's in mq_timedsend */
 		ret = pthread_kill(new_th, SIGUSR1);
 		if (ret != 0)
 			error_and_exit(ret, "pthread_kill");
-		usleep(SIGNAL_DELAY_MS*1000);
+		nanosleep(&completion_wait_ts, NULL);
 		i += SIGNAL_DELAY_MS;
 	}
 

@@ -66,6 +66,7 @@ void *t1_func(void *arg)
 
 int main(void)
 {
+	struct timespec completion_wait_ts = {0, 100000};
 	struct sigaction act;
 
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
@@ -82,7 +83,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 	while (!t1_start)	/* wait for thread1 started */
-		usleep(100);
+		nanosleep(&completion_wait_ts, NULL);
 
 	/* acquire the mutex released by pthread_cond_wait() within thread 1 */
 	if (pthread_mutex_lock(&td.mutex) != 0) {

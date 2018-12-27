@@ -43,7 +43,7 @@
 /* total number of signals sent */
 static unsigned long count_sig;
 /* sleep [us] in between signals */
-static volatile unsigned long sleep_time;
+static volatile long sleep_time;
 /* number of pthread_create scenarios tested */
 static unsigned long count_ope;
 
@@ -59,6 +59,9 @@ static unsigned long long current_time_usec(void)
 static void *sendsig(void *arg)
 {
 	static sigset_t usersigs;
+	struct timespec time_between_signals_ts;
+
+	time_between_signals_ts.tv_sec = 0;
 
 	(void)arg;
 	pid_t process = getpid();
@@ -76,8 +79,11 @@ static void *sendsig(void *arg)
 		 * can progress.
 		 */
 		sleep_time++;
-		if (sleep_time / SIGNALS_WITHOUT_DELAY > 0)
-			usleep(sleep_time / SIGNALS_WITHOUT_DELAY);
+		if (sleep_time / SIGNALS_WITHOUT_DELAY > 0) {
+			time_between_signals_ts.tv_nsec =
+			    (sleep_time * 1000) / SIGNALS_WITHOUT_DELAY;
+			nanosleep(&time_between_signals_ts, NULL);
+		}
 
 		count_sig++;
 		SAFE_FUNC(kill(process, SIGUSR1));

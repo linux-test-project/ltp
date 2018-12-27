@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <aio.h>
+#include <time.h>
 
 #include "posixtest.h"
 
@@ -40,6 +41,7 @@ int main(void)
 	char buf[BUF_SIZE];
 	struct aiocb aiocb;
 	int ret = 0;
+	struct timespec completion_wait_ts = {0, 10000000};
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
@@ -61,7 +63,7 @@ int main(void)
 	}
 
 	do {
-		usleep(10000);
+		nanosleep(&completion_wait_ts, NULL);
 		ret = aio_error(&aiocb);
 	} while (ret == EINPROGRESS);
 	if (ret != EBADF) {
