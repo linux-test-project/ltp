@@ -102,7 +102,7 @@ ext4_test_nsec_timestamps()
 	# Test nanosecond
 	if [ $nsec_atime -eq 0 -a $nsec_mtime -eq 0 -a $nsec_ctime -eq 0 ]; then
 		tst_resm TFAIL "The timestamp is not nanosecond(nsec_atime: $nsec_atime, nsec_mtime: $nsec_mtime, nsec_ctime: $nsec_ctime)"
-		tst_mount mnt_point
+		tst_umount mnt_point
 		return
 	fi
 
