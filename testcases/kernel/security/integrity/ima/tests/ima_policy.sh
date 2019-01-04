@@ -28,7 +28,7 @@ check_policy_writable()
 {
 	local err="IMA policy already loaded and kernel not configured to enable multiple writes to it (need CONFIG_IMA_WRITE_POLICY=y)"
 
-	[ -f /sys/kernel/security/ima/policy ] || tst_brk TCONF "$err"
+	[ -f $IMA_POLICY ] || tst_brk TCONF "$err"
 	# CONFIG_IMA_READ_POLICY
 	echo "" 2> log > $IMA_POLICY
 	grep -q "Device or resource busy" log && tst_brk TCONF "$err"
