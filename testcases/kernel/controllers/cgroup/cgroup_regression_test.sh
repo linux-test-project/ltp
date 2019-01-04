@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2009 FUJITSU LIMITED
 # Author: Li Zefan <lizf@cn.fujitsu.com>
 
@@ -43,15 +44,20 @@ do_cleanup()
 
 check_kernel_bug()
 {
+	local id="$1"
+	local ok_msg="no kernel bug was found"
 	local new_bug=`dmesg | grep -c "kernel BUG"`
 	local new_null=`dmesg | grep -c "kernel NULL pointer dereference"`
 	local new_warning=`dmesg | grep -c "^WARNING"`
 	local new_lockdep=`dmesg | grep -c "possible recursive locking detected"`
 
+	[ "$id" ] && ok_msg="$ok_msg for test $i"
+
 	# no kernel bug is detected
 	if [ $new_bug -eq $NR_BUG -a $new_warning -eq $NR_WARNING -a \
 	     $new_null -eq $NR_NULL -a $new_lockdep -eq $NR_LOCKDEP ]; then
-		return 1
+		tst_res TPASS $ok_msg
+		return 0
 	fi
 
 	# some kernel bug is detected
@@ -73,9 +79,9 @@ check_kernel_bug()
 	NR_WARNING=$new_warning
 	NR_LOCKDEP=$new_lockdep
 
-	echo "check_kernel_bug found something!"
+	tst_res TWARN "BUG FOUND!"
 	dmesg
-	return 0
+	return 1
 }
 
 #---------------------------------------------------------------------------
@@ -101,14 +107,10 @@ test1()
 	fi
 	cat cgroup/tasks > /dev/null
 
-	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel bug was found"
-	fi
-
 	kill -TERM $!
 	wait $! 2>/dev/null
 	umount cgroup
+	check_kernel_bug
 }
 
 #---------------------------------------------------------------------------
@@ -190,13 +192,9 @@ test3()
 	wait $pid1 2>/dev/null
 	wait $pid2 2>/dev/null
 
-	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel bug was found"
-	fi
-
 	rmdir $cpu_subsys_path/* 2> /dev/null
 	umount cgroup 2> /dev/null
+	check_kernel_bug
 }
 
 #---------------------------------------------------------------------------
@@ -302,16 +300,12 @@ test5()
 	sleep 100 &
 	echo $! > $mntpoint/0/tasks
 
-	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel bug was found"
-	fi
-
 	kill -TERM $! > /dev/null
 	wait $! 2>/dev/null
 	rmdir $mntpoint/0
 	# Do NOT unmount pre-existent mountpoints...
 	[ -z "$mounted" ] && umount $mntpoint
+	check_kernel_bug
 }
 
 #---------------------------------------------------------------------------
@@ -344,14 +338,10 @@ test6()
 	wait $pid1 2>/dev/null
 	wait $pid2 2>/dev/null
 
-	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel bug was found"
-	fi
-
 	mount -t cgroup -o ns xxx cgroup/ > /dev/null 2>&1
 	rmdir cgroup/[1-9]* > /dev/null 2>&1
 	umount cgroup
+	check_kernel_bug
 }
 
 #---------------------------------------------------------------------------
@@ -417,9 +407,9 @@ test_7_2()
 	wait $! 2>/dev/null
 	umount cgroup
 
-	# due to the bug, reading /proc/sched_debug may lead to oops
 	grep -q -w "cpu" /proc/cgroups
 	if [ $? -ne 0 -o ! -e /proc/sched_debug ]; then
+		tst_res TWARN "skip rest of testing due possible oops triggered by reading /proc/sched_debug"
 		return
 	fi
 
@@ -447,15 +437,10 @@ test7()
 
 	# remount to add new subsystems to the hierarchy
 	while [ $i -le 2 ]; do
-		test_7_$i $subsys
-		[ $? -ne 0 ] && return
-
-		check_kernel_bug
-		[ $? -eq 0 ] && return
+		test_7_$i $subsys || return
+		check_kernel_bug $i || return
 		i=$((i+1))
 	done
-
-	tst_res TPASS "no kernel bug was found"
 }
 
 #---------------------------------------------------------------------------
@@ -472,19 +457,12 @@ test8()
 		return
 	fi
 
-	cgroup_regression_getdelays -C cgroup/tasks > /dev/null 2>&1
-	if [ $? -eq 0 ]; then
+	if cgroup_regression_getdelays -C cgroup/tasks > /dev/null 2>&1; then
 		tst_res TFAIL "should have failed to get cgroupstat of tasks file"
-		umount cgroup
-		return
-	fi
-
-	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel bug was found"
 	fi
 
 	umount cgroup
+	check_kernel_bug
 }
 
 #---------------------------------------------------------------------------
@@ -508,11 +486,7 @@ test9()
 	wait $pid2 2>/dev/null
 
 	umount cgroup
-
 	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel warning was found"
-	fi
 }
 
 #---------------------------------------------------------------------------
@@ -538,11 +512,7 @@ test10()
 	mkdir cgroup/0
 	rmdir cgroup/0
 	umount cgroup
-
 	check_kernel_bug
-	if [ $? -eq 1 ]; then
-		tst_res TPASS "no kernel warning was found"
-	fi
 }
 
 tst_run
