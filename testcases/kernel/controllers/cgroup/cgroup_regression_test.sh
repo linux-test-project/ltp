@@ -165,12 +165,12 @@ test3()
 		return
 	fi
 
-	if grep -q -w "cpu" /proc/cgroups ; then
-		cpu_subsys_path=$(get_cgroup_mountpoint "cpu")
-	else
+	if ! grep -q -w "cpu" /proc/cgroups; then
 		tst_res TCONF "CONFIG_CGROUP_SCHED is not enabled"
 		return
 	fi
+
+	cpu_subsys_path=$(get_cgroup_mountpoint "cpu")
 
 	# Run the test for 30 secs
 	if [ -z "$cpu_subsys_path" ]; then
@@ -224,13 +224,12 @@ test4()
 	rmdir cgroup/0
 	umount cgroup
 
-	dmesg | grep -q "MAX_LOCKDEP_SUBCLASSES too low"
-	if [ $? -eq 0 ]; then
+	if dmesg | grep -q "MAX_LOCKDEP_SUBCLASSES too low"; then
 		tst_res TFAIL "lockdep BUG was found"
 		return
-	else
-		tst_res TPASS "no lockdep BUG was found"
 	fi
+
+	tst_res TPASS "no lockdep BUG was found"
 }
 
 #---------------------------------------------------------------------------
