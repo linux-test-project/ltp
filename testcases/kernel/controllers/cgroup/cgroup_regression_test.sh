@@ -485,7 +485,7 @@ test9()
 	wait $pid1 2>/dev/null
 	wait $pid2 2>/dev/null
 
-	umount cgroup
+	umount cgroup 2> /dev/null
 	check_kernel_bug
 }
 
@@ -511,7 +511,7 @@ test10()
 	mount -t cgroup none cgroup 2> /dev/null
 	mkdir cgroup/0
 	rmdir cgroup/0
-	umount cgroup
+	umount cgroup 2> /dev/null
 	check_kernel_bug
 }
 
