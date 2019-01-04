@@ -535,6 +535,7 @@ test10()
 	wait $pid2 2>/dev/null
 
 	mount -t cgroup none cgroup 2> /dev/null
+	mkdir cgroup/0
 	rmdir cgroup/0
 	umount cgroup
 
