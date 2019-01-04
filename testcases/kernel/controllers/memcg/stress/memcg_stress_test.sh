@@ -31,10 +31,12 @@ setup()
 	sleep 2
 	local mem_free=`cat /proc/meminfo | grep MemFree | awk '{ print $2 }'`
 	local swap_free=`cat /proc/meminfo | grep SwapFree | awk '{ print $2 }'`
+	local pgsize=`tst_getconf PAGESIZE`
 
 	MEM=$(( $mem_free + $swap_free / 2 ))
 	MEM=$(( $MEM / 1024 ))
 	RUN_TIME=$(( 15 * 60 ))
+	[ "$pgsize" = "4096" ] && THREAD_SPARE_MB=1 || THREAD_SPARE_MB=8
 
 	tst_res TINFO "Calculated available memory $MEM MB"
 }
@@ -101,12 +103,12 @@ run_stress()
 
 test1()
 {
-	run_stress 150 $(( ($MEM - 150) / 150 )) 5 $RUN_TIME
+	run_stress 150 $(( ($MEM - 150 * $THREAD_SPARE_MB) / 150 )) 5 $RUN_TIME
 }
 
 test2()
 {
-	run_stress 1 $MEM 5 $RUN_TIME
+	run_stress 1 $(( $MEM - $THREAD_SPARE_MB)) 5 $RUN_TIME
 }
 
 tst_run
