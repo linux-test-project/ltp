@@ -28,6 +28,7 @@
  */
 
 #define _GNU_SOURCE
+#include <errno.h>
 #include <sched.h>
 #include <time.h>
 
@@ -58,6 +59,22 @@ const char governor[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_governor";
 static char governor_name[16];
 
 const char maxspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_max_freq";
+
+static void check_set_turbo(char *file, char *off)
+{
+	int fd;
+
+	fd = SAFE_OPEN(NULL, file, O_WRONLY);
+
+	/* We try to skip test when getting EPERM. */
+	if (write(fd, off, 1) == -1 && errno == EPERM) {
+		SAFE_CLOSE(NULL, fd);
+		tst_brkm(TCONF, NULL,
+			 "Turbo is disabled by BIOS or unavailable on processor");
+	}
+
+	SAFE_CLOSE(NULL, fd);
+}
 
 static void cleanup(void)
 {
@@ -92,6 +109,13 @@ static void setup(void)
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	SAFE_FILE_SCANF(NULL, cdrv[i].file, "%d", &boost_value);
+
+	/* For intel_pstate, we cannot write data into intel_pstate/no_turbo
+	 * and return EPERM if turbo is disabled by BIOS or unavailable on
+	 * processor.  We should check this case by writing original data.
+	 */
+	if (!strcmp(cdrv[i].name, "intel_pstate") && boost_value == cdrv[i].off)
+		check_set_turbo(cdrv[i].file, cdrv[i].off_str);
 
 	/* change cpu0 scaling governor */
 	SAFE_FILE_SCANF(NULL, governor, "%s", governor_name);
