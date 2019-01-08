@@ -71,7 +71,8 @@ void tst_brk_(const char *file, const int lineno, int ttype,
 
 #define tst_brk(ttype, arg_fmt, ...)						\
 	({									\
-		BUILD_BUG_ON(!((ttype) & (TBROK | TCONF | TFAIL)));		\
+		TST_BRK_SUPPORTS_ONLY_TCONF_TBROK(!((ttype) &			\
+			(TBROK | TCONF | TFAIL))); 				\
 		tst_brk_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__);\
 	})
 
