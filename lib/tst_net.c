@@ -5,6 +5,7 @@
  */
 
 #include <errno.h>
+#include <netdb.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -203,4 +204,18 @@ void tst_init_sockaddr_inet6_bin(struct sockaddr_in6 *sa, const struct in6_addr 
 	sa->sin6_family = AF_INET6;
 	sa->sin6_port = htons(port);
 	memcpy(&sa->sin6_addr, ip_val, sizeof(struct in6_addr));
+}
+
+void safe_getaddrinfo(const char *file, const int lineno, const char *src_addr,
+					  const char *port, const struct addrinfo *hints,
+					  struct addrinfo **addr_info)
+{
+	int err = getaddrinfo(src_addr, port, hints, addr_info);
+
+	if (err)
+		tst_brk(TBROK, "%s:%d: getaddrinfo failed, %s", file, lineno,
+				gai_strerror(err));
+
+	if (!*addr_info)
+		tst_brk(TBROK, "%s:%d: failed to get the address", file, lineno);
 }

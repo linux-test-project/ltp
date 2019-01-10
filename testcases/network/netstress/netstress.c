@@ -29,6 +29,7 @@
 #include "tst_safe_stdio.h"
 #include "tst_safe_pthread.h"
 #include "tst_test.h"
+#include "tst_safe_net.h"
 
 static const int max_msg_len = (1 << 16) - 1;
 static const int min_msg_len = 5;
@@ -441,19 +442,6 @@ static int parse_client_request(const char *msg)
 static struct timespec tv_client_start;
 static struct timespec tv_client_end;
 
-static void setup_addrinfo(const char *src_addr, const char *port,
-			   const struct addrinfo *hints,
-			   struct addrinfo **addr_info)
-{
-	int err = getaddrinfo(src_addr, port, hints, addr_info);
-
-	if (err)
-		tst_brk(TBROK, "getaddrinfo failed, %s", gai_strerror(err));
-
-	if (!*addr_info)
-		tst_brk(TBROK, "failed to get the address");
-}
-
 static void client_init(void)
 {
 	if (clients_num >= MAX_THREADS) {
@@ -471,8 +459,8 @@ static void client_init(void)
 	hints.ai_protocol = 0;
 
 	if (source_addr)
-		setup_addrinfo(source_addr, NULL, &hints, &local_addrinfo);
-	setup_addrinfo(server_addr, tcp_port, &hints, &remote_addrinfo);
+		SAFE_GETADDRINFO(source_addr, NULL, &hints, &local_addrinfo);
+	SAFE_GETADDRINFO(server_addr, tcp_port, &hints, &remote_addrinfo);
 
 	tst_res(TINFO, "Running the test over IPv%s",
 		(remote_addrinfo->ai_family == AF_INET6) ? "6" : "4");
@@ -667,7 +655,7 @@ static void server_init(void)
 
 	if (source_addr && !strchr(source_addr, ':'))
 		SAFE_ASPRINTF(&src_addr, "::ffff:%s", source_addr);
-	setup_addrinfo(src_addr ? src_addr : source_addr, tcp_port,
+	SAFE_GETADDRINFO(src_addr ? src_addr : source_addr, tcp_port,
 		       &hints, &local_addrinfo);
 	free(src_addr);
 

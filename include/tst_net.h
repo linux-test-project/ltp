@@ -7,9 +7,10 @@
 #define TST_NET_H_
 
 #include <arpa/inet.h>
-#include <sys/types.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <sys/types.h>
 
 void tst_get_in_addr(const char *ip_str, struct in_addr *ip);
 void tst_get_in6_addr(const char *ip_str, struct in6_addr *ip6);
@@ -27,4 +28,8 @@ void tst_init_sockaddr_inet_bin(struct sockaddr_in *sa, uint32_t ip_val, uint16_
 void tst_init_sockaddr_inet6(struct sockaddr_in6 *sa, const char *ip_str, uint16_t port);
 void tst_init_sockaddr_inet6_bin(struct sockaddr_in6 *sa, const struct in6_addr *ip_val, uint16_t port);
 
-#endif
+void safe_getaddrinfo(const char *file, const int lineno, const char *src_addr,
+					  const char *port, const struct addrinfo *hints,
+					  struct addrinfo **addr_info);
+
+#endif /* TST_NET_H_ */

@@ -12,6 +12,7 @@
 #include <sys/un.h>
 
 #include "safe_net_fn.h"
+#include "tst_net.h"
 
 #define SAFE_SOCKET(domain, type, protocol) \
 	safe_socket(__FILE__, __LINE__, NULL, domain, type, protocol)
@@ -69,5 +70,10 @@
 
 #define TST_GET_UNUSED_PORT(family, type) \
 	tst_get_unused_port(__FILE__, __LINE__, NULL, family, type)
+
+/* new API only */
+
+#define SAFE_GETADDRINFO(src_addr, port, hints, addr_info) \
+	safe_getaddrinfo(__FILE__, __LINE__, src_addr, port, hints, addr_info)
 
 #endif /* TST_SAFE_NET_H__ */

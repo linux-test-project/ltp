@@ -10,6 +10,7 @@
 #define TST_PRIVATE_H_
 
 #include <stdio.h>
+#include <netdb.h>
 
 #define MAX_IPV4_PREFIX 32
 #define MAX_IPV6_PREFIX 128
