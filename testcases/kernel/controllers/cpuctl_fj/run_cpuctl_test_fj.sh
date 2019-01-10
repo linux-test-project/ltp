@@ -49,7 +49,7 @@ setup()
 	mkdir -p "$CPUCTL" || return 1
 
 	mount -t cgroup -o cpu cpuctl "$CPUCTL" || {
-		tst_resm TFAIL "failed to mount cpu subsytem... Exiting"
+		tst_resm TFAIL "failed to mount cpu subsystem... Exiting"
 		cleanup;
 		return 1;
 	}
