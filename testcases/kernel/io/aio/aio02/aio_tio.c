@@ -57,7 +57,7 @@ static void work_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 
 	if (res != iocb->u.c.nbytes) {
 		fprintf(stderr, "write missed bytes expect %lu got %ld\n",
-			iocb->u.c.nbytes, res2);
+			iocb->u.c.nbytes, res);
 		exit(1);
 	}
 	wait_count--;
