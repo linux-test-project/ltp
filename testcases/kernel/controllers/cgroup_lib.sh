@@ -16,7 +16,7 @@ get_cgroup_mountpoint()
 	[ $# -eq 0 ] && tst_brk TBROK "get_cgroup_mountpoint: subsystem not defined"
 
 	mntpoint=$(grep cgroup /proc/mounts | grep -w $subsystem | awk '{ print $2 }')
-	[ -z "$mountpoint" ] && return 1
+	[ -z "$mntpoint" ] && return 1
 
 	echo $mntpoint
 	return 0
