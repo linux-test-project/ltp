@@ -28,13 +28,7 @@
 #include <string.h>
 
 #include "tst_test.h"
-
 #include "lapi/syscalls.h"
-#ifndef _FILE_OFFSET_BITS
-#define _FILE_OFFSET_BITS 32
-#endif
-
-#if (_FILE_OFFSET_BITS == 64)
 
 #define WRONG_FD       42	/* The number has no meaning.
 				   Just used as something wrong fd */
@@ -93,8 +87,3 @@ static struct tst_test test = {
 	.test = verify_fadvise,
 	.tcnt = ARRAY_SIZE(defined_advise),
 };
-
-#else
-	TST_TEST_TCONF("This test can only run on kernels that implements "
-			"fadvise64 which is used from posix_fadvise");
-#endif
