@@ -78,8 +78,7 @@ static void pipe_socket(void)
 
 	SAFE_PIPE(pp1);
 	SAFE_PIPE(pp2);
-	if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv))
-		tst_brk(TBROK | TERRNO, "fail to create socket pair.");
+	SAFE_SOCKETPAIR(AF_UNIX, SOCK_STREAM, 0, sv);
 
 	SAFE_WRITE(1, pp1[1], arr_in, num_len_data);
 	for (i = num_len_data; i > 0; i = i - ret) {
