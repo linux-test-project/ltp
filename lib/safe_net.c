@@ -132,6 +132,32 @@ int safe_socket(const char *file, const int lineno, void (cleanup_fn)(void),
 	return rval;
 }
 
+int safe_socketpair(const char *file, const int lineno, int domain, int type,
+		    int protocol, int sv[])
+{
+	int rval, ttype;
+
+	rval = socketpair(domain, type, protocol, sv);
+
+	if (rval < 0) {
+		switch (errno) {
+		case EPROTONOSUPPORT:
+		case EOPNOTSUPP:
+		case EAFNOSUPPORT:
+			ttype = TCONF;
+			break;
+		default:
+			ttype = TBROK;
+		}
+
+		tst_brkm(ttype | TERRNO, NULL,
+			 "%s:%d: socketpair(%d, %d, %d, %p) failed",
+			 file, lineno, domain, type, protocol, sv);
+	}
+
+	return rval;
+}
+
 int safe_getsockopt(const char *file, const int lineno, int sockfd, int level,
 		    int optname, void *optval, socklen_t *optlen)
 {
