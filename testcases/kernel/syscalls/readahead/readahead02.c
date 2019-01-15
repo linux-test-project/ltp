@@ -369,6 +369,9 @@ static void setup(void)
 	if (opt_fsizestr)
 		testfile_size = SAFE_STRTOL(opt_fsizestr, 1, INT_MAX);
 
+	if (access(PROC_IO_FNAME, F_OK))
+		tst_brk(TCONF, "Requires " PROC_IO_FNAME);
+
 	has_file(DROP_CACHES_FNAME, 1);
 	has_file(MEMINFO_FNAME, 1);
 
