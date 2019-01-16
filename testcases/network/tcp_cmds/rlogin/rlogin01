@@ -74,7 +74,7 @@ rlogin_test()
 		}
 	" > /dev/null || return 1
 
-	tst_resm TINFO "checking telnet status($i/$LOOPCOUNT)"
+	tst_resm TINFO "checking rlogin status($i/$LOOPCOUNT)"
 	tst_rhost_run -u $RUSER -c "grep -q 9 $RUSER.$RHOST" || return 1
 	tst_rhost_run -u $RUSER -c "rm -f $RUSER.$RHOST"
 }
