@@ -93,11 +93,16 @@ int main(int argc, char *argv[])
 			printf("%03u ", event.header.pcr);
 			display_sha1_digest(event.header.digest);
 		}
-		SHA1_Init(&c);
-		SHA1_Update(&c, pcr[event.header.pcr].digest,
-			    SHA_DIGEST_LENGTH);
-		SHA1_Update(&c, event.header.digest, SHA_DIGEST_LENGTH);
-		SHA1_Final(pcr[event.header.pcr].digest, &c);
+
+		if (event.header.pcr < NUM_PCRS) {
+			SHA1_Init(&c);
+			SHA1_Update(&c, pcr[event.header.pcr].digest,
+				    SHA_DIGEST_LENGTH);
+			SHA1_Update(&c, event.header.digest,
+				    SHA_DIGEST_LENGTH);
+			SHA1_Final(pcr[event.header.pcr].digest, &c);
+		}
+
 #if MAX_EVENT_DATA_SIZE < USHRT_MAX
 		if (event.header.len > MAX_EVENT_DATA_SIZE) {
 			printf("Error event too long\n");
