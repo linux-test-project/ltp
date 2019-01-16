@@ -38,7 +38,7 @@ do_setup()
 			tst_brk TCONF "'arp' doesn't support IPv6"
 		fi
 		SHOW_CMD="arp -a"
-		DEL_CMD="arp -d $(tst_ipaddr rhost)"
+		DEL_CMD="arp -d $(tst_ipaddr rhost) -i $(tst_iface)"
 		;;
 	*)
 		tst_brk TBROK "unknown or missing command, use -c [ arp | ip ]"
