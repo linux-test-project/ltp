@@ -20,6 +20,7 @@
 # Test whether ToMToU and open_writer violations invalidatethe PCR and are logged.
 
 TST_SETUP="setup"
+TST_CLEANUP="cleanup"
 TST_CNT=3
 TST_NEEDS_DEVICE=1
 
@@ -31,13 +32,27 @@ setup()
 	FILE="test.txt"
 	IMA_VIOLATIONS="$SECURITYFS/ima/violations"
 	LOG="/var/log/messages"
+	PRINTK_RATE_LIMIT="0"
 
 	if status_daemon auditd; then
 		LOG="/var/log/audit/audit.log"
+	else
+		tst_check_cmds sysctl
+
+		PRINTK_RATE_LIMIT=`sysctl -n kernel.printk_ratelimit`
+		sysctl -wq kernel.printk_ratelimit=0
 	fi
 	[ -f "$LOG" ] || \
 		tst_brk TBROK "log $LOG does not exist (bug in detection?)"
 	tst_res TINFO "using log $LOG"
+}
+
+cleanup()
+{
+	[ "$PRINTK_RATE_LIMIT" != "0" ] && \
+		sysctl -wq kernel.printk_ratelimit=$PRINTK_RATE_LIMIT
+
+	ima_cleanup
 }
 
 open_file_read()
