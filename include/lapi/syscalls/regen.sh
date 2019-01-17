@@ -77,6 +77,7 @@ for arch in $(cat "${srcdir}/order") ; do
 	case ${arch} in
 		sparc64) echo "#if defined(__sparc__) && defined(__arch64__)" ;;
 		sparc) echo "#if defined(__sparc__) && !defined(__arch64__)" ;;
+		s390) echo "#if defined(__s390__) && !defined(__s390x__)" ;;
 		*) echo "#ifdef __${arch}__" ;;
 	esac
 	while read line ; do
