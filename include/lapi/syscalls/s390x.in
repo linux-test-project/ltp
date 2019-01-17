@@ -259,7 +259,7 @@ geteuid 49
 getegid 50
 setreuid 70
 setregid 71
-getrlimit 76
+getrlimit 191
 getgroups 80
 setgroups 81
 fchown 95
@@ -271,7 +271,6 @@ getresuid 165
 setresgid 170
 getresgid 171
 chown 182
-ugetrlimit 191
 mmap2 192
 truncate64 193
 ftruncate64 194
