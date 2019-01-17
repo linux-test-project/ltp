@@ -76,13 +76,11 @@
 #include <pwd.h>
 
 #include "test.h"
-
-extern int getresuid(uid_t *, uid_t *, uid_t *);
-extern int setresuid(uid_t, uid_t, uid_t);
+#include "compat_16.h"
 
 char *TCID = "getresuid03";
 int TST_TOTAL = 1;
-uid_t pr_uid, pe_uid, ps_uid;	/* calling process real/effective/saved uid */
+UID_T pr_uid, pe_uid, ps_uid;	/* calling process real/effective/saved uid */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -90,7 +88,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	uid_t real_uid,		/* real/eff./saved user id from getresuid() */
+	UID_T real_uid,		/* real/eff./saved user id from getresuid() */
 	 eff_uid, sav_uid;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -106,7 +104,7 @@ int main(int ac, char **av)
 		 * user id's of the calling process after
 		 * setreuid() in setup.
 		 */
-		TEST(getresuid(&real_uid, &eff_uid, &sav_uid));
+		TEST(GETRESUID(cleanup, &real_uid, &eff_uid, &sav_uid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "getresuid() Failed, errno=%d : %s",

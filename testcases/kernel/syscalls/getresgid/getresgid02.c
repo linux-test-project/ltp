@@ -75,14 +75,13 @@
 #include <pwd.h>
 
 #include "test.h"
+#include "compat_16.h"
 
 #define LTPUSER		"nobody"
 
-extern int getresgid(gid_t *, gid_t *, gid_t *);
-
 char *TCID = "getresgid02";
 int TST_TOTAL = 1;
-gid_t pr_gid, pe_gid, ps_gid;	/* calling process real/effective/saved gid */
+GID_T pr_gid, pe_gid, ps_gid;	/* calling process real/effective/saved gid */
 
 void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
@@ -90,7 +89,7 @@ void cleanup();			/* cleanup function for the test */
 int main(int ac, char **av)
 {
 	int lc;
-	gid_t real_gid,		/* real/eff./saved user id from getresgid() */
+	GID_T real_gid,		/* real/eff./saved user id from getresgid() */
 	 eff_gid, sav_gid;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -106,7 +105,7 @@ int main(int ac, char **av)
 		 * user id's of the calling process after
 		 * setregid() in setup.
 		 */
-		TEST(getresgid(&real_gid, &eff_gid, &sav_gid));
+		TEST(GETRESGID(cleanup, &real_gid, &eff_gid, &sav_gid));
 
 		if (TEST_RETURN == -1) {
 			tst_resm(TFAIL, "getresgid() Failed, errno=%d : %s",

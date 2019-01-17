@@ -35,7 +35,9 @@
 #include "lapi/syscalls.h"
 
 int setresuid(uid_t ruid, uid_t euid, uid_t suid);
+int getresuid(uid_t *ruid, uid_t *euid, uid_t *suid);
 int setresgid(gid_t rgid, gid_t egid, gid_t sgid);
+int getresgid(gid_t *rgid, gid_t *egid, gid_t *sgid);
 
 
 /* If the platform has __NR_sys_name32 defined it
@@ -136,9 +138,19 @@ int SETRESUID(void (cleanup)(void), UID_T ruid, UID_T euid, UID_T suid)
 	LTP_CREATE_SYSCALL(setresuid, cleanup, ruid, euid, suid);
 }
 
+int GETRESUID(void (cleanup)(void), UID_T *ruid, UID_T *euid, UID_T *suid)
+{
+	LTP_CREATE_SYSCALL(getresuid, cleanup, ruid, euid, suid);
+}
+
 int SETRESGID(void (cleanup)(void), GID_T rgid, GID_T egid, GID_T sgid)
 {
 	LTP_CREATE_SYSCALL(setresgid, cleanup, rgid, egid, sgid);
+}
+
+int GETRESGID(void (cleanup)(void), GID_T *rgid, GID_T *egid, GID_T *sgid)
+{
+	LTP_CREATE_SYSCALL(getresgid, cleanup, rgid, egid, sgid);
 }
 
 int FCHOWN(void (cleanup)(void), unsigned int fd, UID_T owner, GID_T group)
