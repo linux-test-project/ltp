@@ -12,3 +12,4 @@ lock_torture lock_torture.sh
 zram01 zram01.sh
 zram02 zram02.sh
 zram03 zram03
+umip_basic_test umip_basic_test
