@@ -25,12 +25,14 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "posixtest.h"
 
 #define NUMSTOPS 10
 
-volatile int child_stopped = 0;
+static volatile int child_stopped;
 
-void handler(int signo, siginfo_t * info, void *context)
+void handler(int signo LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
+	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	if (info && info->si_code == CLD_STOPPED) {
 		printf("Child has been stopped\n");
@@ -101,3 +103,4 @@ int main(void)
 	printf("Test FAILED\n");
 	return -1;
 }
+

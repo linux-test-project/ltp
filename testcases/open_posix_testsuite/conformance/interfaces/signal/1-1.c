@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static volatile int handler_called;
 
-void myhandler(int signo)
+void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("SIGCHLD called. Inside handler\n");
 	handler_called = 1;
@@ -51,3 +51,4 @@ int main(void)
 	}
 	return PTS_PASS;
 }
+

@@ -18,9 +18,11 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static volatile int handler_called;
 
-void handler(int signo, siginfo_t * info, void *context)
+void handler(int signo LTP_ATTRIBUTE_UNUSED,
+	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
+	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 }
@@ -53,3 +55,4 @@ int main(void)
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
+

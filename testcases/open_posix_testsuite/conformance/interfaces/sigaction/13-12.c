@@ -23,7 +23,7 @@
 
 stack_t current;
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	stack_t oss;
 
@@ -69,3 +69,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

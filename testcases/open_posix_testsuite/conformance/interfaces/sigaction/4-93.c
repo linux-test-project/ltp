@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
@@ -38,3 +38,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

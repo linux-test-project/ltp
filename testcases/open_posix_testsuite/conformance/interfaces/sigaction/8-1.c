@@ -20,13 +20,13 @@
 
 int SIGXFSZ_count = 0;
 
-void SIGXFSZ_handler(int signo)
+void SIGXFSZ_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGXFSZ_count++;
 	printf("Caught SIGXFSZ\n");
 }
 
-void SIGABRT_handler(int signo)
+void SIGABRT_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGABRT\n");
 	raise(SIGXFSZ);
@@ -68,3 +68,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

@@ -20,13 +20,13 @@
 
 int SIGUSR1_count = 0;
 
-void SIGUSR1_handler(int signo)
+void SIGUSR1_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGUSR1_count++;
 	printf("Caught SIGUSR1\n");
 }
 
-void SIGUSR2_handler(int signo)
+void SIGUSR2_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGUSR2\n");
 	raise(SIGUSR1);
@@ -68,3 +68,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

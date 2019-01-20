@@ -32,9 +32,9 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static volatile int handler_called;
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 }
@@ -154,3 +154,4 @@ int main(void)
 	}
 	return PTS_PASS;
 }
+

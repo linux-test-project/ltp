@@ -23,10 +23,10 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static volatile int handler_called;
 int sigprocmask_return_val = 1;	/* some value that's not a 1 or 0 */
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 	if (sigprocmask_return_val != 1) {
@@ -83,3 +83,4 @@ int main(void)
 	    ("Test PASSED: signal was delivered before the call to sigprocmask returned.\n");
 	return PTS_PASS;
 }
+

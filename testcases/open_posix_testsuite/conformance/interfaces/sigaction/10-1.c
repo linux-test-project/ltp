@@ -15,14 +15,16 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "posixtest.h"
 
 #define NUMSTOPS 10
 
-int child_stopped = 0;
-int child_continued = 0;
-int notification;
+static volatile int child_stopped;
+static volatile int child_continued;
+static volatile int notification;
 
-void handler(int signo, siginfo_t * info, void *context)
+void handler(int signo LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
+	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	if (!info)
 		return;
@@ -113,3 +115,4 @@ int main(void)
 	printf("Test FAILED\n");
 	return -1;
 }
+
