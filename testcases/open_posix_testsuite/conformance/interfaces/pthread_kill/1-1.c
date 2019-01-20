@@ -45,8 +45,8 @@
 #define INMAIN 1
 #define SIGTOTEST SIGABRT
 
-int sem1;			/* Manual semaphore */
-int handler_called = 0;
+static int sem1;			/* Manual semaphore */
+static volatile int handler_called;
 
 void handler()
 {
