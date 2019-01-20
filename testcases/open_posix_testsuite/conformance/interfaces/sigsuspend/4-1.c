@@ -35,7 +35,7 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
@@ -61,7 +61,7 @@ int is_changed(sigset_t set, int sig)
 	if (sigismember(&set, sig) != 1) {
 		return 1;
 	}
-	for (i = 0; i < NUMSIGNALS; i++) {
+	for (i = 0; i < (int)NUMSIGNALS; i++) {
 		if ((siglist[i] != sig)) {
 			if (sigismember(&set, siglist[i]) != 0) {
 				return 1;
