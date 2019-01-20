@@ -16,7 +16,7 @@
 #include <pthread.h>
 
 #define TEST_MACRO(CONSTANT) \
-	void test_ ## CONSTANT(void) { int dummy = #CONSTANT; }
+	void test_ ## CONSTANT(void) { int dummy = CONSTANT; (void)dummy; }
 
 /* BAR */
 TEST_MACRO(PTHREAD_BARRIER_SERIAL_THREAD)
