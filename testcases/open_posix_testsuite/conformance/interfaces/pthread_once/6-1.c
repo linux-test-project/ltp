@@ -131,7 +131,7 @@ void *sendsig(void *arg)
 
 /* Next are the signal handlers. */
 /* This one is registered for signal SIGUSR1 */
-void sighdl1(int sig)
+void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 
@@ -142,7 +142,7 @@ void sighdl1(int sig)
 }
 
 /* This one is registered for signal SIGUSR2 */
-void sighdl2(int sig)
+void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 
@@ -161,7 +161,7 @@ void initializer(void)
 }
 
 /* Test function -- calls pthread_equal() and checks that EINTR is never returned. */
-void *test(void *arg)
+void *test(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

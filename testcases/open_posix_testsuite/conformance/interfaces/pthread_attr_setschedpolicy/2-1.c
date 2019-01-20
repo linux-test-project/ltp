@@ -49,7 +49,7 @@ static int thread_started;
 	exit(PTS_UNRESOLVED); \
 }
 
-static void *thread_func(void *data)
+static void *thread_func(void *data LTP_ATTRIBUTE_UNUSED)
 {
 	struct sched_param sp;
 	int policy;

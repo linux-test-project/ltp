@@ -31,21 +31,21 @@ int cleanup_flag[3];		/* Array to hold the cleanup flags for the 3 cleanup handl
 int i;
 
 /* 3 Cleanup handlers */
-void a_cleanup_func1(void *flag_val)
+void a_cleanup_func1(void *flag_val LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag[i] = 1;
 	i++;
 	return;
 }
 
-void a_cleanup_func2(void *flag_val)
+void a_cleanup_func2(void *flag_val LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag[i] = 2;
 	i++;
 	return;
 }
 
-void a_cleanup_func3(void *flag_val)
+void a_cleanup_func3(void *flag_val LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag[i] = 3;
 	i++;

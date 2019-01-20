@@ -105,7 +105,7 @@ void clnp(void)
 }
 
 /* Thread routine */
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

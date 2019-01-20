@@ -48,7 +48,7 @@
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
 /* 1st thread function */
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

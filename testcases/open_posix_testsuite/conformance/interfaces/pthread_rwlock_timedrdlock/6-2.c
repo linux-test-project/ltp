@@ -78,7 +78,7 @@ static void sig_handler()
 	handler_state = 3;
 }
 
-static void *th_fn(void *arg)
+static void *th_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	struct sigaction act;
 	struct timespec abs_timeout;

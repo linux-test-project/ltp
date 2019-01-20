@@ -35,7 +35,7 @@
 
 sem_t *gsemp;
 
-void sighdl(int sig)
+void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	return;
 }

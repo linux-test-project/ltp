@@ -155,7 +155,7 @@ void *sendsig(void *arg)
 
 /* Next are the signal handlers. */
 /* This one is registered for signal SIGUSR1 */
-void sighdl1(int sig)
+void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig1)) {
@@ -165,7 +165,7 @@ void sighdl1(int sig)
 }
 
 /* This one is registered for signal SIGUSR2 */
-void sighdl2(int sig)
+void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig2)) {
@@ -175,7 +175,7 @@ void sighdl2(int sig)
 }
 
 /* Test function -- This one calls pthread_mutex_trylock and check that no EINTR is returned. */
-void *test(void *arg)
+void *test(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	int i;

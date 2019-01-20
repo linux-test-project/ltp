@@ -102,7 +102,7 @@ CLEANUP(1)
     CLEANUP(2)
     CLEANUP(3)
 
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	pthread_cleanup_push(clnp3, NULL);
 	pthread_cleanup_push(clnp2, NULL);

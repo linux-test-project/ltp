@@ -90,7 +90,7 @@ struct {
 /****  First handler that will be poped
  *  This one works only with recursive mutexes
  */
-void clnp1(void *arg)
+void clnp1(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	if (data.type == PTHREAD_MUTEX_RECURSIVE) {
@@ -111,7 +111,7 @@ void clnp1(void *arg)
 /**** Second handler
  *  This one will trigger an action in main thread, while we are owning the mutex
  */
-void clnp2(void *arg)
+void clnp2(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	do {
@@ -134,7 +134,7 @@ void clnp2(void *arg)
 /**** Third handler
  *  Will actually unlock the mutex, then try to unlock second time to check an error is returned
  */
-void clnp3(void *arg)
+void clnp3(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 
@@ -159,7 +159,7 @@ void clnp3(void *arg)
  * This function will lock the mutex, then install the cleanup handlers
  * and wait for the cond. At this point it will be canceled.
  */
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 

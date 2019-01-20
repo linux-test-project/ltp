@@ -31,13 +31,13 @@
 /* Flag to indicate that the destructor was called */
 int cleanup_flag = 0;
 
-void destructor(void *tmp)
+void destructor(void *tmp LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag = 1;
 }
 
 /* Thread's function. */
-void *a_thread_func(void *tmp)
+void *a_thread_func(void *tmp LTP_ATTRIBUTE_UNUSED)
 {
 	pthread_key_t key;
 	int value = 1;

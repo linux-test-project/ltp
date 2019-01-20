@@ -37,7 +37,7 @@ static int thread_state;
 static time_t currsec1;
 static int expired;
 
-static void *fn_rd_1(void *arg)
+static void *fn_rd_1(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	thread_state = ENTERED_THREAD;
 	struct timespec abs_timeout;
@@ -82,7 +82,7 @@ static void *fn_rd_1(void *arg)
 	return NULL;
 }
 
-static void *fn_rd_2(void *arg)
+static void *fn_rd_2(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	thread_state = ENTERED_THREAD;
 	struct timespec abs_timeout;

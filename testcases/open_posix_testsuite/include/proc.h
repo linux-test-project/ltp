@@ -70,4 +70,3 @@ int tst_process_state_wait3(pid_t pid LTP_ATTRIBUTE_UNUSED,
 	return 0;
 }
 #endif
-

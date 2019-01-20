@@ -36,7 +36,7 @@
 #define THRESHOLD (TIMEOUT - 1)
 
 int blocking;
-void exit_handler(int signo)
+void exit_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("FAIL: the case is blocking, exit anyway\n");
 	blocking = 1;

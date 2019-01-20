@@ -91,7 +91,7 @@ sem_t semsig, semstart;
 int ctrl = 0;
 
 /*********  signal handler  **********/
-void sighdl(int sig)
+void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	if (sem_post(&semsig)) {
 		UNRESOLVED(errno, "Sem_post in signal handler");
@@ -99,7 +99,7 @@ void sighdl(int sig)
 }
 
 /********** thread *********/
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret, i;
 
