@@ -79,7 +79,7 @@ int main(void)
 
 	for (i = 0; i < syslimit; i++) {
 		if (sigqueue(pid, SIGTOTEST, value) != 0) {
-			printf("Failed: sigqueue on %d of %d max, errno: %s\n",
+			printf("Failed: sigqueue on %d of %ld max, errno: %s\n",
 			       i, syslimit, strerror(errno));
 			return PTS_UNRESOLVED;
 		}
