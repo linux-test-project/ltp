@@ -35,7 +35,7 @@
 #define PIPE_READ  0
 #define PIPE_WRITE 1
 
-int parent_process(char *qname, int read_pipe, int write_pipe, int child_pid);
+int parent_process(char *qname, int read_pipe, int write_pipe, pid_t child_pid);
 int child_process(char *qname, int read_pipe, int write_pipe);
 mqd_t open_queue(char *qname, int oflag, int mode);
 int send_receive(int read_pipe, int write_pipe, char send, char *reply);
@@ -92,7 +92,8 @@ int main(void)
 	return PTS_UNRESOLVED;
 }
 
-int parent_process(char *qname, int read_pipe, int write_pipe, int child_pid)
+int parent_process(char *qname, int read_pipe, int write_pipe,
+	pid_t child_pid LTP_ATTRIBUTE_UNUSED)
 {
 	mqd_t queue;
 	struct sigevent se;
@@ -238,3 +239,4 @@ int send_receive(int read_pipe, int write_pipe, char send, char *reply)
 
 	return 0;
 }
+
