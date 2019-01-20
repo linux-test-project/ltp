@@ -35,7 +35,7 @@
 
 int fails = 0, passes = 0;
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 	passes += 1;
