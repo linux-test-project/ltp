@@ -61,7 +61,6 @@ static void child(void)
 	void *prev = NULL;
 	struct rlimit rl;
 	pthread_cond_t cond;
-	pthread_condattr_t attr;
 	int rc;
 
 	/* Limit the process memory to a small value (8 for example). */
@@ -109,7 +108,6 @@ int main(void)
 	pid_t pid;
 	int child_status;
 	int status = PTS_UNRESOLVED;
-	int rc;
 
 	pid = fork();
 	if (pid < 0) {
