@@ -36,12 +36,12 @@ int main(void)
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0);
-	if (mqdes == (mqd_t) - 1) {
+	if (mqdes == (mqd_t)-1) {
 		perror(ERROR_PREFIX "mq_open");
 		return PTS_UNRESOLVED;
 	}
 	if (mq_unlink(mqname) == 0) {
-		if (mq_open(mqname, O_RDWR, S_IRUSR | S_IWUSR, 0) == -1) {
+		if (mq_open(mqname, O_RDWR, S_IRUSR | S_IWUSR, 0) == (mqd_t)-1) {
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {
