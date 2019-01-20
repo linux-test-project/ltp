@@ -5,6 +5,7 @@
 */
 
 #include <mqueue.h>
+#include <stdlib.h>
 #include "posixtest.h"
 
 void test_mq_receive_prototype(void)
@@ -14,6 +15,10 @@ void test_mq_receive_prototype(void)
 	size_t msg_len;
 	char *msgp;
 	unsigned msg_prio;
+
+	mqdes = 0;
+	msg_len = 0;
+	msgp = NULL;
 
 	msg_size = mq_receive(mqdes, msgp, msg_len, &msg_prio);
 

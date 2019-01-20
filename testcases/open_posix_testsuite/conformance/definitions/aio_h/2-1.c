@@ -10,11 +10,14 @@
 
 #include <aio.h>
 #include <stdlib.h>		/* For NULL on non-linux platforms. */
+#include <string.h>
 
 int main(void)
 {
 	struct aiocb aiocb;
 	struct sigevent sigevent;
+
+	memset(&sigevent, 0, sizeof(sigevent));
 
 	aiocb.aio_fildes = -1;
 	aiocb.aio_offset = -1;
