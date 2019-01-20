@@ -5,6 +5,8 @@
 */
 
 #include <mqueue.h>
+#include <stdlib.h>
+
 #include "posixtest.h"
 
 void test_mq_notify_prototype(void)
@@ -12,6 +14,9 @@ void test_mq_notify_prototype(void)
 	mqd_t mqdes;
 	struct sigevent *notification;
 	int err;
+
+	mqdes = 0;
+	notification = NULL;
 
 	err = mq_notify(mqdes, notification);
 
