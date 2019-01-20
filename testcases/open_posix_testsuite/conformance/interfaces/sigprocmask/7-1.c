@@ -41,7 +41,7 @@ int main(void)
 		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
 	};
 
-	for (i = 0; i < NUMSIGNALS; i++) {
+	for (i = 0; i < (int)NUMSIGNALS; i++) {
 		sigemptyset(&oactl);
 		sigemptyset(&tempset);
 		sigaddset(&tempset, siglist[i]);

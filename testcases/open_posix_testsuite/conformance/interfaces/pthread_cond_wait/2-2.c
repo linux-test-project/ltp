@@ -176,6 +176,8 @@ struct _scenar {
 #endif
 };
 
+#define NSCENAR (sizeof(scenarii) / sizeof(scenarii[0]))
+
 void *tf(void *arg)
 {
 	int ret = 0;
@@ -361,7 +363,7 @@ int main(void)
 /**********
  * For each test scenario, initialize the attributes and other variables.
  */
-	for (i = 0; i < (sizeof(scenarii) / sizeof(scenarii[0])); i++) {
+	for (i = 0; i < (int)NSCENAR; i++) {
 #if VERBOSE > 1
 		output("[parent] Preparing attributes for: %s\n",
 		       scenarii[i].descr);

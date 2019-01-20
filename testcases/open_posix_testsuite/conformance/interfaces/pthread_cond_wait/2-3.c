@@ -251,6 +251,8 @@ int main(void)
 #endif
 	};
 
+#define NSCENAR (sizeof(scenar) / sizeof(scenar[0]))
+
 	output_init();
 
 	/* Initialize the constants */
@@ -284,7 +286,7 @@ int main(void)
 	}
 
 	struct timespec wait_ts = {0, 100000};
-	for (i = 0; i < (sizeof(scenar) / sizeof(scenar[0])); i++) {
+	for (i = 0; i < (int)NSCENAR; i++) {
 #if VERBOSE > 1
 		output("Starting test for %s\n", scenar[i].descr);
 #endif

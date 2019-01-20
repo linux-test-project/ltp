@@ -23,6 +23,8 @@
 
 static const int sigs[] = {-1, -10000, INT32_MIN, INT32_MIN + 1};
 
+#define	NUMSIGNALS	(sizeof(sigs) / sizeof(sigs[0]))
+
 int main(void)
 {
 	sigset_t signalset;
@@ -33,7 +35,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	for (i = 0; i < sizeof(sigs) / sizeof(int); i++) {
+	for (i = 0; i < (int)NUMSIGNALS; i++) {
 		ret = sigismember(&signalset, sigs[i]);
 
 		if (ret != -1 || errno != EINVAL) {

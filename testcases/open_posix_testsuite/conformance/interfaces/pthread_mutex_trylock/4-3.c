@@ -194,7 +194,7 @@ void *test(void *arg LTP_ATTRIBUTE_UNUSED)
 	pshared = sysconf(_SC_THREAD_PROCESS_SHARED);
 
 	/* Initialize the mutex objects according to the scenarii */
-	for (i = 0; i < NSCENAR; i++) {
+	for (i = 0; i < (int)NSCENAR; i++) {
 		ret = pthread_mutexattr_init(&ma[i]);
 		if (ret != 0) {
 			UNRESOLVED(ret,
@@ -277,7 +277,7 @@ void *test(void *arg LTP_ATTRIBUTE_UNUSED)
 	}
 
 	/* Destroy everything */
-	for (i = 0; i <= NSCENAR; i++) {
+	for (i = 0; i <= (int)NSCENAR; i++) {
 		ret = pthread_mutex_destroy(&mtx[i]);
 		if (ret != 0) {
 			UNRESOLVED(ret, "Failed to destroy the mutex");

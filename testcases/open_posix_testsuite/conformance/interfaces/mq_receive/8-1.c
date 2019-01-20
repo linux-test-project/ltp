@@ -40,15 +40,16 @@ int main(void)
 	const char *msgptr2 = "test message2 with differnet length";
 	mqd_t mqdes;
 	int prio1 = 1, prio2 = 2;
-	struct mq_attr attr;
+	struct mq_attr attr = {
+		.mq_msgsize = BUFFER,
+		.mq_maxmsg = BUFFER
+	};
 	int unresolved = 0, failure = 0;
 
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
-	attr.mq_msgsize = BUFFER;
-	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t) - 1) {
+	if (mqdes == (mqd_t)-1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}
@@ -62,14 +63,16 @@ int main(void)
 		unresolved = 1;
 	}
 
-	if (mq_receive(mqdes, msgrv1, BUFFER, NULL) != strlen(msgptr2)) {
-		printf
-		    ("FAIL: mq_receive didn't return the selected message size correctly \n");
+	if (mq_receive(mqdes, msgrv1, BUFFER, NULL) !=
+	    (ssize_t)strlen(msgptr2)) {
+		printf("FAIL: mq_receive didn't return the selected message "
+		    "size correctly\n");
 		failure = 1;
 	}
-	if (mq_receive(mqdes, msgrv2, BUFFER, NULL) != strlen(msgptr1)) {
-		printf
-		    ("FAIL: mq_receive didn't return the selected message size correctly \n");
+	if (mq_receive(mqdes, msgrv2, BUFFER, NULL) !=
+	    (ssize_t)strlen(msgptr1)) {
+		printf("FAIL: mq_receive didn't return the selected message "
+		    "size correctly\n");
 		failure = 1;
 	}
 	if (!strcmp(msgrv1, msgrv2)) {

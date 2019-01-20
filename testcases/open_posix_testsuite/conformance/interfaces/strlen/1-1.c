@@ -51,7 +51,7 @@ int main(void)
 		ret_str = random_string(i);
 		obtained_len = strlen(ret_str);
 
-		if (obtained_len != i) {
+		if (obtained_len != (size_t)i) {
 			printf(TNAME " Test Failed, return value is not as expected, "
 					"for the given string. Expected string length: %d,"
 					" But got: %zu.\n", i, obtained_len);

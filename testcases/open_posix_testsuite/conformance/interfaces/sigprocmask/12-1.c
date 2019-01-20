@@ -44,7 +44,7 @@ int is_changed(sigset_t set)
 		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
 	};
 
-	for (i = 0; i < NUMSIGNALS; i++) {
+	for (i = 0; i < (int)NUMSIGNALS; i++) {
 		if (sigismember(&set, siglist[i]) != 0)
 			return 1;
 	}
