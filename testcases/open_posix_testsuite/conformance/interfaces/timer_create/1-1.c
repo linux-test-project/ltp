@@ -34,7 +34,7 @@
 #define SLEEPDELTA 3
 #define ACCEPTABLEDELTA 1
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 }
@@ -85,7 +85,7 @@ int main(void)
 		return PTS_FAIL;
 	}
 
-	if (abs(tsleft.tv_sec - SLEEPDELTA) <= ACCEPTABLEDELTA) {
+	if (labs(tsleft.tv_sec - SLEEPDELTA) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
@@ -95,3 +95,4 @@ int main(void)
 	       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
 	return PTS_FAIL;
 }
+
