@@ -42,7 +42,7 @@
 #define SLEEPDELTA 3
 #define ACCEPTABLEDELTA 1
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 }
@@ -91,7 +91,7 @@ int main(void)
 	}
 	// Test can validly fail if timer did not last for correct amount
 	// of time, but nanosleep() was interrupted.
-	if (abs(tsleft.tv_sec - SLEEPDELTA) > ACCEPTABLEDELTA) {
+	if (labs(tsleft.tv_sec - SLEEPDELTA) > ACCEPTABLEDELTA) {
 		printf("Timer did not last for correct amount of time\n");
 		printf("timer: %d != correct %d\n",
 		       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
@@ -101,3 +101,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

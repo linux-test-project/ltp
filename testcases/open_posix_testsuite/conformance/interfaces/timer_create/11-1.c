@@ -23,7 +23,7 @@
 
 static volatile int caught_signal;
 
-static void handler(int signo)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	caught_signal = 1;
 }
@@ -94,7 +94,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if (abs(ts_end.tv_sec - ts_start.tv_sec - TIMERSEC) <= ACCEPTABLEDELTA) {
+	if (labs(ts_end.tv_sec - ts_start.tv_sec - TIMERSEC) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
 	}
@@ -106,3 +106,4 @@ int main(void)
 	return PTS_FAIL;
 #endif
 }
+
