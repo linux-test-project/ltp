@@ -91,7 +91,7 @@ int main(void)
 	for (i = 0; i < NUM_AIOCBS; i++) {
 
 		aiocbs[i] = (struct aiocb *)calloc(sizeof(struct aiocb), 1);
-		if (aiocbs == NULL) {
+		if (aiocbs[i] == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
 			       strerror(errno));
 			free(bufs);
