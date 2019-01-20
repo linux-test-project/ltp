@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Inside dummy handler\n");
 }
@@ -34,8 +34,8 @@ void handler(int signo)
 int main(void)
 {
 	pid_t pid;
-	pid = fork();
 
+	pid = fork();
 	if (pid == 0) {
 		/* child */
 		sigset_t selectset;
@@ -100,3 +100,4 @@ int main(void)
 		return PTS_PASS;
 	}
 }
+
