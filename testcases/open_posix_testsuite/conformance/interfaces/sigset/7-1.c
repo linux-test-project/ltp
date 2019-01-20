@@ -34,7 +34,7 @@
 
 static int handler_called;
 
-static void myhandler(int signo)
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 }
@@ -84,3 +84,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+
