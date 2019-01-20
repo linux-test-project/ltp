@@ -52,7 +52,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	for (i = 0; i < max; i++) {
+	for (i = 0; (int)i < max; i++) {
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 #ifndef TIMER_MAX
 			if (errno == EAGAIN)

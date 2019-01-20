@@ -50,7 +50,7 @@ int main(void)
 	attr.mq_msgsize = BUFFER;
 	attr.mq_maxmsg = BUFFER;
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
-	if (mqdes == (mqd_t) - 1) {
+	if (mqdes == (mqd_t)-1) {
 		perror(ERROR_PREFIX "mq_open");
 		unresolved = 1;
 	}
@@ -66,13 +66,13 @@ int main(void)
 	ts.tv_sec = time(NULL) + 1;
 	ts.tv_nsec = 0;
 	if (mq_timedreceive(mqdes, msgrv1, BUFFER, NULL, &ts) !=
-	    strlen(msgptr2)) {
+	    (ssize_t)strlen(msgptr2)) {
 		printf("FAIL: mq_timedreceive didn't return the selected "
 		       "message size correctly\n");
 		failure = 1;
 	}
 	if (mq_timedreceive(mqdes, msgrv2, BUFFER, NULL, &ts) !=
-	    strlen(msgptr1)) {
+	    (ssize_t)strlen(msgptr1)) {
 		printf("FAIL: mq_timedreceive didn't return the selected "
 		       "message size correctly\n");
 		failure = 1;

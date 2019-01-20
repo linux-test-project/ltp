@@ -349,7 +349,7 @@ int main(void)
 		UNRESOLVED(ret, "[parent] Failed to set thread stack size");
 
 	/* Do the test for each test scenario */
-	for (scenar = 0; scenar < NSCENAR; scenar++) {
+	for (scenar = 0; scenar < (int)NSCENAR; scenar++) {
 		/* set / reset everything */
 		td->fork = 0;
 		ret = pthread_mutexattr_init(&ma);
