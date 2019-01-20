@@ -28,7 +28,7 @@
 #define ACCEPTABLEDELTA 1
 #define NUMTESTS 6
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 }
@@ -88,7 +88,7 @@ int main(void)
 			failure = 1;
 		}
 
-		if (abs(tsleft.tv_sec - SLEEPDELTA) > ACCEPTABLEDELTA) {
+		if (labs(tsleft.tv_sec - SLEEPDELTA) > ACCEPTABLEDELTA) {
 			printf("Timer did not last correct amount of time\n");
 			failure = 1;
 		}
