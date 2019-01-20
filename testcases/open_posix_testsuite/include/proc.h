@@ -13,6 +13,8 @@
 
 #include <time.h>
 
+#include "posixtest.h"
+
 #ifdef __linux__
 # include <errno.h>
 # include <string.h>
@@ -56,8 +58,8 @@ int tst_process_state_wait3(pid_t pid, const char state,
 	return 1;
 }
 #else
-int tst_process_state_wait3(pid_t pid, const char state,
-	long maxwait_s)
+int tst_process_state_wait3(pid_t pid LTP_ATTRIBUTE_UNUSED,
+	const char state LTP_ATTRIBUTE_UNUSED, long maxwait_s)
 {
 	struct timespec maxwait_ts;
 
@@ -68,3 +70,4 @@ int tst_process_state_wait3(pid_t pid, const char state,
 	return 0;
 }
 #endif
+
