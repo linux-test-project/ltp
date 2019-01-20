@@ -50,10 +50,10 @@
 #define BUF_SIZE	(1024*1024)
 #define WAIT_FOR_AIOCB	6
 
-static int received_selected;
-static int received_all;
+static volatile int received_all;
 
-static void sigrt1_handler(int signum, siginfo_t *info, void *context)
+static void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
+	siginfo_t *info LTP_ATTRIBUTE_UNUSED, void *context LTP_ATTRIBUTE_UNUSED)
 {
 	received_all = 1;
 }
@@ -220,3 +220,5 @@ int main(void)
 
 	return PTS_PASS;
 }
+
+
