@@ -69,8 +69,8 @@ int main(void)
 		    ("FAIL: mq_receive didn't receive the highest priority message\n");
 		failure = 1;
 	}
-	if (rvprio != sdprio2) {
-		printf("FAIL: receive priority %d != send priority %d \n",
+	if ((int)rvprio != sdprio2) {
+		printf("FAIL: receive priority %u != send priority %d\n",
 		       rvprio, sdprio2);
 		failure = 1;
 	}
@@ -82,8 +82,8 @@ int main(void)
 		printf("FAIL: mq_receive didn't receive the correct message\n");
 		failure = 1;
 	}
-	if (rvprio != sdprio1) {
-		printf("FAIL: receive priority %d != send priority %d \n",
+	if ((int)rvprio != sdprio1) {
+		printf("FAIL: receive priority %u != send priority %d\n",
 		       rvprio, sdprio1);
 		failure = 1;
 	}
