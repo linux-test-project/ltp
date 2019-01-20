@@ -28,14 +28,14 @@ int t1_start = 0;
 int signaled = 0;
 
 /* Alarm handler */
-void alarm_handler(int signo)
+void alarm_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Error: failed to wakeup thread\n");
 	pthread_cancel(thread1);
 	exit(PTS_UNRESOLVED);
 }
 
-void *t1_func(void *arg)
+void *t1_func(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int rc;
 

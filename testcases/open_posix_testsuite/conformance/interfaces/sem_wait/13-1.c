@@ -51,7 +51,7 @@
 
 static sem_t sem;
 
-static void handler(int sig)
+static void handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	ret = sem_post(&sem);

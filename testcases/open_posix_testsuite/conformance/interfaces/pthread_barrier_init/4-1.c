@@ -35,7 +35,7 @@ static int thread_state;
 #define EXITING_THREAD 3
 
 /* child thread */
-static void *fn_chld(void *arg)
+static void *fn_chld(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int rc = 0;
 

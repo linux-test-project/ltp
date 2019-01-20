@@ -32,7 +32,7 @@
 int policy_correct = -1;
 int priority_correct = -1;
 
-void *thread(void *tmp)
+void *thread(void *tmp LTP_ATTRIBUTE_UNUSED)
 {
 	struct sched_param param;
 	int policy;

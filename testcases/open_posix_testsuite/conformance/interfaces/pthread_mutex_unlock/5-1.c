@@ -79,7 +79,7 @@
 pthread_mutex_t m;
 
 /** child thread function **/
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	ret = pthread_mutex_unlock(&m);

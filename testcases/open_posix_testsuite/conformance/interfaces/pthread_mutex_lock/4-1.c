@@ -90,7 +90,7 @@ pthread_mutex_t mtx;
 sem_t sem;
 
 /** child thread function **/
-void *threaded(void *arg)
+void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	/* Try to lock the mutex once. The call must fail here. */

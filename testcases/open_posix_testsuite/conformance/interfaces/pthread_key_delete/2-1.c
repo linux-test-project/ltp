@@ -30,7 +30,7 @@ pthread_key_t key;
 int dest_cnt;
 
 /* Destructor function */
-void dest_func(void *p)
+void dest_func(void *p LTP_ATTRIBUTE_UNUSED)
 {
 	dest_cnt++;
 	/* Delete the key and check if an error has occured */

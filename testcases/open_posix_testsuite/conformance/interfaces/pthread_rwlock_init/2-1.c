@@ -25,7 +25,7 @@
 static pthread_rwlock_t rwlock;
 static int thread_state;
 
-static void *fn_rd(void *arg)
+static void *fn_rd(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 
 	thread_state = 2;

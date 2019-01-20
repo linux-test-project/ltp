@@ -31,7 +31,7 @@
 
 int counter = 0;
 
-void myhandler(int signo)
+void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	counter++;
 }

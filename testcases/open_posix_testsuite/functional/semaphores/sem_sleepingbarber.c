@@ -50,7 +50,7 @@ void mdelay(unsigned msecs)
 	nanosleep(&req, NULL);
 }
 
-void *barbers(void *unused)
+void *barbers(void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 	for (i = 0; i < LOOP_NUM; i++) {

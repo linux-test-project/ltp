@@ -45,7 +45,7 @@ void sig_handler()
 	printf("thread: interrupted by SIGUSR1\n");
 }
 
-static void *fn_chld(void *arg)
+static void *fn_chld(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int rc = 0;
 	struct sigaction act;

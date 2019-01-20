@@ -40,7 +40,7 @@
 char gqname[NAMESIZE];
 mqd_t gqueue;
 
-void testfailed_handler(int signo)
+void testfailed_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Timeout never happened\n");
 	printf("Test FAILED\n");
