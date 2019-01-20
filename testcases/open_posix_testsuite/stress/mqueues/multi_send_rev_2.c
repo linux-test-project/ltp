@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	mqstat.mq_msgsize = MSG_SIZE;
 	mqstat.mq_flags = 0;
 
-	if ((mq = mq_open(MQ_NAME, oflag, 0777, &mqstat)) == -1) {
+	if ((mq = mq_open(MQ_NAME, oflag, 0777, &mqstat)) == (mqd_t)-1) {
 		printf("mq_open doesn't return success\n");
 		return PTS_UNRESOLVED;
 	}
