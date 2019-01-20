@@ -20,13 +20,13 @@
 
 int SIGTSTP_count = 0;
 
-void SIGTSTP_handler(int signo)
+void SIGTSTP_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGTSTP_count++;
 	printf("Caught SIGTSTP\n");
 }
 
-void SIGTTIN_handler(int signo)
+void SIGTTIN_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGTTIN\n");
 	raise(SIGTSTP);
@@ -68,3 +68,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static volatile int handler_called;
 
 void handler(int signo)
 {

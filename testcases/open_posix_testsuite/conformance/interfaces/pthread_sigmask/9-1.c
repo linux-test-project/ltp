@@ -24,10 +24,10 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int handler_called = 0;
+static volatile int handler_called;
 int pthread_sigmask_return_val = 1;	/* some value that's not a 1 or 0 */
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 	if (pthread_sigmask_return_val != 1) {
@@ -120,3 +120,4 @@ int main(void)
 	}
 	return PTS_PASS;
 }
+

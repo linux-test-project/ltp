@@ -36,15 +36,19 @@
 #define NUM_AIOCBS	10
 #define BUF_SIZE	1024
 
-int num_received = 0;
-int received_all = 0;
+static volatile int num_received;
+static volatile int received_all;
 
-void sigrt1_handler(int signum, siginfo_t * info, void *context)
+void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
+	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
+	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	num_received++;
 }
 
-void sigrt2_handler(int signum, siginfo_t * info, void *context)
+void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
+	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
+	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	received_all = 1;
 }
@@ -180,3 +184,4 @@ int main(void)
 
 	return PTS_PASS;
 }
+

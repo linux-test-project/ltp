@@ -21,13 +21,11 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int handler_called = 0;
-
-void handler1(int signo)
+void handler1(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
-void handler2(int signo)
+void handler2(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
@@ -61,3 +59,4 @@ int main(void)
 	printf("Test Failed\n");
 	return PTS_FAIL;
 }
+

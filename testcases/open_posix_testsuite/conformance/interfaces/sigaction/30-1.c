@@ -80,7 +80,7 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	return;
 }
@@ -204,3 +204,4 @@ int main(void)
 
 	PASSED;
 }
+

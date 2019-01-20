@@ -20,13 +20,13 @@
 
 int SIGVTALRM_count = 0;
 
-void SIGVTALRM_handler(int signo)
+void SIGVTALRM_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGVTALRM_count++;
 	printf("Caught SIGVTALRM\n");
 }
 
-void SIGXCPU_handler(int signo)
+void SIGXCPU_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGXCPU\n");
 	raise(SIGVTALRM);
@@ -68,3 +68,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

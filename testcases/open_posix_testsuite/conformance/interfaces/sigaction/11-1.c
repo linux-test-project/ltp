@@ -27,10 +27,11 @@
 
 #define NUMSTOPS 2
 
-int child_continued = 0;
-int waiting = 1;
+static volatile int child_continued;
+static volatile int waiting = 1;
 
-void handler(int signo, siginfo_t * info, void *context)
+void handler(int signo LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
+	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	if (info && info->si_code == CLD_CONTINUED) {
 		printf("Child has been stopped\n");
@@ -122,3 +123,4 @@ int main(void)
 	     "continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
 	return PTS_PASS;
 }
+

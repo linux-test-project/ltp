@@ -13,7 +13,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGCHLD\n");
 }
@@ -49,3 +49,4 @@ int main(void)
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
+

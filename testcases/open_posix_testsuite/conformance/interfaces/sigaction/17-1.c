@@ -27,7 +27,7 @@
 
 volatile sig_atomic_t wakeup = 1;
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGABRT\n");
 	wakeup++;
@@ -90,3 +90,4 @@ int main(void)
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
+

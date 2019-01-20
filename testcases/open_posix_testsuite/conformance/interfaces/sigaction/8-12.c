@@ -20,13 +20,13 @@
 
 int SIGQUIT_count = 0;
 
-void SIGQUIT_handler(int signo)
+void SIGQUIT_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGQUIT_count++;
 	printf("Caught SIGQUIT\n");
 }
 
-void SIGSEGV_handler(int signo)
+void SIGSEGV_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGSEGV\n");
 	raise(SIGQUIT);
@@ -68,3 +68,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

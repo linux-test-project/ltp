@@ -20,13 +20,13 @@
 
 int SIGPIPE_count = 0;
 
-void SIGPIPE_handler(int signo)
+void SIGPIPE_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGPIPE_count++;
 	printf("Caught SIGPIPE\n");
 }
 
-void SIGQUIT_handler(int signo)
+void SIGQUIT_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGQUIT\n");
 	raise(SIGPIPE);
@@ -68,3 +68,4 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
+

@@ -72,7 +72,7 @@
 
 int called = 0;
 
-void handler(int sig)
+void handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	sigset_t pending;
@@ -154,3 +154,4 @@ int main(void)
 
 	PASSED;
 }
+

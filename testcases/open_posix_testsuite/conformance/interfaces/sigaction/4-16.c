@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void handler(int signo)
+void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	raise(SIGKILL);
 	exit(0);
@@ -82,3 +82,4 @@ int main(void)
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
+
