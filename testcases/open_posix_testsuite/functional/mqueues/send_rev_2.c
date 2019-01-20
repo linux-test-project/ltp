@@ -117,11 +117,11 @@ int main(void)
 	mqstat.mq_msgsize = MSG_SIZE;
 	mqstat.mq_flags = 0;
 
-	if ((mq1 = mq_open(MQ_NAME_1, oflag, 0777, &mqstat)) == -1) {
+	if ((mq1 = mq_open(MQ_NAME_1, oflag, 0777, &mqstat)) == (mqd_t)-1) {
 		printf("mq_open doesn't return success \n");
 		return PTS_UNRESOLVED;
 	}
-	if ((mq2 = mq_open(MQ_NAME_2, oflag, 0777, &mqstat)) == -1) {
+	if ((mq2 = mq_open(MQ_NAME_2, oflag, 0777, &mqstat)) == (mqd_t)-1) {
 		printf("mq_open doesn't return success \n");
 		return PTS_UNRESOLVED;
 	}
