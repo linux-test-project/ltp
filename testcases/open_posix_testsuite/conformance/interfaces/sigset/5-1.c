@@ -43,14 +43,14 @@ int is_empty(sigset_t * set)
 		SIGTRAP, SIGURG, SIGVTALRM, SIGXCPU, SIGXFSZ
 	};
 
-	for (i = 0; i < NUMSIGNALS; i++) {
+	for (i = 0; i < (int)NUMSIGNALS; i++) {
 		if (sigismember(set, siglist[i]) != 0)
 			return 0;
 	}
 	return 1;
 }
 
-void myhandler(int signo)
+void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
@@ -78,3 +78,4 @@ int main(void)
 	}
 	return PTS_PASS;
 }
+
