@@ -84,4 +84,3 @@ int main(void)
 	printf("Test PASSED: signal was added to the process's signal mask\n");
 	return PTS_PASS;
 }
-

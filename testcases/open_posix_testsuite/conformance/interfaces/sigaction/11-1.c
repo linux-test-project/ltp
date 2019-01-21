@@ -123,4 +123,3 @@ int main(void)
 	     "continued. Again, this is not a bug because of the existence of the word *MAY* in the spec.\n");
 	return PTS_PASS;
 }
-

@@ -145,4 +145,3 @@ int main(void)
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
-

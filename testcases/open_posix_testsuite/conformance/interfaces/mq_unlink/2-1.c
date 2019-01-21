@@ -183,4 +183,3 @@ int send_receive(int read_pipe, int write_pipe, char send, char *reply)
 	}
 	return 0;
 }
-

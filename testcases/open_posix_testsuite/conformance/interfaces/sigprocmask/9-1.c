@@ -83,4 +83,3 @@ int main(void)
 	    ("Test PASSED: signal was delivered before the call to sigprocmask returned.\n");
 	return PTS_PASS;
 }
-
