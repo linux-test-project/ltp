@@ -42,7 +42,9 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <semaphore.h>
+#ifdef	__linux__
 #include <sys/sysinfo.h>
+#endif
 
 #include "../testfrmw/testfrmw.h"
 #include "../testfrmw/testfrmw.c"
@@ -165,7 +167,7 @@ struct testdata {
 struct testdata *td;
 
 /* Child function (either in a thread or in a process) */
-static void *child(void *arg)
+static void *child(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	struct timespec ts;
@@ -235,7 +237,7 @@ children_t *children = &sentinel;
 
 sem_t sem_tmr;
 
-void *timer(void *arg)
+void *timer(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	unsigned int to = TIMEOUT;
 	int ret;
@@ -420,7 +422,7 @@ int main(void)
 		UNRESOLVED(ret, "Failed to initialize the semaphore");
 
 	/* Do the test for each test scenario */
-	for (scenar = 0; scenar < NSCENAR; scenar++) {
+	for (scenar = 0; scenar < (int)NSCENAR; scenar++) {
 		/* set / reset everything */
 		td->fork = 0;
 		ret = pthread_mutexattr_init(&ma);
