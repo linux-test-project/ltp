@@ -17,5 +17,5 @@ void test_mq_setattr_prototype(void)
 	mqdes = 0;
 
 	err = mq_setattr(mqdes, &mqs, &omqs);
-
+	(void)err;
 }

@@ -22,5 +22,5 @@ void test_mq_timedreceive_prototype(void)
 	msgp = NULL;
 
 	size = mq_timedreceive(mqdes, msgp, msg_len, &msg_prio, &abstime);
-
+	(void)size;
 }

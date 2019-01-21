@@ -12,7 +12,8 @@ void test_mq_open_prototype(void)
 {
 	mqd_t res;
 	int oflag = O_RDONLY;
-	const char *name;
+	const char *name = "bogus";
 
 	res = mq_open(name, oflag);
+	(void)res;
 }

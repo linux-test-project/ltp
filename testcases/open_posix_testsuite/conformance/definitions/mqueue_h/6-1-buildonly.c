@@ -21,5 +21,5 @@ void test_mq_receive_prototype(void)
 	msgp = NULL;
 
 	msg_size = mq_receive(mqdes, msgp, msg_len, &msg_prio);
-
+	(void)msg_size;
 }
