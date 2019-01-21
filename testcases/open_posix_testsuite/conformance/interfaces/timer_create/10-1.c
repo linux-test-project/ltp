@@ -106,4 +106,3 @@ int main(void)
 	return PTS_FAIL;
 #endif
 }
-

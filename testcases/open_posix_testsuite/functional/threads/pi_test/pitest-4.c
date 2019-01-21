@@ -335,4 +335,3 @@ int main(void)
 	DPRINTF(stderr, "Main Thread: stop sampler thread\n");
 	return 0;
 }
-

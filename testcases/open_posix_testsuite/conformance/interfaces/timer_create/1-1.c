@@ -95,4 +95,3 @@ int main(void)
 	       (int)ts.tv_sec - (int)tsleft.tv_sec, TIMERSEC);
 	return PTS_FAIL;
 }
-

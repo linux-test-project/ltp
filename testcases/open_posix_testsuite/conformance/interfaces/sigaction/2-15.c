@@ -59,4 +59,3 @@ int main(void)
 	printf("Test Failed\n");
 	return PTS_FAIL;
 }
-

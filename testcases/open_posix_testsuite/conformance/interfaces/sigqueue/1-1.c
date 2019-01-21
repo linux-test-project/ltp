@@ -87,4 +87,3 @@ int main(void)
 	printf("Test FAILED\n");
 	return PTS_FAIL;
 }
-
