@@ -38,7 +38,7 @@ int main(void)
 {
 	sem_t mysemp;
 	struct timespec ts;
-	int pid, status;
+	pid_t pid;
 
 	if (sem_init(&mysemp, 0, 1) == -1) {
 		perror(ERROR_PREFIX "sem_init");
@@ -80,7 +80,7 @@ int main(void)
 	} else {		// parent to send a signal to child
 		int i;
 		sleep(1);
-		status = kill(pid, SIGABRT);	// send signal to child
+		(void)kill(pid, SIGABRT);	// send signal to child
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;
