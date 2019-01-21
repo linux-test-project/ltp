@@ -25,7 +25,6 @@
 
 #ifdef __linux__
 # define _GNU_SOURCE
-# define AFFINITY_NEEDS_GNU_SOURCE 1
 # include <sched.h>
 # include <stdio.h>
 
