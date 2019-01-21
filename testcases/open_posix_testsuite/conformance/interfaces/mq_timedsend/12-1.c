@@ -46,7 +46,7 @@
 	do { errno = en; perror(msg); exit(PTS_UNRESOLVED); } while (0)
 
 /* variable to indicate how many times signal handler was called */
-static volatile sig_atomic_t in_handler;
+static volatile int in_handler;
 
 /* errno returned by mq_timedsend() */
 static int mq_timedsend_errno = -1;
