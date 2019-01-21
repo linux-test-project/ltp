@@ -21,6 +21,7 @@ int main()
 	sigset_t signalset;
 	int returnval;
 	returnval = sigismember(&signalset, SIGALRM);
+	(void)returnval;
 
 #ifdef DEBUG
 	printf("sigismember returned returnval\n");

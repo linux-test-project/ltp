@@ -16,4 +16,5 @@ void test_mq_getattr_prototype(void)
 	mqdes = 0;
 
 	err = mq_getattr(mqdes, &mqs);
+	(void)err;
 }

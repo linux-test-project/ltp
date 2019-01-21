@@ -9,9 +9,9 @@ line 9696 of the Base Definitions document
 
 void test_mqueue_unlink_prototype()
 {
-	const char *name;
+	const char *name = "bogus";
 	int err;
 
 	err = mq_unlink(name);
-
+	(void)err;
 }

@@ -19,5 +19,5 @@ void test_mq_notify_prototype(void)
 	notification = NULL;
 
 	err = mq_notify(mqdes, notification);
-
+	(void)err;
 }
