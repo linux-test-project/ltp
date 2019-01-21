@@ -17,11 +17,11 @@ void test_mq_timedsend_prototype(void)
 	size_t msg_len;
 	unsigned msg_prio;
 
-	mqdes = NULL;
+	mqdes = 0;
 	msgp = NULL;
 	msg_len = 0;
 	msg_prio = 0;
 
 	err = mq_timedsend(mqdes, msgp, msg_len, msg_prio, &timeout);
-
+	(void)err;
 }
