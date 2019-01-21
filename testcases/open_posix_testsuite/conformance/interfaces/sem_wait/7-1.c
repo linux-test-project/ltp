@@ -36,7 +36,7 @@ int main(void)
 {
 	sem_t *mysemp;
 	char semname[28];
-	int pid, status;
+	pid_t pid;
 
 	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
@@ -78,7 +78,7 @@ int main(void)
 	} else {		// parent to send a signal to child
 		int i;
 		sleep(1);
-		status = kill(pid, SIGABRT);	// send signal to child
+		(void)kill(pid, SIGABRT);	// send signal to child
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;
