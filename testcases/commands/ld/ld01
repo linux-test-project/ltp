@@ -67,7 +67,7 @@ test3()
 {
 	EXPECT_PASS $LD -shared f1.o d1.o -o test.so
 
-	if file test.so |grep -q shared; then
+	if file test.so |grep -q -e 'pie executable' -e 'shared object'; then
 		tst_res TPASS "Shared library could be build"
 	else
 		tst_res TFAIL "Failed to build shared library"
