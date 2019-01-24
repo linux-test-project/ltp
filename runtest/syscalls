@@ -430,12 +430,18 @@ getrandom03 getrandom03
 getrandom04 getrandom04
 
 getresgid01 getresgid01
+getresgid01_16 getresgid01_16
 getresgid02 getresgid02
+getresgid02_16 getresgid02_16
 getresgid03 getresgid03
+getresgid03_16 getresgid03_16
 
 getresuid01 getresuid01
+getresuid01_16 getresuid01_16
 getresuid02 getresuid02
+getresuid02_16 getresuid02_16
 getresuid03 getresuid03
+getresuid03_16 getresuid03_16
 
 getrlimit01 getrlimit01
 getrlimit02 getrlimit02
