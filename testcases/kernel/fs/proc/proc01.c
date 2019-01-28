@@ -111,6 +111,7 @@ static const struct mapping known_issues[] = {
 	{"read", "/proc/sys/vm/nr_hugepages", EOPNOTSUPP},
 	{"read", "/proc/sys/vm/nr_overcommit_hugepages", EOPNOTSUPP},
 	{"read", "/proc/sys/vm/nr_hugepages_mempolicy", EOPNOTSUPP},
+	{"read", "/proc/pressure/*", EOPNOTSUPP},
 	{"", "", 0}
 };
 
