@@ -171,6 +171,23 @@ static inline struct timespec tst_timespec_add(struct timespec t1,
 }
 
 /*
+ * Subtracts us microseconds from t.
+ */
+static inline struct timespec tst_timespec_sub_us(struct timespec t,
+                                                  long long us)
+{
+	t.tv_sec -= us / 1000000;
+	t.tv_nsec -= (us % 1000000) * 1000;
+
+	if (t.tv_nsec < 0) {
+		t.tv_sec--;
+		t.tv_nsec += 1000000000;
+	}
+
+	return t;
+}
+
+/*
  * Returns difference between two timespec structures.
  */
 static inline struct timespec tst_timespec_diff(struct timespec t1,
