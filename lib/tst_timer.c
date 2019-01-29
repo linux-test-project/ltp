@@ -15,7 +15,7 @@
 static struct timespec start_time, stop_time;
 static clockid_t clock_id;
 
-static const char *clock_name(clockid_t clk_id)
+const char *tst_clock_name(clockid_t clk_id)
 {
 	switch (clk_id) {
 	case CLOCK_REALTIME:
@@ -45,7 +45,7 @@ void tst_timer_check(clockid_t clk_id)
 		if (errno == EINVAL) {
 			tst_brk(TCONF,
 			         "Clock id %s(%u) not supported by kernel",
-				 clock_name(clk_id), clk_id);
+				 tst_clock_name(clk_id), clk_id);
 			return;
 		}
 
