@@ -1,8 +1,6 @@
 #DESCRIPTION:Posix Timer Tests
 clock_gettime02 clock_gettime02
 clock_gettime03 clock_gettime03
-clock_settime02 clock_settime02
-clock_settime03 clock_settime03
 timer_create02 timer_create02
 timer_create03 timer_create03
 timer_create04 timer_create04
