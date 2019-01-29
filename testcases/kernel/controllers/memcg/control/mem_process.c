@@ -77,7 +77,7 @@ void touch_memory(char *p)
 	int i;
 	int pagesize = getpagesize();
 
-	for (i = 0; i < memsize; i += pagesize)
+	for (i = 0; i < (int)memsize; i += pagesize)
 		p[i] = 0xef;
 }
 
