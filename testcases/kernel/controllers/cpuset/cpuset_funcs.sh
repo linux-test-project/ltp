@@ -128,7 +128,7 @@ setup()
 
 	mkdir -p "$CPUSET_TMP"
 	mkdir "$CPUSET"
-	mount -t cpuset cpuset "$CPUSET" 2> /dev/null
+	mount -t cgroup -o cpuset cpuset "$CPUSET" 2> /dev/null
 	if [ $? -ne 0 ]; then
 		cleanup
 		tst_brkm TFAIL "Could not mount cgroup filesystem with"\
