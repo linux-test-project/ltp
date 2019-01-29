@@ -152,6 +152,25 @@ static inline struct timespec tst_timespec_add_us(struct timespec t,
 }
 
 /*
+ * Adds two timespec structures.
+ */
+static inline struct timespec tst_timespec_add(struct timespec t1,
+                                               struct timespec t2)
+{
+	struct timespec res;
+
+	res.tv_sec = t1.tv_sec + t2.tv_sec;
+	res.tv_nsec = t1.tv_nsec + t2.tv_nsec;
+
+	if (res.tv_nsec >= 1000000000) {
+		res.tv_sec++;
+		res.tv_nsec -= 1000000000;
+	}
+
+	return res;
+}
+
+/*
  * Returns difference between two timespec structures.
  */
 static inline struct timespec tst_timespec_diff(struct timespec t1,
