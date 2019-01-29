@@ -20,6 +20,7 @@
  * Basic unit test for the tst_strstatus() function.
  */
 
+#include <string.h>
 #include "tst_test.h"
 
 static struct tcase {
