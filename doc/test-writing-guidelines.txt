@@ -1539,6 +1539,41 @@ static struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+2.2.29 Changing the Wall Clock Time during test execution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are some tests that, for different reasons, might need to change the
+system-wide clock time. Whenever this happens, it is imperative that the clock
+is restored, at the end of test's execution, taking in consideration the amount
+of time elapsed during that test.
+
+In order for that to happen, struct tst_test has a variable called
+"restore_wallclock" that should be set to "1" so LTP knows it should: (1)
+initialize a monotonic clock during test setup phase and (2) use that monotonic
+clock to fix the system-wide clock time at the test cleanup phase.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static void setup(void)
+{
+	...
+}
+
+static void run(void)
+{
+	...
+}
+
+sturct tst_test test = {
+	...
+	.setup = setup,
+	.test_all = run,
+	.restore_wallclock = 1,
+	...
+};
+-------------------------------------------------------------------------------
 
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

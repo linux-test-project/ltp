@@ -35,6 +35,7 @@
 #include "tst_timer_test.h"
 #include "tst_clocks.h"
 #include "tst_timer.h"
+#include "tst_wallclock.h"
 #include "tst_sys_conf.h"
 #include "tst_kconfig.h"
 
@@ -872,6 +873,9 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->resource_files)
 		copy_resources();
+
+	if (tst_test->restore_wallclock)
+		tst_wallclock_save();
 }
 
 static void do_test_setup(void)
@@ -903,6 +907,9 @@ static void do_cleanup(void)
 		tst_sys_conf_restore(0);
 
 	cleanup_ipc();
+
+	if (tst_test->restore_wallclock)
+		tst_wallclock_restore();
 }
 
 static void run_tests(void)
