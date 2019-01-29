@@ -30,9 +30,23 @@ static inline void safe_clock_gettime(const char *file, const int lineno,
 			"%s:%d clock_gettime() failed", file, lineno);
 }
 
+
+static inline void safe_clock_settime(const char *file, const int lineno,
+	clockid_t clk_id, struct timespec *tp)
+{
+	int rval;
+
+	rval = clock_settime(clk_id, tp);
+	if (rval != 0)
+		tst_brk(TBROK | TERRNO,
+			"%s:%d clock_gettime() failed", file, lineno);
+}
+
 #define SAFE_CLOCK_GETRES(clk_id, res)\
 	safe_clock_getres(__FILE__, __LINE__, (clk_id), (res))
 
 #define SAFE_CLOCK_GETTIME(clk_id, tp)\
 	safe_clock_gettime(__FILE__, __LINE__, (clk_id), (tp))
 
+#define SAFE_CLOCK_SETTIME(clk_id, tp)\
+	safe_clock_settime(__FILE__, __LINE__, (clk_id), (tp))
