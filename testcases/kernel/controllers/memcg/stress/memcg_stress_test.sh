@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 FUJITSU LIMITED
 # Copyright (c) 2018-2019 ARM Ltd. All Rights Reserved.
+# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
 #
 # Author: Li Zefan <lizf@cn.fujitsu.com>
 # Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>
-# Added memcg enable/disable functionality: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com
+# Added memcg enable/disable functionality: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
 
 TST_TESTFUNC=test
 TST_SETUP=setup
@@ -54,56 +55,58 @@ do_mount()
 	mount -t cgroup -omemory memcg /dev/memcg
 }
 
-# $1 - Number of cgroups
-# $2 - Allocated how much memory in one process? in MB
-# $3 - The interval to touch memory in a process
-# $4 - How long does this test run ? in second
+# $1 Number of cgroups
+# $2 Allocated MB memory in one process
+# $3 The interval to touch memory in a process
+# $4 Test duration (sec)
 run_stress()
 {
-	local i
+	local cgroups="$1"
+	local mem_size="$2"
+	local interval="$3"
+	local timeout="$4"
+	local i pid pids
+
+	tst_res TINFO "Testing $cgroups cgroups, using $mem_size MB, interval $interval"
 
 	do_mount
 
-	for i in $(seq 0 $(($1-1))); do
+	tst_res TINFO "Starting cgroups"
+	for i in $(seq 0 $(($cgroups-1))); do
 		mkdir /dev/memcg/$i 2> /dev/null
-		memcg_process_stress $2 $3 &
-		eval pid$i=$!
-
-		eval echo \$pid$i > /dev/memcg/$i/tasks
+		memcg_process_stress $mem_size $interval &
+		echo $! > /dev/memcg/$i/tasks
+		pids="$! $pids"
 	done
 
-	for i in $(seq 0 $(($1-1))); do
-		eval kill -USR1 \$pid$i 2> /dev/null
+	for pid in $pids; do
+		kill -USR1 $pid 2> /dev/null
 	done
 
-	sleep $4
+	tst_res TINFO "Testing cgroups for ${timeout}s"
+	sleep $timeout
 
-	for i in $(seq 0 $(($1-1))); do
-		eval kill -KILL \$pid$i 2> /dev/null
-		eval wait \$pid$i
-
+	tst_res TINFO "Killing groups"
+	i=0
+	for pid in $pids; do
+		kill -KILL $pid 2> /dev/null
+		wait $pid 2> /dev/null
 		rmdir /dev/memcg/$i 2> /dev/null
+		i=$((i+1))
 	done
 
+	tst_res TPASS "Test passed"
 	cleanup
 }
 
 test1()
 {
-	tst_res TINFO "testcase 1 started...it will run for $RUN_TIME secs"
-
 	run_stress 150 $(( ($MEM - 150) / 150 )) 5 $RUN_TIME
-
-	tst_res TPASS "stress test 1 passed"
 }
 
 test2()
 {
-	tst_res TINFO "testcase 2 started...it will run for $RUN_TIME secs"
-
 	run_stress 1 $MEM 5 $RUN_TIME
-
-	tst_res TPASS "stress test 2 passed"
 }
 
 tst_run
