@@ -35,7 +35,10 @@
 # define NR_OPEN (1024*1024)
 #endif
 
+#define NR_OPEN_PATH "/proc/sys/fs/nr_open"
+
 static struct rlimit rlim1, rlim2;
+static unsigned int nr_open = NR_OPEN;
 
 static struct tcase {
 	struct rlimit *rlimt;
@@ -51,7 +54,10 @@ static void verify_setrlimit(unsigned int n)
 
 	TEST(setrlimit(RLIMIT_NOFILE, tc->rlimt));
 	if (TST_RET != -1) {
-		tst_res(TFAIL, "call succeeded unexpectedly");
+		tst_res(TFAIL, "call succeeded unexpectedly "
+			"(nr_open=%u rlim_cur=%lu rlim_max=%lu)", nr_open,
+			(unsigned long)(tc->rlimt->rlim_cur),
+			(unsigned long)(tc->rlimt->rlim_max));
 		return;
 	}
 
@@ -65,10 +71,13 @@ static void verify_setrlimit(unsigned int n)
 
 static void setup(void)
 {
+	if (!access(NR_OPEN_PATH, F_OK))
+		SAFE_FILE_SCANF(NR_OPEN_PATH, "%u", &nr_open);
+
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &rlim1);
 	rlim2.rlim_max = rlim1.rlim_cur;
 	rlim2.rlim_cur = rlim1.rlim_max + 1;
-	rlim1.rlim_max = NR_OPEN + 1;
+	rlim1.rlim_max = nr_open + 1;
 }
 
 static struct tst_test test = {
