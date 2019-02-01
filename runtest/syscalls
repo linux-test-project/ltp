@@ -1197,6 +1197,7 @@ setrlimit02 setrlimit02
 setrlimit03 setrlimit03
 setrlimit04 setrlimit04
 setrlimit05 setrlimit05
+setrlimit06 setrlimit06
 
 set_robust_list01 set_robust_list01
 set_thread_area01 set_thread_area01
