@@ -20,7 +20,7 @@ void run(void)
 {
 	struct ustat ubuf;
 
-	TEST(tst_syscall(__NR_ustat, dev_num, &ubuf));
+	TEST(tst_syscall(__NR_ustat, (unsigned int)dev_num, &ubuf));
 
 	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO, "ustat(2) failed");
