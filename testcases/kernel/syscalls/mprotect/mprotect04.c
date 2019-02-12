@@ -227,10 +227,22 @@ static void *get_func(void *mem, uintptr_t *func_page_offset)
 	tst_resm(TINFO, "exec_func: %p, page_to_copy: %p",
 		&exec_func, page_to_copy);
 
-	/* copy 1st page, if it's not present something is wrong */
-	if (!page_present(page_to_copy))
-		tst_brkm(TBROK, cleanup, "page_to_copy not present\n");
-
+	/* Copy 1st page. If it's not accessible, we might be running on a
+	 * platform that supports execute-only page access permissions, in which
+	 * case we have to explicitly change access protections to allow the
+	 * memory to be read. */
+	if (!page_present(page_to_copy)) {
+		TEST(mprotect(page_to_copy, page_sz, PROT_READ | PROT_EXEC));
+		if (TEST_RETURN == -1) {
+			tst_resm(TFAIL | TTERRNO,
+				 "mprotect(PROT_READ|PROT_EXEC) failed");
+			return NULL;
+		}
+		/* If the memory is still not accessible, then something must be
+		 * wrong. */
+		if (!page_present(page_to_copy))
+			tst_brkm(TBROK, cleanup, "page_to_copy not present\n");
+	}
 	memcpy(mem, page_to_copy, page_sz);
 
 	clear_cache(mem_start, page_sz);
@@ -259,6 +271,9 @@ static void testfunc_protexec(void)
 #else
 	func = get_func(p, &func_page_offset);
 #endif
+
+	if (!func)
+		goto out;
 
 	if (func_page_offset + 64 > page_sz) {
 		SAFE_MUNMAP(cleanup, p, page_sz);
@@ -289,6 +304,7 @@ static void testfunc_protexec(void)
 		}
 	}
 
+out:
 	SAFE_MUNMAP(cleanup, p, page_sz);
 }
 
