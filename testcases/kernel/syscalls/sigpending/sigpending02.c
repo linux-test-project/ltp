@@ -17,13 +17,14 @@
 #include <sys/types.h>
 
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 static void run(void)
 {
 	/* set sigset to point to an invalid location */
 	sigset_t *sigset = (sigset_t *) - 1;
 
-	TEST(sigpending(sigset));
+	TEST(tst_syscall(__NR_sigpending, sigset));
 
 	/* check return code */
 	if (TST_RET == -1) {
