@@ -942,13 +942,14 @@ static void setup(void)
 		}
 	}
 
+	if (zcopy)
+		send_flags |= MSG_ZEROCOPY;
+
 	switch (proto_type) {
 	case TYPE_TCP:
 		tst_res(TINFO, "TCP %s is using %s TCP API.",
 			(client_mode) ? "client" : "server",
 			(fastopen_api) ? "Fastopen" : "old");
-		if (zcopy)
-			send_flags |= MSG_ZEROCOPY;
 		check_tfo_value();
 	break;
 	case TYPE_UDP:
