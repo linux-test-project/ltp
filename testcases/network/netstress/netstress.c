@@ -147,6 +147,7 @@ struct sock_info {
 
 static char *zcopy;
 static int send_flags = MSG_NOSIGNAL;
+static char *reuse_port;
 
 static void init_socket_opts(int sd)
 {
@@ -308,6 +309,8 @@ static void bind_before_connect(int sd)
 
 	if (bind_no_port)
 		SAFE_SETSOCKOPT_INT(sd, SOL_IP, IP_BIND_ADDRESS_NO_PORT, 1);
+	if (reuse_port)
+		SAFE_SETSOCKOPT_INT(sd, SOL_SOCKET, SO_REUSEPORT, 1);
 
 	SAFE_BIND(sd, local_addrinfo->ai_addr, local_addrinfo->ai_addrlen);
 
@@ -674,6 +677,8 @@ static void server_init(void)
 	/* IPv6 socket is also able to access IPv4 protocol stack */
 	sfd = SAFE_SOCKET(family, sock_type, protocol);
 	SAFE_SETSOCKOPT_INT(sfd, SOL_SOCKET, SO_REUSEADDR, 1);
+	if (reuse_port)
+		SAFE_SETSOCKOPT_INT(sfd, SOL_SOCKET, SO_REUSEPORT, 1);
 
 	tst_res(TINFO, "assigning a name to the server socket...");
 	SAFE_BIND(sfd, local_addrinfo->ai_addr, local_addrinfo->ai_addrlen);
@@ -996,6 +1001,7 @@ static struct tst_option options[] = {
 	{"b:", &barg, "-b x     x - low latency busy poll timeout"},
 	{"T:", &type, "-T x     tcp (default), udp, udp_lite, dccp, sctp"},
 	{"z", &zcopy, "-z       enable SO_ZEROCOPY"},
+	{"P:", &reuse_port, "-P       enable SO_REUSEPORT"},
 	{"D:", &dev, "-d x     bind to device x\n"},
 
 	{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
