@@ -408,7 +408,7 @@ test_7_2()
 
 	grep -q -w "cpu" /proc/cgroups
 	if [ $? -ne 0 -o ! -e /proc/sched_debug ]; then
-		tst_res TWARN "skip rest of testing due possible oops triggered by reading /proc/sched_debug"
+		tst_res TCONF "skip rest of testing due possible oops triggered by reading /proc/sched_debug"
 		return
 	fi
 
