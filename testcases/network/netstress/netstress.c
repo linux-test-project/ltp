@@ -88,7 +88,7 @@ static char *server_addr	= "localhost";
 static char *source_addr;
 static char *server_bg;
 static int busy_poll		= -1;
-static int max_etime_cnt = 12; /* ~30 sec max timeout if no connection */
+static int max_etime_cnt = 21; /* ~60 sec max timeout if no connection */
 static int max_eshutdown_cnt = 10;
 static int max_pmtu_err = 10;
 
