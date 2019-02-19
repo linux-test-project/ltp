@@ -82,3 +82,5 @@ quota_remount_test01 quota_remount_test01.sh
 isofs isofs.sh
 
 fs_fill fs_fill
+
+binfmt_misc01 binfmt_misc01.sh
