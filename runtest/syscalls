@@ -79,6 +79,9 @@ clock_nanosleep01 clock_nanosleep01
 clock_nanosleep02 clock_nanosleep02
 clock_nanosleep2_01 clock_nanosleep2_01
 
+clock_gettime01 clock_gettime01
+clock_gettime02 clock_gettime02
+
 clock_settime01 clock_settime01
 clock_settime02 clock_settime02
 
