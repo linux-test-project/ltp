@@ -299,8 +299,9 @@ tst_mkfs()
 		tst_brk TBROK "No device specified"
 	fi
 
-	tst_res TINFO "Formatting $device with $fs_type extra opts='$fs_opts'"
+	tst_test_cmds mkfs.$fs_type
 
+	tst_res TINFO "Formatting $device with $fs_type extra opts='$fs_opts'"
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
 }
 

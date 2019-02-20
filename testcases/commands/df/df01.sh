@@ -49,12 +49,6 @@ parse_args()
 
 setup()
 {
-	local ret
-
-	if [ -n "$TST_FS_TYPE" ]; then
-		tst_test_cmds mkfs.${TST_FS_TYPE}
-	fi
-
 	tst_mkfs $TST_FS_TYPE $TST_DEVICE
 	tst_mount
 	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk '{print $5}')
