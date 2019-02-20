@@ -65,14 +65,14 @@ print_ima_config()
 	local config="/boot/config-$(uname -r)"
 	local i
 
-	tst_res TINFO "/proc/cmdline: $(cat /proc/cmdline)"
-
 	if [ -r "$config" ]; then
 		tst_res TINFO "IMA kernel config:"
 		for i in $(grep ^CONFIG_IMA $config); do
 			tst_res TINFO "$i"
 		done
 	fi
+
+	tst_res TINFO "/proc/cmdline: $(cat /proc/cmdline)"
 }
 
 ima_setup()
