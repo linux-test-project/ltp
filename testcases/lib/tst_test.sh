@@ -286,8 +286,8 @@ tst_umount()
 
 tst_mkfs()
 {
-	local fs_type=$1
-	local device=$2
+	local fs_type=${1:-$TST_FS_TYPE}
+	local device=${2:-$TST_DEVICE}
 	shift 2
 	local fs_opts="$@"
 

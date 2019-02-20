@@ -53,7 +53,7 @@ mount_loop_device()
 {
 	local ret
 
-	tst_mkfs $TST_FS_TYPE $TST_DEVICE
+	tst_mkfs
 	tst_mount
 	cd $TST_MNTPOINT
 }

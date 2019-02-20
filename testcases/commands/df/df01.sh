@@ -49,7 +49,7 @@ parse_args()
 
 setup()
 {
-	tst_mkfs $TST_FS_TYPE $TST_DEVICE
+	tst_mkfs
 	tst_mount
 	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk '{print $5}')
 }

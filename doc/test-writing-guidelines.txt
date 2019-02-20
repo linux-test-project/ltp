@@ -2032,6 +2032,10 @@ The 'tst_mkfs' helper will format device with the filesystem.
 -------------------------------------------------------------------------------
 # format test device with ext2
 tst_mkfs ext2 $TST_DEVICE
+# default params are $TST_FS_TYPE $TST_DEVICE
+tst_mkfs
+# optional parameters
+tst_mkfs ext4 /dev/device -T largefile
 -------------------------------------------------------------------------------
 
 Mounting and unmounting filesystems
