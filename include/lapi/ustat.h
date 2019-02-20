@@ -3,6 +3,8 @@
 #ifndef LAPI_USTAT_H
 #define LAPI_USTAT_H
 
+#include "config.h"
+
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_USTAT_H
