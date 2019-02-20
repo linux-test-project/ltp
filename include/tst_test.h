@@ -243,6 +243,12 @@ const char *tst_strstatus(int status);
 unsigned int tst_timeout_remaining(void);
 void tst_set_timeout(int timeout);
 
+
+/*
+ * Returns path to the test temporary directory in a newly allocated buffer.
+ */
+char *tst_get_tmpdir(void);
+
 #ifndef TST_NO_DEFAULT_MAIN
 
 static struct tst_test test;
