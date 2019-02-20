@@ -235,6 +235,28 @@ TST_RTNL_CHK()
 	tst_brk TBROK "$@ failed: $output"
 }
 
+tst_mount()
+{
+	local mnt_opt mnt_err
+
+	if [ -n "$TST_FS_TYPE" ]; then
+		mnt_opt="-t $TST_FS_TYPE"
+		mnt_err=" $TST_FS_TYPE type"
+	fi
+
+	ROD_SILENT mkdir -p $TST_MNTPOINT
+	mount $mnt_opt $TST_DEVICE $TST_MNTPOINT $TST_MNT_PARAMS
+	local ret=$?
+
+	if [ $ret -eq 32 ]; then
+		tst_brk TCONF "Cannot mount${mnt_err}, missing driver?"
+	fi
+
+	if [ $ret -ne 0 ]; then
+		tst_brk TBROK "Failed to mount device${mnt_err}: mount exit = $ret"
+	fi
+}
+
 tst_umount()
 {
 	local device="$1"
@@ -401,7 +423,7 @@ tst_run()
 			OPTS|USAGE|PARSE_ARGS|POS_ARGS);;
 			NEEDS_ROOT|NEEDS_TMPDIR|TMPDIR|NEEDS_DEVICE|DEVICE);;
 			NEEDS_CMDS|NEEDS_MODULE|MODPATH|DATAROOT);;
-			NEEDS_DRIVERS);;
+			NEEDS_DRIVERS|FS_TYPE|MNTPOINT|MNT_PARAMS);;
 			IPV6|IPVER|TEST_DATA|TEST_DATA_IFS);;
 			RETRY_FUNC|RETRY_FN_EXP_BACKOFF);;
 			NET_MAX_PKT);;
@@ -462,6 +484,7 @@ tst_run()
 		cd "$TST_TMPDIR"
 	fi
 
+	TST_MNTPOINT="${TST_MNTPOINT:-mntpoint}"
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
 		if [ -z ${TST_TMPDIR} ]; then
 			tst_brk TBROK "Use TST_NEEDS_TMPDIR must be set for TST_NEEDS_DEVICE"

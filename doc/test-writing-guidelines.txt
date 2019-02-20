@@ -2034,14 +2034,19 @@ The 'tst_mkfs' helper will format device with the filesystem.
 tst_mkfs ext2 $TST_DEVICE
 -------------------------------------------------------------------------------
 
-Umounting filesystems
-+++++++++++++++++++++
+Mounting and unmounting filesystems
++++++++++++++++++++++++++++++++++++
 
-The 'tst_umount' helper is a safe way to umount a filesystem.
+The 'tst_mount' and 'tst_umount' helpers are a safe way to mount/umount
+a filesystem.
 
-If the path passed to the function is not mounted (present in '/proc/mounts')
+The 'tst_mount' mounts '$TST_DEVICE' of '$TST_FS_TYPE' (optional) to
+'$TST_MNTPOINT' (defaults to mntpoint), optionally using the
+'$TST_MNT_PARAMS'. The '$TST_MNTPOINT' directory is created if it didn't
+exist prior to the function call.
+
+If the path passed to the 'tst_umount' is not mounted (present in '/proc/mounts')
 it's noop.
-
 Otherwise it retries to umount the filesystem a few times on a failure, which
 is a workaround since there are a daemons dumb enough to probe all newly
 mounted filesystems, which prevents them from umounting shortly after they
