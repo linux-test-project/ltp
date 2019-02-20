@@ -40,41 +40,29 @@ OPTIONS
 EOF
 }
 
-FS_TYPE=ext2
+TST_FS_TYPE=ext2
 
 parse_args()
 {
-	FS_TYPE="$2"
+	TST_FS_TYPE="$2"
 }
 
 setup()
 {
 	local ret
 
-	if [ -n "$FS_TYPE" ]; then
-		tst_test_cmds mkfs.${FS_TYPE}
+	if [ -n "$TST_FS_TYPE" ]; then
+		tst_test_cmds mkfs.${TST_FS_TYPE}
 	fi
 
-	tst_mkfs ${FS_TYPE} ${TST_DEVICE}
-
-	ROD_SILENT mkdir -p mntpoint
-
-	mount ${TST_DEVICE} mntpoint
-	ret=$?
-	if [ $ret -eq 32 ]; then
-		tst_brk TCONF "Cannot mount ${FS_TYPE}, missing driver?"
-	fi
-
-	if [ $ret -ne 0 ]; then
-		tst_brk TBROK "Failed to mount device: mount exit = $ret"
-	fi
-
+	tst_mkfs $TST_FS_TYPE $TST_DEVICE
+	tst_mount
 	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk '{print $5}')
 }
 
 cleanup()
 {
-	tst_umount ${TST_DEVICE}
+	tst_umount $TST_DEVICE
 }
 
 df_test()
