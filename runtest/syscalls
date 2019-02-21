@@ -1354,6 +1354,7 @@ syncfs01 syncfs01
 
 #testcases for sync_file_range
 sync_file_range01 sync_file_range01
+sync_file_range02 sync_file_range02
 
 syscall01 syscall01
 
