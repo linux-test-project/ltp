@@ -38,6 +38,9 @@ vxlan_uni_03 vxlan03.sh -d uni
 vxlan_ipv6_multi_03 vxlan03.sh -6 -d multi
 vxlan_ipv6_uni_03 vxlan03.sh -6 -d uni
 
+vxlan_uni_04 vxlan04.sh -d uni
+vxlan_ipv6_uni_04 vxlan04.sh -6 -d uni
+
 vlan01 vlan01.sh
 vlan02 vlan02.sh
 vlan03 vlan03.sh
@@ -47,17 +50,23 @@ macvtap01 macvtap01.sh
 
 macsec01 macsec01.sh
 macsec02 macsec02.sh
+macsec03 macsec03.sh
 
 ipvlan01 ipvlan01.sh
 
 gre_ipv4_01 gre01.sh
 gre_ipv6_01 gre01.sh -6
 
+gre_ipv4_02 gre02.sh
+gre_ipv6_02 gre02.sh -6
+
 dctcp_ipv4_01 dctcp01.sh
 dctcp_ipv6_01 dctcp01.sh -6
 
 geneve01 geneve01.sh
 geneve01_ipv6 geneve01.sh -6
+geneve02 geneve02.sh
+geneve02_ipv6 geneve02.sh -6
 
 sit01 sit01.sh
 

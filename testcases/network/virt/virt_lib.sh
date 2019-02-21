@@ -335,6 +335,16 @@ virt_netperf_msg_sizes()
 	done
 }
 
+virt_netperf_rand_sizes()
+{
+	local max_pkt_size="$TST_NET_MAX_PKT"
+	local types="tcp udp udp_lite"
+
+	for t in $types; do
+		virt_compare_netperf pass "-A $max_pkt_size -T $t"
+	done
+}
+
 # Check if we can create then delete virtual interface.
 virt_test_01()
 {
