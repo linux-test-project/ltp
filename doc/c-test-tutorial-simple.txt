@@ -351,7 +351,7 @@ located in +include/lapi+. System call numbers are listed against the relevant
 call in the +*.in+ files (e.g. +x86_64.in+) which are used to generate
 +syscalls.h+, which is the header you should include. On rare occasions you
 may find the system call number is missing from the +*.in+ files and will need
-to add it (see include/lapi/syscall/strip_syscall.awk).
+to add it (see +include/lapi/syscalls/strip_syscall.awk+).
 
 System call numbers vary between architectures, hence why there are multiple
 +*.in+ files for each architecture. You can find the various values for the
