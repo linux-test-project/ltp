@@ -27,13 +27,13 @@ TST_TEST_DATA_IFS=","
 TST_NEEDS_TMPDIR=1
 TST_TESTFUNC=do_test
 TST_CLEANUP=virt_cleanup
-. virt_lib.sh
-
 # In average cases (with small packets less then 150 bytes) VxLAN slower
 # by 10-30%. If hosts are too close to each other, e.g. connected to the same
 # switch, VxLAN can be much slower when comparing to the performance without
 # any encapsulation.
 VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}
+. virt_lib.sh
+
 [ "$VIRT_PERF_THRESHOLD" -lt 160 ] && VIRT_PERF_THRESHOLD=160
 
 do_test()
