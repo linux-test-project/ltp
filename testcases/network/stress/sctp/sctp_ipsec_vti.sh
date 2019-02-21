@@ -12,7 +12,11 @@ TST_TESTFUNC=do_test
 
 do_test()
 {
-	tst_netload -H $ip_rmt_tun -T sctp -n $2 -N $2 -r $IPSEC_REQUESTS \
+	local opts="-n $2 -N $2"
+	local rand_opt="$(echo $2 | cut -d'R' -f2)"
+
+	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
+	tst_netload -H $ip_rmt_tun -T sctp $opts -r $IPSEC_REQUESTS \
 		-S $ip_loc_tun
 }
 

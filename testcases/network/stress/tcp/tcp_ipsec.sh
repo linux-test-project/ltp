@@ -14,7 +14,11 @@ max_requests=10
 
 do_test()
 {
-	tst_netload -H $(tst_ipaddr rhost) -n $2 -N $2 -r $IPSEC_REQUESTS \
+	local opts="-n $2 -N $2"
+	local rand_opt="$(echo $2 | cut -d'R' -f2)"
+
+	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
+	tst_netload -H $(tst_ipaddr rhost) $opts -r $IPSEC_REQUESTS \
 		-R $max_requests
 }
 

@@ -1,109 +1,109 @@
-tcp4_ipsec01 tcp_ipsec.sh -s 100:1000:65535
-tcp4_ipsec02 tcp_ipsec.sh -p ah -m transport -s 100:1000:65535
-tcp4_ipsec03 tcp_ipsec.sh -p ah -m tunnel -s 100:1000:65535
-tcp4_ipsec04 tcp_ipsec.sh -p esp -m transport -s 100:1000:65535
-tcp4_ipsec05 tcp_ipsec.sh -p esp -m tunnel -s 100:1000:65535
-tcp4_ipsec06 tcp_ipsec.sh -p comp -m transport -s 100:1000:65535
-tcp4_ipsec07 tcp_ipsec.sh -p comp -m tunnel -s 100:1000:65535
-tcp4_ipsec08 tcp_ipsec.sh -A rfc4106_128 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec09 tcp_ipsec.sh -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec10 tcp_ipsec.sh -A rfc4106_192 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec11 tcp_ipsec.sh -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec12 tcp_ipsec.sh -A rfc4106_256 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec13 tcp_ipsec.sh -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec14 tcp_ipsec.sh -A rfc4309_128 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec15 tcp_ipsec.sh -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec16 tcp_ipsec.sh -A rfc4309_192 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec17 tcp_ipsec.sh -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec18 tcp_ipsec.sh -A rfc4309_256 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec19 tcp_ipsec.sh -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec20 tcp_ipsec.sh -A rfc4543_128 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec21 tcp_ipsec.sh -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec22 tcp_ipsec.sh -A rfc4543_192 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec23 tcp_ipsec.sh -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec24 tcp_ipsec.sh -A rfc4543_256 -p esp_aead -m transport -s 100:1000:65535
-tcp4_ipsec25 tcp_ipsec.sh -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec26 tcp_ipsec.sh -p esp -a sha1 -e cast5 -m transport -s 100:1000:65535
-tcp4_ipsec27 tcp_ipsec.sh -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535
-tcp4_ipsec28 tcp_ipsec.sh -p esp -a sha256 -e blowfish -m transport -s 100:1000:65535
-tcp4_ipsec29 tcp_ipsec.sh -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535
-tcp4_ipsec30 tcp_ipsec.sh -p esp -a sha384 -e twofish -m transport -s 100:1000:65535
-tcp4_ipsec31 tcp_ipsec.sh -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535
-tcp4_ipsec32 tcp_ipsec.sh -p esp -a sha512 -e camellia -m transport -s 100:1000:65535
-tcp4_ipsec33 tcp_ipsec.sh -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535
-tcp4_ipsec34 tcp_ipsec.sh -p esp -a rmd160 -e serpent -m transport -s 100:1000:65535
-tcp4_ipsec35 tcp_ipsec.sh -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535
-tcp4_ipsec36 tcp_ipsec.sh -p esp -m beet -s 100:1000:65535
+tcp4_ipsec01 tcp_ipsec.sh -s 100:1000:65535:R65535
+tcp4_ipsec02 tcp_ipsec.sh -p ah -m transport -s 100:1000:65535:R65535
+tcp4_ipsec03 tcp_ipsec.sh -p ah -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec04 tcp_ipsec.sh -p esp -m transport -s 100:1000:65535:R65535
+tcp4_ipsec05 tcp_ipsec.sh -p esp -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec06 tcp_ipsec.sh -p comp -m transport -s 100:1000:65535:R65535
+tcp4_ipsec07 tcp_ipsec.sh -p comp -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec08 tcp_ipsec.sh -A rfc4106_128 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec09 tcp_ipsec.sh -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec10 tcp_ipsec.sh -A rfc4106_192 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec11 tcp_ipsec.sh -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec12 tcp_ipsec.sh -A rfc4106_256 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec13 tcp_ipsec.sh -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec14 tcp_ipsec.sh -A rfc4309_128 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec15 tcp_ipsec.sh -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec16 tcp_ipsec.sh -A rfc4309_192 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec17 tcp_ipsec.sh -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec18 tcp_ipsec.sh -A rfc4309_256 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec19 tcp_ipsec.sh -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec20 tcp_ipsec.sh -A rfc4543_128 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec21 tcp_ipsec.sh -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec22 tcp_ipsec.sh -A rfc4543_192 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec23 tcp_ipsec.sh -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec24 tcp_ipsec.sh -A rfc4543_256 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp4_ipsec25 tcp_ipsec.sh -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec26 tcp_ipsec.sh -p esp -a sha1 -e cast5 -m transport -s 100:1000:65535:R65535
+tcp4_ipsec27 tcp_ipsec.sh -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec28 tcp_ipsec.sh -p esp -a sha256 -e blowfish -m transport -s 100:1000:65535:R65535
+tcp4_ipsec29 tcp_ipsec.sh -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec30 tcp_ipsec.sh -p esp -a sha384 -e twofish -m transport -s 100:1000:65535:R65535
+tcp4_ipsec31 tcp_ipsec.sh -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec32 tcp_ipsec.sh -p esp -a sha512 -e camellia -m transport -s 100:1000:65535:R65535
+tcp4_ipsec33 tcp_ipsec.sh -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec34 tcp_ipsec.sh -p esp -a rmd160 -e serpent -m transport -s 100:1000:65535:R65535
+tcp4_ipsec35 tcp_ipsec.sh -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec36 tcp_ipsec.sh -p esp -m beet -s 100:1000:65535:R65535
 
-tcp6_ipsec01 tcp_ipsec.sh -6 -s 100:1000:65535
-tcp6_ipsec02 tcp_ipsec.sh -6 -p ah -m transport -s 100:1000:65535
-tcp6_ipsec03 tcp_ipsec.sh -6 -p ah -m tunnel -s 100:1000:65535
-tcp6_ipsec04 tcp_ipsec.sh -6 -p esp -m transport -s 100:1000:65535
-tcp6_ipsec05 tcp_ipsec.sh -6 -p esp -m tunnel -s 100:1000:65535
-tcp6_ipsec06 tcp_ipsec.sh -6 -p comp -m transport -s 100:1000:65535
-tcp6_ipsec07 tcp_ipsec.sh -6 -p comp -m tunnel -s 100:1000:65535
-tcp6_ipsec08 tcp_ipsec.sh -6 -A rfc4106_128 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec09 tcp_ipsec.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec10 tcp_ipsec.sh -6 -A rfc4106_192 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec11 tcp_ipsec.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec12 tcp_ipsec.sh -6 -A rfc4106_256 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec13 tcp_ipsec.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec14 tcp_ipsec.sh -6 -A rfc4309_128 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec15 tcp_ipsec.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec16 tcp_ipsec.sh -6 -A rfc4309_192 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec17 tcp_ipsec.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec18 tcp_ipsec.sh -6 -A rfc4309_256 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec19 tcp_ipsec.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec20 tcp_ipsec.sh -6 -A rfc4543_128 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec21 tcp_ipsec.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec22 tcp_ipsec.sh -6 -A rfc4543_192 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec23 tcp_ipsec.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec24 tcp_ipsec.sh -6 -A rfc4543_256 -p esp_aead -m transport -s 100:1000:65535
-tcp6_ipsec25 tcp_ipsec.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec26 tcp_ipsec.sh -6 -p esp -a sha1 -e cast5 -m transport -s 100:1000:65535
-tcp6_ipsec27 tcp_ipsec.sh -6 -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535
-tcp6_ipsec28 tcp_ipsec.sh -6 -p esp -a sha256 -e blowfish -m transport -s 100:1000:65535
-tcp6_ipsec29 tcp_ipsec.sh -6 -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535
-tcp6_ipsec30 tcp_ipsec.sh -6 -p esp -a sha384 -e twofish -m transport -s 100:1000:65535
-tcp6_ipsec31 tcp_ipsec.sh -6 -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535
-tcp6_ipsec32 tcp_ipsec.sh -6 -p esp -a sha512 -e camellia -m transport -s 100:1000:65535
-tcp6_ipsec33 tcp_ipsec.sh -6 -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535
-tcp6_ipsec34 tcp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m transport -s 100:1000:65535
-tcp6_ipsec35 tcp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535
-tcp6_ipsec36 tcp_ipsec.sh -6 -p esp -m beet -s 100:1000:65535
+tcp6_ipsec01 tcp_ipsec.sh -6 -s 100:1000:65535:R65535
+tcp6_ipsec02 tcp_ipsec.sh -6 -p ah -m transport -s 100:1000:65535:R65535
+tcp6_ipsec03 tcp_ipsec.sh -6 -p ah -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec04 tcp_ipsec.sh -6 -p esp -m transport -s 100:1000:65535:R65535
+tcp6_ipsec05 tcp_ipsec.sh -6 -p esp -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec06 tcp_ipsec.sh -6 -p comp -m transport -s 100:1000:65535:R65535
+tcp6_ipsec07 tcp_ipsec.sh -6 -p comp -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec08 tcp_ipsec.sh -6 -A rfc4106_128 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec09 tcp_ipsec.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec10 tcp_ipsec.sh -6 -A rfc4106_192 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec11 tcp_ipsec.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec12 tcp_ipsec.sh -6 -A rfc4106_256 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec13 tcp_ipsec.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec14 tcp_ipsec.sh -6 -A rfc4309_128 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec15 tcp_ipsec.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec16 tcp_ipsec.sh -6 -A rfc4309_192 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec17 tcp_ipsec.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec18 tcp_ipsec.sh -6 -A rfc4309_256 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec19 tcp_ipsec.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec20 tcp_ipsec.sh -6 -A rfc4543_128 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec21 tcp_ipsec.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec22 tcp_ipsec.sh -6 -A rfc4543_192 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec23 tcp_ipsec.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec24 tcp_ipsec.sh -6 -A rfc4543_256 -p esp_aead -m transport -s 100:1000:65535:R65535
+tcp6_ipsec25 tcp_ipsec.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec26 tcp_ipsec.sh -6 -p esp -a sha1 -e cast5 -m transport -s 100:1000:65535:R65535
+tcp6_ipsec27 tcp_ipsec.sh -6 -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec28 tcp_ipsec.sh -6 -p esp -a sha256 -e blowfish -m transport -s 100:1000:65535:R65535
+tcp6_ipsec29 tcp_ipsec.sh -6 -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec30 tcp_ipsec.sh -6 -p esp -a sha384 -e twofish -m transport -s 100:1000:65535:R65535
+tcp6_ipsec31 tcp_ipsec.sh -6 -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec32 tcp_ipsec.sh -6 -p esp -a sha512 -e camellia -m transport -s 100:1000:65535:R65535
+tcp6_ipsec33 tcp_ipsec.sh -6 -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec34 tcp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m transport -s 100:1000:65535:R65535
+tcp6_ipsec35 tcp_ipsec.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec36 tcp_ipsec.sh -6 -p esp -m beet -s 100:1000:65535:R65535
 
-tcp4_ipsec_vti01 tcp_ipsec_vti.sh -p ah -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti02 tcp_ipsec_vti.sh -p esp -m tunnel -s 100:1000:65535
+tcp4_ipsec_vti01 tcp_ipsec_vti.sh -p ah -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti02 tcp_ipsec_vti.sh -p esp -m tunnel -s 100:1000:65535:R65535
 # tcp4_ipsec_vti03 tcp_ipsec_vti.sh -p comp -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti04 tcp_ipsec_vti.sh -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti05 tcp_ipsec_vti.sh -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti06 tcp_ipsec_vti.sh -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti07 tcp_ipsec_vti.sh -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti08 tcp_ipsec_vti.sh -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti09 tcp_ipsec_vti.sh -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti10 tcp_ipsec_vti.sh -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti11 tcp_ipsec_vti.sh -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti12 tcp_ipsec_vti.sh -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti13 tcp_ipsec_vti.sh -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti14 tcp_ipsec_vti.sh -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti15 tcp_ipsec_vti.sh -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti16 tcp_ipsec_vti.sh -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535
-tcp4_ipsec_vti17 tcp_ipsec_vti.sh -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535
+tcp4_ipsec_vti04 tcp_ipsec_vti.sh -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti05 tcp_ipsec_vti.sh -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti06 tcp_ipsec_vti.sh -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti07 tcp_ipsec_vti.sh -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti08 tcp_ipsec_vti.sh -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti09 tcp_ipsec_vti.sh -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti10 tcp_ipsec_vti.sh -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti11 tcp_ipsec_vti.sh -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti12 tcp_ipsec_vti.sh -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti13 tcp_ipsec_vti.sh -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti14 tcp_ipsec_vti.sh -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti15 tcp_ipsec_vti.sh -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti16 tcp_ipsec_vti.sh -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535:R65535
+tcp4_ipsec_vti17 tcp_ipsec_vti.sh -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535:R65535
 
-tcp6_ipsec_vti01 tcp_ipsec_vti.sh -6 -p ah -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti02 tcp_ipsec_vti.sh -6 -p esp -m tunnel -s 100:1000:65535
+tcp6_ipsec_vti01 tcp_ipsec_vti.sh -6 -p ah -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti02 tcp_ipsec_vti.sh -6 -p esp -m tunnel -s 100:1000:65535:R65535
 # tcp6_ipsec_vti03 tcp_ipsec_vti.sh -6 -p comp -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti04 tcp_ipsec_vti.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti05 tcp_ipsec_vti.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti06 tcp_ipsec_vti.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti07 tcp_ipsec_vti.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti08 tcp_ipsec_vti.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti09 tcp_ipsec_vti.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti10 tcp_ipsec_vti.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti11 tcp_ipsec_vti.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti12 tcp_ipsec_vti.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti13 tcp_ipsec_vti.sh -6 -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti14 tcp_ipsec_vti.sh -6 -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti15 tcp_ipsec_vti.sh -6 -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti16 tcp_ipsec_vti.sh -6 -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535
-tcp6_ipsec_vti17 tcp_ipsec_vti.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535
+tcp6_ipsec_vti04 tcp_ipsec_vti.sh -6 -A rfc4106_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti05 tcp_ipsec_vti.sh -6 -A rfc4106_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti06 tcp_ipsec_vti.sh -6 -A rfc4106_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti07 tcp_ipsec_vti.sh -6 -A rfc4309_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti08 tcp_ipsec_vti.sh -6 -A rfc4309_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti09 tcp_ipsec_vti.sh -6 -A rfc4309_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti10 tcp_ipsec_vti.sh -6 -A rfc4543_128 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti11 tcp_ipsec_vti.sh -6 -A rfc4543_192 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti12 tcp_ipsec_vti.sh -6 -A rfc4543_256 -p esp_aead -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti13 tcp_ipsec_vti.sh -6 -p esp -a sha1 -e cast5 -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti14 tcp_ipsec_vti.sh -6 -p esp -a sha256 -e blowfish -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti15 tcp_ipsec_vti.sh -6 -p esp -a sha384 -e twofish -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti16 tcp_ipsec_vti.sh -6 -p esp -a sha512 -e camellia -m tunnel -s 100:1000:65535:R65535
+tcp6_ipsec_vti17 tcp_ipsec_vti.sh -6 -p esp -a rmd160 -e serpent -m tunnel -s 100:1000:65535:R65535

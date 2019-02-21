@@ -13,10 +13,13 @@ TST_CLEANUP=tst_ipsec_cleanup
 
 do_test()
 {
+	local opts="-n $2 -N $2"
+	local rand_opt="$(echo $2 | cut -d'R' -f2)"
 	local type="udp"
-	[ $1 -eq 2 ] && type="udp_lite"
 
-	tst_netload -H $(tst_ipaddr rhost) -T $type -n $2 -N $2 -r $IPSEC_REQUESTS
+	[ $1 -eq 2 ] && type="udp_lite"
+	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
+	tst_netload -H $(tst_ipaddr rhost) -T $type $opts -r $IPSEC_REQUESTS
 }
 
 tst_run
