@@ -92,7 +92,8 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "lapi/syscalls.h"
+#include "lapi/sync_file_range.h"
+#include "check_sync_file_range.h"
 
 #ifndef SYNC_FILE_RANGE_WAIT_BEFORE
 #define SYNC_FILE_RANGE_WAIT_BEFORE 1
@@ -190,48 +191,6 @@ void setup(void)
 	sfd = open(spl_file, O_RDWR | O_CREAT, 0700);
 }
 
-/*****************************************************************************
- * Wraper function to call sync_file_range system call
- ******************************************************************************/
-static inline long syncfilerange(int fd, off64_t offset, off64_t nbytes,
-				 unsigned int flags)
-{
-/* arm and powerpc */
-#if (defined(__arm__) || defined(__powerpc__) || defined(__powerpc64__))
-#if (__WORDSIZE == 32)
-#if __BYTE_ORDER == __BIG_ENDIAN
-	return ltp_syscall(__NR_sync_file_range2, fd, flags,
-		(int)(offset >> 32), (int)offset, (int)(nbytes >> 32),
-		(int)nbytes);
-#elif __BYTE_ORDER == __LITTLE_ENDIAN
-	return ltp_syscall(__NR_sync_file_range2, fd, flags, (int)offset,
-		       (int)(offset >> 32), nbytes, (int)(nbytes >> 32));
-#endif
-#else
-	return ltp_syscall(__NR_sync_file_range2, fd, flags, offset, nbytes);
-#endif
-
-/* s390 */
-#elif (defined(__s390__) || defined(__s390x__)) && __WORDSIZE == 32
-	return ltp_syscall(__NR_sync_file_range, fd, (int)(offset >> 32),
-		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
-
-/* mips */
-#elif defined(__mips__) && __WORDSIZE == 32
-#if __BYTE_ORDER == __BIG_ENDIAN
-	return ltp_syscall(__NR_sync_file_range, fd, 0, (int)(offset >> 32),
-		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
-#elif __BYTE_ORDER == __LITTLE_ENDIAN
-	return ltp_syscall(__NR_sync_file_range, fd, 0, (int)offset,
-		(int)(offset >> 32), (int)nbytes, (int)(nbytes >> 32), flags);
-#endif
-
-/* other */
-#else
-	return ltp_syscall(__NR_sync_file_range, fd, offset, nbytes, flags);
-#endif
-}
-
 /******************************************************************************/
 /*									    */
 /* Function:    main							  */
@@ -258,24 +217,13 @@ int main(int ac, char **av)
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
-#if defined(__powerpc__) || defined(__powerpc64__)	/* for PPC, kernel version > 2.6.21 needed */
-	if (tst_kvercmp(2, 16, 22) < 0) {
-		tst_brkm(TCONF, NULL,
-			 "System doesn't support execution of the test");
-	}
-#else
-	/* For other archs, need kernel version > 2.6.16 */
-
-	if (tst_kvercmp(2, 6, 17) < 0) {
-		tst_brkm(TCONF, NULL,
-			 "System doesn't support execution of the test");
-	}
-#endif
+	if (!check_sync_file_range())
+		tst_brkm(TCONF, NULL, "sync_file_range() not supported");
 
 	setup();
 
 	for (test_index = 0; test_index < TST_TOTAL; test_index++) {
-		TEST(syncfilerange
+		TEST(sync_file_range
 		     (*(test_data[test_index].fd),
 		      test_data[test_index].offset,
 		      test_data[test_index].nbytes,
