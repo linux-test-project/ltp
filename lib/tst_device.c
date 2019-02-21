@@ -45,6 +45,7 @@
 
 static char dev_path[1024];
 static int device_acquired;
+static unsigned long prev_dev_sec_write;
 
 static const char *dev_variants[] = {
 	"/dev/loop%i",
@@ -363,4 +364,32 @@ int tst_umount(const char *path)
 	tst_resm(TWARN, "Failed to umount('%s') after 50 retries", path);
 	errno = err;
 	return -1;
+}
+
+unsigned long tst_dev_bytes_written(const char *dev)
+{
+	struct stat st;
+	unsigned long dev_sec_write = 0, dev_bytes_written, io_ticks = 0;
+	char dev_stat_path[1024];
+
+	snprintf(dev_stat_path, sizeof(dev_stat_path), "/sys/block/%s/stat",
+		 strrchr(dev, '/') + 1);
+
+	if (stat(dev_stat_path, &st) != 0)
+		tst_brkm(TCONF, NULL, "Test device stat file: %s not found",
+			 dev_stat_path);
+
+	SAFE_FILE_SCANF(NULL, dev_stat_path,
+			"%*s %*s %*s %*s %*s %*s %lu %*s %*s %lu",
+			&dev_sec_write, &io_ticks);
+
+	if (!io_ticks)
+		tst_brkm(TCONF, NULL, "Test device stat file: %s broken",
+			 dev_stat_path);
+
+	dev_bytes_written = (dev_sec_write - prev_dev_sec_write) * 512;
+
+	prev_dev_sec_write = dev_sec_write;
+
+	return dev_bytes_written;
 }

@@ -44,4 +44,11 @@ int tst_umount(const char *path);
  */
 int tst_clear_device(const char *dev);
 
+/*
+ * Reads test block device stat file and returns the bytes written since the
+ * last call of this function.
+ * @dev: test block device
+ */
+unsigned long tst_dev_bytes_written(const char *dev);
+
 #endif	/* TST_DEVICE_H__ */
