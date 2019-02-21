@@ -216,6 +216,13 @@ void tst_reinit(void);
 		TST_ERR = errno; \
 	} while (0)
 
+#define TEST_VOID(SCALL) \
+	do { \
+		errno = 0; \
+		SCALL; \
+		TST_ERR = errno; \
+	} while (0)
+
 extern long TST_RET;
 extern int TST_ERR;
 
