@@ -355,3 +355,18 @@ virt_test_02()
 	virt_add_delete_test "$2"
 	start_id=$(($start_id + $NS_TIMES))
 }
+
+virt_gre_setup()
+{
+	virt_type="gre"
+	[ "$TST_IPV6" ] && virt_type="ip6gre"
+	virt_lib_setup
+
+	if [ -z $ip_local -o -z $ip_remote ]; then
+		tst_brk TBROK "you must specify IP address"
+	fi
+
+	tst_res TINFO "test $virt_type"
+	virt_setup "local $(tst_ipaddr) remote $(tst_ipaddr rhost) dev $(tst_iface)" \
+	"local $(tst_ipaddr rhost) remote $(tst_ipaddr) dev $(tst_iface rhost)"
+}
