@@ -1346,6 +1346,7 @@ symlinkat01 symlinkat01
 
 sync01 sync01
 sync02 sync02
+sync03 sync03
 
 syncfs01 syncfs01
 
