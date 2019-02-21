@@ -710,6 +710,13 @@ tst_cleanup_rhost()
 	tst_rhost_run -c "rm -rf $TST_TMPDIR"
 }
 
+tst_default_max_pkt()
+{
+	local mtu="$(cat /sys/class/net/$(tst_iface)/mtu)"
+
+	echo "$((mtu + mtu / 10))"
+}
+
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
@@ -797,7 +804,8 @@ export MCASTNUM_HEAVY="${MCASTNUM_HEAVY:-4000}"
 # want to use more ifaces.
 export LHOST_IFACES="${LHOST_IFACES:-eth0}"
 export RHOST_IFACES="${RHOST_IFACES:-eth0}"
-
+# Maximum payload size for 'virt' performance tests, by default eqauls to 1.1 * MTU
+export TST_NET_MAX_PKT="${TST_NET_MAX_PKT:-$(tst_default_max_pkt)}"
 # Set corresponding HW addresses, e.g. "00:00:00:00:00:01 00:00:00:00:00:02"
 export LHOST_HWADDRS="${LHOST_HWADDRS:-$(tst_get_hwaddrs lhost)}"
 export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
