@@ -291,6 +291,7 @@ fcntl36_64 fcntl36_64
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
+fdatasync03 fdatasync03
 
 fgetxattr01 fgetxattr01
 fgetxattr02 fgetxattr02
