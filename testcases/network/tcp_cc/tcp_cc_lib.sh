@@ -92,12 +92,12 @@ tcp_cc_test01()
 
 	set_cong_alg "$def_alg"
 
-	tst_netload -H $(tst_ipaddr rhost) -A 15000
+	tst_netload -H $(tst_ipaddr rhost) -A $TST_NET_MAX_PKT
 	local res0="$(cat tst_netload.res)"
 
 	set_cong_alg "$alg"
 
-	tst_netload -H $(tst_ipaddr rhost) -A 15000
+	tst_netload -H $(tst_ipaddr rhost) -A $TST_NET_MAX_PKT
 	local res1="$(cat tst_netload.res)"
 
 	local per=$(( $res0 * 100 / $res1 - 100 ))

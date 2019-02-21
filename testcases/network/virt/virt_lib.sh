@@ -327,7 +327,7 @@ virt_check_cmd()
 
 virt_netperf_msg_sizes()
 {
-	local sizes="100 1000 2000 10000"
+	local sizes="100 1000 2000 $TST_NET_MAX_PKT"
 	local s
 
 	for s in $sizes; do

@@ -40,7 +40,7 @@ setup()
 do_test()
 {
 	local type=$2
-	local max_size=10000
+	local max_size=$TST_NET_MAX_PKT
 
 	if [ "$type" = "icmp" ]; then
 		tst_ping $ip_loc $ip_rmt 10 100 1000 2000 $max_size

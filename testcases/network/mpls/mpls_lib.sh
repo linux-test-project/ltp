@@ -84,7 +84,7 @@ mpls_virt_setup()
 mpls_virt_test()
 {
 	local type=$2
-	local max_size=10000
+	local max_size=$TST_NET_MAX_PKT
 
 	if [ "$type" = "icmp" ]; then
 		tst_ping $ip_virt_local $ip_virt_remote 10 100 1000 2000 $max_size
