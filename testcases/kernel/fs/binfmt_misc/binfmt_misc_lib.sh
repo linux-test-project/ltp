@@ -17,6 +17,15 @@ rmod_binfmt_misc=0
 umount_binfmt_misc=0
 binfmt_misc_mntpoint="ltp_binfmt_misc"
 
+remove_binary_type()
+{
+	local name=$1
+
+	(echo -1 >"$name") 2>/dev/null
+	[ $? -ne 0 -o -f "$name" ] && \
+		tst_res TWARN "Fail to remove a binary type"
+}
+
 get_binfmt_misc_mntpoint()
 {
 	local mntpoint

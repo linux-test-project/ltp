@@ -42,11 +42,8 @@ verify_binfmt_misc()
 	cat "$mntpoint/$name" >/dev/null 2>&1
 	tst_res TFAIL "Register a binary type successfully"
 
-	if [ -f "$mntpoint/$name" ]; then
-		(echo -1 >"$mntpoint/$name") 2>/dev/null
-		[ $? -ne 0 -o -f "$mntpoint/$name" ] && \
-			tst_res TWARN "Failed to remove a binary type"
-	fi
+	[ -f "$mntpoint/$name" ] && \
+		remove_binary_type "$mntpoint/$name"
 }
 
 do_test()
