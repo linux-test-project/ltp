@@ -532,7 +532,7 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 #endif
 
-	ret = get_allowed_nodes_arr(NH_MEMS|NH_CPUS, &num_nodes, &nodes);
+	ret = get_allowed_nodes_arr(NH_MEMS, &num_nodes, &nodes);
 	if (ret != 0)
 		tst_brk(TBROK|TERRNO, "get_allowed_nodes_arr");
 	if (num_nodes < 2) {
