@@ -5,7 +5,7 @@
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 virt_type="macsec"
-VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-100}
+VIRT_PERF_THRESHOLD_MIN=100
 IPSEC_MODE="transport"
 
 TST_NEEDS_TMPDIR=1

@@ -17,10 +17,8 @@ TST_TESTFUNC=do_test
 TST_CLEANUP=virt_cleanup
 TST_TEST_DATA="noudpcsum udp6zerocsumtx udp6zerocsumrx, udpcsum"
 TST_TEST_DATA_IFS=","
-VIRT_PERF_THRESHOLD=${VIRT_PERF_THRESHOLD:-160}
+VIRT_PERF_THRESHOLD_MIN=160
 . virt_lib.sh
-
-[ "$VIRT_PERF_THRESHOLD" -lt 160 ] && VIRT_PERF_THRESHOLD=160
 
 do_test()
 {
