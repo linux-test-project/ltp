@@ -95,7 +95,7 @@ static void *fn_ofd_w(void *arg)
 		.l_pid    = 0,
 	};
 
-	while (loop_flag) {
+	do {
 
 		memset(buf, wt, pa->length);
 
@@ -113,7 +113,7 @@ static void *fn_ofd_w(void *arg)
 			wt = pa->cnt;
 
 		sched_yield();
-	}
+	} while (loop_flag);
 
 	pthread_barrier_wait(&barrier);
 	SAFE_CLOSE(fd);
@@ -134,7 +134,7 @@ static void *fn_posix_w(void *arg)
 		.l_len    = pa->length,
 	};
 
-	while (loop_flag) {
+	do {
 
 		memset(buf, wt, pa->length);
 
@@ -152,7 +152,7 @@ static void *fn_posix_w(void *arg)
 			wt = pa->cnt;
 
 		sched_yield();
-	}
+	} while (loop_flag);
 
 	pthread_barrier_wait(&barrier);
 	SAFE_CLOSE(fd);
