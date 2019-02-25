@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0 or later
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *  Copyright (c) Zilogic Systems Pvt. Ltd., 2018
- *  Email : code@zilogic.com
+ * Copyright (c) 2019, Linux Test Project
+ * Copyright (c) Zilogic Systems Pvt. Ltd., 2018
+ * Email : code@zilogic.com
  */
 
 #include <time.h>
 #include "tst_test.h"
+#include "lapi/posix_clocks.h"
 
 static inline void safe_clock_getres(const char *file, const int lineno,
 	clockid_t clk_id, struct timespec *res)

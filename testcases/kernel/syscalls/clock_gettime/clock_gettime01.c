@@ -18,7 +18,6 @@
 
 #include "config.h"
 #include "tst_timer.h"
-#include "lapi/posix_clocks.h"
 #include "tst_safe_clocks.h"
 #include "tst_test.h"
 #include "lapi/syscalls.h"

@@ -45,7 +45,6 @@
 #include "lapi/stat.h"
 #include "lapi/mount.h"
 #include "lapi/fcntl.h"
-#include "lapi/posix_clocks.h"
 
 #define MOUNT_POINT "mount_ext"
 #define TEST_FILE MOUNT_POINT"/test_file.txt"
