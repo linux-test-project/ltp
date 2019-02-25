@@ -7,8 +7,8 @@
 #ifndef SYNCFS_H
 #define SYNCFS_H
 
-#include <sys/types.h>
 #include "config.h"
+#include <sys/types.h>
 #include "lapi/syscalls.h"
 
 #if !defined(HAVE_SYNCFS)
