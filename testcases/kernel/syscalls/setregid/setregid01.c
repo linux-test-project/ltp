@@ -44,9 +44,9 @@ static void run(unsigned int n)
 	TEST(SETREGID(*tc->arg1, *tc->arg2));
 
 	if (TST_RET == -1)
-		tst_res(TFAIL | TTERRNO, tc->msg);
+		tst_res(TFAIL | TTERRNO, "%s", tc->msg);
 	else
-		tst_res(TPASS, tc->msg);
+		tst_res(TPASS, "%s", tc->msg);
 }
 
 static void setup(void)
