@@ -46,7 +46,6 @@ static volatile int fd_notify;
 static pid_t child_pid;
 
 static char event_buf[EVENT_BUF_LEN];
-static int support_perm_events;
 static int support_exec_events;
 
 struct event {
@@ -217,7 +216,7 @@ static int setup_mark(unsigned int n)
 		if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
 				  tc->mask, AT_FDCWD, files[i]) < 0) {
 			if (errno == EINVAL &&
-				(tc->mask & FAN_OPEN_EXEC_PERM && 
+				(tc->mask & FAN_OPEN_EXEC_PERM &&
 				 !support_exec_events)) {
 				tst_res(TCONF,
 					"FAN_OPEN_EXEC_PERM not supported in "
@@ -246,7 +245,6 @@ static int setup_mark(unsigned int n)
 			 * events not supported and filesystem mark not
 			 * supported.
 			 */
-			support_perm_events = 1;
 			if (tc->mask & FAN_OPEN_EXEC_PERM)
 				support_exec_events = 1;
 		}
