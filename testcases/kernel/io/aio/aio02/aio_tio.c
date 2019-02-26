@@ -34,6 +34,7 @@
 #include "config.h"
 #include "common.h"
 #include "test.h"
+#include "safe_macros.h"
 #include <string.h>
 #include <errno.h>
 
@@ -42,7 +43,6 @@
 #define AIO_MAXIO 32
 #define AIO_BLKSIZE (64*1024)
 
-static int alignment = 512;
 static int wait_count = 0;
 
 /*
@@ -94,6 +94,8 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	void *bufptr = NULL;
 	off_t offset = 0;
 	struct timespec timeout;
+	struct stat fi_stat;
+	size_t alignment;
 
 	io_context_t myctx;
 	struct iocb iocb_array[AIO_MAXIO];
@@ -104,6 +106,10 @@ int io_tio(char *pathname, int flag, int n, int operation)
 		printf("open for %s failed: %s\n", pathname, strerror(errno));
 		return -1;
 	}
+
+	/* determine the alignment from the blksize of the underlying device */
+	SAFE_FSTAT(NULL, fd, &fi_stat);
+	alignment = fi_stat.st_blksize;
 
 	res = io_queue_init(n, &myctx);
 	//printf (" res = %d \n", res);
