@@ -1,72 +1,87 @@
-/*************************************************************************************
-*
-*  Copyright (c) International Business Machines  Corp., 2003
-*
-*  This program is free software;  you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY;  without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-*  the GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with this program;  if not, write to the Free Software
-*  Foundation,
-*
-*  FILE        : aio_tio
-*  USAGE       : ./aio_tio
-*
-*  DESCRIPTION : This program will test Asynchronous I/O for 2.5 Kernel infrastructure
-*  REQUIREMENTS:
-*                1) libaio-0.3.92 or up for 2.5 kernal
-*                2) glibc 2.1.91 or up
-*  HISTORY     :
-*      11/03/2003 Kai Zhao (ltcd3@cn.ibm.com)
-*
-*  CODE COVERAGE:
-*                 68.3% - fs/aio.c
-*
-************************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines Corp., 2003
+ * Copyright (c) Linux Test Project, 2004-2019
+ *
+ *  AUTHORS
+ *   Kai Zhao (ltcd3@cn.ibm.com)
+ */
 
 #include "config.h"
-#include "common.h"
-#include "test.h"
-#include "safe_macros.h"
-#include <string.h>
-#include <errno.h>
+#include "tst_test.h"
 
 #ifdef HAVE_LIBAIO
+#include <errno.h>
+#include <stdlib.h>
+#include <libaio.h>
 
 #define AIO_MAXIO 32
 #define AIO_BLKSIZE (64*1024)
 
 static int wait_count = 0;
 
+#define DESC_FLAGS_OPR(x, y) .desc = (x == IO_CMD_PWRITE ? "WRITE: " #y: "READ : " #y), \
+	.flags = y, .operation = x
+
+struct testcase {
+	const char *desc;
+	int flags;
+	int operation;
+} testcases[] = {
+	{
+		DESC_FLAGS_OPR(IO_CMD_PWRITE, O_WRONLY | O_TRUNC | O_DIRECT | O_LARGEFILE | O_CREAT),
+	},
+	{
+		DESC_FLAGS_OPR(IO_CMD_PREAD, O_RDONLY | O_DIRECT | O_LARGEFILE),
+	},
+	{
+		DESC_FLAGS_OPR(IO_CMD_PWRITE, O_RDWR | O_TRUNC),
+	},
+	{
+		DESC_FLAGS_OPR(IO_CMD_PREAD, O_RDWR),
+	},
+	{
+		DESC_FLAGS_OPR(IO_CMD_PWRITE, O_WRONLY | O_TRUNC),
+	},
+	{
+		DESC_FLAGS_OPR(IO_CMD_PREAD, O_RDONLY),
+	},
+};
+
+/*
+ * Fatal error handler
+ */
+static void io_error(const char *func, int rc)
+{
+	if (rc == -ENOSYS)
+		tst_brk(TCONF, "AIO not in this kernel\n");
+	else if (rc < 0)
+		tst_brk(TFAIL, "%s: %s\n", func, strerror(-rc));
+	else
+		tst_brk(TFAIL, "%s: error %d\n", func, rc);
+}
+
 /*
  * write work done
  */
 static void work_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 {
+	(void) ctx;  // silence compiler warning (-Wunused)
 
-	if (res2 != 0) {
+	if (res2 != 0)
 		io_error("aio write", res2);
-	}
 
-	if (res != iocb->u.c.nbytes) {
-		fprintf(stderr, "write missed bytes expect %lu got %ld\n",
+	if (res != (long)iocb->u.c.nbytes)
+		tst_brk(TFAIL, "write missed bytes expect %lu got %ld\n",
 			iocb->u.c.nbytes, res);
-		exit(1);
-	}
+
 	wait_count--;
 }
 
 /*
  * io_wait_run() - wait for an io_event and then call the callback.
  */
-int io_wait_run(io_context_t ctx, struct timespec *to)
+static int io_wait_run(io_context_t ctx, struct timespec *to)
 {
 	struct io_event events[AIO_MAXIO];
 	struct io_event *ep;
@@ -88,7 +103,7 @@ int io_wait_run(io_context_t ctx, struct timespec *to)
 	return ret;
 }
 
-int io_tio(char *pathname, int flag, int n, int operation)
+static int io_tio(char *pathname, int flag, int operation)
 {
 	int res, fd = 0, i = 0;
 	void *bufptr = NULL;
@@ -101,31 +116,26 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	struct iocb iocb_array[AIO_MAXIO];
 	struct iocb *iocbps[AIO_MAXIO];
 
-	fd = open(pathname, flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (fd <= 0) {
-		printf("open for %s failed: %s\n", pathname, strerror(errno));
-		return -1;
-	}
+	fd = SAFE_OPEN(pathname, flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
 	/* determine the alignment from the blksize of the underlying device */
-	SAFE_FSTAT(NULL, fd, &fi_stat);
+	SAFE_FSTAT(fd, &fi_stat);
 	alignment = fi_stat.st_blksize;
 
-	res = io_queue_init(n, &myctx);
-	//printf (" res = %d \n", res);
+	res = io_queue_init(AIO_MAXIO, &myctx);
 
 	for (i = 0; i < AIO_MAXIO; i++) {
 
 		switch (operation) {
 		case IO_CMD_PWRITE:
 			if (posix_memalign(&bufptr, alignment, AIO_BLKSIZE)) {
-				perror(" posix_memalign failed ");
+				tst_brk(TBROK | TERRNO, "posix_memalign failed");
 				return -1;
 			}
 			memset(bufptr, 0, AIO_BLKSIZE);
 
 			io_prep_pwrite(&iocb_array[i], fd, bufptr,
-				       AIO_BLKSIZE, offset);
+					   AIO_BLKSIZE, offset);
 			io_set_callback(&iocb_array[i], work_done);
 			iocbps[i] = &iocb_array[i];
 			offset += AIO_BLKSIZE;
@@ -133,24 +143,19 @@ int io_tio(char *pathname, int flag, int n, int operation)
 			break;
 		case IO_CMD_PREAD:
 			if (posix_memalign(&bufptr, alignment, AIO_BLKSIZE)) {
-				perror(" posix_memalign failed ");
+				tst_brk(TBROK | TERRNO, "posix_memalign failed");
 				return -1;
 			}
 			memset(bufptr, 0, AIO_BLKSIZE);
 
 			io_prep_pread(&iocb_array[i], fd, bufptr,
-				      AIO_BLKSIZE, offset);
+					  AIO_BLKSIZE, offset);
 			io_set_callback(&iocb_array[i], work_done);
 			iocbps[i] = &iocb_array[i];
 			offset += AIO_BLKSIZE;
 			break;
-		case IO_CMD_POLL:
-		case IO_CMD_NOOP:
-			break;
 		default:
-			tst_resm(TFAIL,
-				 "Command failed; opcode returned: %d\n",
-				 operation);
+			tst_res(TFAIL, "Command failed; opcode returned: %d\n", operation);
 			return -1;
 			break;
 		}
@@ -159,13 +164,13 @@ int io_tio(char *pathname, int flag, int n, int operation)
 	do {
 		res = io_submit(myctx, AIO_MAXIO, iocbps);
 	} while (res == -EAGAIN);
-	if (res < 0) {
+
+	if (res < 0)
 		io_error("io_submit tio", res);
-	}
 
 	/*
-	 * We have submitted all the i/o requests. Wait for at least one to complete
-	 * and call the callbacks.
+	 * We have submitted all the i/o requests. Wait for them to complete and
+	 * call the callbacks.
 	 */
 	wait_count = AIO_MAXIO;
 
@@ -185,62 +190,35 @@ int io_tio(char *pathname, int flag, int n, int operation)
 		break;
 	}
 
-	close(fd);
+	SAFE_CLOSE(fd);
 
-	for (i = 0; i < AIO_MAXIO; i++) {
-		if (iocb_array[i].u.c.buf != NULL) {
+	for (i = 0; i < AIO_MAXIO; i++)
+		if (iocb_array[i].u.c.buf != NULL)
 			free(iocb_array[i].u.c.buf);
-		}
-	}
 
 	io_queue_release(myctx);
 
 	return 0;
 }
 
-int test_main(void)
+static void test_io(unsigned int n)
 {
-	int status = 0;
+	int status;
+	struct testcase *tc = testcases + n;
 
-	tst_resm(TINFO, "Running test 1\n");
-	status = io_tio("file1",
-			O_TRUNC | O_DIRECT | O_WRONLY | O_CREAT | O_LARGEFILE,
-			AIO_MAXIO, IO_CMD_PWRITE);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 2\n");
-	status = io_tio("file1", O_RDONLY | O_DIRECT | O_LARGEFILE,
-			AIO_MAXIO, IO_CMD_PREAD);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 3\n");
-	status = io_tio("file1", O_TRUNC | O_RDWR, AIO_MAXIO, IO_CMD_PWRITE);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 4\n");
-	status = io_tio("file1", O_RDWR, AIO_MAXIO, IO_CMD_PREAD);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 5\n");
-	status = io_tio("file1", O_TRUNC | O_WRONLY, AIO_MAXIO, IO_CMD_PWRITE);
-	if (status) {
-		return status;
-	}
-
-	tst_resm(TINFO, "Running test 6 \n");
-	status = io_tio("file1", O_RDONLY, AIO_MAXIO, IO_CMD_PREAD);
-	if (status) {
-		return status;
-	}
-
-	return status;
+	status = io_tio("file", tc->flags, tc->operation);
+	if (status)
+		tst_res(TFAIL, "%s, status = %d", tc->desc, status);
+	else
+		tst_res(TPASS, "%s", tc->desc);
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.test = test_io,
+	.tcnt = ARRAY_SIZE(testcases),
+};
+
+#else
+TST_TEST_TCONF("test requires libaio and its development packages");
 #endif
