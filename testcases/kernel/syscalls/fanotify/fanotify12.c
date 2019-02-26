@@ -278,5 +278,5 @@ static struct tst_test test = {
 	.resource_files = resource_files
 };
 #else
-	TST_TEST_CONF("System does not contain required fanotify support");
+	TST_TEST_TCONF("System does not contain required fanotify support");
 #endif
