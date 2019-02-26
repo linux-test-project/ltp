@@ -172,7 +172,7 @@ static void child_write(void)
 
 	tst_resm(TINFO, "child 2: write to the same memory location.");
 	TEST(ltp_syscall(__NR_process_vm_writev, pids[0], &local,
-			 1, &remote, 1, 0));
+			 1UL, &remote, 1UL, 0UL));
 	if (TEST_RETURN != bufsz)
 		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
 }
@@ -182,7 +182,7 @@ static void setup(void)
 	tst_require_root();
 
 	/* Just a sanity check of the existence of syscall */
-	ltp_syscall(__NR_process_vm_writev, getpid(), NULL, 0, NULL, 0, 0);
+	ltp_syscall(__NR_process_vm_writev, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
 
 	bufsz =
 	    sflag ? SAFE_STRTOL(NULL, sz_opt, 1, LONG_MAX - PADDING_SIZE * 2)

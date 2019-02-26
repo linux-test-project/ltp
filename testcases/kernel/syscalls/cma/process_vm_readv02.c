@@ -135,7 +135,7 @@ static void child_invoke(void)
 
 	tst_resm(TINFO, "child 1: reading string from same memory location.");
 	TEST(ltp_syscall(__NR_process_vm_readv, pids[0],
-			 &local, 1, &remote, 1, 0));
+			 &local, 1UL, &remote, 1UL, 0UL));
 	if (TEST_RETURN != len)
 		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
 	if (strncmp(lp, tst_string, len) != 0)
@@ -150,7 +150,7 @@ static void setup(void)
 	tst_require_root();
 
 	/* Just a sanity check of the existence of syscall */
-	ltp_syscall(__NR_process_vm_readv, getpid(), NULL, 0, NULL, 0, 0);
+	ltp_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
 
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(cleanup);
