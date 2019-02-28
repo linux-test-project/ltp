@@ -573,7 +573,7 @@ tst_netload()
 	[ "$setup_srchost" = 1 ] && s_opts="${s_opts}-S $hostopt "
 
 	local expect_ret=0
-	[ "$expect_res" != "pass" ] && expect_ret=1
+	[ "$expect_res" != "pass" ] && expect_ret=3
 
 	tst_rhost_run -c "pkill -9 netstress\$"
 	s_opts="${cs_opts}${s_opts}-R $s_replies -B $TST_TMPDIR"
@@ -590,25 +590,36 @@ tst_netload()
 	c_opts="${cs_opts}${c_opts}-a $c_num -r $c_requests -d $rfile -g $port"
 
 	tst_res_ TINFO "run client 'netstress -l $c_opts'"
-	netstress -l $c_opts > tst_netload.log 2>&1 || ret=1
+	netstress -l $c_opts > tst_netload.log 2>&1 || ret=$?
 	tst_rhost_run -c "pkill -9 netstress\$"
 
-	if [ "$expect_ret" -ne "$ret" ]; then
-		tst_dump_rhost_cmd
-		cat tst_netload.log
-		tst_brk_ TFAIL "expected '$expect_res' but ret: '$ret'"
+	if [ "$expect_ret" -ne 0 ]; then
+		if [ $((ret & expect_ret)) -ne 0 ]; then
+			tst_res_ TPASS "netstress failed as expected"
+		else
+			tst_res_ TFAIL "expected '$expect_res' but ret: '$ret'"
+		fi
+		return $ret
 	fi
 
-	if [ "$ret" -eq 0 ]; then
-		if [ ! -f $rfile ]; then
-			tst_dump_rhost_cmd
-			cat tst_netload.log
-			tst_brk_ TFAIL "can't read $rfile"
-		fi
-		tst_res_ TPASS "netstress passed, time spent '$(cat $rfile)' ms"
-	else
-		tst_res_ TPASS "netstress failed as expected"
+	if [ "$ret" -ne 0 ]; then
+		tst_dump_rhost_cmd
+		cat tst_netload.log
+		[ $((ret & 3)) -ne 0 ] && \
+			tst_brk_ TFAIL "expected '$expect_res' but ret: '$ret'"
+		[ $((ret & 32)) -ne 0 ] && \
+			tst_brk_ TCONF "not supported configuration"
+		[ $((ret & 4)) -ne 0 ] && \
+			tst_res_ TWARN "netstress has warnings"
 	fi
+
+	if [ ! -f $rfile ]; then
+		tst_dump_rhost_cmd
+		cat tst_netload.log
+		tst_brk_ TFAIL "can't read $rfile"
+	fi
+
+	tst_res_ TPASS "netstress passed, time spent '$(cat $rfile)' ms"
 
 	return $ret
 }
