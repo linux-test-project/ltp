@@ -1033,6 +1033,16 @@ results in 'umount(2)' failing with 'EBUSY'.
 IMPORTANT: All testcases should use 'tst_umount()' instead of 'umount(2)' to
            umount filesystems.
 
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+unsigned long tst_dev_bytes_written(const char *dev);
+-------------------------------------------------------------------------------
+
+This function reads test block device stat file (/sys/block/<device>/stat) and
+returns the bytes written since the last invocation of this function.
+
 2.2.15 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1141,6 +1151,24 @@ int tst_dir_is_empty(const char *dir, int verbose);
 Returns non-zero if directory is empty and zero otherwise.
 
 Directory is considered empty if it contains only '.' and '..'.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount);
+-------------------------------------------------------------------------------
+
+Fill a file with specified pattern using file descriptor.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
+-------------------------------------------------------------------------------
+
+Creates/ovewrites a file with specified pattern using file path.
 
 2.2.18 Getting an unused PID number
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
