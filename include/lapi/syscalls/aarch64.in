@@ -263,4 +263,5 @@ execveat 281
 mlock2 284
 copy_file_range 285
 preadv2 286
+pwritev2 287
 _sysctl 1078

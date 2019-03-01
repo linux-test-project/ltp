@@ -312,4 +312,5 @@ membarrier 324
 mlock2 325
 copy_file_range 326
 preadv2 327
+pwritev2 328
 statx 332

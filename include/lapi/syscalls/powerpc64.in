@@ -352,4 +352,5 @@ execveat 362
 mlock2 378
 copy_file_range 379
 preadv2 380
+pwritev2 381
 statx 383

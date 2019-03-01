@@ -24,3 +24,4 @@ execveat 342
 mlock2 345
 copy_file_range 346
 preadv2 347
+pwritev2 348
