@@ -914,6 +914,8 @@ pwritev03_64 pwritev03_64
 
 pwritev201 pwritev201
 pwritev201_64 pwritev201_64
+pwritev202 pwritev202
+pwritev202_64 pwritev202_64
 
 quotactl01 quotactl01
 quotactl02 quotactl02
