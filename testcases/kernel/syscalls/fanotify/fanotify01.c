@@ -32,6 +32,8 @@
 #define BUF_SIZE 256
 #define TST_TOTAL 12
 
+#define MOUNT_PATH "fs_mnt"
+
 static struct tcase {
 	const char *tname;
 	struct fanotify_mark_type mark;
@@ -325,7 +327,7 @@ pass:
 
 static void setup(void)
 {
-	sprintf(fname, "tfile_%d", getpid());
+	sprintf(fname, MOUNT_PATH"/tfile_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
 }
 
@@ -341,7 +343,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
-	.needs_root = 1
+	.needs_root = 1,
+	.mount_device = 1,
+	.mntpoint = MOUNT_PATH,
 };
 
 #else

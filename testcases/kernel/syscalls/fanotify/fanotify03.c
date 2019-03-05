@@ -38,6 +38,8 @@
 #define BUF_SIZE 256
 #define TST_TOTAL 3
 #define TEST_APP "fanotify_child"
+#define MOUNT_PATH "fs_mnt"
+#define FILE_EXEC_PATH MOUNT_PATH"/"TEST_APP
 
 static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
@@ -127,7 +129,7 @@ static struct tcase {
 static void generate_events(void)
 {
 	int fd;
-	char *const argv[] = {TEST_APP, NULL};
+	char *const argv[] = {FILE_EXEC_PATH, NULL};
 
 	/*
 	 * Generate sequence of events
@@ -144,7 +146,7 @@ static void generate_events(void)
 	if (close(fd) == -1)
 		exit(4);
 
-	if (execve(TEST_APP, argv, environ) != -1)
+	if (execve(FILE_EXEC_PATH, argv, environ) != -1)
 		exit(5);
 }
 
@@ -207,7 +209,7 @@ static int setup_mark(unsigned int n)
 	unsigned int i = 0;
 	struct tcase *tc = &tcases[n];
 	struct fanotify_mark_type *mark = &tc->mark;
-	char *const files[] = {fname, TEST_APP};
+	char *const files[] = {fname, FILE_EXEC_PATH};
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
@@ -345,8 +347,10 @@ static void test_fanotify(unsigned int n)
 
 static void setup(void)
 {
-	sprintf(fname, "fname_%d", getpid());
+	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
+
+	SAFE_CP(TEST_APP, FILE_EXEC_PATH);
 }
 
 static void cleanup(void)
@@ -367,6 +371,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.needs_root = 1,
+	.mount_device = 1,
+	.mntpoint = MOUNT_PATH,
 	.resource_files = resource_files
 };
 

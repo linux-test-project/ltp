@@ -26,6 +26,8 @@
 #if defined(HAVE_SYS_FANOTIFY_H)
 #include <sys/fanotify.h>
 
+#define MOUNT_PATH "fs_mnt"
+
 /* Currently this is fixed in kernel... */
 #define MAX_EVENTS 16384
 
@@ -44,7 +46,7 @@ void test01(void)
 	 * generate events
 	 */
 	for (i = 0; i < MAX_EVENTS + 1; i++) {
-		sprintf(fname, "fname_%d", i);
+		sprintf(fname, MOUNT_PATH"/fname_%d", i);
 		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0644);
 		SAFE_CLOSE(fd);
 	}
@@ -105,7 +107,7 @@ static void setup(void)
 			O_RDONLY);
 
 	if (fanotify_mark(fd_notify, FAN_MARK_MOUNT | FAN_MARK_ADD, FAN_OPEN,
-			  AT_FDCWD, ".") < 0) {
+			  AT_FDCWD, MOUNT_PATH) < 0) {
 		tst_brk(TBROK | TERRNO,
 			"fanotify_mark (%d, FAN_MARK_MOUNT | FAN_MARK_ADD, "
 			"FAN_OPEN, AT_FDCWD, \".\") failed",
@@ -125,6 +127,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.mount_device = 1,
+	.mntpoint = MOUNT_PATH,
 };
 #else
 	TST_TEST_TCONF("system doesn't have required fanotify support");
