@@ -1603,6 +1603,72 @@ sturct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+2.2.29 Testing similar syscalls in one test
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In some cases kernel has several very similar syscalls that do either the same
+or very similar job. This is most noticeable on i386 where we commonly have
+two or three syscall versions. That is because i386 was first platform that
+Linux was developed on and because of that most mistakes in API happened there
+as well. However this is not limited to i386 at all, it's quite common that
+version two syscall has added missing flags parameters or so.
+
+In such cases it does not make much sense to copy&paste the test code over and
+over, rather than that the test library provides support for test variants.
+The idea behind test variants is simple, we run the test several times each
+time with different syscall variant.
+
+The implementation consist of test_variant integer that, if set, denotes number
+of test variants. The test is then forked and executed test_variant times each
+time with different value in global tst_variant variable.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static int do_foo(void)
+{
+	switch (tst_variant) {
+	case 0:
+		return foo();
+	case 1:
+		return syscall(__NR_foo);
+	}
+
+	return -1;
+}
+
+static void run(void)
+{
+	...
+
+	TEST(do_foo);
+
+	...
+}
+
+static void setup(void)
+{
+	switch (tst_variant) {
+	case 0:
+		tst_res(TINFO, "Testing foo variant 1");
+	break;
+	case 1:
+		tst_res(TINFO, "Testing foo variant 2");
+	break;
+	}
+}
+
+sturct tst_test test = {
+	...
+	.setup = setup,
+	.test_all = run,
+	.test_variants = 2,
+	...
+};
+-------------------------------------------------------------------------------
+
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

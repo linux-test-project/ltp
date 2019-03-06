@@ -114,6 +114,8 @@ int tst_parse_int(const char *str, int *val, int min, int max);
 int tst_parse_long(const char *str, long *val, long min, long max);
 int tst_parse_float(const char *str, float *val, float min, float max);
 
+extern unsigned int tst_variant;
+
 struct tst_test {
 	/* number of tests available in test() function */
 	unsigned int tcnt;
@@ -145,6 +147,16 @@ struct tst_test {
 	 * to the test function.
 	 */
 	int all_filesystems:1;
+
+	/*
+	 * If set non-zero denotes number of test variant, the test is executed
+	 * variants times each time with tst_variant set to different number.
+	 *
+	 * This allows us to run the same test for different settings. The
+	 * intended use is to test different syscall wrappers/variants but the
+	 * API is generic and does not limit the usage in any way.
+	 */
+	unsigned int test_variants;
 
 	/* Minimal device size in megabytes */
 	unsigned int dev_min_size;

@@ -1180,9 +1180,12 @@ static int run_tcases_per_fs(void)
 	return ret;
 }
 
+unsigned int tst_variant;
+
 void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 {
-	int ret;
+	int ret = 0;
+	unsigned int test_variants = 1;
 
 	lib_pid = getpid();
 	tst_test = self;
@@ -1194,11 +1197,20 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
 
-	if (tst_test->all_filesystems)
-		ret = run_tcases_per_fs();
-	else
-		ret = fork_testrun();
+	if (tst_test->test_variants)
+		test_variants = tst_test->test_variants;
 
+	for (tst_variant = 0; tst_variant < test_variants; tst_variant++) {
+		if (tst_test->all_filesystems)
+			ret |= run_tcases_per_fs();
+		else
+			ret |= fork_testrun();
+
+		if (ret & ~(TCONF))
+			goto exit;
+	}
+
+exit:
 	do_exit(ret);
 }
 
