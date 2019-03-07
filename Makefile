@@ -77,7 +77,7 @@ INSTALL_TARGETS		+= runtest scenario_groups testscripts
 CLEAN_TARGETS		+= include runtest scenario_groups testscripts
 endif
 INSTALL_TARGETS		+= $(COMMON_TARGETS)
-CLEAN_TARGETS		+= $(COMMON_TARGETS) lib
+CLEAN_TARGETS		+= $(COMMON_TARGETS) lib libs
 BOOTSTRAP_TARGETS	:= $(sort $(COMMON_TARGETS) $(CLEAN_TARGETS) $(INSTALL_TARGETS))
 
 CLEAN_TARGETS		:= $(addsuffix -clean,$(CLEAN_TARGETS))
@@ -89,7 +89,7 @@ MAKE_TARGETS		:= $(addsuffix -all,$(filter-out lib,$(COMMON_TARGETS)))
 # overtaxed one, or one where -j => 1 was specified.
 all: $(addsuffix -all,$(COMMON_TARGETS)) Version
 
-$(MAKE_TARGETS): lib-all
+$(MAKE_TARGETS): lib-all libs-all
 
 .PHONY: include-all include-install
 include-install: $(top_builddir)/include/config.h include/mk/config.mk include-all
@@ -110,7 +110,7 @@ $(sort $(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(D
 ## Pattern based subtarget rules.
 lib-install: lib-all
 
-$(MAKE_TARGETS) include-all lib-all:
+$(MAKE_TARGETS) include-all lib-all libs-all:
 	$(MAKE) -C "$(subst -all,,$@)" \
 		-f "$(abs_top_srcdir)/$(subst -all,,$@)/Makefile" all
 
