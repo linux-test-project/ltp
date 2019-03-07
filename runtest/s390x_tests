@@ -1,0 +1,2 @@
+# Those tests are designed to be executed in s390x environment (zVM or LPAR)
+vmcp vmcp_m.sh
