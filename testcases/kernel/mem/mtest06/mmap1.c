@@ -11,6 +11,9 @@
  * hit SIGSEGV in between mmap/munmap it is a failure. If a read
  * between mmap/munmap worked, then its value must match expected
  * value.
+ *
+ * Can trigger panics/stalls since at least 4.14 on some arches. See:
+ *   fc8efd2ddfed ("mm/memory.c: do_fault: avoid usage of stale vm_area_struct")
  */
 #include <errno.h>
 #include <float.h>
