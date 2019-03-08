@@ -41,5 +41,19 @@ INSTALL_DIR	:= testcases/bin
 
 LDLIBS		+= -lltp
 
-$(APICMDS_DIR) $(LIBLTP_DIR): %:
+ifdef LTPLIBS
+
+LTPLIBS_DIRS = $(addprefix $(abs_top_builddir)/libs/lib, $(LTPLIBS))
+LTPLIBS_FILES = $(addsuffix .a, $(addprefix $(abs_top_builddir)/libs/, $(foreach LIB,$(LTPLIBS),lib$(LIB)/lib$(LIB))))
+
+MAKE_DEPS += $(LTPLIBS_FILES)
+
+$(LTPLIBS_FILES): $(LTPLIBS_DIRS)
+	$(MAKE) -C "$^" -f "$^/Makefile" all
+
+LDFLAGS += $(addprefix -L$(top_builddir)/libs/lib, $(LTPLIBS))
+
+endif
+
+$(LTPLIBS_DIRS) $(APICMDS_DIR) $(LIBLTP_DIR): %:
 	mkdir -p "$@"
