@@ -1,16 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * Copyright (c) 2018 Xiao Yang <yangx.jy@cn.fujitsu.com>
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
+ * Copyright (c) 2019 SUSE.  All Rights Reserved.
  */
 
 /*
@@ -77,6 +69,19 @@ static void setup(void)
 	/* get kernel name and information */
 	if (uname(&buf) == -1)
 		tst_brk(TBROK | TERRNO, "uname() failed");
+
+	/* revert uname change in case of kGraft/livepatch */
+	char *klp_tag;
+	char *right_brace;
+
+	klp_tag = strstr(buf.version, "/kGraft-");
+	if (!klp_tag)
+		klp_tag = strstr(buf.version, "/lp-");
+	if (klp_tag) {
+		right_brace = strchr(klp_tag, ')');
+		if (right_brace)
+			memmove(klp_tag, right_brace, strlen(right_brace)+1);
+	}
 }
 
 static struct tst_test test = {
