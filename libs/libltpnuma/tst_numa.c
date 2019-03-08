@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "config.h"
-#ifdef HAVE_NUMA_H
+#ifdef HAVE_NUMA_V2
 # include <numa.h>
 # include <numaif.h>
 #endif
@@ -43,7 +43,7 @@ void tst_nodemap_free(struct tst_nodemap *nodes)
 	free(nodes);
 }
 
-#ifdef HAVE_NUMA_H
+#ifdef HAVE_NUMA_V2
 
 const char *tst_numa_mode_name(int mode)
 {

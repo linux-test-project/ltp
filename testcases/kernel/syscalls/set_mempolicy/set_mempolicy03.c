@@ -11,7 +11,7 @@
 
 #include <errno.h>
 #include "config.h"
-#ifdef HAVE_NUMA_H
+#ifdef HAVE_NUMA_V2
 # include <numaif.h>
 # include <numa.h>
 #endif
@@ -21,7 +21,7 @@
 #define MNTPOINT "mntpoint"
 #define PAGES_ALLOCATED 16u
 
-#ifdef HAVE_NUMA_H
+#ifdef HAVE_NUMA_V2
 
 #include "set_mempolicy.h"
 
@@ -110,4 +110,4 @@ static struct tst_test test = {
 
 TST_TEST_TCONF(NUMA_ERROR_MSG);
 
-#endif /* HAVE_NUMA_H */
+#endif /* HAVE_NUMA_V2 */

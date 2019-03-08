@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "config.h"
-#ifdef HAVE_NUMA_H
+#ifdef HAVE_NUMA_V2
 # include <numa.h>
 # include <numaif.h>
 #endif
@@ -32,7 +32,7 @@
 #define MNTPOINT "mntpoint"
 #define FILES 10
 
-#ifdef HAVE_NUMA_H
+#ifdef HAVE_NUMA_V2
 
 #include "set_mempolicy.h"
 
@@ -139,4 +139,4 @@ static struct tst_test test = {
 
 TST_TEST_TCONF(NUMA_ERROR_MSG);
 
-#endif /* HAVE_NUMA_H */
+#endif /* HAVE_NUMA_V2 */
