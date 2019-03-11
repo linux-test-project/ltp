@@ -232,10 +232,15 @@ static int tc05(void)
 
 		if (major == 0) {
 			unregister_blkdev(test_major[i], BLK_DEV_NAME);
+#ifdef BLKDEV_MAJOR_MAX
 			pass = 0;
+#endif
 		} else {
 			prk_debug("register_blkdev() with major %u got error %i\n",
 				  test_major[i], major);
+#ifndef BLKDEV_MAJOR_MAX
+			pass = 0;
+#endif
 		}
 	}
 
