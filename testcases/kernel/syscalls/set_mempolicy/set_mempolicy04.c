@@ -77,8 +77,8 @@ static void alloc_and_check(void)
 
 	for (i = 0; i < nodes->cnt; i++) {
 		float treshold = 1.00 * total_pages / 60; /* five percents */
-		float min_pages = 1.00 * total_pages / 3 - treshold;
-		float max_pages = 1.00 * total_pages / 3 + treshold;
+		float min_pages = 1.00 * total_pages / nodes->cnt - treshold;
+		float max_pages = 1.00 * total_pages / nodes->cnt + treshold;
 
 		if (nodes->counters[i] > min_pages && nodes->counters[i] < max_pages) {
 			tst_res(TPASS, "Node %u allocated %u <%.2f,%.2f>",
