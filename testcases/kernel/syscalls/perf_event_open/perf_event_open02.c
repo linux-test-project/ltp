@@ -268,9 +268,20 @@ static void setup(void)
 		tsk_event.disabled = 0;
 		for (i = 0; i < n; ++i) {
 			hwfd[i] = perf_event_open(&hw_event, 0, -1, -1, 0);
-			tskfd[i] = perf_event_open(&tsk_event, 0, -1,
-						   hwfd[i], 0);
-			if (tskfd[i] == -1 || hwfd[i] == -1) {
+			if (hwfd[i] == -1) {
+				if (errno == ENOENT || errno == ENODEV) {
+					tst_brkm(TCONF | TERRNO, cleanup,
+						"PERF_COUNT_HW_INSTRUCTIONS not supported");
+				}
+				tst_brkm(TBROK | TERRNO, cleanup,
+					 "perf_event_open failed");
+			}
+			tskfd[i] = perf_event_open(&tsk_event, 0, -1, hwfd[i], 0);
+			if (tskfd[i] == -1) {
+				if (errno == ENOENT || errno == ENODEV) {
+					tst_brkm(TCONF | TERRNO, cleanup,
+						"PERF_COUNT_SW_TASK_CLOCK not supported");
+				}
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "perf_event_open failed");
 			}
