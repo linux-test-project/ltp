@@ -41,7 +41,7 @@ TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
-TST_NEEDS_CMDS="numactl numastat awk"
+TST_NEEDS_CMDS="awk bc numactl numastat"
 
 . tst_test.sh
 
