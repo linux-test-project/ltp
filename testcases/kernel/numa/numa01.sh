@@ -23,20 +23,18 @@
 # Description:  Test Basic functionality of numactl command.                 #
 #               Test #1: Verifies cpunodebind and membind                    #
 #               Test #2: Verifies preferred node bind for memory allocation  #
-#               Test #3: Verifies share memory allocation on preferred node  #
-#               Test #4: Verifies memory interleave on all nodes             #
-#               Test #5: Verifies share memory interleave on all nodes       #
-#               Test #6: Verifies physcpubind                                #
-#               Test #7: Verifies localalloc                                 #
-#               Test #8: Verifies memhog                                     #
-#               Test #9: Verifies numa_node_size api                         #
-#               Test #10:Verifies Migratepages                               #
-#               Test #11:Verifies hugepage alloacted on specified node       #
-#               Test #12:Verifies THP memory allocated on preferred node     #
+#               Test #3: Verifies memory interleave on all nodes             #
+#               Test #4: Verifies physcpubind                                #
+#               Test #5: Verifies localalloc                                 #
+#               Test #6: Verifies memhog                                     #
+#               Test #7: Verifies numa_node_size api                         #
+#               Test #8:Verifies Migratepages                                #
+#               Test #9:Verifies hugepage alloacted on specified node        #
+#               Test #10:Verifies THP memory allocated on preferred node     #
 #                                                                            #
 ##############################################################################
 
-TST_CNT=12
+TST_CNT=10
 TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
@@ -152,44 +150,8 @@ test2()
 	tst_res TPASS "NUMA preferred node policy"
 }
 
-# Verification of share memory allocated on preferred node
-test3()
-{
-	Mem_curr=0
-	COUNTER=1
-
-	for node in $nodes_list; do
-
-		if [ $COUNTER -eq $total_nodes ]   #wrap up for last node
-		then
-			Preferred_node=$(echo $nodes_list | cut -d ' ' -f 1)
-		else
-			# always next node is preferred node
-			Preferred_node=$(echo $nodes_list | cut -d ' ' -f $((COUNTER+1)))
-		fi
-
-		numactl --cpunodebind=$node --preferred=$Preferred_node support_numa alloc_1MB_shared &
-		pid=$!
-
-		TST_RETRY_FUNC "check_for_support_numa $pid" 0
-
-		Mem_curr=$(echo "$(extract_numastat_p $pid $Preferred_node) * $MB" |bc)
-		if [ $(echo "$Mem_curr < $MB" |bc ) -eq 1 ]; then
-			tst_res TFAIL \
-				"NUMA share memory allocated in node$Preferred_node is less than expected"
-			kill -CONT $pid >/dev/null 2>&1
-			return
-		fi
-
-		COUNTER=$((COUNTER+1))
-		kill -CONT $pid >/dev/null 2>&1
-	done
-
-	tst_res TPASS "NUMA share memory allocated in preferred node"
-}
-
 # Verification of memory interleaved on all nodes
-test4()
+test3()
 {
 	Mem_curr=0
 	# Memory will be allocated using round robin on nodes.
@@ -215,36 +177,8 @@ test4()
 	tst_res TPASS "NUMA interleave policy"
 }
 
-# Verification of shared memory interleaved on all nodes
-test5()
-{
-	Mem_curr=0
-	# Memory will be allocated using round robin on nodes.
-	Exp_incr=$(echo "$MB / $total_nodes" |bc)
-
-	numactl --interleave=all support_numa alloc_1MB_shared &
-	pid=$!
-
-	TST_RETRY_FUNC "check_for_support_numa $pid" 0
-
-	for node in $nodes_list; do
-		Mem_curr=$(echo "$(extract_numastat_p $pid $node) * $MB" |bc)
-
-		if [ $(echo "$Mem_curr < $Exp_incr" |bc ) -eq 1 ]; then
-			tst_res TFAIL \
-				"NUMA interleave share memory allocated in node$node is less than expected"
-			kill -CONT $pid >/dev/null 2>&1
-			return
-		fi
-	done
-
-	kill -CONT $pid >/dev/null 2>&1
-
-	tst_res TPASS "NUMA interleave policy on shared memory"
-}
-
 # Verification of physical cpu bind
-test6()
+test4()
 {
 	no_of_cpus=0	#no. of cpu's exist
 	run_on_cpu=0
@@ -276,7 +210,7 @@ test6()
 }
 
 # Verification of local node allocation
-test7()
+test5()
 {
 	Mem_curr=0
 
@@ -306,7 +240,7 @@ check_ltp_numa_test8_log()
 }
 
 # Verification of memhog with interleave policy
-test8()
+test6()
 {
 	Mem_curr=0
 	# Memory will be allocated using round robin on nodes.
@@ -348,7 +282,7 @@ test8()
 #                 0:  10  20
 #                 1:  20  10
 #
-test9()
+test7()
 {
 	RC=0
 
@@ -368,7 +302,7 @@ test9()
 }
 
 # Verification of migratepages
-test10()
+test8()
 {
 	Mem_curr=0
 	COUNTER=1
@@ -404,7 +338,7 @@ test10()
 }
 
 # Verification of hugepage memory allocated on a node
-test11()
+test9()
 {
 	Mem_huge=0
 	Sys_node=/sys/devices/system/node
@@ -448,7 +382,7 @@ test11()
 }
 
 # Verification of THP memory allocated on preferred node
-test12()
+test10()
 {
 	Mem_curr=0
 

@@ -52,7 +52,6 @@ static void help(void)
 {
 	printf("Input:	Describe input arguments to this program\n");
 	printf("	argv[1] == \"alloc_1MB\" then allocate 1MB of memory\n");
-	printf("	argv[1] == \"alloc_1MB_shared\" then allocate 1MB of share memory\n");
 	printf("	argv[1] == \"alloc_2HPSZ_THP\" then allocate 2HUGE PAGE SIZE of THP memory\n");
 	printf("        argv[1] == \"alloc_1huge_page\" then allocate 1HUGE PAGE SIZE of memory\n");
 	printf("        argv[1] == \"pause\" then pause the program to catch sigint\n");
@@ -90,9 +89,8 @@ static int read_hugepagesize(void)
 
 int main(int argc, char *argv[])
 {
-	int i, fd, rc, hpsz;
+	int i, hpsz;
 	char *buf = NULL;
-	struct stat sb;
 
 	if (argc != 2) {
 		fprintf(stderr, "Here expect only one number(i.e. 2) as the parameter\n");
@@ -113,32 +111,6 @@ int main(int argc, char *argv[])
 		raise(SIGSTOP);
 
 		free(buf);
-	} else if (!strcmp(argv[1], "alloc_1MB_shared")) {
-		fd = open(TEST_SFILE, O_RDWR | O_CREAT, 0666);
-		/* Writing 1MB of random data into this file [32 * 32768 = 1024 * 1024] */
-		for (i = 0; i < 32768; i++){
-			rc = write(fd, STR, strlen(STR));
-			if (rc == -1 || ((size_t)rc != strlen(STR)))
-				fprintf(stderr, "write failed\n");
-		}
-
-		if ((fstat(fd, &sb)) == -1)
-			fprintf(stderr, "fstat failed\n");
-
-		buf = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-		if (buf == MAP_FAILED){
-			fprintf(stderr, "mmap failed\n");
-			close(fd);
-			exit(1);
-		}
-
-		memset(buf, 'a', sb.st_size);
-
-		raise(SIGSTOP);
-
-		munmap(buf, sb.st_size);
-		close(fd);
-		remove(TEST_SFILE);
 	} else if (!strcmp(argv[1], "alloc_2HPSZ_THP")) {
 		ssize_t size = 2 * read_hugepagesize();
 		if (size == 0)
