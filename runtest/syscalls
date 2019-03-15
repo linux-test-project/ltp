@@ -1285,6 +1285,7 @@ sigsuspend01 sigsuspend01
 
 sigtimedwait01 sigtimedwait01
 
+sigwait01 sigwait01
 sigwaitinfo01 sigwaitinfo01
 
 socket01 socket01
