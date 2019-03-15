@@ -29,6 +29,10 @@
 # define MSG_FASTOPEN	0x20000000 /* Send data in TCP SYN */
 #endif
 
+#ifndef SO_REUSEPORT
+# define SO_REUSEPORT	15
+#endif
+
 #ifndef SO_BUSY_POLL
 # define SO_BUSY_POLL	46
 #endif
