@@ -325,7 +325,7 @@ int main(int argc, char **argv)
 			continue;
 		}
 		while (io_getevents(io_ctx, 1, 1, &event, &ts) != 1) ;
-		for (j = 0; j < bufsize; j++) {
+		for (j = 0; j < (int)bufsize; j++) {
 			if (srcbuf[j] != dstbuf[j]) {
 				tst_resm(TFAIL, "Test 6: compare failed - "
 					 "read: %c, " "actual: %c",
