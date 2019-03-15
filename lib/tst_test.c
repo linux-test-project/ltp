@@ -698,7 +698,7 @@ static void assert_test_fn(void)
 		tst_brk(TBROK, "You can define only one test function");
 
 	if (tst_test->test && !tst_test->tcnt)
-		tst_brk(TBROK, "Number of tests (tcnt) must not be > 0");
+		tst_brk(TBROK, "Number of tests (tcnt) must be > 0");
 
 	if (!tst_test->test && tst_test->tcnt)
 		tst_brk(TBROK, "You can define tcnt only for test()");
