@@ -24,6 +24,7 @@
 /*		rt_sigaction Expected EFAULT error check                      */
 /******************************************************************************/
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

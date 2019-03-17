@@ -49,6 +49,8 @@
  *	This test doesn't follow the correct LTP format - PLEASE FIX!
  */
 #define DEBUG 0
+
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
