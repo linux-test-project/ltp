@@ -102,7 +102,7 @@ static pid_t unused_pid;
 static pid_t zero_pid;
 
 struct test_case_t {
-	enum __ptrace_request request;
+	int request;
 	pid_t *pid;
 	int exp_errno;
 } test_cases[] = {
