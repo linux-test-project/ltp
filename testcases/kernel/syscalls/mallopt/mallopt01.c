@@ -63,7 +63,7 @@ extern int tst_COUNT;		/* Test Case counter for tst_routines */
 
 void printinfo();
 
-#if !defined(UCLINUX)
+#if defined(__GLIBC__)
 struct mallinfo info;
 
 int main(int argc, char *argv[])
@@ -150,6 +150,6 @@ void printinfo(void)
 #else
 int main(void)
 {
-	tst_brkm(TCONF, NULL, "test is not available on uClinux");
+	tst_brkm(TCONF, NULL, "mallopt defined only for glibc");
 }
-#endif /* if !defined(UCLINUX) */
+#endif
