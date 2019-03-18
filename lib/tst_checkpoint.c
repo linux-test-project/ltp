@@ -85,6 +85,7 @@ void tst_checkpoint_init(const char *file, const int lineno,
 int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
 {
 	struct timespec timeout;
+	int ret;
 
 	if (id >= tst_max_futexes) {
 		errno = EOVERFLOW;
@@ -94,8 +95,12 @@ int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
 	timeout.tv_sec = msec_timeout/1000;
 	timeout.tv_nsec = (msec_timeout%1000) * 1000000;
 
-	return syscall(SYS_futex, &tst_futexes[id], FUTEX_WAIT,
-		       tst_futexes[id], &timeout);
+	do {
+		ret = syscall(SYS_futex, &tst_futexes[id], FUTEX_WAIT,
+			      tst_futexes[id], &timeout);
+	} while (ret == -1 && errno == EINTR);
+
+	return ret;
 }
 
 int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
