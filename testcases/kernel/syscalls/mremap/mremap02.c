@@ -72,12 +72,11 @@
  * RESTRICTIONS:
  *  None.
  */
+#define _GNU_SOURCE
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#define __USE_GNU
 #include <sys/mman.h>
-#undef __USE_GNU
 
 #include "test.h"
 

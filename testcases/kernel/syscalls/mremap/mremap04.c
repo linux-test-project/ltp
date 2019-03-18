@@ -77,11 +77,10 @@
  * RESTRICTIONS:
  *  None.
  */
+#define _GNU_SOURCE
 #include <errno.h>
 #include <unistd.h>
-#define __USE_GNU
 #include <sys/mman.h>
-#undef __USE_GNU
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
