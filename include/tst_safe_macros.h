@@ -221,7 +221,7 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 	({int tst_ret_ = ioctl(fd, request, ##__VA_ARGS__);  \
 	  tst_ret_ < 0 ?                                     \
 	   tst_brk(TBROK | TERRNO,                           \
-	            "ioctl(%i,%s,...) failed", fd, #request) \
+	            "ioctl(%i,%s,...) failed", fd, #request), 0 \
 	 : tst_ret_;})
 
 #define SAFE_FCNTL(fd, cmd, ...)                            \
