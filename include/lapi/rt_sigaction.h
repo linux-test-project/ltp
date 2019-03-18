@@ -36,12 +36,12 @@
 #if defined(__mips__)
 struct kernel_sigaction {
 	unsigned int sa_flags;
-	__sighandler_t k_sa_handler;
+	void (* k_sa_handler)(int);
 	sigset_t sa_mask;
 };
 #else
 struct kernel_sigaction {
-	__sighandler_t k_sa_handler;
+	void (* k_sa_handler)(int);
 	unsigned long sa_flags;
 	void (*sa_restorer) (void);
 	sigset_t sa_mask;
