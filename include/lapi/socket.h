@@ -49,6 +49,10 @@
 # define SOCK_CLOEXEC 02000000
 #endif
 
+#ifndef AF_ALG
+# define AF_ALG		38
+#endif
+
 #ifndef SOL_SCTP
 # define SOL_SCTP	132
 #endif
@@ -59,6 +63,10 @@
 
 #ifndef SOL_DCCP
 # define SOL_DCCP		269
+#endif
+
+#ifndef SOL_ALG
+# define SOL_ALG		279
 #endif
 
 #endif /* __LAPI_SOCKET_H__ */

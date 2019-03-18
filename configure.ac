@@ -40,6 +40,7 @@ AC_CHECK_HEADERS([ \
     linux/cryptouser.h \
     linux/genetlink.h \
     linux/keyctl.h \
+    linux/if_alg.h \
     linux/if_packet.h \
     linux/if_ether.h \
     linux/mempolicy.h \
