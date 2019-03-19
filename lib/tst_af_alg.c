@@ -16,7 +16,7 @@ int tst_alg_create(void)
 	TEST(socket(AF_ALG, SOCK_SEQPACKET, 0));
 	if (TST_RET >= 0)
 		return TST_RET;
-	if (TST_ERR == EPROTONOSUPPORT)
+	if (TST_ERR == EAFNOSUPPORT)
 		tst_brk(TCONF, "kernel doesn't support AF_ALG");
 	tst_brk(TBROK | TTERRNO, "unexpected error creating AF_ALG socket");
 	return -1;
