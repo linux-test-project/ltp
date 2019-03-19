@@ -92,9 +92,16 @@ static void verify_setpriority(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
+	if (tc->which == PRIO_USER && !user_added) {
+		tst_res(TCONF, "setpriority(%s(%d), %d, -20..19) skipped - Can't add user",
+			str_which(tc->which), tc->which, *tc->who);
+		return;
+	}
+
 	pid = SAFE_FORK();
 	if (pid == 0) {
-		SAFE_SETUID(uid);
+		if (user_added)
+			SAFE_SETUID(uid);
 		SAFE_SETPGID(0, 0);
 
 		TST_CHECKPOINT_WAKE_AND_WAIT(0);
@@ -115,15 +122,20 @@ static void setup(void)
 {
 	const char *const cmd_useradd[] = {"useradd", username, NULL};
 	struct passwd *ltpuser;
+	int rc;
 
-	if (eaccess("/etc/passwd", W_OK))
-		tst_brk(TCONF, "/etc/passwd is not accessible");
-
-	tst_run_cmd(cmd_useradd, NULL, NULL, 0);
-	user_added = 1;
-
-	ltpuser = SAFE_GETPWNAM(username);
-	uid = ltpuser->pw_uid;
+	switch ((rc = tst_run_cmd(cmd_useradd, NULL, NULL, 1))) {
+	case 0:
+		user_added = 1;
+		ltpuser = SAFE_GETPWNAM(username);
+		uid = ltpuser->pw_uid;
+		return;
+	case 1:
+	case 255:
+		return;
+	default:
+		tst_brk(TBROK, "Useradd failed (%d)", rc);
+	}
 }
 
 static void cleanup(void)
