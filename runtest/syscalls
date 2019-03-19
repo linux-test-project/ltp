@@ -840,6 +840,8 @@ pipe11 pipe11
 pipe2_01 pipe2_01
 pipe2_02 pipe2_02
 
+pivot_root01 pivot_root01
+
 poll01 poll01
 poll02 poll02
 
