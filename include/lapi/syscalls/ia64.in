@@ -298,6 +298,7 @@ process_vm_writev 1333
 renameat2 1338
 getrandom 1339
 memfd_create 1340
+userfaultfd 1343
 membarrier 1344
 execveat 1342
 mlock2 1346
