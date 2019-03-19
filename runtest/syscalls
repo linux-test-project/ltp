@@ -1400,6 +1400,8 @@ syslog10 syslog10
 syslog11 syslog11
 syslog12 syslog12
 
+tgkill01 tgkill01
+
 time01 time01
 time02 time02
 
