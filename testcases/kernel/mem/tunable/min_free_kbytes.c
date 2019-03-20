@@ -120,12 +120,12 @@ static void test_tune(unsigned long overcommit_policy)
 		SAFE_WAITPID(pid[i], &status, WUNTRACED | WCONTINUED);
 
 		if (overcommit_policy == 2) {
-			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+			if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 				tst_res(TFAIL,
 					 "child unexpectedly failed: %d",
 					 status);
 		} else if (overcommit_policy == 1) {
-			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
+			if (WIFSIGNALED(status) && WTERMSIG(status) != SIGKILL)
 #if __WORDSIZE == 32
 			{
 				if (total_mem < 3145728UL)
@@ -141,13 +141,12 @@ static void test_tune(unsigned long overcommit_policy)
 			}
 #endif
 		} else {
-			if (WIFEXITED(status)) {
-				if (WEXITSTATUS(status) != 0) {
-					tst_res(TFAIL, "child unexpectedly "
-						 "failed: %d", status);
-				}
-			} else if (!WIFSIGNALED(status) ||
-				   WTERMSIG(status) != SIGKILL) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+				tst_res(TFAIL,
+					 "child unexpectedly failed: %d",
+					 status);
+			} else if (WIFSIGNALED(status) &&
+					WTERMSIG(status) != SIGKILL) {
 				tst_res(TFAIL,
 					 "child unexpectedly failed: %d",
 					 status);
