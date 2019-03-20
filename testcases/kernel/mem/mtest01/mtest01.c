@@ -28,15 +28,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "lapi/abisize.h"
 #include "tst_test.h"
 
 #define FIVE_HUNDRED_MB         (500ULL*1024*1024)
 
-#if defined (_s390_)
+#if defined(_s390_)
 #define ALLOC_THRESHOLD		FIVE_HUNDRED_MB
-#elif __WORDSIZE == 32
+#elif defined(TST_ABI32)
 #define ALLOC_THRESHOLD		(2*FIVE_HUNDRED_MB)
-#elif __WORDSIZE == 64
+#elif defined(TST_ABI64)
 #define ALLOC_THRESHOLD		(6*FIVE_HUNDRED_MB)
 #endif
 

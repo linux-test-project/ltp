@@ -51,6 +51,7 @@
 #include <inttypes.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/abisize.h"
 
 #ifndef OFF_T
 #define OFF_T off_t
@@ -170,7 +171,7 @@ int main(int ac, char **av)
 	int i;
 	int lc;
 
-#if __WORDSIZE == 32
+#ifdef TST_ABI32
 	tst_brkm(TCONF, NULL, "This test is only for 64bit");
 #endif
 

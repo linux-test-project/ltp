@@ -34,6 +34,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "lapi/abisize.h"
 #include "mem.h"
 
 #define MAP_SIZE (1UL<<20)
@@ -126,14 +127,14 @@ static void test_tune(unsigned long overcommit_policy)
 					 status);
 		} else if (overcommit_policy == 1) {
 			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
-#if __WORDSIZE == 32
+#ifdef TST_ABI32
 			{
 				if (total_mem < 3145728UL)
 #endif
 					tst_res(TFAIL,
 						 "child unexpectedly failed: %d",
 						 status);
-#if __WORDSIZE == 32
+#ifdef TST_ABI32
 				/* in 32-bit system, a process allocate about 3Gb memory at most */
 				else
 					tst_res(TINFO, "Child can't allocate "

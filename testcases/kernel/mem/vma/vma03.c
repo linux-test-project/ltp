@@ -51,6 +51,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "tst_kernel.h"
+#include "lapi/abisize.h"
 
 char *TCID = "vma03";
 int TST_TOTAL = 1;
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
 	void *map, *remap;
 	off_t pgoff;
 
-	if (__WORDSIZE != 32 || tst_kernel_bits() != 32) {
+	if (TST_ABI != 32 || tst_kernel_bits() != 32) {
 		tst_brkm(TCONF, NULL,
 			 "test is designed for 32-bit system only.");
 	}

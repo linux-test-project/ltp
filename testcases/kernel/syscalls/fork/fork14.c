@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/abisize.h"
 
 char *TCID = "fork14";
 int TST_TOTAL = 1;
@@ -60,7 +61,7 @@ int main(int ac, char **av)
  * Tested on ppc64/x86_64/i386/s390x. And only 64bit has this issue.
  * Since a 32bit program can't mmap so many memory.
  */
-#if __WORDSIZE == 32
+#ifdef TST_ABI32
 	tst_brkm(TCONF, NULL, "This test is only for 64bit.");
 #endif
 	setup();

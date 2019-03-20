@@ -41,6 +41,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "lapi/fallocate.h"
+#include "lapi/abisize.h"
 
 #define BLOCKS_WRITTEN		12
 #ifdef TEST_DEFAULT
@@ -75,7 +76,7 @@ static struct test_data_t {
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, BLOCKS_WRITTEN, 0, EINVAL},
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, BLOCKS_WRITTEN, -1, EINVAL},
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, -(BLOCKS_WRITTEN+OFFSET), 1, EINVAL},
-#if __WORDSIZE == 64 || _FILE_OFFSET_BITS == 64
+#if defined(TST_ABI64) || _FILE_OFFSET_BITS == 64
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, MAX_FILESIZE, 1, EFBIG},
 	{&fdw, FNAMEW, DEFAULT_TEST_MODE, 1, MAX_FILESIZE, EFBIG},
 #endif

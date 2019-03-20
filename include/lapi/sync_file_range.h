@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include "config.h"
 #include "lapi/syscalls.h"
+#include "lapi/abisize.h"
 
 #if !defined(HAVE_SYNC_FILE_RANGE)
 
@@ -25,7 +26,7 @@ static inline long sync_file_range(int fd, off64_t offset, off64_t nbytes,
 				   unsigned int flags)
 {
 #if (defined(__arm__) || defined(__powerpc__) || defined(__powerpc64__))
-# if (__WORDSIZE == 32)
+# ifdef TST_ABI32
 #  if __BYTE_ORDER == __BIG_ENDIAN
 	return TST_SYSCALL(__NR_sync_file_range2, fd, flags,
 		(int)(offset >> 32), (int)offset, (int)(nbytes >> 32),
@@ -37,10 +38,10 @@ static inline long sync_file_range(int fd, off64_t offset, off64_t nbytes,
 # else
 	return TST_SYSCALL(__NR_sync_file_range2, fd, flags, offset, nbytes);
 # endif
-#elif (defined(__s390__) || defined(__s390x__)) && __WORDSIZE == 32
+#elif (defined(__s390__) || defined(__s390x__)) && defined(TST_ABI32)
 	return TST_SYSCALL(__NR_sync_file_range, fd, (int)(offset >> 32),
 		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);
-#elif defined(__mips__) && __WORDSIZE == 32
+#elif defined(__mips__) && defined(TST_ABI32)
 # if __BYTE_ORDER == __BIG_ENDIAN
 	return TST_SYSCALL(__NR_sync_file_range, fd, 0, (int)(offset >> 32),
 		(int)offset, (int)(nbytes >> 32), (int)nbytes, flags);

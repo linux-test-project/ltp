@@ -49,6 +49,7 @@
 #include <time.h>
 #include <errno.h>
 #include "defs.h"
+#include "lapi/abisize.h"
 
 #define VER_STR "v1.4.2"
 #define BLKGETSIZE _IO(0x12,96)		/* IOCTL for getting the device size */
@@ -64,7 +65,7 @@
 /* the new way we align */
 #define ALIGN(x, y) (((long long unsigned)x/(long long unsigned)y)*(long long unsigned)y)
 
-#if __WORDSIZE == 64
+#ifdef TST_ABI64
 /* the old way we use to align */
 /* #define ALIGN(x, bs) (((OFF_T)x + ((OFF_T)bs - 1)) & ~((OFF_T)bs - 1)) */
 #define BUFALIGN(x) (void *) (((unsigned long)x + (OFF_T)(ALIGNSIZE - 1)) & (OFF_T)~(ALIGNSIZE - 1))

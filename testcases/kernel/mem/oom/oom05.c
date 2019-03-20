@@ -30,6 +30,7 @@
 #include <numa.h>
 #endif
 
+#include "lapi/abisize.h"
 #include "numa_helper.h"
 #include "mem.h"
 
@@ -42,7 +43,7 @@ static void verify_oom(void)
 {
 	int swap_acc_on = 1;
 
-#if __WORDSIZE == 32
+#ifdef TST_ABI32
 	tst_brk(TCONF, "test is not designed for 32-bit system.");
 #endif
 

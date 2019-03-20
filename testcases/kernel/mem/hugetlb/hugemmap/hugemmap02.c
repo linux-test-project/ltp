@@ -39,6 +39,7 @@
 #include <sys/mount.h>
 #include <limits.h>
 #include <sys/param.h>
+#include "lapi/abisize.h"
 #include "hugetlb.h"
 
 #define LOW_ADDR       0x80000000
@@ -100,7 +101,7 @@ static void test_hugemmap(void)
 	/* Attempt to mmap a huge page into a low memory address */
 	addr2 = mmap((void *)low_addr2, map_sz, PROT_READ | PROT_WRITE,
 			MAP_SHARED, fildes, 0);
-#if __WORDSIZE == 64 /* 64-bit process */
+#ifdef TST_ABI64 /* 64-bit process */
 	if (addr2 == MAP_FAILED) {
 		tst_res(TFAIL | TERRNO, "huge mmap failed unexpectedly"
 				" with %s (64-bit)", TEMPFILE);

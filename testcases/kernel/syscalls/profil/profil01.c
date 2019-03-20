@@ -27,6 +27,7 @@
 #include <sys/types.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/abisize.h"
 #include "config.h"
 
 char *TCID = "profil01";
@@ -53,7 +54,7 @@ static void alrm_handler(int sig)
 
 static void __attribute__ ((noinline)) *get_pc(void)
 {
-#if defined(__s390__) && __WORDSIZE == 32
+#if defined(__s390__) && defined(TST_ABI32)
 	/* taken from glibc,
 	 *   sysdeps/unix/sysv/linux/s390/s390-32/profil-counter.h
 	 * 31-bit s390 pointers don't use the 32th bit, however integers do,
