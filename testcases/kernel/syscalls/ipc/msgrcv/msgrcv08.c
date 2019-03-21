@@ -48,15 +48,15 @@ const int TST_TOTAL = 1;
 
 #if __WORDSIZE == 32
 
-struct msgbuf {
+struct mbuf {
 	long mtype;     /* message type, must be > 0 */
 	char mtext[16]; /* message data */
 };
 
 static void msr(int msqid)
 {
-	struct msgbuf msbs;
-	struct msgbuf msbr;
+	struct mbuf msbs;
+	struct mbuf msbr;
 	ssize_t sret;
 	long mtype = 121;
 
