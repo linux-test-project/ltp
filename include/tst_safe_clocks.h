@@ -6,7 +6,9 @@
  */
 
 #include <time.h>
+#include <sys/timex.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
 
 static inline void safe_clock_getres(const char *file, const int lineno,
@@ -44,6 +46,19 @@ static inline void safe_clock_settime(const char *file, const int lineno,
 			"%s:%d clock_gettime() failed", file, lineno);
 }
 
+static inline int safe_clock_adjtime(const char *file, const int lineno,
+	clockid_t clk_id, struct timex *txc)
+{
+	int rval;
+
+	rval = tst_syscall(__NR_clock_adjtime, clk_id, txc);
+	if (rval < 0)
+		tst_brk(TBROK | TERRNO,
+			"%s:%d clock_adjtime() failed %i", file, lineno, rval);
+
+	return rval;
+}
+
 #define SAFE_CLOCK_GETRES(clk_id, res)\
 	safe_clock_getres(__FILE__, __LINE__, (clk_id), (res))
 
@@ -52,3 +67,6 @@ static inline void safe_clock_settime(const char *file, const int lineno,
 
 #define SAFE_CLOCK_SETTIME(clk_id, tp)\
 	safe_clock_settime(__FILE__, __LINE__, (clk_id), (tp))
+
+#define SAFE_CLOCK_ADJTIME(clk_id, txc)\
+	safe_clock_adjtime(__FILE__, __LINE__, (clk_id), (txc))
