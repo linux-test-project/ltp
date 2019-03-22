@@ -5,6 +5,9 @@
  * Email : code@zilogic.com
  */
 
+#ifndef TST_SAFE_CLOCKS_H__
+#define TST_SAFE_CLOCKS_H__
+
 #include <time.h>
 #include <sys/timex.h>
 #include "tst_test.h"
@@ -70,3 +73,5 @@ static inline int safe_clock_adjtime(const char *file, const int lineno,
 
 #define SAFE_CLOCK_ADJTIME(clk_id, txc)\
 	safe_clock_adjtime(__FILE__, __LINE__, (clk_id), (txc))
+
+#endif /* SAFE_CLOCKS_H__ */
