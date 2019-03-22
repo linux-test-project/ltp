@@ -1,40 +1,27 @@
 #! /bin/sh
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2014-2019 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Description:  Test basic functionality of ip command in route2 package
 #
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 
-TST_CLEANUP=cleanup
-TST_TOTAL=6
-TCID="ip_tests"
+TST_CNT=6
+TST_SETUP="init"
+TST_TESTFUNC="test"
+TST_CLEANUP="cleanup"
+TST_NEEDS_TMPDIR=1
+TST_NEEDS_ROOT=1
+TST_NEEDS_CMDS="cat awk diff"
 
-TST_USE_LEGACY_API=1
 . tst_net.sh
 
 rm_dummy=
 
 init()
 {
-	tst_resm TINFO "inititalizing tests"
-	tst_require_root
-	tst_tmpdir
-	tst_test_cmds cat awk diff
+	tst_res TINFO "inititalizing tests"
 
 	iface=ltp_dummy
 	lsmod | grep -q dummy || rm_dummy=1
@@ -54,14 +41,12 @@ init()
 	EOF
 
 	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "can't create expected output for test02"
+		tst_brk TBROK "can't create expected output for test02"
 	fi
 }
 
 cleanup()
 {
-	tst_rmdir
-
 	[ -n "$iface" -a -d /sys/class/net/$iface ] && ip li del $iface
 
 	[ "$rm_dummy" ] && modprobe -r dummy
@@ -70,125 +55,125 @@ cleanup()
 	ip route show | grep $ip4_addr && ip route del $ip4_addr
 }
 
-test01()
+test1()
 {
-	tst_resm TINFO "test 'ip link set' command"
-	tst_resm TINFO "changing mtu size of $iface device"
+	tst_res TINFO "test 'ip link set' command"
+	tst_res TINFO "changing mtu size of $iface device"
 
 	MTUSZ_BAK=$(cat /sys/class/net/${iface}/mtu)
 	ip link set ${iface} mtu 1281
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "ip command failed"
+		tst_res TFAIL "ip command failed"
 		return
 	fi
 
 	MTUSZ=$(cat /sys/class/net/${iface}/mtu)
 	if [ $MTUSZ -eq 1281 ]; then
-		tst_resm TPASS "successfully changed mtu size"
+		tst_res TPASS "successfully changed mtu size"
 		ip link set $iface mtu $MTUSZ_BAK
 	else
-		tst_resm TFAIL "MTU value set to $MTUSZ, but expected 1281"
+		tst_res TFAIL "MTU value set to $MTUSZ, but expected 1281"
 	fi
 }
 
-test02()
+test2()
 {
-	tst_resm TINFO "test 'ip link show' command (list device attributes)"
+	tst_res TINFO "test 'ip link show' command (list device attributes)"
 
 	ip link show $iface | grep $iface > /dev/null
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip link show $iface' command failed"
+		tst_res TFAIL "'ip link show $iface' command failed"
 		return
 	fi
 
-	tst_resm TPASS "$iface correctly listed"
+	tst_res TPASS "$iface correctly listed"
 }
 
-test03()
+test3()
 {
-	tst_resm TINFO "test 'ip addr' command with loopback dev"
-	tst_resm TINFO "add a new protocol address to the device"
+	tst_res TINFO "test 'ip addr' command with loopback dev"
+	tst_res TINFO "add a new protocol address to the device"
 
 	ip addr add 127.6.6.6/24 dev lo
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip addr add' command failed"
+		tst_res TFAIL "'ip addr add' command failed"
 		return
 	fi
 
-	tst_resm TINFO "show protocol address"
+	tst_res TINFO "show protocol address"
 	ip addr show dev lo | grep 127.6.6.6 > /dev/null
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip addr show' command failed"
+		tst_res TFAIL "'ip addr show' command failed"
 		return
 	fi
 
-	tst_resm TINFO "delete protocol address"
+	tst_res TINFO "delete protocol address"
 	ip addr del 127.6.6.6/24 dev lo
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip addr del' command failed"
+		tst_res TFAIL "'ip addr del' command failed"
 		return
 	fi
 
 	ip addr show dev lo | grep 127.6.6.6 > /dev/null
 	if [ $? -eq 0 ]; then
-		tst_resm TFAIL "ip addr del command failed"
+		tst_res TFAIL "ip addr del command failed"
 		return
 	fi
 
-	tst_resm TPASS "'ip addr' command successfully tested"
+	tst_res TPASS "'ip addr' command successfully tested"
 }
 
-test04()
+test4()
 {
 	local taddr="$(tst_ipaddr_un)"
 	local tdev="$(tst_iface)"
-	tst_resm TINFO "test 'ip neigh' command"
-	tst_resm TINFO "add a new neighbor (or replace existed)"
+	tst_res TINFO "test 'ip neigh' command"
+	tst_res TINFO "add a new neighbor (or replace existed)"
 	ip neigh replace $taddr lladdr 00:00:00:00:00:00 dev $tdev nud reachable
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip neigh replace' command failed"
+		tst_res TFAIL "'ip neigh replace' command failed"
 		return
 	fi
 
-	tst_resm TINFO "show all neighbor entries in arp tables"
+	tst_res TINFO "show all neighbor entries in arp tables"
 	echo "$taddr dev $tdev lladdr 00:00:00:00:00:00 REACHABLE" > tst_ip.exp
 
 	ip neigh show $taddr | head -n1 > tst_ip.out 2>&1
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip neigh show' command failed"
+		tst_res TFAIL "'ip neigh show' command failed"
 		return
 	fi
 
 	diff -iwB tst_ip.out tst_ip.exp
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "expected output differs from actual output"
+		tst_res TFAIL "expected output differs from actual output"
 		return
 	fi
 
-	tst_resm TINFO "delete neighbor from the arp table"
+	tst_res TINFO "delete neighbor from the arp table"
 
 	ip neigh del $taddr dev $tdev
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip neigh del' command failed"
+		tst_res TFAIL "'ip neigh del' command failed"
 		return
 	fi
 
 	ip neigh show | grep $taddr | grep -v ' FAILED$' > /dev/null
 	if [ $? -eq 0 ]; then
-		tst_resm TFAIL "$taddr still listed in arp"
+		tst_res TFAIL "$taddr still listed in arp"
 		return
 	fi
 
-	tst_resm TPASS "'ip neigh' command successfully tested"
+	tst_res TPASS "'ip neigh' command successfully tested"
 }
 
-test05()
+test5()
 {
-	tst_resm TINFO "test 'ip route add/del' commands"
+	tst_res TINFO "test 'ip route add/del' commands"
 
 	ROD ip route add $ip4_addr via 127.0.0.1
 
-	tst_resm TINFO "show all route entries in route table"
+	tst_res TINFO "show all route entries in route table"
 
 	# create expected output file.
 	cat > tst_ip.exp <<-EOF
@@ -197,41 +182,41 @@ $ip4_addr via 127.0.0.1 dev lo
 
 	ip route show | grep "$ip4_addr via 127.0.0.1 dev lo" > tst_ip.out 2>&1
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip route show' command failed"
+		tst_res TFAIL "'ip route show' command failed"
 		return
 	fi
 
 	diff -iwB tst_ip.out tst_ip.exp
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip route show' did not list new route"
+		tst_res TFAIL "'ip route show' did not list new route"
 		return
 	fi
 
-	tst_resm TINFO "delete route from the route table"
+	tst_res TINFO "delete route from the route table"
 
 	ROD ip route del $ip4_addr via 127.0.0.1
 
 	ip route show | grep 127.0.0.1 > /dev/null
 	if [ $? -eq 0 ]; then
-		tst_resm TFAIL "route not deleted"
+		tst_res TFAIL "route not deleted"
 		return
 	fi
 
-	tst_resm TPASS "'ip route' command successfully tested"
+	tst_res TPASS "'ip route' command successfully tested"
 }
 
-test06()
+test6()
 {
-	tst_resm TINFO "test 'ip maddr add/del' commands"
-	tst_resm TINFO "adding a new multicast addr"
+	tst_res TINFO "test 'ip maddr add/del' commands"
+	tst_res TINFO "adding a new multicast addr"
 
 	ip maddr add 66:66:00:00:00:66 dev $iface
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "ip maddr add command failed"
+		tst_res TFAIL "ip maddr add command failed"
 		return
 	fi
 
-	tst_resm TINFO "show all multicast addr entries"
+	tst_res TINFO "show all multicast addr entries"
 
 	cat > tst_ip.exp <<-EOF
         link  66:66:00:00:00:66 static
@@ -239,40 +224,31 @@ test06()
 
 	ip maddr show | grep "66:66:00:00:00:66" > tst_ip.out 2>&1
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip maddr show' command failed"
+		tst_res TFAIL "'ip maddr show' command failed"
 		return
 	fi
 
 	diff -iwB tst_ip.out tst_ip.exp
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "multicast addr not added to $iface"
+		tst_res TFAIL "multicast addr not added to $iface"
 		return
 	fi
 
-	tst_resm TINFO "delete multicast address"
+	tst_res TINFO "delete multicast address"
 
 	ip maddr del 66:66:00:00:00:66 dev $iface
 	if [ $? -ne 0 ]; then
-		tst_resm TFAIL "'ip maddr del' command failed"
+		tst_res TFAIL "'ip maddr del' command failed"
 		return
 	fi
 
 	ip maddr show | grep "66:66:00:00:00:66" > /dev/null
 	if [ $? -eq 0 ]; then
-		tst_resm TFAIL "66:66:00:00:00:66 is not deleted"
+		tst_res TFAIL "66:66:00:00:00:66 is not deleted"
 		return
 	fi
 
-	tst_resm TPASS "'ip maddr' command successfully tested"
+	tst_res TPASS "'ip maddr' command successfully tested"
 }
 
-init
-
-test01
-test02
-test03
-test04
-test05
-test06
-
-tst_exit
+tst_run
