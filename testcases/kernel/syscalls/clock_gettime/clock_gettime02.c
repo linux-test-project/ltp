@@ -24,8 +24,6 @@
 #include "tst_timer.h"
 #include "tst_safe_clocks.h"
 
-#define MAX_CLOCKS 16
-
 struct test_case {
 	clockid_t clktype;
 	int exp_err;

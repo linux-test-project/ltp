@@ -16,7 +16,6 @@
 
 #define DELTA_SEC 10
 #define NSEC_PER_SEC (1000000000L)
-#define MAX_CLOCKS 16
 
 struct test_case {
 	clockid_t type;

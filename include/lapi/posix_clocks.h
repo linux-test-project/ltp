@@ -9,6 +9,8 @@
 #ifndef POSIX_CLOCKS_H__
 #define POSIX_CLOCKS_H__
 
+#define MAX_CLOCKS 16
+
 #ifndef CLOCK_MONOTONIC_RAW
 # define CLOCK_MONOTONIC_RAW 4
 #endif
