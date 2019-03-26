@@ -1,6 +1,10 @@
 #!/bin/sh
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2019 Petr Vorel <pvorel@suse.cz>
 set -e
+
+# workaround for missing oldstable-updates repository
+# W: Failed to fetch http://deb.debian.org/debian/dists/oldstable-updates/main/binary-amd64/Packages
+grep -v oldstable-updates /etc/apt/sources.list > /tmp/sources.list && mv /tmp/sources.list /etc/apt/sources.list
 
 apt update
 
