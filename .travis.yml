@@ -14,6 +14,7 @@ matrix:
         - os: linux
           env: DISTRO=debian:stable VARIANT=cross-compile.ppc64le TREE="out"
           compiler: powerpc64le-linux-gnu-gcc
+
         - os: linux
           env: DISTRO=debian:stable VARIANT=cross-compile.aarch64 TREE="out"
           compiler: aarch64-linux-gnu-gcc
@@ -23,18 +24,37 @@ matrix:
           env: DISTRO=debian:stable VARIANT=minimal TREE="out"
           compiler: clang
 
+        # other builds
+        - os: linux
+          env: DISTRO=fedora:latest
+          compiler: clang
+
+        - os: linux
+          env: DISTRO=centos:6 TREE="out"
+          compiler: gcc
+
         - os: linux
           env: DISTRO=debian:testing
           compiler: gcc
+
         - os: linux
-          env: DISTRO=debian:testing
+          env: DISTRO=debian:oldstable
           compiler: clang
+
+        - os: linux
+          env: DISTRO=opensuse/tumbleweed
+          compiler: gcc
+
+        - os: linux
+          env: DISTRO=opensuse/leap
+          compiler: gcc
 
         - os: linux
           env: DISTRO=debian:oldstable
           compiler: gcc
+
         - os: linux
-          env: DISTRO=debian:oldstable
+          env: DISTRO=debian:testing
           compiler: clang
 
         - os: linux
@@ -46,22 +66,7 @@ matrix:
           compiler: gcc
 
         - os: linux
-          env: DISTRO=opensuse/tumbleweed
-          compiler: gcc
-
-        - os: linux
-          env: DISTRO=opensuse/leap
-          compiler: gcc
-
-        - os: linux
-          env: DISTRO=fedora:latest
-          compiler: clang
-
-        - os: linux
           env: DISTRO=centos:latest
-          compiler: gcc
-        - os: linux
-          env: DISTRO=centos:6 TREE="out"
           compiler: gcc
 
 before_install:
