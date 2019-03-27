@@ -37,13 +37,10 @@ static int tested_sigpending(sigset_t *sigset)
 	switch (tst_variant) {
 	case 0:
 		return sigpending(sigset);
-	break;
 	case 1:
 		return tst_syscall(__NR_sigpending, sigset);
-	break;
 	case 2:
 		return tst_syscall(__NR_rt_sigpending, sigset, SIGSETSIZE);
-	break;
 	}
 	return -1;
 }
