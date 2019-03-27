@@ -368,15 +368,6 @@ tst_module_exists()
 	tst_brkm TCONF "Failed to find module '$mod_name'"
 }
 
-# Appends LTP path when doing su
-tst_su()
-{
-	local usr="$1"
-	shift
-
-	su "$usr" -c "PATH=\$PATH:$LTPROOT/testcases/bin/ $@"
-}
-
 TST_CHECKPOINT_WAIT()
 {
 	ROD tst_checkpoint wait 10000 "$1"

@@ -1470,7 +1470,7 @@ setup(). The function will generate a TCONF if the requested flags are not
 fully supported on the running kernel, and TBROK if either a zero mask was
 supplied or if the kernel is already tainted before executing the test.
 
-Then you can call tst_taint_check() during run(), which returns 0 or the 
+Then you can call tst_taint_check() during run(), which returns 0 or the
 tainted flags set in /proc/sys/kernel/tainted as specified earlier.
 
 Depending on your kernel version, not all tainted-flags will be supported.
@@ -2121,29 +2121,6 @@ Otherwise it retries to umount the filesystem a few times on a failure, which
 is a workaround since there are a daemons dumb enough to probe all newly
 mounted filesystems, which prevents them from umounting shortly after they
 were mounted.
-
-Running commands as different user with 'su'
-++++++++++++++++++++++++++++++++++++++++++++
-
-While some distributions retain paths added to +$PATH+ when doing
-+su user -c "command"+ this does not work at least in Debian. If you want to
-run LTP binaries as a different user you must use 'tst_su' instead which sets
-up +$PATH+ and the runs the command.
-
-.Run test child binary as a test user
-[source,sh]
--------------------------------------------------------------------------------
-#!/bin/sh
-TCID=foo01
-. test.sh
-
-tst_su testusr foo01_child
-if [ $? -ne 0 ]; then
-	tst_resm TFAIL "foo failed"
-else
-	tst_resm TPASS "foo passed"
-fi
--------------------------------------------------------------------------------
 
 ROD and ROD_SILENT
 ++++++++++++++++++
