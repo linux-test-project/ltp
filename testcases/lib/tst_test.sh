@@ -288,7 +288,8 @@ tst_mkfs()
 {
 	local fs_type=${1:-$TST_FS_TYPE}
 	local device=${2:-$TST_DEVICE}
-	shift 2
+	[ $# -ge 1 ] && shift
+	[ $# -ge 1 ] && shift
 	local fs_opts="$@"
 
 	if [ -z "$fs_type" ]; then
