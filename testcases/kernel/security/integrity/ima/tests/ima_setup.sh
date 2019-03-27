@@ -105,7 +105,7 @@ ima_cleanup()
 
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
 		cd $TST_TMPDIR
-		tst_umount $TST_DEVICE
+		tst_umount
 	fi
 }
 

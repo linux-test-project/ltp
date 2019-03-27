@@ -71,7 +71,7 @@ mkfs_verify_size()
 {
 	tst_mount
 	local blocknum=`df -P -B 1k mntpoint | tail -n1 | awk '{print $2}'`
-	tst_umount "$TST_DEVICE"
+	tst_umount
 
 	if [ $blocknum -gt "$2" ]; then
 		return 1

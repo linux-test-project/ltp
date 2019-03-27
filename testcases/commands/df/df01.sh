@@ -18,7 +18,7 @@
 
 TST_CNT=12
 TST_SETUP=setup
-TST_CLEANUP=cleanup
+TST_CLEANUP=tst_umount
 TST_TESTFUNC=test
 TST_OPTS="f:"
 TST_USAGE=usage
@@ -52,11 +52,6 @@ setup()
 	tst_mkfs
 	tst_mount
 	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk '{print $5}')
-}
-
-cleanup()
-{
-	tst_umount $TST_DEVICE
 }
 
 df_test()

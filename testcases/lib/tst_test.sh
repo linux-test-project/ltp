@@ -259,7 +259,7 @@ tst_mount()
 
 tst_umount()
 {
-	local device="$1"
+	local device="${1:-$TST_DEVICE}"
 	local i=0
 
 	if ! grep -q "$device" /proc/mounts; then
