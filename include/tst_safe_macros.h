@@ -526,4 +526,7 @@ int safe_personality(const char *filename, unsigned int lineno,
 	}							\
 	} while (0)
 
+void safe_unshare(const char *file, const int lineno, int flags);
+#define SAFE_UNSHARE(flags) safe_unshare(__FILE__, __LINE__, (flags))
+
 #endif /* SAFE_MACROS_H__ */

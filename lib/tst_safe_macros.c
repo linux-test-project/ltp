@@ -18,6 +18,7 @@
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <errno.h>
+#include <sched.h>
 #include "config.h"
 #ifdef HAVE_SYS_FANOTIFY_H
 # include <sys/fanotify.h>
@@ -196,4 +197,20 @@ int safe_chroot(const char *file, const int lineno, const char *path)
 	}
 
 	return rval;
+}
+
+void safe_unshare(const char *file, const int lineno, int flags)
+{
+	int res;
+
+	res = unshare(flags);
+	if (res == -1) {
+		if (errno == EINVAL) {
+			tst_brk_(file, lineno, TCONF | TERRNO,
+				 "unshare(%d) unsupported", flags);
+		} else {
+			tst_brk_(file, lineno, TBROK | TERRNO,
+				 "unshare(%d) failed", flags);
+		}
+	}
 }
