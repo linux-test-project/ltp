@@ -17,8 +17,8 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "stime_var.h"
 
 static struct timeval real_time_tv;
 
@@ -32,7 +32,7 @@ static void run(void)
 
 	new_time = real_time_tv.tv_sec + 30;
 
-	if (tst_syscall(__NR_stime, &new_time) < 0) {
+	if (do_stime(&new_time) < 0) {
 		tst_res(TFAIL | TERRNO, "stime(%ld) failed", new_time);
 		return;
 	}
@@ -52,8 +52,15 @@ static void run(void)
 	}
 }
 
+static void setup(void)
+{
+	stime_info();
+}
+
 static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.restore_wallclock = 1,
+	.setup = setup,
+	.test_variants = TEST_VARIANTS,
 };

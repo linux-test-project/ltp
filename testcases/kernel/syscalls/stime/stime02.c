@@ -19,15 +19,14 @@
 #include <time.h>
 #include <pwd.h>
 
-#include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "stime_var.h"
 
 static time_t new_time;
 
 static void run(void)
 {
-	TEST(tst_syscall(__NR_stime, &new_time));
-
+	TEST(do_stime(&new_time));
 	if (TST_RET != -1) {
 		tst_res(TFAIL,
 			"stime() returned %ld, expected -1 EPERM", TST_RET);
@@ -48,6 +47,8 @@ static void setup(void)
 	time_t curr_time;
 	struct passwd *ltpuser;
 
+	stime_info();
+
 	ltpuser = SAFE_GETPWNAM("nobody");
 	SAFE_SETUID(ltpuser->pw_uid);
 
@@ -61,4 +62,5 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.needs_root = 1,
+	.test_variants = TEST_VARIANTS,
 };
