@@ -52,9 +52,8 @@ compiling and installing the whole testsuite.
 
 Shortcut to running a single test
 ---------------------------------
-
-If you need to execute a single test you actually does not need to compile
-whole LTP, if you want to run a syscall testcase following should work.
+If you need to execute a single test you actually do not need to compile
+the whole LTP, if you want to run a syscall testcase following should work.
 
 ```
 $ cd testcases/kernel/syscalls/foo
