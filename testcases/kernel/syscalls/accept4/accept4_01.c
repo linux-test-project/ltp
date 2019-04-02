@@ -50,9 +50,9 @@ accept4_01(int fd, struct sockaddr *sockaddr, socklen_t *addrlen, int flags)
 	args[2] = (long)addrlen;
 	args[3] = flags;
 
-	return ltp_syscall(__NR_socketcall, SYS_ACCEPT4, args);
+	return tst_syscall(__NR_socketcall, SYS_ACCEPT4, args);
 #else
-	return ltp_syscall(__NR_accept4, fd, sockaddr, addrlen, flags);
+	return tst_syscall(__NR_accept4, fd, sockaddr, addrlen, flags);
 #endif
 }
 #endif
