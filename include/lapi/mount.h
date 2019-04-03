@@ -19,8 +19,16 @@
 #ifndef __MOUNT_H__
 #define __MOUNT_H__
 
+#ifndef MS_REC
+#define MS_REC 16384
+#endif
+
+#ifndef MS_PRIVATE
+#define MS_PRIVATE (1<<18)
+#endif
+
 #ifndef MS_STRICTATIME
-#define MS_STRICTATIME  1 << 24
+#define MS_STRICTATIME (1 << 24)
 #endif
 
 #ifndef MNT_DETACH

@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
+#include "lapi/mount.h"
 
 #ifdef HAVE_UNSHARE
 
