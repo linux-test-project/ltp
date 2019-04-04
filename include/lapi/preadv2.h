@@ -10,6 +10,10 @@
 #include "config.h"
 #include "lapi/syscalls.h"
 
+#ifndef RWF_NOWAIT
+# define RWF_NOWAIT 0x00000008
+#endif
+
 #if !defined(HAVE_PREADV2)
 
 /* LO_HI_LONG taken from glibc */
