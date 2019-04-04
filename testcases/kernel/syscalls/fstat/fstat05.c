@@ -129,15 +129,10 @@ int SIG_SEEN = sizeof(siglist) / sizeof(int);
 
 int main(int ac, char **av)
 {
-	struct stat stat_buf;	/* stat structure buffer */
-	struct stat *ptr_str;
+	struct stat *ptr_str = tst_get_bad_addr(NULL);
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-
-	/* Buffer points outside user's accessible address space. */
-	ptr_str = &stat_buf;	/* if it was for conformance testing */
-	ptr_str = (void *)sbrk(0) + (4 * getpagesize());
 
 	/*
 	 * Invoke setup function
