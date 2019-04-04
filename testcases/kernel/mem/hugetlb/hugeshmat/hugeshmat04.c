@@ -99,7 +99,7 @@ static void setup(void)
 
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
-	hugepages = (orig_hugepages * hpage_size + SIZE) / hpage_size;
+	hugepages = orig_hugepages + SIZE / hpage_size;
 	set_sys_tune("nr_hugepages", hugepages, 1);
 }
 
