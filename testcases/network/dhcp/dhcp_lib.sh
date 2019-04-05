@@ -42,10 +42,12 @@ dhcp_lib_setup()
 
 	if [ $TST_IPV6 ]; then
 		ip_addr="fd00:1:1:2::12/64"
-		ip_addr_check="fd00:1:1:2::100/64"
+		ip_addr_check_noprefix="fd00:1:1:2::100"
+		ip_addr_check="$ip_addr_check_noprefix/128"
 	else
 		ip_addr="10.1.1.12/24"
-		ip_addr_check="10.1.1.100/24"
+		ip_addr_check_noprefix="10.1.1.100"
+		ip_addr_check="$ip_addr_check_noprefix/24"
 	fi
 
 	lsmod | grep -q '^veth ' && veth_loaded=yes || veth_loaded=no
@@ -141,8 +143,13 @@ test01()
 	if [ $? -eq 0 ]; then
 		tst_res TPASS "'$ip_addr_check' configured by DHCPv$TST_IPVER"
 	else
-		tst_res TFAIL "'$ip_addr_check' not configured by DHCPv$TST_IPVER"
-		print_dhcp_log
+		if ip addr show $iface1 | grep -q $ip_addr_check_noprefix; then
+			tst_res TFAIL "'$ip_addr_check_noprefix' configured but has wrong prefix, expect '$ip_addr_check'"
+			ip addr show $iface1
+		else
+			tst_res TFAIL "'$ip_addr_check' not configured by DHCPv$TST_IPVER"
+			print_dhcp_log
+		fi
 	fi
 
 	if [ "$wicked" ]; then
