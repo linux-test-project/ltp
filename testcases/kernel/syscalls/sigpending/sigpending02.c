@@ -13,6 +13,7 @@
  * Test 2: Call sigpending(sigset_t*=-1), it should return -1 with errno EFAULT.
  */
 
+#include "config.h"
 #include "tst_test.h"
 #include "ltp_signal.h"
 #include "lapi/syscalls.h"
@@ -36,7 +37,12 @@ static int tested_sigpending(sigset_t *sigset)
 {
 	switch (tst_variant) {
 	case 0:
+#ifndef HAVE_SIGPENDING
+		tst_brk(TCONF, "libc sigpending() is not implemented");
+#else
 		return sigpending(sigset);
+#endif
+	break;
 	case 1:
 		return tst_syscall(__NR_sigpending, sigset);
 	case 2:
@@ -56,6 +62,8 @@ static void test_sigpending(void)
 	int SIGMAX = MIN(sizeof(sigset_t) * 8, (size_t)_NSIG);
 
 	int i; /* loop index */
+
+	sighandler_counter = 0;
 
 	/* set up signal mask and handler */
 	sigset_t only_SIGUSR, old_mask;

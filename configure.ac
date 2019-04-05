@@ -77,6 +77,7 @@ AC_CHECK_FUNCS([ \
     readlinkat \
     renameat \
     renameat2 \
+    sigpending \
     splice \
     stime \
     syncfs \
