@@ -8,6 +8,7 @@
 #define STIME_VAR__
 
 #include <sys/time.h>
+#include "config.h"
 #include "lapi/syscalls.h"
 
 #define TEST_VARIANTS 3
@@ -16,11 +17,12 @@ static int do_stime(time_t *ntime)
 {
 	switch (tst_variant) {
 	case 0:
-#ifdef __ANDROID__
-		tst_brk(TCONF, "libc stime() is not implemented on Android");
+#ifndef HAVE_STIME
+		tst_brk(TCONF, "libc stime() is not implemented");
 #else
 		return stime(ntime);
 #endif
+	break;
 	case 1:
 		return tst_syscall(__NR_stime, ntime);
 	case 2: {
@@ -41,13 +43,13 @@ static void stime_info(void)
 	switch (tst_variant) {
 	case 0:
 		tst_res(TINFO, "Testing libc stime()");
-		break;
+	break;
 	case 1:
 		tst_res(TINFO, "Testing SYS_stime syscall");
-		break;
+	break;
 	case 2:
 		tst_res(TINFO, "Testing SYS_settimeofday syscall");
-		break;
+	break;
 	}
 }
 

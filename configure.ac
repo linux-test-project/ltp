@@ -78,6 +78,7 @@ AC_CHECK_FUNCS([ \
     renameat \
     renameat2 \
     splice \
+    stime \
     syncfs \
     sync_file_range \
     tee \
