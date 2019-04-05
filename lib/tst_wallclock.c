@@ -25,8 +25,14 @@ void tst_wallclock_save(void)
 	if (tst_clock_gettime(CLOCK_REALTIME, &real_begin))
 		tst_brk(TBROK | TERRNO, "tst_clock_gettime() realtime failed");
 
-	if (tst_clock_gettime(CLOCK_MONOTONIC_RAW, &mono_begin))
+	if (tst_clock_gettime(CLOCK_MONOTONIC_RAW, &mono_begin)) {
+		if (errno == EINVAL) {
+			tst_brk(TCONF | TERRNO,
+				"tst_clock_gettime() didn't support CLOCK_MONOTONIC_RAW");
+		}
+
 		tst_brk(TBROK | TERRNO, "tst_clock_gettime() monotonic failed");
+	}
 
 	clock_saved = 1;
 }
