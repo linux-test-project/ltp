@@ -21,11 +21,6 @@
 # Ngie Cooper, July 2009
 #
 
-# Force IDcheck.sh to fix any issues found with $(DESTDIR)/etc/group and
-# $(DESTDIR)/etc/passwd automatically when after running the top-level
-# install target.
-CREATE_ENTRIES		?= 0
-
 top_srcdir		?= $(CURDIR)
 
 include $(top_srcdir)/include/mk/env_pre.mk
@@ -41,9 +36,6 @@ vpath %.h		$(top_srcdir)/include:$(top_builddir)/include
 vpath %.in		$(top_srcdir)/include
 vpath %.m4		$(top_srcdir)/m4
 vpath %.mk		$(top_srcdir)/mk:$(top_srcdir)/mk/include
-
-# Skip running IDcheck.sh at the end of install?
-SKIP_IDCHECK		?= 0
 
 # User wants uclinux binaries?
 UCLINUX			?= 0
@@ -202,17 +194,6 @@ $(INSTALL_TARGETS): $(INSTALL_DIR) $(DESTDIR)/$(bindir)
 
 ## Install
 install: $(INSTALL_TARGETS)
-ifeq ($(SKIP_IDCHECK),0)
-	-@CREATE_ENTRIES=$(CREATE_ENTRIES) \
-	 DESTDIR="$(DESTDIR)" \
-	 "$(top_srcdir)/IDcheck.sh"
-else
-	@echo "*******************************************************"
-	@echo "** Will not run IDcheck.sh (SKIP_IDCHECK set to 1).  **"
-	@echo "*******************************************************"
-endif
-
-## Misc targets.
 
 ## Help
 .PHONY: help
