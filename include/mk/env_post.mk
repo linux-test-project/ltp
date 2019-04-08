@@ -44,7 +44,7 @@ endif
 ifeq ($(ANDROID),1)
 # There are many undeclared functions, it's best not to accidentally overlook
 # them.
-CFLAGS				+= -Werror-implicit-function-declaration
+CFLAGS				+= -Werror-implicit-function-declaration -D__ANDROID__
 
 LDFLAGS				+= -L$(top_builddir)/lib/android_libpthread
 LDFLAGS				+= -L$(top_builddir)/lib/android_librt
