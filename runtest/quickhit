@@ -223,8 +223,6 @@ signal03 signal03
 # and signal sending.
 sigrelse01 sigrelse01
 # Releasing held signals
-stat06 stat06
-# Negative tests for stat(2)
 statfs01 statfs01
 # Basic test for statfs(2) mounted filesys
 statvfs01 statvfs01
