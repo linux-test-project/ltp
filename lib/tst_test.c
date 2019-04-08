@@ -732,6 +732,7 @@ static int prepare_and_mount_ro_fs(const char *dev,
 
 static void prepare_and_mount_dev_fs(const char *mntpoint)
 {
+#if !defined(__ANDROID__)
 	const char *flags[] = {"nodev", NULL};
 	int mounted_nodev;
 
@@ -742,6 +743,7 @@ static void prepare_and_mount_dev_fs(const char *mntpoint)
 		SAFE_MOUNT(NULL, mntpoint, "tmpfs", 0, NULL);
 		mntpoint_mounted = 1;
 	}
+#endif
 }
 
 static void prepare_device(void)
