@@ -124,6 +124,7 @@ static void do_test(unsigned int i)
 		goto exit;
 	}
 
+	TST_CHECKPOINT_WAKE(0);
 	/* Wait for SIGIO caused by lease breaker. */
 	TEST(sigtimedwait(&newset, NULL, &timeout));
 	if (TST_RET == -1) {
@@ -174,7 +175,7 @@ static void do_child(unsigned int i)
 {
 	long long elapsed_ms;
 
-	TST_PROCESS_STATE_WAIT(getppid(), 'S');
+	TST_CHECKPOINT_WAIT(0);
 
 	tst_timer_start(CLOCK_MONOTONIC);
 
@@ -225,6 +226,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.needs_checkpoints = 1,
 	.tcnt = ARRAY_SIZE(test_cases),
 	.setup = setup,
 	.test = do_test,
