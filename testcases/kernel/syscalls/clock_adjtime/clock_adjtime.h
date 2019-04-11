@@ -14,6 +14,7 @@
 #include <pwd.h>
 #include <sys/timex.h>
 #include <sys/types.h>
+#include "lapi/timex.h"
 
 static int sys_clock_adjtime(clockid_t, struct timex *);
 static void timex_show(char *, struct timex);
