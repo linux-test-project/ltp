@@ -7,6 +7,8 @@
 #ifndef TST_NUMA_H__
 #define TST_NUMA_H__
 
+#include <string.h>
+
 /**
  * Numa nodemap.
  */
