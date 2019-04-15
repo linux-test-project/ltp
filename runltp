@@ -148,7 +148,6 @@ usage()
 		[CHECK_TYPE=2 => Thread Concurrency Check tracing children as well]
 		[CHECK_TYPE=3 => Full Memory Leak & Thread Concurrency Check tracing children as well]
     -N              Run all the networking tests.
-    -n              Run LTP with network traffic in background.
     -o OUTPUTFILE   Redirect test output to a file.
     -p              Human readable format logfiles.
     -q              Print less verbose output to screen. This implies
