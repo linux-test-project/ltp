@@ -48,7 +48,7 @@
 #include <sys/types.h>
 #include <sys/user.h>
 
-#define MEMSIZE	8192*8192
+#define MEMSIZE	8192 * 8192
 
 void on_mem_fault(int sig);
 
@@ -62,16 +62,24 @@ static void usage(char *progname)
 	exit(1);
 }
 
+static int get_pagesize_order(void)
+{
+	int i, pagesize, size = 0;
+	pagesize = sysconf(_SC_PAGESIZE);
+	for (i = 0; size != pagesize; i++)
+		size = 1 << i;
+	return (i - 1);
+}
+
 int main(int argc, char **argv)
 {
 	int i;
 	char *pm1, *pm2, *pm3, *pm4;
-	long pm6;
 	void *memptr;
 	long laddr;
 	int iteration_count;
 	int size;		/* Size to memory to be valloced */
-	int pagesize = 12;	/* 2^12 = 4096, PAGESIZE      */
+	int pagesize_order = get_pagesize_order();
 	int memsize = MEMSIZE;	/* Size of memory to allocate */
 	extern char *optarg;	/* getopt() function global variables */
 	extern int optopt;	/* stores bad option passed to the program */
@@ -154,7 +162,6 @@ int main(int argc, char **argv)
 
 	/* realloc with reduced size */
 	pm4 = realloc(pm3, 5);
-	pm6 = (long)pm4;
 	pm3 = pm4;
 	/* verify contents did not change */
 	for (i = 0; i < 5; i++) {
@@ -168,7 +175,6 @@ int main(int argc, char **argv)
 
 	/* realloc with increased size after fragmenting memory */
 	pm4 = realloc(pm3, 15);
-	pm6 = (long)pm3;
 	pm3 = pm4;
 	/* verify contents did not change */
 	for (i = 0; i < 5; i++) {
@@ -208,16 +214,18 @@ int main(int argc, char **argv)
 		 * Check to see if valloc returns unaligned data.
 		 * This can be done by copying the memory address into
 		 * a variable and the by diving and multipying the address
-		 * by the pagesize and checking.
+		 * by the pagesize order and checking.
 		 */
 		laddr = (long)memptr;
-		if (((laddr >> pagesize) << pagesize) != laddr) {
+		if (((laddr >> pagesize_order) << pagesize_order) != laddr) {
 			tst_brkm(TFAIL, NULL,
 				 "Valloc returned unaligned data");
 		}
 
 		free(memptr);
 	}
+	tst_resm(TPASS, "valloc - valloc of rand() size of memory succeeded "
+		 "for 15000 iteration");
 
 	tst_exit();
 }
