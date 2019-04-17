@@ -1,23 +1,11 @@
 #! /bin/sh
-# Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2016-2019 Oracle and/or its affiliates. All Rights Reserved.
 
-TST_TOTAL=10
-TCID="ping02"
+TST_SETUP="do_setup"
+TST_TESTFUNC="do_test"
+TST_NEEDS_ROOT=1
 
-TST_USE_LEGACY_API=1
 . tst_net.sh
 
 do_setup()
@@ -34,15 +22,14 @@ do_test()
 {
 	local pat="000102030405060708090a0b0c0d0e0f"
 
-	tst_resm TINFO "flood $PING: ICMP packets filled with pattern '$pat'"
+	tst_res TINFO "flood $PING: ICMP packets filled with pattern '$pat'"
 
 	local ipaddr=$(tst_ipaddr rhost)
-	for psize in $PACKETSIZES; do
-		EXPECT_PASS $PING -c $COUNT -f -s $psize $ipaddr -p "$pat" \>/dev/null
+	local s
+
+	for s in $PACKETSIZES; do
+		EXPECT_PASS $PING -c $COUNT -f -s $s $ipaddr -p "$pat" \>/dev/null
 	done
 }
 
-do_setup
-do_test
-
-tst_exit
+tst_run
