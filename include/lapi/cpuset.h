@@ -35,8 +35,8 @@
 #ifndef CPU_ALLOC
 #define CPU_ALLOC(ncpus) malloc(sizeof(cpu_set_t)); \
 if (ncpus > CPU_SETSIZE) { \
-	tst_brkm(TCONF, cleanup, \
-		"Your libc does not support masks with %ld cpus", ncpus); \
+	tst_brk(TCONF, \
+		"Your libc does not support masks with %ld cpus", (long)ncpus); \
 }
 #endif
 
