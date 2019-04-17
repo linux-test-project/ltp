@@ -18,13 +18,14 @@
 #include "lapi/syscalls.h"
 #include "lapi/cpuset.h"
 #include "tst_test.h"
+#include "config.h"
 
 static inline int get_cpu(unsigned *cpu_id,
 			  unsigned *node_id LTP_ATTRIBUTE_UNUSED,
 			  void *cache_struct LTP_ATTRIBUTE_UNUSED)
 {
-#if defined(__i386__)
-	return syscall(__NR_getcpu, cpu_id, node_id, cache_struct);
+#ifndef HAVE_SCHED_GETCPU
+	return tst_syscall(__NR_getcpu, cpu_id, node_id, cache_struct);
 #else
 	*cpu_id = sched_getcpu();
 #endif
