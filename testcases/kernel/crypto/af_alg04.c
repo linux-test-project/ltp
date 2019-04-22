@@ -28,6 +28,8 @@ static void run(void)
 	else
 		algfd = tst_alg_setup("hash", "vmac(aes)", NULL, 16);
 
+	tst_res(TINFO, "Starting vmac hashing test.  May crash buggy kernels.");
+
 	pid = SAFE_FORK();
 
 	reqfd = tst_alg_accept(algfd);
