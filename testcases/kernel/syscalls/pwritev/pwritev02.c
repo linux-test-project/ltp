@@ -36,6 +36,8 @@
 * 7) pwritev(2) should return -1 and set errno to ESPIPE.
 */
 
+#define _GNU_SOURCE
+
 #include <sys/uio.h>
 #include <unistd.h>
 #include "tst_test.h"
