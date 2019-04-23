@@ -662,7 +662,7 @@ static void setup5(void)
 	 * 5-tuple than already connected
 	 */
 	sin2 = sin1;
-	sin2.sin_port = tst_get_unused_port(cleanup, AF_INET, SOCK_STREAM);
+	sin2.sin_port = TST_GET_UNUSED_PORT(cleanup, AF_INET, SOCK_STREAM);
 }
 
 static void setup6(void)

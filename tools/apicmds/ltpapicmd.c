@@ -213,7 +213,7 @@ unsigned short apicmd_get_unused_port(int argc, char *argv[])
 		if (!p[i]->cmd)
 			goto err;
 	}
-	return  tst_get_unused_port(NULL, p[0]->value, p[1]->value);
+	return  TST_GET_UNUSED_PORT(NULL, p[0]->value, p[1]->value);
 
 err:
 	fprintf(stderr, "Usage: tst_get_unused_port FAMILY TYPE\n"

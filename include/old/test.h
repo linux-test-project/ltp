@@ -195,13 +195,6 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 	       const char *dev, const char *fs_type,
 	       const char *const fs_opts[], const char *const extra_opts[]);
 
-/* lib/tst_net.c
- *
- * Return unused port
- */
-unsigned short tst_get_unused_port(void (cleanup_fn)(void),
-	unsigned short family, int type);
-
 /* lib/tst_res.c
  * tst_strsig converts signal's value to corresponding string.
  * tst_strerrno converts errno to corresponding string.

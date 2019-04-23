@@ -44,4 +44,7 @@
 	safe_getsockname(__FILE__, __LINE__, (cleanup_fn), sockfd, addr, \
 			 addrlen)
 
+#define TST_GET_UNUSED_PORT(cleanup_fn, family, type) \
+	tst_get_unused_port(__FILE__, __LINE__, (cleanup_fn), family, type)
+
 #endif /* OLD_SAFE_NET_H__ */

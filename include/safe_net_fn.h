@@ -25,11 +25,6 @@
 #include <arpa/inet.h>
 #include <sys/un.h>
 
-char *tst_sock_addr(const struct sockaddr *sa, socklen_t salen, char *res,
-		    size_t len);
-
-int tst_getsockport(const char *file, const int lineno, int sockfd);
-
 int safe_socket(const char *file, const int lineno, void (cleanup_fn)(void),
 		int domain, int type, int protocol);
 
@@ -71,5 +66,13 @@ int safe_getsockname(const char *file, const int lineno,
 
 int safe_gethostname(const char *file, const int lineno,
 		     char *name, size_t size);
+
+int tst_getsockport(const char *file, const int lineno, int sockfd);
+
+unsigned short tst_get_unused_port(const char *file, const int lineno,
+	      void (cleanup_fn)(void), unsigned short family, int type);
+
+char *tst_sock_addr(const struct sockaddr *sa, socklen_t salen, char *res,
+		    size_t len);
 
 #endif /* SAFE_NET_FN_H__ */
