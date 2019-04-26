@@ -669,7 +669,6 @@ tst_icmp()
 	local opts=
 	local num=
 	local ret=0
-	local ver="${TST_IPV6:-4}"
 
 	OPTIND=0
 	while getopts :t:s: opt; do
@@ -689,12 +688,12 @@ tst_icmp()
 	opts="${opts}-M $(tst_hwaddr rhost) -t $timeout"
 
 	for size in $msg_sizes; do
-		ns-icmpv${ver}_sender -s $size $opts
+		ns-icmpv${TST_IPVER}_sender -s $size $opts
 		ret=$?
 		if [ $ret -eq 0 ]; then
-			tst_res_ TPASS "'ns-icmpv${ver}_sender -s $size $opts' pass"
+			tst_res_ TPASS "'ns-icmpv${TST_IPVER}_sender -s $size $opts' pass"
 		else
-			tst_res_ TFAIL "'ns-icmpv${ver}_sender -s $size $opts' fail"
+			tst_res_ TFAIL "'ns-icmpv${TST_IPVER}_sender -s $size $opts' fail"
 			break
 		fi
 	done

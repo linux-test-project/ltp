@@ -245,7 +245,7 @@ tst_ipsec_vti()
 
 	local o_dir="src $src dst $dst"
 	local i_dir="src $dst dst $src"
-	local ipx="ip -${TST_IPV6:-4} xf"
+	local ipx="ip -$TST_IPVER xf"
 
 	cleanup_vti=$vti
 
