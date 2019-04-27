@@ -1,45 +1,45 @@
-broken_ip4-version01
+broken_ip4-version
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in version field
 
-broken_ip4-ihl01
+broken_ip4-ihl
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the header length field
 
-broken_ip4-totlen01
+broken_ip4-totlen
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the total length field
 
-broken_ip4-fragment01
+broken_ip4-fragment
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong fragment information
 
-broken_ip4-protcol01
+broken_ip4-protcol
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the protocol field
 
-broken_ip4-checksum01
+broken_ip4-checksum
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets that have wrong value in the checksum field
 
-broken_ip4-dstaddr01
+broken_ip4-dstaddr
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv4 packets whose destination address is wrong
 	(destination MAC address is corrct)
 
-broken_ip6-version01
+broken_ip6-version
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv6 packets that have wrong value in version field
 
-broken_ip6-plen01
+broken_ip6-plen
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv6 packets that have wrong value in the payload length field
 
-broken_ip6-nexthdr01
+broken_ip6-nexthdr
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv6 packets that have wrong value in the next header field
 
-broken_ip6-dstaddr01
+broken_ip6-dstaddr
 	Verify that the kernel is not crashed with receiving a large number of
 	IPv6 packets whose destination address is wrong (destination MAC
 	address is correct)

@@ -59,6 +59,14 @@ tst_net_setup()
 {
 	tst_net_remote_tmpdir
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
+
+	if [ -z "$NS_ICMP_SENDER_DATA_MAXSIZE" ]; then
+		if [ "$TST_IPV6" ]; then
+			NS_ICMP_SENDER_DATA_MAXSIZE="$NS_ICMPV6_SENDER_DATA_MAXSIZE"
+		else
+			NS_ICMP_SENDER_DATA_MAXSIZE="$NS_ICMPV4_SENDER_DATA_MAXSIZE"
+		fi
+	fi
 }
 
 [ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
@@ -819,6 +827,9 @@ export TST_NET_MAX_PKT="${TST_NET_MAX_PKT:-$(tst_default_max_pkt)}"
 # Set corresponding HW addresses, e.g. "00:00:00:00:00:01 00:00:00:00:00:02"
 export LHOST_HWADDRS="${LHOST_HWADDRS:-$(tst_get_hwaddrs lhost)}"
 export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
+
+export NS_ICMPV4_SENDER_DATA_MAXSIZE=1472
+export NS_ICMPV6_SENDER_DATA_MAXSIZE=1452
 
 # More information about network parameters can be found
 # in the following document: testcases/network/stress/README
