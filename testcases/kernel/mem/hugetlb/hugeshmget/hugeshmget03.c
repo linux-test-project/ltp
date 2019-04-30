@@ -70,6 +70,7 @@ static void setup(void)
 
 	SAFE_FILE_SCANF(PATH_SHMMNI, "%ld", &orig_shmmni);
 
+	limit_hugepages(&hugepages);
 	set_sys_tune("nr_hugepages", hugepages, 1);
 	SAFE_FILE_PRINTF(PATH_SHMMNI, "%ld", hugepages / 2);
 
