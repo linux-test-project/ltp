@@ -121,6 +121,7 @@ static void do_test(unsigned int i)
 		} else {
 			tst_res(TFAIL | TTERRNO, "fcntl() failed to set lease");
 		}
+		TST_CHECKPOINT_WAKE(0);
 		goto exit;
 	}
 
