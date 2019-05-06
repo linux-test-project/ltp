@@ -1,6 +1,6 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2008
- * Copyright (c) Linux Test Project, 2017
+ * Copyright (c) Linux Test Project, 2017-2019
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,11 @@ static void verify_features(void)
 	unsigned int features, i;
 
 	int netfd = open("/dev/net/tun", O_RDWR);
+
+	/* Android has tun at /dev/tun */
+	if (netfd == -1 && (errno == ENODEV || errno == ENOENT))
+		netfd = open("/dev/tun", O_RDWR);
+
 	if (netfd == -1) {
 		if (errno == ENODEV || errno == ENOENT)
 			tst_brk(TCONF, "TUN support is missing?");
