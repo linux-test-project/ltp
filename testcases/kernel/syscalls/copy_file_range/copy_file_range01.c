@@ -1,66 +1,30 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Linux Test Project, 2017
+ * Copyright (c) Linux Test Project, 2019
+ */
+
+/*
+ * This tests the fundamental functionalities of the copy_file_range
+ * syscall. It does so by copying the contents of one file into
+ * another using various different combinations for length and
+ * input/output offsets.
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
+ * After a copy is done this test checks if the contents of both files
+ * are equal at the given offsets. It is also inspected if the offsets
+ * of the file descriptors are advanced correctly.
  */
 
 #define _GNU_SOURCE
+
 #include <stdio.h>
-#include <errno.h>
 #include <stdlib.h>
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
-#include "lapi/syscalls.h"
+#include "copy_file_range.h"
 
-#define TEST_FILE_1 "copy_file_range_ltp01.txt"
-#define TEST_FILE_2 "copy_file_range_ltp02.txt"
-#define STR "abcdefghijklmnopqrstuvwxyz12345\n"
-
-#define verbose 0
-
-static size_t *len_arr;
-static loff_t **off_arr;
-static int len_sz, off_sz;
-
-static void setup(void)
-{
-	int i, fd, page_size;
-
-	page_size = getpagesize();
-
-	fd = SAFE_OPEN(TEST_FILE_1, O_RDWR | O_CREAT, 0664);
-	/* Writing page_size * 4 of data into test file */
-	for (i = 0; i < (int)(page_size * 4); i++)
-		SAFE_WRITE(1, fd, STR, strlen(STR));
-	SAFE_CLOSE(fd);
-
-	len_sz = 4;
-	len_arr = malloc(sizeof(size_t) * len_sz);
-	len_arr[0] = 11;
-	len_arr[1] = page_size - 1;
-	len_arr[2] = page_size;
-	len_arr[3] = page_size + 1;
-
-	off_sz = 6;
-	off_arr = malloc(sizeof(loff_t *) * off_sz);
-	for (i = 1; i < off_sz; i++)
-		off_arr[i] = malloc(sizeof(loff_t));
-
-	off_arr[0] = NULL;
-	*off_arr[1] = 0;
-	*off_arr[2] = 17;
-	*off_arr[3] = page_size - 1;
-	*off_arr[4] = page_size;
-	*off_arr[5] = page_size + 1;
-}
+static int page_size;
+static int errcount, numcopies;
+static int fd_in, fd_out;
 
 static int check_file_content(const char *fname1, const char *fname2,
 	loff_t *off1, loff_t *off2, size_t len)
@@ -90,52 +54,37 @@ static int check_file_content(const char *fname1, const char *fname2,
 }
 
 static int check_file_offset(const char *m, int fd, loff_t len,
-	loff_t *off_ori, loff_t *off_after)
+		loff_t *off_before, loff_t *off_after)
 {
+	loff_t fd_off = SAFE_LSEEK(fd, 0, SEEK_CUR);
 	int ret = 0;
 
-	if (off_ori) {
-		/* FD should stay untouched, and off_in/out is updated */
-		loff_t fd_off = SAFE_LSEEK(fd, 0, SEEK_CUR);
-
-		if (fd_off == 0) {
-			if (verbose)
-				tst_res(TPASS, "%s FD offset unchanged", m);
-		} else {
-			tst_res(TFAIL, "%s FD offset changed: %ld",
+	if (off_before) {
+		/*
+		 * copy_file_range offset is given:
+		 * - fd offset should stay 0,
+		 * - copy_file_range offset is updated
+		 */
+		if (fd_off != 0) {
+			tst_res(TFAIL,
+				"%s fd offset unexpectedly changed: %ld",
 				m, (long)fd_off);
 			ret = 1;
-		}
 
-		if (!off_after) {
-			tst_res(TFAIL, "%s offset is NULL", m);
-			ret = 1;
-		}
-
-		if ((off_after) && (*off_ori + len == *off_after)) {
-			if (verbose) {
-				tst_res(TPASS, "%s offset advanced as"
-					" expected: %ld", m, (long)*off_after);
-			}
-		} else {
+		} else if (*off_before + len != *off_after) {
 			tst_res(TFAIL, "%s offset unexpected value: %ld",
 				m, (long)*off_after);
 			ret = 1;
 		}
-	} else {
-		/* FD offset is advanced by len */
-		loff_t fd_off = SAFE_LSEEK(fd, 0, SEEK_CUR);
-
-		if (fd_off == len) {
-			if (verbose) {
-				tst_res(TPASS, "%s FD offset changed as"
-					" expected: %ld", m, (long)fd_off);
-			}
-		} else {
-			tst_res(TFAIL, "%s FD offset unexpected value: %ld",
+	}
+	/*
+	 * no copy_file_range offset given:
+	 * - fd offset advanced by length
+	 */
+	else if (fd_off != len) {
+		tst_res(TFAIL, "%s fd offset unexpected value: %ld",
 				m, (long)fd_off);
-			ret = 1;
-		}
+		ret = 1;
 	}
 
 	return ret;
@@ -143,77 +92,135 @@ static int check_file_offset(const char *m, int fd, loff_t len,
 
 static void test_one(size_t len, loff_t *off_in, loff_t *off_out)
 {
+	int ret;
 	size_t to_copy = len;
-	int fd_in, fd_out, ret;
-	loff_t *off_in_ori = off_in;
-	loff_t *off_out_ori = off_out;
-	loff_t off_in_copy;
-	loff_t off_out_copy;
+	loff_t off_in_value_copy, off_out_value_copy;
+	loff_t *off_new_in  = &off_in_value_copy;
+	loff_t *off_new_out = &off_out_value_copy;
 	char str_off_in[32], str_off_out[32];
 
 	if (off_in) {
-		off_in_copy = *off_in;
-		off_in = &off_in_copy;
+		off_in_value_copy = *off_in;
 		sprintf(str_off_in, "%ld", (long)*off_in);
 	} else {
+		off_new_in = NULL;
 		strcpy(str_off_in, "NULL");
 	}
 
 	if (off_out) {
-		off_out_copy = *off_out;
-		off_out = &off_out_copy;
+		off_out_value_copy = *off_out;
 		sprintf(str_off_out, "%ld", (long)*off_out);
 	} else {
+		off_new_out = NULL;
 		strcpy(str_off_out, "NULL");
 	}
-
-	fd_in = SAFE_OPEN(TEST_FILE_1, O_RDONLY);
-	fd_out = SAFE_OPEN(TEST_FILE_2, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 
 	/*
 	 * copy_file_range() will return the number of bytes copied between
 	 * files. This could be less than the length originally requested.
 	 */
 	do {
-		TEST(tst_syscall(__NR_copy_file_range, fd_in, off_in, fd_out,
-			off_out, to_copy, 0));
+		TEST(sys_copy_file_range(fd_in, off_new_in, fd_out,
+				off_new_out, to_copy, 0));
 		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO, "copy_file_range() failed");
-			SAFE_CLOSE(fd_in);
-			SAFE_CLOSE(fd_out);
+			errcount++;
 			return;
 		}
 
 		to_copy -= TST_RET;
 	} while (to_copy > 0);
 
-	ret = check_file_content(TEST_FILE_1, TEST_FILE_2,
-		off_in_ori, off_out_ori, len);
-	if (ret)
+	ret = check_file_content(FILE_SRC_PATH, FILE_DEST_PATH,
+		off_in, off_out, len);
+	if (ret) {
 		tst_res(TFAIL, "file contents do not match");
+		errcount++;
+		return;
+	}
 
-	ret |= check_file_offset("(in)", fd_in, len, off_in_ori, off_in);
-	ret |= check_file_offset("(out)", fd_out, len, off_out_ori, off_out);
+	ret |= check_file_offset("(in)", fd_in, len, off_in, off_new_in);
+	ret |= check_file_offset("(out)", fd_out, len, off_out, off_new_out);
 
-	tst_res(ret == 0 ? TPASS : TFAIL, "off_in: %s, off_out: %s, len: %ld",
-			str_off_in, str_off_out, (long)len);
+	if (ret != 0) {
+		tst_res(TFAIL, "off_in: %s, off_out: %s, len: %ld",
+				str_off_in, str_off_out, (long)len);
+		errcount++;
+	}
+}
 
-	SAFE_CLOSE(fd_in);
-	SAFE_CLOSE(fd_out);
+static void open_files(void)
+{
+	fd_in  = SAFE_OPEN(FILE_SRC_PATH, O_RDONLY);
+	fd_out = SAFE_OPEN(FILE_DEST_PATH, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+}
+
+static void close_files(void)
+{
+	if (fd_out > 0)
+		SAFE_CLOSE(fd_out);
+	if (fd_in  > 0)
+		SAFE_CLOSE(fd_in);
 }
 
 static void copy_file_range_verify(void)
 {
 	int i, j, k;
 
-	for (i = 0; i < len_sz; i++)
-		for (j = 0; j < off_sz; j++)
-			for (k = 0; k < off_sz; k++)
+	errcount = numcopies = 0;
+	size_t len_arr[]	= {11, page_size-1, page_size, page_size+1};
+	loff_t off_arr_values[]	= {0, 17, page_size-1, page_size, page_size+1};
+
+	int num_offsets = ARRAY_SIZE(off_arr_values) + 1;
+	loff_t *off_arr[num_offsets];
+
+	off_arr[0] = NULL;
+	for (i = 1; i < num_offsets; i++)
+		off_arr[i] = &off_arr_values[i-1];
+
+	/* Test all possible cobinations of given lengths and offsets */
+	for (i = 0; i < (int)ARRAY_SIZE(len_arr); i++)
+		for (j = 0; j < num_offsets; j++)
+			for (k = 0; k < num_offsets; k++) {
+				open_files();
 				test_one(len_arr[i], off_arr[j], off_arr[k]);
+				close_files();
+				numcopies++;
+			}
+
+	if (errcount == 0)
+		tst_res(TPASS,
+			"copy_file_range completed all %d copy jobs successfully!",
+			numcopies);
+	else
+		tst_res(TFAIL, "copy_file_range failed %d of %d copy jobs.",
+				errcount, numcopies);
+}
+
+static void setup(void)
+{
+	int i, fd;
+
+	syscall_info();
+
+	page_size = getpagesize();
+
+	fd = SAFE_OPEN(FILE_SRC_PATH, O_RDWR | O_CREAT, 0664);
+	/* Writing page_size * 4 of data into test file */
+	for (i = 0; i < (int)(page_size * 4); i++)
+		SAFE_WRITE(1, fd, CONTENT, CONTSIZE);
+	SAFE_CLOSE(fd);
+}
+
+static void cleanup(void)
+{
+	close_files();
 }
 
 static struct tst_test test = {
 	.setup = setup,
+	.cleanup = cleanup,
 	.needs_tmpdir = 1,
 	.test_all = copy_file_range_verify,
+	.test_variants = TEST_VARIANTS,
 };

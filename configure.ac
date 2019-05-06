@@ -60,6 +60,7 @@ AC_CHECK_HEADERS([ \
 ])
 
 AC_CHECK_FUNCS([ \
+    copy_file_range \
     epoll_pwait \
     execveat \
     fallocate \

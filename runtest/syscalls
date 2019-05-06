@@ -1561,6 +1561,8 @@ memfd_create03 memfd_create03
 memfd_create04 memfd_create04
 
 copy_file_range01 copy_file_range01
+copy_file_range02 copy_file_range02
+copy_file_range03 copy_file_range03
 
 statx01 statx01
 statx02 statx02
