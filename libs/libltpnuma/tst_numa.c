@@ -88,8 +88,9 @@ void tst_nodemap_count_pages(struct tst_nodemap *nodes,
 		if (ret < 0)
 			tst_brk(TBROK | TERRNO, "get_mempolicy() failed");
 
-		if (node < 0 || (unsigned int)node >= nodes->cnt) {
-			tst_res(TWARN, "get_mempolicy(...) returned invalid node %i\n", node);
+		if (node < 0) {
+			tst_res(TWARN,
+				"get_mempolicy(...) returned invalid node %i\n", node);
 			continue;
 		}
 
