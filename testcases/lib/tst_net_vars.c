@@ -220,7 +220,7 @@ static char *get_ipv4_net16_unused(const struct in_addr *ip,
 	unsigned int prefix)
 {
 	struct in_addr mask, network;
-	char buf[128], net_unused[128];
+	char buf[132], net_unused[128];
 
 	mask = prefix2mask(prefix);
 	network = calc_network(ip, &mask);
@@ -274,7 +274,7 @@ static char *get_ipv6_net32_unused(const struct in6_addr *ip6,
 {
 	int i, j;
 	struct in6_addr mask, network;
-	char buf[128], net_unused[128];
+	char buf[130], net_unused[128];
 
 	memset(&mask, 0x0, sizeof(mask));
 
