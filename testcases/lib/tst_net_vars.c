@@ -153,7 +153,7 @@ static int is_in_subnet_ipv6(const struct in6_addr *network,
  */
 static char *get_ipv4_netmask(unsigned int prefix)
 {
-	char buf[INET_ADDRSTRLEN + 1];
+	char buf[INET_ADDRSTRLEN];
 	struct in_addr mask = prefix2mask(prefix);
 
 	if (prefix > MAX_IPV4_PREFIX)
@@ -200,7 +200,7 @@ static char *get_ipv4_broadcast(struct in_addr ip, unsigned int prefix)
 {
 	struct in_addr mask = prefix2mask(prefix);
 	struct in_addr broadcast;
-	char buf[INET_ADDRSTRLEN + 1];
+	char buf[INET_ADDRSTRLEN];
 
 	memset(&broadcast, 0, sizeof(broadcast));
 	broadcast.s_addr = (ip.s_addr & mask.s_addr) | ~mask.s_addr;
@@ -471,7 +471,7 @@ static void check_prefix_range(unsigned int prefix, int is_ipv6, int is_lhost)
 
 static char *get_ipv4_network(int ip, unsigned int prefix)
 {
-	char buf[INET_ADDRSTRLEN + 1];
+	char buf[INET_ADDRSTRLEN];
 	char *p_buf = buf;
 	unsigned char byte;
 	unsigned int i;
