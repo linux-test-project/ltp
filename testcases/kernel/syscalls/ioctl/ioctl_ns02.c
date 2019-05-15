@@ -32,6 +32,9 @@ static void run(void)
 	fd = SAFE_OPEN("/proc/self/ns/uts", O_RDONLY);
 	parent_fd = ioctl(fd, NS_GET_PARENT);
 	if (parent_fd == -1) {
+		if (errno == ENOTTY)
+			tst_brk(TCONF, "ioctl(NS_GET_PARENT) not implemented");
+
 		if (errno == EINVAL)
 			tst_res(TPASS, "NS_GET_PARENT fails with EINVAL");
 		else

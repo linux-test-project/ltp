@@ -53,7 +53,18 @@ static void run(void)
 	sprintf(child_namespace, "/proc/%i/ns/pid", pid);
 	my_fd = SAFE_OPEN("/proc/self/ns/pid", O_RDONLY);
 	child_fd = SAFE_OPEN(child_namespace, O_RDONLY);
-	parent_fd = SAFE_IOCTL(child_fd, NS_GET_PARENT);
+	parent_fd = ioctl(child_fd, NS_GET_PARENT);
+
+	if (parent_fd == -1) {
+		TST_CHECKPOINT_WAKE(0);
+
+		if (errno == ENOTTY) {
+			tst_res(TCONF, "ioctl(NS_GET_PARENT) not implemented");
+			return;
+		}
+
+		tst_brk(TBROK | TERRNO, "ioctl(NS_GET_PARENT) failed");
+	}
 
 	struct stat my_stat, child_stat, parent_stat;
 

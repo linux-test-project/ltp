@@ -40,6 +40,9 @@ static void test_ns_get_parent(void)
 	fd = SAFE_OPEN("/proc/self/ns/pid", O_RDONLY);
 	parent_fd = ioctl(fd, NS_GET_PARENT);
 	if (parent_fd == -1) {
+		if (errno == ENOTTY)
+			tst_brk(TCONF, "ioctl(NS_GET_PARENT) not implemented");
+
 		if (errno == EPERM)
 			tst_res(TPASS, "NS_GET_PARENT fails with EPERM");
 		else

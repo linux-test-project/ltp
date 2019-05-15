@@ -31,6 +31,9 @@ static void run(void)
 	fd = SAFE_OPEN("/proc/self/ns/user", O_RDONLY);
 	parent_fd = ioctl(fd, NS_GET_USERNS);
 	if (parent_fd == -1) {
+		if (errno == ENOTTY)
+			tst_brk(TCONF, "ioctl(NS_GET_USERNS) not implemented");
+
 		if (errno == EPERM)
 			tst_res(TPASS, "NS_GET_USERNS fails with EPERM");
 		else

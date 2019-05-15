@@ -50,7 +50,16 @@ static void run(void)
 
 	my_fd = SAFE_OPEN("/proc/self/ns/user", O_RDONLY);
 	child_fd = SAFE_OPEN(child_namespace, O_RDONLY);
-	parent_fd = SAFE_IOCTL(child_fd, NS_GET_USERNS);
+	parent_fd = ioctl(child_fd, NS_GET_USERNS);
+
+	if (parent_fd == -1) {
+		TST_CHECKPOINT_WAKE(0);
+
+		if (errno == ENOTTY)
+			tst_brk(TCONF, "ioctl(NS_GET_USERNS) not implemented");
+
+		tst_brk(TBROK | TERRNO, "ioctl(NS_GET_USERNS) failed");
+	}
 
 	struct stat my_stat, child_stat, parent_stat;
 
