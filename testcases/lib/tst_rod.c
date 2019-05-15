@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 		if (open(stdout_path, O_CREAT|O_WRONLY|O_TRUNC, 0777) < 0) {
 			fprintf(stderr,
 			        "%s: Failed to open '%s' for writing: %s\n",
-				argv[0], stdin_path, strerror(errno));
+				argv[0], stdout_path, strerror(errno));
 			return 1;
 		}
 	}
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 		if (fd < 0) {
 			fprintf(stderr,
 			        "%s: Failed to open '%s' for writing: %s\n",
-				argv[0], stdin_path, strerror(errno));
+				argv[0], stderr_path, strerror(errno));
 			return 1;
 		}
 
