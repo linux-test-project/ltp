@@ -41,6 +41,7 @@ int TST_TOTAL = 1;
 int main(int argc, char *argv[])
 {
 #if HAVE_SYS_CAPABILITY_H
+#if HAVE_DECL_PR_CAPBSET_DROP
 #ifdef HAVE_LIBCAP
 	int ret = 1;
 	cap_flag_value_t f;
@@ -80,6 +81,9 @@ int main(int argc, char *argv[])
 	tst_resm(TBROK, "Failed to execute check_pe (errno %d)\n", errno);
 #else /* libcap */
 	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
+#endif
+#else /* HAVE_DECL_PR_CAPBSET_DROP */
+	tst_resm(TCONF, "System doesn't have CAPBSET prctls");
 #endif
 #else /* capability_h */
 	tst_resm(TCONF, "System doesn't have sys/capability.h.");

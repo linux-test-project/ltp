@@ -226,7 +226,12 @@ static int caps_actually_set_test(void)
 	int num_caps;
 
 	for (num_caps = 0;; num_caps++) {
+#if HAVE_DECL_PR_CAPBSET_READ
 		ret = prctl(PR_CAPBSET_READ, num_caps);
+#else
+		tst_resm(TCONF, "System doesn't have CAPBSET prctls");
+		ret = -1;
+#endif
 		/*
 		 * Break from the loop in this manner to avoid incrementing,
 		 * then having to decrement value.
