@@ -79,6 +79,7 @@ static void func_info(int ret);
 
 /* Check routine for SHM_STAT */
 static void func_sstat(int ret);
+static void func_sstat_setup(void);
 
 /* Check routine for SHM_LOCK */
 static void func_lock(int ret);
@@ -110,7 +111,7 @@ static struct test_case_t {
 #endif
 	{&shm_id_1, IPC_SET, &buf, func_set, set_setup},
 	{&shm_id_1, IPC_INFO, (struct shmid_ds *) &info, func_info, NULL},
-	{&shm_index, SHM_STAT, &buf, func_sstat, NULL},
+	{&shm_index, SHM_STAT, &buf, func_sstat, func_sstat_setup},
 	{&shm_id_1, SHM_LOCK, NULL, func_lock, NULL},
 	{&shm_id_1, SHM_UNLOCK, NULL, func_unlock, NULL},
 	{&shm_id_1, IPC_RMID, NULL, func_rmid, NULL},
@@ -407,9 +408,23 @@ static void func_info(int ret)
 static void func_sstat(int ret)
 {
 	if (ret >= 0)
-		tst_resm(TPASS, "get correct shared memory id");
+		tst_resm(TPASS, "get correct shared memory id for index: %d",
+			shm_index);
 	else
-		tst_resm(TFAIL, "shared memory id is incorrect");
+		tst_resm(TFAIL, "shared memory id is incorrect, index: %d",
+			shm_index);
+}
+
+static void func_sstat_setup(void)
+{
+	struct shm_info tmp;
+	int ret;
+
+	ret = shmctl(shm_id_1, SHM_INFO, (void *)&tmp);
+	if (ret < 0)
+		tst_resm(TFAIL|TERRNO, "shmctl(SHM_INFO)");
+	else
+		shm_index = ret;
 }
 
 static void func_lock(int ret)
