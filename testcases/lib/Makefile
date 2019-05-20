@@ -28,6 +28,6 @@ INSTALL_TARGETS		:= *.sh
 
 MAKE_TARGETS		:= tst_sleep tst_random tst_checkpoint tst_rod tst_kvcmp\
 			   tst_device tst_net_iface_prefix tst_net_ip_prefix tst_net_vars\
-			   tst_getconf tst_supported_fs tst_check_drivers
+			   tst_getconf tst_supported_fs tst_check_drivers tst_get_unused_port
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
