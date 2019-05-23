@@ -9,6 +9,11 @@
 
 #include <sys/prctl.h>
 
+#ifndef PR_SET_SECCOMP
+# define PR_GET_SECCOMP  21
+# define PR_SET_SECCOMP  22
+#endif
+
 #ifndef PR_SET_CHILD_SUBREAPER
 # define PR_SET_CHILD_SUBREAPER	36
 # define PR_GET_CHILD_SUBREAPER	37

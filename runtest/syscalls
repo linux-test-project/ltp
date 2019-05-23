@@ -861,6 +861,7 @@ ppoll01 ppoll01
 prctl01 prctl01
 prctl02 prctl02
 prctl03 prctl03
+prctl04 prctl04
 
 pread01 pread01
 pread01_64 pread01_64
