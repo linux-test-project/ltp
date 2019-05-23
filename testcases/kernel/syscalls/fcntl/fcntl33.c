@@ -117,7 +117,7 @@ static void do_test(unsigned int i)
 	if (TST_RET == -1) {
 		if (type == TST_OVERLAYFS_MAGIC && TST_ERR == EAGAIN) {
 			tst_res(TINFO | TTERRNO,
-				"fcntl(F_SETLEASE, F_WRLCK) failed on overlapfs as expected");
+				"fcntl(F_SETLEASE, F_WRLCK) failed on overlayfs as expected");
 		} else {
 			tst_res(TFAIL | TTERRNO, "fcntl() failed to set lease");
 		}
