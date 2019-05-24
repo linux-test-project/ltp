@@ -262,8 +262,7 @@ int main(int argc, char *argv[])
 	tst_total = getenv("TST_TOTAL");
 	tst_cntstr = getenv("TST_COUNT");
 	if (TCID == NULL || tst_total == NULL || tst_cntstr == NULL) {
-		 if(!strcmp(cmd_name, "tst_fs_has_free") &&
-		    !strcmp(cmd_name, "tst_get_unused_port")) {
+		 if(!strcmp(cmd_name, "tst_fs_has_free")) {
 			fprintf(stderr,
 				"\nSet variables TCID, TST_TOTAL, and TST_COUNT before each test:\n"
 				"export TCID=<test name>\n"
