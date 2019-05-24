@@ -146,7 +146,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1) {
 			if (type == TST_OVERLAYFS_MAGIC && TEST_ERRNO == EAGAIN) {
 				tst_resm(TINFO | TTERRNO,
-					 "fcntl(F_SETLEASE, F_WRLCK) failed on overlapfs as expected");
+					 "fcntl(F_SETLEASE, F_WRLCK) failed on overlayfs as expected");
 			} else {
 				tst_resm(TFAIL,
 					 "fcntl(%s, F_SETLEASE, F_WRLCK) Failed, errno=%d : %s",
