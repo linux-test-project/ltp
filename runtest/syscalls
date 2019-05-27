@@ -1234,6 +1234,7 @@ setsid01 setsid01
 setsockopt01 setsockopt01
 setsockopt02 setsockopt02
 setsockopt03 setsockopt03
+setsockopt04 setsockopt04
 
 settimeofday01 settimeofday01
 settimeofday02 settimeofday02
