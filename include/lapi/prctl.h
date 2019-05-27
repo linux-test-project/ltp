@@ -9,6 +9,11 @@
 
 #include <sys/prctl.h>
 
+#ifndef PR_SET_NAME
+# define PR_SET_NAME 15
+# define PR_GET_NAME 16
+#endif
+
 #ifndef PR_SET_SECCOMP
 # define PR_GET_SECCOMP  21
 # define PR_SET_SECCOMP  22
