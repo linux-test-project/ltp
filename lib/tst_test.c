@@ -50,6 +50,7 @@ static int iterations = 1;
 static float duration = -1;
 static pid_t main_pid, lib_pid;
 static int mntpoint_mounted;
+static int ovl_mounted;
 static struct timespec tst_start_time; /* valid only for test pid */
 
 struct results {
@@ -871,6 +872,17 @@ static void do_setup(int argc, char *argv[])
 			prepare_device();
 	}
 
+	if (tst_test->needs_overlay && !tst_test->mount_device) {
+		tst_brk(TBROK, "tst_test->mount_device must be set");
+	}
+	if (tst_test->needs_overlay && !mntpoint_mounted) {
+		tst_brk(TBROK, "tst_test->mntpoint must be mounted");
+	}
+	if (tst_test->needs_overlay && !ovl_mounted) {
+		SAFE_MOUNT_OVERLAY();
+		ovl_mounted = 1;
+	}
+
 	if (tst_test->resource_files)
 		copy_resources();
 
@@ -891,6 +903,9 @@ static void do_test_setup(void)
 
 static void do_cleanup(void)
 {
+	if (ovl_mounted)
+		SAFE_UMOUNT(OVL_MNT);
+
 	if (mntpoint_mounted)
 		tst_umount(tst_test->mntpoint);
 

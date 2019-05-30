@@ -122,6 +122,7 @@ struct tst_test {
 	int forks_child:1;
 	int needs_device:1;
 	int needs_checkpoints:1;
+	int needs_overlay:1;
 	int format_device:1;
 	int mount_device:1;
 	int needs_rofs:1;

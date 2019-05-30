@@ -76,4 +76,8 @@ void safe_touch(const char *file, const int lineno,
 		const char *pathname,
 		mode_t mode, const struct timespec times[2]);
 
+/* helper functions to setup overlayfs mountpoint */
+void create_overlay_dirs(void);
+int mount_overlay(const char *file, const int lineno, int skip);
+
 #endif /* SAFE_FILE_OPS_FN */
