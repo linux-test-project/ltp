@@ -55,11 +55,10 @@
 #include "lapi/fcntl.h"
 #include "execveat.h"
 
-#define OVL_MNT "ovl"
 #define TEST_APP "execveat_child"
 #define TEST_FILE_PATH OVL_MNT"/"TEST_APP
 
-static int ovl_mounted;
+static const char mntpoint[] = OVL_BASE_MNTPOINT;
 
 static void do_child(void)
 {
@@ -86,31 +85,7 @@ static void verify_execveat(void)
 
 static void setup(void)
 {
-	int ret;
-
 	check_execveat();
-
-	/* Setup an overlay mount with lower file */
-	SAFE_MKDIR("lower", 0755);
-	SAFE_MKDIR("upper", 0755);
-	SAFE_MKDIR("work", 0755);
-	SAFE_MKDIR(OVL_MNT, 0755);
-	ret = mount("overlay", OVL_MNT, "overlay", 0,
-		    "lowerdir=lower,upperdir=upper,workdir=work");
-	if (ret < 0) {
-		if (errno == ENODEV) {
-			tst_brk(TCONF,
-				"overlayfs is not configured in this kernel.");
-		}
-		tst_brk(TBROK | TERRNO, "overlayfs mount failed");
-	}
-	ovl_mounted = 1;
-}
-
-static void cleanup(void)
-{
-	if (ovl_mounted)
-		SAFE_UMOUNT(OVL_MNT);
 }
 
 static const char *const resource_files[] = {
@@ -121,10 +96,12 @@ static const char *const resource_files[] = {
 static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.mount_device = 1,
+	.needs_overlay = 1,
+	.mntpoint = mntpoint,
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = verify_execveat,
 	.resource_files = resource_files,
 };
