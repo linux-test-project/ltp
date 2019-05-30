@@ -58,8 +58,7 @@ tst_resm()
 	echo " $@"
 
 	case "$ret" in
-	TPASS|TFAIL)
-	TST_COUNT=$((TST_COUNT+1));;
+	TPASS|TFAIL|TCONF) TST_COUNT=$((TST_COUNT+1));;
 	esac
 }
 
