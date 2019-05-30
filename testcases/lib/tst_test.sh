@@ -62,7 +62,7 @@ _tst_do_exit()
 		ret=$((ret|4))
 	fi
 
-	if [ $TST_CONF -gt 0 ]; then
+	if [ $TST_CONF -gt 0 -a $TST_PASS -eq 0 ]; then
 		ret=$((ret|32))
 	fi
 

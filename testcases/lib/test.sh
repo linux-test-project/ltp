@@ -23,6 +23,7 @@
 
 export LTP_RET_VAL=0
 export TST_COUNT=1
+export TST_PASS_COUNT=0
 export TST_LIB_LOADED=1
 export TST_TMPDIR_RHOST=0
 
@@ -60,6 +61,10 @@ tst_resm()
 	case "$ret" in
 	TPASS|TFAIL|TCONF) TST_COUNT=$((TST_COUNT+1));;
 	esac
+
+	if [ "$ret" = TPASS ]; then
+		TST_PASS_COUNT=$((TST_PASS_COUNT+1))
+	fi
 }
 
 tst_brkm()
@@ -111,6 +116,10 @@ tst_exit()
 		rm -f "$LTP_IPC_PATH"
 	fi
 
+	# Mask out TCONF if no TFAIL/TBROK/TWARN but has TPASS
+	if [ $((LTP_RET_VAL & 7)) -eq 0 -a $TST_PASS_COUNT -gt 0 ]; then
+		LTP_RET_VAL=$((LTP_RET_VAL & ~32))
+	fi
 	# Mask out TINFO
 	exit $((LTP_RET_VAL & ~16))
 }
