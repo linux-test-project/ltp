@@ -31,5 +31,7 @@ static void test_exit(void)
 
 }
 
+MODULE_LICENSE("GPL");
+
 module_init(test_init);
 module_exit(test_exit);
