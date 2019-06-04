@@ -148,6 +148,17 @@ static void verify_event(int group, struct fanotify_event_metadata *event)
 	}
 }
 
+/* Close all file descriptors of read events */
+static void close_events_fd(struct fanotify_event_metadata *event, int buflen)
+{
+	while (buflen >= (int)FAN_EVENT_METADATA_LEN) {
+		if (event->fd != FAN_NOFD)
+			SAFE_CLOSE(event->fd);
+		buflen -= (int)FAN_EVENT_METADATA_LEN;
+		event++;
+	}
+}
+
 void test_fanotify(unsigned int n)
 {
 	int ret;
@@ -198,17 +209,16 @@ void test_fanotify(unsigned int n)
 		} else {
 			verify_event(i, event);
 		}
-		if (event->fd != FAN_NOFD)
-			SAFE_CLOSE(event->fd);
+		close_events_fd(event, ret);
 	}
+
 	for (p = 1; p < FANOTIFY_PRIORITIES; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
 			ret = read(fd_notify[p][i], event_buf, EVENT_BUF_LEN);
 			if (ret > 0) {
 				tst_res(TFAIL, "group %d got event",
 					p*GROUPS_PER_PRIO + i);
-				if (event->fd != FAN_NOFD)
-					SAFE_CLOSE(event->fd);
+				close_events_fd((void *)event_buf, ret);
 			} else if (ret == 0) {
 				tst_brk(TBROK, "zero length "
 					"read from fanotify fd");
