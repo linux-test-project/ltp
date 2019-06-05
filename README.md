@@ -185,3 +185,9 @@ list. Also note that these documents are available online at:
 * https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
 
 Although we accept GitHub pull requests, the preferred way is sending patches to our mailing list.
+
+It's a good idea to test patches on Travis CI before posting to mailing
+list. Our travis setup covers various architectures and distributions in
+order to make sure LTP compiles cleanly on most common configurations.
+For testing you need to sign up to Travis CI, enable running builds on your LTP fork on
+https://travis-ci.org/account/repositories and push your branch.
