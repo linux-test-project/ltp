@@ -85,9 +85,7 @@ static void verify_inotify(void)
 	int inotify_fd;
 	int wd;
 
-	inotify_fd = myinotify_init1(0);
-	if (inotify_fd < 0)
-		tst_brk(TBROK | TERRNO, "inotify_init failed");
+	inotify_fd = SAFE_MYINOTIFY_INIT1(0);
 
 	tst_fzsync_pair_reset(&fzsync_pair, write_seek);
 	while (tst_fzsync_run_a(&fzsync_pair)) {

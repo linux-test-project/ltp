@@ -171,15 +171,7 @@ static void setup(void)
 	/* close the file we have open */
 	SAFE_CLOSE(fd);
 
-	fd_notify = myinotify_init();
-	if (fd_notify < 0) {
-		if (errno == ENOSYS)
-			tst_brk(TCONF,
-				"inotify is not configured in this kernel.");
-		else
-			tst_brk(TBROK | TERRNO,
-				"inotify_init failed");
-	}
+	fd_notify = SAFE_MYINOTIFY_INIT();
 
 	tst_umount(mntpoint);
 	mount_flag = 0;

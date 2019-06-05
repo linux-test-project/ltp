@@ -165,16 +165,7 @@ static void setup(void)
 	SAFE_TOUCH(OVL_LOWER"/"DIR_NAME"/"FILE_NAME, 0644, NULL);
 	SAFE_MOUNT_OVERLAY();
 
-	fd_notify = myinotify_init1(O_NONBLOCK);
-	if (fd_notify < 0) {
-		if (errno == ENOSYS) {
-			tst_brk(TCONF,
-				"inotify is not configured in this kernel");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"inotify_init () failed");
-		}
-	}
+	fd_notify = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);
 
 	/* Setup a watch on an overlayfs lower directory */
 	if ((wd = myinotify_add_watch(fd_notify, DIR_PATH, IN_ALL_EVENTS)) < 0) {

@@ -143,16 +143,7 @@ static void setup(void)
 	SAFE_WRITE(1, fd, buf, BUF_SIZE);
 	SAFE_CLOSE(fd);
 
-	fd_notify = myinotify_init1(O_NONBLOCK);
-	if (fd_notify < 0) {
-		if (errno == ENOSYS) {
-			tst_brk(TCONF,
-				"inotify is not configured in this kernel.");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"inotify_init failed");
-		}
-	}
+	fd_notify = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);
 
 	wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS);
 	if (wd < 0) {

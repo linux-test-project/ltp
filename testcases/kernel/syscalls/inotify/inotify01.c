@@ -167,15 +167,7 @@ static void setup(void)
 
 	SAFE_FILE_PRINTF(fname, "%s", fname);
 
-	if ((fd_notify = myinotify_init()) < 0) {
-		if (errno == ENOSYS) {
-			tst_brk(TCONF,
-				"inotify is not configured in this kernel.");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"inotify_init failed");
-		}
-	}
+	fd_notify = SAFE_MYINOTIFY_INIT();
 
 	if ((wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS)) < 0) {
 		tst_brk(TBROK | TERRNO,

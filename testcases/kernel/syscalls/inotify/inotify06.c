@@ -82,9 +82,7 @@ static void verify_inotify(void)
 	}
 
 	for (tests = 0; tests < TEARDOWNS; tests++) {
-		inotify_fd = myinotify_init1(O_NONBLOCK);
-		if (inotify_fd < 0)
-			tst_brk(TBROK | TERRNO, "inotify_init failed");
+		inotify_fd = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);
 
 		for (i = 0; i < FILES; i++) {
 			/*

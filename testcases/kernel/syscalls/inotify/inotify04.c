@@ -95,16 +95,7 @@ static void cleanup(void)
 
 static void setup(void)
 {
-	fd_notify = myinotify_init();
-	if (fd_notify == -1) {
-		if (errno == ENOSYS) {
-			tst_brk(TCONF,
-				"inotify is not configured in this kernel.");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"inotify_init failed");
-		}
-	}
+	fd_notify = SAFE_MYINOTIFY_INIT();
 }
 
 void verify_inotify(void)
