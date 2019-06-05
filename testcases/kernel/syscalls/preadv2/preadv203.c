@@ -50,7 +50,7 @@
 #define CHUNK_SZ 4123
 #define CHUNKS 60
 #define MNTPOINT "mntpoint"
-#define FILES 1000
+#define FILES 500
 
 static int fds[FILES];
 
@@ -225,6 +225,19 @@ static void verify_preadv2(void)
 		tst_res(TFAIL, "Haven't got EAGAIN");
 }
 
+static void check_preadv2_nowait(int fd)
+{
+	char buf[1];
+	struct iovec iovec[] = {
+		{buf, sizeof(buf)},
+	};
+
+	TEST(preadv2(fd, iovec, 1, 0, RWF_NOWAIT));
+
+	if (TST_ERR == EOPNOTSUPP)
+		tst_brk(TCONF | TERRNO, "preadv2()");
+}
+
 static void setup(void)
 {
 	char path[1024];
@@ -236,6 +249,9 @@ static void setup(void)
 		snprintf(path, sizeof(path), MNTPOINT"/file_%i", i);
 
 		fds[i] = SAFE_OPEN(path, O_RDWR | O_CREAT, 0644);
+
+		if (i == 0)
+			check_preadv2_nowait(fds[i]);
 
 		for (j = 0; j < CHUNKS; j++) {
 			memset(buf, '0' + j, sizeof(buf));
