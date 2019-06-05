@@ -168,12 +168,8 @@ static void setup(void)
 	fd_notify = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);
 
 	/* Setup a watch on an overlayfs lower directory */
-	if ((wd = myinotify_add_watch(fd_notify, DIR_PATH, IN_ALL_EVENTS)) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"inotify_add_watch (%d, " DIR_PATH ", IN_ALL_EVENTS) failed",
-			fd_notify);
-		reap_wd = 1;
-	};
+	wd = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, DIR_PATH, IN_ALL_EVENTS);
+	reap_wd = 1;
 
 	SAFE_STAT(DIR_PATH, &buf);
 	tst_res(TINFO, DIR_PATH " ino=%lu", buf.st_ino);

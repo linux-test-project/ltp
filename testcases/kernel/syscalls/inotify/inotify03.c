@@ -77,12 +77,7 @@ void verify_inotify(void)
 	SAFE_MOUNT(tst_device->dev, mntpoint, tst_device->fs_type, 0, NULL);
 	mount_flag = 1;
 
-	wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS);
-	if (wd < 0) {
-		tst_brk(TBROK | TERRNO,
-			"inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed.",
-			fd_notify, fname);
-	}
+	wd = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, fname, IN_ALL_EVENTS);
 
 	event_set[test_cnt] = IN_UNMOUNT;
 	test_cnt++;

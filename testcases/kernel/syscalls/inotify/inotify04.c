@@ -106,19 +106,10 @@ void verify_inotify(void)
 	SAFE_MKDIR(TEST_DIR, 00700);
 	close(SAFE_CREAT(TEST_FILE, 00600));
 
-	wd_dir = myinotify_add_watch(fd_notify, TEST_DIR, IN_ALL_EVENTS);
-	if (wd_dir == -1) {
-		tst_brk(TBROK | TERRNO,
-			"inotify_add_watch(%d, \"%s\", IN_ALL_EVENTS) [1] failed",
-			fd_notify, TEST_DIR);
-	}
+	wd_dir = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, TEST_DIR, IN_ALL_EVENTS);
 	reap_wd_dir = 1;
 
-	wd_file = myinotify_add_watch(fd_notify, TEST_FILE, IN_ALL_EVENTS);
-	if (wd_file == -1)
-		tst_brk(TBROK | TERRNO,
-			"inotify_add_watch(%d, \"%s\", IN_ALL_EVENTS) [2] failed",
-			fd_notify, TEST_FILE);
+	wd_file = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, TEST_FILE, IN_ALL_EVENTS);
 	reap_wd_file = 1;
 
 	SAFE_RMDIR(TEST_DIR);

@@ -51,4 +51,17 @@ static inline int safe_myinotify_init(const char *file, const int lineno, int fd
 #define SAFE_MYINOTIFY_INIT1(flags) \
 	safe_myinotify_init(__FILE__, __LINE__, myinotify_init1(flags))
 
+static inline int safe_myinotify_watch(const char *file, const int lineno, int wd, int fd, const char* fname, const char* mask)
+{
+	if (wd < 0) {
+		tst_brk(TBROK | TERRNO,
+			"%s:%d: inotify_add_watch (%d, %s, %s) failed",
+			file, lineno, fd, fname, mask);
+	}
+	return wd;
+}
+
+#define SAFE_MYINOTIFY_ADD_WATCH(fd, pathname, mask)	\
+	safe_myinotify_watch(__FILE__, __LINE__, myinotify_add_watch(fd, pathname, mask), fd, pathname, #mask)
+
 #endif /* _INOTIFY_H */

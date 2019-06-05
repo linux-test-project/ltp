@@ -89,9 +89,7 @@ static void verify_inotify(void)
 
 	tst_fzsync_pair_reset(&fzsync_pair, write_seek);
 	while (tst_fzsync_run_a(&fzsync_pair)) {
-		wd = myinotify_add_watch(inotify_fd, FNAME, IN_MODIFY);
-		if (wd < 0)
-			tst_brk(TBROK | TERRNO, "inotify_add_watch() failed.");
+		wd = SAFE_MYINOTIFY_ADD_WATCH(inotify_fd, FNAME, IN_MODIFY);
 
 		tst_fzsync_start_race_a(&fzsync_pair);
 		wd = myinotify_rm_watch(inotify_fd, wd);

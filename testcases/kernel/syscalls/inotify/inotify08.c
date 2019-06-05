@@ -160,14 +160,9 @@ static void setup(void)
 	fd_notify = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);
 
 	/* Setup a watch on an overlayfs lower file */
-	if ((wd = myinotify_add_watch(fd_notify, FILE_PATH,
-				IN_ATTRIB | IN_OPEN | IN_CLOSE_WRITE)) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"inotify_add_watch (%d, " FILE_PATH ", "
-			"IN_ATTRIB | IN_OPEN | IN_CLOSE_WRITE) failed",
-			fd_notify);
-		reap_wd = 1;
-	};
+	wd = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, FILE_PATH,
+				IN_ATTRIB | IN_OPEN | IN_CLOSE_WRITE);
+	reap_wd = 1;
 
 	SAFE_STAT(FILE_PATH, &buf);
 	tst_res(TINFO, FILE_PATH " ino=%lu, dev=%u:%u", buf.st_ino,

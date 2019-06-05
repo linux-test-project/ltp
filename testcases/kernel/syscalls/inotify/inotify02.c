@@ -236,12 +236,8 @@ static void setup(void)
 {
 	fd_notify = SAFE_MYINOTIFY_INIT();
 
-	if ((wd = myinotify_add_watch(fd_notify, ".", IN_ALL_EVENTS)) < 0) {
-		tst_brk(TBROK | TERRNO,
-			 "inotify_add_watch (%d, \".\", IN_ALL_EVENTS) failed",
-			 fd_notify);
-		reap_wd = 1;
-	};
+	wd = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, ".", IN_ALL_EVENTS);
+	reap_wd = 1;
 }
 
 static void cleanup(void)
@@ -249,7 +245,6 @@ static void cleanup(void)
 	if (reap_wd && myinotify_rm_watch(fd_notify, wd) < 0) {
 		tst_res(TWARN,
 			"inotify_rm_watch (%d, %d) failed,", fd_notify, wd);
-
 	}
 
 	if (fd_notify > 0)

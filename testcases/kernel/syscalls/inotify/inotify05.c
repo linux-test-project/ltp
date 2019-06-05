@@ -145,12 +145,7 @@ static void setup(void)
 
 	fd_notify = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);
 
-	wd = myinotify_add_watch(fd_notify, fname, IN_ALL_EVENTS);
-	if (wd < 0) {
-		tst_brk(TBROK | TERRNO,
-			"inotify_add_watch (%d, %s, IN_ALL_EVENTS) failed",
-			fd_notify, fname);
-	};
+	wd = SAFE_MYINOTIFY_ADD_WATCH(fd_notify, fname, IN_ALL_EVENTS);
 
 	SAFE_FILE_SCANF("/proc/sys/fs/inotify/max_queued_events",
 			"%d", &max_events);
@@ -161,7 +156,6 @@ static void cleanup(void)
 	if (fd_notify > 0 && myinotify_rm_watch(fd_notify, wd) == -1) {
 		tst_res(TWARN | TERRNO, "inotify_rm_watch (%d, %d) failed",
 			fd_notify, wd);
-
 	}
 
 	if (fd_notify > 0)
