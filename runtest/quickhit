@@ -122,8 +122,6 @@ fork05 fork05
 # %gs is not handled correctly.  See fork05.c for a copy of Ulrich's email
 fpathconf01 fpathconf01
 # Basic test for fpathconf(2)
-fstat01 fstat01
-# Basic test for fstat(2)
 fstatfs01 fstatfs01
 # Basic test for fstatfs(2)
 fsync01 fsync01
