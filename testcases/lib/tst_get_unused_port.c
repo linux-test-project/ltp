@@ -54,6 +54,6 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	printf("%d", TST_GET_UNUSED_PORT(family, type));
+	printf("%d", ntohs(TST_GET_UNUSED_PORT(family, type)));
 	return 0;
 }
