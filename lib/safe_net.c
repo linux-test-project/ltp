@@ -373,6 +373,9 @@ int safe_gethostname(const char *file, const int lineno,
 	return rval;
 }
 
+/*
+ * @return port in network byte order.
+ */
 unsigned short tst_get_unused_port(const char *file, const int lineno,
 	      void (cleanup_fn)(void), unsigned short family, int type)
 {
