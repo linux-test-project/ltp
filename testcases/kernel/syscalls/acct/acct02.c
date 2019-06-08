@@ -140,6 +140,8 @@ static void run(void)
 		tst_res(TPASS, "acct() wrote correct file contents!");
 	else
 		tst_res(TFAIL, "acct() wrote incorrect file contents!");
+
+	SAFE_CLOSE(fd);
 }
 
 static void setup(void)
