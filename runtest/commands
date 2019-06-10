@@ -40,3 +40,4 @@ keyctl01_sh keyctl01.sh
 gdb01_sh gdb01.sh
 unshare01_sh unshare01.sh
 sysctl01_sh sysctl01.sh
+sysctl02_sh sysctl02.sh
