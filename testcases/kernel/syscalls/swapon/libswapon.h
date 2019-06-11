@@ -29,6 +29,11 @@
 /*
  * Make a swap file
  */
-void make_swapfile(void (cleanup)(void), const char *swapfile);
+int make_swapfile(void (cleanup)(void), const char *swapfile, int safe);
 
+/*
+ * Check swapon/swapoff support status of filesystems or files
+ * we are testing on.
+ */
+void is_swap_supported(void (cleanup)(void), const char *filename);
 #endif /* __LIBSWAPON_H__ */

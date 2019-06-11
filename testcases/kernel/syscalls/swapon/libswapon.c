@@ -19,13 +19,15 @@
  *
  */
 
+#include <errno.h>
+#include "lapi/syscalls.h"
 #include "test.h"
 #include "libswapon.h"
 
 /*
  * Make a swap file
  */
-void make_swapfile(void (cleanup)(void), const char *swapfile)
+int make_swapfile(void (cleanup)(void), const char *swapfile, int safe)
 {
 	if (!tst_fs_has_free(NULL, ".", sysconf(_SC_PAGESIZE) * 10,
 	    TST_BYTES)) {
@@ -45,5 +47,44 @@ void make_swapfile(void (cleanup)(void), const char *swapfile)
 	argv[1] = swapfile;
 	argv[2] = NULL;
 
-	tst_run_cmd(cleanup, argv, "/dev/null", "/dev/null", 0);
+	return tst_run_cmd(cleanup, argv, "/dev/null", "/dev/null", safe);
+}
+
+/*
+ * Check swapon/swapoff support status of filesystems or files
+ * we are testing on.
+ */
+void is_swap_supported(void (cleanup)(void), const char *filename)
+{
+	int fibmap = tst_fibmap(filename);
+	long fs_type = tst_fs_type(cleanup, filename);
+	const char *fstype = tst_fs_type_name(fs_type);
+
+	int ret = make_swapfile(NULL, filename, 1);
+	if (ret != 0) {
+		if (fibmap == 1) {
+			tst_brkm(TCONF, cleanup,
+				"mkswap on %s not supported", fstype);
+		} else {
+			tst_brkm(TFAIL, cleanup,
+				"mkswap on %s failed", fstype);
+		}
+	}
+
+	TEST(ltp_syscall(__NR_swapon, filename, 0));
+	if (TEST_RETURN == -1) {
+		if (fibmap == 1 && errno == EINVAL) {
+			tst_brkm(TCONF, cleanup,
+				"Swapfile on %s not implemented", fstype);
+		} else {
+			tst_brkm(TFAIL | TERRNO, cleanup,
+				 "swapon on %s failed", fstype);
+		}
+	}
+
+	TEST(ltp_syscall(__NR_swapoff, filename, 0));
+	if (TEST_RETURN == -1) {
+		tst_brkm(TFAIL | TERRNO, cleanup,
+			"swapoff on %s failed", fstype);
+	}
 }
