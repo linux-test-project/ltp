@@ -16,13 +16,14 @@
 #include <errno.h>
 #include <stdio.h>
 #include <sched.h>
+#include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/ioctl_ns.h"
 #include "lapi/namespaces_constants.h"
 
 #define STACK_SIZE (1024 * 1024)
 
-static char child_stack[STACK_SIZE];
+static char *child_stack;
 
 static void setup(void)
 {
@@ -30,9 +31,18 @@ static void setup(void)
 
 	if (exists < 0)
 		tst_res(TCONF, "namespace not available");
+
+	child_stack = ltp_alloc_stack(STACK_SIZE);
+	if (!child_stack)
+		tst_brk(TBROK|TERRNO, "stack alloc");
 }
 
-static int child(void *arg)
+static void cleanup(void)
+{
+	free(child_stack);
+}
+
+static int child(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	if (getpid() != 1)
 		tst_res(TFAIL, "child should think its pid is 1");
@@ -44,8 +54,10 @@ static int child(void *arg)
 
 static void run(void)
 {
-	pid_t pid = ltp_clone(CLONE_NEWPID, &child, 0,
+	pid_t pid = ltp_clone(CLONE_NEWPID | SIGCHLD, &child, 0,
 		STACK_SIZE, child_stack);
+	if (pid == -1)
+		tst_brk(TBROK | TERRNO, "ltp_clone failed");
 
 	char child_namespace[20];
 	int my_fd, child_fd, parent_fd;
@@ -89,5 +101,6 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_checkpoints = 1,
 	.min_kver = "4.9",
-	.setup = setup
+	.setup = setup,
+	.cleanup = cleanup,
 };
