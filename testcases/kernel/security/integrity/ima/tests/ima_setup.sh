@@ -1,21 +1,8 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 IBM Corporation
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-# Author: Mimi Zohar, zohar@ibm.vnet.ibm.com
+# Copyright (c) 2018-2019 Petr Vorel <pvorel@suse.cz>
+# Author: Mimi Zohar <zohar@linux.ibm.com>
 
 TST_TESTFUNC="test"
 TST_SETUP_CALLER="$TST_SETUP"
@@ -30,6 +17,20 @@ TST_NEEDS_ROOT=1
 SYSFS="/sys"
 UMOUNT=
 TST_FS_TYPE="ext3"
+
+check_ima_policy()
+{
+	local policy="$1"
+	local i
+
+	grep -q "ima_$policy" /proc/cmdline && return
+	for i in $(cat /proc/cmdline); do
+		if echo "$i" | grep -q '^ima_policy='; then
+			echo "$i" | grep -q -e "|[ ]*$policy" -e "$policy[ ]*|" -e "=$policy" && return
+		fi
+	done
+	tst_brk TCONF "IMA measurement tests require builtin IMA $policy policy (e.g. ima_policy=$policy kernel parameter)"
+}
 
 mount_helper()
 {
