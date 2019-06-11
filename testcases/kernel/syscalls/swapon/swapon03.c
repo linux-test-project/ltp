@@ -153,7 +153,7 @@ static int setup_swap(void)
 	int j, fd;
 	int status;
 	int res = 0;
-	char filename[15];
+	char filename[FILENAME_MAX];
 	char buf[BUFSIZ + 1];
 
 	/* Find out how many swapfiles (1 line per entry) already exist */
@@ -210,7 +210,7 @@ static int setup_swap(void)
 			}
 
 			/* Create the swapfile */
-			make_swapfile(cleanup, filename);
+			make_swapfile(cleanup, filename, 0);
 
 			/* turn on the swap file */
 			res = ltp_syscall(__NR_swapon, filename, 0);
@@ -246,7 +246,7 @@ static int setup_swap(void)
 
 	/* Create all needed extra swapfiles for testing */
 	for (j = 0; j < testfiles; j++)
-		make_swapfile(cleanup, swap_testfiles[j].filename);
+		make_swapfile(cleanup, swap_testfiles[j].filename, 0);
 
 	return 0;
 
@@ -333,14 +333,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((fs_type = tst_fs_type(cleanup, "."))) {
-	case TST_NFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do swapon on a file on %s filesystem",
-			 tst_fs_type_name(fs_type));
-	break;
-	}
+	is_swap_supported(cleanup, "./tstswap");
 
 	TEST_PAUSE;
 }

@@ -132,18 +132,11 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((fs_type = tst_fs_type(cleanup, "."))) {
-	case TST_NFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do swapon on a file on %s filesystem",
-			 tst_fs_type_name(fs_type));
-	break;
-	}
+	is_swap_supported(cleanup, "./tstswap");
 
 	SAFE_TOUCH(cleanup, "notswap", 0777, NULL);
-	make_swapfile(cleanup, "swapfile01");
-	make_swapfile(cleanup, "alreadyused");
+	make_swapfile(cleanup, "swapfile01", 0);
+	make_swapfile(cleanup, "alreadyused", 0);
 
 	if (ltp_syscall(__NR_swapon, "alreadyused", 0)) {
 		if (fs_type != TST_BTRFS_MAGIC || errno != EINVAL)
