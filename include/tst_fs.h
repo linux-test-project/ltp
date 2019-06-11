@@ -180,6 +180,11 @@ const char **tst_get_supported_fs_types(int flags);
  */
 void tst_fill_fs(const char *path, int verbose);
 
+/*
+ * test if FIBMAP ioctl is supported
+ */
+int tst_fibmap(const char *filename);
+
 #ifdef TST_TEST_H__
 static inline long tst_fs_type(const char *path)
 {
