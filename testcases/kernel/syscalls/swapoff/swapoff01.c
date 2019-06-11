@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "lapi/syscalls.h"
+#include "../swapon/libswapon.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -86,14 +87,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((fs_type = tst_fs_type(cleanup, "."))) {
-	case TST_NFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do swapoff on a file on %s filesystem",
-			 tst_fs_type_name(fs_type));
-	break;
-	}
+	is_swap_supported(cleanup, "./tstswap");
 
 	if (!tst_fs_has_free(NULL, ".", 64, TST_MB)) {
 		tst_brkm(TBROK, cleanup,

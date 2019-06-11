@@ -33,6 +33,7 @@
 #include "test.h"
 #include "lapi/syscalls.h"
 #include "safe_macros.h"
+#include "../swapon/libswapon.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -124,7 +125,6 @@ static void cleanup01(void)
 
 static void setup(void)
 {
-	long type;
 	struct passwd *nobody;
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -138,14 +138,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	switch ((type = tst_fs_type(cleanup, "."))) {
-	case TST_NFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do swapoff on a file on %s filesystem",
-			 tst_fs_type_name(type));
-	break;
-	}
+	is_swap_supported(cleanup, "./tstswap");
 
 	if (!tst_fs_has_free(NULL, ".", 1, TST_KB)) {
 		tst_brkm(TBROK, cleanup,
