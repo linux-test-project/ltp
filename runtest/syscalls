@@ -624,8 +624,6 @@ lstat01 lstat01
 lstat01_64 lstat01_64
 lstat02 lstat02
 lstat02_64 lstat02_64
-lstat03 lstat03
-lstat03_64 lstat03_64
 
 mallopt01 mallopt01
 
