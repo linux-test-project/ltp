@@ -135,11 +135,11 @@ void *ltp_alloc_stack(size_t size)
 }
 
 /*
- * ltp_clone_malloc: also does the memory allocation for clone with a
+ * ltp_clone_alloc: also does the memory allocation for clone with a
  * caller-specified size.
  */
 int
-ltp_clone_malloc(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
+ltp_clone_alloc(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
 		 size_t stack_size)
 {
 	void *stack;
@@ -162,7 +162,7 @@ ltp_clone_malloc(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
 }
 
 /*
- * ltp_clone_quick: calls ltp_clone_malloc with predetermined stack size.
+ * ltp_clone_quick: calls ltp_clone_alloc with predetermined stack size.
  * Experience thus far suggests that one page is often insufficient,
  * while 6*getpagesize() seems adequate.
  */
@@ -170,5 +170,5 @@ int ltp_clone_quick(unsigned long clone_flags, int (*fn) (void *arg), void *arg)
 {
 	size_t stack_size = getpagesize() * 6;
 
-	return ltp_clone_malloc(clone_flags, fn, arg, stack_size);
+	return ltp_clone_alloc(clone_flags, fn, arg, stack_size);
 }
