@@ -33,6 +33,7 @@ int ltp_clone_malloc(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg, size_t stacksize);
 int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
 		void *arg);
+void *ltp_alloc_stack(size_t size);
 
 #define clone(...) (use_the_ltp_clone_functions__do_not_use_clone)
 

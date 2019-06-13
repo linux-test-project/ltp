@@ -28,8 +28,7 @@
 #include <stdlib.h>
 #include <sched.h>
 #include <stdarg.h>
-#include "test.h"
-#include "config.h"
+#include "tst_clone.h"
 
 #undef clone			/* we want to use clone() */
 
@@ -118,6 +117,24 @@ int ltp_clone7(unsigned long flags, int (*fn)(void *arg), void *arg,
 }
 
 /*
+ * ltp_alloc_stack: allocate stack of size 'size', that is sufficiently
+ * aligned for all arches. User is responsible for freeing allocated
+ * memory.
+ * Returns pointer to new stack. On error, returns NULL with errno set.
+ */
+void *ltp_alloc_stack(size_t size)
+{
+	void *ret = NULL;
+	int err;
+
+	err = posix_memalign(&ret, 64, size);
+	if (err)
+		errno = err;
+
+	return ret;
+}
+
+/*
  * ltp_clone_malloc: also does the memory allocation for clone with a
  * caller-specified size.
  */
@@ -129,7 +146,7 @@ ltp_clone_malloc(unsigned long clone_flags, int (*fn) (void *arg), void *arg,
 	int ret;
 	int saved_errno;
 
-	stack = malloc(stack_size);
+	stack = ltp_alloc_stack(stack_size);
 	if (stack == NULL)
 		return -1;
 
