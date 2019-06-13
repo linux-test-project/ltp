@@ -1,31 +1,14 @@
 #!/bin/sh
-
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2017 Red Hat, Inc.
 #
-# This program is free software;  you can redistribute it and#or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Test functionality of dynamic debug feature by enabling
+# and disabling traces with available flags. Check that these
+# settings don't cause issues by searching dmesg.
 #
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
-# for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-#
-# Test description: Test functionality of dynamic debug feature by enabling
-#                   and disabling traces with available flags. Check that these
-#                   settings don't cause issues by searching dmesg.
-#
-#                   This test handles changes of dynamic debug interface from
-#                   commits 5ca7d2a6 (dynamic_debug: describe_flags with
-#                   '=[pmflt_]*') and 8ba6ebf5 (Dynamic debug: Add more flags)
-#
-# Usage
-# ./dynamic_debug01.sh
+# This test handles changes of dynamic debug interface from
+# commits 5ca7d2a6 (dynamic_debug: describe_flags with
+# '=[pmflt_]*') and 8ba6ebf5 (Dynamic debug: Add more flags)
 
 TST_TESTFUNC=ddebug_test
 TST_NEEDS_CMDS="awk /bin/echo"

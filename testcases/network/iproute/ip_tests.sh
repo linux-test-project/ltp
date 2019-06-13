@@ -1,11 +1,10 @@
 #! /bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2019 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) International Business Machines  Corp., 2001
+# Copyright (c) International Business Machines Corp., 2001
+# Author:       Manoj Iyer, manjo@mail.utexas.edu
 #
 # Description:  Test basic functionality of ip command in route2 package
-#
-# Author:       Manoj Iyer, manjo@mail.utexas.edu
 
 TST_CNT=6
 TST_SETUP="init"

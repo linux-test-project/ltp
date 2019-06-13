@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2013-2019
 
 cd $(dirname $0)
 export LTPROOT=${LTPROOT:-"$PWD"}

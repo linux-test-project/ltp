@@ -1,39 +1,16 @@
 #!/bin/sh
-
-################################################################################
-##                                                                            ##
-## Copyright (c) 2015 SUSE                                                    ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301   ##
-## USA                                                                        ##
-##                                                                            ##
-## Author: Cedric Hnyda <chnyda@suse.com>                                     ##
-##                                                                            ##
-################################################################################
-
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2015 SUSE
+# Author: Cedric Hnyda <chnyda@suse.com>
+#
 # Usage
 # ./cpuacct.sh nbsubgroup nbprocess
-#
-# 1) nbsubgroup : number of subgroup to create
-# 2) nbprocess : number of process to attach to each subgroup
+# nbsubgroup: number of subgroup to create
+# nbprocess: number of process to attach to each subgroup
 #
 # Description
-#
 # 1) Find if cpuacct is mounted, if not mounted, cpuacct will be mounted
 # 2) Check that sum ltp_test/subgroup*/cpuacct.usage = ltp_test/cpuacct.usage
-#
 
 TST_SETUP=setup
 TST_CLEANUP=cleanup

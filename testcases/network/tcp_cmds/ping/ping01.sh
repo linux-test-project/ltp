@@ -1,11 +1,9 @@
 #! /bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2019 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) International Business Machines  Corp., 2000
+# Copyright (c) International Business Machines Corp., 2000
 #
-#  PURPOSE: To test the basic functionality of the `ping` command.
-#
-#  SETUP: If "RHOST" is not exported, then the local hostname is used.
+# To test the basic functionality of the `ping` command.
 #
 #  HISTORY:
 #    06/06/03 Manoj Iyer manjo@mail.utexas.edu

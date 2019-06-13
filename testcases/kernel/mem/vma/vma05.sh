@@ -1,38 +1,20 @@
 #!/bin/sh
-
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2017 Red Hat, Inc.
+# Regression test if the vsyscall and vdso VMA regions are reported correctly.
 #
-# This program is free software;  you can redistribute it and#or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# While [vsyscall] is mostly deprecated with newer systems, there is
+# still plenty of kernels compiled with CONFIG_LEGACY_VSYSCALL_NATIVE and
+# CONFIG_LEGACY_VSYSCALL_EMULATE (see linux/arch/x86/Kconfig for option
+# descriptions). First part of the test will check eligible kernels for
+# regression for a bug fixed by commit 103efcd9aac1 (fix perms/range of
+# vsyscall vma in /proc/*/maps).
 #
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
-# for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, see <http://www.gnu.org/licenses/>.
-
-# Test description: [regression] Check if the vsyscall and vdso VMA regions are
-#                   reported correctly.
-#
-#       While [vsyscall] is mostly deprecated with newer systems, there is
-#       still plenty of kernels compiled with CONFIG_LEGACY_VSYSCALL_NATIVE and
-#       CONFIG_LEGACY_VSYSCALL_EMULATE (see linux/arch/x86/Kconfig for option
-#       descriptions). First part of the test will check eligible kernels for
-#       regression for a bug fixed by commit 103efcd9aac1 (fix perms/range of
-#       vsyscall vma in /proc/*/maps).
-#
-#       Second part of test checks [vdso] VMA permissions (fixed with commits
-#       b6558c4a2378 (fix [vdso] page permissions) and e5b97dde514f (Add
-#       VM_ALWAYSDUMP)). As a consequence of this bug, VMAs were not included
-#       in core dumps which resulted in eg. incomplete backtraces and invalid
-#       core dump files created by gdb.
-
-# Usage
-# ./vma05.sh
+# Second part of test checks [vdso] VMA permissions (fixed with commits
+# b6558c4a2378 (fix [vdso] page permissions) and e5b97dde514f (Add
+# VM_ALWAYSDUMP)). As a consequence of this bug, VMAs were not included
+# in core dumps which resulted in eg. incomplete backtraces and invalid
+# core dump files created by gdb.
 
 TST_SETUP=setup
 TST_CLEANUP=cleanup

@@ -1,3 +1,4 @@
+#!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 # vmcp tool and module test
@@ -7,11 +8,8 @@
 #
 # The test case contains one shell script:
 #
-#    vmcp_m.sh: basically executes the vmcp tool with different parameters and verifies that
-#               output and exitcodes are as expected
-#
-
-#!/bin/sh
+# basically executes the vmcp tool with different parameters and verifies that
+# output and exitcodes are as expected
 
 TST_CNT=2
 TST_TESTFUNC=vmcp_main

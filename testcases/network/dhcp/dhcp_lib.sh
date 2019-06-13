@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
-#
 # Author:       Alexey Kodanev alexey.kodanev@oracle.com
 
 TST_SETUP="dhcp_lib_setup"

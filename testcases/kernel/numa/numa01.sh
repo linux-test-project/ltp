@@ -1,38 +1,20 @@
 #!/bin/sh
-##############################################################################
-#                                                                            #
-# Copyright (c) International Business Machines  Corp., 2007                 #
-#               Sivakumar Chinnaiah, Sivakumar.C@in.ibm.com                  #
-# Copyright (c) Linux Test Project, 2016                                     #
-#                                                                            #
-# This program is free software: you can redistribute it and/or modify       #
-# it under the terms of the GNU General Public License as published by       #
-# the Free Software Foundation, either version 3 of the License, or          #
-# (at your option) any later version.                                        #
-#                                                                            #
-# This program is distributed in the hope that it will be useful,            #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of             #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              #
-# GNU General Public License for more details.                               #
-#                                                                            #
-# You should have received a copy of the GNU General Public License          #
-# along with this program. If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                            #
-##############################################################################
-#                                                                            #
-# Description:  Test Basic functionality of numactl command.                 #
-#               Test #1: Verifies cpunodebind and membind                    #
-#               Test #2: Verifies preferred node bind for memory allocation  #
-#               Test #3: Verifies memory interleave on all nodes             #
-#               Test #4: Verifies physcpubind                                #
-#               Test #5: Verifies localalloc                                 #
-#               Test #6: Verifies memhog                                     #
-#               Test #7: Verifies numa_node_size api                         #
-#               Test #8:Verifies Migratepages                                #
-#               Test #9:Verifies hugepage alloacted on specified node        #
-#               Test #10:Verifies THP memory allocated on preferred node     #
-#                                                                            #
-##############################################################################
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) International Business Machines Corp., 2007
+# Copyright (c) Linux Test Project, 2016
+# Author: Sivakumar Chinnaiah <Sivakumar.C@in.ibm.com>
+#
+# Test Basic functionality of numactl command.
+# Test #1: Verifies cpunodebind and membind
+# Test #2: Verifies preferred node bind for memory allocation
+# Test #3: Verifies memory interleave on all nodes
+# Test #4: Verifies physcpubind
+# Test #5: Verifies localalloc
+# Test #6: Verifies memhog
+# Test #7: Verifies numa_node_size api
+# Test #8:Verifies Migratepages
+# Test #9:Verifies hugepage alloacted on specified node
+# Test #10:Verifies THP memory allocated on preferred node
 
 TST_CNT=10
 TST_SETUP=setup
@@ -43,12 +25,9 @@ TST_NEEDS_CMDS="awk bc numactl numastat"
 
 . tst_test.sh
 
-#
 # Extracts the value of given numa node from the `numastat -p` output.
-#
 # $1 - Pid number.
 # $2 - Node number.
-#
 extract_numastat_p()
 {
 	local pid=$1
