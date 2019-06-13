@@ -1,18 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) International Business Machines  Corp., 2009
+ * Copyright (c) International Business Machines Corp., 2009
  *
  * Authors:
  * Mimi Zohar <zohar@us.ibm.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
- * File: ima_mmap.c
- *
- * Open and mmap a file and sleep. Another process will open the
- * mmapped file in read mode, resulting in a open_writer violation.
  */
 
 #include "tst_test.h"

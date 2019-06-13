@@ -1,35 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) International Business Machines  Corp., 2008
+ * Copyright (c) International Business Machines Corp., 2008
  * Copyright (c) Linux Test Project, 2017-2019
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Author: Rusty Russell <rusty@rustcorp.com.au>
+ * Ported to LTP: subrata <subrata@linux.vnet.ibm.com>
  */
 
 /*
- * File:        ioctl03.c
- *
- * Description: This program tests whether all the valid IFF flags are
- *              returned properly by implementation of TUNGETFEATURES ioctl
- *              on kernel 2.6.27
- *
- * Test Name:   ioctl03
- *
- * Author:      Rusty Russell <rusty@rustcorp.com.au>
- *
- * history:     created - nov 28 2008 - rusty russell <rusty@rustcorp.com.au>
- *              ported to ltp
- *                      - nov 28 2008 - subrata <subrata@linux.vnet.ibm.com>
+ * This program tests whether all the valid IFF flags are
+ * returned properly by implementation of TUNGETFEATURES ioctl
+ * on kernel 2.6.27
  */
 
 #include <sys/types.h>

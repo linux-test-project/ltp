@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 SUSE
  * Author: Nicolai Stange <nstange@suse.de>
@@ -5,27 +6,6 @@
  *
  * Originally found by syzkaller:
  * https://groups.google.com/forum/#!topic/syzkaller-bugs/NKn_ivoPOpk
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses/>.
- *
- * Test for CVE-2017-5754 - pcrypt mishandles freeing instances.
- *
- * The test works by adding and then removing pcrypt-AEAD instances.
- * See commit d76c68109f37 crypto: pcrypt - fix freeing pcrypt instances.
- *
- * If the bug is present then this will probably crash the kernel, but also
- * sometimes the test simply times out.
  */
 
 #include <errno.h>

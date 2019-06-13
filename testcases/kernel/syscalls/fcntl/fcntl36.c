@@ -1,19 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Red Hat Inc. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  * Author: Xiong Zhou <xzhou@redhat.com>
  *
  * This is testing OFD locks racing with POSIX locks:
@@ -29,19 +16,17 @@
  *
  * For example:
  *
- *	Init an file with preset values.
+ * Init an file with preset values.
  *
- *	Threads acquire OFD READ  locks to read  a 4k section start from 0;
- *		checking data read back, there should not be any surprise
- *		values and data should be consistent in a 1k block.
+ * Threads acquire OFD READ  locks to read  a 4k section start from 0;
+ * checking data read back, there should not be any surprise
+ * values and data should be consistent in a 1k block.
  *
- *	Threads acquire OFD WRITE locks to write a 4k section start from 1k,
- *		writing different values in different threads.
+ * Threads acquire OFD WRITE locks to write a 4k section start from 1k,
+ * writing different values in different threads.
  *
- *	Check file data after racing, there should not be any surprise values
- *		and data should be consistent in a 1k block.
- *
- *
+ * Check file data after racing, there should not be any surprise values
+ * and data should be consistent in a 1k block.
  */
 
 #include <sys/types.h>

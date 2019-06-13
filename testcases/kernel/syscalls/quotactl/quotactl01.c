@@ -1,24 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
 * Copyright (c) Crackerjack Project., 2007
 * Copyright (c) 2016 Fujitsu Ltd.
 * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 *
-* This program is free software;  you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY;  without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-* the GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.
-*
-* Test Name: quotactl01
-*
-* Description:
 * This testcase checks the basic flag of quotactl(2) for non-XFS filesystems:
 * 1) quotactl(2) succeeds to turn on quota with Q_QUOTAON flag for user.
 * 2) quotactl(2) succeeds to set disk quota limits with Q_SETQUOTA flag
@@ -44,7 +29,6 @@
 * 14) quotactl(2) succeeds to get quota format with Q_GETFMT flag for group.
 * 15) quotactl(2) succeeds to update quota usages with Q_SYNC flag for group.
 * 16) quotactl(2) succeeds to turn off quota with Q_QUOTAOFF flag for group.
-*
 */
 
 #include <errno.h>

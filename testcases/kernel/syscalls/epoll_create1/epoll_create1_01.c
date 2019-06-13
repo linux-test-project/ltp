@@ -1,24 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Ulrich Drepper <drepper@redhat.com>
- * Copyright (c) International Business Machines  Corp., 2009
+ * Copyright (c) International Business Machines Corp., 2009
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;
- *
- * Test:        epoll_create1_01.c
- *
- * Description: This Program tests the new system call introduced in 2.6.27.
- *              Ulrich´s comment as in:
+ * Test system call introduced in 2.6.27.
  * http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=a0998b50c3f0b8fdd265c63e0032f86ebe377dbf
  *
  * This patch adds the new epoll_create1 syscall.  It extends the old

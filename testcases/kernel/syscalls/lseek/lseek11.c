@@ -1,39 +1,24 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (C) 2017 Red Hat, Inc.  All rights reserved.
+ * Copyright (C) 2017 Red Hat, Inc.  All rights reserved.
+ * Author: Zorro Lang <zlang@redhat.com>
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *  Test functional SEEK_HOLE and SEEK_DATA of lseek(2).
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
+ *  Since version 3.1, Linux supports the following additional values for
+ *  whence:
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *  SEEK_DATA
+ *       Adjust the file offset to the next location in the file greater than
+ *       or  equal  to  offset  containing data.  If offset points to data,
+ *       then the file offset is set to offset.
  *
- *   AUTHOR: Zorro Lang <zlang@redhat.com>
- *
- *   DESCRIPTION
- *     This case does functional SEEK_HOLE and SEEK_DATA of lseek(2) testing.
- *
- *     Since version 3.1, Linux supports the following additional values for
- *     whence:
- *
- *     SEEK_DATA
- *         Adjust the file offset to the next location in the file greater than
- *         or  equal  to  offset  containing data.  If offset points to data,
- *         then the file offset is set to offset.
- *
- *     SEEK_HOLE
- *         Adjust the file offset to the next hole in the file greater than or
- *         equal to offset.  If offset points into the middle of a hole, then
- *         the file offset is set to offset. If there is no hole past offset,
- *         then the file offset is adjusted to the end of the file (i.e., there
- *         is an implicit hole at the end of any file).
+ *  SEEK_HOLE
+ *       Adjust the file offset to the next hole in the file greater than or
+ *       equal to offset.  If offset points into the middle of a hole, then
+ *       the file offset is set to offset. If there is no hole past offset,
+ *       then the file offset is adjusted to the end of the file (i.e., there
+ *       is an implicit hole at the end of any file).
  */
 
 #define _GNU_SOURCE

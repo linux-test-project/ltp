@@ -1,32 +1,18 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
+ * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * Check for basic errors returned by umount(2) system call.
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- *    AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- *
- *    DESCRIPTION
- *	Check for basic errors returned by umount(2) system call.
- *
- *	Verify that umount(2) returns -1 and sets errno to
- *
- *	1) EBUSY if it cannot be umounted, because dir is still busy.
- *	2) EFAULT if specialfile or device file points to invalid address space.
- *	3) ENOENT if pathname was empty or has a nonexistent component.
- *	4) EINVAL if specialfile or device is invalid or not a mount point.
- *	5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
- *****************************************************************************/
+ * Verify that umount(2) returns -1 and sets errno to
+ * 1) EBUSY if it cannot be umounted, because dir is still busy.
+ * 2) EFAULT if specialfile or device file points to invalid address space.
+ * 3) ENOENT if pathname was empty or has a nonexistent component.
+ * 4) EINVAL if specialfile or device is invalid or not a mount point.
+ * 5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
+ */
 
 #include <errno.h>
 #include <string.h>

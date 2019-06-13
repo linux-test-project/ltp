@@ -1,24 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * AUTHOR		: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- *
- * DESCRIPTION
- *	This is a Phase I test for the umount(2) system call.
- *	It is intended to provide a limited exposure of the system call.
- *****************************************************************************/
+ * Phase I test for the umount(2) system call.
+ * It is intended to provide a limited exposure of the system call.
+ */
 
 #include <errno.h>
 #include <sys/mount.h>

@@ -1,66 +1,12 @@
-/******************************************************************************/
-/*									      */
-/* Copyright (c) International Business Machines  Corp., 2001		      */
-/*									      */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.					      */
-/*									      */
-/* This program is distributed in the hope that it will be useful,	      */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of	      */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See	              */
-/* the GNU General Public License for more details.			      */
-/*									      */
-/* You should have received a copy of the GNU General Public License	      */
-/* along with this program;  if not, write to the Free Software		      */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*									      */
-/******************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines Corp., 2001
+ * Author: Manoj Iyer, IBM Austin TX <manjo@austin.ibm.com>, 2001
+ *
+ * Stress the VMM and C library by spawning N threads which malloc
+ * blocks of increasing size until malloc returns NULL.
+ */
 
-/******************************************************************************/
-/*                                                                            */
-/* History:     Nov - 04 - 2001 Created - Manoj Iyer, IBM Austin TX.          */
-/*                               email:manjo@austin.ibm.com                   */
-/*                                                                            */
-/*		Nov - 06 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
-/*				- added function alloc_mem()                  */
-/*    								              */
-/*		Nov - 08 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
-/*				- added logic to allocate memory in the size  */
-/*				  of fibanocci numbers.                       */
-/*				- fixed segmetation fault.                    */
-/*									      */
-/*		Nov - 09 - 2001 Modified - Manoj Iyer, IBM Austin TX.         */
-/*				- separated alocation logic to allocate_free()*/
-/*				  function.                                   */
-/*				- introduced logic to randomly pick allocation*/
-/*				  scheme. size = fibannoci number, pow of 2 or*/
-/*				  power of 3.                                 */
-/*				- changed comments.                           */
-/*				- Added test to LTP.                          */
-/*                                                                            */
-/*		Nov - 09 - 2001 Modified - Manoj Iyer,IBM Austin TX.	      */
-/*				- Removed compile errors.                     */
-/*				- too many missing arguments.                 */
-/*								              */
-/*		Nov - 19 - 2001 Modified - Manoj Iyer, IBM Austin TX.	      */
-/*				- fixed segmentation fault. 		      */
-/*				  changed variable th_status from dynamic to  */
-/*				  static array.			              */
-/*                                                                            */
-/*		May - 15 - 2002 Dan Kegel (dank@kegel.com)                    */
-/*		                - Fixed crash on > 30 threads                 */
-/*		                - Cleaned up, fixed compiler warnings         */
-/*		                - Removed mallocs that could fail             */
-/*		                - Note that pthread_create fails with EINTR   */
-/*                                                                            */
-/* File:	mallocstress.c						      */
-/*									      */
-/* Description:	This program stresses the VMM and C library                   */
-/*              by spawning N threads which                                   */
-/*              malloc blocks of increasing size until malloc returns NULL.   */
-/******************************************************************************/
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>

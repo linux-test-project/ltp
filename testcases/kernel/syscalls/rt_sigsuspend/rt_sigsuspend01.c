@@ -1,12 +1,8 @@
-/******************************************************************************/
-/* Copyright (c) Crackerjack Project., 2007                                   */
-/*                                                                            */
-/* History:     Porting from Crackerjack to LTP is done by                    */
-/*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
-/******************************************************************************/
-
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Description: This tests the rt_sigsuspend() syscall.
+ * Copyright (c) Crackerjack Project., 2007
+ * Porting from Crackerjack to LTP is done by
+ * Manas Kumar Nayak maknayak@in.ibm.com>
  *
  * Waits for SIGALRM in rt_sigsuspend() then checks that process mask wasn't
  * modified.
