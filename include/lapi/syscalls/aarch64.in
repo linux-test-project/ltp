@@ -265,4 +265,5 @@ mlock2 284
 copy_file_range 285
 preadv2 286
 pwritev2 287
+pidfd_send_signal 424
 _sysctl 1078

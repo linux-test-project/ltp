@@ -305,3 +305,4 @@ mlock2 1346
 copy_file_range 1347
 preadv2 1348
 pwritev2 1349
+pidfd_send_signal 1448
