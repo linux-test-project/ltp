@@ -476,23 +476,19 @@ static char *get_ipv4_network(int ip, unsigned int prefix)
 	unsigned char byte;
 	unsigned int i;
 
+	ip = htonl(ip);
+
 	if (prefix > MAX_IPV4_PREFIX)
 		return NULL;
 
 	if (prefix == MAX_IPV4_PREFIX)
 		return strdup("\0");
 
-	prefix &= 0x18;
+	prefix &= MAX_IPV4_PREFIX - 8;
 
-	for (i = 0; i < MAX_IPV4_PREFIX && (prefix == 0 || i < prefix);
-	     i += 8) {
-		if (i == 0) {
-			byte = ip & 0xff;
-			sprintf(p_buf, "%d", byte);
-		} else {
-			byte = (ip >> i) & 0xff;
-			sprintf(p_buf, ".%d", byte);
-		}
+	for (i = prefix; i > 0; i -= 8) {
+		byte = (ip >> i) & 0xff;
+		sprintf(p_buf, i < prefix ? ".%d" : "%d", byte);
 		p_buf += strlen(p_buf);
 	}
 
