@@ -71,6 +71,7 @@ AC_CHECK_FUNCS([ \
     mkdirat \
     mknodat \
     openat \
+    pidfd_send_signal \
     preadv \
     preadv2 \
     profil \
@@ -237,6 +238,7 @@ else
 	numa_error_msg="NUMA support was disabled during build"
 fi
 AC_DEFINE_UNQUOTED(NUMA_ERROR_MSG, ["$numa_error_msg"], [Error message when no NUMA support])
+
 
 LTP_CHECK_SYSCALL_PERF_EVENT_OPEN
 LTP_CHECK_SYSCALL_QUOTACTL

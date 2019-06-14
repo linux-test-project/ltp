@@ -833,6 +833,8 @@ pause03 pause03
 personality01 personality01
 personality02 personality02
 
+pidfd_send_signal01 pidfd_send_signal01
+
 pipe01 pipe01
 pipe02 pipe02
 pipe03 pipe03
