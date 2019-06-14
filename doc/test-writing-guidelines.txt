@@ -153,7 +153,7 @@ separate patch.
 ~~~~~~~~~~~
 
 Code contributed to LTP should be licensed under GPLv2+ (GNU GPL version 2 or
-any later version).
+any later version). Use `SPDX-License-Identifier: GPL-2.0-or-later`.
 
 2. Writing a testcase
 ---------------------
@@ -1694,9 +1694,8 @@ WARNING: All identifiers starting with TST_ or tst_ are reserved for the
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # This is a basic test for true shell buildin
-#
 
 TST_TESTFUNC=do_test
 . tst_test.sh
@@ -1742,9 +1741,8 @@ starts the test.
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Example test with tests in separate functions
-#
 
 TST_TESTFUNC=test
 TST_CNT=2
@@ -1773,9 +1771,8 @@ found they are executed one by one. The test number is passed to it in the '$1'.
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Example test with tests in a single function
-#
 
 TST_TESTFUNC=do_test
 TST_CNT=2
@@ -1802,10 +1799,9 @@ to it in the '$1'.
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Example test with tests in a single function, using $TST_TEST_DATA and
 # $TST_TEST_DATA_IFS
-#
 
 TST_TESTFUNC=do_test
 TST_TEST_DATA="foo:bar:d dd"
@@ -1830,9 +1826,8 @@ It's possible to pass data for function with '$TST_TEST_DATA'. Optional
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Example test with tests in a single function, using $TST_TEST_DATA and $TST_CNT
-#
 
 TST_TESTFUNC=do_test
 TST_CNT=2
@@ -1932,9 +1927,8 @@ variable, if module wasn't found the test will exit with 'TCONF'.
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Optional test command line parameters
-#
 
 TST_OPTS="af:"
 TST_USAGE=usage
@@ -1986,9 +1980,8 @@ and, if option has argument, its value in the '$2'.
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Optional test positional parameters
-#
 
 TST_POS_ARGS=3
 TST_USAGE=usage
@@ -2302,9 +2295,9 @@ correct daemon name.
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Cron daemon restart example
-#
+
 TCID=cron01
 TST_COUNT=1
 . test.sh
