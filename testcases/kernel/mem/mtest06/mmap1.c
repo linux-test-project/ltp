@@ -12,8 +12,11 @@
  * between mmap/munmap worked, then its value must match expected
  * value.
  *
- * Can trigger panics/stalls since at least 4.14 on some arches. See:
+ * Can trigger panics/stalls since at least 4.14 on some arches:
  *   fc8efd2ddfed ("mm/memory.c: do_fault: avoid usage of stale vm_area_struct")
+ * Can trigger user-space stalls on aarch64:
+ *   7a30df49f63a ("mm: mmu_gather: remove __tlb_reset_range() for force flush")
+ *   https://lore.kernel.org/linux-mm/1817839533.20996552.1557065445233.JavaMail.zimbra@redhat.com
  */
 #include <errno.h>
 #include <float.h>
@@ -25,7 +28,11 @@
 #include "tst_test.h"
 #include "tst_safe_pthread.h"
 
-#define DISTANT_MMAP_SIZE (64*1024*1024)
+#ifdef TST_ABI32
+#  define DISTANT_MMAP_SIZE (256*1024*1024)
+#else
+#  define DISTANT_MMAP_SIZE (2L*1024*1024*1024)
+#endif
 #define TEST_FILENAME "ashfile"
 
 /* seconds remaining before reaching timeout */
