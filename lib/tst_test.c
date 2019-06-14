@@ -138,6 +138,7 @@ static void cleanup_ipc(void)
 	if (results) {
 		msync((void*)results, size, MS_SYNC);
 		munmap((void*)results, size);
+		results = NULL;
 	}
 }
 
@@ -921,10 +922,10 @@ static void do_cleanup(void)
 	if (tst_test->save_restore)
 		tst_sys_conf_restore(0);
 
-	cleanup_ipc();
-
 	if (tst_test->restore_wallclock)
 		tst_wallclock_restore();
+
+	cleanup_ipc();
 }
 
 static void run_tests(void)
