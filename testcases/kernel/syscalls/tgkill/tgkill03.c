@@ -7,6 +7,7 @@
 
 #include <pthread.h>
 #include <pwd.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 #include "tst_safe_pthread.h"
@@ -42,6 +43,7 @@ static void setup(void)
 {
 	sigset_t sigusr1;
 	pthread_t defunct_thread;
+	char defunct_tid_path[PATH_MAX];
 
 	sigemptyset(&sigusr1);
 	sigaddset(&sigusr1, SIGUSR1);
@@ -55,8 +57,9 @@ static void setup(void)
 	TST_CHECKPOINT_WAIT(0);
 
 	SAFE_PTHREAD_CREATE(&defunct_thread, NULL, defunct_thread_func, NULL);
-
 	SAFE_PTHREAD_JOIN(defunct_thread, NULL);
+	sprintf(defunct_tid_path, "/proc/%d/task/%d", getpid(), defunct_tid);
+	TST_RETRY_FN_EXP_BACKOFF(access(defunct_tid_path, R_OK), -1, 15);
 }
 
 static void cleanup(void)
@@ -108,4 +111,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = run,
+	.timeout = 20,
 };
