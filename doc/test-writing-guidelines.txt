@@ -347,6 +347,14 @@ assigned a valid file descriptor. For most of the things you need to create
 extra flag that is set right after successful initialization though. Consider,
 for example, test setup below.
 
+We also prefer cleaning up resources that would otherwise be released on the
+program exit. There are two main reasons for this decision. Resources such as
+file descriptors and mmaped memory could block umounting a block device in
+cases where the test library has mounted a filesystem for the test temporary
+directory. Not freeing allocated memory would upset static analysis and tools
+such as valgrind and produce false-positives when checking for leaks in the
+libc and other low level libraries.
+
 [source,c]
 -------------------------------------------------------------------------------
 static int fd0, fd1, mount_flag;
