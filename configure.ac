@@ -48,6 +48,7 @@ AC_CHECK_HEADERS([ \
     linux/netlink.h \
     linux/seccomp.h \
     linux/securebits.h \
+    linux/types.h \
     linux/userfaultfd.h \
     mm.h \
     netinet/sctp.h \

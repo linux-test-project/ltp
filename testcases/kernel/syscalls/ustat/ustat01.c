@@ -5,6 +5,10 @@
  * Check that ustat() succeeds given correct parameters.
  */
 
+#include "config.h"
+#include "tst_test.h"
+
+#if defined(HAVE_SYS_USTAT_H) || defined(HAVE_LINUX_TYPES_H)
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -12,7 +16,6 @@
 
 #include "lapi/syscalls.h"
 #include "lapi/ustat.h"
-#include "tst_test.h"
 
 static dev_t dev_num;
 
@@ -42,3 +45,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 };
+#else
+TST_TEST_TCONF("testing ustat requires <sys/ustat.h> or <linux/types.h>");
+#endif

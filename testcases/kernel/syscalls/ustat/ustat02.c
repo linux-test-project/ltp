@@ -6,6 +6,10 @@
  * invalid dev_t parameter and for bad address paramater.
  */
 
+#include "config.h"
+#include "tst_test.h"
+
+#if defined(HAVE_SYS_USTAT_H) || defined(HAVE_LINUX_TYPES_H)
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -13,7 +17,6 @@
 
 #include "lapi/syscalls.h"
 #include "lapi/ustat.h"
-#include "tst_test.h"
 
 static dev_t invalid_dev = -1;
 static dev_t root_dev;
@@ -61,3 +64,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(tc),
 };
+#else
+TST_TEST_TCONF("testing ustat requires <sys/ustat.h> or <linux/types.h>");
+#endif
