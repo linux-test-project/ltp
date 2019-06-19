@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <sched.h>
 #include <stdarg.h>
+#include "config.h"
 #include "tst_clone.h"
 
 #undef clone			/* we want to use clone() */
