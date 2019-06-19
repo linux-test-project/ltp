@@ -121,6 +121,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.all_filesystems = 1,
+	.dev_fs_flags = TST_FS_SKIP_FUSE,
 	.mntpoint = MNTPOINT,
 	.setup = setup,
 	.test = run,
