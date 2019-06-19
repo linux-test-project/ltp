@@ -162,16 +162,18 @@ int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount);
  */
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 
+#define TST_FS_SKIP_FUSE 0x01
+
 /*
  * Return 1 if a specified fiilsystem is supported
  * Return 0 if a specified fiilsystem isn't supported
  */
-int tst_fs_is_supported(const char *fs_type);
+int tst_fs_is_supported(const char *fs_type, int flags);
 
 /*
  * Returns NULL-terminated array of kernel-supported filesystems.
  */
-const char **tst_get_supported_fs_types(void);
+const char **tst_get_supported_fs_types(int flags);
 
 /*
  * Creates and writes to files on given path until write fails with ENOSPC

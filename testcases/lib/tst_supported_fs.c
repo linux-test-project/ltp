@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (argv[1])
-		return !tst_fs_is_supported(argv[1]);
+		return !tst_fs_is_supported(argv[1], 0);
 
-	filesystems = tst_get_supported_fs_types();
+	filesystems = tst_get_supported_fs_types(0);
 	for (i = 0; filesystems[i]; i++)
 		printf("%s\n", filesystems[i]);
 

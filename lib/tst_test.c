@@ -1151,7 +1151,7 @@ static int run_tcases_per_fs(void)
 {
 	int ret = 0;
 	unsigned int i;
-	const char *const *filesystems = tst_get_supported_fs_types();
+	const char *const *filesystems = tst_get_supported_fs_types(tst_test->dev_fs_flags);
 
 	if (!filesystems[0])
 		tst_brk(TCONF, "There are no supported filesystems");
