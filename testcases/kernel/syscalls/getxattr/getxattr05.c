@@ -37,11 +37,13 @@
 #if defined(HAVE_SYS_XATTR_H) && defined(HAVE_LIBACL)
 
 #define TEST_FILE	"testfile"
+#define SELF_USERNS	"/proc/self/ns/user"
 #define MAX_USERNS	"/proc/sys/user/max_user_namespaces"
 #define UID_MAP	"/proc/self/uid_map"
 
 static acl_t acl;
 static int orig_max_userns = -1;
+static int user_ns_supported = 1;
 
 static struct tcase {
 	/* 0: without userns, 1: with userns */
@@ -110,6 +112,11 @@ static void do_getxattr(unsigned int n)
 	struct tcase *tc = &tcases[n];
 	pid_t pid;
 
+	if (tc->set_userns && !user_ns_supported) {
+		tst_res(TCONF, "user namespace not available");
+		return;
+	}
+
 	pid = SAFE_FORK();
 	if (!pid) {
 		if (tc->set_userns)
@@ -144,10 +151,13 @@ static void setup(void)
 	/* The default value of max_user_namespaces is set to 0 on some distros,
 	 * We need to change the default value to call unshare().
 	 */
-	if (!access(MAX_USERNS, F_OK)) {
+	if (access(SELF_USERNS, F_OK) != 0) {
+		user_ns_supported = 0;
+	} else if (!access(MAX_USERNS, F_OK)) {
 		SAFE_FILE_SCANF(MAX_USERNS, "%d", &orig_max_userns);
 		SAFE_FILE_PRINTF(MAX_USERNS, "%d", 10);
 	}
+
 }
 
 static void cleanup(void)
