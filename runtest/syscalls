@@ -28,8 +28,6 @@ alarm05 alarm05
 alarm06 alarm06
 alarm07 alarm07
 
-asyncio02 asyncio02
-
 bind01 bind01
 bind02 bind02
 bind03 bind03
@@ -1330,6 +1328,8 @@ ssetmask01 ssetmask01
 
 stat01 stat01
 stat01_64 stat01_64
+stat02 stat02
+stat02_64 stat02_64
 stat03 stat03
 stat03_64 stat03_64
 stat04 symlink01 -T stat04

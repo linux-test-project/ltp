@@ -20,21 +20,6 @@ alarm03 alarm03
 #    TEST CASES
 # 	1.) alarm(100), fork, child's alarm(0) shall return 0;
 #	2.) alarm(100), fork, parent's alarm(0) shall return non-zero.
-asyncio02 asyncio02
-# 	Attempt to get some memory to work with.
-# 	Call testrun writing (BUFSIZ + 1) bytes
-# 	Call testrun writing BUFSIZ bytes
-# 	Repeated call to testrun() with decreasing write sizes
-# 		less than BUFSIZ
-# 	End
-#
-# 	Start testrun()
-# 	Attempt to open a temporary file.
-# 	Write the memory to the file.
-# 	Attempt to close the file which also flushes the buffers.
-# 	Now check to see if the number of bytes written is the
-# 		same as the number of bytes in the file.
-# 	Cleanup
 brk01 brk01
 # Basic test for brk()
 #    TEST CASES
