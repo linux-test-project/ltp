@@ -29,6 +29,11 @@
 #define	__FANOTIFY_H__
 
 #include "config.h"
+#include <sys/statfs.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #if defined(HAVE_SYS_FANOTIFY_H)
 
@@ -56,9 +61,6 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 
 #ifndef FAN_REPORT_TID
 #define FAN_REPORT_TID		0x00000100
-#endif
-#ifndef FAN_REPORT_FID
-#define FAN_REPORT_FID		0x00000200
 #endif
 
 #ifndef FAN_MARK_INODE
@@ -88,6 +90,54 @@ struct fanotify_mark_type {
 	unsigned int flag;
 	const char * name;
 };
+
+#ifndef FAN_REPORT_FID
+#define FAN_REPORT_FID		0x00000200
+
+struct fanotify_event_info_header {
+	uint8_t info_type;
+	uint8_t pad;
+	uint16_t len;
+};
+
+struct fanotify_event_info_fid {
+	struct fanotify_event_info_header hdr;
+	__kernel_fsid_t fsid;
+	unsigned char handle[0];
+};
+
+#endif
+
+/*
+ * Helper function used to obtain __kernel_fsid_t and file_handle objects
+ * for a given path. Used by test files correlated to FAN_REPORT_FID
+ * functionality.
+ */
+static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
+			struct file_handle *handle)
+{
+	int mount_id;
+	struct statfs stats;
+
+	if (statfs(path, &stats) == -1)
+		tst_brk(TBROK | TERRNO,
+			"statfs(%s, ...) failed", path);
+	memcpy(fsid, &stats.f_fsid, sizeof(stats.f_fsid));
+
+#ifdef HAVE_NAME_TO_HANDLE_AT
+	if (name_to_handle_at(AT_FDCWD, path, handle, &mount_id, 0) == -1) {
+		if (errno == EOPNOTSUPP) {
+			tst_brk(TCONF,
+				"filesystem %s does not support file handles",
+				tst_device->fs_type);
+		}
+		tst_brk(TBROK | TERRNO,
+			"name_to_handle_at(AT_FDCWD, %s, ...) failed", path);
+	}
+#else
+	tst_brk(TCONF, "name_to_handle_at() is not implmented");
+#endif /* HAVE_NAME_TO_HANDLE_AT */
+}
 
 #define INIT_FANOTIFY_MARK_TYPE(t) \
 	{ FAN_MARK_ ## t, "FAN_MARK_" #t }

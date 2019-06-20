@@ -70,6 +70,7 @@ AC_CHECK_FUNCS([ \
     kcmp \
     mkdirat \
     mknodat \
+    name_to_handle_at \
     openat \
     pidfd_send_signal \
     preadv \

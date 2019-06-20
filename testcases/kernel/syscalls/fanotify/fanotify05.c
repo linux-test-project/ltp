@@ -11,6 +11,7 @@
  *     Generate enough events without reading them and check that overflow
  *     event is generated.
  */
+#define _GNU_SOURCE
 #include "config.h"
 
 #include <stdio.h>
