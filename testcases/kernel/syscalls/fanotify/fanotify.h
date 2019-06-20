@@ -69,6 +69,31 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #ifndef FAN_MARK_FILESYSTEM
 #define FAN_MARK_FILESYSTEM	0x00000100
 #endif
+/* New dirent event masks */
+#ifndef FAN_ATTRIB
+#define FAN_ATTRIB		0x00000004
+#endif
+#ifndef FAN_MOVED_FROM
+#define FAN_MOVED_FROM		0x00000040
+#endif
+#ifndef FAN_MOVED_TO
+#define FAN_MOVED_TO		0x00000080
+#endif
+#ifndef FAN_CREATE
+#define FAN_CREATE		0x00000100
+#endif
+#ifndef FAN_DELETE
+#define FAN_DELETE		0x00000200
+#endif
+#ifndef FAN_DELETE_SELF
+#define FAN_DELETE_SELF		0x00000400
+#endif
+#ifndef FAN_MOVE_SELF
+#define FAN_MOVE_SELF		0x00000800
+#endif
+#ifndef FAN_MOVE
+#define FAN_MOVE		(FAN_MOVED_FROM | FAN_MOVED_TO)
+#endif
 #ifndef FAN_OPEN_EXEC
 #define FAN_OPEN_EXEC		0x00001000
 #endif
