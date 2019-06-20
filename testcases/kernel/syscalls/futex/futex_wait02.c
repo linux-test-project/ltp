@@ -29,10 +29,11 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "futextest.h"
-#include "futex_common.h"
 
 const char *TCID="futex_wait02";
 const int TST_TOTAL=1;
+
+static futex_t *futex;
 
 static void do_child(void)
 {
@@ -79,6 +80,14 @@ static void verify_futex_wait(void)
 		tst_resm(TPASS, "futex_wait() woken up");
 	else
 		tst_resm(TFAIL, "child failed");
+}
+
+static void setup(void)
+{
+	futex = SAFE_MMAP(NULL, NULL, sizeof(*futex), PROT_READ | PROT_WRITE,
+			  MAP_ANONYMOUS | MAP_SHARED, -1, 0);
+
+	*futex = FUTEX_INITIALIZER;
 }
 
 int main(int argc, char *argv[])
