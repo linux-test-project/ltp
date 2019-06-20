@@ -38,6 +38,7 @@
 #define FILE_PATH_ONE MOUNT_PATH"/"FILE_ONE
 #define FILE_PATH_TWO MOUNT_PATH"/"FILE_TWO
 
+#if defined(HAVE_NAME_TO_HANDLE_AT)
 struct event_t {
 	unsigned long long expected_mask;
 	__kernel_fsid_t fsid;
@@ -311,6 +312,9 @@ static struct tst_test test = {
 	.all_filesystems = 1
 };
 
+#else
+	TST_TEST_TCONF("System does not have required name_to_handle_at() support");
+#endif
 #else
 	TST_TEST_TCONF("System does not have required fanotify support");
 #endif

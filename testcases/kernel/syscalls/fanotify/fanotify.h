@@ -125,21 +125,22 @@ struct fanotify_event_info_header {
 	uint16_t len;
 };
 
+#ifdef HAVE_NAME_TO_HANDLE_AT
 struct fanotify_event_info_fid {
 	struct fanotify_event_info_header hdr;
 	__kernel_fsid_t fsid;
 	unsigned char handle[0];
 };
-
+#endif
 #endif
 
+#ifdef HAVE_NAME_TO_HANDLE_AT
 /*
- * Helper function used to obtain __kernel_fsid_t and file_handle objects
- * for a given path. Used by test files correlated to FAN_REPORT_FID
- * functionality.
+ * Helper function used to obtain fsid and file_handle for a given path.
+ * Used by test files correlated to FAN_REPORT_FID functionality.
  */
 static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
-			struct file_handle *handle)
+				    struct file_handle *handle)
 {
 	int mount_id;
 	struct statfs stats;
@@ -149,7 +150,6 @@ static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 			"statfs(%s, ...) failed", path);
 	memcpy(fsid, &stats.f_fsid, sizeof(stats.f_fsid));
 
-#ifdef HAVE_NAME_TO_HANDLE_AT
 	if (name_to_handle_at(AT_FDCWD, path, handle, &mount_id, 0) == -1) {
 		if (errno == EOPNOTSUPP) {
 			tst_brk(TCONF,
@@ -159,10 +159,8 @@ static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 		tst_brk(TBROK | TERRNO,
 			"name_to_handle_at(AT_FDCWD, %s, ...) failed", path);
 	}
-#else
-	tst_brk(TCONF, "name_to_handle_at() is not implmented");
-#endif /* HAVE_NAME_TO_HANDLE_AT */
 }
+#endif /* HAVE_NAME_TO_HANDLE_AT */
 
 #define INIT_FANOTIFY_MARK_TYPE(t) \
 	{ FAN_MARK_ ## t, "FAN_MARK_" #t }

@@ -35,6 +35,7 @@
 #define FILE1 TEST_DIR"/file1"
 #define FILE2 TEST_DIR"/file2"
 
+#if defined(HAVE_NAME_TO_HANDLE_AT)
 struct event_t {
 	unsigned long long mask;
 	__kernel_fsid_t fsid;
@@ -241,6 +242,9 @@ static struct tst_test test = {
 	.cleanup = do_cleanup
 };
 
+#else
+	TST_TEST_TCONF("System does not have required name_to_handle_at() support");
+#endif
 #else
 	TST_TEST_TCONF("System does not have required fanotify support");
 #endif
