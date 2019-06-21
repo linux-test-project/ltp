@@ -338,4 +338,7 @@ mlock2 374
 copy_file_range 375
 preadv2 376
 pwritev2 377
+pkey_mprotect 384
+pkey_alloc 385
+pkey_free 386
 pidfd_send_signal 424
