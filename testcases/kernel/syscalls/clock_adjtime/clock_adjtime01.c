@@ -58,6 +58,7 @@
 
 static long hz;
 static struct timex saved, ttxc;
+static int supported;
 
 struct test_case {
 	unsigned int modes;
@@ -168,6 +169,7 @@ static void setup(void)
 	int rval;
 
 	rval = SAFE_CLOCK_ADJTIME(CLOCK_REALTIME, &saved);
+	supported = 1;
 
 	if (rval != TIME_OK && rval != TIME_ERROR) {
 		timex_show("SAVE_STATUS", saved);
@@ -197,6 +199,9 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	if (supported == 0)
+		return;
+
 	saved.modes = ADJ_ALL;
 
 	/* restore clock resolution based on original status flag */
