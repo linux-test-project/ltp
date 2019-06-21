@@ -76,6 +76,7 @@ AC_CHECK_FUNCS([ \
     pidfd_send_signal \
     preadv \
     preadv2 \
+    pkey_mprotect \
     profil \
     pwritev \
     pwritev2 \
