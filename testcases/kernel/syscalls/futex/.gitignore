@@ -1,3 +1,4 @@
+/futex_cmp_requeue01
 /futex_wait01
 /futex_wait02
 /futex_wait03
