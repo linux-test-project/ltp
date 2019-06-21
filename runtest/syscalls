@@ -1553,6 +1553,7 @@ perf_event_open01 perf_event_open01
 perf_event_open02 perf_event_open02
 
 futex_cmp_requeue01 futex_cmp_requeue01
+futex_cmp_requeue02 futex_cmp_requeue02
 futex_wait01 futex_wait01
 futex_wait02 futex_wait02
 futex_wait03 futex_wait03
