@@ -9,6 +9,9 @@
  *	FAN_REPORT_FID is specified matches those that are obtained via
  *	explicit invocation to system calls statfs(2) and
  *	name_to_handle_at(2).
+ *
+ * This is also regression test for:
+ *     c285a2f01d69 ("fanotify: update connector fsid cache on add mark")
  */
 #define _GNU_SOURCE
 #include "config.h"
@@ -85,6 +88,7 @@ static struct test_case_t {
 	}
 };
 
+static int nofid_fd;
 static int fanotify_fd;
 static char events_buf[BUF_SIZE];
 static struct event_t event_set[EVENT_MAX];
@@ -281,14 +285,24 @@ out:
 
 static void do_setup(void)
 {
-	int fd;
-
 	/* Check for kernel fanotify support */
-	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
-	SAFE_CLOSE(fd);
+	nofid_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 
 	/* Create file and directory objects for testing */
 	create_objects();
+
+	/*
+	 * Create a mark on first inode without FAN_REPORT_FID, to test
+	 * uninitialized connector->fsid cache. This mark remains for all test
+	 * cases and is not expected to get any events (no writes in this test).
+	 */
+	if (fanotify_mark(nofid_fd, FAN_MARK_ADD, FAN_CLOSE_WRITE, AT_FDCWD,
+			  FILE_PATH_ONE) == -1) {
+		tst_brk(TBROK | TERRNO,
+			"fanotify_mark(%d, FAN_MARK_ADD, FAN_CLOSE_WRITE, "
+			"AT_FDCWD, "FILE_PATH_ONE") failed",
+			nofid_fd);
+	}
 
 	/* Get the filesystem fsid and file handle for each created object */
 	get_object_stats();
@@ -296,6 +310,7 @@ static void do_setup(void)
 
 static void do_cleanup(void)
 {
+	SAFE_CLOSE(nofid_fd);
 	if (fanotify_fd > 0)
 		SAFE_CLOSE(fanotify_fd);
 }
