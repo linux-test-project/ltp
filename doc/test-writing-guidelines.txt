@@ -1515,10 +1515,11 @@ and restored at the end of the test. Only first line of a specified
 file is saved and restored.
 
 Pathnames can be optionally prefixed to specify how strictly (during
-'store') are handled files that don't exist:
-  (no prefix) - test ends with TCONF
-  '?'         - test prints info message and continues
-  '!'         - test ends with TBROK
+'store') are handled errors:
+  (no prefix) - test ends with TCONF, if file doesn't exist
+  '?'         - test prints info message and continues,
+                if file doesn't exist or open/read fails
+  '!'         - test ends with TBROK, if file doesn't exist
 
 'restore' is always strict and will TWARN if it encounters any error.
 
