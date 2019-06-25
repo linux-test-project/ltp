@@ -25,8 +25,7 @@ export TST_TOTAL=4
 . pm_include.sh
 
 check_cpufreq_sysfs_files() {
-	total_cpus=$(tst_ncpus)
-	(( total_cpus-=1 ))
+	total_cpus=`expr $(tst_ncpus) - 1`
 	RC=0
 
 	for cpu in $(seq 0 "${total_cpus}" )
@@ -51,8 +50,7 @@ check_cpufreq_sysfs_files() {
 change_govr() {
 	available_govr=$(get_supporting_govr)
 
-	total_cpus=$(tst_ncpus)
-	(( total_cpus-=1 ))
+	total_cpus=`expr $(tst_ncpus) - 1`
 	RC=0
 
 	for cpu in $(seq 0 "${total_cpus}" )
@@ -79,8 +77,7 @@ change_freq() {
 	available_govr=$(get_supporting_govr)
 	RC=0
 
-	total_cpus=$(tst_ncpus)
-	(( total_cpus-=1 ))
+	total_cpus=`expr $(tst_ncpus) - 1`
 
 	if ( echo ${available_govr} | grep -i "userspace" \
 		>/dev/null 2>&1 ); then
