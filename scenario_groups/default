@@ -22,7 +22,6 @@ power_management_tests
 hugetlb
 commands
 hyperthreading
-kernel_misc
 fs_ext4
 can
 cpuhotplug
@@ -30,3 +29,4 @@ net.ipv6_lib
 input
 cve
 crypto
+kernel_misc
