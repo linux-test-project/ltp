@@ -269,6 +269,9 @@ find_kernel_symbol(const char *name)
 	struct utsname utsname;
 	unsigned long addr;
 
+	if (access("/proc/kallsyms", F_OK) == -1)
+		tst_brk(TCONF, "/proc/kallsyms not enabled");
+
 	addr = find_symbol_in_file("/proc/kallsyms", name);
 	if (addr)
 		return addr;
