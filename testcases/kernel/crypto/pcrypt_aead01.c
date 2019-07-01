@@ -6,6 +6,14 @@
  *
  * Originally found by syzkaller:
  * https://groups.google.com/forum/#!topic/syzkaller-bugs/NKn_ivoPOpk
+ *
+ * Test for CVE-2017-5754 - pcrypt mishandles freeing instances.
+ *
+ * The test works by adding and then removing pcrypt-AEAD instances.
+ * See commit d76c68109f37 crypto: pcrypt - fix freeing pcrypt instances.
+ *
+ * If the bug is present then this will probably crash the kernel, but also
+ * sometimes the test simply times out.
  */
 
 #include <errno.h>
