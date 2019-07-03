@@ -44,14 +44,17 @@ do_test()
 
 sysctl_test_overflow()
 {
+	local test_value="$1"
 	local old_value="$(cat $sys_file)"
-	sysctl -w -q $sys_name=$1 2>/dev/null
-	local test_value="$(cat $sys_file)"
 
-	if echo $test_value | grep -q $old_value; then
-		tst_res TPASS "$sys_file overflows, reject it and keep old value"
+	tst_res TINFO "trying to set $sys_name=$test_value"
+	sysctl -w -q $sys_name=$test_value 2>/dev/null
+	local new_value="$(cat $sys_file)"
+
+	if [ "$new_value" = "$old_value" ]; then
+		tst_res TPASS "$sys_file keeps old value ($old_value)"
 	else
-		tst_res TFAIL "$sys_file overflows and set to $test_value"
+		tst_res TFAIL "$sys_file overflows and is set to $new_value"
 	fi
 	cleanup
 }
