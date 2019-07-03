@@ -112,6 +112,11 @@ static void setup(void)
 			sizeof(struct file_dedupe_range_info));
 }
 
+static const char *const needed_drivers[] = {
+	"btrfs",
+	NULL,
+};
+
 static struct tst_test test = {
 	.test = verify_ioctl,
 	.tcnt = ARRAY_SIZE(tcases),
@@ -122,6 +127,7 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.dev_fs_type = "btrfs",
+	.needs_drivers = needed_drivers,
 };
 #else
 	TST_TEST_TCONF(
