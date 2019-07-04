@@ -138,7 +138,7 @@ init_ltp_netspace()
 # Options:
 # -b run in background
 # -s safe option, if something goes wrong, will exit with TBROK
-# -c specify command to run (this must be binary, not shell buildin/function)
+# -c specify command to run (this must be binary, not shell builtin/function)
 # RETURN: 0 on success, 1 on failure
 tst_rhost_run()
 {
@@ -203,7 +203,7 @@ tst_rhost_run()
 # -l LPARAM: parameter passed to CMD in lhost
 # -r RPARAM: parameter passed to CMD in rhost
 # -q: quiet mode (suppress failure warnings)
-# CMD: command to run (this must be binary, not shell buildin/function due
+# CMD: command to run (this must be binary, not shell builtin/function due
 # tst_rhost_run() limitation)
 # RETURN: 0 on success, 1 on missing CMD or exit code on lhost or rhost
 tst_net_run()

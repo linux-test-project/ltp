@@ -29,7 +29,7 @@
  * SPECIAL CASE:
  * $ ./t0 0
  *  Here another arg is not required. This special case will return immediatly
- *  as if it has been timedout. This is usefull to check a timeout return code value.
+ *  as if it has been timedout. This is useful to check a timeout return code value.
  *
  */
 

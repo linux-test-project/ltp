@@ -358,7 +358,7 @@ int strtotimespec(const char *str, struct timespec *ts_p)
  *  by interface index
  *
  * Argument:
- *   lla_p  : pointer to a sockaddr_in6 sturcture which stores the lla
+ *   lla_p  : pointer to a sockaddr_in6 structure which stores the lla
  *  ifindex : index of the interface
  *
  * Return value:

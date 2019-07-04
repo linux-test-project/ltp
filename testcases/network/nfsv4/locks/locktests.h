@@ -20,7 +20,7 @@
  * HISTORY : This program has been written to stress NFSv4 locks. -P
  * option was created to verify NFSv4 locking was thread-aware, and so,
  * locking behaviour over NFSv4 was POSIX correct both using threads and
- * process. This option may not be usefull to stress.
+ * process. This option may not be useful to stress.
  *
  * EXAMPLE : ./locktests -n 50 -f /file/system/to/test
  *

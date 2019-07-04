@@ -48,7 +48,7 @@ static inline long long tst_timespec_to_us(struct timespec t)
 }
 
 /*
- * Converts timespec to miliseconds.
+ * Converts timespec to milliseconds.
  */
 static inline long long tst_timespec_to_ms(struct timespec t)
 {
@@ -64,7 +64,7 @@ static inline long long tst_timeval_to_us(struct timeval t)
 }
 
 /*
- * Converts timeval to miliseconds.
+ * Converts timeval to milliseconds.
  */
 static inline long long tst_timeval_to_ms(struct timeval t)
 {
@@ -302,7 +302,7 @@ void tst_timer_start(clockid_t clk_id);
  * Returns true if timer started by tst_timer_start() has been running for
  * longer than ms seconds.
  *
- * @ms: Time interval in miliseconds.
+ * @ms: Time interval in milliseconds.
  */
 int tst_timer_expired_ms(long long ms);
 
@@ -317,7 +317,7 @@ void tst_timer_stop(void);
 struct timespec tst_timer_elapsed(void);
 
 /*
- * Returns elapsed time in miliseconds.
+ * Returns elapsed time in milliseconds.
  */
 static inline long long tst_timer_elapsed_ms(void)
 {

@@ -128,7 +128,7 @@ CHANGES SINCE v1.2.x
     cycle function and writes and read to random LBAs for each seek, use -pR.
 
     Added a delay time option, -t <delay>.  This will allow a user to specify,
-    in miliseconds, the amount of time for each thread to delay before
+    in milliseconds, the amount of time for each thread to delay before
     performing each IO operation.  The default is to not delay.
 
     Added a LBA alignement offset option, -o <offset>.  This option allows a
