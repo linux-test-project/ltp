@@ -352,18 +352,14 @@ int main(int argc, char *argv[])
 	total++;
 
 	/* Test-10: read, write to a mmaped file */
-	shm_base = (char *)(((long)sbrk(0) + (shmsz - 1)) & ~(shmsz - 1));
-	if (shm_base == NULL) {
-		tst_brkm(TBROK, cleanup, "sbrk failed: %s", strerror(errno));
-	}
 	offset = 4096;
 	count = bufsize;
 	if ((fd = open(filename, O_DIRECT | O_RDWR)) < 0) {
 		tst_brkm(TBROK, cleanup, "can't open %s: %s",
 			 filename, strerror(errno));
 	}
-	shm_base = mmap(shm_base, 0x100000, PROT_READ | PROT_WRITE,
-			MAP_SHARED | MAP_FIXED, fd, 0);
+	shm_base = mmap(0, 0x100000, PROT_READ | PROT_WRITE,
+			MAP_SHARED, fd, 0);
 	if (shm_base == (caddr_t) - 1) {
 		tst_brkm(TBROK, cleanup, "can't mmap file: %s",
 			 strerror(errno));
