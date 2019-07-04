@@ -1523,8 +1523,8 @@ Pathnames can be optionally prefixed to specify how strictly (during
 
 'restore' is always strict and will TWARN if it encounters any error.
 
-Example:
-
+[source,c]
+-------------------------------------------------------------------------------
 static const char *save_restore[] = {
 	"/proc/sys/kernel/core_pattern",
 	NULL,
@@ -1540,6 +1540,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.save_restore = save_restore,
 };
+-------------------------------------------------------------------------------
 
 2.2.28 Parsing kernel .config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
