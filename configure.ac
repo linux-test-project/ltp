@@ -58,6 +58,7 @@ AC_CHECK_HEADERS([ \
     sys/prctl.h \
     sys/shm.h \
     sys/ustat.h \
+    sys/utsname.h \
     sys/xattr.h \
 ])
 
