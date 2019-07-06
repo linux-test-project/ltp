@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <string.h>
+#include <errno.h>
 
 #include "tst_common.h"
 #include "tst_res_flags.h"
