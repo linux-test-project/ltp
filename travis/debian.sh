@@ -33,7 +33,6 @@ apt install -y --no-install-recommends \
     libselinux1-dev \
     libsepol1-dev \
     libssl-dev \
+    libtirpc-dev \
     linux-libc-dev \
     lsb-release
-
-apt install libtirpc1 libtirpc3 || true

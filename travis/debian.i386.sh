@@ -16,4 +16,4 @@ apt install -y --no-install-recommends \
 	libkeyutils1:i386 \
 	libnuma1:i386 \
 	libssl-dev:i386 \
-	libtirpc1:i386
+	libtirpc-dev:i386

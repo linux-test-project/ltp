@@ -16,4 +16,4 @@ apt remove -y \
     libselinux1-dev \
     libsepol1-dev \
     libssl-dev \
-    libtirpc1
+    libtirpc-dev
