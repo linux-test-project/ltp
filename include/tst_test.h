@@ -34,6 +34,7 @@
 #include "tst_get_bad_addr.h"
 #include "tst_path_has_mnt_flags.h"
 #include "tst_sys_conf.h"
+#include "tst_coredump.h"
 
 /*
  * Reports testcase result.

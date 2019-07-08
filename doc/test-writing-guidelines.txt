@@ -826,8 +826,8 @@ The 'TST_PROCESS_STATE_WAIT()' waits until process 'pid' is in requested
 It's mostly used with state 'S' which means that process is sleeping in kernel
 for example in 'pause()' or any other blocking syscall.
 
-2.2.10 Signal handlers
-^^^^^^^^^^^^^^^^^^^^^^
+2.2.10 Signals and signal handlers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need to use signal handlers, keep the code short and simple. Don't
 forget that the signal handler is called asynchronously and can interrupt the
@@ -858,6 +858,14 @@ not be changed in the compiler code flow analysis. There is 'sig_atomic_t'
 type defined in C99 but this one *DOES NOT* imply 'volatile' (it's just a
 'typedef' to 'int'). So the correct type for a flag that is changed from a
 signal handler is either 'volatile int' or 'volatile sig_atomic_t'.
+
+If a crash (e.g. triggered by signal SIGSEGV) is expected in testing, you
+can avoid creation of core files by calling tst_no_corefile() function.
+This takes effect for process (and its children) which invoked it, unless
+they subsequently modify RLIMIT_CORE.
+
+Note that LTP library will reap any processes that test didn't reap itself,
+and report any non-zero exit code as failure.
 
 2.2.11 Kernel Modules
 ^^^^^^^^^^^^^^^^^^^^^
