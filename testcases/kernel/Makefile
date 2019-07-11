@@ -52,6 +52,7 @@ SUBDIRS			+= connectors \
 			   pty \
 			   sched \
 			   security \
+			   sound \
 			   timers \
 			   tracing \
 
