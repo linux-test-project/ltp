@@ -24,6 +24,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/vfs.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <signal.h>
@@ -339,6 +340,23 @@ static inline int safe_lstat(const char *file, const int lineno,
 }
 #define SAFE_LSTAT(path, buf) \
 	safe_lstat(__FILE__, __LINE__, (path), (buf))
+
+static inline int safe_statfs(const char *file, const int lineno,
+                              const char *path, struct statfs *buf)
+{
+	int rval;
+
+	rval = statfs(path, buf);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+		         "statfs(%s,%p) failed", path, buf);
+	}
+
+	return rval;
+}
+#define SAFE_STATFS(path, buf) \
+        safe_statfs(__FILE__, __LINE__, (path), (buf))
 
 static inline off_t safe_lseek(const char *file, const int lineno,
                                int fd, off_t offset, int whence)
