@@ -146,7 +146,20 @@ static void run(void)
 
 static void setup(void)
 {
+	struct statfs buf;
+
 	clock_ticks = SAFE_SYSCONF(_SC_CLK_TCK);
+
+	SAFE_STATFS(".", &buf);
+
+	float avail = (100.00 * buf.f_bavail) / buf.f_blocks;
+
+	/* The accounting data are silently discarded on nearly FS */
+	if (avail < 4.1) {
+		tst_brk(TCONF,
+			"Less than 4.1%% (%.2f) of free space on filesystem",
+			avail);
+	}
 
 	TEST(acct(NULL));
 	if (TST_RET == -1)
