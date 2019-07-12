@@ -29,4 +29,12 @@
 # define PR_GET_NO_NEW_PRIVS 39
 #endif
 
+#ifndef PR_CAP_AMBIENT
+# define PR_CAP_AMBIENT             47
+# define PR_CAP_AMBIENT_IS_SET      1
+# define PR_CAP_AMBIENT_RAISE       2
+# define PR_CAP_AMBIENT_LOWER       3
+# define PR_CAP_AMBIENT_CLEAR_ALL   4
+#endif
+
 #endif /* LAPI_PRCTL_H__ */
