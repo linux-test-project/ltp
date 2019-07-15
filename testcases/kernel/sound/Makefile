@@ -6,7 +6,7 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 CPPFLAGS		+= -D_GNU_SOURCE
 
-LDLIBS			+= -pthread
-
+snd_timer01: CFLAGS+=-pthread
+snd_timer01: LDLIBS+=-lrt
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
