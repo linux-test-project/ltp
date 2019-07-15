@@ -16,6 +16,9 @@
  * that only the command issued by this test gets written into the accounting
  * file, the contents get parsed until the correct entry is found, or EOF
  * is reached.
+ *
+ * This is also accidental regression test for:
+ * 4d9570158b626 kernel/acct.c: fix the acct->needcheck check in check_free_space()
  */
 
 #include <sys/stat.h>
