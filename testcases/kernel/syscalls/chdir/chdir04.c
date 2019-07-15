@@ -83,14 +83,12 @@ struct test_case_t {
 	     */
 	{
 	noexist_dir, ENOENT},
-#ifndef UCLINUX
 	    /*
 	     * to test whether chdir() is setting EFAULT if the
 	     * directory is an invalid address.
 	     */
 	{
 	(void *)-1, EFAULT}
-#endif
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
