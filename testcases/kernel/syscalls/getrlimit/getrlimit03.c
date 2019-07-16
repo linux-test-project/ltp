@@ -26,6 +26,7 @@
 
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "lapi/abisize.h"
 
 /**
  * Linux provides an "old" getrlimit syscall handler that uses signed long,
@@ -61,7 +62,12 @@ struct rlimit_ulong {
 	unsigned long rlim_cur;
 	unsigned long rlim_max;
 };
-const unsigned long RLIM_INFINITY_UL = ULONG_MAX;
+
+#if defined(__mips__) && defined(TST_ABI32)
+	const unsigned long RLIM_INFINITY_UL = 0x7fffffffUL;
+#else
+	const unsigned long RLIM_INFINITY_UL = ULONG_MAX;
+#endif
 
 static int getrlimit_ulong(int resource, struct rlimit_ulong *rlim)
 {
