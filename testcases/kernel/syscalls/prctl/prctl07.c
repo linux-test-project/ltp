@@ -25,7 +25,7 @@
 #include <sys/prctl.h>
 #include <stdlib.h>
 #include "config.h"
-#ifdef HAVE_LIBCAP
+#ifdef HAVE_SYS_CAPABILITY_H
 # include <sys/capability.h>
 #endif
 #include "lapi/syscalls.h"
@@ -35,7 +35,8 @@
 
 #define PROC_STATUS "/proc/self/status"
 
-static inline void check_proc_capamb(char *message, int flag)
+#ifdef HAVE_SYS_CAPABILITY_H
+static void check_proc_capamb(char *message, int flag)
 {
 	int cap_num;
 	char CapAmb[20];
@@ -62,6 +63,7 @@ static inline void check_proc_capamb(char *message, int flag)
 			"%s, CapAmb in %s doesn't have CAP_NET_BIND_SERVICE",
 			message, PROC_STATUS);
 }
+#endif
 
 static inline void check_cap_raise(unsigned int cap, char *message, int fail_flag)
 {
