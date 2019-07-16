@@ -13,7 +13,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/capability.h>
 #include <lapi/prctl.h>
 #include "tst_test.h"
 
