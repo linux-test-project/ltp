@@ -5,9 +5,13 @@
  */
 #ifndef LAPI_SECUREBITS_H
 #define LAPI_SECUREBITS_H
+
 # ifdef HAVE_LINUX_SECUREBITS_H
 #  include <linux/securebits.h>
-# else
+# endif
+
+# ifndef SECBIT_NO_CAP_AMBIENT_RAISE
 #  define SECBIT_NO_CAP_AMBIENT_RAISE  6
-# endif /* HAVE_LINUX_SECUREBITS_H*/
+# endif
+
 #endif /* LAPI_SECUREBITS_H */
