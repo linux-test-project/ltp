@@ -1,7 +1,6 @@
-dnl
-dnl LTP_CHECK_CRYPTO
-dnl ----------------------------
-dnl
+dnl SPDX-License-Identifier: GPL-2.0-or-later
+dnl Copyright (c) Linux Test Project, 2009-2017
+
 AC_DEFUN([LTP_CHECK_CRYPTO], [
 	AC_CHECK_LIB([crypto], [SHA1_Init], [have_libcrypto=yes], [AC_MSG_WARN(missing libcrypto)])
 	AC_CHECK_HEADERS([openssl/sha.h], [have_sha=yes], [AC_MSG_WARN(missing openssl headers)])

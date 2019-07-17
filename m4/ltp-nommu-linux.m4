@@ -1,13 +1,9 @@
-dnl
-dnl NOMMU/Linux (aka uClinux) checks
-dnl
+dnl SPDX-License-Identifier: GPL-2.0-or-later
+dnl Copyright (c) Linux Test Project, 2010
+dnl Author: Mike Frysinger <vapier@gentoo.org>
 
-dnl
-dnl LTP_CHECK_NOMMU_LINUX
-dnl ---------------------
-dnl
 AC_DEFUN([LTP_CHECK_NOMMU_LINUX],
-[dnl
+[
 	AC_CHECK_FUNCS([fork daemon vfork])
 	UCLINUX=0
 	if test "x$ac_cv_func_fork" = "xno" ; then
