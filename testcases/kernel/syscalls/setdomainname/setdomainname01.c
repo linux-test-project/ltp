@@ -15,15 +15,15 @@ static void do_test(void)
 	TEST(do_setdomainname(new, strlen(new)));
 
 	if (TST_RET != 0)
-		tst_brk(TFAIL | TTERRNO, "setdomainname() failed: %d", TST_ERR);
+		tst_brk(TFAIL | TTERRNO, "set" SYSCALL_NAME "() failed: %d", TST_ERR);
 
-	if (getdomainname(tmp, sizeof(tmp)) != 0)
-		tst_brk(TFAIL | TERRNO, "getdomainname() failed");
+	if (GET_SYSCALL(tmp, sizeof(tmp)) != 0)
+		tst_brk(TFAIL | TERRNO, "get" SYSCALL_NAME "() failed");
 
 	if (strcmp(tmp, new))
-		tst_res(TFAIL, "getdomainname() returned wrong domainname: '%s'", tmp);
+		tst_res(TFAIL, "get" SYSCALL_NAME "() returned wrong domainname: '%s'", tmp);
 	else
-		tst_res(TPASS, "setdomainname() succeed");
+		tst_res(TPASS, "set" SYSCALL_NAME "() succeed");
 }
 
 static struct tst_test test = {
