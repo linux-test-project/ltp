@@ -67,6 +67,9 @@ static void *ioctl_thread(void *unused)
 
 static void setup(void)
 {
+	if(access("/dev/snd/timer", F_OK))
+		tst_brk(TCONF, "The file '/dev/snd/timer' is not exist");
+
 	tst_fzsync_pair_init(&fzsync_pair);
 	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 	snd_fd = SAFE_OPEN("/dev/snd/timer",
@@ -75,7 +78,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_CLOSE(snd_fd);
+	if (snd_fd > 0)
+		SAFE_CLOSE(snd_fd);
 }
 
 static void run(void)
@@ -95,6 +99,7 @@ static void run(void)
 	iov.iov_base = read_buf;
 	iov.iov_len = sizeof(read_buf) - 1;
 
+	tst_fzsync_pair_reset(&fzsync_pair, NULL);
 	while (tst_fzsync_run_a(&fzsync_pair)) {
 		nz = 0;
 		memset(read_buf, 0, sizeof(read_buf));
