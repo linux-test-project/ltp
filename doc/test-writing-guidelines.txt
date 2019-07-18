@@ -874,7 +874,7 @@ There are certain cases where the test needs a kernel part and userspace part,
 happily, LTP can build a kernel module and then insert it to the kernel on test
 start for you. See 'testcases/kernel/device-drivers/block' for details.
 
-2.2.11 Useful macros
+2.2.12 Useful macros
 ^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
@@ -892,7 +892,7 @@ LTP_ALIGN(x, a)
 
 Aligns the x to be next multiple of a. The a must be power of 2.
 
-2.2.12 Filesystem type detection
+2.2.13 Filesystem type detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests are known to fail on certain filesystems (you cannot swap on TMPFS,
@@ -927,7 +927,7 @@ below:
 	}
 -------------------------------------------------------------------------------
 
-2.2.13 Thread-safety in the LTP library
+2.2.14 Thread-safety in the LTP library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is safe to use library 'tst_res()' function in multi-threaded tests.
@@ -979,7 +979,7 @@ static void cleanup(void)
 -------------------------------------------------------------------------------
 
 
-2.2.14 Testing with a block device
+2.2.15 Testing with a block device
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests needs a block device (inotify tests, syscall 'EROFS' failures,
@@ -1059,7 +1059,7 @@ unsigned long tst_dev_bytes_written(const char *dev);
 This function reads test block device stat file (/sys/block/<device>/stat) and
 returns the bytes written since the last invocation of this function.
 
-2.2.15 Formatting a device with a filesystem
+2.2.16 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [source,c]
@@ -1086,7 +1086,7 @@ The extra options 'extra_opts' should either be 'NULL' if there are none, or a
 will be passed after device name. e.g: +mkfs -t ext4 -b 1024 /dev/sda1 102400+
 in this case.
 
-2.2.16 Verifying a filesystem's free space
+2.2.17 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests have size requirements for the filesystem's free space. If these
@@ -1111,7 +1111,7 @@ The required free space is calculated by 'size * mult', e.g.
 filesystem, which '"/tmp/testfile"' is in, has 64MB free space at least, and 0
 if not.
 
-2.2.17 Files, directories and fs limits
+2.2.18 Files, directories and fs limits
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests need to know the maximum count of links to a regular file or
@@ -1186,7 +1186,7 @@ int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 
 Creates/overwrites a file with specified pattern using file path.
 
-2.2.18 Getting an unused PID number
+2.2.19 Getting an unused PID number
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests require a 'PID', which is not used by the OS (does not belong to
@@ -1622,7 +1622,7 @@ struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
-2.2.29 Testing similar syscalls in one test
+2.2.30 Testing similar syscalls in one test
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In some cases kernel has several very similar syscalls that do either the same
