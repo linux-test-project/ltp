@@ -1883,6 +1883,9 @@ simply by setting right '$TST_NEEDS_FOO'.
 | 'TST_NEEDS_DRIVERS'| Checks kernel drivers support for the test.
 |=============================================================================
 
+NOTE: Network tests (see testcases/network/README.md) use additional variables
+in 'tst_net.sh'.
+
 Checking for presence of commands
 +++++++++++++++++++++++++++++++++
 
