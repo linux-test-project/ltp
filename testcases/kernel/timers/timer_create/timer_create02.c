@@ -1,177 +1,107 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) Wipro Technologies Ltd, 2003.  All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * Author:	Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
+ * Ported to new library:
+ * 07/2019	Christian Amann <camann@suse.com>
  */
-/**************************************************************************
+/*
  *
- *    TEST IDENTIFIER	: timer_create02
+ * Basic test for timer_create(2):
  *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Basic test for timer_create(2)
- *
- *    TEST CASE TOTAL	: 3
- *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *     This is a Phase I test for the timer_create(2) system call.
- *     It is intended to provide a limited exposure of the system call.
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	 Execute system call with different notification types for
- *	 clock ID CLOCK_REALTIME
- *	 Check return code, if system call failed (return=-1)
- *		Log the errno and Issue a FAIL message.
- *	 Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * timer_create02 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- * 	-c n : Run n copies simultaneously.
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- *RESTRICTIONS:
- * None
- *****************************************************************************/
+ *	Creates a timer for each available clock using the
+ *	following notification types:
+ *	1) SIGEV_NONE
+ *	2) SIGEV_SIGNAL
+ *	3) SIGEV_THREAD
+ *	4) SIGEV_THREAD_ID
+ *	5) NULL
+ */
 
-#include <stdlib.h>
-#include <errno.h>
-#include <time.h>
 #include <signal.h>
-
-#include "test.h"
+#include <time.h>
+#include "tst_test.h"
+#include "tst_safe_macros.h"
 #include "common_timers.h"
 
-void setup(void);
-void setup_test(int option);
+static struct notif_type {
+	int		sigev_signo;
+	int		sigev_notify;
+	char		*message;
+} types[] = {
+	{SIGALRM, SIGEV_NONE, "SIGEV_NONE"},
+	{SIGALRM, SIGEV_SIGNAL, "SIGEV_SIGNAL"},
+	{SIGALRM, SIGEV_THREAD, "SIGEV_THREAD"},
+	{SIGALRM, SIGEV_THREAD_ID, "SIGEV_THREAD_ID"},
+	{0, 0, "NULL"},
+};
 
-char *TCID = "timer_create02";	/* Test program identifier.    */
-int TST_TOTAL = 3;		/* Total number of test cases. */
-static struct sigevent evp, *evp_ptr;
-
-int main(int ac, char **av)
+static void run(unsigned int n)
 {
-	int lc, i, j;
-	kernel_timer_t created_timer_id;	/* holds the returned timer_id */
-	char *message[3] = {
-		"SIGEV_SIGNAL",
-		"NULL",
-		"SIGEV_NONE"
-	};
-	const char *mrstr = "MONOTONIC_RAW";
+	unsigned int i;
+	struct sigevent evp;
+	struct notif_type *nt = &types[n];
+	kernel_timer_t created_timer_id;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	tst_res(TINFO, "Testing notification type: %s", nt->message);
 
-	setup();
+	memset(&evp, 0, sizeof(evp));
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	for (i = 0; i < CLOCKS_DEFINED; ++i) {
+		clock_t clock = clock_list[i];
 
-		tst_count = 0;
+		evp.sigev_value  = (union sigval) 0;
+		evp.sigev_signo  = nt->sigev_signo;
+		evp.sigev_notify = nt->sigev_notify;
 
-		for (i = 0; i < TST_TOTAL; i++) {
+		if (clock == CLOCK_PROCESS_CPUTIME_ID ||
+			clock == CLOCK_THREAD_CPUTIME_ID) {
+			/* (PROCESS_CPUTIME_ID &
+			 *  THREAD_CPUTIME_ID)
+			 * is not supported on kernel versions
+			 * lower than 2.6.12
+			 */
+			if (!have_cputime_timers())
+				continue;
+		}
+		if (clock == CLOCK_MONOTONIC_RAW)
+			continue;
 
-			setup_test(i);
+		if (nt->sigev_notify == SIGEV_THREAD_ID)
+			evp._sigev_un._tid = getpid();
 
-			for (j = 0; j < CLOCKS_DEFINED; ++j) {
+		TEST(tst_syscall(__NR_timer_create, clock,
+				nt->sigev_notify ? &evp : NULL,
+				&created_timer_id));
 
-				if (strstr(get_clock_str(clock_list[j]),
-					   "CPUTIME_ID")) {
-					/* (PROCESS_CPUTIME_ID &
-					 *  THREAD_CPUTIME_ID)
-					 * is not supported on kernel versions
-					 * lower than 2.6.12
-					 */
-					if ((tst_kvercmp(2, 6, 12)) < 0) {
-						continue;
-					}
-				}
-				if (strstr(get_clock_str(clock_list[j]), mrstr))
-					continue;
-
-				TEST(ltp_syscall(__NR_timer_create,
-					clock_list[j], evp_ptr,
-					&created_timer_id));
-
-				tst_resm((TEST_RETURN == 0 ?
-					  TPASS :
-					  TFAIL | TTERRNO),
-					 "%s %s with notification type = %s",
-					 get_clock_str(clock_list[j]),
-					 (TEST_RETURN == 0 ?
-					  "passed" : "failed"), message[i]);
+		if (TST_RET != 0) {
+			if (possibly_unsupported(clock) && TST_ERR == EINVAL) {
+				tst_res(TPASS | TTERRNO,
+					"%s unsupported, failed as expected",
+					get_clock_str(clock));
+			} else {
+				tst_res(TFAIL | TTERRNO,
+					"Failed to create timer for %s",
+					get_clock_str(clock));
 			}
+			continue;
+		}
+
+		tst_res(TPASS, "Timer successfully created for %s",
+					get_clock_str(clock));
+
+		TEST(tst_syscall(__NR_timer_delete, created_timer_id));
+		if (TST_RET != 0) {
+			tst_res(TFAIL | TTERRNO, "Failed to delete timer %s",
+				get_clock_str(clock));
 		}
 	}
-
-	cleanup();
-	tst_exit();
 }
 
-/* setup_test() - sets up individual test */
-void setup_test(int option)
-{
-	switch (option) {
-	case 0:
-		evp.sigev_value = (union sigval) 0;
-		evp.sigev_signo = SIGALRM;
-		evp.sigev_notify = SIGEV_SIGNAL;
-		evp_ptr = &evp;
-		break;
-	case 1:
-		evp_ptr = NULL;
-		break;
-	case 2:
-		evp.sigev_value = (union sigval) 0;
-		evp.sigev_signo = SIGALRM;	/* any will do */
-		evp.sigev_notify = SIGEV_NONE;
-		evp_ptr = &evp;
-		break;
-	}
-}
-
-/* setup() - performs all ONE TIME setup for this test */
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(types),
+	.needs_root = 1,
+};

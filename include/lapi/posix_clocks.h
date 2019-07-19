@@ -35,4 +35,8 @@
 # define CLOCK_BOOTTIME_ALARM 9
 #endif
 
+#ifndef CLOCK_TAI
+#define CLOCK_TAI 11
+#endif
+
 #endif /* POSIX_CLOCKS_H__ */

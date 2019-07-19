@@ -1,6 +1,5 @@
 #DESCRIPTION:Posix Timer Tests
 timer_create02 timer_create02
-timer_create03 timer_create03
 timer_create04 timer_create04
 timer_delete02 timer_delete02
 timer_delete03 timer_delete03

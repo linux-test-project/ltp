@@ -1,187 +1,93 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) Wipro Technologies Ltd, 2003.  All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * Author: Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
+ * Ported to new library:
+ * 07/2019      Christian Amann <camann@suse.com>
  */
-/**************************************************************************
+/*
+ * Basic error handling test for timer_create(2):
  *
- *    TEST IDENTIFIER	: timer_create04
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Test checking for basic error conditions for
- *    			  timer_create(2)
- *
- *    TEST CASE TOTAL	: 8
- *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *    	This test case check whether timer_create(2) returns appropriate error
- *    	value for invalid parameter
- *
- * 	Setup:
- *	 Setup signal handling.
- *	 Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	 For case 7 set event parameter as bad pointer
- *	 for case 8 set returned timer ID parameter as bad pointer
- *	 Execute system call with invalid parameter
- *	 Check return code, if system call fails with errno == expected errno
- * 	 	Issue syscall passed with expected errno
- *	 Otherwise, Issue syscall failed to produce expected errno
- *
- * 	Cleanup:
- * 	 Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * timer_create04 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- * 	-c n : run n copies simultaneously
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- * RESTRICTIONS:
- * None
- *****************************************************************************/
+ *	Passes invalid parameters when calling the syscall and checks
+ *	if it fails with EFAULT/EINVAL:
+ *	1) Pass an invalid pointer for the sigevent structure parameter
+ *	2) Pass an invalid pointer for the timer ID parameter
+ *	3) Pass invalid clock type
+ *	4) Pass a sigevent with invalid sigev_notify
+ *	5) Pass a sigevent with invalid sigev_signo
+ */
 
 #include <stdlib.h>
 #include <errno.h>
-#include <string.h>
 #include <time.h>
 #include <signal.h>
-
-#include "test.h"
+#include "tst_test.h"
 #include "common_timers.h"
 
-void setup(void);
-
-int testcase[6] = {
-	EINVAL,			/* MAX_CLOCKS     */
-	EINVAL,			/* MAX_CLOCKS + 1 */
-	EFAULT,			/* bad sigevent   */
-	EFAULT			/* bad timer_id   */
+static struct sigevent sig_ev = {
+	.sigev_notify = SIGEV_NONE,
+	.sigev_signo  = SIGALRM,
 };
 
-char *TCID = "timer_create04";	/* Test program identifier.    */
-int TST_TOTAL = ARRAY_SIZE(testcase);
+static struct sigevent sig_ev_inv_not = {
+	.sigev_notify = INT_MAX,
+	.sigev_signo = SIGALRM,
+};
 
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-void cleanup(void)
+static struct sigevent sig_ev_inv_sig = {
+	.sigev_notify = SIGEV_SIGNAL,
+	.sigev_signo = INT_MAX,
+};
+
+static kernel_timer_t timer_id;
+
+static struct testcase {
+	clock_t clock;
+	struct sigevent	*ev_ptr;
+	kernel_timer_t	*kt_ptr;
+	int		error;
+	char		*desc;
+} tcases[] = {
+	{CLOCK_REALTIME, NULL, &timer_id, EFAULT, "invalid sigevent struct"},
+	{CLOCK_REALTIME, &sig_ev, NULL, EFAULT, "invalid timer ID"},
+	{MAX_CLOCKS, &sig_ev, &timer_id, EINVAL, "invalid clock"},
+	{CLOCK_REALTIME, &sig_ev_inv_not, &timer_id, EINVAL, "wrong sigev_notify"},
+	{CLOCK_REALTIME, &sig_ev_inv_sig, &timer_id, EINVAL, "wrong sigev_signo"},
+};
+
+static void run(unsigned int n)
 {
+	struct testcase *tc = &tcases[n];
 
-}
+	TEST(tst_syscall(__NR_timer_create, tc->clock, tc->ev_ptr, tc->kt_ptr));
 
-int main(int ac, char **av)
-{
-	int lc, i;
-	kernel_timer_t timer_id, *temp_id;	/* stores the returned timer_id */
-	struct sigevent *temp_ev;	/* used for bad address test case */
-
-	clockid_t clocks[6] = {
-		MAX_CLOCKS,
-		MAX_CLOCKS + 1,
-		CLOCK_REALTIME,
-		CLOCK_MONOTONIC,
-		CLOCK_PROCESS_CPUTIME_ID,
-		CLOCK_THREAD_CPUTIME_ID
-	};
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	TST_TOTAL = sizeof(testcase) / sizeof(testcase[0]);
-
-	/* PROCESS_CPUTIME_ID & THREAD_CPUTIME_ID are not supported on
-	 * kernel versions lower than 2.6.12
-	 */
-	if (tst_kvercmp(2, 6, 12) < 0) {
-		testcase[4] = EINVAL;
-		testcase[5] = EINVAL;
-	} else {
-		testcase[4] = EFAULT;
-		testcase[5] = EFAULT;
+	if (TST_RET != -1 || TST_ERR != tc->error) {
+		tst_res(TFAIL | TTERRNO,
+			"%s idn't fail as expected (%s) - Got",
+			tc->desc, tst_strerrno(tc->error));
+		return;
 	}
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-
-			temp_ev = NULL;
-			temp_id = &timer_id;
-
-			switch (i) {
-			case 2:	/* make the timer_id bad address */
-				temp_id = (kernel_timer_t *) - 1;
-				break;
-			case 3:
-				/* make the event bad address */
-				temp_ev = (struct sigevent *)-1;
-				break;
-			case 4:
-				/* Produce an invalid timer_id address. */
-				if (tst_kvercmp(2, 6, 12) >= 0)
-					temp_id = (kernel_timer_t *) - 1;
-				break;
-			case 5:
-				/* Produce an invalid event address. */
-				if (tst_kvercmp(2, 6, 12) >= 0)
-					temp_ev = (struct sigevent *)-1;
-			}
-
-			TEST(ltp_syscall(__NR_timer_create, clocks[i], temp_ev,
-				     temp_id));
-
-			/* check return code */
-			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
-				tst_resm(TPASS | TTERRNO, "failed as expected");
-			} else {
-				tst_resm(TFAIL | TTERRNO,
-					 "didn't fail as expected [expected "
-					 "errno = %d (%s)]",
-					 testcase[i], strerror(testcase[i]));
-			}	/* end of else */
-
-		}
-
-	}
-
-	cleanup();
-	tst_exit();
+	tst_res(TPASS | TTERRNO, "%s failed as expected", tc->desc);
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup(void)
+static void setup(void)
 {
+	unsigned int i;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
+		if (!tcases[i].ev_ptr)
+			tcases[i].ev_ptr = tst_get_bad_addr(NULL);
 
-	TEST_PAUSE;
+		if (!tcases[i].kt_ptr)
+			tcases[i].kt_ptr = tst_get_bad_addr(NULL);
+	}
 }
+
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(tcases),
+	.setup = setup,
+};
