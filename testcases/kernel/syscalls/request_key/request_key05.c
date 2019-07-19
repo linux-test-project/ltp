@@ -3,7 +3,7 @@
  * Copyright (c) 2017 Richard Palethorpe <rpalethorpe@suse.com>
  */
 /*
- * Test for CVE-2016-6951, original reproducer can be found here:
+ * Test for CVE-2017-6951, original reproducer can be found here:
  * http://www.spinics.net/lists/keyrings/msg01845.html
  *
  * request_key() is not in glibc, so we just use the syscall directly instead
