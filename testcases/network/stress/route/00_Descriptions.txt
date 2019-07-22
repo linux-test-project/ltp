@@ -6,13 +6,9 @@ route{4,6}-change-gw
 	Verify the IPv4/IPv6 is not broken when ip command changes route
 	gateway many times
 
-route4-change-if01
-	Verify the kernel is not crashed when the interface of an IPv4 route is
-	changed frequently by route command
-
-route4-change-if02
-	Verify the kernel is not crashed when the interface of an IPv4 route is
-	changed frequently by ip command
+route{4,6}-change-if
+	Verify the IPv4/IPv6 is not broken when ip command changes route
+	interface many times
 
 route4-redirect01
 	Verify the kernel is not crashed when the IPv4 route is modified by
@@ -26,14 +22,6 @@ route4-rmmod02
 	Verify the kernel is not crashed when IPv4 route is add by ip command
 	then it is deleted by the removing network driver
 
-
-route6-change-if01
-	Verify the kernel is not crashed when the interface of an IPv6 route is
-	changed frequently by route command
-
-route6-change-if02
-	Verify the kernel is not crashed when the interface of an IPv6 route is
-	changed frequently by ip command
 
 route6-redirect01
 	Verify the kernel is not crashed when the IPv6 route is modified by

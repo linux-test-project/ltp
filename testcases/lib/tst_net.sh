@@ -289,6 +289,14 @@ tst_get_ifaces()
 	fi
 }
 
+# Get count of test interfaces for local/remote host.
+tst_get_ifaces_cnt()
+{
+	tst_test_cmds awk
+	local type="${1:-lhost}"
+	echo "$(tst_get_ifaces $type)" | awk '{print NF}'
+}
+
 # Get HW addresses from defined test interface names.
 # tst_get_hwaddrs [TYPE]
 # TYPE: { lhost | rhost }; Default value is 'lhost'.
