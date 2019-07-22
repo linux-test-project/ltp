@@ -22,7 +22,7 @@ do
 done
 
 #  creation of users on the remote machine (removed only at the end of the tests)
-rsh -n $REMOTEHOST python $PWD/create_users.py -u 50 -g 50
+rsh -n $REMOTEHOST python3 $PWD/create_users.py -u 50 -g 50
 
 echo "Starting ACL testing"
 
@@ -51,19 +51,19 @@ echo "Basic tests finished"
 
 echo "LONG ACL TEST"
 echo "creating necessary users and groups"
-python create_users.py -u 50 -g 50
+python3 create_users.py -u 50 -g 50
 echo "creating necessary users and groups on the remote host"
 mkdir $NFSMNTDIR/lacl-testdir
-python test_long_acl.py -l $MAXLENGTH -p $NFSMNTDIR/lacl-testdir
+python3 test_long_acl.py -l $MAXLENGTH -p $NFSMNTDIR/lacl-testdir
 rm -rf $NFSMNTDIR/lacl-testdir
 echo "Long ACL test OK with $MAXLENGTH entries"
 echo "ACL STRESSING TEST"
-python setacl_stress.py -n 100 -u $USER_NB -g $GRP_NB -f $FILE_NB -p $NFSMNTDIR
+python3 setacl_stress.py -n 100 -u $USER_NB -g $GRP_NB -f $FILE_NB -p $NFSMNTDIR
 
 # remove local an remote users
-python cleanusers.py
-python cleangroups.py
-rsh -n $REMOTEHOST python $PWD/cleanusers.py
+python3 cleanusers.py
+python3 cleangroups.py
+rsh -n $REMOTEHOST python3 $PWD/cleanusers.py
 
 echo "Test OK"
 

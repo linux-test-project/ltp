@@ -15,15 +15,15 @@ $SCRIPTS_DIR/run_c_files.sh $profile testpi-0
 
 export LOG_FILE="$LOG_DIR/$LOG_FORMAT-testpi-1.log"
 $SCRIPTS_DIR/run_c_files.sh $profile testpi-1
-PYTHONPATH=../../  python parse-testpi1.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
+PYTHONPATH=../../  python3 parse-testpi1.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
 
 export LOG_FILE="$LOG_DIR/$LOG_FORMAT-testpi-2.log"
 $SCRIPTS_DIR/run_c_files.sh $profile testpi-2
-PYTHONPATH=../../  python parse-testpi2.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
+PYTHONPATH=../../  python3 parse-testpi2.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
 
 export LOG_FILE="$LOG_DIR/$LOG_FORMAT-testpi-4.log"
 $SCRIPTS_DIR/run_c_files.sh $profile testpi-4
-PYTHONPATH=../../  python parse-testpi1.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
+PYTHONPATH=../../  python3 parse-testpi1.py $LOG_FILE 2>&1 | tee -a $LOG_FILE
 
 
 export LOG_FILE=""
