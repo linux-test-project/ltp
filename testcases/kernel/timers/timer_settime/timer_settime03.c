@@ -1,190 +1,119 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) Wipro Technologies Ltd, 2003.  All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
+ * Author:	Aniruddha Marathe <aniruddha.marathe@wipro.com>
  *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
+ * Ported to new library:
+ * 07/2019      Christian Amann <camann@suse.com>
  */
-/**************************************************************************
+/*
+ * This tests basic error handling of the timer_settime(2) syscall:
  *
- *    TEST IDENTIFIER	: timer_settime03
- *
- *    EXECUTED BY	: anyone
- *
- *    TEST TITLE	: Test checking for basic error conditions for
- *    			  timer_settime(2)
- *
- *    TEST CASE TOTAL	: 6
- *
- *    AUTHOR		: Aniruddha Marathe <aniruddha.marathe@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *    	This test case check whether timer_settime(2) returns appropriate error
- *    	value for invalid parameter
- *
- * 	Setup:
- *	 Setup signal handling.
- *	 Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *	 Loop if the proper options are given.
- *	 setup the individual test.
- *	 Execute system call with invalid parameters.
- *	 Check return code, if system call fails with errno == expected errno
- * 	 	Issue syscall passed with expected errno
- *	 Otherwise, Issue syscall failed to produce expected errno
- *
- * 	Cleanup:
- * 	 Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- * timer_settime03 [-c n] [-e] [-i n] [-I x] [-P x] [-t] [-p]
- * where:
- * 	-c n : run n copies simultaneously
- *	-e   : Turn on errno logging.
- *	-i n : Execute test n times.
- *	-I x : Execute test for x seconds.
- *	-p   : Pause for SIGUSR1 before starting
- *	-P x : Pause for x seconds between iterations.
- *	-t   : Turn on syscall timing.
- *
- * RESTRICTIONS:
- * None
- *****************************************************************************/
+ * 1) Setting pointer to new settings to NULL -> EINVAL
+ * 2) Setting tv_nsec of the itimerspec structure to a negative value
+ *    -> EINVAL
+ * 3) Setting tv_nsec of the itimerspec structure to something larger
+ *    than NSEC_PER_SEC -> EINVAL
+ * 4) Passing an invalid timer -> EINVAL
+ * 5) Passing an invalid address for new_value -> EFAULT
+ * 6) Passing an invalid address for old_value -> EFAULT
+ */
 
 #include <errno.h>
 #include <time.h>
-#include <unistd.h>
-
-#include "test.h"
+#include "tst_test.h"
 #include "common_timers.h"
 
-void setup(void);
-void setup_test(int option);
+static struct itimerspec new_set, old_set;
+static kernel_timer_t timer;
+static kernel_timer_t timer_inval = -1;
 
-int testcase[] = {
-	EINVAL,			/* New setting null */
-	EINVAL,			/* tv_nsec < 0 */
-	EINVAL,			/* nsec > NSEC/SEC */
-	EINVAL,			/* Invalid timerid */
-	EFAULT,			/* bad newsetting * */
-	EFAULT			/* bad oldsetting * */
+/* separate description-array to (hopefully) improve readability */
+static const char * const descriptions[] = {
+	"setting new_set pointer to NULL",
+	"setting tv_nsec to a negative value",
+	"setting tv_nsec value too high",
+	"passing pointer to invalid timer_id",
+	"passing invalid address for new_value",
+	"passing invalid address for old_value",
 };
 
-char *TCID = "timer_settime03";
-int TST_TOTAL = ARRAY_SIZE(testcase);
+static struct testcase {
+	kernel_timer_t		*timer_id;
+	struct itimerspec	*new_ptr;
+	struct itimerspec	*old_ptr;
+	int			it_value_tv_nsec;
+	int			error;
+} tcases[] = {
+	{&timer, NULL, &old_set, 0, EINVAL},
+	{&timer, &new_set, &old_set, -1, EINVAL},
+	{&timer, &new_set, &old_set, NSEC_PER_SEC + 1, EINVAL},
+	{&timer_inval, &new_set, &old_set, 0, EINVAL},
+	{&timer, (struct itimerspec *) -1, &old_set, 0, EFAULT},
+	{&timer, &new_set, (struct itimerspec *) -1, 0, EFAULT},
+};
 
-static struct itimerspec new_set, old_set, *old_temp, *new_temp;
-static kernel_timer_t timer, tim;
-
-int main(int ac, char **av)
+static void run(unsigned int n)
 {
-	int lc, i;
+	unsigned int i;
+	struct testcase *tc = &tcases[n];
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	tst_res(TINFO, "Testing for %s:", descriptions[n]);
 
-	setup();
+	for (i = 0; i < CLOCKS_DEFINED; ++i) {
+		clock_t clock = clock_list[i];
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-
-			/* Set up individual tests */
-			setup_test(i);
-			TEST(ltp_syscall(__NR_timer_settime, tim, 0, new_temp,
-				     old_temp));
-
-			/* check return code */
-			if (TEST_RETURN == -1 && TEST_ERRNO == testcase[i]) {
-				tst_resm(TPASS | TTERRNO, "failed as expected");
-			} else {
-				tst_resm(TFAIL | TTERRNO,
-					 "didn't fail as expected [expected "
-					 "errno = %d (%s)]",
-					 testcase[i], strerror(testcase[i]));
-			}	/* end of else */
-
+		if (clock == CLOCK_PROCESS_CPUTIME_ID ||
+			clock == CLOCK_THREAD_CPUTIME_ID) {
+			if (!have_cputime_timers())
+				continue;
 		}
 
-	}
+		/* Init temporary timer */
+		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer));
+		if (TST_RET != 0) {
+			if (possibly_unsupported(clock) && TST_ERR == EINVAL) {
+				tst_res(TPASS | TTERRNO,
+					"%s unsupported, failed as expected",
+					get_clock_str(clock));
+			} else {
+				tst_res(TBROK | TTERRNO,
+					"timer_create(%s) failed",
+					get_clock_str(clock));
+			}
+			continue;
+		}
 
-	cleanup();
-	tst_exit();
-}
+		memset(&new_set, 0, sizeof(new_set));
+		memset(&old_set, 0, sizeof(old_set));
 
-/* This function sets up individual tests */
-void setup_test(int option)
-{
-	switch (option) {
-	case 0:
-		/* Pass NULL structure as new setting */
-		new_temp = NULL;
-		tim = timer;
-		old_temp = &old_set;
-		break;
-	case 1:
-		/* Make tv_nsec value less than 0 */
-		new_set.it_value.tv_nsec = -1;
-		new_set.it_value.tv_sec = 5;
-		new_set.it_interval.tv_sec = 0;
-		new_set.it_interval.tv_nsec = 0;
-		new_temp = &new_set;
-		break;
-	case 2:
-		/* Make tv_nsec more than NSEC_PER_SEC */
-		new_set.it_value.tv_nsec = NSEC_PER_SEC + 1;
-		break;
-	case 3:
-		/* make timer_id invalid */
-		tim = (kernel_timer_t) - 1;
-		new_set.it_value.tv_nsec = 0;
-		break;
-	case 4:
-		/* make new_setting a bad pointer */
-		tim = timer;
-		new_temp = (struct itimerspec *)-1;
-		break;
-	case 5:
-		/* make old_setting a bad pointer */
-		new_temp = &new_set;
-		old_temp = (struct itimerspec *)-1;
-		break;
+		new_set.it_value.tv_sec  = 5;
+		new_set.it_value.tv_nsec = tc->it_value_tv_nsec;
+
+		TEST(tst_syscall(__NR_timer_settime, *tc->timer_id,
+					0, tc->new_ptr,	tc->old_ptr));
+
+		if (tc->error != TST_ERR) {
+			tst_res(TFAIL | TTERRNO,
+				 "%s didn't fail as expected. Expected: %s - Got",
+				 get_clock_str(clock),
+				 tst_strerrno(tc->error));
+		} else {
+			tst_res(TPASS | TTERRNO,
+				"%s failed as expected",
+				get_clock_str(clock));
+		}
+
+		/* Delete temporary timer */
+		TEST(tst_syscall(__NR_timer_delete, timer));
+		if (TST_RET != 0)
+			tst_res(TFAIL | TTERRNO, "timer_delete() failed!");
 	}
 }
 
-/* setup() - performs all ONE TIME setup for this test */
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	if (ltp_syscall(__NR_timer_create, CLOCK_REALTIME, NULL, &timer) < 0) {
-		tst_brkm(TBROK, NULL, "Timer create failed. Cannot"
-			 " setup test");
-	}
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - Performs one time cleanup for this test at
- * completion or premature exit
- */
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test = run,
+	.needs_root = 1,
+	.tcnt = ARRAY_SIZE(tcases),
+};
