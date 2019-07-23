@@ -16,7 +16,7 @@ static void do_test(void)
 {
 	char *new = TST_VALID_DOMAIN_NAME;
 
-	TEST(do_setdomainname(new, sizeof(new)));
+	TEST(do_setdomainname(new, strlen(new)));
 
 	if (TST_RET != -1) {
 		tst_res(TFAIL, "unexpected exit code: %ld", TST_RET);

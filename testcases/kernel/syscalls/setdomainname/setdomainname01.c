@@ -12,7 +12,7 @@ static void do_test(void)
 	char *new = TST_VALID_DOMAIN_NAME;
 	static char tmp[_UTSNAME_DOMAIN_LENGTH];
 
-	TEST(do_setdomainname(new, sizeof(new)));
+	TEST(do_setdomainname(new, strlen(new)));
 
 	if (TST_RET != 0)
 		tst_brk(TFAIL | TTERRNO, "setdomainname() failed: %d", TST_ERR);
