@@ -159,7 +159,7 @@ static int cmp(const void *a, const void *b)
 {
 	const long long *aa = a, *bb = b;
 
-	return *aa < *bb;
+	return (*bb - *aa);
 }
 
 /*
