@@ -75,19 +75,19 @@ setup()
 		#   $ModLoad imjournal
 		#   module(load="imjournal"...)
 		# in rsyslog config, and using those settings.
-		if grep -qri '^[^#].*load.*imjournal' /etc/rsyslog.conf /etc/rsyslog.d/ ; then
-			systemd_journal=$(grep -Ehoi "^[^#].*(imjournal|workdirectory).*" -r /etc/rsyslog.conf /etc/rsyslog.d/)
-			RSYSLOG_CONFIG=$(cat <<EOF
-$systemd_journal
-EOF
-)
+		if grep -qri '^[^#]*modload.*imjournal' /etc/rsyslog.conf /etc/rsyslog.d/; then
+			RSYSLOG_CONFIG=$(grep -Ehoi "^[^#].*(imjournal|workdirectory).*" -r /etc/rsyslog.conf /etc/rsyslog.d/;
+				echo '$imjournalRatelimitInterval 0'; \
+				echo '$ImjournalIgnorePreviousMessages on';)
+		elif grep -qri '^[^#]*module.*load="imjournal"' /etc/rsyslog.conf /etc/rsyslog.d/; then
+			RSYSLOG_CONFIG=$(grep -Ehoi "^[^#].*workdirectory.*" -r /etc/rsyslog.conf /etc/rsyslog.d/; \
+				echo 'module(load="imjournal"'; \
+				echo '       StateFile="imjournal.state"'; \
+				echo '       Ratelimit.Interval="0"'; \
+				echo '       IgnorePreviousMessages="on")')
 		else
-			log_socket=$(grep -ho "^\$SystemLogSocketName .*" -r /etc/rsyslog.conf /etc/rsyslog.d/ | head -1)
-			RSYSLOG_CONFIG=$(cat <<EOF
-\$ModLoad imuxsock.so
-$log_socket
-EOF
-)
+			RSYSLOG_CONFIG=$(echo '$ModLoad imuxsock.so'; \
+				grep -ho "^\$SystemLogSocketName .*" -r /etc/rsyslog.conf /etc/rsyslog.d/ | head -1)
 		fi
 	else
 		tst_resm TCONF "Couldn't find syslogd, syslog-ng or rsyslogd"
