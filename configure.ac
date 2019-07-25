@@ -82,9 +82,11 @@ AC_CHECK_FUNCS([ \
     pwritev \
     pwritev2 \
     readlinkat \
+    recvmmsg \
     renameat \
     renameat2 \
     sched_getcpu \
+    sendmmsg \
     sigpending \
     splice \
     stime \
