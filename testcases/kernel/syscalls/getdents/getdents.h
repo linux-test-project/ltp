@@ -48,10 +48,11 @@ struct linux_dirent64 {
 	char		d_name[];
 };
 
+#if __GLIBC__ <= 2 && __GLIBC_MINOR__ < 30
 static inline int
 getdents64(unsigned int fd, struct linux_dirent64 *dirp64, unsigned int size)
 {
 	return ltp_syscall(__NR_getdents64, fd, dirp64, size);
 }
-
+#endif
 #endif /* GETDENTS_H */
