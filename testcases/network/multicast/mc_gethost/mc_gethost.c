@@ -50,8 +50,12 @@ usage:
 		argv++, argc--;
 	}
 	if (argc >= 1 && !strcmp(*argv, "-6")) {
+#if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 30
+		af = AF_INET, size = INADDRSZ;
+#else
 		af = AF_INET6, size = IN6ADDRSZ;
 		_res.options |= RES_USE_INET6;
+#endif
 		argv++, argc--;
 	}
 	if (argc >= 1 && !strcmp(*argv, "-f")) {
