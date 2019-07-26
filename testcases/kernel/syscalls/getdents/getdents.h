@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include "test.h"
 #include "lapi/syscalls.h"
-
+#include "config.h"
 /*
  * See fs/compat.c struct compat_linux_dirent
  */
@@ -34,11 +34,16 @@ struct linux_dirent {
 	char            d_name[];
 };
 
+#if HAVE_GETDENTS
+#include <unistd.h>
+#else
 static inline int
 getdents(unsigned int fd, struct linux_dirent *dirp, unsigned int size)
 {
 	return ltp_syscall(__NR_getdents, fd, dirp, size);
 }
+
+#endif /* HAVE_GETDENTS */
 
 struct linux_dirent64 {
 	uint64_t	d_ino;
@@ -48,10 +53,13 @@ struct linux_dirent64 {
 	char		d_name[];
 };
 
+#if HAVE_GETDENTS64
+#include <unistd.h>
+#else
 static inline int
 getdents64(unsigned int fd, struct linux_dirent64 *dirp64, unsigned int size)
 {
 	return ltp_syscall(__NR_getdents64, fd, dirp64, size);
 }
-
+#endif /* HAVE_GETDENTS64 */
 #endif /* GETDENTS_H */

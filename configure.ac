@@ -69,6 +69,8 @@ AC_CHECK_FUNCS([ \
     fallocate \
     fchownat \
     fstatat \
+    getdents \
+    getdents64 \
     kcmp \
     mkdirat \
     mknodat \
