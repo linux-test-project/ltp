@@ -17,7 +17,7 @@
 #include <errno.h>
 #include <time.h>
 #include "tst_test.h"
-#include "common_timers.h"
+#include "lapi/common_timers.h"
 
 static void run(void)
 {

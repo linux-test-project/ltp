@@ -7,7 +7,6 @@
 #ifndef __COMMON_TIMERS_H__
 #define __COMMON_TIMERS_H__
 
-#define CLEANUP cleanup
 #include "config.h"
 #include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"

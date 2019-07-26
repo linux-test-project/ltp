@@ -24,7 +24,7 @@
 #include <time.h>
 #include "tst_test.h"
 #include "tst_safe_macros.h"
-#include "common_timers.h"
+#include "lapi/common_timers.h"
 
 static struct notif_type {
 	int		sigev_signo;

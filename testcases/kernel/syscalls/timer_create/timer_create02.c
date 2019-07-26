@@ -24,7 +24,7 @@
 #include <time.h>
 #include <signal.h>
 #include "tst_test.h"
-#include "common_timers.h"
+#include "lapi/common_timers.h"
 
 static struct sigevent sig_ev = {
 	.sigev_notify = SIGEV_NONE,

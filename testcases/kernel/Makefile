@@ -53,7 +53,6 @@ SUBDIRS			+= connectors \
 			   sched \
 			   security \
 			   sound \
-			   timers \
 			   tracing \
 
 ifeq ($(WITH_POWER_MANAGEMENT_TESTSUITE),yes)

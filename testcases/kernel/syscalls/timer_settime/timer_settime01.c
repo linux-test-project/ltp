@@ -23,7 +23,7 @@
 #include <time.h>
 #include <signal.h>
 #include "tst_test.h"
-#include "common_timers.h"
+#include "lapi/common_timers.h"
 
 static struct timespec timenow;
 static struct itimerspec new_set, old_set;

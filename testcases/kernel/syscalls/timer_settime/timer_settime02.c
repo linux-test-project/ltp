@@ -23,7 +23,7 @@
 #include <errno.h>
 #include <time.h>
 #include "tst_test.h"
-#include "common_timers.h"
+#include "lapi/common_timers.h"
 
 static struct itimerspec new_set, old_set;
 static kernel_timer_t timer;

@@ -30,12 +30,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include "test.h"
-#include "common_timers.h"
+#include "lapi/common_timers.h"
 
 #define SECONDS_BEFORE_LEAP 2
 #define SECONDS_AFTER_LEAP 2
 
-char *TCID = "leapsec_timer";
+char *TCID = "clock_gettime03";
 int TST_TOTAL = 1;
 
 static inline int in_order(struct timespec a, struct timespec b);
