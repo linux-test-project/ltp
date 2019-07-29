@@ -128,33 +128,6 @@ static void testfunc_protnone(void)
 	SAFE_MUNMAP(cleanup, addr, page_sz);
 }
 
-#ifdef __ia64__
-
-static char exec_func[] __attribute__ ((aligned (64))) = {
-	0x11, 0x00, 0x00, 0x00, 0x01, 0x00, /* nop.m 0x0             */
-	0x00, 0x00, 0x00, 0x02, 0x00, 0x80, /* nop.i 0x0             */
-	0x08, 0x00, 0x84, 0x00,             /* br.ret.sptk.many b0;; */
-};
-
-struct func_desc {
-	uint64_t func_addr;
-	uint64_t glob_pointer;
-};
-
-static __attribute__((noinline)) void *get_func(void *mem)
-{
-	static struct func_desc fdesc;
-
-	memcpy(mem, exec_func, sizeof(exec_func));
-
-	fdesc.func_addr = (uint64_t)mem;
-	fdesc.glob_pointer = 0;
-
-	return &fdesc;
-}
-
-#else
-
 static void exec_func(void)
 {
 	return;
@@ -250,8 +223,6 @@ static void *get_func(void *mem, uintptr_t *func_page_offset)
 	/* return pointer to area where copy of exec_func resides */
 	return func_copy_start;
 }
-
-#endif
 
 static void testfunc_protexec(void)
 {
