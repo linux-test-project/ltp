@@ -7,7 +7,6 @@
 /lib6/getaddrinfo_01
 /lib6/in6_01
 /lib6/in6_02
-/multicast/mc_gethost/mc_gethost
 /multicast/mc_commo/mc_recv
 /multicast/mc_commo/mc_send
 /multicast/mc_member/mc_member_test

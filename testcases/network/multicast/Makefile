@@ -24,8 +24,4 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-ifeq ($(ANDROID),1)
-FILTER_OUT_DIRS		+= mc_gethost
-endif
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
