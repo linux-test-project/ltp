@@ -83,7 +83,7 @@ clock_nanosleep2_01 clock_nanosleep2_01
 
 clock_gettime01 clock_gettime01
 clock_gettime02 clock_gettime02
-clock_gettime03 clock_gettime03
+leapsec01 leapsec01
 
 clock_settime01 clock_settime01
 clock_settime02 clock_settime02
