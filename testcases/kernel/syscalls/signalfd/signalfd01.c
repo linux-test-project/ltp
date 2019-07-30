@@ -56,22 +56,13 @@ int TST_TOTAL = 1;
 #if defined HAVE_SYS_SIGNALFD_H
 #include <sys/signalfd.h>
 #elif defined HAVE_LINUX_SIGNALFD_H
-#if defined HAVE_LINUX_TYPES_H
-#include <linux/types.h>
-#endif
 #include <linux/signalfd.h>
 #define USE_OWNIMPL
-#elif defined HAVE_SIGNALFD_H
-#include <signalfd.h>
 #else
 #define  USE_STUB
 #endif
 
-#if defined HAVE_STRUCT_SIGNALFD_SIGINFO_SSI_SIGNO
-#define SIGNALFD_PREFIX(FIELD) ssi_##FIELD
-#elif defined HAVE_STRUCT_SIGNALFD_SIGINFO_SIGNO
-#define SIGNALFD_PREFIX(FIELD) FIELD
-#else
+#ifndef HAVE_STRUCT_SIGNALFD_SIGINFO_SSI_SIGNO
 #define USE_STUB
 #endif
 
@@ -170,14 +161,13 @@ int do_test1(uint32_t sig)
 		goto out;
 	}
 
-	if (fdsi.SIGNALFD_PREFIX(signo) == sig) {
+	if (fdsi.ssi_signo == sig) {
 		tst_resm(TPASS, "got expected signal");
 		sfd_for_next = sfd;
 		goto out;
 	} else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.SIGNALFD_PREFIX(signo),
-			 strsignal(fdsi.SIGNALFD_PREFIX(signo)));
+			 fdsi.ssi_signo, strsignal(fdsi.ssi_signo));
 		sfd_for_next = -1;
 		close(sfd);
 		goto out;
@@ -254,13 +244,13 @@ void do_test2(int fd, uint32_t sig)
 		goto out;
 	}
 
-	if (fdsi.SIGNALFD_PREFIX(signo) == sig) {
+	if (fdsi.ssi_signo == sig) {
 		tst_resm(TPASS, "got expected signal");
 		goto out;
 	} else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.SIGNALFD_PREFIX(signo),
-			 strsignal(fdsi.SIGNALFD_PREFIX(signo)));
+			 fdsi.ssi_signo),
+			 strsignal(fdsi.ssi_signo);
 		goto out;
 	}
 
