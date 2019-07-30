@@ -92,7 +92,7 @@ static void run(void)
 {
 	pthread_t server_thr, client_thr;
 
-	server_addr.sin_port = htons(server_port);
+	server_addr.sin_port = server_port;
 	client_addr.sin_port = htons(0);
 
 	SAFE_PTHREAD_CREATE(&server_thr, NULL, server_thread, NULL);
@@ -121,7 +121,7 @@ static void setup(void)
 	addr_len = sizeof(struct sockaddr_in);
 
 	server_port = TST_GET_UNUSED_PORT(AF_INET, SOCK_STREAM);
-	tst_res(TINFO, "Starting listener on port: %d", server_port);
+	tst_res(TINFO, "Starting listener on port: %d", ntohs(server_port));
 }
 
 static void cleanup(void)
