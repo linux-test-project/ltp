@@ -17,6 +17,9 @@
  * Can trigger user-space stalls on aarch64:
  *   7a30df49f63a ("mm: mmu_gather: remove __tlb_reset_range() for force flush")
  *   https://lore.kernel.org/linux-mm/1817839533.20996552.1557065445233.JavaMail.zimbra@redhat.com
+ * Can trigger "still mapped when deleted" BUG at mm/filemap.c:171, on aarch64 since 4.20
+ *   e1b98fa31664 ("locking/rwsem: Add missing ACQUIRE to read_slowpath exit when queue is empty")
+ *   99143f82a255 ("lcoking/rwsem: Add missing ACQUIRE to read_slowpath sleep loop")
  */
 #include <errno.h>
 #include <float.h>
