@@ -36,13 +36,14 @@ AC_CHECK_HEADERS([ \
     ifaddrs.h \
     keyutils.h \
     linux/can.h \
-    linux/dccp.h \
+    linux/cgroupstats.h \
     linux/cryptouser.h \
+    linux/dccp.h \
     linux/genetlink.h \
-    linux/keyctl.h \
     linux/if_alg.h \
     linux/if_packet.h \
     linux/if_ether.h \
+    linux/keyctl.h \
     linux/mempolicy.h \
     linux/module.h \
     linux/netlink.h \
@@ -78,9 +79,9 @@ AC_CHECK_FUNCS([ \
     name_to_handle_at \
     openat \
     pidfd_send_signal \
+    pkey_mprotect \
     preadv \
     preadv2 \
-    pkey_mprotect \
     profil \
     pwritev \
     pwritev2 \
