@@ -139,5 +139,4 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_checkpoints = 1,
-	.needs_root = 1,
 };
