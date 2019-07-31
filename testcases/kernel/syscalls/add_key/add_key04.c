@@ -32,6 +32,10 @@
 
 #define ASSOC_ARRAY_FAN_OUT 16
 
+#define PAYLOAD "payload"
+
+static char *payload;
+
 static void do_test(void)
 {
 	int status;
@@ -42,7 +46,6 @@ static void do_test(void)
 
 	if (SAFE_FORK() == 0) {
 		char description[32];
-		const char payload[] = "payload";
 		int i;
 
 		for (i = 0; i < ASSOC_ARRAY_FAN_OUT; i++) {
@@ -55,7 +58,7 @@ static void do_test(void)
 			}
 		}
 
-		TEST(add_key("user", "userkey", payload, sizeof(payload),
+		TEST(add_key("user", "userkey", payload, sizeof(PAYLOAD),
 			     KEY_SPEC_SESSION_KEYRING));
 		if (TST_RET < 0)
 			tst_brk(TBROK | TTERRNO, "unable to create user key");
@@ -72,7 +75,13 @@ static void do_test(void)
 		tst_brk(TBROK, "Child %s", tst_strstatus(status));
 }
 
+static void setup(void)
+{
+	payload = tst_strdup(PAYLOAD);
+}
+
 static struct tst_test test = {
+	.setup = setup,
 	.test_all = do_test,
 	.forks_child = 1,
 };
