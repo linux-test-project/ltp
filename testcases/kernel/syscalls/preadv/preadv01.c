@@ -24,12 +24,8 @@
 #define CHUNK           64
 
 static int fd;
-static char buf[CHUNK];
 
-static struct iovec rd_iovec[] = {
-	{buf, CHUNK},
-	{NULL, 0},
-};
+static struct iovec *rd_iovec;
 
 static struct tcase {
 	int count;
@@ -111,4 +107,8 @@ static struct tst_test test = {
 	.test = verify_preadv,
 	.min_kver = "2.6.30",
 	.needs_tmpdir = 1,
+	.bufs = (struct tst_buffers []) {
+		{&rd_iovec, .iov_sizes = (int[]){CHUNK, 0, -1}},
+		{},
+	}
 };
