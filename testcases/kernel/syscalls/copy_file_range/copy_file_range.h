@@ -9,7 +9,10 @@
 
 #include <stdbool.h>
 #include <unistd.h>
+#include <sys/sysmacros.h>
+#include <limits.h>
 #include "lapi/syscalls.h"
+#include "lapi/fs.h"
 
 #define TEST_VARIANTS	2
 
@@ -18,10 +21,18 @@
 #define FILE_DEST_PATH  "file_dest"
 #define FILE_RDONL_PATH "file_rdonl"
 #define FILE_DIR_PATH	"file_dir"
-#define FILE_MNTED_PATH	MNTPOINT"/file_mnted"
+#define FILE_MNTED_PATH  MNTPOINT"/file_mnted"
+#define FILE_IMMUTABLE_PATH "file_immutable"
+#define FILE_SWAP_PATH "file_swap"
+#define FILE_CHRDEV    "/dev/null"
+#define FILE_FIFO      "file_fifo"
+#define FILE_COPY_PATH  "file_copy"
 
 #define CONTENT		"ABCDEFGHIJKLMNOPQRSTUVWXYZ12345\n"
 #define CONTSIZE	(sizeof(CONTENT) - 1)
+#define MAX_LEN   MAX_LFS_FILESIZE
+#define MIN_OFF   65537
+#define MAX_OFF   (MAX_LEN - MIN_OFF)
 
 static void syscall_info(void)
 {
