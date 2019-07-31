@@ -783,7 +783,6 @@ munmap03 munmap03
 
 nanosleep01 nanosleep01
 nanosleep02 nanosleep02
-nanosleep03 nanosleep03
 nanosleep04 nanosleep04
 
 nftw01 nftw01

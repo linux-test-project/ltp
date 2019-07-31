@@ -10,6 +10,9 @@
  *  Verify that nanosleep() will be successful to suspend the execution
  *  of a process, returns after the receipt of a signal and writes the
  *  remaining sleep time into the structure.
+ *
+ *  This test also verifies that if the call is interrupted by a signal
+ *  handler, nanosleep() returns -1, sets errno to EINTR.
  */
 
 #include <errno.h>
@@ -39,10 +42,19 @@ static void do_child(void)
 	TEST(nanosleep(&timereq, &timerem));
 	tst_timer_stop();
 
-	if (!TST_RET)
-		tst_brk(TBROK, "nanosleep was not interrupted");
-	if (TST_ERR != EINTR)
-		tst_brk(TBROK | TTERRNO, "nanosleep() failed");
+	if (TST_RET != -1) {
+		tst_res(TFAIL,
+			"nanosleep was not interrupted, returned %ld, expected -1",
+			TST_RET);
+		return;
+	}
+	if (TST_ERR != EINTR) {
+		tst_res(TFAIL | TTERRNO,
+			"nanosleep() failed, expected EINTR, got");
+		return;
+	}
+
+	tst_res(TPASS, "nanosleep() returned -1, set errno to EINTR");
 
 	if (tst_timespec_lt(timereq, tst_timer_elapsed()))
 		tst_brk(TFAIL, "nanosleep() slept more than timereq");
