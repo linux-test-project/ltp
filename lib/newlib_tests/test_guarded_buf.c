@@ -21,9 +21,16 @@ static char *buf3;
 
 static void do_test(unsigned int n)
 {
-	int pid = SAFE_FORK();
+	int pid;
 	int status;
 
+	if (n == 6) {
+		buf1[-1] = 0;
+		buf3[-1] = 0;
+		tst_res(TPASS, "Buffers dirtied!");
+	}
+
+	pid = SAFE_FORK();
 	if (!pid) {
 		switch (n) {
 		case 0:
@@ -44,12 +51,19 @@ static void do_test(unsigned int n)
 		case 5:
 			buf3[BUF3_LEN] = 0;
 		break;
+		case 6:
+			buf1[-2] = 0;
+			buf3[-2] = 0;
+		break;
 		}
 
 		exit(0);
 	}
 
 	SAFE_WAITPID(pid, &status, 0);
+
+	if (n == 6)
+		return;
 
 	if (n < 3) {
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
@@ -69,7 +83,7 @@ static void do_test(unsigned int n)
 static struct tst_test test = {
 	.forks_child = 1,
 	.test = do_test,
-	.tcnt = 6,
+	.tcnt = 7,
 	.bufs = (struct tst_buffers []) {
 		{&buf1, .size = BUF1_LEN},
 		{&buf2, .size = BUF2_LEN},

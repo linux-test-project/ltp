@@ -390,6 +390,9 @@ pid_t safe_fork(const char *filename, unsigned int lineno)
 	if (pid < 0)
 		tst_brk_(filename, lineno, TBROK | TERRNO, "fork() failed");
 
+	if (!pid)
+		atexit(tst_free_all);
+
 	return pid;
 }
 
