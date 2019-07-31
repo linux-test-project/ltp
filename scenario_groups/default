@@ -17,7 +17,6 @@ filecaps
 cap_bounds
 fcntl-locktests
 connectors
-timers
 power_management_tests
 hugetlb
 commands
