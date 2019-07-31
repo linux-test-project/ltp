@@ -23,23 +23,24 @@
 #define DELTA_US (long long) (DELTA_SEC * 1000000)
 #define DELTA_EPS (long long) (DELTA_US * 0.1)
 
+static struct timespec *begin, *change, *end;
+
 static void verify_clock_settime(void)
 {
 	long long elapsed;
-	struct timespec begin, change, end;
 
 	/* test 01: move forward */
 
-	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, &begin);
+	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, begin);
 
-	change = tst_timespec_add_us(begin, DELTA_US);
+	*change = tst_timespec_add_us(*begin, DELTA_US);
 
-	if (clock_settime(CLOCK_REALTIME, &change) != 0)
+	if (clock_settime(CLOCK_REALTIME, change) != 0)
 		tst_brk(TBROK | TTERRNO, "could not set realtime change");
 
-	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, &end);
+	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, end);
 
-	elapsed = tst_timespec_diff_us(end, begin);
+	elapsed = tst_timespec_diff_us(*end, *begin);
 
 	if (elapsed >= DELTA_US && elapsed < (DELTA_US + DELTA_EPS))
 		tst_res(TPASS, "clock_settime(2): was able to advance time");
@@ -48,16 +49,16 @@ static void verify_clock_settime(void)
 
 	/* test 02: move backward */
 
-	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, &begin);
+	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, begin);
 
-	change = tst_timespec_sub_us(begin, DELTA_US);
+	*change = tst_timespec_sub_us(*begin, DELTA_US);
 
-	if (clock_settime(CLOCK_REALTIME, &change) != 0)
+	if (clock_settime(CLOCK_REALTIME, change) != 0)
 		tst_brk(TBROK | TTERRNO, "could not set realtime change");
 
-	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, &end);
+	SAFE_CLOCK_GETTIME(CLOCK_REALTIME, end);
 
-	elapsed = tst_timespec_diff_us(end, begin);
+	elapsed = tst_timespec_diff_us(*end, *begin);
 
 	if (~(elapsed) <= DELTA_US && ~(elapsed) > (DELTA_US - DELTA_EPS))
 		tst_res(TPASS, "clock_settime(2): was able to recede time");
@@ -69,4 +70,10 @@ static struct tst_test test = {
 	.test_all = verify_clock_settime,
 	.needs_root = 1,
 	.restore_wallclock = 1,
+	.bufs = (struct tst_buffers []) {
+		{&begin, .size = sizeof(*begin)},
+		{&change, .size = sizeof(*change)},
+		{&end, .size = sizeof(*end)},
+		{},
+	}
 };
