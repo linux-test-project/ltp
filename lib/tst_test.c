@@ -283,6 +283,8 @@ static void do_test_cleanup(void)
 	if (tst_test->cleanup)
 		tst_test->cleanup();
 
+	tst_free_all();
+
 	tst_brk_handler = tst_vbrk_;
 }
 
@@ -801,6 +803,9 @@ static void do_setup(int argc, char *argv[])
 		tst_test->needs_device = 1;
 
 	setup_ipc();
+
+	if (tst_test->bufs)
+		tst_buffers_alloc(tst_test->bufs);
 
 	if (needs_tmpdir() && !tst_tmpdir_created())
 		tst_tmpdir();

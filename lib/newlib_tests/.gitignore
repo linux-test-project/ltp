@@ -26,3 +26,4 @@ test_exec
 test_exec_child
 test_kconfig
 variant
+test_guarded_buf

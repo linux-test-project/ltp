@@ -35,6 +35,7 @@
 #include "tst_path_has_mnt_flags.h"
 #include "tst_sys_conf.h"
 #include "tst_coredump.h"
+#include "tst_buffers.h"
 
 /*
  * Reports testcase result.
@@ -200,6 +201,11 @@ struct tst_test {
 	 * test.
 	 */
 	const char *const *needs_kconfigs;
+
+	/*
+	 * NULL-terminated array to be allocated buffers.
+	 */
+	struct tst_buffers *bufs;
 };
 
 /*
