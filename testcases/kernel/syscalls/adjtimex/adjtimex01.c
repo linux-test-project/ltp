@@ -12,14 +12,14 @@
 #define SET_MODE (ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
 	ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK)
 
-static struct timex tim_save;
-static struct timex buff;
+static struct timex *tim_save;
+static struct timex *buf;
 
 void verify_adjtimex(void)
 {
-	buff = tim_save;
-	buff.modes = SET_MODE;
-	TEST(adjtimex(&buff));
+	*buf = *tim_save;
+	buf->modes = SET_MODE;
+	TEST(adjtimex(buf));
 	if ((TST_RET >= TIME_OK) && (TST_RET <= TIME_ERROR)) {
 		tst_res(TPASS, "adjtimex() with mode 0x%x ", SET_MODE);
 	} else {
@@ -27,8 +27,8 @@ void verify_adjtimex(void)
 				SET_MODE);
 	}
 
-	buff.modes = ADJ_OFFSET_SINGLESHOT;
-	TEST(adjtimex(&buff));
+	buf->modes = ADJ_OFFSET_SINGLESHOT;
+	TEST(adjtimex(buf));
 	if ((TST_RET >= TIME_OK) && (TST_RET <= TIME_ERROR)) {
 		tst_res(TPASS, "adjtimex() with mode 0x%x ",
 				ADJ_OFFSET_SINGLESHOT);
@@ -41,10 +41,10 @@ void verify_adjtimex(void)
 
 static void setup(void)
 {
-	tim_save.modes = 0;
+	tim_save->modes = 0;
 
 	/* Save current parameters */
-	if ((adjtimex(&tim_save)) == -1) {
+	if ((adjtimex(tim_save)) == -1) {
 		tst_brk(TBROK | TERRNO,
 			"adjtimex(): failed to save current params");
 	}
@@ -54,4 +54,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.test_all = verify_adjtimex,
+	.bufs = (struct tst_buffers []) {
+		{&buf, .size = sizeof(*buf)},
+		{&tim_save, .size = sizeof(*tim_save)},
+		{},
+	}
 };

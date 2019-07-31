@@ -16,14 +16,14 @@
 
 static int hz;			/* HZ from sysconf */
 
-static struct timex tim_save;
-static struct timex buff;
+static struct timex *tim_save;
+static struct timex *buf;
 
 static struct passwd *ltpuser;
 
 static void verify_adjtimex(unsigned int nr)
 {
-	struct timex *buffp;
+	struct timex *bufp;
 	int expected_errno = 0;
 
 	/*
@@ -39,20 +39,20 @@ static void verify_adjtimex(unsigned int nr)
 		return;
 	}
 
-	buff = tim_save;
-	buff.modes = SET_MODE;
-	buffp = &buff;
+	*buf = *tim_save;
+	buf->modes = SET_MODE;
+	bufp = buf;
 	switch (nr) {
 	case 0:
-		buffp = (struct timex *)-1;
+		bufp = (struct timex *)-1;
 		expected_errno = EFAULT;
 		break;
 	case 1:
-		buff.tick = 900000 / hz - 1;
+		buf->tick = 900000 / hz - 1;
 		expected_errno = EINVAL;
 		break;
 	case 2:
-		buff.tick = 1100000 / hz + 1;
+		buf->tick = 1100000 / hz + 1;
 		expected_errno = EINVAL;
 		break;
 	case 3:
@@ -62,18 +62,18 @@ static void verify_adjtimex(unsigned int nr)
 		expected_errno = EPERM;
 		break;
 	case 4:
-		buff.offset = 512000L + 1;
+		buf->offset = 512000L + 1;
 		expected_errno = EINVAL;
 		break;
 	case 5:
-		buff.offset = (-1) * (512000L) - 1;
+		buf->offset = (-1) * (512000L) - 1;
 		expected_errno = EINVAL;
 		break;
 	default:
 		tst_brk(TFAIL, "Invalid test case %u ", nr);
 	}
 
-	TEST(adjtimex(buffp));
+	TEST(adjtimex(bufp));
 	if ((TST_RET == -1) && (TST_ERR == expected_errno)) {
 		tst_res(TPASS | TTERRNO,
 				"adjtimex() error %u ", expected_errno);
@@ -90,23 +90,23 @@ static void verify_adjtimex(unsigned int nr)
 
 static void setup(void)
 {
-	tim_save.modes = 0;
+	tim_save->modes = 0;
 
 	/* set the HZ from sysconf */
 	hz = SAFE_SYSCONF(_SC_CLK_TCK);
 
 	/* Save current parameters */
-	if ((adjtimex(&tim_save)) == -1)
+	if ((adjtimex(tim_save)) == -1)
 		tst_brk(TBROK | TERRNO,
-				"adjtimex(): failed to save current params");
+			"adjtimex(): failed to save current params");
 }
 
 static void cleanup(void)
 {
-	tim_save.modes = SET_MODE;
+	tim_save->modes = SET_MODE;
 
 	/* Restore saved parameters */
-	if ((adjtimex(&tim_save)) == -1)
+	if ((adjtimex(tim_save)) == -1)
 		tst_res(TWARN, "Failed to restore saved parameters");
 }
 
@@ -116,4 +116,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = verify_adjtimex,
+	.bufs = (struct tst_buffers []) {
+		{&buf, .size = sizeof(*buf)},
+		{&tim_save, .size = sizeof(*tim_save)},
+		{},
+	}
 };
