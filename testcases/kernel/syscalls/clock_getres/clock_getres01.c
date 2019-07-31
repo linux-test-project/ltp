@@ -16,26 +16,25 @@
 #include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
 
-static struct timespec res;
+static struct timespec *res;
 
 static struct test_case {
 	char *name;
 	clockid_t clk_id;
-	struct timespec *res;
 	int ret;
 	int err;
 } tcase[] = {
-	{"REALTIME", CLOCK_REALTIME, &res, 0, 0},
-	{"MONOTONIC", CLOCK_MONOTONIC, &res, 0, 0},
-	{"PROCESS_CPUTIME_ID", CLOCK_PROCESS_CPUTIME_ID, &res, 0, 0},
-	{"THREAD_CPUTIME_ID", CLOCK_THREAD_CPUTIME_ID, &res, 0, 0},
-	{"CLOCK_MONOTONIC_RAW", CLOCK_MONOTONIC_RAW, &res, 0, 0,},
-	{"CLOCK_REALTIME_COARSE", CLOCK_REALTIME_COARSE, &res, 0, 0,},
-	{"CLOCK_MONOTONIC_COARSE", CLOCK_MONOTONIC_COARSE, &res, 0, 0,},
-	{"CLOCK_BOOTTIME", CLOCK_BOOTTIME, &res, 0, 0,},
-	{"CLOCK_REALTIME_ALARM", CLOCK_REALTIME_ALARM, &res, 0, 0,},
-	{"CLOCK_BOOTTIME_ALARM", CLOCK_BOOTTIME_ALARM, &res, 0, 0,},
-	{"-1", -1, &res, -1, EINVAL},
+	{"REALTIME", CLOCK_REALTIME, 0, 0},
+	{"MONOTONIC", CLOCK_MONOTONIC, 0, 0},
+	{"PROCESS_CPUTIME_ID", CLOCK_PROCESS_CPUTIME_ID, 0, 0},
+	{"THREAD_CPUTIME_ID", CLOCK_THREAD_CPUTIME_ID, 0, 0},
+	{"CLOCK_MONOTONIC_RAW", CLOCK_MONOTONIC_RAW, 0, 0,},
+	{"CLOCK_REALTIME_COARSE", CLOCK_REALTIME_COARSE, 0, 0,},
+	{"CLOCK_MONOTONIC_COARSE", CLOCK_MONOTONIC_COARSE, 0, 0,},
+	{"CLOCK_BOOTTIME", CLOCK_BOOTTIME, 0, 0,},
+	{"CLOCK_REALTIME_ALARM", CLOCK_REALTIME_ALARM, 0, 0,},
+	{"CLOCK_BOOTTIME_ALARM", CLOCK_BOOTTIME_ALARM, 0, 0,},
+	{"-1", -1, -1, EINVAL},
 };
 
 static const char *variant_desc[] = {
@@ -52,11 +51,10 @@ static void do_test(unsigned int i)
 {
 	switch (tst_variant) {
 	case 0:
-		TEST(clock_getres(tcase[i].clk_id, tcase[i].res));
+		TEST(clock_getres(tcase[i].clk_id, res));
 		break;
 	case 1:
-		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id,
-			tcase[i].res));
+		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id, res));
 		break;
 	case 2:
 		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id, NULL));
@@ -88,4 +86,8 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcase),
 	.test_variants = 3,
 	.setup = setup,
+	.bufs = (struct tst_buffers []) {
+		{&res, .size = sizeof(*res)},
+		{},
+	}
 };
