@@ -45,6 +45,12 @@ int tst_umount(const char *path);
 int tst_clear_device(const char *dev);
 
 /*
+ * Finds a free loop device for use and returns the free loopdev minor(-1 for no
+ * free loopdev). If path is non-NULL, it will be filled with free loopdev path.
+ *
+ */
+int tst_find_free_loopdev(const char *path, size_t path_len);
+/*
  * Reads test block device stat file and returns the bytes written since the
  * last call of this function.
  * @dev: test block device
