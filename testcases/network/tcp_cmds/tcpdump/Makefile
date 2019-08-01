@@ -24,7 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= tcpdump01
+INSTALL_TARGETS		:= tcpdump01.sh
 
 MAKE_TARGETS		:=
 

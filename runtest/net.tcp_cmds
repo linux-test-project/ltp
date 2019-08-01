@@ -6,17 +6,17 @@ ipneigh01_arp ipneigh01.sh -c arp
 ipneigh01_ip ipneigh01.sh -c ip
 arping01 arping01.sh
 clockdiff01 clockdiff01.sh
-ftp ftp01
-host host01
-netstat netstat01
+ftp ftp01.sh
+host host01.sh
+netstat netstat01.sh
 ping01 ping01.sh
 ping02 ping02.sh
-rcp rcp01
-rlogin rlogin01
-rsh rsh01
-sendfile sendfile01
-tcpdump tcpdump01
-telnet telnet01
+rcp rcp01.sh
+rlogin rlogin01.sh
+rsh rsh01.sh
+sendfile sendfile01.sh
+tcpdump tcpdump01.sh
+telnet telnet01.sh
 iptables iptables_tests.sh
 dhcpd dhcpd_tests.sh
 dnsmasq dnsmasq_tests.sh

@@ -24,6 +24,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= mc_opts
+INSTALL_TARGETS		:= mc_opts.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

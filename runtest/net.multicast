@@ -2,7 +2,7 @@
 #
 # PLEASE READ THE README FILE IN /multicast BEFORE RUNNING THESE.
 #
-mc_cmds mc_cmds
-mc_commo mc_commo
-mc_member mc_member
-mc_opts mc_opts
+mc_cmds mc_cmds.sh
+mc_commo mc_commo.sh
+mc_member mc_member.sh
+mc_opts mc_opts.sh

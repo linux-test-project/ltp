@@ -27,7 +27,7 @@ include $(abs_srcdir)/../Makefile.inc
 
 CPPFLAGS		+= -I$(abs_srcdir)/../include
 
-INSTALL_TARGETS		:= sendfile01
+INSTALL_TARGETS		:= sendfile01.sh
 
 MAKE_TARGETS		+= testsf_c testsf_s testsf_c6 testsf_s6
 

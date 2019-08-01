@@ -44,7 +44,7 @@ setup()
 
 get_address()
 {
-	DIGIT=`ps -ef | grep mc_member | grep -v grep | wc -l`
+	DIGIT=`ps -ef | grep mc_member.sh | grep -v grep | wc -l`
 	ADDRESS=$DIGIT.$DIGIT.$DIGIT.$DIGIT
 }
 

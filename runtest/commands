@@ -1,8 +1,8 @@
 #DESCRIPTION:General Linux commands
-ar_sh export TCdat=$LTPROOT/testcases/bin; ar01
-ld01_sh ld01
-ldd01_sh ldd01
-nm01_sh nm01
+ar_sh export TCdat=$LTPROOT/testcases/bin; ar01.sh
+ld01_sh ld01.sh
+ldd01_sh ldd01.sh
+nm01_sh nm01.sh
 file01_sh file01.sh
 tar01_sh  tar_tests.sh
 logrotate_sh export TCdat=$LTPROOT/testcases/bin; logrotate_tests.sh

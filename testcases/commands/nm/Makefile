@@ -24,6 +24,6 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= nm01
+INSTALL_TARGETS		:= nm01.sh
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

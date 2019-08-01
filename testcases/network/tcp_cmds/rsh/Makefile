@@ -24,7 +24,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= rsh01
+INSTALL_TARGETS		:= rsh01.sh
 
 MAKE_TARGETS		:=
 

@@ -225,7 +225,7 @@ contributions are welcome.
     iv) Finally, before running the network.sh script, two variables must be
 	set: The "RHOST" variable should be set to the hostname of the server.
 	The "PASSWD" variable should be set to root's password on the server
-	machine. This is necessary for tests such as telnet01 and ftp01.
+	machine. This is necessary for tests such as telnet01.sh and ftp01.sh.
 
    You can now successfully execute the network.sh script.
 
