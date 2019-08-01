@@ -170,12 +170,12 @@ Developers corner
 
 Before you start you should read following documents:
 
-* `doc/test-writing-guidelines.txt`
-* `doc/build-system-guide.txt`
+* [doc/test-writing-guidelines.txt](https://github.com/linux-test-project/ltp/blob/master/doc/test-writing-guidelines.txt)
+* [doc/build-system-guide.txt](https://github.com/linux-test-project/ltp/blob/master/doc/build-system-guide.txt)
 
 There is also a step-by-step tutorial:
 
-* `doc/c-test-tutorial-simple.txt`
+* [doc/c-test-tutorial-simple.txt](https://github.com/linux-test-project/ltp/blob/master/doc/c-test-tutorial-simple.txt)
 
 If something is not covered there don't hesitate to ask on the LTP mailing
 list. Also note that these documents are available online at:
