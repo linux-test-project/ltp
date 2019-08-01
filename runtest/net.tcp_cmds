@@ -6,15 +6,15 @@ ipneigh01_arp ipneigh01.sh -c arp
 ipneigh01_ip ipneigh01.sh -c ip
 arping01 arping01.sh
 clockdiff01 clockdiff01.sh
-ftp export TCbin=$LTPROOT/testcases/network/tcp_cmds/ftp; ftp01
+ftp ftp01
 host host01
 netstat netstat01
 ping01 ping01.sh
 ping02 ping02.sh
-rcp export TCbin=$LTPROOT/testcases/network/tcp_cmds/rcp; rcp01
+rcp rcp01
 rlogin rlogin01
 rsh rsh01
-sendfile export TCbin=$LTPROOT/testcases/network/tcp_cmds/sendfile; sendfile01
+sendfile sendfile01
 tcpdump tcpdump01
 telnet telnet01
 iptables iptables_tests.sh
