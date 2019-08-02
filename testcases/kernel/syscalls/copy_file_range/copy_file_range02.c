@@ -180,7 +180,7 @@ static void setup(void)
 	fd_immutable = SAFE_OPEN(FILE_IMMUTABLE_PATH, O_RDWR | O_CREAT, 0664);
 	fd_swapfile = SAFE_OPEN(FILE_SWAP_PATH, O_RDWR | O_CREAT, 0600);
 
-	if (loop_devn == -1)
+	if (loop_devn != -1)
 		fd_blkdev = SAFE_OPEN(dev_path, O_RDWR, 0600);
 
 	fd_chrdev = SAFE_OPEN(FILE_CHRDEV, O_RDWR, 0600);
