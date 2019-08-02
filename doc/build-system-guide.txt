@@ -137,19 +137,13 @@ $(AR)			: The library archiver.
 
 $(CC)			: The system C compiler.
 
-$(CXX)			: The system C++ compiler.
-
 $(CPP)			: The system C preprocessor.
 
 $(CFLAGS)		: C compiler flags.
 
 $(CPPFLAGS)		: Preprocessor flags, e.g. -I arguments.
 
-$(CXXFLAGS)		: C++ compiler flags, e.g. -I arguments.
-
 $(DEBUG_CFLAGS)		: Debug flags to pass to $(CC), -g, etc.
-
-$(DEBUG_CXXFLAGS)	: Debug flags to pass to $(CXX).
 
 $(LD)			: The system linker (typically $(CC), but not
 			  necessarily).
@@ -179,14 +173,10 @@ $(OPT_CFLAGS)		: Optimization flags to pass into the C compiler, -O2,
 			  logic in the tree-optimization portion of the gcc
 			  compiler, from 3.3.x to 4.4.
 
-$(OPT_CXXFLAGS)		: Optimization flags to pass to the C++ compiler.
-
 $(RANLIB)		: What to run after archiving a library.
 
 $(WCFLAGS)		: Warning flags to pass to $(CC), e.g. -Werror,
 			  -Wall, etc.
-
-$(WCXXFLAGS)		: Same as $(WCFLAGS), but for $(CXX).
 -------------------------------------------------------------------------------
 
 Make System Variables

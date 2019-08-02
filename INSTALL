@@ -239,7 +239,7 @@ Cross compiling
 ---------------
 
 To cross compile, you must specify the correct variables when running configure.
-e.g. CC, CXX, CXXFLAGS, LDFLAGS, etc...
+e.g. CC, LDFLAGS, etc...
 
 After configure has run, it will generate include/mk/config.mk. You can tweak
 settings in there if need be, but you should not specificy settings on the
@@ -263,8 +263,6 @@ Variables in Makefile
 The conventions enforced are standard ones. Here's a quick summary:
 
 CFLAGS   - used when compiling/linking C code, e.g. -D_GNU_SOURCE (no CPPFLAGS!)
-
-CXXFLAGS - used when compiling/linking C++ code (no CPPFLAGS!)
 
 CPPFLAGS - used when preprocessor is run (so C/C++ compiling with $(CPP)
 	   functions, e.g. -I$SYSROOT/usr/include -I$SYSROOT/include -I$SYSROOT

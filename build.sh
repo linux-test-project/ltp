@@ -21,7 +21,7 @@ CC=gcc
 build_32()
 {
 	echo "===== 32-bit ${1}-tree build into $PREFIX ====="
-	build $1 CFLAGS="-m32" CXXFLAGS="-m32" LDFLAGS="-m32"
+	build $1 CFLAGS="-m32" LDFLAGS="-m32"
 }
 
 build_native()
