@@ -21,7 +21,8 @@ CC=gcc
 build_32()
 {
 	echo "===== 32-bit ${1}-tree build into $PREFIX ====="
-	build $1 CFLAGS="-m32" LDFLAGS="-m32"
+	CFLAGS="-m32 $CFLAGS" LDFLAGS="-m32 $LDFLAGS"
+	build $1
 }
 
 build_native()
@@ -63,7 +64,7 @@ build_out_tree()
 
 	mkdir -p $build
 	cd $build
-	run_configure $tree/configure $CONFIGURE_OPTS_OUT_TREE CC="$CC" $@
+	run_configure $tree/configure $CONFIGURE_OPTS_OUT_TREE $@
 
 	echo "=== build ==="
 	make $make_opts
@@ -74,7 +75,7 @@ build_out_tree()
 
 build_in_tree()
 {
-	run_configure ./configure $CONFIGURE_OPTS_IN_TREE CC="$CC" --prefix=$PREFIX $@
+	run_configure ./configure $CONFIGURE_OPTS_IN_TREE --prefix=$PREFIX $@
 
 	echo "=== build ==="
 	make $MAKE_OPTS
@@ -87,6 +88,9 @@ run_configure()
 {
 	local configure=$1
 	shift
+
+	export CC CFLAGS LDFLAGS
+	echo "CC='$CC' CFLAGS='$CFLAGS' LDFLAGS='$LDFLAGS'"
 
 	echo "=== configure $configure $@ ==="
 	if ! $configure $@; then
