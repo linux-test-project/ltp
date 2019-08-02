@@ -30,6 +30,7 @@
 #include "ffsb.h"
 #include "fileops.h"
 #include "ffsb_op.h"
+#include "ffsb_thread.h"
 
 static void do_stats(struct timeval *start, struct timeval *end,
 		     ffsb_thread_t * ft, ffsb_fs_t * fs, syscall_t sys)

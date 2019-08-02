@@ -19,6 +19,7 @@
 #define _FH_H_
 
 #include <inttypes.h>
+#include "ffsb_thread.h"
 
 struct ffsb_thread;
 struct ffsb_fs;
@@ -29,6 +30,7 @@ int fhopencreate(char *, struct ffsb_thread *, struct ffsb_fs *);
 int fhopenappend(char *, struct ffsb_thread *, struct ffsb_fs *);
 
 void fhread(int, void *, uint64_t, struct ffsb_thread *, struct ffsb_fs *);
+void fhstat(char *name, ffsb_thread_t * ft, ffsb_fs_t * fs);
 
 /* can only write up to size_t bytes at a time, so size is a uint32_t */
 void fhwrite(int, void *, uint32_t, struct ffsb_thread *, struct ffsb_fs *);
