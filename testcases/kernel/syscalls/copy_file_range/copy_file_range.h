@@ -41,7 +41,7 @@ static void syscall_info(void)
 		tst_res(TINFO, "Testing libc copy_file_range()");
 		break;
 	case 1:
-		tst_res(TINFO, "Testing tst copy_file_range()");
+		tst_res(TINFO, "Testing __NR_copy_file_range syscall");
 	}
 }
 

@@ -86,7 +86,7 @@ static int run_command(char *command, char *option, char *file)
 	case 0:
 	return 0;
 	case 255:
-		tst_res(TCONF, "%s binary not installed", command);
+		tst_res(TCONF, "%s binary not installed or failed", command);
 	return 1;
 	default:
 		tst_res(TCONF, "%s exited with %i", command, ret);
