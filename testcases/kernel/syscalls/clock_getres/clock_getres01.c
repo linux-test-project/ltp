@@ -13,6 +13,7 @@
 #include <errno.h>
 
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
 
 static struct timespec res;
@@ -37,9 +38,30 @@ static struct test_case {
 	{"-1", -1, &res, -1, EINVAL},
 };
 
+static const char *variant_desc[] = {
+	"default (vdso or syscall)",
+	"syscall",
+	"syscall with NULL res parameter" };
+
+static void setup(void)
+{
+	tst_res(TINFO, "Testing variant: %s", variant_desc[tst_variant]);
+}
+
 static void do_test(unsigned int i)
 {
-	TEST(clock_getres(tcase[i].clk_id, tcase[i].res));
+	switch (tst_variant) {
+	case 0:
+		TEST(clock_getres(tcase[i].clk_id, tcase[i].res));
+		break;
+	case 1:
+		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id,
+			tcase[i].res));
+		break;
+	case 2:
+		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id, NULL));
+		break;
+	}
 
 	if (TST_RET != tcase[i].ret) {
 		if (TST_ERR == EINVAL) {
@@ -64,4 +86,6 @@ static void do_test(unsigned int i)
 static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcase),
+	.test_variants = 3,
+	.setup = setup,
 };
