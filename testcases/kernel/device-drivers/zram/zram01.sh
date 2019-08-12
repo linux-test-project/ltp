@@ -67,9 +67,13 @@ zram_fill_fs()
 		while true; do
 			dd conv=notrunc if=/dev/zero of=zram${i}/file \
 				oflag=append count=1 bs=1024 status=none \
-				> /dev/null 2>&1 || break
+				>/dev/null 2>err.txt || break
 			b=$(($b + 1))
 		done
+		if [ $b -eq 0 ]; then
+			[ -s err.txt ] && tst_resm TWARN "dd error: $(cat err.txt)"
+			tst_brkm TBROK "cannot fill zram"
+		fi
 		tst_resm TINFO "zram$i can be filled with '$b' KB"
 	done
 
@@ -81,6 +85,8 @@ zram_fill_fs()
 		local s=$(echo $sm | sed 's/M//')
 		total_size=$(($total_size + $s))
 	done
+
+	[ $used_mem -eq 0 ] && tst_brkm TBROK "no memory used by zram"
 
 	tst_resm TINFO "zram used ${used_mem}M, zram disk sizes ${total_size}M"
 
