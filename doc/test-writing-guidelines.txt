@@ -1699,6 +1699,75 @@ struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+2.2.31 Guarded buffers
+^^^^^^^^^^^^^^^^^^^^^^
+
+The test library supports guarded buffers, which are buffers allocated so
+that:
+
+* The end of the buffer is followed by a PROT_NONE page
+
+* The remainder of the page before the buffer is filled with random canary
+  data
+
+Which means that the any access after the buffer will yield a Segmentation
+fault or EFAULT depending on if the access happened in userspace or the kernel
+respectively. The canary before the buffer will also catch any write access
+outside of the buffer.
+
+The purpose of the patch is to catch off-by-one bugs which happens when
+buffers and structures are passed to syscalls. New tests should allocate
+guarded buffers for all data passed to the tested syscall which are passed by
+a pointer.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static struct foo *foo_ptr;
+static struct iovec *iov;
+static void *buf_ptr;
+static char *id;
+...
+
+static void run(void)
+{
+	...
+
+	foo_ptr->bar = 1;
+	foo_ptr->buf = buf_ptr;
+
+	...
+}
+
+static void setup(void)
+{
+	...
+
+	id = tst_strdup(string);
+
+	...
+}
+
+static struct tst_test test = {
+	...
+	.bufs = (struct tst_buffers []) {
+		{&foo_ptr, .size = sizeof(*foo_ptr)},
+		{&buf_ptr, .size = BUF_SIZE},
+		{&iov, .iov_sizes = (int[]){128, 32, -1},
+		{}
+	}
+};
+-------------------------------------------------------------------------------
+
+Guarded buffers can be allocated on runtime in a test setup() by a
+'tst_alloc()' or by 'tst_strdup()' as well as by filling up the .bufs array in
+the tst_test structure.
+
+So far the tst_test structure supports allocating either a plain buffer by
+setting up the size or struct iovec, which is allocated recursively including
+the individual buffers as described by an '-1' terminated array of buffer
+sizes.
 
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
