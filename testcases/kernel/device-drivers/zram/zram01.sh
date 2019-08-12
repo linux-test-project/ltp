@@ -37,7 +37,7 @@ FS_TYPE="btrfs"
 
 RAM_SIZE=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
 if [ "$RAM_SIZE" -lt 1048576 ]; then
-	tst_res TINFO "Not enough space for Btrfs"
+	tst_resm TINFO "Not enough space for Btrfs"
 	FS_SIZE="26214400"
 	FS_TYPE="ext2"
 fi
