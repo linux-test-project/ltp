@@ -4,26 +4,28 @@
  * Copyright (c) 2017 Fujitsu Ltd. (Xiao Yang <yangx.jy@cn.fujitsu.com>)
  */
 /*
- * Test for CVE-2017-5669 which allows us to map the nil page using shmat.
+ * Originated as a test for CVE-2017-5669 but as it turns out the CVE was bogus
+ * to begin with and the test was changed into a regression test for commit:
  *
- * When the bug is present shmat(..., (void *)1, SHM_RND) will round address
- * 0x1 down to zero and give us the (nil/null) page. With the current bug fix
- * in place, shmat it will return EINVAL instead. We also check to see if the
- * returned address is outside the nil page in case an alternative fix has
- * been applied.
+ * commit 8f89c007b6dec16a1793cb88de88fcc02117bbbc
+ * Author: Davidlohr Bueso <dave@stgolabs.net>
+ * Date:   Fri May 25 14:47:30 2018 -0700
  *
- * In any case we manage to map some memory we also try to write to it. This
- * is just to see if we get an access error or some other unexpected behaviour.
+ *  ipc/shm: fix shmat() nil address after round-down when remapping
  *
- * See commit 95e91b831f (ipc/shm: Fix shmat mmap nil-page protection)
+ * Which makes sure that SHM_REMAP forbids NULL address consistently for
+ * SHM_RND as well.
  *
- * The commit above disallowed SHM_RND maps to zero (and rounded) entirely and
- * that broke userland for cases like Xorg. New behavior disallows REMAPs to
- * lower addresses (0<=PAGESIZE).
+ * The timeline went as:
  *
- * See commit a73ab244f0da (Revert "ipc/shm: Fix shmat mmap nil-page protect...)
- * See commit 8f89c007b6de (ipc/shm: fix shmat() nil address after round-dow...)
- * See https://github.com/linux-test-project/ltp/issues/319
+ * 95e91b831f (ipc/shm: Fix shmat mmap nil-page protection)
+ * a73ab244f0da (Revert "ipc/shm: Fix shmat mmap nil-page protect...)
+ * 8f89c007b6de (ipc/shm: fix shmat() nil address after round-dow...)
+ *
+ * The original commit disallowed SHM_RND maps to zero (and rounded) entirely
+ * and that broke userland for cases like Xorg.
+ *
+ * See also https://github.com/linux-test-project/ltp/issues/319
  *
  * This test needs root permissions or else security_mmap_addr(), from
  * get_unmapped_area(), will cause permission errors when trying to mmap lower
