@@ -49,6 +49,10 @@ done
 
 LOOP_COUNT=1
 
+if top -v | grep -q htop; then
+	tst_brkm TCONF "htop is used instead of top (workaround: alias top='/path/to/real/top')"
+fi
+
 if [ $(get_present_cpus_num) -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi
