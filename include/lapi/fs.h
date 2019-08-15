@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Referred from linux kernel -github/torvalds/linux/include/uapi/linux/fs.h
+ * Referred from linux kernel include/uapi/linux/fs.h
+ * Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
  * Copyright (c) Zilogic Systems Pvt. Ltd., 2018
  * Email: code@zilogic.com
  */
+
 #ifdef HAVE_LINUX_FS_H
 # include <linux/fs.h>
 #endif
-# include <sys/user.h>
-# include "lapi/abisize.h"
+
+#include <sys/user.h>
+#include <limits.h>
+#include "lapi/abisize.h"
 
 #ifndef LAPI_FS_H
 #define LAPI_FS_H
@@ -37,11 +41,26 @@
 #define FS_NODUMP_FL	   0x00000040 /* do not dump file */
 #endif
 
-/* Referred form linux kernel include/linux/fs.h */
+/*
+ * Helper function to get MAX_LFS_FILESIZE.
+ * Missing PAGE_SHIFT on some libc prevents defining MAX_LFS_FILESIZE.
+ *
+ * 64 bit: macro taken from kernel from include/linux/fs.h
+ * 32 bit: own implementation
+ */
+static inline loff_t tst_max_lfs_filesize(void)
+{
 #ifdef TST_ABI64
- #define MAX_LFS_FILESIZE   ((loff_t)LLONG_MAX)
+	return (loff_t)LLONG_MAX;
 #else
- #define MAX_LFS_FILESIZE   ((loff_t)ULONG_MAX << PAGE_SHIFT)
+        long page_size = getpagesize();
+        loff_t ret = ULONG_MAX;
+
+        while (page_size >>= 1)
+                ret <<= 1;
+
+        return ret;
 #endif
+}
 
 #endif

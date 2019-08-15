@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/sysmacros.h>
-#include <limits.h>
 #include "lapi/syscalls.h"
 #include "lapi/fs.h"
 
@@ -30,9 +29,7 @@
 
 #define CONTENT		"ABCDEFGHIJKLMNOPQRSTUVWXYZ12345\n"
 #define CONTSIZE	(sizeof(CONTENT) - 1)
-#define MAX_LEN   MAX_LFS_FILESIZE
 #define MIN_OFF   65537
-#define MAX_OFF   (MAX_LEN - MIN_OFF)
 
 static void syscall_info(void)
 {

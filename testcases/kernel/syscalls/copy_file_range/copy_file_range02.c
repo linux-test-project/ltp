@@ -58,23 +58,22 @@ static struct tcase {
 	int	*copy_to_fd;
 	int	flags;
 	int	exp_err;
-	loff_t  dst;
 	loff_t     len;
 	const char *tname;
 } tcases[] = {
-	{&fd_rdonly,	0,   EBADF,      0,     CONTSIZE, "readonly file"},
-	{&fd_dir,	0,   EISDIR,     0,     CONTSIZE, "directory"},
-	{&fd_append,	0,   EBADF,      0,     CONTSIZE, "append to file"},
-	{&fd_closed,	0,   EBADF,      0,     CONTSIZE, "closed file descriptor"},
-	{&fd_dest,	-1,  EINVAL,     0,     CONTSIZE, "invalid flags"},
-	{&fd_immutable, 0,   EPERM,      0,     CONTSIZE, "immutable file"},
-	{&fd_swapfile,  0,   ETXTBSY,    0,     CONTSIZE, "swap file"},
-	{&fd_dup,       0,   EINVAL,     0,     CONTSIZE/2, "overlaping range"},
-	{&fd_blkdev,    0,   EINVAL,     0,     CONTSIZE, "block device"},
-	{&fd_chrdev,    0,   EINVAL,     0,     CONTSIZE, "char device"},
-	{&fd_fifo,      0,   EINVAL,     0,     CONTSIZE, "fifo"},
-	{&fd_copy,      0,   EOVERFLOW,  MAX_OFF, ULLONG_MAX, "max length lenght"},
-	{&fd_copy,      0,   EFBIG,      MAX_OFF, MIN_OFF, "max file size"},
+	{&fd_rdonly,	0,	EBADF,		CONTSIZE,	"readonly file"},
+	{&fd_dir,	0,	EISDIR,		CONTSIZE,	"directory"},
+	{&fd_append,	0,	EBADF,		CONTSIZE,	"append to file"},
+	{&fd_closed,	0,	EBADF,		CONTSIZE,	"closed file descriptor"},
+	{&fd_dest,	-1,	EINVAL,		CONTSIZE,	"invalid flags"},
+	{&fd_immutable,	0,	EPERM,		CONTSIZE,	"immutable file"},
+	{&fd_swapfile,	0,	ETXTBSY,	CONTSIZE,	"swap file"},
+	{&fd_dup,	0,	EINVAL,		CONTSIZE/2,	"overlaping range"},
+	{&fd_blkdev,	0,	EINVAL,		CONTSIZE,	"block device"},
+	{&fd_chrdev,	0,	EINVAL,		CONTSIZE,	"char device"},
+	{&fd_fifo,	0,	EINVAL,		CONTSIZE,	"fifo"},
+	{&fd_copy,	0,	EOVERFLOW,	ULLONG_MAX,	"max length lenght"},
+	{&fd_copy,	0,	EFBIG,		MIN_OFF,	"max file size"},
 };
 
 static int run_command(char *command, char *option, char *file)
@@ -98,6 +97,8 @@ static int run_command(char *command, char *option, char *file)
 static void verify_copy_file_range(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
+	loff_t dst = 0;
+
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
 	if (tc->copy_to_fd == &fd_immutable && chattr_i_nsup) {
@@ -112,8 +113,12 @@ static void verify_copy_file_range(unsigned int n)
 		tst_res(TCONF, "filesystem doesn't have free loopdev, skip it");
 		return;
 	}
+
+	if (tc->copy_to_fd == &fd_copy)
+		dst = tst_max_lfs_filesize() - MIN_OFF;
+
 	TEST(sys_copy_file_range(fd_src, 0, *tc->copy_to_fd,
-				&tc->dst, tc->len, tc->flags));
+				&dst, tc->len, tc->flags));
 
 	if (TST_RET == -1) {
 		if (tc->exp_err == TST_ERR) {
