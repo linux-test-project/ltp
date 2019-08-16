@@ -139,7 +139,7 @@ int tst_find_free_loopdev(char *path, size_t path_len)
 	return -1;
 }
 
-static int attach_device(const char *dev, const char *file)
+int tst_attach_device(const char *dev, const char *file)
 {
 	int dev_fd, file_fd;
 	struct loop_info loopinfo;
@@ -185,7 +185,7 @@ static int attach_device(const char *dev, const char *file)
 	return 0;
 }
 
-static int detach_device(const char *dev)
+int tst_detach_device(const char *dev)
 {
 	int dev_fd, ret, i;
 
@@ -284,7 +284,7 @@ const char *tst_acquire_device__(unsigned int size)
 	if (tst_find_free_loopdev(dev_path, sizeof(dev_path)) == -1)
 		return NULL;
 
-	if (attach_device(dev_path, DEV_FILE))
+	if (tst_attach_device(dev_path, DEV_FILE))
 		return NULL;
 
 	device_acquired = 1;
@@ -329,7 +329,7 @@ int tst_release_device(const char *dev)
 	 *
 	 * The file image is deleted in tst_rmdir();
 	 */
-	ret = detach_device(dev);
+	ret = tst_detach_device(dev);
 
 	device_acquired = 0;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2016-2019 Cyril Hrubis <chrubis@suse.cz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,24 @@ int tst_clear_device(const char *dev);
  *
  */
 int tst_find_free_loopdev(const char *path, size_t path_len);
+
+/*
+ * Attaches a file to a loop device.
+ *
+ * @dev_path Path to the loop device e.g. /dev/loop0
+ * @file_path Path to a file e.g. disk.img
+ * @return Zero on success, non-zero otherwise.
+ */
+int tst_attach_device(const char *dev_path, const char *file_path);
+
+/*
+ * Detaches a file from a loop device.
+ *
+ * @dev_path Path to the loop device e.g. /dev/loop0
+ * @return Zero on succes, non-zero otherwise.
+ */
+int tst_detach_device(const char *dev_path);
+
 /*
  * Reads test block device stat file and returns the bytes written since the
  * last call of this function.
