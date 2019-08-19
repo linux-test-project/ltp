@@ -63,7 +63,7 @@ endif
 
 ifeq ($(ANDROID),1)
 FILTER_OUT_DIRS		+= containers controllers device-drivers fs io ipc mem \
-				sched security timers
+				sched security
 endif
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
