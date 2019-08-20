@@ -23,11 +23,11 @@ static void run(void)
 
 	/* Bump prio to what it was + 1 */
 	class = IOPRIO_CLASS_BE;
-	if (!prio_in_range(prio + 1)) {
-		tst_res(TFAIL, "ioprio increase out of range (%d)", prio + 1);
-		return;
+	prio = prio + 1;
+	if (!prio_in_range(prio)) {
+		tst_res(TCONF, "ioprio increase out of range (%d)", prio);
+		goto second;
 	}
-	prio = (prio + 1);
 
 	TEST(sys_ioprio_set(IOPRIO_WHO_PROCESS, 0,
 			    IOPRIO_PRIO_VALUE(class, prio)));
@@ -36,12 +36,14 @@ static void run(void)
 	else
 		ioprio_check_setting(class, prio, 1);
 
+second:
 	/* Bump prio down two notches */
-	if (!prio_in_range(prio - 2)) {
-		tst_res(TFAIL, "ioprio decrease out of range (%d)", prio - 2);
+	prio = prio - 2;
+	if (!prio_in_range(prio)) {
+		tst_res(TCONF, "ioprio decrease out of range (%d)", prio);
 		return;
 	}
-	prio = (prio - 2);
+
 	TEST(sys_ioprio_set(IOPRIO_WHO_PROCESS, 0,
 			    IOPRIO_PRIO_VALUE(class, prio)));
 	if (TST_RET == -1)
