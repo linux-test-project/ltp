@@ -13,11 +13,15 @@
 
 #define NSEC_IN_SEC 1000000000
 
+#ifndef TIME_T_MAX
+#	define TIME_T_MAX	(time_t)((1UL << ((sizeof(time_t) << 3) - 1)) - 1)
+#endif
+
 /*
  * Returns difference between two struct timespec values. If difference is
  * greater that 1 sec, 1 sec is returned.
  */
-static long timespec_nsec_diff(struct timespec *t1, struct timespec *t2)
+static inline long timespec_nsec_diff(struct timespec *t1, struct timespec *t2)
 {
 	time_t sec_diff;
 	long nsec_diff;
