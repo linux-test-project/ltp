@@ -25,7 +25,8 @@
 int main(void)
 {
 	struct timespec tssleep, tsbefore, tsafter;
-	int sleepuntilsec, flags = 0;
+	time_t sleepuntilsec;
+	int flags = 0;
 
 	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
 		perror("clock_gettime() did not return success\n");
