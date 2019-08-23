@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "posixtest.h"
+#include "timespec.h"
 
 #define TEST "5-1"
 #define FUNCTION "mq_timedreceive"
@@ -61,7 +62,7 @@ int main(void)
 	if (pid != 0) {
 		/* Parent process */
 		int status;
-		ts.tv_sec = INT32_MAX;
+		ts.tv_sec = TIME_T_MAX;
 		ts.tv_nsec = 0;
 		if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) > 0) {
 			wait(&status);

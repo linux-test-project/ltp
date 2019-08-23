@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "posixtest.h"
+#include "timespec.h"
 
 #define NAMESIZE 50
 #define MSGSTR "0123456789"
@@ -80,7 +81,7 @@ int main(void)
 		int i;
 		struct timespec ts;
 		/* set up timeout to be as long as possible */
-		ts.tv_sec = INT32_MAX;
+		ts.tv_sec = TIME_T_MAX;
 		ts.tv_nsec = 0;
 
 		sleep(1);	// give parent time to set up handler
