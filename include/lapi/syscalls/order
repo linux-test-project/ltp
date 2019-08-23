@@ -3,6 +3,9 @@ arm
 hppa
 i386
 ia64
+mips_n32
+mips_n64
+mips_o32
 powerpc64
 powerpc
 s390x

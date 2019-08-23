@@ -78,6 +78,9 @@ for arch in $(cat "${srcdir}/order") ; do
 		sparc64) echo "#if defined(__sparc__) && defined(__arch64__)" ;;
 		sparc) echo "#if defined(__sparc__) && !defined(__arch64__)" ;;
 		s390) echo "#if defined(__s390__) && !defined(__s390x__)" ;;
+		mips_n32) echo "#if defined(__mips__) && defined(_ABIN32)" ;;
+		mips_n64) echo "#if defined(__mips__) && defined(_ABI64)" ;;
+		mips_o32) echo "#if defined(__mips__) && defined(_ABIO32)" ;;
 		*) echo "#ifdef __${arch}__" ;;
 	esac
 	while read line ; do
