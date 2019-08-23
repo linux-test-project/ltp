@@ -115,7 +115,7 @@ static void verify_copy_file_range(unsigned int n)
 	}
 
 	if (tc->copy_to_fd == &fd_copy)
-		dst = tst_max_lfs_filesize() - MIN_OFF;
+		dst = tst_max_lfs_filesize();
 
 	TEST(sys_copy_file_range(fd_src, 0, *tc->copy_to_fd,
 				&dst, tc->len, tc->flags));
@@ -224,8 +224,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.mount_device = 1,
-	.mntpoint = MNTPOINT,
-	.all_filesystems = 1,
+	.needs_tmpdir = 1,
 	.test_variants = TEST_VARIANTS,
 };
