@@ -36,7 +36,8 @@ void handler(int signo)
 int main(void)
 {
 	struct timespec tssleep, tsbefore, tsafter;
-	int pid, sleepuntilsec;
+	int pid;
+	time_t sleepuntilsec;
 	struct sigaction act;
 
 	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
@@ -95,8 +96,9 @@ int main(void)
 			printf("Test PASSED\n");
 			return PTS_PASS;
 		} else {
-			printf("Slept for too long: %d >= %d\n",
-			       (int)tsafter.tv_sec, sleepuntilsec);
+			printf("Slept for too long: %lld >= %lld\n",
+			       (long long int)tsafter.tv_sec,
+				   (long long int)sleepuntilsec);
 			printf("Test FAILED\n");
 			return PTS_FAIL;
 		}

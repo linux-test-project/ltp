@@ -50,7 +50,7 @@ int main(void)
 	if ((pid = fork()) == 0) {
 		/* child here */
 		struct timespec tsend;
-		int expectedsec;
+		time_t expectedsec;
 
 		tssleep.tv_sec = SLEEPSEC;
 		tssleep.tv_nsec = 0;
