@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
 	/* Send datagrams */
 	for (i = 1; i < Num_Loops; i++) {
-		sprintf(buf, "%s %d %d", argv[2], i, (int)time(0));
+		sprintf(buf, "%s %d %lld", argv[2], i, (long long int)time(0));
 		if ((n =
 		     sendto(s, buf, sizeof(buf), 0,
 			    (struct sockaddr *)&mcast_out,
