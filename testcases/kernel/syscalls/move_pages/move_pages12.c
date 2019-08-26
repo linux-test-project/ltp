@@ -25,6 +25,7 @@
  *   mm/hugetlb: take page table lock in follow_huge_pmd()
  *
  *  Test #2:
+ *   #2.1:
  *   This is a regression test for the race condition, where move_pages()
  *   and soft offline are called on a single hugetlb page concurrently.
  *
@@ -36,6 +37,19 @@
  *
  *   mm, hugetlb: use pte_present() instead of pmd_present() in
  *   follow_huge_pmd()
+ *
+ *   #2.2:
+ *   This is also a regression test for an race condition causing SIGBUS
+ *   in hugepage migration/fault.
+ *
+ *   This bug was fixed by:
+ *
+ *   commit 4643d67e8cb0b3536ef0ab5cddd1cedc73fa14ad
+ *   Author: Mike Kravetz <mike.kravetz@oracle.com>
+ *   Date:   Tue Aug 13 15:38:00 2019 -0700
+ *
+ *   hugetlbfs: fix hugetlb page migration/fault race causing SIGBUS
+ *
  */
 
 #include <errno.h>
