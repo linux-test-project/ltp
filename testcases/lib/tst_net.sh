@@ -99,7 +99,7 @@ tst_brk_()
 }
 tst_require_root_()
 {
-	[ -z "$TST_USE_LEGACY_API" ] && TST_NEEDS_ROOT=1 || tst_require_root
+	[ -z "$TST_USE_LEGACY_API" ] && _tst_require_root || tst_require_root
 }
 
 init_ltp_netspace()
