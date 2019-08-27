@@ -1,11 +1,10 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2019 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2015-2016 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines Corp., 2005
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
-TCID=if4-addr-change
 TST_CLEANUP="do_cleanup"
 TST_TESTFUNC="test_body"
 TST_NEEDS_CMDS="ifconfig"
@@ -25,7 +24,7 @@ test_body()
 {
 	local cnt=0
 	local num=1
-	local add_to_net=
+	local add_to_net
 
 	tst_res TINFO "ifconfig changes IPv4 address $NS_TIMES times"
 
