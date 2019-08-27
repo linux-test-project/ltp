@@ -3,6 +3,15 @@
 # Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
 # Author: Petr Vorel <pvorel@suse.cz>
 
+CMD="${CMD:-ip}"
+
+TST_SETUP="${TST_SETUP:-if_setup}"
+TST_TESTFUNC="test_body"
+TST_PARSE_ARGS="if_parse_args"
+TST_USAGE="if_usage"
+TST_OPTS="c:"
+. tst_net_stress.sh
+
 if_usage()
 {
 	echo "-c      Test command (ip, $IF_CMD)"
@@ -17,7 +26,6 @@ if_parse_args()
 
 if_setup()
 {
-	[ -n "$CMD" ] || tst_brk TBROK "IF_CMD variable not defined"
 	if [ "$CMD" != 'ip' -a "$CMD" != "$IF_CMD" ]; then
 		tst_brk TBROK "Missing or wrong -c parameter: '$CMD', use 'ip' or '$IF_CMD'"
 	fi
@@ -33,11 +41,3 @@ if_cleanup_restore()
 	restore_ipaddr
 	restore_ipaddr rhost
 }
-
-TST_SETUP="${TST_SETUP:-if_setup}"
-TST_TESTFUNC="test_body"
-TST_PARSE_ARGS="if_parse_args"
-TST_USAGE="if_usage"
-TST_OPTS="c:"
-
-. tst_net_stress.sh
