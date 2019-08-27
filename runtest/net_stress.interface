@@ -2,30 +2,30 @@
 # Stress test for interface
 #
 
-if4-addr-change_ifconfig if4-addr-change
+if4-addr-change_ifconfig if4-addr-change.sh
 
-if4-updown_ip if-updown -c ip
-if4-updown_ifconfig if-updown -c ifconfig
-if4-addr-adddel_ip if-addr-adddel -c ip
-if4-addr-adddel_ifconfig if-addr-adddel -c ifconfig
-if4-addr-addlarge_ip if-addr-addlarge -c ip
-if4-addr-addlarge_ifconfig if-addr-addlarge -c ifconfig
-if4-route-adddel_ip if-route-adddel -c ip
-if4-route-adddel_route if-route-adddel -c route
-if4-route-addlarge_ip if-route-addlarge -c ip
-if4-route-addlarge_route if-route-addlarge -c route
-if4-mtu-change_ip if-mtu-change -c ip
-if4-mtu-change_ifconfig if-mtu-change -c ifconfig
+if4-updown_ip if-updown.sh -c ip
+if4-updown_ifconfig if-updown.sh -c ifconfig
+if4-addr-adddel_ip if-addr-adddel.sh -c ip
+if4-addr-adddel_ifconfig if-addr-adddel.sh -c ifconfig
+if4-addr-addlarge_ip if-addr-addlarge.sh -c ip
+if4-addr-addlarge_ifconfig if-addr-addlarge.sh -c ifconfig
+if4-route-adddel_ip if-route-adddel.sh -c ip
+if4-route-adddel_route if-route-adddel.sh -c route
+if4-route-addlarge_ip if-route-addlarge.sh -c ip
+if4-route-addlarge_route if-route-addlarge.sh -c route
+if4-mtu-change_ip if-mtu-change.sh -c ip
+if4-mtu-change_ifconfig if-mtu-change.sh -c ifconfig
 
-if6-updown_ip if-updown -6 -c ip
-if6-updown_ifconfig if-updown -6 -c ifconfig
-if6-addr-adddel_ip if-addr-adddel -6 -c ip
-if6-addr-adddel_ifconfig if-addr-adddel -6 -c ifconfig
-if6-addr-addlarge_ip if-addr-addlarge -6 -c ip
-if6-addr-addlarge_ifconfig if-addr-addlarge -6 -c ifconfig
-if6-route-adddel_ip if-route-adddel -6 -c ip
-if6-route-adddel_route if-route-adddel -6 -c route
-if6-route-addlarge_ip if-route-addlarge -6 -c ip
-if6-route-addlarge_route if-route-addlarge -6 -c route
-if6-mtu-change_ip if-mtu-change -6 -c ip
-if6-mtu-change_ifconfig if-mtu-change -6 -c ifconfig
+if6-updown_ip if-updown.sh -6 -c ip
+if6-updown_ifconfig if-updown.sh -6 -c ifconfig
+if6-addr-adddel_ip if-addr-adddel.sh -6 -c ip
+if6-addr-adddel_ifconfig if-addr-adddel.sh -6 -c ifconfig
+if6-addr-addlarge_ip if-addr-addlarge.sh -6 -c ip
+if6-addr-addlarge_ifconfig if-addr-addlarge.sh -6 -c ifconfig
+if6-route-adddel_ip if-route-adddel.sh -6 -c ip
+if6-route-adddel_route if-route-adddel.sh -6 -c route
+if6-route-addlarge_ip if-route-addlarge.sh -6 -c ip
+if6-route-addlarge_route if-route-addlarge.sh -6 -c route
+if6-mtu-change_ip if-mtu-change.sh -6 -c ip
+if6-mtu-change_ifconfig if-mtu-change.sh -6 -c ifconfig

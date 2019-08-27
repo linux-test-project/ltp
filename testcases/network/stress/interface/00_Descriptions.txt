@@ -1,27 +1,27 @@
-if-updown
+if-updown.sh
 	Verify the IPv4/IPv6 connectivity is not broken when ip/ifconfig
 	command ups, then downs an interface many times
 
-if4-addr-change
+if4-addr-change.sh
 	Verify the IPv4 connectivity is not broken when ifconfig
 	command changes address many times
 
-if-addr-adddel
+if-addr-adddel.sh
 	Verify the IPv4/IPv6 connectivity is not broken when ip/ifconfig adds,
 	then deletes an IPv4 alias many times
 
-if-addr-addlarge
+if-addr-addlarge.sh
 	Verify the IPv4/IPv6 connectivity is not broken when ip/ifconifg
 	creates many addresses
 
-if-route-adddel
+if-route-adddel.sh
 	Verify the IPv4/IPv6 connectivity is not broken when the ip/route adds,
 	then and deletes an IPv4/IPv6 route many times
 
-if-route-addlarge
+if-route-addlarge.sh
 	Verify the IPv4/IPv6 connectivity is not broken when the ip/route
 	creates many routes
 
-if-mtu-change
+if-mtu-change.sh
 	Verify the IPv4/IPv6 connectivity is not broken when ip/ifconfig
 	changes MTU many times every 5 seconds
