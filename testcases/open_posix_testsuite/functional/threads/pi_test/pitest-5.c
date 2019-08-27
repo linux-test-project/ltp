@@ -55,28 +55,12 @@ volatile int ts_stop = 0;
 volatile double base_time;
 volatile int unlock_mutex = 0;
 
-struct thread_param {
-	int index;
-	volatile int stop;
-	int sleep_ms;
-	int priority;
-	int policy;
-	const char *name;
-	int cpu;
-	volatile unsigned futex;
-	volatile unsigned should_stall;
-	volatile unsigned progress;
-} tp[] = {
-	{
-	0, 0, 0, 1, SCHED_FIFO, "TL", 0, 0, 0, 0}, {
-	1, 0, 200, 2, SCHED_FIFO, "TP", 0, 0, 0, 0}, {
-	2, 0, 0, 3, SCHED_FIFO, "TF", 1, 0, 0, 0}, {
-	3, 0, 0, 3, SCHED_FIFO, "TF", 2, 0, 0, 0}, {
-	4, 0, 0, 3, SCHED_FIFO, "TF", 3, 0, 0, 0}, {
-	5, 0, 0, 3, SCHED_FIFO, "TF", 4, 0, 0, 0}, {
-	6, 0, 0, 3, SCHED_FIFO, "TF", 5, 0, 0, 0}, {
-	7, 0, 0, 3, SCHED_FIFO, "TF", 6, 0, 0, 0}
+struct thread_param tp_template[] = {
+	{0, 0, 0, 1, SCHED_FIFO, "TL", 0, 0, 0, 0},
+	{1, 0, 200, 2, SCHED_FIFO, "TP", 0, 0, 0, 0},
+	{2, 0, 0, 3, SCHED_FIFO, "TF", 1, 0, 0, 0}
 };
+struct thread_param *tp;
 
 volatile unsigned do_work_dummy;
 void do_work(unsigned granularity_top, volatile unsigned *progress)
@@ -265,6 +249,8 @@ int main(void)
 	time_t multiplier = 1;
 	int i;
 	int rc;
+
+	tp = setup_thread_param(tp_template, ARRAY_SIZE(tp_template));
 
 	test_set_priority(pthread_self(), SCHED_FIFO, 6);
 	base_time = seconds_read();

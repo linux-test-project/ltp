@@ -13,6 +13,46 @@
 
 #define PROTOCOL                PTHREAD_PRIO_INHERIT
 
+struct thread_param {
+	int index;
+	volatile int stop;
+	int sleep_ms;
+	int priority;
+	int policy;
+	const char *name;
+	int cpu;
+	volatile unsigned futex;
+	volatile unsigned should_stall;
+	volatile unsigned progress;
+};
+
+static inline
+struct thread_param *setup_thread_param(struct thread_param *tp_template, int nElements)
+{
+	int i, tf_index;
+	struct thread_param *tp;
+	int cpus;
+
+	cpus = sysconf(_SC_NPROCESSORS_ONLN);
+	if (cpus < 2)
+		cpus = 2;
+	tp = malloc(sizeof(struct thread_param) * (nElements + cpus - 2));
+	if (!tp) {
+		EPRINTF("UNRESOLVED: malloc: %d %s", errno, strerror(errno));
+		exit(UNRESOLVED);
+	}
+	memcpy(tp, tp_template, sizeof(struct thread_param) * nElements);
+
+	tf_index = nElements - 1;
+	for (i = 1; i < cpus - 1; ++i) {
+		tp[tf_index + i] = tp_template[tf_index];
+		tp[tf_index + i].index += i;
+		tp[tf_index + i].cpu += i;
+	}
+
+	return tp;
+}
+
 static inline
 double seconds_read(void)
 {
