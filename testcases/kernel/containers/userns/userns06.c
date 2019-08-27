@@ -49,7 +49,7 @@ static int cpid1, parentuid, parentgid;
 static int child_fn1(void)
 {
 	int exit_val = 0;
-	char *const args[] = { "userns06_capcheck", "privileged" };
+	char *const args[] = { "userns06_capcheck", "privileged", NULL };
 
 	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
 
@@ -69,7 +69,7 @@ static int child_fn2(void)
 {
 	int exit_val = 0;
 	int uid, gid;
-	char *const args[] = { "userns06_capcheck", "unprivileged" };
+	char *const args[] = { "userns06_capcheck", "unprivileged", NULL };
 
 	TST_SAFE_CHECKPOINT_WAIT(NULL, 1);
 
