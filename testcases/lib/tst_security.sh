@@ -17,7 +17,8 @@ _tst_check_security_modules()
 
 	if tst_apparmor_enabled; then
 		tst_res TINFO "AppArmor enabled, this may affect test results"
-		tst_res TINFO "You can try to disable it with TST_DISABLE_APPARMOR=1 (requires super/root)"
+		[ "$TST_DISABLE_APPARMOR" = 1 ] || \
+			tst_res TINFO "it can be disabled with TST_DISABLE_APPARMOR=1 (requires super/root)"
 		profiles=
 		for cmd in $TST_NEEDS_CMDS; do
 			tst_apparmor_used_profile $cmd && profiles="$cmd $profiles"
@@ -28,7 +29,9 @@ _tst_check_security_modules()
 
 	if tst_selinux_enabled; then
 		tst_res TINFO "SELinux enabled in enforcing mode, this may affect test results"
-		tst_res TINFO "You can try to disable it with TST_DISABLE_SELINUX=1 (requires super/root)"
+
+		[ "$TST_DISABLE_SELINUX" = 1 ] || \
+			tst_res TINFO "it can be disabled with TST_DISABLE_SELINUX=1 (requires super/root)"
 		profiles=
 		for cmd in $TST_NEEDS_CMDS; do
 			tst_selinux_used_profile $cmd && profiles="$cmd $profiles"
@@ -91,11 +94,13 @@ tst_selinux_used_profile()
 # Return > 0: failed to disable AppArmor
 tst_disable_apparmor()
 {
+	tst_res TINFO "trying to disable AppArmor (requires super/root)"
 	_tst_require_root
+
 	local f="aa-teardown"
 	local action
 
-	tst_cmd_available $f && { $f; return; }
+	tst_cmd_available $f && { $f >/dev/null; return; }
 	f="/etc/init.d/apparmor"
 	if [ -f "$f" ]; then
 		for action in teardown kill stop; do
@@ -109,7 +114,9 @@ tst_disable_apparmor()
 # Return > 0: failed to disable SELinux
 tst_disable_selinux()
 {
+	tst_res TINFO "trying to disable SELinux (requires super/root)"
 	_tst_require_root
+
 	local f="$(_tst_get_enforce)"
 
 	[ -f "$f" ] && cat 0 > $f
