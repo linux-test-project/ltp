@@ -1128,6 +1128,15 @@ sendmmsg01 sendmmsg01
 sendto01 sendto01
 sendto02 sendto02
 
+set_mempolicy01 set_mempolicy01
+set_mempolicy02 set_mempolicy02
+set_mempolicy03 set_mempolicy03
+set_mempolicy04 set_mempolicy04
+
+set_robust_list01 set_robust_list01
+set_thread_area01 set_thread_area01
+set_tid_address01 set_tid_address01
+
 setdomainname01	setdomainname01
 setdomainname02	setdomainname02
 setdomainname03	setdomainname03
@@ -1240,10 +1249,6 @@ setrlimit03 setrlimit03
 setrlimit04 setrlimit04
 setrlimit05 setrlimit05
 setrlimit06 setrlimit06
-
-set_robust_list01 set_robust_list01
-set_thread_area01 set_thread_area01
-set_tid_address01 set_tid_address01
 
 setsid01 setsid01
 
