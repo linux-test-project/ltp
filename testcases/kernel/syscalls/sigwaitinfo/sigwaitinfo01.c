@@ -128,9 +128,8 @@ static int my_sigtimedwait(const sigset_t * set, siginfo_t * info,
 static int my_rt_sigtimedwait(const sigset_t * set, siginfo_t * info,
 			      struct timespec *timeout)
 {
-
-	/* The last argument is (number_of_signals)/(bits_per_byte), which are 64 and 8, resp. */
-	return ltp_syscall(__NR_rt_sigtimedwait, set, info, timeout, 8);
+	/* _NSIG is always the right number of bits of signal map for all arches */
+	return ltp_syscall(__NR_rt_sigtimedwait, set, info, timeout, _NSIG/8);
 }
 #endif
 
