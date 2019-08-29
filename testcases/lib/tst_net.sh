@@ -761,7 +761,7 @@ IPV6_RHOST="${IPV6_RHOST:-fd00:1:1:1::1/64}"
 # tst_net_ip_prefix -h
 # tst_net_iface_prefix -h
 # tst_net_vars -h
-if [ -z "$TST_PARSE_VARIABLES" ]; then
+if [ -z "$_tst_net_parse_variables" ]; then
 	eval $(tst_net_ip_prefix $IPV4_LHOST || echo "exit $?")
 	eval $(tst_net_ip_prefix -r $IPV4_RHOST || echo "exit $?")
 	eval $(tst_net_ip_prefix $IPV6_LHOST || echo "exit $?")
@@ -770,7 +770,7 @@ fi
 
 [ -n "$TST_USE_NETNS" -a "$TST_INIT_NETNS" != "no" ] && init_ltp_netspace
 
-if [ -z "$TST_PARSE_VARIABLES" ]; then
+if [ -z "$_tst_net_parse_variables" ]; then
 	eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
 	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
 		|| echo "exit $?")
@@ -787,7 +787,7 @@ if [ -z "$TST_PARSE_VARIABLES" ]; then
 	tst_res_ TINFO "$LHOST_IFACES -- $RHOST_IFACES"
 	tst_res_ TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
 	tst_res_ TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
-	export TST_PARSE_VARIABLES="yes"
+	export _tst_net_parse_variables="yes"
 fi
 
 export TST_NETLOAD_CLN_REQUESTS="${TST_NETLOAD_CLN_REQUESTS:-10000}"
@@ -840,8 +840,8 @@ if [ -z "$TST_USE_LEGACY_API" ] && ! tst_cmd_available ping6; then
 	{
 		ping -6 $@
 	}
-	if [ -z "$ping6_warn_printed" ]; then
+	if [ -z "$_tst_net_ping6_warn_printed" ]; then
 		tst_res_ TINFO "ping6 binary/symlink is missing, using workaround. Please, report missing ping6 to your distribution."
-		export ping6_warn_printed=1
+		export _tst_net_ping6_warn_printed=1
 	fi
 fi
