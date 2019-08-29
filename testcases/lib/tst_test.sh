@@ -391,7 +391,9 @@ _tst_setup_timer()
 
 _tst_require_root()
 {
-	[ "$(id -ru)" != 0 ] && tst_brk TCONF "Must be super/root for this test!"
+	if [ "$(id -ru)" != 0 ]; then
+		tst_brk TCONF "Must be super/root for this test!"
+	fi
 }
 
 tst_run()
