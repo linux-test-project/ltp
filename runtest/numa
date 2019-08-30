@@ -1,4 +1,7 @@
-Numa-testcases numa01.sh
+migrate_pages01 migrate_pages01
+migrate_pages02 migrate_pages02
+migrate_pages03 migrate_pages03
+
 move_pages01 move_pages01
 move_pages02 move_pages02
 move_pages03 move_pages03
@@ -12,9 +15,7 @@ move_pages10 move_pages10
 move_pages11 move_pages11
 move_pages12 move_pages12
 
-migrate_pages01 migrate_pages01
-migrate_pages02 migrate_pages02
-migrate_pages03 migrate_pages03
+numa_testcases numa01.sh
 
 set_mempolicy01 set_mempolicy01
 set_mempolicy02 set_mempolicy02
