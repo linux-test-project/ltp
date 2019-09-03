@@ -307,6 +307,7 @@ sched_getattr 315
 renameat2 316
 getrandom 318
 memfd_create 319
+bpf 321
 execveat 322
 userfaultfd 323
 membarrier 324

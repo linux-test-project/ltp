@@ -258,6 +258,7 @@ process_vm_writev 271
 kcmp 272
 getrandom 278
 memfd_create 279
+bpf 280
 userfaultfd 282
 membarrier 283
 execveat 281
