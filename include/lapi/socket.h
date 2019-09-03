@@ -38,6 +38,10 @@
 # define SO_BUSY_POLL	46
 #endif
 
+#ifndef SO_ATTACH_BPF
+# define SO_ATTACH_BPF  50
+#endif
+
 #ifndef SO_ZEROCOPY
 # define SO_ZEROCOPY	60
 #endif
