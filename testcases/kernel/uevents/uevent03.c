@@ -52,7 +52,7 @@ static void get_minor_major(char *device, char *minor, char *major, size_t buf_s
 
 static void verify_uevent(void)
 {
-	int pid, fd;
+	int pid, fd, ret;
 	char sysname[64];
 	char add_msg[1024];
 	char rem_msg[1024];
@@ -167,7 +167,18 @@ static void verify_uevent(void)
 
 	create_uinput_mouse();
 
-	SAFE_IOCTL(mouse_fd, UI_GET_SYSNAME(sizeof(sysname)), sysname);
+	ret = ioctl(mouse_fd, UI_GET_SYSNAME(sizeof(sysname)), sysname);
+	if (ret < 0) {
+		if (errno == EINVAL) {
+			tst_brk(TCONF,
+				"kernel does not support UI_GET_SYSNAME");
+		} else {
+			tst_brk(TBROK,
+				"ioctl(%d, %s,...) failed",
+				mouse_fd, "UI_GET_SYSNAME");
+		}
+	}
+
 	handlers = get_input_handlers();
 
 	tst_res(TINFO, "Sysname: %s", sysname);
