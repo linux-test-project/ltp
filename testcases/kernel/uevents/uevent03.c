@@ -16,11 +16,10 @@
 #include <sys/wait.h>
 #include <sys/sysmacros.h>
 
-#include <linux/uinput.h>
-
 #include "tst_test.h"
 #include "tst_uinput.h"
 #include "uevent.h"
+#include "lapi/uinput.h"
 
 static int mouse_fd;
 

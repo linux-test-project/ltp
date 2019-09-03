@@ -54,6 +54,7 @@ SUBDIRS			+= connectors \
 			   security \
 			   sound \
 			   tracing \
+			   uevents \
 
 ifeq ($(WITH_POWER_MANAGEMENT_TESTSUITE),yes)
 SUBDIRS			+= power_management
