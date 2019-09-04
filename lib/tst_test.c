@@ -895,11 +895,17 @@ static void do_test_setup(void)
 {
 	main_pid = getpid();
 
+	if (tst_test->caps)
+		tst_cap_setup(tst_test->caps, TST_CAP_REQ);
+
 	if (tst_test->setup)
 		tst_test->setup();
 
 	if (main_pid != getpid())
 		tst_brk(TBROK, "Runaway child in setup()!");
+
+	if (tst_test->caps)
+		tst_cap_setup(tst_test->caps, TST_CAP_DROP);
 }
 
 static void do_cleanup(void)

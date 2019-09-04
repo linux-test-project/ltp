@@ -36,6 +36,7 @@
 #include "tst_sys_conf.h"
 #include "tst_coredump.h"
 #include "tst_buffers.h"
+#include "tst_capability.h"
 
 /*
  * Reports testcase result.
@@ -206,6 +207,11 @@ struct tst_test {
 	 * NULL-terminated array to be allocated buffers.
 	 */
 	struct tst_buffers *bufs;
+
+	/*
+	 * NULL-terminated array of capability settings
+	 */
+	struct tst_cap *caps;
 };
 
 /*

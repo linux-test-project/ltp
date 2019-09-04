@@ -1769,6 +1769,91 @@ setting up the size or struct iovec, which is allocated recursively including
 the individual buffers as described by an '-1' terminated array of buffer
 sizes.
 
+2.2.32 Adding and removing capabilities
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests may require the presence or absence of particular
+capabilities. Using the API provided by 'tst_capability.h' the test author can
+try to ensure that some capabilities are either present or absent during the
+test.
+
+For example; below we try to create a raw socket, which requires
+CAP_NET_ADMIN. During setup we should be able to do it, then during run it
+should be impossible. The LTP capability library will check before setup that
+we have this capability, then after setup it will drop it.
+
+[source,c]
+--------------------------------------------------------------------------------
+#include "tst_test.h"
+#include "tst_capability.h"
+#include "tst_safe_net.h"
+
+#include "lapi/socket.h"
+
+static void run(void)
+{
+	TEST(socket(AF_INET, SOCK_RAW, 1));
+	if (TST_RET > -1) {
+		tst_res(TFAIL, "Created raw socket");
+	} else if (TST_ERR != EPERM) {
+		tst_res(TBROK | TTERRNO,
+			"Failed to create socket for wrong reason");
+	} else {
+		tst_res(TPASS | TTERRNO, "Didn't create raw socket");
+	}
+}
+
+static void setup(void)
+{
+	TEST(socket(AF_INET, SOCK_RAW, 1));
+	if (TST_RET < 0)
+		tst_brk(TCONF | TTERRNO, "We don't have CAP_NET_RAW to begin with");
+
+	SAFE_CLOSE(TST_RET);
+}
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.caps = (struct tst_cap []) {
+		TST_CAP(TST_CAP_REQ, CAP_NET_RAW),
+		TST_CAP(TST_CAP_DROP, CAP_NET_RAW),
+		{}
+	},
+};
+--------------------------------------------------------------------------------
+
+Look at the test struct at the bottom. We have filled in the 'caps' field with
+a NULL terminated array containing two 'tst_cap' structs. 'TST_CAP_REQ'
+actions are executed before setup and 'TST_CAP_DROP' are executed after
+setup. This means it is possible to both request and drop a capability.
+
+[source,c]
+--------------------------------------------------------------------------------
+static struct tst_test test = {
+	.test_all = run,
+	.caps = (struct tst_cap []) {
+		TST_CAP(TST_CAP_REQ, CAP_NET_RAW),
+		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
+		{}
+	},
+};
+--------------------------------------------------------------------------------
+
+Here we request 'CAP_NET_RAW', but drop 'CAP_SYS_ADMIN'. If the capability is
+in the permitted set, but not the effective set, the library will try to
+permit it. If it is not in the permitted set, then it will fail with 'TCONF'.
+
+This API does not require 'libcap' to be installed. However it has limited
+features relative to 'libcap'. It only tries to add or remove capabilities
+from the effective set. This means that tests which need to spawn child
+processes may have difficulties ensuring the correct capabilities are
+available to the children (see the capabilities (7) manual pages).
+
+However a lot of problems can be solved by using 'tst_cap_action(struct
+tst_cap  *cap)' directly which can be called at any time. This also helps if
+you wish to drop a capability at the begining of setup.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
