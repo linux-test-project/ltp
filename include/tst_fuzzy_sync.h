@@ -477,8 +477,8 @@ static void tst_fzsync_pair_update(struct tst_fzsync_pair *pair)
 			tst_res(TINFO, "Minimum sampling period ended");
 			tst_fzsync_pair_info(pair);
 		}
-	} else if (fabsf(pair->diff_ab.avg) >= 1 && pair->spins_avg.avg >= 1) {
-		per_spin_time = fabsf(pair->diff_ab.avg) / pair->spins_avg.avg;
+	} else if (fabsf(pair->diff_ab.avg) >= 1) {
+		per_spin_time = fabsf(pair->diff_ab.avg) / MAX(pair->spins_avg.avg, 1.0f);
 		time_delay = drand48() * (pair->diff_sa.avg + pair->diff_sb.avg)
 			- pair->diff_sb.avg;
 		pair->delay += (int)(time_delay / per_spin_time);
@@ -495,6 +495,7 @@ static void tst_fzsync_pair_update(struct tst_fzsync_pair *pair)
 		}
 	} else if (!pair->sampling) {
 		tst_res(TWARN, "Can't calculate random delay");
+		tst_fzsync_pair_info(pair);
 		pair->sampling = -1;
 	}
 
