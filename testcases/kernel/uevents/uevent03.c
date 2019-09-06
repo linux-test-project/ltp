@@ -15,11 +15,10 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/sysmacros.h>
-
+#include <linux/uinput.h>
 #include "tst_test.h"
 #include "tst_uinput.h"
 #include "uevent.h"
-#include "lapi/uinput.h"
 
 static int mouse_fd;
 
@@ -52,8 +51,7 @@ static void get_minor_major(char *device, char *minor, char *major, size_t buf_s
 
 static void verify_uevent(void)
 {
-	int pid, fd, ret;
-	char sysname[64];
+	int pid, fd;
 	char add_msg[1024];
 	char rem_msg[1024];
 	char dev_path[1024];
@@ -71,8 +69,7 @@ static void verify_uevent(void)
 	char major_event1[MINOR_MAJOR_SIZE];
 	char major_event2[MINOR_MAJOR_SIZE];
 
-	char *handlers, *handler1, *handler2;
-
+	char *handlers, *handler1, *handler2, *sysname;
 	struct uevent_desc add = {
 		.msg = add_msg,
 		.value_cnt = 7,
@@ -167,19 +164,11 @@ static void verify_uevent(void)
 
 	create_uinput_mouse();
 
-	ret = ioctl(mouse_fd, UI_GET_SYSNAME(sizeof(sysname)), sysname);
-	if (ret < 0) {
-		if (errno == EINVAL) {
-			tst_brk(TCONF,
-				"kernel does not support UI_GET_SYSNAME");
-		} else {
-			tst_brk(TBROK,
-				"ioctl(%d, %s,...) failed",
-				mouse_fd, "UI_GET_SYSNAME");
-		}
-	}
+	sysname = get_input_field_value('S');
+	handlers = get_input_field_value('H');
 
-	handlers = get_input_handlers();
+	if (!sysname)
+		tst_brk(TBROK, "Expected /devices/virtual/input/inputN sysname!");
 
 	tst_res(TINFO, "Sysname: %s", sysname);
 	tst_res(TINFO, "Handlers: %s", handlers);
@@ -198,41 +187,38 @@ static void verify_uevent(void)
 
 	destroy_uinput_mouse();
 
-	snprintf(add_msg, sizeof(add_msg),
-	         "add@/devices/virtual/input/%s", sysname);
+	snprintf(add_msg, sizeof(add_msg), "add@%s", sysname);
 
-	snprintf(rem_msg, sizeof(rem_msg),
-	         "remove@/devices/virtual/input/%s", sysname);
+	snprintf(rem_msg, sizeof(rem_msg), "remove@%s", sysname);
 
-	snprintf(dev_path, sizeof(dev_path),
-	         "DEVPATH=/devices/virtual/input/%s", sysname);
-
+	snprintf(dev_path, sizeof(dev_path), "DEVPATH=%s", sysname);
 
 	snprintf(add_msg_event1, sizeof(add_msg_event1),
-	         "add@/devices/virtual/input/%s/%s", sysname, handler1);
+		"add@%s/%s", sysname, handler1);
 
 	snprintf(rem_msg_event1, sizeof(rem_msg_event1),
-	         "remove@/devices/virtual/input/%s/%s", sysname, handler1);
+		"remove@%s/%s", sysname, handler1);
 
 	snprintf(dev_path_event1, sizeof(dev_path_event1),
-	         "DEVPATH=/devices/virtual/input/%s/%s", sysname, handler1);
+		"DEVPATH=%s/%s", sysname, handler1);
 
 	snprintf(dev_name1, sizeof(dev_name1),
-	         "DEVNAME=input/%s", handler1);
+		"DEVNAME=input/%s", handler1);
 
 
 	snprintf(add_msg_event2, sizeof(add_msg_event2),
-	         "add@/devices/virtual/input/%s/%s", sysname, handler2);
+		"add@%s/%s", sysname, handler2);
 
 	snprintf(rem_msg_event2, sizeof(rem_msg_event2),
-	         "remove@/devices/virtual/input/%s/%s", sysname, handler2);
+		"remove@%s/%s", sysname, handler2);
 
 	snprintf(dev_path_event2, sizeof(dev_path_event2),
-	         "DEVPATH=/devices/virtual/input/%s/%s", sysname, handler2);
+		"DEVPATH=%s/%s", sysname, handler2);
 
 	snprintf(dev_name2, sizeof(dev_name2),
-	         "DEVNAME=input/%s", handler2);
+		"DEVNAME=input/%s", handler2);
 
+	free(sysname);
 	free(handlers);
 
 	pid = SAFE_FORK();

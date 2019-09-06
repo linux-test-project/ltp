@@ -42,20 +42,31 @@ int open_uinput(void)
 	return -1;
 }
 
+
+#define SYSFS_PREFIX "Sysfs="
 #define HANDLERS_PREFIX "Handlers="
 
-static char *parse_handlers(char *line)
+static char *parse_field(char *line, char field)
 {
-	char *handlers;
+	char *value;
 
-	handlers = strstr(line, HANDLERS_PREFIX) + sizeof(HANDLERS_PREFIX) - 1;
+	switch (field) {
+	case 'H':
+		value = strstr(line, HANDLERS_PREFIX) + sizeof(HANDLERS_PREFIX) - 1;
+		break;
+	case 'S':
+		value = strstr(line, SYSFS_PREFIX) + sizeof(SYSFS_PREFIX) - 1;
+		break;
+	default:
+		return NULL;
+	}
 
-	handlers[strlen(handlers) - 1] = 0;
+	value[strlen(value) - 1] = 0;
 
-	return strdup(handlers);
+	return strdup(value);
 }
 
-char *get_input_handlers(void)
+char *get_input_field_value(char field)
 {
 	FILE *file;
 	char line[1024];
@@ -70,8 +81,8 @@ char *get_input_handlers(void)
 			flag = 1;
 
 		if (flag) {
-			if (line[0] == 'H')
-				return parse_handlers(line);
+			if (line[0] == field)
+				return parse_field(line, field);
 
 			if (line[0] == '\n')
 				flag = 0;

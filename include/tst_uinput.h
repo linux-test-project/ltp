@@ -21,14 +21,13 @@ int open_uinput(void);
 void create_input_device(int fd);
 
 /**
- * Parses /proc/bus/input/devices and returns the handlers strings for our
- * virtual device, which is list of input devices that receive events from the
- * device separated by whitestpaces.
+ * Parses /proc/bus/input/devices and returns the strings for our virtual device.
+ * If passing 'H' to it, it returns HANDLERS string. If passing 'S' to it, it
+ * returns SYSFS string.
  *
- * Returns newly allocated string, list of handlers separated by whitespaces,
- * or NULL in a case of failure.
+ * Returns newly allocated string, or NULL in a case of failure.
  */
-char *get_input_handlers(void);
+char *get_input_field_value(char field);
 
 /**
  * Sets up the virtual device to appear as a mouse, this must be called before
