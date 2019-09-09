@@ -61,7 +61,7 @@ setup()
 	ip link add dev $VCAN type vcan
 	ret=$?
 	if [ $ret -ne 0 ]; then
-		tst_brkm TBROK
+		tst_brkm TBROK \
 			 "ip link add dev $VCAN type vcan failed: ret - $ret"
 	fi
 
