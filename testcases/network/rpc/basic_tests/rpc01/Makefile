@@ -24,7 +24,7 @@ top_srcdir		?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= rpc01
+INSTALL_TARGETS		:= rpc01.sh
 SUBDIRS			:= datafiles
 
 CPPFLAGS		+= -I$(abs_srcdir)/lib

@@ -2,7 +2,7 @@
 #
 # PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
 #
-rpc01 rpc01
-rpcinfo rpcinfo01
-rup rup01
-rusers rusers01
+rpc01 rpc01.sh
+rpcinfo rpcinfo01.sh
+rup rup01.sh
+rusers rusers01.sh
