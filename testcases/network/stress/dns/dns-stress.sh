@@ -180,7 +180,7 @@ test01()
 {
 	tst_resm TINFO "Handling name lookup queries '$NS_TIMES' times"
 
-	tst_rhost_run -s -c "dns-stress01-rmt $TST_IPVER $(tst_ipaddr) $port \
+	tst_rhost_run -s -c "dns-stress01-rmt.sh $TST_IPVER $(tst_ipaddr) $port \
 		$DOMAIN $MIN_ID $MAX_ID $NS_TIMES"
 
 	tst_resm TPASS "Test is finished successfully"
@@ -190,7 +190,7 @@ test02()
 {
 	tst_resm TINFO "Handling reverse lookup queries '$NS_TIMES' times"
 
-	tst_rhost_run -s -c "dns-stress02-rmt $TST_IPVER $(tst_ipaddr) $port $net \
+	tst_rhost_run -s -c "dns-stress02-rmt.sh $TST_IPVER $(tst_ipaddr) $port $net \
 		$MIN_ID $MAX_ID $NS_TIMES"
 
 	tst_resm TPASS "Test is finished successfully"

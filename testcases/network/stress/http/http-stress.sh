@@ -58,7 +58,7 @@ test01()
 {
 	tst_resm TINFO "http client download test file"
 
-	tst_rhost_run -s -c "http-stress01-rmt $(tst_ipaddr) \
+	tst_rhost_run -s -c "http-stress01-rmt.sh $(tst_ipaddr) \
 		http_file $DOWNLOAD_BIGFILESIZE"
 
 	tst_resm TPASS "Test is finished successfully"
@@ -68,7 +68,7 @@ test02()
 {
 	tst_resm TINFO "clients request data asynchronously $NS_DURATION sec"
 
-	tst_rhost_run -s -c "http-stress02-rmt $(tst_ipaddr) http_file \
+	tst_rhost_run -s -c "http-stress02-rmt.sh $(tst_ipaddr) http_file \
 		$DOWNLOAD_BIGFILESIZE $NS_DURATION $CONNECTION_TOTAL"
 
 	tst_resm TPASS "Test is finished successfully"

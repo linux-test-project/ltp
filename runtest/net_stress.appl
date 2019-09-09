@@ -2,17 +2,17 @@
 # Stress test for major application protocol (ssh, dns, http, ftp)
 #
 
-ssh4-stress ssh-stress
-ssh6-stress ssh-stress -6
+ssh4-stress ssh-stress.sh
+ssh6-stress ssh-stress.sh -6
 
-dns4-stress dns-stress
-dns6-stress dns-stress -6
+dns4-stress dns-stress.sh
+dns6-stress dns-stress.sh -6
 
-http4-stress http-stress
-http6-stress http-stress -6
+http4-stress http-stress.sh
+http6-stress http-stress.sh -6
 
-ftp4-download-stress ftp-download-stress
-ftp6-download-stress ftp-download-stress -6
+ftp4-download-stress ftp-download-stress.sh
+ftp6-download-stress ftp-download-stress.sh -6
 
-ftp4-upload-stress ftp-upload-stress
-ftp6-upload-stress ftp-upload-stress -6
+ftp4-upload-stress ftp-upload-stress.sh
+ftp6-upload-stress ftp-upload-stress.sh -6

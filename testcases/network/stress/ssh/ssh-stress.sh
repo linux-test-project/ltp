@@ -106,7 +106,7 @@ test01()
 {
 	tst_resm TINFO "Creating '$CONNECTION_TOTAL' ssh sessions"
 
-	tst_rhost_run -s -c "ssh-stress01-rmt $TST_IPVER $(tst_ipaddr) \
+	tst_rhost_run -s -c "ssh-stress01-rmt.sh $TST_IPVER $(tst_ipaddr) \
 		$rconfig $CONNECTION_TOTAL"
 
 	tst_resm TPASS "Test is finished successfully"
@@ -117,7 +117,7 @@ test02()
 	tst_resm TINFO "Log in/out by many clients asynchronously"
 	tst_resm TINFO "'$CONNECTION_TOTAL' clients, time $NS_DURATION sec"
 
-	tst_rhost_run -s -c "ssh-stress02-rmt $TST_IPVER $(tst_ipaddr) \
+	tst_rhost_run -s -c "ssh-stress02-rmt.sh $TST_IPVER $(tst_ipaddr) \
 		$rconfig $CONNECTION_TOTAL $NS_DURATION"
 
 	tst_resm TPASS "Test is finished successfully"
@@ -132,7 +132,7 @@ test03()
 
 	netstress -R 3 -g $port > tcp_server.log 2>&1 &
 
-	tst_rhost_run -s -c "ssh-stress03-rmt $TST_IPVER $(tst_ipaddr) \
+	tst_rhost_run -s -c "ssh-stress03-rmt.sh $TST_IPVER $(tst_ipaddr) \
 		$rconfig $port $NS_TIMES"
 
 	tst_resm TPASS "Test is finished successfully"
