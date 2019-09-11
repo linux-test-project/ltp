@@ -34,6 +34,7 @@ bind03 bind03
 
 bpf_map01 bpf_map01
 bpf_prog01 bpf_prog01
+bpf_prog02 bpf_prog02
 
 brk01 brk01
 

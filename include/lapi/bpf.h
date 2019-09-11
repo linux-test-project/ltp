@@ -18,7 +18,9 @@
 /* Start copy from linux/bpf_(common).h */
 #define BPF_CLASS(code) ((code) & 0x07)
 #define		BPF_LD		0x00
+#define		BPF_LDX		0x01
 #define		BPF_ST		0x02
+#define		BPF_STX		0x03
 #define		BPF_JMP		0x05
 
 #define BPF_SIZE(code)  ((code) & 0x18)
@@ -30,6 +32,7 @@
 
 #define BPF_OP(code)    ((code) & 0xf0)
 #define		BPF_ADD		0x00
+#define		BPF_SUB		0x10
 
 #define		BPF_JEQ		0x10
 
@@ -432,6 +435,14 @@ enum bpf_func_id {
 
 /* Start copy from tools/include/filter.h */
 
+#define BPF_ALU64_REG(OP, DST, SRC)				\
+	((struct bpf_insn) {					\
+		.code  = BPF_ALU64 | BPF_OP(OP) | BPF_X,	\
+		.dst_reg = DST,					\
+		.src_reg = SRC,					\
+		.off   = 0,					\
+		.imm   = 0 })
+
 #define BPF_ALU64_IMM(OP, DST, IMM)				\
 	((struct bpf_insn) {					\
 		.code  = BPF_ALU64 | BPF_OP(OP) | BPF_K,	\
@@ -476,6 +487,22 @@ enum bpf_func_id {
 		.src_reg = 0,					\
 		.off   = OFF,					\
 		.imm   = IMM })
+
+#define BPF_LDX_MEM(SIZE, DST, SRC, OFF)			\
+	((struct bpf_insn) {					\
+		.code  = BPF_LDX | BPF_SIZE(SIZE) | BPF_MEM,	\
+		.dst_reg = DST,					\
+		.src_reg = SRC,					\
+		.off   = OFF,					\
+		.imm   = 0 })
+
+#define BPF_STX_MEM(SIZE, DST, SRC, OFF)			\
+	((struct bpf_insn) {					\
+		.code  = BPF_STX | BPF_SIZE(SIZE) | BPF_MEM,	\
+		.dst_reg = DST,					\
+		.src_reg = SRC,					\
+		.off   = OFF,					\
+		.imm   = 0 })
 
 #define BPF_JMP_IMM(OP, DST, IMM, OFF)				\
 	((struct bpf_insn) {					\
