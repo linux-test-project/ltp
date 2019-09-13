@@ -1,0 +1,134 @@
+                        DEVICE DRIVER TESTS (DDT)
+================================================================================
+
+1) GOALS:
+================================================================================
+ * Support device driver tests on embedded boards
+ * Support dynamic selection/filtering of test cases based on board capabilities
+ * Support test parameters overrides based on architecture, SoC, or board type
+
+2) DDT TESTS IMPLEMENTATION GUIDELINES
+================================================================================
+2.1) TEST CASES
+ * Avoid hard-coding values that are specific to your platform, instead try to
+   determine the right value to use using the information provided by Linux
+   ( /sys and proc/ are your friends)
+ * When not possible to determine values dynamically, define default values and
+   provide appropriate overrides based on either ARCH, DRIVER, SOC or MACHINE.
+   Try to define the override value at the most generic level possible.
+   ARCH, DRIVER, SOC and MACHINE variables are exported by runltp script.
+ * Avoid adding logic to define values dynamically in your c code. If the code
+   needs to use different values depending on the platform being tested, then
+   make that value a command line argument and write a shell script wraper
+   that calls your c executable. The shell script wrapper should use the
+   override logic define above to determine the right value to pass to the
+   c executable.
+ * Instead of developing huge shell scripts, try to partition the logic into
+   several smaller scripts, each such smaller script should execute some
+   well-defined task and ideally could be used by other people developing
+   tests. Before you start writing scripts, check the available scripts to see
+   if the logic you need is already available. Scripts that return a value are
+   named get_*
+ * If your script return a single value, use echo to return the value. If your
+   script need to return multiple values, consider breaking it into smaller
+   scripts. If absolutely necessary to return multiple values then write the
+   name=value pairs (one per line) to file descriptor 10.
+
+
+2.2) TEST SCENARIOS
+ * Follow LTP guidelines. The test scenario file is basically made of one or
+   more test step lines. Each test step line have following format
+   <TAG> <COMMANDS>, where
+   TAG is a string that identifies the test step.
+     Use following convention to named TAGs so that the test cases can be
+     selectively run based on AREA, SCOPE and/or TYPE.
+     <AREA>_<SCOPE>_<TYPE>_<OPT_ID>,
+      i.e. “NAND_S_FUNC_RW_8K”, “NAND_M_PERF_ALL-SIZES”
+     The SCOPE tags are used to indicate the amount of time require to run
+     the tests, giving users ability to filter test cases based on estimated
+     execution time.
+     SCOPE TAGS:
+      'XS', 'S', 'M', 'L', 'XL', 'XXL' (for eXtra Small, Small, Medium, etc.
+		     Just imagine you are buying clothes ;)
+      We used the following rough guidelines to determine test duration based
+      on scope:
+        XS:  <= 1  min
+        S:   <= 10 mins
+        M:   <= 1  hour
+        L:   <= 8  hours
+        XL:  <= 24 hours
+        XXL: <= 1  week
+     TYPE TAGS:
+      ‘FUNC’, ‘PERF’, ‘STRESS’, ‘USECASE’, ‘COMPLIANCE’, ‘MODULAR’, ‘DOC’
+   COMMANDS is a list of one or more shell commands separated by semicolon (;),
+     the test step will pass if the commands return zero, otherwise it fails.
+
+ * Use the default test scenario file template available at
+   runtest/ddt/TEMPLATE as a starting point to develop your test scenario.
+
+ * Use the @requires annotation to specify ARCH, DRIVER, SOC and/or MACHINE
+   requirements to run the test scenario. You can use (), &&, ||, * to specify
+   the test requirements. Examples:
+
+   @requires /net/eth/* && spi_master
+   To run this test the platform must have an ethernet driver and a
+   spi_master driver
+
+   @requires am335x-boneblack
+   This test can only be run on an beaglebone black
+
+   @requires (mmc_host || nand) && armv*
+   This test requires mmc or nand drivers and an ARM architecture
+
+ * Optionally use the @setup_requires annotation to specify test setup requirements.
+   Some test cases like USB and Video capture requires special peripherals, such as
+   USB flash drives, DVD players, video cameras, etc., to be connected to the DUT.
+   Using @setup_requires the test developer highlights such test setup requirements.
+   This information might be used by test automation frameworks to allocate test requests
+   to DUTs that have the appropriate peripherals connected to them.
+   Please follow the naming conventions identified in section 4) of this document
+   if the test scenario needs to identify any setup requirements.
+
+   You can use underscore(_) to seperate multiple @setup_requires. Example:
+
+   @setup_requires usbhostvideo_usbhostaudio
+   This test requires usbhostvideo setup and usbhostaudio setup.
+
+  * Optionally use the @sw_requires to highlight any filesystem tool or packages
+    required to run the tests, for example:
+    @sw_requires serialcheck
+
+3) HOW TO ADD NEW PLATFORMS
+================================================================================
+ * Copy the default platform file available at platforms/TEMPLATE to
+   platforms/<your platform>. <your platform> name is typically the evm name
+
+ * Modify your platform file based on the capabilities supported by the new board.
+   The platform file identifies the architecture, the SoC, the board and the
+   supported drivers. The supported drivers lines follow a variation of the
+   hierarchy used in /sys/class but it is not exactly the same. Hence it is
+   important to use the platforms/TEMPLATE file as your starting point.
+   Please note the first 3 lines of the platform file MUST identify, the
+   architecture, SoC and board respectively, follow by one or more driver lines.
+   Typically the architecture and machine name used in the platform file are
+   the ones reported by uname -a.
+* You might need to define new override values for your new platform in some
+   test case files (see section 2.1 above for details). A reasonable strategy
+   is to try to run an existing tests and then analyze the test failures
+   to determine probable test cases where you need to define override values.
+
+4) @setup_requires Naming Conventions
+================================================================================
+As discussed in section 2.2 above, @setup_requires is used to highlight test scenarios' setup
+requirements. The following @setup_requires tags are currently defined.
+If required, please feel free to define a new tag below
+
+* Multimedia Related:
+hdmiqual, hdmi, videosensor
+
+
+* USB Related:
+usbhostmsc, usbhosthid, usbhostaudio, usbhostvideo, usbslavefbs, usbslavecdc, usbslaverndis, usbslaveasync
+
+* Storage Related:
+sd, sdhc, mmc, sata

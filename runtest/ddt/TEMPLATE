@@ -1,0 +1,12 @@
+# @name Test scenario name (i.e. Nand Write/Read Performance test)
+# @desc Test scenario description.
+# @requires nand
+# @setup_requires
+# @sw_requires
+
+# PLEASE READ "DDT TESTS IMPLEMENTATION GUIDELINES" section in
+# <ltp>/README.ddt file before writing test cases.
+# Below you can see a sample test case, which follows <TEST TAG> <test commands> syntax
+# The tail fails if the <test commands> return non-zero.
+
+NAND_S_FUNC_DD_RW_0001 source 'common.sh'; part=`get_mtd_partition_number.sh "nand"` || die "error getting mtd part number: $part"; size=`get_mtd_erase_size.sh "$part"` || die "error getting mtd erase size: $size"; blk_device_dd_readwrite_test.sh -f "jffs2" -b "$size" -c 10 -d "nand"

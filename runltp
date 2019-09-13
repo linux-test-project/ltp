@@ -78,7 +78,7 @@ setup()
     }
     export LTPROOT=${PWD}
     export TMPBASE="/tmp"
-    export PATH="${PATH}:${LTPROOT}/testcases/bin:${LTPROOT}/bin"
+    export PATH="${PATH}:${LTPROOT}/testcases/bin:${LTPROOT}/bin"$( find ${LTPROOT}/testcases/bin/ddt -type d -exec printf {}":" \; )
 
     export LTP_DEV_FS_TYPE="ext2"
 
@@ -110,7 +110,7 @@ usage()
     usage: ${0##*/} [ -a EMAIL_TO ] [ -c NUM_PROCS ] [ -C FAILCMDFILE ] [ -T TCONFCMDFILE ]
     [ -d TMPDIR ] [ -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG ] -e [ -f CMDFILES(,...) ]
     [ -g HTMLFILE] [ -i NUM_PROCS ] [ -l LOGFILE ] [ -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG ]
-    -N -n [ -o OUTPUTFILE ] -p -q -Q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
+    -N -n [ -o OUTPUTFILE ] -p [-P platform] -q -Q [ -r LTPROOT ] [ -s PATTERN ] [ -t DURATION ]
     -v [ -w CMDFILEADDR ] [ -x INSTANCES ] [ -b DEVICE ] [-B LTP_DEV_FS_TYPE]
 	[ -F LOOPS,PERCENTAGE ] [ -z BIG_DEVICE ] [-Z  LTP_BIG_DEV_FS_TYPE]
 
@@ -150,6 +150,7 @@ usage()
     -N              Run all the networking tests.
     -o OUTPUTFILE   Redirect test output to a file.
     -p              Human readable format logfiles.
+    -P PLATFORM     Platform to run tests on. Used to filter device driver tests (ddt)
     -q              Print less verbose output to screen. This implies
                     not logging start of the test in kernel log.
     -Q              Don't log start of test in kernel log.
@@ -216,13 +217,15 @@ main()
     local EMAIL_TO=
     local TAG_RESTRICT_STRING=
     local PAN_COMMAND=
+    local PLATFORM=
+    local PLATFORMDIR=
     local RANDOMRUN=0
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%m_%d-%Hh_%Mm_%Ss"`
     local scenfile=
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:b:B:c:C:T:d:D:ef:F:g:hi:I:K:l:m:M:No:pqQr:Rs:S:t:T:w:x:z:Z: arg
+    while getopts a:b:B:c:C:T:d:D:ef:F:g:hi:I:K:l:m:M:No:pP:qQr:Rs:S:t:T:w:x:z:Z: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -405,6 +408,7 @@ main()
             esac ;;
 
         p)  PRETTY_PRT="-p";;
+        P)  PLATFORM="$OPTARG";;
 
         q)  QUIET_MODE="-q";;
 
@@ -569,6 +573,50 @@ main()
       INSTANCES="$INSTANCES -O ${TMP}"
     }
 
+    PLATFORMDIR=${TMP}/platform
+    export PLATFORMDIR
+    if [ -n "$PLATFORM" -a -f "${LTPROOT}/platforms/${PLATFORM}" ]; then
+        # If platform was specified, create platform capability files in TMP dir
+        echo "INFO: Filtering testscenarios based on $PLATFORM capabilities"
+        export PLATFORM
+        local i=0; local DRIVERS=""
+        DONE=false
+        until $DONE ;do
+            read -r file || DONE=true
+            echo $file | grep -e "^#.*" > /dev/null
+            if [ "$?" == "0" ]; then
+		continue
+            fi
+            mkdir -p ${PLATFORMDIR}/${file}
+            case $i in
+		0) ARCH="$file"
+                   export ARCH ;;
+                1) SOC="$file"
+                   export SOC ;;
+                2) MACHINE="$file"
+                   export MACHINE ;;
+                3) DRIVERS="$file" ;;
+                *) DRIVERS="${DRIVERS},${file}" ;;
+            esac
+	    i=`expr $i + 1`
+
+	done < ${LTPROOT}/platforms/${PLATFORM}
+        export DRIVERS
+
+    elif [ -n "$PLATFORM" -a ! -f "${LTPROOT}/platforms/${PLATFORM}" ]; then
+        echo "FATAL: Directory ${LTPROOT}/platforms/${PLATFORM}. Check -P argument"
+        exit 1
+
+    else
+        # Set default arch, soc, board values
+        export ARCH=`uname -m`
+        mkdir -p ${PLATFORMDIR}/${ARCH}
+	export SOC=`uname -p`
+        mkdir -p ${PLATFORMDIR}/${SOC}
+	export MACHINE=`uname -i`
+        mkdir -p ${PLATFORMDIR}/${MACHINE}
+    fi
+
     # If user does not provide a command file select a default set of testcases
     # to execute.
     if [ -z "$CMDFILES" ] && [ -z "$CMDFILEADDR" ]; then
@@ -589,6 +637,12 @@ EOF
             scenfile=${LTPROOT}/runtest/$scenfile
             [ -f "$scenfile" ] || continue
 
+            # Filter testscenarios based on platform capabilities
+            if ! check_feature_support "$scenfile"; then
+                echo "INFO: Test scenario $scenfile not supported for $PLATFORM"
+	        continue
+	    fi
+
             cat $scenfile >> "$TMP/alltests" || {
                 echo "FATAL: unable to append to command file"
                 rm -Rf "$TMP"
@@ -604,6 +658,13 @@ EOF
         for scenfile in `echo "$CMDFILES" | tr ',' ' '`
         do
             [ -f "$scenfile" ] || scenfile="$LTPROOT/runtest/$scenfile"
+
+            # Filter testscenarios based on platform capabilities
+            if ! check_feature_support "$scenfile"; then
+                echo "INFO: Test scenario $scenfile not supported for $PLATFORM"
+		continue
+	    fi
+
             cat "$scenfile" >> ${TMP}/alltests || \
             {
                 echo "FATAL: unable to create command file"
@@ -620,11 +681,16 @@ EOF
             echo "FATAL: error while getting the command file with wget (address $CMDFILEADDR)"
             exit 1
         fi
-        cat "${TMP}/wgetcmdfile" >> ${TMP}/alltests || \
-        {
-            echo "FATAL: unable to create command file"
-            exit 1
-        }
+        # Filter testscenarios based on platform capabilities
+        if ! check_feature_support "${TMP}/wgetcmdfile"; then
+	    echo "INFO: Test scenario not supported for $PLATFORM"
+	else
+            cat "${TMP}/wgetcmdfile" >> ${TMP}/alltests || \
+            {
+                echo "FATAL: unable to create command file"
+                exit 1
+            }
+        fi
     }
 
     # The fsx-linux tests use the SCRATCHDEV environment variable as a location
@@ -984,6 +1050,16 @@ cleanup()
     rm -rf ${TMP}
 }
 
+check_feature_support()
+{
+    cd ${PLATFORMDIR}
+    x=$(awk '/^# +@requires +\w+/' $1)
+    if [ -n "$x" ]; then
+	echo "$x" | awk '{gsub(/^# +@requires/,""); gsub(/\(/,"\\( ");gsub(/\)/," \\)");gsub(/ +\w+/," -e&");gsub(/\|\|/,"-o");gsub(/\&\&/,"-a");print}' | awk '{print "test", $0}' | sh
+    else
+        return 0
+    fi
+}
 
 LTP_SCRIPT="$(basename $0)"
 
