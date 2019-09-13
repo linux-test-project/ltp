@@ -1,0 +1,31 @@
+# @name UART Read/Write tests with HW flow control
+# @desc Use https://github.com/nsekhar/serialcheck to validate UART at various rates
+# Since serialcheck relies on termbits.h rate definitions, it is not possible to go over 4M.
+# It is recommended to setup an external loopback wire between CTS/RTS to make results
+# more reliable at higher rates
+# @requires
+# @setup_requires uarthwflow
+# @sw_requires serialcheck
+
+UART_S_FUNC_9600_HWFLOW source 'serialcheck.sh' -r 9600 -x
+UART_S_FUNC_19200_HWFLOW source 'serialcheck.sh' -r 19200 -x
+UART_S_FUNC_38400_HWFLOW source 'serialcheck.sh' -r 38400 -x
+UART_S_FUNC_57600_HWFLOW source 'serialcheck.sh' -r 57600 -x
+UART_XS_FUNC_115200_HWFLOW source 'serialcheck.sh' -r 115200 -x
+UART_L_STRESS_115200_HWFLOW source 'serialcheck.sh' -r 115200 -l 200 -x
+UART_S_FUNC_230400_HWFLOW source 'serialcheck.sh' -r 230400 -x
+UART_S_FUNC_460800_HWFLOW source 'serialcheck.sh' -r 460800 -x
+UART_S_FUNC_500000_HWFLOW source 'serialcheck.sh' -r 500000 -x
+UART_S_FUNC_576000_HWFLOW source 'serialcheck.sh' -r 576000 -x
+UART_S_FUNC_921600_HWFLOW source 'serialcheck.sh' -r 921600 -x
+UART_S_FUNC_1000000_HWFLOW source 'serialcheck.sh' -r 1000000 -x
+UART_S_FUNC_1152000_HWFLOW source 'serialcheck.sh' -r 1152000 -x
+UART_S_FUNC_1500000_HWFLOW source 'serialcheck.sh' -r 1500000 -x
+UART_S_FUNC_2000000_HWFLOW source 'serialcheck.sh' -r 2000000 -x
+UART_S_FUNC_2500000_HWFLOW source 'serialcheck.sh' -r 2500000 -x
+UART_S_FUNC_3000000_HWFLOW source 'serialcheck.sh' -r 3000000 -x
+UART_S_PERF_3000000_HWFLOW source 'serialcheck.sh' -r 3000000 -l 50 -x
+UART_S_FUNC_3500000_HWFLOW source 'serialcheck.sh' -r 3500000 -x
+UART_L_STRESS_3500000_HWFLOW source 'serialcheck.sh' -r 3500000 -l 500 -x
+UART_XL_STRESS_3500000_HWFLOW source 'serialcheck.sh' -r 3500000 -l 5000 -x
+UART_S_FUNC_4000000_HWFLOW source 'serialcheck.sh' -r 4000000 -x

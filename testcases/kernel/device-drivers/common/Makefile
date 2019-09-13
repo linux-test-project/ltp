@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2019 Texas Instruments Incorporated
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -14,21 +14,21 @@
 # along with this program; if not, write the Free Software Foundation,
 # Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-top_srcdir	?= ../../..
+top_srcdir		?= ../../../..
 
-include $(top_srcdir)/include/mk/env_pre.mk
+include $(top_srcdir)/include/mk/testcases.mk
 
-SUBDIRS		:= acpi \
-		   block \
-		   common \
-		   cpufreq \
-		   locking \
-		   pci \
-		   rcu \
-		   rtc \
-		   tbio \
-		   uaccess \
-		   uart \
-		   zram
+INSTALL_DIR		:= testcases/bin/ddt/$(notdir $(CURDIR:%/=%))
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+FILTER_OUT_DIRS :=
+
+# We don't want to copy over the Makefile
+UNWANTED_FILES	:= Makefile
+
+INSTALL_MODE	:= 00755
+
+INSTALL_TARGETS	:= $(filter-out $(UNWANTED_FILES),$(notdir $(patsubst $(abs_srcdir)/%,%,$(wildcard $(abs_srcdir)/*))))
+
+MAKE_TARGETS	:=
+
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

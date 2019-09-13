@@ -1,0 +1,4 @@
+# Collection of site specific configuration parameters
+# Please prepend variables names with SITE_
+
+SITE_HTTP_PROXY=http://company.proxy.com:80
