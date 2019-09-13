@@ -57,7 +57,7 @@ static int sleep_between_faults;
 
 static int swap_accounting_enabled;
 
-#define PAGES 32
+#define PAGES 128
 #define TOUCHED_PAGE1 0
 #define TOUCHED_PAGE2 10
 
