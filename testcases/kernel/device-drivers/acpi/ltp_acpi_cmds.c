@@ -233,6 +233,9 @@ static int acpi_traverse_from_root(void)
 static acpi_handle dev_handle;
 static int acpi_hw_reduced;
 
+/* check if PM2 control register supported */
+static bool pm2_supported;
+
 static int acpi_init(void)
 {
 	acpi_status status;
@@ -240,12 +243,15 @@ static int acpi_init(void)
 	struct acpi_table_fadt *fadt;
 	struct acpi_table_header *table;
 	struct acpi_device_info *dev_info;
+	pm2_supported = true;
 
 	status = acpi_get_table(ACPI_SIG_FADT, 0, &table);
 	if (ACPI_SUCCESS(status)) {
 		fadt = (struct acpi_table_fadt *)table;
 		if (fadt->flags & ACPI_FADT_HW_REDUCED)
 			acpi_hw_reduced = 1;
+		if (fadt->pm2_control_block == 0 || fadt->pm2_control_length == 0)
+			pm2_supported = false;
 	}
 	if (acpi_hw_reduced)
 		prk_alert("Detected the Hardware-reduced ACPI mode");
@@ -481,6 +487,8 @@ static int acpi_test_register(void)
 	 * commit/?id=50ffba1bd3120b069617455545bc27bcf3cf7579
 	 */
 	for (i = 0; i < ACPI_NUM_BITREG; ++i) {
+		if (i == ACPI_BITREG_ARB_DISABLE && !pm2_supported)
+			continue;
 		status = acpi_read_bit_register(i, &val);
 		err |= acpi_failure(status, "acpi_read_bit_register");
 		if (ACPI_SUCCESS(status))
