@@ -25,7 +25,7 @@
 #define TESTFILE	"test_file"
 
 static int fd_ok;
-static int fd_ebadf;
+static int fd_ebadf = -1;
 static struct stat stat_buf;
 
 static struct tcase {
@@ -83,7 +83,6 @@ static void run(unsigned int tc_num)
 
 static void setup(void)
 {
-	fd_ebadf = tst_get_unused_pid();
 	fd_ok = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, 0644);
 }
 
