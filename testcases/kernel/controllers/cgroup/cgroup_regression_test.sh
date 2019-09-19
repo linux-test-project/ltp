@@ -7,7 +7,7 @@
 TST_TESTFUNC=test
 TST_SETUP=do_setup
 TST_CLEANUP=do_cleanup
-TST_CNT=10
+TST_CNT=9
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="awk dmesg find mountpoint rmdir"
@@ -233,77 +233,28 @@ test4()
 }
 
 #---------------------------------------------------------------------------
-# Bug:    When mount cgroup fs and the fs was busy, root_count should not be
-#         decremented in cgroup_kill_sb()
-# Kernel: 2.6.29-rcX
-# Links:  https://openvz.org/pipermail/devel/2009-January/016345.html
-#         http://lkml.org/lkml/2009/1/28/190
-# Fix:    commit 839ec5452ebfd5905b9c69b20ceb640903a8ea1a
+# Bug:    When running 2 concurrent mount/umount threads, kernel WARNING
+#         may be triggered, but it's VFS' issue but not cgroup.
+# Kernel: 2.6.24 - 2.6.29-rcX
+# Links:  http://lkml.org/lkml/2009/1/4/354
+# Fix:    commit 1a88b5364b535edaa321d70a566e358390ff0872
 #---------------------------------------------------------------------------
 test5()
 {
-	local mounted
-	local failing
-	local mntpoint
+	cgroup_regression_5_1.sh &
+	local pid1=$!
+	cgroup_regression_5_2.sh &
+	local pid2=$!
 
-	local lines=`cat /proc/cgroups | wc -l`
-	if [ $lines -le 2 ]; then
-		tst_res TCONF "require at least 2 cgroup subsystems"
-		return
-	fi
+	sleep 30
+	kill -USR1 $pid1 $pid2
+	wait $pid1 2>/dev/null
+	wait $pid2 2>/dev/null
 
-	local subsys1=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
-	local subsys2=`tail -n 2 /proc/cgroups | head -1 | awk '{ print $1 }'`
-
-	# Accounting here for the fact that the chosen subsystems could
-	# have been already previously mounted at boot time: in such a
-	# case we must skip the initial co-mount step (which would
-	# fail anyway) and properly re-organize the $mntpoint and
-	# $failing params to be used in the following expected-to-fail
-	# mount action. Note that the subsysN name itself will be listed
-	# amongst mounts options.
-	get_cgroup_mountpoint $subsys1 >/dev/null && mounted=$subsys1
-	[ -z "$mounted" ] && get_cgroup_mountpoint $subsys2 >/dev/null && mounted=$subsys2
-	if [ -z "$mounted" ]; then
-		mntpoint=cgroup
-		failing=$subsys1
-		mount -t cgroup -o $subsys1,$subsys2 xxx $mntpoint/
-		if [ $? -ne 0 ]; then
-			tst_res TFAIL "mount $subsys1 and $subsys2 failed"
-			return
-		fi
-	else
-		# Use the pre-esistent mountpoint as $mntpoint and use a
-		# co-mount with $failing: this way the 2nd mount will
-		# also fail (as expected) in this 'mirrored' configuration.
-		mntpoint=$(get_cgroup_mountpoint $mounted)
-		failing=$subsys1,$subsys2
-	fi
-
-	# This 2nd mount has been properly configured to fail
-	mount -t cgroup -o $failing xxx $mntpoint/ 2> /dev/null
-	if [ $? -eq 0 ]; then
-		tst_res TFAIL "mount $failing should fail"
-		# Do NOT unmount pre-existent mountpoints...
-		[ -z "$mounted" ] && umount $mntpoint/
-		return
-	fi
-
-	mkdir $mntpoint/0
-	# Otherwise we can't attach task
-	if [ "$subsys1" = cpuset -o "$subsys2" = cpuset ]; then
-		echo 0 > $mntpoint/0/cpuset.cpus 2> /dev/null
-		echo 0 > $mntpoint/0/cpuset.mems 2> /dev/null
-	fi
-
-	sleep 100 &
-	echo $! > $mntpoint/0/tasks
-
-	kill -TERM $! > /dev/null
-	wait $! 2>/dev/null
-	rmdir $mntpoint/0
-	# Do NOT unmount pre-existent mountpoints...
-	[ -z "$mounted" ] && umount $mntpoint/
+	mount -t cgroup none cgroup 2> /dev/null
+	mkdir cgroup/0
+	rmdir cgroup/0
+	umount cgroup/ 2> /dev/null
 	check_kernel_bug
 }
 
@@ -484,32 +435,6 @@ test9()
 	wait $pid1 2>/dev/null
 	wait $pid2 2>/dev/null
 
-	umount cgroup/ 2> /dev/null
-	check_kernel_bug
-}
-
-#---------------------------------------------------------------------------
-# Bug:    When running 2 concurrent mount/umount threads, kernel WARNING
-#         may be triggered, but it's VFS' issue but not cgroup.
-# Kernel: 2.6.24 - 2.6.29-rcX
-# Links:  http://lkml.org/lkml/2009/1/4/354
-# Fix:    commit 1a88b5364b535edaa321d70a566e358390ff0872
-#---------------------------------------------------------------------------
-test10()
-{
-	cgroup_regression_10_1.sh &
-	local pid1=$!
-	cgroup_regression_10_2.sh &
-	local pid2=$!
-
-	sleep 30
-	kill -USR1 $pid1 $pid2
-	wait $pid1 2>/dev/null
-	wait $pid2 2>/dev/null
-
-	mount -t cgroup none cgroup 2> /dev/null
-	mkdir cgroup/0
-	rmdir cgroup/0
 	umount cgroup/ 2> /dev/null
 	check_kernel_bug
 }
