@@ -69,7 +69,7 @@ ext4_test_journal_checksum()
 		return
 	fi
 
-	ffsb ffsb-config2 > /dev/null
+	ffsb $LTPROOT/testcases/data/ext4-ffsb/ffsb-config2 > /dev/null
 	if [ $? -ne 0 ]; then
 		tst_resm TFAIL "ffsb returned failure"
 		umount mnt_point

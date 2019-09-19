@@ -34,13 +34,13 @@ age_filesystem()
 {
 	if [ $1 -eq $EMPTY ]; then
 		# aging, then del
-		ffsb ffsb-config3 > /dev/null
+		ffsb $LTPROOT/testcases/data/ext4-ffsb/ffsb-config3 > /dev/null
 		rm -rf mnt_point/*
 	elif [ $1 -eq $SMALL ]; then
 		# age filesystem from 0.0 to 0.2 -> 0.4 -> 0.6 -> 0.8 -> 1.0
 		for ((n = 3; n < 8; n++))
 		{
-			ffsb ffsb-config$n > /dev/null
+			ffsb $LTPROOT/testcases/data/ext4-ffsb/ffsb-config$n > /dev/null
 			mv mnt_point/data mnt_point/data$n
 		}
 	elif [ $1 -eq $LARGE ]; then
