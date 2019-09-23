@@ -121,7 +121,14 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		if (strcmp(tc[i - 1].value, XATTR_TEST_VALUE))
+		if (TEST_RETURN != XATTR_TEST_VALUE_SIZE) {
+			tst_resm(TFAIL,
+				 "getxattr() returned wrong size %ld expected %d",
+				 TEST_RETURN, XATTR_TEST_VALUE_SIZE);
+			continue;
+		}
+
+		if (memcmp(tc[i - 1].value, XATTR_TEST_VALUE, XATTR_TEST_VALUE_SIZE))
 			tst_resm(TFAIL, "Wrong value, expect \"%s\" got \"%s\"",
 				 XATTR_TEST_VALUE, tc[i - 1].value);
 		else
