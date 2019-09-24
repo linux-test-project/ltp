@@ -1,0 +1,29 @@
+LTP Library API Writing Guidelines
+==================================
+
+1. General Rules
+----------------
+
+For extending library API it applies the same general rules as for writing tests
+(see 'doc/test-writing-guidelines.txt'), with strong focus on readability and simplicity.
+
+Library tests are in 'lib/newlib_tests' directory.
+
+Don't forget to update docs when you change the API
+('doc/test-writing-guidelines.txt').
+
+2. C API
+--------
+
+API source code is in headers 'include/\*.h', 'include/lapi/*.h' (backward
+compatibility for old kernel and libc) and C sources in 'lib/*.c'. Files have
+'tst_' prefix.
+
+3. Shell API
+------------
+
+API source code is in 'tst_test.sh', 'tst_security.sh' and 'tst_net.sh'
+(all in 'testcases/lib' directory).
+
+Changes in the shell API should not introduce uncommon dependencies
+(use basic commands installed everywhere by default).
