@@ -17,20 +17,23 @@
 #include <time.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 #include "posixtest.h"
 
-#define LARGENUMBER 8000000
+#define BUSY_LOOP_SECONDS 5
+
 int main(void)
 {
 	clock_t c1, c2;
 	double sec1, sec2;
-	int i;
+	time_t end;
 
 	c1 = clock();
 	sec1 = c1 / CLOCKS_PER_SEC;
 
-	for (i = 0; i < LARGENUMBER; i++) {
-		// keep busy so CPU time increases
+	end = time(NULL) + BUSY_LOOP_SECONDS;
+
+	while (end >= time(NULL)) {
 		clock();
 	}
 
