@@ -171,9 +171,25 @@ static void run(void)
 	acct(NULL);
 
 	do {
-		tst_res(TINFO, "== entry %d ==", ++i);
-
 		read_bytes = SAFE_READ(0, fd, &acct_struct, acct_size);
+
+		if (i == 0 && read_bytes == 0) {
+			tst_res(TFAIL, "acct file is empty");
+			goto exit;
+		}
+
+		if (read_bytes == 0) {
+			tst_res(TFAIL, "end of file reached");
+			goto exit;
+		}
+
+		if (read_bytes != acct_size) {
+			tst_res(TFAIL, "incomplete read %i bytes, expected %i",
+			        read_bytes, acct_size);
+			goto exit;
+		}
+
+		tst_res(TINFO, "== entry %d ==", ++i);
 
 		if (v3)
 			ret = verify_acct(&acct_struct.v3, acct_struct.v3.ac_etime);
@@ -192,6 +208,7 @@ static void run(void)
 	else
 		tst_res(TPASS, "acct() wrote correct file contents!");
 
+exit:
 	SAFE_CLOSE(fd);
 }
 
