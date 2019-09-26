@@ -27,6 +27,7 @@
 #include "tst_test.h"
 #include "lapi/socket.h"
 #include "lapi/bpf.h"
+#include "bpf_common.h"
 
 const char MSG[] = "Ahoj!";
 static char *msg;
@@ -94,6 +95,8 @@ int load_prog(int fd)
 
 void setup(void)
 {
+	rlimit_bump_memlock();
+
 	memcpy(prog, PROG, sizeof(PROG));
 	memcpy(msg, MSG, sizeof(MSG));
 }

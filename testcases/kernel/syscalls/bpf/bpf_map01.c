@@ -17,6 +17,7 @@
 #include "config.h"
 #include "tst_test.h"
 #include "lapi/bpf.h"
+#include "bpf_common.h"
 
 #define VAL_SZ 1024
 
@@ -139,6 +140,8 @@ void run(unsigned int n)
 static void setup(void)
 {
 	unsigned int i;
+
+	rlimit_bump_memlock();
 
 	memcpy(key8, "12345678", 8);
 	memset(key4, 0, 4);
