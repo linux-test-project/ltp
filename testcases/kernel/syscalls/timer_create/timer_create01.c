@@ -18,6 +18,9 @@
  *	3) SIGEV_THREAD
  *	4) SIGEV_THREAD_ID
  *	5) NULL
+ *
+ * This is also regression test for commit:
+ * f18ddc13af98 ("alarmtimer: Use EOPNOTSUPP instead of ENOTSUPP")
  */
 
 #include <signal.h>
@@ -77,7 +80,8 @@ static void run(unsigned int n)
 				&created_timer_id));
 
 		if (TST_RET != 0) {
-			if (possibly_unsupported(clock) && TST_ERR == EINVAL) {
+			if (possibly_unsupported(clock) &&
+			    (TST_ERR == EINVAL || TST_ERR == ENOTSUP)) {
 				tst_res(TPASS | TTERRNO,
 					"%s unsupported, failed as expected",
 					get_clock_str(clock));
