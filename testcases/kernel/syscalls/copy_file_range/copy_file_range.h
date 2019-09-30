@@ -7,9 +7,7 @@
 #ifndef __COPY_FILE_RANGE_H__
 #define __COPY_FILE_RANGE_H__
 
-#include <stdbool.h>
-#include <unistd.h>
-#include <sys/sysmacros.h>
+#include <stdio.h>
 #include "lapi/syscalls.h"
 #include "lapi/fs.h"
 
@@ -60,6 +58,25 @@ static int sys_copy_file_range(int fd_in, loff_t *off_in,
 				off_out, len, flags);
 	}
 	return -1;
+}
+
+static inline int verify_cross_fs_copy_support(const char *path_in, const char *path_out)
+{
+	int i, fd, fd_test;
+
+	fd = SAFE_OPEN(path_in, O_RDWR | O_CREAT, 0664);
+	/* Writing page_size * 4 of data into test file */
+	for (i = 0; i < (int)(getpagesize() * 4); i++)
+		SAFE_WRITE(1, fd, CONTENT, CONTSIZE);
+
+	fd_test = SAFE_OPEN(path_out, O_RDWR | O_CREAT, 0664);
+	TEST(sys_copy_file_range(fd, 0, fd_test, 0, CONTSIZE, 0));
+
+	SAFE_CLOSE(fd_test);
+	remove(FILE_MNTED_PATH);
+	SAFE_CLOSE(fd);
+
+	return TST_ERR == EXDEV ? 0 : 1;
 }
 
 #endif /* __COPY_FILE_RANGE_H__ */
