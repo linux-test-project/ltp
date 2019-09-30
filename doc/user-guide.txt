@@ -1,0 +1,29 @@
+LTP User Guidelines
+===================
+
+For compiling and installing and running the tests see `README.md`.
+For running LTP network tests see `testcases/network/README.md`.
+
+1. Library environment variables
+--------------------------------
+
+|==============================================================================
+| 'KCONFIG_PATH'        | The path to the kernel config file, (if not set, it tries
+                          the usual paths '/boot/config-RELEASE' or '/proc/config.gz').
+| 'LTPROOT'             | Prefix for installed LTP, the default is '/opt/ltp'.
+| 'LTP_COLORIZE_OUTPUT' | Force colorized output behaviour. 'y' or '1': always colorize
+                          'n' or '0': never colorize.
+| 'LTP_TIMEOUT_MUL'     | Multiply timeout, must be number >= 1 (> 1 is useful for
+                          slow machines to avoid unexpected timeout).
+                          Variable is also used in shell tests.
+| 'PATH'                | It's required to addjust path:
+                          `PATH="$PATH:$LTPROOT/testcases/bin"`
+| 'TMPDIR'              | Base directory for template directory, which is required by C tests
+                          `tst_test->needs_tmpdir=1` (or others) or shell 'TST_NEEDS_TMPDIR=1').
+|==============================================================================
+
+2. Colorized output
+-------------------
+
+By default LTP colorizes it's output unless using pipe or redirect to file.
+It's possible to force behaviour with 'LTP_COLORIZE_OUTPUT' environment variable.

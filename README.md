@@ -165,6 +165,9 @@ Note that all shell scripts need the `PATH` to be set. However this is not
 limited to shell scripts, many C based tests need environment variables as
 well.
 
+For more info see `doc/user-guide.txt` or online at
+https://github.com/linux-test-project/ltp/wiki/User-Guidelines.
+
 Developers corner
 =================
 
