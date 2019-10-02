@@ -171,6 +171,7 @@ usage()
     -z BIG_DEVICE   Some tests require a big unmounted block device
                     to run correctly.
     -Z  LTP_BIG_DEV_FS_TYPE The file system of the big device
+    -W ZOOFILE      Specify the zoo file used to record current test tags (default PID of this script)
 
 
 
@@ -219,10 +220,11 @@ main()
     local RANDOMRUN=0
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%m_%d-%Hh_%Mm_%Ss"`
     local scenfile=
+    local ZOOFILE=$$
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:b:B:c:C:T:d:D:ef:F:g:hi:I:K:l:m:M:No:pqQr:Rs:S:t:T:w:x:z:Z: arg
+    while getopts a:b:B:c:C:T:d:D:ef:F:g:hi:I:K:l:m:M:No:pqQr:Rs:S:t:T:w:x:z:Z:W: arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -446,6 +448,7 @@ main()
         B) LTP_DEV_FS_TYPE=$OPTARG;;
         z) BIG_DEVICE=$OPTARG;;
         Z) BIG_DEVICE_FS_TYPE=$OPTARG;;
+        W) ZOOFILE=$OPTARG;;
         \?) usage;;
         esac
     done
@@ -708,7 +711,7 @@ EOF
     fi
 
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
-    PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE $NO_KMSG -e -S $INSTANCES $DURATION -a $$ \
+    PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE $NO_KMSG -e -S $INSTANCES $DURATION -a ${ZOOFILE} \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE $TCONFCMDFILE"
     echo "COMMAND:    $PAN_COMMAND"
     if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
@@ -804,7 +807,7 @@ EOF
 	fi
     # Some tests need to run inside the "bin" directory.
     cd "${LTPROOT}/testcases/bin"
-    "${LTPROOT}/bin/ltp-pan" $QUIET_MODE $NO_KMSG -e -S $INSTANCES $DURATION -a $$ -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE $TCONFCMDFILE
+    "${LTPROOT}/bin/ltp-pan" $QUIET_MODE $NO_KMSG -e -S $INSTANCES $DURATION -a ${ZOOFILE} -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE $TCONFCMDFILE
 
     if [ $? -eq 0 ]; then
       echo "INFO: ltp-pan reported all tests PASS"
