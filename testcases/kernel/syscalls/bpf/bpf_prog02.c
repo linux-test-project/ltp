@@ -43,8 +43,8 @@ static int load_prog(int fd)
 
 		BPF_LD_MAP_FD(BPF_REG_1, fd),	        /* 1: r1 = &fd */
 		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),   /* 3: r2 = fp */
-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),  /* 4: r2 = r2 - 8 */
-		BPF_ST_MEM(BPF_DW, BPF_REG_2, 0, 0),    /* 5: *r2 = 0 */
+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),  /* 4: r2 = r2 - 4 */
+		BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 0),     /* 5: *r2 = 0 */
 		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),/* 6: map_lookup_elem */
 		BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 17), /* 7: if(!r0) goto 25 */
 		BPF_MOV64_REG(BPF_REG_3, BPF_REG_0),    /* 8: r3 = r0 */
@@ -54,8 +54,8 @@ static int load_prog(int fd)
 
 		BPF_LD_MAP_FD(BPF_REG_1, fd),	        /* 13: r1 = &fd */
 		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),   /* 15: r2 = fp */
-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),  /* 16: r2 = r2 - 8 */
-		BPF_ST_MEM(BPF_DW, BPF_REG_2, 0, 1),    /* 17: *r2 = 1 */
+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),  /* 16: r2 = r2 - 4 */
+		BPF_ST_MEM(BPF_W, BPF_REG_2, 0, 1),     /* 17: *r2 = 1 */
 		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),/* 18: map_lookup_elem */
 		BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 5),  /* 19: if(!r0) goto 25 */
 		BPF_MOV64_REG(BPF_REG_3, BPF_REG_0),    /* 20: r3 = r0 */

@@ -24,6 +24,7 @@
 #define		BPF_JMP		0x05
 
 #define BPF_SIZE(code)  ((code) & 0x18)
+#define		BPF_W		0x00    /* 32-bit */
 #define         BPF_DW		0x18	/* double word (64-bit) */
 
 #define BPF_MODE(code)  ((code) & 0xe0)
