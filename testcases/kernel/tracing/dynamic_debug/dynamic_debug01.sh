@@ -127,7 +127,7 @@ ddebug_test()
 	sed -i -e 1,`wc -l < ./dmesg.old`d ./dmesg.new
 	if grep -q -e "Kernel panic" -e "Oops" -e "general protection fault" \
 		-e "general protection handler: wrong gs" -e "\(XEN\) Panic" \
-		-e "fault" -e "warn" -e "BUG" ./dmesg.new ; then
+		-e "fault" -e "warn" -e "\<BUG\>" ./dmesg.new ; then
 		tst_res TFAIL "Issues found in dmesg!"
 	else
 		tst_res TPASS "Dynamic debug OK"
