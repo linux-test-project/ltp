@@ -50,19 +50,8 @@ void run(unsigned int n)
 	attr->value_size = VAL_SZ;
 	attr->max_entries = 1;
 
-	TEST(bpf(BPF_MAP_CREATE, attr, sizeof(*attr)));
-	if (TST_RET == -1) {
-		if (TST_ERR == EPERM) {
-			tst_brk(TCONF | TTERRNO,
-				"bpf() requires CAP_SYS_ADMIN on this system");
-		} else {
-			tst_res(TFAIL | TTERRNO, "Failed to create %s map",
-				map_types[n].name);
-			return;
-		}
-	}
+	fd = bpf_map_create(attr);
 	tst_res(TPASS, "Created %s map", map_types[n].name);
-	fd = TST_RET;
 
 	memset(attr, 0, sizeof(*attr));
 	attr->map_fd = fd;

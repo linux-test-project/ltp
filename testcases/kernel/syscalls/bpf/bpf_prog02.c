@@ -111,16 +111,7 @@ static void run(void)
 	attr->value_size = 8;
 	attr->max_entries = 2;
 
-	TEST(bpf(BPF_MAP_CREATE, attr, sizeof(*attr)));
-	if (TST_RET == -1) {
-		if (TST_ERR == EPERM) {
-			tst_brk(TCONF | TTERRNO,
-				"bpf() requires CAP_SYS_ADMIN on this system");
-		} else {
-			tst_brk(TBROK | TTERRNO, "Failed to create array map");
-		}
-	}
-	map_fd = TST_RET;
+	map_fd = bpf_map_create(attr);
 
 	prog_fd = load_prog(map_fd);
 
