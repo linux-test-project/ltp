@@ -54,6 +54,7 @@ struct linux_dirent64 {
 };
 
 #if HAVE_GETDENTS64
+#include <dirent.h>
 #include <unistd.h>
 #else
 static inline int
