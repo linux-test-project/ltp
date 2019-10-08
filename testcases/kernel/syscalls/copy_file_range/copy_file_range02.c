@@ -25,9 +25,10 @@
  * 9) Try to copy contents to a blkdev ->EINVAL
  * 10) Try to copy contents to a chardev ->EINVAL
  * 11) Try to copy contents to a FIFO ->EINVAL
- * 12) Try to copy contents to a file with length beyond
+ * 12) Try to copy contenst to a PIPE ->EINVAL
+ * 13) Try to copy contents to a file with length beyond
  *     16EiB wraps around 0 -> EOVERFLOW
- * 13) Try to copy contents to a file with target file range
+ * 14) Try to copy contents to a file with target file range
  *     beyond maximum supported file size ->EFBIG
  */
 
@@ -48,6 +49,7 @@ static int fd_dup;
 static int fd_blkdev;
 static int fd_chrdev;
 static int fd_fifo;
+static int fd_pipe[2];
 static int fd_copy;
 static int need_unlink;
 
@@ -73,6 +75,7 @@ static struct tcase {
 	{&fd_blkdev,	0,	EINVAL,		CONTSIZE,	"block device"},
 	{&fd_chrdev,	0,	EINVAL,		CONTSIZE,	"char device"},
 	{&fd_fifo,	0,	EINVAL,		CONTSIZE,	"fifo"},
+	{&fd_pipe[0],	0,	EINVAL,		CONTSIZE,	"pipe"},
 	{&fd_copy,	0,	EOVERFLOW,	ULLONG_MAX,	"max length lenght"},
 	{&fd_copy,	0,	EFBIG,		MIN_OFF,	"max file size"},
 };
@@ -163,6 +166,11 @@ static void cleanup(void)
 		SAFE_CLOSE(fd_copy);
 	if (need_unlink > 0)
 		SAFE_UNLINK(FILE_FIFO);
+
+	if (fd_pipe[0] > 0) {
+		SAFE_CLOSE(fd_pipe[0]);
+		SAFE_CLOSE(fd_pipe[1]);
+	}
 }
 
 static void setup(void)
@@ -200,6 +208,8 @@ static void setup(void)
 
 	fd_chrdev = SAFE_OPEN(FILE_CHRDEV, O_RDWR, 0600);
 	fd_fifo = SAFE_OPEN(FILE_FIFO, O_RDWR, 0600);
+
+	SAFE_PIPE(fd_pipe);
 
 	SAFE_WRITE(1, fd_src, CONTENT, CONTSIZE);
 	close(fd_src);
