@@ -2174,7 +2174,7 @@ Locating kernel modules
 +++++++++++++++++++++++
 
 The LTP build system can build kernel modules as well, setting
-'$TST_NEEDS_MODULE' to module name will cause to library to look for the
+'$TST_NEEDS_MODULE' to module name will cause the library to look for the
 module in a few possible paths.
 
 If module was found the path to it will be stored into '$TST_MODPATH'
