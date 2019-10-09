@@ -282,6 +282,35 @@ static void spawn_workers(void)
 	}
 }
 
+static void work_push_retry(int worker, const char *buf)
+{
+	int i, ret, worker_min, worker_max, usleep_time = 100;
+
+	if (worker < 0) {
+		/* pick any, try -worker first */
+		worker_min = worker * (-1);
+		worker_max = worker_count;
+	} else {
+		/* keep trying worker */
+		worker_min = worker;
+		worker_max = worker + 1;
+	}
+	i = worker_min;
+
+	for (;;) {
+		ret = queue_push(workers[i].q, buf);
+		if (ret == 1)
+			break;
+
+		if (++i >= worker_max) {
+			i = worker_min;
+			if (usleep_time < 100000)
+				usleep_time *= 2;
+			usleep(usleep_time);
+		}
+	}
+}
+
 static void stop_workers(void)
 {
 	const char stop_code[1] = { '\0' };
@@ -292,7 +321,7 @@ static void stop_workers(void)
 
 	for (i = 0; i < worker_count; i++) {
 		if (workers[i].q)
-			TST_RETRY_FUNC(queue_push(workers[i].q, stop_code), 1);
+			work_push_retry(i, stop_code);
 	}
 
 	for (i = 0; i < worker_count; i++) {
@@ -310,7 +339,7 @@ static void rep_sched_work(const char *path, int rep)
 	for (i = j = 0; i < rep; i++, j++) {
 		if (j >= worker_count)
 			j = 0;
-		TST_RETRY_FUNC(queue_push(workers[j].q, path), 1);
+		work_push_retry(-j, path);
 	}
 }
 
