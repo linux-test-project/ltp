@@ -493,8 +493,10 @@ tst_init_iface()
 	tst_res_ TINFO "initialize '$type' '$iface' interface"
 
 	if [ "$type" = "lhost" ]; then
-		ip xfrm policy flush || return $?
-		ip xfrm state flush || return $?
+		if ip xfrm state 1>/dev/null 2>&1; then
+			ip xfrm policy flush || return $?
+			ip xfrm state flush || return $?
+		fi
 		ip link set $iface down || return $?
 		ip route flush dev $iface || return $?
 		ip addr flush dev $iface || return $?
@@ -502,8 +504,10 @@ tst_init_iface()
 		return $?
 	fi
 
-	tst_rhost_run -c "ip xfrm policy flush" || return $?
-	tst_rhost_run -c "ip xfrm state flush" || return $?
+	if tst_rhost_run -c "ip xfrm state 1>/dev/null 2>&1"; then
+		tst_rhost_run -c "ip xfrm policy flush" || return $?
+		tst_rhost_run -c "ip xfrm state flush" || return $?
+	fi
 	tst_rhost_run -c "ip link set $iface down" || return $?
 	tst_rhost_run -c "ip route flush dev $iface" || return $?
 	tst_rhost_run -c "ip addr flush dev $iface" || return $?
