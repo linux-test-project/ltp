@@ -64,6 +64,11 @@ enum {
 	ACORE = 0x08,
 	AXSIG = 0x10
 };
+# if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+# define ACCT_BYTEORDER  0x80
+# elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+# define ACCT_BYTEORDER  0x00
+# endif
 #endif /* HAVE_STRUCT_ACCT_V3 */
 
 #endif /* LAPI_ACCT_H */
