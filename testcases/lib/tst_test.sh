@@ -139,25 +139,51 @@ ROD()
 	fi
 }
 
-EXPECT_PASS()
+_tst_expect_pass()
 {
+	local fnc="$1"
+	shift
+
 	tst_rod "$@"
 	if [ $? -eq 0 ]; then
 		tst_res TPASS "$@ passed as expected"
 	else
-		tst_res TFAIL "$@ failed unexpectedly"
+		$fnc TFAIL "$@ failed unexpectedly"
 	fi
 }
 
-EXPECT_FAIL()
+_tst_expect_fail()
 {
+	local fnc="$1"
+	shift
+
 	# redirect stderr since we expect the command to fail
 	tst_rod "$@" 2> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_res TPASS "$@ failed as expected"
 	else
-		tst_res TFAIL "$@ passed unexpectedly"
+		$fnc TFAIL "$@ passed unexpectedly"
 	fi
+}
+
+EXPECT_PASS()
+{
+	_tst_expect_pass tst_res "$@"
+}
+
+EXPECT_PASS_BRK()
+{
+	_tst_expect_pass tst_brk "$@"
+}
+
+EXPECT_FAIL()
+{
+	_tst_expect_fail tst_res "$@"
+}
+
+EXPECT_FAIL_BRK()
+{
+	_tst_expect_fail tst_brk "$@"
 }
 
 TST_RETRY_FN_EXP_BACKOFF()

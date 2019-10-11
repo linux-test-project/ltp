@@ -2438,7 +2438,7 @@ Note the '>' is escaped with '\', this causes that the '>' and filename are
 passed to the 'ROD' function as parameters and the 'ROD' function contains
 code to split '$@' on '>' and redirects the output to the file.
 
-EXPECT_PASS and EXPECT_FAIL
+EXPECT_PASS{,_BRK} and EXPECT_FAIL{,_BRK}
 +++++++++++++++++++++++++++
 
 [source,sh]
@@ -2452,6 +2452,9 @@ and 'tst_resm TFAIL' otherwise. 'EXPECT_FAIL' does vice versa.
 
 Output redirection rules are the same as for the 'ROD' function. In addition
 to that, 'EXPECT_FAIL' always redirects the command's stderr to '/dev/null'.
+
+There are also 'EXPECT_PASS_BRK' and 'EXPECT_FAIL_BRK', which works the same way
+except breaking a test when unexpected action happen.
 
 tst_kvcmp
 +++++++++
