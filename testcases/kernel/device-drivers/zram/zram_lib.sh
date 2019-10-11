@@ -155,7 +155,7 @@ zram_set_memlimit()
 zram_makeswap()
 {
 	tst_resm TINFO "make swap with zram device(s)"
-	tst_test_cmds mkswap swapon swapoff
+	tst_require_cmds mkswap swapon swapoff
 	local i=0
 	for i in $(seq 0 $(($dev_num - 1))); do
 		mkswap /dev/zram$i > err.log 2>&1
@@ -179,7 +179,7 @@ zram_makeswap()
 
 zram_swapoff()
 {
-	tst_test_cmds swapoff
+	tst_require_cmds swapoff
 	local i=
 	for i in $(seq 0 $dev_makeswap); do
 		swapoff /dev/zram$i > err.log 2>&1
@@ -195,7 +195,7 @@ zram_swapoff()
 
 zram_makefs()
 {
-	tst_test_cmds mkfs
+	tst_require_cmds mkfs
 	local i=0
 	for fs in $zram_filesystems; do
 		# if requested fs not supported default it to ext2

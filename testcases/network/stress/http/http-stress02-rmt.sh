@@ -24,7 +24,7 @@ TST_TOTAL=1
 
 . test.sh
 
-tst_test_cmds awk curl
+tst_require_cmds awk curl
 
 if [ $# -ne 5 ]; then
 	tst_brkm TBROK "Usage: $0 server_addr fname fsize duration connections"

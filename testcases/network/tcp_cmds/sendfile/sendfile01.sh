@@ -47,7 +47,7 @@ do_setup()
 
 	FILES=${FILES:-"ascii.sm ascii.med ascii.lg ascii.jmb"}
 
-	tst_test_cmds diff stat
+	tst_require_cmds diff stat
 
 	tst_tmpdir
 }

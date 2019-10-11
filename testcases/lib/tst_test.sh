@@ -311,7 +311,7 @@ tst_mkfs()
 		tst_brk TBROK "No device specified"
 	fi
 
-	tst_test_cmds mkfs.$fs_type
+	tst_require_cmds mkfs.$fs_type
 
 	tst_res TINFO "Formatting $device with $fs_type extra opts='$fs_opts'"
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
@@ -333,7 +333,7 @@ tst_cmd_available()
 	fi
 }
 
-tst_test_cmds()
+tst_require_cmds()
 {
 	local cmd
 	for cmd in $*; do
@@ -513,7 +513,7 @@ tst_run()
 	[ "$TST_DISABLE_APPARMOR" = 1 ] && tst_disable_apparmor
 	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
 
-	tst_test_cmds $TST_NEEDS_CMDS
+	tst_require_cmds $TST_NEEDS_CMDS
 	tst_test_drivers $TST_NEEDS_DRIVERS
 
 	if [ -n "$TST_MIN_KVER" ]; then
@@ -577,7 +577,7 @@ tst_run()
 	#TODO check that test reports some results for each test function call
 	while [ $TST_ITERATIONS -gt 0 ]; do
 		if [ -n "$TST_TEST_DATA" ]; then
-			tst_test_cmds cut tr wc
+			tst_require_cmds cut tr wc
 			_tst_max=$(( $(echo $TST_TEST_DATA | tr -cd "$TST_TEST_DATA_IFS" | wc -c) +1))
 			for _tst_i in $(seq $_tst_max); do
 				_tst_data="$(echo "$TST_TEST_DATA" | cut -d"$TST_TEST_DATA_IFS" -f$_tst_i)"

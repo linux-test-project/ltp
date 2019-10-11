@@ -28,7 +28,7 @@ server_ipaddr="$1"
 filename="$2"
 filesize="$3"
 
-tst_test_cmds curl
+tst_require_cmds curl
 
 echo $server_ipaddr | grep ':' > /dev/null
 if [ $? -eq 0 ]; then

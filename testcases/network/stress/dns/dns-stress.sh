@@ -43,7 +43,7 @@ cleanup()
 common_setup()
 {
 	tst_require_root
-	tst_test_cmds named dig
+	tst_require_cmds named dig
 
 	if [ "$TST_IPV6" ]; then
 		record="AAAA"

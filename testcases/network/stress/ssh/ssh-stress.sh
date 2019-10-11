@@ -46,7 +46,7 @@ setup()
 	trap "tst_brkm TBROK 'test interrupted'" INT
 
 	tst_require_root
-	tst_test_cmds pkill sshd ssh od
+	tst_require_cmds pkill sshd ssh od
 
 	# Get the sshd command with absolute path
 	SSHD=$(which sshd)

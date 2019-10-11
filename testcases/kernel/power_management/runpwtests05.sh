@@ -35,7 +35,7 @@ else
 	max_sched_smt=1
 fi
 
-tst_test_cmds python3
+tst_require_cmds python3
 
 if ! grep sched_debug -qw /proc/cmdline ; then
 	tst_brkm TCONF "Kernel cmdline parameter 'sched_debug' needed," \

@@ -16,7 +16,7 @@ setup()
 		cmd="tracepath$TST_IPVER"
 		tst_cmd_available $cmd || cmd="tracepath -6"
 	fi
-	tst_test_cmds $(echo $cmd | cut -f 1 -d' ')
+	tst_require_cmds $(echo $cmd | cut -f 1 -d' ')
 
 	if $cmd -V >/dev/null 2>&1; then
 		tst_res TINFO "traceroute version:"

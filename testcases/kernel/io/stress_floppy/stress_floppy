@@ -40,7 +40,7 @@ setup()
 {
 	tst_tmpdir
 
-	tst_test_cmds fdformat tar dump cpio dd mkfs mkdosfs
+	tst_require_cmds fdformat tar dump cpio dd mkfs mkdosfs
 
 	TCtmp=$(pwd)
 }

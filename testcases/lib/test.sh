@@ -151,7 +151,7 @@ tst_rmdir()
 #
 # Checks if commands passed as arguments exists
 #
-tst_test_cmds()
+tst_require_cmds()
 {
 	local cmd
 	for cmd in $*; do

@@ -2154,7 +2154,7 @@ TST_NEEDS_CMDS="modinfo modprobe"
 Setting '$TST_NEEDS_CMDS' to a string listing required commands will check for
 existence each of them and exits the test with 'TCONF' on first missing.
 
-Alternatively the 'tst_test_cmds()' function can be used to do the same on
+Alternatively the 'tst_require_cmds()' function can be used to do the same on
 runtime, since sometimes we need to the check at runtime too.
 
 'tst_check_cmds()' can be used for requirements just for a particular test

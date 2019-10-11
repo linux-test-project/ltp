@@ -38,7 +38,7 @@ TST_USE_LEGACY_API=1
 
 setup()
 {
-	tst_test_cmds netstat
+	tst_require_cmds netstat
 	tst_tmpdir
 }
 

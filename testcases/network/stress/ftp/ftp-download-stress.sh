@@ -42,7 +42,7 @@ cleanup()
 setup()
 {
 	tst_require_root
-	tst_test_cmds pkill vsftpd
+	tst_require_cmds pkill vsftpd
 	tst_tmpdir
 
 	tst_resm TINFO "run FTP over IPv$TST_IPVER"

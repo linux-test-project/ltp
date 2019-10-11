@@ -30,7 +30,7 @@ setup()
 
 	tst_tmpdir
 
-	tst_test_cmds xinetd diff telnet
+	tst_require_cmds xinetd diff telnet
 
 	check_addr="127.0.0.1"
 	ip a | grep -q inet6 && check_addr="$check_addr ::1"

@@ -24,7 +24,7 @@ TST_TOTAL=1
 
 . test.sh
 
-tst_test_cmds awk killall
+tst_require_cmds awk killall
 
 server_ipaddr="$1"
 filename="$2"

@@ -37,7 +37,7 @@ parse_args()
 setup()
 {
 	if [ -n "$TST_FS_TYPE" ]; then
-		tst_test_cmds mkfs.${TST_FS_TYPE}
+		tst_require_cmds mkfs.${TST_FS_TYPE}
 	fi
 
 	ROD_SILENT mkdir -p mntpoint

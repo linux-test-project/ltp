@@ -26,7 +26,7 @@ MCAST_IPV6_ADDR="${MCAST_IPV6_ADDR_PREFIX}:1"
 netstress_setup()
 {
 	TST_NEEDS_ROOT=1
-	tst_test_cmds pgrep pkill
+	tst_require_cmds pgrep pkill
 }
 
 # Cleanup for tests using netstress.

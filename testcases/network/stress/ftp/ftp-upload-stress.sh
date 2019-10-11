@@ -42,7 +42,7 @@ cleanup()
 setup()
 {
 	tst_require_root
-	tst_test_cmds pkill vsftpd
+	tst_require_cmds pkill vsftpd
 	tst_tmpdir
 
 	tst_resm TINFO "run FTP over IPv$TST_IPVER"
@@ -57,7 +57,7 @@ setup()
 	getenforce 2> /dev/null | grep -q Enforcing
 	if [ $? -eq 0 ]; then
 		tst_resm TINFO "configuring SELinux FTP parameters"
-		tst_test_cmds chcon setsebool
+		tst_require_cmds chcon setsebool
 		setsebool allow_ftpd_anon_write 1 || \
 			tst_brkm TBROK "Failed to allow ftpd anonymous write"
 		chcon -R -t public_content_rw_t $FTP_UPLOAD_DIR || \

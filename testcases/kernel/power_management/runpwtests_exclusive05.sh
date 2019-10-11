@@ -35,7 +35,7 @@ else
 	max_sched_smt=1
 fi
 
-tst_test_cmds python3
+tst_require_cmds python3
 
 hyper_threaded=$(is_hyper_threaded)
 multi_socket=$(is_multi_socket)

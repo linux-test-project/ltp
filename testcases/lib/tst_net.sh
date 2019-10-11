@@ -111,7 +111,7 @@ init_ltp_netspace()
 	local pid
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
-		tst_test_cmds ip
+		tst_require_cmds ip
 		tst_require_root_
 
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
@@ -292,7 +292,7 @@ tst_get_ifaces()
 # Get count of test interfaces for local/remote host.
 tst_get_ifaces_cnt()
 {
-	tst_test_cmds awk
+	tst_require_cmds awk
 	local type="${1:-lhost}"
 	echo "$(tst_get_ifaces $type)" | awk '{print NF}'
 }
@@ -326,7 +326,7 @@ tst_get_hwaddrs()
 # LINK: link number starting from 0. Default value is '0'.
 tst_hwaddr()
 {
-	tst_test_cmds awk
+	tst_require_cmds awk
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -342,7 +342,7 @@ tst_hwaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_iface()
 {
-	tst_test_cmds awk
+	tst_require_cmds awk
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"
@@ -576,7 +576,7 @@ tst_del_ipaddr()
 # LINK: link number starting from 0. Default value is '0'.
 tst_restore_ipaddr()
 {
-	tst_test_cmds ip
+	tst_require_cmds ip
 	tst_require_root_
 
 	local type="${1:-lhost}"
@@ -746,7 +746,7 @@ tst_ping()
 	local ret=0
 
 	echo "$dst_addr" | grep -q ':' && cmd="ping6"
-	tst_test_cmds $cmd
+	tst_require_cmds $cmd
 
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do

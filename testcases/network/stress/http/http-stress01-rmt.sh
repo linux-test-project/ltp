@@ -24,7 +24,7 @@ TST_TOTAL=1
 
 . test.sh
 
-tst_test_cmds awk curl
+tst_require_cmds awk curl
 
 # Check the arguments
 [ $# -ne 3 ] && tst_brkm TBROK "Usage: $0 server_ipaddr filename filesize"

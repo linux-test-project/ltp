@@ -25,7 +25,7 @@ TST_USE_LEGACY_API=1
 
 setup()
 {
-	tst_test_cmds rlogin expect
+	tst_require_cmds rlogin expect
 
 	if [ -z $RUSER ]; then
 		RUSER=root

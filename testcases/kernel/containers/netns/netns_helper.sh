@@ -110,7 +110,7 @@ tst_check_iproute()
 netns_setup()
 {
 	tst_require_root
-	tst_test_cmds ip modprobe
+	tst_require_cmds ip modprobe
 
 	modprobe veth > /dev/null 2>&1
 
@@ -139,7 +139,7 @@ netns_setup()
 		;;
 	ioctl)
 		USE_IFCONFIG=1
-		tst_test_cmds ifconfig
+		tst_require_cmds ifconfig
 		;;
 	*)
 		tst_brkm TBROK \
