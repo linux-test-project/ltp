@@ -353,7 +353,7 @@ tst_check_cmds()
 	return 0
 }
 
-tst_test_drivers()
+tst_require_drivers()
 {
 	[ $# -eq 0 ] && return 0
 
@@ -514,7 +514,7 @@ tst_run()
 	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
 
 	tst_require_cmds $TST_NEEDS_CMDS
-	tst_test_drivers $TST_NEEDS_DRIVERS
+	tst_require_drivers $TST_NEEDS_DRIVERS
 
 	if [ -n "$TST_MIN_KVER" ]; then
 		tst_kvcmp -lt "$TST_MIN_KVER" && \
