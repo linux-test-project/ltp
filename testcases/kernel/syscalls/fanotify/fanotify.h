@@ -126,6 +126,13 @@ struct fanotify_event_info_header {
 };
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
+#ifndef __kernel_fsid_t
+typedef struct {
+	int	val[2];
+} lapi_fsid_t;
+#define __kernel_fsid_t lapi_fsid_t
+#endif
+
 struct fanotify_event_info_fid {
 	struct fanotify_event_info_header hdr;
 	__kernel_fsid_t fsid;
