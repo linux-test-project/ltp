@@ -54,6 +54,12 @@ void run(void)
 		TEST(tst_crypto_del_alg(&ses, &a));
 		if (TST_RET)
 			tst_brk(TBROK | TRERRNO, "del_alg");
+
+		if (tst_timeout_remaining() < 10) {
+			tst_res(TINFO, "Time limit reached, stopping at "
+				"%d iterations", i);
+			break;
+		}
 	}
 
 	tst_res(TPASS, "Nothing bad appears to have happened");
