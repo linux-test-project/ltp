@@ -52,6 +52,7 @@ Usage is: ./performance_counter02  [-v]
 The -v flag makes it print out the values of each counter.
 */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -72,6 +73,7 @@ The -v flag makes it print out the values of each counter.
 
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/cpuset.h"
 #include "lapi/syscalls.h"
 
 char *TCID = "perf_event_open02";
@@ -221,6 +223,23 @@ static void setup(void)
 {
 	int i;
 	struct perf_event_attr tsk_event, hw_event;
+
+#ifdef HAVE_SCHED_GETCPU
+	int cpu = sched_getcpu();
+	size_t mask_size;
+	cpu_set_t *mask;
+
+	if (cpu == -1)
+		tst_brkm(TBROK | TERRNO, NULL, "sched_getcpu() failed");
+
+	mask = CPU_ALLOC(cpu + 1);
+	mask_size = CPU_ALLOC_SIZE(cpu + 1);
+	CPU_ZERO_S(mask_size, mask);
+	CPU_SET(cpu, mask);
+	if (sched_setaffinity(0, mask_size, mask) == -1)
+		tst_brkm(TBROK | TERRNO, NULL, "sched_setaffinity() failed");
+	CPU_FREE(mask);
+#endif
 
 	/*
 	 * According to perf_event_open's manpage, the official way of
