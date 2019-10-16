@@ -94,11 +94,17 @@ int main(void)
 
 	valuensec = tsres.tv_nsec;
 	intervalnsec = 2 * valuensec;
-	//expectedoverruns = (1000000000 - valuensec) / intervalnsec;
 	expectedoverruns = 1000000000 / intervalnsec - 1;
 
+	/*
+	 * waking up from sleep isn't instant, we can overshoot.
+	 * Allow up to ~50ms worth of extra overruns.
+	 */
+	fudge = 50000000 / intervalnsec + 1;
+
 	printf("value = %d sec, interval = %d nsec, "
-	       "expected overruns = %d\n", 1, intervalnsec, expectedoverruns);
+	       "expected overruns = %d, fudge = %d\n", 1,
+	       intervalnsec, expectedoverruns, fudge);
 
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = intervalnsec;
@@ -146,7 +152,6 @@ int main(void)
 	 * extra expiries after the nanosleep completes so do
 	 * a range check.
 	 */
-	fudge = expectedoverruns / 100;
 	if (overruns >= expectedoverruns && overruns < expectedoverruns + fudge) {
 		printf("Test PASSED\n");
 		return PTS_PASS;
