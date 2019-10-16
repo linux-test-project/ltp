@@ -13,6 +13,7 @@
  *    -1 and set errno to EPERM
  */
 
+#define _GNU_SOURCE
 #include "config.h"
 #include <sys/ioctl.h>
 #include <sys/types.h>
