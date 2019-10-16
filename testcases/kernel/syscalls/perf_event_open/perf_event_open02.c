@@ -324,6 +324,12 @@ static void verify(void)
 
 	do_work();
 
+	/* stop groups with hw counters first before tsk0 */
+	for (i = 0; i < n; i++) {
+		ioctl(hwfd[i], PERF_EVENT_IOC_DISABLE);
+		ioctl(tskfd[i], PERF_EVENT_IOC_DISABLE);
+	}
+
 	if (prctl(PR_TASK_PERF_EVENTS_DISABLE) == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup,
 			 "prctl(PR_TASK_PERF_EVENTS_DISABLE) failed");
