@@ -108,12 +108,12 @@ tst_require_root_()
 
 init_ltp_netspace()
 {
-	tst_test_cmds ip
-	tst_require_root_
-
-	local pid=
+	local pid
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
+		tst_test_cmds ip
+		tst_require_root_
+
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD ns_create net,mnt)"
 		mkdir -p /var/run/netns
