@@ -36,6 +36,7 @@ struct tst_test *tst_test;
 static const char *tid;
 static int iterations = 1;
 static float duration = -1;
+static float timeout_mul = -1;
 static pid_t main_pid, lib_pid;
 static int mntpoint_mounted;
 static int ovl_mounted;
@@ -1093,25 +1094,43 @@ unsigned int tst_timeout_remaining(void)
 	return 0;
 }
 
+unsigned int tst_multiply_timeout(unsigned int timeout)
+{
+	char *mul;
+	int ret;
+
+	if (timeout_mul == -1) {
+		mul = getenv("LTP_TIMEOUT_MUL");
+		if (mul) {
+			if ((ret = tst_parse_float(mul, &timeout_mul, 1, 10000))) {
+				tst_brk(TBROK, "Failed to parse LTP_TIMEOUT_MUL: %s",
+						tst_strerrno(ret));
+			}
+		} else {
+			timeout_mul = 1;
+		}
+	}
+	if (timeout_mul < 1)
+		tst_brk(TBROK, "LTP_TIMEOUT_MUL must to be int >= 1! (%.2f)",
+				timeout_mul);
+
+	if (timeout < 1)
+		tst_brk(TBROK, "timeout must to be >= 1! (%d)", timeout);
+
+	return timeout * timeout_mul;
+}
+
 void tst_set_timeout(int timeout)
 {
-	char *mul = getenv("LTP_TIMEOUT_MUL");
-
 	if (timeout == -1) {
 		tst_res(TINFO, "Timeout per run is disabled");
 		return;
 	}
 
-	results->timeout = timeout;
+	if (timeout < 1)
+		tst_brk(TBROK, "timeout must to be >= 1! (%d)", timeout);
 
-	if (mul) {
-		float m = atof(mul);
-
-		if (m < 1)
-			tst_brk(TBROK, "Invalid timeout multiplier '%s'", mul);
-
-		results->timeout = results->timeout * m + 0.5;
-	}
+	results->timeout = tst_multiply_timeout(timeout);
 
 	tst_res(TINFO, "Timeout per run is %uh %02um %02us",
 		results->timeout/3600, (results->timeout%3600)/60,
