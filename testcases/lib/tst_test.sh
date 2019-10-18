@@ -190,8 +190,10 @@ TST_RETRY_FN_EXP_BACKOFF()
 {
 	local tst_fun="$1"
 	local tst_exp=$2
-	local tst_sec=$(expr $3 \* 1000000)
+	local tst_sec=$(($3 * 1000000))
 	local tst_delay=1
+
+	_tst_multiply_timeout tst_sec
 
 	if [ $# -ne 3 ]; then
 		tst_brk TBROK "TST_RETRY_FN_EXP_BACKOFF expects 3 parameters"
@@ -402,16 +404,12 @@ _tst_rescmp()
 	fi
 }
 
-
-_tst_setup_timer()
+_tst_multiply_timeout()
 {
-	TST_TIMEOUT=${TST_TIMEOUT:-300}
-	LTP_TIMEOUT_MUL=${LTP_TIMEOUT_MUL:-1}
+	[ $# -ne 1 ] && tst_brk TBROK "_tst_multiply_timeout expect 1 parameter"
+	eval "local timeout=\$$1"
 
-	if [ "$TST_TIMEOUT" = -1 ]; then
-		tst_res TINFO "Timeout per run is disabled"
-		return
-	fi
+	LTP_TIMEOUT_MUL=${LTP_TIMEOUT_MUL:-1}
 
 	local err="LTP_TIMEOUT_MUL must be number >= 1!"
 
@@ -422,13 +420,29 @@ _tst_setup_timer()
 		LTP_TIMEOUT_MUL=$((LTP_TIMEOUT_MUL+1))
 		tst_res TINFO "ceiling LTP_TIMEOUT_MUL to $LTP_TIMEOUT_MUL"
 	fi
+
 	[ "$LTP_TIMEOUT_MUL" -ge 1 ] || tst_brk TBROK "$err ($LTP_TIMEOUT_MUL)"
+	[ "$timeout" -ge 1 ] || tst_brk TBROK "timeout need to be >= 1 ($timeout)"
+
+	eval "$1='$((timeout * LTP_TIMEOUT_MUL))'"
+	return 0
+}
+
+_tst_setup_timer()
+{
+	TST_TIMEOUT=${TST_TIMEOUT:-300}
+
+	if [ "$TST_TIMEOUT" = -1 ]; then
+		tst_res TINFO "Timeout per run is disabled"
+		return
+	fi
 
 	if ! tst_is_int "$TST_TIMEOUT" || [ "$TST_TIMEOUT" -lt 1 ]; then
 		tst_brk TBROK "TST_TIMEOUT must be int >= 1! ($TST_TIMEOUT)"
 	fi
 
-	local sec=$((TST_TIMEOUT * LTP_TIMEOUT_MUL))
+	local sec=$TST_TIMEOUT
+	_tst_multiply_timeout sec
 	local h=$((sec / 3600))
 	local m=$((sec / 60 % 60))
 	local s=$((sec % 60))
