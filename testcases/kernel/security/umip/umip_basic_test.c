@@ -47,7 +47,7 @@ static void asm_sidt(void)
 	unsigned char val[IDT_LEN];
 
 	memset(val, 0, sizeof(val));
-	tst_res(TINFO, "TEST sidt, sidt result save at [%p]\n", val);
+	tst_res(TINFO, "TEST sidt, sidt result save at [%p]", val);
 	asm volatile("sidt %0\n" : "=m" (val));
 	exit(0);
 }
@@ -56,7 +56,7 @@ static void asm_sldt(void)
 {
 	unsigned long val;
 
-	tst_res(TINFO, "TEST sldt, sldt result save at [%p]\n", &val);
+	tst_res(TINFO, "TEST sldt, sldt result save at [%p]", &val);
 	asm volatile("sldt %0\n" : "=m" (val));
 	exit(0);
 }
@@ -65,7 +65,7 @@ static void asm_smsw(void)
 {
 	unsigned long val;
 
-	tst_res(TINFO, "TEST smsw, smsw result save at [%p]\n", &val);
+	tst_res(TINFO, "TEST smsw, smsw result save at [%p]", &val);
 	asm volatile("smsw %0\n" : "=m" (val));
 	exit(0);
 }
@@ -74,7 +74,7 @@ static void asm_str(void)
 {
 	unsigned long val;
 
-	tst_res(TINFO, "TEST str, str result save at [%p]\n", &val);
+	tst_res(TINFO, "TEST str, str result save at [%p]", &val);
 	asm volatile("str %0\n" : "=m" (val));
 	exit(0);
 }
