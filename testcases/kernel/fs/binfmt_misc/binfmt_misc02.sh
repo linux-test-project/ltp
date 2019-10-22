@@ -26,7 +26,7 @@ TST_NEEDS_CMDS="which cat head"
 recognised_unrecognised()
 {
 	local file=$1
-	local string=$2
+	local string="$2"
 
 	eval $file >temp 2>&1
 	if [ $? -ne 0 ] || ! grep -q "$string" temp; then
@@ -52,7 +52,7 @@ recognised_unrecognised()
 unrecognised()
 {
 	local file=$1
-	local string=$2
+	local string="$2"
 
 	eval $file >temp 2>&1
 	if [ $? -eq 0 ] || grep -q "$string" temp; then
