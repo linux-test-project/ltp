@@ -105,4 +105,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.forks_child = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "21d4120ec6f5"},
+		{}
+	}
 };

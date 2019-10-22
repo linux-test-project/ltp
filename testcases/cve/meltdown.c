@@ -377,7 +377,11 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
 	.cleanup = cleanup,
-	.min_kver = "2.6.32"
+	.min_kver = "2.6.32",
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2017-5754"},
+		{}
+	}
 };
 
 #else /* #if defined(__x86_64__) || defined(__i386__) */

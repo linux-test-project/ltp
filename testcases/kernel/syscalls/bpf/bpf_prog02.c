@@ -181,5 +181,9 @@ static struct tst_test test = {
 		{&attr, .size = sizeof(*attr)},
 		{&msg, .size = sizeof(MSG)},
 		{},
+	},
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "3612af783cf5"},
+		{}
 	}
 };

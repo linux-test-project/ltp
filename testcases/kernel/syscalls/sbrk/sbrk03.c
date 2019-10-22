@@ -66,4 +66,8 @@ static void sbrk_test(void)
 
 static struct tst_test test = {
 	.test_all = sbrk_test,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "473a06572fcd"},
+		{}
+	}
 };

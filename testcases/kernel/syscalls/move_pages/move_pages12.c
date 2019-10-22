@@ -330,6 +330,12 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcases),
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "e66f17ff7177"},
+		{"linux-git", "c9d398fa2378"},
+		{"linux-git", "4643d67e8cb0"},
+		{}
+	}
 };
 
 #else

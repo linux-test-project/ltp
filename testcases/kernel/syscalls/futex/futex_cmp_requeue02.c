@@ -73,4 +73,9 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = verify_futex_cmp_requeue,
 	.tcnt = ARRAY_SIZE(tcases),
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2018-6927"},
+		{"linux-git", "fbe0e839d1e2"},
+		{}
+	}
 };

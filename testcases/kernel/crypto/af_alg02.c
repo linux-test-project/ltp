@@ -59,4 +59,9 @@ static struct tst_test test = {
 	.test_all = run,
 	.timeout = 20,
 	.needs_checkpoints = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "ecaaab564978"},
+		{"CVE", "2017-17805"},
+		{}
+	}
 };

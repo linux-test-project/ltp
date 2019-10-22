@@ -41,4 +41,8 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2018-1000001"},
+		{}
+	}
 };
