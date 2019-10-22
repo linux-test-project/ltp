@@ -108,7 +108,8 @@ print_dhcp_log()
 
 test01()
 {
-	local wicked
+	local wicked_cfg="/etc/sysconfig/network/ifcfg-$iface1"
+	local wicked_cleanup
 
 	tst_res TINFO "testing DHCP server $dhcp_name: $(print_dhcp_version)"
 	tst_res TINFO "using DHCP client: $(dhclient --version 2>&1)"
@@ -130,15 +131,28 @@ test01()
 
 	if [ $HAVE_SYSTEMCTL -eq 1 ] && \
 		systemctl --no-pager -p Id show network.service | grep -q Id=wicked.service; then
-		tst_res TINFO "temporarily disabling wicked"
-		wicked=1
-		systemctl disable wicked
+		tst_res TINFO "wicked is running, don't start dhclient"
+		if [ ! -f "$wicked_cfg" ]; then
+			cat <<EOF > $wicked_cfg
+BOOTPROTO='dhcp'
+NAME='LTP card'
+STARTMODE='auto'
+USERCONTROL='no'
+EOF
+			wicked_cleanup=1
+		else
+			tst_res TINFO "wicked config file $wicked_cfg already exist"
+		fi
+
+		tst_res TINFO "restarting wicked"
+		systemctl restart wicked
+	else
+		tst_res TINFO "starting dhclient -$TST_IPVER $iface1"
+		dhclient -$TST_IPVER $iface1 || tst_brk TBROK "dhclient failed"
 	fi
-	tst_res TINFO "starting dhclient -$TST_IPVER $iface1"
-	dhclient -$TST_IPVER $iface1 || tst_brk TBROK "dhclient failed"
 
 	# check that we get configured ip address
-	ip addr show $iface1 | grep $ip_addr_check > /dev/null
+	ip addr show $iface1 | grep -q $ip_addr_check
 	if [ $? -eq 0 ]; then
 		tst_res TPASS "'$ip_addr_check' configured by DHCPv$TST_IPVER"
 	else
@@ -151,10 +165,7 @@ test01()
 		fi
 	fi
 
-	if [ "$wicked" ]; then
-		tst_res TINFO "reenabling wicked"
-		systemctl enable wicked
-	fi
+	[ "$wicked_cleanup" ] && rm -f $wicked_cfg
 
 	stop_dhcp
 }
