@@ -115,12 +115,12 @@ static int queue_pop(struct queue *q, char *buf)
 
 		if (++j >= BUFFER_SIZE - 1)
 			tst_brk(TBROK, "Buffer is too small for path");
-		if (++i >= QUEUE_SIZE)
-			i = 0;
+
+		 i = (i + 1) % QUEUE_SIZE;
 	}
 
 	buf[j] = '\0';
-	tst_atomic_store(i + 1, &q->front);
+	tst_atomic_store((i + 1) % QUEUE_SIZE, &q->front);
 
 	return 1;
 }
@@ -133,8 +133,8 @@ static int queue_push(struct queue *q, const char *buf)
 	do {
 		q->data[i] = buf[j];
 
-		if (++i >= QUEUE_SIZE)
-			i = 0;
+		i = (i + 1) % QUEUE_SIZE;
+
 		if (i == front)
 			return 0;
 
