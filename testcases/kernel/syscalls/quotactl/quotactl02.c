@@ -17,24 +17,17 @@
  *    quota limits.
  */
 #define _GNU_SOURCE
+#include "config.h"
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/quota.h>
-#include "config.h"
-
-#if defined(HAVE_QUOTAV2) || defined(HAVE_QUOTAV1)
-# include <sys/quota.h>
-#endif
-
-#if defined(HAVE_XFS_QUOTA)
-# include <xfs/xqm.h>
-#endif
 
 #include "tst_test.h"
 #include "lapi/quotactl.h"
 
-#if defined(HAVE_XFS_QUOTA) && (defined(HAVE_QUOTAV2) || defined(HAVE_QUOTAV1))
+#ifdef HAVE_XFS_QUOTA
+# include <xfs/xqm.h>
 static void check_qoff(int, char *);
 static void check_qon(int, char *);
 static void check_qlim(int, char *);
@@ -69,8 +62,8 @@ static void check_qoff(int subcmd, char *desp)
 	int res;
 	struct fs_quota_stat res_qstat;
 
-	res = quotactl(QCMD(subcmd, USRQUOTA), tst_device->dev,
-	               test_id, (void*) &res_qstat);
+	res = quotactl(QCMD(subcmd, USRQUOTA), tst_device->dev, test_id,
+		       (void *) &res_qstat);
 	if (res == -1) {
 		tst_res(TFAIL | TERRNO,
 			"quotactl() failed to get xfs quota off status");
@@ -91,7 +84,7 @@ static void check_qon(int subcmd, char *desp)
 	struct fs_quota_stat res_qstat;
 
 	res = quotactl(QCMD(subcmd, USRQUOTA), tst_device->dev,
-	               test_id, (void*) &res_qstat);
+		       test_id, (void *) &res_qstat);
 	if (res == -1) {
 		tst_res(TFAIL | TERRNO,
 			"quotactl() failed to get xfs quota on status");
@@ -114,7 +107,7 @@ static void check_qlim(int subcmd, char *desp)
 	res_dquota.d_rtb_softlimit = 0;
 
 	res = quotactl(QCMD(subcmd, USRQUOTA), tst_device->dev,
-	               test_id, (void*) &res_dquota);
+		       test_id, (void *) &res_dquota);
 	if (res == -1) {
 		if (errno == EINVAL) {
 			tst_brk(TCONF | TERRNO,
@@ -126,20 +119,20 @@ static void check_qlim(int subcmd, char *desp)
 	}
 
 	if (res_dquota.d_id != test_id) {
-		tst_res(TFAIL, "quotactl() got unexpected user id %u,"
-			" expected %u", res_dquota.d_id, test_id);
+		tst_res(TFAIL, "quotactl() got unexpected user id %u, expected %u",
+				res_dquota.d_id, test_id);
 		return;
 	}
 
 	if (res_dquota.d_rtb_hardlimit != set_dquota.d_rtb_hardlimit) {
-		tst_res(TFAIL, "quotactl() got unexpected rtb soft limit %llu,"
-			" expected %llu", res_dquota.d_rtb_hardlimit,
+		tst_res(TFAIL, "quotactl() got unexpected rtb soft limit %llu, expected %llu",
+				res_dquota.d_rtb_hardlimit,
 			set_dquota.d_rtb_hardlimit);
 		return;
 	}
 
-	tst_res(TPASS, "quoactl() succeeded to set and use %s to get xfs disk "
-		"quota limits", desp);
+	tst_res(TPASS, "quoactl() succeeded to set and use %s to get xfs disk quota limits",
+			desp);
 }
 
 static void setup(void)
@@ -172,5 +165,5 @@ static struct tst_test test = {
 	.setup = setup,
 };
 #else
-	TST_TEST_TCONF("This system didn't support quota or xfs quota");
+	TST_TEST_TCONF("System doesn't support xfs quota");
 #endif

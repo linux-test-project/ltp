@@ -24,24 +24,17 @@
  */
 
 #define _GNU_SOURCE
+#include "config.h"
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/quota.h>
-#include "config.h"
-
-#if defined(HAVE_QUOTAV2) || defined(HAVE_QUOTAV1)
-# include <sys/quota.h>
-#endif
-
-#if defined(HAVE_XFS_QUOTA)
-# include <xfs/xqm.h>
-#endif
 
 #include "tst_test.h"
 #include "lapi/quotactl.h"
 
-#if defined(HAVE_XFS_QUOTA) && (defined(HAVE_QUOTAV2) || defined(HAVE_QUOTAV1))
+#ifdef HAVE_XFS_QUOTA
+# include <xfs/xqm.h>
 
 static const char mntpoint[] = "mnt_point";
 static uint32_t test_id = 0xfffffffc;
@@ -84,5 +77,5 @@ static struct tst_test test = {
 };
 
 #else
-	TST_TEST_TCONF("This system didn't support quota or xfs quota");
+	TST_TEST_TCONF("System doesn't support xfs quota");
 #endif
