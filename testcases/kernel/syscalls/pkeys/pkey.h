@@ -9,6 +9,7 @@
 
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "lapi/mmap.h"
 
 #ifndef PKEY_DISABLE_ACCESS
 # define PKEY_DISABLE_ACCESS 0x1
