@@ -726,9 +726,15 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 {
 	int rval;
 
-	rval = mount(source, target, filesystemtype, mountflags, data);
-	if (!rval)
-		return 0;
+	/*
+	 * Don't try using the kernel's NTFS driver when mounting NTFS, since
+	 * the kernel's NTFS driver doesn't have proper write support.
+	 */
+	if (strcmp(filesystemtype, "ntfs")) {
+		rval = mount(source, target, filesystemtype, mountflags, data);
+		if (!rval)
+			return 0;
+	}
 
 	/*
 	 * The FUSE filesystem executes mount.fuse helper, which tries to
