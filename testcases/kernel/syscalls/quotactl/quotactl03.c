@@ -33,7 +33,7 @@
 #include "tst_test.h"
 #include "lapi/quotactl.h"
 
-#ifdef HAVE_XFS_QUOTA
+#ifdef HAVE_XFS_XQM_H
 # include <xfs/xqm.h>
 
 static const char mntpoint[] = "mnt_point";
@@ -48,27 +48,31 @@ static void verify_quota(void)
 	TEST(quotactl(QCMD(Q_XGETNEXTQUOTA, USRQUOTA), tst_device->dev,
 		test_id, (void *)&res_dquota));
 	if (TST_RET != -1) {
-		tst_res(TFAIL, "quotactl() found the next active ID:"
-			" %u unexpectedly", res_dquota.d_id);
+		tst_res(TFAIL, "quotactl() found the next active ID: %u unexpectedly",
+				res_dquota.d_id);
 		return;
 	}
 
-	if (TST_ERR == EINVAL) {
+	if (TST_ERR == EINVAL)
 		tst_brk(TCONF | TTERRNO,
 			"Q_XGETNEXTQUOTA wasn't supported in quotactl()");
-	}
 
-	if (TST_ERR != ENOENT) {
-		tst_res(TFAIL | TTERRNO, "quotactl() failed unexpectedly with"
-			" %s expected ENOENT", tst_strerrno(TST_ERR));
-	} else {
+	if (TST_ERR != ENOENT)
+		tst_res(TFAIL | TTERRNO, "quotactl() failed unexpectedly with %s expected ENOENT",
+				tst_strerrno(TST_ERR));
+	else
 		tst_res(TPASS, "quotactl() failed with ENOENT as expected");
-	}
 }
+
+static const char *kconfigs[] = {
+	"CONFIG_XFS_QUOTA",
+	NULL
+};
 
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
+	.needs_kconfigs = kconfigs,
 	.test_all = verify_quota,
 	.mount_device = 1,
 	.dev_fs_type = "xfs",
@@ -77,5 +81,5 @@ static struct tst_test test = {
 };
 
 #else
-	TST_TEST_TCONF("System doesn't support xfs quota");
+	TST_TEST_TCONF("System doesn't have <xfs/xqm.h>");
 #endif

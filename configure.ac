@@ -62,6 +62,7 @@ AC_CHECK_HEADERS([ \
     sys/ustat.h \
     sys/utsname.h \
     sys/xattr.h \
+    xfs/xqm.h \
 ])
 
 AC_CHECK_FUNCS([ \
@@ -254,7 +255,6 @@ LTP_CHECK_TIMERFD
 test "x$with_tirpc" = xyes && LTP_CHECK_TIRPC
 LTP_CHECK_TPACKET_V3
 LTP_CHECK_UNAME_DOMAINNAME
-LTP_CHECK_XFS_QUOTACTL
 LTP_CHECK_X_TABLES
 LTP_DETECT_HOST_CPU
 
