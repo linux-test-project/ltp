@@ -28,12 +28,19 @@
 
 NR_CPUS=`tst_ncpus`
 if [ -f "/sys/devices/system/node/has_high_memory" ]; then
-	N_NODES="`cat /sys/devices/system/node/has_high_memory`"
+	N_NODES="`cat /sys/devices/system/node/has_high_memory | tr ',' ' '`"
 else
-	N_NODES="`cat /sys/devices/system/node/has_normal_memory`"
+	N_NODES="`cat /sys/devices/system/node/has_normal_memory | tr ',' ' '`"
 fi
-N_NODES=${N_NODES#*-*}
-N_NODES=$(($N_NODES + 1))
+count=0
+for item in $N_NODES; do
+	delta=1
+	if [ "${item#*-*}" != "$item" ]; then
+		delta=$((${item#*-*} - ${item%*-*} + 1))
+	fi
+	count=$((count + $delta))
+done
+N_NODES=$count
 
 CPUSET="/dev/cpuset"
 CPUSET_TMP="/tmp/cpuset_tmp"
