@@ -43,7 +43,7 @@
  * This macro will call @FUNC in a loop with a delay between retries. If @FUNC
  * returns @ERET then the loop exits. The delay between retries starts at one
  * micro second and is then doubled each iteration until it exceeds one second
- * (the total time sleeping will be aproximately one second as well). When the
+ * (the total time sleeping will be approximately one second as well). When the
  * delay exceeds one second tst_brk() is called.
  */
 #define TST_RETRY_FUNC(FUNC, ERET) \
