@@ -28,8 +28,7 @@ _tst_do_exit()
 	local ret=0
 	TST_DO_EXIT=1
 
-	if [ -n "$TST_SETUP_STARTED" -a -n "$TST_CLEANUP" -a \
-	     -z "$TST_NO_CLEANUP" ]; then
+	if [ -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
 		$TST_CLEANUP
 	fi
 
@@ -572,7 +571,6 @@ tst_run()
 	fi
 
 	if [ -n "$TST_SETUP" ]; then
-		TST_SETUP_STARTED=1
 		$TST_SETUP
 	fi
 
