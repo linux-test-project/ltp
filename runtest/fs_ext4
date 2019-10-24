@@ -1,4 +1,0 @@
-ext4-nsec-timestamps	ext4_nsec_timestamps_test.sh
-ext4-uninit-groups	ext4_uninit_groups_test.sh
-ext4-persist-prealloc	ext4_persist_prealloc_test.sh
-ext4-subdir-limit	ext4_subdir_limit_test.sh

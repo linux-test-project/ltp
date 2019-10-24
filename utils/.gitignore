@@ -1,12 +1,3 @@
-/ffsb
-/ffsb-6.0-rc2/.deps/
-/ffsb-6.0-rc2/ffsb
-/ffsb-6.0-rc2/Makefile
-/ffsb-6.0-rc2/config.h
-/ffsb-6.0-rc2/config.log
-/ffsb-6.0-rc2/config.status
-/ffsb-6.0-rc2/stamp-h
-/ffsb-6.0-rc2/stamp-h1
 /sctp/func_tests/test_1_to_1_accept_close
 /sctp/func_tests/test_1_to_1_addrs
 /sctp/func_tests/test_1_to_1_connect
