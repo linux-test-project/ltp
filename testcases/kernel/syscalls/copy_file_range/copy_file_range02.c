@@ -55,6 +55,7 @@ static int need_unlink;
 
 static int chattr_i_nsup;
 static int swap_nsup;
+static int cross_sup;
 static int loop_devn;
 
 static struct tcase {
@@ -63,21 +64,22 @@ static struct tcase {
 	int	exp_err;
 	loff_t     len;
 	const char *tname;
+	int     new_error;
 } tcases[] = {
-	{&fd_rdonly,	0,	EBADF,		CONTSIZE,	"readonly file"},
-	{&fd_dir,	0,	EISDIR,		CONTSIZE,	"directory"},
-	{&fd_append,	0,	EBADF,		CONTSIZE,	"append to file"},
-	{&fd_closed,	0,	EBADF,		CONTSIZE,	"closed file descriptor"},
-	{&fd_dest,	-1,	EINVAL,		CONTSIZE,	"invalid flags"},
-	{&fd_immutable,	0,	EPERM,		CONTSIZE,	"immutable file"},
-	{&fd_swapfile,	0,	ETXTBSY,	CONTSIZE,	"swap file"},
-	{&fd_dup,	0,	EINVAL,		CONTSIZE/2,	"overlaping range"},
-	{&fd_blkdev,	0,	EINVAL,		CONTSIZE,	"block device"},
-	{&fd_chrdev,	0,	EINVAL,		CONTSIZE,	"char device"},
-	{&fd_fifo,	0,	EINVAL,		CONTSIZE,	"fifo"},
-	{&fd_pipe[0],	0,	EINVAL,		CONTSIZE,	"pipe"},
-	{&fd_copy,	0,	EOVERFLOW,	ULLONG_MAX,	"max length lenght"},
-	{&fd_copy,	0,	EFBIG,		MIN_OFF,	"max file size"},
+	{&fd_rdonly,	0,	EBADF,		CONTSIZE,	"readonly file",	0},
+	{&fd_dir,	0,	EISDIR,		CONTSIZE,	"directory",	0},
+	{&fd_append,	0,	EBADF,		CONTSIZE,	"append to file",	0},
+	{&fd_closed,	0,	EBADF,		CONTSIZE,	"closed file descriptor",	0},
+	{&fd_dest,	-1,	EINVAL,		CONTSIZE,	"invalid flags",	0},
+	{&fd_immutable,	0,	EPERM,		CONTSIZE,	"immutable file",	1},
+	{&fd_swapfile,	0,	ETXTBSY,	CONTSIZE,	"swap file",	1},
+	{&fd_dup,	0,	EINVAL,		CONTSIZE/2,	"overlaping range",	1},
+	{&fd_blkdev,	0,	EINVAL,		CONTSIZE,	"block device", 	0},
+	{&fd_chrdev,	0,	EINVAL,		CONTSIZE,	"char device",	0},
+	{&fd_fifo,	0,	EINVAL,		CONTSIZE,	"fifo", 	0},
+	{&fd_pipe[0],	0,	EINVAL,		CONTSIZE,	"pipe", 	0},
+	{&fd_copy,	0,	EOVERFLOW,	ULLONG_MAX,	"max length lenght", 	1},
+	{&fd_copy,	0,	EFBIG,		MIN_OFF,	"max file size", 	1},
 };
 
 static int run_command(char *command, char *option, char *file)
@@ -105,6 +107,11 @@ static void verify_copy_file_range(unsigned int n)
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
+	if (tc->new_error && !cross_sup) {
+		tst_res(TCONF,
+			"copy_file_range() doesn't support cross-device, skip it");
+		return;
+	}
 	if (tc->copy_to_fd == &fd_immutable && chattr_i_nsup) {
 		tst_res(TCONF, "filesystem doesn't support chattr +i, skip it");
 		return;
@@ -178,9 +185,7 @@ static void setup(void)
 	syscall_info();
 	char dev_path[1024];
 
-	if (!verify_cross_fs_copy_support(FILE_SRC_PATH, FILE_MNTED_PATH))
-		tst_brk(TCONF,
-			"copy_file_range() doesn't support cross-device, skip it");
+	cross_sup = verify_cross_fs_copy_support(FILE_SRC_PATH, FILE_MNTED_PATH);
 
 	if (access(FILE_DIR_PATH, F_OK) == -1)
 		SAFE_MKDIR(FILE_DIR_PATH, 0777);
