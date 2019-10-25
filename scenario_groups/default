@@ -21,7 +21,6 @@ power_management_tests
 hugetlb
 commands
 hyperthreading
-fs_ext4
 can
 cpuhotplug
 net.ipv6_lib
