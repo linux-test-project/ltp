@@ -28,6 +28,7 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "lapi/abisize.h"
 #include "tst_test.h"
 #include "tst_safe_pthread.h"
 
