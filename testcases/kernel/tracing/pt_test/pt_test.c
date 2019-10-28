@@ -124,6 +124,32 @@ static void intel_pt_trace_check(void)
 	tst_res(TPASS, "perf trace test passed");
 }
 
+static int is_affected_by_erratum_BDM106(void)
+{
+	int family = -1, model = -1;
+
+	if (FILE_LINES_SCANF("/proc/cpuinfo", "cpu family%*s%d", &family)
+		|| family != 6)
+		return 0;
+
+	if (!FILE_LINES_SCANF("/proc/cpuinfo", "model%*s%d", &model)) {
+		tst_res(TINFO, "Intel FAM6 model %d", model);
+
+		switch (model) {
+		case 0x3D: /* INTEL_FAM6_BROADWELL */
+		/* fallthrough */
+		case 0x47: /* INTEL_FAM6_BROADWELL_G */
+		/* fallthrough */
+		case 0x4F: /* INTEL_FAM6_BROADWELL_X */
+		/* fallthrough */
+		case 0x56: /* INTEL_FAM6_BROADWELL_D */
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 static void setup(void)
 {
 	struct perf_event_attr attr = {};
@@ -145,6 +171,11 @@ static void setup(void)
 	attr.size	= sizeof(struct perf_event_attr);
 	attr.mmap			= 1;
 	if (str_branch_flag) {
+		if (is_affected_by_erratum_BDM106()) {
+			tst_brk(TCONF, "erratum BDM106 disallows not "
+				"setting BRANCH_EN on this CPU");
+		}
+
 		tst_res(TINFO, "Intel PT will disable branch trace");
 		attr.config |= 1;
 	}
