@@ -58,7 +58,7 @@ static char *opt_chunksize, *opt_maxbytes, *opt_maxpercent;
 static struct tst_option mtest_options[] = {
 	{"c:", &opt_chunksize,	"-c  size of chunk in bytes to malloc on each pass"},
 	{"b:", &opt_maxbytes,	"-b  maximum number of bytes to allocate before stopping"},
-	{"p:", &opt_maxpercent, "-u  percent of total memory used at which the program stops"},
+	{"p:", &opt_maxpercent, "-p  percent of total memory used at which the program stops"},
 	{"w",  &dowrite,   	"-w  write to the memory after allocating"},
 	{"v",  &verbose,     	"-v  verbose"},
 	{NULL, NULL, 		NULL}
