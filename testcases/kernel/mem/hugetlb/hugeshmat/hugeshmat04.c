@@ -85,9 +85,9 @@ static void setup(void)
 {
 	long mem_total, hpage_size, orig_hugepages;
 
+	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
 	orig_hugepages = save_nr_hugepages();
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
 	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", (long)SIZE);
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &new_shmmax);
 

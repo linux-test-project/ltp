@@ -64,11 +64,10 @@ static void setup(void)
 {
 	long hpage_size;
 
+	SAFE_FILE_SCANF(PATH_SHMMNI, "%ld", &orig_shmmni);
 	save_nr_hugepages();
 	if (nr_opt)
 		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
-
-	SAFE_FILE_SCANF(PATH_SHMMNI, "%ld", &orig_shmmni);
 
 	limit_hugepages(&hugepages);
 	set_sys_tune("nr_hugepages", hugepages, 1);
