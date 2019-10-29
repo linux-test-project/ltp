@@ -23,7 +23,7 @@
  *	ftest08.c -- test single file io (tsfio.c by rbk) (ported from SPIE,
  *		     section2/filesuite/ftest10.c, by Airong Zhang)
  *
- * 	this is the same as ftest5, except that it uses lseek64
+ * 	this is the same as ftest4, except that it uses lseek64
  *
  * CALLS
  *	fsync, sync, lseek64, read, write

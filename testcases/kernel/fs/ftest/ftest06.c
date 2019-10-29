@@ -25,7 +25,7 @@
  * 	this is the same as ftest2, except that it uses lseek64
  *
  * CALLS
- *	open, close,  read, write, llseek,
+ *	open, close,  read, write, lseek64,
  *	unlink, chdir
  *
  *

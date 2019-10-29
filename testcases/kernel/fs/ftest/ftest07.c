@@ -23,7 +23,7 @@
  *	ftest07.c -- test file I/O with readv and writev (ported from SPIE,
  *		    section2/filesuite/ftest9.c
  *
- * 	this is the same as ftest4, except that it uses lseek64
+ * 	this is the same as ftest3, except that it uses lseek64
  *
  * CALLS
  *	lseek64, readv, writev,
