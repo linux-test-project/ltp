@@ -38,7 +38,7 @@
 static long huge_free;
 static long huge_free2;
 static long hugepages;
-static long orig_shmmax, new_shmmax;
+static long orig_shmmax = -1, new_shmmax;
 
 static void shared_hugepage(void);
 
@@ -106,7 +106,8 @@ static void setup(void)
 static void cleanup(void)
 {
 	restore_nr_hugepages();
-	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", orig_shmmax);
+	if (orig_shmmax != -1)
+		SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", orig_shmmax);
 }
 
 static struct tst_test test = {

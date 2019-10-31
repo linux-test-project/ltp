@@ -39,7 +39,7 @@ static int num_shms;
 static int shm_id_arr[MAXIDS];
 
 static long hugepages = 128;
-static long orig_shmmni;
+static long orig_shmmni = -1;
 static struct tst_option options[] = {
 	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
@@ -105,7 +105,8 @@ static void cleanup(void)
 	for (i = 0; i < num_shms; i++)
 		rm_shm(shm_id_arr[i]);
 
-	FILE_PRINTF(PATH_SHMMNI, "%ld", orig_shmmni);
+	if (orig_shmmni != -1)
+		FILE_PRINTF(PATH_SHMMNI, "%ld", orig_shmmni);
 	restore_nr_hugepages();
 }
 
