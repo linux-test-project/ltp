@@ -7,10 +7,6 @@
    requires sys/types.h and sys/quota.h */
 #define HAS_NEW_MINIMAL_QUOTACTL 1
 
-/* Define to 1 if you have the RHEL ~4.6 version of quotactl, e.g. require
-   linux/quota.h instead of sys/quota.h */
-#undef HAS_RHEL46_QUOTACTL
-
 /* Define to 1 if you have the RHEL 4.8+ version of quotactl, e.g. require
    sys/quota.h */
 #define HAS_RHEL48_QUOTACTL
