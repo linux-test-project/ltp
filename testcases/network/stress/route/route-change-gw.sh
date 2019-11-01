@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2020 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines Corp., 2006
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 # Rewrite into new shell API: Petr Vorel
@@ -8,19 +8,11 @@
 # Change route gateway
 # lhost: 10.23.1.1, gw (on rhost): 10.23.1.x, rhost: 10.23.0.1
 
+TST_SETUP="setup_gw"
+TST_CLEANUP="route_cleanup"
 TST_TESTFUNC="test_gw"
 . route-lib.sh
-
-setup()
-{
-	tst_res TINFO "change IPv$TST_IPVER route gateway $NS_TIMES times"
-
-	rt="$(tst_ipaddr_un -p 0 0)"
-	lhost="$(tst_ipaddr_un 1 1)"
-	rhost="$(tst_ipaddr_un 0 1)"
-	tst_add_ipaddr -s -q -a $lhost
-	tst_add_ipaddr -s -q -a $rhost rhost
-}
+TST_CNT=$NS_TIMES
 
 test_gw()
 {

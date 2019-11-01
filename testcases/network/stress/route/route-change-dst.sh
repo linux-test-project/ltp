@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2020 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines Corp., 2006
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 # Rewrite into new shell API: Petr Vorel
@@ -8,8 +8,11 @@
 # Change route destination
 # lhost: 10.0.0.2, rhost: 10.23.x.1
 
+TST_SETUP="setup"
+TST_CLEANUP="route_cleanup"
 TST_TESTFUNC="test_dst"
 . route-lib.sh
+TST_CNT=$NS_TIMES
 
 setup()
 {

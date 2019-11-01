@@ -1,36 +1,26 @@
 route{4,6}-change-dst
-	Verify the IPv4/IPv6 is not broken when ip command changes route
-	destination many times
+	Change IPv4/IPv6 route destination by ip command
 
 route{4,6}-change-gw
-	Verify the IPv4/IPv6 is not broken when ip command changes route
-	gateway many times
+	Change IPv4/IPv6 route gateway by ip command
 
 route{4,6}-change-if
-	Verify the IPv4/IPv6 is not broken when ip command changes route
-	interface many times
+	Change IPv4/IPv6 route interface by ip command
 
-route4-redirect01
-	Verify the kernel is not crashed when the IPv4 route is modified by
-	ICMP Redirects frequently
+route{4,6}-change-netlink-dst
+	Change IPv4/IPv6 route destination by Netlink API via libmnl
 
-route4-rmmod01
-	Verify the kernel is not crashed when IPv4 route is add by route command
-	then it is deleted by the removing network driver
+route{4,6}-change-netlink-gw
+	Change IPv4/IPv6 route gateway by Netlink API via libmnl
 
-route4-rmmod02
-	Verify the kernel is not crashed when IPv4 route is add by ip command
-	then it is deleted by the removing network driver
+route{4,6}-change-netlink-if
+	Change IPv4/IPv6 route interface by Netlink API via libmnl
 
+route{4,6}-redirect01
+	Change IPv4/IPv6 route by ICMP Redirects frequently
 
-route6-redirect01
-	Verify the kernel is not crashed when the IPv6 route is modified by
-	ICMP Redirects frequently
+route{4,6}-rmmod01
+	Add IPv4/IPv6 route by route command then delete it by the removing network driver
 
-route6-rmmod01
-	Verify the kernel is not crashed when IPv6 route is add by route command
-	then it is deleted by the removing network driver
-
-route6-rmmod02
-	Verify the kernel is not crashed when IPv6 route is add by ip command
-	then it is deleted by the removing network driver
+route{4,6}-rmmod02
+	Add IPv4/IPv6 route by ip command then delete it by the removing network driver

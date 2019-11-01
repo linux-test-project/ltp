@@ -20,4 +20,5 @@ apt update
 apt install -y --no-install-recommends \
 	gcc-${gcc_arch}-linux-gnu \
 	libc6-dev-${ARCH}-cross \
+	libmnl-dev:$ARCH \
 	libtirpc-dev:$ARCH
