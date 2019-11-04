@@ -116,6 +116,13 @@ struct fanotify_mark_type {
 	const char * name;
 };
 
+#ifndef __kernel_fsid_t
+typedef struct {
+	int	val[2];
+} lapi_fsid_t;
+#define __kernel_fsid_t lapi_fsid_t
+#endif /* __kernel_fsid_t */
+
 #ifndef FAN_REPORT_FID
 #define FAN_REPORT_FID		0x00000200
 
@@ -126,20 +133,13 @@ struct fanotify_event_info_header {
 };
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
-#ifndef __kernel_fsid_t
-typedef struct {
-	int	val[2];
-} lapi_fsid_t;
-#define __kernel_fsid_t lapi_fsid_t
-#endif
-
 struct fanotify_event_info_fid {
 	struct fanotify_event_info_header hdr;
 	__kernel_fsid_t fsid;
 	unsigned char handle[0];
 };
-#endif
-#endif
+#endif /* HAVE_NAME_TO_HANDLE_AT */
+#endif /* ! FAN_REPORT_FID */
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
 /*
