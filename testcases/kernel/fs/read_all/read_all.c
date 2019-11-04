@@ -83,6 +83,7 @@ static char *drop_privs;
 static char *blacklist[] = {
 	NULL, /* reserved for -e parameter */
 	"/sys/power/wakeup_count",
+	"/sys/kernel/debug/*",
 };
 
 static struct tst_option options[] = {
