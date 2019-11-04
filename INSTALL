@@ -38,32 +38,18 @@ downloaded from:
 Configuration
 -------------------
 
-Using autoconf (preferred):
-	$ make autotools # This must be run from "$TOP_SRCDIR"!
-	$ test -d "$TOP_BUILDDIR" || mkdir -p "$TOP_BUILDDIR"
-	$ cd "$TOP_BUILDDIR" && "$TOP_SRCDIR/configure" \
-	  # [configure args go here, e.g. CC=$CC, LDFLAGS=$LDFLAGS, etc]
+Configuration requires autoconf:
 
-Not using autoconf:
-
-	$ test -d "$TOP_BUILDDIR" || mkdir -p "$TOP_BUILDDIR"
-	$ cp "$TOP_SRCDIR/include/config.h.default" \
-	     "$TOP_BUILDDIR/include/config.h"
-	$ cp "$TOP_SRCDIR/include/mk/config.mk.default" \
-	     "$TOP_BUILDDIR/include/mk/config.mk"
-	$ cp "$TOP_SRCDIR/include/mk/features.mk.default" \
-	     "$TOP_BUILDDIR/include/mk/features.mk"
-
-	# Fire up your favorite editor and set each value appropriately in
-	# include/mk/config.mk. Uncomment all values commented out, such as
-	# NUMA_LIBS, etc, but only if you're sure that the libraries exist and
-	# can be linked on your system.
+	$ cd $TOP_SRCDIR
+	$ make autotools
+	$ mkdir -p $TOP_BUILDDIR
+	$ cd $TOP_BUILDDIR && ./configure # configure args go here, e.g. CC=$CC, LDFLAGS=$LDFLAGS, etc
 
 - $TOP_SRCDIR and $TOP_BUILDDIR are the same for in-build-tree scenarios.
 - $TOP_SRCDIR and $TOP_BUILDDIR differ for out-of-build-tree scenarios.
 
 See the In-build-tree and Out-of-build-tree sections below for more details on
-what to do next...
+what to do next.
 
 Compiling LTP
 -------------------
