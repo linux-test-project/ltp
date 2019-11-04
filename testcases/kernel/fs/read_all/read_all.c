@@ -71,7 +71,6 @@ enum dent_action {
 static char *verbose;
 static char *quiet;
 static char *root_dir;
-static char *exclude;
 static char *str_reads;
 static int reads = 1;
 static char *str_worker_count;
@@ -81,6 +80,11 @@ static long max_workers = 15;
 static struct worker *workers;
 static char *drop_privs;
 
+static char *blacklist[] = {
+	NULL, /* reserved for -e parameter */
+	"/sys/power/wakeup_count",
+};
+
 static struct tst_option options[] = {
 	{"v", &verbose,
 	 "-v       Print information about successful reads."},
@@ -88,7 +92,7 @@ static struct tst_option options[] = {
 	 "-q       Don't print file read or open errors."},
 	{"d:", &root_dir,
 	 "-d path  Path to the directory to read from, defaults to /sys."},
-	{"e:", &exclude,
+	{"e:", &blacklist[0],
 	 "-e pattern Ignore files which match an 'extended' pattern, see fnmatch(3)."},
 	{"r:", &str_reads,
 	 "-r count The number of times to schedule a file for reading."},
@@ -182,17 +186,29 @@ static void sanitize_str(char *buf, ssize_t count)
 		strcpy(buf + MAX_DISPLAY, "...");
 }
 
+static int is_blacklisted(const char *path)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(blacklist); i++) {
+		if (blacklist[i] && !fnmatch(blacklist[i], path, FNM_EXTMATCH)) {
+			if (verbose)
+				tst_res(TINFO, "Ignoring %s", path);
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 static void read_test(const char *path)
 {
 	char buf[BUFFER_SIZE];
 	int fd;
 	ssize_t count;
 
-	if (exclude && !fnmatch(exclude, path, FNM_EXTMATCH)) {
-		if (verbose)
-			tst_res(TINFO, "Ignoring %s", path);
+	if (is_blacklisted(path))
 		return;
-	}
 
 	if (verbose)
 		tst_res(TINFO, "%s(%s)", __func__, path);
