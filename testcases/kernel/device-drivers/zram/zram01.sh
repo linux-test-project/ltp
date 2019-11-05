@@ -58,8 +58,7 @@ TST_CLEANUP="zram_cleanup"
 
 zram_fill_fs()
 {
-	tst_require_cmds awk bc dd free
-	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
+	tst_require_cmds awk bc dd
 
 	for i in $(seq 0 $(($dev_num - 1))); do
 		tst_resm TINFO "fill zram$i..."
@@ -74,30 +73,27 @@ zram_fill_fs()
 			[ -s err.txt ] && tst_resm TWARN "dd error: $(cat err.txt)"
 			tst_brkm TBROK "cannot fill zram"
 		fi
-		tst_resm TINFO "zram$i can be filled with '$b' KB"
+		tst_resm TPASS "zram$i can be filled with '$b' KB"
+
+		if [ ! -f "/sys/block/zram$i/mm_stat" ]; then
+			if [ $i -eq 0 ]; then
+				tst_resm TCONF "zram compression ratio test requires zram mm_stat sysfs file"
+			fi
+
+			continue
+		fi
+
+		local compr_size=`awk '{print $2}' "/sys/block/zram$i/mm_stat"`
+		local v=$((100 * 1024 * $b / $compr_size))
+		local r=`echo "scale=2; $v / 100 " | bc`
+
+		if [ "$v" -lt 100 ]; then
+			tst_resm TFAIL "compression ratio: $r:1"
+			break
+		fi
+
+		tst_resm TPASS "compression ratio: $r:1"
 	done
-
-	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
-	local used_mem=$(($mem_free0 - $mem_free1))
-
-	local total_size=0
-	for sm in $zram_sizes; do
-		local s=$(echo $sm | sed 's/M//')
-		total_size=$(($total_size + $s))
-	done
-
-	[ $used_mem -eq 0 ] && tst_brkm TBROK "no memory used by zram"
-
-	tst_resm TINFO "zram used ${used_mem}M, zram disk sizes ${total_size}M"
-
-	local v=$((100 * $total_size / $used_mem))
-
-	if [ "$v" -lt 100 ]; then
-		tst_resm TFAIL "compression ratio: 0.$v:1"
-		return
-	fi
-
-	tst_resm TPASS "compression ratio: $(echo "scale=2; $v / 100 " | bc):1"
 }
 
 zram_load
