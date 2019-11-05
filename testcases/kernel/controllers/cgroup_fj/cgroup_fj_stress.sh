@@ -74,6 +74,7 @@ setup
 export TMPFILE=./tmp_tasks.$$
 
 count=0
+collected_pids=
 
 build_subgroups()
 {
@@ -107,6 +108,7 @@ attach_task()
     if [ -z "$ppid" ]; then
         cgroup_fj_proc&
         pid=$!
+        collected_pids="$collected_pids $pid"
     else
         pid="$ppid"
     fi
@@ -148,9 +150,10 @@ case $attach_operation in
 "each" )
     tst_resm TINFO "Attaching task to each subgroup"
     attach_task "$start_path" 0
-    ROD killall -9 "cgroup_fj_proc"
-    # Wait for attached tasks to terminate
-    wait
+    for pid in $collected_pids; do
+        ROD kill -9 "$pid"
+        wait "$pid"
+    done
     ;;
 *  )
     ;;
