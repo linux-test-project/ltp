@@ -468,6 +468,9 @@ static void parse_topt(unsigned int topts_len, int opt, char *optarg)
 	if (i >= topts_len)
 		tst_brk(TBROK, "Invalid option '%c' (should not happen)", opt);
 
+	if (*toptions[i].arg)
+		tst_res(TWARN, "Option -%c passed multiple times", opt);
+
 	*(toptions[i].arg) = optarg ? optarg : "";
 }
 
