@@ -559,7 +559,7 @@ tst_add_ipaddr()
 		return $?
 	fi
 
-	[ "$quiet" ] || tst_res_ TINFO "set remote addr $addr"
+	[ "$quiet" ] || tst_res_ TINFO "$action remote addr $addr"
 	tst_rhost_run $rsafe -c "ip addr $action $addr dev $iface $dad"
 }
 
