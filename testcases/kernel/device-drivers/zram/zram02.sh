@@ -1,28 +1,12 @@
 #!/bin/sh
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 # Test checks that we can create swap zram device.
-#
-# Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
-TCID="zram02"
-TST_TOTAL=7
-
-. test.sh
+TST_CNT=5
+TST_TESTFUNC="do_test"
 . zram_lib.sh
 
 # Test will create the following number of zram devices:
@@ -41,13 +25,15 @@ zram_max_streams="2"
 zram_sizes="107374182400" # 100GB
 zram_mem_limits="1M"
 
-TST_CLEANUP="zram_cleanup"
+do_test()
+{
+	case $1 in
+	 1) zram_max_streams;;
+	 2) zram_set_disksizes;;
+	 3) zram_set_memlimit;;
+	 4) zram_makeswap;;
+	 5) zram_swapoff;;
+	esac
+}
 
-zram_load
-zram_max_streams
-zram_set_disksizes
-zram_set_memlimit
-zram_makeswap
-zram_swapoff
-
-tst_exit
+tst_run

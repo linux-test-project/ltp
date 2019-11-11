@@ -1,29 +1,14 @@
 #!/bin/sh
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 # Test creates several zram devices with different filesystems on them.
 # It fills each device with zeros and checks that compression works.
-#
-# Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
-TCID="zram01"
-TST_TOTAL=8
-
-. test.sh
+TST_CNT=7
+TST_TESTFUNC="do_test"
+TST_NEEDS_CMDS="awk bc dd"
 . zram_lib.sh
 
 # Test will create the following number of zram devices:
@@ -37,7 +22,7 @@ FS_TYPE="btrfs"
 
 RAM_SIZE=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
 if [ "$RAM_SIZE" -lt 1048576 ]; then
-	tst_resm TINFO "Not enough space for Btrfs"
+	tst_res TINFO "not enough space for Btrfs"
 	FS_SIZE="26214400"
 	FS_TYPE="ext2"
 fi
@@ -54,14 +39,10 @@ zram_mem_limits="25M 25M 25M $((FS_SIZE/1024/1024))M"
 zram_filesystems="ext3 ext4 xfs $FS_TYPE"
 zram_algs="lzo lzo lzo lzo"
 
-TST_CLEANUP="zram_cleanup"
-
 zram_fill_fs()
 {
-	tst_require_cmds awk bc dd
-
 	for i in $(seq 0 $(($dev_num - 1))); do
-		tst_resm TINFO "fill zram$i..."
+		tst_res TINFO "filling zram$i (it can take long time)"
 		local b=0
 		while true; do
 			dd conv=notrunc if=/dev/zero of=zram${i}/file \
@@ -70,14 +51,14 @@ zram_fill_fs()
 			b=$(($b + 1))
 		done
 		if [ $b -eq 0 ]; then
-			[ -s err.txt ] && tst_resm TWARN "dd error: $(cat err.txt)"
-			tst_brkm TBROK "cannot fill zram"
+			[ -s err.txt ] && tst_res TWARN "dd error: $(cat err.txt)"
+			tst_brk TBROK "cannot fill zram $i"
 		fi
-		tst_resm TPASS "zram$i can be filled with '$b' KB"
+		tst_res TPASS "zram$i was filled with '$b' KB"
 
 		if [ ! -f "/sys/block/zram$i/mm_stat" ]; then
 			if [ $i -eq 0 ]; then
-				tst_resm TCONF "zram compression ratio test requires zram mm_stat sysfs file"
+				tst_res TCONF "zram compression ratio test requires zram mm_stat sysfs file"
 			fi
 
 			continue
@@ -88,21 +69,25 @@ zram_fill_fs()
 		local r=`echo "scale=2; $v / 100 " | bc`
 
 		if [ "$v" -lt 100 ]; then
-			tst_resm TFAIL "compression ratio: $r:1"
+			tst_res TFAIL "compression ratio: $r:1"
 			break
 		fi
 
-		tst_resm TPASS "compression ratio: $r:1"
+		tst_res TPASS "compression ratio: $r:1"
 	done
 }
 
-zram_load
-zram_max_streams
-zram_compress_alg
-zram_set_disksizes
-zram_set_memlimit
-zram_makefs
-zram_mount
-zram_fill_fs
+do_test()
+{
+	case $1 in
+	 1) zram_max_streams;;
+	 2) zram_compress_alg;;
+	 3) zram_set_disksizes;;
+	 4) zram_set_memlimit;;
+	 5) zram_makefs;;
+	 6) zram_mount;;
+	 7) zram_fill_fs;;
+	esac
+}
 
-tst_exit
+tst_run
