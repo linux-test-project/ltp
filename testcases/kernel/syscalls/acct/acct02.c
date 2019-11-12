@@ -74,7 +74,8 @@ static int verify_acct(void *acc, int elap_time)
 {
 	int sys_time  = UNPACK(ACCT_MEMBER(ac_stime));
 	int user_time = UNPACK(ACCT_MEMBER(ac_stime));
-	int ret = 0, tmp;
+	unsigned int btime_diff;
+	int ret = 0;
 	float tmp2;
 
 	if (strcmp(ACCT_MEMBER(ac_comm), COMMAND)) {
@@ -83,15 +84,13 @@ static int verify_acct(void *acc, int elap_time)
 		ret = 1;
 	}
 
-	if (ACCT_MEMBER(ac_btime) < start_time) {
-		tst_res(TINFO, "ac_btime < %d (%d)", start_time,
-			ACCT_MEMBER(ac_btime));
-		ret = 1;
-	}
+	if (start_time > ACCT_MEMBER(ac_btime))
+		btime_diff = start_time - ACCT_MEMBER(ac_btime);
+	else
+		btime_diff = ACCT_MEMBER(ac_btime) - start_time;
 
-	tmp = ACCT_MEMBER(ac_btime) - start_time;
-	if (tmp > 1) {
-		tst_res(TINFO, "ac_btime - %d > 1 (%d)", start_time, tmp);
+	if (btime_diff > 7200) {
+		tst_res(TINFO, "ac_btime_diff %u", btime_diff);
 		ret = 1;
 	}
 
