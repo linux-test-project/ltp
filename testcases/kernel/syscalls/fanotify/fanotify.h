@@ -101,6 +101,10 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #define FAN_OPEN_EXEC_PERM	0x00040000
 #endif
 
+#ifndef FAN_REPORT_FID
+#define FAN_REPORT_FID		0x00000200
+#endif
+
 /*
  * FAN_ALL_PERM_EVENTS has been deprecated, so any new permission events
  * are not to be added to it. To cover the instance where a new permission
@@ -123,23 +127,21 @@ typedef struct {
 #define __kernel_fsid_t lapi_fsid_t
 #endif /* __kernel_fsid_t */
 
-#ifndef FAN_REPORT_FID
-#define FAN_REPORT_FID		0x00000200
-
+#ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_HEADER
 struct fanotify_event_info_header {
 	uint8_t info_type;
 	uint8_t pad;
 	uint16_t len;
 };
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_HEADER */
 
-#ifdef HAVE_NAME_TO_HANDLE_AT
+#ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID
 struct fanotify_event_info_fid {
 	struct fanotify_event_info_header hdr;
 	__kernel_fsid_t fsid;
 	unsigned char handle[0];
 };
-#endif /* HAVE_NAME_TO_HANDLE_AT */
-#endif /* ! FAN_REPORT_FID */
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID */
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
 /*
