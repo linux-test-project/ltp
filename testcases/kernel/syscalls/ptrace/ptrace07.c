@@ -178,6 +178,12 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "814fb7bb7db5"},
+		{"CVE", "2017-15537"},
+		{}
+	}
+
 };
 
 #else /* !__x86_64__ */

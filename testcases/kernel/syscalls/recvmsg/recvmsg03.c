@@ -148,5 +148,9 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.setup = setup,
-	.test_all = verify_recvmsg
+	.test_all = verify_recvmsg,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "06b6a1cf6e77"},
+		{}
+	}
 };

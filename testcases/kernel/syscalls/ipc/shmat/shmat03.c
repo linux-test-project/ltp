@@ -18,7 +18,7 @@
  *
  * The timeline went as:
  *
- * 95e91b831f (ipc/shm: Fix shmat mmap nil-page protection)
+ * 95e91b831f87 (ipc/shm: Fix shmat mmap nil-page protection)
  * a73ab244f0da (Revert "ipc/shm: Fix shmat mmap nil-page protect...)
  * 8f89c007b6de (ipc/shm: fix shmat() nil address after round-dow...)
  *
@@ -100,4 +100,11 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = run,
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2017-5669"},
+		{"linux-git", "95e91b831f87"},
+		{"linux-git", "a73ab244f0da"},
+		{"linux-git", "8f89c007b6de"},
+		{}
+	}
 };

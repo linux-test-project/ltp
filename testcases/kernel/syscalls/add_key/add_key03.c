@@ -83,4 +83,8 @@ static void do_test(void)
 static struct tst_test test = {
 	.test_all = do_test,
 	.needs_root = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "237bbd29f7a0"},
+		{}
+	}
 };

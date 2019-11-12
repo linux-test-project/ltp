@@ -139,6 +139,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = migrate_test,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "4b0ece6fa016"},
+		{}
+	}
 };
 
 #else

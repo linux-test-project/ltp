@@ -324,7 +324,11 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
-	.all_filesystems = 1
+	.all_filesystems = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "c285a2f01d69"},
+		{}
+	}
 };
 
 #else

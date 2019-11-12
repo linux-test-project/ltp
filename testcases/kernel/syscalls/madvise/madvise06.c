@@ -173,4 +173,8 @@ static struct tst_test test = {
 	.min_kver = "3.10.0",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "55231e5c898c"},
+		{}
+	}
 };

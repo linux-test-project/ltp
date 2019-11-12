@@ -24,11 +24,11 @@
  *	This bug is present in all RHEL6 versions, but not in RHEL7. It looks
  *	like this was fixed in mainline kernel > v3.3 by the following patches:
  *
- *	091d0d5 (shm: fix null pointer deref when userspace specifies
+ *	091d0d55b286 (shm: fix null pointer deref when userspace specifies
  *		 invalid hugepage size)
- *	af73e4d (hugetlbfs: fix mmap failure in unaligned size request)
- *	42d7395 (mm: support more pagesizes for MAP_HUGETLB/SHM_HUGETLB)
- *	40716e2 (hugetlbfs: fix alignment of huge page requests)
+ *	af73e4d9506d (hugetlbfs: fix mmap failure in unaligned size request)
+ *	42d7395feb56 (mm: support more pagesizes for MAP_HUGETLB/SHM_HUGETLB)
+ *	40716e29243d (hugetlbfs: fix alignment of huge page requests)
  *
  * AUTHORS
  *	Vladislav Dronov <vdronov@redhat.com>
@@ -109,4 +109,11 @@ static struct tst_test test = {
 	.test_all = test_hugeshmat,
 	.setup = setup,
 	.cleanup = cleanup,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "091d0d55b286"},
+		{"linux-git", "af73e4d9506d"},
+		{"linux-git", "42d7395feb56"},
+		{"linux-git", "40716e29243d"},
+		{}
+	}
 };

@@ -84,4 +84,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = do_test,
 	.forks_child = 1,
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2017-12193"},
+		{"linux-git", "ea6789980fda"},
+		{}
+	}
 };

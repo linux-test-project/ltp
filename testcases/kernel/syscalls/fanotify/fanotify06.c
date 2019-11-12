@@ -256,6 +256,11 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = mntpoint,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "8edc6e1688fc"},
+		{"linux-git", "d989903058a8"},
+		{}
+	}
 };
 
 #else

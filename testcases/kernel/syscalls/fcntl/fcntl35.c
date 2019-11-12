@@ -120,5 +120,9 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
-	.test = do_test
+	.test = do_test,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "086e774a57fb"},
+		{}
+	}
 };

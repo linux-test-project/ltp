@@ -409,4 +409,9 @@ static struct tst_test test = {
 	.options = options,
 	.test = test_readahead,
 	.tcnt = ARRAY_SIZE(tcases),
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "b833a3660394"},
+		{"linux-git", "5b910bd615ba"},
+		{}
+	}
 };

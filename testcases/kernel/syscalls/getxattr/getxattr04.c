@@ -113,7 +113,11 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.forks_child = 1,
 	.test_all = verify_getxattr,
-	.setup = setup
+	.setup = setup,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "5a93790d4e2d"},
+		{}
+	}
 };
 
 #else /* HAVE_SYS_XATTR_H */
