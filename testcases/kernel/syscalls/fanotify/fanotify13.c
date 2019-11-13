@@ -130,8 +130,8 @@ static int setup_marks(unsigned int fd, struct test_case_t *tc)
 					"kernel");
 				return 1;
 			} else if (errno == ENODEV &&
-					!event_set[i].fsid.val[0] &&
-					!event_set[i].fsid.val[1]) {
+					!FSID_VAL_MEMBER(event_set[i].fsid, 0) &&
+					!FSID_VAL_MEMBER(event_set[i].fsid, 1)) {
 				tst_res(TCONF,
 					"FAN_REPORT_FID not supported on "
 					"filesystem type %s",
@@ -275,8 +275,8 @@ static void do_test(unsigned int number)
 			"and name_to_handle_at(2)",
 			metadata->mask,
 			getpid(),
-			event_fid->fsid.val[0],
-			event_fid->fsid.val[1],
+			FSID_VAL_MEMBER(event_fid->fsid, 0),
+			FSID_VAL_MEMBER(event_fid->fsid, 1),
 			*(unsigned long *) event_file_handle->f_handle);
 	}
 out:

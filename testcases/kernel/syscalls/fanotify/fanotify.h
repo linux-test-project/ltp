@@ -143,6 +143,12 @@ struct fanotify_event_info_fid {
 };
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID */
 
+#ifdef HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL
+# define FSID_VAL_MEMBER(fsid, i) (fsid.__val[i])
+#else
+# define FSID_VAL_MEMBER(fsid, i) (fsid.val[i])
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL */
+
 #ifdef HAVE_NAME_TO_HANDLE_AT
 /*
  * Helper function used to obtain fsid and file_handle for a given path.
