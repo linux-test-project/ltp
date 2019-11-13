@@ -47,6 +47,7 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 	struct bitmask *bm = numa_allocate_nodemask();
 	unsigned int i;
 	void *ptr;
+	pid_t pid;
 	unsigned long size = PAGES_ALLOCATED * page_size;
 
 	numa_bitmask_setbit(bm, node);
@@ -69,7 +70,8 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 
 	const char *prefix = "child: ";
 
-	if (SAFE_FORK()) {
+	pid = SAFE_FORK();
+	if (pid) {
 		prefix = "parent: ";
 		tst_reap_children();
 	}
@@ -104,6 +106,9 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 
 	if (fail)
 		tst_nodemap_print_counters(nodes);
+
+	if (!pid)
+		exit(0);
 }
 
 static const int modes[] = {
