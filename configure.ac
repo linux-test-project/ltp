@@ -108,8 +108,9 @@ AC_CHECK_FUNCS([ \
 # Expect
 AC_ARG_WITH([bash],
   [AC_HELP_STRING([--with-bash],
-    [have the Bourne Again SHell interpreter (default=no)])],
-  [with_bash=yes],
+    [have the Bourne Again Shell interpreter])],
+  [with_bash=$withval],
+  [with_bash=no]
 )
 if test "x$with_bash" = xyes; then
     AC_SUBST([WITH_BASH],["yes"])
@@ -119,8 +120,8 @@ fi
 
 AC_ARG_WITH([expect],
   [AC_HELP_STRING([--with-expect],
-    [have the Tcl/expect library (default=yes)])],
-  [with_expect=yes],
+    [have the Tcl/expect library])],
+  [with_expect=$withval],
   [with_expect=no]
 )
 if test "x$with_expect" = xyes; then
@@ -132,16 +133,16 @@ fi
 # Numa
 AC_ARG_WITH([numa],
   AC_HELP_STRING([--without-numa],
-    [without numa support (default=no)]),
-  [with_numa=no],
+    [without numa support]),
+  [with_numa=$withval],
   [with_numa=yes]
 )
 
 # Perl
 AC_ARG_WITH([perl],
   [AC_HELP_STRING([--with-perl],
-    [have a perl interpreter (default=yes)])],
-  [with_perl=yes],
+    [have a perl interpreter])],
+  [with_perl=$withval],
   [with_perl=no]
 )
 if test "x$with_perl" = xyes; then
@@ -153,8 +154,8 @@ fi
 # Python
 AC_ARG_WITH([python],
   [AC_HELP_STRING([--with-python],
-    [have a python interpreter (default=yes)])],
-  [with_python=yes],
+    [have a python interpreter])],
+  [with_python=$withval],
   [with_python=no]
 )
 if test "x$with_python" = xyes; then
@@ -166,8 +167,8 @@ fi
 # TI RPC
 AC_ARG_WITH([tirpc],
   AC_HELP_STRING([--without-tirpc],
-    [without libtirpc support (default=no)]),
-  [with_tirpc=no],
+    [without libtirpc support]),
+  [with_tirpc=$withval],
   [with_tirpc=yes]
 )
 # END tools knobs
@@ -176,8 +177,9 @@ AC_ARG_WITH([tirpc],
 
 AC_ARG_WITH([open-posix-testsuite],
   [AC_HELP_STRING([--with-open-posix-testsuite],
-    [compile and install the open posix testsuite (default=no)])],
-  [with_open_posix_testsuite=$withval]
+    [compile and install the open posix testsuite])],
+  [with_open_posix_testsuite=$withval],
+  [with_open_posix_testsuite=no]
 )
 if test "x$with_open_posix_testsuite" = xyes; then
     AC_SUBST([WITH_OPEN_POSIX_TESTSUITE],["yes"])
@@ -185,14 +187,14 @@ else
     AC_SUBST([WITH_OPEN_POSIX_TESTSUITE],["no"])
 fi
 
-# testcases/realtime requires bash and python.
-if test "x$with_bash" = xyes && test "x$with_python" = xyes; then
-    AC_ARG_WITH([realtime-testsuite],
-      [AC_HELP_STRING([--with-realtime-testsuite],
-        [compile and install the realtime testsuite (default=no)])],
-      [with_realtime_testsuite=yes]
-    )
-fi
+# TODO: testcases/realtime requires bash and python.
+AC_ARG_WITH([realtime-testsuite],
+  [AC_HELP_STRING([--with-realtime-testsuite],
+    [compile and install the realtime testsuite])],
+  [with_realtime_testsuite=$withval],
+  [with_realtime_testsuite=no]
+)
+
 if test "x$with_realtime_testsuite" = xyes; then
     AC_SUBST([WITH_REALTIME_TESTSUITE],["yes"])
     # Run configure on testcases/realtime as well.
