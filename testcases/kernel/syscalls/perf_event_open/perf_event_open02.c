@@ -149,7 +149,7 @@ static int count_hardware_counters(void)
 	struct perf_event_attr hw_event;
 	int i, hwctrs = 0;
 	int fdarry[MAX_CTRS];
-	struct read_format buf;
+	struct read_format buf, buf2, diff;
 
 	memset(&hw_event, 0, sizeof(struct perf_event_attr));
 
@@ -165,16 +165,20 @@ static int count_hardware_counters(void)
 
 		all_counters_set(PR_TASK_PERF_EVENTS_ENABLE);
 		do_work(1);
-		all_counters_set(PR_TASK_PERF_EVENTS_DISABLE);
-
 		if (read(fdarry[i], &buf, sizeof(buf)) != sizeof(buf))
-			tst_brk(TBROK | TERRNO, "error reading counter(s)");
+			tst_brk(TBROK | TERRNO, "error reading counter(s) #1");
+		do_work(1);
+		all_counters_set(PR_TASK_PERF_EVENTS_DISABLE);
+		if (read(fdarry[i], &buf2, sizeof(buf2)) != sizeof(buf2))
+			tst_brk(TBROK | TERRNO, "error reading counter(s) #2");
 
-		if (verbose) {
-			tst_res(TINFO, "[%d] value:%lld time_enabled:%lld "
-			       "time_running:%lld", i, buf.value,
-			       buf.time_enabled, buf.time_running);
-		}
+		diff.value = buf2.value - buf.value;
+		diff.time_enabled = buf2.time_enabled - buf.time_enabled;
+		diff.time_running = buf2.time_running - buf.time_running;
+
+		tst_res(TINFO, "[%d] value:%lld time_enabled:%lld "
+		       "time_running:%lld", i, diff.value,
+		       diff.time_enabled, diff.time_running);
 
 		/*
 		 * Normally time_enabled and time_running are the same value.
@@ -188,7 +192,7 @@ static int count_hardware_counters(void)
 		 * multiplexing happens and the number of the opened events
 		 * are the number of max available hardware counters.
 		 */
-		if (buf.time_enabled != buf.time_running) {
+		if (diff.time_enabled != diff.time_running) {
 			hwctrs = i;
 			break;
 		}
