@@ -31,12 +31,14 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <sched.h>
+#include <signal.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/prctl.h>
+#include <sys/time.h>
 #include <sys/types.h>
 
 #include "config.h"
@@ -49,7 +51,6 @@
 #include <linux/perf_event.h>
 
 #define MAX_CTRS	1000
-#define LOOPS		100000000
 
 struct read_format {
 	unsigned long long value;
@@ -67,6 +68,8 @@ static struct tst_option options[] = {
 
 static int ntotal, nhw;
 static int tsk0 = -1, hwfd[MAX_CTRS], tskfd[MAX_CTRS];
+static int volatile work_done;
+static unsigned int est_loops;
 
 static int perf_event_open(struct perf_event_attr *event, pid_t pid,
 	int cpu, int group_fd, unsigned long flags)
@@ -98,14 +101,47 @@ static void all_counters_set(int state)
 		tst_brk(TBROK | TERRNO, "prctl(%d) failed", state);
 }
 
-static void do_work(void)
+static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	int i;
-
-	for (i = 0; i < LOOPS; ++i)
-		asm volatile (""::"g" (i));
+	work_done = 1;
 }
 
+static void bench_work(int time_ms)
+{
+	unsigned int i;
+	struct itimerval val;
+	struct sigaction sa;
+
+	memset(&sa, 0, sizeof(sa));
+	sa.sa_handler = alarm_handler;
+	sa.sa_flags = SA_RESETHAND;
+	SAFE_SIGACTION(SIGALRM, &sa, NULL);
+
+	work_done = 0;
+	memset(&val, 0, sizeof(val));
+	val.it_value.tv_sec = time_ms / 1000;
+	val.it_value.tv_usec = (time_ms % 1000) * 1000;
+
+	if (setitimer(ITIMER_REAL, &val, NULL))
+		tst_brk(TBROK | TERRNO, "setitimer");
+
+	while (!work_done) {
+		for (i = 0; i < 100000; ++i)
+			asm volatile (""::"g" (i));
+		est_loops++;
+	}
+
+	tst_res(TINFO, "bench_work estimated loops = %u in %d ms", est_loops, time_ms);
+}
+
+static void do_work(int mult)
+{
+	unsigned long i, j, loops = mult * est_loops;
+
+	for (j = 0; j < loops; j++)
+		for (i = 0; i < 100000; i++)
+			asm volatile (""::"g" (i));
+}
 
 #ifndef __s390__
 static int count_hardware_counters(void)
@@ -128,7 +164,7 @@ static int count_hardware_counters(void)
 		fdarry[i] = perf_event_open(&hw_event, 0, -1, -1, 0);
 
 		all_counters_set(PR_TASK_PERF_EVENTS_ENABLE);
-		do_work();
+		do_work(1);
 		all_counters_set(PR_TASK_PERF_EVENTS_DISABLE);
 
 		if (read(fdarry[i], &buf, sizeof(buf)) != sizeof(buf))
@@ -194,6 +230,8 @@ static void setup(void)
 		hwfd[i] = -1;
 		tskfd[i] = -1;
 	}
+
+	bench_work(500);
 
 	/*
 	 * According to perf_event_open's manpage, the official way of
@@ -268,7 +306,7 @@ static void verify(void)
 	}
 
 	all_counters_set(PR_TASK_PERF_EVENTS_ENABLE);
-	do_work();
+	do_work(8);
 	/* stop groups with hw counters first before tsk0 */
 	for (i = 0; i < ntotal; i++) {
 		ioctl(hwfd[i], PERF_EVENT_IOC_DISABLE);
