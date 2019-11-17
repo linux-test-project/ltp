@@ -367,7 +367,7 @@ void touch_memory(bool rw, unsigned long *memp, size_t memlen)
 void init_glctx(glctx_t * gcp)
 {
 
-	bzero(gcp, sizeof(glctx_t));
+	memset(gcp, 0, sizeof(glctx_t));
 
 	gcp->pagesize = (size_t) sysconf(_SC_PAGESIZE);
 

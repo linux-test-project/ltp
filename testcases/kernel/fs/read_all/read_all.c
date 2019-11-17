@@ -31,6 +31,7 @@
 #include <lapi/fnmatch.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <dirent.h>
 #include <errno.h>
 #include <unistd.h>
@@ -287,7 +288,7 @@ static void spawn_workers(void)
 	int i;
 	struct worker *wa = workers;
 
-	bzero(workers, worker_count * sizeof(*workers));
+	memset(workers, 0, worker_count * sizeof(*workers));
 
 	for (i = 0; i < worker_count; i++) {
 		wa[i].q = queue_init();

@@ -105,7 +105,7 @@
 #else
 /* for linux or sgi */
 #include <sys/uio.h>		/* readv(2)/writev(2) */
-#include <string.h>		/* bzero */
+#include <string.h>
 #endif
 #if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
 #if !defined(UCLINUX) && !defined(__UCLIBC__)

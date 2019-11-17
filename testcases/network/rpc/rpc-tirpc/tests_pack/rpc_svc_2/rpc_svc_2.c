@@ -26,6 +26,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include <rpc/rpc.h>
 #include <utmp.h>
 

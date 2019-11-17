@@ -14,7 +14,6 @@
 #include <sys/epoll.h>
 #include <poll.h>
 #include <string.h>
-#include <strings.h>
 #include <errno.h>
 
 #include "tst_test.h"
@@ -181,7 +180,7 @@ static void verify_epollio(void)
 	while (events) {
 		int events_matched = 0;
 
-		bzero(ret_evs, sizeof(ret_evs));
+		memset(ret_evs, 0, sizeof(ret_evs));
 		TEST(epoll_wait(epfd, ret_evs, 2, -1));
 
 		if (TST_RET <= 0) {

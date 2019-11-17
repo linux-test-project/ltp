@@ -41,7 +41,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -92,7 +91,7 @@ main(int argc, char *argv[])
         svr_sk = test_socket(pf_class, SOCK_STREAM, IPPROTO_SCTP);
 	test_bind(svr_sk, &svr_loop.sa, sizeof(svr_loop));
 
-	bzero(&svr_local_addr, sizeof(svr_local_addr));
+	memset(&svr_local_addr, 0, sizeof(svr_local_addr));
 	len = sizeof(svr_local_addr);
 	/* Verify that getsockname() on an unconnected socket works fine. */
 	error = getsockname(svr_sk, (struct sockaddr *)&svr_local_addr, &len);
@@ -101,7 +100,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "getsockname on an unconnected socket");
 
-	bzero(&svr_peer_addr, sizeof(svr_peer_addr));
+	memset(&svr_peer_addr, 0, sizeof(svr_peer_addr));
 	len = sizeof(svr_peer_addr);
 	/* Verify that getpeername() on an unconnected socket fails. */
 	error = getpeername(svr_sk, (struct sockaddr *)&svr_peer_addr, &len);
@@ -125,7 +124,7 @@ main(int argc, char *argv[])
 #endif
 	test_connect(clt_sk, &svr_loop.sa, sizeof(svr_loop));
 
-	bzero(&clt_local_addr, sizeof(clt_local_addr));
+	memset(&clt_local_addr, 0, sizeof(clt_local_addr));
 	len = sizeof(clt_local_addr);
 	/* Get the client's local address. */
 	error = getsockname(clt_sk, (struct sockaddr *)&clt_local_addr, &len);
@@ -135,7 +134,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "getsockname on a connected client socket");
 
-	bzero(&clt_peer_addr, sizeof(clt_peer_addr));
+	memset(&clt_peer_addr, 0, sizeof(clt_peer_addr));
 	len = sizeof(clt_peer_addr);
 	/* Get the client's peer address. */
 	error = getpeername(clt_sk, (struct sockaddr *)&clt_peer_addr, &len);
@@ -149,7 +148,7 @@ main(int argc, char *argv[])
 	len = sizeof(accept_loop);
 	accept_sk = test_accept(svr_sk, &accept_loop.sa, &len); 
 
-	bzero(&svr_local_addr, sizeof(svr_local_addr));
+	memset(&svr_local_addr, 0, sizeof(svr_local_addr));
 	len = sizeof(svr_local_addr);
 	/* Get the server's local address. */
 	error = getsockname(accept_sk, (struct sockaddr *)&svr_local_addr,
@@ -160,7 +159,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "getsockname on a connected server socket");
 
-	bzero(&svr_peer_addr, sizeof(svr_peer_addr));
+	memset(&svr_peer_addr, 0, sizeof(svr_peer_addr));
 	len = sizeof(svr_peer_addr);
 	/* Get the server's peer address. */
 	error = getpeername(accept_sk, (struct sockaddr *)&svr_peer_addr,
@@ -200,7 +199,7 @@ main(int argc, char *argv[])
 #endif
 	tst_resm(TPASS, "getsockname/getpeername server/client match");
 
-	bzero(&clt_local_addr, sizeof(clt_local_addr));
+	memset(&clt_local_addr, 0, sizeof(clt_local_addr));
 	len = sizeof(clt_local_addr);
 	/*getsockname():  Bad socket descriptor, EBADF expected error*/
 	error = getsockname(-1, (struct sockaddr *)&clt_local_addr, &len);
@@ -235,7 +234,7 @@ main(int argc, char *argv[])
 
 	tst_resm(TPASS, "getsockname with invalid buffer - EFAULT");
  
-	bzero(&clt_peer_addr, sizeof(clt_peer_addr));
+	memset(&clt_peer_addr, 0, sizeof(clt_peer_addr));
 	len = sizeof(clt_peer_addr);
 	/*getpeername():  Bad socket descriptor, EBADF expected error*/
 	error = getpeername(-1, (struct sockaddr *)&clt_local_addr, &len);

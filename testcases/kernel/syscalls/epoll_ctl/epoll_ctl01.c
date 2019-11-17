@@ -21,7 +21,7 @@
 
 #include <sys/epoll.h>
 #include <poll.h>
-#include <strings.h>
+#include <string.h>
 #include <errno.h>
 #include "tst_test.h"
 
@@ -88,7 +88,7 @@ static void check_epoll_ctl(int opt, int exp_num)
 
 	while (events) {
 		int events_matched = 0;
-		bzero(res_evs, sizeof(res_evs));
+		memset(res_evs, 0, sizeof(res_evs));
 
 		res = epoll_wait(epfd, res_evs, 2, -1);
 		if (res <= 0) {
