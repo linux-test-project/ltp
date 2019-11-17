@@ -48,7 +48,6 @@ int do_file_op(char *filename)
 	result = 0;
 	FILE *fptr;
 	char str[256] = "./";
-	fptr = malloc(sizeof(FILE));
 
 	uid = geteuid();
 	strcat(str, filename);
