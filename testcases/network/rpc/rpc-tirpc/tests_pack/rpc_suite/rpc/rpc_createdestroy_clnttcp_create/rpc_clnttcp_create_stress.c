@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <rpc/rpc.h>
 #include <sys/socket.h>
@@ -65,7 +66,7 @@ int main(int argn, char *argc[])
 		exit(-1);
 	}
 
-	bcopy(hp->h_addr, (caddr_t) & server_addr.sin_addr, hp->h_length);
+	memcpy((caddr_t) & server_addr.sin_addr, hp->h_addr, hp->h_length);
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = 0;
 
