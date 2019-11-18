@@ -65,6 +65,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "splitstr.h"
 #include "zoolib.h"
@@ -1200,6 +1201,14 @@ static struct collection *get_collection(char *file, int optind, int argc,
 				n->pcnt_f[1] = 's';
 			}
 			n->name = strdup(strsep(&a, " \t"));
+			while (a != NULL && isspace(*a))
+				a++;
+			if (a == NULL || a[0] == 0) {
+				fprintf(stderr,
+					"pan(%s): Testcase '%s' requires a command to execute.\n",
+					panname, n->name);
+				return NULL;
+			}
 			n->cmdline = strdup(a);
 			n->next = NULL;
 
