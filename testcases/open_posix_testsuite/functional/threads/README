@@ -11,8 +11,3 @@ Currently it contains:
 
 condvar - Test cases by Abhijeet Bisain. Testing pthread_cond_wait()
 scheduling behavior when threads has realtime priority.
-
-pi_test - Test Priority Inheritence.
-
-robust_test - This suite is not proper to exist in PTS, since
-the work of adding Robust Mutex to POSIX is still ongoing.
