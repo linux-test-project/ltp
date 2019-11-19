@@ -730,7 +730,7 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	 * Don't try using the kernel's NTFS driver when mounting NTFS, since
 	 * the kernel's NTFS driver doesn't have proper write support.
 	 */
-	if (strcmp(filesystemtype, "ntfs")) {
+	if (!filesystemtype || strcmp(filesystemtype, "ntfs")) {
 		rval = mount(source, target, filesystemtype, mountflags, data);
 		if (!rval)
 			return 0;
@@ -764,7 +764,7 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 			 mountflags, data);
 	}
 
-	return rval;
+	return -1;
 }
 
 int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
