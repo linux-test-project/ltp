@@ -1,26 +1,41 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2017 Fujitsu Ltd.
+ * Copyright (c) 2017-2019 Fujitsu Ltd.
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
  */
 
 #ifndef LAPI_QUOTACTL_H__
-# define LAPI_QUOTACTL_H__
+#define LAPI_QUOTACTL_H__
 
-# ifndef Q_XGETNEXTQUOTA
-#  define Q_XGETNEXTQUOTA XQM_CMD(9)
-# endif
+#include <sys/quota.h>
+
+#ifdef HAVE_STRUCT_IF_NEXTDQBLK
+# include <linux/quota.h>
+#else
+# ifdef HAVE_LINUX_TYPES_H
+# include <linux/types.h>
+struct if_nextdqblk {
+	__u64 dqb_bhardlimit;
+	__u64 dqb_bsoftlimit;
+	__u64 dqb_curspace;
+	__u64 dqb_ihardlimit;
+	__u64 dqb_isoftlimit;
+	__u64 dqb_curinodes;
+	__u64 dqb_btime;
+	__u64 dqb_itime;
+	__u32 dqb_valid;
+	__u32 dqb_id;
+};
+#endif
+#endif /* HAVE_STRUCT_IF_NEXTDQBLK */
+
+#ifndef Q_XGETNEXTQUOTA
+# define Q_XGETNEXTQUOTA XQM_CMD(9)
+#endif
+
+#ifndef Q_GETNEXTQUOTA
+# define Q_GETNEXTQUOTA 0x800009 /* get disk limits and usage >= ID */
+#endif
 
 #endif /* LAPI_QUOTACTL_H__ */
