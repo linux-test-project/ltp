@@ -59,6 +59,10 @@ struct fs_quota_statv {
 # endif /* HAVE_LINUX_TYPES_H */
 #endif /* HAVE_STRUCT_FS_QUOTA_STATV */
 
+#ifndef PRJQUOTA
+# define PRJQUOTA 2
+#endif
+
 #ifndef Q_XGETQSTATV
 # define Q_XGETQSTATV XQM_CMD(8)
 #endif
