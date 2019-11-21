@@ -13,50 +13,46 @@
 #ifdef HAVE_STRUCT_IF_NEXTDQBLK
 # include <linux/quota.h>
 #else
-# ifdef HAVE_LINUX_TYPES_H
-# include <linux/types.h>
+# include <stdint.h>
 struct if_nextdqblk {
-	__u64 dqb_bhardlimit;
-	__u64 dqb_bsoftlimit;
-	__u64 dqb_curspace;
-	__u64 dqb_ihardlimit;
-	__u64 dqb_isoftlimit;
-	__u64 dqb_curinodes;
-	__u64 dqb_btime;
-	__u64 dqb_itime;
-	__u32 dqb_valid;
-	__u32 dqb_id;
+	uint64_t	dqb_bhardlimit;
+	uint64_t	dqb_bsoftlimit;
+	uint64_t	dqb_curspace;
+	uint64_t	dqb_ihardlimit;
+	uint64_t	dqb_isoftlimit;
+	uint64_t	dqb_curinodes;
+	uint64_t	dqb_btime;
+	uint64_t	dqb_itime;
+	uint32_t	dqb_valid;
+	uint32_t	dqb_id;
 };
-#endif
 #endif /* HAVE_STRUCT_IF_NEXTDQBLK */
 
 #ifndef HAVE_STRUCT_FS_QUOTA_STATV
-# ifdef HAVE_LINUX_TYPES_H
-#  include <linux/types.h>
+# include <stdint.h>
 struct fs_qfilestatv {
-	__u64           qfs_ino;
-	__u64           qfs_nblks;
-	__u32           qfs_nextents;
-	__u32           qfs_pad;
+	uint64_t	qfs_ino;
+	uint64_t	qfs_nblks;
+	uint32_t	qfs_nextents;
+	uint32_t	qfs_pad;
 };
 
 struct fs_quota_statv {
-	__s8                    qs_version;
-	__u8                    qs_pad1;
-	__u16                   qs_flags;
-	__u32                   qs_incoredqs;
-	struct fs_qfilestatv    qs_uquota;
-	struct fs_qfilestatv    qs_gquota;
-	struct fs_qfilestatv    qs_pquota;
-	__s32                   qs_btimelimit;
-	__s32                   qs_itimelimit;
-	__s32                   qs_rtbtimelimit;
-	__u16                   qs_bwarnlimit;
-	__u16                   qs_iwarnlimit;
-	__u64                   qs_pad2[8];
+	int8_t			qs_version;
+	uint8_t			qs_pad1;
+	uint16_t		qs_flags;
+	uint32_t		qs_incoredqs;
+	struct fs_qfilestatv	qs_uquota;
+	struct fs_qfilestatv	qs_gquota;
+	struct fs_qfilestatv	qs_pquota;
+	int32_t			qs_btimelimit;
+	int32_t			qs_itimelimit;
+	int32_t			qs_rtbtimelimit;
+	uint16_t		qs_bwarnlimit;
+	uint16_t		qs_iwarnlimit;
+	uint64_t		qs_pad2[8];
 };
-#  define FS_QSTATV_VERSION1 1
-# endif /* HAVE_LINUX_TYPES_H */
+# define FS_QSTATV_VERSION1 1
 #endif /* HAVE_STRUCT_FS_QUOTA_STATV */
 
 #ifndef PRJQUOTA
