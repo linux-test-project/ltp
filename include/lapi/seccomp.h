@@ -6,19 +6,19 @@
 #ifndef LAPI_SECCOMP_H
 #define LAPI_SECCOMP_H
 
-# include <linux/types.h>
+#include <stdint.h>
 
-# ifdef HAVE_LINUX_SECCOMP_H
-#  include <linux/seccomp.h>
-# else
+#ifdef HAVE_LINUX_SECCOMP_H
+# include <linux/seccomp.h>
+#else
 /* Valid values for seccomp.mode and prctl(PR_SET_SECCOMP, <mode>) */
-#  define SECCOMP_MODE_DISABLED   0
-#  define SECCOMP_MODE_STRICT     1
-#  define SECCOMP_MODE_FILTER     2
+# define SECCOMP_MODE_DISABLED   0
+# define SECCOMP_MODE_STRICT     1
+# define SECCOMP_MODE_FILTER     2
 
-#  define SECCOMP_RET_KILL_THREAD  0x00000000U /* kill the thread */
-#  define SECCOMP_RET_KILL         SECCOMP_RET_KILL_THREAD
-#  define SECCOMP_RET_ALLOW        0x7fff0000U /* allow */
+# define SECCOMP_RET_KILL_THREAD  0x00000000U /* kill the thread */
+# define SECCOMP_RET_KILL         SECCOMP_RET_KILL_THREAD
+# define SECCOMP_RET_ALLOW        0x7fff0000U /* allow */
 
 /**
  * struct seccomp_data - the format the BPF program executes over.
@@ -31,10 +31,10 @@
  */
 struct seccomp_data {
 	int nr;
-	__u32 arch;
-	__u64 instruction_pointer;
-	__u64 args[6];
+	uint32_t arch;
+	uint64_t instruction_pointer;
+	uint64_t args[6];
 };
 
-# endif /* HAVE_LINUX_SECCOMP_H*/
+#endif /* HAVE_LINUX_SECCOMP_H*/
 #endif /* LAPI_SECCOMP_H */
