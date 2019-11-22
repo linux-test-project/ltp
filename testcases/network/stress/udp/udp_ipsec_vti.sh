@@ -19,7 +19,7 @@ do_test()
 
 	[ $1 -eq 2 ] && type="udp_lite"
 	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
-	tst_netload -H $ip_rmt_tun -T $type $opts -r $IPSEC_REQUESTS
+	tst_netload -H $ip_rmt_tun -T $type $opts -r $IPSEC_REQUESTS -D $tst_vti
 }
 
 tst_run

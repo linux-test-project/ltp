@@ -17,7 +17,7 @@ do_test()
 
 	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
 	tst_netload -H $ip_rmt_tun -T sctp $opts -r $IPSEC_REQUESTS \
-		-S $ip_loc_tun
+		-S $ip_loc_tun -D $tst_vti
 }
 
 tst_run

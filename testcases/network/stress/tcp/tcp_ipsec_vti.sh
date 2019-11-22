@@ -18,7 +18,8 @@ do_test()
 	local rand_opt="$(echo $2 | cut -d'R' -f2)"
 
 	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
-	tst_netload -H $ip_rmt_tun $opts -r $IPSEC_REQUESTS -R $max_requests
+	tst_netload -H $ip_rmt_tun $opts -r $IPSEC_REQUESTS \
+		    -R $max_requests -D $tst_vti
 }
 
 tst_run

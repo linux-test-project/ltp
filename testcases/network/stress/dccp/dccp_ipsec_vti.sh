@@ -16,7 +16,7 @@ do_test()
 	local rand_opt="$(echo $2 | cut -d'R' -f2)"
 
 	[ "$2" != "$rand_opt" ] && opts="-A $rand_opt"
-	tst_netload -H $ip_rmt_tun -T dccp $opts -r $IPSEC_REQUESTS
+	tst_netload -H $ip_rmt_tun -T dccp $opts -r $IPSEC_REQUESTS -D $tst_vti
 }
 
 tst_run
