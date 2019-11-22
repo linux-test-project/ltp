@@ -37,12 +37,12 @@ static void run(void)
 
 		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer_id));
 		if (TST_RET != 0) {
-			if (possibly_unsupported(clock) && TST_ERR == EINVAL) {
-				tst_res(TPASS | TTERRNO,
-					"%s unsupported, failed as expected",
+			if (possibly_unsupported(clock) &&
+				(TST_ERR == EINVAL || TST_ERR == ENOTSUP)) {
+				tst_res(TCONF | TTERRNO, "%s unsupported",
 					get_clock_str(clock));
 			} else {
-				tst_res(TBROK | TTERRNO,
+				tst_res(TFAIL | TTERRNO,
 					"Aborting test - timer_create(%s) failed",
 					get_clock_str(clock));
 			}

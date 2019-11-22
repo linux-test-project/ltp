@@ -60,12 +60,12 @@ static void run(unsigned int n)
 
 		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer));
 		if (TST_RET != 0) {
-			if (possibly_unsupported(clock) && TST_ERR == EINVAL) {
-				tst_res(TPASS | TTERRNO,
-					"%s unsupported, failed as expected",
+			if (possibly_unsupported(clock) &&
+				(TST_ERR == EINVAL || TST_ERR == ENOTSUP)) {
+				tst_res(TCONF | TTERRNO, "%s unsupported",
 					get_clock_str(clock));
 			} else {
-				tst_res(TBROK | TTERRNO,
+				tst_res(TFAIL | TTERRNO,
 					"timer_create(%s) failed",
 					get_clock_str(clock));
 			}
@@ -80,7 +80,7 @@ static void run(unsigned int n)
 
 		if (tc->flag & TIMER_ABSTIME) {
 			if (clock_gettime(clock, &timenow) < 0) {
-				tst_res(TBROK,
+				tst_res(TFAIL,
 					"clock_gettime(%s) failed - skipping the test",
 					get_clock_str(clock));
 				continue;

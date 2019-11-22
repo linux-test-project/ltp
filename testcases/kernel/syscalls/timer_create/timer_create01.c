@@ -82,8 +82,7 @@ static void run(unsigned int n)
 		if (TST_RET != 0) {
 			if (possibly_unsupported(clock) &&
 			    (TST_ERR == EINVAL || TST_ERR == ENOTSUP)) {
-				tst_res(TPASS | TTERRNO,
-					"%s unsupported, failed as expected",
+				tst_res(TCONF | TTERRNO, "%s unsupported",
 					get_clock_str(clock));
 			} else {
 				tst_res(TFAIL | TTERRNO,
