@@ -182,5 +182,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.forks_child = 1,
 	.test_all = run,
-	.options = options
+	.options = options,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "07f2c7ab6f8d"},
+		{}
+	}
 };
