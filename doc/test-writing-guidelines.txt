@@ -2593,7 +2593,7 @@ tst_exit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The shell library provides an implementation of the checkpoint interface
-compatible with the C version. All TST_CHECKPOINT_* functions are available.
+compatible with the C version. All 'TST_CHECKPOINT_*' functions are available.
 
 In order to initialize checkpoints '$TST_NEEDS_CHECKPOINTS' must be set to '1'
 before the inclusion of 'test.sh':
@@ -2608,7 +2608,7 @@ TST_NEEDS_CHECKPOINTS=1
 
 Since both the implementations are compatible, it's also possible to start
 a child binary process from a shell test and synchronize with it. This process
-must have checkpoints initialized by calling tst_reinit()'.
+must have checkpoints initialized by calling 'tst_reinit()'.
 
 3. Common problems
 ------------------
@@ -2624,7 +2624,7 @@ with 'open()' or 'creat()' etc, the mode specified as the last parameter *is
 not* the mode the file is created with. The mode depends on current 'umask()'
 settings which may clear some of the bits. If your test depends on specific
 file permissions you need either to change umask to 0 or 'chmod()' the file
-afterwards or use SAFE_TOUCH() that does the 'chmod()' for you.
+afterwards or use 'SAFE_TOUCH()' that does the 'chmod()' for you.
 
 3.2 access()
 ~~~~~~~~~~~
