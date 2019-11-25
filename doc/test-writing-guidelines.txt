@@ -2345,7 +2345,11 @@ tst_is_int "$FOO"
 
 Checking for integers and floating point numbers
 ++++++++++++++++++++++++++++++++++++++++++++++++
-# returns zero if passed an integer or floating point number parameter, non-zero otherwise
+
+[source,sh]
+-------------------------------------------------------------------------------
+# returns zero if passed an integer or floating point number parameter,
+# non-zero otherwise
 tst_is_num "$FOO"
 -------------------------------------------------------------------------------
 
@@ -2440,7 +2444,7 @@ passed to the 'ROD' function as parameters and the 'ROD' function contains
 code to split '$@' on '>' and redirects the output to the file.
 
 EXPECT_PASS{,_BRK} and EXPECT_FAIL{,_BRK}
-+++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++
 
 [source,sh]
 -------------------------------------------------------------------------------
