@@ -64,6 +64,9 @@
 #define SAFE_LISTEN(socket, backlog) \
 	safe_listen(__FILE__, __LINE__, NULL, socket, backlog)
 
+#define SAFE_ACCEPT(sockfd, addr, addrlen) \
+	safe_accept(__FILE__, __LINE__, NULL, sockfd, addr, addrlen)
+
 #define SAFE_CONNECT(sockfd, addr, addrlen) \
 	safe_connect(__FILE__, __LINE__, NULL, sockfd, addr, addrlen)
 

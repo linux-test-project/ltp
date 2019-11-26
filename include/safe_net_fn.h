@@ -57,6 +57,9 @@ int safe_bind(const char *file, const int lineno, void (cleanup_fn)(void),
 int safe_listen(const char *file, const int lineno, void (cleanup_fn)(void),
 		int socket, int backlog);
 
+int safe_accept(const char *file, const int lineno, void (cleanup_fn)(void),
+		int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
 int safe_connect(const char *file, const int lineno, void (cleanup_fn)(void),
 		 int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
