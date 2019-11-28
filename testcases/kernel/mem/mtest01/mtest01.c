@@ -33,7 +33,7 @@
 
 #define FIVE_HUNDRED_MB         (500ULL*1024*1024)
 
-#if defined(_s390_)
+#if defined(__s390__) || defined(__s390x__)
 #define ALLOC_THRESHOLD		FIVE_HUNDRED_MB
 #elif defined(TST_ABI32)
 #define ALLOC_THRESHOLD		(2*FIVE_HUNDRED_MB)
@@ -216,10 +216,15 @@ static void mem_test(void)
 	if (children_done < pid_cntr) {
 		tst_res(TFAIL, "kbytes allocated %sless than expected %llu",
 				write_msg, alloc_maxbytes / 1024);
-	} else {
-		tst_res(TPASS, "%llu kbytes allocated %s",
-				alloc_maxbytes / 1024, write_msg);
+
+		for (i = 0; i < pid_cntr; i++)
+			kill(pid_list[i], SIGKILL);
+
+		return;
 	}
+
+	tst_res(TPASS, "%llu kbytes allocated %s",
+			alloc_maxbytes / 1024, write_msg);
 
 	for (i = 0; i < pid_cntr; i++) {
 		TST_PROCESS_STATE_WAIT(pid_list[i], 'T');
