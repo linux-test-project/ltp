@@ -57,15 +57,14 @@ setup()
 		tst_res TINFO "2 or more remote ifaces required, adding $new_riface"
 		add_macvlan $new_riface rhost
 	fi
+
+
 }
 
 test_if()
 {
-	local max=253
-	[ "$TST_IPV6" ] && max=65533
-	local net_id=$(($1 % $max + 1))
-	local gw="$(tst_ipaddr_un $net_id 1)"
-	local lhost="$(tst_ipaddr_un $net_id 2)"
+	local gw="$(tst_ipaddr_un -n1 $1 1)"
+	local lhost="$(tst_ipaddr_un -n1 $1 2)"
 	local link_num="$(($1 % $(tst_get_ifaces_cnt)))"
 	local iface="$(tst_iface lhost $link_num)"
 
