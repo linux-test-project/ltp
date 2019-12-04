@@ -141,7 +141,6 @@ static void verify_quota(unsigned int n)
 }
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.needs_kconfigs = kconfigs,
 	.test = verify_quota,

@@ -87,7 +87,6 @@ static void setup(void)
 
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(TC),
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.needs_rofs = 1,
 	.mntpoint = MNT_POINT,

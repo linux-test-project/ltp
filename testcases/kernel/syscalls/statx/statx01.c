@@ -165,5 +165,4 @@ static struct tst_test test = {
 	.needs_devfs = 1,
 	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 };

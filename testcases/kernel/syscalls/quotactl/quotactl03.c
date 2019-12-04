@@ -70,7 +70,6 @@ static const char *kconfigs[] = {
 };
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.needs_kconfigs = kconfigs,
 	.test_all = verify_quota,

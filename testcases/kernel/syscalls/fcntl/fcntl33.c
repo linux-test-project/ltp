@@ -226,7 +226,6 @@ static void cleanup(void)
 static struct tst_test test = {
 	.forks_child = 1,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.needs_checkpoints = 1,
 	.tcnt = ARRAY_SIZE(test_cases),
 	.setup = setup,

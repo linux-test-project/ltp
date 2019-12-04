@@ -153,7 +153,6 @@ static struct tst_test test = {
 	.test = verify_creat,
 	.needs_root = 1,
 	.needs_rofs = 1,
-	.needs_tmpdir = 1,
 	.mntpoint = "mntpoint",
 	.setup = setup,
 };

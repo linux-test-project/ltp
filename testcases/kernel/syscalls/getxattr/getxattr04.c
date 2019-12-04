@@ -106,7 +106,6 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.mount_device = 1,
 	.dev_fs_type = "xfs",

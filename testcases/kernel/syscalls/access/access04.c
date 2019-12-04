@@ -110,7 +110,6 @@ static void setup(void)
 
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,
 	.needs_rofs = 1,

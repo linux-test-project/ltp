@@ -171,7 +171,6 @@ static struct tst_test test = {
 	.test_all = verify_ftruncate,
 	.setup = setup,
 	.needs_checkpoints = 1,
-	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.mount_device = 1,
 	.needs_root = 1,

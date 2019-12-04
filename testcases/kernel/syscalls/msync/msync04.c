@@ -93,7 +93,6 @@ static struct tst_test test = {
 	.test_all = test_msync,
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.mntpoint = "msync04",
 	.mount_device = 1,

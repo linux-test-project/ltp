@@ -120,7 +120,6 @@ static void verify_acct(unsigned int nr)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.mntpoint = "mntpoint",
 	.needs_rofs = 1,
 	.tcnt = ARRAY_SIZE(tcases),

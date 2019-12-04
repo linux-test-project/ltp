@@ -493,7 +493,10 @@ this needed.
 
 If '.needs_tmpdir' is set to '1' in the 'struct tst_test' unique test
 temporary is created and it's set as the test working directory. Tests *MUST
-NOT* create temporary files outside that directory.
+NOT* create temporary files outside that directory. The flag is not needed to
+be set when use these flags: '.all_filesystems', '.format_device', '.mntpoint',
+'.mount_device' '.needs_checkpoints', '.needs_device', '.resource_file'
+(these flags imply creating temporary directory).
 
 IMPORTANT: Close all file descriptors (that point to files in test temporary
            directory, even the unlinked ones) either in the 'test()' function

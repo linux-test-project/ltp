@@ -81,7 +81,6 @@ static void cleanup(void)
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.format_device = 1,
 	.setup = setup,
 	.cleanup = cleanup,

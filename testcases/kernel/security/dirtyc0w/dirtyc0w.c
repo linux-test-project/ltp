@@ -92,7 +92,6 @@ void dirtyc0w_test(void)
 }
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.needs_checkpoints = 1,
 	.forks_child = 1,
 	.needs_root = 1,

@@ -148,7 +148,6 @@ static const char *kconfigs[] = {
 };
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.needs_kconfigs = kconfigs,
 	.min_kver = "4.10", /* commit 689c958cbe6b (ext4: add project quota support) */

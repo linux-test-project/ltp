@@ -47,7 +47,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.setup = setup,
 	.test_all = verify_fsync,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = "mntpoint",

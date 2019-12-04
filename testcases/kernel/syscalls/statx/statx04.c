@@ -180,7 +180,6 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.all_filesystems = 1,
 	.mount_device = 1,
-	.needs_tmpdir = 1,
 	.mntpoint = MOUNT_POINT,
 	.min_kver = "4.11",
 };

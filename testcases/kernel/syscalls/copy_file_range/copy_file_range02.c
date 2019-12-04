@@ -248,6 +248,5 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.test_variants = TEST_VARIANTS,
 };
