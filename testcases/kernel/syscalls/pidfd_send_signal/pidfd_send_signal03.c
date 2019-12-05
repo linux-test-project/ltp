@@ -59,7 +59,7 @@ static void verify_pidfd_send_signal(void)
 
 		/* Manipulate PID for next process */
 		sprintf(pid_str, "%d", pid - 1);
-		SAFE_FILE_PRINTF(last_pid_file, pid_str);
+		SAFE_FILE_PRINTF(last_pid_file, "%s", pid_str);
 
 		new_pid = SAFE_FORK();
 		if (new_pid == 0) {
