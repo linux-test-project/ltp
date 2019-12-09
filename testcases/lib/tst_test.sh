@@ -523,6 +523,8 @@ tst_run()
 
 	_tst_setup_timer
 
+	[ "$TST_NEEDS_DEVICE" = 1 ] && TST_TMPDIR=1
+
 	if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
 		if [ -z "$TMPDIR" ]; then
 			export TMPDIR="/tmp"
@@ -539,9 +541,6 @@ tst_run()
 
 	TST_MNTPOINT="${TST_MNTPOINT:-mntpoint}"
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
-		if [ -z ${TST_TMPDIR} ]; then
-			tst_brk TBROK "Use TST_NEEDS_TMPDIR must be set for TST_NEEDS_DEVICE"
-		fi
 
 		TST_DEVICE=$(tst_device acquire)
 

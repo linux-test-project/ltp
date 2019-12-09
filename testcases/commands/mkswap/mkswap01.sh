@@ -9,7 +9,6 @@ TST_CNT=10
 TST_SETUP=setup
 TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
-TST_NEEDS_TMPDIR=1
 TST_NEEDS_DEVICE=1
 TST_NEEDS_CMDS="uuidgen blkid blockdev mkswap"
 . tst_test.sh
