@@ -273,6 +273,8 @@ tst_umount()
 	local device="${1:-$TST_DEVICE}"
 	local i=0
 
+	[ -z "$device" ] && return
+
 	if ! grep -q "$device" /proc/mounts; then
 		tst_res TINFO "The $device is not mounted, skipping umount"
 		return
@@ -545,6 +547,7 @@ tst_run()
 		TST_DEVICE=$(tst_device acquire)
 
 		if [ ! -b "$TST_DEVICE" -o $? -ne 0 ]; then
+			unset TST_DEVICE
 			tst_brk TBROK "Failed to acquire device"
 		fi
 
