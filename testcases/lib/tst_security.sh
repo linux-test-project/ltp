@@ -95,7 +95,7 @@ tst_selinux_used_profile()
 tst_disable_apparmor()
 {
 	tst_res TINFO "trying to disable AppArmor (requires super/root)"
-	_tst_require_root
+	tst_require_root
 
 	local f="aa-teardown"
 	local action
@@ -115,7 +115,7 @@ tst_disable_apparmor()
 tst_disable_selinux()
 {
 	tst_res TINFO "trying to disable SELinux (requires super/root)"
-	_tst_require_root
+	tst_require_root
 
 	local f="$(_tst_get_enforce)"
 

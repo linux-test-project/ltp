@@ -2208,7 +2208,8 @@ simply by setting right '$TST_NEEDS_FOO'.
 [options="header"]
 |=============================================================================
 | Variable name      | Action done
-| 'TST_NEEDS_ROOT'   | Exit the test with 'TCONF' unless executed under root
+| 'TST_NEEDS_ROOT'   | Exit the test with 'TCONF' unless executed under root.
+|                    | Alternatively the 'tst_require_root' command can be used.
 | 'TST_NEEDS_TMPDIR' | Create test temporary directory and cd into it.
 | 'TST_NEEDS_DEVICE' | Prepare test temporary device, the path to testing
                        device is stored in '$TST_DEVICE' variable.

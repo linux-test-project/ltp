@@ -97,14 +97,6 @@ tst_brk_()
 {
 	[ -z "$TST_USE_LEGACY_API" ] && tst_brk $@ || tst_brkm $@
 }
-tst_require_root_()
-{
-	if [ -z "$TST_USE_LEGACY_API" ]; then
-		_tst_require_root
-	else
-		tst_require_root
-	fi
-}
 
 init_ltp_netspace()
 {
@@ -112,7 +104,7 @@ init_ltp_netspace()
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
 		tst_require_cmds ip
-		tst_require_root_
+		tst_require_root
 
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD ns_create net,mnt)"
@@ -577,7 +569,7 @@ tst_del_ipaddr()
 tst_restore_ipaddr()
 {
 	tst_require_cmds ip
-	tst_require_root_
+	tst_require_root
 
 	local type="${1:-lhost}"
 	local link_num="${2:-0}"

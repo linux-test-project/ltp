@@ -460,7 +460,7 @@ _tst_setup_timer()
 	_tst_setup_timer_pid=$!
 }
 
-_tst_require_root()
+tst_require_root()
 {
 	if [ "$(id -ru)" != 0 ]; then
 		tst_brk TCONF "Must be super/root for this test!"
@@ -535,7 +535,7 @@ tst_run()
 		tst_brk TBROK "Number of iterations (-i) must be > 0"
 	fi
 
-	[ "$TST_NEEDS_ROOT" = 1 ] && _tst_require_root
+	[ "$TST_NEEDS_ROOT" = 1 ] && tst_require_root
 
 	[ "$TST_DISABLE_APPARMOR" = 1 ] && tst_disable_apparmor
 	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
