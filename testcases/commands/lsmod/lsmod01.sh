@@ -5,10 +5,42 @@
 #
 # Test basic functionality of lsmod command.
 
+TST_CLEANUP=cleanup
+TST_SETUP=setup
 TST_TESTFUNC=lsmod_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="lsmod"
 . tst_test.sh
+
+module_inserted=
+
+setup()
+{
+	if [ -z "$(cat /proc/modules)"  ]; then
+		tst_res TINFO "Loading dummy kernel module"
+		tst_require_module "ltp_lsmod01.ko"
+		tst_require_root
+		tst_require_cmds insmod
+		insmod "$TST_MODPATH"
+		if [ $? -ne 0 ]; then
+			tst_res TBROK "insmod failed"
+			return
+		fi
+
+		module_inserted=1
+	fi
+}
+
+cleanup()
+{
+	if [ "$module_inserted" = 1 ]; then
+		tst_res TINFO "Unloading dummy kernel module"
+		rmmod ltp_lsmod01
+		if [ $? -ne 0 ]; then
+			tst_res TWARN "rmmod failed"
+		fi
+	fi
+}
 
 lsmod_matches_proc_modules()
 {
