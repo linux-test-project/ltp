@@ -2275,6 +2275,9 @@ module in a few possible paths.
 If module was found the path to it will be stored into '$TST_MODPATH'
 variable, if module wasn't found the test will exit with 'TCONF'.
 
+Alternatively the 'tst_require_module()' function can be used to do the same
+at runtime.
+
 2.3.3 Optional command line parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
