@@ -19,6 +19,13 @@ matrix:
           env: DISTRO=debian:stable VARIANT=cross-compile.aarch64 TREE="out"
           compiler: aarch64-linux-gnu-gcc
 
+        # musl (native)
+        - os: linux
+          # Message: WARNING: xsltproc: cannot process http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl
+          # doc/meson.build:70:1: ERROR: Problem encountered: Docs cannot be built: xsltproc does not work correctly
+          env: DISTRO=alpine:latest
+          compiler: gcc
+
         # build with minimal dependencies
         - os: linux
           env: DISTRO=debian:stable VARIANT=minimal TREE="out"
