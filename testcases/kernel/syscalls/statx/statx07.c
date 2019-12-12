@@ -133,8 +133,8 @@ static void setup(void)
 	snprintf(server_path, sizeof(server_path), ":%s/%s", cwd, SERV_PATH);
 
 	snprintf(cmd, sizeof(cmd),
-		 "exportfs -i -o no_root_squash,rw,sync,no_subtree_check *%.1024s",
-		 server_path);
+		 "exportfs -i -o no_root_squash,rw,sync,no_subtree_check,fsid=%d *%.1024s",
+		 getpid(), server_path);
 	exported = 1;
 
 	ret = tst_system(cmd);
