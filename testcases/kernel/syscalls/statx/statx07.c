@@ -144,7 +144,8 @@ static void setup(void)
 		tst_brk(TBROK | TST_ERR, "failed to exportfs");
 
 	if (mount(server_path, CLI_PATH, "nfs", 0, "addr=127.0.0.1")) {
-		if (errno == EOPNOTSUPP || errno == ECONNREFUSED)
+		if (errno == EOPNOTSUPP || errno == ECONNREFUSED
+			|| errno == ETIMEDOUT)
 			tst_brk(TCONF | TERRNO, "nfs server not set up?");
 		tst_brk(TBROK | TERRNO, "mount() nfs failed");
 	}
