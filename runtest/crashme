@@ -7,7 +7,7 @@ f00f f00f
 crash01 crash01
 # Generate random code and execute it. Read f00f comment,
 # this test lockup SunOS,WindowsNT,etc. in seconds..
-crash02 crash02
+crash02 crash02 -v 2
 # Generate random syscalls and execute them, less probability
 # to hose your system, but still.
 mem01 mem01 -r

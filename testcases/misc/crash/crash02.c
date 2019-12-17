@@ -430,13 +430,12 @@ void try_one_crash(int try_num)
 	arg6 = rand_long();
 	arg7 = rand_long();
 
-	if (x_opt) {
-		if (verbose_level >= 1)
-			printf("%04d: syscall(%ld, %#lx, %#lx, %#lx, %#lx, "
-			       "%#lx, %#lx, %#lx)\n",
-			       try_num, sysno, arg1, arg2, arg3, arg4, arg5,
-			       arg6, arg7);
-	} else {
+	if (x_opt || verbose_level >= 1)
+		printf("%04d: syscall(%ld, %#lx, %#lx, %#lx, %#lx, %#lx, "
+		       "%#lx, %#lx)\n", try_num, sysno, arg1, arg2, arg3,
+		       arg4, arg5, arg6, arg7);
+
+	if (!x_opt) {
 		syscall(sysno, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 		record_errno(errno);
 	}
