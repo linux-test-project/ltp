@@ -4,14 +4,11 @@
 
 TST_SETUP="do_setup"
 TST_CLEANUP="do_cleanup"
-TST_NEEDS_CMDS="nft iptables-translate grep ping telnet"
-TST_NEEDS_DRIVERS="nf_tables"
 use_iptables=0
 cleanup_table=0
 cleanup_chain=0
 
 . iptables_lib.sh
-. tst_test.sh
 
 do_setup()
 {

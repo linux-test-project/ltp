@@ -10,12 +10,22 @@ TST_CNT=6
 TST_TESTFUNC="test"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
+TST_SETUP="${TST_SETUP:-init}"
+TST_CLEANUP="${TST_CLEANUP:-cleanup}"
 
 if [ "$use_iptables" = 1 ]; then
 	toolname=iptables
+	cmds="$toolname"
+	TST_NEEDS_DRIVERS="ip_tables"
 else
 	toolname=nft
+	cmds="$toolname iptables-translate"
+	TST_NEEDS_DRIVERS="nf_tables"
 fi
+
+TST_NEEDS_CMDS="$cmds grep ping telnet"
+
+. tst_test.sh
 
 NFRUN()
 {
