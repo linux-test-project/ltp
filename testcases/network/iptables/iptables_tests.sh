@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2018-2019 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 #
 #  Author:	Jan 20 2004 Hubert Lin <linux02NOSPAAAM@tw.ibm.com>
@@ -123,7 +123,7 @@ test2()
 	fi
 
 	tst_res TINFO "Pinging 127.0.0.1"
-	ping -c 2 127.0.0.1 > tst_iptables.out 2>&1
+	ping -c 2 127.0.0.1 -W 1 -i 0 > tst_iptables.out 2>&1
 	if [ $? -ne 0 ]; then
 		grep "100% packet loss" tst_iptables.out > tst_iptables.err 2>&1
 		if [ $? -ne 0 ]; then
@@ -148,7 +148,7 @@ test2()
 		return
 	fi
 	tst_res TINFO "Pinging 127.0.0.1 again"
-	ping -c 2 127.0.0.1 > tst_iptables.out 2>&1
+	ping -c 2 127.0.0.1 -W 1 -i 0 > tst_iptables.out 2>&1
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "iptables blocking loopback. This is expected" \
 			       "behaviour on certain distributions where" \
@@ -174,7 +174,7 @@ test3()
 	fi
 
 	tst_res TINFO "Pinging 127.0.0.1"
-	ping -c 2 127.0.0.1 > tst_iptables.out 2>&1
+	ping -c 2 127.0.0.1 -W 1 -i 0 > tst_iptables.out 2>&1
 	if [ $? -ne 0 ]; then
 		grep "100% packet loss" tst_iptables.out > tst_iptables.err 2>&1
 		if [ $? -ne 0 ]; then
@@ -198,7 +198,7 @@ test3()
 		return
 	fi
 	tst_res TINFO "Pinging 127.0.0.1 again"
-	ping -c 2 127.0.0.1 > tst_iptables.out 2>&1
+	ping -c 2 127.0.0.1 -W 1 -i 0 > tst_iptables.out 2>&1
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "iptables blocking ping requests. This is" \
 			      "expected behaviour on certain distributions" \
@@ -332,7 +332,7 @@ test6()
 	fi
 
 	tst_res TINFO "ping 127.0.0.1"
-	ping -c 10 127.0.0.1 > tst_iptables.out 2>&1
+	ping -c 10 127.0.0.1 -W 1 -i 0 > tst_iptables.out 2>&1
 	if [ $? -eq 0 ]; then
 		sleep 2
 		logcnt=$(dmesg | grep -c "$logprefix")
