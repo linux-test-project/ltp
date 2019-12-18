@@ -48,6 +48,8 @@ static void verify_sync_file_range(struct testcase *tc)
 
 	lseek(fd, tc->write_off, SEEK_SET);
 
+	sync();
+
 	tst_dev_bytes_written(tst_device->dev);
 
 	tst_fill_fd(fd, 0, TST_MB, tc->write_size_mb);
@@ -66,8 +68,7 @@ static void verify_sync_file_range(struct testcase *tc)
 
 	SAFE_CLOSE(fd);
 
-	if ((written >= tc->exp_sync_size) &&
-	    (written <= (tc->exp_sync_size + tc->exp_sync_size/10)))
+	if (written >= tc->exp_sync_size)
 		tst_res(TPASS, "%s", tc->desc);
 	else
 		tst_res(TFAIL, "%s: Synced %li, expected %li", tc->desc,
