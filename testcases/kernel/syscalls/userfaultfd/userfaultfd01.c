@@ -82,12 +82,19 @@ static void run(void)
 
 	set_pages();
 
-	uffd = sys_userfaultfd(O_CLOEXEC | O_NONBLOCK);
+	TEST(sys_userfaultfd(O_CLOEXEC | O_NONBLOCK));
 
-	if (uffd == -1)
-		tst_brk(TBROK | TERRNO,
-			"Could not create userfault file descriptor");
+	if (TST_RET == -1) {
+		if (TST_ERR == EPERM) {
+			tst_res(TCONF, "Hint: check /proc/sys/vm/unprivileged_userfaultfd");
+			tst_brk(TCONF | TTERRNO,
+				"userfaultfd() requires CAP_SYS_PTRACE on this system");
+		} else
+			tst_brk(TBROK | TTERRNO,
+				"Could not create userfault file descriptor");
+	}
 
+	uffd = TST_RET;
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = 0;
 	SAFE_IOCTL(uffd, UFFDIO_API, &uffdio_api);
