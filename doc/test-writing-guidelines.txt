@@ -2465,6 +2465,14 @@ to that, 'EXPECT_FAIL' always redirects the command's stderr to '/dev/null'.
 There are also 'EXPECT_PASS_BRK' and 'EXPECT_FAIL_BRK', which works the same way
 except breaking a test when unexpected action happen.
 
+It's possible to detect whether expected value happened:
+[source,sh]
+-------------------------------------------------------------------------------
+if ! EXPECT_PASS command arg1 2\> /dev/null; then
+	continue
+fi
+-------------------------------------------------------------------------------
+
 tst_kvcmp
 +++++++++
 

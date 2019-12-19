@@ -56,13 +56,8 @@ do_test() {
 		"-allow-lowercase -allow-multidot -iso-level 3 -f -l -D -J -allow-leading-dots -R"
 	do
 		rm -f isofs.iso
-		mkisofs -o isofs.iso -quiet $mkisofs_opt $make_file_sys_dir 2> /dev/null
-		if [ $? -eq 0 ]; then
-			tst_res TPASS "mkisofs -o isofs.iso -quiet $mkisofs_opt $make_file_sys_dir"
-		else
-			tst_res TFAIL "mkisofs -o isofs.iso -quiet $mkisofs_opt $make_file_sys_dir"
-			continue
-		fi
+		EXPECT_PASS mkisofs -o isofs.iso -quiet $mkisofs_opt $make_file_sys_dir 2\> /dev/null \
+			|| continue
 
 		for mount_opt in \
 			"loop" \

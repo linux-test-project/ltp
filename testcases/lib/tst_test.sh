@@ -146,8 +146,10 @@ _tst_expect_pass()
 	tst_rod "$@"
 	if [ $? -eq 0 ]; then
 		tst_res TPASS "$@ passed as expected"
+		return 0
 	else
 		$fnc TFAIL "$@ failed unexpectedly"
+		return 1
 	fi
 }
 
@@ -160,8 +162,10 @@ _tst_expect_fail()
 	tst_rod "$@" 2> /dev/null
 	if [ $? -ne 0 ]; then
 		tst_res TPASS "$@ failed as expected"
+		return 0
 	else
 		$fnc TFAIL "$@ passed unexpectedly"
+		return 1
 	fi
 }
 
