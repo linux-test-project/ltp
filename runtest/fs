@@ -40,7 +40,7 @@ rwtest05 export LTPROOT; rwtest -N rwtest05 -c -q -i 50 -T 64b 500b:$TMPDIR/rwte
 iogen01 export LTPROOT; rwtest -N iogen01 -i 120s -s read,write -Da -Dv -n 2 500b:$TMPDIR/doio.f1.$$ 1000b:$TMPDIR/doio.f2.$$
 
 fs_inod01 fs_inod $TMPDIR 10 10 10
-linker01 linktest.sh 1000 1000
+linker01 linktest.sh
 openfile01 openfile -f10 -t10
 inode01 inode01
 inode02 inode02
