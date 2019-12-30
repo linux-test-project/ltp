@@ -4,8 +4,6 @@ tirpc_rpcb_getmaps rpc_test.sh -s tirpc_svc_3 -c tirpc_rpcb_getmaps
 tirpc_authnone_create rpc_test.sh -c tirpc_authnone_create
 tirpc_authsys_create rpc_test.sh -s tirpc_svc_1 -c tirpc_authsys_create
 tirpc_authsys_create_default rpc_test.sh -c tirpc_authsys_create_default
-tirpc_authdes_create rpc_test.sh -s tirpc_svc_1 -c tirpc_authdes_create
-tirpc_authdes_seccreate rpc_test.sh -s tirpc_svc_1 -c tirpc_authdes_seccreate
 
 tirpc_clnt_dg_create rpc_test.sh -s tirpc_svc_5 -c tirpc_clnt_dg_create
 tirpc_svc_dg_create rpc_test.sh -c tirpc_svc_dg_create
