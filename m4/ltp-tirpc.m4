@@ -6,7 +6,7 @@ AC_DEFUN([LTP_CHECK_TIRPC],[
 	TIRPC_LIBS=""
 
 	AC_CHECK_HEADERS([tirpc/netconfig.h netconfig.h], [
-		if [[ -n $SDKTARGETSYSROOT ]]; then
+		if test -n "$SDKTARGETSYSROOT"; then
 			TIRPC_CPPFLAGS="-I${SDKTARGETSYSROOT}/usr/include/tirpc"
 		else
 			TIRPC_CPPFLAGS="-I${SYSROOT}/usr/include/tirpc"
