@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define INTPROCNUM 10

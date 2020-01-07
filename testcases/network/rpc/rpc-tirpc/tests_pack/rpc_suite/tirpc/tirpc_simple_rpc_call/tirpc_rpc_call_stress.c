@@ -30,7 +30,7 @@
 #include <string.h>
 #include <time.h>
 #include <errno.h>
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define PROCNUM 1

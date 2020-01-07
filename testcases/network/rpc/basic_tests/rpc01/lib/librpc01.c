@@ -16,7 +16,7 @@
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "lapi/rpc.h"
+#include "rpc.h"
 #include "librpc01.h"
 
 bool_t xdr_receive_data(XDR *xdrs, struct data **buffer)

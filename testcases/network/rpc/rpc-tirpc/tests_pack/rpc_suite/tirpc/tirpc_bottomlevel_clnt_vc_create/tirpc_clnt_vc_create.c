@@ -31,7 +31,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include "librpc-tirpc.h"
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define PROCNUM 1

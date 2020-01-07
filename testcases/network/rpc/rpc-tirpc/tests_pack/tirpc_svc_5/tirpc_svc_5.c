@@ -33,7 +33,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include "librpc-tirpc.h"
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 #define VERSNUM 1
 #define PROCSIMPLEPING	1

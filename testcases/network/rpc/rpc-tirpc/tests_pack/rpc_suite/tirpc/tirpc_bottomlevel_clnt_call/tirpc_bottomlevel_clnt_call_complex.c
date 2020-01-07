@@ -30,7 +30,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <errno.h>
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define CALCTHREADPROC	1000

@@ -20,4 +20,5 @@ zypper --non-interactive install --no-recommends \
 	libselinux-devel \
 	libtirpc-devel \
 	linux-glibc-devel \
-	lsb-release
+	lsb-release \
+	pkg-config

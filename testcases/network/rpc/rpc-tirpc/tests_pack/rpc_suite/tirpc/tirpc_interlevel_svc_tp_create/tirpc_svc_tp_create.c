@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <errno.h>
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define VERSNUM 1

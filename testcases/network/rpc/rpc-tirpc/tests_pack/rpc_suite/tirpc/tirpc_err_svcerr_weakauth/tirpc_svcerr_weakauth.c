@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <netinet/in.h>
 #include <errno.h>
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define PROCNUM 100

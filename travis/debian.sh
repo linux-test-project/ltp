@@ -35,6 +35,7 @@ apt install -y --no-install-recommends \
 	libssl-dev \
 	libtirpc-dev \
 	linux-libc-dev \
-	lsb-release
+	lsb-release \
+	pkg-config
 
 df -hT

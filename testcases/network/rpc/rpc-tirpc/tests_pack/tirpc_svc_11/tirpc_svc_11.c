@@ -30,7 +30,7 @@
 #include <sys/socket.h>
 #include <errno.h>
 #include <netinet/in.h>
-#include "lapi/rpc.h"
+#include "rpc.h"
 
 //Standard define
 #define VERSNUM 1
