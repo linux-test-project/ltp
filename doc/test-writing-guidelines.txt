@@ -1072,7 +1072,10 @@ unsigned long tst_dev_bytes_written(const char *dev);
 -------------------------------------------------------------------------------
 
 This function reads test block device stat file (/sys/block/<device>/stat) and
-returns the bytes written since the last invocation of this function.
+returns the bytes written since the last invocation of this function. To avoid
+FS deferred IO metadata/cache interference, we suggest doing "syncfs" before the
+tst_dev_bytes_written first invocation. And an inline function named tst_dev_sync
+is created for that intention.
 
 2.2.16 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

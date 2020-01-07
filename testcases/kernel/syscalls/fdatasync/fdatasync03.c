@@ -32,8 +32,7 @@ static void verify_fdatasync(void)
 
 	fd = SAFE_OPEN(FNAME, O_RDWR|O_CREAT, MODE);
 
-	sync();
-
+	tst_dev_sync(fd);
 	tst_dev_bytes_written(tst_device->dev);
 
 	tst_fill_fd(fd, 0, TST_MB, FILE_SIZE_MB);

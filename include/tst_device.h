@@ -69,6 +69,16 @@ int tst_attach_device(const char *dev_path, const char *file_path);
 int tst_detach_device(const char *dev_path);
 
 /*
+ * To avoid FS deferred IO metadata/cache interference, so we do syncfs
+ * simply before the tst_dev_bytes_written invocation. For easy to use,
+ * we create this inline function tst_dev_sync.
+ */
+static inline void tst_dev_sync(int fd)
+{
+	syncfs(fd);
+}
+
+/*
  * Reads test block device stat file and returns the bytes written since the
  * last call of this function.
  * @dev: test block device
