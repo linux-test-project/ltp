@@ -18,6 +18,8 @@
 #ifndef TST_DEVICE_H__
 #define TST_DEVICE_H__
 
+#include <unistd.h>
+
 struct tst_device {
 	const char *dev;
 	const char *fs_type;
