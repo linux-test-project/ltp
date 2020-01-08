@@ -935,7 +935,6 @@ pselect03 pselect03
 pselect03_64 pselect03_64
 
 ptrace01 ptrace01
-ptrace02 ptrace02
 ptrace03 ptrace03
 ptrace04 ptrace04
 ptrace05 ptrace05
