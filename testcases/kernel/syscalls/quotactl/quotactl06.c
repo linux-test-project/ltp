@@ -154,7 +154,7 @@ static void setup(void)
 	case 0:
 		break;
 	case 255:
-		tst_brk(TBROK, "quotacheck binary not installed");
+		tst_brk(TCONF, "quotacheck binary not installed");
 		break;
 	default:
 		tst_brk(TBROK, "quotacheck exited with %i", ret);
