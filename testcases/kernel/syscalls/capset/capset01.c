@@ -13,6 +13,9 @@
 #include "lapi/syscalls.h"
 #include <linux/capability.h>
 
+static pid_t pid;
+static struct __user_cap_header_struct *header;
+static struct __user_cap_data_struct *data;
 static struct tcase {
 	int version;
 	char *message;
@@ -25,26 +28,35 @@ static struct tcase {
 static void verify_capset(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
-	struct __user_cap_header_struct header;
-	struct __user_cap_data_struct data[2];
 
 	tst_res(TINFO, "%s", tc->message);
-	header.version = tc->version;
-	header.pid = getpid();
+	header->version = tc->version;
+	header->pid = pid;
 
-	if (tst_syscall(__NR_capget, &header, data) == -1) {
+	if (tst_syscall(__NR_capget, header, data) == -1) {
 		tst_res(TFAIL | TTERRNO, "capget() failed");
 		return;
 	}
 
-	TEST(tst_syscall(__NR_capset, &header, data));
+	TEST(tst_syscall(__NR_capset, header, data));
 	if (TST_RET == 0)
 		tst_res(TPASS, "capset() returned %ld", TST_RET);
 	else
 		tst_res(TFAIL | TTERRNO, "Test Failed, capset() returned %ld", TST_RET);
 }
 
+static void setup(void)
+{
+	pid = getpid();
+}
+
 static struct tst_test test = {
+	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_capset,
+	.bufs = (struct tst_buffers []) {
+		{&header, .size = sizeof(*header)},
+		{&data, .size = 2 * sizeof(*data)},
+		{},
+	}
 };

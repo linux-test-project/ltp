@@ -13,6 +13,8 @@
 #include <linux/capability.h>
 
 static pid_t pid;
+static struct __user_cap_header_struct *hdr;
+static struct __user_cap_data_struct *data;
 
 static struct tcase {
 	int version;
@@ -26,16 +28,12 @@ static struct tcase {
 static void verify_capget(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
-	struct __user_cap_header_struct hdr = {
-		.version = tc->version,
-		.pid = pid,
-	};
-
-	struct __user_cap_data_struct data[2];
 
 	tst_res(TINFO, "%s", tc->message);
 
-	TEST(tst_syscall(__NR_capget, &hdr, data));
+	hdr->version = tc->version;
+	hdr->pid = pid;
+	TEST(tst_syscall(__NR_capget, hdr, data));
 	if (TST_RET == 0)
 		tst_res(TPASS, "capget() returned %ld", TST_RET);
 	else
@@ -61,4 +59,9 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_DROP, CAP_NET_RAW),
 		{}
 	},
+	.bufs = (struct tst_buffers []) {
+		{&hdr, .size = sizeof(*hdr)},
+		{&data, .size = 2 * sizeof(*data)},
+		{},
+	}
 };
