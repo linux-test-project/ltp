@@ -45,6 +45,7 @@ capget02 capget02
 capset01 capset01
 capset02 capset02
 capset03 capset03
+capset04 capset04
 
 cacheflush01 cacheflush01
 
