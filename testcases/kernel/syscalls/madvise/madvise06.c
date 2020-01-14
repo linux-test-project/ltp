@@ -49,7 +49,6 @@ static void setup(void)
 
 	pg_sz = getpagesize();
 
-	check_path(drop_caches_fname);
 	tst_res(TINFO, "dropping caches");
 	sync();
 	SAFE_FILE_PRINTF(drop_caches_fname, "3");
