@@ -88,6 +88,7 @@ static void setup(void)
 {
 	char opt_bsize[32];
 	const char *const extra_opts[] = {"-O encrypt", opt_bsize, NULL};
+	int ret;
 
 	snprintf(opt_bsize, sizeof(opt_bsize), "-b %i", getpagesize());
 
@@ -98,12 +99,12 @@ static void setup(void)
 	SAFE_MKDIR(TESTDIR_FLAGGED, 0777);
 	SAFE_MKDIR(TESTDIR_UNFLAGGED, 0777);
 
-	TEST(tst_system("echo qwery | e4crypt add_key "TESTDIR_FLAGGED));
+	ret = tst_system("echo qwery | e4crypt add_key "TESTDIR_FLAGGED);
 
-	if (WEXITSTATUS(TST_RET) == 127)
+	if (WEXITSTATUS(ret) == 127)
 		tst_brk(TCONF, "e4crypt not installed!");
 
-	if (WEXITSTATUS(TST_RET))
+	if (WEXITSTATUS(ret))
 		tst_brk(TCONF, "e4crypt failed (CONFIG_EXT4_ENCRYPTION not set?)");
 }
 
