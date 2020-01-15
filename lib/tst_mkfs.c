@@ -98,7 +98,7 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 			 "%s:%d: %s not found in $PATH", file, lineno, mkfs);
 	default:
 		tst_brkm(TBROK, cleanup_fn,
-			 "%s:%d: %s failed with %i", mkfs, ret, file, lineno);
+			 "%s:%d: %s failed with %i", file, lineno, mkfs, ret);
 	}
 }
 
