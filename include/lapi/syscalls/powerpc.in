@@ -339,6 +339,7 @@ recvmsg 342
 recvmmsg 343
 accept4 344
 syscalls 345
+syncfs 348
 process_vm_readv  351
 process_vm_writev 352
 kcmp 354

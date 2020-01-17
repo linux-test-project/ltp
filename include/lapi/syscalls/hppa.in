@@ -16,6 +16,7 @@ faccessat (__NR_openat + 12)
 splice 291
 tee 293
 vmsplice 294
+syncfs 327
 process_vm_readv 330
 process_vm_writev 331
 memfd_create 340

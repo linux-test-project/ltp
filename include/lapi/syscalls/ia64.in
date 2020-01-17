@@ -293,6 +293,7 @@ recvmmsg 1322
 fanotify_init 1323
 fanotify_mark 1324
 prlimit64 1325
+syncfs 1329
 process_vm_readv 1332
 process_vm_writev 1333
 renameat2 1338

@@ -360,6 +360,7 @@ accept4 366
 fanotify_init 367
 fanotify_mark 368
 prlimit64 369
+syncfs 373
 process_vm_readv 376
 process_vm_writev 377
 kcmp 378

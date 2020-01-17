@@ -332,6 +332,7 @@ recvmmsg 337
 fanotify_init 338
 fanotify_mark 339
 prlimit64 340
+syncfs 344
 process_vm_readv 347
 process_vm_writev 348
 kcmp 349
