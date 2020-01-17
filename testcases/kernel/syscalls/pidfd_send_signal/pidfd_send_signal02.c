@@ -21,6 +21,7 @@
  *    -> EPERM
  */
 
+#define _GNU_SOURCE
 #include <pwd.h>
 #include <signal.h>
 #include "tst_safe_pthread.h"

@@ -15,6 +15,7 @@
  * child using the pidfd of the first one.
  */
 
+#define _GNU_SOURCE
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>

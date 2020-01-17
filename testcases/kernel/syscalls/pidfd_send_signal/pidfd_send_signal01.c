@@ -9,6 +9,7 @@
  * struct is passed.
  */
 
+#define _GNU_SOURCE
 #include <signal.h>
 #include <stdlib.h>
 #include "tst_safe_pthread.h"
