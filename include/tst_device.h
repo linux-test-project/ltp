@@ -19,7 +19,7 @@
 #define TST_DEVICE_H__
 
 #include <unistd.h>
-#include <sys/syscall.h>
+#include "lapi/syscalls.h"
 
 struct tst_device {
 	const char *dev;
