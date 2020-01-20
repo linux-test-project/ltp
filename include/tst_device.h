@@ -19,7 +19,6 @@
 #define TST_DEVICE_H__
 
 #include <unistd.h>
-#include "lapi/syscalls.h"
 
 struct tst_device {
 	const char *dev;
@@ -76,10 +75,7 @@ int tst_detach_device(const char *dev_path);
  * simply before the tst_dev_bytes_written invocation. For easy to use,
  * we create this inline function tst_dev_sync.
  */
-static inline int tst_dev_sync(int fd)
-{
-	return syscall(__NR_syncfs, fd);
-}
+int tst_dev_sync(int fd);
 
 /*
  * Reads test block device stat file and returns the bytes written since the

@@ -31,6 +31,7 @@
 #include <linux/loop.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include "lapi/syscalls.h"
 #include "test.h"
 #include "safe_macros.h"
 
@@ -220,6 +221,11 @@ int tst_detach_device(const char *dev)
 	tst_resm(TWARN,
 		"ioctl(%s, LOOP_CLR_FD, 0) no ENXIO for too long", dev);
 	return 1;
+}
+
+int tst_dev_sync(int fd)
+{
+	return syscall(__NR_syncfs, fd);
 }
 
 const char *tst_acquire_device__(unsigned int size)
