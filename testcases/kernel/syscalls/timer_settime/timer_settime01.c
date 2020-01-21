@@ -16,6 +16,9 @@
  * 4) Using absolute time
  *
  * All of these tests are supposed to be successful.
+ *
+ * This is also regression test for commit:
+ * f18ddc13af98 ("alarmtimer: Use EOPNOTSUPP instead of ENOTSUPP")
  */
 
 #include <stdlib.h>
@@ -121,4 +124,8 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "f18ddc13af98"},
+		{}
+	}
 };
