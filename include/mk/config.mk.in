@@ -31,11 +31,6 @@ RANLIB			:= @RANLIB@
 STRIP			:= @STRIP@
 YACC			:= @YACC@
 
-# XXX: I'm lazy... but if someone has a working javac, they should have a
-# working jar on their systems.
-JAR			:= jar
-JAVAC			:= @JAVAC@
-
 AIO_LIBS		:= @AIO_LIBS@
 CAP_LIBS		:= @CAP_LIBS@
 ACL_LIBS		:= @ACL_LIBS@
