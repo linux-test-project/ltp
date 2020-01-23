@@ -156,7 +156,7 @@ int TST_TOTAL = 0;
 
 int main(void)
 {
-	tst_resm(TPASS, "socket call test on this architecture disabled.");
+	tst_resm(TCONF, "socket call test on this architecture disabled.");
 	tst_exit();
 }
 
