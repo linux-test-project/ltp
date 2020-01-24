@@ -371,3 +371,4 @@ copy_file_range 391
 preadv2 392
 pwritev2 393
 pidfd_send_signal 424
+pidfd_open 434

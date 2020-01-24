@@ -344,3 +344,4 @@ pkey_mprotect 384
 pkey_alloc 385
 pkey_free 386
 pidfd_send_signal 424
+pidfd_open 434

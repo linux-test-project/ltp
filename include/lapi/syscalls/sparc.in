@@ -349,3 +349,4 @@ pkey_mprotect 362
 pkey_alloc 363
 pkey_free 364
 pidfd_send_signal 424
+pidfd_open 434

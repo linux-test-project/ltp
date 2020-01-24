@@ -357,6 +357,7 @@ preadv2 380
 pwritev2 381
 statx 383
 pidfd_send_signal 424
+pidfd_open 434
 pkey_mprotect 386
 pkey_alloc 384
 pkey_free 385
