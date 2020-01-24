@@ -84,4 +84,9 @@ int tst_dev_sync(int fd);
  */
 unsigned long tst_dev_bytes_written(const char *dev);
 
+/*
+ * Wipe the contents of given directory but keep the directory itself
+ */
+void tst_purge_dir(const char *path);
+
 #endif	/* TST_DEVICE_H__ */

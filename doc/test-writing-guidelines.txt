@@ -1193,6 +1193,17 @@ Directory is considered empty if it contains only '.' and '..'.
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
+void tst_purge_dir(const char *path);
+-------------------------------------------------------------------------------
+
+Deletes the contents of given directory but keeps the directory itself. Useful
+for cleaning up the temporary directory and mount points between test cases or
+test iterations. Terminates the program with 'TBROK' on error.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
 int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount);
 -------------------------------------------------------------------------------
 
