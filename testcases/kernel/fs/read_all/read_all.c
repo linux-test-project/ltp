@@ -85,6 +85,8 @@ static char *blacklist[] = {
 	NULL, /* reserved for -e parameter */
 	"/sys/power/wakeup_count",
 	"/sys/kernel/debug/*",
+	"/sys/devices/platform/*/eeprom",
+	"/sys/devices/platform/*/nvmem",
 };
 
 static struct tst_option options[] = {
