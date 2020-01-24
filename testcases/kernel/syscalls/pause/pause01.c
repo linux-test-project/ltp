@@ -38,7 +38,7 @@ static void do_test(void)
 		do_child();
 
 	TST_CHECKPOINT_WAIT(0);
-	TST_PROCESS_STATE_WAIT(pid, 'S');
+	TST_PROCESS_STATE_WAIT(pid, 'S', 0);
 	kill(pid, SIGINT);
 
 	/*

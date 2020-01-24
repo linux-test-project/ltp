@@ -80,7 +80,7 @@ static void do_test(unsigned int n)
 		_exit(0);
 	}
 
-	TST_PROCESS_STATE_WAIT(pid, 'S');
+	TST_PROCESS_STATE_WAIT(pid, 'S', 0);
 	SAFE_KILL(pid, SIGHUP);
 	tst_reap_children();
 }

@@ -159,7 +159,7 @@ static void test_clone_stopped(int t)
 
 	child = clone_child(&test_cases[t]);
 
-	TST_PROCESS_STATE_WAIT(child, 'T');
+	TST_PROCESS_STATE_WAIT(child, 'T', 0);
 
 	stopped_flag = 0;
 

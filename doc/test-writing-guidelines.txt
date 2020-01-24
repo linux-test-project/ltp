@@ -820,11 +820,14 @@ For the details of the interface, look into the 'include/tst_checkpoint.h'.
  * Z - zombie process
  * T - process is traced
  */
-TST_PROCESS_STATE_WAIT(pid, state)
+TST_PROCESS_STATE_WAIT(pid, state, msec_timeout)
 -------------------------------------------------------------------------------
 
 The 'TST_PROCESS_STATE_WAIT()' waits until process 'pid' is in requested
-'state'. The call polls +/proc/pid/stat+ to get this information.
+'state' or timeout is reached. The call polls +/proc/pid/stat+ to get this
+information. A timeout of 0 will wait infinitely.
+
+On timeout -1 is returned and errno set to ETIMEDOUT.
 
 It's mostly used with state 'S' which means that process is sleeping in kernel
 for example in 'pause()' or any other blocking syscall.

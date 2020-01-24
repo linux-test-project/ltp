@@ -87,7 +87,7 @@ static void verify_futex_cmp_requeue(unsigned int n)
 	}
 
 	for (i = 0; i < tc->num_waiters; i++)
-		TST_PROCESS_STATE_WAIT(pid[i], 'S');
+		TST_PROCESS_STATE_WAIT(pid[i], 'S', 0);
 
 	tst_res(TINFO, "Test %d: waiters: %d, wakes: %d, requeues: %d",
 		n, tc->num_waiters, tc->set_wakes, tc->set_requeues);

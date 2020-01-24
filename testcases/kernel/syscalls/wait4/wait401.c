@@ -25,7 +25,7 @@ static void run(void)
 
 	pid = SAFE_FORK();
 	if (!pid) {
-		TST_PROCESS_STATE_WAIT(getppid(), 'S');
+		TST_PROCESS_STATE_WAIT(getppid(), 'S', 0);
 		exit(0);
 	}
 

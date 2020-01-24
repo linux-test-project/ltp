@@ -47,9 +47,9 @@
  */
 #ifdef TST_TEST_H__
 
-#define TST_PROCESS_STATE_WAIT(pid, state) \
+#define TST_PROCESS_STATE_WAIT(pid, state, msec_timeout) \
 	tst_process_state_wait(__FILE__, __LINE__, NULL, \
-	                       (pid), (state))
+	                       (pid), (state), (msec_timeout))
 #else
 /*
  * The same as above but does not use tst_brkm() interface.
@@ -62,11 +62,11 @@ int tst_process_state_wait2(pid_t pid, const char state);
 
 # define TST_PROCESS_STATE_WAIT(cleanup_fn, pid, state) \
 	 tst_process_state_wait(__FILE__, __LINE__, (cleanup_fn), \
-	                        (pid), (state))
+	                        (pid), (state), 0)
 #endif
 
-void tst_process_state_wait(const char *file, const int lineno,
-                            void (*cleanup_fn)(void),
-                            pid_t pid, const char state);
+int tst_process_state_wait(const char *file, const int lineno,
+                            void (*cleanup_fn)(void), pid_t pid,
+			    const char state, unsigned int msec_timeout);
 
 #endif /* TST_PROCESS_STATE__ */

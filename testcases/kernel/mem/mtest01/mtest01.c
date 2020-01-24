@@ -227,7 +227,7 @@ static void mem_test(void)
 			alloc_maxbytes / 1024, write_msg);
 
 	for (i = 0; i < pid_cntr; i++) {
-		TST_PROCESS_STATE_WAIT(pid_list[i], 'T');
+		TST_PROCESS_STATE_WAIT(pid_list[i], 'T', 0);
 		kill(pid_list[i], SIGCONT);
 	}
 }

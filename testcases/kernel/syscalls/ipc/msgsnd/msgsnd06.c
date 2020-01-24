@@ -57,7 +57,7 @@ static void do_test(void)
 		_exit(0);
 	}
 
-	TST_PROCESS_STATE_WAIT(pid, 'S');
+	TST_PROCESS_STATE_WAIT(pid, 'S', 0);
 
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
 
