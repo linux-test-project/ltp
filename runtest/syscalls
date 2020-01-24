@@ -1551,6 +1551,7 @@ vhangup02 vhangup02
 vmsplice01 vmsplice01
 vmsplice02 vmsplice02
 vmsplice03 vmsplice03
+vmsplice04 vmsplice04
 
 wait01 wait01
 wait02 wait02
