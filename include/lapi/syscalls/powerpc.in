@@ -356,6 +356,7 @@ copy_file_range 379
 preadv2 380
 pwritev2 381
 statx 383
+io_pgetevents 388
 pidfd_send_signal 424
 pidfd_open 434
 pkey_mprotect 386

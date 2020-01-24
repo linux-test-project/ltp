@@ -320,5 +320,6 @@ pkey_mprotect 329
 pkey_alloc 330
 pkey_free 331
 statx 332
+io_pgetevents 333
 pidfd_send_signal 424
 pidfd_open 434

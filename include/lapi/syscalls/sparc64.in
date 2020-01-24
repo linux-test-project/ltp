@@ -320,6 +320,7 @@ mlock2 356
 copy_file_range 357
 preadv2 358
 pwritev2 359
+io_pgetevents 361
 pkey_mprotect 362
 pkey_alloc 363
 pkey_free 364
