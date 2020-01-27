@@ -471,6 +471,9 @@ int in_blacklist(int sysno)
 #if defined(__NR_clone) && __NR_clone
 		SYS_clone,
 #endif
+#if defined(__NR_vhangup) && __NR_vhangup
+		__NR_vhangup,	/* int vhangup(void); - terminal logout */
+#endif
 		-1
 	};
 
