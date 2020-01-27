@@ -1,6 +1,7 @@
 #DESCRIPTION:Terminal type stress
 pty01 pty01
 pty02 pty02
+pty03 pty03
 ptem01 ptem01
 hangup01 hangup01
 
