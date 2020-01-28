@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <termios.h>
-#include <sys/ioctl.h>
+#include "lapi/ioctl.h"
 
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
