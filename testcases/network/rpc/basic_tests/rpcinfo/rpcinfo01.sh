@@ -6,18 +6,11 @@
 TST_TESTFUNC=do_test
 TST_SETUP=do_setup
 TST_NEEDS_TMPDIR=1
-. tst_net.sh
+. rpc_lib.sh
 
 do_setup()
 {
-	tst_res TINFO "Checking for portmap or rpcbind"
-
-	if pgrep portmap > /dev/null; then
-		PORTMAPPER="portmap"
-	else
-		pgrep rpcbind > /dev/null && PORTMAPPER="rpcbind" || \
-			tst_brk TCONF "portmap or rpcbind is not running"
-	fi
+	check_portmap_rpcbind
 
 	# Create file with 1 tcp and 1 udp line. Use for variable assignments.
 	rpcinfo -p $(tst_ipaddr) | grep tcp | sed -n 2p > rpc_out
