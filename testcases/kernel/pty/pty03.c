@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-#include <termio.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 
