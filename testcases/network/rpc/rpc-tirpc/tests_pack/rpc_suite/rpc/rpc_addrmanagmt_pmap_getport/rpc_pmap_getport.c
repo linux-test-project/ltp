@@ -29,8 +29,8 @@
 #include <stdio.h>
 #include <rpc/rpc.h>
 #include <netinet/in.h>
-#include <rpc/pmap_clnt.h>
 #include <netdb.h>
+#include "rpc.h"
 
 //Standard define
 #define PROCNUM 1

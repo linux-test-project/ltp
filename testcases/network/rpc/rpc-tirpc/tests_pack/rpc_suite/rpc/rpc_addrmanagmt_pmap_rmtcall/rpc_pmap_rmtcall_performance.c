@@ -28,9 +28,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <rpc/rpc.h>
 #include <errno.h>
 #include <netdb.h>
+#include "rpc.h"
 
 //Standard define
 #define PROCNUM 1

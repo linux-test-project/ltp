@@ -13,4 +13,10 @@
 #include <rpc/xdr.h>
 #include <rpc/svc.h>
 
+/*
+ * For pmap_unset() and clnt_broadcast().
+ * Needed for glibc, which does not include <rpc/pmap_clnt.h> in <rpc/rpc.h>.
+ */
+#include <rpc/pmap_clnt.h>
+
 #endif	/* RPC_H__ */

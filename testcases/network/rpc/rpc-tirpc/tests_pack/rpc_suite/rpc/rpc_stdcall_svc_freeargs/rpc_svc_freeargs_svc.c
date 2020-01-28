@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <rpc/rpc.h>
+#include "rpc.h"
 
 //Standard define
 #define VERSNUM 1

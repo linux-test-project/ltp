@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <rpc/rpc.h>
+#include "rpc.h"
 
 //Standard define
 #define PROCNUM 1

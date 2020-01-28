@@ -1,20 +1,5 @@
-#
-#    Copyright (C) 2014, Oracle and/or its affiliates. All Rights Reserved.
-#
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License along
-#    with this program; if not, write to the Free Software Foundation, Inc.,
-#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
+# Copyright (C) 2014, Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
 
 top_srcdir		?= ../../../../..
 
@@ -23,6 +8,13 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 LIBDIR			:= lib
 FILTER_OUT_DIRS		:= $(LIBDIR)
 LIB			:= $(LIBDIR)/librpc-tirpc.a
+
+# keep only rpc_*
+ifeq ($(TIRPC_LIBS),)
+FILTER_OUT_MAKE_TARGETS	+= tirpc_cleaner
+FILTER_OUT_DIRS	+= tirpc_svc_1 tirpc_svc_2 tirpc_svc_3 tirpc_svc_4 tirpc_svc_5 tirpc_svc_6 tirpc_svc_7 tirpc_svc_8 tirpc_svc_9 tirpc_svc_11
+endif
+
 
 $(LIBDIR):
 	mkdir -p "$@"
