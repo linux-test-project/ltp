@@ -1,6 +1,6 @@
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
+ *   Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
  *
  *   This program is free software;  you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -57,17 +57,16 @@
  */
 
 #include <stdio.h>
-#include <termio.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/ioctl.h>
-#include <sys/termios.h>
+#include <termios.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/ioctl.h"
 
 #define	CNUL	0
 

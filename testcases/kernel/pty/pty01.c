@@ -29,12 +29,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <termio.h>
+#include <termios.h>
 #include <unistd.h>
 
-/** LTP Port **/
 #include "test.h"
 #include "safe_macros.h"
+#include "lapi/ioctl.h"
 
 char *TCID = "pty01";		/* Test program identifier.    */
 int TST_TOTAL = 5;		/* Total number of test cases. */

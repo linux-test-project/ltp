@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) International Business Machines  Corp., 2001
- *  07/2001 Ported by Wayne Boyer
- *  04/2002 Fixes by wjhuie
- */
-/*
- * DESCRIPTION
+ * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) 2020 Petr Vorel <petr.vorel@gmail.com>
+ * 07/2001 Ported by Wayne Boyer
+ * 04/2002 Fixes by wjhuie
+ *
  *	Testcase to check the errnos set by the ioctl(2) system call.
  *
  * ALGORITHM
@@ -14,15 +13,14 @@
  *	3. EINVAL: Pass invalid cmd in ioctl(fd, cmd, arg)
  *	4. ENOTTY: Pass an non-streams fd in ioctl(fd, cmd, arg)
  *	5. EFAULT: Pass a NULL address for termio
- *
  */
 
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <termio.h>
 #include <termios.h>
 #include "tst_test.h"
+#include "lapi/ioctl.h"
 
 #define	INVAL_IOCTL	9999999
 
