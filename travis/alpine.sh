@@ -31,7 +31,6 @@ echo "WARNING: remove unsupported tests (until they're fixed)"
 cd ..
 rm -rfv \
 	testcases/kernel/pty/pty01.c \
-	testcases/kernel/pty/pty02.c \
 	testcases/kernel/pty/ptem01.c \
 	testcases/kernel/sched/process_stress/process.c \
 	testcases/kernel/syscalls/accept4/accept4_01.c \

@@ -14,7 +14,8 @@
 
 #include <stdlib.h>
 #include <errno.h>
-#include <termio.h>
+#include <sys/ioctl.h>
+#include <termios.h>
 
 #include "tst_test.h"
 #include "lapi/termbits.h"
