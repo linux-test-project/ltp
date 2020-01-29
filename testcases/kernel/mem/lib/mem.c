@@ -52,7 +52,7 @@ static int alloc_mem(long int length, int testcase)
 		}
 	}
 
-#ifdef HAVE_MADV_MERGEABLE
+#ifdef HAVE_DECL_MADV_MERGEABLE
 	if (testcase == KSM && madvise(s, length, MADV_MERGEABLE) == -1)
 		return errno;
 #endif
@@ -368,7 +368,7 @@ static void create_ksm_child(int child_num, int size, int unit,
 	for (j = 0; j < total_unit; j++) {
 		memory[j] = SAFE_MMAP(NULL, unit * MB, PROT_READ|PROT_WRITE,
 			MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-#ifdef HAVE_MADV_MERGEABLE
+#ifdef HAVE_DECL_MADV_MERGEABLE
 		if (madvise(memory[j], unit * MB, MADV_MERGEABLE) == -1)
 			tst_brk(TBROK|TERRNO, "madvise");
 #endif
@@ -551,7 +551,7 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	for (i = 0; i < num_nodes; i++) {
 		memory[i] = SAFE_MMAP(NULL, length, PROT_READ|PROT_WRITE,
 			    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-#ifdef HAVE_MADV_MERGEABLE
+#ifdef HAVE_DECL_MADV_MERGEABLE
 		if (madvise(memory[i], length, MADV_MERGEABLE) == -1)
 			tst_brk(TBROK|TERRNO, "madvise");
 #endif

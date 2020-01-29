@@ -32,13 +32,19 @@ AC_PROG_YACC
 
 AC_PREFIX_DEFAULT(/opt/ltp)
 
+AC_CHECK_DECLS([IFLA_NET_NS_PID],,,[#include <linux/if_link.h>])
+AC_CHECK_DECLS([MADV_MERGEABLE],,,[#include <sys/mman.h>])
+AC_CHECK_DECLS([PR_CAPBSET_DROP, PR_CAPBSET_READ],,,[#include <sys/prctl.h>])
+
 AC_CHECK_HEADERS([ \
+    asm/ldt.h \
     ifaddrs.h \
     keyutils.h \
     linux/can.h \
     linux/cgroupstats.h \
     linux/cryptouser.h \
     linux/dccp.h \
+    linux/fs.h \
     linux/genetlink.h \
     linux/if_alg.h \
     linux/if_packet.h \
@@ -59,11 +65,14 @@ AC_CHECK_HEADERS([ \
     sys/inotify.h \
     sys/prctl.h \
     sys/shm.h \
+    sys/timerfd.h \
     sys/ustat.h \
     sys/utsname.h \
     sys/xattr.h \
     xfs/xqm.h \
 ])
+AC_CHECK_HEADERS(fts.h, [have_fts=1])
+AC_SUBST(HAVE_FTS_H, $have_fts)
 
 AC_CHECK_FUNCS([ \
     copy_file_range \
@@ -78,6 +87,7 @@ AC_CHECK_FUNCS([ \
     io_pgetevents \
     mkdirat \
     mknodat \
+    modify_ldt \
     name_to_handle_at \
     openat \
     pidfd_open \
@@ -96,13 +106,72 @@ AC_CHECK_FUNCS([ \
     sendmmsg \
     sigpending \
     splice \
+    statx \
     stime \
     syncfs \
     sync_file_range \
     tee \
+    timerfd_create \
+    timerfd_gettime \
+    timerfd_settime \
     unshare \
     ustat \
     vmsplice \
+])
+AC_CHECK_FUNCS(mkdtemp,[],AC_MSG_ERROR(mkdtemp() not found!))
+
+AC_CHECK_MEMBERS([struct fanotify_event_info_fid.fsid.__val],,,[#include <sys/fanotify.h>])
+AC_CHECK_MEMBERS([struct perf_event_mmap_page.aux_head],,,[#include <linux/perf_event.h>])
+AC_CHECK_MEMBERS([struct sigaction.sa_sigaction],[],[],[#include <signal.h>])
+
+AC_CHECK_MEMBERS([struct utsname.domainname],,,[
+#define _GNU_SOURCE
+#include <sys/utsname.h>
+])
+
+AC_CHECK_TYPES([enum kcmp_type],,,[#include <linux/kcmp.h>])
+AC_CHECK_TYPES([struct acct_v3],,,[#include <sys/acct.h>])
+AC_CHECK_TYPES([struct fanotify_event_info_header],,,[#include <sys/fanotify.h>])
+AC_CHECK_TYPES([struct fanotify_event_info_fid],,,[#include <sys/fanotify.h>])
+AC_CHECK_TYPES([struct file_dedupe_range],,,[#include <linux/fs.h>])
+AC_CHECK_TYPES([struct fs_quota_statv],,,[#include <xfs/xqm.h>])
+AC_CHECK_TYPES([struct if_nextdqblk],,,[#include <linux/quota.h>])
+AC_CHECK_TYPES([struct iovec],,,[#include <sys/uio.h>])
+
+AC_CHECK_TYPES([struct mmsghdr],,,[
+#define _GNU_SOURCE
+#include <sys/types.h>
+#include <sys/socket.h>
+])
+
+AC_CHECK_TYPES([struct rlimit64],,,[
+#define _LARGEFILE64_SOURCE
+#include <sys/resource.h>
+])
+
+AC_CHECK_TYPES([struct statx, struct statx_timestamp],,,[
+#define _GNU_SOURCE
+#include <sys/stat.h>
+])
+
+AC_CHECK_TYPES([struct termio],,,[#include <sys/ioctl.h>])
+
+AC_CHECK_TYPES([struct tpacket_req3],,,[
+#ifdef HAVE_LINUX_IF_PACKET_H
+# include <linux/if_packet.h>
+#endif
+])
+
+AC_CHECK_TYPES([struct user_desc, struct modify_ldt_ldt_s],[],[],[
+#include <asm/ldt.h>
+])
+
+AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <limits.h>
+#include <linux/netfilter_ipv4/ip_tables.h>
 ])
 
 # Tools knobs
@@ -208,7 +277,7 @@ fi
 AC_CONFIG_COMMANDS([syscalls.h], [cd ${ac_top_srcdir}/include/lapi/syscalls; ./regen.sh])
 
 # custom functions
-LTP_CHECK_ACCT
+# NOTE: don't create custom functions for simple checks, put them into this file
 LTP_CHECK_ACL_SUPPORT
 LTP_CHECK_ATOMIC_MEMORY_MODEL
 LTP_CHECK_BUILTIN_CLEAR_CACHE
@@ -216,32 +285,17 @@ LTP_CHECK_CAPABILITY_SUPPORT
 LTP_CHECK_CC_WARN_OLDSTYLE
 LTP_CHECK_CLONE_SUPPORTS_7_ARGS
 LTP_CHECK_CRYPTO
-LTP_CHECK_FANOTIFY
-LTP_CHECK_FIDEDUPE
 LTP_CHECK_FORTIFY_SOURCE
-LTP_CHECK_FTS_H
-LTP_CHECK_IF_LINK
-LTP_CHECK_IOVEC
-LTP_CHECK_KCMP_TYPE
 LTP_CHECK_KERNEL_DEVEL
 LTP_CHECK_KEYUTILS_SUPPORT
 LTP_CHECK_LINUX_PTRACE
 LTP_CHECK_LINUXRANDOM
-LTP_CHECK_MADVISE
-LTP_CHECK_MKDTEMP
-LTP_CHECK_MMSGHDR
 LTP_CHECK_MREMAP_FIXED
 LTP_CHECK_NOMMU_LINUX
-LTP_CHECK_PERF_EVENT
-LTP_CHECK_PRCTL_SUPPORT
-LTP_CHECK_RLIMIT64
 LTP_CHECK_SELINUX
-LTP_CHECK_SIGNAL
-LTP_CHECK_STATX
 LTP_CHECK_SYNC_ADD_AND_FETCH
 LTP_CHECK_SYSCALL_EVENTFD
 LTP_CHECK_SYSCALL_FCNTL
-LTP_CHECK_SYSCALL_MODIFY_LDT
 
 if test "x$with_numa" = xyes; then
 	LTP_CHECK_SYSCALL_NUMA
@@ -253,16 +307,10 @@ AC_DEFINE_UNQUOTED(NUMA_ERROR_MSG, ["$numa_error_msg"], [Error message when no N
 
 
 LTP_CHECK_SYSCALL_PERF_EVENT_OPEN
-LTP_CHECK_SYSCALL_QUOTACTL
 LTP_CHECK_SYSCALL_SIGNALFD
 LTP_CHECK_SYSCALL_UTIMENSAT
 LTP_CHECK_TASKSTATS
-LTP_CHECK_TERMIO
-LTP_CHECK_TIMERFD
 test "x$with_tirpc" = xyes && LTP_CHECK_TIRPC
-LTP_CHECK_TPACKET_V3
-LTP_CHECK_UNAME_DOMAINNAME
-LTP_CHECK_X_TABLES
 LTP_DETECT_HOST_CPU
 
 AC_OUTPUT

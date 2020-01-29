@@ -41,7 +41,7 @@
 #include "tst_test.h"
 #include "mem.h"
 
-#ifdef HAVE_MADV_MERGEABLE
+#ifdef HAVE_DECL_MADV_MERGEABLE
 
 static int ksm_run_orig = -1;
 static void sighandler(int sig);

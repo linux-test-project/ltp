@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		if (access(PATH_KSM, F_OK) == -1)
 			tst_brkm(TCONF, NULL,
 				 "KSM configuration is not enabled");
-#ifdef HAVE_MADV_MERGEABLE
+#ifdef HAVE_DECL_MADV_MERGEABLE
 		tst_resm(TINFO, "add to KSM regions.");
 #else
 		tst_brkm(TCONF, NULL, "MADV_MERGEABLE missing in sys/mman.h");
@@ -133,7 +133,7 @@ void mmapzero(void)
 	}
 	if (x == MAP_FAILED)
 		tst_brkm(TFAIL | TERRNO, cleanup, "mmap");
-#ifdef HAVE_MADV_MERGEABLE
+#ifdef HAVE_DECL_MADV_MERGEABLE
 	if (opt_ksm) {
 		if (madvise(x, SIZE + SIZE - ps, MADV_MERGEABLE) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "madvise");
