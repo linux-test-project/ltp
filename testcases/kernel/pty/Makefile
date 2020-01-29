@@ -24,8 +24,6 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS		+= -D_GNU_SOURCE
-
 pty03: CFLAGS += -pthread
 pty03: LDFLAGS += -lrt
 

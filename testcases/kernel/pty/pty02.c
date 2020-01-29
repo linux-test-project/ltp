@@ -12,6 +12,7 @@
  * slave.  This is simplified from a syzkaller-generated reproducer.
  */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/ioctl.h>

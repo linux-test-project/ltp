@@ -20,10 +20,7 @@
 /* 12/23/2002	Port to LTP	robbiew@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE 1
-#endif
-
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>

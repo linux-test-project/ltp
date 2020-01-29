@@ -20,6 +20,7 @@
 /* 12/23/2002   Port to LTP     robbiew@us.ibm.com */
 /* 06/30/2001   Port to Linux   nsharoff@us.ibm.com */
 
+#define _GNU_SOURCE
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,10 +30,6 @@
 #include <sys/stat.h>
 #include <sys/poll.h>
 #include <sys/types.h>
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE 1
-#endif
 
 /** LTP Port **/
 #include "test.h"

@@ -24,6 +24,7 @@
  * "can, slip: Protect tty->disc_data in write_wakeup and close with RCU"
  */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
