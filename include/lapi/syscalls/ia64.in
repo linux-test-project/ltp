@@ -311,6 +311,9 @@ pkey_mprotect 1354
 pkey_alloc 1355
 pkey_free 1356
 pidfd_send_signal 1448
+io_uring_setup 1449
+io_uring_enter 1450
+io_uring_register 1451
 open_tree 1452
 move_mount 1453
 fsopen 1454

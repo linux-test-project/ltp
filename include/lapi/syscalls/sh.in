@@ -371,6 +371,9 @@ copy_file_range 391
 preadv2 392
 pwritev2 393
 pidfd_send_signal 424
+io_uring_setup 425
+io_uring_enter 426
+io_uring_register 427
 open_tree 428
 move_mount 429
 fsopen 430
