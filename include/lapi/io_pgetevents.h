@@ -21,7 +21,8 @@ int io_pgetevents(io_context_t ctx, long min_nr, long max_nr,
 		 struct io_event *events, struct timespec *timeout,
 		 sigset_t *sigmask)
 {
-	return syscall(__NR_io_pgetevents, ctx, min_nr, max_nr, events, timeout, sigmask);
+	return tst_syscall(__NR_io_pgetevents, ctx, min_nr, max_nr, events,
+			   timeout, sigmask);
 }
 #endif /* HAVE_IO_PGETEVENTS */
 #endif /* HAVE_LIBAIO */
