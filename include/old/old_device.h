@@ -41,6 +41,7 @@ const char *tst_dev_fs_type(void);
  * Note that you have to call tst_tmpdir() beforehand.
  *
  * Returns path to the device or NULL if it cannot be created.
+ * Call tst_release_device() when you're done.
  */
 const char *tst_acquire_device_(void (cleanup_fn)(void), unsigned int size);
 
@@ -55,6 +56,11 @@ static inline const char *tst_acquire_device(void (cleanup_fn)(void))
  * @dev: device path returned by the tst_acquire_device()
  */
 int tst_release_device(const char *dev);
+
+/*
+ * @dev: device path returned by the tst_acquire_device()
+ */
+int tst_detach_device(const char *dev);
 
 /*
  * Just like umount() but retries several times on failure.

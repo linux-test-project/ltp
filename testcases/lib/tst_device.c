@@ -60,7 +60,13 @@ static int release_device(int argc, char *argv[])
 	if (argc != 3)
 		return 1;
 
-	return tst_release_device(argv[2]);
+	/*
+	 * tst_acquire_device() was called in a different process.
+	 * tst_release_device() would think that no device was acquired yet
+	 * and do nothing. Call tst_detach_device() directly to bypass
+	 * the check.
+	 */
+	return tst_detach_device(argv[2]);
 }
 
 int main(int argc, char *argv[])
