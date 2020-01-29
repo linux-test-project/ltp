@@ -271,5 +271,11 @@ pkey_alloc 289
 pkey_free 290
 io_pgetevents 292
 pidfd_send_signal 424
+open_tree 428
+move_mount 429
+fsopen 430
+fsconfig 431
+fsmount 432
+fspick 433
 pidfd_open 434
 _sysctl 1078
