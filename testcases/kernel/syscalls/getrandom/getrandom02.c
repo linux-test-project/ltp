@@ -10,6 +10,8 @@
 #include "lapi/syscalls.h"
 #include "tst_test.h"
 
+#define PROC_ENTROPY_AVAIL "/proc/sys/kernel/random/entropy_avail"
+
 static int modes[] = { 0, GRND_RANDOM, GRND_NONBLOCK,
 		       GRND_RANDOM | GRND_NONBLOCK };
 
@@ -37,11 +39,17 @@ static int check_content(unsigned char *buf, int nb)
 static void verify_getrandom(unsigned int n)
 {
 	unsigned char buf[256];
+	int bufsize = 64, entropy_avail;
+
+	if (access(PROC_ENTROPY_AVAIL, F_OK) == 0) {
+		SAFE_FILE_SCANF(PROC_ENTROPY_AVAIL, "%d", &entropy_avail);
+		if (entropy_avail > 256)
+			bufsize = sizeof(buf);
+	}
 
 	memset(buf, 0, sizeof(buf));
-
 	do {
-		TEST(tst_syscall(__NR_getrandom, buf, sizeof(buf), modes[n]));
+		TEST(tst_syscall(__NR_getrandom, buf, bufsize, modes[n]));
 	} while ((modes[n] & GRND_NONBLOCK) && TST_RET == -1
 		  && TST_ERR == EAGAIN);
 
