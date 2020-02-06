@@ -302,6 +302,8 @@ fcntl35 fcntl35
 fcntl35_64 fcntl35_64
 fcntl36 fcntl36
 fcntl36_64 fcntl36_64
+fcntl37 fcntl37
+fcntl37_64 fcntl37_64
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
