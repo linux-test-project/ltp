@@ -6,6 +6,7 @@ zypper --non-interactive install --no-recommends \
 	autoconf \
 	automake \
 	clang \
+	findutils \
 	gcc \
 	gzip \
 	make \
