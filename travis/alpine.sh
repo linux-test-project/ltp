@@ -1,6 +1,6 @@
 #!/bin/sh
-# Copyright (c) 2019 Petr Vorel <petr.vorel@gmail.com>
-set -e
+# Copyright (c) 2019-2020 Petr Vorel <petr.vorel@gmail.com>
+set -ex
 
 apk update
 
@@ -24,7 +24,6 @@ apk add \
 	openssl-dev \
 	pkgconfig
 
-echo "=== /etc/os-release ==="
 cat /etc/os-release
 
 echo "WARNING: remove unsupported tests (until they're fixed)"

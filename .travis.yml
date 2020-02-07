@@ -1,3 +1,5 @@
+# Copyright (c) 2017-2020 Petr Vorel <pvorel@suse.cz>
+
 sudo: required
 language: c
 services:
@@ -12,11 +14,11 @@ matrix:
 
         # cross compilation builds
         - os: linux
-          env: DISTRO=debian:stable VARIANT=cross-compile.ppc64le TREE="out"
+          env: DISTRO=debian:stable VARIANT=cross-compile.ppc64le TREE=out
           compiler: powerpc64le-linux-gnu-gcc
 
         - os: linux
-          env: DISTRO=debian:stable VARIANT=cross-compile.aarch64 TREE="out"
+          env: DISTRO=debian:stable VARIANT=cross-compile.aarch64 TREE=out
           compiler: aarch64-linux-gnu-gcc
 
         # musl (native)
@@ -28,7 +30,7 @@ matrix:
 
         # build with minimal dependencies
         - os: linux
-          env: DISTRO=debian:stable VARIANT=minimal TREE="out"
+          env: DISTRO=debian:stable VARIANT=minimal TREE=out
           compiler: clang
 
         # native non-intel
@@ -48,7 +50,7 @@ matrix:
           compiler: clang
 
         - os: linux
-          env: DISTRO=centos:6 TREE="out"
+          env: DISTRO=centos:6 TREE=out
           compiler: gcc
 
         - os: linux
@@ -76,7 +78,7 @@ matrix:
           compiler: clang
 
         - os: linux
-          env: DISTRO=ubuntu:latest TREE="out"
+          env: DISTRO=ubuntu:latest TREE=out
           compiler: gcc
 
         - os: linux
@@ -90,7 +92,7 @@ matrix:
 before_install:
     - DIR="/usr/src/ltp"
     - printf "FROM $DISTRO\nRUN mkdir -p $DIR\nWORKDIR $DIR\nCOPY . $DIR\n" > Dockerfile
-    - echo "cat Dockerfile"; cat Dockerfile
+    - cat Dockerfile
     - docker build -t ltp .
 
 script:
