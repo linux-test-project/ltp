@@ -24,13 +24,13 @@ build_32()
 {
 	echo "===== 32-bit ${1}-tree build into $PREFIX ====="
 	CFLAGS="-m32 $CFLAGS" LDFLAGS="-m32 $LDFLAGS"
-	build $1
+	build $1 $2
 }
 
 build_native()
 {
 	echo "===== native ${1}-tree build into $PREFIX ====="
-	build $1
+	build $1 $2
 }
 
 build_cross()
@@ -40,26 +40,30 @@ build_cross()
 		{ echo "Missing CC variable, pass it with -c option." >&2; exit 1; }
 
 	echo "===== cross-compile ${host} ${1}-tree build into $PREFIX ====="
-	build $1 "--host=$host" CROSS_COMPILE="${host}-"
+	build $1 $2 "--host=$host" CROSS_COMPILE="${host}-"
 }
 
 build()
 {
 	local tree="$1"
-	shift
+	local install="$2"
+	shift 2
 
 	echo "=== autotools ==="
 	make autotools
 
 	if [ "$tree" = "in" ]; then
-		build_in_tree $@
+		build_in_tree $install $@
 	else
-		build_out_tree $@
+		build_out_tree $install $@
 	fi
 }
 
 build_out_tree()
 {
+	local install="$1"
+	shift
+
 	local tree="$PWD"
 	local build="$tree/../ltp-build"
 	local make_opts="$MAKE_OPTS -C $build -f $tree/Makefile top_srcdir=$tree top_builddir=$build"
@@ -71,19 +75,30 @@ build_out_tree()
 	echo "=== build ==="
 	make $make_opts
 
-	echo "=== install ==="
-	make $make_opts DESTDIR="$PREFIX" SKIP_IDCHECK=1 install
+	if [ "$install" = 1 ]; then
+		echo "=== install ==="
+		make $make_opts DESTDIR="$PREFIX" SKIP_IDCHECK=1 install
+	else
+		echo "make install skipped, use -i to run it"
+	fi
 }
 
 build_in_tree()
 {
+	local install="$1"
+	shift
+
 	run_configure ./configure $CONFIGURE_OPTS_IN_TREE --prefix=$PREFIX $@
 
 	echo "=== build ==="
 	make $MAKE_OPTS
 
-	echo "=== install ==="
-	make $MAKE_OPTS install
+	if [ "$install" = 1 ]; then
+		echo "=== install ==="
+		make $MAKE_OPTS install
+	else
+		echo "make install skipped, use -i to run it"
+	fi
 }
 
 run_configure()
@@ -139,11 +154,13 @@ EOF
 PREFIX="$DEFAULT_PREFIX"
 build="$DEFAULT_BUILD"
 tree="$DEFAULT_TREE"
+install=0
 
-while getopts "c:ho:p:t:" opt; do
+while getopts "c:hio:p:t:" opt; do
 	case "$opt" in
 	c) CC="$OPTARG";;
 	h) usage; exit 0;;
+	i) install=1;;
 	o) case "$OPTARG" in
 		in|out) tree="$OPTARG";;
 		*) echo "Wrong build tree '$OPTARG'" >&2; usage; exit 1;;
@@ -166,4 +183,4 @@ echo
 echo "=== compiler version ==="
 $CC --version
 
-eval build_$build $tree
+eval build_$build $tree $install
