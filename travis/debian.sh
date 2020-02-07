@@ -36,3 +36,5 @@ apt install -y --no-install-recommends \
 	libtirpc-dev \
 	linux-libc-dev \
 	lsb-release
+
+df -hT
