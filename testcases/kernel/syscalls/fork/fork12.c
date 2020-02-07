@@ -70,6 +70,12 @@ int main(int ac, char **av)
 		forks = 0;
 		while ((pid1 = fork()) != -1) {
 			if (pid1 == 0) {	/* child */
+				/*
+				 * Taunt the OOM killer so that it doesn't
+				 * kill system processes
+				 */
+				SAFE_FILE_PRINTF(NULL,
+					"/proc/self/oom_score_adj", "500");
 				pause();
 				exit(0);
 			}
