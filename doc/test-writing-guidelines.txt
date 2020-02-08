@@ -1953,6 +1953,67 @@ specified by the user plus some other heuristics.
 
 For full documentation see the comments in 'include/tst_fuzzy_sync.h'.
 
+2.2.34 Reserving hugepages
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Many of the LTP tests need to use hugepage in their testing, this allows the
+test can reserve hugepages from system only via '.request_hugepages = xx'.
+
+If set non-zero number of 'request_hugepages', test will try to reserve the
+expected number of hugepage for testing in setup phase. If system does not
+have enough hpage for using, it will try the best to reserve 80% available
+number of hpages. With success test stores the reserved hugepage number in
+'tst_hugepages'. For the system without hugetlb supporting, variable
+'tst_hugepages' will be set to 0.
+
+Also, we do cleanup and restore work for the hpages resetting automatically.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static void run(void)
+{
+	...
+
+	if (tst_hugepages == test.request_hugepages)
+		TEST(do_hpage_test);
+	else
+		...
+	...
+}
+
+struct tst_test test = {
+	.test_all = run,
+	.request_hugepages = 2,
+	...
+};
+[source,c]
+-------------------------------------------------------------------------------
+
+or,
+
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static void run(void)
+{
+	...
+}
+
+static void setup(void)
+{
+        if (tst_hugepages != test.requested_hugepages)
+                tst_brk(TCONF, "...");
+}
+
+struct tst_test test = {
+	.test_all = run,
+	.request_hugepages = 2,
+	...
+};
+-------------------------------------------------------------------------------
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

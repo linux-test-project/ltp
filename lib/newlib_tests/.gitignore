@@ -23,6 +23,7 @@ tst_strstatus
 test17
 test18
 test19
+test20
 tst_expiration_timer
 test_exec
 test_exec_child

@@ -890,6 +890,9 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->all_filesystems)
 		tst_test->needs_device = 1;
 
+	if (tst_test->request_hugepages)
+		tst_request_hugepages(tst_test->request_hugepages);
+
 	setup_ipc();
 
 	if (tst_test->bufs)
@@ -1006,8 +1009,7 @@ static void do_cleanup(void)
 		tst_rmdir();
 	}
 
-	if (tst_test->save_restore)
-		tst_sys_conf_restore(0);
+	tst_sys_conf_restore(0);
 
 	if (tst_test->restore_wallclock)
 		tst_wallclock_restore();

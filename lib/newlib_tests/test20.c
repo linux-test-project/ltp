@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2019 Li Wang <liwang@redhat.com>
+ */
+
+/*
+ * Tests .request_hugepages + .save_restore
+ */
+
+#include "tst_test.h"
+#include "tst_hugepage.h"
+#include "tst_sys_conf.h"
+
+static const char * const save_restore[] = {
+	"!/proc/sys/kernel/numa_balancing",
+	NULL,
+};
+
+static void do_test(void) {
+
+	int val, hpages;
+
+	tst_res(TINFO, "tst_hugepages = %u", tst_hugepages);
+	SAFE_FILE_PRINTF("/proc/sys/kernel/numa_balancing", "1");
+
+	hpages = test.request_hugepages;
+	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%d", &val);
+	if (val != hpages)
+		tst_brk(TBROK, "nr_hugepages = %d, but expect %d", val, hpages);
+	else
+		tst_res(TPASS, "test .needs_hugepges");
+
+	hpages = tst_request_hugepages(3);
+	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%d", &val);
+	if (val != hpages)
+		tst_brk(TBROK, "nr_hugepages = %d, but expect %d", val, hpages);
+	else
+		tst_res(TPASS, "tst_request_hugepages");
+}
+
+static struct tst_test test = {
+	.test_all = do_test,
+	.request_hugepages = 2,
+	.save_restore = save_restore,
+};

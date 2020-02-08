@@ -37,6 +37,7 @@
 #include "tst_coredump.h"
 #include "tst_buffers.h"
 #include "tst_capability.h"
+#include "tst_hugepage.h"
 
 /*
  * Reports testcase result.
@@ -147,6 +148,18 @@ struct tst_test {
 	 * to the test function.
 	 */
 	int all_filesystems:1;
+
+	/*
+	 * If set non-zero number of request_hugepages, test will try to reserve the
+	 * expected number of hugepage for testing in setup phase. If system does not
+	 * have enough hpage for using, it will try the best to reserve 80% available
+	 * number of hpages. With success test stores the reserved hugepage number in
+	 * 'tst_hugepages. For the system without hugetlb supporting, variable
+	 * 'tst_hugepages' will be set to 0.
+	 *
+	 * Also, we do cleanup and restore work for the hpages resetting automatically.
+	 */
+	unsigned int request_hugepages;
 
 	/*
 	 * If set non-zero denotes number of test variant, the test is executed
