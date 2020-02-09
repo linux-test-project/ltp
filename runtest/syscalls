@@ -1352,7 +1352,6 @@ socket02 socket02
 socketcall01 socketcall01
 socketcall02 socketcall02
 socketcall03 socketcall03
-socketcall04 socketcall04
 
 socketpair01 socketpair01
 socketpair02 socketpair02
