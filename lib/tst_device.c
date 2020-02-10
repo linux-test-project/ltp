@@ -363,10 +363,17 @@ int tst_umount(const char *path)
 		if (!ret)
 			return 0;
 
+		if (err != EBUSY) {
+			tst_resm(TWARN, "umount('%s') failed with %s",
+		         path, tst_strerrno(err));
+			errno = err;
+			return ret;
+		}
+
 		tst_resm(TINFO, "umount('%s') failed with %s, try %2i...",
 		         path, tst_strerrno(err), i+1);
 
-		if (i == 0 && err == EBUSY) {
+		if (i == 0) {
 			tst_resm(TINFO, "Likely gvfsd-trash is probing newly "
 			         "mounted fs, kill it to speed up tests.");
 		}
