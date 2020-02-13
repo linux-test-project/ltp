@@ -192,8 +192,7 @@ void do_child(void)
 	exit(1);
 }
 
-/* 1024 GNU blocks */
-#define MIN_RLIMIT_CORE (1024 * 1024)
+#define MIN_RLIMIT_CORE (512 * 1024)
 
 void setup(void)
 {

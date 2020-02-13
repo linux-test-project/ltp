@@ -62,7 +62,7 @@ void verify_abort(void)
 		tst_res(TFAIL, "abort() raised %s", tst_strsig(sig));
 }
 
-#define MIN_RLIMIT_CORE (1024 * 1024)
+#define MIN_RLIMIT_CORE (512 * 1024)
 
 static void setup(void)
 {
