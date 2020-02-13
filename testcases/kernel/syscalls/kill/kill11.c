@@ -201,6 +201,14 @@ void setup(void)
 
 	SAFE_GETRLIMIT(NULL, RLIMIT_CORE, &rlim);
 
+	if (rlim.rlim_max < MIN_RLIMIT_CORE) {
+		if (geteuid() != 0) {
+			tst_brkm(TCONF, NULL, "hard limit(%lu)less than MIN_RLIMT_CORE(%i)",
+				rlim.rlim_max, MIN_RLIMIT_CORE);
+		}
+		tst_resm(TINFO, "Raising rlim_max to %i", MIN_RLIMIT_CORE);
+		rlim.rlim_max = MIN_RLIMIT_CORE;
+	}
 	if (rlim.rlim_cur < MIN_RLIMIT_CORE) {
 		tst_resm(TINFO, "Adjusting RLIMIT_CORE to %i", MIN_RLIMIT_CORE);
 		rlim.rlim_cur = MIN_RLIMIT_CORE;
