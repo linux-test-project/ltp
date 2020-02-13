@@ -18,7 +18,7 @@
 #define AIO_MAXIO 32
 #define AIO_BLKSIZE (64*1024)
 
-static int wait_count = 0;
+static int wait_count;
 
 #define DESC_FLAGS_OPR(x, y) .desc = (x == IO_CMD_PWRITE ? "WRITE: " #y: "READ : " #y), \
 	.flags = y, .operation = x
@@ -203,10 +203,17 @@ static int io_tio(char *pathname, int flag, int operation)
 
 static void test_io(unsigned int n)
 {
-	int status;
+	int status, new_flags;
 	struct testcase *tc = testcases + n;
 
-	status = io_tio("file", tc->flags, tc->operation);
+	new_flags = tc->flags;
+
+	if ((tst_fs_type(".") == TST_TMPFS_MAGIC) && (tc->flags & O_DIRECT)) {
+		tst_res(TINFO, "Drop O_DIRECT flag for tmpfs");
+		new_flags &= ~O_DIRECT;
+	}
+
+	status = io_tio("file", new_flags, tc->operation);
 	if (status)
 		tst_res(TFAIL, "%s, status = %d", tc->desc, status);
 	else
