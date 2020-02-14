@@ -80,6 +80,10 @@ AC_CHECK_FUNCS([ \
     execveat \
     fallocate \
     fchownat \
+    fsconfig \
+    fsmount \
+    fsopen \
+    fspick \
     fstatat \
     getdents \
     getdents64 \
@@ -88,7 +92,9 @@ AC_CHECK_FUNCS([ \
     mkdirat \
     mknodat \
     modify_ldt \
+    move_mount \
     name_to_handle_at \
+    open_tree \
     openat \
     pidfd_open \
     pidfd_send_signal \
