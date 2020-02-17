@@ -2317,30 +2317,63 @@ that can sleep for defined amount of seconds, milliseconds or microseconds.
 tst_sleep 100ms
 -------------------------------------------------------------------------------
 
-Retry a function in limited time
-++++++++++++++++++++++++++++++++
+Retry a function call multiple times
+++++++++++++++++++++++++++++++++++++
 
-Sometimes LTP test needs retrying a function for many times to get success.
-This achievement makes that possible via keeping it retrying if the return
-value of the function is NOT as we expected. After exceeding a limited time,
-test will break from the retries immediately. The time limit is multiplied
-with LTP_TIMEOUT_MUL.
+Sometimes an LTP test needs to retry a function call multiple times because
+the system is not ready to process it successfully on the first try. The LTP
+library has useful tools to handle the call retry automatically.
+'TST_RETRY_FUNC()' will keep retrying for up to 1 second. If you want a custom
+time limit use 'TST_RETRY_FN_EXP_BACKOFF()'. Both methods return the value
+returned by the last 'FUNC' call.
+
+The delay between retries starts at 1 microsecond and doubles after each call.
+The retry loop ends when the function call succeeds or when the next delay
+exceeds the specified time (1 second for 'TST_RETRY_FUNC()'). The maximum
+delay is multiplied by TST_TIMEOUT_MUL. The total cumulative delay may be up
+to twice as long as the adjusted maximum delay.
+
+The C version of 'TST_RETRY_FUNC()' is a macro which takes two arguments:
+
+* 'FUNC' is the complete function call with arguments which should be retried
+  multiple times.
+* 'SUCCESS_CHECK' is a macro or function which will validate 'FUNC' return
+  value. 'FUNC' call was successful if 'SUCCESS_CHECK(ret)' evaluates to
+  non-zero.
+
+Both retry methods clear 'errno' before every 'FUNC' call so your
+'SUCCESS_CHECK' can look for specific error codes as well. The LTP library
+also includes predefined 'SUCCESS_CHECK' macros for the most common call
+conventions:
+
+* 'TST_RETVAL_EQ0()' - The call was successful if 'FUNC' returned 0 or NULL
+* 'TST_RETVAL_NOTNULL()' - The call was successful if 'FUNC' returned any
+  value other than 0 or NULL.
+* 'TST_RETVAL_GE0()' - The call was successful if 'FUNC' returned value >= 0.
 
 [source,c]
 -------------------------------------------------------------------------------
-# retry function in 1 second
-TST_RETRY_FUNC(FUNC, EXPECTED_RET)
+/* Keep trying for 1 second */
+TST_RETRY_FUNC(FUNC, SUCCESS_CHECK)
 
-# retry function in N second
-TST_RETRY_FN_EXP_BACKOFF(FUNC, EXPECTED_RET, N)
+/* Keep trying for up to 2*N seconds */
+TST_RETRY_FN_EXP_BACKOFF(FUNC, SUCCESS_CHECK, N)
 -------------------------------------------------------------------------------
+
+The shell version of 'TST_RETRY_FUNC()' is simpler and takes slightly
+different arguments:
+
+* 'FUNC' is a string containing the complete function or program call with
+  arguments.
+* 'EXPECTED_RET' is a single expected return value. 'FUNC' call was successful
+  if the return value is equal to EXPECTED_RET.
 
 [source,sh]
 -------------------------------------------------------------------------------
-# retry function in 1 second
+# Keep trying for 1 second
 TST_RETRY_FUNC "FUNC arg1 arg2 ..." "EXPECTED_RET"
 
-# retry function in N second
+# Keep trying for up to 2*N seconds
 TST_RETRY_FN_EXP_BACKOFF "FUNC arg1 arg2 ..." "EXPECTED_RET" "N"
 -------------------------------------------------------------------------------
 

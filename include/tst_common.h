@@ -26,34 +26,53 @@
 /**
  * TST_RETRY_FUNC() - Repeatedly retry a function with an increasing delay.
  * @FUNC - The function which will be retried
- * @ERET - The value returned from @FUNC on success
+ * @ECHCK - Function/macro for validating @FUNC return value
  *
- * This macro will call @FUNC in a loop with a delay between retries. If @FUNC
- * returns @ERET then the loop exits. The delay between retries starts at one
- * micro second and is then doubled each iteration until it exceeds one second
- * (the total time sleeping will be approximately one second as well). When the
- * delay exceeds one second tst_brk() is called.
+ * This macro will call @FUNC in a loop with a delay between retries.
+ * If ECHCK(ret) evaluates to non-zero, the loop ends. The delay between
+ * retries starts at one microsecond and is then doubled each iteration until
+ * it exceeds one second (the total time sleeping will be approximately one
+ * second as well). When the delay exceeds one second, the loop will end.
+ * The TST_RETRY_FUNC() macro returns the last value returned by @FUNC.
  */
-#define TST_RETRY_FUNC(FUNC, ERET) \
-	TST_RETRY_FN_EXP_BACKOFF(FUNC, ERET, 1)
+#define TST_RETRY_FUNC(FUNC, ECHCK) \
+	TST_RETRY_FN_EXP_BACKOFF(FUNC, ECHCK, 1)
 
-#define TST_RETRY_FN_EXP_BACKOFF(FUNC, ERET, MAX_DELAY)	\
+#define TST_RETRY_FN_EXP_BACKOFF(FUNC, ECHCK, MAX_DELAY)	\
 ({	unsigned int tst_delay_, tst_max_delay_;			\
+	typeof(FUNC) tst_ret_;						\
 	tst_delay_ = 1;							\
 	tst_max_delay_ = tst_multiply_timeout(MAX_DELAY * 1000000);	\
 	for (;;) {							\
-		typeof(FUNC) tst_ret_ = FUNC;				\
-		if (tst_ret_ == ERET)					\
+		errno = 0;						\
+		tst_ret_ = FUNC;					\
+		if (ECHCK(tst_ret_))					\
 			break;						\
 		if (tst_delay_ < tst_max_delay_) {			\
 			usleep(tst_delay_);				\
 			tst_delay_ *= 2;				\
 		} else {						\
-			tst_brk(TBROK, #FUNC" timed out");		\
+			break;						\
 		}							\
 	}								\
-	ERET;								\
+	tst_ret_;								\
 })
+
+/*
+ * Return value validation macros for TST_RETRY_FUNC():
+ * TST_RETVAL_EQ0() - Check that value is equal to zero
+ */
+#define TST_RETVAL_EQ0(x) (!(x))
+
+/*
+ * TST_RETVAL_NOTNULL() - Check that value is not equal to zero/NULL
+ */
+#define TST_RETVAL_NOTNULL(x) (!!(x))
+
+/*
+ * TST_RETVAL_GE0() - Check that value is greater than or equal to zero
+ */
+#define TST_RETVAL_GE0(x) ((x) >= 0)
 
 #define TST_BRK_SUPPORTS_ONLY_TCONF_TBROK(condition) \
 	do { ((void)sizeof(char[1 - 2 * !!(condition)])); } while (0)

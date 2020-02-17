@@ -14,6 +14,8 @@
 #include "tst_test.h"
 #include "tgkill.h"
 
+#define CHECK_ENOENT(x) ((x) == -1 && errno == ENOENT)
+
 static pthread_t child_thread;
 
 static pid_t parent_tgid;
@@ -44,6 +46,7 @@ static void setup(void)
 	sigset_t sigusr1;
 	pthread_t defunct_thread;
 	char defunct_tid_path[PATH_MAX];
+	int ret;
 
 	sigemptyset(&sigusr1);
 	sigaddset(&sigusr1, SIGUSR1);
@@ -59,7 +62,10 @@ static void setup(void)
 	SAFE_PTHREAD_CREATE(&defunct_thread, NULL, defunct_thread_func, NULL);
 	SAFE_PTHREAD_JOIN(defunct_thread, NULL);
 	sprintf(defunct_tid_path, "/proc/%d/task/%d", getpid(), defunct_tid);
-	TST_RETRY_FN_EXP_BACKOFF(access(defunct_tid_path, R_OK), -1, 15);
+	ret = TST_RETRY_FN_EXP_BACKOFF(access(defunct_tid_path, R_OK),
+		CHECK_ENOENT, 15);
+	if (!CHECK_ENOENT(ret))
+		tst_brk(TBROK, "Timeout, %s still exists", defunct_tid_path);
 }
 
 static void cleanup(void)
