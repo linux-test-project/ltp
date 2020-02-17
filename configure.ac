@@ -47,8 +47,8 @@ AC_CHECK_HEADERS([ \
     linux/fs.h \
     linux/genetlink.h \
     linux/if_alg.h \
-    linux/if_packet.h \
     linux/if_ether.h \
+    linux/if_packet.h \
     linux/keyctl.h \
     linux/mempolicy.h \
     linux/module.h \
@@ -83,8 +83,8 @@ AC_CHECK_FUNCS([ \
     fstatat \
     getdents \
     getdents64 \
-    kcmp \
     io_pgetevents \
+    kcmp \
     mkdirat \
     mknodat \
     modify_ldt \
@@ -108,8 +108,8 @@ AC_CHECK_FUNCS([ \
     splice \
     statx \
     stime \
-    syncfs \
     sync_file_range \
+    syncfs \
     tee \
     timerfd_create \
     timerfd_gettime \
@@ -131,8 +131,8 @@ AC_CHECK_MEMBERS([struct utsname.domainname],,,[
 
 AC_CHECK_TYPES([enum kcmp_type],,,[#include <linux/kcmp.h>])
 AC_CHECK_TYPES([struct acct_v3],,,[#include <sys/acct.h>])
-AC_CHECK_TYPES([struct fanotify_event_info_header],,,[#include <sys/fanotify.h>])
 AC_CHECK_TYPES([struct fanotify_event_info_fid],,,[#include <sys/fanotify.h>])
+AC_CHECK_TYPES([struct fanotify_event_info_header],,,[#include <sys/fanotify.h>])
 AC_CHECK_TYPES([struct file_dedupe_range],,,[#include <linux/fs.h>])
 AC_CHECK_TYPES([struct fs_quota_statv],,,[#include <xfs/xqm.h>])
 AC_CHECK_TYPES([struct if_nextdqblk],,,[#include <linux/quota.h>])
