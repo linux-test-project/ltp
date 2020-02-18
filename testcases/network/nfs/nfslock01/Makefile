@@ -12,4 +12,4 @@ INSTALL_TARGETS			:= nfslock01
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
-$(MAKE_TARGETS): %: %.o nfs_flock_func.o
+$(MAKE_TARGETS): %: nfs_flock_func.o

@@ -55,7 +55,7 @@
 			break;						\
 		}							\
 	}								\
-	tst_ret_;								\
+	tst_ret_;							\
 })
 
 /*
