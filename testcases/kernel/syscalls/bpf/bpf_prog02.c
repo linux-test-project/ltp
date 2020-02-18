@@ -37,7 +37,6 @@ static union bpf_attr *attr;
 
 static int load_prog(int fd)
 {
-	static struct bpf_insn *prog;
 	struct bpf_insn insn[] = {
 		BPF_MOV64_IMM(BPF_REG_6, 1),            /* 0: r6 = 1 */
 
@@ -67,31 +66,8 @@ static int load_prog(int fd)
 		BPF_EXIT_INSN(),		        /* 26: return r0 */
 	};
 
-	if (!prog)
-		prog = tst_alloc(sizeof(insn));
-	memcpy(prog, insn, sizeof(insn));
-
-	memset(attr, 0, sizeof(*attr));
-	attr->prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
-	attr->insns = ptr_to_u64(prog);
-	attr->insn_cnt = ARRAY_SIZE(insn);
-	attr->license = ptr_to_u64("GPL");
-	attr->log_buf = ptr_to_u64(log);
-	attr->log_size = BUFSIZ;
-	attr->log_level = 1;
-
-	TEST(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)));
-	if (TST_RET == -1) {
-		if (log[0] != 0) {
-			tst_res(TINFO, "Verification log:");
-			fputs(log, stderr);
-			tst_brk(TBROK | TTERRNO, "Failed verification");
-		} else {
-			tst_brk(TBROK | TTERRNO, "Failed to load program");
-		}
-	}
-
-	return TST_RET;
+	bpf_init_prog_attr(attr, insn, sizeof(insn), log, BUFSIZ);
+	return bpf_load_prog(attr, log);
 }
 
 static void setup(void)

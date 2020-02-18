@@ -32,6 +32,8 @@
 
 #define LOG_SIZE (1024 * 1024)
 
+#define CHECK_BPF_RET(x) ((x) >= 0 || ((x) == -1 && errno != EPERM))
+
 static const char MSG[] = "Ahoj!";
 static char *msg;
 
@@ -42,7 +44,8 @@ static union bpf_attr *attr;
 
 static int load_prog(int fd)
 {
-	static struct bpf_insn *prog;
+	int ret;
+
 	struct bpf_insn insn[] = {
 		BPF_LD_MAP_FD(BPF_REG_1, fd),
 
@@ -85,31 +88,24 @@ static int load_prog(int fd)
 		BPF_EXIT_INSN()
 	};
 
-	if (!prog)
-		prog = tst_alloc(sizeof(insn));
-	memcpy(prog, insn, sizeof(insn));
+	bpf_init_prog_attr(attr, insn, sizeof(insn), log, LOG_SIZE);
+	ret = TST_RETRY_FUNC(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)),
+		CHECK_BPF_RET);
 
-	memset(attr, 0, sizeof(*attr));
-	attr->prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
-	attr->insns = ptr_to_u64(prog);
-	attr->insn_cnt = ARRAY_SIZE(insn);
-	attr->license = ptr_to_u64("GPL");
-	attr->log_buf = ptr_to_u64(log);
-	attr->log_size = LOG_SIZE;
-	attr->log_level = 1;
+	if (ret < -1)
+		tst_brk(TBROK, "Invalid bpf() return value %d", ret);
 
-	TEST(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)));
-	if (TST_RET == -1) {
-		if (log[0] != 0)
-			tst_res(TPASS | TTERRNO, "Failed verification");
-		else
-			tst_brk(TBROK | TTERRNO, "Failed to load program");
-	} else {
+	if (ret >= 0) {
 		tst_res(TINFO, "Verification log:");
 		fputs(log, stderr);
+		return ret;
 	}
 
-	return TST_RET;
+	if (log[0] == 0)
+		tst_brk(TBROK | TERRNO, "Failed to load program");
+
+	tst_res(TPASS | TERRNO, "Failed verification");
+	return ret;
 }
 
 static void setup(void)

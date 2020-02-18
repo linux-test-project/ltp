@@ -30,16 +30,66 @@ void rlimit_bump_memlock(void)
 
 int bpf_map_create(union bpf_attr *attr)
 {
-	TEST(bpf(BPF_MAP_CREATE, attr, sizeof(*attr)));
-	if (TST_RET == -1) {
+	int ret;
+
+	ret = TST_RETRY_FUNC(bpf(BPF_MAP_CREATE, attr, sizeof(*attr)),
+		TST_RETVAL_GE0);
+
+	if (ret == -1) {
 		if (TST_ERR == EPERM) {
 			tst_res(TCONF, "Hint: check also /proc/sys/kernel/unprivileged_bpf_disabled");
-			tst_brk(TCONF | TTERRNO,
+			tst_brk(TCONF | TERRNO,
 				"bpf() requires CAP_SYS_ADMIN on this system");
 		} else {
-			tst_brk(TBROK | TTERRNO, "Failed to create array map");
+			tst_brk(TBROK | TERRNO, "Failed to create array map");
 		}
 	}
 
-	return TST_RET;
+	return ret;
+}
+
+void bpf_init_prog_attr(union bpf_attr *attr, const struct bpf_insn *prog,
+	size_t prog_size, char *log_buf, size_t log_size)
+{
+	static struct bpf_insn *buf;
+	static size_t buf_size;
+	size_t prog_len = prog_size / sizeof(*prog);
+
+	/* all guarded buffers will be free()d automatically by LTP library */
+	if (!buf || prog_size > buf_size) {
+		buf = tst_alloc(prog_size);
+		buf_size = prog_size;
+	}
+
+	memcpy(buf, prog, prog_size);
+	memset(attr, 0, sizeof(*attr));
+	attr->prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+	attr->insns = ptr_to_u64(buf);
+	attr->insn_cnt = prog_len;
+	attr->license = ptr_to_u64("GPL");
+	attr->log_buf = ptr_to_u64(log_buf);
+	attr->log_size = log_size;
+	attr->log_level = 1;
+}
+
+int bpf_load_prog(union bpf_attr *attr, const char *log)
+{
+	int ret;
+
+	ret = TST_RETRY_FUNC(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)),
+		TST_RETVAL_GE0);
+
+	if (ret >= 0) {
+		tst_res(TPASS, "Loaded program");
+		return ret;
+	}
+
+	if (ret != -1)
+		tst_brk(TBROK, "Invalid bpf() return value: %d", ret);
+
+	if (log[0] != 0)
+		tst_brk(TBROK | TERRNO, "Failed verification: %s", log);
+
+	tst_brk(TBROK | TERRNO, "Failed to load program");
+	return ret;
 }

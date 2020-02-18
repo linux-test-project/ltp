@@ -10,5 +10,8 @@
 
 void rlimit_bump_memlock(void);
 int bpf_map_create(union bpf_attr *attr);
+void bpf_init_prog_attr(union bpf_attr *attr, const struct bpf_insn *prog,
+	size_t prog_size, char *log_buf, size_t log_size);
+int bpf_load_prog(union bpf_attr *attr, const char *log);
 
 #endif
