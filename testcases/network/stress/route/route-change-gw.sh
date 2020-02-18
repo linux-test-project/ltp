@@ -6,7 +6,7 @@
 # Rewrite into new shell API: Petr Vorel
 #
 # Change route gateway
-# lhost: 10.23.x.2, gw (on rhost): 10.23.x.1, rhost: 10.23.0.1
+# lhost: 10.23.1.1, gw (on rhost): 10.23.1.x, rhost: 10.23.0.1
 
 TST_TESTFUNC="test_gw"
 . route-lib.sh

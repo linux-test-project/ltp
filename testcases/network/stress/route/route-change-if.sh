@@ -3,6 +3,7 @@
 # Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines Corp., 2006
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
+# Rewrite into new shell API: Petr Vorel
 #
 # Change route interface
 # lhost: 10.23.x.2, gw (on rhost): 10.23.x.1, rhost: 10.23.0.1, switching ifaces on lhost
@@ -57,8 +58,6 @@ setup()
 		tst_res TINFO "2 or more remote ifaces required, adding $new_riface"
 		add_macvlan $new_riface rhost
 	fi
-
-
 }
 
 test_if()
