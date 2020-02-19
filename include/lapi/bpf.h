@@ -553,12 +553,12 @@ enum bpf_func_id {
 /* End copy from tools/include/filter.h */
 
 /* Start copy from tools/lib/bpf  */
-inline uint64_t ptr_to_u64(const void *ptr)
+static inline uint64_t ptr_to_u64(const void *ptr)
 {
 	return (uint64_t) (unsigned long) ptr;
 }
 
-inline int bpf(enum bpf_cmd cmd, union bpf_attr *attr, unsigned int size)
+static inline int bpf(enum bpf_cmd cmd, union bpf_attr *attr, unsigned int size)
 {
 	return tst_syscall(__NR_bpf, cmd, attr, size);
 }
