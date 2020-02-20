@@ -210,7 +210,8 @@ static void setup(void)
 	size_t i = 0;
 	struct sockaddr_un sun;
 
-	dev_t dev = makedev(1, 3);
+	dev_t chr_dev = makedev(1, 3);
+	dev_t blk_dev = makedev(7, 3);
 
 	SAFE_TOUCH(FILENAME, 0644, NULL);
 	SAFE_TOUCH(SYMLINKF, 0644, NULL);
@@ -219,8 +220,8 @@ static void setup(void)
 
 	/* root: mknod(2) needs it to create something other than a file */
 	SAFE_MKNOD(FIFO, S_IFIFO | 0777, 0);
-	SAFE_MKNOD(CHR, S_IFCHR | 0777, dev);
-	SAFE_MKNOD(BLK, S_IFBLK | 0777, dev);
+	SAFE_MKNOD(CHR, S_IFCHR | 0777, chr_dev);
+	SAFE_MKNOD(BLK, S_IFBLK | 0777, blk_dev);
 
 	for (i = 0; i < ARRAY_SIZE(tc); i++) {
 
