@@ -38,10 +38,8 @@
 #include <sys/time.h>
 #include <errno.h>
 #include "test.h"
-#include <sys/syscall.h>
 #include <unistd.h>
-
-#define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
+#include "lapi/syscalls.h"
 
 char *TCID = "gettimeofday01";
 int TST_TOTAL = 1;
@@ -63,7 +61,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		TEST(gettimeofday((void *)-1, (void *)-1));
+		TEST(ltp_syscall(__NR_gettimeofday, (void *)-1, (void *)-1));
 
 		/* gettimeofday returns an int, so we need to turn the long
 		 * TEST_RETURN into an int to test with */

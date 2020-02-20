@@ -16,14 +16,12 @@
 #include <stdint.h>
 #include <sys/time.h>
 #include <stdlib.h>
-#include <sys/syscall.h>
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
 
 #include "tst_test.h"
-
-#define gettimeofday(a,b)  syscall(__NR_gettimeofday,a,b)
+#include "lapi/syscalls.h"
 
 static volatile sig_atomic_t done;
 static char *str_rtime;
@@ -48,13 +46,13 @@ static void verify_gettimeofday(void)
 
 	alarm(rtime);
 
-	if (gettimeofday(&tv1, NULL)) {
+	if (tst_syscall(__NR_gettimeofday, &tv1, NULL)) {
 		tst_res(TBROK | TERRNO, "gettimeofday() failed");
 		return;
 	}
 
 	while (!done) {
-		if (gettimeofday(&tv2, NULL)) {
+		if (tst_syscall(__NR_gettimeofday, &tv2, NULL)) {
 			tst_res(TBROK | TERRNO, "gettimeofday() failed");
 			return;
 		}
