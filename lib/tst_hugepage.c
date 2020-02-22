@@ -13,7 +13,7 @@ unsigned int tst_hugepages;
 int tst_request_hugepages(int hpages)
 {
 	int val;
-	long mem_avail, max_hpages;
+	long max_hpages;
 
 	if (access(PATH_HUGEPAGES, F_OK)) {
 		tst_hugepages = 0;
@@ -22,8 +22,7 @@ int tst_request_hugepages(int hpages)
 
 	tst_hugepages = hpages;
 	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
-	mem_avail = SAFE_READ_MEMINFO("MemFree:");
-	max_hpages = mem_avail / SAFE_READ_MEMINFO("Hugepagesize:");
+	max_hpages = SAFE_READ_MEMINFO("MemFree:") / SAFE_READ_MEMINFO("Hugepagesize:");
 
 	if (hpages > max_hpages) {
 		tst_res(TINFO, "Requested number(%d) of hugepages is too large, "
