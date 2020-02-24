@@ -21,6 +21,10 @@ matrix:
           env: DISTRO=debian:stable VARIANT=cross-compile ARCH=arm64 TREE=out
           compiler: aarch64-linux-gnu-gcc
 
+        - os: linux
+          env: DISTRO=debian:stable VARIANT=cross-compile ARCH=s390x TREE=out
+          compiler: s390x-linux-gnu-gcc
+
         # musl (native)
         - os: linux
           # Message: WARNING: xsltproc: cannot process http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl
@@ -38,11 +42,6 @@ matrix:
           arch: ppc64le
           compiler: gcc
           env: DISTRO=debian:testing
-
-        - os: linux
-          arch: s390x
-          compiler: gcc
-          env: DISTRO=debian:stable
 
         # other builds
         - os: linux
