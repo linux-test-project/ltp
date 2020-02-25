@@ -35,13 +35,15 @@ static void run(unsigned int n)
 
 	if (TST_RET != -1) {
 		SAFE_CLOSE(TST_RET);
-		tst_brk(TFAIL, "%s: pidfd_open succeeded unexpectedly (index: %d)",
+		tst_res(TFAIL, "%s: pidfd_open succeeded unexpectedly (index: %d)",
 			tc->name, n);
+		return;
 	}
 
 	if (tc->exp_errno != TST_ERR) {
-		tst_brk(TFAIL | TTERRNO, "%s: pidfd_open() should fail with %s",
+		tst_res(TFAIL | TTERRNO, "%s: pidfd_open() should fail with %s",
 			tc->name, tst_strerrno(tc->exp_errno));
+		return;
 	}
 
 	tst_res(TPASS | TTERRNO, "%s: pidfd_open() failed as expected",
