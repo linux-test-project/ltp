@@ -65,7 +65,7 @@ static void do_test(void)
 	if (TST_ERR == EACCES) {
 		tst_res(TPASS, "request_key() failed with EACCES as expected");
 	} else {
-		tst_res(TBROK | TTERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"request_key() failed with unexpected error code");
 	}
 }
