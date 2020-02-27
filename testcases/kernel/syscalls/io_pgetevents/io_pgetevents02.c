@@ -60,7 +60,7 @@ static void cleanup(void)
 {
 	if (ctx_initialized) {
 		if (io_destroy(ctx) < 0)
-			tst_res(TBROK | TERRNO, "io_destroy() failed");
+			tst_res(TWARN | TERRNO, "io_destroy() failed");
 	}
 
 	if (fd > 0)

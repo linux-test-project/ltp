@@ -22,7 +22,7 @@ static void run(void)
 		tst_res(TFAIL, "Created raw socket");
 		SAFE_CLOSE(TST_RET);
 	} else if (TST_ERR != EPERM) {
-		tst_res(TBROK | TTERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"Failed to create socket for wrong reason");
 	} else {
 		tst_res(TPASS | TTERRNO, "Didn't create raw socket");

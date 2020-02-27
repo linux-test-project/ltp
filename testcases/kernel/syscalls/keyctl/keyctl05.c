@@ -103,7 +103,7 @@ static void test_update_nonupdatable(const char *type,
 				"and/or CONFIG_CRYPTO_SHA256)");
 			return;
 		}
-		tst_res(TBROK | TTERRNO, "unexpected error adding '%s' key",
+		tst_res(TFAIL | TTERRNO, "unexpected error adding '%s' key",
 			type);
 		return;
 	}
@@ -115,7 +115,7 @@ static void test_update_nonupdatable(const char *type,
 	 */
 	TEST(keyctl(KEYCTL_SETPERM, keyid, KEY_POS_ALL));
 	if (TST_RET != 0) {
-		tst_res(TBROK | TTERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"failed to grant write permission to '%s' key", type);
 		return;
 	}
@@ -123,12 +123,12 @@ static void test_update_nonupdatable(const char *type,
 	tst_res(TINFO, "Try to update the '%s' key...", type);
 	TEST(keyctl(KEYCTL_UPDATE, keyid, payload, plen));
 	if (TST_RET == 0) {
-		tst_res(TBROK,
+		tst_res(TFAIL,
 			"updating '%s' key unexpectedly succeeded", type);
 		return;
 	}
 	if (TST_ERR != EOPNOTSUPP) {
-		tst_res(TBROK | TTERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"updating '%s' key unexpectedly failed", type);
 		return;
 	}
@@ -151,7 +151,7 @@ static void test_update_setperm_race(void)
 	TEST(add_key("user", "desc", payload, sizeof(payload),
 		KEY_SPEC_SESSION_KEYRING));
 	if (TST_RET < 0) {
-		tst_res(TBROK | TTERRNO, "failed to add 'user' key");
+		tst_res(TFAIL | TTERRNO, "failed to add 'user' key");
 		return;
 	}
 	keyid = TST_RET;
@@ -172,7 +172,7 @@ static void test_update_setperm_race(void)
 	for (i = 0; i < 10000; i++) {
 		TEST(keyctl(KEYCTL_UPDATE, keyid, payload, sizeof(payload)));
 		if (TST_RET != 0 && TST_ERR != EACCES) {
-			tst_res(TBROK | TTERRNO, "failed to update 'user' key");
+			tst_res(TFAIL | TTERRNO, "failed to update 'user' key");
 			return;
 		}
 	}

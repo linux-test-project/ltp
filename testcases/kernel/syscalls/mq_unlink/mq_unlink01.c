@@ -85,7 +85,7 @@ static void do_test(unsigned int i)
 	fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 
 	if (tc->as_nobody && seteuid(pw->pw_uid)) {
-		tst_res(TBROK | TERRNO, "seteuid failed");
+		tst_res(TFAIL | TERRNO, "seteuid failed");
 		goto EXIT;
 	}
 

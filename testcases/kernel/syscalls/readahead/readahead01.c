@@ -61,7 +61,7 @@ static void test_bad_fd(void)
 	tst_res(TINFO, "test_bad_fd O_WRONLY");
 	fd = mkstemp(tempname);
 	if (fd == -1)
-		tst_res(TBROK | TERRNO, "mkstemp failed");
+		tst_res(TFAIL | TERRNO, "mkstemp failed");
 	SAFE_CLOSE(fd);
 	fd = SAFE_OPEN(tempname, O_WRONLY);
 	TEST(readahead(fd, 0, getpagesize()));

@@ -85,7 +85,7 @@ static int set_ldisc(int tty, struct ldisc_info *ldisc)
 			"You don't appear to have the %s TTY line discipline",
 			ldisc->name);
 	} else {
-		tst_res(TBROK | TTERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"Failed to set the %s line discipline", ldisc->name);
 	}
 

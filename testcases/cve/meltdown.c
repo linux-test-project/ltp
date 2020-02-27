@@ -175,7 +175,7 @@ readbit(int fd, unsigned long addr, char bit)
 	for (i = 0; i < CYCLES; i++) {
 		ret = pread(fd, buf, sizeof(buf), 0);
 		if (ret < 0)
-			tst_res(TBROK | TERRNO, "can't read fd");
+			tst_res(TFAIL | TERRNO, "can't read fd");
 
 		clflush_target();
 
@@ -304,7 +304,7 @@ static void setup(void)
 	memset(target_array, 1, sizeof(target_array));
 
 	if (set_signal() < 0)
-		tst_res(TBROK | TERRNO, "set_signal");
+		tst_res(TFAIL | TERRNO, "set_signal");
 }
 
 #define READ_SIZE 32
@@ -320,7 +320,7 @@ static void run(void)
 
 	expected_len = pread(spec_fd, expected, sizeof(expected), 0);
 	if (expected_len < 0)
-		tst_res(TBROK | TERRNO, "can't read test fd");
+		tst_res(TFAIL | TERRNO, "can't read test fd");
 
 	/* read address of saved_cmdline_addr */
 	addr = saved_cmdline_addr;

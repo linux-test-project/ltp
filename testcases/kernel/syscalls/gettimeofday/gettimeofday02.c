@@ -46,16 +46,12 @@ static void verify_gettimeofday(void)
 
 	alarm(rtime);
 
-	if (tst_syscall(__NR_gettimeofday, &tv1, NULL)) {
-		tst_res(TBROK | TERRNO, "gettimeofday() failed");
-		return;
-	}
+	if (tst_syscall(__NR_gettimeofday, &tv1, NULL))
+		tst_brk(TFAIL | TERRNO, "gettimeofday() failed");
 
 	while (!done) {
-		if (tst_syscall(__NR_gettimeofday, &tv2, NULL)) {
-			tst_res(TBROK | TERRNO, "gettimeofday() failed");
-			return;
-		}
+		if (tst_syscall(__NR_gettimeofday, &tv2, NULL))
+			tst_brk(TFAIL | TERRNO, "gettimeofday() failed");
 
 		if (tv2.tv_sec < tv1.tv_sec ||
 		    (tv2.tv_sec == tv1.tv_sec && tv2.tv_usec < tv1.tv_usec)) {
@@ -69,7 +65,6 @@ static void verify_gettimeofday(void)
 		tv1 = tv2;
 		cnt++;
 	}
-
 
 	tst_res(TINFO, "gettimeofday() called %llu times", cnt);
 	tst_res(TPASS, "gettimeofday() monotonous in %i seconds", rtime);

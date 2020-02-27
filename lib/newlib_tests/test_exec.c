@@ -25,7 +25,7 @@ static void do_test(void)
 
 	execve(path, argv, environ);
 
-	tst_res(TBROK | TERRNO, "EXEC!");
+	tst_res(TFAIL | TERRNO, "EXEC!");
 }
 
 static struct tst_test test = {

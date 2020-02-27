@@ -115,8 +115,8 @@ static int addr_on_node(void *addr)
 	ret = tst_syscall(__NR_get_mempolicy, &node, NULL, (unsigned long)0,
 		      (unsigned long)addr, MPOL_F_NODE | MPOL_F_ADDR);
 	if (ret == -1) {
-		tst_res(TBROK | TERRNO, "error getting memory policy "
-			 "for page %p", addr);
+		tst_res(TFAIL | TERRNO,
+				"error getting memory policy for page %p", addr);
 	}
 	return node;
 }

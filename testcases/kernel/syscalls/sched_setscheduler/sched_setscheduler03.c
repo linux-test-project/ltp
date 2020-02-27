@@ -130,11 +130,11 @@ static void setup(void)
 
 	tst_res(TINFO, "Setting init sched policy to SCHED_OTHER");
 	if (sched_setscheduler(0, SCHED_OTHER, &param[0]) != 0)
-		tst_res(TBROK | TERRNO,
+		tst_res(TFAIL | TERRNO,
 			 "ERROR sched_setscheduler: (0, SCHED_OTHER, param)");
 
 	if (sched_getscheduler(0) != SCHED_OTHER)
-		tst_res(TBROK | TERRNO, "ERROR sched_setscheduler");
+		tst_res(TFAIL | TERRNO, "ERROR sched_setscheduler");
 
 	tst_res(TINFO, "Setting euid to nobody to drop privilege");
 

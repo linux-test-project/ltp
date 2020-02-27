@@ -78,7 +78,7 @@ static void run(unsigned int tc_num)
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 		return;
 
-	tst_res(TBROK, "child %s", tst_strstatus(status));
+	tst_res(TFAIL, "child %s", tst_strstatus(status));
 }
 
 static void setup(void)

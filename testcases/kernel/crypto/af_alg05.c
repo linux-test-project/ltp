@@ -35,11 +35,11 @@ static void run(void)
 	TEST(read(reqfd, buffer, 15));
 
 	if (TST_RET == 0)
-		tst_res(TBROK, "read() unexpectedly succeeded");
+		tst_res(TFAIL, "read() unexpectedly succeeded");
 	else if (TST_ERR == EINVAL)
 		tst_res(TPASS, "read() expectedly failed with EINVAL");
 	else
-		tst_res(TBROK | TTERRNO, "read() failed with unexpected error");
+		tst_res(TFAIL | TTERRNO, "read() failed with unexpected error");
 
 	close(reqfd);
 }

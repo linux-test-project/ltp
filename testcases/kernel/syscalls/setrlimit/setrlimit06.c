@@ -106,7 +106,7 @@ static void verify_setrlimit(void)
 		}
 	}
 
-	tst_res(TBROK, "Child %s", tst_strstatus(status));
+	tst_res(TFAIL, "Child %s", tst_strstatus(status));
 }
 
 static struct tst_test test = {

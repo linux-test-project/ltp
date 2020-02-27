@@ -223,7 +223,7 @@ static void stat_cleanup(void)
 	/* remove the parent's shared memory the second time through */
 	if (stat_time == SECOND)
 		if (shmdt(set_shared) == -1)
-			tst_res(TBROK | TERRNO, "shmdt in stat_cleanup()");
+			tst_res(TFAIL | TERRNO, "shmdt in stat_cleanup()");
 	stat_time++;
 }
 
@@ -246,7 +246,7 @@ static void func_set(void)
 {
 	/* first stat the shared memory to get the new data */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-		tst_res(TBROK | TERRNO, "shmctl in func_set()");
+		tst_res(TFAIL | TERRNO, "shmctl in func_set()");
 		return;
 	}
 
