@@ -1,6 +1,6 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2004
- * Copyright (c) Linux Test Project, 2004-2017
+ * Copyright (c) Linux Test Project, 2004-2020
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,37 +82,20 @@ struct tcase {
 	{IPC_RMID, func_rmid, NULL}
 };
 
-static void test_hugeshmctl(void)
+static void test_hugeshmctl(unsigned int i)
 {
-	unsigned int i;
-
-	/* initialize stat_time */
-	stat_time = FIRST;
-
 	/*
-	 * Create a shared memory segment with read and write
-	 * permissions.  Do this here instead of in setup()
-	 * so that looping (-i) will work correctly.
+	 * if needed, set up any required conditions by
+	 * calling the appropriate setup function
 	 */
-	shm_id_1 = shmget(shmkey, shm_size,
-			SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
-	if (shm_id_1 == -1)
-		tst_brk(TBROK | TERRNO, "shmget #main");
+	if (tcases[i].func_setup != NULL)
+		(*tcases[i].func_setup) ();
 
-	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
-		/*
-		 * if needed, set up any required conditions by
-		 * calling the appropriate setup function
-		 */
-		if (tcases[i].func_setup != NULL)
-			(*tcases[i].func_setup) ();
-
-		if (shmctl(shm_id_1, tcases[i].cmd, &buf) == -1) {
-			tst_res(TFAIL | TERRNO, "shmctl #main");
-			continue;
-		}
-		(*tcases[i].func_test) ();
+	if (shmctl(shm_id_1, tcases[i].cmd, &buf) == -1) {
+		tst_res(TFAIL | TERRNO, "shmctl #main");
+		return;
 	}
+	(*tcases[i].func_test)();
 }
 
 /*
@@ -322,6 +305,19 @@ void setup(void)
 	shm_size = hpage_size * hugepages / 2;
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
+
+	/* initialize stat_time */
+	stat_time = FIRST;
+
+	/*
+	 * Create a shared memory segment with read and write
+	 * permissions.  Do this here instead of in setup()
+	 * so that looping (-i) will work correctly.
+	 */
+	shm_id_1 = shmget(shmkey, shm_size,
+			SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
+	if (shm_id_1 == -1)
+		tst_brk(TBROK | TERRNO, "shmget #main");
 }
 
 void cleanup(void)
@@ -331,11 +327,12 @@ void cleanup(void)
 }
 
 static struct tst_test test = {
+	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.forks_child = 1,
 	.options = options,
 	.setup = setup,
 	.cleanup = cleanup,
-	.test_all = test_hugeshmctl,
+	.test = test_hugeshmctl,
 	.needs_checkpoints = 1,
 };

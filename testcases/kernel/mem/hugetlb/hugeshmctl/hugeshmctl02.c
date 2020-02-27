@@ -1,6 +1,6 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2004
- * Copyright (c) Linux Test Project, 2004-2017
+ * Copyright (c) Linux Test Project, 2004-2020
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,26 +66,22 @@ struct tcase {
 	{&shm_id_2, -1, &buf, EINVAL},
 };
 
-static void test_hugeshmctl(void)
+static void test_hugeshmctl(unsigned int i)
 {
-	unsigned int i;
-
-	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
-		TEST(shmctl(*(tcases[i].shmid), tcases[i].cmd, tcases[i].sbuf));
-		if (TST_RET != -1) {
-			tst_res(TFAIL, "shmctl succeeded "
-					"unexpectedly");
-			continue;
-		}
-		if (TST_ERR == tcases[i].error) {
-			tst_res(TPASS | TTERRNO, "shmctl failed "
-					"as expected");
-		} else {
-			tst_res(TFAIL | TTERRNO, "shmctl failed "
-					"unexpectedly - expect errno = "
-					"%d, got", tcases[i].error);
-		}
+	TEST(shmctl(*(tcases[i].shmid), tcases[i].cmd, tcases[i].sbuf));
+	if (TST_RET != -1) {
+		tst_res(TFAIL, "shmctl succeeded unexpectedly");
+		return;
 	}
+
+	if (TST_ERR == tcases[i].error) {
+		tst_res(TPASS | TTERRNO, "shmctl failed as expected");
+		return;
+	}
+
+	tst_res(TFAIL | TTERRNO,
+			"shmctl failed unexpectedly - expect errno = %d, got",
+			tcases[i].error);
 }
 
 static void setup(void)
@@ -124,10 +120,11 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.test = test_hugeshmctl,
+	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.options = options,
 	.setup = setup,
 	.cleanup = cleanup,
-	.test_all = test_hugeshmctl,
 };
