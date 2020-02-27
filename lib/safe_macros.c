@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Linux Test Project, 2010-2020
+ */
+
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/mman.h>
