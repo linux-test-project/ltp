@@ -421,6 +421,7 @@ Printf-like function to report test result, it's mostly used with ttype:
 | 'TPASS' | Test has passed.
 | 'TFAIL' | Test has failed.
 | 'TINFO' | General message.
+| 'TWARN' | Something went wrong but we decided to continue. Mostly used in cleanup functions.
 |==============================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
@@ -724,7 +725,7 @@ static void do_test(void)
 
 	execve(path, argv, environ);
 
-	tst_res(TBROK | TERRNO, "EXEC!");
+	tst_res(TFAIL | TERRNO, "EXEC!");
 }
 
 static struct tst_test test = {
@@ -1816,7 +1817,7 @@ static void run(void)
 	if (TST_RET > -1) {
 		tst_res(TFAIL, "Created raw socket");
 	} else if (TST_ERR != EPERM) {
-		tst_res(TBROK | TTERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"Failed to create socket for wrong reason");
 	} else {
 		tst_res(TPASS | TTERRNO, "Didn't create raw socket");
