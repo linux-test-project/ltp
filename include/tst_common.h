@@ -74,7 +74,13 @@
  */
 #define TST_RETVAL_GE0(x) ((x) >= 0)
 
-#define TST_BRK_SUPPORTS_ONLY_TCONF_TBROK(condition) \
+#define TST_BUILD_BUG_ON(condition) \
 	do { ((void)sizeof(char[1 - 2 * !!(condition)])); } while (0)
+
+#define TST_BRK_SUPPORTS_ONLY_TCONF_TBROK(condition) \
+	TST_BUILD_BUG_ON(condition)
+
+#define TST_RES_SUPPORTS_TCONF_TFAIL_TINFO_TPASS_TWARN(condition) \
+	TST_BUILD_BUG_ON(condition)
 
 #endif /* TST_COMMON_H__ */
