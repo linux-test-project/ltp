@@ -6,7 +6,7 @@
 #ifndef LTP_BPF_COMMON_H
 #define LTP_BPF_COMMON_H
 
-#define BPF_MEMLOCK_ADD (256*1024)
+#define BPF_MEMLOCK_ADD (2*1024*1024)
 
 void rlimit_bump_memlock(void);
 int bpf_map_create(union bpf_attr *attr);
