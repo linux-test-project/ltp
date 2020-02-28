@@ -16,7 +16,7 @@ TST_OPTS="c:e:s:"
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 TST_PARSE_ARGS=rpc_parse_args
-TST_NEEDS_CMDS="pkill"
+TST_NEEDS_CMDS="pkill rpcinfo"
 . rpc_lib.sh
 
 usage()
