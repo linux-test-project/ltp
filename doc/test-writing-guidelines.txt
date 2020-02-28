@@ -327,6 +327,15 @@ time may vary arbitrarily, for these timeout can be disabled by setting it to
 Test can find out how much time (in seconds) is remaining to timeout,
 by calling 'tst_timeout_remaining()'.
 
+LAPI headers
+++++++++++++
+
+Use our LAPI headers ('include "lapi/foo.h"') to keep compatibility with old
+distributions. LAPI header should always include original header. Older linux
+headers were problematic, therefore we preferred to use libc headers. There are
+still some bugs when combining certain glibc headers with linux headers, see
+https://sourceware.org/glibc/wiki/Synchronizing_Headers.
+
 A word about the cleanup() callback
 +++++++++++++++++++++++++++++++++++
 
