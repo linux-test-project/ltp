@@ -4,7 +4,7 @@ dnl Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
 
 AC_DEFUN([LTP_CHECK_TIRPC], [
 	dnl libtirpc library and headers
-	PKG_CHECK_MODULES([LIBTIRPC], [libtirpc], [
+	PKG_CHECK_MODULES([LIBTIRPC], [libtirpc >= 0.2.4], [
 		have_libtirpc=yes
 		TIRPC_CFLAGS=$LIBTIRPC_CFLAGS
 		TIRPC_LIBS=$LIBTIRPC_LIBS
