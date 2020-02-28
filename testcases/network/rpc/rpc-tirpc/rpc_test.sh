@@ -1,100 +1,84 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 #!/bin/sh
-#
 # Copyright (c) 2014 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of
-# the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it would be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write the Free Software Foundation,
-# Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#
-# This is a wrapper script to execute tests from the RPC/TI-RPC tests
-# suite (http://nfsv4.bullopensource.org/doc/rpc_testsuite.php) in LTP.
+# Copyright (c) 2017-2020 Petr Vorel <pvorel@suse.cz>
 
-SERVER=""
-CLIENT=""
-CLIENT_EXTRA_OPTS=""
-CLEANER=""
+SERVER=
+CLIENT=
+CLIENT_EXTRA_OPTS=
+CLEANER=
 # Program number to register the services to rpcbind
 PROGNUMNOSVC=536875000
 
-cleanup()
-{
-	if [ ! -z "$SERVER" ]; then
-		killall -9 $SERVER
-		$CLEANER $PROGNUMNOSVC
-	fi
-}
+TST_TESTFUNC=do_test
+TST_USAGE=usage
+TST_OPTS="c:e:s:"
+TST_SETUP=setup
+TST_CLEANUP=cleanup
+TST_PARSE_ARGS=rpc_parse_args
+TST_NEEDS_CMDS="pkill"
+. rpc_lib.sh
 
 usage()
 {
 	cat << EOF
 USAGE: $0 [-s sprog] -c clprog [ -e extra ]
 
-sprog   - server program binary
-clprog  - client program binary
-extra   - extra client options
+Connect to the remote host and start sprog.
+Then execute clprog and passing it the remote host value.
 
-This scripts connects to the remote host and starts sprog there. After that it
-executes clprog passing it the remote host value.
-
-After the test completes, this script kills sprog on remote and performs a
-cleaning operation.
+-c clprog client program binary
+-s sprog  server program binary
+-e extra  extra client options
 EOF
-
-	exit 1
 }
 
-while getopts s:c:e:h arg; do
-	case $arg in
-		s) SERVER="$OPTARG" ;;
+rpc_parse_args()
+{
+	case "$1" in
 		c) CLIENT="$OPTARG" ;;
 		e) CLIENT_EXTRA_OPTS="$OPTARG" ;;
-		h) usage ;;
+		s) SERVER="$OPTARG" ;;
 	esac
-done
-shift $(($OPTIND - 1))
+}
 
-if [ ! -z "$SERVER" ]; then
-	CLEANER="rpc_cleaner"
-	if echo "$SERVER" | grep -q '^tirpc'; then
-		CLEANER="tirpc_cleaner"
+setup()
+{
+	check_portmap_rpcbind
+
+	if [ -n "$SERVER" ]; then
+		CLEANER="rpc_cleaner"
+		if echo "$SERVER" | grep -q '^tirpc'; then
+			CLEANER="tirpc_cleaner"
+		fi
 	fi
-fi
 
-if [ -z "$CLIENT" ]; then
-	echo "client program not set"
-	echo ""
-	usage
-fi
+	[ -n "$CLIENT" ] || tst_brk "client program not set"
+}
 
-TCID="$CLIENT"
-TST_TOTAL=1
-TST_COUNT=1
-TST_CLEANUP=cleanup
+cleanup()
+{
+	if [ ! -z "$SERVER" ]; then
+		pkill -9 $SERVER > /dev/null 2>&1
+		$CLEANER $PROGNUMNOSVC
+	fi
+}
 
-TST_USE_LEGACY_API=1
-. tst_net.sh
+do_test()
+{
+	local i
 
-if [ ! -z "$SERVER" ]; then
-	$SERVER $PROGNUMNOSVC &
+	if [ -n "$SERVER" ]; then
+		$SERVER $PROGNUMNOSVC &
 
-	for i in $(seq 1 10); do
-		rpcinfo -p localhost | grep -q $PROGNUMNOSVC && break
-		[ "$i" -eq 30 ] && tst_brkm TBROK "server not registered"
-		tst_sleep 100ms
-	done
-fi
+		for i in $(seq 1 10); do
+			rpcinfo -p localhost | grep -q $PROGNUMNOSVC && break
+			[ "$i" -eq 30 ] && tst_brk TBROK "server not registered"
+			tst_sleep 100ms
+		done
+	fi
 
-EXPECT_RHOST_PASS $CLIENT $(tst_ipaddr) $PROGNUMNOSVC $CLIENT_EXTRA_OPTS
+	EXPECT_RHOST_PASS $CLIENT $(tst_ipaddr) $PROGNUMNOSVC $CLIENT_EXTRA_OPTS
+}
 
-tst_exit
+tst_run
