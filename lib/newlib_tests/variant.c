@@ -31,13 +31,13 @@ static void setup(void)
 
 	switch (tst_variant) {
 	case 0:
-		tst_res(TINFO, "Starting tst_brk TCONF test");
+		tst_res(TINFO, "Starting tst_brk(TCONF) test");
 	break;
 	case 1:
-		tst_res(TINFO, "Starting tst_res TPASS test");
+		tst_res(TINFO, "Starting tst_res(TPASS) test");
 	break;
 	case 2:
-		tst_res(TINFO, "Starting tst_res TBROK test");
+		tst_res(TINFO, "Starting tst_brk(TBROK) test");
 	break;
 	}
 }
