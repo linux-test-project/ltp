@@ -6,6 +6,7 @@
 TST_TESTFUNC=do_test
 TST_SETUP=do_setup
 TST_CLEANUP=do_cleanup
+TST_NEEDS_CMDS="pkill rpcinfo"
 . rpc_lib.sh
 
 NUMLOOPS=${NUMLOOPS:-3}
