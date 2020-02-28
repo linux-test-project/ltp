@@ -186,7 +186,6 @@ list. Also note that these documents are available online at:
 
 * https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines
 * https://github.com/linux-test-project/ltp/wiki/LTP-Library-API-Writing-Guidelines
-* https://github.com/linux-test-project/ltp/wiki/Style-Guide
 * https://github.com/linux-test-project/ltp/wiki/Build-System
 * https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial
 
