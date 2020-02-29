@@ -61,7 +61,7 @@ MODULE_LICENSE("GPL");
 #define TFAIL	1
 #define TSKIP	32
 
-static DEFINE_PCI_DEVICE_TABLE(ltp_pci_tbl) = {
+static const struct pci_device_id ltp_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_ANY_ID, PCI_ANY_ID) },
 	{ 0, }
 };
