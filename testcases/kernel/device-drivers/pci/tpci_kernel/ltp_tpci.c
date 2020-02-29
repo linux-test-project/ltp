@@ -361,29 +361,6 @@ static int test_bus_add_devices(void)
 }
 
 /*
- * test_enable_bridges
- *	make call to pci_enable_bridges,
- *	use bus pointer from the ltp_pci
- *	structure
- */
-static int test_enable_bridges(void)
-{
-	struct pci_bus *bus = ltp_pci.bus;
-
-	prk_info("enable bridges");
-
-	pci_enable_bridges(bus);
-
-	if (bus) {
-		prk_info("called enable bridges");
-		return TPASS;
-	}
-
-	prk_err("enable_bridges failed");
-	return TFAIL;
-}
-
-/*
  * test_match_device
  *	make call to pci_match_device, returns a
  *	pci_device_id pointer
@@ -608,9 +585,6 @@ static int test_case(unsigned int cmd)
 		break;
 	case BUS_ADD_DEVICES:
 		rc = test_bus_add_devices();
-		break;
-	case ENABLE_BRIDGES:
-		rc = test_enable_bridges();
 		break;
 	case MATCH_DEVICE:
 		rc = test_match_device();
