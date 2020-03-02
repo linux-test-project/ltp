@@ -48,7 +48,7 @@ get_socket_type()
 
 nfs_setup_server()
 {
-	local export_cmd="exportfs -i -o no_root_squash,rw *:$remote_dir"
+	local export_cmd="exportfs -i -o fsid=$$,no_root_squash,rw *:$remote_dir"
 
 	if [ -n "$LTP_NETNS" ]; then
 		if [ ! -d $remote_dir ]; then
