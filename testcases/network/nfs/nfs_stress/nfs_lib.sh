@@ -46,6 +46,15 @@ get_socket_type()
 	done
 }
 
+nfs_server_udp_enabled()
+{
+	local config f
+
+	tst_rhost_run -c "[ -f /etc/nfs.conf ]" || return 0
+	config=$(tst_rhost_run -c 'for f in $(grep ^include.*= '/etc/nfs.conf' | cut -d = -f2); do [ -f $f ] && printf "$f "; done')
+	tst_rhost_run -c "grep -q '^[# ]*udp *= *y' /etc/nfs.conf $config"
+}
+
 nfs_setup_server()
 {
 	local export_cmd="exportfs -i -o fsid=$$,no_root_squash,rw *:$remote_dir"
@@ -97,6 +106,10 @@ nfs_setup()
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
 		tst_res TINFO "setup NFSv$i, socket type $type"
+
+		if [ "$type" = "udp" -o "$type" = "udp6" ] && ! nfs_server_udp_enabled; then
+			tst_brk TCONF "UDP support disabled on NFS server"
+		fi
 
 		local_dir="$TST_TMPDIR/$i/$n"
 		remote_dir="$TST_TMPDIR/$i/$type"
