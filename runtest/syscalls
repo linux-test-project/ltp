@@ -1473,6 +1473,7 @@ timerfd03 timerfd03
 timerfd_create01 timerfd_create01
 timerfd_gettime01 timerfd_gettime01
 timerfd_settime01 timerfd_settime01
+timerfd_settime02 timerfd_settime02
 
 timer_create01 timer_create01
 timer_create02 timer_create02

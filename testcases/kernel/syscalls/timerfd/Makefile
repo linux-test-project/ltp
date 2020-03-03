@@ -5,6 +5,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS			+= -lpthread -lrt
+LDLIBS			+= -lrt
+timerfd_settime02:	LDLIBS	+= -pthread
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
