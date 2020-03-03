@@ -44,7 +44,7 @@ vma_report_check()
 {
 	if [ $(uname -m) = "x86_64" ]; then
 		if LINE=$(grep "vsyscall" /proc/self/maps); then
-			RIGHT="ffffffffff600000-ffffffffff601000[[:space:]]r-xp"
+			RIGHT="ffffffffff600000-ffffffffff601000[[:space:]][r-]-xp"
 			if echo "$LINE" | grep -q "$RIGHT"; then
 				tst_res TPASS "[vsyscall] reported correctly"
 			else
