@@ -15,7 +15,7 @@
  *  timerfd: Protect the might cancel mechanism proper
  */
 #include <unistd.h>
-#include <lapi/timerfd.h>
+#include "tst_safe_timerfd.h"
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
 #include "tst_taint.h"
@@ -32,16 +32,8 @@ static struct tst_fzsync_pair fzsync_pair;
 
 static void setup(void)
 {
-	int ttype;
-
 	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
-	errno = 0;
-	fd = timerfd_create(CLOCK_REALTIME, 0);
-
-	if (fd < 0) {
-		ttype = (errno == ENOTSUP ? TCONF : TBROK);
-		tst_brk(ttype | TERRNO, "Cannot create timer");
-	}
+	fd = SAFE_TIMERFD_CREATE(CLOCK_REALTIME, 0);
 
 	fzsync_pair.exec_loops = 1000000;
 	tst_fzsync_pair_init(&fzsync_pair);

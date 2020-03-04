@@ -19,7 +19,7 @@
 #include <poll.h>
 #include "tst_test.h"
 #include "tst_timer.h"
-#include "lapi/timerfd.h"
+#include "tst_safe_timerfd.h"
 
 static struct tcase {
 	int id;
@@ -47,8 +47,7 @@ static void settime(int tfd, struct itimerspec *tmr, int tflags,
 	tmr->it_value = tst_us_to_timespec(tvalue);
 	tmr->it_interval = tst_us_to_timespec(tinterval);
 
-	if (timerfd_settime(tfd, tflags, tmr, NULL))
-		tst_brk(TBROK | TERRNO, "timerfd_settime() failed");
+	SAFE_TIMERFD_SETTIME(tfd, tflags, tmr, NULL);
 }
 
 static void waittmr(int tfd, unsigned int exp_ticks)
@@ -87,9 +86,7 @@ static void run(unsigned int n)
 
 	tst_res(TINFO, "testing %s", clks->name);
 
-	tfd = timerfd_create(clks->id, 0);
-	if (tfd == -1)
-		tst_brk(TFAIL | TERRNO, "timerfd_create() failed");
+	tfd = SAFE_TIMERFD_CREATE(clks->id, 0);
 
 	tst_res(TINFO, "relative timer (100 ms)");
 	settime(tfd, &tmr, 0, 100 * 1000, 0);
