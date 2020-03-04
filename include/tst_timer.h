@@ -332,9 +332,4 @@ static inline long long tst_timer_elapsed_us(void)
 	return tst_timespec_to_us(tst_timer_elapsed());
 }
 
-/*
- * Returns a string containing given clock type name
- */
-const char *tst_clock_name(clockid_t);
-
 #endif /* TST_TIMER */
