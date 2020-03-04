@@ -13,14 +13,7 @@ TST_NEEDS_CMDS="lsmod"
 lsmod_matches_proc_modules()
 {
 	lsmod_output=$(lsmod | awk '!/Module/{print $1, $2, $3}' | sort)
-	if [ -z "$lsmod_output" ]; then
-		tst_brk TBROK "Failed to parse the output from lsmod"
-	fi
-
 	modules_output=$(awk '{print $1, $2, $3}' /proc/modules | sort)
-	if [ -z "$modules_output" ]; then
-		tst_brk TBROK "Failed to parse /proc/modules"
-	fi
 
 	if [ "$lsmod_output" != "$modules_output" ]; then
 		tst_res TINFO "lsmod output different from /proc/modules"
