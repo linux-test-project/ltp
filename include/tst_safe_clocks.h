@@ -11,6 +11,7 @@
 #include <time.h>
 #include <sys/timex.h>
 #include "tst_test.h"
+#include "tst_clocks.h"
 #include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
 
@@ -20,10 +21,11 @@ static inline void safe_clock_getres(const char *file, const int lineno,
 	int rval;
 
 	rval = clock_getres(clk_id, res);
-	if (rval != 0)
+	if (rval != 0) {
 		tst_brk(TBROK | TERRNO,
-			"%s:%d clock_getres() failed", file, lineno);
-
+			"%s:%d clock_getres(%s) failed",
+			file, lineno, tst_clock_name(clk_id));
+	}
 }
 
 static inline void safe_clock_gettime(const char *file, const int lineno,
@@ -32,9 +34,11 @@ static inline void safe_clock_gettime(const char *file, const int lineno,
 	int rval;
 
 	rval = clock_gettime(clk_id, tp);
-	if (rval != 0)
+	if (rval != 0) {
 		tst_brk(TBROK | TERRNO,
-			"%s:%d clock_gettime() failed", file, lineno);
+			"%s:%d clock_gettime(%s) failed",
+			file, lineno, tst_clock_name(clk_id));
+	}
 }
 
 
@@ -44,9 +48,11 @@ static inline void safe_clock_settime(const char *file, const int lineno,
 	int rval;
 
 	rval = clock_settime(clk_id, tp);
-	if (rval != 0)
+	if (rval != 0) {
 		tst_brk(TBROK | TERRNO,
-			"%s:%d clock_gettime() failed", file, lineno);
+			"%s:%d clock_gettime(%s) failed",
+			file, lineno, tst_clock_name(clk_id));
+	}
 }
 
 static inline int safe_clock_adjtime(const char *file, const int lineno,
@@ -55,9 +61,11 @@ static inline int safe_clock_adjtime(const char *file, const int lineno,
 	int rval;
 
 	rval = tst_syscall(__NR_clock_adjtime, clk_id, txc);
-	if (rval < 0)
+	if (rval < 0) {
 		tst_brk(TBROK | TERRNO,
-			"%s:%d clock_adjtime() failed %i", file, lineno, rval);
+			"%s:%d clock_adjtime(%s) failed %i",
+			file, lineno, tst_clock_name(clk_id), rval);
+	}
 
 	return rval;
 }
