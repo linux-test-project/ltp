@@ -24,7 +24,6 @@ Do not reinvent the wheel!
 * Do not add custom PASS/FAIL reporting functions
 * Do not write Makefiles from scratch,
   use LTP build system instead, etc.
-* ...
 
 1.2 Code duplication
 ~~~~~~~~~~~~~~~~~~~~
