@@ -4,3 +4,4 @@
 /timerfd_create01
 /timerfd_gettime01
 /timerfd_settime01
+/timerfd_settime02
