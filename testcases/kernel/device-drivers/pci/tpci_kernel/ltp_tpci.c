@@ -61,7 +61,7 @@ MODULE_LICENSE("GPL");
 #define TFAIL	1
 #define TSKIP	32
 
-static DEFINE_PCI_DEVICE_TABLE(ltp_pci_tbl) = {
+static const struct pci_device_id ltp_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_ANY_ID, PCI_ANY_ID) },
 	{ 0, }
 };
@@ -104,7 +104,7 @@ static int probe_pci_dev(unsigned int bus, unsigned int slot)
 		ltp_pci.dev = NULL;
 	}
 
-	dev = pci_get_bus_and_slot(bus, slot);
+	dev = pci_get_domain_bus_and_slot(pci_domain_nr(dev->bus), bus, slot);
 	if (!dev || !dev->driver)
 		return -ENODEV;
 
@@ -361,29 +361,6 @@ static int test_bus_add_devices(void)
 }
 
 /*
- * test_enable_bridges
- *	make call to pci_enable_bridges,
- *	use bus pointer from the ltp_pci
- *	structure
- */
-static int test_enable_bridges(void)
-{
-	struct pci_bus *bus = ltp_pci.bus;
-
-	prk_info("enable bridges");
-
-	pci_enable_bridges(bus);
-
-	if (bus) {
-		prk_info("called enable bridges");
-		return TPASS;
-	}
-
-	prk_err("enable_bridges failed");
-	return TFAIL;
-}
-
-/*
  * test_match_device
  *	make call to pci_match_device, returns a
  *	pci_device_id pointer
@@ -608,9 +585,6 @@ static int test_case(unsigned int cmd)
 		break;
 	case BUS_ADD_DEVICES:
 		rc = test_bus_add_devices();
-		break;
-	case ENABLE_BRIDGES:
-		rc = test_enable_bridges();
 		break;
 	case MATCH_DEVICE:
 		rc = test_match_device();
