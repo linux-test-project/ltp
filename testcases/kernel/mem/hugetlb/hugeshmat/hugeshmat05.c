@@ -1,18 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015-2017 Red Hat, Inc.
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- */
-
-/*
  * DESCRIPTION
  *	shmget()/shmat() fails to allocate huge pages shared memory segment
  *	with EINVAL if its size is not in the range [ N*HUGE_PAGE_SIZE - 4095,
@@ -40,23 +30,16 @@
 
 static long page_size;
 static long hpage_size;
-static long hugepages;
 
 #define N 4
 
 void setup(void)
 {
-	save_nr_hugepages();
 	page_size = getpagesize();
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
-	hugepages = N + 1;
-	set_sys_tune("nr_hugepages", hugepages, 1);
-}
-
-void cleanup(void)
-{
-	restore_nr_hugepages();
+	if (tst_hugepages != test.request_hugepages)
+		tst_brk(TCONF, "No enough hugepages for testing.");
 }
 
 void shm_test(int size)
@@ -108,7 +91,7 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.test_all = test_hugeshmat,
 	.setup = setup,
-	.cleanup = cleanup,
+	.request_hugepages = N + 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "091d0d55b286"},
 		{"linux-git", "af73e4d9506d"},

@@ -53,10 +53,8 @@ static void func_set(void);
 static void func_rmid(void);
 static void *set_shmat(void);
 
-static long hugepages = 128;
-
 static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
+	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
 };
 
@@ -290,15 +288,17 @@ void setup(void)
 {
 	long hpage_size;
 
-	save_nr_hugepages();
-	if (nr_opt)
-		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
+	if (nr_opt) {
+		tst_hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
+		tst_request_hugepages(tst_hugepages);
+	}
 
-	limit_hugepages(&hugepages);
-	set_sys_tune("nr_hugepages", hugepages, 1);
+	if (tst_hugepages == 0)
+		tst_brk(TCONF, "No enough hugepages for testing.");
+
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
-	shm_size = hpage_size * hugepages / 2;
+	shm_size = hpage_size * tst_hugepages / 2;
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 }
@@ -306,7 +306,6 @@ void setup(void)
 void cleanup(void)
 {
 	rm_shm(shm_id_1);
-	restore_nr_hugepages();
 }
 
 static struct tst_test test = {
@@ -318,4 +317,5 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = test_hugeshmctl,
 	.needs_checkpoints = 1,
+	.request_hugepages = 128,
 };

@@ -1,23 +1,12 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Linux Test Project, 2014-2017
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- */
-
-/*
  * DESCRIPTION
  *	hugeshmat04 - test for hugepage leak inspection.
  *
  *	It is a regression test for shared hugepage leak, when over 1GB
- *	shered memory was alocated in hugepage, the hugepage is not released
+ *	shared memory was alocated in hugepage, the hugepage is not released
  *	though process finished.
  *
  *	You need more than 2GB memory in test job
@@ -85,7 +74,7 @@ static void setup(void)
 {
 	long mem_total, hpage_size, orig_hugepages;
 
-	orig_hugepages = save_nr_hugepages();
+	orig_hugepages = get_sys_tune("nr_hugepages");
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
 	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", (long)SIZE);
@@ -100,12 +89,13 @@ static void setup(void)
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	hugepages = orig_hugepages + SIZE / hpage_size;
-	set_sys_tune("nr_hugepages", hugepages, 1);
+	tst_request_hugepages(hugepages);
+	if (tst_hugepages != (unsigned long)hugepages)
+		tst_brk(TCONF, "No enough hugepages for testing.");
 }
 
 static void cleanup(void)
 {
-	restore_nr_hugepages();
 	if (orig_shmmax != -1)
 		SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", orig_shmmax);
 }
@@ -118,4 +108,5 @@ static struct tst_test test = {
 	.test = test_hugeshmat,
 	.setup = setup,
 	.cleanup = cleanup,
+	.request_hugepages = 1,
 };

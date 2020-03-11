@@ -1,19 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2004
  * Copyright (c) Linux Test Project, 2004-2017
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- */
-
-/*
  * DESCRIPTION
  *	hugeshmat03 - test for EACCES error
  *
@@ -50,10 +39,8 @@ static void *addr;
 static uid_t ltp_uid;
 static char *ltp_user = "nobody";
 
-static long hugepages = 128;
-
 static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
+	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
 };
 
@@ -87,15 +74,17 @@ static void setup(void)
 {
 	long hpage_size;
 
-	save_nr_hugepages();
-	if (nr_opt)
-		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
+	if (nr_opt) {
+		tst_hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
+		tst_request_hugepages(tst_hugepages);
+	}
 
-	limit_hugepages(&hugepages);
-	set_sys_tune("nr_hugepages", hugepages, 1);
+	if (tst_hugepages == 0)
+		tst_brk(TCONF, "No enough hugepages for testing.");
+
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
-	shm_size = hpage_size * hugepages / 2;
+	shm_size = hpage_size * tst_hugepages / 2;
 	update_shm_size(&shm_size);
 	shmkey = getipckey();
 	shm_id_1 = shmget(shmkey, shm_size,
@@ -109,7 +98,6 @@ static void setup(void)
 static void cleanup(void)
 {
 	rm_shm(shm_id_1);
-	restore_nr_hugepages();
 }
 
 static struct tst_test test = {
@@ -120,4 +108,5 @@ static struct tst_test test = {
 	.test_all = verify_hugeshmat,
 	.setup = setup,
 	.cleanup = cleanup,
+	.request_hugepages = 128,
 };

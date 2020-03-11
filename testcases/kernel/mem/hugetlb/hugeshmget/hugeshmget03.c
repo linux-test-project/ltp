@@ -1,19 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-late
 /*
  * Copyright (c) International Business Machines  Corp., 2004
  * Copyright (c) Linux Test Project, 2004-2017
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- */
-
-/*
  * DESCRIPTION
  *	hugeshmget03 - test for ENOSPC error
  *
@@ -23,7 +12,6 @@
  */
 
 #include <limits.h>
-#include "hugetlb.h"
 #include "hugetlb.h"
 
 /*
@@ -38,10 +26,9 @@ static int shm_id_1 = -1;
 static int num_shms;
 static int shm_id_arr[MAXIDS];
 
-static long hugepages = 128;
 static long orig_shmmni = -1;
 static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s   num  Set the number of the been allocated hugepages"},
+	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
 	{NULL, NULL, NULL}
 };
 
@@ -64,15 +51,16 @@ static void setup(void)
 {
 	long hpage_size;
 
-	save_nr_hugepages();
-	if (nr_opt)
-		hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
+	if (nr_opt) {
+		tst_hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
+		tst_request_hugepages(tst_hugepages);
+	}
+
+	if (tst_hugepages == 0)
+		tst_brk(TCONF, "No enough hugepages for testing.");
 
 	SAFE_FILE_SCANF(PATH_SHMMNI, "%ld", &orig_shmmni);
-
-	limit_hugepages(&hugepages);
-	set_sys_tune("nr_hugepages", hugepages, 1);
-	SAFE_FILE_PRINTF(PATH_SHMMNI, "%ld", hugepages / 2);
+	SAFE_FILE_PRINTF(PATH_SHMMNI, "%ld", tst_hugepages / 2);
 
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	shm_size = hpage_size;
@@ -107,7 +95,6 @@ static void cleanup(void)
 
 	if (orig_shmmni != -1)
 		FILE_PRINTF(PATH_SHMMNI, "%ld", orig_shmmni);
-	restore_nr_hugepages();
 }
 
 static struct tst_test test = {
@@ -116,4 +103,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_hugeshmget,
+	.request_hugepages = 128,
 };
