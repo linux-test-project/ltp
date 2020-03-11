@@ -42,9 +42,5 @@ void rm_shm(int shm_id);
 
 char *nr_opt;
 char *Hopt;
-void check_hugepage(void);
-long save_nr_hugepages(void);
-void restore_nr_hugepages(void);
-void limit_hugepages(long *hpages);
 
 #endif /* hugetlb.h */

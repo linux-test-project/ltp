@@ -39,49 +39,6 @@
 #include <pwd.h>
 #include "hugetlb.h"
 
-static long orig_hugepages = -1;
-
-long save_nr_hugepages(void)
-{
-	check_hugepage();
-
-	orig_hugepages = get_sys_tune("nr_hugepages");
-
-	return orig_hugepages;
-}
-
-void restore_nr_hugepages(void)
-{
-	if (orig_hugepages != -1)
-		set_sys_tune("nr_hugepages", orig_hugepages, 0);
-}
-
-void limit_hugepages(long *hpages)
-{
-	long mem_avail, max_hpages;
-
-	if (FILE_LINES_SCANF("/proc/meminfo",
-			"MemAvailable: %ld", &mem_avail)) {
-		/*
-		 * Dropping caches and using "MemFree:" on kernel
-		 * that doesn't have "MemAvailable:" in Meminfo
-		 */
-		tst_res(TINFO, "MemAvailable: not found in /proc/meminfo");
-
-		SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
-		mem_avail = SAFE_READ_MEMINFO("MemFree:");
-	}
-
-	max_hpages = mem_avail / SAFE_READ_MEMINFO("Hugepagesize:");
-
-	if (*hpages > max_hpages) {
-		tst_res(TINFO, "Requested number of hugepages too large, "
-				"limiting to 80%% of the max hugepage count %ld",
-				max_hpages);
-		*hpages = max_hpages * 0.8;
-	}
-}
-
 /*
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.
