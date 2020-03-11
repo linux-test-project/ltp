@@ -60,7 +60,7 @@ static void test_hugemmap(void)
 	tst_res(TINFO, "Size of huge pages is %d KB", huge_pagesize);
 
 #ifdef TST_ABI32
-	tst_res(TINFO, "Total amount of free huge pages is %d",
+	tst_res(TINFO, "Total amount of free huge pages is %ld",
 			freepages);
 	tst_res(TINFO, "Max number allowed for 1 mmap file in"
 			" 32-bits is 128");
