@@ -15,7 +15,7 @@
  *
  * Note: this depend on the status of system memory fragmentation.
  */
-int tst_request_hugepages(int hpages);
+unsigned long tst_request_hugepages(unsigned long hpages);
 
 /*
  * This variable is used for recording the number of hugepages which system can
@@ -24,6 +24,6 @@ int tst_request_hugepages(int hpages);
  *
  * If system does not support hugetlb, then it will be set to 0.
  */
-extern unsigned int tst_hugepages;
+extern unsigned long tst_hugepages;
 
 #endif /* TST_HUGEPAGE_H */

@@ -163,7 +163,7 @@ struct tst_test {
 	 *
 	 * Also, we do cleanup and restore work for the hpages resetting automatically.
 	 */
-	unsigned int request_hugepages;
+	unsigned long request_hugepages;
 
 	/*
 	 * If set non-zero denotes number of test variant, the test is executed

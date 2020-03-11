@@ -18,22 +18,22 @@ static const char * const save_restore[] = {
 
 static void do_test(void) {
 
-	int val, hpages;
+	unsigned long val, hpages;
 
-	tst_res(TINFO, "tst_hugepages = %u", tst_hugepages);
+	tst_res(TINFO, "tst_hugepages = %lu", tst_hugepages);
 	SAFE_FILE_PRINTF("/proc/sys/kernel/numa_balancing", "1");
 
 	hpages = test.request_hugepages;
-	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%d", &val);
+	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
 	if (val != hpages)
-		tst_brk(TBROK, "nr_hugepages = %d, but expect %d", val, hpages);
+		tst_brk(TBROK, "nr_hugepages = %lu, but expect %lu", val, hpages);
 	else
 		tst_res(TPASS, "test .needs_hugepges");
 
 	hpages = tst_request_hugepages(3);
-	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%d", &val);
+	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
 	if (val != hpages)
-		tst_brk(TBROK, "nr_hugepages = %d, but expect %d", val, hpages);
+		tst_brk(TBROK, "nr_hugepages = %lu, but expect %lu", val, hpages);
 	else
 		tst_res(TPASS, "tst_request_hugepages");
 }
