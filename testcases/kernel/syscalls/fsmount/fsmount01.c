@@ -3,67 +3,94 @@
  * Copyright (C) 2020 Red Hat, Inc.  All rights reserved.
  * Author: Zorro Lang <zlang@redhat.com>
  *
- * Use new mount API from v5.2 (fsopen(), fsconfig(), fsmount(), move_mount())
- * to mount a filesystem without any specified mount options.
+ * Basic fsmount() test.
  */
-
-#include <sys/mount.h>
 
 #include "tst_test.h"
 #include "lapi/fsmount.h"
 
-#define MNTPOINT "newmount_point"
-static int sfd, mfd, is_mounted;
+#define MNTPOINT	"mntpoint"
 
-static void cleanup(void)
-{
-	if (is_mounted)
-		SAFE_UMOUNT(MNTPOINT);
-}
+#define TCASE_ENTRY(_flags, _attrs)	{.name = "Flag " #_flags ", Attr " #_attrs, .flags = _flags, .attrs = _attrs}
 
-static void test_fsmount(void)
+static struct tcase {
+	char *name;
+	unsigned int flags;
+	unsigned int attrs;
+} tcases[] = {
+	TCASE_ENTRY(0, MOUNT_ATTR_RDONLY),
+	TCASE_ENTRY(0, MOUNT_ATTR_NOSUID),
+	TCASE_ENTRY(0, MOUNT_ATTR_NODEV),
+	TCASE_ENTRY(0, MOUNT_ATTR_NOEXEC),
+	TCASE_ENTRY(0, MOUNT_ATTR_RELATIME),
+	TCASE_ENTRY(0, MOUNT_ATTR_NOATIME),
+	TCASE_ENTRY(0, MOUNT_ATTR_STRICTATIME),
+	TCASE_ENTRY(0, MOUNT_ATTR_NODIRATIME),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_RDONLY),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_NOSUID),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_NODEV),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_NOEXEC),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_RELATIME),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_NOATIME),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_STRICTATIME),
+	TCASE_ENTRY(FSMOUNT_CLOEXEC, MOUNT_ATTR_NODIRATIME),
+};
+
+static void run(unsigned int n)
 {
-	TEST(fsopen(tst_device->fs_type, FSOPEN_CLOEXEC));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "fsopen() on %s failed", tst_device->fs_type);
-	sfd = TST_RET;
-	tst_res(TPASS, "fsopen() on %s", tst_device->fs_type);
+	struct tcase *tc = &tcases[n];
+	int sfd, mfd;
+
+	TEST(sfd = fsopen(tst_device->fs_type, FSOPEN_CLOEXEC));
+	if (sfd == -1) {
+		tst_res(TFAIL | TTERRNO, "fsopen() on %s failed",
+			tst_device->fs_type);
+		return;
+	}
 
 	TEST(fsconfig(sfd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO,
+	if (TST_RET == -1) {
+		SAFE_CLOSE(sfd);
+		tst_res(TFAIL | TTERRNO,
 			"fsconfig() failed to set source to %s", tst_device->dev);
-	tst_res(TPASS, "fsconfig() set source to %s", tst_device->dev);
-
+		return;
+	}
 
 	TEST(fsconfig(sfd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "fsconfig() created superblock");
-	tst_res(TPASS, "fsconfig() created superblock");
+	if (TST_RET == -1) {
+		SAFE_CLOSE(sfd);
+		tst_res(TFAIL | TTERRNO, "fsconfig() created superblock");
+		return;
+	}
 
-	TEST(fsmount(sfd, FSMOUNT_CLOEXEC, 0));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "fsmount() failed to create a mount object");
-	mfd = TST_RET;
-	tst_res(TPASS, "fsmount() created a mount object");
+	TEST(mfd = fsmount(sfd, tc->flags, tc->attrs));
 	SAFE_CLOSE(sfd);
 
+	if (mfd == -1) {
+		tst_res(TFAIL | TTERRNO,
+			"fsmount() failed to create a mount object");
+		return;
+	}
+
 	TEST(move_mount(mfd, "", AT_FDCWD, MNTPOINT, MOVE_MOUNT_F_EMPTY_PATH));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "move_mount() failed to attach to the mount point");
-	is_mounted = 1;
-	tst_res(TPASS, "move_mount() attached to the mount point");
 	SAFE_CLOSE(mfd);
+
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO,
+			"move_mount() failed to attach to the mount point");
+		return;
+	}
 
 	if (tst_is_mounted_at_tmpdir(MNTPOINT)) {
 		SAFE_UMOUNT(MNTPOINT);
-		is_mounted = 0;
+		tst_res(TPASS, "%s: fsmount() passed", tc->name);
 	}
 }
 
 static struct tst_test test = {
-	.test_all = test_fsmount,
-	.cleanup = cleanup,
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = run,
+	.setup = fsopen_supported_by_kernel,
 	.needs_root = 1,
 	.mntpoint = MNTPOINT,
 	.format_device = 1,
