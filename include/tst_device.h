@@ -25,6 +25,13 @@ extern struct tst_device *tst_device;
 int tst_umount(const char *path);
 
 /*
+ * Verifies if an earlier mount is successful or not.
+ * @path: Mount path to verify
+ */
+int tst_is_mounted(const char *path);
+int tst_is_mounted_at_tmpdir(const char *path);
+
+/*
  * Clears a first few blocks of the device. This is needed when device has
  * already been formatted with a filesystems, subset of mkfs.foo utils aborts
  * the operation if it finds a filesystem signature there.
