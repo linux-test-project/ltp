@@ -89,6 +89,9 @@ AC_CHECK_FUNCS([ \
     getdents \
     getdents64 \
     io_pgetevents \
+    io_uring_setup \
+    io_uring_register \
+    io_uring_enter \
     kcmp \
     mkdirat \
     mknodat \
