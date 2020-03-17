@@ -88,12 +88,15 @@ zram_compress_alg()
 	local algs="$(sed 's/[][]//g' /sys/block/zram0/comp_algorithm)"
 	tst_res TINFO "supported algs: $algs"
 
-	for alg in $algs; do
-		local sys_path="/sys/block/zram${i}/comp_algorithm"
-		echo "$alg" >  $sys_path || \
-			tst_brk TFAIL "can't set '$alg' to $sys_path"
-		i=$(($i + 1))
-		tst_res TINFO "$sys_path = '$alg' ($i/$dev_num)"
+	local dev_max=$(($dev_num - 1))
+
+	for i in $(seq 0 $dev_max); do
+		for alg in $algs; do
+			local sys_path="/sys/block/zram${i}/comp_algorithm"
+			echo "$alg" >  $sys_path || \
+				tst_brk TFAIL "can't set '$alg' to $sys_path"
+			tst_res TINFO "$sys_path = '$alg' ($i/$dev_max)"
+		done
 	done
 
 	tst_res TPASS "test succeeded"
