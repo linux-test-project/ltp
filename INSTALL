@@ -19,8 +19,8 @@ flex can be obtained here:
 make 3.81 can be obtained here:
 - http://ftp.gnu.org/gnu/make/make-3.81.tar.bz2
 
-If you want to use auto configuration, be sure autoconf-2.61+ & automake-1.10+
-are installed.
+If you want to use auto configuration you also need autoconf-2.61+, automake-1.10+
+and pkg-config.
 
 automake-1.10.2's sources can be downloaded from:
 - ftp://ftp.gnu.org/gnu/automake/automake-1.10.2.tar.bz2
@@ -34,6 +34,9 @@ autoconf-2.61 also requires m4-1.4.7+ be installed. Its sources can be
 downloaded from:
 - http://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.bz2
 - http://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz
+
+pkg-config can be downloaded from:
+- https://pkg-config.freedesktop.org/releases/
 
 Configuration
 -------------------
