@@ -50,6 +50,9 @@ $ ./configure
 Now you can continue either with compiling and running a single test or with
 compiling and installing the whole testsuite.
 
+For optional library dependencies look into scripts for major distros in
+`travis/` directory. You can also build whole LTP with `./build.sh` script.
+
 Shortcut to running a single test
 ---------------------------------
 If you need to execute a single test you actually do not need to compile
@@ -103,6 +106,9 @@ dependencies.
   output.
 * If a tests fails due to a missing user or group, see the Quick Start section
   of `INSTALL`.
+
+Running tests
+-------------
 
 To run all the test suites
 
@@ -167,6 +173,12 @@ well.
 
 For more info see `doc/user-guide.txt` or online at
 https://github.com/linux-test-project/ltp/wiki/User-Guidelines.
+
+Network tests
+-------------
+Network tests require certain setup, described in `testcases/network/README.md`
+(online at https://github.com/linux-test-project/ltp/tree/master/testcases/network)
+and `INSTALL`.
 
 Developers corner
 =================
