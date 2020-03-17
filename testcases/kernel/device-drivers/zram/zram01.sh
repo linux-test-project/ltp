@@ -37,7 +37,6 @@ fi
 zram_sizes="26214400 26214400 26214400 $FS_SIZE"
 zram_mem_limits="25M 25M 25M $((FS_SIZE/1024/1024))M"
 zram_filesystems="ext3 ext4 xfs $FS_TYPE"
-zram_algs="lzo lzo lzo lzo"
 
 zram_fill_fs()
 {

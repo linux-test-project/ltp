@@ -85,10 +85,10 @@ zram_compress_alg()
 	local i=0
 
 	tst_res TINFO "test that we can set compression algorithm"
-	local algs="$(cat /sys/block/zram0/comp_algorithm)"
+	local algs="$(sed 's/[][]//g' /sys/block/zram0/comp_algorithm)"
 	tst_res TINFO "supported algs: $algs"
 
-	for alg in $zram_algs; do
+	for alg in $algs; do
 		local sys_path="/sys/block/zram${i}/comp_algorithm"
 		echo "$alg" >  $sys_path || \
 			tst_brk TFAIL "can't set '$alg' to $sys_path"
