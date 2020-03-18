@@ -104,7 +104,7 @@ static int probe_pci_dev(unsigned int bus, unsigned int slot)
 		ltp_pci.dev = NULL;
 	}
 
-	dev = pci_get_domain_bus_and_slot(pci_domain_nr(dev->bus), bus, slot);
+	dev = pci_get_domain_bus_and_slot(0, bus, slot);
 	if (!dev || !dev->driver)
 		return -ENODEV;
 
