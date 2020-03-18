@@ -24,5 +24,8 @@
 #ifndef CLONE_NEWUTS
 #  define CLONE_NEWUTS	0x04000000
 #endif
+#ifndef CLONE_NEWTIME
+#  define CLONE_NEWTIME 0x00000080
+#endif
 
 #endif /* __NAMESPACES_CONSTANTS_H__ */
