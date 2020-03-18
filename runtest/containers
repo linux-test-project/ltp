@@ -89,3 +89,4 @@ userns07 userns07
 # time namespaces
 sysinfo03 sysinfo03
 clock_nanosleep03 clock_nanosleep03
+clock_gettime03 clock_gettime03
