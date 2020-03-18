@@ -13,6 +13,7 @@
 #endif
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
+#include "lapi/setns.h"
 #include "tst_safe_macros.h"
 #include "lapi/personality.h"
 
@@ -200,5 +201,16 @@ void safe_unshare(const char *file, const int lineno, int flags)
 			tst_brk_(file, lineno, TBROK | TERRNO,
 				 "unshare(%d) failed", flags);
 		}
+	}
+}
+
+void safe_setns(const char *file, const int lineno, int fd, int nstype)
+{
+	int ret;
+
+	ret = setns(fd, nstype);
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO, "setns(%i, %i) failed",
+		         fd, nstype);
 	}
 }
