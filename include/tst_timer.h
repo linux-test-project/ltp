@@ -115,6 +115,21 @@ static inline int tst_timespec_lt(struct timespec t1, struct timespec t2)
 	return t1.tv_sec < t2.tv_sec;
 }
 
+static inline struct timespec tst_timespec_normalize(struct timespec t)
+{
+	if (t.tv_nsec >= 1000000000) {
+		t.tv_sec++;
+		t.tv_nsec -= 1000000000;
+	}
+
+	if (t.tv_nsec < 0) {
+		t.tv_sec--;
+		t.tv_nsec += 1000000000;
+	}
+
+	return t;
+}
+
 /*
  * Adds us microseconds to t.
  */
@@ -124,12 +139,8 @@ static inline struct timespec tst_timespec_add_us(struct timespec t,
 	t.tv_sec += us / 1000000;
 	t.tv_nsec += (us % 1000000) * 1000;
 
-	if (t.tv_nsec >= 1000000000) {
-		t.tv_sec++;
-		t.tv_nsec -= 1000000000;
-	}
 
-	return t;
+	return tst_timespec_normalize(t);
 }
 
 /*
@@ -143,12 +154,7 @@ static inline struct timespec tst_timespec_add(struct timespec t1,
 	res.tv_sec = t1.tv_sec + t2.tv_sec;
 	res.tv_nsec = t1.tv_nsec + t2.tv_nsec;
 
-	if (res.tv_nsec >= 1000000000) {
-		res.tv_sec++;
-		res.tv_nsec -= 1000000000;
-	}
-
-	return res;
+	return tst_timespec_normalize(res);
 }
 
 /*
@@ -160,12 +166,7 @@ static inline struct timespec tst_timespec_sub_us(struct timespec t,
 	t.tv_sec -= us / 1000000;
 	t.tv_nsec -= (us % 1000000) * 1000;
 
-	if (t.tv_nsec < 0) {
-		t.tv_sec--;
-		t.tv_nsec += 1000000000;
-	}
-
-	return t;
+	return tst_timespec_normalize(t);
 }
 
 /*
