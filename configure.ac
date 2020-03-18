@@ -112,6 +112,7 @@ AC_CHECK_FUNCS([ \
     renameat2 \
     sched_getcpu \
     sendmmsg \
+    setns \
     sigpending \
     splice \
     statx \
