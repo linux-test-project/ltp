@@ -91,3 +91,4 @@ sysinfo03 sysinfo03
 clock_nanosleep03 clock_nanosleep03
 clock_gettime03 clock_gettime03
 timens01 timens01
+timerfd04 timerfd04
