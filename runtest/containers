@@ -85,3 +85,6 @@ userns04 userns04
 userns05 userns05
 userns06 userns06
 userns07 userns07
+
+# time namespaces
+sysinfo03 sysinfo03
