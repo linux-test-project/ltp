@@ -26,7 +26,7 @@ static int pidfd;
 static void received_signal(int sig, siginfo_t *info, void *ucontext)
 {
 	if (info && ucontext) {
-		if (sig == SIGNAL && uinfo->si_value.sival_int == DATA) {
+		if (sig == SIGNAL && info->si_value.sival_int == DATA) {
 			tst_res(TPASS, "Received correct signal and data!");
 			sig_rec = 1;
 		} else {
