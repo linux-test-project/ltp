@@ -53,7 +53,7 @@ static void setup(void)
 
 	TEST(fd = fsopen(tst_device->fs_type, 0));
 	if (fd == -1)
-		tst_brk(TBROK | TERRNO, "fsopen() failed");
+		tst_brk(TBROK | TTERRNO, "fsopen() failed");
 
 	temp_fd = open("testfile", O_RDWR | O_CREAT, 01444);
 	if (temp_fd == -1)

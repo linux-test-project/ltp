@@ -27,19 +27,19 @@ static void run(unsigned int n)
 
 	TEST(fspick_fd = fspick(AT_FDCWD, MNTPOINT, tc->flags));
 	if (fspick_fd == -1) {
-		tst_res(TFAIL | TERRNO, "fspick() failed");
+		tst_res(TFAIL | TTERRNO, "fspick() failed");
 		return;
 	}
 
 	TEST(fsconfig(fspick_fd, FSCONFIG_SET_STRING, "sync", "false", 0));
 	if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO, "fsconfig() failed");
+		tst_res(TFAIL | TTERRNO, "fsconfig() failed");
 		goto out;
 	}
 
 	TEST(fsconfig(fspick_fd, FSCONFIG_SET_FLAG, "ro", NULL, 0));
 	if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO, "fsconfig() failed");
+		tst_res(TFAIL | TTERRNO, "fsconfig() failed");
 		goto out;
 	}
 

@@ -24,22 +24,22 @@ static void run(void)
 
 	TEST(fd = fsopen(tst_device->fs_type, 0));
 	if (fd == -1)
-		tst_brk(TBROK | TERRNO, "fsopen() failed");
+		tst_brk(TBROK | TTERRNO, "fsopen() failed");
 
 	TEST(fsconfig(fd, FSCONFIG_SET_FLAG, "rw", NULL, 0));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TERRNO, "fsconfig() failed");
+		tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
 
 	TEST(fsconfig(fd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TERRNO, "fsconfig() failed");
+		tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
 
 	TEST(fsconfig(fd, FSCONFIG_SET_PATH, "sync", tst_device->dev, 0));
 	if (TST_RET == -1) {
 		if (TST_ERR == EOPNOTSUPP)
 			tst_res(TCONF, "fsconfig(): FSCONFIG_SET_PATH not supported");
 		else
-			tst_brk(TFAIL | TERRNO, "fsconfig() failed");
+			tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_SET_PATH_EMPTY, "sync", tst_device->dev, 0));
@@ -47,7 +47,7 @@ static void run(void)
 		if (TST_ERR == EOPNOTSUPP)
 			tst_res(TCONF, "fsconfig(): FSCONFIG_SET_PATH_EMPTY not supported");
 		else
-			tst_brk(TFAIL | TERRNO, "fsconfig() failed");
+			tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_SET_FD, "sync", NULL, 0));
@@ -55,23 +55,23 @@ static void run(void)
 		if (TST_ERR == EOPNOTSUPP)
 			tst_res(TCONF, "fsconfig(): FSCONFIG_SET_FD not supported");
 		else
-			tst_brk(TFAIL | TERRNO, "fsconfig() failed");
+			tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TERRNO, "fsconfig() failed");
+		tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
 
 	TEST(fsmfd = fsmount(fd, 0, 0));
 	if (fsmfd == -1)
-		tst_brk(TBROK | TERRNO, "fsmount() failed");
+		tst_brk(TBROK | TTERRNO, "fsmount() failed");
 
 	TEST(move_mount(fsmfd, "", AT_FDCWD, MNTPOINT,
 			MOVE_MOUNT_F_EMPTY_PATH));
 	SAFE_CLOSE(fsmfd);
 
 	if (TST_RET == -1)
-		tst_brk(TBROK | TERRNO, "move_mount() failed");
+		tst_brk(TBROK | TTERRNO, "move_mount() failed");
 
 	if (tst_is_mounted_at_tmpdir(MNTPOINT)) {
 		SAFE_UMOUNT(MNTPOINT);

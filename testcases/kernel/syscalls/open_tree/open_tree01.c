@@ -42,21 +42,21 @@ static void run(unsigned int n)
 
 	TEST(fd = fsopen(tst_device->fs_type, 0));
 	if (fd == -1) {
-		tst_res(TFAIL | TERRNO, "fsopen() failed");
+		tst_res(TFAIL | TTERRNO, "fsopen() failed");
 		return;
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
 	if (TST_RET == -1) {
 		SAFE_CLOSE(fd);
-		tst_res(TFAIL | TERRNO, "fsconfig() failed");
+		tst_res(TFAIL | TTERRNO, "fsconfig() failed");
 		return;
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
 	if (TST_RET == -1) {
 		SAFE_CLOSE(fd);
-		tst_res(TFAIL | TERRNO, "fsconfig() failed");
+		tst_res(TFAIL | TTERRNO, "fsconfig() failed");
 		return;
 	}
 
@@ -64,7 +64,7 @@ static void run(unsigned int n)
 	SAFE_CLOSE(fd);
 
 	if (fsmfd == -1) {
-		tst_res(TFAIL | TERRNO, "fsmount() failed");
+		tst_res(TFAIL | TTERRNO, "fsmount() failed");
 		return;
 	}
 
@@ -73,18 +73,18 @@ static void run(unsigned int n)
 	SAFE_CLOSE(fsmfd);
 
 	if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO, "move_mount() failed");
+		tst_res(TFAIL | TTERRNO, "move_mount() failed");
 		return;
 	}
 
 	if (!tst_is_mounted_at_tmpdir(MNTPOINT)) {
-		tst_res(TFAIL | TERRNO, "device not mounted");
+		tst_res(TFAIL | TTERRNO, "device not mounted");
 		return;
 	}
 
 	TEST(otfd = open_tree(AT_FDCWD, MNTPOINT, tc->flags | OPEN_TREE_CLONE));
 	if (otfd == -1) {
-		tst_res(TFAIL | TERRNO, "open_tree() failed");
+		tst_res(TFAIL | TTERRNO, "open_tree() failed");
 		goto out;
 	}
 
@@ -93,7 +93,7 @@ static void run(unsigned int n)
 	SAFE_CLOSE(otfd);
 
 	if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO, "move_mount() failed");
+		tst_res(TFAIL | TTERRNO, "move_mount() failed");
 		goto out;
 	}
 

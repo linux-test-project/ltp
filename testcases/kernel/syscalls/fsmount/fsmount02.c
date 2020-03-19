@@ -35,15 +35,15 @@ static void setup(void)
 
 	TEST(fd = fsopen(tst_device->fs_type, 0));
 	if (fd == -1)
-		tst_brk(TBROK | TERRNO, "fsopen() failed");
+		tst_brk(TBROK | TTERRNO, "fsopen() failed");
 
 	TEST(fsconfig(fd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TERRNO, "fsconfig() failed");
+		tst_brk(TBROK | TTERRNO, "fsconfig() failed");
 
 	TEST(fsconfig(fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TERRNO, "fsconfig() failed");
+		tst_brk(TBROK | TTERRNO, "fsconfig() failed");
 }
 
 static void run(unsigned int n)
