@@ -5,7 +5,7 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
  *
- * Test that the clock time can be set to 0, a large number, Y2K
+ * Test that the clock time can be set to a large number, Y2K
  * critical dates, and times around daylight savings.
  *
  * Test for CLOCK_REALTIME.  (N/A for CLOCK_MONOTONIC as that clock
@@ -16,13 +16,12 @@
 #include <stdint.h>
 #include "posixtest.h"
 
-#define NUMTESTS 6
+#define NUMTESTS 5
 
 #define ACCEPTABLESECDELTA 0
-#define ACCEPTABLENSECDELTA 5000
+#define ACCEPTABLENSECDELTA 5000000
 
 static int testtimes[NUMTESTS][2] = {
-	{0, 0},			// zero
 	{INT32_MAX, 999999999},	// large number
 	{946713600, 999999999},	// Y2K - Jan 1, 2000
 	{951811200, 999999999},	// Y2K - Feb 29, 2000
