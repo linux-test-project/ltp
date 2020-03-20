@@ -1283,8 +1283,8 @@ return value is '255' if 'execvp()' failed with 'ENOENT' and '254' otherwise.
 'stdout_path' and 'stderr_path' determine where to redirect the program
 stdout and stderr I/O streams.
 
-The 'SAFE_CMD()' macro can be used automatic handling non zero exits (exits
-with 'TBROK') or 'ENOENT' (exits with 'TCONF').
+The 'SAFE_CMD()' macro can be used automatic handling non-zero exits (exits
+with 'TBROK') and 'ENOENT' (exits with 'TCONF').
 
 .Example
 [source,c]
