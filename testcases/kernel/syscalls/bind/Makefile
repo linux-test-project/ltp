@@ -5,4 +5,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
+bind04 bind05:	CFLAGS		+= -pthread
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
