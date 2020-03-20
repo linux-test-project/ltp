@@ -24,8 +24,8 @@
 #define _GNU_SOURCE
 #include <pwd.h>
 #include <signal.h>
+#include "lapi/pidfd_send_signal.h"
 #include "tst_safe_pthread.h"
-#include "pidfd_send_signal.h"
 
 #define CORRECT_SIGNAL		SIGUSR1
 #define DIFFERENT_SIGNAL	SIGUSR2
@@ -68,7 +68,7 @@ static void setup(void)
 {
 	struct passwd *pw;
 
-	check_syscall_support();
+	pidfd_send_signal_supported();
 
 	pidfd = SAFE_OPEN("/proc/self", O_DIRECTORY | O_CLOEXEC);
 	init_pidfd = SAFE_OPEN("/proc/1", O_DIRECTORY | O_CLOEXEC);

@@ -10,7 +10,7 @@
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
-static void check_syscall_support(void)
+static inline void pidfd_send_signal_supported(void)
 {
 	/* allow the tests to fail early */
 	tst_syscall(__NR_pidfd_send_signal);
@@ -20,7 +20,6 @@ static void check_syscall_support(void)
 static int pidfd_send_signal(int pidfd, int sig, siginfo_t *info,
 				 unsigned int flags)
 {
-	tst_res(TINFO, "Testing syscall(__NR_pidfd_send_signal)");
 	return tst_syscall(__NR_pidfd_send_signal, pidfd, sig, info, flags);
 }
 #endif /* HAVE_PIDFD_SEND_SIGNAL */

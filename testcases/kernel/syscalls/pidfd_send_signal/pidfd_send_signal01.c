@@ -12,8 +12,8 @@
 #define _GNU_SOURCE
 #include <signal.h>
 #include <stdlib.h>
+#include "lapi/pidfd_send_signal.h"
 #include "tst_safe_pthread.h"
-#include "pidfd_send_signal.h"
 
 #define SIGNAL  SIGUSR1
 #define DATA	777
@@ -69,7 +69,7 @@ static void verify_pidfd_send_signal(void)
 
 static void setup(void)
 {
-	check_syscall_support();
+	pidfd_send_signal_supported();
 
 	pidfd = SAFE_OPEN("/proc/self", O_DIRECTORY | O_CLOEXEC);
 
