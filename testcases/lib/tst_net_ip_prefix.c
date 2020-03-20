@@ -10,6 +10,7 @@
 #include "tst_test.h"
 
 #include "tst_net.h"
+#include "tst_private.h"
 
 #define DEFAULT_IPV4_PREFIX 24
 #define DEFAULT_IPV6_PREFIX 64
@@ -67,22 +68,22 @@ int main(int argc, char *argv[])
 	prefix_str = strchr(ip_str, '/');
 
 	if (prefix_str)
-		prefix = get_prefix(ip_str, is_ipv6);
+		prefix = tst_get_prefix(ip_str, is_ipv6);
 	else
 		prefix = is_ipv6 ? DEFAULT_IPV6_PREFIX : DEFAULT_IPV4_PREFIX;
 
 	/* checks for validity of IP string */
 	if (is_ipv6)
-		get_in6_addr(ip_str, &ip6);
+		tst_get_in6_addr(ip_str, &ip6);
 	else
-		get_in_addr(ip_str, &ip);
+		tst_get_in_addr(ip_str, &ip);
 
 	if (is_ipv6) {
 		print_ivar(is_rhost ? "IPV6_RPREFIX" : "IPV6_LPREFIX", prefix);
-		print_svar(is_rhost ? "IPV6_RHOST" : "IPV6_LHOST", ip_str);
+		tst_print_svar(is_rhost ? "IPV6_RHOST" : "IPV6_LHOST", ip_str);
 	} else {
 		print_ivar(is_rhost ? "IPV4_RPREFIX" : "IPV4_LPREFIX", prefix);
-		print_svar(is_rhost ? "IPV4_RHOST" : "IPV4_LHOST", ip_str);
+		tst_print_svar(is_rhost ? "IPV4_RHOST" : "IPV4_LHOST", ip_str);
 	}
 
 	exit(EXIT_SUCCESS);
