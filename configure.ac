@@ -75,6 +75,7 @@ AC_CHECK_HEADERS(fts.h, [have_fts=1])
 AC_SUBST(HAVE_FTS_H, $have_fts)
 
 AC_CHECK_FUNCS([ \
+    clone3 \
     copy_file_range \
     epoll_pwait \
     execveat \
