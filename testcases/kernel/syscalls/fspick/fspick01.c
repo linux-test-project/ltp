@@ -43,6 +43,12 @@ static void run(unsigned int n)
 		goto out;
 	}
 
+	TEST(fsconfig(fspick_fd, FSCONFIG_CMD_RECONFIGURE, NULL, NULL, 0));
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "fsconfig() failed");
+		goto out;
+	}
+
 	tst_res(TPASS, "%s: fspick() passed", tc->name);
 
 out:
