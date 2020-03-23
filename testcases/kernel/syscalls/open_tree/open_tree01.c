@@ -38,54 +38,12 @@ static void setup(void)
 static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
-	int fd, fsmfd, otfd;
-
-	TEST(fd = fsopen(tst_device->fs_type, 0));
-	if (fd == -1) {
-		tst_res(TFAIL | TTERRNO, "fsopen() failed");
-		return;
-	}
-
-	TEST(fsconfig(fd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
-	if (TST_RET == -1) {
-		SAFE_CLOSE(fd);
-		tst_res(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_STRING) failed");
-		return;
-	}
-
-	TEST(fsconfig(fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
-	if (TST_RET == -1) {
-		SAFE_CLOSE(fd);
-		tst_res(TFAIL | TTERRNO, "fsconfig(FSCONFIG_CMD_CREATE) failed");
-		return;
-	}
-
-	TEST(fsmfd = fsmount(fd, 0, 0));
-	SAFE_CLOSE(fd);
-
-	if (fsmfd == -1) {
-		tst_res(TFAIL | TTERRNO, "fsmount() failed");
-		return;
-	}
-
-	TEST(move_mount(fsmfd, "", AT_FDCWD, MNTPOINT,
-			MOVE_MOUNT_F_EMPTY_PATH));
-	SAFE_CLOSE(fsmfd);
-
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "move_mount() failed");
-		return;
-	}
-
-	if (!tst_is_mounted_at_tmpdir(MNTPOINT)) {
-		tst_res(TFAIL | TTERRNO, "device not mounted");
-		return;
-	}
+	int otfd;
 
 	TEST(otfd = open_tree(AT_FDCWD, MNTPOINT, tc->flags | OPEN_TREE_CLONE));
 	if (otfd == -1) {
 		tst_res(TFAIL | TTERRNO, "open_tree() failed");
-		goto out;
+		return;
 	}
 
 	TEST(move_mount(otfd, "", AT_FDCWD, OT_MNTPOINT,
@@ -94,16 +52,13 @@ static void run(unsigned int n)
 
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "move_mount() failed");
-		goto out;
+		return;
 	}
 
 	if (tst_is_mounted_at_tmpdir(OT_MNTPOINT)) {
 		SAFE_UMOUNT(OT_MNTPOINT);
 		tst_res(TPASS, "%s: open_tree() passed", tc->name);
 	}
-
-out:
-	SAFE_UMOUNT(MNTPOINT);
 }
 
 static struct tst_test test = {
@@ -112,7 +67,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.format_device = 1,
+	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.dev_fs_flags = TST_FS_SKIP_FUSE,
