@@ -25,13 +25,6 @@
 
 #define PORT_NUM 33333
 
-#ifndef SOCK_CLOEXEC
-# define SOCK_CLOEXEC    O_CLOEXEC
-#endif
-#ifndef SOCK_NONBLOCK
-# define SOCK_NONBLOCK   O_NONBLOCK
-#endif
-
 static const char *variant_desc[] = {
 	"libc accept4()",
 	"__NR_accept4 syscall",
