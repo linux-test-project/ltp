@@ -6,7 +6,8 @@
  */
 #include "tst_test.h"
 #include "lapi/fsmount.h"
-#include "fspick.h"
+
+#define MNTPOINT		"mntpoint"
 
 static struct tcase {
 	char *name;
@@ -44,10 +45,9 @@ static void run(unsigned int n)
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = run,
-	.setup = setup,
-	.cleanup = cleanup,
+	.setup = fsopen_supported_by_kernel,
 	.needs_root = 1,
-	.format_device = 1,
+	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.dev_fs_flags = TST_FS_SKIP_FUSE,
