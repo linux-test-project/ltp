@@ -52,14 +52,14 @@ static void run(unsigned int n)
 	if (TST_RET == -1) {
 		SAFE_CLOSE(sfd);
 		tst_res(TFAIL | TTERRNO,
-			"fsconfig() failed to set source to %s", tst_device->dev);
+			"fsconfig(FSCONFIG_SET_STRING) failed to set source to %s", tst_device->dev);
 		return;
 	}
 
 	TEST(fsconfig(sfd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
 	if (TST_RET == -1) {
 		SAFE_CLOSE(sfd);
-		tst_res(TFAIL | TTERRNO, "fsconfig() created superblock");
+		tst_res(TFAIL | TTERRNO, "fsconfig(FSCONFIG_CMD_CREATE) failed");
 		return;
 	}
 

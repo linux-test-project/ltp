@@ -39,11 +39,11 @@ static void setup(void)
 
 	TEST(fsconfig(fd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "fsconfig() failed");
+		tst_brk(TBROK | TTERRNO, "fsconfig(FSCONFIG_SET_STRING) failed");
 
 	TEST(fsconfig(fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "fsconfig() failed");
+		tst_brk(TBROK | TTERRNO, "fsconfig(FSCONFIG_CMD_CREATE) failed");
 }
 
 static void run(unsigned int n)

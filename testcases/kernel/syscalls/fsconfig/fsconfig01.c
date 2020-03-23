@@ -28,39 +28,39 @@ static void run(void)
 
 	TEST(fsconfig(fd, FSCONFIG_SET_FLAG, "rw", NULL, 0));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
+		tst_brk(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_FLAG) failed");
 
 	TEST(fsconfig(fd, FSCONFIG_SET_STRING, "source", tst_device->dev, 0));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
+		tst_brk(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_STRING) failed");
 
 	TEST(fsconfig(fd, FSCONFIG_SET_PATH, "sync", tst_device->dev, 0));
 	if (TST_RET == -1) {
 		if (TST_ERR == EOPNOTSUPP)
-			tst_res(TCONF, "fsconfig(): FSCONFIG_SET_PATH not supported");
+			tst_res(TCONF, "fsconfig(FSCONFIG_SET_PATH) not supported");
 		else
-			tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
+			tst_brk(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_PATH) failed");
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_SET_PATH_EMPTY, "sync", tst_device->dev, 0));
 	if (TST_RET == -1) {
 		if (TST_ERR == EOPNOTSUPP)
-			tst_res(TCONF, "fsconfig(): FSCONFIG_SET_PATH_EMPTY not supported");
+			tst_res(TCONF, "fsconfig(FSCONFIG_SET_PATH_EMPTY) not supported");
 		else
-			tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
+			tst_brk(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_PATH_EMPTY) failed");
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_SET_FD, "sync", NULL, 0));
 	if (TST_RET == -1) {
 		if (TST_ERR == EOPNOTSUPP)
-			tst_res(TCONF, "fsconfig(): FSCONFIG_SET_FD not supported");
+			tst_res(TCONF, "fsconfig(FSCONFIG_SET_FD) not supported");
 		else
-			tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
+			tst_brk(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_FD) failed");
 	}
 
 	TEST(fsconfig(fd, FSCONFIG_CMD_CREATE, NULL, NULL, 0));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TTERRNO, "fsconfig() failed");
+		tst_brk(TFAIL | TTERRNO, "fsconfig(FSCONFIG_CMD_CREATE) failed");
 
 	TEST(fsmfd = fsmount(fd, 0, 0));
 	if (fsmfd == -1)
