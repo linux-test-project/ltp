@@ -21,6 +21,7 @@
 #include <grp.h>
 
 #include "safe_macros_fn.h"
+#include "tst_cmd.h"
 
 #define SAFE_BASENAME(path) \
 	safe_basename(__FILE__, __LINE__, NULL, (path))
@@ -534,8 +535,23 @@ int safe_personality(const char *filename, unsigned int lineno,
 void safe_unshare(const char *file, const int lineno, int flags);
 #define SAFE_UNSHARE(flags) safe_unshare(__FILE__, __LINE__, (flags))
 
-
 void safe_setns(const char *file, const int lineno, int fd, int nstype);
 #define SAFE_SETNS(fd, nstype) safe_setns(__FILE__, __LINE__, (fd), (nstype));
+
+static inline void safe_cmd(const char *file, const int lineno, const char *const argv[],
+				  const char *stdout_path, const char *stderr_path)
+{
+	int rval;
+
+	switch ((rval = tst_cmd(argv, stdout_path, stderr_path,
+				TST_CMD_PASS_RETVAL | TST_CMD_TCONF_ON_MISSING))) {
+	case 0:
+		break;
+	default:
+		tst_brk(TBROK, "%s:%d: %s failed (%d)", file, lineno, argv[0], rval);
+	}
+}
+#define SAFE_CMD(argv, stdout_path, stderr_path) \
+	safe_cmd(__FILE__, __LINE__, (argv), (stdout_path), (stderr_path))
 
 #endif /* SAFE_MACROS_H__ */
