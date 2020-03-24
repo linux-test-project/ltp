@@ -92,7 +92,7 @@ xinetd_test()
 
 	for a in $check_addr; do
 		p=$(echo $pattern | sed "s/ADDR/$a/")
-		echo '' | telnet $a 2>&1 | grep -qi "$p"
+		echo '' | telnet $a 2>&1 | grep -qiE "$p"
 		[ $? -ne 0 ] && \
 			tst_brk TFAIL "not expected output for 'telnet $a'"
 	done
@@ -103,7 +103,7 @@ do_test()
 {
 	case $1 in
 	1) xinetd_test $1 "disabled" \
-			"telnet: connect to address ADDR: Connection refused";;
+			"telnet: (connect to address ADDR|Unable to connect to remote host): Connection refused";;
 	2) xinetd_test $1 "enabled" \
 			"Connection closed by foreign host";;
 	esac
