@@ -17,8 +17,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define EXPIREDELTA 3
-#define LONGTIME 5
+#define EXPIREDELTA 2
 
 #define CHILDPASS 1
 
@@ -51,6 +50,10 @@ int main(int argc, char *argv[])
 			return PTS_UNRESOLVED;
 		}
 
+		if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) {
+			perror("sigprocmask() failed\n");
+			return PTS_UNRESOLVED;
+		}
 		ev.sigev_notify = SIGEV_SIGNAL;
 		ev.sigev_signo = SIGABRT;
 		if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
@@ -73,10 +76,14 @@ int main(int argc, char *argv[])
 			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
 		}
-		printf("Got it!  Child\n");
 
-		sleep(LONGTIME);
-		return CHILDPASS;
+		if (sig == SIGABRT) {
+			printf("Got it! Child\n");
+			return CHILDPASS;
+		}
+
+		printf("Got another signal! Child\n");
+		return PTS_FAIL;
 	} else {
 		/*parent */
 		struct sigevent ev;
@@ -94,6 +101,11 @@ int main(int argc, char *argv[])
 
 		if (sigaddset(&set, SIGALRM) == -1) {
 			perror("sigaddset() failed\n");
+			return PTS_UNRESOLVED;
+		}
+
+		if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) {
+			perror("sigaprocmask() failed\n");
 			return PTS_UNRESOLVED;
 		}
 
@@ -119,7 +131,13 @@ int main(int argc, char *argv[])
 			perror("sigwait() failed\n");
 			return PTS_UNRESOLVED;
 		}
-		printf("Got it!  Parent\n");
+
+		if (sig != SIGALRM) {
+			printf("Got another signal! Parent\n");
+			return PTS_FAIL;
+		}
+
+		printf("Got it! Parent\n");
 
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit\n");
