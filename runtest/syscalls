@@ -1176,6 +1176,7 @@ sendfile09_64 sendfile09_64
 
 sendmsg01 sendmsg01
 sendmsg02 sendmsg02
+sendmsg03 sendmsg03
 
 sendmmsg01 sendmmsg01
 

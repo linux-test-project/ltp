@@ -62,7 +62,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_CLOSE(sockfd);
+	if (sockfd > 0)
+		SAFE_CLOSE(sockfd);
 	tst_fzsync_pair_cleanup(&fzsync_pair);
 }
 
