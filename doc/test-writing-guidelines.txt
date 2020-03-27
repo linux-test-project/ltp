@@ -1546,7 +1546,7 @@ test should include "tst_checksum.h" header, then can call tst_crc32c().
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests may need specific kernel drivers, either compiled in, or built
-as a module. If .need_drivers points to a NULL-terminated array of kernel
+as a module. If .needs_drivers points to a NULL-terminated array of kernel
 module names these are all checked and the test exits with TCONF on the
 first missing driver.
 
