@@ -168,9 +168,6 @@ static void setup(void)
 	switch (ret) {
 	case 0:
 		break;
-	case 255:
-		tst_brk(TCONF, "quotacheck binary not installed");
-		break;
 	default:
 		tst_brk(TBROK, "quotacheck exited with %i", ret);
 	}
@@ -234,5 +231,9 @@ static struct tst_test test = {
 	.dev_fs_type = "ext4",
 	.mntpoint = MNTPOINT,
 	.mnt_data = "usrquota,grpquota",
+	.needs_cmds = (const char *const []) {
+		"quotacheck",
+		NULL
+	},
 	.setup = setup,
 };

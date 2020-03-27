@@ -43,9 +43,6 @@ static void add_user(void)
 		user_added = 1;
 		ltpuser = SAFE_GETPWNAM(username);
 		break;
-	case 255:
-		tst_brk(TCONF, "useradd not found");
-		break;
 	default:
 		tst_brk(TBROK, "useradd failed (%d)", rc);
 	}
@@ -214,6 +211,11 @@ static struct tst_test test = {
 	.bufs = (struct tst_buffers []) {
 		{&user_buf, .size = 64},
 		{}
+	},
+	.needs_cmds = (const char *const []) {
+		"useradd",
+		"userdel",
+		NULL
 	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "a08bf91ce28"},
