@@ -41,5 +41,6 @@ cve-2017-18075 pcrypt_aead01
 cve-2017-1000380 snd_timer01
 cve-2018-5803 sctp_big_chunk
 cve-2018-1000001 realpath01
+cve-2018-1000199 ptrace08
 cve-2018-1000204 ioctl_sg01
 cve-2018-19854 crypto_user01
