@@ -2023,6 +2023,21 @@ struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+2.2.35 Checking for required commands
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Required commands can be checked with '.needs_cmds', which points to a 'NULL'
+terminated array of strings such as:
+
+[source,c]
+-------------------------------------------------------------------------------
+.needs_cmds = (const char *const []) {
+	"useradd",
+	"userdel",
+	NULL
+},
+-------------------------------------------------------------------------------
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

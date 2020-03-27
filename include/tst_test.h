@@ -239,6 +239,9 @@ struct tst_test {
 	 * {NULL, NULL} terminated array of tags.
 	 */
 	const struct tst_tag *tags;
+
+	/* NULL terminated array of required binaries */
+	const char *const *needs_cmds;
 };
 
 /*

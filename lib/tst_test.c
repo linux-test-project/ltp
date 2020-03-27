@@ -3,6 +3,7 @@
  * Copyright (c) 2015-2016 Cyril Hrubis <chrubis@suse.cz>
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -879,6 +880,16 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->min_kver)
 		check_kver();
+
+	if (tst_test->needs_cmds) {
+		const char *cmd;
+		char path[PATH_MAX];
+		int i;
+
+		for (i = 0; (cmd = tst_test->needs_cmds[i]); ++i)
+			if (tst_get_path(cmd, path, sizeof(path)))
+				tst_brk(TCONF, "Couldn't find '%s' in $PATH", cmd);
+	}
 
 	if (tst_test->needs_drivers) {
 		const char *name;
