@@ -563,7 +563,7 @@ struct tst_option {
 };
 -------------------------------------------------------------------------------
 
-Test specific command line parameters can be passed with the 'NULL'-terminated
+Test specific command line parameters can be passed with the 'NULL' terminated
 array of 'struct tst_option'. The 'optstr' is the command line option i.e. "o"
 or "o:" if option has a parameter. Only short options are supported. The 'arg'
 is where 'optarg' is stored upon match. If option has no parameter it's set to
@@ -1269,7 +1269,7 @@ int tst_run_cmd(const char *const argv[],
 'tst_run_cmd' is a wrapper for 'vfork() + execvp()' which provides a way
 to execute an external program.
 
-'argv[]' is a NULL-terminated array of strings starting with the program name
+'argv[]' is a 'NULL' terminated array of strings starting with the program name
 which is followed by optional arguments.
 
 A non-zero 'pass_exit_val' makes 'tst_run_cmd' return the program exit code to
@@ -1431,7 +1431,7 @@ static struct tst_test test = {
 
 If the test needs additional files to be copied to the test temporary
 directory all you need to do is to list their filenames in the
-'NULL'-terminated array '.resource_files' in the tst_test structure.
+'NULL' terminated array '.resource_files' in the tst_test structure.
 
 When resource files is set test temporary directory is created automatically,
 there is need to set '.needs_tmpdir' as well.
@@ -1522,13 +1522,13 @@ void run(void)
 }
 -------------------------------------------------------------------------------
 
-You have to call tst_taint_init() with non-zero flags first, preferably during
-setup(). The function will generate a TCONF if the requested flags are not
-fully supported on the running kernel, and TBROK if either a zero mask was
+You have to call 'tst_taint_init()' with non-zero flags first, preferably during
+setup(). The function will generate a 'TCONF' if the requested flags are not
+fully supported on the running kernel, and 'TBROK' if either a zero mask was
 supplied or if the kernel is already tainted before executing the test.
 
-Then you can call tst_taint_check() during run(), which returns 0 or the
-tainted flags set in /proc/sys/kernel/tainted as specified earlier.
+Then you can call 'tst_taint_check()' during 'run()', which returns 0 or the
+tainted flags set in '/proc/sys/kernel/tainted' as specified earlier.
 
 Depending on your kernel version, not all tainted-flags will be supported.
 
@@ -1540,14 +1540,14 @@ https://www.kernel.org/doc/html/latest/admin-guide/tainted-kernels.html
 ^^^^^^^^^^^^^^^^
 
 CRC32c checksum generation is supported by LTP. In order to use it, the
-test should include "tst_checksum.h" header, then can call tst_crc32c().
+test should include 'tst_checksum.h' header, then can call 'tst_crc32c()'.
 
 2.2.26 Checking kernel for the driver support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Some tests may need specific kernel drivers, either compiled in, or built
-as a module. If .needs_drivers points to a NULL-terminated array of kernel
-module names these are all checked and the test exits with TCONF on the
+as a module. If '.needs_drivers' points to a 'NULL' terminated array of kernel
+module names these are all checked and the test exits with 'TCONF' on the
 first missing driver.
 
 Since it relies on modprobe command, the check will be skipped if the command
@@ -1558,7 +1558,7 @@ itself is not available on the system.
 
 LTP library can be instructed to save and restore value of specified
 (/proc|sys) files. This is achieved by initialized tst_test struct
-field 'save_restore'. It is a NULL terminated array of strings where
+field 'save_restore'. It is a 'NULL' terminated array of strings where
 each string represents a file, whose value is saved at the beginning
 and restored at the end of the test. Only first line of a specified
 file is saved and restored.
@@ -1566,10 +1566,10 @@ file is saved and restored.
 Pathnames can be optionally prefixed to specify how strictly (during
 'store') are handled errors:
 
-* (no prefix) - test ends with TCONF, if file doesn't exist
+* (no prefix) - test ends with 'TCONF', if file doesn't exist
 * '?'         - test prints info message and continues,
                 if file doesn't exist or open/read fails
-* '!'         - test ends with TBROK, if file doesn't exist
+* '!'         - test ends with 'TBROK', if file doesn't exist
 
 'restore' is always strict and will TWARN if it encounters any error.
 
@@ -1853,7 +1853,7 @@ static struct tst_test test = {
 --------------------------------------------------------------------------------
 
 Look at the test struct at the bottom. We have filled in the 'caps' field with
-a NULL terminated array containing two 'tst_cap' structs. 'TST_CAP_REQ'
+a 'NULL' terminated array containing two 'tst_cap' structs. 'TST_CAP_REQ'
 actions are executed before setup and 'TST_CAP_DROP' are executed after
 setup. This means it is possible to both request and drop a capability.
 
@@ -1997,11 +1997,11 @@ struct tst_test test = {
 	.request_hugepages = 2,
 	...
 };
-[source,c]
 -------------------------------------------------------------------------------
 
 or,
 
+[source,c]
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
