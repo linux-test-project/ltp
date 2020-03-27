@@ -5,6 +5,14 @@
 #ifndef TST_CMD_H__
 #define TST_CMD_H__
 
+enum tst_cmd_flags {
+	/*
+	 * return the program exit code, otherwise it will call cleanup_fn() if the
+	 * program exit code is not zero.
+	 */
+	TST_CMD_PASS_RETVAL = 1,
+};
+
 /*
  * vfork() + execvp() specified program.
  * @argv: a list of two (at least program name + NULL) or more pointers that
@@ -14,68 +22,64 @@
  * redirection is not needed.
  * @stderr_fd: file descriptor where to redirect stderr. Set -1 if
  * redirection is not needed.
- * @pass_exit_val: if it's non-zero, this function will return the program
- * exit code, otherwise it will call cleanup_fn() if the program
- * exit code is not zero.
+ * @flags: enum tst_cmd_flags
  */
 int tst_cmd_fds_(void (cleanup_fn)(void),
 			const char *const argv[],
 			int stdout_fd,
 			int stderr_fd,
-			int pass_exit_val);
+			enum tst_cmd_flags flags);
 
 /* Executes tst_cmd_fds() and redirects its output to a file
  * @stdout_path: path where to redirect stdout. Set NULL if redirection is
  * not needed.
  * @stderr_path: path where to redirect stderr. Set NULL if redirection is
  * not needed.
- * @pass_exit_val: if it's non-zero, this function will return the program
- * exit code, otherwise it will call cleanup_fn() if the program
- * exit code is not zero.
+ * @flags: enum tst_cmd_flags
  */
 int tst_cmd_(void (cleanup_fn)(void),
 		const char *const argv[],
 		const char *stdout_path,
 		const char *stderr_path,
-		int pass_exit_val);
+		enum tst_cmd_flags flags);
 
 #ifdef TST_TEST_H__
 static inline int tst_cmd_fds(const char *const argv[],
 				  int stdout_fd,
 				  int stderr_fd,
-				  int pass_exit_val)
+				  enum tst_cmd_flags flags)
 {
 	return tst_cmd_fds_(NULL, argv,
-	                        stdout_fd, stderr_fd, pass_exit_val);
+	                        stdout_fd, stderr_fd, flags);
 }
 
 static inline int tst_cmd(const char *const argv[],
 			      const char *stdout_path,
 			      const char *stderr_path,
-			      int pass_exit_val)
+			      enum tst_cmd_flags flags)
 {
 	return tst_cmd_(NULL, argv,
-	                    stdout_path, stderr_path, pass_exit_val);
+	                    stdout_path, stderr_path, flags);
 }
 #else
 static inline int tst_cmd_fds(void (cleanup_fn)(void),
 				  const char *const argv[],
 				  int stdout_fd,
 				  int stderr_fd,
-				  int pass_exit_val)
+				  enum tst_cmd_flags flags)
 {
 	return tst_cmd_fds_(cleanup_fn, argv,
-	                        stdout_fd, stderr_fd, pass_exit_val);
+	                        stdout_fd, stderr_fd, flags);
 }
 
 static inline int tst_cmd(void (cleanup_fn)(void),
 			      const char *const argv[],
 			      const char *stdout_path,
 			      const char *stderr_path,
-			      int pass_exit_val)
+			      enum tst_cmd_flags flags)
 {
 	return tst_cmd_(cleanup_fn, argv,
-	                    stdout_path, stderr_path, pass_exit_val);
+	                    stdout_path, stderr_path, flags);
 }
 #endif
 

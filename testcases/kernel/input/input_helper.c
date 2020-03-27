@@ -92,7 +92,7 @@ static int try_load_uinput(void)
 
 	tst_resm(TINFO, "Trying to load uinput kernel module");
 
-	ret = tst_cmd(NULL, argv, NULL, NULL, 1);
+	ret = tst_cmd(NULL, argv, NULL, NULL, TST_CMD_PASS_RETVAL);
 	if (ret) {
 		tst_resm(TINFO, "Failed to load the uinput module");
 		return 0;
@@ -108,7 +108,7 @@ static void unload_uinput(void)
 
 	tst_resm(TINFO, "Unloading uinput kernel module");
 
-	ret = tst_cmd(NULL, argv, NULL, NULL, 1);
+	ret = tst_cmd(NULL, argv, NULL, NULL, TST_CMD_PASS_RETVAL);
 	if (ret)
 		tst_resm(TWARN, "Failed to unload uinput module");
 }

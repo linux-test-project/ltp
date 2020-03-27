@@ -109,7 +109,8 @@ void tst_module_unload(void (cleanup_fn)(void), const char *mod_name)
 
 	rc = 1;
 	for (i = 0; i < 50; i++) {
-		rc = tst_cmd(NULL, argv, "/dev/null", "/dev/null", 1);
+		rc = tst_cmd(NULL, argv, "/dev/null", "/dev/null",
+				 TST_CMD_PASS_RETVAL);
 		if (!rc)
 			break;
 

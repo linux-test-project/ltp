@@ -67,7 +67,7 @@ static void run_command(void)
 {
 	const char *const cmd[] = {COMMAND, NULL};
 
-	rc = tst_cmd(cmd, NULL, NULL, 1) << 8;
+	rc = tst_cmd(cmd, NULL, NULL, TST_CMD_PASS_RETVAL) << 8;
 }
 
 static int verify_acct(void *acc, int elap_time)

@@ -112,7 +112,7 @@ static void setup(void)
 	struct passwd *ltpuser;
 	int rc;
 
-	switch ((rc = tst_cmd(cmd_useradd, NULL, NULL, 1))) {
+	switch ((rc = tst_cmd(cmd_useradd, NULL, NULL, TST_CMD_PASS_RETVAL))) {
 	case 0:
 		user_added = 1;
 		ltpuser = SAFE_GETPWNAM(username);
@@ -133,7 +133,7 @@ static void cleanup(void)
 
 	const char *const cmd_userdel[] = {"userdel", "-r", username, NULL};
 
-	if (tst_cmd(cmd_userdel, NULL, NULL, 1))
+	if (tst_cmd(cmd_userdel, NULL, NULL, TST_CMD_PASS_RETVAL))
 		tst_res(TWARN | TERRNO, "'userdel -r %s' failed", username);
 }
 

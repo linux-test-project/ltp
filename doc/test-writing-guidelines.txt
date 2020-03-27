@@ -1263,20 +1263,20 @@ different once the call returns and should be used only for rough estimates.
 int tst_cmd(const char *const argv[],
 	        const char *stdout_path,
 	        const char *stderr_path,
-	        int pass_exit_val);
+	        enum tst_cmd_flags flags);
 -------------------------------------------------------------------------------
 
-'tst_cmd' is a wrapper for 'vfork() + execvp()' which provides a way
+'tst_cmd()' is a wrapper for 'vfork() + execvp()' which provides a way
 to execute an external program.
 
 'argv[]' is a 'NULL' terminated array of strings starting with the program name
 which is followed by optional arguments.
 
-A non-zero 'pass_exit_val' makes 'tst_cmd' return the program exit code to
-the caller. A zero for 'pass_exit_val' makes 'tst_cmd' exit the tests
-on failure.
+'TST_CMD_PASS_RETVAL' enum 'tst_cmd_flags' makes 'tst_cmd()'
+return the program exit code to the caller, otherwise 'tst_cmd()' exit the
+tests on failure.
 
-In case that 'execvp()' has failed and the 'pass_exit_val' flag was set, the
+In case that 'execvp()' has failed and the enum 'TST_CMD_PASS_RETVAL' flag was set, the
 return value is '255' if 'execvp()' failed with 'ENOENT' and '254' otherwise.
 
 'stdout_path' and 'stderr_path' determine where to redirect the program

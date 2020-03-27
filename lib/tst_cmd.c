@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,7 +17,6 @@
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Author: Alexey Kodanev <alexey.kodanev@oracle.com>
- *
  */
 
 #include <errno.h>
@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include "test.h"
+#include "tst_cmd.h"
 
 #define OPEN_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define OPEN_FLAGS	(O_WRONLY | O_APPEND | O_CREAT)
@@ -35,7 +36,7 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 		const char *const argv[],
 		int stdout_fd,
 		int stderr_fd,
-		int pass_exit_val)
+		enum tst_cmd_flags flags)
 {
 	int rc;
 
@@ -97,7 +98,7 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 
 	rc = WEXITSTATUS(ret);
 
-	if ((!pass_exit_val) && rc) {
+	if (!(flags & TST_CMD_PASS_RETVAL) && rc) {
 		tst_brkm(TBROK, cleanup_fn,
 			 "'%s' exited with a non-zero code %d at %s:%d",
 			 argv[0], rc, __FILE__, __LINE__);
@@ -111,7 +112,7 @@ int tst_cmd_(void (cleanup_fn)(void),
 		const char *const argv[],
 		const char *stdout_path,
 		const char *stderr_path,
-		int pass_exit_val)
+		enum tst_cmd_flags flags)
 {
 	int stdout_fd = -1;
 	int stderr_fd = -1;
@@ -137,8 +138,7 @@ int tst_cmd_(void (cleanup_fn)(void),
 				stderr_path, __FILE__, __LINE__);
 	}
 
-	rc = tst_cmd_fds(cleanup_fn, argv, stdout_fd, stderr_fd,
-			     pass_exit_val);
+	rc = tst_cmd_fds(cleanup_fn, argv, stdout_fd, stderr_fd, flags);
 
 	if ((stdout_fd != -1) && (close(stdout_fd) == -1))
 		tst_resm(TWARN | TERRNO,

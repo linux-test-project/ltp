@@ -164,7 +164,7 @@ static void setup(void)
 	const char *const cmd[] = {"quotacheck", "-ugF", "vfsv0", MNTPOINT, NULL};
 	int ret;
 
-	ret = tst_cmd(cmd, NULL, NULL, 1);
+	ret = tst_cmd(cmd, NULL, NULL, TST_CMD_PASS_RETVAL);
 	switch (ret) {
 	case 0:
 		break;

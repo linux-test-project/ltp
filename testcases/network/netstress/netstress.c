@@ -967,7 +967,7 @@ static void setup(void)
 		/* dccp* modules can be blacklisted, load them manually */
 		const char * const argv[] = {"modprobe", "dccp_ipv6", NULL};
 
-		if (tst_cmd(argv, NULL, NULL, 1))
+		if (tst_cmd(argv, NULL, NULL, TST_CMD_PASS_RETVAL))
 			tst_brk(TCONF, "Failed to load dccp_ipv6 module");
 
 		tst_res(TINFO, "DCCP %s", (client_mode) ? "client" : "server");
