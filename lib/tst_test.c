@@ -447,18 +447,19 @@ static void print_test_tags(void)
 	unsigned int i;
 	const struct tst_tag *tags = tst_test->tags;
 
+	if (!tags)
+		return;
+
 	printf("\nTags\n");
 	printf("----\n");
 
-	if (tags) {
-		for (i = 0; tags[i].name; i++) {
-			if (!strcmp(tags[i].name, "CVE"))
-				printf(CVE_DB_URL "%s\n", tags[i].value);
-			else if (!strcmp(tags[i].name, "linux-git"))
-				printf(LINUX_GIT_URL "%s\n", tags[i].value);
-			else
-				printf("%s: %s\n", tags[i].name, tags[i].value);
-		}
+	for (i = 0; tags[i].name; i++) {
+		if (!strcmp(tags[i].name, "CVE"))
+			printf(CVE_DB_URL "%s\n", tags[i].value);
+		else if (!strcmp(tags[i].name, "linux-git"))
+			printf(LINUX_GIT_URL "%s\n", tags[i].value);
+		else
+			printf("%s: %s\n", tags[i].name, tags[i].value);
 	}
 
 	printf("\n");
