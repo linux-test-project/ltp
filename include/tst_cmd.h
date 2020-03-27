@@ -11,6 +11,9 @@ enum tst_cmd_flags {
 	 * program exit code is not zero.
 	 */
 	TST_CMD_PASS_RETVAL = 1,
+
+	/* exit with TCONF if program is not in path */
+	TST_CMD_TCONF_ON_MISSING = 2,
 };
 
 /*

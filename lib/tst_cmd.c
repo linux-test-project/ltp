@@ -56,6 +56,17 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 	 */
 	void *old_handler = signal(SIGCHLD, SIG_DFL);
 
+	const char *cmd;
+	char path[PATH_MAX];
+
+	if (tst_get_path(argv[0], path, sizeof(path))) {
+		if (flags & TST_CMD_TCONF_ON_MISSING)
+			tst_brkm(TCONF, "Couldn't find '%s' in $PATH at %s:%d", argv[0],
+				 __FILE__, __LINE__);
+		else
+			_exit(255);
+	}
+
 	pid_t pid = vfork();
 	if (pid == -1) {
 		tst_brkm(TBROK | TERRNO, cleanup_fn, "vfork failed at %s:%d",
@@ -74,10 +85,7 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 			dup2(stderr_fd, STDERR_FILENO);
 		}
 
-		if (execvp(argv[0], (char *const *)argv)) {
-			if (errno == ENOENT)
-				_exit(255);
-		}
+		execvp(argv[0], (char *const *)argv);
 		_exit(254);
 	}
 

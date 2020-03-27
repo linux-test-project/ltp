@@ -1274,7 +1274,8 @@ which is followed by optional arguments.
 
 'TST_CMD_PASS_RETVAL' enum 'tst_cmd_flags' makes 'tst_cmd()'
 return the program exit code to the caller, otherwise 'tst_cmd()' exit the
-tests on failure.
+tests on failure. 'TST_CMD_TCONF_ON_MISSING' check for program in '$PATH' and exit
+with 'TCONF' if not found.
 
 In case that 'execvp()' has failed and the enum 'TST_CMD_PASS_RETVAL' flag was set, the
 return value is '255' if 'execvp()' failed with 'ENOENT' and '254' otherwise.
