@@ -553,5 +553,14 @@ static inline void safe_cmd(const char *file, const int lineno, const char *cons
 }
 #define SAFE_CMD(argv, stdout_path, stderr_path) \
 	safe_cmd(__FILE__, __LINE__, (argv), (stdout_path), (stderr_path))
+/*
+ * SAFE_PTRACE() treats any non-zero return value as error. Don't use it
+ * for requests like PTRACE_PEEK* or PTRACE_SECCOMP_GET_FILTER which use
+ * the return value to pass arbitrary data.
+ */
+long tst_safe_ptrace(const char *file, const int lineno, int req, pid_t pid,
+	void *addr, void *data);
+#define SAFE_PTRACE(req, pid, addr, data) \
+	tst_safe_ptrace(__FILE__, __LINE__, req, pid, addr, data)
 
 #endif /* SAFE_MACROS_H__ */
