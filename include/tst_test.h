@@ -240,7 +240,7 @@ struct tst_test {
 	 */
 	const struct tst_tag *tags;
 
-	/* NULL terminated array of required binaries */
+	/* NULL terminated array of required commands */
 	const char *const *needs_cmds;
 };
 
