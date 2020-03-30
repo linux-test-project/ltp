@@ -20,11 +20,12 @@
 #include "tst_test.h"
 
 #define BLOCKSIZE 8192
-#define MAXBLKS 262144
+#define MAXBLKS 65536
 #define TIME_LIMIT 120
+#define BUF_SIZE 2048
 
 char tempfile[40] = "";
-char pbuf[BUFSIZ];
+char pbuf[BUF_SIZE];
 int fd;
 off_t max_blks = MAXBLKS;
 
@@ -40,14 +41,14 @@ static void setup(void) {
 		tst_brk(TBROK, "fstatvfs failed");
 	}
 
-	f_bavail = (stat_buf.f_bavail * stat_buf.f_frsize) / BLOCKSIZE;
+	f_bavail = (stat_buf.f_bavail * stat_buf.f_bsize) / BLOCKSIZE;
 	if (f_bavail && (f_bavail < MAXBLKS)) {
 		max_blks = f_bavail;
 	}
 
 #ifdef LARGEFILE
 	SAFE_FCNTL(fd, F_SETFL, O_LARGEFILE);
-	SAFE_WRITE(1, fd, pbuf, BUFSIZ);
+	SAFE_WRITE(1, fd, pbuf, BUF_SIZE);
 #endif
 }
 
@@ -60,17 +61,15 @@ static void run(void) {
 	double time_delta;
 	long int random_number;
 
-	while (max_block <= data_blocks) {
-		random_number = rand();
-		max_block = random_number % max_blks;
-		data_blocks = random_number % 1000 + 1;
-	}
+	random_number = rand();
+	max_block = random_number % max_blks + 1;
+	data_blocks = random_number % max_block;
 
 	for (i = 1; i <= data_blocks; i++) {
 		offset = i * ((BLOCKSIZE * max_block) / data_blocks);
-		offset -= BUFSIZ;
+		offset -= BUF_SIZE;
 		SAFE_LSEEK(fd, offset, SEEK_SET);
-		SAFE_WRITE(1, fd, pbuf, BUFSIZ);
+		SAFE_WRITE(1, fd, pbuf, BUF_SIZE);
 	}
 	time_start = time(0);
 
