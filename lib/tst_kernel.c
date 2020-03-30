@@ -85,7 +85,7 @@ int tst_check_driver(const char *name)
 {
 #ifndef __ANDROID__
 	const char * const argv[] = { "modprobe", "-n", name, NULL };
-	int res = tst_run_cmd_(NULL, argv, "/dev/null", "/dev/null", 1);
+	int res = tst_cmd_(NULL, argv, "/dev/null", "/dev/null", 1);
 
 	/* 255 - it looks like modprobe not available */
 	return (res == 255) ? 0 : res;

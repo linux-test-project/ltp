@@ -149,7 +149,7 @@ static void setup(void)
 	int ret;
 	unsigned int i;
 
-	ret = tst_run_cmd(cmd, NULL, NULL, 1);
+	ret = tst_cmd(cmd, NULL, NULL, 1);
 	switch (ret) {
 	case 0:
 		break;

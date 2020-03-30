@@ -18,13 +18,13 @@
  * exit code, otherwise it will call cleanup_fn() if the program
  * exit code is not zero.
  */
-int tst_run_cmd_fds_(void (cleanup_fn)(void),
+int tst_cmd_fds_(void (cleanup_fn)(void),
 			const char *const argv[],
 			int stdout_fd,
 			int stderr_fd,
 			int pass_exit_val);
 
-/* Executes tst_run_cmd_fds() and redirects its output to a file
+/* Executes tst_cmd_fds() and redirects its output to a file
  * @stdout_path: path where to redirect stdout. Set NULL if redirection is
  * not needed.
  * @stderr_path: path where to redirect stderr. Set NULL if redirection is
@@ -33,48 +33,48 @@ int tst_run_cmd_fds_(void (cleanup_fn)(void),
  * exit code, otherwise it will call cleanup_fn() if the program
  * exit code is not zero.
  */
-int tst_run_cmd_(void (cleanup_fn)(void),
+int tst_cmd_(void (cleanup_fn)(void),
 		const char *const argv[],
 		const char *stdout_path,
 		const char *stderr_path,
 		int pass_exit_val);
 
 #ifdef TST_TEST_H__
-static inline int tst_run_cmd_fds(const char *const argv[],
+static inline int tst_cmd_fds(const char *const argv[],
 				  int stdout_fd,
 				  int stderr_fd,
 				  int pass_exit_val)
 {
-	return tst_run_cmd_fds_(NULL, argv,
+	return tst_cmd_fds_(NULL, argv,
 	                        stdout_fd, stderr_fd, pass_exit_val);
 }
 
-static inline int tst_run_cmd(const char *const argv[],
+static inline int tst_cmd(const char *const argv[],
 			      const char *stdout_path,
 			      const char *stderr_path,
 			      int pass_exit_val)
 {
-	return tst_run_cmd_(NULL, argv,
+	return tst_cmd_(NULL, argv,
 	                    stdout_path, stderr_path, pass_exit_val);
 }
 #else
-static inline int tst_run_cmd_fds(void (cleanup_fn)(void),
+static inline int tst_cmd_fds(void (cleanup_fn)(void),
 				  const char *const argv[],
 				  int stdout_fd,
 				  int stderr_fd,
 				  int pass_exit_val)
 {
-	return tst_run_cmd_fds_(cleanup_fn, argv,
+	return tst_cmd_fds_(cleanup_fn, argv,
 	                        stdout_fd, stderr_fd, pass_exit_val);
 }
 
-static inline int tst_run_cmd(void (cleanup_fn)(void),
+static inline int tst_cmd(void (cleanup_fn)(void),
 			      const char *const argv[],
 			      const char *stdout_path,
 			      const char *stderr_path,
 			      int pass_exit_val)
 {
-	return tst_run_cmd_(cleanup_fn, argv,
+	return tst_cmd_(cleanup_fn, argv,
 	                    stdout_path, stderr_path, pass_exit_val);
 }
 #endif

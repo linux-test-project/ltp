@@ -47,7 +47,7 @@ int make_swapfile(void (cleanup)(void), const char *swapfile, int safe)
 	argv[1] = swapfile;
 	argv[2] = NULL;
 
-	return tst_run_cmd(cleanup, argv, "/dev/null", "/dev/null", safe);
+	return tst_cmd(cleanup, argv, "/dev/null", "/dev/null", safe);
 }
 
 /*

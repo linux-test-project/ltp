@@ -87,7 +87,7 @@ static int run_command(char *command, char *option, char *file)
 	const char *const cmd[] = {command, option, file, NULL};
 	int ret;
 
-	ret = tst_run_cmd(cmd, NULL, NULL, 1);
+	ret = tst_cmd(cmd, NULL, NULL, 1);
 	switch (ret) {
 	case 0:
 	return 0;

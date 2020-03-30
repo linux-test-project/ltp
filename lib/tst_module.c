@@ -97,7 +97,7 @@ void tst_module_load(void (cleanup_fn)(void),
 	for (i = offset; i < size; ++i)
 		mod_argv[i] = argv[i - offset];
 
-	tst_run_cmd(cleanup_fn, mod_argv, NULL, NULL, 0);
+	tst_cmd(cleanup_fn, mod_argv, NULL, NULL, 0);
 	free(mod_path);
 }
 
@@ -109,7 +109,7 @@ void tst_module_unload(void (cleanup_fn)(void), const char *mod_name)
 
 	rc = 1;
 	for (i = 0; i < 50; i++) {
-		rc = tst_run_cmd(NULL, argv, "/dev/null", "/dev/null", 1);
+		rc = tst_cmd(NULL, argv, "/dev/null", "/dev/null", 1);
 		if (!rc)
 			break;
 

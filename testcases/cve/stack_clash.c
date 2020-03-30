@@ -119,7 +119,7 @@ void dump_proc_self_maps(void)
 	static char buf[64];
 	static const char *cmd[] = {"cat", buf, NULL};
 	sprintf(buf, "/proc/%d/maps", getpid());
-	tst_run_cmd(cmd, NULL, NULL, 0);
+	tst_cmd(cmd, NULL, NULL, 0);
 }
 
 void __attribute__((noinline)) preallocate_stack(unsigned long required)

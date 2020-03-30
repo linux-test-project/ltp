@@ -1260,20 +1260,20 @@ different once the call returns and should be used only for rough estimates.
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
-int tst_run_cmd(const char *const argv[],
+int tst_cmd(const char *const argv[],
 	        const char *stdout_path,
 	        const char *stderr_path,
 	        int pass_exit_val);
 -------------------------------------------------------------------------------
 
-'tst_run_cmd' is a wrapper for 'vfork() + execvp()' which provides a way
+'tst_cmd' is a wrapper for 'vfork() + execvp()' which provides a way
 to execute an external program.
 
 'argv[]' is a 'NULL' terminated array of strings starting with the program name
 which is followed by optional arguments.
 
-A non-zero 'pass_exit_val' makes 'tst_run_cmd' return the program exit code to
-the caller. A zero for 'pass_exit_val' makes 'tst_run_cmd' exit the tests
+A non-zero 'pass_exit_val' makes 'tst_cmd' return the program exit code to
+the caller. A zero for 'pass_exit_val' makes 'tst_cmd' exit the tests
 on failure.
 
 In case that 'execvp()' has failed and the 'pass_exit_val' flag was set, the
@@ -1291,7 +1291,7 @@ const char *const cmd[] = { "ls", "-l", NULL };
 
 ...
 	/* Store output of 'ls -l' into log.txt */
-	tst_run_cmd(cmd, "log.txt", NULL, 0);
+	tst_cmd(cmd, "log.txt", NULL, 0);
 ...
 -------------------------------------------------------------------------------
 

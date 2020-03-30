@@ -70,7 +70,7 @@ static int try_systemd_detect_virt(void)
 	char virt_type[64];
 	int ret;
 
-	/* See tst_run_cmd.c */
+	/* See tst_cmd.c */
 	void *old_handler = signal(SIGCHLD, SIG_DFL);
 
 	f = popen("systemd-detect-virt", "r");

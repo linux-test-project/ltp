@@ -108,7 +108,7 @@ void tst_cat_file(const char *filename)
 {
 	const char *cmd[] = {"cat", filename, NULL};
 
-	tst_run_cmd(NULL, cmd, NULL, NULL, 0);
+	tst_cmd(NULL, cmd, NULL, NULL, 0);
 }
 
 void apicmd_brk(int argc, char *argv[])
