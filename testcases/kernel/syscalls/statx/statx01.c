@@ -148,6 +148,8 @@ static void setup(void)
 	char data_buff[SIZE];
 	int file_fd;
 
+	umask(0);
+
 	memset(data_buff, '@', sizeof(data_buff));
 
 	file_fd =  SAFE_OPEN(TESTFILE, O_RDWR|O_CREAT, MODE);
