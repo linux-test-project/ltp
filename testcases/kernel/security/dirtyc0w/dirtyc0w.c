@@ -45,6 +45,8 @@ static void setup(void)
 {
 	struct passwd *pw;
 
+	umask(0);
+
 	pw = SAFE_GETPWNAM("nobody");
 
 	nobody_uid = pw->pw_uid;
