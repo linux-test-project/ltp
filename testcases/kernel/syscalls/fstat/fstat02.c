@@ -72,6 +72,8 @@ static void setup(void)
 	user_id  = getuid();
 	group_id = getgid();
 
+	umask(0);
+
 	fildes = SAFE_OPEN(TESTFILE, O_WRONLY | O_CREAT, FILE_MODE);
 
 	if (tst_fill_file(TESTFILE, 'a', FILE_SIZE, 1))
