@@ -103,11 +103,11 @@ static void run(unsigned int n)
 		return;
 	}
 
-	if (!pid)
-		do_child(clone_pidfd, n);
-
 	parent_received_signal = 0;
 	SAFE_SIGACTION(tc->exit_signal, &psig_action, NULL);
+
+	if (!pid)
+		do_child(clone_pidfd, n);
 
 	/* Need to send signal to child process */
 	if (clone_pidfd) {
