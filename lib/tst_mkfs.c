@@ -88,7 +88,8 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 
 	tst_resm(TINFO, "Formatting %s with %s opts='%s' extra opts='%s'",
 	         dev, fs_type, fs_opts_str, extra_opts_str);
-	ret = tst_cmd(cleanup_fn, argv, "/dev/null", NULL, TST_CMD_PASS_RETVAL);
+	ret = tst_cmd(cleanup_fn, argv, "/dev/null", NULL, TST_CMD_PASS_RETVAL |
+				  TST_CMD_TCONF_ON_MISSING);
 
 	switch (ret) {
 	case 0:
