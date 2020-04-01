@@ -61,7 +61,7 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 
 	if (tst_get_path(argv[0], path, sizeof(path))) {
 		if (flags & TST_CMD_TCONF_ON_MISSING)
-			tst_brkm(TCONF, "Couldn't find '%s' in $PATH at %s:%d", argv[0],
+			tst_brkm(TCONF, cleanup_fn, "Couldn't find '%s' in $PATH at %s:%d", argv[0],
 				 __FILE__, __LINE__);
 		else
 			_exit(255);
