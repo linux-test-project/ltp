@@ -108,7 +108,7 @@ script:
             curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
             sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
             sudo apt-get update
-        ￼   sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+            sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
         fi
 
     - docker run -t ltp /bin/sh -c "cd travis && ./$INSTALL.sh && if [ \"$VARIANT\" ]; then ARCH=\"$ARCH\" ./$INSTALL.$VARIANT.sh; fi && ../build.sh -o $TREE -t $BUILD -c $CC $INSTALL_OPT"
