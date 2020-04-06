@@ -81,11 +81,6 @@ void setup(void)
 		Hopt = tst_get_tmpdir();
 	SAFE_MOUNT("none", Hopt, "hugetlbfs", 0, NULL);
 
-	if (nr_opt) {
-		tst_hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
-		tst_request_hugepages(tst_hugepages);
-	}
-
 	if (tst_hugepages == 0)
 		tst_brk(TCONF, "No enough hugepages for testing.");
 

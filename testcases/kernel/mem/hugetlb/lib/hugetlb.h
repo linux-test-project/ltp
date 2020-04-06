@@ -40,7 +40,4 @@ int getipckey(void);
 int getuserid(char *user);
 void rm_shm(int shm_id);
 
-char *nr_opt;
-char *Hopt;
-
 #endif /* hugetlb.h */

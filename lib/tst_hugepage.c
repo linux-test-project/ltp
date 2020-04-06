@@ -19,14 +19,18 @@ unsigned long tst_request_hugepages(unsigned long hpages)
 		goto out;
 	}
 
-	tst_hugepages = hpages;
+	if (nr_opt)
+		tst_hugepages = SAFE_STRTOL(nr_opt, 1, LONG_MAX);
+	else
+		tst_hugepages = hpages;
+
 	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
 	max_hpages = SAFE_READ_MEMINFO("MemFree:") / SAFE_READ_MEMINFO("Hugepagesize:");
 
-	if (hpages > max_hpages) {
+	if (tst_hugepages > max_hpages) {
 		tst_res(TINFO, "Requested number(%lu) of hugepages is too large, "
 				"limiting to 80%% of the max hugepage count %lu",
-				hpages, max_hpages);
+				tst_hugepages, max_hpages);
 		tst_hugepages = max_hpages * 0.8;
 
 		if (tst_hugepages < 1)

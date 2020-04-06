@@ -66,11 +66,6 @@ void setup(void)
 {
 	long hpage_size;
 
-	if (nr_opt) {
-		tst_hugepages = SAFE_STRTOL(nr_opt, 0, LONG_MAX);
-		tst_request_hugepages(tst_hugepages);
-	}
-
 	if (tst_hugepages == 0)
 		tst_brk(TCONF, "No enough hugepages for testing.");
 
