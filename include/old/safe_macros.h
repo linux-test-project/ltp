@@ -66,6 +66,9 @@
 #define SAFE_PIPE(cleanup_fn, fildes)	\
 	safe_pipe(__FILE__, __LINE__, cleanup_fn, (fildes))
 
+#define SAFE_PIPE2(fildes, flags) \
+	safe_pipe2(__FILE__, __LINE__, NULL, (fildes), (flags))
+
 #define SAFE_READ(cleanup_fn, len_strict, fildes, buf, nbyte)	\
 	safe_read(__FILE__, __LINE__, cleanup_fn, (len_strict), (fildes), \
 	    (buf), (nbyte))

@@ -87,6 +87,12 @@ static inline int safe_dup(const char *file, const int lineno,
 #define SAFE_PIPE(fildes) \
 	safe_pipe(__FILE__, __LINE__, NULL, (fildes))
 
+int safe_pipe2(const char *file, const int lineno, void (*cleanup_fn) (void),
+	       int fildes[2], int flags);
+
+#define SAFE_PIPE2(fildes, flags) \
+	safe_pipe2(__FILE__, __LINE__, NULL, (fildes), (flags))
+
 #define SAFE_READ(len_strict, fildes, buf, nbyte) \
 	safe_read(__FILE__, __LINE__, NULL, (len_strict), (fildes), (buf), (nbyte))
 

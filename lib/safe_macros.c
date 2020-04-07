@@ -248,6 +248,21 @@ int safe_pipe(const char *file, const int lineno, void (*cleanup_fn) (void),
 	return rval;
 }
 
+int safe_pipe2(const char *file, const int lineno, void (*cleanup_fn) (void),
+               int fildes[2], int flags)
+{
+	int rval;
+
+	rval = pipe2(fildes, flags);
+	if (rval == -1) {
+		tst_brkm(TBROK | TERRNO, cleanup_fn,
+			 "%s:%d: pipe2({%d,%d}) failed",
+			 file, lineno, fildes[0], fildes[1]);
+	}
+
+	return rval;
+}
+
 ssize_t safe_read(const char *file, const int lineno, void (*cleanup_fn) (void),
                   char len_strict, int fildes, void *buf, size_t nbyte)
 {
