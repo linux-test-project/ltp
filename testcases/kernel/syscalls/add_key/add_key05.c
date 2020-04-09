@@ -10,6 +10,10 @@
  * This is also a regression test for
  * commit a08bf91ce28e ("KEYS: allow reaching the keys quotas exactly")
  * commit 2e356101e72a ("KEYS: reaching the keys quotas correctly")
+ *
+ * If you run this test with -i > 5 then expect to see some sporadic failures
+ * where add_key fails with EDQUOT. Keys are freed asynchronously and we only
+ * create up to 10 users to avoid race conditions.
  */
 
 #include <stdio.h>
@@ -18,47 +22,53 @@
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
+#define MAX_USERS 10
+
 static char *user_buf;
-static const char *username = "ltp_add_key05";
-static int user_added;
-struct passwd *ltpuser;
-static char fmt[1024];
+static uid_t ltpuser[MAX_USERS];
+
+static unsigned int usern;
+static unsigned int useri;
 
 static const char *const save_restore[] = {
+	"?/proc/sys/kernel/keys/gc_delay",
 	"?/proc/sys/kernel/keys/maxkeys",
 	"?/proc/sys/kernel/keys/maxbytes",
 	NULL,
 };
 
-static void add_user(void)
+static void add_user(char n)
 {
-	if (user_added)
-		return;
-
+	char username[] = "ltp_add_key05_n";
 	const char *const cmd_useradd[] = {"useradd", username, NULL};
+	struct passwd *pw;
+
+	username[sizeof(username) - 2] = '0' + n;
 
 	SAFE_CMD(cmd_useradd, NULL, NULL);
-	user_added = 1;
-	ltpuser = SAFE_GETPWNAM(username);
-	sprintf(fmt, "%5u: %%*5d %%*d/%%*d %%d/%%d %%d/%%d", ltpuser->pw_uid);
+	pw = SAFE_GETPWNAM(username);
+	ltpuser[(unsigned int)n] = pw->pw_uid;
+
+	tst_res(TINFO, "Created user %s", pw->pw_name);
 }
 
-static void clean_user(void)
+static void clean_user(char n)
 {
-	if (!user_added)
-		return;
-
+	char username[] = "ltp_add_key05_n";
 	const char *const cmd_userdel[] = {"userdel", "-r", username, NULL};
+
+	username[sizeof(username) - 2] = '0' + n;
 
 	if (tst_cmd(cmd_userdel, NULL, NULL, TST_CMD_PASS_RETVAL))
 		tst_res(TWARN | TERRNO, "'userdel -r %s' failed", username);
-	else
-		user_added = 0;
 }
 
 static inline void parse_proc_key_users(int *used_key, int *max_key, int *used_bytes, int *max_bytes)
 {
 	unsigned int val[4];
+	char fmt[1024];
+
+	sprintf(fmt, "%5u: %%*5d %%*d/%%*d %%d/%%d %%d/%%d", ltpuser[useri]);
 	SAFE_FILE_LINES_SCANF("/proc/key-users", fmt, &val[0], &val[1], &val[2], &val[3]);
 
 	if (used_key)
@@ -71,7 +81,7 @@ static inline void parse_proc_key_users(int *used_key, int *max_key, int *used_b
 		*max_bytes = val[3];
 }
 
-static void verify_max_btyes(void)
+static void verify_max_bytes(void)
 {
 	char *buf;
 	int plen, invalid_plen, delta;
@@ -121,8 +131,8 @@ static void verify_max_btyes(void)
 	plen = max_bytes - used_bytes - delta - strlen("test_xxx") - 1;
 	TEST(add_key("user", "test_max", buf, plen, KEY_SPEC_THREAD_KEYRING));
 	if (TST_RET == -1) {
-		 tst_res(TFAIL | TTERRNO, "add_key(test_max) failed unexpectedly");
-		 return;
+		tst_res(TFAIL | TTERRNO, "add_key(test_max) failed unexpectedly");
+		return;
 	}
 
 	tst_res(TPASS, "add_key(test_max) succeeded as expected");
@@ -170,28 +180,46 @@ count:
 
 static void do_test(unsigned int n)
 {
-	add_user();
+	if (usern < MAX_USERS)
+		add_user(usern++);
+
+	if (useri >= MAX_USERS) {
+		sleep(1);
+		useri = 0;
+	}
+
 	if (!SAFE_FORK()) {
-		SAFE_SETUID(ltpuser->pw_uid);
+		SAFE_SETUID(ltpuser[useri]);
+		tst_res(TINFO, "User: %d, UID: %d", useri, ltpuser[useri]);
 		TEST(add_key("user", "test1", user_buf, 64, KEY_SPEC_THREAD_KEYRING));
 		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO, "add key test1 failed");
 			return;
 		}
+
 		if (n)
 			verify_max_keys();
 		else
-			verify_max_btyes();
-		exit(0);
+			verify_max_bytes();
 	}
+
 	tst_reap_children();
-	clean_user();
+	useri++;
+
+	return;
 }
 
 static void setup(void)
 {
+	SAFE_FILE_PRINTF("/proc/sys/kernel/keys/gc_delay", "1");
 	SAFE_FILE_PRINTF("/proc/sys/kernel/keys/maxkeys", "200");
 	SAFE_FILE_PRINTF("/proc/sys/kernel/keys/maxbytes", "20000");
+}
+
+static void cleanup(void)
+{
+	while (usern--)
+		clean_user(usern);
 }
 
 static struct tst_test test = {
@@ -200,7 +228,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.setup = setup,
-	.cleanup = clean_user,
+	.cleanup = cleanup,
 	.save_restore = save_restore,
 	.bufs = (struct tst_buffers []) {
 		{&user_buf, .size = 64},
