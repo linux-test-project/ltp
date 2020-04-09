@@ -16,6 +16,7 @@
  */
 
 #include <linux/types.h>
+#include <time.h>
 #include <sound/asound.h>
 #include <sound/asequencer.h>
 
