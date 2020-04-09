@@ -97,14 +97,14 @@ static void run(unsigned int n)
 	args->stack_size = 0;
 	args->tls = 0;
 
+	parent_received_signal = 0;
+	SAFE_SIGACTION(tc->exit_signal, &psig_action, NULL);
+
 	TEST(pid = clone3(args, sizeof(*args)));
 	if (pid < 0) {
 		tst_res(TFAIL | TTERRNO, "clone3() failed (%d)", n);
 		return;
 	}
-
-	parent_received_signal = 0;
-	SAFE_SIGACTION(tc->exit_signal, &psig_action, NULL);
 
 	if (!pid)
 		do_child(clone_pidfd, n);
