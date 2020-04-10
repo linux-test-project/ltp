@@ -233,3 +233,17 @@ long tst_safe_ptrace(const char *file, const int lineno, int req, pid_t pid,
 
 	return ret;
 }
+
+int safe_pipe2(const char *file, const int lineno, int fildes[2], int flags)
+{
+	int ret;
+
+	ret = pipe2(fildes, flags);
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"pipe2({%d,%d}) failed with flag(%d)",
+			fildes[0], fildes[1], flags);
+	}
+
+	return ret;
+}
