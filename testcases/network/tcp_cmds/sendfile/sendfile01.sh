@@ -98,7 +98,7 @@ do_test()
 
 do_cleanup()
 {
-	[ -n "$server_started" ] && tst_rhost_run -s -c "pkill $SERVER"
+	[ -n "$server_started" ] && tst_rhost_run -c "pkill $SERVER"
 	tst_rmdir
 }
 
