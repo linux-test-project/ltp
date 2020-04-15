@@ -42,11 +42,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef PATH_MAX
 char fullpath[PATH_MAX];
-#else
-char fullpath[1024]; /* Guess */
-#endif
 
 int FLAG;
 volatile int timer_expired;
