@@ -18,7 +18,10 @@ generate_runfile()
 	echo -n "" >"$OUTFILE"
 
 	for fsname in $FS_LIST; do
-		sed -e "s/{fsname}/$fsname/g" "$INFILE" >>"$OUTFILE"
+		# Btrfs needs too much space for reliable stress testing
+		if [ "x$fsname" != "xbtrfs" ]; then
+			sed -e "s/{fsname}/$fsname/g" "$INFILE" >>"$OUTFILE"
+		fi
 	done
 
 	tst_res TPASS "Runfile $OUTFILE successfully created"
