@@ -66,7 +66,6 @@ extern char *optarg;
 
 #define _MAXTHREADS 256
 #define CALIBRATE_LOOPS 100000
-unsigned long iters_per_us;
 
 #define NS_PER_MS 1000000
 #define NS_PER_US 1000
