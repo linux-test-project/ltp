@@ -35,6 +35,17 @@
 
 #include "libcontrollers.h"
 
+char fullpath[PATH_MAX];
+int FLAG;
+volatile int timer_expired = 0;
+int retval;
+unsigned int num_line;
+unsigned int current_shares;
+unsigned int total_shares;
+unsigned int *shares_pointer;
+char target[LINE_MAX];
+struct dirent *dir_pointer;
+
 /*
  * Function: scan_shares_file()
  * This function scans all the shares files under the mountpoint

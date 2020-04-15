@@ -78,7 +78,6 @@ extern void cleanup(void)
 }
 
 int migrate_task();
-volatile int timer_expired = 0;
 
 int main(void)
 {

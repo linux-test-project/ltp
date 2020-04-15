@@ -81,8 +81,6 @@ extern void cleanup(void)
 	/* Report exit status */
 }
 
-volatile int timer_expired = 0;
-
 int main(int argc, char *argv[])
 {
 

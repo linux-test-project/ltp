@@ -42,24 +42,16 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-char fullpath[PATH_MAX];
-
-int FLAG;
-volatile int timer_expired;
-
-int retval;
-
-unsigned int num_line;//??
-
-unsigned int current_shares;
-
-unsigned int total_shares;
-
-unsigned int *shares_pointer;//??
-
-char target[LINE_MAX];
-
-struct dirent 	*dir_pointer;
+extern char fullpath[PATH_MAX];
+extern int FLAG;
+extern volatile int timer_expired;
+extern int retval;
+extern unsigned int num_line;
+extern unsigned int current_shares;
+extern unsigned int total_shares;
+extern unsigned int *shares_pointer;
+extern char target[LINE_MAX];
+extern struct dirent *dir_pointer;
 
 enum{
 	GET_SHARES	=1,
