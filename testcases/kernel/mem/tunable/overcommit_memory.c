@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) Linux Test Project, 2012-2020
  * Copyright (C) 2012-2017  Red Hat, Inc.
  *
  * This program is free software;  you can redistribute it and/or modify
@@ -101,8 +102,7 @@ static void setup(void)
 
 	if (access(PATH_SYSVM "overcommit_memory", F_OK) == -1 ||
 	    access(PATH_SYSVM "overcommit_ratio", F_OK) == -1)
-		tst_brk(TCONF, "The system "
-			 "can't support to test %s", TCID);
+		tst_brk(TCONF, "system doesn't support overcommit_memory");
 
 	if (R_opt)
 		overcommit_ratio = SAFE_STRTOL(R_opt, 0, LONG_MAX);

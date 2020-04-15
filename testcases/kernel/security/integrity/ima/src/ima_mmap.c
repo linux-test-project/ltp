@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2010-2020
  * Copyright (c) International Business Machines Corp., 2009
  *
  * Authors:
@@ -33,7 +34,7 @@ static void cleanup(void)
 static void run(void)
 {
 	if (!filename)
-		tst_brk(TBROK, "Usage: %s -f filename", TCID);
+		tst_brk(TBROK, "missing filename (-f filename)");
 
 	fd = SAFE_OPEN(filename, O_CREAT | O_RDWR, S_IRWXU);
 
