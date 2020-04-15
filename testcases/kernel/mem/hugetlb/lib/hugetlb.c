@@ -39,6 +39,8 @@
 #include <pwd.h>
 #include "hugetlb.h"
 
+key_t shmkey;
+
 /*
  * getipckey() - generates and returns a message key used by the "get"
  *		 calls to create an IPC resource.
