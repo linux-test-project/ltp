@@ -228,10 +228,28 @@ int tst_dev_sync(int fd)
 	return syscall(__NR_syncfs, fd);
 }
 
+const char *tst_acquire_loop_device(unsigned int size, const char *filename)
+{
+	unsigned int acq_dev_size = MAX(size, DEV_SIZE_MB);
+
+	if (tst_fill_file(filename, 0, 1024 * 1024, acq_dev_size)) {
+		tst_resm(TWARN | TERRNO, "Failed to create %s", filename);
+		return NULL;
+	}
+
+	if (tst_find_free_loopdev(dev_path, sizeof(dev_path)) == -1)
+		return NULL;
+
+	if (tst_attach_device(dev_path, filename))
+		return NULL;
+
+	return dev_path;
+}
+
 const char *tst_acquire_device__(unsigned int size)
 {
 	int fd;
-	char *dev;
+	const char *dev;
 	struct stat st;
 	unsigned int acq_dev_size;
 	uint64_t ltp_dev_size;
@@ -282,20 +300,12 @@ const char *tst_acquire_device__(unsigned int size)
 				ltp_dev_size, acq_dev_size);
 	}
 
-	if (tst_fill_file(DEV_FILE, 0, 1024 * 1024, acq_dev_size)) {
-		tst_resm(TWARN | TERRNO, "Failed to create " DEV_FILE);
-		return NULL;
-	}
+	dev = tst_acquire_loop_device(acq_dev_size, DEV_FILE);
 
-	if (tst_find_free_loopdev(dev_path, sizeof(dev_path)) == -1)
-		return NULL;
+	if (dev)
+		device_acquired = 1;
 
-	if (tst_attach_device(dev_path, DEV_FILE))
-		return NULL;
-
-	device_acquired = 1;
-
-	return dev_path;
+	return dev;
 }
 
 const char *tst_acquire_device_(void (cleanup_fn)(void), unsigned int size)

@@ -53,12 +53,25 @@ static inline const char *tst_acquire_device(void (cleanup_fn)(void))
 }
 
 /*
+ * Acquire a loop device with specified temp filename. This function allows
+ * you to acquire multiple devices at the same time. LTP_DEV is ignored.
+ * If you call this function directly, use tst_detach_device() to release
+ * the devices. tst_release_device() will not work correctly.
+ *
+ * The return value points to a static buffer and additional calls of
+ * tst_acquire_loop_device() or tst_acquire_device() will overwrite it.
+ */
+const char *tst_acquire_loop_device(unsigned int size, const char *filename);
+
+/*
  * @dev: device path returned by the tst_acquire_device()
  */
 int tst_release_device(const char *dev);
 
 /*
- * @dev: device path returned by the tst_acquire_device()
+ * Cleanup function for tst_acquire_loop_device(). If you have acquired
+ * a device using tst_acquire_device(), use tst_release_device() instead.
+ * @dev: device path returned by the tst_acquire_loop_device()
  */
 int tst_detach_device(const char *dev);
 
