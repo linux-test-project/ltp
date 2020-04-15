@@ -9,6 +9,8 @@
 #include "tst_hugepage.h"
 
 unsigned long tst_hugepages;
+char *nr_opt;
+char *Hopt;
 
 unsigned long tst_request_hugepages(unsigned long hpages)
 {
