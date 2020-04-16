@@ -23,7 +23,7 @@ tst_net_parse_args()
 {
 	case $1 in
 	6) TST_IPV6=6 TST_IPVER=6;;
-	*) $TST_PARSE_ARGS_CALLER "$1" "$2";;
+	*) [ "$TST_PARSE_ARGS_CALLER" ] && $TST_PARSE_ARGS_CALLER "$1" "$2";;
 	esac
 }
 
