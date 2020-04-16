@@ -888,6 +888,8 @@ if [ -z "$_tst_net_parse_variables" ]; then
 	export _tst_net_parse_variables="yes"
 fi
 
+export TST_NET_DATAROOT="$LTPROOT/testcases/bin/datafiles"
+
 export TST_NETLOAD_CLN_REQUESTS="${TST_NETLOAD_CLN_REQUESTS:-10000}"
 export TST_NETLOAD_CLN_NUMBER="${TST_NETLOAD_CLN_NUMBER:-2}"
 export TST_NETLOAD_BINDTODEVICE="${TST_NETLOAD_BINDTODEVICE-1}"
