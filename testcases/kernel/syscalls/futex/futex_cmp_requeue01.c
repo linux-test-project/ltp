@@ -45,7 +45,7 @@ static struct tcase {
 static void do_child(void)
 {
 	int slept_for_ms = 0;
-	struct timespec usec = tst_ms_to_timespec(max_sleep_ms);
+	struct timespec usec = tst_timespec_from_ms(max_sleep_ms);
 	int pid = getpid();
 	int ret = 0;
 

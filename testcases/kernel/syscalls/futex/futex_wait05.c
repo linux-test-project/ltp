@@ -15,7 +15,7 @@
 
 int sample_fn(int clk_id, long long usec)
 {
-	struct timespec to = tst_us_to_timespec(usec);
+	struct timespec to = tst_timespec_from_us(usec);
 	futex_t futex = FUTEX_INITIALIZER;
 
 	tst_timer_start(clk_id);

@@ -16,7 +16,7 @@
 
 int sample_fn(int clk_id, long long usec)
 {
-	struct timespec t = tst_us_to_timespec(usec);
+	struct timespec t = tst_timespec_from_us(usec);
 
 	tst_timer_start(clk_id);
 	TEST(nanosleep(&t, NULL));

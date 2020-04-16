@@ -25,6 +25,7 @@ test18
 test19
 test20
 tst_expiration_timer
+test_timer
 test_exec
 test_exec_child
 test_kconfig

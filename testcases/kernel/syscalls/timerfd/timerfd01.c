@@ -44,8 +44,8 @@ static unsigned long long getustime(int clockid)
 static void settime(int tfd, struct itimerspec *tmr, int tflags,
                     unsigned long long tvalue, int tinterval)
 {
-	tmr->it_value = tst_us_to_timespec(tvalue);
-	tmr->it_interval = tst_us_to_timespec(tinterval);
+	tmr->it_value = tst_timespec_from_us(tvalue);
+	tmr->it_interval = tst_timespec_from_us(tinterval);
 
 	SAFE_TIMERFD_SETTIME(tfd, tflags, tmr, NULL);
 }

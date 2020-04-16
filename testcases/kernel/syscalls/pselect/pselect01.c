@@ -12,7 +12,7 @@
 int sample_fn(int clk_id, long long usec)
 {
 	fd_set readfds;
-	struct timespec tv = tst_us_to_timespec(usec);
+	struct timespec tv = tst_timespec_from_us(usec);
 
 	FD_ZERO(&readfds);
 	FD_SET(0, &readfds);

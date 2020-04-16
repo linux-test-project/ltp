@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
- * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2015-2020 Cyril Hrubis <chrubis@suse.cz>
  */
 
  /*
@@ -14,27 +14,7 @@
 
 #include <sys/time.h>
 #include <time.h>
-
-static inline long long tst_timespec_to_ns(struct timespec t)
-{
-	return t.tv_sec * 1000000000 + t.tv_nsec;
-}
-
-/*
- * Converts timespec to microseconds.
- */
-static inline long long tst_timespec_to_us(struct timespec t)
-{
-	return t.tv_sec * 1000000 + (t.tv_nsec + 500) / 1000;
-}
-
-/*
- * Converts timespec to milliseconds.
- */
-static inline long long tst_timespec_to_ms(struct timespec t)
-{
-	return t.tv_sec * 1000 + (t.tv_nsec + 500000) / 1000000;
-}
+#include "tst_test.h"
 
 /*
  * Converts timeval to microseconds.
@@ -53,7 +33,7 @@ static inline long long tst_timeval_to_ms(struct timeval t)
 }
 
 /*
- * Converts ms to struct timeval
+ * Converts milliseconds to struct timeval
  */
 static inline struct timeval tst_ms_to_timeval(long long ms)
 {
@@ -66,7 +46,7 @@ static inline struct timeval tst_ms_to_timeval(long long ms)
 }
 
 /*
- * Converts us to struct timeval
+ * Converts microseconds to struct timeval
  */
 static inline struct timeval tst_us_to_timeval(long long us)
 {
@@ -76,135 +56,6 @@ static inline struct timeval tst_us_to_timeval(long long us)
 	ret.tv_usec = us % 1000000;
 
 	return ret;
-}
-
-/*
- * Converts ms to struct timespec
- */
-static inline struct timespec tst_ms_to_timespec(long long ms)
-{
-	struct timespec ret;
-
-	ret.tv_sec = ms / 1000;
-	ret.tv_nsec = (ms % 1000) * 1000000;
-
-	return ret;
-}
-
-/*
- * Converts us to struct timespec
- */
-static inline struct timespec tst_us_to_timespec(long long us)
-{
-	struct timespec ret;
-
-	ret.tv_sec = us / 1000000;
-	ret.tv_nsec = (us % 1000000) * 1000;
-
-	return ret;
-}
-
-/*
- * Comparsions
- */
-static inline int tst_timespec_lt(struct timespec t1, struct timespec t2)
-{
-	if (t1.tv_sec == t2.tv_sec)
-		return t1.tv_nsec < t2.tv_nsec;
-
-	return t1.tv_sec < t2.tv_sec;
-}
-
-static inline struct timespec tst_timespec_normalize(struct timespec t)
-{
-	if (t.tv_nsec >= 1000000000) {
-		t.tv_sec++;
-		t.tv_nsec -= 1000000000;
-	}
-
-	if (t.tv_nsec < 0) {
-		t.tv_sec--;
-		t.tv_nsec += 1000000000;
-	}
-
-	return t;
-}
-
-/*
- * Adds us microseconds to t.
- */
-static inline struct timespec tst_timespec_add_us(struct timespec t,
-                                                  long long us)
-{
-	t.tv_sec += us / 1000000;
-	t.tv_nsec += (us % 1000000) * 1000;
-
-
-	return tst_timespec_normalize(t);
-}
-
-/*
- * Adds two timespec structures.
- */
-static inline struct timespec tst_timespec_add(struct timespec t1,
-                                               struct timespec t2)
-{
-	struct timespec res;
-
-	res.tv_sec = t1.tv_sec + t2.tv_sec;
-	res.tv_nsec = t1.tv_nsec + t2.tv_nsec;
-
-	return tst_timespec_normalize(res);
-}
-
-/*
- * Subtracts us microseconds from t.
- */
-static inline struct timespec tst_timespec_sub_us(struct timespec t,
-                                                  long long us)
-{
-	t.tv_sec -= us / 1000000;
-	t.tv_nsec -= (us % 1000000) * 1000;
-
-	return tst_timespec_normalize(t);
-}
-
-/*
- * Returns difference between two timespec structures.
- */
-static inline struct timespec tst_timespec_diff(struct timespec t1,
-                                                struct timespec t2)
-{
-	struct timespec res;
-
-	res.tv_sec = t1.tv_sec - t2.tv_sec;
-
-	if (t1.tv_nsec < t2.tv_nsec) {
-		res.tv_sec--;
-		res.tv_nsec = 1000000000 - (t2.tv_nsec - t1.tv_nsec);
-	} else {
-		res.tv_nsec = t1.tv_nsec - t2.tv_nsec;
-	}
-
-	return res;
-}
-
-static inline long long tst_timespec_diff_ns(struct timespec t1,
-					     struct timespec t2)
-{
-	return t1.tv_nsec - t2.tv_nsec + 1000000000LL * (t1.tv_sec - t2.tv_sec);
-}
-
-static inline long long tst_timespec_diff_us(struct timespec t1,
-                                             struct timespec t2)
-{
-	return tst_timespec_to_us(tst_timespec_diff(t1, t2));
-}
-
-static inline long long tst_timespec_diff_ms(struct timespec t1,
-                                             struct timespec t2)
-{
-	return tst_timespec_to_ms(tst_timespec_diff(t1, t2));
 }
 
 /*
@@ -239,28 +90,486 @@ static inline long long tst_timeval_diff_ms(struct timeval t1,
 	return tst_timeval_to_ms(tst_timeval_diff(t1, t2));
 }
 
+#ifndef __kernel_timespec
+
+#if defined(__x86_64__) && defined(__ILP32__)
+typedef long long __kernel_long_t;
+#else
+typedef long __kernel_long_t;
+#endif
+
+typedef __kernel_long_t	__kernel_old_time_t;
+
+struct __kernel_old_timespec {
+	__kernel_old_time_t	tv_sec;		/* seconds */
+	__kernel_old_time_t	tv_nsec;	/* nanoseconds */
+};
+
+typedef long long __kernel_time64_t;
+
+struct __kernel_timespec {
+	__kernel_time64_t       tv_sec;                 /* seconds */
+	long long               tv_nsec;                /* nanoseconds */
+};
+#endif
+
+enum tst_ts_type {
+	TST_LIBC_TIMESPEC,
+	TST_KERN_OLD_TIMESPEC,
+	TST_KERN_TIMESPEC
+};
+
+struct tst_ts {
+	enum tst_ts_type type;
+	union {
+		struct timespec libc_ts;
+		struct __kernel_old_timespec kern_old_ts;
+		struct __kernel_timespec kern_ts;
+	};
+};
+
+/*
+ * Returns tst_ts seconds.
+ */
+static inline long long tst_ts_get_sec(struct tst_ts ts)
+{
+	switch (ts.type) {
+	case TST_LIBC_TIMESPEC:
+		return ts.libc_ts.tv_sec;
+	case TST_KERN_OLD_TIMESPEC:
+		return ts.kern_old_ts.tv_sec;
+	case TST_KERN_TIMESPEC:
+		return ts.kern_ts.tv_sec;
+	default:
+		tst_brk(TBROK, "Invalid type: %d", ts.type);
+		return -1;
+	}
+}
+
+/*
+ * Returns tst_ts nanoseconds.
+ */
+static inline long long tst_ts_get_nsec(struct tst_ts ts)
+{
+	switch (ts.type) {
+	case TST_LIBC_TIMESPEC:
+		return ts.libc_ts.tv_nsec;
+	case TST_KERN_OLD_TIMESPEC:
+		return ts.kern_old_ts.tv_nsec;
+	case TST_KERN_TIMESPEC:
+		return ts.kern_ts.tv_nsec;
+	default:
+		tst_brk(TBROK, "Invalid type: %d", ts.type);
+		return -1;
+	}
+}
+
+/*
+ * Sets tst_ts seconds.
+ */
+static inline void tst_ts_set_sec(struct tst_ts *ts, long long sec)
+{
+	switch (ts->type) {
+	case TST_LIBC_TIMESPEC:
+		ts->libc_ts.tv_sec = sec;
+	break;
+	case TST_KERN_OLD_TIMESPEC:
+		ts->kern_old_ts.tv_sec = sec;
+	break;
+	case TST_KERN_TIMESPEC:
+		ts->kern_ts.tv_sec = sec;
+	break;
+	default:
+		tst_brk(TBROK, "Invalid type: %d", ts->type);
+	}
+}
+
+/*
+ * Sets tst_ts nanoseconds.
+ */
+static inline void tst_ts_set_nsec(struct tst_ts *ts, long long nsec)
+{
+	switch (ts->type) {
+	case TST_LIBC_TIMESPEC:
+		ts->libc_ts.tv_nsec = nsec;
+	break;
+	case TST_KERN_OLD_TIMESPEC:
+		ts->kern_old_ts.tv_nsec = nsec;
+	break;
+	case TST_KERN_TIMESPEC:
+		ts->kern_ts.tv_nsec = nsec;
+	break;
+	default:
+		tst_brk(TBROK, "Invalid type: %d", ts->type);
+	}
+}
+
+/*
+ * Converts timespec to tst_ts.
+ */
+static inline struct tst_ts tst_ts_from_timespec(struct timespec ts)
+{
+	struct tst_ts t = {
+		.type = TST_LIBC_TIMESPEC,
+		.libc_ts.tv_sec = ts.tv_sec,
+		.libc_ts.tv_nsec = ts.tv_nsec,
+	};
+
+	return t;
+}
+
+/*
+ * Converst tst_ts into timespec.
+ */
+static inline struct timespec tst_ts_to_timespec(struct tst_ts t)
+{
+	return t.libc_ts;
+}
+
+/*
+ * Converts tst_ts to nanoseconds.
+ */
+static inline long long tst_ts_to_ns(struct tst_ts t)
+{
+	return tst_ts_get_sec(t) * 1000000000 + tst_ts_get_nsec(t);
+}
+
+/*
+ * Converts tst_ts to microseconds and rounds the value.
+ */
+static inline long long tst_ts_to_us(struct tst_ts t)
+{
+	return tst_ts_get_sec(t) * 1000000 +
+	       (tst_ts_get_nsec(t) + 500) / 1000;
+}
+
+/*
+ * Converts timespec to microseconds and rounds the value.
+ */
+static inline long long tst_timespec_to_us(struct timespec ts)
+{
+	return tst_ts_to_us(tst_ts_from_timespec(ts));
+}
+
+/*
+ * Converts tst_ts to milliseconds and rounds the value.
+ */
+static inline long long tst_ts_to_ms(struct tst_ts t)
+{
+	return tst_ts_get_sec(t) * 1000 +
+	       (tst_ts_get_nsec(t) + 500000) / 1000000;
+}
+
+/*
+ * Converts timespec to milliseconds and rounds the value.
+ */
+static inline long long tst_timespec_to_ms(struct timespec ts)
+{
+	return tst_ts_to_ms(tst_ts_from_timespec(ts));
+}
+
+/*
+ * Converts nanoseconds to tst_ts
+ */
+static inline struct tst_ts
+tst_ts_from_ns(enum tst_ts_type type, long long ns)
+{
+	struct tst_ts ret = {.type = type};
+
+	tst_ts_set_sec(&ret, ns / 1000000000);
+	tst_ts_set_nsec(&ret, ns % 1000000000);
+
+	return ret;
+}
+
+/*
+ * Converts microseconds to tst_ts
+ */
+static inline struct tst_ts
+tst_ts_from_us(enum tst_ts_type type, long long us)
+{
+	struct tst_ts ret = {.type = type};
+
+	tst_ts_set_sec(&ret, us / 1000000);
+	tst_ts_set_nsec(&ret, (us % 1000000) * 1000);
+
+	return ret;
+}
+
+/*
+ * Converts microseconds to timespec
+ */
+static inline struct timespec
+tst_timespec_from_us(long long us)
+{
+	return tst_ts_to_timespec(tst_ts_from_us(TST_LIBC_TIMESPEC, us));
+}
+
+/*
+ * Converts miliseconds to tst_ts
+ */
+static inline struct tst_ts
+tst_ts_from_ms(enum tst_ts_type type, long long ms)
+{
+	struct tst_ts ret = {.type = type};
+
+	tst_ts_set_sec(&ret, ms / 1000);
+	tst_ts_set_nsec(&ret, (ms % 1000) * 1000000);
+
+	return ret;
+}
+
+/*
+ * Converts miliseconds to timespec
+ */
+static inline struct timespec
+tst_timespec_from_ms(long long ms)
+{
+	return tst_ts_to_timespec(tst_ts_from_ms(TST_LIBC_TIMESPEC, ms));
+}
+
+/*
+ * Returns if t1 less than t2. Both t1 and t2 must be normalized.
+ */
+static inline int tst_ts_lt(struct tst_ts t1, struct tst_ts t2)
+{
+	if (tst_ts_get_sec(t1) == tst_ts_get_sec(t2))
+		return tst_ts_get_nsec(t1) < tst_ts_get_nsec(t2);
+
+	return tst_ts_get_sec(t1) < tst_ts_get_sec(t2);
+}
+
+/*
+ * Returns if ts1 less than ts2. Both ts1 and ts2 must be normalized.
+ */
+static inline int tst_timespec_lt(struct timespec ts1, struct timespec ts2)
+{
+	return tst_ts_lt(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+}
+
+/*
+ * Returns normalized tst_ts, i.e. 0 <= nsec < 1000000000.
+ */
+static inline struct tst_ts tst_ts_normalize(struct tst_ts t)
+{
+	long long sec = tst_ts_get_sec(t);
+	long long nsec = tst_ts_get_nsec(t);
+
+	if (nsec >= 1000000000) {
+		tst_ts_set_sec(&t, sec + 1);
+		tst_ts_set_nsec(&t, nsec - 1000000000);
+	}
+
+	if (nsec < 0) {
+		tst_ts_set_sec(&t, sec - 1);
+		tst_ts_set_nsec(&t, nsec + 1000000000);
+	}
+
+	return t;
+}
+
+/*
+ * Adds us microseconds to tst_ts.
+ */
+static inline struct tst_ts
+tst_ts_add_us(struct tst_ts t, long long us)
+{
+	struct tst_ts res = {.type = t.type};
+
+	tst_ts_set_sec(&res, tst_ts_get_sec(t) + us / 1000000);
+	tst_ts_set_nsec(&res, tst_ts_get_nsec(t) + (us % 1000000) * 1000);
+
+	return tst_ts_normalize(res);
+}
+
+/*
+ * Adds us microseconds to struct timespec.
+ */
+static inline struct timespec
+tst_timespec_add_us(struct timespec ts, long long us)
+{
+	struct tst_ts res;
+
+	res = tst_ts_add_us(tst_ts_from_timespec(ts), us);
+
+	return tst_ts_to_timespec(res);
+}
+
+/*
+ * Substracts us microseconds from tst_ts.
+ */
+static inline struct tst_ts
+tst_ts_sub_us(struct tst_ts t, long long us)
+{
+	struct tst_ts res = {.type = t.type};
+
+	tst_ts_set_sec(&res, tst_ts_get_sec(t) - us / 1000000);
+	tst_ts_set_nsec(&res, tst_ts_get_nsec(t) - (us % 1000000) * 1000);
+
+	return tst_ts_normalize(res);
+}
+
+/*
+ * Substracts us microseconds from timespec.
+ */
+static inline struct timespec
+tst_timespec_sub_us(struct timespec ts, long long us)
+{
+	struct tst_ts res;
+
+	res = tst_ts_sub_us(tst_ts_from_timespec(ts), us);
+
+	return tst_ts_to_timespec(res);
+}
+
+/*
+ * Adds two tst_ts structures.
+ */
+static inline struct tst_ts
+tst_ts_add(struct tst_ts t1, struct tst_ts t2)
+{
+	struct tst_ts res = {.type = t1.type};
+
+	tst_ts_set_sec(&res, tst_ts_get_sec(t1) + tst_ts_get_sec(t2));
+	tst_ts_set_nsec(&res, tst_ts_get_nsec(t1) + tst_ts_get_nsec(t2));
+
+	return tst_ts_normalize(res);
+}
+
+/*
+ * Adds two timespec structures.
+ */
+static inline struct timespec
+tst_timespec_add(struct timespec ts1, struct timespec ts2)
+{
+	struct tst_ts res;
+
+	res = tst_ts_add(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+
+	return tst_ts_to_timespec(res);
+}
+
+/*
+ * Substract two tst_ts structures.
+ */
+static inline struct tst_ts
+tst_ts_diff(struct tst_ts t1, struct tst_ts t2)
+{
+	struct tst_ts res = {.type = t1.type};
+
+	tst_ts_set_sec(&res, tst_ts_get_sec(t1) - tst_ts_get_sec(t2));
+	tst_ts_set_nsec(&res, tst_ts_get_nsec(t1) - tst_ts_get_nsec(t2));
+
+	return tst_ts_normalize(res);
+}
+
+/*
+ * Substract two timespec structures.
+ */
+static inline struct timespec
+tst_timespec_diff(struct timespec ts1, struct timespec ts2)
+{
+	struct tst_ts res;
+
+	res = tst_ts_diff(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+
+	return tst_ts_to_timespec(res);
+}
+
+/*
+ * Substract two tst_ts structures returns number of nanoseconds.
+ */
+static inline long long
+tst_ts_diff_ns(struct tst_ts t1, struct tst_ts t2)
+{
+	return tst_ts_to_ns(tst_ts_diff(t1, t2));
+}
+
+/*
+ * Substract two timespec structures returns number of nanoseconds.
+ */
+static inline long long
+tst_timespec_diff_ns(struct timespec ts1, struct timespec ts2)
+{
+	return tst_ts_diff_ns(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+}
+
+/*
+ * Substract two tst_ts structures returns number of microseconds.
+ */
+static inline long long
+tst_ts_diff_us(struct tst_ts t1, struct tst_ts t2)
+{
+	return tst_ts_to_us(tst_ts_diff(t1, t2));
+}
+
+/*
+ * Substract two timespec structures returns number of microseconds.
+ */
+static inline long long
+tst_timespec_diff_us(struct timespec ts1, struct timespec ts2)
+{
+	return tst_ts_diff_us(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+}
+
+/*
+ * Substract two tst_ts structures returns number of milliseconds.
+ */
+static inline long long
+tst_ts_diff_ms(struct tst_ts t1, struct tst_ts t2)
+{
+	return tst_ts_to_ms(tst_ts_diff(t1, t2));
+}
+
+/*
+ * Substract two timespec structures returns number of milliseconds.
+ */
+static inline long long
+tst_timespec_diff_ms(struct timespec ts1, struct timespec ts2)
+{
+	return tst_ts_diff_ms(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+}
+
 /*
  * Returns absolute value of difference between two timespec structures.
  */
-static inline struct timespec tst_timespec_abs_diff(struct timespec t1,
-                                                    struct timespec t2)
+static inline struct tst_ts
+tst_ts_abs_diff(struct tst_ts t1, struct tst_ts t2)
 {
-	if (tst_timespec_lt(t1, t2))
-		return tst_timespec_diff(t2, t1);
+	if (tst_ts_lt(t1, t2))
+		return tst_ts_diff(t2, t1);
 	else
-		return tst_timespec_diff(t1, t2);
+		return tst_ts_diff(t1, t2);
 }
 
-static inline long long tst_timespec_abs_diff_us(struct timespec t1,
-                                                 struct timespec t2)
+/*
+ * Returns absolute value of difference between two tst_ts structures in
+ * microseconds.
+ */
+static inline long long
+tst_ts_abs_diff_us(struct tst_ts t1, struct tst_ts t2)
 {
-       return tst_timespec_to_us(tst_timespec_abs_diff(t1, t2));
+	return tst_ts_to_us(tst_ts_abs_diff(t1, t2));
 }
 
-static inline long long tst_timespec_abs_diff_ms(struct timespec t1,
-                                                 struct timespec t2)
+/*
+ * Returns absolute value of difference between two timespec structures in
+ * microseconds.
+ */
+static inline long long
+tst_timespec_abs_diff_us(struct timespec ts1, struct timespec ts2)
 {
-       return tst_timespec_to_ms(tst_timespec_abs_diff(t1, t2));
+	return tst_ts_abs_diff_us(tst_ts_from_timespec(ts1), tst_ts_from_timespec(ts2));
+}
+
+/*
+ * Returns absolute value of difference between two timespec structures in
+ * milliseconds.
+ */
+static inline long long
+tst_ts_abs_diff_ms(struct tst_ts t1, struct tst_ts t2)
+{
+	return tst_ts_to_ms(tst_ts_abs_diff(t1, t2));
 }
 
 /*
