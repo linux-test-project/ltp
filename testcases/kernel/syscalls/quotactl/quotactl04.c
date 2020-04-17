@@ -102,7 +102,7 @@ static struct tcase {
 
 static void setup(void)
 {
-	const char *const fs_opts[] = {"-O quota,project", NULL};
+	const char *const fs_opts[] = {"-I 256", "-O quota,project", NULL};
 
 	test_id = geteuid();
 	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
