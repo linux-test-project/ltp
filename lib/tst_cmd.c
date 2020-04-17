@@ -64,7 +64,7 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 			tst_brkm(TCONF, cleanup_fn, "Couldn't find '%s' in $PATH at %s:%d", argv[0],
 				 __FILE__, __LINE__);
 		else
-			_exit(255);
+			return 255;
 	}
 
 	pid_t pid = vfork();
