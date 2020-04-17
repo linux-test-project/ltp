@@ -87,12 +87,12 @@ static void run(unsigned int i)
 static void setup(void)
 {
 	char opt_bsize[32];
-	const char *const extra_opts[] = {"-O encrypt", opt_bsize, NULL};
+	const char *const fs_opts[] = {"-O encrypt", opt_bsize, NULL};
 	int ret;
 
 	snprintf(opt_bsize, sizeof(opt_bsize), "-b %i", getpagesize());
 
-	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, extra_opts);
+	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
 	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, 0);
 	mount_flag = 1;
 

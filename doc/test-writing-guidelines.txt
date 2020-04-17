@@ -1116,6 +1116,9 @@ The extra options 'extra_opts' should either be 'NULL' if there are none, or a
 will be passed after device name. e.g: +mkfs -t ext4 -b 1024 /dev/sda1 102400+
 in this case.
 
+Note that perfer to store the options which can be passed before or after device
+name by 'fs_opts' array.
+
 2.2.17 Verifying a filesystem's free space
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

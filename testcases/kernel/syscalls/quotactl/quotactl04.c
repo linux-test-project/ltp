@@ -102,10 +102,10 @@ static struct tcase {
 
 static void setup(void)
 {
-	const char *const extra_opts[] = {"-O quota,project", NULL};
+	const char *const fs_opts[] = {"-O quota,project", NULL};
 
 	test_id = geteuid();
-	SAFE_MKFS(tst_device->dev, tst_device->fs_type, NULL, extra_opts);
+	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
 	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, "quota");
 	mount_flag = 1;
 }
