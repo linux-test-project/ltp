@@ -38,6 +38,7 @@
 #include "tst_buffers.h"
 #include "tst_capability.h"
 #include "tst_hugepage.h"
+#include "tst_assert.h"
 
 /*
  * Reports testcase result.
