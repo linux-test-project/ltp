@@ -28,18 +28,6 @@ static struct tcase {
 	{"prctl05_test_xxxxx", "prctl05_test_xx"}
 };
 
-static void check_proc_comm(char *path, char *name)
-{
-	char comm_buf[20];
-
-	SAFE_FILE_SCANF(path, "%s", comm_buf);
-	if (strcmp(name, comm_buf))
-		tst_res(TFAIL,
-			"%s has %s, expected %s", path, comm_buf, name);
-	else
-		tst_res(TPASS, "%s sets to %s", path, comm_buf);
-}
-
 static void verify_prctl(unsigned int n)
 {
 	char buf[20];
@@ -71,9 +59,8 @@ static void verify_prctl(unsigned int n)
 	tid = tst_syscall(__NR_gettid);
 
 	sprintf(comm_path, "/proc/self/task/%d/comm", tid);
-	check_proc_comm(comm_path, tc->expname);
-
-	check_proc_comm("/proc/self/comm", tc->expname);
+	TST_ASSERT_STR(comm_path, tc->expname);
+	TST_ASSERT_STR("/proc/self/comm", tc->expname);
 }
 
 static struct tst_test test = {
