@@ -217,7 +217,7 @@ int file_lines_scanf(const char *file, const int lineno,
 
 	if (strict && ret != arg_count) {
 		tst_brkm(TBROK, cleanup_fn, "Expected %i conversions got %i"
-			" at %s:%d", arg_count, ret, file, lineno);
+			" FILE '%s' at %s:%d", arg_count, ret, path, file, lineno);
 		return 1;
 	}
 
