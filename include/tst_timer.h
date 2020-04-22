@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 /*
  * Converts timeval to microseconds.
@@ -128,6 +129,36 @@ struct tst_ts {
 	} ts;
 };
 
+static inline void *tst_ts_get(struct tst_ts *t)
+{
+	switch (t->type) {
+	case TST_LIBC_TIMESPEC:
+		return &t->ts.libc_ts;
+	case TST_KERN_OLD_TIMESPEC:
+		return &t->ts.kern_old_ts;
+	case TST_KERN_TIMESPEC:
+		return &t->ts.kern_ts;
+	default:
+		tst_brk(TBROK, "Invalid type: %d", t->type);
+		return NULL;
+	}
+}
+
+static inline int libc_clock_gettime(clockid_t clk_id, void *ts)
+{
+	return clock_gettime(clk_id, ts);
+}
+
+static inline int sys_clock_gettime(clockid_t clk_id, void *ts)
+{
+	return tst_syscall(__NR_clock_gettime, clk_id, ts);
+}
+
+static inline int sys_clock_gettime64(clockid_t clk_id, void *ts)
+{
+	return tst_syscall(__NR_clock_gettime64, clk_id, ts);
+}
+
 /*
  * Returns tst_ts seconds.
  */
@@ -162,6 +193,27 @@ static inline long long tst_ts_get_nsec(struct tst_ts ts)
 		tst_brk(TBROK, "Invalid type: %d", ts.type);
 		return -1;
 	}
+}
+
+/*
+ * Checks that timespec is valid, i.e. that the timestamp is not zero and that
+ * the nanoseconds are normalized i.e. in <0, 1s) interval.
+ *
+ *  0: On success, i.e. timespec updated correctly.
+ * -1: Error, timespec not updated.
+ * -2: Error, tv_nsec is corrupted.
+ */
+static inline int tst_ts_valid(struct tst_ts *t)
+{
+	long long nsec = tst_ts_get_nsec(*t);
+
+	if (nsec < 0 || nsec >= 1000000000)
+		return -2;
+
+	if (tst_ts_get_sec(*t) == 0 && tst_ts_get_nsec(*t) == 0)
+		return -1;
+
+	return 0;
 }
 
 /*
