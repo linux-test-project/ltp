@@ -159,6 +159,21 @@ static inline int sys_clock_gettime64(clockid_t clk_id, void *ts)
 	return tst_syscall(__NR_clock_gettime64, clk_id, ts);
 }
 
+static inline int libc_clock_settime(clockid_t clk_id, void *ts)
+{
+	return clock_settime(clk_id, ts);
+}
+
+static inline int sys_clock_settime(clockid_t clk_id, void *ts)
+{
+	return tst_syscall(__NR_clock_settime, clk_id, ts);
+}
+
+static inline int sys_clock_settime64(clockid_t clk_id, void *ts)
+{
+	return tst_syscall(__NR_clock_settime64, clk_id, ts);
+}
+
 /*
  * Returns tst_ts seconds.
  */
