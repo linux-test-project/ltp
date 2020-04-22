@@ -74,6 +74,9 @@ static void setup(void)
 {
 	long mem_total, hpage_size, orig_hugepages;
 
+	if (tst_hugepages == 0)
+		tst_brk(TCONF, "Not enough hugepages for testing.");
+
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);

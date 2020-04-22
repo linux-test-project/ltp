@@ -35,11 +35,11 @@ static long hpage_size;
 
 void setup(void)
 {
+	if (tst_hugepages != test.request_hugepages)
+		tst_brk(TCONF, "Not enough hugepages for testing.");
+
 	page_size = getpagesize();
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
-
-	if (tst_hugepages != test.request_hugepages)
-		tst_brk(TCONF, "No enough hugepages for testing.");
 }
 
 void shm_test(int size)

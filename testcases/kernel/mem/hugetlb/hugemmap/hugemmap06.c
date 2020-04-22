@@ -39,9 +39,9 @@ struct mp {
 
 static void setup(void)
 {
-	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	if (tst_hugepages != test.request_hugepages)
 		tst_brk(TCONF, "System RAM is not enough to test.");
+	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 }
 
 static void *thr(void *arg)
