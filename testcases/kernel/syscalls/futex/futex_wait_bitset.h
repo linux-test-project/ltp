@@ -3,7 +3,7 @@
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  */
 
-#define TRESHOLD_US 100000
+#define THRESHOLD_US 100000
 #define DEFAULT_TIMEOUT_US 100010
 
 static void verify_futex_wait_bitset(long long wait_us, clock_t clk_id)
@@ -48,7 +48,7 @@ static void verify_futex_wait_bitset(long long wait_us, clock_t clk_id)
 		return;
 	}
 
-	if (tst_timespec_diff_us(end, to) > TRESHOLD_US) {
+	if (tst_timespec_diff_us(end, to) > THRESHOLD_US) {
 		tst_res(TFAIL,
 			"futex_wait_bitset() waited too long %llius, expected %llius",
 			tst_timespec_diff_us(end, start), wait_us);
