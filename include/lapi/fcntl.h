@@ -9,6 +9,10 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 
+#ifndef O_DIRECT
+# define O_DIRECT 040000
+#endif
+
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
 #endif
