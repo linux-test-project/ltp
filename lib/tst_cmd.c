@@ -56,7 +56,6 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 	 */
 	void *old_handler = signal(SIGCHLD, SIG_DFL);
 
-	const char *cmd;
 	char path[PATH_MAX];
 
 	if (tst_get_path(argv[0], path, sizeof(path))) {
