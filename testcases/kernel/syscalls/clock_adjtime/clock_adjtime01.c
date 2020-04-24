@@ -55,15 +55,15 @@
  */
 
 #include "clock_adjtime.h"
+#include "lapi/abisize.h"
 
 static long hz;
-static struct timex saved, ttxc;
+static struct tst_timex saved, ttxc;
 static int supported;
 
 struct test_case {
 	unsigned int modes;
 	long highlimit;
-	long *ptr;
 	long delta;
 };
 
@@ -80,79 +80,103 @@ struct test_case tc[] = {
 	{
 	 .modes = ADJ_OFFSET,
 	 .highlimit = 500000,
-	 .ptr = &ttxc.offset,
 	 .delta = 10000,
 	},
 	{
 	 .modes = ADJ_FREQUENCY,
-	 .ptr = &ttxc.freq,
 	 .delta = 100,
 	},
 	{
 	 .modes = ADJ_MAXERROR,
-	 .ptr = &ttxc.maxerror,
 	 .delta = 100,
 	},
 	{
 	 .modes = ADJ_ESTERROR,
-	 .ptr = &ttxc.esterror,
 	 .delta = 100,
 	},
 	{
 	 .modes = ADJ_TIMECONST,
-	 .ptr = &ttxc.constant,
 	 .delta = 1,
 	},
 	{
 	 .modes = ADJ_TICK,
 	 .highlimit = 1100000,
-	 .ptr = &ttxc.tick,
 	 .delta = 1000,
 	},
 };
 
+static struct test_variants {
+	int (*clock_adjtime)(clockid_t clk_id, void *timex);
+	enum tst_timex_type type;
+	char *desc;
+} variants[] = {
+#if defined(TST_ABI32)
+	{.clock_adjtime = sys_clock_adjtime, .type = TST_LIBC_TIMEX, .desc = "syscall with libc spec"},
+#endif
+
+#if defined(TST_ABI64)
+	{.clock_adjtime = sys_clock_adjtime, .type = TST_KERN_TIMEX, .desc = "syscall with kernel spec64"},
+#endif
+
+#if (__NR_clock_adjtime64 != __LTP__NR_INVALID_SYSCALL)
+	{.clock_adjtime = sys_clock_adjtime64, .type = TST_KERN_TIMEX, .desc = "syscall time64 with kernel spec64"},
+#endif
+};
+
 static void verify_clock_adjtime(unsigned int i)
 {
-	long ptroff, *ptr = NULL;
-	struct timex verify;
+	struct test_variants *tv = &variants[tst_variant];
+	struct tst_timex verify;
+	long long val;
+	int rval;
 
-	memset(&ttxc, 0, sizeof(struct timex));
-	memset(&verify, 0, sizeof(struct timex));
+	memset(&ttxc, 0, sizeof(ttxc));
+	memset(&verify, 0, sizeof(verify));
 
-	SAFE_CLOCK_ADJTIME(CLOCK_REALTIME, &ttxc);
-	timex_show("GET", ttxc);
+	ttxc.type = verify.type = tv->type;
 
-	ttxc.modes = tc[i].modes;
+	rval = tv->clock_adjtime(CLOCK_REALTIME, tst_timex_get(&ttxc));
+	if (rval < 0) {
+		tst_res(TFAIL | TERRNO, "clock_adjtime() failed %i", rval);
+		return;
+	}
 
-	if (tc[i].ptr && tc[i].delta) {
+	timex_show("GET", &ttxc);
 
-		*tc[i].ptr += tc[i].delta;
+	timex_set_field_uint(&ttxc, ADJ_MODES, tc[i].modes);
+
+	if (tc[i].delta) {
+		val = timex_get_field_long(&ttxc, tc[i].modes);
+		val += tc[i].delta;
 
 		/* fix limits, if existent, so no errors occur */
+		if (tc[i].highlimit && val >= tc[i].highlimit)
+			val = tc[i].highlimit;
 
-		if (tc[i].highlimit) {
-			if (*tc[i].ptr >= tc[i].highlimit)
-				*tc[i].ptr = tc[i].highlimit;
-		}
+		timex_set_field_long(&ttxc, tc[i].modes, val);
 	}
 
-	SAFE_CLOCK_ADJTIME(CLOCK_REALTIME, &ttxc);
-	timex_show("SET", ttxc);
-
-	if (tc[i].ptr) {
-
-		/* adjtimex field being tested so we can verify later */
-
-		ptroff = (long) tc[i].ptr - (long) &ttxc;
-		ptr = (void *) &verify + ptroff;
+	rval = tv->clock_adjtime(CLOCK_REALTIME, tst_timex_get(&ttxc));
+	if (rval < 0) {
+		tst_res(TFAIL | TERRNO, "clock_adjtime() failed %i", rval);
+		return;
 	}
 
-	TEST(sys_clock_adjtime(CLOCK_REALTIME, &verify));
-	timex_show("VERIFY", verify);
+	timex_show("SET", &ttxc);
 
-	if (tc[i].ptr && *tc[i].ptr != *ptr) {
+	rval = tv->clock_adjtime(CLOCK_REALTIME, tst_timex_get(&verify));
+	if (rval < 0) {
+		tst_res(TFAIL | TERRNO, "clock_adjtime() failed %i", rval);
+		return;
+	}
+
+	timex_show("VERIFY", &verify);
+
+	if (tc[i].delta &&
+	    timex_get_field_long(&ttxc, tc[i].modes) !=
+	    timex_get_field_long(&verify, tc[i].modes)) {
 		tst_res(TFAIL, "clock_adjtime(): could not set value (mode=%x)",
-				tc[i].modes);
+			tc[i].modes);
 	}
 
 	if (TST_RET < 0) {
@@ -165,14 +189,23 @@ static void verify_clock_adjtime(unsigned int i)
 
 static void setup(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	size_t i;
 	int rval;
 
-	rval = SAFE_CLOCK_ADJTIME(CLOCK_REALTIME, &saved);
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
+
+	saved.type = tv->type;
+	rval = tv->clock_adjtime(CLOCK_REALTIME, tst_timex_get(&saved));
+	if (rval < 0) {
+		tst_res(TFAIL | TERRNO, "clock_adjtime() failed %i", rval);
+		return;
+	}
+
 	supported = 1;
 
 	if (rval != TIME_OK && rval != TIME_ERROR) {
-		timex_show("SAVE_STATUS", saved);
+		timex_show("SAVE_STATUS", &saved);
 		tst_brk(TBROK | TTERRNO, "clock has on-going leap changes, "
 				"returned: %i", rval);
 	}
@@ -188,7 +221,7 @@ static void setup(void)
 
 		/* fix usec as being test default resolution */
 
-		if (saved.modes & ADJ_NANO) {
+		if (timex_get_field_uint(&saved, ADJ_MODES) & ADJ_NANO) {
 			if (tc[i].modes == ADJ_OFFSET) {
 				tc[i].highlimit *= 1000;
 				tc[i].delta *= 1000;
@@ -199,21 +232,29 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
+	unsigned int modes = ADJ_ALL;
+	int rval;
+
 	if (supported == 0)
 		return;
 
-	saved.modes = ADJ_ALL;
-
 	/* restore clock resolution based on original status flag */
 
-	if (saved.status & STA_NANO)
-		saved.modes |= ADJ_NANO;
+	if (timex_get_field_uint(&saved, ADJ_STATUS) & STA_NANO)
+		modes |= ADJ_NANO;
 	else
-		saved.modes |= ADJ_MICRO;
+		modes |= ADJ_MICRO;
+
+	timex_set_field_uint(&saved, ADJ_MODES, modes);
 
 	/* restore original clock flags */
 
-	SAFE_CLOCK_ADJTIME(CLOCK_REALTIME, &saved);
+	rval = tv->clock_adjtime(CLOCK_REALTIME, tst_timex_get(&saved));
+	if (rval < 0) {
+		tst_res(TFAIL | TERRNO, "clock_adjtime() failed %i", rval);
+		return;
+	}
 }
 
 static struct tst_test test = {
@@ -221,6 +262,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
+	.test_variants = ARRAY_SIZE(variants),
 	.needs_root = 1,
 	.restore_wallclock = 1,
 };
