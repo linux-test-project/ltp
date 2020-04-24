@@ -12,11 +12,9 @@
 
 #include <errno.h>
 
-#include "tst_test.h"
-#include "lapi/syscalls.h"
+#include "tst_timer.h"
 #include "lapi/posix_clocks.h"
-
-static struct timespec *res;
+#include "lapi/abisize.h"
 
 static struct test_case {
 	char *name;
@@ -37,29 +35,45 @@ static struct test_case {
 	{"-1", -1, -1, EINVAL},
 };
 
-static const char *variant_desc[] = {
-	"default (vdso or syscall)",
-	"syscall",
-	"syscall with NULL res parameter" };
+static struct tst_ts *tspec, *nspec = NULL;
+
+static struct test_variants {
+	int (*func)(clockid_t clk_id, void *ts);
+	enum tst_ts_type type;
+	struct tst_ts **spec;
+	char *desc;
+} variants[] = {
+#if defined(TST_ABI32)
+	{ .func = libc_clock_getres, .type = TST_LIBC_TIMESPEC, .spec = &tspec, .desc = "vDSO or syscall with libc spec"},
+	{ .func = libc_clock_getres, .type = TST_LIBC_TIMESPEC, .spec = &nspec, .desc = "vDSO or syscall with libc spec with NULL res"},
+	{ .func = sys_clock_getres, .type = TST_LIBC_TIMESPEC, .spec = &tspec, .desc = "syscall with libc spec"},
+	{ .func = sys_clock_getres, .type = TST_LIBC_TIMESPEC, .spec = &nspec, .desc = "syscall with libc spec with NULL res"},
+	{ .func = sys_clock_getres, .type = TST_KERN_OLD_TIMESPEC, .spec = &tspec, .desc = "syscall with kernel spec32"},
+	{ .func = sys_clock_getres, .type = TST_KERN_OLD_TIMESPEC, .spec = &nspec, .desc = "syscall with kernel spec32 with NULL res"},
+#endif
+
+#if defined(TST_ABI64)
+	{ .func = sys_clock_getres, .type = TST_KERN_TIMESPEC, .spec = &tspec, .desc = "syscall with kernel spec64"},
+	{ .func = sys_clock_getres, .type = TST_KERN_TIMESPEC, .spec = &nspec, .desc = "syscall with kernel spec64 with NULL res"},
+#endif
+
+#if (__NR_clock_getres_time64 != __LTP__NR_INVALID_SYSCALL)
+	{ .func = sys_clock_getres64, .type = TST_KERN_TIMESPEC, .spec = &tspec, .desc = "syscall time64 with kernel spec64"},
+	{ .func = sys_clock_getres64, .type = TST_KERN_TIMESPEC, .spec = &nspec, .desc = "syscall time64 with kernel spec64 with NULL res"},
+#endif
+};
 
 static void setup(void)
 {
-	tst_res(TINFO, "Testing variant: %s", variant_desc[tst_variant]);
+	tspec->type = variants[tst_variant].type;
+	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
 }
 
 static void do_test(unsigned int i)
 {
-	switch (tst_variant) {
-	case 0:
-		TEST(clock_getres(tcase[i].clk_id, res));
-		break;
-	case 1:
-		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id, res));
-		break;
-	case 2:
-		TEST(tst_syscall(__NR_clock_getres, tcase[i].clk_id, NULL));
-		break;
-	}
+	struct test_variants *tv = &variants[tst_variant];
+
+	TEST(tv->func(tcase[i].clk_id, tst_ts_get(*tv->spec)));
 
 	if (TST_RET != tcase[i].ret) {
 		if (TST_ERR == EINVAL) {
@@ -84,10 +98,10 @@ static void do_test(unsigned int i)
 static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcase),
-	.test_variants = 3,
+	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
 	.bufs = (struct tst_buffers []) {
-		{&res, .size = sizeof(*res)},
+		{&tspec, .size = sizeof(*tspec)},
 		{},
 	}
 };

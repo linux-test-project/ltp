@@ -131,6 +131,9 @@ struct tst_ts {
 
 static inline void *tst_ts_get(struct tst_ts *t)
 {
+	if (!t)
+		return NULL;
+
 	switch (t->type) {
 	case TST_LIBC_TIMESPEC:
 		return &t->ts.libc_ts;
@@ -142,6 +145,21 @@ static inline void *tst_ts_get(struct tst_ts *t)
 		tst_brk(TBROK, "Invalid type: %d", t->type);
 		return NULL;
 	}
+}
+
+static inline int libc_clock_getres(clockid_t clk_id, void *ts)
+{
+	return clock_getres(clk_id, ts);
+}
+
+static inline int sys_clock_getres(clockid_t clk_id, void *ts)
+{
+	return tst_syscall(__NR_clock_getres, clk_id, ts);
+}
+
+static inline int sys_clock_getres64(clockid_t clk_id, void *ts)
+{
+	return tst_syscall(__NR_clock_getres_time64, clk_id, ts);
 }
 
 static inline int libc_clock_gettime(clockid_t clk_id, void *ts)
