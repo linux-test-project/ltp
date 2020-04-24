@@ -192,6 +192,26 @@ static inline int sys_clock_settime64(clockid_t clk_id, void *ts)
 	return tst_syscall(__NR_clock_settime64, clk_id, ts);
 }
 
+static inline int libc_clock_nanosleep(clockid_t clk_id, int flags,
+				       void *request, void *remain)
+{
+	return clock_nanosleep(clk_id, flags, request, remain);
+}
+
+static inline int sys_clock_nanosleep(clockid_t clk_id, int flags,
+				      void *request, void *remain)
+{
+	return tst_syscall(__NR_clock_nanosleep, clk_id, flags,
+			   request, remain);
+}
+
+static inline int sys_clock_nanosleep64(clockid_t clk_id, int flags,
+				        void *request, void *remain)
+{
+	return tst_syscall(__NR_clock_nanosleep_time64, clk_id, flags,
+			   request, remain);
+}
+
 /*
  * Returns tst_ts seconds.
  */
