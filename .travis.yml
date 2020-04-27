@@ -77,7 +77,7 @@ matrix:
           compiler: clang
 
         - os: linux
-          env: DISTRO=ubuntu:latest TREE=out
+          env: DISTRO=ubuntu:eoan TREE=out
           compiler: gcc
 
         - os: linux
