@@ -207,7 +207,7 @@ TST_RETRY_FN_EXP_BACKOFF()
 	fi
 
 	while true; do
-		$tst_fun
+		eval "$tst_fun"
 		if [ "$?" = "$tst_exp" ]; then
 			break
 		fi
