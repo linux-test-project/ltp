@@ -11,7 +11,7 @@ TST_SETUP=do_setup
 TST_CLEANUP=do_cleanup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
-TST_NEEDS_CMDS="diff stat"
+TST_NEEDS_CMDS="diff ss stat"
 . tst_net.sh
 
 do_setup()
@@ -28,7 +28,7 @@ do_setup()
 	tst_rhost_run -s -b -c "$server $(tst_ipaddr rhost) $port"
 	server_started=1
 	tst_res TINFO "wait for the server to start"
-	sleep 1
+	TST_RETRY_FUNC "tst_rhost_run -c 'ss -ltp' | grep -q '$port.*testsf'" 0
 }
 
 do_test()
