@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2012 Linux Test Project.  All Rights Reserved.
+ * Copyright (c) 2012-2020 Linux Test Project.  All Rights Reserved.
  * Author: Jan Kara, November 2013
  */
 
@@ -37,6 +37,31 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 }
 
 #endif /* HAVE_SYS_FANOTIFY_H */
+
+int safe_fanotify_init(const char *file, const int lineno,
+	unsigned int flags, unsigned int event_f_flags)
+{
+	int rval;
+
+#ifdef HAVE_SYS_FANOTIFY_H
+	rval = fanotify_init(flags, event_f_flags);
+
+	if (rval == -1) {
+		if (errno == ENOSYS) {
+			tst_brk(TCONF,
+				"fanotify is not configured in this kernel.");
+		}
+		tst_brk(TBROK | TERRNO,
+			"%s:%d: fanotify_init() failed", file, lineno);
+	}
+#else
+	tst_brk(TCONF, "Header <sys/fanotify.h> is not present");
+#endif /* HAVE_SYS_FANOTIFY_H */
+
+	return rval;
+}
+#define SAFE_FANOTIFY_INIT(fan, mode)  \
+	safe_fanotify_init(__FILE__, __LINE__, (fan), (mode))
 
 #ifndef FAN_REPORT_TID
 #define FAN_REPORT_TID		0x00000100

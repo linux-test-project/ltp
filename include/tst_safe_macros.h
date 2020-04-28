@@ -551,11 +551,6 @@ int safe_mincore(const char *file, const int lineno, void *start,
 #define SAFE_MINCORE(start, length, vec) \
 	safe_mincore(__FILE__, __LINE__, (start), (length), (vec))
 
-int safe_fanotify_init(const char *file, const int lineno,
-	unsigned int flags, unsigned int event_f_flags);
-#define SAFE_FANOTIFY_INIT(fan, mode)  \
-	safe_fanotify_init(__FILE__, __LINE__, (fan), (mode))
-
 int safe_personality(const char *filename, unsigned int lineno,
 		    unsigned long persona);
 #define SAFE_PERSONALITY(persona) safe_personality(__FILE__, __LINE__, persona)
