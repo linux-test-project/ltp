@@ -2,7 +2,7 @@
 # Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
 set -ex
 
-zypper --non-interactive install --no-recommends \
+zypper --non-interactive install --force-resolution --no-recommends \
 	autoconf \
 	automake \
 	clang \
