@@ -15,6 +15,8 @@ setup()
 {
 	local cnt=0
 
+	tst_res TINFO "change IPv$TST_IPVER route gateway $ROUTE_CHANGE_NETLINK times"
+
 	check_max_ip
 	setup_gw
 

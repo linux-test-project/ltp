@@ -13,7 +13,7 @@ TST_TESTFUNC="test_netlink"
 
 setup()
 {
-	tst_res TINFO "change IPv$TST_IPVER route destination $NS_TIMES times"
+	tst_res TINFO "change IPv$TST_IPVER route destination $ROUTE_CHANGE_NETLINK times"
 
 	local cnt=0
 	local gw rhost rhost_all rt

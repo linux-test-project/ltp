@@ -8,11 +8,17 @@
 # Change route gateway
 # lhost: 10.23.1.1, gw (on rhost): 10.23.1.x, rhost: 10.23.0.1
 
-TST_SETUP="setup_gw"
+TST_SETUP="setup"
 TST_CLEANUP="route_cleanup"
 TST_TESTFUNC="test_gw"
 . route-lib.sh
-TST_CNT=$NS_TIMES
+TST_CNT=$ROUTE_CHANGE_IP
+
+setup()
+{
+	tst_res TINFO "change IPv$TST_IPVER route gateway $ROUTE_CHANGE_IP times"
+	setup_gw
+}
 
 test_gw()
 {

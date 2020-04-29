@@ -45,7 +45,7 @@ check_max_ip()
 
 	tst_is_int "$ROUTE_MAX_IP" || tst_brk TBROK "\$ROUTE_MAX_IP not int ($ROUTE_MAX_IP)"
 	[ $ROUTE_MAX_IP -gt $max_ip_limit ] && ROUTE_MAX_IP=$max_ip_limit
-	[ $ROUTE_MAX_IP -gt $NS_TIMES ] && ROUTE_MAX_IP=$NS_TIMES
+	[ $ROUTE_MAX_IP -gt $ROUTE_CHANGE_NETLINK ] && ROUTE_MAX_IP=$ROUTE_CHANGE_NETLINK
 }
 
 cleanup_if()
@@ -63,8 +63,6 @@ route_cleanup()
 
 setup_gw()
 {
-	tst_res TINFO "change IPv$TST_IPVER route gateway $NS_TIMES times"
-
 	rt="$(tst_ipaddr_un -p 0 0)"
 	lhost="$(tst_ipaddr_un 1 1)"
 	rhost="$(tst_ipaddr_un 0 1)"
@@ -74,8 +72,6 @@ setup_gw()
 
 setup_if()
 {
-	tst_res TINFO "change IPv$TST_IPVER route interface $NS_TIMES times"
-
 	rt="$(tst_ipaddr_un -p 0)"
 	rhost="$(tst_ipaddr_un 0 1)"
 	tst_add_ipaddr -s -q -a $rhost rhost
@@ -99,7 +95,7 @@ test_netlink()
 	local cmd ip_flag
 	[ "$TST_IPV6" ] && ip_flag="-6"
 
-	cmd="route-change-netlink -c $NS_TIMES $ip_flag -p $ROUTE_RHOST_PORT $ROUTE_CHANGE_NETLINK_PARAMS"
+	cmd="route-change-netlink -c $ROUTE_CHANGE_NETLINK $ip_flag -p $ROUTE_RHOST_PORT $ROUTE_CHANGE_NETLINK_PARAMS"
 	tst_res TINFO "running $cmd"
 	$cmd || ret=$?
 	if [ "$ret" -ne 0 ]; then

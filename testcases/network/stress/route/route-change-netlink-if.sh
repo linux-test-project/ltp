@@ -16,6 +16,7 @@ setup()
 	local gw gw_all iface iface_all
 	local cnt=0
 
+	tst_res TINFO "change IPv$TST_IPVER route interface $ROUTE_CHANGE_NETLINK times"
 	setup_if
 
 	while [ $cnt -lt $(tst_get_ifaces_cnt) ]; do

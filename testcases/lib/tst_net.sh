@@ -913,6 +913,8 @@ export UPLOAD_BIGFILESIZE="${UPLOAD_BIGFILESIZE:-2147483647}"
 export UPLOAD_REGFILESIZE="${UPLOAD_REGFILESIZE:-1024}"
 export MCASTNUM_NORMAL="${MCASTNUM_NORMAL:-20}"
 export MCASTNUM_HEAVY="${MCASTNUM_HEAVY:-4000}"
+export ROUTE_CHANGE_IP="${ROUTE_CHANGE_IP:-100}"
+export ROUTE_CHANGE_NETLINK="${ROUTE_CHANGE_NETLINK:-10000}"
 
 # Warning: make sure to set valid interface names and IP addresses below.
 # Set names for test interfaces, e.g. "eth0 eth1"

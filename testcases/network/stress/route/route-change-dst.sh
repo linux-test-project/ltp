@@ -12,11 +12,11 @@ TST_SETUP="setup"
 TST_CLEANUP="route_cleanup"
 TST_TESTFUNC="test_dst"
 . route-lib.sh
-TST_CNT=$NS_TIMES
+TST_CNT=$ROUTE_CHANGE_IP
 
 setup()
 {
-	tst_res TINFO "change IPv$TST_IPVER route destination $NS_TIMES times"
+	tst_res TINFO "change IPv$TST_IPVER route destination $ROUTE_CHANGE_IP times"
 }
 
 test_dst()
