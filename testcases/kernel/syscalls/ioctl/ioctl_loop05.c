@@ -6,9 +6,21 @@
  * This is a basic ioctl test about loopdevice.
  *
  * It is designed to test LOOP_SET_DIRECT_IO can updata a live
- * loop device dio mode. It need the backing file also supports
+ * loop device dio mode. It needs the backing file also supports
  * dio mode and the lo_offset is aligned with the logical block size.
+ *
+ * The direct I/O error handling is a bit messy on Linux, some filesystems
+ * return error when it coudln't be enabled, some silently fall back to regular
+ * buffered I/O.
+ *
+ * The LOOP_SET_DIRECT_IO ioctl() may ignore all checks if it cannot get the
+ * logical block size which is the case if the block device pointer in the
+ * backing file inode is not set. In this case the direct I/O appears to be
+ * enabled but falls back to buffered I/O later on. This is the case at least
+ * for Btrfs. Because of that the test passes both with failure as well as
+ * success with non-zero offset.
  */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -58,7 +70,7 @@ static void verify_ioctl_loop(void)
 	TST_RETRY_FUNC(ioctl(dev_fd, LOOP_SET_STATUS, &loopinfo), TST_RETVAL_EQ0);
 	TEST(ioctl(dev_fd, LOOP_SET_DIRECT_IO, 1));
 	if (TST_RET == 0) {
-		tst_res(TPASS, "LOOP_SET_DIRECT_IO succeeded");
+		tst_res(TPASS, "LOOP_SET_DIRECT_IO succeeded, offset is ignored");
 		check_dio_value(1);
 		SAFE_IOCTL(dev_fd, LOOP_SET_DIRECT_IO, 0);
 	} else {
@@ -71,7 +83,7 @@ static void verify_ioctl_loop(void)
 
 	TEST(ioctl(dev_fd, LOOP_SET_DIRECT_IO, 1));
 	if (TST_RET == 0) {
-		tst_res(TFAIL, "LOOP_SET_DIRECT_IO succeeded unexpectedly");
+		tst_res(TPASS, "LOOP_SET_DIRECT_IO succeeded");
 		SAFE_IOCTL(dev_fd, LOOP_SET_DIRECT_IO, 0);
 		return;
 	}
