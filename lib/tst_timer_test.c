@@ -26,6 +26,7 @@ static long long *samples;
 static unsigned int cur_sample;
 static unsigned int monotonic_resolution;
 static unsigned int timerslack;
+static int virt_env;
 
 static char *print_frequency_plot;
 static char *file_name;
@@ -306,7 +307,10 @@ void do_timer_test(long long usec, unsigned int nsamples)
 		samples[nsamples-1], samples[0], median,
 		1.00 * trunc_mean / keep_samples, discard);
 
-	if (trunc_mean > (nsamples - discard) * usec + threshold) {
+	if (virt_env) {
+		tst_res(TINFO,
+			"Virtualisation detected, skipping oversleep checks");
+	} else if (trunc_mean > (nsamples - discard) * usec + threshold) {
 		tst_res(TFAIL, "%s slept for too long", scall);
 
 		if (!print_frequency_plot)
@@ -343,6 +347,11 @@ static void timer_setup(void)
 	if (setup)
 		setup();
 
+	/*
+	 * Running tests in VM may cause timing issues, disable upper bound
+	 * checks if any hypervisor is detected.
+	 */
+	virt_env = tst_is_virt(VIRT_ANY);
 	tst_clock_getres(CLOCK_MONOTONIC, &t);
 
 	tst_res(TINFO, "CLOCK_MONOTONIC resolution %lins", (long)t.tv_nsec);
