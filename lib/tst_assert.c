@@ -12,7 +12,7 @@ void tst_assert_int(const char *file, const int lineno, const char *path, int va
 {
 	int sys_val;
 
-	SAFE_FILE_SCANF(path, "%d", &sys_val);
+	safe_file_scanf(file, lineno, NULL, path, "%d", &sys_val);
 
 	if (val == sys_val) {
 		tst_res_(file, lineno, TPASS, "%s = %d", path, val);
@@ -26,7 +26,7 @@ void tst_assert_str(const char *file, const int lineno, const char *path, const 
 {
 	char sys_val[1024];
 
-	SAFE_FILE_SCANF(path, "%1024s", sys_val);
+	safe_file_scanf(file, lineno, NULL, path, "%1024s", sys_val);
 	if (!strcmp(val, sys_val)) {
 		tst_res_(file, lineno, TPASS, "%s = '%s'", path, val);
 		return;
