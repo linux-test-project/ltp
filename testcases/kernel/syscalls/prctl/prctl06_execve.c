@@ -12,14 +12,19 @@
 int main(int argc, char **argv)
 {
 	struct passwd *pw;
+	int proc_flag;
 
 	pw = SAFE_GETPWNAM("nobody");
 
 	tst_reinit();
-	if (argc != 2)
-		tst_brk(TFAIL, "argc is %d, expected 2", argc);
+	if (argc != 3)
+		tst_brk(TFAIL, "argc is %d, expected 3", argc);
 
-	check_no_new_privs(1, argv[1]);
+	if (!strcmp(argv[2], "Yes"))
+		proc_flag = 1;
+	else
+		proc_flag = 0;
+	check_no_new_privs(1, argv[1], proc_flag);
 
 	TEST(getegid());
 	if (TST_RET == 0)

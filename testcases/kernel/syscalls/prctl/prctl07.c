@@ -34,36 +34,9 @@
 #include "tst_test.h"
 
 #define PROC_STATUS "/proc/self/status"
-
-#ifdef HAVE_SYS_CAPABILITY_H
-static void check_proc_capamb(char *message, int flag)
-{
-	int cap_num;
-	char CapAmb[20];
-
-	SAFE_FILE_LINES_SCANF(PROC_STATUS, "CapAmb:%s", CapAmb);
-	cap_num = strtol(CapAmb, NULL, 16);
-	if (flag == 2) {
-		if (cap_num == 0)
-			tst_res(TPASS,
-				"%s, %s CapAmb has been clear as %d",
-				message, PROC_STATUS, cap_num);
-		else
-			tst_res(TFAIL,
-				"%s, %s CapAmb has been clear expect 0, got %d",
-				message, PROC_STATUS, cap_num);
-		return;
-	}
-	if (cap_num == (1 << CAP_NET_BIND_SERVICE))
-		tst_res(flag ? TPASS : TFAIL,
-			"%s, CapAmb in %s has CAP_NET_BIND_SERVICE",
-			message, PROC_STATUS);
-	else
-		tst_res(flag ? TFAIL : TPASS,
-			"%s, CapAmb in %s doesn't have CAP_NET_BIND_SERVICE",
-			message, PROC_STATUS);
-}
-#endif
+#define ZERO_STRING "0000000000000000"
+/*CAP_NET_BIND_SERVICE stored in the CapAmb field of PROC_STATUS*/
+#define CAP_STRING  "0000000000000400"
 
 static inline void check_cap_raise(unsigned int cap, char *message, int fail_flag)
 {
@@ -127,7 +100,8 @@ static void verify_prctl(void)
 	cap_set_flag(caps, CAP_PERMITTED, numcaps, caplist, CAP_SET);
 	cap_set_proc(caps);
 
-	check_proc_capamb("At the beginning", 0);
+	tst_res(TINFO, "At the beginning");
+	TST_ASSERT_FILE_STR(PROC_STATUS, "CapAmb", ZERO_STRING);
 
 	cap_clear_flag(caps, CAP_INHERITABLE);
 	cap_set_proc(caps);
@@ -148,14 +122,17 @@ static void verify_prctl(void)
 	/*Even this cap has been in ambient set, raise succeeds and return 0*/
 	check_cap_raise(CAP_NET_BIND_SERVICE, "CAP_NET_BIND_SERIVCE twice", 0);
 
-	check_proc_capamb("After PR_CAP_AMBIENT_RAISE", 1);
+	tst_res(TINFO, "After PR_CAP_AMBIENT_RAISE");
+	TST_ASSERT_FILE_STR(PROC_STATUS, "CapAmb", CAP_STRING);
 
 	check_cap_is_set(CAP_NET_BIND_SERVICE, "CAP_NET_BIND_SERVICE was", 1);
 	check_cap_is_set(CAP_NET_RAW, "CAP_NET_RAW was", 0);
 	/*move a cap what was not in ambient set, it also return 0*/
 	check_cap_lower(CAP_NET_RAW, "CAP_NET_RAW(it wasn't in ambient set)");
 	check_cap_lower(CAP_NET_BIND_SERVICE, "CAP_NET_BIND_SERVICE(it was in ambient set)");
-	check_proc_capamb("After PR_CAP_AMBIENT_LORWER", 0);
+
+	tst_res(TINFO, "After PR_CAP_AMBIENT_LORWER");
+	TST_ASSERT_FILE_STR(PROC_STATUS, "CapAmb", ZERO_STRING);
 
 	prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, CAP_NET_BIND_SERVICE, 0, 0, 0);
 	tst_res(TINFO, "raise cap for clear");
@@ -165,7 +142,8 @@ static void verify_prctl(void)
 	else
 		tst_res(TFAIL | TERRNO, "PR_AMBIENT_CLEAR_ALL failed");
 
-	check_proc_capamb("After PR_CAP_AMBIENT_CLEAN_ALL", 2);
+	tst_res(TINFO, "After PR_CAP_AMBIENT_CLEAR_ALL");
+	TST_ASSERT_FILE_STR(PROC_STATUS, "CapAmb", ZERO_STRING);
 
 	cap_free(caps);
 #else

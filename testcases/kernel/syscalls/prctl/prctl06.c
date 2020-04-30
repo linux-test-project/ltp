@@ -21,16 +21,18 @@
 
 static uid_t nobody_uid;
 static gid_t nobody_gid;
+static int proc_flag = 1;
+static char *proc_sup = "Yes";
 
 static void do_prctl(void)
 {
 	char ipc_env_var[1024];
-	char *const argv[] = {BIN_PATH, "After execve, parent process", NULL};
-	char *const childargv[] = {BIN_PATH, "After execve, child process", NULL};
+	char *const argv[] = {BIN_PATH, "After execve, parent process", proc_sup, NULL};
+	char *const childargv[] = {BIN_PATH, "After execve, child process", proc_sup, NULL};
 	char *const envp[] = {ipc_env_var, NULL };
 	int childpid;
 
-	check_no_new_privs(0, "parent");
+	check_no_new_privs(0, "parent", proc_flag);
 
 	TEST(prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
 	if (TST_RET == -1) {
@@ -46,14 +48,14 @@ static void do_prctl(void)
 
 	childpid = SAFE_FORK();
 	if (childpid == 0) {
-		check_no_new_privs(1, "After fork, child process");
+		check_no_new_privs(1, "After fork, child process", proc_flag);
 		execve(BIN_PATH, childargv, envp);
 		tst_brk(TFAIL | TTERRNO,
 			"child process failed to execute prctl_execve");
 
 	} else {
 		tst_reap_children();
-		check_no_new_privs(1, "parent process");
+		check_no_new_privs(1, "parent process", proc_flag);
 		execve(BIN_PATH, argv, envp);
 		tst_brk(TFAIL | TTERRNO,
 			"parent process failed to execute prctl_execve");
@@ -74,6 +76,7 @@ static void verify_prctl(void)
 static void setup(void)
 {
 	struct passwd *pw;
+	int field;
 
 	pw = SAFE_GETPWNAM("nobody");
 	nobody_uid = pw->pw_uid;
@@ -96,6 +99,13 @@ static void setup(void)
 
 	tst_brk(TBROK | TTERRNO,
 		"current environment doesn't permit PR_GET/SET_NO_NEW_PRIVS");
+
+	TEST(FILE_LINES_SCANF(PROC_STATUS, "NoNewPrivs:%d", &field));
+	if (TST_RET == 1) {
+		tst_res(TCONF, "%s doesn't support NoNewPrivs field", PROC_STATUS);
+		proc_flag = 0;
+		proc_sup = "No";
+	}
 }
 
 static const char *const resfile[] = {

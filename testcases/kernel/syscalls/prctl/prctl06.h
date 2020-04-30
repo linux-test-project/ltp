@@ -24,30 +24,7 @@
 #define BIN_PATH           MNTPOINT"/"TESTBIN
 #define SUID_MODE          (S_ISUID|S_ISGID|S_IXUSR|S_IXGRP|S_IXOTH)
 
-void check_proc_field(int val, char *name)
-{
-	static int flag = 1;
-	int field = 0;
-
-	if (!flag)
-		return;
-
-	TEST(FILE_LINES_SCANF(PROC_STATUS, "NoNewPrivs:%d", &field));
-	if (TST_RET == 1) {
-		tst_res(TCONF,
-			"%s doesn't support NoNewPrivs field", PROC_STATUS);
-		flag = 0;
-		return;
-	}
-	if (val == field)
-		tst_res(TPASS, "%s %s NoNewPrivs field expected %d got %d",
-			name, PROC_STATUS, val, field);
-	else
-		tst_res(TFAIL, "%s %s NoNewPrivs field expected %d got %d",
-			name, PROC_STATUS, val, field);
-}
-
-void check_no_new_privs(int val, char *name)
+void check_no_new_privs(int val, char *name, int flag)
 {
 	TEST(prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0));
 	if (TST_RET == val)
@@ -58,8 +35,8 @@ void check_no_new_privs(int val, char *name)
 		tst_res(TFAIL,
 			"%s prctl(PR_GET_NO_NEW_PRIVS) expected %d got %ld",
 			name, val, TST_RET);
-
-	check_proc_field(val, name);
+	if (flag)
+		TST_ASSERT_FILE_INT(PROC_STATUS, "NoNewPrivs:", val);
 }
 
 #endif
