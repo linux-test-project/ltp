@@ -2045,6 +2045,14 @@ terminated array of strings such as:
 },
 -------------------------------------------------------------------------------
 
+2.2.36 Assert sys or proc file value
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using TST_ASSERT_INT/STR(path, val) to assert that integer value or string stored in
+the prefix field of file pointed by path equals to the value passed to this function.
+
+Also having a similar api pair TST_ASSERT_FILE_INT/STR(path, prefix, val) to assert
+the field value of file.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
