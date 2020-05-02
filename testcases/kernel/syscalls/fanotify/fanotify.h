@@ -41,6 +41,9 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #ifndef FAN_REPORT_TID
 #define FAN_REPORT_TID		0x00000100
 #endif
+#ifndef FAN_REPORT_FID
+#define FAN_REPORT_FID		0x00000200
+#endif
 
 #ifndef FAN_MARK_INODE
 #define FAN_MARK_INODE		0
@@ -79,9 +82,8 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #ifndef FAN_OPEN_EXEC_PERM
 #define FAN_OPEN_EXEC_PERM	0x00040000
 #endif
-
-#ifndef FAN_REPORT_FID
-#define FAN_REPORT_FID		0x00000200
+#ifndef FAN_DIR_MODIFY
+#define FAN_DIR_MODIFY		0x00080000
 #endif
 
 /*
@@ -105,6 +107,13 @@ typedef struct {
 } lapi_fsid_t;
 #define __kernel_fsid_t lapi_fsid_t
 #endif /* __kernel_fsid_t */
+
+#ifndef FAN_EVENT_INFO_TYPE_FID
+#define FAN_EVENT_INFO_TYPE_FID		1
+#endif
+#ifndef FAN_EVENT_INFO_TYPE_DFID_NAME
+#define FAN_EVENT_INFO_TYPE_DFID_NAME	2
+#endif
 
 #ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_HEADER
 struct fanotify_event_info_header {
@@ -154,6 +163,26 @@ static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 		tst_brk(TBROK | TERRNO,
 			"name_to_handle_at(AT_FDCWD, %s, ...) failed", path);
 	}
+}
+
+struct fanotify_fid_t {
+	__kernel_fsid_t fsid;
+	struct file_handle handle;
+	char buf[MAX_HANDLE_SZ];
+};
+
+static inline void fanotify_save_fid(const char *path,
+				     struct fanotify_fid_t *fid)
+{
+	int *fh = (int *)(fid->handle.f_handle);
+
+	fh[0] = fh[1] = fh[2] = 0;
+	fid->handle.handle_bytes = MAX_HANDLE_SZ;
+	fanotify_get_fid(path, &fid->fsid, &fid->handle);
+
+	tst_res(TINFO,
+		"fid(%s) = %x.%x.%x.%x.%x...", path, fid->fsid.val[0],
+		fid->fsid.val[1], fh[0], fh[1], fh[2]);
 }
 #endif /* HAVE_NAME_TO_HANDLE_AT */
 
