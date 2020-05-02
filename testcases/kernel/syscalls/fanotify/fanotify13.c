@@ -44,18 +44,16 @@
 #if defined(HAVE_NAME_TO_HANDLE_AT)
 struct event_t {
 	unsigned long long expected_mask;
-	__kernel_fsid_t fsid;
-	struct file_handle handle;
-	char buf[MAX_HANDLE_SZ];
 };
 
 static struct object_t {
 	const char *path;
 	int is_dir;
+	struct fanotify_fid_t fid;
 } objects[] = {
-	{FILE_PATH_ONE, 0},
-	{FILE_PATH_TWO, 0},
-	{DIR_PATH_ONE, 1}
+	{FILE_PATH_ONE, 0, {}},
+	{FILE_PATH_TWO, 0, {}},
+	{DIR_PATH_ONE, 1, {}}
 };
 
 static struct test_case_t {
@@ -108,11 +106,8 @@ static void create_objects(void)
 static void get_object_stats(void)
 {
 	unsigned int i;
-	for (i = 0; i < ARRAY_SIZE(objects); i++) {
-		event_set[i].handle.handle_bytes = MAX_HANDLE_SZ;
-		fanotify_get_fid(objects[i].path, &event_set[i].fsid,
-				&event_set[i].handle);
-	}
+	for (i = 0; i < ARRAY_SIZE(objects); i++)
+		fanotify_save_fid(objects[i].path, &objects[i].fid);
 }
 
 static int setup_marks(unsigned int fd, struct test_case_t *tc)
@@ -130,8 +125,8 @@ static int setup_marks(unsigned int fd, struct test_case_t *tc)
 					"kernel");
 				return 1;
 			} else if (errno == ENODEV &&
-					!event_set[i].fsid.val[0] &&
-					!event_set[i].fsid.val[1]) {
+				   !objects[i].fid.fsid.val[0] &&
+				   !objects[i].fid.fsid.val[1]) {
 				tst_res(TCONF,
 					"FAN_REPORT_FID not supported on "
 					"filesystem type %s",
@@ -207,6 +202,7 @@ static void do_test(unsigned int number)
 	for (i = 0, metadata = (struct fanotify_event_metadata *) events_buf;
 		FAN_EVENT_OK(metadata, len);
 		metadata = FAN_EVENT_NEXT(metadata, len), i++) {
+		struct fanotify_fid_t *expected_fid = &objects[i].fid;
 		event_fid = (struct fanotify_event_info_fid *) (metadata + 1);
 		event_file_handle = (struct file_handle *) event_fid->handle;
 
@@ -226,43 +222,43 @@ static void do_test(unsigned int number)
 				event_set[i].expected_mask);
 
 		/* Verify handle_bytes returned in event */
-		if (event_file_handle->handle_bytes
-				!= event_set[i].handle.handle_bytes) {
+		if (event_file_handle->handle_bytes !=
+		    expected_fid->handle.handle_bytes) {
 			tst_res(TFAIL,
 				"handle_bytes (%x) returned in event does not "
 				"equal to handle_bytes (%x) returned in "
 				"name_to_handle_at(2)",
 				event_file_handle->handle_bytes,
-				event_set[i].handle.handle_bytes);
+				expected_fid->handle.handle_bytes);
 			continue;
 		}
 
 		/* Verify handle_type returned in event */
 		if (event_file_handle->handle_type !=
-				event_set[i].handle.handle_type) {
+		    expected_fid->handle.handle_type) {
 			tst_res(TFAIL,
 				"handle_type (%x) returned in event does not "
 				"equal to handle_type (%x) returned in "
 				"name_to_handle_at(2)",
 				event_file_handle->handle_type,
-				event_set[i].handle.handle_type);
+				expected_fid->handle.handle_type);
 			continue;
 		}
 
 		/* Verify file identifier f_handle returned in event */
 		if (memcmp(event_file_handle->f_handle,
-				event_set[i].handle.f_handle,
-				event_set[i].handle.handle_bytes) != 0) {
+			   expected_fid->handle.f_handle,
+			   expected_fid->handle.handle_bytes) != 0) {
 			tst_res(TFAIL,
-				"event_file_handle->f_handle does not match "
-				"event_set[i].handle.f_handle returned in "
+				"file_handle returned in event does not match "
+				"the file_handle returned in "
 				"name_to_handle_at(2)");
 			continue;
 		}
 
 		/* Verify filesystem ID fsid  returned in event */
-		if (memcmp(&event_fid->fsid, &event_set[i].fsid,
-				sizeof(event_set[i].fsid)) != 0) {
+		if (memcmp(&event_fid->fsid, &expected_fid->fsid,
+			   sizeof(expected_fid->fsid)) != 0) {
 			tst_res(TFAIL,
 				"event_fid.fsid != stat.f_fsid that was "
 				"obtained via statfs(2)");
