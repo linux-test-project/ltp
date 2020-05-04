@@ -45,7 +45,7 @@ matrix:
 
         # other builds
         - os: linux
-          env: DISTRO=fedora:33 MAKE_INSTALL=1
+          env: DISTRO=fedora:rawhide MAKE_INSTALL=1
           compiler: clang
 
         - os: linux
