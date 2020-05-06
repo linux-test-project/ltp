@@ -51,18 +51,18 @@
  * a2f11835994e ("can.h: make padding given by gcc explicit").
  */
 
-#define CAN_MTU 16
+#define CAN_MTU		(sizeof(struct can_frame))
 #define CAN_MAX_DLEN 8
 
 typedef uint32_t canid_t;
 
 struct can_frame {
 	canid_t can_id;
-	uint32_t can_dlc;
-	uint32_t __pad;
-	uint32_t __res0;
-	uint32_t __res1;
-	uint32_t data[CAN_MAX_DLEN] __attribute__((aligned(8)));
+	uint8_t can_dlc;
+	uint8_t __pad;
+	uint8_t __res0;
+	uint8_t __res1;
+	uint8_t data[CAN_MAX_DLEN] __attribute__((aligned(8)));
 };
 
 #include <stddef.h>
@@ -366,7 +366,6 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.needs_root = 1,
-	.min_kver = "4.10",
 	.tags = (const struct tst_tag[]){
 		{"linux-git", "b9258a2cece4ec1f020715fe3554bc2e360f6264"},
 		{"CVE", "CVE-2020-11494"},
