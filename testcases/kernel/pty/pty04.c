@@ -34,9 +34,10 @@
  */
 
 #define _GNU_SOURCE
+#include "config.h"
 #include "tst_test.h"
 #include "tst_buffers.h"
-#include "config.h"
+#include "lapi/tty.h"
 
 #if defined(HAVE_LINUX_IF_PACKET_H) && defined(HAVE_LINUX_IF_ETHER_H)
 
@@ -44,11 +45,14 @@
 #include <linux/if_ether.h>
 #include <linux/tty.h>
 
-#ifdef HAVE_LINUX_CAN_H
-# include <linux/can.h>
-#else
-# define CAN_MTU 16
-# define CAN_MAX_DLEN 8
+/*
+ * define instead of including <linux/can.h> to support kernel headers
+ * before change from v4.2-rc1
+ * a2f11835994e ("can.h: make padding given by gcc explicit").
+ */
+
+#define CAN_MTU 16
+#define CAN_MAX_DLEN 8
 
 typedef uint32_t canid_t;
 
@@ -60,7 +64,6 @@ struct can_frame {
 	uint32_t __res1;
 	uint32_t data[CAN_MAX_DLEN] __attribute__((aligned(8)));
 };
-#endif
 
 #include <stddef.h>
 #include <stdlib.h>
