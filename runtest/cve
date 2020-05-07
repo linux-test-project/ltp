@@ -50,3 +50,4 @@ cve-2018-1000199 ptrace08
 cve-2018-1000204 ioctl_sg01
 cve-2018-18559 bind06
 cve-2018-19854 crypto_user01
+cve-2020-11494 pty04
