@@ -87,6 +87,12 @@ static void setup(void)
 	SAFE_CHOWN(BIN_PATH, 0, 0);
 	SAFE_CHMOD(BIN_PATH, SUID_MODE);
 
+	if (FILE_LINES_SCANF(PROC_STATUS, "NoNewPrivs:%d", &field)) {
+		tst_res(TCONF, "%s doesn't support NoNewPrivs field", PROC_STATUS);
+		proc_flag = 0;
+		proc_sup = "No";
+	}
+
 	TEST(prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0));
 	if (TST_RET == 0) {
 		tst_res(TINFO, "kernel supports PR_GET/SET_NO_NEW_PRIVS");
@@ -99,13 +105,6 @@ static void setup(void)
 
 	tst_brk(TBROK | TTERRNO,
 		"current environment doesn't permit PR_GET/SET_NO_NEW_PRIVS");
-
-	TEST(FILE_LINES_SCANF(PROC_STATUS, "NoNewPrivs:%d", &field));
-	if (TST_RET == 1) {
-		tst_res(TCONF, "%s doesn't support NoNewPrivs field", PROC_STATUS);
-		proc_flag = 0;
-		proc_sup = "No";
-	}
 }
 
 static const char *const resfile[] = {
