@@ -12,6 +12,9 @@
  * For LO_FLAGS_PARTSCAN flag, it is the same as LO_FLAGS_AUTOCLEAR flag.
  * But we also check whether we can scan partition table correctly ie check
  * whether /dev/loopnp1 and /sys/bloclk/loop0/loop0p1 existed.
+ *
+ * It is also a regression test for kernel
+ * commit 10c70d95c0f2 ("block: remove the bd_openers checks in blk_drop_partitions").
  */
 
 #include <stdio.h>
@@ -136,6 +139,10 @@ static struct tst_test test = {
 	.needs_drivers = (const char *const []) {
 		"loop",
 		NULL
+	},
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "10c70d95c0f2"},
+		{}
 	},
 	.needs_tmpdir = 1,
 };
