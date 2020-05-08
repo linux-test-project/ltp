@@ -47,7 +47,7 @@ test2()
 {
 	EXPECT_PASS $NM -f posix -g $TST_DATAROOT/f1 \> nm.out
 
-	if grep -q "\w [a,b,d,f,t]" nm.out; then
+	if grep -q "^[^ ]\+ [abdft]" nm.out; then
 		tst_res TFAIL "Got internal symbols with -g"
 		cat nm.out
 	else
