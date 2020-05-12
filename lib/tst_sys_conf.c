@@ -26,8 +26,11 @@ int tst_sys_conf_save_str(const char *path, const char *value)
 {
 	struct tst_sys_conf *n = SAFE_MALLOC(sizeof(*n));
 
-	strncpy(n->path, path, sizeof(n->path));
-	strncpy(n->value, value, sizeof(n->value));
+	strncpy(n->path, path, sizeof(n->path)-1);
+	strncpy(n->value, value, sizeof(n->value)-1);
+
+	n->path[sizeof(n->path) - 1] = 0;
+	n->value[sizeof(n->value) - 1] = 0;
 
 	n->next = save_restore_data;
 	save_restore_data = n;
