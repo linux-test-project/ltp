@@ -124,6 +124,7 @@ int randomoplen = 1;		/* -O flag disables it */
 int seed = 1;			/* -S flag */
 int mapped_writes = 1;		/* -W flag disables */
 int mapped_reads = 1;		/* -R flag disables it */
+int read_only = 0;		/* */
 int fsxgoodfd = 0;
 FILE *fsxlogf = NULL;
 int badoff = -1;
@@ -441,8 +442,12 @@ void open_test_files(char **argv, int argc)
 	for (i = 0, tf = test_files; i < num_test_files; i++, tf++) {
 
 		tf->path = argv[i];
-		tf->fd = open(tf->path, O_RDWR | (lite ? 0 : O_CREAT | O_TRUNC),
-			      0666);
+		if (read_only) {
+			tf->fd = open(tf->path, O_RDONLY, 0);
+		} else {
+			tf->fd = open(tf->path, O_RDWR | (lite ? 0 : O_CREAT | O_TRUNC),
+				      0666);
+		}
 		if (tf->fd < 0) {
 			prterr(tf->path);
 			exit(91);
@@ -470,7 +475,7 @@ void close_test_files(void)
 }
 
 void check_size(void)
-{
+{	
 	struct stat statbuf;
 	off_t size_by_seek;
 	int fd = get_fd();
@@ -716,6 +721,8 @@ void gendata(char *original_buf, char *good_buf, unsigned offset, unsigned size)
 
 void dowrite(unsigned offset, unsigned size)
 {
+	if (read_only)
+		return;
 	struct timeval t;
 	off_t ret;
 	unsigned iret;
@@ -957,7 +964,11 @@ void docloseopen(void)
 		gettimeofday(&t, NULL);
 		prt("       %lu.%06lu close done\n", t.tv_sec, t.tv_usec);
 	}
-	tf->fd = open(tf->path, O_RDWR, 0);
+	if (read_only){
+		tf->fd = open(tf->path, O_RDONLY, 0);
+	} else {
+		tf->fd = open(tf->path, O_RDWR, 0);
+	}
 	if (tf->fd < 0) {
 		prterr("docloseopen: open");
 		report_failure(181);
@@ -998,8 +1009,9 @@ void test(void)
 	 * TRUNCATE:    op = 3
 	 * MAPWRITE:    op = 3 or 4
 	 */
-	if (lite ? 0 : op == 3 && (style & 1) == 0)	/* vanilla truncate? */
+	if (lite ? 0 : op == 3 && (style & 1) == 0) {	/* vanilla truncate? */
 		dotruncate(random() % maxfilelen);
+	}
 	else {
 		if (randomoplen)
 			size = random() % (maxoplen + 1);
@@ -1011,8 +1023,11 @@ void test(void)
 				offset %= maxfilelen;
 				if (offset + size > maxfilelen)
 					size = maxfilelen - offset;
-				if (op != 1)
-					domapwrite(offset, size);
+				if (op != 1){
+					if (!read_only) {
+						domapwrite(offset, size);
+					}
+				}
 				else
 					dowrite(offset, size);
 			} else {
@@ -1074,6 +1089,7 @@ void usage(void)
 		"	-I: When multiple paths to the file are given each operation uses\n"
 		"	    a different path.  Iterate through them in order with 'rotate'\n"
 		"	    or chose then at 'random'.  (defaults to random)\n"
+		"	-z: read only mode which disables write operations for files (default 0)\n"
 		"	fname: this filename is REQUIRED (no default)\n");
 	exit(90);
 }
@@ -1125,7 +1141,7 @@ int main(int argc, char **argv)
 	setvbuf(stdout, NULL, _IOLBF, 0);	/* line buffered stdout */
 
 	while ((ch = getopt(argc, argv,
-			    "b:c:dl:m:no:p:qr:s:t:w:D:I:LN:OP:RS:W"))
+			    "b:c:dl:m:no:p:qr:s:t:w:D:I:LN:OP:RS:Wz"))
 	       != EOF)
 		switch (ch) {
 		case 'b':
@@ -1243,9 +1259,12 @@ int main(int argc, char **argv)
 		case 'W':
 			mapped_writes = 0;
 			if (!quiet)
-				fprintf(stdout, "mapped writes DISABLED\n");
+				fprintf(stdout, "mapped writes ENABLED\n");
 			break;
-
+		case 'z':
+			read_only = 1;
+			fprintf(stdout, "Read only mode for files enabled\n");
+			break;
 		default:
 			usage();
 
@@ -1318,23 +1337,25 @@ int main(int argc, char **argv)
 		exit(99);
 	memset(temp_buf, '\0', maxoplen);
 
-	if (lite) {		/* zero entire existing file */
-		ssize_t written;
-		int fd = get_fd();
+	if (!read_only) {
+		if (lite) {		/* zero entire existing file */
+			ssize_t written;
+			int fd = get_fd();
 
-		written = write(fd, good_buf, (size_t) maxfilelen);
-		if (written != maxfilelen) {
-			if (written == -1) {
-				prterr(fname);
-				warn("main: error on write");
-			} else
-				warn("main: short write, 0x%x bytes instead"
-				     "of 0x%x\n",
-				     (unsigned)written, maxfilelen);
-			exit(98);
-		}
-	} else
-		check_trunc_hack();
+			written = write(fd, good_buf, (size_t) maxfilelen);
+			if (written != maxfilelen) {
+				if (written == -1) {
+					prterr(fname);
+					warn("main: error on write");
+				} else
+					warn("main: short write, 0x%x bytes instead"
+						"of 0x%x\n",
+						(unsigned)written, maxfilelen);
+				exit(98);
+			}
+		} else
+			check_trunc_hack();
+	}
 
 	while (numops == -1 || numops--)
 		test();
