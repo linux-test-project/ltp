@@ -92,7 +92,7 @@ static struct ldisc_info ldiscs[] = {
 	{N_SLCAN, "N_SLCAN", CAN_MTU},
 };
 
-static volatile int ptmx, pts, sk, mtu, no_check;
+static int ptmx, pts, sk, mtu, no_check;
 
 static int set_ldisc(int tty, const struct ldisc_info *ldisc)
 {
@@ -173,13 +173,15 @@ static void write_pty(const struct ldisc_info *ldisc)
 
 
 	written = 0;
-	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written), TST_RETVAL_NOTNULL);
+	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written),
+			     TST_RETVAL_NOTNULL);
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "Failed 1st write to PTY");
 	tst_res(TPASS, "Wrote PTY 1");
 
 	written = 0;
-	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written), TST_RETVAL_NOTNULL);
+	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written),
+			     TST_RETVAL_NOTNULL);
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "Failed 2nd write to PTY");
 
@@ -312,7 +314,7 @@ static void read_netdev(const struct ldisc_info *ldisc)
 	tst_res(TPASS, "Read netdev 2");
 
 	TST_CHECKPOINT_WAKE(0);
-	while((rlen = read(sk, data, plen)) > 0)
+	while ((rlen = read(sk, data, plen)) > 0)
 		check_data(ldisc, data, rlen);
 
 	tst_res(TPASS, "Reading data from netdev interrupted by hangup");
