@@ -5,7 +5,7 @@
  *
  * This is a basic ioctl test about loopdevice.
  *
- * It is designed to test LOOP_SET_DIRECT_IO can updata a live
+ * It is designed to test LOOP_SET_DIRECT_IO can update a live
  * loop device dio mode. It needs the backing file also supports
  * dio mode and the lo_offset is aligned with the logical block size.
  *
@@ -57,6 +57,7 @@ static void verify_ioctl_loop(void)
 	struct loop_info loopinfo;
 
 	memset(&loopinfo, 0, sizeof(loopinfo));
+	TST_RETRY_FUNC(ioctl(dev_fd, LOOP_SET_STATUS, &loopinfo), TST_RETVAL_EQ0);
 
 	tst_res(TINFO, "Without setting lo_offset or sizelimit");
 	SAFE_IOCTL(dev_fd, LOOP_SET_DIRECT_IO, 1);
@@ -91,9 +92,6 @@ static void verify_ioctl_loop(void)
 		tst_res(TPASS | TTERRNO, "LOOP_SET_DIRECT_IO failed as expected");
 	else
 		tst_res(TFAIL | TTERRNO, "LOOP_SET_DIRECT_IO failed expected EINVAL got");
-
-	loopinfo.lo_offset = 0;
-	TST_RETRY_FUNC(ioctl(dev_fd, LOOP_SET_STATUS, &loopinfo), TST_RETVAL_EQ0);
 }
 
 static void setup(void)
