@@ -53,7 +53,7 @@ setup()
 		fi
 	fi
 
-	[ -n "$CLIENT" ] || tst_brk "client program not set"
+	[ -n "$CLIENT" ] || tst_brk TBROK "client program not set"
 }
 
 cleanup()
