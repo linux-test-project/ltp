@@ -52,7 +52,7 @@ static char is_gzip;
 static FILE *open_kconfig(void)
 {
 	FILE *fp;
-	char buf[1024];
+	char buf[1064];
 	char path_buf[1024];
 	const char *path = kconfig_path(path_buf, sizeof(path_buf));
 

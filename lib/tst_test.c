@@ -68,7 +68,7 @@ extern unsigned int tst_max_futexes;
 
 #define IPC_ENV_VAR "LTP_IPC_PATH"
 
-static char ipc_path[1024];
+static char ipc_path[1064];
 const char *tst_ipc_path = ipc_path;
 
 static char shm_path[1024];
