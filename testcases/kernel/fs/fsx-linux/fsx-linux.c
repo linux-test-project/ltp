@@ -124,7 +124,7 @@ int randomoplen = 1;		/* -O flag disables it */
 int seed = 1;			/* -S flag */
 int mapped_writes = 1;		/* -W flag disables */
 int mapped_reads = 1;		/* -R flag disables it */
-int read_only = 0;		/* */
+int read_only = 0;		/* -z flag*/
 int fsxgoodfd = 0;
 FILE *fsxlogf = NULL;
 int badoff = -1;
@@ -475,7 +475,7 @@ void close_test_files(void)
 }
 
 void check_size(void)
-{	
+{
 	struct stat statbuf;
 	off_t size_by_seek;
 	int fd = get_fd();
@@ -1009,9 +1009,9 @@ void test(void)
 	 * TRUNCATE:    op = 3
 	 * MAPWRITE:    op = 3 or 4
 	 */
-	if (lite ? 0 : op == 3 && (style & 1) == 0) {	/* vanilla truncate? */
+	if (lite ? 0 : op == 3 && (style & 1) == 0) 	/* vanilla truncate? */
 		dotruncate(random() % maxfilelen);
-	}
+	
 	else {
 		if (randomoplen)
 			size = random() % (maxoplen + 1);
@@ -1259,11 +1259,11 @@ int main(int argc, char **argv)
 		case 'W':
 			mapped_writes = 0;
 			if (!quiet)
-				fprintf(stdout, "mapped writes ENABLED\n");
+				fprintf(stdout, "mapped writes DISABLED\n");
 			break;
 		case 'z':
 			read_only = 1;
-			fprintf(stdout, "Read only mode for files enabled\n");
+			fprintf(stdout, "Read only mode for files ENABLED\n");
 			break;
 		default:
 			usage();
