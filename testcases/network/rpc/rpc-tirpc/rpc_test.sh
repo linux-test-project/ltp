@@ -54,12 +54,13 @@ setup()
 	fi
 
 	[ -n "$CLIENT" ] || tst_brk TBROK "client program not set"
+	tst_check_cmds $CLIENT $SERVER || tst_brk TCONF "LTP compiled without TI-RPC support?"
 }
 
 cleanup()
 {
-	if [ ! -z "$SERVER" ]; then
-		pkill -9 $SERVER > /dev/null 2>&1
+	if [ "$SERVER_STARTED" ]; then
+		pkill -13 -x $SERVER
 		$CLEANER $PROGNUMNOSVC
 	fi
 }
@@ -70,6 +71,7 @@ do_test()
 
 	if [ -n "$SERVER" ]; then
 		$SERVER $PROGNUMNOSVC &
+		SERVER_STARTED=1
 
 		for i in $(seq 1 10); do
 			rpcinfo -p localhost | grep -q $PROGNUMNOSVC && break
