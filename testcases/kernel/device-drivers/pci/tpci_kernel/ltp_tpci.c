@@ -290,7 +290,6 @@ static int test_find_subsys(void)
  */
 static int test_scan_bus(void)
 {
-#ifdef CONFIG_HOTPLUG
 	int num;
 	struct pci_bus *bus = ltp_pci.bus;
 
@@ -307,10 +306,6 @@ static int test_scan_bus(void)
 	}
 	prk_info("success scan bus");
 	return TPASS;
-#else
-	prk_info("pci_rescan_bus() is not supported");
-	return TSKIP;
-#endif
 }
 
 /*

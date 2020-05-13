@@ -131,7 +131,6 @@ CONFIG_KEXEC_JUMP=y
 ---------------------------------
 Enabling HOTPLUG for your Kernels
 ---------------------------------
-CONFIG_HOTPLUG=y
 CONFIG_HOTPLUG_CPU=y
 CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
 CONFIG_ACPI_HOTPLUG_CPU=y
