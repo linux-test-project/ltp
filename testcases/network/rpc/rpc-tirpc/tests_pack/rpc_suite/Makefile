@@ -3,6 +3,8 @@
 
 top_srcdir		?= ../../../../../..
 
+include	$(top_srcdir)/include/mk/env_pre.mk
+
 ifeq ($(TIRPC_LIBS),)
 FILTER_OUT_DIRS	+= tirpc
 endif
