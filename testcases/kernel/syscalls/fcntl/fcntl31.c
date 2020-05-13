@@ -116,9 +116,12 @@ static void setup(void)
 
 	pid = getpid();
 
-	ret = setpgrp();
-	if (ret < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "setpgrp() failed");
+	/* Changing process group ID is forbidden when PID == SID i.e. we are session leader */
+	if (pid != getsid(0)) {
+		ret = setpgrp();
+		if (ret < 0)
+			tst_brkm(TBROK | TERRNO, cleanup, "setpgrp() failed");
+	}
 	pgrp_pid = getpgid(0);
 	if (pgrp_pid < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "getpgid() failed");
