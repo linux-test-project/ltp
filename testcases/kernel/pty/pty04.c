@@ -177,7 +177,7 @@ static void write_pty(const struct ldisc_info *ldisc)
 			     TST_RETVAL_NOTNULL);
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "Failed 1st write to PTY");
-	tst_res(TPASS, "Wrote PTY 1");
+	tst_res(TPASS, "Wrote PTY %s %d (1)", ldisc->name, ptmx);
 
 	written = 0;
 	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written),
@@ -188,7 +188,7 @@ static void write_pty(const struct ldisc_info *ldisc)
 	if (tcflush(ptmx, TCIFLUSH))
 		tst_brk(TBROK | TERRNO, "tcflush(ptmx, TCIFLUSH)");
 
-	tst_res(TPASS, "Wrote PTY 2");
+	tst_res(TPASS, "Wrote PTY %s %d (2)", ldisc->name, ptmx);
 
 	while (try_write(ptmx, data, len, NULL) >= 0)
 		;
@@ -288,6 +288,24 @@ static void check_data(const struct ldisc_info *ldisc,
 		tst_res(TINFO, "Will continue test without data checking");
 }
 
+static void try_read(int fd, char *data, ssize_t size)
+{
+	ssize_t ret, n = 0;
+	int retry = mtu;
+
+	while (retry--) {
+		ret = read(fd, data, size - n);
+
+		if (ret < 0)
+			break;
+
+		if ((n += ret) >= size)
+			return;
+	}
+
+	tst_brk(TBROK | TERRNO, "Read %zd of %zd bytes", n, size);
+}
+
 static void read_netdev(const struct ldisc_info *ldisc)
 {
 	int rlen, plen = 0;
@@ -305,13 +323,13 @@ static void read_netdev(const struct ldisc_info *ldisc)
 
 	tst_res(TINFO, "Reading from socket %d", sk);
 
-	SAFE_READ(1, sk, data, plen);
+	try_read(sk, data, plen);
 	check_data(ldisc, data, plen);
-	tst_res(TPASS, "Read netdev 1");
+	tst_res(TPASS, "Read netdev %s %d (1)", ldisc->name, sk);
 
-	SAFE_READ(1, sk, data, plen);
+	try_read(sk, data, plen);
 	check_data(ldisc, data, plen);
-	tst_res(TPASS, "Read netdev 2");
+	tst_res(TPASS, "Read netdev %s %d (2)", ldisc->name, sk);
 
 	TST_CHECKPOINT_WAKE(0);
 	while ((rlen = read(sk, data, plen)) > 0)
@@ -319,6 +337,7 @@ static void read_netdev(const struct ldisc_info *ldisc)
 
 	tst_res(TPASS, "Reading data from netdev interrupted by hangup");
 
+	close(sk);
 	tst_free_all();
 }
 
@@ -342,7 +361,7 @@ static void do_test(unsigned int n)
 	}
 
 	if (!SAFE_FORK()) {
-		TST_CHECKPOINT_WAIT(0);
+		TST_CHECKPOINT_WAIT2(0, 100000);
 		SAFE_IOCTL(pts, TIOCVHANGUP);
 		tst_res(TINFO, "Sent hangup ioctl to PTS");
 		SAFE_IOCTL(ptmx, TIOCVHANGUP);
@@ -357,6 +376,7 @@ static void cleanup(void)
 {
 	ioctl(pts, TIOCVHANGUP);
 	ioctl(ptmx, TIOCVHANGUP);
+	close(sk);
 
 	tst_reap_children();
 }
