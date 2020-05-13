@@ -42,7 +42,7 @@ static void setup(void)
 
 	sigemptyset(&sigmask);
 
-	fd = SAFE_OPEN("io_pgetevents_file", O_RDWR | O_CREAT);
+	fd = SAFE_OPEN("io_pgetevents_file", O_RDWR | O_CREAT, 0644);
 	io_prep_pwrite(&cb, fd, data, 4096, 0);
 
 	ret = io_setup(1, &ctx);

@@ -158,7 +158,7 @@ static void test_enotdir(void)
 	struct linux_dirent64 dir64;
 	struct linux_dirent dir;
 
-	fd = SAFE_OPEN(cleanup, "test", O_CREAT | O_RDWR);
+	fd = SAFE_OPEN(cleanup, "test", O_CREAT | O_RDWR, 0644);
 
 	if (longsyscall)
 		getdents64(fd, &dir64, sizeof(dir64));

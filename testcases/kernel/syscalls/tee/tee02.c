@@ -44,7 +44,7 @@ static struct tcase {
 
 static void setup(void)
 {
-	fd = SAFE_OPEN(TEST_FILE, O_RDWR | O_CREAT);
+	fd = SAFE_OPEN(TEST_FILE, O_RDWR | O_CREAT, 0644);
 	SAFE_PIPE(pipes);
 	SAFE_WRITE(1, pipes[1], STR, sizeof(STR) - 1);
 }

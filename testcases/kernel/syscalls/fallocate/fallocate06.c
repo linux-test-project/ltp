@@ -77,7 +77,7 @@ static void setup(void)
 	int fd;
 	struct stat statbuf;
 
-	fd = SAFE_OPEN(TEMPFILE, O_WRONLY | O_CREAT | O_TRUNC);
+	fd = SAFE_OPEN(TEMPFILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
 	/*
 	 * Set FS_NOCOW_FL flag on the temp file. Non-CoW filesystems will
@@ -166,7 +166,7 @@ static void run(unsigned int n)
 
 	tst_res(TINFO, "Case %u. Fill FS: %s; Use copy on write: %s", n+1,
 		tc->fill_fs ? "yes" : "no", tc->no_cow ? "no" : "yes");
-	fd = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT | O_TRUNC);
+	fd = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT | O_TRUNC, 0644);
 
 	if (cow_support)
 		toggle_cow(fd, !tc->no_cow);

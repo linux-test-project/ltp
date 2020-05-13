@@ -39,7 +39,7 @@ static void setup(void)
 	int fd;
 	struct stat statbuf;
 
-	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT);
+	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT, 0644);
 
 	/*
 	 * Use real FS block size, otherwise fallocate() call will test
@@ -57,7 +57,8 @@ static void run(void)
 	int fd;
 	long extsize, tmp;
 
-	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT | O_TRUNC);
+	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT | O_TRUNC,
+		0644);
 	TEST(fallocate(fd, 0, 0, bufsize));
 
 	if (TST_RET) {

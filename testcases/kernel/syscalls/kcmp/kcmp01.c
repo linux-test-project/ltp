@@ -43,7 +43,7 @@ static struct test_case {
 
 static void setup(void)
 {
-	fd1 = SAFE_OPEN(TEST_FILE, O_CREAT | O_RDWR | O_TRUNC);
+	fd1 = SAFE_OPEN(TEST_FILE, O_CREAT | O_RDWR | O_TRUNC, 0666);
 }
 
 static void cleanup(void)
