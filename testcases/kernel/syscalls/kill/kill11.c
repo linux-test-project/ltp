@@ -44,7 +44,9 @@ static struct tcase {
 	{SIGPIPE, 0},
 	{SIGALRM, 0},
 	{SIGTERM, 0},
+#ifdef SIGSTKFLT
 	{SIGSTKFLT, 0},
+#endif
 	{SIGXCPU, 1},
 	{SIGXFSZ, 1},
 	{SIGVTALRM, 0},
