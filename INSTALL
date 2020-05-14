@@ -1,42 +1,30 @@
-$Id: INSTALL,v 1.36 2010/01/18 23:46:09 yaberauneya Exp $
-
 Requirements
 -------------------
 
-1. In order to compile ltp you must have make 3.80+ (make 3.81 preferred).
-2. In order to compile and use ltp-scanner (a utility in the pan directory),
-   you must have bison/yacc, and flex installed.
+Tools are needed for LTP compilation. They should be available as a
+package in any Linux distribution (no specific version is required).
 
-bison can be obtained here:
-- http://ftp.gnu.org/gnu/bison/bison-2.4.1.tar.gz
+Debian / Ubuntu
+# apt install gcc git make pkgconf autoconf automake bison flex m4 linux-headers-$(uname -r) libc6-dev
 
-Berkeley yacc can be obtained here:
-- ftp://invisible-island.net/byacc/byacc.tar.gz
+OpenSUSE / SLES
+# zypper install gcc git make pkgconf autoconf automake bison flex m4 linux-glibc-devel glibc-devel
 
-flex can be obtained here:
-- http://downloads.sourceforge.net/project/flex/flex/flex-2.5.33/flex-2.5.33.tar.bz2
+Fedora / CentOS / RHEL
+# yum install gcc git make pkgconf autoconf automake bison flex m4 kernel-headers glibc-headers
 
-make 3.81 can be obtained here:
-- http://ftp.gnu.org/gnu/make/make-3.81.tar.bz2
+These are minimal build requirements for git compilation. Some tests require
+extra development files of some libraries, see travis/*.sh. There is also
+support for other Linux distributions not listed here.
 
-If you want to use auto configuration you also need autoconf-2.61+, automake-1.10+
-and pkg-config.
+autoconf, automake, m4 (autoconf requirement), git and pkgconf (or pkg-config
+on older distros) are required only for compilation from git (used for creating
+configure file).
 
-automake-1.10.2's sources can be downloaded from:
-- ftp://ftp.gnu.org/gnu/automake/automake-1.10.2.tar.bz2
-- ftp://ftp.gnu.org/gnu/automake/automake-1.10.2.tar.gz
+pkgconf is recommended also for compilation from tarball as it
+does automatic detection of some library support.
 
-autoconf-2.61's sources can be downloaded from:
-- ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
-- ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.gz
-
-autoconf-2.61 also requires m4-1.4.7+ be installed. Its sources can be
-downloaded from:
-- http://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.bz2
-- http://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz
-
-pkg-config can be downloaded from:
-- https://pkg-config.freedesktop.org/releases/
+GNU Bison / Berkeley Yacc is required for ltp-scanner.
 
 Configuration
 -------------------
