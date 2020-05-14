@@ -45,24 +45,6 @@ what to do next.
 Compiling LTP
 -------------------
 
-"What's in a Path?"
--------------------
-
-Before getting started, you should make sure that your build directory and
-source directory are as basic as possible: no commas, colons, semicolons,
-spaces, etc. In fact, this is a relatively good rule of thumb when dealing
-with any [Gnu?] make based opensource project.
-
-We won't `fix' the `issues' associated with these particular set of build
-errors resulting from non-sane pathnames, because it would introduce unneeded
-complexity into the build system and would require non-trivial effort to fix
-and validate the third-party packages, and thus wouldn't be a sustainable
-model to follow.
-
-So, we apologize for the inconvenience, but using other characters like
-underscores and dashes should help when disambiguating words between build
-and source pathnames.
-
 In-build-tree
 -------------------
 In-build-tree support is when you build binaries (applications, binary objects)
@@ -235,11 +217,6 @@ PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./c
 
 * Arch Linux
 PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
-
-uClinux Users
---------------
-Specify UCLINUX=1 when calling make; -DUCLINUX=1 use is deprecated and highly
-discouraged.
 
 Android Users
 -------------
