@@ -294,7 +294,7 @@ static void try_read(int fd, char *data, ssize_t size)
 	int retry = mtu;
 
 	while (retry--) {
-		ret = read(fd, data, size - n);
+		ret = read(fd, data + n, size - n);
 
 		if (ret < 0)
 			break;
