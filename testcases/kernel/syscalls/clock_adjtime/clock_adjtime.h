@@ -14,9 +14,46 @@
 #include <pwd.h>
 #include <sys/timex.h>
 #include <sys/types.h>
+#include <asm/posix_types.h>
 #include "lapi/timex.h"
 
 #ifndef __kernel_timex
+struct __kernel_old_timeval {
+	__kernel_old_time_t	tv_sec;		/* seconds */
+	__kernel_suseconds_t	tv_usec;	/* microseconds */
+};
+
+struct __kernel_old_timex {
+	unsigned int modes;	/* mode selector */
+	__kernel_long_t offset;	/* time offset (usec) */
+	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
+	__kernel_long_t maxerror;/* maximum error (usec) */
+	__kernel_long_t esterror;/* estimated error (usec) */
+	int status;		/* clock command/status */
+	__kernel_long_t constant;/* pll time constant */
+	__kernel_long_t precision;/* clock precision (usec) (read only) */
+	__kernel_long_t tolerance;/* clock frequency tolerance (ppm)
+				   * (read only)
+				   */
+	struct __kernel_old_timeval time;	/* (read only, except for ADJ_SETOFFSET) */
+	__kernel_long_t tick;	/* (modified) usecs between clock ticks */
+
+	__kernel_long_t ppsfreq;/* pps frequency (scaled ppm) (ro) */
+	__kernel_long_t jitter; /* pps jitter (us) (ro) */
+	int shift;              /* interval duration (s) (shift) (ro) */
+	__kernel_long_t stabil;            /* pps stability (scaled ppm) (ro) */
+	__kernel_long_t jitcnt; /* jitter limit exceeded (ro) */
+	__kernel_long_t calcnt; /* calibration intervals (ro) */
+	__kernel_long_t errcnt; /* calibration errors (ro) */
+	__kernel_long_t stbcnt; /* stability limit exceeded (ro) */
+
+	int tai;		/* TAI offset (ro) */
+
+	int  :32; int  :32; int  :32; int  :32;
+	int  :32; int  :32; int  :32; int  :32;
+	int  :32; int  :32; int  :32;
+};
+
 struct __kernel_timex_timeval {
 	__kernel_time64_t       tv_sec;
 	long long		tv_usec;
@@ -58,14 +95,14 @@ struct __kernel_timex {
 #endif
 
 enum tst_timex_type {
-	TST_LIBC_TIMEX,
+	TST_KERN_OLD_TIMEX,
 	TST_KERN_TIMEX
 };
 
 struct tst_timex {
 	enum tst_timex_type type;
 	union tx{
-		struct timex libc_timex;
+		struct __kernel_old_timex kern_old_timex;
 		struct __kernel_timex kern_timex;
 	} tx;
 };
@@ -73,8 +110,8 @@ struct tst_timex {
 static inline void *tst_timex_get(struct tst_timex *t)
 {
 	switch (t->type) {
-	case TST_LIBC_TIMEX:
-		return &t->tx.libc_timex;
+	case TST_KERN_OLD_TIMEX:
+		return &t->tx.kern_old_timex;
 	case TST_KERN_TIMEX:
 		return &t->tx.kern_timex;
 	default:
@@ -124,8 +161,8 @@ static inline int sys_clock_adjtime64(clockid_t clk_id, void *timex)
 static inline void timex_show(const char *mode, struct tst_timex *timex)
 {
 	switch (timex->type) {
-	case TST_LIBC_TIMEX:
-		TIMEX_SHOW(timex->tx.libc_timex, mode, "%ld");
+	case TST_KERN_OLD_TIMEX:
+		TIMEX_SHOW(timex->tx.kern_old_timex, mode, "%ld");
 		return;
 	case TST_KERN_TIMEX:
 		TIMEX_SHOW(timex->tx.kern_timex, mode, "%lld");
@@ -167,8 +204,8 @@ static inline void timex_show(const char *mode, struct tst_timex *timex)
 static inline void *timex_get_field(struct tst_timex *timex, unsigned int field)
 {
 	switch (timex->type) {
-	case TST_LIBC_TIMEX:
-		SELECT_FIELD(timex->tx.libc_timex, field);
+	case TST_KERN_OLD_TIMEX:
+		SELECT_FIELD(timex->tx.kern_old_timex, field);
 	case TST_KERN_TIMEX:
 		SELECT_FIELD(timex->tx.kern_timex, field);
 	default:
@@ -184,7 +221,7 @@ static inline type_kern							\
 timex_get_field_##type_libc(struct tst_timex *timex, unsigned int field) \
 {									\
 	switch (timex->type) {						\
-	case TST_LIBC_TIMEX:						\
+	case TST_KERN_OLD_TIMEX:						\
 		return *((type_libc*)timex_get_field(timex, field));	\
 	case TST_KERN_TIMEX:						\
 		return *((type_kern*)timex_get_field(timex, field));	\
@@ -199,7 +236,7 @@ timex_set_field_##type_libc(struct tst_timex *timex, unsigned int field, \
 			    type_kern value)				\
 {									\
 	switch (timex->type) {						\
-	case TST_LIBC_TIMEX:						\
+	case TST_KERN_OLD_TIMEX:						\
 		*((type_libc*)timex_get_field(timex, field)) = value;	\
 		return;							\
 	case TST_KERN_TIMEX:						\

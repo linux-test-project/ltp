@@ -55,7 +55,6 @@
  */
 
 #include "clock_adjtime.h"
-#include "lapi/abisize.h"
 
 static long hz;
 static struct tst_timex saved, ttxc;
@@ -110,16 +109,12 @@ static struct test_variants {
 	enum tst_timex_type type;
 	char *desc;
 } variants[] = {
-#if defined(TST_ABI32)
-	{.clock_adjtime = sys_clock_adjtime, .type = TST_LIBC_TIMEX, .desc = "syscall with libc spec"},
-#endif
-
-#if defined(TST_ABI64)
-	{.clock_adjtime = sys_clock_adjtime, .type = TST_KERN_TIMEX, .desc = "syscall with kernel spec64"},
+#if (__NR_clock_adjtime != __LTP__NR_INVALID_SYSCALL)
+	{.clock_adjtime = sys_clock_adjtime, .type = TST_KERN_OLD_TIMEX, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_clock_adjtime64 != __LTP__NR_INVALID_SYSCALL)
-	{.clock_adjtime = sys_clock_adjtime64, .type = TST_KERN_TIMEX, .desc = "syscall time64 with kernel spec64"},
+	{.clock_adjtime = sys_clock_adjtime64, .type = TST_KERN_TIMEX, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
