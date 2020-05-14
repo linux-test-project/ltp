@@ -214,13 +214,27 @@ contributions are welcome.
 
 Cross compiling
 ---------------
-
 To cross compile, you must specify the correct variables when running configure.
-e.g. CC, LDFLAGS, etc...
+e.g. CC, LDFLAGS, etc.
+For correct pkgconf / pkg-config detection you need to set
+PKG_CONFIG_SYSROOT_DIR=$SYSROOT
 
 After configure has run, it will generate include/mk/config.mk. You can tweak
 settings in there if need be, but you should not specificy settings on the
 command-line when running make.
+
+32 bit build on 64 bit machine
+------------------------------
+You need to set CFLAGS=-m32 LDFLAGS=-m32 and PKG_CONFIG_LIBDIR
+
+* RPM based distributions (openSUSE, Fedora, etc.)
+PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
+
+* Debian / Ubuntu and derivates
+PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
+
+* Arch Linux
+PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
 
 uClinux Users
 --------------
