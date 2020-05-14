@@ -36,15 +36,16 @@
 
 #define BUF_SIZE 256
 
-static char fname1[BUF_SIZE + 11], fname2[BUF_SIZE + 11];
-static char dname1[BUF_SIZE], dname2[BUF_SIZE];
-static int fd_notify;
-
+#ifdef HAVE_NAME_TO_HANDLE_AT
 struct event_t {
 	unsigned long long mask;
 	struct fanotify_fid_t *fid;
 	char name[BUF_SIZE];
 };
+
+static char fname1[BUF_SIZE + 11], fname2[BUF_SIZE + 11];
+static char dname1[BUF_SIZE], dname2[BUF_SIZE];
+static int fd_notify;
 
 static struct event_t event_set[EVENT_MAX];
 
@@ -398,6 +399,9 @@ static struct tst_test test = {
 	.needs_root = 1
 };
 
+#else
+	TST_TEST_TCONF("system does not have required name_to_handle_at() support");
+#endif
 #else
 	TST_TEST_TCONF("system doesn't have required fanotify support");
 #endif
