@@ -62,7 +62,7 @@ LDFLAGS			:= @LDFLAGS@
 
 DEBUG_CFLAGS		?= -g
 
-# Please see README.mk-devel about -fstrict-aliasing.
+# for -fstrict-aliasing see doc/build-system-guide.txt
 OPT_CFLAGS		?= -O2 -fno-strict-aliasing -pipe
 
 WCFLAGS			?= -Wall -W @GCC_WARN_OLDSTYLE@
