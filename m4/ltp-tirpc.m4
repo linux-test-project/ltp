@@ -17,9 +17,9 @@ AC_DEFUN([LTP_CHECK_TIRPC], [
 	dnl rpc_broadcast() instead of clnt_broadcast()), but glibc implementation
 	dnl does not have the new ones. We could either provide the deprecated
 	dnl functions (copy from libtirpc src/rpc_soc.c) or drop glibc tests.
-	AC_CHECK_HEADERS([rpc/rpc.h], [have_rpc_headers=yes])
+	AC_CHECK_FUNCS([xdr_char clnttcp_create], [have_rpc_glibc=yes])
 
-	if test "x$have_libtirpc" = "xyes" -o "x$have_rpc_headers" = "xyes"; then
+	if test "x$have_libtirpc" = "xyes" -o "x$have_rpc_glibc" = "xyes"; then
 		AC_SUBST(HAVE_RPC, 1)
 	fi
 
