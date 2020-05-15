@@ -206,7 +206,7 @@ static void open_netdev(const struct ldisc_info *ldisc)
 	SAFE_IOCTL(pts, SIOCGIFNAME, ifreq.ifr_name);
 	tst_res(TINFO, "Netdev is %s", ifreq.ifr_name);
 
-	sk = SAFE_SOCKET(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	sk = SAFE_SOCKET(PF_PACKET, SOCK_RAW, 0);
 
 	ifreq.ifr_mtu = ldisc->mtu;
 	if (ioctl(sk, SIOCSIFMTU, &ifreq))
