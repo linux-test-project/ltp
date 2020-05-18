@@ -56,6 +56,13 @@ setup()
 
 	[ -n "$CLIENT" ] || tst_brk TBROK "client program not set"
 	tst_check_cmds $CLIENT $SERVER || tst_brk TCONF "LTP compiled without TI-RPC support?"
+
+	tst_cmd_available ldd which || return
+	if ldd $(which $CLIENT) |grep -q /libtirpc\.so; then
+		tst_res TINFO "using libtirpc: yes"
+	else
+		tst_res TINFO "using libtirpc: no (probably using glibc)"
+	fi
 }
 
 cleanup()

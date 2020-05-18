@@ -11,5 +11,5 @@ check_portmap_rpcbind()
 		pgrep rpcbind > /dev/null && PORTMAPPER="rpcbind" || \
 			tst_brk TCONF "portmap or rpcbind is not running"
 	fi
-	tst_res TINFO "Using $PORTMAPPER"
+	tst_res TINFO "using $PORTMAPPER"
 }
