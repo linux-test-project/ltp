@@ -250,22 +250,32 @@ tst_net_run()
 
 EXPECT_RHOST_PASS()
 {
-	tst_rhost_run -c "$*" > /dev/null
+	local log="$TMPDIR/log.$$"
+
+	tst_rhost_run -c "$*" > $log
 	if [ $? -eq 0 ]; then
 		tst_res_ TPASS "$* passed as expected"
 	else
 		tst_res_ TFAIL "$* failed unexpectedly"
+		cat $log
 	fi
+
+	rm -f $log
 }
 
 EXPECT_RHOST_FAIL()
 {
-	tst_rhost_run -c "$* 2> /dev/null"
+	local log="$TMPDIR/log.$$"
+
+	tst_rhost_run -c "$*" > $log
 	if [ $? -ne 0 ]; then
 		tst_res_ TPASS "$* failed as expected"
 	else
 		tst_res_ TFAIL "$* passed unexpectedly"
+		cat $log
 	fi
+
+	rm -f $log
 }
 
 # Get test interface names for local/remote host.
