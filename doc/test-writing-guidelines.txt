@@ -2053,6 +2053,50 @@ the prefix field of file pointed by path equals to the value passed to this func
 Also having a similar api pair TST_ASSERT_FILE_INT/STR(path, prefix, val) to assert
 the field value of file.
 
+2.2.36 Using Control Group
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Some of LTP tests need Control Group in their configuration, tst_cgroup.h provides
+APIs to make cgroup unified mounting at setup phase to be possible. The method is
+extracted from mem.h with the purpose of extendible for further developing, and
+trying to compatible the current two versions of cgroup.
+
+Considering there are many differences between cgroup v1 and v2, here we capsulate
+the detail of cgroup mounting in high-level functions, which will be easier to use
+cgroup without caring about too much technical thing.   
+
+Also, we do cgroup mount/umount work for the different hierarchy automatically.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static void run(void)
+{
+	...
+
+	tst_cgroup_move_current(PATH_TMP_CG_MEM);
+	tst_cgroup_mem_set_maxbytes(PATH_TMP_CG_MEM, MEMSIZE);
+
+	// do test under cgroup
+	...
+}
+
+static void setup(void)
+{
+	tst_cgroup_mount(TST_CGROUP_MEMCG, PATH_TMP_CG_MEM);
+}
+
+static void cleanup(void)
+{
+	tst_cgroup_umount(PATH_TMP_CG_MEM);
+}
+
+struct tst_test test = {
+	.test_all = run,
+	...
+};
+
+-------------------------------------------------------------------------------
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
