@@ -1685,8 +1685,8 @@ over, rather than that the test library provides support for test variants.
 The idea behind test variants is simple, we run the test several times each
 time with different syscall variant.
 
-The implementation consist of test_variant integer that, if set, denotes number
-of test variants. The test is then forked and executed test_variant times each
+The implementation consist of test_variants integer that, if set, denotes number
+of test variants. The test is then forked and executed test_variants times each
 time with different value in global tst_variant variable.
 
 [source,c]
