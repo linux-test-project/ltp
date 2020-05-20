@@ -86,7 +86,7 @@ static void run(unsigned int i)
 
 	got_signal = 0;
 
-	tst_res(TINFO, tc->message);
+	tst_res(TINFO, "%s", tc->message);
 
 	if (tc->handler == 1) {
 		parent_act.sa_handler = parent_handler;
