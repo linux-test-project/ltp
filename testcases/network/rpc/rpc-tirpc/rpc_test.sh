@@ -37,7 +37,8 @@ rpc_parse_args()
 {
 	case "$1" in
 		c) CLIENT="$OPTARG" ;;
-		e) CLIENT_EXTRA_OPTS="$OPTARG" ;;
+		e) tst_check_cmds sed
+		   CLIENT_EXTRA_OPTS="$(echo $OPTARG | sed 's/,/ /')" ;;
 		s) SERVER="$OPTARG" ;;
 	esac
 }
