@@ -22,6 +22,8 @@
 #ifndef __LIBNEWIPC_H
 #define __LIBNEWIPC_H	1
 
+#include <sys/types.h>
+
 #define MSG_RD	0400
 #define MSG_WR	0200
 #define MSG_RW	(MSG_RD | MSG_WR)

@@ -4,5 +4,8 @@
 top_srcdir              ?= ../../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/../Makefile2.inc
+
+LDLIBS  += -lltpnewipc
+LDFLAGS += -L$(top_builddir)/libs/libltpnewipc
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
