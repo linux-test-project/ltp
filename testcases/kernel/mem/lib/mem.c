@@ -686,13 +686,13 @@ void write_cpuset_files(char *prefix, char *filename, char *buf)
 	close(fd);
 }
 
-void write_cpusets(long nd)
+void write_cpusets(const char *cgroup_dir, long nd)
 {
 	char buf[BUFSIZ];
 	char cpus[BUFSIZ] = "";
 
 	snprintf(buf, BUFSIZ, "%ld", nd);
-	write_cpuset_files(CPATH_NEW, "mems", buf);
+	tst_cgroup_cpuset_write_files(cgroup_dir, "mems", buf);
 
 	gather_node_cpus(cpus, nd);
 	/*
@@ -701,14 +701,12 @@ void write_cpusets(long nd)
 	 * the value of cpuset.cpus.
 	 */
 	if (strlen(cpus) != 0) {
-		write_cpuset_files(CPATH_NEW, "cpus", cpus);
+		tst_cgroup_cpuset_write_files(cgroup_dir, "cpus", cpus);
 	} else {
 		tst_res(TINFO, "No CPUs in the node%ld; "
 				"using only CPU0", nd);
-		write_cpuset_files(CPATH_NEW, "cpus", "0");
+		tst_cgroup_cpuset_write_files(cgroup_dir, "cpus", "0");
 	}
-
-	SAFE_FILE_PRINTF(CPATH_NEW "/tasks", "%d", getpid());
 }
 
 void umount_mem(char *path, char *path_new)
