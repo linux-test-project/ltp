@@ -474,6 +474,9 @@ int in_blacklist(int sysno)
 #if defined(__NR_vhangup) && __NR_vhangup
 		__NR_vhangup,	/* int vhangup(void); - terminal logout */
 #endif
+#if defined(__NR_pause) && __NR_pause
+		__NR_pause,	/* int pause(void); - sleep indefinitely */
+#endif
 		-1
 	};
 
