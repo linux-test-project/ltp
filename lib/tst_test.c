@@ -316,6 +316,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
                const char *fmt, va_list va)
 {
 	print_result(file, lineno, ttype, fmt, va);
+	update_results(TTYPE_RESULT(ttype));
 
 	/*
 	 * The getpid implementation in some C library versions may cause cloned
@@ -1316,10 +1317,8 @@ static int run_tcases_per_fs(void)
 			mntpoint_mounted = 0;
 		}
 
-		if (ret == TCONF) {
-			update_results(ret);
+		if (ret == TCONF)
 			continue;
-		}
 
 		if (ret == 0)
 			continue;
