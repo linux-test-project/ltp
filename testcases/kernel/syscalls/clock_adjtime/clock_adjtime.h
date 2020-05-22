@@ -18,11 +18,6 @@
 #include "lapi/timex.h"
 
 #ifndef __kernel_timex
-struct __kernel_old_timeval {
-	__kernel_old_time_t	tv_sec;		/* seconds */
-	__kernel_suseconds_t	tv_usec;	/* microseconds */
-};
-
 struct __kernel_old_timex {
 	unsigned int modes;	/* mode selector */
 	__kernel_long_t offset;	/* time offset (usec) */

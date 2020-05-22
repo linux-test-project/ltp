@@ -21,6 +21,7 @@
 #include <errno.h>
 
 #include "tst_test.h"
+#include "tst_timer.h"
 #include "lapi/syscalls.h"
 
 static volatile sig_atomic_t done;
@@ -39,7 +40,7 @@ static void breakout(int sig)
 
 static void verify_gettimeofday(void)
 {
-	struct timeval tv1, tv2;
+	struct __kernel_old_timeval tv1, tv2;
 	unsigned long long cnt = 0;
 
 	done = 0;
