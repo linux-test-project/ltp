@@ -55,21 +55,6 @@ static inline void safe_clock_settime(const char *file, const int lineno,
 	}
 }
 
-static inline int safe_clock_adjtime(const char *file, const int lineno,
-	clockid_t clk_id, struct timex *txc)
-{
-	int rval;
-
-	rval = tst_syscall(__NR_clock_adjtime, clk_id, txc);
-	if (rval < 0) {
-		tst_brk(TBROK | TERRNO,
-			"%s:%d clock_adjtime(%s) failed %i",
-			file, lineno, tst_clock_name(clk_id), rval);
-	}
-
-	return rval;
-}
-
 #define SAFE_CLOCK_GETRES(clk_id, res)\
 	safe_clock_getres(__FILE__, __LINE__, (clk_id), (res))
 
@@ -78,8 +63,5 @@ static inline int safe_clock_adjtime(const char *file, const int lineno,
 
 #define SAFE_CLOCK_SETTIME(clk_id, tp)\
 	safe_clock_settime(__FILE__, __LINE__, (clk_id), (tp))
-
-#define SAFE_CLOCK_ADJTIME(clk_id, txc)\
-	safe_clock_adjtime(__FILE__, __LINE__, (clk_id), (txc))
 
 #endif /* SAFE_CLOCKS_H__ */
