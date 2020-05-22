@@ -21,7 +21,7 @@ static void verify_settimeofday(void)
 	suseconds_t delta;
 	struct timeval tv1, tv2;
 
-	if (tst_syscall(__NR_gettimeofday, &tv1, NULL) == -1)
+	if (gettimeofday(&tv1, NULL) == -1)
 		tst_brk(TBROK | TERRNO, "gettimeofday(&tv1, NULL) failed");
 
 	tv1.tv_sec += VAL_SEC;
@@ -35,7 +35,7 @@ static void verify_settimeofday(void)
 		return;
 	}
 
-	if (tst_syscall(__NR_gettimeofday, &tv2, NULL) == -1)
+	if (gettimeofday(&tv2, NULL) == -1)
 		tst_brk(TBROK | TERRNO, "gettimeofday(&tv2, NULL) failed");
 
 	if (tv2.tv_sec > tv1.tv_sec) {
