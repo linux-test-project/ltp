@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 IBM Corporation
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
 # Author: Mimi Zohar <zohar@linux.ibm.com>
 #
 # Verify the boot and PCR aggregates.
@@ -73,7 +73,7 @@ validate_pcr()
 test2()
 {
 	tst_res TINFO "verify PCR values"
-	tst_check_cmds evmctl
+	tst_check_cmds evmctl || return
 
 	tst_res TINFO "evmctl version: $(evmctl --version)"
 

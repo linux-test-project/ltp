@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 IBM Corporation
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
 # Author: Mimi Zohar <zohar@linux.ibm.com>
 #
 # Test whether ToMToU and open_writer violations invalidatethe PCR and are logged.
@@ -19,13 +19,11 @@ setup()
 	FILE="test.txt"
 	IMA_VIOLATIONS="$SECURITYFS/ima/violations"
 	LOG="/var/log/messages"
-	PRINTK_RATE_LIMIT="0"
+	PRINTK_RATE_LIMIT=
 
 	if status_daemon auditd; then
 		LOG="/var/log/audit/audit.log"
-	else
-		tst_check_cmds sysctl
-
+	elif tst_check_cmds sysctl; then
 		PRINTK_RATE_LIMIT=`sysctl -n kernel.printk_ratelimit`
 		sysctl -wq kernel.printk_ratelimit=0
 	fi
@@ -36,7 +34,7 @@ setup()
 
 cleanup()
 {
-	[ "$PRINTK_RATE_LIMIT" != "0" ] && \
+	[ "$PRINTK_RATE_LIMIT" ] && \
 		sysctl -wq kernel.printk_ratelimit=$PRINTK_RATE_LIMIT
 }
 
