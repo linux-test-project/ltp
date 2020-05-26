@@ -550,7 +550,7 @@ tst_run()
 
 	_tst_setup_timer
 
-	[ "$TST_NEEDS_DEVICE" = 1 ] && TST_TMPDIR=1
+	[ "$TST_NEEDS_DEVICE" = 1 ] && TST_NEEDS_TMPDIR=1
 
 	if [ "$TST_NEEDS_TMPDIR" = 1 ]; then
 		if [ -z "$TMPDIR" ]; then
