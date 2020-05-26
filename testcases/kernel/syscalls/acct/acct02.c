@@ -141,7 +141,7 @@ static int verify_acct(void *acc, int elap_time)
 		ret = 1;
 	}
 
-	if (ACCT_MEMBER_V3(ac_version) != (3 | ACCT_BYTEORDER)) {
+	if (ACCT_MEMBER_V3(ac_version) != (char)(3 | ACCT_BYTEORDER)) {
 		tst_res(TINFO, "ac_version != 3 (%d)",
 			ACCT_MEMBER_V3(ac_version));
 		ret = 1;
