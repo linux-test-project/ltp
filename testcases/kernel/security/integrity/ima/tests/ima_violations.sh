@@ -64,7 +64,7 @@ close_file_write()
 get_count()
 {
 	local search="$1"
-	echo $(grep -c "${search}.*${FILE}" $LOG)
+	echo $(grep -c "$search.*$FILE" $LOG)
 }
 
 validate()

@@ -27,14 +27,14 @@ test1()
 	if [ ! -f "$tpm_bios" ]; then
 		tst_res TINFO "TPM Hardware Support not enabled in kernel or no TPM chip found"
 
-		if [ "${boot_hash}" = "${zero}" ]; then
+		if [ "$boot_hash" = "$zero" ]; then
 			tst_res TPASS "bios boot aggregate is 0"
 		else
 			tst_res TFAIL "bios boot aggregate is not 0"
 		fi
 	else
 		boot_aggregate=$(ima_boot_aggregate $tpm_bios | grep "boot_aggregate:" | cut -d':' -f2)
-		if [ "${boot_hash}" = "${boot_aggregate}" ]; then
+		if [ "$boot_hash" = "$boot_aggregate" ]; then
 			tst_res TPASS "bios aggregate matches IMA boot aggregate"
 		else
 			tst_res TFAIL "bios aggregate does not match IMA boot aggregate"
@@ -61,9 +61,9 @@ validate_pcr()
 
 	while read line; do
 		pcr="$(echo $line | cut -d':' -f1)"
-		if [ "${pcr}" = "PCR-10" ]; then
+		if [ "$pcr" = "PCR-10" ]; then
 			hash="$(echo $line | cut -d':' -f2 | awk '{ gsub (" ", "", $0); print tolower($0) }')"
-			[ "${hash}" = "${aggregate_pcr}" ]
+			[ "$hash" = "$aggregate_pcr" ]
 			return $?
 		fi
 	done < $dev_pcrs
