@@ -43,7 +43,9 @@ unsigned long tst_request_hugepages(unsigned long hpages)
 	SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%lu", tst_hugepages);
 	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
 	if (val != tst_hugepages)
-		tst_brk(TBROK, "nr_hugepages = %lu, but expect %lu", val, tst_hugepages);
+		tst_brk(TCONF, "nr_hugepages = %lu, but expect %lu. "
+				"Not enough hugepages for testing.",
+				val, tst_hugepages);
 
 	tst_res(TINFO, "%lu hugepage(s) reserved", tst_hugepages);
 out:
