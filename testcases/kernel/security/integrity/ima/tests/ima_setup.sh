@@ -11,6 +11,9 @@ TST_CLEANUP_CALLER="$TST_CLEANUP"
 TST_CLEANUP="ima_cleanup"
 TST_NEEDS_ROOT=1
 
+# TST_NEEDS_DEVICE can be unset, therefore specify explicitly
+TST_NEEDS_TMPDIR=1
+
 . tst_test.sh
 
 SYSFS="/sys"

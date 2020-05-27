@@ -8,7 +8,6 @@
 
 TST_SETUP="setup"
 TST_CNT=2
-TST_NEEDS_TMPDIR=1
 
 . ima_setup.sh
 
