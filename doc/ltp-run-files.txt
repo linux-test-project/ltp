@@ -56,9 +56,7 @@ if run network tests flag is passed these additional tests are run
  - nfs
 
 To test filesystem with LVM
-- ltpfslvm.sh
-w/o LVM
-- ltpfsnolvm.sh
+- testscripts/lvmtest.sh
 
 Device Mapper tests
  - ltpdmmapper.sh
