@@ -60,7 +60,8 @@
 #define TST_TAINT_E     (1 << 13) /* unsigned module was loaded */
 #define TST_TAINT_L     (1 << 14) /* A soft lock-up has previously occurred */
 #define TST_TAINT_K     (1 << 15) /* kernel has been live-patched */
-#define TST_TAINT_X	(1 << 16) /* auxiliary taint, for distro's use */
+#define TST_TAINT_X     (1 << 16) /* auxiliary taint, for distro's use */
+#define TST_TAINT_T     (1 << 17) /* kernel was built with the struct randomization plugin */
 
 /*
  * Initialize and prepare support for checking tainted kernel.
