@@ -96,6 +96,9 @@ static void verify_ioctl_loop(void)
 
 static void setup(void)
 {
+	int fd;
+	struct stat buf;
+
 	if (tst_fs_type(".") == TST_TMPFS_MAGIC)
 		tst_brk(TCONF, "tmpfd doesn't support O_DIRECT flag");
 
@@ -105,6 +108,14 @@ static void setup(void)
 
 	sprintf(sys_loop_diopath, "/sys/block/loop%d/loop/dio", dev_num);
 	tst_fill_file("test.img", 0, 1024, 1024);
+
+	fd = SAFE_OPEN("test.img", O_RDONLY);
+	SAFE_FSTAT(fd, &buf);
+	SAFE_CLOSE(fd);
+
+	logical_block_size = buf.st_blksize;
+	tst_res(TINFO, "backing dev logical_block_size is %d", logical_block_size);
+
 	tst_attach_device(dev_path, "test.img");
 	attach_flag = 1;
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
@@ -112,8 +123,14 @@ static void setup(void)
 	if (ioctl(dev_fd, LOOP_SET_DIRECT_IO, 0) && errno == EINVAL)
 		tst_brk(TCONF, "LOOP_SET_DIRECT_IO is not supported");
 
-	SAFE_IOCTL(dev_fd, BLKSSZGET, &logical_block_size);
-	tst_res(TINFO, "%s default logical_block_size is %d", dev_path, logical_block_size);
+	/*
+	 * from __loop_update_dio():
+	 *   We support direct I/O only if lo_offset is aligned with the
+	 *   logical I/O size of backing device, and the logical block
+	 *   size of loop is bigger than the backing device's and the loop
+	 *   needn't transform transfer.
+	 */
+	TST_RETRY_FUNC(ioctl(dev_fd, LOOP_SET_BLOCK_SIZE, logical_block_size), TST_RETVAL_EQ0);
 }
 
 static void cleanup(void)
