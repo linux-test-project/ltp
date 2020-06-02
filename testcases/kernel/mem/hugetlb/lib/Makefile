@@ -21,6 +21,6 @@ top_srcdir		?= ../../../../..
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/testcases/kernel/mem/include/libmem.mk
 
-LIB			:= libhugetlb.a
+INTERNAL_LIB		:= libhugetlb.a
 
 include $(top_srcdir)/include/mk/lib.mk

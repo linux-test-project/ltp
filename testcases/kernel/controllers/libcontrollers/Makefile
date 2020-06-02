@@ -24,6 +24,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LIB			:= libcontrollers.a
+INTERNAL_LIB		:= libcontrollers.a
 
 include $(top_srcdir)/include/mk/lib.mk

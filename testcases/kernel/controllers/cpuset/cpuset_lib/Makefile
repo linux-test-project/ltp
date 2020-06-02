@@ -27,6 +27,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 
 LDLIBS			:= -lm -lcontrollers -lltp $(LDLIBS)
 
-LIB			:= libcpu_set.a
+INTERNAL_LIB		:= libcpu_set.a
 
 include	$(top_srcdir)/include/mk/lib.mk

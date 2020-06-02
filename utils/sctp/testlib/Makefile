@@ -28,7 +28,7 @@ CPPFLAGS		+= -DLTP -I$(abs_srcdir)/../include
 
 LDLIBS			+= -lltp -lsctp
 
-LIB			:= libsctputil.a
+INTERNAL_LIB		:= libsctputil.a
 
 #
 #DEPLIBDIR		:= ../lib

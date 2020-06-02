@@ -20,6 +20,6 @@ top_srcdir             ?= ../../../../../..
 
 include        $(top_srcdir)/include/mk/env_pre.mk
 
-LIB	:= librpc-tirpc.a
+INTERNAL_LIB	:= librpc-tirpc.a
 
 include $(top_srcdir)/include/mk/lib.mk
