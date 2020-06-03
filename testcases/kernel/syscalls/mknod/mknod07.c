@@ -43,6 +43,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
+#include <sys/sysmacros.h>
 
 #include "test.h"
 #include "safe_macros.h"
@@ -69,13 +70,14 @@ static struct test_case_t {
 	char *pathname;
 	int mode;
 	int exp_errno;
+	int major, minor;
 } test_cases[] = {
-	{ "testdir_1/tnode_1", SOCKET_MODE, EACCES },
-	{ "testdir_1/tnode_2", FIFO_MODE, EACCES },
-	{ "tnode_3", CHR_MODE, EPERM },
-	{ "tnode_4", BLK_MODE, EPERM },
-	{ "mntpoint/tnode_5", SOCKET_MODE, EROFS },
-	{ elooppathname, FIFO_MODE, ELOOP },
+	{ "testdir_1/tnode_1", SOCKET_MODE, EACCES, 0, 0 },
+	{ "testdir_1/tnode_2", FIFO_MODE, EACCES, 0, 0 },
+	{ "tnode_3", CHR_MODE, EPERM, 1, 3 },
+	{ "tnode_4", BLK_MODE, EPERM, 0, 0 },
+	{ "mntpoint/tnode_5", SOCKET_MODE, EROFS, 0, 0 },
+	{ elooppathname, FIFO_MODE, ELOOP, 0, 0 },
 };
 
 char *TCID = "mknod07";
@@ -149,7 +151,8 @@ static void setup(void)
 
 static void mknod_verify(const struct test_case_t *test_case)
 {
-	TEST(mknod(test_case->pathname, test_case->mode, 0));
+	TEST(mknod(test_case->pathname, test_case->mode,
+		makedev(test_case->major, test_case->minor)));
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL, "mknod succeeded unexpectedly");
