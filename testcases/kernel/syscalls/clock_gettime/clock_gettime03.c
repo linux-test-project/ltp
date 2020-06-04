@@ -76,7 +76,7 @@ static void child(struct test_variants *tv, struct tcase *tc)
 
 	diff = tst_ts_diff_ms(then, now);
 
-	if (diff/1000 != tc->off) {
+	if (diff - tc->off * 1000 > 10) {
 		tst_res(TFAIL, "Wrong offset (%s) read %llims",
 		        tst_clock_name(tc->clk_id), diff);
 	} else {
@@ -86,7 +86,7 @@ static void child(struct test_variants *tv, struct tcase *tc)
 
 	diff = tst_ts_diff_ms(parent_then, now);
 
-	if (diff/1000) {
+	if (diff > 10) {
 		tst_res(TFAIL, "Wrong offset (%s) read %llims",
 		        tst_clock_name(tc->clk_id), diff);
 	} else {
