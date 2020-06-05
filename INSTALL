@@ -178,8 +178,9 @@ contributions are welcome.
 		echo (stream)
 		fingerd
 		rshd
-	 Also, because certain RPC programs are tested, the "portmapper" daemon
-	 MUST be started, as well as NFS server AND lock services.
+	 Also, because certain RPC programs are tested, the portmapper daemon
+	 (rpcbind, or portmap on old distributions) MUST be started, as well as NFS
+	 server AND lock services.
 
     iv) Finally, before running the network.sh script, two variables must be
 	set: The "RHOST" variable should be set to the hostname of the server.
