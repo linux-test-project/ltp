@@ -58,7 +58,7 @@ nfs_server_udp_enabled()
 	tst_rhost_run -c "[ -f /etc/nfs.conf ]" || return 0
 	config=$(tst_rhost_run -c 'for f in $(grep ^include.*= '/etc/nfs.conf' | cut -d = -f2); do [ -f $f ] && printf "$f "; done')
 
-	tst_rhost_run -c "grep -q '^[# ]*udp *= *y' /etc/nfs.conf $config"
+	tst_rhost_run -c "grep -q \"^[# ]*udp *= *y\" /etc/nfs.conf $config"
 }
 
 nfs_setup_server()
