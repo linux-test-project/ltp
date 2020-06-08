@@ -132,7 +132,7 @@ void setup(void)
 
 	/* Change scheduling policy to SCHED_FIFO */
 	if ((sched_setscheduler(0, SCHED_FIFO, &p)) == -1) {
-		tst_brkm(TBROK, cleanup, "sched_setscheduler() failed");
+		tst_brkm(TBROK|TERRNO, cleanup, "sched_setscheduler() failed");
 	}
 }
 
