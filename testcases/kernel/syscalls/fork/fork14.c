@@ -91,7 +91,7 @@ static void cleanup(void)
 
 static int fork_test(void)
 {
-	int i, j, prev_failed = 0, fails = 0;
+	int i, j, prev_failed = 0, fails = 0, cnt = 0;
 	int reproduced = 0;
 	void *addr;
 
@@ -114,6 +114,7 @@ static int fork_test(void)
 		} else {
 			pointer_vec[i] = addr;
 		}
+		cnt++;
 
 		switch (tst_fork()) {
 		case -1:
@@ -133,7 +134,7 @@ static int fork_test(void)
 	}
 
 clear_memory_map:
-	for (j = 0; j <= i; j++) {
+	for (j = 0; j < cnt; j++) {
 		if (pointer_vec[j])
 			SAFE_MUNMAP(cleanup, pointer_vec[j], 1 * GB);
 	}
