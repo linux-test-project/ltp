@@ -66,6 +66,16 @@
 # define MADV_KEEPONFORK 19
 #endif
 
+#ifndef MAP_FIXED_NOREPLACE
+
+#ifdef __alpha__
+# define MAP_FIXED_NOREPLACE 0x200000
+#else
+# define MAP_FIXED_NOREPLACE 0x100000
+#endif
+
+#endif /* MAP_FIXED_NOREPLACE */
+
 #ifdef HAVE_SYS_SHM_H
 # include <sys/shm.h>
 # define MMAP_GRANULARITY SHMLBA
