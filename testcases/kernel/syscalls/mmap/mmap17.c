@@ -20,7 +20,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <error.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
