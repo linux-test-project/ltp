@@ -3,9 +3,11 @@
 
 top_srcdir		?= ../../../..
 
+LTPLIBS = ltpipc
+
 include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS  += -lltpipc
-LDFLAGS += -L$(top_builddir)/libs/libltpipc
+kill07: LDLIBS  += -lltpipc
+kill05: LDLIBS  += -lltpipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
