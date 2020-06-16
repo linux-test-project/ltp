@@ -8,7 +8,7 @@
 #define IPCBUF_H
 
 #include "config.h"
-#include <linux/posix_types.h>
+#include "lapi/posix_types.h"
 
 #ifndef HAVE_IPC64_PERM
 

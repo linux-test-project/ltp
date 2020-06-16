@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include "tst_test.h"
+#include "lapi/posix_types.h"
 #include "lapi/syscalls.h"
 
 /*
@@ -92,12 +93,6 @@ static inline long long tst_timeval_diff_ms(struct timeval t1,
 }
 
 #ifndef __kernel_timespec
-
-#if defined(__x86_64__) && defined(__ILP32__)
-typedef long long __kernel_long_t;
-#else
-typedef long __kernel_long_t;
-#endif
 
 typedef __kernel_long_t	__kernel_old_time_t;
 

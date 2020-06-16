@@ -7,7 +7,7 @@
 #ifndef IPC_SHMBUF_H
 #define IPC_SHMBUF_H
 
-#include <linux/posix_types.h>
+#include "lapi/posix_types.h"
 #include <sys/sem.h>
 #include "tst_timer.h"
 #include "ipcbuf.h"
