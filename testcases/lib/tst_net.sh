@@ -131,50 +131,45 @@ init_ltp_netspace()
 }
 
 # Run command on remote host.
+# tst_rhost_run -c CMD [-b] [-s] [-u USER]
 # Options:
 # -b run in background
+# -c CMD specify command to run (this must be binary, not shell builtin/function)
 # -s safe option, if something goes wrong, will exit with TBROK
-# -c specify command to run (this must be binary, not shell builtin/function)
+# -u USER for ssh/rsh (default root)
 # RETURN: 0 on success, 1 on failure
 tst_rhost_run()
 {
-	local pre_cmd=
 	local post_cmd=' || echo RTERR'
-	local out=
 	local user="root"
-	local cmd=
-	local safe=0
+	local ret=0
+	local cmd out output pre_cmd safe
 
-	OPTIND=0
-
+	local OPTIND
 	while getopts :bsc:u: opt; do
 		case "$opt" in
-		b) [ "$TST_USE_NETNS" ] && pre_cmd= || pre_cmd="nohup"
+		b) [ "${TST_USE_NETNS:-}" ] && pre_cmd= || pre_cmd="nohup"
 		   post_cmd=" > /dev/null 2>&1 &"
 		   out="1> /dev/null"
 		;;
-		s) safe=1 ;;
 		c) cmd="$OPTARG" ;;
+		s) safe=1 ;;
 		u) user="$OPTARG" ;;
 		*) tst_brk_ TBROK "tst_rhost_run: unknown option: $OPTARG" ;;
 		esac
 	done
 
-	OPTIND=0
-
 	if [ -z "$cmd" ]; then
-		[ "$safe" -eq 1 ] && \
+		[ "$safe" ] && \
 			tst_brk_ TBROK "tst_rhost_run: command not defined"
 		tst_res_ TWARN "tst_rhost_run: command not defined"
 		return 1
 	fi
 
-	local output=
-	local ret=0
 	if [ -n "${TST_USE_SSH:-}" ]; then
 		output=`ssh -n -q $user@$RHOST "sh -c \
 			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'RTERR'`
-	elif [ -n "$TST_USE_NETNS" ]; then
+	elif [ -n "${TST_USE_NETNS:-}" ]; then
 		output=`$LTP_NETNS sh -c \
 			"$pre_cmd $cmd $post_cmd" $out 2>&1 || echo 'RTERR'`
 	else
@@ -184,7 +179,7 @@ tst_rhost_run()
 	echo "$output" | grep -q 'RTERR$' && ret=1
 	if [ $ret -eq 1 ]; then
 		output=$(echo "$output" | sed 's/RTERR//')
-		[ "$safe" -eq 1 ] && \
+		[ "$safe" ] && \
 			tst_brk_ TBROK "'$cmd' failed on '$RHOST': '$output'"
 	fi
 
