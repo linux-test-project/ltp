@@ -78,7 +78,11 @@ static struct tcase {
 	{&fd_chrdev,	0,	EINVAL,		CONTSIZE,	"char device",	0},
 	{&fd_fifo,	0,	EINVAL,		CONTSIZE,	"fifo", 	0},
 	{&fd_pipe[0],	0,	EINVAL,		CONTSIZE,	"pipe", 	0},
-	{&fd_copy,	0,	EOVERFLOW,	ULLONG_MAX,	"max length lenght", 	1},
+#ifdef TST_ABI64
+	{&fd_copy,	0,	EOVERFLOW,	ULLONG_MAX,	"max length", 	1},
+#else
+	{&fd_copy,	0,	EFBIG,		ULLONG_MAX,	"max length", 	1},
+#endif
 	{&fd_copy,	0,	EFBIG,		MIN_OFF,	"max file size", 	1},
 };
 
