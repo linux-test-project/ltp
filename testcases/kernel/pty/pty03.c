@@ -2,6 +2,8 @@
 /*
  * Copyright (c) 2020 SUSE
  *
+ * CVE-2020-14416
+ *
  * Test based on Syzkaller reproducer:
  * https://syzkaller.appspot.com/bug?id=680c24ff647dd7241998e19da52e8136d2fd3523
  *
@@ -148,6 +150,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "0ace17d568241"},
+		{"CVE", "2020-14416"},
 		{}
 	}
 };
