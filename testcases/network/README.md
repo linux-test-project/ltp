@@ -3,6 +3,9 @@
 ## Pre-requisites
 Enable all the networking services on test machine(s): rshd, nfsd, fingerd.
 
+Both single and two host configurations support debugging via
+`TST_NET_RHOST_RUN_DEBUG=1` environment variable.
+
 ## Single Host Configuration
 
 It is a default configuration ('RHOST' is not defined). LTP adds 'ltp_ns'
