@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2014-2019
+# Copyright (c) Linux Test Project, 2014-2020
 # Author: Cyril Hrubis <chrubis@suse.cz>
 #
 # LTP test library for shell.
@@ -102,9 +102,9 @@ tst_res()
 
 	_tst_inc_res "$res"
 
-	printf "$TST_ID $TST_COUNT "
-	tst_print_colored $res "$res: "
-	echo "$@"
+	printf "$TST_ID $TST_COUNT " >&2
+	tst_print_colored $res "$res: " >&2
+	echo "$@" >&2
 }
 
 tst_brk()
