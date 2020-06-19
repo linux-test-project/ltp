@@ -151,54 +151,7 @@ contributions are welcome.
    in the CD-ROM drive.  The corresponding tests will fail if either disk is
    missing.
 
-5. The network tests are executed by running the network.sh script. The network
-   tests require some configuration for them to work correctly:
-
-     i) First, there MUST be another test machine setup to act as the server
-	to these client side tests.  This machine MUST have the LTP installed
-	in the same exact location, i.e. if the client has /root/ltp, then the
-	server must have /root/ltp.  This is required because certain tests
-	expect to find server files in certain locations.  Make sure to compile
-	the LTP on this server machine also.
-
-    ii) Second, the server must be setup to allow the client to connect using
-	the "r" commands, such as rsh.  This is done by simply creating/editing
-	the ".rhosts" file under /root.  Place the hostname of the client
-	machine in this file to allow root to remotely connect without the use
-	of a password. If server has the PAM system security tool, you need
-	to add the following lines to /etc/securetty:
-		rlogin
-		rsh
-		rexec
-		pts/0
-		pts/1
-		  :
-		pts/9
-
-   iii) Next, certain services must be activated in order for certain tests to
-	execute.  The following services are activated via inetd/xinetd:
-		rlogind
-		ftpd
-		telnetd
-		echo (stream)
-		fingerd
-		rshd
-	 Also, because certain RPC programs are tested, the portmapper daemon
-	 (rpcbind, or portmap on old distributions) MUST be started, as well as NFS
-	 server AND lock services.
-
-    iv) Finally, before running the network.sh script, two variables must be
-	set: The "RHOST" variable should be set to the hostname of the server.
-	The "PASSWD" variable should be set to root's password on the server
-	machine. This is necessary for tests such as telnet01.sh and ftp01.sh.
-
-   You can now successfully execute the network.sh script.
-
-   You can run the test category which you are interested in, -h option shows
-   the list of the test category:
-       # ./network.sh -h
-
-   For more info about howto run network.sh see testcases/network/README.md.
+5. The network tests related installation see testcases/network/README.md.
 
 Cross compiling
 ---------------

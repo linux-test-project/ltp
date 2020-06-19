@@ -1,94 +1,89 @@
 # LTP Network Tests
 
-## Pre-requisites
-Enable all the networking services on test machine(s): rshd, nfsd, fingerd.
-
-Both single and two host configurations support debugging via
-`TST_NET_RHOST_RUN_DEBUG=1` environment variable.
-
 ## Single Host Configuration
 
-It is a default configuration ('RHOST' is not defined). LTP adds 'ltp_ns'
-network namespace and auto-configure 'veth' pair according to LTP network
-environment variables.
+It's the default configuration (if the `RHOST` environment variable is not
+defined). LTP adds `ltp_ns` network namespace and auto-configure `veth` pair
+according to LTP network environment variables.
 
 ## Two Host Configuration
 
-This setup requires 'RHOST' environment variable to be set properly and
-configured SSH or RSH (default) access to a remote host.
+This setup requires the `RHOST` environment variable to be set properly and
+configured SSH access to a remote host.
 
-The 'RHOST' variable name must be set to the hostname of the server
-(test management link) and PASSWD should be set to the root password
-of the remote server.
+The `RHOST` variable must be set to the hostname of the server (test management
+link) and public key setup or login without password is required.
 
-In order to have RSH access:
-* Edit the "/root/.rhosts" file. Please note that the file may not exist,
-so you must create one if it does not. You must add the fully qualified
-hostname of the machine you are testing on to this file. By adding the test
-machine's hostname to this file, you will be allowing the machine to rsh to itself,
-as root, without the requirement of a password.
+SSH server needs to be configured to allow root login and use Public Key
+Authentication (`PermitRootLogin yes` and `PubkeyAuthentication yes` in
+`/etc/ssh/sshd_config`).
 
-```sh
-echo $client_hostname >> /root/.rhosts
-```
-
-You may need to re-label '.rhost' file to make sure rlogind will have access to it:
-
-```sh
-/sbin/restorecon -v /root/.rhosts
-```
-
-* Add rlogin, rsh, rexec into /etc/securetty file:
-
-```sh
-for i in rlogin rsh rexec; do echo $i >> /etc/securetty; done
-```
+Some of the network stress tests which hasn't been ported to network API were
+designed to be tested with `rsh` via `LTP_RSH` environment variable. Now it's
+by default used `ssh`, for details see `testcases/network/stress/README`.
 
 ## Server Services Configuration
-Verify that the below daemon services are running. If not, please install
-and start them:
-rsh-server, telnet-server, finger-server, rdist, rsync, dhcp-server, http-server.
+Tests have various external dependencies, exit with `TCONF` when not installed.
+Some tests require additional setup.
 
-Note: If any of the above daemon is not running on server, the test related to
-that service running from client will fail.
+### FTP and telnet setup
+FTP stress tests and telnet server tests require environment variables `RHOST`
+(remote machine), `RUSER` (remote user) and `PASSWD` (remote password). NOTE:
+`RHOST` will imply two host configuration for other tests.
 
-### FTP setup
-* In “/etc/ftpusers” [or vi /etc/vsftpd.ftpusers], comment the line containing
-“root” string. This file lists all those users who are not given access to do ftp
+If `RUSER` is set to `root`, either of these steps is required:
+
+* In `/etc/ftpusers` (or `/etc/vsftpd.ftpusers`), comment the line containing
+"root" string. This file lists all those users who are not given access to do ftp
 on the current system.
 
-* If you don’t want to do the previous step, put following entry into /root/.netrc
-machine <remote_server_name> login root password <remote_root_password>.
-Otherwise, ftp,rlogin & telnet fails for ‘root’ user & hence needs to be
-executed using ‘test’ user to get successful results.
+* If you don’t want to do the previous step, put following entry into `/root/.netrc`:
+```
+machine <remote_server_name>
+login root
+password <remote_root_password>
+```
+
+### HTTP setup
+HTTP stress tests require configured and running web server (Apache2, Nginx, etc.).
+
+### NFS setup
+NFS tests require running NFS server, enable and start `nfs-server.service`
+(Debian/Ubuntu and openSUSE/SLES: `nfs-kernel-server` package, others:
+`nfs-server` package).
+
+There is no detection whether service is running, test will simply fail without
+warning.
+
+### TI-RPC / Sun RPC setup
+TI-RPC (or glibc legacy Sun RPC) tests require running rpcbind (or portmap on
+old distributions), enable and start `rpcbind.service`.
 
 ## LTP setup
-Install LTP testsuite. In case of two hosts configuration, make sure LTP is installed
-on both client and server machines.
+Install LTP testsuite (see INSTALL). In case of two hosts configuration, LTP
+needs to be installed the same exact location and `LTPROOT` and `PATH`
+environment variables set on *both* client and server machines. This is
+required because some tests expect to find server files in certain locations.
 
-Testcases and network tools must be in PATH, e.g.:
+Example for the default prefix `/opt/ltp`:
 
 ```sh
-export PATH=/opt/ltp/testcases/bin:/usr/bin:$PATH
+export LTPROOT="/opt/ltp"; export PATH="$LTPROOT/testcases/bin:$PATH"
 ```
-Default values for all LTP network variables are set in testcases/lib/tst_net.sh.
-If you need to override some parameters please export them before test run or
-specify them when running ltp-pan or testscripts/network.sh.
 
 ## Running the tests
-To run the test type the following:
+The network tests are executed by running the network.sh script:
 
 ```sh
 TEST_VARS ./network.sh OPTIONS
 ```
 Where
-* TEST_VARS - non-default network parameters (see testcases/lib/tst_net.sh), they
-  could be exported before test run;
-* OPTIONS - test group(s), use '-h' to see available ones.
+* `TEST_VARS` - non-default network parameters
+* `OPTIONS` - test group(s), use `-h` to see available ones.
 
-## Analyzing the results
-Generally this test must be run more than 24 hours. When you want to stop the test
-press CTRL+C to stop ./network.sh.
+Default values for all LTP network parameters are set in `testcases/lib/tst_net.sh`.
+Network stress parameters are documented in `testcases/network/stress/README`.
 
-Search failed tests in LTP logfile using grep FAIL <logfile>. For any failures,
-run the individual tests and then try to come to the conclusion.
+## Debugging
+Both single and two host configurations support debugging via
+`TST_NET_RHOST_RUN_DEBUG=1` environment variable.
