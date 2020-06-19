@@ -136,7 +136,7 @@ init_ltp_netspace()
 # -b run in background
 # -c CMD specify command to run (this must be binary, not shell builtin/function)
 # -s safe option, if something goes wrong, will exit with TBROK
-# -u USER for ssh/rsh (default root)
+# -u USER for ssh (default root)
 # RETURN: 0 on success, 1 on failure
 tst_rhost_run()
 {
@@ -166,14 +166,12 @@ tst_rhost_run()
 		return 1
 	fi
 
-	if [ -n "${TST_USE_SSH:-}" ]; then
-		output=`ssh -n -q $user@$RHOST "sh -c \
-			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'RTERR'`
-	elif [ -n "${TST_USE_NETNS:-}" ]; then
+	if [ -n "${TST_USE_NETNS:-}" ]; then
 		output=`$LTP_NETNS sh -c \
 			"$pre_cmd $cmd $post_cmd" $out 2>&1 || echo 'RTERR'`
 	else
-		output=`rsh -n -l $user $RHOST "sh -c \
+		tst_require_cmds ssh
+		output=`ssh -nq $user@$RHOST "sh -c \
 			'$pre_cmd $cmd $post_cmd'" $out 2>&1 || echo 'RTERR'`
 	fi
 	echo "$output" | grep -q 'RTERR$' && ret=1
