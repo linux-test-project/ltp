@@ -1611,7 +1611,7 @@ errno etc.
 However in rare cases core kernel features couldn't be detected based on the
 kernel userspace API and we have to resort to kernel .config parsing.
 
-For this cases the test should set the 'NULL' terminated needs_kconfig array
+For this cases the test should set the 'NULL' terminated '.needs_kconfigs' array
 of kernel config options required for the test. The config option can be
 specified either as plain "CONFIG_FOO" in which case it's sufficient for the
 test continue if it's set to any value (typically =y or =m). Or with a value
