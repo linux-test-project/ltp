@@ -49,6 +49,7 @@ enum tst_cgroup_ver tst_cgroup_version(void)
 		return TST_CGROUP_V1;
 
 	tst_brk(TCONF, "Cgroup is not configured");
+	return TST_CGROUP_V1; /* fix -Werror=return-type */
 }
 
 static void tst_cgroup1_mount(const char *name, const char *option,
