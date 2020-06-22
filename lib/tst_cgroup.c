@@ -38,18 +38,25 @@ static int tst_cgroup_check(const char *cgroup)
 
 enum tst_cgroup_ver tst_cgroup_version(void)
 {
-	if (tst_cgroup_check("cgroup2")) {
-		if (!tst_is_mounted("cgroup2") && tst_is_mounted("cgroup"))
-			return TST_CGROUP_V1;
-		else
-			return TST_CGROUP_V2;
-	}
+        enum tst_cgroup_ver cg_ver;
 
-	if (tst_cgroup_check("cgroup"))
-		return TST_CGROUP_V1;
+        if (tst_cgroup_check("cgroup2")) {
+                if (!tst_is_mounted("cgroup2") && tst_is_mounted("cgroup"))
+                        cg_ver = TST_CGROUP_V1;
+                else
+                        cg_ver = TST_CGROUP_V2;
 
-	tst_brk(TCONF, "Cgroup is not configured");
-	return TST_CGROUP_V1; /* fix -Werror=return-type */
+                goto out;
+        }
+
+        if (tst_cgroup_check("cgroup"))
+                cg_ver = TST_CGROUP_V1;
+
+        if (!cg_ver)
+                tst_brk(TCONF, "Cgroup is not configured");
+
+out:
+        return cg_ver;
 }
 
 static void tst_cgroup1_mount(const char *name, const char *option,
