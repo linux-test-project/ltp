@@ -511,7 +511,7 @@ static void tst_fzsync_pair_update(struct tst_fzsync_pair *pair)
 		per_spin_time = fabsf(pair->diff_ab.avg) / MAX(pair->spins_avg.avg, 1.0f);
 		time_delay = drand48() * (pair->diff_sa.avg + pair->diff_sb.avg)
 			- pair->diff_sb.avg;
-		pair->delay += (int)(time_delay / per_spin_time);
+		pair->delay += (int)(1.1 * time_delay / per_spin_time);
 
 		if (!pair->sampling) {
 			tst_res(TINFO,
