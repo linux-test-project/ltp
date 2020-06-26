@@ -17,7 +17,6 @@
 
 #define _GNU_SOURCE
 #include <poll.h>
-#include "tst_test.h"
 #include "tst_timer.h"
 #include "tst_safe_timerfd.h"
 
@@ -29,25 +28,45 @@ static struct tcase {
 	{CLOCK_REALTIME, "CLOCK REALTIME"},
 };
 
+static struct test_variants {
+	int (*cgettime)(clockid_t clk_id, void *ts);
+	int (*tfd_gettime)(int fd, void *its);
+	int (*tfd_settime)(int fd, int flags, void *new_value, void *old_value);
+	enum tst_ts_type type;
+	char *desc;
+} variants[] = {
+#if (__NR_timerfd_gettime != __LTP__NR_INVALID_SYSCALL)
+	{ .cgettime = sys_clock_gettime, .tfd_gettime = sys_timerfd_gettime, .tfd_settime = sys_timerfd_settime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+#endif
+
+#if (__NR_timerfd_gettime64 != __LTP__NR_INVALID_SYSCALL)
+	{ .cgettime = sys_clock_gettime64, .tfd_gettime = sys_timerfd_gettime64, .tfd_settime = sys_timerfd_settime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+#endif
+};
+
 static unsigned long long getustime(int clockid)
 {
-	struct timespec tp;
+	struct test_variants *tv = &variants[tst_variant];
+	struct tst_ts tp = {.type = tv->type, };
 
-	if (clock_gettime((clockid_t) clockid, &tp)) {
+	if (tv->cgettime((clockid_t) clockid, tst_ts_get(&tp))) {
 		tst_res(TFAIL | TERRNO, "clock_gettime() failed");
 		return 0;
 	}
 
-	return 1000000ULL * tp.tv_sec + tp.tv_nsec / 1000;
+	return 1000000ULL * tst_ts_get_sec(tp) + tst_ts_get_nsec(tp) / 1000;
 }
 
-static void settime(int tfd, struct itimerspec *tmr, int tflags,
+static void settime(int tfd, struct tst_its *tmr, int tflags,
                     unsigned long long tvalue, int tinterval)
 {
-	tmr->it_value = tst_timespec_from_us(tvalue);
-	tmr->it_interval = tst_timespec_from_us(tinterval);
+	struct test_variants *tv = &variants[tst_variant];
 
-	SAFE_TIMERFD_SETTIME(tfd, tflags, tmr, NULL);
+	tst_its_set_value_from_us(tmr, tvalue);
+	tst_its_set_interval_from_us(tmr, tinterval);
+
+	if (tv->tfd_settime(tfd, tflags, tst_its_get(tmr), NULL))
+		tst_res(TFAIL | TERRNO, "timerfd_settime() failed");
 }
 
 static void waittmr(int tfd, unsigned int exp_ticks)
@@ -78,10 +97,11 @@ static void waittmr(int tfd, unsigned int exp_ticks)
 
 static void run(unsigned int n)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	int tfd;
 	unsigned long long tnow;
 	uint64_t uticks;
-	struct itimerspec tmr;
+	struct tst_its tmr = {.type = tv->type, };
 	struct tcase *clks = &tcases[n];
 
 	tst_res(TINFO, "testing %s", clks->name);
@@ -102,11 +122,12 @@ static void run(unsigned int n)
 	settime(tfd, &tmr, TFD_TIMER_ABSTIME, tnow + 50 * 1000, 50 * 1000);
 
 	memset(&tmr, 0, sizeof(tmr));
-	if (timerfd_gettime(tfd, &tmr))
+	tmr.type = tv->type;
+
+	if (tv->tfd_gettime(tfd, tst_its_get(&tmr)))
 		tst_res(TFAIL | TERRNO, "timerfd_gettime() failed");
 
-
-	if (tmr.it_value.tv_sec != 0 || tmr.it_value.tv_nsec > 50 * 1000000)
+	if (tst_its_get_value_sec(tmr) != 0 || tst_its_get_value_nsec(tmr) > 50 * 1000000)
 		tst_res(TFAIL, "Timer read back value not relative");
 	else
 		tst_res(TPASS, "Timer read back value is relative");
@@ -132,8 +153,15 @@ static void run(unsigned int n)
 	SAFE_CLOSE(tfd);
 }
 
+static void setup(void)
+{
+	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
+}
+
 static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(tcases),
+	.test_variants = ARRAY_SIZE(variants),
+	.setup = setup,
 	.min_kver = "2.6.25",
 };

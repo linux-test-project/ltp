@@ -19,7 +19,6 @@
 #include "tst_safe_timerfd.h"
 #include "tst_timer.h"
 #include "lapi/namespaces_constants.h"
-#include "tst_test.h"
 
 #define SLEEP_US 40000
 
@@ -35,26 +34,58 @@ static struct tcase {
 	{CLOCK_BOOTTIME, CLOCK_BOOTTIME, -10},
 };
 
+static struct test_variants {
+	int (*cgettime)(clockid_t clk_id, void *ts);
+	int (*tfd_settime)(int fd, int flags, void *new_value, void *old_value);
+	enum tst_ts_type type;
+	char *desc;
+} variants[] = {
+#if (__NR_timerfd_settime != __LTP__NR_INVALID_SYSCALL)
+	{ .cgettime = sys_clock_gettime, .tfd_settime = sys_timerfd_settime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+#endif
+
+#if (__NR_timerfd_settime64 != __LTP__NR_INVALID_SYSCALL)
+	{ .cgettime = sys_clock_gettime64, .tfd_settime = sys_timerfd_settime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+#endif
+};
+
+static void setup(void)
+{
+	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
+}
+
 static void verify_timerfd(unsigned int n)
 {
-	struct timespec start, end;
-	struct itimerspec it = {};
+	struct test_variants *tv = &variants[tst_variant];
+	struct tst_ts start, end;
+	struct tst_its it;
 	struct tcase *tc = &tcases[n];
 
+	start.type = end.type = it.type = tv->type;
 	SAFE_UNSHARE(CLONE_NEWTIME);
 
 	SAFE_FILE_PRINTF("/proc/self/timens_offsets", "%d %d 0",
 	                 tc->clk_off, tc->off);
 
-	SAFE_CLOCK_GETTIME(tc->clk_id, &start);
+	if (tv->cgettime(tc->clk_id, tst_ts_get(&start))) {
+		tst_res(TFAIL | TTERRNO, "clock_gettime(2) failed for clock %s",
+			tst_clock_name(tc->clk_id));
+		return;
+	}
 
-	it.it_value = tst_timespec_add_us(start, 1000000 * tc->off + SLEEP_US);
+	end = tst_ts_add_us(start, 1000000 * tc->off + SLEEP_US);
+	tst_its_set_interval_sec(&it, 0);
+	tst_its_set_interval_nsec(&it, 0);
+	tst_its_set_value_from_ts(&it, end);
 
 	if (!SAFE_FORK()) {
 		uint64_t exp;
 		int fd = SAFE_TIMERFD_CREATE(tc->clk_id, 0);
 
-		SAFE_TIMERFD_SETTIME(fd, TFD_TIMER_ABSTIME, &it, NULL);
+		if (tv->tfd_settime(fd, TFD_TIMER_ABSTIME, tst_its_get(&it), NULL)) {
+			tst_res(TFAIL | TERRNO, "timerfd_settime() failed");
+			return;
+		}
 
 		SAFE_READ(1, fd, &exp, sizeof(exp));
 
@@ -67,9 +98,13 @@ static void verify_timerfd(unsigned int n)
 
 	SAFE_WAIT(NULL);
 
-	SAFE_CLOCK_GETTIME(CLOCK_MONOTONIC, &end);
+	if (tv->cgettime(CLOCK_MONOTONIC, tst_ts_get(&end))) {
+		tst_res(TFAIL | TTERRNO, "clock_gettime(2) failed for clock %s",
+			tst_clock_name(CLOCK_MONOTONIC));
+		return;
+	}
 
-	long long diff = tst_timespec_diff_us(end, start);
+	long long diff = tst_ts_diff_us(end, start);
 
 	if (diff > 5 * SLEEP_US) {
 		tst_res(TFAIL, "timerfd %s slept too long %lli",
@@ -90,6 +125,8 @@ static void verify_timerfd(unsigned int n)
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_timerfd,
+	.test_variants = ARRAY_SIZE(variants),
+	.setup = setup,
 	.needs_root = 1,
 	.forks_child = 1,
 	.needs_kconfigs = (const char *[]) {
