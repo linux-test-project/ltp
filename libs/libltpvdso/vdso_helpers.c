@@ -8,8 +8,11 @@
 #include "tst_test.h"
 
 #include "parse_vdso.h"
-#include <sys/auxv.h>
 #include "config.h"
+
+#ifdef HAVE_GETAUXVAL
+# include <sys/auxv.h>
+#endif /* HAVE_GETAUXVAL */
 
 static unsigned long sysinfo_ehdr;
 
