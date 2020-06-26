@@ -28,8 +28,14 @@
  *
  * These are the prototypes:
  */
+
+#include <time.h>
+
 extern void vdso_init_from_auxv(void *auxv);
 extern void vdso_init_from_sysinfo_ehdr(uintptr_t base);
 extern void *vdso_sym(const char *version, const char *name);
 
+typedef int (*gettime_t)(clockid_t clk_id, void *ts);
+void find_clock_gettime_vdso(gettime_t *ptr_vdso_gettime,
+			     gettime_t *ptr_vdso_gettime64);
 #endif /* PARSE_VDSO_H__ */
