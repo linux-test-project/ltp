@@ -190,6 +190,7 @@ static void tst_cgroup_set_path(const char *cgroup_dir)
 	tst_cgroup_path = SAFE_MALLOC(sizeof(struct tst_cgroup_path));
 	tst_cgroup_path->mnt_path = SAFE_MALLOC(strlen(cgroup_dir) + 1);
 	tst_cgroup_path->new_path = SAFE_MALLOC(strlen(cgroup_new_dir) + 1);
+	tst_cgroup_path->next = NULL;
 
 	if (!tst_cgroup_paths) {
 		tst_cgroup_paths = tst_cgroup_path;
