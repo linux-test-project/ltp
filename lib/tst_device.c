@@ -31,6 +31,7 @@
 #include <linux/loop.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <sys/sysmacros.h>
 #include "lapi/syscalls.h"
 #include "test.h"
 #include "safe_macros.h"
@@ -487,4 +488,24 @@ unsigned long tst_dev_bytes_written(const char *dev)
 	prev_dev_sec_write = dev_sec_write;
 
 	return dev_bytes_written;
+}
+
+void tst_find_backing_dev(const char *path, char *dev)
+{
+	char fmt[1024];
+	struct stat buf;
+
+	if (stat(path, &buf) < 0)
+		 tst_brkm(TWARN | TERRNO, NULL, "stat() failed");
+
+	snprintf(fmt, sizeof(fmt), "%%*i %%*i %u:%u %%*s %%*s %%*s %%*s %%*s %%*s %%s %%*s",
+			major(buf.st_dev), minor(buf.st_dev));
+
+	SAFE_FILE_LINES_SCANF(NULL, "/proc/self/mountinfo", fmt, dev);
+
+	if (stat(dev, &buf) < 0)
+		 tst_brkm(TWARN | TERRNO, NULL, "stat(%s) failed", dev);
+
+	if (S_ISBLK(buf.st_mode) != 1)
+		tst_brkm(TCONF, NULL, "dev(%s) isn't a block dev", dev);
 }

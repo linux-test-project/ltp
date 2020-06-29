@@ -13,6 +13,7 @@ static void do_test(void)
 {
 	int fd;
 	const char *dev;
+	char block_dev[100];
 	uint64_t ltp_dev_size;
 
 	dev = tst_device->dev;
@@ -29,6 +30,13 @@ static void do_test(void)
 		tst_res(TPASS, "Got expected device size");
 	else
 		tst_res(TFAIL, "Got unexpected device size");
+
+	tst_find_backing_dev("/boot", block_dev);
+	tst_res(TPASS, "/boot belongs to %s block dev", block_dev);
+	tst_find_backing_dev("/", block_dev);
+	tst_res(TPASS, "/ belongs to %s block dev", block_dev);
+	tst_find_backing_dev("/tmp", block_dev);
+	tst_find_backing_dev("/boot/xuyang", block_dev);
 }
 
 static struct tst_test test = {

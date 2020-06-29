@@ -1089,6 +1089,17 @@ FS deferred IO metadata/cache interference, we suggest doing "syncfs" before the
 tst_dev_bytes_written first invocation. And an inline function named tst_dev_sync
 is created for that intention.
 
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+voud tst_find_backing_dev(const char *path, char *dev);
+-------------------------------------------------------------------------------
+
+This function finds the block dev that this path belongs to, it uses stat function
+to get the major/minor number of the path. Then scan them in "/proc/self/mountinfo"
+and list 10th column value as its block dev if match succeeds.
+
 2.2.16 Formatting a device with a filesystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -84,4 +84,11 @@ unsigned long tst_dev_bytes_written(const char *dev);
  */
 void tst_purge_dir(const char *path);
 
+/*
+ * Find the file or path belongs to which block dev
+ * @path  Path to find the backing dev
+ * @dev   The block dev
+ */
+void tst_find_backing_dev(const char *path, char *dev);
+
 #endif	/* TST_DEVICE_H__ */
