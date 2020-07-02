@@ -12,6 +12,14 @@ unsigned long tst_hugepages;
 char *nr_opt;
 char *Hopt;
 
+size_t tst_get_hugepage_size(void)
+{
+	if (access(PATH_HUGEPAGES, F_OK))
+		return 0;
+
+	return SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
+}
+
 unsigned long tst_request_hugepages(unsigned long hpages)
 {
 	unsigned long val, max_hpages;
