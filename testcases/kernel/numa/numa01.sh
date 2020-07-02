@@ -25,6 +25,17 @@ TST_NEEDS_CMDS="awk bc numactl numastat"
 
 . tst_test.sh
 
+# Awk the field matching the node value for numastat
+# $1 - Pid number
+# $2 - Node number
+get_node_index()
+{
+       local pid=$1
+       local nid="Node $2"
+       echo $(numastat -p $pid | sed '3q;d' | awk -F '[[:space:]][[:space:]]+' \
+               -v node="$nid" '{ for (i = 1; i <= NF; ++i) if($i==node) print i; exit }')
+}
+
 # Convert the value of given numa node from the `numastat -p` output,
 # multiply by size.
 # $1 - Pid number
@@ -33,9 +44,9 @@ TST_NEEDS_CMDS="awk bc numactl numastat"
 get_mem_cur()
 {
 	local pid=$1
-	local node=$(($2 + 2))
+	local index=$(echo "$(get_node_index $pid $2)")
 	local size=$3
-	local numstat=$(numastat -p $pid |awk '/^Total/ {print $'$node'}')
+	local numstat=$(numastat -p $pid |awk '/^Total/ {print $'$index'}')
 
 	if [ -z "$numstat" ]; then
 		echo 0
@@ -350,7 +361,8 @@ test9()
 		pid=$!
 		TST_RETRY_FUNC "check_for_support_numa $pid" 0
 
-		Mem_huge=$(echo $(numastat -p $pid |awk '/^Huge/ {print $'$((node+2))'}'))
+		local index=$(echo "$(get_node_index $pid $node)")
+		Mem_huge=$(echo $(numastat -p $pid |awk '/^Huge/ {print $'$index'}'))
 		Mem_huge=$((${Mem_huge%.*} * 1024))
 
 		if [ "$Mem_huge" -lt "$HPAGE_SIZE" ]; then
