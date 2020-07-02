@@ -718,6 +718,46 @@ tst_timespec_from_ms(long long ms)
 }
 
 /*
+ * Sets tst_its it_value from microseconds.
+ */
+static inline void tst_its_set_interval_from_us(struct tst_its *its, long long usec)
+{
+	struct timespec tp = tst_timespec_from_us(usec);
+
+	tst_its_set_interval_sec(its, tp.tv_sec);
+	tst_its_set_interval_nsec(its, tp.tv_nsec);
+}
+
+/*
+ * Sets tst_its it_value from microseconds.
+ */
+static inline void tst_its_set_value_from_us(struct tst_its *its, long long usec)
+{
+	struct timespec tp = tst_timespec_from_us(usec);
+
+	tst_its_set_value_sec(its, tp.tv_sec);
+	tst_its_set_value_nsec(its, tp.tv_nsec);
+}
+
+/*
+ * Sets tst_its it_interval from tst_ts.
+ */
+static inline void tst_its_set_interval_from_ts(struct tst_its *its, struct tst_ts ts)
+{
+	tst_its_set_interval_sec(its, tst_ts_get_sec(ts));
+	tst_its_set_interval_nsec(its, tst_ts_get_nsec(ts));
+}
+
+/*
+ * Sets tst_its it_value from tst_ts.
+ */
+static inline void tst_its_set_value_from_ts(struct tst_its *its, struct tst_ts ts)
+{
+	tst_its_set_value_sec(its, tst_ts_get_sec(ts));
+	tst_its_set_value_nsec(its, tst_ts_get_nsec(ts));
+}
+
+/*
  * Returns if t1 less than t2. Both t1 and t2 must be normalized.
  */
 static inline int tst_ts_lt(struct tst_ts t1, struct tst_ts t2)
