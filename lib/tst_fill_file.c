@@ -19,12 +19,14 @@
  *
  */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "lapi/fallocate.h"
 
 #include "test.h"
 
@@ -54,6 +56,22 @@ int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount)
 	return 0;
 }
 
+int tst_prealloc_size_fd(int fd, size_t bs, size_t bcount)
+{
+	int ret;
+
+	errno = 0;
+	ret = fallocate(fd, 0, 0, bs * bcount);
+
+	if (ret && errno == ENOSPC)
+		return ret;
+
+	if (ret)
+		ret = tst_fill_fd(fd, 0, bs, bcount);
+
+	return ret;
+}
+
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount)
 {
 	int fd;
@@ -71,6 +89,28 @@ int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount)
 	if (close(fd) < 0) {
 		unlink(path);
 
+		return -1;
+	}
+
+	return 0;
+}
+
+int tst_prealloc_file(const char *path, size_t bs, size_t bcount)
+{
+	int fd;
+
+	fd = open(path, O_CREAT|O_WRONLY|O_TRUNC, S_IRUSR|S_IWUSR);
+	if (fd < 0)
+		return -1;
+
+	if (tst_prealloc_size_fd(fd, bs, bcount)) {
+		close(fd);
+		unlink(path);
+		return -1;
+	}
+
+	if (close(fd) < 0) {
+		unlink(path);
 		return -1;
 	}
 

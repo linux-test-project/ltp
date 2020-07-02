@@ -1236,10 +1236,30 @@ Fill a file with specified pattern using file descriptor.
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
+int tst_prealloc_size_fd(int fd, size_t bs, size_t bcount);
+-------------------------------------------------------------------------------
+
+Preallocate the specified amount of space using 'fallocate()'. Falls back to
+'tst_fill_fd()' if 'fallocate()' fails.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
 -------------------------------------------------------------------------------
 
 Creates/overwrites a file with specified pattern using file path.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+int tst_prealloc_file(const char *path, size_t bs, size_t bcount);
+-------------------------------------------------------------------------------
+
+Create/overwrite a file and preallocate the specified amount of space for it.
+The allocated space will not be initialized to any particular content.
 
 2.2.19 Getting an unused PID number
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

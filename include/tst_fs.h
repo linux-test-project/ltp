@@ -141,6 +141,15 @@ int tst_get_path(const char *prog_name, char *buf, size_t buf_len);
 int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount);
 
 /*
+ * Preallocate space in open file. If fallocate() fails, falls back to
+ * using tst_fill_fd().
+ * @fd: file descriptor
+ * @bs: block size
+ * @bcount: blocks count
+ */
+int tst_prealloc_size_fd(int fd, size_t bs, size_t bcount);
+
+/*
  * Creates/ovewrites a file with specified pattern
  * @path: path to file
  * @pattern: pattern
@@ -148,6 +157,14 @@ int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount);
  * @bcount: blocks amount
  */
 int tst_fill_file(const char *path, char pattern, size_t bs, size_t bcount);
+
+/*
+ * Creates file of specified size. Space will be only preallocated if possible.
+ * @path: path to file
+ * @bs: block size
+ * @bcount: blocks amount
+ */
+int tst_prealloc_file(const char *path, size_t bs, size_t bcount);
 
 #define TST_FS_SKIP_FUSE 0x01
 
