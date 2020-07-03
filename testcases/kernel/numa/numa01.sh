@@ -12,11 +12,10 @@
 # Test #5: Verifies localalloc
 # Test #6: Verifies memhog
 # Test #7: Verifies numa_node_size api
-# Test #8: Verifies Migratepages
-# Test #9: Verifies hugepage alloacted on specified node
-# Test #10: Verifies THP memory allocated on preferred node
+# Test #8: Verifies hugepage alloacted on specified node
+# Test #9: Verifies THP memory allocated on preferred node
 
-TST_CNT=10
+TST_CNT=9
 TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
@@ -300,43 +299,8 @@ test7()
 	fi
 }
 
-# Verification of migratepages
-test8()
-{
-	local mem_curr
-	local cnt=1
-
-	for node in $nodes_list; do
-		if [ $cnt -eq $total_nodes ]; then
-			Preferred_node=$(echo $nodes_list | cut -d ' ' -f 1)
-		else
-			Preferred_node=$(echo $nodes_list | cut -d ' ' -f $((cnt+1)))
-		fi
-
-		numactl --preferred=$node support_numa alloc_1MB &
-		pid=$!
-
-		TST_RETRY_FUNC "check_for_support_numa $pid" 0
-
-		migratepages $pid $node $Preferred_node
-
-		mem_curr=$(get_mem_cur $pid $Preferred_node $MB)
-		if [ $(echo "$mem_curr < $MB" |bc ) -eq 1 ]; then
-			tst_res TFAIL \
-				"NUMA migratepages is not working fine"
-			kill -CONT $pid >/dev/null 2>&1
-			return
-		fi
-
-		cnt=$((cnt+1))
-		kill -CONT $pid >/dev/null 2>&1
-	done
-
-	tst_res TPASS "NUMA MIGRATEPAGES policy"
-}
-
 # Verification of hugepage memory allocated on a node
-test9()
+test8()
 {
 	Mem_huge=0
 	Sys_node=/sys/devices/system/node
@@ -381,7 +345,7 @@ test9()
 }
 
 # Verification of THP memory allocated on preferred node
-test10()
+test9()
 {
 	local mem_curr
 	local cnt=1

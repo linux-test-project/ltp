@@ -26,38 +26,27 @@ Verifies the preferred node memory policy which will allocate memory from the no
 testcase will use the support_numa process for the verfication.
 
 TestCase3:
-Verifies the preferred node memory policy which will allocate shared memory from the node we specify. This
+Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
 testcase will use the support_numa process for the verfication.
 
 TestCase4:
-Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
-testcase will use the support_numa process for the verfication.
-
-TestCase5:
-Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
-testcase will use the support_numa process for the verfication.
-
-TestCase6:
 Verifies the physical cpu affinity which runs the process support_numa on the specified physical cpu number.
 
-TestCase7:
+TestCase5:
 Verifies the local allocation policy which always allocates memory from the local node. This testcase
 will use the support_numa process for the verfication.
 
-TestCase8:
+TestCase6:
 Verifies the memory interleaving policy which will distribute the memory evenly among all nodes. This
 testcase will use memhog for the verfication.
 
-TestCase9:
+TestCase7:
 Verifies the numa_node_size api with hardware checking.
 
-TestCase10:
-Verifieds the NUMA migratepages policy.
-
-TestCase11:
+TestCase8:
 Verifies the hugepage memory allocated from the node we specify.
 
-TestCase12:
+TestCase9:
 Verifies the preferred node policy with THP memory allocating from the node we specify.
 
 Pre-requisites
