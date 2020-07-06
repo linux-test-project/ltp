@@ -1,23 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015  Yi Zhang <wetpzy@gmail.com>
  *                     Li Wang <liwang@redhat.com>
  *
- * Licensed under the GNU GPLv2 or later.
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
- /* DESCRIPTION:
+ * DESCRIPTION:
  *
  *   It is a regression test for commit:
  *   http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/
@@ -37,120 +23,102 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-#include <pthread.h>
-#include <errno.h>
 #include <sys/time.h>
 #include <string.h>
 
-#include "test.h"
-#include "safe_macros.h"
 #include "futextest.h"
 #include "futex_utils.h"
 #include "lapi/mmap.h"
-
-#define PATH_MEMINFO "/proc/meminfo"
-#define PATH_NR_HUGEPAGES "/proc/sys/vm/nr_hugepages"
-#define PATH_HUGEPAGES	"/sys/kernel/mm/hugepages/"
-
-const char *TCID = "futex_wake04";
-const int TST_TOTAL = 1;
+#include "tst_safe_stdio.h"
+#include "tst_safe_pthread.h"
 
 static futex_t *futex1, *futex2;
 
-static struct timespec to = {.tv_sec = 30, .tv_nsec = 0};
+static struct tst_ts to;
 
 static long orig_hugepages;
 
+static struct test_variants {
+	enum futex_fn_type fntype;
+	enum tst_ts_type tstype;
+	char *desc;
+} variants[] = {
+#if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
+	{ .fntype = FUTEX_FN_FUTEX, .tstype = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+#endif
+
+#if (__NR_futex_time64 != __LTP__NR_INVALID_SYSCALL)
+	{ .fntype = FUTEX_FN_FUTEX64, .tstype = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+#endif
+};
+
 static void setup(void)
 {
-	tst_require_root();
+	struct test_variants *tv = &variants[tst_variant];
 
-	if ((tst_kvercmp(2, 6, 32)) < 0) {
-		tst_brkm(TCONF, NULL, "This test can only run on kernels "
-			"that are 2.6.32 or higher");
-	}
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
+	futex_supported_by_kernel(tv->fntype);
+
+	to = tst_ts_from_ns(tv->tstype, 30 * NSEC_PER_SEC);
 
 	if (access(PATH_HUGEPAGES, F_OK))
-		tst_brkm(TCONF, NULL, "Huge page is not supported.");
+		tst_brk(TCONF, "Huge page is not supported.");
 
-	tst_tmpdir();
-
-	SAFE_FILE_SCANF(NULL, PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
+	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%ld", &orig_hugepages);
 
 	if (orig_hugepages <= 0)
-		SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%d", 1);
-
-	TEST_PAUSE;
+		SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%d", 1);
 }
 
 static void cleanup(void)
 {
 	if (orig_hugepages <= 0)
-		SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
-
-	tst_rmdir();
-}
-
-static int read_hugepagesize(void)
-{
-	FILE *fp;
-	char line[BUFSIZ], buf[BUFSIZ];
-	int val;
-
-	fp = SAFE_FOPEN(cleanup, PATH_MEMINFO, "r");
-	while (fgets(line, BUFSIZ, fp) != NULL) {
-		if (sscanf(line, "%64s %d", buf, &val) == 2)
-			if (strcmp(buf, "Hugepagesize:") == 0) {
-				SAFE_FCLOSE(cleanup, fp);
-				return 1024 * val;
-			}
-	}
-
-	SAFE_FCLOSE(cleanup, fp);
-	tst_brkm(TBROK, NULL, "can't find \"%s\" in %s",
-			"Hugepagesize:", PATH_MEMINFO);
+		SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%ld", orig_hugepages);
 }
 
 static void *wait_thread1(void *arg LTP_ATTRIBUTE_UNUSED)
 {
-	futex_wait(futex1, *futex1, &to, 0);
+	struct test_variants *tv = &variants[tst_variant];
+
+	futex_wait(tv->fntype, futex1, *futex1, &to, 0);
 
 	return NULL;
 }
 
 static void *wait_thread2(void *arg LTP_ATTRIBUTE_UNUSED)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	int res;
 
-	res = futex_wait(futex2, *futex2, &to, 0);
+	errno = 0;
+	res = futex_wait(tv->fntype, futex2, *futex2, &to, 0);
 	if (!res)
-		tst_resm(TPASS, "Hi hydra, thread2 awake!");
+		tst_res(TPASS, "Hi hydra, thread2 awake!");
 	else
-		tst_resm(TFAIL, "Bug: wait_thread2 did not wake after 30 secs.");
+		tst_res(TFAIL | TERRNO, "Bug: wait_thread2 did not wake after 30 secs.");
 
 	return NULL;
 }
 
 static void wakeup_thread2(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	void *addr;
-	int hpsz, pgsz, res;
+	int hpsz, pgsz;
 	pthread_t th1, th2;
 
-	hpsz = read_hugepagesize();
-	tst_resm(TINFO, "Hugepagesize %i", hpsz);
+	hpsz = tst_get_hugepage_size();
+	tst_res(TINFO, "Hugepagesize %i", hpsz);
 
 	/*allocate some shared memory*/
 	addr = mmap(NULL, hpsz, PROT_WRITE | PROT_READ,
 	            MAP_SHARED | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
 
 	if (addr == MAP_FAILED) {
-		if (errno == ENOMEM) {
-			tst_brkm(TCONF, NULL,
-				 "Cannot allocate hugepage, memory too fragmented?");
-		}
+		if (errno == ENOMEM)
+			tst_brk(TCONF, "Cannot allocate hugepage, memory too fragmented?");
 
-		tst_brkm(TBROK | TERRNO, NULL, "Cannot allocate hugepage");
+		tst_brk(TBROK | TERRNO, "Cannot allocate hugepage");
 	}
 
 	pgsz = getpagesize();
@@ -163,47 +131,26 @@ static void wakeup_thread2(void)
 	*futex2 = 0;
 
 	/*thread1 block on futex1 first,then thread2 block on futex2*/
-	res = pthread_create(&th1, NULL, wait_thread1, NULL);
-	if (res) {
-		tst_brkm(TBROK, NULL, "pthread_create(): %s",
-				tst_strerrno(res));
-	}
-
-	res = pthread_create(&th2, NULL, wait_thread2, NULL);
-	if (res) {
-		tst_brkm(TBROK, NULL, "pthread_create(): %s",
-				tst_strerrno(res));
-	}
+	SAFE_PTHREAD_CREATE(&th1, NULL, wait_thread1, NULL);
+	SAFE_PTHREAD_CREATE(&th2, NULL, wait_thread2, NULL);
 
 	while (wait_for_threads(2))
 		usleep(1000);
 
-	futex_wake(futex2, 1, 0);
+	futex_wake(tv->fntype, futex2, 1, 0);
+	SAFE_PTHREAD_JOIN(th2, NULL);
+	futex_wake(tv->fntype, futex1, 1, 0);
+	SAFE_PTHREAD_JOIN(th1, NULL);
 
-	res = pthread_join(th2, NULL);
-	if (res)
-		tst_brkm(TBROK, NULL, "pthread_join(): %s", tst_strerrno(res));
-
-	futex_wake(futex1, 1, 0);
-
-	res = pthread_join(th1, NULL);
-	if (res)
-		tst_brkm(TBROK, NULL, "pthread_join(): %s", tst_strerrno(res));
-
-	SAFE_MUNMAP(NULL, addr, hpsz);
+	SAFE_MUNMAP(addr, hpsz);
 }
 
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		wakeup_thread2();
-
-	cleanup();
-	tst_exit();
-}
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = wakeup_thread2,
+	.test_variants = ARRAY_SIZE(variants),
+	.needs_root = 1,
+	.min_kver = "2.6.32",
+	.needs_tmpdir = 1,
+};

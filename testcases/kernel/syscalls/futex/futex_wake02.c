@@ -1,39 +1,32 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
- * Licensed under the GNU GPLv2 or later.
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Block several threads on a private mutex, then wake them up.
  */
- /*
-  * Block several threads on a private mutex, then wake them up.
-  */
 
-#include <errno.h>
-#include <pthread.h>
+#include <sys/types.h>
 
-#include "test.h"
-#include "safe_macros.h"
 #include "futextest.h"
 #include "futex_utils.h"
-
-const char *TCID="futex_wake02";
-const int TST_TOTAL=11;
+#include "tst_safe_pthread.h"
 
 static futex_t futex = FUTEX_INITIALIZER;
 
 static volatile int threads_flags[55];
+
+static struct test_variants {
+	enum futex_fn_type fntype;
+	char *desc;
+} variants[] = {
+#if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
+	{ .fntype = FUTEX_FN_FUTEX, .desc = "syscall with old kernel spec"},
+#endif
+
+#if (__NR_futex_time64 != __LTP__NR_INVALID_SYSCALL)
+	{ .fntype = FUTEX_FN_FUTEX64, .desc = "syscall time64 with kernel spec"},
+#endif
+};
 
 static int threads_awake(void)
 {
@@ -58,9 +51,10 @@ static void clear_threads_awake(void)
 
 static void *threaded(void *arg)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	long i = (long)arg;
 
-	futex_wait(&futex, futex, NULL, FUTEX_PRIVATE_FLAG);
+	futex_wait(tv->fntype, &futex, futex, NULL, FUTEX_PRIVATE_FLAG);
 
 	threads_flags[i] = 1;
 
@@ -69,27 +63,23 @@ static void *threaded(void *arg)
 
 static void do_child(void)
 {
-	int res, i, j, awake;
+	struct test_variants *tv = &variants[tst_variant];
+	int i, j, awake;
 	pthread_t t[55];
 
-	for (i = 0; i < (int)ARRAY_SIZE(t); i++) {
-		res = pthread_create(&t[i], NULL, threaded, (void*)((long)i));
-		if (res) {
-			tst_brkm(TBROK, NULL, "pthread_create(): %s",
-			         tst_strerrno(res));
-		}
-	}
+	for (i = 0; i < (int)ARRAY_SIZE(t); i++)
+		SAFE_PTHREAD_CREATE(&t[i], NULL, threaded, (void*)((long)i));
 
 	while (wait_for_threads(ARRAY_SIZE(t)))
 		usleep(100);
 
 	for (i = 1; i <= 10; i++) {
 		clear_threads_awake();
-		res = futex_wake(&futex, i, FUTEX_PRIVATE_FLAG);
-		if (i != res) {
-			tst_resm(TFAIL,
-			         "futex_wake() woken up %i threads, expected %i",
-			         res, i);
+		TEST(futex_wake(tv->fntype, &futex, i, FUTEX_PRIVATE_FLAG));
+		if (i != TST_RET) {
+			tst_res(TFAIL | TTERRNO,
+			         "futex_wake() woken up %li threads, expected %i",
+			         TST_RET, i);
 		}
 
 		for (j = 0; j < 100000; j++) {
@@ -101,26 +91,25 @@ static void do_child(void)
 		}
 
 		if (awake == i) {
-			tst_resm(TPASS, "futex_wake() woken up %i threads", i);
+			tst_res(TPASS, "futex_wake() woken up %i threads", i);
 		} else {
-			tst_resm(TFAIL, "Woken up %i threads, expected %i",
-			         awake, i);
+			tst_res(TFAIL, "Woken up %i threads, expected %i",
+				awake, i);
 		}
 	}
 
-	res = futex_wake(&futex, 1, FUTEX_PRIVATE_FLAG);
-
-	if (res) {
-		tst_resm(TFAIL, "futex_wake() woken up %i, none were waiting",
-		         res);
+	TEST(futex_wake(tv->fntype, &futex, 1, FUTEX_PRIVATE_FLAG));
+	if (TST_RET) {
+		tst_res(TFAIL | TTERRNO, "futex_wake() woken up %li, none were waiting",
+			TST_RET);
 	} else {
-		tst_resm(TPASS, "futex_wake() woken up 0 threads");
+		tst_res(TPASS, "futex_wake() woken up 0 threads");
 	}
 
 	for (i = 0; i < (int)ARRAY_SIZE(t); i++)
-		pthread_join(t[i], NULL);
+		SAFE_PTHREAD_JOIN(t[i], NULL);
 
-	tst_exit();
+	exit(0);
 }
 
 /*
@@ -135,30 +124,23 @@ static void do_child(void)
  * under /proc/$PID/tasks/, but the subsequent open() fails with ENOENT because
  * the thread was removed meanwhile.
  */
-static void verify_futex_wake(void)
+static void run(void)
 {
-	int pid;
-
-	pid = tst_fork();
-
-	switch (pid) {
-	case 0:
+	if (!SAFE_FORK())
 		do_child();
-	case -1:
-		tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
-	default:
-		tst_record_childstatus(NULL, pid);
-	}
 }
 
-int main(int argc, char *argv[])
+static void setup(void)
 {
-	int lc;
+	struct test_variants *tv = &variants[tst_variant];
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		verify_futex_wake();
-
-	tst_exit();
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
+	futex_supported_by_kernel(tv->fntype);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.test_variants = ARRAY_SIZE(variants),
+	.forks_child = 1,
+};

@@ -19,7 +19,7 @@ int sample_fn(int clk_id, long long usec)
 	futex_t futex = FUTEX_INITIALIZER;
 
 	tst_timer_start(clk_id);
-	TEST(futex_wait(&futex, futex, &to, 0));
+	TEST(syscall(SYS_futex, &futex, FUTEX_WAIT, futex, &to, NULL, 0));
 	tst_timer_stop();
 	tst_timer_sample();
 

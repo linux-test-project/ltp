@@ -1,105 +1,83 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
- * Licensed under the GNU GPLv2 or later.
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * Block on a futex and wait for wakeup.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * This tests uses shared memory page to store the mutex variable.
  */
- /*
-  * Block on a futex and wait for wakeup.
-  *
-  * This tests uses shared memory page to store the mutex variable.
-  */
 
 #include <sys/mman.h>
 #include <sys/wait.h>
-#include <errno.h>
 
-#include "test.h"
-#include "safe_macros.h"
 #include "futextest.h"
-
-const char *TCID="futex_wait02";
-const int TST_TOTAL=1;
+#include "futex_utils.h"
 
 static futex_t *futex;
 
+static struct test_variants {
+	enum futex_fn_type fntype;
+	char *desc;
+} variants[] = {
+#if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
+	{ .fntype = FUTEX_FN_FUTEX, .desc = "syscall with old kernel spec"},
+#endif
+
+#if (__NR_futex_time64 != __LTP__NR_INVALID_SYSCALL)
+	{ .fntype = FUTEX_FN_FUTEX64, .desc = "syscall time64 with kernel spec"},
+#endif
+};
+
 static void do_child(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	int ret;
 
-	tst_process_state_wait2(getppid(), 'S');
+	TST_PROCESS_STATE_WAIT(getppid(), 'S', 1000);
 
-	ret = futex_wake(futex, 1, 0);
+	ret = futex_wake(tv->fntype, futex, 1, 0);
 
 	if (ret != 1)
-		tst_brkm(TFAIL, NULL, "futex_wake() returned %i", ret);
+		tst_res(TFAIL | TERRNO, "futex_wake() failed");
 
-	exit(TPASS);
+	exit(0);
 }
 
-static void verify_futex_wait(void)
+static void run(void)
 {
-	int res;
-	int pid;
+	struct test_variants *tv = &variants[tst_variant];
+	int res, pid;
 
-	pid = tst_fork();
-
-	switch (pid) {
-	case 0:
+	pid = SAFE_FORK();
+	if (!pid)
 		do_child();
-	break;
-	case -1:
-		tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
-	break;
-	default:
-	break;
-	}
 
-	res = futex_wait(futex, *futex, NULL, 0);
-
+	res = futex_wait(tv->fntype, futex, *futex, NULL, 0);
 	if (res) {
-		tst_resm(TFAIL, "futex_wait() returned %i, errno %s",
-		         res, tst_strerrno(errno));
+		tst_res(TFAIL | TERRNO, "futex_wait() failed");
+		return;
 	}
 
-	SAFE_WAIT(NULL, &res);
-
-	if (WIFEXITED(res) && WEXITSTATUS(res) == TPASS)
-		tst_resm(TPASS, "futex_wait() woken up");
-	else
-		tst_resm(TFAIL, "child failed");
+	SAFE_WAIT(NULL);
+	tst_res(TPASS, "futex_wait() woken up");
 }
 
 static void setup(void)
 {
-	futex = SAFE_MMAP(NULL, NULL, sizeof(*futex), PROT_READ | PROT_WRITE,
+	struct test_variants *tv = &variants[tst_variant];
+
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
+	futex_supported_by_kernel(tv->fntype);
+
+	futex = SAFE_MMAP(NULL, sizeof(*futex), PROT_READ | PROT_WRITE,
 			  MAP_ANONYMOUS | MAP_SHARED, -1, 0);
 
 	*futex = FUTEX_INITIALIZER;
 }
 
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		verify_futex_wait();
-
-	tst_exit();
-}
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.test_variants = ARRAY_SIZE(variants),
+	.forks_child = 1,
+};

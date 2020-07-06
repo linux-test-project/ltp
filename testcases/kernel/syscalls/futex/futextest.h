@@ -1,35 +1,14 @@
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2009
- *   Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * NAME
- *      futextest.h
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright © International Business Machines  Corp., 2009
+ * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  *
  * DESCRIPTION
  *      Glibc independent futex library for testing kernel functionality.
  *
  * AUTHOR
  *      Darren Hart <dvhltc@us.ibm.com>
- *
- * HISTORY
- *      2009-Nov-6: Initial version by Darren Hart <dvhltc@us.ibm.com>
- *
- *****************************************************************************/
+ */
 
 #ifndef _FUTEXTEST_H
 #define _FUTEXTEST_H
@@ -39,6 +18,7 @@
 #include <sys/types.h>
 #include <linux/futex.h>
 #include "lapi/futex.h"
+#include "tst_timer.h"
 
 #define FUTEX_INITIALIZER 0
 
@@ -82,18 +62,35 @@
 # define FUTEX_CLOCK_REALTIME 256
 #endif
 
+enum futex_fn_type {
+	FUTEX_FN_FUTEX,
+	FUTEX_FN_FUTEX64,
+};
+
+static inline void futex_supported_by_kernel(enum futex_fn_type fntype)
+{
+	if (fntype != FUTEX_FN_FUTEX64)
+		return;
+
+	/* Check if the syscall is implemented on the platform */
+	TEST(sys_futex_time64(NULL, 0, 0, NULL, NULL, 0));
+	if (TST_RET == -1 && TST_ERR == ENOSYS)
+		tst_brk(TCONF, "Test not supported on kernel/platform");
+}
+
 /**
- * futex() - SYS_futex syscall wrapper
+ * futex_syscall() - futex syscall wrapper
+ * @fntype:	Futex function type
  * @uaddr:	address of first futex
  * @op:		futex op code
  * @val:	typically expected value of uaddr, but varies by op
- * @timeout:	typically an absolute struct timespec (except where noted
+ * @timeout:	typically an absolute struct tst_ts (except where noted
  *		otherwise). Overloaded by some ops
  * @uaddr2:	address of second futex for some ops\
  * @val3:	varies by op
  * @opflags:	flags to be bitwise OR'd with op, such as FUTEX_PRIVATE_FLAG
  *
- * futex() is used by all the following futex op wrappers. It can also be
+ * futex_syscall() is used by all the following futex op wrappers. It can also be
  * used for misuse and abuse testing. Generally, the specific op wrappers
  * should be used instead. It is a macro instead of an static inline function as
  * some of the types over overloaded (timeout is used for nr_requeue for
@@ -102,17 +99,30 @@
  * These argument descriptions are the defaults for all
  * like-named arguments in the following wrappers except where noted below.
  */
-#define futex(uaddr, op, val, timeout, uaddr2, val3, opflags) \
-	syscall(SYS_futex, uaddr, op | opflags, val, timeout, uaddr2, val3)
+static inline int futex_syscall(enum futex_fn_type fntype, futex_t *uaddr,
+				int futex_op, futex_t val, void *timeout,
+				futex_t *uaddr2, int val3, int opflags)
+{
+	int (*func)(int *uaddr, int futex_op, int val, void *to, int *uaddr2, int val3);
+
+	if (fntype == FUTEX_FN_FUTEX)
+		func = sys_futex;
+	else
+		func = sys_futex_time64;
+
+	return func((int *)uaddr, futex_op | opflags, val, timeout, (int *)uaddr2, val3);
+}
 
 /**
  * futex_wait() - block on uaddr with optional timeout
  * @timeout:	relative timeout
  */
 static inline int
-futex_wait(futex_t *uaddr, futex_t val, struct timespec *timeout, int opflags)
+futex_wait(enum futex_fn_type fntype, futex_t *uaddr, futex_t val,
+	   struct tst_ts *timeout, int opflags)
 {
-	return futex(uaddr, FUTEX_WAIT, val, timeout, NULL, 0, opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_WAIT, val,
+			     tst_ts_get(timeout), NULL, 0, opflags);
 }
 
 /**
@@ -120,9 +130,10 @@ futex_wait(futex_t *uaddr, futex_t val, struct timespec *timeout, int opflags)
  * @nr_wake:	wake up to this many tasks
  */
 static inline int
-futex_wake(futex_t *uaddr, int nr_wake, int opflags)
+futex_wake(enum futex_fn_type fntype, futex_t *uaddr, int nr_wake, int opflags)
 {
-	return futex(uaddr, FUTEX_WAKE, nr_wake, NULL, NULL, 0, opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_WAKE, nr_wake, NULL, NULL, 0,
+			     opflags);
 }
 
 /**
@@ -130,11 +141,11 @@ futex_wake(futex_t *uaddr, int nr_wake, int opflags)
  * @bitset:	bitset to be used with futex_wake_bitset
  */
 static inline int
-futex_wait_bitset(futex_t *uaddr, futex_t val, struct timespec *timeout,
-		  u_int32_t bitset, int opflags)
+futex_wait_bitset(enum futex_fn_type fntype, futex_t *uaddr, futex_t val,
+		  struct tst_ts *timeout, u_int32_t bitset, int opflags)
 {
-	return futex(uaddr, FUTEX_WAIT_BITSET, val, timeout, NULL, bitset,
-		     opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_WAIT_BITSET, val,
+			     tst_ts_get(timeout), NULL, bitset, opflags);
 }
 
 /**
@@ -142,10 +153,11 @@ futex_wait_bitset(futex_t *uaddr, futex_t val, struct timespec *timeout,
  * @bitset:	bitset to compare with that used in futex_wait_bitset
  */
 static inline int
-futex_wake_bitset(futex_t *uaddr, int nr_wake, u_int32_t bitset, int opflags)
+futex_wake_bitset(enum futex_fn_type fntype, futex_t *uaddr, int nr_wake,
+		  u_int32_t bitset, int opflags)
 {
-	return futex(uaddr, FUTEX_WAKE_BITSET, nr_wake, NULL, NULL, bitset,
-		     opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_WAKE_BITSET, nr_wake, NULL,
+			     NULL, bitset, opflags);
 }
 
 /**
@@ -153,30 +165,32 @@ futex_wake_bitset(futex_t *uaddr, int nr_wake, u_int32_t bitset, int opflags)
  * @detect:	whether (1) or not (0) to perform deadlock detection
  */
 static inline int
-futex_lock_pi(futex_t *uaddr, struct timespec *timeout, int detect,
-	      int opflags)
+futex_lock_pi(enum futex_fn_type fntype, futex_t *uaddr, struct tst_ts *timeout,
+	      int detect, int opflags)
 {
-	return futex(uaddr, FUTEX_LOCK_PI, detect, timeout, NULL, 0, opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_LOCK_PI, detect,
+			     tst_ts_get(timeout), NULL, 0, opflags);
 }
 
 /**
  * futex_unlock_pi() - release uaddr as a PI mutex, waking the top waiter
  */
 static inline int
-futex_unlock_pi(futex_t *uaddr, int opflags)
+futex_unlock_pi(enum futex_fn_type fntype, futex_t *uaddr, int opflags)
 {
-	return futex(uaddr, FUTEX_UNLOCK_PI, 0, NULL, NULL, 0, opflags);
-}
+	return futex_syscall(fntype, uaddr, FUTEX_UNLOCK_PI, 0, NULL, NULL, 0,
+			     opflags); }
 
 /**
  * futex_wake_op() - FIXME: COME UP WITH A GOOD ONE LINE DESCRIPTION
  */
 static inline int
-futex_wake_op(futex_t *uaddr, futex_t *uaddr2, int nr_wake, int nr_wake2,
-	      int wake_op, int opflags)
+futex_wake_op(enum futex_fn_type fntype, futex_t *uaddr, futex_t *uaddr2,
+	      int nr_wake, int nr_wake2, int wake_op, int opflags)
 {
-	return futex(uaddr, FUTEX_WAKE_OP, nr_wake, nr_wake2, uaddr2, wake_op,
-		     opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_WAKE_OP, nr_wake,
+			     (void *)((unsigned long)nr_wake2), uaddr2, wake_op,
+			     opflags);
 }
 
 /**
@@ -188,11 +202,12 @@ futex_wake_op(futex_t *uaddr, futex_t *uaddr2, int nr_wake, int nr_wake2,
  * favor of futex_cmp_requeue().
  */
 static inline int
-futex_requeue(futex_t *uaddr, futex_t *uaddr2, int nr_wake, int nr_requeue,
-	      int opflags)
+futex_requeue(enum futex_fn_type fntype, futex_t *uaddr, futex_t *uaddr2,
+	      int nr_wake, int nr_requeue, int opflags)
 {
-	return futex(uaddr, FUTEX_REQUEUE, nr_wake, nr_requeue, uaddr2, 0,
-		     opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_REQUEUE, nr_wake,
+			     (void *)((unsigned long)nr_requeue), uaddr2, 0,
+			     opflags);
 }
 
 /**
@@ -201,11 +216,12 @@ futex_requeue(futex_t *uaddr, futex_t *uaddr2, int nr_wake, int nr_requeue,
  * @nr_requeue:	requeue up to this many tasks
  */
 static inline int
-futex_cmp_requeue(futex_t *uaddr, futex_t val, futex_t *uaddr2, int nr_wake,
-		  int nr_requeue, int opflags)
+futex_cmp_requeue(enum futex_fn_type fntype, futex_t *uaddr, futex_t val,
+		  futex_t *uaddr2, int nr_wake, int nr_requeue, int opflags)
 {
-	return futex(uaddr, FUTEX_CMP_REQUEUE, nr_wake, nr_requeue, uaddr2,
-		     val, opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_CMP_REQUEUE, nr_wake,
+			     (void *)((unsigned long)nr_requeue), uaddr2, val,
+			     opflags);
 }
 
 /**
@@ -217,11 +233,11 @@ futex_cmp_requeue(futex_t *uaddr, futex_t val, futex_t *uaddr2, int nr_wake,
  * paired with futex_cmp_requeue_pi().
  */
 static inline int
-futex_wait_requeue_pi(futex_t *uaddr, futex_t val, futex_t *uaddr2,
-		      struct timespec *timeout, int opflags)
+futex_wait_requeue_pi(enum futex_fn_type fntype, futex_t *uaddr, futex_t val,
+		      futex_t *uaddr2, struct tst_ts *timeout, int opflags)
 {
-	return futex(uaddr, FUTEX_WAIT_REQUEUE_PI, val, timeout, uaddr2, 0,
-		     opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_WAIT_REQUEUE_PI, val,
+			     tst_ts_get(timeout), uaddr2, 0, opflags);
 }
 
 /**
@@ -232,11 +248,12 @@ futex_wait_requeue_pi(futex_t *uaddr, futex_t val, futex_t *uaddr2,
  * @nr_requeue:	requeue up to this many tasks
  */
 static inline int
-futex_cmp_requeue_pi(futex_t *uaddr, futex_t val, futex_t *uaddr2, int nr_wake,
-		     int nr_requeue, int opflags)
+futex_cmp_requeue_pi(enum futex_fn_type fntype, futex_t *uaddr, futex_t val,
+		     futex_t *uaddr2, int nr_wake, int nr_requeue, int opflags)
 {
-	return futex(uaddr, FUTEX_CMP_REQUEUE_PI, nr_wake, nr_requeue, uaddr2, val,
-		     opflags);
+	return futex_syscall(fntype, uaddr, FUTEX_CMP_REQUEUE_PI, nr_wake,
+			     (void *)((unsigned long)nr_requeue), uaddr2, val,
+			     opflags);
 }
 
 /**
