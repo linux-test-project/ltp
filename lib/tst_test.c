@@ -363,7 +363,7 @@ static void check_child_status(pid_t pid, int status)
 	}
 
 	if (!(WIFEXITED(status)))
-		tst_brk(TBROK, "Child (%i) exited abnormaly", pid);
+		tst_brk(TBROK, "Child (%i) exited abnormally", pid);
 
 	ret = WEXITSTATUS(status);
 	switch (ret) {
@@ -673,7 +673,7 @@ static void print_failure_hints(void)
 				hint_printed = 1;
 				printf("\n");
 				print_colored("HINT: ");
-				printf("You _MAY_ be vunerable to CVE(s), see:\n\n");
+				printf("You _MAY_ be vulnerable to CVE(s), see:\n\n");
 			}
 
 			printf(CVE_DB_URL "%s\n", tags[i].value);
@@ -790,7 +790,7 @@ static void assert_test_fn(void)
 		cnt++;
 
 	if (!cnt)
-		tst_brk(TBROK, "No test function speficied");
+		tst_brk(TBROK, "No test function specified");
 
 	if (cnt != 1)
 		tst_brk(TBROK, "You can define only one test function");
