@@ -5,10 +5,17 @@
  *
  * Gets round-robin time quantum by calling sched_rr_get_interval() and
  * checks that the value is sane.
+ *
+ * It is also a regression test for kernel
+ * commit 975e155ed873 ("sched/rt: Show the 'sched_rr_timeslice' SCHED_RR
+ * timeslice tuning knob in milliseconds").
  */
 
 #include <sched.h>
 #include "tst_timer.h"
+
+#define PROC_SCHED_RR_TIMESLICE_MS	"/proc/sys/kernel/sched_rr_timeslice_ms"
+static int proc_flag;
 
 struct tst_ts tp;
 
@@ -39,6 +46,8 @@ static void setup(void)
 
 	if ((sched_setscheduler(0, SCHED_RR, &p)) == -1)
 		tst_res(TFAIL | TTERRNO, "sched_setscheduler() failed");
+
+	proc_flag = !access(PROC_SCHED_RR_TIMESLICE_MS, F_OK);
 }
 
 static void run(void)
@@ -62,6 +71,8 @@ static void run(void)
 		        tst_ts_get_sec(tp), tst_ts_get_nsec(tp));
 	}
 
+	if (proc_flag)
+		TST_ASSERT_INT("/proc/sys/kernel/sched_rr_timeslice_ms", tst_ts_to_ms(tp));
 }
 
 static struct tst_test test = {
@@ -69,4 +80,8 @@ static struct tst_test test = {
 	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
 	.needs_root = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "975e155ed873"},
+		{}
+	}
 };
