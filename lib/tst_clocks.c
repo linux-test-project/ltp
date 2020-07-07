@@ -14,11 +14,11 @@
 
 typedef int (*mysyscall)(clockid_t clk_id, void *ts);
 
-int syscall_supported_by_kernel(mysyscall func)
+int syscall_supported_by_kernel(long sysnr)
 {
 	int ret;
 
-	ret = func(0, NULL);
+	ret = syscall(sysnr, 0, NULL);
 	if (ret == -1 && errno == ENOSYS)
 		return 0;
 
@@ -32,13 +32,13 @@ int tst_clock_getres(clockid_t clk_id, struct timespec *res)
 	int ret;
 
 #if (__NR_clock_getres_time64 != __LTP__NR_INVALID_SYSCALL)
-	if (!func && syscall_supported_by_kernel(sys_clock_getres64)) {
+	if (!func && syscall_supported_by_kernel(__NR_clock_getres_time64)) {
 		func = sys_clock_getres64;
 		tts.type = TST_KERN_TIMESPEC;
 	}
 #endif
 
-	if (!func && syscall_supported_by_kernel(sys_clock_getres)) {
+	if (!func && syscall_supported_by_kernel(__NR_clock_getres)) {
 		func = sys_clock_getres;
 		tts.type = TST_KERN_OLD_TIMESPEC;
 	}
@@ -62,13 +62,13 @@ int tst_clock_gettime(clockid_t clk_id, struct timespec *ts)
 	int ret;
 
 #if (__NR_clock_gettime64 != __LTP__NR_INVALID_SYSCALL)
-	if (!func && syscall_supported_by_kernel(sys_clock_gettime64)) {
+	if (!func && syscall_supported_by_kernel(__NR_clock_gettime64)) {
 		func = sys_clock_gettime64;
 		tts.type = TST_KERN_TIMESPEC;
 	}
 #endif
 
-	if (!func && syscall_supported_by_kernel(sys_clock_gettime)) {
+	if (!func && syscall_supported_by_kernel(__NR_clock_gettime)) {
 		func = sys_clock_gettime;
 		tts.type = TST_KERN_OLD_TIMESPEC;
 	}
@@ -91,13 +91,13 @@ int tst_clock_settime(clockid_t clk_id, struct timespec *ts)
 	static mysyscall func;
 
 #if (__NR_clock_settime64 != __LTP__NR_INVALID_SYSCALL)
-	if (!func && syscall_supported_by_kernel(sys_clock_settime64)) {
+	if (!func && syscall_supported_by_kernel(__NR_clock_settime64)) {
 		func = sys_clock_settime64;
 		tts.type = TST_KERN_TIMESPEC;
 	}
 #endif
 
-	if (!func && syscall_supported_by_kernel(sys_clock_settime)) {
+	if (!func && syscall_supported_by_kernel(__NR_clock_settime)) {
 		func = sys_clock_settime;
 		tts.type = TST_KERN_OLD_TIMESPEC;
 	}
