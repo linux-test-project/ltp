@@ -233,7 +233,7 @@ static void tst_cgroup_del_path(const char *cgroup_dir)
 {
 	struct tst_cgroup_path *a, *b;
 
-	if (tst_cgroup_paths)
+	if (!tst_cgroup_paths)
 		return;
 
 	a = b = tst_cgroup_paths;
