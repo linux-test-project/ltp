@@ -11,9 +11,6 @@ host host01.sh
 netstat netstat01.sh
 ping01 ping01.sh
 ping02 ping02.sh
-rcp rcp01.sh
-rlogin rlogin01.sh
-rsh rsh01.sh
 sendfile sendfile01.sh
 tcpdump tcpdump01.sh
 telnet telnet01.sh
