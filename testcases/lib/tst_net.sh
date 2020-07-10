@@ -838,7 +838,7 @@ tst_default_max_pkt()
 export RHOST="$RHOST"
 export PASSWD="${PASSWD:-}"
 # Don't use it in new tests, use tst_rhost_run() from tst_net.sh instead.
-export LTP_RSH="${LTP_RSH:-rsh -n}"
+export LTP_RSH="${LTP_RSH:-ssh -nq}"
 
 # Test Links
 # IPV{4,6}_{L,R}HOST can be set with or without prefix (e.g. IP or IP/prefix),

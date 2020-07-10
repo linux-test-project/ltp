@@ -48,10 +48,9 @@ To run the network stress testcases, use network.sh script, located in
 testscripts directory. For documentation about using network.sh see INSTALL
 and testcases/network/README.md
 
-Unfortunately some stress tests still depend on rsh for accessing remote host, even
-you decide to use SSH or network namespaces with network.sh.
-Instead of rsh, you can use ssh to set the environment variable LTP_RSH.
-Please refer the `Environment Variable' section of this document.
+Some stress tests originally designed to be tested with rsh for accessing
+remote host are now using ssh using the current user. Old behavior (using rsh
+can be achieved with setting LTP_RSH variable).
 
 The behaviour of network stress tests is configurable with environment
 variables (See `Environment Variable' section).
@@ -146,7 +145,7 @@ Optional environment variables
 ------------------------------
 
  o LTP_RSH
-   The name of the remote shell command, namely rsh or ssh.
+   The name of the remote shell command, namely ssh (the default) or rsh.
    In ether case, the remote host must accept the login from the local host
    without password.
 
