@@ -29,7 +29,7 @@
 
 static struct tst_ts timenow;
 static struct tst_its new_set, old_set;
-static timer_t timer;
+static kernel_timer_t timer;
 
 static struct testcase {
 	struct tst_its		*old_ptr;
@@ -46,8 +46,8 @@ static struct testcase {
 
 static struct test_variants {
 	int (*cgettime)(clockid_t clk_id, void *ts);
-	int (*tgettime)(timer_t timer, void *its);
-	int (*func)(timer_t timerid, int flags, void *its, void *old_its);
+	int (*tgettime)(kernel_timer_t timer, void *its);
+	int (*func)(kernel_timer_t timerid, int flags, void *its, void *old_its);
 	enum tst_ts_type type;
 	char *desc;
 } variants[] = {

@@ -15,7 +15,7 @@
 #include "tst_timer.h"
 
 static struct test_variants {
-	int (*func)(timer_t timer, void *its);
+	int (*func)(kernel_timer_t timer, void *its);
 	enum tst_ts_type type;
 	char *desc;
 } variants[] = {
@@ -28,7 +28,7 @@ static struct test_variants {
 #endif
 };
 
-static timer_t timer;
+static kernel_timer_t timer;
 
 static void setup(void)
 {
@@ -66,7 +66,7 @@ static void verify(void)
 		tst_res(TFAIL | TTERRNO, "timer_gettime() Failed");
 	}
 
-	TEST(tv->func((timer_t)-1, tst_its_get(&spec)));
+	TEST(tv->func((kernel_timer_t)-1, tst_its_get(&spec)));
 	if (TST_RET == -1 && TST_ERR == EINVAL)
 		tst_res(TPASS, "timer_gettime(-1) Failed: EINVAL");
 	else

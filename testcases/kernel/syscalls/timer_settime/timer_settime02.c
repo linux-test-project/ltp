@@ -30,8 +30,8 @@
 static struct tst_its new_set, old_set;
 static struct tst_its *pnew_set = &new_set, *pold_set = &old_set, *null_set = NULL;
 static void *faulty_set;
-static timer_t timer;
-static timer_t timer_inval = (timer_t)-1;
+static kernel_timer_t timer;
+static kernel_timer_t timer_inval = (kernel_timer_t)-1;
 
 /* separate description-array to (hopefully) improve readability */
 static const char * const descriptions[] = {
@@ -44,7 +44,7 @@ static const char * const descriptions[] = {
 };
 
 static struct testcase {
-	timer_t			*timer_id;
+	kernel_timer_t		*timer_id;
 	struct tst_its		**new_ptr;
 	struct tst_its		**old_ptr;
 	int			it_value_tv_nsec;
@@ -59,7 +59,7 @@ static struct testcase {
 };
 
 static struct test_variants {
-	int (*func)(timer_t timerid, int flags, void *its,
+	int (*func)(kernel_timer_t timerid, int flags, void *its,
 		    void *old_its);
 	enum tst_ts_type type;
 	char *desc;

@@ -316,23 +316,23 @@ static inline int sys_sched_rr_get_interval64(pid_t pid, void *ts)
 	return tst_syscall(__NR_sched_rr_get_interval_time64, pid, ts);
 }
 
-static inline int sys_timer_gettime(timer_t timerid, void *its)
+static inline int sys_timer_gettime(kernel_timer_t timerid, void *its)
 {
 	return tst_syscall(__NR_timer_gettime, timerid, its);
 }
 
-static inline int sys_timer_gettime64(timer_t timerid, void *its)
+static inline int sys_timer_gettime64(kernel_timer_t timerid, void *its)
 {
 	return tst_syscall(__NR_timer_gettime64, timerid, its);
 }
 
-static inline int sys_timer_settime(timer_t timerid, int flags, void *its,
+static inline int sys_timer_settime(kernel_timer_t timerid, int flags, void *its,
 				    void *old_its)
 {
 	return tst_syscall(__NR_timer_settime, timerid, flags, its, old_its);
 }
 
-static inline int sys_timer_settime64(timer_t timerid, int flags, void *its,
+static inline int sys_timer_settime64(kernel_timer_t timerid, int flags, void *its,
 				      void *old_its)
 {
 	return tst_syscall(__NR_timer_settime64, timerid, flags, its, old_its);
