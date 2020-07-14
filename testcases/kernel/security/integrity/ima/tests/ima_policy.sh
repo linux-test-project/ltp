@@ -23,7 +23,6 @@ check_policy_writable()
 
 setup()
 {
-	IMA_POLICY="$IMA_DIR/policy"
 	check_policy_writable
 
 	VALID_POLICY="$TST_DATAROOT/measure.policy"

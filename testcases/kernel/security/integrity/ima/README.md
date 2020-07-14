@@ -1,14 +1,6 @@
-IMA + EVM testing
-=================
+# IMA + EVM testing
 
-IMA tests
----------
-
-`ima_measurements.sh` require builtin IMA tcb policy to be loaded
-(`ima_policy=tcb` kernel parameter).
-Although a custom policy, loaded via dracut, systemd or manually from user
-space, may contain equivalent measurement tcb rules, detecting them would
-require `IMA_READ_POLICY=y` therefore ignore this option.
+## IMA tests
 
 Mandatory kernel configuration for IMA:
 ```
@@ -16,8 +8,35 @@ CONFIG_INTEGRITY=y
 CONFIG_IMA=y
 ```
 
-EVM tests
----------
+### IMA measurement tests
+`ima_measurements.sh` require builtin IMA tcb policy to be loaded
+(`ima_policy=tcb` kernel parameter).
+Although a custom policy, loaded via dracut, systemd or manually from user
+space, may contain equivalent measurement tcb rules, detecting them would
+require `IMA_READ_POLICY=y` therefore ignore this option.
+
+### IMA key import test
+`ima_keys.sh` requires a x509 public key, by default in `/etc/keys/x509_ima.der`
+(defined in `CONFIG_IMA_X509_PATH` kernel config option).
+The key must be signed by the private key you generate. Follow these instructions:
+https://manpages.ubuntu.com/manpages/disco/man1/evmctl.1.html#generate%20trusted%20keys
+
+The test cannot be set-up automatically because the x509 public key must be
+built into the kernel and loaded onto a trusted keyring
+(e.g. `.builtin_trusted_keys`, `.secondary_trusted_keyring`).
+
+As well as what's required for the IMA tests, the following are also required
+in the kernel configuration:
+```
+CONFIG_IMA_READ_POLICY=y
+CONFIG_IMA_X509_PATH="/etc/keys/x509_ima.der"
+CONFIG_SYSTEM_TRUSTED_KEYRING=y
+CONFIG_SYSTEM_TRUSTED_KEYS="/etc/keys/ima-local-ca.pem"
+```
+
+Test also requires loaded policy with `func=KEY_CHECK`, see example in `keycheck.policy`.
+
+## EVM tests
 
 `evm_overlay.sh` requires a builtin IMA appraise tcb policy (e.g. `ima_policy=appraise_tcb`
 kernel parameter) which appraises the integrity of all files owned by root and EVM setup.

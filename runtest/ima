@@ -3,4 +3,5 @@ ima_measurements ima_measurements.sh
 ima_policy ima_policy.sh
 ima_tpm ima_tpm.sh
 ima_violations ima_violations.sh
+ima_keys ima_keys.sh
 evm_overlay evm_overlay.sh
