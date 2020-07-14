@@ -86,6 +86,11 @@ root_cpu_hotplug_test()
 		return 1
 	fi
 
+	# cpuset hotplug is asynchronous operation, we could end up reading a
+	# stale value here. sleep is awful, but we can't do better.
+	# See https://github.com/linux-test-project/ltp/issues/693
+	sleep 1
+
 	root_cpus="`cat $CPUSET/cpuset.cpus`"
 
 	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
@@ -154,6 +159,11 @@ general_cpu_hotplug_test()
 		/bin/kill -s SIGKILL $tst_pid
 		return 1
 	fi
+
+	# cpuset hotplug is asynchronous operation, we could end up reading a
+	# stale value here. sleep is awful, but we can't do better.
+	# See https://github.com/linux-test-project/ltp/issues/693
+	sleep 1
 
 	cpus="`cat $path/cpuset.cpus`"
 
