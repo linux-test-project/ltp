@@ -1,210 +1,55 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
  *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-/*
- * NAME
- *	msgrcv01.c
- *
- * DESCRIPTION
- *	msgrcv01 - test that msgrcv() receives the expected message
- *
- * ALGORITHM
- *	create a message queue
- *	initialize a message buffer with a known message and type
- *	loop if that option was specified
- *	fork a child to receive the message
- *	parent enqueues the message then exits
- *	check the return code
- *	  if failure, issue a FAIL message.
- *	otherwise,
- *	  if doing functionality testing
- *		build a new message and compare it to the one received
- *	  	if they are the same,
- *			issue a PASS message
- *		otherwise
- *			issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  msgrcv01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * msgrcv01 - test that msgrcv() receives the expected message
  */
 
 #include <string.h>
 #include <sys/wait.h>
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
 
-#include "test.h"
+static key_t msgkey;
+static int queue_id = -1;
+static struct buf {
+	long type;
+	char mtext[MSGSIZE];
+} rcv_buf, snd_buf = {MSGTYPE, "hello"};
 
-#include "ipcmsg.h"
-
-void cleanup(void);
-void setup(void);
-void do_child(void);
-
-char *TCID = "msgrcv01";
-int TST_TOTAL = 1;
-
-int msg_q_1;
-MSGBUF snd_buf, rcv_buf, cmp_buf;
-
-pid_t c_pid;
-
-int main(int ac, char **av)
+static void verify_msgrcv(void)
 {
-	int lc;
-	void check_functionality(void);
-	int status, e_code;
+	SAFE_MSGSND(queue_id, &snd_buf, MSGSIZE, 0);
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "d", &msg_q_1);
-#endif
-
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * fork a child to read from the queue while the parent
-		 * enqueues the message to be read.
-		 */
-		if ((c_pid = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "could not fork");
-		}
-
-		if (c_pid == 0) {	/* child */
-#ifdef UCLINUX
-			if (self_exec(av[0], "d", msg_q_1) < 0) {
-				tst_brkm(TBROK, cleanup, "could not self_exec");
-			}
-#else
-			do_child();
-#endif
-		} else {	/* parent */
-			/* put the message on the queue */
-			if (msgsnd(msg_q_1, &snd_buf, MSGSIZE, 0) == -1) {
-				tst_brkm(TBROK, cleanup,
-					 "Couldn't enqueue" " message");
-			}
-			/* wait for the child to finish */
-			wait(&status);
-			/* make sure the child returned a good exit status */
-			e_code = status >> 8;
-			if (e_code != 0) {
-				tst_resm(TFAIL, "Failures reported above");
-			}
-
-		}
+	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, 1, 0));
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "msgrcv failed");
+		return;
 	}
-
-	cleanup();
-	tst_exit();
-
-    /** NOT REACHED **/
-
+	if (strcmp(rcv_buf.mtext, snd_buf.mtext) == 0)
+		tst_res(TPASS, "message received(%s) = message sent(%s)",
+			rcv_buf.mtext, snd_buf.mtext);
+	else
+		tst_res(TFAIL, "message received(%s) != message sent(%s)",
+			rcv_buf.mtext, snd_buf.mtext);
 }
 
-/*
- * do_child()
- */
-void do_child(void)
+static void setup(void)
 {
-	int retval = 0;
-
-	TEST(msgrcv(msg_q_1, &rcv_buf, MSGSIZE, 1, 0));
-
-	if (TEST_RETURN == -1) {
-		retval = 1;
-		tst_resm(TFAIL, "%s call failed - errno = %d : %s",
-			 TCID, TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
-		/*
-		 * Build a new message and compare it
-		 * with the one received.
-		 */
-		init_buf(&cmp_buf, MSGTYPE, MSGSIZE);
-
-		if (strcmp(rcv_buf.mtext, cmp_buf.mtext) == 0) {
-			tst_resm(TPASS,
-				 "message received = " "message sent");
-		} else {
-			retval = 1;
-			tst_resm(TFAIL,
-				 "message received != " "message sent");
-		}
-	}
-	exit(retval);
+	msgkey = GETIPCKEY();
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void cleanup(void)
 {
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See libs/libltpipc/libipc.c for more information.
-	 */
-	tst_tmpdir();
-
-	msgkey = getipckey();
-
-	/* create a message queue with read/write permission */
-	if ((msg_q_1 = msgget(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW)) == -1) {
-		tst_brkm(TBROK, cleanup, "Can't create message queue");
-	}
-
-	/* initialize the message buffer */
-	init_buf(&snd_buf, MSGTYPE, MSGSIZE);
+	if (queue_id != -1)
+		SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-	/* if it exists, remove the message queue that was created */
-	rm_queue(msg_q_1);
-
-	tst_rmdir();
-
-}
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_msgrcv,
+	.needs_tmpdir = 1,
+};

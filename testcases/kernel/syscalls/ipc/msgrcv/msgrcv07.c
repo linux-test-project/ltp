@@ -1,172 +1,98 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2014 Fujitsu Ltd.
+ * Copyright (c) 2014-2020 Fujitsu Ltd.
  * Author: Xiaoguang Wang <wangxg.fnst@cn.fujitsu.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
-/*
- * Description:
- *     Basic test for msgrcv(2) using MSG_EXCEPT, MSG_NOERROR
+ * Basic test for msgrcv(2) using MSG_EXCEPT, MSG_NOERROR
  */
 
 #define  _GNU_SOURCE
 #include <sys/wait.h>
-#include "test.h"
-#include "ipcmsg.h"
-
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
 
 #define MSGTYPE1	1
 #define MSGTYPE2	2
-#define MSG1	"message type1"
-#define MSG2	"message type2"
+#define MSG1	"messagetype1"
+#define MSG2	"messagetype2"
 
-static void wait4child(pid_t child, char *tst_flag);
+static key_t msgkey;
+static int queue_id = -1;
+static struct buf {
+	long type;
+	char mtext[MSGSIZE];
+} rcv_buf, snd_buf[2] = {
+	{MSGTYPE1, MSG1},
+	{MSGTYPE2, MSG2}
+};
 
-static void test_msg_except(void);
-static void test_msg_noerror(void);
-
-static void (*testfunc[])(void) = { test_msg_except, test_msg_noerror };
-
-char *TCID = "msgrcv07";
-int TST_TOTAL = ARRAY_SIZE(testfunc);
-
-int main(int ac, char **av)
+static void cleanup(void)
 {
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++)
-			(*testfunc[i])();
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-void setup(void)
-{
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
+	if (queue_id != -1)
+		SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
 }
 
 static void test_msg_except(void)
 {
-	pid_t child_pid;
-	int msgq_id;
-	MSGBUF snd_buf1 = {.mtype = MSGTYPE1, .mtext = MSG1};
-	MSGBUF snd_buf2 = {.mtype = MSGTYPE2, .mtext = MSG2};
-	MSGBUF rcv_buf;
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
+	SAFE_MSGSND(queue_id, &snd_buf[0], MSGSIZE, 0);
+	SAFE_MSGSND(queue_id, &snd_buf[1], MSGSIZE, 0);
 
-	msgq_id = msgget(IPC_PRIVATE, MSG_RW);
-	if (msgq_id == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Can't create message queue");
-
-	if (msgsnd(msgq_id, &snd_buf1, MSGSIZE, 0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Can't enqueue message");
-
-	if (msgsnd(msgq_id, &snd_buf2, MSGSIZE, 0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Can't enqueue message");
-
-	child_pid = tst_fork();
-	if (child_pid == -1) {
-		tst_brkm(TBROK, cleanup, "fork failed");
-	} else if (child_pid > 0) {
-		wait4child(child_pid, "MSG_EXCEPT");
-	} else {
-		memset(&rcv_buf, 0, sizeof(rcv_buf));
-		TEST(msgrcv(msgq_id, &rcv_buf, MSGSIZE, MSGTYPE2, MSG_EXCEPT));
-		if (TEST_RETURN == -1) {
-			fprintf(stderr, "msgrcv(MSG_EXCEPT) failed\n");
-			exit(TBROK);
-		}
-		/* check the received message */
-		if (strcmp(rcv_buf.mtext, MSG1) == 0 &&
-		    rcv_buf.mtype == MSGTYPE1)
-			exit(TPASS);
-		else
-			exit(TFAIL);
+	memset(&rcv_buf, 0, sizeof(rcv_buf));
+	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, MSGTYPE2, MSG_EXCEPT));
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "msgrcv(MSG_EXCEPT) failed");
+		cleanup();
+		return;
 	}
-
-	rm_queue(msgq_id);
+	tst_res(TPASS, "msgrcv(MSG_EXCEPT) succeeded");
+	if (strcmp(rcv_buf.mtext, MSG1) == 0 && rcv_buf.type == MSGTYPE1)
+		tst_res(TPASS, "msgrcv(MSG_EXCEPT) excepted MSGTYPE2 and only got MSGTYPE1");
+	else
+		tst_res(TFAIL, "msgrcv(MSG_EXCEPT) didn't get MSGTYPE1 message");
+	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
 }
-
 
 static void test_msg_noerror(void)
 {
-	pid_t child_pid;
-	int msg_len, msgq_id;
-	MSGBUF snd_buf1 = {.mtype = MSGTYPE1, .mtext = MSG1};
-	MSGBUF rcv_buf;
+	int msg_len;
 
-	msgq_id = msgget(IPC_PRIVATE, MSG_RW);
-	if (msgq_id == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Can't create message queue");
+	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
+	SAFE_MSGSND(queue_id, &snd_buf[0], MSGSIZE, 0);
+	msg_len = sizeof(MSG1) / 2;
+	memset(&rcv_buf, 0, sizeof(rcv_buf));
 
-	if (msgsnd(msgq_id, &snd_buf1, MSGSIZE, 0) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "Can't enqueue message");
-
-	child_pid = tst_fork();
-	if (child_pid == -1) {
-		tst_brkm(TBROK, cleanup, "fork failed");
-	} else if (child_pid > 0) {
-		wait4child(child_pid, "MSG_NOERROR");
-	} else {
-		msg_len = sizeof(MSG1) / 2;
-		memset(&rcv_buf, 0, sizeof(rcv_buf));
-
-		TEST(msgrcv(msgq_id, &rcv_buf, msg_len, MSGTYPE1, MSG_NOERROR));
-		if (TEST_RETURN == -1)
-			exit(TFAIL);
-
-		if (strncmp(rcv_buf.mtext, MSG1, msg_len) == 0 &&
-		    rcv_buf.mtype == MSGTYPE1)
-			exit(TPASS);
-		exit(TFAIL);
+	TEST(msgrcv(queue_id, &rcv_buf, msg_len, MSGTYPE1, MSG_NOERROR));
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "msgrcv(MSG_NOERROR) failed");
+		cleanup();
+		return;
 	}
-
-	rm_queue(msgq_id);
+	tst_res(TPASS, "msgrcv(MSG_NOERROR) succeeded");
+	if (strncmp(rcv_buf.mtext, MSG1, msg_len) == 0 && rcv_buf.type == MSGTYPE1)
+		tst_res(TPASS, "msgrcv(MSG_NOERROR) truncated message text correctly");
+	else
+		tst_res(TFAIL, "msgrcv(MSG_NOERROR) truncated message text incorrectly");
+	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
 }
 
-static void wait4child(pid_t child, char *tst_flag)
+static void setup(void)
 {
-	int status;
-	int ret;
-
-	if (waitpid(child, &status, 0) == -1)
-		tst_resm(TBROK | TERRNO, "waitpid");
-	if (WIFEXITED(status)) {
-		ret = WEXITSTATUS(status);
-		if (ret == 0)
-			tst_resm(TPASS, "test %s success", tst_flag);
-		else if (ret == 1)
-			tst_resm(TFAIL, "test %s failed", tst_flag);
-		else
-			tst_brkm(TBROK, cleanup, "msgrcv failed unexpectedly");
-	} else {
-		tst_brkm(TBROK, cleanup, "child process terminated "
-			 "abnormally. status: %d", status);
-	}
+	msgkey = GETIPCKEY();
 }
 
-void cleanup(void)
+static void (*testfunc[])(void) = {test_msg_except, test_msg_noerror};
+
+static void verify_msgcrv(unsigned int n)
 {
+	(*testfunc[n])();
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test = verify_msgcrv,
+	.tcnt = ARRAY_SIZE(testfunc),
+};

@@ -15,8 +15,6 @@ msgget03 msgget03
 
 msgrcv01 msgrcv01
 msgrcv02 msgrcv02
-msgrcv03 msgrcv03
-msgrcv04 msgrcv04
 msgrcv05 msgrcv05
 msgrcv06 msgrcv06
 msgrcv07 msgrcv07
