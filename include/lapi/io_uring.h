@@ -20,6 +20,10 @@
 
 #ifndef IOSQE_FIXED_FILE
 
+#ifndef __kernel_rwf_t
+typedef int __kernel_rwf_t;
+#endif
+
 /*
  * IO submission data structure (Submission Queue Entry)
  */
