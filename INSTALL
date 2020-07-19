@@ -37,7 +37,7 @@ Configuration requires autoconf:
 	$ cd $TOP_SRCDIR
 	$ make autotools
 	$ mkdir -p $TOP_BUILDDIR
-	$ cd $TOP_BUILDDIR && ./configure # configure args go here, e.g. CC=$CC, LDFLAGS=$LDFLAGS, etc
+	$ cd $TOP_BUILDDIR && $TOP_SRCDIR/configure # configure args go here, e.g. CC=$CC, LDFLAGS=$LDFLAGS, etc
 
 - $TOP_SRCDIR and $TOP_BUILDDIR are the same for in-build-tree scenarios.
 - $TOP_SRCDIR and $TOP_BUILDDIR differ for out-of-build-tree scenarios.
