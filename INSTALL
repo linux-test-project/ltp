@@ -1,17 +1,20 @@
 Requirements
--------------------
+------------
 
 Tools are needed for LTP compilation. They should be available as a
 package in any Linux distribution (no specific version is required).
 
 Debian / Ubuntu
-# apt install gcc git make pkgconf autoconf automake bison flex m4 linux-headers-$(uname -r) libc6-dev
+
+	# apt install gcc git make pkgconf autoconf automake bison flex m4 linux-headers-$(uname -r) libc6-dev
 
 OpenSUSE / SLES
-# zypper install gcc git make pkgconf autoconf automake bison flex m4 linux-glibc-devel glibc-devel
+
+	# zypper install gcc git make pkgconf autoconf automake bison flex m4 linux-glibc-devel glibc-devel
 
 Fedora / CentOS / RHEL
-# yum install gcc git make pkgconf autoconf automake bison flex m4 kernel-headers glibc-headers
+
+	# yum install gcc git make pkgconf autoconf automake bison flex m4 kernel-headers glibc-headers
 
 These are minimal build requirements for git compilation. Some tests require
 extra development files of some libraries, see travis/*.sh. There is also
@@ -27,7 +30,7 @@ does automatic detection of some library support.
 GNU Bison / Berkeley Yacc is required for ltp-scanner.
 
 Configuration
--------------------
+-------------
 
 Configuration requires autoconf:
 
@@ -43,10 +46,11 @@ See the In-build-tree and Out-of-build-tree sections below for more details on
 what to do next.
 
 Compiling LTP
--------------------
+-------------
 
 In-build-tree
--------------------
+-------------
+
 In-build-tree support is when you build binaries (applications, binary objects)
 in the same directory where the source files reside.
 
@@ -71,7 +75,8 @@ following information,
 	iii. config.log
 
 Out-of-build-tree
--------------------
+-----------------
+
 Out-of-build-tree support is when you build binaries (applications, binary
 objects, generated files) outside of the directory where the source files
 reside. This is typically used when cross-compiling for multiple targets.
@@ -103,12 +108,12 @@ items which need fixing in the LTP tree.
 Quick Start
 -----------
 
-1> tar xzf ltp-XXXXXXXX.tar.gz
-2> cd ltp
-3> ./configure
-4> make all
-5> make install
-6> /opt/ltp/runltp
+	$ tar xzf ltp-XXXXXXXX.tar.gz
+	$ cd ltp
+	$ ./configure
+	$ make all
+	# make install
+	$ /opt/ltp/runltp
 
 *NOTE:
 - LTP assumes the existence of the nobody, bin, and daemon users and their
@@ -197,6 +202,7 @@ contributions are welcome.
 
 Cross compiling
 ---------------
+
 To cross compile, you must specify the correct variables when running configure.
 e.g. CC, LDFLAGS, etc.
 For correct pkgconf / pkg-config detection you need to set
@@ -208,6 +214,7 @@ command-line when running make.
 
 32 bit build on 64 bit machine
 ------------------------------
+
 You need to set CFLAGS=-m32 LDFLAGS=-m32 and PKG_CONFIG_LIBDIR
 
 * RPM based distributions (openSUSE, Fedora, etc.)
@@ -221,13 +228,14 @@ PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
 
 Android Users
 -------------
+
 Specify ANDROID=1 when calling make. Many tests which would otherwise work are
 currently not built because they share a directory with an incompatible test.
 
 The shell scripts expect /bin/sh to exist, so create a symlink.
 
 Variables in Makefile
-----------------------
+---------------------
 
 The conventions enforced are standard ones. Here's a quick summary:
 
@@ -246,7 +254,7 @@ For other variables and more info about the build systems see
 doc/build-system-guide.txt.
 
 Common Issues
-----------------------
+-------------
 
 Issue:    When executing configure it says:
 
