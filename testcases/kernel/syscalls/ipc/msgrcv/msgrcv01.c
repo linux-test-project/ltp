@@ -12,7 +12,7 @@
 #include "libnewipc.h"
 
 static key_t msgkey;
-static int queue_id = -1;
+static int queue_id = -1, pid;
 static struct buf {
 	long type;
 	char mtext[MSGSIZE];
@@ -20,25 +20,52 @@ static struct buf {
 
 static void verify_msgrcv(void)
 {
+	struct msqid_ds qs_buf;
+	time_t before_rcv, after_rcv;
+
 	SAFE_MSGSND(queue_id, &snd_buf, MSGSIZE, 0);
 
+	time(&before_rcv);
 	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, 1, 0));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgrcv failed");
 		return;
 	}
+	time(&after_rcv);
+
 	if (strcmp(rcv_buf.mtext, snd_buf.mtext) == 0)
 		tst_res(TPASS, "message received(%s) = message sent(%s)",
 			rcv_buf.mtext, snd_buf.mtext);
 	else
 		tst_res(TFAIL, "message received(%s) != message sent(%s)",
 			rcv_buf.mtext, snd_buf.mtext);
+
+	SAFE_MSGCTL(queue_id, IPC_STAT, &qs_buf);
+	if (qs_buf.msg_cbytes == 0 && qs_buf.msg_qnum == 0)
+		tst_res(TPASS, "queue bytes and number of queues matched");
+	else
+		tst_res(TFAIL, "queue bytes or number of queues mismatched");
+	if (qs_buf.msg_lrpid == pid)
+		tst_res(TPASS, "PID of last msgrcv(2) matched");
+	else
+		tst_res(TFAIL, "PID of last msgrcv(2) mismatched");
+
+	if (qs_buf.msg_rtime >= before_rcv && qs_buf.msg_rtime <= after_rcv) {
+		tst_res(TPASS, "msg_rtime = %lu in [%lu, %lu]",
+			(unsigned long)qs_buf.msg_rtime,
+			(unsigned long)before_rcv, (unsigned long)after_rcv);
+	} else {
+		tst_res(TFAIL, "msg_rtime = %lu out of [%lu, %lu]",
+			(unsigned long)qs_buf.msg_rtime,
+			(unsigned long)before_rcv, (unsigned long)after_rcv);
+	}
 }
 
 static void setup(void)
 {
 	msgkey = GETIPCKEY();
 	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
+	pid = getpid();
 }
 
 static void cleanup(void)
