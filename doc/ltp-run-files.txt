@@ -69,7 +69,6 @@ other filesystem or disk type tests
  - autofs1.sh
  - autofs4.sh
  - diskio.sh
- - exportfs.sh
  - isofs.sh
  - sysfs.sh
 
