@@ -50,7 +50,7 @@ static void report_success_cond(const char *func, int line,
 #define REPORT_SUCCESS(exp_return, exp_errno)					\
 	REPORT_SUCCESS_COND(exp_return, exp_errno, 1, "");
 
-static void empty_handler(int sig)
+static void empty_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 }
 
@@ -74,7 +74,7 @@ static int my_sigwait(const sigset_t * set, siginfo_t * info,
 
 #ifdef TEST_SIGWAITINFO
 static int my_sigwaitinfo(const sigset_t * set, siginfo_t * info,
-			  void *timeout)
+			  void *timeout LTP_ATTRIBUTE_UNUSED)
 {
 	return sigwaitinfo(set, info);
 }
@@ -106,7 +106,8 @@ static int my_rt_sigtimedwait_time64(const sigset_t * set, siginfo_t * info,
 #endif
 #endif
 
-void test_empty_set(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
+void test_empty_set(swi_func sigwaitinfo, int signo,
+		    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
 	siginfo_t si;
@@ -150,7 +151,7 @@ void test_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
  * by POSIX; but works for non-ignored signals under Linux
  */
 void test_unmasked_matching(swi_func sigwaitinfo, int signo,
-			    enum tst_ts_type type)
+			    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
 	siginfo_t si;
@@ -172,7 +173,7 @@ void test_unmasked_matching(swi_func sigwaitinfo, int signo,
 }
 
 void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
-				   enum tst_ts_type type)
+				   enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
 	pid_t child;
@@ -190,7 +191,7 @@ void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
 }
 
 void test_masked_matching(swi_func sigwaitinfo, int signo,
-			  enum tst_ts_type type)
+			  enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
 	siginfo_t si;
@@ -229,7 +230,7 @@ void test_masked_matching(swi_func sigwaitinfo, int signo,
 }
 
 void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
-			     enum tst_ts_type type)
+			     enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
 	siginfo_t si;
@@ -281,7 +282,7 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
 }
 
 void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
-				 enum tst_ts_type type)
+				 enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
 	pid_t child;
@@ -316,7 +317,8 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_bad_address(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
+void test_bad_address(swi_func sigwaitinfo, int signo,
+		      enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
 	pid_t child;
@@ -345,7 +347,8 @@ void test_bad_address(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
 	SAFE_WAIT(NULL);
 }
 
-void test_bad_address2(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
+void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
+		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 	int status;
@@ -391,7 +394,8 @@ void test_bad_address2(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
 	}
 }
 
-void test_bad_address3(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
+void test_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
+		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
 	SUCCEED_OR_DIE(sigemptyset, "sigemptyset failed", &sigs);
