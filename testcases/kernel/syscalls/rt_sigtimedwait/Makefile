@@ -3,14 +3,10 @@
 
 top_srcdir ?= ../../../..
 
+LTPLIBS = ltpsigwait
+
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS += -DTEST_RT_SIGTIMEDWAIT
-
-rt_sigtimedwait01: $(abs_srcdir)/../sigwaitinfo/sigwaitinfo01.c
-	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
-
-MAKE_TARGETS := rt_sigtimedwait01
+LDLIBS  := -lltpsigwait $(LDLIBS)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
-

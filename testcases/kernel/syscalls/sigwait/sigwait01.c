@@ -3,27 +3,29 @@
 
 #include "libsigwait.h"
 
-static int my_sigwaitinfo(const sigset_t * set, siginfo_t * info,
-			  void *timeout LTP_ATTRIBUTE_UNUSED)
+static int my_sigwait(const sigset_t * set,
+		      siginfo_t * info LTP_ATTRIBUTE_UNUSED,
+		      void *timeout LTP_ATTRIBUTE_UNUSED)
 {
-	return sigwaitinfo(set, info);
+	int ret;
+	int err = sigwait(set, &ret);
+
+	if (err == 0)
+		return ret;
+	errno = err;
+	return -1;
 }
 
 struct sigwait_test_desc tests[] = {
-	{ test_empty_set, SIGUSR1},
-	{ test_unmasked_matching, SIGUSR1},
-	{ test_masked_matching, SIGUSR1},
 	{ test_unmasked_matching_noinfo, SIGUSR1},
 	{ test_masked_matching_noinfo, SIGUSR1},
-	{ test_bad_address, SIGUSR1},
-	{ test_bad_address2, SIGUSR1},
 };
 
 static void run(unsigned int i)
 {
 	struct sigwait_test_desc *tc = &tests[i];
 
-	tc->tf(my_sigwaitinfo, tc->signo, TST_LIBC_TIMESPEC);
+	tc->tf(my_sigwait, tc->signo, TST_LIBC_TIMESPEC);
 }
 
 static struct tst_test test = {

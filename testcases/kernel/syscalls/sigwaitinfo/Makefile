@@ -3,8 +3,10 @@
 
 top_srcdir ?= ../../../..
 
+LTPLIBS = ltpsigwait
+
 include $(top_srcdir)/include/mk/testcases.mk
 
-CPPFLAGS += -DTEST_SIGWAITINFO
+LDLIBS  := -lltpsigwait $(LDLIBS)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
