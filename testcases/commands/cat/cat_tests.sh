@@ -1,22 +1,15 @@
 #!/bin/sh
 
-#下面的语句表示会执行4个测试项
 TST_CNT=4
-#下面的语句表示从do_test方法开始执行
 TST_TESTFUNC=do_test
-#下面的语句表示需要一个临时目录
 TST_NEEDS_TMPDIR=1
-#下面的语句表示需要执行的命令为cat
 TST_NEEDS_CMDS="cat"
-#下面的语句是LTP的规范
 . tst_test.sh
 
 
-#下面有2个方法，cat_test()和do_test()，下面我们进入执行的入口do_test方法，然后再回来这里，这下我们可以用local定义局部变量，避免影响其他用例，现在我们可以知道下面的$1和$2的值了，拿到他们往下走。
 cat_test()
 {
 #create test file
-	touch test
 	echo aaa > test
 
 #parameter
@@ -52,9 +45,6 @@ cat_test()
 	fi
 
 	tst_res TPASS "cat passed with $cat_opt option."
-
-#delete test file
-	rm test
 }
 
 do_test()
