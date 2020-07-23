@@ -50,7 +50,6 @@ static void verify_ioctl_loop(unsigned int n)
 
 	tst_res(TINFO, "%s", tc->message);
 	file_fd = SAFE_OPEN("test.img", tc->mode);
-	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 
 	if (tc->ioctl == LOOP_SET_FD) {
 		SAFE_IOCTL(dev_fd, LOOP_SET_FD, file_fd);
@@ -97,9 +96,8 @@ static void verify_ioctl_loop(unsigned int n)
 		tst_res(TFAIL, "LOOP_CHANGE_FD succeeded");
 	}
 
-	SAFE_CLOSE(dev_fd);
 	SAFE_CLOSE(file_fd);
-	tst_detach_device(dev_path);
+	tst_detach_device_by_fd(dev_path, dev_fd);
 	attach_flag = 0;
 }
 
@@ -136,7 +134,6 @@ static void setup(void)
 		loop_configure_sup = 0;
 	}
 	loopconfig.info.lo_flags = LO_FLAGS_READ_ONLY;
-	SAFE_CLOSE(dev_fd);
 }
 
 static void cleanup(void)

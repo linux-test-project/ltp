@@ -70,7 +70,6 @@ static void verify_ioctl(void)
 	tst_attach_device(dev_path, "test.img");
 	attach_flag = 1;
 
-	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	loopinfo.lo_flags =  LO_FLAGS_PARTSCAN;
 	SAFE_IOCTL(dev_fd, LOOP_SET_STATUS, &loopinfo);
 	check_partition(1, true);
@@ -81,8 +80,7 @@ static void verify_ioctl(void)
 	check_partition(1, true);
 	check_partition(2, true);
 
-	SAFE_CLOSE(dev_fd);
-	tst_detach_device(dev_path);
+	tst_detach_device_by_fd(dev_path, dev_fd);
 	attach_flag = 0;
 }
 
@@ -92,6 +90,7 @@ static void setup(void)
 	if (dev_num < 0)
 		tst_brk(TBROK, "Failed to find free loop device");
 	tst_prealloc_file("test.img", 1024 * 1024, 20);
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 }
 
 static void cleanup(void)

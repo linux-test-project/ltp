@@ -33,7 +33,6 @@ static void verify_ioctl_loop(void)
 	attach_flag = 1;
 
 	TST_ASSERT_INT(sys_loop_sizepath, OLD_SIZE/512);
-	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	file_fd = SAFE_OPEN("test.img", O_RDWR);
 	SAFE_IOCTL(dev_fd, LOOP_GET_STATUS, &loopinfoget);
 
@@ -42,6 +41,8 @@ static void verify_ioctl_loop(void)
 
 	SAFE_TRUNCATE("test.img", NEW_SIZE);
 	SAFE_IOCTL(dev_fd, LOOP_SET_CAPACITY);
+
+	SAFE_LSEEK(dev_fd, 0, SEEK_SET);
 
 	/*check that we can't write data beyond 5K into loop device*/
 	TEST(write(dev_fd, wrbuf, OLD_SIZE));
@@ -55,8 +56,7 @@ static void verify_ioctl_loop(void)
 	TST_ASSERT_INT(sys_loop_sizepath, NEW_SIZE/512);
 
 	SAFE_CLOSE(file_fd);
-	SAFE_CLOSE(dev_fd);
-	tst_detach_device(dev_path);
+	tst_detach_device_by_fd(dev_path, dev_fd);
 	unlink("test.img");
 	attach_flag = 0;
 }
@@ -70,6 +70,7 @@ static void setup(void)
 	wrbuf = SAFE_MALLOC(OLD_SIZE);
 	memset(wrbuf, 'x', OLD_SIZE);
 	sprintf(sys_loop_sizepath, "/sys/block/loop%d/size", dev_num);
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 }
 
 static void cleanup(void)
