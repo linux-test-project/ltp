@@ -303,10 +303,8 @@ void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 	pid_t pid;
 	int status;
 
-	switch (pid = fork()) {
-	case -1:
-		tst_brk(TBROK | TERRNO, "fork() failed");
-	case 0:
+	pid = SAFE_FORK();
+	if (pid == 0) {
 		signal(SIGSEGV, SIG_DFL);
 
 		/*
@@ -321,9 +319,6 @@ void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		tst_res(TINFO | TTERRNO, "swi_func returned: %ld",
 			TST_RET);
 		_exit(1);
-		break;
-	default:
-		break;
 	}
 
 	SAFE_WAITPID(pid, &status, 0);
