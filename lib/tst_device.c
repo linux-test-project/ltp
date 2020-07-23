@@ -187,9 +187,36 @@ int tst_attach_device(const char *dev, const char *file)
 	return 0;
 }
 
+int tst_detach_device_by_fd(const char *dev, int dev_fd)
+{
+	int ret, i;
+
+	/* keep trying to clear LOOPDEV until we get ENXIO, a quick succession
+	 * of attach/detach might not give udev enough time to complete */
+	for (i = 0; i < 40; i++) {
+		ret = ioctl(dev_fd, LOOP_CLR_FD, 0);
+
+		if (ret && (errno == ENXIO))
+			return 0;
+
+		if (ret && (errno != EBUSY)) {
+			tst_resm(TWARN,
+				 "ioctl(%s, LOOP_CLR_FD, 0) unexpectedly failed with: %s",
+				 dev, tst_strerrno(errno));
+			return 1;
+		}
+
+		usleep(50000);
+	}
+
+	tst_resm(TWARN,
+		"ioctl(%s, LOOP_CLR_FD, 0) no ENXIO for too long", dev);
+	return 1;
+}
+
 int tst_detach_device(const char *dev)
 {
-	int dev_fd, ret, i;
+	int dev_fd, ret;
 
 	dev_fd = open(dev, O_RDONLY);
 	if (dev_fd < 0) {
@@ -197,31 +224,9 @@ int tst_detach_device(const char *dev)
 		return 1;
 	}
 
-	/* keep trying to clear LOOPDEV until we get ENXIO, a quick succession
-	 * of attach/detach might not give udev enough time to complete */
-	for (i = 0; i < 40; i++) {
-		ret = ioctl(dev_fd, LOOP_CLR_FD, 0);
-
-		if (ret && (errno == ENXIO)) {
-			close(dev_fd);
-			return 0;
-		}
-
-		if (ret && (errno != EBUSY)) {
-			tst_resm(TWARN,
-				 "ioctl(%s, LOOP_CLR_FD, 0) unexpectedly failed with: %s",
-				 dev, tst_strerrno(errno));
-			close(dev_fd);
-			return 1;
-		}
-
-		usleep(50000);
-	}
-
+	ret = tst_detach_device_by_fd(dev, dev_fd);
 	close(dev_fd);
-	tst_resm(TWARN,
-		"ioctl(%s, LOOP_CLR_FD, 0) no ENXIO for too long", dev);
-	return 1;
+	return ret;
 }
 
 int tst_dev_sync(int fd)
