@@ -41,5 +41,4 @@ void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 void test_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
 void sigwait_setup(void);
-void sigwait_cleanup(void);
 #endif /* SIGWAIT_H__ */

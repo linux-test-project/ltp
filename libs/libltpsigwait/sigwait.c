@@ -363,11 +363,4 @@ void sigwait_setup(void)
 	signal(SIGUSR1, empty_handler);
 	signal(SIGALRM, empty_handler);
 	signal(SIGUSR2, SIG_IGN);
-
-	alarm(10);	/* arrange a 10 second timeout */
-}
-
-void sigwait_cleanup(void)
-{
-	alarm(0);
 }

@@ -30,6 +30,5 @@ static struct tst_test test = {
 	.test= run,
 	.tcnt = ARRAY_SIZE(tests),
 	.setup = sigwait_setup,
-	.cleanup = sigwait_cleanup,
 	.forks_child = 1,
 };

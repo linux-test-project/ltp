@@ -73,6 +73,5 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tests),
 	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
-	.cleanup = sigwait_cleanup,
 	.forks_child = 1,
 };
