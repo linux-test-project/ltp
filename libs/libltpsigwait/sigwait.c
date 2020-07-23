@@ -49,9 +49,7 @@ void test_empty_set(swi_func sigwaitinfo, int signo,
 	siginfo_t si;
 	pid_t child;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, INT_MAX, 100000);
@@ -74,9 +72,7 @@ void test_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
 	tst_ts_set_sec(&ts, 1);
 	tst_ts_set_nsec(&ts, 0);
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, INT_MAX, 100000);
@@ -98,13 +94,8 @@ void test_unmasked_matching(swi_func sigwaitinfo, int signo,
 	siginfo_t si;
 	pid_t child;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
-
-	TEST(sigaddset(&sigs, signo));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
+	SAFE_SIGADDSET(&sigs, signo);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, INT_MAX, 100000);
@@ -124,13 +115,8 @@ void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
 	sigset_t sigs;
 	pid_t child;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
-
-	TEST(sigaddset(&sigs, signo));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
+	SAFE_SIGADDSET(&sigs, signo);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, INT_MAX, 100000);
@@ -149,27 +135,18 @@ void test_masked_matching(swi_func sigwaitinfo, int signo,
 	siginfo_t si;
 	pid_t child;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
-
-	TEST(sigaddset(&sigs, signo));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
+	SAFE_SIGADDSET(&sigs, signo);
 
 	/* let's not get interrupted by our dying child */
-	TEST(sigaddset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGADDSET(&sigs, SIGCHLD);
 
 	TEST(sigprocmask(SIG_SETMASK, &sigs, &oldmask));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "sigprocmask() failed");
 
 	/* don't wait on a SIGCHLD */
-	TEST(sigdelset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigdelset() failed");
+	SAFE_SIGDELSET(&sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, 1, 0);
@@ -203,31 +180,19 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
 
 	signo = SIGRTMIN + 1;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
-
-	TEST(sigaddset(&sigs, signo));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
-
-	TEST(sigaddset(&sigs, signo + 1));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
+	SAFE_SIGADDSET(&sigs, signo);
+	SAFE_SIGADDSET(&sigs, signo + 1);
 
 	/* let's not get interrupted by our dying child */
-	TEST(sigaddset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGADDSET(&sigs, SIGCHLD);
 
 	TEST(sigprocmask(SIG_SETMASK, &sigs, &oldmask));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "sigprocmask() failed");
 
 	/* don't wait on a SIGCHLD */
-	TEST(sigdelset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigdelset() failed");
+	SAFE_SIGDELSET(&sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
 	child[0] = create_sig_proc(signo, 1, 0);
@@ -266,27 +231,18 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
 	sigset_t sigs, oldmask;
 	pid_t child;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
-
-	TEST(sigaddset(&sigs, signo));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
+	SAFE_SIGADDSET(&sigs, signo);
 
 	/* let's not get interrupted by our dying child */
-	TEST(sigaddset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGADDSET(&sigs, SIGCHLD);
 
 	TEST(sigprocmask(SIG_SETMASK, &sigs, &oldmask));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "sigprocmask() failed");
 
 	/* don't wait on a SIGCHLD */
-	TEST(sigdelset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigdelset() failed");
+	SAFE_SIGDELSET(&sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, 1, 0);
@@ -314,27 +270,18 @@ void test_bad_address(swi_func sigwaitinfo, int signo,
 	sigset_t sigs, oldmask;
 	pid_t child;
 
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
-
-	TEST(sigaddset(&sigs, signo));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGEMPTYSET(&sigs);
+	SAFE_SIGADDSET(&sigs, signo);
 
 	/* let's not get interrupted by our dying child */
-	TEST(sigaddset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigaddset() failed");
+	SAFE_SIGADDSET(&sigs, SIGCHLD);
 
 	TEST(sigprocmask(SIG_SETMASK, &sigs, &oldmask));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "sigprocmask() failed");
 
 	/* don't wait on a SIGCHLD */
-	TEST(sigdelset(&sigs, SIGCHLD));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigdelset() failed");
+	SAFE_SIGDELSET(&sigs, SIGCHLD);
 
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, 1, 0);
@@ -401,10 +348,8 @@ void test_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
-	TEST(sigemptyset(&sigs));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigemptyset() failed");
 
+	SAFE_SIGEMPTYSET(&sigs);
 	TEST(sigwaitinfo(&sigs, NULL, (void *)1));
 	REPORT_SUCCESS(-1, EFAULT);
 }
