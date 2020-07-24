@@ -36,6 +36,14 @@ CONFIG_SYSTEM_TRUSTED_KEYS="/etc/keys/ima-local-ca.pem"
 
 Test also requires loaded policy with `func=KEY_CHECK`, see example in `keycheck.policy`.
 
+### IMA kexec test
+
+`ima_kexec.sh` requires loaded policy which contains `measure func=KEXEC_CMDLINE`,
+see example in `kexec.policy`.
+
+The test attempts to kexec the existing running kernel image.
+To kexec a different kernel image export `IMA_KEXEC_IMAGE=<pathname>`.
+
 ## EVM tests
 
 `evm_overlay.sh` requires a builtin IMA appraise tcb policy (e.g. `ima_policy=appraise_tcb`
