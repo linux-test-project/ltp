@@ -130,6 +130,42 @@ int safe_sigaction(const char *file, const int lineno,
 	return rval;
 }
 
+void safe_sigaddset(const char *file, const int lineno,
+                    sigset_t *sigs, int signo)
+{
+	int rval;
+
+	rval = sigaddset(sigs, signo);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+		         "sigaddset() %s (%i) failed",
+			 tst_strsig(signo), signo);
+	}
+}
+
+void safe_sigdelset(const char *file, const int lineno,
+                    sigset_t *sigs, int signo)
+{
+	int rval;
+
+	rval = sigdelset(sigs, signo);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+		         "sigdelset() %s (%i) failed",
+			 tst_strsig(signo), signo);
+	}
+}
+
+void safe_sigemptyset(const char *file, const int lineno,
+                      sigset_t *sigs)
+{
+	int rval;
+
+	rval = sigemptyset(sigs);
+	if (rval == -1)
+		tst_brk_(file, lineno, TBROK | TERRNO, "sigemptyset() failed");
+}
+
 struct group *safe_getgrnam(const char *file, const int lineno,
 			    const char *name)
 {

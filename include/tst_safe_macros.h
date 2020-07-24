@@ -431,48 +431,18 @@ int safe_sigaction(const char *file, const int lineno,
 #define SAFE_SIGACTION(signum, act, oldact) \
 	safe_sigaction(__FILE__, __LINE__, (signum), (act), (oldact))
 
-static inline void safe_sigaddset(const char *file, const int lineno,
-				  sigset_t *sigs, int signo)
-{
-	int rval;
-
-	rval = sigaddset(sigs, signo);
-	if (rval == -1) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-		         "sigaddset() %s (%i) failed",
-			 tst_strsig(signo), signo);
-	}
-}
-
+void safe_sigaddset(const char *file, const int lineno,
+                    sigset_t *sigs, int signo);
 #define SAFE_SIGADDSET(sigs, signo) \
 	safe_sigaddset(__FILE__, __LINE__, (sigs), (signo))
 
-static inline void safe_sigdelset(const char *file, const int lineno,
-				  sigset_t *sigs, int signo)
-{
-	int rval;
-
-	rval = sigdelset(sigs, signo);
-	if (rval == -1) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-		         "sigdelset() %s (%i) failed",
-			 tst_strsig(signo), signo);
-	}
-}
-
+void safe_sigdelset(const char *file, const int lineno,
+                    sigset_t *sigs, int signo);
 #define SAFE_SIGDELSET(sigs, signo) \
 	safe_sigdelset(__FILE__, __LINE__, (sigs), (signo))
 
-static inline void safe_sigemptyset(const char *file, const int lineno,
-				    sigset_t *sigs)
-{
-	int rval;
-
-	rval = sigemptyset(sigs);
-	if (rval == -1)
-		tst_brk_(file, lineno, TBROK | TERRNO, "sigemptyset() failed");
-}
-
+void safe_sigemptyset(const char *file, const int lineno,
+                      sigset_t *sigs);
 #define SAFE_SIGEMPTYSET(sigs) \
 	safe_sigemptyset(__FILE__, __LINE__, (sigs))
 
