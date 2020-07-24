@@ -51,14 +51,14 @@ static pid_t set_sig(struct tst_ts *ts,
 	gettime(CLOCK_REALTIME, tst_ts_get(ts));
 	*ts = tst_ts_add_us(*ts, 3000000);
 
-	return create_sig_proc(SIGINT, 40, 200000);
+	return create_sig_proc(SIGINT, 40, 50000);
 }
 
 static void set_timeout(struct tst_ts *ts,
 			int (*gettime)(clockid_t clk_id, void *ts))
 {
 	gettime(CLOCK_REALTIME, tst_ts_get(ts));
-	*ts = tst_ts_add_us(*ts, 50000);
+	*ts = tst_ts_add_us(*ts, 10000);
 }
 
 static void kill_pid(pid_t pid)
