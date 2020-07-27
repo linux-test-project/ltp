@@ -54,7 +54,7 @@ compute_digest()
 	return 1
 }
 
-check_ima_policy()
+require_ima_policy_cmdline()
 {
 	local policy="$1"
 	local i

@@ -15,7 +15,7 @@ TST_NEEDS_DEVICE=1
 
 setup()
 {
-	check_ima_policy "tcb"
+	require_ima_policy_cmdline "tcb"
 
 	TEST_FILE="$PWD/test.txt"
 	POLICY="$IMA_DIR/policy"
