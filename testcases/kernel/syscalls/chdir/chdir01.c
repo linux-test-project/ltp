@@ -1,181 +1,144 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2001
+ *     07/2001 Ported by Wayne Boyer
+ * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
 /*
- * NAME
- * 	chdir01.c
- *
- * DESCRIPTION
- *	Check proper operation of chdir(): tests whether the
- *	system call can it change the current, working directory, and find a
- *	file there? Will it fail on a non-directory entry ?
- *
- * ALGORITHM
- * 	Make a directory "Testdirectory", and create a file in it. cd into
- * 	the directory and read the entry. It should be the file just
- * 	created.
- *
- * USAGE:  <for command-line>
- *  chdir01 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- * 	None
+ * Check that the chdir() syscall returns correct value and error code
+ * in various situations when called with root privileges
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
-#include<sys/stat.h>
-#include "test.h"
-#include "safe_macros.h"
+#include <unistd.h>
+#include <pwd.h>
 
-char *TCID = "chdir01";
-int TST_TOTAL = 2;
+#include "tst_test.h"
 
-void setup(void);
-void cleanup(void);
-static void checknames(char **, int, DIR *);
+#define MNTPOINT "mntpoint"
 
-char testdir[40] = "";
+#define FILE_NAME "testfile"
+#define DIR_NAME "subdir"
+#define BLOCKED_NAME "keep_out"
+#define LINK_NAME1 "symloop"
+#define LINK_NAME2 "symloop2"
 
-int main(int ac, char **av)
+static char *workdir;
+static int skip_symlinks, skip_blocked;
+static struct passwd *ltpuser;
+
+static struct test_case {
+	const char *name;
+	int root_ret, root_err, nobody_ret, nobody_err;
+} testcase_list[] = {
+	{FILE_NAME, -1, ENOTDIR, -1, ENOTDIR},
+	{BLOCKED_NAME, 0, 0, -1, EACCES},
+	{DIR_NAME, 0, 0, 0, 0},
+	{".", 0, 0, 0, 0},
+	{"..", 0, 0, 0, 0},
+	{"/", 0, 0, 0, 0},
+	{"missing", -1, ENOENT, -1, ENOENT},
+	{LINK_NAME1, -1, ELOOP, -1, ELOOP},
+};
+
+static void setup(void)
 {
-	DIR *ddir, *opendir();
+	char *cwd;
 	int fd;
-	char *filname = "chdirtest";
-	char *filenames[3];
+	struct stat statbuf;
 
-	int lc;
+	cwd = SAFE_GETCWD(NULL, 0);
+	workdir = SAFE_MALLOC(strlen(cwd) + strlen(MNTPOINT) + 2);
+	sprintf(workdir, "%s/%s", cwd, MNTPOINT);
+	free(cwd);
+	SAFE_CHDIR(workdir);
+	SAFE_MKDIR(DIR_NAME, 0755);
+	SAFE_MKDIR(BLOCKED_NAME, 0644);
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	/* FAT and NTFS override file and directory permissions */
+	SAFE_STAT(BLOCKED_NAME, &statbuf);
+	skip_blocked = statbuf.st_mode & 0111;
+	skip_symlinks = 0;
+	TEST(symlink(LINK_NAME1, LINK_NAME2));
 
-	setup();
+	if (!TST_RET)
+		SAFE_SYMLINK(LINK_NAME2, LINK_NAME1);
+	else if (TST_RET == -1 && TST_ERR == EPERM)
+		skip_symlinks = 1;
+	else
+		tst_brk(TBROK | TTERRNO, "Cannot create symlinks");
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	fd = SAFE_CREAT(FILE_NAME, 0644);
+	SAFE_CLOSE(fd);
 
-		tst_count = 0;
-
-		SAFE_CHDIR(cleanup, testdir);
-
-		fd = SAFE_CREAT(cleanup, filname, 0000);
-		SAFE_CLOSE(cleanup, fd);
-		if ((ddir = opendir(".")) == NULL)
-			tst_brkm(TBROK | TERRNO, cleanup, "opendir(.) failed");
-
-		filenames[0] = ".";
-		filenames[1] = "..";
-		filenames[2] = filname;
-		checknames(filenames, sizeof(filenames) / sizeof(filenames[0]),
-			   ddir);
-		closedir(ddir);
-
-		TEST(chdir(filname));
-
-		if (TEST_RETURN != -1)
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-		else if (TEST_ERRNO != ENOTDIR)
-			tst_resm(TFAIL | TTERRNO,
-				 "failed unexpectedly; wanted ENOTDIR");
-		else
-			tst_resm(TPASS, "failed as expected with ENOTDIR");
-
-		SAFE_UNLINK(cleanup, filname);
-
-		SAFE_CHDIR(cleanup, "..");
-
-		/* ELOOP */
-		SAFE_SYMLINK(cleanup, "test_eloop1", "test_eloop2");
-		SAFE_SYMLINK(cleanup, "test_eloop2", "test_eloop1");
-
-		TEST(chdir("test_eloop1"));
-
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-		} else if (TEST_ERRNO != ELOOP) {
-			tst_resm(TFAIL | TTERRNO,
-				 "failed unexpectedly; wanted ELOOP");
-		} else {
-			tst_resm(TPASS, "failed as expected with ELOOP");
-		}
-
-		SAFE_UNLINK(cleanup, "test_eloop1");
-		SAFE_UNLINK(cleanup, "test_eloop2");
-	}
-	cleanup();
-
-	tst_exit();
-
+	if (!ltpuser)
+		ltpuser = SAFE_GETPWNAM("nobody");
 }
 
-void setup(void)
+static void check_result(const char *user, const char *name, int retval,
+	int experr)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	umask(0);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	sprintf(testdir, "Testdir.%d", getpid());
-
-	SAFE_MKDIR(cleanup, testdir, 0700);
-}
-
-void cleanup(void)
-{
-	tst_rmdir();
-}
-
-void checknames(char **pfilnames, int fnamecount, DIR * ddir)
-{
-	struct dirent *dir;
-	int i, found;
-
-	found = 0;
-	while ((dir = readdir(ddir)) != NULL) {
-		for (i = 0; i < fnamecount; i++) {
-			/*
-			 * if dir->d_name is not null terminated it is a bug
-			 * anyway
-			 */
-			if (strcmp(pfilnames[i], dir->d_name) == 0) {
-				tst_resm(TINFO, "Found file %s", dir->d_name);
-				found++;
-			}
-		}
+	if (TST_RET != retval) {
+		tst_res(TFAIL | TTERRNO,
+			"%s: chdir(\"%s\") returned unexpected value %ld",
+			user, name, TST_RET);
+		return;
 	}
-	if (found < fnamecount) {
-		tst_brkm(TFAIL, cleanup,
-			 "Some files do not exist, but they must exist");
+
+	if (TST_RET != 0 && TST_ERR != experr) {
+		tst_res(TFAIL | TTERRNO,
+			"%s: chdir(\"%s\") returned unexpected error", user,
+			name);
+		return;
 	}
+
+	tst_res(TPASS | TTERRNO, "%s: chdir(\"%s\") returned correct value",
+		user, name);
 }
+
+static void run(unsigned int n)
+{
+	struct test_case *tc = testcase_list + n;
+
+	if (tc->root_err == ELOOP && skip_symlinks) {
+		tst_res(TCONF, "Skipping symlink loop test, not supported");
+		return;
+	}
+
+	/* Reset current directory to mountpoint */
+	SAFE_CHDIR(workdir);
+
+	TEST(chdir(tc->name));
+	check_result("root", tc->name, tc->root_ret, tc->root_err);
+
+	if (tc->nobody_err == EACCES && skip_blocked) {
+		tst_res(TCONF, "Skipping unprivileged permission test, "
+			"FS mangles dir mode");
+		return;
+	}
+
+	SAFE_CHDIR(workdir);
+	SAFE_SETEUID(ltpuser->pw_uid);
+	TEST(chdir(tc->name));
+	SAFE_SETEUID(0);
+	check_result("nobody", tc->name, tc->nobody_ret, tc->nobody_err);
+}
+
+static void cleanup(void)
+{
+	free(workdir);
+}
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.mount_device = 1,
+	.mntpoint = MNTPOINT,
+	.all_filesystems = 1,
+	.test = run,
+	.tcnt = ARRAY_SIZE(testcase_list),
+	.setup = setup,
+	.cleanup = cleanup
+};

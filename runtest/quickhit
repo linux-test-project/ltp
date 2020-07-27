@@ -24,7 +24,7 @@ brk01 brk01
 # Basic test for brk()
 #    TEST CASES
 # 	1.) brk(2) returns...
-chdir02 chdir02
+chdir01 chdir01
 # Basic test for chdir(2)
 #    TEST CASES
 # 	1.) chdir(2) returns...
