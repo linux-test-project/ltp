@@ -5,7 +5,7 @@
 #
 # Verify that keys are measured correctly based on policy.
 
-TST_NEEDS_CMDS="grep mktemp cut sed tr"
+TST_NEEDS_CMDS="cut grep sed tr xxd"
 TST_CNT=1
 TST_NEEDS_DEVICE=1
 
