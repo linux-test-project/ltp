@@ -16,6 +16,7 @@ static inline int libc_sendmmsg(int sockfd, struct mmsghdr *msgvec,
 	return sendmmsg(sockfd, msgvec, vlen, flags);
 #else
 	tst_brk(TCONF, "libc sendmmsg not present");
+	return -1;
 #endif
 }
 
@@ -32,6 +33,7 @@ static inline int libc_recvmmsg(int sockfd, struct mmsghdr *msgvec,
 	return recvmmsg(sockfd, msgvec, vlen, flags, timeout);
 #else
 	tst_brk(TCONF, "libc recvmmsg not present");
+	return -1;
 #endif
 }
 
