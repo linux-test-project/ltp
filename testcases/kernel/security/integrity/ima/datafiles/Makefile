@@ -26,6 +26,6 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR		:= testcases/data/ima_policy
 
-INSTALL_TARGETS		:= measure*
+INSTALL_TARGETS		:= measure.policy-invalid *.policy
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
