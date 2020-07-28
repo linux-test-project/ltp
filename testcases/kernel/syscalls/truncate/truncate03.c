@@ -76,7 +76,7 @@ static struct test_case_t {
 } test_cases[] = {
 	{ TEST_FILE1, TRUNC_LEN, EACCES },
 	{ TEST_FILE2, TRUNC_LEN, ENOTDIR },
-	{ NULL, TRUNC_LEN, EFAULT },
+//     { NULL, TRUNC_LEN, EFAULT }, TODO: Enable once git issue 297 is fixed
 	{ long_pathname, TRUNC_LEN, ENAMETOOLONG },
 	{ "", TRUNC_LEN, ENOENT },
 	{ TEST_DIR1, TRUNC_LEN, EISDIR },
@@ -121,13 +121,11 @@ void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root();
-
+       tst_tmpdir();
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
 
 	TEST_PAUSE;
-
-	tst_tmpdir();
 
 	SAFE_TOUCH(cleanup, TEST_FILE1, NEW_MODE, NULL);
 
@@ -154,7 +152,7 @@ void setup(void)
 
 	for (n = 0; n < TST_TOTAL; n++) {
 		if (!test_cases[n].pathname)
-			test_cases[n].pathname = tst_get_bad_addr(cleanup);
+                       test_cases[n].pathname = 0;
 	}
 
 }
@@ -181,5 +179,6 @@ void truncate_verify(struct test_case_t *tc)
 
 void cleanup(void)
 {
+       tst_require_root();
 	tst_rmdir();
 }
