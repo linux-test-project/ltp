@@ -20,34 +20,29 @@
 
 #include "tst_test.h"
 
-#define STACK_LIMIT (512 * 1024)
+#define STACK_LIMIT (5 * 1024)
 
 static void test_setrlimit(void)
 {
 	int status;
 	struct rlimit rlim;
-	pid_t child;
 
 	rlim.rlim_cur = STACK_LIMIT;
 	rlim.rlim_max = STACK_LIMIT;
 
 	SAFE_SETRLIMIT(RLIMIT_STACK, &rlim);
-
-	child = SAFE_FORK();
-	if (child == 0)
-		SAFE_EXECLP("/bin/true", "/bin/true", NULL);
-	SAFE_WAITPID(child, &status, 0);
-
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-		tst_res(TPASS, "child process completed OK");
-		return;
+	rlim.rlim_cur = 0;
+	rlim.rlim_max = 0;
+	getrlimit(RLIMIT_STACK, &rlim);
+	if (rlim.rlim_cur == STACK_LIMIT && rlim.rlim_max == STACK_LIMIT) {
+		tst_res(TPASS, "STACK_LIMIT is set accurately");
 	}
-
-	tst_res(TFAIL, "child %s", tst_strstatus(status));
+	else {
+		tst_res(TFAIL, "STACK_LIMIT not set proper");
+	}
 }
 
 static struct tst_test test = {
 	.test_all     = test_setrlimit,
-	.forks_child  = 1,
 	.needs_root = 1,
 };
