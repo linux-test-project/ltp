@@ -45,7 +45,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <setjmp.h>
+#include <pthread.h>
 #include "test.h"
+#include "tst_safe_pthread.h"
 
 #include <stdlib.h>
 #include <stdlib.h>
@@ -63,14 +65,15 @@ char testdir[MAXPATHLEN];
 int parent_pid, sigchld, sigterm, jump;
 void term(int sig);
 void chld(int sig);
-int *pidlist, child_count;
+int child_count;
 jmp_buf env_buf;
+pthread_t *tidlist;
+int terminate_thread = 0;
 
 int getchild(int group, int child, int children);
-int dochild1(void);
-int dochild2(void);
-int dochild3(int group);
-int massmurder(void);
+void* dochild1(void* parm);
+void* dochild2(void* parm);
+void* dochild3(void* parm);
 int runtest(void);
 void setup(void);
 void cleanup(void);
@@ -112,18 +115,6 @@ int main(int argc, char *argv[])
 
 	setup();
 
-	if (signal(SIGTERM, term) == SIG_ERR) {
-		tst_brkm(TFAIL, cleanup,
-			 "Error setting up SIGTERM signal, ERRNO = %d", errno);
-
-	}
-
-	if (signal(SIGCHLD, chld) == SIG_ERR) {
-		tst_brkm(TFAIL, cleanup,
-			 "Error setting up SIGCHLD signal, ERRNO = %d", errno);
-
-	}
-
 	runtest();
 	cleanup();
 	tst_exit();
@@ -132,7 +123,7 @@ int main(int argc, char *argv[])
 int runtest(void)
 {
 	int i, j;
-	int count, child, status;
+	int count;
 	char tmpdir[MAXPATHLEN];
 
 	/* Create permanent directories with holes in directory structure */
@@ -159,7 +150,7 @@ int runtest(void)
 
 	/* allocate space for list of child pid's */
 
-	if ((pidlist = malloc((child_groups * NCHILD) * sizeof(int))) ==
+	if ((tidlist = malloc((child_groups * NCHILD) * sizeof(pthread_t))) ==
 	    NULL) {
 		tst_brkm(TWARN, NULL,
 			 "\tMalloc failed (may be OK if under stress)");
@@ -173,60 +164,26 @@ int runtest(void)
 		}
 	}
 
-	/* If signal already received, skip to cleanup */
-
-	if (!sigchld && !sigterm) {
-		if (test_time) {
-			/* To get out of sleep if signal caught */
-			if (!setjmp(env_buf)) {
-				jump++;
-				sleep(test_time);
-			}
-		} else {
-			pause();
-		}
-	}
-
-	/* Reset signals since we are about to clean-up and to avoid
-	 * problem with wait call *               $
-	 * */
-
-	if (signal(SIGTERM, SIG_IGN) == SIG_ERR) {
-		tst_brkm(TFAIL, cleanup,
-			 "Error resetting SIGTERM signal, ERRNO = %d", errno);
-	}
-	if (signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
-		tst_brkm(TFAIL, cleanup,
-			 "Error resetting SIGCHLD signal, ERRNO = %d", errno);
-	}
 
 	if (test_time) {
 		sleep(test_time);
 	}
 
 	/* Clean up children */
-	massmurder();
+	terminate_thread = 1;
+
 	/*
 	 * Watch children finish and show returns.
 	 */
 
 	count = 0;
-	while (1) {
-		if ((child = wait(&status)) > 0) {
-			if (status != 0) {
-				tst_brkm(TWARN,
-					 NULL,
-					 "\tChild{%d} exited status = %0x",
-					 child, status);
-			}
-			count++;
-		} else {
-			if (errno != EINTR) {
-				break;
-			}
-			tst_resm(TINFO, "\tSignal detected during wait");
-		}
+	while (count < child_count) {
+		SAFE_PTHREAD_JOIN(tidlist[count], NULL);
+		count++;
 	}
+
+	// free the memory allocated for list of thread ids
+	free(tidlist);
 
 	/*
 	 * Make sure correct number of children exited.
@@ -263,101 +220,64 @@ int runtest(void)
 
 int getchild(int group, int child, int children)
 {
-	int pid;
+	pthread_t tid;
 
-	pid = FORK_OR_VFORK();
-
-	if (pid < 0) {
-
-		massmurder();	/* kill the kids */
-		tst_brkm(TBROK, cleanup,
-			 "\tFork failed (may be OK if under stress)");
-	} else if (pid == 0) {	/* child does this */
-		switch (children % NCHILD) {
-		case 0:
-			dochild1();	/* create existing directories */
-			break;	/* so lint won't complain */
-		case 1:
-			dochild2();	/* remove nonexistant directories */
-			break;
-		case 2:
-			dochild3(group);	/* create/delete directories */
-			break;
-		default:
-			tst_brkm(TFAIL, cleanup,
-				 "Test not inplemented for child %d", child);
-			exit(1);
-			break;
-		}
-		exit(1);	/* If child gets here, something wrong */
+	switch (children % NCHILD) {
+	case 0:
+		SAFE_PTHREAD_CREATE(&tid, NULL, dochild1, NULL);
+		break;	/* so lint won't complain */
+	case 1:
+		SAFE_PTHREAD_CREATE(&tid, NULL, dochild2, NULL);
+		break;
+	case 2:
+		SAFE_PTHREAD_CREATE(&tid, NULL, dochild3,(void*)(long)group);
+		break;
+	default:
+		tst_brkm(TFAIL, cleanup,
+			 "Test not inplemented for child %d", child);
+		break;
 	}
-	pidlist[children] = pid;
+	tidlist[children] = tid;
 	return 0;
 }
 
-void term(int sig)
+void* dochild1(void* parm LTP_ATTRIBUTE_UNUSED)
 {
-	/* Routine to handle SIGTERM signal. */
-
-	if (parent_pid == getpid()) {
-		tst_brkm(TWARN, NULL, "\tsignal SIGTERM received by parent.");
-	}
-	sigterm++;
-	if (jump) {
-		longjmp(env_buf, 1);
-	}
-}
-
-void chld(int sig)
-{
-	/* Routine to handle SIGCHLD signal. */
-
-	sigchld++;
-	if (jump) {
-		longjmp(env_buf, 1);
-	}
-}
-
-int dochild1(void)
-{
-	/* Child routine which attempts to create directories in the test
-	 * directory that already exist. Runs until a SIGTERM signal is
-	 * received. Will exit with an error if it is able to create the
+	/* Child thread which attempts to create directories in the test
+	 * directory that already exist. Runs until main routine terminates it
+	 * Will exit with an error if it is able to create the
 	 * directory or if the expected error is not received.
 	 */
 
 	int j;
 	char tmpdir[MAXPATHLEN];
 
-	while (!sigterm) {
+	while (!terminate_thread) {
 		for (j = 0; j < nfiles; j += NCHILD) {
 			sprintf(tmpdir, DIR_NAME, j);
-			TEST(mkdir(tmpdir, MODE_RWX));
 
-			if (TEST_RETURN < 0) {
+			if (mkdir(tmpdir, MODE_RWX) < 0) {
 
-				if (TEST_ERRNO != EEXIST) {
+				if (errno != EEXIST) {
 					tst_brkm(TFAIL, cleanup,
 						 "MKDIR %s, errno = %d; Wrong error detected.",
 						 tmpdir, TEST_ERRNO);
-					exit(1);
 				}
 			} else {
 				tst_brkm(TFAIL, cleanup,
 					 "MKDIR %s succeded when it shoud have failed.",
 					 tmpdir);
-				exit(1);
 			}
 		}
 	}
-	exit(0);
+	pthread_exit(0);
 }
 
-int dochild2(void)
+void* dochild2(void* parm LTP_ATTRIBUTE_UNUSED)
 {
-	/* Child routine which attempts to remove directories from the
-	 * test directory which do not exist. Runs until a SIGTERM
-	 * signal is received. Exits with an error if the proper
+	/* Child thread which attempts to remove directories from the
+	 * test directory which do not exist. Runs until main routine
+	 * terminate the thread. Exits with an error if the proper
 	 * error is not detected or if the remove operation is
 	 * successful.
 	 */
@@ -365,7 +285,7 @@ int dochild2(void)
 	int j;
 	char tmpdir[MAXPATHLEN];
 
-	while (!sigterm) {
+	while (!terminate_thread) {
 		for (j = 1; j < nfiles; j += NCHILD) {
 			sprintf(tmpdir, DIR_NAME, j);
 			if (rmdir(tmpdir) < 0) {
@@ -373,46 +293,41 @@ int dochild2(void)
 					tst_brkm(TFAIL, cleanup,
 						 "RMDIR %s, errno = %d; Wrong error detected.",
 						 tmpdir, errno);
-					exit(1);
 				}
 			} else {
 				tst_brkm(TFAIL, cleanup,
 					 "RMDIR %s succeded when it should have failed.",
 					 tmpdir);
-				exit(1);
 			}
 		}
 	}
-	exit(0);
-	return 0;
+	pthread_exit(0);
 }
 
-int dochild3(int group)
+void* dochild3(void *parm)
 {
 	/* Child routine which creates and deletes directories in the
-	 * test directory. Runs until a SIGTERM signal is received, then
-	 * cleans up and exits. Detects error if the expected condition
+	 * test directory. Runs until a terminate_thread variable is set.
+	 * Detects error if the expected condition
 	 * is not encountered.
 	 */
 
+	long group = (long)parm;
 	int j;
 
 	char tmpdir[MAXPATHLEN];
 	char tmp[MAXPATHLEN];
 
-	while (!sigterm) {
+	while (!terminate_thread) {
 		for (j = 2; j < nfiles; j += NCHILD) {
 			strcpy(tmp, DIR_NAME);
 			strcat(tmp, ".%d");
 			sprintf(tmpdir, tmp, j, group);
 
-			TEST(mkdir(tmpdir, MODE_RWX));
-
-			if (TEST_RETURN < 0) {
+			if (mkdir(tmpdir, MODE_RWX) < 0) {
 				tst_brkm(TFAIL, cleanup,
 					 "MKDIR %s, errno = %d; Wrong error detected.",
 					 tmpdir, TEST_ERRNO);
-				exit(1);
 			}
 		}
 		for (j = 2; j < nfiles; j += NCHILD) {
@@ -423,26 +338,10 @@ int dochild3(int group)
 				tst_brkm(TFAIL, cleanup,
 					 "RMDIR %s, errno = %d; Wrong error detected.",
 					 tmpdir, errno);
-				exit(1);
 			}
 		}
 	}
-	exit(0);
-}
-
-int massmurder(void)
-{
-	register int j;
-	for (j = 0; j < child_count; j++) {
-		if (pidlist[j] > 0) {
-			if (kill(pidlist[j], SIGTERM) < 0) {
-				tst_brkm(TFAIL, cleanup,
-					 "Error killing child %d, ERRNO = %d",
-					 j, errno);
-			}
-		}
-	}
-	return 0;
+	pthread_exit(0);
 }
 
 void setup(void)
