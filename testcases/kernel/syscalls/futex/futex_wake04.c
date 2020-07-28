@@ -45,12 +45,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "futextest.h"
-#include "futex_utils.h"
 #include "lapi/mmap.h"
-
-#define PATH_MEMINFO "/proc/meminfo"
-#define PATH_NR_HUGEPAGES "/proc/sys/vm/nr_hugepages"
-#define PATH_HUGEPAGES	"/sys/kernel/mm/hugepages/"
 
 const char *TCID = "futex_wake04";
 const int TST_TOTAL = 1;
@@ -58,8 +53,6 @@ const int TST_TOTAL = 1;
 static futex_t *futex1, *futex2;
 
 static struct timespec to = {.tv_sec = 30, .tv_nsec = 0};
-
-static long orig_hugepages;
 
 static void setup(void)
 {
@@ -70,45 +63,14 @@ static void setup(void)
 			"that are 2.6.32 or higher");
 	}
 
-	if (access(PATH_HUGEPAGES, F_OK))
-		tst_brkm(TCONF, NULL, "Huge page is not supported.");
-
 	tst_tmpdir();
-
-	SAFE_FILE_SCANF(NULL, PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
-
-	if (orig_hugepages <= 0)
-		SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%d", 1);
 
 	TEST_PAUSE;
 }
 
 static void cleanup(void)
 {
-	if (orig_hugepages <= 0)
-		SAFE_FILE_PRINTF(NULL, PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
-
 	tst_rmdir();
-}
-
-static int read_hugepagesize(void)
-{
-	FILE *fp;
-	char line[BUFSIZ], buf[BUFSIZ];
-	int val;
-
-	fp = SAFE_FOPEN(cleanup, PATH_MEMINFO, "r");
-	while (fgets(line, BUFSIZ, fp) != NULL) {
-		if (sscanf(line, "%64s %d", buf, &val) == 2)
-			if (strcmp(buf, "Hugepagesize:") == 0) {
-				SAFE_FCLOSE(cleanup, fp);
-				return 1024 * val;
-			}
-	}
-
-	SAFE_FCLOSE(cleanup, fp);
-	tst_brkm(TBROK, NULL, "can't find \"%s\" in %s",
-			"Hugepagesize:", PATH_MEMINFO);
 }
 
 static void *wait_thread1(void *arg LTP_ATTRIBUTE_UNUSED)
@@ -137,12 +99,13 @@ static void wakeup_thread2(void)
 	int hpsz, pgsz, res;
 	pthread_t th1, th2;
 
-	hpsz = read_hugepagesize();
-	tst_resm(TINFO, "Hugepagesize %i", hpsz);
+	pgsz = getpagesize();
+
+	hpsz = 2 * pgsz;
 
 	/*allocate some shared memory*/
 	addr = mmap(NULL, hpsz, PROT_WRITE | PROT_READ,
-	            MAP_SHARED | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+	            MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
 	if (addr == MAP_FAILED) {
 		if (errno == ENOMEM) {
@@ -152,8 +115,6 @@ static void wakeup_thread2(void)
 
 		tst_brkm(TBROK | TERRNO, NULL, "Cannot allocate hugepage");
 	}
-
-	pgsz = getpagesize();
 
 	/*apply the first subpage to futex1*/
 	futex1 = addr;
@@ -175,8 +136,7 @@ static void wakeup_thread2(void)
 				tst_strerrno(res));
 	}
 
-	while (wait_for_threads(2))
-		usleep(1000);
+	sleep(5);	
 
 	futex_wake(futex2, 1, 0);
 
