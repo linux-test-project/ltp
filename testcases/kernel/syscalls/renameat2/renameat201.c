@@ -39,8 +39,10 @@
 #include "lapi/fcntl.h"
 #include "renameat2.h"
 
-#define TEST_DIR "test_dir/"
-#define TEST_DIR2 "test_dir2/"
+#define MNTPOINT  "mntpoint"
+#define DIR_MODE  (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+#define TEST_DIR "mntpoint/test_dir/"
+#define TEST_DIR2 "mntpoint/test_dir2/"
 
 #define TEST_FILE "test_file"
 #define TEST_FILE2 "test_file2"
@@ -51,7 +53,8 @@ char *TCID = "renameat201";
 
 static int olddirfd;
 static int newdirfd;
-static long fs_type;
+const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 static struct test_case {
 	int *olddirfd;
@@ -105,9 +108,11 @@ static void setup(void)
 			"This test can only run on kernels that are 3.15. and higher");
 	}
 
-	tst_tmpdir();
 
-	fs_type = tst_fs_type(cleanup, ".");
+
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
 
 	SAFE_MKDIR(cleanup, TEST_DIR, 0700);
 	SAFE_MKDIR(cleanup, TEST_DIR2, 0700);
@@ -127,8 +132,16 @@ static void cleanup(void)
 
 	if (newdirfd > 0 && close(newdirfd) < 0)
 		tst_resm(TWARN | TERRNO, "close newdirfd failed");
+	remove("test_dir/test_file1");
+	remove("test_dir/test_file3");
+	remove("test_dir2/test_file2");
+	remove("test_dir2/test_file3");
 
-	tst_rmdir();
+	SAFE_RMDIR(NULL, TEST_DIR);
+	SAFE_RMDIR(NULL, TEST_DIR2);
+	SAFE_UMOUNT(NULL, MNTPOINT);
+	SAFE_RMDIR(NULL, MNTPOINT);
+
 
 }
 
@@ -137,13 +150,6 @@ static void renameat2_verify(const struct test_case *test)
 	TEST(renameat2(*(test->olddirfd), test->oldpath,
 			*(test->newdirfd), test->newpath, test->flags));
 
-	if ((test->flags & RENAME_EXCHANGE) && EINVAL == TEST_ERRNO
-		&& fs_type == TST_BTRFS_MAGIC) {
-		tst_resm(TCONF,
-			"RENAME_EXCHANGE flag is not implemeted on %s",
-			tst_fs_type_name(fs_type));
-		return;
-	}
 
 	if (test->exp_errno && TEST_RETURN != -1) {
 		tst_resm(TFAIL, "renameat2() succeeded unexpectedly");
