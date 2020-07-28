@@ -31,6 +31,9 @@ static void verify_fcntl(int);
 static void cleanup(void);
 
 #define FILE_MODE	(S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID)
+#define MNTPOINT  "mntpoint"
+#define FILENAME  "mntpoint/fcntl32testfile"
+#define DIR_MODE  (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 
 static int fd1;
 static int fd2;
@@ -53,6 +56,8 @@ static struct test_case_t {
 
 char *TCID = "fcntl32";
 int TST_TOTAL = ARRAY_SIZE(test_cases);
+const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 int main(int ac, char **av)
 {
@@ -77,29 +82,16 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 
-	tst_tmpdir();
-
-	switch ((type = tst_fs_type(cleanup, "."))) {
-	case TST_NFS_MAGIC:
-	case TST_RAMFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl(F_SETLEASE, F_WRLCK) "
-			 "on %s filesystem",
-			 tst_fs_type_name(type));
-	default:
-		break;
-	}
-
-	SAFE_TOUCH(cleanup, "file", FILE_MODE, NULL);
+	SAFE_TOUCH(cleanup, FILENAME, FILE_MODE, NULL);
 }
 
 static void verify_fcntl(int i)
 {
-	fd1 = SAFE_OPEN(cleanup, "file", test_cases[i].fd1_flag);
-	fd2 = SAFE_OPEN(cleanup, "file", test_cases[i].fd2_flag);
+	fd1 = SAFE_OPEN(cleanup, FILENAME, test_cases[i].fd1_flag);
+	fd2 = SAFE_OPEN(cleanup, FILENAME, test_cases[i].fd2_flag);
 
 	TEST(fcntl(fd1, F_SETLEASE, F_WRLCK));
 
@@ -132,6 +124,7 @@ static void cleanup(void)
 
 	if (fd2 > 0 && close(fd2))
 		tst_resm(TWARN | TERRNO, "Failed to close file");
+	remove(FILENAME);
+	SAFE_RMDIR(NULL, MNTPOINT);
 
-	tst_rmdir();
 }
