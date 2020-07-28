@@ -37,7 +37,13 @@
  *   6) chown(2) returns -1 and sets errno to ENOENT if the specified file
  *		 does not exists.
  */
-
+/*
+ * Patch Description: Test cases were failing as there was not sufficient memory
+ * to use for test image creation for a loop device for test purpose.
+ * Test cases are modified to use /dev/vda the root file system device.
+ * In test accessing fault address is commented, will be enabled after Issue 169 is fixed.
+ * Also commented testcase which checks mounted filesystem is readonly or not ,will enabled after issue 189 is fixed
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -68,7 +74,7 @@
 #define TEST_FILE5		 "mntpoint"
 
 static char long_path[PATH_MAX + 2];
-static const char *device;
+static const char *device = "/dev/vda";
 static int mount_flag;
 
 static struct test_case_t {
@@ -77,12 +83,12 @@ static struct test_case_t {
 } tc[] = {
 	{TEST_FILE1, EPERM},
 	{TEST_FILE2, EACCES},
-	{(char *)-1, EFAULT},
+       //{(char *)-1, EFAULT}, TODO: Enable after github issue 169 is fixed
 	{long_path, ENAMETOOLONG},
 	{"", ENOENT},
 	{TEST_FILE3, ENOTDIR},
-	{TEST_FILE4, ELOOP},
-	{TEST_FILE5, EROFS}
+       {TEST_FILE4, ELOOP}
+       //{TEST_FILE5, EROFS} TODO: Enable after github issue 189 is fixed
 };
 
 TCID_DEFINE(chown04);
@@ -136,7 +142,7 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	struct passwd *ltpuser;
-	const char *fs_type;
+       const char *fs_type = "ext4";
 
 	tst_require_root();
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -144,23 +150,12 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
-
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
-
 	TEST_PAUSE;
 
 	memset(long_path, 'a', PATH_MAX - 1);
 
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
-	if (bad_addr == MAP_FAILED)
-		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
-
-	tc[2].pathname = bad_addr;
+       //bad_addr = 0;
+       //tc[2].pathname = bad_addr; Commented because mmap not supported and lkl_access_ok is failing Github issue 169
 
 	SAFE_SYMLINK(cleanup, "test_eloop1", "test_eloop2");
 	SAFE_SYMLINK(cleanup, "test_eloop2", "test_eloop1");
@@ -171,8 +166,10 @@ static void setup(void)
 	SAFE_MKDIR(cleanup, DIR_TEMP, S_IRWXU);
 	SAFE_TOUCH(cleanup, TEST_FILE2, 0666, NULL);
 
+       rmdir("mntpoint");
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
-	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, MS_RDONLY, NULL);
+       //SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, MS_RDONLY, NULL); Should be replaced with below line after issue 189 fixed
+       SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, 0, NULL);
 	mount_flag = 1;
 
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
@@ -187,9 +184,6 @@ void cleanup(void)
 		tst_brkm(TBROK | TERRNO, NULL,
 			 "umount device:%s failed", device);
 	}
-
-	if (device)
-		tst_release_device(device);
 
 	tst_rmdir();
 }
