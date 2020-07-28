@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <string.h>
+#include <stdio.h>
 
 #ifdef HAVE_SYS_XATTR_H
 # include <sys/xattr.h>
@@ -32,6 +33,9 @@
 #define VALUE_SIZE	(sizeof(VALUE) - 1)
 #define KEY_SIZE    (sizeof(SECURITY_KEY1) - 1)
 #define TESTFILE    "testfile"
+#define TESTID	"listxattr01"
+
+char tmpdirpath[512];
 
 static int has_attribute(const char *list, int llen, const char *attr)
 {
@@ -63,18 +67,33 @@ static void verify_listxattr(void)
 	tst_res(TPASS, "listxattr() succeeded");
 }
 
+void create_tempdir(void)
+{
+	sprintf(tmpdirpath, "/tmp%s_%d", TESTID, getpid());
+
+	SAFE_MKDIR(tmpdirpath, 0644);
+}
+
 static void setup(void)
 {
+	create_tempdir();
+
 	SAFE_TOUCH(TESTFILE, 0644, NULL);
 
 	SAFE_SETXATTR(TESTFILE, SECURITY_KEY1, VALUE, VALUE_SIZE, XATTR_CREATE);
 }
 
+void cleanup(void)
+{
+	remove(TESTFILE);
+	SAFE_RMDIR(tmpdirpath);
+}
+
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.test_all = verify_listxattr,
 	.setup = setup,
+	.cleanup = cleanup,
 };
 
 #else
