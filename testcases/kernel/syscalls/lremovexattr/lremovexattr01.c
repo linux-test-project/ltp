@@ -105,10 +105,16 @@ static void verify_lremovexattr(void)
 	SAFE_REMOVEXATTR(FILENAME, XATTR_KEY);
 
 	tst_res(TPASS, "lremovexattr(2) removed attribute as expected");
+       remove(FILENAME);
+       remove(SYMLINK);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static void setup(void)
 {
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, NULL);
 	SAFE_TOUCH(FILENAME, 0644, NULL);
 
 	if (symlink(FILENAME, SYMLINK) < 0)
@@ -118,9 +124,6 @@ static void setup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_lremovexattr,
-	.mntpoint = MNTPOINT,
-	.mount_device = 1,
-	.all_filesystems = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
