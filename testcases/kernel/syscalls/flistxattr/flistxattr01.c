@@ -13,7 +13,7 @@
 * associated with the file itself in the filesystem.
 *
 */
-
+#include <stdio.h>
 #include "config.h"
 #include <errno.h>
 #include <sys/types.h>
@@ -31,6 +31,12 @@
 #define VALUE	"test"
 #define VALUE_SIZE	(sizeof(VALUE) - 1)
 #define KEY_SIZE    (sizeof(SECURITY_KEY1) - 1)
+#define MNTPOINT        "mntpoint"
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+#define FILE_MODE       (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID)
+#define TESTFILE "mntpoint/flistxattr01testfile"
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 static int fd;
 
@@ -66,7 +72,11 @@ static void verify_flistxattr(void)
 
 static void setup(void)
 {
-	fd = SAFE_OPEN("testfile", O_RDWR | O_CREAT, 0644);
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(device, MNTPOINT, fs_type, 0, "user_xattr");
+
+	fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, 0644);
 
 	SAFE_FSETXATTR(fd, SECURITY_KEY1, VALUE, VALUE_SIZE, XATTR_CREATE);
 }
@@ -75,6 +85,10 @@ static void cleanup(void)
 {
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+	remove(TESTFILE);
+	SAFE_UMOUNT(MNTPOINT);
+	SAFE_RMDIR(MNTPOINT);
+
 }
 
 static struct tst_test test = {
