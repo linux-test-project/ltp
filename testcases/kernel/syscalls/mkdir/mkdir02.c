@@ -17,6 +17,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "tst_test.h"
+#include <sys/prctl.h>
+#include <linux/securebits.h>
 
 #define TESTDIR1	"testdir1"
 #define TESTDIR2	"testdir1/testdir2"
@@ -54,10 +56,8 @@ static void verify_mkdir(void)
 		if (!fail)
 			tst_res(TPASS, "New dir inherited GID and S_ISGID");
 
-		exit(0);
 	}
 
-	tst_reap_children();
 	SAFE_RMDIR(TESTDIR2);
 }
 
@@ -67,6 +67,16 @@ static void setup(void)
 	struct passwd *pw;
 	struct stat buf;
 	pid_t pid;
+	int usr_secbits;
+
+	// set the flag "SECBIT_NO_SETUID_FIXUP" to retain the
+	// effective capabilities, when user id changed from root to non-root.
+	if(getuid() == 0)
+	{
+		usr_secbits = prctl(PR_GET_SECUREBITS, 0, 0, 0, 0);
+		usr_secbits |= SECBIT_NO_SETUID_FIXUP;
+		prctl(PR_SET_SECUREBITS, usr_secbits, 0, 0, 0);
+	}
 
 	pw = SAFE_GETPWNAM("nobody");
 	nobody_uid = pw->pw_uid;
@@ -84,10 +94,7 @@ static void setup(void)
 		SAFE_MKDIR(TESTDIR1, 0777);
 		SAFE_STAT(TESTDIR1, &buf);
 		SAFE_CHMOD(TESTDIR1, buf.st_mode | S_ISGID);
-		exit(0);
 	}
-
-	tst_reap_children();
 }
 
 static struct tst_test test = {
