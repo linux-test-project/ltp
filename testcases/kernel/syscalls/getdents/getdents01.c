@@ -99,6 +99,7 @@ int main(int ac, char **av)
 	dirp = buf;
 
 	setup();
+	longsyscall = 1;
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		const char *d_name;
