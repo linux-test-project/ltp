@@ -76,11 +76,10 @@ int main(int ac, char **av)
 {
 	int lc;
 
-	int i, red, wtstatus;
+	int i, red;
 	int pipefd[2];		/* fds for pipe read/write */
 	char rebuf[BUFSIZ];
 	int Acnt = 0, Bcnt = 0;	/* count 'A' and 'B' */
-	int fork_1, fork_2;	/* ret values in parent */
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
@@ -98,58 +97,16 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if ((fork_1 = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-		}
-
-		if (fork_1 == 0) {	/* 1st child */
-			if (close(pipefd[0]) != 0) {
-				tst_resm(TWARN, "pipefd[0] close failed, "
-					 "errno = %d", errno);
-				exit(1);
+		for (i = 0; i < PIPEWRTCNT / 2; ++i) {
+			if (write(pipefd[1], "A", 1) != 1) {
+				tst_brkm(TBROK|TERRNO, cleanup, "write to pipe failed");
 			}
+		}
 
-			for (i = 0; i < PIPEWRTCNT / 2; ++i) {
-				if (write(pipefd[1], "A", 1) != 1) {
-					tst_resm(TWARN, "write to pipe failed");
-					exit(1);
-				}
+		for (i = 0; i < PIPEWRTCNT / 2; ++i) {
+			if (write(pipefd[1], "B", 1) != 1) {
+				tst_brkm(TBROK|TERRNO, cleanup, "write to pipe failed");
 			}
-			exit(0);
-		}
-
-		/* parent */
-
-		SAFE_WAITPID(cleanup, fork_1, &wtstatus, 0);
-		if (WIFEXITED(wtstatus) && WEXITSTATUS(wtstatus) != 0) {
-			tst_brkm(TBROK, cleanup, "child exited abnormally");
-		}
-
-		if ((fork_2 = FORK_OR_VFORK()) == -1) {
-			tst_brkm(TBROK, cleanup, "fork() #2 failed");
-		}
-
-		if (fork_2 == 0) {	/* 2nd child */
-			if (close(pipefd[0]) != 0) {
-				perror("pipefd[0] close failed");
-				exit(1);
-			}
-
-			for (i = 0; i < PIPEWRTCNT / 2; ++i) {
-				if (write(pipefd[1], "B", 1) != 1) {
-					perror("write to pipe failed");
-					exit(1);
-				}
-			}
-			exit(0);
-		}
-
-		/* parent */
-
-		SAFE_WAITPID(cleanup, fork_2, &wtstatus, 0);
-		if (WEXITSTATUS(wtstatus) != 0) {
-			tst_brkm(TBROK, cleanup, "problem detected in child, "
-				 "wait status %d, errno = %d", wtstatus, errno);
 		}
 
 		if (close(pipefd[1]) != 0) {
@@ -187,6 +144,10 @@ int main(int ac, char **av)
 
 		/* clean up things in case we are looping */
 		Acnt = Bcnt = 0;
+
+		if (close(pipefd[0]) != 0)
+			tst_brkm(TBROK | TERRNO, cleanup,
+				 "pipefd[0] close failed, errno = %d", errno);
 	}
 	cleanup();
 
