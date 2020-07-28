@@ -12,6 +12,11 @@
 * of extended attribute names, which can be used to estimate a suitable buffer.
 */
 
+/* Currently xattr is not enabled while mounting root file system. Patch is
+ * to mount root file system with xattr enabled and then use it for the test.
+*/
+
+#include <stdio.h>
 #include "config.h"
 #include <errno.h>
 #include <sys/types.h>
@@ -28,7 +33,15 @@
 #define VALUE	"test"
 #define VALUE_SIZE	(sizeof(VALUE) - 1)
 
-static const char * const filename[] = {"testfile1", "testfile2"};
+#define MNTPOINT        "mntpoint"
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+#define FILE_MODE       (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID)
+#define TESTFILE1 "mntpoint/listxattr03testfile1"
+#define TESTFILE2 "mntpoint/listxattr03testfile2"
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
+
+static const char * const filename[] = {TESTFILE1,TESTFILE2};
 
 static int check_suitable_buf(const char *name, long size)
 {
@@ -58,11 +71,23 @@ static void verify_listxattr(unsigned int n)
 
 static void setup(void)
 {
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(device, MNTPOINT, fs_type, 0, "user_xattr");
+
 	SAFE_TOUCH(filename[0], 0644, NULL);
 
 	SAFE_TOUCH(filename[1], 0644, NULL);
 
 	SAFE_SETXATTR(filename[1], SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
+}
+
+static void cleanup(void)
+{
+	remove(TESTFILE1);
+	remove(TESTFILE2);
+	SAFE_UMOUNT(MNTPOINT);
+	SAFE_RMDIR(MNTPOINT);
 }
 
 static struct tst_test test = {
@@ -71,6 +96,7 @@ static struct tst_test test = {
 	.test = verify_listxattr,
 	.tcnt = ARRAY_SIZE(filename),
 	.setup = setup,
+	.cleanup = cleanup,
 };
 
 #else /* HAVE_SYS_XATTR_H */
