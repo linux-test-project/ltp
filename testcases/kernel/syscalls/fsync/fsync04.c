@@ -29,10 +29,11 @@ static void verify_fsync(void)
 {
 	int fd;
 	unsigned long written;
-
+       SAFE_MKDIR(MNTPOINT, MODE);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, NULL);
 	fd = SAFE_OPEN(FNAME, O_RDWR|O_CREAT, MODE);
 
-	tst_dev_bytes_written(tst_device->dev);
+       tst_dev_bytes_written("/dev/vda");
 
 	tst_fill_fd(fd, 0, TST_MB, FILE_SIZE_MB);
 
@@ -41,9 +42,12 @@ static void verify_fsync(void)
 	if (TST_RET)
 		tst_brk(TFAIL | TTERRNO, "fsync(fd) failed");
 
-	written = tst_dev_bytes_written(tst_device->dev);
+       written = tst_dev_bytes_written("/dev/vda");
 
 	SAFE_CLOSE(fd);
+       remove(FNAME);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 
 	if (written >= FILE_SIZE)
 		tst_res(TPASS, "Test file synced to device");
@@ -53,8 +57,5 @@ static void verify_fsync(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.mount_device = 1,
-	.all_filesystems = 1,
-	.mntpoint = MNTPOINT,
 	.test_all = verify_fsync,
 };
