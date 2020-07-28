@@ -20,30 +20,19 @@
 static int fd[2];
 static char rdbuf[SIZE];
 static char wrbuf[SIZE];
+static int flag_sighandle = 0;
 
-static void do_child(void)
+void sighandle_sigpipe(int tmp LTP_ATTRIBUTE_UNUSED)
 {
-	SAFE_SIGNAL(SIGPIPE, SIG_DFL);
-	SAFE_CLOSE(fd[0]);
-	SAFE_WRITE(1, fd[1], wrbuf, SIZE);
-
-	TST_CHECKPOINT_WAIT(0);
-
-	SAFE_WRITE(1, fd[1], wrbuf, SIZE);
-	exit(0);
+	flag_sighandle = 1;
+	tst_res(TINFO, "SIGPIPE signal handler is called");
 }
 
 static void verify_pipe(void)
 {
-	int status;
-	int sig = 0;
-	pid_t pid;
 
 	memset(wrbuf, 'a', SIZE);
-
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "dd", &fd[0], &fd[1]);
-#endif
+	SAFE_SIGNAL(SIGPIPE, sighandle_sigpipe);
 
 	TEST(pipe(fd));
 	if (TST_RET == -1) {
@@ -51,18 +40,9 @@ static void verify_pipe(void)
 		return;
 	}
 
-	pid = SAFE_FORK();
-	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(av[0], "dd", fd[0], fd[1]) < 0)
-			tst_brk(TBROK, "self_exec failed");
-#else
-		do_child();
-#endif
-	}
-
 	memset(rdbuf, 0, SIZE);
-	SAFE_CLOSE(fd[1]);
+
+	SAFE_WRITE(1, fd[1], wrbuf, SIZE);
 	SAFE_READ(1, fd[0], rdbuf, SIZE);
 
 	if (memcmp(wrbuf, rdbuf, SIZE) != 0) {
@@ -70,26 +50,29 @@ static void verify_pipe(void)
 			"write data didn't match");
 		return;
 	}
-
+	
+	// close the pipe's reader file descriptor
 	SAFE_CLOSE(fd[0]);
-	TST_CHECKPOINT_WAKE(0);
-	SAFE_WAIT(&status);
 
-	if (!WIFSIGNALED(status)) {
-		tst_res(TFAIL, "Child wasn't killed by signal");
-	} else {
-		sig = WTERMSIG(status);
-		if (sig != SIGPIPE) {
-			tst_res(TFAIL, "Child killed by %s expected SIGPIPE",
-				tst_strsig(sig));
+	// Test the broken pipe behaviour
+	TEST(write(fd[1], wrbuf, SIZE));
+	if (TST_RET == -1) {
+		if (errno == EPIPE && flag_sighandle == 1) {
+			tst_res(TPASS|TERRNO, "write returned as expected");
 		} else {
-				tst_res(TPASS, "Child killed by SIGPIPE");
+			tst_res(TFAIL|TERRNO, "write failed with unexpected error");
+		}
+		
+	} else {
+		if (flag_sighandle == 1) {
+			tst_res(TPASS, "write sucessed as expected");
+		} else {
+			tst_res(TFAIL, "write sucessed unexpectedly");
 		}
 	}
+	SAFE_CLOSE(fd[1]);
 }
 
 static struct tst_test test = {
-	.forks_child = 1,
-	.needs_checkpoints = 1,
 	.test_all = verify_pipe,
 };
