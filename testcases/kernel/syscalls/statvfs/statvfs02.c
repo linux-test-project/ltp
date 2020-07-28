@@ -48,7 +48,7 @@ static struct test_case_t {
 	struct statvfs *buf;
 	int exp_errno;
 } test_cases[] = {
-	{NULL, &buf, EFAULT},
+//     {NULL, &buf, EFAULT}, TODO: Enable once git issue 297 is fixed
 	{TEST_SYMLINK, &buf, ELOOP},
 	{nametoolong, &buf, ENAMETOOLONG},
 	{"filenoexist", &buf, ENOENT},
@@ -91,8 +91,8 @@ static void setup(void)
 
 	SAFE_TOUCH(cleanup, TEST_FILE, 0644, NULL);
 
-	test_cases[0].path = SAFE_MMAP(cleanup, NULL, 1, PROT_NONE,
-	                               MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+//     test_cases[0].path = SAFE_MMAP(cleanup, NULL, 1, PROT_NONE,
+//                                    MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 }
 
 static void statvfs_verify(const struct test_case_t *test)
