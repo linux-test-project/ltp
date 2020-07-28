@@ -99,7 +99,6 @@ char *TCID = "ptrace03";
 
 static pid_t init_pid = 1;
 static pid_t unused_pid;
-static pid_t zero_pid;
 
 struct test_case_t {
 	int request;
@@ -108,86 +107,42 @@ struct test_case_t {
 } test_cases[] = {
 	{
 	PTRACE_ATTACH, &init_pid, EPERM}, {
-	PTRACE_ATTACH, &unused_pid, ESRCH}, {
-	PTRACE_TRACEME, &zero_pid, EPERM},};
+	PTRACE_ATTACH, &unused_pid, ESRCH}, 
+	};
 
 int TST_TOTAL = sizeof(test_cases) / sizeof(test_cases[0]);
 
 int main(int ac, char **av)
 {
 
-	int lc, i;
-	pid_t child_pid;
-	int status;
+	int i;
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	tst_count = 0;
+	for (i = 0; i < TST_TOTAL; ++i) {
 
-		tst_count = 0;
+		tst_resm(TINFO,"Running test %d",i);
+		/* since Linux 2.6.26, it's allowed to trace init,
+		   so just skip this test case */
+		if (i == 0 && tst_kvercmp(2, 6, 25) > 0) {
+			tst_resm(TINFO,
+				 "skipping this test as this kernel allows to trace init");
+			continue;
+		}
 
-		for (i = 0; i < TST_TOTAL; ++i) {
-
-			/* since Linux 2.6.26, it's allowed to trace init,
-			   so just skip this test case */
-			if (i == 0 && tst_kvercmp(2, 6, 25) > 0) {
-				tst_resm(TCONF,
-					 "this kernel allows to trace init");
-				continue;
-			}
-
-			/* fork() */
-			switch (child_pid = FORK_OR_VFORK()) {
-
-			case -1:
-				/* fork() failed */
-				tst_resm(TFAIL, "fork() failed");
-				continue;
-
-			case 0:
-				/* Child */
-
-				/* setup for third test case */
-				if (i == 2) {
-					if ((ptrace(PTRACE_TRACEME, 0,
-						    NULL, NULL)) == -1) {
-						tst_resm(TWARN, "ptrace()"
-							 " falied with errno, %d : %s",
-							 errno,
-							 strerror(errno));
-						exit(0);
-					}
-				}
-
-				TEST(ptrace(test_cases[i].request,
-					    *(test_cases[i].pid), NULL, NULL));
-				if ((TEST_RETURN == -1) && (TEST_ERRNO ==
-							    test_cases
-							    [i].exp_errno)) {
-					exit(TEST_ERRNO);
-				} else {
-					tst_resm(TWARN | TTERRNO,
-						 "ptrace() returned %ld",
-						 TEST_RETURN);
-					exit(TEST_ERRNO);
-				}
-
-			default:
-				/* Parent */
-				if ((waitpid(child_pid, &status, 0)) < 0) {
-					tst_resm(TFAIL, "waitpid() failed");
-					continue;
-				}
-				if ((WIFEXITED(status)) &&
-				    (WEXITSTATUS(status) ==
-				     test_cases[i].exp_errno)) {
-					tst_resm(TPASS, "Test Passed");
-				} else {
-					tst_resm(TFAIL, "Test Failed");
-				}
-			}
+		TEST(ptrace(test_cases[i].request,
+				    *(test_cases[i].pid), NULL, NULL));
+		if ((TEST_RETURN == -1) && (TEST_ERRNO ==
+					    test_cases
+					    [i].exp_errno)) {
+			tst_resm(TPASS,"Test passed %d",i);
+		} else {
+				tst_resm(TWARN | TTERRNO,
+					 "ptrace() returned %ld",
+					 TEST_RETURN);
 		}
 	}
 
