@@ -42,6 +42,8 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "pthread.h"
+#include "tst_safe_pthread.h"
 
 char *TCID = "sendto01";
 int testno;
@@ -50,6 +52,8 @@ static char buf[1024], bigbuf[128 * 1024];
 static int s;
 static struct sockaddr_in sin1, sin2;
 static int sfd;
+static pthread_t server_tid;
+static int kill_thread;
 
 struct test_case_t {		/* test case structure */
 	int domain;		/* PF_INET, PF_UNIX, ... */
@@ -75,7 +79,7 @@ static void setup3(void);
 static void cleanup(void);
 static void cleanup0(void);
 static void cleanup1(void);
-static void do_child(void);
+void* do_child_thread(void* arg);
 
 struct test_case_t tdat[] = {
 	{.domain = PF_INET,
@@ -106,37 +110,38 @@ struct test_case_t tdat[] = {
 	 .cleanup = cleanup0,
 	 .desc = "invalid socket"}
 	,
+// TODO: Enable back after issue 169 fixed
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{.domain = PF_INET,
-	 .type = SOCK_DGRAM,
-	 .proto = 0,
-	 .buf = (void *)-1,
-	 .buflen = sizeof(buf),
-	 .flags = 0,
-	 .to = &sin1,
-	 .tolen = sizeof(sin1),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "invalid send buffer"}
-	,
+//	/* Skip since uClinux does not implement memory protection */
+//	{.domain = PF_INET,
+//	 .type = SOCK_DGRAM,
+//	 .proto = 0,
+//	 .buf = (void *)-1,
+//	 .buflen = sizeof(buf),
+//	 .flags = 0,
+//	 .to = &sin1,
+//	 .tolen = sizeof(sin1),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "invalid send buffer"}
+//	,
 #endif
-	{.domain = PF_INET,
-	 .type = SOCK_STREAM,
-	 .proto = 0,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .flags = 0,
-	 .to = &sin2,
-	 .tolen = sizeof(sin2),
-	 .retval = 0,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "connected TCP"}
-	,
+//	{.domain = PF_INET,
+//	 .type = SOCK_STREAM,
+//	 .proto = 0,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .flags = 0,
+//	 .to = &sin2,
+//	 .tolen = sizeof(sin2),
+//	 .retval = 0,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "connected TCP"}
+//	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -165,22 +170,23 @@ struct test_case_t tdat[] = {
 	 .cleanup = cleanup1,
 	 .desc = "invalid to buffer length"}
 	,
+// TODO: Enable back after issue 169 is fixed
 #ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
-	{.domain = PF_INET,
-	 .type = SOCK_DGRAM,
-	 .proto = 0,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .flags = 0,
-	 .to = (struct sockaddr_in *)-1,
-	 .tolen = sizeof(sin1),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "invalid to buffer"}
-	,
+//	/* Skip since uClinux does not implement memory protection */
+//	{.domain = PF_INET,
+//	 .type = SOCK_DGRAM,
+//	 .proto = 0,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .flags = 0,
+//	 .to = (struct sockaddr_in *)-1,
+//	 .tolen = sizeof(sin1),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "invalid to buffer"}
+//	,
 #endif
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
@@ -231,9 +237,9 @@ int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 static char *argv0;
 #endif
 
-static pid_t start_server(struct sockaddr_in *sin0)
+static pthread_t start_server(struct sockaddr_in *sin0)
 {
-	pid_t pid;
+	pthread_t tid;
 	socklen_t slen = sizeof(*sin0);
 
 	sin0->sin_family = AF_INET;
@@ -255,27 +261,20 @@ static pid_t start_server(struct sockaddr_in *sin0)
 	}
 	SAFE_GETSOCKNAME(cleanup, sfd, (struct sockaddr *)sin0, &slen);
 
-	switch ((pid = FORK_OR_VFORK())) {
-	case 0:
-#ifdef UCLINUX
-		if (self_exec(argv0, "d", sfd) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "server self_exec failed");
-#else
-		do_child();
-#endif
-		break;
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
-	default:
-		(void)close(sfd);
-		return pid;
+	//start a child thread to create a directory
+	if(pthread_create(&tid, NULL, do_child_thread, NULL)== -1)
+	{
+		tst_brkm(TBROK | TERRNO, cleanup, "Thread create failed");
 	}
+	else
+	{
+		tst_resm(TINFO,"Thread created");
+	}
+	return tid;
 
-	exit(1);
 }
 
-static void do_child(void)
+void* do_child_thread(void* arg)
 {
 	struct sockaddr_in fsin;
 	fd_set afds, rfds;
@@ -287,7 +286,7 @@ static void do_child(void)
 	nfds = sfd + 1;
 
 	/* accept connections until killed */
-	while (1) {
+	while (!kill_thread) {
 		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
@@ -315,6 +314,8 @@ static void do_child(void)
 			}
 		}
 	}
+	tst_resm(TINFO,"Thread finished");
+	pthread_exit(NULL);
 }
 
 int main(int ac, char *av[])
@@ -323,10 +324,6 @@ int main(int ac, char *av[])
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
-#ifdef UCLINUX
-	argv0 = av[0];
-	maybe_run_child(&do_child, "d", &sfd);
-#endif
 
 	setup();
 
@@ -364,20 +361,20 @@ int main(int ac, char *av[])
 	tst_exit();
 }
 
-static pid_t server_pid;
 
 static void setup(void)
 {
-	TEST_PAUSE;
-
-	server_pid = start_server(&sin1);
+	server_tid = start_server(&sin1);
 
 	signal(SIGPIPE, SIG_IGN);
 }
 
 static void cleanup(void)
 {
-	kill(server_pid, SIGKILL);
+	kill_thread = 1;
+	sched_yield();
+	if(sfd >=0)
+		(void)close(sfd);
 }
 
 static void setup0(void)
@@ -390,6 +387,8 @@ static void setup0(void)
 
 static void cleanup0(void)
 {
+	if (s >= 0 && s != 400)
+		(void)close(s);
 	s = -1;
 }
 
