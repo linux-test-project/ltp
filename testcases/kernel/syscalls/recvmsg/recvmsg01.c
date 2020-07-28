@@ -54,9 +54,11 @@
 #include <sys/file.h>
 
 #include <netinet/in.h>
+#include <pthread.h>
 
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 char *TCID = "recvmsg01";
 int testno;
@@ -83,10 +85,10 @@ void cleanup(void);
 void cleanup0(void);
 void cleanup1(void);
 void cleanup2(void);
-void do_child(void);
+void* do_child(void* prm);
 
 void sender(int);
-pid_t start_server(struct sockaddr_in *, struct sockaddr_un *);
+void start_server(struct sockaddr_in *, struct sockaddr_un *);
 
 struct test_case_t {		/* test case structure */
 	int domain;		/* PF_INET, PF_UNIX, ... */
@@ -129,18 +131,19 @@ struct test_case_t {		/* test case structure */
 	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf),
 		    &msgdat, -1, (struct sockaddr *)&from, -1, -1,
 		    EINVAL, setup1, cleanup1, "invalid socket length"},
+// TODO: Enable back after issue 169 fixed
 /* 5 */
-	{
-	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)-1, sizeof(buf),
-		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
-		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
-	,
+//	{
+//	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)-1, sizeof(buf),
+//		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
+//		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
+//	,
 /* 6 */
-	{
-	PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf),
-		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
-		    -1, EFAULT, setup1, cleanup1, "invalid iovec buffer"}
-	,
+//	{
+//	PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf),
+//		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
+//		    -1, EFAULT, setup1, cleanup1, "invalid iovec buffer"}
+//	,
 /* 7 */
 	{
 	PF_INET, SOCK_STREAM, 0, iov, -1, (void *)buf, sizeof(buf),
@@ -245,7 +248,7 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-pid_t pid;
+pthread_t tid = NULL;
 char tmpsunpath[1024];
 
 void setup(void)
@@ -263,13 +266,19 @@ void setup(void)
 
 	signal(SIGPIPE, SIG_IGN);
 
-	pid = start_server(&sin1, &sun1);
+	start_server(&sin1, &sun1);
 }
 
 void cleanup(void)
 {
-	if (pid > 0)
-		(void)kill(pid, SIGKILL);	/* kill server */
+	if (tid != NULL)
+		SAFE_PTHREAD_JOIN(tid, NULL);
+
+	if (ufd >= 0)
+		close(ufd);
+	if (sfd >= 0)
+		close(sfd);
+	
 	if (tmpsunpath[0] != '\0')
 		(void)unlink(tmpsunpath);
 	tst_rmdir();
@@ -341,15 +350,11 @@ void setup4(void)
 void cleanup1(void)
 {
 	(void)close(s);
-	close(ufd);
-	close(sfd);
 	s = -1;
 }
 
 void cleanup2(void)
 {
-	close(ufd);
-	close(sfd);
 	(void)close(s);
 	s = -1;
 
@@ -360,9 +365,8 @@ void cleanup2(void)
 	controllen = 0;
 }
 
-pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
+void start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 {
-	pid_t pid;
 	socklen_t slen = sizeof(*ssin);
 
 	ssin->sin_family = AF_INET;
@@ -373,15 +377,12 @@ pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 	sfd = socket(PF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server socket failed");
-		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)ssin, sizeof(*ssin)) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server bind failed");
-		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server listen failed");
-		return -1;
 	}
 	SAFE_GETSOCKNAME(cleanup, sfd, (struct sockaddr *)ssin, &slen);
 
@@ -389,39 +390,18 @@ pid_t start_server(struct sockaddr_in *ssin, struct sockaddr_un *ssun)
 	ufd = socket(PF_UNIX, SOCK_STREAM, 0);
 	if (ufd < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server UD socket failed");
-		return -1;
 	}
 	if (bind(ufd, (struct sockaddr *)ssun, sizeof(*ssun))) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server UD bind failed");
-		return -1;
 	}
 	if (listen(ufd, 10) < 0) {
 		tst_brkm(TBROK | TERRNO, cleanup, "server UD listen failed");
-		return -1;
 	}
 
-	switch ((pid = FORK_OR_VFORK())) {
-	case 0:		/* child */
-#ifdef UCLINUX
-		if (self_exec(argv0, "dd", sfd, ufd) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "server self_exec failed");
-#else
-		do_child();
-#endif
-		break;
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
-		/* fall through */
-	default:		/* parent */
-		(void)close(sfd);
-		(void)close(ufd);
-		return pid;
-	}
-	exit(1);
+	SAFE_PTHREAD_CREATE(&tid, NULL, do_child, NULL);
 }
 
-void do_child(void)
+void* do_child(void* prm LTP_ATTRIBUTE_UNUSED)
 {
 	struct sockaddr_in fsin;
 	struct sockaddr_un fsun;
@@ -435,7 +415,7 @@ void do_child(void)
 	nfds = MAX(sfd + 1, ufd + 1);
 
 	/* accept connections until killed */
-	while (1) {
+	while (testno < TST_TOTAL) {
 		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
@@ -483,6 +463,7 @@ void do_child(void)
 				}
 			}
 	}
+	pthread_exit(NULL);
 }
 
 #define TM	"from recvmsg01 server"
