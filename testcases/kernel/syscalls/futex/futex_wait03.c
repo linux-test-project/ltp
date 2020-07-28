@@ -37,7 +37,9 @@ static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	long ret;
 
-	tst_process_state_wait2(getpid(), 'S');
+	// wait for main thread to go for block state
+	sleep(3);
+	sched_yield();
 
 	ret = futex_wake(&futex, 1, FUTEX_PRIVATE_FLAG);
 
