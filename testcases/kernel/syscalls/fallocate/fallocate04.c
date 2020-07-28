@@ -285,6 +285,7 @@ static void run(unsigned int i)
 
 static void setup(void)
 {
+       SAFE_MKDIR(MNTPOINT, 0644);
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0700);
 
 	get_blocksize();
@@ -294,6 +295,8 @@ static void cleanup(void)
 {
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+       remove(FNAME);
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static struct tst_option opts[] = {
@@ -307,9 +310,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.test = run,
 	.tcnt = ARRAY_SIZE(tcases),
-	.mount_device = 1,
-	.mntpoint = MNTPOINT,
-	.all_filesystems = 1,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
