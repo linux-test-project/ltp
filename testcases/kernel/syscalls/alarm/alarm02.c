@@ -37,7 +37,7 @@ static void verify_alarm(unsigned int n)
 	if (ret != 0) {
 		tst_res(TFAIL,
 			"alarm(%u) returned %ld, when 0 was ",
-			tc->sec, TST_RET);
+			tc->sec, ret);
 		return;
 	}
 
@@ -70,6 +70,9 @@ static void sighandler(int sig)
 
 static void setup(void)
 {
+	// reset the alarm
+	alarm(0);
+
 	SAFE_SIGNAL(SIGALRM, sighandler);
 }
 
