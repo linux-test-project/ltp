@@ -36,8 +36,9 @@
 #define SECURITY_KEY    "security.ltptest"
 #define VALUE           "test"
 #define VALUE_SIZE      (sizeof(VALUE) - 1)
-#define TESTFILE        "testfile"
-#define SYMLINK         "symlink"
+#define TESTFILE        "mntpoint/testfile"
+#define SYMLINK         "mntpoint/symlink"
+#define MNTPOINT        "mntpoint"
 
 static char longpathname[PATH_MAX + 2];
 
@@ -48,7 +49,7 @@ static struct test_case {
 } tc[] = {
 	{SYMLINK, 1, ERANGE},
 	{"", 20, ENOENT},
-	{(char *)-1, 20, EFAULT},
+//     {(char *)-1, 20, EFAULT}, // TODO: Enable once git issue 297 is fixed
 	{longpathname, 20, ENAMETOOLONG}
 };
 
@@ -77,6 +78,9 @@ static void verify_llistxattr(unsigned int n)
 
 static void setup(void)
 {
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, "user_xattr");
+
 	SAFE_TOUCH(TESTFILE, 0644, NULL);
 
 	SAFE_SYMLINK(TESTFILE, SYMLINK);
@@ -86,12 +90,21 @@ static void setup(void)
 	memset(longpathname, 'a', sizeof(longpathname) - 1);
 }
 
+static void cleanup(void)
+{
+       remove(TESTFILE);
+       remove(SYMLINK);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
+}
+
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.test = verify_llistxattr,
 	.tcnt = ARRAY_SIZE(tc),
 	.setup = setup,
+       .cleanup = cleanup,
 };
 
 #else /* HAVE_SYS_XATTR_H */
