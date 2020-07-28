@@ -34,10 +34,17 @@
  * Minimum kernel version required is 4.11.
  */
 
+
+/* Patch to use root file system for the test as loop device file
+ * system cannot be used as lkl Kernel Memory is set to 32M.
+ */
+
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/sysmacros.h>
+#include <sys/mount.h>
 #include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "lapi/stat.h"
@@ -52,6 +59,9 @@
 #define SIZE 256
 #define MAJOR 8
 #define MINOR 1
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 static void test_normal_file(void)
 {
@@ -147,6 +157,9 @@ static void setup(void)
 {
 	char data_buff[SIZE];
 	int file_fd;
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(device, MNTPOINT, fs_type, 0, NULL);
 
 	memset(data_buff, '@', sizeof(data_buff));
 
@@ -157,13 +170,19 @@ static void setup(void)
 	SAFE_MKNOD(DEVICEFILE, S_IFBLK | 0777, makedev(MAJOR, MINOR));
 }
 
+static void cleanup(void)
+{
+	remove(DEVICEFILE);
+	remove(TESTFILE);
+	umount(MNTPOINT);
+	rmdir(MNTPOINT);
+}
 static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
+	.cleanup = cleanup, 
 	.min_kver = "4.11",
-	.needs_devfs = 1,
-	.mntpoint = MNTPOINT,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 };
