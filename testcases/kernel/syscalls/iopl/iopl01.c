@@ -42,6 +42,13 @@ static void verify_iopl(void)
 	}
 }
 
+static void setup(void)
+{
+	/* iopl() is restricted under kernel lockdown. */
+	if (tst_lockdown_enabled())
+		tst_brk(TCONF, "Kernel is locked down, skip this test");
+}
+
 static void cleanup(void)
 {
 	/*
@@ -54,6 +61,7 @@ static void cleanup(void)
 static struct tst_test test = {
 	.test_all = verify_iopl,
 	.needs_root = 1,
+	.setup = setup,
 	.cleanup = cleanup,
 };
 
