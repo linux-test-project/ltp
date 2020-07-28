@@ -23,25 +23,49 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <pthread.h>
 
 #include "test.h"
 #include "safe_macros.h"
 #include "futextest.h"
+#include "tst_safe_pthread.h"
+
+#define TOTAL_THREADS 55
 
 const char *TCID="futex_wake03";
 const int TST_TOTAL=11;
 
 static futex_t *futex;
+static int thread_flag[TOTAL_THREADS];
 
-static void do_child(void)
+static int threads_awake(void)
 {
+	int ret = 0;
+	unsigned int i;
+
+	for (i = 0; i < TOTAL_THREADS; i++) {
+		if (thread_flag[i])
+			ret++;
+	}
+
+	return ret;
+}
+
+static void* do_child(void* parm)
+{
+	long i = (long) parm;
 	futex_wait(futex, *futex, NULL, 0);
-	exit(0);
+	thread_flag[i] = 1;
+	pthread_exit(0);
 }
 
 static void do_wake(int nr_children)
 {
 	int res, i, cnt;
+	
+	//clear the thread flag
+	for (i = 0; i < TOTAL_THREADS; i++)
+		thread_flag[i] = 0;
 
 	res = futex_wake(futex, nr_children, 0);
 
@@ -52,10 +76,8 @@ static void do_wake(int nr_children)
 		return;
 	}
 
-	for (cnt = 0, i = 0; i < 100000; i++) {
-		while (waitpid(-1, &res, WNOHANG) > 0)
-			cnt++;
-
+	for (i = 0; i < 100000; i++) {
+		cnt = threads_awake();
 		if (cnt == nr_children)
 			break;
 
@@ -73,23 +95,13 @@ static void do_wake(int nr_children)
 static void verify_futex_wake(void)
 {
 	int i, res;
-	pid_t pids[55];
+	pthread_t tids[55];
 
-	for (i = 0; i < (int)ARRAY_SIZE(pids); i++) {
-		pids[i] = tst_fork();
-
-		switch (pids[i]) {
-		case -1:
-			tst_brkm(TBROK | TERRNO, NULL, "fork()");
-		case 0:
-			do_child();
-		default:
-		break;
-		}
+	for (i = 0; i < TOTAL_THREADS; i++) {
+		SAFE_PTHREAD_CREATE(&tids[i], NULL, do_child, (void*)((long)i));
 	}
 
-	for (i = 0; i < (int)ARRAY_SIZE(pids); i++)
-		tst_process_state_wait2(pids[i], 'S');
+	sleep(5);
 
 	for (i = 1; i <= 10; i++)
 		do_wake(i);
@@ -102,6 +114,9 @@ static void verify_futex_wake(void)
 	} else {
 		tst_resm(TPASS, "futex_wake() woken up 0 children");
 	}
+	
+	for (i = 0; i < TOTAL_THREADS; i++)
+		SAFE_PTHREAD_JOIN(tids[i], NULL);
 }
 
 static void setup(void)
