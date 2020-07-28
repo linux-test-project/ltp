@@ -28,8 +28,9 @@
 #define SECURITY_KEY	"security.ltptest"
 #define VALUE           "test"
 #define VALUE_SIZE      (sizeof(VALUE) - 1)
+#define MNTPOINT       "mntpoint"
 
-static const char *filename[] = {"testfile1", "testfile2"};
+static const char *filename[] = {"mntpoint/testfile1", "mntpoint/testfile2"};
 
 static int check_suitable_buf(const char *name, long size)
 {
@@ -59,11 +60,22 @@ static void verify_llistxattr(unsigned int n)
 
 static void setup(void)
 {
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, "user_xattr");
+
 	SAFE_TOUCH(filename[0], 0644, NULL);
 
 	SAFE_TOUCH(filename[1], 0644, NULL);
 
 	SAFE_LSETXATTR(filename[1], SECURITY_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
+}
+
+static void cleanup(void)
+{
+       remove(filename[0]);
+       remove(filename[1]);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static struct tst_test test = {
@@ -72,6 +84,7 @@ static struct tst_test test = {
 	.test = verify_llistxattr,
 	.tcnt = ARRAY_SIZE(filename),
 	.setup = setup,
+       .cleanup = cleanup,
 };
 
 #else /* HAVE_SYS_XATTR_H */
