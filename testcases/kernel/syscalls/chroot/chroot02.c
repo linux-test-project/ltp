@@ -56,7 +56,7 @@
 char *TCID = "chroot02";
 int TST_TOTAL = 1;
 int fileHandle = 0;
-
+#define tmpdir "/tmp/chroot02_temp_dir"
 #define TMP_FILENAME	"chroot02_testfile"
 struct stat buf;
 
@@ -84,7 +84,7 @@ int main(int ac, char **av)
 		if (pid == 0) {
 			retval = 0;
 
-			if (chroot(tst_get_tmpdir()) == -1) {
+                       if (chroot(tmpdir) == -1) {
 				perror("chroot failed");
 				retval = 1;
 			} else {
@@ -94,14 +94,9 @@ int main(int ac, char **av)
 				}
 			}
 
-			exit(retval);
 		}
 
-		/* parent */
-		wait(&status);
-		/* make sure the child returned a good exit status */
-		if (WIFSIGNALED(status) ||
-		    (WIFEXITED(status) && WEXITSTATUS(status) != 0))
+               if (retval)
 			tst_resm(TFAIL, "chroot functionality incorrect");
 		else
 			tst_resm(TPASS, "chroot functionality correct");
@@ -119,7 +114,9 @@ void setup(void)
 {
 	tst_require_root();
 
-	tst_tmpdir();
+       rmdir(tmpdir);
+       mkdir(tmpdir, 0644);
+       chdir(tmpdir);
 	if ((fileHandle = creat(TMP_FILENAME, 0777)) == -1)
 		tst_brkm(TBROK, cleanup, "failed to create temporary file "
 			 TMP_FILENAME);
@@ -142,7 +139,5 @@ void cleanup(void)
 	 * print errno log if that option was specified.
 	 */
 	close(fileHandle);
-
-	tst_rmdir();
 
 }
