@@ -25,7 +25,7 @@
  * The same test is done in a fork to check if new UIDs are correctly
  * passed to the son.
  */
-
+// Patch Description : Modified to report PASS/FAIL status by replacing exit, as child process is not supported.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -69,7 +69,7 @@ int main(int ac, char **av)
 	if (pid == 0)
 		do_master_child();
 
-	tst_record_childstatus(cleanup, pid);
+       //tst_record_childstatus(cleanup, pid);
 
 	cleanup();
 	tst_exit();
@@ -92,15 +92,13 @@ static void do_master_child(void)
 
 	if (TEST_RETURN != -1) {
 		close(TEST_RETURN);
-		printf("open succeeded unexpectedly\n");
-		exit(TFAIL);
+               tst_resm(TFAIL, "open succeeded unexpectedly\n");
 	}
 
 	if (TEST_ERRNO == EACCES) {
-		printf("open failed with EACCESS as expected\n");
+               tst_resm(TPASS, "open failed with EACCESS as expected\n");
 	} else {
-		printf("open returned unexpected errno - %d\n", TEST_ERRNO);
-		exit(TFAIL);
+               tst_resm(TFAIL, "open returned unexpected errno - %d\n", TEST_ERRNO);
 	}
 
 	/* Test 2: Check a son process cannot open the file
@@ -118,16 +116,14 @@ static void do_master_child(void)
 
 		if (TEST_RETURN != -1) {
 			close(TEST_RETURN);
-			printf("open succeeded unexpectedly\n");
-			exit(TFAIL);
+                       tst_resm(TFAIL, "open succeeded unexpectedly\n");
 		}
 
 		if (TEST_ERRNO == EACCES) {
-			printf("open failed with EACCESS as expected\n");
+                       tst_resm(TPASS, "open failed with EACCESS as expected\n");
 		} else {
-			printf("open returned unexpected errno - %d\n",
+                       tst_resm(TFAIL, "open returned unexpected errno - %d\n",
 			       TEST_ERRNO);
-			exit(TFAIL);
 		}
 	} else {
 		/* Wait for son completion */
@@ -155,10 +151,10 @@ static void do_master_child(void)
 		perror("open failed unexpectedly");
 		exit(TFAIL);
 	} else {
-		printf("open call succeeded\n");
+               tst_resm(TPASS, "open call succeeded\n");
 		close(TEST_RETURN);
 	}
-	exit(TPASS);
+       //exit(TPASS);
 }
 
 static void setup(void)
