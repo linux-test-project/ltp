@@ -40,6 +40,11 @@ char *TCID = "removexattr01";
 #define USER_KEY	"user.test"
 #define VALUE	"test"
 #define VALUE_SIZE	(sizeof(VALUE) - 1)
+#define MNTPOINT       "mntpoint"
+#define FILENAME       "mntpoint/removexattr01testfile"
+#define DIR_MODE       (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 static void verify_removexattr(void);
 static void setup(void);
@@ -71,7 +76,7 @@ static void verify_removexattr(void)
 	int size = 64;
 	char buf[size];
 
-	n = setxattr("testfile", USER_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
+	n = setxattr(FILENAME, USER_KEY, VALUE, VALUE_SIZE, XATTR_CREATE);
 	if (n == -1) {
 		if (errno == ENOTSUP) {
 			tst_brkm(TCONF, cleanup, "no xattr support in fs or "
@@ -81,13 +86,13 @@ static void verify_removexattr(void)
 		}
 	}
 
-	TEST(removexattr("testfile", USER_KEY));
+	TEST(removexattr(FILENAME, USER_KEY));
 	if (TEST_RETURN != 0) {
 		tst_resm(TFAIL | TTERRNO, "removexattr() failed");
 		return;
 	}
 
-	n = getxattr("testfile", USER_KEY, buf, size);
+	n = getxattr(FILENAME, USER_KEY, buf, size);
 	if (n != -1) {
 		tst_resm(TFAIL, "getxattr() succeeded for deleted key");
 		return;
@@ -106,14 +111,18 @@ static void setup(void)
 
 	TEST_PAUSE;
 
-	tst_tmpdir();
-
-	SAFE_TOUCH(cleanup, "testfile", 0644, NULL);
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, "user_xattr");
+	SAFE_TOUCH(cleanup, FILENAME, 0644, NULL);
 }
 
 static void cleanup(void)
 {
-	tst_rmdir();
+	remove(FILENAME);
+	SAFE_UMOUNT(NULL, MNTPOINT);
+	SAFE_RMDIR(NULL, MNTPOINT);
+
 }
 
 #else /* HAVE_SYS_XATTR_H */
