@@ -23,17 +23,24 @@
  * Minimum kernel version required is 4.11.
  */
 
+/* Patch to use root file system for the test as loop device file
+ * system cannot be used as lkl Kernel Memory is set to 32M.
+ */
+
 #define _GNU_SOURCE
 #include "tst_test.h"
 #include "lapi/fs.h"
 #include <stdlib.h>
 #include "lapi/stat.h"
-
+#include <sys/mount.h>
 #define MOUNT_POINT "mntpoint"
 #define TESTDIR_FLAGGED MOUNT_POINT"/test_dir1"
 #define TESTDIR_UNFLAGGED MOUNT_POINT"/test_dir2"
 
 static int fd, clear_flags;
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 static void test_flagged(void)
 {
@@ -127,10 +134,6 @@ static void caid_flags_setup(void)
 			tst_brk(TCONF | TERRNO, "FS_IOC_GETFLAGS not supported");
 
 		/* ntfs3g fuse fs returns wrong errno for unimplemented ioctls */
-		if (!strcmp(tst_device->fs_type, "ntfs")) {
-			tst_brk(TCONF | TERRNO,
-				"ntfs3g does not support FS_IOC_GETFLAGS");
-		}
 
 		tst_brk(TBROK | TERRNO, "ioctl(%i, FS_IOC_GETFLAGS, ...)", fd);
 	}
@@ -149,11 +152,12 @@ static void caid_flags_setup(void)
 
 static void setup(void)
 {
+	rmdir(MOUNT_POINT);
+	SAFE_MKDIR(MOUNT_POINT, DIR_MODE);
+	SAFE_MOUNT(device, MOUNT_POINT, fs_type, 0, NULL);	
 	SAFE_MKDIR(TESTDIR_FLAGGED, 0777);
 	SAFE_MKDIR(TESTDIR_UNFLAGGED, 0777);
 
-	if (!strcmp(tst_device->fs_type, "btrfs") && tst_kvercmp(4, 13, 0) < 0)
-		tst_brk(TCONF, "Btrfs statx() supported since 4.13");
 
 	caid_flags_setup();
 }
@@ -170,6 +174,9 @@ static void cleanup(void)
 
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+	rmdir(TESTDIR_FLAGGED);
+	rmdir(TESTDIR_UNFLAGGED);
+	umount(MOUNT_POINT);
 }
 
 static struct tst_test test = {
@@ -178,9 +185,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.all_filesystems = 1,
-	.mount_device = 1,
 	.needs_tmpdir = 1,
-	.mntpoint = MOUNT_POINT,
 	.min_kver = "4.11",
 };
