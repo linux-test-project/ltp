@@ -24,15 +24,19 @@
 #define FILE_SIZE_MB	32
 #define FILE_SIZE	(FILE_SIZE_MB * TST_MB)
 #define MODE		0644
+#define dev            "/dev/vda"
 
 static void verify_fdatasync(void)
 {
 	int fd;
 	unsigned long written;
 
+       rmdir(MNTPOINT);
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT(dev, MNTPOINT, "ext4", 0, NULL);
 	fd = SAFE_OPEN(FNAME, O_RDWR|O_CREAT, MODE);
 
-	tst_dev_bytes_written(tst_device->dev);
+       tst_dev_bytes_written(dev);
 
 	tst_fill_fd(fd, 0, TST_MB, FILE_SIZE_MB);
 
@@ -41,9 +45,12 @@ static void verify_fdatasync(void)
 	if (TST_RET)
 		tst_brk(TFAIL | TTERRNO, "fdatasync(fd) failed");
 
-	written = tst_dev_bytes_written(tst_device->dev);
+       written = tst_dev_bytes_written(dev);
 
 	SAFE_CLOSE(fd);
+       remove(FNAME);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 
 	if (written >= FILE_SIZE)
 		tst_res(TPASS, "Test file data synced to device");
@@ -53,8 +60,5 @@ static void verify_fdatasync(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.mount_device = 1,
-	.all_filesystems = 1,
-	.mntpoint = MNTPOINT,
 	.test_all = verify_fdatasync,
 };
