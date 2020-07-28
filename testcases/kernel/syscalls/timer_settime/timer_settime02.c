@@ -25,6 +25,10 @@
 #include "tst_test.h"
 #include "lapi/common_timers.h"
 
+#ifndef ENOTSUPP
+#define ENOTSUPP	524
+#endif
+
 static struct itimerspec new_set, old_set;
 static kernel_timer_t timer;
 static kernel_timer_t timer_inval = -1;
@@ -50,8 +54,9 @@ static struct testcase {
 	{&timer, &new_set, &old_set, -1, EINVAL},
 	{&timer, &new_set, &old_set, NSEC_PER_SEC + 1, EINVAL},
 	{&timer_inval, &new_set, &old_set, 0, EINVAL},
-	{&timer, (struct itimerspec *) -1, &old_set, 0, EFAULT},
-	{&timer, &new_set, (struct itimerspec *) -1, 0, EFAULT},
+	// TODO: Enable once git issue 297 is fixed
+	//{&timer, (struct itimerspec *) -1, &old_set, 0, EFAULT},
+	//{&timer, &new_set, (struct itimerspec *) -1, 0, EFAULT},
 };
 
 static void run(unsigned int n)
@@ -73,7 +78,7 @@ static void run(unsigned int n)
 		/* Init temporary timer */
 		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer));
 		if (TST_RET != 0) {
-			if (possibly_unsupported(clock) && TST_ERR == EINVAL) {
+			if (possibly_unsupported(clock) && (TST_ERR == EINVAL || TST_ERR == ENOTSUPP)) {
 				tst_res(TPASS | TTERRNO,
 					"%s unsupported, failed as expected",
 					get_clock_str(clock));
