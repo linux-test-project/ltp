@@ -40,6 +40,7 @@
 #include "tst_hugepage.h"
 #include "tst_assert.h"
 #include "tst_cgroup.h"
+#include "tst_lockdown.h"
 
 /*
  * Reports testcase result.
