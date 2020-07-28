@@ -146,6 +146,7 @@ void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root();
+       tst_tmpdir(); // TODO: Will be removed once fixing git issue :357
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
 		tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
@@ -153,7 +154,7 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	tst_tmpdir();
+//     tst_tmpdir(); // Will be enabled once fixing git issue :236
 
 	/*
 	 * Create a test file under temporary directory with specified
@@ -177,7 +178,7 @@ void setup(void)
  */
 void cleanup(void)
 {
-
+       tst_require_root(); // TODO: Will be removed once fixing git issue:357
 	tst_rmdir();
 
 }
