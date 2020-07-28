@@ -35,6 +35,7 @@
 
 TCID_DEFINE(setfsgid03);
 int TST_TOTAL = 1;
+gid_t gid;
 
 static char nobody_uid[] = "nobody";
 static struct passwd *ltpuser;
@@ -46,18 +47,12 @@ int main(int ac, char **av)
 {
 	int lc;
 
-	gid_t gid;
-
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
-
-		gid = 1;
-		while (!getgrgid(gid))
-			gid++;
 
 		GID16_CHECK(gid, setfsgid, cleanup);
 
@@ -86,6 +81,10 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	tst_require_root();
+
+       gid = 1;
+       while (!getgrgid(gid))
+               gid++;
 
 	ltpuser = getpwnam(nobody_uid);
 	if (ltpuser == NULL)
