@@ -85,16 +85,14 @@ int main(int ac, char **av)
 
 			if (fcntl(1, F_DUPFD, 1) != -1) {
 				tst_resm(TFAIL, "fcntl failed to FAIL");
-				exit(1);
+				fail = 1;
 			} else if (errno != EMFILE) {
 				tst_resm(TFAIL, "Expected EMFILE got %d",
 					 errno);
-				exit(1);
+				fail = 1;
 			}
-			exit(0);
 		}
-		waitpid(pid, &status, 0);
-		if (WEXITSTATUS(status) == 0)
+		if (fail == 0)
 			tst_resm(TPASS, "block 1 PASSED");
 		else
 			tst_resm(TFAIL, "block 1 FAILED");
