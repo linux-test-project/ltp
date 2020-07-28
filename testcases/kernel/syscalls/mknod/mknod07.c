@@ -26,9 +26,7 @@
  *	the caller is not super-user.
  *   2) mknod(2) returns -1 and sets errno to EACCES if parent directory
  *	does not allow  write  permission  to  the process.
- *   3) mknod(2) returns -1 and sets errno to EROFS if pathname refers to
- *	a file on a read-only file system.
- *   4) mknod(2) returns -1 and sets errno to ELOOP if too many symbolic
+ *   3) mknod(2) returns -1 and sets errno to ELOOP if too many symbolic
  *	links were encountered in resolving pathname.
  *
  */
@@ -42,7 +40,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/mount.h>
 
 #include "test.h"
 #include "safe_macros.h"
@@ -51,7 +48,6 @@
 #define DIR_TEMP_MODE		(S_IRUSR | S_IXUSR)
 #define DIR_MODE		(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 				 S_IXGRP|S_IROTH|S_IXOTH)
-#define MNT_POINT		"mntpoint"
 
 #define FIFO_MODE	(S_IFIFO | S_IRUSR | S_IRGRP | S_IROTH)
 #define SOCKET_MODE	(S_IFSOCK | S_IRWXU | S_IRWXG | S_IRWXO)
@@ -62,9 +58,6 @@
 
 static char elooppathname[sizeof(ELOPFILE) * 43] = ".";
 
-static const char *device;
-static int mount_flag;
-
 static struct test_case_t {
 	char *pathname;
 	int mode;
@@ -74,7 +67,6 @@ static struct test_case_t {
 	{ "testdir_1/tnode_2", FIFO_MODE, EACCES },
 	{ "tnode_3", CHR_MODE, EPERM },
 	{ "tnode_4", BLK_MODE, EPERM },
-	{ "mntpoint/tnode_5", SOCKET_MODE, EROFS },
 	{ elooppathname, FIFO_MODE, ELOOP },
 };
 
@@ -109,7 +101,6 @@ static void setup(void)
 {
 	int i;
 	struct passwd *ltpuser;
-	const char *fs_type;
 
 	tst_require_root();
 
@@ -117,20 +108,7 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to acquire device");
-
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
-
 	TEST_PAUSE;
-
-	/* mount a read-only file system for EROFS test */
-	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
-	SAFE_MOUNT(cleanup, device, MNT_POINT, fs_type, MS_RDONLY, NULL);
-	mount_flag = 1;
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);
@@ -170,12 +148,6 @@ static void cleanup(void)
 {
 	if (seteuid(0) == -1)
 		tst_resm(TWARN | TERRNO, "seteuid(0) failed");
-
-	if (mount_flag && tst_umount(MNT_POINT) < 0)
-		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
-
-	if (device)
-		tst_release_device(device);
 
 	tst_rmdir();
 }
