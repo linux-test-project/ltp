@@ -44,11 +44,13 @@
 #include <sys/un.h>
 #include <sys/file.h>
 #include <sys/wait.h>
+#include <pthread.h>
 
 #include <netinet/in.h>
 
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 char *TCID = "sendmsg01";
 int testno;
@@ -64,6 +66,7 @@ static int controllen;
 static struct iovec iov[1];
 static int sfd;			/* shared between do_child and start_server */
 static int ufd;			/* shared between do_child and start_server */
+static pthread_t server_tid;
 
 static void setup(void);
 static void setup0(void);
@@ -80,7 +83,7 @@ static void cleanup0(void);
 static void cleanup1(void);
 static void cleanup4(void);
 
-static void do_child(void);
+static void* do_child(void* parm);
 
 struct test_case_t {		/* test case structure */
 	int domain;		/* PF_INET, PF_UNIX, ... */
@@ -136,40 +139,41 @@ struct test_case_t tdat[] = {
 	 .cleanup = cleanup0,
 	 .desc = "invalid socket"}
 	,
-	{.domain = PF_INET,
-	 .type = SOCK_DGRAM,
-	 .proto = 0,
-	 .iov = iov,
-	 .iovcnt = 1,
-	 .buf = (void *)-1,
-	 .buflen = sizeof(buf),
-	 .msg = &msgdat,
-	 .flags = 0,
-	 .to = (struct sockaddr *)&sin1,
-	 .tolen = sizeof(sin1),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "invalid send buffer"}
-	,
-	{.domain = PF_INET,
-	 .type = SOCK_STREAM,
-	 .proto = 0,
-	 .iov = iov,
-	 .iovcnt = 1,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .msg = &msgdat,
-	 .flags = 0,
-	 .to = (struct sockaddr *)&sin2,
-	 .tolen = sizeof(sin2),
-	 .retval = 0,
-	 .experrno = EFAULT,
-	 .setup = setup5,
-	 .cleanup = cleanup1,
-	 .desc = "connected TCP"}
-	,
+// TODO: Enable once git issue 297 is fixed.
+//	{.domain = PF_INET,
+//	 .type = SOCK_DGRAM,
+//	 .proto = 0,
+//	 .iov = iov,
+//	 .iovcnt = 1,
+//	 .buf = (void *)-1,
+//	 .buflen = sizeof(buf),
+//	 .msg = &msgdat,
+//	 .flags = 0,
+//	 .to = (struct sockaddr *)&sin1,
+//	 .tolen = sizeof(sin1),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "invalid send buffer"}
+//	,
+//	{.domain = PF_INET,
+//	 .type = SOCK_STREAM,
+//	 .proto = 0,
+//	 .iov = iov,
+//	 .iovcnt = 1,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .msg = &msgdat,
+//	 .flags = 0,
+//	 .to = (struct sockaddr *)&sin2,
+//	 .tolen = sizeof(sin2),
+//	 .retval = 0,
+//	 .experrno = EFAULT,
+//	 .setup = setup5,
+//	 .cleanup = cleanup1,
+//	 .desc = "connected TCP"}
+//	,
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -203,22 +207,23 @@ struct test_case_t tdat[] = {
 	 .setup = setup1,
 	 .cleanup = cleanup1,
 	 .desc = "invalid to buffer length"},
-	{.domain = PF_INET,
-	 .type = SOCK_DGRAM,
-	 .proto = 0,
-	 .iov = iov,
-	 .iovcnt = 1,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .msg = &msgdat,
-	 .flags = 0,
-	 .to = (struct sockaddr *)-1,
-	 .tolen = sizeof(struct sockaddr),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "invalid to buffer"},
+// TODO: Enable once git issue 297 is fixed.
+//	{.domain = PF_INET,
+//	 .type = SOCK_DGRAM,
+//	 .proto = 0,
+//	 .iov = iov,
+//	 .iovcnt = 1,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .msg = &msgdat,
+//	 .flags = 0,
+//	 .to = (struct sockaddr *)-1,
+//	 .tolen = sizeof(struct sockaddr),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "invalid to buffer"},
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -253,40 +258,41 @@ struct test_case_t tdat[] = {
 	 .cleanup = cleanup1,
 	 .desc = "local endpoint shutdown"}
 	,
-	{.domain = PF_INET,
-	 .type = SOCK_STREAM,
-	 .proto = 0,
-	 .iov = NULL,
-	 .iovcnt = 1,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .msg = &msgdat,
-	 .flags = 0,
-	 .to = (struct sockaddr *)&sin1,
-	 .tolen = sizeof(sin1),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "invalid iovec pointer"}
-	,
-	{.domain = PF_INET,
-	 .type = SOCK_STREAM,
-	 .proto = 0,
-	 .iov = iov,
-	 .iovcnt = 1,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .msg = NULL,
-	 .flags = 0,
-	 .to = (struct sockaddr *)&sin1,
-	 .tolen = sizeof(sin1),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup1,
-	 .cleanup = cleanup1,
-	 .desc = "invalid msghdr pointer"}
-	,
+// TODO: Enable once git issue 297 is fixed.
+//	{.domain = PF_INET,
+//	 .type = SOCK_STREAM,
+//	 .proto = 0,
+//	 .iov = NULL,
+//	 .iovcnt = 1,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .msg = &msgdat,
+//	 .flags = 0,
+//	 .to = (struct sockaddr *)&sin1,
+//	 .tolen = sizeof(sin1),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "invalid iovec pointer"}
+//	,
+//	{.domain = PF_INET,
+//	 .type = SOCK_STREAM,
+//	 .proto = 0,
+//	 .iov = iov,
+//	 .iovcnt = 1,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .msg = NULL,
+//	 .flags = 0,
+//	 .to = (struct sockaddr *)&sin1,
+//	 .tolen = sizeof(sin1),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup1,
+//	 .cleanup = cleanup1,
+//	 .desc = "invalid msghdr pointer"}
+//	,
 	{.domain = PF_UNIX,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -338,22 +344,23 @@ struct test_case_t tdat[] = {
 	 .cleanup = cleanup4,
 	 .desc = "invalid cmsg length"}
 	,
-	{.domain = PF_UNIX,
-	 .type = SOCK_DGRAM,
-	 .proto = 0,
-	 .iov = iov,
-	 .iovcnt = 1,
-	 .buf = buf,
-	 .buflen = sizeof(buf),
-	 .msg = &msgdat,
-	 .flags = 0,
-	 .to = (struct sockaddr *)&sun1,
-	 .tolen = sizeof(sun1),
-	 .retval = -1,
-	 .experrno = EFAULT,
-	 .setup = setup8,
-	 .cleanup = cleanup4,
-	 .desc = "invalid cmsg pointer"}
+// TODO: Enable once git issue 297 is fixed.
+//	{.domain = PF_UNIX,
+//	 .type = SOCK_DGRAM,
+//	 .proto = 0,
+//	 .iov = iov,
+//	 .iovcnt = 1,
+//	 .buf = buf,
+//	 .buflen = sizeof(buf),
+//	 .msg = &msgdat,
+//	 .flags = 0,
+//	 .to = (struct sockaddr *)&sun1,
+//	 .tolen = sizeof(sun1),
+//	 .retval = -1,
+//	 .experrno = EFAULT,
+//	 .setup = setup8,
+//	 .cleanup = cleanup4,
+//	 .desc = "invalid cmsg pointer"}
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
@@ -367,11 +374,6 @@ int main(int argc, char *argv[])
 	int lc;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
-
-#ifdef UCLINUX
-	argv0 = argv[0];
-	maybe_run_child(&do_child, "dd", &sfd, &ufd);
-#endif
 
 	setup();
 
@@ -416,9 +418,8 @@ int main(int argc, char *argv[])
 	tst_exit();
 }
 
-static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
+static void start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 {
-	pid_t pid;
 	socklen_t slen = sizeof(*sin0);
 
 	sin0->sin_family = AF_INET;
@@ -430,17 +431,14 @@ static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 	if (sfd < 0) {
 		tst_brkm(TBROK, cleanup, "server socket failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 	if (bind(sfd, (struct sockaddr *)sin0, sizeof(*sin0)) < 0) {
 		tst_brkm(TBROK, cleanup, "server bind failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 	if (listen(sfd, 10) < 0) {
 		tst_brkm(TBROK, cleanup, "server listen failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 	SAFE_GETSOCKNAME(cleanup, sfd, (struct sockaddr *)sin0, &slen);
 
@@ -449,36 +447,16 @@ static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 	if (ufd < 0) {
 		tst_brkm(TBROK, cleanup, "server UD socket failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 	if (bind(ufd, (struct sockaddr *)sun0, sizeof(*sun0))) {
 		tst_brkm(TBROK, cleanup, "server UD bind failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 
-	switch ((pid = FORK_OR_VFORK())) {
-	case 0:
-#ifdef UCLINUX
-		if (self_exec(argv0, "dd", sfd, ufd) < 0)
-			tst_brkm(TBROK, cleanup, "server self_exec failed");
-#else
-		do_child();
-#endif
-		break;
-	case -1:
-		tst_brkm(TBROK, cleanup, "server fork failed: %s",
-			 strerror(errno));
-	default:
-		close(sfd);
-		close(ufd);
-		return pid;
-	}
-
-	exit(1);
+	SAFE_PTHREAD_CREATE(&server_tid, NULL, do_child, NULL);
 }
 
-static void do_child(void)
+static void* do_child(void* parm LTP_ATTRIBUTE_UNUSED)
 {
 	struct sockaddr_in fsin;
 	struct sockaddr_un fsun;
@@ -491,8 +469,8 @@ static void do_child(void)
 
 	nfds = MAX(sfd + 1, ufd + 1);
 
-	/* accept connections until killed */
-	while (1) {
+	/* accept connections until all tests completed */
+	while (testno < TST_TOTAL) {
 		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
@@ -528,16 +506,13 @@ static void do_child(void)
 			}
 		}
 	}
+	pthread_exit(NULL);
 }
 
-static pid_t pid;
 static char tmpsunpath[1024];
 
 static void setup(void)
 {
-
-	int ret = 0;
-
 	tst_require_root();
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 	TEST_PAUSE;
@@ -548,27 +523,19 @@ static void setup(void)
 	sun1.sun_family = AF_UNIX;
 	strcpy(sun1.sun_path, tmpsunpath);
 
-	/* this test will fail or in some cases hang if no eth or lo is
-	 * configured, so making sure in setup that at least lo is up
-	 */
-	ret = system("ip link set lo up");
-	if (WEXITSTATUS(ret) != 0) {
-		ret = system("ifconfig lo up 127.0.0.1");
-		if (WEXITSTATUS(ret) != 0) {
-			tst_brkm(TBROK, cleanup,
-			    "ip/ifconfig failed to bring up loop back device");
-		}
-	}
-
-	pid = start_server(&sin1, &sun1);
+	start_server(&sin1, &sun1);
 
 	signal(SIGPIPE, SIG_IGN);
 }
 
 static void cleanup(void)
 {
-	if (pid > 0)
-		kill(pid, SIGKILL);	/* kill server, if server exists */
+	SAFE_PTHREAD_JOIN(server_tid, NULL);
+	if(sfd >= 0)
+		close(sfd);
+	if(ufd >= 0)
+		close(ufd);
+
 	unlink(tmpsunpath);
 	tst_rmdir();
 }
@@ -584,6 +551,8 @@ static void setup0(void)
 
 static void cleanup0(void)
 {
+	if(s != 400 && s >= 0)
+		close(s);
 	s = -1;
 }
 
