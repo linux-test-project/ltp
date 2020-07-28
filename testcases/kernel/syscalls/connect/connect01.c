@@ -44,6 +44,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -54,6 +55,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 char *TCID = "connect01";
 int testno;
@@ -63,7 +65,8 @@ struct sockaddr_in sin1, sin2, sin3, sin4;
 static int sfd;			/* shared between start_server and do_child */
 
 void setup(void), setup0(void), setup1(void), setup2(void),
-cleanup(void), cleanup0(void), cleanup1(void), do_child(void);
+cleanup(void), cleanup0(void), cleanup1(void);
+void* do_child(void* parm);
 
 static pid_t start_server(struct sockaddr_in *);
 
@@ -83,13 +86,14 @@ struct test_case_t {		/* test case structure */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
 		    sizeof(struct sockaddr_in), -1, EBADF, setup0,
 		    cleanup0, "bad file descriptor"},
-#ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
-	{
-	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
-		    sizeof(struct sockaddr_in), -1, EFAULT, setup1,
-		    cleanup1, "invalid socket buffer"},
-#endif
+// TODO: Enable back after issue 169 fixed
+//#ifndef UCLINUX
+//	    /* Skip since uClinux does not implement memory protection */
+//	{
+//	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
+//		    sizeof(struct sockaddr_in), -1, EFAULT, setup1,
+//		    cleanup1, "invalid socket buffer"},
+//#endif
 	{
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
 		    3, -1, EINVAL, setup1, cleanup1, "invalid salen"}, {
@@ -175,6 +179,7 @@ int main(int argc, char *argv[])
 }
 
 pid_t pid;
+pthread_t tid;
 
 void setup(void)
 {
@@ -200,7 +205,8 @@ void setup(void)
 
 void cleanup(void)
 {
-	(void)kill(pid, SIGKILL);
+	SAFE_PTHREAD_JOIN(tid, NULL);
+	(void)close(sfd);
 
 }
 
@@ -266,7 +272,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 #ifdef UCLINUX
 		self_exec(argv0, "d", sfd);
 #else
-		do_child();
+		SAFE_PTHREAD_CREATE(&tid, NULL, do_child, NULL);
 #endif
 		break;
 	case -1:
@@ -274,13 +280,12 @@ pid_t start_server(struct sockaddr_in *sin0)
 		/* fall through */
 	default:		/* parent */
 		(void)close(sfd);
-		return pid;
 	}
 
-	return -1;
+	return pid;
 }
 
-void do_child(void)
+void* do_child(void* parm LTP_ATTRIBUTE_UNUSED)
 {
 	struct sockaddr_in fsin;
 	fd_set afds, rfds;
@@ -292,14 +297,19 @@ void do_child(void)
 
 	nfds = sfd + 1;
 
+	// thread is infinitely blocked at select syscall
+	// a timeout of 1 second is considered to comeout
+	// of blocked state. 
+	struct timeval tv = {1, 0};
+
 	/* accept connections until killed */
-	while (1) {
+	while (testno < TST_TOTAL) {
 		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
 
 		if (select(nfds, &rfds, NULL, NULL,
-			   NULL) < 0)
+			   &tv) < 0)
 			if (errno != EINTR)
 				exit(1);
 		if (FD_ISSET(sfd, &rfds)) {
@@ -320,4 +330,5 @@ void do_child(void)
 				}
 			}
 	}
+	pthread_exit(0);
 }
