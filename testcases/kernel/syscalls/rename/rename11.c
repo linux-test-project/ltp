@@ -53,8 +53,8 @@ char *TCID = "rename11";
 static char elooppathname[sizeof(ELOPFILE) * 43] = ".";
 static int max_subdirs;
 
-static const char *device;
-static const char *fs_type;
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 static int mount_flag;
 
 static void cleanup(void);
@@ -97,14 +97,6 @@ static void setup(void)
 	tst_tmpdir();
 
 	TEST_PAUSE;
-
-	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
-
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	SAFE_MKDIR(cleanup, MNTPOINT, 0755);
 	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
@@ -179,9 +171,6 @@ static void cleanup(void)
 {
 	if (mount_flag && tst_umount(MNTPOINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
-
-	if (device)
-		tst_release_device(device);
 
 	tst_rmdir();
 }
