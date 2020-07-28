@@ -8,7 +8,7 @@
  */
 
 #define _GNU_SOURCE
-
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -19,7 +19,7 @@
 #define MNTPOINT "mntpoint"
 #define FALLOCATE_SIZE 8192
 #define TESTED_FLAGS "fallocate(FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE)"
-
+char fname[256];
 static int fd;
 
 static void run(void)
@@ -27,6 +27,7 @@ static void run(void)
 	char buf[FALLOCATE_SIZE];
 	ssize_t ret;
 
+       SAFE_MKDIR(MNTPOINT, 0644);
 	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT);
 
 	if (fallocate(fd, 0, 0, FALLOCATE_SIZE)) {
@@ -80,14 +81,18 @@ static void cleanup(void)
 {
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+
+       for (int i = 0; i < 13; i++){
+               sprintf(fname, "mntpoint/file%d", i);
+               remove(fname);
+       }
+
+       remove("mntpoint/test_file");
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_tmpdir = 1,
-	.mount_device = 1,
-	.mntpoint = MNTPOINT,
-	.all_filesystems = 1,
 	.cleanup = cleanup,
 	.test_all = run,
 };
