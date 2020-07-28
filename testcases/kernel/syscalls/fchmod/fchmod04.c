@@ -146,6 +146,8 @@ void setup(void)
 {
 	tst_require_root();
 
+       tst_tmpdir(); // TODO: Will be removed once fixing git issue :357
+
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -158,7 +160,7 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	tst_tmpdir();
+//     tst_tmpdir(); // TODO: Will be enabled once fixing git issue :236
 
 	/*
 	 * Create a test directory under temporary directory with specified
@@ -184,6 +186,8 @@ void cleanup(void)
 
 	/* Close the test directory opened during setup() */
 	SAFE_CLOSE(NULL, fd);
+
+       tst_require_root(); // TODO: Will be removed once fixing git issue :357
 
 	tst_rmdir();
 
