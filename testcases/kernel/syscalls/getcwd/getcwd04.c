@@ -28,24 +28,24 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "tst_test.h"
+#include "tst_safe_pthread.h"
 
 #define TIMEOUT	5
 
-static void do_child(void);
+static void* do_child(void* parm);
 static void sigproc(int sig);
 static volatile sig_atomic_t end;
 static char init_cwd[PATH_MAX];
+static int kill_thread;
 
 static void verify_getcwd(void)
 {
-	int status;
 	char cur_cwd[PATH_MAX];
-	pid_t child;
+	pthread_t tid;
 
-	child = SAFE_FORK();
-	if (child == 0)
-		do_child();
+	SAFE_PTHREAD_CREATE(&tid, NULL, do_child, NULL);
 
 	 while (1) {
 		SAFE_GETCWD(cur_cwd, PATH_MAX);
@@ -62,8 +62,8 @@ static void verify_getcwd(void)
 		}
 	}
 
-	SAFE_KILL(child, SIGKILL);
-	SAFE_WAITPID(child, &status, 0);
+	kill_thread = 1;
+	SAFE_PTHREAD_JOIN(tid, NULL);
 }
 
 static void setup(void)
@@ -83,18 +83,19 @@ static void sigproc(int sig)
 	end = sig;
 }
 
-static void do_child(void)
+static void* do_child(void* parm)
 {
 	unsigned int i = 0;
 	char c_name[PATH_MAX] = "testfile", n_name[PATH_MAX];
 
 	SAFE_TOUCH(c_name, 0644, NULL);
 
-	while (1) {
+	while (!kill_thread) {
 		snprintf(n_name, PATH_MAX, "testfile%u", i++);
 		SAFE_RENAME(c_name, n_name);
 		strncpy(c_name, n_name, PATH_MAX);
 	}
+	pthread_exit(NULL);
 }
 
 static struct tst_test test = {
