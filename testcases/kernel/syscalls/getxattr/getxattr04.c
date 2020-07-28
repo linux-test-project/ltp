@@ -52,7 +52,6 @@ static void loop_getxattr(void)
 {
 	int res;
 
-	while (!end) {
 		res = getxattr(TEST_FILE, TRUSTED_SMALL, NULL, 0);
 		if (res == -1) {
 			if (errno == ENODATA) {
@@ -65,8 +64,8 @@ static void loop_getxattr(void)
 
 			exit(0);
 		}
-	}
 
+       SAFE_REMOVEXATTR(TEST_FILE, TRUSTED_SMALL);
 	tst_res(TPASS, "getxattr() succeeded to get an existing attribute");
 	exit(0);
 }
@@ -88,13 +87,17 @@ static void verify_getxattr(void)
 		SAFE_REMOVEXATTR(TEST_FILE, TRUSTED_BIG);
 	}
 
-	kill(pid, SIGUSR1);
-	tst_reap_children();
+       remove(TEST_FILE);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static void setup(void)
 {
-	SAFE_SIGNAL(SIGUSR1, sigproc);
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, NULL);
+
+       SAFE_SIGNAL(SIGUSR1, sigproc);
 
 	SAFE_TOUCH(TEST_FILE, 0644, NULL);
 
@@ -108,10 +111,6 @@ static void setup(void)
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
-	.mount_device = 1,
-	.dev_fs_type = "xfs",
-	.mntpoint = MNTPOINT,
-	.forks_child = 1,
 	.test_all = verify_getxattr,
 	.setup = setup
 };
