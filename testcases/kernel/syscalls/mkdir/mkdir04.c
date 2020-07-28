@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "tst_test.h"
+#include <pthread.h>
 
 #define TESTDIR	 "testdir"
 #define TESTSUBDIR "testdir/testdir"
@@ -37,24 +38,31 @@ static void verify_mkdir(void)
 	tst_res(TPASS | TERRNO, "mkdir() failed expectedly");
 }
 
+void* child_thread(void* arg)
+{
+	struct passwd *pw;
+	pw = SAFE_GETPWNAM("nobody");
+	nobody_uid = pw->pw_uid;
+
+	SAFE_SETREUID(nobody_uid, nobody_uid);
+	SAFE_MKDIR(TESTDIR, 0700);
+	pthread_exit(NULL);
+}
+
 static void setup(void)
 {
 	struct passwd *pw;
-	pid_t pid;
+	pthread_t tid;
 
-	pw = SAFE_GETPWNAM("nobody");
-	nobody_uid = pw->pw_uid;
 	pw = SAFE_GETPWNAM("bin");
 	bin_uid = pw->pw_uid;
-
-	pid = SAFE_FORK();
-	if (pid == 0) {
-		SAFE_SETREUID(nobody_uid, nobody_uid);
-		SAFE_MKDIR(TESTDIR, 0700);
-		exit(0);
+	
+	//start a child thread to create a directory	
+	if(pthread_create(&tid, NULL, child_thread, NULL)== -1)
+	{
+		tst_brk(TBROK, "Thread create failed");
 	}
-
-	tst_reap_children();
+	pthread_join(tid, NULL);
 
 	SAFE_SETREUID(bin_uid, bin_uid);
 }
@@ -64,5 +72,4 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.setup = setup,
-	.forks_child = 1,
 };
