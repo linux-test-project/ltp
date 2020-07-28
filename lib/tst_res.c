@@ -412,16 +412,13 @@ void tst_exit(void)
 
 pid_t tst_fork(void)
 {
-	pid_t child;
+	pid_t child = 0;
 
 	NO_NEWLIB_ASSERT("Unknown", 0);
 
 	tst_old_flush();
 
-	child = fork();
-	if (child == 0)
-		T_exitval = 0;
-
+        
 	return child;
 }
 
@@ -462,7 +459,8 @@ pid_t tst_vfork(void)
 	NO_NEWLIB_ASSERT("Unknown", 0);
 
 	tst_old_flush();
-	return vfork();
+//	return vfork();
+	return 0;
 }
 
 /*

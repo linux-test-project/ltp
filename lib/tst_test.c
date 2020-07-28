@@ -383,19 +383,7 @@ void tst_reap_children(void)
 
 pid_t safe_fork(const char *filename, unsigned int lineno)
 {
-	pid_t pid;
-
-	if (!tst_test->forks_child)
-		tst_brk(TBROK, "test.forks_child must be set!");
-
-	tst_flush();
-
-	pid = fork();
-	if (pid < 0)
-		tst_brk_(filename, lineno, TBROK | TERRNO, "fork() failed");
-
-	if (!pid)
-		atexit(tst_free_all);
+	pid_t pid = 0;
 
 	return pid;
 }
@@ -1132,11 +1120,9 @@ static int fork_testrun(void)
 	else
 		tst_set_timeout(300);
 
-	SAFE_SIGNAL(SIGINT, sigint_handler);
 
-	test_pid = fork();
-	if (test_pid < 0)
-		tst_brk(TBROK | TERRNO, "fork()");
+	test_pid = 0;
+	tst_res(TINFO, "No fork support");
 
 	if (!test_pid) {
 		SAFE_SIGNAL(SIGALRM, SIG_DFL);
@@ -1146,21 +1132,9 @@ static int fork_testrun(void)
 		testrun();
 	}
 
-	SAFE_WAITPID(test_pid, &status, 0);
 	alarm(0);
 	SAFE_SIGNAL(SIGINT, SIG_DFL);
 
-	if (WIFEXITED(status) && WEXITSTATUS(status))
-		return WEXITSTATUS(status);
-
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
-		tst_res(TINFO, "If you are running on slow machine, "
-			       "try exporting LTP_TIMEOUT_MUL > 1");
-		tst_brk(TBROK, "Test killed! (timeout?)");
-	}
-
-	if (WIFSIGNALED(status))
-		tst_brk(TBROK, "Test killed by %s!", tst_strsig(WTERMSIG(status)));
 
 	return 0;
 }
