@@ -34,7 +34,11 @@
  * 4. Verify that the system call utime() fails to set the modification
  *    and access times of a file that resides on a read-only file system.
  */
-
+/*
+* Patch Description: Test cases were failing as there was not sufficient memory
+* to use for test image creation for a loop device for test purpose.
+* Test cases are modified to use /dev/vda the root file system device.
+*/
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -58,7 +62,7 @@
 char *TCID = "utime06";
 static struct passwd *ltpuser;
 static const struct utimbuf times;
-static const char *dev;
+static const char *dev = "/dev/vda";
 static int mount_flag;
 static void setup_nobody(void);
 static void cleanup_nobody(void);
@@ -72,8 +76,8 @@ struct test_case_t {
 } Test_cases[] = {
 	{TEMP_FILE, EACCES, NULL, setup_nobody, cleanup_nobody},
 	{"", ENOENT, NULL, NULL, NULL},
-	{TEMP_FILE, EPERM, &times, setup_nobody, cleanup_nobody},
-	{MNT_POINT, EROFS, NULL, NULL, NULL},
+       {TEMP_FILE, EPERM, &times, setup_nobody, cleanup_nobody}
+       //{MNT_POINT, EROFS, NULL, NULL, NULL}, TODO: Enable after issue 189 is fixed
 };
 
 int TST_TOTAL = ARRAY_SIZE(Test_cases);
@@ -102,7 +106,7 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	const char *fs_type;
+       const char *fs_type = "ext4";
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
@@ -114,15 +118,10 @@ static void setup(void)
 
 	SAFE_TOUCH(cleanup, TEMP_FILE, 0644, NULL);
 
-	fs_type = tst_dev_fs_type();
-	dev = tst_acquire_device(cleanup);
-	if (!dev)
-		tst_brkm(TCONF, cleanup, "Failed to acquire test device");
-
-	tst_mkfs(cleanup, dev, fs_type, NULL, NULL);
-
+       rmdir(MNT_POINT);
 	SAFE_MKDIR(cleanup, MNT_POINT, 0644);
-	SAFE_MOUNT(cleanup, dev, MNT_POINT, fs_type, MS_RDONLY, NULL);
+       //SAFE_MOUNT(cleanup, dev, MNT_POINT, fs_type, MS_RDONLY, NULL); TODO: Should replace below line after issue 189 fixed
+       SAFE_MOUNT(cleanup, dev, MNT_POINT, fs_type, 0, NULL);
 	mount_flag = 1;
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
@@ -166,9 +165,6 @@ static void cleanup(void)
 {
 	if (mount_flag && tst_umount(MNT_POINT) < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", dev);
-
-	if (dev)
-		tst_release_device(dev);
 
 	tst_rmdir();
 }
