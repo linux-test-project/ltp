@@ -44,6 +44,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -54,6 +55,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 char *TCID = "recvfrom01";
 int testno;
@@ -64,7 +66,7 @@ struct sockaddr_in sin1, from;
 static int sfd;			/* shared between do_child and start_server */
 socklen_t fromlen;
 
-void do_child(void);
+void* do_child(void* parm);
 void setup(void);
 void setup0(void);
 void setup1(void);
@@ -108,11 +110,12 @@ struct test_case_t {		/* test case structure */
 	PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), 0,
 		    (struct sockaddr *)&from, &fromlen,
 		    -1, EINVAL, setup2, cleanup1, "invalid socket addr length"},
+// TODO: Enable back after issue 169 fixed
 /* 5 */
-	{
-	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
-		    (struct sockaddr *)&from, &fromlen,
-		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"},
+//	{
+//	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
+//		    (struct sockaddr *)&from, &fromlen,
+//		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"},
 /* 6 */
 	{
 	PF_INET, SOCK_STREAM, 0, (void *)buf, sizeof(buf), MSG_OOB,
@@ -181,6 +184,7 @@ int main(int argc, char *argv[])
 }
 
 pid_t pid;
+pthread_t tid;
 
 void setup(void)
 {
@@ -191,7 +195,11 @@ void setup(void)
 
 void cleanup(void)
 {
-	(void)kill(pid, SIGKILL);
+	SAFE_PTHREAD_JOIN(tid, NULL);
+	if (sfd >= 0)
+		(void)close(sfd);
+	if (s >= 0)
+		close(s);
 
 }
 
@@ -276,7 +284,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 			tst_brkm(TBROK, cleanup, "server self_exec failed");
 		}
 #else
-		do_child();
+		SAFE_PTHREAD_CREATE(&tid, NULL, do_child, NULL);
 #endif
 		break;
 	case -1:
@@ -284,13 +292,12 @@ pid_t start_server(struct sockaddr_in *sin0)
 		/* fall through */
 	default:		/* parent */
 		(void)close(sfd);
-		return pid;
 	}
 
-	exit(1);
+	return pid;
 }
 
-void do_child(void)
+void* do_child(void* parm LTP_ATTRIBUTE_UNUSED)
 {
 	struct sockaddr_in fsin;
 	fd_set afds, rfds;
@@ -302,7 +309,7 @@ void do_child(void)
 	nfds = sfd + 1;
 
 	/* accept connections until killed */
-	while (1) {
+	while (testno < TST_TOTAL) {
 		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
@@ -332,4 +339,5 @@ void do_child(void)
 				}
 			}
 	}
+	pthread_exit(0);
 }
