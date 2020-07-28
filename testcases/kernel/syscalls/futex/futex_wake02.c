@@ -67,7 +67,7 @@ static void *threaded(void *arg)
 	return NULL;
 }
 
-static void do_child(void)
+static void verify_futex_wake(void)
 {
 	int res, i, j, awake;
 	pthread_t t[55];
@@ -80,8 +80,8 @@ static void do_child(void)
 		}
 	}
 
-	while (wait_for_threads(ARRAY_SIZE(t)))
-		usleep(100);
+	// wait for the threads
+	sleep(5);
 
 	for (i = 1; i <= 10; i++) {
 		clear_threads_awake();
@@ -119,36 +119,6 @@ static void do_child(void)
 
 	for (i = 0; i < (int)ARRAY_SIZE(t); i++)
 		pthread_join(t[i], NULL);
-
-	tst_exit();
-}
-
-/*
- * We do the real test in a child because with the test -i parameter the loop
- * that checks that all threads are sleeping may fail with ENOENT. That is
- * because some of the threads from previous run may still be there.
- *
- * Which is because the userspace part of pthread_join() sleeps in a futex on a
- * pthread tid which is woken up at the end of the exit_mm(tsk) which is before
- * the process is removed from the parent thread_group list. So there is a
- * small race window where the readdir() returns the process tid as a directory
- * under /proc/$PID/tasks/, but the subsequent open() fails with ENOENT because
- * the thread was removed meanwhile.
- */
-static void verify_futex_wake(void)
-{
-	int pid;
-
-	pid = tst_fork();
-
-	switch (pid) {
-	case 0:
-		do_child();
-	case -1:
-		tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
-	default:
-		tst_record_childstatus(NULL, pid);
-	}
 }
 
 int main(int argc, char *argv[])
