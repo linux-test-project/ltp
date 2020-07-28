@@ -94,6 +94,11 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
+#include "safe_macros.h"
+
+#define MNTPOINT  "mntpoint"
+#define FILENAME  "mntpoint/fcntl26testfile"
+#define DIR_MODE  (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 
 void setup();
 void cleanup();
@@ -103,6 +108,8 @@ int TST_TOTAL = 1;
 
 char fname[255];
 int fd;
+const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 int main(int ac, char **av)
 {
@@ -118,16 +125,6 @@ int main(int ac, char **av)
      * perform global setup for test
      ***************************************************************/
 	setup();
-
-	switch ((type = tst_fs_type(cleanup, "."))) {
-	case TST_NFS_MAGIC:
-	case TST_RAMFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brkm(TCONF, cleanup,
-			 "Cannot do fcntl on a file on %s filesystem",
-			 tst_fs_type_name(type));
-	break;
-	}
 
     /***************************************************************
      * check looping state if -c option given
@@ -186,13 +183,11 @@ void setup(void)
 {
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, 0, NULL);
 
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	sprintf(fname, "tfile_%d", getpid());
-	if ((fd = open(fname, O_WRONLY | O_CREAT, 0777)) == -1) {
+	if ((fd = open(FILENAME, O_WRONLY | O_CREAT, 0777)) == -1) {
 		tst_brkm(TBROK, cleanup,
 			 "open(%s, O_WRONLY|O_CREAT,0777) Failed, errno=%d : %s",
 			 fname, errno, strerror(errno));
@@ -212,6 +207,9 @@ void cleanup(void)
 			 strerror(errno));
 	}
 
-	tst_rmdir();
+	remove(FILENAME);
+	SAFE_UMOUNT(NULL, MNTPOINT);
+	SAFE_RMDIR(NULL, MNTPOINT);
+
 
 }
