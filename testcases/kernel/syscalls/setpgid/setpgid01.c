@@ -83,11 +83,18 @@ static void setpgid_test1(void)
 	pid = getpid();
 
 	TEST(setpgid(pid, pgid));
-	if (TEST_RETURN == -1 || getpgrp() != pgid) {
-		tst_resm(TFAIL | TTERRNO, "test setpgid(%d, %d) fail",
-			 pid, pgid);
-	} else {
+	if (pgid == 0 && TEST_RETURN == 0 && getpgrp() == pid)
+	{
 		tst_resm(TPASS, "test setpgid(%d, %d) success", pid, pgid);
+	}
+	else
+	{
+		if (TEST_RETURN == -1 || getpgrp() != pgid) {
+			tst_resm(TFAIL | TTERRNO, "test setpgid(%d, %d) fail",
+				 pid, pgid);
+		} else {
+			tst_resm(TPASS, "test setpgid(%d, %d) success", pid, pgid);
+		}
 	}
 }
 
