@@ -135,6 +135,8 @@ void setup(void)
 void cleanup(void)
 {
 
+	close(fd[0]);
+	close(fd[1]);
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
