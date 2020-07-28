@@ -33,7 +33,7 @@ static void verify_fsync(void)
 
 static void setup(void)
 {
-	sprintf(fname, "mntpoint/tfile_%d", getpid());
+	sprintf(fname, "tfile_%d", getpid());
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 }
 
@@ -49,7 +49,4 @@ static struct tst_test test = {
 	.test_all = verify_fsync,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
-	.mount_device = 1,
-	.mntpoint = "mntpoint",
-	.all_filesystems = 1,
 };
