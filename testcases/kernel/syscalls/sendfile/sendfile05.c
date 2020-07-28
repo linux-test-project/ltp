@@ -51,8 +51,10 @@
 #include <sys/mman.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 #ifndef OFF_T
 #define OFF_T off_t
@@ -62,29 +64,44 @@ TCID_DEFINE(sendfile05);
 
 char in_file[100];
 char out_file[100];
-int out_fd;
-pid_t child_pid;
-static int sockfd, s;
+int out_fd = 1;
+pthread_t child_tid = NULL;
+static int sockfd = -1;
 static struct sockaddr_in sin1;	/* shared between do_child and create_server */
 
 void cleanup(void);
-void do_child(void);
+void* do_child(void* parm);
 void setup(void);
-int create_server(void);
+void create_server(void);
 
 int TST_TOTAL = 1;
 
-#ifdef UCLINUX
-static char *argv0;
-#endif
+void close_server(void)
+{
+	if(child_tid != NULL) {
+		SAFE_PTHREAD_JOIN(child_tid, NULL);
+		child_tid = NULL;
+	}
 
+	if (sockfd >= 0) {
+		close(sockfd);
+		sockfd = -1;
+	}
+
+	if (out_fd >= 0) {
+		close(out_fd);
+		out_fd = -1;
+	}
+
+		
+}
 void do_sendfile(void)
 {
 	OFF_T offset;
 	int in_fd;
 	struct stat sb;
 
-	out_fd = create_server();
+	create_server();
 
 	if ((in_fd = open(in_file, O_RDONLY)) < 0) {
 		tst_brkm(TBROK, cleanup, "open failed: %d", errno);
@@ -108,26 +125,23 @@ void do_sendfile(void)
 	}
 
 	shutdown(sockfd, SHUT_RDWR);
-	shutdown(s, SHUT_RDWR);
-	kill(child_pid, SIGKILL);
+	shutdown(out_fd, SHUT_RDWR);
+	close_server();
 	close(in_fd);
 }
 
 /*
  * do_child
  */
-void do_child(void)
+void* do_child(void* parm LTP_ATTRIBUTE_UNUSED)
 {
-	int lc;
 	socklen_t length;
 	char rbuf[4096];
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		length = sizeof(sin1);
-		recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr *)&sin1,
-			 &length);
-	}
-	exit(0);
+	length = sizeof(sin1);
+	recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr *)&sin1, &length);
+
+	pthread_exit(0);
 }
 
 /*
@@ -163,14 +177,15 @@ void setup(void)
  */
 void cleanup(void)
 {
-
-	close(out_fd);
+	if (sockfd >= 0)
+		shutdown(sockfd, SHUT_RDWR);
+	close_server();
 	/* delete the test directory created in setup() */
 	tst_rmdir();
 
 }
 
-int create_server(void)
+void create_server(void)
 {
 	static int count = 0;
 	socklen_t slen = sizeof(sin1);
@@ -179,7 +194,6 @@ int create_server(void)
 	if (sockfd < 0) {
 		tst_brkm(TBROK, cleanup, "call to socket() failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 	sin1.sin_family = AF_INET;
 	sin1.sin_port = 0; /* pick random free port */
@@ -188,37 +202,18 @@ int create_server(void)
 	if (bind(sockfd, (struct sockaddr *)&sin1, sizeof(sin1)) < 0) {
 		tst_brkm(TBROK, cleanup, "call to bind() failed: %s",
 			 strerror(errno));
-		return -1;
 	}
 	SAFE_GETSOCKNAME(cleanup, sockfd, (struct sockaddr *)&sin1, &slen);
 
-	child_pid = FORK_OR_VFORK();
-	if (child_pid < 0) {
-		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",
-			 strerror(errno));
-		return -1;
-	}
-	if (!child_pid) {	/* child */
-#ifdef UCLINUX
-		if (self_exec(argv0, "") < 0) {
-			tst_brkm(TBROK, cleanup, "self_exec failed");
-			return -1;
+	SAFE_PTHREAD_CREATE(&child_tid, NULL, do_child, NULL);
 
-		}
-#else
-		do_child();
-#endif
-	}
-
-	s = socket(PF_INET, SOCK_DGRAM, 0);
+	out_fd = socket(PF_INET, SOCK_DGRAM, 0);
 	inet_aton("127.0.0.1", &sin1.sin_addr);
-	if (s < 0) {
+	if (out_fd < 0) {
 		tst_brkm(TBROK, cleanup, "call to socket() failed: %s",
 			 strerror(errno));
-		return -1;
 	}
-	SAFE_CONNECT(cleanup, s, (struct sockaddr *)&sin1, sizeof(sin1));
-	return s;
+	SAFE_CONNECT(cleanup, out_fd, (struct sockaddr *)&sin1, sizeof(sin1));
 
 }
 
@@ -227,10 +222,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	argv0 = av[0];
-	maybe_run_child(&do_child, "");
-#endif
 
 	setup();
 
