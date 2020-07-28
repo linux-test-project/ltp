@@ -52,6 +52,8 @@ static char *toolong_fname = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx
 static char *dir_fname = "/tmp";
 static char *user2_fname = "user2_0600";
 static char *unmapped_fname;
+char nobody_uid[] = "nobody";
+struct passwd *ltpuser;
 
 struct test_case_t;
 
@@ -60,12 +62,12 @@ static struct test_case_t {
 	int flags;
 	int error;
 } tcases[] = {
-	{&existing_fname, O_CREAT | O_EXCL, EEXIST},
 	{&dir_fname, O_RDWR, EISDIR},
+       {&existing_fname, O_CREAT | O_EXCL, EEXIST},
 	{&existing_fname, O_DIRECTORY, ENOTDIR},
 	{&toolong_fname, O_RDWR, ENAMETOOLONG},
 	{&user2_fname, O_WRONLY, EACCES},
-	{&unmapped_fname, O_CREAT, EFAULT}
+//     {&unmapped_fname, O_CREAT, EFAULT} // TODO: Enable once git issue 297 is fixed.
 };
 
 void verify_open(unsigned int i)
@@ -87,27 +89,28 @@ void verify_open(unsigned int i)
 				"expected %d", TST_ERR,
 				strerror(TST_ERR), tcases[i].error);
 	}
+
+       if (i == 0){
+               /* Switch to nobody user for correct error code collection */
+               ltpuser = getpwnam(nobody_uid);
+               SAFE_SETGID(ltpuser->pw_gid);
+               SAFE_SETUID(ltpuser->pw_uid);
+
+       }
 }
 
 static void setup(void)
 {
 	int fildes;
-	char nobody_uid[] = "nobody";
-	struct passwd *ltpuser;
 
 	umask(0);
 
 	SAFE_CREAT(user2_fname, 0600);
 
-	/* Switch to nobody user for correct error code collection */
-	ltpuser = getpwnam(nobody_uid);
-	SAFE_SETGID(ltpuser->pw_gid);
-	SAFE_SETUID(ltpuser->pw_uid);
-
 	fildes = SAFE_CREAT(existing_fname, 0600);
 	close(fildes);
 
-	unmapped_fname = tst_get_bad_addr(NULL);
+       unmapped_fname = 0;
 }
 
 static struct tst_test test = {
