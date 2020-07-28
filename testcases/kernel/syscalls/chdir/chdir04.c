@@ -87,8 +87,9 @@ struct test_case_t {
 	     * to test whether chdir() is setting EFAULT if the
 	     * directory is an invalid address.
 	     */
-	{
-	(void *)-1, EFAULT}
+	//TODO: Enable back after issue 169 fixed
+	//{
+	//(void *)-1, EFAULT}
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
