@@ -32,8 +32,10 @@
 #define VALUE           "test"
 #define VALUE_SIZE      (sizeof(VALUE) - 1)
 #define KEY_SIZE        (sizeof(SECURITY_KEY1) - 1)
-#define TESTFILE        "testfile"
-#define SYMLINK         "symlink"
+#define TESTFILE        "mntpoint/testfile"
+#define SYMLINK         "mntpoint/symlink"
+#define MNTPOINT        "mntpoint"
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 
 
 static int has_attribute(const char *list, int llen, const char *attr)
@@ -68,11 +70,19 @@ static void verify_llistxattr(void)
 		return;
 	}
 
+       remove(TESTFILE);
+       remove(SYMLINK);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
+
 	tst_res(TPASS, "llistxattr() succeeded");
 }
 
 static void setup(void)
 {
+       SAFE_MKDIR(MNTPOINT, DIR_MODE);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, NULL);
+
 	SAFE_TOUCH(TESTFILE, 0644, NULL);
 
 	SAFE_SYMLINK(TESTFILE, SYMLINK);
