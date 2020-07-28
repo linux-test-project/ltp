@@ -37,13 +37,14 @@ static char root[] = "root";
 static char nobody_uid[] = "nobody";
 static char nobody_gid[] = "nobody";
 static struct passwd *ltpuser;
+static gid_t rootpw_gid;
 
 static void setup(void);
 static void cleanup(void);
 
 int main(int ac, char **av)
 {
-	struct passwd *getpwnam(), *rootpwent;
+	struct passwd *getpwnam();
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -53,14 +54,9 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		if ((rootpwent = getpwnam(root)) == NULL) {
-			tst_brkm(TBROK, cleanup, "getpwnam failed for user id "
-				 "%s", root);
-		}
+		GID16_CHECK(rootpw_gid, setgid, cleanup);
 
-		GID16_CHECK(rootpwent->pw_gid, setgid, cleanup);
-
-		TEST(SETGID(cleanup, rootpwent->pw_gid));
+		TEST(SETGID(cleanup, rootpw_gid));
 
 		if (TEST_RETURN != -1) {
 			tst_resm(TFAIL, "call succeeded unexpectedly");
@@ -81,7 +77,16 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
+	static struct passwd *rootusr;
+
 	tst_require_root();
+
+	if ((rootusr = getpwnam(root)) == NULL) {
+		tst_brkm(TBROK, cleanup, "getpwnam failed for user id "
+			 "%s", root);
+	}
+
+	rootpw_gid = rootusr->pw_gid;
 
 	/* Switch to nobody user for correct error code collection */
 	ltpuser = getpwnam(nobody_uid);
