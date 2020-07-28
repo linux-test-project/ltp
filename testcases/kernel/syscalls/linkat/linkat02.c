@@ -49,10 +49,10 @@
 #define BASENAME	"mntpoint/basename"
 
 static char nametoolong[PATH_MAX+2];
-static const char *device;
+static const char *device = "/dev/vda";
 static int mount_flag;
 static int max_hardlinks;
-static const char *fs_type;
+static const char *fs_type = "ext4";
 
 static void setup(void);
 static void cleanup(void);
@@ -148,12 +148,6 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to acquire device");
-
 	TEST_PAUSE;
 
 	ltpuser = SAFE_GETPWNAM(cleanup, "nobody");
@@ -170,7 +164,6 @@ static void setup(void)
 	SAFE_MKDIR(cleanup, "./tmp", DIR_MODE);
 	SAFE_TOUCH(cleanup, TEST_EACCES, 0666, NULL);
 
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
 
 	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, 0, NULL);
@@ -200,9 +193,6 @@ static void cleanup(void)
 {
 	if (mount_flag && tst_umount("mntpoint") < 0)
 		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
-
-	if (device)
-		tst_release_device(device);
 
 	tst_rmdir();
 }
