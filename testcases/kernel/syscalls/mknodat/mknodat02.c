@@ -69,9 +69,11 @@ static struct test_case_t {
 	{ &curfd, "tnode1", FIFOMODE, 0 },
 	{ &curfd, "tnode2", FREGMODE, 0 },
 	{ &curfd, "tnode3", SOCKMODE, 0 },
-	{ &dir_fd, "tnode4", FIFOMODE, EROFS },
-	{ &dir_fd, "tnode5", FREGMODE, EROFS },
-	{ &dir_fd, "tnode6", SOCKMODE, EROFS },
+// Below tests are disabled as we dont have a device
+// with read only file system in SGX
+//	{ &dir_fd, "tnode4", FIFOMODE, EROFS },
+//	{ &dir_fd, "tnode5", FREGMODE, EROFS },
+//	{ &dir_fd, "tnode6", SOCKMODE, EROFS },
 	{ &curfd, elooppathname, FIFOMODE, ELOOP },
 	{ &curfd, elooppathname, FREGMODE, ELOOP },
 	{ &curfd, elooppathname, SOCKMODE, ELOOP },
@@ -118,12 +120,6 @@ static void setup(void)
 	tst_tmpdir();
 
 	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to acquire device");
-
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
 
 	TEST_PAUSE;
 
@@ -131,7 +127,6 @@ static void setup(void)
 	 * mount a read-only file system for EROFS test
 	 */
 	SAFE_MKDIR(cleanup, MNT_POINT, DIR_MODE);
-	SAFE_MOUNT(cleanup, device, MNT_POINT, fs_type, MS_RDONLY, NULL);
 	mount_flag = 1;
 	dir_fd = SAFE_OPEN(cleanup, MNT_POINT, O_DIRECTORY);
 
@@ -174,11 +169,6 @@ static void cleanup(void)
 {
 	if (dir_fd > 0 && close(dir_fd) < 0)
 		tst_resm(TWARN | TERRNO, "close(%d) failed", dir_fd);
-	if (mount_flag && tst_umount(MNT_POINT) < 0)
-		tst_resm(TWARN | TERRNO, "umount device:%s failed", device);
-
-	if (device)
-		tst_release_device(device);
 
 	tst_rmdir();
 }
