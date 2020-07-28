@@ -143,8 +143,10 @@ static void cleanup(void)
 	if (writefd >= 0)
 		SAFE_CLOSE(writefd);
 
-	SAFE_MUNMAP(read_thp, thp_size);
-	SAFE_MUNMAP(write_thp, thp_size);
+	if (read_thp)
+		SAFE_MUNMAP(read_thp, thp_size);
+	if (write_thp)
+		SAFE_MUNMAP(write_thp, thp_size);
 }
 
 static struct tst_test test = {
