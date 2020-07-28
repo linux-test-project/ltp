@@ -14,12 +14,15 @@
 #include <stdlib.h>
 #include <linux/futex.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "tst_timer_test.h"
 #include "tst_test.h"
 #include "futextest.h"
+#include "tst_safe_pthread.h"
 
 static futex_t *futexes;
+int thread_cnt = 0;
 
 static struct tcase {
 	int num_waiters;
@@ -28,41 +31,39 @@ static struct tcase {
 } tcases[] = {
 	{10, 3, 7},
 	{10, 0, 10},
-	{10, 2, 6},
-	{100, 50, 50},
-	{100, 0, 70},
-	{1000, 100, 900},
-	{1000, 300, 500},
+	{10, 2, 6}
 };
 
-static void do_child(void)
+static void* do_child(void* parm LTP_ATTRIBUTE_UNUSED)
 {
-	struct timespec usec = tst_ms_to_timespec(2000);
+	struct timespec usec = tst_ms_to_timespec(30000);
 	int pid = getpid();
+	tst_atomic_inc(&thread_cnt);
 
 	if (!futex_wait(&futexes[0], futexes[0], &usec, 0))
-		exit(0);
+		pthread_exit(0);
 
 	tst_res(TINFO | TERRNO, "process %d wasn't woken up", pid);
-	exit(1);
+	pthread_exit(0);
 }
 
 static void verify_futex_cmp_requeue(unsigned int n)
 {
 	int num_requeues = 0, num_waits = 0, num_total = 0;
-	int i, status;
+	int i;
 	struct tcase *tc = &tcases[n];
-	int pid[tc->num_waiters];
+	pthread_t tid[tc->num_waiters];
 	int exp_ret = tc->set_wakes + tc->set_requeues;
 
 	for (i = 0; i < tc->num_waiters; i++) {
-		pid[i] = SAFE_FORK();
-		if (!pid[i])
-			do_child();
+		SAFE_PTHREAD_CREATE(&tid[i], NULL, do_child, NULL);
 	}
-
-	for (i = 0; i < tc->num_waiters; i++)
-		TST_PROCESS_STATE_WAIT(pid[i], 'S');
+	
+	// wait for all threads to start and wait for futex
+	while (thread_cnt < tc->num_waiters) {
+		sched_yield();
+	}		
+	sleep(3);
 
 	TEST(futex_cmp_requeue(&futexes[0], futexes[0], &futexes[1],
 	     tc->set_wakes, tc->set_requeues, 0));
@@ -75,9 +76,9 @@ static void verify_futex_cmp_requeue(unsigned int n)
 	num_waits = futex_wake(&futexes[0], tc->num_waiters, 0);
 
 	for (i = 0; i < tc->num_waiters; i++) {
-		SAFE_WAITPID(pid[i], &status, 0);
-		if (WIFEXITED(status) && !WEXITSTATUS(status))
-			num_total++;
+		sched_yield();
+		SAFE_PTHREAD_JOIN(tid[i], NULL);
+		num_total++;
 	}
 
 	if (num_total != tc->num_waiters) {
@@ -104,6 +105,9 @@ static void verify_futex_cmp_requeue(unsigned int n)
 	tst_res(TPASS,
 		"futex_cmp_requeue() woke up %d waiters and requeued %d waiters",
 		tc->set_wakes, tc->set_requeues);
+
+	// Reset the thread count
+	thread_cnt = 0;
 }
 
 static void setup(void)
@@ -126,5 +130,4 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_futex_cmp_requeue,
-	.forks_child = 1,
 };
