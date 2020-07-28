@@ -57,6 +57,10 @@
 #define CHR      MNTPOINT"/fsetxattr02chr"
 #define BLK      MNTPOINT"/fsetxattr02blk"
 #define SOCK     "fsetxattr02sock"
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+#define FILE_MODE       (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID)
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 struct test_case {
 	char *fname;
@@ -117,15 +121,16 @@ static struct test_case tc[] = {
 	 .flags = XATTR_CREATE,
 	 .exp_err = EPERM,
 	 },
-	{			/* case 05, set attr to block special */
-	 .fname = BLK,
-	 .fflags = O_RDONLY,
-	 .key = XATTR_TEST_KEY,
-	 .value = XATTR_TEST_VALUE,
-	 .size = XATTR_TEST_VALUE_SIZE,
-	 .flags = XATTR_CREATE,
-	 .exp_err = EPERM,
-	 },
+//TODO:Enable after issue 254 support for block device is added
+//	{			/* case 05, set attr to block special */
+//	 .fname = BLK,
+//	 .fflags = O_RDONLY,
+//	 .key = XATTR_TEST_KEY,
+//	 .value = XATTR_TEST_VALUE,
+//	 .size = XATTR_TEST_VALUE_SIZE,
+//	 .flags = XATTR_CREATE,
+//	 .exp_err = EPERM,
+//	 },
 	{			/* case 06, set attr to socket */
 	 .fname = SOCK,
 	 .fflags = O_RDONLY,
@@ -198,6 +203,9 @@ static void setup(void)
 	struct sockaddr_un sun;
 
 	dev_t dev = makedev(1, 3);
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(device, MNTPOINT, fs_type, 0, "user_xattr");
 
 	SAFE_TOUCH(FILENAME, 0644, NULL);
 	SAFE_MKDIR(DIRNAME, 0644);
@@ -239,22 +247,25 @@ static void cleanup(void)
 		if (tc[i].fd > 0)
 			SAFE_CLOSE(tc[i].fd);
 	}
+	remove(FILENAME);
+	remove(SYMLINK);
+	remove(FIFO);
+	remove(CHR);
+	remove(BLK);
+	remove(SOCK);
+	SAFE_RMDIR(DIRNAME);
+	SAFE_UMOUNT(MNTPOINT);
+	SAFE_RMDIR(MNTPOINT);
+
 }
 
-static const char *const needed_drivers[] = {
-	"brd",
-	NULL,
-};
 
 static struct tst_test test = {
 	.setup = setup,
 	.test = verify_fsetxattr,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
-	.needs_devfs = 1,
-	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.needs_drivers = needed_drivers,
 };
 
 #else /* HAVE_SYS_XATTR_H */
