@@ -17,25 +17,20 @@
 
 static void run(void)
 {
-	pid_t pid, pid1;
+	pid_t pid;
 
-	pid = SAFE_FORK();
-	if (pid > 0) {
-		waitpid(pid, NULL, 0);
-	} else {
-		pid1 = setsid();
-		if (pid1 < 0)
-			tst_brk(TBROK | TTERRNO, "setsid failed");
-		TEST(tst_syscall(__NR_vhangup));
-		if (TST_RET == -1)
-			tst_res(TFAIL | TTERRNO, "vhangup() failed");
-		else
-			tst_res(TPASS, "vhangup() succeeded");
-	}
+	pid = setsid();
+	if (pid < 0)
+		tst_res(TWARN | TTERRNO,
+			"current process is already a group leader");
+	TEST(tst_syscall(__NR_vhangup));
+	if (TST_RET == -1)
+		tst_res(TFAIL | TTERRNO, "vhangup() failed");
+	else
+		tst_res(TPASS, "vhangup() succeeded");
 }
 
 static struct tst_test test = {
 	.test_all = run,
-	.forks_child = 1,
 	.needs_root = 1,
 };
