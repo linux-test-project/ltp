@@ -56,14 +56,18 @@
 
 #define MNTPOINT "mntpoint"
 #define OFFSET    11
-#define FILENAME "fgetxattr02testfile"
-#define DIRNAME  "fgetxattr02testdir"
+#define FILENAME "mntpoint/fgetxattr02testfile"
+#define DIRNAME  "mntpoint/fgetxattr02testdir"
 #define SYMLINK  "fgetxattr02symlink"
-#define SYMLINKF "fgetxattr02symlinkfile"
-#define FIFO     MNTPOINT"/fgetxattr02fifo"
-#define CHR      MNTPOINT"/fgetxattr02chr"
-#define BLK      MNTPOINT"/fgetxattr02blk"
-#define SOCK     "fgetxattr02sock"
+#define SYMLINKF "mntpoint/fgetxattr02symlinkfile"
+#define FIFO     "mntpoint/fgetxattr02fifo"
+#define CHR      "mntpoint/fgetxattr02chr"
+#define BLK      "mntpoint/fgetxattr02blk"
+#define SOCK     "mntpoint/fgetxattr02sock"
+#define DIR_MODE        (S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
+#define FILE_MODE       (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID)
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 struct test_case {
 	char *fname;
@@ -133,17 +137,18 @@ static struct test_case tc[] = {
 	 .exp_err = ENODATA,
 	 .exp_ret = -1,
 	 },
-	{			/* case 05, get attr from block special */
-	 .fname = BLK,
-	 .fflags = O_RDONLY,
-	 .key = XATTR_TEST_KEY,
-	 .value = XATTR_TEST_VALUE,
-	 .size = XATTR_TEST_VALUE_SIZE,
-	 .ret_value = NULL,
-	 .flags = XATTR_CREATE,
-	 .exp_err = ENODATA,
-	 .exp_ret = -1,
-	 },
+//TODO:Enable after issue 254 support for block device is added
+//	{			/* case 05, get attr from block special */
+//	 .fname = BLK,
+//	 .fflags = O_RDONLY,
+//	 .key = XATTR_TEST_KEY,
+//	 .value = XATTR_TEST_VALUE,
+//	 .size = XATTR_TEST_VALUE_SIZE,
+//	 .ret_value = NULL,
+//	 .flags = XATTR_CREATE,
+//	 .exp_err = ENODATA,
+//	 .exp_ret = -1,
+//	 },
 	{			/* case 06, get attr from socket */
 	 .fname = SOCK,
 	 .fflags = O_RDONLY,
@@ -212,6 +217,10 @@ static void setup(void)
 
 	dev_t dev = makedev(1, 3);
 
+	rmdir(MNTPOINT);
+	SAFE_MKDIR(MNTPOINT, DIR_MODE);
+	SAFE_MOUNT(device, MNTPOINT, fs_type, 0, "user_xattr");
+
 	SAFE_TOUCH(FILENAME, 0644, NULL);
 	SAFE_TOUCH(SYMLINKF, 0644, NULL);
 	SAFE_MKDIR(DIRNAME, 0644);
@@ -263,6 +272,16 @@ static void cleanup(void)
 		if (tc[i].fd > 0)
 			SAFE_CLOSE(tc[i].fd);
 	}
+	remove(SYMLINKF);
+	remove(SYMLINK);
+	remove(FILENAME);
+	remove(FIFO);
+	remove(CHR);
+	remove(BLK);
+	remove(SOCK);
+	SAFE_RMDIR(DIRNAME);
+	SAFE_UMOUNT(MNTPOINT);
+	SAFE_RMDIR(MNTPOINT);
 }
 
 static struct tst_test test = {
@@ -270,8 +289,6 @@ static struct tst_test test = {
 	.test = verify_fgetxattr,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
-	.needs_devfs = 1,
-	.mntpoint = MNTPOINT,
 	.needs_root = 1,
 };
 
