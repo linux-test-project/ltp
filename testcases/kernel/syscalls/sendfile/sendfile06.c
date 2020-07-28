@@ -39,21 +39,24 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <pthread.h>
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 TCID_DEFINE(sendfile06);
 
 #define IN_FILE		"infile"
 #define OUT_FILE	"outfile"
 
-static pid_t child_pid;
-static int sockfd;
+static pthread_t child_tid = NULL;
+static int sockfd = -1;
 static struct sockaddr_in sin1;
 static struct stat sb;
+static int stop_server = 0;
 
 static void cleanup(void);
-static void do_child(void);
+static void* do_child(void* prm);
 static void setup(void);
 static int create_server(void);
 
@@ -63,11 +66,24 @@ int TST_TOTAL = 1;
 static char *argv0;
 #endif
 
+void close_server(void)
+{
+	if (child_tid != NULL) {
+		SAFE_PTHREAD_JOIN(child_tid, NULL);
+		child_tid = NULL;
+	}
+
+	if (sockfd >= 0) {
+		close(sockfd);
+		sockfd = -1;
+	}
+
+}
+
 static void do_sendfile(void)
 {
 	int in_fd, out_fd;
 	off_t after_pos;
-	int wait_stat;
 
 	out_fd = create_server();
 
@@ -86,32 +102,31 @@ static void do_sendfile(void)
 		tst_resm(TFAIL, "sendfile(2) failed to return "
 			 "expected value, expected: %" PRId64 ", "
 			 "got: %ld", (int64_t) sb.st_size, TEST_RETURN);
-		SAFE_KILL(cleanup, child_pid, SIGKILL);
+		stop_server = 1;
 	} else if (after_pos != sb.st_size) {
 		tst_resm(TFAIL, "sendfile(2) failed to update "
 			 " the file position of in_fd, "
 			 "expected file position: %" PRId64 ", "
 			 "actual file position %" PRId64,
 			 (int64_t) sb.st_size, (int64_t) after_pos);
-		SAFE_KILL(cleanup, child_pid, SIGKILL);
+		stop_server = 1;
 	} else {
 		tst_resm(TPASS, "functionality of sendfile() is "
 			 "correct");
-		waitpid(-1, &wait_stat, 0);
 	}
-
+	
+	close_server();
 	SAFE_CLOSE(cleanup, in_fd);
 	SAFE_CLOSE(cleanup, out_fd);
-	SAFE_CLOSE(cleanup, sockfd);
 }
 
-static void do_child(void)
+static void* do_child(void* prm LTP_ATTRIBUTE_UNUSED)
 {
 	socklen_t length = sizeof(sin1);
 	char rbuf[4096];
 	ssize_t ret, bytes_total_received = 0;
 
-	while (bytes_total_received < sb.st_size) {
+	while (bytes_total_received < sb.st_size && !stop_server) {
 		ret = recvfrom(sockfd, rbuf, 4096, 0, (struct sockaddr *)&sin1,
 			       &length);
 		if (ret < 0) {
@@ -122,7 +137,7 @@ static void do_child(void)
 		bytes_total_received += ret;
 	}
 
-	exit(0);
+	pthread_exit(0);
 }
 
 static void setup(void)
@@ -171,24 +186,7 @@ static int create_server(void)
 	}
 	SAFE_GETSOCKNAME(cleanup, sockfd, (struct sockaddr *)&sin1, &slen);
 
-	child_pid = FORK_OR_VFORK();
-	if (child_pid < 0) {
-		tst_brkm(TBROK, cleanup, "client/server fork failed: %s",
-			 strerror(errno));
-		return -1;
-	}
-
-	if (!child_pid) {
-#ifdef UCLINUX
-		if (self_exec(argv0, "") < 0) {
-			tst_brkm(TBROK, cleanup, "self_exec failed");
-			return -1;
-
-		}
-#else
-		do_child();
-#endif
-	}
+	SAFE_PTHREAD_CREATE(&child_tid, NULL, do_child, NULL);
 
 	s = socket(PF_INET, SOCK_DGRAM, 0);
 	inet_aton("127.0.0.1", &sin1.sin_addr);
@@ -209,11 +207,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-
-#ifdef UCLINUX
-	argv0 = av[0];
-	maybe_run_child(&do_child, "");
-#endif
 
 	setup();
 
