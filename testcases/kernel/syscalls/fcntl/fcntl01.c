@@ -163,6 +163,9 @@ int main(int ac, char **av)
 					 "unlinking %s failed", fname);
 		}
 	}
+
+	tst_resm(TPASS, "fcntl functionality is correct");
+
 	cleanup();
 	tst_exit();
 }
