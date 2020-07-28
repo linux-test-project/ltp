@@ -114,12 +114,12 @@ static void setup(void)
 {
 	ltpuser = SAFE_GETPWNAM("nobody");
 
-	SAFE_SETGID(ltpuser->pw_gid);
-	SAFE_SETUID(ltpuser->pw_uid);
-
 	root = get_group_by_name("root");
 	ltpgroup = get_group_by_gid(ltpuser->pw_gid);
 	bin = get_group_by_name("bin");
+
+	SAFE_SETGID(ltpuser->pw_gid);
+	SAFE_SETUID(ltpuser->pw_uid);
 }
 
 static struct tst_test test = {
