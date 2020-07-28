@@ -26,6 +26,10 @@
  *   MNT_DETACH. (fails with the error EINVAL)"
  */
 
+/* Patch to use root file system for the test as loop device file
+ * system cannot be used as lkl Kernel Memory is set to 32M.
+ */
+
 #include <errno.h>
 #include <sys/mount.h>
 
@@ -44,8 +48,8 @@ static void verify_failure(int i);
 static void verify_success(int i);
 static void cleanup(void);
 
-static const char *device;
-static const char *fs_type;
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 static int mount_flag;
 
@@ -111,15 +115,7 @@ static void setup(void)
 	tst_sig(NOFORK, DEF_HANDLER, NULL);
 
 	tst_tmpdir();
-
-	fs_type = tst_dev_fs_type();
-	device = tst_acquire_device(cleanup);
-
-	if (!device)
-		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
-
-	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
-
+	rmdir(MNTPOINT);
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 
 	TEST_PAUSE;
