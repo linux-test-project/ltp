@@ -62,10 +62,10 @@ static struct test_case_t {
 	{TEST_FILE1, &buf, ENOTDIR},
 	{TEST_NOEXIST, &buf, ENOENT},
 	{test_toolong, &buf, ENAMETOOLONG},
-#ifndef UCLINUX
-	{(char *)-1, &buf, EFAULT},
-	{TEST_FILE, (struct statfs *)-1, EFAULT},
-#endif
+//#ifndef UCLINUX TODO: Enable once git issue 297 is fixed
+//     {(char *)-1, &buf, EFAULT},
+//     {TEST_FILE, (struct statfs *)-1, EFAULT},
+//#endif
 	{TEST_SYMLINK, &buf, ELOOP},
 };
 
@@ -106,8 +106,8 @@ static void setup(void)
 	memset(test_toolong, 'a', PATH_MAX+1);
 
 #if !defined(UCLINUX)
-	TC[3].path = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
-			       MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+//     TC[3].path = SAFE_MMAP(cleanup, 0, 1, PROT_NONE,
+//                            MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 #endif
 
 	SAFE_SYMLINK(cleanup, TEST_SYMLINK, "statfs_symlink_2");
