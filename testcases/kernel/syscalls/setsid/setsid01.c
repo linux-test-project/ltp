@@ -39,6 +39,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
+#include <pthread.h>
+#include <tst_safe_pthread.h>
 
 #define INVAL_FLAG	-1
 #define USER2		301
@@ -53,18 +55,14 @@ int TST_TOTAL = 1;
 static char *argv0;
 #endif
 
-void do_child_1(void);
-void do_child_2(void);
+static void* do_child_thread(void* arg);
+static void* do_master_thread(void* arg);
+
 void setup(void);
 void cleanup(void);
 
 int main(int ac, char **av)
 {
-	int pid;
-	int fail = 0;
-	int ret, status;
-	int exno = 0;
-
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -86,128 +84,67 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		/*
-		 * When the process group having forked of a child
-		 * and then it attached itself to another process
-		 * group and tries to setsid
+		 * Creates two threads and tries to do setsid()
 		 */
-		pid = FORK_OR_VFORK();
+		pthread_t master_tid;
 
-		if (pid == 0) {
-			if ((pid = FORK_OR_VFORK()) == -1) {
-				tst_resm(TFAIL, "Fork failed");
+		SAFE_PTHREAD_CREATE(&master_tid, NULL, do_master_thread, NULL);
 
-			}
-			if (pid == 0) {
-#ifdef UCLINUX
-				if (self_exec(argv0, "n", 1) < 0) {
-					tst_resm(TFAIL, "self_exec failed");
-
-				}
-#else
-				do_child_1();
-#endif
-			} else {
-				if (setpgid(0, 0) < 0) {
-					tst_resm(TFAIL,
-						 "setpgid(parent) failed: %s",
-						 strerror(errno));
-					fail = 1;
-				}
-
-				if ((ret = wait(&status)) > 0) {
-					if (status != 0) {
-						tst_resm(TFAIL,
-							 "Test {%d} exited "
-							 "status 0x%0x (wanted 0x0)",
-							 ret, status);
-						fail = 1;
-					}
-				}
-			}
-			exit(0);
-		} else {
-			if ((ret = wait(&status)) > 0) {
-				if (status != 0) {
-					tst_resm(TFAIL, "Test {%d} exited "
-						 "status 0x%0x (wanted 0x0)",
-						 ret, status);
-					fail = 1;
-				}
-			}
-		}
-
-		if (!(fail || exno)) {
-			tst_resm(TPASS, "all misc tests passed");
-		}
+		SAFE_PTHREAD_JOIN(master_tid, NULL);
 	}
 	cleanup();
 	tst_exit();
 
 }
 
-/*
- * do_child_1()
- */
-void do_child_1(void)
+static void* do_master_thread(void* arg)
 {
-	int exno = 0;
-	int retval, ret, status;
-	int pid;
-
-	sleep(1);
+	pthread_t child_tid;
 
 	if (setpgid(0, 0) < 0) {
-		tst_resm(TFAIL, "setpgid(0,0) failed: %s", strerror(errno));
-		exno = 1;
+		tst_resm(TFAIL, "master thread: setpgid(0,0) failed with error: %s", strerror(errno));
+		pthread_exit(NULL);
+	}
+	else
+	{
+		tst_resm(TINFO, "master thread: setpgid(0,0) success");
 	}
 
-	if ((pid = FORK_OR_VFORK()) == -1) {
-		tst_brkm(TFAIL, NULL, "Fork failed");
-	}
-	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv0, "n", 2) < 0) {
-			tst_brkm(TFAIL, NULL, "self_exec failed");
-		}
-#else
-		do_child_2();
-#endif
-	} else {
-		retval = setpgid(0, getppid());
-		if (retval < 0) {
-			tst_resm(TFAIL, "setpgid failed, errno :%d", errno);
-			exno = 2;
-		}
+	SAFE_PTHREAD_CREATE(&child_tid, NULL, do_child_thread, NULL);
 
-		retval = setsid();
+	SAFE_PTHREAD_JOIN(child_tid, NULL);
 
-		if (errno == EPERM) {
-			tst_resm(TPASS, "setsid SUCCESS to set "
-				 "errno to EPERM");
-		} else {
-			tst_resm(TFAIL, "setsid failed, expected %d,"
-				 "return %d", -1, errno);
-			exno = 3;
-		}
-		kill(pid, SIGKILL);
-		if ((ret = wait(&status)) > 0) {
-			if (status != 9) {
-				tst_resm(TFAIL,
-					 "Test {%d} exited status 0x%-x (wanted 0x9)",
-					 ret, status);
-				exno = 4;
-			}
-		}
-	}
-	exit(exno);
+	pthread_exit(NULL);
+
 }
 
-/*
- * do_child_2()
- */
-void do_child_2(void)
+
+static void* do_child_thread(void* arg)
 {
-	for (;;) ;
+	int retval;
+
+	/* Since thread is being used , need to replace getppid() with getpid() */
+	retval = setpgid(0, getpid());
+
+	if (retval < 0) {
+		tst_resm(TFAIL, "setpgid failed, errno :%d", errno);
+	}
+	else
+	{
+		tst_resm(TINFO, "setpgid for child thread success");
+	}
+
+	retval = setsid();
+
+	if (errno == EPERM) {
+		tst_resm(TPASS, "setsid SUCCESS to set "
+				"errno to EPERM");
+	} else {
+		tst_resm(TFAIL, "setsid failed, expected %d,"
+				"return %d", -1, errno);
+	}
+
+	pthread_exit(NULL);
 }
 
 /*
