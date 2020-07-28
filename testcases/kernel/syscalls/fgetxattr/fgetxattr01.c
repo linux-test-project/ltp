@@ -17,6 +17,10 @@
  *     - verify the attribute got by fgetxattr(2) is same as the value we set
  */
 
+/* Patch to use root file system for the test as loop device file
+ * system cannot be used as lkl Kernel Memory is set to 32M.
+ */
+
 #include "config.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,8 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef HAVE_SYS_XATTR_H
-# include <sys/xattr.h>
+#include <sys/xattr.h>
 #endif
+#include <sys/mount.h>
+
 #include "tst_test.h"
 
 #ifdef HAVE_SYS_XATTR_H
@@ -41,6 +47,7 @@
 #define XATTR_TEST_INVALID_KEY "user.nosuchkey"
 #define MNTPOINT "mntpoint"
 #define FNAME MNTPOINT"/fgetxattr01testfile"
+#define DIR_MODE (S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP)
 
 static int fd = -1;
 
@@ -109,6 +116,19 @@ static void verify_fgetxattr(unsigned int i)
 static void setup(void)
 {
 	size_t i = 0;
+        rmdir(MNTPOINT);
+        SAFE_MKDIR(MNTPOINT, DIR_MODE);
+        const char* src  = "/dev/vda";
+        const char* type = "ext4";
+        const unsigned long mntflags = 0;
+        const char* opts = "mode=0777";
+        int result = mount(src, MNTPOINT, type, mntflags, opts);
+
+        if (result != 0) {
+                TST_RET = result;
+                tst_res(TFAIL, "umount()- setup Failed");
+                return;
+        }
 
 	SAFE_TOUCH(FNAME, 0644, NULL);
 	fd = SAFE_OPEN(FNAME, O_RDONLY, NULL);
@@ -131,6 +151,9 @@ static void cleanup(void)
 
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+	remove(FNAME);
+	umount(MNTPOINT);
+	rmdir(MNTPOINT);
 }
 
 static struct tst_test test = {
@@ -138,9 +161,6 @@ static struct tst_test test = {
 	.test = verify_fgetxattr,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
-	.mntpoint = MNTPOINT,
-	.mount_device = 1,
-	.all_filesystems = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
