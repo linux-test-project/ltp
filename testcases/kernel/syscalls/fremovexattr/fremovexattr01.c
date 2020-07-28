@@ -70,10 +70,16 @@ static void cleanup(void)
 {
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+       remove(FNAME);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static void setup(void)
 {
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, NULL);
+
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0644);
 
 	TEST(fremovexattr(fd, XATTR_TEST_KEY));
@@ -86,9 +92,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_fremovexattr,
 	.cleanup = cleanup,
-	.mntpoint = MNTPOINT,
-	.mount_device = 1,
-	.all_filesystems = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
