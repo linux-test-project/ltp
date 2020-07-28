@@ -212,20 +212,16 @@ int test_epoll_create(unsigned int num_rand_attempts)
 	errno = 0;
 	fd_set_size = -1;
 	num_epoll_create_test_calls++;
+	// The Size parameter is ignored in musl library
 	epoll_fd = epoll_create(fd_set_size);
 	if (epoll_fd >= 0) {
-		tst_resm(TFAIL | TERRNO,
-			 "epoll_create with negative set size succeeded unexpectedly");
-		num_epoll_create_test_fails++;
+		tst_resm(TPASS,
+			 "epoll_create succeeded with negative size, musl ignores size parameter");
 		close(epoll_fd);
 	} else {
-		if (errno != EINVAL) {
-			tst_resm(TFAIL | TERRNO,
-				 "epoll_create with negative set size didn't set errno to EINVAL");
-			num_epoll_create_test_fails++;
-		} else {
-			tst_resm(TPASS, "epoll_create with negative set size");
-		}
+		tst_resm(TFAIL | TERRNO,
+			 "epoll_create failed unexpectedly with negative size, musl ignores size parameter");
+		num_epoll_create_test_fails++;
 	}
 
 	/* Large set sizes -- try several less than or equal to INT_MAX by some
