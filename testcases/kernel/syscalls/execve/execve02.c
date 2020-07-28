@@ -28,12 +28,12 @@
 
 #include "tst_test.h"
 
-#define TEST_APP "execve_child"
+#define TEST_APP "/ltp/testcases/kernel/syscalls/execve/execve_child"
 #define USER_NAME "nobody"
 
 static uid_t nobody_uid;
 
-static void do_child(void)
+static void verify_execve(void)
 {
 	char *argv[2] = {TEST_APP, NULL};
 
@@ -53,15 +53,6 @@ static void do_child(void)
 
 	tst_res(TPASS | TERRNO, "execve() failed expectedly");
 
-	exit(0);
-}
-
-static void verify_execve(void)
-{
-	pid_t pid = SAFE_FORK();
-
-	if (pid == 0)
-		do_child();
 }
 
 static void setup(void)
@@ -74,16 +65,10 @@ static void setup(void)
 	nobody_uid = pwd->pw_uid;
 }
 
-static const char *const resource_files[] = {
-	TEST_APP,
-	NULL,
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.setup = setup,
-	.resource_files = resource_files,
 	.test_all = verify_execve,
 };
