@@ -51,9 +51,11 @@
 #include <sys/un.h>
 
 #include <netinet/in.h>
+#include <pthread.h>
 
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_safe_pthread.h"
 
 char *TCID = "recv01";
 int testno;
@@ -63,7 +65,7 @@ int s;				/* socket descriptor */
 struct sockaddr_in sin1, sin2, sin3, sin4;
 static int sfd;			/* shared between do_child and start_server */
 
-void do_child(void), setup(void), setup0(void), setup1(void),
+void* do_child(void* prm), setup(void), setup0(void), setup1(void),
 cleanup(void), cleanup0(void), cleanup1(void);
 pid_t start_server(struct sockaddr_in *);
 
@@ -87,13 +89,14 @@ struct test_case_t {		/* test case structure */
 	0, 0, 0, buf, sizeof(buf), 0,
 		    -1, ENOTSOCK, setup0, cleanup0, "invalid socket"}
 	,
-#ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
-	{
-	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
-		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
-	,
-#endif
+// TODO: Enable back after issue 169 fixed
+//#ifndef UCLINUX
+//	    /* Skip since uClinux does not implement memory protection */
+//	{
+//	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
+//		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
+//	,
+//#endif
 	{
 	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), MSG_OOB,
 		    -1, EINVAL, setup1, cleanup1, "invalid MSG_OOB flag set"}
@@ -158,6 +161,7 @@ int main(int argc, char *argv[])
 }
 
 pid_t pid;
+pthread_t tid;
 
 void setup(void)
 {
@@ -170,8 +174,8 @@ void setup(void)
 
 void cleanup(void)
 {
-	(void)kill(pid, SIGKILL);
 
+	SAFE_PTHREAD_JOIN(tid, NULL);
 }
 
 void setup0(void)
@@ -247,9 +251,9 @@ pid_t start_server(struct sockaddr_in *sin0)
 			tst_brkm(TBROK | TERRNO, cleanup,
 				 "server self_exec failed");
 #else
-		do_child();
+		SAFE_PTHREAD_CREATE(&tid, NULL, do_child, NULL);
 #endif
-		break;
+		return pid;
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
 		/* fall through */
@@ -261,7 +265,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 	exit(1);
 }
 
-void do_child(void)
+void* do_child(void* prm)
 {
 	struct sockaddr_in fsin;
 	fd_set afds, rfds;
@@ -273,7 +277,7 @@ void do_child(void)
 	nfds = sfd + 1;
 
 	/* accept connections until killed */
-	while (1) {
+	while (testno < TST_TOTAL) {
 		socklen_t fromlen;
 
 		memcpy(&rfds, &afds, sizeof(rfds));
@@ -303,4 +307,5 @@ void do_child(void)
 				}
 			}
 	}
+	pthread_exit(0);
 }
