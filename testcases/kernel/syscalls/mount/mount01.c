@@ -19,7 +19,10 @@
  *	This is a Phase I test for the mount(2) system call.
  *	It is intended to provide a limited exposure of the system call.
  */
-
+/* Patch to use root file system as in SGX the default Kernel Memory is
+ * set to 32M.
+*/
+ 
 #include <errno.h>
 #include <sys/mount.h>
 #include <sys/types.h>
@@ -36,8 +39,8 @@ int TST_TOTAL = 1;
 #define DIR_MODE (S_IRWXU | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP)
 #define MNTPOINT "mntpoint"
 
-static const char *device;
-static const char *fs_type;
+static const char *device = "/dev/vda";
+static const char *fs_type = "ext4";
 
 int main(int ac, char **av)
 {
@@ -77,14 +80,14 @@ static void setup(void)
 
 	tst_tmpdir();
 
-	fs_type = tst_dev_fs_type();
+/*	fs_type = tst_dev_fs_type();
 	device = tst_acquire_device(cleanup);
 
 	if (!device)
 		tst_brkm(TCONF, cleanup, "Failed to obtain block device");
 
 	tst_mkfs(cleanup, device, fs_type, NULL, NULL);
-
+*/
 	SAFE_MKDIR(cleanup, MNTPOINT, DIR_MODE);
 
 	TEST_PAUSE;
@@ -92,8 +95,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (device)
+/*	if (device)
 		tst_release_device(device);
-
+*/
 	tst_rmdir();
 }
