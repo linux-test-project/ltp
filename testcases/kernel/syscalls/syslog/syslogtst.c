@@ -297,7 +297,10 @@ int main(int argc, char *argv[])
 	if (exit_flag == 1)
 		exit(1);
 	else
+	{
+		tst_resm(TPASS, "syslogt passed all test cases");	
 		exit(0);
+	}
 
 }
 
