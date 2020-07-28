@@ -12,10 +12,13 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "tst_test.h"
+#include "tst_safe_pthread.h"
 
 static int socket_fd, accepted;
 static struct sockaddr_un sun;
+pthread_t tid;
 
 #define SOCKNAME	"testsocket"
 
@@ -28,25 +31,25 @@ static void setup(void)
 	SAFE_LISTEN(socket_fd, SOMAXCONN);
 }
 
-static void fork_func(void)
+static void* thread_func(void* parm LTP_ATTRIBUTE_UNUSED)
 {
-	int fork_socket_fd = SAFE_SOCKET(sun.sun_family, SOCK_STREAM, 0);
+	int thread_socket_fd = SAFE_SOCKET(sun.sun_family, SOCK_STREAM, 0);
 
-	SAFE_CONNECT(fork_socket_fd, (struct sockaddr *)&sun, sizeof(sun));
+	SAFE_CONNECT(thread_socket_fd, (struct sockaddr *)&sun, sizeof(sun));
 	TST_CHECKPOINT_WAIT(0);
-	SAFE_CLOSE(fork_socket_fd);
-	exit(0);
+	SAFE_CLOSE(thread_socket_fd);
+	pthread_exit(0);
 }
 
 static void test_function(void)
 {
-	pid_t fork_id;
+	pid_t pid;
 	struct ucred cred;
 	socklen_t cred_len = sizeof(cred);
 
-	fork_id = SAFE_FORK();
-	if (!fork_id)
-		fork_func();
+	pid = getpid();
+
+	SAFE_PTHREAD_CREATE(&tid, NULL, thread_func, NULL);
 
 	accepted = accept(socket_fd, NULL, NULL);
 	if (accepted < 0) {
@@ -59,7 +62,7 @@ static void test_function(void)
 		goto clean;
 	}
 
-	if (fork_id != cred.pid)
+	if (pid != cred.pid)
 		tst_res(TFAIL, "Received wrong PID %d, expected %d",
 				cred.pid, getpid());
 	else
@@ -76,12 +79,12 @@ static void cleanup(void)
 		SAFE_CLOSE(accepted);
 	if (socket_fd >= 0)
 		SAFE_CLOSE(socket_fd);
+	SAFE_PTHREAD_JOIN(tid, NULL);
 }
 
 static struct tst_test test = {
 	.test_all = test_function,
 	.setup = setup,
 	.cleanup = cleanup,
-	.forks_child = 1,
 	.needs_checkpoints = 1,
 };
