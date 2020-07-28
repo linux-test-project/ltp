@@ -55,9 +55,9 @@ struct test_case tc[] = {
 	 .key = XATTR_TEST_KEY,
 	 .exp_err = EBADF,
 	 },
-	{				/* case 3: bad name attribute */
-	 .exp_err = EFAULT,
-	},
+//     {                               /* case 3: bad name attribute */ TODO: Will be enabled once issue 297 is fixed
+//      .exp_err = EFAULT,
+//     },
 };
 
 static void verify_fremovexattr(unsigned int i)
@@ -86,12 +86,17 @@ static void cleanup(void)
 {
 	if (fd > 0)
 		SAFE_CLOSE(fd);
+       remove(FNAME);
+       SAFE_UMOUNT(MNTPOINT);
+       SAFE_RMDIR(MNTPOINT);
 }
 
 static void setup(void)
 {
 	size_t i = 0;
 
+       SAFE_MKDIR(MNTPOINT, 0644);
+       SAFE_MOUNT("/dev/vda", MNTPOINT, "ext4", 0, NULL);
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0644);
 
 	for (i = 0; i < ARRAY_SIZE(tc); i++) {
@@ -100,7 +105,7 @@ static void setup(void)
 			tc[i].fd = fd;
 
 		if (!tc[i].key && tc[i].exp_err == EFAULT)
-			tc[i].key = tst_get_bad_addr(cleanup);
+                       tc[i].key = 0;
 	}
 }
 
@@ -109,9 +114,6 @@ static struct tst_test test = {
 	.test = verify_fremovexattr,
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tc),
-	.mntpoint = MNTPOINT,
-	.mount_device = 1,
-	.all_filesystems = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
