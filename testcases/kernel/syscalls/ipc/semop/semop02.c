@@ -1,163 +1,143 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * E2BIG   - nsops is greater than max number of operations allowed per syscall
+ * EACCESS - calling process does not have permission to alter semaphore
+ * EFAULT  - invalid address passed for sops
+ * EINVAL  - nonpositive nsops
+ * EINVAL  - negative semid
+ * ERANGE  - semop + semval > semvmx a maximal semaphore value
+ * EFBIG   - sem_num less than zero
+ * EFBIG   - sem_num > number of semaphores in a set
+ * EAGAIN  - semop = 0 for non-zero semaphore and IPC_NOWAIT passed in flags
+ * EAGAIN  - semop = -1 for zero semaphore and IPC_NOWAIT passed in flags
  *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-/*
- * DESCRIPTION
- *	semop02 - test for E2BIG, EACCES, EFAULT, EINVAL and ERANGE errors
- *
- * HISTORY
+ * Copyright (c) International Business Machines  Corp., 2001
  *	03/2001 - Written by Wayne Boyer
- *
- *      10/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
- *      - Fix concurrency issue. The second key used for this test could
- *        conflict with the key from another task.
+ *	10/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  */
 
 #define _GNU_SOURCE
 #include <pwd.h>
-#include "test.h"
-#include "safe_macros.h"
-#include "ipcsem.h"
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include "tst_test.h"
+#include "libnewipc.h"
+#include "lapi/semun.h"
 
-char *TCID = "semop02";
+static int valid_sem_id = -1;
+static int noperm_sem_id = -1;
+static int bad_sem_id = -1;
+static short sem_op_max, sem_op_1 = 1, sem_op_negative = -1, sem_op_zero = 0;
+static struct sembuf *faulty_buf;
 
-static void semop_verify(int i);
-int sem_id_1 = -1;	/* a semaphore set with read & alter permissions */
-int sem_id_2 = -1;	/* a semaphore set without read & alter permissions */
-int bad_id = -1;
+#define NSOPS	1
+#define	BIGOPS	1024
 
-struct sembuf s_buf[PSEMS];
-
-int badbuf = -1;
-
-#define NSOPS	5		/* a resonable number of operations */
-#define	BIGOPS	1024		/* a value that is too large for the number */
-				/* of semop operations that are permitted   */
-struct test_case_t {
+static struct test_case_t {
 	int *semid;
-	struct sembuf *t_sbuf;
+	struct sembuf **buf;
+	short *sem_op;
+	unsigned short ctl_sem_num;
+	unsigned short sem_num;
+	short sem_flg;
 	unsigned t_ops;
+	int arr_val;
 	int error;
-} TC[] = {
-	{&sem_id_1, (struct sembuf *)&s_buf, BIGOPS, E2BIG},
-	{&sem_id_2, (struct sembuf *)&s_buf, NSOPS, EACCES},
-	{&sem_id_1, (struct sembuf *)-1, NSOPS, EFAULT},
-	{&sem_id_1, (struct sembuf *)&s_buf, 0, EINVAL},
-	{&bad_id, (struct sembuf *)&s_buf, NSOPS, EINVAL},
-	{&sem_id_1, (struct sembuf *)&s_buf, 1, ERANGE}
+} tc[] = {
+	{&valid_sem_id, NULL, &sem_op_1, 0, 0, 0, BIGOPS, 1, E2BIG},
+	{&noperm_sem_id, NULL, &sem_op_1, 0, 0, 0, NSOPS, 1, EACCES},
+	{&valid_sem_id, &faulty_buf, &sem_op_1, 0, 0, 0, NSOPS, 1, EFAULT},
+	{&valid_sem_id, NULL, &sem_op_1, 0, 0, 0, 0, 1, EINVAL},
+	{&bad_sem_id,   NULL, &sem_op_1, 0, 0, 0, NSOPS, 1, EINVAL},
+	{&valid_sem_id, NULL, &sem_op_max, 0, 0, 0, 1, 1, ERANGE},
+	{&valid_sem_id, NULL, &sem_op_1, 0, -1, SEM_UNDO, 1, 1, EFBIG},
+	{&valid_sem_id, NULL, &sem_op_1, 0, PSEMS + 1, SEM_UNDO, 1, 1, EFBIG},
+	{&valid_sem_id, NULL, &sem_op_zero, 2, 2, IPC_NOWAIT, 1, 1, EAGAIN},
+	{&valid_sem_id, NULL, &sem_op_negative, 2, 2, IPC_NOWAIT, 1, 0, EAGAIN}
 };
 
-int TST_TOTAL = ARRAY_SIZE(TC);
-
-int main(int ac, char **av)
+static void setup(void)
 {
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++)
-			semop_verify(i);
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-void setup(void)
-{
-	char nobody_uid[] = "nobody";
 	struct passwd *ltpuser;
-	key_t semkey2;
-	struct seminfo ipc_buf;
+	key_t semkey;
 	union semun arr;
+	struct seminfo ipc_buf;
 
-	tst_require_root();
+	ltpuser = SAFE_GETPWNAM("nobody");
+	SAFE_SETUID(ltpuser->pw_uid);
 
-	ltpuser = SAFE_GETPWNAM(NULL, nobody_uid);
-	SAFE_SETUID(NULL, ltpuser->pw_uid);
+	semkey = GETIPCKEY();
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	valid_sem_id = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
+	if (valid_sem_id == -1)
+		tst_brk(TBROK | TERRNO, "couldn't create semaphore in setup");
 
-	TEST_PAUSE;
+	semkey = GETIPCKEY();
 
-	tst_tmpdir();
-
-	/* get an IPC resource key */
-	semkey = getipckey();
-
-	/* create a semaphore set with read and alter permissions */
-	sem_id_1 = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
-	if (sem_id_1 == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "couldn't create semaphore in setup");
-	}
-
-	/* Get an new IPC resource key. */
-	semkey2 = getipckey();
-
-	/* create a semaphore set without read and alter permissions */
-	sem_id_2 = semget(semkey2, PSEMS, IPC_CREAT | IPC_EXCL);
-	if (sem_id_2 == -1) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "couldn't create semaphore in setup");
-	}
+	noperm_sem_id = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL);
+	if (noperm_sem_id == -1)
+		tst_brk(TBROK | TERRNO, "couldn't create semaphore in setup");
 
 	arr.__buf = &ipc_buf;
-	if (semctl(sem_id_1, 0, IPC_INFO, arr) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "semctl() IPC_INFO failed");
+	if (semctl(valid_sem_id, 0, IPC_INFO, arr) == -1)
+		tst_brk(TBROK | TERRNO, "semctl() IPC_INFO failed");
 
-	/* for ERANGE errno test */
-	arr.val = 1;
-	s_buf[0].sem_op = ipc_buf.semvmx;
-	if (semctl(sem_id_1, 0, SETVAL, arr) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "semctl() SETVAL failed");
+	sem_op_max = ipc_buf.semvmx;
+	faulty_buf = tst_get_bad_addr(NULL);
 }
 
-static void semop_verify(int i)
+static void run(unsigned int i)
 {
-	TEST(semop(*(TC[i].semid), TC[i].t_sbuf, TC[i].t_ops));
+	union semun arr = {.val = tc[i].arr_val};
+	struct sembuf buf = {
+		.sem_op = *tc[i].sem_op,
+		.sem_flg = tc[i].sem_flg,
+		.sem_num = tc[i].sem_num,
+	};
+	struct sembuf *ptr = &buf;
 
-	if (TEST_RETURN != -1) {
-		tst_resm(TFAIL, "call succeeded unexpectedly");
+	if (*tc[i].semid == valid_sem_id) {
+		if (semctl(valid_sem_id, tc[i].ctl_sem_num, SETVAL, arr) == -1)
+			tst_brk(TBROK | TERRNO, "semctl() SETVAL failed");
+	}
+
+	if (tc[i].buf)
+		ptr = *tc[i].buf;
+
+	TEST(semop(*(tc[i].semid), ptr, tc[i].t_ops));
+
+	if (TST_RET != -1) {
+		tst_res(TFAIL | TTERRNO, "call succeeded unexpectedly");
 		return;
 	}
 
-	if (TEST_ERRNO == TC[i].error) {
-		tst_resm(TPASS | TTERRNO, "semop failed as expected");
+	if (TST_ERR == tc[i].error) {
+		tst_res(TPASS | TTERRNO, "semop failed as expected");
 	} else {
-		tst_resm(TFAIL | TTERRNO,
-			 "semop failed unexpectedly; expected: "
-			 "%d - %s", TC[i].error, strerror(TC[i].error));
+		tst_res(TFAIL | TTERRNO,
+		        "semop failed unexpectedly; expected: %s",
+		        tst_strerrno(tc[i].error));
 	}
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-	/* if they exist, remove the semaphore resources */
-	rm_sema(sem_id_1);
-	rm_sema(sem_id_2);
+	if (valid_sem_id != -1) {
+		if (semctl(valid_sem_id, 0, IPC_RMID) == -1)
+			tst_res(TWARN, "semaphore deletion failed.");
+	}
 
-	tst_rmdir();
+	if (noperm_sem_id != -1) {
+		if (semctl(noperm_sem_id, 0, IPC_RMID) == -1)
+			tst_res(TWARN, "semaphore deletion failed.");
+	}
 }
+
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(tc),
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+};

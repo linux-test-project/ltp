@@ -1,158 +1,126 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * semop05 - test for EINTR and EIDRM errors
  *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-/*
- * NAME
- *	semop03.c
- *
- * DESCRIPTION
- *	semop03 - test for EFBIG error
- *
- * ALGORITHM
- *	create a semaphore set with read and alter permissions
- *	loop if that option was specified
- *	call semop() using two different invalid cases
- *	check the errno value
- *	  issue a PASS message if we get EFBIG
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  semop03 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
+ * Copyright (c) International Business Machines  Corp., 2001
  *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ *	14/03/2008 Matthieu Fertré (Matthieu.Fertre@irisa.fr)
  */
 
-#include "ipcsem.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/sem.h>
+#include "tst_test.h"
+#include "libnewipc.h"
+#include "lapi/semun.h"
 
-char *TCID = "semop03";
-int TST_TOTAL = 2;
+static key_t semkey;
+static int sem_id = -1;
 
-int sem_id_1 = -1;
+struct test_case_t {
+	union semun semunptr;
+	short op;
+	short flg;
+	short num;
+	int error;
+} tc[] = {
+	{{1}, 0, 0, 2, EIDRM},
+	{{0}, -1, 0, 3, EIDRM},
+	{{1}, 0, 0, 4, EINTR},
+	{{0}, -1, 0, 5, EINTR}
+};
 
-struct sembuf s_buf;
-
-int TC[] = { -1, PSEMS + 1 };	/* negative and too many "primitive" semas */
-
-int main(int ac, char **av)
+static void do_child(int i)
 {
-	int lc;
-	int i;
+	struct sembuf s_buf = {
+		.sem_op = tc[i].op,
+		.sem_flg = tc[i].flg,
+		.sem_num = tc[i].num,
+	};
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	TEST(semop(sem_id, &s_buf, 1));
+	if (TST_RET != -1) {
+		tst_res(TFAIL, "call succeeded when error expected");
+		exit(0);
+	}
 
-	setup();		/* global setup */
+	if (TST_ERR == tc[i].error)
+		tst_res(TPASS | TTERRNO, "expected failure");
+	else
+		tst_res(TFAIL | TTERRNO, "unexpected failure");
 
-	/* initialize two fields in the sembuf structure here */
-	s_buf.sem_op = 1;	/* add this value to struct sem.semval */
-	s_buf.sem_flg = SEM_UNDO;	/* undo when process exits */
+	exit(0);
+}
 
-	/* The following loop checks looping state if -i option given */
+static void sighandler(int sig)
+{
+	if (sig != SIGHUP)
+		tst_brk(TBROK, "unexpected signal %d received", sig);
+}
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
+static void setup(void)
+{
+	SAFE_SIGNAL(SIGHUP, sighandler);
+	semkey = GETIPCKEY();
 
-		for (i = 0; i < TST_TOTAL; i++) {
+	sem_id = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
+	if (sem_id == -1)
+		tst_brk(TBROK | TERRNO, "couldn't create semaphore in setup");
+}
 
-			/* initialize the last field in the sembuf */
-			/* structure to the test dependent value   */
-			s_buf.sem_num = TC[i];
+static void cleanup(void)
+{
+	if (sem_id != -1) {
+		if (semctl(sem_id, 0, IPC_RMID) == -1)
+			tst_res(TWARN, "semaphore deletion failed.");
+	}
+}
 
-			/*
-			 * use the TEST macro to make the call
-			 */
+static void run(unsigned int i)
+{
+	pid_t pid;
 
-			TEST(semop(sem_id_1, &s_buf, 1));
+	if (semctl(sem_id, tc[i].num, SETVAL, tc[i].semunptr) == -1)
+		tst_brk(TBROK | TERRNO, "semctl() failed");
 
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-				continue;
-			}
+	pid = SAFE_FORK();
 
-			switch (TEST_ERRNO) {
-			case EFBIG:
-				tst_resm(TPASS, "expected failure - errno = "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-				break;
-			default:
-				tst_resm(TFAIL, "unexpected error - "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-				break;
-			}
+	if (pid == 0) {
+		do_child(i);
+	} else {
+		TST_PROCESS_STATE_WAIT(pid, 'S', 0);
+
+		/*
+		 * If we are testing for EIDRM then remove
+		 * the semaphore, else send a signal that
+		 * must be caught as we are testing for
+		 * EINTR.
+		 */
+		if (tc[i].error == EIDRM) {
+			/* remove the semaphore resource */
+			cleanup();
+		} else {
+			SAFE_KILL(pid, SIGHUP);
 		}
+
+		waitpid(pid, NULL, 0);
 	}
 
-	cleanup();
+	if (tc[i].error == EINTR)
+		return;
 
-	tst_exit();
+	sem_id = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
+	if (sem_id == -1)
+		tst_brk(TBROK | TERRNO, "couldn't recreate semaphore");
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See libs/libltpipc/libipc.c for more information.
-	 */
-	tst_tmpdir();
-
-	/* get an IPC resource key */
-	semkey = getipckey();
-
-	/* create a semaphore with read and alter permissions */
-	if ((sem_id_1 =
-	     semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA)) == -1) {
-		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
-	}
-}
-
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-	/* if it exists, remove the semaphore resource */
-	rm_sema(sem_id_1);
-
-	tst_rmdir();
-
-}
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(tc),
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+	.forks_child = 1,
+};
