@@ -156,11 +156,11 @@ void test_masked_matching(swi_func sigwaitinfo, int signo,
 			    && si.si_code == SI_USER
 			    && si.si_signo == signo, "Struct siginfo mismatch");
 
-	TEST(sigprocmask(SIG_SETMASK, &oldmask, &oldmask));
+	TEST(sigprocmask(SIG_SETMASK, &oldmask, &sigs));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "restoring original signal mask failed");
 
-	if (sigismember(&oldmask, signo))
+	if (sigismember(&sigs, signo))
 		tst_res(TPASS, "sigwaitinfo restored the original mask");
 	else
 		tst_res(TFAIL,
@@ -214,11 +214,11 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
 			    && si.si_signo == signo + 1,
 			    "Struct siginfo mismatch");
 
-	TEST(sigprocmask(SIG_SETMASK, &oldmask, &oldmask));
+	TEST(sigprocmask(SIG_SETMASK, &oldmask, &sigs));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "restoring original signal mask failed");
 
-	if (sigismember(&oldmask, signo))
+	if (sigismember(&sigs, signo))
 		tst_res(TPASS, "sigwaitinfo restored the original mask");
 	else
 		tst_res(TFAIL,
@@ -250,11 +250,11 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
 	TEST(sigwaitinfo(&sigs, NULL, NULL));
 	REPORT_SUCCESS(signo, 0);
 
-	TEST(sigprocmask(SIG_SETMASK, &oldmask, &oldmask));
+	TEST(sigprocmask(SIG_SETMASK, &oldmask, &sigs));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "restoring original signal mask failed");
 
-	if (sigismember(&oldmask, signo))
+	if (sigismember(&sigs, signo))
 		tst_res(TPASS, "sigwaitinfo restored the original mask");
 	else
 		tst_res(TFAIL,
@@ -289,9 +289,9 @@ void test_bad_address(swi_func sigwaitinfo, int signo,
 	TEST(sigwaitinfo(&sigs, (void *)1, NULL));
 	REPORT_SUCCESS(-1, EFAULT);
 
-	TEST(sigprocmask(SIG_SETMASK, &oldmask, &oldmask));
+	TEST(sigprocmask(SIG_SETMASK, &oldmask, NULL));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigprocmask() failed");
+		tst_brk(TBROK | TTERRNO, "restoring original signal mask failed");
 
 	SAFE_KILL(child, SIGTERM);
 	SAFE_WAIT(NULL);
