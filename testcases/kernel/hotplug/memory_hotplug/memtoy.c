@@ -447,7 +447,6 @@ int parse_command_line_args(int argc, char *argv[])
 			break;
 		}
 	}
-done:
 
 	return (error);
 }
