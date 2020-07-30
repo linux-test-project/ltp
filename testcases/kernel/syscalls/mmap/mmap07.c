@@ -27,10 +27,11 @@
  *  The call should fail to map the file.
  *
  * Expected Result:
- *  mmap() should fail returning -1 and errno should get set to EACCES.
+ *  mmap() should fail returning -1 and errno should get set to EBADF.
  *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ *	07/2020 Modifed for sgx-lkl to check for EBADF rather than EACCES
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,8 +91,8 @@ int main(int ac, char **av)
 			}
 			continue;
 		}
-		if (TEST_ERRNO == EACCES) {
-			tst_resm(TPASS, "mmap failed with EACCES");
+		if (TEST_ERRNO == EBADF) {
+			tst_resm(TPASS, "mmap failed with EBADF");
 		} else {
 			tst_resm(TFAIL | TERRNO,
 				 "mmap failed with unexpected errno");
