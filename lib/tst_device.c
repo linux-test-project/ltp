@@ -497,16 +497,31 @@ unsigned long tst_dev_bytes_written(const char *dev)
 
 void tst_find_backing_dev(const char *path, char *dev)
 {
-	char fmt[1024];
+	char fmt[20];
 	struct stat buf;
+	FILE *file;
+	char line[PATH_MAX];
+	char *pre = NULL;
+	char *next = NULL;
 
 	if (stat(path, &buf) < 0)
-		 tst_brkm(TWARN | TERRNO, NULL, "stat() failed");
+		tst_brkm(TWARN | TERRNO, NULL, "stat() failed");
 
-	snprintf(fmt, sizeof(fmt), "%%*i %%*i %u:%u %%*s %%*s %%*s %%*s %%*s %%*s %%s %%*s",
-			major(buf.st_dev), minor(buf.st_dev));
+	snprintf(fmt, sizeof(fmt), "%u:%u", major(buf.st_dev), minor(buf.st_dev));
+	file = SAFE_FOPEN(NULL, "/proc/self/mountinfo", "r");
 
-	SAFE_FILE_LINES_SCANF(NULL, "/proc/self/mountinfo", fmt, dev);
+	while (fgets(line, sizeof(line), file)) {
+		if (strstr(line, fmt) != NULL) {
+			pre = strstr(line, " - ");
+			pre = strtok_r(pre, " ", &next);
+			pre = strtok_r(NULL, " ", &next);
+			pre = strtok_r(NULL, " ", &next);
+			strcpy(dev, pre);
+			break;
+		}
+	}
+
+	SAFE_FCLOSE(NULL, file);
 
 	if (stat(dev, &buf) < 0)
 		 tst_brkm(TWARN | TERRNO, NULL, "stat(%s) failed", dev);
