@@ -36,8 +36,6 @@ static futex_t *futex1, *futex2;
 
 static struct tst_ts to;
 
-static long orig_hugepages;
-
 static struct test_variants {
 	enum futex_fn_type fntype;
 	enum tst_ts_type tstype;
@@ -54,26 +52,15 @@ static struct test_variants {
 
 static void setup(void)
 {
+	if (tst_hugepages == 0)
+		tst_brk(TCONF, "No enough hugepages for testing.");
+
 	struct test_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	futex_supported_by_kernel(tv->fntype);
 
 	to = tst_ts_from_ns(tv->tstype, 30 * NSEC_PER_SEC);
-
-	if (access(PATH_HUGEPAGES, F_OK))
-		tst_brk(TCONF, "Huge page is not supported.");
-
-	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%ld", &orig_hugepages);
-
-	if (orig_hugepages <= 0)
-		SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%d", 1);
-}
-
-static void cleanup(void)
-{
-	if (orig_hugepages <= 0)
-		SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%ld", orig_hugepages);
 }
 
 static void *wait_thread1(void *arg LTP_ATTRIBUTE_UNUSED)
@@ -147,10 +134,10 @@ static void wakeup_thread2(void)
 
 static struct tst_test test = {
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = wakeup_thread2,
 	.test_variants = ARRAY_SIZE(variants),
 	.needs_root = 1,
 	.min_kver = "2.6.32",
 	.needs_tmpdir = 1,
+	.request_hugepages = 1,
 };
