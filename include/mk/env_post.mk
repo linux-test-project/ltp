@@ -107,4 +107,6 @@ $(error You must define $$(prefix) before executing install)
 endif # END $(filter-out install,$(MAKECMDGOALS)),$(MAKECMDGOALS)
 endif
 
+include $(top_srcdir)/include/mk/rules.mk
+
 endif

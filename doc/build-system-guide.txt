@@ -158,6 +158,8 @@ $(LDFLAGS)		: What to pass in to the linker, including -L arguments
 
 $(LDLIBS)		: Libraries to pass to the linker (e.g. -lltp, etc).
 
+$(LTPLDLIBS)            : LTP internal libraries i.e. these in libs/ directory.
+
 $(OPT_CFLAGS)		: Optimization flags to pass into the C compiler, -O2,
 			  etc. If you specify -O2 or higher, you should also
 			  specify -fno-strict-aliasing, because of gcc

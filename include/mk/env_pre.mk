@@ -79,7 +79,9 @@ builddir			:= .
 
 abs_builddir			:= $(CURDIR)
 
-cwd_rel_from_top		:= $(subst $(abs_top_builddir),,$(abs_builddir))
+cwd_rel1			:= $(subst $(abs_top_builddir),,$(abs_builddir))
+cwd_rel2			:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
+cwd_rel_from_top		:= $(if $(cwd_rel1),$(cwd_rel2),$(cwd_rel1))
 
 # Where's the source located at? Squish all of the / away by using abspath...
 ifdef MAKE_3_80_COMPAT
