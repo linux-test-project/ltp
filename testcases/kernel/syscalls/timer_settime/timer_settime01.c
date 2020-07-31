@@ -19,6 +19,7 @@
  *
  * This is also regression test for commit:
  * f18ddc13af98 ("alarmtimer: Use EOPNOTSUPP instead of ENOTSUPP")
+ * d78c9300c51d ("alarmtimer: Return relative times in timer_gettime")
  */
 
 #include <stdlib.h>
@@ -187,6 +188,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "f18ddc13af98"},
+		{"linux-git", "d78c9300c51d"},
 		{}
 	}
 };
