@@ -7,6 +7,6 @@ LTPLIBS = ltpsigwait
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS  := -lltpsigwait $(LDLIBS)
+LTPLDLIBS  = -lltpsigwait
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

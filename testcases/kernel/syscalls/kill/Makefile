@@ -7,7 +7,7 @@ LTPLIBS = ltpipc
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-kill07: LDLIBS  += -lltpipc
-kill05: LDLIBS  += -lltpipc
+kill07: LTPLDLIBS  = -lltpipc
+kill05: LTPLDLIBS  = -lltpipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
