@@ -75,9 +75,16 @@ trunk-install: $(INSTALL_FILES)
 all: trunk-all
 
 clean:: trunk-clean
+ifdef VERBOSE
 	@set -e; for dir in $(SUBDIRS); do \
 	    $(MAKE) -C "$$dir" -f "$(abs_srcdir)/$$dir/Makefile" $@; \
 	done
+else
+	@set -e; for dir in $(SUBDIRS); do \
+	    echo "DIR $$dir"; \
+	    $(MAKE) --no-print-directory -C "$$dir" -f "$(abs_srcdir)/$$dir/Makefile" $@; \
+	done
+endif
 ifneq ($(abs_builddir),$(abs_srcdir))
 	$(RM) -Rf $(SUBDIRS)
 endif
@@ -90,9 +97,15 @@ ifeq ($(strip $(SUBDIRS)),)
 	$(error SUBDIRS empty -- did you want generic_leaf_target instead?)
 else
 $(RECURSIVE_TARGETS): %: | $(SUBDIRS)
+ifdef VERBOSE
 	@set -e; for dir in $(SUBDIRS); do \
 	    $(MAKE) -C $$dir -f "$(abs_srcdir)/$$dir/Makefile" $@; \
 	done
+else
+	@set -e; for dir in $(SUBDIRS); do \
+	    $(MAKE) --no-print-directory -C $$dir -f "$(abs_srcdir)/$$dir/Makefile" $@; \
+	done
+endif
 endif
 
 # vim: syntax=make

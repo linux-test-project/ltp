@@ -63,11 +63,18 @@ LIBSRCS		:= $(filter-out $(FILTER_OUT_LIBSRCS),$(LIBSRCS))
 LIBOBJS		:= $(LIBSRCS:.c=.o)
 
 $(LIB): $(notdir $(LIBOBJS))
-	if [ -z "$(strip $^)" ] ; then \
+	@if [ -z "$(strip $^)" ] ; then \
 		echo "Cowardly refusing to create empty archive"; \
 		exit 1; \
 	fi
+ifdef VERBOSE
 	$(if $(AR),$(AR),ar) -rc "$@" $^
 	$(if $(RANLIB),$(RANLIB),ranlib) "$@"
+else
+	@echo "AR $@"
+	@$(if $(AR),$(AR),ar) -rc "$@" $^
+	@echo "RANLIB $@"
+	@$(if $(RANLIB),$(RANLIB),ranlib) "$@"
+endif
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
