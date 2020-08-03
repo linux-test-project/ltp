@@ -16,11 +16,15 @@ space, may contain equivalent measurement tcb rules, detecting them would
 require `IMA_READ_POLICY=y` therefore ignore this option.
 
 ### IMA key test
-`ima_keys.sh` requires a readable IMA policy, as well as a loaded policy
-with `func=KEY_CHECK keyrings=...`, see example in `keycheck.policy`.
+The measuring keys test (first test) in `ima_keys.sh` requires a readable IMA
+policy, as well as a loaded measure policy with `func=KEY_CHECK keyrings=...`.
 
-As well as what's required for the IMA tests, the following are also required
--in the kernel configuration:
+The certificate import test (second test) require measure policy with
+`func=KEY_CHECK keyrings=key_import_test`. Valid policy for both is in
+`keycheck.policy`.
+
+As well as what's required for the IMA tests, key tests require reading the IMA
+policy allowed in the kernel configuration:
 ```
 CONFIG_IMA_READ_POLICY=y
 ```
