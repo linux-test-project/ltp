@@ -15,26 +15,15 @@ Although a custom policy, loaded via dracut, systemd or manually from user
 space, may contain equivalent measurement tcb rules, detecting them would
 require `IMA_READ_POLICY=y` therefore ignore this option.
 
-### IMA key import test
-`ima_keys.sh` requires a x509 public key, by default in `/etc/keys/x509_ima.der`
-(defined in `CONFIG_IMA_X509_PATH` kernel config option).
-The key must be signed by the private key you generate. Follow these instructions:
-https://manpages.ubuntu.com/manpages/disco/man1/evmctl.1.html#generate%20trusted%20keys
-
-The test cannot be set-up automatically because the x509 public key must be
-built into the kernel and loaded onto a trusted keyring
-(e.g. `.builtin_trusted_keys`, `.secondary_trusted_keyring`).
+### IMA key test
+`ima_keys.sh` requires a readable IMA policy, as well as a loaded policy
+with `func=KEY_CHECK keyrings=...`, see example in `keycheck.policy`.
 
 As well as what's required for the IMA tests, the following are also required
-in the kernel configuration:
+-in the kernel configuration:
 ```
 CONFIG_IMA_READ_POLICY=y
-CONFIG_IMA_X509_PATH="/etc/keys/x509_ima.der"
-CONFIG_SYSTEM_TRUSTED_KEYRING=y
-CONFIG_SYSTEM_TRUSTED_KEYS="/etc/keys/ima-local-ca.pem"
 ```
-
-Test also requires loaded policy with `func=KEY_CHECK`, see example in `keycheck.policy`.
 
 ### IMA kexec test
 
@@ -50,7 +39,7 @@ To kexec a different kernel image export `IMA_KEXEC_IMAGE=<pathname>`.
 kernel parameter) which appraises the integrity of all files owned by root and EVM setup.
 Again, for simplicity ignore possibility to load requires rules via custom policy.
 
-Mandatory kernel configuration for IMA & EVM:
+Mandatory kernel configuration for EVM tests:
 ```
 CONFIG_INTEGRITY=y
 CONFIG_INTEGRITY_SIGNATURE=y
@@ -62,7 +51,7 @@ CONFIG_TRUSTED_KEYS=y
 CONFIG_ENCRYPTED_KEYS=y
 ```
 
-Example of installing IMA + EVM on openSUSE:
+Example of preparing environment on for EVM on openSUSE:
 
 * Boot install system with `ima_policy=tcb|appraise_tcb ima_appraise=fix evm=fix` kernel parameters
   (for IMA measurement, IMA appraisal and EVM protection)
