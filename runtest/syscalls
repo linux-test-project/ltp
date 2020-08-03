@@ -879,6 +879,7 @@ open_tree02 open_tree02
 mincore01 mincore01
 mincore02 mincore02
 mincore03 mincore03
+mincore04 mincore04
 
 madvise01 madvise01
 madvise02 madvise02
