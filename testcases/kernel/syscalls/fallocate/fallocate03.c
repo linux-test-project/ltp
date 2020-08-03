@@ -81,6 +81,17 @@
  *		Cleanup the temporary folder
  *
 *************************************************************************/
+/*
+ * Patch Description:
+    Test Failure reason in SGX-LKL:
+    [[ SGX-LKL ]] libc_start_main_stage2(): Calling app main: /ltp/testcases/kernel/syscalls/fallocate/fallocate03
+    fallocate01 1 TCONF : fallocate03.c:251: fallocate system call is not implemented
+    Test is happening on temporary file created under /tmp, on which fallocate system call is failing.
+
+    Workaround to fix the issue:
+    fallocate system call is failing on temporary file created under /tmp directory.
+    So modified the tests to create directory in root filesystem.
+ */
 
 #define _GNU_SOURCE
 
@@ -103,13 +114,14 @@
 #define HOLE_SIZE_IN_BLOCKS 12
 #define DEFAULT_MODE 0
 #define TRUE 0
+#define tempdir "tempdir"
+#define fname	tempdir"/tfile_sparse"
 
 void get_blocksize(int);
 void populate_file();
 void file_seek(off_t);
 
 char *TCID = "fallocate03";
-char fname[255];
 int fd;
 struct test_data_t {
 	int mode;
@@ -147,7 +159,8 @@ void cleanup(void)
 	if (close(fd) == -1)
 		tst_resm(TWARN | TERRNO, "close(%s) failed", fname);
 
-	tst_rmdir();
+      remove(fname);
+      rmdir(tempdir);
 
 }
 
@@ -162,9 +175,10 @@ void setup(void)
 	/* Create temporary directories */
 	TEST_PAUSE;
 
-	tst_tmpdir();
+	// fallocate system call is failing to create temporary directory under /tmp using tst_tmpdir function.
+	// so, creating test directory in root filesystem as workaroud
+	mkdir(tempdir, 0777);
 
-	sprintf(fname, "tfile_sparse_%d", getpid());
 	fd = SAFE_OPEN(cleanup, fname, O_RDWR | O_CREAT, 0700);
 	get_blocksize(fd);
 	populate_file();
