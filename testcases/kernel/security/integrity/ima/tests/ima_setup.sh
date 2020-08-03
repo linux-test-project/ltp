@@ -160,6 +160,11 @@ ima_setup()
 	BINARY_MEASUREMENTS="$IMA_DIR/binary_runtime_measurements"
 	IMA_POLICY="$IMA_DIR/policy"
 
+	# hack to support running tests locally from ima/tests directory
+	if [ ! -d "$TST_DATAROOT" ]; then
+		TST_DATAROOT="$LTPROOT/../datafiles/$TST_ID/"
+	fi
+
 	print_ima_config
 
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
