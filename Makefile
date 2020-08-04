@@ -1,8 +1,8 @@
 #
 #    Top-level Makefile for LTP. See INSTALL for more info.
 #
-#    Copyright (C) 2009-2010, Cisco Systems Inc.
-#    Copyright (C) 2010-2011, Linux Test Project.
+#    Copyright (c) Linux Test Project, 2009-2020
+#    Copyright (c) Cisco Systems Inc., 2009-2010
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -89,11 +89,7 @@ include-install: $(top_builddir)/include/config.h include/mk/config.mk include-a
 INSTALL_DIR		:= $(DESTDIR)/$(prefix)
 
 # DO NOT REMOVE THIS CALL (see clean_install_dir call below...)!!!!
-ifdef MAKE_3_80_COMPAT
-INSTALL_DIR		:= $(call MAKE_3_80_abspath,$(INSTALL_DIR))
-else
 INSTALL_DIR		:= $(abspath $(INSTALL_DIR))
-endif
 
 # build tree bootstrap targets and $(INSTALL_DIR) target.
 $(sort $(addprefix $(abs_top_builddir)/,$(BOOTSTRAP_TARGETS)) $(INSTALL_DIR) $(DESTDIR)/$(bindir)):

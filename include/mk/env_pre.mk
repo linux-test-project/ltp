@@ -1,7 +1,8 @@
 #
 #    Make pre-include environment Makefile.
 #
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (c) Linux Test Project, 2009-2020
+#    Copyright (c) Cisco Systems Inc., 2009
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -36,28 +37,13 @@ BUILD_TREE_NONSRCDIR_INSTALL	:= 3
 # configure not run.
 BUILD_TREE_UNCONFIGURED		:= 4
 
-ifndef MAKE_VERSION_CHECK
-export MAKE_VERSION_CHECK = 1
-ifneq ($(firstword $(sort 3.80 $(MAKE_VERSION))),3.80)
-$(error Your version of make $(MAKE_VERSION) is too old. Upgrade to at least 3.80; 3.81+ is preferred)
-else
-ifneq ($(filter 3.80%,$(MAKE_VERSION)),)
-export MAKE_3_80_COMPAT	:= 1
-endif # make 3.80?
-endif # At least make 3.80?
-endif # MAKE_VERSION_CHECK
-
 # Get the absolute path for the source directory.
 top_srcdir			?= $(error You must define top_srcdir before including this file)
 
 include $(top_srcdir)/include/mk/functions.mk
 
 # Where's the root source directory?
-ifdef MAKE_3_80_COMPAT
-abs_top_srcdir			:= $(call MAKE_3_80_abspath,$(top_srcdir))
-else
 abs_top_srcdir			:= $(abspath $(top_srcdir))
-endif
 
 #
 # Where's the root object directory?
@@ -67,12 +53,8 @@ endif
 #
 top_builddir			?= $(top_srcdir)
 
-# We need the absolute path...
-ifdef MAKE_3_80_COMPAT
-abs_top_builddir		:= $(call MAKE_3_80_abspath,$(top_builddir))
-else
+# We need the absolute path
 abs_top_builddir		:= $(abspath $(top_builddir))
-endif
 
 # Where's the root object directory?
 builddir			:= .
@@ -83,12 +65,8 @@ cwd_rel1			:= $(subst $(abs_top_builddir),,$(abs_builddir))
 cwd_rel2			:= $(subst $(abs_top_builddir)/,,$(abs_builddir))
 cwd_rel_from_top		:= $(if $(cwd_rel1),$(cwd_rel2),$(cwd_rel1))
 
-# Where's the source located at? Squish all of the / away by using abspath...
-ifdef MAKE_3_80_COMPAT
-abs_srcdir			:= $(call MAKE_3_80_abspath,$(abs_top_srcdir)/$(cwd_rel_from_top))
-else
+# Where's the source located at? Squish all of the / away by using abspath
 abs_srcdir			:= $(abspath $(abs_top_srcdir)/$(cwd_rel_from_top))
-endif
 
 srcdir				:= $(strip $(subst $(abs_top_srcdir)/,,$(abs_srcdir)))
 
@@ -138,13 +116,7 @@ BUILD_TREE_STATE		:= $(BUILD_TREE_NONSRCDIR_INSTALL)
 endif
 endif
 
-ifeq ($(MAKE_3_80_COMPAT),1)
-# Trick make 3.80 into thinking that the default goal is all.
-.PHONY: default
-default: all
-else
 .DEFAULT_GOAL			:= all
-endif
 
 endif	# END autotools, *clean...
 

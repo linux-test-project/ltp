@@ -1,7 +1,8 @@
 #
 #    library include Makefile.
 #
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (c) Linux Test Project, 2009-2020
+#    Copyright (c) Cisco Systems Inc., 2009
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -49,15 +50,8 @@ endif
 MAKE_TARGETS	+= $(LIB)
 
 LIBSRCS		?= $(wildcard $(abs_srcdir)/*.c)
-
-ifdef MAKE_3_80_COMPAT
-LIBSRCS		:= $(call MAKE_3_80_abspath,$(LIBSRCS))
-else
 LIBSRCS		:= $(abspath $(LIBSRCS))
-endif
-
 LIBSRCS		:= $(subst $(abs_srcdir)/,,$(wildcard $(LIBSRCS)))
-
 LIBSRCS		:= $(filter-out $(FILTER_OUT_LIBSRCS),$(LIBSRCS))
 
 LIBOBJS		:= $(LIBSRCS:.c=.o)

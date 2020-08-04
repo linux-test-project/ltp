@@ -1,7 +1,8 @@
 #
 #    Environment post-setup Makefile.
 #
-#    Copyright (C) 2009, Cisco Systems Inc.
+#    Copyright (c) Linux Test Project, 2009-2020
+#    Copyright (c) Cisco Systems Inc., 2009
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -79,28 +80,10 @@ INSTALL_TARGETS			:= $(patsubst $(abs_srcdir)/%,%,$(INSTALL_TARGETS))
 # scripts, so let's chmod them like that.
 INSTALL_MODE			?= 00775
 
-ifdef MAKE_3_80_COMPAT
-
-INSTALL_PATH			:= $(call MAKE_3_80_abspath,$(DESTDIR)/$(INSTALL_DIR))
-
-INSTALL_TARGETS_ABS		:= $(call MAKE_3_80_abspath,$(addprefix $(INSTALL_PATH)/,$(INSTALL_TARGETS)))
-MAKE_TARGETS_ABS		:= $(call MAKE_3_80_abspath,$(addprefix $(INSTALL_PATH)/,$(MAKE_TARGETS)))
-
-INSTALL_FILES			:= $(INSTALL_TARGETS_ABS) $(MAKE_TARGETS_ABS)
-
-$(INSTALL_TARGETS_ABS):
-	test -d "$(@D)" || mkdir -p "$(@D)"
-	install -m $(INSTALL_MODE) "$(abs_srcdir)/$(subst $(INSTALL_PATH)/,,$@)" "$@"
-
-$(MAKE_TARGETS_ABS):
-	test -d "$(@D)" || mkdir -p "$(@D)"
-	install -m $(INSTALL_MODE) "$(abs_builddir)/$(subst $(INSTALL_PATH)/,,$@)" "$@"
-else
 $(abspath $(addprefix $(DESTDIR)/$(INSTALL_DIR)/,$(sort $(dir $(INSTALL_TARGETS) $(MAKE_TARGETS))))):
 	mkdir -p "$@"
 $(foreach install_target,$(INSTALL_TARGETS),$(eval $(call generate_install_rule,$(install_target),$(abs_srcdir),$(INSTALL_DIR))))
 $(foreach make_target,$(MAKE_TARGETS),$(eval $(call generate_install_rule,$(make_target),$(abs_builddir),$(INSTALL_DIR))))
-endif
 
 else  # else ! $(filter-out install,$(MAKECMDGOALS)),$(MAKECMDGOALS)
 $(error You must define $$(prefix) before executing install)
