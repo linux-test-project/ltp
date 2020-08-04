@@ -35,6 +35,18 @@
  *
  */
 
+/*
+ * Patch Description:
+   Failure reason in SGX-LKL:
+   [[  SGX-LKL ]] libc_start_main_stage2(): Calling app main: /ltp/testcases/kernel/syscalls/preadv2/preadv203
+   [    0.143012] Out of memory: Killed process 36 (host0) total-vm:4kB, anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+   [    0.144073] Kernel panic - not syncing: System is deadlocked on memory
+ 
+ * Work around to fix the issue:
+   Tests were failing with kernel panic in loop device as loop device is having 32MB memory limit
+   So modified the tests to use root filesystem.
+ */
+
 #define _GNU_SOURCE
 #include <string.h>
 #include <sys/uio.h>
@@ -240,6 +252,8 @@ static void check_preadv2_nowait(int fd)
 
 static void setup(void)
 {
+	rmdir(MNTPOINT);
+      SAFE_MKDIR(MNTPOINT, 0644);
 	char path[1024];
 	char buf[CHUNK_SZ];
 	unsigned int i;
@@ -263,11 +277,15 @@ static void setup(void)
 static void do_cleanup(void)
 {
 	unsigned int i;
-
+	char path[1024];
 	for (i = 0; i < FILES; i++) {
+		snprintf(path, sizeof(path), MNTPOINT"/file_%i", i);
 		if (fds[i] > 0)
 			SAFE_CLOSE(fds[i]);
+		remove(path);
 	}
+
+	SAFE_RMDIR(MNTPOINT);
 }
 
 TST_DECLARE_ONCE_FN(cleanup, do_cleanup);
@@ -276,9 +294,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_preadv2,
-	.mntpoint = MNTPOINT,
-	.mount_device = 1,
-	.all_filesystems = 1,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 };
