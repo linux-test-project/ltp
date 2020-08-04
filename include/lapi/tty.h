@@ -10,6 +10,10 @@
 # include <linux/tty.h>
 #endif
 
+#ifndef N_HDLC
+# define N_HDLC 13
+#endif
+
 #ifndef N_SLCAN
 # define N_SLCAN		17	/* Serial / USB serial CAN Adaptors */
 #endif
