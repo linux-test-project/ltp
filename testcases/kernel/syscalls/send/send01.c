@@ -129,19 +129,18 @@ static struct test_case_t tdat[] = {
 	 .cleanup = cleanup1,
 	 .desc = "UDP message too big"}
 	,
-//TODO:Enable below lines after issue 405 is fixed
-//	{.domain = PF_INET,
-//	 .type = SOCK_STREAM,
-//	 .proto = 0,
-//	 .buf = buf,
-//	 .buflen = sizeof(buf),
-//	 .flags = 0,
-//	 .retval = -1,
-//	 .experrno = EPIPE,
-//	 .setup = setup2,
-//	 .cleanup = cleanup1,
-//	 .desc = "local endpoint shutdown"}
-//	,
+	{.domain = PF_INET,
+	 .type = SOCK_STREAM,
+	 .proto = 0,
+	 .buf = buf,
+	 .buflen = sizeof(buf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = EPIPE,
+	 .setup = setup2,
+	 .cleanup = cleanup1,
+	 .desc = "local endpoint shutdown"}
+	,
 #ifndef UCLINUX
 	/* Skip since uClinux does not implement memory protection */
 	{.domain = PF_INET,
