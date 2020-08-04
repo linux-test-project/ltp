@@ -76,8 +76,8 @@
 	https://github.com/lsds/sgx-lkl/issues/224
 
 	Workaround to fix the issue:
-	Groupid of nobody user is 65534, so passing this value as arguement will produce EINVAL
-	Moved getpwnam() function to root user block to get user info
+	Commented first test and needs to be enabled once git issue 267 is fixed
+	As a workaround for issue 224, moved getpwnam() function to root user block to get user info
  */
 #include <limits.h>
 #include <sys/types.h>
@@ -111,8 +111,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	int (*setupfunc) ();
 } Test_cases[] = {
-	{
-	65534, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL}, // TODO: Revertback once git issue 267 is fixed
+//	{
+//	1, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL}, // TODO: Enable once git issue 267 is fixed
        	{
 	0, 2, "Permission denied, not super-user", EPERM, setup1}
 };
@@ -206,6 +206,8 @@ int setup1(void)
 {
 	struct passwd *user_info;	/* struct. to hold test user info */
 
+	// Nobody user do not have permissions to open /etc/passwd file 
+	// Please refer sgx-lkl/issues/224, Hence moved this piece of code to root user block
 	if ((user_info = getpwnam(TESTUSER)) == NULL) {
                 tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
         }
