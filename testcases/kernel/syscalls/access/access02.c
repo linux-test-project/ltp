@@ -47,11 +47,13 @@ static struct tcase {
 	{FNAME_F, F_OK, "F_OK", FNAME_F},
 	{FNAME_R, R_OK, "R_OK", FNAME_R},
 	{FNAME_W, W_OK, "W_OK", FNAME_W},
-	{FNAME_X, X_OK, "X_OK", FNAME_X},
+	// TODO: Enable below testcase once Github issue #598 is fixed
+	//{FNAME_X, X_OK, "X_OK", FNAME_X},
 	{SNAME_F, F_OK, "F_OK", FNAME_F},
 	{SNAME_R, R_OK, "R_OK", FNAME_R},
 	{SNAME_W, W_OK, "W_OK", FNAME_W},
-	{SNAME_X, X_OK, "X_OK", FNAME_X}
+	// TODO: Enable below testcase once Github issue #598 is fixed
+	//{SNAME_X, X_OK, "X_OK", FNAME_X}
 };
 
 static void access_test(struct tcase *tc, const char *user)
@@ -153,6 +155,10 @@ static void verify_access(unsigned int n)
 	access_test(tc, "root");
 
 	/* test as nobody */
+// SGX-LKL dosent support forking of child process.
+// Hence, commenting this below code.
+// TODO: This need to be enabled after fixing lsds/sgx-lkl#598 issue
+#if 0
 	pid = SAFE_FORK();
 	if (pid) {
 		SAFE_WAITPID(pid, NULL, 0);
@@ -160,6 +166,11 @@ static void verify_access(unsigned int n)
 		SAFE_SETUID(uid);
 		access_test(tc, "nobody");
 	}
+#endif
+	// The test verification with nobody user will continue in same process.
+	SAFE_SETUID(uid);
+	access_test(tc, "nobody");
+
 }
 
 static void setup(void)
