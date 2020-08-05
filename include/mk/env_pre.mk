@@ -154,4 +154,8 @@ BUILD_TREE_STATE		?= $(BUILD_TREE_UNCONFIGURED)
 # just these two vars and $(CURDIR).
 export abs_top_srcdir abs_top_builddir BUILD_TREE_STATE
 
+ifeq ($V,1)
+VERBOSE=1
+endif
+
 endif
