@@ -158,18 +158,17 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_require_root();
-       tst_tmpdir(); // TODO: Will removed once git issue :357 is fixed
+
 	ltpuser = getpwnam(nobody_uid);
 	if (setuid(ltpuser->pw_uid) == -1)
 		tst_resm(TINFO | TERRNO, "setuid(%u) failed", ltpuser->pw_uid);
 
 	TEST_PAUSE;
 
-//     tst_tmpdir(); // TODO: Will be enabled once git issue:236 is fixed
+	tst_tmpdir();
 
 	/*
 	 * Create a test directory under temporary directory with specified
@@ -186,7 +185,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-       tst_require_root(); // TODO: Will removed once git issue :357 is fixed
 	tst_rmdir();
 
 }

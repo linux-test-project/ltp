@@ -191,7 +191,7 @@ void setup(void)
 	int fildes;		/* file handle for temp file */
 
 	tst_require_root();
-       tst_tmpdir(); // TODO: Will be removed once git issue:357 is fixed
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	/* Switch to nobody user for correct error code collection */
@@ -205,7 +205,7 @@ void setup(void)
 	 */
 	TEST_PAUSE;
 
-//     tst_tmpdir(); // TODO: Will be enabled once git issue:236 is fixed
+	tst_tmpdir();
 
 	/* Creat a temporary file under above directory */
 	fildes = SAFE_CREAT(cleanup, TEMP_FILE, FILE_MODE);
@@ -232,7 +232,6 @@ void setup(void)
  */
 void cleanup(void)
 {
-       tst_require_root(); // TODO: Will be removed once git issue:357 is fixed
 	tst_rmdir();
 
 }

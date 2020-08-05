@@ -144,11 +144,9 @@ int main(int ac, char **av)
  */
 void setup(void)
 {
-	tst_require_root();
-
-       tst_tmpdir(); // TODO: Will be removed once fixing git issue :357
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+
+	tst_require_root();
 
 	/* Switch to nobody user for correct error code collection */
 	ltpuser = getpwnam(nobody_uid);
@@ -160,7 +158,7 @@ void setup(void)
 
 	TEST_PAUSE;
 
-//     tst_tmpdir(); // TODO: Will be enabled once fixing git issue :236
+	tst_tmpdir();
 
 	/*
 	 * Create a test directory under temporary directory with specified
@@ -186,8 +184,6 @@ void cleanup(void)
 
 	/* Close the test directory opened during setup() */
 	SAFE_CLOSE(NULL, fd);
-
-       tst_require_root(); // TODO: Will be removed once fixing git issue :357
 
 	tst_rmdir();
 

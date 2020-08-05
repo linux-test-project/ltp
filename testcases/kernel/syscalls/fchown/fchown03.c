@@ -112,14 +112,12 @@ static void setup(void)
 
 	tst_require_root();
 
-       tst_tmpdir(); // TODO: Will be removed once fixing git issue :357
-
 	ltpuser = SAFE_GETPWNAM(cleanup, nobody_uid);
 	SAFE_SETEUID(NULL, ltpuser->pw_uid);
 
 	TEST_PAUSE;
 
-//     tst_tmpdir(); // TODO: Will be enabled once fixing git issue :236
+	tst_tmpdir();
 
 	fildes = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_CREAT, FILE_MODE);
 
@@ -136,8 +134,6 @@ static void cleanup(void)
 {
 	if (fildes > 0 && close(fildes))
 		tst_resm(TWARN | TERRNO, "close(%s) Failed", TESTFILE);
-
-       tst_require_root(); // TODO: Will be removed once fixing git issue :357
 
 	tst_rmdir();
 }
