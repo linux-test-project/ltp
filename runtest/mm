@@ -20,7 +20,6 @@ mtest06_3 mmap3 -x 0.002 -p
 # Remains diabled till the infinite loop problem is solved
 #mtest-6_4 shmat1 -x 0.00005
 
-mem01 mem01
 mem02 mem02
 mem03 mem03
 

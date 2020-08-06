@@ -10,9 +10,6 @@ crash01 crash01
 crash02 crash02 -v 2
 # Generate random syscalls and execute them, less probability
 # to hose your system, but still.
-mem01 mem01 -r
-# Memory eater. Loves to be run in parallel with other programs.
-# May panic on buggy systems if the OOM killer was not fast enough :-)
 fork12 fork12
 # Fork as many children as possible.  On systems with lots of memory
 # and kernels prior to 2.4.19, this can hang the system by using up all pids
