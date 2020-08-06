@@ -166,6 +166,44 @@ void safe_sigemptyset(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO, "sigemptyset() failed");
 }
 
+static const char *strhow(int how)
+{
+	switch (how) {
+	case SIG_BLOCK:
+		return "SIG_BLOCK";
+	case SIG_UNBLOCK:
+		return "SIG_UNBLOCK";
+	case SIG_SETMASK:
+		return "SIG_SETMASK";
+	default:
+		return "???";
+	}
+}
+
+void safe_sigprocmask(const char *file, const int lineno,
+                      int how, sigset_t *set, sigset_t *oldset)
+{
+	int rval;
+
+	rval = sigprocmask(how, set, oldset);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+		         "sigprocmask(%s, %p, %p)", strhow(how), set, oldset);
+	}
+}
+
+void safe_sigwait(const char *file, const int lineno,
+                  sigset_t *set, int *sig)
+{
+	int rval;
+
+	rval = sigwait(set, sig);
+	if (rval != 0) {
+		errno = rval;
+		tst_brk_(file, lineno, TBROK, "sigwait(%p, %p)", set, sig);
+	}
+}
+
 struct group *safe_getgrnam(const char *file, const int lineno,
 			    const char *name)
 {

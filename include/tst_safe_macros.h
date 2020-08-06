@@ -446,6 +446,16 @@ void safe_sigemptyset(const char *file, const int lineno,
 #define SAFE_SIGEMPTYSET(sigs) \
 	safe_sigemptyset(__FILE__, __LINE__, (sigs))
 
+void safe_sigprocmask(const char *file, const int lineno,
+                      int how, sigset_t *set, sigset_t *oldset);
+#define SAFE_SIGPROCMASK(how, set, oldset) \
+	safe_sigprocmask(__FILE__, __LINE__, (how), (set), (oldset))
+
+void safe_sigwait(const char *file, const int lineno,
+                  sigset_t *set, int *sig);
+#define SAFE_SIGWAIT(set, sig) \
+	safe_sigwait(__FILE__, __LINE__, (set), (sig))
+
 #define SAFE_EXECLP(file, arg, ...) do {                   \
 	execlp((file), (arg), ##__VA_ARGS__);              \
 	tst_brk_(__FILE__, __LINE__, TBROK | TERRNO,       \
