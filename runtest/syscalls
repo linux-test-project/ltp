@@ -41,6 +41,7 @@ bpf_map01 bpf_map01
 bpf_prog01 bpf_prog01
 bpf_prog02 bpf_prog02
 bpf_prog03 bpf_prog03
+bpf_prog04 bpf_prog04
 
 brk01 brk01
 
