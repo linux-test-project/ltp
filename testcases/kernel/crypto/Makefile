@@ -21,6 +21,6 @@ CFLAGS			+= -D_GNU_SOURCE
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
-af_alg02: CFLAGS += -pthread
+af_alg02 af_alg07: CFLAGS += -pthread
 
-crypto_user02: LDLIBS += -lrt
+af_alg07 crypto_user02: LDLIBS += -lrt

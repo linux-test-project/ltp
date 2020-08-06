@@ -4,6 +4,7 @@ af_alg03 af_alg03
 af_alg04 af_alg04
 af_alg05 af_alg05
 af_alg06 af_alg06
+af_alg07 af_alg07
 pcrypt_aead01 pcrypt_aead01
 crypto_user01 crypto_user01
 crypto_user02 crypto_user02
