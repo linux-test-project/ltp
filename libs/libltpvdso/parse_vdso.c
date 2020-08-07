@@ -45,8 +45,9 @@ static struct vdso_info
 	/* Symbol table */
 	ELF(Sym) *symtab;
 	const char *symstrings;
-	ELF(Word) *bucket, *chain;
+	void *bucket, *chain;
 	ELF(Word) nbucket, nchain;
+	bool hash_ent_is_dword;
 
 	/* Version table */
 	ELF(Versym) *versym;
@@ -67,6 +68,28 @@ static unsigned long elf_hash(const unsigned char *name)
 	return h;
 }
 
+/* return value of hash table entry */
+ELF(Word) get_hash_val(void *ptr, ELF(Word) idx)
+{
+	if (vdso_info.hash_ent_is_dword) {
+		ELF(Xword) *table = ptr;
+		/* for vdso assume all values fit in Elf Word */
+		return (ELF(Word)) table[idx];
+	}
+
+	ELF(Word) *table = ptr;
+	return table[idx];
+}
+
+/* return pointer to hash table entry */
+void *get_hash_ptr(void *ptr, ELF(Word) idx)
+{
+	if (vdso_info.hash_ent_is_dword)
+		return &((ELF(Xword) *) ptr)[idx];
+
+	return &((ELF(Word) *) ptr)[idx];
+}
+
 void vdso_init_from_sysinfo_ehdr(uintptr_t base)
 {
 	size_t i;
@@ -81,6 +104,14 @@ void vdso_init_from_sysinfo_ehdr(uintptr_t base)
 	    (ELF_BITS == 32 ? ELFCLASS32 : ELFCLASS64)) {
 		return;  /* Wrong ELF class -- check ELF_BITS */
 	}
+
+	/* 64bit s390 and alpha have hash entry size of 8 bytes */
+	if ((hdr->e_machine == EM_ALPHA
+		|| hdr->e_machine == EM_S390)
+		&& hdr->e_ident[EI_CLASS] == ELFCLASS64)
+		vdso_info.hash_ent_is_dword = true;
+	else
+		vdso_info.hash_ent_is_dword = false;
 
 	ELF(Phdr) *pt = (ELF(Phdr)*)(vdso_info.load_addr + hdr->e_phoff);
 	ELF(Dyn) *dyn = 0;
@@ -147,11 +178,11 @@ void vdso_init_from_sysinfo_ehdr(uintptr_t base)
 	if (!vdso_info.verdef)
 		vdso_info.versym = 0;
 
-	/* Parse the hash table header. */
-	vdso_info.nbucket = hash[0];
-	vdso_info.nchain = hash[1];
-	vdso_info.bucket = &hash[2];
-	vdso_info.chain = &hash[vdso_info.nbucket + 2];
+
+	vdso_info.nbucket = get_hash_val(hash, 0);
+	vdso_info.nchain = get_hash_val(hash, 1);
+	vdso_info.bucket = get_hash_ptr(hash, 2);
+	vdso_info.chain = get_hash_ptr(hash, vdso_info.nbucket + 2);
 
 	/* That's all we need. */
 	vdso_info.valid = true;
@@ -202,9 +233,10 @@ void *vdso_sym(const char *version, const char *name)
 		return 0;
 
 	ver_hash = elf_hash((const void*)version);
-	ELF(Word) chain = vdso_info.bucket[elf_hash((const void*)name) % vdso_info.nbucket];
+	ELF(Word) chain = get_hash_val(vdso_info.bucket,
+		elf_hash((const void*)name) % vdso_info.nbucket);
 
-	for (; chain != STN_UNDEF; chain = vdso_info.chain[chain]) {
+	for (; chain != STN_UNDEF; chain = get_hash_val(vdso_info.chain, chain)) {
 		ELF(Sym) *sym = &vdso_info.symtab[chain];
 
 		/* Check for a defined global or weak function w/ right name. */
