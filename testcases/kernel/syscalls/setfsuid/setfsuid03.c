@@ -22,10 +22,6 @@
  * Testcase to test the basic functionality of the setfsuid(2) system
  * call when called by a user other than root.
  */
-/*
- *  Patch Description: Test is failing to open /etc/passwd file with nobody user. Logged issue 224 for the same
- *  As test intention is not testing opening /etc/passwd, moved this piece of code to setup function
- */
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -49,15 +45,15 @@ int main(int ac, char **av)
 {
 	int lc;
 
-       //uid_t uid;
+	uid_t uid;
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();
 
-       //uid = 1;
-       //while (!getpwuid(uid)) TODO:Enable after issue 224 is fixed
-       //      uid++;
+	uid = 1;
+	while (!getpwuid(uid))
+		uid++;
 
 	UID16_CHECK(uid, setfsuid, cleanup);
 
