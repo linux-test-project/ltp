@@ -17,6 +17,7 @@ static int fd, fd_root, fd_nonblock, fd_maxint = INT_MAX - 1, fd_invalid = -1;
 #include "mq_timed.h"
 
 static struct tst_ts ts;
+static void *bad_addr;
 
 static struct test_case tcase[] = {
 	{
@@ -129,6 +130,20 @@ static struct test_case tcase[] = {
 		.ret = -1,
 		.err = EINTR,
 	},
+	{
+		.fd = &fd,
+		.len = 16,
+		.bad_msg_addr = 1,
+		.ret = -1,
+		.err = EFAULT,
+	},
+	{
+		.fd = &fd,
+		.len = 16,
+		.bad_ts_addr = 1,
+		.ret = -1,
+		.err = EFAULT,
+	}
 };
 
 static void setup(void)
@@ -137,6 +152,8 @@ static void setup(void)
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	ts.type = tv->type;
+
+	bad_addr = tst_get_bad_addr(cleanup_common);
 
 	setup_common();
 }
@@ -150,6 +167,7 @@ static void do_test(unsigned int i)
 	size_t len = MAX_MSGSIZE;
 	char rmsg[len];
 	pid_t pid = -1;
+	void *msg_ptr, *abs_timeout;
 
 	tst_ts_set_sec(&ts, tc->tv_sec);
 	tst_ts_set_nsec(&ts, tc->tv_nsec);
@@ -168,7 +186,17 @@ static void do_test(unsigned int i)
 			}
 	}
 
-	TEST(tv->send(*tc->fd, smsg, tc->len, tc->prio, tst_ts_get(tc->rq)));
+	if (tc->bad_msg_addr)
+		msg_ptr = bad_addr;
+	else
+		msg_ptr = smsg;
+
+	if (tc->bad_ts_addr)
+		abs_timeout = bad_addr;
+	else
+		abs_timeout = tst_ts_get(tc->rq);
+
+	TEST(tv->send(*tc->fd, msg_ptr, tc->len, tc->prio, abs_timeout));
 
 	if (pid > 0)
 		kill_pid(pid);
@@ -179,7 +207,7 @@ static void do_test(unsigned int i)
 				"mq_timedsend() failed unexpectedly, expected %s",
 				tst_strerrno(tc->err));
 		else
-			tst_res(TPASS | TTERRNO, "mq_timedreceive() failed expectedly");
+			tst_res(TPASS | TTERRNO, "mq_timedsend() failed expectedly");
 
 		if (*tc->fd == fd)
 			cleanup_queue(fd);

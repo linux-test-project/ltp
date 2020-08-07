@@ -41,6 +41,8 @@ struct test_case {
 	int send;
 	int signal;
 	int timeout;
+	int bad_msg_addr;
+	int bad_ts_addr;
 	int ret;
 	int err;
 };

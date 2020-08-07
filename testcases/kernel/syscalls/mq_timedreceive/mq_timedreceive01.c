@@ -17,6 +17,7 @@ static int fd, fd_root, fd_nonblock, fd_maxint = INT_MAX - 1, fd_invalid = -1;
 #include "mq_timed.h"
 
 static struct tst_ts ts;
+static void *bad_addr;
 
 static struct test_case tcase[] = {
 	{
@@ -123,6 +124,13 @@ static struct test_case tcase[] = {
 		.ret = -1,
 		.err = EINTR,
 	},
+	{
+		.fd = &fd,
+		.len = 16,
+		.bad_ts_addr = 1,
+		.ret = -1,
+		.err = EFAULT,
+	}
 };
 
 static void setup(void)
@@ -131,6 +139,8 @@ static void setup(void)
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	ts.type = tv->type;
+
+	bad_addr = tst_get_bad_addr(NULL);
 
 	setup_common();
 }
@@ -144,6 +154,7 @@ static void do_test(unsigned int i)
 	size_t len = MAX_MSGSIZE;
 	char rmsg[len];
 	pid_t pid = -1;
+	void *abs_timeout;
 
 	tst_ts_set_sec(&ts, tc->tv_sec);
 	tst_ts_set_nsec(&ts, tc->tv_nsec);
@@ -164,7 +175,12 @@ static void do_test(unsigned int i)
 	if (tc->invalid_msg)
 		len -= 1;
 
-	TEST(tv->receive(*tc->fd, rmsg, len, &prio, tst_ts_get(tc->rq)));
+	if (tc->bad_ts_addr)
+		abs_timeout = bad_addr;
+	else
+		abs_timeout = tst_ts_get(tc->rq);
+
+	TEST(tv->receive(*tc->fd, rmsg, len, &prio, abs_timeout));
 
 	if (pid > 0)
 		kill_pid(pid);
