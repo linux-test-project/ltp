@@ -5,8 +5,4 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-vpath %.c $(srcdir):$(top_srcdir)/lib
-
-INSTALL_TARGETS		:= utimensat_tests.sh
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

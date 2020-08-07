@@ -1,282 +1,254 @@
-/*************************************************************************************/
-/*                                                                                   */
-/* Copyright (C) 2008, Michael Kerrisk <mtk.manpages@gmail.com>,                     */
-/* Copyright (C) 2008, Linux Foundation                                              */
-/*                                                                                   */
-/* This program is free software;  you can redistribute it and/or modify             */
-/* it under the terms of the GNU General Public License as published by              */
-/* the Free Software Foundation; either version 2 of the License, or                 */
-/* (at your option) any later version.                                               */
-/*                                                                                   */
-/* This program is distributed in the hope that it will be useful,                   */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of                   */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                         */
-/* the GNU General Public License for more details.                                  */
-/*                                                                                   */
-/* You should have received a copy of the GNU General Public License                 */
-/* along with this program;  if not, write to the Free Software                      */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           */
-/*************************************************************************************/
-/*                                                                                   */
-/* File: utimnsat01.c                                                                */
-/* Description: A command-line interface for testing the utimensat() system call.    */
-/* Author: Michael Kerrisk <mtk.manpages@gmail.com>                                  */
-/* History:                                                                          */
-/*	17 Mar  2008  Initial creation,                                              */
-/*	31 May  2008  Reworked for easier test automation,                           */
-/*	2  June 2008  Renamed from t_utimensat.c to test_utimensat.c,                */
-/*	05 June 2008  Submitted to LTP by Subrata Modak <subrata@linux.vnet.ibm.com> */
-/*************************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2008 Michael Kerrisk <mtk.manpages@gmail.com>
+ * Copyright (c) 2008 Subrata Modak <subrata@linux.vnet.ibm.com>
+ * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
+ *
+ * Basic utimnsat() test.
+ */
 
-#define _GNU_SOURCE
-#define _ATFILE_SOURCE
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/syscall.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "test.h"
-#include "lapi/syscalls.h"
+#include "lapi/fs.h"
+#include "tst_timer.h"
 
-char *TCID = "utimensat01";
-int TST_TOTAL = 0;
+#define UTIME_NOW	((1l << 30) - 1l)
+#define UTIME_OMIT	((1l << 30) - 2l)
 
-#define cleanup tst_exit
+#define TEST_FILE	"test_file"
+#define TEST_DIR	"test_dir"
 
-/* We use EXIT_FAILURE for an expected failure from utimensat()
-   (e.g., EACCES and EPERM), and one of the following for unexpected
-   failures (i.e., something broke in our test setup). */
+static void *bad_addr;
 
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
-#ifndef AT_SYMLINK_NOFOLLOW
-#define AT_SYMLINK_NOFOLLOW 0x100
-#endif
+struct mytime {
+	long access_tv_sec;
+	long access_tv_nsec;
+	long mod_tv_sec;
+	long mod_tv_nsec;
+	int atime_change;
+	int mtime_change;
+};
 
-#define EXIT_bad_usage 3
-#define EXIT_failed_syscall 3
+static struct mytime tnn = {0, UTIME_NOW, 0, UTIME_NOW, 1, 1};
+static struct mytime too = {0, UTIME_OMIT, 0, UTIME_OMIT, 0, 0};
+static struct mytime tno = {0, UTIME_NOW, 0, UTIME_OMIT, 1, 0};
+static struct mytime ton = {0, UTIME_OMIT, 0, UTIME_NOW, 0, 1};
+static struct mytime t11 = {1, 1, 1, 1, 1, 1};
 
-#define errExit(msg)    do { perror(msg); exit(EXIT_failed_syscall); \
-                        } while (0)
+struct test_case {
+	int dirfd;
+	char *pathname;
+	struct mytime *mytime;
+	int flags;
+	int oflags;
+	int attr;
+	int mode;
+	int exp_err;
+} tcase[] = {
+	/* Testing read-only file */
+	{AT_FDCWD, TEST_FILE, NULL, 0, O_RDONLY, 0, 0400, 0},
+	{AT_FDCWD, TEST_FILE, &tnn, 0, O_RDONLY, 0, 0400, 0},
+	{AT_FDCWD, TEST_FILE, &too, 0, O_RDONLY, 0, 0400, 0},
+	{AT_FDCWD, TEST_FILE, &tno, 0, O_RDONLY, 0, 0400, 0},
+	{AT_FDCWD, TEST_FILE, &ton, 0, O_RDONLY, 0, 0400, 0},
+	{AT_FDCWD, TEST_FILE, &t11, 0, O_RDONLY, 0, 0400, 0},
 
-#define UTIME_NOW      ((1l << 30) - 1l)
-#define UTIME_OMIT     ((1l << 30) - 2l)
+	/* Testing writable file */
+	{AT_FDCWD, TEST_FILE, NULL, 0, O_RDONLY, 0, 0666, 0},
+	{AT_FDCWD, TEST_FILE, &tnn, 0, O_RDONLY, 0, 0666, 0},
+	{AT_FDCWD, TEST_FILE, &too, 0, O_RDONLY, 0, 0666, 0},
+	{AT_FDCWD, TEST_FILE, &tno, 0, O_RDONLY, 0, 0666, 0},
+	{AT_FDCWD, TEST_FILE, &ton, 0, O_RDONLY, 0, 0666, 0},
+	{AT_FDCWD, TEST_FILE, &t11, 0, O_RDONLY, 0, 0666, 0},
 
-static inline int
-utimensat_sc(int dirfd, const char *pathname,
-	     const struct timespec times[2], int flags)
+	/* Testing append-only file */
+	{AT_FDCWD, TEST_FILE, NULL, 0, O_RDONLY, FS_APPEND_FL, 0600, 0},
+	{AT_FDCWD, TEST_FILE, &tnn, 0, O_RDONLY, FS_APPEND_FL, 0600, 0},
+	{AT_FDCWD, TEST_FILE, &too, 0, O_RDONLY, FS_APPEND_FL, 0600, 0},
+	{AT_FDCWD, TEST_FILE, &tno, 0, O_RDONLY, FS_APPEND_FL, 0600, EPERM},
+	{AT_FDCWD, TEST_FILE, &ton, 0, O_RDONLY, FS_APPEND_FL, 0600, EPERM},
+	{AT_FDCWD, TEST_FILE, &t11, 0, O_RDONLY, FS_APPEND_FL, 0600, EPERM},
+
+	/* Testing immutable file */
+	{AT_FDCWD, TEST_FILE, NULL, 0, O_RDONLY, FS_IMMUTABLE_FL, 0600, -1},
+	{AT_FDCWD, TEST_FILE, &tnn, 0, O_RDONLY, FS_IMMUTABLE_FL, 0600, -1},
+	{AT_FDCWD, TEST_FILE, &too, 0, O_RDONLY, FS_IMMUTABLE_FL, 0600, 0},
+	{AT_FDCWD, TEST_FILE, &tno, 0, O_RDONLY, FS_IMMUTABLE_FL, 0600, EPERM},
+	{AT_FDCWD, TEST_FILE, &ton, 0, O_RDONLY, FS_IMMUTABLE_FL, 0600, EPERM},
+	{AT_FDCWD, TEST_FILE, &t11, 0, O_RDONLY, FS_IMMUTABLE_FL, 0600, EPERM},
+
+	/* Testing immutable-append-only file */
+	{AT_FDCWD, TEST_FILE, NULL, 0, O_RDONLY, FS_APPEND_FL|FS_IMMUTABLE_FL, 0600, -1},
+	{AT_FDCWD, TEST_FILE, &tnn, 0, O_RDONLY, FS_APPEND_FL|FS_IMMUTABLE_FL, 0600, -1},
+	{AT_FDCWD, TEST_FILE, &too, 0, O_RDONLY, FS_APPEND_FL|FS_IMMUTABLE_FL, 0600, 0},
+	{AT_FDCWD, TEST_FILE, &tno, 0, O_RDONLY, FS_APPEND_FL|FS_IMMUTABLE_FL, 0600, EPERM},
+	{AT_FDCWD, TEST_FILE, &ton, 0, O_RDONLY, FS_APPEND_FL|FS_IMMUTABLE_FL, 0600, EPERM},
+	{AT_FDCWD, TEST_FILE, &t11, 0, O_RDONLY, FS_APPEND_FL|FS_IMMUTABLE_FL, 0600, EPERM},
+
+	/* Other failure tests */
+	{AT_FDCWD, TEST_FILE, NULL, 0, O_RDONLY, 0, 0400, EFAULT},
+	{AT_FDCWD, NULL, &tnn, 0, O_RDONLY, 0, 0400, EFAULT},
+	{-1, NULL, &tnn, AT_SYMLINK_NOFOLLOW, O_RDONLY, 0, 0400, EINVAL},
+	{-1, TEST_FILE, &tnn, 0, O_RDONLY, 0, 0400, ENOENT},
+};
+
+static inline int sys_utimensat(int dirfd, const char *pathname,
+			const struct __kernel_old_timespec times[2], int flags)
 {
-	return ltp_syscall(__NR_utimensat, dirfd, pathname, times, flags);
+	return tst_syscall(__NR_utimensat, dirfd, pathname, times, flags);
 }
 
-static void usageError(char *progName)
+static void update_error(struct test_case *tc)
 {
-	fprintf(stderr, "Usage: %s pathname [atime-sec "
-		"atime-nsec mtime-sec mtime-nsec]\n\n", progName);
-	fprintf(stderr, "Permitted options are:\n");
-	fprintf(stderr, "    [-d path] "
-		"open a directory file descriptor"
-		" (instead of using AT_FDCWD)\n");
-	fprintf(stderr, "    -q        Quiet\n");
-	fprintf(stderr, "    -w        Open directory file "
-		"descriptor with O_RDWR|O_APPEND\n"
-		"              (instead of O_RDONLY)\n");
-	fprintf(stderr, "    -n        Use AT_SYMLINK_NOFOLLOW\n");
-	fprintf(stderr, "\n");
+	if (tc->exp_err != -1)
+		return;
 
-	fprintf(stderr, "pathname can be \"NULL\" to use NULL "
-		"argument in call\n");
-	fprintf(stderr, "\n");
-
-	fprintf(stderr, "Either nsec field can be\n");
-	fprintf(stderr, "    'n' for UTIME_NOW\n");
-	fprintf(stderr, "    'o' for UTIME_OMIT\n");
-	fprintf(stderr, "\n");
-
-	fprintf(stderr, "If the time fields are omitted, "
-		"then a NULL 'times' argument is used\n");
-	fprintf(stderr, "\n");
-
-	exit(EXIT_bad_usage);
+	/*
+	 * Starting with 4.8.0 operations on immutable files return EPERM
+	 * instead of EACCES.
+	 * This patch has also been merged to stable 4.4 with
+	 * b3b4283 ("vfs: move permission checking into notify_change() for utimes(NULL)")
+	 */
+	if (tst_kvercmp(4, 4, 27) < 0)
+		tc->exp_err = EACCES;
+	else
+		tc->exp_err = EPERM;
 }
 
-int main(int argc, char *argv[])
+static void change_attr(struct test_case *tc, int fd, int set)
 {
-	int flags, dirfd, opt, oflag;
-	struct timespec ts[2];
-	struct timespec *tsp;
-	char *pathname, *dirfdPath;
+	int attr;
+
+	if (!tc->attr)
+		return;
+
+	SAFE_IOCTL(fd, FS_IOC_GETFLAGS, &attr);
+
+	if (set)
+		attr |= tc->attr;
+	else
+		attr &= ~tc->attr;
+
+	SAFE_IOCTL(fd, FS_IOC_SETFLAGS, &attr);
+}
+
+static void reset_time(char *pathname, int dfd, int flags, int i)
+{
+	struct __kernel_old_timespec ts[2];
 	struct stat sb;
-	int verbose;
 
-	/* Command-line argument parsing */
+	memset(ts, 0, sizeof(ts));
+	sys_utimensat(dfd, pathname, ts, flags);
 
-	flags = 0;
-	verbose = 1;
-	dirfd = AT_FDCWD;
-	dirfdPath = NULL;
-	oflag = O_RDONLY;
-
-	while ((opt = getopt(argc, argv, "d:nqw")) != -1) {
-		switch (opt) {
-		case 'd':
-			dirfdPath = optarg;
-			break;
-
-		case 'n':
-			flags |= AT_SYMLINK_NOFOLLOW;
-			if (verbose)
-				printf("Not following symbolic links\n");
-			break;
-
-		case 'q':
-			verbose = 0;
-			break;
-
-		case 'w':
-			oflag = O_RDWR | O_APPEND;
-			break;
-
-		default:
-			usageError(argv[0]);
-		}
+	TEST(stat(pathname, &sb));
+	if (TST_RET) {
+		tst_res(TFAIL | TTERRNO, "%2d: stat() failed", i);
+	} else if (sb.st_atime || sb.st_mtime) {
+		tst_res(TFAIL, "Failed to reset access and modification time (%lu: %lu)",
+			sb.st_atime, sb.st_mtime);
 	}
-
-	if ((optind + 5 != argc) && (optind + 1 != argc))
-		usageError(argv[0]);
-
-	if (dirfdPath != NULL) {
-		dirfd = open(dirfdPath, oflag);
-		if (dirfd == -1)
-			errExit("open");
-
-		if (verbose) {
-			printf("Opened dirfd %d", oflag);
-			if ((oflag & O_ACCMODE) == O_RDWR)
-				printf(" O_RDWR");
-			if (oflag & O_APPEND)
-				printf(" O_APPEND");
-			printf(": %s\n", dirfdPath);
-		}
-	}
-
-	pathname = (strcmp(argv[optind], "NULL") == 0) ? NULL : argv[optind];
-
-	/* Either, we get no values for 'times' fields, in which case
-	   we give a NULL pointer to utimensat(), or we get four values,
-	   for secs+nsecs for each of atime and mtime.  The special
-	   values 'n' and 'o' can be used for tv_nsec settings of
-	   UTIME_NOW and UTIME_OMIT, respectively. */
-
-	if (argc == optind + 1) {
-		tsp = NULL;
-
-	} else {
-		ts[0].tv_sec = atoi(argv[optind + 1]);
-		if (argv[optind + 2][0] == 'n') {
-			ts[0].tv_nsec = UTIME_NOW;
-		} else if (argv[optind + 2][0] == 'o') {
-			ts[0].tv_nsec = UTIME_OMIT;
-		} else {
-			ts[0].tv_nsec = atoi(argv[optind + 2]);
-		}
-
-		ts[1].tv_sec = atoi(argv[optind + 3]);
-		if (argv[optind + 4][0] == 'n') {
-			ts[1].tv_nsec = UTIME_NOW;
-		} else if (argv[optind + 4][0] == 'o') {
-			ts[1].tv_nsec = UTIME_OMIT;
-		} else {
-			ts[1].tv_nsec = atoi(argv[optind + 4]);
-		}
-
-		tsp = ts;
-	}
-
-	/* For testing purposes, it may have been useful to run this program
-	   as set-user-ID-root so that a directory file descriptor could be
-	   opened as root.  (This allows us to obtain a file descriptor even
-	   if normal user doesn't have permissions on the file.)  Now we
-	   reset to the real UID before making the utimensat() call, so that
-	   the permission checking for the utimensat() call is performed
-	   under that UID. */
-
-	if (geteuid() == 0) {
-		uid_t u;
-
-		u = getuid();
-
-		if (verbose)
-			printf("Resetting UIDs to %ld\n", (long)u);
-
-		if (setresuid(u, u, u) == -1)
-			errExit("setresuid");
-	}
-
-	/* Display information allowing user to verify arguments for call */
-
-	if (verbose) {
-		printf("dirfd is %d\n", dirfd);
-		printf("pathname is %s\n", pathname);
-		printf("tsp is %p", tsp);
-		if (tsp != NULL) {
-			printf("; struct  = { %ld, %ld } { %ld, %ld }",
-			       (long)tsp[0].tv_sec, (long)tsp[0].tv_nsec,
-			       (long)tsp[1].tv_sec, (long)tsp[1].tv_nsec);
-		}
-		printf("\n");
-		printf("flags is %d\n", flags);
-	}
-
-	/* Make the call and see what happened */
-
-	if (utimensat_sc(dirfd, pathname, tsp, flags) == -1) {
-		if (errno == EPERM) {
-			if (verbose)
-				printf("utimensat() failed with EPERM\n");
-			else
-				printf("EPERM\n");
-			exit(EXIT_FAILURE);
-
-		} else if (errno == EACCES) {
-			if (verbose)
-				printf("utimensat() failed with EACCES\n");
-			else
-				printf("EACCES\n");
-			exit(EXIT_FAILURE);
-
-		} else if (errno == EINVAL) {
-			if (verbose)
-				printf("utimensat() failed with EINVAL\n");
-			else
-				printf("EINVAL\n");
-			exit(EXIT_FAILURE);
-
-		} else {	/* Unexpected failure case from utimensat() */
-			errExit("utimensat");
-		}
-	}
-
-	if (verbose)
-		printf("utimensat() succeeded\n");
-
-	if (stat((pathname != NULL) ? pathname : dirfdPath, &sb) == -1)
-		errExit("stat");
-
-	if (verbose) {
-		printf("Last file access:         %s", ctime(&sb.st_atime));
-		printf("Last file modification:   %s", ctime(&sb.st_mtime));
-		printf("Last status change:       %s", ctime(&sb.st_ctime));
-
-	} else {
-		printf("SUCCESS %ld %ld\n", (long)sb.st_atime,
-		       (long)sb.st_mtime);
-	}
-
-	exit(EXIT_SUCCESS);
 }
+
+static void run(unsigned int i)
+{
+	struct test_case *tc = &tcase[i];
+	struct __kernel_old_timespec ts[2];
+	int dfd = AT_FDCWD, fd = 0, atime_change, mtime_change;
+	struct mytime *mytime = tc->mytime;
+	char *pathname = NULL;
+	void *tsp = NULL;
+	struct stat sb;
+
+	if (tc->dirfd != AT_FDCWD)
+		dfd = SAFE_OPEN(TEST_DIR, tc->oflags);
+
+	if (tc->pathname) {
+		fd = SAFE_OPEN(tc->pathname, O_WRONLY | O_CREAT);
+		pathname = tc->pathname;
+		SAFE_CHMOD(tc->pathname, tc->mode);
+		reset_time(pathname, dfd, tc->flags, i);
+		change_attr(tc, fd, 1);
+	} else if (tc->exp_err == EFAULT) {
+		pathname = bad_addr;
+	}
+
+	if (mytime) {
+		ts[0].tv_sec = mytime->access_tv_sec;
+		ts[0].tv_nsec = mytime->access_tv_nsec;
+		ts[1].tv_sec = mytime->mod_tv_sec;
+		ts[1].tv_nsec = mytime->mod_tv_nsec;
+		tsp = ts;
+	} else if (tc->exp_err == EFAULT) {
+		tsp = bad_addr;
+	}
+
+	TEST(sys_utimensat(dfd, pathname, tsp, tc->flags));
+	if (tc->pathname)
+		change_attr(tc, fd, 0);
+
+	if (TST_RET) {
+		if (!tc->exp_err) {
+			tst_res(TFAIL | TTERRNO, "%2d: utimensat() failed", i);
+		} else if (tc->exp_err == TST_ERR) {
+			tst_res(TPASS | TTERRNO, "%2d: utimensat() failed expectedly", i);
+		} else {
+			tst_res(TFAIL | TTERRNO, "%2d: utimensat() failed with incorrect error, expected %s",
+				i, tst_strerrno(tc->exp_err));
+		}
+	} else if (tc->exp_err) {
+		tst_res(TFAIL, "%2d: utimensat() passed unexpectedly", i);
+	} else {
+		atime_change = mytime ? mytime->atime_change : 1;
+		mtime_change = mytime ? mytime->mtime_change : 1;
+
+		TEST(stat(tc->pathname ? tc->pathname : TEST_DIR, &sb));
+		if (TST_RET) {
+			tst_res(TFAIL | TTERRNO, "%2d: stat() failed", i);
+			goto close;
+		}
+
+		if (!!sb.st_atime != atime_change) {
+			tst_res(TFAIL, "%2d: atime %s have changed but %s",
+				i, atime_change ? "should" : "shouldn't",
+				sb.st_atime ? "did" : "didn't");
+		} else if (!!sb.st_mtime != mtime_change) {
+			tst_res(TFAIL, "%2d: mtime %s have changed but %s",
+				i, mtime_change ? "should" : "shouldn't",
+				sb.st_mtime ? "did" : "didn't");
+		} else {
+			tst_res(TPASS, "%2d: utimensat() passed", i);
+		}
+	}
+
+close:
+	if (dfd != AT_FDCWD)
+		SAFE_CLOSE(dfd);
+
+	if (tc->pathname)
+		SAFE_CLOSE(fd);
+}
+
+static void setup(void)
+{
+	size_t i;
+
+	bad_addr = tst_get_bad_addr(NULL);
+	SAFE_MKDIR(TEST_DIR, 0700);
+
+	for (i = 0; i < ARRAY_SIZE(tcase); i++)
+		update_error(&tcase[i]);
+}
+
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(tcase),
+	.setup = setup,
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+};
