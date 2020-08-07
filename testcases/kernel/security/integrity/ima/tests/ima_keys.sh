@@ -16,11 +16,14 @@ TST_NEEDS_DEVICE=1
 # (450d0fd51564 - "IMA: Call workqueue functions to measure queued keys")
 test1()
 {
-	local keyrings keycheck_lines keycheck_line templates test_file="file.txt"
+	local keyrings keycheck_lines keycheck_line templates
+	local pattern="func=KEY_CHECK"
+	local test_file="file.txt"
 
 	tst_res TINFO "verifying key measurement for keyrings and templates specified in IMA policy file"
 
-	keycheck_lines=$(require_ima_policy_content "func=KEY_CHECK" "")
+	require_ima_policy_content "$pattern"
+	keycheck_lines=$(check_ima_policy_content "$pattern" "")
 	keycheck_line=$(echo "$keycheck_lines" | grep "keyrings" | head -n1)
 
 	if [ -z "$keycheck_line" ]; then
