@@ -33,7 +33,12 @@
  *     already exists and is a regular file and the open mode allows
  *     writing, when 'flags' is set to O_TRUNC.
  */
-
+/*
+ * Patch Description:
+	One sub test case create a child process and execlp the child.
+	In sgx-lkl currently fork is not supported. Hence, commenting this testcase.
+      TODO:Enable this sub test case after fixing Github issue lsds/sgx-lkl#598
+ */
 #define _GNU_SOURCE
 
 #include <sys/types.h>
@@ -71,7 +76,10 @@ static void testfunc_trunc(void);
 
 static void (*testfunc[])(void) = {
 	testfunc_append,
-	testfunc_cloexec,
+	// This sub test case create a child process and execlp the child.
+	// In sgx-lkl currently fork is not supported. Hence, commenting this testcase.
+	// TODO:Enable this sub test case after fixing Github issue lsds/sgx-lkl#598
+	// testfunc_cloexec,
 	testfunc_largefile,
 	testfunc_noatime,
 	testfunc_nofollow,
