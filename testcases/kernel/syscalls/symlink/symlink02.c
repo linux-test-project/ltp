@@ -159,6 +159,8 @@ int main(int ac, char **av)
 				 strerror(TEST_ERRNO));
 		} else {
 			SAFE_UNLINK(cleanup, symlnk);
+			tst_resm(TPASS, "symlink(%s, %s) Successful",
+                               fname, symlnk);
 		}
 	}
 
