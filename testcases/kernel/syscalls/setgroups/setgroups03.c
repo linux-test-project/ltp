@@ -67,18 +67,14 @@
  */
 
 /* Patch Description:
- 	First sub test(EINVAL) is failing because of bug 267
-	Issue 267: Add support to configure sysconf as part of app_config
-	https://github.com/lsds/sgx-lkl/issues/267
+       First sub test(EINVAL) is failing because of bug 267
+       Issue 267: Add support to configure sysconf as part of app_config
+       https://github.com/lsds/sgx-lkl/issues/267
 
-	Second sub test(EPERM) is failing because of bug 224
-	Issue 224: [Tests] nobody user does not have permissions to open /etc/passwd
-	https://github.com/lsds/sgx-lkl/issues/224
-
-	Workaround to fix the issue:
-	Commented first test and needs to be enabled once git issue 267 is fixed
-	As a workaround for issue 224, moved getpwnam() function to root user block to get user info
+       Workaround to fix the issue:
+       Commented first test and needs to be enabled once git issue 267 is fixed
  */
+
 #include <limits.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -111,10 +107,8 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int exp_errno;
 	int (*setupfunc) ();
 } Test_cases[] = {
-//	{
-//	1, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL}, // TODO: Enable once git issue 267 is fixed
-       	{
-	0, 2, "Permission denied, not super-user", EPERM, setup1}
+//	{1, 1, "Size is > sysconf(_SC_NGROUPS_MAX)", EINVAL, NULL}, TODO: Enable once git issue 267 is fixed
+	{0, 2, "Permission denied, not super-user", EPERM, setup1}
 };
 
 int main(int ac, char **av)
@@ -206,18 +200,16 @@ int setup1(void)
 {
 	struct passwd *user_info;	/* struct. to hold test user info */
 
-	// Nobody user do not have permissions to open /etc/passwd file 
-	// Please refer sgx-lkl/issues/224, Hence moved this piece of code to root user block
-	if ((user_info = getpwnam(TESTUSER)) == NULL) {
-                tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
-        }
-
 /* Switch to nobody user for correct error code collection */
 	ltpuser = getpwnam(nobody_uid);
 	if (seteuid(ltpuser->pw_uid) == -1) {
 		tst_resm(TINFO, "setreuid failed to "
 			 "to set the effective uid to %d", ltpuser->pw_uid);
 		perror("setreuid");
+	}
+
+	if ((user_info = getpwnam(TESTUSER)) == NULL) {
+		tst_brkm(TFAIL, cleanup, "getpwnam(2) of %s Failed", TESTUSER);
 	}
 
 	if (!GID_SIZE_CHECK(user_info->pw_gid)) {
