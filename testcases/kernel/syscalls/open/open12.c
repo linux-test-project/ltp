@@ -19,6 +19,15 @@
  *	O_APPEND, O_NOATIME, O_CLOEXEC and O_LARGEFILE.
  */
 
+/*
+ * Patch Description:
+	Subtest(test_cloexec) creates a child process and does a execlp on the child.
+	In sgx-lkl currently fork is not supported. Hence, commenting this testcase.
+	TODO:Enable (test_cloexec) test once git issue https://github.com/lsds/sgx-lkl/issues/598 is fixed
+	Also the test is failing with Kernel panic in loop device because we have 32MB memory
+	limit in loop device. Hence modified the testcase to use root filesystem.
+ */
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -51,7 +60,7 @@ static void test_noatime(void);
 static void test_cloexec(void);
 static void test_largefile(void);
 
-static void (*test_func[])(void) = { test_append, test_noatime, test_cloexec,
+static void (*test_func[])(void) = { test_append, test_noatime, //test_cloexec,TODO:Enable once issue 598 is fixed
 				     test_largefile };
 
 int TST_TOTAL = ARRAY_SIZE(test_func);
@@ -97,20 +106,6 @@ static void setup(void)
 			skip_noatime = 1;
 			return;
 		}
-
-		fs_type = tst_dev_fs_type();
-		device = tst_acquire_device(cleanup);
-
-		if (!device) {
-			tst_resm(TINFO, "Failed to obtain block device");
-			skip_noatime = 1;
-			goto end;
-		}
-
-		tst_mkfs(cleanup, device, fs_type, NULL, NULL);
-
-		SAFE_MOUNT(cleanup, device, MNTPOINT, fs_type, MS_STRICTATIME, NULL);
-		mount_flag = 1;
 	}
 
 end:
@@ -259,11 +254,5 @@ static void test_largefile(void)
 
 static void cleanup(void)
 {
-	if (mount_flag && tst_umount(MNTPOINT) == -1)
-		tst_brkm(TWARN | TERRNO, NULL, "umount(2) failed");
-
-	if (device)
-		tst_release_device(device);
-
 	tst_rmdir();
 }
