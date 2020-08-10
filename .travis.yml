@@ -38,12 +38,6 @@ matrix:
           env: DISTRO=debian:stable VARIANT=minimal TREE=out
           compiler: clang
 
-        # native non-intel
-        - os: linux
-          arch: ppc64le
-          compiler: gcc
-          env: DISTRO=debian:testing
-
         # other builds
         - os: linux
           env: DISTRO=fedora:rawhide MAKE_INSTALL=1
