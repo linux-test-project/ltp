@@ -32,12 +32,14 @@ if [ -f "/sys/devices/system/node/has_high_memory" ]; then
 else
 	N_NODES="`cat /sys/devices/system/node/has_normal_memory`"
 fi
+mem_string="$N_NODES"
 N_NODES=${N_NODES#*-*}
 N_NODES=$(($N_NODES + 1))
 
 CPUSET="/dev/cpuset"
 CPUSET_TMP="/tmp/cpuset_tmp"
-
+CLONE_CHILDREN="/dev/cpuset/cgroup.clone_children"
+CHILDREN_VALUE="0"
 HOTPLUG_CPU="1"
 
 cpuset_log()
@@ -134,6 +136,8 @@ setup()
 		tst_brkm TFAIL "Could not mount cgroup filesystem with"\
 					" cpuset on $CPUSET..Exiting test"
 	fi
+
+	CHILDREN_VALUE="`cat $CLONE_CHILDREN`"
 }
 
 # Write the cleanup function
@@ -143,6 +147,8 @@ cleanup()
 		rm -rf "$CPUSET" >/dev/null 2>&1
 		return 0
 	}
+
+	echo $CHILDREN_VALUE > $CLONE_CHILDREN
 
 	find "$CPUSET" -type d | sort | sed -n '2,$p' | tac | while read subdir
 	do
