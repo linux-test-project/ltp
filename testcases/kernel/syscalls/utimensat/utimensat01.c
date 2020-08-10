@@ -16,10 +16,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include "lapi/fs.h"
+#include "lapi/utime.h"
 #include "tst_timer.h"
-
-#define UTIME_NOW	((1l << 30) - 1l)
-#define UTIME_OMIT	((1l << 30) - 2l)
 
 #define TEST_FILE	"test_file"
 #define TEST_DIR	"test_dir"
