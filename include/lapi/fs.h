@@ -10,6 +10,7 @@
 # include <linux/fs.h>
 #endif
 
+#include <sys/types.h>
 #include <sys/user.h>
 #include <limits.h>
 #include "lapi/abisize.h"
