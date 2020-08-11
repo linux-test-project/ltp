@@ -11,7 +11,7 @@ case "$ARCH" in
 arm64) gcc_arch="aarch64";;
 ppc64el) gcc_arch="powerpc64le";;
 s390x) gcc_arch="$ARCH";;
-*) echo "unsupported arch: '$1'!" >&2; exit 1;;
+*) echo "unsupported arch: '$ARCH'!" >&2; exit 1;;
 esac
 
 dpkg --add-architecture $ARCH
