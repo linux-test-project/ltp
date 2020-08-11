@@ -48,7 +48,8 @@ static void setup(void)
 
 		if (fcount < 2) {
 			fclose(fr);
-			tst_brk(TBROK, "Unexpected data in /proc/kallsyms %d", fcount);
+			tst_brk(TBROK, "Unexpected data in /proc/kallsyms %d",
+				fcount);
 		}
 
 		if (fcount >= 3 && endl != '\n')
@@ -89,9 +90,8 @@ static void run(void)
 
 	child = child_pid = SAFE_FORK();
 
-	if (!child_pid) {
+	if (!child_pid)
 		child_main();
-	}
 
 	if (SAFE_WAITPID(child_pid, &status, WUNTRACED) != child_pid)
 		tst_brk(TBROK, "Received event from unexpected PID");
@@ -133,6 +133,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.forks_child = 1,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "f67b15037a7a"},
 		{"CVE", "2018-1000199"},
