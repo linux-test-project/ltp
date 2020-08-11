@@ -41,6 +41,7 @@
 #include "tst_assert.h"
 #include "tst_cgroup.h"
 #include "tst_lockdown.h"
+#include "tst_taint.h"
 
 /*
  * Reports testcase result.
@@ -167,6 +168,14 @@ struct tst_test {
 	 * Also, we do cleanup and restore work for the hpages resetting automatically.
 	 */
 	unsigned long request_hugepages;
+
+	/*
+	 * If set to non-zero, call tst_taint_init(taint_check) during setup
+	 * and check kernel taint at the end of the test. If all_filesystems
+	 * is non-zero, taint check will be performed after each FS test and
+	 * testing will be terminated by TBROK if taint is detected.
+	 */
+	unsigned int taint_check;
 
 	/*
 	 * If set non-zero denotes number of test variant, the test is executed

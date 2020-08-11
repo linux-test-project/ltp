@@ -1535,38 +1535,41 @@ test.c:8: INFO: do_action(arg) failed
 2.2.24 Tainted kernels
 ^^^^^^^^^^^^^^^^^^^^^^
 
-If you need to detect, if a testcase triggers a kernel warning, bug or oops,
-the following can be used to detect TAINT_W or TAINT_D:
+If you need to detect whether a testcase triggers a kernel warning, bug or
+oops, the following can be used to detect TAINT_W or TAINT_D:
 
 [source,c]
 -------------------------------------------------------------------------------
 #include "tst_test.h"
-#include "tst_taint.h"
 
-void setup(void)
-{
+static struct tst_test test = {
 	...
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	...
-}
-...
+};
+
 void run(void)
 {
 	...
-	if (tst_taint_check() == 0)
-		tst_res(TPASS, "kernel is not tainted");
+	if (tst_taint_check() != 0)
+		tst_res(TFAIL, "kernel has issues");
 	else
-		tst_res(TFAIL, "kernel is tainted");
+		tst_res(TPASS, "kernel seems to be fine");
 }
 -------------------------------------------------------------------------------
 
-You have to call 'tst_taint_init()' with non-zero flags first, preferably during
-setup(). The function will generate a 'TCONF' if the requested flags are not
-fully supported on the running kernel, and 'TBROK' if either a zero mask was
-supplied or if the kernel is already tainted before executing the test.
+To initialize taint checks, you have to set the taint flags you want to test
+for in the 'taint_check' attribute of the tst_test struct. LTP library will
+then automatically call 'tst_taint_init()' during test setup. The function
+will generate a 'TCONF' if the requested flags are not fully supported on the
+running kernel, and 'TBROK' if the kernel is already tainted before executing
+the test.
 
-Then you can call 'tst_taint_check()' during 'run()', which returns 0 or the
-tainted flags set in '/proc/sys/kernel/tainted' as specified earlier.
+LTP library will then automatically check kernel taint at the end of testing.
+If '.all_filesystems' is set in struct tst_test, taint check will be performed
+after each file system and testing may be aborted early by 'TBROK'. You can
+optionally also call 'tst_taint_check()' during 'run()', which returns 0 or
+the tainted flags set in '/proc/sys/kernel/tainted' as specified earlier.
 
 Depending on your kernel version, not all tainted-flags will be supported.
 

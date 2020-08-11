@@ -7,14 +7,12 @@
  *
  * ...
  * #include "tst_test.h"
- * #include "tst_taint.h"
  * ..
- * void setup(void)
- * {
+ * static struct tst_test test = {
  *	...
- *	tst_taint_init(TST_TAINT_W | TST_TAINT_D));
+ *	.taint_check = TST_TAINT_W | TST_TAINT_D,
  *	...
- * }
+ * };
  *
  * void run(void)
  * {
@@ -29,10 +27,14 @@
  *
  *
  *
- * The above code checks, if the kernel issued a warning (TST_TAINT_W)
+ * The above code checks whether the kernel issued a warning (TST_TAINT_W)
  * or even died (TST_TAINT_D) during test execution.
  * If these are set after running a test case, we most likely
  * triggered a kernel bug.
+ *
+ * You do not need to use tst_taint_check() explicitly because it'll be called
+ * automatically at the end of testing by the LTP library if
+ * tst_test.taint_check in non-zero.
  */
 
 #ifndef TST_TAINTED_H__
@@ -64,7 +66,10 @@
 #define TST_TAINT_T     (1 << 17) /* kernel was built with the struct randomization plugin */
 
 /*
- * Initialize and prepare support for checking tainted kernel.
+ * Initialize and prepare support for checking tainted kernel. Called
+ * automatically by LTP library during test setup if tst_test.taint_check
+ * is non-zero. The value of tst_test.taint_check will be passed as the mask
+ * argument.
  *
  * supply the mask of TAINT-flags you want to check, for example
  * (TST_TAINT_W | TST_TAINT_D) when you want to check if the kernel issued
@@ -72,7 +77,7 @@
  *
  * This function tests if the requested flags are supported on the
  * locally running kernel. In case the tainted-flags are already set by
- * the kernel, there is no reason to continue and TCONF is generated.
+ * the kernel, there is no reason to continue and TBROK is generated.
  *
  * The mask must not be zero.
  */

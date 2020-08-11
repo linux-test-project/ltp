@@ -1001,6 +1001,9 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->restore_wallclock)
 		tst_wallclock_save();
+
+	if (tst_test->taint_check)
+		tst_taint_init(tst_test->taint_check);
 }
 
 static void do_test_setup(void)
@@ -1278,6 +1281,9 @@ static int fork_testrun(void)
 	SAFE_WAITPID(test_pid, &status, 0);
 	alarm(0);
 	SAFE_SIGNAL(SIGINT, SIG_DFL);
+
+	if (tst_test->taint_check && tst_taint_check())
+		tst_brk(TBROK, "Kernel is now tainted.");
 
 	if (WIFEXITED(status) && WEXITSTATUS(status))
 		return WEXITSTATUS(status);
