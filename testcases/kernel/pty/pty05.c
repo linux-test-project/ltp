@@ -22,7 +22,6 @@
 #include "lapi/tty.h"
 
 #include "tst_test.h"
-#include "tst_taint.h"
 #include "tst_fuzzy_sync.h"
 
 #define BUF_SIZE 1
@@ -33,8 +32,6 @@ static char buf[BUF_SIZE];
 
 static void setup(void)
 {
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
-
 	fzsync_pair.exec_loops = 100000;
 	tst_fzsync_pair_init(&fzsync_pair);
 }
@@ -99,6 +96,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "82f2341c94d27"},
 		{"CVE", "2017-2636"},

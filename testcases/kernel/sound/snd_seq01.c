@@ -22,7 +22,6 @@
 
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
-#include "tst_taint.h"
 
 static int fd = -1;
 static int client_id;
@@ -64,7 +63,6 @@ static void setup(void)
 {
 	struct snd_seq_queue_info qconf = { .queue = 0 };
 
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 	errno = 0;
 	fd = open("/dev/snd/seq", O_RDWR);
 
@@ -126,6 +124,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.timeout = 120,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "d15d662e89fc"},
 		{"CVE", "2018-7566"},

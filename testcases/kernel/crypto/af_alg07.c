@@ -43,7 +43,6 @@ static void setup(void)
 {
 	uid = getuid();
 	gid = getgid();
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 
 	fd = SAFE_OPEN("tmpfile", O_RDWR | O_CREAT, 0644);
 
@@ -110,6 +109,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9060cb719e61"},
 		{"CVE", "2019-8912"},

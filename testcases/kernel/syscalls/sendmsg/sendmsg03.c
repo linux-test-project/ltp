@@ -22,7 +22,6 @@
 #include <sched.h>
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
-#include "tst_taint.h"
 
 #define IOVEC_COUNT 4
 #define PACKET_SIZE 100
@@ -39,7 +38,6 @@ static void setup(void)
 {
 	int i;
 
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);
 	sockfd = SAFE_SOCKET(AF_INET, SOCK_RAW, IPPROTO_ICMP);
@@ -106,6 +104,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "8f659a03a0ba"},
 		{"CVE", "2017-17712"},

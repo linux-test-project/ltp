@@ -24,7 +24,6 @@
 
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
-#include "tst_taint.h"
 #include "lapi/if_packet.h"
 #include "lapi/if_ether.h"
 
@@ -35,8 +34,6 @@ static void setup(void)
 {
 	int real_uid = getuid();
 	int real_gid = getgid();
-
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);
@@ -122,6 +119,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS=y",
 		"CONFIG_NET_NS=y",

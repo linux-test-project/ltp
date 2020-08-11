@@ -9,7 +9,7 @@
  * Check that UDP fragmentation offload doesn't cause memory corruption
  * if the userspace process turns off UFO in between two send() calls.
  * Kernel crash fixed in:
- * 
+ *
  *  commit 85f1bd9a7b5a79d5baa8bf44af19658f7bf77bfa
  *  Author: Willem de Bruijn <willemb@google.com>
  *  Date:   Thu Aug 10 12:29:19 2017 -0400
@@ -27,7 +27,6 @@
 
 #include "tst_test.h"
 #include "tst_net.h"
-#include "tst_taint.h"
 
 #define BUFSIZE 4000
 
@@ -39,8 +38,6 @@ static void setup(void)
 	int real_gid = getgid();
 	int sock;
 	struct ifreq ifr;
-
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);
@@ -62,6 +59,7 @@ static void run(void)
 {
 	int sock, i;
 	char buf[BUFSIZE];
+
 	memset(buf, 0x42, BUFSIZE);
 
 	for (i = 0; i < 1000; i++) {
@@ -84,6 +82,7 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS=y",
 		"CONFIG_NET_NS=y",

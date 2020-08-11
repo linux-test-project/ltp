@@ -18,7 +18,6 @@
 
 #include "config.h"
 #include "tst_test.h"
-#include "tst_taint.h"
 #include "tst_fuzzy_sync.h"
 #include "tst_safe_macros.h"
 #include "tst_safe_pthread.h"
@@ -71,7 +70,6 @@ static void setup(void)
 		tst_brk(TCONF, "The file '/dev/snd/timer' is not exist");
 
 	tst_fzsync_pair_init(&fzsync_pair);
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 	snd_fd = SAFE_OPEN("/dev/snd/timer",
 			O_RDONLY|O_CREAT|O_NOCTTY|O_SYNC|O_LARGEFILE, 0);
 }
@@ -140,6 +138,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "d11662f4f798"},
 		{"linux-git", "ba3021b2c79b"},

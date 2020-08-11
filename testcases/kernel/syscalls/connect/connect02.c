@@ -35,7 +35,6 @@
 
 #include "tst_test.h"
 #include "tst_net.h"
-#include "tst_taint.h"
 
 static int listenfd = -1, fd = -1, confd1 = -1, confd2 = -1, confd3 = -1;
 static struct sockaddr_in6 bind_addr;
@@ -45,8 +44,6 @@ static struct sockaddr reset_addr;
 static void setup(void)
 {
 	socklen_t size = sizeof(bind_addr);
-
-	tst_taint_init(TST_TAINT_W | TST_TAINT_D);
 
 	tst_init_sockaddr_inet6_bin(&bind_addr, &in6addr_any, 0);
 	tst_init_sockaddr_inet_bin(&bind_addr4, INADDR_ANY, 0);
@@ -132,6 +129,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9d538fa60bad"},
 		{"linux-git", "82c9ae440857"},
