@@ -41,7 +41,6 @@
  * Patch Description: Test cases were failing as there was not sufficient memory
  * to use for test image creation for a loop device for test purpose.
  * Test cases are modified to use /dev/vda the root file system device.
- * In test accessing fault address is commented, will be enabled after Issue 169 is fixed.
  * Also commented testcase which checks mounted filesystem is readonly or not ,will enabled after issue 189 is fixed
  */
 #include <stdio.h>
@@ -83,12 +82,12 @@ static struct test_case_t {
 } tc[] = {
 	{TEST_FILE1, EPERM},
 	{TEST_FILE2, EACCES},
-       //{(char *)-1, EFAULT}, TODO: Enable after github issue 169 is fixed
+	{(char *)-1, EFAULT},
 	{long_path, ENAMETOOLONG},
 	{"", ENOENT},
 	{TEST_FILE3, ENOTDIR},
-       {TEST_FILE4, ELOOP}
-       //{TEST_FILE5, EROFS} TODO: Enable after github issue 189 is fixed
+	{TEST_FILE4, ELOOP},
+//{TEST_FILE5, EROFS} TODO: Enable after github issue 189 is fixed
 };
 
 TCID_DEFINE(chown04);
@@ -142,7 +141,7 @@ int main(int ac, char **av)
 static void setup(void)
 {
 	struct passwd *ltpuser;
-       const char *fs_type = "ext4";
+	const char *fs_type = "ext4";
 
 	tst_require_root();
 	tst_sig(FORK, DEF_HANDLER, cleanup);
@@ -154,8 +153,13 @@ static void setup(void)
 
 	memset(long_path, 'a', PATH_MAX - 1);
 
-       //bad_addr = 0;
-       //tc[2].pathname = bad_addr; Commented because mmap not supported and lkl_access_ok is failing Github issue 169
+	bad_addr = tst_get_bad_addr(NULL);
+	tc[2].pathname = bad_addr;
+	bad_addr = mmap(0, 1, PROT_NONE,
+			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+
+	if (bad_addr == MAP_FAILED)	
+		tst_brkm(TBROK | TERRNO, cleanup, "mmap failed");
 
 	SAFE_SYMLINK(cleanup, "test_eloop1", "test_eloop2");
 	SAFE_SYMLINK(cleanup, "test_eloop2", "test_eloop1");
@@ -166,10 +170,10 @@ static void setup(void)
 	SAFE_MKDIR(cleanup, DIR_TEMP, S_IRWXU);
 	SAFE_TOUCH(cleanup, TEST_FILE2, 0666, NULL);
 
-       rmdir("mntpoint");
+	rmdir("mntpoint");
 	SAFE_MKDIR(cleanup, "mntpoint", DIR_MODE);
        //SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, MS_RDONLY, NULL); Should be replaced with below line after issue 189 fixed
-       SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, 0, NULL);
+	SAFE_MOUNT(cleanup, device, "mntpoint", fs_type, 0, NULL);
 	mount_flag = 1;
 
 	SAFE_SETEUID(cleanup, ltpuser->pw_uid);

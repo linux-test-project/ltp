@@ -44,7 +44,7 @@ static void setup(void)
 	const char* src  = "/dev/vda";
 	const char* type = "ext4";
 	const unsigned long mntflags = 0;
-	const char* opts = "mode=0777";   
+	const char* opts = "mode=0777";
 	int result = mount(src, MNTPOINT, type, mntflags, opts);
 
 	if (result != 0) {

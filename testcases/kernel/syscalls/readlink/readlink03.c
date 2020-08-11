@@ -59,8 +59,7 @@ static struct tcase {
 	{"", buffer, sizeof(buffer), ENOENT},
 	{SYM_FILE3, buffer, sizeof(buffer), ENOTDIR},
 	{elooppathname, buffer, sizeof(buffer), ELOOP},
-	// TODO: Enable back after issue 169 fixed
-	//{SYMFILE, (char *)-1, sizeof(buffer), EFAULT},
+	{SYMFILE, (char *)-1, sizeof(buffer), EFAULT},
 };
 
 static void verify_readlink(unsigned int n)

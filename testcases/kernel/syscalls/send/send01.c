@@ -101,21 +101,20 @@ static struct test_case_t tdat[] = {
 	 .cleanup = cleanup0,
 	 .desc = "invalid socket"}
 	,
-//TODO Enable below lines after issue 169 is fixed
 #ifndef UCLINUX
-//	/* Skip since uClinux does not implement memory protection */
-//	{.domain = PF_INET,
-//	 .type = SOCK_STREAM,
-//	 .proto = 0,
-//	 .buf = (void *)-1,
-//	 .buflen = sizeof(buf),
-//	 .flags = 0,
-//	 .retval = -1,
-//	 .experrno = EFAULT,
-//	 .setup = setup1,
-//	 .cleanup = cleanup1,
-//	 .desc = "invalid send buffer"}
-//	,
+	/* Skip since uClinux does not implement memory protection */
+	{.domain = PF_INET,
+	 .type = SOCK_STREAM,
+	 .proto = 0,
+	 .buf = (void *)-1,
+	 .buflen = sizeof(buf),
+	 .flags = 0,
+	 .retval = -1,
+	 .experrno = EFAULT,
+	 .setup = setup1,
+	 .cleanup = cleanup1,
+	 .desc = "invalid send buffer"}
+	,
 #endif
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,

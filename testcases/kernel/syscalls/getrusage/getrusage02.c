@@ -91,9 +91,8 @@ struct test_cases_t {
 	{
 	RUSAGE_BOTH, &usage, EINVAL},
 #ifndef UCLINUX
-	// TODO: Enable back after issue 169 fixed
-	//{
-	//RUSAGE_SELF, (struct rusage *)-1, EFAULT}
+	{
+	RUSAGE_SELF, (struct rusage *)-1, EFAULT}
 #endif
 };
 

@@ -82,15 +82,13 @@ int main(int ac, char **av)
 			         "timer_gettime(-1) = %li", TEST_RETURN);
 		}
 
-//TODO: uncomment below 7 lines after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//		TEST(ltp_syscall(__NR_timer_gettime, timer, NULL));
-//		if (TEST_RETURN == -1 && TEST_ERRNO == EFAULT) {
-//			tst_resm(TPASS,	"timer_gettime(NULL) Failed: EFAULT");
-//		} else {
-//			tst_resm(TFAIL | TERRNO,
-//			         "timer_gettime(-1) = %li", TEST_RETURN);
-//		}
+		TEST(ltp_syscall(__NR_timer_gettime, timer, NULL));
+		if (TEST_RETURN == -1 && TEST_ERRNO == EFAULT) {
+			tst_resm(TPASS,	"timer_gettime(NULL) Failed: EFAULT");
+		} else {
+			tst_resm(TFAIL | TERRNO,
+			         "timer_gettime(-1) = %li", TEST_RETURN);
+		}
 	}
 
 	cleanup();

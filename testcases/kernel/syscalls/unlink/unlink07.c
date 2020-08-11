@@ -30,7 +30,7 @@ static struct test_case_t {
 	{"nonexistfile", "non-existent file", ENOENT},
 	{"", "path is empty string", ENOENT},
 	{"nefile/file", "path contains a non-existent file", ENOENT},
-//     {NULL, "invalid address", EFAULT}, // TODO: Enable once git issue 297 is fixed
+	{NULL, "invalid address", EFAULT},
 	{"file/file", "path contains a regular file", ENOTDIR},
 	{longpathname, "pathname too long", ENAMETOOLONG},
 };
@@ -66,7 +66,7 @@ static void setup(void)
 
 	for (n = 0; n < ARRAY_SIZE(tcases); n++) {
 		if (!tcases[n].name)
-                       tcases[n].name = 0;
+                       tcases[n].name = tst_get_bad_addr(NULL);
 	}
 }
 

@@ -123,16 +123,15 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL, "Test condition %d failed",
 				 condition_number++);
 		}
-//TODO:Enable after issue 169 is fixed
-//		/* Invalid Args : Error Condition where tp = NULL */
-//		TEST(settimeofday((struct timeval *)-1, NULL));
-//		if (TEST_RETURN == -1) {
-//			tst_resm(TPASS, "Test condition %d successful",
-//				 condition_number++);
-//		} else {
-//			tst_resm(TFAIL, "Test condition %d failed",
-//				 condition_number);
-//		}
+		/* Invalid Args : Error Condition where tp = NULL */
+		TEST(settimeofday((struct timeval *)-1, NULL));
+		if (TEST_RETURN == -1) {
+			tst_resm(TPASS, "Test condition %d successful",
+				 condition_number++);
+		} else {
+			tst_resm(TFAIL, "Test condition %d failed",
+				 condition_number);
+		}
 
 	}
 	cleanup();

@@ -46,9 +46,7 @@ static struct tcase {
 	{buf, sizeof(buf), &fd, -1, EINVAL},
 	{buf, sizeof(buf), &inv_fd, 0, EBADF},
 	{buf, sizeof(buf), &fd_ro, 0, EBADF},
-//TODO: uncomment below 1 line after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//	{NULL, sizeof(buf), &fd, 0, EFAULT},
+	{NULL, sizeof(buf), &fd, 0, EFAULT},
 };
 
 /*

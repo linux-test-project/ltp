@@ -62,10 +62,10 @@ static struct test_case_t {
 	{TEST_FILE1, &buf, ENOTDIR},
 	{TEST_NOEXIST, &buf, ENOENT},
 	{test_toolong, &buf, ENAMETOOLONG},
-//#ifndef UCLINUX TODO: Enable once git issue 297 is fixed
-//     {(char *)-1, &buf, EFAULT},
-//     {TEST_FILE, (struct statfs *)-1, EFAULT},
-//#endif
+#ifndef UCLINUX
+	{(char *)-1, &buf, EFAULT},
+	{TEST_FILE, (struct statfs *)-1, EFAULT},
+#endif
 	{TEST_SYMLINK, &buf, ELOOP},
 };
 

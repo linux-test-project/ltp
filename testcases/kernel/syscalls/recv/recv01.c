@@ -89,14 +89,13 @@ struct test_case_t {		/* test case structure */
 	0, 0, 0, buf, sizeof(buf), 0,
 		    -1, ENOTSOCK, setup0, cleanup0, "invalid socket"}
 	,
-// TODO: Enable back after issue 169 fixed
-//#ifndef UCLINUX
-//	    /* Skip since uClinux does not implement memory protection */
-//	{
-//	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
-//		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
-//	,
-//#endif
+#ifndef UCLINUX
+	    /* Skip since uClinux does not implement memory protection */
+	{
+	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
+		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
+	,
+#endif
 	{
 	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), MSG_OOB,
 		    -1, EINVAL, setup1, cleanup1, "invalid MSG_OOB flag set"}

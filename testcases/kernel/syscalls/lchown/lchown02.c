@@ -94,7 +94,7 @@ struct test_case_t {
 static struct test_case_t test_cases[] = {
 	{SFILE1, "Process is not owner/root", EPERM, setup_eperm},
 	{SFILE2, "Search permission denied", EACCES, setup_eacces},
-//     {NULL, "Unaccessible address space", EFAULT, setup_efault}, // TODO: Enable once git issue 297 is fixed
+	{NULL, "Unaccessible address space", EFAULT, setup_efault},
 	{path, "Pathname too long", ENAMETOOLONG, setup_longpath},
 	{SFILE3, "Path contains regular file", ENOTDIR, setup_enotdir},
 	{"", "Pathname is empty", ENOENT, NULL},
@@ -249,7 +249,7 @@ static void setup_eacces(int pos LTP_ATTRIBUTE_UNUSED)
  */
 static void setup_efault(int pos)
 {
-       test_cases[pos].pathname = 0;
+	test_cases[pos].pathname = tst_get_bad_addr(cleanup);
 }
 
 /*

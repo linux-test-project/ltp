@@ -42,7 +42,7 @@ static struct testcase {
 	{longpathname, ENAMETOOLONG},
 	{TESTDIR2, ENOENT},
 	{TESTDIR3, ENOTDIR},
-//     {NULL, EFAULT},
+	{NULL, EFAULT},
 	{looppathname, ELOOP},
 	{TESTDIR5, EROFS},
 	{MNT_POINT, EBUSY},
@@ -62,7 +62,7 @@ static void setup(void)
 
 	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
 		if (!tcases[i].dir)
-                       tcases[i].dir = 0;
+ 			tcases[i].dir = tst_get_bad_addr(NULL);	
 	}
 
 	/*

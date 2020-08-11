@@ -130,13 +130,12 @@ struct test_case tc[] = {
 	 .flags = XATTR_CREATE,
 	 .exp_err = ERANGE,
 	},
-//TODO: Enable back after issue 169 fixed
-//	{			/* case 08, NULL key */
-//	 .value = &xattr_value,
-//	 .size = XATTR_TEST_VALUE_SIZE,
-//	 .flags = XATTR_CREATE,
-//	 .exp_err = EFAULT,
-//	},
+	{			/* case 08, NULL key */
+	 .value = &xattr_value,
+	 .size = XATTR_TEST_VALUE_SIZE,
+	 .flags = XATTR_CREATE,
+	 .exp_err = EFAULT,
+	},
 };
 
 static const char *device = "/dev/vda";

@@ -33,7 +33,7 @@ static struct tcase {
 	int exp_errno;
 } tcases[] = {
 	{"Already mounted/busy", MNTPOINT, EBUSY},
-//	{"Invalid address", NULL, EFAULT}, This test is commented because in SGX accessing NULL results in enclave exit
+	{"Invalid address", NULL, EFAULT},
 	{"Directory not found", "nonexistent", ENOENT},
 	{"Invalid  device", "./", EINVAL},
 	{"Pathname too long", long_path, ENAMETOOLONG}

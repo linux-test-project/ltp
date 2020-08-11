@@ -81,9 +81,8 @@ static struct test_case_t {
 	int exp_errno;
 } test_cases[] = {
 	{
-	// TODO: Enable back after issue 169 fixed
-	&set, 1, EINVAL}//, {
-	//(sigset_t *) - 1, SIGSETSIZE, EFAULT}
+	&set, 1, EINVAL}, {
+	(sigset_t *) - 1, SIGSETSIZE, EFAULT}
 };
 
 int test_count = sizeof(test_cases) / sizeof(struct test_case_t);

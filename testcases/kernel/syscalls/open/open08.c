@@ -63,11 +63,11 @@ static struct test_case_t {
 	int error;
 } tcases[] = {
 	{&dir_fname, O_RDWR, EISDIR},
-       {&existing_fname, O_CREAT | O_EXCL, EEXIST},
+	{&existing_fname, O_CREAT | O_EXCL, EEXIST},
 	{&existing_fname, O_DIRECTORY, ENOTDIR},
 	{&toolong_fname, O_RDWR, ENAMETOOLONG},
 	{&user2_fname, O_WRONLY, EACCES},
-//     {&unmapped_fname, O_CREAT, EFAULT} // TODO: Enable once git issue 297 is fixed.
+	{&unmapped_fname, O_CREAT, EFAULT}
 };
 
 void verify_open(unsigned int i)
@@ -110,7 +110,7 @@ static void setup(void)
 	fildes = SAFE_CREAT(existing_fname, 0600);
 	close(fildes);
 
-       unmapped_fname = 0;
+	unmapped_fname = tst_get_bad_addr(NULL);
 }
 
 static struct tst_test test = {

@@ -87,15 +87,13 @@ struct test_case_t {
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
 		    EINVAL, setup0, cleanup0, "not a socket"}
 	,
-//TODO: uncomment below 7 lines after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//#if !defined(UCLINUX)
-//	{
-//	PF_INET, SOCK_STREAM, 0, SIOCATMARK, 0,
-//		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
-//		    EFAULT, setup1, cleanup1, "invalid option buffer"}
-//	,
-//#endif
+#if !defined(UCLINUX)
+	{
+	PF_INET, SOCK_STREAM, 0, SIOCATMARK, 0,
+		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
+		    EFAULT, setup1, cleanup1, "invalid option buffer"}
+	,
+#endif
 	{
 	PF_INET, SOCK_DGRAM, 0, SIOCATMARK, &optval,
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
@@ -108,16 +106,14 @@ struct test_case_t {
 	PF_INET, SOCK_DGRAM, 0, SIOCGIFFLAGS, &ifr,
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), 0,
 		    0, setup3, cleanup1, "SIOCGIFFLAGS"}
-//TODO: uncomment below 8 lines after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//	, {
-//	PF_INET, SOCK_DGRAM, 0, SIOCGIFFLAGS, 0,
-//		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
-//		    EFAULT, setup3, cleanup1, "SIOCGIFFLAGS with invalid ifr"}
-//	, {
-//	PF_INET, SOCK_DGRAM, 0, SIOCSIFFLAGS, 0,
-//		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
-//		    EFAULT, setup3, cleanup1, "SIOCSIFFLAGS with invalid ifr"}
+	, {
+	PF_INET, SOCK_DGRAM, 0, SIOCGIFFLAGS, 0,
+		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
+		    EFAULT, setup3, cleanup1, "SIOCGIFFLAGS with invalid ifr"}
+	, {
+	PF_INET, SOCK_DGRAM, 0, SIOCSIFFLAGS, 0,
+		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
+		    EFAULT, setup3, cleanup1, "SIOCSIFFLAGS with invalid ifr"}
 ,};
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);

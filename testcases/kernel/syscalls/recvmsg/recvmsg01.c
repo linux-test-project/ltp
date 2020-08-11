@@ -131,19 +131,18 @@ struct test_case_t {		/* test case structure */
 	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)buf, sizeof(buf),
 		    &msgdat, -1, (struct sockaddr *)&from, -1, -1,
 		    EINVAL, setup1, cleanup1, "invalid socket length"},
-// TODO: Enable back after issue 169 fixed
 /* 5 */
-//	{
-//	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)-1, sizeof(buf),
-//		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
-//		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
-//	,
+	{
+	PF_INET, SOCK_STREAM, 0, iov, 1, (void *)-1, sizeof(buf),
+		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
+		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
+	,
 /* 6 */
-//	{
-//	PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf),
-//		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
-//		    -1, EFAULT, setup1, cleanup1, "invalid iovec buffer"}
-//	,
+	{
+	PF_INET, SOCK_STREAM, 0, 0, 1, (void *)buf, sizeof(buf),
+		    &msgdat, 0, (struct sockaddr *)&from, sizeof(from),
+		    -1, EFAULT, setup1, cleanup1, "invalid iovec buffer"}
+	,
 /* 7 */
 	{
 	PF_INET, SOCK_STREAM, 0, iov, -1, (void *)buf, sizeof(buf),

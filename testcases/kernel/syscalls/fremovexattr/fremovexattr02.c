@@ -55,9 +55,9 @@ struct test_case tc[] = {
 	 .key = XATTR_TEST_KEY,
 	 .exp_err = EBADF,
 	 },
-//     {                               /* case 3: bad name attribute */ TODO: Will be enabled once issue 297 is fixed
-//      .exp_err = EFAULT,
-//     },
+	{				/* case 3: bad name attribute */
+	 .exp_err = EFAULT,
+	},
 };
 
 static void verify_fremovexattr(unsigned int i)
@@ -105,7 +105,7 @@ static void setup(void)
 			tc[i].fd = fd;
 
 		if (!tc[i].key && tc[i].exp_err == EFAULT)
-                       tc[i].key = 0;
+			tc[i].key = tst_get_bad_addr(cleanup);
 	}
 }
 

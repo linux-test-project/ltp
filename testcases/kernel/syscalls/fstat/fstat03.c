@@ -33,8 +33,8 @@ static struct tcase {
 	struct stat *stat_buf;
 	int exp_err;
 } tcases[] = {
-       {&fd_ebadf, &stat_buf, EBADF}
-//     {&fd_ok, NULL, EFAULT}, TODO: Analyze and enable once issue 297 is fixed
+	{&fd_ebadf, &stat_buf, EBADF}
+	{&fd_ok, NULL, EFAULT},
 };
 
 static void check_fstat(unsigned int tc_num)

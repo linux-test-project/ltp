@@ -20,9 +20,7 @@ struct test_case {
 } tcases[] = {
 	{ "len == -1", TST_VALID_DOMAIN_NAME, -1, ERRNO_DESC(EINVAL) },
 	{ "len > allowed maximum", TST_VALID_DOMAIN_NAME, MAX_NAME_LENGTH + 1, ERRNO_DESC(EINVAL) },
-//TODO: uncomment below 1 line after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//	{ "name == NULL", NULL, MAX_NAME_LENGTH, ERRNO_DESC(EFAULT) }
+	{ "name == NULL", NULL, MAX_NAME_LENGTH, ERRNO_DESC(EFAULT) }
 };
 
 void verify_setdomainname(unsigned int nr)

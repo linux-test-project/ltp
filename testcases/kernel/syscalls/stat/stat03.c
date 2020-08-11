@@ -33,7 +33,7 @@ static struct tcase{
 	int exp_errno;
 } TC[] = {
 	{TST_EACCES_FILE, EACCES},
-//     {NULL, EFAULT}, // TODO: Enable once git issue 297 is fixed
+	{NULL, EFAULT},
 	{long_dir, ENAMETOOLONG},
 	{TST_ENOENT, ENOENT},
 	{TST_ENOTDIR_DIR, ENOTDIR},

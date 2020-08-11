@@ -42,13 +42,13 @@ static struct test_case_t {
 } TC[] = {
 	/* EBADF - fd is invalid */
 	{
-       -1, &buf, EBADF}
-//#ifndef UCLINUX // TODO: Analyze and enable once issue 297 is fixed.
+	-1, &buf, EBADF},
+#ifndef UCLINUX
 	    /* Skip since uClinux does not implement memory protection */
 	    /* EFAULT - address for buf is invalid */
-//     {
-//     -1, (void *)-1, EFAULT}
-//#endif
+	{
+	-1, (void *)-1, EFAULT}
+#endif
 };
 
 int TST_TOTAL = ARRAY_SIZE(TC);
@@ -98,17 +98,17 @@ static void setup(void)
 	TEST_PAUSE;
 
 	tst_tmpdir();
-//#ifndef UCLINUX //TODO: Analyze and enable once issue 297 is fixed.
-//     TC[1].fd = SAFE_OPEN(cleanup, "tempfile", O_RDWR | O_CREAT, 0700);
-//#endif
+#ifndef UCLINUX
+	TC[1].fd = SAFE_OPEN(cleanup, "tempfile", O_RDWR | O_CREAT, 0700);
+#endif
 }
 
 static void cleanup(void)
 {
-//#ifndef UCLINUX //TODO: Analyze and enable once issue 297 is fixed.
-//     if (TC[1].fd > 0 && close(TC[1].fd))
-//             tst_resm(TWARN | TERRNO, "Failed to close fd");
-//#endif
+#ifndef UCLINUX
+	if (TC[1].fd > 0 && close(TC[1].fd))
+			tst_resm(TWARN | TERRNO, "Failed to close fd");
+#endif
 
 	tst_rmdir();
 }

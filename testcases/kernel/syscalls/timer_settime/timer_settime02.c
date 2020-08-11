@@ -54,9 +54,8 @@ static struct testcase {
 	{&timer, &new_set, &old_set, -1, EINVAL},
 	{&timer, &new_set, &old_set, NSEC_PER_SEC + 1, EINVAL},
 	{&timer_inval, &new_set, &old_set, 0, EINVAL},
-	// TODO: Enable once git issue 297 is fixed
-	//{&timer, (struct itimerspec *) -1, &old_set, 0, EFAULT},
-	//{&timer, &new_set, (struct itimerspec *) -1, 0, EFAULT},
+	{&timer, (struct itimerspec *) -1, &old_set, 0, EFAULT},
+	{&timer, &new_set, (struct itimerspec *) -1, 0, EFAULT},
 };
 
 static void run(unsigned int n)

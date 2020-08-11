@@ -93,16 +93,14 @@ struct test_case_t {		/* test case structure */
 		    sizeof(fsin1), -1, ENOTSOCK, setup0, cleanup0,
 		    "bad file descriptor"}
 	,
-//TODO: uncomment below 8 lines after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//#if !defined(UCLINUX)
-//	{
-//	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, 0,
-//		    sizeof(optval), (struct sockaddr *)&fsin1,
-//		    sizeof(fsin1), -1, EFAULT, setup1, cleanup1,
-//		    "invalid option buffer"}
-//	,
-//#endif
+#if !defined(UCLINUX)
+	{
+	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, 0,
+		    sizeof(optval), (struct sockaddr *)&fsin1,
+		    sizeof(fsin1), -1, EFAULT, setup1, cleanup1,
+		    "invalid option buffer"}
+	,
+#endif
 	{
 	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, &optval, 0,
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,

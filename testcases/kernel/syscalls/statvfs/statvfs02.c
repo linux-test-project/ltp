@@ -48,7 +48,7 @@ static struct test_case_t {
 	struct statvfs *buf;
 	int exp_errno;
 } test_cases[] = {
-//     {NULL, &buf, EFAULT}, TODO: Enable once git issue 297 is fixed
+	{NULL, &buf, EFAULT},
 	{TEST_SYMLINK, &buf, ELOOP},
 	{nametoolong, &buf, ENAMETOOLONG},
 	{"filenoexist", &buf, ENOENT},

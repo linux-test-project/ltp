@@ -64,8 +64,7 @@ static struct tcase {
 	{&fd1, wr_iovec1, 1, 0, EINVAL},
 	{&fd1, wr_iovec2, -1, 0, EINVAL},
 	{&fd1, wr_iovec2, 1, -1, EINVAL},
-	// TODO: Enable back after issue 169 fixed
-	//{&fd1, wr_iovec3, 1, 0, EFAULT},
+	{&fd1, wr_iovec3, 1, 0, EFAULT},
 	{&fd3, wr_iovec2, 1, 0, EBADF},
 	{&fd2, wr_iovec2, 1, 0, EBADF},
 	{&fd4[1], wr_iovec2, 1, 0, ESPIPE}

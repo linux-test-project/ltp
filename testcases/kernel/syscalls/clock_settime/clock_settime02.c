@@ -25,11 +25,12 @@ struct test_case {
 };
 
 struct test_case tc[] = {
-//     {                               /* case 01: REALTIME: timespec NULL   */
-//      .type = CLOCK_REALTIME,        // TODO: Enable once git issue 297 is fixed
-//      .exp_err = EFAULT,
-//      .replace = 1,
-//      },
+{
+					/* case 01: REALTIME: timespec NULL   */
+	 .type = CLOCK_REALTIME,
+	 .exp_err = EFAULT,
+	 .replace = 1,
+	},
 	{				/* case 02: REALTIME: tv_sec = -1     */
 	 .type = CLOCK_REALTIME,
 	 .newtime.tv_sec = -1,
@@ -112,7 +113,7 @@ static void verify_clock_settime(unsigned int i)
 
 	/* bad pointer case */
 	if (tc[i].exp_err == EFAULT)
-               specptr = 0;
+		specptr = tst_get_bad_addr(NULL);
 
 	TEST(sys_clock_settime(tc[i].type, specptr));
 

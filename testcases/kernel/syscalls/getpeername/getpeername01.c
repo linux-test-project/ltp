@@ -68,13 +68,12 @@ struct test_case_t {
 	{-1, (struct sockaddr *)&fsin1, &invalid_sinlen, -1, EINVAL, setup4,
 	 cleanup4, "EINVAL"},
 #ifndef UCLINUX
-	// TODO: Enable back after issue 169 fixed
-	//{-1, (struct sockaddr *)-1, &sinlen, -1, EFAULT, setup4, cleanup4,
-	// "EFAULT"},
-	//{-1, (struct sockaddr *)&fsin1, NULL, -1, EFAULT, setup4,
-	// cleanup4, "EFAULT"},
-	//{-1, (struct sockaddr *)&fsin1, (socklen_t *)1, -1, EFAULT, setup4,
-	// cleanup4, "EFAULT"},
+	{-1, (struct sockaddr *)-1, &sinlen, -1, EFAULT, setup4, cleanup4,
+	 "EFAULT"},
+	{-1, (struct sockaddr *)&fsin1, NULL, -1, EFAULT, setup4,
+	 cleanup4, "EFAULT"},
+	{-1, (struct sockaddr *)&fsin1, (socklen_t *)1, -1, EFAULT, setup4,
+	 cleanup4, "EFAULT"},
 #endif
 };
 

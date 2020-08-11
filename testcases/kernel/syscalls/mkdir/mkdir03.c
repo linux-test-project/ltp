@@ -38,7 +38,7 @@ static struct tcase {
 	char *pathname;
 	int exp_errno;
 } TC[] = {
-//     {NULL, EFAULT}, // TODO: Enable once git issue 297 is fixed
+	{NULL, EFAULT},
 	{long_dir, ENAMETOOLONG},
 	{TST_EEXIST, EEXIST},
 	{TST_ENOENT, ENOENT},

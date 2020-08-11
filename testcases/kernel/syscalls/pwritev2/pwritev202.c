@@ -57,7 +57,7 @@ static struct tcase {
 	{&fd1, wr_iovec1, 1, 0, 0, EINVAL},
 	{&fd1, wr_iovec2, -1, 0, 0, EINVAL},
 	{&fd1, wr_iovec2, 1, 1, -1, EOPNOTSUPP},
-//     {&fd1, wr_iovec3, 1, 0, 0, EFAULT}, // TODO: Enable once git issue 297 is fixed
+	{&fd1, wr_iovec3, 1, 0, 0, EFAULT},
 	{&fd3, wr_iovec2, 1, 0, 0, EBADF},
 	{&fd2, wr_iovec2, 1, 0, 0, EBADF},
 	{&fd4[0], wr_iovec2, 1, 0, 0, ESPIPE},
@@ -90,7 +90,7 @@ static void setup(void)
 	fd2 = SAFE_OPEN("file2", O_RDONLY | O_CREAT, 0644);
 	SAFE_PIPE(fd4);
 
-       wr_iovec3[0].iov_base = 0;
+	wr_iovec3[0].iov_base = tst_get_bad_addr(NULL);
 }
 
 static void cleanup(void)

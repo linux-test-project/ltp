@@ -68,7 +68,7 @@ struct test_case_t {
 	{"regfile/file", "path contains a regular file", "nefile", "nefile",
 	 ENOTDIR},
 	{longpath, "pathname too long", "nefile", "nefile", ENAMETOOLONG},
-//     {NULL, "invalid address", "nefile", "nefile", EFAULT}, TODO: Enable once git issue 297 is fixed.
+	{NULL, "invalid address", "nefile", "nefile", EFAULT},
 	/* second path is invalid */
 	{"regfile", "regfile", "", "empty string", ENOENT},
 	{"regfile", "regfile", "neefile/file",
@@ -76,7 +76,7 @@ struct test_case_t {
 	{"regfile", "regfile", "file/file",
 		    "path contains a regular file", ENOENT},
 	{"regfile", "regfile", longpath, "pathname too long", ENAMETOOLONG},
-//     {"regfile", "regfile", NULL, "invalid address", EFAULT}, TODO: Enable once git issue 297 is fixed.
+	{"regfile", "regfile", NULL, "invalid address", EFAULT},
 	/* two existing files */
 	{"regfile", "regfile", "regfile2", "regfile2", EEXIST},
 };
@@ -153,7 +153,7 @@ static void setup(void)
 	SAFE_TOUCH(cleanup, "regfile2", 0777, NULL);
 	SAFE_MKDIR(cleanup, "dir", 0777);
 
-       void *bad_addr = 0; // Changed as mmap is not supported in sgx
+    void *bad_addr = tst_get_bad_addr(cleanup); // Changed as mmap is not supported in sgx
 
 	for (n = 0; n < TST_TOTAL; n++) {
 		if (!test_cases[n].file1)

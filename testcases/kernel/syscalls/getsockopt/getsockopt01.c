@@ -91,19 +91,17 @@ struct test_case_t {		/* test case structure */
 		    &optlen, (struct sockaddr *)&fsin1, sizeof(fsin1),
 		    -1, ENOTSOCK, setup0, cleanup0, "bad file descriptor"}
 	,
-//TODO: uncomment below 11 lines after fixing github issue 169.
-//url: https://github.com/lsds/sgx-lkl/issues/169
-//#ifndef UCLINUX
-//	{
-//	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, 0, &optlen,
-//		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
-//		    EFAULT, setup1, cleanup1, "invalid option buffer"}
-//	, {
-//	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, &optval, 0,
-//		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
-//		    EFAULT, setup1, cleanup1, "invalid optlen"}
-//	,
-//#endif /* UCLINUX */
+#ifndef UCLINUX
+	{
+	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, 0, &optlen,
+		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
+		    EFAULT, setup1, cleanup1, "invalid option buffer"}
+	, {
+	PF_INET, SOCK_STREAM, 0, SOL_SOCKET, SO_OOBINLINE, &optval, 0,
+		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
+		    EFAULT, setup1, cleanup1, "invalid optlen"}
+	,
+#endif /* UCLINUX */
 	{
 	PF_INET, SOCK_STREAM, 0, 500, SO_OOBINLINE, &optval, &optlen,
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,

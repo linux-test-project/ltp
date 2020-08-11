@@ -49,7 +49,7 @@ static struct test_case {
 } tc[] = {
 	{SYMLINK, 1, ERANGE},
 	{"", 20, ENOENT},
-//     {(char *)-1, 20, EFAULT}, // TODO: Enable once git issue 297 is fixed
+	{(char *)-1, 20, EFAULT},
 	{longpathname, 20, ENAMETOOLONG}
 };
 
