@@ -36,6 +36,7 @@
 #include <sys/mman.h>
 #include <ctype.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <numa.h>
 #include <numaif.h>
 #include <stdarg.h>
@@ -743,6 +744,47 @@ static int file_seg(char *args)
 }
 
 /*
+ * createfile <file-name> <size>[k|m|g|p]]
+ */
+static int create_file(char *args)
+{
+	glctx_t *gcp = &glctx;
+	char *filename, *nextarg;
+	size_t len;
+	int fd;
+
+	args += strspn(args, whitespace);
+	if (!required_arg(args, "<file-name>"))
+		return CMD_ERROR;
+	filename = strtok_r(args, whitespace, &nextarg);
+	args = nextarg + strspn(nextarg, whitespace);
+
+	if (!required_arg(args, "<size>"))
+		return CMD_ERROR;
+	args = strtok_r(args, whitespace, &nextarg);
+	len = get_scaled_value(args, "size");
+	if (len == BOGUS_SIZE)
+		return CMD_ERROR;
+	args = get_next_arg(args, nextarg);
+
+	fd = open(filename, O_RDWR | O_CREAT, 0600);
+	if (fd < 0) {
+		fprintf(stderr, "%s: createfile failed - %s\n",
+			gcp->program_name, strerror(errno));
+		return CMD_ERROR;
+	}
+
+	if (posix_fallocate(fd, 0, len)) {
+		fprintf(stderr, "%s: createfile failed - %s\n",
+			gcp->program_name, strerror(errno));
+		return CMD_ERROR;
+	}
+	close(fd);
+	return CMD_SUCCESS;
+}
+
+
+/*
  * remove_seg:  <seg-name> [<seg-name> ...]
  */
 static int remove_seg(char *args)
@@ -1046,6 +1088,8 @@ struct command {
 		    "\tspecified offset into the file.  <offset> and <length> may be\n"
 		    "\tomitted and specified on the map command.\n"
 		    "\t<seg-share> := private|shared - default = private\n"}, {
+	.cmd_name = "createfile", .cmd_func = create_file, .cmd_help =
+			"createfile <file-name> <size>[k|m|g|p]]",}, {
 	.cmd_name = "shm",.cmd_func = shmem_seg,.cmd_help =
 		    "shm <seg-name> <seg-size>[k|m|g|p] - \n"
 		    "\tdefine a shared memory segment of specified size.\n"
