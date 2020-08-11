@@ -36,8 +36,10 @@ build_native()
 build_cross()
 {
 	local host="${CC%-gcc}"
-	[ -n "$host" ] || \
-		{ echo "Missing CC variable, pass it with -c option." >&2; exit 1; }
+	if [ "$host" = "gcc" ]; then
+		echo "Invalid CC variable for cross compilation: $CC (clang not supported)" >&2
+		exit 1
+	fi
 
 	echo "===== cross-compile ${host} ${1}-tree build into $PREFIX ====="
 	build $1 $2 "--host=$host" CROSS_COMPILE="${host}-"
