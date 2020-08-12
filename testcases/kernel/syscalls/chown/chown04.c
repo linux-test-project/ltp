@@ -82,7 +82,7 @@ static struct test_case_t {
 } tc[] = {
 	{TEST_FILE1, EPERM},
 	{TEST_FILE2, EACCES},
-	{(char *)-1, EFAULT},
+//	{(char *)-1, EFAULT}, Enable when sgx-lkl github issue 772 is fixed.
 	{long_path, ENAMETOOLONG},
 	{"", ENOENT},
 	{TEST_FILE3, ENOTDIR},
@@ -153,8 +153,10 @@ static void setup(void)
 
 	memset(long_path, 'a', PATH_MAX - 1);
 
-	bad_addr = tst_get_bad_addr(NULL);
+#if 0 // Enable when sgx-lkl github issue 772 is fixed.
+	bad_addr = tst_get_bad_addr(NULL); 
 	tc[2].pathname = bad_addr;
+#endif
 	bad_addr = mmap(0, 1, PROT_NONE,
 			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
 

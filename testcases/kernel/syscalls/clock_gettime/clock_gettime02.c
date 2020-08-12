@@ -97,7 +97,7 @@ static void verify_clock_gettime(unsigned int i)
 
 	/* bad pointer cases */
 	if (tc[i].exp_err == EFAULT)
-		specptr = tst_get_bad_addr(NULL);
+		specptr = 0; // tst_get_bad_addr(NULL);  Enable when sgx-lkl github issue 772 is fixed.
 
 	TEST(sys_clock_gettime(tc[i].clktype, specptr));
 

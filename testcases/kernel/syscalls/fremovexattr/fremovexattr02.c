@@ -55,9 +55,11 @@ struct test_case tc[] = {
 	 .key = XATTR_TEST_KEY,
 	 .exp_err = EBADF,
 	 },
-	{				/* case 3: bad name attribute */
+#if 0 //  Enable when sgx-lkl github issue 772 is fixed.
+	{				/* case 3: bad name attribute */ 
 	 .exp_err = EFAULT,
 	},
+#endif
 };
 
 static void verify_fremovexattr(unsigned int i)

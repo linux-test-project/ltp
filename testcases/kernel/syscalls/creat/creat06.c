@@ -79,7 +79,7 @@ static struct test_case_t {
 	{NO_DIR, MODE1, ENOENT, NULL, NULL},
 	{NOT_DIR, MODE1, ENOTDIR, NULL, NULL},
 #if !defined(UCLINUX)
-	{NULL, MODE1, EFAULT, bad_addr_setup, NULL},
+	// {NULL, MODE1, EFAULT, bad_addr_setup, NULL},  Enable when sgx-lkl github issue 772 is fixed.
 #endif
 	{TEST6_FILE, MODE1, EACCES, test6_setup, test6_cleanup},
 	{TEST7_FILE, MODE1, ELOOP, NULL, NULL},

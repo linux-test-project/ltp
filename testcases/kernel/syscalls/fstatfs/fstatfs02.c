@@ -46,8 +46,8 @@ static struct test_case_t {
 #ifndef UCLINUX
 	    /* Skip since uClinux does not implement memory protection */
 	    /* EFAULT - address for buf is invalid */
-	{
-	-1, (void *)-1, EFAULT}
+	//{
+	//-1, (void *)-1, EFAULT} Enable when sgx-lkl github issue 772 is fixed.
 #endif
 };
 

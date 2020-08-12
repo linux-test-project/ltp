@@ -57,7 +57,7 @@ static struct tcase {
 	{TEST_FILE1, FILE_MODE, EPERM, set_nobody, set_root},
 	{TEST_FILE2, FILE_MODE, EACCES, set_nobody, set_root},
 	{(char *)-1, FILE_MODE, EFAULT, NULL, NULL},
-	{NULL, FILE_MODE, EFAULT, NULL, NULL},
+//	{NULL, FILE_MODE, EFAULT, NULL, NULL}, Enable when sgx-lkl github issue 772 is fixed.
 	{long_path, FILE_MODE, ENAMETOOLONG, NULL, NULL},
 	{"", FILE_MODE, ENOENT, NULL, NULL},
 	{TEST_FILE3, FILE_MODE, ENOTDIR, NULL, NULL},

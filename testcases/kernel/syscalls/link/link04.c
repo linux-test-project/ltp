@@ -68,7 +68,7 @@ struct test_case_t {
 	{"regfile/file", "path contains a regular file", "nefile", "nefile",
 	 ENOTDIR},
 	{longpath, "pathname too long", "nefile", "nefile", ENAMETOOLONG},
-	{NULL, "invalid address", "nefile", "nefile", EFAULT},
+//	{NULL, "invalid address", "nefile", "nefile", EFAULT}, Enable when sgx-lkl github issue 772 is fixed.
 	/* second path is invalid */
 	{"regfile", "regfile", "", "empty string", ENOENT},
 	{"regfile", "regfile", "neefile/file",
@@ -76,7 +76,7 @@ struct test_case_t {
 	{"regfile", "regfile", "file/file",
 		    "path contains a regular file", ENOENT},
 	{"regfile", "regfile", longpath, "pathname too long", ENAMETOOLONG},
-	{"regfile", "regfile", NULL, "invalid address", EFAULT},
+//	{"regfile", "regfile", NULL, "invalid address", EFAULT}, Enable when sgx-lkl github issue 772 is fixed.
 	/* two existing files */
 	{"regfile", "regfile", "regfile2", "regfile2", EEXIST},
 };

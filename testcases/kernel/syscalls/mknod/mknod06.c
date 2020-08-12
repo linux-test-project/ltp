@@ -101,7 +101,7 @@ struct test_case_t {		/* test case struct. to hold ref. test cond's */
 	int (*setupfunc) ();
 } Test_cases[] = {
 	{"tnode_1", "Specified node already exists", EEXIST, setup1},
-	{NULL, "Invalid address", EFAULT, no_setup},
+//	{NULL, "Invalid address", EFAULT, no_setup},  Enable when sgx-lkl github issue 772 is fixed.
 	{"testdir_2/tnode_2", "Non-existent file", ENOENT, no_setup}, {
 	"", "Pathname is empty", ENOENT, no_setup}, {
 	Longpathname, "Pathname too long", ENAMETOOLONG, longpath_setup}, {

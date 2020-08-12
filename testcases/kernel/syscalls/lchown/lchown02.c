@@ -94,7 +94,7 @@ struct test_case_t {
 static struct test_case_t test_cases[] = {
 	{SFILE1, "Process is not owner/root", EPERM, setup_eperm},
 	{SFILE2, "Search permission denied", EACCES, setup_eacces},
-	{NULL, "Unaccessible address space", EFAULT, setup_efault},
+//	{NULL, "Unaccessible address space", EFAULT, setup_efault}, Enable when sgx-lkl github issue 772 is fixed.
 	{path, "Pathname too long", ENAMETOOLONG, setup_longpath},
 	{SFILE3, "Path contains regular file", ENOTDIR, setup_enotdir},
 	{"", "Pathname is empty", ENOENT, NULL},

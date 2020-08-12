@@ -25,12 +25,14 @@ struct test_case {
 };
 
 struct test_case tc[] = {
-{
+	#if 0 // Enable when sgx-lkl github issue 772 is fixed.
+	{
 					/* case 01: REALTIME: timespec NULL   */
 	 .type = CLOCK_REALTIME,
 	 .exp_err = EFAULT,
 	 .replace = 1,
 	},
+	#endif
 	{				/* case 02: REALTIME: tv_sec = -1     */
 	 .type = CLOCK_REALTIME,
 	 .newtime.tv_sec = -1,
