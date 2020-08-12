@@ -84,6 +84,18 @@
  *		Cleanup the temporary folder
  *
 *************************************************************************/
+/*
+ * Patch Description:
+    Test Failure reason in SGX-LKL:
+    Test is happening on temporary file created under /tmp, on which fallocate system call is failing.
+
+ * Workaround to fix the issue:
+    fallocate system call is failing on temporary file created under /tmp directory.
+    So modified the tests to create directory in root filesystem.
+    TODO: Enable tst_tmpdir once git issue 734 is fixed
+    Issue: [Tests] fallocate system call is failing on /tmp filesystem.
+    https://github.com/lsds/sgx-lkl/issues/734
+ */
 
 #define _GNU_SOURCE
 
@@ -105,13 +117,15 @@
 #include "lapi/fcntl.h"
 
 #define BLOCKS_WRITTEN 12
+#define tempdir "tempdir"
+#define fname_mode1 tempdir "/tfile_mode1"	/* Files used for testing */
+#define fname_mode2 tempdir "/tfile_mode2"	/* Files used for testing */
 
 void get_blocksize(int);
 void populate_files(int fd);
 void runtest(int, int, loff_t);
 
 char *TCID = "fallocate01";
-char fname_mode1[255], fname_mode2[255];	/* Files used for testing */
 int fd_mode1, fd_mode2;
 int TST_TOTAL = 2;
 loff_t block_size;
@@ -130,7 +144,11 @@ void cleanup(void)
 		tst_resm(TWARN | TERRNO, "close(%s) failed", fname_mode1);
 	if (close(fd_mode2) == -1)
 		tst_resm(TWARN | TERRNO, "close(%s) failed", fname_mode2);
-	tst_rmdir();
+	// fallocate systemcall is failing on temporary directory created under /tmp
+	// Hence test directory is created in root filesystem.
+	remove(fname_mode1);
+      remove(fname_mode2);
+      rmdir(tempdir); // TODO: Revert changes once (https://github.com/lsds/sgx-lkl/issues/734) is fixed
 }
 
 /*****************************************************************************
@@ -142,15 +160,14 @@ void setup(void)
 {
 	/* Create temporary directories */
 	TEST_PAUSE;
+	// fallocate system call is failing on temporary directory under /tmp using tst_tmpdir function.
+	// so, creating test directory in root filesystem as workaroud
+	mkdir(tempdir, 0777); // TODO: Revert changes once (https://github.com/lsds/sgx-lkl/issues/734) is fixed
 
-	tst_tmpdir();
-
-	sprintf(fname_mode1, "tfile_mode1_%d", getpid());
 	fd_mode1 = SAFE_OPEN(cleanup, fname_mode1, O_RDWR | O_CREAT, 0700);
 	get_blocksize(fd_mode1);
 	populate_files(fd_mode1);
 
-	sprintf(fname_mode2, "tfile_mode2_%d", getpid());
 	fd_mode2 = SAFE_OPEN(cleanup, fname_mode2, O_RDWR | O_CREAT, 0700);
 	populate_files(fd_mode2);
 }
