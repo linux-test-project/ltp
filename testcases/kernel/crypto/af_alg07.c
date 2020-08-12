@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <pwd.h>
+#include "lapi/fcntl.h"
 
 #include "tst_test.h"
 #include "tst_af_alg.h"
