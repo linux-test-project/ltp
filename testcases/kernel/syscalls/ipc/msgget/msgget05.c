@@ -51,7 +51,9 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	for (int i = 0; i < 2; i++) {
+	int i;
+
+	for (i = 0; i < 2; i++) {
 		if (queue_id[i] != -1)
 			SAFE_MSGCTL(queue_id[i], IPC_RMID, NULL);
 	}
