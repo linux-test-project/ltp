@@ -26,7 +26,7 @@
 #define EXPLICIT PTHREAD_EXPLICIT_SCHED
 #define INHERIT PTHREAD_INHERIT_SCHED
 
-int verify_inheritsched(pthread_attr_t * attr, int schedtype)
+static int verify_inheritsched(pthread_attr_t * attr, int schedtype)
 {
 	int rc;
 	int inheritsched;

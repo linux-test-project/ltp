@@ -34,7 +34,7 @@
 static int last_signal;
 static volatile int test_failed;
 
-void myhandler(int signo, siginfo_t *info LTP_ATTRIBUTE_UNUSED,
+static void myhandler(int signo, siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	printf("%d, ", signo);

@@ -79,7 +79,7 @@ typedef struct {
 	int status;		/* error code */
 } testdata_t;
 
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int m_pshared;		/* 0: mutex is process-private (default) ~ !0: mutex is process-shared, if supported */
 	int fork;		/* 0: Test between threads. ~ !0: Test across processes, if supported (mmap) */
@@ -125,7 +125,7 @@ struct _scenar {
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
 /* The test function will only perform a trylock operation then return. */
-void *tf(void *arg)
+static void *tf(void *arg)
 {
 	testdata_t *td = (testdata_t *) arg;
 

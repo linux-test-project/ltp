@@ -6,4 +6,4 @@
 
 #include <signal.h>
 
-void (*dummy) (int) = SIG_HOLD;
+static void (*dummy) (int) = SIG_HOLD;

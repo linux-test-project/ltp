@@ -25,7 +25,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Now inside signal handler\n");
 }

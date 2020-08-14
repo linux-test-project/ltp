@@ -21,7 +21,7 @@ returned by the pthread_sigmask functions.
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	sigset_t oactl, tempset;
 	int i, j, test_failed = 0;

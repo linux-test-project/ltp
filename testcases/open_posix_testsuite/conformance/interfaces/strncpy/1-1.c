@@ -30,7 +30,7 @@
 #define STEP_COUNT 2000
 #define TNAME "strncpy/1-1.c"
 
-char *random_string(int len)
+static char *random_string(int len)
 {
     int i;
     char *output_string = NULL;

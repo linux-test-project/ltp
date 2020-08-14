@@ -74,11 +74,11 @@
 /***********************************    Test cases  *****************************************/
 /********************************************************************************************/
 
-char do_it = 1;
-long long iterations = 0;
+static char do_it = 1;
+static long long iterations = 0;
 
 /* Handler for user request to terminate */
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	/* do_it = 0 */
 
@@ -88,14 +88,14 @@ void sighdl(int sig)
 	while (do_it);
 }
 
-void floodsighdl(int sig)
+static void floodsighdl(int sig)
 {
 	/* Nothing to do */
 	return;
 }
 
 /* Signals flood receiver thread */
-void *flood_receiver(void *arg)
+static void *flood_receiver(void *arg)
 {
 	int ret = 0;
 	/* register the signal handler for this one thread */
@@ -123,7 +123,7 @@ void *flood_receiver(void *arg)
 }
 
 /* Signal flood threads */
-void *flooder_1(void *arg)
+static void *flooder_1(void *arg)
 {
 	int ret = 0;
 
@@ -139,7 +139,7 @@ void *flooder_1(void *arg)
 	return NULL;
 }
 
-void *flooder_2(void *arg)
+static void *flooder_2(void *arg)
 {
 	int ret = 0;
 
@@ -156,15 +156,15 @@ void *flooder_2(void *arg)
 }
 
 /* Synchronized threads */
-int sync;
-void syncsighdl(int sig)
+static int sync;
+static void syncsighdl(int sig)
 {
 	/* signal we have been called */
 	sync = 1;
 	return;
 }
 
-void *sync_rec(void *arg)
+static void *sync_rec(void *arg)
 {
 	int ret = 0;
 
@@ -185,7 +185,7 @@ void *sync_rec(void *arg)
 	return NULL;
 }
 
-void *sync_send(void *arg)
+static void *sync_send(void *arg)
 {
 	int ret = 0;
 

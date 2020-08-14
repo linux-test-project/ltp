@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("About to stop child\n");
 	raise(SIGSTOP);

@@ -20,18 +20,18 @@
 
 #define THREAD_NUM  5
 
-struct testdata {
+static struct testdata {
 	pthread_mutex_t mutex;
 	pthread_cond_t cond;
 } td;
 
-pthread_t thread[THREAD_NUM];
+static pthread_t thread[THREAD_NUM];
 
-int start_num = 0;
-int waken_num = 0;
+static int start_num = 0;
+static int waken_num = 0;
 
 /* Alarm handler */
-void alarm_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void alarm_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 	printf("Error: failed to wakeup all threads\n");
@@ -42,7 +42,7 @@ void alarm_handler(int signo LTP_ATTRIBUTE_UNUSED)
 	exit(PTS_UNRESOLVED);
 }
 
-void *thr_func(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *thr_func(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	pthread_t self = pthread_self();

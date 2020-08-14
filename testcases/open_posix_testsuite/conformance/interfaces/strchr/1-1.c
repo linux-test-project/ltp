@@ -37,7 +37,7 @@
 #define SKIP_CHAR 'n'
 #define MATCH_CHAR 's'
 
-char *random_string(int len, int char_pos)
+static char *random_string(int len, int char_pos)
 {
 	int i;
 	char *output_string = malloc(len + 1);

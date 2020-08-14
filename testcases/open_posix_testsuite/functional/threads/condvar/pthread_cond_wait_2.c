@@ -36,21 +36,21 @@
 #define RUNTIME       5
 #define POLICY        SCHED_RR
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 /* Flags that the threads use to indicate events */
 static volatile int woken_up;
 static volatile int low_done;
 
-float timediff(struct timespec t2, struct timespec t1)
+static float timediff(struct timespec t2, struct timespec t1)
 {
 	float diff = t2.tv_sec - t1.tv_sec;
 	diff += (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
 	return diff;
 }
 
-void *hi_prio_thread(void *tmp)
+static void *hi_prio_thread(void *tmp)
 {
 	struct sched_param param;
 	int policy;
@@ -79,7 +79,7 @@ void *hi_prio_thread(void *tmp)
 	return NULL;
 }
 
-void *low_prio_thread(void *tmp)
+static void *low_prio_thread(void *tmp)
 {
 	struct timespec start_time, current_time;
 	struct sched_param param;

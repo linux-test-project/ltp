@@ -29,7 +29,7 @@
 static int init_flag;
 
 /* The init function that pthread_once calls */
-void an_init_func(void)
+static void an_init_func(void)
 {
 	init_flag++;
 }

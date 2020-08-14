@@ -49,7 +49,7 @@
 static volatile int countdown = BUF_NB;
 static volatile int canceled;
 
-void sig_handler(int signum LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
+static void sig_handler(int signum LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
     void *context LTP_ATTRIBUTE_UNUSED)
 {
 	struct aiocb *a = info->si_value.sival_ptr;

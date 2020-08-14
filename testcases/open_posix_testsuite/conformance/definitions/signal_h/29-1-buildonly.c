@@ -11,7 +11,7 @@
 typedef int (*sigaction_test) (int, const struct sigaction *,
 			       struct sigaction *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	sigaction_test dummyvar;
 	dummyvar = sigaction;

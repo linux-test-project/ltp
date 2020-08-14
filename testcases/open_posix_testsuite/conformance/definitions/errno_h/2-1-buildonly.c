@@ -6,9 +6,9 @@
 
 #include <errno.h>
 
-int errno_test;
+static int errno_test;
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	errno_test = errno;
 	return 0;

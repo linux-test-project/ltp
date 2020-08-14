@@ -17,9 +17,9 @@
 
 #define SIGTOTEST SIGUSR1
 
-stack_t alternate_s;
+static stack_t alternate_s;
 
-void handler()
+static void handler()
 {
 	printf("Just a dummy handler\n");
 }

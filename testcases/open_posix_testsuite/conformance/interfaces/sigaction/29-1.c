@@ -86,7 +86,7 @@
 
 static volatile sig_atomic_t latest;
 
-void handler(int sig LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
+static void handler(int sig LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	if (info->si_signo != SIGRTMAX) {

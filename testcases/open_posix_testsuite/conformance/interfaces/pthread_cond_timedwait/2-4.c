@@ -68,7 +68,7 @@ typedef struct {
 	int status;		/* error code */
 } testdata_t;
 
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int mc_pshared;		/* 0: mutex and cond are process-private (default) ~ !0: Both are process-shared, if supported */
 	int c_clock;		/* 0: cond uses the default clock. ~ !0: Cond uses monotonic clock, if supported. */
@@ -148,7 +148,7 @@ struct _scenar {
 #endif
 };
 
-void *tf(void *arg)
+static void *tf(void *arg)
 {
 	int ret = 0;
 	struct timespec ts;

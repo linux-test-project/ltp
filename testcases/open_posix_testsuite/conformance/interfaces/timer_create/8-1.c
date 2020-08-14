@@ -43,12 +43,12 @@
 #define CHILDSUCCESS 1
 #define CHILDFAILURE 0
 
-void parenthandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void parenthandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Expected - Caught signal\n");
 }
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Not expected - Caught signal\n");
 }

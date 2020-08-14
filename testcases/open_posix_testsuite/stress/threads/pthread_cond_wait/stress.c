@@ -97,7 +97,7 @@
 
 #endif
 
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int mc_pshared;		/* 0: mutex and cond are process-private (default) ~ !0: Both are process-shared, if supported */
 	int c_clock;		/* 0: cond uses the default clock. ~ !0: Cond uses monotonic clock, if supported. */
@@ -180,7 +180,7 @@ struct _scenar {
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
 /* This is the shared structure for all threads related to the same condvar */
-struct celldata {
+static struct celldata {
 	pthread_t workers[NCHILDREN * SCALABILITY_FACTOR + 2];
 	pthread_t signaler;
 
@@ -197,10 +197,10 @@ struct celldata {
 	long cnttotal;
 } cells[NSCENAR * SCALABILITY_FACTOR];
 
-char do_it = 1;
-pthread_attr_t ta;
+static char do_it = 1;
+static pthread_attr_t ta;
 
-void cleanup(void *arg)
+static void cleanup(void *arg)
 {
 	int ret;
 	struct celldata *cd = (struct celldata *)arg;
@@ -213,7 +213,7 @@ void cleanup(void *arg)
 
 }
 
-void *worker(void *arg)
+static void *worker(void *arg)
 {
 	int ret;
 	struct celldata *cd = (struct celldata *)arg;
@@ -272,7 +272,7 @@ void *worker(void *arg)
 	return NULL;
 }
 
-void *signaler(void *arg)
+static void *signaler(void *arg)
 {
 	int ret;
 	struct celldata *cd = (struct celldata *)arg;
@@ -308,7 +308,7 @@ void *signaler(void *arg)
 	return NULL;
 }
 
-void *cellmanager(void *arg)
+static void *cellmanager(void *arg)
 {
 	int ret, i;
 	struct celldata *cd = (struct celldata *)arg;
@@ -406,7 +406,7 @@ void *cellmanager(void *arg)
 	return NULL;
 }
 
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	/* do_it = 0 */
 	do {

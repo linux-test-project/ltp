@@ -25,9 +25,9 @@
 #define TIMERVAL 2
 #define TIMERINTERVAL 3
 
-int madeit = 0;
+static int madeit = 0;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	madeit++;
 	if (madeit > 1) {

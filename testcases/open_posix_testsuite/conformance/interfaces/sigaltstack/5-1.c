@@ -18,7 +18,7 @@
 
 #define SIGTOTEST SIGUSR1
 
-void handler()
+static void handler()
 {
 	printf("Do nothing useful\n");
 }

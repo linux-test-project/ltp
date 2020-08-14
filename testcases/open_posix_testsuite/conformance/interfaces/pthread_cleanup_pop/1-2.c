@@ -30,18 +30,18 @@
 #define INTHREAD 0
 #define INMAIN 1
 
-int sem1;			/* Manual semaphore */
-int cleanup_flag;
+static int sem1;			/* Manual semaphore */
+static int cleanup_flag;
 
 /* Cleanup handler */
-void a_cleanup_func(void *flag_val)
+static void a_cleanup_func(void *flag_val)
 {
 	cleanup_flag = (long)flag_val;
 	return;
 }
 
 /* Function that the thread executes upon its creation */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	pthread_cleanup_push(a_cleanup_func, (void *)CLEANUP_CALLED);
 	pthread_cleanup_pop(0);

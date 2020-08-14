@@ -17,6 +17,6 @@
 /* The minimun acceptable value for USHRT_MAX */
 #define MIN_USHRT_MAX 65535
 
-shmatt_t tmin = 0;
-shmatt_t tmax = USHRT_MAX;
-shmatt_t tminmax = MIN_USHRT_MAX;
+static shmatt_t tmin = 0;
+static shmatt_t tmax = USHRT_MAX;
+static shmatt_t tminmax = MIN_USHRT_MAX;

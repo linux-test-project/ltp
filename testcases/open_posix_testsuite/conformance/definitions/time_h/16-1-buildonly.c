@@ -14,7 +14,7 @@
 
 typedef char *(*ctime_test) (const time_t *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	ctime_test dummyvar;
 	dummyvar = ctime;

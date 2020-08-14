@@ -22,7 +22,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-char *shm_name[] = {
+static char *shm_name[] = {
 	/* char which are in portable character set but not in portable
 	   filename character set */
 	"$#\n@\t\a,~}",

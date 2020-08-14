@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("SIGUSR1 called. Inside handler\n");
 }

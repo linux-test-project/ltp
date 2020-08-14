@@ -22,16 +22,16 @@
 
 #define CHILDPASS 1
 
-int caughtabort = 0;
-int caughtalarm = 0;
+static int caughtabort = 0;
+static int caughtalarm = 0;
 
-void handler_abrt(int signo)
+static void handler_abrt(int signo)
 {
 	printf("Caught abort signal\n");
 	caughtabort++;
 }
 
-void handler_alrm(int signo)
+static void handler_alrm(int signo)
 {
 	printf("Caught alarm signal\n");
 	caughtalarm++;

@@ -38,14 +38,14 @@
 #define CHILDPASS 1
 #define CHILDFAIL 0
 
-char gqname[NAMESIZE];
-mqd_t gqueue;
+static char gqname[NAMESIZE];
+static mqd_t gqueue;
 
 /*
  * This handler is just used to catch the signal and stop sleep (so the
  * parent knows the child is still busy sending signals).
  */
-void justreturn_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void justreturn_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	return;
 }

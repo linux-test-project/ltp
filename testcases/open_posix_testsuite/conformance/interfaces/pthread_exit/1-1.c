@@ -28,10 +28,10 @@
 #define INTHREAD 0		/* Control going to or is already for Thread */
 #define INMAIN 1		/* Control going to or is already for Main */
 
-int sem;			/* Manual semaphore used to indicate when the thread has been created. */
+static int sem;			/* Manual semaphore used to indicate when the thread has been created. */
 
 /* Thread's function. */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	sem = INMAIN;
 	pthread_exit((void *)RETURN_CODE);

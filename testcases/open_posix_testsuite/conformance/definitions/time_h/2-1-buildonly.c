@@ -9,9 +9,9 @@
  */
 #include <time.h>
 
-struct tm this_type_should_exist, t;
+static struct tm this_type_should_exist, t;
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	int week, year, dst;
 

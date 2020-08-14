@@ -27,11 +27,11 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void *func(void *parm);
+static void *func(void *parm);
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-int t1_start = 0;
-int t1_pause = 1;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static int t1_start = 0;
+static int t1_pause = 1;
 
 int main(void)
 {
@@ -84,7 +84,7 @@ int main(void)
 	return PTS_PASS;
 }
 
-void *func(void *parm LTP_ATTRIBUTE_UNUSED)
+static void *func(void *parm LTP_ATTRIBUTE_UNUSED)
 {
 	int rc;
 

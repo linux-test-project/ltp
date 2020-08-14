@@ -80,7 +80,7 @@
 
 #endif
 
-struct _scenar {
+static struct _scenar {
 	int m_type;
 	int mc_pshared;
 	int c_clock;
@@ -139,7 +139,7 @@ struct _scenar {
 
 #define NSCENAR (sizeof(scenarii) / sizeof(scenarii[0]))
 
-struct testdata {
+static struct testdata {
 	int count;
 	pthread_cond_t cnd;
 	pthread_mutex_t mtx;
@@ -149,7 +149,7 @@ struct testdata {
 	char fork;
 } *td;
 
-struct {
+static struct {
 	union {
 		pthread_t t;
 		pid_t p;

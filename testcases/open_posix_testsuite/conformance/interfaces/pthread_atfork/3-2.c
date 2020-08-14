@@ -75,28 +75,28 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
-int controls[3] = { 0, 0, 0 };
+static int controls[3] = { 0, 0, 0 };
 
 /* pthread_atfork handlers */
-void prepare(void)
+static void prepare(void)
 {
 	controls[0]++;
 }
 
-void parent(void)
+static void parent(void)
 {
 	controls[1]++;
 }
 
-void child(void)
+static void child(void)
 {
 	controls[2]++;
 }
 
 /* Thread function */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t child, ctl;

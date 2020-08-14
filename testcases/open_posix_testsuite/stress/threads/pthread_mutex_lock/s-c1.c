@@ -78,7 +78,7 @@
 /********************************************************************************************/
 
 #ifndef WITHOUT_XOPEN
-int types[] = {
+static int types[] = {
 	PTHREAD_MUTEX_NORMAL,
 	PTHREAD_MUTEX_ERRORCHECK,
 	PTHREAD_MUTEX_RECURSIVE,
@@ -87,21 +87,21 @@ int types[] = {
 #endif
 
 /* The mutex the threads will block on */
-pthread_mutex_t mtx[5];
+static pthread_mutex_t mtx[5];
 
 /* The condition used to signal the main thread to go to the next step */
-pthread_cond_t cnd;
-pthread_mutex_t m;
+static pthread_cond_t cnd;
+static pthread_mutex_t m;
 
 /* The shared data used to control the results of the test */
-unsigned long nbthOK[5];
-unsigned long nbthNOK[5];
-unsigned long nbthTOT;
+static unsigned long nbthOK[5];
+static unsigned long nbthNOK[5];
+static unsigned long nbthTOT;
 
 /*****
  *
  */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret;
 	int i;

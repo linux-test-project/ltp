@@ -18,15 +18,15 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int SIGTSTP_count = 0;
+static int SIGTSTP_count = 0;
 
-void SIGTSTP_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGTSTP_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGTSTP_count++;
 	printf("Caught SIGTSTP\n");
 }
 
-void SIGTTIN_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGTTIN_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGTTIN\n");
 	raise(SIGTSTP);

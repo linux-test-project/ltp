@@ -18,7 +18,7 @@
 
 typedef int (*sched_setscheduler_test) (pid_t, int, const struct sched_param *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	sched_setscheduler_test dummyvar;
 	dummyvar = sched_setscheduler;

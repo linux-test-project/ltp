@@ -25,12 +25,12 @@
 #define CUS_NUM		10
 #define LOOP_NUM	30
 
-sem_t customer;
-sem_t barber;
-sem_t lock;
-sem_t print;
+static sem_t customer;
+static sem_t barber;
+static sem_t lock;
+static sem_t print;
 
-int waiting = 0;
+static int waiting = 0;
 
 #ifdef __GNUC__
 #define my_printf(x...) do { \
@@ -42,7 +42,7 @@ int waiting = 0;
 #define my_printf printf
 #endif
 
-void mdelay(unsigned msecs)
+static void mdelay(unsigned msecs)
 {
 	struct timespec req;
 	req.tv_sec = msecs / 1000;
@@ -50,7 +50,7 @@ void mdelay(unsigned msecs)
 	nanosleep(&req, NULL);
 }
 
-void *barbers(void *unused LTP_ATTRIBUTE_UNUSED)
+static void *barbers(void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	int i;
 	for (i = 0; i < LOOP_NUM; i++) {
@@ -92,7 +92,7 @@ void *barbers(void *unused LTP_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-void *customers(void *ID)
+static void *customers(void *ID)
 {
 	int CusID;
 	CusID = *(int *)ID;

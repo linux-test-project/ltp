@@ -51,7 +51,7 @@
 static char semname[28];
 static char semname_1[28];	/* Used to record state */
 
-int set_my_prio(int priority)
+static int set_my_prio(int priority)
 {
 	struct sched_param sp;
 	sp.sched_priority = priority;
@@ -64,7 +64,7 @@ int set_my_prio(int priority)
 	return 0;
 }
 
-int get_my_prio(void)
+static int get_my_prio(void)
 {
 	struct sched_param sp;
 
@@ -76,7 +76,7 @@ int get_my_prio(void)
 	return sp.sched_priority;
 }
 
-int child_fn(int priority, int id)
+static int child_fn(int priority, int id)
 {
 	sem_t *sem, *sem_1;
 

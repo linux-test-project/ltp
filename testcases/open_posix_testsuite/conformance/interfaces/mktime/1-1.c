@@ -15,8 +15,8 @@
 #include <time.h>
 #include "posixtest.h"
 
-struct tm tm_ptr;
-time_t tps;
+static struct tm tm_ptr;
+static time_t tps;
 
 int main(void)
 {

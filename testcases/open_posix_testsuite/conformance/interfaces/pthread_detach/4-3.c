@@ -62,14 +62,14 @@ static unsigned long count_sig;
 static long sleep_time;
 static sigset_t usersigs;
 
-struct thestruct {
+static struct thestruct {
 	int sig;
 #ifdef WITH_SYNCHRO
 	sem_t *sem;
 #endif
 };
 
-unsigned long long current_time_usec()
+static unsigned long long current_time_usec()
 {
 	struct timeval now;
 	SAFE_FUNC(gettimeofday(&now, NULL));
@@ -216,7 +216,7 @@ static void *test(void *arg)
 	return NULL;
 }
 
-void do_child()
+static void do_child()
 {
 	int ret;
 	pthread_t th_work, th_sig1;
@@ -279,7 +279,7 @@ void do_child()
 		UNRESOLVED(ret, "Worker thread join failed");
 }
 
-void main_loop()
+static void main_loop()
 {
 	int child_count = 0;
 	int stat_pipe[2];

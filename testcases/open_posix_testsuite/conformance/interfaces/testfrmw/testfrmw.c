@@ -34,12 +34,12 @@
 /* We use a mutex to avoid conflicts in traces */
 static pthread_mutex_t m_trace = PTHREAD_MUTEX_INITIALIZER;
 
-void output_init(void)
+static void output_init(void)
 {
 	return;
 }
 
-void output(char *string, ...)
+static void output(char *string, ...)
 {
 	va_list ap;
 	struct tm *now;
@@ -62,7 +62,7 @@ void output(char *string, ...)
 	pthread_setcancelstate(oldstate, NULL);
 }
 
-void output_fini(void)
+static void output_fini(void)
 {
 	return;
 }

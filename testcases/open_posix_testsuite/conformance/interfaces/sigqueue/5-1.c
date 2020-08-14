@@ -29,9 +29,9 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int counter = 0;
+static int counter = 0;
 
-void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	counter++;
 }

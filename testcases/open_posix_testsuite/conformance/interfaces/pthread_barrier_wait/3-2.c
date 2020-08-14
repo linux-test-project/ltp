@@ -38,7 +38,7 @@ static int barrier_waited;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-void sig_handler()
+static void sig_handler()
 {
 	struct timespec ts;
 	sig_rcvd = 1;

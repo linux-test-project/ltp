@@ -29,10 +29,10 @@
 #define    THREAD_NUM  	5
 #define    LOOPS     	4
 
-void *f1(void *parm);
+static void *f1(void *parm);
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-int value;			/* value protected by mutex */
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static int value;			/* value protected by mutex */
 
 int main(void)
 {
@@ -69,7 +69,7 @@ int main(void)
 	return PTS_PASS;
 }
 
-void *f1(void *parm LTP_ATTRIBUTE_UNUSED)
+static void *f1(void *parm LTP_ATTRIBUTE_UNUSED)
 {
 	int i, tmp;
 	int rc = 0;

@@ -76,13 +76,13 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
-int control = 0;
-int nerrors = 0;
+static int control = 0;
+static int nerrors = 0;
 
 /* pthread_atfork handlers */
-void pre3(void)
+static void pre3(void)
 {
 	control++;
 
@@ -90,7 +90,7 @@ void pre3(void)
 		nerrors++;
 }
 
-void pre2(void)
+static void pre2(void)
 {
 	control++;
 
@@ -98,7 +98,7 @@ void pre2(void)
 		nerrors++;
 }
 
-void pre1(void)
+static void pre1(void)
 {
 	control++;
 
@@ -106,7 +106,7 @@ void pre1(void)
 		nerrors++;
 }
 
-void par1(void)
+static void par1(void)
 {
 	control++;
 
@@ -114,7 +114,7 @@ void par1(void)
 		nerrors++;
 }
 
-void par2(void)
+static void par2(void)
 {
 	control++;
 
@@ -122,7 +122,7 @@ void par2(void)
 		nerrors++;
 }
 
-void par3(void)
+static void par3(void)
 {
 	control++;
 
@@ -130,7 +130,7 @@ void par3(void)
 		nerrors++;
 }
 
-void chi1(void)
+static void chi1(void)
 {
 	control += 2;
 
@@ -138,7 +138,7 @@ void chi1(void)
 		nerrors++;
 }
 
-void chi2(void)
+static void chi2(void)
 {
 	control += 2;
 
@@ -146,7 +146,7 @@ void chi2(void)
 		nerrors++;
 }
 
-void chi3(void)
+static void chi3(void)
 {
 	control += 2;
 
@@ -155,7 +155,7 @@ void chi3(void)
 }
 
 /* Thread function */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t child, ctl;

@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-struct unique {
+static struct unique {
 	int value;
 	char *name;
 } sym[] = {

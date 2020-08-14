@@ -24,7 +24,7 @@
 #define SIGTOTEST SIGALRM
 #define SLEEPTIME 3
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 }

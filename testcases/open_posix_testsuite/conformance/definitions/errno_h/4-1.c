@@ -14,7 +14,7 @@
 #define PTP_UNINITIATED 6
 #define PTP_NORESULT    7
 
-struct unique {
+static struct unique {
 	int value;
 	char *name;
 } sym[] = { {

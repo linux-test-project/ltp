@@ -31,10 +31,10 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int handler_count = 0;
-int handler_error = 0;
+static int handler_count = 0;
+static int handler_error = 0;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	static int inside_handler = 0;
 

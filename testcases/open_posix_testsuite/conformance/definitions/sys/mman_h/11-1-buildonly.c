@@ -18,7 +18,7 @@
 
 typedef int (*mlock_test) (const void *, size_t);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	mlock_test dummyvar;
 	dummyvar = mlock;

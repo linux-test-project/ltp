@@ -24,7 +24,7 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int is_empty(sigset_t * set)
+static int is_empty(sigset_t * set)
 {
 
 	int i;
@@ -50,7 +50,7 @@ int is_empty(sigset_t * set)
 	return 1;
 }
 
-void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 

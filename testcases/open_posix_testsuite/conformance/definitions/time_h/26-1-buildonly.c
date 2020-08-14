@@ -15,7 +15,7 @@
 typedef size_t(*strftime_test) (char *, size_t, const char *,
 				const struct tm *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	strftime_test dummyvar;
 	dummyvar = strftime;

@@ -21,7 +21,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int main(void)
 {

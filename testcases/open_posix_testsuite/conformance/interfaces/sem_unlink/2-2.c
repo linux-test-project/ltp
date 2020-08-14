@@ -83,7 +83,7 @@
 /******************************************************************************/
 
 /* Operations common to all processes on the semaphore*/
-sem_t *common()
+static sem_t *common()
 {
 	int ret;
 	sem_t *sem;

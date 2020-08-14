@@ -32,9 +32,9 @@
 #define BEFOREHANDLER 1
 #define INHANDLER 2
 #define LEAVINGHANDLER 3
-int globalStatus = BEFOREHANDLER;
+static int globalStatus = BEFOREHANDLER;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	globalStatus = INHANDLER;
 	printf("Caught signal being tested!\n");

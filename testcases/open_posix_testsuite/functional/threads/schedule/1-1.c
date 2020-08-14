@@ -36,18 +36,18 @@
 #define LOW_PRIORITY 5
 #define RUNTIME 5
 
-pthread_barrier_t barrier;
+static pthread_barrier_t barrier;
 static volatile int woken_up;
 static volatile int low_done;
 
-float timediff(struct timespec t2, struct timespec t1)
+static float timediff(struct timespec t2, struct timespec t1)
 {
 	float diff = t2.tv_sec - t1.tv_sec;
 	diff += (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
 	return diff;
 }
 
-int my_pthread_barrier_wait(pthread_barrier_t *p)
+static int my_pthread_barrier_wait(pthread_barrier_t *p)
 {
 	int rc;
 
@@ -57,7 +57,7 @@ int my_pthread_barrier_wait(pthread_barrier_t *p)
 	return rc;
 }
 
-void *hi_prio_thread(void *tmp)
+static void *hi_prio_thread(void *tmp)
 {
 	struct sched_param param;
 	int policy;
@@ -82,7 +82,7 @@ void *hi_prio_thread(void *tmp)
 	pthread_exit(NULL);
 }
 
-void *low_prio_thread(void *tmp)
+static void *low_prio_thread(void *tmp)
 {
 	struct timespec start_timespec, current_timespec;
 	struct sched_param param;

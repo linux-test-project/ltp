@@ -70,7 +70,7 @@
 /********************************************************************************************/
 #ifndef WITHOUT_XOPEN
 
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int m_pshared;		/* 0: mutex is process-private (default) ~ !0: mutex is process-shared, if supported */
 	char *descr;		/* Case description */

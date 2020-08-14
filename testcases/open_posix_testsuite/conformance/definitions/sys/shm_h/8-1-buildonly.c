@@ -16,7 +16,7 @@
 
 typedef void *(*shmat_test) (int, const void *, int);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	shmat_test dummyvar;
 	dummyvar = shmat;

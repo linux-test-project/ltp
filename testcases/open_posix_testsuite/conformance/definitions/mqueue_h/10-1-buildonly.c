@@ -8,7 +8,7 @@
 #include <time.h>
 #include "posixtest.h"
 
-void test_mq_timedsend_prototype(void)
+static void test_mq_timedsend_prototype(void)
 {
 	mqd_t mqdes;
 	struct timespec timeout;

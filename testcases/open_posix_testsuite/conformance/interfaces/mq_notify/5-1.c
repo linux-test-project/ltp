@@ -44,14 +44,14 @@
 #define MSG_SIZE	40
 #define BUFFER 40
 
-int enter_handler = 0;
+static int enter_handler = 0;
 
-void msg_handler()
+static void msg_handler()
 {
 	enter_handler = 1;
 }
 
-void mqclean(mqd_t queue, const char *qname)
+static void mqclean(mqd_t queue, const char *qname)
 {
 	mq_close(queue);
 	mq_unlink(qname);

@@ -8,7 +8,7 @@
 
 typedef int (*siginterrupt_test) (int, int);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	siginterrupt_test dummyvar;
 	dummyvar = siginterrupt;

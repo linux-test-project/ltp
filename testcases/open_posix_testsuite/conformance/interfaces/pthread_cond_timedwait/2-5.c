@@ -62,7 +62,7 @@
 
 #ifndef WITHOUT_XOPEN
 
-struct _td {
+static struct _td {
 	pthread_mutex_t mtx1, mtx2;	/* The two mutex m1 and m2 */
 	pthread_cond_t cnd;	/* The cond var c */
 	char boolcnd;		/* The boolean predicate b associated with c */
@@ -72,7 +72,7 @@ struct _td {
 	int stopped;		/* # of threads which are terminated */
 } data;
 
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret;
 

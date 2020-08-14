@@ -32,12 +32,12 @@
 #include <errno.h>
 #include "posixtest.h"
 
-struct testcase {
+static struct testcase {
 	int prot;
 	int flags;
 };
 
-struct testcase testcases[] = {
+static struct testcase testcases[] = {
 	{.flags = MAP_SHARED,.prot = PROT_NONE},
 	{.flags = MAP_SHARED,.prot = PROT_READ},
 	{.flags = MAP_SHARED,.prot = PROT_WRITE},

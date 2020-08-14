@@ -89,8 +89,8 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-int global = 0;
-int tab[3];
+static int global = 0;
+static int tab[3];
 
 #define CLEANUP(n) void clnp##n(void * arg)\
 {\
@@ -102,7 +102,7 @@ CLEANUP(1)
     CLEANUP(2)
     CLEANUP(3)
 
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	pthread_cleanup_push(clnp3, NULL);
 	pthread_cleanup_push(clnp2, NULL);

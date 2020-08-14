@@ -42,7 +42,7 @@
  * Add more if desired.
  */
 
-struct sig_info {
+static struct sig_info {
 	int sig;
 	char *sig_name;
 	char caught;
@@ -85,7 +85,7 @@ static volatile int ready;
 static sem_t sem;
 
 /* Lookup */
-struct sig_info *lookup(int signo)
+static struct sig_info *lookup(int signo)
 {
 	struct sig_info *s = &sigs[0];
 
@@ -98,7 +98,7 @@ struct sig_info *lookup(int signo)
 }
 
 /* Handler function */
-void handler(int signo)
+static void handler(int signo)
 {
 	struct sig_info *s;
 
@@ -108,7 +108,7 @@ void handler(int signo)
 }
 
 /* Thread function */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int rc;
 	int status = PTS_PASS;
@@ -143,7 +143,7 @@ void *threaded(void *arg)
 	return (void *)((long)status);
 }
 
-int test_sig(struct sig_info *s)
+static int test_sig(struct sig_info *s)
 {
 	int rc;
 	int status = PTS_UNRESOLVED;

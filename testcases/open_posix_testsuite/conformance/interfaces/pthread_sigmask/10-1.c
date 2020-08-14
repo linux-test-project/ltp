@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	sigset_t set1, set2;
 	int pthread_sigmask_return_val = 1;

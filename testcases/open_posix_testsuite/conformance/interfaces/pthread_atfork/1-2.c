@@ -86,28 +86,28 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-pthread_t threads[3];
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
-pthread_t ch;
+static pthread_t threads[3];
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t ch;
 
 /* at fork handlers */
-void prepare(void)
+static void prepare(void)
 {
 	threads[0] = pthread_self();
 }
 
-void parent(void)
+static void parent(void)
 {
 	threads[1] = pthread_self();
 }
 
-void child(void)
+static void child(void)
 {
 	threads[2] = pthread_self();
 }
 
 /* Thread function */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t child, ctl;

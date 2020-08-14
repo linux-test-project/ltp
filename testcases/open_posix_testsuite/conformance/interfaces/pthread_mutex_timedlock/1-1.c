@@ -34,10 +34,10 @@
 
 #define TIMEOUT 3		/* 3 seconds of timeout time for
 				   pthread_mutex_timedlock(). */
-void *f1(void *parm);
+static void *f1(void *parm);
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
-struct timeval currsec1, currsec2;	/* Variables for saving time before
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
+static struct timeval currsec1, currsec2;	/* Variables for saving time before
 					   and after locking the mutex using
 					   pthread_mutex_timedlock(). */
 /****************************
@@ -106,7 +106,7 @@ int main(void)
  * f1()
  *
  * *************************/
-void *f1(void *parm LTP_ATTRIBUTE_UNUSED)
+static void *f1(void *parm LTP_ATTRIBUTE_UNUSED)
 {
 	struct timespec timeout;
 

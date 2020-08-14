@@ -11,4 +11,4 @@
 
 #include <pthread.h>
 
-pthread_barrierattr_t dummy;
+static pthread_barrierattr_t dummy;

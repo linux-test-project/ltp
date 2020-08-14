@@ -96,16 +96,16 @@
 /********************************************************************************************/
 
 /* This will be used to control that atexit() has been called */
-int *ctl;
-long mf;
+static int *ctl;
+static long mf;
 
-void clnp(void)
+static void clnp(void)
 {
 	*ctl = 1;
 }
 
 /* Thread routine */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

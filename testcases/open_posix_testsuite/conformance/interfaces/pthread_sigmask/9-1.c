@@ -25,9 +25,9 @@
 #include "posixtest.h"
 
 static volatile int handler_called;
-int pthread_sigmask_return_val = 1;	/* some value that's not a 1 or 0 */
+static int pthread_sigmask_return_val = 1;	/* some value that's not a 1 or 0 */
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 	if (pthread_sigmask_return_val != 1) {
@@ -37,7 +37,7 @@ void handler(int signo LTP_ATTRIBUTE_UNUSED)
 	}
 }
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	struct sigaction act;
 	sigset_t blocked_set1;

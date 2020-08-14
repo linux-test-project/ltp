@@ -21,7 +21,7 @@
 
 typedef int (*posix_typed_mem_open_test) (const char *, int, int);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	posix_typed_mem_open_test dummyvar;
 	dummyvar = posix_typed_mem_open;

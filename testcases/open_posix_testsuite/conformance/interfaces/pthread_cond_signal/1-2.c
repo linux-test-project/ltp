@@ -111,7 +111,7 @@
 
 #endif
 
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int mc_pshared;		/* 0: mutex and cond are process-private (default) ~ !0: Both are process-shared, if supported */
 	int c_clock;		/* 0: cond uses the default clock. ~ !0: Cond uses monotonic clock, if supported. */
@@ -202,10 +202,10 @@ typedef struct {
 	clockid_t cid;		/* clock used in the condvar */
 	char fork;		/* the children are processes */
 } testdata_t;
-testdata_t *td;
+static testdata_t *td;
 
 /* Child function (either in a thread or in a process) */
-void *child(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *child(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	struct timespec ts;
@@ -266,7 +266,7 @@ void *child(void *arg LTP_ATTRIBUTE_UNUSED)
 }
 
 /* Timeout thread */
-void *timer(void *arg)
+static void *timer(void *arg)
 {
 	pid_t *pchildren = (pid_t *) arg;
 	unsigned int to = TIMEOUT;

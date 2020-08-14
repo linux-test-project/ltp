@@ -29,7 +29,7 @@
 
 #define STACKADDROFFSET 0x8000000
 
-void *thread_func()
+static void *thread_func()
 {
 	pthread_exit(0);
 	return NULL;

@@ -31,7 +31,7 @@
 
 static volatile int child_stopped;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
+static void handler(int signo LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	if (info && info->si_code == CLD_STOPPED) {

@@ -21,7 +21,7 @@
 #include "posixtest.h"
 
 #define LARGENUMBER 900000
-void dosomething(void)
+static void dosomething(void)
 {
 	int i;
 	for (i = 0; i < LARGENUMBER; i++) {

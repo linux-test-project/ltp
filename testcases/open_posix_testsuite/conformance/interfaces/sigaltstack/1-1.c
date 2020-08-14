@@ -27,9 +27,9 @@
 
 #define SIGTOTEST SIGUSR1
 
-stack_t alternate_s;
+static stack_t alternate_s;
 
-void handler()
+static void handler()
 {
 	int i = 0;
 	if ((void *)&i < (alternate_s.ss_sp)

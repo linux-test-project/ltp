@@ -23,7 +23,7 @@
  *
  */
 
-struct __scenario {
+static struct __scenario {
 	/* Object to hold the given configuration, and which will be used to create the threads */
 	pthread_attr_t ta;
 	/* General parameters */
@@ -138,7 +138,7 @@ struct __scenario {
 #define NSCENAR (sizeof(scenarii) / sizeof(scenarii[0]))
 
 /* This function will initialize every pthread_attr_t object in the scenarii array */
-void scenar_init()
+static void scenar_init()
 {
 	int ret = 0;
 	int i;
@@ -416,7 +416,7 @@ void scenar_init()
 }
 
 /* This function will free all resources consumed in the scenar_init() routine */
-void scenar_fini(void)
+static void scenar_fini(void)
 {
 	int ret = 0, i;
 
@@ -437,7 +437,7 @@ void scenar_fini(void)
 	}
 }
 
-int sc = 0;			/* This might be very dirty... but is much simpler */
+static int sc = 0;			/* This might be very dirty... but is much simpler */
 
 #ifdef STD_MAIN			/* We want main to be defined here */
 

@@ -21,7 +21,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-void *thread_function(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *thread_function(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	/* Does nothing */
 	pthread_exit(NULL);

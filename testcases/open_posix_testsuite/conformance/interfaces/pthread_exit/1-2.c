@@ -91,7 +91,7 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	pthread_exit(NULL + 1);
 

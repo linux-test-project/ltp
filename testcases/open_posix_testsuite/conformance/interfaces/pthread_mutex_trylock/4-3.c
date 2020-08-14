@@ -72,7 +72,7 @@
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int m_pshared;		/* 0: mutex is process-private (default) ~ !0: mutex is process-shared, if supported */
 	char *descr;		/* Case description */
@@ -102,16 +102,16 @@ struct _scenar {
 
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
-char do_it = 1;
-char woken = 0;
-unsigned long count_ope = 0;
+static char do_it = 1;
+static char woken = 0;
+static unsigned long count_ope = 0;
 #ifdef WITH_SYNCHRO
-sem_t semsig1;
-sem_t semsig2;
-unsigned long count_sig = 0;
+static sem_t semsig1;
+static sem_t semsig2;
+static unsigned long count_sig = 0;
 #endif
 
-sigset_t usersigs;
+static sigset_t usersigs;
 
 typedef struct {
 	int sig;
@@ -121,7 +121,7 @@ typedef struct {
 } thestruct;
 
 /* the following function keeps on sending the signal to the process */
-void *sendsig(void *arg)
+static void *sendsig(void *arg)
 {
 	thestruct *thearg = (thestruct *) arg;
 	int ret;
@@ -155,7 +155,7 @@ void *sendsig(void *arg)
 
 /* Next are the signal handlers. */
 /* This one is registered for signal SIGUSR1 */
-void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig1)) {
@@ -165,7 +165,7 @@ void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 }
 
 /* This one is registered for signal SIGUSR2 */
-void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig2)) {
@@ -175,7 +175,7 @@ void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 }
 
 /* Test function -- This one calls pthread_mutex_trylock and check that no EINTR is returned. */
-void *test(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *test(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	int i;

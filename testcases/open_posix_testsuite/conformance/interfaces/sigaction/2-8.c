@@ -21,11 +21,11 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-void handler1(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler1(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 
-void handler2(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler2(int signo LTP_ATTRIBUTE_UNUSED)
 {
 }
 

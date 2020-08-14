@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 int main(void)
 {

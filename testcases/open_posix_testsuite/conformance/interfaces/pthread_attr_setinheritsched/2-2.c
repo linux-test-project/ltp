@@ -34,9 +34,9 @@
 #define FUNCTION "pthread_attr_setinheritsched"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-const long int policy = SCHED_FIFO;
-const long int old_policy = SCHED_OTHER;
-void *thread_func(void *arg LTP_ATTRIBUTE_UNUSED)
+static const long int policy = SCHED_FIFO;
+static const long int old_policy = SCHED_OTHER;
+static void *thread_func(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	int new_policy;

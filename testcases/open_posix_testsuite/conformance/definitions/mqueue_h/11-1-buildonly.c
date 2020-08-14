@@ -7,7 +7,7 @@ line 9696 of the Base Definitions document
 #include <mqueue.h>
 #include "posixtest.h"
 
-void test_mqueue_unlink_prototype()
+static void test_mqueue_unlink_prototype()
 {
 	const char *name = "bogus";
 	int err;

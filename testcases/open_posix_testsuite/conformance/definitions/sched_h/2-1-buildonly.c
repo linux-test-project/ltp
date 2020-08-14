@@ -13,9 +13,9 @@
  */
 #include <sched.h>
 
-struct sched_param this_type_should_exist, s;
+static struct sched_param this_type_should_exist, s;
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	s.sched_priority = 0;
 

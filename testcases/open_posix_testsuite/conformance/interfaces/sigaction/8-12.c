@@ -18,15 +18,15 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int SIGQUIT_count = 0;
+static int SIGQUIT_count = 0;
 
-void SIGQUIT_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGQUIT_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGQUIT_count++;
 	printf("Caught SIGQUIT\n");
 }
 
-void SIGSEGV_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGSEGV_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGSEGV\n");
 	raise(SIGQUIT);

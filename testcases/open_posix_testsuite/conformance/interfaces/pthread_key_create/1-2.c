@@ -27,11 +27,11 @@
 
 #define NUM_OF_THREADS 10
 #define KEY_VALUE 1000
-pthread_key_t keys[NUM_OF_THREADS];
-int i;
+static pthread_key_t keys[NUM_OF_THREADS];
+static int i;
 
 /* Thread function that sets the key to KEY_VALUE */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	/* Set the key to KEY_VALUE */
 	if (pthread_setspecific(keys[i], (void *)(KEY_VALUE)) != 0) {

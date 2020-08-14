@@ -31,9 +31,9 @@
 #define INTHREAD 0		/* Control going to or is already for Thread */
 #define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;			/* Manual semaphore */
+static int sem1;			/* Manual semaphore */
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 
 	/* Indicate to main() that the thread was created. */

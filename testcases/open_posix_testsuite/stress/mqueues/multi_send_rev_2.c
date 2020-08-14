@@ -30,12 +30,12 @@
 #define MAX_MSG		5
 #define Max_Threads	100
 
-const char *s_msg_ptr[] =
+static const char *s_msg_ptr[] =
     { "send_1 1", "send_1 2", "send_1 3", "send_1 4", "send_1 5" };
-char r_msg_ptr[Max_Threads][MAX_MSG][MSG_SIZE];
-mqd_t mq = 0;
+static char r_msg_ptr[Max_Threads][MAX_MSG][MSG_SIZE];
+static mqd_t mq = 0;
 
-int *send(void *ID)
+static int *msend(void *ID)
 {
 	int i;
 	int ThreadID = *(int *)ID;
@@ -53,7 +53,7 @@ int *send(void *ID)
 
 }
 
-int *receive(void *ID)
+static int *mreceive(void *ID)
 {
 	int i;
 	int ThreadID = *(int *)ID;
@@ -106,9 +106,9 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < num; i++) {
 		ThreadID[i] = i;
-		pthread_create(&sed[i], NULL, (void *)send,
+		pthread_create(&sed[i], NULL, (void *)msend,
 			       (void *)&ThreadID[i]);
-		pthread_create(&rev[i], NULL, (void *)receive,
+		pthread_create(&rev[i], NULL, (void *)mreceive,
 			       (void *)&ThreadID[i]);
 	}
 

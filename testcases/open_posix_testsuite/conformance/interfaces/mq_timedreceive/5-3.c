@@ -37,7 +37,7 @@
 #define NAMESIZE 50
 #define BUFFER 40
 
-void stopreceive(int signo LTP_ATTRIBUTE_UNUSED)
+static void stopreceive(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	return;
 }

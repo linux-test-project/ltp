@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-void test_mq_receive_prototype(void)
+static void test_mq_receive_prototype(void)
 {
 	mqd_t mqdes;
 	ssize_t msg_size;

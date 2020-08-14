@@ -4,35 +4,35 @@
 
 #include <signal.h>
 
-int dummy1 = SIGABRT;
-int dummy2 = SIGALRM;
-int dummy3 = SIGBUS;
-int dummy4 = SIGCHLD;
-int dummy5 = SIGCONT;
-int dummy6 = SIGFPE;
-int dummy7 = SIGHUP;
-int dummy8 = SIGILL;
-int dummy9 = SIGINT;
-int dummy10 = SIGKILL;
-int dummy11 = SIGPIPE;
-int dummy12 = SIGQUIT;
-int dummy13 = SIGSEGV;
-int dummy14 = SIGSTOP;
-int dummy15 = SIGTERM;
-int dummy16 = SIGTSTP;
-int dummy17 = SIGTTIN;
-int dummy18 = SIGTTOU;
-int dummy19 = SIGUSR1;
-int dummy20 = SIGUSR2;
+static int dummy1 = SIGABRT;
+static int dummy2 = SIGALRM;
+static int dummy3 = SIGBUS;
+static int dummy4 = SIGCHLD;
+static int dummy5 = SIGCONT;
+static int dummy6 = SIGFPE;
+static int dummy7 = SIGHUP;
+static int dummy8 = SIGILL;
+static int dummy9 = SIGINT;
+static int dummy10 = SIGKILL;
+static int dummy11 = SIGPIPE;
+static int dummy12 = SIGQUIT;
+static int dummy13 = SIGSEGV;
+static int dummy14 = SIGSTOP;
+static int dummy15 = SIGTERM;
+static int dummy16 = SIGTSTP;
+static int dummy17 = SIGTTIN;
+static int dummy18 = SIGTTOU;
+static int dummy19 = SIGUSR1;
+static int dummy20 = SIGUSR2;
 #ifdef SIGPOLL
-int dummy21 = SIGPOLL;
+static int dummy21 = SIGPOLL;
 #endif
 #ifdef SIGPROF
-int dummy22 = SIGPROF;
+static int dummy22 = SIGPROF;
 #endif
-int dummy23 = SIGSYS;
-int dummy24 = SIGTRAP;
-int dummy25 = SIGURG;
-int dummy26 = SIGVTALRM;
-int dummy27 = SIGXCPU;
-int dummy28 = SIGXFSZ;
+static int dummy23 = SIGSYS;
+static int dummy24 = SIGTRAP;
+static int dummy25 = SIGURG;
+static int dummy26 = SIGVTALRM;
+static int dummy27 = SIGXCPU;
+static int dummy28 = SIGXFSZ;

@@ -33,9 +33,9 @@
 
 #define SEMINITVAL 0		//initial value of semaphore = 0
 
-sem_t *gsemp;
+static sem_t *gsemp;
 
-void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	return;
 }

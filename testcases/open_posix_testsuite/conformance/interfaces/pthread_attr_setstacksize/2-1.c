@@ -32,10 +32,10 @@
 #define FUNCTION "pthread_attr_setstacksize"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-size_t stack_size;
-void *stack_addr;
+static size_t stack_size;
+static void *stack_addr;
 
-void *thread_func()
+static void *thread_func()
 {
 	pthread_attr_t attr;
 	size_t ssize;

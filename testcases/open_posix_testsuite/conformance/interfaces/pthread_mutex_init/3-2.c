@@ -91,21 +91,21 @@
 /********************************************************************************************/
 
 /**** global variables ****/
-pthread_mutex_t *p_mtx;
-int retval = 0;
-int returned = 0;
-int canceled = 0;
-sem_t semA, semB;
+static pthread_mutex_t *p_mtx;
+static int retval = 0;
+static int returned = 0;
+static int canceled = 0;
+static sem_t semA, semB;
 
 /***** Cancelation handlers  *****/
-void cleanup_deadlk(void *arg LTP_ATTRIBUTE_UNUSED)
+static void cleanup_deadlk(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	canceled = 1;
 	pthread_mutex_unlock(p_mtx);
 }
 
 /***** Threads functions *****/
-void *deadlk_issue(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *deadlk_issue(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret, tmp;
 
@@ -137,7 +137,7 @@ void *deadlk_issue(void *arg LTP_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-void *unlock_issue(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *unlock_issue(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 

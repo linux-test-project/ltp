@@ -22,10 +22,10 @@
 #include <string.h>
 #include "posixtest.h"
 
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void *thread(void *tmp)
+static void *thread(void *tmp)
 {
 	int rc = 0;
 
@@ -52,7 +52,7 @@ void *thread(void *tmp)
 	return tmp;
 }
 
-void *watchdog(void *arg)
+static void *watchdog(void *arg)
 {
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 

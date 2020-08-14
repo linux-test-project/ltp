@@ -20,7 +20,7 @@
 
 #define THREAD_NUM  3
 
-struct testdata {
+static struct testdata {
 	pthread_mutex_t mutex;
 	pthread_cond_t cond;
 } td;

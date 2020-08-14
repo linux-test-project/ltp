@@ -8,7 +8,7 @@
 #include <mqueue.h>
 #include "posixtest.h"
 
-void test_mq_open_prototype(void)
+static void test_mq_open_prototype(void)
 {
 	mqd_t res;
 	int oflag = O_RDONLY;

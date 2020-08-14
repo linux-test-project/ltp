@@ -38,14 +38,14 @@
 static volatile int received_selected;
 static volatile int received_all;
 
-void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
+static void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	received_selected = info->si_value.sival_int;
 }
 
-void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
+static void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {

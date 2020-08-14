@@ -14,12 +14,12 @@
 #include <pthread.h>
 #include "posixtest.h"
 
-void *thread_function(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *thread_function(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	return NULL;
 }
 
-void dummy_func()
+static void dummy_func()
 {
 	pthread_t a_thread;
 

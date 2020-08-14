@@ -67,11 +67,11 @@
 
 #define INIT_VAL 0
 
-char do_it = 1;
-long long iterations = 0;
+static char do_it = 1;
+static long long iterations = 0;
 
 /* Handler for user request to terminate */
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	/* do_it = 0 */
 
@@ -81,7 +81,7 @@ void sighdl(int sig)
 }
 
 /* Thread function */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret = 0;
 

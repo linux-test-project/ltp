@@ -9,7 +9,7 @@
 
 typedef int (*sigignore_test) (int);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	sigignore_test dummyvar;
 	dummyvar = sigignore;

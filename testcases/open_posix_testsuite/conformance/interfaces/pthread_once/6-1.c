@@ -74,15 +74,15 @@
 /***********************************    Test cases  *****************************************/
 /********************************************************************************************/
 
-char do_it = 1;
-unsigned long count_ope = 0;
+static char do_it = 1;
+static unsigned long count_ope = 0;
 #ifdef WITH_SYNCHRO
-sem_t semsig1;
-sem_t semsig2;
-unsigned long count_sig = 0;
+static sem_t semsig1;
+static sem_t semsig2;
+static unsigned long count_sig = 0;
 #endif
 
-sigset_t usersigs;
+static sigset_t usersigs;
 
 typedef struct {
 	int sig;
@@ -92,7 +92,7 @@ typedef struct {
 } thestruct;
 
 /* the following function keeps on sending the signal to the process */
-void *sendsig(void *arg)
+static void *sendsig(void *arg)
 {
 	thestruct *thearg = (thestruct *) arg;
 	int ret;
@@ -131,7 +131,7 @@ void *sendsig(void *arg)
 
 /* Next are the signal handlers. */
 /* This one is registered for signal SIGUSR1 */
-void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 
@@ -142,7 +142,7 @@ void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 }
 
 /* This one is registered for signal SIGUSR2 */
-void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 
@@ -152,16 +152,16 @@ void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 #endif
 }
 
-int init_ctl;
+static int init_ctl;
 /* Init function */
-void initializer(void)
+static void initializer(void)
 {
 	init_ctl++;
 	return;
 }
 
 /* Test function -- calls pthread_equal() and checks that EINTR is never returned. */
-void *test(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *test(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

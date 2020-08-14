@@ -35,7 +35,7 @@ typedef struct {
 	mqd_t mqID;
 } mq_info;
 
-int *send(void *info)
+static int *msend(void *info)
 {
 	int i;
 
@@ -57,7 +57,7 @@ int *send(void *info)
 
 }
 
-int *receive(void *info)
+static int *mreceive(void *info)
 {
 	int i;
 	char r_msg_ptr[MAX_MSG][MSG_SIZE];
@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
 	for (i = 0; i < num; i++) {
 		info[i].ThreadID = i;
 		info[i].mqID = mq[i];
-		pthread_create(&sed[i], NULL, (void *)send, (void *)&info[i]);
-		pthread_create(&rev[i], NULL, (void *)receive,
+		pthread_create(&sed[i], NULL, (void *)msend, (void *)&info[i]);
+		pthread_create(&rev[i], NULL, (void *)mreceive,
 			       (void *)&info[i]);
 	}
 	for (i = 0; i < num; i++) {

@@ -4,4 +4,4 @@
 
 #include <signal.h>
 
-void (*dummy) (int) = SIG_IGN;
+static void (*dummy) (int) = SIG_IGN;

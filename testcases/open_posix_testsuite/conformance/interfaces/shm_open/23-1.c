@@ -44,11 +44,11 @@
 #define NPROCESS 1000		/* Number of concurrent processes */
 #define NLOOP 1000		/* Number of shared memory object */
 
-char name[NAME_SIZE];
-int *create_cnt;
-sem_t *sem;
+static char name[NAME_SIZE];
+static int *create_cnt;
+static sem_t *sem;
 
-int child_func(void)
+static int child_func(void)
 {
 	int i, fd;
 	struct timespec ts = {.tv_sec = 0,.tv_nsec = 0 };

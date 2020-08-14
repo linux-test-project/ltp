@@ -25,9 +25,9 @@
 #include <errno.h>
 #include "posixtest.h"
 
-volatile sig_atomic_t wakeup = 1;
+static volatile sig_atomic_t wakeup = 1;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGVTALRM\n");
 	wakeup++;

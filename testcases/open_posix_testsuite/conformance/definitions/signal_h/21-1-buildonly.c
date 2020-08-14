@@ -5,18 +5,18 @@
 #include <signal.h>
 #include <sys/types.h>
 
-siginfo_t this_type_should_exist, t;
-int tsigno;
-int terrno;
-int tcode;
-pid_t tpid;
-uid_t tuid;
-void *taddr;
-int tstatus;
-long tband;
-union sigval tvalue;
+static siginfo_t this_type_should_exist, t;
+static int tsigno;
+static int terrno;
+static int tcode;
+static pid_t tpid;
+static uid_t tuid;
+static void *taddr;
+static int tstatus;
+static long tband;
+static union sigval tvalue;
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	tsigno = t.si_signo;
 	terrno = t.si_errno;
