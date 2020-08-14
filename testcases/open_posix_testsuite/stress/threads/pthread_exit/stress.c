@@ -93,11 +93,11 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-char do_it = 1;
-long long iterations = 0;
+static char do_it = 1;
+static long long iterations = 0;
 
 /* Handler for user request to terminate */
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	/* do_it = 0 */
 	do {
@@ -107,7 +107,7 @@ void sighdl(int sig)
 }
 
 /* Cleanup handler to make sure the thread is exiting */
-void cleanup(void *arg)
+static void cleanup(void *arg)
 {
 	int ret = 0;
 	sem_t *sem = (sem_t *) arg;
@@ -123,7 +123,7 @@ void cleanup(void *arg)
 }
 
 /* Thread routine */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	pthread_cleanup_push(cleanup, &scenarii[sc].sem);
 

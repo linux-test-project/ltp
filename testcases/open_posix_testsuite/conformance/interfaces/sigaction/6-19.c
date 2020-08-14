@@ -20,7 +20,7 @@
 
 static volatile int handler_called;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED,
+static void handler(int signo LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {

@@ -25,9 +25,9 @@
 
 #define FIFOPOLICY SCHED_FIFO
 
-volatile int thread_created = 0;
+static volatile int thread_created = 0;
 
-void *thread_func()
+static void *thread_func()
 {
 	thread_created = 1;
 	pthread_exit(0);

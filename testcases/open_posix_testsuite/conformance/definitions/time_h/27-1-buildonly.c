@@ -15,7 +15,7 @@
 
 typedef char *(*strptime_test) (const char *, const char *, struct tm *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	strptime_test dummyvar;
 	dummyvar = strptime;

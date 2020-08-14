@@ -102,9 +102,9 @@
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
-char do_it = 1;
+static char do_it = 1;
 #ifndef WITHOUT_XOPEN
-int types[] = { PTHREAD_MUTEX_NORMAL,
+static int types[] = { PTHREAD_MUTEX_NORMAL,
 	PTHREAD_MUTEX_ERRORCHECK,
 	PTHREAD_MUTEX_RECURSIVE,
 	PTHREAD_MUTEX_DEFAULT
@@ -125,11 +125,11 @@ typedef struct {
 	unsigned long long sigcnt, opcnt;	/* We count every iteration */
 } cell_t;
 
-pthread_key_t _c;		/* this key will always contain a pointer to the thread's cell */
+static pthread_key_t _c;		/* this key will always contain a pointer to the thread's cell */
 
 /***** The next function is in charge of sending signal USR2 to
  * all the other threads in its cell, until the end of the test. */
-void *sigthr(void *arg)
+static void *sigthr(void *arg)
 {
 	int ret;
 	int i = 0;
@@ -178,7 +178,7 @@ void *sigthr(void *arg)
 
 /***** The next function is the signal handler
  * for all the others threads in the cell */
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	int ret;
 	cell_t *c = (cell_t *) pthread_getspecific(_c);
@@ -190,7 +190,7 @@ void sighdl(int sig)
 
 /***** The next function can return only when the sigthr has terminated.
  * This avoids the signal thread try to kill a terminated thread. */
-void waitsigend(cell_t * c)
+static void waitsigend(cell_t * c)
 {
 	while (c->sigok == 0) {
 		sched_yield();
@@ -199,7 +199,7 @@ void waitsigend(cell_t * c)
 
 /***** The next function aims to control that no other thread
  * owns the mutex at the same time */
-void control(cell_t * c, char *loc)
+static void control(cell_t * c, char *loc)
 {
 	*loc++;			/* change the local control value */
 	if (c->ctrl != 0) {
@@ -222,7 +222,7 @@ void control(cell_t * c, char *loc)
 
 /***** The next 3 functions are the worker threads
  */
-void *lockthr(void *arg)
+static void *lockthr(void *arg)
 {
 	int ret;
 	char loc;		/* Local value for control */
@@ -269,7 +269,7 @@ void *lockthr(void *arg)
 	return NULL;
 }
 
-void *timedlockthr(void *arg)
+static void *timedlockthr(void *arg)
 {
 	int ret;
 	char loc;		/* Local value for control */
@@ -326,7 +326,7 @@ void *timedlockthr(void *arg)
 	return NULL;
 }
 
-void *trylockthr(void *arg)
+static void *trylockthr(void *arg)
 {
 	int ret;
 	char loc;		/* Local value for control */
@@ -378,7 +378,7 @@ void *trylockthr(void *arg)
 
 /***** The next function initializes a cell_t object
  * This includes running the threads */
-void cell_init(int id, cell_t * c, pthread_mutexattr_t * pma)
+static void cell_init(int id, cell_t * c, pthread_mutexattr_t * pma)
 {
 	int ret, i;
 	pthread_attr_t pa;	/* We will specify a minimal stack size */
@@ -479,7 +479,7 @@ void cell_init(int id, cell_t * c, pthread_mutexattr_t * pma)
 
 /***** The next function destroys a cell_t object
  * This includes stopping the threads */
-void cell_fini(int id,
+static void cell_fini(int id,
 	       cell_t * c,
 	       unsigned long long *globalopcount,
 	       unsigned long long *globalsigcount)
@@ -528,7 +528,7 @@ void cell_fini(int id,
 /**** Next function is called when the process is killed with SIGUSR1
  * It tells every threads in every cells to stop their work.
  */
-void globalsig(int sig)
+static void globalsig(int sig)
 {
 	output("Signal received, processing. Please wait...\n");
 	do {

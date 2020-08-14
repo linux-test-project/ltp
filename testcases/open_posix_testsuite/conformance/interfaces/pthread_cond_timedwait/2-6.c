@@ -48,7 +48,7 @@
 #define USE_ALTCLK		/* make tests with MONOTONIC CLOCK if supported */
 #endif
 
-struct {
+static struct {
 	pthread_mutex_t mtx;
 	pthread_cond_t cnd;
 	int type;
@@ -61,7 +61,7 @@ struct {
 /****  First handler that will be poped
  *  This one works only with recursive mutexes
  */
-void clnp1(void *arg)
+static void clnp1(void *arg)
 {
 	int ret;
 
@@ -85,7 +85,7 @@ void clnp1(void *arg)
 /**** Second handler
  *  This one will trigger an action in main thread, while we are owning the mutex
  */
-void clnp2(void *arg)
+static void clnp2(void *arg)
 {
 	int ret;
 
@@ -111,7 +111,7 @@ void clnp2(void *arg)
 /**** Third handler
  *  Will actually unlock the mutex, then try to unlock second time to check an error is returned
  */
-void clnp3(void *arg)
+static void clnp3(void *arg)
 {
 	int ret;
 
@@ -138,7 +138,7 @@ void clnp3(void *arg)
  * This function will lock the mutex, then install the cleanup handlers
  * and wait for the cond. At this point it will be canceled.
  */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret;
 

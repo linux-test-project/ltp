@@ -26,7 +26,7 @@
 #define STEP_COUNT 2000
 #define TNAME "strlen/1-1.c"
 
-char *random_string(int len)
+static char *random_string(int len)
 {
 	int i;
 	char *output_string;

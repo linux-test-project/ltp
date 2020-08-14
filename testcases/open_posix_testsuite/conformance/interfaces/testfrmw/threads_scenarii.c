@@ -22,7 +22,7 @@
  * scenar_fini(): function to call after end of use of the scenarii array.
  */
 
-struct __scenario {
+static struct __scenario {
 	/*
 	 * Object to hold the given configuration,
 	 * and which will be used to create the threads
@@ -191,7 +191,7 @@ CASE_UNK(0, 1, 1, 1, 0, 0, 0, 0, "Explicit FIFO max param"),
  * This function will initialize every pthread_attr_t object
  * in the scenarii array
  */
-void scenar_init(void)
+static void scenar_init(void)
 {
 	int ret = 0;
 	unsigned int i;
@@ -462,7 +462,7 @@ void scenar_init(void)
  * This function will free all resources consumed
  * in the scenar_init() routine
  */
-void scenar_fini(void)
+static void scenar_fini(void)
 {
 	int ret = 0;
 	unsigned int i;
@@ -482,7 +482,7 @@ void scenar_fini(void)
 	}
 }
 
-unsigned int sc;
+static unsigned int sc;
 
 #ifdef STD_MAIN
 

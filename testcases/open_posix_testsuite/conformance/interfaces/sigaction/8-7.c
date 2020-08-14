@@ -18,15 +18,15 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int SIGFPE_count = 0;
+static int SIGFPE_count = 0;
 
-void SIGFPE_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGFPE_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGFPE_count++;
 	printf("Caught SIGFPE\n");
 }
 
-void SIGHUP_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGHUP_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGHUP\n");
 	raise(SIGFPE);

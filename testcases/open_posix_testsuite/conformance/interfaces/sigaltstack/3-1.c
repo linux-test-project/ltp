@@ -32,7 +32,7 @@
 
 static stack_t alternate_s;
 
-void handler()
+static void handler()
 {
 
 	stack_t handler_s;

@@ -16,9 +16,9 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-int signal_blocked = 0;
+static int signal_blocked = 0;
 
-void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("SIGCHLD called. Inside handler\n");
 	sigset_t mask;

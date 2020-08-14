@@ -93,10 +93,10 @@
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
 
-char do_it = 1;
+static char do_it = 1;
 
 /* Signal handler which will stop the stress run */
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	do {
 		do_it = 0;
@@ -105,7 +105,7 @@ void sighdl(int sig)
 }
 
 /* Timeout thread */
-void *timer(void *arg)
+static void *timer(void *arg)
 {
 	unsigned int to = TIMEOUT;
 	do {
@@ -118,14 +118,14 @@ void *timer(void *arg)
 }
 
 /* Test specific data */
-char go_on = 0;
+static char go_on = 0;
 
 typedef struct {
 	pthread_mutex_t *mtx;
 	pthread_barrier_t *bar;
 } testdata_t;
 
-struct _scenar {
+static struct _scenar {
 	int m_type;		/* Mutex type to use */
 	int m_pshared;		/* 0: mutex is process-private (default) ~ !0: mutex is process-shared, if supported */
 	char *descr;		/* Case description */
@@ -155,7 +155,7 @@ struct _scenar {
 
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret = 0, ret2 = 0;
 	testdata_t *td = (testdata_t *) arg;

@@ -22,13 +22,13 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int sem;			/* Manual semaphore */
-int cleanup_flag;		/* Made global so that the cleanup function
+static int sem;			/* Manual semaphore */
+static int cleanup_flag;		/* Made global so that the cleanup function
 				   can manipulate the value as well. */
 
 /* A cleanup function that sets the cleanup_flag to 1, meaning that the
  * cleanup function was reached. */
-void a_cleanup_func()
+static void a_cleanup_func()
 {
 	cleanup_flag = 1;
 	sem = 0;
@@ -40,7 +40,7 @@ void a_cleanup_func()
  * loop, never reaching the cleanup_pop function.  So the only way the cleanup
  * function can be called is when the thread is canceled and all the cleanup
  * functions are supposed to be popped. */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	/* To enable thread immediate cancelation, since the default
 	 * is PTHREAD_CANCEL_DEFERRED. */

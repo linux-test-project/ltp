@@ -22,7 +22,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-int rc;
+static int rc;
 
 static void sig_handler()
 {

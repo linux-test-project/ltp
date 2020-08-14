@@ -12,9 +12,9 @@
 
 #include <pthread.h>
 
-pthread_t a;
+static pthread_t a;
 
-void dummy_func()
+static void dummy_func()
 {
 	pthread_detach(a);
 	return;

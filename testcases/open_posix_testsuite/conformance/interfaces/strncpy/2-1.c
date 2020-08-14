@@ -31,7 +31,7 @@
 #define TNAME "strncpy/2-1.c"
 #define EXTRA_BYTES 10
 
-char *random_string(int len)
+static char *random_string(int len)
 {
     int i;
     char *output_string;

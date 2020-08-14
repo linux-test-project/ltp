@@ -49,21 +49,21 @@ static char do_it = 1;
 static char woken;
 static unsigned long count_cnd_sig, count_cnd_wup;
 #ifdef WITH_SYNCHRO
-sem_t semsig1;
-sem_t semsig2;
+static sem_t semsig1;
+static sem_t semsig2;
 static unsigned long count_sig;
 #endif
 
 static sigset_t usersigs;
 
-struct thestruct {
+static struct thestruct {
 	int sig;
 #ifdef WITH_SYNCHRO
 	sem_t *sem;
 #endif
 };
 
-struct {
+static struct {
 	pthread_mutex_t mtx;
 	pthread_cond_t cnd;
 } data;

@@ -30,7 +30,7 @@
 
 static stack_t alternate_s, original_s;
 
-void handler()
+static void handler()
 {
 
 	stack_t handler_s;

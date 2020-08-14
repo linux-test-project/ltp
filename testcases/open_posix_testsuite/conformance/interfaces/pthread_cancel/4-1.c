@@ -20,8 +20,8 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int sem;			/* Manual semaphore */
-void *a_thread_func()
+static int sem;			/* Manual semaphore */
+static void *a_thread_func()
 {
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 

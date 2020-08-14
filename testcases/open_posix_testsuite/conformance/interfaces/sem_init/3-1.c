@@ -25,8 +25,8 @@
 #define FUNCTION "sem_init"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-sem_t psem, csem;
-int n;
+static sem_t psem, csem;
+static int n;
 
 int main(void)
 {

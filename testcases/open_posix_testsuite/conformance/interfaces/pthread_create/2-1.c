@@ -26,7 +26,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	return NULL;
 }

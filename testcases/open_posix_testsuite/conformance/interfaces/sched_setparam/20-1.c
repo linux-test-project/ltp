@@ -19,7 +19,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void *runner(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *runner(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 
 	while (1)

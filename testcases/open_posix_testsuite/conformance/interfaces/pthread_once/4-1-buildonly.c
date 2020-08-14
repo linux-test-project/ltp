@@ -12,4 +12,4 @@
 
 #include <pthread.h>
 
-pthread_once_t dummy = PTHREAD_ONCE_INIT;
+static pthread_once_t dummy = PTHREAD_ONCE_INIT;

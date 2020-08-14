@@ -54,7 +54,7 @@ static void alarm_handler()
 	flag = 0;
 }
 
-void *do_work(void *arg)
+static void *do_work(void *arg)
 {
 	(void) arg;
 
@@ -141,7 +141,7 @@ static void run_hp_threads(int sched_policy, int sched_prio)
 
 }
 
-struct params {
+static struct params {
 	int sched_policy;
 	int sched_priority;
 };
@@ -177,7 +177,7 @@ static void *do_test(void *arg)
 	return NULL;
 }
 
-struct tcase {
+static struct tcase {
 	int sched_policy;
 	int prio;
 };
@@ -188,7 +188,7 @@ enum tprio {
 	MAX_1,
 };
 
-struct tcase tcases[] = {
+static struct tcase tcases[] = {
 	{SCHED_FIFO, MIN},
 	{SCHED_FIFO, HALF},
 	{SCHED_FIFO, MAX_1},

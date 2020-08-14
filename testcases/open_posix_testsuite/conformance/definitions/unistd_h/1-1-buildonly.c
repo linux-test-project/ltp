@@ -13,7 +13,7 @@
 
 typedef int (*fsync_test) (int fildes);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	fsync_test dummyvar;
 	dummyvar = fsync;

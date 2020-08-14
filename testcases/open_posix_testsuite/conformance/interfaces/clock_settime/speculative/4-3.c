@@ -43,9 +43,9 @@
 
 #define SIGTOTEST SIGALRM
 
-int caught = 0;
+static int caught = 0;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	(void) signo;
 

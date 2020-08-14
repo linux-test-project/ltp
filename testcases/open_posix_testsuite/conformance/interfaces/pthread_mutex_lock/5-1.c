@@ -86,12 +86,12 @@
 /********************************************************************************************/
 /***********************************    Test case   *****************************************/
 /********************************************************************************************/
-pthread_mutex_t mtx[5];
-sem_t semsig, semstart;
-int ctrl = 0;
+static pthread_mutex_t mtx[5];
+static sem_t semsig, semstart;
+static int ctrl = 0;
 
 /*********  signal handler  **********/
-void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	if (sem_post(&semsig)) {
 		UNRESOLVED(errno, "Sem_post in signal handler");
@@ -99,7 +99,7 @@ void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
 }
 
 /********** thread *********/
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret, i;
 

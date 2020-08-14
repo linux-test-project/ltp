@@ -27,7 +27,7 @@
 #define RRPOLICY SCHED_RR
 #define OTHERPOLICY SCHED_OTHER
 
-int verify_policy(pthread_attr_t * attr, int policytype)
+static int verify_policy(pthread_attr_t * attr, int policytype)
 {
 	int rc;
 	int policy;

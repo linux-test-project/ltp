@@ -46,10 +46,10 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int SIGUSR1_called = 0;
-int SIGUSR2_called = 0;
+static int SIGUSR1_called = 0;
+static int SIGUSR2_called = 0;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	if (signo == SIGUSR1) {
 		printf("SIGUSR1 called. Inside handler\n");

@@ -4,17 +4,17 @@
 
 #include <signal.h>
 
-int dummy1 = SA_NOCLDSTOP;
-int dummy2 = SIG_BLOCK;
-int dummy3 = SIG_UNBLOCK;
-int dummy4 = SIG_SETMASK;
-int dummy5 = SA_ONSTACK;
-int dummy6 = SA_RESETHAND;
-int dummy7 = SA_RESTART;
-int dummy8 = SA_SIGINFO;
-int dummy9 = SA_NOCLDWAIT;
-int dummy10 = SA_NODEFER;
-int dummy11 = SS_ONSTACK;
-int dummy12 = SS_DISABLE;
-int dummy13 = MINSIGSTKSZ;
-int dummy14 = SIGSTKSZ;
+static int dummy1 = SA_NOCLDSTOP;
+static int dummy2 = SIG_BLOCK;
+static int dummy3 = SIG_UNBLOCK;
+static int dummy4 = SIG_SETMASK;
+static int dummy5 = SA_ONSTACK;
+static int dummy6 = SA_RESETHAND;
+static int dummy7 = SA_RESTART;
+static int dummy8 = SA_SIGINFO;
+static int dummy9 = SA_NOCLDWAIT;
+static int dummy10 = SA_NODEFER;
+static int dummy11 = SS_ONSTACK;
+static int dummy12 = SS_DISABLE;
+static int dummy13 = MINSIGSTKSZ;
+static int dummy14 = SIGSTKSZ;

@@ -21,9 +21,9 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-stack_t current;
+static stack_t current;
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	stack_t oss;
 

@@ -33,7 +33,7 @@
 
 #define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
 
-void sigbus_handler(int signum)
+static void sigbus_handler(int signum)
 {
 	if (signum == SIGBUS) {
 		WRITE("SIGBUS triggered\n");

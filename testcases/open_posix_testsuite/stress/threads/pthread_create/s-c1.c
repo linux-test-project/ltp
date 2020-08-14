@@ -107,11 +107,11 @@ typedef struct __mes_t {
 } mes_t;
 
 /* Forward declaration */
-int parse_measure(mes_t * measures);
+static int parse_measure(mes_t * measures);
 
-pthread_mutex_t m_synchro = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t m_synchro = PTHREAD_MUTEX_INITIALIZER;
 
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret = 0;
 
@@ -445,7 +445,7 @@ int main(int argc, char *argv[])
  * The function returns 0 when r1 is the best for all cases (latency is constant) and !0 otherwise.
  */
 
-struct row {
+static struct row {
 	long X;			/* the X values -- copied from function argument */
 	long Y[NSCENAR];	/* the Y values -- copied from function argument */
 	long _x[NSCENAR];	/* Value X - Xavg */
@@ -456,7 +456,7 @@ struct row {
 	double _lny[NSCENAR];	/* Value LnY - LnYavg */
 };
 
-int parse_measure(mes_t * measures)
+static int parse_measure(mes_t * measures)
 {
 	int ret, i, r;
 

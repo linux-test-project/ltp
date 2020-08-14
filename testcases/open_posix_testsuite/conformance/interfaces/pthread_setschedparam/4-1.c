@@ -76,7 +76,7 @@
 /******************************************************************************/
 
 /* This function checks the thread policy & priority */
-void check_param(pthread_t thread, int policy, int priority)
+static void check_param(pthread_t thread, int policy, int priority)
 {
 	int ret = 0;
 
@@ -107,7 +107,7 @@ void check_param(pthread_t thread, int policy, int priority)
 }
 
 /* thread function */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

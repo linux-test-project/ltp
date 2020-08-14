@@ -33,20 +33,20 @@
 #define INTHREAD 0		/* Control going to or is already for Thread */
 #define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;			/* Manual semaphore */
-int cleanup_flag;
+static int sem1;			/* Manual semaphore */
+static int cleanup_flag;
 
 /* Cleanup function that the thread executes when it is canceled.  So if
  * cleanup_flag is -1, it means that the thread was canceled, meaning
  * the test will fail. */
-void a_cleanup_func()
+static void a_cleanup_func()
 {
 	cleanup_flag = -1;
 	return;
 }
 
 /* Function that the thread executes upon its creation */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 

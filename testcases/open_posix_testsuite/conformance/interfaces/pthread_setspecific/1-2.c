@@ -30,11 +30,11 @@
 #define KEY_VALUE_1 100
 #define KEY_VALUE_2 200
 
-pthread_key_t key;
-void *rc1;
-void *rc2;
+static pthread_key_t key;
+static void *rc1;
+static void *rc2;
 
-void *a_thread_func()
+static void *a_thread_func()
 {
 	/* Bind a value to key for this thread (this will be different from the value
 	 * that we bind for the main thread) */

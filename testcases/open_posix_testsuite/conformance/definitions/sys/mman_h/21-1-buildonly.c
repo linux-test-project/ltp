@@ -22,7 +22,7 @@
 typedef int (*posix_typed_mem_get_info_test) (int,
 					      struct posix_typed_mem_info *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	posix_typed_mem_get_info_test dummyvar;
 	dummyvar = posix_typed_mem_get_info;

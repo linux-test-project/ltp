@@ -75,11 +75,11 @@
 /***********************************    Test cases  *****************************************/
 /********************************************************************************************/
 
-char do_it = 1;
-long long iterations = 0;
+static char do_it = 1;
+static long long iterations = 0;
 
 /* Handler for user request to terminate */
-void sighdl(int sig)
+static void sighdl(int sig)
 {
 	do {
 		do_it = 0;
@@ -87,11 +87,11 @@ void sighdl(int sig)
 	while (do_it);
 }
 
-pthread_once_t once_ctl;
-int once_chk;
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_once_t once_ctl;
+static int once_chk;
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
-void init_routine(void)
+static void init_routine(void)
 {
 	int ret = 0;
 	ret = pthread_mutex_lock(&mtx);
@@ -112,7 +112,7 @@ void init_routine(void)
 }
 
 /* Thread function */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret = 0;
 

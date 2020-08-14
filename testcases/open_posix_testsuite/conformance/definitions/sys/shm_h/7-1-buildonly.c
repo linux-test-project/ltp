@@ -12,4 +12,4 @@
 
 #include <sys/shm.h>
 
-pid_t this_type_should_exist;
+static pid_t this_type_should_exist;

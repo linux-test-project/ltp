@@ -10,4 +10,4 @@
 
 #include <pthread.h>
 
-pthread_mutex_t dummy;
+static pthread_mutex_t dummy;

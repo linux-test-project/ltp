@@ -28,15 +28,15 @@
 #define INTERVAL  1
 #define TIMEOUT   5
 
-struct testdata {
+static struct testdata {
 	pthread_mutex_t mutex;
 	pthread_cond_t cond;
 } td;
 
-int t1_start = 0;
-int signaled = 0;
+static int t1_start = 0;
+static int signaled = 0;
 
-void *t1_func(void *arg)
+static void *t1_func(void *arg)
 {
 	int rc;
 	struct timespec timeout;

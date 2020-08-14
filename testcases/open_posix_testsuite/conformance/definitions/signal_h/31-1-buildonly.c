@@ -10,7 +10,7 @@
 
 typedef int (*sigaltstack_test) (const stack_t *, stack_t *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	sigaltstack_test dummyvar;
 	dummyvar = sigaltstack;

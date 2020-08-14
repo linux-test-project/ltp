@@ -49,15 +49,15 @@
 #define TIMEOUT (1000)		/* ns, timeout parameter for pthread_cond_timedwait */
 #define INTERVAL (700)		/* ns, frequency (actually, period) for the condition signaling */
 
-char do_it = 1;
-unsigned long count_cnd_sig = 0, count_cnd_wup = 0;
+static char do_it = 1;
+static unsigned long count_cnd_sig = 0, count_cnd_wup = 0;
 #ifdef WITH_SYNCHRO
-sem_t semsig1;
-sem_t semsig2;
-unsigned long count_sig = 0;
+static sem_t semsig1;
+static sem_t semsig2;
+static unsigned long count_sig = 0;
 #endif
 
-sigset_t usersigs;
+static sigset_t usersigs;
 
 typedef struct {
 	int sig;
@@ -66,13 +66,13 @@ typedef struct {
 #endif
 } thestruct;
 
-struct {
+static struct {
 	pthread_mutex_t mtx;
 	pthread_cond_t cnd;
 } data;
 
 /* the following function keeps on sending the signal to the process */
-void *sendsig(void *arg)
+static void *sendsig(void *arg)
 {
 	thestruct *thearg = (thestruct *) arg;
 	int ret;
@@ -107,7 +107,7 @@ void *sendsig(void *arg)
 
 /* Next are the signal handlers. */
 /* This one is registered for signal SIGUSR1 */
-void sighdl1(int sig)
+static void sighdl1(int sig)
 {
 	(void) sig;
 #ifdef WITH_SYNCHRO
@@ -118,7 +118,7 @@ void sighdl1(int sig)
 }
 
 /* This one is registered for signal SIGUSR2 */
-void sighdl2(int sig)
+static void sighdl2(int sig)
 {
 	(void) sig;
 #ifdef WITH_SYNCHRO
@@ -130,7 +130,7 @@ void sighdl2(int sig)
 
 /* The following function will timedwait on the cond
  * it does check that no error code of EINTR is returned */
-void *waiter(void *arg)
+static void *waiter(void *arg)
 {
 	int ret;
 	struct timespec ts;
@@ -187,7 +187,7 @@ void *waiter(void *arg)
 }
 
 /* The next function will signal the condition at periodic interval */
-void *worker(void *arg)
+static void *worker(void *arg)
 {
 	int ret = 0;
 	struct timespec ts, tsrem;

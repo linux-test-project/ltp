@@ -19,7 +19,7 @@
 
 typedef int (*sched_rr_get_interval_test) (pid_t, struct timespec *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	sched_rr_get_interval_test dummyvar;
 	dummyvar = sched_rr_get_interval;

@@ -31,7 +31,7 @@
 #define SIGTOTEST SIGALRM
 #define TIMERSEC 3
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Should not have caught signal\n");
 	exit(PTS_FAIL);

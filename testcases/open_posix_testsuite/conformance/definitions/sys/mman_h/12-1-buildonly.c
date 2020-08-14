@@ -18,7 +18,7 @@
 
 typedef int (*mlockall_test) (int);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	mlockall_test dummyvar;
 	dummyvar = mlockall;

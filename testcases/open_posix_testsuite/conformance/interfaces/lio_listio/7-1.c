@@ -40,14 +40,14 @@
 static volatile int num_received;
 static volatile int received_all;
 
-void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
+static void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {
 	num_received++;
 }
 
-void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
+static void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {

@@ -12,4 +12,4 @@
 
 #include <sys/shm.h>
 
-struct ipc_perm this_type_should_exist;
+static struct ipc_perm this_type_should_exist;

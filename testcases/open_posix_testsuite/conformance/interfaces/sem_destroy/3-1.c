@@ -25,14 +25,14 @@
 #define FUNCTION "sem_destroy"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-sem_t psem, csem;
-int n;
+static sem_t psem, csem;
+static int n;
+static void *producer(void *);
+static void *consumer(void *);
 
 int main(void)
 {
 	pthread_t prod, cons;
-	void *producer(void *);
-	void *consumer(void *);
 	long cnt = 3;
 
 	n = 0;
@@ -65,7 +65,7 @@ int main(void)
 	}
 }
 
-void *producer(void *arg)
+static void *producer(void *arg)
 {
 	int i, cnt;
 	cnt = (long)arg;
@@ -77,7 +77,7 @@ void *producer(void *arg)
 	return NULL;
 }
 
-void *consumer(void *arg)
+static void *consumer(void *arg)
 {
 	int i, cnt;
 	cnt = (long)arg;

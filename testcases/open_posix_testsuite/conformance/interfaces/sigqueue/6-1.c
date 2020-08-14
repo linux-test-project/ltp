@@ -37,7 +37,7 @@
 static int return_val = 1;
 static volatile int handler_called;
 
-void myhandler(int signo LTP_ATTRIBUTE_UNUSED,
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {

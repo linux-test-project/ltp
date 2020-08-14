@@ -7,7 +7,7 @@
 #include <mqueue.h>
 #include "posixtest.h"
 
-void test_mq_getattr_prototype(void)
+static void test_mq_getattr_prototype(void)
 {
 	mqd_t mqdes;
 	struct mq_attr mqs;

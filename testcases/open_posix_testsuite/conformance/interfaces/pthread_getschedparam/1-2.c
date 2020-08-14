@@ -27,7 +27,7 @@
 #define ERR_MSG(f, rc)  printf("Failed: func %s rc: %s (%u)\n", \
 				f, strerror(rc), rc)
 
-void *thread_func(void* arg LTP_ATTRIBUTE_UNUSED)
+static void *thread_func(void* arg LTP_ATTRIBUTE_UNUSED)
 {
 	struct sched_param sparam;
 	int policy, priority, policy_1;

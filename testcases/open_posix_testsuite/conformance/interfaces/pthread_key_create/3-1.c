@@ -28,17 +28,17 @@
 
 #define KEY_VALUE 1000
 
-pthread_key_t key;
-int dest_cnt;
+static pthread_key_t key;
+static int dest_cnt;
 
 /* Destructor function */
-void dest_func(void *p LTP_ATTRIBUTE_UNUSED)
+static void dest_func(void *p LTP_ATTRIBUTE_UNUSED)
 {
 	dest_cnt++;
 }
 
 /* Thread function */
-void *a_thread_func()
+static void *a_thread_func()
 {
 
 	/* Set the value of the key to a value */

@@ -15,7 +15,7 @@
 
 typedef int (*clock_settime_test) (clockid_t, const struct timespec *);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	clock_settime_test dummyvar;
 	dummyvar = clock_settime;

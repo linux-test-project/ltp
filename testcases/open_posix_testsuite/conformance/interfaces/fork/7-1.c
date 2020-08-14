@@ -49,7 +49,7 @@
 #define MESSCAT_IN  "messcat.txt"
 #define MESSCAT_OUT "messcat.cat"
 
-void read_catalog(nl_catd cat, char *who)
+static void read_catalog(nl_catd cat, char *who)
 {
 	char *msg = NULL;
 	int i, j;

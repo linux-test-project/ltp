@@ -22,7 +22,7 @@
 
 #define OKDELTA 1
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("In handler\n");
 }

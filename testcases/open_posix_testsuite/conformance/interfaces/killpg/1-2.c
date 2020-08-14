@@ -27,7 +27,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-void myhandler(int signo)
+static void myhandler(int signo)
 {
 	(void) signo;
 	_exit(1);

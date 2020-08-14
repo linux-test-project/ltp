@@ -88,28 +88,28 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-int atctl = 0;
-pthread_key_t tld[3];
+static int atctl = 0;
+static pthread_key_t tld[3];
 
 /* atexit() routines */
-void at1(void)
+static void at1(void)
 {
 	atctl += 1;
 }
 
-void at2(void)
+static void at2(void)
 {
 	atctl += 2;
 }
 
 /* TLD destructor */
-void destructor(void *arg)
+static void destructor(void *arg)
 {
 	*(int *)arg += 1;
 }
 
 /* Thread routine */
-void *threaded(void *arg)
+static void *threaded(void *arg)
 {
 	int ret = 0;
 

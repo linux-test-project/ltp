@@ -20,9 +20,9 @@
 
 #if defined(_POSIX_SPORADIC_SERVER) && _POSIX_SPORADIC_SERVER != -1
 
-struct sched_param s;
+static struct sched_param s;
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	struct timespec ss_repl_period, ss_init_budget;
 

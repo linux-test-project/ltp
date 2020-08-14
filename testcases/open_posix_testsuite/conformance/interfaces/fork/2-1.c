@@ -48,14 +48,14 @@
 #include "posixtest.h"
 #include "mem_pattern.h"
 
-struct test_struct {
+static struct test_struct {
 	char one;
 	short two;
 	int three;
 	void *four;
 };
 
-void handler(int sig)
+static void handler(int sig)
 {
 	(void)sig;
 }

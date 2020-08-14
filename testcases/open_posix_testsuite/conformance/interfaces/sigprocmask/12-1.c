@@ -25,7 +25,7 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int is_changed(sigset_t set)
+static int is_changed(sigset_t set)
 {
 
 	int i;
@@ -51,7 +51,7 @@ int is_changed(sigset_t set)
 	return 0;
 }
 
-int get_rand(void)
+static int get_rand(void)
 {
 
 	int r;

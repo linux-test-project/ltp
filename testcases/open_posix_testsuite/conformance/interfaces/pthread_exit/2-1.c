@@ -25,11 +25,11 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int i[3], j;
+static int i[3], j;
 
 /* Cleanup function that the thread executes when it is canceled.  So if
  * cleanup_flag is 1, it means that the thread was canceled. */
-void a_cleanup_func1()
+static void a_cleanup_func1()
 {
 	i[j] = 1;
 	j++;
@@ -38,7 +38,7 @@ void a_cleanup_func1()
 
 /* Cleanup function that the thread executes when it is canceled.  So if
  * cleanup_flag is 1, it means that the thread was canceled. */
-void a_cleanup_func2()
+static void a_cleanup_func2()
 {
 	i[j] = 2;
 	j++;
@@ -47,7 +47,7 @@ void a_cleanup_func2()
 
 /* Cleanup function that the thread executes when it is canceled.  So if
  * cleanup_flag is 1, it means that the thread was canceled. */
-void a_cleanup_func3()
+static void a_cleanup_func3()
 {
 	i[j] = 3;
 	j++;
@@ -55,7 +55,7 @@ void a_cleanup_func3()
 }
 
 /* Thread's function. */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	/* Set up 3 cleanup handlers */
 	pthread_cleanup_push(a_cleanup_func1, NULL);

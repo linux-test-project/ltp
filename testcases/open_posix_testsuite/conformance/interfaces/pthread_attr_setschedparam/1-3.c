@@ -29,12 +29,12 @@
 #define POLICY SCHED_FIFO
 
 /* the thread uses this to indicate to main or success */
-int policy_correct = -1;
+static int policy_correct = -1;
 /* the thread uses this to indicate to main or success */
-int priority_correct = -1;
+static int priority_correct = -1;
 
 /* Thread function which checks the scheduler settings for itself */
-void *thread(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void *thread(void *tmp LTP_ATTRIBUTE_UNUSED)
 {
 	struct sched_param param;
 	int policy;

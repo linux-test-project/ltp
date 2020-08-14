@@ -43,9 +43,9 @@
 #include <string.h>
 #include <unistd.h>
 
-pid_t pid_to_monitor;
+static pid_t pid_to_monitor;
 
-void sighandler(int sig)
+static void sighandler(int sig)
 {
 	if (0 < pid_to_monitor) {
 		if (kill(pid_to_monitor, SIGKILL) == -1) {

@@ -12,7 +12,7 @@
 
 #include <pthread.h>
 
-void dummy_func()
+static void dummy_func()
 {
 	pthread_exit(NULL);
 	return;

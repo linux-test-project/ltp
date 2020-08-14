@@ -30,13 +30,13 @@
 #define MSG_SIZE	128
 #define MAX_MSG		3
 
-const char *s_msg_ptr[] = { "msg test 1", "msg test 2", "msg test 3" };
+static const char *s_msg_ptr[] = { "msg test 1", "msg test 2", "msg test 3" };
 
-char r_msg_ptr_1[MAX_MSG][MSG_SIZE];
-char r_msg_ptr_2[MAX_MSG][MSG_SIZE];
-pthread_t send1, send2, rev1, rev2;
+static char r_msg_ptr_1[MAX_MSG][MSG_SIZE];
+static char r_msg_ptr_2[MAX_MSG][MSG_SIZE];
+static pthread_t send1, send2, rev1, rev2;
 
-int *send_1(void *mq)
+static int *send_1(void *mq)
 {
 	int i;
 	mqd_t mq1 = *(mqd_t *) mq;
@@ -54,7 +54,7 @@ int *send_1(void *mq)
 
 }
 
-int *send_2(void *mq)
+static int *send_2(void *mq)
 {
 	int i;
 	mqd_t mq2 = *(mqd_t *) mq;
@@ -71,7 +71,7 @@ int *send_2(void *mq)
 	pthread_exit(NULL);
 }
 
-int *receive_1(void *mq)
+static int *receive_1(void *mq)
 {
 	int i;
 	mqd_t mq1 = *(mqd_t *) mq;
@@ -88,7 +88,7 @@ int *receive_1(void *mq)
 	pthread_exit(NULL);
 }
 
-int *receive_2(void *mq)
+static int *receive_2(void *mq)
 {
 	int i;
 	mqd_t mq2 = *(mqd_t *) mq;

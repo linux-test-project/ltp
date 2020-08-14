@@ -33,9 +33,9 @@
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 static void *stack_addr;
-size_t stack_size;
+static size_t stack_size;
 
-void *thread_func()
+static void *thread_func()
 {
 	pthread_attr_t attr;
 	void *saddr;

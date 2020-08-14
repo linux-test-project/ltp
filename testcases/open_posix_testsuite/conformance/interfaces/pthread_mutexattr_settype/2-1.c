@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-void alarm_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void alarm_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Got SIGALRM after 1 second\n");
 	printf("Test PASSED\n");

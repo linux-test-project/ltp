@@ -40,14 +40,14 @@
 #define BUFFER 40
 #define MAXMSG 5
 
-char gqname[NAMESIZE];
-mqd_t gqueue;
+static char gqname[NAMESIZE];
+static mqd_t gqueue;
 
 /*
  * This handler is just used to catch the signal and stop sleep (so the
  * parent knows the child is still busy sending signals).
  */
-void stopsleep_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void stopsleep_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	return;
 }

@@ -49,11 +49,11 @@
 #define STDOUT 1
 #define STDERR 2
 
-int nb_child;			/* Number of child processes == number of CPUs */
-int count = 0;
-int the_pipe[2];
+static int nb_child;			/* Number of child processes == number of CPUs */
+static int count = 0;
+static int the_pipe[2];
 
-void child_process(int id)
+static void child_process(int id)
 {
 	int i;
 	struct sched_param param;
@@ -68,7 +68,7 @@ void child_process(int id)
 	}
 }
 
-void sigterm_handler(int signum LTP_ATTRIBUTE_UNUSED)
+static void sigterm_handler(int signum LTP_ATTRIBUTE_UNUSED)
 {
 	close(STDOUT);
 	close(the_pipe[0]);

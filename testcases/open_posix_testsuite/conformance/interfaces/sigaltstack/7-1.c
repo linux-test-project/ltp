@@ -28,7 +28,7 @@
 
 static stack_t altstack1;
 
-void handler()
+static void handler()
 {
 	stack_t altstack2;
 

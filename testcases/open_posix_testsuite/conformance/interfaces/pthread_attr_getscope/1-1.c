@@ -28,7 +28,7 @@
 #define SYSTEMSCOPE PTHREAD_SCOPE_SYSTEM
 #define PROCESSSCOPE PTHREAD_SCOPE_PROCESS
 
-int verify_scope(pthread_attr_t * attr, int scopetype)
+static int verify_scope(pthread_attr_t * attr, int scopetype)
 {
 	int rc;
 	int scope;

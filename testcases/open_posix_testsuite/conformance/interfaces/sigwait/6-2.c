@@ -80,12 +80,12 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-int n_awaken = 0;
-pthread_t last_awaken;
-sigset_t setusr;
+static int n_awaken = 0;
+static pthread_t last_awaken;
+static sigset_t setusr;
 
 /* Thread function */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	int sig;

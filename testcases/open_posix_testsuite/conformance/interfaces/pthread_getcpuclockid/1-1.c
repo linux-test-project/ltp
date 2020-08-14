@@ -27,7 +27,7 @@
 #define FUNCTION "pthread_getcpuclockid"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-void *thread_func()
+static void *thread_func()
 {
 	int rc;
 	clockid_t cid;

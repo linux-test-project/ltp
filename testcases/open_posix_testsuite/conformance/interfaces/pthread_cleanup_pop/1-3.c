@@ -27,25 +27,25 @@
 #define CLEANUP_NOTCALLED 0
 #define CLEANUP_CALLED 1
 
-int cleanup_flag[3];		/* Array to hold the cleanup flags for the 3 cleanup handlers */
-int i;
+static int cleanup_flag[3];		/* Array to hold the cleanup flags for the 3 cleanup handlers */
+static int i;
 
 /* 3 Cleanup handlers */
-void a_cleanup_func1(void *flag_val LTP_ATTRIBUTE_UNUSED)
+static void a_cleanup_func1(void *flag_val LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag[i] = 1;
 	i++;
 	return;
 }
 
-void a_cleanup_func2(void *flag_val LTP_ATTRIBUTE_UNUSED)
+static void a_cleanup_func2(void *flag_val LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag[i] = 2;
 	i++;
 	return;
 }
 
-void a_cleanup_func3(void *flag_val LTP_ATTRIBUTE_UNUSED)
+static void a_cleanup_func3(void *flag_val LTP_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag[i] = 3;
 	i++;
@@ -53,7 +53,7 @@ void a_cleanup_func3(void *flag_val LTP_ATTRIBUTE_UNUSED)
 }
 
 /* Function that the thread executes upon its creation */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	pthread_cleanup_push(a_cleanup_func1, NULL);
 	pthread_cleanup_push(a_cleanup_func2, NULL);

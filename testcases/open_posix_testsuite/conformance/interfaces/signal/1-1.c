@@ -24,7 +24,7 @@
 
 static volatile int handler_called;
 
-void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("SIGCHLD called. Inside handler\n");
 	handler_called = 1;

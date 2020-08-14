@@ -18,15 +18,15 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int SIGXCPU_count = 0;
+static int SIGXCPU_count = 0;
 
-void SIGXCPU_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGXCPU_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	SIGXCPU_count++;
 	printf("Caught SIGXCPU\n");
 }
 
-void SIGXFSZ_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGXFSZ_handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGXFSZ\n");
 	raise(SIGXCPU);

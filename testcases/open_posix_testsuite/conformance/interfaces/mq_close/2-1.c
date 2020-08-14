@@ -35,10 +35,10 @@
 #define PIPE_READ  0
 #define PIPE_WRITE 1
 
-int parent_process(char *qname, int read_pipe, int write_pipe, pid_t child_pid);
-int child_process(char *qname, int read_pipe, int write_pipe);
-mqd_t open_queue(char *qname, int oflag, int mode);
-int send_receive(int read_pipe, int write_pipe, char send, char *reply);
+static int parent_process(char *qname, int read_pipe, int write_pipe, pid_t child_pid);
+static int child_process(char *qname, int read_pipe, int write_pipe);
+static mqd_t open_queue(char *qname, int oflag, int mode);
+static int send_receive(int read_pipe, int write_pipe, char send, char *reply);
 
 int main(void)
 {
@@ -92,7 +92,7 @@ int main(void)
 	return PTS_UNRESOLVED;
 }
 
-int parent_process(char *qname, int read_pipe, int write_pipe,
+static int parent_process(char *qname, int read_pipe, int write_pipe,
 	pid_t child_pid LTP_ATTRIBUTE_UNUSED)
 {
 	mqd_t queue;
@@ -153,7 +153,7 @@ int parent_process(char *qname, int read_pipe, int write_pipe,
 	}
 }
 
-int child_process(char *qname, int read_pipe, int write_pipe)
+static int child_process(char *qname, int read_pipe, int write_pipe)
 {
 	mqd_t queue;
 	struct sigevent se;
@@ -202,7 +202,7 @@ int child_process(char *qname, int read_pipe, int write_pipe)
 	return 0;
 }
 
-mqd_t open_queue(char *qname, int oflag, int mode)
+static mqd_t open_queue(char *qname, int oflag, int mode)
 {
 	mqd_t queue;
 
@@ -214,7 +214,7 @@ mqd_t open_queue(char *qname, int oflag, int mode)
 	return queue;
 }
 
-int send_receive(int read_pipe, int write_pipe, char send, char *reply)
+static int send_receive(int read_pipe, int write_pipe, char send, char *reply)
 {
 	ssize_t bytes;
 

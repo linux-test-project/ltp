@@ -36,11 +36,11 @@
 #define INTHREAD 0		/* Control going to or is already for Thread */
 #define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;			/* Manual semaphore */
-int cleanup_flag;
+static int sem1;			/* Manual semaphore */
+static int cleanup_flag;
 
 /* The cleanup handler */
-void a_cleanup_func(void *flag_val)
+static void a_cleanup_func(void *flag_val)
 {
 	cleanup_flag = (long)flag_val;
 	sem1 = INMAIN;
@@ -48,7 +48,7 @@ void a_cleanup_func(void *flag_val)
 }
 
 /* Function that the thread executes upon its creation */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);

@@ -28,7 +28,7 @@
 #define ACCEPTABLEDELTA 1
 #define NUMTESTS 6
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 }

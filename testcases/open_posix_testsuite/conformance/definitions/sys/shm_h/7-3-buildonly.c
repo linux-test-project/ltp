@@ -12,4 +12,4 @@
 
 #include <sys/shm.h>
 
-key_t this_type_should_exist;
+static key_t this_type_should_exist;

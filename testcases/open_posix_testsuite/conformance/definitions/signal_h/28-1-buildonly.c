@@ -8,7 +8,7 @@
 
 typedef int (*raise_test) (int);
 
-int dummyfcn(void)
+static int dummyfcn(void)
 {
 	raise_test dummyvar;
 	dummyvar = raise;

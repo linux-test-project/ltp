@@ -39,7 +39,7 @@
 
 static volatile int received_all = 0;
 
-void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
+static void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
 	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
 	void *context LTP_ATTRIBUTE_UNUSED)
 {

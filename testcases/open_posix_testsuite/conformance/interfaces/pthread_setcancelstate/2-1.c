@@ -26,11 +26,11 @@
 #define INTHREAD 0		/* Control going to or is already for Thread */
 #define INMAIN 1		/* Control going to or is already for Main */
 
-int sem1;			/* Manual semaphore */
-int cancel_flag;
+static int sem1;			/* Manual semaphore */
+static int cancel_flag;
 
 /* Function that the thread executes upon its creation */
-void *a_thread_func()
+static void *a_thread_func()
 {
 	/* Set default cancel state should be ENABLE, meaning it should honor all
 	 * cancel requests. */

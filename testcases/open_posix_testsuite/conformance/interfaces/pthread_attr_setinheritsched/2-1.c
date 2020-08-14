@@ -29,8 +29,8 @@
 #define FUNCTION "pthread_attr_setinheritsched"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-const long int policy = SCHED_FIFO;
-void *thread_func()
+static const long int policy = SCHED_FIFO;
+static void *thread_func()
 {
 	int rc;
 	int new_policy;

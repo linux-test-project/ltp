@@ -29,15 +29,15 @@
 #define FUNCTION "pthread_cancel"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int cleanup_flag = 0;
-int destructor_flag = 0;
-int sem = 0;			/* manual semaphore */
-struct timespec destructor_time, cleanup_time;
+static int cleanup_flag = 0;
+static int destructor_flag = 0;
+static int sem = 0;			/* manual semaphore */
+static struct timespec destructor_time, cleanup_time;
 
 /*
    Destructor for the Thread Specific Data
  */
-void destructor(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void destructor(void *tmp LTP_ATTRIBUTE_UNUSED)
 {
 	clock_gettime(CLOCK_REALTIME, &destructor_time);
 	destructor_flag = 1;
@@ -46,14 +46,14 @@ void destructor(void *tmp LTP_ATTRIBUTE_UNUSED)
 /*
    Cleanup Handler for the Thread
  */
-void cleanup_function()
+static void cleanup_function()
 {
 	clock_gettime(CLOCK_REALTIME, &cleanup_time);
 	cleanup_flag = 1;
 }
 
 /* Thread's function. */
-void *a_thread_func(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void *a_thread_func(void *tmp LTP_ATTRIBUTE_UNUSED)
 {
 	pthread_key_t key;
 	int value = 1;

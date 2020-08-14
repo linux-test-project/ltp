@@ -31,7 +31,7 @@
 #define SLEEPDELTA 3
 #define ACCEPTABLEDELTA 1
 
-void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo LTP_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal\n");
 }

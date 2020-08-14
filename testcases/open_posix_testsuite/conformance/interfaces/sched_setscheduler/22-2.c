@@ -19,7 +19,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-void *runner(void *arg)
+static void *runner(void *arg)
 {
 	(void) arg;
 

@@ -12,9 +12,9 @@
 
 #include <pthread.h>
 
-pthread_attr_t a;
+static pthread_attr_t a;
 
-void dummy_func()
+static void dummy_func()
 {
 
 	pthread_attr_setdetachstate(&a, PTHREAD_CREATE_DETACHED);

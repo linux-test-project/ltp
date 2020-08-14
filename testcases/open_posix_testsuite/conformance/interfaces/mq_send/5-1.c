@@ -44,12 +44,12 @@
 #define BUFFER 40
 #define MAXMSG 5
 
-char gqname[NAMESIZE];
-mqd_t gqueue;
+static char gqname[NAMESIZE];
+static mqd_t gqueue;
 
-int sync_pipes[2];
+static int sync_pipes[2];
 
-int cleanup_for_exit(int gqueue, char *gqname, int ret)
+static int cleanup_for_exit(int gqueue, char *gqname, int ret)
 {
 	mq_close(gqueue);
 	mq_unlink(gqname);

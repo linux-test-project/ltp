@@ -89,21 +89,21 @@
 /***********************************    Real Test   *****************************************/
 /********************************************************************************************/
 
-int global = 0;
+static int global = 0;
 
 /* atexit() routines */
-void at1(void)
+static void at1(void)
 {
 	global +=1;
 }
 
-void at2(void)
+static void at2(void)
 {
 	global +=2;
 }
 
 /* Thread routine */
-void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

@@ -26,7 +26,7 @@
 
 #define NAMESIZE 50
 
-void handler(int signo)
+static void handler(int signo)
 {
 	(void) signo;
 #ifdef DEBUG
