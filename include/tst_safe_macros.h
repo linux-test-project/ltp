@@ -446,6 +446,11 @@ void safe_sigemptyset(const char *file, const int lineno,
 #define SAFE_SIGEMPTYSET(sigs) \
 	safe_sigemptyset(__FILE__, __LINE__, (sigs))
 
+void safe_sigfillset(const char *file, const int lineno,
+		     sigset_t *sigs);
+#define SAFE_SIGFILLSET(sigs) \
+	safe_sigfillset(__FILE__, __LINE__, (sigs))
+
 void safe_sigprocmask(const char *file, const int lineno,
                       int how, sigset_t *set, sigset_t *oldset);
 #define SAFE_SIGPROCMASK(how, set, oldset) \

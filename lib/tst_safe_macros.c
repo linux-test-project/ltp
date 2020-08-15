@@ -166,6 +166,16 @@ void safe_sigemptyset(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO, "sigemptyset() failed");
 }
 
+void safe_sigfillset(const char *file, const int lineno,
+		     sigset_t *sigs)
+{
+	int rval;
+
+	rval = sigfillset(sigs);
+	if (rval == -1)
+		tst_brk_(file, lineno, TBROK | TERRNO, "sigfillset() failed");
+}
+
 static const char *strhow(int how)
 {
 	switch (how) {
