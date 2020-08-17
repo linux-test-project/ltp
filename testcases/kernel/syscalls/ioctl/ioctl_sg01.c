@@ -7,7 +7,7 @@
  * CVE-2018-1000204
  *
  * Test ioctl(SG_IO) and check that kernel doesn't leak data. Requires
- * a read-accessible SCSI-compatible device (e.g. SATA disk). Running mem01
+ * a read-accessible SCSI-compatible device (e.g. SATA disk). Running oom*
  * test program before this one may increase the chance of successfully
  * reproducing the bug.
  *
