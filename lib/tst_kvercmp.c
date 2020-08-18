@@ -18,12 +18,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <limits.h>
 #include <sys/utsname.h>
 #include "test.h"
+
+#define OSRELEASE_PATH "/etc/os-release"
 
 static char *parse_digit(const char *str, int *d)
 {
@@ -127,6 +130,9 @@ int tst_kvexcmp(const char *tst_exv, const char *cur_ver)
 
 const char *tst_kvcmp_distname(const char *kver)
 {
+	static char distname[64];
+	char *p = distname;
+
 	if (strstr(kver, ".el5uek"))
 		return "OL5UEK";
 
@@ -138,6 +144,17 @@ const char *tst_kvcmp_distname(const char *kver)
 
 	if (strstr(kver, ".el6"))
 		return "RHEL6";
+
+	if (access(OSRELEASE_PATH, F_OK) != -1) {
+		SAFE_FILE_LINES_SCANF(NULL, OSRELEASE_PATH, "ID=%s", distname);
+
+		while (*p) {
+			*p = toupper((unsigned char)*p);
+			p++;
+		}
+
+		return distname;
+	}
 
 	return NULL;
 }
