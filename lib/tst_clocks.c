@@ -57,7 +57,7 @@ int tst_clock_getres(clockid_t clk_id, struct timespec *res)
 
 int tst_clock_gettime(clockid_t clk_id, struct timespec *ts)
 {
-	struct tst_ts tts = { 0, };
+	static struct tst_ts tts = { 0, };
 	static mysyscall func;
 	int ret;
 
@@ -87,7 +87,7 @@ int tst_clock_gettime(clockid_t clk_id, struct timespec *ts)
 
 int tst_clock_settime(clockid_t clk_id, struct timespec *ts)
 {
-	struct tst_ts tts = { 0, };
+	static struct tst_ts tts = { 0, };
 	static mysyscall func;
 
 #if (__NR_clock_settime64 != __LTP__NR_INVALID_SYSCALL)
