@@ -158,6 +158,11 @@ static void tst_multi_set_time(enum tst_ts_type type, struct mytime *mytime)
 
 static void update_error(struct test_case *tc)
 {
+	static struct tst_kern_exv kvers[] = {
+		/* Ubuntu kernel has patch b3b4283 since 4.4.0-48.69 */
+		{ "UBUNTU", "4.4.0-48.69" },
+	};
+
 	if (tc->exp_err != -1)
 		return;
 
@@ -167,7 +172,7 @@ static void update_error(struct test_case *tc)
 	 * This patch has also been merged to stable 4.4 with
 	 * b3b4283 ("vfs: move permission checking into notify_change() for utimes(NULL)")
 	 */
-	if (tst_kvercmp(4, 4, 27) < 0)
+	if (tst_kvercmp2(4, 4, 27, kvers) < 0)
 		tc->exp_err = EACCES;
 	else
 		tc->exp_err = EPERM;
