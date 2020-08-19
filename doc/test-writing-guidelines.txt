@@ -1567,9 +1567,9 @@ the test.
 
 LTP library will then automatically check kernel taint at the end of testing.
 If '.all_filesystems' is set in struct tst_test, taint check will be performed
-after each file system and testing may be aborted early by 'TBROK'. You can
-optionally also call 'tst_taint_check()' during 'run()', which returns 0 or
-the tainted flags set in '/proc/sys/kernel/tainted' as specified earlier.
+after each file system and taint will abort testing early with 'TFAIL'. You
+can optionally also call 'tst_taint_check()' during 'run()', which returns 0
+or the tainted flags set in '/proc/sys/kernel/tainted' as specified earlier.
 
 Depending on your kernel version, not all tainted-flags will be supported.
 

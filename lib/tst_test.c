@@ -1282,8 +1282,10 @@ static int fork_testrun(void)
 	alarm(0);
 	SAFE_SIGNAL(SIGINT, SIG_DFL);
 
-	if (tst_test->taint_check && tst_taint_check())
-		tst_brk(TBROK, "Kernel is now tainted.");
+	if (tst_test->taint_check && tst_taint_check()) {
+		tst_res(TFAIL, "Kernel is now tainted.");
+		return TFAIL;
+	}
 
 	if (WIFEXITED(status) && WEXITSTATUS(status))
 		return WEXITSTATUS(status);
