@@ -65,7 +65,7 @@ static void run(void)
 	SAFE_SIGADDSET(&set, SIGABRT);
 	SAFE_SIGPROCMASK(SIG_BLOCK, &set, NULL);
 
-	TEST(tst_syscall(__NR_timer_create, CLOCK_REALTIME_ALARM, &ev, &timer));
+	TEST(tst_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
 	if (TST_RET != 0)
 		tst_brk(TBROK | TERRNO, "timer_create() failed");
 
