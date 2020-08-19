@@ -17,13 +17,15 @@ TST_NEEDS_DEVICE=1
 test1()
 {
 	local keyrings keycheck_lines keycheck_line templates
-	local pattern="func=KEY_CHECK"
+	local func='func=KEY_CHECK'
+	local buf='template=ima-buf'
+	local pattern="($func.*$buf|$buf.*$func)"
 	local test_file="file.txt"
 
 	tst_res TINFO "verifying key measurement for keyrings and templates specified in IMA policy file"
 
-	require_ima_policy_content "$pattern"
-	keycheck_lines=$(check_ima_policy_content "$pattern" "")
+	require_ima_policy_content "$pattern" '-Eq'
+	keycheck_lines=$(check_ima_policy_content "$pattern" '-E')
 	keycheck_line=$(echo "$keycheck_lines" | grep "keyrings" | head -n1)
 
 	if [ -z "$keycheck_line" ]; then
@@ -39,7 +41,7 @@ test1()
 	templates=$(echo "$keycheck_line" | tr " " "\n" | grep "template" | \
 		cut -d'=' -f2)
 
-	grep -E "($templates)*($keyrings)" $ASCII_MEASUREMENTS | while read line
+	grep -E "($templates).*($keyrings)" $ASCII_MEASUREMENTS | while read line
 	do
 		local digest expected_digest algorithm
 
