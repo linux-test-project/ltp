@@ -21,14 +21,29 @@
 #include <pthread.h>
 #include <errno.h>
 
+#define SALSA20_IV_SIZE       8
+#define SALSA20_MIN_KEY_SIZE  16
+
 static void *verify_encrypt(void *arg)
 {
+	const uint8_t iv[SALSA20_IV_SIZE] = { 0 };
+	const struct tst_alg_sendmsg_params params = {
+		.encrypt = true,
+		.iv = iv,
+		.ivlen = SALSA20_IV_SIZE,
+	};
 	char buf[16];
-	int reqfd = tst_alg_setup_reqfd("skcipher", "salsa20", NULL, 16);
+	int reqfd = tst_alg_setup_reqfd("skcipher", "salsa20", NULL,
+					SALSA20_MIN_KEY_SIZE);
 
+	/* Send a zero-length message to encrypt */
+	tst_alg_sendmsg(reqfd, NULL, 0, &params);
+
+	/*
+	 * Read the zero-length encrypted data.
+	 * With the bug, the kernel crashed here.
+	 */
 	TST_CHECKPOINT_WAKE(0);
-
-	/* With the bug the kernel crashed here */
 	if (read(reqfd, buf, 16) == 0)
 		tst_res(TPASS, "Successfully \"encrypted\" an empty message");
 	else
