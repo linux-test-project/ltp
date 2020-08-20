@@ -131,6 +131,7 @@ int tst_kvexcmp(const char *tst_exv, const char *cur_ver)
 const char *tst_kvcmp_distname(const char *kver)
 {
 	static char distname[64];
+	char *ret = distname;
 	char *p = distname;
 
 	if (strstr(kver, ".el5uek"))
@@ -148,12 +149,21 @@ const char *tst_kvcmp_distname(const char *kver)
 	if (access(OSRELEASE_PATH, F_OK) != -1) {
 		SAFE_FILE_LINES_SCANF(NULL, OSRELEASE_PATH, "ID=%s", distname);
 
+		if (p[0] == '"') {
+			ret = distname + 1;
+			p = ret;
+		}
+
 		while (*p) {
+			if (*p == '"') {
+				*p = 0;
+				break;
+			}
 			*p = toupper((unsigned char)*p);
 			p++;
 		}
 
-		return distname;
+		return ret;
 	}
 
 	return NULL;
