@@ -30,7 +30,7 @@ int tst_kvexcmp(const char *tst_exv, const char *cur_kver);
 /*
  * Compare given kernel version with currently running kernel.
  *
- * Returns negative if older, 0 if the same and possitive if newer.
+ * Returns negative if older, 0 if the same and positive if newer.
  */
 int tst_kvercmp(int r1, int r2, int r3);
 

@@ -16,7 +16,7 @@ void tst_checkpoint_init(const char *file, const int lineno,
 /*
  * Waits for wakeup.
  *
- * @id: Checkpoint id, possitive number
+ * @id: Checkpoint id, positive number
  * @msec_timeout: Timeout in milliseconds, 0 == no timeout
  */
 int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout);
@@ -24,7 +24,7 @@ int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout);
 /*
  * Wakes up sleeping process(es)/thread(s).
  *
- * @id: Checkpoint id, possitive number
+ * @id: Checkpoint id, positive number
  * @nr_wake: Number of processes/threads to wake up
  * @msec_timeout: Timeout in milliseconds, 0 == no timeout
  */

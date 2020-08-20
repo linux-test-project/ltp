@@ -55,12 +55,12 @@ if [ "$#" -ne "4" ]; then
 fi
 
 case $subgroup_num in
-    ''|*[!0-9]*) usage_and_exit "Number of subgroups must be possitive integer";;
+    ''|*[!0-9]*) usage_and_exit "Number of subgroups must be positive integer";;
     *) ;;
 esac
 
 case $subgroup_depth in
-    ''|*[!0-9]*) usage_and_exit "Depth of the subgroup tree must be possitive integer";;
+    ''|*[!0-9]*) usage_and_exit "Depth of the subgroup tree must be positive integer";;
     *) ;;
 esac
 
