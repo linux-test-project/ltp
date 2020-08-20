@@ -146,3 +146,67 @@ int tst_alg_setup_reqfd(const char *algtype, const char *algname,
 	close(algfd);
 	return reqfd;
 }
+
+void tst_alg_sendmsg(int reqfd, const void *data, size_t datalen,
+		     const struct tst_alg_sendmsg_params *params)
+{
+	struct iovec iov = {
+		.iov_base = (void *)data,
+		.iov_len = datalen,
+	};
+	struct msghdr msg = {
+		.msg_iov = &iov,
+		.msg_iovlen = 1,
+		.msg_flags = params->msg_flags,
+	};
+	size_t controllen;
+	uint8_t *control;
+	struct cmsghdr *cmsg;
+	struct af_alg_iv *alg_iv;
+
+	if (params->encrypt && params->decrypt)
+		tst_brk(TBROK, "Both encrypt and decrypt are specified");
+
+	controllen = 0;
+	if (params->encrypt || params->decrypt)
+		controllen += CMSG_SPACE(sizeof(uint32_t));
+	if (params->ivlen)
+		controllen += CMSG_SPACE(sizeof(struct af_alg_iv) +
+					 params->ivlen);
+	if (params->assoclen)
+		controllen += CMSG_SPACE(sizeof(uint32_t));
+
+	control = SAFE_MALLOC(controllen);
+	memset(control, 0, controllen);
+	msg.msg_control = control;
+	msg.msg_controllen = controllen;
+	cmsg = CMSG_FIRSTHDR(&msg);
+
+	if (params->encrypt || params->decrypt) {
+		cmsg->cmsg_level = SOL_ALG;
+		cmsg->cmsg_type = ALG_SET_OP;
+		cmsg->cmsg_len = CMSG_LEN(sizeof(uint32_t));
+		*(uint32_t *)CMSG_DATA(cmsg) =
+			params->encrypt ? ALG_OP_ENCRYPT : ALG_OP_DECRYPT;
+		cmsg = CMSG_NXTHDR(&msg, cmsg);
+	}
+	if (params->ivlen) {
+		cmsg->cmsg_level = SOL_ALG;
+		cmsg->cmsg_type = ALG_SET_IV;
+		cmsg->cmsg_len = CMSG_LEN(sizeof(struct af_alg_iv) +
+					  params->ivlen);
+		alg_iv = (struct af_alg_iv *)CMSG_DATA(cmsg);
+		alg_iv->ivlen = params->ivlen;
+		memcpy(alg_iv->iv, params->iv, params->ivlen);
+		cmsg = CMSG_NXTHDR(&msg, cmsg);
+	}
+	if (params->assoclen) {
+		cmsg->cmsg_level = SOL_ALG;
+		cmsg->cmsg_type = ALG_SET_AEAD_ASSOCLEN;
+		cmsg->cmsg_len = CMSG_LEN(sizeof(uint32_t));
+		*(uint32_t *)CMSG_DATA(cmsg) = params->assoclen;
+		cmsg = CMSG_NXTHDR(&msg, cmsg);
+	}
+
+	SAFE_SENDMSG(datalen, reqfd, &msg, 0);
+}
