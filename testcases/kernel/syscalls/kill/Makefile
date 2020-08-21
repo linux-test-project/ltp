@@ -3,11 +3,11 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ltpipc
+LTPLIBS = ltpipc ltpnewipc
 
 include $(top_srcdir)/include/mk/testcases.mk
 
 kill07: LTPLDLIBS  = -lltpipc
-kill05: LTPLDLIBS  = -lltpipc
+kill05: LTPLDLIBS  = -lltpnewipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
