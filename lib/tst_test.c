@@ -1378,7 +1378,7 @@ void tst_flush(void)
 	if (rval != 0)
 		tst_brk(TBROK | TERRNO, "fflush(stderr) failed");
 
-	rval = fflush(stderr);
+	rval = fflush(stdout);
 	if (rval != 0)
 		tst_brk(TBROK | TERRNO, "fflush(stdout) failed");
 
