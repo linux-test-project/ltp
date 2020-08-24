@@ -9,6 +9,9 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sed"
 . tst_test.sh
 
+LVM_DIR="${LVM_DIR:-/tmp}"
+LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
+
 generate_runfile()
 {
 	trap 'tst_brk TBROK "Cannot create LVM runfile"' ERR
@@ -20,7 +23,7 @@ generate_runfile()
 	for fsname in $FS_LIST; do
 		# Btrfs needs too much space for reliable stress testing
 		if [ "x$fsname" != "xbtrfs" ]; then
-			sed -e "s/{fsname}/$fsname/g" "$INFILE" >>"$OUTFILE"
+			sed -e "s/{fsname}/$fsname/g; s^{tempdir}^$LVM_TMPDIR^g" "$INFILE" >>"$OUTFILE"
 		fi
 	done
 

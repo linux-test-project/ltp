@@ -9,8 +9,9 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="losetup umount vgremove"
 . tst_test.sh
 
-LVM_TMPDIR="/tmp/ltp/growfiles"
-LVM_IMGDIR="/tmp/ltp/imgfiles"
+LVM_DIR="${LVM_DIR:-/tmp}"
+LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
+LVM_IMGDIR="$LVM_DIR/ltp/imgfiles"
 
 cleanup_lvm()
 {
@@ -27,7 +28,7 @@ cleanup_lvm()
 		ROD tst_device release $devname
 	done
 
-	rm -rf /tmp/ltp
+	rm -rf $LVM_DIR/ltp
 	tst_res TPASS "LVM configuration for LTP removed successfully."
 }
 
