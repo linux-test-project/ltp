@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <sys/mount.h>
 #include <sys/xattr.h>
+#include <sys/sysinfo.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <libgen.h>
@@ -1087,4 +1088,22 @@ int safe_mincore(const char *file, const int lineno, void *start,
 	}
 
 	return rval;
+}
+
+int safe_sysinfo(const char *file, const int lineno, struct sysinfo *info)
+{
+	int ret;
+
+	errno = 0;
+	ret = sysinfo(info);
+
+	if (ret == -1) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, NULL,
+			"sysinfo() failed");
+	} else if (ret) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, NULL,
+			"Invalid sysinfo() return value %d", ret);
+	}
+
+	return ret;
 }

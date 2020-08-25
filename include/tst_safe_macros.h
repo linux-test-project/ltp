@@ -12,6 +12,7 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/vfs.h>
+#include <sys/sysinfo.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <signal.h>
@@ -597,5 +598,9 @@ long tst_safe_ptrace(const char *file, const int lineno, int req, pid_t pid,
 	void *addr, void *data);
 #define SAFE_PTRACE(req, pid, addr, data) \
 	tst_safe_ptrace(__FILE__, __LINE__, req, pid, addr, data)
+
+int safe_sysinfo(const char *file, const int lineno, struct sysinfo *info);
+#define SAFE_SYSINFO(info) \
+	safe_sysinfo(__FILE__, __LINE__, (info))
 
 #endif /* SAFE_MACROS_H__ */
