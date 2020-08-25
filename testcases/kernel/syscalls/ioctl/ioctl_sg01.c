@@ -100,19 +100,22 @@ static void cleanup(void)
 
 static void run(void)
 {
-	size_t i;
+	size_t i, j;
 
 	memset(buffer, 0, BUF_SIZE);
-	TEST(ioctl(devfd, SG_IO, &query));
 
-	if (TST_RET != 0 && TST_RET != -1)
-		tst_brk(TBROK | TTERRNO, "Invalid ioctl() return value");
+	for (i = 0; i < 100; i++) {
+		TEST(ioctl(devfd, SG_IO, &query));
 
-	/* Check the output buffer even if ioctl() failed, just in case. */
-	for (i = 0; i < BUF_SIZE; i++) {
-		if (buffer[i]) {
-			tst_res(TFAIL, "Kernel memory leaked");
-			return;
+		if (TST_RET != 0 && TST_RET != -1)
+			tst_brk(TBROK|TTERRNO, "Invalid ioctl() return value");
+
+		/* Check the buffer even if ioctl() failed, just in case. */
+		for (j = 0; j < BUF_SIZE; j++) {
+			if (buffer[j]) {
+				tst_res(TFAIL, "Kernel memory leaked");
+				return;
+			}
 		}
 	}
 
