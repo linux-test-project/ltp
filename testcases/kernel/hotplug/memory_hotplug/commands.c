@@ -744,6 +744,28 @@ static int file_seg(char *args)
 }
 
 /*
+ * deletefile <file-name>
+ */
+static int delete_file(char *args)
+{
+       glctx_t *gcp = &glctx;
+       char *filename, *nextarg;
+
+       args += strspn(args, whitespace);
+       if (!required_arg(args, "<file-name>"))
+               return CMD_ERROR;
+       filename = strtok_r(args, whitespace, &nextarg);
+
+       if (remove(filename)) {
+               fprintf(stderr, "%s: deletefile failed - %s\n",
+                       gcp->program_name, strerror(errno));
+               return CMD_ERROR;
+       }
+
+       return CMD_SUCCESS;
+}
+
+/*
  * createfile <file-name> <size>[k|m|g|p]]
  */
 static int create_file(char *args)
@@ -782,7 +804,6 @@ static int create_file(char *args)
 	close(fd);
 	return CMD_SUCCESS;
 }
-
 
 /*
  * remove_seg:  <seg-name> [<seg-name> ...]
@@ -1090,6 +1111,8 @@ struct command {
 		    "\t<seg-share> := private|shared - default = private\n"}, {
 	.cmd_name = "createfile", .cmd_func = create_file, .cmd_help =
 			"createfile <file-name> <size>[k|m|g|p]]",}, {
+	.cmd_name = "deletefile", .cmd_func = delete_file, .cmd_help =
+			"deletefile <file-name>"}, {
 	.cmd_name = "shm",.cmd_func = shmem_seg,.cmd_help =
 		    "shm <seg-name> <seg-size>[k|m|g|p] - \n"
 		    "\tdefine a shared memory segment of specified size.\n"
