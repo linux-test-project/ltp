@@ -31,13 +31,14 @@
 #define BUFSIZE 4000
 
 static struct sockaddr_in addr;
+static int dst_sock = -1;
 
 static void setup(void)
 {
 	int real_uid = getuid();
 	int real_gid = getgid();
-	int sock;
 	struct ifreq ifr;
+	socklen_t addrlen = sizeof(addr);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);
@@ -45,14 +46,23 @@ static void setup(void)
 	SAFE_FILE_PRINTF("/proc/self/uid_map", "0 %d 1", real_uid);
 	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1", real_gid);
 
-	tst_init_sockaddr_inet_bin(&addr, INADDR_LOOPBACK, 12345);
-	sock = SAFE_SOCKET(AF_INET, SOCK_DGRAM, 0);
+	tst_init_sockaddr_inet_bin(&addr, INADDR_LOOPBACK, 0);
+	dst_sock = SAFE_SOCKET(AF_INET, SOCK_DGRAM, 0);
+
 	strcpy(ifr.ifr_name, "lo");
 	ifr.ifr_mtu = 1500;
-	SAFE_IOCTL(sock, SIOCSIFMTU, &ifr);
+	SAFE_IOCTL(dst_sock, SIOCSIFMTU, &ifr);
 	ifr.ifr_flags = IFF_UP;
-	SAFE_IOCTL(sock, SIOCSIFFLAGS, &ifr);
-	SAFE_CLOSE(sock);
+	SAFE_IOCTL(dst_sock, SIOCSIFFLAGS, &ifr);
+
+	SAFE_BIND(dst_sock, (struct sockaddr *)&addr, addrlen);
+	SAFE_GETSOCKNAME(dst_sock, (struct sockaddr*)&addr, &addrlen);
+}
+
+static void cleanup(void)
+{
+	if (dst_sock != -1)
+		SAFE_CLOSE(dst_sock);
 }
 
 static void run(void)
@@ -82,6 +92,7 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
+	.cleanup = cleanup,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS=y",
