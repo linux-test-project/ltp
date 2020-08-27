@@ -24,7 +24,7 @@
 
 static volatile int handler_called;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	handler_called = 1;
 }
