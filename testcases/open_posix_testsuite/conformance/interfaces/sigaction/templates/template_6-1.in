@@ -20,7 +20,7 @@
 
 static volatile int handler_called;
 
-void handler(int signo, siginfo_t *info, void *context)
+static void handler(int signo, siginfo_t *info, void *context)
 {
 	handler_called = 1;
 }

@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-void handler(int signo)
+static void handler(int signo)
 {
 	raise(SIGKILL);
 	exit(0);

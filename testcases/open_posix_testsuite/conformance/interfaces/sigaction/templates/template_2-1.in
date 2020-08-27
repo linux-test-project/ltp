@@ -23,11 +23,11 @@
 
 static volatile int handler_called;
 
-void handler1(int signo)
+static void handler1(int signo)
 {
 }
 
-void handler2(int signo)
+static void handler2(int signo)
 {
 }
 

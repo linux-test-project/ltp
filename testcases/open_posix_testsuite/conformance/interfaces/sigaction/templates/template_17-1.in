@@ -25,9 +25,9 @@
 #include <errno.h>
 #include "posixtest.h"
 
-volatile sig_atomic_t wakeup = 1;
+static volatile sig_atomic_t wakeup = 1;
 
-void handler(int signo)
+static void handler(int signo)
 {
 	printf("Caught %%MYSIG%%\n");
 	wakeup++;

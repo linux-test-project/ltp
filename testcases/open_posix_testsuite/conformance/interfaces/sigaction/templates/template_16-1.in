@@ -89,11 +89,11 @@ Anyway, a false negative status cannot be returned.
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-volatile sig_atomic_t caught = 0;
-sem_t sem;
+static volatile sig_atomic_t caught = 0;
+static sem_t sem;
 
 /* Handler function */
-void handler( int signo )
+static void handler( int signo )
 {
 	printf( "Caught signal %d\n", signo );
 	caught++;
