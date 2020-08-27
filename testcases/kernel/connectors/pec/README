@@ -31,7 +31,7 @@ This script runs all the 5 testcases.
 
 pec_listener.c
 ------------------
-This program is used to ilsten to process events received through the kernel
+This program is used to listen to process events received through the kernel
 connector and print them.
 
 Makefile
