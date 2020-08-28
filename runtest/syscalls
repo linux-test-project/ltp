@@ -1174,6 +1174,7 @@ semop02 semop02
 semop03 semop03
 
 send01 send01
+send02 send02
 
 sendfile02 sendfile02
 sendfile02_64 sendfile02_64
