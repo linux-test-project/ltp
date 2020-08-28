@@ -146,17 +146,13 @@ AC_CHECK_MEMBERS([struct utsname.domainname],,,[
 AC_CHECK_TYPES([enum kcmp_type],,,[#include <linux/kcmp.h>])
 AC_CHECK_TYPES([struct acct_v3],,,[#include <sys/acct.h>])
 AC_CHECK_TYPES([struct af_alg_iv, struct sockaddr_alg],,,[# include <linux/if_alg.h>])
-AC_CHECK_TYPES([struct fanotify_event_info_fid],,,[#include <sys/fanotify.h>])
-AC_CHECK_TYPES([struct fanotify_event_info_header],,,[#include <sys/fanotify.h>])
+AC_CHECK_TYPES([struct fanotify_event_info_fid, struct fanotify_event_info_header],,,[#include <sys/fanotify.h>])
 AC_CHECK_TYPES([struct file_dedupe_range],,,[#include <linux/fs.h>])
 AC_CHECK_TYPES([struct fs_quota_statv],,,[#include <xfs/xqm.h>])
 AC_CHECK_TYPES([struct if_nextdqblk],,,[#include <linux/quota.h>])
 AC_CHECK_TYPES([struct iovec],,,[#include <sys/uio.h>])
 AC_CHECK_TYPES([struct ipc64_perm],,,[#include <sys/ipcbuf.h>])
 AC_CHECK_TYPES([struct loop_config],,,[#include <linux/loop.h>])
-AC_CHECK_TYPES([struct semid64_ds],,,[#include <sys/sem.h>])
-AC_CHECK_TYPES([struct shmid64_ds],,,[#include <sys/shmbuf.h>])
-AC_CHECK_TYPES([struct msqid64_ds],,,[#include <sys/msgbuf.h>])
 
 AC_CHECK_TYPES([struct mmsghdr],,,[
 #define _GNU_SOURCE
@@ -164,10 +160,15 @@ AC_CHECK_TYPES([struct mmsghdr],,,[
 #include <sys/socket.h>
 ])
 
+AC_CHECK_TYPES([struct msqid64_ds],,,[#include <sys/msgbuf.h>])
+
 AC_CHECK_TYPES([struct rlimit64],,,[
 #define _LARGEFILE64_SOURCE
 #include <sys/resource.h>
 ])
+
+AC_CHECK_TYPES([struct semid64_ds],,,[#include <sys/sem.h>])
+AC_CHECK_TYPES([struct shmid64_ds],,,[#include <sys/shmbuf.h>])
 
 AC_CHECK_TYPES([struct statx, struct statx_timestamp],,,[
 #define _GNU_SOURCE
@@ -175,16 +176,8 @@ AC_CHECK_TYPES([struct statx, struct statx_timestamp],,,[
 ])
 
 AC_CHECK_TYPES([struct termio],,,[#include <sys/ioctl.h>])
-
-AC_CHECK_TYPES([struct tpacket_req3],,,[
-#ifdef HAVE_LINUX_IF_PACKET_H
-# include <linux/if_packet.h>
-#endif
-])
-
-AC_CHECK_TYPES([struct user_desc, struct modify_ldt_ldt_s],[],[],[
-#include <asm/ldt.h>
-])
+AC_CHECK_TYPES([struct tpacket_req3],,,[# include <linux/if_packet.h>])
+AC_CHECK_TYPES([struct user_desc, struct modify_ldt_ldt_s],[],[],[#include <asm/ldt.h>])
 
 AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
 #include <sys/types.h>
