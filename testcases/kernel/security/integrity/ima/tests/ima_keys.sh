@@ -20,7 +20,7 @@ REQUIRED_POLICY="^measure.*($FUNC_KEYCHECK.*$TEMPLATE_BUF|$TEMPLATE_BUF.*$FUNC_K
 
 setup()
 {
-	require_ima_policy_content "$REQUIRED_POLICY" '-E' > policy.txt
+	require_ima_policy_content "$REQUIRED_POLICY" '-E' > $TST_TMPDIR/policy.txt
 }
 
 cleanup()
@@ -32,7 +32,7 @@ check_keys_policy()
 {
 	local pattern="$1"
 
-	if ! grep -E "$pattern" policy.txt; then
+	if ! grep -E "$pattern" $TST_TMPDIR/policy.txt; then
 		tst_res TCONF "IMA policy must specify $pattern, $FUNC_KEYCHECK, $TEMPLATE_BUF"
 		return 1
 	fi
