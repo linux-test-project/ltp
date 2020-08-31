@@ -161,6 +161,7 @@ static void update_error(struct test_case *tc)
 	static struct tst_kern_exv kvers[] = {
 		/* Ubuntu kernel has patch b3b4283 since 4.4.0-48.69 */
 		{ "UBUNTU", "4.4.0-48.69" },
+		{ NULL, NULL},
 	};
 
 	if (tc->exp_err != -1)
@@ -295,7 +296,8 @@ static void setup(void)
 	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
 
 	bad_addr = tst_get_bad_addr(NULL);
-	SAFE_MKDIR(TEST_DIR, 0700);
+	if (access(TEST_DIR, R_OK))
+		SAFE_MKDIR(TEST_DIR, 0700);
 
 	for (i = 0; i < ARRAY_SIZE(tcase); i++)
 		update_error(&tcase[i]);
