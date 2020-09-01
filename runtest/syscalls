@@ -1543,6 +1543,7 @@ timer_gettime01 timer_gettime01
 
 timer_settime01 timer_settime01
 timer_settime02 timer_settime02
+timer_settime03 timer_settime03
 
 tkill01 tkill01
 tkill02 tkill02
