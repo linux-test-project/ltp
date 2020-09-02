@@ -12,6 +12,7 @@
 #include "tst_test.h"
 #include "libnewipc.h"
 #include "lapi/semun.h"
+#include "semop.h"
 
 #define NSEMS 4
 
@@ -21,14 +22,23 @@ static key_t semkey;
 static unsigned short int sarr[PSEMS];
 static union semun get_arr = {.array = sarr};
 static struct sembuf sops[PSEMS];
+static struct tst_ts timeout;
 
-static void run(void)
+static struct test_case_t {
+	struct tst_ts *to;
+} tc[] = {
+	{NULL},
+	{&timeout}
+};
+
+static void run(unsigned int n)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	union semun arr = { .val = 0 };
 	int fail = 0;
 	int i;
 
-	TEST(semop(sem_id, sops, NSEMS));
+	TEST(call_semop(tv, sem_id, sops, NSEMS, tst_ts_get(tc[n].to)));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "semop() failed");
 		return;
@@ -56,7 +66,15 @@ static void run(void)
 
 static void setup(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	int i;
+
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
+	semop_supported_by_kernel(tv);
+
+	timeout.type = tv->type;
+	tst_ts_set_sec(&timeout, 0);
+	tst_ts_set_nsec(&timeout, 10000);
 
 	semkey = GETIPCKEY();
 
@@ -80,7 +98,9 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.test_all = run,
+	.test = run,
+	.tcnt = ARRAY_SIZE(tc),
+	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
