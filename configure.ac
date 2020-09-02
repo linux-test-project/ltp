@@ -58,7 +58,6 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/tty.h \
     linux/types.h \
     linux/userfaultfd.h \
-    mm.h \
     netinet/sctp.h \
     pthread.h \
     sys/epoll.h \
