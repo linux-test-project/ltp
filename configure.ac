@@ -36,7 +36,7 @@ AC_CHECK_DECLS([IFLA_NET_NS_PID],,,[#include <linux/if_link.h>])
 AC_CHECK_DECLS([MADV_MERGEABLE],,,[#include <sys/mman.h>])
 AC_CHECK_DECLS([PR_CAPBSET_DROP, PR_CAPBSET_READ],,,[#include <sys/prctl.h>])
 
-AC_CHECK_HEADERS([ \
+AC_CHECK_HEADERS_ONCE([ \
     asm/ldt.h \
     ifaddrs.h \
     keyutils.h \
@@ -75,7 +75,7 @@ AC_CHECK_HEADERS([ \
 AC_CHECK_HEADERS(fts.h, [have_fts=1])
 AC_SUBST(HAVE_FTS_H, $have_fts)
 
-AC_CHECK_FUNCS([ \
+AC_CHECK_FUNCS_ONCE([ \
     clone3 \
     copy_file_range \
     epoll_pwait \
