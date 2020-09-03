@@ -9,8 +9,6 @@ AC_CONFIG_FILES([   \
 AC_CHECK_HEADERS_ONCE([ \
 	pthread.h \
 ])
-AM_CONDITIONAL(CROSS_COMPILATION, test x$cross_compiling = xyes)
-
 AC_CANONICAL_HOST
 
 AC_PROG_CC
