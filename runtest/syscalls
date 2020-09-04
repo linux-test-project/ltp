@@ -998,6 +998,7 @@ ptrace05 ptrace05
 ptrace07 ptrace07
 ptrace08 ptrace08
 ptrace09 ptrace09
+ptrace10 ptrace10
 
 pwrite01 pwrite01
 pwrite02 pwrite02
