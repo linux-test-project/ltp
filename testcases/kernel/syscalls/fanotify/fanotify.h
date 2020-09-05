@@ -139,6 +139,11 @@ struct fanotify_event_info_fid {
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL */
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
+
+#ifndef MAX_HANDLE_SZ
+#define MAX_HANDLE_SZ		128
+#endif
+
 /*
  * Helper function used to obtain fsid and file_handle for a given path.
  * Used by test files correlated to FAN_REPORT_FID functionality.
