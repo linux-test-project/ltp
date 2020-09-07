@@ -1,115 +1,152 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
+ */
+/*
+ * Call shmctl() with SHM_INFO flag and check that:
  *
- *   Copyright (c) International Business Machines  Corp., 2001
+ * * The returned index points to a valid SHM by calling SHM_STAT_ANY
+ * * Also count that valid indexes < returned max index sums up to used_ids
+ * * And the data are consistent with /proc/sysvipc/shm
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ * There is a possible race between the call to the shmctl() and read from the
+ * proc file so this test cannot be run in parallel with any IPC testcases that
+ * adds or removes SHM segments.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Note what we create a SHM segment in the test setup to make sure that there
+ * is at least one during the testrun.
  */
 
-/*
- * NAME
- *	shmctl04.c
- *
- * DESCRIPTION
- *	shmctl04 - test the SHM_INFO command
- *		   they are used with shmctl() in ipcs
- *
- * USAGE:  <for command-line>
- *  shmctl04 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	09/2002 - Written by Mingming Cao
- *
- * RESTRICTIONS
- *	none
- */
+#define _GNU_SOURCE
+#include <stdio.h>
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
+#include "lapi/shm.h"
 
-#include "ipcshm.h"
+#define SHM_SIZE 2048
 
-char *TCID = "shmctl04";
-int TST_TOTAL = 1;
+static int shm_id = -1;
 
-struct shm_info shm_info;
-int max_ids;
-
-/*
- * These are the various setup and check functions for the commands
- * that we are checking.
- */
-
-int main(int ac, char **av)
+static void parse_proc_sysvipc(struct shm_info *info)
 {
-	int lc;
+	int page_size = getpagesize();
+	FILE *f = fopen("/proc/sysvipc/shm", "r");
+	int used_ids = 0;
+	int shmid_max = 0;
+	unsigned long shm_rss = 0;
+	unsigned long shm_swp = 0;
+	unsigned long shm_tot = 0;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	/* Eat header */
+	for (;;) {
+		int c = fgetc(f);
 
-	setup();
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-		TEST(shmctl(0, SHM_INFO, (struct shmid_ds *)&shm_info));
-
-		if (TEST_RETURN != -1) {
-			tst_resm(TPASS, "SHM_INFO call succeeded");
-			continue;
-		}
-
-		tst_resm(TFAIL, "SHM_INFO call failed with an unexpected error"
-			 " - %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-
+		if (c == '\n' || c == EOF)
+			break;
 	}
 
-	cleanup();
-
-	tst_exit();
-}
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
+	int shmid, size, rss, swap;
 
 	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See libs/libltpipc/libipc.c for more information.
+	 * Sum rss, swap and size for all elements listed, which should equal
+	 * the data returned in the shm_info structure.
+	 *
+	 * Note that the size has to be rounded up to nearest multiple of page
+	 * size.
 	 */
-	tst_tmpdir();
+	while (fscanf(f, "%*i %i %*i %i %*i %*i %*i %*i %*i %*i %*i %*i %*i %*i %i %i",
+	              &shmid, &size, &rss, &swap) > 0) {
+		used_ids++;
+		shm_rss += rss/page_size;
+		shm_swp += swap/page_size;
+		shm_tot += (size + page_size - 1) / page_size;
+		if (shmid > shmid_max)
+			shmid_max = shmid;
+	}
 
+	if (info->used_ids != used_ids) {
+		tst_res(TFAIL, "used_ids = %i, expected %i",
+		        info->used_ids, used_ids);
+	} else {
+		tst_res(TPASS, "used_ids = %i", used_ids);
+	}
+
+	if (info->shm_rss != shm_rss) {
+		tst_res(TFAIL, "shm_rss = %li, expected %li",
+		        info->shm_rss, shm_rss);
+	} else {
+		tst_res(TPASS, "shm_rss = %li", shm_rss);
+	}
+
+	if (info->shm_swp != shm_swp) {
+		tst_res(TFAIL, "shm_swp = %li, expected %li",
+		        info->shm_swp, shm_swp);
+	} else {
+		tst_res(TPASS, "shm_swp = %li", shm_swp);
+	}
+
+	if (info->shm_tot != shm_tot) {
+		tst_res(TFAIL, "shm_tot = %li, expected %li",
+		        info->shm_tot, shm_tot);
+	} else {
+		tst_res(TPASS, "shm_tot = %li", shm_tot);
+	}
+
+	fclose(f);
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
+static void verify_shminfo(void)
 {
+	struct shm_info info;
+	struct shmid_ds ds;
+	int i, shmid, cnt = 0;
 
-	tst_rmdir();
+	TEST(shmctl(0, SHM_INFO, (struct shmid_ds *)&info));
 
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "shmctl(0, SHM_INFO, ...)");
+		return;
+	}
+
+	shmid = shmctl(TST_RET, SHM_STAT_ANY, &ds);
+
+	if (shmid == -1) {
+		tst_res(TFAIL | TTERRNO, "SHM_INFO haven't returned a valid index");
+	} else {
+		tst_res(TPASS,
+			"SHM_INFO returned valid index %li maps to shmid %i",
+			TST_RET, shmid);
+	}
+
+	for (i = 0; i <= TST_RET; i++) {
+		if (shmctl(i, SHM_STAT_ANY, &ds) != -1)
+			cnt++;
+	}
+
+	if (cnt == info.used_ids) {
+		tst_res(TPASS, "Counted used = %i", cnt);
+	} else {
+		tst_res(TFAIL, "Counted used = %i, used_ids = %i",
+		        cnt, info.used_ids);
+	}
+
+	parse_proc_sysvipc(&info);
 }
+
+static void setup(void)
+{
+	shm_id = SAFE_SHMGET(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | SHM_RW);
+}
+
+static void cleanup(void)
+{
+	if (shm_id >= 0)
+		SAFE_SHMCTL(shm_id, IPC_RMID, NULL);
+}
+
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_shminfo,
+};
