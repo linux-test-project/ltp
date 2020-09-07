@@ -552,6 +552,8 @@ main()
     # write to it as user nobody
     export TMPDIR=$TMP
 
+    trap "cleanup" 0
+
     chmod 777 $TMP || \
     {
       echo "unable to chmod 777 $TMP ... aborting"
@@ -952,7 +954,6 @@ cleanup()
 LTP_SCRIPT="$(basename $0)"
 
 if [ "$LTP_SCRIPT" = "runltp" ]; then
-    trap "cleanup" 0
     setup
     main "$@"
 fi
