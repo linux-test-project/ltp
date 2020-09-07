@@ -22,6 +22,15 @@ void tst_assert_int(const char *file, const int lineno,
 	tst_assert_file_int(__FILE__, __LINE__, path, prefix, val)
 
 /*
+ * Same as tst_assert_int() but for unsigned long.
+ */
+void tst_assert_ulong(const char *file, const int lineno,
+                      const char *path, unsigned long val);
+
+#define TST_ASSERT_ULONG(path, val) \
+	tst_assert_ulong(__FILE__, __LINE__, path, val)
+
+/*
  * Asserts that integer value stored in the prefix field of file pointed by path
  * equals to the value passed to this function. This is mostly useful for
  * asserting correct field values in sysfs, procfs, etc.

@@ -23,6 +23,20 @@ void tst_assert_int(const char *file, const int lineno, const char *path, int va
 	tst_res_(file, lineno, TFAIL, "%s != %d got %d", path, val, sys_val);
 }
 
+void tst_assert_ulong(const char *file, const int lineno, const char *path, unsigned long val)
+{
+	unsigned long sys_val;
+
+	safe_file_scanf(file, lineno, NULL, path, "%lu", &sys_val);
+
+	if (val == sys_val) {
+		tst_res_(file, lineno, TPASS, "%s = %lu", path, val);
+		return;
+	}
+
+	tst_res_(file, lineno, TFAIL, "%s != %lu got %lu", path, val, sys_val);
+}
+
 void tst_assert_file_int(const char *file, const int lineno, const char *path, const char *prefix, int val)
 {
 	int sys_val;
