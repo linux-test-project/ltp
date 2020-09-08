@@ -1156,8 +1156,6 @@ sched_getattr01 sched_getattr01
 sched_getattr02 sched_getattr02
 
 select01 select01
-select02 select02
-select03 select03
 select04 select04
 
 semctl01 semctl01
