@@ -24,7 +24,6 @@
 #define  _GNU_SOURCE
 #include <string.h>
 #include <sys/wait.h>
-#include <sys/msg.h>
 #include <pwd.h>
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
