@@ -15,6 +15,9 @@
 #include "lapi/loop.h"
 #include "tst_test.h"
 
+#define RETVAL_CHECK(x) \
+       ({ value ? TST_RETVAL_EQ0(x) : TST_RETVAL_NOTNULL(x); })
+
 static char dev_path[1024];
 static int dev_num, attach_flag, dev_fd;
 static char loop_partpath[1026], sys_loop_partpath[1026];
@@ -36,7 +39,7 @@ static void check_partition(int part_num, bool value)
 		dev_num, dev_num, part_num);
 	sprintf(loop_partpath, "%sp%d", dev_path, part_num);
 
-	ret = access(sys_loop_partpath, F_OK);
+	ret = TST_RETRY_FN_EXP_BACKOFF(access(sys_loop_partpath, F_OK), RETVAL_CHECK, 30);
 	if (ret == 0)
 		tst_res(value ? TPASS : TFAIL, "access %s succeeds",
 			sys_loop_partpath);
@@ -44,7 +47,7 @@ static void check_partition(int part_num, bool value)
 		tst_res(value ? TFAIL : TPASS, "access %s fails",
 			sys_loop_partpath);
 
-	ret = access(loop_partpath, F_OK);
+	ret = TST_RETRY_FN_EXP_BACKOFF(access(loop_partpath, F_OK), RETVAL_CHECK, 30);
 	if (ret == 0)
 		tst_res(value ? TPASS : TFAIL, "access %s succeeds",
 			loop_partpath);

@@ -64,13 +64,13 @@ static void check_loop_value(int set_flag, int get_flag, int autoclear_field)
 		return;
 	}
 
-	ret = access(loop_partpath, F_OK);
+	ret = TST_RETRY_FN_EXP_BACKOFF(access(loop_partpath, F_OK), TST_RETVAL_EQ0, 30);
 	if (ret == 0)
 		tst_res(TPASS, "access %s succeeds", loop_partpath);
 	else
 		tst_res(TFAIL, "access %s fails", loop_partpath);
 
-	ret = access(sys_loop_partpath, F_OK);
+	ret = TST_RETRY_FN_EXP_BACKOFF(access(sys_loop_partpath, F_OK), TST_RETVAL_EQ0, 30);
 	if (ret == 0)
 		tst_res(TPASS, "access %s succeeds", sys_loop_partpath);
 	else
