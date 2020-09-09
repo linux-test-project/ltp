@@ -52,7 +52,15 @@ static struct test_case_t {
 	},
 	{
 		FAN_CLASS_NOTIF | FAN_REPORT_FID, FAN_MARK_MOUNT, INODE_EVENTS
-	}
+	},
+	{
+		/* FAN_REPORT_NAME without FAN_REPORT_DIR_FID is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_NAME, 0, 0
+	},
+	{
+		/* FAN_REPORT_NAME without FAN_REPORT_DIR_FID is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_FID | FAN_REPORT_NAME, 0, 0
+	},
 };
 
 static void do_test(unsigned int number)

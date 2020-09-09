@@ -44,6 +44,13 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #ifndef FAN_REPORT_FID
 #define FAN_REPORT_FID		0x00000200
 #endif
+#ifndef FAN_REPORT_DIR_FID
+#define FAN_REPORT_DIR_FID	0x00000400
+#endif
+#ifndef FAN_REPORT_NAME
+#define FAN_REPORT_NAME		0x00000800
+#define FAN_REPORT_DFID_NAME     (FAN_REPORT_DIR_FID | FAN_REPORT_NAME)
+#endif
 
 #ifndef FAN_MARK_INODE
 #define FAN_MARK_INODE		0
@@ -113,6 +120,9 @@ typedef struct {
 #endif
 #ifndef FAN_EVENT_INFO_TYPE_DFID_NAME
 #define FAN_EVENT_INFO_TYPE_DFID_NAME	2
+#endif
+#ifndef FAN_EVENT_INFO_TYPE_DFID
+#define FAN_EVENT_INFO_TYPE_DFID	3
 #endif
 
 #ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_HEADER
