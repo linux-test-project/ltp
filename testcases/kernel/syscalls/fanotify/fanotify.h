@@ -52,6 +52,14 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #define FAN_REPORT_DFID_NAME     (FAN_REPORT_DIR_FID | FAN_REPORT_NAME)
 #endif
 
+/* Non-uapi convenience macros */
+#ifndef FAN_REPORT_DFID_NAME_FID
+#define FAN_REPORT_DFID_NAME_FID (FAN_REPORT_DFID_NAME | FAN_REPORT_FID)
+#endif
+#ifndef FAN_REPORT_DFID_FID
+#define FAN_REPORT_DFID_FID      (FAN_REPORT_DIR_FID | FAN_REPORT_FID)
+#endif
+
 #ifndef FAN_MARK_INODE
 #define FAN_MARK_INODE		0
 #endif
