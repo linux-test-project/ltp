@@ -30,6 +30,7 @@
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
+#include "lapi/msg.h"
 
 #define MSGTYPE1	1
 #define MSGTYPE2	2
