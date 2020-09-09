@@ -89,9 +89,6 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
 #ifndef FAN_OPEN_EXEC_PERM
 #define FAN_OPEN_EXEC_PERM	0x00040000
 #endif
-#ifndef FAN_DIR_MODIFY
-#define FAN_DIR_MODIFY		0x00080000
-#endif
 
 /*
  * FAN_ALL_PERM_EVENTS has been deprecated, so any new permission events
@@ -102,6 +99,11 @@ static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
  */
 #define LTP_ALL_PERM_EVENTS	(FAN_OPEN_PERM | FAN_OPEN_EXEC_PERM | \
 				 FAN_ACCESS_PERM)
+
+struct fanotify_group_type {
+	unsigned int flag;
+	const char * name;
+};
 
 struct fanotify_mark_type {
 	unsigned int flag;
@@ -200,6 +202,9 @@ static inline void fanotify_save_fid(const char *path,
 		fid->fsid.val[1], fh[0], fh[1], fh[2]);
 }
 #endif /* HAVE_NAME_TO_HANDLE_AT */
+
+#define INIT_FANOTIFY_GROUP_TYPE(t) \
+	{ FAN_ ## t, "FAN_" #t }
 
 #define INIT_FANOTIFY_MARK_TYPE(t) \
 	{ FAN_MARK_ ## t, "FAN_MARK_" #t }
