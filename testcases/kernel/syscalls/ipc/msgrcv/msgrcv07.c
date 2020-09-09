@@ -46,12 +46,6 @@ static struct buf {
 	{MSGTYPE2, MSG2}
 };
 
-static void cleanup(void)
-{
-	if (queue_id != -1)
-		SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
-}
-
 static void prepare_queue(void)
 {
 	queue_id = SAFE_MSGGET(msgkey, IPC_CREAT | IPC_EXCL | MSG_RW);
@@ -67,15 +61,19 @@ static void test_msg_except(void)
 	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, MSGTYPE2, MSG_EXCEPT));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgrcv(MSG_EXCEPT) failed");
-		cleanup();
-		return;
+		goto exit;
 	}
+
 	tst_res(TPASS, "msgrcv(MSG_EXCEPT) succeeded");
+
 	if (strcmp(rcv_buf.mtext, MSG1) == 0 && rcv_buf.type == MSGTYPE1)
-		tst_res(TPASS, "msgrcv(MSG_EXCEPT) excepted MSGTYPE2 and only got MSGTYPE1");
+		tst_res(TPASS, "MSG_EXCEPT excepted MSGTYPE2 and got MSGTYPE1");
 	else
-		tst_res(TFAIL, "msgrcv(MSG_EXCEPT) didn't get MSGTYPE1 message");
+		tst_res(TFAIL, "MSG_EXCEPT didn't get MSGTYPE1 message");
+
+exit:
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+	queue_id = -1;
 }
 
 static void test_msg_noerror(void)
@@ -90,15 +88,19 @@ static void test_msg_noerror(void)
 	TEST(msgrcv(queue_id, &rcv_buf, msg_len, MSGTYPE1, MSG_NOERROR));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgrcv(MSG_NOERROR) failed");
-		cleanup();
-		return;
+		goto exit;
 	}
+
 	tst_res(TPASS, "msgrcv(MSG_NOERROR) succeeded");
+
 	if (strncmp(rcv_buf.mtext, MSG1, msg_len) == 0 && rcv_buf.type == MSGTYPE1)
-		tst_res(TPASS, "msgrcv(MSG_NOERROR) truncated message text correctly");
+		tst_res(TPASS, "MSG_NOERROR truncated message correctly");
 	else
-		tst_res(TFAIL, "msgrcv(MSG_NOERROR) truncated message text incorrectly");
+		tst_res(TFAIL, "MSG_NOERROR truncated message incorrectly");
+
+exit:
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+	queue_id = -1;
 }
 
 static void test_msg_copy(void)
@@ -159,6 +161,7 @@ static void test_msg_copy(void)
 
 exit:
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+	queue_id = -1;
 }
 
 static void test_zero_msgtyp(void)
@@ -168,15 +171,19 @@ static void test_zero_msgtyp(void)
 	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, 0, 0));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgrcv(zero_msgtyp) failed");
-		cleanup();
-		return;
+		goto exit;
 	}
+
 	tst_res(TPASS, "msgrcv(zero_msgtyp) succeeded");
+
 	if (strcmp(rcv_buf.mtext, MSG1) == 0 && rcv_buf.type == MSGTYPE1)
-		tst_res(TPASS, "msgrcv(zero_msgtyp) got the first message");
+		tst_res(TPASS, "zero_msgtyp got the first message");
 	else
-		tst_res(TFAIL, "msgrcv(zero_msgtyp) didn't get the first message");
+		tst_res(TFAIL, "zero_msgtyp didn't get the first message");
+
+exit:
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+	queue_id = -1;
 }
 
 static void test_positive_msgtyp(void)
@@ -186,17 +193,22 @@ static void test_positive_msgtyp(void)
 	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, MSGTYPE2, 0));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgrcv(positive_msgtyp) failed");
-		cleanup();
-		return;
+		goto exit;
 	}
+
 	tst_res(TPASS, "msgrcv(positive_msgtyp) succeeded");
-	if (strcmp(rcv_buf.mtext, MSG2) == 0 && rcv_buf.type == MSGTYPE2)
-		tst_res(TPASS, "msgrcv(positive_msgtyp) got the first message"
-			       " in the queue of type msgtyp");
-	else
-		tst_res(TFAIL, "msgrcv(positive_msgtyp) didn't get the first "
-			       "message in the queue of type msgtyp");
+
+	if (strcmp(rcv_buf.mtext, MSG2) == 0 && rcv_buf.type == MSGTYPE2) {
+		tst_res(TPASS,
+		        "msgtyp got the first message in the queue of type msgtyp");
+	} else {
+		tst_res(TFAIL,
+			"msgtyp didn't get the first message in the queue of type msgtyp");
+	}
+
+exit:
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+	queue_id = -1;
 }
 
 static void test_negative_msgtyp(void)
@@ -206,19 +218,29 @@ static void test_negative_msgtyp(void)
 	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, -MSGTYPE2, 0));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgrcv(negative_msgtyp) failed");
-		cleanup();
-		return;
+		goto exit;
 	}
+
 	tst_res(TPASS, "msgrcv(negative_msgtyp) succeeded");
-	if (strcmp(rcv_buf.mtext, MSG1) == 0 && rcv_buf.type == MSGTYPE1)
-		tst_res(TPASS, "msgrcv(negative_msgtyp) got the first message"
-				" in the queue with the lowest type");
-	else
-		tst_res(TFAIL, "msgrcv(negative_msgtyp) didn't get the first "
-				"message in the queue with the lowest type");
+
+	if (strcmp(rcv_buf.mtext, MSG1) == 0 && rcv_buf.type == MSGTYPE1) {
+		tst_res(TPASS,
+		        "-msgtyp got the first message in the queue with the lowest type");
+	} else {
+		tst_res(TFAIL,
+			"-msgtyp didn't get the first message in the queue with the lowest type");
+	}
+
+exit:
 	SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+	queue_id = -1;
 }
 
+static void cleanup(void)
+{
+	if (queue_id != -1)
+		SAFE_MSGCTL(queue_id, IPC_RMID, NULL);
+}
 
 static void setup(void)
 {
