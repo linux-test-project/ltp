@@ -22,6 +22,7 @@
  *
  * Test cases #17-#23 are regression tests for commit:
  *
+ *     497b0c5a7c06 fsnotify: send event to parent and child with single...
  *     eca4784cbb18 fsnotify: send event to parent and child with single...
  */
 #define _GNU_SOURCE
@@ -566,7 +567,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9bdda4e9cf2d"},
 		{"linux-git", "2f02fd3fa13e"},
-		{"linux-git", "eca4784cbb18"},
+		{"linux-git", "497b0c5a7c06"},
 		{}
 	}
 };
