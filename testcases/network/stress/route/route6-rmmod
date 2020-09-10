@@ -121,6 +121,9 @@ do_setup()
 	exit $TST_TOTAL
     fi
 
+    # The module name of the interface at the local host
+    lhost_module=
+
     # Make sure to clean up
     do_cleanup
 
