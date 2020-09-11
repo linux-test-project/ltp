@@ -20,10 +20,10 @@
  *
  *     2f02fd3fa13e fanotify: fix ignore mask logic for events on child...
  *
- * Test cases #17-#23 are regression tests for commit:
+ * Test cases with 'ignored_onchild' are regression tests for commit
+ * (from v5.9, unlikely to be backported thus not in .tags):
  *
  *     497b0c5a7c06 fsnotify: send event to parent and child with single...
- *     eca4784cbb18 fsnotify: send event to parent and child with single...
  */
 #define _GNU_SOURCE
 #include "config.h"
@@ -451,6 +451,12 @@ static void test_fanotify(unsigned int n)
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
+	if (tc->ignored_onchild && tst_kvercmp(5, 9, 0) < 0) {
+		tst_res(TCONF, "ignored mask in combination with flag FAN_EVENT_ON_CHILD"
+				" has undefined behavior on kernel < 5.9");
+		return;
+	}
+
 	if (create_fanotify_groups(n) != 0)
 		goto cleanup;
 
@@ -567,7 +573,6 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9bdda4e9cf2d"},
 		{"linux-git", "2f02fd3fa13e"},
-		{"linux-git", "497b0c5a7c06"},
 		{}
 	}
 };
