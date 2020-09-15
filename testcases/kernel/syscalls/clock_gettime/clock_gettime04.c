@@ -22,6 +22,7 @@ clockid_t clks[] = {
 };
 
 static gettime_t ptr_vdso_gettime, ptr_vdso_gettime64;
+static long long delta = 5;
 
 static inline int do_vdso_gettime(gettime_t vdso, clockid_t clk_id, void *ts)
 {
@@ -82,6 +83,11 @@ static struct test_variants {
 
 static void setup(void)
 {
+	if (tst_is_virt(VIRT_ANY)) {
+		tst_res(TINFO, "Running in a virtual machine, multiply the delta by 10.");
+		delta *= 10;
+	}
+
 	find_clock_gettime_vdso(&ptr_vdso_gettime, &ptr_vdso_gettime64);
 }
 
@@ -143,9 +149,9 @@ static void run(unsigned int i)
 
 			diff /= 1000000;
 
-			if (diff >= 5) {
-				tst_res(TFAIL, "%s: Difference between successive readings greater than 5 ms (%d): %lld",
-					tst_clock_name(clks[i]), j, diff);
+			if (diff >= delta) {
+				tst_res(TFAIL, "%s: Difference between successive readings greater than %lld ms (%d): %lld",
+					tst_clock_name(clks[i]), delta, j, diff);
 				return;
 			}
 		}
