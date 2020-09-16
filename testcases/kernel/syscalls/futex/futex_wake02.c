@@ -15,10 +15,7 @@ static futex_t futex = FUTEX_INITIALIZER;
 
 static volatile int threads_flags[55];
 
-static struct test_variants {
-	enum futex_fn_type fntype;
-	char *desc;
-} variants[] = {
+static struct futex_test_variants variants[] = {
 #if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
 	{ .fntype = FUTEX_FN_FUTEX, .desc = "syscall with old kernel spec"},
 #endif
@@ -51,7 +48,7 @@ static void clear_threads_awake(void)
 
 static void *threaded(void *arg)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	long i = (long)arg;
 
 	futex_wait(tv->fntype, &futex, futex, NULL, FUTEX_PRIVATE_FLAG);
@@ -63,7 +60,7 @@ static void *threaded(void *arg)
 
 static void do_child(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	int i, j, awake;
 	pthread_t t[55];
 
@@ -132,7 +129,7 @@ static void run(void)
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	futex_supported_by_kernel(tv->fntype);

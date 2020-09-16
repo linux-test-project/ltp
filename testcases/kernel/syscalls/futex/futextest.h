@@ -67,6 +67,13 @@ enum futex_fn_type {
 	FUTEX_FN_FUTEX64,
 };
 
+struct futex_test_variants {
+	enum futex_fn_type fntype;
+	enum tst_ts_type tstype;
+	int (*gettime)(clockid_t clk_id, void *ts);
+	char *desc;
+};
+
 static inline void futex_supported_by_kernel(enum futex_fn_type fntype)
 {
 	if (fntype != FUTEX_FN_FUTEX64)

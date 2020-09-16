@@ -36,11 +36,7 @@ static futex_t *futex1, *futex2;
 
 static struct tst_ts to;
 
-static struct test_variants {
-	enum futex_fn_type fntype;
-	enum tst_ts_type tstype;
-	char *desc;
-} variants[] = {
+static struct futex_test_variants variants[] = {
 #if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
 	{ .fntype = FUTEX_FN_FUTEX, .tstype = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
@@ -55,7 +51,7 @@ static void setup(void)
 	if (tst_hugepages == 0)
 		tst_brk(TCONF, "No enough hugepages for testing.");
 
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	futex_supported_by_kernel(tv->fntype);
@@ -65,7 +61,7 @@ static void setup(void)
 
 static void *wait_thread1(void *arg LTP_ATTRIBUTE_UNUSED)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 
 	futex_wait(tv->fntype, futex1, *futex1, &to, 0);
 
@@ -74,7 +70,7 @@ static void *wait_thread1(void *arg LTP_ATTRIBUTE_UNUSED)
 
 static void *wait_thread2(void *arg LTP_ATTRIBUTE_UNUSED)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	int res;
 
 	errno = 0;
@@ -89,7 +85,7 @@ static void *wait_thread2(void *arg LTP_ATTRIBUTE_UNUSED)
 
 static void wakeup_thread2(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	void *addr;
 	int hpsz, pgsz;
 	pthread_t th1, th2;

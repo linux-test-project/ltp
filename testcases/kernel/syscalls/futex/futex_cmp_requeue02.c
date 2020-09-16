@@ -32,10 +32,7 @@ static struct tcase {
 	{1, 1, FUTEX_INITIALIZER + 1, EAGAIN},
 };
 
-static struct test_variants {
-	enum futex_fn_type fntype;
-	char *desc;
-} variants[] = {
+static struct futex_test_variants variants[] = {
 #if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
 	{ .fntype = FUTEX_FN_FUTEX, .desc = "syscall with old kernel spec"},
 #endif
@@ -47,7 +44,7 @@ static struct test_variants {
 
 static void verify_futex_cmp_requeue(unsigned int n)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	struct tcase *tc = &tcases[n];
 
 	TEST(futex_cmp_requeue(tv->fntype, &futexes[0], tc->exp_val,
@@ -69,7 +66,7 @@ static void verify_futex_cmp_requeue(unsigned int n)
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	futex_supported_by_kernel(tv->fntype);

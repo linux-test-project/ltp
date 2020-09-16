@@ -13,10 +13,7 @@
 
 static futex_t *futex;
 
-static struct test_variants {
-	enum futex_fn_type fntype;
-	char *desc;
-} variants[] = {
+static struct futex_test_variants variants[] = {
 #if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
 	{ .fntype = FUTEX_FN_FUTEX, .desc = "syscall with old kernel spec"},
 #endif
@@ -28,7 +25,7 @@ static struct test_variants {
 
 static void do_child(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 
 	futex_wait(tv->fntype, futex, *futex, NULL, 0);
 	exit(0);
@@ -36,7 +33,7 @@ static void do_child(void)
 
 static void do_wake(int nr_children)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	int res, i, cnt;
 
 	TEST(futex_wake(tv->fntype, futex, nr_children, 0));
@@ -67,7 +64,7 @@ static void do_wake(int nr_children)
 
 static void run(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 	pid_t pids[55];
 	unsigned int i;
 
@@ -95,7 +92,7 @@ static void run(void)
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct futex_test_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	futex_supported_by_kernel(tv->fntype);
