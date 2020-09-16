@@ -9,6 +9,7 @@
  */
 
 #include "config.h"
+#include "time64_variants.h"
 #include "tst_timer.h"
 #include "tst_safe_clocks.h"
 
@@ -91,18 +92,13 @@ struct test_case tc[] = {
 
 static struct tst_ts spec;
 
-static struct test_variants {
-	int (*gettime)(clockid_t clk_id, void *ts);
-	int (*settime)(clockid_t clk_id, void *ts);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_clock_settime != __LTP__NR_INVALID_SYSCALL)
-	{ .gettime = sys_clock_gettime, .settime = sys_clock_settime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .clock_gettime = sys_clock_gettime, .clock_settime = sys_clock_settime, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_clock_settime64 != __LTP__NR_INVALID_SYSCALL)
-	{ .gettime = sys_clock_gettime64, .settime = sys_clock_settime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .clock_gettime = sys_clock_gettime64, .clock_settime = sys_clock_settime64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
@@ -115,13 +111,13 @@ static void setup(void)
 
 static void verify_clock_settime(unsigned int i)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	void *ts;
 
-	spec.type = tv->type;
+	spec.type = tv->ts_type;
 
 	if (tc[i].replace == 0) {
-		TEST(tv->gettime(CLOCK_REALTIME, tst_ts_get(&spec)));
+		TEST(tv->clock_gettime(CLOCK_REALTIME, tst_ts_get(&spec)));
 		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO, "clock_gettime(2) failed for clock %s",
 				tst_clock_name(CLOCK_REALTIME));
@@ -142,7 +138,7 @@ static void verify_clock_settime(unsigned int i)
 	else
 		ts = tst_ts_get(&spec);
 
-	TEST(tv->settime(tc[i].type, ts));
+	TEST(tv->clock_settime(tc[i].type, ts));
 
 	if (TST_RET != -1) {
 		tst_res(TFAIL | TTERRNO, "clock_settime(2): clock %s passed unexpectedly, expected %s",
