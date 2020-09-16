@@ -135,10 +135,10 @@ static struct test_case tcase[] = {
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
-	ts.type = tv->type;
+	ts.type = tv->ts_type;
 
 	bad_addr = tst_get_bad_addr(NULL);
 
@@ -147,7 +147,7 @@ static void setup(void)
 
 static void do_test(unsigned int i)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	const struct test_case *tc = &tcase[i];
 	unsigned int j;
 	unsigned int prio;
@@ -160,13 +160,13 @@ static void do_test(unsigned int i)
 	tst_ts_set_nsec(&ts, tc->tv_nsec);
 
 	if (tc->signal)
-		pid = set_sig(tc->rq, tv->gettime);
+		pid = set_sig(tc->rq, tv->clock_gettime);
 
 	if (tc->timeout)
-		set_timeout(tc->rq, tv->gettime);
+		set_timeout(tc->rq, tv->clock_gettime);
 
 	if (tc->send) {
-		if (tv->send(*tc->fd, smsg, tc->len, tc->prio, NULL) < 0) {
+		if (tv->mqt_send(*tc->fd, smsg, tc->len, tc->prio, NULL) < 0) {
 			tst_res(TFAIL | TTERRNO, "mq_timedsend() failed");
 			return;
 		}
@@ -180,7 +180,7 @@ static void do_test(unsigned int i)
 	else
 		abs_timeout = tst_ts_get(tc->rq);
 
-	TEST(tv->receive(*tc->fd, rmsg, len, &prio, abs_timeout));
+	TEST(tv->mqt_receive(*tc->fd, rmsg, len, &prio, abs_timeout));
 
 	if (pid > 0)
 		kill_pid(pid);
