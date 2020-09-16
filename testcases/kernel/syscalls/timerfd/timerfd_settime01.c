@@ -13,6 +13,7 @@
 
 #define _GNU_SOURCE
 
+#include "time64_variants.h"
 #include "tst_timer.h"
 #include "lapi/timerfd.h"
 
@@ -35,27 +36,23 @@ static struct test_case_t {
 
 static struct tst_its new_value;
 
-static struct test_variants {
-	int (*tfd_settime)(int fd, int flags, void *new_value, void *old_value);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_timerfd_settime != __LTP__NR_INVALID_SYSCALL)
-	{ .tfd_settime = sys_timerfd_settime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .tfd_settime = sys_timerfd_settime, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_timerfd_settime64 != __LTP__NR_INVALID_SYSCALL)
-	{ .tfd_settime = sys_timerfd_settime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .tfd_settime = sys_timerfd_settime64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	bad_addr = tst_get_bad_addr(NULL);
-	new_value.type = tv->type;
+	new_value.type = tv->ts_type;
 
 	clockfd = timerfd_create(CLOCK_REALTIME, 0);
 	if (clockfd == -1) {
@@ -77,7 +74,7 @@ static void cleanup(void)
 
 static void run(unsigned int n)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct test_case_t *test = &test_cases[n];
 	void *its;
 

@@ -17,6 +17,7 @@
 
 #define _GNU_SOURCE
 #include <poll.h>
+#include "time64_variants.h"
 #include "tst_timer.h"
 #include "tst_safe_timerfd.h"
 
@@ -28,28 +29,22 @@ static struct tcase {
 	{CLOCK_REALTIME, "CLOCK REALTIME"},
 };
 
-static struct test_variants {
-	int (*cgettime)(clockid_t clk_id, void *ts);
-	int (*tfd_gettime)(int fd, void *its);
-	int (*tfd_settime)(int fd, int flags, void *new_value, void *old_value);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_timerfd_gettime != __LTP__NR_INVALID_SYSCALL)
-	{ .cgettime = sys_clock_gettime, .tfd_gettime = sys_timerfd_gettime, .tfd_settime = sys_timerfd_settime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .clock_gettime = sys_clock_gettime, .tfd_gettime = sys_timerfd_gettime, .tfd_settime = sys_timerfd_settime, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_timerfd_gettime64 != __LTP__NR_INVALID_SYSCALL)
-	{ .cgettime = sys_clock_gettime64, .tfd_gettime = sys_timerfd_gettime64, .tfd_settime = sys_timerfd_settime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .clock_gettime = sys_clock_gettime64, .tfd_gettime = sys_timerfd_gettime64, .tfd_settime = sys_timerfd_settime64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
 static unsigned long long getustime(int clockid)
 {
-	struct test_variants *tv = &variants[tst_variant];
-	struct tst_ts tp = {.type = tv->type, };
+	struct time64_variants *tv = &variants[tst_variant];
+	struct tst_ts tp = {.type = tv->ts_type, };
 
-	if (tv->cgettime((clockid_t) clockid, tst_ts_get(&tp))) {
+	if (tv->clock_gettime((clockid_t) clockid, tst_ts_get(&tp))) {
 		tst_res(TFAIL | TERRNO, "clock_gettime() failed");
 		return 0;
 	}
@@ -60,7 +55,7 @@ static unsigned long long getustime(int clockid)
 static void settime(int tfd, struct tst_its *tmr, int tflags,
                     unsigned long long tvalue, int tinterval)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 
 	tst_its_set_value_from_us(tmr, tvalue);
 	tst_its_set_interval_from_us(tmr, tinterval);
@@ -97,11 +92,11 @@ static void waittmr(int tfd, unsigned int exp_ticks)
 
 static void run(unsigned int n)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	int tfd;
 	unsigned long long tnow;
 	uint64_t uticks;
-	struct tst_its tmr = {.type = tv->type, };
+	struct tst_its tmr = {.type = tv->ts_type, };
 	struct tcase *clks = &tcases[n];
 
 	tst_res(TINFO, "testing %s", clks->name);
@@ -122,7 +117,7 @@ static void run(unsigned int n)
 	settime(tfd, &tmr, TFD_TIMER_ABSTIME, tnow + 50 * 1000, 50 * 1000);
 
 	memset(&tmr, 0, sizeof(tmr));
-	tmr.type = tv->type;
+	tmr.type = tv->ts_type;
 
 	if (tv->tfd_gettime(tfd, tst_its_get(&tmr)))
 		tst_res(TFAIL | TERRNO, "timerfd_gettime() failed");

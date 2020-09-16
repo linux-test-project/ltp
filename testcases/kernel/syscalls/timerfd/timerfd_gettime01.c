@@ -12,6 +12,7 @@
 
 #define _GNU_SOURCE
 
+#include "time64_variants.h"
 #include "tst_timer.h"
 #include "tst_safe_timerfd.h"
 
@@ -32,10 +33,7 @@ static struct test_case_t {
 	{&fd, NULL, EINVAL},
 };
 
-static struct test_variants {
-	int (*tfd_gettime)(int fd, void *its);
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_timerfd_gettime != __LTP__NR_INVALID_SYSCALL)
 	{ .tfd_gettime = sys_timerfd_gettime, .desc = "syscall with old kernel spec"},
 #endif
@@ -70,7 +68,7 @@ static void cleanup(void)
 
 static void run(unsigned int n)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct test_case_t *test = &test_cases[n];
 	void *its;
 
