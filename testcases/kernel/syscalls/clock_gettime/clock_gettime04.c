@@ -9,6 +9,7 @@
 
 #include "config.h"
 #include "parse_vdso.h"
+#include "time64_variants.h"
 #include "tst_timer.h"
 #include "tst_safe_clocks.h"
 
@@ -62,23 +63,19 @@ static inline int my_gettimeofday(clockid_t clk_id, void *ts)
 	return 0;
 }
 
-static struct test_variants {
-	int (*gettime)(clockid_t clk_id, void *ts);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
-	{ .gettime = libc_clock_gettime, .type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
+static struct time64_variants variants[] = {
+	{ .clock_gettime = libc_clock_gettime, .ts_type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
 
 #if (__NR_clock_gettime != __LTP__NR_INVALID_SYSCALL)
-	{ .gettime = sys_clock_gettime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
-	{ .gettime = vdso_gettime, .type = TST_KERN_OLD_TIMESPEC, .desc = "vDSO with old kernel spec"},
+	{ .clock_gettime = sys_clock_gettime, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .clock_gettime = vdso_gettime, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "vDSO with old kernel spec"},
 #endif
 
 #if (__NR_clock_gettime64 != __LTP__NR_INVALID_SYSCALL)
-	{ .gettime = sys_clock_gettime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
-	{ .gettime = vdso_gettime64, .type = TST_KERN_TIMESPEC, .desc = "vDSO time64 with kernel spec"},
+	{ .clock_gettime = sys_clock_gettime64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .clock_gettime = vdso_gettime64, .ts_type = TST_KERN_TIMESPEC, .desc = "vDSO time64 with kernel spec"},
 #endif
-	{ .gettime = my_gettimeofday, .type = TST_LIBC_TIMESPEC, .desc = "gettimeofday"},
+	{ .clock_gettime = my_gettimeofday, .ts_type = TST_LIBC_TIMESPEC, .desc = "gettimeofday"},
 };
 
 static void setup(void)
@@ -95,7 +92,7 @@ static void run(unsigned int i)
 {
 	struct tst_ts ts;
 	long long start, end = 0, diff, slack;
-	struct test_variants *tv;
+	struct time64_variants *tv;
 	int count = 10000, ret;
 	unsigned int j;
 
@@ -105,13 +102,13 @@ static void run(unsigned int i)
 			start = end;
 
 			tv = &variants[j];
-			ts.type = tv->type;
+			ts.type = tv->ts_type;
 
 			/* Do gettimeofday() test only for CLOCK_REALTIME */
-			if (tv->gettime == my_gettimeofday && clks[i] != CLOCK_REALTIME)
+			if (tv->clock_gettime == my_gettimeofday && clks[i] != CLOCK_REALTIME)
 				continue;
 
-			ret = tv->gettime(clks[i], tst_ts_get(&ts));
+			ret = tv->clock_gettime(clks[i], tst_ts_get(&ts));
 			if (ret) {
 				/*
 				 * _vdso_gettime() sets error to ENOSYS if vdso
@@ -135,7 +132,7 @@ static void run(unsigned int i)
 			 * gettimeofday() doesn't capture time less than 1 us,
 			 * add 999 to it.
 			 */
-			if (tv->gettime == my_gettimeofday)
+			if (tv->clock_gettime == my_gettimeofday)
 				slack = 999;
 			else
 				slack = 0;
