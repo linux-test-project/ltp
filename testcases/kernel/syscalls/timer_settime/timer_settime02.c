@@ -25,6 +25,7 @@
 
 #include <errno.h>
 #include <time.h>
+#include "time64_variants.h"
 #include "tst_timer.h"
 
 static struct tst_its new_set, old_set;
@@ -58,18 +59,13 @@ static struct testcase {
 	{&timer, &pnew_set, (struct tst_its **)&faulty_set, 0, EFAULT},
 };
 
-static struct test_variants {
-	int (*func)(kernel_timer_t timerid, int flags, void *its,
-		    void *old_its);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_timer_settime != __LTP__NR_INVALID_SYSCALL)
-	{ .func = sys_timer_settime, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .timer_settime = sys_timer_settime, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_timer_settime64 != __LTP__NR_INVALID_SYSCALL)
-	{ .func = sys_timer_settime64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .timer_settime = sys_timer_settime64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
@@ -81,7 +77,7 @@ static void setup(void)
 
 static void run(unsigned int n)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct testcase *tc = &tcases[n];
 	void *new, *old;
 	unsigned int i;
@@ -115,7 +111,7 @@ static void run(unsigned int n)
 		memset(&new_set, 0, sizeof(new_set));
 		memset(&old_set, 0, sizeof(old_set));
 
-		new_set.type = old_set.type = tv->type;
+		new_set.type = old_set.type = tv->ts_type;
 		tst_its_set_interval_sec(&new_set, 0);
 		tst_its_set_interval_nsec(&new_set, 0);
 		tst_its_set_value_sec(&new_set, 5);
@@ -124,7 +120,7 @@ static void run(unsigned int n)
 		new = (tc->new_ptr == (struct tst_its **)&faulty_set) ? faulty_set : tst_its_get(*tc->new_ptr);
 		old = (tc->old_ptr == (struct tst_its **)&faulty_set) ? faulty_set : tst_its_get(*tc->old_ptr);
 
-		TEST(tv->func(*tc->timer_id, 0, new, old));
+		TEST(tv->timer_settime(*tc->timer_id, 0, new, old));
 
 		if (tc->error != TST_ERR) {
 			tst_res(TFAIL | TTERRNO,
