@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) Jiri Palecek<jpalecek@web.de>, 2009 */
 
+#include "time64_variants.h"
 #include "libsigwait.h"
 
 static int my_rt_sigtimedwait(const sigset_t * set, siginfo_t * info,
@@ -40,26 +41,22 @@ struct sigwait_test_desc tests[] = {
 	{ test_masked_matching_rt, -1},
 };
 
-static struct test_variants {
-	swi_func swi;
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_rt_sigtimedwait != __LTP__NR_INVALID_SYSCALL)
-	{ .swi = my_rt_sigtimedwait, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .sigwait = my_rt_sigtimedwait, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_rt_sigtimedwait_time64 != __LTP__NR_INVALID_SYSCALL)
-	{ .swi = my_rt_sigtimedwait_time64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .sigwait = my_rt_sigtimedwait_time64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
 static void run(unsigned int i)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct sigwait_test_desc *tc = &tests[i];
 
-	tc->tf(tv->swi, tc->signo, tv->type);
+	tc->tf(tv->sigwait, tc->signo, tv->ts_type);
 }
 
 static void setup(void)
