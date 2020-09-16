@@ -17,6 +17,7 @@
 
 #include <limits.h>
 
+#include "time64_variants.h"
 #include "tst_safe_clocks.h"
 #include "tst_sig_proc.h"
 #include "tst_timer.h"
@@ -105,25 +106,21 @@ static struct test_case tcase[] = {
 static struct tst_ts *rq;
 static struct tst_ts *rm;
 
-static struct test_variants {
-	int (*func)(clockid_t clock_id, int flags, void *request, void *remain);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
-	{ .func = libc_clock_nanosleep, .type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
+static struct time64_variants variants[] = {
+	{ .clock_nanosleep = libc_clock_nanosleep, .ts_type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
 
 #if (__NR_clock_nanosleep != __LTP__NR_INVALID_SYSCALL)
-	{ .func = sys_clock_nanosleep, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .clock_nanosleep = sys_clock_nanosleep, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_clock_nanosleep_time64 != __LTP__NR_INVALID_SYSCALL)
-	{ .func = sys_clock_nanosleep64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .clock_nanosleep = sys_clock_nanosleep64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
 void setup(void)
 {
-	rq->type = variants[tst_variant].type;
+	rq->type = variants[tst_variant].ts_type;
 	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
 	SAFE_SIGNAL(SIGINT, sighandler);
 	bad_addr = tst_get_bad_addr(NULL);
@@ -131,7 +128,7 @@ void setup(void)
 
 static void do_test(unsigned int i)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct test_case *tc = &tcase[i];
 	pid_t pid = 0;
 	void *request, *remain;
@@ -157,9 +154,9 @@ static void do_test(unsigned int i)
 	else
 		remain = tst_ts_get(rm);
 
-	TEST(tv->func(tc->clk_id, tc->flags, request, remain));
+	TEST(tv->clock_nanosleep(tc->clk_id, tc->flags, request, remain));
 
-	if (tv->func == libc_clock_nanosleep) {
+	if (tv->clock_nanosleep == libc_clock_nanosleep) {
 		/*
 		 * The return value and error number are differently set for
 		 * libc syscall as compared to kernel syscall.

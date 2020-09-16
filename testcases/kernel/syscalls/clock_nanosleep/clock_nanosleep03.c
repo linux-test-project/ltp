@@ -16,6 +16,7 @@
  */
 
 #include <stdlib.h>
+#include "time64_variants.h"
 #include "tst_safe_clocks.h"
 #include "tst_timer.h"
 #include "lapi/namespaces_constants.h"
@@ -23,40 +24,35 @@
 #define OFFSET_S 10
 #define SLEEP_US 100000
 
-static struct test_variants {
-	int (*gettime)(clockid_t clk_id, void *ts);
-	int (*func)(clockid_t clock_id, int flags, void *request, void *remain);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
-	{ .gettime = libc_clock_gettime, .func = libc_clock_nanosleep, .type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
+static struct time64_variants variants[] = {
+	{ .clock_gettime = libc_clock_gettime, .clock_nanosleep = libc_clock_nanosleep, .ts_type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
 
 #if (__NR_clock_nanosleep != __LTP__NR_INVALID_SYSCALL)
-	{ .gettime = sys_clock_gettime, .func = sys_clock_nanosleep, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .clock_gettime = sys_clock_gettime, .clock_nanosleep = sys_clock_nanosleep, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_clock_nanosleep_time64 != __LTP__NR_INVALID_SYSCALL)
-	{ .gettime = sys_clock_gettime64, .func = sys_clock_nanosleep64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .clock_gettime = sys_clock_gettime64, .clock_nanosleep = sys_clock_nanosleep64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
-static void do_clock_gettime(struct test_variants *tv, struct tst_ts *ts)
+static void do_clock_gettime(struct time64_variants *tv, struct tst_ts *ts)
 {
 	int ret;
 
-	ret = tv->gettime(CLOCK_MONOTONIC, tst_ts_get(ts));
+	ret = tv->clock_gettime(CLOCK_MONOTONIC, tst_ts_get(ts));
 	if (ret == -1)
 		tst_brk(TBROK | TERRNO, "clock_settime(CLOCK_MONOTONIC) failed");
 }
 
 static void verify_clock_nanosleep(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct tst_ts start, end, sleep_abs;
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 
-	start.type = end.type = sleep_abs.type = tv->type;
+	start.type = end.type = sleep_abs.type = tv->ts_type;
 
 	SAFE_UNSHARE(CLONE_NEWTIME);
 
@@ -67,12 +63,12 @@ static void verify_clock_nanosleep(void)
 	sleep_abs = tst_ts_add_us(start, 1000000 * OFFSET_S + SLEEP_US);
 
 	if (!SAFE_FORK()) {
-		TEST(tv->func(CLOCK_MONOTONIC, TIMER_ABSTIME, tst_ts_get(&sleep_abs), NULL));
+		TEST(tv->clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, tst_ts_get(&sleep_abs), NULL));
 		/*
 		 * The return value and error number are differently set for
 		 * libc syscall as compared to kernel syscall.
 		 */
-		if ((tv->func == libc_clock_nanosleep) && TST_RET) {
+		if ((tv->clock_nanosleep == libc_clock_nanosleep) && TST_RET) {
 			TST_ERR = TST_RET;
 			TST_RET = -1;
 		}
