@@ -13,6 +13,7 @@
  */
 
 #include <sched.h>
+#include "time64_variants.h"
 #include "tst_timer.h"
 
 static pid_t unused_pid;
@@ -32,31 +33,27 @@ struct test_cases_t {
 	{ &zero_pid, NULL, EFAULT}
 };
 
-static struct test_variants {
-	int (*func)(pid_t pid, void *ts);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
-	{ .func = libc_sched_rr_get_interval, .type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
+static struct time64_variants variants[] = {
+	{ .sched_rr_get_interval = libc_sched_rr_get_interval, .ts_type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
 
 #if (__NR_sched_rr_get_interval != __LTP__NR_INVALID_SYSCALL)
-	{ .func = sys_sched_rr_get_interval, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .sched_rr_get_interval = sys_sched_rr_get_interval, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_sched_rr_get_interval_time64 != __LTP__NR_INVALID_SYSCALL)
-	{ .func = sys_sched_rr_get_interval64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .sched_rr_get_interval = sys_sched_rr_get_interval64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct sched_param p = { 1 };
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 
 	bad_addr = tst_get_bad_addr(NULL);
-	tp.type = tv->type;
+	tp.type = tv->ts_type;
 
 	if ((sched_setscheduler(0, SCHED_RR, &p)) == -1)
 		tst_res(TFAIL | TTERRNO, "sched_setscheduler() failed");
@@ -66,7 +63,7 @@ static void setup(void)
 
 static void run(unsigned int i)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct test_cases_t *tc = &test_cases[i];
 	struct timerspec *ts;
 
@@ -75,7 +72,7 @@ static void run(unsigned int i)
 	else
 		ts = tst_ts_get(tc->tp);
 
-	TEST(tv->func(*tc->pid, ts));
+	TEST(tv->sched_rr_get_interval(*tc->pid, ts));
 
 	if (TST_RET != -1) {
 		tst_res(TFAIL, "sched_rr_get_interval() passed unexcpectedly");
