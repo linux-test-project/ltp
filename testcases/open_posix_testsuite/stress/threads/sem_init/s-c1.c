@@ -372,6 +372,7 @@ int main(int argc, char *argv[])
 
 		PASSED;
 	}
+}
 
 /***
  * The next function will seek for the better model for each series of measurements.
