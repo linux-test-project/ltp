@@ -5,6 +5,7 @@
  * Description:
  * Basic io_pgetevents() test to check various failures.
  */
+#include "time64_variants.h"
 #include "tst_test.h"
 #include "tst_timer.h"
 #include "lapi/io_pgetevents.h"
@@ -36,31 +37,26 @@ static struct tcase {
 	{"invalid sigmask", &ctx, 1, 1, events, &to, NULL, EFAULT},
 };
 
-static struct test_variants {
-	int (*io_pgetevents)(io_context_t ctx, long min_nr, long max_nr,
-		struct io_event *events, void *timeout, sigset_t *sigmask);
-	enum tst_ts_type type;
-	char *desc;
-} variants[] = {
+static struct time64_variants variants[] = {
 #if (__NR_io_pgetevents != __LTP__NR_INVALID_SYSCALL)
-	{ .io_pgetevents = sys_io_pgetevents, .type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
+	{ .io_pgetevents = sys_io_pgetevents, .ts_type = TST_KERN_OLD_TIMESPEC, .desc = "syscall with old kernel spec"},
 #endif
 
 #if (__NR_io_pgetevents_time64 != __LTP__NR_INVALID_SYSCALL)
-	{ .io_pgetevents = sys_io_pgetevents_time64, .type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
+	{ .io_pgetevents = sys_io_pgetevents_time64, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
 
 static void setup(void)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct iocb cb, *cbs[1];
 	char data[4096];
 	int ret;
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 	bad_addr = tst_get_bad_addr(NULL);
-	to = tst_ts_from_ns(tv->type, 10000);
+	to = tst_ts_from_ns(tv->ts_type, 10000);
 
 	cbs[0] = &cb;
 
@@ -93,7 +89,7 @@ static void cleanup(void)
 
 static void run(unsigned int n)
 {
-	struct test_variants *tv = &variants[tst_variant];
+	struct time64_variants *tv = &variants[tst_variant];
 	struct tcase *tc = &tcases[n];
 	struct timespec *to;
 	sigset_t *sigmask;
