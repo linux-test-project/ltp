@@ -1210,6 +1210,7 @@ sendmmsg02 sendmmsg02
 
 sendto01 sendto01
 sendto02 sendto02
+sendto03 sendto03
 
 set_mempolicy01 set_mempolicy01
 set_mempolicy02 set_mempolicy02
