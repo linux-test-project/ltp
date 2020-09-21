@@ -1,0 +1,15 @@
+# The purpose of this file is to have a quick integration test for various
+# test frameworks that integrate LTP testsuite.
+
+access01 access01
+chdir01 chdir01
+fork01 fork01
+time01 time01
+wait02 wait02
+write01 write01
+symlink01 symlink01
+stat04 symlink01 -T stat04
+utime01A symlink01 -T utime01
+rename01A symlink01 -T rename01
+splice02 seq 1 20 | splice02
+route4-change-dst route-change-dist.sh
