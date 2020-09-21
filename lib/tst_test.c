@@ -193,22 +193,22 @@ static void print_result(const char *file, const int lineno, int ttype,
 
 	switch (TTYPE_RESULT(ttype)) {
 	case TPASS:
-		res = "PASS";
+		res = "TPASS";
 	break;
 	case TFAIL:
-		res = "FAIL";
+		res = "TFAIL";
 	break;
 	case TBROK:
-		res = "BROK";
+		res = "TBROK";
 	break;
 	case TCONF:
-		res = "CONF";
+		res = "TCONF";
 	break;
 	case TWARN:
-		res = "WARN";
+		res = "TWARN";
 	break;
 	case TINFO:
-		res = "INFO";
+		res = "TINFO";
 	break;
 	default:
 		tst_brk(TBROK, "Invalid ttype value %i", ttype);
