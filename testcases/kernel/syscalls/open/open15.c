@@ -17,14 +17,11 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 
 #include "tst_test.h"
 
 #define TEST_FILE "testfile"
-
-static int fd;
 
 static struct tcase {
 	char *filename;
@@ -32,36 +29,25 @@ static struct tcase {
 	mode_t mode;
 } tcases[] = {
 	{TEST_FILE, O_RDWR | O_CREAT, 0644 | ~07777},
-	{TEST_FILE, 0, ~07777}
+	{TEST_FILE, 0, ~07777},
 };
 
 static void verify_open(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
-	struct stat buf;
 
 	TEST(open(tc->filename, tc->flags, tc->mode));
-	fd = TST_RET;
+	int fd = TST_RET;
 	if (fd == -1) {
-		tst_res(TFAIL, "Cannot open the file");
-	} else {
-		tst_res(TPASS, "Unknown mode bits were ignored as expected");
-		SAFE_CLOSE(fd);
+		tst_res(TFAIL | TTERRNO, "Cannot open the file");
+		return;
 	}
-}
-
-static void setup(void)
-{
-}
-
-static void cleanup(void)
-{
+	tst_res(TPASS, "Unknown mode bits were ignored as expected");
+	SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_tmpdir = 1,
-	.setup = setup,
-	.cleanup = cleanup,
 	.test = verify_open,
 };

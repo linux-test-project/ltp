@@ -26,30 +26,28 @@
 #define CHMOD_MODE (0777 | ~07777)
 #define TESTFILE   "testfile"
 
-void test_chmod(void)
+static void test_chmod(void)
 {
 	struct stat stat_buf;
 
 	TEST(chmod(TESTFILE, CHMOD_MODE));
 	if (TST_RET == -1) {
-		tst_res(TFAIL, "chmod(%s, %#o) failed", TESTFILE, CHMOD_MODE);
+		tst_res(TFAIL | TTERRNO, "chmod(%s, %#o) failed", TESTFILE, CHMOD_MODE);
+		return;
 	}
 
-	if (stat(TESTFILE, &stat_buf) == -1) {
-		tst_brk(TFAIL | TTERRNO, "stat failed");
-	}
+	SAFE_STAT(TESTFILE, &stat_buf);
 
 	mode_t expected = S_IFREG | (CHMOD_MODE & 07777);
-	if (stat_buf.st_mode == expected) {
-		tst_res(TPASS, "Unknown mode bits were ignored as expected",
-				TESTFILE, CHMOD_MODE);
-	} else {
+	if (stat_buf.st_mode != expected) {
 		tst_res(TFAIL, "%s: Incorrect mode 0%04o, expected 0%04o",
 				TESTFILE, stat_buf.st_mode, expected);
+		return;
 	}
+	tst_res(TPASS, "Unknown mode bits were ignored as expected");
 }
 
-void setup(void)
+static void setup(void)
 {
 	int fd;
 
