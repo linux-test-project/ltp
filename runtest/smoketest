@@ -12,4 +12,4 @@ stat04 symlink01 -T stat04
 utime01A symlink01 -T utime01
 rename01A symlink01 -T rename01
 splice02 seq 1 20 | splice02
-route4-change-dst route-change-dist.sh
+route4-change-dst route-change-dst.sh
