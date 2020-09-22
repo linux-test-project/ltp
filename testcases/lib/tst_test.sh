@@ -350,7 +350,7 @@ tst_require_cmds()
 tst_check_cmds()
 {
 	local cmd
-	for cmd; do
+	for cmd in $*; do
 		if ! tst_cmd_available $cmd; then
 			tst_res TCONF "'$cmd' not found"
 			return 1
