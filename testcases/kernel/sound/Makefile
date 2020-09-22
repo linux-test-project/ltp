@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-top_srcdir		:= ../../..
+top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
