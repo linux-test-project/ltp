@@ -2359,7 +2359,10 @@ runtime, since sometimes we need to the check at runtime too.
 
 'tst_check_cmds()' can be used for requirements just for a particular test
 as it doesn't exit (it issues 'tst_res TCONF'). Expected usage is:
-...
+
+[source,sh]
+-------------------------------------------------------------------------------
+#!/bin/sh
 
 TST_TESTFUNC=do_test
 . tst_test.sh
@@ -2372,7 +2375,7 @@ do_test()
 }
 
 tst_run
-...
+-------------------------------------------------------------------------------
 
 Locating kernel modules
 +++++++++++++++++++++++
