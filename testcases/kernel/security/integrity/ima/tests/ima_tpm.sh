@@ -33,7 +33,7 @@ test1()
 			tst_res TFAIL "bios boot aggregate is not 0"
 		fi
 	else
-		boot_aggregate=$(ima_boot_aggregate $tpm_bios | grep "boot_aggregate:" | cut -d':' -f2)
+		boot_aggregate=$(ima_boot_aggregate -f $tpm_bios | grep "sha1:" | cut -d':' -f2)
 		if [ "$boot_hash" = "$boot_aggregate" ]; then
 			tst_res TPASS "bios aggregate matches IMA boot aggregate"
 		else
