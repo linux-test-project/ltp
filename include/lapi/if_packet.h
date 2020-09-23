@@ -25,6 +25,10 @@
 # define PACKET_RESERVE 12
 #endif
 
+#ifndef PACKET_VNET_HDR
+#define PACKET_VNET_HDR 15
+#endif
+
 #ifndef PACKET_FANOUT
 #define PACKET_FANOUT	18
 #endif
