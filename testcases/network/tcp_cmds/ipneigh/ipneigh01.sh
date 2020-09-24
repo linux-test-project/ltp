@@ -20,14 +20,14 @@ do_setup()
 	case $CMD in
 	ip)
 		SHOW_CMD="ip neigh show"
-		DEL_CMD="ip neigh del $(tst_ipaddr rhost) dev $(tst_iface)"
+		DEL_CMD="ROD ip neigh del $(tst_ipaddr rhost) dev $(tst_iface)"
 		;;
 	arp)
 		if [ -n "$TST_IPV6" ]; then
 			tst_brk TCONF "'arp' doesn't support IPv6"
 		fi
 		SHOW_CMD="arp -a"
-		DEL_CMD="arp -d $(tst_ipaddr rhost) -i $(tst_iface)"
+		DEL_CMD="ROD arp -d $(tst_ipaddr rhost) -i $(tst_iface)"
 		;;
 	*)
 		tst_brk TBROK "unknown or missing command, use -c [ arp | ip ]"
@@ -75,7 +75,7 @@ do_test()
 		[ "$ret" -ne 0 ] && \
 			tst_brk TFAIL "$entry_name entry '$(tst_ipaddr rhost)' not listed"
 
-		$DEL_CMD || tst_brk TFAIL "fail to delete entry"
+		$DEL_CMD
 
 		$SHOW_CMD | grep -q "$(tst_ipaddr rhost).*$(tst_hwaddr rhost)" && \
 			tst_brk TFAIL "'$DEL_CMD' failed, entry has " \
