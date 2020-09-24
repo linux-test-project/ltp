@@ -295,11 +295,12 @@ tst_ipsec_setup_vti()
 	tst_ipsec_vti lhost $ip_loc $ip_rmt $tst_vti
 	tst_ipsec_vti rhost $ip_rmt $ip_loc $tst_vti
 
-	local mask=
+	local mask address_opt
 	if [ "$TST_IPV6" ]; then
 		ip_loc_tun="${IPV6_NET32_UNUSED}::1";
 		ip_rmt_tun="${IPV6_NET32_UNUSED}::2";
 		mask=64
+		address_opt=nodad
 		ROD ip -6 route add ${IPV6_NET32_UNUSED}::/$mask dev $tst_vti
 	else
 		ip_loc_tun="${IPV4_NET16_UNUSED}.1.1";
@@ -311,6 +312,6 @@ tst_ipsec_setup_vti()
 	tst_res TINFO "Add IPs to vti tunnel, " \
 		       "loc: $ip_loc_tun/$mask, rmt: $ip_rmt_tun/$mask"
 
-	ROD ip a add $ip_loc_tun/$mask dev $tst_vti nodad
+	ROD ip a add $ip_loc_tun/$mask dev $tst_vti $address_opt
 	tst_rhost_run -s -c "ip a add $ip_rmt_tun/$mask dev $tst_vti"
 }
