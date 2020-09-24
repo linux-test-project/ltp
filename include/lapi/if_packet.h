@@ -26,15 +26,15 @@
 #endif
 
 #ifndef PACKET_VNET_HDR
-#define PACKET_VNET_HDR 15
+# define PACKET_VNET_HDR 15
 #endif
 
 #ifndef PACKET_FANOUT
-#define PACKET_FANOUT	18
+# define PACKET_FANOUT 18
 #endif
 
 #ifndef PACKET_FANOUT_ROLLOVER
-#define PACKET_FANOUT_ROLLOVER	3
+# define PACKET_FANOUT_ROLLOVER 3
 #endif
 
 #ifndef HAVE_STRUCT_TPACKET_REQ3
