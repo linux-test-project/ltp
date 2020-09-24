@@ -292,10 +292,10 @@ virt_compare_netperf()
 	local vt="$(cat res_ipv4)"
 	local vt6="$(cat res_ipv6)"
 
-	tst_netload -H $ip_remote $opts -d res_ipv4
+	tst_netload -H $(tst_ipaddr rhost) $opts -d res_lan
 
-	local lt="$(cat res_ipv4)"
-	tst_res TINFO "time lan($lt) $virt_type IPv4($vt) and IPv6($vt6) ms"
+	local lt="$(cat res_lan)"
+	tst_res TINFO "time lan IPv${TST_IPVER}($lt) $virt_type IPv4($vt) and IPv6($vt6) ms"
 
 	per=$(( $vt * 100 / $lt - 100 ))
 	per6=$(( $vt6 * 100 / $lt - 100 ))
