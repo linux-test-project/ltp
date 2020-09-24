@@ -108,6 +108,7 @@ AC_CHECK_FUNCS_ONCE([ \
     profil \
     pwritev \
     pwritev2 \
+    rand_r \
     readlinkat \
     recvmmsg \
     renameat \
