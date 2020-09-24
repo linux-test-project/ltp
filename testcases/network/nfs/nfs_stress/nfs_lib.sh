@@ -87,11 +87,17 @@ nfs_mount()
 
 	tst_res TINFO "Mounting NFS: $mnt_cmd"
 	if [ -n "$LTP_NETNS" ] && [ -z "$LTP_NFS_NETNS_USE_LO" ]; then
-		tst_rhost_run -s -c "$mnt_cmd"
-		return
+		tst_rhost_run -c "$mnt_cmd"
+	else
+		$mnt_cmd > /dev/null
 	fi
 
-	ROD $mnt_cmd
+	if [ $? -ne 0 ]; then
+		if [ "$type" = "udp" -o "$type" = "udp6" ] && tst_kvcmp -ge 5.6; then
+			tst_brk TCONF "UDP support disabled with the kernel config NFS_DISABLE_UDP_SUPPORT?"
+		fi
+		tst_brk TBROK "mount command failed"
+	fi
 }
 
 nfs_setup()
