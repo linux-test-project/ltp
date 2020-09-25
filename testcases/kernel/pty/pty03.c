@@ -24,6 +24,9 @@
  *
  * Fixed by commit 0ace17d568241:
  * "can, slip: Protect tty->disc_data in write_wakeup and close with RCU"
+ *
+ * This is also regression test for commit:
+ * dd42bf1197144 ("tty: Prevent ldisc drivers from re-using stale tty fields")
  */
 
 #define _GNU_SOURCE
@@ -151,6 +154,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "0ace17d568241"},
 		{"CVE", "2020-14416"},
+		{"linux-git", "dd42bf1197144"},
 		{}
 	}
 };
