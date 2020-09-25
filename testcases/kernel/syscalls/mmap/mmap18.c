@@ -202,9 +202,9 @@ static void run_test(void)
 {
 	size_t stack_size = 8 * PTHREAD_STACK_MIN;
 
-	grow_stack_success(stack_size, page_size);
+	grow_stack_success(stack_size, PTHREAD_STACK_MIN);
 	grow_stack_success(stack_size, stack_size/2);
-	grow_stack_fail(stack_size, page_size);
+	grow_stack_fail(stack_size, PTHREAD_STACK_MIN);
 	grow_stack_fail(stack_size, stack_size/2);
 }
 
