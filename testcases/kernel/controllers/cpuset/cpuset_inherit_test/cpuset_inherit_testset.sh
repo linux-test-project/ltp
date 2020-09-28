@@ -106,7 +106,7 @@ inherit_test()
 test_cpus()
 {
 	cfile_name="cpus"
-	let "num=$nr_cpus-1"
+	num=$((nr_cpus-1))
 	cpu_string="0-$num"
 	if [ $nr_cpus -eq 1 ]; then
 		cpu_string="0"
