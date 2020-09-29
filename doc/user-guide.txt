@@ -1,7 +1,7 @@
 LTP User Guidelines
 ===================
 
-For compiling and installing and running the tests see `README.md`.
+For compiling, installing and running the tests see `README.md`.
 For running LTP network tests see `testcases/network/README.md`.
 
 1. Library environment variables
@@ -18,8 +18,8 @@ For running LTP network tests see `testcases/network/README.md`.
                           Variable is also used in shell tests, but ceiled to int.
 | 'PATH'                | It's required to addjust path:
                           `PATH="$PATH:$LTPROOT/testcases/bin"`
-| 'TMPDIR'              | Base directory for template directory, which is required by C tests
-                          `tst_test->needs_tmpdir=1` (or others) or shell 'TST_NEEDS_TMPDIR=1').
+| 'TMPDIR'              | Base directory for template directory (C: '.needs_tmpdir = 1'
+                          and others, which imply it, shell: 'TST_NEEDS_TMPDIR=1').
 | 'TST_NO_CLEANUP'      | Disable running test cleanup (defined in 'TST_CLEANUP').
 |==============================================================================
 
