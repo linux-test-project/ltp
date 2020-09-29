@@ -66,11 +66,11 @@ static struct tcase {
 
 static void setup(void)
 {
-	int rval;
-
-	rval = io_setup(1, &ctx);
-	if (rval)
-		tst_brk(TBROK | TERRNO, "io_setup() returned %d", rval);
+	TEST(io_setup(1, &ctx));
+	if (TST_RET == -ENOSYS)
+		tst_brk(TCONF | TRERRNO, "io_setup(): AIO not supported by kernel");
+	else if (TST_RET)
+		tst_brk(TBROK | TRERRNO, "io_setup() failed");
 
 	io_prep_pread(&inv_fd_iocb, -1, buf, sizeof(buf), 0);
 
