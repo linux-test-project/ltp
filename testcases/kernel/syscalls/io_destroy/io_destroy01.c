@@ -32,6 +32,11 @@ static void verify_io_destroy(void)
 		return;
 	}
 
+	if (TST_RET == -ENOSYS) {
+		tst_res(TCONF, "io_destroy() not supported");
+		return;
+	}
+
 	if (TST_RET == -EINVAL) {
 		tst_res(TPASS,
 			"io_destroy() failed as expected, returned -EINVAL");
