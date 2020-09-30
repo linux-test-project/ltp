@@ -61,11 +61,9 @@ virt_lib_setup()
 TST_NEEDS_ROOT=1
 . tst_net.sh
 
-ip_local=$(tst_ipaddr)
 ip_virt_local="$(TST_IPV6= tst_ipaddr_un)"
 ip6_virt_local="$(TST_IPV6=6 tst_ipaddr_un)"
 
-ip_remote=$(tst_ipaddr rhost)
 ip_virt_remote="$(TST_IPV6= tst_ipaddr_un rhost)"
 ip6_virt_remote="$(TST_IPV6=6 tst_ipaddr_un rhost)"
 
@@ -375,10 +373,6 @@ virt_gre_setup()
 	virt_type="gre"
 	[ "$TST_IPV6" ] && virt_type="ip6gre"
 	virt_lib_setup
-
-	if [ -z $ip_local -o -z $ip_remote ]; then
-		tst_brk TBROK "you must specify IP address"
-	fi
 
 	tst_res TINFO "test $virt_type"
 	virt_setup "local $(tst_ipaddr) remote $(tst_ipaddr rhost) dev $(tst_iface)" \

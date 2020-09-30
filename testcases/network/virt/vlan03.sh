@@ -24,17 +24,9 @@ TST_NEEDS_TMPDIR=1
 TST_TEST_DATA=",$p0 $lb0 $rh1,$p1 $lb1 $rh1"
 TST_TEST_DATA_IFS=","
 TST_TESTFUNC=do_test
-TST_SETUP=do_setup
+TST_SETUP=virt_lib_setup
 TST_CLEANUP=virt_cleanup
 . virt_lib.sh
-
-do_setup()
-{
-	if [ -z $ip_local -o -z $ip_remote ]; then
-		tst_brk TBROK "you must specify IP address"
-	fi
-	virt_lib_setup
-}
 
 do_test()
 {
