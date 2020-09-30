@@ -53,6 +53,8 @@ static void verify_success(unsigned int nr, io_context_t *ctx, int init_val)
 	memset(ctx, init_val, sizeof(*ctx));
 
 	TEST(io_setup(nr, ctx));
+	if (TST_RET == -ENOSYS)
+		tst_brk(TCONF | TRERRNO, "io_setup(): AIO not supported by kernel");
 	if (TST_RET != 0) {
 		tst_res(TFAIL, "io_setup() failed unexpectedly with %li (%s)",
 			TST_RET, tst_strerrno(-TST_RET));
