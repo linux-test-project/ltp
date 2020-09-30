@@ -510,6 +510,11 @@ static int trigger_eventfd_overflow(int evfd, int *fd, io_context_t * ctx)
 	ret = io_setup(16, ctx);
 	if (ret < 0) {
 		errno = -ret;
+		if (errno == ENOSYS) {
+			tst_brkm(TCONF | TERRNO, cleanup,
+				 "io_setup(): AIO not supported by kernel");
+		}
+
 		tst_resm(TINFO | TERRNO, "io_setup error");
 		return -1;
 	}
