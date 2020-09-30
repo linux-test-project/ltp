@@ -65,9 +65,11 @@ static void setup(void)
 	fd = SAFE_OPEN("io_pgetevents_file", O_RDWR | O_CREAT, 0644);
 	io_prep_pwrite(&cb, fd, data, 4096, 0);
 
-	ret = io_setup(1, &ctx);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "io_setup() failed");
+	TEST(io_setup(1, &ctx));
+	if (TST_RET == -ENOSYS)
+		tst_brk(TCONF | TRERRNO, "io_setup(): AIO not supported by kernel");
+	if (TST_RET < 0)
+		tst_brk(TBROK | TRERRNO, "io_setup() failed");
 
 	ctx_initialized = 1;
 
