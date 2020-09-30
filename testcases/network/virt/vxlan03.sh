@@ -40,7 +40,7 @@ do_test()
 		tst_brk TBROK "you must specify IP address"
 	fi
 
-	virt_check_cmd virt_add ltp_v0 id 0 $2 || continue
+	virt_check_cmd virt_add ltp_v0 id 0 $2 || return
 
 	tst_res TINFO "the same VNI must work"
 	# VNI is 24 bits long, so max value, which is not reserved, is 0xFFFFFE
