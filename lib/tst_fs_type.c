@@ -84,6 +84,8 @@ const char *tst_fs_type_name(long f_type)
 		return "EXOFS";
 	case TST_OVERLAYFS_MAGIC:
 		return "OVERLAYFS";
+	case TST_FUSE_MAGIC:
+		return "FUSE";
 	default:
 		return "Unknown";
 	}
