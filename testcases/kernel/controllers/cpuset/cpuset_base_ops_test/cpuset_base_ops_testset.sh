@@ -128,10 +128,8 @@ test_cpus()
 		base_op_test "$CPUSET/1/cpuset.cpus" "0,1-$((nr_cpus-2))," "0-$((nr_cpus-2))"
 	fi
 
-	if tst_kvcmp -lt "3.0 RHEL6:2.6.32"; then
+	if tst_kvcmp -ge "4.3"; then
 		base_op_test "$CPUSET/1/cpuset.cpus" "0-" "WRITE_ERROR"
-	else
-		base_op_test "$CPUSET/1/cpuset.cpus" "0-" "0"
 	fi
 }
 
@@ -163,10 +161,8 @@ test_mems()
 		base_op_test "$CPUSET/1/cpuset.mems" "0,1-$((nr_mems-2))," "0-$((nr_mems-2))"
 	fi
 
-	if tst_kvcmp -lt "3.0 RHEL6:2.6.32"; then
+	if tst_kvcmp -ge "4.3"; then
 		base_op_test "$CPUSET/1/cpuset.mems" "0-" "WRITE_ERROR"
-	else
-		base_op_test "$CPUSET/1/cpuset.mems" "0-" "0"
 	fi
 }
 
