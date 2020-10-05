@@ -8,6 +8,7 @@ zypper --non-interactive install --force-resolution --no-recommends \
 	clang \
 	findutils \
 	gcc \
+	git \
 	gzip \
 	make \
 	kernel-default-devel \

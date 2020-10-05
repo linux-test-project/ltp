@@ -8,6 +8,7 @@ yum -y install \
 	make \
 	clang \
 	gcc \
+	git \
 	findutils \
 	libtirpc \
 	libtirpc-devel \

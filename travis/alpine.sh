@@ -10,6 +10,7 @@ apk add \
 	automake \
 	clang \
 	gcc \
+	git \
 	keyutils-dev \
 	libaio-dev \
 	libacl \

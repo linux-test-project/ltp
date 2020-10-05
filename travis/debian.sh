@@ -17,6 +17,7 @@ apt install -y --no-install-recommends \
 	devscripts \
 	clang \
 	gcc \
+	git \
 	libacl1 \
 	libacl1-dev \
 	libaio-dev \
