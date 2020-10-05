@@ -7,6 +7,11 @@
 /* 12/03/2002	Port to LTP     robbiew@us.ibm.com */
 /* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
 
+/*\
+ * [DOCUMENTATION]
+ *  Verify that acct() returns proper errno on failure.
+\*/
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>

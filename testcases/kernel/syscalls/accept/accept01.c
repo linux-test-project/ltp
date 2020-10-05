@@ -3,10 +3,12 @@
 /*
  *   Copyright (c) International Business Machines  Corp., 2001
  *   07/2001 Ported by Wayne Boyer
- *
- *   Description:
- *     Verify that accept() returns the proper errno for various failure cases
  */
+
+/*\
+ * [DESCRIPTION]
+ * Verify that accept() returns the proper errno for various failure cases.
+\*/
 
 #include <stdio.h>
 #include <unistd.h>

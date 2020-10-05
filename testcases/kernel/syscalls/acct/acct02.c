@@ -3,7 +3,9 @@
  *  Copyright (c) SUSE LLC, 2019
  *  Author: Christian Amann <camann@suse.com>
  */
-/*
+/*\
+ * [DOCUMENTATION]
+ *
  * This tests if the kernel writes correct data to the
  * process accounting file.
  *
@@ -19,7 +21,7 @@
  *
  * This is also accidental regression test for:
  * 4d9570158b626 kernel/acct.c: fix the acct->needcheck check in check_free_space()
- */
+\*/
 
 #include <sys/stat.h>
 #include <errno.h>
