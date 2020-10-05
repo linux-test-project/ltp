@@ -57,6 +57,8 @@
 #				     rope to hang one's self in the event of
 #				     unwanted behavior.
 #
+# $(HOST_MAKE_TARGETS)	: Host tools which use $HOSTCC.
+#
 # $(CLEAN_TARGETS)		: What targets should be cleaned (must be
 #				  real files). This will automatically append
 #				  adds the .o suffix to all files referenced
@@ -91,6 +93,10 @@
 #
 
 .PHONY: all clean install
+
+ifneq ($(strip $(MAKE_TARGETS)),)
+$(MAKE_TARGETS) += $(HOST_MAKE_TARGETS)
+endif
 
 $(MAKE_TARGETS): | $(MAKE_DEPS)
 

@@ -31,6 +31,19 @@ RANLIB			:= @RANLIB@
 STRIP			:= @STRIP@
 YACC			:= @YACC@
 
+HOSTCC  = @HOSTCC@
+build := @build@
+host := @host@
+ifeq ($(strip $(HOSTCC)),)
+# native build, respect CC
+ifeq ($(build),$(host))
+HOSTCC := $(CC)
+else
+# cross compilation
+HOSTCC := cc
+endif
+endif
+
 AIO_LIBS		:= @AIO_LIBS@
 CAP_LIBS		:= @CAP_LIBS@
 ACL_LIBS		:= @ACL_LIBS@
@@ -69,6 +82,14 @@ WCFLAGS			?= -Wall -W @GCC_WARN_OLDSTYLE@
 
 LDFLAGS			+= $(WLDFLAGS)
 CFLAGS			+= $(DEBUG_CFLAGS) $(OPT_CFLAGS) $(WCFLAGS)
+
+ifeq ($(strip $(HOST_CFLAGS)),)
+HOST_CFLAGS := $(CFLAGS)
+endif
+
+ifeq ($(strip $(HOST_LDFLAGS)),)
+HOST_LDFLAGS := $(LDFLAGS)
+endif
 
 LINUX_VERSION		:= @LINUX_VERSION@
 LINUX_DIR		:= @LINUX_DIR@

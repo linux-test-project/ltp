@@ -13,6 +13,8 @@ AC_CONFIG_FILES([ \
     execltp \
 ])
 
+AC_ARG_VAR(HOSTCC, [The C compiler on the host])
+
 AM_MAINTAINER_MODE([enable])
 
 AC_CANONICAL_HOST

@@ -22,6 +22,14 @@ else
 	@echo LD $(target_rel_dir)$@
 endif
 
+$(HOST_MAKE_TARGETS): %: %.c
+ifdef VERBOSE
+	$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) $< $(HOST_LDLIBS) -o $@
+else
+	@$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) $< $(HOST_LDLIBS) -o $@
+	@echo HOSTCC $(target_rel_dir)$@
+endif
+
 %: %.c
 ifdef VERBOSE
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ $(LTPLDLIBS) $(LDLIBS) -o $@

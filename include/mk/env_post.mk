@@ -48,11 +48,10 @@ LDFLAGS				+= -L$(top_builddir)/lib/android_librt
 endif
 
 MAKE_TARGETS			?= $(notdir $(patsubst %.c,%,$(wildcard $(abs_srcdir)/*.c)))
-
 MAKE_TARGETS			:= $(filter-out $(FILTER_OUT_MAKE_TARGETS),$(MAKE_TARGETS))
 
 # with only *.dwo, .[0-9]+.dwo can not be cleaned
-CLEAN_TARGETS			+= $(MAKE_TARGETS) *.o *.pyc .cache.mk *.dwo .*.dwo
+CLEAN_TARGETS			+= $(MAKE_TARGETS) $(HOST_MAKE_TARGETS) *.o *.pyc .cache.mk *.dwo .*.dwo
 
 # Majority of the files end up in testcases/bin...
 INSTALL_DIR			?= testcases/bin
