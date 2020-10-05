@@ -77,6 +77,8 @@ static void mq_notify_verify(struct test_case_t *test)
 
 	if (TEST_ERRNO == test->exp_errno) {
 		tst_resm(TPASS | TTERRNO, "mq_notify failed as expected");
+	} else if (TEST_ERRNO == ENOSYS) {
+		tst_resm(TCONF | TTERRNO, "mq_notify not available");
 	} else {
 		tst_resm(TFAIL | TTERRNO,
 			 "mq_notify failed unexpectedly; expected: %d - %s",
