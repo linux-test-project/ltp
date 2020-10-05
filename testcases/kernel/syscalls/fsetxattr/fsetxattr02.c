@@ -241,11 +241,6 @@ static void cleanup(void)
 	}
 }
 
-static const char *const needed_drivers[] = {
-	"brd",
-	NULL,
-};
-
 static struct tst_test test = {
 	.setup = setup,
 	.test = verify_fsetxattr,
@@ -254,7 +249,10 @@ static struct tst_test test = {
 	.needs_devfs = 1,
 	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.needs_drivers = needed_drivers,
+	.needs_drivers = (const char *const[]) {
+		"brd",
+		NULL,
+	},
 };
 
 #else /* HAVE_SYS_XATTR_H */
