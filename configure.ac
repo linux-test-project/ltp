@@ -189,7 +189,7 @@ AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
 
 # Tools knobs
 
-# Expect
+# Bash
 AC_ARG_WITH([bash],
   [AC_HELP_STRING([--with-bash],
     [have the Bourne Again Shell interpreter])],
@@ -202,6 +202,34 @@ else
     AC_SUBST([WITH_BASH],["no"])
 fi
 
+# metadata
+AC_ARG_ENABLE([metadata],
+  [AC_HELP_STRING([--disable-metadata],
+	[Disable metadata generation (both HTML and PDF, default no)])],
+  [], [enable_metadata=yes]
+)
+AC_ARG_ENABLE([metadata_html],
+  [AC_HELP_STRING([--disable-metadata-html],
+	[Disable metadata HTML generation (default no)])],
+  [], [enable_metadata_html=yes]
+)
+
+AC_ARG_ENABLE([metadata_pdf],
+  [AC_HELP_STRING([--enable-metadata-pdf],
+	[Enable metadata PDF generation (default no)])],
+  [], [enable_metadata_pdf=no]
+)
+
+AC_ARG_WITH([metadata_generator],
+  [AC_HELP_STRING([--with-metadata-generator=asciidoc|asciidoctor],
+	[Specify metadata generator to use (default autodetect)])],
+  [with_metadata_generator=$withval],
+  [with_metadata_generator=detect]
+)
+
+LTP_DOCPARSE
+
+# Expect
 AC_ARG_WITH([expect],
   [AC_HELP_STRING([--with-expect],
     [have the Tcl/expect library])],
