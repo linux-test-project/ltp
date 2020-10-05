@@ -2,7 +2,10 @@
 # Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
 set -ex
 
-zypper --non-interactive install --force-resolution --no-recommends \
+zyp="zypper --non-interactive install --force-resolution --no-recommends"
+
+$zyp \
+	asciidoc \
 	autoconf \
 	automake \
 	clang \
@@ -23,4 +26,7 @@ zypper --non-interactive install --force-resolution --no-recommends \
 	libtirpc-devel \
 	linux-glibc-devel \
 	lsb-release \
+	perl-JSON \
 	pkg-config
+
+$zyp ruby2.7-rubygem-asciidoctor || $zyp ruby2.5-rubygem-asciidoctor
