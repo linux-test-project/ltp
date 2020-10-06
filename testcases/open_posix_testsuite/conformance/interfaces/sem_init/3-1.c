@@ -27,6 +27,8 @@
 
 static sem_t psem, csem;
 static int n;
+static void *producer(void *);
+static void *consumer(void *);
 
 static void *producer(void *arg)
 {
