@@ -28,11 +28,32 @@
 static sem_t psem, csem;
 static int n;
 
+static void *producer(void *arg)
+{
+	int i, cnt;
+	cnt = (long)arg;
+	for (i = 0; i < cnt; i++) {
+		sem_wait(&psem);
+		n++;
+		sem_post(&csem);
+	}
+	return NULL;
+}
+
+static void *consumer(void *arg)
+{
+	int i, cnt;
+	cnt = (long)arg;
+	for (i = 0; i < cnt; i++) {
+		sem_wait(&csem);
+		sem_post(&psem);
+	}
+	return NULL;
+}
+
 int main(void)
 {
 	pthread_t prod, cons;
-	void *producer(void *);
-	void *consumer(void *);
 	long cnt = 3;
 
 	n = 0;
@@ -63,27 +84,4 @@ int main(void)
 		puts("TEST FAILED");
 		return PTS_FAIL;
 	}
-}
-
-void *producer(void *arg)
-{
-	int i, cnt;
-	cnt = (long)arg;
-	for (i = 0; i < cnt; i++) {
-		sem_wait(&psem);
-		n++;
-		sem_post(&csem);
-	}
-	return NULL;
-}
-
-void *consumer(void *arg)
-{
-	int i, cnt;
-	cnt = (long)arg;
-	for (i = 0; i < cnt; i++) {
-		sem_wait(&csem);
-		sem_post(&psem);
-	}
-	return NULL;
 }
