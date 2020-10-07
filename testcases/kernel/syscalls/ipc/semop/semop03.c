@@ -71,7 +71,7 @@ static void setup(void)
 	semop_supported_by_kernel(tv);
 
 	timeout.type = tv->ts_type;
-	tst_ts_set_sec(&timeout, 0);
+	tst_ts_set_sec(&timeout, 2);
 	tst_ts_set_nsec(&timeout, 10000000);
 
 	SAFE_SIGNAL(SIGHUP, sighandler);
