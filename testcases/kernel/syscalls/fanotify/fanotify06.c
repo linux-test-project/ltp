@@ -78,7 +78,6 @@ static struct tcase {
 static void create_fanotify_groups(void)
 {
 	unsigned int p, i;
-	int ret;
 
 	for (p = 0; p < FANOTIFY_PRIORITIES; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
@@ -87,32 +86,20 @@ static void create_fanotify_groups(void)
 							     O_RDONLY);
 
 			/* Add mount mark for each group */
-			ret = fanotify_mark(fd_notify[p][i],
+			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | FAN_MARK_MOUNT,
 					    FAN_MODIFY,
 					    AT_FDCWD, fname);
-			if (ret < 0) {
-				tst_brk(TBROK | TERRNO,
-					"fanotify_mark(%d, FAN_MARK_ADD | "
-					"FAN_MARK_MOUNT, FAN_MODIFY, AT_FDCWD,"
-					" %s) failed", fd_notify[p][i], fname);
-			}
+
 			/* Add ignore mark for groups with higher priority */
 			if (p == 0)
 				continue;
-			ret = fanotify_mark(fd_notify[p][i],
+
+			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD |
 					    FAN_MARK_IGNORED_MASK |
 					    FAN_MARK_IGNORED_SURV_MODIFY,
 					    FAN_MODIFY, AT_FDCWD, fname);
-			if (ret < 0) {
-				tst_brk(TBROK | TERRNO,
-					"fanotify_mark(%d, FAN_MARK_ADD | "
-					"FAN_MARK_IGNORED_MASK | "
-					"FAN_MARK_IGNORED_SURV_MODIFY, "
-					"FAN_MODIFY, AT_FDCWD, %s) failed",
-					fd_notify[p][i], fname);
-			}
 		}
 	}
 }

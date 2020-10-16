@@ -289,7 +289,6 @@ static int create_fanotify_groups(unsigned int n)
 	struct fanotify_mark_type *mark, *ignore_mark;
 	unsigned int mark_ignored, mask;
 	unsigned int p, i;
-	int ret;
 
 	mark = &fanotify_mark_types[tc->mark_type];
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
@@ -318,18 +317,12 @@ static int create_fanotify_groups(unsigned int n)
 			 * FAN_EVENT_ON_CHILD has no effect on filesystem/mount
 			 * or inode mark on non-directory.
 			 */
-			ret = fanotify_mark(fd_notify[p][i],
+			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | mark->flag,
 					    tc->expected_mask_without_ignore |
 					    FAN_EVENT_ON_CHILD,
 					    AT_FDCWD, tc->mark_path);
-			if (ret < 0) {
-				tst_brk(TBROK | TERRNO,
-					"fanotify_mark(%d, FAN_MARK_ADD | %s,"
-					"FAN_OPEN, AT_FDCWD, %s) failed",
-					fd_notify[p][i], mark->name,
-					tc->mark_path);
-			}
+
 			/* Add ignore mark for groups with higher priority */
 			if (p == 0)
 				continue;
@@ -338,18 +331,9 @@ static int create_fanotify_groups(unsigned int n)
 			mark_ignored = FAN_MARK_IGNORED_MASK |
 					FAN_MARK_IGNORED_SURV_MODIFY;
 add_mark:
-			ret = fanotify_mark(fd_notify[p][i],
+			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | ignore_mark->flag | mark_ignored,
 					    mask, AT_FDCWD, tc->ignore_path);
-			if (ret < 0) {
-				tst_brk(TBROK | TERRNO,
-					"fanotify_mark(%d, FAN_MARK_ADD | %s | %s, "
-					"%x, AT_FDCWD, %s) failed",
-					fd_notify[p][i], ignore_mark->name,
-					mark_ignored ? "FAN_MARK_IGNORED_MASK | "
-					"FAN_MARK_IGNORED_SURV_MODIFY" : "",
-					mask, tc->ignore_path);
-			}
 
 			/*
 			 * If ignored mask is on a parent watching children,

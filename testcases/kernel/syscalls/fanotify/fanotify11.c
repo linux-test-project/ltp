@@ -55,7 +55,6 @@ static unsigned int tcases[] = {
 
 void test01(unsigned int i)
 {
-	int ret;
 	pthread_t p_id;
 	struct fanotify_event_metadata event;
 	int fd_notify;
@@ -76,10 +75,8 @@ void test01(unsigned int i)
 				tcases[i]);
 	}
 
-	ret = fanotify_mark(fd_notify, FAN_MARK_ADD,
+	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD,
 			FAN_ALL_EVENTS | FAN_EVENT_ON_CHILD, AT_FDCWD, ".");
-	if (ret != 0)
-		tst_brk(TBROK, "fanotify_mark FAN_MARK_ADD fail ret=%d", ret);
 
 	SAFE_PTHREAD_CREATE(&p_id, NULL, thread_create_file, NULL);
 

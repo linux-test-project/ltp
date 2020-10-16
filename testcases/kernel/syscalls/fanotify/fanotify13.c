@@ -117,13 +117,8 @@ static int setup_marks(unsigned int fd, struct test_case_t *tc)
 	struct fanotify_mark_type *mark = &tc->mark;
 
 	for (i = 0; i < ARRAY_SIZE(objects); i++) {
-		if (fanotify_mark(fd, FAN_MARK_ADD | mark->flag, tc->mask,
-					AT_FDCWD, objects[i].path) == -1) {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark(%d, FAN_MARK_ADD, FAN_OPEN, "
-				"AT_FDCWD, %s) failed",
-				fanotify_fd, objects[i].path);
-		}
+		SAFE_FANOTIFY_MARK(fd, FAN_MARK_ADD | mark->flag, tc->mask,
+				   AT_FDCWD, objects[i].path);
 
 		/* Setup the expected mask for each generated event */
 		event_set[i].expected_mask = tc->mask;
@@ -276,13 +271,8 @@ static void do_setup(void)
 	 * uninitialized connector->fsid cache. This mark remains for all test
 	 * cases and is not expected to get any events (no writes in this test).
 	 */
-	if (fanotify_mark(nofid_fd, FAN_MARK_ADD, FAN_CLOSE_WRITE, AT_FDCWD,
-			  FILE_PATH_ONE) == -1) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark(%d, FAN_MARK_ADD, FAN_CLOSE_WRITE, "
-			"AT_FDCWD, "FILE_PATH_ONE") failed",
-			nofid_fd);
-	}
+	SAFE_FANOTIFY_MARK(nofid_fd, FAN_MARK_ADD, FAN_CLOSE_WRITE, AT_FDCWD,
+			  FILE_PATH_ONE);
 
 	/* Get the filesystem fsid and file handle for each created object */
 	get_object_stats();

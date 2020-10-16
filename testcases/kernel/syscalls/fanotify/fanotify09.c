@@ -99,7 +99,6 @@ static void create_fanotify_groups(struct tcase *tc)
 {
 	struct fanotify_mark_type *mark = &tc->mark;
 	unsigned int i, onchild, ondir = tc->ondir;
-	int ret;
 
 	for (i = 0; i < NUM_GROUPS; i++) {
 		fd_notify[i] = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF |
@@ -111,17 +110,11 @@ static void create_fanotify_groups(struct tcase *tc)
 		 * but only the first group requests events on dir.
 		 */
 		onchild = (i == 0) ? FAN_EVENT_ON_CHILD | ondir : 0;
-		ret = fanotify_mark(fd_notify[i],
+		SAFE_FANOTIFY_MARK(fd_notify[i],
 				    FAN_MARK_ADD | mark->flag,
 				    FAN_CLOSE_NOWRITE | onchild,
 				    AT_FDCWD, tc->testdir);
-		if (ret < 0) {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark(%d, FAN_MARK_ADD | %s, "
-				"%x, AT_FDCWD, '%s') failed",
-				fd_notify[i], mark->name,
-				FAN_CLOSE_NOWRITE | ondir, tc->testdir);
-		}
+
 		/*
 		 * Add inode mark on parent for each group with MODIFY event,
 		 * but only the first group requests events on child.
@@ -129,15 +122,9 @@ static void create_fanotify_groups(struct tcase *tc)
 		 * setting the DCACHE_FSNOTIFY_PARENT_WATCHED dentry
 		 * flag.
 		 */
-		ret = fanotify_mark(fd_notify[i], FAN_MARK_ADD,
+		SAFE_FANOTIFY_MARK(fd_notify[i], FAN_MARK_ADD,
 				    FAN_MODIFY | ondir | onchild,
 				    AT_FDCWD, ".");
-		if (ret < 0) {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark(%d, FAN_MARK_ADD, "
-				"%x, AT_FDCWD, '.') failed",
-				fd_notify[i], FAN_MODIFY | ondir | onchild);
-		}
 	}
 }
 

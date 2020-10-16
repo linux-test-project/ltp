@@ -174,13 +174,8 @@ static void do_test(unsigned int number)
 	/*
 	 * Watch dir modify events with name in filesystem/dir
 	 */
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag, tc->mask,
-			  AT_FDCWD, MOUNT_PATH) < 0) {
-		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_ADD | %s, 0x%lx, "
-		    "AT_FDCWD, '"MOUNT_PATH"') failed",
-		    fd_notify, mark->name, tc->mask);
-	}
+	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag, tc->mask,
+			   AT_FDCWD, MOUNT_PATH);
 
 	/* Save the mount root fid */
 	fanotify_save_fid(MOUNT_PATH, &root_fid);
@@ -195,14 +190,9 @@ static void do_test(unsigned int number)
 	/* Save the subdir fid */
 	fanotify_save_fid(dname1, &dir_fid);
 
-	if (tc->sub_mask &&
-	    fanotify_mark(fd_notify, FAN_MARK_ADD | sub_mark->flag, tc->sub_mask,
-			  AT_FDCWD, dname1) < 0) {
-		tst_brk(TBROK | TERRNO,
-		    "fanotify_mark (%d, FAN_MARK_ADD | %s, 0x%lx, "
-		    "AT_FDCWD, '%s') failed",
-		    fd_notify, sub_mark->name, tc->sub_mask, dname1);
-	}
+	if (tc->sub_mask)
+		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | sub_mark->flag,
+				   tc->sub_mask, AT_FDCWD, dname1);
 
 	event_set[tst_count].mask = FAN_CREATE | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;

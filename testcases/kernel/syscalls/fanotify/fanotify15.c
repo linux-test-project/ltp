@@ -85,17 +85,10 @@ static void do_test(unsigned int number)
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
 
-	if (fanotify_mark(fanotify_fd, FAN_MARK_ADD | mark->flag, tc->mask |
+	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | mark->flag, tc->mask |
 				FAN_CREATE | FAN_DELETE | FAN_MOVE |
 				FAN_MODIFY | FAN_ONDIR,
-				AT_FDCWD, TEST_DIR) == -1) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark(%d, FAN_MARK_ADD | %s, "
-			"FAN_CREATE | FAN_DELETE | FAN_MOVE | "
-			"FAN_MODIFY | FAN_ONDIR | 0x%lx, "
-			"AT_FDCWD, %s) failed",
-			fanotify_fd, mark->name, tc->mask, TEST_DIR);
-	}
+				AT_FDCWD, TEST_DIR);
 
 	/* Save the test root dir fid */
 	fanotify_save_fid(TEST_DIR, &root_fid);
@@ -187,13 +180,8 @@ static void do_test(unsigned int number)
 	/*
 	 * Cleanup the mark
 	 */
-	if (fanotify_mark(fanotify_fd, FAN_MARK_FLUSH | mark->flag, 0,
-			  AT_FDCWD, TEST_DIR) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark (%d, FAN_MARK_FLUSH | %s, 0,"
-			"AT_FDCWD, '"TEST_DIR"') failed",
-			fanotify_fd, mark->name);
-	}
+	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_FLUSH | mark->flag, 0,
+			  AT_FDCWD, TEST_DIR);
 
 	/* Process each event in buffer */
 	for (i = 0, metadata = (struct fanotify_event_metadata *) events_buf;

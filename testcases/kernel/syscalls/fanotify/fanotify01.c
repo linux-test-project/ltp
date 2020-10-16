@@ -102,14 +102,8 @@ static void test_fanotify(unsigned int n)
 
 	fd_notify = SAFE_FANOTIFY_INIT(tc->init_flags, O_RDONLY);
 
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
-			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
-			  AT_FDCWD, fname) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | %s | "
-			"FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
-			"failed", fd_notify, mark->name, fname);
-	}
+	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag,
+			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, fname);
 
 	/*
 	 * generate sequence of events
@@ -157,14 +151,9 @@ static void test_fanotify(unsigned int n)
 	 */
 
 	/* Ignore access events */
-	if (fanotify_mark(fd_notify,
+	SAFE_FANOTIFY_MARK(fd_notify,
 			  FAN_MARK_ADD | mark->flag | FAN_MARK_IGNORED_MASK,
-			  FAN_ACCESS, AT_FDCWD, fname) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark (%d, FAN_MARK_ADD | %s | "
-			"FAN_MARK_IGNORED_MASK, FAN_ACCESS, AT_FDCWD, %s) "
-			"failed", fd_notify, mark->name, fname);
-	}
+			  FAN_ACCESS, AT_FDCWD, fname);
 
 	fd = SAFE_OPEN(fname, O_RDWR);
 	event_set[tst_count] = FAN_OPEN;
@@ -207,15 +196,9 @@ static void test_fanotify(unsigned int n)
 	 * Now ignore open & close events regardless of file
 	 * modifications
 	 */
-	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag |
+	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag |
 			  FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY,
-			  FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark (%d, FAN_MARK_ADD | %s | "
-			"FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY, "
-			"FAN_OPEN | FAN_CLOSE, AT_FDCWD, %s) failed",
-			fd_notify, mark->name, fname);
-	}
+			  FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname);
 
 	/* This event should be ignored */
 	fd = SAFE_OPEN(fname, O_RDWR);
@@ -236,15 +219,9 @@ static void test_fanotify(unsigned int n)
 	len += ret;
 
 	/* Now remove open and close from ignored mask */
-	if (fanotify_mark(fd_notify,
+	SAFE_FANOTIFY_MARK(fd_notify,
 			  FAN_MARK_REMOVE | mark->flag | FAN_MARK_IGNORED_MASK,
-			  FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark (%d, FAN_MARK_REMOVE | %s | "
-			"FAN_MARK_IGNORED_MASK, FAN_OPEN | FAN_CLOSE, "
-			"AT_FDCWD, %s) failed", fd_notify,
-			mark->name, fname);
-	}
+			  FAN_OPEN | FAN_CLOSE, AT_FDCWD, fname);
 
 	SAFE_CLOSE(fd);
 	event_set[tst_count] = FAN_CLOSE_WRITE;
@@ -340,14 +317,9 @@ pass:
 
 	}
 	/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
-	if (fanotify_mark(fd_notify, FAN_MARK_REMOVE | mark->flag,
+	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_REMOVE | mark->flag,
 			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
-			  AT_FDCWD, fname) < 0) {
-		tst_brk(TBROK | TERRNO,
-			"fanotify_mark (%d, FAN_MARK_REMOVE | %s, FAN_ACCESS | "
-			"FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
-			"failed", fd_notify, mark->name, fname);
-	}
+			  AT_FDCWD, fname);
 
 	SAFE_CLOSE(fd_notify);
 }

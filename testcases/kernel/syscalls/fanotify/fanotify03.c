@@ -222,14 +222,8 @@ static int setup_mark(unsigned int n)
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
 	for (; i < ARRAY_SIZE(files); i++) {
-		if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
-				  tc->mask, AT_FDCWD, files[i]) < 0) {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark(%d, FAN_MARK_ADD | %s, "
-				"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
-				"AT_FDCWD, %s) failed.",
-				fd_notify, mark->name, fname);
-		}
+		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag,
+				  tc->mask, AT_FDCWD, files[i]);
 	}
 
 	return 0;

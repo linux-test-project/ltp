@@ -61,6 +61,29 @@ int safe_fanotify_init(const char *file, const int lineno,
 	return rval;
 }
 
+static inline int safe_fanotify_mark(const char *file, const int lineno,
+			int fd, unsigned int flags, uint64_t mask,
+			int dfd, const char *pathname)
+{
+	int rval;
+
+	rval = fanotify_mark(fd, flags, mask, dfd, pathname);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO, "fanotify_mark() failed");
+	}
+
+	if (rval < -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "invalid fanotify_mark() return %d", rval);
+	}
+
+	return rval;
+}
+
+#define SAFE_FANOTIFY_MARK(fd, flags, mask, dfd, pathname)  \
+	safe_fanotify_mark(__FILE__, __LINE__, (fd), (flags), (mask), (dfd), (pathname))
+
 #define SAFE_FANOTIFY_INIT(fan, mode)  \
 	safe_fanotify_init(__FILE__, __LINE__, (fan), (mode))
 

@@ -147,31 +147,15 @@ static int setup_mark(unsigned int n)
 
 	for (; i < ARRAY_SIZE(files); i++) {
 		/* Setup normal mark on object */
-		if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
-					tc->mask, AT_FDCWD, files[i]) < 0) {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark(%d, FAN_MARK_ADD | %s, "
-				"%llx, AT_FDCWD, %s) failed",
-				fd_notify,
-				mark->name,
-				tc->mask,
-				files[i]);
-		}
+		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag,
+					tc->mask, AT_FDCWD, files[i]);
 
 		/* Setup ignore mark on object */
 		if (tc->ignore_mask) {
-			if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag
+			SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag
 						| FAN_MARK_IGNORED_MASK,
 						tc->ignore_mask, AT_FDCWD,
-						files[i]) < 0) {
-				tst_brk(TBROK | TERRNO,
-					"fanotify_mark (%d, "
-					"FAN_MARK_ADD | %s "
-					"| FAN_MARK_IGNORED_MASK, "
-					"%llx, AT_FDCWD, %s) failed",
-					fd_notify, mark->name,
-					tc->ignore_mask, files[i]);
-			}
+						files[i]);
 		}
 	}
 
