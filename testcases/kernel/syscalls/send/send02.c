@@ -71,32 +71,40 @@ static void setup(void)
 	memset(sendbuf, 0x42, SENDSIZE);
 }
 
-static int check_recv(int sock, long expsize)
+static int check_recv(int sock, long expsize, int loop)
 {
 	char recvbuf[RECVSIZE] = {0};
 
-	TEST(recv(sock, recvbuf, RECVSIZE, MSG_DONTWAIT));
+	while (1) {
+		TEST(recv(sock, recvbuf, RECVSIZE, MSG_DONTWAIT));
 
-	if (TST_RET == -1) {
-		/* expected error immediately after send(MSG_MORE) */
-		if (!expsize && (TST_ERR == EAGAIN || TST_ERR == EWOULDBLOCK))
-			return 1;
+		if (TST_RET == -1) {
+			/* expected error immediately after send(MSG_MORE) */
+			if (TST_ERR == EAGAIN || TST_ERR == EWOULDBLOCK) {
+				if (expsize)
+					continue;
+				else
+					break;
+			}
 
-		/* unexpected error */
-		tst_res(TFAIL | TTERRNO, "recv() error");
-		return 0;
-	}
+			/* unexpected error */
+			tst_res(TFAIL | TTERRNO, "recv() error at step %d, expsize %ld",
+				loop, expsize);
+			return 0;
+		}
 
-	if (TST_RET < 0) {
-		tst_res(TFAIL | TTERRNO, "Invalid recv() return value %ld",
-			TST_RET);
-		return 0;
-	}
+		if (TST_RET < 0) {
+			tst_res(TFAIL | TTERRNO, "recv() returns %ld at step %d, expsize %ld",
+				TST_RET, loop, expsize);
+			return 0;
+		}
 
-	if (TST_RET != expsize) {
-		tst_res(TFAIL, "recv() read %ld bytes, expected %ld", TST_RET,
-			expsize);
-		return 0;
+		if (TST_RET != expsize) {
+			tst_res(TFAIL, "recv() read %ld bytes, expected %ld, step %d",
+				TST_RET, expsize, loop);
+			return 0;
+		}
+		return 1;
 	}
 
 	return 1;
@@ -120,6 +128,8 @@ static void run(unsigned int n)
 	struct test_case *tc = testcase_list + n;
 	socklen_t len = sizeof(addr);
 
+	tst_res(TINFO, "Tesing %s", tc->name);
+
 	tst_init_sockaddr_inet_bin(&addr, INADDR_LOOPBACK, 0);
 	listen_sock = SAFE_SOCKET(tc->domain, tc->type, tc->protocol);
 	dst_sock = listen_sock;
@@ -139,19 +149,19 @@ static void run(unsigned int n)
 			dst_sock = SAFE_ACCEPT(listen_sock, NULL, NULL);
 
 		tc->send(sock, sendbuf, SENDSIZE, 0);
-		ret = check_recv(dst_sock, SENDSIZE);
+		ret = check_recv(dst_sock, SENDSIZE, i + 1);
 
 		if (!ret)
 			break;
 
 		tc->send(sock, sendbuf, SENDSIZE, MSG_MORE);
-		ret = check_recv(dst_sock, 0);
+		ret = check_recv(dst_sock, 0, i + 1);
 
 		if (!ret)
 			break;
 
 		tc->send(sock, sendbuf, 1, 0);
-		ret = check_recv(dst_sock, SENDSIZE + 1);
+		ret = check_recv(dst_sock, SENDSIZE + 1, i + 1);
 
 		if (!ret)
 			break;
@@ -163,7 +173,7 @@ static void run(unsigned int n)
 	}
 
 	if (ret)
-		tst_res(TPASS, "%s(MSG_MORE) works correctly", tc->name);
+		tst_res(TPASS, "MSG_MORE works correctly");
 
 	cleanup();
 	dst_sock = -1;
