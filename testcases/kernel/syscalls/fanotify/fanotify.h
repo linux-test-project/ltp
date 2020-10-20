@@ -60,6 +60,7 @@ int safe_fanotify_init(const char *file, const int lineno,
 
 	return rval;
 }
+
 #define SAFE_FANOTIFY_INIT(fan, mode)  \
 	safe_fanotify_init(__FILE__, __LINE__, (fan), (mode))
 
@@ -259,6 +260,27 @@ static inline void require_fanotify_access_permissions_supported_by_kernel(void)
 	}
 
 	SAFE_CLOSE(fd);
+}
+
+static inline int fanotify_events_supported_by_kernel(uint64_t mask)
+{
+	int fd;
+	int rval = 0;
+
+	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
+
+	if (fanotify_mark(fd, FAN_MARK_ADD, mask, AT_FDCWD, ".") < 0) {
+		if (errno == EINVAL) {
+			rval = -1;
+		} else {
+			tst_brk(TBROK | TERRNO,
+				"fanotify_mark (%d, FAN_MARK_ADD, ..., AT_FDCWD, \".\") failed", fd);
+		}
+	}
+
+	SAFE_CLOSE(fd);
+
+	return rval;
 }
 
 #endif /* __FANOTIFY_H__ */

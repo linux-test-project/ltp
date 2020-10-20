@@ -64,6 +64,7 @@ static unsigned int fanotify_class[] = {
 static int fd_notify[NUM_CLASSES][GROUPS_PER_PRIO];
 
 static char event_buf[EVENT_BUF_LEN];
+static int exec_events_unsupported;
 
 #define MOUNT_PATH "fs_mnt"
 #define MNT2_PATH "mntpoint"
@@ -323,13 +324,6 @@ static int create_fanotify_groups(unsigned int n)
 					    AT_FDCWD, tc->mark_path);
 			if (ret < 0) {
 				if (errno == EINVAL &&
-				    tc->expected_mask_without_ignore &
-				    FAN_OPEN_EXEC) {
-					tst_res(TCONF,
-						"FAN_OPEN_EXEC not supported "
-						"by kernel?");
-					return -1;
-				} else if (errno == EINVAL &&
 					tc->mark_type == FANOTIFY_FILESYSTEM) {
 					tst_res(TCONF,
 						"FAN_MARK_FILESYSTEM not "
@@ -451,6 +445,11 @@ static void test_fanotify(unsigned int n)
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
+	if (exec_events_unsupported && tc->expected_mask_with_ignore & FAN_OPEN_EXEC) {
+		tst_res(TCONF, "FAN_OPEN_EXEC not supported in kernel?");
+		return;
+	}
+
 	if (tc->ignored_onchild && tst_kvercmp(5, 9, 0) < 0) {
 		tst_res(TCONF, "ignored mask in combination with flag FAN_EVENT_ON_CHILD"
 				" has undefined behavior on kernel < 5.9");
@@ -535,6 +534,8 @@ cleanup:
 
 static void setup(void)
 {
+	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC);
+
 	/* Create another bind mount at another path for generating events */
 	SAFE_MKDIR(MNT2_PATH, 0755);
 	SAFE_MOUNT(MOUNT_PATH, MNT2_PATH, "none", MS_BIND, NULL);
