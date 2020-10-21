@@ -25,27 +25,62 @@ static struct tcases {
 	int *nfds;
 	fd_set *readfds;
 	fd_set *writefds;
+	int *readfd;
+	int *writefd;
 	char *desc;
 } tests[] = {
-	{&fd_reg, &readfds_reg, NULL, "with regular file"},
-	{&fds_pipe[1], &readfds_pipe, &writefds_pipe, "with system pipe"},
-	{&fd_npipe, &readfds_npipe, &writefds_npipe, "with named pipe (FIFO)"},
+	{&fd_reg, &readfds_reg, NULL, &fd_reg, NULL, "with regular file"},
+	{&fds_pipe[1], &readfds_pipe, &writefds_pipe, &fds_pipe[0], &fds_pipe[1], "with system pipe"},
+	{&fd_npipe, &readfds_npipe, &writefds_npipe, &fd_npipe, &fd_npipe, "with named pipe (FIFO)"},
 };
 
 static void run(unsigned int n)
 {
 	struct tcases *tc = &tests[n];
 	struct timeval timeout;
+	char buf;
+	int exp_ret = 1;
 
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 100000;
 
+	if (tc->writefd) {
+		SAFE_WRITE(0, *tc->writefd, &buf, sizeof(buf));
+		exp_ret++;
+	}
+
 	TEST(do_select(*tc->nfds + 1, tc->readfds, tc->writefds, 0, &timeout));
 
-	if (TST_RET == -1)
-		tst_res(TFAIL | TTERRNO, "select() failed %s", tc->desc);
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "select() %s failed", tc->desc);
+		return;
+	}
+
+	if (!TST_RET) {
+		tst_res(TFAIL, "select() %s timed out", tc->desc);
+		return;
+	}
+
+	if (TST_RET != exp_ret) {
+		tst_res(TFAIL, "select() %s returned %lu expected %d",
+		        tc->desc, TST_RET, exp_ret);
+		return;
+	}
+
+	tst_res(TPASS, "select() %s returned %i", tc->desc, exp_ret);
+
+	if (FD_ISSET(*tc->readfd, tc->readfds))
+		tst_res(TPASS, "readfds bit %i is set", *tc->readfd);
 	else
-		tst_res(TPASS, "select() passed %s", tc->desc);
+		tst_res(TFAIL, "readfds bit %i is not set", *tc->readfd);
+
+	if (!tc->writefd)
+		return;
+
+	if (FD_ISSET(*tc->writefd, tc->writefds))
+		tst_res(TPASS, "writefds bit %i is set", *tc->writefd);
+	else
+		tst_res(TPASS, "writefds bit %i is not set", *tc->writefd);
 }
 
 static void setup(void)
