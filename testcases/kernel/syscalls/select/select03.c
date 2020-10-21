@@ -1,0 +1,95 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2020 Linaro Ltd.
+ *
+ * Failure tests.
+ */
+
+#include <unistd.h>
+#include <errno.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include "select_var.h"
+
+static fd_set readfds_reg, writefds_reg, fds_closed;
+static fd_set *preadfds_reg = &readfds_reg, *pwritefds_reg = &writefds_reg;
+static fd_set *pfds_closed = &fds_closed, *nullfds = NULL, *faulty_fds;
+static int fd_closed, fd[2];
+static struct timeval timeout = {.tv_sec = 0, .tv_usec = 100000};
+
+static struct timeval *valid_to = &timeout, *invalid_to;
+
+static struct tcases {
+	char *name;
+	int nfds;
+	fd_set **readfds;
+	fd_set **writefds;
+	fd_set **exceptfds;
+	struct timeval **timeout;
+	int exp_errno;
+} tests[] = {
+	{ "Negative nfds", -1, &preadfds_reg, &pwritefds_reg, &nullfds, &valid_to, EINVAL },
+	{ "Invalid readfds", 6, &pfds_closed, &pwritefds_reg, &nullfds, &valid_to, EBADF },
+	{ "Invalid writefds", 6, &preadfds_reg, &pfds_closed, &nullfds, &valid_to, EBADF },
+	{ "Invalid exceptfds", 6, &preadfds_reg, &pwritefds_reg, &pfds_closed, &valid_to, EBADF },
+	{ "Faulty readfds", 6, &faulty_fds, &pwritefds_reg, &nullfds, &valid_to, EFAULT },
+	{ "Faulty writefds", 6, &preadfds_reg, &faulty_fds, &nullfds, &valid_to, EFAULT },
+	{ "Faulty exceptfds", 6, &preadfds_reg, &pwritefds_reg, &faulty_fds, &valid_to, EFAULT },
+	{ "Faulty timeout", 6, &preadfds_reg, &pwritefds_reg, &nullfds, &invalid_to, EFAULT },
+};
+
+static void run(unsigned int n)
+{
+	struct tcases *tc = &tests[n];
+
+	TEST(do_select_faulty_to(tc->nfds, *tc->readfds, *tc->writefds,
+				 *tc->exceptfds, *tc->timeout,
+				 tc->timeout == &invalid_to));
+
+	if (TST_RET != -1) {
+		tst_res(TFAIL, "%s: select() passed unexpectedly with %ld",
+		        tc->name, TST_RET);
+		return;
+	}
+
+	if (tc->exp_errno != TST_ERR) {
+		tst_res(TFAIL | TTERRNO, "%s: select()() should fail with %s",
+			tc->name, tst_strerrno(tc->exp_errno));
+		return;
+	}
+
+	tst_res(TPASS | TTERRNO, "%s: select() failed as expected", tc->name);
+}
+
+static void setup(void)
+{
+	void *faulty_address;
+
+	select_info();
+
+	/* Regular file */
+	fd_closed = SAFE_OPEN("tmpfile1", O_CREAT | O_RDWR, 0777);
+	FD_ZERO(&fds_closed);
+	FD_SET(fd_closed, &fds_closed);
+
+	SAFE_PIPE(fd);
+	FD_ZERO(&readfds_reg);
+	FD_ZERO(&writefds_reg);
+	FD_SET(fd[0], &readfds_reg);
+	FD_SET(fd[1], &writefds_reg);
+
+	SAFE_CLOSE(fd_closed);
+
+	faulty_address = tst_get_bad_addr(NULL);
+	invalid_to = faulty_address;
+	faulty_fds = faulty_address;
+}
+
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(tests),
+	.test_variants = TEST_VARIANTS,
+	.setup = setup,
+	.needs_tmpdir = 1,
+};
