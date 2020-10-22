@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
 #include <pwd.h>
 #include "hugetlb.h"
 
@@ -52,7 +52,7 @@ int getipckey(void)
 	char *curdir = NULL;
 	size_t size = 0;
 	key_t ipc_key;
-	struct timeb time_info;
+	struct timeval time_info;
 
 	curdir = getcwd(curdir, size);
 	if (curdir == NULL)
@@ -67,11 +67,11 @@ int getipckey(void)
 	 * project identifier is a "random character" produced by
 	 * generating a random number between 0 and 25 and then adding
 	 * that to the ascii value of 'a'.  The "seed" for the random
-	 * number is the millisecond value that is set in the timeb
-	 * structure after calling ftime().
+	 * number is the microseconds value that is set in the timeval
+	 * structure after calling gettimeofday().
 	 */
-	ftime(&time_info);
-	srandom((unsigned int)time_info.millitm);
+	gettimeofday(&time_info, NULL);
+	srandom((unsigned int)time_info.tv_usec);
 
 	ipc_key = ftok(curdir, ascii_a + random() % 26);
 	if (ipc_key == -1)

@@ -52,7 +52,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -199,7 +199,7 @@ void *thread_func(void *args)
 	static int sched_policy;	/* scheduling policy as set by user/default   */
 	struct sched_param ssp;	/* set schedule priority.                     */
 	struct sched_param gsp;	/* gsp schedule priority.                     */
-	struct timeb tptr;	/* tptr.millitm will be used to seed srand.   */
+	struct timeval tptr;	/* tptr.tv_usec will be used to seed srand.   */
 	thread_sched_t *locargptr =	/* local ptr to the arguments.                */
 	    (thread_sched_t *) args;
 
@@ -215,8 +215,8 @@ void *thread_func(void *args)
 		ssp.sched_priority = 0;
 	else {
 		/* Set a random value between max_priority and min_priority */
-		ftime(&tptr);
-		srand((tptr.millitm) % 1000);
+		gettimeofday(&tptr, NULL);
+		srand((unsigned int)tptr.tv_usec);
 		set_priority = (min_priority + (int)((float)max_priority
 						     * rand() / (RAND_MAX +
 								 1.0)));
