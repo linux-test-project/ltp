@@ -15,8 +15,12 @@ static inline ssize_t safe_pread(const char *file, const int lineno,
 
 	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "pread(%d,%p,%zu,%lld) failed",
-			 fildes, buf, nbyte, (long long)offset);
+			"pread(%d,%p,%zu,%lld) failed",
+			fildes, buf, nbyte, (long long)offset);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid pread(%d,%p,%zu,%lld) return value %zd",
+			fildes, buf, nbyte, (long long)offset, rval);
 	}
 
 	return rval;
@@ -34,8 +38,12 @@ static inline ssize_t safe_pwrite(const char *file, const int lineno,
 	rval = pwrite(fildes, buf, nbyte, offset);
 	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "pwrite(%d,%p,%zu,%lld) failed",
-			 fildes, buf, nbyte, (long long)offset);
+			"pwrite(%d,%p,%zu,%lld) failed",
+			fildes, buf, nbyte, (long long)offset);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid pwrite(%d,%p,%zu,%lld) return value %zd",
+			fildes, buf, nbyte, (long long)offset, rval);
 	}
 
 	return rval;
