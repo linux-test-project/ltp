@@ -212,10 +212,11 @@ void safe_getaddrinfo(const char *file, const int lineno, const char *src_addr,
 {
 	int err = getaddrinfo(src_addr, port, hints, addr_info);
 
-	if (err)
-		tst_brk(TBROK, "%s:%d: getaddrinfo failed, %s", file, lineno,
-				gai_strerror(err));
+	if (err) {
+		tst_brk_(file, lineno, TBROK, "getaddrinfo failed, %s",
+			gai_strerror(err));
+	}
 
 	if (!*addr_info)
-		tst_brk(TBROK, "%s:%d: failed to get the address", file, lineno);
+		tst_brk_(file, lineno, TBROK, "failed to get the address");
 }
