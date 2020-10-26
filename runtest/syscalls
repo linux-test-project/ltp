@@ -1477,7 +1477,7 @@ symlink05 symlink05
 #symlinkat test cases
 symlinkat01 symlinkat01
 
-sync03 sync03
+sync01 sync01
 
 syncfs01 syncfs01
 
