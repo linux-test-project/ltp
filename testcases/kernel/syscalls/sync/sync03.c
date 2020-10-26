@@ -37,10 +37,7 @@ static void verify_sync(void)
 
 	tst_fill_fd(fd, 0, TST_MB, FILE_SIZE_MB);
 
-	TEST_VOID(sync());
-
-	if (TST_RET)
-		tst_brk(TFAIL | TTERRNO, "sync() failed");
+	sync();
 
 	written = tst_dev_bytes_written(tst_device->dev);
 
