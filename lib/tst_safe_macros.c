@@ -403,9 +403,13 @@ int safe_dup(const char *file, const int lineno, int oldfd)
 	int rval;
 
 	rval = dup(oldfd);
+
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "dup(%i) failed", oldfd);
+			"dup(%i) failed", oldfd);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid dup(%i) return value %d", oldfd, rval);
 	}
 
 	return rval;
@@ -437,7 +441,6 @@ void safe_cmd(const char *file, const int lineno, const char *const argv[],
 	case 0:
 		break;
 	default:
-		tst_brk(TBROK, "%s:%d: %s failed (%d)", file, lineno, argv[0],
-			rval);
+		tst_brk_(file, lineno, TBROK, "%s failed (%d)", argv[0], rval);
 	}
 }
