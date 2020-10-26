@@ -36,9 +36,11 @@ static inline int safe_mq_open(const char *file, const int lineno,
 	va_end(ap);
 
 	rval = mq_open(pathname, oflags, mode, attr);
+
 	if (rval == -1) {
-		tst_brk(TBROK | TERRNO, "%s:%d: mq_open(%s,%d,0%o,%p) failed",
-			 file, lineno, pathname, oflags, mode, attr);
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mq_open(%s,%d,%04o,%p) failed", pathname, oflags,
+			mode, attr);
 	}
 
 	return rval;
