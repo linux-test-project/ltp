@@ -6,24 +6,8 @@ mcast4-group-single-socket mcast-group-single-socket
 mcast4-group-multiple-socket mcast-group-multiple-socket
 mcast4-group-same-group mcast-group-same-group
 mcast4-group-source-filter mcast-group-source-filter
-mcast4-pktfld01 mcast4-pktfld01
-mcast4-pktfld02 mcast4-pktfld02
-mcast4-queryfld01 mcast4-queryfld01
-mcast4-queryfld02 mcast4-queryfld02
-mcast4-queryfld03 mcast4-queryfld03
-mcast4-queryfld04 mcast4-queryfld04
-mcast4-queryfld05 mcast4-queryfld05
-mcast4-queryfld06 mcast4-queryfld06
 
 mcast6-group-single-socket mcast-group-single-socket -6
 mcast6-group-multiple-socket mcast-group-multiple-socket -6
 mcast6-group-same-group mcast-group-same-group -6
 mcast6-group-source-filter mcast-group-source-filter -6
-mcast6-pktfld01 mcast6-pktfld01
-mcast6-pktfld02 mcast6-pktfld02
-mcast6-queryfld01 mcast6-queryfld01
-mcast6-queryfld02 mcast6-queryfld02
-mcast6-queryfld03 mcast6-queryfld03
-mcast6-queryfld04 mcast6-queryfld04
-mcast6-queryfld05 mcast6-queryfld05
-mcast6-queryfld06 mcast6-queryfld06
