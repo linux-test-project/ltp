@@ -397,3 +397,47 @@ int safe_pipe2(const char *file, const int lineno, int fildes[2], int flags)
 
 	return ret;
 }
+
+int safe_dup(const char *file, const int lineno, int oldfd)
+{
+	int rval;
+
+	rval = dup(oldfd);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "dup(%i) failed", oldfd);
+	}
+
+	return rval;
+}
+
+sighandler_t safe_signal(const char *file, const int lineno,
+	int signum, sighandler_t handler)
+{
+	sighandler_t rval;
+
+	rval = signal(signum, handler);
+
+	if (rval == SIG_ERR) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"signal(%d,%p) failed",
+			signum, handler);
+	}
+
+	return rval;
+}
+
+void safe_cmd(const char *file, const int lineno, const char *const argv[],
+	const char *stdout_path, const char *stderr_path)
+{
+	int rval;
+
+	switch ((rval = tst_cmd(argv, stdout_path, stderr_path,
+		TST_CMD_PASS_RETVAL | TST_CMD_TCONF_ON_MISSING))) {
+	case 0:
+		break;
+	default:
+		tst_brk(TBROK, "%s:%d: %s failed (%d)", file, lineno, argv[0],
+			rval);
+	}
+}
