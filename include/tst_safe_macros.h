@@ -130,7 +130,7 @@ int safe_setreuid(const char *file, const int lineno,
 int safe_setpgid(const char *file, const int lineno, pid_t pid, pid_t pgid);
 
 #define SAFE_SETPGID(pid, pgid) \
-	safe_setpgid(__FILE__, __LINE__, (pid), (pgid));
+	safe_setpgid(__FILE__, __LINE__, (pid), (pgid))
 
 pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 
@@ -141,7 +141,7 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 	safe_unlink(__FILE__, __LINE__, NULL, (pathname))
 
 #define SAFE_LINK(oldpath, newpath) \
-        safe_link(__FILE__, __LINE__, NULL, (oldpath), (newpath))
+	safe_link(__FILE__, __LINE__, NULL, (oldpath), (newpath))
 
 #define SAFE_LINKAT(olddirfd, oldpath, newdirfd, newpath, flags) \
 	safe_linkat(__FILE__, __LINE__, NULL, (olddirfd), (oldpath), \
@@ -151,7 +151,7 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 	safe_readlink(__FILE__, __LINE__, NULL, (path), (buf), (bufsize))
 
 #define SAFE_SYMLINK(oldpath, newpath) \
-        safe_symlink(__FILE__, __LINE__, NULL, (oldpath), (newpath))
+	safe_symlink(__FILE__, __LINE__, NULL, (oldpath), (newpath))
 
 #define SAFE_WRITE(len_strict, fildes, buf, nbyte) \
 	safe_write(__FILE__, __LINE__, NULL, (len_strict), (fildes), (buf), (nbyte))
@@ -178,10 +178,10 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 	safe_fchown(__FILE__, __LINE__, NULL, (fd), (owner), (group))
 
 #define SAFE_WAIT(status) \
-        safe_wait(__FILE__, __LINE__, NULL, (status))
+	safe_wait(__FILE__, __LINE__, NULL, (status))
 
 #define SAFE_WAITPID(pid, status, opts) \
-        safe_waitpid(__FILE__, __LINE__, NULL, (pid), (status), (opts))
+	safe_waitpid(__FILE__, __LINE__, NULL, (pid), (status), (opts))
 
 #define SAFE_KILL(pid, sig) \
 	safe_kill(__FILE__, __LINE__, NULL, (pid), (sig))
@@ -350,7 +350,7 @@ static inline int safe_statfs(const char *file, const int lineno,
 	return rval;
 }
 #define SAFE_STATFS(path, buf) \
-        safe_statfs(__FILE__, __LINE__, (path), (buf))
+	safe_statfs(__FILE__, __LINE__, (path), (buf))
 
 static inline off_t safe_lseek(const char *file, const int lineno,
                                int fd, off_t offset, int whence)
@@ -432,32 +432,32 @@ int safe_sigaction(const char *file, const int lineno,
 #define SAFE_SIGACTION(signum, act, oldact) \
 	safe_sigaction(__FILE__, __LINE__, (signum), (act), (oldact))
 
-void safe_sigaddset(const char *file, const int lineno,
+int safe_sigaddset(const char *file, const int lineno,
                     sigset_t *sigs, int signo);
 #define SAFE_SIGADDSET(sigs, signo) \
 	safe_sigaddset(__FILE__, __LINE__, (sigs), (signo))
 
-void safe_sigdelset(const char *file, const int lineno,
+int safe_sigdelset(const char *file, const int lineno,
                     sigset_t *sigs, int signo);
 #define SAFE_SIGDELSET(sigs, signo) \
 	safe_sigdelset(__FILE__, __LINE__, (sigs), (signo))
 
-void safe_sigemptyset(const char *file, const int lineno,
+int safe_sigemptyset(const char *file, const int lineno,
                       sigset_t *sigs);
 #define SAFE_SIGEMPTYSET(sigs) \
 	safe_sigemptyset(__FILE__, __LINE__, (sigs))
 
-void safe_sigfillset(const char *file, const int lineno,
+int safe_sigfillset(const char *file, const int lineno,
 		     sigset_t *sigs);
 #define SAFE_SIGFILLSET(sigs) \
 	safe_sigfillset(__FILE__, __LINE__, (sigs))
 
-void safe_sigprocmask(const char *file, const int lineno,
+int safe_sigprocmask(const char *file, const int lineno,
                       int how, sigset_t *set, sigset_t *oldset);
 #define SAFE_SIGPROCMASK(how, set, oldset) \
 	safe_sigprocmask(__FILE__, __LINE__, (how), (set), (oldset))
 
-void safe_sigwait(const char *file, const int lineno,
+int safe_sigwait(const char *file, const int lineno,
                   sigset_t *set, int *sig);
 #define SAFE_SIGWAIT(set, sig) \
 	safe_sigwait(__FILE__, __LINE__, (set), (sig))
@@ -563,11 +563,11 @@ int safe_personality(const char *filename, unsigned int lineno,
 	}							\
 	} while (0)
 
-void safe_unshare(const char *file, const int lineno, int flags);
+int safe_unshare(const char *file, const int lineno, int flags);
 #define SAFE_UNSHARE(flags) safe_unshare(__FILE__, __LINE__, (flags))
 
-void safe_setns(const char *file, const int lineno, int fd, int nstype);
-#define SAFE_SETNS(fd, nstype) safe_setns(__FILE__, __LINE__, (fd), (nstype));
+int safe_setns(const char *file, const int lineno, int fd, int nstype);
+#define SAFE_SETNS(fd, nstype) safe_setns(__FILE__, __LINE__, (fd), (nstype))
 
 static inline void safe_cmd(const char *file, const int lineno, const char *const argv[],
 				  const char *stdout_path, const char *stderr_path)

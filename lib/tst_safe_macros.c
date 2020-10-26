@@ -23,10 +23,14 @@ int safe_setpgid(const char *file, const int lineno, pid_t pid, pid_t pgid)
 	int rval;
 
 	rval = setpgid(pid, pgid);
-	if (rval) {
-		tst_brk(TBROK | TERRNO,
-		        "%s:%d: setpgid(%i, %i) failed",
-			file, lineno, pid, pgid);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"setpgid(%i, %i) failed", pid, pgid);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid setpgid(%i, %i) return value %d", pid, pgid,
+			rval);
 	}
 
 	return rval;
@@ -37,9 +41,13 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid)
 	pid_t pgid;
 
 	pgid = getpgid(pid);
+
 	if (pgid == -1) {
-		tst_brk(TBROK | TERRNO,
-			"%s:%d: getpgid(%i) failed", file, lineno, pid);
+		tst_brk_(file, lineno, TBROK | TERRNO, "getpgid(%i) failed",
+			pid);
+	} else if (pgid < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid getpgid(%i) return value %d", pid, pgid);
 	}
 
 	return pgid;
@@ -50,9 +58,13 @@ int safe_personality(const char *filename, unsigned int lineno,
 {
 	int prev_persona = personality(persona);
 
-	if (prev_persona < 0) {
+	if (prev_persona == -1) {
 		tst_brk_(filename, lineno, TBROK | TERRNO,
 			 "persona(%ld) failed", persona);
+	} else if (prev_persona < 0) {
+		tst_brk_(filename, lineno, TBROK | TERRNO,
+			 "Invalid persona(%ld) return value %d", persona,
+			 prev_persona);
 	}
 
 	return prev_persona;
@@ -64,10 +76,14 @@ int safe_setregid(const char *file, const int lineno,
 	int rval;
 
 	rval = setregid(rgid, egid);
+
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "setregid(%li, %li) failed",
-			 (long)rgid, (long)egid);
+			 "setregid(%li, %li) failed", (long)rgid, (long)egid);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid setregid(%li, %li) return value %d",
+			 (long)rgid, (long)egid, rval);
 	}
 
 	return rval;
@@ -79,10 +95,14 @@ int safe_setreuid(const char *file, const int lineno,
 	int rval;
 
 	rval = setreuid(ruid, euid);
+
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "setreuid(%li, %li) failed",
-			 (long)ruid, (long)euid);
+			 "setreuid(%li, %li) failed", (long)ruid, (long)euid);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid setreuid(%li, %li) return value %d",
+			 (long)ruid, (long)euid, rval);
 	}
 
 	return rval;
@@ -101,55 +121,87 @@ int safe_sigaction(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"sigaction(%s (%d), %p, %p) failed",
 			tst_strsig(signum), signum, act, oldact);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid sigaction(%s (%d), %p, %p) return value %d",
+			tst_strsig(signum), signum, act, oldact, rval);
 	}
 
 	return rval;
 }
 
-void safe_sigaddset(const char *file, const int lineno,
+int safe_sigaddset(const char *file, const int lineno,
                     sigset_t *sigs, int signo)
 {
 	int rval;
 
 	rval = sigaddset(sigs, signo);
+
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-		         "sigaddset() %s (%i) failed",
-			 tst_strsig(signo), signo);
+			"sigaddset() %s (%i) failed", tst_strsig(signo),
+			signo);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid sigaddset() %s (%i) return value %d",
+			tst_strsig(signo), signo, rval);
 	}
+
+	return rval;
 }
 
-void safe_sigdelset(const char *file, const int lineno,
+int safe_sigdelset(const char *file, const int lineno,
                     sigset_t *sigs, int signo)
 {
 	int rval;
 
 	rval = sigdelset(sigs, signo);
+
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-		         "sigdelset() %s (%i) failed",
-			 tst_strsig(signo), signo);
+			"sigdelset() %s (%i) failed", tst_strsig(signo),
+			signo);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid sigdelset() %s (%i) return value %d",
+			tst_strsig(signo), signo, rval);
 	}
+
+	return rval;
 }
 
-void safe_sigemptyset(const char *file, const int lineno,
+int safe_sigemptyset(const char *file, const int lineno,
                       sigset_t *sigs)
 {
 	int rval;
 
 	rval = sigemptyset(sigs);
-	if (rval == -1)
+
+	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO, "sigemptyset() failed");
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid sigemptyset() return value %d", rval);
+	}
+
+	return rval;
 }
 
-void safe_sigfillset(const char *file, const int lineno,
+int safe_sigfillset(const char *file, const int lineno,
 		     sigset_t *sigs)
 {
 	int rval;
 
 	rval = sigfillset(sigs);
-	if (rval == -1)
+
+	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO, "sigfillset() failed");
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid sigfillset() return value %d", rval);
+	}
+
+	return rval;
 }
 
 static const char *strhow(int how)
@@ -166,28 +218,44 @@ static const char *strhow(int how)
 	}
 }
 
-void safe_sigprocmask(const char *file, const int lineno,
+int safe_sigprocmask(const char *file, const int lineno,
                       int how, sigset_t *set, sigset_t *oldset)
 {
 	int rval;
 
 	rval = sigprocmask(how, set, oldset);
+
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-		         "sigprocmask(%s, %p, %p)", strhow(how), set, oldset);
+			"sigprocmask(%s, %p, %p) failed", strhow(how), set,
+			oldset);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid sigprocmask(%s, %p, %p) return value %d",
+			strhow(how), set, oldset, rval);
 	}
+
+	return rval;
 }
 
-void safe_sigwait(const char *file, const int lineno,
+int safe_sigwait(const char *file, const int lineno,
                   sigset_t *set, int *sig)
 {
 	int rval;
 
 	rval = sigwait(set, sig);
-	if (rval != 0) {
+
+	if (rval > 0) {
 		errno = rval;
-		tst_brk_(file, lineno, TBROK, "sigwait(%p, %p)", set, sig);
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"sigwait(%p, %p) failed", set, sig);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK,
+			"Invalid sigwait(%p, %p) return value %d", set, sig,
+			rval);
 	}
+
+	return rval;
 }
 
 struct group *safe_getgrnam(const char *file, const int lineno,
@@ -241,19 +309,24 @@ int safe_chroot(const char *file, const int lineno, const char *path)
 	int rval;
 
 	rval = chroot(path);
+
 	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO, "chroot(%s) failed",
+			path);
+	} else if (rval) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			 "chroot(%s) failed", path);
+			 "Invalid chroot(%s) return value %d", path, rval);
 	}
 
 	return rval;
 }
 
-void safe_unshare(const char *file, const int lineno, int flags)
+int safe_unshare(const char *file, const int lineno, int flags)
 {
 	int res;
 
 	res = unshare(flags);
+
 	if (res == -1) {
 		if (errno == EINVAL) {
 			tst_brk_(file, lineno, TCONF | TERRNO,
@@ -262,18 +335,30 @@ void safe_unshare(const char *file, const int lineno, int flags)
 			tst_brk_(file, lineno, TBROK | TERRNO,
 				 "unshare(%d) failed", flags);
 		}
+	} else if (res) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid unshare(%d) return value %d", flags, res);
 	}
+
+	return res;
 }
 
-void safe_setns(const char *file, const int lineno, int fd, int nstype)
+int safe_setns(const char *file, const int lineno, int fd, int nstype)
 {
 	int ret;
 
 	ret = setns(fd, nstype);
+
 	if (ret == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO, "setns(%i, %i) failed",
-		         fd, nstype);
+			fd, nstype);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid setns(%i, %i) return value %d", fd, nstype,
+			ret);
 	}
+
+	return ret;
 }
 
 long tst_safe_ptrace(const char *file, const int lineno, int req, pid_t pid,
@@ -299,10 +384,15 @@ int safe_pipe2(const char *file, const int lineno, int fildes[2], int flags)
 	int ret;
 
 	ret = pipe2(fildes, flags);
+
 	if (ret == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			"pipe2({%d,%d}) failed with flag(%d)",
-			fildes[0], fildes[1], flags);
+			"pipe2({%d,%d}) failed with flag(%d)", fildes[0],
+			fildes[1], flags);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid pipe2({%d,%d}, %d) return value %d",
+			fildes[0], fildes[1], flags, ret);
 	}
 
 	return ret;
