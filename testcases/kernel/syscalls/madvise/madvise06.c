@@ -19,6 +19,23 @@
  *   Date:   Thu May 22 11:54:17 2014 -0700
  *
  *       mm: madvise: fix MADV_WILLNEED on shmem swapouts
+ *
+ *   Two checks are performed, the first looks at how SwapCache
+ *   changes during madvise. When the pages are dirtied, about half
+ *   will be accounted for under Cached and the other half will be
+ *   moved into Swap. When madvise is run it will cause the pages
+ *   under Cached to also be moved to Swap while rotating the pages
+ *   already in Swap into SwapCached. So we expect that SwapCached has
+ *   roughly MEM_LIMIT bytes added to it, but for reliability the
+ *   PASS_THRESHOLD is much lower than that.
+ *
+ *   Secondly we run madvise again, but only on the first
+ *   PASS_THRESHOLD bytes to ensure these are entirely in RAM. Then we
+ *   dirty these pages and check there were (almost) no page
+ *   faults. Two faults are allowed incase some tasklet or something
+ *   else unexpected, but irrelevant procedure, registers a fault to
+ *   our process.
+ *
  */
 
 #include <errno.h>
@@ -28,8 +45,10 @@
 #include "tst_test.h"
 
 #define CHUNK_SZ (400*1024*1024L)
-#define CHUNK_PAGES (CHUNK_SZ / pg_sz)
+#define MEM_LIMIT (CHUNK_SZ / 2)
+#define MEMSW_LIMIT (2 * CHUNK_SZ)
 #define PASS_THRESHOLD (CHUNK_SZ / 4)
+#define PASS_THRESHOLD_KB (PASS_THRESHOLD / 1024)
 
 #define MNT_NAME "memory"
 #define GROUP_NAME "madvise06"
@@ -37,10 +56,37 @@
 static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
 static int pg_sz;
 
+static long init_swap, init_swap_cached, init_cached;
+
 static void check_path(const char *path)
 {
 	if (access(path, R_OK | W_OK))
 		tst_brk(TCONF, "file needed: %s\n", path);
+}
+
+#define READ_CGMEM(item)						\
+	({long tst_rval;						\
+	  SAFE_FILE_LINES_SCANF(MNT_NAME"/"GROUP_NAME"/memory."item, 	\
+				"%ld",					\
+				&tst_rval);				\
+	  tst_rval;})
+
+static void meminfo_diag(const char *point)
+{
+	FILE_PRINTF("/proc/sys/vm/stat_refresh", "1");
+	tst_res(TINFO, "%s", point);
+	tst_res(TINFO, "\tSwap: %ld Kb",
+		SAFE_READ_MEMINFO("SwapTotal:") - SAFE_READ_MEMINFO("SwapFree:") - init_swap);
+	tst_res(TINFO, "\tSwapCached: %ld Kb",
+		SAFE_READ_MEMINFO("SwapCached:") - init_swap_cached);
+	tst_res(TINFO, "\tCached: %ld Kb",
+		SAFE_READ_MEMINFO("Cached:") - init_cached);
+	tst_res(TINFO, "\tcgmem.usage_in_bytes: %ld Kb",
+		READ_CGMEM("usage_in_bytes") / 1024);
+	tst_res(TINFO, "\tcgmem.memsw.usage_in_bytes: %ld Kb",
+		READ_CGMEM("memsw.usage_in_bytes") / 1024);
+	tst_res(TINFO, "\tcgmem.kmem.usage_in_bytes: %ld Kb",
+		READ_CGMEM("kmem.usage_in_bytes") / 1024);
 }
 
 static void setup(void)
@@ -77,9 +123,19 @@ static void setup(void)
 
 	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
 	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.limit_in_bytes", "%ld\n",
-		PASS_THRESHOLD);
+			 MEM_LIMIT);
+	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.memsw.limit_in_bytes", "%ld\n",
+			 MEMSW_LIMIT);
 	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.swappiness", "60");
 	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/tasks", "%d\n", getpid());
+
+	meminfo_diag("Initial meminfo, later values are relative to this (except memcg)");
+	init_swap = SAFE_READ_MEMINFO("SwapTotal:") - SAFE_READ_MEMINFO("SwapFree:");
+	init_swap_cached = SAFE_READ_MEMINFO("SwapCached:");
+	init_cached = SAFE_READ_MEMINFO("Cached:");
+
+	tst_res(TINFO, "mapping %ld Kb (%ld pages), limit %ld Kb, pass threshold %ld Kb",
+		CHUNK_SZ / 1024, CHUNK_SZ / pg_sz, MEM_LIMIT / 1024, PASS_THRESHOLD_KB);
 }
 
 static void cleanup(void)
@@ -112,55 +168,60 @@ static int get_page_fault_num(void)
 
 static void test_advice_willneed(void)
 {
-	int loops = 50;
+	int loops = 50, res;
 	char *target;
 	long swapcached_start, swapcached;
 	int page_fault_num_1, page_fault_num_2;
 
+	meminfo_diag("Before mmap");
+	tst_res(TINFO, "PageFault(before mmap): %d", get_page_fault_num());
 	target = SAFE_MMAP(NULL, CHUNK_SZ, PROT_READ | PROT_WRITE,
 			MAP_SHARED | MAP_ANONYMOUS,
 			-1, 0);
+	meminfo_diag("Before dirty");
+	tst_res(TINFO, "PageFault(before dirty): %d", get_page_fault_num());
 	dirty_pages(target, CHUNK_SZ);
+	tst_res(TINFO, "PageFault(after dirty): %d", get_page_fault_num());
 
+	meminfo_diag("Before madvise");
 	SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapCached: %ld",
 		&swapcached_start);
-	tst_res(TINFO, "SwapCached (before madvise): %ld", swapcached_start);
 
-	TEST(madvise(target, CHUNK_SZ, MADV_WILLNEED));
+	TEST(madvise(target, MEM_LIMIT, MADV_WILLNEED));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TERRNO, "madvise failed");
 
 	do {
 		loops--;
 		usleep(100000);
+		FILE_PRINTF("/proc/sys/vm/stat_refresh", "1");
 		SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapCached: %ld",
 			&swapcached);
-	} while (swapcached < swapcached_start + PASS_THRESHOLD / 1024
-		&& loops > 0);
+	} while (swapcached < swapcached_start + PASS_THRESHOLD_KB && loops > 0);
 
-	tst_res(TINFO, "SwapCached (after madvise): %ld", swapcached);
-	if (swapcached > swapcached_start + PASS_THRESHOLD / 1024) {
-		tst_res(TPASS, "Regression test pass");
-		SAFE_MUNMAP(target, CHUNK_SZ);
-		return;
-	}
+	meminfo_diag("After madvise");
+	res = swapcached > swapcached_start + PASS_THRESHOLD_KB;
+	tst_res(res ? TPASS : TFAIL,
+		"%s than %ld Kb were moved to the swap cache",
+		res ? "more" : "less", PASS_THRESHOLD_KB);
 
-	/*
-	 * We may have hit a bug or we just have slow I/O,
-	 * try accessing first page.
-	 */
+
+	TEST(madvise(target, PASS_THRESHOLD, MADV_WILLNEED));
+	if (TST_RET == -1)
+		tst_brk(TBROK | TERRNO, "madvise failed");
+
 	page_fault_num_1 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / no mem access): %d",
 			page_fault_num_1);
-	target[0] = 'a';
+	dirty_pages(target, PASS_THRESHOLD);
 	page_fault_num_2 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / mem access): %d",
 			page_fault_num_2);
+	meminfo_diag("After page access");
 
-	if (page_fault_num_1 != page_fault_num_2)
-		tst_res(TFAIL, "Bug has been reproduced");
-	else
-		tst_res(TPASS, "Regression test pass");
+	res = page_fault_num_2 - page_fault_num_1;
+	tst_res(res < 3 ? TPASS : TFAIL,
+		"%d pages were faulted out of 2 max", res);
 
 	SAFE_MUNMAP(target, CHUNK_SZ);
 }
