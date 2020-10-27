@@ -132,11 +132,13 @@ static void run(unsigned int n)
 					get_clock_str(clock));
 				continue;
 			}
-			val += tst_ts_to_us(timenow);
+			tst_ts_add_us(timenow, val);
+			tst_its_set_value_from_ts(&new_set, timenow);
+		} else {
+			tst_its_set_value_from_us(&new_set, val);
 		}
 
 		tst_its_set_interval_from_us(&new_set, tc->it_interval_tv_usec);
-		tst_its_set_value_from_us(&new_set, val);
 
 		TEST(tv->timer_settime(timer, tc->flag, tst_its_get(&new_set), tst_its_get(tc->old_ptr)));
 
