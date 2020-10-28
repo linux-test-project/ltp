@@ -17,6 +17,7 @@
  * Second directory has no flags set.
  *
  * Minimum kernel version required is 4.11.
+ * Minimum e2fsprogs version required is 1.43.
  */
 
 #define _GNU_SOURCE
@@ -86,9 +87,22 @@ static void run(unsigned int i)
 
 static void setup(void)
 {
+	FILE *f;
 	char opt_bsize[32];
 	const char *const fs_opts[] = {"-O encrypt", opt_bsize, NULL};
-	int ret;
+	int ret, rc, major, minor, patch;
+
+	f = popen("mkfs.ext4 -V 2>&1 | awk '/mke2fs/ {print $2}'", "r");
+	if (!f)
+		tst_res(TINFO, "Unable to get mkfs.ext4 version.");
+	else {
+		rc = fscanf(f, "%d.%d.%d", &major, &minor, &patch);
+		if (rc != 3)
+			tst_res(TINFO, "Unable parse version number");
+		else if (major * 10000 + minor * 100 + patch < 14300)
+			tst_brk(TCONF, "Test needs mkfs.ext4 >= 1.43 for encrypt option, test skipped");
+		pclose(f);
+	}
 
 	snprintf(opt_bsize, sizeof(opt_bsize), "-b %i", getpagesize());
 
