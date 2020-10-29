@@ -56,6 +56,11 @@ static pid_t child_pid;
 
 static int deffered_check;
 
+static struct tst_kern_exv kvers[] = {
+	{"RHEL8", "4.18.0-49"},
+	{NULL, NULL},
+};
+
 static void setup(void)
 {
 	/*
@@ -70,9 +75,10 @@ static void setup(void)
 	 * The original fix for the kernel haven't rejected the kernel address
 	 * right away when breakpoint was modified from userspace it was
 	 * disabled instead and the EINVAL was returned when dr7 was written to
-	 * enable it again.
+	 * enable it again. On RHEL8, it has introduced the right fix since
+	 * 4.18.0-49.
 	 */
-	if (tst_kvercmp(4, 19, 0) < 0)
+	if (tst_kvercmp2(4, 19, 0, kvers) < 0)
 		deffered_check = 1;
 }
 
