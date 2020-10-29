@@ -156,7 +156,7 @@ static struct _scenar {
 
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
-static struct testdata {
+struct testdata {
 	int count;		/* number of children currently waiting */
 	pthread_cond_t cnd;
 	pthread_mutex_t mtx;

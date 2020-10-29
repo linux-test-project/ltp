@@ -56,7 +56,7 @@ static unsigned long count_sig;
 
 static sigset_t usersigs;
 
-static struct thestruct {
+struct thestruct {
 	int sig;
 #ifdef WITH_SYNCHRO
 	sem_t *sem;

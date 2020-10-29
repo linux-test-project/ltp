@@ -42,7 +42,7 @@
  * Add more if desired.
  */
 
-static struct sig_info {
+struct sig_info {
 	int sig;
 	char *sig_name;
 	char caught;

@@ -141,7 +141,7 @@ static void run_hp_threads(int sched_policy, int sched_prio)
 
 }
 
-static struct params {
+struct params {
 	int sched_policy;
 	int sched_priority;
 };
@@ -177,7 +177,7 @@ static void *do_test(void *arg)
 	return NULL;
 }
 
-static struct tcase {
+struct tcase {
 	int sched_policy;
 	int prio;
 };
