@@ -48,7 +48,7 @@
 #include "posixtest.h"
 #include "mem_pattern.h"
 
-static struct test_struct {
+struct test_struct {
 	char one;
 	short two;
 	int three;
