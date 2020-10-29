@@ -29,7 +29,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-static int counter = 0;
+static volatile int counter = 0;
 
 static void myhandler(int signo LTP_ATTRIBUTE_UNUSED)
 {
