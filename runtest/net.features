@@ -81,3 +81,5 @@ fanout01 fanout01
 
 wireguard01 wireguard01.sh
 wireguard01_ipv6 wireguard01.sh -6
+wireguard02 wireguard02.sh
+wireguard02_ipv6 wireguard02.sh -6
