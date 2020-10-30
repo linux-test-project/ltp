@@ -229,10 +229,13 @@ virt_minimize_timeout()
 	local mac_loc="$(cat /sys/class/net/ltp_v0/address)"
 	local mac_rmt="$(tst_rhost_run -c 'cat /sys/class/net/ltp_v0/address')"
 
-	ROD_SILENT "ip ne replace $ip_virt_remote lladdr \
-		    $mac_rmt nud permanent dev ltp_v0"
-	tst_rhost_run -s -c "ip ne replace $ip_virt_local lladdr \
-			     $mac_loc nud permanent dev ltp_v0"
+	if [ "$mac_loc" ]; then
+		ROD_SILENT "ip ne replace $ip_virt_remote lladdr \
+			    $mac_rmt nud permanent dev ltp_v0"
+		tst_rhost_run -s -c "ip ne replace $ip_virt_local lladdr \
+				     $mac_loc nud permanent dev ltp_v0"
+	fi
+
 	virt_tcp_syn=$(sysctl -n net.ipv4.tcp_syn_retries)
 	ROD sysctl -q net.ipv4.tcp_syn_retries=1
 }
