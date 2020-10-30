@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2018-2020 Oracle and/or its affiliates. All Rights Reserved.
 
 TST_SETUP="setup"
 TST_TESTFUNC="do_test"
@@ -27,7 +27,7 @@ setup()
 
 do_test()
 {
-	tcp_cc_test01 bbr -50
+	tcp_cc_test01 bbr -100
 }
 
 tst_run

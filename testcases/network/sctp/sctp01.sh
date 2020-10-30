@@ -23,7 +23,7 @@ test()
 	tst_netload -S $(tst_ipaddr) -H $(tst_ipaddr rhost) -T sctp -R 3 $opts
 	local res1="$(cat tst_netload.res)"
 
-	tst_netload_compare $res0 $res1 -100 100
+	tst_netload_compare $res0 $res1 -200 200
 }
 
 tst_run
