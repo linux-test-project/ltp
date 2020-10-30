@@ -92,7 +92,7 @@
 static int global = 0;
 static int tab[3];
 
-#define CLEANUP(n) void clnp##n(void * arg)\
+#define CLEANUP(n) static void clnp##n(void * arg)\
 {\
 	tab[global]=n; \
 	global++; \
