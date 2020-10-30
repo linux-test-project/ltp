@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2015-2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2015-2020 Oracle and/or its affiliates. All Rights Reserved.
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
@@ -47,13 +47,7 @@ test()
 		tst_netload -H $(tst_ipaddr rhost) -n 10 -N 10 -d res_$x
 	done
 
-	local poll_cmp=$(( 100 - ($(cat res_50) * 100) / $(cat res_0) ))
-
-	if [ "$poll_cmp" -lt 1 ]; then
-		tst_res TFAIL "busy poll result is '$poll_cmp' %"
-	else
-		tst_res TPASS "busy poll increased performance by '$poll_cmp' %"
-	fi
+	tst_netload_compare $(cat res_0) $(cat res_50) 1
 }
 
 tst_run

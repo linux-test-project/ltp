@@ -741,6 +741,37 @@ tst_netload()
 	return $ret
 }
 
+# Compares results for netload runs.
+# tst_netload_compare TIME_BASE TIME THRESHOLD_LOW [THRESHOLD_HI]
+# TIME_BASE: time taken to run netstress load test - 100%
+# TIME: time that is compared to the base one
+# THRESHOD_LOW: lower limit for TFAIL
+# THRESHOD_HIGH: upper limit for TWARN
+tst_netload_compare()
+{
+	local base_time=$1
+	local new_time=$2
+	local threshold_low=$3
+	local threshold_hi=$4
+
+	if [ -z "$base_time" -o -z "$new_time" -o -z "$threshold_low" ]; then
+		tst_brk_ TBROK "tst_netload_compare: invalid argument(s)"
+	fi
+
+	local res=$(((base_time - new_time) * 100 / base_time))
+	local msg="performance result is ${res}%"
+
+	if [ "$res" -lt "$threshold_low" ]; then
+		tst_res_ TFAIL "$msg < threshold ${threshold_low}%"
+		return
+	fi
+
+	[ "$threshold_hi" ] && [ "$res" -gt "$threshold_hi" ] && \
+		tst_res_ TWARN "$msg > threshold ${threshold_hi}%"
+
+	tst_res_ TPASS "$msg, in range [${threshold_low}:${threshold_hi}]%"
+}
+
 # tst_ping [IFACE] [DST ADDR] [MESSAGE SIZE ARRAY]
 # Check icmp connectivity
 # IFACE: source interface name or IP address

@@ -295,25 +295,8 @@ virt_compare_netperf()
 	local lt="$(cat res_lan)"
 	tst_res TINFO "time lan IPv${TST_IPVER}($lt) $virt_type IPv4($vt) and IPv6($vt6) ms"
 
-	per=$(( $vt * 100 / $lt - 100 ))
-	per6=$(( $vt6 * 100 / $lt - 100 ))
-
-	case "$virt_type" in
-	vxlan|geneve)
-		tst_res TINFO "IP4 $virt_type over IP$TST_IPVER slower by $per %"
-		tst_res TINFO "IP6 $virt_type over IP$TST_IPVER slower by $per6 %"
-	;;
-	*)
-		tst_res TINFO "IP4 $virt_type slower by $per %"
-		tst_res TINFO "IP6 $virt_type slower by $per6 %"
-	esac
-
-	if [ "$per" -ge "$VIRT_PERF_THRESHOLD" -o \
-	     "$per6" -ge "$VIRT_PERF_THRESHOLD" ]; then
-		tst_res TFAIL "Test failed, threshold: $VIRT_PERF_THRESHOLD %"
-	else
-		tst_res TPASS "Test passed, threshold: $VIRT_PERF_THRESHOLD %"
-	fi
+	tst_netload_compare $lt $vt "-$VIRT_PERF_THRESHOLD"
+	tst_netload_compare $lt $vt6 "-$VIRT_PERF_THRESHOLD"
 }
 
 virt_check_cmd()

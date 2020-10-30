@@ -23,13 +23,7 @@ test()
 	tst_netload -S $(tst_ipaddr) -H $(tst_ipaddr rhost) -T sctp -R 3 $opts
 	local res1="$(cat tst_netload.res)"
 
-	local per=$(( $res0 * 100 / $res1 - 100 ))
-
-	if [ "$per" -gt "100" -o "$per" -lt "-100" ]; then
-		tst_res TFAIL "sctp performance $per %"
-	else
-		tst_res TPASS "sctp performance $per % in range -100 ... 100 %"
-	fi
+	tst_netload_compare $res0 $res1 -100 100
 }
 
 tst_run
