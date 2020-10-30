@@ -78,3 +78,6 @@ mpls03_ipv6 mpls03.sh -6
 mpls04 mpls04.sh
 
 fanout01 fanout01
+
+wireguard01 wireguard01.sh
+wireguard01_ipv6 wireguard01.sh -6

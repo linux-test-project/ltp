@@ -124,7 +124,7 @@ virt_add()
 	esac
 
 	case $virt_type in
-	vxlan|geneve|sit)
+	vxlan|geneve|sit|wireguard)
 		ip li add $vname type $virt_type $opt
 	;;
 	gre|ip6gre)
@@ -145,7 +145,7 @@ virt_add_rhost()
 		[ "$vxlan_dstport" -eq 1 ] && opt="$opt dstport 0"
 		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
 	;;
-	sit)
+	sit|wireguard)
 		tst_rhost_run -s -c "ip link add ltp_v0 type $virt_type $@"
 	;;
 	gre|ip6gre)
