@@ -29,6 +29,9 @@
  *  Date:   Mon Mar 26 15:39:07 2018 -1000
  *
  *  perf/hwbp: Simplify the perf-hwbp code, fix documentation
+ *
+ * On Centos7, this is also a regression test for
+ * commit 27747f8bc355 ("perf/x86/hw_breakpoints: Fix check for kernel-space breakpoints").
  */
 
 #include <stdlib.h>
@@ -164,6 +167,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "f67b15037a7a"},
 		{"CVE", "2018-1000199"},
+		{"linux-git", "27747f8bc355"},
 		{}
 	}
 };
