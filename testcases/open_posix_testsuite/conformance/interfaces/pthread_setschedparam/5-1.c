@@ -76,7 +76,7 @@
 /*****************************    Test case   *********************************/
 /******************************************************************************/
 
-static char do_it = 1;
+static volatile char do_it = 1;
 static unsigned long count_ope = 0;
 #ifdef WITH_SYNCHRO
 static sem_t semsig1;
