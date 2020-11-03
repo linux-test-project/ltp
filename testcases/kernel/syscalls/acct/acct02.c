@@ -49,18 +49,20 @@ static union acct_union {
 	struct acct_v3	v3;
 } acct_struct;
 
+#define ACCT_V3 "CONFIG_BSD_PROCESS_ACCT_V3"
+
 static int acct_version_is_3(void)
 {
-	const char *kconfig_acct_v3[] = {
-		"CONFIG_BSD_PROCESS_ACCT_V3",
-		NULL
+	struct tst_kconfig_var kconfig = {
+		.id = ACCT_V3,
+		.id_len = sizeof(ACCT_V3)-1,
 	};
 
-	struct tst_kconfig_res results[1];
+	tst_kconfig_read(&kconfig, 1);
 
-	tst_kconfig_read(kconfig_acct_v3, results, 1);
+	tst_res(TINFO, ACCT_V3 "=%c", kconfig.choice);
 
-	return results[0].match == 'y';
+	return kconfig.choice == 'y';
 }
 
 static void run_command(void)

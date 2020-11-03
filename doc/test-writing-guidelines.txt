@@ -1643,21 +1643,26 @@ on the system, disabled syscalls can be detected by checking for 'ENOSYS'
 errno etc.
 
 However in rare cases core kernel features couldn't be detected based on the
-kernel userspace API and we have to resort to kernel .config parsing.
+kernel userspace API and we have to resort to parse the kernel .config.
 
-For this cases the test should set the 'NULL' terminated '.needs_kconfigs' array
-of kernel config options required for the test. The config option can be
-specified either as plain "CONFIG_FOO" in which case it's sufficient for the
-test continue if it's set to any value (typically =y or =m). Or with a value
-as "CONFIG_FOO=bar" in which case the value has to match as well. The test is
-aborted with 'TCONF' if any of the required options were not set.
+For this cases the test should set the 'NULL' terminated '.needs_kconfigs'
+array of boolean expressions with constraints on the kconfig variables. The
+boolean expression consits of variables, two binary operations '&' and '|',
+negation '!' and correct sequence of parentesis '()'. Variables are expected
+to be in a form of "CONFIG_FOO[=bar]".
+
+The test will continue to run if all expressions are evaluated to 'True'.
+Missing variable is mapped to 'False' as well as variable with different than
+specified value, e.g. 'CONFIG_FOO=bar' will evaluate to 'False' if the value
+is anything else but 'bar'. If config variable is specified as plain
+'CONFIG_FOO' it's evaluated to true it's set to any value (typically =y or =m).
 
 [source,c]
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
 static const char *kconfigs[] = {
-	"CONFIG_X86_INTEL_UMIP",
+	"CONFIG_X86_INTEL_UMIP | CONFIG_X86_UMIP",
 	NULL
 };
 
