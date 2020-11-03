@@ -39,7 +39,9 @@ int  tst_cgroup_mem_swapacct_enabled(const char *cgroup_dir);
 void tst_cgroup_mem_set_maxswap(const char *cgroup_dir, long memsz);
 
 /* Set of functions to read/write cpuset controller files content */
-void tst_cgroup_cpuset_read_files(const char *cgroup_dir, const char *filename, char *retbuf);
-void tst_cgroup_cpuset_write_files(const char *cgroup_dir, const char *filename, const char *buf);
+void tst_cgroup_cpuset_read_files(const char *cgroup_dir, const char *filename,
+	char *retbuf, size_t retbuf_sz);
+void tst_cgroup_cpuset_write_files(const char *cgroup_dir, const char *filename,
+	const char *buf);
 
 #endif /* TST_CGROUP_H */

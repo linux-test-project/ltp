@@ -393,7 +393,8 @@ void tst_cgroup_mem_set_maxswap(const char *cgroup_dir, long memsz)
 		tst_cgroup_set_knob(cgroup_dir, "memory.swap.max", memsz);
 }
 
-void tst_cgroup_cpuset_read_files(const char *cgroup_dir, const char *filename, char *retbuf)
+void tst_cgroup_cpuset_read_files(const char *cgroup_dir, const char *filename,
+	char *retbuf, size_t retbuf_sz)
 {
 	int fd;
 	char *cgroup_new_dir;
@@ -417,7 +418,8 @@ void tst_cgroup_cpuset_read_files(const char *cgroup_dir, const char *filename, 
 			tst_brk(TBROK | TERRNO, "open %s", knob_path);
 	}
 
-	if (read(fd, retbuf, sizeof(retbuf)) < 0)
+	memset(retbuf, 0, retbuf_sz);
+	if (read(fd, retbuf, retbuf_sz) < 0)
 		tst_brk(TBROK | TERRNO, "read %s", knob_path);
 
 	close(fd);
