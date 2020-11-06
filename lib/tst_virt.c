@@ -109,9 +109,9 @@ int tst_is_virt(int virt_type)
 {
 	int ret = try_systemd_detect_virt();
 
-	if (ret >= 0) {
+	if (ret > 0) {
 		if (virt_type == VIRT_ANY)
-			return ret != 0;
+			return 1;
 		else
 			return ret == virt_type;
 	}
