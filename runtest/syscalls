@@ -1572,7 +1572,6 @@ umask01 umask01
 
 uname01 uname01
 uname02 uname02
-uname03 uname03
 uname04 uname04
 
 unlink01 symlink01 -T unlink01
