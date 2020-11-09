@@ -336,7 +336,7 @@ int main(int argc, char **argv)
 		if (!strcmp(logfilename, "-")) {
 			logfile = stdout;
 		} else {
-			if ((logfile = fopen(logfilename, "a+")) == NULL) {
+			if ((logfile = fopen(logfilename, "a+e")) == NULL) {
 				fprintf(stderr,
 					"pan(%s): Error %s (%d) opening log file '%s'\n",
 					panname, strerror(errno), errno,
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
 	}
 
 	if (failcmdfilename) {
-		if (!(failcmdfile = fopen(failcmdfilename, "a+"))) {
+		if (!(failcmdfile = fopen(failcmdfilename, "a+e"))) {
 			fprintf(stderr,
 				"pan(%s): Error %s (%d) opening fail cmd file '%s'\n",
 				panname, strerror(errno), errno,
@@ -463,7 +463,7 @@ int main(int argc, char **argv)
 	}
 
 	if (tconfcmdfilename) {
-		tconfcmdfile = fopen(tconfcmdfilename, "a+");
+		tconfcmdfile = fopen(tconfcmdfilename, "a+e");
 		if (!tconfcmdfile) {
 			fprintf(stderr, "pan(%s): Error %s (%d) opening "
 				"tconf cmd file '%s'\n", panname,
