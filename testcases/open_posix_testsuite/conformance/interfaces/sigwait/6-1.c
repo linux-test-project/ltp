@@ -81,7 +81,7 @@
 /***************************    Test case   ***********************************/
 /******************************************************************************/
 
-static int n_awaken = 0;
+static volatile int n_awaken = 0;
 static sigset_t setusr;
 
 /* Thread function */
