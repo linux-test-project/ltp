@@ -16,34 +16,35 @@ static fd_set readfds_reg, writefds_reg, fds_closed;
 static fd_set *preadfds_reg = &readfds_reg, *pwritefds_reg = &writefds_reg;
 static fd_set *pfds_closed = &fds_closed, *nullfds = NULL, *faulty_fds;
 static int fd_closed, fd[2];
+static int negative_nfds = -1, maxfds;
 static struct timeval timeout = {.tv_sec = 0, .tv_usec = 100000};
 
 static struct timeval *valid_to = &timeout, *invalid_to;
 
 static struct tcases {
 	char *name;
-	int nfds;
+	int *nfds;
 	fd_set **readfds;
 	fd_set **writefds;
 	fd_set **exceptfds;
 	struct timeval **timeout;
 	int exp_errno;
 } tests[] = {
-	{ "Negative nfds", -1, &preadfds_reg, &pwritefds_reg, &nullfds, &valid_to, EINVAL },
-	{ "Invalid readfds", 6, &pfds_closed, &pwritefds_reg, &nullfds, &valid_to, EBADF },
-	{ "Invalid writefds", 6, &preadfds_reg, &pfds_closed, &nullfds, &valid_to, EBADF },
-	{ "Invalid exceptfds", 6, &preadfds_reg, &pwritefds_reg, &pfds_closed, &valid_to, EBADF },
-	{ "Faulty readfds", 6, &faulty_fds, &pwritefds_reg, &nullfds, &valid_to, EFAULT },
-	{ "Faulty writefds", 6, &preadfds_reg, &faulty_fds, &nullfds, &valid_to, EFAULT },
-	{ "Faulty exceptfds", 6, &preadfds_reg, &pwritefds_reg, &faulty_fds, &valid_to, EFAULT },
-	{ "Faulty timeout", 6, &preadfds_reg, &pwritefds_reg, &nullfds, &invalid_to, EFAULT },
+	{ "Negative nfds", &negative_nfds, &preadfds_reg, &pwritefds_reg, &nullfds, &valid_to, EINVAL },
+	{ "Invalid readfds", &maxfds, &pfds_closed, &pwritefds_reg, &nullfds, &valid_to, EBADF },
+	{ "Invalid writefds", &maxfds, &preadfds_reg, &pfds_closed, &nullfds, &valid_to, EBADF },
+	{ "Invalid exceptfds", &maxfds, &preadfds_reg, &pwritefds_reg, &pfds_closed, &valid_to, EBADF },
+	{ "Faulty readfds", &maxfds, &faulty_fds, &pwritefds_reg, &nullfds, &valid_to, EFAULT },
+	{ "Faulty writefds", &maxfds, &preadfds_reg, &faulty_fds, &nullfds, &valid_to, EFAULT },
+	{ "Faulty exceptfds", &maxfds, &preadfds_reg, &pwritefds_reg, &faulty_fds, &valid_to, EFAULT },
+	{ "Faulty timeout", &maxfds, &preadfds_reg, &pwritefds_reg, &nullfds, &invalid_to, EFAULT },
 };
 
 static void run(unsigned int n)
 {
 	struct tcases *tc = &tests[n];
 
-	TEST(do_select_faulty_to(tc->nfds, *tc->readfds, *tc->writefds,
+	TEST(do_select_faulty_to(*tc->nfds, *tc->readfds, *tc->writefds,
 				 *tc->exceptfds, *tc->timeout,
 				 tc->timeout == &invalid_to));
 
@@ -81,6 +82,7 @@ static void setup(void)
 
 	SAFE_CLOSE(fd_closed);
 
+	maxfds = fd[1] + 1;
 	faulty_address = tst_get_bad_addr(NULL);
 	invalid_to = faulty_address;
 	faulty_fds = faulty_address;
