@@ -70,9 +70,6 @@ static int is_ibmz(int virt_type)
 	char line[64];
 	int found_lpar, found_zvm;
 
-	if (virt_type != VIRT_IBMZ_LPAR && virt_type != VIRT_IBMZ_ZVM)
-		return 0;
-
 	if (access("/proc/sysinfo", F_OK) != 0)
 		return 0;
 
