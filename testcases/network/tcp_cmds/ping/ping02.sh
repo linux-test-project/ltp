@@ -16,19 +16,26 @@ do_setup()
 	PING=ping${TST_IPV6}
 
 	tst_require_cmds $PING
+
+	ping_opts="-f -p 000102030405060708090a0b0c0d0e0f"
+	ipaddr=$(tst_ipaddr rhost)
+
+	if ! $PING -c 1 -f $ipaddr >/dev/null 2>&1; then
+		ping_opts="-i 0.01 -p aa"
+		if $PING -i 2>&1 | grep -q "invalid option"; then
+			tst_brk TCONF "unsupported ping version (old busybox?)"
+		fi
+	fi
 }
 
 do_test()
 {
-	local pat="000102030405060708090a0b0c0d0e0f"
-
-	tst_res TINFO "flood $PING: ICMP packets filled with pattern '$pat'"
-
-	local ipaddr=$(tst_ipaddr rhost)
 	local s
 
+	tst_res TINFO "flood $PING: ICMP packets with options '$ping_opts'"
+
 	for s in $PACKETSIZES; do
-		EXPECT_PASS $PING -c $COUNT -f -s $s $ipaddr -p "$pat" \>/dev/null
+		EXPECT_PASS $PING -c $COUNT -s $s $ipaddr $ping_opts \>/dev/null
 	done
 }
 
