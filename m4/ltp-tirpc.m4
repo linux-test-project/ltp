@@ -6,8 +6,6 @@ AC_DEFUN([LTP_CHECK_TIRPC], [
 	dnl libtirpc library and headers
 	PKG_CHECK_MODULES([LIBTIRPC], [libtirpc >= 0.2.4], [
 		have_libtirpc=yes
-		TIRPC_CFLAGS=$LIBTIRPC_CFLAGS
-		TIRPC_LIBS=$LIBTIRPC_LIBS
 	], [have_libtirpc=no])
 
 	dnl TI-RPC headers (in glibc, since 2.26 installed only when configured
@@ -22,9 +20,4 @@ AC_DEFUN([LTP_CHECK_TIRPC], [
 	if test "x$have_libtirpc" = "xyes" -o "x$have_rpc_glibc" = "xyes"; then
 		AC_SUBST(HAVE_RPC, 1)
 	fi
-
-	dnl fix for old pkg-config (< 0.24)
-	dnl https://autotools.io/pkgconfig/pkg_check_modules.html
-	AC_SUBST(TIRPC_CFLAGS)
-	AC_SUBST(TIRPC_LIBS)
 ])

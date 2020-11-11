@@ -10,7 +10,7 @@ FILTER_OUT_DIRS		:= $(LIBDIR)
 LIB			:= $(LIBDIR)/librpc-tirpc.a
 
 # keep only rpc_*
-ifeq ($(TIRPC_LIBS),)
+ifeq ($(LIBTIRPC_LIBS),)
 FILTER_OUT_MAKE_TARGETS	+= tirpc_cleaner
 FILTER_OUT_DIRS	+= tirpc_svc_1 tirpc_svc_2 tirpc_svc_3 tirpc_svc_4 tirpc_svc_5 tirpc_svc_6 tirpc_svc_7 tirpc_svc_8 tirpc_svc_9 tirpc_svc_11
 endif

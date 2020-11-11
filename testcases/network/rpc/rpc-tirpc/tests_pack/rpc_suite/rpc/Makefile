@@ -5,7 +5,7 @@ top_srcdir		?= ../../../../../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-ifeq ($(TIRPC_LIBS),)
+ifeq ($(LIBTIRPC_LIBS),)
 # glibc does not define registerrpc() in <rpc/rpc.h>
 # registerrpc() is deprecated in libtirpc, it should be replaced by rpc_reg()
 FILTER_OUT_DIRS	+= rpc_regunreg_registerrpc

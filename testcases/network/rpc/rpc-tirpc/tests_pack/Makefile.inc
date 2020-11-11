@@ -15,5 +15,5 @@ $(LIBRPC-TIRPC): $(LIBDIR)
 MAKE_DEPS	+= $(LIBRPC-TIRPC)
 
 LDFLAGS		+= -L$(LIBDIR)
-LDLIBS		+= $(TIRPC_LIBS) -lrpc-tirpc
-CFLAGS		+= $(TIRPC_CFLAGS) -I$(LIBSRCDIR) -I$(LIBSRCDIR)/../include -pthread
+LDLIBS		+= $(LIBTIRPC_LIBS) -lrpc-tirpc
+CFLAGS		+= $(LIBTIRPC_CFLAGS) -I$(LIBSRCDIR) -I$(LIBSRCDIR)/../include -pthread
