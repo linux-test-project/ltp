@@ -81,6 +81,13 @@ static unsigned int tokenize(const char *expr, struct tst_expr_tok *last)
 			token_cnt += new_tok(&last, &expr[j], i - j);
 			j = i+1;
 		break;
+		case '"':
+			while (expr[i+1] != '"' && expr[i+1])
+				i++;
+
+			if (expr[i+1] == '"')
+				i++;
+		break;
 		default:
 		break;
 		}

@@ -102,6 +102,9 @@ static void do_test(void)
 	do_eval_test("False & A", 1, 0, 0, 0);
 	do_eval_test("! Undefined", 0, 0, 0, -1);
 
+	do_eval_test("\"(none)\"", 0, 0, 0, -1);
+	do_eval_test("\"(none)\" & \" \"", 0, 0, 0, -1);
+
 	parse_fail("A!");
 	parse_fail("A &");
 	parse_fail("A B");
