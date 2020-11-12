@@ -30,10 +30,18 @@ static void verify_ptrace(void)
 	if (!child_pid[1]) {
 		SAFE_SETUID(uid);
 		TEST(ptrace(PTRACE_ATTACH, child_pid[0], NULL, NULL));
+
 		if (TST_RET == 0) {
 			tst_res(TFAIL, "ptrace() succeeded unexpectedly");
 			exit(0);
 		}
+
+		if (TST_RET != -1) {
+			tst_res(TFAIL,
+				"Invalid ptrace() return value %ld", TST_RET);
+			exit(0);
+		}
+
 		if (TST_ERR == EPERM)
 			tst_res(TPASS | TTERRNO, "ptrace() failed as expected");
 		else
