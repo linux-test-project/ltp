@@ -224,6 +224,105 @@ static inline unsigned int get_len(const char* kconfig, unsigned int len)
 	return sep - kconfig;
 }
 
+static void print_err(FILE *f, const struct tst_expr_tok *var,
+                      size_t spaces, const char *err)
+{
+	size_t i;
+
+	for (i = 0; i < var->tok_len; i++)
+		fputc(var->tok[i], f);
+
+	fputc('\n', f);
+
+	while (spaces--)
+		fputc(' ', f);
+
+	fprintf(f, "^\n%s\n\n", err);
+}
+
+static int validate_var(const struct tst_expr_tok *var)
+{
+	size_t i = 7;
+
+	if (var->tok_len < 7 || strncmp(var->tok, "CONFIG_", 7)) {
+		print_err(stderr, var, 0, "Expected CONFIG_ prefix");
+		return 1;
+	}
+
+	while (var->tok[i]) {
+		char c;
+
+		if (i >= var->tok_len)
+			return 0;
+
+		c = var->tok[i];
+
+		if ((c >= 'A' && c <= 'Z') || c == '_') {
+			i++;
+			continue;
+		}
+
+		if (c == '=') {
+			i++;
+			break;
+		}
+
+		print_err(stderr, var, i, "Unexpected character in variable name");
+		return 1;
+	}
+
+	if (i >= var->tok_len) {
+		print_err(stderr, var, i, "Missing value");
+		return 1;
+	}
+
+	if (var->tok[i] == '"') {
+		do {
+			i++;
+		} while (i < var->tok_len && var->tok[i] != '"');
+
+		if (i < var->tok_len) {
+			print_err(stderr, var, i, "Garbage after a string");
+			return 1;
+		}
+
+		if (var->tok[i] != '"') {
+			print_err(stderr, var, i, "Untermianted string");
+			return 1;
+		}
+
+		return 0;
+	}
+
+	do {
+		i++;
+	} while (i < var->tok_len && isalnum(var->tok[i]));
+
+	if (i < var->tok_len) {
+		print_err(stderr, var, i, "Invalid character in variable value");
+		return 1;
+	}
+
+	return 0;
+}
+
+static int validate_vars(struct tst_expr *const exprs[], unsigned int expr_cnt)
+{
+	unsigned int i;
+	const struct tst_expr_tok *j;
+	unsigned int ret = 0;
+
+	for (i = 0; i < expr_cnt; i++) {
+		for (j = exprs[i]->rpn; j; j = j->next) {
+			if (j->op == TST_OP_VAR)
+				ret |= validate_var(j);
+		}
+	}
+
+	return ret;
+}
+
+
 static inline unsigned int get_var_cnt(struct tst_expr *const exprs[],
                                        unsigned int expr_cnt)
 {
@@ -371,6 +470,9 @@ void tst_kconfig_check(const char *const kconfigs[])
 		if (!exprs[i])
 			tst_brk(TBROK, "Invalid kconfig expression!");
 	}
+
+	if (validate_vars(exprs, expr_cnt))
+		tst_brk(TBROK, "Invalid kconfig variables!");
 
 	var_cnt = get_var_cnt(exprs, expr_cnt);
 	struct tst_kconfig_var vars[var_cnt];
