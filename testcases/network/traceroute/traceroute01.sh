@@ -56,7 +56,11 @@ test1()
 test2()
 {
 	tst_res TINFO "run traceroute with TCP SYN"
-	run_trace -T
+	if traceroute -T 2>&1 | grep -q "invalid option"; then
+		tst_res TCONF "-T flag (TCP SYN) not supported"
+	else
+		run_trace -T
+	fi
 }
 
 tst_run
