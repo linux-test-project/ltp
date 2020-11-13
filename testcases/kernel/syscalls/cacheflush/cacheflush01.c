@@ -45,12 +45,8 @@ static void test_cacheflush(unsigned int i)
 {
 	struct test_case_t *tc = &test_cases[i];
 
-	TEST(tst_syscall(__NR_cacheflush, addr, getpagesize(), tc->cache));
-	if (TST_RET == 0) {
-		tst_res(TPASS, "%s passed", tc->desc);
-	} else {
-		tst_res(TFAIL | TTERRNO, "%s failed", tc->desc);
-	}
+	TST_EXP_PASS(tst_syscall(__NR_cacheflush, addr, getpagesize(), tc->cache),
+	             "%s", tc->desc);
 }
 
 static struct tst_test test = {
