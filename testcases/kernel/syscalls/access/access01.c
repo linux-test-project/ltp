@@ -231,46 +231,15 @@ static struct tcase {
 	{DNAME_WX"/"FNAME_X, W_OK, "W_OK", EACCES, 1}
 };
 
-static void verify_success(struct tcase *tc, const char *user)
-{
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO,
-		        "access(%s, %s) as %s failed unexpectedly",
-		        tc->fname, tc->name, user);
-		return;
-	}
-
-	tst_res(TPASS, "access(%s, %s) as %s", tc->fname, tc->name, user);
-}
-
-static void verify_failure(struct tcase *tc, const char *user)
-{
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "access(%s, %s) as %s succeded unexpectedly",
-		        tc->fname, tc->name, user);
-		return;
-	}
-
-	if (TST_ERR != tc->exp_errno) {
-		tst_res(TFAIL | TTERRNO,
-		        "access(%s, %s) as %s should fail with %s",
-		        tc->fname, tc->name, user,
-		        tst_strerrno(tc->exp_errno));
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "access(%s, %s) as %s",
-	        tc->fname, tc->name, user);
-}
-
 static void access_test(struct tcase *tc, const char *user)
 {
-	TEST(access(tc->fname, tc->mode));
-
-	if (tc->exp_errno)
-		verify_failure(tc, user);
-	else
-		verify_success(tc, user);
+	if (tc->exp_errno) {
+		TST_EXP_FAIL(access(tc->fname, tc->mode), tc->exp_errno,
+		             "access(%s, %s) as %s", tc->fname, tc->name, user);
+	} else {
+		TST_EXP_PASS(access(tc->fname, tc->mode),
+		             "access(%s, %s) as %s", tc->fname, tc->name, user);
+	}
 }
 
 static void verify_access(unsigned int n)

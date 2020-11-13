@@ -26,34 +26,13 @@ static struct tcase {
 	{(void *)-1, X_OK, "X_OK"},
 };
 
-static void access_test(struct tcase *tc, const char *user)
-{
-	TEST(access(tc->addr, tc->mode));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "access(%p, %s) as %s succeeded unexpectedly",
-			tc->addr, tc->name, user);
-		return;
-	}
-
-	if (TST_ERR != EFAULT) {
-		tst_res(TFAIL | TTERRNO,
-			"access(%p, %s) as %s should fail with EFAULT",
-			tc->addr, tc->name, user);
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "access(%p, %s) as %s",
-		tc->addr, tc->name, user);
-}
-
 static void verify_access(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 	pid_t pid;
 
-	/* test as root */
-	access_test(tc, "root");
+	TST_EXP_FAIL(access(tc->addr, tc->mode), EFAULT,
+	             "invalid address as root");
 
 	/* test as nobody */
 	pid = SAFE_FORK();
@@ -61,7 +40,8 @@ static void verify_access(unsigned int n)
 		SAFE_WAITPID(pid, NULL, 0);
 	} else {
 		SAFE_SETUID(uid);
-		access_test(tc, "nobody");
+		TST_EXP_FAIL(access(tc->addr, tc->mode), EFAULT,
+		             "invalid address as nobody");
 	}
 }
 

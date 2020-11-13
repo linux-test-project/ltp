@@ -59,13 +59,11 @@ static void access_test(struct tcase *tc, const char *user)
 	struct stat stat_buf;
 	char command[64];
 
-	TEST(access(tc->pathname, tc->mode));
+	TST_EXP_PASS(access(tc->pathname, tc->mode),
+	             "access(%s, %s) as %s", tc->pathname, tc->name, user);
 
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "access(%s, %s) as %s failed",
-			tc->pathname, tc->name, user);
+	if (!TST_PASS)
 		return;
-	}
 
 	switch (tc->mode) {
 	case F_OK:
