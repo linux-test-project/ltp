@@ -486,7 +486,7 @@ static unsigned int sc;
 
 #ifdef STD_MAIN
 
-extern void *threaded(void *arg);
+static void *threaded(void *arg);
 
 int main(void)
 {
