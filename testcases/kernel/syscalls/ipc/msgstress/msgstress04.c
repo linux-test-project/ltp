@@ -1,10 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2002
  *
+ * This program is free software;  you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY;  without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program;  if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *
  * 06/30/2001   Port to Linux   nsharoff@us.ibm.com
  * 11/11/2002   Port to LTP     dbarrera@us.ibm.com
- * 10/21/2020   Convert to new api xuyang2018.jy@cn.fujitsu.com
+ */
+
+/*
  * Get and manipulate a message queue.
  * Same as msgstress02 but gets the actual msgmni value under procfs.
  */
@@ -21,15 +36,23 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "tst_test.h"
-#include "libnewipc.h"
-#include "tst_safe_sysv_ipc.h"
-#include "msgstress_common.h"
+#include "test.h"
+#include "ipcmsg.h"
+#include "libmsgctl.h"
+
+char *TCID = "msgstress04";
+int TST_TOTAL = 1;
 
 #define MAXNREPS	1000
+#ifndef CONFIG_COLDFIRE
 #define MAXNPROCS	 1000000	/* This value is set to an arbitrary high limit. */
+#else
+#define MAXNPROCS	 100000	/* Coldfire can't deal with 1000000 */
+#endif
 #define MAXNKIDS	10
+#define DEFNKIDS	2
 
+static int maxnkids = MAXNKIDS;	/* Used if pid_max is exceeded */
 static key_t keyarray[MAXNPROCS];
 static int pidarray[MAXNPROCS];
 static int rkidarray[MAXNKIDS];
@@ -37,45 +60,88 @@ static int wkidarray[MAXNKIDS];
 static int tid;
 static int nprocs, nreps, nkids, MSGMNI;
 static int maxnprocs;
-static void cleanup(void);
+static int procstat;
 
-static void dotest(key_t, int);
+void setup(void);
+void cleanup(void);
+
+static void term(int);
+static int dotest(key_t, int);
 static void dotest_iteration(int off);
+static void cleanup_msgqueue(int i, int tid);
 
 static char *opt_maxnprocs;
 static char *opt_nkids;
 static char *opt_nreps;
 
-static struct tst_option options[] = {
-	{"n:", &opt_maxnprocs, "-n N     Number of processes"},
-	{"c:", &opt_nkids, "-c -N    Number of read/write child pairs"},
-	{"l:", &opt_nreps, "-l N     Number of iterations"},
-	{NULL, NULL, NULL}
+static option_t options[] = {
+	{"n:", NULL, &opt_maxnprocs},
+	{"c:", NULL, &opt_nkids},
+	{"l:", NULL, &opt_nreps},
+	{NULL, NULL, NULL},
 };
 
-static void cleanup_msgqueue(int i, int tid)
+static void usage(void)
 {
-	/*
-	 * Decrease the value of i by 1 because it is getting incremented
-	 * even if the fork is failing.
-	 */
-	i--;
-	/* Kill all children & free message queue. */
-	for (; i >= 0; i--) {
-		(void)kill(rkidarray[i], SIGKILL);
-		(void)kill(wkidarray[i], SIGKILL);
-	}
-	SAFE_MSGCTL(tid, IPC_RMID, 0);
+	printf("  -n      Number of processes\n");
+	printf("  -c      Number of read/write child pairs\n");
+	printf("  -l      Number of iterations\n");
 }
 
-static void verify_msgstress(void)
+
+int main(int argc, char **argv)
 {
 	int i, j, ok;
 
+	tst_parse_opts(argc, argv, options, usage);
+
+	setup();
+
+	nreps = MAXNREPS;
+	nkids = MAXNKIDS;
+
+	if (opt_nreps) {
+		nreps = atoi(opt_nreps);
+		if (nreps > MAXNREPS) {
+			tst_resm(TINFO,
+				 "Requested number of iterations too large, "
+				 "setting to Max. of %d", MAXNREPS);
+			nreps = MAXNREPS;
+		}
+	}
+
+	if (opt_nkids) {
+		nkids = atoi(opt_nkids);
+		if (nkids > MAXNKIDS) {
+			tst_resm(TINFO,
+				 "Requested number of read/write pairs too "
+				 "large, setting to Max. of %d", MAXNKIDS);
+			nkids = MAXNKIDS;
+		}
+	}
+
+
+	if (opt_maxnprocs) {
+		if (atoi(opt_maxnprocs) > maxnprocs) {
+			tst_resm(TINFO,
+				 "Requested number of processes too large, "
+				 "setting to Max. of %d", MSGMNI);
+		} else {
+			maxnprocs = atoi(opt_maxnprocs);
+		}
+	}
+
+	procstat = 0;
 	srand48((unsigned)getpid() + (unsigned)(getppid() << 16));
 	tid = -1;
 
-	/* Set up array of unique keys for use in allocating message queues */
+	/* Setup signal handling routine */
+	if (sigset(SIGTERM, term) == SIG_ERR)
+		tst_brkm(TFAIL, cleanup, "Sigset SIGTERM failed");
+
+	/* Set up array of unique keys for use in allocating message
+	 * queues
+	 */
 	for (i = 0; i < MSGMNI; i++) {
 		ok = 1;
 		do {
@@ -117,162 +183,268 @@ static void verify_msgstress(void)
 		dotest_iteration(i * maxnprocs);
 	}
 
-	tst_res(TPASS, "Test ran successfully!");
+	tst_resm(TPASS, "Test ran successfully!");
 
 	cleanup();
+	tst_exit();
 }
 
 static void dotest_iteration(int off)
 {
 	key_t key;
-	int i, count;
+	int i, count, status;
 	pid_t pid;
 
 	memset(pidarray, 0, sizeof(pidarray));
 
 	for (i = 0; i < nprocs; i++) {
 		key = keyarray[off + i];
-		pid = SAFE_FORK();
+
+		if ((pid = FORK_OR_VFORK()) < 0)
+			tst_brkm(TFAIL, cleanup,
+				 "Fork failed (may be OK if under stress)");
 
 		/* Child does this */
 		if (pid == 0) {
-			dotest(key, i);
-			exit(0);
+			procstat = 1;
+			exit(dotest(key, i));
 		}
 		pidarray[i] = pid;
 	}
 
 	count = 0;
 	while (1) {
-		if (wait(NULL) > 0) {
+		if ((wait(&status)) > 0) {
+			if (status >> 8 != PASS)
+				tst_brkm(TFAIL, cleanup,
+					"Child exit status = %d", status >> 8);
 			count++;
 		} else {
-			if (errno != EINTR)
+			if (errno != EINTR) {
 				break;
+			}
+#ifdef DEBUG
+			tst_resm(TINFO, "Signal detected during wait");
+#endif
 		}
 	}
 	/* Make sure proper number of children exited */
 	if (count != nprocs)
-		tst_brk(TFAIL, "Wrong number of children exited, Saw %d, Expected %d",
-				count, nprocs);
+		tst_brkm(TFAIL, cleanup,
+			 "Wrong number of children exited, Saw %d, Expected %d",
+			 count, nprocs);
 }
 
+static void cleanup_msgqueue(int i, int tid)
+{
+	/*
+	 * Decrease the value of i by 1 because it
+	 * is getting incremented even if the fork
+	 * is failing.
+	 */
 
-static void dotest(key_t key, int child_process)
+	i--;
+	/*
+	 * Kill all children & free message queue.
+	 */
+	for (; i >= 0; i--) {
+		(void)kill(rkidarray[i], SIGKILL);
+		(void)kill(wkidarray[i], SIGKILL);
+	}
+
+	if (msgctl(tid, IPC_RMID, 0) < 0) {
+		printf("Msgctl error in cleanup_msgqueue %d\n", errno);
+		exit(FAIL);
+	}
+}
+
+static int dotest(key_t key, int child_process)
 {
 	int id, pid;
-	int i, count;
+	int i, count, status, exit_status;
 
-	id = SAFE_MSGGET(key, IPC_CREAT | S_IRUSR | S_IWUSR);
+	sighold(SIGTERM);
+	if ((id = msgget(key, IPC_CREAT | S_IRUSR | S_IWUSR)) < 0) {
+		printf("msgget() error in child %d: %s\n",
+			child_process, strerror(errno));
+		return FAIL;
+	}
 	tid = id;
+	sigrelse(SIGTERM);
+
+	exit_status = PASS;
+
 	for (i = 0; i < nkids; i++) {
-		pid = fork();
-		if (pid < 0) {
-			tst_res(TFAIL, "Fork failure in the first child of child group %d\n",
+		if ((pid = FORK_OR_VFORK()) < 0) {
+			printf("Fork failure in the first child of child group %d\n",
 				child_process);
 			cleanup_msgqueue(i, tid);
-			return;
+			return FAIL;
 		}
 		/* First child does this */
 		if (pid == 0) {
-			do_reader(key, tid, getpid(), child_process, nreps);
-			exit(0);
+			procstat = 2;
+			exit(doreader(key, tid, getpid(),
+					child_process, nreps));
 		}
 		rkidarray[i] = pid;
-		pid = fork();
-		if (pid < 0) {
-			tst_res(TFAIL, "Fork failure in the first child of child group %d\n",
+		if ((pid = FORK_OR_VFORK()) < 0) {
+			printf("Fork failure in the second child of child group %d\n",
 				child_process);
+			/*
+			 * Kill the reader child process
+			 */
+			(void)kill(rkidarray[i], SIGKILL);
+
 			cleanup_msgqueue(i, tid);
-			return;
+			return FAIL;
 		}
 		/* Second child does this */
 		if (pid == 0) {
-			do_writer(key, tid, rkidarray[i], child_process, nreps);
-			exit(0);
+			procstat = 2;
+			exit(dowriter(key, tid, rkidarray[i],
+					child_process, nreps));
 		}
 		wkidarray[i] = pid;
 	}
 	/* Parent does this */
 	count = 0;
 	while (1) {
-		if (wait(NULL) > 0) {
+		if ((wait(&status)) > 0) {
+			if (status >> 8 != PASS) {
+				printf("Child exit status = %d from child group %d\n",
+					status >> 8, child_process);
+				for (i = 0; i < nkids; i++) {
+					kill(rkidarray[i], SIGTERM);
+					kill(wkidarray[i], SIGTERM);
+				}
+				if (msgctl(tid, IPC_RMID, 0) < 0) {
+					printf("msgctl() error: %s\n",
+						strerror(errno));
+				}
+				return FAIL;
+			}
 			count++;
 		} else {
-			if (errno != EINTR)
+			if (errno != EINTR) {
 				break;
+			}
 		}
 	}
 	/* Make sure proper number of children exited */
 	if (count != (nkids * 2)) {
-		tst_res(TFAIL, "Wrong number of children exited in child group %d, saw %d, expected %d\n",
+		printf("Wrong number of children exited in child group %d, saw %d, expected %d\n",
 			child_process, count, (nkids * 2));
+		if (msgctl(tid, IPC_RMID, 0) < 0) {
+			printf("msgctl() error: %s\n", strerror(errno));
+		}
+		return FAIL;
 	}
-	SAFE_MSGCTL(id, IPC_RMID, NULL);
+	if (msgctl(id, IPC_RMID, 0) < 0) {
+		printf("msgctl() failure in child group %d: %s\n",
+			child_process, strerror(errno));
+		return FAIL;
+	}
+	return exit_status;
 }
 
-static void setup(void)
+/* ARGSUSED */
+static void term(int sig LTP_ATTRIBUTE_UNUSED)
+{
+	int i;
+
+	if (procstat == 0) {
+#ifdef DEBUG
+		tst_resm(TINFO, "SIGTERM signal received, test killing kids");
+#endif
+		for (i = 0; i < nprocs; i++) {
+			if (pidarray[i] > 0) {
+				if (kill(pidarray[i], SIGTERM) < 0) {
+					tst_resm(TBROK,
+						 "Kill failed to kill child %d",
+						 i);
+					exit(FAIL);
+				}
+			}
+		}
+		return;
+	}
+
+	if (procstat == 2) {
+		exit(PASS);
+	}
+
+	if (tid == -1) {
+		exit(FAIL);
+	}
+	for (i = 0; i < nkids; i++) {
+		if (rkidarray[i] > 0)
+			kill(rkidarray[i], SIGTERM);
+		if (wkidarray[i] > 0)
+			kill(wkidarray[i], SIGTERM);
+	}
+}
+
+void setup(void)
 {
 	int nr_msgqs, free_pids;
 
-	tid = -1;
-	SAFE_FILE_SCANF("/proc/sys/kernel/msgmni", "%d", &nr_msgqs);
+	tst_tmpdir();
+	/* You will want to enable some signal handling so you can capture
+	 * unexpected signals like SIGSEGV.
+	 */
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	MSGMNI = nr_msgqs - GET_USED_QUEUES();
+	/* One cavet that hasn't been fixed yet.  TEST_PAUSE contains the code to
+	 * fork the test with the -c option.  You want to make sure you do this
+	 * before you create your temporary directory.
+	 */
+	TEST_PAUSE;
+
+	nr_msgqs = get_max_msgqueues();
+	if (nr_msgqs < 0)
+		tst_brkm(TBROK, cleanup, "get_max_msgqueues() failed");
+
+	MSGMNI = nr_msgqs - get_used_msgqueues();
 	if (MSGMNI <= 0)
-		tst_brk(TCONF, "Max number of message queues already used, "
-			"cannot create more.");
+		tst_brkm(TBROK, cleanup,
+			 "Max number of message queues already used, cannot create more.");
 
-	tst_res(TINFO, "Found %d available message queues", MSGMNI);
+	tst_resm(TINFO, "Found %d available message queues", MSGMNI);
 
-	free_pids = tst_get_free_pids();
+	free_pids = tst_get_free_pids(cleanup);
 	if (free_pids < 0) {
-		tst_brk(TBROK, "Can't obtain free_pid count");
+		tst_brkm(TBROK, cleanup, "Can't obtain free_pid count");
 	} else if (!free_pids) {
-		tst_brk(TBROK, "No free pids");
+		tst_brkm(TBROK, cleanup, "No free pids");
 	}
-
-	if (opt_nreps) {
-		nreps = SAFE_STRTOL(opt_nreps, 1, INT_MAX);
-		nreps = min(nreps, MAXNREPS);
-	} else {
-		nreps = MAXNREPS;
-	}
-
-	if (opt_nkids) {
-		nkids = SAFE_STRTOL(opt_nkids, 1, INT_MAX);
-		nkids = min(nkids, MAXNKIDS);
-	} else {
-		nkids = MAXNKIDS;
-	}
-
 
 	/* We don't use more than a half of available pids.
 	 * For each child we fork up to 2*maxnkids grandchildren. */
-	maxnprocs = (free_pids / 2) / (1 + 2 * nkids);
+	maxnprocs = (free_pids / 2) / (1 + 2 * maxnkids);
 
 	if (!maxnprocs)
-		tst_brk(TBROK, "Not enough free pids");
+		tst_brkm(TBROK, cleanup, "Not enough free pids");
 
-	if (opt_maxnprocs)
-		maxnprocs = SAFE_STRTOL(opt_maxnprocs, 1, INT_MAX);
-
-	SAFE_SIGNAL(SIGTERM, SIG_IGN);
-	tst_res(TINFO, "Using upto %d pids, %d processes %d read/write pairs, %d repeats",
-		free_pids/2, maxnprocs, nkids, nreps);
+	tst_resm(TINFO, "Using upto %d pids", free_pids / 2);
 }
 
-static void cleanup(void)
+void cleanup(void)
 {
-	if (tid >= 0)
-		SAFE_MSGCTL(tid, IPC_RMID, NULL);
-}
+	int status;
 
-static struct tst_test test = {
-	.needs_tmpdir = 1,
-	.options = options,
-	.setup = setup,
-	.cleanup = cleanup,
-	.forks_child = 1,
-	.test_all = verify_msgstress,
-};
+	/*
+	 * Remove the message queue from the system
+	 */
+#ifdef DEBUG
+	tst_resm(TINFO, "Removing the message queue");
+#endif
+	(void)msgctl(tid, IPC_RMID, NULL);
+	if ((status = msgctl(tid, IPC_STAT, NULL)) != -1) {
+		(void)msgctl(tid, IPC_RMID, NULL);
+		tst_resm(TFAIL, "msgctl(tid, IPC_RMID) failed");
+
+	}
+
+	tst_rmdir();
+}

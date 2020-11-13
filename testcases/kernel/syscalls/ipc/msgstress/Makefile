@@ -3,13 +3,10 @@
 
 top_srcdir              ?= ../../../../..
 
-LTPLIBS = ltpnewipc
+LTPLIBS = ltpipc
 
 include $(top_srcdir)/include/mk/testcases.mk
-
-LTPLDLIBS  = -lltpnewipc
 FILTER_OUT_MAKE_TARGETS         := msgstress_common
-MAKE_TARGETS            := $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*[1-4].c))
-$(MAKE_TARGETS): %: msgstress_common.o
+LTPLDLIBS  += -lltpipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
