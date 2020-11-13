@@ -75,6 +75,7 @@ const char *tst_ipc_path = ipc_path;
 static char shm_path[1024];
 
 int TST_ERR;
+int TST_PASS;
 long TST_RET;
 
 static void do_cleanup(void);

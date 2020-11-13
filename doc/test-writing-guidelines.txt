@@ -451,6 +451,60 @@ Printf-like function to report error and exit the test, it can be used with ttyp
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
 'errno', 'TST_ERR' respectively.
 
+There are also 'TST_EXP_*()' macros that can simplify syscall unit tests to a
+single line, use them whenever possible. These macros take a function call as
+the first parameter and a printf-like format string and parameters as well.
+These test macros then expand to a code that runs the call, checks the return
+value and errno and reports the test result.
+
+[source,c]
+-------------------------------------------------------------------------------
+static void test(void)
+{
+	...
+	TST_EXP_PASS(stat(fname, &statbuf), "stat(%s, ...)", fname);
+
+	if (!TST_PASS)
+		return;
+	...
+}
+-------------------------------------------------------------------------------
+
+The 'TST_EXP_PASS()' can be used for calls that return -1 on failure and 0 on
+success. It will check for the return value and reports failure if the return
+value is not equal to 0. The call also sets the 'TST_PASS' variable to 1 if
+the call succeeeded.
+
+[source,c]
+-------------------------------------------------------------------------------
+static void test(void)
+{
+	...
+	TST_EXP_FD(open(fname, O_RDONLY), "open(%s, O_RDONLY)", fname);
+
+	SAFE_CLOSE(TST_RET);
+	...
+}
+-------------------------------------------------------------------------------
+
+The 'TST_EXP_FD()' is the same as 'TST_EXP_PASS()' the only difference is that
+the return value is expected to be a file descriptor so the call passes if
+positive integer is returned.
+
+[source,c]
+-------------------------------------------------------------------------------
+static void test(void)
+{
+	...
+	TST_EXP_FAIL(stat(fname, &statbuf), ENOENT, "stat(%s, ...)", fname);
+	...
+}
+-------------------------------------------------------------------------------
+
+The 'TST_EXP_FAIL()' is similar to 'TST_EXP_PASS()' but it fails the test if
+the call haven't failed with -1 and 'errno' wasn't set to the expected one
+passed as the second argument.
+
 [source,c]
 -------------------------------------------------------------------------------
 const char *tst_strsig(int sig);

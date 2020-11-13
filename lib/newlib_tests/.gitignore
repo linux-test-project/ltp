@@ -37,3 +37,6 @@ test_kconfig02
 variant
 test_guarded_buf
 tst_bool_expr
+test_macros01
+test_macros02
+test_macros03
