@@ -54,6 +54,11 @@ int safe_fanotify_init(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"%s:%d: fanotify_init() failed", file, lineno);
 	}
+
+	if (rval < -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "invalid fanotify_init() return %d", rval);
+	}
 #else
 	tst_brk_(file, lineno, TCONF, "Header <sys/fanotify.h> is not present");
 #endif /* HAVE_SYS_FANOTIFY_H */
