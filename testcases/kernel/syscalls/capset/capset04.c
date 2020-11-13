@@ -24,18 +24,11 @@ static void verify_capset(void)
 	if (!child_pid)
 		pause();
 
+	tst_res(TINFO, "Test capset() for a different process");
+
 	header->pid = child_pid;
 
-	TEST(tst_syscall(__NR_capset, header, data));
-	if (TST_RET == 0) {
-		tst_res(TFAIL, "capset succeed unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == EPERM)
-		tst_res(TPASS, "capset can't modify other process capabilities");
-	else
-		tst_res(TFAIL | TTERRNO, "capset expected EPERM, bug got");
+	TST_EXP_FAIL(tst_syscall(__NR_capset, header, data), EPERM, "capset()");
 
 	SAFE_KILL(child_pid, SIGTERM);
 	SAFE_WAIT(NULL);

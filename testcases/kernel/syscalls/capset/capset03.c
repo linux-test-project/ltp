@@ -23,15 +23,7 @@ static void verify_capset(void)
 {
 	tst_res(TINFO, "Test bad value data(when pI is not old pP or old pI without CAP_SETPCAP)");
 	data[0].inheritable = CAP2;
-	TEST(tst_syscall(__NR_capset, header, data));
-	if (TST_RET == 0) {
-		tst_res(TFAIL, "capset succeed unexpectedly");
-		return;
-	}
-	if (TST_ERR == EPERM)
-		tst_res(TPASS | TTERRNO, "capset() failed as expected");
-	else
-		tst_res(TFAIL | TTERRNO, "capset expected EPERM, bug got");
+	TST_EXP_FAIL(tst_syscall(__NR_capset, header, data), EPERM, "capset()");
 }
 
 static void setup(void)

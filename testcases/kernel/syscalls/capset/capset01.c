@@ -20,16 +20,15 @@ static struct tcase {
 	int version;
 	char *message;
 } tcases[] = {
-	{0x19980330, "Test on LINUX_CAPABILITY_VERSION_1"},
-	{0x20071026, "Test on LINUX_CAPABILITY_VERSION_2"},
-	{0x20080522, "Test on LINUX_CAPABILITY_VERSION_3"},
+	{0x19980330, "LINUX_CAPABILITY_VERSION_1"},
+	{0x20071026, "LINUX_CAPABILITY_VERSION_2"},
+	{0x20080522, "LINUX_CAPABILITY_VERSION_3"},
 };
 
 static void verify_capset(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	tst_res(TINFO, "%s", tc->message);
 	header->version = tc->version;
 	header->pid = pid;
 
@@ -38,11 +37,8 @@ static void verify_capset(unsigned int n)
 		return;
 	}
 
-	TEST(tst_syscall(__NR_capset, header, data));
-	if (TST_RET == 0)
-		tst_res(TPASS, "capset() returned %ld", TST_RET);
-	else
-		tst_res(TFAIL | TTERRNO, "Test Failed, capset() returned %ld", TST_RET);
+	TST_EXP_PASS(tst_syscall(__NR_capset, header, data),
+	             "capset() with %s", tc->message);
 }
 
 static void setup(void)

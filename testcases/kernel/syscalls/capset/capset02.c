@@ -43,12 +43,12 @@ static struct tcase {
 	int flag;
 	char *message;
 } tcases[] = {
-	{0x20080522, 0, CAP1, CAP1, CAP1, EFAULT, 1, "Test bad address header"},
-	{0x20080522, 0, CAP1, CAP1, CAP1, EFAULT, 2, "Test bad address data"},
-	{0, 0, CAP1, CAP1, CAP1, EINVAL, 0, "Test bad version"},
-	{0x20080522, 0, CAP2, CAP1, CAP1, EPERM, 0, "Test bad value data(when pE is not in pP)"},
-	{0x20080522, 0, CAP1, CAP2, CAP1, EPERM, 0, "Test bad value data(when pP is not in old pP)"},
-	{0x20080522, 0, CAP1, CAP1, CAP2, EPERM, 0, "Test bad value data(when pI is not in bounding set or old pI)"},
+	{0x20080522, 0, CAP1, CAP1, CAP1, EFAULT, 1, "bad address header"},
+	{0x20080522, 0, CAP1, CAP1, CAP1, EFAULT, 2, "bad address data"},
+	{0, 0, CAP1, CAP1, CAP1, EINVAL, 0, "bad version"},
+	{0x20080522, 0, CAP2, CAP1, CAP1, EPERM, 0, "bad value data(when pE is not in pP)"},
+	{0x20080522, 0, CAP1, CAP2, CAP1, EPERM, 0, "bad value data(when pP is not in old pP)"},
+	{0x20080522, 0, CAP1, CAP1, CAP2, EPERM, 0, "bad value data(when pI is not in bounding set or old pI)"},
 };
 
 static void verify_capset(unsigned int n)
@@ -62,19 +62,9 @@ static void verify_capset(unsigned int n)
 	data->permitted = tc->permitted;
 	data->inheritable = tc->inheritable;
 
-	tst_res(TINFO, "%s", tc->message);
-
-	TEST(tst_syscall(__NR_capset, tc->flag - 1 ? header : bad_addr,
-				tc->flag - 2 ? data : bad_addr));
-	if (TST_RET == 0) {
-		tst_res(TFAIL, "capset() succeed unexpectedly");
-		return;
-	}
-	if (TST_ERR == tc->exp_err)
-		tst_res(TPASS | TTERRNO, "capset() failed as expected");
-	else
-		tst_res(TFAIL | TTERRNO, "capset() expected %s got ",
-			tst_strerrno(tc->exp_err));
+	TST_EXP_FAIL(tst_syscall(__NR_capset, tc->flag - 1 ? header : bad_addr,
+	                         tc->flag - 2 ? data : bad_addr),
+	             tc->exp_err, "capset() with %s", tc->message);
 	/*
 	 * When an unsupported version value is specified, it will
 	 * return the kernel preferred value of _LINUX_CAPABILITY_VERSION_?.
