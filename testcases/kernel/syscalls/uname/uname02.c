@@ -16,22 +16,7 @@ static void *bad_addr;
 
 static void verify_uname(void)
 {
-	TEST(uname(bad_addr));
-	if (TST_RET == 0) {
-		tst_res(TFAIL, "uname() succeed when failure expected");
-		return;
-	}
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "Invalid uname() return value %ld", TST_RET);
-		return;
-	}
-
-	if (TST_ERR == EFAULT)
-		tst_res(TPASS, "uname() got EFAULT as expected");
-	else
-		tst_res(TFAIL | TTERRNO, "uname() failed unexpectedly");
-
+	TST_EXP_FAIL(uname(bad_addr), EFAULT);
 }
 
 static void setup(void)

@@ -18,24 +18,17 @@ static void verify_uname(void)
 
 	memset(&un, 0, sizeof(un));
 
-	TEST(uname(&un));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "uname() failed");
-		return;
-	}
+	TST_EXP_PASS(uname(&un));
 
-	if (TST_RET != 0) {
-		tst_res(TFAIL | TTERRNO,
-			"uname() returned invalid value %ld", TST_RET);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (strcmp(un.sysname, "Linux")) {
 		tst_res(TFAIL, "sysname is not Linux");
 		return;
 	}
 
-	tst_res(TPASS, "uname() succeeded");
+	tst_res(TPASS, "sysname set to Linux");
 }
 
 static struct tst_test test = {
