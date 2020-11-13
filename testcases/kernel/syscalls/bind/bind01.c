@@ -47,14 +47,12 @@ void verify_bind(unsigned int nr)
 {
 	struct test_case *tcase = &tcases[nr];
 
-	TEST(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen));
-	if (TST_RET != tcase->retval && TST_ERR != tcase->experrno) {
-		tst_res(TFAIL, "%s ; returned"
-			" %ld (expected %d), errno %d (expected"
-			" %d)", tcase->desc, TST_RET, tcase->retval,
-			TST_ERR, tcase->experrno);
+	if (tcase->experrno) {
+		TST_EXP_FAIL(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
+		             tcase->experrno, "%s", tcase->desc);
 	} else {
-		tst_res(TPASS, "%s successful", tcase->desc);
+		TST_EXP_PASS(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
+		             "%s", tcase->desc);
 	}
 }
 
