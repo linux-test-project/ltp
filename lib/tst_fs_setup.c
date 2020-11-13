@@ -36,14 +36,15 @@ int mount_overlay(const char *file, const int lineno, int skip)
 
 	if (errno == ENODEV) {
 		if (skip) {
-			tst_brk(TCONF, "%s:%d: " TST_FS_SETUP_OVERLAYFS_MSG,
-				file, lineno);
+			tst_brk_(file, lineno, TCONF,
+				TST_FS_SETUP_OVERLAYFS_MSG);
 		} else {
-			tst_res(TINFO, "%s:%d: " TST_FS_SETUP_OVERLAYFS_MSG,
-				file, lineno);
+			tst_res_(file, lineno, TINFO,
+				TST_FS_SETUP_OVERLAYFS_MSG);
 		}
 	} else {
-		tst_brk(TBROK | TERRNO, "overlayfs mount failed");
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"overlayfs mount failed");
 	}
 	return ret;
 }
