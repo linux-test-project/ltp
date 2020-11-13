@@ -31,11 +31,11 @@ static struct tcase {
 	int flag;
 	char *message;
 } tcases[] = {
-	{0x20080522, 0, EFAULT, 1, "Test bad address header"},
-	{0x20080522, 0, EFAULT, 2, "Test bad address data"},
-	{0, 0, EINVAL, 0, "Test bad version"},
-	{0x20080522, -1, EINVAL, 0, "Test bad pid"},
-	{0x20080522, 1, ESRCH, 0, "Test unused pid"},
+	{0x20080522, 0, EFAULT, 1, "bad address header"},
+	{0x20080522, 0, EFAULT, 2, "bad address data"},
+	{0, 0, EINVAL, 0, "bad version"},
+	{0x20080522, -1, EINVAL, 0, "bad pid"},
+	{0x20080522, 1, ESRCH, 0, "unused pid"},
 };
 
 static void verify_capget(unsigned int n)
@@ -48,25 +48,15 @@ static void verify_capget(unsigned int n)
 	else
 		header->pid = tc->pid;
 
-	tst_res(TINFO, "%s", tc->message);
-
 	/*
 	 * header must not be NULL. data may be NULL only when the user is
 	 * trying to determine the preferred capability version format
 	 * supported by the kernel. So use tst_get_bad_addr() to get
 	 * this error.
 	 */
-	TEST(tst_syscall(__NR_capget, tc->flag - 1 ? header : NULL,
-				tc->flag - 2 ? data : bad_data));
-	if (TST_RET == 0) {
-		tst_res(TFAIL, "capget() succeed unexpectedly");
-		return;
-	}
-	if (TST_ERR == tc->exp_err)
-		tst_res(TPASS | TTERRNO, "capget() failed as expected");
-	else
-		tst_res(TFAIL | TTERRNO, "capget() expected %s got ",
-			tst_strerrno(tc->exp_err));
+	TST_EXP_FAIL(tst_syscall(__NR_capget, tc->flag - 1 ? header : NULL,
+	                         tc->flag - 2 ? data : bad_data),
+		     tc->exp_err, "capget() with %s", tc->message);
 
 	/*
 	 * When an unsupported version value is specified, it will
