@@ -17,9 +17,14 @@ int safe_timerfd_create(const char *file, const int lineno,
 	int fd;
 
 	fd = timerfd_create(clockid, flags);
-	if (fd < 0) {
-		tst_brk(TTYPE | TERRNO, "%s:%d timerfd_create(%s) failed",
-			file, lineno, tst_clock_name(clockid));
+
+	if (fd == -1) {
+		tst_brk_(file, lineno, TTYPE | TERRNO,
+			"timerfd_create(%s) failed", tst_clock_name(clockid));
+	} else if (fd < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid timerfd_create(%s) return value %d",
+			tst_clock_name(clockid), fd);
 	}
 
 	return fd;
@@ -31,9 +36,13 @@ int safe_timerfd_gettime(const char *file, const int lineno,
 	int rval;
 
 	rval = timerfd_gettime(fd, curr_value);
-	if (rval != 0) {
-		tst_brk(TTYPE | TERRNO, "%s:%d timerfd_gettime() failed",
-			file, lineno);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TTYPE | TERRNO,
+			"timerfd_gettime() failed");
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid timerfd_gettime() return value %d", rval);
 	}
 
 	return rval;
@@ -47,9 +56,13 @@ int safe_timerfd_settime(const char *file, const int lineno,
 	int rval;
 
 	rval = timerfd_settime(fd, flags, new_value, old_value);
-	if (rval != 0) {
-		tst_brk(TTYPE | TERRNO, "%s:%d timerfd_settime() failed",
-			file, lineno);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TTYPE | TERRNO,
+			"timerfd_settime() failed");
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid timerfd_settime() return value %d", rval);
 	}
 
 	return rval;
