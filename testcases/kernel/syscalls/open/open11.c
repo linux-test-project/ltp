@@ -277,21 +277,19 @@ static struct test_case {
 
 static void verify_open(unsigned int n)
 {
-	int fd;
-
-	TEST(open(tc[n].path, tc[n].flags, tc[n].mode));
-	fd = TST_RET;
-
-	if (fd > 0)
-		SAFE_CLOSE(fd);
-
-	if (tc[n].err == -1 || TST_ERR == tc[n].err) {
+	if (tc[n].err > 0) {
+		TST_EXP_FAIL(open(tc[n].path, tc[n].flags, tc[n].mode),
+		             tc[n].err, "%s", tc[n].desc);
+	} else if (tc[n].err == 0) {
+		TST_EXP_FD(open(tc[n].path, tc[n].flags, tc[n].mode),
+		           "%s", tc[n].desc);
+	} else {
+		TEST(open(tc[n].path, tc[n].flags, tc[n].mode));
 		tst_res(TPASS, "%s", tc[n].desc);
-		return;
 	}
 
-	tst_res(TFAIL | TTERRNO, "%s - expected %s",
-			tc[n].desc, tst_strerrno(tc[n].err));
+	if (TST_RET > 0)
+		SAFE_CLOSE(TST_RET);
 }
 
 static void setup(void)
