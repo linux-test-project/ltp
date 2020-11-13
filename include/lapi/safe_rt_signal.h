@@ -15,10 +15,15 @@ static inline int safe_rt_sigaction(const char *file, const int lineno,
 	int ret;
 
 	ret = ltp_rt_sigaction(signum, act, oact, sigsetsize);
-	if (ret < 0) {
-		tst_brk(TBROK | TERRNO,
-			"%s:%d: ltp_rt_sigaction(%i, %p, %p, %zu) failed",
-			file, lineno, signum, act, oact, sigsetsize);
+
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"ltp_rt_sigaction(%i, %p, %p, %zu) failed",
+			signum, act, oact, sigsetsize);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid ltp_rt_sigaction(%i, %p, %p, %zu) return value %d",
+			signum, act, oact, sigsetsize, ret);
 	}
 
 	return ret;
@@ -35,10 +40,14 @@ static inline int safe_rt_sigprocmask(const char *file, const int lineno,
 	int ret;
 
 	ret = tst_syscall(__NR_rt_sigprocmask, how, set, oldset, sigsetsize);
-	if (ret < 0) {
-		tst_brk(TBROK | TERRNO,
-		        "%s:%d: rt_sigprocmask(%i, %p, %p, %zu) failed",
-			file, lineno, how, set, oldset, sigsetsize);
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"rt_sigprocmask(%i, %p, %p, %zu) failed",
+			how, set, oldset, sigsetsize);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid rt_sigprocmask(%i, %p, %p, %zu) return value %d",
+			how, set, oldset, sigsetsize, ret);
 	}
 
 	return ret;
