@@ -10,4 +10,8 @@
 
 typedef volatile uint32_t futex_t;
 
+#if !defined(SYS_futex) && defined(SYS_futex_time64)
+#define SYS_futex SYS_futex_time64
+#endif
+
 #endif /* LAPI_FUTEX_H__ */
