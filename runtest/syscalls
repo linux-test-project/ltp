@@ -1561,8 +1561,6 @@ timer_settime03 timer_settime03
 tkill01 tkill01
 tkill02 tkill02
 
-truncate01 truncate01
-truncate01_64 truncate01_64
 truncate02 truncate02
 truncate02_64 truncate02_64
 truncate03 truncate03
