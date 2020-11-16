@@ -60,7 +60,7 @@ static void verify_pipe(unsigned int n)
 	SAFE_CLOSE(fds[0]);
 	SAFE_CLOSE(fds[1]);
 
-	while (cnt < child_num && sleep_us < 100000) {
+	while (cnt < child_num && sleep_us < 1000000) {
 		ret = waitpid(-1, NULL, WNOHANG);
 		if (ret < 0)
 			tst_brk(TBROK | TERRNO, "waitpid()");
