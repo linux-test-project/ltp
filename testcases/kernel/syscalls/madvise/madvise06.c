@@ -65,14 +65,16 @@ static void check_path(const char *path)
 }
 
 #define READ_CGMEM(item)						\
-	({long tst_rval;						\
-	  SAFE_FILE_LINES_SCANF(MNT_NAME"/"GROUP_NAME"/memory."item, 	\
-				"%ld",					\
-				&tst_rval);				\
+	({long tst_rval = 0;						\
+	  const char *cgpath = MNT_NAME"/"GROUP_NAME"/memory."item;	\
+	  if (!access(cgpath, R_OK))					\
+		  SAFE_FILE_LINES_SCANF(cgpath, "%ld", &tst_rval);	\
 	  tst_rval;})
 
 static void meminfo_diag(const char *point)
 {
+	long rval;
+
 	FILE_PRINTF("/proc/sys/vm/stat_refresh", "1");
 	tst_res(TINFO, "%s", point);
 	tst_res(TINFO, "\tSwap: %ld Kb",
@@ -83,10 +85,14 @@ static void meminfo_diag(const char *point)
 		SAFE_READ_MEMINFO("Cached:") - init_cached);
 	tst_res(TINFO, "\tcgmem.usage_in_bytes: %ld Kb",
 		READ_CGMEM("usage_in_bytes") / 1024);
-	tst_res(TINFO, "\tcgmem.memsw.usage_in_bytes: %ld Kb",
-		READ_CGMEM("memsw.usage_in_bytes") / 1024);
-	tst_res(TINFO, "\tcgmem.kmem.usage_in_bytes: %ld Kb",
-		READ_CGMEM("kmem.usage_in_bytes") / 1024);
+
+	rval = READ_CGMEM("memsw.usage_in_bytes") / 1024;
+	if (rval)
+		tst_res(TINFO, "\tcgmem.memsw.usage_in_bytes: %ld Kb", rval);
+
+	rval = READ_CGMEM("kmem.usage_in_bytes") / 1024;
+	if (rval)
+		tst_res(TINFO, "\tcgmem.kmem.usage_in_bytes: %ld Kb", rval);
 }
 
 static void setup(void)
@@ -124,8 +130,11 @@ static void setup(void)
 	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
 	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.limit_in_bytes", "%ld\n",
 			 MEM_LIMIT);
-	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.memsw.limit_in_bytes", "%ld\n",
-			 MEMSW_LIMIT);
+
+	if (!access(MNT_NAME"/"GROUP_NAME"/memory.memsw.limit_in_bytes", W_OK)) {
+		SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.memsw.limit_in_bytes",
+				 "%ld\n", MEMSW_LIMIT);
+	}
 	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/memory.swappiness", "60");
 	SAFE_FILE_PRINTF(MNT_NAME"/"GROUP_NAME"/tasks", "%d\n", getpid());
 
