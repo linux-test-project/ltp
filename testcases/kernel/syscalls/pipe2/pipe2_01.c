@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-late
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Ulrich Drepper <drepper@redhat.com>
  * Copyright (c) International Business Machines  Corp., 2009
