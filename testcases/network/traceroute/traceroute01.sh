@@ -28,7 +28,7 @@ run_trace()
 	local bytes=60
 	[ "$TST_IPV6" ] && bytes=80
 
-	EXPECT_PASS traceroute $ip $bytes -n -m 2 $opts \>out.log 2>&1
+	EXPECT_PASS traceroute $ip $bytes -n -m 2 $opts \>out.log
 
 	grep -q "$bytes byte" out.log
 	if [ $? -ne 0 ]; then
