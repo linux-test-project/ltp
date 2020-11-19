@@ -277,8 +277,13 @@ static int validate_var(const struct tst_expr_tok *var)
 	}
 
 	if (i >= var->tok_len) {
-		print_err(stderr, var, i, "Missing value");
-		return 1;
+
+		if (var->tok[i-1] == '=') {
+			print_err(stderr, var, i, "Missing value");
+			return -1;
+		}
+
+		return 0;
 	}
 
 	if (var->tok[i] == '"') {
