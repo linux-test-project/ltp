@@ -262,6 +262,11 @@ static int validate_var(const struct tst_expr_tok *var)
 			continue;
 		}
 
+		if (c >= '0' && c <= '9') {
+			i++;
+			continue;
+		}
+
 		if (c == '=') {
 			i++;
 			break;
