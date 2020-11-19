@@ -291,7 +291,7 @@ static int validate_var(const struct tst_expr_tok *var)
 			i++;
 		} while (i < var->tok_len && var->tok[i] != '"');
 
-		if (i < var->tok_len) {
+		if (i < var->tok_len - 1) {
 			print_err(stderr, var, i, "Garbage after a string");
 			return 1;
 		}
