@@ -254,14 +254,12 @@ static void cleanup(void)
 	acct(NULL);
 }
 
-static const char *kconfigs[] = {
-	"CONFIG_BSD_PROCESS_ACCT",
-	NULL
-};
-
 static struct tst_test test = {
 	.test_all = run,
-	.needs_kconfigs = kconfigs,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_BSD_PROCESS_ACCT",
+		NULL
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
