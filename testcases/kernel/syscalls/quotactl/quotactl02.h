@@ -26,10 +26,6 @@ static uint32_t test_id;
 static int x_getnextquota_nsup;
 static int x_getstatv_nsup;
 static const char mntpoint[] = "mnt_point";
-static const char *kconfigs[] = {
-	"CONFIG_XFS_QUOTA",
-	NULL
-};
 
 void check_support_cmd(int quotatype)
 {

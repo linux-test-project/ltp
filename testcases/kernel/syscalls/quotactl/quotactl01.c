@@ -210,14 +210,12 @@ static void verify_quota(unsigned int n)
 	tst_res(TPASS, "quotactl succeeded to %s", tc->des);
 }
 
-static const char *kconfigs[] = {
-	"CONFIG_QFMT_V2",
-	NULL
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_kconfigs = kconfigs,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_QFMT_V2",
+		NULL
+	},
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
 	.mount_device = 1,

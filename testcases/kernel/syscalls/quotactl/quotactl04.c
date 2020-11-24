@@ -154,14 +154,12 @@ static void verify_quota(unsigned int n)
 	tst_res(TPASS, "quotactl succeeded to %s", tc->des);
 }
 
-static const char *kconfigs[] = {
-	"CONFIG_QFMT_V2",
-	NULL
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_kconfigs = kconfigs,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_QFMT_V2",
+		NULL
+	},
 	.min_kver = "4.10", /* commit 689c958cbe6b (ext4: add project quota support) */
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),

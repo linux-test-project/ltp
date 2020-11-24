@@ -168,14 +168,12 @@ static void setup(void)
 	}
 }
 
-static const char *kconfigs[] = {
-	"CONFIG_QFMT_V2",
-	NULL
-};
-
 static struct tst_test test = {
 	.setup = setup,
-	.needs_kconfigs = kconfigs,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_QFMT_V2",
+		NULL
+	},
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_quotactl,
 	.dev_fs_type = "ext4",

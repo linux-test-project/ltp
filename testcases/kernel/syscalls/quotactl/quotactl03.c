@@ -64,14 +64,12 @@ static void verify_quota(void)
 		tst_res(TPASS, "quotactl() failed with ENOENT as expected");
 }
 
-static const char *kconfigs[] = {
-	"CONFIG_XFS_QUOTA",
-	NULL
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_kconfigs = kconfigs,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_XFS_QUOTA",
+		NULL
+	},
 	.test_all = verify_quota,
 	.mount_device = 1,
 	.dev_fs_type = "xfs",
