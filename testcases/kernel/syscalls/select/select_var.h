@@ -16,6 +16,8 @@ struct compat_sel_arg_struct {
 	long _tvp;
 };
 
+#define GLIBC_SELECT_VARIANT 0
+
 static int do_select_faulty_to(int nfds, fd_set *readfds, fd_set *writefds,
 		fd_set *exceptfds, struct timeval *timeout, int faulty_to)
 {

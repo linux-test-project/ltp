@@ -7,8 +7,10 @@
 
 #include <unistd.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include "select_var.h"
 
@@ -40,7 +42,7 @@ static struct tcases {
 	{ "Faulty timeout", &maxfds, &preadfds_reg, &pwritefds_reg, &nullfds, &invalid_to, EFAULT },
 };
 
-static void run(unsigned int n)
+static void verify_select(unsigned int n)
 {
 	struct tcases *tc = &tests[n];
 
@@ -61,6 +63,31 @@ static void run(unsigned int n)
 	}
 
 	tst_res(TPASS | TTERRNO, "%s: select() failed as expected", tc->name);
+
+	exit(0);
+}
+
+static void run(unsigned int n)
+{
+	int pid, status;
+
+	pid = SAFE_FORK();
+	if (!pid)
+		verify_select(n);
+
+	SAFE_WAITPID(pid, &status, 0);
+
+	if (WIFEXITED(status))
+		return;
+
+	if (tst_variant == GLIBC_SELECT_VARIANT &&
+	    tests[n].timeout == &invalid_to &&
+	    WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV) {
+		tst_res(TPASS, "%s: select() killed by signal", tests[n].name);
+		return;
+	}
+
+	tst_res(TFAIL, "Child %s", tst_strstatus(status));
 }
 
 static void setup(void)
@@ -94,4 +121,5 @@ static struct tst_test test = {
 	.test_variants = TEST_VARIANTS,
 	.setup = setup,
 	.needs_tmpdir = 1,
+	.forks_child = 1,
 };
