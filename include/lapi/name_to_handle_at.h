@@ -1,0 +1,65 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2020 Linaro Limited. All rights reserved.
+ * Author: Viresh Kumar <viresh.kumar@linaro.org>
+ */
+
+#ifndef NAME_TO_HANDLE_AT_H__
+#define NAME_TO_HANDLE_AT_H__
+
+#include <sys/syscall.h>
+#include "config.h"
+#include "lapi/syscalls.h"
+#include "tst_buffers.h"
+#include "tst_test.h"
+
+#ifndef HAVE_NAME_TO_HANDLE_AT
+struct file_handle {
+	unsigned int handle_bytes;
+	int handle_type;
+	/* File identifier.  */
+	unsigned char f_handle[0];
+};
+
+static inline int name_to_handle_at(int dfd, const char *pathname,
+                                    struct file_handle *handle,
+                                    int *mount_id, int flags)
+{
+	return tst_syscall(__NR_name_to_handle_at, dfd, pathname, handle,
+			   mount_id, flags);
+}
+
+static inline int open_by_handle_at(int mount_fd, struct file_handle *handle,
+                                    int flags)
+{
+	return tst_syscall(__NR_open_by_handle_at, mount_fd, handle, flags);
+}
+#endif
+
+/* Returns a valid pointer on success, NULL on errors */
+static inline struct file_handle *
+allocate_file_handle(int dfd, const char *pathname)
+{
+	struct file_handle fh = {}, *fhp;
+	int mount_id;
+
+	/*
+	 * Make an initial call to name_to_handle_at() to discover the size
+	 * required for the file handle.
+	 */
+	TEST(name_to_handle_at(dfd, pathname, &fh, &mount_id, 0));
+	if (TST_RET != -1 || TST_ERR != EOVERFLOW) {
+		tst_res(TFAIL | TTERRNO,
+			"name_to_handle_at() should fail with EOVERFLOW");
+		return NULL;
+	}
+
+	/* Valid file handle */
+	fhp = tst_alloc(sizeof(*fhp) + fh.handle_bytes);
+	fhp->handle_type = fh.handle_type;
+	fhp->handle_bytes = fh.handle_bytes;
+
+	return fhp;
+}
+
+#endif /* NAME_TO_HANDLE_AT_H__ */
