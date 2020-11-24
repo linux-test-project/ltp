@@ -168,4 +168,8 @@ static struct tst_test test = {
 	.needs_device = 1,
 	.dev_fs_type = "ext4",
 	.mntpoint = MNTPOINT,
+	.needs_cmds = (const char *[]) {
+		"mkfs.ext4",
+		NULL
+	}
 };
