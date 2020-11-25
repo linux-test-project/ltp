@@ -129,7 +129,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	tst_resm_hexd_(__FILE__, __LINE__, (ttype), (buf), (size), \
 		       (arg_fmt), ##__VA_ARGS__)
 
-void tst_brkm_(const char *file, const int lineno, int ttype,
+void tst_brkm__(const char *file, const int lineno, int ttype,
 	void (*func)(void), const char *arg_fmt, ...)
 	__attribute__ ((format (printf, 5, 6))) LTP_ATTRIBUTE_NORETURN;
 
@@ -139,11 +139,18 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 	if (tst_test) \
 		tst_brk_(__FILE__, __LINE__, flags, fmt, ##__VA_ARGS__); \
 	else \
-		tst_brkm_(__FILE__, __LINE__, flags, cleanup, fmt, ##__VA_ARGS__); \
+		tst_brkm__(__FILE__, __LINE__, flags, cleanup, fmt, ##__VA_ARGS__); \
+	} while (0)
+
+#define tst_brkm_(file, lineno, flags, cleanup, fmt, ...) do { \
+	if (tst_test) \
+		tst_brk_(file, lineno, flags, fmt, ##__VA_ARGS__); \
+	else \
+		tst_brkm__(file, lineno, flags, cleanup, fmt, ##__VA_ARGS__); \
 	} while (0)
 #else
 # define tst_brkm(flags, cleanup, fmt, ...) do { \
-		tst_brkm_(__FILE__, __LINE__, flags, cleanup, fmt, ##__VA_ARGS__); \
+		tst_brkm__(__FILE__, __LINE__, flags, cleanup, fmt, ##__VA_ARGS__); \
 	} while (0)
 #endif
 

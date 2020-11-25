@@ -10,7 +10,7 @@
 #include "tst_test.h"
 
 void tst_resm_(char *, int, int, char *);
-void tst_brkm_(char *, int, int, void (*)(void), char *);
+void tst_brkm__(char *, int, int, void (*)(void), char *);
 
 static void cleanup(void)
 {
@@ -24,7 +24,7 @@ static void do_test(unsigned int i)
 		tst_resm_(__FILE__, __LINE__, TPASS, "passed message");
 	break;
 	case 1:
-		tst_brkm_(__FILE__, __LINE__, TCONF, cleanup, "Non-NULL cleanup");
+		tst_brkm__(__FILE__, __LINE__, TCONF, cleanup, "Non-NULL cleanup");
 	break;
 	}
 }

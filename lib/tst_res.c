@@ -575,7 +575,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
 	}
 }
 
-void tst_brkm_(const char *file, const int lineno, int ttype,
+void tst_brkm__(const char *file, const int lineno, int ttype,
 	void (*func)(void), const char *arg_fmt, ...)
 {
 	char tmesg[USERMESG];
@@ -587,11 +587,9 @@ void tst_brkm_(const char *file, const int lineno, int ttype,
 			tst_brk_(file, lineno, TBROK,
 			         "Non-NULL cleanup in newlib!");
 		}
-
-		tst_brk_(file, lineno, ttype, "%s", tmesg);
-	} else {
-		tst_brk__(file, lineno, ttype, func, "%s", tmesg);
 	}
+
+	tst_brk__(file, lineno, ttype, func, "%s", tmesg);
 
 	/* Shouldn't be reached, but fixes build time warnings about noreturn. */
 	abort();
