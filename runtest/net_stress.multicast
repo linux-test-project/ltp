@@ -6,8 +6,12 @@ mcast4-group-single-socket mcast-group-single-socket.sh
 mcast4-group-multiple-socket mcast-group-multiple-socket.sh
 mcast4-group-same-group mcast-group-same-group.sh
 mcast4-group-source-filter mcast-group-source-filter.sh
+mcast4-pktfld01 mcast-pktfld01.sh
+mcast4-pktfld02 mcast-pktfld02.sh
 
 mcast6-group-single-socket mcast-group-single-socket.sh -6
 mcast6-group-multiple-socket mcast-group-multiple-socket.sh -6
 mcast6-group-same-group mcast-group-same-group.sh -6
 mcast6-group-source-filter mcast-group-source-filter.sh -6
+mcast6-pktfld01 mcast-pktfld01.sh -6
+mcast6-pktfld02 mcast-pktfld02.sh -6
