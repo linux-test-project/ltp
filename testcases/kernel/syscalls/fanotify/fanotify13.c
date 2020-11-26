@@ -124,14 +124,6 @@ static int setup_marks(unsigned int fd, struct test_case_t *tc)
 					"FAN_MARK_FILESYSTEM not supported by "
 					"kernel");
 				return 1;
-			} else if (errno == ENODEV &&
-				   !objects[i].fid.fsid.val[0] &&
-				   !objects[i].fid.fsid.val[1]) {
-				tst_res(TCONF,
-					"FAN_REPORT_FID not supported on "
-					"filesystem type %s",
-					tst_device->fs_type);
-				return 1;
 			}
 			tst_brk(TBROK | TERRNO,
 				"fanotify_mark(%d, FAN_MARK_ADD, FAN_OPEN, "
@@ -162,17 +154,7 @@ static void do_test(unsigned int number)
 		"Test #%d: FAN_REPORT_FID with mark flag: %s",
 		number, mark->name);
 
-	fanotify_fd = fanotify_init(FAN_CLASS_NOTIF | FAN_REPORT_FID, O_RDONLY);
-	if (fanotify_fd == -1) {
-		if (errno == EINVAL) {
-			tst_res(TCONF,
-				"FAN_REPORT_FID not supported by kernel");
-			return;
-		}
-		tst_brk(TBROK | TERRNO,
-			"fanotify_init(FAN_CLASS_NOTIF | FAN_REPORT_FID, "
-			"O_RDONLY) failed");
-	}
+	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | FAN_REPORT_FID, O_RDONLY);
 
 	/*
 	 * Place marks on a set of objects and setup the expected masks
@@ -281,7 +263,8 @@ out:
 
 static void do_setup(void)
 {
-	/* Check for kernel fanotify support */
+	REQUIRE_FANOTIFY_FAN_REPORT_FID_SUPPORTED_ON_FS(MOUNT_PATH);
+
 	nofid_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 
 	/* Create file and directory objects for testing */

@@ -283,4 +283,57 @@ static inline int fanotify_events_supported_by_kernel(uint64_t mask)
 	return rval;
 }
 
+/*
+ * @return  0: fanotify supported both in kernel and on tested filesystem
+ * @return -1: FAN_REPORT_FID not supported in kernel
+ * @return -2: FAN_REPORT_FID not supported on tested filesystem
+ */
+static inline int fanotify_fan_report_fid_supported_on_fs(const char *fname)
+{
+	int fd;
+	int rval = 0;
+
+	fd = fanotify_init(FAN_CLASS_NOTIF | FAN_REPORT_FID, O_RDONLY);
+
+	if (fd < 0) {
+		if (errno == ENOSYS)
+			tst_brk(TCONF, "fanotify not configured in kernel");
+
+		if (errno == EINVAL)
+			return -1;
+
+		tst_brk(TBROK | TERRNO, "fanotify_init() failed");
+	}
+
+	if (fanotify_mark(fd, FAN_MARK_ADD, FAN_ACCESS, AT_FDCWD, fname) < 0) {
+		if (errno == ENODEV || errno == EOPNOTSUPP || errno == EXDEV) {
+			rval = -2;
+		} else {
+			tst_brk(TBROK | TERRNO,
+				"fanotify_mark (%d, FAN_MARK_ADD, ..., AT_FDCWD, %s) failed",
+				fd, fname);
+		}
+	}
+
+	SAFE_CLOSE(fd);
+
+	return rval;
+}
+
+#define FANOTIFY_FAN_REPORT_FID_ERR_MSG_(res_func, fail) do { \
+	if (fail == -1) \
+		res_func(TCONF, "FAN_REPORT_FID not supported in kernel?"); \
+	if (fail == -2) \
+		res_func(TCONF, "FAN_REPORT_FID not supported on %s filesystem", \
+			tst_device->fs_type); \
+	} while (0)
+
+#define FANOTIFY_FAN_REPORT_FID_ERR_MSG(fail) \
+	FANOTIFY_FAN_REPORT_FID_ERR_MSG_(tst_res, (fail))
+
+#define REQUIRE_FANOTIFY_FAN_REPORT_FID_SUPPORTED_ON_FS(fname) do { \
+	FANOTIFY_FAN_REPORT_FID_ERR_MSG_(tst_brk, \
+		fanotify_fan_report_fid_supported_on_fs(fname)); \
+	} while (0)
+
 #endif /* __FANOTIFY_H__ */

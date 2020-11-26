@@ -89,10 +89,6 @@ static void do_test(unsigned int number)
 				FAN_CREATE | FAN_DELETE | FAN_MOVE |
 				FAN_MODIFY | FAN_ONDIR,
 				AT_FDCWD, TEST_DIR) == -1) {
-		if (errno == ENODEV || errno == EOPNOTSUPP || errno == EXDEV)
-			tst_brk(TCONF,
-				"FAN_REPORT_FID not supported on %s "
-				"filesystem", tst_device->fs_type);
 		tst_brk(TBROK | TERRNO,
 			"fanotify_mark(%d, FAN_MARK_ADD | %s, "
 			"FAN_CREATE | FAN_DELETE | FAN_MOVE | "
@@ -287,22 +283,9 @@ static void do_test(unsigned int number)
 
 static void do_setup(void)
 {
-	int fd;
-
-	/* Check kernel for fanotify support */
-	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
-	SAFE_CLOSE(fd);
-
-	fanotify_fd = fanotify_init(FAN_REPORT_FID, O_RDONLY);
-	if (fanotify_fd == -1) {
-		if (errno == EINVAL)
-			tst_brk(TCONF,
-				"FAN_REPORT_FID not supported in kernel");
-		tst_brk(TBROK | TERRNO,
-			"fanotify_init(FAN_REPORT_FID, O_RDONLY) failed");
-	}
-
 	SAFE_MKDIR(TEST_DIR, 0755);
+	REQUIRE_FANOTIFY_FAN_REPORT_FID_SUPPORTED_ON_FS(TEST_DIR);
+	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_REPORT_FID, O_RDONLY);
 }
 
 static void do_cleanup(void)
