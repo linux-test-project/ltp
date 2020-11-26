@@ -10,6 +10,7 @@
 #include <sys/syscall.h>
 #include "config.h"
 #include "lapi/syscalls.h"
+#include "lapi/fcntl.h"
 #include "tst_buffers.h"
 #include "tst_test.h"
 

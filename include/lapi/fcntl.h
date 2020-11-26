@@ -136,4 +136,8 @@
 # define SPLICE_F_NONBLOCK 2
 #endif
 
+#ifndef MAX_HANDLE_SZ
+# define MAX_HANDLE_SZ	128
+#endif
+
 #endif /* __LAPI_FCNTL_H__ */
