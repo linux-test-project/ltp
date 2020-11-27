@@ -56,6 +56,7 @@ struct results {
 	int skipped;
 	int failed;
 	int warnings;
+	int broken;
 	unsigned int timeout;
 };
 
@@ -178,6 +179,9 @@ static void update_results(int ttype)
 	break;
 	case TFAIL:
 		tst_atomic_inc(&results->failed);
+	break;
+	case TBROK:
+		tst_atomic_inc(&results->broken);
 	break;
 	}
 }
@@ -368,10 +372,8 @@ static void check_child_status(pid_t pid, int status)
 	ret = WEXITSTATUS(status);
 	switch (ret) {
 	case TPASS:
-	break;
 	case TBROK:
 	case TCONF:
-		tst_brk(ret, "Reported by child (%i)", pid);
 	break;
 	default:
 		tst_brk(TBROK, "Invalid child (%i) exit value %i", pid, ret);
@@ -698,9 +700,13 @@ static void do_exit(int ret)
 		if (results->warnings)
 			ret |= TWARN;
 
+		if (results->broken)
+			ret |= TBROK;
+
 		printf("\nSummary:\n");
 		printf("passed   %d\n", results->passed);
 		printf("failed   %d\n", results->failed);
+		printf("broken   %d\n", results->broken);
 		printf("skipped  %d\n", results->skipped);
 		printf("warnings %d\n", results->warnings);
 	}
@@ -735,6 +741,9 @@ static int results_equal(struct results *a, struct results *b)
 		return 0;
 
 	if (a->skipped != b->skipped)
+		return 0;
+
+	if (a->broken != b->broken)
 		return 0;
 
 	return 1;
