@@ -480,7 +480,7 @@ static void client_init(void)
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tv_client_start);
 	intptr_t i;
 	for (i = 0; i < clients_num; ++i)
-		SAFE_PTHREAD_CREATE(&thread_ids[i], 0, client_fn, (void *)i);
+		SAFE_PTHREAD_CREATE(&thread_ids[i], &attr, client_fn, (void *)i);
 }
 
 static void client_run(void)
@@ -747,8 +747,6 @@ static void server_run(void)
 	struct sockaddr_in6 addr6;
 	socklen_t addr_size = sizeof(addr6);
 
-	pthread_attr_init(&attr);
-
 	/*
 	 * detaching threads allow to reclaim thread's resources
 	 * once a thread finishes its work.
@@ -979,6 +977,12 @@ static void setup(void)
 		protocol = IPPROTO_SCTP;
 	break;
 	}
+
+	if ((errno = pthread_attr_init(&attr)))
+		tst_brk(TBROK | TERRNO, "pthread_attr_init failed");
+
+	if ((errno = pthread_attr_setstacksize(&attr, 256*1024)))
+		tst_brk(TBROK | TERRNO, "pthread_attr_setstacksize(256*1024) failed");
 
 	net.init();
 }
