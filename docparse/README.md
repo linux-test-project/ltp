@@ -130,7 +130,7 @@ bitflags, integers or arrays of strings:
 ```c
 struct tst_test test = {
 	...
-	/* tests needs to run with UID=1 */
+	/* tests needs to run with UID=0 */
 	.needs_root = 1,
 
 	/*
