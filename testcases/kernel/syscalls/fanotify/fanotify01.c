@@ -75,6 +75,7 @@ static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static int fd_notify;
 static int fan_report_fid_unsupported;
+static int filesystem_mark_unsupported;
 
 static unsigned long long event_set[EVENT_MAX];
 
@@ -94,16 +95,16 @@ static void test_fanotify(unsigned int n)
 		return;
 	}
 
+	if (filesystem_mark_unsupported && mark->flag == FAN_MARK_FILESYSTEM) {
+		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
+		return;
+	}
+
 	fd_notify = SAFE_FANOTIFY_INIT(tc->init_flags, O_RDONLY);
 
 	if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
 			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
 			  AT_FDCWD, fname) < 0) {
-		if (errno == EINVAL && mark->flag == FAN_MARK_FILESYSTEM) {
-			tst_res(TCONF,
-				"FAN_MARK_FILESYSTEM not supported in kernel?");
-			return;
-		}
 		tst_brk(TBROK | TERRNO,
 			"fanotify_mark (%d, FAN_MARK_ADD, FAN_ACCESS | %s | "
 			"FAN_MODIFY | FAN_CLOSE | FAN_OPEN, AT_FDCWD, %s) "
@@ -363,6 +364,7 @@ static void setup(void)
 	SAFE_FILE_PRINTF(fname, "1");
 
 	fan_report_fid_unsupported = fanotify_fan_report_fid_supported_on_fs(fname);
+	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
 }
 
 static void cleanup(void)

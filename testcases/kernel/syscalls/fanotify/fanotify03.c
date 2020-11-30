@@ -49,6 +49,7 @@ static pid_t child_pid;
 
 static char event_buf[EVENT_BUF_LEN];
 static int exec_events_unsupported;
+static int filesystem_mark_unsupported;
 
 struct event {
 	unsigned long long mask;
@@ -213,24 +214,21 @@ static int setup_mark(unsigned int n)
 		return -1;
 	}
 
+	if (filesystem_mark_unsupported && mark->flag == FAN_MARK_FILESYSTEM) {
+		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
+		return -1;
+	}
+
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
 	for (; i < ARRAY_SIZE(files); i++) {
 		if (fanotify_mark(fd_notify, FAN_MARK_ADD | mark->flag,
 				  tc->mask, AT_FDCWD, files[i]) < 0) {
-			if (errno == EINVAL &&
-					mark->flag == FAN_MARK_FILESYSTEM) {
-				tst_res(TCONF,
-					"FAN_MARK_FILESYSTEM not supported in "
-					"kernel?");
-				return -1;
-			} else {
-				tst_brk(TBROK | TERRNO,
-					"fanotify_mark(%d, FAN_MARK_ADD | %s, "
-					"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
-					"AT_FDCWD, %s) failed.",
-					fd_notify, mark->name, fname);
-			}
+			tst_brk(TBROK | TERRNO,
+				"fanotify_mark(%d, FAN_MARK_ADD | %s, "
+				"FAN_ACCESS_PERM | FAN_OPEN_PERM, "
+				"AT_FDCWD, %s) failed.",
+				fd_notify, mark->name, fname);
 		}
 	}
 
@@ -331,6 +329,7 @@ static void setup(void)
 {
 	require_fanotify_access_permissions_supported_by_kernel();
 
+	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
 	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC_PERM);
 
 	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
