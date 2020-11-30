@@ -347,6 +347,8 @@ static void test_fanotify(unsigned int n)
 
 static void setup(void)
 {
+	require_fanotify_access_permissions_supported_by_kernel();
+
 	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
 
