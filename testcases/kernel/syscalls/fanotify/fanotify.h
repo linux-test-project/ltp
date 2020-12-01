@@ -13,37 +13,13 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
-
-#if defined(HAVE_SYS_FANOTIFY_H)
-
 #include <sys/fanotify.h>
-
-#else /* HAVE_SYS_FANOTIFY_H */
-
-/* fanotify(7) wrappers */
-
-#include <stdint.h>
-#include "lapi/syscalls.h"
-
-static int fanotify_init(unsigned int flags, unsigned int event_f_flags)
-{
-	return syscall(__NR_fanotify_init, flags, event_f_flags);
-}
-
-static long fanotify_mark(int fd, unsigned int flags, uint64_t mask,
-                     int dfd, const char *pathname)
-{
-	return syscall(__NR_fanotify_mark, fd, flags, mask, dfd, pathname);
-}
-
-#endif /* HAVE_SYS_FANOTIFY_H */
 
 int safe_fanotify_init(const char *file, const int lineno,
 	unsigned int flags, unsigned int event_f_flags)
 {
 	int rval;
 
-#ifdef HAVE_SYS_FANOTIFY_H
 	rval = fanotify_init(flags, event_f_flags);
 
 	if (rval == -1) {
@@ -59,9 +35,6 @@ int safe_fanotify_init(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			 "invalid fanotify_init() return %d", rval);
 	}
-#else
-	tst_brk_(file, lineno, TCONF, "Header <sys/fanotify.h> is not present");
-#endif /* HAVE_SYS_FANOTIFY_H */
 
 	return rval;
 }

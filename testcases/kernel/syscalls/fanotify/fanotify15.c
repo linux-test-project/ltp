@@ -22,12 +22,10 @@
 #include <fcntl.h>
 #include <sys/statfs.h>
 #include <sys/types.h>
-
 #include "tst_test.h"
-#include "fanotify.h"
 
-#if defined(HAVE_SYS_FANOTIFY_H)
-#include <sys/fanotify.h>
+#ifdef HAVE_SYS_FANOTIFY_H
+#include "fanotify.h"
 
 #define EVENT_MAX 10
 

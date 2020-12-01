@@ -12,12 +12,10 @@
  */
 #define _GNU_SOURCE
 #include "tst_test.h"
-#include "fanotify.h"
-
 #include <errno.h>
 
-#if defined(HAVE_SYS_FANOTIFY_H)
-#include <sys/fanotify.h>
+#ifdef HAVE_SYS_FANOTIFY_H
+#include "fanotify.h"
 
 #define MNTPOINT "mntpoint"
 #define FILE1 MNTPOINT"/file1"

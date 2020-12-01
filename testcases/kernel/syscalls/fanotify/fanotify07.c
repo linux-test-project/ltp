@@ -30,10 +30,9 @@
 #include <sys/syscall.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "fanotify.h"
 
-#if defined(HAVE_SYS_FANOTIFY_H)
-#include <sys/fanotify.h>
+#ifdef HAVE_SYS_FANOTIFY_H
+#include "fanotify.h"
 
 #define BUF_SIZE 256
 static char fname[BUF_SIZE];

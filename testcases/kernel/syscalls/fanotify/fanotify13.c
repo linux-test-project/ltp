@@ -25,10 +25,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include "tst_test.h"
-#include "fanotify.h"
 
-#if defined(HAVE_SYS_FANOTIFY_H)
-#include <sys/fanotify.h>
+#ifdef HAVE_SYS_FANOTIFY_H
+#include "fanotify.h"
 
 #define PATH_LEN 128
 #define BUF_SIZE 256
