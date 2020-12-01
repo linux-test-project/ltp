@@ -587,6 +587,8 @@ void tst_brkm__(const char *file, const int lineno, int ttype,
 			tst_brk_(file, lineno, TBROK,
 			         "Non-NULL cleanup in newlib!");
 		}
+
+		tst_brk_(file, lineno, ttype, "%s", tmesg);
 	}
 
 	tst_brk__(file, lineno, ttype, func, "%s", tmesg);
