@@ -48,14 +48,14 @@ int safe_fanotify_init(const char *file, const int lineno,
 
 	if (rval == -1) {
 		if (errno == ENOSYS) {
-			tst_brk(TCONF,
-				"fanotify is not configured in this kernel.");
+			tst_brk_(file, lineno, TCONF,
+				"fanotify is not configured in this kernel");
 		}
-		tst_brk(TBROK | TERRNO,
+		tst_brk_(file, lineno, TBROK | TERRNO,
 			"%s:%d: fanotify_init() failed", file, lineno);
 	}
 #else
-	tst_brk(TCONF, "Header <sys/fanotify.h> is not present");
+	tst_brk_(file, lineno, TCONF, "Header <sys/fanotify.h> is not present");
 #endif /* HAVE_SYS_FANOTIFY_H */
 
 	return rval;
