@@ -13,6 +13,7 @@ TST_CLEANUP="cleanup"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="cat awk diff"
+TST_NEEDS_DRIVERS="dummy"
 
 . tst_net.sh
 
@@ -51,7 +52,7 @@ cleanup()
 	[ "$rm_dummy" ] && modprobe -r dummy
 
 	# test #5
-	ip route show | grep $ip4_addr && ip route del $ip4_addr
+	[ "$ip4_addr" ] && ip route show | grep -q $ip4_addr && ip route del $ip4_addr
 }
 
 test1()
