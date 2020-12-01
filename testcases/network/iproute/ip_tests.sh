@@ -26,10 +26,10 @@ init()
 	iface=ltp_dummy
 	lsmod | grep -q dummy || rm_dummy=1
 
-	ROD ip li add $iface type dummy
+	ROD ip link add $iface type dummy
 
 	ip4_addr=${IPV4_NET16_UNUSED}.6.6
-	ROD ip a add ${ip4_addr}/24 dev $iface
+	ROD ip addr add ${ip4_addr}/24 dev $iface
 
 	cat > tst_ip02.exp <<-EOF
 	1:
@@ -47,7 +47,7 @@ init()
 
 cleanup()
 {
-	[ -n "$iface" -a -d /sys/class/net/$iface ] && ip li del $iface
+	[ -n "$iface" -a -d /sys/class/net/$iface ] && ip link del $iface
 
 	[ "$rm_dummy" ] && modprobe -r dummy
 
