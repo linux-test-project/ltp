@@ -579,7 +579,6 @@ static void cleanup(void)
 static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(test_cases),
-	.dev_fs_flags = TST_FS_SKIP_FUSE,
 	.setup = setup,
 	.cleanup = cleanup,
 	.mount_device = 1,
