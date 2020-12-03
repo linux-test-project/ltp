@@ -240,9 +240,9 @@ static int get_shm_idx_from_id(int shm_id)
 
 static void setup(void)
 {
-	ctime_min = time(NULL);
+	ctime_min = get_ipc_timestamp();
 	shm_id = SAFE_SHMGET(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | SHM_RW);
-	ctime_max = time(NULL);
+	ctime_max = get_ipc_timestamp();
 
 	shm_idx = get_shm_idx_from_id(shm_id);
 

@@ -29,13 +29,13 @@ static void verify_msgsnd(void)
 	struct msqid_ds qs_buf;
 	time_t before_snd, after_snd;
 
-	time(&before_snd);
+	before_snd = get_ipc_timestamp();
 	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, 0));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "msgsnd() failed");
 		return;
 	}
-	time(&after_snd);
+	after_snd = get_ipc_timestamp();
 
 	SAFE_MSGCTL(queue_id, IPC_STAT, &qs_buf);
 

@@ -10,6 +10,6 @@ shmctl05: LDLIBS += -lrt
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-shmctl02 shmctl04 shmctl06: LTPLDLIBS = -lltpnewipc
+shmctl01 shmctl02 shmctl04 shmctl06: LTPLDLIBS = -lltpnewipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
