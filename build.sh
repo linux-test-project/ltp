@@ -22,7 +22,29 @@ MAKE_OPTS="-j$(getconf _NPROCESSORS_ONLN)"
 
 build_32()
 {
+	local dir
+	local arch="$(uname -m)"
+
 	echo "===== 32-bit ${1}-tree build into $PREFIX ====="
+
+	if [ -z "$PKG_CONFIG_LIBDIR" ]; then
+		if [ "$arch" != "x86_64" ]; then
+			echo "ERROR: auto-detection not supported platform $arch, export PKG_CONFIG_LIBDIR!"
+			exit 1
+		fi
+
+		for dir in /usr/lib/i386-linux-gnu/pkgconfig \
+			/usr/lib32/pkgconfig /usr/lib/pkgconfig; do
+			if [ -d "$dir" ]; then
+				PKG_CONFIG_LIBDIR="$dir"
+				break
+			fi
+		done
+		if [ -z "$PKG_CONFIG_LIBDIR" ]; then
+			echo "WARNING: PKG_CONFIG_LIBDIR not found, build might fail"
+		fi
+	fi
+
 	CFLAGS="-m32 $CFLAGS" LDFLAGS="-m32 $LDFLAGS"
 	build $1 $2
 }
@@ -108,8 +130,8 @@ run_configure()
 	local configure=$1
 	shift
 
-	export CC CFLAGS LDFLAGS
-	echo "CC='$CC' CFLAGS='$CFLAGS' LDFLAGS='$LDFLAGS'"
+	export CC CFLAGS LDFLAGS PKG_CONFIG_LIBDIR
+	echo "CC='$CC' CFLAGS='$CFLAGS' LDFLAGS='$LDFLAGS' PKG_CONFIG_LIBDIR='$PKG_CONFIG_LIBDIR'"
 
 	echo "=== configure $configure $@ ==="
 	if ! $configure $@; then
@@ -147,7 +169,7 @@ in       in-tree build
 out      out-of-tree build
 
 BUILD TYPES:
-32       32-bit build
+32       32-bit build (PKG_CONFIG_LIBDIR auto-detection for x86_64)
 cross    cross-compile build (requires set compiler via -c switch)
 native   native build
 EOF
