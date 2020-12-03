@@ -22,6 +22,7 @@
 #ifndef __LIBNEWIPC_H
 #define __LIBNEWIPC_H	1
 
+#include <time.h>
 #include <sys/types.h>
 
 #define MSG_RD	0400
@@ -55,5 +56,7 @@ int get_used_queues(const char *file, const int lineno);
 void *probe_free_addr(const char *file, const int lineno);
 #define PROBE_FREE_ADDR() \
 	probe_free_addr(__FILE__, __LINE__)
+
+time_t get_ipc_timestamp(void);
 
 #endif /* newlibipc.h */
