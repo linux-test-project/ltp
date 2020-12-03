@@ -147,9 +147,9 @@ in       in-tree build
 out      out-of-tree build
 
 BUILD TYPES:
-32       32-bit in-tree build
-cross    cross-compile in-tree build (requires set compiler via -c switch)
-native   native in-tree build
+32       32-bit build
+cross    cross-compile build (requires set compiler via -c switch)
+native   native build
 EOF
 }
 
