@@ -286,15 +286,15 @@ static inline int fanotify_events_supported_by_kernel(uint64_t mask)
 
 /*
  * @return  0: fanotify supported both in kernel and on tested filesystem
- * @return -1: FAN_REPORT_FID not supported in kernel
- * @return -2: FAN_REPORT_FID not supported on tested filesystem
+ * @return -1: @flags not supported in kernel
+ * @return -2: @flags not supported on tested filesystem (tested if @fname is not NULL)
  */
-static inline int fanotify_fan_report_fid_supported_on_fs(const char *fname)
+static inline int fanotify_init_flags_supported_on_fs(unsigned int flags, const char *fname)
 {
 	int fd;
 	int rval = 0;
 
-	fd = fanotify_init(FAN_CLASS_NOTIF | FAN_REPORT_FID, O_RDONLY);
+	fd = fanotify_init(flags, O_RDONLY);
 
 	if (fd < 0) {
 		if (errno == ENOSYS)
@@ -306,7 +306,7 @@ static inline int fanotify_fan_report_fid_supported_on_fs(const char *fname)
 		tst_brk(TBROK | TERRNO, "fanotify_init() failed");
 	}
 
-	if (fanotify_mark(fd, FAN_MARK_ADD, FAN_ACCESS, AT_FDCWD, fname) < 0) {
+	if (fname && fanotify_mark(fd, FAN_MARK_ADD, FAN_ACCESS, AT_FDCWD, fname) < 0) {
 		if (errno == ENODEV || errno == EOPNOTSUPP || errno == EXDEV) {
 			rval = -2;
 		} else {
@@ -321,20 +321,32 @@ static inline int fanotify_fan_report_fid_supported_on_fs(const char *fname)
 	return rval;
 }
 
-#define FANOTIFY_FAN_REPORT_FID_ERR_MSG_(res_func, fail) do { \
-	if (fail == -1) \
-		res_func(TCONF, "FAN_REPORT_FID not supported in kernel?"); \
-	if (fail == -2) \
-		res_func(TCONF, "FAN_REPORT_FID not supported on %s filesystem", \
-			tst_device->fs_type); \
-	} while (0)
+static inline int fanotify_init_flags_supported_by_kernel(unsigned int flags)
+{
+	return fanotify_init_flags_supported_on_fs(flags, NULL);
+}
 
-#define FANOTIFY_FAN_REPORT_FID_ERR_MSG(fail) \
-	FANOTIFY_FAN_REPORT_FID_ERR_MSG_(tst_res, (fail))
+typedef void (*tst_res_func_t)(const char *file, const int lineno,
+			       int ttype, const char *fmt, ...);
 
-#define REQUIRE_FANOTIFY_FAN_REPORT_FID_SUPPORTED_ON_FS(fname) do { \
-	FANOTIFY_FAN_REPORT_FID_ERR_MSG_(tst_brk, \
-		fanotify_fan_report_fid_supported_on_fs(fname)); \
+static inline void fanotify_init_flags_err_msg(const char *flags_str,
+	const char *file, const int lineno, tst_res_func_t res_func, int fail)
+{
+	if (fail == -1)
+		res_func(file, lineno, TCONF,
+			 "%s not supported in kernel?", flags_str);
+	if (fail == -2)
+		res_func(file, lineno, TCONF,
+			 "%s not supported on %s filesystem",
+			 flags_str, tst_device->fs_type);
+}
+
+#define FANOTIFY_INIT_FLAGS_ERR_MSG(flags, fail) \
+	fanotify_init_flags_err_msg(#flags, __FILE__, __LINE__, tst_res_, (fail))
+
+#define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(flags, fname) do { \
+	fanotify_init_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
+		fanotify_init_flags_supported_on_fs(flags, fname)); \
 	} while (0)
 
 static inline int fanotify_mark_supported_by_kernel(uint64_t flag)

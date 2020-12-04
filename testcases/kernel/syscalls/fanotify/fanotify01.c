@@ -90,7 +90,7 @@ static void test_fanotify(unsigned int n)
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
 	if (fan_report_fid_unsupported && (tc->init_flags & FAN_REPORT_FID)) {
-		FANOTIFY_FAN_REPORT_FID_ERR_MSG(fan_report_fid_unsupported);
+		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_FID, fan_report_fid_unsupported);
 		return;
 	}
 
@@ -334,7 +334,7 @@ static void setup(void)
 	sprintf(fname, MOUNT_PATH"/tfile_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
 
-	fan_report_fid_unsupported = fanotify_fan_report_fid_supported_on_fs(fname);
+	fan_report_fid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FID, fname);
 	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
 }
 
