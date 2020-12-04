@@ -918,6 +918,9 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->all_filesystems)
 		tst_test->needs_device = 1;
 
+	if (tst_test->min_cpus > (unsigned long)tst_ncpus())
+		tst_brk(TCONF, "Test needs at least %lu CPUs online", tst_test->min_cpus);
+
 	if (tst_test->request_hugepages)
 		tst_request_hugepages(tst_test->request_hugepages);
 

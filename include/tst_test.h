@@ -157,6 +157,9 @@ struct tst_test {
 	 */
 	int all_filesystems:1;
 
+	/* Minimum number of online CPU required by the test */
+	unsigned long min_cpus;
+
 	/*
 	 * If set non-zero number of request_hugepages, test will try to reserve the
 	 * expected number of hugepage for testing in setup phase. If system does not
