@@ -189,9 +189,9 @@ static inline int test_accept(int sk, struct sockaddr *addr, socklen_t *addrlen)
 static inline int test_send(int sk, const void *msg, size_t len, int flags)
 {
 	int error = send(sk, msg, len, flags);
-        if (len != error)
-                tst_brkm(TBROK, tst_exit, "send: error:%d errno:%d",
-			 error, errno);
+	long length = (long)len;
+	if (length != error)
+		tst_brkm(TBROK, tst_exit, "send: error:%d errno:%d", error, errno);
 	return error;
 }
 
@@ -199,9 +199,9 @@ static inline int test_sendto(int sk, const void *msg, size_t len, int flags,
 			      const struct sockaddr *to, socklen_t tolen)
 {
 	int error = sendto(sk, msg, len, flags, to, tolen);
-        if (len != error)
-                tst_brkm(TBROK, tst_exit, "sendto: error:%d errno:%d",
-			 error, errno);
+	long length = (long)len;
+	if (length != error)
+		tst_brkm(TBROK, tst_exit, "sendto: error:%d errno:%d", error, errno);
 	return error;
 }
 
@@ -273,9 +273,10 @@ static inline int test_sctp_sendmsg(int s, const void *msg, size_t len,
 				    uint16_t stream_no, uint32_t timetolive,
 				    uint32_t context)
 {
+	long length = (long)len;
 	int error = sctp_sendmsg(s, msg, len, to, tolen, ppid, flags, stream_no,
 	  		         timetolive, context);
-	if (len != error)
+	if (length != error)
 		tst_brkm(TBROK, tst_exit, "sctp_sendmsg: error:%d errno:%d",
 			 error, errno);
 	return error;			
@@ -285,8 +286,9 @@ static inline int test_sctp_send(int s, const void *msg, size_t len,
 				 const struct sctp_sndrcvinfo *sinfo, 
 				 int flags)
 {
+	long length = (long)len;
 	int error = sctp_send(s, msg, len, sinfo, flags);
-	if (len != error)
+	if (length != error)
 		tst_brkm(TBROK, tst_exit, "sctp_send: error:%d errno:%d",
 			 error, errno);
 	return error;			

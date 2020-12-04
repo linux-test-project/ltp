@@ -230,7 +230,7 @@ static void touch_mem(char *dest, size_t size)
 {
 	int i;
 	if (touch_pages) {
-		for (i = 0; i < size; i += page_size)
+		for (i = 0; i < (long)size; i += page_size)
 			*(dest + i) = 0xff;
 	}
 }
@@ -281,14 +281,14 @@ static void my_memcpy(void *dest, void *src, size_t len)
 	char *s = (char *)src;
 	int i;
 
-	for (i = 0; i < len; i++)
+	for (i = 0; i < (long)len; i++)
 		d[i] = s[i];
 	return;
 }
 
 static void allocate(void)
 {
-	int i;
+	unsigned int i;
 
 	mem = alloc_mem(chunks * sizeof(record_t *));
 
@@ -313,7 +313,7 @@ static void allocate(void)
 
 static void write_pattern(void)
 {
-	int i, j;
+	unsigned int i, j;
 
 	for (i = 0; i < chunks; i++) {
 		for (j = 0; j < chunk_size / record_size; j++)
