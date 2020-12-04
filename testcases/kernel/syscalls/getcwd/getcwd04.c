@@ -68,9 +68,6 @@ static void verify_getcwd(void)
 
 static void setup(void)
 {
-	if (tst_ncpus() == 1)
-		tst_brk(TCONF, "This test needs two cpus at least");
-
 	SAFE_SIGNAL(SIGALRM, sigproc);
 
 	alarm(TIMEOUT);
@@ -101,5 +98,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_getcwd,
 	.needs_tmpdir = 1,
-	.forks_child = 1
+	.forks_child = 1,
+	.min_cpus = 2
 };
