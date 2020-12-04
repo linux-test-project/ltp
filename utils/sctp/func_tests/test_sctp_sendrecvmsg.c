@@ -70,7 +70,7 @@ static char *nottlmsg = "This should NOT time out!\n";
 static char ttlfrag[SMALL_MAXSEG*3] = {0};
 static char *message = "Hello world\n";
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int sk1, sk2;
 	sockaddr_storage_t loop1;

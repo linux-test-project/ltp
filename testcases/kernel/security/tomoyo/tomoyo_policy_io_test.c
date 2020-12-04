@@ -187,7 +187,7 @@ static void stage_policy_io_test(void)
 	}
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	tomoyo_test_init();
 	stage_policy_io_test();

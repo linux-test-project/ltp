@@ -72,7 +72,7 @@ int TST_CNT = 0;
 int msg_sizes[] = {1353, 2000, 5000, 10000, 20000, 32768};
 
 int
-main(int argc, char *argv[])
+main(void)
 {
         int sk1, sk2;
         sockaddr_storage_t loop1;

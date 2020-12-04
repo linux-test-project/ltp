@@ -38,7 +38,7 @@
 char *TCID = "cap_bounds_r";
 int TST_TOTAL = 2;
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #if HAVE_SYS_CAPABILITY_H
 #if HAVE_DECL_PR_CAPBSET_READ && HAVE_DECL_PR_CAPBSET_DROP

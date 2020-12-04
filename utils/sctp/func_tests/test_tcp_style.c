@@ -58,7 +58,7 @@ int TST_CNT = 0;
 #define MAX_CLIENTS 10
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int clt_sk[MAX_CLIENTS], accept_sk[MAX_CLIENTS];
 	int listen_sk, clt2_sk, accept2_sk;

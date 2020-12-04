@@ -686,7 +686,7 @@ int test_epoll_ctl(int epoll_fd)
 	return (num_epoll_ctl_test_fails / num_epoll_ctl_test_calls);
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
 	int epoll_fd;
 	struct timeval tv;

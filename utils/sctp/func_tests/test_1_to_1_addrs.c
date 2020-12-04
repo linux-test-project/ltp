@@ -75,7 +75,7 @@ int TST_TOTAL = 10;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
         int error;
 	socklen_t len;

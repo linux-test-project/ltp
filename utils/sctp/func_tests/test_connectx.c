@@ -64,7 +64,7 @@ int TST_CNT = 0;
 	((unsigned char *)&addr)[3]
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int svr_sk, clt_sk1, clt_sk2, peeloff_sk;
 	sctp_assoc_t associd, svr_associd1, svr_associd2, clt_associd1, clt_associd2;

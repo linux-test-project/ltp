@@ -60,7 +60,7 @@ int TST_CNT = 0;
 #define MAX_CLIENTS 10
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int clnt_sk[MAX_CLIENTS], acpt_sk[MAX_CLIENTS],sk;
 	int lstn_sk;
