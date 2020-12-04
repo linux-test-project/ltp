@@ -59,7 +59,7 @@ int TST_TOTAL = 2;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int svr_sk, clt_sk;
 	struct sockaddr_in svr_loop, clt_loop;

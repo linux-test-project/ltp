@@ -613,7 +613,7 @@ static void stage_file_test(void)
 		close(fd);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	tomoyo_test_init();
 	fprintf(domain_fp, "%s /bin/true\n", self_domain);

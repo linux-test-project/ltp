@@ -59,7 +59,7 @@ int TST_CNT = 0;
 #define MAX_CLIENTS 10
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int svr_sk, clt_sk[MAX_CLIENTS], peeloff_sk[MAX_CLIENTS];
 	sctp_assoc_t svr_associd[MAX_CLIENTS];

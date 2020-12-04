@@ -67,7 +67,7 @@ static int numin(char *, double *);
 static int checkbuf(char *, int, int);
 
 /*--------------------------------------------------------------*/
-int main(int argc, char *argv[])
+int main(void)
 {
 	register int i, j;
 	double r1, r2, x;

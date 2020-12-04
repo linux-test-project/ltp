@@ -222,7 +222,7 @@ static void process_event(struct nlmsghdr *nlhdr)
 	}
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
 	int ret;
 	int sd;

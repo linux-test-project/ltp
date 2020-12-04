@@ -63,7 +63,7 @@ static int blexit(void);
 /********************************/
 
 /*--------------------------------------------------------------*/
-int main(int argc, char *argv[])
+int main(void)
 {
 	register long long i;
 	register int j, k, l, m;

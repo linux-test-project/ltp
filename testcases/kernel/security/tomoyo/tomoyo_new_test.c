@@ -610,7 +610,7 @@ static struct test_struct {
 	NULL}
 };
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int i;
 	tomoyo_test_init();

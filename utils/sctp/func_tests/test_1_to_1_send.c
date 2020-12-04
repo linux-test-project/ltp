@@ -62,7 +62,7 @@ int TST_TOTAL = 8;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
         socklen_t len,len_snd;
 	int msg_count;

@@ -80,7 +80,7 @@ int TST_TOTAL = 15;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
         int sk,pf_class;
 	int error = 0;

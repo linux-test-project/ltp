@@ -57,7 +57,7 @@ int TST_CNT = 0;
 #define MAX_CLIENTS 10
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int clt_sk, svr_sk, accept_sk;
 	sockaddr_storage_t svr_loop, accept_loop;

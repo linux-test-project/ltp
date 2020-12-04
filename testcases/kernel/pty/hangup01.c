@@ -204,7 +204,7 @@ int child(int masterfd)
 /*
  * main test driver
  */
-int main(int argc, char **argv)
+int main(void)
 {
 	int masterfd;		/* master pty fd */
 	char *slavename;

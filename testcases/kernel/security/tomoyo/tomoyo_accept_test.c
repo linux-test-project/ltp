@@ -112,7 +112,7 @@ static void test(int rw_loop, int truncate_loop, int append_loop,
 	}
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	tomoyo_test_init();
 	fprintf(profile_fp, "255-PREFERENCE::learning={ verbose=no }\n");

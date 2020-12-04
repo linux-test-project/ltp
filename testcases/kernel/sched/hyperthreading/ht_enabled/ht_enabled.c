@@ -19,7 +19,7 @@
 char *TCID = "smt_smp_enabled";
 int TST_TOTAL = 1;
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret_val = 1;
 #if  (!defined __x86_64__ && !defined __i386__)

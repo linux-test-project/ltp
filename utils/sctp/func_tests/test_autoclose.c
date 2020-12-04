@@ -59,7 +59,7 @@ int TST_TOTAL = 1;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int sk1, sk2;
 	sockaddr_storage_t loop1, loop2;

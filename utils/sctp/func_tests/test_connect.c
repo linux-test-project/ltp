@@ -55,7 +55,7 @@ int TST_TOTAL = 5;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
 	int svr_sk, clt_sk1, clt_sk2, peeloff_sk;
 	sctp_assoc_t svr_associd1;
