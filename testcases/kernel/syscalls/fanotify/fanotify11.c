@@ -36,6 +36,8 @@
 #define gettid() syscall(SYS_gettid)
 static int tid;
 
+static int fan_report_tid_unsupported;
+
 void *thread_create_file(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	char tid_file[64] = {0};
@@ -63,16 +65,12 @@ void test01(unsigned int i)
 			i, (tcases[i] & FAN_REPORT_TID) ? "with" : "without",
 			tgid, tid, event.pid);
 
-	fd_notify = fanotify_init(tcases[i], 0);
-	if (fd_notify < 0) {
-		if (errno == EINVAL && (tcases[i] & FAN_REPORT_TID)) {
-			tst_res(TCONF,
-				"FAN_REPORT_TID not supported in kernel?");
-			return;
-		}
-		tst_brk(TBROK | TERRNO, "fanotify_init(0x%x, 0) failed",
-				tcases[i]);
+	if (fan_report_tid_unsupported && (tcases[i] & FAN_REPORT_TID)) {
+		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TID, fan_report_tid_unsupported);
+		return;
 	}
+
+	fd_notify = SAFE_FANOTIFY_INIT(tcases[i], 0);
 
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD,
 			FAN_ALL_EVENTS | FAN_EVENT_ON_CHILD, AT_FDCWD, ".");
@@ -96,10 +94,7 @@ void test01(unsigned int i)
 
 static void setup(void)
 {
-	int fd;
-
-	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
-	SAFE_CLOSE(fd);
+	fan_report_tid_unsupported = fanotify_init_flags_supported_by_kernel(FAN_REPORT_TID);
 }
 
 static struct tst_test test = {

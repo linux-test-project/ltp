@@ -57,6 +57,7 @@ static unsigned int fanotify_class[] = {
 	FAN_REPORT_DFID_NAME_FID,
 };
 #define NUM_CLASSES ARRAY_SIZE(fanotify_class)
+#define NUM_PRIORITIES 3
 
 #define GROUPS_PER_PRIO 3
 
@@ -64,6 +65,7 @@ static int fd_notify[NUM_CLASSES][GROUPS_PER_PRIO];
 
 static char event_buf[EVENT_BUF_LEN];
 static int exec_events_unsupported;
+static int fan_report_dfid_unsupported;
 static int filesystem_mark_unsupported;
 
 #define MOUNT_PATH "fs_mnt"
@@ -294,21 +296,8 @@ static int create_fanotify_groups(unsigned int n)
 
 	for (p = 0; p < num_classes; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
-			fd_notify[p][i] = fanotify_init(fanotify_class[p] |
-							FAN_NONBLOCK, O_RDONLY);
-			if (fd_notify[p][i] == -1) {
-				if (errno == EINVAL &&
-				    fanotify_class[p] & FAN_REPORT_NAME) {
-					tst_res(TCONF,
-						"FAN_REPORT_NAME not supported by kernel?");
-					/* Do not try creating this group again */
-					num_classes--;
-					return -1;
-				}
-
-				tst_brk(TBROK | TERRNO,
-					"fanotify_init(%x, 0) failed", fanotify_class[p]);
-			}
+			fd_notify[p][i] = SAFE_FANOTIFY_INIT(fanotify_class[p] |
+							     FAN_NONBLOCK, O_RDONLY);
 
 			/*
 			 * Add mark for each group.
@@ -518,6 +507,13 @@ static void setup(void)
 {
 	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC);
 	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
+	fan_report_dfid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
+									  MOUNT_PATH);
+	if (fan_report_dfid_unsupported) {
+		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_DFID_NAME, fan_report_dfid_unsupported);
+		/* Limit tests to legacy priority classes */
+		num_classes = NUM_PRIORITIES;
+	}
 
 	/* Create another bind mount at another path for generating events */
 	SAFE_MKDIR(MNT2_PATH, 0755);

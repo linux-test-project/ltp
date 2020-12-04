@@ -158,17 +158,7 @@ static void do_test(unsigned int number)
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
 
-	fd_notify = fanotify_init(group->flag, 0);
-	if (fd_notify == -1) {
-		if (errno == EINVAL) {
-			tst_res(TCONF,
-				"%s not supported by kernel", group->name);
-			return;
-		}
-
-		tst_brk(TBROK | TERRNO,
-			"fanotify_init(%s, 0) failed", group->name);
-	}
+	fd_notify = SAFE_FANOTIFY_INIT(group->flag, 0);
 
 	/*
 	 * Watch dir modify events with name in filesystem/dir
@@ -551,7 +541,7 @@ check_match:
 
 static void setup(void)
 {
-	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, MOUNT_PATH);
+	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_DIR_FID, MOUNT_PATH);
 
 	sprintf(dname1, "%s/%s", MOUNT_PATH, DIR_NAME1);
 	sprintf(dname2, "%s/%s", MOUNT_PATH, DIR_NAME2);
