@@ -76,6 +76,11 @@ static void run(void)
 			return;
 		}
 
+		if (TST_RET == -1 && TST_ERR == EBADF) {
+			tst_fzsync_pair_add_bias(&fzsync_pair, 1);
+			continue;
+		}
+
 		if (TST_RET == -1 && TST_ERR == ENOENT) {
 			tst_res(TPASS | TTERRNO,
 				"fchownat() failed successfully");
