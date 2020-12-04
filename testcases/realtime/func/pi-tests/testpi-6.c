@@ -41,7 +41,6 @@
 #include <unistd.h>
 #include <librttest.h>
 
-#if HAS_PTHREAD_MUTEXTATTR_ROBUST_APIS
 pthread_mutex_t child_mutex;
 
 void *child_thread(void *arg)
@@ -92,12 +91,5 @@ int do_test(int argc, char **argv)
 
 	return 0;
 }
-#else
-int do_test(int argc, char **argv)
-{
-	printf("Your system doesn't have robust pthread mutex support\n");
-	return 1;
-}
-#endif
 
 #include "test-skeleton.c"

@@ -12,13 +12,3 @@ else
 	AC_MSG_RESULT(no)
 fi
 ])
-
-AC_DEFUN([REALTIME_CHECK_ROBUST_APIS],[
-	AC_CHECK_DECLS([pthread_mutexattr_getrobust, pthread_mutexattr_setrobust],[],[has_robust="no"],[[#include <pthread.h>]])
-	AC_MSG_CHECKING([for pthread_mutexattr_*robust* APIs])
-if test "x$has_robust" != "xno"; then
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
-])
