@@ -38,7 +38,7 @@
 char *TCID = "exec_without_inh";
 int TST_TOTAL = 1;
 
-int main(int argc, char *argv[])
+int main(void)
 {
 #if HAVE_SYS_CAPABILITY_H
 #if HAVE_DECL_PR_CAPBSET_DROP

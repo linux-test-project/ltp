@@ -248,7 +248,7 @@ static void setup(void)
 *   M A I N
 ***********************************************************************/
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	pid_t cpid;
 	mqd_t mqd;

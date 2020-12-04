@@ -104,7 +104,7 @@ void dio_append(char *filename)
 	}
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
 	char filename[PATH_MAX];
 	int pid[NUM_CHILDREN];

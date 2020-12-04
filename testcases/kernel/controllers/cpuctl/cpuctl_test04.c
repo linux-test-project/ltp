@@ -77,7 +77,7 @@ extern void cleanup(void)
 	tst_exit();		/* Report exit status */
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 
 	int test_num;

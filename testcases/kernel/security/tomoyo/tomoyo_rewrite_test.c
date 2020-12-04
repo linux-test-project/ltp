@@ -160,7 +160,7 @@ static void stage_rewrite_test(void)
 	printf("\n\n");
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 	tomoyo_test_init();
 	stage_rewrite_test();

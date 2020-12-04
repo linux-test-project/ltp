@@ -380,7 +380,7 @@ static void test5(void)
 /*
  * main test driver
  */
-int main(int argc, char **argv)
+int main(void)
 {
 	test1();
 	test2();

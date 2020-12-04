@@ -71,7 +71,7 @@ int TST_CNT = 0;
 #define SK_MAX  10
 
 int
-main(int argc, char *argv[])
+main(void)
 {
         socklen_t len;
 	int i;

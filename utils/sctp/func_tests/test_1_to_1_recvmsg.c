@@ -62,7 +62,7 @@ int TST_TOTAL = 8;
 int TST_CNT = 0;
 
 int
-main(int argc, char *argv[])
+main(void)
 {
         socklen_t len;
 	int sk,pf_class,lstn_sk,acpt_sk;

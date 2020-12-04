@@ -76,7 +76,7 @@ extern void cleanup(void)
 	/* Report exit status */
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
 
 	int test_num;
