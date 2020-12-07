@@ -2134,8 +2134,14 @@ struct tst_test test = {
 	.test_all = run,
 	...
 };
-
 -------------------------------------------------------------------------------
+
+2.2.37 Require minimum numbers of CPU for a testcase
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some tests require more than specific number of CPU. It can be defined with
+`.min_cpus = N`.
+
 2.3 Writing a testcase in shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
