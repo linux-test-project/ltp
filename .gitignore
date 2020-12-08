@@ -11,6 +11,7 @@ core
 lib*.a
 .cache.mk
 *.dwo
+*.mod
 
 /aclocal.m4
 autom4te.cache
