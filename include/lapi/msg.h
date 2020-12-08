@@ -12,4 +12,8 @@
 # define MSG_COPY  040000  /* copy (not remove) all queue messages */
 #endif
 
+#ifndef MSG_STAT_ANY
+# define MSG_STAT_ANY 13
+#endif
+
 #endif
