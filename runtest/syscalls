@@ -879,9 +879,6 @@ openat201 openat201
 openat202 openat202
 openat203 openat203
 
-open_by_handle_at01 open_by_handle_at01
-open_by_handle_at02 open_by_handle_at02
-
 open_tree01 open_tree01
 open_tree02 open_tree02
 
