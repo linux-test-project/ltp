@@ -3,16 +3,19 @@
  * Copyright (c) International Business Machines  Corp., 2001
  * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
+
+/*\
+ * [DESCRIPTION]
+ *
  * Verify that shmctl() IPC_STAT and SHM_STAT reports correct data.
  *
  * The shm_nattach is excercised by:
  *
- * 1. forking() children that attach and detach SHM
- * 2. attaching the SHM before fork and letting the children detach it
+ * - forking() children that attach and detach SHM
+ * - attaching the SHM before fork and letting the children detach it
  *
  * We check that the number shm_nattach is correct after each step we do.
- */
+\*/
 
 #define _GNU_SOURCE
 #include <stdlib.h>

@@ -8,7 +8,9 @@
  * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
+/*\
+ * [DESCRIPTION]
+ *
  * Test for EACCES, EFAULT and EINVAL errors.
  *
  * * EACCES - segment has no read or write permissions
@@ -23,7 +25,7 @@
  * * EPERM  - attempt to change root-owned shm
  * * EPERM  - attempt to lock root-owned shm
  * * EPERM  - attempt to unlock root-owned shm
- */
+\*/
 
 #include <pwd.h>
 

@@ -2,7 +2,10 @@
 /*
  * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
+
+/*\
+ * [DESCRIPTION]
+ *
  * Call shmctl() with SHM_INFO flag and check that:
  *
  * * The returned index points to a valid SHM by calling SHM_STAT_ANY
@@ -15,7 +18,7 @@
  *
  * Note what we create a SHM segment in the test setup to make sure that there
  * is at least one during the testrun.
- */
+\*/
 
 #define _GNU_SOURCE
 #include <stdio.h>

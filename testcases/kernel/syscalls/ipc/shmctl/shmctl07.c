@@ -2,9 +2,12 @@
 /*
  * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
+
+/*\
+ * [DESCRIPTION]
+ *
  * Test for a SHM_LOCK and SHM_UNLOCK.
- */
+\*/
 
 #define _GNU_SOURCE
 #include <stdio.h>

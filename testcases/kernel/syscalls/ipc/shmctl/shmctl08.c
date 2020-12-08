@@ -2,12 +2,15 @@
 /*
  * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
+
+/*\
+ * [DESCRIPTION]
+ *
  * Test for a SHM_SET.
  *
  * The test clears the group and others bits from the shm_perm.mode and checks
  * the result as well as if the ctime was updated correctly.
- */
+\*/
 
 #define _GNU_SOURCE
 #include <stdio.h>

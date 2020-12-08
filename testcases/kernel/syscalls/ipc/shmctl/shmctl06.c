@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
- *
- * Description:
- * Cross verify the _high fields being set to 0 by the kernel.
  */
+
+/*\
+ * [DESCRIPTION]
+ *
+ * Cross verify the _high fields being set to 0 by the kernel.
+\*/
+
 #include <sys/shm.h>
 #include "lapi/shmbuf.h"
 #include "libnewipc.h"
