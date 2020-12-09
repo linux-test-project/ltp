@@ -401,15 +401,15 @@ int main(int argc, char *argv[])
 
 	/* Normalize the result */
 	for (i = 0; implies[i].flag; i++) {
-		if (!data_node_hash_get(res, implies[i].flag))
-			continue;
-
-		if (data_node_hash_get(res, implies[i].implies)) {
+		if (data_node_hash_get(res, implies[i].flag) &&
+		    data_node_hash_get(res, implies[i].implies))
 			fprintf(stderr, "%s: useless tag: %s\n", argv[1], implies[i].implies);
-			continue;
-		}
+	}
 
-		data_node_hash_add(res, implies[i].implies, data_node_string("1"));
+	for (i = 0; implies[i].flag; i++) {
+		if (data_node_hash_get(res, implies[i].flag) &&
+		    !data_node_hash_get(res, implies[i].implies))
+			data_node_hash_add(res, implies[i].implies, data_node_string("1"));
 	}
 
 	data_node_hash_add(res, "fname", data_node_string(argv[1]));
