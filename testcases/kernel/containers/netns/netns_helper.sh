@@ -17,8 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #==============================================================================
 
-. test.sh
+. tst_test.sh
 TST_CLEANUP=netns_ns_exec_cleanup
+TST_NEEDS_ROOT=1
+TST_NEEDS_CMDS="ip modprobe"
 
 # Set to 1 only for test cases using ifconfig (ioctl).
 USE_IFCONFIG=0
@@ -60,7 +62,6 @@ NS_HANDLE1=""
 IFCONF_IN6_ARG=""
 ###############################################################################
 
-
 tst_check_iproute()
 {
 	local cur_ipver="$(ip -V)"
@@ -69,11 +70,11 @@ tst_check_iproute()
 	cur_ipver=${cur_ipver##*s}
 
 	if [ -z $cur_ipver ] || [ -z $spe_ipver ]; then
-		tst_brkm TBROK "don't obtain valid iproute version"
+		tst_brk TBROK "don't obtain valid iproute version"
 	fi
 
 	if [ $cur_ipver -lt $spe_ipver ]; then
-		tst_brkm TCONF \
+		tst_brk TCONF \
 			"The commands in iproute tools do not support required objects"
 	fi
 }
@@ -106,11 +107,9 @@ tst_check_iproute()
 #	* IP6_VETH0, IP6_VETH1
 #		IPv6 addresses for veth0 and veth1 devices.
 #
-# On success function returns, on error tst_brkm is called and TC is terminated.
+# On success function returns, on error tst_brk is called and TC is terminated.
 netns_setup()
 {
-	tst_require_root
-	tst_require_cmds ip modprobe
 
 	modprobe veth > /dev/null 2>&1
 
@@ -118,7 +117,7 @@ netns_setup()
 	ns_exec)
 		setns_check
 		if [ $? -eq 32 ]; then
-			tst_brkm TCONF "setns not supported"
+			tst_brk TCONF "setns not supported"
 		fi
 		NS_TYPE="net"
 		netns_ns_exec_setup
@@ -129,7 +128,7 @@ netns_setup()
 		TST_CLEANUP=netns_ip_cleanup
 		;;
 	*)
-		tst_brkm TBROK \
+		tst_brk TBROK \
 		"first argument must be a program used to enter a network namespace (ns_exec|ip)"
 		;;
 	esac
@@ -142,22 +141,22 @@ netns_setup()
 		tst_require_cmds ifconfig
 		;;
 	*)
-		tst_brkm TBROK \
+		tst_brk TBROK \
 		"third argument must be a comm. type between kernel and user space (netlink|ioctl)"
 		;;
 	esac
 
 	if [ -z "$4" ]; then
-		tst_brkm TBROK "fourth argument must be the IPv4 address for veth0"
+		tst_brk TBROK "fourth argument must be the IPv4 address for veth0"
 	fi
 	if [ -z "$5" ]; then
-		tst_brkm TBROK "fifth argument must be the IPv4 address for veth1"
+		tst_brk TBROK "fifth argument must be the IPv4 address for veth1"
 	fi
 	if [ -z "$6" ]; then
-		tst_brkm TBROK "sixth argument must be the IPv6 address for veth0"
+		tst_brk TBROK "sixth argument must be the IPv6 address for veth0"
 	fi
 	if [ -z "$7" ]; then
-		tst_brkm TBROK "seventh argument must be the IPv6 address for veth1"
+		tst_brk TBROK "seventh argument must be the IPv6 address for veth1"
 	fi
 
 	case "$2" in
@@ -176,7 +175,7 @@ netns_setup()
 		NETMASK=64
 		;;
 	*)
-		tst_brkm TBROK "second argument must be an ip version (ipv4|ipv6)"
+		tst_brk TBROK "second argument must be an ip version (ipv4|ipv6)"
 		;;
 	esac
 
@@ -194,18 +193,18 @@ netns_ns_exec_setup()
 
 	NS_HANDLE0=$(ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
-		tst_resm TINFO "$NS_HANDLE0"
-		tst_brkm TBROK "unable to create a new network namespace"
+		tst_res TINFO "$NS_HANDLE0"
+		tst_brk TBROK "unable to create a new network namespace"
 	fi
 
 	NS_HANDLE1=$(ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
-		tst_resm TINFO "$NS_HANDLE1"
-		tst_brkm TBROK "unable to create a new network namespace"
+		tst_res TINFO "$NS_HANDLE1"
+		tst_brk TBROK "unable to create a new network namespace"
 	fi
 
 	$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link add veth0 type veth peer name veth1 || \
-		tst_brkm TBROK "unable to create veth pair devices"
+		tst_brk TBROK "unable to create veth pair devices"
 
 	$NS_EXEC $NS_HANDLE0 $NS_TYPE ns_ifmove veth1 $NS_HANDLE1
 	ret=$?
@@ -214,10 +213,10 @@ netns_ns_exec_setup()
 	fi
 
 	if [ $ret -eq 32 ]; then
-		tst_brkm TCONF "IFLA_NET_NS_PID not supported"
+		tst_brk TCONF "IFLA_NET_NS_PID not supported"
 	fi
 
-	tst_brkm TBROK "unable to add device veth1 to the separate network namespace"
+	tst_brk TBROK "unable to add device veth1 to the separate network namespace"
 }
 
 ##
@@ -236,15 +235,15 @@ netns_ip_setup()
 	ip netns del $NS_HANDLE1 2>/dev/null
 
 	ip netns add $NS_HANDLE0 || \
-		tst_brkm TBROK "unable to create a new network namespace"
+		tst_brk TBROK "unable to create a new network namespace"
 	ip netns add $NS_HANDLE1 || \
-		tst_brkm TBROK "unable to create a new network namespace"
+		tst_brk TBROK "unable to create a new network namespace"
 
 	$NS_EXEC $NS_HANDLE0 ip link add veth0 type veth peer name veth1 || \
-		tst_brkm TBROK "unable to create veth pair devices"
+		tst_brk TBROK "unable to create veth pair devices"
 
 	$NS_EXEC $NS_HANDLE0 ip link set veth1 netns $NS_HANDLE1 || \
-		tst_brkm TBROK "unable to add device veth1 to the separate network namespace"
+		tst_brk TBROK "unable to add device veth1 to the separate network namespace"
 }
 
 ##
@@ -253,7 +252,7 @@ netns_ip_setup()
 netns_set_ip()
 {
 	if [ -z "$NS_EXEC" ]; then
-		tst_brkm TBROK "netns_setup() function must be called first"
+		tst_brk TBROK "netns_setup() function must be called first"
 	fi
 
 	# This applies only for ipv6 variant:
@@ -273,23 +272,23 @@ netns_set_ip()
 	case $USE_IFCONFIG in
 	1)
 		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 $IFCONF_IN6_ARG $IP0/$NETMASK ||
-			tst_brkm TBROK "adding address to veth0 failed"
+			tst_brk TBROK "adding address to veth0 failed"
 		$NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK ||
-			tst_brkm TBROK "adding address to veth1 failed"
+			tst_brk TBROK "adding address to veth1 failed"
 		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 up ||
-			tst_brkm TBROK "enabling veth0 device failed"
+			tst_brk TBROK "enabling veth0 device failed"
 		$NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 up ||
-			tst_brkm TBROK "enabling veth1 device failed"
+			tst_brk TBROK "enabling veth1 device failed"
 		;;
 	*)
 		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP0/$NETMASK dev veth0 ||
-			tst_brkm TBROK "adding address to veth0 failed"
+			tst_brk TBROK "adding address to veth0 failed"
 		$NS_EXEC $NS_HANDLE1 $NS_TYPE ip address add $IP1/$NETMASK dev veth1 ||
-			tst_brkm TBROK "adding address to veth1 failed"
+			tst_brk TBROK "adding address to veth1 failed"
 		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set veth0 up ||
-			tst_brkm TBROK "enabling veth0 device failed"
+			tst_brk TBROK "enabling veth0 device failed"
 		$NS_EXEC $NS_HANDLE1 $NS_TYPE ip link set veth1 up ||
-			tst_brkm TBROK "enabling veth1 device failed"
+			tst_brk TBROK "enabling veth1 device failed"
 		;;
 	esac
 }

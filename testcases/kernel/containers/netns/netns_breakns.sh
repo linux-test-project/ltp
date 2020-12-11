@@ -1,22 +1,7 @@
 #!/bin/sh
-#==============================================================================
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Köry Maincent <kory.maincent@bootlin.com> 2020
 # Copyright (c) 2015 Red Hat, Inc.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of version 2 the GNU General Public License as
-# published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Written by Matus Marhefka <mmarhefk@redhat.com>
-#
-#==============================================================================
 #
 # SYNOPSIS:
 # netns_breakns.sh <NS_EXEC_PROGRAM> <IP_VERSION> <COMM_TYPE>
@@ -40,34 +25,28 @@
 # device which is not inside the network namespace referred to by NS_HANDLE0:
 # 1. using netlink (ip command).
 # 2. using ioctl (ifconfig command).
-#==============================================================================
 
-TCID="netns_breakns_$1_$2_$3"
-TST_TOTAL=2
+TST_POS_ARGS=3
+TST_SETUP=do_setup
+TST_TESTFUNC=do_test
 . netns_helper.sh
 
-# SETUP
-netns_setup $1 $2 $3 "192.168.0.2" "192.168.0.3" "fd00::2" "fd00::3"
-tst_resm TINFO "NS interaction: $1 | devices setup: $3"
+PROG=$1
+IP_VER=$2
+COM_TYPE=$3
 
+do_setup()
+{
+	netns_setup $PROG $IP_VER $COM_TYPE "192.168.0.2" "192.168.0.3" "fd00::2" "fd00::3"
+	tst_res TINFO "NS interaction: $PROG | devices setup: $COM_TYPE"
+}
 
-# TEST CASE #1
-$NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP1/$NETMASK dev veth1 2>/dev/null
-if [ $? -ne 0 ]; then
-	tst_resm TPASS "controlling device over netlink"
-else
-	tst_resm TFAIL "controlling device over netlink"
-fi
+do_test()
+{
+	EXPECT_FAIL $NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP1/$NETMASK dev veth1
 
+	tst_require_cmds ifconfig
+	EXPECT_FAIL $NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK
+}
 
-# TEST CASE #2
-tst_require_cmds ifconfig
-$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK 2>/dev/null
-if [ $? -ne 0 ]; then
-	tst_resm TPASS "controlling device over ioctl"
-else
-	tst_resm TFAIL "controlling device over ioctl"
-fi
-
-
-tst_exit
+tst_run

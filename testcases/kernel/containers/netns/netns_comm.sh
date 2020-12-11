@@ -1,22 +1,7 @@
 #!/bin/sh
-#==============================================================================
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Köry Maincent <kory.maincent@bootlin.com> 2020
 # Copyright (c) 2015 Red Hat, Inc.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of version 2 the GNU General Public License as
-# published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Written by Matus Marhefka <mmarhefk@redhat.com>
-#
-#==============================================================================
 #
 # SYNOPSIS:
 # netns_comm.sh <NS_EXEC_PROGRAM> <IP_VERSION> <COMM_TYPE>
@@ -43,56 +28,43 @@
 #      one device)
 #   3. communication over the lo (localhost) device in a separate
 #      network namespace
-#==============================================================================
 
-TCID="netns_comm_$1_$2_$3"
-TST_TOTAL=3
+TST_POS_ARGS=3
+TST_SETUP=do_setup
+TST_TESTFUNC=do_test
 . netns_helper.sh
 
-# SETUP
-netns_setup $1 $2 $3 "192.168.0.2" "192.168.0.3" "fd00::2" "fd00::3"
-tst_resm TINFO "NS interaction: $1 | devices setup: $3"
+PROG=$1
+IP_VER=$2
+COM_TYPE=$3
 
+do_setup()
+{
+	netns_setup $PROG $IP_VER $COM_TYPE "192.168.0.2" "192.168.0.3" "fd00::2" "fd00::3"
+	tst_res TINFO "NS interaction: $PROG | devices setup: $COM_TYPE"
+}
 
-# TEST CASE #1
-$NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I veth0 $IP1 1>/dev/null
-if [ $? -eq 0 ]; then
-	tst_resm TPASS "configuration and communication over veth0"
-else
-	tst_resm TFAIL "configuration and communication over veth0"
-fi
+do_test()
+{
+	EXPECT_PASS $NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I veth0 $IP1 1>/dev/null
 
+	EXPECT_PASS $NS_EXEC $NS_HANDLE1 $NS_TYPE $tping -q -c2 -I veth1 $IP0 1>/dev/null
 
-# TEST CASE #2
-$NS_EXEC $NS_HANDLE1 $NS_TYPE $tping -q -c2 -I veth1 $IP0 1>/dev/null
-if [ $? -eq 0 ]; then
-	tst_resm TPASS "configuration and communication over veth1"
-else
-	tst_resm TFAIL "configuration and communication over veth1"
-fi
+	case "$IP_VER" in
+	ipv4) ip_lo="127.0.0.1" ;;
+	ipv6) ip_lo="::1" ;;
+	esac
+	case "$COM_TYPE" in
+	netlink)
+		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set dev lo up || \
+			tst_brk TBROK "enabling lo device failed"
+		;;
+	ioctl)
+		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig lo up || \
+			tst_brk TBROK "enabling lo device failed"
+		;;
+	esac
+	EXPECT_PASS $NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I lo $ip_lo 1>/dev/null
+}
 
-
-# TEST CASE #3
-case "$2" in
-ipv4) IP_LO="127.0.0.1" ;;
-ipv6) IP_LO="::1" ;;
-esac
-case "$3" in
-netlink)
-	$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set dev lo up || \
-		tst_brkm TBROK "enabling lo device failed"
-	;;
-ioctl)
-	$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig lo up || \
-		tst_brkm TBROK "enabling lo device failed"
-	;;
-esac
-$NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I lo $IP_LO 1>/dev/null
-if [ $? -eq 0 ]; then
-	tst_resm TPASS "configuration and communication over localhost"
-else
-	tst_resm TFAIL "configuration and communication over localhost"
-fi
-
-
-tst_exit
+tst_run
