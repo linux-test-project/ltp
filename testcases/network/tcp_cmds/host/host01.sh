@@ -12,7 +12,7 @@ TST_NEEDS_CMDS="awk host hostname"
 
 do_test()
 {
-	local lhost="$(hostname)"
+	local lhost="${HOSTNAME:-$(hostname)}"
 	local addr
 
 	tst_res TINFO "test basic functionality of the host command"
