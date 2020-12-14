@@ -19,7 +19,7 @@ do_setup()
 
 do_test()
 {
-	tst_ping $(tst_iface) $(tst_ipaddr rhost) $2
+	tst_ping -s $2
 }
 
 tst_run

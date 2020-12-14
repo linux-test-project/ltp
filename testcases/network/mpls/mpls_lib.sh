@@ -87,8 +87,8 @@ mpls_virt_test()
 	local max_size=$TST_NET_MAX_PKT
 
 	if [ "$type" = "icmp" ]; then
-		tst_ping $ip_virt_local $ip_virt_remote 10 100 1000 2000 $max_size
-		tst_ping $ip6_virt_local $ip6_virt_remote 10 100 1000 2000 $max_size
+		tst_ping -I $ip_virt_local -H $ip_virt_remote -s "10 100 1000 2000 $max_size"
+		tst_ping -I $ip6_virt_local -H $ip6_virt_remote -s "10 100 1000 2000 $max_size"
 	else
 		tst_netload -S $ip_virt_local -H $ip_virt_remote -T $type -n 10 -N 10
 		tst_netload -S $ip6_virt_local -H $ip6_virt_remote -T $type -n 10 -N 10

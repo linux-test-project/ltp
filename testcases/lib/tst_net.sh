@@ -800,37 +800,58 @@ tst_netload_compare()
 	tst_res_ TPASS "$msg, in range [${threshold_low}:${threshold_hi}]%"
 }
 
-# tst_ping [IFACE] [DST ADDR] [MESSAGE SIZE ARRAY]
+tst_ping_opt_unsupported()
+{
+	ping $@ 2>&1 | grep -q "invalid option"
+}
+
+# tst_ping -c COUNT -s MESSAGE_SIZES -p PATTERN -I IFACE -H HOST
 # Check icmp connectivity
 # IFACE: source interface name or IP address
-# DST ADDR: destination IPv4 or IPv6 address
-# MESSAGE SIZE ARRAY: message size array
+# HOST: destination IPv4 or IPv6 address
+# MESSAGE_SIZES: message size array
 tst_ping()
 {
 	# The max number of ICMP echo request
-	PING_MAX="${PING_MAX:-500}"
-
-	local src_iface="${1:-$(tst_iface)}"
-	local dst_addr="${2:-$(tst_ipaddr rhost)}"; shift $(( $# >= 2 ? 2 : 0 ))
-	local msg_sizes="$*"
-	local msg="tst_ping $dst_addr iface/saddr $src_iface, msg_size"
+	local ping_count="${PING_MAX:-500}"
+	local flood_opt="-f"
+	local pattern_opt
+	local msg_sizes
+	local src_iface="$(tst_iface)"
+	local dst_addr="$(tst_ipaddr rhost)"
 	local cmd="ping"
 	local ret=0
+	local opts
+
+	local OPTIND
+	while getopts c:s:p:I:H: opt; do
+		case "$opt" in
+		c) ping_count="$OPTARG";;
+		s) msg_sizes="$OPTARG";;
+		p) pattern_opt="-p $OPTARG";;
+		I) src_iface="$OPTARG";;
+		H) dst_addr="$OPTARG";;
+		*) tst_brk_ TBROK "tst_ping: unknown option: $OPTARG";;
+		esac
+	done
 
 	echo "$dst_addr" | grep -q ':' && cmd="ping6"
 	tst_require_cmds $cmd
 
+	if tst_ping_opt_unsupported $flood_opt; then
+		flood_opt="-i 0.01"
+		[ "$pattern_opt" ] && pattern_opt="-p aa"
+
+		tst_ping_opt_unsupported -i $pattern_opt && \
+			tst_brk_ TCONF "unsupported ping version (old busybox?)"
+	fi
+
 	# ping cmd use 56 as default message size
 	for size in ${msg_sizes:-"56"}; do
-		$cmd -I $src_iface -c $PING_MAX $dst_addr \
-			-s $size -i 0 > /dev/null 2>&1
+		EXPECT_PASS $cmd -I $src_iface -c $ping_count -s $size \
+			$flood_opt $pattern_opt $dst_addr \>/dev/null
 		ret=$?
-		if [ $ret -eq 0 ]; then
-			tst_res_ TPASS "$msg $size: pass"
-		else
-			tst_res_ TFAIL "$msg $size: fail"
-			break
-		fi
+		[ "$ret" -ne 0 ] && break
 	done
 	return $ret
 }

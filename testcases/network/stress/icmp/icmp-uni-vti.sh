@@ -18,7 +18,7 @@ do_setup()
 
 do_test()
 {
-	tst_ping $tst_vti $ip_rmt_tun $2
+	tst_ping -I $tst_vti -H $ip_rmt_tun -s $2
 }
 
 tst_run

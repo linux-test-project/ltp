@@ -77,7 +77,7 @@ test_body()
 
 		tst_sleep $CHANGE_INTERVAL
 
-		tst_ping $(tst_ipaddr) $(tst_ipaddr rhost) "1 1000 65507"
+		tst_ping -s "1 1000 65507"
 	done
 }
 

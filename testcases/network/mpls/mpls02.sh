@@ -43,7 +43,7 @@ do_test()
 	local max_size=$TST_NET_MAX_PKT
 
 	if [ "$type" = "icmp" ]; then
-		tst_ping $ip_loc $ip_rmt 10 100 1000 2000 $max_size
+		tst_ping -I $ip_loc -H $ip_rmt -s "10 100 1000 2000 $max_size"
 	else
 		tst_netload -S $ip_loc -H $ip_rmt -T $type -n 10 -N 10
 		tst_netload -S $ip_loc -H $ip_rmt -T $type -A $max_size

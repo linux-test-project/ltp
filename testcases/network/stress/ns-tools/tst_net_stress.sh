@@ -69,7 +69,7 @@ check_connectivity()
 
 	tst_res TINFO "ping through $src_iface iface to ${dst_addr}$cnt_msg"
 
-	tst_ping $src_iface $dst_addr
+	tst_ping -I $src_iface -H $dst_addr
 }
 
 # check_connectivity_interval CNT [RESTORE] [SRC_IFACE] [DST_ADDR]
