@@ -137,7 +137,7 @@ mount_loop_device()
 
 print_ima_config()
 {
-	local config="/boot/config-$(uname -r)"
+	local config="${KCONFIG_PATH:-/boot/config-$(uname -r)}"
 	local i
 
 	if [ -r "$config" ]; then
