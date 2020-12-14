@@ -598,7 +598,7 @@ struct tcses *get_tcs_info(char *ptr)
 	}
 #endif
 
-	for (ctr = 0; ctr < (sizeof(all_tcses) / sizeof(struct tcses)); ctr++) {
+	for (ctr = 0; ctr < (int)(sizeof(all_tcses) / sizeof(struct tcses)); ctr++) {
 		if (strcmp(ptr, all_tcses[ctr].tcid) == 0 ||
 		    strcmp(ptr, all_tcses[ctr].syscall) == 0) {
 			tcs_ptr = &all_tcses[ctr];
@@ -1879,7 +1879,7 @@ void help(void)
 
 	printf("   -T id  Determines which tests cases to execute:\n");
 
-	for (ind = 0; ind < sizeof(all_tcses) / sizeof(struct tcses); ind++) {
+	for (ind = 0; ind < (int)sizeof(all_tcses) / sizeof(struct tcses); ind++) {
 		printf("  %s/%s - %s\n", all_tcses[ind].tcid,
 		       all_tcses[ind].syscall, all_tcses[ind].desc);
 	}

@@ -122,7 +122,7 @@ int main(int ac, char **av)
 					 "stat(%s) failed", TESTFILE);
 			stat_buf.st_mode &= ~S_IFREG;
 
-			if (stat_buf.st_mode == mode)
+			if (stat_buf.st_mode == (unsigned int)mode)
 				tst_resm(TPASS, "Functionality of "
 					 "chmod(%s, %#o) successful",
 					 TESTFILE, mode);

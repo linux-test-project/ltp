@@ -144,7 +144,7 @@ static void child_environment(void)
 
 	fildes = creat(OUTPUT_FILE, 0700);
 
-	for (index = 0; index < NUMBER_OF_ENVIRON; index++) {
+	for (index = 0; index < (int)NUMBER_OF_ENVIRON; index++) {
 		memset(msg, 0, MAX_LINE_LENGTH);
 
 		var = getenv(environ_list[index]);
@@ -243,7 +243,7 @@ void parent_environment(void)
 	char *var;
 
 	fildes = SAFE_OPEN(cleanup, OUTPUT_FILE, O_RDWR);
-	for (index = 0; index < NUMBER_OF_ENVIRON; index++) {
+	for (index = 0; index < (int)NUMBER_OF_ENVIRON; index++) {
 		ret = read(fildes, tmp_line, MAX_LINE_LENGTH);
 		if (ret == 0) {
 			tst_resm(TBROK,

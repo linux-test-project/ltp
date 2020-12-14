@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
 		tst_resm(TINFO, "touching mmaped memory");
 
-		for (i = 0; i < memsize; i++) {
+		for (i = 0; i < (int)memsize; i++) {
 			array[i] = (char)i;
 		}
 

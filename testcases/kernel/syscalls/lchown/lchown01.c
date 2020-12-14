@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 					 SFILE, TEST_ERRNO);
 			}
 
-			if (user_id == -1) {
+			if ((int)user_id == -1) {
 				if (i > 0)
 					user_id =
 					    test_cases[i - 1].user_id;
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 					user_id = geteuid();
 			}
 
-			if (group_id == -1) {
+			if ((int)group_id == -1) {
 				if (i > 0)
 					group_id =
 					    test_cases[i - 1].group_id;

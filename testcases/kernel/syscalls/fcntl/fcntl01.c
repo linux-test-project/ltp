@@ -154,7 +154,7 @@ int main(int ac, char **av)
 			tst_resm(TFAIL, "unexpected flags, got 0x%x, "
 				 "expected 0x%x", flags, 1);
 
-		for (i = 0; i < ARRAY_SIZE(fd); i++)
+		for (i = 0; i < (int)ARRAY_SIZE(fd); i++)
 			close(fd[i]);
 		for (i = 0; i < 8; i++) {
 			sprintf(fname, "./fcntl%d.%d", i, mypid);
