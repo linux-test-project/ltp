@@ -93,7 +93,7 @@ test_print_cmsg(sctp_cmsg_t type, sctp_cmsg_data_t *data)
 
 /* This function prints the message. */
 void
-test_print_message(int sk, struct msghdr *msg, size_t msg_len)
+test_print_message(int sk LTP_ATTRIBUTE_UNUSED, struct msghdr *msg, size_t msg_len)
 {
 	sctp_cmsg_data_t *data;
 	struct cmsghdr *cmsg;
@@ -114,7 +114,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 		/* Make sure that everything is printable and that we
 		 * are NUL terminated...
 		 */
-		printf("DATA(%d):  ", msg_len);
+		printf("DATA(%ld):  ", msg_len);
 		while ( msg_len > 0 ) {
 			char *text;
 			unsigned int len;
@@ -231,7 +231,7 @@ test_check_msg_notification(struct msghdr *msg, int datalen,
  * stream and ppid.
  */
 void
-test_check_buf_data(void *buf, int datalen, int msg_flags,
+test_check_buf_data(void *buf LTP_ATTRIBUTE_UNUSED, int datalen, int msg_flags,
 		    struct sctp_sndrcvinfo *sinfo, int expected_datalen,
 		    int expected_msg_flags, uint16_t expected_stream,
 		    uint32_t expected_ppid)

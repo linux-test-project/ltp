@@ -421,9 +421,8 @@ static unsigned int search_mem(void)
 	return (i);
 }
 
-static void *thread_run(void *arg)
+static void *thread_run(void *arg __attribute__((unused)))
 {
-
 	if (verbose > 1)
 		printf("Thread started\n");
 
