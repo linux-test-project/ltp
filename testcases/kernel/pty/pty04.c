@@ -133,21 +133,58 @@ static int open_pty(const struct ldisc_info *ldisc)
 	return set_ldisc(pts, ldisc);
 }
 
-static ssize_t try_write(int fd, const char *data,
-			 ssize_t size, ssize_t *written)
+static ssize_t try_async_write(int fd, const char *data, ssize_t size,
+			       ssize_t *done)
 {
-	ssize_t ret = write(fd, data, size);
+	ssize_t off = done ? *done : 0;
+	ssize_t ret = write(fd, data + off, size - off);
 
 	if (ret < 0)
 		return -(errno != EAGAIN);
 
-	return !written || (*written += ret) >= size;
+	if (!done)
+		return 1;
+
+	*done += ret;
+	return *done >= size;
 }
 
-static void write_pty(const struct ldisc_info *ldisc)
+static ssize_t try_async_read(int fd, char *data, ssize_t size,
+			      ssize_t *done)
+{
+	ssize_t off = done ? *done : 0;
+	ssize_t ret = read(fd, data + off, size - off);
+
+	if (ret < 0)
+		return -(errno != EAGAIN);
+
+	if (!done)
+		return 1;
+
+	*done += ret;
+	return *done >= size;
+}
+
+static ssize_t retry_async_write(int fd, const char *data, ssize_t size)
+{
+	ssize_t done = 0;
+
+	return TST_RETRY_FUNC(try_async_write(fd, data, size, &done),
+			      TST_RETVAL_NOTNULL);
+}
+
+static ssize_t retry_async_read(int fd, char *data, ssize_t size)
+{
+	ssize_t done = 0;
+
+	return TST_RETRY_FUNC(try_async_read(fd, data, size, &done),
+			      TST_RETVAL_NOTNULL);
+}
+
+static void do_pty(const struct ldisc_info *ldisc)
 {
 	char *data;
-	ssize_t written, ret;
+	ssize_t ret;
 	size_t len = 0;
 
 	switch (ldisc->n) {
@@ -171,17 +208,12 @@ static void write_pty(const struct ldisc_info *ldisc)
 		break;
 	}
 
-
-	written = 0;
-	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written),
-			     TST_RETVAL_NOTNULL);
+	ret = retry_async_write(ptmx, data, len);
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "Failed 1st write to PTY");
 	tst_res(TPASS, "Wrote PTY %s %d (1)", ldisc->name, ptmx);
 
-	written = 0;
-	ret = TST_RETRY_FUNC(try_write(ptmx, data, len, &written),
-			     TST_RETVAL_NOTNULL);
+	ret = retry_async_write(ptmx, data, len);
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "Failed 2nd write to PTY");
 
@@ -190,10 +222,22 @@ static void write_pty(const struct ldisc_info *ldisc)
 
 	tst_res(TPASS, "Wrote PTY %s %d (2)", ldisc->name, ptmx);
 
-	while (try_write(ptmx, data, len, NULL) >= 0)
-		;
+	ret = retry_async_read(ptmx, data, len);
+	if (ret < 0)
+		tst_brk(TBROK | TERRNO, "Failed read of PTY");
 
-	tst_res(TPASS, "Writing to PTY interrupted by hangup");
+	tst_res(TPASS, "Read PTY %s %d", ldisc->name, ptmx);
+	TST_CHECKPOINT_WAKE(0);
+
+	while (1) {
+		if (retry_async_read(ptmx, data, len) < 0)
+			break;
+
+		if (retry_async_write(ptmx, data, len) < 0)
+			break;
+	}
+
+	tst_res(TPASS, "Transmission on PTY interrupted by hangup");
 
 	tst_free_all();
 }
@@ -288,7 +332,7 @@ static void check_data(const struct ldisc_info *ldisc,
 		tst_res(TINFO, "Will continue test without data checking");
 }
 
-static void try_read(int fd, char *data, ssize_t size)
+static ssize_t try_sync_read(int fd, char *data, ssize_t size)
 {
 	ssize_t ret, n = 0;
 	int retry = mtu;
@@ -297,13 +341,35 @@ static void try_read(int fd, char *data, ssize_t size)
 		ret = read(fd, data + n, size - n);
 
 		if (ret < 0)
-			break;
+			return ret;
 
 		if ((n += ret) >= size)
-			return;
+			return ret;
 	}
 
-	tst_brk(TBROK | TERRNO, "Read %zd of %zd bytes", n, size);
+	tst_brk(TBROK | TERRNO, "Only read %zd of %zd bytes", n, size);
+
+	return n;
+}
+
+static ssize_t try_sync_write(int fd, const char *data, ssize_t size)
+{
+	ssize_t ret, n = 0;
+	int retry = mtu;
+
+	while (retry--) {
+		ret = write(fd, data + n, size - n);
+
+		if (ret < 0)
+			return ret;
+
+		if ((n += ret) >= size)
+			return ret;
+	}
+
+	tst_brk(TBROK | TERRNO, "Only wrote %zd of %zd bytes", n, size);
+
+	return n;
 }
 
 static void read_netdev(const struct ldisc_info *ldisc)
@@ -323,19 +389,34 @@ static void read_netdev(const struct ldisc_info *ldisc)
 
 	tst_res(TINFO, "Reading from socket %d", sk);
 
-	try_read(sk, data, plen);
+	TEST(try_sync_read(sk, data, plen));
+	if (TST_RET < 0)
+		tst_brk(TBROK | TTERRNO, "Read netdev %s %d (1)", ldisc->name, sk);
 	check_data(ldisc, data, plen);
 	tst_res(TPASS, "Read netdev %s %d (1)", ldisc->name, sk);
 
-	try_read(sk, data, plen);
+	TEST(try_sync_read(sk, data, plen));
+	if (TST_RET < 0)
+		tst_brk(TBROK | TTERRNO, "Read netdev %s %d (2)", ldisc->name, sk);
 	check_data(ldisc, data, plen);
 	tst_res(TPASS, "Read netdev %s %d (2)", ldisc->name, sk);
 
-	TST_CHECKPOINT_WAKE(0);
-	while ((rlen = read(sk, data, plen)) > 0)
-		check_data(ldisc, data, rlen);
+	TEST(try_sync_write(sk, data, plen));
+	if (TST_RET < 0)
+		tst_brk(TBROK | TTERRNO, "Write netdev %s %d", ldisc->name, sk);
 
-	tst_res(TPASS, "Reading data from netdev interrupted by hangup");
+	tst_res(TPASS, "Write netdev %s %d", ldisc->name, sk);
+
+	while (1) {
+		if (try_sync_write(sk, data, plen) < 0)
+			break;
+
+		if ((rlen = try_sync_read(sk, data, plen)) < 0)
+			break;
+		check_data(ldisc, data, rlen);
+	}
+
+	tst_res(TPASS, "Data transmission on netdev interrupted by hangup");
 
 	close(sk);
 	tst_free_all();
@@ -356,7 +437,7 @@ static void do_test(unsigned int n)
 	}
 
 	if (!SAFE_FORK()) {
-		write_pty(ldisc);
+		do_pty(ldisc);
 		return;
 	}
 
