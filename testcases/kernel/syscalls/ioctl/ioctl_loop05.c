@@ -101,6 +101,9 @@ static void setup(void)
 	if (tst_fs_type(".") == TST_TMPFS_MAGIC)
 		tst_brk(TCONF, "tmpfd doesn't support O_DIRECT flag");
 
+	if (tst_fs_type(".") == TST_OVERLAYFS_MAGIC)
+		tst_brk(TCONF, "device isn't properly detected in overlay fs");
+
 	dev_num = tst_find_free_loopdev(dev_path, sizeof(dev_path));
 	if (dev_num < 0)
 		tst_brk(TBROK, "Failed to find free loop device");
