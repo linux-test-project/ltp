@@ -21,11 +21,54 @@ CHANGE_VALUES="784 1142 552 1500 552 1500 552 748 552 1142 1500"
 CHANGE6_VALUES="1280 1445 1335 1390 1500 1280 1500 1280 1335 1500"
 saved_mtu=
 
+MAX_PACKET_SIZE=65507
+
+set_mtu()
+{
+	local mtu="$1"
+	local cmd="$2"
+	local ret=0
+	local iface=$(tst_iface)
+	local iface_rmt=$(tst_iface rhost)
+
+	case $cmd in
+		ifconfig) ifconfig $iface mtu $mtu || ret=1
+			tst_rhost_run -c "ifconfig $iface_rmt mtu $mtu" || ret=1
+			;;
+		ip) ip link set $iface mtu $mtu || ret=1
+			tst_rhost_run -c "ip link set $iface_rmt mtu $mtu" || ret=1
+			;;
+		*) tst_brk TBROK "unknown cmd '$cmd'"
+			;;
+	esac
+
+	return $ret
+}
+
+find_ipv4_max_packet_size()
+{
+	local min_mtu=552
+	local size=$MAX_PACKET_SIZE
+
+	set_mtu $min_mtu $CMD || tst_brk TBROK "failed to set MTU to $mtu"
+	tst_res TINFO "checking max MTU"
+	while [ $size -gt 0 ]; do
+		if ping -I $(tst_iface) -c1 -w1 -s $size $(tst_ipaddr rhost) >/dev/null; then
+			tst_res TINFO "use max MTU $size"
+			MAX_PACKET_SIZE=$size
+			return
+		fi
+		size=$((size - 500))
+	done
+	tst_brk TBROK "failed to find max MTU"
+}
+
 do_setup()
 {
 	[ "$TST_IPV6" ] && CHANGE_VALUES=$CHANGE6_VALUES
 	if_setup
 	saved_mtu="$(cat /sys/class/net/$(tst_iface)/mtu)"
+	[ "$TST_IPV6" ] || find_ipv4_max_packet_size
 }
 
 do_cleanup()
@@ -40,9 +83,6 @@ do_cleanup()
 test_body()
 {
 	local cmd="$CMD"
-
-	local iface=$(tst_iface)
-	local iface_rmt=$(tst_iface rhost)
 
 	tst_res TINFO "'$cmd' changes MTU $MTU_CHANGE_TIMES times" \
 	               "every $CHANGE_INTERVAL seconds"
@@ -59,24 +99,14 @@ test_body()
 		make_background_tcp_traffic
 
 		tst_res TINFO "set MTU to $mtu $cnt/$MTU_CHANGE_TIMES"
-		local ret=0
-		case $cmd in
-		ifconfig) ifconfig $iface mtu $mtu || ret=1
-			tst_rhost_run -c "ifconfig $iface_rmt mtu $mtu"
-		;;
-		ip) ip link set $iface mtu $mtu || ret=1
-			tst_rhost_run -c "ip link set $iface_rmt mtu $mtu"
-		;;
-		esac
-
-		if [ $? -ne 0 -o $ret -ne 0 ]; then
-			tst_res TFAIL "Failed to change the mtu at $cnt time"
+		if ! set_mtu $mtu $cmd; then
+			tst_res TFAIL "failed to change MTU to $mtu at $cnt time"
 			return
 		fi
 
 		tst_sleep $CHANGE_INTERVAL
 
-		tst_ping -s "1 1000 65507"
+		tst_ping -s "1 $((mtu / 2)) $mtu $MAX_PACKET_SIZE"
 	done
 }
 
