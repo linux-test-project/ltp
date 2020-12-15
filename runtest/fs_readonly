@@ -51,5 +51,5 @@ test_robind50 test_robind.sh -c "ftest05"
 test_robind51 test_robind.sh -c "ftest06"
 test_robind52 test_robind.sh -c "ftest07"
 test_robind53 test_robind.sh -c "ftest08"
-test_robind54 test_robind.sh -c "lftest 80"
+test_robind54 test_robind.sh -c "lftest -n 80
 test_robind55 test_robind.sh -c "writetest"

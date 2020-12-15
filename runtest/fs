@@ -58,7 +58,7 @@ ftest06 ftest06
 ftest07 ftest07
 ftest08 ftest08
 
-lftest01	lftest 100
+lftest01	lftest
 writetest01	writetest
 
 #Also run the fs_di (Data Integrity tests)
