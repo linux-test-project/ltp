@@ -43,7 +43,6 @@ test_body()
 
 	local iface=$(tst_iface)
 	local iface_rmt=$(tst_iface rhost)
-	[ "$TST_IPV6" ] && local netmask=64 || local netmask=16
 
 	tst_res TINFO "'$cmd' changes MTU $MTU_CHANGE_TIMES times" \
 	               "every $CHANGE_INTERVAL seconds"
