@@ -72,7 +72,7 @@ matrix:
           compiler: clang
 
         - os: linux
-          env: DISTRO=ubuntu:eoan TREE=out
+          env: DISTRO=ubuntu:groovy TREE=out
           compiler: gcc
 
         - os: linux
