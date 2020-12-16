@@ -336,9 +336,19 @@ sub content_all_tests
 			}
 
 			$content .= "|" . tag2title($k) . "\n|";
+
 			if (ref($v) eq 'ARRAY') {
-				$content .= table_escape(join(', ', @$v));
+				# two dimensional array
+				if (ref(@$v[0]) eq 'ARRAY') {
+					for my $v2 (@$v) {
+						$content .= paragraph(table_escape(join(' ', @$v2)));
+					}
+				} else {
+					# one dimensional array
+					$content .= table_escape(join(', ', @$v));
+				}
 			} else {
+				# plain content
 				$content .= table_escape($v);
 			}
 
