@@ -27,11 +27,6 @@ static int num_shms;
 static int shm_id_arr[MAXIDS];
 
 static long orig_shmmni = -1;
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 static void test_hugeshmget(void)
 {
 	TEST(shmget(IPC_PRIVATE, shm_size,
@@ -94,7 +89,10 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_hugeshmget,

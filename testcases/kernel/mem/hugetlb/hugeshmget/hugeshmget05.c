@@ -21,11 +21,6 @@ static int shm_id_1 = -1;
 static uid_t ltp_uid;
 static char *ltp_user = "nobody";
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 static void do_child(void);
 
 static void test_hugeshmget(void)
@@ -90,7 +85,10 @@ void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_hugeshmget,

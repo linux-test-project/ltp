@@ -18,11 +18,6 @@
 static size_t shm_size;
 static int shm_id_1 = -1;
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 static void test_hugeshmget(void)
 {
 	struct shmid_ds buf;
@@ -76,7 +71,10 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_hugeshmget,
