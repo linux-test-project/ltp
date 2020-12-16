@@ -12,6 +12,8 @@
 
 #include "data_storage.h"
 
+#define WARN(str) fprintf(stderr, "WARNING: " str "\n")
+
 static void oneline_comment(FILE *f)
 {
 	int c;
@@ -52,7 +54,8 @@ static void multiline_comment(FILE *f, struct data_node *doc)
 				struct data_node *line;
 				buf[bufp] = 0;
 				line = data_node_string(eat_asterisk_space(buf));
-				data_node_array_add(doc, line);
+				if (data_node_array_add(doc, line))
+					WARN("doc string comment truncated");
 				bufp = 0;
 				continue;
 			}
@@ -193,8 +196,6 @@ exit:
 	buf[i] = 0;
 	return buf;
 }
-
-#define WARN(str) fprintf(stderr, str "\n")
 
 static int parse_array(FILE *f, struct data_node *node)
 {
