@@ -19,11 +19,6 @@ static char *str_len_data;
 static int num_len_data = PIPE_MAX;
 static char *arr_in, *arr_out;
 
-static struct tst_option options[] = {
-	{"l:", &str_len_data, "-l <num> Length of test data (in bytes)"},
-	{NULL, NULL, NULL},
-};
-
 static void setup(void)
 {
 	int i, pipe_limit;
@@ -84,6 +79,9 @@ static struct tst_test test = {
 	.test_all = pipe_pipe,
 	.setup = setup,
 	.cleanup = cleanup,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"l:", &str_len_data, "-l <num> Length of test data (in bytes)"},
+		{}
+	},
 	.min_kver = "2.6.31"
 };
