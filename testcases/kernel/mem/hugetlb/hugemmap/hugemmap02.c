@@ -34,12 +34,6 @@
 #define LOW_ADDR       0x80000000
 #define LOW_ADDR2      0x90000000
 
-static struct tst_option options[] = {
-	{"H:", &Hopt,   "-H /..   Location of hugetlbfs, i.e.  -H /var/hugetlbfs"},
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 static char TEMPFILE[MAXPATHLEN];
 
 static unsigned long *addr;
@@ -143,7 +137,11 @@ static void cleanup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"H:", &Hopt,   "-H /..   Location of hugetlbfs, i.e.  -H /var/hugetlbfs"},
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_hugemmap,

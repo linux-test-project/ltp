@@ -65,12 +65,6 @@ static long size = NR_HPAGES, length = (NR_HPAGES + NR_HPAGES/2) * 2;
 char *opt_sysfs;
 char *opt_alloc;
 char *opt_shmid;
-static struct tst_option options[] = {
-	{"s",  &opt_sysfs, "-s        Setup hugepages from sysfs"},
-	{"m",  &opt_shmid, "-m        Reserve hugepages by shmget"},
-	{"a:", &opt_alloc, "-a        Number of overcommint hugepages"},
-	{NULL, NULL, NULL}
-};
 
 static void check_wr_bytes(void *addr);
 static int checkproc(long act_val, char *string, long exp_val);
@@ -304,7 +298,12 @@ static void init_sys_sz_paths(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s",  &opt_sysfs, "-s        Setup hugepages from sysfs"},
+		{"m",  &opt_shmid, "-m        Reserve hugepages by shmget"},
+		{"a:", &opt_alloc, "-a        Number of overcommint hugepages"},
+		{}
+},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_overcommit,
