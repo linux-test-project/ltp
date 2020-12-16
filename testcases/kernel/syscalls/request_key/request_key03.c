@@ -39,11 +39,6 @@
 
 static char *opt_bug;
 
-static struct tst_option options[] = {
-	{"b:", &opt_bug,  "-b       Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
-	{NULL, NULL, NULL}
-};
-
 static void test_with_key_type(const char *type, const char *payload,
 			       int effort)
 {
@@ -187,7 +182,10 @@ static void do_test(void)
 static struct tst_test test = {
 	.test_all = do_test,
 	.forks_child = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"b:", &opt_bug,  "-b       Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-15299"},
 		{"linux-git", "60ff5b2f547a"},
