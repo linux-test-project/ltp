@@ -70,11 +70,6 @@
 #define EXPECT_FAIL		1
 
 static char *R_opt;
-static struct tst_option options[] = {
-	{"R:", &R_opt, "  -R n    Percentage of overcommitting memory"},
-	{NULL, NULL, NULL}
-};
-
 static long old_overcommit_memory = -1;
 static long old_overcommit_ratio = -1;
 static long overcommit_ratio;
@@ -269,7 +264,10 @@ static void calculate_total_batch_size(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"R:", &R_opt, "  -R n    Percentage of overcommitting memory"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = overcommit_memory_test,
