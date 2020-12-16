@@ -172,17 +172,15 @@ static void run(void)
 	tst_res(TPASS, "test doesn't cause crash");
 }
 
-static struct tst_option options[] = {
-	{"a:", &addr_param, "-a       number of additional IP address params"},
-	{NULL, NULL, NULL}
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.forks_child = 1,
 	.test_all = run,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"a:", &addr_param, "-a       number of additional IP address params"},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2018-5803"},
 		{"linux-git", "07f2c7ab6f8d"},
