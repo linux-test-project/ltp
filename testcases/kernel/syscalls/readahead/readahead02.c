@@ -49,11 +49,6 @@ static int orig_bdi_limit;
 
 static const char mntpoint[] = OVL_BASE_MNTPOINT;
 
-static struct tst_option options[] = {
-	{"s:", &opt_fsizestr, "-s    testfile size (default 64MB)"},
-	{NULL, NULL, NULL}
-};
-
 static int libc_readahead(int fd, off_t offset, size_t len)
 {
 	return readahead(fd, offset, len);
@@ -405,7 +400,10 @@ static struct tst_test test = {
 	.mntpoint = mntpoint,
 	.setup = setup,
 	.cleanup = cleanup,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &opt_fsizestr, "-s    testfile size (default 64MB)"},
+		{}
+	},
 	.test = test_readahead,
 	.tcnt = ARRAY_SIZE(tcases),
 	.tags = (const struct tst_tag[]) {
