@@ -14,13 +14,6 @@ int merge_across_nodes;
 int size = 128, num = 3, unit = 1;
 char *opt_sizestr, *opt_numstr, *opt_unitstr;
 
-struct tst_option ksm_options[] = {
-	{"n:", &opt_numstr,  "-n       Number of processes"},
-	{"s:", &opt_sizestr, "-s       Memory allocation size in MB"},
-	{"u:", &opt_unitstr, "-u       Memory allocation unit in MB"},
-	{NULL, NULL, NULL}
-};
-
 static inline void parse_ksm_options(char *str_size, int *size,
 		char *str_num, int *num, char *str_unit, int *unit)
 {
@@ -37,8 +30,3 @@ static inline void parse_ksm_options(char *str_size, int *size,
 				"the remainder of division of size by unit is "
 				"not zero.");
 }
-
-static const char * const save_restore[] = {
-	"?/sys/kernel/mm/ksm/max_page_sharing",
-	NULL,
-};
