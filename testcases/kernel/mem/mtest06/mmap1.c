@@ -65,11 +65,6 @@ static int mapcnt, unmapcnt;
 /* stored sequence id before making read attempt */
 static int br_map, br_unmap;
 
-static struct tst_option options[] = {
-	{"x:", &str_exec_time, "Exec time (hours)"},
-	{NULL, NULL, NULL}
-};
-
 /* compare "before read" counters  with "after read" counters */
 static inline int was_area_mapped(int br_m, int br_u, int ar_m, int ar_u)
 {
@@ -258,6 +253,9 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"x:", &str_exec_time, "Exec time (hours)"},
+		{}
+	},
 	.needs_tmpdir = 1,
 };
