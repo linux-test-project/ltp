@@ -120,13 +120,11 @@ static void setup(void)
 		start_thread(&threads[i]);
 }
 
-static struct tst_option options[] = {
-	{"t:", &str_threads, "-t       Number of threads (default 10)"},
-	{NULL, NULL, NULL},
-};
-
 static struct tst_test test = {
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"t:", &str_threads, "-t       Number of threads (default 10)"},
+		{}
+	},
 	.needs_checkpoints = 1,
 	.setup = setup,
 	.test_all = run,
