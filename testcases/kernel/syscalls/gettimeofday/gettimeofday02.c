@@ -28,11 +28,6 @@ static volatile sig_atomic_t done;
 static char *str_rtime;
 static int rtime = 10;
 
-static struct tst_option options[] = {
-	{"T:", &str_rtime, "-T len   Test iteration runtime in seconds"},
-	{NULL, NULL, NULL},
-};
-
 static void breakout(int sig)
 {
 	done = sig;
@@ -85,6 +80,9 @@ static void setup(void)
 
 static struct tst_test test = {
 	.setup = setup,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"T:", &str_rtime, "-T len   Test iteration runtime in seconds"},
+		{},
+	},
 	.test_all = verify_gettimeofday,
 };
