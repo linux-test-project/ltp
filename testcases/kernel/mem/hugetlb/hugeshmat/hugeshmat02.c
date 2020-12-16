@@ -39,11 +39,6 @@ static int shm_id_1 = -1;
 static int shm_id_2 = -1;
 static void *addr;
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 struct tcase {
 	int *shmid;
 	void *addr;
@@ -104,7 +99,10 @@ void cleanup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_hugeshmat,
 	.setup = setup,

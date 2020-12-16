@@ -39,11 +39,6 @@ static void *addr;
 static uid_t ltp_uid;
 static char *ltp_user = "nobody";
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 static void verify_hugeshmat(void)
 {
 	int status;
@@ -99,7 +94,10 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.needs_tmpdir = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.test_all = verify_hugeshmat,
 	.setup = setup,
 	.cleanup = cleanup,
