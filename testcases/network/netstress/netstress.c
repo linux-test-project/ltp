@@ -992,40 +992,36 @@ static void do_test(void)
 	net.run();
 }
 
-static struct tst_option options[] = {
-	{"f", &fastopen_api, "-f       Use TFO API, default is old API"},
-	{"F", &fastopen_sapi,
-		"-F       TCP_FASTOPEN_CONNECT socket option and standard API"},
-	{"t:", &targ, "-t x     Set tcp_fastopen value"},
-
-	{"S:", &source_addr, "-S x     Source address to bind"},
-	{"g:", &tcp_port, "-g x     x - server port"},
-	{"b:", &barg, "-b x     x - low latency busy poll timeout"},
-	{"T:", &type, "-T x     tcp (default), udp, udp_lite, dccp, sctp"},
-	{"z", &zcopy, "-z       enable SO_ZEROCOPY"},
-	{"P:", &reuse_port, "-P       enable SO_REUSEPORT"},
-	{"D:", &dev, "-D x     bind to device x\n"},
-
-	{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
-	{"l", &client_mode, "-l       Become client, default is server"},
-	{"a:", &aarg, "-a x     Number of clients running in parallel"},
-	{"r:", &rarg, "-r x     Number of client requests"},
-	{"n:", &narg, "-n x     Client message size"},
-	{"N:", &Narg, "-N x     Server message size"},
-	{"m:", &Targ, "-m x     Receive timeout in milliseconds (not used by UDP/DCCP client)"},
-	{"d:", &rpath, "-d x     x is a path to file where result is saved"},
-	{"A:", &Aarg, "-A x     x max payload length (generated randomly)\n"},
-
-	{"R:", &Rarg, "Server:\n-R x     x requests after which conn.closed"},
-	{"q:", &qarg, "-q x     x - TFO queue"},
-	{"B:", &server_bg, "-B x     run in background, x - process directory"},
-	{NULL, NULL, NULL}
-};
-
 static struct tst_test test = {
 	.test_all = do_test,
 	.forks_child = 1,
 	.setup = setup,
 	.cleanup = cleanup,
-	.options = options
+	.options = (struct tst_option[]) {
+		{"f", &fastopen_api, "-f       Use TFO API, default is old API"},
+		{"F", &fastopen_sapi, "-F       TCP_FASTOPEN_CONNECT socket option and standard API"},
+		{"t:", &targ, "-t x     Set tcp_fastopen value"},
+		{"S:", &source_addr, "-S x     Source address to bind"},
+		{"g:", &tcp_port, "-g x     x - server port"},
+		{"b:", &barg, "-b x     x - low latency busy poll timeout"},
+		{"T:", &type, "-T x     tcp (default), udp, udp_lite, dccp, sctp"},
+		{"z", &zcopy, "-z       enable SO_ZEROCOPY"},
+		{"P:", &reuse_port, "-P       enable SO_REUSEPORT"},
+		{"D:", &dev, "-D x     bind to device x\n"},
+
+		{"H:", &server_addr, "Client:\n-H x     Server name or IP address"},
+		{"l", &client_mode, "-l       Become client, default is server"},
+		{"a:", &aarg, "-a x     Number of clients running in parallel"},
+		{"r:", &rarg, "-r x     Number of client requests"},
+		{"n:", &narg, "-n x     Client message size"},
+		{"N:", &Narg, "-N x     Server message size"},
+		{"m:", &Targ, "-m x     Receive timeout in milliseconds (not used by UDP/DCCP client)"},
+		{"d:", &rpath, "-d x     x is a path to file where result is saved"},
+		{"A:", &Aarg, "-A x     x max payload length (generated randomly)\n"},
+
+		{"R:", &Rarg, "Server:\n-R x     x requests after which conn.closed"},
+		{"q:", &qarg, "-q x     x - TFO queue"},
+		{"B:", &server_bg, "-B x     run in background, x - process directory"},
+		{}
+	},
 };
