@@ -39,11 +39,6 @@ static int *shared;
 static int pass;
 static sigjmp_buf env;
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 static void check_functionality(void);
 static void sighandler(int sig);
 
@@ -150,7 +145,10 @@ void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = hugeshmdt_test,
