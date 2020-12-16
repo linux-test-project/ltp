@@ -16,12 +16,6 @@ static char *filename;
 static void *file;
 static int fd;
 
-static struct tst_option options[] = {
-	{"f:", &filename,
-	 "-f file  File to mmap"},
-	{NULL, NULL, NULL}
-};
-
 static void cleanup(void)
 {
 	if (file)
@@ -48,7 +42,10 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"f:", &filename, "-f file  File to mmap"},
+		{}
+	},
 	.test_all = run,
 	.cleanup = cleanup,
 };
