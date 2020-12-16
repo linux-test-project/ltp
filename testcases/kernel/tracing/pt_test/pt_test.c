@@ -216,17 +216,14 @@ static void cleanup(void)
 	del_map(bufm, buhsz);
 }
 
-static struct tst_option options[] = {
-	{"m", &str_mode, "-m different mode, default is full mode"},
-	{"e:", &str_exclude_info, "-e exclude info, user or kernel"},
-	{"b", &str_branch_flag, "-b if disable branch trace"},
-	{NULL, NULL, NULL}
-};
-
-
 static struct tst_test test = {
 	.test_all = intel_pt_trace_check,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"m", &str_mode, "-m different mode, default is full mode"},
+		{"e:", &str_exclude_info, "-e exclude info, user or kernel"},
+		{"b", &str_branch_flag, "-b if disable branch trace"},
+		{}
+	},
 	.min_kver = "4.1",
 	.setup = setup,
 	.cleanup = cleanup,
