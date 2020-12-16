@@ -9,7 +9,8 @@
 
 /*\
  * [DESCRIPTION]
- *  Checks that process which called abort() gets killed by SIGIOT and dumps core.
+ *
+ * Checks that process which called abort() gets killed by SIGIOT and dumps core.
  *
  * [ALGORITHM]
  *  - Fork child.
