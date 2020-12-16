@@ -30,13 +30,6 @@ static uid_t ltpuser[MAX_USERS];
 static unsigned int usern;
 static unsigned int useri;
 
-static const char *const save_restore[] = {
-	"?/proc/sys/kernel/keys/gc_delay",
-	"?/proc/sys/kernel/keys/maxkeys",
-	"?/proc/sys/kernel/keys/maxbytes",
-	NULL,
-};
-
 static void add_user(char n)
 {
 	char username[] = "ltp_add_key05_n";
@@ -229,7 +222,12 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.setup = setup,
 	.cleanup = cleanup,
-	.save_restore = save_restore,
+	.save_restore = (const char * const[]) {
+		"?/proc/sys/kernel/keys/gc_delay",
+		"?/proc/sys/kernel/keys/maxkeys",
+		"?/proc/sys/kernel/keys/maxbytes",
+		NULL,
+	},
 	.bufs = (struct tst_buffers []) {
 		{&user_buf, .size = 64},
 		{}
