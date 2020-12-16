@@ -64,7 +64,7 @@ static inline struct data_node *data_node_string(const char *string)
 	return node;
 }
 
-#define MAX_ELEMS 20
+#define MAX_ELEMS 100
 
 static inline struct data_node *data_node_hash(void)
 {
