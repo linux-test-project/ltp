@@ -42,11 +42,6 @@
 static int dfd;
 static void *fmem;
 
-static const char * const save_restore[] = {
-	CORE_PATTERN,
-	NULL,
-};
-
 static void setup(void)
 {
 	char cwd[1024];
@@ -218,5 +213,8 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,
-	.save_restore = save_restore
+	.save_restore = (const char * const[]) {
+		CORE_PATTERN,
+		NULL,
+	},
 };
