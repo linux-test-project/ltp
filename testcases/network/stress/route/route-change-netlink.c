@@ -303,22 +303,21 @@ static void run(void)
 	tst_res(TPASS, "routes created and deleted");
 }
 
-static struct tst_option options[] = {
-	{"6", &ipv6_opt, "-6       Use IPv6 (default is IPv4)"},
-	{"c:", &c_opt, "-c x     Num loops (mandatory)"},
-	{"d:", &d_opt, "-d iface Interface to work on (mandatory)"},
-	{"g:", &g_opt, "-g x     Gateway IP"},
-	{"p:", &p_opt, "-p port  Rhost port (mandatory)"},
-	{"r:", &r_opt, "-r x     Rhost IP (mandatory)\n\n-g, -r IP parameter can contain more IP, separated by "
-		CHR2STR(IP_ADDR_DELIM)},
-	{NULL, NULL, NULL}
-};
 static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"6", &ipv6_opt, "-6       Use IPv6 (default is IPv4)"},
+		{"c:", &c_opt, "-c x     Num loops (mandatory)"},
+		{"d:", &d_opt, "-d iface Interface to work on (mandatory)"},
+		{"g:", &g_opt, "-g x     Gateway IP"},
+		{"p:", &p_opt, "-p port  Rhost port (mandatory)"},
+		{"r:", &r_opt, "-r x     Rhost IP (mandatory)\n\n-g, -r IP parameter can contain more IP, separated by "
+			CHR2STR(IP_ADDR_DELIM)},
+		{}
+	},
 };
 #else
 	TST_TEST_TCONF("libmnl library and headers are required");
