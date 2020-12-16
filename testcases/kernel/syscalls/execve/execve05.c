@@ -43,10 +43,6 @@
 static int nchild = 8;
 
 static char *opt_nchild;
-static struct tst_option exe_options[] = {
-	{"n:", &opt_nchild, "-n    numbers of children"},
-	{NULL, NULL, NULL}
-};
 
 static const char *const resource_files[] = {
 	TEST_APP,
@@ -83,7 +79,10 @@ static void setup(void)
 
 static struct tst_test test = {
 	.test_all = verify_execve,
-	.options = exe_options,
+	.options = (struct tst_option[]) {
+		{"n:", &opt_nchild, "-n    numbers of children"},
+		{}
+	},
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.needs_checkpoints = 1,
