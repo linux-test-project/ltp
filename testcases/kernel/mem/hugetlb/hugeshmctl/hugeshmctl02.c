@@ -34,11 +34,6 @@ static int shm_id_2 = -1;
 static int shm_id_3 = -1;
 static struct shmid_ds buf;
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 struct tcase {
 	int *shmid;
 	int cmd;
@@ -109,7 +104,10 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.request_hugepages = 128,

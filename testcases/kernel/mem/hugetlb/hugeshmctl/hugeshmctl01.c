@@ -53,11 +53,6 @@ static void func_set(void);
 static void func_rmid(void);
 static void *set_shmat(void);
 
-static struct tst_option options[] = {
-	{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
-	{NULL, NULL, NULL}
-};
-
 struct tcase {
 	int cmd;
 	void (*func_test) (void);
@@ -307,7 +302,10 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.forks_child = 1,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"s:", &nr_opt, "-s num   Set the number of the been allocated hugepages"},
+		{}
+	},
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = test_hugeshmctl,
