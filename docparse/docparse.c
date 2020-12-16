@@ -31,7 +31,7 @@ static const char *eat_asterisk_space(const char *c)
 		i++;
 
 	if (c[i] == '*') {
-		while (isspace(c[i+1]))
+		if (isspace(c[i+1]))
 			i++;
 		return &c[i+1];
 	}
