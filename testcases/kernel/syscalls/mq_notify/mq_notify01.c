@@ -198,15 +198,13 @@ static void do_test(unsigned int i)
 	tst_res(TPASS, "mq_notify and mq_timedsend exited expectedly");
 }
 
-static struct tst_option options[] = {
-	{"d", &str_debug, "Print debug messages"},
-	{NULL, NULL, NULL}
-};
-
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcase),
 	.test = do_test,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"d", &str_debug, "Print debug messages"},
+		{}
+	},
 	.setup = setup_common,
 	.cleanup = cleanup_common,
 };
