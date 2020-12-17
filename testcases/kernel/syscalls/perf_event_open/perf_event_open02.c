@@ -356,7 +356,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.options = (struct tst_option[]) {
-		{"v", &verbose, "-v\tverbose output"},
+		{"v", &verbose, "-v       verbose output"},
 		{},
 	},
 	.test_all = verify,
