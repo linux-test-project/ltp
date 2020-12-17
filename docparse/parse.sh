@@ -5,7 +5,7 @@
 set -e
 
 top_builddir=$PWD/..
-top_srcdir="$(dirname $0)/.."
+top_srcdir="$(cd $(dirname $0)/..; pwd)"
 
 cd $top_srcdir
 
