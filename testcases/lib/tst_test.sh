@@ -586,8 +586,12 @@ tst_run()
 	[ -n "$TST_NEEDS_MODULE" ] && tst_require_module "$TST_NEEDS_MODULE"
 
 	if [ -n "$TST_SETUP" ]; then
-		TST_DO_CLEANUP=1
-		$TST_SETUP
+		if type $TST_SETUP >/dev/null 2>/dev/null; then
+			TST_DO_CLEANUP=1
+			$TST_SETUP
+		else
+			tst_brk TBROK "TST_SETUP=$TST_SETUP declared, but function not defined (or cmd not found)"
+		fi
 	fi
 
 	#TODO check that test reports some results for each test function call
