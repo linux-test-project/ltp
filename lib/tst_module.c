@@ -28,7 +28,7 @@
 #include "ltp_priv.h"
 #include "old_module.h"
 
-void tst_module_exists(void (cleanup_fn)(void),
+void tst_module_exists_(void (cleanup_fn)(void),
 	const char *mod_name, char **mod_path)
 {
 	/* check current working directory */
@@ -77,11 +77,11 @@ void tst_module_exists(void (cleanup_fn)(void),
 		free(buf);
 }
 
-void tst_module_load(void (cleanup_fn)(void),
+void tst_module_load_(void (cleanup_fn)(void),
 	const char *mod_name, char *const argv[])
 {
 	char *mod_path = NULL;
-	tst_module_exists(cleanup_fn, mod_name, &mod_path);
+	tst_module_exists_(cleanup_fn, mod_name, &mod_path);
 
 	const int offset = 2; /* command name & module path */
 	int size = 0;
@@ -101,7 +101,7 @@ void tst_module_load(void (cleanup_fn)(void),
 	free(mod_path);
 }
 
-void tst_module_unload(void (cleanup_fn)(void), const char *mod_name)
+void tst_module_unload_(void (cleanup_fn)(void), const char *mod_name)
 {
 	int i, rc;
 

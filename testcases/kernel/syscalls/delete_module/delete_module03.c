@@ -14,7 +14,7 @@
 
 #include <errno.h>
 #include "tst_test.h"
-#include "old_module.h"
+#include "tst_module.h"
 #include "lapi/syscalls.h"
 
 #define DUMMY_MOD		"dummy_del_mod"
@@ -43,7 +43,7 @@ static void do_delete_module(void)
 		 * insmod DUMMY_MOD_KO again in case running
 		 * with -i option
 		 */
-		tst_module_load(NULL, DUMMY_MOD_KO, NULL);
+		tst_module_load(DUMMY_MOD_KO, NULL);
 		dummy_mod_loaded = 1;
 	}
 }
@@ -51,11 +51,11 @@ static void do_delete_module(void)
 static void setup(void)
 {
 	/* Load first kernel module */
-	tst_module_load(NULL, DUMMY_MOD_KO, NULL);
+	tst_module_load(DUMMY_MOD_KO, NULL);
 	dummy_mod_loaded = 1;
 
 	/* Load dependant kernel module */
-	tst_module_load(NULL, DUMMY_MOD_DEP_KO, NULL);
+	tst_module_load(DUMMY_MOD_DEP_KO, NULL);
 	dummy_mod_dep_loaded = 1;
 }
 
@@ -63,11 +63,11 @@ static void cleanup(void)
 {
 	/* Unload dependent kernel module */
 	if (dummy_mod_dep_loaded == 1)
-		tst_module_unload(NULL, DUMMY_MOD_DEP_KO);
+		tst_module_unload(DUMMY_MOD_DEP_KO);
 
 	/* Unload first kernel module */
 	if (dummy_mod_loaded == 1)
-		tst_module_unload(NULL, DUMMY_MOD_KO);
+		tst_module_unload(DUMMY_MOD_KO);
 }
 
 static struct tst_test test = {

@@ -14,9 +14,9 @@
  */
 
 #include <errno.h>
-#include "old_module.h"
 #include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "tst_module.h"
 
 #define MODULE_NAME	"dummy_del_mod"
 #define MODULE_NAME_KO	"dummy_del_mod.ko"
@@ -26,7 +26,7 @@ static int module_loaded;
 static void do_delete_module(void)
 {
 	if (module_loaded == 0) {
-		tst_module_load(NULL, MODULE_NAME_KO, NULL);
+		tst_module_load(MODULE_NAME_KO, NULL);
 		module_loaded = 1;
 	}
 
@@ -44,7 +44,7 @@ static void do_delete_module(void)
 static void cleanup(void)
 {
 	if (module_loaded == 1)
-		tst_module_unload(NULL, MODULE_NAME_KO);
+		tst_module_unload(MODULE_NAME_KO);
 }
 
 static struct tst_test test = {
