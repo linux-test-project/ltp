@@ -32,7 +32,9 @@ for test in `find testcases/ -name '*.c'`; do
 			echo ','
 		fi
 		first=
-		echo -n "$a"
+		cat <<EOF
+$a
+EOF
 	fi
 done
 
