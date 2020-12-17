@@ -11,6 +11,7 @@ TST_MIN_KVER="3.7"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="tc"
+TST_NEEDS_DRIVERS="sch_netem"
 TST_OPTS="R:"
 TST_USAGE=tcp_fastopen_usage
 TST_PARSE_ARGS=tcp_fastopen_parse_args
