@@ -517,6 +517,9 @@ getxattr03 getxattr03
 getxattr04 getxattr04
 getxattr05 getxattr05
 
+init_module01 init_module01
+init_module02 init_module02
+
 #Needs tty device.
 #ioctl01 ioctl01 -D /dev/tty0
 #ioctl02 ioctl02 -D /dev/tty0
