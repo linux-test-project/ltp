@@ -28,7 +28,7 @@ _tst_do_exit()
 	local ret=0
 	TST_DO_EXIT=1
 
-	if [ -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
+	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
 		$TST_CLEANUP
 	fi
 
@@ -582,6 +582,7 @@ tst_run()
 	[ -n "$TST_NEEDS_MODULE" ] && tst_require_module "$TST_NEEDS_MODULE"
 
 	if [ -n "$TST_SETUP" ]; then
+		TST_DO_CLEANUP=1
 		$TST_SETUP
 	fi
 
@@ -599,7 +600,6 @@ tst_run()
 		fi
 		TST_ITERATIONS=$((TST_ITERATIONS-1))
 	done
-
 	_tst_do_exit
 }
 
@@ -608,6 +608,7 @@ _tst_run_tests()
 	local _tst_data="$1"
 	local _tst_i
 
+	TST_DO_CLEANUP=1
 	for _tst_i in $(seq ${TST_CNT:-1}); do
 		if type ${TST_TESTFUNC}1 > /dev/null 2>&1; then
 			_tst_run_test "$TST_TESTFUNC$_tst_i" $_tst_i "$_tst_data"
