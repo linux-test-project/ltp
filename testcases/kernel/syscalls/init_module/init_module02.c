@@ -71,7 +71,8 @@ static void run(unsigned int n)
 	if (tc->exp_errno == EEXIST)
 		tst_module_load(MODULE_NAME, NULL);
 
-	TST_EXP_FAIL(init_module(*tc->buf, *tc->size, tc->param), tc->exp_errno);
+	TST_EXP_FAIL(init_module(*tc->buf, *tc->size, tc->param), tc->exp_errno,
+		     "TestName: %s", tc->name);
 
 	if (tc->exp_errno == EEXIST)
 		tst_module_unload(MODULE_NAME);
