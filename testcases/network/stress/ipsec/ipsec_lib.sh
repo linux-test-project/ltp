@@ -83,7 +83,7 @@ ipsec_lib_setup()
 	ALGR=
 
 	if [ -n "$IPSEC_MODE" ]; then
-		tst_net_run "tst_check_drivers xfrm_user" || \
+		tst_net_run -q "tst_check_drivers xfrm_user" || \
 			tst_brk TCONF "xfrm_user driver not available on lhost or rhost"
 		cleanup_xfrm=1
 	fi
