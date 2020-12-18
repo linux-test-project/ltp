@@ -65,7 +65,7 @@ tst_apparmor_used_profile()
 # Return 1: enabled in permissive mode or disabled
 tst_selinux_enforced()
 {
-	local f="$(_tst_get_enforce)"
+	local f="$(tst_get_enforce)"
 
 	[ -f "$f" ] && [ "$(cat $f)" = "1" ]
 }
@@ -117,13 +117,13 @@ tst_disable_selinux()
 	tst_res TINFO "trying to disable SELinux (requires super/root)"
 	tst_require_root
 
-	local f="$(_tst_get_enforce)"
+	local f="$(tst_get_enforce)"
 
 	[ -f "$f" ] && cat 0 > $f
 }
 
 # Get SELinux enforce file path
-_tst_get_enforce()
+tst_get_enforce()
 {
 	local dir="/sys/fs/selinux"
 
