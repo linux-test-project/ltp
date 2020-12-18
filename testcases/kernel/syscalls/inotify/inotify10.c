@@ -8,6 +8,10 @@
  *     Check that event is reported to watching parent and watching child
  *     based on their interest
  *
+ * Test case #3 is a regression test for commit fecc4559780d that fixes
+ * a bug introduced in kernel v5.9:
+ *
+ *     fsnotify: fix events reported to watching parent and child
  */
 
 #include "config.h"
@@ -62,6 +66,11 @@ static struct tcase {
 		"Group with parent watch and other group with child watches",
 		IN_ATTRIB, 0, 0,
 		0, IN_ATTRIB, IN_ATTRIB,
+	},
+	{
+		"Two Groups with parent and child watches for different events",
+		IN_ATTRIB, IN_OPEN, IN_OPEN,
+		IN_OPEN, IN_ATTRIB, IN_ATTRIB,
 	},
 };
 
@@ -199,6 +208,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = verify_inotify,
 	.tcnt = ARRAY_SIZE(tcases),
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "fecc4559780d"},
+		{}
+	}
 };
 
 #else
