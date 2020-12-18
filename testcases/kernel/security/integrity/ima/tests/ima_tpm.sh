@@ -157,7 +157,10 @@ read_pcr_tpm2()
 	local pcrread="tsspcrread -halg $ALGORITHM"
 	local i pcr
 
-	tst_check_cmds tsspcrread || return 1
+	if ! tst_cmd_available tsspcrread; then
+		echo "tsspcrread not found"
+		return 32
+	fi
 
 	for i in $(seq 0 $pcrmax); do
 		pcr=$($pcrread -ha "$i" -ns)
