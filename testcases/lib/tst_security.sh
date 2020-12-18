@@ -122,12 +122,21 @@ tst_disable_selinux()
 	[ -f "$f" ] && cat 0 > $f
 }
 
-# Get SELinux enforce file path
-tst_get_enforce()
+# Get SELinux directory path
+tst_get_selinux_dir()
 {
 	local dir="/sys/fs/selinux"
 
 	[ -d "$dir" ] || dir="/selinux"
+	[ -d "$dir" ] && echo "$dir"
+}
+
+# Get SELinux enforce file path
+tst_get_enforce()
+{
+	local dir=$(tst_get_selinux_dir)
+	[ -z "$dir" ] || return
+
 	local f="$dir/enforce"
 	[ -f "$f" ] && echo "$f"
 }
