@@ -44,7 +44,9 @@ cleanup()
 
 lsmod_matches_proc_modules()
 {
-	lsmod_output=$(lsmod | awk '!/Module/{print $1, $2, $3}' | sort)
+	lsmod_output=$(lsmod \
+			| awk '!/Module/{print $1, $2, ($3==-2) ? "-" : $3}' \
+			| sort)
 	if [ -z "$lsmod_output" ]; then
 		tst_brk TBROK "Failed to parse the output from lsmod"
 	fi
