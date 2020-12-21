@@ -2,12 +2,12 @@
 # Stress test for TCP/IP protocol stack (Multicast)
 #
 
-mcast4-group-single-socket mcast-group-single-socket
-mcast4-group-multiple-socket mcast-group-multiple-socket
-mcast4-group-same-group mcast-group-same-group
-mcast4-group-source-filter mcast-group-source-filter
+mcast4-group-single-socket mcast-group-single-socket.sh
+mcast4-group-multiple-socket mcast-group-multiple-socket.sh
+mcast4-group-same-group mcast-group-same-group.sh
+mcast4-group-source-filter mcast-group-source-filter.sh
 
-mcast6-group-single-socket mcast-group-single-socket -6
-mcast6-group-multiple-socket mcast-group-multiple-socket -6
-mcast6-group-same-group mcast-group-same-group -6
-mcast6-group-source-filter mcast-group-source-filter -6
+mcast6-group-single-socket mcast-group-single-socket.sh -6
+mcast6-group-multiple-socket mcast-group-multiple-socket.sh -6
+mcast6-group-same-group mcast-group-same-group.sh -6
+mcast6-group-source-filter mcast-group-source-filter.sh -6
