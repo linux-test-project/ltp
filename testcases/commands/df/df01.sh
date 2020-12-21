@@ -101,8 +101,8 @@ df_check()
 		local free=$(stat -f mntpoint --printf=%f)
 		local used=$((total-free))
 		local bsize=$(stat -f mntpoint --printf=%s)
-		total=$(($total * $bsize / 1024))
-		used=$(($used * $bsize / 1024))
+		total=$((($total * $bsize + 512)/ 1024))
+		used=$((($used * $bsize + 512) / 1024))
 	fi
 
 	grep ${TST_DEVICE} output | grep -q "${total}.*${used}"
