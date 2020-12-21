@@ -12,6 +12,12 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="unzip"
 . tst_test.sh
 
+EXTRACT_MATCH="extracting"
+
+if unzip 2>&1 | grep -q 'BusyBox'; then
+	EXTRACT_MATCH="inflating"
+fi
+
 setup()
 {
 	cat > unzip_exp.out <<EOF
@@ -21,15 +27,15 @@ Archive:  $TST_DATAROOT/test.zip
    creating: dir/d2/
    creating: dir/d3/
    creating: dir/d4/
- extracting: dir/d1/f1
- extracting: dir/d1/f2
- extracting: dir/d1/f3
+ $EXTRACT_MATCH: dir/d1/f1
+ $EXTRACT_MATCH: dir/d1/f2
+ $EXTRACT_MATCH: dir/d1/f3
    creating: dir/d2/d1/
    creating: dir/d2/d2/
    creating: dir/d2/d3/
- extracting: dir/d2/f1
- extracting: dir/d2/f2
- extracting: dir/d2/f3
+ $EXTRACT_MATCH: dir/d2/f1
+ $EXTRACT_MATCH: dir/d2/f2
+ $EXTRACT_MATCH: dir/d2/f3
    creating: dir/d3/d1/
    creating: dir/d3/d2/
    creating: dir/d3/d3/
