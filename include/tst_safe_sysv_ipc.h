@@ -9,6 +9,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
 
 int safe_msgget(const char *file, const int lineno, key_t key, int msgflg);
 #define SAFE_MSGGET(key, msgflg) \
@@ -50,5 +51,18 @@ int safe_shmctl(const char *file, const int lineno, int shmid, int cmd,
 	int tst_ret_ = safe_shmctl(__FILE__, __LINE__, (shmid), (cmd), (buf)); \
 	(shmid) = ((cmd) == IPC_RMID ? -1 : (shmid)); \
 	tst_ret_;})
+
+int safe_semget(const char *file, const int lineno, key_t key, int nsems,
+		int semflg);
+#define SAFE_SEMGET(key, nsems, semflg) \
+	safe_semget(__FILE__, __LINE__, (key), (nsems), (semflg))
+
+int safe_semctl(const char *file, const int lineno, int semid, int semnum,
+		int cmd, ...);
+#define SAFE_SEMCTL(semid, semnum, cmd, ...) ({ \
+	int tst_ret_ = safe_semctl(__FILE__, __LINE__, (semid), (semnum), \
+				(cmd), ##__VA_ARGS__); \
+	(semid) = ((cmd) == IPC_RMID ? -1 : (semid)); \
+	tst_ret_; })
 
 #endif /* TST_SAFE_SYSV_IPC_H__ */

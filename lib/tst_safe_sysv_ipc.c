@@ -10,6 +10,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
+#include "lapi/sem.h"
 
 /*
  * The IPC_STAT, IPC_SET and IPC_RMID can return either 0 or -1.
@@ -171,6 +172,52 @@ int safe_shmctl(const char *file, const int lineno, int shmid, int cmd,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"Invalid shmctl(%i, %i, %p) return value %d", shmid,
 			cmd, buf, rval);
+	}
+
+	return rval;
+}
+
+int safe_semget(const char *file, const int lineno, key_t key, int nsems,
+		int semflg)
+{
+	int rval;
+
+	rval = semget(key, nsems, semflg);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"semget(%i, %i, %x) failed", (int)key, nsems, semflg);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid semget(%i, %i, %x) return value %d",
+			(int)key, nsems, semflg, rval);
+	}
+
+	return rval;
+}
+
+int safe_semctl(const char *file, const int lineno, int semid, int semnum,
+		int cmd, ...)
+{
+	int rval;
+	va_list va;
+	union semun un;
+
+	va_start(va, cmd);
+
+	un = va_arg(va, union semun);
+
+	va_end(va);
+
+	rval = semctl(semid, semnum, cmd, un);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+		"semctl(%i, %i, %i,...) failed", semid, semnum, cmd);
+	} else if (ret_check(cmd, rval)) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid semctl(%i, %i, %i,...) return value %d", semid,
+			semnum, cmd, rval);
 	}
 
 	return rval;
