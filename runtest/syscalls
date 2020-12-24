@@ -1179,6 +1179,7 @@ semctl05 semctl05
 semctl06 semctl06
 semctl07 semctl07
 semctl08 semctl08
+semctl09 semctl09
 
 semget01 semget01
 semget02 semget02
