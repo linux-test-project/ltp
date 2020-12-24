@@ -22,10 +22,9 @@
 #define _GNU_SOURCE
 #include <pwd.h>
 #include <sys/ipc.h>
-#include <sys/sem.h>
 #include "tst_test.h"
 #include "libnewipc.h"
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 #include "semop.h"
 
 static int valid_sem_id = -1;

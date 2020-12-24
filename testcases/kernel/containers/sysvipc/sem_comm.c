@@ -27,7 +27,6 @@
 
 #define _GNU_SOURCE
 #include <sys/ipc.h>
-#include <sys/sem.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -35,7 +34,7 @@
 #include "ipcns_helper.h"
 #include "test.h"
 #include "safe_macros.h"
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 
 #define TESTKEY 124426L
 char *TCID	= "sem_comm";

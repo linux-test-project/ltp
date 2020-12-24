@@ -8,10 +8,9 @@
  */
 
 #include <stdlib.h>
-#include <sys/sem.h>
 #include "tst_test.h"
 #include "libnewipc.h"
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 #include "semop.h"
 
 #define NSEMS 4

@@ -47,13 +47,12 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <sys/sem.h>
 
 #include "tlibio.h"
 
 #include "test.h"
 #include "safe_macros.h"
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 
 char *TCID = "pipeio";
 int TST_TOTAL = 1;

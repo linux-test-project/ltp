@@ -3,8 +3,10 @@
  * Copyright (c) 2015 Linux Test Project
  */
 
-#ifndef SEMUN_H__
-#define SEMUN_H__
+#include <sys/sem.h>
+
+#ifndef LAPI_SEM_H
+#define LAPI_SEM_H
 
 #if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
 /* union semun is defined by including <sys/sem.h> */
@@ -19,4 +21,8 @@ union semun {
 };
 #endif
 
-#endif /* SEMUN_H__ */
+#ifndef SEM_STAT_ANY
+# define SEM_STAT_ANY 20
+#endif
+
+#endif /* LAPI_SEM_H */

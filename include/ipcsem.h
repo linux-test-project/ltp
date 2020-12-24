@@ -29,7 +29,7 @@
 #include <sys/sem.h>
 
 #include "test.h"
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 
 void cleanup(void);
 void setup(void);

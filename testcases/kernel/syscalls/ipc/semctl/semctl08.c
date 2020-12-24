@@ -6,7 +6,7 @@
  * Cross verify the _high fields being set to 0 by the kernel.
  */
 #include "lapi/sembuf.h"
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 #include "tst_test.h"
 #include "libnewipc.h"
 

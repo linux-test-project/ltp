@@ -40,11 +40,10 @@
 #include <sys/msg.h>
 #include <sys/resource.h>
 #include <sys/select.h>
-#include <sys/sem.h>
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "lapi/semun.h"
+#include "lapi/sem.h"
 
 /* indexes into environment variable array */
 #define ADBG 0
