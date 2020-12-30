@@ -13,7 +13,8 @@
 #include "lapi/sem.h"
 
 /*
- * The IPC_STAT, IPC_SET and IPC_RMID can return either 0 or -1.
+ * The IPC_STAT, IPC_SET, IPC_RMID, SHM_LOCK, SHM_UNLOCK, SETALL and SETVAL
+ * can return either 0 or -1.
  *
  * Linux specific cmds either returns -1 on failure or positive integer
  * either index into an kernel array or shared primitive indentifier.
@@ -24,6 +25,10 @@ static int ret_check(int cmd, int ret)
 	case IPC_STAT:
 	case IPC_SET:
 	case IPC_RMID:
+	case SHM_LOCK:
+	case SHM_UNLOCK:
+	case SETALL:
+	case SETVAL:
 		return ret != 0;
 	default:
 		return ret < 0;
