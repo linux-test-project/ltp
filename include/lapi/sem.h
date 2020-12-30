@@ -2,11 +2,10 @@
 /*
  * Copyright (c) 2015 Linux Test Project
  */
-
-#include <sys/sem.h>
-
 #ifndef LAPI_SEM_H
 #define LAPI_SEM_H
+
+#include <sys/sem.h>
 
 #if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
 /* union semun is defined by including <sys/sem.h> */
