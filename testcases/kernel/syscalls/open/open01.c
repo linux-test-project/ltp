@@ -47,6 +47,9 @@ static void verify_open(unsigned int n)
 
 	TST_EXP_FD(open(tc->filename, tc->flag, tc->mode),
 	           "open() with %s", tc->desc);
+	if (!TST_PASS)
+		return;
+
 	fd = TST_RET;
 
 	SAFE_FSTAT(fd, &buf);
