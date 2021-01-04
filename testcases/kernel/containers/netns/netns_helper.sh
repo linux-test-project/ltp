@@ -1,66 +1,49 @@
 #!/bin/sh
-#==============================================================================
-# Copyright (c) Linux Test Project, 2014
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2014-2020
 # Copyright (c) 2015 Red Hat, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#==============================================================================
 
-. tst_test.sh
 TST_CLEANUP=netns_ns_exec_cleanup
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="ip modprobe"
+. tst_test.sh
 
 # Set to 1 only for test cases using ifconfig (ioctl).
 USE_IFCONFIG=0
 
-
-##
 # Variables which can be used in test cases (set by netns_setup() function):
-###############################################################################
+
 # Use in test cases to execute commands inside a namespace. Set to 'ns_exec' or
 # 'ip netns exec' command according to NS_EXEC_PROGRAM argument specified in
 # netns_setup() function call.
-NS_EXEC=""
+NS_EXEC=
 
 # Set to "net" for ns_create/ns_exec as their options requires
 # to specify a namespace type. Empty for ip command.
-NS_TYPE=""
+NS_TYPE=
 
 # IP addresses of veth0 (IP0) and veth1 (IP1) devices (ipv4/ipv6 variant
 # is determined according to the IP_VERSION argument specified in netns_setup()
 # function call.
-IP0=""
-IP1=""
-NETMASK=""
+IP0=
+IP1=
+NETMASK=
 
 # 'ping' or 'ping6' according to the IP_VERSION argument specified
 # in netns_setup() function call.
-tping=""
+tping=
 
 # Network namespaces handles for manipulating and executing commands inside
 # namespaces. For 'ns_exec' handles are PIDs of daemonized processes running
 # in namespaces.
-NS_HANDLE0=""
-NS_HANDLE1=""
+NS_HANDLE0=
+NS_HANDLE1=
 
 # Adds "inet6 add" to the 'ifconfig' arguments which is required for the ipv6
 # version. Always use with 'ifconfig', even if ipv4 version of a test case is
 # used, in which case IFCONF_IN6_ARG will be empty string. Usage:
 # ifconfig <device> $IFCONF_IN6_ARG IP/NETMASK
-IFCONF_IN6_ARG=""
-###############################################################################
+IFCONF_IN6_ARG=
 
 tst_check_iproute()
 {
@@ -69,17 +52,15 @@ tst_check_iproute()
 
 	cur_ipver=${cur_ipver##*s}
 
-	if [ -z $cur_ipver ] || [ -z $spe_ipver ]; then
-		tst_brk TBROK "don't obtain valid iproute version"
+	if [ -z "$cur_ipver" -o -z "$spe_ipver" ]; then
+		tst_brk TBROK "failed to obtain valid iproute version"
 	fi
 
 	if [ $cur_ipver -lt $spe_ipver ]; then
-		tst_brk TCONF \
-			"The commands in iproute tools do not support required objects"
+		tst_brk TCONF "too old iproute version"
 	fi
 }
 
-##
 # Sets up global variables which can be used in test cases (documented above),
 # creates two network namespaces and a pair of virtual ethernet devices, each
 # device in one namespace. Each device is then enabled and assigned an IP
@@ -182,7 +163,6 @@ netns_setup()
 	netns_set_ip
 }
 
-##
 # Sets up NS_EXEC to use 'ns_exec', creates two network namespaces and stores
 # their handles into NS_HANDLE0 and NS_HANDLE1 variables (in this case handles
 # are PIDs of daemonized processes running in these namespaces). Virtual
@@ -219,7 +199,6 @@ netns_ns_exec_setup()
 	tst_brk TBROK "unable to add device veth1 to the separate network namespace"
 }
 
-##
 # Sets up NS_EXEC to use 'ip netns exec', creates two network namespaces
 # and stores their handles into NS_HANDLE0 and NS_HANDLE1 variables. Virtual
 # ethernet device is then created for each namespace.
@@ -246,7 +225,6 @@ netns_ip_setup()
 		tst_brk TBROK "unable to add device veth1 to the separate network namespace"
 }
 
-##
 # Enables virtual ethernet devices and assigns IP addresses for both
 # of them (IPv4/IPv6 variant is decided by netns_setup() function).
 netns_set_ip()
