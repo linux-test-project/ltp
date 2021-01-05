@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2003-2021
 #
 # Test basic functionality of cpio command
 
@@ -12,6 +13,10 @@ TST_SETUP="setup"
 
 setup()
 {
+	if ! cpio 2>&1 | grep -i -q -- '-o\sCreate'; then
+		tst_brk TCONF "-o flag not supported"
+	fi
+
 	ARCHIVE_FORMAT=
 
 	if cpio 2>&1 | grep -q 'BusyBox'; then
