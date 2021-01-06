@@ -11,7 +11,7 @@
  *
  * Verify that:
  *
- *   - getdents() fails with EBADF if file descriptor fd is invalid.
+ *   - getdents() fails with EBADF if file descriptor fd is invalid
  *   - getdents() fails with EINVAL if result buffer is too small
  *   - getdents() fails with ENOTDIR if file descriptor does not refer to a directory
  *   - getdents() fails with ENOENT if directory was unlinked()
