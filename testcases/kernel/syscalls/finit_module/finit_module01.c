@@ -19,12 +19,17 @@
 
 #define MODULE_NAME	"finit_module.ko"
 
-int fd;
+static int fd;
+
+static char *mod_path;
 
 static void setup(void)
 {
 	finit_module_supported_by_kernel();
-	fd = SAFE_OPEN(MODULE_NAME, O_RDONLY|O_CLOEXEC);
+
+	tst_module_exists(MODULE_NAME, &mod_path);
+
+	fd = SAFE_OPEN(mod_path, O_RDONLY|O_CLOEXEC);
 }
 
 static void run(void)
