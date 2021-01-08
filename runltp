@@ -320,9 +320,9 @@ main()
             /*)
                 HTMLFILE="$OPTARG";;
             *)
-                HTMLFILE="$LTPROOT/output/$OPTARG";;
+                HTMLFILE="$LTPROOT/output/$OPTARG"
+                ALT_DIR_OUT=1;;
             esac
-            ALT_DIR_OUT=1
             ALT_HTML_OUT=1;;
         h)  usage;;
 
