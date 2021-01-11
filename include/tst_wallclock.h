@@ -12,4 +12,8 @@ void tst_wallclock_save(void);
 
 void tst_wallclock_restore(void);
 
+void tst_rtc_clock_save(const char *rtc_dev);
+
+void tst_rtc_clock_restore(const char *rtc_dev);
+
 #endif	/* TST_WALLCLK_H__ */
