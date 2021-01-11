@@ -57,7 +57,7 @@ build_native()
 
 build_cross()
 {
-	local host="${CC%-gcc}"
+	local host=$(basename "${CC%-gcc}")
 	if [ "$host" = "gcc" ]; then
 		echo "Invalid CC variable for cross compilation: $CC (clang not supported)" >&2
 		exit 1
