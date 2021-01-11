@@ -64,7 +64,7 @@ build_cross()
 	fi
 
 	echo "===== cross-compile ${host} ${1}-tree build into $PREFIX ====="
-	build $1 $2 "--host=$host" CROSS_COMPILE="${host}-"
+	build $1 $2 "--host=$host"
 }
 
 build()
