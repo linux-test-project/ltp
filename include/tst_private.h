@@ -29,4 +29,12 @@ void tst_print_svar_change(const char *name, const char *val);
 
 int tst_get_prefix(const char *ip_str, int is_ipv6);
 
+/*
+ * Checks kernel config for a single configuration option and returns its
+ * state if found. The possible return values are the same as for
+ * tst_kconfig_var.choice, with the same meaning. See tst_kconfig_read()
+ * description in tst_kconfig.h.
+ */
+char tst_kconfig_get(const char *confname);
+
 #endif
