@@ -12,8 +12,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <sys/fanotify.h>
+#include "lapi/fcntl.h"
 
 int safe_fanotify_init(const char *file, const int lineno,
 	unsigned int flags, unsigned int event_f_flags)
