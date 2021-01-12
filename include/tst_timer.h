@@ -99,10 +99,12 @@ static inline long long tst_timeval_diff_ms(struct timeval t1,
 
 typedef __kernel_long_t	__kernel_old_time_t;
 
+#ifndef __kernel_old_timeval
 struct __kernel_old_timeval {
 	__kernel_old_time_t	tv_sec;		/* seconds */
 	__kernel_suseconds_t	tv_usec;	/* microseconds */
 };
+#endif
 
 struct __kernel_old_timespec {
 	__kernel_old_time_t	tv_sec;		/* seconds */
