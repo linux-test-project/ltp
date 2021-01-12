@@ -46,7 +46,7 @@ extern void *TST_RET_PTR;
 	tst_res_(__FILE__, __LINE__, RES, \
 		TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, SCALL) FMT, __VA_ARGS__), PAR)
 
-#define TST_EXP_FD(SCALL, ...)                                                 \
+#define TST_EXP_FD_SILENT(SCALL, ...)                                          \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
 		                                                               \
@@ -64,14 +64,20 @@ extern void *TST_RET_PTR;
 			break;                                                 \
 		}                                                              \
                                                                                \
-		TST_MSGP_(TPASS, " returned fd %ld", TST_RET,                  \
-		         #SCALL, ##__VA_ARGS__);                               \
-                                                                               \
 		TST_PASS = 1;                                                  \
                                                                                \
 	} while (0)
 
-#define TST_EXP_PASS(SCALL, ...)                                               \
+#define TST_EXP_FD(SCALL, ...)                                                 \
+	do {                                                                   \
+		TST_EXP_FD_SILENT(SCALL, __VA_ARGS__);                         \
+		                                                               \
+		if (TST_PASS)                                                  \
+			TST_MSGP_(TPASS, " returned fd %ld", TST_RET,          \
+				#SCALL, ##__VA_ARGS__);                        \
+	} while (0)
+
+#define TST_EXP_PASS_SILENT(SCALL, ...)                                        \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
 		                                                               \
@@ -89,12 +95,17 @@ extern void *TST_RET_PTR;
 			break;                                                 \
 		}                                                              \
                                                                                \
-		TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);             \
-                                                                               \
 		TST_PASS = 1;                                                  \
                                                                                \
 	} while (0)
 
+#define TST_EXP_PASS(SCALL, ...)                                               \
+	do {                                                                   \
+		TST_EXP_PASS_SILENT(SCALL, __VA_ARGS__);                       \
+		                                                               \
+		if (TST_PASS)                                                  \
+			TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);     \
+	} while (0)                                                            \
 
 #define TST_EXP_FAIL(SCALL, ERRNO, ...)                                        \
 	do {                                                                   \
