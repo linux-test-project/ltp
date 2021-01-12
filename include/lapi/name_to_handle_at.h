@@ -15,13 +15,6 @@
 #include "tst_test.h"
 
 #ifndef HAVE_NAME_TO_HANDLE_AT
-struct file_handle {
-	unsigned int handle_bytes;
-	int handle_type;
-	/* File identifier.  */
-	unsigned char f_handle[0];
-};
-
 static inline int name_to_handle_at(int dfd, const char *pathname,
                                     struct file_handle *handle,
                                     int *mount_id, int flags)
@@ -35,7 +28,7 @@ static inline int open_by_handle_at(int mount_fd, struct file_handle *handle,
 {
 	return tst_syscall(__NR_open_by_handle_at, mount_fd, handle, flags);
 }
-#endif
+#endif /* HAVE_NAME_TO_HANDLE_AT */
 
 /* Returns a valid pointer on success, NULL on errors */
 static inline struct file_handle *

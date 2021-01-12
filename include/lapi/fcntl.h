@@ -6,6 +6,7 @@
 #ifndef __LAPI_FCNTL_H__
 #define __LAPI_FCNTL_H__
 
+#include "config.h"
 #include <fcntl.h>
 #include <sys/socket.h>
 
@@ -139,5 +140,14 @@
 #ifndef MAX_HANDLE_SZ
 # define MAX_HANDLE_SZ	128
 #endif
+
+#ifndef HAVE_STRUCT_FILE_HANDLE
+struct file_handle {
+	unsigned int handle_bytes;
+	int handle_type;
+	/* File identifier.  */
+	unsigned char f_handle[0];
+};
+#endif /* HAVE_STRUCT_FILE_HANDLE */
 
 #endif /* __LAPI_FCNTL_H__ */
