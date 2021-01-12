@@ -18,14 +18,12 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <pthread.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <linux/limits.h>
 #include "tst_test.h"
 #include "tst_safe_pthread.h"

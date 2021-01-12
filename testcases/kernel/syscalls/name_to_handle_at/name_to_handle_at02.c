@@ -10,7 +10,6 @@
 \*/
 
 #define _GNU_SOURCE
-#include <fcntl.h>
 #include "lapi/name_to_handle_at.h"
 
 #define TEST_FILE "test_file"

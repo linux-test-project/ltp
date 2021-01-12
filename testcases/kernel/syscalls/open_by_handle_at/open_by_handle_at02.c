@@ -10,7 +10,6 @@
 \*/
 #define _GNU_SOURCE
 #include <linux/capability.h>
-#include <fcntl.h>
 #include "tst_capability.h"
 #include "lapi/name_to_handle_at.h"
 

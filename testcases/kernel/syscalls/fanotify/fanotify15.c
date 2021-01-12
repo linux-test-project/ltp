@@ -19,7 +19,6 @@
 
 #include <string.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <sys/statfs.h>
 #include <sys/types.h>
 #include "tst_test.h"

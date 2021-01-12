@@ -15,7 +15,6 @@
 \*/
 
 #define _GNU_SOURCE
-#include <fcntl.h>
 #include <sys/stat.h>
 #include "lapi/name_to_handle_at.h"
 
