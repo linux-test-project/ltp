@@ -45,7 +45,7 @@ static void verify_open(unsigned int n)
 	struct tcase *tc = &tcases[n];
 	struct stat buf;
 
-	TST_EXP_FD(open(tc->filename, tc->flag, tc->mode),
+	TST_EXP_FD_SILENT(open(tc->filename, tc->flag, tc->mode),
 	           "open() with %s", tc->desc);
 	if (!TST_PASS)
 		return;
