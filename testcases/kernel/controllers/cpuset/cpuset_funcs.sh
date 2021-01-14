@@ -26,23 +26,34 @@
 
 . test.sh
 
+cpu_string="`cat /sys/devices/system/cpu/online`"
 NR_CPUS=`tst_ncpus`
+
 if [ -f "/sys/devices/system/node/has_high_memory" ]; then
-	N_NODES="`cat /sys/devices/system/node/has_high_memory | tr ',' ' '`"
+	mem_string="`cat /sys/devices/system/node/has_high_memory`"
 else
-	N_NODES="`cat /sys/devices/system/node/has_normal_memory | tr ',' ' '`"
+	mem_string="`cat /sys/devices/system/node/has_normal_memory`"
 fi
+N_NODES="`echo $mem_string | tr ',' ' '`"
 count=0
+final_node=0
 for item in $N_NODES; do
 	delta=1
 	if [ "${item#*-*}" != "$item" ]; then
 		delta=$((${item#*-*} - ${item%*-*} + 1))
 	fi
+	final_node=${item#*-*}
 	count=$((count + $delta))
 done
+final_node=$((final_node + 1))
 N_NODES=$count
 
-mem_string="$N_NODES"
+final_cpu=0
+N_CPUS="`echo $cpu_string | tr ',' ' '`"
+for item in $N_CPUS; do
+	final_cpu=${item#*-*}
+done
+final_cpu=$((final_cpu + 1))
 
 CPUSET="/dev/cpuset"
 CPUSET_TMP="/tmp/cpuset_tmp"
@@ -78,12 +89,24 @@ ncpus_check()
 	if [ $NR_CPUS -lt $1 ]; then
 		tst_brkm TCONF "The total of CPUs is less than $1"
 	fi
+	# check online cpus whether match 0-num
+	if [ $final_cpu -eq $NR_CPUS ]; then
+		tst_resm TINFO "CPUs are numbered continuously starting at 0 ($cpu_string)"
+	else
+		tst_brkm TCONF "CPUs are not numbered continuously starting at 0 ($cpu_string)"
+	fi
 }
 
 nnodes_check()
 {
 	if [ $N_NODES -lt $1 ]; then
 		tst_brkm TCONF "The total of nodes is less than $1"
+	fi
+	# check online nodes whether match 0-num
+	if [ $final_node -eq $N_NODES ]; then
+		tst_resm TINFO "Nodes are numbered continuously starting at 0 ($mem_string)"
+	else
+		tst_brkm TCONF "Nodes are not numbered continuously starting at 0 ($mem_string)"
 	fi
 }
 
