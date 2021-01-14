@@ -106,11 +106,6 @@ inherit_test()
 test_cpus()
 {
 	cfile_name="cpus"
-	num=$((nr_cpus-1))
-	cpu_string="0-$num"
-	if [ $nr_cpus -eq 1 ]; then
-		cpu_string="0"
-	fi
 	while read inherit cpus result
 	do
 		inherit_test "$CPUSET/1/cpuset.cpus" "$inherit" "$cpus" "$result"
