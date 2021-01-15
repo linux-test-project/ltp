@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2020-2021 Petr Vorel <pvorel@suse.cz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +18,11 @@
 
 #include <sys/personality.h>
 #include <sys/utsname.h>
+#include <limits.h>
+
 #include "test.h"
 #include "tst_kernel.h"
+#include "old_safe_stdio.h"
 
 static int get_kernel_bits_from_uname(struct utsname *buf)
 {
@@ -81,20 +85,97 @@ int tst_kernel_bits(void)
 	return kernel_bits;
 }
 
-int tst_check_driver(const char *name)
+static int tst_search_driver(const char *driver, const char *file)
 {
-#ifndef __ANDROID__
-	const char * const argv[] = { "modprobe", "-n", name, NULL };
-	int res = tst_cmd_(NULL, argv, "/dev/null", "/dev/null",
-			       TST_CMD_PASS_RETVAL);
+	struct stat st;
+	char buf[PATH_MAX];
+	char *path = NULL, *search = NULL, *sep = NULL;
+	FILE *f;
+	int ret = -1;
 
-	/* 255 - it looks like modprobe not available */
-	return (res == 255) ? 0 : res;
-#else
-	/* Android modprobe may not have '-n', or properly installed
-	 * module.*.bin files to determine built-in drivers. Assume
-	 * all drivers are available.
+	struct utsname uts;
+
+	if (uname(&uts)) {
+		tst_brkm(TBROK | TERRNO, NULL, "uname() failed");
+		return -1;
+	}
+	SAFE_ASPRINTF(NULL, &path, "/lib/modules/%s/%s", uts.release, file);
+
+	if (stat(path, &st) || !(S_ISREG(st.st_mode) || S_ISLNK(st.st_mode))) {
+		tst_resm(TWARN, "expected file %s does not exist or not a file", path);
+		return -1;
+	}
+
+	if (access(path, R_OK)) {
+		tst_resm(TWARN, "file %s cannot be read", path);
+		return -1;
+	}
+
+	SAFE_ASPRINTF(NULL, &search, "/%s.ko", driver);
+
+	f = SAFE_FOPEN(NULL, path, "r");
+
+	while (fgets(buf, sizeof(buf), f)) {
+		/* cut dependencies after : */
+		if ((sep = strchr(buf, ':')))
+			*sep = 0;
+
+		/* driver found */
+		if (strstr(buf, search) != NULL) {
+			ret = 0;
+			break;
+		}
+	}
+
+	SAFE_FCLOSE(NULL, f);
+	free(search);
+	free(path);
+
+	return ret;
+}
+
+static int tst_check_driver_(const char *driver)
+{
+	if (!tst_search_driver(driver, "modules.dep") ||
+		!tst_search_driver(driver, "modules.builtin"))
+		return 0;
+
+	return -1;
+}
+
+int tst_check_driver(const char *driver)
+{
+#ifdef __ANDROID__
+	/*
+	 * Android may not have properly installed modules.* files. We could
+	 * search modules in /system/lib/modules, but to to determine built-in
+	 * drivers we need modules.builtin. Therefore assume all drivers are
+	 * available.
 	 */
 	return 0;
 #endif
+
+	if (!tst_check_driver_(driver))
+		return 0;
+
+	int ret = -1;
+
+	if (strrchr(driver, '-') || strrchr(driver, '_')) {
+		char *driver2 = strdup(driver);
+		char *ix = driver2;
+		char find = '-', replace = '_';
+
+		if (strrchr(driver, '_')) {
+			find = '_';
+			replace = '-';
+		}
+
+		while ((ix = strchr(ix, find)))
+			*ix++ = replace;
+
+		ret = tst_check_driver_(driver2);
+		free(driver2);
+	}
+
+	return ret;
 }
