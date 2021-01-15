@@ -51,11 +51,15 @@ static union semun un;
  */
 static inline int do_semctl(int semid, int semnum, int cmd)
 {
+	struct semid_ds info;
+
+	un.buf = &info;
+
 	switch (tst_variant) {
 	case 0:
-		return tst_syscall(__NR_semctl, semid, semnum, cmd, &un.buf);
+		return tst_syscall(__NR_semctl, semid, semnum, cmd, un);
 	case 1:
-		return semctl(semid, semnum, cmd, &un.buf);
+		return semctl(semid, semnum, cmd, un);
 	}
 	return -1;
 }
