@@ -130,7 +130,7 @@ static void check_swapping(void)
 	while (i < 10) {
 		swap_free_now = SAFE_READ_MEMINFO("SwapFree:");
 		sleep(1);
-		if (abs(swap_free_now - SAFE_READ_MEMINFO("SwapFree:")) < 512)
+		if (labs(swap_free_now - SAFE_READ_MEMINFO("SwapFree:")) < 512)
 			break;
 
 		i++;
