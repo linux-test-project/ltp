@@ -26,7 +26,7 @@
  */
 static inline long long tst_timeval_to_us(struct timeval t)
 {
-	return t.tv_sec * 1000000 + t.tv_usec;
+	return ((long long)t.tv_sec) * 1000000 + t.tv_usec;
 }
 
 /*
@@ -34,7 +34,7 @@ static inline long long tst_timeval_to_us(struct timeval t)
  */
 static inline long long tst_timeval_to_ms(struct timeval t)
 {
-	return t.tv_sec * 1000 + (t.tv_usec + 500) / 1000;
+	return ((long long)t.tv_sec) * 1000 + (t.tv_usec + 500) / 1000;
 }
 
 /*
