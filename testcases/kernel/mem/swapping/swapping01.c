@@ -95,7 +95,8 @@ static void init_meminfo(void)
 		tst_brk(TCONF, "Not enough available mem to test.");
 
 	if (swap_free_init < mem_over_max)
-		tst_brk(TCONF, "Not enough swap space to test.");
+		tst_brk(TCONF, "Not enough swap space to test: swap_free_init(%ldkB) < mem_over_max(%ldkB)",
+				swap_free_init, mem_over_max);
 }
 
 static void do_alloc(void)
@@ -127,10 +128,10 @@ static void check_swapping(void)
 
 	/* Still occupying memory, loop for a while */
 	i = 0;
-	while (i < 10) {
+	while (i < 30) {
 		swap_free_now = SAFE_READ_MEMINFO("SwapFree:");
 		sleep(1);
-		if (labs(swap_free_now - SAFE_READ_MEMINFO("SwapFree:")) < 512)
+		if (labs(swap_free_now - SAFE_READ_MEMINFO("SwapFree:")) < 10)
 			break;
 
 		i++;
