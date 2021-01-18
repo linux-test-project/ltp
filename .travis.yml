@@ -85,6 +85,14 @@ matrix:
 
 before_install:
     - df -hT
+    # pull rate limit workaround
+    - tmpdaemon=$(mktemp)
+    - sudo jq '."registry-mirrors" += ["https://mirror.gcr.io"]' /etc/docker/daemon.json > $tmpdaemon
+    - sudo mv $tmpdaemon /etc/docker/daemon.json
+    - sudo systemctl daemon-reload
+    - sudo systemctl restart docker
+    - docker system info
+    # ltp
     - DIR="/usr/src/ltp"
     - printf "FROM $DISTRO\nRUN mkdir -p $DIR\nWORKDIR $DIR\nCOPY . $DIR\n" > Dockerfile
     - cat Dockerfile
