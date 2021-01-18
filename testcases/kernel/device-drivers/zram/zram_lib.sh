@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2021 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 dev_makeswap=-1
@@ -9,6 +9,7 @@ dev_mounted=-1
 TST_NEEDS_TMPDIR=1
 TST_SETUP="zram_load"
 TST_CLEANUP="zram_cleanup"
+TST_NEEDS_DRIVERS="zram"
 . tst_test.sh
 
 zram_cleanup()
@@ -210,6 +211,3 @@ zram_mount()
 
 	tst_res TPASS "mount of zram device(s) succeeded"
 }
-
-modinfo zram > /dev/null 2>&1 ||
-	tst_brk TCONF "zram not configured in kernel"
