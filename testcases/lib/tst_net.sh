@@ -106,7 +106,6 @@ init_ltp_netspace()
 		tst_require_cmds ip
 		tst_require_root
 
-		tst_require_drivers veth
 		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD ns_create net,mnt)"
 		mkdir -p /var/run/netns
