@@ -13,7 +13,7 @@ TST_SETUP="setup"
 
 setup()
 {
-	if ! cpio 2>&1 | grep -i -q -- '-o\sCreate'; then
+	if ! cpio --help 2>&1 | grep -q -- '-o.*Create'; then
 		tst_brk TCONF "-o flag not supported"
 	fi
 
