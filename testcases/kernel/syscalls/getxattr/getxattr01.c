@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		for (i = 0; i < ARRAY_SIZE(tc); i++) {
+		for (i = 0; i < (int)ARRAY_SIZE(tc); i++) {
 			TEST(getxattr(tc[i].fname, tc[i].key, tc[i].value,
 				      tc[i].size));
 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 static void setup(void)
 {
 	int fd;
-	int i;
+	unsigned int i;
 
 	tst_require_root();
 
@@ -161,7 +161,7 @@ static void setup(void)
 	}
 
 	/* Prepare test cases */
-	for (i = 0; i <  ARRAY_SIZE(tc); i++) {
+	for (i = 0; i < ARRAY_SIZE(tc); i++) {
 		tc[i].value = malloc(BUFFSIZE);
 		if (tc[i].value == NULL) {
 			tst_brkm(TBROK | TERRNO, cleanup,

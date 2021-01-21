@@ -149,14 +149,14 @@ static void test_nonlinear(int fd)
 	char *data = NULL;
 	int i, j, repeat = 2;
 
-	for (i = 0; i < cache_pages; i++) {
+	for (i = 0; i < (int)cache_pages; i++) {
 		char *page = cache_contents + i * page_sz;
 
-		for (j = 0; j < page_words; j++)
+		for (j = 0; j < (int)page_words; j++)
 			page[j] = i;
 	}
 
-	if (write(fd, cache_contents, cache_sz) != cache_sz) {
+	if (write(fd, cache_contents, cache_sz) != (int)cache_sz) {
 		tst_resm(TFAIL,
 			 "Write Error for \"cache_contents\" to \"cache_sz\" of %zu (errno=%d : %s)",
 			 cache_sz, errno, strerror(errno));
@@ -173,7 +173,7 @@ static void test_nonlinear(int fd)
 	}
 
 again:
-	for (i = 0; i < window_pages; i += 2) {
+	for (i = 0; i < (int)window_pages; i += 2) {
 		char *page = data + i * page_sz;
 
 		if (remap_file_pages(page, page_sz * 2, 0,
@@ -186,12 +186,12 @@ again:
 		}
 	}
 
-	for (i = 0; i < window_pages; i++) {
+	for (i = 0; i < (int)window_pages; i++) {
 		/*
 		 * Double-check the correctness of the mapping:
 		 */
 		if (i & 1) {
-			if (data[i * page_sz] != window_pages - i) {
+			if (data[i * page_sz] != ((int)window_pages) - i) {
 				tst_resm(TFAIL,
 					 "hm, mapped incorrect data, "
 					 "data[%d]=%d, (window_pages-%d)=%zu",
@@ -200,7 +200,7 @@ again:
 				cleanup(data);
 			}
 		} else {
-			if (data[i * page_sz] != window_pages - i - 2) {
+			if (data[i * page_sz] != ((int)window_pages) - i - 2) {
 				tst_resm(TFAIL,
 					 "hm, mapped incorrect data, "
 					 "data[%d]=%d, (window_pages-%d-2)=%zu",

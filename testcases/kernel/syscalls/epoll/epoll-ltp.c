@@ -549,7 +549,7 @@ int test_epoll_ctl(int epoll_fd)
 							for (index = 1;
 							     index < 64;
 							     index++) {
-								if (ev_ptr->events != epoll_events[index]) {
+								if ((int)ev_ptr->events != epoll_events[index]) {
 									expected_errno
 									    =
 									    EINVAL;
@@ -649,8 +649,7 @@ int test_epoll_ctl(int epoll_fd)
 							  RES_PASS_RETV_MAT_ERRNO_IGN)))
 						{
 							if (result >
-							    (sizeof
-							     (result_strings) /
+							   (int)(sizeof(result_strings) /
 							     sizeof(const char
 								    *))) {
 								/* Returned a result which has no corresponding text description */

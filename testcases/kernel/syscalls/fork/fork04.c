@@ -144,7 +144,7 @@ static void child_environment(void)
 
 	fildes = creat(OUTPUT_FILE, 0700);
 
-	for (index = 0; index < NUMBER_OF_ENVIRON; index++) {
+	for (index = 0; index < (int)NUMBER_OF_ENVIRON; index++) {
 		memset(msg, 0, MAX_LINE_LENGTH);
 
 		var = getenv(environ_list[index]);
@@ -238,7 +238,7 @@ void parent_environment(void)
 	int fildes;
 	char tmp_line[MAX_LINE_LENGTH];
 	char parent_value[MAX_LINE_LENGTH];
-	int index;
+	unsigned int index;
 	int ret;
 	char *var;
 

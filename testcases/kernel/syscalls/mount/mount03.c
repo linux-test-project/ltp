@@ -208,7 +208,7 @@ int test_rwflag(int i, int cnt)
 
 		/* Write the buffer data into file */
 		if (write(fildes, write_buffer, strlen(write_buffer)) !=
-		    strlen(write_buffer)) {
+		    (long)strlen(write_buffer)) {
 			tst_resm(TWARN | TERRNO, "writing to %s failed", file);
 			close(fildes);
 			return 1;

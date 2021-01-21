@@ -164,7 +164,7 @@ static void setup(void)
 	}
 
 	/* Write some data into temporary file */
-	if (write(fildes, write_buf, strlen(write_buf)) != strlen(write_buf)) {
+	if (write(fildes, write_buf, strlen(write_buf)) != (long)strlen(write_buf)) {
 		tst_brkm(TFAIL, cleanup, "writing to %s", TEMPFILE);
 	}
 

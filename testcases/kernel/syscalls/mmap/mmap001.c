@@ -81,7 +81,8 @@ option_t options[] = {
 int main(int argc, char *argv[])
 {
 	char *array;
-	int i, lc;
+	int lc;
+	unsigned int i;
 	int fd;
 	unsigned int pages, memsize;
 

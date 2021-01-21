@@ -46,7 +46,8 @@ int main(int ac, char **av)
 	int flags;
 	char fname[40];
 	int fd[10], fd2[10];
-	int mypid, i;
+	int mypid;
+	unsigned int i;
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
@@ -157,7 +158,7 @@ int main(int ac, char **av)
 		for (i = 0; i < ARRAY_SIZE(fd); i++)
 			close(fd[i]);
 		for (i = 0; i < 8; i++) {
-			sprintf(fname, "./fcntl%d.%d", i, mypid);
+			sprintf(fname, "./fcntl%u.%d", i, mypid);
 			if ((unlink(fname)) == -1)
 				tst_resm(TFAIL | TERRNO,
 					 "unlinking %s failed", fname);

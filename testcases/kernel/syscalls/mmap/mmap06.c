@@ -128,7 +128,7 @@ static void setup(void)
 	}
 
 	/* Write test buffer contents into temporary file */
-	if (write(fildes, tst_buff, page_sz) < page_sz) {
+	if (write(fildes, tst_buff, page_sz) < (ssize_t)page_sz) {
 		free(tst_buff);
 		tst_brkm(TFAIL, cleanup, "writing to %s failed", TEMPFILE);
 	}

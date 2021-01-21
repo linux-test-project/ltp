@@ -223,7 +223,7 @@ static void child_invoke(int *bufsz_arr)
 	count = 0;
 	nr_error = 0;
 	for (i = 0; i < NUM_LOCAL_VECS; i++) {
-		for (j = 0; j < local[i].iov_len; j++) {
+		for (j = 0; j < (int)local[i].iov_len; j++) {
 			expect = count % 256;
 			actual = ((unsigned char *)local[i].iov_base)[j];
 			if (expect != actual) {
