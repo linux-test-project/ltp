@@ -347,7 +347,7 @@ LTP_CHECK_SYSCALL_FCNTL
 
 if test "x$with_numa" = xyes; then
 	LTP_CHECK_SYSCALL_NUMA
-	numa_error_msg="test requires libnuma >= 2 and it's development packages"
+	numa_error_msg="test requires libnuma development packages with LIBNUMA_API_VERSION >= 2"
 else
 	numa_error_msg="NUMA support was disabled during build"
 fi
