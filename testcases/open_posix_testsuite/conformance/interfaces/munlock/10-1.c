@@ -12,6 +12,11 @@
  * valid mapped pages in the address space of the process.
  *
  * Assume that the value LONG_MAX is an invalid pointer.
+ *
+ * aarch64 linux versions v5.3 up to v5.6-rc1 may incorrectly report
+ * EINVAL instead of ENOMEM, see:
+ *   597399d0cb91 ("arm64: tags: Preserve tags for addresses translated via TTBR1")
+ *   d0022c0ef29b ("arm64: memory: Add missing brackets to untagged_addr() macro")
  */
 
 #include <sys/mman.h>
