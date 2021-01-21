@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2021 Petr Vorel <pvorel@suse.cz>
 set -ex
 
 yum="yum -y install"
@@ -13,6 +13,7 @@ $yum \
 	gcc \
 	git \
 	findutils \
+	numactl-devel \
 	libtirpc \
 	libtirpc-devel \
 	perl-JSON \
