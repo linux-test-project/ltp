@@ -119,7 +119,7 @@ void cleanup(void)
 {
 	int i;
 
-	for (i = 0; i < ARRAY_SIZE(fd); i++) {
+	for (i = 0; i < (int)ARRAY_SIZE(fd); i++) {
 		close(fd[i]);
 		close(nfd[i]);
 	}

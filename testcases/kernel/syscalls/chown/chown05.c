@@ -128,9 +128,9 @@ int main(int ac, char **av)
 			}
 			if (stat(TESTFILE, &stat_buf) == -1)
 				tst_brkm(TFAIL, cleanup, "stat failed");
-			if (user_id == -1)
+			if ((int)user_id == -1)
 				user_id = test_cases[i - 1].user_id;
-			if (group_id == -1)
+			if ((int)group_id == -1)
 				group_id = test_cases[i - 1].group_id;
 
 			if (stat_buf.st_uid != user_id ||
