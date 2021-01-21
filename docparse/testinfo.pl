@@ -6,8 +6,7 @@
 use strict;
 use warnings;
 
-use JSON;
-use LWP::Simple;
+use JSON qw(decode_json);
 use Cwd qw(abs_path);
 use File::Basename qw(dirname);
 
