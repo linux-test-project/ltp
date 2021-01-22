@@ -110,7 +110,7 @@ static void test_def_pagesize(int fd)
 		} else {
 			tst_res(TFAIL,
 				"munmap(%p, %dkB) suceeded unexpectedly\n",
-				mem, i);
+				mem, i/1024);
 			return;
 		}
 	}
