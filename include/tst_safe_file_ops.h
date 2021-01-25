@@ -28,6 +28,14 @@
                         &tst_rval); \
         tst_rval;})
 
+#define SAFE_READ_PROC_STATUS(pid, item) \
+       ({long tst_rval_; \
+        char tst_path_[128]; \
+        sprintf(tst_path_, "/proc/%d/status", pid); \
+        SAFE_FILE_LINES_SCANF(tst_path_, item " %ld", \
+                        &tst_rval_); \
+        tst_rval_;})
+
 #define FILE_PRINTF(path, fmt, ...) \
 	file_printf(__FILE__, __LINE__, \
 		    (path), (fmt), ## __VA_ARGS__)
