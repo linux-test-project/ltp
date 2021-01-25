@@ -113,9 +113,6 @@ void setup(void)
 
 	TEST_PAUSE;
 
-	if ((page_sz = getpagesize()) == -1)
-		tst_brkm(TBROK | TERRNO, NULL, "getpagesize failed");
-
 	tst_tmpdir();
 
 	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
