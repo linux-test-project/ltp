@@ -187,6 +187,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	SAFE_SETEUID(root_uid);
+
 	if (sem_id >= 0)
 		SAFE_SEMCTL(sem_id, 0, IPC_RMID);
 }
