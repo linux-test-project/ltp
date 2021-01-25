@@ -31,7 +31,9 @@ void verify_brk(void)
 		break;
 		}
 
-		TST_EXP_PASS(brk((void *)new_brk), "brk()");
+		TST_EXP_PASS_SILENT(brk((void *)new_brk), "brk()");
+		if (!TST_PASS)
+			return;
 
 		cur_brk = (uintptr_t)sbrk(0);
 
@@ -46,6 +48,8 @@ void verify_brk(void)
 		if (i % 3 == 0)
 			*((char *)cur_brk) = 0;
 	}
+
+	tst_res(TPASS, "brk() works fine");
 }
 
 static struct tst_test test = {

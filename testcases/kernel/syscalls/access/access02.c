@@ -59,7 +59,7 @@ static void access_test(struct tcase *tc, const char *user)
 	struct stat stat_buf;
 	char command[64];
 
-	TST_EXP_PASS(access(tc->pathname, tc->mode),
+	TST_EXP_PASS_SILENT(access(tc->pathname, tc->mode),
 	             "access(%s, %s) as %s", tc->pathname, tc->name, user);
 
 	if (!TST_PASS)

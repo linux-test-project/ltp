@@ -131,7 +131,7 @@ static void test_bind(unsigned int n)
 	tst_res(TINFO, "Testing %s", tc->description);
 	sock = SAFE_SOCKET(tc->address->sa_family, tc->type, tc->protocol);
 
-	TST_EXP_PASS(bind(sock, tc->address, tc->addrlen), "bind()");
+	TST_EXP_PASS_SILENT(bind(sock, tc->address, tc->addrlen), "bind()");
 
 	if (!TST_PASS) {
 		SAFE_CLOSE(sock);
