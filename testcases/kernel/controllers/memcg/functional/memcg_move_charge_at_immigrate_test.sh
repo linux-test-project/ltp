@@ -1,63 +1,83 @@
 #! /bin/sh
-
-################################################################################
-##                                                                            ##
-## Copyright (c) 2012 FUJITSU LIMITED                                         ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software               ##
-## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    ##
-##                                                                            ##
-################################################################################
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2012 FUJITSU LIMITED
+# Copyright (c) 2014-2018 Linux Test Project
+# Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
 #
-# File :        memcg_move_charge_at_immigrate_test.sh
-# Description:  Tests memory.move_charge_at_immigrate.
-# Author:       Peng Haitao <penght@cn.fujitsu.com>
-# History:      2012/01/16 - Created.
-#
+# Author: Peng Haitao <penght@cn.fujitsu.com>
 
-TCID="memcg_move_charge_at_immigrate_test"
-TST_TOTAL=4
+MEMCG_TESTFUNC=test
+TST_CNT=4
 
 . memcg_lib.sh
 
-# Test disable moving charges
-testcase_1()
+
+# Run test cases which test memory.move_charge_at_immigrate
+test_move_charge()
 {
+	local memtypes="$1"
+	local size=$2
+	local total_size=$3
+	local move_charge_mask=$4
+	local b_rss=$5
+	local b_cache=$6
+	local a_rss=$7
+	local a_cache=$8
+
+	mkdir subgroup_a
+
+	start_memcg_process $memtypes -s $size
+
+	warmup
+	if [ $? -ne 0 ]; then
+		rmdir subgroup_a
+		return
+	fi
+
+	echo $MEMCG_PROCESS_PID > subgroup_a/tasks
+	signal_memcg_process $total_size "subgroup_a/"
+
+	mkdir subgroup_b
+	echo $move_charge_mask > subgroup_b/memory.move_charge_at_immigrate
+	echo $MEMCG_PROCESS_PID > subgroup_b/tasks
+
+	cd subgroup_b
+	check_mem_stat "rss" $b_rss
+	check_mem_stat "cache" $b_cache
+	cd ../subgroup_a
+	check_mem_stat "rss" $a_rss
+	check_mem_stat "cache" $a_cache
+	cd ..
+	stop_memcg_process
+	rmdir subgroup_a subgroup_b
+}
+
+
+test1()
+{
+	tst_res TINFO "Test disable moving charges"
 	test_move_charge "--mmap-anon" $PAGESIZES $PAGESIZES 0 0 0 $PAGESIZES 0
 }
 
-# Test move anon
-testcase_2()
+test2()
 {
+	tst_res TINFO "Test move anon"
 	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZES \
-		$((PAGESIZES*3)) 1 $PAGESIZES 0 0 $((PAGESIZES*2))
+		$((PAGESIZES * 3)) 1 $PAGESIZES 0 0 $((PAGESIZES * 2))
 }
 
-# Test move file
-testcase_3()
+test3()
 {
+	tst_res TINFO "Test move file"
 	test_move_charge "--mmap-anon --shm --mmap-file" $PAGESIZES \
-		$((PAGESIZES*3)) 2 0 $((PAGESIZES*2)) $PAGESIZES 0
+		$((PAGESIZES * 3)) 2 0 $((PAGESIZES * 2)) $PAGESIZES 0
 }
 
-# Test move anon and file
-testcase_4()
+test4()
 {
+	tst_res TINFO "Test move anon and file"
 	test_move_charge "--mmap-anon --shm" $PAGESIZES \
-		$((PAGESIZES*2)) 3 $PAGESIZES $PAGESIZES 0 0
+		$((PAGESIZES * 2)) 3 $PAGESIZES $PAGESIZES 0 0
 }
 
-run_tests
-
-tst_exit
+tst_run

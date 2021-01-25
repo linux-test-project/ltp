@@ -1,50 +1,63 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2009 FUJITSU LIMITED
+# Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
+# Copyright (c) 2018 Xiao Yang <yangx.jy@cn.fujitsu.com>
+# Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
+#
+# Author: Li Zefan <lizf@cn.fujitsu.com>
+# Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>
+# Added memcg enable/disable functinality: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com
 
-################################################################################
-##                                                                            ##
-## Copyright (c) 2009 FUJITSU LIMITED                                         ##
-##                                                                            ##
-## This program is free software;  you can redistribute it and#or modify      ##
-## it under the terms of the GNU General Public License as published by       ##
-## the Free Software Foundation; either version 2 of the License, or          ##
-## (at your option) any later version.                                        ##
-##                                                                            ##
-## This program is distributed in the hope that it will be useful, but        ##
-## WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY ##
-## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   ##
-## for more details.                                                          ##
-##                                                                            ##
-## You should have received a copy of the GNU General Public License          ##
-## along with this program;  if not, write to the Free Software Foundation,   ##
-## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           ##
-##                                                                            ##
-## Author: Li Zefan <lizf@cn.fujitsu.com>                                     ##
-## Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>                     ##
-## Added memcg enable/disable functinality: Rishikesh K Rajak		      ##
-##						<risrajak@linux.vnet.ibm.com  ##
-##                                                                            ##
-################################################################################
-
-TCID="memcg_subgroup_charge"
-TST_TOTAL=3
+MEMCG_TESTFUNC=test
+TST_CNT=3
 
 . memcg_lib.sh
 
-# Test that group and subgroup have no relationship
-testcase_1()
+# Test the memory charge won't move to subgroup
+# $1 - memory.limit_in_bytes in parent group
+# $2 - memory.limit_in_bytes in sub group
+test_subgroup()
 {
-	test_subgroup $PAGESIZES $((2*PAGESIZES))
+	mkdir subgroup
+	echo $1 > memory.limit_in_bytes
+	echo $2 > subgroup/memory.limit_in_bytes
+
+	start_memcg_process --mmap-anon -s $PAGESIZES
+
+	warmup
+	if [ $? -ne 0 ]; then
+		return
+	fi
+
+	echo $MEMCG_PROCESS_PID > tasks
+	signal_memcg_process $PAGESIZES
+	check_mem_stat "rss" $PAGESIZES
+
+	cd subgroup
+	echo $MEMCG_PROCESS_PID > tasks
+	check_mem_stat "rss" 0
+
+	# cleanup
+	cd ..
+	stop_memcg_process
+	rmdir subgroup
 }
 
-testcase_2()
+test1()
+{
+	tst_res TINFO "Test that group and subgroup have no relationship"
+	test_subgroup $PAGESIZES $((2 * PAGESIZES))
+}
+
+test2()
 {
 	test_subgroup $PAGESIZES $PAGESIZES
 }
 
-testcase_3()
+test3()
 {
 	test_subgroup $PAGESIZES 0
 }
 
-run_tests
-tst_exit
+tst_run
