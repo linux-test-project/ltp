@@ -106,12 +106,14 @@ int main(int ac, char **av)
 
 void setup(void)
 {
-	int c_total = 0, nwrite = 0;	/* no. of bytes to be written */
+	size_t c_total = 0, nwrite = 0;	/* no. of bytes to be written */
 	char tst_buf[BUF_SIZE];
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	TEST_PAUSE;
+
+	page_sz = (size_t)getpagesize();
 
 	tst_tmpdir();
 
