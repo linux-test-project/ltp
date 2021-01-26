@@ -1,3 +1,6 @@
+#ifndef FCNTL_COMMON_H__
+#define FCNTL_COMMON_H__
+
 #include "lapi/syscalls.h"
 #include "lapi/abisize.h"
 
@@ -31,3 +34,5 @@ static int my_fcntl(int fd, int cmd, void *lck)
 	return ret;
 }
 #endif
+
+#endif /* FCNTL_COMMON_H__ */
