@@ -101,6 +101,9 @@ int main(void)
 	struct sigaction act;
 	pthread_mutexattr_t ma;
 
+	waken_num = 0;
+	start_num = 0;
+
 	if (pthread_mutexattr_init(&ma) != 0) {
 		fprintf(stderr, "Fail to initialize mutex attribute\n");
 		return PTS_UNRESOLVED;
