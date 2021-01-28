@@ -7,6 +7,7 @@ dev_makeswap=-1
 dev_mounted=-1
 
 TST_NEEDS_TMPDIR=1
+TST_NEEDS_ROOT=1
 TST_SETUP="zram_load"
 TST_CLEANUP="zram_cleanup"
 TST_NEEDS_DRIVERS="zram"
