@@ -10,21 +10,23 @@ TST_CNT=7
 TST_TESTFUNC="do_test"
 TST_NEEDS_CMDS="awk bc dd"
 . zram_lib.sh
+TST_SETUP="setup"
+
+check_space_for_btrfs()
+{
+	local ram_size
+
+	ram_size=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
+	if [ "$ram_size" -lt 1048576 ]; then
+		tst_res TINFO "not enough space for Btrfs"
+		return 1
+	fi
+	return 0
+}
 
 # List of parameters for zram devices.
 # For each number the test creates own zram device.
-zram_max_streams="2 3 5 8"
-
-FS_SIZE="402653184"
-FS_TYPE="btrfs"
-
-RAM_SIZE=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
-if [ "$RAM_SIZE" -lt 1048576 ]; then
-	tst_res TINFO "not enough space for Btrfs"
-	FS_SIZE="26214400"
-	FS_TYPE="ext2"
-fi
-
+# NOTE about size:
 # The zram sysfs node 'disksize' value can be either in bytes,
 # or you can use mem suffixes. But in some old kernels, mem
 # suffixes are not supported, for example, in RHEL6.6GA's kernel
@@ -32,9 +34,37 @@ fi
 # not support mem suffixes, in some newer kernels, they use
 # memparse() which supports mem suffixes. So here we just use
 # bytes to make sure everything works correctly.
-zram_sizes="26214400 26214400 26214400 $FS_SIZE"
-zram_mem_limits="25M 25M 25M $((FS_SIZE/1024/1024))M"
-zram_filesystems="ext3 ext4 xfs $FS_TYPE"
+initialize_vars()
+{
+	local fs limit size stream=-1
+	dev_num=0
+
+	for fs in $(tst_supported_fs); do
+		size="26214400"
+		limit="25M"
+		if [ "$fs" = "btrfs" ]; then
+			check_space_for_btrfs || continue
+			size="402653184"
+			limit="$((size/1024/1024))M"
+		fi
+
+		stream=$((stream+3))
+		dev_num=$((dev_num+1))
+		zram_filesystems="$zram_filesystems $fs"
+		zram_mem_limits="$zram_mem_limits $limit"
+		zram_sizes="$zram_sizes $size"
+		zram_max_streams="$zram_max_streams $stream"
+	done
+
+	[ $dev_num -eq 0 ] && \
+		tst_brk TCONF "no suitable filesystem"
+}
+
+setup()
+{
+	initialize_vars
+	zram_load
+}
 
 zram_fill_fs()
 {
