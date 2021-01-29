@@ -58,6 +58,7 @@ int TST_TOTAL = 1;
 int TST_CNT = 0;
 
 #define MAX_CLIENTS 10
+#include "tst_kernel.h"
 
 int
 main(void)
@@ -82,6 +83,9 @@ main(void)
         char *message = "hello, world!\n";
 	struct sctp_status status;
 	socklen_t status_len;
+
+	if (tst_check_driver("sctp"))
+		tst_brkm(TCONF, tst_exit, "sctp driver not available");
 
         /* Rather than fflush() throughout the code, set stdout to 
 	 * be unbuffered.  

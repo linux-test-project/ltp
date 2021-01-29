@@ -49,6 +49,7 @@
 #include <sys/uio.h>
 #include <linux/socket.h>
 #include <sctputil.h>
+#include "tst_kernel.h"
 
 #define THREADS 10    /* FIXME should be 500 instead of 10 */
 #define THREAD_SND_RCV_LOOPS 10
@@ -145,6 +146,9 @@ main(void)
 	struct sockaddr_in lstn_addr;
 	socklen_t len = sizeof(struct sockaddr_in);
 	struct sockaddr_in svr_addr;
+
+	if (tst_check_driver("sctp"))
+		tst_brkm(TCONF, tst_exit, "sctp driver not available");
 
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);

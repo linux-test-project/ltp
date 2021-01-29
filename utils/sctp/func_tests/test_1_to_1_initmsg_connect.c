@@ -110,4 +110,8 @@ static void test_sctp(unsigned int n)
 static struct tst_test test = {
 	.test = test_sctp,
 	.tcnt = ARRAY_SIZE(testcase_list),
+	.needs_drivers = (const char *[]) {
+		"sctp",
+		NULL
+	},
 };

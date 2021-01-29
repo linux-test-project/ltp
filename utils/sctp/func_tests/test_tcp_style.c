@@ -50,6 +50,7 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sctputil.h>
+#include "tst_kernel.h"
 
 char *TCID = __FILE__;
 int TST_TOTAL = 22;
@@ -80,6 +81,9 @@ main(void)
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 	char *big_buffer;
 	struct iovec iov;
+
+	if (tst_check_driver("sctp"))
+		tst_brkm(TCONF, tst_exit, "sctp driver not available");
 
         /* Rather than fflush() throughout the code, set stdout to 
 	 * be unbuffered.  

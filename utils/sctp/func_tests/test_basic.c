@@ -56,6 +56,7 @@
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <sctputil.h>
+#include "tst_kernel.h"
 
 char *TCID = __FILE__;
 int TST_TOTAL = 15;
@@ -91,6 +92,9 @@ int main(void)
 	struct sockaddr_in *in_addr;
 	struct sockaddr_in6 *in6_addr;
 	void *addr_buf;
+
+	if (tst_check_driver("sctp"))
+		tst_brkm(TCONF, tst_exit, "sctp driver not available");
 
         /* Rather than fflush() throughout the code, set stdout to 
 	 * be unbuffered. 

@@ -63,6 +63,7 @@
 #include <sys/uio.h>
 #include <linux/socket.h>
 #include <sctputil.h>
+#include "tst_kernel.h"
 
 char *TCID = __FILE__;
 int TST_TOTAL = 14;
@@ -88,6 +89,9 @@ main(void)
 	char incmsg[CMSG_SPACE(sizeof(sctp_cmsg_data_t))];
 	int fd, err_no = 0;
 	char filename[21];
+
+	if (tst_check_driver("sctp"))
+		tst_brkm(TCONF, tst_exit, "sctp driver not available");
 
 	/* Rather than fflush() throughout the code, set stdout to
          * be unbuffered.
