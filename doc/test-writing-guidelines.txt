@@ -2393,8 +2393,8 @@ tst_run
 '$TST_TEST_DATA' can be used with '$TST_CNT'. If '$TST_TEST_DATA_IFS' not specified,
 space as default value is used. Of course, it's possible to use separate functions.
 
-2.3.2 Library environment variables for shell
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.3.2 Library environment variables and functions for shell
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Similarily to the C library various checks and preparations can be requested
 simply by setting right '$TST_NEEDS_FOO'.
@@ -2415,11 +2415,19 @@ simply by setting right '$TST_NEEDS_FOO'.
 | 'TST_TIMEOUT'      | Maximum timeout set for the test in sec. Must be int >= 1,
                        or -1 (special value to disable timeout), default is 300.
                        Variable is meant be set in tests, not by user.
-                       It's equivalent of `tst_test.timeout` in C.
+                       It's an equivalent of `tst_test.timeout` in C, can be set
+                       via 'tst_set_timeout(timeout)' after test has started.
+|=============================================================================
+
+[options="header"]
+|=============================================================================
+| Function name              | Action done
+| 'tst_set_timeout(timeout)' | Maximum timeout set for the test in sec.
+                               See 'TST_TIMEOUT' variable.
 |=============================================================================
 
 NOTE: Network tests (see testcases/network/README.md) use additional variables
-in 'tst_net.sh'.
+and functions in 'tst_net.sh'.
 
 Checking for presence of commands
 +++++++++++++++++++++++++++++++++

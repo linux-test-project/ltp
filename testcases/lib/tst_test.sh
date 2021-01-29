@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2014-2020
+# Copyright (c) Linux Test Project, 2014-2021
 # Author: Cyril Hrubis <chrubis@suse.cz>
 #
 # LTP test library for shell.
@@ -22,6 +22,14 @@ export TST_LIB_LOADED=1
 
 # default trap function
 trap "tst_brk TBROK 'test interrupted'" INT
+
+_tst_cleanup_timer()
+{
+	if [ -n "$_tst_setup_timer_pid" ]; then
+		kill $_tst_setup_timer_pid 2>/dev/null
+		wait $_tst_setup_timer_pid 2>/dev/null
+	fi
+}
 
 _tst_do_exit()
 {
@@ -48,10 +56,7 @@ _tst_do_exit()
 		[ "$TST_TMPDIR_RHOST" = 1 ] && tst_cleanup_rhost
 	fi
 
-	if [ -n "$_tst_setup_timer_pid" ]; then
-		kill $_tst_setup_timer_pid 2>/dev/null
-		wait $_tst_setup_timer_pid 2>/dev/null
-	fi
+	_tst_cleanup_timer
 
 	if [ $TST_FAIL -gt 0 ]; then
 		ret=$((ret|1))
@@ -459,6 +464,8 @@ _tst_setup_timer()
 
 	tst_res TINFO "timeout per run is ${h}h ${m}m ${s}s"
 
+	_tst_cleanup_timer
+
 	sleep $sec && tst_res TBROK "test killed, timeout! If you are running on slow machine, try exporting LTP_TIMEOUT_MUL > 1" && kill -9 -$pid &
 
 	_tst_setup_timer_pid=$!
@@ -490,6 +497,12 @@ tst_require_module()
 	fi
 
 	tst_res TINFO "Found module at '$TST_MODPATH'"
+}
+
+tst_set_timeout()
+{
+	TST_TIMEOUT="$1"
+	_tst_setup_timer
 }
 
 tst_run()
