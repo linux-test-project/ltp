@@ -1140,7 +1140,6 @@ sched_get_priority_min01 sched_get_priority_min01
 sched_get_priority_min02 sched_get_priority_min02
 
 sched_getparam01 sched_getparam01
-sched_getparam02 sched_getparam02
 sched_getparam03 sched_getparam03
 
 sched_rr_get_interval01 sched_rr_get_interval01
