@@ -71,6 +71,8 @@ static const char x509_cert[] =
 	"\x83\x8d\x69\xda\xd6\x59\xbd"
 	;
 
+	static int fips_enabled;
+
 static void new_session_keyring(void)
 {
 	TEST(keyctl(KEYCTL_JOIN_SESSION_KEYRING, NULL));
@@ -85,19 +87,25 @@ static void test_update_nonupdatable(const char *type,
 
 	new_session_keyring();
 
+	int is_asymmetric = !strcmp(type, "asymmetric");
+
 	TEST(add_key(type, "desc", payload, plen, KEY_SPEC_SESSION_KEYRING));
 	if (TST_RET < 0) {
+		if (TST_ERR == EINVAL && is_asymmetric && fips_enabled) {
+			tst_res(TCONF, "key size not allowed in FIPS mode");
+			return;
+		}
 		if (TST_ERR == ENODEV) {
 			tst_res(TCONF, "kernel doesn't support key type '%s'",
 				type);
 			return;
 		}
-		if (TST_ERR == EBADMSG && !strcmp(type, "asymmetric")) {
+		if (TST_ERR == EBADMSG && is_asymmetric) {
 			tst_res(TCONF, "kernel is missing x509 cert parser "
 				"(CONFIG_X509_CERTIFICATE_PARSER)");
 			return;
 		}
-		if (TST_ERR == ENOENT && !strcmp(type, "asymmetric")) {
+		if (TST_ERR == ENOENT && is_asymmetric) {
 			tst_res(TCONF, "kernel is missing crypto algorithms "
 				"needed to parse x509 cert (CONFIG_CRYPTO_RSA "
 				"and/or CONFIG_CRYPTO_SHA256)");
@@ -180,6 +188,11 @@ static void test_update_setperm_race(void)
 	tst_res(TPASS, "didn't crash while racing to update 'user' key");
 }
 
+static void setup(void)
+{
+	fips_enabled = tst_fips_enabled();
+}
+
 static void do_test(unsigned int i)
 {
 	/*
@@ -205,6 +218,7 @@ static void do_test(unsigned int i)
 
 static struct tst_test test = {
 	.tcnt = 3,
+	.setup = setup,
 	.test = do_test,
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
