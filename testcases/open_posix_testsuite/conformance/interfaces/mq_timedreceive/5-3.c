@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "posixtest.h"
 
 #define TEST "5-3"
@@ -70,7 +71,7 @@ int main(void)
 		sigemptyset(&act.sa_mask);
 		sigaction(SIGABRT, &act, 0);
 
-		ts.tv_sec = INT32_MAX;
+		ts.tv_sec = time(NULL) + 5;
 		ts.tv_nsec = 0;
 
 		if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
