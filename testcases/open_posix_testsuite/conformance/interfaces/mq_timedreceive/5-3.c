@@ -74,16 +74,17 @@ int main(void)
 		ts.tv_nsec = 0;
 
 		if (mq_timedreceive(mqdes, msgrv, BUFFER, NULL, &ts) == -1) {
-			wait(NULL);
 			if (EINTR != errno) {
 				printf("errno != EINTR\n");
 				failure = 1;
 			}
 		} else {
-			wait(NULL);
-			printf("mq_timedreceive() succeed unexpectly\n");
+			printf("mq_timedreceive() succeeded unexpectedly\n");
 			failure = 1;
 		}
+
+		wait(NULL);
+
 		if (mq_close(mqdes) != 0) {
 			perror("mq_close() did not return success");
 			unresolved = 1;
