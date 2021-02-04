@@ -95,16 +95,16 @@ static void setup(void)
 
 	mask = CPU_ALLOC(ncpus);
 	if (!mask)
-		tst_brk(TBROK | TTERRNO, "CPU_ALLOC() failed");
+		tst_brk(TBROK | TERRNO, "CPU_ALLOC() failed");
 
 	mask_size = CPU_ALLOC_SIZE(ncpus);
 
 	if (sched_getaffinity(0, mask_size, mask) < 0)
-		tst_brk(TBROK | TTERRNO, "sched_getaffinity() failed");
+		tst_brk(TBROK | TERRNO, "sched_getaffinity() failed");
 
 	emask = CPU_ALLOC(ncpus + 1);
 	if (!emask)
-		tst_brk(TBROK | TTERRNO, "CPU_ALLOC() failed");
+		tst_brk(TBROK | TERRNO, "CPU_ALLOC() failed");
 
 	emask_size = CPU_ALLOC_SIZE(ncpus + 1);
 	CPU_ZERO_S(emask_size, emask);

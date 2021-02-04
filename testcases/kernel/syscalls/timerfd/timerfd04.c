@@ -64,7 +64,7 @@ static void verify_timerfd(unsigned int n)
 	                 tc->clk_off, tc->off);
 
 	if (tv->clock_gettime(tc->clk_id, tst_ts_get(&start))) {
-		tst_res(TFAIL | TTERRNO, "clock_gettime(2) failed for clock %s",
+		tst_res(TFAIL | TERRNO, "clock_gettime(2) failed for clock %s",
 			tst_clock_name(tc->clk_id));
 		return;
 	}
@@ -95,7 +95,7 @@ static void verify_timerfd(unsigned int n)
 	SAFE_WAIT(NULL);
 
 	if (tv->clock_gettime(CLOCK_MONOTONIC, tst_ts_get(&end))) {
-		tst_res(TFAIL | TTERRNO, "clock_gettime(2) failed for clock %s",
+		tst_res(TFAIL | TERRNO, "clock_gettime(2) failed for clock %s",
 			tst_clock_name(CLOCK_MONOTONIC));
 		return;
 	}

@@ -57,7 +57,7 @@ void tst_cap_action(struct tst_cap *cap)
 	uint32_t mask = CAP_TO_MASK(cap->id);
 
 	if (tst_capget(&hdr, cur))
-		tst_brk(TBROK | TTERRNO, "tst_capget()");
+		tst_brk(TBROK | TERRNO, "tst_capget()");
 
 	memcpy(new, cur, sizeof(new));
 
