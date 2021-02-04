@@ -1712,3 +1712,4 @@ statx07 statx07
 membarrier01 membarrier01
 
 io_uring01 io_uring01
+io_uring02 io_uring02

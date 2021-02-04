@@ -60,3 +60,4 @@ cve-2019-8912 af_alg07
 cve-2020-11494 pty04
 cve-2020-14386 sendto03
 cve-2020-14416 pty03
+cve-2020-29373 io_uring02
