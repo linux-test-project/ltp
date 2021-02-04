@@ -24,6 +24,10 @@
 # define CAP_NET_RAW          13
 #endif
 
+#ifndef CAP_SYS_CHROOT
+# define CAP_SYS_CHROOT       18
+#endif
+
 #ifndef CAP_SYS_ADMIN
 # define CAP_SYS_ADMIN        21
 #endif
