@@ -18,6 +18,10 @@
 
 #include "lapi/syscalls.h"
 
+#ifdef HAVE_LINUX_IO_URING_H
+#include <linux/io_uring.h>
+#endif
+
 #ifndef IOSQE_FIXED_FILE
 
 #ifndef __kernel_rwf_t
@@ -260,8 +264,8 @@ struct io_uring_probe {
 
 
 #ifndef HAVE_IO_URING_REGISTER
-int io_uring_register(int fd, unsigned int opcode, void *arg,
-		      unsigned int nr_args)
+static inline int io_uring_register(int fd, unsigned int opcode, void *arg,
+	unsigned int nr_args)
 {
 	return tst_syscall(__NR_io_uring_register, fd, opcode, arg, nr_args);
 }
@@ -269,22 +273,23 @@ int io_uring_register(int fd, unsigned int opcode, void *arg,
 
 
 #ifndef HAVE_IO_URING_SETUP
-int io_uring_setup(unsigned int entries, struct io_uring_params *p)
+static inline int io_uring_setup(unsigned int entries,
+	struct io_uring_params *p)
 {
 	return tst_syscall(__NR_io_uring_setup, entries, p);
 }
 #endif /* HAVE_IO_URING_SETUP */
 
 #ifndef HAVE_IO_URING_ENTER
-int io_uring_enter(int fd, unsigned int to_submit, unsigned int min_complete,
-		   unsigned int flags, sigset_t *sig)
+static inline int io_uring_enter(int fd, unsigned int to_submit,
+	unsigned int min_complete, unsigned int flags, sigset_t *sig)
 {
 	return tst_syscall(__NR_io_uring_enter, fd, to_submit, min_complete,
 			flags, sig, _NSIG / 8);
 }
 #endif /* HAVE_IO_URING_ENTER */
 
-void io_uring_setup_supported_by_kernel(void)
+static inline void io_uring_setup_supported_by_kernel(void)
 {
 	if ((tst_kvercmp(5, 1, 0)) < 0) {
 		TEST(syscall(__NR_io_uring_setup, NULL, 0));
