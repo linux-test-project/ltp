@@ -6,9 +6,6 @@
 #
 # Setup script for multicast stress tests.
 
-TST_CLEANUP="mcast_cleanup"
-TST_TESTFUNC="do_test"
-TST_NEEDS_TMPDIR=1
 . tst_net_stress.sh
 
 mcast_setup4()

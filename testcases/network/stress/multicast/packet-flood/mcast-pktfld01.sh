@@ -8,7 +8,10 @@
 # a single socket, then receiving a large number of UDP packets at the socket
 
 TST_NEEDS_ROOT=1
+TST_NEEDS_TMPDIR=1
 TST_SETUP="mcast_setup_normal_udp"
+TST_CLEANUP="mcast_cleanup"
+TST_TESTFUNC="do_test"
 . mcast-lib.sh
 
 do_test()

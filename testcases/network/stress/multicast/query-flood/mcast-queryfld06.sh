@@ -11,6 +11,8 @@
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_SETUP="mcast_setup_normal"
+TST_CLEANUP="mcast_cleanup"
+TST_TESTFUNC="do_test"
 . mcast-lib.sh
 
 SRC_ADDR_IPV4=10.10.10.1

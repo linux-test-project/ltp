@@ -19,7 +19,11 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
+TST_NEEDS_ROOT=1
+TST_NEEDS_TMPDIR=1
 TST_SETUP="do_setup"
+TST_CLEANUP="mcast_cleanup"
+TST_TESTFUNC="do_test"
 . mcast-lib.sh
 
 do_setup()
