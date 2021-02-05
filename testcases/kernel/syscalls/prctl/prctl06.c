@@ -50,14 +50,14 @@ static void do_prctl(void)
 	if (childpid == 0) {
 		check_no_new_privs(1, "After fork, child process", proc_flag);
 		execve(BIN_PATH, childargv, envp);
-		tst_brk(TFAIL | TTERRNO,
+		tst_brk(TFAIL | TERRNO,
 			"child process failed to execute prctl_execve");
 
 	} else {
 		tst_reap_children();
 		check_no_new_privs(1, "parent process", proc_flag);
 		execve(BIN_PATH, argv, envp);
-		tst_brk(TFAIL | TTERRNO,
+		tst_brk(TFAIL | TERRNO,
 			"parent process failed to execute prctl_execve");
 	}
 }
