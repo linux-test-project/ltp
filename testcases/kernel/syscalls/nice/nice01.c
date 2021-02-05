@@ -49,7 +49,7 @@ static void verify_nice(void)
 
 	TEST(nice(-NICEINC));
 	if (TST_ERR)
-		tst_brk(TBROK | TERRNO, "nice(-NICEINC) failed");
+		tst_brk(TBROK | TTERRNO, "nice(-NICEINC) failed");
 }
 
 static struct tst_test test = {

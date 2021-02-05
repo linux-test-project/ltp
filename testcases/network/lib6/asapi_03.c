@@ -269,7 +269,7 @@ static void so_test(struct soent *psoe)
 	TEST(setsockopt(sr, SOL_IPV6, psoe->so_opt, &psoe->so_setval,
 			psoe->so_valsize));
 	if (TEST_RETURN != 0) {
-		tst_resm(TFAIL | TERRNO, "%s set-get: setsockopt",
+		tst_resm(TFAIL | TTERRNO, "%s set-get: setsockopt",
 			 psoe->so_tname);
 		return;
 	}
@@ -277,7 +277,7 @@ static void so_test(struct soent *psoe)
 	valsize = psoe->so_valsize;
 	TEST(getsockopt(sr, SOL_IPV6, psoe->so_opt, &sobuf, &valsize));
 	if (TEST_RETURN != 0) {
-		tst_brkm(TBROK | TERRNO, NULL, "%s set-get: getsockopt",
+		tst_brkm(TBROK | TTERRNO, NULL, "%s set-get: getsockopt",
 			 psoe->so_tname);
 	} else if (memcmp(&psoe->so_setval, &sobuf, psoe->so_valsize)) {
 		tst_resm(TFAIL, "%s set-get optval != setval", psoe->so_tname);

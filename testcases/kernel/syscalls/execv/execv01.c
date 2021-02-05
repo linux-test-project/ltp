@@ -28,7 +28,7 @@ static void verify_execv(void)
 	pid = SAFE_FORK();
 	if (pid == 0) {
 		TEST(execv(path, args));
-		tst_brk(TFAIL | TERRNO, "Failed to execute execv01_child");
+		tst_brk(TFAIL | TTERRNO, "Failed to execute execv01_child");
 	}
 }
 

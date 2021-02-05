@@ -203,7 +203,7 @@ static void test_advice_willneed(void)
 
 	TEST(madvise(target, MEM_LIMIT, MADV_WILLNEED));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TERRNO, "madvise failed");
+		tst_brk(TBROK | TTERRNO, "madvise failed");
 
 	do {
 		loops--;
@@ -223,7 +223,7 @@ static void test_advice_willneed(void)
 
 	TEST(madvise(target, PASS_THRESHOLD, MADV_WILLNEED));
 	if (TST_RET == -1)
-		tst_brk(TBROK | TERRNO, "madvise failed");
+		tst_brk(TBROK | TTERRNO, "madvise failed");
 
 	page_fault_num_1 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / no mem access): %d",

@@ -183,7 +183,7 @@ static long *fetch_remote_addrs(void)
 	TEST(ltp_syscall(__NR_process_vm_readv, pids[0], &local,
 			 1UL, &remote, 1UL, 0UL));
 	if (TEST_RETURN != len)
-		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TFAIL | TTERRNO, tst_exit, "process_vm_readv");
 
 	return local.iov_base;
 }
@@ -217,7 +217,7 @@ static void child_invoke(int *bufsz_arr)
 			    (unsigned long)NUM_LOCAL_VECS, remote,
 			    (unsigned long)nr_iovecs, 0UL));
 	if (TEST_RETURN != bufsz)
-		tst_brkm(TBROK | TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TBROK | TTERRNO, tst_exit, "process_vm_readv");
 
 	/* verify every byte */
 	count = 0;

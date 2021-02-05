@@ -54,7 +54,7 @@ int main(int ac, char **av)
 		TEST(statvfs(TEST_PATH, &buf));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TERRNO, "statvfs(%s, ...) failed",
+			tst_resm(TFAIL | TTERRNO, "statvfs(%s, ...) failed",
 				 TEST_PATH);
 		} else {
 			tst_resm(TPASS, "statvfs(%s, ...) passed", TEST_PATH);

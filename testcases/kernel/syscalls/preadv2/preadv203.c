@@ -235,7 +235,7 @@ static void check_preadv2_nowait(int fd)
 	TEST(preadv2(fd, iovec, 1, 0, RWF_NOWAIT));
 
 	if (TST_ERR == EOPNOTSUPP)
-		tst_brk(TCONF | TERRNO, "preadv2()");
+		tst_brk(TCONF | TTERRNO, "preadv2()");
 }
 
 static void setup(void)

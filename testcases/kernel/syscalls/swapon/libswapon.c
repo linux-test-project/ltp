@@ -84,7 +84,7 @@ void is_swap_supported(void (cleanup)(void), const char *filename)
 
 	TEST(ltp_syscall(__NR_swapoff, filename, 0));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL | TERRNO, cleanup,
+		tst_brkm(TFAIL | TTERRNO, cleanup,
 			"swapoff on %s failed", fstype);
 	}
 }

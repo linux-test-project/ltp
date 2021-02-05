@@ -103,7 +103,7 @@ int main(int ac, char **av)
 		TEST(msync(addr, page_sz, MS_ASYNC));
 
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TERRNO, "msync failed");
+			tst_resm(TFAIL | TTERRNO, "msync failed");
 			continue;
 		}
 

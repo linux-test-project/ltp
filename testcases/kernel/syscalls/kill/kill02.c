@@ -349,7 +349,7 @@ void parent_rout(void)
 	TEST(kill(0, SIGUSR1));
 
 	if (TEST_RETURN == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "kill() failed");
+		tst_brkm(TBROK | TTERRNO, NULL, "kill() failed");
 		(void)par_kill();
 		cleanup();
 	}

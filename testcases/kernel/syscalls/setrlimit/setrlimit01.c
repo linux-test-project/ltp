@@ -247,7 +247,7 @@ static void test4(void)
 	TEST(setrlimit(RLIMIT_CORE, &rlim));
 
 	if (TEST_RETURN == -1) {
-		tst_resm(TFAIL | TERRNO, "setrlimit failed to set RLIMIT_CORE");
+		tst_resm(TFAIL | TTERRNO, "setrlimit failed to set RLIMIT_CORE");
 		return;
 	}
 

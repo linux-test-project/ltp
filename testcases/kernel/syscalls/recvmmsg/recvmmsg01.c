@@ -117,7 +117,7 @@ static void setup(void)
 	TEST(tv->sendmmsg(send_sockfd, msg, 1, 0));
 
 	if (TST_RET != 1) {
-		tst_res(TFAIL | TERRNO, "sendmmsg() failed");
+		tst_res(TFAIL | TTERRNO, "sendmmsg() failed");
 		return;
 	}
 

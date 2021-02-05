@@ -31,7 +31,7 @@ static void run(void)
 
 	TEST(wait4(pid, &status, 0, &rusage));
 	if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO, "wait4() failed");
+		tst_res(TFAIL | TTERRNO, "wait4() failed");
 		return;
 	}
 

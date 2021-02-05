@@ -140,7 +140,7 @@ static void verify_prctl(void)
 	if (TST_RET == 0)
 		tst_res(TPASS, "PR_CAP_AMBIENT_CLEAR ALL succeeded");
 	else
-		tst_res(TFAIL | TERRNO, "PR_AMBIENT_CLEAR_ALL failed");
+		tst_res(TFAIL | TTERRNO, "PR_AMBIENT_CLEAR_ALL failed");
 
 	tst_res(TINFO, "After PR_CAP_AMBIENT_CLEAR_ALL");
 	TST_ASSERT_FILE_STR(PROC_STATUS, "CapAmb", ZERO_STRING);

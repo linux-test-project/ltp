@@ -18,7 +18,7 @@ static void verify_dup(void)
 	if (TST_RET < -1) {
 		tst_res(TFAIL, "Invalid dup() return value %ld", TST_RET);
 	} else if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO, "dup(%d) Failed", fd);
+		tst_res(TFAIL | TTERRNO, "dup(%d) Failed", fd);
 	} else {
 		tst_res(TPASS, "dup(%d) returned %ld", fd, TST_RET);
 		SAFE_CLOSE(TST_RET);

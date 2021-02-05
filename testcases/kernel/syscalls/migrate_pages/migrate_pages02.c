@@ -89,7 +89,7 @@ static int migrate_to_node(pid_t pid, int node)
 		new_nodes));
 	if (TST_RET != 0) {
 		if (TST_RET < 0) {
-			tst_res(TFAIL | TERRNO, "migrate_pages failed "
+			tst_res(TFAIL | TTERRNO, "migrate_pages failed "
 				 "ret: %ld, ", TST_RET);
 			print_mem_stats(pid, node);
 		} else {

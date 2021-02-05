@@ -52,7 +52,7 @@ static void verify_flock(unsigned n)
 	fd2 = SAFE_OPEN("testfile", O_RDWR);
 	TEST(flock(fd2, tc->operation));
 	if (TST_RET != 0) {
-		tst_res(TFAIL | TERRNO, "flock() failed to acquire %s",
+		tst_res(TFAIL | TTERRNO, "flock() failed to acquire %s",
 			tc->f_lock);
 		SAFE_CLOSE(fd2);
 		return;

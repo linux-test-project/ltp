@@ -101,7 +101,7 @@ static void run(unsigned int test_case)
 	/* pivot_root requires no shared mounts exist in process namespace */
 	TEST(unshare(CLONE_NEWNS | CLONE_FS));
 	if (TST_RET == -1)
-		tst_brk(TFAIL | TERRNO, "unshare failed");
+		tst_brk(TFAIL | TTERRNO, "unshare failed");
 
 	/*
 	 * Create an initial root dir. pivot_root doesn't work if the initial root
@@ -153,7 +153,7 @@ static void run(unsigned int test_case)
 
 	if (test_cases[test_case].test_case == NORMAL) {
 		if (TST_RET)
-			tst_res(TFAIL | TERRNO, "pivot_root failed");
+			tst_res(TFAIL | TTERRNO, "pivot_root failed");
 		else
 			tst_res(TPASS, "pivot_root succeeded");
 

@@ -174,7 +174,7 @@ static void child_write(void)
 	TEST(ltp_syscall(__NR_process_vm_writev, pids[0], &local,
 			 1UL, &remote, 1UL, 0UL));
 	if (TEST_RETURN != bufsz)
-		tst_brkm(TFAIL | TERRNO, tst_exit, "process_vm_readv");
+		tst_brkm(TFAIL | TTERRNO, tst_exit, "process_vm_readv");
 }
 
 static void setup(void)

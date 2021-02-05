@@ -143,7 +143,7 @@ int main(void)
 	/* Container creation on PID namespace */
 	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn, NULL));
 	if (TEST_RETURN == -1) {
-		tst_brkm(TBROK | TERRNO, NULL, "clone failed");
+		tst_brkm(TBROK | TTERRNO, NULL, "clone failed");
 	}
 
 	sleep(1);

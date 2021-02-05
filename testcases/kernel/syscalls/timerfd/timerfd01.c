@@ -141,7 +141,7 @@ static void run(unsigned int n)
 	if (TST_RET > 0)
 		tst_res(TFAIL, "timer ticks not zero");
 	else if (TST_ERR != EAGAIN)
-		tst_res(TFAIL | TERRNO, "read should fail with EAGAIN got");
+		tst_res(TFAIL | TTERRNO, "read should fail with EAGAIN got");
 	else
 		tst_res(TPASS | TERRNO, "read failed with");
 

@@ -55,7 +55,7 @@ static void verify_execveat(unsigned int i)
 	pid = SAFE_FORK();
 	if (pid == 0) {
 		TEST(execveat(*tc->fd, tc->pathname, argv, environ, tc->flag));
-		tst_res(TFAIL | TERRNO, "execveat() returns unexpected errno");
+		tst_res(TFAIL | TTERRNO, "execveat() returns unexpected errno");
 	}
 }
 

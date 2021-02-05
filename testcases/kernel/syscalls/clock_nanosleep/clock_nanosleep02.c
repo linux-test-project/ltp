@@ -22,7 +22,7 @@ int sample_fn(int clk_id, long long usec)
 	tst_timer_sample();
 
 	if (TST_RET != 0) {
-		tst_res(TFAIL | TERRNO,
+		tst_res(TFAIL | TTERRNO,
 			"nanosleep() returned %li", TST_RET);
 		return 1;
 	}

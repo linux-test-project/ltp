@@ -39,7 +39,7 @@ static void do_test(void)
 	if (TST_RET == -1) {
 		if (TST_ERR == EINVAL)
 			tst_brk(TCONF, "tcsetattr(, , EXTPROC | ICANON) is not supported");
-		tst_brk(TBROK | TERRNO, "tcsetattr() failed");
+		tst_brk(TBROK | TTERRNO, "tcsetattr() failed");
 	}
 
 	if (unlockpt(ptmx) != 0)

@@ -61,7 +61,7 @@ static void run(void)
 
 	TEST(tst_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
 	if (TST_RET != 0)
-		tst_brk(TBROK | TERRNO, "timer_create() failed");
+		tst_brk(TBROK | TTERRNO, "timer_create() failed");
 
 	tst_ts_set_sec(&start, time);
 	tst_ts_set_nsec(&start, 0);

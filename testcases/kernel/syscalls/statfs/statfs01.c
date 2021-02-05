@@ -144,7 +144,7 @@ int main(int ac, char **av)
 
 		/* check return code */
 		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TERRNO, "statfs(%s, ..) failed",
+			tst_resm(TFAIL | TTERRNO, "statfs(%s, ..) failed",
 				 fname);
 		} else {
 			tst_resm(TPASS, "statfs(%s, ..) returned %ld",

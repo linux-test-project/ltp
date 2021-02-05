@@ -56,7 +56,7 @@ static void do_child(void)
 	TST_CHECKPOINT_WAIT(0);
 
 	TEST(execve(TEST_APP, argv, environ));
-	tst_res(TFAIL | TERRNO, "execve() returned unexpected errno");
+	tst_res(TFAIL | TTERRNO, "execve() returned unexpected errno");
 }
 
 static void verify_execve(void)

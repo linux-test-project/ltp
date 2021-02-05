@@ -60,7 +60,7 @@ int main(int ac, char **av)
 	TEST(ltp_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
 
 	if (TEST_RETURN != 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "Failed to create timer");
+		tst_brkm(TBROK | TTERRNO, cleanup, "Failed to create timer");
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
@@ -70,7 +70,7 @@ int main(int ac, char **av)
 			tst_resm(TPASS,
 			         "timer_getoverrun(CLOCK_REALTIME) Passed");
 		} else {
-			tst_resm(TFAIL | TERRNO,
+			tst_resm(TFAIL | TTERRNO,
 			         "timer_getoverrun(CLOCK_REALTIME) Failed");
 		}
 
@@ -78,7 +78,7 @@ int main(int ac, char **av)
 		if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL) {
 			tst_resm(TPASS,	"timer_gettime(-1) Failed: EINVAL");
 		} else {
-			tst_resm(TFAIL | TERRNO,
+			tst_resm(TFAIL | TTERRNO,
 			         "timer_gettime(-1) = %li", TEST_RETURN);
 		}
 	}

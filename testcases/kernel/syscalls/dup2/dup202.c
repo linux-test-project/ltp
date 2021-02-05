@@ -108,7 +108,7 @@ int main(int ac, char **av)
 			TEST(dup2(ofd, *TC[i].nfd));
 
 			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TERRNO,
+				tst_resm(TFAIL | TTERRNO,
 					 "call failed unexpectedly");
 				continue;
 			}
