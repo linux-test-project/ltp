@@ -10,16 +10,12 @@
 
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
+TST_SETUP="mcast_setup_normal"
 . mcast-lib.sh
 
 SRC_ADDR_IPV4="10.10.10.1"
 SRC_ADDR_IPV6="fec0:100:100:100::1"
 FILTER_MODE="include"
-
-do_setup()
-{
-	mcast_setup $MCASTNUM_NORMAL
-}
 
 do_test()
 {

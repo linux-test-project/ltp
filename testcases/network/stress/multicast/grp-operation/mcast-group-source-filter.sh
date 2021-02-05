@@ -19,12 +19,8 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
+TST_SETUP="mcast_setup_normal"
 . mcast-lib.sh
-
-do_setup()
-{
-	mcast_setup $MCASTNUM_NORMAL
-}
 
 do_test()
 {

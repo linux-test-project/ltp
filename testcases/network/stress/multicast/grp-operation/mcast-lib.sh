@@ -6,7 +6,6 @@
 #
 # Setup script for multicast stress tests.
 
-TST_SETUP="do_setup"
 TST_CLEANUP="mcast_cleanup"
 TST_TESTFUNC="do_test"
 TST_NEEDS_TMPDIR=1
@@ -57,6 +56,18 @@ mcast_setup()
 	netstress_setup
 
 	[ "$TST_IPV6" ] && mcast_setup6 || mcast_setup4 $max
+}
+
+mcast_setup_normal()
+{
+	mcast_setup $MCASTNUM_NORMAL
+}
+
+mcast_setup_normal_udp()
+{
+	mcast_setup_normal
+	MCAST_LCMD="ns-mcast_receiver"
+	MCAST_RCMD="ns-udpsender"
 }
 
 mcast_cleanup4()

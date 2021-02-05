@@ -9,14 +9,8 @@
 # packets at each socket
 
 TST_NEEDS_ROOT=1
+TST_SETUP="mcast_setup_normal_udp"
 . mcast-lib.sh
-
-do_setup()
-{
-	mcast_setup $MCASTNUM_NORMAL
-	MCAST_LCMD=ns-mcast_receiver
-	MCAST_RCMD=ns-udpsender
-}
 
 do_test()
 {
@@ -40,10 +34,10 @@ do_test()
 		[ $? -ne 0 ] && tst_brk TBROK "no free udp port available"
 
 		# Run a receiver
-		ROD ns-mcast_receiver -f $TST_IPVER -I $(tst_iface lhost) -m $addr -p $port -b
+		ROD $MCAST_LCMD -f $TST_IPVER -I $(tst_iface lhost) -m $addr -p $port -b
 
 		# Run a sender
-		tst_rhost_run -s -c "ns-udpsender -D $addr -f $TST_IPVER -p $port -m -I $(tst_iface rhost) -b -t $NS_DURATION"
+		tst_rhost_run -s -c "$MCAST_RCMD -D $addr -f $TST_IPVER -p $port -m -I $(tst_iface rhost) -b -t $NS_DURATION"
 
 		n=$((n+1))
 	done

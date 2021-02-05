@@ -9,12 +9,8 @@
 
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
+TST_SETUP="mcast_setup_normal"
 . mcast-lib.sh
-
-do_setup()
-{
-	mcast_setup $MCASTNUM_NORMAL
-}
 
 do_test()
 {

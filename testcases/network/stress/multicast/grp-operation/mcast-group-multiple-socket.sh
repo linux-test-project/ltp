@@ -19,6 +19,7 @@
 #
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
+TST_SETUP="do_setup"
 . mcast-lib.sh
 
 do_setup()

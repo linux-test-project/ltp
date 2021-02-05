@@ -10,22 +10,18 @@
 
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
+TST_SETUP="mcast_setup_normal"
 . mcast-lib.sh
 
 SRC_ADDR_IPV4=10.10.10.1
 SRC_ADDR_IPV6=fec0:100:100:100::1
 FILTER_MODE="include"
 
-do_setup()
-{
-	mcast_setup $MCASTNUM_NORMAL
-}
-
 do_test()
 {
 	tst_res TINFO "joining $MCASTNUM_NORMAL IPv${TST_IPVER} multicast groups on separate sockets, then receiving a large number of Multicast Address and Source Specific Queries in $NS_DURATION seconds"
 
-    local prefix="$MCAST_IPV4_ADDR_PREFIX"
+	local prefix="$MCAST_IPV4_ADDR_PREFIX"
 	local src_addr="$SRC_ADDR_IPV4"
 	if [ "$TST_IPV6" ]; then
 		prefix="$MCAST_IPV6_ADDR_PREFIX"
