@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2021 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines Corp., 2006
 # Author: Petr Vorel <pvorel@suse.cz>
 #
@@ -147,4 +147,20 @@ do_multicast_test_join_leave()
 	for pid in $pids; do wait $pid; done
 
 	tst_res TPASS "test is finished successfully"
+}
+
+do_multicast_test_join_single_socket()
+{
+	local extra="$1"
+	local prefix="$MCAST_IPV4_ADDR_PREFIX"
+	[ "$TST_IPV6" ] && prefix="$MCAST_IPV6_ADDR_PREFIX"
+
+	# Run a multicast join tool
+	local tmpfile=$$
+	EXPECT_PASS $MCAST_LCMD -n 1 -p $prefix \> $tmpfile
+	tst_res TINFO "joined $(grep groups $tmpfile)"
+
+	local params
+	[ "$TST_IPV6" ] && params="-S $(tst_ipaddr) -m"
+	EXPECT_RHOST_PASS $MCAST_RCMD -t $NS_DURATION -r 0 $params $extra
 }
