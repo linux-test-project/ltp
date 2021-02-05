@@ -131,6 +131,12 @@ init_ltp_netspace()
 	tst_restore_ipaddr rhost
 }
 
+# return 0: use ssh, 1: use netns
+tst_net_use_netns()
+{
+	[ -n "$TST_USE_NETNS" ]
+}
+
 # Run command on remote host.
 # tst_rhost_run -c CMD [-b] [-s] [-u USER]
 # Options:
