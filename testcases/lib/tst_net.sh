@@ -762,14 +762,10 @@ tst_netload()
 		tst_netload_brk TFAIL "expected '$expect_res' but ret: '$ret'"
 	fi
 
-	local mean res_sum r
-	for r in $results; do
-		res_sum="$((res_sum + r))"
-	done
-	mean=$((res_sum / passed))
-	echo "$mean" > $rfile
+	local median=$(tst_get_median $results)
+	echo "$median" > $rfile
 
-	tst_res_ TPASS "netstress passed, mean time $mean ms, data:$results"
+	tst_res_ TPASS "netstress passed, median time $median ms, data:$results"
 
 	return $ret
 }
