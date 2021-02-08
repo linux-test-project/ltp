@@ -711,7 +711,7 @@ tst_netload()
 	tst_rhost_run -c "pkill -9 netstress\$"
 	rm -f tst_netload.log
 
-	local res=0
+	local results
 	local passed=0
 
 	for i in $(seq 1 $run_cnt); do
@@ -752,7 +752,7 @@ tst_netload()
 		[ ! -f $rfile ] && \
 			tst_netload_brk TFAIL "can't read $rfile"
 
-		res="$((res + $(cat $rfile)))"
+		results="$results $(cat $rfile)"
 		passed=$((passed + 1))
 	done
 
@@ -762,10 +762,14 @@ tst_netload()
 		tst_netload_brk TFAIL "expected '$expect_res' but ret: '$ret'"
 	fi
 
-	res=$((res / $passed))
-	echo "$res" > $rfile
+	local mean res_sum r
+	for r in $results; do
+		res_sum="$((res_sum + r))"
+	done
+	mean=$((res_sum / passed))
+	echo "$mean" > $rfile
 
-	tst_res_ TPASS "netstress passed, mean time '$res' ms"
+	tst_res_ TPASS "netstress passed, mean time $mean ms, data:$results"
 
 	return $ret
 }
