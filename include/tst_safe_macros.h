@@ -50,6 +50,11 @@ int safe_dup(const char *file, const int lineno, int oldfd);
 #define SAFE_DUP(oldfd) \
 	safe_dup(__FILE__, __LINE__, (oldfd))
 
+int safe_dup2(const char *file, const int lineno, int oldfd, int newfd);
+
+#define SAFE_DUP2(oldfd, newfd)			\
+	safe_dup2(__FILE__, __LINE__, (oldfd), (newfd))
+
 #define SAFE_GETCWD(buf, size) \
 	safe_getcwd(__FILE__, __LINE__, NULL, (buf), (size))
 

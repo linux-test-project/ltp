@@ -415,6 +415,24 @@ int safe_dup(const char *file, const int lineno, int oldfd)
 	return rval;
 }
 
+int safe_dup2(const char *file, const int lineno, int oldfd, int newfd)
+{
+	int rval;
+
+	rval = dup2(oldfd, newfd);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "dup2(%i, %i) failed", oldfd, newfd);
+	} else if (rval != newfd) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid dup2(%i, %i) return value %d",
+			 oldfd, newfd, rval);
+	}
+
+	return rval;
+}
+
 sighandler_t safe_signal(const char *file, const int lineno,
 	int signum, sighandler_t handler)
 {
