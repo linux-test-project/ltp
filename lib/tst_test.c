@@ -424,6 +424,31 @@ pid_t safe_fork(const char *filename, unsigned int lineno)
 	return pid;
 }
 
+pid_t safe_clone(const char *file, const int lineno,
+		 const struct tst_clone_args *args)
+{
+	pid_t pid;
+
+	if (!tst_test->forks_child)
+		tst_brk(TBROK, "test.forks_child must be set!");
+
+	pid = tst_clone(args);
+
+	switch (pid) {
+	case -1:
+		tst_brk_(file, lineno, TBROK | TERRNO, "clone3 failed");
+		break;
+	case -2:
+		tst_brk_(file, lineno, TBROK | TERRNO, "clone failed");
+		return -1;
+	}
+
+	if (!pid)
+		atexit(tst_free_all);
+
+	return pid;
+}
+
 static struct option {
 	char *optstr;
 	char *help;

@@ -547,9 +547,9 @@ void tst_flush(void);
 Flush output streams, handling errors appropriately.
 
 This function is rarely needed when you have to flush the output streams
-before calling 'fork()' or 'clone()'. Note that the 'SAFE_FORK()' calls this
-function automatically. See 3.4 FILE buffers and fork() for explanation why is
-this needed.
+before calling 'fork()' or 'clone()'. Note that the 'SAFE_FORK()' and 'SAFE_CLONE()'
+calls this function automatically. See 3.4 FILE buffers and fork() for explanation
+why is this needed.
 
 2.2.3 Test temporary directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -732,10 +732,10 @@ This happens when 'stdout' gets redirected to a file. In this case, the
 'stdout' is not line buffered, but block buffered. Hence after a fork content
 of the buffers will be printed by the parent and each of the children.
 
-To avoid that you should use 'SAFE_FORK()'.
+To avoid that you should use 'SAFE_FORK()', 'SAFE_CLONE()' or 'tst_clone()'.
 
 IMPORTANT: You have to set the '.forks_child' flag in the test structure
-           if your testcase forks.
+           if your testcase forks or calls 'SAFE_CLONE()'.
 
 2.2.8 Doing the test in the child process
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -768,6 +768,23 @@ void tst_reap_children(void);
 The 'tst_reap_children()' function makes the process wait for all of its
 children and exits with 'tst_brk(TBROK, ...)' if any of them returned
 a non zero exit code.
+
+When using 'SAFE_CLONE' or 'tst_clone', this may not work depending on
+the parameters passed to clone. The following call to 'SAFE_CLONE' is
+identical to 'fork()', so will work as expected.
+
+[source,c]
+--------------------------------------------------------------------------------
+const struct tst_clone_args args = {
+	.exit_signal = SIGCHLD,
+};
+
+SAFE_CLONE(&args);
+--------------------------------------------------------------------------------
+
+If 'exit_signal' is set to something else, then this will break
+'tst_reap_children'. It's not expected that all parameters to clone will
+work with the LTP library unless specific action is taken by the test code.
 
 .Using 'tst_res()' from binaries started by 'exec()'
 [source,c]
