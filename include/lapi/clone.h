@@ -10,6 +10,7 @@
 #include <sys/syscall.h>
 #include <linux/types.h>
 #include <sched.h>
+#include <stdint.h>
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -26,7 +27,7 @@ struct clone_args {
 	uint64_t __attribute__((aligned(8))) tls;
 };
 
-int clone3(struct clone_args *args, size_t size)
+static inline int clone3(struct clone_args *args, size_t size)
 {
 	return tst_syscall(__NR_clone3, args, size);
 }
@@ -36,7 +37,7 @@ int clone3(struct clone_args *args, size_t size)
 #define CLONE_PIDFD	0x00001000	/* set if a pidfd should be placed in parent */
 #endif
 
-void clone3_supported_by_kernel(void)
+static inline void clone3_supported_by_kernel(void)
 {
 	if ((tst_kvercmp(5, 3, 0)) < 0) {
 		/* Check if the syscall is backported on an older kernel */
