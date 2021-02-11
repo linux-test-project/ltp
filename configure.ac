@@ -43,6 +43,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/can.h \
     linux/cgroupstats.h \
     linux/cryptouser.h \
+    linux/close_range.h \
     linux/dccp.h \
     linux/fs.h \
     linux/genetlink.h \
@@ -77,6 +78,7 @@ AC_SUBST(HAVE_FTS_H, $have_fts)
 
 AC_CHECK_FUNCS_ONCE([ \
     clone3 \
+    close_range \
     copy_file_range \
     epoll_pwait \
     execveat \

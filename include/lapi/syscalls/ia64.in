@@ -337,5 +337,6 @@ fsconfig 1455
 fsmount 1456
 fspick 1457
 pidfd_open 1458
+close_range 1460
 openat2 1461
 pidfd_getfd 1462

@@ -398,5 +398,6 @@ fsconfig 431
 fsmount 432
 fspick 433
 pidfd_open 434
+close_range 436
 openat2 437
 pidfd_getfd 438
