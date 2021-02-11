@@ -120,6 +120,8 @@ close01 close01
 close02 close02
 close08 close08
 
+close_range01 close_range01
+
 confstr01 confstr01
 
 connect01 connect01
