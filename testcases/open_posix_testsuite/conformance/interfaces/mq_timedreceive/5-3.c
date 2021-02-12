@@ -55,7 +55,8 @@ int main(void)
 	sprintf(mqname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	attr.mq_msgsize = BUFFER;
-	attr.mq_maxmsg = BUFFER;
+	attr.mq_maxmsg = 1;
+
 	mqdes = mq_open(mqname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, &attr);
 	if (mqdes == (mqd_t) - 1) {
 		perror(ERROR_PREFIX "mq_open");
