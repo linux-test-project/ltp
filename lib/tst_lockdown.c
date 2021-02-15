@@ -2,6 +2,8 @@
 
 #define TST_NO_DEFAULT_MAIN
 
+#define PATH_LOCKDOWN	"/sys/kernel/security/lockdown"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mount.h>
