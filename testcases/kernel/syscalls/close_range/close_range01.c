@@ -197,6 +197,10 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.needs_root = 1,
 	.test = run,
+	.caps = (struct tst_cap []) {
+		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
+		{}
+	},
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.setup = setup,
 	.tags = (const struct tst_tag[]) {
