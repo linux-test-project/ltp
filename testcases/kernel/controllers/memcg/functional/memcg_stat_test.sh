@@ -27,15 +27,15 @@ test2()
 test3()
 {
 	tst_res TINFO "Test unevictable with MAP_LOCKED"
-	test_mem_stat "--mmap-lock1" $PAGESIZE $PAGESIZE \
-		"unevictable" $PAGESIZE false
+	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES \
+		"unevictable" $PAGESIZES false
 }
 
 test4()
 {
 	tst_res TINFO "Test unevictable with mlock"
-	test_mem_stat "--mmap-lock2" $PAGESIZE $PAGESIZE \
-		"unevictable" $PAGESIZE false
+	test_mem_stat "--mmap-lock2" $PAGESIZES $PAGESIZES \
+		"unevictable" $PAGESIZES false
 }
 
 test5()
@@ -44,11 +44,11 @@ test5()
 	echo 1 > memory.use_hierarchy
 
 	mkdir subgroup
-	echo $PAGESIZE > memory.limit_in_bytes
-	echo $((PAGESIZE*2)) > subgroup/memory.limit_in_bytes
+	echo $PAGESIZES > memory.limit_in_bytes
+	echo $((PAGESIZES * 2)) > subgroup/memory.limit_in_bytes
 
 	cd subgroup
-	check_mem_stat "hierarchical_memory_limit" $PAGESIZE
+	check_mem_stat "hierarchical_memory_limit" $PAGESIZES
 
 	cd ..
 	rmdir subgroup
@@ -62,11 +62,11 @@ test6()
 	echo 0 > memory.use_hierarchy
 
 	mkdir subgroup
-	echo $PAGESIZE > memory.limit_in_bytes
-	echo $((PAGESIZE * 2)) > subgroup/memory.limit_in_bytes
+	echo $PAGESIZES > memory.limit_in_bytes
+	echo $((PAGESIZES * 2)) > subgroup/memory.limit_in_bytes
 
 	cd subgroup
-	check_mem_stat "hierarchical_memory_limit" $((PAGESIZE * 2))
+	check_mem_stat "hierarchical_memory_limit" $((PAGESIZES * 2))
 
 	cd ..
 	rmdir subgroup
@@ -80,13 +80,13 @@ test7()
 	ROD echo 1 \> memory.use_hierarchy
 
 	mkdir subgroup
-	echo $PAGESIZE > memory.limit_in_bytes
-	echo $PAGESIZE > memory.memsw.limit_in_bytes
-	echo $((PAGESIZE*2)) > subgroup/memory.limit_in_bytes
-	echo $((PAGESIZE*2)) > subgroup/memory.memsw.limit_in_bytes
+	echo $PAGESIZES > memory.limit_in_bytes
+	echo $PAGESIZES > memory.memsw.limit_in_bytes
+	echo $((PAGESIZES * 2)) > subgroup/memory.limit_in_bytes
+	echo $((PAGESIZES * 2)) > subgroup/memory.memsw.limit_in_bytes
 
 	cd subgroup
-	check_mem_stat "hierarchical_memsw_limit" $PAGESIZE
+	check_mem_stat "hierarchical_memsw_limit" $PAGESIZES
 
 	cd ..
 	rmdir subgroup
@@ -101,13 +101,13 @@ test8()
 	ROD echo 0 \> memory.use_hierarchy
 
 	mkdir subgroup
-	echo $PAGESIZE > memory.limit_in_bytes
-	echo $PAGESIZE > memory.memsw.limit_in_bytes
-	echo $((PAGESIZE*2)) > subgroup/memory.limit_in_bytes
-	echo $((PAGESIZE*2)) > subgroup/memory.memsw.limit_in_bytes
+	echo $PAGESIZES > memory.limit_in_bytes
+	echo $PAGESIZES > memory.memsw.limit_in_bytes
+	echo $((PAGESIZES * 2)) > subgroup/memory.limit_in_bytes
+	echo $((PAGESIZES * 2)) > subgroup/memory.memsw.limit_in_bytes
 
 	cd subgroup
-	check_mem_stat "hierarchical_memsw_limit" $((PAGESIZE*2))
+	check_mem_stat "hierarchical_memsw_limit" $((PAGESIZES * 2))
 
 	cd ..
 	rmdir subgroup
