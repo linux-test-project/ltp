@@ -16,37 +16,38 @@
 #include "lapi/syscalls.h"
 
 #ifndef HAVE_FSOPEN
-int fsopen(const char *fsname, unsigned int flags)
+static inline int fsopen(const char *fsname, unsigned int flags)
 {
 	return tst_syscall(__NR_fsopen, fsname, flags);
 }
 #endif /* HAVE_FSOPEN */
 
 #ifndef HAVE_FSCONFIG
-int fsconfig(int fd, unsigned int cmd, const char *key,
-	     const void *value, int aux)
+static inline int fsconfig(int fd, unsigned int cmd, const char *key,
+                           const void *value, int aux)
 {
 	return tst_syscall(__NR_fsconfig, fd, cmd, key, value, aux);
 }
 #endif /* HAVE_FSCONFIG */
 
 #ifndef HAVE_FSMOUNT
-int fsmount(int fd, unsigned int flags, unsigned int mount_attrs)
+static inline int fsmount(int fd, unsigned int flags, unsigned int mount_attrs)
 {
 	return tst_syscall(__NR_fsmount, fd, flags, mount_attrs);
 }
 #endif /* HAVE_FSMOUNT */
 
 #ifndef HAVE_FSPICK
-int fspick(int dirfd, const char *pathname, unsigned int flags)
+static inline int fspick(int dirfd, const char *pathname, unsigned int flags)
 {
 	return tst_syscall(__NR_fspick, dirfd, pathname, flags);
 }
 #endif /* HAVE_FSPICK */
 
 #ifndef HAVE_MOVE_MOUNT
-int move_mount(int from_dirfd, const char *from_pathname, int to_dirfd,
-	       const char *to_pathname, unsigned int flags)
+static inline int move_mount(int from_dirfd, const char *from_pathname,
+                             int to_dirfd, const char *to_pathname,
+                             unsigned int flags)
 {
 	return tst_syscall(__NR_move_mount, from_dirfd, from_pathname, to_dirfd,
 			   to_pathname, flags);
@@ -54,7 +55,7 @@ int move_mount(int from_dirfd, const char *from_pathname, int to_dirfd,
 #endif /* HAVE_MOVE_MOUNT */
 
 #ifndef HAVE_OPEN_TREE
-int open_tree(int dirfd, const char *pathname, unsigned int flags)
+static inline int open_tree(int dirfd, const char *pathname, unsigned int flags)
 {
 	return tst_syscall(__NR_open_tree, dirfd, pathname, flags);
 }
@@ -130,7 +131,7 @@ enum fsconfig_command {
 
 #endif /* OPEN_TREE_CLONE */
 
-void fsopen_supported_by_kernel(void)
+static inline void fsopen_supported_by_kernel(void)
 {
 	if ((tst_kvercmp(5, 2, 0)) < 0) {
 		/* Check if the syscall is backported on an older kernel */

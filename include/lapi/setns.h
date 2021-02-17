@@ -11,7 +11,7 @@
 #include <sched.h>
 
 #ifndef HAVE_SETNS
-int setns(int fd, int nstype)
+static inline int setns(int fd, int nstype)
 {
 	return tst_syscall(__NR_setns, fd, nstype);
 }

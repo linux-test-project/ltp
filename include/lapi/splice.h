@@ -11,8 +11,8 @@
 #include "lapi/syscalls.h"
 
 #if !defined(HAVE_SPLICE)
-ssize_t splice(int fd_in, loff_t *off_in, int fd_out,
-	loff_t *off_out, size_t len, unsigned int flags)
+static inline ssize_t splice(int fd_in, loff_t *off_in, int fd_out,
+                             loff_t *off_out, size_t len, unsigned int flags)
 {
 	return tst_syscall(__NR_splice, fd_in, off_in,
 		fd_out, off_out, len, flags);

@@ -11,9 +11,9 @@
 #include "lapi/syscalls.h"
 
 #if !defined(HAVE_EXECVEAT)
-int execveat(int dirfd, const char *pathname,
-			char *const argv[], char *const envp[],
-			int flags)
+static inline int execveat(int dirfd, const char *pathname,
+			   char *const argv[], char *const envp[],
+			   int flags)
 {
 	return tst_syscall(__NR_execveat, dirfd, pathname, argv, envp, flags);
 }

@@ -22,7 +22,7 @@ static inline int finit_module(int fd, const char *param_values, int flags)
 	return tst_syscall(__NR_finit_module, fd, param_values, flags);
 }
 
-void finit_module_supported_by_kernel(void)
+static inline void finit_module_supported_by_kernel(void)
 {
        if ((tst_kvercmp(3, 8, 0)) < 0) {
                /* Check if the syscall is backported on an older kernel */

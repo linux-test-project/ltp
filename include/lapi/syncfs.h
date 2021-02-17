@@ -12,7 +12,7 @@
 #include "lapi/syscalls.h"
 
 #if !defined(HAVE_SYNCFS)
-int syncfs(int fd)
+static inline int syncfs(int fd)
 {
 	return tst_syscall(__NR_syncfs, fd);
 }

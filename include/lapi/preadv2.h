@@ -19,8 +19,8 @@
 /* LO_HI_LONG taken from glibc */
 # define LO_HI_LONG(val) (long) (val), (long) (((uint64_t) (val)) >> 32)
 
-ssize_t preadv2(int fd, const struct iovec *iov, int iovcnt, off_t offset,
-		int flags)
+static inline ssize_t preadv2(int fd, const struct iovec *iov, int iovcnt,
+                              off_t offset, int flags)
 {
 	return tst_syscall(__NR_preadv2, fd, iov, iovcnt,
 			   LO_HI_LONG(offset), flags);

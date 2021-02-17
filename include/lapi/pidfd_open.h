@@ -15,7 +15,7 @@
 #include "config.h"
 
 #ifndef HAVE_PIDFD_OPEN
-int pidfd_open(pid_t pid, unsigned int flags)
+static inline int pidfd_open(pid_t pid, unsigned int flags)
 {
 	return tst_syscall(__NR_pidfd_open, pid, flags);
 }

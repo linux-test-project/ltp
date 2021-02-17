@@ -11,7 +11,7 @@
 #include "lapi/fcntl.h"
 
 #ifndef HAVE_MKDIRAT
-int mkdirat(int dirfd, const char *dirname, int mode)
+static inline int mkdirat(int dirfd, const char *dirname, int mode)
 {
 	return ltp_syscall(__NR_mkdirat, dirfd, dirname, mode);
 }

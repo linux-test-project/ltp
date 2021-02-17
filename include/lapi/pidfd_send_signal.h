@@ -17,8 +17,8 @@ static inline void pidfd_send_signal_supported(void)
 }
 
 #ifndef HAVE_PIDFD_SEND_SIGNAL
-static int pidfd_send_signal(int pidfd, int sig, siginfo_t *info,
-				 unsigned int flags)
+static inline int pidfd_send_signal(int pidfd, int sig, siginfo_t *info,
+                                    unsigned int flags)
 {
 	return tst_syscall(__NR_pidfd_send_signal, pidfd, sig, info, flags);
 }

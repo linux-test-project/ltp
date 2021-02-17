@@ -12,8 +12,8 @@
 #include "lapi/syscalls.h"
 
 #if !defined(HAVE_RENAMEAT)
-int renameat(int olddirfd, const char *oldpath, int newdirfd,
-			const char *newpath)
+static inline int renameat(int olddirfd, const char *oldpath, int newdirfd,
+                           const char *newpath)
 {
 	return ltp_syscall(__NR_renameat, olddirfd, oldpath, newdirfd,
 					newpath);

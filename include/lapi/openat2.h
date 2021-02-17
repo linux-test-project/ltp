@@ -47,7 +47,8 @@ struct open_how {
 					be scoped inside the dirfd
 					(similar to chroot(2)). */
 
-int openat2(int dfd, const char *pathname, struct open_how *how, size_t size)
+static inline int openat2(int dfd, const char *pathname,
+                          struct open_how *how, size_t size)
 {
 	return tst_syscall(__NR_openat2, dfd, pathname, how, size);
 }
@@ -59,7 +60,7 @@ struct open_how_pad {
 	uint64_t pad;
 };
 
-void openat2_supported_by_kernel(void)
+static inline void openat2_supported_by_kernel(void)
 {
 	if ((tst_kvercmp(5, 6, 0)) < 0) {
 		/* Check if the syscall is backported on an older kernel */
