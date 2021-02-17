@@ -71,8 +71,6 @@ enum {
 	IOSQE_FIXED_FILE_BIT,
 	IOSQE_IO_DRAIN_BIT,
 	IOSQE_IO_LINK_BIT,
-	IOSQE_IO_HARDLINK_BIT,
-	IOSQE_ASYNC_BIT,
 };
 
 /*
@@ -84,10 +82,6 @@ enum {
 #define IOSQE_IO_DRAIN		(1U << IOSQE_IO_DRAIN_BIT)
 /* links next sqe */
 #define IOSQE_IO_LINK		(1U << IOSQE_IO_LINK_BIT)
-/* like LINK, but stronger */
-#define IOSQE_IO_HARDLINK	(1U << IOSQE_IO_HARDLINK_BIT)
-/* always go async */
-#define IOSQE_ASYNC		(1U << IOSQE_ASYNC_BIT)
 
 /*
  * io_uring_setup() flags
@@ -262,6 +256,17 @@ struct io_uring_probe {
 
 #endif /* IOSQE_FIXED_FILE */
 
+#ifndef IOSQE_IO_HADRLINK
+/* like LINK, but stronger */
+#define IOSQE_IO_HARDLINK_BIT	3
+#define IOSQE_IO_HARDLINK	(1U << IOSQE_IO_HARDLINK_BIT)
+#endif /* IOSQE_IO_HADRLINK */
+
+#ifndef IOSQE_ASYNC
+/* always go async */
+#define IOSQE_ASYNC_BIT		4
+#define IOSQE_ASYNC		(1U << IOSQE_ASYNC_BIT)
+#endif /* IOSQE_ASYNC */
 
 #ifndef HAVE_IO_URING_REGISTER
 static inline int io_uring_register(int fd, unsigned int opcode, void *arg,
