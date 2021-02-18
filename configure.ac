@@ -30,7 +30,7 @@ AC_DEFUN([AC_PROG_STRIP], [AC_CHECK_TOOL(STRIP, strip, :)])
 AC_PROG_STRIP
 AC_PROG_YACC
 
-m4_ifndef([PKG_PREREQ],
+m4_ifndef([PKG_CHECK_EXISTS],
 	[m4_fatal([must install pkg-config or pkgconfig and pkg.m4 macro (usual dependency), see INSTALL])])
 
 AC_PREFIX_DEFAULT(/opt/ltp)
