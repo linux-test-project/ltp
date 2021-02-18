@@ -56,6 +56,10 @@ matrix:
           compiler: clang
 
         - os: linux
+          env: DISTRO=opensuse/tumbleweed CONTAINER=podman CONTAINER_ARGS="--runtime=/usr/bin/runc"
+          compiler: gcc
+
+        - os: linux
           env: DISTRO=opensuse/leap
           compiler: gcc
 
@@ -80,19 +84,41 @@ matrix:
           compiler: gcc
 
 before_install:
-    - df -hT
-    # pull rate limit workaround
+    # Tumbleweed requires podman and newest runc due docker incompatible with glibc 2.33 (faccessat2)
+    - CONTAINER="${CONTAINER:-docker}"
+    - conf="/etc/docker/daemon.json"
+    - >
+        if [ "$CONTAINER" = "podman" ]; then
+            # podman
+            . /etc/os-release
+            sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
+            wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_${VERSION_ID}/Release.key -O- | sudo apt-key add -
+            sudo apt update
+            sudo apt -y install podman slirp4netns
+            conf="/etc/containers/registries.conf"
+
+            # runc
+            sudo curl -L https://github.com/opencontainers/runc/releases/download/v1.0.0-rc93/runc.amd64 -o /usr/bin/runc
+            sudo chmod +x /usr/bin/runc
+        fi
+
+    # Docker Hub pull rate limit workaround
+    - conf="/etc/docker/daemon.json"
     - tmpdaemon=$(mktemp)
-    - sudo jq '."registry-mirrors" += ["https://mirror.gcr.io"]' /etc/docker/daemon.json > $tmpdaemon
-    - sudo mv $tmpdaemon /etc/docker/daemon.json
-    - sudo systemctl daemon-reload
-    - sudo systemctl restart docker
-    - docker system info
+    - sudo jq '."registry-mirrors" += ["https://mirror.gcr.io"]' $conf > $tmpdaemon
+    - sudo mv $tmpdaemon $conf
+    - >
+        if [ "$CONTAINER" = "docker" ]; then
+            sudo systemctl daemon-reload
+            sudo systemctl restart docker
+        fi
+    - $CONTAINER info
+
     # ltp
     - DIR="/usr/src/ltp"
     - printf "FROM $DISTRO\nRUN mkdir -p $DIR\nWORKDIR $DIR\nCOPY . $DIR\n" > Dockerfile
     - cat Dockerfile
-    - docker build -t ltp .
+    - $CONTAINER $CONTAINER_ARGS build -t ltp .
 
 script:
     - INSTALL="${DISTRO%%:*}"
@@ -100,4 +126,4 @@ script:
     - if [ "$MAKE_INSTALL" = 1 ]; then INSTALL_OPT="-i"; fi
     - if [ ! "$TREE" ]; then TREE="in"; fi
     - case $VARIANT in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
-    - docker run -t ltp /bin/sh -c "cd travis && ./$INSTALL.sh && if [ \"$VARIANT\" ]; then ARCH=\"$ARCH\" ./$INSTALL.$VARIANT.sh; fi && ../build.sh -o $TREE -t $BUILD -c $CC $INSTALL_OPT"
+    - $CONTAINER $CONTAINER_ARGS run -t ltp /bin/sh -c "cd travis && ./$INSTALL.sh && if [ \"$VARIANT\" ]; then ARCH=\"$ARCH\" ./$INSTALL.$VARIANT.sh; fi && ../build.sh -o $TREE -t $BUILD -c $CC $INSTALL_OPT"
