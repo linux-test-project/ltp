@@ -2501,7 +2501,7 @@ void symlink_f(int opno, long r)
 }
 
 /* ARGSUSED */
-void sync_f(int opno, long r)
+void sync_f(int opno, long r __attribute__((unused)))
 {
 	sync();
 	if (verbose)
