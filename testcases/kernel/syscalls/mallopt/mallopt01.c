@@ -12,9 +12,8 @@
  * Basic mallinfo() and mallopt() testing.
 \*/
 
-#include <malloc.h>
 
-#include "tst_test.h"
+#include "../mallinfo/mallinfo_common.h"
 #include "tst_safe_macros.h"
 
 #ifdef HAVE_MALLOPT
@@ -22,21 +21,6 @@
 #define MAX_FAST_SIZE	(80 * sizeof(size_t) / 4)
 
 struct mallinfo info;
-
-void print_mallinfo(void)
-{
-	tst_res(TINFO, "mallinfo structure:");
-	tst_res(TINFO, "mallinfo.arena = %d", info.arena);
-	tst_res(TINFO, "mallinfo.ordblks = %d", info.ordblks);
-	tst_res(TINFO, "mallinfo.smblks = %d", info.smblks);
-	tst_res(TINFO, "mallinfo.hblkhd = %d", info.hblkhd);
-	tst_res(TINFO, "mallinfo.hblks = %d", info.hblks);
-	tst_res(TINFO, "mallinfo.usmblks = %d", info.usmblks);
-	tst_res(TINFO, "mallinfo.fsmblks = %d", info.fsmblks);
-	tst_res(TINFO, "mallinfo.uordblks = %d", info.uordblks);
-	tst_res(TINFO, "mallinfo.fordblks = %d", info.fordblks);
-	tst_res(TINFO, "mallinfo.keepcost = %d", info.keepcost);
-}
 
 void test_mallopt(void)
 {
@@ -46,11 +30,11 @@ void test_mallopt(void)
 
 	info = mallinfo();
 	if (info.uordblks < 20480) {
-		print_mallinfo();
+		print_mallinfo("Test uordblks", &info);
 		tst_res(TFAIL, "mallinfo() failed: uordblks < 20K");
 	}
 	if (info.smblks != 0) {
-		print_mallinfo();
+		print_mallinfo("Test smblks", &info);
 		tst_res(TFAIL, "mallinfo() failed: smblks != 0");
 	}
 	if (info.uordblks >= 20480 && info.smblks == 0)
