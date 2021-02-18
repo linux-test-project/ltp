@@ -280,7 +280,7 @@ void usage(void);
 void write_freq(void);
 void zero_freq(void);
 
-void sg_handler(int signum)
+void sg_handler(int signum __attribute__((unused)))
 {
 	should_stop = 1;
 }
