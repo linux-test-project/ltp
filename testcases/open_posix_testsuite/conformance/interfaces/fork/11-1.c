@@ -106,5 +106,6 @@ int main(void)
 
 cleanup:
 	close(fd);
+	unlink(path_template);
 	return result;
 }
