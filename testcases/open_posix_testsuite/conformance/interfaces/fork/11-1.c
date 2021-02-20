@@ -47,7 +47,7 @@ static int child(int fd)
 
 	if (fcntl(fd, F_SETLK, &fl) == -1) {
 		if (errno == EACCES || errno == EAGAIN) {
-			printf("PASSED: child did not inherit the lock\n");
+			printf("PASSED: Child locked file already locked by parent\n");
 			return PTS_PASS;
 		}
 
@@ -56,7 +56,7 @@ static int child(int fd)
 		return PTS_UNRESOLVED;
 	}
 
-	printf("Child locked file already locked by parent\n");
+	printf("Child did not inherit the lock\n");
 	return PTS_FAIL;
 }
 
