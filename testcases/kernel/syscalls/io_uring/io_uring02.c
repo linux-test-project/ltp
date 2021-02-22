@@ -19,6 +19,12 @@
  *  Date:   Fri Feb 7 16:05:21 2020 -0700
  *
  *  io_uring: grab ->fs as part of async preparation
+ *
+ * stable 5.4 specific backport:
+ *
+ *  commit c4a23c852e80a3921f56c6fbc851a21c84a6d06b
+ *  Author: Nicolai Stange <nstange@suse.de>
+ *  Date:   Wed Jan 27 14:34:43 2021 +0100
  */
 
 #include <stdio.h>
@@ -252,6 +258,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9392a27d88b9"},
 		{"linux-git", "ff002b30181d"},
+		{"linux-stable-git", "c4a23c852e80"},
 		{"CVE", "2020-29373"},
 		{}
 	}
