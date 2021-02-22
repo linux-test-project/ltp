@@ -37,6 +37,20 @@ see example in `kexec.policy`.
 The test attempts to kexec the existing running kernel image.
 To kexec a different kernel image export `IMA_KEXEC_IMAGE=<pathname>`.
 
+### IMA SELinux test
+
+To enable IMA to measure SELinux state and policy, `ima_selinux.sh`
+requires a readable IMA policy, as well as a loaded measure policy with
+`measure func=CRITICAL_DATA label=selinux`,
+see example in `selinux.policy`.
+
+As well as what's required for the IMA tests, SELinux tests require SELinux enabled
+and reading the IMA policy allowed in the kernel configuration:
+```
+CONFIG_SECURITY_SELINUX=y
+CONFIG_IMA_READ_POLICY=y
+```
+
 ## EVM tests
 
 `evm_overlay.sh` requires a builtin IMA appraise tcb policy (e.g. `ima_policy=appraise_tcb`
