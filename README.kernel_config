@@ -18,8 +18,11 @@ CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
+CONFIG_TIME_NS=y
 CONFIG_VETH=y
 CONFIG_MACVLAN=y
+CONFIG_TUN=y
+CONFIG_TAP=y
 
 The IPC namespaces do not automatically enable IPC, so you may
 also want to have:
@@ -282,6 +285,19 @@ end
 ---------------------------------
 
 ---------------------------------
+Enabling Kernel Configuration to test Memory management features
+---------------------------------
+CONFIG_KSM=y
+CONFIG_MEMORY_FAILURE=y
+---------------------------------
+Enabling Kernel Configuration to test other filesystems
+---------------------------------
+CONFIG_FANOTIFY=y
+CONFIG_QFMT_V2=y
+---------------------------------
+Enabling Kernel Configuration to test CPU/Task time and stats accounting
+---------------------------------
+CONFIG_BSD_PROCESS_ACCT=y
 Enabling Kernel Configuration to test ext4 new features
 ---------------------------------
 CONFIG_EXT4_FS=y
