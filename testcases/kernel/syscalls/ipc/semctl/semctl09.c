@@ -23,15 +23,20 @@
  * completely different meaning than their names seems to suggest.
  *
  * We also calling semctl() directly by syscall(), because of a glibc bug:
- * * semctl SEM_STAT_ANY fails to pass the buffer specified by the caller
- * * to the kernel.
- * * https://sourceware.org/bugzilla/show_bug.cgi?id=26637
  *
+ * semctl SEM_STAT_ANY fails to pass the buffer specified by the caller
+ * to the kernel.
+ *
+ * https://sourceware.org/bugzilla/show_bug.cgi?id=26637
+\*/
+
+/*
  * The glibc bug was fixed in:
+ *
  * * commit  574500a108be1d2a6a0dc97a075c9e0a98371aba
  * * Author: Dmitry V. Levin <ldv@altlinux.org>
  * * Date:   Tue, 29 Sep 2020 17:10:20 +0000 (14:10 -0300)
-\*/
+ */
 
 #include <stdio.h>
 #include <pwd.h>
@@ -200,4 +205,8 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tests),
 	.test_variants = 2,
 	.needs_root = 1,
+	.tags = (const struct tst_tag[]) {
+		{"glibc-git", "574500a108be"},
+		{}
+	}
 };
