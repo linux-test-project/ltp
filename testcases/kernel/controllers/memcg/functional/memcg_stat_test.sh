@@ -109,7 +109,7 @@ test8()
 	cd subgroup
 	check_mem_stat "hierarchical_memsw_limit" $((PAGESIZE*2))
 
-	cd .
+	cd ..
 	rmdir subgroup
 }
 
