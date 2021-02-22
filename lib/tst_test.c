@@ -38,6 +38,7 @@
  */
 const char *TCID __attribute__((weak));
 
+/* update also docparse/testinfo.pl */
 #define LINUX_GIT_URL "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id="
 #define LINUX_STABLE_GIT_URL "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id="
 #define GLIBC_GIT_URL "https://sourceware.org/git/?p=glibc.git;a=commit;h="
@@ -703,6 +704,7 @@ static void print_failure_hint(const char *tag, const char *hint,
 	}
 }
 
+/* update also docparse/testinfo.pl */
 static void print_failure_hints(void)
 {
 	print_failure_hint("linux-git", "missing kernel fixes", LINUX_GIT_URL);
