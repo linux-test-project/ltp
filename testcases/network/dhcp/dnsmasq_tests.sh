@@ -12,7 +12,7 @@ dhcp_name="dnsmasq"
 log="/var/log/dnsmasq.tst.log"
 
 lease_dir="/var/lib/misc"
-tst_selinux_enabled && lease_dir="/var/lib/dnsmasq"
+tst_selinux_enforced && lease_dir="/var/lib/dnsmasq"
 lease_file="$lease_dir/dnsmasq.tst.leases"
 
 common_opt="--no-hosts --no-resolv --dhcp-authoritative \

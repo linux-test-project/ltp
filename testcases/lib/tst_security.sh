@@ -27,7 +27,7 @@ _tst_check_security_modules()
 		tst_res TINFO "loaded AppArmor profiles: $profiles"
 	fi
 
-	if tst_selinux_enabled; then
+	if tst_selinux_enforced; then
 		tst_res TINFO "SELinux enabled in enforcing mode, this may affect test results"
 
 		[ "$TST_DISABLE_SELINUX" = 1 ] || \
@@ -63,7 +63,7 @@ tst_apparmor_used_profile()
 # Detect whether SELinux is enabled in enforcing mode
 # Return 0: enabled in enforcing mode
 # Return 1: enabled in permissive mode or disabled
-tst_selinux_enabled()
+tst_selinux_enforced()
 {
 	local f="$(_tst_get_enforce)"
 

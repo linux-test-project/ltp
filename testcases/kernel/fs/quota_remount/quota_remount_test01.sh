@@ -52,7 +52,7 @@ do_test()
 
 	# some distros (CentOS 6.x, for example) doesn't permit creating
 	# of quota files in a directory with SELinux file_t type
-	if tst_selinux_enabled &&
+	if tst_selinux_enforced &&
 		tst_cmd_available chcon && ! chcon -t tmp_t $MNTDIR; then
 			tst_brk TCONF "could not change SELinux file type"
 	fi
