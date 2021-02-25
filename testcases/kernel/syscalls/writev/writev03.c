@@ -49,6 +49,7 @@ static void setup(void)
 	mapfd = SAFE_OPEN(MAPFILE, O_CREAT|O_RDWR|O_TRUNC, 0644);
 	SAFE_WRITE(1, mapfd, buf, BUF_SIZE);
 
+	fzsync_pair.exec_time_p = 0.25;
 	tst_fzsync_pair_init(&fzsync_pair);
 }
 
