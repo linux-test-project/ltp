@@ -115,6 +115,10 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_HIGH_RES_TIMERS=y",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "78c9c4dfbf8c"},
 		{"CVE", "2018-12896"},
