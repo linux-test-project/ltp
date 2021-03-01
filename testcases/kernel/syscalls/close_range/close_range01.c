@@ -190,7 +190,6 @@ static void run(unsigned int n)
 
 static struct tst_test test = {
 	.tcnt = 4,
-	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.mount_device = 1,
 	.mntpoint = "mnt",

@@ -289,7 +289,6 @@ static struct tst_test test = {
 	.setup = do_setup,
 	.cleanup = do_cleanup,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
 	.all_filesystems = 1,

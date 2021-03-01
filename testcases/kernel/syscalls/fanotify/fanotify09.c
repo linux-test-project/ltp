@@ -365,7 +365,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "54a307ba8d3c"},
