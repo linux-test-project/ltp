@@ -24,7 +24,7 @@ generate_locate_test_makefile() {
 
 	echo "Generating $maketype Makefiles"
 
-	locate-test --$maketype | sed -e 's,^./,,g' > make-gen.$maketype
+	locate-test --$maketype | sed -e 's,^./,,g' | sort > make-gen.$maketype
 
 	generate_makefiles make-gen.$maketype $*
 
