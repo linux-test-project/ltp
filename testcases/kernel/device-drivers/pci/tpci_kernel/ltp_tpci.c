@@ -321,6 +321,9 @@ static int test_slot_scan(void)
 
 	prk_info("scan pci slot");
 
+	if ((num % 8) != 0)
+		return TPASS;
+
 	ret = pci_scan_slot(bus, num);
 	if (ret >= 0) {
 		prk_info("found '%d' devices from scan slot", ret);
