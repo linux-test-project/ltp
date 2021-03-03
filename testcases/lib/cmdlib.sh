@@ -103,8 +103,8 @@ exists()
 {
     for cmd in $*; do
         if ! command -v $cmd >/dev/null 2>&1; then
-            end_testcase "$cmd: command not found"
-            exit 1
+            tst_resm TCONF "$1: command $2 not found."
+            exit 32
         fi
     done
 }
