@@ -235,11 +235,6 @@ static void do_cleanup(void)
 		SAFE_CLOSE(fd_notify);
 }
 
-static const char *const resource_files[] = {
-	TEST_APP,
-	NULL
-};
-
 static struct tst_test test = {
 	.setup = do_setup,
 	.test = do_test,
@@ -247,7 +242,10 @@ static struct tst_test test = {
 	.cleanup = do_cleanup,
 	.forks_child = 1,
 	.needs_root = 1,
-	.resource_files = resource_files
+	.resource_files = (const char *const []) {
+		TEST_APP,
+		NULL
+	}
 };
 #else
 	TST_TEST_TCONF("System does not contain required fanotify support");

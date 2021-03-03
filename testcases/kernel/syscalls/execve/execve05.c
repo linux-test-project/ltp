@@ -44,11 +44,6 @@ static int nchild = 8;
 
 static char *opt_nchild;
 
-static const char *const resource_files[] = {
-	TEST_APP,
-	NULL,
-};
-
 static void do_child(void)
 {
 	char *argv[3] = {TEST_APP, "canary", NULL};
@@ -86,6 +81,9 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.needs_checkpoints = 1,
-	.resource_files = resource_files,
+	.resource_files = (const char *const []) {
+		TEST_APP,
+		NULL
+	},
 	.setup = setup,
 };

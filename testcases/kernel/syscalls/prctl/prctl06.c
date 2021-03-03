@@ -113,13 +113,11 @@ static void setup(void)
 		"current environment doesn't permit PR_GET/SET_NO_NEW_PRIVS");
 }
 
-static const char *const resfile[] = {
-	TESTBIN,
-	NULL,
-};
-
 static struct tst_test test = {
-	.resource_files = resfile,
+	.resource_files = (const char *const []) {
+		TESTBIN,
+		NULL
+	},
 	.setup = setup,
 	.test_all = verify_prctl,
 	.forks_child = 1,

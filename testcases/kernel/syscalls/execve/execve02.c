@@ -74,16 +74,14 @@ static void setup(void)
 	nobody_uid = pwd->pw_uid;
 }
 
-static const char *const resource_files[] = {
-	TEST_APP,
-	NULL,
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.setup = setup,
-	.resource_files = resource_files,
+	.resource_files = (const char *const []) {
+		TEST_APP,
+		NULL
+	},
 	.test_all = verify_execve,
 };

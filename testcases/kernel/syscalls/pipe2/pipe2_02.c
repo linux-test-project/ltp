@@ -54,13 +54,11 @@ static void verify_pipe2(void)
 	cleanup();
 }
 
-static const char *const resfile[] = {
-	TESTBIN,
-	NULL,
-};
-
 static struct tst_test test = {
-	.resource_files = resfile,
+	.resource_files = (const char *const []) {
+		TESTBIN,
+		NULL
+	},
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.needs_root = 1,

@@ -85,11 +85,6 @@ static void setup(void)
 	fd = SAFE_OPEN(TEST_REL_APP, O_PATH);
 }
 
-static const char *const resource_files[] = {
-	TEST_APP,
-	NULL,
-};
-
 static void cleanup(void)
 {
 	if (fd > 0)
@@ -97,7 +92,10 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.resource_files = resource_files,
+	.resource_files = (const char *const []) {
+		TEST_APP,
+		NULL
+	},
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_execveat,
 	.child_needs_reinit = 1,

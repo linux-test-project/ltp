@@ -67,11 +67,6 @@ static void setup(void)
 	check_execveat();
 }
 
-static const char *const resource_files[] = {
-	TEST_APP,
-	NULL,
-};
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
@@ -81,7 +76,10 @@ static struct tst_test test = {
 	.child_needs_reinit = 1,
 	.setup = setup,
 	.test_all = verify_execveat,
-	.resource_files = resource_files,
+	.resource_files = (const char *const []) {
+		TEST_APP,
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "8db6c34f1dbc"},
 		{"linux-git", "355139a8dba4"},
