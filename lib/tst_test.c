@@ -942,13 +942,11 @@ static void do_setup(int argc, char *argv[])
 				tst_brk(TCONF, "%s driver not available", name);
 	}
 
+	if (tst_test->mount_device)
+		tst_test->format_device = 1;
+
 	if (tst_test->format_device)
 		tst_test->needs_device = 1;
-
-	if (tst_test->mount_device) {
-		tst_test->needs_device = 1;
-		tst_test->format_device = 1;
-	}
 
 	if (tst_test->all_filesystems)
 		tst_test->needs_device = 1;
