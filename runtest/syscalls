@@ -1446,7 +1446,7 @@ socketpair02 socketpair02
 sockioctl01 sockioctl01
 
 splice01 splice01
-splice02 seq 1 20000 | splice02
+splice02 (seq 1 20000 || :) | splice02
 splice03 splice03
 splice04 splice04
 splice05 splice05
