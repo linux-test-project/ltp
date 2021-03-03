@@ -370,6 +370,8 @@ static struct implies {
 	{"all_filesystems", (const char *[]) {"needs_device", "needs_tmpdir",
 		NULL}},
 	{"needs_device", (const char *[]) {"needs_tmpdir", NULL}},
+	{"needs_checkpoints", (const char *[]) {"needs_tmpdir", NULL}},
+	{"resource_files", (const char *[]) {"needs_tmpdir", NULL}},
 	{NULL, (const char *[]) {NULL}}
 };
 
