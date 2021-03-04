@@ -15,7 +15,7 @@
 static void verify_getpid(void)
 {
 	pid_t pid_max, pid;
-	int status, i;
+	int i;
 
 	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%d\n", &pid_max);
 
@@ -28,11 +28,11 @@ static void verify_getpid(void)
 			if (1 < pid && pid <= pid_max)
 				tst_res(TPASS, "getpid() returns %d", pid);
 			else
-				tst_res(TFAIL | TTERRNO,
+				tst_res(TFAIL,
 					"getpid() returns out of range: %d", pid);
 			exit(0);
 		} else {
-			SAFE_WAIT(&status);
+			SAFE_WAIT(NULL);
 		}
 	}
 }
