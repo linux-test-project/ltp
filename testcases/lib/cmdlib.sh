@@ -118,7 +118,7 @@ tst_require_root()
 {
 	if [ "x$(id -u)" != "x0" ]; then
 		tst_resm TCONF "You must be root to execute this test"
-		exit 0
+		exit 32
 	fi
 }
 
