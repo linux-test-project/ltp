@@ -21,7 +21,7 @@
  *
  * The final test is the actual bug reproducer. Note that we call
  * clone directly to share the file table.
-\*/
+ */
 
 #include <stdlib.h>
 

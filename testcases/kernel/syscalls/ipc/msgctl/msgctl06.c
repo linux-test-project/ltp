@@ -21,7 +21,7 @@
  *
  * Also note that for MSG_INFO the members of the msginfo structure have
  * completely different meaning than their names seems to suggest.
-\*/
+ */
 
 #include <stdio.h>
 #include <pwd.h>

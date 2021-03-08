@@ -11,7 +11,7 @@
  * where writev() first writes uninitialized data into the file (possibly
  * exposing internal kernel structures) and then overwrites it with the real
  * iovec contents later.
-\*/
+ */
 
 /*
  * Bugs fixed in:

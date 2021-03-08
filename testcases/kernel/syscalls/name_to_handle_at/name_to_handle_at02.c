@@ -7,7 +7,7 @@
  * [DESCRIPTION]
  *
  * Failure tests for name_to_handle_at().
-\*/
+ */
 
 #define _GNU_SOURCE
 #include "lapi/name_to_handle_at.h"

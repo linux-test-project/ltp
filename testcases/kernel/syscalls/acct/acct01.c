@@ -10,7 +10,7 @@
 /*\
  * [DOCUMENTATION]
  *  Verify that acct() returns proper errno on failure.
-\*/
+ */
 
 #include <sys/types.h>
 #include <sys/stat.h>

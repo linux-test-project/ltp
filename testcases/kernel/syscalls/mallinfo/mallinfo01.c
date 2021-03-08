@@ -9,7 +9,7 @@
  *
  * Basic mallinfo() test. Refer to glibc test mallinfo2 test
  * https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/tst-mallinfo2.c
-\*/
+ */
 #include "mallinfo_common.h"
 #include "tst_safe_macros.h"
 

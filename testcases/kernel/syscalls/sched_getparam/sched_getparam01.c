@@ -15,7 +15,7 @@
  * for the calling process.
  * - If pid is not zero, sched_getparam(2) gets the scheduling
  * parameters for the specified [pid] process.
-\*/
+ */
 
 #include <errno.h>
 #include <stdlib.h>

@@ -8,7 +8,7 @@
  * [DESCRIPTION]
  *
  * Test for semctl() EACCES error.
-\*/
+ */
 
 #include <pwd.h>
 #include "tst_safe_sysv_ipc.h"

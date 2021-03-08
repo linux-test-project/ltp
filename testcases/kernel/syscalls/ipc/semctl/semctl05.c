@@ -10,7 +10,7 @@
  * [DESCRIPTION]
  *
  * Test for semctl() ERANGE error
-\*/
+ */
 
 #include "tst_safe_sysv_ipc.h"
 #include "tst_test.h"

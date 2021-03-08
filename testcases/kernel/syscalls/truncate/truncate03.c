@@ -27,7 +27,7 @@
  *   is larger than the maximum file size.
  * - truncate(2) returns -1 and sets errno to ELOOP if too many symbolic
  *   links were encountered in translating the pathname.
-\*/
+ */
 
 #define _GNU_SOURCE
 

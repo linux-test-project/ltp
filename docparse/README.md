@@ -173,7 +173,7 @@ The test documentation is stored in a special comment such as:
  *
  * This is a test description.
  * Consisting of several lines.
-\*/
+ */
 ```
 
 Which will yield following json output:

@@ -21,7 +21,7 @@
  *
  * This is also accidental regression test for:
  * 4d9570158b626 kernel/acct.c: fix the acct->needcheck check in check_free_space()
-\*/
+ */
 
 #include <sys/stat.h>
 #include <errno.h>

@@ -11,7 +11,7 @@
  * [ALGORITHM]
  * Open the maximum allowed number of file descriptors and then try to call
  * dup() once more and verify it fails with EMFILE.
-\*/
+ */
 
 #include <stdlib.h>
 #include "tst_test.h"

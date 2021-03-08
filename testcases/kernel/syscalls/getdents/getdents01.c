@@ -13,7 +13,7 @@
  * Basic getdents() test that checks if directory listing is correct and
  * complete.
  *
-\*/
+ */
 
 #define _GNU_SOURCE
 

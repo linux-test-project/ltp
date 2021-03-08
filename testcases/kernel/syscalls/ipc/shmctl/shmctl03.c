@@ -8,7 +8,7 @@
  *
  * Call shmctl() with IPC_INFO flag and check that the data are consistent with
  * /proc/sys/kernel/shm*.
-\*/
+ */
 
 #define _GNU_SOURCE
 #include "tst_test.h"

@@ -12,7 +12,7 @@
  *  - Check that EOVERFLOW is returned as expected by name_to_handle_at().
  *  - Check that we were able to access a file's stat with name_to_handle_at()
  *    and open_by_handle_at().
-\*/
+ */
 
 #define _GNU_SOURCE
 #include <sys/stat.h>

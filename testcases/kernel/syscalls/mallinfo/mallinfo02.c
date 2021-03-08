@@ -9,7 +9,7 @@
  *
  * Basic mallinfo() test for malloc() using sbrk or mmap.
  * It size > MMAP_THRESHOLD, it will use mmap. Otherwise, use sbrk.
-\*/
+ */
 
 #include "mallinfo_common.h"
 #include "tst_safe_macros.h"

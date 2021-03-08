@@ -15,7 +15,7 @@
  *   - getdents() fails with EINVAL if result buffer is too small
  *   - getdents() fails with ENOTDIR if file descriptor does not refer to a directory
  *   - getdents() fails with ENOENT if directory was unlinked()
-\*/
+ */
 
 #define _GNU_SOURCE
 #include <errno.h>

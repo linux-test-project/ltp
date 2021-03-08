@@ -18,7 +18,7 @@
  *
  * Note what we create a SHM segment in the test setup to make sure that there
  * is at least one during the testrun.
-\*/
+ */
 
 #define _GNU_SOURCE
 #include <stdio.h>

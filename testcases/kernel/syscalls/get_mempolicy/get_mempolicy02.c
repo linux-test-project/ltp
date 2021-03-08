@@ -15,7 +15,7 @@
  * [DESCRIPTION]
  *
  * Verify that get_mempolicy() returns a proper return errno for failure cases.
-\*/
+ */
 
 #include "config.h"
 #include "tst_test.h"

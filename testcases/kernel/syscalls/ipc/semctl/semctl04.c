@@ -12,7 +12,7 @@
  *
  * Runs IPC_SET and IPC_RMID from unprivileged child process.
  *
-\*/
+ */
 
 #include <pwd.h>
 #include <sys/wait.h>

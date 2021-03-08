@@ -7,7 +7,7 @@
  * [DESCRIPTION]
  *
  * Failure tests for open_by_handle_at().
-\*/
+ */
 #define _GNU_SOURCE
 #include <linux/capability.h>
 #include "tst_capability.h"

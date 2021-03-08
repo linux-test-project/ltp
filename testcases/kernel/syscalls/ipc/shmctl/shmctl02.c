@@ -25,7 +25,7 @@
  * * EPERM  - attempt to change root-owned shm
  * * EPERM  - attempt to lock root-owned shm
  * * EPERM  - attempt to unlock root-owned shm
-\*/
+ */
 
 #include <pwd.h>
 

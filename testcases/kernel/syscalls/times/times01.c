@@ -7,7 +7,7 @@
  *
  * This is a Phase I test for the times(2) system call.  It is intended to
  * provide a limited exposure of the system call.
-\*/
+ */
 
 #include <sys/times.h>
 #include <errno.h>

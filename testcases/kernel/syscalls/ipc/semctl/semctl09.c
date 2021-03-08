@@ -28,7 +28,7 @@
  * to the kernel.
  *
  * https://sourceware.org/bugzilla/show_bug.cgi?id=26637
-\*/
+ */
 
 /*
  * The glibc bug was fixed in:

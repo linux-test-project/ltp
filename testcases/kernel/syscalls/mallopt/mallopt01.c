@@ -10,7 +10,7 @@
  * [DESCRIPTION]
  *
  * Basic mallinfo() and mallopt() testing.
-\*/
+ */
 
 
 #include "../mallinfo/mallinfo_common.h"

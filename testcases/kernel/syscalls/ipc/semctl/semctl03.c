@@ -9,7 +9,7 @@
  * [DESCRIPTION]
  *
  * Test for semctl() EINVAL and EFAULT errors
-\*/
+ */
 
 #include "tst_safe_sysv_ipc.h"
 #include "tst_test.h"

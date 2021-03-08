@@ -10,7 +10,7 @@
  * - Then check it accepts a large lower fd.
  * - Finally check CLOEXEC works
  *
-\*/
+ */
 
 #include <stdlib.h>
 

@@ -15,7 +15,7 @@
  * - Read the RTC time back
  * - Check if the set time and the read time are identical
  * - Restore RTC time
-\*/
+ */
 
 #include <stdio.h>
 #include "tst_rtctime.h"

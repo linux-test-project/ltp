@@ -5,7 +5,7 @@
  *
  * - EBADF Bad socket file descriptor
  * - EFAULT Bad message vector address
-\*/
+ */
 
 #define _GNU_SOURCE
 #include "sendmmsg.h"

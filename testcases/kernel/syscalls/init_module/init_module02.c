@@ -11,7 +11,7 @@
  * [ALGORITHM]
  *
  * Tests various failure scenarios for init_module().
-\*/
+ */
 
 #include <linux/capability.h>
 #include <errno.h>

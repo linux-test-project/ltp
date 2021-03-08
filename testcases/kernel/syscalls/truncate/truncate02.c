@@ -13,7 +13,7 @@
  * - If the file is larger than the specified length, the extra data is lost.
  * - If the file is shorter than the specified length, the extra data is filled by '0'.
  * - truncate(2) doesn't change offset.
-\*/
+ */
 
 #include <errno.h>
 #include <unistd.h>

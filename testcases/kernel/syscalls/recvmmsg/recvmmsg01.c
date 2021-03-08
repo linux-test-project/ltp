@@ -8,7 +8,7 @@
  * - EINVAL Bad seconds value for the timeout argument
  * - EINVAL Bad nanoseconds value for the timeout argument
  * - EFAULT Bad timeout address
-\*/
+ */
 
 #define _GNU_SOURCE
 #include "../sendmmsg/sendmmsg.h"

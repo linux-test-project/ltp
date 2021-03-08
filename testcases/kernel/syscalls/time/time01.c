@@ -9,7 +9,7 @@
  * limited exposure of the system call.
  * - Verify that time(2) returns the value of time in seconds since the Epoch
  * and stores this value in the memory pointed to by the parameter.
-\*/
+ */
 
 #include <time.h>
 #include <errno.h>

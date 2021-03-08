@@ -15,7 +15,7 @@
  * touch_atime(), although it's a race condition so it's not guaranteed to
  * work. This test is based on the reproducer provided in the fix's commit
  * message.
-\*/
+ */
 
 #include "lapi/syscalls.h"
 #include "tst_test.h"

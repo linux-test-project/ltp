@@ -13,7 +13,7 @@
  * [ALGORITHM]
  * Call dup(2) with invalid argument and make sure it returns -1 with errno set
  * to EBADF.
-\*/
+ */
 
 #include "tst_test.h"
 

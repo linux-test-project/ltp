@@ -18,7 +18,7 @@
  * - semctl() with SETVAL and GETVAL
  * - semctl() with GETPID
  * - semctl() with GETNCNT and GETZCNT
-\*/
+ */
 
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"

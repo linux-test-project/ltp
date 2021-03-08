@@ -61,7 +61,7 @@
  *    Date:   Mon Dec 14 19:11:51 2020 -0800
  *
  *    mm,hwpoison: return -EBUSY when migration fails
-\*/
+ */
 
 #include <errno.h>
 #include <unistd.h>

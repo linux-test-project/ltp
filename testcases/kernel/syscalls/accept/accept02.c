@@ -19,7 +19,7 @@
  *
  * For more information about this CVE see:
  * https://www.suse.com/security/cve/CVE-2017-8890/
-\*/
+ */
 
 #include <errno.h>
 #include <sys/socket.h>

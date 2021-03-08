@@ -12,7 +12,7 @@
  *
  * Check that we were able to access a file's stat which is opened with
  * open_by_handle_at().
-\*/
+ */
 
 #define _GNU_SOURCE
 #include <sys/stat.h>

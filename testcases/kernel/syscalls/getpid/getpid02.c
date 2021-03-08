@@ -9,7 +9,7 @@
  * Check that:
  * - fork() in parent returns the same pid as getpid() in child
  * - getppid() in child returns the same pid as getpid() in parent
-\*/
+ */
 
 #include <errno.h>
 

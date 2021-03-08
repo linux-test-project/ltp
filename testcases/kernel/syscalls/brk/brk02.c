@@ -9,7 +9,7 @@
  * and not expanding the original due to multiple anon pages.  mprotect() that
  * new VMA then brk() back to the original address therefore causing a munmap of
  * at least one full VMA.
-\*/
+ */
 
 #include <unistd.h>
 #include <sys/mman.h>

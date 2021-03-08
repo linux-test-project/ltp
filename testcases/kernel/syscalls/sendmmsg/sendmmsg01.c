@@ -4,7 +4,7 @@
  *
  * This test is based on source contained in the man pages for sendmmsg and
  * recvmmsg in release 4.15 of the Linux man-pages project.
-\*/
+ */
 
 #define _GNU_SOURCE
 #include "sendmmsg.h"

@@ -16,7 +16,7 @@
  *  - Fork child.
  *  - Child calls abort.
  *  - Parent checks return status.
-\*/
+ */
 
 #include <sys/types.h>
 #include <sys/wait.h>

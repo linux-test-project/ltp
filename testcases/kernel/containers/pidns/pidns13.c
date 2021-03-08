@@ -20,7 +20,7 @@
  * * in cinit1, set pipe read end to send SIGUSR1 for asynchronous I/O
  * * let cinit2 trigger async I/O on pipe write end
  * * in signal info, check si_code to be POLL_IN and si_fd to be pipe read fd
-\*/
+ */
 
 #define _GNU_SOURCE 1
 #include <sys/wait.h>
