@@ -329,9 +329,9 @@ sub content_all_tests
 		if (defined $json->{'tests'}{$name}{doc}) {
 			for my $doc (@{$json->{'tests'}{$name}{doc}}) {
 
-				# fix formatting for asciidoc [DOCUMENTATION] => *DOCUMENTATION*
+				# fix formatting for asciidoc [DOCUMENTATION] => *Documentation*
 				if ($doc =~ s/^\[(.*)\]$/$1/) {
-					$doc = paragraph(bold($doc));
+					$doc = paragraph(bold(ucfirst(lc($doc))));
 				}
 
 				$content .= "$doc\n";
