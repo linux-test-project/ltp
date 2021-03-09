@@ -147,15 +147,20 @@ static void run(unsigned int i)
 			diff /= 1000000;
 
 			if (diff >= delta) {
-				tst_res(TFAIL, "%s: Difference between successive readings greater than %lld ms (%d): %lld",
-					tst_clock_name(clks[i]), delta, j, diff);
+				tst_res(TFAIL, "%s(%s): Difference between successive readings greater than %lld ms (%d): %lld",
+					tst_clock_name(clks[i]), tv->desc, delta, j, diff);
 				return;
 			}
 		}
 	} while (--count);
 
-	tst_res(TPASS, "%s: Difference between successive readings is reasonable",
-		tst_clock_name(clks[i]));
+	tst_res(TPASS, "%s: Difference between successive readings is reasonable for following variants:",
+			tst_clock_name(clks[i]));
+	for (j = 0; j < ARRAY_SIZE(variants); j++) {
+		if (variants[j].clock_gettime == my_gettimeofday && clks[i] != CLOCK_REALTIME)
+			continue;
+		tst_res(TINFO, "\t- %s", variants[j].desc);
+	}
 }
 
 static struct tst_test test = {
