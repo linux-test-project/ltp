@@ -117,7 +117,7 @@ static void test_setns(unsigned int testno)
 			t->setup(t, i);
 
 		if (t->skip) {
-			tst_res(TINFO, "skip %s", t->msg);
+			tst_res(TCONF, "skip %s", t->msg);
 			continue;
 		}
 
