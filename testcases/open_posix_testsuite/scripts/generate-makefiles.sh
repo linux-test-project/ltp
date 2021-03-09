@@ -148,8 +148,12 @@ EOF
 
 	fi
 
-	cat >> "$makefile.2" <<EOF
+	if [ ! -z "${tests}" ]; then
+		cat >> "$makefile.2" <<EOF
 INSTALL_TARGETS+=	${tests}
+EOF
+	fi
+	cat >> "$makefile.2" <<EOF
 MAKE_TARGETS+=		${targets}
 
 EOF
