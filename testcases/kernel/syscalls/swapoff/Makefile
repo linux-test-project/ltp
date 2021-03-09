@@ -3,7 +3,10 @@
 
 top_srcdir		?= ../../../..
 
+LTPLIBS = ltpswapon
+
 include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/./Makefile.inc
+
+LTPLDLIBS  = -lltpswapon
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
-$(MAKE_TARGETS): %: ../swapon/libswapon.o

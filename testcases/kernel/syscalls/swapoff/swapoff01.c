@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "lapi/syscalls.h"
-#include "../swapon/libswapon.h"
+#include "libswapon.h"
 
 static void setup(void);
 static void cleanup(void);

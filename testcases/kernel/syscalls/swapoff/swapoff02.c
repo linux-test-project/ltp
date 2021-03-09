@@ -33,7 +33,7 @@
 #include "test.h"
 #include "lapi/syscalls.h"
 #include "safe_macros.h"
-#include "../swapon/libswapon.h"
+#include "libswapon.h"
 
 static void setup(void);
 static void cleanup(void);
