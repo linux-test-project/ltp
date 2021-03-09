@@ -167,8 +167,8 @@ mandir=/usr/share/man
 
 VER=`grep VER_STR main.h | awk -F\" '{print $$2}'`
 GBLHDRS=main.h globals.h defs.h
-ALLHDRS=$(wildcard *.h)
-SRCS=$(wildcard *.c)
+ALLHDRS=$(sort $(wildcard *.h))
+SRCS=$(sort $(wildcard *.c))
 OBJS=$(SRCS:.c=.o)
 
 CFLAGS += -g -Wall -O -D"LINUX" -D"_THREAD_SAFE" -D"_GNU_SOURCE" -D"_LARGE_FILES" -D"_LARGEFILE64_SOURCE" -D"_FILE_OFFSET_BITS=64" $(RPM_OPT_FLAGS)

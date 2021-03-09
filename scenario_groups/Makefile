@@ -31,7 +31,7 @@ UNWANTED_FILES		:= Makefile
 
 INSTALL_MODE		:= 00644
 
-INSTALL_TARGETS		:= $(filter-out $(UNWANTED_FILES),$(notdir $(patsubst $(abs_srcdir)/%,%,$(wildcard $(abs_srcdir)/*))))
+INSTALL_TARGETS		:= $(filter-out $(UNWANTED_FILES),$(notdir $(patsubst $(abs_srcdir)/%,%,$(sort $(wildcard $(abs_srcdir)/*)))))
 
 MAKE_TARGETS		:=
 

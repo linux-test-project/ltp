@@ -21,7 +21,7 @@ CPPFLAGS		+= -fpic
 
 INSTALL_TARGETS		:= ldd*.so lddfile.out
 
-LDD_C_FILES		:= $(wildcard $(abs_srcdir)/lddfile*.c)
+LDD_C_FILES		:= $(sort $(wildcard $(abs_srcdir)/lddfile*.c))
 LDD_SO_FILES		:= $(patsubst $(abs_srcdir)/%.c,%.obj.so,$(LDD_C_FILES))
 MAKE_TARGETS		:= lddfile.out
 CLEAN_TARGETS		+= *.obj $(LDD_SO_FILES)

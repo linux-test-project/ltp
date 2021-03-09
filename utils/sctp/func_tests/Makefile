@@ -30,7 +30,7 @@ LDFLAGS		+= $(addprefix -L$(abs_builddir)/../,lib testlib)
 
 LDLIBS		+= -lsctputil -lsctp -lpthread
 
-V4_TARGETS	:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c))
+V4_TARGETS	:= $(patsubst $(abs_srcdir)/%.c,%,$(sort $(wildcard $(abs_srcdir)/*.c)))
 
 V6_TARGETS	:= test_basic_v6 test_fragments_v6 test_getname_v6 \
 		   test_inaddr_any_v6 test_peeloff_v6 \

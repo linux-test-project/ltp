@@ -28,6 +28,6 @@ INSTALL_TARGETS		:= smt_smp_enabled.sh
 
 MAKE_TARGETS		:= ht_enabled
 
-$(MAKE_TARGETS): $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))
+$(MAKE_TARGETS): $(patsubst $(abs_srcdir)/%.c,%.o,$(sort $(wildcard $(abs_srcdir)/*.c)))
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

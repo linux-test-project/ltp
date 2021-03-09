@@ -209,7 +209,7 @@ LDLIBS		+= -lpthread
 
 MAKE_TARGETS	:= disktest
 
-OBJS		:= $(patsubst $(abs_srcdir)/%.c,%.o,$(wildcard $(abs_srcdir)/*.c))
+OBJS		:= $(patsubst $(abs_srcdir)/%.c,%.o,$(sort $(wildcard $(abs_srcdir)/*.c)))
 
 disktest-$(VER):
 	mkdir -p "$@"

@@ -104,7 +104,7 @@ static void *thread_fn(LTP_ATTRIBUTE_UNUSED void *args)
 				"\treturn 0;\n}\n";
 
 	const char make_buf_n[] = "CFLAGS := -O -w -g\n"
-				  "SRCS=$(wildcard *.c)\n"
+				  "SRCS=$(sort $(wildcard *.c))\n"
 				  "TARGETS=$(SRCS:.c=)\n"
 				  "all: $(TARGETS)\n"
 				  "$(TARGETS): %: %.c\n"
@@ -114,7 +114,7 @@ static void *thread_fn(LTP_ATTRIBUTE_UNUSED void *args)
 
 	const char make_buf[] = "CFLAGS := -O -w -g\n"
 				"SUBDIR = dir\n"
-				"SRCS=$(wildcard *.c)\n"
+				"SRCS=$(sort $(wildcard *.c))\n"
 				"TARGETS=$(SRCS:.c=)\n"
 				"all: $(SUBDIR) $(TARGETS)\n"
 				"$(TARGETS): %: %.c\n"

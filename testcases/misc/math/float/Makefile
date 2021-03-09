@@ -27,6 +27,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 LDLIBS		+= -lpthread -lm
 
 # main.c doesn't compile...
-MAKE_TARGETS	:= $(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/float*.c))
+MAKE_TARGETS	:= $(patsubst $(abs_srcdir)/%.c,%,$(sort $(wildcard $(abs_srcdir)/float*.c)))
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

@@ -10,7 +10,7 @@ INSTALL_TARGETS		:= sched_stress.sh
 
 LDLIBS			+= -lpthread
 
-MAKE_TARGETS		:= $(filter-out sched,$(patsubst $(abs_srcdir)/%.c,%,$(wildcard $(abs_srcdir)/*.c)))
+MAKE_TARGETS		:= $(filter-out sched,$(patsubst $(abs_srcdir)/%.c,%,$(sort $(wildcard $(abs_srcdir)/*.c))))
 
 RM			+= -r
 

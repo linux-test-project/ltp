@@ -5,7 +5,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-SRCS			:= $(wildcard $(abs_srcdir)/lchown*.c)
+SRCS			:= $(sort $(wildcard $(abs_srcdir)/lchown*.c))
 
 include $(abs_srcdir)/../utils/compat_16.mk
 
