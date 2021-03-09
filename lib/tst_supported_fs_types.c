@@ -23,6 +23,7 @@ static const char *const fs_type_whitelist[] = {
 	"vfat",
 	"exfat",
 	"ntfs",
+	"tmpfs",
 	NULL
 };
 
@@ -32,6 +33,11 @@ static int has_mkfs(const char *fs_type)
 {
 	char buf[128];
 	int ret;
+
+	if (strstr(fs_type, "tmpfs")) {
+		tst_res(TINFO, "mkfs is not needed for tmpfs");
+		return 1;
+	}
 
 	sprintf(buf, "mkfs.%s >/dev/null 2>&1", fs_type);
 
@@ -66,16 +72,26 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 	static int fuse_supported = -1;
 	const char *tmpdir = getenv("TMPDIR");
 	char buf[128];
+	char template[PATH_MAX];
 	int ret;
 
 	if (!tmpdir)
 		tmpdir = "/tmp";
 
-	mount("/dev/zero", tmpdir, fs_type, 0, NULL);
-	if (errno != ENODEV) {
+	snprintf(template, sizeof(template), "%s/mountXXXXXX", tmpdir);
+	if (!mkdtemp(template))
+		tst_brk(TBROK | TERRNO , "mkdtemp(%s) failed", template);
+
+	ret = mount("/dev/zero", template, fs_type, 0, NULL);
+	if ((ret && errno != ENODEV) || !ret) {
+		if (!ret)
+			tst_umount(template);
 		tst_res(TINFO, "Kernel supports %s", fs_type);
+		SAFE_RMDIR(template);
 		return TST_FS_KERNEL;
 	}
+
+	SAFE_RMDIR(template);
 
 	/* Is FUSE supported by kernel? */
 	if (fuse_supported == -1) {
