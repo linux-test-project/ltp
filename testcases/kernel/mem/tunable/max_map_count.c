@@ -164,6 +164,9 @@ static void max_map_count_test(void)
 		max_iters = MAX_MAP_COUNT;
 
 	max_maps = MAP_COUNT_DEFAULT;
+	if (max_iters < max_maps)
+		tst_brk(TCONF, "test requires more free memory");
+
 	while (max_maps <= max_iters) {
 		set_sys_tune("max_map_count", max_maps, 1);
 
