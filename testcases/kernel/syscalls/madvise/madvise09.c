@@ -12,7 +12,7 @@
  *
  * o Madvise pages with MADV_FREE
  *
- * o Check that madvised pages were not freed immediatelly
+ * o Check that madvised pages were not freed immediately
  *
  * o Write to some of the madvised pages again, these must not be freed
  *
@@ -177,9 +177,9 @@ static void child(void)
 	}
 
 	if (ptr[page_size] != 'a')
-		tst_res(TFAIL, "MADV_FREE pages were freed immediatelly");
+		tst_res(TFAIL, "MADV_FREE pages were freed immediately");
 	else
-		tst_res(TPASS, "MADV_FREE pages were not freed immediatelly");
+		tst_res(TPASS, "MADV_FREE pages were not freed immediately");
 
 	ptr[TOUCHED_PAGE1 * page_size] = 'b';
 	ptr[TOUCHED_PAGE2 * page_size] = 'b';
