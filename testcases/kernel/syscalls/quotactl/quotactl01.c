@@ -53,6 +53,8 @@
 
 static int32_t fmt_id = FMTID;
 static int test_id;
+static char usrpath[] = USRPATH;
+static char grppath[] = GRPPATH;
 static struct dqblk set_dq = {
 	.dqb_bsoftlimit = 100,
 	.dqb_valid = QIF_BLIMITS
@@ -79,7 +81,7 @@ static struct tcase {
 	char *des;
 	char *tname;
 } tcases[] = {
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, USRPATH,
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath,
 	NULL, NULL, 0, "turn on quota for user",
 	"QCMD(Q_QUOTAON, USRQUOTA)"},
 
@@ -115,11 +117,11 @@ static struct tcase {
 	"get next disk quota limit for user",
 	"QCMD(Q_GETNEXTQUOTA, USRQUOTA)"},
 
-	{QCMD(Q_QUOTAOFF, USRQUOTA), &test_id, USRPATH,
+	{QCMD(Q_QUOTAOFF, USRQUOTA), &test_id, usrpath,
 	NULL, NULL, 0, "turn off quota for user",
 	"QCMD(Q_QUOTAOFF, USRQUOTA)"},
 
-	{QCMD(Q_QUOTAON, GRPQUOTA), &fmt_id, GRPPATH,
+	{QCMD(Q_QUOTAON, GRPQUOTA), &fmt_id, grppath,
 	NULL, NULL, 0, "turn on quota for group",
 	"QCMD(Q_QUOTAON, GRPQUOTA)"},
 
@@ -154,7 +156,7 @@ static struct tcase {
 	"get next disk quota limit for group",
 	"QCMD(Q_GETNEXTQUOTA, GRPQUOTA)"},
 
-	{QCMD(Q_QUOTAOFF, GRPQUOTA), &test_id, GRPPATH,
+	{QCMD(Q_QUOTAOFF, GRPQUOTA), &test_id, grppath,
 	NULL, NULL, 0, "turn off quota for group",
 	"QCMD(Q_QUOTAOFF, GRPQUOTA)"},
 };
