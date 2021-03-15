@@ -61,7 +61,7 @@ static long init_swap, init_swap_cached, init_cached;
 static void check_path(const char *path)
 {
 	if (access(path, R_OK | W_OK))
-		tst_brk(TCONF, "file needed: %s\n", path);
+		tst_brk(TCONF, "file needed: %s", path);
 }
 
 #define READ_CGMEM(item)						\

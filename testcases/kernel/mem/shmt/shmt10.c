@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
 	if ((shmid = shmget(key, SIZE, IPC_CREAT | 0666)) < 0) {
 		tst_resm(TFAIL, "shmget");
-		tst_brkm(TFAIL, NULL, "Error: shmid = %d\n", shmid);
+		tst_brkm(TFAIL, NULL, "Error: shmid = %d", shmid);
 	}
 
 	pid = fork();
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < iter; i++) {
 		if ((c1 = shmat(shmid, NULL, 0)) == (char *)-1) {
 			tst_resm(TFAIL,
-				 "Error shmat: iter %d, shmid = %d\n", i,
+				 "Error shmat: iter %d, shmid = %d", i,
 				 shmid);
 			break;
 		}
@@ -133,7 +133,7 @@ static int rm_shm(int shmid)
 		perror("shmctl");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 "shmctl Failed to remove: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	return (0);
@@ -148,7 +148,7 @@ static int child(int iter)
 		if ((c1 = shmat(shmid, NULL, 0)) == (char *)-1) {
 			tst_brkm(TFAIL,
 				 NULL,
-				 "Error:child proc: shmat: iter %d, shmid = %d\n",
+				 "Error:child proc: shmat: iter %d, shmid = %d",
 				 i, shmid);
 		}
 		if (shmdt(c1) < 0) {

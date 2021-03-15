@@ -214,7 +214,7 @@ static void *get_func(void *mem, uintptr_t *func_page_offset)
 		/* If the memory is still not accessible, then something must be
 		 * wrong. */
 		if (!page_present(page_to_copy))
-			tst_brkm(TBROK, cleanup, "page_to_copy not present\n");
+			tst_brkm(TBROK, cleanup, "page_to_copy not present");
 	}
 	memcpy(mem, page_to_copy, page_sz);
 

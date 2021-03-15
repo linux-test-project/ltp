@@ -49,11 +49,11 @@ static void verify_msgrcv(void)
 	}
 
 	if (rcv_buf.mtype != mtype) {
-		tst_res(TFAIL, "found mtype %ld, expected %ld\n", rcv_buf.mtype, mtype);
+		tst_res(TFAIL, "found mtype %ld, expected %ld", rcv_buf.mtype, mtype);
 		return;
 	}
 	if ((size_t)TST_RET != sizeof(snd_buf.mtext)) {
-		tst_res(TFAIL, "received %zi, expected %zu\n", (size_t)TST_RET, sizeof(snd_buf.mtext));
+		tst_res(TFAIL, "received %zi, expected %zu", (size_t)TST_RET, sizeof(snd_buf.mtext));
 		return;
 	}
 

@@ -68,7 +68,7 @@ int main(void)
 	if ((shmid = shmget(key, 16 * K_1, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
 		tst_brkm(TFAIL, NULL,
-			 "shmget Failed: shmid = %d, errno = %d\n",
+			 "shmget Failed: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 
@@ -78,7 +78,7 @@ int main(void)
 
 	if ((cp1 = shmat(shmid, NULL, 0)) == (char *)-1) {
 		perror("shmat");
-		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",
+		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d",
 			 shmid, errno);
 	} else {
 		*cp1 = '1';
@@ -92,13 +92,13 @@ int main(void)
 
 	if ((cp2 = shmat(shmid, NULL, 0)) == (char *)-1) {
 		perror("shmat");
-		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",
+		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d",
 			 shmid, errno);
 	} else {
 		second_attach = SUCCESSFUL;
 		if ((*cp2 != '1' || *(cp2 + 5 * K_1) != '2') &&
 		    first_attach == SUCCESSFUL) {
-			tst_resm(TFAIL, "Error: Shared memory contents\n");
+			tst_resm(TFAIL, "Error: Shared memory contents");
 		}
 	}
 
@@ -111,7 +111,7 @@ int main(void)
 	if (first_attach && second_attach) {
 		if (*cp2 != '1' || *(cp2 + 5 * K_1) != '2' ||
 		    *cp1 != '1' || *(cp1 + 5 * K_1) != '2') {
-			tst_resm(TFAIL, "Error: Shared memory contents\n");
+			tst_resm(TFAIL, "Error: Shared memory contents");
 		}
 	}
 
@@ -126,7 +126,7 @@ static int rm_shm(int shmid)
 		perror("shmctl");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 "shmctl Failed to remove: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	return (0);

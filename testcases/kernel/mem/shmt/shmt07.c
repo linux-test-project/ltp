@@ -72,7 +72,7 @@ int main(void)
 	if ((shmid = shmget(key, SIZE, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
 		tst_brkm(TFAIL, NULL,
-			 "Error: shmget: shmid = %d, errno = %d\n",
+			 "Error: shmget: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	cp = shmat(shmid, NULL, 0);
@@ -80,7 +80,7 @@ int main(void)
 	if (cp == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,
-			 "Error: shmat: shmid = %d, errno = %d\n",
+			 "Error: shmat: shmid = %d, errno = %d",
 			 shmid, errno);
 		rm_shm(shmid);
 		tst_exit();
@@ -100,10 +100,10 @@ int main(void)
 
 	case 0:
 		if (*cp != '1') {
-			tst_resm(TFAIL, "Error: not 1\n");
+			tst_resm(TFAIL, "Error: not 1");
 		}
 		if (*(cp + 1) != '2') {
-			tst_resm(TFAIL, "Error: not 2\n");
+			tst_resm(TFAIL, "Error: not 2");
 		}
 		tst_exit();
 	}
@@ -124,7 +124,7 @@ static int rm_shm(int shmid)
 		perror("shmctl");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 "shmctl Failed to remove: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	return (0);

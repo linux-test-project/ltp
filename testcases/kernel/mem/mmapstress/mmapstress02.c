@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 /*****  LTP Port        *****/
 void ok_exit(void)
 {
-	tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed");
 	tst_rmdir();
 	tst_exit();
 }

@@ -234,7 +234,7 @@ static void setup(int argc, char *argv[])
 
 static int test_run(void)
 {
-	tst_resm(TINFO, " --- HARDLINKS AND SYMLINKS RESTRICTIONS TEST ---\n");
+	tst_resm(TINFO, " --- HARDLINKS AND SYMLINKS RESTRICTIONS TEST ---");
 
 	int	result_slink = 0,
 		result_hlink = 0,
@@ -256,8 +256,8 @@ static int test_run(void)
 	}
 
 	/* final results */
-	tst_resm(TINFO, "All test-cases have been completed, summary:\n"
-		" - symlinks  test:\t%s\n"
+	tst_resm(TINFO, "All test-cases have been completed, summary:"
+		" - symlinks  test:\t%s"
 		" - hardlinks test:\t%s",
 		(result_slink == 1) ? "FAIL" : "PASS",
 		(result_hlink == 1) ? "FAIL" : "PASS");

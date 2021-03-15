@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL|TERRNO, "move_pages failed");
 			goto err_kill_child;
 		} else if (ret > 0) {
-			tst_resm(TINFO, "move_pages() returned %d\n", ret);
+			tst_resm(TINFO, "move_pages() returned %d", ret);
 		}
 
 		verify_pages_on_node(pages, status, TEST_PAGES, to_node);

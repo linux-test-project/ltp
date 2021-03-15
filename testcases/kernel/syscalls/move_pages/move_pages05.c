@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 				 "move_pages unexpectedly failed");
 			goto err_kill_child;
 		} else if (ret > 0) {
-			tst_resm(TINFO, "move_pages() returned %d\n", ret);
+			tst_resm(TINFO, "move_pages() returned %d", ret);
 		}
 
 		if (status[SHARED_PAGE] == -EACCES)

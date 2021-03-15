@@ -688,7 +688,7 @@ int main(int argc, char **argv)
 				argv[0], optopt);
 			break;
 		default:
-			tst_brkm(TBROK, NULL, "%s: getopt() failed!!!\n",
+			tst_brkm(TBROK, NULL, "%s: getopt() failed!!!",
 				 argv[0]);
 		}
 	}

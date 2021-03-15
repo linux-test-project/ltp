@@ -82,7 +82,7 @@ static void test_profil(void)
 	 * set scale to 2*65536 to have 1:1 mapping for $pc */
 	ret = profil(buf, sizeof(buf), offset, 2*65536);
 	if (ret)
-		tst_brkm(TBROK, NULL, "profil returned: %d\n", ret);
+		tst_brkm(TBROK, NULL, "profil returned: %d", ret);
 
 	signal(SIGALRM, alrm_handler);
 	alarm(PROFIL_TIME);

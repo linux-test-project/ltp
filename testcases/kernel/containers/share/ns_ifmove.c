@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	int intf_index, pid, rtnetlink_socket;
 
 	if (argc != 3) {
-		tst_resm(TINFO, "%s <INTERFACE_NAME> <NAMESPACE_PID>\n",
+		tst_resm(TINFO, "%s <INTERFACE_NAME> <NAMESPACE_PID>",
 			 argv[0]);
 		return 1;
 	}

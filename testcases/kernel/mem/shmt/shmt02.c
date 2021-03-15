@@ -67,7 +67,7 @@ int main(void)
 	if ((shmid = shmget(key, 16 * K_1, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
 		tst_brkm(TFAIL, NULL,
-			 "shmget Failed: shmid = %d, errno = %d\n",
+			 "shmget Failed: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 
@@ -79,7 +79,7 @@ int main(void)
 
 	if (cp == (char *)-1) {
 		perror("shmat");
-		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d\n",
+		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d",
 			 shmid, errno);
 		rm_shm(shmid);
 		tst_exit();
@@ -96,7 +96,7 @@ int main(void)
 
 	if (*cp != '1' || *(cp + 1) != '2') {
 		tst_resm(TFAIL,
-			 "Error in shared memory contents: shmid = %d\n",
+			 "Error in shared memory contents: shmid = %d",
 			 shmid);
 	}
 
@@ -113,7 +113,7 @@ static int rm_shm(int shmid)
 		perror("shmctl");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 "shmctl Failed to remove: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	return (0);

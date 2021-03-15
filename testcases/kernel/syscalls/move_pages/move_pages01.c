@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 			free_pages(pages, TEST_PAGES);
 			continue;
 		} else if (ret > 0) {
-			tst_resm(TINFO, "move_pages() returned %d\n", ret);
+			tst_resm(TINFO, "move_pages() returned %d", ret);
 		}
 
 		verify_pages_linear(pages, status, TEST_PAGES);

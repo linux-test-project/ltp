@@ -49,33 +49,33 @@ int main(int argc, char *argv[])
 	int n;
 
 	if (argc != 2) {
-		tst_brkm(TBROK, NULL, "Usage: check_pe [0|1]\n");
+		tst_brkm(TBROK, NULL, "Usage: check_pe [0|1]");
 	}
 	n = atoi(argv[1]);
 	if (n != 0 && n != 1) {
-		tst_brkm(TBROK, NULL, "Usage: check_pe [0|1]\n");
+		tst_brkm(TBROK, NULL, "Usage: check_pe [0|1]");
 	}
 
 	cur = cap_get_proc();
 	ret = cap_get_flag(cur, CAP_SYS_ADMIN, CAP_EFFECTIVE, &f);
 	if (ret) {
-		tst_brkm(TBROK, NULL, "cap_get_flag failed (errno %d)\n",
+		tst_brkm(TBROK, NULL, "cap_get_flag failed (errno %d)",
 			 errno);
 	}
 
 	cap_free(cur);
 	if (n == 1) {
 		if (f == CAP_SET) {
-			tst_resm(TPASS, "cap is in pE\n");
+			tst_resm(TPASS, "cap is in pE");
 			tst_exit();
 		}
-		tst_brkm(TFAIL, NULL, "cap is not in pE\n");
+		tst_brkm(TFAIL, NULL, "cap is not in pE");
 	}
 	if (f == CAP_CLEAR) {
-		tst_resm(TPASS, "cap is not in pE\n");
+		tst_resm(TPASS, "cap is not in pE");
 		tst_exit();
 	}
-	tst_resm(TFAIL, "Cap is in pE\n");
+	tst_resm(TFAIL, "Cap is in pE");
 #else /* libcap */
 	tst_resm(TCONF, "System doesn't have POSIX capabilities.");
 #endif

@@ -81,13 +81,13 @@ int main(void)
 
 	if ((unsigned long)sbrk(16384) >= (-4095UL)) {
 		perror("sbrk");
-		tst_brkm(TFAIL, NULL, "Error: sbrk failed, errno = %d\n",
+		tst_brkm(TFAIL, NULL, "Error: sbrk failed, errno = %d",
 			 errno);
 	}
 
 	if ((unsigned long)sbrk(-4097) >= (-4095UL)) {
 		perror("sbrk");
-		tst_brkm(TFAIL, NULL, "Error: sbrk failed, errno = %d\n",
+		tst_brkm(TFAIL, NULL, "Error: sbrk failed, errno = %d",
 			 errno);
 	}
 
@@ -95,7 +95,7 @@ int main(void)
 		perror("shmget");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "Error: shmget Failed, shmid = %d, errno = %d\n",
+			 "Error: shmget Failed, shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 
@@ -103,7 +103,7 @@ int main(void)
 	if (c1 == (char *)-1) {
 		perror("shmat");
 		tst_resm(TFAIL,
-			 "Error: shmat Failed, shmid = %d, errno = %d\n",
+			 "Error: shmat Failed, shmid = %d, errno = %d",
 			 shmid, errno);
 		rm_shm(shmid);
 		tst_exit();
@@ -115,7 +115,7 @@ int main(void)
 
 	if ((unsigned long)sbrk(32 * K_1) >= (-4095UL)) {
 		perror("sbrk");
-		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
+		tst_resm(TFAIL, "Error: sbrk failed, errno = %d", errno);
 		rm_shm(shmid);
 		tst_exit();
 	}
@@ -135,7 +135,7 @@ int main(void)
 
 	if ((unsigned long)sbrk(-16000) >= (-4095UL)) {
 		perror("sbrk");
-		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
+		tst_resm(TFAIL, "Error: sbrk failed, errno = %d", errno);
 		rm_shm(shmid);
 		tst_exit();
 	}
@@ -152,7 +152,7 @@ int main(void)
 	if (c3 == (char *)-1) {
 		perror("shmat1");
 		tst_resm(TFAIL,
-			 "Error: shmat Failed, shmid = %d, errno = %d\n",
+			 "Error: shmat Failed, shmid = %d, errno = %d",
 			 shmid, errno);
 		rm_shm(shmid);
 		tst_exit();
@@ -164,7 +164,7 @@ int main(void)
 #if defined (__ia64__) || defined(__mips__) || defined(__hppa__) || defined(__arm__) || defined(__aarch64__)
 	while ((vp = sbrk(INCREMENT)) != (void *)-1) ;
 	if (errno != ENOMEM) {
-		tst_resm(TFAIL, "Error: sbrk failed, errno = %d\n", errno);
+		tst_resm(TFAIL, "Error: sbrk failed, errno = %d", errno);
 		rm_shm(shmid);
 		tst_exit();
 	}
@@ -192,7 +192,7 @@ static int rm_shm(int shmid)
 		perror("shmctl");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 "shmctl Failed to remove: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	return (0);

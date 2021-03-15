@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	parent_pid = getpid();
 
 	if (sigset(SIGTERM, (void (*)())term) == SIG_ERR) {
-		tst_resm(TBROK, "\tSIGTERM sigset set failed, errno=%d\n",
+		tst_resm(TBROK, "\tSIGTERM sigset set failed, errno=%d",
 			 errno);
 		exit(1);
 	}
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 		file_length = 8;
 		nchild = 5;
 	} else if (argc < 5) {
-		tst_resm(TCONF, "Bad argument count.\n");
+		tst_resm(TCONF, "Bad argument count.");
 		printf
 		    ("\tinode02 max_depth max_breadth file_length #children\n\tdefault: inode02 6 5 8 5\n");
 		exit(1);
@@ -198,8 +198,8 @@ int main(int argc, char *argv[])
 	}
 
 	if (count != nchild) {
-		tst_resm(TFAIL, "Wrong number of children waited on!\n");
-		tst_resm(TFAIL, "Saw %d, expected %d\n", count, nchild);
+		tst_resm(TFAIL, "Wrong number of children waited on!");
+		tst_resm(TFAIL, "Saw %d, expected %d", count, nchild);
 		local_flag = FAILED;
 	}
 
@@ -837,7 +837,7 @@ void setup(void)
  */
 void fail_exit(void)
 {
-	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
+	tst_brkm(TFAIL, tst_rmdir, "Test failed");
 }
 
 /*
@@ -872,7 +872,7 @@ void ok_exit(void)
  */
 void forkfail(void)
 {
-	tst_brkm(TBROK, tst_rmdir, "Reason: %s\n", strerror(errno));
+	tst_brkm(TBROK, tst_rmdir, "Reason: %s", strerror(errno));
 }
 
 /*
@@ -884,7 +884,7 @@ void forkfail(void)
  */
 void terror(char *message)
 {
-	tst_resm(TBROK, "Reason: %s:%s\n", message, strerror(errno));
+	tst_resm(TBROK, "Reason: %s:%s", message, strerror(errno));
 	return;
 }
 

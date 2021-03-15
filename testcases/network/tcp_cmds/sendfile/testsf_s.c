@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
 	/* open socket */
 	if ((s = socket(AFI, SOCK_STREAM, 0)) < 0) {
-		tst_brkm(TBROK, NULL, "socket error = %d\n", errno);
+		tst_brkm(TBROK, NULL, "socket error = %d", errno);
 	}
 
 	signal(SIGCHLD, SIG_IGN);	/* ignore signals from children */
@@ -74,14 +74,14 @@ int main(int argc, char *argv[])
 
 	/* bind IP and port to socket */
 	if (bind(s, (sa_t *) & sa, sizeof(sa)) < 0) {
-		tst_resm(TBROK, "bind error = %d\n", errno);
+		tst_resm(TBROK, "bind error = %d", errno);
 		close(s);
 		tst_exit();
 	}
 
 	/* start to listen socket */
 	if (listen(s, LISTEN_BACKLOG) < 0) {
-		tst_resm(TBROK, "listen error = %d\n", errno);
+		tst_resm(TBROK, "listen error = %d", errno);
 		close(s);
 		tst_exit();
 	}
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 		/* accept a connection from a client */
 		if ((as = accept(s, &from, &fromlen)) < 0) {
-			tst_resm(TBROK, "accept error = %d\n", errno);
+			tst_resm(TBROK, "accept error = %d", errno);
 			if (errno == EINTR)
 				continue;
 			close(s);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
 		/* create a process to manage the connection */
 		if ((pid = fork()) < 0) {
-			tst_resm(TBROK, "fork error = %d\n", errno);
+			tst_resm(TBROK, "fork error = %d", errno);
 			close(as);
 			tst_exit();
 		}
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
 		/* get client request information */
 		if ((nbytes = read(as, rbuf, PATH_MAX)) <= 0) {
-			tst_resm(TBROK, "socket read error = %d\n", errno);
+			tst_resm(TBROK, "socket read error = %d", errno);
 			close(as);
 			tst_exit();
 		}
@@ -140,10 +140,10 @@ int main(int argc, char *argv[])
 		/* the file name */
 		lp++;
 
-		tst_resm(TINFO, "The file to send is %s\n", lp);
+		tst_resm(TINFO, "The file to send is %s", lp);
 		/* open requested file to send */
 		if ((fd = open(lp, O_RDONLY)) < 0) {
-			tst_resm(TBROK, "file open error = %d\n", errno);
+			tst_resm(TBROK, "file open error = %d", errno);
 			close(as);
 			tst_exit();
 		}
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 			if ((rc = sendfile(as, fd, offset, flen)) != flen) {
 				if ((errno != EWOULDBLOCK) && (errno != EAGAIN)) {
 					tst_resm(TBROK,
-						 "sendfile error = %d, rc = %d\n",
+						 "sendfile error = %d, rc = %d",
 						 errno, rc);
 					close(as);
 					close(fd);
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 			}
 			chunks++;
 		} while (rc != 0);
-		tst_resm(TINFO, "File %s sent in %d parts\n", lp, chunks);
+		tst_resm(TINFO, "File %s sent in %d parts", lp, chunks);
 
 		close(as);	/* close connection */
 		close(fd);	/* close requested file */

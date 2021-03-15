@@ -488,13 +488,13 @@ unsigned int initrand(void)
 /*****  LTP Port        *****/
 void ok_exit(void)
 {
-	tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed");
 	tst_exit();
 }
 
 int anyfail(void)
 {
-	tst_brkm(TFAIL, NULL, "Test failed\n");
+	tst_brkm(TFAIL, NULL, "Test failed");
 }
 
 /*****  **      **      *****/

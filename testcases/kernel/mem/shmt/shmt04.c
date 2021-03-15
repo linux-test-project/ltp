@@ -87,7 +87,7 @@ int main(void)
 
 	if ((shmid = shmget(key, SIZE, IPC_CREAT | 0666)) < 0) {
 		perror("shmget");
-		tst_resm(TFAIL, "Error: shmget: shmid = %d, errno = %d\n",
+		tst_resm(TFAIL, "Error: shmget: shmid = %d, errno = %d",
 			 shmid, errno);
 		/*
 		 * kill the child if parent failed to do the attach
@@ -99,7 +99,7 @@ int main(void)
 		if (cp == (char *)-1) {
 			perror("shmat");
 			tst_resm(TFAIL,
-				 "Error: shmat: shmid = %d, errno = %d\n",
+				 "Error: shmat: shmid = %d, errno = %d",
 				 shmid, errno);
 
 /* kill the child if parent failed to do the attch */
@@ -121,7 +121,7 @@ int main(void)
 		if (pid1 != pid) {
 			tst_resm(TFAIL, "Waited on the wrong child");
 			tst_resm(TFAIL,
-				 "Error: wait_status = %d, pid1= %d\n", status,
+				 "Error: wait_status = %d, pid1= %d", status,
 				 pid1);
 		}
 	}
@@ -155,7 +155,7 @@ int child(void)
 	if ((shmid = shmget(key, SIZE, 0)) < 0) {
 		perror("shmget:child process");
 		tst_resm(TFAIL,
-			 "Error: shmget: errno=%d, shmid=%d, child_pid=%d\n",
+			 "Error: shmget: errno=%d, shmid=%d, child_pid=%d",
 			 errno, shmid, chld_pid);
 	} else {
 		cp = shmat(shmid, NULL, 0);
@@ -163,20 +163,20 @@ int child(void)
 		if (cp == (char *)-1) {
 			perror("shmat:child process");
 			tst_resm(TFAIL,
-				 "Error: shmat: errno=%d, shmid=%d, child_pid=%d\n",
+				 "Error: shmat: errno=%d, shmid=%d, child_pid=%d",
 				 errno, shmid, chld_pid);
 		} else {
 			if (*cp != 'A') {
-				tst_resm(TFAIL, "child: not A\n");
+				tst_resm(TFAIL, "child: not A");
 			}
 			if (*(cp + 1) != 'B') {
-				tst_resm(TFAIL, "child: not B\n");
+				tst_resm(TFAIL, "child: not B");
 			}
 			if (*(cp + 2) != 'C') {
-				tst_resm(TFAIL, "child: not C\n");
+				tst_resm(TFAIL, "child: not C");
 			}
 			if (*(cp + 8192) != 0) {
-				tst_resm(TFAIL, "child: not 0\n");
+				tst_resm(TFAIL, "child: not 0");
 			}
 		}
 
@@ -190,7 +190,7 @@ static int rm_shm(int shmid)
 		perror("shmctl");
 		tst_brkm(TFAIL,
 			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
+			 "shmctl Failed to remove: shmid = %d, errno = %d",
 			 shmid, errno);
 	}
 	return (0);

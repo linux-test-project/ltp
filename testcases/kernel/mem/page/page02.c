@@ -95,7 +95,7 @@ char *argv[];
 			bd_arg(argv[2]);
 	} else {
 		printf("page02 [memory size (words)]  [nchild]\n");
-		tst_resm(TCONF, "\tBad arg count.\n");
+		tst_resm(TCONF, "\tBad arg count.");
 		exit(1);
 	}
 	half_memory_size = memory_size / 2;
@@ -114,9 +114,9 @@ char *argv[];
 		if ((pid = fork()) == -1) {
 			tst_resm(TBROK,
 				 "Fork failed (may be OK if under stress)");
-			tst_resm(TINFO, "System resource may be too low.\n");
+			tst_resm(TINFO, "System resource may be too low.");
 			local_flag = PASSED;
-			tst_brkm(TBROK, tst_rmdir, "Reason: %s\n",
+			tst_brkm(TBROK, tst_rmdir, "Reason: %s",
 				 strerror(errno));
 		} else if (pid == 0) {
 			/********************************/
@@ -128,23 +128,23 @@ char *argv[];
 
 			memory_pointer = malloc(memory_size * sizeof(int));
 			if (memory_pointer == 0) {
-				tst_resm(TBROK, "\tCannot malloc memory.\n");
+				tst_resm(TBROK, "\tCannot malloc memory.");
 				if (i < 2) {
 					tst_resm(TBROK,
-						 "\tThis should not happen to first two children.\n");
-					tst_resm(TBROK, "\tChild %d - fail.\n",
+						 "\tThis should not happen to first two children.");
+					tst_resm(TBROK, "\tChild %d - fail.",
 						 i);
 				} else {
 					tst_resm(TBROK,
-						 "\tThis is ok for all but first two children.\n");
-					tst_resm(TBROK, "\tChild %d - ok.\n",
+						 "\tThis is ok for all but first two children.");
+					tst_resm(TBROK, "\tChild %d - ok.",
 						 i);
 					kill(parent_pid, SIGUSR1);
 					_exit(0);
 				}
 				tst_resm(TBROK, "malloc fail");
 				tst_resm(TFAIL,
-					 "\t\nImpossible to allocate memory of size %d in process %d\n",
+					 "\tImpossible to allocate memory of size %d in process %d",
 					 memory_size, i);
 				kill(parent_pid, SIGUSR1);
 				tst_exit();
@@ -209,8 +209,8 @@ char *argv[];
 	}
 
 	if (count != nchild) {
-		tst_resm(TFAIL, "\tWrong number of children waited on.\n");
-		tst_resm(TFAIL, "\tCount = %d, expected = %d.\n",
+		tst_resm(TFAIL, "\tWrong number of children waited on.");
+		tst_resm(TFAIL, "\tCount = %d, expected = %d.",
 			 count, nchild);
 	}
 
@@ -224,7 +224,7 @@ char *argv[];
 int bd_arg(str)
 char *str;
 {
-	tst_brkm(TCONF, NULL, "\tCannot parse %s as a number.\n", str);
+	tst_brkm(TCONF, NULL, "\tCannot parse %s as a number.", str);
 }
 
 int chld()

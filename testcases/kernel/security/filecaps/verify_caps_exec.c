@@ -80,7 +80,7 @@ static void drop_root(int keep_perms)
 		prctl(PR_SET_KEEPCAPS, 1);
 	ret = setresuid(1000, 1000, 1000);
 	if (ret) {
-		tst_brkm(TFAIL | TERRNO, NULL, "Error dropping root privs\n");
+		tst_brkm(TFAIL | TERRNO, NULL, "Error dropping root privs");
 		tst_exit();
 	}
 	if (keep_perms) {
@@ -88,10 +88,10 @@ static void drop_root(int keep_perms)
 		int ret;
 		if (!cap)
 			tst_brkm(TBROK | TERRNO, NULL,
-				 "cap_from_text failed\n");
+				 "cap_from_text failed");
 		ret = cap_set_proc(cap);
 		if (ret < 0)
-			tst_brkm(TBROK | TERRNO, NULL, "cap_set_proc failed\n");
+			tst_brkm(TBROK | TERRNO, NULL, "cap_set_proc failed");
 		cap_free(cap);
 	}
 }
@@ -104,15 +104,15 @@ static int perms_test(void)
 	drop_root(DROP_PERMS);
 	cap = cap_from_text("all=eip");
 	if (!cap) {
-		tst_resm(TFAIL, "could not get cap from text for perms test\n");
+		tst_resm(TFAIL, "could not get cap from text for perms test");
 		return 1;
 	}
 	ret = cap_set_file(TSTPATH, cap);
 	if (ret) {
-		tst_resm(TPASS, "could not set capabilities as non-root\n");
+		tst_resm(TPASS, "could not set capabilities as non-root");
 		ret = 0;
 	} else {
-		tst_resm(TFAIL, "could set capabilities as non-root\n");
+		tst_resm(TFAIL, "could set capabilities as non-root");
 		ret = 1;
 	}
 
@@ -126,7 +126,7 @@ static void create_fifo(void)
 
 	ret = mkfifo(get_caps_fifo(), S_IRWXU | S_IRWXG | S_IRWXO);
 	if (ret == -1 && errno != EEXIST)
-		tst_brkm(TFAIL | TERRNO, NULL, "failed creating %s\n",
+		tst_brkm(TFAIL | TERRNO, NULL, "failed creating %s",
 			 get_caps_fifo());
 }
 
@@ -146,7 +146,7 @@ static void read_from_fifo(char *buf)
 	memset(buf, 0, 200);
 	fd = open(get_caps_fifo(), O_RDONLY);
 	if (fd < 0)
-		tst_brkm(TFAIL | TERRNO, NULL, "Failed opening fifo\n");
+		tst_brkm(TFAIL | TERRNO, NULL, "Failed opening fifo");
 	read(fd, buf, 199);
 	close(fd);
 }
@@ -163,7 +163,7 @@ static int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 
 	pid = fork();
 	if (pid < 0)
-		tst_brkm(TFAIL | TERRNO, NULL, "%s: failed fork\n", __func__);
+		tst_brkm(TFAIL | TERRNO, NULL, "%s: failed fork", __func__);
 	if (pid == 0) {
 		drop_root(keepperms);
 		print_my_caps();
@@ -173,7 +173,7 @@ static int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		snprintf(buf, 200, "failed to run as %s\n", capstxt);
 		cap_free(capstxt);
 		write_to_fifo(buf);
-		tst_brkm(TFAIL, NULL, "%s: exec failed\n", __func__);
+		tst_brkm(TFAIL, NULL, "%s: exec failed", __func__);
 	} else {
 		p = buf;
 		while (1) {
@@ -189,15 +189,15 @@ static int fork_drop_and_exec(int keepperms, cap_t expected_caps)
 		p = strchr(buf, '.');
 		if (!p)
 			tst_brkm(TFAIL, NULL,
-				 "got a bad message from print_caps\n");
+				 "got a bad message from print_caps");
 		p += 1;
 		actual_caps = cap_from_text(p);
 		if (cap_compare(actual_caps, expected_caps) != 0) {
 			capstxt = cap_to_text(expected_caps, NULL);
 			tst_resm(TINFO,
-				 "Expected to run as .%s., ran as .%s..\n",
+				 "Expected to run as .%s., ran as .%s..",
 				 capstxt, p);
-			tst_resm(TINFO, "those are not the same\n");
+			tst_resm(TINFO, "those are not the same");
 			cap_free(capstxt);
 			ret = -1;
 		}
@@ -251,13 +251,13 @@ static int caps_actually_set_test(void)
 		cap_set_flag(fcap, CAP_PERMITTED, 1, capvalue, CAP_SET);
 		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d\n", whichcap);
+			tst_resm(TINFO, "%d", whichcap);
 			continue;
 		}
 		ret = fork_drop_and_exec(DROP_PERMS, fcap);
 		if (ret) {
 			tst_resm(TINFO,
-				 "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0\n",
+				 "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=0",
 				 whichcap);
 			if (!finalret)
 				finalret = ret;
@@ -273,13 +273,13 @@ static int caps_actually_set_test(void)
 		cap_set_flag(fcap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
 		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d\n", whichcap);
+			tst_resm(TINFO, "%d", whichcap);
 			continue;
 		}
 		ret = fork_drop_and_exec(DROP_PERMS, fcap);
 		if (ret) {
 			tst_resm(TINFO,
-				 "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1\n",
+				 "Failed CAP_PERMITTED=%d CAP_EFFECTIVE=1",
 				 whichcap);
 			if (!finalret)
 				finalret = ret;
@@ -300,7 +300,7 @@ static int caps_actually_set_test(void)
 	 */
 	ret = cap_set_proc(cap_fullpi);
 	if (ret)
-		tst_resm(TINFO, "Could not fill pI.  pI tests will fail.\n");
+		tst_resm(TINFO, "Could not fill pI.  pI tests will fail.");
 
 	/*
 	 * next try each bit in fI
@@ -330,13 +330,13 @@ static int caps_actually_set_test(void)
 		cap_set_flag(fcap, CAP_INHERITABLE, 1, capvalue, CAP_SET);
 		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d\n", whichcap);
+			tst_resm(TINFO, "%d", whichcap);
 			continue;
 		}
 		ret = fork_drop_and_exec(KEEP_PERMS, pcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
-				 "CAP_EFFECTIVE=0\n", whichcap);
+				 "CAP_EFFECTIVE=0", whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
@@ -354,7 +354,7 @@ static int caps_actually_set_test(void)
 		cap_set_flag(pcap, CAP_EFFECTIVE, 1, capvalue, CAP_SET);
 		ret = cap_set_file(TSTPATH, fcap);
 		if (ret) {
-			tst_resm(TINFO, "%d\n", whichcap);
+			tst_resm(TINFO, "%d", whichcap);
 			continue;
 		}
 		/* The actual result will be a full pI, with
@@ -366,7 +366,7 @@ static int caps_actually_set_test(void)
 		cap_free(cmpcap);
 		if (ret) {
 			tst_resm(TINFO, "Failed with_perms CAP_INHERITABLE=%d "
-				 "CAP_EFFECTIVE=1\n", whichcap);
+				 "CAP_EFFECTIVE=1", whichcap);
 			if (!finalret)
 				finalret = ret;
 		}
@@ -411,9 +411,9 @@ int main(int argc, char *argv[])
 	case 1:
 		ret = caps_actually_set_test();
 		if (ret)
-			tst_resm(TFAIL, "Some tests failed\n");
+			tst_resm(TFAIL, "Some tests failed");
 		else
-			tst_resm(TPASS, "All tests passed\n");
+			tst_resm(TPASS, "All tests passed");
 		break;
 	default:
 		usage(argv[0]);

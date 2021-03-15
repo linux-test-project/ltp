@@ -167,7 +167,7 @@ static void stress_malloc(void)
 
 		SAFE_PTHREAD_JOIN(thread_id[thread_index], &status);
 		if ((intptr_t)status != 0) {
-			tst_res(TFAIL, "thread [%d] - exited with errors\n",
+			tst_res(TFAIL, "thread [%d] - exited with errors",
 				thread_index);
 		}
 	}

@@ -376,7 +376,7 @@ static void test_read_returns_first_message(void)
 	} else {
 		tst_res(TFAIL, "readers got different messages");
 		for (i = 0; i < NUM_READ_MSGS; i++)
-			tst_res(TINFO, "msg%d: %lu\n", i, seqno[i]);
+			tst_res(TINFO, "msg%d: %lu", i, seqno[i]);
 	}
 }
 

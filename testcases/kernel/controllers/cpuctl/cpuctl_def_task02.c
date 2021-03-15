@@ -134,10 +134,10 @@ int main(void)
 			sprintf(mygroup, "%s", mygroup_p);
 		} else {
 			tst_brkm(TBROK, cleanup,
-				 "Invalid other input parameters\n");
+				 "Invalid other input parameters");
 		}
 	} else {
-		tst_brkm(TBROK, cleanup, "Invalid test number passed\n");
+		tst_brkm(TBROK, cleanup, "Invalid test number passed");
 	}
 
 	sprintf(mytaskfile, "%s", mygroup);
@@ -242,7 +242,7 @@ int main(void)
 				break;
 			default:
 				tst_brkm(TBROK, cleanup,
-					 "Invalid test number passed\n");
+					 "Invalid test number passed");
 				break;
 
 			}	/* end switch */

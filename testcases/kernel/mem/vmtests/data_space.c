@@ -177,7 +177,7 @@ int runtest()
 			 status);
 #endif
 		if (status) {
-			tst_resm(TFAIL, "\tTest failed, expected 0 exit.\n");
+			tst_resm(TFAIL, "\tTest failed, expected 0 exit.");
 			local_flag = FAILED;
 		}
 		++count;
@@ -188,7 +188,7 @@ int runtest()
 	 */
 
 	if (count != nchild) {
-		tst_resm(TFAIL, "\tWrong # children waited on, count = %d\n",
+		tst_resm(TFAIL, "\tWrong # children waited on, count = %d",
 			 count);
 		local_flag = FAILED;
 	}
@@ -298,7 +298,7 @@ int me;
 			if ((bits[chunk / 8] & (1 << (chunk % 8))) == 0) {
 				if (memcmp(buf, zero_buf, csize)) {
 					tst_resm(TFAIL,
-						 "\t%s[%d] bad verify @ %d (%p) for val %d count %d, should be 0x%x.\n",
+						 "\t%s[%d] bad verify @ %d (%p) for val %d count %d, should be 0x%x.",
 						 prog, me, chunk, buf, val,
 						 count, val - 1);
 					tst_resm(TINFO, "\tPrev ");
@@ -315,7 +315,7 @@ int me;
 				++collide;
 				if (memcmp(buf, val_buf, csize)) {
 					tst_resm(TFAIL,
-						 "\t%s[%d] bad verify @ %d (%p) for val %d count %d.\n",
+						 "\t%s[%d] bad verify @ %d (%p) for val %d count %d.",
 						 prog, me, chunk, buf, val,
 						 count);
 					tst_resm(TINFO, "\tPrev ");
@@ -486,14 +486,14 @@ int okexit(me)
 int me;
 {
 	kill(parent_pid, SIGUSR1);
-	tst_resm(TINFO, "\tChild [%d] - cannot malloc buffer - exiting.\n", me);
+	tst_resm(TINFO, "\tChild [%d] - cannot malloc buffer - exiting.", me);
 	if (me) {
-		tst_resm(TINFO, "\tThis is ok - probably swap space limit.\n");
+		tst_resm(TINFO, "\tThis is ok - probably swap space limit.");
 		tst_exit();
 	} else {
 		tst_brkm(TBROK,
 			 NULL,
-			 "\tThis is not ok for first child - check parameters.\n");
+			 "\tThis is not ok for first child - check parameters.");
 	}
 
 	return 0;

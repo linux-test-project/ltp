@@ -54,11 +54,11 @@ struct testcase {
 static void io_error(const char *func, int rc)
 {
 	if (rc == -ENOSYS)
-		tst_brk(TCONF, "AIO not in this kernel\n");
+		tst_brk(TCONF, "AIO not in this kernel");
 	else if (rc < 0)
-		tst_brk(TFAIL, "%s: %s\n", func, strerror(-rc));
+		tst_brk(TFAIL, "%s: %s", func, strerror(-rc));
 	else
-		tst_brk(TFAIL, "%s: error %d\n", func, rc);
+		tst_brk(TFAIL, "%s: error %d", func, rc);
 }
 
 /*
@@ -72,7 +72,7 @@ static void work_done(io_context_t ctx, struct iocb *iocb, long res, long res2)
 		io_error("aio write", res2);
 
 	if (res != (long)iocb->u.c.nbytes)
-		tst_brk(TFAIL, "write missed bytes expect %lu got %ld\n",
+		tst_brk(TFAIL, "write missed bytes expect %lu got %ld",
 			iocb->u.c.nbytes, res);
 
 	wait_count--;
@@ -155,7 +155,7 @@ static int io_tio(char *pathname, int flag, int operation)
 			offset += AIO_BLKSIZE;
 			break;
 		default:
-			tst_res(TFAIL, "Command failed; opcode returned: %d\n", operation);
+			tst_res(TFAIL, "Command failed; opcode returned: %d", operation);
 			return -1;
 			break;
 		}

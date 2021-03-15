@@ -204,12 +204,12 @@ int main(int argc, char *argv[])
 
 void ok_exit(void)
 {
-	tst_resm(TPASS, "Test passed\n");
+	tst_resm(TPASS, "Test passed");
 	tst_rmdir();
 	tst_exit();
 }
 
 int anyfail(void)
 {
-	tst_brkm(TFAIL, tst_rmdir, "Test failed\n");
+	tst_brkm(TFAIL, tst_rmdir, "Test failed");
 }

@@ -390,7 +390,7 @@ int doit(c_info * parent)
 			if ((rc =
 			     pthread_create(&(info_p->threads[child]), &attr,
 					    (void *)doit, (void *)info_p))) {
-				tst_resm(TINFO, "pthread_create (doit): %s\n",
+				tst_resm(TINFO, "pthread_create (doit): %s",
 					 strerror(rc));
 				testexit(3);
 			} else {
@@ -553,7 +553,7 @@ int main(int argc, char *argv[])
 	 * Initialize node mutex.
 	 */
 	if ((rc = pthread_mutex_init(&node_mutex, NULL))) {
-		tst_resm(TINFO, "pthread_mutex_init(node_mutex): %s\n",
+		tst_resm(TINFO, "pthread_mutex_init(node_mutex): %s",
 			 strerror(rc));
 		testexit(7);
 	}
@@ -562,7 +562,7 @@ int main(int argc, char *argv[])
 	 * Initialize node condition variable.
 	 */
 	if ((rc = pthread_cond_init(&node_condvar, NULL))) {
-		tst_resm(TINFO, "pthread_cond_init(node_condvar): %s\n",
+		tst_resm(TINFO, "pthread_cond_init(node_condvar): %s",
 			 strerror(rc));
 		testexit(8);
 	}
@@ -606,14 +606,14 @@ int main(int argc, char *argv[])
 
 		if ((rc = pthread_mutex_init(&child_info[ind].child_mutex,
 					     NULL))) {
-			tst_resm(TINFO, "pthread_mutex_init child_mutex: %s\n",
+			tst_resm(TINFO, "pthread_mutex_init child_mutex: %s",
 				 strerror(rc));
 			testexit(13);
 		}
 
 		if ((rc = pthread_mutex_init(&child_info[ind].talk_mutex,
 					     NULL))) {
-			tst_resm(TINFO, "pthread_mutex_init talk_mutex: %s\n",
+			tst_resm(TINFO, "pthread_mutex_init talk_mutex: %s",
 				 strerror(rc));
 			testexit(14);
 		}
@@ -628,7 +628,7 @@ int main(int argc, char *argv[])
 
 		if ((rc = pthread_cond_init(&child_info[ind].talk_condvar,
 					    NULL))) {
-			tst_resm(TINFO, "pthread_cond_init talk_condvar: %s\n",
+			tst_resm(TINFO, "pthread_cond_init talk_condvar: %s",
 				 strerror(rc));
 			testexit(16);
 		}
@@ -644,7 +644,7 @@ int main(int argc, char *argv[])
 		 "Creating root thread attributes via pthread_attr_init.");
 
 	if ((rc = pthread_attr_init(&attr))) {
-		tst_resm(TINFO, "pthread_attr_init: %s\n", strerror(rc));
+		tst_resm(TINFO, "pthread_attr_init: %s", strerror(rc));
 		testexit(17);
 	}
 
@@ -655,7 +655,7 @@ int main(int argc, char *argv[])
 	 */
 	if ((rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE))
 	    ) {
-		tst_resm(TINFO, "pthread_attr_setdetachstate: %s\n",
+		tst_resm(TINFO, "pthread_attr_setdetachstate: %s",
 			 strerror(rc));
 		testexit(18);
 	}
@@ -663,7 +663,7 @@ int main(int argc, char *argv[])
 	tst_resm(TINFO, "Creating root thread via pthread_create.");
 
 	if ((rc = pthread_create(&root_thread, &attr, (void *)doit, NULL))) {
-		tst_resm(TINFO, "pthread_create: %s\n", strerror(rc));
+		tst_resm(TINFO, "pthread_create: %s", strerror(rc));
 		testexit(19);
 	}
 
@@ -676,7 +676,7 @@ int main(int argc, char *argv[])
 	 * Wait for the root child to exit.
 	 */
 	if ((rc = pthread_join(root_thread, NULL))) {
-		tst_resm(TINFO, "pthread_join: %s\n", strerror(rc));
+		tst_resm(TINFO, "pthread_join: %s", strerror(rc));
 		testexit(20);
 	}
 

@@ -50,7 +50,7 @@ int set_caps_from_text(char *capstr)
 	int ret;
 
 	if (!caps) {
-		tst_resm(TFAIL, "Bad capability name: %s\n", capstr);
+		tst_resm(TFAIL, "Bad capability name: %s", capstr);
 		return 1;
 	}
 	ret = cap_set_proc(caps);
@@ -100,7 +100,7 @@ int main(void)
 	ret = set_caps_from_text("all=iep cap_sys_admin-ep+i cap_setpcap-e+ip");
 	debug_print_caps("final");
 	if (ret) {
-		tst_resm(TPASS, "pI is properly capped\n");
+		tst_resm(TPASS, "pI is properly capped");
 		tst_exit();
 	}
 

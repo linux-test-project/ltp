@@ -71,7 +71,7 @@ static struct test_case_t {
 
 static void handler(int sig)
 {
-	tst_resm(TINFO, "Signal Handler Called with signal number %d\n", sig);
+	tst_resm(TINFO, "Signal Handler Called with signal number %d", sig);
 	return;
 }
 

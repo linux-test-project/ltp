@@ -86,7 +86,7 @@ static void sig_handler(int signal, siginfo_t *info,
 		longjmp(jmpbuf, 1);
 		break;
 	default:
-		tst_res(TFAIL, "Unexpected signal - %d, addr: %p, exiting\n",
+		tst_res(TFAIL, "Unexpected signal - %d, addr: %p, exiting",
 			signal, info->si_addr);
 		_exit(TBROK);
 	}
