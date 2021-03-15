@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright 2019 Google LLC
+ * Copyright (c) 2019 Google LLC
+ * Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
  */
 
 /*
@@ -26,37 +27,65 @@
 #include "tst_crypto.h"
 #include "tst_timer.h"
 
+/*
+ * List of possible algorithms to use try (not exhaustive).
+ * The algorithm has to be valid (i.e. the drivers must exists
+ * and be a valid combination) and it has to be deleteable.
+ * To be deletable it cannot be used by someone else.
+ * The first algorithm, that fullfils the criteria is used for the test.
+ */
+static const char * const ALGORITHM_CANDIDATES[] = {
+	"hmac(sha1-generic)",
+	"hmac(sha224-generic)",
+	"hmac(sha256-generic)",
+	"hmac(sha384-generic)",
+	"hmac(md5-generic)"
+};
+
+static const char* algorithm = NULL;
 static struct tst_crypto_session ses = TST_CRYPTO_SESSION_INIT;
+
 
 static void setup(void)
 {
+	int rc;
+	unsigned i;
+	struct crypto_user_alg alg;
 	tst_crypto_open(&ses);
+
+	/* find an algorithm, that is not in use */
+	for (i = 0; i < ARRAY_SIZE(ALGORITHM_CANDIDATES); ++i) {
+		memset(&alg, 0, sizeof(alg));
+		strcpy(alg.cru_driver_name, ALGORITHM_CANDIDATES[i]);
+
+		/* try to add it, to see if it is valid */
+		rc = tst_crypto_add_alg(&ses, &alg);
+		if (rc != 0)
+			continue;
+
+		/* it also has to be deletable */
+		rc = tst_crypto_del_alg(&ses, &alg);
+		if (rc == 0) {
+			algorithm = ALGORITHM_CANDIDATES[i];
+			break;
+		}
+	}
+	if (!algorithm) {
+		tst_brk(TCONF, "No viable algorithm found");
+	}
 }
 
 static void run(void)
 {
-	struct crypto_user_alg alg = {
-		/*
-		 * Any algorithm instantiated from a template can do here, but
-		 * choose something that's commonly available.
-		 */
-		.cru_driver_name = "hmac(sha256-generic)",
-	};
+	struct crypto_user_alg alg = {};
 	pid_t pid;
 	int status;
 
-	/* Check whether the algorithm is supported before continuing. */
-	TEST(tst_crypto_add_alg(&ses, &alg));
-	if (TST_RET != 0 && TST_RET != -EEXIST) {
-		if (TST_RET == -ENOENT)
-			tst_brk(TCONF, "%s not supported", alg.cru_driver_name);
-
-		tst_brk(TBROK | TRERRNO,
-			"unexpected error checking for algorithm support");
-	}
+	strcpy(alg.cru_driver_name, algorithm);
 
 	tst_res(TINFO,
-		"Starting crypto_user larval deletion test.  May crash buggy kernels.");
+		"Starting crypto_user larval deletion test using algorithm %s. May crash buggy kernels.",
+		algorithm);
 
 	tst_timer_start(CLOCK_MONOTONIC);
 
