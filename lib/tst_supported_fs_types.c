@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
+#include <sys/quota.h>
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
@@ -108,4 +109,34 @@ const char **tst_get_supported_fs_types(int flags)
 	}
 
 	return fs_types;
+}
+
+int tst_check_quota_support(const char *device, int format, char *quotafile)
+{
+	TEST(quotactl(QCMD(Q_QUOTAON, USRQUOTA), device, format, quotafile));
+
+	/* Not supported */
+	if (TST_RET == -1 && TST_ERR == ESRCH)
+		return 0;
+
+	/* Broken */
+	if (TST_RET)
+		return -1;
+
+	quotactl(QCMD(Q_QUOTAOFF, USRQUOTA), device, 0, 0);
+	return 1;
+}
+
+void tst_require_quota_support_(const char *file, const int lineno,
+	const char *device, int format, char *quotafile)
+{
+	int status = tst_check_quota_support(device, format, quotafile);
+
+	if (!status) {
+		tst_brk_(file, lineno, TCONF,
+			"Kernel or device does not support FS quotas");
+	}
+
+	if (status < 0)
+		tst_brk_(file, lineno, TBROK|TTERRNO, "FS quotas are broken");
 }
