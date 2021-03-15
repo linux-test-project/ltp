@@ -1,2 +1,2 @@
 #DESCRIPTION:Netlink Connector tests
-Connectors connector_test.sh
+cn_pec_sh cn_pec.sh
