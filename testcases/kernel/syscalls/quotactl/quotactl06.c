@@ -158,6 +158,8 @@ static void setup(void)
 	if (access(USRPATH, F_OK) == -1)
 		tst_brk(TFAIL | TERRNO, "user quotafile didn't exist");
 
+	tst_require_quota_support(tst_device->dev, fmt_id, usrpath);
+
 	SAFE_MKDIR(TESTDIR1, 0666);
 	test_id = geteuid();
 	test_invalid = test_id + 1;
