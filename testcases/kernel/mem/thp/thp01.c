@@ -138,4 +138,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = thp_test,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "a7d6e4ecdb76"},
+		{"CVE", "2011-0999"},
+		{}
+	}
 };
