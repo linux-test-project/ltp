@@ -104,7 +104,9 @@ test1()
 # that the certificate is measured correctly by IMA.
 test2()
 {
-	tst_require_cmds evmctl keyctl openssl
+	tst_require_cmds keyctl openssl
+
+	require_evmctl "1.3.2"
 
 	local cert_file="$TST_DATAROOT/x509_ima.der"
 	local keyring_name="key_import_test"
