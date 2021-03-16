@@ -52,39 +52,6 @@ setup()
 	fi
 }
 
-# check_evmctl REQUIRED_TPM_VERSION
-# return: 0: evmctl is new enough, 1: version older than required (or version < v0.9)
-check_evmctl()
-{
-	local required="$1"
-
-	local r1="$(echo $required | cut -d. -f1)"
-	local r2="$(echo $required | cut -d. -f2)"
-	local r3="$(echo $required | cut -d. -f3)"
-	[ -z "$r3" ] && r3=0
-
-	tst_is_int "$r1" || tst_brk TBROK "required major version not int ($v1)"
-	tst_is_int "$r2" || tst_brk TBROK "required minor version not int ($v2)"
-	tst_is_int "$r3" || tst_brk TBROK "required patch version not int ($v3)"
-
-	tst_check_cmds evmctl || return 1
-
-	local v="$(evmctl --version | cut -d' ' -f2)"
-	[ -z "$v" ] && return 1
-	tst_res TINFO "evmctl version: $v"
-
-	local v1="$(echo $v | cut -d. -f1)"
-	local v2="$(echo $v | cut -d. -f2)"
-	local v3="$(echo $v | cut -d. -f3)"
-	[ -z "$v3" ] && v3=0
-
-	if [ $v1 -lt $r1 ] || [ $v1 -eq $r1 -a $v2 -lt $r2 ] || \
-		[ $v1 -eq $r1 -a $v2 -eq $r2 -a $v3 -lt $r3 ]; then
-		return 1
-	fi
-	return 0
-}
-
 # prints major version: 1: TPM 1.2, 2: TPM 2.0
 # or nothing on TPM-bypass (no TPM device)
 # WARNING: Detecting TPM 2.0 can fail due kernel not exporting TPM 2.0 files.
