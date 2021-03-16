@@ -54,7 +54,7 @@ static void child_fn(unsigned int cinit_no)
 	pid_t pid, ppid;
 	int flags;
 
-	pid = getpid();
+	pid = tst_syscall(__NR_getpid);
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID)
 		tst_brk(TBROK, "cinit%u: pidns not created.", cinit_no);
