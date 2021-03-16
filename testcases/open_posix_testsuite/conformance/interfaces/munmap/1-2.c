@@ -30,7 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define TNAME "munmap/1-2.c"
 
@@ -43,7 +45,7 @@ static void sigsegv_handler(int signum LTP_ATTRIBUTE_UNUSED)
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	long file_size;
 
 	void *pa = NULL;
@@ -71,8 +73,7 @@ int main(void)
 	len = page_size + 1;
 
 	/* Create tmp file */
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_munmap_1_1_%d",
-		 getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_munmap_1_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

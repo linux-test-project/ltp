@@ -35,17 +35,19 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+
 #include "posixtest.h"
+#include "tempfile.h"
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	ssize_t size = 1024;
 	char data[size];
 	void *pa;
 	int fd;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_7_1_%d", getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_7_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

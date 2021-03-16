@@ -29,7 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
 
@@ -48,7 +50,7 @@ int main(void)
 	printf("_POSIX_MEMORY_PROTECTION is not defined\n");
 	return PTS_UNTESTED;
 #endif
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	long page_size;
 	long total_size;
 
@@ -72,7 +74,7 @@ int main(void)
 	sigaction(SIGBUS, &sa, NULL);
 
 	/* Create tmp file */
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_2_%d", getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_2");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

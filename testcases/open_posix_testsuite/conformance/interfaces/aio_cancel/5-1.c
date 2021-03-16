@@ -35,6 +35,7 @@
 #include <aio.h>
 
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define TNAME "aio_cancel/5-1.c"
 
@@ -43,7 +44,7 @@
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	int fd;
 	struct aiocb *aiocb[BUF_NB];
 	char *buf[BUF_NB];
@@ -54,8 +55,7 @@ int main(void)
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_5_1_%d",
-		 getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_aio_cancel_5_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

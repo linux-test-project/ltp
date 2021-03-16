@@ -39,16 +39,19 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #ifdef	__linux__
 #include <sys/vfs.h>
 #endif
+
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define TYPE_TMPFS_MAGIC	0x01021994
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	long page_size;
 
 	char *pa;
@@ -63,10 +66,11 @@ int main(void)
 	/* mmap will create a partial page */
 	len = page_size / 2;
 
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_5");
 #ifdef	__linux__
 	struct statfs buf;
 
-	if (statfs("/tmp", &buf)) {
+	if (statfs(ltp_get_tmpdir(), &buf)) {
 		printf("Error at statfs(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
@@ -77,7 +81,6 @@ int main(void)
 	}
 #endif
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_11_5_%d", getpid());
 	child = fork();
 	switch (child) {
 	case 0:

@@ -29,7 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define TNAME "lio_listio/3-1.c"
 
@@ -54,7 +56,7 @@ static void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	int fd;
 
 	struct aiocb *aiocbs[NUM_AIOCBS];
@@ -69,8 +71,7 @@ int main(void)
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		exit(PTS_UNSUPPORTED);
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_lio_listio_3_1_%d",
-		 getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_lio_listio_3_1");
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);

@@ -26,7 +26,9 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define LOOP_NUM 100000
 
@@ -35,7 +37,7 @@ int main(void)
 	int rc;
 	unsigned long cnt;
 
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	long total_size;
 
 	void *pa;
@@ -45,7 +47,7 @@ int main(void)
 	total_size = 1024;
 	size = total_size;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_mmap_10_1_%d", getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_10_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

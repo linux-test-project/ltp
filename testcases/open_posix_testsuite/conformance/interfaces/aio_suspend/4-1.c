@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define TNAME "aio_suspend/4-1.c"
 
@@ -60,7 +61,7 @@ static void sigrt2_handler(int signum)
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	struct aiocb aiocbs[NUM_AIOCBS];
 	struct aiocb *aiolist[NUM_AIOCBS];
 	struct aiocb *plist[2];
@@ -74,8 +75,7 @@ int main(void)
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_suspend_4_1_%d",
-		 getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_aio_suspend_4_1");
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_SYNC | O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);

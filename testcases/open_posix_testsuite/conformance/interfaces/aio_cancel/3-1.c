@@ -40,6 +40,7 @@
 #include <time.h>
 
 #include "posixtest.h"
+#include "tempfile.h"
 
 #define TNAME "aio_cancel/3-1.c"
 
@@ -64,7 +65,7 @@ static void sig_handler(int signum LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
 
 int main(void)
 {
-	char tmpfname[256];
+	char tmpfname[PATH_MAX];
 	int fd;
 	struct aiocb *aiocb_list[BUF_NB];
 	struct aiocb *aiocb;
@@ -77,8 +78,7 @@ int main(void)
 		return PTS_UNSUPPORTED;
 	}
 
-	snprintf(tmpfname, sizeof(tmpfname), "/tmp/pts_aio_cancel_3_1_%d",
-		 getpid());
+	LTP_GET_TMP_FILENAME(tmpfname, "pts_aio_cancel_3_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {
