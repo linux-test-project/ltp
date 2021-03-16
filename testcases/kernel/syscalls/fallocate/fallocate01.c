@@ -247,14 +247,14 @@ void runtest(int mode, int fd, loff_t expected_size)
 		tst_resm(TFAIL | TERRNO, "fstat failed after fallocate()");
 
 	if (file_stat.st_size != expected_size)
-		tst_resm(TFAIL | TTERRNO,
+		tst_resm(TFAIL | TERRNO,
 			 "fstat test fails on fallocate (%d, %d, %" PRId64 ", %"
 			 PRId64 ") Failed on mode", fd, mode, offset, len);
 
 	write_offset = random() % len;
 	lseek_offset = lseek(fd, write_offset, SEEK_CUR);
 	if (lseek_offset != offset + write_offset) {
-		tst_resm(TFAIL | TTERRNO,
+		tst_resm(TFAIL | TERRNO,
 			 "lseek fails in fallocate(%d, %d, %" PRId64 ", %"
 			 PRId64 ") failed on mode", fd, mode, offset, len);
 		return;

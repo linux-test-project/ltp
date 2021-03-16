@@ -165,19 +165,19 @@ static void verify(struct test_case_t *tc)
 	fd = TEST_RETURN;
 
 	if (ioctl(fd, PERF_EVENT_IOC_RESET, 0) == -1) {
-		tst_brkm(TFAIL | TTERRNO, cleanup,
+		tst_brkm(TFAIL | TERRNO, cleanup,
 			 "ioctl set PERF_EVENT_IOC_RESET failed");
 	}
 
 	if (ioctl(fd, PERF_EVENT_IOC_ENABLE, 0) == -1) {
-		tst_brkm(TFAIL | TTERRNO, cleanup,
+		tst_brkm(TFAIL | TERRNO, cleanup,
 			 "ioctl set PERF_EVENT_IOC_ENABLE failed");
 	}
 
 	do_work();
 
 	if (ioctl(fd, PERF_EVENT_IOC_DISABLE, 0) == -1) {
-		tst_brkm(TFAIL | TTERRNO, cleanup,
+		tst_brkm(TFAIL | TERRNO, cleanup,
 			 "ioctl set PERF_EVENT_IOC_RESET failed");
 	}
 

@@ -258,7 +258,7 @@ static void setup(void)
 	 * is this flag is missing.
 	 */
 	if (!MFD_FLAGS_AVAILABLE(MFD_ALLOW_SEALING)) {
-		tst_brk(TCONF | TTERRNO,
+		tst_brk(TCONF | TERRNO,
 			"memfd_create(%u) not implemented", MFD_ALLOW_SEALING);
 	}
 }
