@@ -114,8 +114,7 @@ extern void *TST_RET_PTR;
 		TST_PASS = 0;                                                  \
 		                                                               \
 		if (TST_RET == 0) {                                            \
-			TST_MSG_(TFAIL | TTERRNO, " succeeded",                \
-			         #SCALL, ##__VA_ARGS__);                       \
+			TST_MSG_(TFAIL, " succeeded", #SCALL, ##__VA_ARGS__);  \
 		        break;                                                 \
 		}                                                              \
 		                                                               \
@@ -127,11 +126,11 @@ extern void *TST_RET_PTR;
 		                                                               \
 		if (ERRNO) {                                                   \
 			if (TST_ERR == ERRNO) {                                \
-				TST_MSG_(TPASS | TERRNO, "",                   \
+				TST_MSG_(TPASS | TTERRNO, "",                  \
 				         #SCALL, ##__VA_ARGS__);               \
 				TST_PASS = 1;                                  \
 			} else {                                               \
-				TST_MSGP_(TFAIL | TERRNO, " expected %s",      \
+				TST_MSGP_(TFAIL | TTERRNO, " expected %s",     \
 				          tst_strerrno(ERRNO),                 \
 				          #SCALL, ##__VA_ARGS__);              \
 			}                                                      \
