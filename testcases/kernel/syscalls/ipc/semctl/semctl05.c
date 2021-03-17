@@ -7,7 +7,7 @@
  *	03/2001 - Written by Wayne Boyer
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Test for semctl() ERANGE error
  */

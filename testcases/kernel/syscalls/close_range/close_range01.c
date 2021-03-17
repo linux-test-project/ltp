@@ -10,7 +10,7 @@
  * Copyright (c) 2021 SUSE LLC, other copyrights may apply.
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * We check that close_range()
  *

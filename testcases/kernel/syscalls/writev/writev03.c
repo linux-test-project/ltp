@@ -4,7 +4,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Check for potential issues in writev() if the first iovec entry is NULL
  * and the next one is not present in RAM. This can result in a brief window

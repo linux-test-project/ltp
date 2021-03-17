@@ -8,7 +8,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * *Test 1*
  *

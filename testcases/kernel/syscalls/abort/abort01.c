@@ -8,11 +8,11 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Checks that process which called abort() gets killed by SIGIOT and dumps core.
  *
- * [ALGORITHM]
+ * [Algorithm]
  *  - Fork child.
  *  - Child calls abort.
  *  - Parent checks return status.

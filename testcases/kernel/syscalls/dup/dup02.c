@@ -7,10 +7,10 @@
  *
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  * Negative test for dup(2) with bad fds.
  *
- * [ALGORITHM]
+ * [Algorithm]
  * Call dup(2) with invalid argument and make sure it returns -1 with errno set
  * to EBADF.
  */

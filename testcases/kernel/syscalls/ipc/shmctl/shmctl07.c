@@ -4,7 +4,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Test for a SHM_LOCK and SHM_UNLOCK.
  */

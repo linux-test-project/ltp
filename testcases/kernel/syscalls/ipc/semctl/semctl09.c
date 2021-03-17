@@ -4,7 +4,7 @@
  * Author: Feiyu Zhu <zhufy.jy@cn.fujitsu.com>
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Call semctl() with SEM_INFO flag and check that:
  *

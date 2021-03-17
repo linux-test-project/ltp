@@ -4,11 +4,11 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic init_module() failure tests.
  *
- * [ALGORITHM]
+ * [Algorithm]
  *
  * Tests various failure scenarios for init_module().
  */

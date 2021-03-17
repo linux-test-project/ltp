@@ -4,11 +4,11 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic init_module() tests.
  *
- * [ALGORITHM]
+ * [Algorithm]
  *
  * Inserts a simple module after opening and mmaping the module file.
  */

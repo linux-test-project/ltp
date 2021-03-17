@@ -4,7 +4,7 @@
  * Author: Christian Amann <camann@suse.com>
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Test for CVE-2017-8890
  *

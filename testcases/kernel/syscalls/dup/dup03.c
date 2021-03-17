@@ -5,10 +5,10 @@
  *
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  * Negative test for dup(2) (too many fds).
  *
- * [ALGORITHM]
+ * [Algorithm]
  * Open the maximum allowed number of file descriptors and then try to call
  * dup() once more and verify it fails with EMFILE.
  */

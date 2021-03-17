@@ -5,7 +5,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Verify that shmctl() IPC_STAT and SHM_STAT reports correct data.
  *

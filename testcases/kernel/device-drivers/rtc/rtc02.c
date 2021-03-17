@@ -4,11 +4,11 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * RTC device set time function test.
  *
- * [ALGORITHM]
+ * [Algorithm]
  *
  * - Save RTC time
  * - Set RTC time

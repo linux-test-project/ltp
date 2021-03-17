@@ -6,7 +6,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  * Verify that accept() returns the proper errno for various failure cases.
  */
 

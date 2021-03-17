@@ -4,7 +4,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Call shmctl() with SHM_INFO flag and check that:
  *

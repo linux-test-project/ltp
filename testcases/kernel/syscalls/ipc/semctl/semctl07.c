@@ -10,7 +10,7 @@
  *	  to conflict with other instances of the same test.
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic tests for semctl().
  *

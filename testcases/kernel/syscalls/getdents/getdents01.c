@@ -8,7 +8,7 @@
 
 /*\
  *
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic getdents() test that checks if directory listing is correct and
  * complete.

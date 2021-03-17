@@ -9,7 +9,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Test for EACCES, EFAULT and EINVAL errors.
  *

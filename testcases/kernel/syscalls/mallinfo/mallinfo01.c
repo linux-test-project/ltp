@@ -5,7 +5,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic mallinfo() test. Refer to glibc test mallinfo2 test
  * https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/tst-mallinfo2.c

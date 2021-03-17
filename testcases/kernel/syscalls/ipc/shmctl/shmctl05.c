@@ -4,7 +4,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Regression test for commit
  * 3f05317d9889 (ipc/shm: fix use-after-free of shm file via remap_file_pages()).

@@ -4,7 +4,7 @@
  * Author: Feiyu Zhu <zhufy.jy@cn.fujitsu.com>
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Call msgctl() with MSG_INFO flag and check that:
  *

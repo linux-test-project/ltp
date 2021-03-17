@@ -12,7 +12,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Verify that get_mempolicy() returns a proper return errno for failure cases.
  */

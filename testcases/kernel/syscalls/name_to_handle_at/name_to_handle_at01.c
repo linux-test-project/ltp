@@ -4,11 +4,11 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic name_to_handle_at() tests.
  *
- * [ALGORITHM]
+ * [Algorithm]
  *  - Check that EOVERFLOW is returned as expected by name_to_handle_at().
  *  - Check that we were able to access a file's stat with name_to_handle_at()
  *    and open_by_handle_at().
