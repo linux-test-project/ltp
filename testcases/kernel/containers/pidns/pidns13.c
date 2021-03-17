@@ -116,8 +116,6 @@ static void run(void)
 
 	SAFE_CLOSE(pipe_fd[0]);
 	SAFE_CLOSE(pipe_fd[1]);
-
-	tst_reap_children();
 }
 
 static struct tst_test test = {
