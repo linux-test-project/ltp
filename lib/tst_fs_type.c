@@ -47,46 +47,46 @@ const char *tst_fs_type_name(long f_type)
 {
 	switch (f_type) {
 	case TST_TMPFS_MAGIC:
-		return "TMPFS";
+		return "tmpfs";
 	case TST_NFS_MAGIC:
-		return "NFS";
+		return "nfs";
 	case TST_V9FS_MAGIC:
-		return "9P";
+		return "9p";
 	case TST_RAMFS_MAGIC:
-		return "RAMFS";
+		return "ramfs";
 	case TST_BTRFS_MAGIC:
-		return "BTRFS";
+		return "btrfs";
 	case TST_XFS_MAGIC:
-		return "XFS";
+		return "xfs";
 	case TST_EXT2_OLD_MAGIC:
-		return "EXT2";
+		return "ext2";
 	case TST_EXT234_MAGIC:
-		return "EXT2/EXT3/EXT4";
+		return "ext2/ext3/ext4";
 	case TST_MINIX_MAGIC:
 	case TST_MINIX_MAGIC2:
 	case TST_MINIX2_MAGIC:
 	case TST_MINIX2_MAGIC2:
 	case TST_MINIX3_MAGIC:
-		return "MINIX";
+		return "minix";
 	case TST_UDF_MAGIC:
-		return "UDF";
+		return "udf";
 	case TST_SYSV2_MAGIC:
 	case TST_SYSV4_MAGIC:
-		return "SYSV";
+		return "sysv";
 	case TST_UFS_MAGIC:
 	case TST_UFS2_MAGIC:
-		return "UFS";
+		return "ufs";
 	case TST_F2FS_MAGIC:
-		return "F2FS";
+		return "f2fs";
 	case TST_NILFS_MAGIC:
-		return "NILFS";
+		return "nilfs";
 	case TST_EXOFS_MAGIC:
-		return "EXOFS";
+		return "exofs";
 	case TST_OVERLAYFS_MAGIC:
-		return "OVERLAYFS";
+		return "overlayfs";
 	case TST_FUSE_MAGIC:
-		return "FUSE";
+		return "fuse";
 	default:
-		return "Unknown";
+		return "unknown";
 	}
 }
