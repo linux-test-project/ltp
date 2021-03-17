@@ -29,7 +29,7 @@
 #define CHILDPASS 1
 #define CHILDFAIL 0
 
-static void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("In handler\n");
 }

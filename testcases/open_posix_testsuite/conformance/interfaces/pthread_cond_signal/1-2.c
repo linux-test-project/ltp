@@ -205,7 +205,7 @@ typedef struct {
 static testdata_t *td;
 
 /* Child function (either in a thread or in a process) */
-static void *child(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *child(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	struct timespec ts;

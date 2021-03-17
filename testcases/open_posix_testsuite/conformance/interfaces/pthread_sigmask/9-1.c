@@ -27,7 +27,7 @@
 static volatile int handler_called;
 static int pthread_sigmask_return_val = 1;	/* some value that's not a 1 or 0 */
 
-static void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	handler_called = 1;
 	if (pthread_sigmask_return_val != 1) {

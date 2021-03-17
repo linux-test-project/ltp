@@ -45,7 +45,7 @@ static int thread_state;
 static time_t currsec1, currsec2;
 static int expired;
 
-static void *fn_rd(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_rd(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec abs_timeout;
 	int rc;

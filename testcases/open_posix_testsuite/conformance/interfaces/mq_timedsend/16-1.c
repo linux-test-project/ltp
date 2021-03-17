@@ -51,7 +51,7 @@ static mqd_t gqueue;
  * This handler is just used to catch the signal and stop sleep (so the
  * parent knows the child is still busy sending signals).
  */
-static void stopsleep_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void stopsleep_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	return;
 }

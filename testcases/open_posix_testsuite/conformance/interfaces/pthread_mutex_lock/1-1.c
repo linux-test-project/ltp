@@ -69,7 +69,7 @@ int main(void)
 	return PTS_PASS;
 }
 
-static void *f1(void *parm LTP_ATTRIBUTE_UNUSED)
+static void *f1(void *parm PTS_ATTRIBUTE_UNUSED)
 {
 	int i, tmp;
 	int rc = 0;

@@ -59,8 +59,8 @@ int main(void)
 	/* Size of the file */
 	total_size = 2 * page_size;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_3_1_1");
-	LTP_GET_TMP_FILENAME(tmpfname2, "pts_mmap_3_1_2");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_3_1_1");
+	PTS_GET_TMP_FILENAME(tmpfname2, "pts_mmap_3_1_2");
 
 	unlink(tmpfname);
 	unlink(tmpfname2);

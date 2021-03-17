@@ -40,16 +40,16 @@
 static volatile int received_selected;
 static volatile int received_all;
 
-static void sigrt1_handler(int signum LTP_ATTRIBUTE_UNUSED,
+static void sigrt1_handler(int signum PTS_ATTRIBUTE_UNUSED,
 	siginfo_t *info,
-	void *context LTP_ATTRIBUTE_UNUSED)
+	void *context PTS_ATTRIBUTE_UNUSED)
 {
 	received_selected = info->si_value.sival_int;
 }
 
-static void sigrt2_handler(int signum LTP_ATTRIBUTE_UNUSED,
-	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
-	void *context LTP_ATTRIBUTE_UNUSED)
+static void sigrt2_handler(int signum PTS_ATTRIBUTE_UNUSED,
+	siginfo_t *info PTS_ATTRIBUTE_UNUSED,
+	void *context PTS_ATTRIBUTE_UNUSED)
 {
 	received_all = 1;
 }
@@ -71,7 +71,7 @@ int main(void)
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		exit(PTS_UNSUPPORTED);
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_lio_listio_2_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_lio_listio_2_1");
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);

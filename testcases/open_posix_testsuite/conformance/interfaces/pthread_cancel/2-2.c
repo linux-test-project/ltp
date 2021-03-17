@@ -30,13 +30,13 @@
 static int cleanup_flag = 0;
 static int sem = 0;			/* manual semaphore */
 
-static void destructor(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void destructor(void *tmp PTS_ATTRIBUTE_UNUSED)
 {
 	cleanup_flag = 1;
 }
 
 /* Thread's function. */
-static void *a_thread_func(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void *a_thread_func(void *tmp PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_key_t key;
 	int value = 1;

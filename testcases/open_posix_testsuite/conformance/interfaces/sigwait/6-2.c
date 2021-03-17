@@ -85,7 +85,7 @@ static pthread_t last_awaken;
 static sigset_t setusr;
 
 /* Thread function */
-static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	int sig;

@@ -29,7 +29,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-static void myhandler(int signo, siginfo_t *info, void *context LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo, siginfo_t *info, void *context PTS_ATTRIBUTE_UNUSED)
 {
 	if (signo == SIGTOTEST && info->si_value.sival_int == VALTOTEST) {
 		printf

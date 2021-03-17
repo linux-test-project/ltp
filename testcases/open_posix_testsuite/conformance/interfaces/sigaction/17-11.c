@@ -27,7 +27,7 @@
 
 static volatile sig_atomic_t wakeup = 1;
 
-static void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGQUIT\n");
 	wakeup++;

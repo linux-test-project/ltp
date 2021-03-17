@@ -44,7 +44,7 @@ static int thread_state;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-static void *fn_rd_1(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_rd_1(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc = 0;
 
@@ -67,7 +67,7 @@ static void *fn_rd_1(void *arg LTP_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-static void *fn_rd_2(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_rd_2(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	thread_state = ENTERED_THREAD;

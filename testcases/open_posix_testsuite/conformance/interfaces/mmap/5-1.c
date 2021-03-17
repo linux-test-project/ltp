@@ -95,7 +95,7 @@ int main(void)
 	int fd, fail = 0;
 	unsigned int i;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_5_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_5_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

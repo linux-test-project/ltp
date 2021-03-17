@@ -62,7 +62,7 @@ static int do_test(int num_aiocbs, size_t buf_size)
 	int err = PTS_UNRESOLVED;
 	int i;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_aio_suspend_9_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_suspend_9_1");
 	unlink(tmpfname);
 
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);

@@ -26,7 +26,7 @@ static volatile int after_cancel;
 static volatile int thread_sleep_time;
 static sem_t sem;
 
-static void cleanup_func(LTP_ATTRIBUTE_UNUSED void *unused)
+static void cleanup_func(PTS_ATTRIBUTE_UNUSED void *unused)
 {
 	struct timespec cleanup_ts = {0, SLEEP_MS*1000000};
 	do {
@@ -35,7 +35,7 @@ static void cleanup_func(LTP_ATTRIBUTE_UNUSED void *unused)
 	} while (after_cancel == 0 && thread_sleep_time < TIMEOUT_MS);
 }
 
-static void *thread_func(LTP_ATTRIBUTE_UNUSED void *unused)
+static void *thread_func(PTS_ATTRIBUTE_UNUSED void *unused)
 {
 	int waited_for_cancel_ms = 0;
 	struct timespec cancel_wait_ts = {0, SLEEP_MS*1000000};

@@ -95,7 +95,7 @@ int main(void)
  * f1()
  *
  * *************************/
-static void *f1(void *parm LTP_ATTRIBUTE_UNUSED)
+static void *f1(void *parm PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec timeout;
 

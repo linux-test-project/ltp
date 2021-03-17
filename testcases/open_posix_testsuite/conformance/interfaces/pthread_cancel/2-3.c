@@ -37,7 +37,7 @@ static struct timespec destructor_time, cleanup_time;
 /*
    Destructor for the Thread Specific Data
  */
-static void destructor(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void destructor(void *tmp PTS_ATTRIBUTE_UNUSED)
 {
 	clock_gettime(CLOCK_REALTIME, &destructor_time);
 	destructor_flag = 1;
@@ -53,7 +53,7 @@ static void cleanup_function()
 }
 
 /* Thread's function. */
-static void *a_thread_func(void *tmp LTP_ATTRIBUTE_UNUSED)
+static void *a_thread_func(void *tmp PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_key_t key;
 	int value = 1;

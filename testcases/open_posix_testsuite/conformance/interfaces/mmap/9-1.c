@@ -49,7 +49,7 @@ int main(void)
 	size = total_size;
 
 	/* Create tmp file */
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_9_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_9_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

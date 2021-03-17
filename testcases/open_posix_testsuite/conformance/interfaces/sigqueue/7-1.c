@@ -34,8 +34,8 @@
 static int last_signal;
 static volatile int test_failed;
 
-static void myhandler(int signo, siginfo_t *info LTP_ATTRIBUTE_UNUSED,
-	void *context LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo, siginfo_t *info PTS_ATTRIBUTE_UNUSED,
+	void *context PTS_ATTRIBUTE_UNUSED)
 {
 	printf("%d, ", signo);
 	if (last_signal >= signo) {

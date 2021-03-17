@@ -40,7 +40,7 @@ int main(void)
 	size_t len = total_size;
 	int fd, err = 0;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_27_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_27_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

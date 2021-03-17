@@ -20,13 +20,13 @@
 
 static int SIGTRAP_count = 0;
 
-static void SIGTRAP_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGTRAP_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	SIGTRAP_count++;
 	printf("Caught SIGTRAP\n");
 }
 
-static void SIGURG_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGURG_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGURG\n");
 	raise(SIGTRAP);

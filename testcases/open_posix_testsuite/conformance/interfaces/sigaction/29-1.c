@@ -86,8 +86,8 @@
 
 static volatile sig_atomic_t latest;
 
-static void handler(int sig LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
-	void *context LTP_ATTRIBUTE_UNUSED)
+static void handler(int sig PTS_ATTRIBUTE_UNUSED, siginfo_t *info,
+	void *context PTS_ATTRIBUTE_UNUSED)
 {
 	if (info->si_signo != SIGRTMAX) {
 		output("Received unexpected signal %d\n", info->si_signo);

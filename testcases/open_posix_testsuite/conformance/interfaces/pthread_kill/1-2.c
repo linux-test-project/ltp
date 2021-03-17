@@ -93,7 +93,7 @@ static void handler(int sig)
 }
 
 /* Thread function */
-static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rebours = 3;
 

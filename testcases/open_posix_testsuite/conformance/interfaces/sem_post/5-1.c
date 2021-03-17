@@ -35,7 +35,7 @@
 
 static sem_t *gsemp;
 
-static void sighdl(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl(int sig PTS_ATTRIBUTE_UNUSED)
 {
 	return;
 }

@@ -67,7 +67,7 @@ static void child_process(int id)
 	}
 }
 
-static void sigterm_handler(int signum LTP_ATTRIBUTE_UNUSED)
+static void sigterm_handler(int signum PTS_ATTRIBUTE_UNUSED)
 {
 	close(STDOUT);
 	close(the_pipe[0]);

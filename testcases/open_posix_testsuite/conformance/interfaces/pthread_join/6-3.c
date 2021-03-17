@@ -96,7 +96,7 @@ static void *sendsig(void *arg)
 
 /* Next are the signal handlers. */
 /* This one is registered for signal SIGUSR1 */
-static void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl1(int sig PTS_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig1))
@@ -105,7 +105,7 @@ static void sighdl1(int sig LTP_ATTRIBUTE_UNUSED)
 }
 
 /* This one is registered for signal SIGUSR2 */
-static void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
+static void sighdl2(int sig PTS_ATTRIBUTE_UNUSED)
 {
 #ifdef WITH_SYNCHRO
 	if (sem_post(&semsig2))
@@ -113,13 +113,13 @@ static void sighdl2(int sig LTP_ATTRIBUTE_UNUSED)
 #endif
 }
 
-static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	sched_yield();
 	return NULL;
 }
 
-static void *test(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *test(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	pthread_t child;

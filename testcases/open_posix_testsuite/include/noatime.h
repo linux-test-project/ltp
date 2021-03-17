@@ -86,7 +86,7 @@ int mounted_noatime(const char *path)
 	return (_statfs.f_flags & MNT_NOATIME);
 }
 #else
-int mounted_noatime(const char *path LTP_ATTRIBUTE_UNUSED)
+int mounted_noatime(const char *path PTS_ATTRIBUTE_UNUSED)
 {
 	return 0;
 }

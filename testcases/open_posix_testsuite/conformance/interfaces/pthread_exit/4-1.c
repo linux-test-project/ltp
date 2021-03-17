@@ -103,7 +103,7 @@ static void at2(void)
 }
 
 /* Thread routine */
-static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 

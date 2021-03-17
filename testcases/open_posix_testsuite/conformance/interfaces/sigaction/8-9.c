@@ -20,13 +20,13 @@
 
 static int SIGILL_count = 0;
 
-static void SIGILL_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGILL_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	SIGILL_count++;
 	printf("Caught SIGILL\n");
 }
 
-static void SIGINT_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGINT_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGINT\n");
 	raise(SIGILL);

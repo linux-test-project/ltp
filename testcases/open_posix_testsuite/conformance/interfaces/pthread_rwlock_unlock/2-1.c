@@ -40,7 +40,7 @@ static int thread_state;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-static void *fn_wr(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_wr(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc = 0;
 

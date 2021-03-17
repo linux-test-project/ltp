@@ -20,13 +20,13 @@
 
 static int SIGPROF_count = 0;
 
-static void SIGPROF_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGPROF_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	SIGPROF_count++;
 	printf("Caught SIGPROF\n");
 }
 
-static void SIGSYS_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGSYS_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGSYS\n");
 	raise(SIGPROF);

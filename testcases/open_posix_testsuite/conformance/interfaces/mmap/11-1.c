@@ -50,7 +50,7 @@ int main(void)
 	total_size = 3 * page_size;
 	size = page_size;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

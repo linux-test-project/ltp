@@ -157,7 +157,7 @@ static struct {
 	int nb;
 } children;
 
-static void *child(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *child(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	int timed;
@@ -228,7 +228,7 @@ static void *child(void *arg LTP_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-static void *timer(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *timer(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	unsigned int to = TIMEOUT;
 	do {

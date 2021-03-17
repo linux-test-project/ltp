@@ -32,7 +32,7 @@ static sem_t r_lock, w_lock;
 static int reader_count = 0;
 static int data = 0;
 
-static int read_fun(int ID LTP_ATTRIBUTE_UNUSED)
+static int read_fun(int ID PTS_ATTRIBUTE_UNUSED)
 {
 	printf("read the board, data=%d \n", data);
 	return 0;

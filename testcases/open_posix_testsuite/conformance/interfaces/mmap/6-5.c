@@ -41,7 +41,7 @@ int main(void)
 	int fd;
 
 	/* Create the file */
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_6_5");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_6_5");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

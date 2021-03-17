@@ -74,7 +74,7 @@ int main(void)
 	sigaction(SIGBUS, &sa, NULL);
 
 	/* Create tmp file */
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_2");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_2");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

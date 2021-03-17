@@ -48,8 +48,8 @@ int main(void)
 
 	char *ch;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_13_1");
-	if (mounted_noatime(ltp_get_tmpdir()) == 1) {
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_13_1");
+	if (mounted_noatime(pts_get_tmpdir()) == 1) {
 		printf("UNTESTED: The tmpdir is mounted noatime\n");
 		return PTS_UNTESTED;
 	}

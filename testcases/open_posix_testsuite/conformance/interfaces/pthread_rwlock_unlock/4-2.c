@@ -41,7 +41,7 @@ static int rc, thread_state;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-static void *fn_unlk(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_unlk(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	thread_state = ENTERED_THREAD;
 	printf("un_thread: unlock read lock\n");

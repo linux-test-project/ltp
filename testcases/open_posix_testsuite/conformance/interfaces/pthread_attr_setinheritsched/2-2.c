@@ -36,7 +36,7 @@
 
 static const long int policy = SCHED_FIFO;
 static const long int old_policy = SCHED_OTHER;
-static void *thread_func(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *thread_func(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	int new_policy;

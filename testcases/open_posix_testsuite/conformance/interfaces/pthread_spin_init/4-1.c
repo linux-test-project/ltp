@@ -33,7 +33,7 @@
 static pthread_spinlock_t spinlock;
 static int pshared;
 
-static void *fn_chld(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_chld(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	/* child: initialize a spin lock being locked by main thread */

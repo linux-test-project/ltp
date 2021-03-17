@@ -46,7 +46,7 @@ static int expired;
 #define ENTERED_THREAD 2
 #define EXITING_THREAD 3
 
-static void *fn(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec abs_timeout;
 	int rc;

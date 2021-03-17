@@ -54,7 +54,7 @@ int main(void)
 
 	sprintf(qname, "/mq_open_16-1_%d", getpid());
 
-	LTP_GET_TMP_FILENAME(fname, "pts_mq_open_16_1");
+	PTS_GET_TMP_FILENAME(fname, "pts_mq_open_16_1");
 	unlink(fname);
 	fd = open(fname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

@@ -34,7 +34,7 @@
 
 static sem_t *gsemp;
 
-static void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	if (sem_post(gsemp) == -1) {
 		perror(ERROR_PREFIX "sem_post");

@@ -47,7 +47,7 @@ static int thread_state;
 #define PASSED_RLOCK2 4
 #define EXITING_THREAD 5
 
-static void *fn_rd(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_rd(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc = 0;
 

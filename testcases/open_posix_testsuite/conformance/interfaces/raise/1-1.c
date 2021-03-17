@@ -22,7 +22,7 @@
 
 #define SIGTOTEST SIGABRT
 
-static void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Caught signal being tested!\n");
 	printf("Test PASSED\n");

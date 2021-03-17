@@ -50,8 +50,8 @@
 static volatile int countdown = BUF_NB;
 static volatile int canceled;
 
-static void sig_handler(int signum LTP_ATTRIBUTE_UNUSED, siginfo_t *info,
-    void *context LTP_ATTRIBUTE_UNUSED)
+static void sig_handler(int signum PTS_ATTRIBUTE_UNUSED, siginfo_t *info,
+    void *context PTS_ATTRIBUTE_UNUSED)
 {
 	struct aiocb *a = info->si_value.sival_ptr;
 
@@ -78,7 +78,7 @@ int main(void)
 		return PTS_UNSUPPORTED;
 	}
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_aio_cancel_3_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_cancel_3_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

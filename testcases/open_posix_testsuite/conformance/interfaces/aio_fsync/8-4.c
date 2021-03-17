@@ -36,7 +36,7 @@ int main(void)
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_aio_fsync_8_4");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_fsync_8_4");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

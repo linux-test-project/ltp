@@ -58,8 +58,8 @@ int tst_process_state_wait3(pid_t pid, const char state,
 	return 1;
 }
 #else
-int tst_process_state_wait3(pid_t pid LTP_ATTRIBUTE_UNUSED,
-	const char state LTP_ATTRIBUTE_UNUSED, long maxwait_s)
+int tst_process_state_wait3(pid_t pid PTS_ATTRIBUTE_UNUSED,
+	const char state PTS_ATTRIBUTE_UNUSED, long maxwait_s)
 {
 	struct timespec maxwait_ts;
 

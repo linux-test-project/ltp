@@ -40,7 +40,7 @@ int main(void)
 	size_t size = 1024;
 	int fd;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_6_4");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_6_4");
 
 	/* Create a tmp file */
 	unlink(tmpfname);

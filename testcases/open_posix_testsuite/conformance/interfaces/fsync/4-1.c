@@ -35,7 +35,7 @@ int main(void)
 	int total_size = 1024;
 	int fd;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_fsync_4_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_fsync_4_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

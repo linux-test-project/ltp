@@ -31,7 +31,7 @@ static struct testdata {
 static int start_num = 0;
 static int waken_num = 0;
 
-static void *thr_func(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *thr_func(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	struct timespec timeout;

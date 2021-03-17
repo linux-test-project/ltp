@@ -167,7 +167,7 @@ struct testdata {
 static struct testdata *td;
 
 /* Child function (either in a thread or in a process) */
-static void *child(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *child(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	struct timespec ts;
@@ -237,7 +237,7 @@ static children_t *children = &sentinel;
 
 static sem_t sem_tmr;
 
-static void *timer(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *timer(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	unsigned int to = TIMEOUT;
 	int ret;

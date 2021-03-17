@@ -34,7 +34,7 @@
 static int handler_count = 0;
 static int handler_error = 0;
 
-static void handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	static int inside_handler = 0;
 

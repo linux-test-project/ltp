@@ -155,7 +155,7 @@ static void chi3(void)
 }
 
 /* Thread function */
-static void *threaded(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t child, ctl;

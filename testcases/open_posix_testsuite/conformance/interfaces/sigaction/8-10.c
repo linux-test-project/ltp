@@ -20,13 +20,13 @@
 
 static int SIGINT_count = 0;
 
-static void SIGINT_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGINT_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	SIGINT_count++;
 	printf("Caught SIGINT\n");
 }
 
-static void SIGPIPE_handler(int signo LTP_ATTRIBUTE_UNUSED)
+static void SIGPIPE_handler(int signo PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Caught SIGPIPE\n");
 	raise(SIGINT);

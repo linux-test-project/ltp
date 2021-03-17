@@ -93,7 +93,7 @@ int main(void)
 }
 
 static int parent_process(char *qname, int read_pipe, int write_pipe,
-	pid_t child_pid LTP_ATTRIBUTE_UNUSED)
+	pid_t child_pid PTS_ATTRIBUTE_UNUSED)
 {
 	mqd_t queue;
 	struct sigevent se;

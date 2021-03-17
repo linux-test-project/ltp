@@ -32,7 +32,7 @@ static pthread_key_t key;
 static int dest_cnt;
 
 /* Destructor function */
-static void dest_func(void *p LTP_ATTRIBUTE_UNUSED)
+static void dest_func(void *p PTS_ATTRIBUTE_UNUSED)
 {
 	dest_cnt++;
 }

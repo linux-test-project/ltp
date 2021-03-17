@@ -31,7 +31,7 @@
 
 static pthread_spinlock_t spinlock;
 
-static void *fn_chld(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *fn_chld(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int rc = 0;
 

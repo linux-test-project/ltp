@@ -37,7 +37,7 @@ int main(void)
 	int flag = ~0;
 	int fd;
 
-	LTP_GET_TMP_FILENAME(tmpfname, "pts_mmap_21_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_21_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

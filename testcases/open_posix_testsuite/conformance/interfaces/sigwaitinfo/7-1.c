@@ -32,9 +32,9 @@
 
 static int counter;
 
-static void myhandler(int signo LTP_ATTRIBUTE_UNUSED,
-	siginfo_t *info LTP_ATTRIBUTE_UNUSED,
-	void *context LTP_ATTRIBUTE_UNUSED)
+static void myhandler(int signo PTS_ATTRIBUTE_UNUSED,
+	siginfo_t *info PTS_ATTRIBUTE_UNUSED,
+	void *context PTS_ATTRIBUTE_UNUSED)
 {
 	counter++;
 }
