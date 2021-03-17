@@ -98,12 +98,6 @@ static void setup(void)
 {
 	char bd_path[100];
 
-	if (tst_fs_type(".") == TST_TMPFS_MAGIC)
-		tst_brk(TCONF, "tmpfd doesn't support O_DIRECT flag");
-
-	if (tst_fs_type(".") == TST_OVERLAYFS_MAGIC)
-		tst_brk(TCONF, "device isn't properly detected in overlay fs");
-
 	dev_num = tst_find_free_loopdev(dev_path, sizeof(dev_path));
 	if (dev_num < 0)
 		tst_brk(TBROK, "Failed to find free loop device");
@@ -151,6 +145,11 @@ static struct tst_test test = {
 	.test_all = verify_ioctl_loop,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.skip_filesystems = (const char *const []) {
+		"tmpfs",
+		"overlayfs",
+		NULL
+	},
 	.needs_drivers = (const char *const []) {
 		"loop",
 		NULL

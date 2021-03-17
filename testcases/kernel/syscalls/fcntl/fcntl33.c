@@ -81,17 +81,6 @@ static void setup(void)
 	SAFE_FILE_SCANF(PATH_LS_BRK_T, "%d", &ls_brk_t);
 	SAFE_FILE_PRINTF(PATH_LS_BRK_T, "%d", 45);
 
-	switch ((type = tst_fs_type("."))) {
-	case TST_NFS_MAGIC:
-	case TST_RAMFS_MAGIC:
-	case TST_TMPFS_MAGIC:
-		tst_brk(TCONF,
-			"Cannot do fcntl(F_SETLEASE, F_WRLCK) on %s filesystem",
-			tst_fs_type_name(type));
-	default:
-		break;
-	}
-
 	SAFE_TOUCH("file", FILE_MODE, NULL);
 
 	sigemptyset(&newset);
@@ -230,5 +219,11 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(test_cases),
 	.setup = setup,
 	.test = do_test,
-	.cleanup = cleanup
+	.cleanup = cleanup,
+	.skip_filesystems = (const char *const []) {
+		"tmpfs",
+		"ramfs",
+		"nfs",
+		NULL
+	},
 };
