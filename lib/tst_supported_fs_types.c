@@ -46,7 +46,22 @@ static int has_mkfs(const char *fs_type)
 	return 1;
 }
 
-static int has_kernel_support(const char *fs_type, int flags)
+int tst_fs_in_skiplist(const char *fs_type, const char *const *skiplist)
+{
+	unsigned int i;
+
+	if (!skiplist)
+		return 0;
+
+	for (i = 0; skiplist[i]; i++) {
+		if (!strcmp(fs_type, skiplist[i]))
+			return 1;
+	}
+
+	return 0;
+}
+
+static enum tst_fs_impl has_kernel_support(const char *fs_type)
 {
 	static int fuse_supported = -1;
 	const char *tmpdir = getenv("TMPDIR");
@@ -59,7 +74,7 @@ static int has_kernel_support(const char *fs_type, int flags)
 	mount("/dev/zero", tmpdir, fs_type, 0, NULL);
 	if (errno != ENODEV) {
 		tst_res(TINFO, "Kernel supports %s", fs_type);
-		return 1;
+		return TST_FS_KERNEL;
 	}
 
 	/* Is FUSE supported by kernel? */
@@ -74,7 +89,7 @@ static int has_kernel_support(const char *fs_type, int flags)
 	}
 
 	if (!fuse_supported)
-		return 0;
+		return TST_FS_UNSUPPORTED;
 
 	/* Is FUSE implementation installed? */
 	sprintf(buf, "mount.%s >/dev/null 2>&1", fs_type);
@@ -82,29 +97,52 @@ static int has_kernel_support(const char *fs_type, int flags)
 	ret = tst_system(buf);
 	if (WEXITSTATUS(ret) == 127) {
 		tst_res(TINFO, "Filesystem %s is not supported", fs_type);
-		return 0;
-	}
-
-	if (flags & TST_FS_SKIP_FUSE) {
-		tst_res(TINFO, "Skipping FUSE as requested by the test");
-		return 0;
+		return TST_FS_UNSUPPORTED;
 	}
 
 	tst_res(TINFO, "FUSE does support %s", fs_type);
-	return 1;
+	return TST_FS_FUSE;
 }
 
-int tst_fs_is_supported(const char *fs_type, int flags)
+enum tst_fs_impl tst_fs_is_supported(const char *fs_type)
 {
-	return has_kernel_support(fs_type, flags) && has_mkfs(fs_type);
+	enum tst_fs_impl ret;
+
+	ret = has_kernel_support(fs_type);
+	if (!ret)
+		return TST_FS_UNSUPPORTED;
+
+	if (has_mkfs(fs_type))
+		return ret;
+
+	return TST_FS_UNSUPPORTED;
 }
 
-const char **tst_get_supported_fs_types(int flags)
+const char **tst_get_supported_fs_types(const char *const *skiplist)
 {
 	unsigned int i, j = 0;
+	int skip_fuse;
+	enum tst_fs_impl sup;
+
+	skip_fuse = tst_fs_in_skiplist("fuse", skiplist);
 
 	for (i = 0; fs_type_whitelist[i]; i++) {
-		if (tst_fs_is_supported(fs_type_whitelist[i], flags))
+		if (tst_fs_in_skiplist(fs_type_whitelist[i], skiplist)) {
+			tst_res(TINFO, "Skipping %s as requested by the test",
+				fs_type_whitelist[i]);
+			continue;
+		}
+
+		sup = tst_fs_is_supported(fs_type_whitelist[i]);
+
+		if (skip_fuse && sup == TST_FS_FUSE) {
+			tst_res(TINFO,
+				"Skipping FUSE based %s as requested by the test",
+				fs_type_whitelist[i]);
+			continue;
+		}
+
+		if (sup)
 			fs_types[j++] = fs_type_whitelist[i];
 	}
 
