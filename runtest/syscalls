@@ -44,6 +44,7 @@ bpf_prog03 bpf_prog03
 bpf_prog04 bpf_prog04
 
 brk01 brk01
+brk02 brk02
 
 capget01 capget01
 capget02 capget02
@@ -492,6 +493,7 @@ getrlimit02 getrlimit02
 getrlimit03 getrlimit03
 
 get_mempolicy01 get_mempolicy01
+get_mempolicy02 get_mempolicy02
 get_robust_list01 get_robust_list01
 
 getrusage01 getrusage01
