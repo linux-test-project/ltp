@@ -1,0 +1,57 @@
+# Maintainer Patch Review Checklist
+
+Patchset should be tested locally and ideally also in maintainer's fork in
+https://travis-ci.org/[Travis CI].
+
+NOTE: Travis does only build testing, passing the CI means only that the
+      test compiles fine on variety of different distributions and
+      releases.
+
+The test should be executed at least once locally and should PASS as well.
+
+Commit messages should have
+
+* Author's `Signed-off-by` tag
+* Committer's `Reviewed-by` or `Signed-off-by` tag
+* Check also mailing lists for other reviewers / testers tags, notes and failure reports
+* `Fixes: hash` if it fixes particular LTP commit
+* `Fixes: #N` if it fixes github issue number N, so it's automatically closed
+
+After patch is accepted or rejected, set correct state and archive in
+https://patchwork.ozlabs.org/project/ltp/list/[LTP patchwork instance].
+
+Also update LTP WIKI (git URL https://github.com/linux-test-project/ltp.wiki.git)
+if touch `doc/*.txt`.
+
+## New tests
+New test should
+
+* Have a record in runtest file
+* Test should work fine with more than one iteration
+  (e.g. run with `-i 100`)
+* Have a brief description
+* License: the default license for new tests is GPL v2 or later, use
+  GPL-2.0-or-later; the licence for test (e.g. GPL-2.0) should not change
+  unless test is completely rewritten
+* Old copyrights should be kept unless test is completely rewritten
+
+### C tests
+* Use new https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#22-writing-a-test-in-c[C API]
+* Test binaries are added into corresponding '.gitignore' files
+* Check coding style with
+  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/scripts/checkpatch.pl[checkpatch.pl]
+  (more in https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#131-c-coding-style[C coding style])
+* Docparse documentation
+* If a test is a regression test it should include tags
+  (more in https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#2238-test-tags[Test tags])
+
+### Shell tests
+* Use new https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#23-writing-a-testcase-in-shell[shell API]
+* Check coding style with
+  https://salsa.debian.org/debian/devscripts/raw/master/scripts/checkbashisms.pl[checkbashism.pl]
+  (more in https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#132-shell-coding-style[Shell coding style])
+* If a test is a regression test it should include related kernel or glibc commits as a comment
+
+## LTP library
+For patchset touching library please check also
+https://github.com/linux-test-project/ltp/wiki/LTP-Library-API-Writing-Guidelines[LTP Library API Writing Guidelines].
