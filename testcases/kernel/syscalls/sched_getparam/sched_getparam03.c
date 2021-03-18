@@ -3,7 +3,7 @@
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  */
 
- /*\
+/*\
  * [Description]
  *
  * Verify that:
@@ -14,7 +14,7 @@
  * the parameter pid is an invalid value (-1)
  * - sched_getparam(2) returns -1 and sets errno to EINVAL if the
  * parameter p is an invalid address
- \*/
+ */
 
 #include <errno.h>
 #include <sched.h>
