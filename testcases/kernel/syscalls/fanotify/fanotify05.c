@@ -21,11 +21,14 @@
 #include <string.h>
 #include <sys/syscall.h>
 #include "tst_test.h"
+#include "tst_timer.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"
 
 #define MOUNT_PATH "fs_mnt"
+#define FNAME_PREFIX "fname_"
+#define PATH_PREFIX MOUNT_PATH "/" FNAME_PREFIX
 
 /* Currently this is fixed in kernel... */
 #define MAX_EVENTS 16384
@@ -36,19 +39,35 @@ static int fd, fd_notify;
 
 struct fanotify_event_metadata event;
 
-void test01(void)
+static void generate_events(int num_files)
 {
+	long long elapsed_ms;
 	int i;
-	int len;
 
-	/*
-	 * generate events
-	 */
-	for (i = 0; i < MAX_EVENTS + 1; i++) {
-		sprintf(fname, MOUNT_PATH"/fname_%d", i);
+	tst_timer_start(CLOCK_MONOTONIC);
+
+	for (i = 0; i < num_files; i++) {
+		sprintf(fname, PATH_PREFIX "%d", i);
 		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0644);
 		SAFE_CLOSE(fd);
 	}
+
+	tst_timer_stop();
+
+	elapsed_ms = tst_timer_elapsed_ms();
+
+	tst_res(TINFO, "Created %d files in %llims", i, elapsed_ms);
+}
+
+void test01(void)
+{
+	int len, nevents = 0;
+	int num_files = MAX_EVENTS + 1;
+
+	/*
+	 * Generate events on unique files so they won't be merged
+	 */
+	generate_events(num_files);
 
 	while (1) {
 		/*
@@ -56,17 +75,16 @@ void test01(void)
 		 */
 		len = read(fd_notify, &event, sizeof(event));
 		if (len < 0) {
-			if (errno == -EAGAIN) {
-				tst_res(TFAIL, "Overflow event not "
-					"generated!\n");
-				break;
+			if (errno != EAGAIN) {
+				tst_brk(TBROK | TERRNO,
+					"read of notification event failed");
 			}
-			tst_brk(TBROK | TERRNO,
-				"read of notification event failed");
+			tst_res(TFAIL, "Overflow event not generated!\n");
 			break;
 		}
 		if (event.fd != FAN_NOFD)
 			close(event.fd);
+		nevents++;
 
 		/*
 		 * check events
@@ -92,12 +110,12 @@ void test01(void)
 				break;
 			}
 			tst_res(TPASS,
-				"got event: mask=%llx pid=%u fd=%d",
-				(unsigned long long)event.mask,
+				"Got an overflow event: pid=%u fd=%d",
 				(unsigned)event.pid, event.fd);
-				break;
+			break;
 		}
 	}
+	tst_res(TINFO, "Got %d events", nevents);
 }
 
 static void setup(void)
