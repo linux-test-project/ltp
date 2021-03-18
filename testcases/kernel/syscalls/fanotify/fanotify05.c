@@ -61,7 +61,7 @@ static void event_res(struct fanotify_event_metadata *event, int i)
 	}
 }
 
-static void generate_events(int num_files)
+static void generate_events(int open_flags, int num_files)
 {
 	long long elapsed_ms;
 	int i;
@@ -70,7 +70,7 @@ static void generate_events(int num_files)
 
 	for (i = 0; i < num_files; i++) {
 		sprintf(fname, PATH_PREFIX "%d", i);
-		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0644);
+		fd = SAFE_OPEN(fname, open_flags, 0644);
 		SAFE_CLOSE(fd);
 	}
 
@@ -78,18 +78,24 @@ static void generate_events(int num_files)
 
 	elapsed_ms = tst_timer_elapsed_ms();
 
-	tst_res(TINFO, "Created %d files in %llims", i, elapsed_ms);
+	tst_res(TINFO, "%s %d files in %llims",
+		(open_flags & O_CREAT) ? "Created" : "Opened", i, elapsed_ms);
 }
 
 void test01(void)
 {
-	int len, nevents = 0;
+	int len, nevents = 0, got_overflow = 0;
 	int num_files = MAX_EVENTS + 1;
 
 	/*
 	 * Generate events on unique files so they won't be merged
 	 */
-	generate_events(num_files);
+	generate_events(O_RDWR | O_CREAT, num_files);
+
+	/*
+	 * Generate more events on the same files that me be merged
+	 */
+	generate_events(O_RDONLY, num_files);
 
 	while (1) {
 		/*
@@ -101,7 +107,8 @@ void test01(void)
 				tst_brk(TBROK | TERRNO,
 					"read of notification event failed");
 			}
-			tst_res(TFAIL, "Overflow event not generated!\n");
+			if (!got_overflow)
+				tst_res(TFAIL, "Overflow event not generated!\n");
 			break;
 		}
 		if (event.fd != FAN_NOFD) {
@@ -129,10 +136,11 @@ void test01(void)
 			break;
 		}
 		if (event.mask == FAN_Q_OVERFLOW) {
-			if (event.fd != FAN_NOFD) {
+			if (got_overflow || event.fd != FAN_NOFD) {
 				tst_res(TFAIL,
-					"invalid overflow event: "
+					"%s overflow event: "
 					"mask=%llx pid=%u fd=%d",
+					got_overflow ? "unexpected" : "invalid",
 					(unsigned long long)event.mask,
 					(unsigned)event.pid,
 					event.fd);
@@ -141,7 +149,7 @@ void test01(void)
 			tst_res(TPASS,
 				"Got an overflow event: pid=%u fd=%d",
 				(unsigned)event.pid, event.fd);
-			break;
+			got_overflow = 1;
 		}
 	}
 	tst_res(TINFO, "Got %d events", nevents);
