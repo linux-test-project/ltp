@@ -207,7 +207,7 @@ static void setup(void)
 	SAFE_FILE_LINES_SCANF(TOTAL_HP_PATH, "%ld", &og_total_pages);
 	sprintf(buf, "%ld", og_total_pages + 1);
 
-	fd = open(TOTAL_HP_PATH, O_RDWR | O_TRUNC);
+	fd = SAFE_OPEN(TOTAL_HP_PATH, O_RDWR | O_TRUNC);
 
 	if (write(fd, buf, strlen(buf)) == -1)
 		tst_brk(TCONF | TERRNO,
@@ -233,7 +233,7 @@ static void cleanup(void)
 
 	sprintf(buf, "%ld", og_total_pages);
 
-	fd = open(TOTAL_HP_PATH, O_RDWR | O_TRUNC);
+	fd = SAFE_OPEN(TOTAL_HP_PATH, O_RDWR | O_TRUNC);
 
 	if (write(fd, buf, strlen(buf)) == -1)
 		tst_brk(TCONF | TERRNO, "Clean-up failed: write() failed");

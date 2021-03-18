@@ -55,9 +55,7 @@ static void setup(void)
 	if (fd == -1)
 		tst_brk(TBROK | TTERRNO, "fsopen() failed");
 
-	temp_fd = open("testfile", O_RDWR | O_CREAT, 01444);
-	if (temp_fd == -1)
-		tst_brk(TBROK, "Can't obtain temp_fd, open() failed");
+	temp_fd = SAFE_OPEN("testfile", O_RDWR | O_CREAT, 01444);
 }
 
 static void cleanup(void)

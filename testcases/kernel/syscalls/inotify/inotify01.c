@@ -52,10 +52,7 @@ void verify_inotify(void)
 	event_set[test_cnt] = IN_ATTRIB;
 	test_cnt++;
 
-	if ((fd = open(fname, O_RDONLY)) == -1) {
-		tst_brk(TBROK | TERRNO,
-			"open(%s, O_RDWR|O_CREAT,0700) failed", fname);
-	}
+	fd = SAFE_OPEN(fname, O_RDONLY);
 	event_set[test_cnt] = IN_OPEN;
 	test_cnt++;
 
@@ -70,10 +67,7 @@ void verify_inotify(void)
 	event_set[test_cnt] = IN_CLOSE_NOWRITE;
 	test_cnt++;
 
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1) {
-		tst_brk(TBROK,
-			"open(%s, O_RDWR|O_CREAT,0700) failed", fname);
-	}
+	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 	event_set[test_cnt] = IN_OPEN;
 	test_cnt++;
 
