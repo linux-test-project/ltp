@@ -33,8 +33,12 @@
 #define FNAME_PREFIX_LEN 6
 #define PATH_PREFIX MOUNT_PATH "/" FNAME_PREFIX
 
-/* Currently this is fixed in kernel... */
-#define MAX_EVENTS 16384
+#define SYSFS_MAX_EVENTS "/proc/sys/fs/fanotify/max_queued_events"
+
+/* In older kernels this limit is fixed in kernel */
+#define DEFAULT_MAX_EVENTS 16384
+
+static int max_events;
 
 static struct tcase {
 	const char *tname;
@@ -100,7 +104,7 @@ static void test_fanotify(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 	int len, nevents = 0, got_overflow = 0;
-	int num_files = MAX_EVENTS + 1;
+	int num_files = max_events + 1;
 	int expect_overflow = !(tc->init_flags & FAN_UNLIMITED_QUEUE);
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
@@ -186,6 +190,13 @@ static void setup(void)
 	/* Check for kernel fanotify support */
 	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 	SAFE_CLOSE(fd);
+
+	/* In older kernels this limit is fixed in kernel */
+	if (access(SYSFS_MAX_EVENTS, F_OK) && errno == ENOENT)
+		max_events = DEFAULT_MAX_EVENTS;
+	else
+		SAFE_FILE_SCANF(SYSFS_MAX_EVENTS, "%d", &max_events);
+	tst_res(TINFO, "max_queued_events=%d", max_events);
 }
 
 static void cleanup(void)
