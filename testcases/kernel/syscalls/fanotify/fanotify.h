@@ -125,6 +125,9 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 #define FAN_OPEN_EXEC_PERM	0x00040000
 #endif
 
+/* Flags required for unprivileged user group */
+#define FANOTIFY_REQUIRED_USER_INIT_FLAGS    (FAN_REPORT_FID)
+
 /*
  * FAN_ALL_PERM_EVENTS has been deprecated, so any new permission events
  * are not to be added to it. To cover the instance where a new permission
