@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <libgen.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/syscall.h>
 #include "tst_test.h"
@@ -28,6 +30,7 @@
 
 #define MOUNT_PATH "fs_mnt"
 #define FNAME_PREFIX "fname_"
+#define FNAME_PREFIX_LEN 6
 #define PATH_PREFIX MOUNT_PATH "/" FNAME_PREFIX
 
 /* Currently this is fixed in kernel... */
@@ -35,9 +38,28 @@
 
 #define BUF_SIZE 256
 static char fname[BUF_SIZE];
+static char symlnk[BUF_SIZE];
+static char fdpath[BUF_SIZE];
 static int fd, fd_notify;
 
 struct fanotify_event_metadata event;
+
+static void event_res(struct fanotify_event_metadata *event, int i)
+{
+	int len = 0;
+	const char *filename;
+	sprintf(symlnk, "/proc/self/fd/%d", event->fd);
+	len = readlink(symlnk, fdpath, sizeof(fdpath));
+	if (len < 0)
+		len = 0;
+	fdpath[len] = 0;
+	filename = basename(fdpath);
+	if (len > FNAME_PREFIX_LEN && atoi(filename + FNAME_PREFIX_LEN) != i) {
+		tst_res(TFAIL, "Got event #%d out of order filename=%s", i, filename);
+	} else if (i == 0) {
+		tst_res(TINFO, "Got event #%d filename=%s", i, filename);
+	}
+}
 
 static void generate_events(int num_files)
 {
@@ -82,8 +104,15 @@ void test01(void)
 			tst_res(TFAIL, "Overflow event not generated!\n");
 			break;
 		}
-		if (event.fd != FAN_NOFD)
+		if (event.fd != FAN_NOFD) {
+			/*
+			 * Verify that events generated on unique files
+			 * are received by the same order they were generated.
+			 */
+			if (nevents < num_files)
+				event_res(&event, nevents);
 			close(event.fd);
+		}
 		nevents++;
 
 		/*
