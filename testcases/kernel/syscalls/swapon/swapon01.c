@@ -32,18 +32,11 @@ static void cleanup(void);
 char *TCID = "swapon01";
 int TST_TOTAL = 1;
 
-static long fs_type;
-
 static void verify_swapon(void)
 {
 	TEST(ltp_syscall(__NR_swapon, "./swapfile01", 0));
 
 	if (TEST_RETURN == -1) {
-		if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
-			tst_brkm(TCONF, cleanup,
-			         "Swapfile on BTRFS not implemeted");
-			return;
-		}
 		tst_resm(TFAIL | TTERRNO, "Failed to turn on swapfile");
 	} else {
 		tst_resm(TPASS, "Succeeded to turn on swapfile");

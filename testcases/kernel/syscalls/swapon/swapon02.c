@@ -47,7 +47,6 @@ int TST_TOTAL = 4;
 
 static uid_t nobody_uid;
 static int do_swapoff;
-static long fs_type;
 
 static struct test_case_t {
 	char *err_desc;
@@ -79,11 +78,6 @@ static void verify_swapon(struct test_case_t *test)
 			 " Got errno - %s : %s",
 			 test->exp_errval, test->err_desc);
 		return;
-	}
-
-	if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
-		tst_resm(TCONF, "Swapfile on BTRFS not implemeted");
-			return;
 	}
 
 	tst_resm(TFAIL, "swapon(2) failed to produce expected error:"
@@ -138,12 +132,10 @@ static void setup(void)
 	make_swapfile(cleanup, "swapfile01", 0);
 	make_swapfile(cleanup, "alreadyused", 0);
 
-	if (ltp_syscall(__NR_swapon, "alreadyused", 0)) {
-		if (fs_type != TST_BTRFS_MAGIC || errno != EINVAL)
-			tst_resm(TWARN | TERRNO, "swapon(alreadyused) failed");
-	} else {
+	if (ltp_syscall(__NR_swapon, "alreadyused", 0))
+		tst_resm(TWARN | TERRNO, "swapon(alreadyused) failed");
+	else
 		do_swapoff = 1;
-	}
 
 	TEST_PAUSE;
 }

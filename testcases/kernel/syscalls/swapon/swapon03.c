@@ -52,8 +52,6 @@ int TST_TOTAL = 1;
 
 static int swapfiles;
 
-static long fs_type;
-
 int testfiles = 3;
 static struct swap_testfile_t {
 	char *filename;
@@ -215,9 +213,6 @@ static int setup_swap(void)
 			/* turn on the swap file */
 			res = ltp_syscall(__NR_swapon, filename, 0);
 			if (res != 0) {
-				if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL)
-					exit(2);
-
 				if (errno == EPERM) {
 					printf("Successfully created %d "
 					       "swapfiles\n", j);
@@ -233,16 +228,8 @@ static int setup_swap(void)
 	} else
 		waitpid(pid, &status, 0);
 
-	switch (WEXITSTATUS(status)) {
-	case 0:
-	break;
-	case 2:
-		tst_brkm(TCONF, cleanup, "Swapfile on BTRFS not implemeted");
-	break;
-	default:
+	if (WEXITSTATUS(status))
 		tst_brkm(TFAIL, cleanup, "Failed to setup swaps");
-	break;
-	}
 
 	/* Create all needed extra swapfiles for testing */
 	for (j = 0; j < testfiles; j++)
