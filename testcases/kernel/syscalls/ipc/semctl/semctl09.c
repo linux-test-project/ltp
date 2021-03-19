@@ -185,9 +185,14 @@ static void setup(void)
 
 	nobody_uid = ltpuser->pw_uid;
 	root_uid = 0;
+	test_info();
+
+#if !HAVE_DECL_SEM_STAT_ANY
+	if (tst_variant == 1)
+		tst_brk(TCONF, "libc does not support semctl(SEM_STAT_ANY)");
+#endif
 
 	sem_id = SAFE_SEMGET(IPC_PRIVATE, 2, IPC_CREAT | 0600);
-	test_info();
 }
 
 static void cleanup(void)
