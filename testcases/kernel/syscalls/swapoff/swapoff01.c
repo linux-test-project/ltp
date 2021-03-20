@@ -34,8 +34,6 @@ static void verify_swapoff(void);
 char *TCID = "swapoff01";
 int TST_TOTAL = 1;
 
-static long fs_type;
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -56,11 +54,6 @@ int main(int ac, char **av)
 static void verify_swapoff(void)
 {
 	if (ltp_syscall(__NR_swapon, "./swapfile01", 0) != 0) {
-		if (fs_type == TST_BTRFS_MAGIC && errno == EINVAL) {
-			tst_brkm(TCONF, cleanup,
-			         "Swapfiles on BTRFS are not implemented");
-		}
-
 		tst_resm(TBROK, "Failed to turn on the swap file"
 			 ", skipping test iteration");
 		return;
