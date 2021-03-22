@@ -53,14 +53,12 @@ static void generate_events(void)
 	/*
 	 * generate sequence of events
 	 */
-	if ((fd = open(fname, O_RDWR | O_CREAT, 0700)) == -1)
-		exit(1);
+	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 
 	/* Run until killed... */
 	while (1) {
-		lseek(fd, 0, SEEK_SET);
-		if (read(fd, buf, BUF_SIZE) == -1)
-			exit(3);
+		SAFE_LSEEK(fd, 0, SEEK_SET);
+		SAFE_READ(0, fd, buf, BUF_SIZE);
 	}
 }
 
@@ -72,7 +70,7 @@ static void run_children(void)
 		child_pid[i] = SAFE_FORK();
 		if (!child_pid[i]) {
 			/* Child will generate events now */
-			close(fd_notify);
+			SAFE_CLOSE(fd_notify);
 			generate_events();
 			exit(0);
 		}
@@ -159,9 +157,8 @@ static void test_fanotify(void)
 	 * unanswered fanotify events block notification subsystem.
 	 */
 	newfd = setup_instance();
-	if (close(newfd)) {
-		tst_brk(TBROK | TERRNO, "close(%d) failed", newfd);
-	}
+
+	SAFE_CLOSE(newfd);
 
 	tst_res(TPASS, "second instance destroyed successfully");
 
