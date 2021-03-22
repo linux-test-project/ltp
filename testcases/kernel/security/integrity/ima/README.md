@@ -19,9 +19,23 @@ require `IMA_READ_POLICY=y` therefore ignore this option.
 The measuring keys test (first test) in `ima_keys.sh` requires a readable IMA
 policy, as well as a loaded measure policy with `func=KEY_CHECK keyrings=...`.
 
-The certificate import test (second test) require measure policy with
-`func=KEY_CHECK keyrings=key_import_test`. Valid policy for both is in
-`keycheck.policy`.
+The certificate import test (second test) requires measure policy with
+`func=KEY_CHECK keyrings=key_import_test`.
+
+For example of valid policy for both tests on all supported kernels see `keycheck.policy`.
+
+If the IMA key tests are executed on kernel v5.6 through v5.10,
+`ima-buf` template should be specified in the IMA policy rule for
+key measurement, e.g.:
+```
+measure func=KEY_CHECK keyrings=key_import_test template=ima-buf
+```
+
+Executing on kernel v5.11 or later, `template=ima-buf` is optional in the IMA
+policy rule for key measurement, e.g.:
+```
+measure func=KEY_CHECK keyrings=key_import_test
+```
 
 As well as what's required for the IMA tests, key tests require reading the IMA
 policy allowed in the kernel configuration:
