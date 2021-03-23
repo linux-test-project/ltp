@@ -3,10 +3,13 @@
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
  *
  * Started by Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check that fanotify work for children of a directory
  */
+
+/*\
+ * [Description]
+ * Check that fanotify work for children of a directory.
+ */
+
 #define _GNU_SOURCE
 #include "config.h"
 

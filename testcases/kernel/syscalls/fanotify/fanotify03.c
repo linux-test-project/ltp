@@ -3,10 +3,13 @@
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
  *
  * Started by Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check that fanotify permission events work
  */
+
+/*\
+ * [Description]
+ * Check that fanotify permission events work.
+ */
+
 #define _GNU_SOURCE
 #include "config.h"
 

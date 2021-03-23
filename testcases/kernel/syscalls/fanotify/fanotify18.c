@@ -7,7 +7,6 @@
 
 /*\
  * [Description]
- *
  * This set of tests is to ensure that the unprivileged listener feature of
  * fanotify is functioning as expected. The objective this test case file
  * is to validate whether any forbidden flags that are passed by an

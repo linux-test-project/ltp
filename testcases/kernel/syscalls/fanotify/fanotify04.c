@@ -3,9 +3,11 @@
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
  *
  * Started by Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check various fanotify special flags
+ */
+
+/*\
+ * [Description]
+ * Check various fanotify special flags.
  */
 
 #define _GNU_SOURCE

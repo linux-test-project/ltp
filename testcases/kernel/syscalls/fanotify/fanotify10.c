@@ -5,13 +5,17 @@
  *
  * Started by Jan Kara <jack@suse.cz>
  * Forked from fanotify06.c by Amir Goldstein <amir73il@gmail.com>
- *
- * DESCRIPTION
- *     Check that fanotify properly merges ignore mask of a mount mark
- *     with a mask of an inode mark on the same group.  Unlike the
- *     prototype test fanotify06, do not use FAN_MODIFY event for the
- *     test mask, because it hides the bug.
- *
+ */
+
+/*\
+ * [Description]
+ * Check that fanotify properly merges ignore mask of a mount mark
+ * with a mask of an inode mark on the same group.  Unlike the
+ * prototype test fanotify06, do not use FAN_MODIFY event for the
+ * test mask, because it hides the bug.
+ */
+
+/*
  * This is a regression test for commit:
  *
  *     9bdda4e9cf2d fsnotify: fix ignore mask logic in fsnotify()
@@ -25,6 +29,7 @@
  *
  *     497b0c5a7c06 fsnotify: send event to parent and child with single...
  */
+
 #define _GNU_SOURCE
 #include "config.h"
 

@@ -3,14 +3,17 @@
  * Copyright (c) 2014 SUSE Linux.  All Rights Reserved.
  *
  * Started by Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check that fanotify overflow event is properly generated
- *
- * ALGORITHM
- *     Generate enough events without reading them and check that overflow
- *     event is generated.
  */
+
+/*\
+ * [Description]
+ * Check that fanotify overflow event is properly generated.
+ *
+ * [Algorithm]
+ * Generate enough events without reading them and check that overflow
+ * event is generated.
+ */
+
 #define _GNU_SOURCE
 #include "config.h"
 

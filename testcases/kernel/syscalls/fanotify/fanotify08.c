@@ -3,10 +3,13 @@
  * Copyright (c) 2017 RedHat.  All Rights Reserved.
  *
  * Started by Xiong Zhou <xzhou@redhat.com>
- *
- * DESCRIPTION
- *     Sanity check fanotify_init flag FAN_CLOEXEC by fcntl.
  */
+
+/*\
+ * [Description]
+ * Sanity check fanotify_init flag FAN_CLOEXEC by fcntl.
+ */
+
 #define _GNU_SOURCE
 #include "config.h"
 

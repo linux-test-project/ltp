@@ -3,17 +3,21 @@
  * Copyright (c) 2017 SUSE.  All Rights Reserved.
  *
  * Started by Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check that fanotify permission events are handled properly on instance
- *     destruction.
- *
+ */
+
+/*\
+ * [Description]
+ * Check that fanotify permission events are handled properly on instance destruction.
+ */
+
+/*
  * Kernel crashes should be fixed by:
  *  96d41019e3ac "fanotify: fix list corruption in fanotify_get_response()"
  *
  * Kernel hangs should be fixed by:
  *  05f0e38724e8 "fanotify: Release SRCU lock when waiting for userspace response"
  */
+
 #define _GNU_SOURCE
 #include "config.h"
 

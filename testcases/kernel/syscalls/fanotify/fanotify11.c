@@ -3,13 +3,15 @@
  * Copyright (c) 2018 Huawei.  All Rights Reserved.
  *
  * Started by nixiaoming <nixiaoming@huawei.com>
- *
- * DESCRIPTION
- *     After fanotify_init adds flags FAN_REPORT_TID,
- *     check whether the program can accurately identify which thread id
- *     in the multithreaded program triggered the event.
- *
  */
+
+/*\
+ * [Description]
+ * After fanotify_init adds flags FAN_REPORT_TID,
+ * check whether the program can accurately identify which thread id
+ * in the multithreaded program triggered the event.
+ */
+
 #define _GNU_SOURCE
 #include "config.h"
 

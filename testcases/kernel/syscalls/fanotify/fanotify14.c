@@ -3,13 +3,16 @@
  * Copyright (c) 2018 Matthew Bobrowski. All Rights Reserved.
  *
  * Started by Matthew Bobrowski <mbobrowski@mbobrowski.org>
- *
- * DESCRIPTION
- *	This test file has been designed to ensure that the fanotify
- *	system calls fanotify_init(2) and fanotify_mark(2) return the
- *	correct error code to the calling process when an invalid flag or
- *	mask value has been specified in conjunction with FAN_REPORT_FID.
  */
+
+/*\
+ * [Description]
+ * This test file has been designed to ensure that the fanotify
+ * system calls fanotify_init(2) and fanotify_mark(2) return the
+ * correct error code to the calling process when an invalid flag or
+ * mask value has been specified in conjunction with FAN_REPORT_FID.
+ */
+
 #define _GNU_SOURCE
 #include "tst_test.h"
 #include <errno.h>

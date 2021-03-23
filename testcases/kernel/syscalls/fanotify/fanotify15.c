@@ -4,16 +4,19 @@
  *
  * Started by Amir Goldstein <amir73il@gmail.com>
  * Modified by Matthew Bobrowski <mbobrowski@mbobrowski.org>
- *
- * DESCRIPTION
- *	Test file that has been purposely designed to verify
- *	FAN_REPORT_FID functionality while using newly defined dirent
- *	events.
- *
+ */
+
+/*\
+ * [Description]
+ * Test file that has been purposely designed to verify FAN_REPORT_FID
+ * functionality while using newly defined dirent events.
+ */
+
+/*
  * Test case #1 is a regression test for commit f367a62a7cad:
- *
  *      fanotify: merge duplicate events on parent and child
  */
+
 #define _GNU_SOURCE
 #include "config.h"
 

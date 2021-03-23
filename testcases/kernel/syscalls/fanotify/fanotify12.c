@@ -3,14 +3,16 @@
  * Copyright (c) 2018 Matthew Bobrowski. All Rights Reserved.
  *
  * Started by Matthew Bobrowski <mbobrowski@mbobrowski.org>
- *
- * DESCRIPTION
- *	Validate that the newly introduced FAN_OPEN_EXEC mask functions as
- *	expected. The idea is to generate a sequence of open related
- *	actions to ensure that the correct event flags are being set
- *	depending on what event mask was requested when the object was
- *	marked.
  */
+
+/*\
+ * [Description]
+ * Validate that the newly introduced FAN_OPEN_EXEC mask functions as expected.
+ * The idea is to generate a sequence of open related actions to ensure that
+ * the correct event flags are being set depending on what event mask was
+ * requested when the object was marked.
+ */
+
 #define _GNU_SOURCE
 #include "config.h"
 

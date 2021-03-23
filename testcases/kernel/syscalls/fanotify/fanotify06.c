@@ -3,11 +3,14 @@
  * Copyright (c) 2014 SUSE.  All Rights Reserved.
  *
  * Started by Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check that fanotify properly merges ignore mask of an inode and
- *     mountpoint.
- *
+ */
+
+/*\
+ * [Description]
+ * Check that fanotify properly merges ignore mask of an inode and mountpoint.
+ */
+
+/*
  * This is a regression test for:
  *
  *  commit 8edc6e1688fc8f02c8c1f53a2ec4928cb1055f4d
@@ -24,6 +27,7 @@
  *
  *      ovl: do not generate duplicate fsnotify events for "fake" path
  */
+
 #define _GNU_SOURCE
 #include "config.h"
 
