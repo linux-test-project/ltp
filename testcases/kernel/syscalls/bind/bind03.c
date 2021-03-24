@@ -66,8 +66,8 @@ void run(void)
 
 static void cleanup(void)
 {
-	close(sock1);
-	close(sock2);
+	SAFE_CLOSE(sock1);
+	SAFE_CLOSE(sock2);
 }
 
 static struct tst_test test = {

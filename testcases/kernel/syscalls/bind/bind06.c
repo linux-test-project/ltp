@@ -60,8 +60,8 @@ static void cleanup(void)
 
 static void do_bind(void)
 {
-	bind(fd, (struct sockaddr *)&addr1, sizeof(addr1));
-	bind(fd, (struct sockaddr *)&addr2, sizeof(addr2));
+	SAFE_BIND(fd, (struct sockaddr *)&addr1, sizeof(addr1));
+	SAFE_BIND(fd, (struct sockaddr *)&addr2, sizeof(addr2));
 }
 
 static void *thread_run(void *arg)
