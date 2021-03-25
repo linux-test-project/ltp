@@ -26,30 +26,30 @@ void brk_down_vmas(void)
 	void *addr = brk_addr + page_size;
 
 	if (brk(addr)) {
-		tst_res(TFAIL, "Cannot expand brk() by page size");
+		tst_res(TFAIL | TERRNO, "Cannot expand brk() by page size");
 		return;
 	}
 
 	addr += page_size;
 	if (brk(addr)) {
-		tst_res(TFAIL, "Cannot expand brk() by 2x page size");
+		tst_res(TFAIL | TERRNO, "Cannot expand brk() by 2x page size");
 		return;
 	}
 
 	if (mprotect(addr - page_size, page_size,
 		     PROT_READ|PROT_WRITE|PROT_EXEC)) {
-		tst_res(TFAIL, "Cannot mprotect new VMA");
+		tst_res(TFAIL | TERRNO, "Cannot mprotect new VMA");
 		return;
 	}
 
 	addr += page_size;
 	if (brk(addr)) {
-		tst_res(TFAIL, "Cannot expand brk() after mprotect");
+		tst_res(TFAIL | TERRNO, "Cannot expand brk() after mprotect");
 		return;
 	}
 
 	if (brk(brk_addr)) {
-		tst_res(TFAIL, "Cannot restore brk() to start address");
+		tst_res(TFAIL | TERRNO, "Cannot restore brk() to start address");
 		return;
 	}
 
