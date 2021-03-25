@@ -168,11 +168,11 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (ns_ipc_fd != -1)
-		close(ns_ipc_fd);
+		SAFE_CLOSE(ns_ipc_fd);
 	if (ns_uts_fd != -1)
-		close(ns_uts_fd);
+		SAFE_CLOSE(ns_uts_fd);
 
-	shmctl(shmid, IPC_RMID, NULL);
+	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
 }
 
 static struct tst_test test = {

@@ -19,9 +19,7 @@ static int get_ns_fd(int pid, const char *ns)
 
 	sprintf(tmp, "/proc/%d/ns/%s", pid, ns);
 	if (stat(tmp, &st) == 0) {
-		fd = open(tmp, O_RDONLY);
-		if (fd == -1)
-			tst_brk(TBROK|TERRNO, "failed to open %s", tmp);
+		fd = SAFE_OPEN(tmp, O_RDONLY);
 	} else {
 		if (errno != ENOENT)
 			tst_brk(TBROK|TERRNO, "failed to stat %s", tmp);
@@ -58,5 +56,5 @@ static void close_ns_fds(void)
 
 	for (i = 0; i < ns_total; i++)
 		if (ns_fds[i] != -1)
-			close(ns_fds[i]);
+			SAFE_CLOSE(ns_fds[i]);
 }
