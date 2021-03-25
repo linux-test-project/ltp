@@ -32,10 +32,9 @@ static void verify_capset(unsigned int n)
 	header->version = tc->version;
 	header->pid = pid;
 
-	if (tst_syscall(__NR_capget, header, data) == -1) {
-		tst_res(TFAIL | TTERRNO, "capget() failed");
-		return;
-	}
+	TEST(tst_syscall(__NR_capget, header, data));
+	if (TST_RET == -1)
+	      tst_brk(TFAIL | TTERRNO, "capget() failed");
 
 	TST_EXP_PASS(tst_syscall(__NR_capset, header, data),
 	             "capset() with %s", tc->message);
