@@ -174,11 +174,6 @@ static void verify_clock_adjtime(unsigned int i)
 			tc[i].modes);
 	}
 
-	if (TST_RET < 0) {
-		tst_res(TFAIL | TTERRNO, "clock_adjtime(): mode=%x, returned "
-				"error", tc[i].modes);
-	}
-
 	tst_res(TPASS, "clock_adjtime(): success (mode=%x)", tc[i].modes);
 }
 
@@ -201,7 +196,7 @@ static void setup(void)
 
 	if (rval != TIME_OK && rval != TIME_ERROR) {
 		timex_show("SAVE_STATUS", &saved);
-		tst_brk(TBROK | TTERRNO, "clock has on-going leap changes, "
+		tst_brk(TBROK | TERRNO, "clock has on-going leap changes, "
 				"returned: %i", rval);
 	}
 

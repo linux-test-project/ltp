@@ -209,7 +209,7 @@ static void setup(void)
 
 	if (rval != TIME_OK && rval != TIME_ERROR) {
 		timex_show("SAVE_STATUS", &saved);
-		tst_brk(TBROK | TTERRNO, "clock has on-going leap changes, "
+		tst_brk(TBROK | TERRNO, "clock has on-going leap changes, "
 				"returned: %i", rval);
 	}
 
