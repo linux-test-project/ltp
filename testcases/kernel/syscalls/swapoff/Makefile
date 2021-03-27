@@ -3,10 +3,10 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ltpswapon
+LTPLIBS = ltpswap
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LTPLDLIBS  = -lltpswapon
+LTPLDLIBS  = -lltpswap
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
