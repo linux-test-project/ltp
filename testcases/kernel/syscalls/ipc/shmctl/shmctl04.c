@@ -130,7 +130,7 @@ static void verify_shminfo(unsigned int n)
 	shmid = shmctl(TST_RET, SHM_STAT_ANY, &ds);
 
 	if (shmid == -1) {
-		tst_res(TFAIL | TTERRNO, "SHM_INFO haven't returned a valid index");
+		tst_res(TFAIL | TERRNO, "SHM_INFO haven't returned a valid index");
 	} else {
 		tst_res(TPASS,
 			"SHM_INFO returned valid index %li maps to shmid %i",
