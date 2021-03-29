@@ -42,8 +42,8 @@
 #include "safe_macros.h"
 #include "compat_16.h"
 
-#define FILE_MODE (mode_t)(S_IFREG | S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
-#define NEW_PERMS (mode_t)(S_IFREG | S_IRWXU | S_IRWXG | S_ISUID | S_ISGID)
+#define FILE_MODE (mode_t)(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define NEW_PERMS (mode_t)(S_IRWXU | S_IRWXG | S_ISUID | S_ISGID)
 #define FCHOWN_PERMS	(mode_t)(NEW_PERMS & ~(S_ISUID | S_ISGID))
 #define TESTFILE	"testfile"
 
