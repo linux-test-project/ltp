@@ -155,10 +155,20 @@ static void verify_shminfo(unsigned int n)
 static void setup(void)
 {
 	struct passwd *ltpuser = SAFE_GETPWNAM("nobody");
+	struct shmid_ds temp_ds;
 	nobody_uid = ltpuser->pw_uid;
 	root_uid = 0;
 
 	shm_id = SAFE_SHMGET(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | SHM_RW);
+
+	TEST(shmctl(shm_id, SHM_STAT_ANY, &temp_ds));
+	if (TST_RET == -1) {
+		if (TST_ERR == EINVAL)
+			tst_brk(TCONF, "kernel doesn't support SHM_STAT_ANY");
+		else
+			tst_brk(TBROK | TTERRNO,
+				"Current environment doesn't permit SHM_STAT_ANY");
+	}
 }
 
 static void cleanup(void)

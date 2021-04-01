@@ -115,7 +115,7 @@ static void verify_msgctl(unsigned int n)
 	msgid = msgctl(TST_RET, MSG_STAT_ANY, &buf);
 
 	if (msgid == -1) {
-		tst_res(TFAIL | TTERRNO, "MSG_INFO haven't returned a valid index");
+		tst_res(TFAIL | TERRNO, "MSG_INFO haven't returned a valid index");
 	} else {
 		tst_res(TPASS, "MSG_INFO returned valid index %li to msgid %i",
 			TST_RET, msgid);
@@ -138,12 +138,22 @@ static void verify_msgctl(unsigned int n)
 
 static void setup(void)
 {
+	struct msqid_ds temp_buf;
 	ltpuser = SAFE_GETPWNAM("nobody");
 	nobody_uid = ltpuser->pw_uid;
 	root_uid = 0;
 
 	msg_id = SAFE_MSGGET(IPC_PRIVATE, IPC_CREAT | MSG_RW);
 	SAFE_MSGSND(msg_id, "abcd", 4, 0);
+
+	TEST(msgctl(msg_id, MSG_STAT_ANY, &temp_buf));
+	if (TST_RET == -1) {
+		if (TST_ERR == EINVAL)
+			tst_brk(TCONF, "kernel doesn't support MSG_STAT_ANY");
+		else
+			tst_brk(TBROK | TTERRNO,
+				"Current environment doesn't permit MSG_STAT_ANY");
+	}
 }
 
 static void cleanup(void)

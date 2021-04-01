@@ -158,7 +158,7 @@ static void verify_semctl(unsigned int n)
 				"specified by the caller to kernel");
 		return;
 	} else if (semid == -1) {
-		tst_res(TFAIL | TTERRNO, "SEM_INFO haven't returned a valid index");
+		tst_res(TFAIL | TERRNO, "SEM_INFO haven't returned a valid index");
 	} else {
 		tst_res(TPASS, "SEM_INFO returned valid index %li to semid %i",
 			TST_RET, semid);
@@ -193,6 +193,18 @@ static void setup(void)
 #endif
 
 	sem_id = SAFE_SEMGET(IPC_PRIVATE, 2, IPC_CREAT | 0600);
+
+	TEST(do_semctl(sem_id, 0, SEM_STAT_ANY));
+	if (TST_RET == -1) {
+		if (TST_ERR == EFAULT)
+			tst_brk(TFAIL,
+				"SEM_STAT_ANY doesn't pass the buffer specified by the caller to kernel");
+		if (TST_ERR == EINVAL)
+			tst_brk(TCONF, "kernel doesn't support SEM_STAT_ANY");
+		else
+			tst_brk(TBROK | TTERRNO,
+				"Current environment doesn't permit SEM_STAT_ANY");
+	}
 }
 
 static void cleanup(void)
