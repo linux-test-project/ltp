@@ -3,9 +3,13 @@
  * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Tests misaligned fallocate()
+ *
  * Test scenario:
+ *
  * 1. write() several blocks worth of data
  * 2. fallocate() some more space (not aligned to FS blocks)
  * 3. try to write() into the allocated space
@@ -13,10 +17,13 @@
  * 5. read() the deallocated range and check that it was zeroed
  *
  * Subtests:
- * - fill file system between step 2 and 3
+ *
+ * - fill filesystem between step 2 and 3
  * - disable copy-on-write on test file
  * - combinations of above subtests
- *
+ */
+
+/*
  * This is also regression test for:
  * e093c4be760e ("xfs: Fix tail rounding in xfs_alloc_file_space()")
  * 6d4572a9d71d ("Allow btrfs_truncate_block() to fallback to nocow for data
