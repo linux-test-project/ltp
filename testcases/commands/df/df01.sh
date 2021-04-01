@@ -39,7 +39,7 @@ setup()
 {
 	tst_mkfs
 	tst_mount
-	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk '{print $5}')
+	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk 'NR==1{print $5}')
 }
 
 df_test()
