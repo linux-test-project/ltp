@@ -19,6 +19,8 @@
  *
  * This is also regression test for:
  * e093c4be760e ("xfs: Fix tail rounding in xfs_alloc_file_space()")
+ * 6d4572a9d71d ("Allow btrfs_truncate_block() to fallback to nocow for data
+ *              space reservation")
  */
 
 #define _GNU_SOURCE
@@ -259,6 +261,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "e093c4be760e"},
+		{"linux-git", "6d4572a9d71d"},
 		{}
 	}
 };
