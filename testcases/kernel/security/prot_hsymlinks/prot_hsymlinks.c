@@ -227,6 +227,9 @@ static void setup(int argc, char *argv[])
 
 	tst_tmpdir();
 
+	/* fix for hsym user with umask 0077 */
+	umask(0);
+
 	init_base_dirs();
 
 	init_files_dirs();
