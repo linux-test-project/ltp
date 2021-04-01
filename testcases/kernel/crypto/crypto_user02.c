@@ -70,9 +70,9 @@ static void setup(void)
 			break;
 		}
 	}
-	if (!algorithm) {
+
+	if (!algorithm)
 		tst_brk(TCONF, "No viable algorithm found");
-	}
 }
 
 static void run(void)
