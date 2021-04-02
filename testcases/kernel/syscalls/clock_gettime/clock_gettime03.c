@@ -1,20 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-
-  Copyright (c) 2020 Cyril Hrubis <chrubis@suse.cz>
-
+ * Copyright (c) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
+
 /*
-
-  Basic test for timer namespaces.
-
-  After a call to unshare(CLONE_NEWTIME) a new timer namespace is created, the
-  process that has called the unshare() can adjust offsets for CLOCK_MONOTONIC
-  and CLOCK_BOOTTIME for its children by writing to the '/proc/self/timens_offsets'.
-
-  The child processes also switch to the initial parent namespace and checks
-  that the offset is set to 0.
-
+ * [Description]
+ *
+ * After a call to unshare(CLONE_NEWTIME) a new timer namespace is created, the
+ * process that has called the unshare() can adjust offsets for CLOCK_MONOTONIC
+ * and CLOCK_BOOTTIME for its children by writing to the '/proc/self/timens_offsets'.
+ *
+ * The child processes also switch to the initial parent namespace and checks
+ * that the offset is set to 0.
  */
 
 #define _GNU_SOURCE

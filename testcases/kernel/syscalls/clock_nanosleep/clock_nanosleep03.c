@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-
-  Copyright (c) 2020 Cyril Hrubis <chrubis@suse.cz>
-
+ * Copyright (c) 2020 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
 
-   Test that clock_nanosleep() adds correctly an offset with absolute timeout
-   and CLOCK_MONOTONIC inside of a timer namespace.
-
-   After a call to unshare(CLONE_NEWTIME) a new timer namespace is created, the
-   process that has called the unshare() can adjust offsets for CLOCK_MONOTONIC
-   and CLOCK_BOOTTIME for its children by writing to the '/proc/self/timens_offsets'.
-
+/*\
+ * [Description]
+ *
+ * Test that clock_nanosleep() adds correctly an offset with absolute timeout
+ * and CLOCK_MONOTONIC inside of a timer namespace.
+ *
+ * After a call to unshare(CLONE_NEWTIME) a new timer namespace is created, the
+ * process that has called the unshare() can adjust offsets for CLOCK_MONOTONIC
+ * and CLOCK_BOOTTIME for its children by writing to the '/proc/self/timens_offsets'.
  */
 
 #include <stdlib.h>
