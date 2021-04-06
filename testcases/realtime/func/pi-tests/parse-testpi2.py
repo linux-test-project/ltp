@@ -49,10 +49,8 @@ class TestPi2(Log):
 					flag=True
 				elif count == 0:
 					return False
+			prev_line=line
 
-
-
-		prev_line=line
 		if count>=2:
 			return True
 		else:
