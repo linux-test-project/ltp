@@ -12,12 +12,12 @@ KDIR	:= /lib/modules/$(shell uname -r)/build
 PWD	:= $(shell pwd)
 
 default:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 	${CC} $(EXTRA_CFLAGS) -o userBlockNLS userBlockNLS.c
-#	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
+#	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
 
 clean:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 	rm -f modules.order
 	rm -f userBlockNLS
 

@@ -13,9 +13,9 @@ KDIR	:= /lib/modules/$(shell uname -r)/build
 PWD	:= $(shell pwd)
 
 default:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 	${CC} -Wall -o userBlockInclude userBlockInclude.c
-#	$(MAKE) -C $(KERNELDIR) SUBDIRS=$(PWD) modules
+#	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
 endif
 
 clean:
