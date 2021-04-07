@@ -111,7 +111,7 @@ void usage(char *prog_name, int status)
 
 void checkopt(int argc, char **argv)
 {
-	char c = '\0';
+	int c = '\0';
 	char *endptr = NULL;
 	long nr_cpus = 0;
 	long opt_value = 0;
