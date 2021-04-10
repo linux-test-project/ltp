@@ -82,6 +82,7 @@ _tst_do_exit()
 	echo "Summary:"
 	echo "passed   $TST_PASS"
 	echo "failed   $TST_FAIL"
+	echo "broken   $TST_BROK"
 	echo "skipped  $TST_CONF"
 	echo "warnings $TST_WARN"
 
