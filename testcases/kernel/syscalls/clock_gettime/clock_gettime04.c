@@ -2,9 +2,21 @@
 /*
  * Copyright (c) 2020 Linaro Limited. All rights reserved.
  * Author: Viresh Kumar<viresh.kumar@linaro.org>
+ */
+
+/*\
+ * [Description]
  *
  * Check time difference between successive readings and report a bug if
  * difference found to be over 5 ms.
+ *
+ * This test reports a s390x BUG which has been fixed in:
+ *
+ *    commit 5b43bd184530af6b868d8273b0a743a138d37ee8
+ *    Author: Heiko Carstens <hca@linux.ibm.com>
+ *    Date:   Wed Mar 24 20:23:55 2021 +0100
+ *
+ *    s390/vdso: fix initializing and updating of vdso_data
  */
 
 #include "config.h"
@@ -167,4 +179,8 @@ static struct tst_test test = {
 	.test = run,
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(clks),
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "5b43bd184530"},
+		{}
+	}
 };
