@@ -56,7 +56,7 @@ static void setup(void)
 	tp.type = tv->ts_type;
 
 	if ((sched_setscheduler(0, SCHED_RR, &p)) == -1)
-		tst_res(TFAIL | TTERRNO, "sched_setscheduler() failed");
+		tst_res(TFAIL | TERRNO, "sched_setscheduler() failed");
 
 	unused_pid = tst_get_unused_pid();
 }

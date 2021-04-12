@@ -42,7 +42,7 @@ static void setup(void)
 	tp.type = tv->ts_type;
 
 	if ((sched_setscheduler(0, SCHED_RR, &p)) == -1)
-		tst_res(TFAIL | TTERRNO, "sched_setscheduler() failed");
+		tst_res(TFAIL | TERRNO, "sched_setscheduler() failed");
 
 	proc_flag = !access(PROC_SCHED_RR_TIMESLICE_MS, F_OK);
 }
