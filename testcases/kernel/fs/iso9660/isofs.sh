@@ -9,6 +9,7 @@
 # It makes ISO9660 file system with different options and also
 # mounts ISO9660 file system with different mount options.
 
+TST_NEEDS_CMDS="mount umount"
 TST_NEEDS_TMPDIR=1
 TST_SETUP=setup
 TST_TESTFUNC=do_test
@@ -33,7 +34,7 @@ gen_fs_tree()
 {
 	local cur_path="$1"
 	local cur_depth="$2"
-	local new_path
+	local i new_path
 
 	[ "$cur_depth" -gt "$MAX_DEPTH" ] && return
 
@@ -45,9 +46,11 @@ gen_fs_tree()
 	done
 }
 
-do_test() {
+do_test()
+{
 	local mnt_point="$PWD/mnt"
 	local make_file_sys_dir="$PWD/files"
+	local mkisofs_opt mount_opt
 
 	mkdir -p -m 777 $mnt_point
 	mkdir -p $make_file_sys_dir
@@ -83,14 +86,11 @@ do_test() {
 			"loop,check=relaxed,map=normal" \
 			"loop,block=512,unhide,session=2"
 		do
-			mount -t iso9660 -o $mount_opt isofs.iso $mnt_point
-			if [ $? -ne 0 ]; then
-				tst_res TFAIL "mount -t iso9660 -o $mount_opt isofs.iso $mnt_point"
-				continue
-			fi
+			EXPECT_PASS mount -t iso9660 -o $mount_opt isofs.iso $mnt_point \
+				|| continue
 
-			ls -lR $mnt_point > /dev/null || tst_res TFAIL "ls -lR $mnt_point"
-			umount $mnt_point || tst_brk TFAIL "umount $mnt_point"
+			EXPECT_PASS ls -lR $mnt_point \> /dev/null
+			EXPECT_PASS_BRK umount $mnt_point
 
 			tst_res TPASS "mount/umount with \"$mount_opt\" options"
 		done
