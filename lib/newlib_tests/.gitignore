@@ -40,3 +40,5 @@ tst_bool_expr
 test_macros01
 test_macros02
 test_macros03
+tst_fuzzy_sync01
+tst_fuzzy_sync02
