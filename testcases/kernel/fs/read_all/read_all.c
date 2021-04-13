@@ -87,6 +87,7 @@ static char *blacklist[] = {
 	"/sys/kernel/debug/*",
 	"/sys/devices/platform/*/eeprom",
 	"/sys/devices/platform/*/nvmem",
+	"/sys/*/cpu??*(?)/*",	/* cpu* entries with 2 or more digits */
 };
 
 static int queue_pop(struct queue *q, char *buf)
