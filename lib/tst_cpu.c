@@ -17,6 +17,8 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "lapi/cpuset.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
@@ -70,4 +72,28 @@ long tst_ncpus_max(void)
 		ncpus_max = tst_ncpus_conf();
 	}
 	return ncpus_max;
+}
+
+long tst_ncpus_available(void)
+{
+#ifdef CPU_COUNT_S
+	long ncpus = tst_ncpus_max();
+	size_t cpusz = CPU_ALLOC_SIZE(ncpus);
+	cpu_set_t *cpus = CPU_ALLOC(ncpus);
+
+	if (!cpus)
+		tst_brkm(TBROK | TERRNO, NULL, "CPU_ALLOC(%zu)", cpusz);
+
+	if (sched_getaffinity(0, cpusz, cpus)) {
+		tst_resm(TWARN | TERRNO, "sched_getaffinity(0, %zu, %zx)",
+			cpusz, (size_t)cpus);
+	} else {
+		ncpus = CPU_COUNT_S(cpusz, cpus);
+	}
+	CPU_FREE(cpus);
+
+	return ncpus;
+#else
+	return tst_ncpus();
+#endif
 }
