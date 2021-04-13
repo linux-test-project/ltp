@@ -98,5 +98,9 @@ static struct tst_test test = {
 	.mntpoint = "msync04",
 	.mount_device = 1,
 	.all_filesystems = 1,
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
+	},
 	.min_kver = "2.6.25",
 };

@@ -62,6 +62,10 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.all_filesystems = 1,
+	.skip_filesystems = (const char*[]) {
+		"tmpfs",
+		NULL
+	},
 	.mntpoint = MNTPOINT,
 	.setup = setup,
 	.test_all = verify_syncfs,

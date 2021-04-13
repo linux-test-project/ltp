@@ -121,7 +121,11 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.all_filesystems = 1,
-	.skip_filesystems = (const char *const []){"fuse", NULL},
+	.skip_filesystems = (const char *const []){
+		"fuse",
+		"tmpfs",
+		NULL
+	},
 	.mntpoint = MNTPOINT,
 	.setup = setup,
 	.test = run,

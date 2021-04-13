@@ -58,4 +58,8 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.mntpoint = MNTPOINT,
 	.test_all = verify_fdatasync,
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
+	}
 };
