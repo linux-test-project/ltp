@@ -43,7 +43,7 @@ int main(void)
 
 	size_t mapped_size = 0;
 
-	snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_25_1_%d", getpid());
+	snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_24_1_%d", getpid());
 
 	/* Create shared object */
 	shm_unlink(tmpfname);
