@@ -93,16 +93,8 @@ static void gen_exec(void)
  */
 static inline void gen_fork(void)
 {
-	pid_t pid;
-	int status;
-
-	pid = SAFE_FORK();
-	if (pid == 0) {
-		printf("fork parent: %d, child: %d\n", getppid(), getpid());
-		exit(0);
-	} else {		/* Parent should wait for the child */
-		wait(&status);
-	}
+	/* The actual fork is already done in main */
+	printf("fork parent: %d, child: %d\n", getppid(), getpid());
 }
 
 /**
@@ -110,16 +102,10 @@ static inline void gen_fork(void)
  */
 static inline void gen_exit(void)
 {
-	pid_t pid;
-	int status;
-
-	pid = SAFE_FORK();
-	if (pid == 0) {
-		printf("exit pid: %d exit_code: %d\n", getpid(), 0);
-		exit(0);
-	} else {
-		wait(&status);
-	}
+	/* exit_signal will always be SIGCHLD, if the process terminates cleanly */
+	printf("exit pid: %d exit_code: %d exit_signal: %d\n",
+	       getpid(), 0, SIGCHLD);
+	/* exit is called by main already */
 }
 
 /*
@@ -128,7 +114,7 @@ static inline void gen_exit(void)
 static inline void gen_uid(void)
 {
 	SAFE_SETUID(ltp_uid);
-	printf("uid pid: %d euid: %d\n", getpid(), ltp_uid);
+	printf("uid pid: %d euid: %d ruid: %d\n", getpid(), ltp_uid, ltp_uid);
 }
 
 /*
@@ -137,7 +123,7 @@ static inline void gen_uid(void)
 static inline void gen_gid(void)
 {
 	SAFE_SETGID(ltp_gid);
-	printf("gid pid: %d egid: %d\n", getpid(), ltp_gid);
+	printf("gid pid: %d egid: %d rgid: %u\n", getpid(), ltp_gid, ltp_gid);
 }
 
 /*
@@ -210,8 +196,6 @@ int main(int argc, char **argv)
 	ltp_uid = ent->pw_uid;
 	ltp_gid = ent->pw_gid;
 
-	signal(SIGCHLD, SIG_IGN);
-
 	/* special processing for gen_exec, see comments above gen_exec() */
 	if (gen_event == gen_exec) {
 		exec_argv = argv;
@@ -223,8 +207,26 @@ int main(int argc, char **argv)
 	}
 
 	/* other events */
-	for (i = 0; i < nr_event; i++)
-		gen_event();
+	for (i = 0; i < nr_event; i++) {
+		pid_t pid;
+		int status;
+
+		pid = SAFE_FORK();
+		if (pid == 0) {
+			gen_event();
+			exit(0);
+		} else {
+			if (pid != SAFE_WAITPID(pid, &status, 0)) {
+				fprintf(stderr,
+				        "Child process did not terminate as expected\n");
+				return 1;
+			}
+			if (WEXITSTATUS(status) != 0) {
+				fprintf(stderr, "Child process did not terminate with 0\n");
+				return 1;
+			}
+		}
+	}
 
 	return 0;
 }
