@@ -685,7 +685,7 @@ else
 fi
 
 if [ -z "$TST_NO_DEFAULT_RUN" ]; then
-	if TST_TEST_PATH=$(which $0) 2>/dev/null; then
+	if TST_TEST_PATH=$(command -v $0) 2>/dev/null; then
 		if ! grep -q tst_run "$TST_TEST_PATH"; then
 			tst_brk TBROK "Test $0 must call tst_run!"
 		fi
