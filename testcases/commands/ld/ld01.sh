@@ -27,7 +27,7 @@ test1()
 {
 	EXPECT_FAIL $LD x.o y.o 2\> ld.out
 
-	if grep -q "$LD:.*[xy]\.o.*No such file or directory" ld.out; then
+	if grep -q "[xy]\.o.*No such file or directory" ld.out; then
 		tst_res TPASS "Missing files were reported"
 	else
 		tst_res TFAIL "Missing files were not reported"
@@ -39,7 +39,7 @@ test2()
 {
 	EXPECT_FAIL $CC x.o y.o 2\> cc.out
 
-	if grep -q "$CC:.*[xy]\.o.*No such file or directory" cc.out; then
+	if grep -q "[xy]\.o.*No such file or directory" cc.out; then
 		tst_res TPASS "Missing files were reported"
 	else
 		tst_res TFAIL "Missing files were not reported"
