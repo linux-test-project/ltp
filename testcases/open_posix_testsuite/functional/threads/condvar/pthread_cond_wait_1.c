@@ -27,7 +27,7 @@
 #include "posixtest.h"
 #include "safe_helpers.h"
 
-#define TEST "5-1"
+#define TEST "pthread_cond_wait_1"
 #define AREA "scheduler"
 #define ERROR_PREFIX "unexpected error: " AREA " " TEST ": "
 

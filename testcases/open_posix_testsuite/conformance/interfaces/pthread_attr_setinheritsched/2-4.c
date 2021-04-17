@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
-#define TEST "4-2"
+#define TEST "2-4"
 #define AREA "scheduler"
 #define ERROR_PREFIX "unexpected error: " AREA " " TEST ": "
 

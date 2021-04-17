@@ -27,7 +27,7 @@
 #include "posixtest.h"
 #include "safe_helpers.h"
 
-#define TEST "5-5"
+#define TEST "1-2"
 #define AREA "scheduler"
 #define ERROR_PREFIX "unexpected error: " AREA " " TEST ": "
 
