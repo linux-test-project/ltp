@@ -46,7 +46,7 @@ extern void *TST_RET_PTR;
 	tst_res_(__FILE__, __LINE__, RES, \
 		TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, SCALL) FMT, __VA_ARGS__), PAR)
 
-#define TST_EXP_FD_SILENT(SCALL, ...)                                          \
+#define TST_EXP_POSITIVE(SCALL, ...)                                           \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
 		                                                               \
@@ -68,12 +68,25 @@ extern void *TST_RET_PTR;
                                                                                \
 	} while (0)
 
+#define TST_EXP_FD_SILENT(SCALL, ...)	TST_EXP_POSITIVE(SCALL, __VA_ARGS__)
+
 #define TST_EXP_FD(SCALL, ...)                                                 \
 	do {                                                                   \
 		TST_EXP_FD_SILENT(SCALL, __VA_ARGS__);                         \
 		                                                               \
 		if (TST_PASS)                                                  \
 			TST_MSGP_(TPASS, " returned fd %ld", TST_RET,          \
+				#SCALL, ##__VA_ARGS__);                        \
+	} while (0)
+
+#define TST_EXP_PID_SILENT(SCALL, ...)	TST_EXP_POSITIVE(SCALL, __VA_ARGS__)
+
+#define TST_EXP_PID(SCALL, ...)                                                \
+	do {                                                                   \
+		TST_EXP_PID_SILENT(SCALL, __VA_ARGS__);                        \
+									       \
+		if (TST_PASS)                                                  \
+			TST_MSGP_(TPASS, " returned pid %ld", TST_RET,         \
 				#SCALL, ##__VA_ARGS__);                        \
 	} while (0)
 
