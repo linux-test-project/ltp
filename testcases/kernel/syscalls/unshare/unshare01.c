@@ -4,10 +4,15 @@
  * Ported from Crackerjack to LTP by Manas Kumar Nayak maknayak@in.ibm.com>
  */
 
-/*
+/*\
  * [Description]
  *
  * Basic tests for the unshare() syscall.
+ *
+ * [Algorithm]
+ *
+ * Calls unshare() for different CLONE_* flags in a child process and expects
+ * them to succeed.
  */
 
 #define _GNU_SOURCE
