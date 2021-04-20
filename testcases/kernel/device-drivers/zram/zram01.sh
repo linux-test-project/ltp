@@ -40,6 +40,7 @@ initialize_vars()
 	dev_num=0
 
 	for fs in $(tst_supported_fs); do
+		[ "$fs" = "tmpfs" ] && continue
 		size="26214400"
 		limit="25M"
 		if [ "$fs" = "btrfs" ]; then
