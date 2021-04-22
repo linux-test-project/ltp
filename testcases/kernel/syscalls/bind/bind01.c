@@ -53,6 +53,8 @@ void verify_bind(unsigned int nr)
 	} else {
 		TST_EXP_PASS(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
 		             "%s", tcase->desc);
+		SAFE_CLOSE(inet_socket);
+		inet_socket = SAFE_SOCKET(PF_INET, SOCK_STREAM, 0);
 	}
 }
 
