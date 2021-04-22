@@ -1,106 +1,62 @@
-/******************************************************************************/
-/* Copyright (c) Crackerjack Project., 2007				   */
-/*									    */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or	  */
-/* (at your option) any later version.					*/
-/*									    */
-/* This program is distributed in the hope that it will be useful,	    */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of	    */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See		  */
-/* the GNU General Public License for more details.			   */
-/*									    */
-/* You should have received a copy of the GNU General Public License	  */
-/* along with this program;  if not, write to the Free Software	       */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*									    */
-/******************************************************************************/
-/******************************************************************************/
-/*									    */
-/* File:	tkill01.c					   */
-/*									    */
-/* Description: This tests the tkill() syscall		      */
-/*									    */
-/* Usage:  <for command-line>						 */
-/* tkill01 [-c n] [-e][-i n] [-I x] [-p x] [-t]		     */
-/*      where,  -c n : Run n copies concurrently.			     */
-/*	      -e   : Turn on errno logging.				 */
-/*	      -i n : Execute test n times.				  */
-/*	      -I x : Execute test for x seconds.			    */
-/*	      -P x : Pause for x seconds between iterations.		*/
-/*	      -t   : Turn on syscall timing.				*/
-/*									    */
-/* Total Tests: 1							     */
-/*									    */
-/* Test Name:   tkill01					     */
-/* History:     Porting from Crackerjack to LTP is done by		    */
-/*	      Manas Kumar Nayak maknayak@in.ibm.com>			*/
-/******************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Linux Test Project, 2009-2021
+ * Copyright (c) Crackerjack Project, 2007
+ * Ported from Crackerjack to LTP by Manas Kumar Nayak maknayak@in.ibm.com>
+ */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <unistd.h>
+/*\
+ * [Description]
+ *
+ * Basic tests for the tkill syscall.
+ *
+ * [Algorithm]
+ *
+ * Calls tkill and capture signal to verify success.
+ */
 
 #include <signal.h>
-#include <sys/syscall.h>
-#include <linux/unistd.h>
-#include <sys/types.h>
 
-#include "test.h"
 #include "lapi/syscalls.h"
+#include "tst_test.h"
 
-char *TCID = "tkill01";
-int testno;
-int TST_TOTAL = 2;
+static volatile sig_atomic_t sig_flag;
 
-void cleanup(void)
+static void sighandler(int sig)
 {
-
-	tst_rmdir();
+	if (sig == SIGUSR1)
+		sig_flag = 1;
 }
 
-void setup(void)
+static void setup(void)
 {
-	TEST_PAUSE;
-	tst_tmpdir();
+	SAFE_SIGNAL(SIGUSR1, sighandler);
 }
 
-int sig_count = 0;
-
-void sig_action(int sig)
-{
-	sig_count = 1;
-}
-
-int main(int ac, char **av)
+static void run(void)
 {
 	int tid;
-	int lc;
+	int timeout_ms = 1000;
+	sig_flag = 0;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	tid = tst_syscall(__NR_gettid);
+	TST_EXP_PASS(tst_syscall(__NR_tkill, tid, SIGUSR1));
 
-	setup();
+	while (timeout_ms--) {
+		if (sig_flag)
+			break;
 
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if (signal(SIGUSR1, &sig_action) == SIG_ERR)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "signal(SIGUSR1, ..) failed");
-			TEST(tid = ltp_syscall(__NR_gettid));
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO, "tkill failed");
-			}
-			TEST(ltp_syscall(__NR_tkill, tid, SIGUSR1));
-			if (TEST_RETURN == 0) {
-				tst_resm(TPASS, "tkill call succeeded");
-			} else {
-				tst_resm(TFAIL | TTERRNO, "tkill failed");
-			}
-		}
+		usleep(1000);
 	}
-	cleanup();
-	tst_exit();
+
+	if (sig_flag)
+		tst_res(TPASS, "signal captured");
+	else
+		tst_res(TFAIL, "signal not captured");
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.test_all = run,
+};
