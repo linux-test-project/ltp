@@ -48,9 +48,8 @@ struct test_case_t {
 
 static void setup(void)
 {
-	in_fd = SAFE_CREAT("in_file", O_RDONLY);
-	out_fd = SAFE_CREAT("out_file", O_WRONLY);
-	SAFE_WRITE(1, in_fd, "a", 1);
+	in_fd = SAFE_OPEN("in_file", O_CREAT | O_RDWR, 0600);
+	out_fd = SAFE_CREAT("out_file", 0600);
 }
 
 static void cleanup(void)
