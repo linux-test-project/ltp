@@ -54,6 +54,8 @@ static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
+	memset(&fh, 0, sizeof(fh));
+
 	TEST(name_to_handle_at(tc->dfd, *tc->pathname, *tc->fhp, *tc->mount_id,
 			       tc->flags));
 
