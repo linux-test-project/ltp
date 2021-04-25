@@ -61,6 +61,8 @@ static void run(void)
 {
 	int rval;
 
+	fd = SAFE_OPEN(".", O_RDONLY|O_DIRECTORY);
+
 	rval = tst_getdents(fd, dirp, BUFSIZE);
 
 	if (rval < 0) {
@@ -92,6 +94,8 @@ static void run(void)
 	} while (rval > 0);
 
 	check_flags();
+
+	SAFE_CLOSE(fd);
 }
 
 static void reset_flags(void)
@@ -162,21 +166,12 @@ static void setup(void)
 			}
 		}
 	}
-
-	fd = SAFE_OPEN(".", O_RDONLY|O_DIRECTORY);
-}
-
-static void cleanup(void)
-{
-	if (fd != 0)
-		SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.test_all = run,
 	.setup = setup,
-	.cleanup = cleanup,
 	.bufs = (struct tst_buffers []) {
 		{&dirp, .size = BUFSIZE},
 		{},
