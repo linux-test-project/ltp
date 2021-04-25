@@ -123,6 +123,7 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.skip_filesystems = (const char *const []){
 		"fuse",
+		"ntfs",
 		"tmpfs",
 		NULL
 	},
