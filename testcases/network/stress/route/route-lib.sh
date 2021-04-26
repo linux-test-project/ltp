@@ -91,20 +91,19 @@ setup_if()
 
 test_netlink()
 {
+	local opt="-c $ROUTE_CHANGE_NETLINK $TST_IPV6_FLAG -p $ROUTE_RHOST_PORT $ROUTE_CHANGE_NETLINK_PARAMS"
+	local cmd="route-change-netlink"
 	local ret=0
-	local cmd ip_flag
-	[ "$TST_IPV6" ] && ip_flag="-6"
 
-	cmd="route-change-netlink -c $ROUTE_CHANGE_NETLINK $ip_flag -p $ROUTE_RHOST_PORT $ROUTE_CHANGE_NETLINK_PARAMS"
-	tst_res TINFO "running $cmd"
-	$cmd || ret=$?
+	tst_res TINFO "running $cmd $opt"
+	$cmd $opt || ret=$?
 	if [ "$ret" -ne 0 ]; then
 		[ $((ret & 3)) -ne 0 ] && \
-			tst_brk TFAIL "route-change-netlink failed"
+			tst_brk TFAIL "$cmd failed"
 		[ $((ret & 32)) -ne 0 ] && \
 			tst_brk TCONF "not supported configuration"
 		[ $((ret & 4)) -ne 0 ] && \
-			tst_res TWARN "route-change-netlink has warnings"
+			tst_res TWARN "$cmd has warnings"
 	fi
-	tst_res TPASS "route-change-netlink passed"
+	tst_res TPASS "$cmd passed"
 }

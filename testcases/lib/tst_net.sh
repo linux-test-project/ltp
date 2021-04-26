@@ -18,11 +18,13 @@ TST_SETUP="tst_net_setup"
 # Blank for an IPV4 test; 6 for an IPV6 test.
 TST_IPV6=${TST_IPV6:-}
 TST_IPVER=${TST_IPV6:-4}
+# Blank for IPv4, '-6' for IPv6 test.
+TST_IPV6_FLAG=${TST_IPV6_FLAG:-}
 
 tst_net_parse_args()
 {
 	case $1 in
-	6) TST_IPV6=6 TST_IPVER=6;;
+	6) TST_IPV6=6 TST_IPVER=6 TST_IPV6_FLAG="-6";;
 	*) [ "$TST_PARSE_ARGS_CALLER" ] && $TST_PARSE_ARGS_CALLER "$1" "$2";;
 	esac
 }
