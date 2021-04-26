@@ -60,6 +60,12 @@ gre_ipv6_01 gre01.sh -6
 gre_ipv4_02 gre02.sh
 gre_ipv6_02 gre02.sh -6
 
+gue01 fou01.sh -t gue
+gue01_ipv6 fou01.sh -t gue -6
+
+fou01 fou01.sh
+fou01_ipv6 fou01.sh -6
+
 dctcp_ipv4_01 dctcp01.sh
 dctcp_ipv6_01 dctcp01.sh -6
 

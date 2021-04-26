@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2018-2019 Petr Vorel <pvorel@suse.cz>
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2014-2021 Oracle and/or its affiliates. All Rights Reserved.
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 # VxLAN
@@ -99,6 +99,19 @@ virt_cleanup()
 	virt_cleanup_rmt
 }
 
+_get_gue_fou_tnl()
+{
+	local enc_type="$1"
+	local tnl=sit
+
+	if [ "$enc_type" = "gue" ]; then
+		[ -n "$TST_IPV6" ] && tnl="ip6tnl"
+	else
+		[ -n "$TST_IPV6" ] && tnl="ip6gre" || tnl="gre"
+	fi
+	echo "$tnl"
+}
+
 virt_add()
 {
 	local vname=$1
@@ -118,7 +131,7 @@ virt_add()
 		[ -z "$opt" ] && \
 			opt="remote $(tst_ipaddr rhost) dev $(tst_iface)"
 	;;
-	sit)
+	sit|gue|fou)
 		[ -z "$opt" ] && opt="remote $(tst_ipaddr rhost) local $(tst_ipaddr)"
 	;;
 	esac
@@ -129,6 +142,9 @@ virt_add()
 	;;
 	gre|ip6gre)
 		ip -f inet$TST_IPV6 tu add $vname mode $virt_type $opt
+	;;
+	gue|fou)
+		ip link add name $vname type $(_get_gue_fou_tnl $virt_type) $opt
 	;;
 	*)
 		ip li add link $(tst_iface) $vname type $virt_type $opt
@@ -151,6 +167,10 @@ virt_add_rhost()
 	gre|ip6gre)
 		tst_rhost_run -s -c "ip -f inet$TST_IPV6 tu add ltp_v0 \
 				     mode $virt_type $@"
+	;;
+	gue|fou)
+		tst_rhost_run -s -c "ip link add name ltp_v0 \
+				     type $(_get_gue_fou_tnl $virt_type) $@"
 	;;
 	*)
 		tst_rhost_run -s -c "ip li add link $(tst_iface rhost) ltp_v0 \
