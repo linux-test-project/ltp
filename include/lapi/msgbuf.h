@@ -17,7 +17,7 @@
 #if defined(__mips__)
 #define HAVE_MSQID64_DS
 
-#if defined(__arch64__)
+#if __BITS_PER_LONG == 64
 /*
  * The msqid64_ds structure for the MIPS architecture.
  * Note extra padding because this structure is passed back and forth

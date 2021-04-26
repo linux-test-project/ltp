@@ -27,7 +27,7 @@
  * data structure when moving to 64-bit time_t.
  */
 
-#if defined(__arch64__)
+#if __BITS_PER_LONG == 64
 struct shmid64_ds {
 	struct ipc64_perm	shm_perm;	/* operation perms */
 	size_t			shm_segsz;	/* size of segment (bytes) */
