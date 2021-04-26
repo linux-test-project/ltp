@@ -81,16 +81,18 @@ static void run(void)
 
 	reset_flags();
 
+	void *recp = dirp;
+
 	do {
-		size_t d_reclen = tst_dirp_reclen(dirp);
-		const char *d_name = tst_dirp_name(dirp);
+		size_t d_reclen = tst_dirp_reclen(recp);
+		const char *d_name = tst_dirp_name(recp);
 
 		set_flag(d_name);
 
 		tst_res(TINFO, "Found '%s'", d_name);
 
 		rval -= d_reclen;
-		dirp += d_reclen;
+		recp += d_reclen;
 	} while (rval > 0);
 
 	check_flags();
