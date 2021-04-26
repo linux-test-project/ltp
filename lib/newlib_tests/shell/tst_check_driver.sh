@@ -20,7 +20,7 @@ setup()
 
 test_drivers()
 {
-	local paths="$@"
+	local paths="$*"
 	local drv
 
 	if [ -z "$paths" ]; then
