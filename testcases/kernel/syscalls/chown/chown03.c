@@ -43,9 +43,6 @@ static void check_owner(struct stat *s, uid_t exp_uid, gid_t exp_gid)
 		tst_res(TFAIL, "%s: wrong owner set to (uid=%d, gid=%d),"
 			       " expected (uid=%d, gid=%d)",
 			FILENAME, s->st_uid, s->st_gid, exp_uid, exp_gid);
-	else
-		tst_res(TPASS, "%s: expected owner set to (uid=%d, gid=%d)",
-			FILENAME, exp_uid, exp_gid);
 }
 
 static void check_mode(struct stat *s, mode_t exp_mode)
@@ -53,9 +50,6 @@ static void check_mode(struct stat *s, mode_t exp_mode)
 	if (s->st_mode != exp_mode)
 	      tst_res(TFAIL, "%s: wrong mode permissions %#o, expected %#o",
 		      FILENAME, s->st_mode, exp_mode);
-	else
-	      tst_res(TPASS, "%s: expected mode permissions %#o",
-		      FILENAME, s->st_mode);
 }
 
 static void run(void)
