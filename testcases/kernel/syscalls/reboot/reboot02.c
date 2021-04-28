@@ -31,7 +31,7 @@
 char nobody_uid[] = "nobody";
 struct passwd *ltpuser;
 
-static struct test_case_t {
+static struct tcase {
 	int flag;
 	int exp_errno;
 	const char *option_message;
@@ -40,19 +40,19 @@ static struct test_case_t {
 	{LINUX_REBOOT_CMD_CAD_ON, EPERM, "LINUX_REBOOT_CMD_CAD_ON"},
 };
 
-static void run(int n)
+static void run(unsigned int n)
 {
-	struct test_case_t *tcase = &tcases[n];
+	struct tcase *tc = &tcases[n];
 
 	if (n == 0)
-		TST_EXP_FAIL(reboot(tcase->flag),
-			tcase->exp_errno, "%s", tcase->option_message);
+		TST_EXP_FAIL(reboot(tc->flag),
+			tc->exp_errno, "%s", tc->option_message);
 	else {
 		ltpuser = SAFE_GETPWNAM(nobody_uid);
 		SAFE_SETEUID(ltpuser->pw_uid);
 
-		TST_EXP_FAIL(reboot(tcase->flag),
-			tcase->exp_errno, "%s", tcase->option_message);
+		TST_EXP_FAIL(reboot(tc->flag),
+			tc->exp_errno, "%s", tc->option_message);
 
 		SAFE_SETEUID(0);
 	}
