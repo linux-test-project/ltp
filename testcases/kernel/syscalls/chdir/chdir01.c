@@ -69,7 +69,7 @@ static void setup(void)
 
 	if (!TST_RET)
 		SAFE_SYMLINK(LINK_NAME2, LINK_NAME1);
-	else if (TST_RET == -1 && TST_ERR == EPERM)
+	else if (TST_RET == -1 && (TST_ERR == EPERM || TST_ERR == ENOSYS))
 		skip_symlinks = 1;
 	else
 		tst_brk(TBROK | TTERRNO, "Cannot create symlinks");
