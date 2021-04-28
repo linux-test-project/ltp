@@ -21,7 +21,6 @@ mtest06_3 mmap3 -x 0.002 -p
 #mtest-6_4 shmat1 -x 0.00005
 
 mem02 mem02
-mem03 mem03
 
 page01 page01
 page02 page02
