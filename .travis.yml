@@ -40,7 +40,7 @@ matrix:
 
         # other builds
         - os: linux
-          env: DISTRO=fedora:latest MAKE_INSTALL=1
+          env: DISTRO=fedora:latest MAKE_INSTALL=1 CONTAINER=podman CONTAINER_ARGS="--runtime=/usr/bin/runc"
           compiler: clang
 
         - os: linux
@@ -84,8 +84,8 @@ matrix:
           compiler: gcc
 
 before_install:
-    # Tumbleweed requires podman and newest runc due docker incompatible with glibc 2.33 (faccessat2)
     - CONTAINER="${CONTAINER:-docker}"
+    # distros with glibc >=2.33 require podman and newest runc due docker faccessat2 incompatiblity
     - >
         if [ "$CONTAINER" = "podman" ]; then
             # podman
