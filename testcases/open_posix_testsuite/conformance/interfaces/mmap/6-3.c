@@ -53,7 +53,7 @@ int main(void)
 	int status;
 	int sig_num;
 
-	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_6_2");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_6_3");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

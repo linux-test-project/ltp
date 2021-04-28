@@ -55,7 +55,7 @@ int main(void)
 	    || sysconf(_SC_AIO_MAX) == -1)
 		return PTS_UNSUPPORTED;
 
-	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_write_4_1");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_read_9_1");
 	unlink(tmpfname);
 	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd == -1) {

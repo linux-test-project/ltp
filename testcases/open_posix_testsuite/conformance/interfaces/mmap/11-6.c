@@ -59,7 +59,7 @@ int main(void)
 	/* mmap will create a partial page */
 	len = page_size / 2;
 
-	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_5");
+	PTS_GET_TMP_FILENAME(tmpfname, "pts_mmap_11_6");
 	child = fork();
 	switch (child) {
 	case 0:
