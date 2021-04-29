@@ -82,7 +82,6 @@ void sighandler(int);
 long l_seek(int, long, int);
 void setup(void);
 void cleanup(void);
-int fail;
 
 #if !defined(UCLINUX)
 
@@ -153,37 +152,24 @@ int main(int argc, char **argv)
 		 * the scheduled write() with valid data is done correctly
 		 * or not.
 		 */
-//block1:
-		tst_resm(TINFO, "Enter block 1");
-		fail = 0;
-
 		l_seek(fd[0], 0, 0);
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN < 0) {
 			if (TEST_ERRNO == EFAULT) {
-				tst_resm(TINFO, "Received EFAULT as expected");
+				tst_resm(TPASS, "Received EFAULT as expected");
 			} else {
 				tst_resm(TFAIL, "Expected EFAULT, got %d",
 					 TEST_ERRNO);
-				fail = 1;
 			}
 			l_seek(fd[0], K_1, 0);
 			if ((nbytes = read(fd[0], buf_list[0], CHUNK)) != 0) {
 				tst_resm(TFAIL, "Expected nbytes = 0, got "
 					 "%d", nbytes);
-				fail = 1;
 			}
 		} else {
 			tst_resm(TFAIL, "Error writev returned a positive "
 				 "value");
-			fail = 1;
 		}
-		if (fail) {
-			tst_resm(TINFO, "block 1 FAILED");
-		} else {
-			tst_resm(TINFO, "block 1 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 1");
 	}
 	close(fd[0]);
 	close(fd[1]);
@@ -283,7 +269,6 @@ long l_seek(int fdesc, long offset, int whence)
 {
 	if (lseek(fdesc, offset, whence) < 0) {
 		tst_resm(TFAIL, "lseek Failed : errno = %d", errno);
-		fail = 1;
 	}
 	return 0;
 }

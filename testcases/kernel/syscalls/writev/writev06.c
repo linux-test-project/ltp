@@ -73,7 +73,6 @@ int TST_TOTAL = 1;
 void sighandler(int);
 void setup(void);
 void cleanup(void);
-int fail;
 
 int main(int argc, char **argv)
 {
@@ -116,33 +115,20 @@ int main(int argc, char **argv)
 		 * Iovecs passed to writev points to valid (readable) regions,
 		 * so all bytes must be successfully written.
 		 */
-//block1:
-
-		tst_resm(TINFO, "Enter block 1");
-		fail = 0;
-
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN >= 0) {
 			if (TEST_RETURN == 2) {
-				tst_resm(TINFO,
+				tst_resm(TPASS,
 					 "writev returned %d as expected", 2);
 			} else {
 				tst_resm(TFAIL, "Expected nbytes = %d, got "
 					 "%ld", 2, TEST_RETURN);
-				fail = 1;
 			}
 		} else {
 			tst_resm(TFAIL | TTERRNO,
 				 "Error writev return value = %ld",
 				 TEST_RETURN);
-			fail = 1;
 		}
-		if (fail) {
-			tst_resm(TINFO, "block 1 FAILED");
-		} else {
-			tst_resm(TINFO, "block 1 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
 	tst_exit();

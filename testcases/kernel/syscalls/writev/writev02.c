@@ -87,7 +87,6 @@ void sighandler(int);
 void l_seek(int, off_t, int);
 void setup(void);
 void cleanup(void);
-int fail;
 
 int main(int argc, char **argv)
 {
@@ -135,7 +134,6 @@ int main(int argc, char **argv)
 		if ((fd[0] = open(f_name, O_RDWR, 0666)) < 0)
 			tst_brkm(TFAIL | TERRNO, cleanup,
 				 "open(.., O_RDWR, ..) failed");
-//block1:
 		/*
 		 * In this block we are trying to call writev() with invalid
 		 * vector to be written in a sparse file. This will return
@@ -143,8 +141,6 @@ int main(int argc, char **argv)
 		 * the scheduled write() with valid data at 8k th offset is
 		 * done correctly or not.
 		 */
-		tst_resm(TINFO, "Enter block 1");
-
 		l_seek(fd[0], 0, 0);
 		TEST(writev(fd[0], wr_iovec, 2));
 		if (TEST_RETURN < 0) {
@@ -167,7 +163,6 @@ int main(int argc, char **argv)
 		} else
 			tst_resm(TFAIL, "Error writev returned a positive "
 				 "value");
-		tst_resm(TINFO, "Exit block 1");
 	}
 	cleanup();
 	tst_exit();
