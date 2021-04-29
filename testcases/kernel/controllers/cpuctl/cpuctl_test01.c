@@ -14,7 +14,8 @@
 /*                                                                            */
 /* You should have received a copy of the GNU General Public License          */
 /* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
+/* Foundation, Inc.,							      */
+/* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA		      */
 /*                                                                            */
 /******************************************************************************/
 
@@ -67,7 +68,7 @@
 #define TIME_INTERVAL	30	/* Time interval in seconds */
 #define NUM_INTERVALS	3	/* How many iterations of TIME_INTERVAL */
 #define NUM_SETS	4	/* How many share values (with same ratio) */
-#define MULTIPLIER   	10	/* decides the rate at which share value gets multiplied */
+#define MULTIPLIER	10	/* decides the rate at which share value gets multiplied */
 #define GRANULARITY    5	/* % value by which shares of a group changes */
 char *TCID = "cpuctl_test01";
 int TST_TOTAL = 1;
