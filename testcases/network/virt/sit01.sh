@@ -11,7 +11,7 @@ virt_type="sit"
 
 do_setup()
 {
-	[ -n "$TST_IPV6" ] && tst_res TBROK "invalid option '-6' for sit tunnel"
+	[ -n "$TST_IPV6" ] && tst_brk TBROK "invalid option '-6' for sit tunnel"
 
 	virt_lib_setup
 
