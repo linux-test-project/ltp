@@ -60,6 +60,8 @@ CPUSET_TMP="/tmp/cpuset_tmp"
 CLONE_CHILDREN="/dev/cpuset/cgroup.clone_children"
 CHILDREN_VALUE="0"
 HOTPLUG_CPU="1"
+SCHED_LB="/dev/cpuset/cpuset.sched_load_balance"
+SCHED_LB_VALUE="0"
 
 cpuset_log()
 {
@@ -169,6 +171,7 @@ setup()
 	fi
 
 	CHILDREN_VALUE="`cat $CLONE_CHILDREN`"
+	SCHED_LB_VALUE="`cat $SCHED_LB`"
 }
 
 # Write the cleanup function
@@ -180,6 +183,7 @@ cleanup()
 	}
 
 	echo $CHILDREN_VALUE > $CLONE_CHILDREN
+	echo $SCHED_LB_VALUE > $SCHED_LB
 
 	find "$CPUSET" -type d | sort | sed -n '2,$p' | tac | while read subdir
 	do
