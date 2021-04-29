@@ -368,6 +368,7 @@ static long readproc(const char *obj)
 		if ((statbuf.st_mode & S_IRUSR) == 0 &&
 		    (statbuf.st_mode & S_IWUSR) != 0) {
 			tst_resm(TINFO, "%s: is write-only.", obj);
+			(void)close(fd);
 			return 0;
 		}
 
@@ -376,6 +377,7 @@ static long readproc(const char *obj)
 			if (!strcmp(obj, error_nonblock[i])) {
 				tst_resm(TINFO, "%s: does not honor "
 					 "O_NONBLOCK", obj);
+				(void)close(fd);
 				return 0;
 			}
 		}
