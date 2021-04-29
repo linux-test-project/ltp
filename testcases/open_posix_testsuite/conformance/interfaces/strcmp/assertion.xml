@@ -1,0 +1,17 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:64897:64904">
+    The function will compare the string pointed to by s1 to the string pointed
+    to by s2. Upon completion, function will return an integer greater than 0,
+    if the string pointed to by s1 is greater than the string pointed to by s2.
+  <assertion>
+  <assertion id="2" tag="ref:XBD7:64897:64904">
+    The function will compare the string pointed to by s1 to the string pointed
+    to by s2. Upon completion, function will return an integer equal to 0, if the
+    string pointed to by s1 is equal to the string pointed to by s2.
+  <assertion>
+  <assertion id="3" tag="ref:XBD7:64897:64904">
+    The function will compare the string pointed to by s1 to the string pointed
+    to by s2. Upon completion, function will return an integer less than 0, if the
+    string pointed to by s1 is less than the string pointed to by s2.
+  <assertion>
+<assertions>
