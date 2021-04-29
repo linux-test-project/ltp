@@ -13,10 +13,13 @@
  *
  * Assume that the value LONG_MAX is an invalid pointer.
  *
- * aarch64 linux versions v5.3 up to v5.6-rc1 may incorrectly report
- * EINVAL instead of ENOMEM, see:
+ * aarch64 linux versions v5.4-rc1 up to v5.6-rc3 may incorrectly report
+ * EINVAL instead of ENOMEM, the fix patch see:
  *   597399d0cb91 ("arm64: tags: Preserve tags for addresses translated via TTBR1")
  *   d0022c0ef29b ("arm64: memory: Add missing brackets to untagged_addr() macro")
+ *
+ * this bug was introduced because of the following commit, see:
+ *   057d3389108e ("mm: untag user pointers passed to memory syscalls")
  */
 
 #include <sys/mman.h>
