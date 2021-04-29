@@ -89,8 +89,6 @@ int create_segment(void *, size_t);
 void cleanup(void);
 void setup(void);
 
-#define FAILED 1
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -98,25 +96,20 @@ int main(int ac, char **av)
 	void *ptr;
 	int retval, func;
 
-	int flag;
 	int seg[4];
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
-	setup();		/* global setup */
+	setup();
 
-	/* The following loop checks looping state if -i option given */
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-//block1:
 		/*
 		 * Check for ENOSYS.
 		 */
-		tst_resm(TINFO, "Enter block 1");
-		flag = 0;
 		ptr = malloc(10);
 		func = 100;
 		retval = modify_ldt(func, ptr, sizeof(ptr));
@@ -125,29 +118,20 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "modify_ldt() set invalid "
 					 "errno, expected ENOSYS, got: %d",
 					 errno);
-				flag = FAILED;
+			} else {
+				tst_resm(TPASS,
+					"modify_ldt() set expected errno");
 			}
 		} else {
 			tst_resm(TFAIL, "modify_ldt error: "
 				 "unexpected return value %d", retval);
-			flag = FAILED;
 		}
 
-		if (flag) {
-			tst_resm(TINFO, "block 1 FAILED");
-		} else {
-			tst_resm(TINFO, "block 1 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 1");
 		free(ptr);
 
-//block2:
 		/*
 		 * Check for EINVAL
 		 */
-		tst_resm(TINFO, "Enter block 2");
-		flag = 0;
-
 		ptr = 0;
 
 		retval = modify_ldt(1, ptr, sizeof(ptr));
@@ -156,28 +140,20 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "modify_ldt() set invalid "
 					 "errno, expected EINVAL, got: %d",
 					 errno);
-				flag = FAILED;
+			} else {
+				tst_resm(TPASS,
+					"modify_ldt() set expected errno");
 			}
 		} else {
 			tst_resm(TFAIL, "modify_ldt error: "
 				 "unexpected return value %d", retval);
-			flag = FAILED;
 		}
-
-		if (flag) {
-			tst_resm(TINFO, "block 2 FAILED");
-		} else {
-			tst_resm(TINFO, "block 2 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 2");
-
-//block3:
 
 		/*
 		 * Create a new LDT segment.
 		 */
 		if (create_segment(seg, sizeof(seg)) == -1) {
-			tst_brkm(TINFO, cleanup, "Creation of segment failed");
+			tst_brkm(TBROK, cleanup, "Creation of segment failed");
 		}
 
 		/*
@@ -191,25 +167,17 @@ int main(int ac, char **av)
 				tst_resm(TFAIL, "modify_ldt() set invalid "
 					 "errno, expected EFAULT, got: %d",
 					 errno);
-				flag = FAILED;
+			} else {
+				tst_resm(TPASS,
+					"modify_ldt() set expected errno");
 			}
 		} else {
 			tst_resm(TFAIL, "modify_ldt error: "
 				 "unexpected return value %d", retval);
-			flag = FAILED;
 		}
-
-		if (flag) {
-			tst_resm(TINFO, "block 3 FAILED");
-		} else {
-			tst_resm(TINFO, "block 3 PASSED");
-		}
-		tst_resm(TINFO, "Exit block 3");
-
 	}
 	cleanup();
 	tst_exit();
-
 }
 
 /*
@@ -231,9 +199,6 @@ int create_segment(void *seg, size_t size)
 	return modify_ldt(1, &entry, sizeof(entry));
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test
- */
 void setup(void)
 {
 
@@ -242,10 +207,6 @@ void setup(void)
 	TEST_PAUSE;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * or premature exit.
- */
 void cleanup(void)
 {
 
