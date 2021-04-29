@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2016-2021
 # Copyright (c) 2015 Fujitsu Ltd.
 # Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
 #
@@ -21,11 +22,7 @@ setup()
 		tst_require_module "ltp_lsmod01.ko"
 		tst_require_root
 		tst_require_cmds insmod
-		insmod "$TST_MODPATH"
-		if [ $? -ne 0 ]; then
-			tst_res TBROK "insmod failed"
-			return
-		fi
+		ROD insmod "$TST_MODPATH"
 
 		module_inserted=1
 	fi
