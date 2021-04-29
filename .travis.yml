@@ -40,7 +40,7 @@ matrix:
 
         # other builds
         - os: linux
-          env: DISTRO=fedora:latest MAKE_INSTALL=1 CONTAINER=podman CONTAINER_ARGS="--runtime=/usr/bin/runc"
+          env: DISTRO=fedora:latest MAKE_INSTALL=1 CONTAINER=podman
           compiler: clang
 
         - os: linux
@@ -56,7 +56,7 @@ matrix:
           compiler: clang
 
         - os: linux
-          env: DISTRO=opensuse/tumbleweed CONTAINER=podman CONTAINER_ARGS="--runtime=/usr/bin/runc"
+          env: DISTRO=opensuse/tumbleweed CONTAINER=podman
           compiler: gcc
 
         - os: linux
@@ -85,10 +85,11 @@ matrix:
 
 before_install:
     - CONTAINER="${CONTAINER:-docker}"
-    # distros with glibc >=2.33 require podman and newest runc due docker faccessat2 incompatiblity
+    # distros with glibc >=2.33 require podman and newest runc due docker faccessat2 incompatibility
     - >
         if [ "$CONTAINER" = "podman" ]; then
             # podman
+            CONTAINER_ARGS="--runtime=/usr/bin/runc"
             . /etc/os-release
             sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
             wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_${VERSION_ID}/Release.key -O- | sudo apt-key add -
