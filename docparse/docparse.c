@@ -308,7 +308,7 @@ static struct data_node *parse_file(const char *fname)
 	const char *token;
 
 	if (access(fname, F_OK)) {
-		fprintf(stderr, "file %s is not exist\n", fname);
+		fprintf(stderr, "file %s does not exist\n", fname);
 		return NULL;
 	}
 
