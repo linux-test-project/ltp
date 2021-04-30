@@ -289,6 +289,8 @@ int map_and_thread(char *tmpfile,
 	static pthread_t pthread_ids[NUMTHREAD];
 	/* contains ids of the threads created       */
 	void * map_addr = NULL;	/* address where the file is mapped          */
+	ssize_t written = 0;
+	ssize_t bytes;
 
 	/* Create a file with permissions 0666, and open it with RDRW perms       */
 	/* if the name is not a NULL                                              */
@@ -299,22 +301,38 @@ int map_and_thread(char *tmpfile,
 			  S_IRWXO | S_IRWXU | S_IRWXG))
 		    == -1) {
 			perror("map_and_thread(): open()");
-			close(fd);
 			fflush(NULL);
 			return FAILED;
 		}
 
 		/* Write pagesize * pages_num bytes to the file */
 		empty_buf = malloc(pagesize * pages_num);
-		if (write(fd, empty_buf, pagesize * pages_num) !=
-		    (pagesize * pages_num)) {
-			perror("map_and_thread(): write()");
-			free(empty_buf);
-			fflush(NULL);
+		if (!empty_buf) {
+			perror("map_and_thread(): malloc()");
 			remove_files(tmpfile, NULL);
 			close(fd);
+			fflush(NULL);
 			return FAILED;
 		}
+
+		/* Writing fewer bytes than required is not an error so retry if
+		 * fewer were written; if that happened due to some permanent
+		 * error like ENOSPC the following retry will fail and a proper
+		 * errno will be reported.
+		 */
+		do {
+			bytes = write(fd, empty_buf + written,
+				      pagesize * pages_num - written);
+			if (bytes < 0) {
+				perror("map_and_thread(): write()");
+				free(empty_buf);
+				fflush(NULL);
+				close(fd);
+				remove_files(tmpfile, NULL);
+				return FAILED;
+			}
+			written += bytes;
+		} while (written < pagesize * pages_num);
 		map_type = (fault_type == COW_FAULT) ? MAP_PRIVATE : MAP_SHARED;
 
 		/* Map the file, if the required fault type is COW_FAULT map the file */
