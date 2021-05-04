@@ -391,22 +391,19 @@ sub content_all_tests
 			}
 			my $k = @$tag[0];
 			my $v = @$tag[1];
-			my $text = $k;
 
 			if (defined($$git_url{$k})) {
-				$text .= "-$v";
-
 				$commits{$k} = () unless (defined($commits{$k}));
 				unless (defined($commits{$k}{$v})) {
 					chdir($$git_url{$k});
 					$commits{$k}{$v} = `git log --pretty=format:'%s' -1 $v`;
 					chdir(OUTDIR);
 				}
-				$v = $commits{$k}{$v};
+				$v .= ' ("' . $commits{$k}{$v} . '")';
 			}
 
-			my $a = html_a(tag_url($k, @$tag[1]), $text);
-			$content .= "\n|$a\n|$v\n";
+			$v = html_a(tag_url($k, @$tag[1]), $v);
+			$content .= "\n|$k\n|$v\n";
 			$tmp2 = 1;
 		}
 		if (defined($tmp2)) {
