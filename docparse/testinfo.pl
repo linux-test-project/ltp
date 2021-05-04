@@ -424,8 +424,9 @@ sub content_all_tests
 
 		$tmp2 = undef;
 		my %commits;
+		my @sorted_tags = sort { $a->[0] cmp $b->[0] } @{$json->{'tests'}{$name}{tags}};
 
-		for my $tag (@{$json->{'tests'}{$name}{tags}}) {
+		for my $tag (@sorted_tags) {
 			if (!defined($tmp2)) {
 				$content .= table . "|Tags|Info\n"
 			}
