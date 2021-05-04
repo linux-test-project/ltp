@@ -35,6 +35,8 @@
 
 #ifdef HAVE_NUMA_V2
 
+static const struct tst_cgroup_group *cg;
+
 volatile int end;
 static int *nodes;
 static int nnodes;
@@ -47,15 +49,14 @@ static long count_cpu(void);
 
 static void test_cpuset(void)
 {
-	int child, i, status;
+	int child, i;
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
-	char mems[BUFSIZ], buf[BUFSIZ];
+	char buf[BUFSIZ];
 
-	tst_cgroup_cpuset_read_files(PATH_TMP_CG_CST, "cpus", buf, BUFSIZ);
-	tst_cgroup_cpuset_write_files(PATH_TMP_CG_CST, "cpus", buf);
-	tst_cgroup_cpuset_read_files(PATH_TMP_CG_CST, "mems", mems, BUFSIZ);
-	tst_cgroup_cpuset_write_files(PATH_TMP_CG_CST, "mems", mems);
-	tst_cgroup_move_current(PATH_TMP_CG_CST);
+	SAFE_CGROUP_READ(cg, "cpuset.cpus", buf, sizeof(buf));
+	SAFE_CGROUP_PRINT(cg, "cpuset.cpus", buf);
+	SAFE_CGROUP_READ(cg, "cpuset.mems", buf, sizeof(buf));
+	SAFE_CGROUP_PRINT(cg, "cpuset.mems", buf);
 
 	child = SAFE_FORK();
 	if (child == 0) {
@@ -69,33 +70,30 @@ static void test_cpuset(void)
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}
 
-	snprintf(buf, BUFSIZ, "%d", nodes[0]);
-	tst_cgroup_cpuset_write_files(PATH_TMP_CG_CST, "mems", buf);
-	snprintf(buf, BUFSIZ, "%d", nodes[1]);
-	tst_cgroup_cpuset_write_files(PATH_TMP_CG_CST, "mems", buf);
+	SAFE_CGROUP_PRINTF(cg, "cpuset.mems", "%d", nodes[0]);
+	SAFE_CGROUP_PRINTF(cg, "cpuset.mems", "%d", nodes[1]);
 
-	SAFE_WAITPID(child, &status, WUNTRACED | WCONTINUED);
-	if (WEXITSTATUS(status) != 0) {
-		tst_res(TFAIL, "child exit status is %d", WEXITSTATUS(status));
-		return;
-	}
+	tst_reap_children();
 
 	tst_res(TPASS, "cpuset test pass");
 }
 
 static void setup(void)
 {
-	tst_cgroup_mount(TST_CGROUP_CPUSET, PATH_TMP_CG_CST);
+	tst_cgroup_require("cpuset", NULL);
 	ncpus = count_cpu();
 	if (get_allowed_nodes_arr(NH_MEMS | NH_CPUS, &nnodes, &nodes) < 0)
 		tst_brk(TBROK | TERRNO, "get_allowed_nodes_arr");
 	if (nnodes <= 1)
 		tst_brk(TCONF, "requires a NUMA system.");
+
+	cg = tst_cgroup_get_test_group();
+	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
 }
 
 static void cleanup(void)
 {
-	tst_cgroup_umount(PATH_TMP_CG_CST);
+	tst_cgroup_cleanup();
 }
 
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)

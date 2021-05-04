@@ -61,7 +61,7 @@ void check_hugepage(void);
 void write_memcg(void);
 
 /* cpuset/memcg - include/tst_cgroup.h */
-void write_cpusets(const char *cgroup_dir, long nd);
+void write_cpusets(const struct tst_cgroup_group *cg, long nd);
 
 /* shared */
 unsigned int get_a_numa_node(void);
