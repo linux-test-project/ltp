@@ -34,15 +34,7 @@
 #include "test.h"
 #include "safe_file_ops_fn.h"
 
-/*
- * Count number of expected assigned conversions. Any conversion starts with '%'.
- * The '%%' matches % and no assignment is done. The %*x matches as x would do but
- * the assignment is suppressed.
- *
- * NOTE: This is not 100% correct for complex scanf strings, but will do for
- *       all of our intended usage.
- */
-static int count_scanf_conversions(const char *fmt)
+int tst_count_scanf_conversions(const char *fmt)
 {
 	unsigned int cnt = 0;
 	int flag = 0;
@@ -89,7 +81,7 @@ int file_scanf(const char *file, const int lineno,
 		return 1;
 	}
 
-	exp_convs = count_scanf_conversions(fmt);
+	exp_convs = tst_count_scanf_conversions(fmt);
 
 	va_start(va, fmt);
 	ret = vfscanf(f, fmt, va);
@@ -141,7 +133,7 @@ void safe_file_scanf(const char *file, const int lineno,
 		return;
 	}
 
-	exp_convs = count_scanf_conversions(fmt);
+	exp_convs = tst_count_scanf_conversions(fmt);
 
 	va_start(va, fmt);
 	ret = vfscanf(f, fmt, va);
@@ -195,7 +187,7 @@ int file_lines_scanf(const char *file, const int lineno,
 		return 1;
 	}
 
-	arg_count = count_scanf_conversions(fmt);
+	arg_count = tst_count_scanf_conversions(fmt);
 
 	while (fgets(line, BUFSIZ, fp) != NULL) {
 		va_start(ap, fmt);
