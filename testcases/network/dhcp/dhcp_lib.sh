@@ -37,6 +37,12 @@ stop_dhcp()
 
 dhcp_lib_setup()
 {
+	if [ $HAVE_SYSTEMCTL -eq 1 ] && \
+		systemctl --no-pager -p Id show network.service | grep -q Id=wicked.service; then
+		[ $TST_IPV6 ] && tst_brk TCONF "wicked not supported on IPv6"
+		is_wicked=1
+	fi
+
 	[ -z "$log" ] && log="$PWD/$(basename $0 '.sh').log"
 
 	if [ $TST_IPV6 ]; then
@@ -129,8 +135,7 @@ test01()
 		tst_brk TBROK "Failed to start $dhcp_name"
 	fi
 
-	if [ $HAVE_SYSTEMCTL -eq 1 ] && \
-		systemctl --no-pager -p Id show network.service | grep -q Id=wicked.service; then
+	if [ "$is_wicked" ]; then
 		tst_res TINFO "wicked is running, don't start dhclient"
 		if [ ! -f "$wicked_cfg" ]; then
 			cat <<EOF > $wicked_cfg
