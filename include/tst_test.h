@@ -39,7 +39,6 @@
 #include "tst_capability.h"
 #include "tst_hugepage.h"
 #include "tst_assert.h"
-#include "tst_cgroup.h"
 #include "tst_lockdown.h"
 #include "tst_fips.h"
 #include "tst_taint.h"
