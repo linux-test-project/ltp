@@ -16,6 +16,8 @@ test15
 test16
 tst_capability01
 tst_capability02
+tst_cgroup01
+tst_cgroup02
 tst_device
 tst_safe_fileops
 tst_res_hexd
@@ -24,7 +26,6 @@ test17
 test18
 test19
 test20
-test21
 test22
 tst_expiration_timer
 test_assert
