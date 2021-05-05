@@ -5,6 +5,7 @@
 
 #define _GNU_SOURCE
 #include <unistd.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <sched.h>
 #include <sys/ptrace.h>
@@ -431,6 +432,20 @@ int safe_dup2(const char *file, const int lineno, int oldfd, int newfd)
 	}
 
 	return rval;
+}
+
+void *safe_realloc(const char *file, const int lineno, void *ptr, size_t size)
+{
+	void *ret;
+
+	ret = realloc(ptr, size);
+
+	if (!ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"realloc(%p, %zu) failed", ptr, size);
+	}
+
+	return ret;
 }
 
 sighandler_t safe_signal(const char *file, const int lineno,
