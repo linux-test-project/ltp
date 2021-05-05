@@ -38,8 +38,11 @@
 /* Number of files to test (must be > 1) */
 #define FILES 5
 
+#define PROCFILE "/proc/sys/fs/inotify/max_user_instances"
+
 static char names[FILES][PATH_MAX];
 static pid_t pid;
+static int old_proc_limit;
 
 static void setup(void)
 {
@@ -47,6 +50,11 @@ static void setup(void)
 
 	for (i = 0; i < FILES; i++)
 		sprintf(names[i], "fname_%d", i);
+
+	SAFE_FILE_SCANF(PROCFILE, "%d", &old_proc_limit);
+
+	if (old_proc_limit >= 0 && old_proc_limit < TEARDOWNS)
+		SAFE_FILE_PRINTF(PROCFILE, "%d", TEARDOWNS + 128);
 }
 
 static void verify_inotify(void)
@@ -95,10 +103,13 @@ static void cleanup(void)
 		SAFE_KILL(pid, SIGKILL);
 		SAFE_WAIT(NULL);
 	}
+
+	SAFE_FILE_PRINTF(PROCFILE, "%d", old_proc_limit);
 }
 
 static struct tst_test test = {
 	.timeout = 600,
+	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.setup = setup,
