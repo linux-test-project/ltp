@@ -125,3 +125,18 @@ int bpf_load_prog(union bpf_attr *const attr, const char *const log)
 	tst_brk(TBROK | TERRNO, "Failed to load program");
 	return ret;
 }
+
+void bpf_run_prog(const int prog_fd,
+		  const char *const msg, const size_t msg_len)
+{
+	int sk[2];
+
+	SAFE_SOCKETPAIR(AF_UNIX, SOCK_DGRAM, 0, sk);
+	SAFE_SETSOCKOPT(sk[1], SOL_SOCKET, SO_ATTACH_BPF,
+			&prog_fd, sizeof(prog_fd));
+
+	SAFE_WRITE(1, sk[0], msg, msg_len);
+
+	SAFE_CLOSE(sk[0]);
+	SAFE_CLOSE(sk[1]);
+}

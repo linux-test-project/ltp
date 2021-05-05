@@ -79,20 +79,11 @@ static void setup(void)
 static void run(void)
 {
 	int map_fd, prog_fd;
-	int sk[2];
 
 	map_fd = bpf_map_array_create(2);
 	prog_fd = load_prog(map_fd);
-
-	SAFE_SOCKETPAIR(AF_UNIX, SOCK_DGRAM, 0, sk);
-	SAFE_SETSOCKOPT(sk[1], SOL_SOCKET, SO_ATTACH_BPF,
-			&prog_fd, sizeof(prog_fd));
-
-	SAFE_WRITE(1, sk[0], msg, sizeof(MSG));
-
+	bpf_run_prog(prog_fd, msg, sizeof(MSG));
 	SAFE_CLOSE(prog_fd);
-	SAFE_CLOSE(sk[0]);
-	SAFE_CLOSE(sk[1]);
 
         *key = 0;
 	bpf_map_array_get(map_fd, key, val);
