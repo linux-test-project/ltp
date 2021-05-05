@@ -28,7 +28,7 @@ void rlimit_bump_memlock(void)
 	}
 }
 
-int bpf_map_create(union bpf_attr *attr)
+int bpf_map_create(union bpf_attr *const attr)
 {
 	int ret;
 
@@ -48,12 +48,46 @@ int bpf_map_create(union bpf_attr *attr)
 	return ret;
 }
 
-void bpf_init_prog_attr(union bpf_attr *attr, const struct bpf_insn *prog,
-	size_t prog_size, char *log_buf, size_t log_size)
+int bpf_map_array_create(const uint32_t max_entries)
+{
+	union bpf_attr map_attr = {
+		.map_type = BPF_MAP_TYPE_ARRAY,
+		.key_size = 4,
+		.value_size = 8,
+		.max_entries = max_entries,
+		.map_flags = 0
+	};
+
+	return bpf_map_create(&map_attr);
+}
+
+void bpf_map_array_get(const int map_fd,
+		       const uint32_t *const array_indx,
+		       uint64_t *const array_val)
+{
+	union bpf_attr elem_attr = {
+		.map_fd = map_fd,
+		.key = ptr_to_u64(array_indx),
+		.value = ptr_to_u64(array_val),
+		.flags = 0
+	};
+	const int ret = bpf(BPF_MAP_LOOKUP_ELEM, &elem_attr, sizeof(elem_attr));
+
+	if (ret) {
+		tst_brk(TBROK | TTERRNO,
+			"Failed array map lookup: fd=%i [%"PRIu32"]",
+			map_fd, *array_indx);
+	}
+}
+
+void bpf_init_prog_attr(union bpf_attr *const attr,
+			const struct bpf_insn *const prog,
+			const size_t prog_size, char *const log_buf,
+			const size_t log_size)
 {
 	static struct bpf_insn *buf;
 	static size_t buf_size;
-	size_t prog_len = prog_size / sizeof(*prog);
+	const size_t prog_len = prog_size / sizeof(*prog);
 
 	/* all guarded buffers will be free()d automatically by LTP library */
 	if (!buf || prog_size > buf_size) {
@@ -72,12 +106,10 @@ void bpf_init_prog_attr(union bpf_attr *attr, const struct bpf_insn *prog,
 	attr->log_level = 1;
 }
 
-int bpf_load_prog(union bpf_attr *attr, const char *log)
+int bpf_load_prog(union bpf_attr *const attr, const char *const log)
 {
-	int ret;
-
-	ret = TST_RETRY_FUNC(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)),
-		TST_RETVAL_GE0);
+	const int ret = TST_RETRY_FUNC(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)),
+				       TST_RETVAL_GE0);
 
 	if (ret >= 0) {
 		tst_res(TPASS, "Loaded program");
