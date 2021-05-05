@@ -47,6 +47,9 @@ ssize_t safe_sendto(const char *file, const int lineno, char len_strict,
 ssize_t safe_sendmsg(const char *file, const int lineno, size_t msg_len,
 		  int sockfd, const struct msghdr *msg, int flags);
 
+ssize_t safe_recv(const char *file, const int lineno, size_t len,
+	int sockfd, void *buf, size_t size, int flags);
+
 ssize_t safe_recvmsg(const char *file, const int lineno, size_t msg_len,
 		  int sockfd, struct msghdr *msg, int flags);
 

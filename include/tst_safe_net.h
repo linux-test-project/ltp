@@ -42,6 +42,9 @@
 #define SAFE_SENDMSG(msg_len, fd, msg, flags) \
 	safe_sendmsg(__FILE__, __LINE__, msg_len, fd, msg, flags)
 
+#define SAFE_RECV(msg_len, fd, buf, size, flags)		\
+	safe_recv(__FILE__, __LINE__, (msg_len), (fd), (buf), (size), (flags))
+
 #define SAFE_RECVMSG(msg_len, fd, msg, flags)		\
 	safe_recvmsg(__FILE__, __LINE__, msg_len, fd, msg, flags)
 
