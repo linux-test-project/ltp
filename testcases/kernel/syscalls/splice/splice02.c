@@ -153,7 +153,6 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.needs_checkpoints = 1,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.min_kver = "2.6.17",
