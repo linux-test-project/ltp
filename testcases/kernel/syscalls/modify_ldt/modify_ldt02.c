@@ -120,6 +120,7 @@ int main(int ac, char **av)
 
 		tst_old_flush();
 		if ((pid = FORK_OR_VFORK()) == 0) {
+			signal(SIGSEGV, SIG_DFL);
 			val = read_segment(0);
 			exit(1);
 		}
@@ -168,23 +169,9 @@ int read_segment(unsigned int index)
 	return res;
 }
 
-void sigsegv_handler(int sig)
-{
-	tst_resm(TINFO, "received signal: %d", sig);
-	exit(0);
-}
-
 void setup(void)
 {
-	struct sigaction act;
-
-	memset(&act, 0, sizeof(act));
-	sigemptyset(&act.sa_mask);
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	act.sa_handler = sigsegv_handler;
-	(void)sigaction(SIGSEGV, &act, NULL);
 
 	TEST_PAUSE;
 }
