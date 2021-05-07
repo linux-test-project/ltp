@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2020 Microsoft Corporation
-# Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2021 Petr Vorel <pvorel@suse.cz>
 # Author: Lachlan Sneff <t-josne@linux.microsoft.com>
 #
 # Verify that keys are measured correctly based on policy.
@@ -20,6 +20,7 @@ REQUIRED_POLICY="^measure.*$FUNC_KEYCHECK"
 setup()
 {
 	require_ima_policy_content "$REQUIRED_POLICY" '-E' > $TST_TMPDIR/policy.txt
+	require_valid_policy_template
 }
 
 cleanup()
@@ -27,15 +28,14 @@ cleanup()
 	tst_is_num $KEYRING_ID && keyctl clear $KEYRING_ID
 }
 
-check_policy_template()
+
+require_valid_policy_template()
 {
 	while read line; do
 	if echo $line | grep -q 'template=' && ! echo $line | grep -q 'template=ima-buf'; then
-		tst_res TCONF "only template=ima-buf can be specified for KEY_CHECK"
-		return 1
+		tst_brk TCONF "only template=ima-buf can be specified for KEY_CHECK"
 	fi
 	done < $TST_TMPDIR/policy.txt
-	return 0
 }
 
 check_keys_policy()
@@ -58,8 +58,6 @@ test1()
 	local test_file="file.txt" tmp_file="file2.txt"
 
 	tst_res TINFO "verify key measurement for keyrings and templates specified in IMA policy"
-
-	check_policy_template || return
 
 	check_keys_policy "$pattern" > $tmp_file || return
 	keycheck_lines=$(cat $tmp_file)
@@ -114,8 +112,6 @@ test2()
 	local temp_file="file.txt"
 
 	tst_res TINFO "verify measurement of certificate imported into a keyring"
-
-	check_policy_template || return
 
 	check_keys_policy "$pattern" >/dev/null || return
 
