@@ -24,7 +24,7 @@ int main(void)
 	timeptr = localtime(&current_time);
 
 	if (timeptr != NULL) {
-		printf("date: %s", (asctime(localtime((&current_time)))));
+		printf("date: %s, ", (asctime(localtime((&current_time)))));
 		puts("Test PASSED");
 		return PTS_PASS;
 	} else {

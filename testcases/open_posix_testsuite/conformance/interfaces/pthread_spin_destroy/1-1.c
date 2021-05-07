@@ -56,7 +56,7 @@ int main(void)
 	printf("main: destroy spin lock\n");
 	rc = pthread_spin_destroy(&spinlock);
 	if (rc != 0) {
-		printf("Test FAILED: Error at pthread_spin_destroy()"
+		printf("Test FAILED: Error at pthread_spin_destroy(), "
 		       "Return code : %d\n", rc);
 		return PTS_FAIL;
 	}

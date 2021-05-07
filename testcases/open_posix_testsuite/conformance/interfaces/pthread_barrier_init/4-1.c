@@ -114,7 +114,7 @@ int main(void)
 	rc = pthread_barrier_init(&barrier, NULL, 2);
 
 	if (rc == EBUSY) {
-		printf("main: pthread_barrier_init() correctly got EBUSY");
+		printf("main: pthread_barrier_init() correctly got EBUSY\n");
 		printf("Test PASSED\n");
 	} else {
 		printf("main: got return code: %d, %s\n", rc, strerror(rc));

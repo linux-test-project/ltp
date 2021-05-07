@@ -46,14 +46,14 @@ int main(void)
 	for (i = 0; i < COUNT; i++) {
 		if (pthread_rwlock_unlock(&rwlock) != 0) {
 			printf
-			    ("Test FAILED: main cannot unlock rwlock number %d",
+			    ("Test FAILED: main cannot unlock rwlock number %d\n",
 			     i);
 			return PTS_FAIL;
 		}
 	}
 
 	if (pthread_rwlock_destroy(&rwlock) != 0) {
-		printf("Error at pthread_rwlockattr_destroy()");
+		printf("Error at pthread_rwlockattr_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 

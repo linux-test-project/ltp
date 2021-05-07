@@ -56,7 +56,7 @@ int main(void)
 	}
 
 	if (pthread_attr_init(&attr) != 0) {
-		printf("An error occurs when calling pthread_attr_init()");
+		printf("An error occurs when calling pthread_attr_init()\n");
 		return PTS_UNRESOLVED;
 	}
 	result = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
@@ -64,16 +64,16 @@ int main(void)
 		printf("Process contention scope threads are not supported.\n");
 		return PTS_UNSUPPORTED;
 	} else if (result != 0) {
-		printf("An error occurs when calling pthread_attr_setscope()");
+		printf("An error occurs when calling pthread_attr_setscope()\n");
 		return PTS_UNRESOLVED;
 	}
 	if (pthread_create(&tid, &attr, runner, NULL) != 0) {
-		printf("An error occurs when calling pthread_create()");
+		printf("An error occurs when calling pthread_create()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (pthread_getschedparam(tid, &policy, &param) != 0) {
-		printf("An error occurs when calling pthread_getschedparam()");
+		printf("An error occurs when calling pthread_getschedparam()\n");
 		return PTS_UNRESOLVED;
 	}
 

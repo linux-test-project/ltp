@@ -81,7 +81,7 @@ static void *fn_wr_1(void *arg PTS_ATTRIBUTE_UNUSED)
 	}
 
 	if (pthread_rwlock_destroy(&rwlock) != 0) {
-		printf("thread1: Error at pthread_rwlockattr_destroy()");
+		printf("thread1: Error at pthread_rwlockattr_destroy()\n");
 		exit(PTS_UNRESOLVED);
 	}
 	thread_state = EXITING_THREAD;

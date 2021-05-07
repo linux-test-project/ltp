@@ -19,7 +19,7 @@
 #include "posixtest.h"
 
 #define TEST "3-2"
-#define FUNCTION "pthread_attr_setschedpaarm"
+#define FUNCTION "pthread_attr_setschedparam"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 #define RRPOLICY SCHED_RR

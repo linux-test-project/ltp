@@ -66,7 +66,7 @@ static void *fn_chld(void *arg)
 	pthread_spin_unlock(&spinlock);
 
 	if (pthread_spin_destroy(&spinlock) != 0) {
-		printf("Error at pthread_spin_destroy()");
+		printf("Error at pthread_spin_destroy()\n");
 		exit(PTS_UNRESOLVED);
 	}
 

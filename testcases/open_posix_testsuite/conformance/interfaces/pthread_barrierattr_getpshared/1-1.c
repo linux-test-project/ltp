@@ -49,7 +49,7 @@ int main(void)
 	rc = pthread_barrierattr_destroy(&ba);
 	if (rc != 0) {
 		printf("Error at pthread_barrierattr_destroy() "
-		       "return code: %d, %s", rc, strerror(rc));
+		       "return code: %d, %s\n", rc, strerror(rc));
 		return PTS_UNRESOLVED;
 	}
 

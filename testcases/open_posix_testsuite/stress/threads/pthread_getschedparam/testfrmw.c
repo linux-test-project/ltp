@@ -56,7 +56,7 @@ static void output(char *string, ...)
 	if (now == NULL)
 		printf(ts);
 	else
-		printf("[%2.2d:%2.2d:%2.2d]", now->tm_hour, now->tm_min,
+		printf("[%2.2d:%2.2d:%2.2d]\n", now->tm_hour, now->tm_min,
 		       now->tm_sec);
 	va_start(ap, string);
 	vprintf(string, ap);

@@ -106,10 +106,10 @@ static void *th_fn(void *arg PTS_ATTRIBUTE_UNUSED)
 		printf("thread: correctly acquired read lock\n");
 		expired = 0;
 	} else if (rc == ETIMEDOUT) {
-		printf("thread: timer expired, did not acquire read lock");
+		printf("thread: timer expired, did not acquire read lock\n");
 		expired = 1;
 	} else {
-		printf("Error at pthread_rwlock_timedrdlock()");
+		printf("Error at pthread_rwlock_timedrdlock()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -155,7 +155,7 @@ int main(void)
 
 	printf("main: fire SIGUSR1 to thread\n");
 	if (pthread_kill(sig_thread, SIGUSR1) != 0) {
-		printf("Error in pthread_kill()");
+		printf("Error in pthread_kill()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -206,12 +206,12 @@ int main(void)
 	}
 
 	if (pthread_join(sig_thread, NULL) != 0) {
-		printf("Error at pthread_join()");
+		printf("Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (pthread_rwlock_destroy(&rwlock) != 0) {
-		printf("Error at pthread_destroy()");
+		printf("Error at pthread_destroy()\n");
 		exit(PTS_UNRESOLVED);
 	}
 

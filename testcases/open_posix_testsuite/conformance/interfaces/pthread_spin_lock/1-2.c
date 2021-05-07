@@ -142,7 +142,7 @@ int main(void)
 
 	/* Destroy the spinlock */
 	if (pthread_spin_destroy(&spinlock) != 0) {
-		printf("Error at pthread_spin_destroy()");
+		printf("Error at pthread_spin_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 

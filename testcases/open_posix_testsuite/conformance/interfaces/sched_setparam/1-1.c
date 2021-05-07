@@ -106,7 +106,7 @@ int main(void)
 		result = sched_setparam(child_pid, &param);
 
 		if (result == 0 && param.sched_priority == new_priority) {
-			printf("Test PASSED");
+			printf("Test PASSED\n");
 			kill(child_pid, SIGUSR1);
 			return PTS_PASS;
 		}

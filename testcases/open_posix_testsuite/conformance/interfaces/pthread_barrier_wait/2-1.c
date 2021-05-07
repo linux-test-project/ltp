@@ -112,7 +112,7 @@ int main(void)
 	}
 
 	if (pthread_barrier_destroy(&barrier) != 0) {
-		printf("Error at pthread_barrier_destroy()");
+		printf("Error at pthread_barrier_destroy()\n");
 		return PTS_UNRESOLVED;
 	}
 

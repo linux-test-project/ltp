@@ -42,7 +42,7 @@ int main(void)
 	/* Set the attribute to PTHREAD_PROCESS_PRIVATE.  */
 	ret = pthread_mutexattr_setpshared(&mta, PTHREAD_PROCESS_PRIVATE);
 	if (ret != 0) {
-		printf("Test FAILED: Expected return code 0, got: %d", ret);
+		printf("Test FAILED: Expected return code 0, got: %d\n", ret);
 		return PTS_FAIL;
 	}
 

@@ -51,9 +51,9 @@ static void output(char *string, ...)
 	nw = time(NULL);
 	now = localtime(&nw);
 	if (now == NULL)
-		printf("[??:??:??]");
+		printf("[??:??:??]\n");
 	else
-		printf("[%2.2d:%2.2d:%2.2d]",
+		printf("[%2.2d:%2.2d:%2.2d]\n",
 		       now->tm_hour, now->tm_min, now->tm_sec);
 	va_start(ap, string);
 	vprintf(string, ap);
