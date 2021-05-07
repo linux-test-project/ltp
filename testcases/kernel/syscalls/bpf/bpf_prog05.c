@@ -142,11 +142,11 @@ static void run(void)
 	*key = 0;
 
 	tst_res(TINFO, "Check w7(-1) /= w6(0) [r7 = -1, r6 = 1 << 32]");
-	expect_reg_val("src(r6)", 1UL << 32);
+	expect_reg_val("src(r6)", 1ULL << 32);
 	expect_reg_val("dst(r7)", 0);
 
 	tst_res(TINFO, "Check w7(-1) %%= w6(0) [r7 = -1, r6 = 1 << 32]");
-	expect_reg_val("src(r6)", 1UL << 32);
+	expect_reg_val("src(r6)", 1ULL << 32);
 	expect_reg_val("dst(r7)", (uint32_t)-1);
 
 	SAFE_CLOSE(map_fd);
