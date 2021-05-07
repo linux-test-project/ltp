@@ -10,6 +10,7 @@
 #include <inttypes.h>
 
 #include "lapi/bpf.h"
+#include "lapi/socket.h"
 
 #define BPF_MEMLOCK_ADD (2*1024*1024)
 

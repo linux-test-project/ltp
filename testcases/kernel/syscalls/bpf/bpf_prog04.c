@@ -26,8 +26,6 @@
 #include "tst_test.h"
 #include "tst_taint.h"
 #include "tst_capability.h"
-#include "lapi/socket.h"
-#include "lapi/bpf.h"
 #include "bpf_common.h"
 
 #define BUFSIZE 8192
