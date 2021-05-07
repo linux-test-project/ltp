@@ -231,7 +231,7 @@ int setup_test(int i)
 		rl.rlim_cur = 7;
 
 		if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0) {
-			tst_resm(TWARN, "setrlimit failed to set the "
+			tst_resm(TWARN | TERRNO, "setrlimit failed to set the "
 				 "resource for RLIMIT_MEMLOCK to check "
 				 "for mlockall() error %s\n", TC[i].edesc);
 			return 1;
@@ -268,6 +268,7 @@ void cleanup_test(int i)
 
 	switch (i) {
 	case 0:
+	case 1:
 		SAFE_SETEUID(cleanup, 0);
 
 		rl.rlim_max = -1;
@@ -280,11 +281,6 @@ void cleanup_test(int i)
 				 "checking for mlockall() error %s\n",
 				 TC[i].edesc);
 		}
-
-		return;
-
-	case 1:
-		SAFE_SETEUID(cleanup, 0);
 		return;
 
 	}
