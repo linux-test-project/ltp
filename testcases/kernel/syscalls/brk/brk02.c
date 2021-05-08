@@ -36,8 +36,7 @@ void brk_down_vmas(void)
 		return;
 	}
 
-	if (mprotect(addr - page_size, page_size,
-		     PROT_READ|PROT_WRITE|PROT_EXEC)) {
+	if (mprotect(addr - page_size, page_size, PROT_READ)) {
 		tst_res(TFAIL | TERRNO, "Cannot mprotect new VMA");
 		return;
 	}
