@@ -32,7 +32,7 @@ do_test()
 {
 	tst_res TINFO "testing killing test after TST_TIMEOUT"
 
-	tst_sleep 2
+	sleep 2
 	tst_res TFAIL "test: running after TST_TIMEOUT"
 }
 
@@ -40,7 +40,7 @@ cleanup()
 {
 	tst_res TPASS "test run cleanup after timeout"
 
-	tst_sleep 15 # must be higher than wait time in _tst_kill_test
+	sleep 15 # must be higher than wait time in _tst_kill_test
 	tst_res TFAIL "cleanup: running after TST_TIMEOUT"
 }
 
