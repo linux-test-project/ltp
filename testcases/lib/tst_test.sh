@@ -439,6 +439,7 @@ _tst_kill_test()
 {
 	local i=10
 
+	trap '' INT
 	tst_res TBROK "Test timeouted, sending SIGINT! If you are running on slow machine, try exporting LTP_TIMEOUT_MUL > 1"
 	kill -INT -$pid
 	tst_sleep 100ms
