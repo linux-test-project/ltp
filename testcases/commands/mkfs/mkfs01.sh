@@ -96,6 +96,9 @@ mkfs_test()
 	if [ "$fs_type" = "xfs" ] || [ "$fs_type" = "btrfs" ]; then
 		fs_op="$fs_op -f"
 	fi
+	if [ "$fs_type" = "ext3" ] || [ "$fs_type" = "ext4" ]; then
+		fs_op="$fs_op -b 1024"
+	fi
 
 	local mkfs_cmd="mkfs $mkfs_op $fs_op $device $size"
 
