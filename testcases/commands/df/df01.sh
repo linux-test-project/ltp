@@ -80,10 +80,10 @@ df_verify()
 	if [ $? -ne 0 ]; then
 		grep -q -E "unrecognized option | invalid option" output
 		if [ $? -eq 0 ]; then
-			tst_res TCONF "'$1' not supported."
+			tst_res TCONF "'$@' not supported."
 			return 32
 		else
-			tst_res TFAIL "'$1' failed."
+			tst_res TFAIL "'$@' failed."
 			cat output
 			return 1
 		fi
