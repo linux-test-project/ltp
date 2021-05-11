@@ -1236,7 +1236,7 @@ static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 	if (++sigkill_retries > 10) {
 		WRITE_MSG("Cannot kill test processes!\n");
 		WRITE_MSG("Congratulation, likely test hit a kernel bug.\n");
-		WRITE_MSG("Exitting uncleanly...\n");
+		WRITE_MSG("Exiting uncleanly...\n");
 		_exit(TFAIL);
 	}
 }

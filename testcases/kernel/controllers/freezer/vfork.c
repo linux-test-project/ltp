@@ -21,7 +21,7 @@
  *
  * vfork <num> times, stopping after each vfork. TODO: Requires an external process
  * to send SIGCONT to goto the next vfork. <num> SIGCONT signals must be
- * received before exitting.
+ * received before exiting.
  *
  * We can't do anything but execve or _exit in vfork'd processes
  * so we use ptrace vfork'd processes in order to pause then during each
