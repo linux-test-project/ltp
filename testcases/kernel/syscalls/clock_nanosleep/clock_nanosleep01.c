@@ -208,7 +208,7 @@ static void do_test(unsigned int i)
 		return;
 	}
 
-	tst_res(TPASS | TERRNO, "clock_nanosleep() failed with");
+	tst_res(TPASS | TTERRNO, "clock_nanosleep() failed with");
 }
 
 static struct tst_test test = {

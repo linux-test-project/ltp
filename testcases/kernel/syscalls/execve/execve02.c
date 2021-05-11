@@ -49,9 +49,9 @@ static void do_child(void)
 		tst_brk(TFAIL, "execve() passed unexpectedly");
 
 	if (TST_ERR != EACCES)
-		tst_brk(TFAIL | TERRNO, "execve() failed unexpectedly");
+		tst_brk(TFAIL | TTERRNO, "execve() failed unexpectedly");
 
-	tst_res(TPASS | TERRNO, "execve() failed expectedly");
+	tst_res(TPASS | TTERRNO, "execve() failed expectedly");
 
 	exit(0);
 }
