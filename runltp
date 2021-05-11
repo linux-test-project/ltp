@@ -122,7 +122,7 @@ usage()
     -T TCONFCMDFILE Command file with all test cases that are not fully tested.
     -d TMPDIR       Directory where temporary files will be created.
     -D NUM_PROCS,NUM_FILES,NUM_BYTES,CLEAN_FLAG
-                    Run LTP under additional background Load on Secondary Storage (Seperate by comma)
+                    Run LTP under additional background Load on Secondary Storage (separated by comma)
                     [NUM_PROCS   = no. of processes creating Storage Load by spinning over write()]
                     [NUM_FILES   = Write() to these many files (Defaults to 1 when value 0 or undefined)]
                     [NUM_BYTES   = write these many bytes (defaults to 1GB, when value 0 or undefined)]
@@ -138,7 +138,7 @@ usage()
 			Log Kernel messages generated for each test cases inside this directory
     -l LOGFILE      Log results of test in a logfile.
     -m NUM_PROCS,CHUNKS,BYTES,HANGUP_FLAG
-                    Run LTP under additional background Load on Main memory (Seperate by comma)
+                    Run LTP under additional background Load on Main memory (separated by comma)
                     [NUM_PROCS   = no. of processes creating main Memory Load by spinning over malloc()]
                     [CHUNKS      = malloc these many chunks (default is 1 when value 0 or undefined)]
                     [BYTES       = malloc CHUNKS of BYTES bytes (default is 256MB when value 0 or undefined) ]
@@ -300,11 +300,11 @@ main()
             version_of_ltp
 	    ;;
         f)  # Execute user defined set of testcases.
-            # Can be more then one file, just separate it with ',', like:
+            # Can be more than one file, just separate it with ',', like:
             # -f nfs,commands,/tmp/testfile
             CMDFILES=$OPTARG;;
 	F)	INJECT_KERNEL_FAULT=1
-		#Seperate out the NO_OF_LOOPS & FAULT_PERCENTAGE
+		# Separate out the NO_OF_LOOPS & FAULT_PERCENTAGE
 		INJECT_FAULT_LOOPS_PER_TEST=`echo $OPTARG |cut -d',' -f1 | tr -d '\n' | tr -d ' '`
 		INJECT_KERNEL_FAULT_PERCENTAGE=`echo $OPTARG |cut -d',' -f2 | tr -d '\n' | tr -d ' '`
 		if [ ! $INJECT_FAULT_LOOPS_PER_TEST ]; then
@@ -502,10 +502,6 @@ main()
           OUTPUTFILE_NAME="$DEFAULT_FILE_NAME_GENERATION_TIME"
           OUTPUTFILE="-o $LTPROOT/output/LTP_RUN_ON-$OUTPUTFILE_NAME.output"
           ALT_DIR_OUT=1
-          if [ ! "$HTMLFILE" ] ; then                        ## User has not mentioned HTML File name, We need to create one
-             HTMLFILE_NAME=`basename $OUTPUTFILE_NAME`
-             HTMLFILE="$LTPROOT/output/$HTMLFILE_NAME.html"
-          fi
        fi
     fi
 
@@ -522,16 +518,17 @@ main()
             }
         }
     }
+
     # If we need, create the results directory
     [ "$ALT_DIR_RES" -eq 1 ] && \
     {
-        echo "INFO: creating $LTPROOT/results directory"
         [ ! -d $LTPROOT/results ] && \
         {
-           mkdir -p $LTPROOT/results || \
-           {
-               echo "ERROR: failed to create $LTPROOT/results"
-               exit 1
+            echo "INFO: creating $LTPROOT/results directory"
+            mkdir -p $LTPROOT/results || \
+            {
+                echo "ERROR: failed to create $LTPROOT/results"
+                exit 1
             }
         }
     }
@@ -840,12 +837,12 @@ EOF
        export LTP_VERSION=$version_date
        export TEST_START_TIME="$test_start_time"
        export TEST_END_TIME="$(date)"
-       OUTPUT_DIRECTORY=`echo $OUTPUTFILE | cut -c4-`
+       OUTPUT_FILE=`echo $OUTPUTFILE | cut -c4-`
        LOGS_DIRECTORY="$LTPROOT/results"
        export TEST_OUTPUT_DIRECTORY="$LTPROOT/output"
        export TEST_LOGS_DIRECTORY=$LOGS_DIRECTORY
        echo "Generating HTML Output.....!!"
-       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/bin/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_DIRECTORY  > $HTMLFILE; )
+       ( perl $LTPROOT/bin/genhtml.pl $LTPROOT/bin/html_report_header.txt test_start test_end test_output execution_status $OUTPUT_FILE  > $HTMLFILE; )
        echo "Generated HTML Output.....!!"
        echo "Location: $HTMLFILE";
 
