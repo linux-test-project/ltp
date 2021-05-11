@@ -117,7 +117,7 @@ static void test2(void)
 	 * Since we would be altering the filesize in the child,
 	 * we need to "sync", ie. fflush the parent's write buffers
 	 * here.  This is because the child will inherit the parent's
-	 * write buffer, and while exitting it would try to fflush it.
+	 * write buffer, and while exiting it would try to fflush it.
 	 * Since its filesize is truncated to only 10 bytes, the
 	 * fflush attempt would fail, and the child would exit with
 	 * an wired value!  So, it is essential to fflush the parent's

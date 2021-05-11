@@ -92,10 +92,10 @@ cleanup(). So if a there is a cleanup() callback in the tst\_test structure
 it's executed. The cleanup() callback runs in a special context where the
 tst\_brk(TBROK, ...) calls are converted into tst\_res(TWARN, ...) calls. This
 is because we found out that carrying on with partially broken cleanup is
-usually better option than exitting it in the middle.
+usually better option than exiting it in the middle.
 
 The test cleanup() is also called by the tst\_brk() handler in order to cleanup
-before exitting the test process, hence it must be able to cope even with
+before exiting the test process, hence it must be able to cope even with
 partial test setup. Usually it suffices to make sure to clean up only
 resources that already have been set up and to do that in an inverse order that
 we did in setup().

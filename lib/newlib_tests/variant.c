@@ -22,7 +22,7 @@ static void do_test(void)
 	break;
 	}
 
-	tst_res(TINFO, "test() function exitting normaly");
+	tst_res(TINFO, "test() function exiting normally");
 }
 
 static void setup(void)

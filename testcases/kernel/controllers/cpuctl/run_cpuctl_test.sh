@@ -90,7 +90,7 @@ NUM_CPUS=`tst_ncpus`
 	echo "RUNNING SETUP.....";
 	do_setup;
 
-	# Trap the signal from any abnormaly terminated task
+	# Trap the signal from any abnormally terminated task
 	# and kill all others and let cleanup be called
 	trap 'echo "signal caught from task"; killall cpuctl_task_*;' SIGUSR1;
 
@@ -294,7 +294,7 @@ NUM_CPUS=`tst_ncpus`
 		# and they will return non zero exit status. So Test broke!!
 		if [ $RC -ne 0 ]
 		then
-			echo "Task $i exited abnormaly with return value: $RC";
+			echo "Task $i exited abnormally with return value: $RC";
 			tst_resm TINFO "Test could not execute for the expected duration";
 			cleanup;
 			exit -1;

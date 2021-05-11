@@ -208,7 +208,7 @@ PWD=`pwd`
 	RC=$?;  # Return status of the task being waited
 	if [ $RC -ne 0 ]
 	then
-		echo "Task $check_task exited abnormaly with return value: $RC";
+		echo "Task $check_task exited abnormally with return value: $RC";
 		echo TBROK "Test could'nt execute for expected duration";
 	fi
 	cd $PWD;

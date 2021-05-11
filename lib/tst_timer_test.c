@@ -267,7 +267,7 @@ void do_timer_test(long long usec, unsigned int nsamples)
 	cur_sample = 0;
 	for (i = 0; i < (int)nsamples; i++) {
 		if (sample(CLOCK_MONOTONIC, usec)) {
-			tst_res(TINFO, "sampling function failed, exitting");
+			tst_res(TINFO, "sampling function failed, exiting");
 			return;
 		}
 	}
