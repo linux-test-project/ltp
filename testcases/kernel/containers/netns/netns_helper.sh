@@ -45,22 +45,6 @@ NS_HANDLE1=
 # ifconfig <device> $IFCONF_IN6_ARG IP/NETMASK
 IFCONF_IN6_ARG=
 
-tst_check_iproute()
-{
-	local cur_ipver="$(ip -V)"
-	local spe_ipver="$1"
-
-	cur_ipver=${cur_ipver##*s}
-
-	if [ -z "$cur_ipver" -o -z "$spe_ipver" ]; then
-		tst_brk TBROK "failed to obtain valid iproute version"
-	fi
-
-	if [ $cur_ipver -lt $spe_ipver ]; then
-		tst_brk TCONF "too old iproute version"
-	fi
-}
-
 # Sets up global variables which can be used in test cases (documented above),
 # creates two network namespaces and a pair of virtual ethernet devices, each
 # device in one namespace. Each device is then enabled and assigned an IP
@@ -204,7 +188,9 @@ netns_ns_exec_setup()
 # ethernet device is then created for each namespace.
 netns_ip_setup()
 {
-	tst_check_iproute 111010
+	ip netns > /dev/null || \
+		tst_brk TCONF "ip without netns support (required iproute2 >= ss111010 - v3.0.0)"
+
 	NS_EXEC="ip netns exec"
 
 	NS_HANDLE0=tst_net_ns0
