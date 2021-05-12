@@ -64,7 +64,6 @@ shmctl08 shmctl08
 shmdt01 shmdt01
 shmdt02 shmdt02
 
-shmget01 shmget01
 shmget02 shmget02
 shmget03 shmget03
 shmget04 shmget04
