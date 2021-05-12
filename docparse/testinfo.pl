@@ -87,6 +87,11 @@ sub code
 	return "+$_[0]+";
 }
 
+sub hr
+{
+	return "\n\n'''\n\n";
+}
+
 sub html_a
 {
 	my ($url, $text) = @_;
@@ -99,17 +104,17 @@ sub html_a
 
 sub h1
 {
-	return "= $_[0]\n";
+	return "== $_[0]\n";
 }
 
 sub h2
 {
-	return "== $_[0]\n";
+	return "=== $_[0]\n";
 }
 
 sub h3
 {
-	return "=== $_[0]\n";
+	return "==== $_[0]\n";
 }
 
 sub label
@@ -350,6 +355,7 @@ sub content_all_tests
 			$printed = $letter;
 		}
 
+		$content .= hr() if (defined($tmp));
 		$content .= label($name);
 		$content .= h3($name);
 		$content .= $letters;
