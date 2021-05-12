@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2017-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2021 Petr Vorel <pvorel@suse.cz>
 # Script for travis builds.
 #
 # TODO: Implement comparison of installed files. List of installed files can
@@ -15,9 +15,9 @@ CC="${CC:-gcc}"
 DEFAULT_PREFIX="$HOME/ltp-install"
 DEFAULT_BUILD="native"
 DEFAULT_TREE="in"
-CONFIGURE_OPTS_IN_TREE="--with-open-posix-testsuite --with-realtime-testsuite"
+CONFIGURE_OPTS_IN_TREE="--with-open-posix-testsuite --with-realtime-testsuite $CONFIGURE_OPT_EXTRA"
 # TODO: open posix testsuite is currently broken in out-tree-build. Enable it once it's fixed.
-CONFIGURE_OPTS_OUT_TREE="--with-realtime-testsuite"
+CONFIGURE_OPTS_OUT_TREE="--with-realtime-testsuite $CONFIGURE_OPT_EXTRA"
 MAKE_OPTS="-j$(getconf _NPROCESSORS_ONLN)"
 
 build_32()
@@ -172,6 +172,12 @@ BUILD TYPES:
 32       32-bit build (PKG_CONFIG_LIBDIR auto-detection for x86_64)
 cross    cross-compile build (requires set compiler via -c switch)
 native   native build
+
+Default configure options:
+in-tree:    $CONFIGURE_OPTS_IN_TREE
+out-of-tree $CONFIGURE_OPTS_OUT_TREE
+
+configure options can extend the default with \$CONFIGURE_OPT_EXTRA environment variable
 EOF
 }
 
