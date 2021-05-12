@@ -86,6 +86,9 @@ int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
 	struct timespec timeout;
 	int ret;
 
+	if (!tst_max_futexes)
+		tst_brkm(TBROK, NULL, "Set test.needs_checkpoints = 1");
+
 	if (id >= tst_max_futexes) {
 		errno = EOVERFLOW;
 		return -1;
@@ -106,6 +109,9 @@ int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
                         unsigned int msec_timeout)
 {
 	unsigned int msecs = 0, waked = 0;
+
+	if (!tst_max_futexes)
+		tst_brkm(TBROK, NULL, "Set test.needs_checkpoints = 1");
 
 	if (id >= tst_max_futexes) {
 		errno = EOVERFLOW;
