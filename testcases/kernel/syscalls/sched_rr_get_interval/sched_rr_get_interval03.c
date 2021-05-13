@@ -75,14 +75,14 @@ static void run(unsigned int i)
 	TEST(tv->sched_rr_get_interval(*tc->pid, ts));
 
 	if (TST_RET != -1) {
-		tst_res(TFAIL, "sched_rr_get_interval() passed unexcpectedly");
+		tst_res(TFAIL, "sched_rr_get_interval() passed unexpectedly");
 		return;
 	}
 
 	if (tc->exp_errno == TST_ERR)
-		tst_res(TPASS | TTERRNO, "sched_rr_get_interval() failed as excpected");
+		tst_res(TPASS | TTERRNO, "sched_rr_get_interval() failed as expected");
 	else
-		tst_res(TFAIL | TTERRNO, "sched_rr_get_interval() failed unexcpectedly: %s",
+		tst_res(TFAIL | TTERRNO, "sched_rr_get_interval() failed unexpectedly: %s",
 			tst_strerrno(tc->exp_errno));
 }
 

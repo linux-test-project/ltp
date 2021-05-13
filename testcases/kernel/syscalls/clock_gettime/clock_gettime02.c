@@ -120,7 +120,7 @@ static void verify_clock_gettime(unsigned int i)
 	TEST(tv->clock_gettime(tc[i].clktype, ts));
 
 	if (TST_RET != -1) {
-		tst_res(TFAIL, "clock_gettime(2): clock %s passed unexcpectedly",
+		tst_res(TFAIL, "clock_gettime(2): clock %s passed unexpectedly",
 			tst_clock_name(tc[i].clktype));
 		return;
 	}
