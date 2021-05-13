@@ -22,6 +22,7 @@ static void usage(void)
 
 int main(int argc, char *argv[])
 {
+	const char *skiplist[] = {"tmpfs", NULL};
 	const char *const *filesystems;
 	int i;
 
@@ -39,7 +40,7 @@ int main(int argc, char *argv[])
 	if (argv[1])
 		return !tst_fs_is_supported(argv[1]);
 
-	filesystems = tst_get_supported_fs_types(NULL);
+	filesystems = tst_get_supported_fs_types(skiplist);
 	for (i = 0; filesystems[i]; i++)
 		printf("%s\n", filesystems[i]);
 
