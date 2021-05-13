@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009, Cisco Systems Inc.
 # Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
 # Ngie Cooper, July 2009

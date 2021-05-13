@@ -1,8 +1,5 @@
-#
-# Read COPYING for licensing details.
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Ngie Cooper, June 2010
-#
 
 # Makefiles that are considered critical to execution; if they don't exist
 # all of the Makefiles will be rebuilt by default.

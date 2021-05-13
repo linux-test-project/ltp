@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2014, Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
 
