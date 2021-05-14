@@ -30,6 +30,8 @@
 
 #ifdef HAVE_UNSHARE
 
+static uid_t nobody_uid;
+
 static struct test_case_t {
 	int mode;
 	int expected_error;
@@ -42,20 +44,19 @@ static struct test_case_t {
 static void run(unsigned int i)
 {
 	pid_t pid = SAFE_FORK();
-	if (pid == 0)
+	if (pid == 0) {
+		if (tc[i].expected_error == EPERM)
+			SAFE_SETUID(nobody_uid);
+
 		TST_EXP_FAIL(unshare(tc[i].mode), tc[i].expected_error,
 			     "unshare(%s)", tc[i].desc);
+	}
 }
 
 static void setup(void)
 {
 	struct passwd *ltpuser = SAFE_GETPWNAM("nobody");
-	SAFE_SETEUID(ltpuser->pw_uid);
-}
-
-static void cleanup(void)
-{
-	SAFE_SETEUID(0);
+	nobody_uid = ltpuser->pw_uid;
 }
 
 static struct tst_test test = {
@@ -63,7 +64,6 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
-	.cleanup = cleanup,
 	.setup = setup,
 	.test = run,
 };
