@@ -5,10 +5,11 @@
 
 #include <asm/types.h>
 #include <linux/netlink.h>
-#include <linux/rtnetlink.h>
 #include <linux/veth.h>
 #include <sys/socket.h>
 #include <net/if.h>
+#include "lapi/rtnetlink.h"
+
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_rtnetlink.h"
