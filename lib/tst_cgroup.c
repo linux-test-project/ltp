@@ -122,7 +122,7 @@ struct cgroup_ctrl {
 	const enum cgroup_ctrl_indx ctrl_indx;
 
 	/* Runtime; hierarchy the controller is attached to */
-        struct cgroup_root *ctrl_root;
+	struct cgroup_root *ctrl_root;
 	/* Runtime; whether we required the controller */
 	int we_require_it:1;
 };
@@ -442,7 +442,7 @@ void tst_cgroup_scan(void)
 	}
 
 	do {
-                if (strncmp(mnt->mnt_type, "cgroup", 6))
+		if (strncmp(mnt->mnt_type, "cgroup", 6))
 			continue;
 
 		cgroup_root_scan(mnt->mnt_type, mnt->mnt_dir, mnt->mnt_opts);
@@ -530,7 +530,7 @@ mount:
 	if (!ctrl->ctrl_root)
 		return;
 
-        ctrl->ctrl_root->we_mounted_it = 1;
+	ctrl->ctrl_root->we_mounted_it = 1;
 	ctrl->ctrl_root->mnt_dir.we_created_it = made_dir;
 
 	if (ctrl->ctrl_indx == CTRL_MEMORY) {

@@ -25,8 +25,8 @@
  * case we end up with a set of hierarchies like the follwoing. Where
  * existing system-manager-created CGroups have been omitted.
  *
- * 	(V2 Root)	(V1 Root 1)	...	(V1 Root N)
- * 	    |		     |			     |
+ *	(V2 Root)	(V1 Root 1)	...	(V1 Root N)
+ *	    |		     |			     |
  *	  (ltp)		   (ltp)	...	   (ltp)
  *	 /     \	  /	\		  /	\
  *  (drain) (test-n) (drain)  (test-n)  ...  (drain)  (test-n)
