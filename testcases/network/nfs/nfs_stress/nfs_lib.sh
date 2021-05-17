@@ -83,16 +83,17 @@ nfs_mount()
 		mount_dir="$(tst_ipaddr $host_type):$remote_dir"
 	fi
 
-	local mnt_cmd="mount -t nfs $opts $mount_dir $local_dir"
+	local mnt_cmd="mount -v -t nfs $opts $mount_dir $local_dir"
 
 	tst_res TINFO "Mounting NFS: $mnt_cmd"
 	if [ -n "$LTP_NETNS" ] && [ -z "$LTP_NFS_NETNS_USE_LO" ]; then
-		tst_rhost_run -c "$mnt_cmd"
+		tst_rhost_run -c "$mnt_cmd" > mount.log
 	else
-		$mnt_cmd > /dev/null
+		$mnt_cmd > mount.log
 	fi
 
 	if [ $? -ne 0 ]; then
+		cat mount.log
 		if [ "$type" = "udp" -o "$type" = "udp6" ] && tst_kvcmp -ge 5.6; then
 			tst_brk TCONF "UDP support disabled with the kernel config NFS_DISABLE_UDP_SUPPORT?"
 		fi
