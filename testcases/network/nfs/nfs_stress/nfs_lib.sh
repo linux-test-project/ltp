@@ -110,11 +110,6 @@ nfs_mount()
 
 nfs_setup()
 {
-	# Check if current filesystem is NFS
-	if [ "$(stat -f . | grep "Type: nfs")" ]; then
-		tst_brk TCONF "Cannot run nfs-stress test on mounted NFS"
-	fi
-
 	local i
 	local type
 	local n=0
@@ -122,6 +117,16 @@ nfs_setup()
 	local local_dir
 	local remote_dir
 	local mount_dir
+
+	if [ "$(stat -f . | grep "Type: nfs")" ]; then
+		tst_brk TCONF "Cannot run nfs-stress test on mounted NFS"
+	fi
+
+	if tst_cmd_available pgrep; then
+		for i in rpc.mountd rpc.statd; do
+			pgrep $i > /dev/null || tst_brk TCONF "$i not running"
+		done
+	fi
 
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
