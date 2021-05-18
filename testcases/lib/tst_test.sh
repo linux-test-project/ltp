@@ -444,13 +444,13 @@ _tst_kill_test()
 	kill -INT -$pid
 	tst_sleep 100ms
 
-	while kill -0 $pid 2>&1 > /dev/null && [ $i -gt 0 ]; do
+	while kill -0 $pid >/dev/null 2>&1 && [ $i -gt 0 ]; do
 		tst_res TINFO "Test is still running, waiting ${i}s"
 		sleep 1
 		i=$((i-1))
 	done
 
-	if kill -0 $pid 2>&1 > /dev/null; then
+	if kill -0 $pid >/dev/null 2>&1; then
 		tst_res TBROK "Test still running, sending SIGKILL"
 		kill -KILL -$pid
 	fi
