@@ -142,7 +142,7 @@ void handler(int sig, siginfo_t * sip, void *ucp)
 		 * of the signal list
 		 */
 		if (sigismember(&omask, sig) == 0) {
-			tst_resm(TFAIL, "SA_RESETHAND should cause sig to"
+			tst_resm(TFAIL, "SA_RESETHAND should cause sig to "
 				 "be masked when the handler executes.");
 			return;
 		}
@@ -156,7 +156,7 @@ void handler(int sig, siginfo_t * sip, void *ucp)
 		 * included sig.
 		 */
 		if (!sigismember(&omask, sig)) {
-			tst_resm(TFAIL, "sig should continue to be masked"
+			tst_resm(TFAIL, "sig should continue to be masked "
 				 "because sa_mask originally contained sig.");
 			return;
 		}

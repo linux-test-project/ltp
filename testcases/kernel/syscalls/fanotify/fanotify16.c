@@ -417,7 +417,7 @@ check_match:
 		} else if (fhlen != expected_fid->handle.handle_bytes) {
 			tst_res(TFAIL,
 				"got event: mask=%llx pid=%u fd=%d name='%s' "
-				"len=%d info_type=%d info_len=%d fh_len=%d expected(%d)"
+				"len=%d info_type=%d info_len=%d fh_len=%d expected(%d) "
 				"fh_type=%d",
 				(unsigned long long)event->mask,
 				(unsigned)event->pid, event->fd, filename,

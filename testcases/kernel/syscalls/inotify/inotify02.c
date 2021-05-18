@@ -150,7 +150,7 @@ void verify_inotify(void)
 					"1c17d18e3775485bf1e0ce79575eb637a94494a2.");
 			tst_res(TFAIL,
 				"get unnecessary event: "
-				"wd=%d mask=%08x cookie=%-5u len=%-2u"
+				"wd=%d mask=%08x cookie=%-5u len=%-2u "
 				"name=\"%.*s\"", event->wd, event->mask,
 				event->cookie, event->len, event->len,
 				event->name);

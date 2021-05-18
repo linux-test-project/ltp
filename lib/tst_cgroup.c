@@ -404,7 +404,7 @@ v1:
 			goto discard;
 
 		tst_brk(TBROK,
-			"The intersection of two distinct sets of mounted controllers should be null?"
+			"The intersection of two distinct sets of mounted controllers should be null? "
 			"Check '%s' and '%s'", root->mnt_path, mnt_dir);
 	}
 

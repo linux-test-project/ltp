@@ -66,7 +66,7 @@ int main(int ac, char **av)
 			TEST(fcntl(file, F_SETLK, &fl));
 
 			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "fcntl() returned %ld,"
+				tst_resm(TFAIL, "fcntl() returned %ld, "
 					 "expected -1, errno=%d", TEST_RETURN,
 					 EAGAIN);
 			} else {

@@ -185,7 +185,7 @@ void do_child_1(void)
 			tst_resm(TPASS, "setsid SUCCESS to set "
 				 "errno to EPERM");
 		} else {
-			tst_resm(TFAIL, "setsid failed, expected %d,"
+			tst_resm(TFAIL, "setsid failed, expected %d, "
 				 "return %d", -1, errno);
 			exno = 3;
 		}

@@ -65,7 +65,7 @@ int main(int ac, char **av)
 		TEST(link(OLDPATH, NEWPATH));
 
 		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "link() returned %ld,"
+			tst_resm(TFAIL, "link() returned %ld, "
 				 "expected -1, errno=%d", TEST_RETURN,
 				 EACCES);
 		} else {

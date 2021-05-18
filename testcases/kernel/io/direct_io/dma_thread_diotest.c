@@ -289,7 +289,7 @@ static void dma_thread_diotest_verify(void)
 				rc = pthread_create(&worker[j].tid, NULL,
 						    worker_thread, worker + j);
 				if (rc != 0) {
-					tst_brkm(TBROK, cleanup, "Can't create"
+					tst_brkm(TBROK, cleanup, "Can't create "
 						 "worker thread %d: %s",
 						 j, strerror(rc));
 				}
@@ -304,7 +304,7 @@ static void dma_thread_diotest_verify(void)
 				}
 				if ((intptr_t)retval != 0) {
 					tst_brkm(TBROK, cleanup, "there is"
-						 "some errors in worker[%d],"
+						 "some errors in worker[%d], "
 						 "return value: %ld",
 						 j, (intptr_t)retval);
 				}

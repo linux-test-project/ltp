@@ -345,7 +345,7 @@ int main(int argc,		/* number of input parameters.                        */
 				spcy = SCHED_OTHER;
 			else {
 				fprintf(stderr,
-					"ERROR: Unrecognized scheduler policy,"
+					"ERROR: Unrecognized scheduler policy, "
 					"using default\n");
 				usage(argv[0]);
 			}

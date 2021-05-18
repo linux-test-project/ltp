@@ -134,7 +134,7 @@ main(void)
 	/* accept() TEST1: Bad socket descriptor EBADF, Expected error */
         error = accept(-1, (struct sockaddr *) &acpt_addr, &len);
         if (error != -1 || errno != EBADF)
-		tst_brkm(TBROK, tst_exit, "accept with a bad socket descriptor"
+		tst_brkm(TBROK, tst_exit, "accept with a bad socket descriptor "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "accept() with a bad socket descriptor - EBADF");
@@ -159,7 +159,7 @@ main(void)
         /*accept() TEST3: Invalid address EFAULT, Expected error*/
         error = accept(lstn_sk, (struct sockaddr *) -1, &len);
         if (error != -1 || errno != EFAULT)
-		tst_brkm(TBROK, tst_exit, "accept with invalid address"
+		tst_brkm(TBROK, tst_exit, "accept with invalid address "
                          "error:%d, errno:%d", error, errno);
 
 	tst_resm(TPASS, "accept() with invalid address - EFAULT");

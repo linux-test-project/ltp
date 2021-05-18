@@ -66,7 +66,7 @@ int main(int ac, char **av)
 
 		/* Check return code from link(2) */
 		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL | TTERRNO, "link() returned %ld,"
+			tst_resm(TFAIL | TTERRNO, "link() returned %ld, "
 				 "expected -1, errno=%d", TEST_RETURN, EACCES);
 		} else {
 			if (TEST_ERRNO == EACCES) {

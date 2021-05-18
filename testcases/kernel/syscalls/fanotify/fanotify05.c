@@ -158,8 +158,7 @@ static void test_fanotify(unsigned int n)
 		if (event.mask != FAN_OPEN &&
 		    event.mask != FAN_Q_OVERFLOW) {
 			tst_res(TFAIL,
-				"got event: mask=%llx (expected %llx)"
-				"pid=%u fd=%d",
+				"got event: mask=%llx (expected %llx) pid=%u fd=%d",
 				(unsigned long long)event.mask,
 				(unsigned long long)FAN_OPEN,
 				(unsigned)event.pid, event.fd);
@@ -168,8 +167,7 @@ static void test_fanotify(unsigned int n)
 		if (event.mask == FAN_Q_OVERFLOW) {
 			if (got_overflow || event.fd != FAN_NOFD) {
 				tst_res(TFAIL,
-					"%s overflow event: "
-					"mask=%llx pid=%u fd=%d",
+					"%s overflow event: mask=%llx pid=%u fd=%d",
 					got_overflow ? "unexpected" : "invalid",
 					(unsigned long long)event.mask,
 					(unsigned)event.pid,

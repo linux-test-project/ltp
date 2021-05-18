@@ -156,7 +156,7 @@ int main(void)
         inmessage.msg_controllen = sizeof(incmsg);
         error = recvmsg(sk2, &inmessage, MSG_WAITALL);
         if (error > 0)
-                tst_brkm(TBROK, tst_exit, "recvmsg on a socket neither"
+                tst_brkm(TBROK, tst_exit, "recvmsg on a socket neither "
 			 "listening nor established error: %d", error);
 
 	tst_resm(TPASS, "recvmsg on a socket neither listening nor "

@@ -55,8 +55,8 @@ static void verify_shmat(struct test_case_t *tc)
 	if (errno == tc->exp_err) {
 		tst_res(TPASS | TERRNO, "shmat() failed as expected");
 	} else {
-		tst_res(TFAIL | TERRNO, "shmat() failed unexpectedly,"
-			 "expected: %s", tst_strerrno(tc->exp_err));
+		tst_res(TFAIL | TERRNO, "shmat() failed unexpectedly, expected: %s",
+			tst_strerrno(tc->exp_err));
 	}
 }
 

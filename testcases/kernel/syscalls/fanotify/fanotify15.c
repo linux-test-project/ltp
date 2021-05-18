@@ -161,7 +161,7 @@ static void do_test(unsigned int number)
 			  FAN_DELETE_SELF | FAN_ONDIR,
 			  AT_FDCWD, DIR1) == -1) {
 		tst_brk(TBROK | TERRNO,
-			"fanotify_mark(%d, FAN_MARK_ADD | %s,"
+			"fanotify_mark(%d, FAN_MARK_ADD | %s, "
 			"FAN_DELETE_SELF | FAN_ONDIR, AT_FDCWD, %s) failed",
 			fanotify_fd, mark->name, DIR1);
 	}

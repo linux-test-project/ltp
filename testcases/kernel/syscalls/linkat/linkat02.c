@@ -121,7 +121,7 @@ static void linkat_verify(const struct test_struct *desc)
 
 	if (TEST_RETURN != -1) {
 		tst_resm(TFAIL,
-			 "linkat(""AT_FDCWD"", %s, ""AT_FDCWD"", %s, %d)"
+			 "linkat(""AT_FDCWD"", %s, ""AT_FDCWD"", %s, %d) "
 			 "succeeded unexpectedly", desc->oldfname,
 			 desc->newfname, desc->flags);
 		return;

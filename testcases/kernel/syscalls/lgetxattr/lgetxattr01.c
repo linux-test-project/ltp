@@ -89,8 +89,8 @@ next:
 	if (TST_ERR == ENODATA) {
 		tst_res(TPASS | TTERRNO, "lgetxattr() failed as expected");
 	} else {
-		tst_res(TFAIL | TTERRNO, "lgetxattr() failed unexpectedly,"
-			"expected %s", tst_strerrno(ENODATA));
+		tst_res(TFAIL | TTERRNO, "lgetxattr() failed unexpectedly, expected %s",
+			tst_strerrno(ENODATA));
 	}
 }
 

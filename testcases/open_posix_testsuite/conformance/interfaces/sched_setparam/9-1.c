@@ -113,8 +113,7 @@ int main(void)
 	if (rc) {
 		nb_cpu = get_ncpu();
 		if (nb_cpu == -1) {
-			printf("Can not get the number of"
-			       " CPUs of the machine.\n");
+			printf("Can not get the number of CPUs of the machine\n");
 			return PTS_UNRESOLVED;
 		}
 	} else {

@@ -49,13 +49,12 @@ void verify_adjtimex(void)
 		TEST(adjtimex(buf));
 		if ((TST_RET == -1) && (TST_ERR == EINVAL)) {
 			tst_res(TINFO,
-				"expecting adjtimex() to fail with EINVAL"
-				" with mode 0x%x", ADJ_ADJTIME);
+				"expecting adjtimex() to fail with EINVAL with mode 0x%x",
+				ADJ_ADJTIME);
 		} else {
 			tst_brk(TBROK | TERRNO,
-					"adjtimex(): Unexpeceted error,"
-					"expecting EINVAL with mode 0x%x",
-					ADJ_ADJTIME);
+				"adjtimex(): Unexpeceted error, expecting EINVAL with mode 0x%x",
+				ADJ_ADJTIME);
 		}
 
 		tst_res(TINFO, "tai : 0x%08x", buf->tai);

@@ -115,12 +115,10 @@ int main(int ac, char **av)
 
 			/* Switch to nobody user */
 			if ((ltpuser = getpwnam(nobody_uid)) == NULL) {
-				tst_brkm(TBROK, NULL, "\"nobody\" user"
-					 "not present");
+				tst_brkm(TBROK, NULL, "'%s' user not present", nobody_uid);
 			}
 			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_resm(TWARN, "seteuid failed to "
-					 "to set the effective uid to %d",
+				tst_resm(TWARN, "seteuid failed to to set the effective uid to %d",
 					 ltpuser->pw_uid);
 				exit(1);
 			}

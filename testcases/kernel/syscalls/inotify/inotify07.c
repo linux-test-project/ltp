@@ -100,7 +100,7 @@ void verify_inotify(void)
 		if (test_num >= test_cnt) {
 			tst_res(TFAIL,
 				"get unnecessary event: "
-				"wd=%d mask=%08x cookie=%-5u len=%-2u"
+				"wd=%d mask=%08x cookie=%-5u len=%-2u "
 				"name=\"%.*s\"", event->wd, event->mask,
 				event->cookie, event->len, event->len,
 				event->name);
@@ -169,8 +169,8 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (reap_wd && myinotify_rm_watch(fd_notify, wd) < 0) {
-		tst_res(TWARN,
-			"inotify_rm_watch (%d, %d) failed,", fd_notify, wd);
+		tst_res(TWARN, "inotify_rm_watch (%d, %d) failed",
+			fd_notify, wd);
 	}
 
 	if (fd_notify > 0)

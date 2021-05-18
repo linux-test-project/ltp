@@ -119,7 +119,7 @@ main(void)
 	error = connect(clt_sk1, &svr_loop.sa, sizeof(svr_loop));
 	/* Non-blocking connect should return immediately with EINPROGRESS. */
 	if ((error != -1) || (EINPROGRESS != errno))
-		tst_brkm(TBROK, tst_exit, "non-blocking connect error: %d"
+		tst_brkm(TBROK, tst_exit, "non-blocking connect error: %d "
 			 "errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking connect");

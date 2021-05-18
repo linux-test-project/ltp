@@ -462,8 +462,7 @@ int main(int argc, char **argv)
 	memset(&param, 0, sizeof(param));
 	param.sched_priority = nr_tasks + prio_start;
 	if (sched_setscheduler(0, SCHED_FIFO, &param))
-		debug(DBG_WARN, "Warning, can't set priority of"
-		      "main thread !\n");
+		debug(DBG_WARN, "Warning, can't set priority of main thread!\n");
 	intv.tv_sec = INTERVAL / NS_PER_SEC;
 	intv.tv_nsec = INTERVAL % (1 * NS_PER_SEC);
 

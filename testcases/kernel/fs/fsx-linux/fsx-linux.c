@@ -283,7 +283,7 @@ void save_buffer(char *buffer, off_t bufferlength, int fd)
 		if (size_by_seek == (off_t) - 1)
 			prterr("save_buffer: lseek eof");
 		else if (bufferlength > size_by_seek) {
-			warn("save_buffer: .fsxgood file too short... will"
+			warn("save_buffer: .fsxgood file too short... will "
 			     "save 0x%llx bytes instead of 0x%llx\n",
 			     (unsigned long long)size_by_seek,
 			     (unsigned long long)bufferlength);
@@ -300,7 +300,7 @@ void save_buffer(char *buffer, off_t bufferlength, int fd)
 		if (byteswritten == -1)
 			prterr("save_buffer write");
 		else
-			warn("save_buffer: short write, 0x%x bytes instead"
+			warn("save_buffer: short write, 0x%x bytes instead "
 			     "of 0x%llx\n",
 			     (unsigned)byteswritten,
 			     (unsigned long long)bufferlength);
@@ -358,10 +358,10 @@ void check_buffers(unsigned offset, unsigned size)
 		if (n) {
 			prt("\t%#7x\n", n);
 			if (bad)
-				prt("operation# (mod 256) for the bad data"
+				prt("operation# (mod 256) for the bad data "
 				    "may be %u\n", ((unsigned)op & 0xff));
 			else
-				prt("operation# (mod 256) for the bad data"
+				prt("operation# (mod 256) for the bad data "
 				    "unknown, check HOLE and EXTEND ops\n");
 		} else
 			prt("????????????????\n");
@@ -1328,7 +1328,7 @@ int main(int argc, char **argv)
 				prterr(fname);
 				warn("main: error on write");
 			} else
-				warn("main: short write, 0x%x bytes instead"
+				warn("main: short write, 0x%x bytes instead "
 				     "of 0x%x\n",
 				     (unsigned)written, maxfilelen);
 			exit(98);

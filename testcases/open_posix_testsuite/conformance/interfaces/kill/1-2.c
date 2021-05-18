@@ -66,7 +66,7 @@ int main(void)
 		sigaction(SIGTOTEST, &act, 0);
 
 		if (0 != sigwait(&set, &sig)) {
-			printf("Sigwait did not return 0."
+			printf("Sigwait did not return 0. "
 				"Possible problem with sigwait function\n");
 			/* FAIL */
 			return 0;

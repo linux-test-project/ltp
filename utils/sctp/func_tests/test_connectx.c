@@ -156,7 +156,7 @@ main(void)
 			      &associd);
 	/* Non-blocking connectx should return immediately with EINPROGRESS. */
 	if ((error != -1) || (EINPROGRESS != errno))
-		tst_brkm(TBROK, tst_exit, "non-blocking connectx error: %d"
+		tst_brkm(TBROK, tst_exit, "non-blocking connectx error: %d "
 			 "errno:%d", error, errno);
 
 	tst_resm(TPASS, "non-blocking connectx");

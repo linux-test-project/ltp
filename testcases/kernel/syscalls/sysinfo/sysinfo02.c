@@ -106,7 +106,7 @@ int main(int ac, char **av)
 				 TEST_ERRNO);
 		} else {
 			/* Test Failed */
-			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1"
+			tst_brkm(TFAIL, cleanup, "sysinfo() Failed, Expected -1 "
 				 "returned %d/n", TEST_ERRNO);
 		}
 	}

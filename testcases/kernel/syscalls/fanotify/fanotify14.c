@@ -98,7 +98,7 @@ static void do_test(unsigned int number)
 	if (tc->mask == 0) {
 		tst_res(TFAIL,
 			"fanotify_fd=%d fanotify_init(%x, O_RDONLY) "
-			"unexpectedly succeeded when tests with mask 0 are"
+			"unexpectedly succeeded when tests with mask 0 are "
 			"expected to fail when calling fanotify_init()",
 			fanotify_fd,
 			tc->init_flags);

@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 			ret = sscanf(optarg, "%d%c", &run_time, &modifier);
 			if (ret == 0) {
 				fprintf(stderr,
-					"Need proper time input: ####x where"
+					"Need proper time input: ####x where "
 					"x is one of s,m,h,d\n");
 				break;
 			} else if (ret == 1) {

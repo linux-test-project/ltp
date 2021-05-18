@@ -66,8 +66,7 @@ int main(int ac, char **av)
 			if (test_cases[ind].child_stack == NULL) {
 				test_stack = NULL;
 			} else if (*test_cases[ind].child_stack == NULL) {
-				tst_resm(TWARN, "Can not allocate stack for"
-					 "child, skipping test case");
+				tst_resm(TWARN, "Can not allocate stack for child, skipping test case");
 				continue;
 			} else {
 				test_stack = child_stack;
@@ -82,10 +81,8 @@ int main(int ac, char **av)
 					 test_cases[ind].err_desc);
 			} else {
 				tst_resm(TFAIL | TTERRNO,
-					 "Call failed to produce expected error; "
-					 "expected errno %d and result -1; got result %ld",
-					 test_cases[ind].exp_errno,
-					 TEST_RETURN);
+					 "Failed to produce expected error, expected errno: %d and result: -1, got result %ld",
+					 test_cases[ind].exp_errno, TEST_RETURN);
 			}
 		}
 	}

@@ -122,7 +122,7 @@ int main(int ac, char **av)
 		}
 		if (cnt >= nlinks) {
 			tst_resm(TPASS,
-				 "link(%s, %s[1-%d]) ret %ld for %d files,"
+				 "link(%s, %s[1-%d]) ret %ld for %d files, "
 			         "stat linkcounts match %d",
 				 fname, fname, nlinks, TEST_RETURN,
 				 nlinks, (int)fbuf.st_nlink);

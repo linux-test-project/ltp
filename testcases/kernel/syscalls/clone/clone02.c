@@ -131,8 +131,7 @@ int main(int ac, char **av)
 
 		for (i = 0; i < TST_TOTAL; ++i) {
 			if (test_setup() != 0) {
-				tst_resm(TWARN, "test_setup() failed,"
-					 "skipping this test case");
+				tst_resm(TWARN, "test_setup() failed, skipping this test case");
 				continue;
 			}
 

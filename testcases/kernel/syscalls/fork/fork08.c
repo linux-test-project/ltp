@@ -116,7 +116,7 @@ forkone:
 				tst_resm(TINFO, "second child got char: %c",
 					 ch_r_stat);
 				if (ch_r_stat == 'b') {
-					tst_resm(TPASS, "Test passed in child"
+					tst_resm(TPASS, "Test passed in child "
 						 "number %d", forks);
 					exit(0);
 				} else if (ch_r_stat == EOF) {
@@ -124,7 +124,7 @@ forkone:
 						 "EOF");
 					exit(-1);
 				} else {
-					tst_resm(TFAIL, "test failed in child"
+					tst_resm(TFAIL, "test failed in child "
 						 "no %d", forks);
 					exit(-1);
 				}
