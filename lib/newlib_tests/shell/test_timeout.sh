@@ -28,7 +28,7 @@ timeout02.sh|  -10|0|  |2
 timeout02.sh| -0.1|0|  |0
 timeout02.sh| -1.1|0|  |2
 timeout02.sh|-10.1|0|  |2
-timeout03.sh|     |0|12|137| | | |Test kill if test does not terminate by SIGINT
+timeout03.sh|     |0|12|137| | | |Test is killed, if it does not terminate after SIGTERM
 timeout04.sh|     |0|  |  2|0|0|1|Verify that timeout is enforced
 timeout02.sh|    2|1| 2|   |1|0|0|Test termination of timeout process
 "

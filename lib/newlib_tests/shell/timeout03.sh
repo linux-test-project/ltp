@@ -6,8 +6,9 @@
 # expected output:
 # timeout03 1 TINFO: timeout per run is 0h 0m 1s
 # timeout03 1 TINFO: testing killing test after TST_TIMEOUT
-# timeout03 1 TBROK: Test timeouted, sending SIGINT! If you are running on slow machine, try exporting LTP_TIMEOUT_MUL > 1
-# timeout03 1 TBROK: test interrupted or timed out
+# timeout03 1 TBROK: Test timed out, sending SIGTERM! If you are running on slow machine, try exporting LTP_TIMEOUT_MUL > 1
+# Terminated
+# timeout03 1 TBROK: test terminated
 # timeout03 1 TPASS: test run cleanup after timeout
 # timeout03 1 TINFO: Test is still running, waiting 10s
 # timeout03 1 TINFO: Test is still running, waiting 9s
