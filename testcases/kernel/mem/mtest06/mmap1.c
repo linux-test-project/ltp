@@ -186,7 +186,7 @@ static void setup(void)
 {
 	struct sigaction sigptr;
 	size_t distant_mmap_size;
-	long mem_total;
+	size_t mem_total;
 
 	page_sz = getpagesize();
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
@@ -195,7 +195,7 @@ static void setup(void)
 #ifdef TST_ABI32
 	distant_mmap_size = 256*1024*1024;
 #else
-	distant_mmap_size = (mem_total > 2 * GIGABYTE) ? 2 * GIGABYTE : mem_total;
+	distant_mmap_size = (mem_total > 4 * GIGABYTE) ? 2 * GIGABYTE : mem_total / 2;
 #endif
 	/*
 	 * Used as hint for mmap thread, so it doesn't interfere
