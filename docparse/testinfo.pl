@@ -96,8 +96,8 @@ sub html_a
 {
 	my ($url, $text) = @_;
 
-	# escape ]
-	$text =~ s/([]])/\\$1/g;
+	# escape: ] |
+	$text =~ s/([]|])/\\$1/g;
 
 	return "$url\[$text\]";
 }
