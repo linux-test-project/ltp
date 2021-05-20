@@ -428,7 +428,7 @@ sub content_all_tests
 
 		for my $tag (@sorted_tags) {
 			if (!defined($tmp2)) {
-				$content .= table . "|Tags|Info\n"
+				$content .= table . "|Tag|Info\n"
 			}
 			my $k = @$tag[0];
 			my $v = @$tag[1];
