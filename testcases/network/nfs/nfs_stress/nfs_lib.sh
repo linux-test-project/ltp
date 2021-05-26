@@ -30,6 +30,7 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="$TST_NEEDS_CMDS mount exportfs"
 TST_SETUP="${TST_SETUP:-nfs_setup}"
 TST_CLEANUP="${TST_CLEANUP:-nfs_cleanup}"
+TST_NEEDS_DRIVERS="nfsd"
 
 # When set and test is using netns ($TST_USE_NETNS set) NFS traffic will go
 # through lo interface instead of ltp_ns_veth* netns interfaces (useful for
