@@ -1,6 +1,9 @@
 C Test Case Tutorial
 ====================
 
+NOTE: See also
+      https://github.com/linux-test-project/ltp/wiki/C-Test-API[C Test API].
+
 This is a step-by-step tutorial on writing a simple C LTP test, where topics
 of the LTP and Linux kernel testing will be introduced gradually using a
 concrete example. Most sections will include exercises, some trivial and
