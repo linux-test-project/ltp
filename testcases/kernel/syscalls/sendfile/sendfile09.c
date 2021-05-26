@@ -26,17 +26,13 @@
 
 #ifndef TST_ABI32
 
-#ifndef OFF_T
-#define OFF_T off_t
-#endif
-
 #define ONE_GB		(INT64_C(1) << 30)
 #define IN_FILE		"in_file"
 #define OUT_FILE	"out_file"
 
 static struct test_case_t {
 	char *desc;
-	OFF_T offset;
+	off_t offset;
 	int64_t count;
 	int64_t exp_retval;
 	int64_t exp_updated_offset;
@@ -67,9 +63,9 @@ static void run(unsigned int i)
 {
 	int in_fd = SAFE_OPEN(IN_FILE, O_RDONLY);
 	int out_fd = SAFE_OPEN(OUT_FILE, O_WRONLY);
-	OFF_T offset = tc[i].offset;
+	off_t offset = tc[i].offset;
 
-	OFF_T before_pos, after_pos;
+	off_t before_pos, after_pos;
 	before_pos = SAFE_LSEEK(in_fd, 0, SEEK_CUR);
 
 	TEST(sendfile(out_fd, in_fd, &offset, tc[i].count));

@@ -59,10 +59,6 @@
 #include "test.h"
 #include "safe_macros.h"
 
-#ifndef OFF_T
-#define OFF_T off_t
-#endif /* Not def: OFF_T */
-
 TCID_DEFINE(sendfile02);
 int TST_TOTAL = 4;
 
@@ -95,7 +91,7 @@ struct test_case_t {
 static char *argv0;
 #endif
 
-void do_sendfile(OFF_T offset, int i)
+void do_sendfile(off_t offset, int i)
 {
 	int in_fd;
 	struct stat sb;
