@@ -94,9 +94,15 @@ nfs_mount()
 
 	if [ $? -ne 0 ]; then
 		cat mount.log
+
 		if [ "$type" = "udp" -o "$type" = "udp6" ] && tst_kvcmp -ge 5.6; then
 			tst_brk TCONF "UDP support disabled with the kernel config NFS_DISABLE_UDP_SUPPORT?"
 		fi
+
+		if grep -iq "Protocol not supported" mount.log; then
+			tst_brk TCONF "Protocol not supported"
+		fi
+
 		tst_brk TBROK "mount command failed"
 	fi
 }
