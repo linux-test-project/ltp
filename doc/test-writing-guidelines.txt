@@ -8,7 +8,7 @@ guide and it's not, by any means, a substitute for common sense.
 NOTE: See also
       https://github.com/linux-test-project/ltp/wiki/C-Test-API[C Test API],
       https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API],
-	  https://github.com/linux-test-project/ltp/wiki/LTP-Library-API-Writing-Guidelines[LTP Library API Writing Guidelines].
+      https://github.com/linux-test-project/ltp/wiki/LTP-Library-API-Writing-Guidelines[LTP Library API Writing Guidelines].
 
 1. General Rules
 ----------------
