@@ -1065,9 +1065,12 @@ One important topic which has not been covered by this tutorial, is
 multi-process or multi-threaded testing. The LTP library functions work inside
 child processes and threads, but their semantics change slightly. There are
 also various helper functions for synchronising and forking processes. For
-more information see the Test Writing Guidelines (either at
-https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines[the
-Wiki] or in ./doc), in particular sections 2.2.7 to 2.2.10 and 2.2.13.
+more information see
+https://github.com/linux-test-project/ltp/wiki/C-Test-API[C Test API],
+in particular sections
+https://github.com/linux-test-project/ltp/wiki/C-Test-API#17-fork-ing[1.7 Fork()-ing] to
+https://github.com/linux-test-project/ltp/wiki/C-Test-API#110-signals-and-signal-handlers[1.10 Signals and signal handlers] and
+https://github.com/linux-test-project/ltp/wiki/C-Test-API#114-thread-safety-in-the-ltp-library[1.14 Thread-safety in the LTP library].
 
 When it comes time to submit a test, the preferred way to do it is on the
 mailing list although you can also use GitHub. The LTP follows similar rules
