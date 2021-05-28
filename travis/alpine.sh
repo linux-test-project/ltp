@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2019-2020 Petr Vorel <petr.vorel@gmail.com>
+# Copyright (c) 2019-2021 Petr Vorel <petr.vorel@gmail.com>
 set -ex
 
 apk update
@@ -31,7 +31,7 @@ apk add \
 cat /etc/os-release
 
 echo "WARNING: remove unsupported tests (until they're fixed)"
-cd ..
+cd $(dirname $0)/..
 rm -rfv \
 	testcases/kernel/sched/process_stress/process.c \
 	testcases/kernel/syscalls/confstr/confstr01.c \
@@ -39,5 +39,6 @@ rm -rfv \
 	testcases/kernel/syscalls/getcontext/getcontext01.c \
 	testcases/kernel/syscalls/rt_tgsigqueueinfo/rt_tgsigqueueinfo01.c \
 	testcases/kernel/syscalls/timer_create/timer_create01.c \
-	testcases/kernel/syscalls/timer_create/timer_create03.c \
+	testcases/kernel/syscalls/timer_create/timer_create03.c
+
 cd -
