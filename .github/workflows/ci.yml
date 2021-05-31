@@ -1,0 +1,157 @@
+name: "CI: docker based builds"
+on: [push, pull_request]
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 32bit build
+          - container: "debian:stable"
+            env:
+              CC: gcc
+              VARIANT: i386
+
+          # cross compilation builds
+          - container: "debian:stable"
+            env:
+              ARCH: ppc64el
+              CC: powerpc64le-linux-gnu-gcc
+              MAKE_INSTALL: 1
+              TREE: out
+              VARIANT: cross-compile
+
+          - container: "debian:stable"
+            env:
+              ARCH: arm64
+              CC: aarch64-linux-gnu-gcc
+              MAKE_INSTALL: 1
+              TREE: out
+              VARIANT: cross-compile
+
+          - container: "debian:stable"
+            env:
+              ARCH: s390x
+              CC: s390x-linux-gnu-gcc
+              MAKE_INSTALL: 1
+              TREE: out
+              VARIANT: cross-compile
+
+          # musl (native)
+          - container: "alpine:latest"
+            env:
+              CC: gcc
+              METADATA: asciidoctor
+
+          # build with minimal dependencies
+          - container: "debian:stable"
+            env:
+              CC: clang
+              TREE: out
+              VARIANT: minimal
+
+          # other builds
+          - container: "fedora:latest"
+            env:
+              CC: clang
+              MAKE_INSTALL: 1
+              METADATA: asciidoctor-pdf
+
+          - container: "centos:7"
+            env:
+              CC: gcc
+              METADATA: asciidoc-pdf
+              TREE: out
+
+          - container: "debian:testing"
+            env:
+              CC: gcc
+              METADATA: asciidoctor-pdf
+
+          - container: "debian:oldstable"
+            env:
+              CC: clang
+              METADATA: asciidoc-pdf
+
+          - container: "opensuse/tumbleweed"
+            env:
+              CC: gcc
+              METADATA: asciidoctor
+
+          - container: "opensuse/leap"
+            env:
+              CC: gcc
+              METADATA: asciidoc-pdf
+
+          - container: "debian:oldstable"
+            env:
+              CC: gcc
+              METADATA: asciidoctor
+
+          - container: "debian:testing"
+            env:
+              CC: clang
+              METADATA: asciidoc-pdf
+
+          - container: "ubuntu:groovy"
+            env:
+              CC: gcc
+              METADATA: asciidoctor
+              TREE: out
+
+          - container: "ubuntu:xenial"
+            env:
+              CC: gcc
+              METADATA: asciidoc-pdf
+
+          - container: "centos:latest"
+            env:
+              CC: gcc
+              METADATA: asciidoctor
+
+    container:
+      image: ${{ matrix.container }}
+      env: ${{ matrix.env }}
+
+    steps:
+    - name: Show OS
+      run: cat /etc/os-release
+
+    - name: Git checkout
+      uses: actions/checkout@v1
+
+    - name: Install additional packages
+      run: |
+        INSTALL=${{ matrix.container }}
+        INSTALL="${INSTALL%%:*}"
+        INSTALL="${INSTALL%%/*}"
+        ./ci/$INSTALL.sh
+        if [ "$VARIANT" ]; then ./ci/$INSTALL.$VARIANT.sh; fi
+
+    - name: Compiler version
+      run: $CC --version
+
+    - name: ver_linux
+      run: ./ver_linux
+
+    - name: Autotools
+      run: ./build.sh -r autotools
+
+    - name: Configure
+      run: |
+        if [ "$METADATA" = "asciidoc-pdf" ]; then CONFIGURE_OPT_EXTRA="--with-metadata-generator=asciidoc --enable-metadata-pdf"; fi
+        if [ "$METADATA" = "asciidoctor" ]; then CONFIGURE_OPT_EXTRA="--with-metadata-generator=asciidoctor"; fi
+        if [ "$METADATA" = "asciidoctor-pdf" ]; then CONFIGURE_OPT_EXTRA="--with-metadata-generator=asciidoctor --enable-metadata-pdf"; fi
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        CONFIGURE_OPT_EXTRA="$CONFIGURE_OPT_EXTRA" ./build.sh -r configure -o ${TREE:-in} -t $BUILD -c $CC
+
+    - name: Compile
+      run: ./build.sh -r build -o ${TREE:-in}
+
+    - name: Install
+      run: |
+        if [ "$MAKE_INSTALL" = 1 ]; then INSTALL_OPT="-i"; fi
+        ./build.sh -r install -o ${TREE:-in} $INSTALL_OPT

@@ -210,13 +210,6 @@ done
 
 cd $SRC_DIR
 
-echo "=== ver_linux ==="
-./ver_linux
-echo
-
-echo "=== compiler version ==="
-$CC --version
-
 if [ -z "$run" -o "$run" = "autotools" ]; then
 	make autotools
 fi
