@@ -17,16 +17,15 @@ cleanup()
 set_busy_poll()
 {
 	local value=${1:-"0"}
-	ROD_SILENT sysctl -q -w net.core.busy_poll=$value
-	tst_rhost_run -s -c "sysctl -q -w net.core.busy_poll=$value"
+	tst_set_sysctl net.core.busy_poll $value safe
 }
 
 setup()
 {
 	busy_poll_check_config
 
-	busy_poll_old="$(cat /proc/sys/net/core/busy_poll)"
-	rbusy_poll_old=$(tst_rhost_run -c 'cat /proc/sys/net/core/busy_poll')
+	busy_poll_old="$(sysctl -n net.core.busy_poll)"
+	rbusy_poll_old=$(tst_rhost_run -c 'sysctl -ne net.core.busy_poll')
 }
 
 test()
