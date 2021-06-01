@@ -855,6 +855,11 @@ tst_cgroup_group_mk(const struct tst_cgroup_group *const parent,
 	return cg;
 }
 
+const char *tst_cgroup_group_name(const struct tst_cgroup_group *const cg)
+{
+	return cg->group_name;
+}
+
 struct tst_cgroup_group *tst_cgroup_group_rm(struct tst_cgroup_group *const cg)
 {
 	struct cgroup_dir **dir;
