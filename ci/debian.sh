@@ -46,5 +46,6 @@ $apt \
 	pkg-config
 
 $apt ruby-asciidoctor-pdf || true
+$apt asciidoc-dblatex || true
 
 df -hT
