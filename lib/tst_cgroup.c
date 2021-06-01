@@ -82,7 +82,8 @@ struct cgroup_root {
 /* Controller sub-systems */
 enum cgroup_ctrl_indx {
 	CTRL_MEMORY = 1,
-	CTRL_CPUSET = 2,
+	CTRL_CPU,
+	CTRL_CPUSET,
 };
 #define CTRLS_MAX CTRL_CPUSET
 
@@ -162,6 +163,18 @@ static const files_t memory_ctrl_files = {
 	{ }
 };
 
+static const files_t cpu_ctrl_files = {
+	/* The V1 quota and period files were combined in the V2 max
+	 * file. The quota is in the first column and if we just print
+	 * a single value to the file, it will be treated as the
+	 * quota. To get or set the period we need to branch on the
+	 * API version.
+	 */
+	{ "cpu.max", "cpu.cfs_quota_us", CTRL_CPU },
+	{ "cpu.cfs_period_us", "cpu.cfs_period_us", CTRL_CPU },
+	{ }
+};
+
 static const files_t cpuset_ctrl_files = {
 	{ "cpuset.cpus", "cpuset.cpus", CTRL_CPUSET },
 	{ "cpuset.mems", "cpuset.mems", CTRL_CPUSET },
@@ -173,6 +186,9 @@ static struct cgroup_ctrl controllers[] = {
 	[0] = { "cgroup", cgroup_ctrl_files, 0, NULL, 0 },
 	[CTRL_MEMORY] = {
 		"memory", memory_ctrl_files, CTRL_MEMORY, NULL, 0
+	},
+	[CTRL_CPU] = {
+		"cpu", cpu_ctrl_files, CTRL_CPU, NULL, 0
 	},
 	[CTRL_CPUSET] = {
 		"cpuset", cpuset_ctrl_files, CTRL_CPUSET, NULL, 0
