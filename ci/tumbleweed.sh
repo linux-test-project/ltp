@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2021 Petr Vorel <pvorel@suse.cz>
 set -ex
 
 zyp="zypper --non-interactive install --force-resolution --no-recommends"
@@ -29,4 +29,4 @@ $zyp \
 	perl-JSON \
 	pkg-config
 
-$zyp ruby2.7-rubygem-asciidoctor || $zyp ruby2.5-rubygem-asciidoctor
+$zyp ruby2.7-rubygem-asciidoctor || $zyp ruby2.5-rubygem-asciidoctor || true
