@@ -42,7 +42,9 @@ void tst_wallclock_save(void)
 
 void tst_wallclock_restore(void)
 {
+	static const char *localtime = "/etc/localtime";
 	static struct timespec mono_end, elapsed, adjust;
+	int ret;
 
 	if (!clock_saved)
 		return;
@@ -60,6 +62,19 @@ void tst_wallclock_restore(void)
 
 	if (tst_clock_settime(CLOCK_REALTIME, &adjust))
 		tst_brk(TBROK | TERRNO, "tst_clock_settime() realtime failed");
+
+	/*
+	 * Fix access time of /etc/localtime because adjusting the wallclock
+	 * might have changed it to a time value which lies far ahead
+	 * in the future.
+	 * The access time of a file only changes if the new one is past
+	 * the current one, therefore, just opening a file and reading it
+	 * might not be enough because the current access time might be far
+	 * in the future.
+	 */
+	ret = access(localtime, F_OK);
+	if (!ret)
+		SAFE_TOUCH(localtime, 0, NULL);
 }
 
 void tst_rtc_clock_save(const char *rtc_dev)
