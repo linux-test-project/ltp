@@ -599,6 +599,12 @@ void tst_cgroup_require(const char *const ctrl_name,
 	struct cgroup_ctrl *const ctrl = cgroup_find_ctrl(ctrl_name);
 	struct cgroup_root *root;
 
+	if (!ctrl) {
+		tst_brk(TBROK, "'%s' controller is unknown to LTP", ctrl_name);
+		tst_brk(TBROK, "Calling %s in cleanup?", __func__);
+		return;
+	}
+
 	if (!options)
 		options = &default_opts;
 
