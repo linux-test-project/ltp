@@ -1,11 +1,6 @@
 #!/bin/sh
 # Copyright (c) 2017-2021 Petr Vorel <pvorel@suse.cz>
-# Script for travis builds.
-#
-# TODO: Implement comparison of installed files. List of installed files can
-# be used only for local builds as Travis currently doesn't support sharing
-# file between jobs, see
-# https://github.com/travis-ci/travis-ci/issues/6054
+# Script for CI builds.
 
 set -e
 

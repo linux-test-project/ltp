@@ -17,7 +17,7 @@ Fedora / CentOS / RHEL
 	# yum install gcc git make pkgconf autoconf automake bison flex m4 kernel-headers glibc-headers
 
 These are minimal build requirements for git compilation. Some tests require
-extra development files of some libraries, see travis/*.sh. There is also
+extra development files of some libraries, see ci/*.sh. There is also
 support for other Linux distributions not listed here.
 
 autoconf, automake, m4 (autoconf requirement), git and pkgconf (or pkg-config

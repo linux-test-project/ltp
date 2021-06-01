@@ -1,19 +1,19 @@
 Supported kernel, libc, toolchain versions
 ==========================================
 
-1. Build testing with Travis CI
--------------------------------
+1. Build testing with GitHub Actions
+------------------------------------
 
-We test master branch in https://travis-ci.org/github/linux-test-project/ltp/builds[travis CI]
+We test master branch in https://github.com/linux-test-project/ltp/actions[GitHub Actions]
 to ensure LTP builds on various distributions including old, current and bleeding edge.
 We test both gcc and clang toolchains, various architectures with cross-compilation.
 For list of tested distros see
-https://github.com/linux-test-project/ltp/blob/master/.travis.yml[.travis.yml].
+https://github.com/linux-test-project/ltp/blob/master/.github/workflows/ci.yml[.github/workflows/ci.yml].
 
 
-NOTE: Travis does only build testing, passing the CI means only that the
-      test compiles fine on variety of different distributions and releases.
-      Travis also uses the latest distribution image of a particular release.
+NOTE: GitHub Actions does only build testing, passing the CI means only that
+      the test compiles fine on variety of different distributions and releases.
+      GitHub Actions also uses the latest distribution image of a particular release.
 
 1.1 Oldest tested distributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,6 +61,6 @@ distribution you may as well reconsider you life choices.
 | https://uclibc-ng.org/[uClibc-ng] | Although not being tested it should work as well as it attempt to maintain a glibc compatible interface.
 | https://www.uclibc.org/[uClibc]   | Older https://www.uclibc.org/[uClibc] might have problems.
 | https://musl.libc.org/[musl] | Not yet fully supported (see
-                                 https://github.com/linux-test-project/ltp/blob/master/travis/alpine.sh[travis script]
+                                 https://github.com/linux-test-project/ltp/blob/master/ci/alpine.sh[CI script]
                                  for list of files which need to be deleted in order to compile under musl).
 | binder (Android) | Please use https://android.googlesource.com/platform/external/ltp/[AOSP fork].

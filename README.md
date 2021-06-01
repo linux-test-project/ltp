@@ -39,7 +39,7 @@ Quick guide to running the tests
 
 If you have git, autoconf, automake, m4, pkgconf / pkg-config, libc headers,
 linux kernel headers and other common development packages installed (see
-INSTALL and travis/*.sh), the chances are the following will work:
+INSTALL and ci/*.sh), the chances are the following will work:
 
 ```
 $ git clone https://github.com/linux-test-project/ltp.git
@@ -52,7 +52,7 @@ Now you can continue either with compiling and running a single test or with
 compiling and installing the whole testsuite.
 
 For optional library dependencies look into scripts for major distros in
-`travis/` directory. You can also build whole LTP with `./build.sh` script.
+`ci/` directory. You can also build whole LTP with `./build.sh` script.
 
 Shortcut to running a single test
 ---------------------------------
@@ -204,8 +204,7 @@ list. Also note that these documents are available online at:
 
 Although we accept GitHub pull requests, the preferred way is sending patches to our mailing list.
 
-It's a good idea to test patches on Travis CI before posting to mailing
-list. Our travis setup covers various architectures and distributions in
+It's a good idea to test patches on GitHub Actions before posting to mailing
+list. Our GitHub Actions setup covers various architectures and distributions in
 order to make sure LTP compiles cleanly on most common configurations.
-For testing you need to sign up to Travis CI, enable running builds on your LTP fork on
-https://travis-ci.org/account/repositories and push your branch.
+For testing you need to just to push your changes to your own LTP fork on GitHub.
