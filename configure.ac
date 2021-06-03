@@ -102,6 +102,7 @@ AC_CHECK_FUNCS_ONCE([ \
     io_uring_enter \
     kcmp \
     mallinfo \
+    mallinfo2 \
     mallopt \
     mkdirat \
     mknodat \
