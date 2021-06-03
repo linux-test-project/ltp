@@ -62,7 +62,8 @@ static void run(unsigned int i)
 	UID16_CHECK((uid = geteuid()), "fchown");
 	GID16_CHECK((gid = getegid()), "fchown");
 
-	TST_EXP_FAIL(FCHOWN(*tc[i].fd, uid, gid), tc[i].exp_errno);
+	TST_EXP_FAIL(FCHOWN(*tc[i].fd, uid, gid), tc[i].exp_errno,
+	             "fchown(%i, %i, %i)", *tc[i].fd, uid, gid);
 }
 
 static void cleanup(void)
