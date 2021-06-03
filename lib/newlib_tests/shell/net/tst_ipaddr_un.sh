@@ -7,8 +7,11 @@ TST_CNT=2
 
 PATH="$(dirname $0)/../../../../testcases/lib/:$PATH"
 
-# workaround to disable netns initialization
-RHOST="foo"
+TST_NET_SKIP_VARIABLE_INIT=1
+
+# from tst_net_vars.c
+IPV4_NET16_UNUSED="10.23"
+IPV6_NET32_UNUSED="fd00:23"
 
 . tst_net.sh
 
