@@ -18,17 +18,7 @@
  * - a protected buffer is created by mmap with specifying protection
  */
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/sendfile.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/mman.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
 #include "tst_test.h"
 
 static int in_fd;

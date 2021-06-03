@@ -12,17 +12,7 @@
  * when passing full out_fd opened with O_NONBLOCK.
  */
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/sendfile.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/mman.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
 #include "tst_test.h"
 
 #define MAX_FILL_DATA_LENGTH 0xFFFFFFF
