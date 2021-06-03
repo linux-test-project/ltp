@@ -230,7 +230,7 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 
 /*
  * following functions are inline because the behaviour may depend on
- * -D_FILE_OFFSET_BITS=64 -DOFF_T=off64_t compile flags
+ * -D_FILE_OFFSET_BITS=64 compile flag
  */
 
 static inline void *safe_mmap(const char *file, const int lineno,
