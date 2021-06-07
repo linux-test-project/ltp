@@ -157,7 +157,7 @@
 
 /*
  * following functions are inline because the behaviour may depend on
- * -D_FILE_OFFSET_BITS=64 -DOFF_T=__off64_t compile flags
+ * -D_FILE_OFFSET_BITS=64 compile flag
  */
 
 static inline void *safe_mmap(const char *file, const int lineno,
