@@ -138,6 +138,9 @@ static int try_systemd_detect_virt(void)
 	if (!strncmp("zvm", virt_type, 3))
 		return VIRT_IBMZ_ZVM;
 
+	if (!strncmp("microsoft", virt_type, 9))
+		return VIRT_HYPERV;
+
 	return VIRT_OTHER;
 }
 
