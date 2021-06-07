@@ -3,32 +3,48 @@
  * Copyright (c) 2013-2019 FUJITSU LIMITED. All rights reserved
  * Author: DAN LI <li.dan@cn.fujitsu.com>
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
  * This testcase checks basic flags of quotactl(2) for an XFS file system:
- * 1) quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
+ *
+ * 1. quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
  *    for user.
- * 2) quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
- *    for usr.
- * 3) quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
+ *
+ * 2. quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
+ *    for user.
+ *
+ * 3. quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
  *    limits for user.
- * 4) quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
+ *
+ * 4. quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
  *    quota limits greater than or equal to ID for user.
- * 5) quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
+ *
+ * 5. quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
  *    for user.
- * 6) quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
+ *
+ * 6. quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
  *    for user.
- * 7) quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
+ *
+ * 7. quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
  *    for group.
- * 8) quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
+ *
+ * 8. quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
  *    for group.
- * 9) quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
+ *
+ * 9. quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
  *    limits for group.
- * 10)quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
- *    quota limits for group.
- * 11)quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
- *    for group.
- * 12)quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
- *    for group.
+ *
+ * 10. quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
+ *     quota limits for group.
+ *
+ * 11. quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
+ *     for group.
+ *
+ * 12. quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
+ *     for group.
  */
 
 #include "quotactl02.h"
