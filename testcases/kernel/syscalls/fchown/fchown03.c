@@ -85,7 +85,9 @@ static void cleanup(void)
 {
 	SAFE_SETEGID(0);
 	SAFE_SETEUID(0);
-	SAFE_CLOSE(fd);
+
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {

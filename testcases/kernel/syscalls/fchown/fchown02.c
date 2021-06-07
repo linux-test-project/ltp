@@ -53,7 +53,8 @@ static void run(unsigned int i)
 
 	SAFE_CHMOD(tc[i].filename, tc[i].set_mode);
 
-	TST_EXP_PASS(FCHOWN(*tc[i].fd, uid, gid));
+	TST_EXP_PASS(FCHOWN(*tc[i].fd, uid, gid),
+		"fchown(%i, %i, %i)", *tc[i].fd, uid, gid);
 
 	SAFE_STAT(tc[i].filename, &stat_buf);
 
@@ -78,8 +79,10 @@ static void cleanup(void)
 {
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(tc); i++)
-		SAFE_CLOSE(*tc[i].fd);
+	for (i = 0; i < ARRAY_SIZE(tc); i++) {
+		if (*tc[i].fd > 0)
+			SAFE_CLOSE(*tc[i].fd);
+	}
 }
 
 static struct tst_test test = {

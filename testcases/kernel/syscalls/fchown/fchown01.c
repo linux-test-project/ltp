@@ -28,7 +28,8 @@ static gid_t gid;
 
 static void run(void)
 {
-	TST_EXP_PASS(FCHOWN(fd, uid, gid));
+	TST_EXP_PASS(FCHOWN(fd, uid, gid),
+		"fchown(%i, %i, %i)", fd, uid, gid);
 }
 
 static void setup(void)
