@@ -14,28 +14,28 @@ TST_CNT=8
 test1()
 {
 	tst_res TINFO "Test cache"
-	test_mem_stat "--shm -k 3" $PAGESIZES $PAGESIZES "cache" $PAGESIZES false
+	test_mem_stat "--shm -k 3" $PAGESIZES $PAGESIZES "cache" $PAGESIZES $PAGESIZES false
 }
 
 test2()
 {
 	tst_res TINFO "Test mapped_file"
 	test_mem_stat "--mmap-file" $PAGESIZES $PAGESIZES \
-		"mapped_file" $PAGESIZES false
+		"mapped_file" $PAGESIZES $PAGESIZES false
 }
 
 test3()
 {
 	tst_res TINFO "Test unevictable with MAP_LOCKED"
 	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES \
-		"unevictable" $PAGESIZES false
+		"unevictable" $PAGESIZES $PAGESIZES false
 }
 
 test4()
 {
 	tst_res TINFO "Test unevictable with mlock"
 	test_mem_stat "--mmap-lock2" $PAGESIZES $PAGESIZES \
-		"unevictable" $PAGESIZES false
+		"unevictable" $PAGESIZES $PAGESIZES false
 }
 
 test5()
