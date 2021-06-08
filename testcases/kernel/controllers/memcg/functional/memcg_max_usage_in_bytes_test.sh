@@ -12,6 +12,10 @@ TST_CNT=4
 . memcg_lib.sh
 
 MEM_TO_ALLOC=$((PAGESIZE * 1024))
+# Recent Linux kernels (at least v5.4) started reporting memory usage of 32
+# pages higher than requested allocation. Cause is not known, so let's just be
+# flexible.
+MEM_EXPECTED_UPPER=$((MEM_TO_ALLOC + PAGESIZE * 32))
 MEM_LIMIT=$((MEM_TO_ALLOC * 2))
 
 # Run test cases which checks memory.[memsw.]max_usage_in_bytes after make
@@ -32,7 +36,7 @@ test_max_usage_in_bytes()
 	signal_memcg_process $MEM_TO_ALLOC
 	signal_memcg_process $MEM_TO_ALLOC
 
-	check_mem_stat $item $MEM_TO_ALLOC
+	check_mem_stat $item $MEM_TO_ALLOC $MEM_EXPECTED_UPPER
 
 	if [ $check_after_reset -eq 1 ]; then
 		echo 0 > $item
