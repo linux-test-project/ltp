@@ -616,6 +616,7 @@ io_pgetevents02 io_pgetevents02
 io_setup01 io_setup01
 io_setup02 io_setup02
 io_submit01 io_submit01
+io_submit02 io_submit02
 
 keyctl01 keyctl01
 keyctl02 keyctl02
