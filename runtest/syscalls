@@ -607,6 +607,7 @@ ioprio_set03 ioprio_set03
 
 io_cancel01 io_cancel01
 io_destroy01 io_destroy01
+io_destroy02 io_destroy02
 io_getevents01 io_getevents01
 
 io_pgetevents01 io_pgetevents01
