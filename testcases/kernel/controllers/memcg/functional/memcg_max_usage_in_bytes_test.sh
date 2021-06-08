@@ -40,7 +40,11 @@ test_max_usage_in_bytes()
 
 	if [ $check_after_reset -eq 1 ]; then
 		echo 0 > $item
-		check_mem_stat $item 0
+		# Recent Linux kernels (at least v5.4) started reporting
+		# a non-zero max_usage_in_bytes after resetting the counter.
+		# The typical values are 0, 4096, 8096 and up to 122880.
+		# Cause is not known, so let's just be flexible.
+		check_mem_stat $item 0 $((PAGESIZE * 32))
 	fi
 
 	stop_memcg_process
