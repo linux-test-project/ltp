@@ -3,10 +3,11 @@
  * Copyright (C) 2011-2017  Red Hat, Inc.
  */
 
-/* Description:
+/*\
+ * [Description]
  *
  * This is a reproducer of CVE-2011-0999, which fixed by mainline commit
- * a7d6e4ecdb7648478ddec76d30d87d03d6e22b31:
+ * a7d6e4ecdb76 ("thp: prevent hugepages during args/env copying into the user stack")
  *
  * "Transparent hugepages can only be created if rmap is fully
  * functional. So we must prevent hugepages to be created while
@@ -15,10 +16,11 @@
  * It will cause a panic something like this, if the patch didn't get
  * applied:
  *
+ * ```
  * kernel BUG at mm/huge_memory.c:1260!
  * invalid opcode: 0000 [#1] SMP
  * last sysfs file: /sys/devices/system/cpu/cpu23/cache/index2/shared_cpu_map
- * ....
+ * ```
  *
  * Due to commit da029c11e6b1 which reduced the stack size considerably, we
  * now perform a binary search to find the largest possible argument we can
