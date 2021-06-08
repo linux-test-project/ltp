@@ -1,21 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2011-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
  */
 
-/* thp02 - detect mremap bug when THP is enabled.
+/*\
+ * [Description]
  *
- * There was a bug in mremap THP support, sometimes crash happened
- * due to the following reason according to developers:
+ * Test for detecting mremap bug when THP is enabled.
+ *
+ * There was a bug in mremap THP support, sometimes causing crash
+ * due to the following reason:
  *
  * "alloc_new_pmd was forcing the allocation of a pte before calling
  * move_huge_page and that resulted in a VM_BUG_ON in move_huge_page
@@ -23,15 +17,17 @@
  *
  * There are 4 cases to test this bug:
  *
- * 1) old_addr hpage aligned, old_end not hpage aligned, new_addr
- *    hpage aligned;
- * 2) old_addr hpage aligned, old_end not hpage aligned, new_addr not
- *    hpage aligned;
- * 3) old_addr not hpage aligned, old_end hpage aligned, new_addr
- *    hpage aligned;
- * 4) old_addr not hpage aligned, old_end hpage aligned, new_addr not
- *    hpage aligned.
+ * 1. old_addr hpage aligned, old_end not hpage aligned, new_addr
+ *    hpage aligned
  *
+ * 2. old_addr hpage aligned, old_end not hpage aligned, new_addr not
+ *    hpage aligned
+ *
+ * 3. old_addr not hpage aligned, old_end hpage aligned, new_addr
+ *    hpage aligned
+ *
+ * 4. old_addr not hpage aligned, old_end hpage aligned, new_addr not
+ *    hpage aligned
  */
 
 #define _GNU_SOURCE
