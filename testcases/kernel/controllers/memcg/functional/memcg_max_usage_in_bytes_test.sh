@@ -32,7 +32,7 @@ test_max_usage_in_bytes()
 	signal_memcg_process $MEM_TO_ALLOC
 	signal_memcg_process $MEM_TO_ALLOC
 
-	check_mem_stat $item $MEM_TO_ALLOC
+	check_mem_stat $item $MEM_TO_ALLOC $((MEM_TO_ALLOC + PAGESIZE * 32))
 
 	if [ $check_after_reset -eq 1 ]; then
 		echo 0 > $item
