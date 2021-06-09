@@ -2,6 +2,7 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * 07/2001 Ported by Wayne Boyer
+ * Copyright (c) 2021 Xie Ziyao <xieziyao@huawei.com>
  */
 
 /*\
@@ -20,24 +21,31 @@
 #define TESTFILE "testfile"
 
 struct test_case_t {
+	char *desc;
 	uid_t uid;
 	gid_t gid;
 } tc[] = {
-	{700, 701},
-	{702, 701},
-	{702, 703},
-	{704, 705}
+	{"change owner/group ids", 700, 701},
+	{"change owner id only", 702, -1},
+	{"change owner id only", 703, 701},
+	{"change group id only", -1, 704},
+	{"change group id only", 703, 705},
+	{"no change", -1, -1}
 };
 
 static void run(unsigned int i)
 {
 	struct stat stat_buf;
-	TST_EXP_PASS(CHOWN(TESTFILE, tc[i].uid, tc[i].gid));
+	uid_t expect_uid = tc[i].uid == (uid_t)-1 ? tc[i - 1].uid : tc[i].uid;
+	gid_t expect_gid = tc[i].gid == (uid_t)-1 ? tc[i - 1].gid : tc[i].gid;
+
+	TST_EXP_PASS(CHOWN(TESTFILE, tc[i].uid, tc[i].gid), "chown(%s, %d, %d), %s",
+		     TESTFILE, tc[i].uid, tc[i].gid, tc[i].desc);
 
 	SAFE_STAT(TESTFILE, &stat_buf);
-	if (stat_buf.st_uid != tc[i].uid || stat_buf.st_gid != tc[i].gid) {
+	if (stat_buf.st_uid != expect_uid || stat_buf.st_gid != expect_gid) {
 		tst_res(TFAIL, "%s: incorrect ownership set, expected %d %d",
-			TESTFILE, tc[i].uid, tc[i].gid);
+			TESTFILE, expect_uid, expect_gid);
 	}
 }
 
