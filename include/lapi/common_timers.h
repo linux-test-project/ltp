@@ -12,7 +12,7 @@
 #include "lapi/posix_clocks.h"
 
 #ifndef NSEC_PER_SEC
-#define NSEC_PER_SEC (1000000000L)
+#define NSEC_PER_SEC (1000000000LL)
 #endif
 
 static const clock_t clock_list[] = {
