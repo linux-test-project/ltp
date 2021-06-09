@@ -67,6 +67,12 @@ static void run(unsigned int i)
 	struct test_cases_t *tc = &test_cases[i];
 	struct timerspec *ts;
 
+	if (tc->exp_errno == EFAULT
+		&& tv->sched_rr_get_interval == libc_sched_rr_get_interval) {
+		tst_res(TCONF, "EFAULT skipped for libc_variant");
+		return;
+	}
+
 	if (tc->exp_errno == EFAULT)
 		ts = bad_addr;
 	else
