@@ -55,6 +55,10 @@ done
 
 LOOP_COUNT=1
 
+if tst_virt_hyperv; then
+	tst_brkm TCONF "Microsoft Hyper-V detected, no support for CPU hotplug"
+fi
+
 if [ $(get_present_cpus_num) -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi

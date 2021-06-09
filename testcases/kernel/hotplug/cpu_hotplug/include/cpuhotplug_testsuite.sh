@@ -50,6 +50,21 @@ assert ()                 #  If condition false,
   fi
 }
 
+# Detect whether running under hypervisor: Microsoft Hyper-V
+# Return 0: running under Hyper-V
+# Return 1: not running under Hyper-V (bare metal, other hypervisor or
+#           failure of detection)
+tst_virt_hyperv()
+{
+	local v="$(systemd-detect-virt)"
+	# TODO: once converted to newlib, use tst_cmd_available
+
+	[ $? -eq 0 ] || return 1
+	[ "$v" = "microsoft" ] || return 1
+
+	return 0
+}
+
 ############################################################
 ## Process management                                     ##
 ############################################################
