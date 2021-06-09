@@ -3,6 +3,7 @@
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * AUTHOR: William Roske
  * CO-PILOT: Dave Fenner
+ * Copyright (c) 2021 Xie Ziyao <xieziyao@huawei.com>
  */
 
 /*\
@@ -10,13 +11,6 @@
  *
  * Basic test for chown(). Calls chown() on a file and expects it to pass.
  */
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
 
 #include "tst_test.h"
 #include "compat_tst_16.h"

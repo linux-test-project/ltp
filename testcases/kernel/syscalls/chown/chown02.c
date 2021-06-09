@@ -2,6 +2,7 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * 07/2001 Ported by Wayne Boyer
+ * Copyright (c) 2021 Xie Ziyao <xieziyao@huawei.com>
  */
 
 /*\
@@ -11,11 +12,6 @@
  *  - clears setuid and setgid bits set on an executable file
  *  - preserves setgid bit set on a non-group-executable file
  */
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include "tst_test.h"
 #include "compat_tst_16.h"
@@ -46,7 +42,8 @@ static void run(unsigned int i)
 
 	SAFE_CHMOD(tc[i].filename, tc[i].set_mode);
 
-	TST_EXP_PASS(CHOWN(tc[i].filename, uid, gid));
+	TST_EXP_PASS(CHOWN(tc[i].filename, uid, gid), "chown(%s, %d, %d)",
+		     tc[i].filename, uid, gid);
 
 	struct stat stat_buf;
 	SAFE_STAT(tc[i].filename, &stat_buf);

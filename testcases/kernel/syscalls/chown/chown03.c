@@ -17,15 +17,6 @@
  * Also verify that chown() clears the setuid/setgid bits set on the file.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
-#include <grp.h>
 #include <pwd.h>
 
 #include "tst_test.h"

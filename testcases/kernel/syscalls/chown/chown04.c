@@ -54,15 +54,16 @@ static char long_path[PATH_MAX + 2] = {[0 ... PATH_MAX + 1] = 'a'};
 static struct test_case_t {
 	char *pathname;
 	int exp_errno;
+	char *desc;
 } tc[] = {
-	{TEST_FILE1, EPERM},
-	{TEST_FILE2, EACCES},
-	{(char *)-1, EFAULT},
-	{long_path, ENAMETOOLONG},
-	{"", ENOENT},
-	{TEST_FILE3, ENOTDIR},
-	{TEST_FILE4, ELOOP},
-	{TEST_FILE5, EROFS}
+	{TEST_FILE1, EPERM, "without permissions"},
+	{TEST_FILE2, EACCES, "without full permissions of the path prefix"},
+	{(char *)-1, EFAULT, "with unaccessible pathname points"},
+	{long_path, ENAMETOOLONG, "when pathname is too long"},
+	{"", ENOENT, "when file does not exist"},
+	{TEST_FILE3, ENOTDIR, "when the path prefix is not a directory"},
+	{TEST_FILE4, ELOOP, "with too many symbolic links"},
+	{TEST_FILE5, EROFS, "when the named file resides on a read-only filesystem"}
 };
 
 static void run(unsigned int i)
@@ -73,7 +74,8 @@ static void run(unsigned int i)
 	UID16_CHECK((uid = geteuid()), "chown");
 	GID16_CHECK((gid = getegid()), "chown");
 
-	TST_EXP_FAIL(CHOWN(tc[i].pathname, uid, gid), tc[i].exp_errno);
+	TST_EXP_FAIL(CHOWN(tc[i].pathname, uid, gid), tc[i].exp_errno,
+		     "chown() %s", tc[i].desc);
 }
 
 static void setup(void)
