@@ -32,6 +32,7 @@
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
+#include "lapi/syscalls.h"
 
 #define SHM_SIZE 2048
 
@@ -42,6 +43,16 @@ static int shm_bad = -1;
 static int shm_rem;
 
 static struct shmid_ds buf;
+
+static int libc_shmctl(int shmid, int cmd, void *buf)
+{
+	return shmctl(shmid, cmd, buf);
+}
+
+static int sys_shmctl(int shmid, int cmd, void *buf)
+{
+	return tst_syscall(__NR_shmctl, shmid, cmd, buf);
+}
 
 static struct tcase {
 	int *shm_id;
@@ -63,9 +74,27 @@ static struct tcase {
 	{&shm_id3, SHM_UNLOCK, &buf, EPERM}
 };
 
+static struct test_variants
+{
+	int (*shmctl)(int shmid, int cmd, void *buf);
+	char *desc;
+} variants[] = {
+	{ .shmctl = libc_shmctl, .desc = "libc shmctl()"},
+#if (__NR_shmctl != __LTP__NR_INVALID_SYSCALL)
+	{ .shmctl = sys_shmctl,  .desc = "__NR_shmctl syscall"},
+#endif
+};
+
 static void verify_shmctl(unsigned int i)
 {
-	TEST(shmctl(*(tc[i].shm_id), tc[i].cmd, tc[i].buf));
+	struct test_variants *tv = &variants[tst_variant];
+
+	if (tc[i].error == EFAULT && tv->shmctl == libc_shmctl) {
+		tst_res(TCONF, "EFAULT is skipped for libc variant");
+		return;
+	}
+
+	TEST(tv->shmctl(*(tc[i].shm_id), tc[i].cmd, tc[i].buf));
 
 	if (TST_RET != -1) {
 		tst_res(TFAIL, "shmctl() returned %li", TST_RET);
@@ -74,7 +103,7 @@ static void verify_shmctl(unsigned int i)
 
 	if (TST_ERR == tc[i].error) {
 		tst_res(TPASS | TTERRNO, "shmctl(%i, %i, %p)",
-		        *tc[i].shm_id, tc[i].cmd, tc[i].buf);
+				*tc[i].shm_id, tc[i].cmd, tc[i].buf);
 		return;
 	}
 
@@ -84,9 +113,13 @@ static void verify_shmctl(unsigned int i)
 
 static void setup(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
+
 	key_t shmkey1, shmkey2;
 	struct passwd *ltpuser;
 	int tmp;
+
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
 
 	shm_id3 = SAFE_SHMGET(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | SHM_RW);
 
@@ -121,6 +154,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = verify_shmctl,
+	.test_variants = ARRAY_SIZE(variants),
 	.tcnt = ARRAY_SIZE(tc),
 	.needs_root = 1,
 };
