@@ -166,6 +166,7 @@ int tst_is_virt(int virt_type)
 	case VIRT_IBMZ_LPAR:
 	case VIRT_IBMZ_ZVM:
 		return is_ibmz(virt_type);
+	case VIRT_HYPERV:
 	case VIRT_OTHER:
 		return 0;
 	}
