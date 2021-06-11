@@ -78,18 +78,8 @@ static void run(unsigned int i)
 	else
 		ts = tst_ts_get(tc->tp);
 
-	TEST(tv->sched_rr_get_interval(*tc->pid, ts));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "sched_rr_get_interval() passed unexpectedly");
-		return;
-	}
-
-	if (tc->exp_errno == TST_ERR)
-		tst_res(TPASS | TTERRNO, "sched_rr_get_interval() failed as expected");
-	else
-		tst_res(TFAIL | TTERRNO, "sched_rr_get_interval() failed unexpectedly: %s",
-			tst_strerrno(tc->exp_errno));
+	TST_EXP_FAIL(tv->sched_rr_get_interval(*tc->pid, ts), tc->exp_errno,
+	             "sched_rr_get_interval(%i, %p)", *tc->pid, ts);
 }
 
 static struct tst_test test = {
