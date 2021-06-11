@@ -57,7 +57,8 @@ if [ $cpus_num -lt 2 ]; then
 	tst_brkm TCONF "system doesn't have required CPU hotplug support"
 fi
 
-if [ $(get_hotplug_cpus_num) -lt 1 ]; then
+hotplug_cpus_num=$(get_hotplug_cpus_num)
+if [ $hotplug_cpus_num -lt 1 ]; then
 	tst_brkm TCONF "system doesn't have at least one hotpluggable CPU"
 fi
 
@@ -85,7 +86,7 @@ until [ $LOOP_COUNT -gt $HOTPLUG04_LOOPS ]; do
 		# that the kernel will refuse to offline the last CPU.
 		# If only some of the CPUs are hotpluggable,
 		# they all can be offlined.
-		if [ $cpu -eq $cpus_num ]; then
+		if [ $cpu -eq $hotplug_cpus_num ]; then
 			if offline_cpu $i 2> /dev/null; then
 				tst_brkm TFAIL "Have we just offlined the last CPU?"
 			else
