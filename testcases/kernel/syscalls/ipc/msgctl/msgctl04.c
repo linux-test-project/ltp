@@ -76,21 +76,10 @@ static void verify_msgctl(unsigned int i)
 		return;
 	}
 
-	TEST(tv->msgctl(*(tc[i].msg_id), tc[i].cmd, tc[i].buf));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "msgctl() returned %li", TST_RET);
-		return;
-	}
-
-	if (TST_ERR == tc[i].error) {
-		tst_res(TPASS | TTERRNO, "msgctl(%i, %i, %p)",
-			*tc[i].msg_id, tc[i].cmd, tc[i].buf);
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO, "msgctl(%i, %i, %p) expected %s",
-		*tc[i].msg_id, tc[i].cmd, tc[i].buf, tst_strerrno(tc[i].error));
+	TST_EXP_FAIL(tv->msgctl(*(tc[i].msg_id), tc[i].cmd, tc[i].buf),
+	             tc[i].error,
+	             "msgctl(%i, %i, %p)",
+	             *(tc[i].msg_id), tc[i].cmd, tc[i].buf);
 }
 
 static void setup(void)
