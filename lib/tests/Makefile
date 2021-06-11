@@ -1,6 +1,6 @@
 top_srcdir		?= ../..
 
-include $(top_srcdir)/include/mk/testcases.mk
+include $(top_srcdir)/include/mk/env_pre.mk
 
 CFLAGS			+= -W
 LDLIBS			+= -lltp
