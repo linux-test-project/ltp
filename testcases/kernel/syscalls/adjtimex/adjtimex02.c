@@ -5,104 +5,148 @@
  *  AUTHOR : Saji Kumar.V.R <saji.kumar@wipro.com>
  */
 
+/*\
+ * [Description]
+ *
+ * Tests for adjtimex() error conditions:
+ *
+ * - EPERM with SET_MODE as nobody
+ * - EFAULT with SET_MODE and invalid timex pointer
+ * - EINVAL with ADJ_TICK greater than max tick
+ * - EINVAL with ADJ_TICK smaller than min tick
+ *
+ * On kernels older than 2.6.26:
+ *
+ * - EINVAL with AJD_OFFSET smaller than min offset
+ * - EINVAL with AJD_OFFSET greater than max offset
+ */
+
 #include <errno.h>
 #include <sys/timex.h>
 #include <unistd.h>
 #include <pwd.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
-#define SET_MODE ( ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
-	ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK )
+#define SET_MODE (ADJ_OFFSET | ADJ_FREQUENCY | ADJ_MAXERROR | ADJ_ESTERROR | \
+				ADJ_STATUS | ADJ_TIMECONST | ADJ_TICK)
 
-static int hz;			/* HZ from sysconf */
+static int hz;		/* HZ from sysconf */
 
-static struct timex *tim_save;
-static struct timex *buf;
-
+static struct timex *tim_save, *buf;
 static struct passwd *ltpuser;
 
-static void verify_adjtimex(unsigned int nr)
+static int libc_adjtimex(struct timex *value)
+{
+	return adjtimex(value);
+}
+
+static int sys_adjtimex(struct timex *value)
+{
+	return tst_syscall(__NR_adjtimex, value);
+}
+
+static struct test_case {
+	unsigned int modes;
+	long lowlimit;
+	long highlimit;
+	long delta;
+	int exp_err;
+} tc[] = {
+	{.modes = SET_MODE, .exp_err = EPERM},
+	{.modes = SET_MODE, .exp_err = EFAULT},
+	{.modes = ADJ_TICK, .lowlimit = 900000, .delta = 1, .exp_err = EINVAL},
+	{.modes = ADJ_TICK, .highlimit = 1100000, .delta = 1, .exp_err = EINVAL},
+	{.modes = ADJ_OFFSET, .highlimit = 512000L, .delta = 1, .exp_err = EINVAL},
+	{.modes = ADJ_OFFSET, .lowlimit = -512000L, .delta = -1, .exp_err = EINVAL},
+};
+
+static struct test_variants
+{
+	int (*adjtimex)(struct timex *value);
+	char *desc;
+} variants[] = {
+	{ .adjtimex = libc_adjtimex, .desc = "libc adjtimex()"},
+
+#if (__NR_adjtimex != __LTP__NR_INVALID_SYSCALL)
+	{ .adjtimex = sys_adjtimex,  .desc = "__NR_adjtimex syscall"},
+#endif
+};
+
+static void verify_adjtimex(unsigned int i)
 {
 	struct timex *bufp;
-	int expected_errno = 0;
-
-	/*
-	 * since Linux 2.6.26, if buf.offset value is outside
-	 * the acceptable range, it is simply normalized instead
-	 * of letting the syscall fail. so just skip this test
-	 * case.
-	 */
-	if (nr > 3 && (tst_kvercmp(2, 6, 25) > 0)) {
-		tst_res(TCONF, "this kernel normalizes buf."
-				"offset value if it is outside"
-				" the acceptable range.");
-		return;
-	}
+	struct test_variants *tv = &variants[tst_variant];
 
 	*buf = *tim_save;
-	buf->modes = SET_MODE;
+	buf->modes = tc[i].modes;
 	bufp = buf;
-	switch (nr) {
-	case 0:
-		bufp = (struct timex *)-1;
-		expected_errno = EFAULT;
-		break;
-	case 1:
-		buf->tick = 900000 / hz - 1;
-		expected_errno = EINVAL;
-		break;
-	case 2:
-		buf->tick = 1100000 / hz + 1;
-		expected_errno = EINVAL;
-		break;
-	case 3:
-		/* Switch to nobody user for correct error code collection */
-		ltpuser = SAFE_GETPWNAM("nobody");
+
+	if (tc[i].exp_err == EPERM)
 		SAFE_SETEUID(ltpuser->pw_uid);
-		expected_errno = EPERM;
-		break;
-	case 4:
-		buf->offset = 512000L + 1;
-		expected_errno = EINVAL;
-		break;
-	case 5:
-		buf->offset = (-1) * (512000L) - 1;
-		expected_errno = EINVAL;
-		break;
-	default:
-		tst_brk(TFAIL, "Invalid test case %u ", nr);
+
+	if (tc[i].exp_err == EINVAL) {
+		if (tc[i].modes == ADJ_TICK) {
+			if (tc[i].lowlimit)
+				buf->tick = tc[i].lowlimit - tc[i].delta;
+
+			if (tc[i].highlimit)
+				buf->tick = tc[i].highlimit + tc[i].delta;
+		}
+		if (tc[i].modes == ADJ_OFFSET && (tst_kvercmp(2, 6, 25) > 0)) {
+			if (tc[i].lowlimit || tc[i].highlimit) {
+				tst_res(TCONF, "Newer kernels normalize offset value outside range");
+				return;
+			}
+		}
 	}
 
-	TEST(adjtimex(bufp));
-	if ((TST_RET == -1) && (TST_ERR == expected_errno)) {
-		tst_res(TPASS | TTERRNO,
-				"adjtimex() error %u ", expected_errno);
-	} else {
-		tst_res(TFAIL | TTERRNO,
-				"Test Failed, adjtimex() returned %ld",
-				TST_RET);
+	if (tc[i].exp_err == EFAULT) {
+		if (tv->adjtimex != libc_adjtimex) {
+			bufp = (struct timex *) -1;
+		} else {
+			tst_res(TCONF, "EFAULT is skipped for libc variant");
+			return;
+		}
 	}
 
-	/* clean up after ourselves */
-	if (nr == 3)
+	TST_EXP_FAIL(tv->adjtimex(bufp), tc[i].exp_err, "adjtimex() error");
+
+	if (tc[i].exp_err == EPERM)
 		SAFE_SETEUID(0);
 }
 
 static void setup(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
+	size_t i;
+
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
+
 	tim_save->modes = 0;
+
+	ltpuser = SAFE_GETPWNAM("nobody");
+	SAFE_SETEUID(ltpuser->pw_uid);
 
 	/* set the HZ from sysconf */
 	hz = SAFE_SYSCONF(_SC_CLK_TCK);
 
-	/* Save current parameters */
-	if ((adjtimex(tim_save)) == -1)
+	for (i = 0; i < ARRAY_SIZE(tc); i++) {
+		if (tc[i].modes == ADJ_TICK) {
+			tc[i].highlimit /= hz;
+			tc[i].lowlimit /= hz;
+		}
+	}
+
+	if ((adjtimex(tim_save)) == -1) {
 		tst_brk(TBROK | TERRNO,
 			"adjtimex(): failed to save current params");
+	}
 }
 
 static void cleanup(void)
 {
+
 	tim_save->modes = SET_MODE;
 
 	/* Restore saved parameters */
@@ -111,11 +155,12 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.needs_root = 1,
-	.tcnt = 6,
+	.test = verify_adjtimex,
 	.setup = setup,
 	.cleanup = cleanup,
-	.test = verify_adjtimex,
+	.tcnt = ARRAY_SIZE(tc),
+	.test_variants = ARRAY_SIZE(variants),
+	.needs_root = 1,
 	.bufs = (struct tst_buffers []) {
 		{&buf, .size = sizeof(*buf)},
 		{&tim_save, .size = sizeof(*tim_save)},
