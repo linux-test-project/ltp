@@ -16,12 +16,18 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 static struct itimerval *value;
 
+static int sys_setitimer(int which, void *new_value, void *old_value)
+{
+	return tst_syscall(__NR_setitimer, which, new_value, old_value);
+}
+
 static void verify_setitimer(void)
 {
-	TST_EXP_FAIL(setitimer(ITIMER_REAL, value, (struct itimerval *)-1),
+	TST_EXP_FAIL(sys_setitimer(ITIMER_REAL, value, (struct itimerval *)-1),
 	             EFAULT);
 }
 
