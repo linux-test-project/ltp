@@ -13,10 +13,16 @@
 #include <errno.h>
 #include <sys/time.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
+
+static int sys_getitimer(int which, void *curr_value)
+{
+	return tst_syscall(__NR_getitimer, which, curr_value);
+}
 
 static void verify_getitimer(void)
 {
-	TST_EXP_FAIL(getitimer(ITIMER_REAL, (struct itimerval *)-1), EFAULT);
+	TST_EXP_FAIL(sys_getitimer(ITIMER_REAL, (struct itimerval *)-1), EFAULT);
 }
 
 static struct tst_test test = {
