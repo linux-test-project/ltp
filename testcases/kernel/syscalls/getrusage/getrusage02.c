@@ -61,7 +61,7 @@ static void verify_getrusage(unsigned int i)
 		return;
 	}
 
-	TST_EXP_FAIL(getrusage(tc[i].who, tc[i].usage), tc[i].exp_errno,
+	TST_EXP_FAIL(tv->getrusage(tc[i].who, tc[i].usage), tc[i].exp_errno,
 	             "getrusage(%i, %p)", tc[i].who, tc[i].usage);
 }
 
