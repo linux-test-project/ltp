@@ -260,6 +260,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_kconfigs = (const char *[]) {
+		"CONFIG_VETH",
 		"CONFIG_USER_NS=y",
 		"CONFIG_NET_NS=y",
 		NULL
