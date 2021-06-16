@@ -19,9 +19,21 @@ TST_CNT=3
 # $2 - memory.limit_in_bytes in sub group
 test_subgroup()
 {
+	local limit_parent=$1
+	local limit_subgroup=$2
+
+	# OOM might start killing if memory usage is 100%, so give it
+	# always one page size more:
+	if [ $limit_parent -ne 0 ]; then
+		limit_parent=$((limit_parent + PAGESIZE))
+	fi
+	if [ $limit_subgroup -ne 0 ]; then
+		limit_subgroup=$((limit_subgroup + PAGESIZE))
+	fi
+
 	mkdir subgroup
-	echo $1 > memory.limit_in_bytes
-	echo $2 > subgroup/memory.limit_in_bytes
+	echo $limit_parent > memory.limit_in_bytes
+	echo $limit_subgroup > subgroup/memory.limit_in_bytes
 
 	start_memcg_process --mmap-anon -s $PAGESIZES
 
