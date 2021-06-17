@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2012-2014 Cyril Hrubis chrubis@suse.cz
+ * Copyright (c) 2021 Xie Ziyao <xieziyao@huawei.com>
  */
 
 #include <stdio.h>
@@ -66,4 +67,24 @@ int tst_process_state_wait2(pid_t pid, const char state)
 
 		usleep(10000);
 	}
+}
+
+int tst_process_exit_wait(pid_t pid, unsigned int msec_timeout)
+{
+	unsigned int msecs = 0;
+
+	for (;;) {
+		if (kill(pid, 0) && errno == ESRCH)
+			break;
+
+		usleep(1000);
+		msecs += 1;
+
+		if (msec_timeout && msecs >= msec_timeout) {
+			errno = ETIMEDOUT;
+			return 0;
+		}
+	}
+
+	return 1;
 }
