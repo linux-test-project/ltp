@@ -1,353 +1,186 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
- * getrusage03 - test ru_maxrss behaviors in struct rusage
- *
- * This test program is backported from upstream commit:
- * 1f10206cf8e945220f7220a809d8bfc15c21f9a5, which fills ru_maxrss
- * value in struct rusage according to rss hiwater mark. To make sure
- * this feature works correctly, a series of tests are executed in
- * this program.
- *
  * Copyright (C) 2011  Red Hat, Inc.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
+ * Copyright (C) 2021 Xie Ziyao <xieziyao@huawei.com>
  */
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdio.h>
+
+/*\
+ * [Description]
+ *
+ * Test ru_maxrss behaviors in struct rusage.
+ *
+ * This test program is backported from upstream commit: 1f10206cf8e9, which
+ * fills ru_maxrss value in struct rusage according to rss hiwater mark. To
+ * make sure this feature works correctly, a series of tests are executed in
+ * this program.
+ */
+
 #include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
+#include "getrusage03.h"
 
-char *TCID = "getrusage03";
-int TST_TOTAL = 1;
-
-#define DELTA_MAX	10240
+#define TESTBIN "getrusage03_child"
 
 static struct rusage ru;
 static long maxrss_init;
-static int retval, status;
-static pid_t pid;
 
-static void inherit_fork(void);
-static void inherit_fork2(void);
-static void fork_malloc(void);
-static void grandchild_maxrss(void);
-static void zombie(void);
-static void sig_ign(void);
-static void exec_without_fork(void);
-static void check_return(int status, char *pass_msg, char *fail_msg);
-static int is_in_delta(long value);
-static void consume(int mega);
-static void setup(void);
-static void cleanup(void);
+static const char *const resource[] = {
+	TESTBIN,
+	NULL,
+};
 
-int main(int argc, char *argv[])
+static void inherit_fork1(void)
 {
-	int lc;
+	SAFE_GETRUSAGE(RUSAGE_SELF, &ru);
+	maxrss_init = ru.ru_maxrss;
 
-	tst_parse_opts(argc, argv, NULL, NULL);
+	if (!SAFE_FORK()) {
+		SAFE_GETRUSAGE(RUSAGE_SELF, &ru);
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		tst_resm(TINFO, "allocate 100MB");
-		consume(100);
-
-		inherit_fork();
-		inherit_fork2();
-		fork_malloc();
-		grandchild_maxrss();
-		zombie();
-		sig_ign();
-		exec_without_fork();
+		if (is_in_delta(maxrss_init - ru.ru_maxrss))
+			tst_res(TPASS, "initial.self ~= child.self");
+		else
+			tst_res(TFAIL, "child.self = %li, expected %li",
+				ru.ru_maxrss, maxrss_init);
+		exit(0);
 	}
-	cleanup();
-	tst_exit();
+	tst_reap_children();
 }
 
-/* Testcase #01: fork inherit
- * expect: initial.self ~= child.self */
-static void inherit_fork(void)
-{
-	tst_resm(TINFO, "Testcase #01: fork inherit");
-
-	SAFE_GETRUSAGE(cleanup, RUSAGE_SELF, &ru);
-	tst_resm(TINFO, "initial.self = %ld", ru.ru_maxrss);
-
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork #1");
-	case 0:
-		maxrss_init = ru.ru_maxrss;
-		SAFE_GETRUSAGE(cleanup, RUSAGE_SELF, &ru);
-		tst_resm(TINFO, "child.self = %ld", ru.ru_maxrss);
-		exit(is_in_delta(maxrss_init - ru.ru_maxrss));
-	default:
-		break;
-	}
-
-	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
-	check_return(WEXITSTATUS(status), "initial.self ~= child.self",
-		     "initial.self !~= child.self");
-}
-
-/* Testcase #02: fork inherit (cont.)
- * expect: initial.children ~= 100MB, child.children = 0 */
 static void inherit_fork2(void)
 {
-	tst_resm(TINFO, "Testcase #02: fork inherit(cont.)");
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "initial.children = %ld", ru.ru_maxrss);
 	if (is_in_delta(ru.ru_maxrss - 102400))
-		tst_resm(TPASS, "initial.children ~= 100MB");
+		tst_res(TPASS, "initial.children ~= 100MB");
 	else
-		tst_resm(TFAIL, "initial.children !~= 100MB");
+		tst_res(TFAIL, "initial.children = %li, expected %i",
+			ru.ru_maxrss, 102400);
 
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork #2");
-	case 0:
-		SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-		tst_resm(TINFO, "child.children = %ld", ru.ru_maxrss);
-		exit(ru.ru_maxrss == 0);
-	default:
-		break;
+	if (!SAFE_FORK()) {
+		SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
+
+		if (!ru.ru_maxrss)
+			tst_res(TPASS, "child.children == 0");
+		else
+			tst_res(TFAIL, "child.children = %li, expected %i",
+				ru.ru_maxrss, 0);
+		exit(0);
 	}
-
-	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
-	check_return(WEXITSTATUS(status), "child.children == 0",
-		     "child.children != 0");
+	tst_reap_children();
 }
 
-/* Testcase #03: fork + malloc
- * expect: initial.self + 50MB ~= child.self */
-static void fork_malloc(void)
-{
-	tst_resm(TINFO, "Testcase #03: fork + malloc");
-
-	SAFE_GETRUSAGE(cleanup, RUSAGE_SELF, &ru);
-	tst_resm(TINFO, "initial.self = %ld", ru.ru_maxrss);
-
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork #3");
-	case 0:
-		maxrss_init = ru.ru_maxrss;
-		tst_resm(TINFO, "child allocate +50MB");
-		consume(50);
-		SAFE_GETRUSAGE(cleanup, RUSAGE_SELF, &ru);
-		tst_resm(TINFO, "child.self = %ld", ru.ru_maxrss);
-		exit(is_in_delta(maxrss_init + 51200 - ru.ru_maxrss));
-	default:
-		break;
-	}
-
-	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
-	check_return(WEXITSTATUS(status), "initial.self + 50MB ~= child.self",
-		     "initial.self + 50MB !~= child.self");
-}
-
-/* Testcase #04: grandchild maxrss
- * expect: post_wait.children ~= 300MB */
 static void grandchild_maxrss(void)
 {
-	tst_resm(TINFO, "Testcase #04: grandchild maxrss");
+	if (!SAFE_FORK())
+		SAFE_EXECLP("getrusage03_child", "getrusage03_child",
+			    "grand_consume", "300", NULL);
+	tst_reap_children();
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "initial.children = %ld", ru.ru_maxrss);
-
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK | TERRNO, cleanup, "fork #4");
-	case 0:
-		retval = system("getrusage03_child -g 300");
-		if ((WIFEXITED(retval) && WEXITSTATUS(retval) != 0))
-			tst_brkm(TBROK | TERRNO, cleanup, "system");
-		exit(0);
-	default:
-		break;
-	}
-
-	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
-	if (WEXITSTATUS(status) != 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "child exit status is not 0");
-
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "post_wait.children = %ld", ru.ru_maxrss);
 	if (is_in_delta(ru.ru_maxrss - 307200))
-		tst_resm(TPASS, "child.children ~= 300MB");
+		tst_res(TPASS, "child.children ~= 300MB");
 	else
-		tst_resm(TFAIL, "child.children !~= 300MB");
+		tst_res(TFAIL, "child.children = %li, expected %i",
+			ru.ru_maxrss, 307200);
 }
 
-/* Testcase #05: zombie
- * expect: initial ~= pre_wait, post_wait ~= 400MB */
 static void zombie(void)
 {
-	tst_resm(TINFO, "Testcase #05: zombie");
-
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "initial.children = %ld", ru.ru_maxrss);
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 	maxrss_init = ru.ru_maxrss;
 
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK, cleanup, "fork #5");
-	case 0:
-		retval = system("getrusage03_child -n 400");
-		if ((WIFEXITED(retval) && WEXITSTATUS(retval) != 0))
-			tst_brkm(TBROK | TERRNO, cleanup, "system");
-		exit(0);
-	default:
-		break;
-	}
+	pid_t pid = SAFE_FORK();
 
-	sleep(1);		/* children become zombie */
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "pre_wait.children = %ld", ru.ru_maxrss);
+	if (!pid)
+		SAFE_EXECLP("getrusage03_child", "getrusage03_child",
+			    "consume", "400", NULL);
+
+	TST_PROCESS_STATE_WAIT(pid, 'Z', 0);
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 	if (is_in_delta(ru.ru_maxrss - maxrss_init))
-		tst_resm(TPASS, "initial.children ~= pre_wait.children");
+		tst_res(TPASS, "initial.children ~= pre_wait.children");
 	else
-		tst_resm(TFAIL, "initial.children !~= pre_wait.children");
+		tst_res(TFAIL, "pre_wait.children = %li, expected %li",
+			ru.ru_maxrss, maxrss_init);
 
-	SAFE_WAITPID(cleanup, pid, &status, WUNTRACED | WCONTINUED);
-	if (WEXITSTATUS(status) != 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "child exit status is not 0");
-
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "post_wait.children = %ld", ru.ru_maxrss);
+	tst_reap_children();
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 	if (is_in_delta(ru.ru_maxrss - 409600))
-		tst_resm(TPASS, "post_wait.children ~= 400MB");
+		tst_res(TPASS, "post_wait.children ~= 400MB");
 	else
-		tst_resm(TFAIL, "post_wait.children !~= 400MB");
+		tst_res(TFAIL, "post_wait.children = %li, expected %i",
+			ru.ru_maxrss, 409600);
 }
 
-/* Testcase #06: SIG_IGN
- * expect: initial ~= after_zombie */
 static void sig_ign(void)
 {
-	tst_resm(TINFO, "Testcase #06: SIG_IGN");
-
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "initial.children = %ld", ru.ru_maxrss);
-	signal(SIGCHLD, SIG_IGN);
+	SAFE_SIGNAL(SIGCHLD, SIG_IGN);
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 	maxrss_init = ru.ru_maxrss;
 
-	switch (pid = fork()) {
-	case -1:
-		tst_brkm(TBROK, cleanup, "fork #6");
-	case 0:
-		retval = system("getrusage03_child -n 500");
-		if ((WIFEXITED(retval) && WEXITSTATUS(retval) != 0))
-			tst_brkm(TBROK | TERRNO, cleanup, "system");
-		exit(0);
-	default:
-		break;
-	}
+	pid_t pid = SAFE_FORK();
 
-	sleep(1);		/* children become zombie */
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	tst_resm(TINFO, "after_zombie.children = %ld", ru.ru_maxrss);
+	if (!pid)
+		SAFE_EXECLP("getrusage03_child", "getrusage03_child",
+			    "consume", "500", NULL);
+
+	TST_PROCESS_EXIT_WAIT(pid, 0);
+	SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
 	if (is_in_delta(ru.ru_maxrss - maxrss_init))
-		tst_resm(TPASS, "initial.children ~= after_zombie.children");
+		tst_res(TPASS, "initial.children ~= after_zombie.children");
 	else
-		tst_resm(TFAIL, "initial.children !~= after_zombie.children");
-	signal(SIGCHLD, SIG_DFL);
+		tst_res(TFAIL, "after_zombie.children = %li, expected %li",
+			ru.ru_maxrss, maxrss_init);
+
+	SAFE_SIGNAL(SIGCHLD, SIG_DFL);
 }
 
-/* Testcase #07: exec without fork
- * expect: initial ~= fork */
-static void exec_without_fork(void)
+static void inherit_exec(void)
 {
-	char str_maxrss_self[BUFSIZ], str_maxrss_child[BUFSIZ];
-	long maxrss_self, maxrss_child;
+	if (!SAFE_FORK()) {
+		char str_maxrss_self[BUFSIZ], str_maxrss_child[BUFSIZ];
 
-	tst_resm(TINFO, "Testcase #07: exec without fork");
+		SAFE_GETRUSAGE(RUSAGE_SELF, &ru);
+		sprintf(str_maxrss_self, "%ld", ru.ru_maxrss);
+		SAFE_GETRUSAGE(RUSAGE_CHILDREN, &ru);
+		sprintf(str_maxrss_child, "%ld", ru.ru_maxrss);
 
-	SAFE_GETRUSAGE(cleanup, RUSAGE_SELF, &ru);
-	maxrss_self = ru.ru_maxrss;
-	SAFE_GETRUSAGE(cleanup, RUSAGE_CHILDREN, &ru);
-	maxrss_child = ru.ru_maxrss;
-	tst_resm(TINFO, "initial.self = %ld, initial.children = %ld",
-		 maxrss_self, maxrss_child);
-
-	sprintf(str_maxrss_self, "%ld", maxrss_self);
-	sprintf(str_maxrss_child, "%ld", maxrss_child);
-	if (execlp("getrusage03_child", "getrusage03_child", "-v",
-		   "-s", str_maxrss_self, "-l", str_maxrss_child, NULL) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "execlp");
+		SAFE_EXECLP("getrusage03_child", "getrusage03_child",
+			    "compare", str_maxrss_self, str_maxrss_child, NULL);
+	}
+	tst_reap_children();
 }
 
-static int is_in_delta(long value)
-{
-	return (value >= -DELTA_MAX && value <= DELTA_MAX);
-}
+void (*testfunc_list[])(void) = {
+	inherit_fork1, inherit_fork2, grandchild_maxrss,
+	zombie, sig_ign, inherit_exec
+};
 
-static void check_return(int status, char *pass_msg, char *fail_msg)
+static void run(unsigned int i)
 {
-	switch (status) {
-	case 1:
-		tst_resm(TPASS, "%s", pass_msg);
-		break;
-	case 0:
-		tst_resm(TFAIL, "%s", fail_msg);
-		break;
-	default:
-		tst_resm(TFAIL, "child exit status is %d", status);
-		break;
+	if (!SAFE_FORK()) {
+		if (!SAFE_FORK()) {
+			consume_mb(100);
+			exit(0);
+		}
+
+		SAFE_WAIT(NULL);
+
+		testfunc_list[i]();
 	}
 }
 
-static void consume(int mega)
-{
-	size_t sz;
-	void *ptr;
-
-	sz = mega * 1024 * 1024;
-	ptr = SAFE_MALLOC(cleanup, sz);
-	memset(ptr, 0, sz);
-}
-
-static void setup(void)
-{
-	/* Disable test if the version of the kernel is less than 2.6.32 */
-	if ((tst_kvercmp(2, 6, 32)) < 0) {
-		tst_resm(TCONF, "This ru_maxrss field is not supported");
-		tst_brkm(TCONF, NULL, "before kernel 2.6.32");
-	}
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.forks_child = 1,
+	.child_needs_reinit = 1,
+	.resource_files = resource,
+	.min_kver = "2.6.32",
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "1f10206cf8e9"},
+	},
+	.test = run,
+	.tcnt = ARRAY_SIZE(testfunc_list),
+};
