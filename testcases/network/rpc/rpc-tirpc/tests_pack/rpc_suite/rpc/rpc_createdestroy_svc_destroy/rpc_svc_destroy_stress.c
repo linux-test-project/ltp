@@ -56,6 +56,10 @@ int main(int argn, char *argc[])
 	for (i = 0; i < nbCall; i++) {
 		svcr = svcfd_create(fd, 0, 0);
 
+		//check returned value
+		if (svcr == NULL)
+			continue;
+
 		//Then call destroy macro
 		svc_destroy(svcr);
 

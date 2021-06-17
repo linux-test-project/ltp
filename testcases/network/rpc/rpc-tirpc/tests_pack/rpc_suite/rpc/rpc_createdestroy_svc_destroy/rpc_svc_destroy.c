@@ -47,6 +47,10 @@ int main(void)
 	//First of all, create a server
 	svcr = svcfd_create(fd, 0, 0);
 
+	//check returned value
+	if (svcr == NULL)
+		return test_status;
+
 	//Then call destroy macro
 	svc_destroy(svcr);
 
