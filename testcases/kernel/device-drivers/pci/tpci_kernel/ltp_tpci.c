@@ -556,6 +556,11 @@ static int test_case(unsigned int cmd)
 {
 	int rc = TSKIP;
 
+	if (!ltp_pci.dev || !ltp_pci.bus) {
+		prk_err("device or bus not selected for test");
+		return TFAIL;
+	}
+
 	switch (cmd) {
 	case PCI_ENABLE:
 		rc = pci_enable();
