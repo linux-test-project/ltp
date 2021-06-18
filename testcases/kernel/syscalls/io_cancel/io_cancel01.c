@@ -8,8 +8,8 @@
 /*\
  * [Description]
  *
- * Calls io_cancel() with one of the data structures points to invalid data and
- * expects it to return EFAULT.
+ * Test io_cancel invoked via syscall(2) with one of pointers set to invalid
+ * address and expects it to return EFAULT.
  */
 
 #include <linux/aio_abi.h>
@@ -21,10 +21,15 @@
 static void run(void)
 {
 	aio_context_t ctx;
+
 	memset(&ctx, 0, sizeof(ctx));
 	TST_EXP_FAIL(tst_syscall(__NR_io_cancel, ctx, NULL, NULL), EFAULT);
 }
 
 static struct tst_test test = {
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_AIO=y",
+		NULL
+	},
 	.test_all = run,
 };
