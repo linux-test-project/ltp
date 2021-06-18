@@ -1,11 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Crackerjack Project., 2007
+ * Ported from Crackerjack to LTP by Masatake YAMATO <yamato@redhat.com>
  * Copyright (c) 2011-2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/* Porting from Crackerjack to LTP is done
-   by Masatake YAMATO <yamato@redhat.com> */
+/*\
+ * [Description]
+ *
+ * Test io_submit() invoked via libaio:
+ *
+ * - io_submit fails and returns -EINVAL if ctx is invalid.
+ * - io_submit fails and returns -EINVAL if nr is invalid.
+ * - io_submit fails and returns -EFAULT if iocbpp pointer is invalid.
+ * - io_submit fails and returns -EBADF if fd is invalid.
+ * - io_submit succeeds and returns the number of iocbs submitted.
+ * - io_submit succeeds and returns 0 if nr is zero.
+ */
 
 #include <errno.h>
 #include <string.h>
