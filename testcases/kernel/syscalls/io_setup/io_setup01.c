@@ -1,20 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) Crackerjack Project., 2007
- *   Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
- *   Copyright (c) 2017 Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Crackerjack Project., 2007
+ * Ported from Crackerjack to LTP by Masatake YAMATO <yamato@redhat.com>
+ * Copyright (c) 2011 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2017 Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/* Porting from Crackerjack to LTP is done
- * by Masatake YAMATO <yamato@redhat.com>
+/*\
+ * [Description]
  *
- * Description:
- * 1) io_setup(2) succeeds if both nr_events and ctxp are valid.
- * 2) io_setup(2) fails and returns -EINVAL if ctxp is not initialized to 0.
- * 3) io_setup(2) fails and returns -EINVAL if nr_events is invalid.
- * 4) io_setup(2) fails and returns -EFAULT if ctxp is NULL.
- * 5) io_setup(2) fails and returns -EAGAIN if nr_events exceeds the limit
- *    of available events.
+ * Test io_setup invoked via libaio:
+ *
+ * - io_setup succeeds if both nr_events and ctxp are valid.
+ * - io_setup fails and returns -EINVAL if ctxp is not initialized to 0.
+ * - io_setup fails and returns -EINVAL if nr_events is invalid.
+ * - io_setup fails and returns -EFAULT if ctxp is NULL.
+ * - io_setup fails and returns -EAGAIN if nr_events exceeds the limit
+ *   1of available events.
  */
 
 #include <errno.h>
