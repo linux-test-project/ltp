@@ -11,8 +11,7 @@ include $(abs_srcdir)/../utils/newer_64.mk
 
 %_64: CPPFLAGS += -D_FILE_OFFSET_BITS=64
 
-preadv203: CFLAGS += -pthread
-preadv203_64: CFLAGS += -pthread
+preadv203 preadv203_64: CFLAGS += -pthread
 preadv203_64: LDFLAGS += -pthread
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

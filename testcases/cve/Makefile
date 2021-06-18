@@ -11,27 +11,18 @@ stack_clash:	CFLAGS += -fno-optimize-sibling-calls
 
 cve-2016-7042:	LDLIBS += $(KEYUTILS_LIBS)
 
-cve-2016-7117:	CFLAGS += -pthread
-cve-2016-7117:	LDLIBS += -lrt
-
-cve-2014-0196:  CFLAGS += -pthread
-cve-2014-0196:  LDLIBS += -lrt
+cve-2014-0196 cve-2016-7117 cve-2017-2671 cve-2017-17052 cve-2017-17053:  CFLAGS += -pthread
+cve-2014-0196 cve-2016-7117 cve-2017-2671:  LDLIBS += -lrt
 
 ifneq ($(ANDROID),1)
 cve-2014-0196:  LDLIBS += -lutil
 endif
-
-cve-2017-2671:	CFLAGS += -pthread
-cve-2017-2671:	LDLIBS += -lrt
 
 meltdown: CFLAGS += -I$(abs_srcdir)/../realtime/include
 
 ifneq (,$(filter $(HOST_CPU),x86 x86_64))
 meltdown: CFLAGS += -msse2
 endif
-
-cve-2017-17052:	CFLAGS += -pthread
-cve-2017-17053:	CFLAGS += -pthread
 
 cve-2015-3290:	CFLAGS += -pthread -fomit-frame-pointer
 
