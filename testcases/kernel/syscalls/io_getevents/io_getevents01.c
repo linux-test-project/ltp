@@ -8,7 +8,8 @@
 /*\
  * [Description]
  *
- * Calls io_getevents() when ctx is invalid and expects it to return EINVAL.
+ * Test io_getevents invoked via syscall(2) with invalid ctx and expects it to
+ * return EINVAL.
  */
 
 #include <linux/aio_abi.h>
@@ -20,10 +21,15 @@
 static void run(void)
 {
 	aio_context_t ctx;
+
 	memset(&ctx, 0, sizeof(ctx));
 	TST_EXP_FAIL(tst_syscall(__NR_io_getevents, ctx, 0, 0, NULL, NULL), EINVAL);
 }
 
 static struct tst_test test = {
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_AIO=y",
+		NULL
+	},
 	.test_all = run,
 };
