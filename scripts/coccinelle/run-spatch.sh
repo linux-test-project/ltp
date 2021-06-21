@@ -25,11 +25,21 @@ libltp_spatch() {
 	       -D fix \
 	       --include-headers \
 	       $*
+	spatch --dir include \
+	       --use-gitgrep \
+	       --in-place \
+	       -D fix \
+	       --include-headers \
+	       $*
     else
 	spatch --dir lib \
 	       --ignore lib/parse_opts.c \
 	       --ignore lib/newlib_tests \
 	       --ignore lib/tests \
+	       --use-gitgrep \
+	       --include-headers \
+	       $*
+	spatch --dir include \
 	       --use-gitgrep \
 	       --include-headers \
 	       $*
