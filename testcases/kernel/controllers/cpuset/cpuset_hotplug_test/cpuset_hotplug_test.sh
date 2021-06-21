@@ -93,8 +93,7 @@ root_cpu_hotplug_test()
 
 	root_cpus="`cat $CPUSET/cpuset.cpus`"
 
-	task_cpus="`cat /proc/$tst_pid/status | grep Cpus_allowed_list`"
-	task_cpus="`echo $task_cpus | sed -e 's/Cpus_allowed_list: //'`"
+	task_cpus="`cat /sys/devices/system/cpu/present`"
 
 	check_result "$root_cpus" "$expect_cpus"
 	ret=$?
@@ -103,7 +102,7 @@ root_cpu_hotplug_test()
 		check_result "$task_cpus" "$expect_task_cpus"
 		ret=$?
 		if [ $ret -ne 0 ]; then
-			tst_resm TFAIL "task's allowed list isn't expected.(Result: $task_cpus, Expect: $expect_task_cpus)"
+			tst_resm TFAIL "task's cpu present list isn't expected.(Result: $task_cpus, Expect: $expect_task_cpus)"
 		fi
 	else
 		tst_resm TFAIL "root group's cpus isn't expected(Result: $root_cpus, Expect: $expect_cpus)."
@@ -186,6 +185,7 @@ general_cpu_hotplug_test()
 			/bin/kill -s SIGKILL $tst_pid
 			return 1
 		fi
+		task_cpus="`cat /sys/devices/system/cpu/present`"
 	fi
 
 	check_result "$cpus" "$expect_cpus"
@@ -194,7 +194,7 @@ general_cpu_hotplug_test()
 		check_result $task_cpus $expect_task_cpus
 		ret=$?
 		if [ $ret -ne 0 ]; then
-			tst_resm TFAIL "task's cpu allowed list isn't expected(Result: $task_cpus, Expect: $expect_task_cpus)."
+			tst_resm TFAIL "task's cpu present list isn't expected(Result: $task_cpus, Expect: $expect_task_cpus)."
 		fi
 	else
 		if [ "$cpus" = "" ]; then
