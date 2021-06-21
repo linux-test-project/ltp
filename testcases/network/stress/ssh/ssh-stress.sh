@@ -11,7 +11,7 @@ TST_TESTFUNC="test"
 TST_CNT=3
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
-TST_NEEDS_CMDS="sshd ssh od pkill pgrep"
+TST_NEEDS_CMDS="sshd ssh ssh-keygen od pkill pgrep"
 
 . tst_net.sh
 
@@ -56,7 +56,14 @@ TCPKeepAlive yes
 UseDNS no
 StrictModes no
 PidFile $TST_TMPDIR/sshd.pid
+HostKey $TST_TMPDIR/ssh_host_rsa_key
+HostKey $TST_TMPDIR/ssh_host_ecdsa_key
+HostKey $TST_TMPDIR/ssh_host_ed25519_key
 EOF
+
+	ssh-keygen -q -N "" -t rsa -b 4096 -f $TST_TMPDIR/ssh_host_rsa_key
+	ssh-keygen -q -N "" -t ecdsa -f $TST_TMPDIR/ssh_host_ecdsa_key
+	ssh-keygen -q -N "" -t ed25519 -f $TST_TMPDIR/ssh_host_ed25519_key
 
 	tst_res TINFO "Generate configuration file and key at the remote host"
 	tst_rhost_run -s -c "ssh-keygen -t rsa -N \"\" -f $TST_TMPDIR/id_rsa \
