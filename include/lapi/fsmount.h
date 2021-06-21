@@ -133,12 +133,14 @@ enum fsconfig_command {
 
 static inline void fsopen_supported_by_kernel(void)
 {
+	long ret;
+
 	if ((tst_kvercmp(5, 2, 0)) < 0) {
 		/* Check if the syscall is backported on an older kernel */
-		TEST(syscall(__NR_fsopen, NULL, 0));
-		if (TST_RET != -1)
-			SAFE_CLOSE(TST_RET);
-		else if (TST_ERR == ENOSYS)
+		ret = syscall(__NR_fsopen, NULL, 0);
+		if (ret != -1)
+			SAFE_CLOSE(ret);
+		else if (errno == ENOSYS)
 			tst_brk(TCONF, "Test not supported on kernel version < v5.2");
 	}
 }

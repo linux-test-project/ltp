@@ -43,10 +43,12 @@ static inline int clone3(struct clone_args *args, size_t size)
 
 static inline void clone3_supported_by_kernel(void)
 {
+	long ret;
+
 	if ((tst_kvercmp(5, 3, 0)) < 0) {
 		/* Check if the syscall is backported on an older kernel */
-		TEST(syscall(__NR_clone3, NULL, 0));
-		if (TST_RET == -1 && TST_ERR == ENOSYS)
+		ret = syscall(__NR_clone3, NULL, 0);
+		if (ret == -1 && errno == ENOSYS)
 			tst_brk(TCONF, "Test not supported on kernel version < v5.3");
 	}
 }
