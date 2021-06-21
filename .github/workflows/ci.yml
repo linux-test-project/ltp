@@ -94,7 +94,7 @@ jobs:
           - container: "debian:testing"
             env:
               CC: clang
-              METADATA: asciidoc-pdf
+              METADATA: asciidoctor-pdf
 
           - container: "ubuntu:groovy"
             env:
