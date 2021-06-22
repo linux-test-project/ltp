@@ -21,6 +21,8 @@ struct tst_rtnl_message {
 	size_t payload_size;
 };
 
+extern int tst_rtnl_errno;
+
 /* Open a netlink socket */
 struct tst_rtnl_context *tst_rtnl_create_context(const char *file,
 	const int lineno);

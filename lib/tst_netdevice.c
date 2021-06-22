@@ -149,9 +149,9 @@ int tst_create_veth_pair(const char *file, const int lineno,
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
 	if (!ret) {
-		tst_brk_(file, lineno, TBROK | TTERRNO,
-			"Failed to create veth interfaces %s+%s", ifname1,
-			ifname2);
+		tst_brk_(file, lineno, TBROK,
+			"Failed to create veth interfaces %s+%s: %s", ifname1,
+			ifname2, tst_strerrno(tst_rtnl_errno));
 	}
 
 	return ret;
@@ -183,8 +183,9 @@ int tst_remove_netdev(const char *file, const int lineno, const char *ifname)
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
 	if (!ret) {
-		tst_brk_(file, lineno, TBROK | TTERRNO,
-			"Failed to remove netdevice %s", ifname);
+		tst_brk_(file, lineno, TBROK,
+			"Failed to remove netdevice %s: %s", ifname,
+			tst_strerrno(tst_rtnl_errno));
 	}
 
 	return ret;
@@ -232,8 +233,9 @@ static int modify_address(const char *file, const int lineno,
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
 	if (!ret) {
-		tst_brk_(file, lineno, TBROK | TTERRNO,
-			"Failed to modify %s network address", ifname);
+		tst_brk_(file, lineno, TBROK,
+			"Failed to modify %s network address: %s", ifname,
+			tst_strerrno(tst_rtnl_errno));
 	}
 
 	return ret;
@@ -301,8 +303,9 @@ static int change_ns(const char *file, const int lineno, const char *ifname,
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
 	if (!ret) {
-		tst_brk_(file, lineno, TBROK | TTERRNO,
-			"Failed to move %s to another namespace", ifname);
+		tst_brk_(file, lineno, TBROK,
+			"Failed to move %s to another namespace: %s", ifname,
+			tst_strerrno(tst_rtnl_errno));
 	}
 
 	return ret;
@@ -392,8 +395,9 @@ static int modify_route(const char *file, const int lineno, unsigned int action,
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
 	if (!ret) {
-		tst_brk_(file, lineno, TBROK | TTERRNO,
-			"Failed to modify network route");
+		tst_brk_(file, lineno, TBROK,
+			"Failed to modify network route: %s",
+			tst_strerrno(tst_rtnl_errno));
 	}
 
 	return ret;

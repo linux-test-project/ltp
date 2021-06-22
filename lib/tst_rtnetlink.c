@@ -24,6 +24,8 @@ struct tst_rtnl_context {
 	struct nlmsghdr *curmsg;
 };
 
+int tst_rtnl_errno;
+
 static int tst_rtnl_grow_buffer(const char *file, const int lineno,
 	struct tst_rtnl_context *ctx, size_t size)
 {
@@ -380,7 +382,7 @@ int tst_rtnl_check_acks(const char *file, const int lineno,
 		}
 
 		if (res->err->error) {
-			TST_ERR = -res->err->error;
+			tst_rtnl_errno = -res->err->error;
 			return 0;
 		}
 	}
@@ -394,7 +396,7 @@ int tst_rtnl_send_validate(const char *file, const int lineno,
 	struct tst_rtnl_message *response;
 	int ret;
 
-	TST_ERR = 0;
+	tst_rtnl_errno = 0;
 
 	if (tst_rtnl_send(file, lineno, ctx) <= 0)
 		return 0;
