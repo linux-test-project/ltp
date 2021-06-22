@@ -196,10 +196,8 @@ static void func_sall(void)
 
 static void func_sval(void)
 {
-	int semv;
-	union semun arr;
+	int semv = SAFE_SEMCTL(sem_id, 4, GETVAL);
 
-	semv = SAFE_SEMCTL(sem_id, 4, GETVAL, arr);
 	if (semv != INCVAL)
 		tst_res(TFAIL, "semaphore value is not what was set");
 	else
