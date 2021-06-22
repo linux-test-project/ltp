@@ -78,7 +78,7 @@ int read_eof(char *filename)
 void dio_append(char *filename)
 {
 	int fd;
-	void *bufptr;
+	void *bufptr = NULL;
 	int i;
 	int w;
 

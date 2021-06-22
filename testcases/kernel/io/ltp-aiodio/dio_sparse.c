@@ -57,7 +57,7 @@ int TST_TOTAL = 1;
  */
 int dio_sparse(int fd, int align, int writesize, int filesize, int offset)
 {
-	void *bufptr;
+	void *bufptr = NULL;
 	int i, w;
 
 	TEST(posix_memalign(&bufptr, align, writesize));
