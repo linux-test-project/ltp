@@ -82,7 +82,7 @@ static void verify_shmat(unsigned int n)
 {
 	int *addr;
 	pid_t pid;
-	int status;
+	int status = 0;
 	struct shmid_ds buf;
 
 	struct test_case_t *tc = &tcases[n];
