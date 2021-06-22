@@ -610,6 +610,7 @@ io_cancel02 io_cancel02
 io_destroy01 io_destroy01
 io_destroy02 io_destroy02
 io_getevents01 io_getevents01
+io_getevents02 io_getevents02
 
 io_pgetevents01 io_pgetevents01
 io_pgetevents02 io_pgetevents02
