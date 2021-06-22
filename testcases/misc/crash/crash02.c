@@ -197,9 +197,8 @@ void monitor_fcn(int sig)
 void badboy_fork(void)
 {
 	int status, pid;
-	pid_t child;
-	child = fork();
-	badboy_pid = status;
+	pid_t child = fork();
+
 	switch (child) {
 	case -1:
 		perror("fork");
@@ -211,6 +210,7 @@ void badboy_fork(void)
 #endif
 		exit(0);
 	default:
+		badboy_pid = child;
 		if (verbose_level > 3)
 			printf("badboy pid = %d\n", badboy_pid);
 
