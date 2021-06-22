@@ -83,7 +83,7 @@ static void term(int sig);
 static int csize;		/* chunk size */
 static int iterations;		/* # total iterations */
 static int max_size;		/* max file size */
-static int misc_intvl;		/* for doing misc things; 0 ==> no */
+static const int misc_intvl = 10;		/* for doing misc things; 0 ==> no */
 static int nchild;		/* how many children */
 static int fd;			/* file descriptor used by child */
 static int parent_pid;
@@ -139,7 +139,6 @@ static void setup(void)
 	nchild = 5;
 	csize = K_2;		/* should run with 1, 2, and 4 K sizes */
 	max_size = K_1 * K_1;
-	misc_intvl = 10;
 
 	if (sigset(SIGTERM, term) == SIG_ERR) {
 		tst_brkm(TBROK | TERRNO, NULL, "sigset failed");
