@@ -83,7 +83,7 @@ do_test()
 
 		for i in $(seq 1 10); do
 			rpcinfo -p localhost | grep -q $PROGNUMNOSVC && break
-			[ "$i" -eq 30 ] && tst_brk TBROK "server not registered"
+			[ "$i" -eq 10 ] && tst_brk TBROK "server not registered"
 			tst_sleep 100ms
 		done
 	fi
