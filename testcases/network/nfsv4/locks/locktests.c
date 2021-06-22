@@ -580,7 +580,7 @@ int master(void)
 	char dbg[16];
 #endif
 	struct flock request;
-	struct s_test tLock;
+	struct s_test tLock = { 0 };
 	enum state_t state;
 	int offset;
 	/* A test sentence written in the file */
