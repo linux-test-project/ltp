@@ -1010,7 +1010,7 @@ int safe_cgroup_has(const char *const file, const int lineno,
 		if (!(alias = cgroup_file_alias(cfile, *dir)))
 		    continue;
 
-		if (!faccessat((*dir)->dir_fd, file_name, F_OK, 0))
+		if (!faccessat((*dir)->dir_fd, alias, F_OK, 0))
 			return 1;
 
 		if (errno == ENOENT)
