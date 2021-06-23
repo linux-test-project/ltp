@@ -46,7 +46,21 @@ static void verify_oom(void)
 	testoom(0, 0, ENOMEM, 1);
 
 	if (SAFE_CGROUP_HAS(cg, "memory.swap.max")) {
-		SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", TESTMEM);
+		/*
+		 * Cgroup v2 tracks memory and swap in separate, which splits
+		 * memory and swap counter. So with swappiness enable (default
+		 * value is 60 on RHEL), it likely has part of memory swapping
+		 * out during the allocating.
+		 *
+		 * To get more opportunities to reach the swap limitation,
+		 * let's scale down the value of 'memory.swap.max' to only
+		 * 1MB for CGroup v2.
+		 */
+		if (TST_CGROUP_VER(cg, "memory") != TST_CGROUP_V1)
+			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", MB);
+		else
+			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", TESTMEM + MB);
+
 		testoom(0, 1, ENOMEM, 1);
 	}
 
