@@ -19,11 +19,53 @@ TST_MIN_KVER="3.18"
 . cgroup_lib.sh
 
 LOCAL_MOUNTPOINT="cpuset_test"
+BACKUP_DIRECTORY="cpuset_backup"
 
 root_cpuset_dir=
 cpu_exclusive="cpuset.cpu_exclusive"
 cpus="cpuset.cpus"
 old_cpu_exclusive_value=1
+
+# cpuset_backup_and_update <backup_dir> <what> <value>
+# Create backup of the values of a specific file (<what>)
+# in all cpuset groups and set the value to <value>
+# The backup is written to <backup_dir> in the same structure
+# as in the cpuset filesystem
+cpuset_backup_and_update()
+{
+	local backup_dir=$1
+	local what=$2
+	local value=$3
+	local old_dir=$PWD
+
+	cd ${root_cpuset_dir}
+	find . -mindepth 2 -name ${what} -print0 |
+	while IFS= read -r -d '' file; do
+		mkdir -p "$(dirname "${backup_dir}/${file}")"
+		cat "${file}" > "${backup_dir}/${file}"
+		echo "${value}" > "${file}"
+	done
+
+	cd $old_dir
+}
+
+# cpuset_restore <backup_dir> <what>
+# Restores the value of a file (<what>) in all cpuset
+# groups from the backup created by cpuset_backup_and_update
+cpuset_restore()
+{
+	local backup_dir=$1
+	local what=$2
+	local old_dir=$PWD
+
+	cd ${backup_dir}
+	find . -mindepth 2 -name ${what} -print0 |
+	while IFS= read -r -d '' file; do
+		cat "${file}" > "${root_cpuset_dir}/${file}"
+	done
+
+	cd $old_dir
+}
 
 setup()
 {
@@ -49,6 +91,11 @@ setup()
 		tst_brk TBROK "Both cpuset.cpu_exclusive and cpu_exclusive do not exist"
 	fi
 
+	# Ensure that no group explicitely uses a cpu,
+	# otherwise setting cpuset.cpus for the testgroup will fail
+	mkdir ${BACKUP_DIRECTORY}
+	cpuset_backup_and_update "${PWD}/${BACKUP_DIRECTORY}" ${cpus} ""
+
 	old_cpu_exclusive_value=$(cat ${root_cpuset_dir}/${cpu_exclusive})
 	if [ "${old_cpu_exclusive_value}" != "1" ];then
 		echo 1 > ${root_cpuset_dir}/${cpu_exclusive}
@@ -60,6 +107,10 @@ cleanup()
 {
 	if [ -d "${root_cpuset_dir}/testdir" ]; then
 		rmdir ${root_cpuset_dir}/testdir
+	fi
+
+	if [ -d "${BACKUP_DIRECTORY}" ]; then
+		cpuset_restore "${PWD}/${BACKUP_DIRECTORY}" ${cpus}
 	fi
 
 	if [ "$old_cpu_exclusive_value" != 1 ]; then
