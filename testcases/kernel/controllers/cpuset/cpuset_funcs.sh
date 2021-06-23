@@ -134,6 +134,13 @@ cpuset_check()
 	tst_brkm TCONF "Cpuset is not supported"
 }
 
+machine_check()
+{
+	if tst_virt_hyperv; then
+		tst_brkm TCONF "Microsoft Hyper-V detected, no support for CPU hotplug"
+	fi
+}
+
 # optional parameters (pass both or none of them):
 # $1 - required number of cpus (default 2)
 # $2 - required number of memory nodes (default 2)
@@ -149,6 +156,7 @@ check()
 
 	nnodes_check ${2:-2}
 
+	machine_check
 }
 
 # Create /dev/cpuset & mount the cgroup file system with cpuset
