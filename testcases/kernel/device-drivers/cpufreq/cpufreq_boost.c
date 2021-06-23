@@ -90,6 +90,9 @@ static void setup(void)
 	unsigned int i;
 	tst_require_root();
 
+	if (tst_is_virt(VIRT_ANY))
+		tst_brkm(TCONF, NULL, "running in a virtual machine, overclock not reliably measureable");
+
 	for (i = 0; i < ARRAY_SIZE(cdrv); ++i) {
 		fd = open(cdrv[i].file, O_RDWR);
 		if (fd == -1)
