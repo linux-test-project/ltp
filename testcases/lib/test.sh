@@ -321,6 +321,22 @@ tst_mkfs()
 	ROD_SILENT mkfs.$fs_type $fs_opts $device
 }
 
+# Detect whether running under hypervisor: Microsoft Hyper-V
+# Return 0: running under Hyper-V
+# Return 1: not running under Hyper-V (bare metal, other hypervisor or
+#           failure of detection)
+tst_virt_hyperv()
+{
+	local v
+
+	v="$(systemd-detect-virt)"
+
+	[ $? -eq 0 ] || return 1
+	[ "$v" = "microsoft" ] || return 1
+
+	return 0
+}
+
 tst_umount()
 {
 	local device="$1"
