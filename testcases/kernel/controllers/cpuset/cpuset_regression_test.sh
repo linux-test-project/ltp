@@ -27,13 +27,6 @@ old_cpu_exclusive_value=1
 
 setup()
 {
-	local cpu_num
-
-	cpu_num=$(tst_getconf _NPROCESSORS_ONLN)
-	if [ $cpu_num -lt 2 ]; then
-		tst_brk TCONF "We need 2 cpus at least to have test"
-	fi
-
 	if ! is_cgroup_subsystem_available_and_enabled "cpuset"; then
 		tst_brk TCONF "Either kernel does not support cpuset controller or feature not enabled"
 	fi
@@ -101,12 +94,12 @@ test()
 	fi
 
 	# This may trigger the kernel crash
-	echo 0-1 > ${root_cpuset_dir}/testdir/${cpus}
-	[ $? -ne 0 ] && tst_brk TFAIL "'echo 0-1 > ${root_cpuset_dir}/testdir/${cpus}' failed"
+	echo 0 > ${root_cpuset_dir}/testdir/${cpus}
+	[ $? -ne 0 ] && tst_brk TFAIL "'echo 0 > ${root_cpuset_dir}/testdir/${cpus}' failed"
 
 	cpus_value=$(cat ${root_cpuset_dir}/testdir/${cpus})
-	if [ "${cpus_value}" != "0-1" ]; then
-		tst_brk TFAIL "${cpus} is '${cpus_value}', expected '0-1'"
+	if [ "${cpus_value}" != "0" ]; then
+		tst_brk TFAIL "${cpus} is '${cpus_value}', expected '0'"
 	fi
 
 	tst_res TPASS "Bug is not reproducible"
