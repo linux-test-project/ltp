@@ -136,6 +136,16 @@ pid_t safe_getpgid(const char *file, const int lineno, pid_t pid);
 #define SAFE_GETPGID(pid) \
 	safe_getpgid(__FILE__, __LINE__, (pid))
 
+int safe_setgroups(const char *file, const int lineno, size_t size, const gid_t *list);
+
+#define SAFE_SETGROUPS(size, list) \
+	safe_setgroups(__FILE__, __LINE__, (size), (list))
+
+int safe_getgroups(const char *file, const int lineno, int size, gid_t list[]);
+
+#define SAFE_GETGROUPS(size, list) \
+	safe_getgroups(__FILE__, __LINE__, (size), (list))
+
 #define SAFE_UNLINK(pathname) \
 	safe_unlink(__FILE__, __LINE__, NULL, (pathname))
 
