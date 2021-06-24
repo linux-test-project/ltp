@@ -21,6 +21,7 @@ void tst_pollute_memory(size_t maxsize, int fillchar)
 
 	SAFE_SYSINFO(&info);
 	safety = MAX(4096 * SAFE_SYSCONF(_SC_PAGESIZE), 128 * 1024 * 1024);
+	safety = MAX(safety, (info.freeram / 64));
 	safety /= info.mem_unit;
 
 	if (info.freeswap > safety)
