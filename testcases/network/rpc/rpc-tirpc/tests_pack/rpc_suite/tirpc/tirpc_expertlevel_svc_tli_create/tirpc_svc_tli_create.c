@@ -63,7 +63,7 @@ int main(void)
 
 	transp = svc_tli_create(RPC_ANYFD, nconf, NULL, 0, 0);
 
-	test_status = ((SVCXPRT *) transp != NULL) ? 0 : 1;
+	test_status = (transp != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed

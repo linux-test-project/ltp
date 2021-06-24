@@ -54,7 +54,7 @@ int main(void)
 	}
 
 	transp = svc_vc_create(sock, 0, 0);
-	test_status = ((SVCXPRT *) transp != NULL) ? 0 : 1;
+	test_status = (transp != NULL) ? 0 : 1;
 
 	if (transp != NULL)
 		svc_destroy(transp);

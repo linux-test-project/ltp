@@ -48,7 +48,7 @@ int main(void)
 	svcr = svcfd_create(fd, 0, 0);
 
 	//check returned value
-	test_status = ((SVCXPRT *) svcr != NULL) ? 0 : 1;
+	test_status = (svcr != NULL) ? 0 : 1;
 
 	//This last printf gives the result status to the tests suite
 	//normally should be 0: test has passed or 1: test has failed
