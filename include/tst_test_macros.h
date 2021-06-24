@@ -120,13 +120,13 @@ extern void *TST_RET_PTR;
 			TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);     \
 	} while (0)                                                            \
 
-#define TST_EXP_FAIL(SCALL, ERRNO, ...)                                        \
+#define TST_EXP_FAIL_(PASS_COND, SCALL, ERRNO, ...)                            \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
 		                                                               \
 		TST_PASS = 0;                                                  \
 		                                                               \
-		if (TST_RET == 0) {                                            \
+		if (PASS_COND) {                                               \
 			TST_MSG_(TFAIL, " succeeded", #SCALL, ##__VA_ARGS__);  \
 		        break;                                                 \
 		}                                                              \
@@ -149,5 +149,9 @@ extern void *TST_RET_PTR;
 			}                                                      \
 		}                                                              \
 	} while (0)
+
+#define TST_EXP_FAIL(SCALL, ERRNO, ...) TST_EXP_FAIL_(TST_RET == 0, SCALL, ERRNO, __VA_ARGS__)
+
+#define TST_EXP_FAIL2(SCALL, ERRNO, ...) TST_EXP_FAIL_(TST_RET >= 0, SCALL, ERRNO, __VA_ARGS__)
 
 #endif	/* TST_TEST_MACROS_H__ */

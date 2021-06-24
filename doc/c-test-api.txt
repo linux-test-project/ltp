@@ -283,6 +283,19 @@ passed as the second argument.
 
 [source,c]
 -------------------------------------------------------------------------------
+static void test(void)
+{
+	...
+	TST_EXP_FAIL2(msgget(key, flags), EINVAL, "msgget(%i, %i)", key, flags);
+	...
+}
+-------------------------------------------------------------------------------
+
+The 'TST_EXP_FAIL2()' is the same as 'TST_EXP_FAIL()' except the return value
+is expected to be non-negative integer if call passes.
+
+[source,c]
+-------------------------------------------------------------------------------
 const char *tst_strsig(int sig);
 -------------------------------------------------------------------------------
 
