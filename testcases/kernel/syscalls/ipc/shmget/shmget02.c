@@ -1,184 +1,112 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  03/2001 - Written by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) 2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  */
 
-/*
- * NAME
- *	shmget02.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	shmget02 - check for ENOENT, EEXIST and EINVAL errors
+ * Test for ENOENT, EEXIST, EINVAL, EACCES, EPERM errors.
  *
- * ALGORITHM
- *	create a shared memory segment with read & write permissions
- *	loop if that option was specified
- *	  call shmget() using five different invalid cases
- *	  check the errno value
- *	    issue a PASS message if we get ENOENT, EEXIST or EINVAL
- *	  otherwise, the tests fails
- *	    issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  shmget02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- *      06/03/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
- *      - Fix concurrency issue. The second key used for this test could
- *        conflict with the key from another task.
- *
- * RESTRICTIONS
- *	none
+ * ENOENT - No segment exists for the given key and IPC_CREAT was not specified.
+ * EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given.
+ * EINVAL - A new segment was to be created and size is less than SHMMIN or
+ * greater than SHMMAX. Or a segment for the given key exists, but size is
+ * gran eater than the size of that segment.
+ * EACCES - The user does not have permission to access the shared memory segment.
+ * EPERM - The SHM_HUGETLB flag was specified, but the caller was not privileged
+ * (did not have the CAP_IPC_LOCK capability) and is not a member of the
+ * sysctl_hugetlb_shm_group group.
+ * ENOMEM - The SHM_HUGETLB flag was specified, the caller was privileged but not
+ * have enough hugepage memory space.
  */
 
-#include "ipcshm.h"
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <stdlib.h>
+#include <pwd.h>
+#include <sys/shm.h>
+#include <grp.h>
+#include "tst_safe_sysv_ipc.h"
+#include "tst_test.h"
+#include "libnewipc.h"
+#include "lapi/shm.h"
 
-char *TCID = "shmget02";
-int TST_TOTAL = 4;
+static int shm_id = -1;
+static key_t shmkey, shmkey1;
+static struct passwd *pw;
 
-int shm_id_1 = -1;
-int shm_nonexisting_key = -1;
-key_t shmkey2;
-
-struct test_case_t {
-	int *skey;
-	int size;
+static struct tcase {
+	int *shmkey;
+	size_t size;
 	int flags;
-	int error;
-} TC[] = {
-	/* EINVAL - size is 0 */
-	{
-	&shmkey2, 0, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
-	    /* EINVAL - size is negative */
-//      {&shmkey2, -1, IPC_CREAT | IPC_EXCL | SHM_RW, EINVAL},
-	    /* EINVAL - size is larger than created segment */
-	{
-	&shmkey, SHM_SIZE * 2, SHM_RW, EINVAL},
-	    /* EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given */
-	{
-	&shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL | SHM_RW, EEXIST},
-	    /* ENOENT - no segment exists for the key and IPC_CREAT is not given */
-	    /* use shm_id_2 (-1) as the key */
-	{
-	&shm_nonexisting_key, SHM_SIZE, SHM_RW, ENOENT}
+	/*1: nobody expected  0: root expected */
+	int exp_user;
+	/*1: nobody expected  0: root expected */
+	int exp_group;
+	int exp_err;
+} tcases[] = {
+	{&shmkey1, SHM_SIZE, IPC_EXCL, 0, 0, ENOENT},
+	{&shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL, 0, 0, EEXIST},
+	{&shmkey1, SHMMIN - 1, IPC_CREAT | IPC_EXCL, 0, 0, EINVAL},
+	{&shmkey1, SHMMAX + 1, IPC_CREAT | IPC_EXCL, 0, 0, EINVAL},
+	{&shmkey, SHM_SIZE * 2, IPC_EXCL, 0, 0, EINVAL},
+	{&shmkey, SHM_SIZE, SHM_RD, 1, 0, EACCES},
+	{&shmkey1, SHM_SIZE, IPC_CREAT | SHM_HUGETLB, 0, 1, EPERM},
+	{&shmkey1, SHM_SIZE, IPC_CREAT | SHM_HUGETLB, 0, 0, ENOMEM}
 };
 
-int main(int ac, char **av)
+static void do_test(unsigned int n)
 {
-	int lc;
-	int i;
+	struct tcase *tc = &tcases[n];
+	pid_t pid;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	if (tc->exp_user == 0 && tc->exp_group == 0) {
+		TST_EXP_FAIL2(shmget(*tc->shmkey, tc->size, tc->flags), tc->exp_err,
+			"shmget(%i, %lu, %i)", *tc->shmkey, tc->size, tc->flags);
+		return;
+	}
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/* loop through the test cases */
-		for (i = 0; i < TST_TOTAL; i++) {
-			/*
-			 * Look for a failure ...
-			 */
-
-			TEST(shmget(*(TC[i].skey), TC[i].size, TC[i].flags));
-
-			if (TEST_RETURN != -1) {
-				tst_resm(TFAIL, "call succeeded unexpectedly");
-				continue;
-			}
-
-			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - errno = "
-					 "%d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "call failed with an "
-					 "unexpected error - %d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
+	pid = SAFE_FORK();
+	if (pid == 0) {
+		if (tc->exp_group) {
+			SAFE_SETGROUPS(0, NULL);
+			SAFE_SETGID(pw->pw_gid);
 		}
+		SAFE_SETUID(pw->pw_uid);
+		TST_EXP_FAIL2(shmget(*tc->shmkey, tc->size, tc->flags), tc->exp_err,
+			"shmget(%i, %lu, %i)", *tc->shmkey, tc->size, tc->flags);
+		exit(0);
 	}
-
-	cleanup();
-
-	tst_exit();
+	tst_reap_children();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
+	shmkey = GETIPCKEY();
+	shmkey1 = GETIPCKEY();
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See libs/libltpipc/libipc.c for more information.
-	 */
-	tst_tmpdir();
-
-	/* get an IPC resource key */
-	shmkey = getipckey();
-
-	/* Get an new IPC resource key. */
-	shmkey2 = getipckey();
-
-	if ((shm_id_1 = shmget(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL |
-			       SHM_RW)) == -1) {
-		tst_brkm(TBROK, cleanup, "couldn't create shared memory "
-			 "segment in setup()");
-	}
-
-	/* Make sure shm_nonexisting_key is a nonexisting key */
-	while (1) {
-		while (-1 != shmget(shm_nonexisting_key, 1, SHM_RD)) {
-			shm_nonexisting_key--;
-		}
-		if (errno == ENOENT)
-			break;
-	}
+	shm_id = SAFE_SHMGET(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL);
+	pw = SAFE_GETPWNAM("nobody");
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/* if it exists, remove the shared memory resource */
-	rm_shm(shm_id_1);
-
-	tst_rmdir();
-
+	if (shm_id >= 0)
+		SAFE_SHMCTL(shm_id, IPC_RMID, NULL);
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.forks_child = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test = do_test,
+	.tcnt = ARRAY_SIZE(tcases),
+	.request_hugepages = 0,
+};
