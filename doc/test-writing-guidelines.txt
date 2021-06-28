@@ -234,7 +234,7 @@ of the upstream project that has been dead since 2005 and also a number of
 directories with tests for more specific features.
 
 5.1 Runtest Files
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 The list of tests to be executed is stored in runtest files under the
 'runtest/' directory. The default set of runtest files to be executed is
