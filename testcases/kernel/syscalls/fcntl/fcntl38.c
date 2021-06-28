@@ -93,4 +93,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_dnotify,
+	.needs_kconfigs = (const char *[]) { "CONFIG_DNOTIFY=y", NULL },
 };
