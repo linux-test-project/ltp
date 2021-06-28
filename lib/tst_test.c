@@ -915,7 +915,7 @@ static void do_setup(int argc, char *argv[])
 
 	assert_test_fn();
 
-	tid = get_tid(argv);
+	TCID = tid = get_tid(argv);
 
 	if (tst_test->sample)
 		tst_test = tst_timer_test_setup(tst_test);
@@ -1411,8 +1411,6 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	tst_test = self;
 
 	do_setup(argc, argv);
-
-	TCID = tid;
 
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
