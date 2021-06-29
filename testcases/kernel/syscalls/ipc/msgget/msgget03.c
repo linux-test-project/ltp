@@ -20,22 +20,14 @@
 #include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
-static int maxmsgs;
+static int maxmsgs, queue_cnt;
 static int *queues;
 static key_t msgkey;
 
 static void verify_msgget(void)
 {
-	TEST(msgget(msgkey + maxmsgs, IPC_CREAT | IPC_EXCL));
-	if (TST_RET != -1)
-		tst_res(TFAIL, "msgget() succeeded unexpectedly");
-
-	if (TST_ERR == ENOSPC) {
-		tst_res(TPASS | TTERRNO, "msgget() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO, "msgget() failed unexpectedly,"
-			" expected ENOSPC");
-	}
+	TST_EXP_FAIL2(msgget(msgkey + maxmsgs, IPC_CREAT | IPC_EXCL), ENOSPC,
+		"msgget(%i, %i)", msgkey + maxmsgs, IPC_CREAT | IPC_EXCL);
 }
 
 static void setup(void)
@@ -49,11 +41,10 @@ static void setup(void)
 	queues = SAFE_MALLOC(maxmsgs * sizeof(int));
 
 	for (num = 0; num < maxmsgs; num++) {
-		queues[num] = -1;
-
 		res = msgget(msgkey + num, IPC_CREAT | IPC_EXCL);
-		if (res != -1)
-			queues[num] = res;
+		if (res == -1)
+			tst_brk(TBROK | TERRNO, "msgget failed unexpectedly");
+		queues[queue_cnt++] = res;
 	}
 
 	tst_res(TINFO, "The maximum number of message queues (%d) reached",
@@ -67,10 +58,8 @@ static void cleanup(void)
 	if (!queues)
 		return;
 
-	for (num = 0; num < maxmsgs; num++) {
-		if (queues[num] != -1)
-			SAFE_MSGCTL(queues[num], IPC_RMID, NULL);
-	}
+	for (num = 0; num < queue_cnt; num++)
+		SAFE_MSGCTL(queues[num], IPC_RMID, NULL);
 
 	free(queues);
 }
