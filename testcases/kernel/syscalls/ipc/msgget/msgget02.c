@@ -46,19 +46,8 @@ static struct tcase {
 
 static void verify_msgget(struct tcase *tc)
 {
-	TEST(msgget(*tc->key, tc->flags));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "msgget() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "msgget() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO, "msgget() failed unexpectedly,"
-			" expected %s", tst_strerrno(tc->exp_err));
-	}
+	TST_EXP_FAIL2(msgget(*tc->key, tc->flags), tc->exp_err, "msgget(%i, %i)",
+		*tc->key, tc->flags);
 }
 
 static void do_test(unsigned int n)

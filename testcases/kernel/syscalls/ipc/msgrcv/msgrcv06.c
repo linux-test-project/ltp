@@ -24,15 +24,8 @@ static struct buf {
 
 static void verify_msgrcv(void)
 {
-	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, 1, 0));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "msgrcv() succeeded unexpectedly");
-		return;
-	}
-	if (TST_ERR == EIDRM)
-		tst_res(TPASS | TTERRNO, "msgrcv() failed as expected");
-	else
-		tst_res(TFAIL | TTERRNO, "msgrcv() failed expected EIDRM but got");
+	TST_EXP_FAIL2(msgrcv(queue_id, &rcv_buf, MSGSIZE, 1, 0), EIDRM,
+		"msgrcv(%i, %p, %d, 1, 0)", queue_id, &rcv_buf, MSGSIZE);
 }
 
 static void do_test(void)

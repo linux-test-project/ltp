@@ -59,21 +59,8 @@ static void verify_msgrcv(unsigned int n)
 
 	tst_res(TINFO, "%s", tc->message);
 
-	TEST(msgrcv(queue_id, &rcv_buf, MSGSIZE, tc->msg_type, MSG_COPY | tc->msg_flag));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "msgrcv() succeeded unexpectedly");
-		SAFE_MSGSND(queue_id, &snd_buf, MSGSIZE, 0);
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "msgrcv() failed as expected");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO,
-		"msgrcv() failed unexpectedly, expected %s got",
-		tst_strerrno(tc->exp_err));
+	TST_EXP_FAIL2(msgrcv(queue_id, &rcv_buf, MSGSIZE, tc->msg_type, MSG_COPY | tc->msg_flag), tc->exp_err,
+		"msgrcv(%i, %p, %i, %i, %i)", queue_id, &rcv_buf, MSGSIZE, tc->msg_type, MSG_COPY | tc->msg_flag);
 }
 
 static void setup(void)

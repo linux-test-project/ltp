@@ -59,18 +59,8 @@ static struct tcase {
 
 static void verify_msgrcv(struct tcase *tc)
 {
-	TEST(msgrcv(*tc->id, tc->buffer, tc->msgsz, tc->msgtyp, tc->msgflag));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "smgrcv() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "msgrcv() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO, "msgrcv() failed unexpectedly,"
-			" expected %s but got", tst_strerrno(tc->exp_err));
-	}
+	TST_EXP_FAIL2(msgrcv(*tc->id, tc->buffer, tc->msgsz, tc->msgtyp, tc->msgflag), tc->exp_err,
+		"msgrcv(%i, %p, %i, %ld, %i)", *tc->id, tc->buffer, tc->msgsz, tc->msgtyp, tc->msgflag);
 }
 
 static void do_test(unsigned int n)

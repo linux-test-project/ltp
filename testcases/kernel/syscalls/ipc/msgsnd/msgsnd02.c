@@ -61,18 +61,8 @@ static struct tcase {
 
 static void verify_msgsnd(struct tcase *tc)
 {
-	TEST(msgsnd(*tc->id, tc->buffer, tc->msgsz, 0));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "smgsnd() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "msgsnd() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO, "msgsnd() failed unexpectedly,"
-			" expected %s", tst_strerrno(tc->exp_err));
-	}
+	TST_EXP_FAIL(msgsnd(*tc->id, tc->buffer, tc->msgsz, 0), tc->exp_err,
+		"msgsnd(%i, %p, %i, 0)", *tc->id, tc->buffer, tc->msgsz);
 }
 
 static void do_test(unsigned int n)

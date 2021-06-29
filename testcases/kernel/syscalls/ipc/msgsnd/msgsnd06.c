@@ -28,18 +28,8 @@ static struct buf {
 
 static void verify_msgsnd(void)
 {
-	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, 0));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "msgsnd() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == EIDRM) {
-		tst_res(TPASS | TTERRNO, "msgsnd() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO,
-			"msgsnd() failed unexpectedly, expected EIDRM");
-	}
+	TST_EXP_FAIL(msgsnd(queue_id, &snd_buf, MSGSIZE, 0), EIDRM,
+		"msgsnd(%i, %p, %i, 0)", queue_id, &snd_buf, MSGSIZE);
 }
 
 static void do_test(void)

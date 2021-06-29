@@ -41,18 +41,8 @@ static struct tcase {
 
 static void verify_msgsnd(struct tcase *tc)
 {
-	TEST(msgsnd(queue_id, &snd_buf, MSGSIZE, tc->flag));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "msgsnd() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "msgsnd() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO, "msgsnd() failed unexpectedly,"
-			" expected %s", tst_strerrno(tc->exp_err));
-	}
+	TST_EXP_FAIL(msgsnd(queue_id, &snd_buf, MSGSIZE, tc->flag), tc->exp_err,
+		"msgsnd(%i, %p, %i, %i)", queue_id, &snd_buf, MSGSIZE, tc->flag);
 }
 
 static void sighandler(int sig)
