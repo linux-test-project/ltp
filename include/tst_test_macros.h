@@ -139,7 +139,7 @@ extern void *TST_RET_PTR;
 		                                                               \
 		if (ERRNO) {                                                   \
 			if (TST_ERR == ERRNO) {                                \
-				TST_MSG_(TPASS | TTERRNO, "",                  \
+				TST_MSG_(TPASS | TTERRNO, " ",                 \
 				         #SCALL, ##__VA_ARGS__);               \
 				TST_PASS = 1;                                  \
 			} else {                                               \
