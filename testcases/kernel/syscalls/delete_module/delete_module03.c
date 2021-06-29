@@ -50,6 +50,10 @@ static void do_delete_module(void)
 
 static void setup(void)
 {
+	/* lockdown requires signed modules */
+	if (tst_lockdown_enabled())
+		tst_brk(TCONF, "Kernel is locked down, skip this test");
+
 	/* Load first kernel module */
 	tst_module_load(DUMMY_MOD_KO, NULL);
 	dummy_mod_loaded = 1;
