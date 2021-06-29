@@ -89,7 +89,7 @@ static void do_test(unsigned int i)
 	else
 		timeout = tst_ts_get(&ts);
 
-	TST_EXP_FAIL(tv->recvmmsg(*tc->fd, *tc->msg_vec, VLEN, 0, timeout),
+	TST_EXP_FAIL2(tv->recvmmsg(*tc->fd, *tc->msg_vec, VLEN, 0, timeout),
 	             tc->exp_errno, "recvmmsg() %s", tc->desc);
 }
 

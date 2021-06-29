@@ -49,7 +49,7 @@ static void verify_open(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	TST_EXP_FAIL(open(tc->filename, tc->flag, 0444),
+	TST_EXP_FAIL2(open(tc->filename, tc->flag, 0444),
 	             tc->exp_errno, "open() %s", tc->desc);
 }
 

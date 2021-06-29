@@ -58,7 +58,7 @@ static void run(unsigned int i)
 	if (tc[i].pass_unmapped_buffer)
 		SAFE_MUNMAP(protected_buffer, sizeof(*protected_buffer));
 
-	TST_EXP_FAIL(sendfile(out_fd, in_fd, protected_buffer, 1),
+	TST_EXP_FAIL2(sendfile(out_fd, in_fd, protected_buffer, 1),
 		     EFAULT, "sendfile(..) with %s, protection=%d",
 		     tc[i].desc, tc[i].protection);
 

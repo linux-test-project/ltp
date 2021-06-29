@@ -278,7 +278,7 @@ static struct test_case {
 static void verify_open(unsigned int n)
 {
 	if (tc[n].err > 0) {
-		TST_EXP_FAIL(open(tc[n].path, tc[n].flags, tc[n].mode),
+		TST_EXP_FAIL2(open(tc[n].path, tc[n].flags, tc[n].mode),
 		             tc[n].err, "%s", tc[n].desc);
 	} else if (tc[n].err == 0) {
 		TST_EXP_FD(open(tc[n].path, tc[n].flags, tc[n].mode),

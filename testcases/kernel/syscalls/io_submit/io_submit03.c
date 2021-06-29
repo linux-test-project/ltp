@@ -103,7 +103,7 @@ static void cleanup(void)
 
 static void run(unsigned int i)
 {
-	TST_EXP_FAIL(tst_syscall(__NR_io_submit, *tc[i].ctx, tc[i].nr, tc[i].iocbs),
+	TST_EXP_FAIL2(tst_syscall(__NR_io_submit, *tc[i].ctx, tc[i].nr, tc[i].iocbs),
 		     tc[i].exp_errno, "io_submit() with %s", tc[i].desc);
 }
 

@@ -97,7 +97,7 @@ void verify_accept(unsigned int nr)
 {
 	struct test_case *tcase = &tcases[nr];
 
-	TST_EXP_FAIL(accept(*tcase->fd, tcase->sockaddr, &tcase->salen),
+	TST_EXP_FAIL2(accept(*tcase->fd, tcase->sockaddr, &tcase->salen),
 	             tcase->experrno, "%s", tcase->desc);
 }
 

@@ -110,7 +110,7 @@ static void verify_adjtimex(unsigned int i)
 		}
 	}
 
-	TST_EXP_FAIL(tv->adjtimex(bufp), tc[i].exp_err, "adjtimex() error");
+	TST_EXP_FAIL2(tv->adjtimex(bufp), tc[i].exp_err, "adjtimex() error");
 
 	if (tc[i].exp_err == EPERM)
 		SAFE_SETEUID(0);

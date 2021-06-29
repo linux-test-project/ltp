@@ -50,7 +50,7 @@ static void cleanup(void)
 
 static void run(unsigned int i)
 {
-	TST_EXP_FAIL(sendfile(*(tc[i].out_fd), *(tc[i].in_fd), NULL, 1),
+	TST_EXP_FAIL2(sendfile(*(tc[i].out_fd), *(tc[i].in_fd), NULL, 1),
 		     EBADF, "sendfile(..) with %s", tc[i].desc);
 }
 
