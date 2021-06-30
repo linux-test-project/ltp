@@ -54,7 +54,7 @@ static void run(void)
 			sb.st_size, TST_RET);
 	else if (after_pos != sb.st_size)
 		tst_res(TFAIL, "sendfile() updated the file position of in_fd unexpectedly,"
-			" expected file position: %," PRId64
+			" expected file position: %" PRId64
 			" actual file position %" PRId64,
 			(int64_t)(sb.st_size), (int64_t)(after_pos));
 	else
