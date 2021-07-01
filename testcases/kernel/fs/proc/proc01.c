@@ -140,12 +140,6 @@ static const char lsm_should_work[][PATH_MAX] = {
 	"/proc/self/task/[0-9]*/attr/selinux/*",
 	""
 };
-
-/* Place holder for none of LSM is detected. */
-#else
-static const char lsm_should_work[][PATH_MAX] = {
-	""
-};
 #endif
 
 /* Known files that does not honor O_NONBLOCK, so they will hang
