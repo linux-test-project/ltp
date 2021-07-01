@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2017 Richard Palethorpe <rpalethorpe@suse.com>
+ * Copyright (c) 2017 Veronika Kabatova <vkabatov@redhat.com>
  */
-/* Basic functionality test for tst_fuzzy_sync.h similar to the atomic tests
- * (test15.c). One thread writes to the odd indexes of an array while the
- * other writes to the even. If the threads are not synchronised then they
- * will probably write to the wrong indexes as they share an index variable
- * which they should take it in turns to update.
+
+/*
+ * Test for cecbd0cb3 ("Fix buffer overflow in print_result() function")
  */
 
 #include <stdlib.h>
