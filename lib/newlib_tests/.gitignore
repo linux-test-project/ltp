@@ -13,7 +13,6 @@ test12
 test13
 test14
 test15
-test16
 tst_capability01
 tst_capability02
 tst_cgroup01
@@ -44,3 +43,4 @@ test_macros03
 test_macros04
 tst_fuzzy_sync01
 tst_fuzzy_sync02
+tst_fuzzy_sync03
