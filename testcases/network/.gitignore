@@ -24,6 +24,7 @@
 /sctp/sctp_big_chunk
 /sockets/ltpClient
 /sockets/ltpServer
+/sockets/vsock01
 /stress/ns-tools/ns-icmp_redirector
 /stress/ns-tools/ns-icmpv4_sender
 /stress/ns-tools/ns-icmpv6_sender
