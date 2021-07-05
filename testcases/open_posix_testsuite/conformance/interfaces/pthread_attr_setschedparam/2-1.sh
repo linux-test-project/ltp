@@ -1,4 +1,3 @@
-
 #!/bin/sh
 # Copyright (c) 2004, QUALCOMM Inc. All rights reserved.
 # Created by:  abisain REMOVE-THIS AT qualcomm DOT com

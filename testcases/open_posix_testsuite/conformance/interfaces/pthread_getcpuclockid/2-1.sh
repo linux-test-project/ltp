@@ -1,4 +1,3 @@
-
 #!/bin/sh
 # Copyright (c) 2004, Intel Corporation. All rights reserved.
 # Created by:  crystal.xiong REMOVE-THIS AT intel DOT com
