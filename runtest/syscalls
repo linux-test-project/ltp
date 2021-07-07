@@ -1663,6 +1663,7 @@ wait02 wait02
 
 wait401 wait401
 wait402 wait402
+wait403 wait403
 
 waitpid01 waitpid01
 waitpid02 waitpid02
