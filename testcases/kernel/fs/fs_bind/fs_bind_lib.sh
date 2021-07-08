@@ -28,6 +28,8 @@ FS_BIND_DISK2="disk2"
 FS_BIND_DISK3="disk3"
 FS_BIND_DISK4="disk4"
 
+FS_BIND_MNTNS_PID=
+
 # Creates a directory and bind-mounts it to itself.
 # usage: fs_bind_makedir share_mode directory
 # where
@@ -68,16 +70,24 @@ fs_bind_makedir()
 #              If -n is given, only two directories are allowed.
 fs_bind_check()
 {
-	local expect_diff args msg dir1 dir2 fail output
+	local OPTIND expect_diff use_ns args msg dir1 dir2 fail output
 	expect_diff=0
-	while getopts "n" args; do
+	use_ns=0
+	while getopts "ns" args; do
 		case "$args" in
-		n) expect_diff=1; shift; ;;
+		n) expect_diff=1; ;;
+		s) use_ns=1; ;;
 		esac
 	done
+	shift $((OPTIND-1))
 	msg="Check"
 	[ $expect_diff -eq 1 ] && msg="$msg no"
-	msg="$msg propagation $*"
+	msg="$msg propagation"
+	if [ $use_ns -eq 1 ]; then
+		[ -z "$FS_BIND_MNTNS_PID" ] && tst_brk TBROK "Namespace does not exist"
+		msg="$msg in mnt namespace"
+	fi
+	msg="$msg $*"
 
 	if [ $# -lt 2 ] || ( [ $expect_diff -eq 1 ] && [ $# -ne 2 ] ); then
 		tst_brk TBROK "Insufficient arguments"
@@ -102,7 +112,11 @@ fs_bind_check()
 	        fi
 	    fi
 
-		output="$(diff -r "$dir1" "$dir2" 2> /dev/null)"
+		if [ $use_ns -eq 1 ]; then
+			output="$(ns_exec ${FS_BIND_MNTNS_PID} mnt diff -r "$PWD/$dir1" "$PWD/$dir2" 2> /dev/null)"
+		else
+			output="$(diff -r "$dir1" "$dir2" 2> /dev/null)"
+		fi
 
 		if [ $? -ne 0 ]; then
 			if [ $expect_diff -eq 1 ]; then
@@ -184,9 +198,29 @@ _fs_bind_setup_test()
 	done
 }
 
+fs_bind_create_ns()
+{
+	[ -n "$FS_BIND_MNTNS_PID" ] && tst_brk TBROK "Namespace exist already"
+	FS_BIND_MNTNS_PID=$(ns_create mnt)
+}
+
+fs_bind_exec_ns()
+{
+	[ -z "$FS_BIND_MNTNS_PID" ] && tst_brk TBROK "Namespace does not exist"
+	EXPECT_PASS ns_exec $FS_BIND_MNTNS_PID mnt "$@"
+}
+
+fs_bind_destroy_ns()
+{
+	[ -n "$FS_BIND_MNTNS_PID" ] && kill $FS_BIND_MNTNS_PID 2>/dev/null
+	FS_BIND_MNTNS_PID=
+}
+
 _fs_bind_cleanup_test()
 {
 	local mounts
+
+	fs_bind_destroy_ns
 
 	mounts=$( awk -v tmp="$TST_TMPDIR/$FS_BIND_SANDBOX/" '
 		index($2, tmp) {

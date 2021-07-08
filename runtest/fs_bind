@@ -94,3 +94,12 @@ fs_bind_rbind39_sh fs_bind_rbind39.sh
 
 
 fs_bind_regression_sh fs_bind_regression.sh
+
+
+fs_bind_cloneNS01_sh fs_bind_cloneNS01.sh
+fs_bind_cloneNS02_sh fs_bind_cloneNS02.sh
+fs_bind_cloneNS03_sh fs_bind_cloneNS03.sh
+fs_bind_cloneNS04_sh fs_bind_cloneNS04.sh
+fs_bind_cloneNS05_sh fs_bind_cloneNS05.sh
+fs_bind_cloneNS06_sh fs_bind_cloneNS06.sh
+fs_bind_cloneNS07_sh fs_bind_cloneNS07.sh

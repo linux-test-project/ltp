@@ -1,85 +1,38 @@
-#!/bin/bash
-
-#
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) International Business Machines  Corp., 2005
+# Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
 # Author: Avantika Mathur (mathurav@us.ibm.com)
-#
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
 
-SETS_DEFAULTS="${TCID=test01} ${TST_COUNT=1} ${TST_TOTAL=1}"
-declare -r TCID
-declare -r TST_COUNT
-declare -r TST_TOTAL
-export TCID TST_COUNT TST_TOTAL
+FS_BIND_TESTFUNC=test
 
-tst_resm TINFO "***************TEST01***************"
-tst_resm TINFO "cloneNS: namespace with shared dirs"
-tst_resm TINFO "************************************"
+. fs_bind_lib.sh
 
-. "${FS_BIND_ROOT}/bin/setup" || (tst_resm TWARN "Setup of cloneNS/test01 failed" && tst_exit)
-export result=0
-
-
-trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"; break' ERR
-
-while /bin/true ; do
-	# This loop is for error recovery purposes only
-
-	cp "${FS_BIND_ROOT}/cloneNS/parent01" ./
-	cp "${FS_BIND_ROOT}/cloneNS/child01" .
-
-	chmod 755 parent01 child01
-
-	"${FS_BIND_ROOT}/bin/makedir" share dir1
-	"${FS_BIND_ROOT}/bin/makedir" share dir2
-
-
-	mount --bind "$disk1" dir1
-
-	mount --bind dir1 dir2
-
-	"${FS_BIND_ROOT}/bin/nsclone" ./parent01 ./child01 || result=$?
-
-	break
-done
-trap 'ERR=$? ; tst_resm TWARN "cloneNS/test01: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
-if [ -n "${ERR_MSG}" ]; then
-	tst_resm TWARN "cloneNS/test01: ${ERR_MSG}"
-	ERR_MSG=""
-	result=$ERR
-fi
-trap '' ERR
+test()
 {
-	umount dir1/a
-	umount dir2/b
-	umount dir1
-	umount dir1
-	umount dir1
-	umount dir2
+	tst_res TINFO "cloneNS: namespace with shared dirs"
 
-	rm -rf dir* parent* child*
+	fs_bind_makedir rshared dir1
+	fs_bind_makedir rshared dir2
 
-	cleanup
-} >& /dev/null
-if [ $result -ne 0 ]
-then
-	tst_resm TFAIL "cloneNS/test01: FAILED: cloneNS: namespace with shared dirs"
-	exit 1
-else
-	tst_resm TPASS "cloneNS/test01: PASSED"
-	exit 0
-fi
-tst_exit
+	EXPECT_PASS mount --bind "$FS_BIND_DISK1" dir1
+	EXPECT_PASS mount --bind dir1 dir2
+
+	fs_bind_create_ns
+
+	EXPECT_PASS mount --bind "$FS_BIND_DISK2" dir2/a
+	fs_bind_check dir1/a dir2/a
+
+	fs_bind_check -s "$FS_BIND_DISK2" dir1/a dir2/a
+	fs_bind_exec_ns mount --bind "$PWD/$FS_BIND_DISK3" $PWD/dir1/b
+	fs_bind_check -s dir1/b dir2/b
+
+	EXPECT_PASS umount dir1/b
+	EXPECT_PASS umount dir2/a
+	EXPECT_PASS umount dir2
+	EXPECT_PASS umount dir1
+	EXPECT_PASS umount dir2
+	EXPECT_PASS umount dir1
+}
+
+tst_run
