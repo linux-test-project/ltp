@@ -2,10 +2,10 @@
 # Copyright (C) 2009, Cisco Systems Inc.
 # Ngie Cooper, July 2009
 
-top_srcdir			?= ../../../..
+top_srcdir			?= ../../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS			:= fs_bind_lib.sh fs_bind_regression.sh
+INSTALL_TARGETS			:= fs_bind*
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

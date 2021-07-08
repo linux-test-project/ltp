@@ -1,2 +1,96 @@
 #DESCRIPTION:Bind mounts and shared subtrees
-BindMounts	$LTPROOT/testscripts/test_fs_bind.sh
+
+fs_bind01_sh   fs_bind01.sh
+fs_bind02_sh   fs_bind02.sh
+fs_bind03_sh   fs_bind03.sh
+fs_bind04_sh   fs_bind04.sh
+fs_bind05_sh   fs_bind05.sh
+fs_bind06_sh   fs_bind06.sh
+fs_bind07_sh   fs_bind07.sh
+fs_bind07-2_sh   fs_bind07-2.sh
+fs_bind08_sh   fs_bind08.sh
+fs_bind09_sh   fs_bind09.sh
+fs_bind10_sh   fs_bind10.sh
+fs_bind11_sh   fs_bind11.sh
+fs_bind12_sh   fs_bind12.sh
+fs_bind13_sh   fs_bind13.sh
+fs_bind14_sh   fs_bind14.sh
+fs_bind15_sh   fs_bind15.sh
+fs_bind16_sh   fs_bind16.sh
+fs_bind17_sh   fs_bind17.sh
+fs_bind18_sh   fs_bind18.sh
+fs_bind19_sh   fs_bind19.sh
+fs_bind20_sh   fs_bind20.sh
+fs_bind21_sh   fs_bind21.sh
+fs_bind22_sh   fs_bind22.sh
+fs_bind23_sh   fs_bind23.sh
+fs_bind24_sh   fs_bind24.sh
+
+
+fs_bind_move01_sh fs_bind_move01.sh
+fs_bind_move02_sh fs_bind_move02.sh
+fs_bind_move03_sh fs_bind_move03.sh
+fs_bind_move04_sh fs_bind_move04.sh
+fs_bind_move05_sh fs_bind_move05.sh
+fs_bind_move06_sh fs_bind_move06.sh
+fs_bind_move07_sh fs_bind_move07.sh
+fs_bind_move08_sh fs_bind_move08.sh
+fs_bind_move09_sh fs_bind_move09.sh
+fs_bind_move10_sh fs_bind_move10.sh
+fs_bind_move11_sh fs_bind_move11.sh
+fs_bind_move12_sh fs_bind_move12.sh
+fs_bind_move13_sh fs_bind_move13.sh
+fs_bind_move14_sh fs_bind_move14.sh
+fs_bind_move15_sh fs_bind_move15.sh
+fs_bind_move16_sh fs_bind_move16.sh
+fs_bind_move17_sh fs_bind_move17.sh
+fs_bind_move18_sh fs_bind_move18.sh
+fs_bind_move19_sh fs_bind_move19.sh
+fs_bind_move20_sh fs_bind_move20.sh
+fs_bind_move21_sh fs_bind_move21.sh
+fs_bind_move22_sh fs_bind_move22.sh
+
+
+fs_bind_rbind01_sh fs_bind_rbind01.sh
+fs_bind_rbind02_sh fs_bind_rbind02.sh
+fs_bind_rbind03_sh fs_bind_rbind03.sh
+fs_bind_rbind04_sh fs_bind_rbind04.sh
+fs_bind_rbind05_sh fs_bind_rbind05.sh
+fs_bind_rbind06_sh fs_bind_rbind06.sh
+fs_bind_rbind07-2_sh fs_bind_rbind07-2.sh
+fs_bind_rbind07_sh fs_bind_rbind07.sh
+fs_bind_rbind08_sh fs_bind_rbind08.sh
+fs_bind_rbind09_sh fs_bind_rbind09.sh
+fs_bind_rbind10_sh fs_bind_rbind10.sh
+fs_bind_rbind11_sh fs_bind_rbind11.sh
+fs_bind_rbind12_sh fs_bind_rbind12.sh
+fs_bind_rbind13_sh fs_bind_rbind13.sh
+fs_bind_rbind14_sh fs_bind_rbind14.sh
+fs_bind_rbind15_sh fs_bind_rbind15.sh
+fs_bind_rbind16_sh fs_bind_rbind16.sh
+fs_bind_rbind17_sh fs_bind_rbind17.sh
+fs_bind_rbind18_sh fs_bind_rbind18.sh
+fs_bind_rbind19_sh fs_bind_rbind19.sh
+fs_bind_rbind20_sh fs_bind_rbind20.sh
+fs_bind_rbind21_sh fs_bind_rbind21.sh
+fs_bind_rbind22_sh fs_bind_rbind22.sh
+fs_bind_rbind23_sh fs_bind_rbind23.sh
+fs_bind_rbind24_sh fs_bind_rbind24.sh
+fs_bind_rbind25_sh fs_bind_rbind25.sh
+fs_bind_rbind26_sh fs_bind_rbind26.sh
+fs_bind_rbind27_sh fs_bind_rbind27.sh
+fs_bind_rbind28_sh fs_bind_rbind28.sh
+fs_bind_rbind29_sh fs_bind_rbind29.sh
+fs_bind_rbind30_sh fs_bind_rbind30.sh
+fs_bind_rbind31_sh fs_bind_rbind31.sh
+fs_bind_rbind32_sh fs_bind_rbind32.sh
+fs_bind_rbind33_sh fs_bind_rbind33.sh
+fs_bind_rbind34_sh fs_bind_rbind34.sh
+fs_bind_rbind35_sh fs_bind_rbind35.sh
+fs_bind_rbind36_sh fs_bind_rbind36.sh
+fs_bind_rbind37_sh fs_bind_rbind37.sh
+fs_bind_rbind38_sh fs_bind_rbind38.sh
+fs_bind_rbind39_sh fs_bind_rbind39.sh
+
+
+fs_bind_regression_sh fs_bind_regression.sh

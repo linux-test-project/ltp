@@ -1,101 +1,54 @@
-#!/bin/bash
-#
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) International Business Machines  Corp., 2005
+# Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
 # Author: Avantika Mathur (mathurav@us.ibm.com)
-#
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
 
-SETS_DEFAULTS="${TCID=test38} ${TST_COUNT=1} ${TST_TOTAL=1}"
-declare -r TCID
-declare -r TST_COUNT
-declare -r TST_TOTAL
-export TCID TST_COUNT TST_TOTAL
+FS_BIND_TESTFUNC=test
 
-tst_resm TINFO "***************TEST38***************"
-tst_resm TINFO "rbind: private to private - with slave children."
-tst_resm TINFO "************************************"
+. fs_bind_lib.sh
 
-. "${FS_BIND_ROOT}/bin/setup" || (tst_resm TWARN "Setup of rbind/test38 failed" && tst_exit)
-export result=0
-
-
-
-trap 'ERR=$? ; ERR_MSG="caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"; break' ERR
-
-while /bin/true ; do
-	# This loop is for error recovery purposes only
-
+test()
+{
+	tst_res TINFO "rbind: private to private - with slave children"
 
 	mkdir parent1 parent2 parent1/child1 parent2/child2
-	"${FS_BIND_ROOT}/bin/makedir" share share1
-	"${FS_BIND_ROOT}/bin/makedir" share share2
-	mount --rbind share1 parent1/child1
-	mount --rbind share2 parent2/child2
-	"${FS_BIND_ROOT}/bin/makedir" slave parent1/child1
-	"${FS_BIND_ROOT}/bin/makedir" slave parent2/child2
+	fs_bind_makedir rshared share1
+	fs_bind_makedir rshared share2
+	EXPECT_PASS mount --rbind share1 parent1/child1
+	EXPECT_PASS mount --rbind share2 parent2/child2
+	EXPECT_PASS mount --make-rslave parent1/child1
+	EXPECT_PASS mount --make-rslave parent2/child2
 
-	mount --bind "$disk1" share1
+	EXPECT_PASS mount --bind "$FS_BIND_DISK1" share1
 
-	mount --rbind parent1 parent2
+	EXPECT_PASS mount --rbind parent1 parent2
 
-	check parent1 parent2
-	check parent1/child1 parent2/child1
+	fs_bind_check parent1 parent2
+	fs_bind_check parent1/child1 parent2/child1
 
-	mount --bind "$disk2" share1/a
-	check parent1/child1/a parent2/child1/a share1/a
+	EXPECT_PASS mount --bind "$FS_BIND_DISK2" share1/a
+	fs_bind_check parent1/child1/a parent2/child1/a share1/a
 
-	mount --bind "$disk3" parent1/child1/b
-	check -n parent1/child1/b share1/b
+	EXPECT_PASS mount --bind "$FS_BIND_DISK3" parent1/child1/b
+	fs_bind_check -n parent1/child1/b share1/b
 
-	mount --bind "$disk4" parent2/child1/c
-	check -n parent2/child1/c share1/c
+	EXPECT_PASS mount --bind "$FS_BIND_DISK4" parent2/child1/c
+	fs_bind_check -n parent2/child1/c share1/c
 
 
-	break
-done
-trap 'ERR=$? ; tst_resm TWARN "rbind/test38: caught error near: ${BASH_SOURCE[0]}:${FUNCNAME[0]}:${LINENO}:$_ (returned ${ERR})"' ERR
-if [ -n "${ERR_MSG}" ]; then
-	tst_resm TWARN "rbind/test38: ${ERR_MSG}"
-	ERR_MSG=""
-	result=$ERR
-fi
-trap '' ERR
-{
-	umount share1/a
-	umount parent1/child1/b
-	umount parent2/child1/c
-	umount parent1/child1
-	umount parent1/child1
-	umount parent2/child1
-	umount parent2/child1
-	umount parent2
-	umount share1
-	umount share1
-	umount share2
-	umount parent2/child2
+	EXPECT_PASS umount share1/a
+	EXPECT_PASS umount parent1/child1/b
+	EXPECT_PASS umount parent2/child1/c
+	EXPECT_PASS umount parent1/child1
+	EXPECT_PASS umount parent1/child1
+	EXPECT_PASS umount parent2/child1
+	EXPECT_PASS umount parent2/child1
+	EXPECT_PASS umount parent2
+	EXPECT_PASS umount share1
+	EXPECT_PASS umount share1
+	EXPECT_PASS umount share2
+	EXPECT_PASS umount parent2/child2
+}
 
-	rm -rf parent* share*
-	cleanup
-} >& /dev/null
-if [ $result -ne 0 ]
-then
-	tst_resm TFAIL "rbind/test38: FAILED: rbind: private to private - with slave children."
-	exit 1
-else
-	tst_resm TPASS "rbind/test38: PASSED"
-	exit 0
-fi
-tst_exit
+tst_run
