@@ -128,6 +128,7 @@ AC_CHECK_FUNCS_ONCE([ \
     renameat2 \
     sched_getcpu \
     sendmmsg \
+    sethostid \
     setns \
     sigpending \
     splice \
