@@ -26,7 +26,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_DIR			:= $(prefix)/testcases/bin/fs_bind
 
-INSTALL_TARGETS			:= */test*
+INSTALL_TARGETS			:= */*.sh */test*
 
 RECURSIVE_TARGETS		:= all install uninstall
 

@@ -63,7 +63,7 @@ test_setup()
 
 	total=0 # total number of tests
 	for dir in "${test_dirs[@]}" ; do
-		((total += `ls "${FS_BIND_ROOT}/${dir}/test"* | wc -l`))
+		((total += `ls "${FS_BIND_ROOT}/${dir}/"*.sh | wc -l`))
 	done
 	TST_TOTAL=${total}
 
@@ -480,7 +480,7 @@ main()
 {
 	TST_COUNT=1
 	for dir in "${test_dirs[@]}" ; do
-		tests=( $(find "${FS_BIND_ROOT}/${dir}" -type f -name 'test*') )
+		tests=( $(find "${FS_BIND_ROOT}/${dir}" -type f -name '*.sh') )
 		clean_sandbox "$0" || break
 		for t in "${tests[@]}" ; do
 			run_test "$t"
