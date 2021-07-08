@@ -87,9 +87,11 @@ static void do_test(unsigned int n)
 
 static void setup(void)
 {
+	struct rlimit rl = { 0, 0 };
 	shmkey = GETIPCKEY();
 	shmkey1 = GETIPCKEY();
 
+	SAFE_SETRLIMIT(RLIMIT_MEMLOCK, &rl);
 	shm_id = SAFE_SHMGET(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL);
 	pw = SAFE_GETPWNAM("nobody");
 }
