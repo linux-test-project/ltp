@@ -3,7 +3,7 @@
  * Copyright (c) 2021 SUSE LLC <rpalethorpe@suse.com>
  */
 
-/*
+/*\
  * [Description]
  *
  * Check wait4(INT_MIN, ...) is not allowed. The pid is negated before
