@@ -1,5 +1,0 @@
-Clone Namespace Tests:
-	Currently the cloneNS test do not accurately report a final success or
-	failure value. To check if a test has passed, view the test output and
-	look at each individual check_prop test, and see if there are any
-	failures.
