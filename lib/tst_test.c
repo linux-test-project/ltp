@@ -882,8 +882,26 @@ static void prepare_and_mount_dev_fs(const char *mntpoint)
 	}
 }
 
+static char *limit_tmpfs_mount_size(const char *mnt_data,
+		char *buf, size_t buf_size, const char *fs_type)
+{
+	if (strcmp(fs_type, "tmpfs"))
+		return mnt_data;
+
+	if (mnt_data)
+		snprintf(buf, buf_size, "%s,size=%luM", mnt_data, tdev.size);
+	else
+		snprintf(buf, buf_size, "size=%luM", tdev.size);
+
+	tst_res(TINFO, "Limiting tmpfs size to %luMB", tdev.size);
+
+	return buf;
+}
+
 static void prepare_device(void)
 {
+	char *mnt_data, buf[1024];
+
 	if (tst_test->format_device) {
 		SAFE_MKFS(tdev.dev, tdev.fs_type, tst_test->dev_fs_opts,
 			  tst_test->dev_extra_opts);
@@ -896,8 +914,11 @@ static void prepare_device(void)
 	}
 
 	if (tst_test->mount_device) {
+		mnt_data = limit_tmpfs_mount_size(tst_test->mnt_data,
+				buf, sizeof(buf), tdev.fs_type);
+
 		SAFE_MOUNT(tdev.dev, tst_test->mntpoint, tdev.fs_type,
-			   tst_test->mnt_flags, tst_test->mnt_data);
+			   tst_test->mnt_flags, mnt_data);
 		mntpoint_mounted = 1;
 	}
 }
@@ -1014,6 +1035,8 @@ static void do_setup(int argc, char *argv[])
 
 		if (!tdev.dev)
 			tst_brk(TCONF, "Failed to acquire device");
+
+		tdev.size = tst_get_device_size(tdev.dev);
 
 		tst_device = &tdev;
 
