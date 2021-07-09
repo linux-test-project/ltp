@@ -910,7 +910,7 @@ filesystem the 'tst_device.fs_type' is set to the currently tested fs type, if
 set it's mounted at '.mntpoint'. Also the test timeout is reset for each
 execution of the test function. This flag is expected to be used for filesystem
 related syscalls that are at least partly implemented in the filesystem
-specific code e.g. fallocate().
+specific code e.g. 'fallocate()'.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -952,8 +952,8 @@ int tst_find_free_loopdev(const char *path, size_t path_len);
 
 This function finds a free loopdev and returns the free loopdev minor (-1 for no
 free loopdev). If path is non-NULL, it will be filled with free loopdev path.
-If you want to use a customized loop device, we can call tst_find_free_loopdev
-(NULL, 0) in tests to get a free minor number and then mknod.
+If you want to use a customized loop device, we can call 'tst_find_free_loopdev(NULL, 0)'
+in tests to get a free minor number and then mknod.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -962,10 +962,10 @@ If you want to use a customized loop device, we can call tst_find_free_loopdev
 unsigned long tst_dev_bytes_written(const char *dev);
 -------------------------------------------------------------------------------
 
-This function reads test block device stat file (/sys/block/<device>/stat) and
+This function reads test block device stat file ('/sys/block/<device>/stat') and
 returns the bytes written since the last invocation of this function. To avoid
 FS deferred IO metadata/cache interference, we suggest doing "syncfs" before the
-tst_dev_bytes_written first invocation. And an inline function named tst_dev_sync
+tst_dev_bytes_written first invocation. And an inline function named 'tst_dev_sync()'
 is created for that intention.
 
 [source,c]
@@ -976,7 +976,7 @@ voud tst_find_backing_dev(const char *path, char *dev);
 -------------------------------------------------------------------------------
 
 This function finds the block dev that this path belongs to, it uses stat function
-to get the major/minor number of the path. Then scan them in "/proc/self/mountinfo"
+to get the major/minor number of the path. Then scan them in '/proc/self/mountinfo'
 and list 2th column value after ' - ' string as its block dev if match succeeds.
 
 [source,c]
@@ -986,7 +986,7 @@ and list 2th column value after ' - ' string as its block dev if match succeeds.
 uint64_t tst_get_device_size(const char *dev_path);
 -------------------------------------------------------------------------------
 
-This function gets size of the given block device, it checks the dev_path is
+This function gets size of the given block device, it checks the 'dev_path' is
 valid first, if yes, return the size in MB, otherwise return -1.
 
 1.16 Formatting a device with a filesystem
