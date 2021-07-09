@@ -898,6 +898,14 @@ static char *limit_tmpfs_mount_size(const char *mnt_data,
 	return buf;
 }
 
+static const char *get_device_name(const char *fs_type)
+{
+       if (!strcmp(fs_type, "tmpfs"))
+               return "ltp-tmpfs";
+       else
+               return tdev.dev;
+}
+
 static void prepare_device(void)
 {
 	char *mnt_data, buf[1024];
@@ -917,8 +925,8 @@ static void prepare_device(void)
 		mnt_data = limit_tmpfs_mount_size(tst_test->mnt_data,
 				buf, sizeof(buf), tdev.fs_type);
 
-		SAFE_MOUNT(tdev.dev, tst_test->mntpoint, tdev.fs_type,
-			   tst_test->mnt_flags, mnt_data);
+		SAFE_MOUNT(get_device_name(tdev.fs_type), tst_test->mntpoint,
+				tdev.fs_type, tst_test->mnt_flags, mnt_data);
 		mntpoint_mounted = 1;
 	}
 }
