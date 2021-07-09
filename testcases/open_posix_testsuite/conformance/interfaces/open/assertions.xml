@@ -1,0 +1,220 @@
+<assertions>
+	<assertion id="1" tag="ref:XBD7:46754:46754">
+		Establish the connection between file and file descriptor.
+	</assertion>
+	<assertion id="2" tag="ref:XBD7:46759:46760">
+		When file is opened using open(), file descriptor shall not
+		share with any other process with in the system.
+	</assertion>
+	<assertion id="3" tag="ref:XBD7:46760:46761">
+		FD_CLOEXEC file descriptor flag associated with the new file descriptor
+		shall be cleared unless the O_CLOEXEC flag is set in oflag.
+	</assertion>
+	<assertion id="4" tag="ref:XBD6:46763:46764">
+		The file offset used to mark the current position within the file shall
+		be set to the beginning of the file.
+	</assertion>
+	<assertion id="5" tag="ref:XBD7:46770:46771">
+		When O_EXEC flag is used, file is opened for execute only.
+	</assertion>
+	<assertion id="6" tag="ref:XBD7:46772:46772">
+		When O_RDONLY flag is used, file is opened for read only.
+	</assertion>
+	<assertion id="7" tag="ref:XBD7:46773:46774">
+		When O_RDWR flag is used, file is opened for read and write.
+	</assertion>
+	<assertion id="8" tag="ref:XBD7:46775:46776">
+		When O_SEARCH flag is used, directory is opened for search only.
+	</assertion>
+	<assertion id="9" tag="ref:XBD7:46777:46777">
+		When O_WRONLY flag is used, file is opened for write only.
+	</assertion>
+	<assertion id="10" tag="ref:XBD7:46779:46779">
+		When O_APPEND flag is used, the file offset shall be set to the end of
+		the file prior to each write
+	</assertion>
+	<assertion id="11" tag="ref:XBD7:46781:46782">
+		When O_CREAT flag is set and O_DIRECTORY flag is not set, the file shall
+		be created as regular file.
+	</assertion>
+	<assertion id="12" tag="ref:XBD7:46783:46784">
+		When O_CREAT flag is set, the user ID of the file which is created,
+		shall be set to the effective user ID of the process.
+	</assertion>
+	<assertion id="13" tag="ref:XBD7:46784:46785">
+		When O_CREAT flag is set, the group ID of the file which is created shall
+		be set to the group ID of the file’s parent directory.
+	</assertion>
+	<assertion id="14" tag="ref:XBD7:46786:46792">
+		When O_CREAT flag is set, permission bits for the file mode which is
+		created shall be set as (mode_t & ~umask), where mode_t is user argument
+		which is passed after oflag.
+	</assertion>
+	<assertion id="15" tag="ref:XBD7:46799:46799">
+		When O_DIRECTORY flag and O_CREAT flag are set, new directory will be
+		created if not already exist.
+	</assertion>
+	<assertion id="16" tag="ref:XBD7:46799:46799">
+		When O_DIRECTORY flag is set on non directory file, call will fail and
+		set errno to [ENOTDIR]
+	</assertion>
+	<assertion id="17" tag="ref:XBD7:46800:46801">
+		When O_DSYNC flag is set, Write I/O operations on the file descriptor
+		shall complete as defined by synchronized I/O data integrity completion
+	</assertion>
+	<assertion id="18" tag="ref:XBD7:46802:46803">
+		When O_CREAT and O_EXCL are set, open( ) shall fail if the file exists
+		and errno will be set EEXIST.
+	</assertion>
+	<assertion id="19" tag="ref:XBD7:46803:46806">
+		When O_CREAT and O_EXCL are set, check for the existence of the file and
+		the creation of the file if it does not exist shall be atomic with respect
+		to other threads executing open( ) naming the same filename in the same
+		directory with O_EXCL and O_CREAT set.
+	</assertion>
+	<assertion id="20" tag="ref:XBD7:46807:46809">
+		When O_EXCL and O_CREAT are set, and path names a symbolic link, open( )
+		shall fail and set errno to [EEXIST], regardless of the contents of the symbolic link.
+	</assertion>
+	<assertion id="21" tag="ref:XBD7:46810:46811">
+		When O_NOCTTY is set and path identifies a terminal device, open( )
+		shall not cause the terminal device to become the controlling terminal for the process.
+	</assertion>
+	<assertion id="22" tag="ref:XBD7:46811:46812">
+		When O_NOCTTY is set and if path does not identify a terminal device,
+		O_NOCTTY shall be ignored.
+	</assertion>
+	<assertion id="23" tag="ref:XBD7:46813:46813">
+		When O_NOFOLLOW is set and If pathname is a symbolic link, then the
+		open fail and set errno to [ELOOP]
+	</assertion>
+	<assertion id="24" tag="ref:XBD7:46814:46815">
+		When opening a FIFO with O_RDONLY set and If O_NONBLOCK is set, an
+		open( ) for reading-only shall return without delay.
+	</assertion>
+	<assertion id="25" tag="ref:XBD7:46816:46817">
+		When opening a FIFO with O_WRONLY set and if O_NONBLOCK is set, open( )
+		for writing-only shall return an error if no process currently has the file open for reading.
+	</assertion>
+	<assertion id="26" tag="ref:XBD7:46817:46818">
+		When opening a FIFO with O_RDONLY set and If O_NONBLOCK is not set, an
+		open( ) for reading-only shall block the calling thread until a thread opens the file for writing
+	</assertion>
+	<assertion id="27" tag="ref:XBD7:46818:46819">
+		When opening a FIFO with O_WRONLY set and if O_NONBLOCK is not set,
+		open( ) for writing-only shall block the calling thread until a thread opens the file for reading.
+	</assertion>
+	<assertion id="28" tag="ref:XBD7:46822:46824">
+		When opening a block special or character special files which
+		supports non blocking opens with O_NONBLOCK set, the open( ) function
+		shall return without blocking for the device to be ready or available.
+	</assertion>
+	<assertion id="29" tag="ref:XBD7:46825:46828">
+		When opening a block special or character special files which supports
+		non blocking opens with O_NONBLOCK not set, the open( ) function shall block
+		the calling thread until the device is ready or available before returning.
+	</assertion>
+	<assertion id="30" tag="ref:XBD7:46843:46844">
+		When O_TRUNC flag is set and If the file already exists and is a regular file and the access
+		mode allows writing (i.e., is O_RDWR or O_WRONLY) it will be truncated to length 0.
+	</assertion>
+	<assertion id="31" tag="ref:XBD7:46845:46846">
+		When the file is a FIFO or terminal device file, the O_TRUNC flag is ignored.
+	</assertion>
+	<assertion id="32" tag="ref:XBD7:">
+		If path identifies a terminal device other than a pseudo-terminal, the
+		device is not already open in any process, and either O_TTY_INIT is set in
+		oflag or O_TTY_INIT has the value zero, open( ) shall set any non-standard
+		termios structure terminal parameters to a state that provides conforming behavior.
+	</assertion>
+	<assertion id="33" tag="ref:XBD7:46860:46861">
+		When O_CREAT is set and the file did not previously exist, upon successful
+		completion, open( ) shall mark for update the last data access, last data
+		modification, and last file status change timestamps of the file and the last
+		data modification and last file status change timestamps of the parent directory.
+	</assertion>
+	<assertion id="34" tag="ref:XBD7:46866:46867">
+		When O_TRUNC is set and the file did previously exist, upon successful completion, open( ) shall
+		mark for update the last data modification and last file status change timestamps of the file.
+	</assertion>
+	<assertion id="35" tag="ref:XBD7:46880:46881">
+		The largest value that can be represented correctly in an object of type off_t shall be established
+		as the offset maximum in the open file description.
+	</assertion>
+	<assertion id="36" tag="ref:XBD7:46899:46899">
+		When search permission is denied on a component of the path prefix, errno will be set to EACCES.
+	</assertion>
+	<assertion id="37" tag="ref:XBD7:46900:46900">
+		When the file exists and permission specified by oflag are denied, errno will be set to EACCES.
+	</assertion>
+	<assertion id="38" tag="ref:XBD7:46901:46901">
+		When the file does not exist and write permission are denied on directory, errno will be set to EACCES.
+	</assertion>
+	<assertion id="39" tag="ref:XBD7:46902:46902">
+		When O_TRUNC is set and write permission is denied, errno will be set to EACCES.
+	</assertion>
+	<assertion id="40" tag="ref:XBD7:46904:46904">
+		When a signal was caught during open(), errno will be set to EINTR.
+	</assertion>
+	<assertion id="41" tag="ref:XBD7:46905:46905">
+		When O_DSYNC is set and synchronized I/O is not supported on the file, errno will be set to  EINVAL.
+	</assertion>
+	<assertion id="42" tag="ref:XBD7:46906:46907">
+		When the path argument names a STREAMS file and a hangup or error occurred during the open( ), errno will be set EIO.
+	</assertion>
+	<assertion id="43" tag="ref:XBD7:46908:46909">
+		When the named file is a directory and oflag includes O_WRONLY or O_RDWR, or
+		includes O_CREAT without O_DIRECTORY, errno will be set to EISDIR.
+	</assertion>
+	<assertion id="44" tag="ref:XBD7:46910:46911">
+		When a loop exists in symbolic links encountered during resolution of the path argument, errno will be set to ELOOP.
+	</assertion>
+	<assertion id="45" tag="ref:XBD7:46913:46913">
+		When all file descriptors available to the process are currently open, errno will be set EMFILE.
+	</assertion>
+	<assertion id="47" tag="ref:XBD7:46914:46915">
+		When the length of a component of a pathname is longer than {NAME_MAX}, errno will be set to ENAMETOOLONG.
+	</assertion>
+	<assertion id="46" tag="ref:XBD7:46916:46916">
+		When the maximum allowable number of files is currently open in the system, errno will be set to ENFILE
+	</assertion>
+	<assertion id="47" tag="ref:XBD7:46917:46917">
+		When O_CREAT is not set and a component of path does not name an existing file, errno will be set to ENOENT.
+	</assertion>
+	<assertion id="48" tag="ref:XBD7:46918:46919">
+		When O_CREAT is set and a component of the path prefix of path does not name an existing file,
+		or path points to an empty string, errno will be set to ENOENT.
+	</assertion>
+	<assertion id="49" tag="ref:XBD7:46920:46922">
+		When O_CREAT is set, and the path argument contains at least one non-slash character
+		and ends with one or more trailing slash characters, errno will be set to ENOTDIR.
+	</assertion>
+	<assertion id="50" tag="ref:XBD7:46923:46924">
+		When O_CREAT flag is set and If the path without the trailing slash characters would
+		name an existing file, an [ENOENT] error shall not occur.
+	</assertion>
+	<assertion id="51" tag="ref:XBD7:46925:46926">
+		When the path argument names a STREAMS-based file and the system is unable to allocate a STREAM,
+		errno will be set to ENOSR.
+	</assertion>
+	<assertion id="52" tag="ref:XBD7:46927:46928">
+		When the directory or file system that would contain the new file cannot be expanded,
+		the file does not exist, and O_CREAT is specified, errno will be set to ENOSPC.
+	</assertion>
+	<assertion id="53" tag="ref:XBD7:46936:46937">
+		When O_NONBLOCK is set, the named file is a FIFO, O_WRONLY is set, and no process has the file open for reading,
+		errno will be set to ENXIO.
+	</assertion>
+	<assertion id="54" tag="ref:XBD7:46938:46939">
+		When the named file is a character special or block special file, and the device associated with this special file
+		does not exist, errno will be set to ENXIO
+	</assertion>
+	<assertion id="55" tag="ref:XBD7:46940:46941">
+		When the named file is a regular file and the size of the file cannot be represented correctly in an object of
+		type off_t, errno will be set to EOVERFLOW
+	</assertion>
+	<assertion id="56" tag="ref:XBD7:46942:46944">
+		When the named file resides on a read-only file system and either O_WRONLY, O_RDWR,
+		O_CREAT (if the file does not exist), or O_TRUNC is set in the oflag argument, errno will be set to EROFS
+	</assertion>
+</assertions>
