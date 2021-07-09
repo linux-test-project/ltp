@@ -979,6 +979,16 @@ This function finds the block dev that this path belongs to, it uses stat functi
 to get the major/minor number of the path. Then scan them in "/proc/self/mountinfo"
 and list 2th column value after ' - ' string as its block dev if match succeeds.
 
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+uint64_t tst_get_device_size(const char *dev_path);
+-------------------------------------------------------------------------------
+
+This function gets size of the given block device, it checks the dev_path is
+valid first, if yes, return the size in MB, otherwise return -1.
+
 1.16 Formatting a device with a filesystem
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

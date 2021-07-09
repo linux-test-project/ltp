@@ -7,10 +7,12 @@
 #define TST_DEVICE_H__
 
 #include <unistd.h>
+#include <stdint.h>
 
 struct tst_device {
 	const char *dev;
 	const char *fs_type;
+	uint64_t size;
 };
 
 /*
@@ -56,6 +58,11 @@ int tst_find_free_loopdev(const char *path, size_t path_len);
  * @return Zero on success, non-zero otherwise.
  */
 int tst_attach_device(const char *dev_path, const char *file_path);
+
+/*
+ * Get size (in MB) of the given device
+ */
+uint64_t tst_get_device_size(const char *dev_path);
 
 /*
  * Detaches a file from a loop device fd.
