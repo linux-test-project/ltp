@@ -7,6 +7,4 @@ include	$(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= rpc_test.sh
 
-MAKE_TARGETS		:=
-
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

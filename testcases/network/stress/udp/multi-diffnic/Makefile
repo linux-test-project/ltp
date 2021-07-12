@@ -26,6 +26,4 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= udp*
 
-MAKE_TARGETS		:=
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -10,6 +10,4 @@ include $(top_srcdir)/include/mk/env_pre.mk
 INSTALL_TARGETS		:= ping01.sh \
 			   ping02.sh
 
-MAKE_TARGETS		:=
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

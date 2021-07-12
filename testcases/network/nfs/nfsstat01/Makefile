@@ -8,6 +8,4 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= nfsstat01
 
-MAKE_TARGETS		:=
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -8,6 +8,4 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 INSTALL_TARGETS		:= dhcp_lib.sh dhcpd_tests.sh dnsmasq_tests.sh
 
-MAKE_TARGETS		:=
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
