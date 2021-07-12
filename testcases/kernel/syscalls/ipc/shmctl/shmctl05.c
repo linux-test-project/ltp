@@ -91,8 +91,10 @@ static void do_test(void)
 
 static void cleanup(void)
 {
+	int id;
 	tst_fzsync_pair_cleanup(&fzsync_pair);
-	shmctl(0xF00F, IPC_RMID, NULL);
+	id = SAFE_SHMGET(0xF00F, 4096, 0);
+	shmctl(id, IPC_RMID, NULL);
 }
 
 static struct tst_test test = {
