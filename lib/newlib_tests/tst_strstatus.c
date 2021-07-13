@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2019-2021 Petr Vorel <pvorel@suse.cz>
  */
 
 /*
@@ -18,7 +19,7 @@ static struct tcase {
 	{0x0001, "killed by SIGHUP"},
 	{0x137f, "is stopped"},
 	{0xffff, "is resumed"},
-	{0xff, "invalid status 0xff"},
+	{0x1ff, "invalid status 0x1ff"},
 };
 
 static void do_test(unsigned int n)
