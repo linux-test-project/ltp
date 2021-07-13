@@ -18,54 +18,54 @@ TST_CNT=10
 # Test the management and counting of memory
 test1()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZES $PAGESIZES "rss" $PAGESIZES false
+	test_mem_stat "--mmap-anon" $PAGESIZES $PAGESIZES "rss" $PAGESIZES $PAGESIZES false
 }
 
 test2()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE "rss" 0 false
+	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE "rss" 0 0 false
 }
 
 test3()
 {
-	test_mem_stat "--shm -k 3" $PAGESIZE $PAGESIZE "rss" 0 false
+	test_mem_stat "--shm -k 3" $PAGESIZE $PAGESIZE "rss" 0 0 false
 }
 
 test4()
 {
 	test_mem_stat "--mmap-anon --mmap-file --shm" \
-		$PAGESIZES $((PAGESIZES * 3)) "rss" $PAGESIZES false
+		$PAGESIZES $((PAGESIZES * 3)) "rss" $PAGESIZES $PAGESIZES false
 }
 
 test5()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES false
+	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES $PAGESIZES false
 }
 
 test6()
 {
-	test_mem_stat "--mmap-anon" $PAGESIZES $PAGESIZES "rss" $PAGESIZES true
+	test_mem_stat "--mmap-anon" $PAGESIZES $PAGESIZES "rss" $PAGESIZES $PAGESIZES true
 }
 
 test7()
 {
-	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE "rss" 0 true
+	test_mem_stat "--mmap-file" $PAGESIZE $PAGESIZE "rss" 0 0 true
 }
 
 test8()
 {
-	test_mem_stat "--shm -k 8" $PAGESIZE $PAGESIZE "rss" 0 true
+	test_mem_stat "--shm -k 8" $PAGESIZE $PAGESIZE "rss" 0 0 true
 }
 
 test9()
 {
 	test_mem_stat "--mmap-anon --mmap-file --shm" \
-		$PAGESIZES $((PAGESIZES * 3)) "rss" $PAGESIZES true
+		$PAGESIZES $((PAGESIZES * 3)) "rss" $PAGESIZES $PAGESIZES true
 }
 
 test10()
 {
-	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES true
+	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES $PAGESIZES true
 }
 
 tst_run
