@@ -37,7 +37,7 @@ test_max_usage_in_bytes()
 
 	if [ $check_after_reset -eq 1 ]; then
 		echo 0 > $item
-		check_mem_stat $item 0
+		check_mem_stat $item 0 $PAGESIZES
 	fi
 
 	stop_memcg_process
