@@ -40,6 +40,7 @@ static void do_test(void)
 }
 
 static struct tst_test test = {
+	.needs_root = 1,
 	.needs_device = 1,
 	.dev_min_size = 300,
 	.test_all = do_test,
