@@ -200,11 +200,12 @@ static void grow_stack_fail(size_t stack_size, size_t mapped_size)
 
 static void run_test(void)
 {
-	size_t stack_size = 8 * PTHREAD_STACK_MIN;
+	size_t pthread_stack = LTP_ALIGN(PTHREAD_STACK_MIN, getpagesize());
+	size_t stack_size = 8 * pthread_stack;
 
-	grow_stack_success(stack_size, PTHREAD_STACK_MIN);
+	grow_stack_success(stack_size, pthread_stack);
 	grow_stack_success(stack_size, stack_size/2);
-	grow_stack_fail(stack_size, PTHREAD_STACK_MIN);
+	grow_stack_fail(stack_size, pthread_stack);
 	grow_stack_fail(stack_size, stack_size/2);
 }
 
