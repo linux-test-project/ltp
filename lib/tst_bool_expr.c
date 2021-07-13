@@ -55,6 +55,7 @@ static int new_tok(struct tst_expr_tok **last, const char *tok, size_t tok_len)
 	(*last)->tok = tok;
 	(*last)->tok_len = tok_len;
 	(*last)->op = char_to_op(tok[0]);
+	(*last)->priv = NULL;
 	(*last)++;
 
 	return 1;
