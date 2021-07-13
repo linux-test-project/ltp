@@ -251,6 +251,7 @@ test_mem_stat()
 	local exp_stat_size_low=$5
 	local exp_stat_size_up=$6
 	local check_after_free=$7
+	local kmem_stat_name="${stat_name##*.}"
 
 	start_memcg_process $memtypes -s $size
 
@@ -260,6 +261,15 @@ test_mem_stat()
 
 	echo $MEMCG_PROCESS_PID > tasks
 	signal_memcg_process $size
+
+	if [ "$kmem_stat_name" = "max_usage_in_bytes" ] ||
+	   [ "$kmem_stat_name" = "usage_in_bytes" ]; then
+		local kmem=$(cat "memory.kmem.${kmem_stat_name}")
+		if [ $? -eq 0 ]; then
+			exp_stat_size_low=$((exp_stat_size_low + kmem))
+			exp_stat_size_up=$((exp_stat_size_up + kmem))
+		fi
+	fi
 
 	if [ "$exp_stat_size_low" = "$exp_stat_size_up" ]; then
 		check_mem_stat $stat_name $exp_stat_size_low
