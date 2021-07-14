@@ -488,23 +488,23 @@ static void print_test_tags(void)
 	if (!tags)
 		return;
 
-	printf("\nTags\n");
-	printf("----\n");
+	fprintf(stderr, "\nTags\n");
+	fprintf(stderr, "----\n");
 
 	for (i = 0; tags[i].name; i++) {
 		if (!strcmp(tags[i].name, "CVE"))
-			printf(CVE_DB_URL "%s\n", tags[i].value);
+			fprintf(stderr, CVE_DB_URL "%s\n", tags[i].value);
 		else if (!strcmp(tags[i].name, "linux-git"))
-			printf(LINUX_GIT_URL "%s\n", tags[i].value);
+			fprintf(stderr, LINUX_GIT_URL "%s\n", tags[i].value);
 		else if (!strcmp(tags[i].name, "linux-stable-git"))
-			printf(LINUX_STABLE_GIT_URL "%s\n", tags[i].value);
+			fprintf(stderr, LINUX_STABLE_GIT_URL "%s\n", tags[i].value);
 		else if (!strcmp(tags[i].name, "glibc-git"))
-			printf(GLIBC_GIT_URL "%s\n", tags[i].value);
+			fprintf(stderr, GLIBC_GIT_URL "%s\n", tags[i].value);
 		else
-			printf("%s: %s\n", tags[i].name, tags[i].value);
+			fprintf(stderr, "%s: %s\n", tags[i].name, tags[i].value);
 	}
 
-	printf("\n");
+	fprintf(stderr, "\n");
 }
 
 static void check_option_collision(void)
@@ -674,9 +674,9 @@ int tst_parse_float(const char *str, float *val, float min, float max)
 static void print_colored(const char *str)
 {
 	if (tst_color_enabled(STDOUT_FILENO))
-		printf("%s%s%s", ANSI_COLOR_YELLOW, str, ANSI_COLOR_RESET);
+		fprintf(stderr, "%s%s%s", ANSI_COLOR_YELLOW, str, ANSI_COLOR_RESET);
 	else
-		printf("%s", str);
+		fprintf(stderr, "%s", str);
 }
 
 static void print_failure_hint(const char *tag, const char *hint,
@@ -694,12 +694,12 @@ static void print_failure_hint(const char *tag, const char *hint,
 		if (!strcmp(tags[i].name, tag)) {
 			if (!hint_printed) {
 				hint_printed = 1;
-				printf("\n");
+				fprintf(stderr, "\n");
 				print_colored("HINT: ");
-				printf("You _MAY_ be %s, see:\n\n", hint);
+				fprintf(stderr, "You _MAY_ be %s, see:\n\n", hint);
 			}
 
-			printf("%s%s\n", url, tags[i].value);
+			fprintf(stderr, "%s%s\n", url, tags[i].value);
 		}
 	}
 }
@@ -734,12 +734,12 @@ static void do_exit(int ret)
 		if (results->broken)
 			ret |= TBROK;
 
-		printf("\nSummary:\n");
-		printf("passed   %d\n", results->passed);
-		printf("failed   %d\n", results->failed);
-		printf("broken   %d\n", results->broken);
-		printf("skipped  %d\n", results->skipped);
-		printf("warnings %d\n", results->warnings);
+		fprintf(stderr, "\nSummary:\n");
+		fprintf(stderr, "passed   %d\n", results->passed);
+		fprintf(stderr, "failed   %d\n", results->failed);
+		fprintf(stderr, "broken   %d\n", results->broken);
+		fprintf(stderr, "skipped  %d\n", results->skipped);
+		fprintf(stderr, "warnings %d\n", results->warnings);
 	}
 
 	do_cleanup();
