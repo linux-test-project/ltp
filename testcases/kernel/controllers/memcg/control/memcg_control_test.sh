@@ -53,6 +53,8 @@ STATUS_PIPE="$TMP/status_pipe"
 PASS=0
 FAIL=1
 
+. test.sh
+
 # Check if the test process is killed on crossing boundary
 test_proc_kill()
 {
@@ -118,7 +120,7 @@ result()
 cleanup()
 {
 	if [ -e $TST_PATH/mnt ]; then
-		umount $TST_PATH/mnt 2> /dev/null
+		tst_umount $TST_PATH/mnt
 		rm -rf $TST_PATH/mnt
 	fi
 }
