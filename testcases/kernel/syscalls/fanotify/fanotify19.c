@@ -132,7 +132,7 @@ static void do_fork(void)
 
 	SAFE_WAITPID(child, &status, 0);
 
-	if (WIFEXITED(child) && WEXITSTATUS(child) != 0)
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		tst_brk(TBROK, "Child process terminated incorrectly. Aborting");
 }
 
@@ -255,6 +255,8 @@ static void test_fanotify(unsigned int n)
 			event = FAN_EVENT_NEXT(event, len);
 		}
 	}
+
+	SAFE_CLOSE(fd_notify);
 }
 
 static void setup(void)

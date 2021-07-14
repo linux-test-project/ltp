@@ -136,7 +136,7 @@ static void test_fanotify(unsigned int n)
 			(tc->mark_flags & DISALLOWED_MARK_FLAGS ||
 			 tc->mark_mask & FAN_ALL_PERM_EVENTS)) {
 			tst_res(TPASS, "Received result EPERM, as expected");
-			return;
+			goto out;
 		}
 
 		tst_brk(TBROK | TERRNO,
@@ -151,6 +151,9 @@ static void test_fanotify(unsigned int n)
 	tst_res(TPASS,
 		"fanotify_init() and fanotify_mark() returned successfully, "
 		"as expected");
+
+out:
+	SAFE_CLOSE(fd_notify);
 }
 
 static void setup(void)
