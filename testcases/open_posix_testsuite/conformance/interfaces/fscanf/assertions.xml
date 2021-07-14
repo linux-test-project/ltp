@@ -1,0 +1,693 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:32209:32210">
+    When there are excess arguments as compared to the directives in the control
+    string format, they will be ignored.
+  </assertion>
+  <assertion id="2" tag="ref:XBD7:32211:32213">
+    When “%n$” conversion specifier is used, conversion is applied to the nth
+    argument after the format in the argument list (where n is   a decimal
+    integer in range [1,{NL_ARGMAX}]).
+  </assertion>
+  <assertion id="3" tag="ref:XBD7:32218:32220">
+    When “%n$” conversion specifier is used, “%%” and “%*” specifiers are
+    permissible.
+  </assertion>
+  <assertion id="4" tag="ref:XBD6:32242:32243">
+    A directive composed of one or more white-space characters is executed by
+    reading input until no more valid input can be read.
+  </assertion>
+  <assertion id="5" tag="ref:XBD7:32242:32244">
+    A directive composed of one or more white-space characters is executed by
+    reading input until up to the first byte which is not a whitespace
+    character, which remains unread.
+  </assertion>
+  <assertion id="6" tag="ref:XBD7:32246:32248">
+    When the comparison between the byte read and byte comprising the
+    corresponding directive are not equivalent, the directive will fail, and
+    the differing and subsequent bytes will remain unread.
+  </assertion>
+  <assertion id="7" tag="ref:XBD7:32248:32249">
+    When end-of-file or encoding error or read error prevents a character from
+    being read, the directive will fail.
+  </assertion>
+  <assertion id="8" tag="ref:XBD7:32253:32254">
+    Input white space characters (as specified by isspace( ))are skipped unless
+    [, c, C, or n conversion specifiers are used.
+  </assertion>
+  <assertion id="9" tag="ref:XBD7:32255:32256">
+    An item is read from the input, unless the conversion specification includes
+    an n conversion specifier.
+  </assertion>
+  <assertion id="10" tag="ref:XBD7:32259:32260">
+    When the length of the input item ( i.e. the longest sequence of input bytes
+    which is an initial subsequence of a matching sequence) is 0(when EOF,
+    encoding error or read error has not occured), the execution of the
+    conversion specification fails and it is a matching failure.
+  </assertion>
+  <assertion id="12" tag="ref:XBD7:32266:32270">
+    When assignment suppression is indicated by  “*”, the  result of conversion
+    introduced by “%”  is is not stored in any object.
+  </assertion>
+  <assertion id="13" tag="ref:XBD7:32266:32270">
+    When assignment suppression is indicated by  “*”, the  result of conversion
+    introduced by  “%n$” is is not stored in any object.
+  </assertion>
+  <assertion id="14" tag="ref:XBD7:32278:32280">
+    When “%m” conversion specifier is used along with “%c”, “%s”, and “%[“
+    conversion specifiers and the function returns EOF, any memory successfully
+    allocated for parameters using assignment-allocation character “m” by this
+    call will be freed before the function returns.
+  </assertion>
+  <assertion id="15" tag="ref:XBD7:32282:32283">
+    When "%hhd" specifier is specified, signed char(base argument is 10) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="16" tag="ref:XBD7:32282:32283">
+    When "%hhi" specifier is specified, signed char(base argument is 0) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="17" tag="ref:XBD7:32282:32283">
+    When "%hho" specifier is specified, unsigned char(base argument is 8) is
+    read from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="18" tag="ref:XBD7:32282:32283">
+    When "%hhu" specifier is specified, unsigned char(base argument is 10) is
+    read from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="19" tag="ref:XBD7:32282:32283">
+    When "%hhx" specifier is specified, unsigned char(base argument is 16) is
+    read from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="20" tag="ref:XBD7:32282:32283">
+    When "%hhX" specifier is specified, unsigned char(base argument is 16) is
+    read from the named input stream in sequence, bytes are read in sequence
+    and result is stored in the arguments. Function call expects a control
+    string format and a set of pointer arguments indicating where the converted
+    input is stored.
+  </assertion>
+  <assertion id="21" tag="ref:XBD7:32282:32283">
+    When "%hhn" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%hhn" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%hhn" directive. Directives specified after
+    "%hhn" are converted but they don't account for the length calculated in
+    "%hhn" directive.
+  </assertion>
+  <assertion id="22" tag="ref:XBD7:32284:32285">
+    When "%hd" specifier is specified, signed short integer(base argument is 10)
+    is read from the named input stream in sequence, bytes are read in sequence
+    and result is stored in the arguments. Function call expects a control
+    string format and a set of pointer arguments indicating where the converted
+    input is stored.
+  </assertion>
+  <assertion id="23" tag="ref:XBD7:32284:32285">
+    When "%hi" specifier is specified, signed short integer(base argument is 0)
+    is read from the named input stream in sequence, bytes are read in sequence
+    and result is stored in the arguments. Function call expects a control
+    string format and a set of pointer arguments indicating where the converted
+    input is stored.
+  </assertion>
+  <assertion id="24" tag="ref:XBD7:32284:32285">
+    When "%ho" specifier is specified, unsigned short octal integer(base
+    argument is 8) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="25" tag="ref:XBD7:32284:32285">
+    When "%hu" specifier is specified, unsigned short integer(base argument is
+    10) is read from the named input stream in sequence, bytes are read in
+    sequence and result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="26" tag="ref:XBD7:32284:32285">
+    When "%hx" specifier is specified, unsigned short hexadecimal integer(base
+    argument is 16) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="27" tag="ref:XBD7:32284:32285">
+    When "%hX" specifier is specified, unsigned short hexadecimal integer(base
+    argument is 16) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="28" tag="ref:XBD7:32284:32285">
+    When "%hn" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%hn" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%hn" directive. Directives specified after
+    "%hn" are converted but they don't account for the length calculated in
+    "%hn" directive.
+  </assertion>
+  <assertion id="29" tag="ref:XBD7:32286:32287">
+    When "%ld" specifier is specified, signed long integer(base argument is 10)
+    is read from the named input stream in sequence, bytes are read in sequence
+    and result is stored in the arguments. Function call expects a control
+    string format and a set of pointer arguments indicating where the converted
+    input is stored.
+  </assertion>
+  <assertion id="30" tag="ref:XBD7:32286:32287">
+    When "%li" specifier is specified, signed long integer(base argument is 0)
+    is read from the named input stream in sequence, bytes are read in sequence
+    and result is stored in the arguments. Function call expects a control
+    string format and a set of pointer arguments indicating where the converted
+    input is stored.
+  </assertion>
+  <assertion id="31" tag="ref:XBD7:32286:32287">
+    When "%lo" specifier is specified, unsigned long octal integer(base argument
+    is 8) is read from the named input stream in sequence, bytes are read in
+    sequence and result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="32" tag="ref:XBD7:32286:32287">
+    When "%lu" specifier is specified, unsigned long integer(base argument is 10
+    ) is read from the named input stream in sequence, bytes are read in
+    sequence and result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="33" tag="ref:XBD7:32286:32287">
+    When "%lx" specifier is specified, unsigned long hexadecimal integer(base
+    argument is 16) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="34" tag="ref:XBD7:32286:32287">
+    When "%lX" specifier is specified, unsigned long hexadecimal integer(base
+    argument is 16) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="35" tag="ref:XBD7:32284:32285">
+    When "%ln" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%ln" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%ln" directive. Directives specified after
+    "%ln" are converted but they don't account for the length calculated in
+    "%ln" directive.
+  </assertion>
+  <assertion id="36" tag="ref:XBD7:32287:32288">
+    When either of "a,A,e,E,f,F,g,G" conversion specifiers is used with length
+    specifier "l", double is read from the named input stream in sequence, bytes
+    are read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="37" tag="ref:XBD7:32288:32290">
+    When either of "c,s, or [" conversion specifiers is used with length
+    specifier "l", wchar_t is read from the named input stream in sequence, bytes
+    are read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="38" tag="ref:XBD7:32288:32291">
+    When assignment-alloation character "m" is specified with either of "c,s,
+    or [" conversion specifiers and length specifier "l", wchar_t is read from
+    the named input stream in sequence, bytes are read in sequence and result is
+    stored in the arguments. Argument should be type pointer to pointer to
+    wchar_t and memory for the sequence is allocated by fscanf().Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="39" tag="ref:XBD7:32292:32294">
+    When "%lld" specifier is specified, long long(base argument is 10) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="40" tag="ref:XBD7:32292:32294">
+    When "%lli" specifier is specified, long long(base argument is 0) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="41" tag="ref:XBD7:32292:32294">
+    When "%llo" specifier is specified, unsigned long(base argument is 8) is
+    read from the named input stream in sequence, bytes are read in sequence
+    and result is stored in the arguments. Function call expects a control
+    string format and a set of pointer arguments indicating where the converted
+    input is stored.
+  </assertion>
+  <assertion id="42" tag="ref:XBD7:32292:32294">
+    When "%llu" specifier is specified, unsigned long(base argument is 10) is
+    read from the name input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="43" tag="ref:XBD7:32292:32294">
+    When "%llx" specifier is specified, unsigned long(base argument is 16) is
+    read from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="44" tag="ref:XBD7:32292:32294">
+    When "%llX" specifier is specified, unsigned long(base argument is 16) is
+    read from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input is
+    stored.
+  </assertion>
+  <assertion id="45" tag="ref:XBD7:32292:32294">
+    When "%lln" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%lln" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%lln" directive. Directives specified after
+    "%lln" are converted but they don't account for the length calculated in
+    "%lln" directive.
+  </assertion>
+  <assertion id="46" tag="ref:XBD7:32295:32296">
+    When "%jd" specifier is specified, intmax_t(base argument is 10) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="47" tag="ref:XBD7:32295:32296">
+    When "%ji" specifier is specified, intmax_t(base argument is 0) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="48" tag="ref:XBD7:32295:32296">
+    When "%jo" specifier is specified, uintmax_t(base argument is 8) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="49" tag="ref:XBD7:32295:32296">
+    When "%ju" specifier is specified, uintmax_t(base argument is 10) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="50" tag="ref:XBD7:32295:32296">
+    When "%jx" specifier is specified, uintmax_t(base argument is 16) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="51" tag="ref:XBD7:32295:32296">
+    When "%jX" specifier is specified, uintmax_t(base argument is 16) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="52" tag="ref:XBD7:32295:32296">
+    When "%jn" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%jn" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%jn" directive. Directives specified after
+    "%jn" are converted but they don't account for the length calculated in
+    "%jn" directive.
+  </assertion>
+  <assertion id="53" tag="ref:XBD7:32297:32298">
+    When "%zd" specifier is specified, signed integer type of size_t(base
+    argument is 10) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="54" tag="ref:XBD7:32297:32298">
+    When "%zi" specifier is specified, signed integer type of size_t(base
+    argument is 0) is read from the named input stream in sequence, bytes are
+    read in sequence and result is stored in the arguments. Function call
+    expects a control string format and a set of pointer arguments indicating
+    where the converted input is stored.
+  </assertion>
+  <assertion id="55" tag="ref:XBD7:32297:32298">
+    When "%zo" specifier is specified, size_t(base argument is 8) is read from
+    the named input stream in sequence, bytes are read in sequence and result
+    is stored in the arguments. Function call expects a control string format
+    and a set of pointer arguments indicating where the converted input is
+    stored.
+  </assertion>
+  <assertion id="56" tag="ref:XBD7:32297:32298">
+    When "%zu" specifier is specified, size_t(base argument is 10) is read from
+    the named input stream in sequence, bytes are read in sequence and result
+    is stored in the arguments. Function call expects a control string format
+    and a set of pointer arguments indicating where the converted input is
+    stored.
+  </assertion>
+  <assertion id="57" tag="ref:XBD7:32297:32298">
+    When "%zx" specifier is specified, size_t(base argument is 16) is read from
+    the named input stream in sequence, bytes are read in sequence and result
+    is stored in the arguments. Function call expects a control string format
+    and a set of pointer arguments indicating where the converted input is
+    stored.
+  </assertion>
+  <assertion id="58" tag="ref:XBD7:32297:32298">
+    When "%zX" specifier is specified, size_t(base argument is 16) is read from
+    the named input stream in sequence, bytes are read in sequence and result
+    is stored in the arguments. Function call expects a control string format
+    and a set of pointer arguments indicating where the converted input is
+    stored.
+  </assertion>
+  <assertion id="59" tag="ref:XBD7:32297:32298">
+    When "%zn" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%zn" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%zn" directive. Directives specified after
+    "%zn" are converted but they don't account for the length calculated in
+    "%zn" directive.
+  </assertion>
+  <assertion id="60" tag="ref:XBD7:32299:32300">
+    When "%td" specifier is specified, ptrdiff_t(base argument is 10) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="61" tag="ref:XBD7:32299:32300">
+    When "%ti" specifier is specified, ptrdiff_t(base argument is 0) is read
+    from the named input stream in sequence, bytes are read in sequence and
+    result is stored in the arguments. Function call expects a control string
+    format and a set of pointer arguments indicating where the converted input
+    is stored.
+  </assertion>
+  <assertion id="62" tag="ref:XBD7:32299:32300">
+    When "%to" specifier is specified, unsigned type of ptrdiff_t(base argument
+    is 8) is read from the named input stream in sequence, bytes are read in
+    sequence and  result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="63" tag="ref:XBD7:32299:32300">
+    When "%tu" specifier is specified, unsigned type of ptrdiff_t(base argument
+    is 10) is read from the named input stream in sequence, bytes are read in
+    sequence and  result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="64" tag="ref:XBD7:32299:32300">
+    When "%tx" specifier is specified, unsigned type of ptrdiff_t(base argument
+    is 16) is read from the named input stream in sequence, bytes are read in
+    sequence and  result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="65" tag="ref:XBD7:32299:32300">
+    When "%tX" specifier is specified, unsigned type of ptrdiff_t(base argument
+    is 16) is read from the named input stream in sequence, bytes are read in
+    sequence and  result is stored in the arguments. Function call expects a
+    control string format and a set of pointer arguments indicating where the
+    converted input is stored.
+  </assertion>
+  <assertion id="66" tag="ref:XBD7:32299:32300">
+    When "%tn" specifier is specified, data is read from the named input
+    stream in sequence, interprets the bytes in sequence according to the
+    directive format specified before "%tn" directive, and stores the results
+    in its arguments. Number of bytes read by fscanf() so far are written to
+    the argument corresponding to "%tn" directive. Directives specified after
+    "%tn" are converted but they don't account for the length calculated in
+    "%tn" directive.
+  </assertion>
+  <assertion id="67" tag="ref:XBD7:32301:32302">
+    When either of "%La", "%LA", "%Le", "LE", "Lf", "LF", "%Lg", or "%LG"
+    specifier is specified, long double is read from the named input stream in
+    sequence, bytes are read in sequence and  result is stored in the arguments.
+    Function call expects a control string format and a set of pointer arguments
+    indicating where the converted input is stored.
+  </assertion>
+  <assertion id="68" tag="ref:XBD7:32307:32309">
+    When "%d" specifier is used with no length specifier, the corresponding
+    argument matches type pointer to int(base argument is 10).
+  </assertion>
+  <assertion id="69" tag="ref:XBD7:32311:32313">
+    When "%i" specifier is used with no length specifier, the corresponding
+    argument matches type pointer to int(base argument is auto detected).
+  </assertion>
+  <assertion id="70" tag="ref:XBD7:32310:32311">
+    When input starts with "0x/0X" for conversion specifier "i" and any/no
+    length specifier, base of the corresponding argument is considered to be
+    hexadecimal.
+  </assertion>
+  <assertion id="71" tag="ref:XBD7:32310:32311">
+    When input starts with "0" for conversion specifier "i" and any/no length
+    specifier, base of the corresponding argument is considered to be
+    octal.
+  </assertion>
+  <assertion id="72" tag="ref:XBD7:32310:32311">
+    When input doesn't start with "0" or "0x/0X" for conversion specifier "i"
+    and any/no length specifier, base of the corresponding argument is
+    considered to be decimal.
+  </assertion>
+  <assertion id="73" tag="ref:XBD7:32315:32317">
+    When "%o" specifier is used with no length specifier, the corresponding
+    argument matches type pointer to unsigned(base argument is 8).
+  </assertion>
+  <assertion id="74" tag="ref:XBD7:32319:32321">
+    When "%u" specifier is used with no length specifier, the corresponding
+    argument matches type pointer to unsigned(base argument is 10).
+  </assertion>
+  <assertion id="75" tag="ref:XBD7:32319:32321">
+    When "%x" specifier is used with no length specifier, the corresponding
+    argument matches type pointer to unsigned(base argument is 16).
+  </assertion>
+  <assertion id="76" tag="ref:XBD7:32328:32330">
+    When "%a", "%e", "%f", or "%g"  specifier is used with no length specifier, the
+    corresponding argument matches type pointer to float.
+  </assertion>
+  <assertion id="77" tag="ref:XBD7:32334:32338">
+    When the 'm' assignment allocation character is not specified and the corresponding
+    argument is a pointer to the initial byte of an array of char, signed char,
+    or unsigned char large enough to accept the sequence and a terminating
+    null character code, which will be added automatically, then %s
+    matches a sequence of bytes that are not white-space characters.
+  </assertion>
+  <assertion id="78" tag="ref:XBD7:32338:32339">
+    When the 'm' assignment allocation character is specified and the corresponding
+    argument is pointer to a pointer to a char, then %s matches a sequence of bytes
+    that are not white-space characters.The function will allocate memory and makes
+    pointer to a pointer to char point it (the newly allocated memory) that needs
+    to be freed.
+  </assertion>
+  <assertion id="79" tag="ref:XBD7:32340:32346">
+    When an “l” qualifier is specified with conversion specifier “s”, then each
+    character will be converted to a wide character (works as mbrtowc( )
+    function), with the conversion state described by an mbstate_t object
+    initialized to zero before the first character is converted. The
+    corresponding argument is a pointer to an array of wchar_t large enough to
+    accept the sequence and the terminating null wide character, which will be
+    added automatically.
+  </assertion>
+  <assertion id="81" tag="ref:XBD7:32349:32354">
+    When conversion specifier “[“ is used and the corresponding argument is a pointer
+    to the initial byte of an array of char, signed char, or unsigned char large enough
+    to accept the sequence and a terminating null byte which will be added
+    automatically, then the normal skip over white-space characters are suppressed.
+  </assertion>
+  <assertion id="82" tag="ref:XBD7:32354:32355">
+    When the "m" assignment allocation character is specified and the conversion
+    specifier "[" is used corresponding argument is pointer to a pointer to a char,
+    then the normal skip over white-space characters are suppressed. The function
+    will allocate memory and makes pointer to a pointer to char point it
+    (the newly allocated memory) that needs to be freed.
+  </assertion>
+  <assertion id="83" tag="ref:XBD7:32356:32362">
+    When “l” (ell) qualifier is present along with conversion specifier “[“,
+    each character in the sequence will  be converted to a wide character as if
+    by a call to the mbrtowc( ) function, with the conversion state described by
+    an mbstate_t object initialized to zero before the first character is
+    converted. The corresponding argument is a pointer to an array of wchar_t
+    large enough to accept the sequence and the terminating null wide character,
+    which will be added automatically.
+  </assertion>
+  <assertion id="85" tag="ref:XBD7:32365:32366">
+    The conversion specification “[“ includes all subsequent bytes in the format
+    string up to and including the matching “]”.
+  </assertion>
+  <assertion id="86" tag="ref:XBD7:32366:32370">
+    If conversion specifier is “[“  and the byte next to it is a “^”:
+        The scanset contains all bytes that do not appear in the scanlist
+        between the “^” and the “]”.
+  </assertion>
+  <assertion id="87" tag="ref:XBD7:32370:32373">
+    If the conversion specification begins with "[]" or "[ˆ]":
+        The “]“ is included in the scanlist and the next “]“ is the matching “]“
+        that ends the conversion specification.
+  </assertion>
+  <assertion id="88" tag="ref:XBD7:32376:32377">
+    When conversion specifier 'c' is used, the corresponding argument is a pointer
+    to the initial byte of an array of char, signed char, or unsigned char large
+    enough to accept the sequence, then argument matches a sequence of bytes of
+    the number specified by field width (1 if no field width is specified).
+    And no null byte is added.
+  </assertion>
+  <assertion id="89" tag="ref:XBD7:32377:32377">
+    When conversion specifier “c” is used, no null byte is added.
+  </assertion>
+  <assertion id="90" tag="ref:XBD7:32377:32378">
+    When conversion specifier “c” is used, the normal skip over white-space
+    characters is suppressed.
+  </assertion>
+  <assertion id="91" tag="ref:XBD7:32378:32381">
+    When conversion specifier “c” is used, the corresponding argument is a
+    pointer to the initial byte of an array of char, signed char, or unsigned
+    char large enough to accept the sequence.
+  </assertion>
+  <assertion id="92" tag="ref:XBD7:32381:32382">
+    When "m" assignment-allocation character is specified along with conversion
+    specifier "c" and the corresponding argument is a pointer to a pointer to
+    a char. The function will allocate memory and makes pointer to a pointer
+    to char point it (the newly allocated memory) that needs to be freed.
+  </assertion>
+  <assertion id="94" tag="ref:XBD7:32384:32386">
+    When “l” (ell) qualifier is present along with conversion specifier “c”,
+    each character in the sequence is converted to a wide character as if by a
+    call to the mbrtowc() function, with the conversion state described by an
+    mbstate_t object initialized to zero before first character is converted.
+  </assertion>
+  <assertion id="95" tag="ref:XBD7:32386:32387">
+    When “l” (ell) qualifier is present along with conversion specifier “c”, no
+    null wide character is added.
+  </assertion>
+  <assertion id="96" tag="ref:XBD7:32387:32391">
+    When “m” assignment-allocation character is specified along with conversion
+    specifier “c” and length specifier "l", the corresponding argument is a
+    pointer to a pointer to a wchar_t and memory for the sequence is allocated
+    by fscanf().
+  </assertion>
+  <assertion id="97" tag="ref:XBD7:32392:32395">
+    When conversion specifier “p” is used, argument matches a set of sequences,
+    which is same as sequence produced fprintf() function. The corresponding
+    matching argument is a pointer to pointer to a void.
+  </assertion>
+  <assertion id="99" tag="ref:XBD7:32396:32398">
+    If the input item to the corresponding directive with conversion specifier
+    “p” is a value converted earlier during the same program execution:
+        The pointer that results shall compare equal to that value.
+  </assertion>
+  <assertion id="101" tag="ref:XBD7:32399:32401">
+    When conversion specifier “n” is used, the corresponding argument should be
+    a pointer to a integer into which the the number of bytes read from the
+    input so far by this call to fscanf function will be written and no
+    input is consumed.
+  </assertion>
+  <assertion id="102" tag="ref:XBD7:32406:32406">
+    When conversion specifier “C” is used, the corresponding argument matches
+    type pointer to wchar_t.
+  </assertion>
+  <assertion id="103" tag="ref:XBD7:32406:32406">
+    When conversion specifier “C” is used with specifier ‘m’, the corresponding
+    argument matches type pointer to a pointer to wchar_t. The function will
+    allocate memory dynamically (that needs to be freed) and the above argument
+    points to it.
+  </assertion>
+  <assertion id="104" tag="ref:XBD7:32407:32407">
+    When conversion specifier “S” is used, the corresponding argument matches
+    type pointer to wchar_t.
+  </assertion>
+  <assertion id="105" tag="ref:XBD7:32407:32407">
+    When conversion specifier “S” is used with specifier ‘m’, then the
+    corresponding argument matches type pointer to a pointer to wchar_t.
+    The function will allocate memory dynamically (that needs to be freed)
+    and the above argument points to it.
+  </assertion>
+  <assertion id="106" tag="ref:XBD7:32408:32408">
+    When conversion specifier “%” is used, no conversion or assignment occurs
+    but it matches a single % character in input.
+  </assertion>
+  <assertion id="107" tag="ref:XBD7:32413:32418">
+    If end-of-file occurs before any bytes matching the current conversion
+    specification:
+        Execution of the current conversion specification will terminate with
+        an input failure.
+    Otherwise:
+        Unless execution of the current conversion specification is terminated
+        with a matching failure, execution of the following conversion
+        specification (if any) will be terminated with an input failure.
+  </assertion>
+  <assertion id="109" tag="ref:XBD7:32422:32423">
+    Trailing white spaces are left unread except for matching conversion
+    specification([, c, C, or n).
+  </assertion>
+  <assertion id="110" tag="ref:XBD7:32430:32431">
+    When directives are successfully converted, the function returns number of
+    successfully matched and assigned input items.
+  </assertion>
+  <assertion id="111" tag="ref:XBD7:32431:32431">
+    When there is an early matching failure, the function returns a zero.
+  </assertion>
+  <assertion id="112" tag="ref:XBD7:32431:32433">
+    When the input ends before completion of first conversion(if any) and a
+    matching failure has not occurred, EOF is returned.
+  </assertion>
+  <assertion id="113" tag="ref:XBD7:32433:32435">
+    When an error occurs before completion of first conversion and a matching
+    failure has not occurred, EOF is returned and corresponding errno is set to
+    indicate the error.
+  </assertion>
+  <assertion id="114" tag="ref:XBD7:32435:32436">
+    When a read error occurs, the error indicator for the stream is set.
+  </assertion>
+  <assertion id="115" tag="ref:XBD7:32438:32439">
+    If the O_NONBLOCK flag is set for the underlying stream and the thread is
+    delayed in the fscanf() operation and data needs to be read:
+        Function will fail with EAGAIN error.
+  </assertion>
+  <assertion id="116" tag="ref:XBD7:32438:32439">
+    When the file descriptor underlying stream is not a valid file descriptor
+    open for reading and data needs to be read, function will fail with EBADF
+    error.
+  </assertion>
+  <assertion id="117" tag="ref:XBD7:32438:32439">
+    When the process is in a background process group trying to read from its
+    controlling terminal, and the calling thread is blocking SIGTTIN, function
+    will fail with EIO error.
+  </assertion>
+  <assertion id="118" tag="ref:XBD7:32438:32439">
+    When the process is in a background process group trying to read from its
+    controlling terminal, and the process is ignoring SIGTTIN function will
+    fail with EIO error.
+  </assertion>
+  <assertion id="119" tag="ref:XBD7:32438:32439">
+    When reading a regular file at or beyond the maximum associated with the
+    corresponding stream, function will fail with EOVERFLOW error.
+  </assertion>
+  <assertion id="120" tag="ref:XBD7:32441:32441">
+    When input byte sequence does not form  a valid character, function will
+    fail with EILSEQ error.
+  </assertion>
+  <assertion id="121" tag="ref:XBD7:32438:32439">
+    When the process is in a background process group trying to read from its
+    controlling terminal, and the process group of the process is orphaned,
+    function will fail with EIO error.
+  </assertion>
+</assertions>
