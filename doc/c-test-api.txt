@@ -2245,6 +2245,10 @@ struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+NOTE: We don't track all backports to stable kernel but just those which are
+      stable branch specific (unique), i.e. no commit in mainline. Example of
+      commits: c4a23c852e80, cac68d12c531.
+
 Glibc git commit in a regression test for a glibc bug:
 [source,c]
 -------------------------------------------------------------------------------
