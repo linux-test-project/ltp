@@ -85,3 +85,5 @@ fs_fill fs_fill
 
 binfmt_misc01 binfmt_misc01.sh
 binfmt_misc02 binfmt_misc02.sh
+
+squashfs01 squashfs01
