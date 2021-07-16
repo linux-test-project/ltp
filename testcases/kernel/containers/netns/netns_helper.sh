@@ -5,7 +5,8 @@
 
 TST_CLEANUP=netns_ns_exec_cleanup
 TST_NEEDS_ROOT=1
-TST_NEEDS_CMDS="ip modprobe ping"
+TST_NEEDS_CMDS="ip ping"
+TST_NEEDS_DRIVERS="veth"
 . tst_test.sh
 
 # Set to 1 only for test cases using ifconfig (ioctl).
@@ -75,9 +76,6 @@ IFCONF_IN6_ARG=
 # On success function returns, on error tst_brk is called and TC is terminated.
 netns_setup()
 {
-
-	modprobe veth > /dev/null 2>&1
-
 	case "$1" in
 	ns_exec)
 		setns_check
