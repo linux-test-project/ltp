@@ -178,8 +178,7 @@ https://github.com/linux-test-project/ltp/wiki/User-Guidelines.
 Network tests
 -------------
 Network tests require certain setup, described in `testcases/network/README.md`
-(online at https://github.com/linux-test-project/ltp/tree/master/testcases/network)
-and `INSTALL`.
+(online at https://github.com/linux-test-project/ltp/tree/master/testcases/network).
 
 Developers corner
 =================
