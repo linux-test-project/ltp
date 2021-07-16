@@ -1,11 +1,11 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2014-2020
+# Copyright (c) Linux Test Project, 2014-2021
 # Copyright (c) 2015 Red Hat, Inc.
 
 TST_CLEANUP=netns_ns_exec_cleanup
 TST_NEEDS_ROOT=1
-TST_NEEDS_CMDS="ip modprobe"
+TST_NEEDS_CMDS="ip modprobe ping"
 . tst_test.sh
 
 # Set to 1 only for test cases using ifconfig (ioctl).
@@ -132,10 +132,12 @@ netns_setup()
 	ipv6)
 		IFCONF_IN6_ARG="inet6 add"
 		IP0=$6; IP1=$7;
-		if which ping6 >/dev/null 2>&1; then
+
+		if tst_cmd_available ping6; then
 		    tping="ping6"
 		else
 		    tping="ping -6"
+			tst_res_ TINFO "ping6 binary/symlink is missing, using workaround. Please, report missing ping6 to your distribution."
 		fi
 		NETMASK=64
 		;;
