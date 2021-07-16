@@ -340,3 +340,4 @@ pidfd_open 1458
 close_range 1460
 openat2 1461
 pidfd_getfd 1462
+epoll_pwait2 1465
