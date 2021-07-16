@@ -86,6 +86,7 @@ AC_CHECK_FUNCS_ONCE([ \
     close_range \
     copy_file_range \
     epoll_pwait \
+    epoll_pwait2 \
     execveat \
     fallocate \
     fchownat \
