@@ -51,14 +51,14 @@ static int child(void *arg LTP_ATTRIBUTE_UNUSED)
 
 static void run(void)
 {
-	char child_namespace[20];
+	char child_namespace[30];
 
 	pid_t pid = ltp_clone(CLONE_NEWUSER | SIGCHLD, &child, 0,
 		STACK_SIZE, child_stack);
 	if (pid == -1)
 		tst_brk(TBROK | TERRNO, "ltp_clone failed");
 
-	sprintf(child_namespace, "/proc/%i/ns/user", pid);
+	snprintf(child_namespace, sizeof(child_namespace), "/proc/%i/ns/user", pid);
 	int my_fd, child_fd, parent_fd;
 
 	my_fd = SAFE_OPEN("/proc/self/ns/user", O_RDONLY);
