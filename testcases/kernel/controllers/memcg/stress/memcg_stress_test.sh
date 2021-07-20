@@ -78,7 +78,7 @@ run_stress()
 		mkdir /dev/memcg/$i 2> /dev/null
 		memcg_process_stress $mem_size $interval &
 		echo $! > /dev/memcg/$i/tasks
-		pids="$! $pids"
+		pids="$pids $!"
 	done
 
 	for pid in $pids; do
