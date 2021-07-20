@@ -957,6 +957,9 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->min_kver)
 		check_kver();
 
+	if (tst_test->skip_in_lockdown && tst_lockdown_enabled())
+		tst_brk(TCONF, "Kernel is locked down, skipping test");
+
 	if (tst_test->needs_cmds) {
 		const char *cmd;
 		char path[PATH_MAX];
