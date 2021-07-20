@@ -25,6 +25,7 @@
 static char *mod_path;
 
 static int fd, fd_zero, fd_invalid = -1, fd_dir;
+static int kernel_lockdown;
 
 static struct tst_cap cap_req = TST_CAP(TST_CAP_REQ, CAP_SYS_MODULE);
 static struct tst_cap cap_drop = TST_CAP(TST_CAP_DROP, CAP_SYS_MODULE);
@@ -64,11 +65,19 @@ static void dir_setup(struct tcase *tc)
 		tc->exp_errno = EINVAL;
 }
 
+static void lockdown_setup(struct tcase *tc)
+{
+	if (kernel_lockdown)
+		tc->exp_errno = EPERM;
+}
+
 static struct tcase tcases[] = {
 	{"invalid-fd", &fd_invalid, "", O_RDONLY | O_CLOEXEC, 0, 0, 0, bad_fd_setup},
 	{"zero-fd", &fd_zero, "", O_RDONLY | O_CLOEXEC, 0, 0, EINVAL, NULL},
-	{"null-param", &fd, NULL, O_RDONLY | O_CLOEXEC, 0, 0, EFAULT, NULL},
-	{"invalid-param", &fd, "status=invalid", O_RDONLY | O_CLOEXEC, 0, 0, EINVAL, NULL},
+	{"null-param", &fd, NULL, O_RDONLY | O_CLOEXEC, 0, 0, EFAULT,
+		lockdown_setup},
+	{"invalid-param", &fd, "status=invalid", O_RDONLY | O_CLOEXEC, 0, 0,
+		EINVAL, lockdown_setup},
 	{"invalid-flags", &fd, "", O_RDONLY | O_CLOEXEC, -1, 0, EINVAL, NULL},
 	{"no-perm", &fd, "", O_RDONLY | O_CLOEXEC, 0, 1, EPERM, NULL},
 	{"module-exists", &fd, "", O_RDONLY | O_CLOEXEC, 0, 0, EEXIST, NULL},
@@ -84,6 +93,7 @@ static void setup(void)
 
 	tst_module_exists(MODULE_NAME, &mod_path);
 
+	kernel_lockdown = tst_lockdown_enabled();
 	SAFE_MKDIR(TEST_DIR, 0700);
 	fd_dir = SAFE_OPEN(TEST_DIR, O_DIRECTORY);
 
@@ -108,8 +118,15 @@ static void run(unsigned int n)
 		tst_cap_action(&cap_drop);
 
 	/* Insert module twice */
-	if (tc->exp_errno == EEXIST)
+	if (tc->exp_errno == EEXIST) {
+		if (kernel_lockdown) {
+			tst_res(TCONF, "Kernel is locked down, skipping %s",
+				tc->name);
+			return;
+		}
+
 		tst_module_load(MODULE_NAME, NULL);
+	}
 
 	TST_EXP_FAIL(finit_module(*tc->fd, tc->param, tc->flags), tc->exp_errno,
 		     "TestName: %s", tc->name);
