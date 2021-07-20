@@ -25,10 +25,6 @@ static int module_loaded;
 
 static void do_delete_module(void)
 {
-	/* lockdown requires signed modules */
-	if (tst_lockdown_enabled())
-		tst_brk(TCONF, "Kernel is locked down, skip this test");
-
 	if (module_loaded == 0) {
 		tst_module_load(MODULE_NAME_KO, NULL);
 		module_loaded = 1;
@@ -53,6 +49,8 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
+	/* lockdown requires signed modules */
+	.skip_in_lockdown = 1,
 	.cleanup = cleanup,
 	.test_all = do_delete_module,
 };

@@ -53,10 +53,6 @@ static void setup(void)
 {
 	struct passwd *pw;
 
-	/* iopl() is restricted under kernel lockdown. */
-	if (tst_lockdown_enabled())
-		tst_brk(TCONF, "Kernel is locked down, skip this test");
-
 	pw = SAFE_GETPWNAM("nobody");
 	SAFE_SETEUID(pw->pw_uid);
 }
@@ -70,6 +66,8 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_iopl,
 	.needs_root = 1,
+	/* iopl() is restricted under kernel lockdown. */
+	.skip_in_lockdown = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 };
