@@ -124,7 +124,7 @@ int main(int ac, char **av)
 					 "correct");
 			}
 		}
-#if defined(__ia64__) || defined(__hppa__)
+#if defined(__ia64__) || defined(__hppa__) || defined(__mips__)
 		if (pass) {
 			tst_resm(TPASS, "Got SIGSEGV as expected");
 		} else {
