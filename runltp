@@ -172,6 +172,7 @@ usage()
                     to run correctly.
     -Z  LTP_BIG_DEV_FS_TYPE The file system of the big device
     -W ZOOFILE      Specify the zoo file used to record current test tags (default PID of this script)
+    -j EXTREME_QUITE_MODE Print extremely less verbose output. Use this option along with "-q" option.
 
 
 
@@ -221,10 +222,11 @@ main()
     local DEFAULT_FILE_NAME_GENERATION_TIME=`date +"%Y_%m_%d-%Hh_%Mm_%Ss"`
     local scenfile=
     local ZOOFILE=$$
+    local EXTREME_QUITE_MODE=
 
     version_date=$(cat "$LTPROOT/Version")
 
-    while getopts a:b:B:c:C:T:d:D:ef:F:g:hi:I:K:l:m:M:No:pqQr:Rs:S:t:T:w:x:z:Z:W: arg
+    while getopts a:b:B:c:C:T:d:D:ef:F:g:hi:I:K:l:m:M:No:pqQr:Rs:S:t:T:w:x:z:Z:W:j arg
     do  case $arg in
         a)  EMAIL_TO=$OPTARG
             ALT_EMAIL_OUT=1;;
@@ -449,6 +451,7 @@ main()
         z) BIG_DEVICE=$OPTARG;;
         Z) BIG_DEVICE_FS_TYPE=$OPTARG;;
         W) ZOOFILE=$OPTARG;;
+        j) EXTREME_QUITE_MODE="-j";;
         \?) usage;;
         esac
     done
@@ -658,20 +661,28 @@ EOF
     fi
 
     # check for required users and groups
-    ${LTPROOT}/IDcheck.sh || \
-    {
-        echo "WARNING: required users and groups not present"
-        echo "WARNING: some test cases may fail"
-    }
-
-    # display versions of installed software
-    [ -z "$QUIET_MODE" ] && \
-    {
-        ${LTPROOT}/ver_linux || \
+    if [ ! -z "$EXTREME_QUITE_MODE" ]
+    then
+        ${LTPROOT}/IDcheck.sh >nul 2>nul
+    else
+        ${LTPROOT}/IDcheck.sh || \
         {
-            echo "WARNING: unable to display versions of software installed"
-            exit 1
-    }
+            echo "WARNING: required users and groups not present"
+            echo "WARNING: some test cases may fail"
+        }
+    fi
+
+    [ -z "$EXTREME_QUITE_MODE" ] && \
+    {
+        # display versions of installed software
+        [ -z "$QUIET_MODE" ] && \
+        {
+            ${LTPROOT}/ver_linux || \
+            {
+                echo "WARNING: unable to display versions of software installed"
+                exit 1
+            }
+        }
     }
 
     set_block_device
@@ -679,9 +690,12 @@ EOF
     # here even if the user don't specify a big block device, we
     # also don't create the big block device.
     if [ -z "$BIG_DEVICE" ]; then
-        echo "no big block device was specified on commandline."
-        echo "Tests which require a big block device are disabled."
-        echo "You can specify it with option -z"
+        [ -z "$EXTREME_QUITE_MODE" ] && \
+        {
+            echo "no big block device was specified on commandline."
+            echo "Tests which require a big block device are disabled."
+            echo "You can specify it with option -z"
+        }
     else
         export LTP_BIG_DEV=$BIG_DEVICE
         if [ -z "$BIG_DEVICE_FS_TYPE" ]; then
@@ -710,30 +724,34 @@ EOF
     [ ! -z "$QUIET_MODE" ] && { echo "INFO: Test start time: $(date)" ; }
     PAN_COMMAND="${LTPROOT}/bin/ltp-pan $QUIET_MODE $NO_KMSG -e -S $INSTANCES $DURATION -a ${ZOOFILE} \
     -n $$ $PRETTY_PRT -f ${TMP}/alltests $LOGFILE $OUTPUTFILE $FAILCMDFILE $TCONFCMDFILE"
-    echo "COMMAND:    $PAN_COMMAND"
-    if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
-      echo "INFO: Restricted to $TAG_RESTRICT_STRING"
-    fi
-    #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
 
-    ## Display the Output/Log/Failed/HTML file names here
-    printf "LOG File: "
-    echo $LOGFILE | cut -b4-
+    [ -z "$EXTREME_QUITE_MODE" ] && \
+    {
+        echo "COMMAND:    $PAN_COMMAND"
+        if [ ! -z "$TAG_RESTRICT_STRING" ] ; then
+            echo "INFO: Restricted to $TAG_RESTRICT_STRING"
+        fi
+        #$PAN_COMMAND #Duplicated code here, because otherwise if we fail, only "PAN_COMMAND" gets output
 
-    if [ "$OUTPUTFILE" ]; then
-       printf "OUTPUT File: "
-       echo $OUTPUTFILE | cut -b4-
-    fi
+        ## Display the Output/Log/Failed/HTML file names here
+        printf "LOG File: "
+        echo $LOGFILE | cut -b4-
 
-    printf "FAILED COMMAND File: "
-    echo $FAILCMDFILE | cut -b4-
+        if [ "$OUTPUTFILE" ]; then
+            printf "OUTPUT File: "
+            echo $OUTPUTFILE | cut -b4-
+        fi
 
-   printf "TCONF COMMAND File: "
-   echo $TCONFCMDFILE | cut -b4-
+        printf "FAILED COMMAND File: "
+        echo $FAILCMDFILE | cut -b4-
 
-    if [ "$HTMLFILE" ]; then
-       echo "HTML File: $HTMLFILE"
-    fi
+        printf "TCONF COMMAND File: "
+        echo $TCONFCMDFILE | cut -b4-
+
+        if [ "$HTMLFILE" ]; then
+            echo "HTML File: $HTMLFILE"
+        fi
+    }
 
     echo "Running tests......."
     test_start_time=$(date)
@@ -924,6 +942,8 @@ EOF
 
     [ "$ALT_DIR_OUT" -eq 1 ] || [ "$ALT_DIR_RES" -eq 1 ] && \
     {
+        [ -z "$EXTREME_QUITE_MODE" ] && \
+        {
     cat <<-EOF >&1
 
        ###############################################################
@@ -933,6 +953,7 @@ EOF
        ###############################################################
 
 	EOF
+        }
     }
     exit $VALUE
 }
