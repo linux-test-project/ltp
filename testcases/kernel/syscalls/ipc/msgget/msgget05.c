@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
- * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
+ * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
- * It is a basic test about msg_next_id.
- * When the message queue identifier that msg_next_id stored has existed,
+ * It is a basic test for msg_next_id.
+ * When the message queue identifier that msg_next_id stored is already in use,
  * call msgget with different key just use another unused value in range
- * [0,INT_MAX]. kernel doesn't guarantee the desired id.
+ * [0,INT_MAX]. Kernel doesn't guarantee the desired id.
  */
 
 #include <errno.h>
@@ -45,8 +49,6 @@ static void setup(void)
 	pid = getpid();
 	SAFE_FILE_PRINTF(NEXT_ID_PATH, "%d", pid);
 	queue_id[0] = SAFE_MSGGET(msgkey[0], IPC_CREAT | MSG_RW);
-	tst_res(TINFO, "Test msg_next_id effects on msgget(different key) "
-		"when this message queue identifier has existed");
 }
 
 static void cleanup(void)

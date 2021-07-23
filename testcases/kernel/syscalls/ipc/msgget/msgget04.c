@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
- * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
+ * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
- * It is a basic test about msg_next_id.
- * msg_next_id specifies desired id for next allocated IPC message. By default
- * they are equal to -1, which means generic allocation logic. Possible values
- * to set are in range {0..INT_MAX}.
- * Toggle with non-default value will be set back to -1 by kernel after
- * successful IPC object allocation.
+ * It is a basic test for msg_next_id.
+ * msg_next_id specifies desired id for next allocated IPC message. By
+ * default it's equal to -1, which means generic allocation logic.
+ * Possible values to set are in range {0..INT_MAX}.
+ * The value will be set back to -1 by kernel after successful IPC object
+ * allocation.
  */
 
 #include <errno.h>

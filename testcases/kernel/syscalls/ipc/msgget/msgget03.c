@@ -3,11 +3,12 @@
  * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * DESCRIPTION
- * test for an ENOSPC error by using up all available
- * message queues.
+/*\
+ * [Description]
  *
+ * Test for ENOSPC error.
+ *
+ * ENOSPC -  All possible message queues have been taken (MSGMNI)
  */
 
 #include <errno.h>

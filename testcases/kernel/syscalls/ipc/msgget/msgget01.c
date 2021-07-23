@@ -3,9 +3,10 @@
  * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * DESCRIPTION
- * create a message queue, write a message to it and
+/*\
+ * [Description]
+ *
+ * Create a message queue, write a message to it and
  * read it back.
  */
 

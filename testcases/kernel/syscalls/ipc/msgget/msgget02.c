@@ -3,8 +3,11 @@
  * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * DESCRIPTION
+/*\
+ * [Description]
+ *
+ * Test for EEXIST, ENOENT, EACCES errors.
+ *
  * 1) msgget(2) fails if a message queue exists for key and msgflg
  *    specified both IPC_CREAT and IPC_EXCL.
  * 2) msgget(2) fails if no message queue exists for key and msgflg
