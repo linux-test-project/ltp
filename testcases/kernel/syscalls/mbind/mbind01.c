@@ -17,6 +17,7 @@
 #include "config.h"
 #include "numa_helper.h"
 #include "tst_test.h"
+#include "lapi/numaif.h"
 
 #ifdef HAVE_NUMA_V2
 
@@ -32,6 +33,7 @@ static struct bitmask *nodemask, *getnodemask, *empty_nodemask;
 static void test_default(unsigned int i, char *p);
 static void test_none(unsigned int i, char *p);
 static void test_invalid_nodemask(unsigned int i, char *p);
+static void check_policy_pref_no_target(int);
 
 struct test_case {
 	int policy;
@@ -39,6 +41,7 @@ struct test_case {
 	unsigned flags;
 	int ret;
 	int err;
+	void (*check_policy)(int);
 	void (*test)(unsigned int, char *);
 	struct bitmask **exp_nodemask;
 };
@@ -88,6 +91,7 @@ static struct test_case tcase[] = {
 		.ret = 0,
 		.err = 0,
 		.test = test_none,
+		.check_policy = check_policy_pref_no_target,
 	},
 	{
 		POLICY_DESC(MPOL_PREFERRED),
@@ -116,6 +120,15 @@ static struct test_case tcase[] = {
 		.test = test_invalid_nodemask,
 	},
 };
+
+static void check_policy_pref_no_target(int policy)
+{
+	if (policy != MPOL_PREFERRED && policy != MPOL_LOCAL) {
+		tst_res(TFAIL, "Wrong policy: %d, "
+			"expected MPOL_PREFERRED or MPOL_LOCAL",
+			policy);
+	}
+}
 
 static void test_default(unsigned int i, char *p)
 {
@@ -183,7 +196,10 @@ static void do_test(unsigned int i)
 			tst_res(TFAIL | TTERRNO, "get_mempolicy failed");
 			return;
 		}
-		if (tc->policy != policy) {
+
+		if (tc->check_policy)
+			tc->check_policy(policy);
+		else if (tc->policy != policy) {
 			tst_res(TFAIL, "Wrong policy: %d, expected: %d",
 				tc->policy, policy);
 			fail = 1;
