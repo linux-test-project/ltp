@@ -442,6 +442,7 @@ static int test_assign_resources(void)
 
 		if (r->flags & IORESOURCE_MEM &&
 			r->flags & IORESOURCE_PREFETCH) {
+			pci_release_resource(dev, i);
 			ret = pci_assign_resource(dev, i);
 			prk_info("assign resource to '%d', ret '%d'", i, ret);
 			rc |= (ret < 0 && ret != -EBUSY) ? TFAIL : TPASS;
