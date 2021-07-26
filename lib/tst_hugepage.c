@@ -34,6 +34,11 @@ unsigned long tst_request_hugepages(unsigned long hpages)
 	else
 		tst_hugepages = hpages;
 
+	if (hpages == TST_NO_HUGEPAGES) {
+		tst_hugepages = 0;
+		goto set_hugepages;
+	}
+
 	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
 	max_hpages = SAFE_READ_MEMINFO("MemFree:") / SAFE_READ_MEMINFO("Hugepagesize:");
 
@@ -47,6 +52,7 @@ unsigned long tst_request_hugepages(unsigned long hpages)
 			goto out;
 	}
 
+set_hugepages:
 	tst_sys_conf_save("?/proc/sys/vm/nr_hugepages");
 	SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%lu", tst_hugepages);
 	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);

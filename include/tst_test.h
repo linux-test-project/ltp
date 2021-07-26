@@ -125,6 +125,8 @@ struct tst_tag {
 
 extern unsigned int tst_variant;
 
+#define TST_NO_HUGEPAGES ((unsigned long)-1)
+
 struct tst_test {
 	/* number of tests available in test() function */
 	unsigned int tcnt;
@@ -175,7 +177,8 @@ struct tst_test {
 	 * have enough hpage for using, it will try the best to reserve 80% available
 	 * number of hpages. With success test stores the reserved hugepage number in
 	 * 'tst_hugepages. For the system without hugetlb supporting, variable
-	 * 'tst_hugepages' will be set to 0.
+	 * 'tst_hugepages' will be set to 0. If the hugepage number needs to be set to
+	 * 0 on supported hugetlb system, please use '.request_hugepages = TST_NO_HUGEPAGES'.
 	 *
 	 * Also, we do cleanup and restore work for the hpages resetting automatically.
 	 */
