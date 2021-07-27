@@ -25,11 +25,7 @@ static int do_stime(time_t *ntime)
 #endif
 	break;
 	case 1:
-#if !defined(__mips__) ||  _MIPS_SZLONG == 32
 		return tst_syscall(__NR_stime, ntime);
-#else
-		tst_brk(TCONF, "the stime() syscall only o32 ABI in mips, make sure the current program is 32-bit");
-#endif
 	case 2: {
 		struct __kernel_old_timeval tv;
 
