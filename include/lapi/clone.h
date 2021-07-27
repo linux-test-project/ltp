@@ -37,6 +37,10 @@ static inline int clone3(struct clone_args *args, size_t size)
 #define CLONE_PIDFD	0x00001000	/* set if a pidfd should be placed in parent */
 #endif
 
+#ifndef CLONE_NEWUSER
+# define CLONE_NEWUSER	0x10000000
+#endif
+
 static inline void clone3_supported_by_kernel(void)
 {
 	if ((tst_kvercmp(5, 3, 0)) < 0) {
