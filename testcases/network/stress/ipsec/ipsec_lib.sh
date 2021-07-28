@@ -292,6 +292,9 @@ tst_ipsec_setup_vti()
 
 	tst_res TINFO "Test vti$TST_IPV6 + IPsec[$IPSEC_PROTO/$IPSEC_MODE]"
 
+	tst_net_run -q "tst_check_drivers ip${TST_IPV6}_vti" || \
+		tst_brk TCONF "ip${TST_IPV6}_vti driver not available on lhost or rhost"
+
 	tst_ipsec_vti lhost $ip_loc $ip_rmt $tst_vti
 	tst_ipsec_vti rhost $ip_rmt $ip_loc $tst_vti
 
