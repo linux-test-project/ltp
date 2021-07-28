@@ -22,6 +22,7 @@
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/functions.mk
+include $(top_srcdir)/include/mk/sparse.mk
 
 APICMDS_DIR	:= $(abs_top_builddir)/tools/apicmds
 

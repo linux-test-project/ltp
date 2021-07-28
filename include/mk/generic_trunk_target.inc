@@ -48,7 +48,7 @@
 
 include $(top_srcdir)/include/mk/functions.mk
 
-RECURSIVE_TARGETS		?= all install
+RECURSIVE_TARGETS		?= all install check
 
 $(eval $(get_make_dirs))
 
@@ -67,6 +67,9 @@ trunk-clean:: | $(SUBDIRS)
 $(INSTALL_FILES): | $(INSTALL_DEPS)
 
 trunk-install: $(INSTALL_FILES)
+
+$(CHECK_TARGETS): | $(CHECK_DEPS)
+trunk-check: $(CHECK_TARGETS)
 
 # Avoid creating duplicate .PHONY references to all, clean, and install. IIRC,
 # I've seen some indeterministic behavior when one does this in the past with
@@ -107,5 +110,7 @@ else
 	done
 endif
 endif
+
+check: trunk-check
 
 # vim: syntax=make

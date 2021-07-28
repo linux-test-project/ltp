@@ -104,3 +104,7 @@ $(CRITICAL_MAKEFILE): \
 	$(top_srcdir)/LDFLAGS			\
 	$(top_srcdir)/LDLIBS
 	@$(MAKE) generate-makefiles
+
+.PHONY: check
+check:
+	@echo "Checker not yet supported by Open POSIX testsuite"

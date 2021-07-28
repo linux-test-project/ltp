@@ -47,6 +47,8 @@ endif
 
 CLEAN_TARGETS += .dep_modules *.mod built-in.a
 
+CHECK_TARGETS := $(filter-out %.ko, $(CHECK_TARGETS))
+
 MODULE_SOURCES := $(patsubst %.ko,%.c,$(filter %.ko, $(MAKE_TARGETS)))
 
 # Ignoring the exit status of commands is done to be forward compatible with
