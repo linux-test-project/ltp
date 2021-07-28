@@ -1,28 +1,6 @@
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2006-2008
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * NAME
- *       libtsc.h
- *
- * DESCRIPTION
- *
- * USAGE:
- *       To be included in some testcases.
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright © International Business Machines  Corp., 2006-2008
  *
  * AUTHOR
  *        Darren Hart <dvhltc@us.ibm.com>
@@ -30,8 +8,10 @@
  *
  * HISTORY
  *      It directly comes from the librttest.h (see its HISTORY).
- *
- *****************************************************************************/
+ */
+
+#ifndef TST_TSC_H
+#define TST_TSC_H
 
 #undef TSC_UNSUPPORTED
 
@@ -70,3 +50,4 @@
 #define TSC_UNSUPPORTED
 #endif
 
+#endif
