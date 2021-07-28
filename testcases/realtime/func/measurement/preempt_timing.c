@@ -52,7 +52,8 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include <librttest.h>
-#include <libtsc.h>
+
+#include "tst_tsc.h"
 
 #define ITERATIONS 1000000ULL
 #define INTERVALS 10

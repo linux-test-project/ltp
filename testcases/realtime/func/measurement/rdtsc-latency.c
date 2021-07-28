@@ -44,7 +44,8 @@
 #include <errno.h>
 #include <stdint.h>
 #include <librttest.h>
-#include <libtsc.h>
+
+#include "tst_tsc.h"
 
 #define ITERATIONS 1000000
 

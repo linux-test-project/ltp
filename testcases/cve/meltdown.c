@@ -19,7 +19,7 @@
 
 #include <emmintrin.h>
 
-#include "libtsc.h"
+#include "tst_tsc.h"
 
 #define TARGET_OFFSET	9
 #define TARGET_SIZE	(1 << TARGET_OFFSET)

@@ -46,7 +46,8 @@
 #include <pthread.h>
 #include <librttest.h>
 #include <libstats.h>
-#include <libtsc.h>
+
+#include "tst_tsc.h"
 
 #define HANDLER_PRIO 98
 #define SIGNAL_PRIO 99
