@@ -28,4 +28,6 @@ INSTALL_TARGETS		:= *.awk *.pl *.sh html_report_header.txt
 
 INSTALL_DIR		:= bin
 
+FILTER_OUT_DIRS		+= sparse
+
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
