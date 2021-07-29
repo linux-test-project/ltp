@@ -38,7 +38,7 @@ void tst_nodemap_print_counters(struct tst_nodemap *nodes);
  *
  * @mode Numa mempolicy mode.
  */
-const char *tst_numa_mode_name(int mode);
+const char *tst_mempolicy_mode_name(int mode);
 
 /**
  * Maps pages into memory, if path is NULL the mapping is anonymous otherwise is backed by the file.

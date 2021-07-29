@@ -74,18 +74,18 @@ static void verify_policy(int mode)
 	if (TST_RET != -1) {
 		tst_res(TFAIL,
 		        "mbind(%s, MPOL_MF_STRICT) node %u returned %li, expected -1",
-		        tst_numa_mode_name(mode), node, TST_RET);
+		        tst_mempolicy_mode_name(mode), node, TST_RET);
 		return;
 	}
 
 	if (TST_ERR == EIO) {
 		tst_res(TPASS | TTERRNO,
 		        "mbind(%s, MPOL_MF_STRICT) node %u",
-		        tst_numa_mode_name(mode), node);
+		        tst_mempolicy_mode_name(mode), node);
 	} else {
 		tst_res(TFAIL | TTERRNO,
 			"mbind(%s, MPOL_MF_STRICT) node %u expected EIO",
-		        tst_numa_mode_name(mode), node);
+		        tst_mempolicy_mode_name(mode), node);
 	}
 }
 

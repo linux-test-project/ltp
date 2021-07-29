@@ -61,12 +61,12 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 	if (TST_RET) {
 		tst_res(TFAIL | TTERRNO,
 		        "mbind(%s, %s) node %u",
-		        tst_numa_mode_name(mode), mbind_flag_name(flag), node);
+		        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 		return;
 	}
 
 	tst_res(TPASS, "mbind(%s, %s) node %u",
-	        tst_numa_mode_name(mode), mbind_flag_name(flag), node);
+	        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 
 	const char *prefix = "child: ";
 

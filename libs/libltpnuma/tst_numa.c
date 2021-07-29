@@ -46,7 +46,7 @@ void tst_nodemap_free(struct tst_nodemap *nodes)
 
 #ifdef HAVE_NUMA_V2
 
-const char *tst_numa_mode_name(int mode)
+const char *tst_mempolicy_mode_name(int mode)
 {
 	switch (mode) {
 	case MPOL_DEFAULT:

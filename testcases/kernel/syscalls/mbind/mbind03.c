@@ -68,11 +68,11 @@ static void verify_policy(int mode, unsigned flag)
 	if (TST_RET) {
 		tst_res(TFAIL | TTERRNO,
 		        "mbind(%s, %s) node %u",
-		        tst_numa_mode_name(mode), mbind_flag_name(flag), node);
+		        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 		goto exit;
 	} else {
 		tst_res(TPASS, "mbind(%s, %s) node %u succeded",
-		        tst_numa_mode_name(mode), mbind_flag_name(flag), node);
+		        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 	}
 
 	tst_nodemap_reset_counters(nodes);
