@@ -17,6 +17,7 @@
 #include "config.h"
 #include "numa_helper.h"
 #include "tst_test.h"
+#include "tst_numa.h"
 #include "lapi/numaif.h"
 
 #ifdef HAVE_NUMA_V2
@@ -124,9 +125,9 @@ static struct test_case tcase[] = {
 static void check_policy_pref_no_target(int policy)
 {
 	if (policy != MPOL_PREFERRED && policy != MPOL_LOCAL) {
-		tst_res(TFAIL, "Wrong policy: %d, "
+		tst_res(TFAIL, "Wrong policy: %s(%d), "
 			"expected MPOL_PREFERRED or MPOL_LOCAL",
-			policy);
+			tst_numa_mode_name(policy), policy);
 	}
 }
 
@@ -200,8 +201,9 @@ static void do_test(unsigned int i)
 		if (tc->check_policy)
 			tc->check_policy(policy);
 		else if (tc->policy != policy) {
-			tst_res(TFAIL, "Wrong policy: %d, expected: %d",
-				policy, tc->policy);
+			tst_res(TFAIL, "Wrong policy: %s(%d), expected: %s(%d)",
+				tst_numa_mode_name(policy), policy,
+				tst_numa_mode_name(tc->policy), tc->policy);
 			fail = 1;
 		}
 		if (tc->exp_nodemask) {

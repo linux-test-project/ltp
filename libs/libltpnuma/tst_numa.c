@@ -16,6 +16,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_numa.h"
+#include "lapi/numaif.h"
 
 void tst_nodemap_print_counters(struct tst_nodemap *nodes)
 {
@@ -50,12 +51,14 @@ const char *tst_numa_mode_name(int mode)
 	switch (mode) {
 	case MPOL_DEFAULT:
 		return "MPOL_DEFAULT";
-	case MPOL_BIND:
-		return "MPOL_BIND";
 	case MPOL_PREFERRED:
 		return "MPOL_PREFERRED";
+	case MPOL_BIND:
+		return "MPOL_BIND";
 	case MPOL_INTERLEAVE:
 		return "MPOL_INTERLEAVE";
+	case MPOL_LOCAL:
+		return "MPOL_LOCAL";
 	default:
 		return "???";
 	}
