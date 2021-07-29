@@ -34,7 +34,7 @@ static struct bitmask *nodemask, *getnodemask, *empty_nodemask;
 static void test_default(unsigned int i, char *p);
 static void test_none(unsigned int i, char *p);
 static void test_invalid_nodemask(unsigned int i, char *p);
-static void check_policy_pref_no_target(int);
+static void check_policy_pref_or_local(int);
 
 struct test_case {
 	int policy;
@@ -92,7 +92,7 @@ static struct test_case tcase[] = {
 		.ret = 0,
 		.err = 0,
 		.test = test_none,
-		.check_policy = check_policy_pref_no_target,
+		.check_policy = check_policy_pref_or_local,
 	},
 	{
 		POLICY_DESC(MPOL_PREFERRED),
@@ -100,6 +100,20 @@ static struct test_case tcase[] = {
 		.err = 0,
 		.test = test_default,
 		.exp_nodemask = &nodemask,
+	},
+	{
+		POLICY_DESC(MPOL_LOCAL),
+		.ret = 0,
+		.err = 0,
+		.test = test_none,
+		.exp_nodemask = &empty_nodemask,
+		.check_policy = check_policy_pref_or_local,
+	},
+	{
+		POLICY_DESC_TEXT(MPOL_LOCAL, "target exists"),
+		.ret = -1,
+		.err = EINVAL,
+		.test = test_default,
 	},
 	{
 		POLICY_DESC(UNKNOWN_POLICY),
@@ -122,7 +136,7 @@ static struct test_case tcase[] = {
 	},
 };
 
-static void check_policy_pref_no_target(int policy)
+static void check_policy_pref_or_local(int policy)
 {
 	if (policy != MPOL_PREFERRED && policy != MPOL_LOCAL) {
 		tst_res(TFAIL, "Wrong policy: %s(%d), "
@@ -181,6 +195,17 @@ static void do_test(unsigned int i)
 	char *p = NULL;
 
 	tst_res(TINFO, "case %s", tc->desc);
+
+	if (tc->policy == MPOL_LOCAL) {
+		if ((tst_kvercmp(3, 8, 0)) < 0) {
+			tst_res(TCONF, "%s is not supported",
+				tst_mempolicy_mode_name(tc->policy));
+			return;
+		}
+
+		if ((tst_kvercmp(5, 14, 0)) >= 0)
+			tc->check_policy = NULL;
+	}
 
 	setup_node();
 
