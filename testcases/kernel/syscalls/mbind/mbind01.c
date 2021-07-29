@@ -201,7 +201,7 @@ static void do_test(unsigned int i)
 			tc->check_policy(policy);
 		else if (tc->policy != policy) {
 			tst_res(TFAIL, "Wrong policy: %d, expected: %d",
-				tc->policy, policy);
+				policy, tc->policy);
 			fail = 1;
 		}
 		if (tc->exp_nodemask) {
