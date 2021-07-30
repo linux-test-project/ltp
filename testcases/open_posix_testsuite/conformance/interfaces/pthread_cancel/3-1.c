@@ -35,19 +35,25 @@ static void cleanup_func(PTS_ATTRIBUTE_UNUSED void *unused)
 	} while (after_cancel == 0 && thread_sleep_time < TIMEOUT_MS);
 }
 
-static void *thread_func(PTS_ATTRIBUTE_UNUSED void *unused)
+static void sleep_loop(void)
 {
 	int waited_for_cancel_ms = 0;
 	struct timespec cancel_wait_ts = {0, SLEEP_MS*1000000};
 
-	SAFE_PFUNC(pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL));
-	pthread_cleanup_push(cleanup_func, NULL);
-
-	SAFE_FUNC(sem_post(&sem));
 	while (waited_for_cancel_ms < TIMEOUT_MS) {
 		nanosleep(&cancel_wait_ts, NULL);
 		waited_for_cancel_ms += SLEEP_MS;
 	}
+}
+
+static void *thread_func(PTS_ATTRIBUTE_UNUSED void *unused)
+{
+	SAFE_PFUNC(pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL));
+	pthread_cleanup_push(cleanup_func, NULL);
+
+	SAFE_FUNC(sem_post(&sem));
+
+	sleep_loop();
 
 	/* shouldn't be reached */
 	printf("Error: cancel never arrived\n");
