@@ -181,6 +181,9 @@ typedef struct {
 #ifndef FAN_EVENT_INFO_TYPE_PIDFD
 #define FAN_EVENT_INFO_TYPE_PIDFD	4
 #endif
+#ifndef FAN_EVENT_INFO_TYPE_ERROR
+#define FAN_EVENT_INFO_TYPE_ERROR	5
+#endif
 
 #ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_HEADER
 struct fanotify_event_info_header {
@@ -204,6 +207,14 @@ struct fanotify_event_info_pidfd {
 	int32_t pidfd;
 };
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_PIDFD */
+
+#ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_ERROR
+struct fanotify_event_info_error {
+	struct fanotify_event_info_header hdr;
+	__s32 error;
+	__u32 error_count;
+};
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_ERROR */
 
 /* NOTE: only for struct fanotify_event_info_fid */
 #ifdef HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL
@@ -417,5 +428,26 @@ static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
 	fanotify_init_flags_err_msg(#mask, __FILE__, __LINE__, tst_brk_, \
 		fanotify_events_supported_by_kernel(mask, init_flags, mark_type)); \
 } while (0)
+
+struct fanotify_event_info_header *get_event_info(
+					struct fanotify_event_metadata *event,
+					int info_type)
+{
+	struct fanotify_event_info_header *hdr = NULL;
+	char *start = (char *) event;
+	int off;
+
+	for (off = event->metadata_len; (off+sizeof(*hdr)) < event->event_len;
+	     off += hdr->len) {
+		hdr = (struct fanotify_event_info_header *) &(start[off]);
+		if (hdr->info_type == info_type)
+			return hdr;
+	}
+	return NULL;
+}
+
+#define get_event_info_error(event)					\
+	((struct fanotify_event_info_error *)				\
+	 get_event_info((event), FAN_EVENT_INFO_TYPE_ERROR))
 
 #endif /* __FANOTIFY_H__ */
