@@ -255,6 +255,10 @@ static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 	}
 }
 
+#ifndef FILEID_INVALID
+#define FILEID_INVALID		0xff
+#endif
+
 struct fanotify_fid_t {
 	__kernel_fsid_t fsid;
 	struct file_handle handle;
@@ -449,5 +453,9 @@ struct fanotify_event_info_header *get_event_info(
 #define get_event_info_error(event)					\
 	((struct fanotify_event_info_error *)				\
 	 get_event_info((event), FAN_EVENT_INFO_TYPE_ERROR))
+
+#define get_event_info_fid(event)					\
+	((struct fanotify_event_info_fid *)				\
+	 get_event_info((event), FAN_EVENT_INFO_TYPE_FID))
 
 #endif /* __FANOTIFY_H__ */
