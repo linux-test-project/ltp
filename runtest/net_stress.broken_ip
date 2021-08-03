@@ -3,15 +3,15 @@
 #
 
 # Broken IP packet
-broken_ip4-version broken_ip-version
-broken_ip4-ihl broken_ip-ihl
-broken_ip4-fragment broken_ip-fragment
-broken_ip6-plen broken_ip-plen
-broken_ip4-protcol broken_ip-protcol
-broken_ip4-checksum broken_ip-checksum
-broken_ip4-dstaddr broken_ip-dstaddr
+broken_ip4-version broken_ip-version.sh
+broken_ip4-ihl broken_ip-ihl.sh
+broken_ip4-fragment broken_ip-fragment.sh
+broken_ip6-plen broken_ip-plen.sh
+broken_ip4-protcol broken_ip-protcol.sh
+broken_ip4-checksum broken_ip-checksum.sh
+broken_ip4-dstaddr broken_ip-dstaddr.sh
 
-broken_ip6-dstaddr broken_ip-dstaddr -6
-broken_ip6-nexthdr broken_ip-nexthdr -6
-broken_ip6-plen broken_ip-plen -6
-broken_ip6-version broken_ip-version -6
+broken_ip6-dstaddr broken_ip-dstaddr.sh -6
+broken_ip6-nexthdr broken_ip-nexthdr.sh -6
+broken_ip6-plen broken_ip-plen.sh -6
+broken_ip6-version broken_ip-version.sh -6
