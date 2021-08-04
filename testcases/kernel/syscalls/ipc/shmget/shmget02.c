@@ -32,9 +32,12 @@
 #include <sys/shm.h>
 #include <grp.h>
 #include "tst_safe_sysv_ipc.h"
+#include "tst_kconfig.h"
 #include "tst_test.h"
 #include "libnewipc.h"
 #include "lapi/shm.h"
+
+#define CONFIG_HUGETLBFS "CONFIG_HUGETLBFS"
 
 static int shm_id = -1;
 static key_t shmkey, shmkey1;
@@ -59,6 +62,17 @@ static struct tcase {
 	{&shmkey1, SHM_SIZE, IPC_CREAT | SHM_HUGETLB, 0, 1, EPERM},
 	{&shmkey1, SHM_SIZE, IPC_CREAT | SHM_HUGETLB, 0, 0, ENOMEM}
 };
+
+static int hugetlbfs_supported(void)
+{
+	struct tst_kconfig_var kconfig = {
+		.id = CONFIG_HUGETLBFS,
+		.id_len = sizeof(CONFIG_HUGETLBFS)-1,
+	};
+
+	tst_kconfig_read(&kconfig, 1);
+	return kconfig.choice == 'y';
+}
 
 static void do_test(unsigned int n)
 {
@@ -94,6 +108,17 @@ static void setup(void)
 	SAFE_SETRLIMIT(RLIMIT_MEMLOCK, &rl);
 	shm_id = SAFE_SHMGET(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL);
 	pw = SAFE_GETPWNAM("nobody");
+
+	if (!hugetlbfs_supported()) {
+		unsigned int i;
+
+		tst_res(TINFO, "SHM_HUGETLB not supported by kernel");
+
+		for (i = 0; i < ARRAY_SIZE(tcases); i++) {
+			if (tcases[i].flags & SHM_HUGETLB)
+				tcases[i].exp_err = EINVAL;
+		}
+	}
 }
 
 static void cleanup(void)
