@@ -35,6 +35,12 @@
  * faults. Two faults are allowed incase some tasklet or something
  * else unexpected, but irrelevant procedure, registers a fault to
  * our process.
+ *
+ * It also can reproduce the MADV_WILLNEED preformance problem.
+ * It was introduced since 5.9 kernel with the following commit
+ *   e6e88712e43b ("mm: optimise madvise WILLNEED")
+ * and fixed since 5.10-rc5 kernel with the following commit
+ *   66383800df9c ("mm: fix madvise WILLNEED performance problem").
  */
 
 #include <errno.h>
@@ -242,6 +248,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "55231e5c898c"},
 		{"linux-git", "8de15e920dc8"},
+		{"linux-git", "66383800df9c"},
 		{}
 	}
 };
