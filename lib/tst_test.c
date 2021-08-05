@@ -882,7 +882,7 @@ static void prepare_and_mount_dev_fs(const char *mntpoint)
 	}
 }
 
-static char *limit_tmpfs_mount_size(const char *mnt_data,
+static const char *limit_tmpfs_mount_size(const char *mnt_data,
 		char *buf, size_t buf_size, const char *fs_type)
 {
 	if (strcmp(fs_type, "tmpfs"))
@@ -908,7 +908,8 @@ static const char *get_device_name(const char *fs_type)
 
 static void prepare_device(void)
 {
-	char *mnt_data, buf[1024];
+	const char *mnt_data;
+	char buf[1024];
 
 	if (tst_test->format_device) {
 		SAFE_MKFS(tdev.dev, tdev.fs_type, tst_test->dev_fs_opts,
