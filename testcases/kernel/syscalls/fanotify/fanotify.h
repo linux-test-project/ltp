@@ -399,4 +399,9 @@ static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
 	return rval;
 }
 
+#define REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(mark_type) do { \
+	fanotify_init_flags_err_msg(#mark_type, __FILE__, __LINE__, tst_brk_, \
+				    fanotify_mark_supported_by_kernel(mark_type)); \
+} while (0)
+
 #endif /* __FANOTIFY_H__ */
