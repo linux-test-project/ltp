@@ -22,7 +22,7 @@
 #include "libnewipc.h"
 
 static int *queues;
-static int maxshms, queue_cnt;
+static int maxshms, queue_cnt, used_cnt;
 static key_t shmkey;
 
 static void verify_shmget(void)
@@ -36,11 +36,13 @@ static void setup(void)
 	int res, num;
 
 	shmkey = GETIPCKEY();
-
+	used_cnt = GET_USED_SEGMENTS();
+	tst_res(TINFO, "Current environment %d shared memory segments are already in use",
+		used_cnt);
 	SAFE_FILE_SCANF("/proc/sys/kernel/shmmni", "%i", &maxshms);
 
-	queues = SAFE_MALLOC(maxshms * sizeof(int));
-	for (num = 0; num < maxshms; num++) {
+	queues = SAFE_MALLOC((maxshms - used_cnt) * sizeof(int));
+	for (num = 0; num < maxshms - used_cnt; num++) {
 		res = shmget(shmkey + num, SHM_SIZE, IPC_CREAT | IPC_EXCL | SHM_RW);
 		if (res == -1)
 			tst_brk(TBROK | TERRNO, "shmget failed unexpectedly");
