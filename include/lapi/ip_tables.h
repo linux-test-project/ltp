@@ -5,6 +5,7 @@
 
 #include "config.h"
 
+#include <net/if.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 
 #ifndef HAVE_STRUCT_XT_ENTRY_MATCH

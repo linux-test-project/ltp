@@ -19,7 +19,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <net/if.h>
 #include <limits.h>
 
 #include "tst_test.h"
