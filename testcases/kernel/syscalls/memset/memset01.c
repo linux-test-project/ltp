@@ -7,7 +7,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * The testcase for test setting of buffer by check boundary conditions.
  */

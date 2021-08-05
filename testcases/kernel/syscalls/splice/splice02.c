@@ -5,7 +5,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  * Original reproducer for kernel fix
  * bf40d3435caf NFS: add support for splice writes
  * from v2.6.31-rc1.

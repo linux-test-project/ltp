@@ -5,7 +5,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic mallinfo2() test.
  *

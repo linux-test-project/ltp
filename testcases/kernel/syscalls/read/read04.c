@@ -4,7 +4,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Testcase to check if read() returns the number of bytes read correctly.
  */

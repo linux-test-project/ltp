@@ -3,7 +3,7 @@
  * Copyright (c) 2021 Richard Palethorpe <rpalethorpe@suse.com>
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * This verifies Fuzzy Sync's ability to reproduce a particular
  * outcome to a data race when multiple races are present.

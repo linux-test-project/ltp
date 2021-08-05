@@ -4,7 +4,7 @@
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Testcase to check if read() successfully sets errno to EAGAIN when read from
  * a pipe (fifo, opened in O_NONBLOCK mode) without writing to it.

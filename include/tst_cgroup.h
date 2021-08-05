@@ -5,7 +5,7 @@
  * Copyright (c) 2020-2021 SUSE LLC <rpalethorpe@suse.com>
  */
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * The LTP CGroups API tries to present a consistent interface to the
  * many possible CGroup configurations a system could have.
