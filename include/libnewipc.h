@@ -49,9 +49,11 @@ key_t getipckey(const char *file, const int lineno);
 #define GETIPCKEY() \
 	getipckey(__FILE__, __LINE__)
 
-int get_used_queues(const char *file, const int lineno);
+int get_used_sysvipc(const char *file, const int lineno, const char *sysvipc_file);
 #define GET_USED_QUEUES() \
-	get_used_queues(__FILE__, __LINE__)
+	get_used_sysvipc(__FILE__, __LINE__, "/proc/sysvipc/msg")
+#define GET_USED_SEGMENTS() \
+	get_used_sysvipc(__FILE__, __LINE__, "/proc/sysvipc/shm")
 
 void *probe_free_addr(const char *file, const int lineno);
 #define PROBE_FREE_ADDR() \

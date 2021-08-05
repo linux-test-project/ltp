@@ -48,25 +48,25 @@ key_t getipckey(const char *file, const int lineno)
 	return key;
 }
 
-int get_used_queues(const char *file, const int lineno)
+int get_used_sysvipc(const char *file, const int lineno, const char *sysvipc_file)
 {
 	FILE *fp;
-	int used_queues = -1;
+	int used = -1;
 	char buf[BUFSIZE];
 
-	fp = safe_fopen(file, lineno, NULL, "/proc/sysvipc/msg", "r");
+	fp = safe_fopen(file, lineno, NULL, sysvipc_file, "r");
 
 	while (fgets(buf, BUFSIZE, fp) != NULL)
-		used_queues++;
+		used++;
 
 	fclose(fp);
 
-	if (used_queues < 0) {
-		tst_brk(TBROK, "can't read /proc/sysvipc/msg to get "
-			"used message queues at %s:%d", file, lineno);
+	if (used < 0) {
+		tst_brk(TBROK, "can't read %s to get used sysvipc resource total at "
+			"%s:%d", sysvipc_file, file, lineno);
 	}
 
-	return used_queues;
+	return used;
 }
 
 void *probe_free_addr(const char *file, const int lineno)
