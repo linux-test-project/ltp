@@ -21,7 +21,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "libnewipc.h"
 
-static int maxmsgs, queue_cnt;
+static int maxmsgs, queue_cnt, used_cnt;
 static int *queues;
 static key_t msgkey;
 
@@ -37,11 +37,15 @@ static void setup(void)
 
 	msgkey = GETIPCKEY();
 
+	used_cnt = GET_USED_QUEUES();
+	tst_res(TINFO, "Current environment %d message queues are already in use",
+		used_cnt);
+
 	SAFE_FILE_SCANF("/proc/sys/kernel/msgmni", "%i", &maxmsgs);
 
-	queues = SAFE_MALLOC(maxmsgs * sizeof(int));
+	queues = SAFE_MALLOC((maxmsgs - used_cnt) * sizeof(int));
 
-	for (num = 0; num < maxmsgs; num++) {
+	for (num = 0; num < maxmsgs - used_cnt; num++) {
 		res = msgget(msgkey + num, IPC_CREAT | IPC_EXCL);
 		if (res == -1)
 			tst_brk(TBROK | TERRNO, "msgget failed unexpectedly");
