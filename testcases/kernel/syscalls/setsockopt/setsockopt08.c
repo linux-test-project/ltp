@@ -79,6 +79,8 @@
  *  - sizeof(struct xt_entry_target) = 32
  */
 
+#include <netinet/in.h>
+
 #include "tst_test.h"
 #include "tst_safe_net.h"
 #include "lapi/ip_tables.h"
