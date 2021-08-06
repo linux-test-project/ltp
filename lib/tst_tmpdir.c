@@ -108,12 +108,18 @@ int tst_tmpdir_created(void)
 
 char *tst_get_tmpdir(void)
 {
+	char *ret = NULL;
+
 	if (TESTDIR == NULL) {
 		tst_brkm(TBROK, NULL, "you must call tst_tmpdir() first");
 		return NULL;
 	}
 
-	return strdup(TESTDIR);
+	ret = strdup(TESTDIR);
+	if (!ret)
+		tst_brkm(TBROK, NULL, "strdup() failed");
+
+	return ret;
 }
 
 const char *tst_get_startwd(void)
