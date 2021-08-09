@@ -4,11 +4,12 @@
  * Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
-/*
- * Description:
- *  Basic test for epoll_wait(2).
- *  Check that epoll_wait(2) works for EPOLLOUT and EPOLLIN events
- *  on a epoll instance and that struct epoll_event is set correctly.
+/*\
+ * [Description]
+ *
+ * Basic test for epoll_wait. Check that epoll_wait works for EPOLLOUT and
+ * EPOLLIN events on an epoll instance and that struct epoll_event is set
+ * correctly.
  */
 
 #include <sys/epoll.h>
@@ -226,24 +227,18 @@ static void cleanup(void)
 	}
 }
 
+static void (*testcase_list[])(void) = {
+	verify_epollout, verify_epollin, verify_epollio
+};
+
 static void do_test(unsigned int n)
 {
-	switch (n) {
-	case 0:
-		verify_epollout();
-	break;
-	case 1:
-		verify_epollin();
-	break;
-	case 2:
-		verify_epollio();
-	break;
-	}
+	testcase_list[n]();
 }
 
 static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = do_test,
-	.tcnt = 3,
+	.tcnt = ARRAY_SIZE(testcase_list),
 };
