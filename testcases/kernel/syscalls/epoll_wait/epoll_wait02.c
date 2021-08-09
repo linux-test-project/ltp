@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2016 Fujitsu Ltd.
- *  Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ * Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- *  Check that epoll_wait(2) timeouts correctly.
+/*\
+ * [Description]
+ *
+ * Check that epoll_wait(2) timeouts correctly.
  */
 
 #include <sys/epoll.h>
@@ -17,7 +19,7 @@
 
 static int epfd, fds[2];
 static struct epoll_event epevs[1] = {
-       {.events = EPOLLIN}
+	{.events = EPOLLIN}
 };
 
 int sample_fn(int clk_id, long long usec)
@@ -30,8 +32,7 @@ int sample_fn(int clk_id, long long usec)
 	tst_timer_sample();
 
 	if (TST_RET != 0) {
-		tst_res(TFAIL | TTERRNO,
-			"epoll_wait() returned %li", TST_RET);
+		tst_res(TFAIL | TTERRNO, "epoll_wait() returned %li", TST_RET);
 		return 1;
 	}
 
