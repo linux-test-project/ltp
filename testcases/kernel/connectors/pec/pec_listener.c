@@ -50,7 +50,7 @@ int main(void)
 
 static __u32 seq;
 
-static int exit_flag;
+static volatile int exit_flag;
 static struct sigaction sigint_action;
 
 struct nlmsghdr *nlhdr;
