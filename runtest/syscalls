@@ -167,6 +167,7 @@ epoll_wait04 epoll_wait04
 epoll_pwait01 epoll_pwait01
 epoll_pwait02 epoll_pwait02
 epoll_pwait03 epoll_pwait03
+epoll_pwait04 epoll_pwait04
 
 eventfd01 eventfd01
 
