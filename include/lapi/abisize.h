@@ -5,8 +5,8 @@
  *  Petr Vorel <petr.vorel@gmail.com>
  */
 
-#ifndef ABISIZE_H__
-#define ABISIZE_H__
+#ifndef LAPI_ABISIZE_H__
+#define LAPI_ABISIZE_H__
 
 /* __WORDSIZE replacement */
 #if defined(__LP64__) || defined(_LP64)
@@ -28,4 +28,4 @@
      (defined(__aarch64__) && defined(__ILP32__)) || \
      defined(TST_ABI64)
 
-#endif /* ABISIZE_H__ */
+#endif /* LAPI_ABISIZE_H__ */

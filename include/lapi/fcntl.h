@@ -3,8 +3,8 @@
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  */
 
-#ifndef __LAPI_FCNTL_H__
-#define __LAPI_FCNTL_H__
+#ifndef LAPI_FCNTL_H__
+#define LAPI_FCNTL_H__
 
 #include "config.h"
 #include <fcntl.h>
@@ -150,4 +150,4 @@ struct file_handle {
 };
 #endif /* HAVE_STRUCT_FILE_HANDLE */
 
-#endif /* __LAPI_FCNTL_H__ */
+#endif /* LAPI_FCNTL_H__ */

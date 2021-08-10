@@ -44,4 +44,4 @@ struct xt_entry_target {
 };
 #endif
 
-#endif
+#endif /* LAPI_IP_TABLES__ */

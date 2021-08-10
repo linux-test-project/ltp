@@ -3,8 +3,8 @@
  * Copyright (c) International Business Machines  Corp., 2008
  */
 
-#ifndef SYNC_FILE_RANGE_H
-#define SYNC_FILE_RANGE_H
+#ifndef LAPI_SYNC_FILE_RANGE_H__
+#define LAPI_SYNC_FILE_RANGE_H__
 
 #include <sys/types.h>
 #include "config.h"
@@ -55,4 +55,4 @@ static inline long sync_file_range(int fd, off64_t offset, off64_t nbytes,
 }
 #endif
 
-#endif /* SYNC_FILE_RANGE_H */
+#endif /* LAPI_SYNC_FILE_RANGE_H__ */

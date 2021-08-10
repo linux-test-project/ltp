@@ -3,11 +3,11 @@
  * Copyright (c) 2021 Linux Test Project
  */
 
-#ifndef NUMAIF_H__
-#define NUMAIF_H__
+#ifndef LAPI_NUMAIF_H__
+#define LAPI_NUMAIF_H__
 
 #ifndef MPOL_LOCAL
 # define MPOL_LOCAL	4
 #endif
 
-#endif /* NUMAIF_H__ */
+#endif /* LAPI_NUMAIF_H__ */

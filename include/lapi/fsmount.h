@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef FSMOUNT_H__
-#define FSMOUNT_H__
+#ifndef LAPI_FSMOUNT_H__
+#define LAPI_FSMOUNT_H__
 
 #include <sys/mount.h>
 #include <sys/syscall.h>
@@ -145,4 +145,4 @@ static inline void fsopen_supported_by_kernel(void)
 	}
 }
 
-#endif /* FSMOUNT_H__ */
+#endif /* LAPI_FSMOUNT_H__ */

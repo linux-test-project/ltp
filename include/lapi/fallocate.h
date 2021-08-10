@@ -4,8 +4,8 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  */
 
-#ifndef FALLOCATE_H
-#define FALLOCATE_H
+#ifndef LAPI_FALLOCATE_H__
+#define LAPI_FALLOCATE_H__
 
 #include <sys/types.h>
 #include <endian.h>
@@ -57,4 +57,4 @@ static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 }
 #endif
 
-#endif /* FALLOCATE_H */
+#endif /* LAPI_FALLOCATE_H__ */

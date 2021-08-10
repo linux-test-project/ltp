@@ -3,8 +3,8 @@
  * Copyright (C) 2017  Red Hat, Inc.
  */
 
-#ifndef LAPI_MEMFD_H
-#define LAPI_MEMFD_H
+#ifndef LAPI_MEMFD_H__
+#define LAPI_MEMFD_H__
 
 /* flags for memfd_create(2) (unsigned int) */
 #ifndef MFD_CLOEXEC
@@ -47,4 +47,4 @@
 #define MFD_HUGE_16GB (34 << 26)
 #endif
 
-#endif
+#endif /* LAPI_MEMFD_H__ */

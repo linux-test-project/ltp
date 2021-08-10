@@ -4,8 +4,8 @@
  * Author: Daniel Díaz <daniel.diaz@linaro.org>
  */
 
-#ifndef LAPI_SIGNAL_H
-#define LAPI_SIGNAL_H
+#ifndef LAPI_SIGNAL_H__
+#define LAPI_SIGNAL_H__
 
 #include <signal.h>
 
@@ -21,4 +21,4 @@
 # define __SIGRTMAX (_NSIG - 1)
 #endif
 
-#endif
+#endif /* LAPI_SIGNAL_H__ */

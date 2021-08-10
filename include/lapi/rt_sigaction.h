@@ -6,8 +6,8 @@
  * Author: Ngie Cooper <yaneurabeya@gmail.com>
  */
 
-#ifndef LTP_RT_SIGACTION_H
-#define LTP_RT_SIGACTION_H
+#ifndef LAPI_RT_SIGACTION_H__
+#define LAPI_RT_SIGACTION_H__
 
 #include "ltp_signal.h"
 
@@ -242,4 +242,4 @@ static int ltp_rt_sigaction(int signum, const struct sigaction *act,
 	return ret;
 }
 
-#endif /* LTP_RT_SIGACTION_H */
+#endif /* LAPI_RT_SIGACTION_H__ */

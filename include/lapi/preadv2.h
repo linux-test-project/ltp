@@ -4,8 +4,8 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-#ifndef PREADV2_H
-#define PREADV2_H
+#ifndef LAPI_PREADV2_H__
+#define LAPI_PREADV2_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -27,4 +27,4 @@ static inline ssize_t preadv2(int fd, const struct iovec *iov, int iovcnt,
 }
 #endif
 
-#endif /* PREADV2_H */
+#endif /* LAPI_PREADV2_H__ */

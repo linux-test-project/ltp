@@ -4,8 +4,8 @@
  * Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
  */
 
-#ifndef IOCTL_H__
-#define IOCTL_H__
+#ifndef LAPI_IOCTL_H__
+#define LAPI_IOCTL_H__
 
 #include "config.h"
 #include <sys/ioctl.h>
@@ -37,4 +37,4 @@ struct termio
 };
 #endif /* HAVE_STRUCT_TERMIO */
 
-#endif /* IOCTL_H__ */
+#endif /* LAPI_IOCTL_H__ */

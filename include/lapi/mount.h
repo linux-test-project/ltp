@@ -3,8 +3,8 @@
  * Copyright (c) 2015 Cui Bixuan <cuibixuan@huawei.com>
  */
 
-#ifndef __MOUNT_H__
-#define __MOUNT_H__
+#ifndef LAPI_MOUNT_H__
+#define LAPI_MOUNT_H__
 
 #ifndef MS_REC
 #define MS_REC 16384
@@ -30,4 +30,4 @@
 #define UMOUNT_NOFOLLOW 8
 #endif
 
-#endif /* __MOUNT_H__ */
+#endif /* LAPI_MOUNT_H__ */

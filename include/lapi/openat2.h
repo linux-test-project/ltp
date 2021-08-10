@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef OPENAT2_H
-#define OPENAT2_H
+#ifndef LAPI_OPENAT2_H__
+#define LAPI_OPENAT2_H__
 
 #include <sys/syscall.h>
 #include <linux/types.h>
@@ -72,4 +72,4 @@ static inline void openat2_supported_by_kernel(void)
 	}
 }
 
-#endif /* OPENAT2_H */
+#endif /* LAPI_OPENAT2_H__ */

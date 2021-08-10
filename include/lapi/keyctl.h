@@ -3,8 +3,8 @@
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-#ifndef KEYCTL_H__
-#define KEYCTL_H__
+#ifndef LAPI_KEYCTL_H__
+#define LAPI_KEYCTL_H__
 
 #include "config.h"
 
@@ -175,4 +175,4 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEY_OTH_ALL     0x0000003f
 #endif /* !KEY_POS_VIEW */
 
-#endif	/* KEYCTL_H__ */
+#endif	/* LAPI_KEYCTL_H__ */

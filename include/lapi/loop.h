@@ -3,8 +3,8 @@
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
  */
-#ifndef LAPI_LOOP_H
-#define LAPI_LOOP_H
+#ifndef LAPI_LOOP_H__
+#define LAPI_LOOP_H__
 
 #include "config.h"
 #include <linux/types.h>
@@ -52,4 +52,4 @@ struct loop_config {
 };
 #endif
 
-#endif
+#endif /* LAPI_LOOP_H__ */

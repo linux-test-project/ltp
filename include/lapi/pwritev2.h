@@ -4,8 +4,8 @@
  * Author: Jinhui Huang <huangjh.jy@cn.fujitsu.com>
  */
 
-#ifndef PWRITEV2_H
-#define PWRITEV2_H
+#ifndef LAPI_PWRITEV2_H__
+#define LAPI_PWRITEV2_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -23,4 +23,4 @@ static inline ssize_t pwritev2(int fd, const struct iovec *iov, int iovcnt,
 }
 #endif
 
-#endif /* PWRITEV2_H */
+#endif /* LAPI_PWRITEV2_H__ */

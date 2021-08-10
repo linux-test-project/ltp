@@ -3,8 +3,8 @@
  * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
  */
 
-#ifndef IOCTL_NS_H__
-#define IOCTL_NS_H__
+#ifndef LAPI_IOCTL_NS_H__
+#define LAPI_IOCTL_NS_H__
 
 #include <asm-generic/ioctl.h>
 
@@ -25,4 +25,4 @@
 #endif
 
 
-#endif /* IOCTL_NS_H__ */
+#endif /* LAPI_IOCTL_NS_H__ */

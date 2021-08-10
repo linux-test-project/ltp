@@ -8,8 +8,8 @@
  * some eBPF testing without any external dependencies.
  */
 
-#ifndef BPF_H
-# define BPF_H
+#ifndef LAPI_BPF_H__
+#define LAPI_BPF_H__
 
 #include <stdint.h>
 
@@ -590,4 +590,4 @@ static inline int bpf(enum bpf_cmd cmd, union bpf_attr *attr, unsigned int size)
 }
 /* End copy from tools/lib/bpf */
 
-#endif	/* BPF_H */
+#endif	/* LAPI_BPF_H__ */

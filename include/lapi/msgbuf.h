@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef IPC_MSGBUF_H
-#define IPC_MSGBUF_H
+#ifndef LAPI_MSGBUF_H__
+#define LAPI_MSGBUF_H__
 
 #include "lapi/posix_types.h"
 #include <sys/sem.h>
@@ -303,4 +303,4 @@ struct msqid64_ds {
 
 #endif /* HAVE_MSQID64_DS */
 
-#endif /* IPC_MSGBUF_H */
+#endif /* LAPI_MSGBUF_H__ */

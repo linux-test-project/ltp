@@ -4,8 +4,8 @@
  * Author: Sumit Garg <sumit.garg@linaro.org>
  */
 
-#ifndef SYNCFS_H
-#define SYNCFS_H
+#ifndef LAPI_SYNCFS_H__
+#define LAPI_SYNCFS_H__
 
 #include "config.h"
 #include <sys/types.h>
@@ -18,4 +18,4 @@ static inline int syncfs(int fd)
 }
 #endif
 
-#endif /* SYNCFS_H */
+#endif /* LAPI_SYNCFS_H__ */

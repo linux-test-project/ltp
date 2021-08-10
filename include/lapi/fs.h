@@ -14,8 +14,8 @@
 #include <limits.h>
 #include "lapi/abisize.h"
 
-#ifndef LAPI_FS_H
-#define LAPI_FS_H
+#ifndef LAPI_FS_H__
+#define LAPI_FS_H__
 
 #ifndef FS_IOC_GETFLAGS
 #define	FS_IOC_GETFLAGS	_IOR('f', 1, long)
@@ -63,4 +63,4 @@ static inline loff_t tst_max_lfs_filesize(void)
 #endif
 }
 
-#endif
+#endif /* LAPI_FS_H__ */

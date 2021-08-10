@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef IPCBUF_H
-#define IPCBUF_H
+#ifndef LAPI_IPCBUF_H__
+#define LAPI_IPCBUF_H__
 
 #include "config.h"
 #include "lapi/posix_types.h"
@@ -192,4 +192,4 @@ struct ipc64_perm {
 
 #endif /* HAVE_IPC64_PERM */
 
-#endif /* IPCBUF_H */
+#endif /* LAPI_IPCBUF_H__ */

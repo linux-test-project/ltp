@@ -4,8 +4,8 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  */
 
-#ifndef TEE_H
-#define TEE_H
+#ifndef LAPI_TEE_H__
+#define LAPI_TEE_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -18,4 +18,4 @@ static inline ssize_t tee(int fd_in, int fd_out,
 }
 #endif
 
-#endif /* TEE_H */
+#endif /* LAPI_TEE_H__ */

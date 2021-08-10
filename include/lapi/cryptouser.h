@@ -3,8 +3,8 @@
  * Copyright (c) 2018 Richard Palethorpe <rpalethorpe@suse.com>
  */
 
-#ifndef CRYPTOUSER_H__
-#define CRYPTOUSER_H__
+#ifndef LAPI_CRYPTOUSER_H__
+#define LAPI_CRYPTOUSER_H__
 
 #ifdef HAVE_LINUX_CRYPTOUSER_H
 #  include <linux/cryptouser.h>
@@ -179,4 +179,4 @@ struct crypto_report_acomp {
 #  define CRYPTO_ALG_TYPE_ACOMPRESS_MASK	0x0000000e
 #endif
 
-#endif	/* CRYPTOUSER_H__ */
+#endif	/* LAPI_CRYPTOUSER_H__ */

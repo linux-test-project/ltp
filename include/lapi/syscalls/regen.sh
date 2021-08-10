@@ -27,8 +27,8 @@ cat << EOF > "${output_pid}"
  * Licensed under the GPLv2 or later, see the COPYING file.
  */
 
-#ifndef __LAPI_SYSCALLS_H__
-#define __LAPI_SYSCALLS_H__
+#ifndef LAPI_SYSCALLS_H__
+#define LAPI_SYSCALLS_H__
 
 #include <errno.h>
 #include <sys/syscall.h>

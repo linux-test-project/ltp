@@ -10,4 +10,4 @@
 # define EXTPROC     0200000
 #endif
 
-#endif
+#endif /* LAPI_TERMBITS_H__ */

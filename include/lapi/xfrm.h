@@ -14,4 +14,4 @@
 # define XFRM_MSG_GETPOLICY 21
 #endif
 
-#endif
+#endif /* LAPI_XFRM_H__ */

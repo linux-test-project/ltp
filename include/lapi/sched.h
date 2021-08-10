@@ -3,8 +3,8 @@
  * Copyright (c) 2015 Cui Bixuan <cuibixuan@huawei.com>
  */
 
-#ifndef __SCHED_H__
-#define __SCHED_H__
+#ifndef LAPI_SCHED_H__
+#define LAPI_SCHED_H__
 
 #include "lapi/syscalls.h"
 #include <stdint.h>
@@ -56,4 +56,4 @@ static inline int sched_getattr(pid_t pid, struct sched_attr *attr,
 #define CLONE_IO        0x80000000
 #endif
 
-#endif /* __SCHED_H__ */
+#endif /* LAPI_SCHED_H__ */

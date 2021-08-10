@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef LAPI_USTAT_H
-#define LAPI_USTAT_H
+#ifndef LAPI_USTAT_H__
+#define LAPI_USTAT_H__
 
 #include "config.h"
 
@@ -19,4 +19,4 @@ struct ustat {
 };
 #endif
 
-#endif /* LAPI_USTAT_H */
+#endif /* LAPI_USTAT_H__ */

@@ -6,8 +6,8 @@
 
 #include <time.h>
 
-#ifndef POSIX_CLOCKS_H__
-#define POSIX_CLOCKS_H__
+#ifndef LAPI_POSIX_CLOCKS_H__
+#define LAPI_POSIX_CLOCKS_H__
 
 #define MAX_CLOCKS 16
 
@@ -39,4 +39,4 @@
 #define CLOCK_TAI 11
 #endif
 
-#endif /* POSIX_CLOCKS_H__ */
+#endif /* LAPI_POSIX_CLOCKS_H__ */

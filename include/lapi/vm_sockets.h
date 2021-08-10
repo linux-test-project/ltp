@@ -3,8 +3,8 @@
  * Copyright (C) 2021 SUSE LLC <rpalethorpe@suse.com>
  */
 
-#ifndef LAPI_VM_SOCKETS_H
-#define LAPI_VM_SOCKETS_H
+#ifndef LAPI_VM_SOCKETS_H__
+#define LAPI_VM_SOCKETS_H__
 
 #include <sys/socket.h>
 
@@ -16,4 +16,4 @@
 #  define VMADDR_CID_LOCAL 1
 #endif
 
-#endif /* LAPI_VM_SOCKETS_H */
+#endif /* LAPI_VM_SOCKETS_H__ */

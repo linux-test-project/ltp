@@ -4,8 +4,8 @@
  * Keep all the common defines/checks for the timer tests here
  */
 
-#ifndef __COMMON_TIMERS_H__
-#define __COMMON_TIMERS_H__
+#ifndef LAPI_COMMON_TIMERS_H__
+#define LAPI_COMMON_TIMERS_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -78,4 +78,4 @@ static inline int have_cputime_timers(void)
  */
 typedef int kernel_timer_t;
 
-#endif
+#endif /* LAPI_COMMON_TIMERS_H__ */

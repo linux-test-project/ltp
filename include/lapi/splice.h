@@ -4,8 +4,8 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  */
 
-#ifndef SPLICE_H
-#define SPLICE_H
+#ifndef LAPI_SPLICE_H__
+#define LAPI_SPLICE_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -19,4 +19,4 @@ static inline ssize_t splice(int fd_in, loff_t *off_in, int fd_out,
 }
 #endif
 
-#endif /* SPLICE_H */
+#endif /* LAPI_SPLICE_H__ */

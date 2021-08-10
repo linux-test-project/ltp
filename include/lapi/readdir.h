@@ -4,8 +4,8 @@
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
  */
 
-#ifndef READDIR_H
-#define READDIR_H
+#ifndef LAPI_READDIR_H__
+#define LAPI_READDIR_H__
 
 #include <limits.h>
 
@@ -16,4 +16,4 @@ struct old_linux_dirent {
 	char  d_name[NAME_MAX+1];	/* filename (null-terminated) */
 };
 
-#endif /* READDIR_H */
+#endif /* LAPI_READDIR_H__ */

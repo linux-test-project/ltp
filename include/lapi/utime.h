@@ -3,7 +3,8 @@
  * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
  */
 
-#ifndef __UTIME_H__
+#ifndef LAPI_UTIME_H__
+#define LAPI_UTIME_H__
 
 #ifndef UTIME_NOW
 # define UTIME_NOW ((1l << 30) - 1l)
@@ -13,4 +14,4 @@
 # define UTIME_OMIT ((1l << 30) - 2l)
 #endif
 
-#endif /* __UTIME_H__ */
+#endif /* LAPI_UTIME_H__ */

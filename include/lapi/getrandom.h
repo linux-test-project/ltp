@@ -3,8 +3,8 @@
  * Copyright (c) 2015 Linux Test Project
  */
 
-#ifndef __GETRANDOM_H__
-#define __GETRANDOM_H__
+#ifndef LAPI_GETRANDOM_H__
+#define LAPI_GETRANDOM_H__
 
 #include "config.h"
 
@@ -27,4 +27,4 @@
 # define GRND_RANDOM	0x0002
 #endif
 
-#endif /* __GETRANDOM_H__ */
+#endif /* LAPI_GETRANDOM_H__ */

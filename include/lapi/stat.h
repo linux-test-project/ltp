@@ -4,8 +4,9 @@
  * Copyright (c) Zilogic Systems Pvt. Ltd., 2018
  * Email: code@zilogic.com
  */
-#ifndef LAPI_STAT_H
-#define LAPI_STAT_H
+
+#ifndef LAPI_STAT_H__
+#define LAPI_STAT_H__
 
 #include <stdint.h>
 #include <unistd.h>
@@ -254,4 +255,4 @@ static inline int statx(int dirfd, const char *pathname, unsigned int flags,
 # define AT_STATX_DONT_SYNC	0x4000
 #endif
 
-#endif
+#endif /* LAPI_STAT_H__ */

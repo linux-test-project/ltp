@@ -3,8 +3,8 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-#ifndef __LAPI_IF_ETHER_H__
-#define __LAPI_IF_ETHER_H__
+#ifndef LAPI_IF_ETHER_H__
+#define LAPI_IF_ETHER_H__
 
 #include "config.h"
 
@@ -16,4 +16,4 @@
 # define ETH_P_ALL 0x0003
 #endif
 
-#endif /* __LAPI_IF_ETHER_H__ */
+#endif /* LAPI_IF_ETHER_H__ */

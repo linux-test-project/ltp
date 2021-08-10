@@ -5,7 +5,7 @@
  */
 
 #ifndef LAPI_MLOCK2_H__
-# define LAPI_MLOCK2_H__
+#define LAPI_MLOCK2_H__
 
 #include <linux/mman.h>
 

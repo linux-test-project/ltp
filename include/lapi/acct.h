@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef LAPI_ACCT_H
-#define LAPI_ACCT_H
+#ifndef LAPI_ACCT_H__
+#define LAPI_ACCT_H__
 
 #include <sys/types.h>
 #include "config.h"
@@ -71,4 +71,4 @@ enum {
 # endif
 #endif /* HAVE_STRUCT_ACCT_V3 */
 
-#endif /* LAPI_ACCT_H */
+#endif /* LAPI_ACCT_H__ */

@@ -2,8 +2,8 @@
 /*
  * Copyright (c) 2015 Linux Test Project
  */
-#ifndef LAPI_SEM_H
-#define LAPI_SEM_H
+#ifndef LAPI_SEM_H__
+#define LAPI_SEM_H__
 
 #include <sys/sem.h>
 
@@ -24,4 +24,4 @@ union semun {
 # define SEM_STAT_ANY 20
 #endif
 
-#endif /* LAPI_SEM_H */
+#endif /* LAPI_SEM_H__ */

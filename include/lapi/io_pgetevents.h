@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef IO_PGETEVENTS_H
-#define IO_PGETEVENTS_H
+#ifndef LAPI_IO_PGETEVENTS_H__
+#define LAPI_IO_PGETEVENTS_H__
 
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -32,4 +32,4 @@ static inline int sys_io_pgetevents_time64(io_context_t ctx, long min_nr, long m
 
 #endif /* HAVE_LIBAIO */
 
-#endif /* IO_PGETEVENTS_H */
+#endif /* LAPI_IO_PGETEVENTS_H__ */

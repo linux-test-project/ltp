@@ -3,8 +3,8 @@
  * Copyright 2019 Google LLC
  */
 
-#ifndef IF_ALG_H__
-#define IF_ALG_H__
+#ifndef LAPI_IF_ALG_H__
+#define LAPI_IF_ALG_H__
 
 #ifdef HAVE_LINUX_IF_ALG_H
 #  include <linux/if_alg.h>
@@ -56,4 +56,4 @@ struct af_alg_iv {
 # define ALG_OP_ENCRYPT		1
 #endif
 
-#endif /* IF_ALG_H__ */
+#endif /* LAPI_IF_ALG_H__ */

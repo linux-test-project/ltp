@@ -6,8 +6,8 @@
  * Mostly copied/adapted from <linux/io_uring.h>
  */
 
-#ifndef IO_URING_H__
-#define IO_URING_H__
+#ifndef LAPI_IO_URING_H__
+#define LAPI_IO_URING_H__
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -307,4 +307,4 @@ static inline void io_uring_setup_supported_by_kernel(void)
 	}
 }
 
-#endif /* IO_URING_H__ */
+#endif /* LAPI_IO_URING_H__ */

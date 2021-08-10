@@ -4,8 +4,8 @@
 * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 */
 
-#ifndef __LAPI_SOCKET_H__
-#define __LAPI_SOCKET_H__
+#ifndef LAPI_SOCKET_H__
+#define LAPI_SOCKET_H__
 
 #include "config.h"
 #include <sys/socket.h>
@@ -69,4 +69,4 @@ struct mmsghdr {
 };
 #endif
 
-#endif /* __LAPI_SOCKET_H__ */
+#endif /* LAPI_SOCKET_H__ */

@@ -3,8 +3,8 @@
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
  */
-#ifndef LAPI_SECCOMP_H
-#define LAPI_SECCOMP_H
+#ifndef LAPI_SECCOMP_H__
+#define LAPI_SECCOMP_H__
 
 #include <stdint.h>
 
@@ -37,4 +37,4 @@ struct seccomp_data {
 };
 
 #endif /* HAVE_LINUX_SECCOMP_H*/
-#endif /* LAPI_SECCOMP_H */
+#endif /* LAPI_SECCOMP_H__ */

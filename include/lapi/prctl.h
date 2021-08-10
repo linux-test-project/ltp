@@ -5,7 +5,7 @@
  */
 
 #ifndef LAPI_PRCTL_H__
-# define LAPI_PRCTL_H__
+#define LAPI_PRCTL_H__
 
 #include <sys/prctl.h>
 

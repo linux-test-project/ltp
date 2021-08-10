@@ -3,8 +3,8 @@
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
  */
 
-#ifndef __MKDIRAT_H__
-#define __MKDIRAT_H__
+#ifndef LAPI_MKDIRAT_H__
+#define LAPI_MKDIRAT_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -17,4 +17,4 @@ static inline int mkdirat(int dirfd, const char *dirname, int mode)
 }
 #endif
 
-#endif /* __MKDIRAT_H__ */
+#endif /* LAPI_MKDIRAT_H__ */

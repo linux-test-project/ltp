@@ -3,8 +3,8 @@
  * Copyright (c) 2015 Red Hat, Inc.
  */
 
-#ifndef __NAMESPACES_CONSTANTS_H__
-#define __NAMESPACES_CONSTANTS_H__
+#ifndef LAPI_NAMESPACES_CONSTANTS_H__
+#define LAPI_NAMESPACES_CONSTANTS_H__
 
 #ifndef CLONE_NEWIPC
 #  define CLONE_NEWIPC	0x08000000
@@ -28,4 +28,4 @@
 #  define CLONE_NEWTIME 0x00000080
 #endif
 
-#endif /* __NAMESPACES_CONSTANTS_H__ */
+#endif /* LAPI_NAMESPACES_CONSTANTS_H__ */

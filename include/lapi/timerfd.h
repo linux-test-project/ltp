@@ -4,8 +4,8 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  */
 
-#ifndef TIMERFD_H
-#define TIMERFD_H
+#ifndef LAPI_TIMERFD_H__
+#define LAPI_TIMERFD_H__
 
 #include <time.h>
 #include "config.h"
@@ -39,4 +39,4 @@ static inline int timerfd_gettime(int fd, struct itimerspec *curr_value)
 }
 #endif
 
-#endif /* TIMERFD_H */
+#endif /* LAPI_TIMERFD_H__ */

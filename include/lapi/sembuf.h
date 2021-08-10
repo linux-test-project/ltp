@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef IPC_SEMBUF_H
-#define IPC_SEMBUF_H
+#ifndef LAPI_SEMBUF_H__
+#define LAPI_SEMBUF_H__
 
 #include "lapi/posix_types.h"
 #include <sys/sem.h>
@@ -231,4 +231,4 @@ struct semid64_ds {
 
 #endif /* HAVE_SEMID64_DS */
 
-#endif /* IPC_SEMBUF_H */
+#endif /* LAPI_SEMBUF_H__ */

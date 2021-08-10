@@ -3,8 +3,8 @@
  * Copyright (C) 2018 MediaTek Inc.  All Rights Reserved.
  */
 
-#ifndef EXECVEAT_H
-#define EXECVEAT_H
+#ifndef LAPI_EXECVEAT_H__
+#define LAPI_EXECVEAT_H__
 
 #include <sys/types.h>
 #include "config.h"
@@ -19,4 +19,4 @@ static inline int execveat(int dirfd, const char *pathname,
 }
 #endif
 
-#endif /* EXECVEAT_H */
+#endif /* LAPI_EXECVEAT_H__ */

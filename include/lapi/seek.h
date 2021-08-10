@@ -3,8 +3,8 @@
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-#ifndef SEEK_H__
-#define SEEK_H__
+#ifndef LAPI_SEEK_H__
+#define LAPI_SEEK_H__
 
 #include <unistd.h>
 
@@ -16,4 +16,4 @@
 # define SEEK_HOLE 4
 #endif
 
-#endif /* SEEK_H__ */
+#endif /* LAPI_SEEK_H__ */

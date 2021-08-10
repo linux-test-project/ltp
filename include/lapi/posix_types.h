@@ -3,8 +3,8 @@
  * Copyright (c) Linux Test Project, 2014-2019
  */
 
-#ifndef POSIX_TYPES_H__
-#define POSIX_TYPES_H__
+#ifndef LAPI_POSIX_TYPES_H__
+#define LAPI_POSIX_TYPES_H__
 
 #include <linux/posix_types.h>
 
@@ -18,4 +18,4 @@ typedef unsigned long		__kernel_ulong_t;
 # endif
 #endif
 
-#endif /* POSIX_TYPES_H__ */
+#endif /* LAPI_POSIX_TYPES_H__ */

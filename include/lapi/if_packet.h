@@ -4,8 +4,8 @@
  * Author: Jinhui huang <huangjh.jy@cn.fujitsu.com>
  */
 
-#ifndef __LAPI_IF_PACKET_H__
-#define __LAPI_IF_PACKET_H__
+#ifndef LAPI_IF_PACKET_H__
+#define LAPI_IF_PACKET_H__
 
 #include "config.h"
 
@@ -51,4 +51,4 @@ struct tpacket_req3 {
 };
 #endif
 
-#endif /* __LAPI_IF_PACKET_H__ */
+#endif /* LAPI_IF_PACKET_H__ */

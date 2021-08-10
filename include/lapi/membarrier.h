@@ -4,8 +4,8 @@
  * Author: Rafael David Tinoco <rafael.tinoco@linaro.org>
  */
 
-#ifndef LAPI_MEMBARRIER_H
-#define LAPI_MEMBARRIER_H
+#ifndef LAPI_MEMBARRIER_H__
+#define LAPI_MEMBARRIER_H__
 
 /*
  * Having <linux/membarrier.h> is enough to know if the test should run or
@@ -27,4 +27,4 @@ enum membarrier_cmd {
 	MEMBARRIER_CMD_SHARED			= MEMBARRIER_CMD_GLOBAL,
 };
 
-#endif
+#endif /* LAPI_MEMBARRIER_H__ */

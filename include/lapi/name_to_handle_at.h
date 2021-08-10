@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef NAME_TO_HANDLE_AT_H__
-#define NAME_TO_HANDLE_AT_H__
+#ifndef LAPI_NAME_TO_HANDLE_AT_H__
+#define LAPI_NAME_TO_HANDLE_AT_H__
 
 #include <sys/syscall.h>
 #include "config.h"
@@ -57,4 +57,4 @@ allocate_file_handle(int dfd, const char *pathname)
 	return fhp;
 }
 
-#endif /* NAME_TO_HANDLE_AT_H__ */
+#endif /* LAPI_NAME_TO_HANDLE_AT_H__ */

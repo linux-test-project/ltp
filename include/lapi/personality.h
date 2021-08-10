@@ -7,8 +7,8 @@
  * but in musl macros are used.
  */
 
-#ifndef PERSONALITY_H
-#define PERSONALITY_H
+#ifndef LAPI_PERSONALITY_H__
+#define LAPI_PERSONALITY_H__
 
 #include <sys/personality.h>
 
@@ -20,4 +20,4 @@
 # define READ_IMPLIES_EXEC 0x0400000
 #endif
 
-#endif	/* PERSONALITY_H */
+#endif	/* LAPI_PERSONALITY_H__ */

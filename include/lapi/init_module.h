@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef INIT_MODULE_H__
-#define INIT_MODULE_H__
+#ifndef LAPI_INIT_MODULE_H__
+#define LAPI_INIT_MODULE_H__
 
 #include "config.h"
 #include "lapi/syscalls.h"
@@ -34,4 +34,4 @@ static inline void finit_module_supported_by_kernel(void)
        }
 }
 
-#endif /* INIT_MODULE_H__ */
+#endif /* LAPI_INIT_MODULE_H__ */
