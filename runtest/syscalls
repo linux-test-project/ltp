@@ -63,7 +63,6 @@ chdir04 chdir04
 
 chmod01 chmod01
 chmod01A symlink01 -T chmod01
-chmod02 chmod02
 chmod03 chmod03
 chmod04 chmod04
 chmod05 chmod05
