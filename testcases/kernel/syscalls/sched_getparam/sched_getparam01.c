@@ -21,22 +21,23 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sched.h>
 #include "tst_test.h"
+#include "tst_sched.h"
 
 static pid_t pids[2] = {0, 0};
 
 static void verify_sched_getparam(unsigned int n)
 {
 	pid_t child_pid;
+	struct sched_variant *tv = &sched_variants[tst_variant];
 	struct sched_param param = {
 		.sched_priority = 100,
 	};
 
 	child_pid = SAFE_FORK();
 	if (!child_pid) {
-		TST_EXP_PASS_SILENT(sched_getparam(pids[n], &param),
-				    "sched_getparam(%d)", pids[n]);
+		TST_EXP_PASS_SILENT(tv->sched_getparam(pids[n], &param),
+				   "sched_getparam(%d)", pids[n]);
 		if (!TST_PASS)
 			exit(0);
 
@@ -59,12 +60,17 @@ static void verify_sched_getparam(unsigned int n)
 
 static void setup(void)
 {
+	struct sched_variant *tv = &sched_variants[tst_variant];
+
+	tst_res(TINFO, "Testing %s variant", tv->desc);
+
 	pids[1] = getpid();
 }
 
 static struct tst_test test = {
 	.forks_child = 1,
 	.setup = setup,
+	.test_variants = ARRAY_SIZE(sched_variants),
 	.tcnt = ARRAY_SIZE(pids),
 	.test = verify_sched_getparam,
 };
