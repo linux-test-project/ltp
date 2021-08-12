@@ -15,12 +15,14 @@ test1()
 {
 	tst_res TINFO "test if one of the ancestors goes over its limit, the proces will be killed"
 
+	local limit=$(memcg_adjust_limit_for_kmem $PAGESIZE)
+
 	echo 1 > memory.use_hierarchy
-	echo $PAGESIZE > memory.limit_in_bytes
+	echo $limit > memory.limit_in_bytes
 
 	mkdir subgroup
 	cd subgroup
-	test_proc_kill $((PAGESIZE * 3)) "--mmap-lock1" $((PAGESIZE * 2)) 0
+	test_proc_kill $((limit + PAGESIZE * 3)) "--mmap-lock1" $((limit + PAGESIZE * 2)) 0
 
 	cd ..
 	rmdir subgroup

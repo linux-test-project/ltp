@@ -24,16 +24,12 @@ test_subgroup()
 {
 	local limit_parent=$1
 	local limit_subgroup=$2
-	local total_cpus=`tst_ncpus`
 
-	# Kernel memory allocated for the process is also charged.
-	# It might depend on the number of CPUs. For example on kernel v5.11
-	# additionally total_cpus plus 1-2 pages are charged to the group.
 	if [ $limit_parent -ne 0 ]; then
-		limit_parent=$((limit_parent + 4 * PAGESIZE + total_cpus * PAGESIZE))
+		limit_parent=$(memcg_adjust_limit_for_kmem $limit_parent)
 	fi
 	if [ $limit_subgroup -ne 0 ]; then
-		limit_subgroup=$((limit_subgroup + 4 * PAGESIZE + total_cpus * PAGESIZE))
+		limit_subgroup=$(memcg_adjust_limit_for_kmem $limit_subgroup)
 	fi
 
 	mkdir subgroup
