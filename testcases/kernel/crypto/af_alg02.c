@@ -23,6 +23,7 @@
 
 #define SALSA20_IV_SIZE       8
 #define SALSA20_MIN_KEY_SIZE  16
+static int volatile completed;
 
 static void *verify_encrypt(void *arg)
 {
@@ -48,6 +49,8 @@ static void *verify_encrypt(void *arg)
 		tst_res(TPASS, "Successfully \"encrypted\" an empty message");
 	else
 		tst_res(TFAIL, "read() didn't return 0");
+
+	completed = 1;
 	return arg;
 }
 
@@ -55,12 +58,13 @@ static void run(void)
 {
 	pthread_t thr;
 
+	completed = 0;
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	SAFE_PTHREAD_CREATE(&thr, NULL, verify_encrypt, NULL);
 
 	TST_CHECKPOINT_WAIT(0);
 
-	while (pthread_kill(thr, 0) != ESRCH) {
+	while (!completed) {
 		if (tst_timeout_remaining() <= 10) {
 			pthread_cancel(thr);
 			tst_brk(TBROK,
@@ -68,6 +72,7 @@ static void run(void)
 		}
 		usleep(1000);
 	}
+	pthread_join(thr, NULL);
 }
 
 static struct tst_test test = {
