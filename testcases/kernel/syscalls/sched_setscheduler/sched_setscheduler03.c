@@ -17,13 +17,13 @@
 #include <stdio.h>
 #include <errno.h>
 #include <pwd.h>
-#include <sched.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 #include <stdlib.h>
 
 #include "tst_test.h"
+#include "tst_sched.h"
 
 #define RLIMIT_NICE_NORMAL 20
 
@@ -92,25 +92,24 @@ static void l_rlimit_setup(const int type, struct rlimit *limit)
 
 static void verify_fn(unsigned int i)
 {
-	tst_res(TINFO,
-		"Verifying case[%d]: policy = %d, priority = %d",
+	struct sched_variant *tv = &sched_variants[tst_variant];
+
+	tst_res(TINFO, "Verifying case[%d]: policy = %d, priority = %d",
 		i + 1, cases[i].policy, cases[i].sched_param->sched_priority);
 
-	TEST(sched_setscheduler(*cases[i].pid, cases[i].policy,
-					cases[i].sched_param));
-	if (TST_RET)
-		tst_res(TFAIL | TTERRNO, "case[%d] expected: %d, got: ",
-			i + 1, cases[i].error);
-	else
-		tst_res(TPASS, "case[%d] succeeded", i + 1);
+	TST_EXP_PASS(tv->sched_setscheduler(*cases[i].pid, cases[i].policy,
+		     cases[i].sched_param));
 }
 
 static void setup(void)
 {
+	struct sched_variant *tv = &sched_variants[tst_variant];
 	uid_t ruid, euid, suid;
 	struct rlimit limit;
 	struct passwd *pw;
 	uid_t nobody_uid;
+
+	tst_res(TINFO, "Testing %s variant", tv->desc);
 
 	pw = SAFE_GETPWNAM("nobody");
 	nobody_uid = pw->pw_uid;
@@ -129,12 +128,10 @@ static void setup(void)
 	l_rlimit_setup(RLIMIT_NICE, &limit);
 
 	tst_res(TINFO, "Setting init sched policy to SCHED_OTHER");
-	if (sched_setscheduler(0, SCHED_OTHER, &param[0]) != 0)
-		tst_res(TFAIL | TERRNO,
-			 "ERROR sched_setscheduler: (0, SCHED_OTHER, param)");
-
-	if (sched_getscheduler(0) != SCHED_OTHER)
-		tst_res(TFAIL | TERRNO, "ERROR sched_setscheduler");
+	if (tv->sched_setscheduler(0, SCHED_OTHER, &param[0]))
+		tst_brk(TBROK | TERRNO, "sched_setscheduler(0, SCHED_OTHER, 0)");
+	if (tv->sched_getscheduler(0) != SCHED_OTHER)
+		tst_brk(TBROK | TERRNO, "sched_getscheduler(0) != SCHED_OTHER");
 
 	tst_res(TINFO, "Setting euid to nobody to drop privilege");
 
@@ -159,6 +156,7 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
+	.test_variants = ARRAY_SIZE(sched_variants),
 	.tcnt = ARRAY_SIZE(cases),
 	.test = do_test,
 	.setup = setup,
