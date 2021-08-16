@@ -91,7 +91,7 @@ static void *buffer;
 void setup(void)
 {
 	if (tst_kernel_bits() == 32 || sizeof(long) > 4) {
-		tst_res(TCONF,
+		tst_res(TINFO,
 			"The vulnerability was only present in 32-bit compat mode");
 	}
 
