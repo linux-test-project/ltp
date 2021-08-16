@@ -101,6 +101,8 @@ void setup(void)
 
 void run(void)
 {
+	const char *const res_fmt_str =
+		"setsockopt(%d, IPPROTO_IP, IPT_SO_SET_REPLACE, %p, 1)";
 	struct ipt_replace *ipt_replace = buffer;
 	struct ipt_entry *ipt_entry = &ipt_replace->entries[0];
 	struct xt_entry_match *xt_entry_match =
@@ -110,6 +112,7 @@ void run(void)
 	struct xt_entry_target *xt_entry_tgt =
 		((struct xt_entry_target *) (&ipt_entry->elems[0] + match_size));
 	int fd = SAFE_SOCKET(AF_INET, SOCK_DGRAM, 0);
+	int result;
 
 	xt_entry_match->u.user.match_size = (u_int16_t)match_size;
 	strcpy(xt_entry_match->u.user.name, "state");
@@ -126,10 +129,13 @@ void run(void)
 	ipt_replace->num_counters = 1;
 	ipt_replace->size = ipt_entry->next_offset;
 
-	TST_EXP_FAIL(setsockopt(fd, IPPROTO_IP, IPT_SO_SET_REPLACE, buffer, 1),
-		     EINVAL,
-		     "setsockopt(%d, IPPROTO_IP, IPT_SO_SET_REPLACE, %p, 1)",
-		     fd, buffer);
+	TEST(setsockopt(fd, IPPROTO_IP, IPT_SO_SET_REPLACE, buffer, 1));
+
+	if (TST_RET == -1 && TST_ERR == ENOPROTOOPT)
+		tst_brk(TCONF | TTERRNO, res_fmt_str, fd, buffer);
+
+	result = (TST_RET == -1 && TST_ERR == EINVAL) ? TPASS : TFAIL;
+	tst_res(result | TTERRNO, res_fmt_str, fd, buffer);
 
 	SAFE_CLOSE(fd);
 }
