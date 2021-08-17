@@ -4,34 +4,24 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Test Name: epoll_ctl02.c
+/*\
+ * [Description]
  *
- * Description:
- * 1) epoll_ctl(2) fails if epfd is a invalid file descriptor.
- * 2) epoll_ctl(2) fails if fd is a invalid file descriptor.
- * 3) epoll_ctl(2) fails if op is not supported by this interface.
- * 4) epoll_ctl(2) fails if fd is the same as epfd.
- * 5) epoll_ctl(2) fails with EPOLL_CTL_DEL if fd is not registered
- *    with this epoll instance.
- * 6) epoll_ctl(2) fails with EPOLL_CTL_MOD if fd is not registered
- *    with this epoll instance.
- * 7) epoll_ctl(2) fails with EPOLL_CTL_ADD if fd is already registered
- *    with this epoll instance.
+ * Verify that epoll_cnt() fails with:
  *
- * Expected Result:
- * 1) epoll_ctl(2) should return -1 and set errno to EBADF.
- * 2) epoll_ctl(2) should return -1 and set errno to EBADF.
- * 3) epoll_ctl(2) should return -1 and set errno to EINVAL.
- * 4) epoll_ctl(2) should return -1 and set errno to EINVAL.
- * 5) epoll_ctl(2) should return -1 and set errno to ENOENT.
- * 6) epoll_ctl(2) should return -1 and set errno to ENOENT.
- * 7) epoll_ctl(2) should return -1 and set errno to EEXIST.
- *
+ * - EBADF if epfd is an invalid fd.
+ * - EBADF if fd is an invalid fd.
+ * - EINVAL if op is not supported.
+ * - EINVAL if fd is the same as epfd.
+ * - EINVAL if events is NULL.
+ * - ENOENT if fd is not registered with EPOLL_CTL_DEL.
+ * - ENOENT if fd is not registered with EPOLL_CTL_MOD.
+ * - EEXIST if fd is already registered with EPOLL_CTL_ADD.
  */
-#include <sys/epoll.h>
+
 #include <poll.h>
-#include <errno.h>
+#include <sys/epoll.h>
+
 #include "tst_test.h"
 
 static int epfd;
@@ -44,19 +34,21 @@ static struct epoll_event events[2] = {
 };
 
 static struct testcase {
-	int *epfds;
+	int *epfd;
 	int opt;
-	int *fds;
-	struct epoll_event *ts_event;
+	int *fd;
+	struct epoll_event *event;
 	int exp_err;
-} tcases[] = {
-	{&inv, EPOLL_CTL_ADD, &fd[1], &events[1], EBADF},
-	{&epfd, EPOLL_CTL_ADD, &inv, &events[1], EBADF},
-	{&epfd, -1, &fd[1], &events[1], EINVAL},
-	{&epfd, EPOLL_CTL_ADD, &epfd, &events[1], EINVAL},
-	{&epfd, EPOLL_CTL_DEL, &fd[1], &events[1], ENOENT},
-	{&epfd, EPOLL_CTL_MOD, &fd[1], &events[1], ENOENT},
-	{&epfd, EPOLL_CTL_ADD, &fd[0], &events[0], EEXIST}
+	const char *desc;
+} tc[] = {
+	{&inv, EPOLL_CTL_ADD, &fd[1], &events[1], EBADF, "epfd is an invalid fd"},
+	{&epfd, EPOLL_CTL_ADD, &inv, &events[1], EBADF, "fd is an invalid fd"},
+	{&epfd, -1, &fd[1], &events[1], EINVAL, "op is not supported"},
+	{&epfd, EPOLL_CTL_ADD, &epfd, &events[1], EINVAL, "fd is the same as epfd"},
+	{&epfd, EPOLL_CTL_ADD, &fd[1], NULL, EFAULT, "events is NULL"},
+	{&epfd, EPOLL_CTL_DEL, &fd[1], &events[1], ENOENT, "fd is not registered with EPOLL_CTL_DEL"},
+	{&epfd, EPOLL_CTL_MOD, &fd[1], &events[1], ENOENT, "fd is not registered with EPOLL_CTL_MOD"},
+	{&epfd, EPOLL_CTL_ADD, &fd[0], &events[0], EEXIST, "fd is already registered with EPOLL_CTL_ADD"}
 };
 
 static void setup(void)
@@ -70,9 +62,8 @@ static void setup(void)
 	events[0].data.fd = fd[0];
 	events[1].data.fd = fd[1];
 
-	TEST(epoll_ctl(epfd, EPOLL_CTL_ADD, fd[0], &events[0]));
-	if (TST_RET == -1)
-		tst_brk(TFAIL | TTERRNO, "epoll_ctl() fails to init");
+	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd[0], &events[0]))
+		tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
 }
 
 static void cleanup(void)
@@ -89,25 +80,12 @@ static void cleanup(void)
 
 static void verify_epoll_ctl(unsigned int n)
 {
-	struct testcase *tc = &tcases[n];
-
-	TEST(epoll_ctl(*tc->epfds, tc->opt, *tc->fds,  tc->ts_event));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "epoll_ctl() succeeds unexpectedly");
-		return;
-	}
-
-	if (tc->exp_err == TST_ERR) {
-		tst_res(TPASS | TTERRNO, "epoll_ctl() fails as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO,
-			"epoll_ctl() fails unexpectedly, expected %i: %s",
-			tc->exp_err, tst_strerrno(tc->exp_err));
-	}
+	TST_EXP_FAIL(epoll_ctl(*tc[n].epfd, tc[n].opt, *tc[n].fd, tc[n].event),
+		     tc[n].exp_err, "epoll_clt(...) if %s", tc[n].desc);
 }
 
 static struct tst_test test = {
-	.tcnt = ARRAY_SIZE(tcases),
+	.tcnt = ARRAY_SIZE(tc),
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = verify_epoll_ctl,
