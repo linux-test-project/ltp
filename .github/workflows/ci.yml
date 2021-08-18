@@ -49,7 +49,7 @@ jobs:
           # build with minimal dependencies
           - container: "debian:stable"
             env:
-              CC: clang
+              CC: gcc
               TREE: out
               VARIANT: minimal
 
