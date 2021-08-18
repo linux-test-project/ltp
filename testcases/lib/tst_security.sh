@@ -135,7 +135,7 @@ tst_get_selinux_dir()
 tst_get_enforce()
 {
 	local dir=$(tst_get_selinux_dir)
-	[ -z "$dir" ] || return
+	[ -z "$dir" ] && return
 
 	local f="$dir/enforce"
 	[ -f "$f" ] && echo "$f"
