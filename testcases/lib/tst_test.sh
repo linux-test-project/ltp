@@ -348,18 +348,7 @@ tst_virt_hyperv()
 
 tst_cmd_available()
 {
-	if type command > /dev/null 2>&1; then
-		command -v $1 > /dev/null 2>&1 || return 1
-	else
-		which $1 > /dev/null 2>&1
-		if [ $? -eq 0 ]; then
-			return 0
-		elif [ $? -eq 127 ]; then
-			tst_brk TCONF "missing which command"
-		else
-			return 1
-		fi
-	fi
+	command -v $1 >/dev/null 2>&1
 }
 
 tst_require_cmds()
