@@ -19,7 +19,7 @@
 
 TST_CNT=6
 TST_TESTFUNC=do_test
-TST_NEEDS_CMDS="which cat head"
+TST_NEEDS_CMDS="cat head"
 
 . binfmt_misc_lib.sh
 
@@ -88,18 +88,20 @@ verify_binfmt_misc()
 
 do_test()
 {
+	local cat="$(command -v cat)"
+
 	case $1 in
-	1) verify_binfmt_misc ":textension:E::extension::$(which cat):" \
+	1) verify_binfmt_misc ":textension:E::extension::$cat:" \
 			      "$TST_DATAROOT/file.extension" "1";;
-	2) verify_binfmt_misc ":tmagic:M:1:This::$(which cat):" \
+	2) verify_binfmt_misc ":tmagic:M:1:This::$cat:" \
 			      "$TST_DATAROOT/file.magic" "1";;
-	3) verify_binfmt_misc ".textension.E..extension..$(which cat)." \
+	3) verify_binfmt_misc ".textension.E..extension..$cat." \
 			      "$TST_DATAROOT/file.extension" "1";;
-	4) verify_binfmt_misc ",tmagic,M,1,This,,$(which cat)," \
+	4) verify_binfmt_misc ",tmagic,M,1,This,,$cat," \
 			      "$TST_DATAROOT/file.magic" "1";;
-	5) verify_binfmt_misc ":textension:E::ltp::$(which cat):" \
+	5) verify_binfmt_misc ":textension:E::ltp::$cat:" \
 			      "$TST_DATAROOT/file.extension" "0";;
-	6) verify_binfmt_misc ":tmagic:M:0:This::$(which cat):" \
+	6) verify_binfmt_misc ":tmagic:M:0:This::$cat:" \
 			      "$TST_DATAROOT/file.magic" "0";;
 	esac
 }
