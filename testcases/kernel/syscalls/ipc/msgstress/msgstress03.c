@@ -78,7 +78,7 @@ static void usage(void)
 
 int main(int argc, char **argv)
 {
-	int i, j, ok, pid;
+	int i, j, ok, pid, free_pids;
 	int count, status;
 	struct sigaction act;
 
@@ -107,6 +107,14 @@ int main(int argc, char **argv)
 				 "setting to Max. of %d", MSGMNI);
 			nprocs = MSGMNI;
 		}
+	}
+
+	free_pids = tst_get_free_pids(cleanup);
+	if (nprocs >= free_pids) {
+		tst_resm(TINFO,
+			 "Requested number of processes higher than limit (%d > %d), "
+			 "setting to %d", nprocs, free_pids, free_pids);
+		nprocs = free_pids;
 	}
 
 	srand(getpid());
