@@ -107,15 +107,14 @@ int tst_get_free_pids_(void (*cleanup_fn) (void))
 
 	f = popen("ps -eT | wc -l", "r");
 	if (!f) {
-		tst_resm(TBROK, "Could not run 'ps' to calculate used " "pids");
+		tst_brkm(TBROK, cleanup_fn, "Could not run 'ps' to calculate used pids");
 		return -1;
 	}
 	rc = fscanf(f, "%i", &used_pids);
 	pclose(f);
 
 	if (rc != 1 || used_pids < 0) {
-		tst_resm(TBROK, "Could not read output of 'ps' to "
-			 "calculate used pids");
+		tst_brkm(TBROK, cleanup_fn, "Could not read output of 'ps' to calculate used pids");
 		return -1;
 	}
 
@@ -128,5 +127,9 @@ int tst_get_free_pids_(void (*cleanup_fn) (void))
 	/* max_pids contains the maximum PID + 1,
 	 * used_pids contains used PIDs + 1,
 	 * so this additional '1' is eliminated by the substraction */
+	if (used_pids >= max_pids) {
+		tst_brkm(TBROK, cleanup_fn, "No free pids");
+		return 0;
+	}
 	return max_pids - used_pids;
 }
