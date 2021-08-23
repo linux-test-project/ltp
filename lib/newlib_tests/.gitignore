@@ -41,6 +41,7 @@ test_macros01
 test_macros02
 test_macros03
 test_macros04
+test_macros05
 tst_fuzzy_sync01
 tst_fuzzy_sync02
 tst_fuzzy_sync03
