@@ -515,11 +515,11 @@ The 'tst_mount' mounts '$TST_DEVICE' of '$TST_FS_TYPE' (optional) to
 '$TST_MNT_PARAMS'. The '$TST_MNTPOINT' directory is created if it didn't
 exist prior to the function call.
 
-If the path passed (optional, defaults to '$TST_DEVICE') to the 'tst_umount' is
+If the path passed (optional, defaults to '$TST_MNTPOINT') to the 'tst_umount' is
 not mounted (present in '/proc/mounts') it's noop.
-Otherwise it retries to umount the filesystem a few times on a failure, which
-is a workaround since there are a daemons dumb enough to probe all newly
-mounted filesystems, which prevents them from umounting shortly after they
+Otherwise it retries to umount the filesystem a few times on failure.
+This is a workaround since there are daemons dumb enough to probe all newly
+mounted filesystems, and prevents them from being umounted shortly after they
 were mounted.
 
 ROD and ROD_SILENT
