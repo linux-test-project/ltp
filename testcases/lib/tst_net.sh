@@ -918,7 +918,7 @@ tst_set_sysctl()
 	local rparam=
 	[ "$TST_USE_NETNS" = "yes" ] && rparam="-r '-e'"
 
-	tst_net_run $safe $rparam "sysctl -q -w $name=$value"
+	tst_net_run $safe $rparam "sysctl" "-q -w $name=$value"
 }
 
 tst_cleanup_rhost()
