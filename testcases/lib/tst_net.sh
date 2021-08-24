@@ -811,7 +811,7 @@ tst_netload_compare()
 
 tst_ping_opt_unsupported()
 {
-	ping $@ 2>&1 | grep -q "invalid option"
+	ping $@ 2>&1 | grep -qE "(invalid|unrecognized) option"
 }
 
 # tst_ping -c COUNT -s MESSAGE_SIZES -p PATTERN -I IFACE -H HOST
