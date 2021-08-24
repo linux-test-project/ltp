@@ -34,7 +34,7 @@ setup()
 	TST_FS_TYPE="overlay"
 
 	mntpoint_backup="$TST_MNTPOINT"
-	TST_MNTPOINT="$merged"
+	TST_MNTPOINT="$PWD/$merged"
 
 	params_backup="$TST_MNT_PARAMS"
 	TST_MNT_PARAMS="-o lowerdir=$lower,upperdir=$upper,workdir=$work"
@@ -83,7 +83,7 @@ cleanup()
 {
 	[ -n "$mounted" ] || return 0
 
-	tst_umount $TST_DEVICE
+	tst_umount $TST_MNTPOINT
 
 	TST_DEVICE="$device_backup"
 	TST_FS_TYPE="$fs_type_backup"

@@ -38,7 +38,7 @@ mount_debugfs()
 		if ! grep -q debugfs /proc/filesystems ; then
 			tst_res TCONF "debugfs not supported"
 		fi
-		DEBUGFS_PATH="./tst_debug"
+		DEBUGFS_PATH="$PWD/tst_debug"
 		mkdir "$DEBUGFS_PATH"
 		if mount -t debugfs xxx "$DEBUGFS_PATH" ; then
 			tst_res TINFO "debugfs mounted at $DEBUGFS_PATH"
