@@ -6,6 +6,7 @@
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sysctl tc"
+TST_NEEDS_DRIVERS="sch_netem"
 
 . tst_net.sh
 
