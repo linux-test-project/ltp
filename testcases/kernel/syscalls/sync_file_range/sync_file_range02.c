@@ -4,12 +4,12 @@
  * Author: Sumit Garg <sumit.garg@linaro.org>
  */
 
-/*
- * sync_file_range02
+/*\
+ * [Description]
  *
- * It basically tests sync_file_range() to sync test file range having large
- * dirty file pages to block device. Also, it tests all supported filesystems
- * on a test block device.
+ * Tests if sync_file_range() does sync a test file range with a many dirty pages
+ * to a block device. Also, it tests all supported filesystems on a test block
+ * device.
  */
 
 #define _GNU_SOURCE
