@@ -729,14 +729,14 @@ The shell library provides an implementation of the checkpoint interface
 compatible with the C version. All 'TST_CHECKPOINT_*' functions are available.
 
 In order to initialize checkpoints '$TST_NEEDS_CHECKPOINTS' must be set to '1'
-before the inclusion of 'test.sh':
+before the inclusion of 'tst_test.sh':
 
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
 
 TST_NEEDS_CHECKPOINTS=1
-. test.sh
+. tst_test.sh
 -------------------------------------------------------------------------------
 
 Since both the implementations are compatible, it's also possible to start
