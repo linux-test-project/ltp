@@ -71,8 +71,6 @@ static int ipc_fd;
 extern void *tst_futexes;
 extern unsigned int tst_max_futexes;
 
-#define IPC_ENV_VAR "LTP_IPC_PATH"
-
 static char ipc_path[1064];
 const char *tst_ipc_path = ipc_path;
 

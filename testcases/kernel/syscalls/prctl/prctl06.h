@@ -17,7 +17,6 @@
 #include "tst_test.h"
 
 #define PROC_STATUS        "/proc/self/status"
-#define IPC_ENV_VAR        "LTP_IPC_PATH"
 #define MNTPOINT           "mntpoint"
 #define TESTBIN            "prctl06_execve"
 #define TEST_REL_BIN_DIR   MNTPOINT"/"

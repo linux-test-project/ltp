@@ -16,8 +16,6 @@
 
 #include "tst_test.h"
 
-#define IPC_ENV_VAR "LTP_IPC_PATH"
-
 static void verify_execle(void)
 {
 	pid_t pid;

@@ -275,6 +275,8 @@ struct tst_test {
 void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
                     __attribute__ ((noreturn));
 
+#define IPC_ENV_VAR "LTP_IPC_PATH"
+
 /*
  * Does library initialization for child processes started by exec()
  *
