@@ -23,6 +23,11 @@ int tst_create_veth_pair(const char *file, const int lineno,
 #define CREATE_VETH_PAIR(ifname1, ifname2) \
 	tst_create_veth_pair(__FILE__, __LINE__, (ifname1), (ifname2))
 
+int tst_netdev_add_device(const char *file, const int lineno,
+	const char *ifname, const char *devtype);
+#define NETDEV_ADD_DEVICE(ifname, devtype) \
+	tst_netdev_add_device(__FILE__, __LINE__, (ifname), (devtype))
+
 int tst_remove_netdev(const char *file, const int lineno, const char *ifname);
 #define REMOVE_NETDEV(ifname) tst_remove_netdev(__FILE__, __LINE__, (ifname))
 
