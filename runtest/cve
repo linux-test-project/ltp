@@ -66,6 +66,7 @@ cve-2020-14416 pty03
 cve-2020-25705 icmp_rate_limit01
 cve-2020-29373 io_uring02
 cve-2021-3444 bpf_prog05
+cve-2021-6309 can_bcm01
 cve-2021-22555 setsockopt08 -i 100
 cve-2021-26708 vsock01
 # Tests below may cause kernel memory leak
