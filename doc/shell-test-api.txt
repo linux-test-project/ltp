@@ -515,8 +515,8 @@ The 'tst_mount' mounts '$TST_DEVICE' of '$TST_FS_TYPE' (optional) to
 '$TST_MNT_PARAMS'. The '$TST_MNTPOINT' directory is created if it didn't
 exist prior to the function call.
 
-If the path passed (optional, defaults to '$TST_MNTPOINT') to the 'tst_umount' is
-not mounted (present in '/proc/mounts') it's noop.
+If the path passed (optional, must be absolute path, defaults to '$TST_MNTPOINT')
+to the 'tst_umount' is not mounted (present in '/proc/mounts') it's noop.
 Otherwise it retries to umount the filesystem a few times on failure.
 This is a workaround since there are daemons dumb enough to probe all newly
 mounted filesystems, and prevents them from being umounted shortly after they
