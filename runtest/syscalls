@@ -162,6 +162,7 @@ epoll_create1_02 epoll_create1_02
 epoll01 epoll-ltp
 epoll_ctl01 epoll_ctl01
 epoll_ctl02 epoll_ctl02
+epoll_ctl03 epoll_ctl03
 epoll_wait01 epoll_wait01
 epoll_wait02 epoll_wait02
 epoll_wait03 epoll_wait03
