@@ -201,7 +201,8 @@ int tst_netdev_add_device(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_remove_netdev(const char *file, const int lineno, const char *ifname)
+int tst_netdev_remove_device(const char *file, const int lineno,
+	const char *ifname)
 {
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
 	struct tst_rtnl_context *ctx;
