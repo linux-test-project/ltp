@@ -19,6 +19,9 @@
 #include <signal.h>
 #include <linux/types.h>
 #include <linux/netlink.h>
+#include <tst_checkpoint.h>
+#define TST_NO_DEFAULT_MAIN
+#include <tst_test.h>
 
 #ifndef NETLINK_CONNECTOR
 
@@ -52,8 +55,12 @@ static __u32 seq;
 
 static volatile int exit_flag;
 static struct sigaction sigint_action;
+static pid_t terminate_pid;
+static int checkpoint_id = -1;
 
 struct nlmsghdr *nlhdr;
+
+static void usage(int status) LTP_ATTRIBUTE_NORETURN;
 
 /*
  * Handler for signal int. Set exit flag.
@@ -176,6 +183,7 @@ static void process_event(struct nlmsghdr *nlhdr)
 
 	pe = (struct proc_event *)msg->data;
 
+	//printf("TS: %llu\n", pe->timestamp_ns);
 	switch (pe->what) {
 	case PROC_EVENT_NONE:
 		printf("none err: %u\n", pe->event_data.ack.err);
@@ -203,6 +211,9 @@ static void process_event(struct nlmsghdr *nlhdr)
 		       pe->event_data.exit.process_pid,
 		       pe->event_data.exit.exit_code,
 		       pe->event_data.exit.exit_signal);
+			if (terminate_pid
+				&& terminate_pid == pe->event_data.exec.process_pid)
+				exit_flag = 1;
 		break;
 	default:
 		printf("unknown event\n");
@@ -210,13 +221,50 @@ static void process_event(struct nlmsghdr *nlhdr)
 	}
 }
 
-int main(void)
+static void usage(int status)
+{
+	FILE *stream = (status ? stderr : stdout);
+
+	fprintf(stream, "Usage: pec_listener [-p terminate_pid] [-c checkpoint_id]\n");
+
+	exit(status);
+}
+
+static void parse_args(int argc, char * const argv[])
+{
+	int c;
+
+	while ((c = getopt(argc, argv, "p:c:h")) != -1) {
+		switch (c) {
+		case 'p':
+			if (tst_parse_int(optarg, &terminate_pid, 0, INT_MAX)) {
+				fprintf(stderr, "Invalid value for terminate pid\n");
+				exit(1);
+			}
+			break;
+		case 'c':
+			if (tst_parse_int(optarg, &checkpoint_id, 0, INT_MAX)) {
+				fprintf(stderr, "invalid value for checkpoint_id");
+				usage(1);
+			}
+			break;
+		case 'h':
+			usage(0);
+		default:
+			usage(1);
+		}
+	}
+}
+
+int main(int argc, char * const argv[])
 {
 	int ret;
 	int sd;
 	struct sockaddr_nl l_local;
 	struct sockaddr_nl src_addr;
 	struct pollfd pfd;
+
+	parse_args(argc, argv);
 
 	sigint_action.sa_flags = SA_RESETHAND;
 	sigint_action.sa_handler = &sigint_handler;
@@ -255,6 +303,12 @@ int main(void)
 	if (!ret) {
 		fprintf(stderr, "failed to open PEC listening\n");
 		exit(1);
+	}
+
+	/* ready to receive events */
+	if (checkpoint_id != -1) {
+		tst_reinit();
+		TST_CHECKPOINT_WAKE(0);
 	}
 
 	/* Receive msg from PEC */
