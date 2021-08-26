@@ -32,6 +32,8 @@
 #define PID_MAX_PATH "/proc/sys/kernel/pid_max"
 #define CGROUPS_V1_SLICE_FMT "/sys/fs/cgroup/pids/user.slice/user-%d.slice/pids.max"
 #define CGROUPS_V2_SLICE_FMT "/sys/fs/cgroup/user.slice/user-%d.slice/pids.max"
+/* Leave some available processes for the OS */
+#define PIDS_RESERVE 50
 
 pid_t tst_get_unused_pid_(void (*cleanup_fn) (void))
 {
@@ -123,6 +125,11 @@ int tst_get_free_pids_(void (*cleanup_fn) (void))
 	max_session_pids = get_session_pids_limit(cleanup_fn);
 	if ((max_session_pids > 0) && (max_session_pids < max_pids))
 		max_pids = max_session_pids;
+
+	if (max_pids > PIDS_RESERVE)
+		max_pids -= PIDS_RESERVE;
+	else
+		max_pids = 0;
 
 	/* max_pids contains the maximum PID + 1,
 	 * used_pids contains used PIDs + 1,
