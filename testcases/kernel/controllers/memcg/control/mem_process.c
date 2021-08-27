@@ -101,18 +101,12 @@ void mem_map(void)
 /*
  * done: retrieve instructions from the named pipe
  */
-char action(void)
+char action(int fd)
 {
 	char ch;
-	int fd;
-
-	if ((fd = open(STATUS_PIPE, O_RDONLY)) == -1)
-		err(6, "Error opening named pipe");
 
 	if (read(fd, &ch, 1) == -1)
 		err(7, "Error reading named pipe");
-
-	close(fd);
 
 	return ch;
 }
@@ -120,6 +114,7 @@ char action(void)
 int main(int argc, char **argv)
 {
 	int ret;
+	int fd;
 	char ch;
 
 	process_options(argc, argv);
@@ -129,12 +124,17 @@ int main(int argc, char **argv)
 	if (ret == -1 && errno != EEXIST)
 		errx(1, "Error creating named pipe");
 
+	if ((fd = open(STATUS_PIPE, O_RDONLY)) == -1)
+		err(6, "Error opening named pipe");
+
 	do {
-		ch = action();
+		ch = action(fd);
 
 		if (ch == 'm')
 			mem_map();
 	} while (ch != 'x');
+
+	close(fd);
 
 	remove(STATUS_PIPE);
 
