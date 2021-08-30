@@ -19,7 +19,7 @@ gid_t tst_get_free_gid_(const char *file, const int lineno, gid_t skip)
 
 	errno = 0;
 
-	for (ret = 0; ret < MAX_GID; ret++) {
+	for (ret = 1; ret < MAX_GID; ret++) {
 		if (ret == skip || getgrgid(ret))
 			continue;
 
