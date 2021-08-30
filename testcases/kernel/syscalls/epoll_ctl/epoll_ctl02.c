@@ -7,9 +7,10 @@
 /*\
  * [Description]
  *
- * Verify that epoll_cnt() fails with:
+ * Verify that epoll_ctl() fails with:
  *
  * - EBADF if epfd is an invalid fd.
+ * - EPERM if fd does not support epoll.
  * - EBADF if fd is an invalid fd.
  * - EINVAL if op is not supported.
  * - EINVAL if fd is the same as epfd.
@@ -25,7 +26,7 @@
 #include "tst_test.h"
 
 static int epfd;
-static int fd[2];
+static int fd[2], unsupported_fd;
 static int inv = -1;
 
 static struct epoll_event events[2] = {
@@ -42,6 +43,7 @@ static struct testcase {
 	const char *desc;
 } tc[] = {
 	{&inv, EPOLL_CTL_ADD, &fd[1], &events[1], EBADF, "epfd is an invalid fd"},
+	{&epfd, EPOLL_CTL_ADD, &unsupported_fd, &events[1], EPERM, "fd does not support epoll"},
 	{&epfd, EPOLL_CTL_ADD, &inv, &events[1], EBADF, "fd is an invalid fd"},
 	{&epfd, -1, &fd[1], &events[1], EINVAL, "op is not supported"},
 	{&epfd, EPOLL_CTL_ADD, &epfd, &events[1], EINVAL, "fd is the same as epfd"},
@@ -53,6 +55,8 @@ static struct testcase {
 
 static void setup(void)
 {
+	unsupported_fd = SAFE_OPEN(".", O_RDONLY|O_DIRECTORY, 0);
+
 	epfd = epoll_create(2);
 	if (epfd == -1)
 		tst_brk(TBROK | TERRNO, "fail to create epoll instance");
