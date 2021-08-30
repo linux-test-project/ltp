@@ -23,8 +23,11 @@ gid_t tst_get_free_gid_(const char *file, const int lineno, gid_t skip)
 		if (ret == skip || getgrgid(ret))
 			continue;
 
-		if (errno == 0 || errno == ENOENT || errno == ESRCH)
+		if (errno == 0 || errno == ENOENT || errno == ESRCH) {
+			tst_res_(file, lineno, TINFO | TERRNO,
+				"Found unused GID %d", (int)ret);
 			return ret;
+		}
 
 		tst_brk_(file, lineno, TBROK|TERRNO, "Group ID lookup failed");
 		return (gid_t)-1;

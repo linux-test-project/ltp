@@ -39,6 +39,8 @@ static void setup(void)
 	orig_uid = getuid();
 	nobody_uid = ltpuser->pw_uid;
 	nobody_gid = ltpuser->pw_gid;
+	tst_res(TINFO, "User nobody: uid = %d, gid = %d", (int)nobody_uid,
+		(int)nobody_gid);
 	free_gid = tst_get_free_gid(nobody_gid);
 	tmpdir = tst_get_tmpdir();
 }
