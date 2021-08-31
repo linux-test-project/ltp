@@ -6,7 +6,7 @@
 broken_ip4-version broken_ip-version.sh
 broken_ip4-ihl broken_ip-ihl.sh
 broken_ip4-fragment broken_ip-fragment.sh
-broken_ip6-plen broken_ip-plen.sh
+broken_ip4-plen broken_ip-plen.sh
 broken_ip4-protcol broken_ip-protcol.sh
 broken_ip4-checksum broken_ip-checksum.sh
 broken_ip4-dstaddr broken_ip-dstaddr.sh
