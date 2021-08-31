@@ -40,6 +40,8 @@ static void setup(void)
 	struct ifreq ifr;
 	socklen_t addrlen = sizeof(addr);
 
+	SAFE_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
+
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);
 	SAFE_FILE_PRINTF("/proc/self/setgroups", "deny");
@@ -98,6 +100,10 @@ static struct tst_test test = {
 		"CONFIG_USER_NS=y",
 		"CONFIG_NET_NS=y",
 		NULL
+	},
+	.save_restore = (const char * const[]) {
+		"?/proc/sys/user/max_user_namespaces",
+		NULL,
 	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "85f1bd9a7b5a"},
