@@ -178,6 +178,10 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_CFS_BANDWIDTH",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "39f23ce07b93"},
 		{"linux-git", "b34cb07dde7c"},
