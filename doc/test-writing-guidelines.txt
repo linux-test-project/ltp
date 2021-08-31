@@ -305,12 +305,11 @@ NOTE: See also
       https://github.com/linux-test-project/ltp/wiki/Maintainer-Patch-Review-Checklist[Maintainer Patch Review Checklist].
 
 1. Test compiles and runs fine (check with `-i 10` too)
-2. https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/scripts/checkpatch.pl[checkpatch.pl]
-   does not report any errors
+2. `make check` does not emit any warnings for the test you are working on
+   (hint: run it in the test's directory and/or use `make check-$TCID`)
 3. The runtest entires are in place
 4. Test binaries are added into corresponding '.gitignore' files
 5. Patches apply over the latest git
-6. 'make check' does not emit any warnings
 
 6.1 About .gitignore files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
