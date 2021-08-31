@@ -79,6 +79,9 @@ void tst_brk_(const char *file, const int lineno, int ttype,
 		tst_brk_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__);\
 	})
 
+void tst_printf(const char *const fmt, ...)
+		__attribute__((nonnull(1), format (printf, 1, 2)));
+
 /* flush stderr and stdout */
 void tst_flush(void);
 

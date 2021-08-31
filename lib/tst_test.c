@@ -360,6 +360,15 @@ void tst_brk_(const char *file, const int lineno, int ttype,
 	va_end(va);
 }
 
+void tst_printf(const char *const fmt, ...)
+{
+	va_list va;
+
+	va_start(va, fmt);
+	vdprintf(STDERR_FILENO, fmt, va);
+	va_end(va);
+}
+
 static void check_child_status(pid_t pid, int status)
 {
 	int ret;
