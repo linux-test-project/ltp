@@ -26,6 +26,9 @@ static int fail_fn_should_not_be_seen_in_output(void)
 
 static void do_test(void)
 {
+	TST_EXP_VAL(MACRO_FAIL(), -2);
+	TST_EXP_VAL_SILENT(MACRO_FAIL(), -2);
+
 	TST_EXP_FAIL(MACRO_FAIL(), EINVAL);
 	TST_EXP_FAIL2(MACRO_FAIL(), EINVAL);
 
