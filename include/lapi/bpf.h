@@ -27,6 +27,7 @@
 #define BPF_JNE		0x50	/* jump != */
 
 #define BPF_SIZE(code)  ((code) & 0x18)
+#define		BPF_B		0x10 /*  8-bit */
 #define		BPF_W		0x00    /* 32-bit */
 #define         BPF_DW		0x18	/* double word (64-bit) */
 
