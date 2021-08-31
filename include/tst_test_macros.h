@@ -100,6 +100,33 @@ extern void *TST_RET_PTR;
 				#SCALL, ##__VA_ARGS__);                        \
 	} while (0)
 
+#define TST_EXP_VAL_SILENT_(SCALL, VAL, SSCALL, ...)                           \
+	do {                                                                   \
+		TEST(SCALL);                                                   \
+		                                                               \
+		TST_PASS = 0;                                                  \
+		                                                               \
+		if (TST_RET != VAL) {                                          \
+			TST_MSGP_(TFAIL | TTERRNO, " retval not %ld",          \
+			          (long )VAL, SSCALL, ##__VA_ARGS__);          \
+			break;                                                 \
+		}                                                              \
+		                                                               \
+		TST_PASS = 1;                                                  \
+		                                                               \
+	} while (0)
+
+#define TST_EXP_VAL_SILENT(SCALL, VAL, ...) TST_EXP_VAL_SILENT_(SCALL, VAL, #SCALL, ##__VA_ARGS__)
+
+#define TST_EXP_VAL(SCALL, VAL, ...)                                           \
+	do {                                                                   \
+		TST_EXP_VAL_SILENT_(SCALL, VAL, #SCALL, ##__VA_ARGS__);        \
+		                                                               \
+		if (TST_PASS)                                                  \
+			TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);     \
+			                                                       \
+	} while(0)
+
 #define TST_EXP_PASS_SILENT_(SCALL, SSCALL, ...)                               \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
