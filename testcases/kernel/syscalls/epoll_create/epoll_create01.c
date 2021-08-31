@@ -28,7 +28,7 @@ static void run(unsigned int n)
 
 	if (!TST_PASS)
 		return;
-	SAFE_CLOSE(TST_PASS);
+	SAFE_CLOSE(TST_RET);
 }
 
 static struct tst_test test = {
