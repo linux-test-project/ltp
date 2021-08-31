@@ -307,7 +307,7 @@ NOTE: See also
 1. Test compiles and runs fine (check with `-i 10` too)
 2. `make check` does not emit any warnings for the test you are working on
    (hint: run it in the test's directory and/or use `make check-$TCID`)
-3. The runtest entires are in place
+3. The runtest entries are in place
 4. Test binaries are added into corresponding '.gitignore' files
 5. Patches apply over the latest git
 
