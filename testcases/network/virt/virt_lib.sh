@@ -46,7 +46,7 @@ virt_lib_setup()
 		fi
 
 		# newer versions of 'ip' complain if this option not set
-		ip li add type vxlan help 2>&1 | grep -q dstport && vxlan_dstport=1
+		ip link add type vxlan help 2>&1 | grep -q dstport && vxlan_dstport=1
 	;;
 	esac
 
@@ -78,7 +78,7 @@ fi
 cleanup_vifaces()
 {
 	tst_res TINFO "cleanup virtual interfaces..."
-	local viface=`ip li | sed -nE 's/^[0-9]+: (ltp_v[0-9]+)[@:].+/\1/p'`
+	local viface=`ip link | sed -nE 's/^[0-9]+: (ltp_v[0-9]+)[@:].+/\1/p'`
 	for vx in $viface; do
 		ip link delete $vx
 	done
@@ -138,7 +138,7 @@ virt_add()
 
 	case $virt_type in
 	vxlan|geneve|sit|wireguard)
-		ip li add $vname type $virt_type $opt
+		ip link add $vname type $virt_type $opt
 	;;
 	gre|ip6gre)
 		ip -f inet$TST_IPV6 tu add $vname mode $virt_type $opt
@@ -147,7 +147,7 @@ virt_add()
 		ip link add name $vname type $(_get_gue_fou_tnl $virt_type) $opt
 	;;
 	*)
-		ip li add link $(tst_iface) $vname type $virt_type $opt
+		ip link add link $(tst_iface) $vname type $virt_type $opt
 	;;
 	esac
 }
@@ -159,7 +159,7 @@ virt_add_rhost()
 	vxlan|geneve)
 		[ "$virt_type" = "vxlan" ] && opt="dev $(tst_iface rhost)"
 		[ "$vxlan_dstport" -eq 1 ] && opt="$opt dstport 0"
-		tst_rhost_run -s -c "ip li add ltp_v0 type $virt_type $@ $opt"
+		tst_rhost_run -s -c "ip link add ltp_v0 type $virt_type $@ $opt"
 	;;
 	sit|wireguard)
 		tst_rhost_run -s -c "ip link add ltp_v0 type $virt_type $@"
@@ -173,7 +173,7 @@ virt_add_rhost()
 				     type $(_get_gue_fou_tnl $virt_type) $@"
 	;;
 	*)
-		tst_rhost_run -s -c "ip li add link $(tst_iface rhost) ltp_v0 \
+		tst_rhost_run -s -c "ip link add link $(tst_iface rhost) ltp_v0 \
 				     type $virt_type $@"
 	;;
 	esac
@@ -239,8 +239,8 @@ virt_setup()
 	ROD_SILENT "sysctl -q net.ipv6.conf.ltp_v0.accept_dad=0"
 	tst_rhost_run -s -c "sysctl -q net.ipv6.conf.ltp_v0.accept_dad=0"
 
-	ROD_SILENT "ip li set up ltp_v0"
-	tst_rhost_run -s -c "ip li set up ltp_v0"
+	ROD_SILENT "ip link set up ltp_v0"
+	tst_rhost_run -s -c "ip link set up ltp_v0"
 }
 
 virt_tcp_syn=
@@ -266,7 +266,7 @@ vxlan_setup_subnet_uni()
 		tst_brk TCONF "test must be run with kernel 3.10 or newer"
 	fi
 
-	[ "$(ip li add type $virt_type help 2>&1 | grep remote)" ] || \
+	[ "$(ip link add type $virt_type help 2>&1 | grep remote)" ] || \
 		tst_brk TCONF "iproute doesn't support remote unicast address"
 
 	local opt="$1 remote $(tst_ipaddr rhost)"
@@ -329,7 +329,7 @@ virt_check_cmd()
 		tst_res TCONF "'$@' option(s) not supported, skipping it"
 		return 1
 	fi
-	ROD_SILENT "ip li delete ltp_v0"
+	ROD_SILENT "ip link delete ltp_v0"
 	return 0
 }
 

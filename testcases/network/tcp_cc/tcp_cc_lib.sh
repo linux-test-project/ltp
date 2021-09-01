@@ -31,7 +31,7 @@ tcp_cc_cleanup()
 		tst_set_sysctl net.ipv4.tcp_congestion_control $prev_alg
 
 	[ "$prev_qlen" ] && \
-		tst_rhost_run -c "ip li set txqueuelen $prev_qlen $rmt_dev"
+		tst_rhost_run -c "ip link set txqueuelen $prev_qlen $rmt_dev"
 
 	[ "$prev_queue" ] && \
 		tst_rhost_run -c "tc qdisc replace $rmt_dev root $prev_queue"
