@@ -72,7 +72,7 @@ void tst_wallclock_restore(void)
 	 * might not be enough because the current access time might be far
 	 * in the future.
 	 */
-	ret = access(localtime, F_OK);
+	ret = access(localtime, F_OK | W_OK);
 	if (!ret)
 		SAFE_TOUCH(localtime, 0, NULL);
 }
