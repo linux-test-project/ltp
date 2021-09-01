@@ -26,7 +26,7 @@
 #
 # Description:
 #   Verify that the kernel is not crashed with receiving and sending ICMP
-#   message at differnt NIC with the following conditions
+#   message at different NIC with the following conditions
 #
 #     - The version of IP is IPv6
 #     - IPsec(ESP), tunnel mode
