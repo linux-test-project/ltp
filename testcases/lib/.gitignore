@@ -2,6 +2,7 @@
 /tst_checkpoint
 /tst_device
 /tst_getconf
+/tst_get_free_pids
 /tst_get_median
 /tst_get_unused_port
 /tst_kvcmp
