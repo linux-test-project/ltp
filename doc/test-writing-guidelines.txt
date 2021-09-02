@@ -125,13 +125,13 @@ LTP adopted Linux kernel coding style. If you aren't familiar with its rules
 locate 'linux/Documentation/CodingStyle' in the kernel sources and read it,
 it's a well written introduction.
 
-There is also
+Run `make check` in the test's directory and/or use `make check-$TCID`,
+it uses (among other checks) our vendored version of
 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/scripts/checkpatch.pl[checkpatch.pl]
-script from kernel git tree which can be used to check your patches before the
-submission. Please use reasonably recent one.
+script from kernel git tree.
 
-NOTE: If checkpatch.pl does not report any problems, the code still may be wrong
-      as the tool only looks for common mistakes.
+NOTE: If `make check` does not report any problems, the code still may be wrong
+      as all tools used for checking only look for common mistakes.
 
 2.2 Shell coding style
 ^^^^^^^^^^^^^^^^^^^^^^
