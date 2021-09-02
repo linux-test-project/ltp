@@ -110,6 +110,6 @@ $(INSTALL_FILES): | $(INSTALL_DEPS)
 install: $(INSTALL_FILES)
 
 $(CHECK_TARGETS): | $(CHECK_DEPS)
-check: $(CHECK_TARGETS)
+check: $(CHECK_TARGETS) $(SHELL_CHECK_TARGETS)
 
 # vim: syntax=make

@@ -93,6 +93,8 @@ CHECK_TARGETS			?= $(addprefix check-,$(notdir $(patsubst %.c,%,$(sort $(wildcar
 CHECK_TARGETS			:= $(filter-out $(addprefix check-, $(FILTER_OUT_MAKE_TARGETS)), $(CHECK_TARGETS))
 CHECK				?= $(abs_top_srcdir)/tools/sparse/sparse-ltp
 CHECK_NOFLAGS			?= $(abs_top_srcdir)/scripts/checkpatch.pl -f --no-tree --terse --no-summary --ignore CONST_STRUCT,VOLATILE,SPLIT_STRING
+SHELL_CHECK			?= $(abs_top_srcdir)/scripts/checkbashisms.pl --force --extra
+SHELL_CHECK_TARGETS		?= $(addprefix check-,$(notdir $(sort $(wildcard $(abs_srcdir)/*.sh))))
 
 ifeq ($(CHECK),$(abs_top_srcdir)/tools/sparse/sparse-ltp)
 CHECK_DEPS			+= $(CHECK)

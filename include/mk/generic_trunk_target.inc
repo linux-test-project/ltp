@@ -69,7 +69,7 @@ $(INSTALL_FILES): | $(INSTALL_DEPS)
 trunk-install: $(INSTALL_FILES)
 
 $(CHECK_TARGETS): | $(CHECK_DEPS)
-trunk-check: $(CHECK_TARGETS)
+trunk-check: $(CHECK_TARGETS) $(SHELL_CHECK_TARGETS)
 
 # Avoid creating duplicate .PHONY references to all, clean, and install. IIRC,
 # I've seen some indeterministic behavior when one does this in the past with

@@ -48,3 +48,12 @@ else
 	@-$(CHECK_NOFLAGS) $<
 	@-$(CHECK) $(CHECK_FLAGS) $(CPPFLAGS) $(CFLAGS) $<
 endif
+
+.PHONY: $(SHELL_CHECK_TARGETS)
+$(SHELL_CHECK_TARGETS): check-%.sh: %.sh
+ifdef VERBOSE
+	-$(SHELL_CHECK) $<
+else
+	@echo CHECK $(target_rel_dir)$<
+	@-$(SHELL_CHECK) $<
+endif
