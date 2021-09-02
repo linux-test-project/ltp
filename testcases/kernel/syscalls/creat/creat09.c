@@ -18,6 +18,16 @@
  *  Date:   Tue Jul 3 17:10:19 2018 -0700
  *
  *  Fix up non-directory creation in SGID directories
+ *
+ * This fix is incomplete if file is on xfs filesystem.
+ *
+ * Fixed in:
+ *
+ *  commit 01ea173e103edd5ec41acec65b9261b87e123fc2
+ *  Author: Christoph Hellwig <hch@lst.de>
+ *  Date:   Fri Jan 22 16:48:18 2021 -0800
+ *
+ *  xfs: fix up non-directory creation in SGID directories
  */
 
 #include <stdlib.h>
@@ -112,6 +122,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "0fa3ecd87848"},
 		{"CVE", "2018-13405"},
+		{"linux-git", "01ea173e103e"},
 		{}
 	},
 };
