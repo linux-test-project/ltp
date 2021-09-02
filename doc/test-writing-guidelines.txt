@@ -150,9 +150,13 @@ to 'dash' by default or install 'dash' on your favorite distribution and use
 it to run the tests. If your distribution lacks 'dash' package you can always
 compile it from http://gondor.apana.org.au/~herbert/dash/files/[source].
 
-Debian also has nice devscript
+Run `make check` in the test's directory and/or use `make check-$TCID.sh`,
+it uses (among other checks) our vendored version of
 https://salsa.debian.org/debian/devscripts/raw/master/scripts/checkbashisms.pl[checkbashism.pl]
-that can be used to check for non-portable shell code.
+from Debian, that is used to check for non-portable shell code.
+
+NOTE: If `make check` does not report any problems, the code still may be wrong
+      as `checkbashisms.pl` used for checking only looks for common mistakes.
 
 Here are some common sense style rules for shell
 
