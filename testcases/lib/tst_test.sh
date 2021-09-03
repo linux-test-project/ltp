@@ -30,7 +30,7 @@ _tst_do_exit()
 	TST_DO_EXIT=1
 
 	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
-		if type $TST_CLEANUP >/dev/null 2>/dev/null; then
+		if command -v $TST_CLEANUP >/dev/null 2>/dev/null; then
 			$TST_CLEANUP
 		else
 			tst_res TWARN "TST_CLEANUP=$TST_CLEANUP declared, but function not defined (or cmd not found)"
@@ -691,7 +691,7 @@ tst_run()
 	[ -n "$TST_NEEDS_CHECKPOINTS" ] && _tst_init_checkpoints
 
 	if [ -n "$TST_SETUP" ]; then
-		if type $TST_SETUP >/dev/null 2>/dev/null; then
+		if command -v $TST_SETUP >/dev/null 2>/dev/null; then
 			TST_DO_CLEANUP=1
 			$TST_SETUP
 		else
@@ -723,7 +723,7 @@ _tst_run_tests()
 
 	TST_DO_CLEANUP=1
 	for _tst_i in $(seq ${TST_CNT:-1}); do
-		if type ${TST_TESTFUNC}1 > /dev/null 2>&1; then
+		if command -v ${TST_TESTFUNC}1 > /dev/null 2>&1; then
 			_tst_run_test "$TST_TESTFUNC$_tst_i" $_tst_i "$_tst_data"
 		else
 			_tst_run_test "$TST_TESTFUNC" $_tst_i "$_tst_data"
