@@ -37,6 +37,7 @@
 #include <pwd.h>
 
 #include "tst_test.h"
+#include "tst_uid.h"
 
 #define MODE_RWX	(mode_t)(S_IRWXU | S_IRWXG | S_IRWXO)
 #define DIR_MODE	(mode_t)(S_ISVTX | S_ISGID | S_IFDIR)
@@ -69,10 +70,10 @@ static void test_chmod(void)
 static void setup(void)
 {
 	struct passwd *nobody_u;
-	struct group *bin_gr;
+	gid_t free_gid;
 
 	nobody_u = SAFE_GETPWNAM("nobody");
-	bin_gr = SAFE_GETGRNAM("bin");
+	free_gid = tst_get_free_gid(nobody_u->pw_gid);
 
 	/*
 	 * Create a test directory under temporary directory with specified
@@ -83,7 +84,7 @@ static void setup(void)
 	if (setgroups(1, &nobody_u->pw_gid) == -1)
 		tst_brk(TBROK | TERRNO, "setgroups to nobody's gid failed");
 
-	SAFE_CHOWN(TESTDIR, nobody_u->pw_uid, bin_gr->gr_gid);
+	SAFE_CHOWN(TESTDIR, nobody_u->pw_uid, free_gid);
 
 	/* change to nobody:nobody */
 	SAFE_SETEGID(nobody_u->pw_gid);

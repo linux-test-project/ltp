@@ -20,6 +20,7 @@
 #include <errno.h>
 
 #include "tst_test.h"
+#include "tst_uid.h"
 #include "fchmod.h"
 
 #define PERMS_DIR	043777
@@ -50,10 +51,10 @@ static void verify_fchmod(void)
 static void setup(void)
 {
 	struct passwd *ltpuser;
-	struct group *ltpgroup;
+	gid_t free_gid;
 
 	ltpuser = SAFE_GETPWNAM("nobody");
-	ltpgroup = SAFE_GETGRNAM("bin");
+	free_gid = tst_get_free_gid(ltpuser->pw_gid);
 
 	SAFE_MKDIR(TESTDIR, DIR_MODE);
 
@@ -62,7 +63,7 @@ static void setup(void)
 			tst_strerrno(TST_ERR));
 	}
 
-	SAFE_CHOWN(TESTDIR, ltpuser->pw_uid, ltpgroup->gr_gid);
+	SAFE_CHOWN(TESTDIR, ltpuser->pw_uid, free_gid);
 
 	SAFE_SETEGID(ltpuser->pw_gid);
 	SAFE_SETEUID(ltpuser->pw_uid);
