@@ -168,6 +168,10 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_MANDATORY_FILE_LOCKING=y",
+		NULL
+	},
 	.test_all = verify_ftruncate,
 	.setup = setup,
 	.needs_checkpoints = 1,
