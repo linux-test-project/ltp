@@ -12,26 +12,28 @@
 #define _GNU_SOURCE
 
 #include "tst_test.h"
+#include "tst_timer.h"
 #include "copy_file_range.h"
 
 static int fd_src;
 static int fd_dest;
 
-unsigned long get_timestamp(int fd)
+struct timespec get_timestamp(int fd)
 {
 	struct stat filestat;
 
 	fstat(fd, &filestat);
-	return filestat.st_mtime;
+	return filestat.st_mtim;
 }
 
 static void verify_copy_file_range_timestamp(void)
 {
 	loff_t offset;
-	unsigned long timestamp, updated_timestamp;
+	struct timespec timestamp1, timestamp2;
+	long long diff_us;
 
-	timestamp = get_timestamp(fd_dest);
-	usleep(1000000);
+	timestamp1 = get_timestamp(fd_dest);
+	usleep(1500000);
 
 	offset = 0;
 	TEST(sys_copy_file_range(fd_src, &offset,
@@ -40,12 +42,14 @@ static void verify_copy_file_range_timestamp(void)
 		tst_brk(TBROK | TTERRNO,
 				"copy_file_range unexpectedly failed");
 
-	updated_timestamp = get_timestamp(fd_dest);
+	timestamp2 = get_timestamp(fd_dest);
 
-	if (timestamp == updated_timestamp)
-		tst_brk(TFAIL, "copy_file_range did not update timestamp.");
+	diff_us = tst_timespec_diff_us(timestamp2, timestamp1);
 
-	tst_res(TPASS, "copy_file_range sucessfully updated the timestamp");
+	if (diff_us >= 1000000 && diff_us <= 30000000)
+		tst_res(TPASS, "copy_file_range sucessfully updated the timestamp");
+	else
+		tst_brk(TFAIL, "diff_us = %lld, copy_file_range might not update timestamp", diff_us);
 }
 
 static void cleanup(void)
