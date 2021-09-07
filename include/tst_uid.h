@@ -15,4 +15,13 @@
 gid_t tst_get_free_gid_(const char *file, const int lineno, gid_t skip);
 #define tst_get_free_gid(skip) tst_get_free_gid_(__FILE__, __LINE__, (skip))
 
+/*
+ * Get a specific number of unique existing non-root user or group IDs.
+ * The "start" parameter is the number of buffer entries that are already
+ * filled and will not be modified. The function will fill the remaining
+ * (size-start) entries with unique UID/GID values.
+ */
+void tst_get_uids(uid_t *buf, unsigned int start, unsigned int size);
+void tst_get_gids(gid_t *buf, unsigned int start, unsigned int size);
+
 #endif /* TST_UID_H_ */

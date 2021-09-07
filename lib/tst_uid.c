@@ -36,3 +36,35 @@ gid_t tst_get_free_gid_(const char *file, const int lineno, gid_t skip)
 	tst_brk_(file, lineno, TBROK, "No free group ID found");
 	return (gid_t)-1;
 }
+
+void tst_get_uids(uid_t *buf, unsigned int start, unsigned int count)
+{
+	unsigned int i, j;
+	uid_t id;
+
+	for (i = start, id = 1; i < count; id++) {
+		for (j = 0; j < start; j++) {
+			if (buf[j] == id)
+				break;
+		}
+
+		if (j >= start)
+			buf[i++] = id;
+	}
+}
+
+void tst_get_gids(gid_t *buf, unsigned int start, unsigned int count)
+{
+	unsigned int i, j;
+	gid_t id;
+
+	for (i = start, id = 1; i < count; id++) {
+		for (j = 0; j < start; j++) {
+			if (buf[j] == id)
+				break;
+		}
+
+		if (j >= start)
+			buf[i++] = id;
+	}
+}
