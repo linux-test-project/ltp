@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
+#include "tst_uid.h"
 #include "compat_tst_16.h"
 
 static gid_t root_gid, nobody_gid, other_gid, neg_one = -1;
@@ -40,25 +41,16 @@ static struct tcase {
 	&neg_one, &root_gid, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(-1, root),"}, {
 	&neg_one, &other_gid, EPERM, &nobody_gid, &nobody_gid,
-		    "After setregid(-1, bin)"}, {
+		    "After setregid(-1, other)"}, {
 	&root_gid, &neg_one, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(root,-1),"}, {
 	&other_gid, &neg_one, EPERM, &nobody_gid, &nobody_gid,
-		    "After setregid(bin, -1),"}, {
+		    "After setregid(other, -1),"}, {
 	&root_gid, &other_gid, EPERM, &nobody_gid, &nobody_gid,
-		    "After setregid(root, bin)"}, {
+		    "After setregid(root, other)"}, {
 	&other_gid, &root_gid, EPERM, &nobody_gid, &nobody_gid,
-		    "After setregid(bin, root),"}
+		    "After setregid(other, root),"}
 };
-
-static gid_t get_group_by_name(const char *name)
-{
-	struct group *ret = SAFE_GETGRNAM(name);
-
-	GID16_CHECK(ret->gr_gid, setregid);
-
-	return ret->gr_gid;
-}
 
 void gid_verify(gid_t rg, gid_t eg, char *when)
 {
@@ -101,15 +93,20 @@ static void run(unsigned int n)
 
 static void setup(void)
 {
+	gid_t test_groups[3];
+
 	ltpuser = SAFE_GETPWNAM("nobody");
+	nobody_gid = test_groups[0] = ltpuser->pw_gid;
+	root_gid = test_groups[1] = getgid();
+	tst_get_gids(test_groups, 2, 3);
+	other_gid = test_groups[2];
+
+	GID16_CHECK(root_gid, setregid);
+	GID16_CHECK(nobody_gid, setregid);
+	GID16_CHECK(other_gid, setregid);
 
 	SAFE_SETGID(ltpuser->pw_gid);
 	SAFE_SETUID(ltpuser->pw_uid);
-
-	nobody_gid = ltpuser->pw_gid;
-	GID16_CHECK(nobody_gid, setregid);
-	root_gid = get_group_by_name("root");
-	other_gid = get_group_by_name("bin");
 }
 
 static struct tst_test test = {

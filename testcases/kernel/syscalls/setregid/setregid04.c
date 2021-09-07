@@ -10,6 +10,7 @@
  */
 
 #include "tst_test.h"
+#include "tst_uid.h"
 #include "compat_tst_16.h"
 
 static gid_t first_gid, second_gid, root_gid, neg_one = -1;
@@ -30,7 +31,7 @@ struct test_data_t {
 	&root_gid, &root_gid, &root_gid, &root_gid,
 		    "After setregid(root, root),"}, {
 	&first_gid, &neg_one, &first_gid, &root_gid,
-		    "After setregid(nobody, -1)"}, {
+		    "After setregid(first, -1)"}, {
 	&root_gid, &neg_one, &root_gid, &root_gid,
 		    "After setregid(root,-1),"}, {
 	&neg_one, &neg_one, &root_gid, &root_gid,
@@ -40,11 +41,11 @@ struct test_data_t {
 	&root_gid, &neg_one, &root_gid, &root_gid,
 		    "After setregid(root, -1),"}, {
 	&second_gid, &first_gid, &second_gid, &first_gid,
-		    "After setregid(daemon, nobody)"}, {
+		    "After setregid(second, first)"}, {
 	&neg_one, &neg_one, &second_gid, &first_gid,
 		    "After setregid(-1, -1)"}, {
 	&neg_one, &first_gid, &second_gid, &first_gid,
-		    "After setregid(-1, nobody)"}
+		    "After setregid(-1, first)"}
 };
 
 static void gid_verify(gid_t rg, gid_t eg, const char *when)
@@ -77,9 +78,12 @@ static void run(unsigned int i)
 
 static void setup(void)
 {
-	root_gid = SAFE_GETGRNAM("root")->gr_gid;
-	first_gid = SAFE_GETGRNAM_FALLBACK("nobody", "nogroup")->gr_gid;
-	second_gid = SAFE_GETGRNAM("daemon")->gr_gid;
+	gid_t test_groups[3];
+
+	root_gid = test_groups[0] = getgid();
+	tst_get_gids(test_groups, 1, 3);
+	first_gid = test_groups[1];
+	second_gid = test_groups[2];
 }
 
 static struct tst_test test = {

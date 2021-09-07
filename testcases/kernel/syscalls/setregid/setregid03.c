@@ -12,13 +12,12 @@
 #include <pwd.h>
 
 #include "tst_test.h"
+#include "tst_uid.h"
 #include "compat_tst_16.h"
 
 static int fail = -1;
 static int pass;
 static gid_t primary_gid, secondary_gid, neg_one = -1;
-
-struct passwd nobody;
 
 struct tcase {
 	gid_t *real_gid;
@@ -30,48 +29,44 @@ struct tcase {
 } tcases[] = {
 	{
 	&primary_gid, &secondary_gid, &pass, &primary_gid, &secondary_gid,
-		    "After setregid(daemon, bin),"}, {
+		    "After setregid(primary, secondary),"}, {
 	&neg_one, &primary_gid, &pass, &primary_gid, &primary_gid,
-		    "After setregid(-1, daemon)"}, {
+		    "After setregid(-1, primary)"}, {
 	&neg_one, &secondary_gid, &pass, &primary_gid, &secondary_gid,
-		    "After setregid(-1, bin),"}, {
+		    "After setregid(-1, secondary),"}, {
 	&secondary_gid, &neg_one, &pass, &secondary_gid, &secondary_gid,
-		    "After setregid(bin, -1),"}, {
+		    "After setregid(secondary, -1),"}, {
 	&neg_one, &neg_one, &pass, &secondary_gid, &secondary_gid,
 		    "After setregid(-1, -1),"}, {
 	&neg_one, &secondary_gid, &pass, &secondary_gid, &secondary_gid,
-		    "After setregid(-1, bin),"}, {
+		    "After setregid(-1, secondary),"}, {
 	&secondary_gid, &neg_one, &pass, &secondary_gid, &secondary_gid,
-		    "After setregid(bin, -1),"}, {
+		    "After setregid(secondary, -1),"}, {
 	&secondary_gid, &secondary_gid, &pass, &secondary_gid, &secondary_gid,
-		    "After setregid(bin, bin),"}, {
+		    "After setregid(secondary, secondary),"}, {
 	&primary_gid, &neg_one, &fail, &secondary_gid, &secondary_gid,
-		    "After setregid(daemon, -1)"}, {
+		    "After setregid(primary, -1)"}, {
 	&neg_one, &primary_gid, &fail, &secondary_gid, &secondary_gid,
-		    "After setregid(-1, daemon)"}, {
+		    "After setregid(-1, primary)"}, {
 	&primary_gid, &primary_gid, &fail, &secondary_gid, &secondary_gid,
-		    "After setregid(daemon, daemon)"},};
-
-
-static gid_t get_group(const char *group)
-{
-	struct group *junk;
-
-	junk = SAFE_GETGRNAM(group);
-	GID16_CHECK(junk->gr_gid, setregid);
-	return junk->gr_gid;
-}
+		    "After setregid(primary, primary)"},};
 
 static void setup(void)
 {
-	nobody = *SAFE_GETPWNAM("nobody");
+	struct passwd *nobody;
+	gid_t test_groups[2];
 
-	primary_gid = get_group("daemon");
-	secondary_gid = get_group("bin");
+	nobody = SAFE_GETPWNAM("nobody");
+
+	tst_get_gids(test_groups, 0, 2);
+	primary_gid = test_groups[0];
+	secondary_gid = test_groups[1];
+	GID16_CHECK(primary_gid, setregid);
+	GID16_CHECK(secondary_gid, setregid);
 
 	/* set the appropriate ownership values */
 	SAFE_SETREGID(primary_gid, secondary_gid);
-	SAFE_SETEUID(nobody.pw_uid);
+	SAFE_SETEUID(nobody->pw_uid);
 }
 
 static void test_success(struct tcase *tc)
