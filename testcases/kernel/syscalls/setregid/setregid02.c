@@ -19,11 +19,9 @@
 #include "tst_test.h"
 #include "compat_tst_16.h"
 
-static gid_t neg_one = -1;
+static gid_t root_gid, nobody_gid, other_gid, neg_one = -1;
 
 static struct passwd *ltpuser;
-
-static struct group ltpgroup, root, bin;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -34,50 +32,41 @@ static struct tcase {
 	gid_t *real_gid;
 	gid_t *eff_gid;
 	int exp_errno;
-	struct group *exp_real_usr;
-	struct group *exp_eff_usr;
+	gid_t *exp_real_usr;
+	gid_t *exp_eff_usr;
 	char *test_msg;
 } tcases[] = {
 	{
-	&neg_one, &root.gr_gid, EPERM, &ltpgroup, &ltpgroup,
+	&neg_one, &root_gid, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(-1, root),"}, {
-	&neg_one, &bin.gr_gid, EPERM, &ltpgroup, &ltpgroup,
+	&neg_one, &other_gid, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(-1, bin)"}, {
-	&root.gr_gid, &neg_one, EPERM, &ltpgroup, &ltpgroup,
+	&root_gid, &neg_one, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(root,-1),"}, {
-	&bin.gr_gid, &neg_one, EPERM, &ltpgroup, &ltpgroup,
+	&other_gid, &neg_one, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(bin, -1),"}, {
-	&root.gr_gid, &bin.gr_gid, EPERM, &ltpgroup, &ltpgroup,
+	&root_gid, &other_gid, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(root, bin)"}, {
-	&bin.gr_gid, &root.gr_gid, EPERM, &ltpgroup, &ltpgroup,
+	&other_gid, &root_gid, EPERM, &nobody_gid, &nobody_gid,
 		    "After setregid(bin, root),"}
 };
 
-static struct group get_group_by_name(const char *name)
+static gid_t get_group_by_name(const char *name)
 {
 	struct group *ret = SAFE_GETGRNAM(name);
 
 	GID16_CHECK(ret->gr_gid, setregid);
 
-	return *ret;
+	return ret->gr_gid;
 }
 
-static struct group get_group_by_gid(gid_t gid)
+void gid_verify(gid_t rg, gid_t eg, char *when)
 {
-	struct group *ret = SAFE_GETGRGID(gid);
-
-	GID16_CHECK(ret->gr_gid, setregid);
-
-	return *ret;
-}
-
-void gid_verify(struct group *rg, struct group *eg, char *when)
-{
-	if ((getgid() != rg->gr_gid) || (getegid() != eg->gr_gid)) {
+	if ((getgid() != rg) || (getegid() != eg)) {
 		tst_res(TFAIL, "ERROR: %s real gid = %d; effective gid = %d",
 			 when, getgid(), getegid());
 		tst_res(TINFO, "Expected: real gid = %d; effective gid = %d",
-			 rg->gr_gid, eg->gr_gid);
+			 rg, eg);
 		return;
 	}
 
@@ -107,7 +96,7 @@ static void run(unsigned int n)
 			"setregid(%d, %d) did not fail (ret: %ld) as expected (ret: -1).",
 			*tc->real_gid, *tc->eff_gid, TST_RET);
 	}
-	gid_verify(tc->exp_real_usr, tc->exp_eff_usr, tc->test_msg);
+	gid_verify(*tc->exp_real_usr, *tc->exp_eff_usr, tc->test_msg);
 }
 
 static void setup(void)
@@ -117,9 +106,10 @@ static void setup(void)
 	SAFE_SETGID(ltpuser->pw_gid);
 	SAFE_SETUID(ltpuser->pw_uid);
 
-	root = get_group_by_name("root");
-	ltpgroup = get_group_by_gid(ltpuser->pw_gid);
-	bin = get_group_by_name("bin");
+	nobody_gid = ltpuser->pw_gid;
+	GID16_CHECK(nobody_gid, setregid);
+	root_gid = get_group_by_name("root");
+	other_gid = get_group_by_name("bin");
 }
 
 static struct tst_test test = {
