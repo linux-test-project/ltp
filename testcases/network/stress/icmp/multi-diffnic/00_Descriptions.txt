@@ -1,5 +1,5 @@
 Verify that the kernel is not crashed with receiving and sending various
-size of ICMP message at differnt NIC simultaneously
+size of ICMP message at different NIC simultaneously
 
 icmp4-multi-diffnic01
 	IPv4

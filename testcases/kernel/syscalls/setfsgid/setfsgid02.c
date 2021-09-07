@@ -1,91 +1,73 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) International Business Machines  Corp., 2001
  * Ported by Wayne Boyer
- * Adapted by Dustin Kirkland (k1rkland@us.ibm.com)
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Adapted by Dustin Kirkland <k1rkland@us.ibm.com>
+ * Adapted by Zhao gongyi <zhaogongyi@huawei.com>
  */
 
-/*
- *     Testcase to check the basic functionality of setfsgid(2) system
- *     call failures.
+/*\
+ * [Description]
+ *
+ * Testcase for setfsgid() syscall to check that
+ *
+ * - privileged user can change a filesystem group ID different from saved
+ *  value of previous setfsgid() call
+ * - unprivileged user cannot change it
  */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <grp.h>
 #include <pwd.h>
-#include <sys/types.h>
-#include <errno.h>
+#include "tst_test.h"
+#include "compat_tst_16.h"
 
-#include "test.h"
-#include "compat_16.h"
+static gid_t gid;
+static gid_t pre_gid;
+static const char nobody_uid[] = "nobody";
+static struct passwd *ltpuser;
 
-TCID_DEFINE(setfsgid02);
-int TST_TOTAL = 1;
-
-static void setup(void);
-static void cleanup(void);
-
-int main(int ac, char **av)
+static void run(unsigned int i)
 {
-	int lc;
+	int cnt;
 
-	gid_t gid;
+	GID16_CHECK(gid, setfsgid);
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	if (i == 0) {
+		ltpuser = SAFE_GETPWNAM(nobody_uid);
+		SAFE_SETEUID(ltpuser->pw_uid);
+	}
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		gid = 1;
-		while (getgrgid(gid))
-			gid++;
-
-		GID16_CHECK(gid, setfsgid, cleanup);
-
-		TEST(SETFSGID(cleanup, gid));
-
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO,
-				"setfsgid() failed unexpectedly");
-			continue;
-		}
-
-		if (TEST_RETURN == gid) {
-			tst_resm(TFAIL, "setfsgid() returned %ld, expected %d",
-				 TEST_RETURN, gid);
+	/*
+	 * Run SETFSGID() twice to check the second running have changed
+	 * the gid for privileged user, and have not changed the gid
+	 * for unprivileged user.
+	 */
+	for (cnt = 0; cnt < 2; cnt++) {
+		TEST(SETFSGID(gid));
+		if ((long)pre_gid != TST_RET) {
+			tst_res(TFAIL, "EUID %d: setfsgid() returned %ld", geteuid(), TST_RET);
 		} else {
-			tst_resm(TPASS, "setfsgid() returned expected value : "
-				 "%ld", TEST_RETURN);
+			tst_res(TPASS, "EUID %d: setfsgid() returned expected value: %ld",
+				geteuid(), TST_RET);
+			if (i == 1) {
+				pre_gid = gid;
+				gid++;
+			}
 		}
 	}
 
-	cleanup();
-	tst_exit();
+	if (i == 0)
+		SAFE_SETEUID(0);
 }
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
+	pre_gid = 0;
+	gid = 1;
 }
 
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.needs_root = 1,
+	.setup = setup,
+	.test = run,
+	.tcnt = 2,
+};

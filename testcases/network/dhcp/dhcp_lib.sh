@@ -58,12 +58,12 @@ dhcp_lib_setup()
 	lsmod | grep -q '^veth ' && veth_loaded=yes || veth_loaded=no
 
 	tst_res TINFO "create veth interfaces"
-	ip li add $iface0 type veth peer name $iface1 || \
+	ip link add $iface0 type veth peer name $iface1 || \
 		tst_brk TBROK "failed to add veth $iface0"
 
 	veth_added=1
-	ip li set up $iface0 || tst_brk TBROK "failed to bring $iface0 up"
-	ip li set up $iface1 || tst_brk TBROK "failed to bring $iface1 up"
+	ip link set up $iface0 || tst_brk TBROK "failed to bring $iface0 up"
+	ip link set up $iface1 || tst_brk TBROK "failed to bring $iface1 up"
 
 	stop_dhcp || tst_brk TBROK "Failed to stop dhcp server"
 
@@ -102,7 +102,7 @@ dhcp_lib_cleanup()
 	[ -f "dhclient${TST_IPV6}.leases" ] && \
 		mv dhclient${TST_IPV6}.leases $dhclient_lease
 
-	[ $veth_added ] && ip li del $iface0
+	[ $veth_added ] && ip link del $iface0
 
 	[ "$veth_loaded" = "no" ] && lsmod | grep -q '^veth ' && rmmod veth
 }

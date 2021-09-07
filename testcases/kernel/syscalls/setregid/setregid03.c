@@ -12,77 +12,61 @@
 #include <pwd.h>
 
 #include "tst_test.h"
+#include "tst_uid.h"
 #include "compat_tst_16.h"
 
 static int fail = -1;
 static int pass;
-static gid_t neg_one = -1;
-
-struct group nobody_gr, daemon_gr, root_gr, bin_gr;
-struct passwd nobody;
+static gid_t primary_gid, secondary_gid, neg_one = -1;
 
 struct tcase {
 	gid_t *real_gid;
 	gid_t *eff_gid;
 	int *exp_ret;
-	struct group *exp_real_usr;
-	struct group *exp_eff_usr;
+	gid_t *exp_real_usr;
+	gid_t *exp_eff_usr;
 	char *test_msg;
 } tcases[] = {
 	{
-	&daemon_gr.gr_gid, &bin_gr.gr_gid, &pass, &daemon_gr, &bin_gr,
-		    "After setregid(daemon, bin),"}, {
-	&neg_one, &daemon_gr.gr_gid, &pass, &daemon_gr, &daemon_gr,
-		    "After setregid(-1, daemon)"}, {
-	&neg_one, &bin_gr.gr_gid, &pass, &daemon_gr, &bin_gr,
-		    "After setregid(-1, bin),"}, {
-	&bin_gr.gr_gid, &neg_one, &pass, &bin_gr, &bin_gr,
-		    "After setregid(bin, -1),"}, {
-	&neg_one, &neg_one, &pass, &bin_gr, &bin_gr,
+	&primary_gid, &secondary_gid, &pass, &primary_gid, &secondary_gid,
+		    "After setregid(primary, secondary),"}, {
+	&neg_one, &primary_gid, &pass, &primary_gid, &primary_gid,
+		    "After setregid(-1, primary)"}, {
+	&neg_one, &secondary_gid, &pass, &primary_gid, &secondary_gid,
+		    "After setregid(-1, secondary),"}, {
+	&secondary_gid, &neg_one, &pass, &secondary_gid, &secondary_gid,
+		    "After setregid(secondary, -1),"}, {
+	&neg_one, &neg_one, &pass, &secondary_gid, &secondary_gid,
 		    "After setregid(-1, -1),"}, {
-	&neg_one, &bin_gr.gr_gid, &pass, &bin_gr, &bin_gr,
-		    "After setregid(-1, bin),"}, {
-	&bin_gr.gr_gid, &neg_one, &pass, &bin_gr, &bin_gr,
-		    "After setregid(bin, -1),"}, {
-	&bin_gr.gr_gid, &bin_gr.gr_gid, &pass, &bin_gr, &bin_gr,
-		    "After setregid(bin, bin),"}, {
-	&daemon_gr.gr_gid, &neg_one, &fail, &bin_gr, &bin_gr,
-		    "After setregid(daemon, -1)"}, {
-	&neg_one, &daemon_gr.gr_gid, &fail, &bin_gr, &bin_gr,
-		    "After setregid(-1, daemon)"}, {
-	&daemon_gr.gr_gid, &daemon_gr.gr_gid, &fail, &bin_gr, &bin_gr,
-		    "After setregid(daemon, daemon)"},};
-
-
-static struct group get_group_fallback(const char *gr1, const char *gr2)
-{
-	struct group *junk;
-
-	junk = SAFE_GETGRNAM_FALLBACK(gr1, gr2);
-	GID16_CHECK(junk->gr_gid, setregid);
-	return *junk;
-}
-
-static struct group get_group(const char *group)
-{
-	struct group *junk;
-
-	junk = SAFE_GETGRNAM(group);
-	GID16_CHECK(junk->gr_gid, setregid);
-	return *junk;
-}
+	&neg_one, &secondary_gid, &pass, &secondary_gid, &secondary_gid,
+		    "After setregid(-1, secondary),"}, {
+	&secondary_gid, &neg_one, &pass, &secondary_gid, &secondary_gid,
+		    "After setregid(secondary, -1),"}, {
+	&secondary_gid, &secondary_gid, &pass, &secondary_gid, &secondary_gid,
+		    "After setregid(secondary, secondary),"}, {
+	&primary_gid, &neg_one, &fail, &secondary_gid, &secondary_gid,
+		    "After setregid(primary, -1)"}, {
+	&neg_one, &primary_gid, &fail, &secondary_gid, &secondary_gid,
+		    "After setregid(-1, primary)"}, {
+	&primary_gid, &primary_gid, &fail, &secondary_gid, &secondary_gid,
+		    "After setregid(primary, primary)"},};
 
 static void setup(void)
 {
-	nobody = *SAFE_GETPWNAM("nobody");
+	struct passwd *nobody;
+	gid_t test_groups[2];
 
-	nobody_gr = get_group_fallback("nobody", "nogroup");
-	daemon_gr = get_group("daemon");
-	bin_gr = get_group("bin");
+	nobody = SAFE_GETPWNAM("nobody");
+
+	tst_get_gids(test_groups, 0, 2);
+	primary_gid = test_groups[0];
+	secondary_gid = test_groups[1];
+	GID16_CHECK(primary_gid, setregid);
+	GID16_CHECK(secondary_gid, setregid);
 
 	/* set the appropriate ownership values */
-	SAFE_SETREGID(daemon_gr.gr_gid, bin_gr.gr_gid);
-	SAFE_SETEUID(nobody.pw_uid);
+	SAFE_SETREGID(primary_gid, secondary_gid);
+	SAFE_SETEUID(nobody->pw_uid);
 }
 
 static void test_success(struct tcase *tc)
@@ -109,13 +93,13 @@ static void test_failure(struct tcase *tc)
 			*tc->real_gid, *tc->eff_gid);
 }
 
-static void gid_verify(struct group *rg, struct group *eg, char *when)
+static void gid_verify(gid_t rg, gid_t eg, char *when)
 {
-	if ((getgid() != rg->gr_gid) || (getegid() != eg->gr_gid)) {
+	if ((getgid() != rg) || (getegid() != eg)) {
 		tst_res(TFAIL, "ERROR: %s real gid = %d; effective gid = %d",
 			 when, getgid(), getegid());
 		tst_res(TINFO, "Expected: real gid = %d; effective gid = %d",
-			 rg->gr_gid, eg->gr_gid);
+			 rg, eg);
 	} else {
 		tst_res(TPASS,
 			"real or effective gid was modified as expected");
@@ -134,7 +118,7 @@ static void run(unsigned int i)
 	else
 		test_failure(tc);
 
-	gid_verify(tc->exp_real_usr, tc->exp_eff_usr, tc->test_msg);
+	gid_verify(*tc->exp_real_usr, *tc->exp_eff_usr, tc->test_msg);
 }
 
 void run_all(void)

@@ -156,6 +156,14 @@ EOF
 	cat >> "$makefile.2" <<EOF
 MAKE_TARGETS+=		${targets}
 
+ifeq (\$V,1)
+VERBOSE=1
+endif
+
+ifndef VERBOSE
+v=@
+endif
+
 EOF
 
 	if [ ! -f "$makefile.3" ]; then
@@ -178,7 +186,7 @@ install: \$(INSTALL_DIR) run.sh
 	@if [ -d speculative ]; then \$(MAKE) -C speculative install; fi
 
 test: run.sh
-	@./run.sh
+	\$(v)./run.sh
 
 \$(INSTALL_DIR):
 	mkdir -p \$@
@@ -231,7 +239,7 @@ EOF
 
 		cat >> "$makefile.3" <<EOF
 $bin_file: \$(srcdir)/$c_file
-	@if $COMPILE_STR > logfile.\$\$\$\$ 2>&1; then \\
+	\$(v)if $COMPILE_STR > logfile.\$\$\$\$ 2>&1; then \\
 		 cat logfile.\$\$\$\$; \\
 		 echo "\$(subdir)/$test_name compile PASSED"; \\
 		 echo "\$(subdir)/$test_name compile PASSED" >> \$(LOGFILE); \\

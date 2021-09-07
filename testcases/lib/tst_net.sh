@@ -109,14 +109,14 @@ init_ltp_netspace()
 		tst_require_root
 
 		tst_require_drivers veth
-		ROD ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
+		ROD ip link add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD ns_create net,mnt)"
 		mkdir -p /var/run/netns
 		ROD ln -s /proc/$pid/ns/net /var/run/netns/ltp_ns
 		ROD ns_exec $pid net,mnt mount --make-rprivate /sys
 		ROD ns_exec $pid net,mnt mount -t sysfs none /sys
 		ROD ns_ifmove ltp_ns_veth1 $pid
-		ROD ns_exec $pid net,mnt ip li set lo up
+		ROD ns_exec $pid net,mnt ip link set lo up
 	elif [ -n "$LTP_NETNS" ]; then
 		tst_res_ TINFO "using not default LTP netns: '$LTP_NETNS'"
 	fi

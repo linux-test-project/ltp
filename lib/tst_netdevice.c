@@ -157,7 +157,52 @@ int tst_create_veth_pair(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_remove_netdev(const char *file, const int lineno, const char *ifname)
+int tst_netdev_add_device(const char *file, const int lineno,
+	const char *ifname, const char *devtype)
+{
+	int ret;
+	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
+	struct tst_rtnl_context *ctx;
+	struct tst_rtnl_attr_list attrs[] = {
+		{IFLA_IFNAME, ifname, strlen(ifname) + 1, NULL},
+		{IFLA_LINKINFO, NULL, 0, (const struct tst_rtnl_attr_list[]){
+			{IFLA_INFO_KIND, devtype, strlen(devtype), NULL},
+			{0, NULL, -1, NULL}
+		}},
+		{0, NULL, -1, NULL}
+	};
+
+	if (strlen(ifname) >= IFNAMSIZ) {
+		tst_brk_(file, lineno, TBROK,
+			"Network device name \"%s\" too long", ifname);
+		return 0;
+	}
+
+	ctx = create_request(file, lineno, RTM_NEWLINK,
+		NLM_F_CREATE | NLM_F_EXCL, &info, sizeof(info));
+
+	if (!ctx)
+		return 0;
+
+	if (tst_rtnl_add_attr_list(file, lineno, ctx, attrs) != 2) {
+		tst_rtnl_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	ret = tst_rtnl_send_validate(file, lineno, ctx);
+	tst_rtnl_destroy_context(file, lineno, ctx);
+
+	if (!ret) {
+		tst_brk_(file, lineno, TBROK,
+			"Failed to create %s device %s: %s", devtype, ifname,
+			tst_strerrno(tst_rtnl_errno));
+	}
+
+	return ret;
+}
+
+int tst_netdev_remove_device(const char *file, const int lineno,
+	const char *ifname)
 {
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
 	struct tst_rtnl_context *ctx;

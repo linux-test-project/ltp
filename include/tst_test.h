@@ -79,6 +79,9 @@ void tst_brk_(const char *file, const int lineno, int ttype,
 		tst_brk_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__);\
 	})
 
+void tst_printf(const char *const fmt, ...)
+		__attribute__((nonnull(1), format (printf, 1, 2)));
+
 /* flush stderr and stdout */
 void tst_flush(void);
 
@@ -274,6 +277,8 @@ struct tst_test {
  */
 void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
                     __attribute__ ((noreturn));
+
+#define IPC_ENV_VAR "LTP_IPC_PATH"
 
 /*
  * Does library initialization for child processes started by exec()

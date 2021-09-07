@@ -26,7 +26,7 @@
 #
 # Description:
 #   Verify that the kernel is not crashed with receiving and sending UDP
-#   datagram at differnt NIC with the following conditions
+#   datagram at different NIC with the following conditions
 #     - The version of IP is IPv6
 #     - IPsec(AH), transport mode
 #

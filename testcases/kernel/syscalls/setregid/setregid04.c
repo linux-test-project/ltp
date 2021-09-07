@@ -10,11 +10,10 @@
  */
 
 #include "tst_test.h"
+#include "tst_uid.h"
 #include "compat_tst_16.h"
 
-static gid_t neg_one = -1;
-
-static struct group nobody_gr, daemon_gr, root_gr, bin_gr;
+static gid_t first_gid, second_gid, root_gid, neg_one = -1;
 
 /*
  * The following structure contains all test data.  Each structure in the array
@@ -24,44 +23,43 @@ static struct group nobody_gr, daemon_gr, root_gr, bin_gr;
 struct test_data_t {
 	gid_t *real_gid;
 	gid_t *eff_gid;
-	struct group *exp_real_usr;
-	struct group *exp_eff_usr;
+	gid_t *exp_real_usr;
+	gid_t *exp_eff_usr;
 	const char *test_msg;
 } test_data[] = {
 	{
-	&root_gr.gr_gid, &root_gr.gr_gid, &root_gr, &root_gr,
+	&root_gid, &root_gid, &root_gid, &root_gid,
 		    "After setregid(root, root),"}, {
-	&nobody_gr.gr_gid, &neg_one, &nobody_gr, &root_gr,
-		    "After setregid(nobody, -1)"}, {
-	&root_gr.gr_gid, &neg_one, &root_gr, &root_gr,
+	&first_gid, &neg_one, &first_gid, &root_gid,
+		    "After setregid(first, -1)"}, {
+	&root_gid, &neg_one, &root_gid, &root_gid,
 		    "After setregid(root,-1),"}, {
-	&neg_one, &neg_one, &root_gr, &root_gr,
+	&neg_one, &neg_one, &root_gid, &root_gid,
 		    "After setregid(-1, -1),"}, {
-	&neg_one, &root_gr.gr_gid, &root_gr, &root_gr,
+	&neg_one, &root_gid, &root_gid, &root_gid,
 		    "After setregid(-1, root)"}, {
-	&root_gr.gr_gid, &neg_one, &root_gr, &root_gr,
+	&root_gid, &neg_one, &root_gid, &root_gid,
 		    "After setregid(root, -1),"}, {
-	&daemon_gr.gr_gid, &nobody_gr.gr_gid, &daemon_gr, &nobody_gr,
-		    "After setregid(daemon, nobody)"}, {
-	&neg_one, &neg_one, &daemon_gr, &nobody_gr,
+	&second_gid, &first_gid, &second_gid, &first_gid,
+		    "After setregid(second, first)"}, {
+	&neg_one, &neg_one, &second_gid, &first_gid,
 		    "After setregid(-1, -1)"}, {
-	&neg_one, &nobody_gr.gr_gid, &daemon_gr, &nobody_gr,
-		    "After setregid(-1, nobody)"}
+	&neg_one, &first_gid, &second_gid, &first_gid,
+		    "After setregid(-1, first)"}
 };
 
-static void gid_verify(struct group *rg, struct group *eg, const char *when)
+static void gid_verify(gid_t rg, gid_t eg, const char *when)
 {
-	if ((getgid() != rg->gr_gid) || (getegid() != eg->gr_gid)) {
+	if ((getgid() != rg) || (getegid() != eg)) {
 		tst_res(TFAIL, "ERROR: %s real gid = %d; effective gid = %d",
 			 when, getgid(), getegid());
 		tst_res(TINFO, "Expected: real gid = %d; effective gid = %d",
-			 rg->gr_gid, eg->gr_gid);
+			 rg, eg);
 	} else {
 		tst_res(TPASS,
 			"real or effective gid was modified as expected");
 	}
 }
-
 
 static void run(unsigned int i)
 {
@@ -74,16 +72,18 @@ static void run(unsigned int i)
 		return;
 	}
 
-	gid_verify(test_data[i].exp_real_usr, test_data[i].exp_eff_usr,
+	gid_verify(*test_data[i].exp_real_usr, *test_data[i].exp_eff_usr,
 		   test_data[i].test_msg);
 }
 
 static void setup(void)
 {
-	root_gr = *SAFE_GETGRNAM("root");
-	nobody_gr = *SAFE_GETGRNAM_FALLBACK("nobody", "nogroup");
-	daemon_gr = *SAFE_GETGRNAM("daemon");
-	bin_gr = *SAFE_GETGRNAM("bin");
+	gid_t test_groups[3];
+
+	root_gid = test_groups[0] = getgid();
+	tst_get_gids(test_groups, 1, 3);
+	first_gid = test_groups[1];
+	second_gid = test_groups[2];
 }
 
 static struct tst_test test = {

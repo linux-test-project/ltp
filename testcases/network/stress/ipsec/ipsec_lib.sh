@@ -123,8 +123,8 @@ tst_ipsec_cleanup()
 	tst_rhost_run -c "ip xfrm state flush && ip xfrm policy flush"
 
 	if [ -n "$cleanup_vti" ]; then
-		ip li del $cleanup_vti 2>/dev/null
-		tst_rhost_run -c "ip li del $cleanup_vti 2>/dev/null"
+		ip link del $cleanup_vti 2>/dev/null
+		tst_rhost_run -c "ip link del $cleanup_vti 2>/dev/null"
 	fi
 }
 
@@ -238,7 +238,7 @@ tst_ipsec_vti()
 	local d="dev $(tst_iface)"
 	local rd="dev $(tst_iface rhost)"
 
-	ip li add type vti help 2>&1 | grep -q vti || \
+	ip link add type vti help 2>&1 | grep -q vti || \
 		tst_brk TCONF "iproute doesn't support 'vti'"
 
 	ipsec_set_algoline
@@ -250,8 +250,8 @@ tst_ipsec_vti()
 	cleanup_vti=$vti
 
 	if [ $target = lhost ]; then
-		TST_RTNL_CHK ip li add $vti $type local $src remote $dst $key $d
-		ROD ip li set $vti up
+		TST_RTNL_CHK ip link add $vti $type local $src remote $dst $key $d
+		ROD ip link set $vti up
 
 		local spi_1="spi 0x$SPI"
 		local spi_2="spi 0x$(( $SPI + 1 ))"
@@ -261,8 +261,8 @@ tst_ipsec_vti()
 		ROD $ipx po add dir in tmpl $i_dir $p $m $mrk
 	elif [ $target = rhost ]; then
 		tst_rhost_run -s -c \
-			"ip li add $vti $type local $src remote $dst $key $rd"
-		tst_rhost_run -s -c "ip li set $vti up"
+			"ip link add $vti $type local $src remote $dst $key $rd"
+		tst_rhost_run -s -c "ip link set $vti up"
 
 		local spi_1="spi 0x$(( $SPI + 1 ))"
 		local spi_2="spi 0x$SPI"

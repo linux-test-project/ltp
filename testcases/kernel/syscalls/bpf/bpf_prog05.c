@@ -63,6 +63,45 @@ static uint64_t *val;
 static char *log;
 static union bpf_attr *attr;
 
+static void ensure_ptr_arithmetic(void)
+{
+	const struct bpf_insn prog_insn[] = {
+		/* r2 = r10
+		 * r3 = -1
+		 * r2 += r3
+		 * *(char *)r2 = 0
+		 */
+		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+		BPF_MOV64_IMM(BPF_REG_3, -1),
+		BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_3),
+		BPF_ST_MEM(BPF_B, BPF_REG_2, 0, 0),
+
+		/* exit(0) */
+		BPF_MOV64_IMM(BPF_REG_0, 0),
+		BPF_EXIT_INSN()
+	};
+	int ret;
+
+	bpf_init_prog_attr(attr, prog_insn, sizeof(prog_insn), log, BUFSIZE);
+
+	ret = TST_RETRY_FUNC(bpf(BPF_PROG_LOAD, attr, sizeof(*attr)),
+				       TST_RETVAL_GE0);
+
+	if (ret >= 0) {
+		tst_res(TINFO, "Have pointer arithmetic");
+		SAFE_CLOSE(ret);
+		return;
+	}
+
+	if (ret != -1)
+		tst_brk(TBROK, "Invalid bpf() return value: %d", ret);
+
+	if (log[0] != 0)
+		tst_brk(TCONF | TERRNO, "No pointer arithmetic:\n %s", log);
+
+	tst_brk(TBROK | TERRNO, "Failed to load program");
+}
+
 static int load_prog(void)
 {
 	const struct bpf_insn prog_insn[] = {
@@ -132,7 +171,9 @@ static void run(void)
 {
 	int prog_fd;
 
-	map_fd = bpf_map_array_create(4);
+	map_fd = bpf_map_array_create(8);
+
+	ensure_ptr_arithmetic();
 	prog_fd = load_prog();
 	bpf_run_prog(prog_fd, msg, sizeof(MSG));
 	SAFE_CLOSE(prog_fd);
@@ -157,6 +198,7 @@ static struct tst_test test = {
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.caps = (struct tst_cap []) {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
+		TST_CAP(TST_CAP_DROP, CAP_BPF),
 		{}
 	},
 	.bufs = (struct tst_buffers []) {

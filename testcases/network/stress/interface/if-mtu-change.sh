@@ -81,8 +81,8 @@ do_cleanup()
 {
 	if_cleanup_restore
 	if [ "$saved_mtu" ]; then
-		ip li set $(tst_iface) mtu $saved_mtu
-		tst_rhost_run -c "ip li set $(tst_iface rhost) mtu $saved_mtu"
+		ip link set $(tst_iface) mtu $saved_mtu
+		tst_rhost_run -c "ip link set $(tst_iface rhost) mtu $saved_mtu"
 	fi
 }
 

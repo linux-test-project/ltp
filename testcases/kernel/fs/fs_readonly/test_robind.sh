@@ -192,7 +192,7 @@ shift $((OPTIND-1))
 
 setup $*
 
-# Executes the tests for differnt FS's
+# Executes the tests for different FS's
 for fstype in $FSTYPES; do
 	if [ "$fstype" = "reiserfs" ]; then
 		opts="-f --journal-size 513 -q"

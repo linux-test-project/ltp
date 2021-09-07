@@ -16,11 +16,15 @@ TST_PARSE_ARGS=parse_args
 TST_USAGE=usage
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
+TST_NEEDS_CHECKPOINTS=1
 TST_TEST_DATA="fork exec exit uid gid"
 
 . tst_test.sh
 
 num_events=10
+
+LISTENER_ID=0
+GENERATOR_ID=1
 
 usage()
 {
@@ -67,27 +71,31 @@ setup()
 test()
 {
 	local event=$2
-	local expected_events lis_rc pid fd_act failed act_nevents exp act
+	local gen_pid list_pid gen_rc lis_rc
+	local expected_events fd_act failed act_nevents exp act
 
 	tst_res TINFO "Testing $2 event (nevents=$num_events)"
 
-	pec_listener >lis_$event.log 2>lis_$event.err &
-	pid=$!
-	# wait for pec_listener to start listening
-	tst_sleep 100ms
+	event_generator -n $num_events -e $event -c $GENERATOR_ID >gen.log &
+	gen_pid=$!
 
-	ROD event_generator -n $num_events -e $event \>gen_$event.log 2\>gen_$event.err
+	pec_listener -p $gen_pid -c $LISTENER_ID >lis.log &
+	lis_pid=$!
 
-	kill -s INT $pid 2> /dev/null
-	wait $pid
+	TST_CHECKPOINT_WAIT $LISTENER_ID
+	TST_CHECKPOINT_WAKE $GENERATOR_ID
+
+	wait $gen_pid
+	gen_rc=$?
+	wait $lis_pid
 	lis_rc=$?
 
-	if [ ! -s gen_$event.log ]; then
-		tst_brk TBROK "failed to generate process events: $(cat gen_$event.err)"
+	if [ $gen_rc -ne 0 ]; then
+		tst_brk TBROK "failed to execute event_generator"
 	fi
 
 	if [ $lis_rc -ne 0 ]; then
-		tst_brk TBROK "failed to execute the listener: $(cat lis_$event.err)"
+		tst_brk TBROK "failed to execute pec_listener"
 	fi
 
 	# The listener writes the same messages as the generator, but it can
@@ -104,7 +112,7 @@ test()
 
 	fd_act=$(free_fd)
 	[ -z "$fd_act" ] && tst_brk TBROK "No free filehandle found"
-	eval "exec ${fd_act}<lis_$event.log"
+	eval "exec ${fd_act}<lis.log"
 
 	failed=0
 	act_nevents=0
@@ -122,7 +130,7 @@ test()
 			tst_res TFAIL "Event was not detected by the event listener: $exp"
 			break
 		fi
-	done <gen_$event.log
+	done <gen.log
 
 	eval "exec ${fd_act}<&-"
 
@@ -134,7 +142,7 @@ test()
 		fi
 	else
 		# TFAIL message is already printed in the loop above
-		cat lis_$event.log
+		cat lis.log
 	fi
 }
 

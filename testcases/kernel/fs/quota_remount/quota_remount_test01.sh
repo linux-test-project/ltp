@@ -32,7 +32,7 @@ do_setup()
 do_clean()
 {
 	[ "$mounted" ] || return
-	tst_umount $MNTDIR
+	tst_umount "$PWD/$MNTDIR"
 	mounted=
 }
 

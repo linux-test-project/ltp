@@ -24,8 +24,9 @@
 #include "libnewipc.h"
 #include "tst_safe_sysv_ipc.h"
 #include "tst_safe_macros.h"
+#include "tst_uid.h"
 
-static uid_t nobody_uid, bin_uid;
+static uid_t test_users[2];
 static int *flag;
 static int shm_id = -1;
 static key_t shm_key;
@@ -35,8 +36,8 @@ static void wait_for_flag(int value)
 	while (1) {
 		if (*flag == value)
 			break;
-		else
-			usleep(100);
+
+		usleep(100);
 	}
 }
 
@@ -47,14 +48,14 @@ static void do_master_child(void)
 	*flag = 0;
 	pid1 = SAFE_FORK();
 	if (pid1 == 0) {
-		SAFE_SETREUID(nobody_uid, nobody_uid);
+		SAFE_SETREUID(test_users[0], test_users[0]);
 		*flag = 1;
 		wait_for_flag(2);
 
 		exit(0);
 	}
 
-	SAFE_SETREUID(bin_uid, bin_uid);
+	SAFE_SETREUID(test_users[1], test_users[1]);
 	wait_for_flag(1);
 	TEST(kill(pid1, SIGKILL));
 
@@ -85,17 +86,10 @@ static void verify_kill(void)
 
 static void setup(void)
 {
-	struct passwd *pw;
-
 	shm_key = GETIPCKEY();
 	shm_id = SAFE_SHMGET(shm_key, getpagesize(), 0666 | IPC_CREAT);
 	flag = SAFE_SHMAT(shm_id, 0, 0);
-
-	pw = SAFE_GETPWNAM("nobody");
-	nobody_uid = pw->pw_uid;
-
-	pw = SAFE_GETPWNAM("bin");
-	bin_uid = pw->pw_uid;
+	tst_get_uids(test_users, 0, 2);
 }
 
 static void cleanup(void)

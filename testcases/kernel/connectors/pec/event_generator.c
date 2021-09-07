@@ -24,17 +24,16 @@ static struct tst_test test = {
 	.forks_child = 1
 };
 
-#define DEFAULT_EVENT_NUM       1
+static uid_t ltp_uid;
+static gid_t ltp_gid;
+static const char *ltp_user = "nobody";
+static char *prog_name;
 
-unsigned long nr_event = DEFAULT_EVENT_NUM;
+static int checkpoint_id = -1;
+static int nr_event = 1;
 
-uid_t ltp_uid;
-gid_t ltp_gid;
-const char *ltp_user = "nobody";
+static void (*gen_event)(void);
 
-char **exec_argv;
-
-void (*gen_event) (void);
 static void usage(int status) LTP_ATTRIBUTE_NORETURN;
 
 /*
@@ -47,45 +46,29 @@ static void usage(int status)
 	FILE *stream = (status ? stderr : stdout);
 
 	fprintf(stream,
-		"Usage: event_generator -e fork|exit|exec|uid|gid [-n nr_event]\n");
+		"Usage: event_generator -e fork|exit|exec|uid|gid [-n nr_event] [-c checkpoint_id]\n");
 
 	exit(status);
 }
 
 /*
  * Generate exec event.
- *
- * We can't just exec nr_event times, because the current process image
- * will be replaced with the new process image, so we use environment
- * variable as event counters, as it will be inherited after exec.
  */
 static void gen_exec(void)
 {
-	char *val;
 	char buf[10];
-	unsigned long nr_exec;
-
-	/* get the event counter */
-	val = getenv("NR_EXEC");
-	if (!val) {
-		nr_exec = 0;
-		setenv("NR_EXEC", "1", 1);
-	} else {
-		nr_exec = atoi(val);
-		snprintf(buf, 10, "%lu", nr_exec + 1);
-		setenv("NR_EXEC", buf, 1);
-	}
-
-	/* stop generate exec event */
-	if (nr_exec >= nr_event)
-		return;
 
 	/* fflush is needed before exec */
 	printf("exec pid: %d\n", getpid());
 	fflush(stdout);
 
-	/* Note: This expects the full path to self in exec_argv[0]! */
-	SAFE_EXECVP(exec_argv[0], exec_argv);
+	/*
+	 * Decrease number of events to generate.
+	 * Don't pass checkpoint_id here. It is only used for synchronizing with
+	 * the shell script, before the first exec.
+	 */
+	sprintf(buf, "%u", nr_event - 1);
+	SAFE_EXECLP(prog_name, prog_name, "-e", "exec", "-n", buf, NULL);
 }
 
 /*
@@ -135,9 +118,8 @@ static inline void gen_gid(void)
 static void process_options(int argc, char **argv)
 {
 	int c;
-	char *end;
 
-	while ((c = getopt(argc, argv, "e:n:h")) != -1) {
+	while ((c = getopt(argc, argv, "e:n:c:h")) != -1) {
 		switch (c) {
 			/* which event to generate */
 		case 'e':
@@ -158,17 +140,21 @@ static void process_options(int argc, char **argv)
 			break;
 			/* number of event to generate */
 		case 'n':
-			nr_event = strtoul(optarg, &end, 10);
-			if (*end != '\0' || nr_event == 0) {
-				fprintf(stderr, "wrong -n argument!");
-				exit(1);
+			if (tst_parse_int(optarg, &nr_event, 0, INT_MAX)) {
+				fprintf(stderr, "invalid value for nr_event");
+				usage(1);
+			}
+			break;
+		case 'c':
+			if (tst_parse_int(optarg, &checkpoint_id, 0, INT_MAX)) {
+				fprintf(stderr, "invalid value for checkpoint_id");
+				usage(1);
 			}
 			break;
 			/* help */
 		case 'h':
 			usage(0);
 		default:
-			fprintf(stderr, "unknown option!\n");
 			usage(1);
 		}
 	}
@@ -181,8 +167,10 @@ static void process_options(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	unsigned long i;
+	int i;
 	struct passwd *ent;
+
+	prog_name = argv[0];
 
 	tst_test = &test;
 
@@ -196,13 +184,21 @@ int main(int argc, char **argv)
 	ltp_uid = ent->pw_uid;
 	ltp_gid = ent->pw_gid;
 
-	/* special processing for gen_exec, see comments above gen_exec() */
+	/* ready to generate events */
+	if (checkpoint_id != -1) {
+		tst_reinit();
+		TST_CHECKPOINT_WAIT(checkpoint_id);
+	}
+
 	if (gen_event == gen_exec) {
-		exec_argv = argv;
-
-		gen_exec();
-
-		/* won't reach here */
+		/*
+		 * The nr_event events are generated,
+		 * by recursively replacing ourself with
+		 * a fresh copy, decrementing the number of events
+		 * for each execution
+		 */
+		if (nr_event != 0)
+			gen_exec();
 		return 0;
 	}
 
@@ -225,6 +221,14 @@ int main(int argc, char **argv)
 				fprintf(stderr, "Child process did not terminate with 0\n");
 				return 1;
 			}
+			/*
+			 * We need a tiny sleep here, so the kernel can generate
+			 * exit events in the correct order.
+			 * Otherwise it can happen, that exit events are generated
+			 * out-of-order.
+			 */
+			if (gen_event == gen_exit)
+				usleep(100);
 		}
 	}
 

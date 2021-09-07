@@ -162,8 +162,12 @@ stage.
   on success, 0 on error. Add +"CONFIG_VETH"+ to +test.needs_kconfigs+ if your
   test calls this function.
 
-- +int REMOVE_NETDEV(const char *ifname)+ – Removes network device +ifname+.
-  Returns 1 on success, 0 on error.
+- +int NETDEV_ADD_DEVICE(const char *ifname, const char *devtype)+ - Creates
+  a new network device named +ifname+ of specified device type. Returns 1 on
+  success, 0 on error.
+
+- +int NETDEV_REMOVE_DEVICE(const char *ifname)+ – Removes network device
+  +ifname+. Returns 1 on success, 0 on error.
 
 2.2 Network address management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

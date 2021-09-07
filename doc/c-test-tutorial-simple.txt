@@ -306,12 +306,11 @@ Wiki]).
 
 Is your +.gitignore+ correct?
 
-3.3 Run checkpatch.pl on the source file
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.3 Run make check
+~~~~~~~~~~~~~~~~~~
 
-The LTP follows the Linux style guidelines where possible. Check what happens
-if you run +kernel/linux/scripts/checkpatch.pl --no-tree -f statx01.c+ and
-correct any style issues.
+Check coding style with `make check`
+ (more in https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#21-c-coding-style[C coding style])
 
 3.4 Install the LTP and run the test with runtest
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -767,7 +766,7 @@ failing due to some faulty logic.
 6.1 What is wrong with the switch statement?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Were you paying attention? Also see the output of +checkpatch.pl+.
+Were you paying attention? Also see the output of +make check+.
 
 6.2 Test a feature unique to statx
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -795,9 +794,9 @@ of fallback logic in the build system. We can now get our test ready for
 submission.
 
 The first thing you need to do before considering submitting your test is run
-+scripts/checkpatch.pl --no-tree -f+ on +statx01.c+. Again, we use the kernel
-style guidelines where possible. Next you should create a new branch, this
-will allow you to reshape your commit history without fear.
++make check-statx01+ or + make check+ in the test's directory. Again, we use
+the kernel style guidelines where possible. Next you should create a new
+branch, this will allow you to reshape your commit history without fear.
 
 After that we have the pleasure of doing an interactive 'rebase' to clean up
 our commit history. In its current form the test only really needs a single

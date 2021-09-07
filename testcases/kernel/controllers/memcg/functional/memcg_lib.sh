@@ -104,24 +104,20 @@ memcg_setup()
 		tst_brk TCONF "Either kernel does not support Memory Resource Controller or feature not enabled"
 	fi
 
-	# Setup IPC
-	LTP_IPC_PATH="/dev/shm/ltp_${TCID}_$$"
-	LTP_IPC_SIZE=$PAGESIZE
-	ROD_SILENT dd if=/dev/zero of="$LTP_IPC_PATH" bs="$LTP_IPC_SIZE" count=1
-	ROD_SILENT chmod 600 "$LTP_IPC_PATH"
-	export LTP_IPC_PATH
-	# Setup IPC end
-
 	ROD mkdir /dev/memcg
 	ROD mount -t cgroup -omemory memcg /dev/memcg
 
-	# The default value for memory.use_hierarchy is 0 and some of tests
-	# (memcg_stat_test.sh and memcg_use_hierarchy_test.sh) expect it so
-	# while there are distributions (RHEL7U0Beta for example) that sets
-	# it to 1.
+	# For kernels older than v5.11 the default value for
+	# memory.use_hierarchy is 0 and some of tests (memcg_stat_test.sh and
+	# memcg_use_hierarchy_test.sh) expect it so while there are
+	# distributions (RHEL7U0Beta for example) that sets it to 1.
 	# Note: If there are already subgroups created it is not possible,
 	# to set this back to 0.
 	# This seems to be the default for all systems using systemd.
+	#
+	# Starting with kernel v5.11, the non-hierarchical mode is not
+	# available. See Linux kernel commit bef8620cd8e0 ("mm: memcg:
+	# deprecate the non-hierarchical mode").
 	orig_memory_use_hierarchy=$(cat /dev/memcg/memory.use_hierarchy)
 	if [ -z "$orig_memory_use_hierarchy" ];then
 		tst_res TINFO "cat /dev/memcg/ failed"

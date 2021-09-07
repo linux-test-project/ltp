@@ -1,10 +1,10 @@
-Motivation for metadata exctraction
-===================================
+Motivation for metadata extraction
+==================================
 
 Exporting documentation
 -----------------------
 
-This allow us to build browseable documentation for the testcases, e.g. a
+This allow us to build browsable documentation for the testcases, e.g. a
 catalogue of test information that would be searchable etc. At this point there
 is a single page generated from the extracted data that tries to outline the
 intent.
@@ -13,11 +13,11 @@ intent.
 Propagating test requirements
 -----------------------------
 
-Some subtests require differnt hardware resources/software versions/etc. the
+Some subtests require different hardware resources/software versions/etc. the
 test execution framework needs to consume these so that it can locate proper
 hardware, install proper software, etc.
 
-Some examples of requriments are:
+Some examples of requirements are:
 
 * Test needs at least 1GB of RAM.
 
@@ -31,7 +31,7 @@ Some examples of requriments are:
 
 
 With this information extracted from the tests the testrunner can then map the
-requiremnts on the available machines in a lab and select a proper machine for
+requirements on the available machines in a lab and select a proper machine for
 the particular (sub)set of testcases as well as supply a particular test with
 additional information needed for the test, such as address of the i2c device,
 paths to the serial devices, etc. In the case of virtual machines the test could
@@ -176,7 +176,7 @@ The test documentation is stored in a special comment such as:
  */
 ```
 
-Which will yield following json output:
+Which will yield following JSON output:
 
 ```json
  "testcaseXY": {

@@ -68,14 +68,14 @@ extern void *TST_RET_PTR;
                                                                                \
 	} while (0)
 
-#define TST_EXP_POSITIVE(SCALL, ...)                               \
-	do {                                                       \
-		TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__);   \
-		                                                   \
-		if (TST_PASS) {                                    \
-			TST_MSGP_(TPASS, " returned %ld",          \
-			          TST_RET, #SCALL, ##__VA_ARGS__); \
-		}                                                  \
+#define TST_EXP_POSITIVE(SCALL, ...)                                           \
+	do {                                                                   \
+		TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__);               \
+		                                                               \
+		if (TST_PASS) {                                                \
+			TST_MSGP_(TPASS, " returned %ld",                      \
+			          TST_RET, #SCALL, ##__VA_ARGS__);             \
+		}                                                              \
 	} while (0)
 
 #define TST_EXP_FD_SILENT(SCALL, ...)	TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__)
@@ -99,6 +99,33 @@ extern void *TST_RET_PTR;
 			TST_MSGP_(TPASS, " returned pid %ld", TST_RET,         \
 				#SCALL, ##__VA_ARGS__);                        \
 	} while (0)
+
+#define TST_EXP_VAL_SILENT_(SCALL, VAL, SSCALL, ...)                           \
+	do {                                                                   \
+		TEST(SCALL);                                                   \
+		                                                               \
+		TST_PASS = 0;                                                  \
+		                                                               \
+		if (TST_RET != VAL) {                                          \
+			TST_MSGP_(TFAIL | TTERRNO, " retval not %ld",          \
+			          (long )VAL, SSCALL, ##__VA_ARGS__);          \
+			break;                                                 \
+		}                                                              \
+		                                                               \
+		TST_PASS = 1;                                                  \
+		                                                               \
+	} while (0)
+
+#define TST_EXP_VAL_SILENT(SCALL, VAL, ...) TST_EXP_VAL_SILENT_(SCALL, VAL, #SCALL, ##__VA_ARGS__)
+
+#define TST_EXP_VAL(SCALL, VAL, ...)                                           \
+	do {                                                                   \
+		TST_EXP_VAL_SILENT_(SCALL, VAL, #SCALL, ##__VA_ARGS__);        \
+		                                                               \
+		if (TST_PASS)                                                  \
+			TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);     \
+			                                                       \
+	} while(0)
 
 #define TST_EXP_PASS_SILENT_(SCALL, SSCALL, ...)                               \
 	do {                                                                   \
@@ -149,15 +176,15 @@ extern void *TST_RET_PTR;
 			break;                                                 \
 		}                                                              \
 		                                                               \
-		if (TST_ERR == ERRNO) {					\
-			TST_MSG_(TPASS | TTERRNO, " ",			\
-				 SSCALL, ##__VA_ARGS__);		\
-			TST_PASS = 1;					\
-		} else {						\
-			TST_MSGP_(TFAIL | TTERRNO, " expected %s",	\
-				  tst_strerrno(ERRNO),			\
-				  SSCALL, ##__VA_ARGS__);		\
-		}							\
+		if (TST_ERR == ERRNO) {                                        \
+			TST_MSG_(TPASS | TTERRNO, " ",                         \
+				 SSCALL, ##__VA_ARGS__);                       \
+			TST_PASS = 1;                                          \
+		} else {                                                       \
+			TST_MSGP_(TFAIL | TTERRNO, " expected %s",             \
+				  tst_strerrno(ERRNO),                         \
+				  SSCALL, ##__VA_ARGS__);                      \
+		}                                                              \
 	} while (0)
 
 #define TST_EXP_FAIL(SCALL, ERRNO, ...) TST_EXP_FAIL_(TST_RET == 0, SCALL, #SCALL, ERRNO, ##__VA_ARGS__)

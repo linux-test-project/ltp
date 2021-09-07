@@ -116,7 +116,6 @@ static void test_netns_netlink(void)
 static struct tst_test test = {
 	.test_all = test_netns_netlink,
 	.needs_checkpoints = 1,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,
 	.needs_kconfigs = (const char *[]) {
