@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include "posixtest.h"
+#include "proc.h"
 
 #define SLEEPSEC 5
 
@@ -52,7 +53,7 @@ int main(void)
 		/* parent here */
 		int i;
 
-		sleep(1);
+		tst_process_state_wait3(pid, 'S', 1);
 
 		if (kill(pid, SIGSTOP) != 0) {
 			printf("Could not raise SIGSTOP\n");

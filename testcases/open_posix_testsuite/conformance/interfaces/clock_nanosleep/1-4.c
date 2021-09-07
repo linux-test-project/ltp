@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "posixtest.h"
+#include "proc.h"
 
 #define SLEEPSEC 30
 
@@ -36,7 +37,7 @@ int main(void)
 		/* parent here */
 		int i;
 
-		sleep(1);
+		tst_process_state_wait3(pid, 'S', 1);
 
 		if (kill(pid, SIGABRT) != 0) {
 			printf("Could not raise signal being tested\n");
