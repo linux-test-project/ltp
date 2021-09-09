@@ -44,8 +44,8 @@ setup()
 cleanup()
 {
 	if [ -e /dev/memcg ]; then
-		umount /dev/memcg 2> /dev/null
-		rmdir /dev/memcg 2> /dev/null
+		EXPECT_PASS umount /dev/memcg
+		EXPECT_PASS rmdir /dev/memcg
 	fi
 }
 
@@ -53,8 +53,8 @@ do_mount()
 {
 	cleanup
 
-	mkdir /dev/memcg 2> /dev/null
-	mount -t cgroup -omemory memcg /dev/memcg
+	EXPECT_PASS mkdir /dev/memcg
+	EXPECT_PASS mount -t cgroup -omemory memcg /dev/memcg
 }
 
 # $1 Number of cgroups

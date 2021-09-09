@@ -123,10 +123,10 @@ cleanup()
     fi
 
     if grep -q "$mount_point" /proc/mounts; then
-        umount "$mount_point"
+        EXPECT_PASS umount "$mount_point"
     fi
 
     if [ -e "$mount_point" ]; then
-        rmdir "$mount_point"
+        EXPECT_PASS rmdir "$mount_point"
     fi
 }
