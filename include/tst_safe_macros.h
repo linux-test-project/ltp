@@ -120,6 +120,16 @@ int safe_setreuid(const char *file, const int lineno,
 #define SAFE_SETREUID(ruid, euid) \
 	safe_setreuid(__FILE__, __LINE__, (ruid), (euid))
 
+int safe_setresgid(const char *file, const int lineno,
+	gid_t rgid, gid_t egid, gid_t sgid);
+#define SAFE_SETRESGID(rgid, egid, sgid) \
+	safe_setresgid(__FILE__, __LINE__, (rgid), (egid), (sgid))
+
+int safe_setresuid(const char *file, const int lineno,
+		  uid_t ruid, uid_t euid, uid_t suid);
+#define SAFE_SETRESUID(ruid, euid, suid) \
+	safe_setresuid(__FILE__, __LINE__, (ruid), (euid), (suid))
+
 #define SAFE_GETRESUID(ruid, euid, suid) \
 	safe_getresuid(__FILE__, __LINE__, NULL, (ruid), (euid), (suid))
 

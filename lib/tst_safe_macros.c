@@ -145,6 +145,45 @@ int safe_setreuid(const char *file, const int lineno,
 	return rval;
 }
 
+int safe_setresgid(const char *file, const int lineno,
+	gid_t rgid, gid_t egid, gid_t sgid)
+{
+	int ret;
+
+	ret = setresgid(rgid, egid, sgid);
+
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"setregid(%li, %li, %li) failed", (long)rgid,
+			(long)egid, (long)sgid);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid setregid(%li, %li, %li) return value %d",
+			(long)rgid, (long)egid, (long)sgid, ret);
+	}
+
+	return ret;
+}
+
+int safe_setresuid(const char *file, const int lineno,
+	uid_t ruid, uid_t euid, uid_t suid)
+{
+	int ret;
+
+	ret = setresuid(ruid, euid, suid);
+
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"setreuid(%li, %li, %li) failed", (long)ruid,
+			(long)euid, (long)suid);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid setreuid(%li, %li, %li) return value %d",
+			(long)ruid, (long)euid, (long)suid, ret);
+	}
+
+	return ret;
+}
 
 int safe_sigaction(const char *file, const int lineno,
                    int signum, const struct sigaction *act,
