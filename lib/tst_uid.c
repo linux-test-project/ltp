@@ -68,3 +68,53 @@ void tst_get_gids(gid_t *buf, unsigned int start, unsigned int count)
 			buf[i++] = id;
 	}
 }
+
+int tst_check_resuid_(const char *file, const int lineno, const char *callstr,
+	uid_t exp_ruid, uid_t exp_euid, uid_t exp_suid)
+{
+	uid_t ruid, euid, suid;
+
+	SAFE_GETRESUID(&ruid, &euid, &suid);
+
+	if (ruid == exp_ruid && euid == exp_euid && suid == exp_suid)
+		return 1;
+
+	if (callstr) {
+		tst_res_(file, lineno, TFAIL, "Unexpected process UID after %s",
+			callstr);
+	} else {
+		tst_res_(file, lineno, TFAIL, "Unexpected process UID");
+	}
+
+	tst_res_(file, lineno, TINFO, "Got: ruid = %d, euid = %d, suid = %d",
+		(int)ruid, (int)euid, (int)suid);
+	tst_res_(file, lineno, TINFO,
+		"Expected: ruid = %d, euid = %d, suid = %d",
+		(int)exp_ruid, (int)exp_euid, (int)exp_suid);
+	return 0;
+}
+
+int tst_check_resgid_(const char *file, const int lineno, const char *callstr,
+	gid_t exp_rgid, gid_t exp_egid, gid_t exp_sgid)
+{
+	gid_t rgid, egid, sgid;
+
+	SAFE_GETRESGID(&rgid, &egid, &sgid);
+
+	if (rgid == exp_rgid && egid == exp_egid && sgid == exp_sgid)
+		return 1;
+
+	if (callstr) {
+		tst_res_(file, lineno, TFAIL, "Unexpected process GID after %s",
+			callstr);
+	} else {
+		tst_res_(file, lineno, TFAIL, "Unexpected process GID");
+	}
+
+	tst_res_(file, lineno, TINFO, "Got: rgid = %d, egid = %d, sgid = %d",
+		(int)rgid, (int)egid, (int)sgid);
+	tst_res_(file, lineno, TINFO,
+		"Expected: rgid = %d, egid = %d, sgid = %d",
+		(int)exp_rgid, (int)exp_egid, (int)exp_sgid);
+	return 0;
+}
