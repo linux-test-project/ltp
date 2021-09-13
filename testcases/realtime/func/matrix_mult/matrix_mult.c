@@ -188,7 +188,7 @@ void *concurrent_thread(void *thread)
 	return NULL;
 }
 
-void main_thread(void)
+int main_thread(void)
 {
 	int ret, i, j;
 	nsec_t start, end;
@@ -308,7 +308,7 @@ void main_thread(void)
 	     criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
 
-	return;
+	return ret;
 }
 
 int main(int argc, char *argv[])
@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
 	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 	/* the minimum avg concurrent multiplier to pass */
 	criteria = pass_criteria * numcpus;
-	int new_iterations;
+	int new_iterations, ret;
 
 	if (iterations <= 0) {
 		fprintf(stderr, "iterations must be greater than zero\n");
@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
 	printf("Number of CPUs: %u\n", numcpus);
 
 	set_priority(PRIO);
-	main_thread();
+	ret = main_thread();
 
-	return 0;
+	return ret;
 }
