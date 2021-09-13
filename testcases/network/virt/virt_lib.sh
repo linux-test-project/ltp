@@ -250,9 +250,9 @@ virt_minimize_timeout()
 	local mac_rmt="$(tst_rhost_run -c 'cat /sys/class/net/ltp_v0/address')"
 
 	if [ "$mac_loc" ]; then
-		ROD_SILENT "ip ne replace $ip_virt_remote lladdr \
+		ROD_SILENT "ip neigh replace $ip_virt_remote lladdr \
 			    $mac_rmt nud permanent dev ltp_v0"
-		tst_rhost_run -s -c "ip ne replace $ip_virt_local lladdr \
+		tst_rhost_run -s -c "ip neigh replace $ip_virt_local lladdr \
 				     $mac_loc nud permanent dev ltp_v0"
 	fi
 
