@@ -231,7 +231,7 @@ virt_setup()
 	virt_add_rhost "$opt_r"
 
 	ROD_SILENT "ip addr add ${ip6_virt_local}/64 dev ltp_v0 nodad"
-	tst_rhost_run -s -c "ip ad add ${ip6_virt_remote}/64 dev ltp_v0 nodad"
+	tst_rhost_run -s -c "ip addr add ${ip6_virt_remote}/64 dev ltp_v0 nodad"
 
 	ROD_SILENT "ip addr add ${ip_virt_local}/24 dev ltp_v0"
 	tst_rhost_run -s -c "ip addr add ${ip_virt_remote}/24 dev ltp_v0"

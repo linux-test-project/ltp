@@ -618,10 +618,10 @@ tst_wait_ipv6_dad()
 	local iface_rmt=${2:-$(tst_iface rhost)}
 
 	for i in $(seq 1 50); do
-		ip a sh $iface_loc | grep -q tentative
+		ip addr sh $iface_loc | grep -q tentative
 		ret=$?
 
-		tst_rhost_run -c "ip a sh $iface_rmt | grep -q tentative"
+		tst_rhost_run -c "ip addr sh $iface_rmt | grep -q tentative"
 
 		[ $ret -ne 0 -a $? -ne 0 ] && return
 

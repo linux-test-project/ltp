@@ -315,6 +315,6 @@ tst_ipsec_setup_vti()
 	tst_res TINFO "Add IPs to vti tunnel, " \
 		       "loc: $ip_loc_tun/$mask, rmt: $ip_rmt_tun/$mask"
 
-	ROD ip a add $ip_loc_tun/$mask dev $tst_vti $address_opt
-	tst_rhost_run -s -c "ip a add $ip_rmt_tun/$mask dev $tst_vti"
+	ROD ip addr add $ip_loc_tun/$mask dev $tst_vti $address_opt
+	tst_rhost_run -s -c "ip addr add $ip_rmt_tun/$mask dev $tst_vti"
 }
