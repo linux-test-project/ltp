@@ -2,6 +2,7 @@
 
 profile=${1:-default}
 
+cd $(dirname $0)
 if [ ! $SCRIPTS_DIR ]; then
         # assume we're running standalone
         export SCRIPTS_DIR=../../scripts/
