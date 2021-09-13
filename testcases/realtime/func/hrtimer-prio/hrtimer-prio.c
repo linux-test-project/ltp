@@ -76,9 +76,6 @@ void usage(void)
 	printf
 	    ("  -f#	   #:rt fifo priority of busy threads (1,98), defaults to %d\n",
 	     DEF_MED_PRIO);
-	printf
-	    ("  -m#	   #:maximum timer latency in microseconds, defaults to %d\n",
-	     DEF_CRITERIA);
 }
 
 int parse_args(int c, char *v)
