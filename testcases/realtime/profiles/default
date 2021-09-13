@@ -46,6 +46,10 @@ func/matrix_mult		matrix_mult -c 0.75
 # Default maxduration=0.5 s
 func/thread_clock		tc-2 -c 0.5
 
+# Pass if maximum timer latency is less than criterium (us).
+# Default latency=10 us
+func/hrtimer-prio       hrtimer-prio
+
 # The below tests have no pass/fail criterium.
 func/gtod_latency		gtod_latency
 func/sched_jitter		sched_jitter
