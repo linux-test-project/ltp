@@ -208,7 +208,15 @@ test1_hw_tpm()
 			return
 		fi
 		tst_check_cmds ima_boot_aggregate || return
+
 		cmd="ima_boot_aggregate -f $tpm_bios"
+
+		# TCONF: libcrypto and openssl development packages required
+		$cmd
+		if [ $? -eq 32 ]; then
+			tst_res TCONF "$cmd returned TCONF"
+			return
+		fi
 	fi
 	tst_res TINFO "using command: $cmd"
 
