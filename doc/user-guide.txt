@@ -19,6 +19,11 @@ For running LTP network tests see `testcases/network/README.md`.
 | 'LTP_TIMEOUT_MUL'     | Multiply timeout, must be number >= 1 (> 1 is useful for
                           slow machines to avoid unexpected timeout).
                           Variable is also used in shell tests, but ceiled to int.
+| 'LTP_VIRT_OVERRIDE'   | Overrides virtual machine detection in the test
+                          library. Setting it to empty string tell the library
+                          that system is not a virtual machine. Other possible
+                          values are 'kvm', 'xen', 'zvm' and 'microsoft' that
+                          describe different types supervisors.
 | 'PATH'                | It's required to addjust path:
                           `PATH="$PATH:$LTPROOT/testcases/bin"`
 | 'TMPDIR'              | Base directory for template directory (C: '.needs_tmpdir = 1'
