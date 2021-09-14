@@ -18,22 +18,16 @@ TST_CNT=3
 MEM_TO_ALLOC=$((PAGESIZES * 2))
 
 # Test the memory charge won't move to subgroup
-# $1 - memory.limit_in_bytes in parent group
-# $2 - memory.limit_in_bytes in sub group
+# $1 - memory.limit_in_bytes in sub group
 test_subgroup()
 {
-	local limit_parent=$1
-	local limit_subgroup=$2
+	local limit_subgroup=$1
 
-	if [ $limit_parent -ne 0 ]; then
-		limit_parent=$(memcg_adjust_limit_for_kmem $limit_parent)
-	fi
 	if [ $limit_subgroup -ne 0 ]; then
 		limit_subgroup=$(memcg_adjust_limit_for_kmem $limit_subgroup)
 	fi
 
 	ROD mkdir subgroup
-	EXPECT_PASS echo $limit_parent \> memory.limit_in_bytes
 	EXPECT_PASS echo $limit_subgroup \> subgroup/memory.limit_in_bytes
 
 	start_memcg_process --mmap-anon -s $MEM_TO_ALLOC
@@ -60,17 +54,17 @@ test_subgroup()
 test1()
 {
 	tst_res TINFO "Test that group and subgroup have no relationship"
-	test_subgroup $MEM_TO_ALLOC $((2 * MEM_TO_ALLOC))
+	test_subgroup $((2 * MEM_TO_ALLOC))
 }
 
 test2()
 {
-	test_subgroup $MEM_TO_ALLOC $MEM_TO_ALLOC
+	test_subgroup $MEM_TO_ALLOC
 }
 
 test3()
 {
-	test_subgroup $MEM_TO_ALLOC 0
+	test_subgroup 0
 }
 
 tst_run
