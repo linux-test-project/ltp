@@ -723,7 +723,7 @@ static void move_to_background(void)
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
-	int fd = SAFE_OPEN(log_path, O_CREAT | O_TRUNC | O_RDONLY, 00444);
+	int fd = SAFE_OPEN(log_path, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
 	SAFE_DUP(fd);
 }
