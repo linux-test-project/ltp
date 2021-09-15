@@ -497,7 +497,7 @@ void tst_kconfig_check(const char *const kconfigs[])
 
 		if (val != 1) {
 			abort_test = 1;
-			tst_res(TINFO, "Constrain '%s' not satisfied!", kconfigs[i]);
+			tst_res(TINFO, "Constraint '%s' not satisfied!", kconfigs[i]);
 			dump_vars(exprs[i]);
 		}
 
