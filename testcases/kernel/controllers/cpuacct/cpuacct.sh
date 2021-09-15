@@ -119,10 +119,13 @@ setup()
 
 cleanup()
 {
-
 	if [ "$testpath" ]; then
 		tst_res TINFO "removing created directories"
-		rm -rf $testpath
+
+		if [ -d "$testpath/subgroup_1" ]; then
+			rmdir $testpath/subgroup_*
+		fi
+		rmdir $testpath
 	fi
 
 	if [ "$mounted" -ne 1 ]; then
