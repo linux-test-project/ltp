@@ -2,25 +2,26 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2021 Petr Vorel <pvorel@suse.cz>
 
-# testing shell timeout handling in _tst_kill_test()
+# testing shell timeout handling in tst_timeout_kill
 # expected output:
 # timeout03 1 TINFO: timeout per run is 0h 0m 1s
 # timeout03 1 TINFO: testing killing test after TST_TIMEOUT
-# timeout03 1 TBROK: Test timed out, sending SIGTERM! If you are running on slow machine, try exporting LTP_TIMEOUT_MUL > 1
+# Test timed out, sending SIGTERM!
+# If you are running on slow machine, try exporting LTP_TIMEOUT_MUL > 1
 # Terminated
 # timeout03 1 TBROK: test terminated
 # timeout03 1 TPASS: test run cleanup after timeout
-# timeout03 1 TINFO: Test is still running, waiting 10s
-# timeout03 1 TINFO: Test is still running, waiting 9s
-# timeout03 1 TINFO: Test is still running, waiting 8s
-# timeout03 1 TINFO: Test is still running, waiting 7s
-# timeout03 1 TINFO: Test is still running, waiting 6s
-# timeout03 1 TINFO: Test is still running, waiting 5s
-# timeout03 1 TINFO: Test is still running, waiting 4s
-# timeout03 1 TINFO: Test is still running, waiting 3s
-# timeout03 1 TINFO: Test is still running, waiting 2s
-# timeout03 1 TINFO: Test is still running, waiting 1s
-# timeout03 1 TBROK: Test still running, sending SIGKILL
+# Test is still running... 10
+# Test is still running... 9
+# Test is still running... 8
+# Test is still running... 7
+# Test is still running... 6
+# Test is still running... 5
+# Test is still running... 4
+# Test is still running... 3
+# Test is still running... 2
+# Test is still running... 1
+# Test is still running, sending SIGKILL
 # Killed
 
 TST_TESTFUNC=do_test
