@@ -93,11 +93,8 @@ static void run(unsigned int n)
 {
 	struct time64_variants *tv = &variants[tst_variant];
 	struct tcase *tc = &tcases[n];
-	struct timespec *to;
-	sigset_t *sigmask;
-
-	sigmask = tc->sigmask ? tc->sigmask : bad_addr;
-	to = tc->timeout ? tc->timeout : bad_addr;
+	void *const to = tc->timeout ? tst_ts_get(tc->timeout) : bad_addr;
+	sigset_t *const sigmask = tc->sigmask ? tc->sigmask : bad_addr;
 
 	TEST(tv->io_pgetevents(*tc->ctx, tc->min_nr, tc->max_nr, tc->events, to,
 			       sigmask));
