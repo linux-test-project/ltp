@@ -51,7 +51,10 @@ int main(void)
 	sigemptyset(&act.sa_mask);
 	sigaction(SIGCHLD, &act, 0);
 
-	if ((pid = fork()) == 0) {
+	if ((pid = fork()) < 0) {
+		printf("fork() did not return success\n");
+		return PTS_UNRESOLVED;
+	} else if (pid == 0) {
 		/* child */
 		/* wait forever, or until we are
 		   interrupted by a signal */

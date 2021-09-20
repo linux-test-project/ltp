@@ -31,7 +31,10 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if ((pid = fork()) == 0) {
+	if ((pid = fork()) < 0) {
+		printf("fork() did not return success\n");
+		return PTS_UNRESOLVED;
+	} else if (pid == 0) {
 		/* child here */
 		struct timespec tssleep;
 
