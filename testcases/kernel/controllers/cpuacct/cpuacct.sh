@@ -71,8 +71,10 @@ check_free_memory()
 check_limits()
 {
 	local tasksneeded=$((max * nbprocess))
-	local tasksmax=$(tst_get_free_pids)
-	test $? -eq 0 || return 0
+	local tasksmax
+
+	tasksmax=$(tst_get_free_pids)
+	[ $? -eq 0 ] || return 0
 
 	if [ $tasksmax -le $tasksneeded ]; then
 		tst_brk TCONF "limit of tasks is too low (approximate need $tasksneeded, limit $tasksmax)"
