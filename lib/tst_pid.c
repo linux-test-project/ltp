@@ -28,6 +28,7 @@
 #include "test.h"
 #include "tst_pid.h"
 #include "old_safe_file_ops.h"
+#include "tst_safe_macros.h"
 
 #define PID_MAX_PATH "/proc/sys/kernel/pid_max"
 #define CGROUPS_V1_SLICE_FMT "/sys/fs/cgroup/pids/user.slice/user-%d.slice/pids.max"
@@ -69,6 +70,7 @@ static int read_session_pids_limit(const char *path_fmt, int uid,
 				   void (*cleanup_fn) (void))
 {
 	int max_pids, ret;
+	char max_pid_value[100];
 	char path[PATH_MAX];
 
 	ret = snprintf(path, sizeof(path), path_fmt, uid);
@@ -80,8 +82,14 @@ static int read_session_pids_limit(const char *path_fmt, int uid,
 		return -1;
 	}
 
-	SAFE_FILE_SCANF(cleanup_fn, path, "%d", &max_pids);
-	tst_resm(TINFO, "Found limit of processes %d (from %s)", max_pids, path);
+	SAFE_FILE_SCANF(cleanup_fn, path, "%s", max_pid_value);
+	if (!strcmp(max_pid_value, "max")) {
+		SAFE_FILE_SCANF(cleanup_fn, PID_MAX_PATH, "%d", &max_pids);
+		tst_resm(TINFO, "Found limit of processes %d (from %s=max)", max_pids, path);
+	} else {
+		max_pids = SAFE_STRTOL(max_pid_value, 0, INT_MAX);
+		tst_resm(TINFO, "Found limit of processes %d (from %s)", max_pids, path);
+	}
 
 	return max_pids;
 }
