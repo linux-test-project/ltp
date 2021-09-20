@@ -37,7 +37,7 @@ static void run(unsigned int i)
 
 	struct tcase *tc = tcases + i;
 
-	tst_res(TINFO, tc->desc);
+	tst_res(TINFO, "%s", tc->desc);
 
 	fd0 = SAFE_CREAT(filename0, 0666);
 	SAFE_WRITE(1, fd0, filename0, strlen(filename0));
