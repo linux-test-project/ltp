@@ -176,7 +176,7 @@ extern void *TST_RET_PTR;
 			break;                                                 \
 		}                                                              \
 		                                                               \
-		if (TST_ERR == ERRNO) {                                        \
+		if (TST_ERR == (ERRNO)) {                                      \
 			TST_MSG_(TPASS | TTERRNO, " ",                         \
 				 SSCALL, ##__VA_ARGS__);                       \
 			TST_PASS = 1;                                          \
