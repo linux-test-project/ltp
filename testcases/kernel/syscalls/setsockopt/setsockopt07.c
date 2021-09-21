@@ -38,7 +38,7 @@ static void setup(void)
 	int real_uid = getuid();
 	int real_gid = getgid();
 
-	SAFE_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
+	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);

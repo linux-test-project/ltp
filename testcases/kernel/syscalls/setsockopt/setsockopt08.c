@@ -95,7 +95,7 @@ void setup(void)
 			"The vulnerability was only present in 32-bit compat mode");
 	}
 
-	SAFE_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
+	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);

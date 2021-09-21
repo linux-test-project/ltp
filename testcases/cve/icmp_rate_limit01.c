@@ -58,7 +58,7 @@ static void setup(void)
 	for (i = 0; i < SRCADDR_COUNT; i++)
 		fds[i] = -1;
 
-	SAFE_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
+	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
 	SAFE_UNSHARE(CLONE_NEWNET);

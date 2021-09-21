@@ -121,7 +121,7 @@ static void setup(void)
 	SAFE_WRITE(fd, 1, "\n", 1);
 	SAFE_CLOSE(fd);
 
-	SAFE_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
+	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
 }
 
 static struct tst_test test = {
