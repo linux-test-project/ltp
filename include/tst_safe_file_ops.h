@@ -44,6 +44,11 @@
 	safe_file_printf(__FILE__, __LINE__, NULL, \
 	                 (path), (fmt), ## __VA_ARGS__)
 
+/* Same as SAFE_FILE_PRINTF() but returns quietly if the path doesn't exist */
+#define SAFE_TRY_FILE_PRINTF(path, fmt, ...) \
+	safe_try_file_printf(__FILE__, __LINE__, NULL, \
+		(path), (fmt), ## __VA_ARGS__)
+
 #define SAFE_CP(src, dst) \
 	safe_cp(__FILE__, __LINE__, NULL, (src), (dst))
 

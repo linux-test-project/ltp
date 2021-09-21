@@ -250,11 +250,10 @@ err:
 	return 1;
 }
 
-void safe_file_printf(const char *file, const int lineno,
-		      void (*cleanup_fn) (void),
-		      const char *path, const char *fmt, ...)
+static void safe_file_vprintf(const char *file, const int lineno,
+	void (*cleanup_fn)(void), const char *path, const char *fmt,
+	va_list va)
 {
-	va_list va;
 	FILE *f;
 
 	f = fopen(path, "w");
@@ -265,21 +264,40 @@ void safe_file_printf(const char *file, const int lineno,
 		return;
 	}
 
-	va_start(va, fmt);
-
 	if (vfprintf(f, fmt, va) < 0) {
 		tst_brkm_(file, lineno, TBROK, cleanup_fn,
 			"Failed to print to FILE '%s'", path);
 		return;
 	}
 
-	va_end(va);
-
 	if (fclose(f)) {
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
 			"Failed to close FILE '%s'", path);
 		return;
 	}
+}
+
+void safe_file_printf(const char *file, const int lineno,
+	void (*cleanup_fn)(void), const char *path, const char *fmt, ...)
+{
+	va_list va;
+
+	va_start(va, fmt);
+	safe_file_vprintf(file, lineno, cleanup_fn, path, fmt, va);
+	va_end(va);
+}
+
+void safe_try_file_printf(const char *file, const int lineno,
+	void (*cleanup_fn)(void), const char *path, const char *fmt, ...)
+{
+	va_list va;
+
+	if (access(path, F_OK))
+		return;
+
+	va_start(va, fmt);
+	safe_file_vprintf(file, lineno, cleanup_fn, path, fmt, va);
+	va_end(va);
 }
 
 //TODO: C implementation? better error condition reporting?

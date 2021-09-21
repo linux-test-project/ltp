@@ -62,6 +62,10 @@ void safe_file_printf(const char *file, const int lineno,
                       const char *path, const char *fmt, ...)
                       __attribute__ ((format (printf, 5, 6)));
 
+void safe_try_file_printf(const char *file, const int lineno,
+	void (*cleanup_fn)(void), const char *path, const char *fmt, ...)
+	__attribute__ ((format (printf, 5, 6)));
+
 /*
  * Safe function to copy files, no more system("cp ...") please.
  */
