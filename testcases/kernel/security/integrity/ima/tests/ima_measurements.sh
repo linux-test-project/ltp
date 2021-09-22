@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 IBM Corporation
-# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2021 Petr Vorel <pvorel@suse.cz>
 # Author: Mimi Zohar <zohar@linux.ibm.com>
 #
 # Verify that measurements are added to the measurement list based on policy.
@@ -18,8 +18,7 @@ setup()
 	require_ima_policy_cmdline "tcb"
 
 	TEST_FILE="$PWD/test.txt"
-	POLICY="$IMA_DIR/policy"
-	[ -f "$POLICY" ] || tst_res TINFO "not using default policy"
+	[ -f "$IMA_POLICY" ] || tst_res TINFO "not using default policy"
 }
 
 ima_check()
