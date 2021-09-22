@@ -9,9 +9,14 @@
  *
  * Test whether the access mode are the same for both file descriptors.
  *
- * - 0: read only ? "0444"
- * - 1: write only ? "0222"
- * - 2: read/write ? "0666"
+ * Create file with mode, dup2, [change mode], check mode
+ *
+ * - read only, dup2, read only ? "0444"
+ * - write only, dup2, write only ? "0222"
+ * - read/write, dup2 read/write ? "0666"
+ * - read/write/execute, dup2, set read only, read only ? "0444"
+ * - read/write/execute, dup2, set write only, write only ? "0222"
+ * - read/write/execute, dup2, set read/write, read/write ? "0666"
  */
 
 #include <errno.h>
@@ -29,10 +34,15 @@ static int duprdo = 10, dupwro = 20, duprdwr = 30;
 static struct tcase {
 	int *nfd;
 	mode_t mode;
+	/* 0 - set mode before dup2, 1 - change mode after dup2 */
+	int flag;
 } tcases[] = {
-	{&duprdo, 0444},
-	{&dupwro, 0222},
-	{&duprdwr, 0666},
+	{&duprdo, 0444, 0},
+	{&dupwro, 0222, 0},
+	{&duprdwr, 0666, 0},
+	{&duprdo, 0444, 1},
+	{&dupwro, 0222, 1},
+	{&duprdwr, 0666, 1},
 };
 
 static void setup(void)
@@ -52,13 +62,20 @@ static void run(unsigned int i)
 	struct stat oldbuf, newbuf;
 	struct tcase *tc = tcases + i;
 
-	ofd = SAFE_CREAT(testfile, tc->mode);
+	if (tc->flag)
+		ofd = SAFE_CREAT(testfile, 0777);
+	else
+		ofd = SAFE_CREAT(testfile, tc->mode);
 	nfd = *tc->nfd;
 
 	TEST(dup2(ofd, nfd));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "call failed unexpectedly");
 		goto free;
+	}
+	if (tc->flag) {
+		SAFE_CHMOD(testfile, tc->mode);
+		tst_res(TINFO, "original mode 0777, new mode 0%o after chmod", tc->mode);
 	}
 
 	SAFE_FSTAT(ofd, &oldbuf);
