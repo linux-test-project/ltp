@@ -63,15 +63,27 @@ static struct tcase {
 	{&shmkey1, SHM_SIZE, IPC_CREAT | SHM_HUGETLB, 0, 0, ENOMEM}
 };
 
-static int hugetlbfs_supported(void)
+static int get_hugetlb_exp_error(void)
 {
+	long tmp;
 	struct tst_kconfig_var kconfig = {
 		.id = CONFIG_HUGETLBFS,
 		.id_len = sizeof(CONFIG_HUGETLBFS)-1,
 	};
 
 	tst_kconfig_read(&kconfig, 1);
-	return kconfig.choice == 'y';
+
+	if (kconfig.choice != 'y') {
+		tst_res(TINFO, "SHM_HUGETLB not supported by kernel");
+		return EINVAL;
+	}
+
+	if (FILE_LINES_SCANF("/proc/meminfo", "Hugepagesize: %ld", &tmp)) {
+		tst_res(TINFO, "Huge pages not supported by hardware");
+		return ENOENT;
+	}
+
+	return 0;
 }
 
 static void do_test(unsigned int n)
@@ -102,22 +114,23 @@ static void do_test(unsigned int n)
 static void setup(void)
 {
 	struct rlimit rl = { 0, 0 };
+	int hugetlb_errno;
+	unsigned int i;
+
 	shmkey = GETIPCKEY();
 	shmkey1 = GETIPCKEY();
 
 	SAFE_SETRLIMIT(RLIMIT_MEMLOCK, &rl);
 	shm_id = SAFE_SHMGET(shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL);
 	pw = SAFE_GETPWNAM("nobody");
+	hugetlb_errno = get_hugetlb_exp_error();
 
-	if (!hugetlbfs_supported()) {
-		unsigned int i;
+	if (!hugetlb_errno)
+		return;
 
-		tst_res(TINFO, "SHM_HUGETLB not supported by kernel");
-
-		for (i = 0; i < ARRAY_SIZE(tcases); i++) {
-			if (tcases[i].flags & SHM_HUGETLB)
-				tcases[i].exp_err = EINVAL;
-		}
+	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
+		if (tcases[i].flags & SHM_HUGETLB)
+			tcases[i].exp_err = hugetlb_errno;
 	}
 }
 
