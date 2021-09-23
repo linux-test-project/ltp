@@ -23,6 +23,7 @@
 
 #define SIZE	(1024 * 1024 * 1024)
 #define BOUNDARY (1024 * 1024 * 1024)
+#define BOUNDARY_MAX (3U * 1024 * 1024 * 1024)
 
 static long huge_free;
 static long huge_free2;
@@ -49,12 +50,20 @@ static void shared_hugepage(void)
 	int status, shmid;
 	size_t size = (size_t)SIZE;
 	void *buf;
+	unsigned long boundary = BOUNDARY;
 
 	shmid = shmget(IPC_PRIVATE, size, SHM_HUGETLB | IPC_CREAT | 0777);
 	if (shmid < 0)
 		tst_brk(TBROK | TERRNO, "shmget");
 
-	buf = shmat(shmid, (void *)BOUNDARY, SHM_RND | 0777);
+	while (boundary <= BOUNDARY_MAX
+		&& range_is_mapped(boundary, boundary+SIZE))
+		boundary += 128*1024*1024;
+	if (boundary > BOUNDARY_MAX)
+		tst_brk(TCONF, "failed to find free unmapped range");
+
+	tst_res(TINFO, "attaching at 0x%lx", boundary);
+	buf = shmat(shmid, (void *)boundary, SHM_RND | 0777);
 	if (buf == (void *)-1) {
 		shmctl(shmid, IPC_RMID, NULL);
 		tst_brk(TBROK | TERRNO, "shmat");
@@ -104,6 +113,10 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "c5c99429fa57"},
+		{}
+	},
 	.needs_root = 1,
 	.forks_child = 1,
 	.needs_tmpdir = 1,
