@@ -26,6 +26,7 @@
 
 #include "tst_test.h"
 #include "tst_uid.h"
+#include "tst_clocks.h"
 
 #define MNTPOINT	"mntpoint"
 #define TEMP_FILE	MNTPOINT"/tmp_file"
@@ -71,9 +72,9 @@ static void run(void)
 	}
 
 	SAFE_SETEUID(user_uid);
-	mintime = time(0);
+	mintime = tst_get_fs_timestamp();
 	TST_EXP_PASS(utime(TEMP_FILE, NULL));
-	maxtime = time(0);
+	maxtime = tst_get_fs_timestamp();
 	SAFE_SETEUID(root_uid);
 	SAFE_STAT(TEMP_FILE, &statbuf);
 
