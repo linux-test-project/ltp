@@ -59,6 +59,4 @@ void *probe_free_addr(const char *file, const int lineno);
 #define PROBE_FREE_ADDR() \
 	probe_free_addr(__FILE__, __LINE__)
 
-time_t get_ipc_timestamp(void);
-
 #endif /* newlibipc.h */

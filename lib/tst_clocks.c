@@ -142,3 +142,16 @@ const char *tst_clock_name(clockid_t clk_id)
 		return "INVALID/UNKNOWN CLOCK";
 	}
 }
+
+time_t tst_get_fs_timestamp(void)
+{
+	struct timespec ts;
+	int ret;
+
+	ret = tst_clock_gettime(CLOCK_REALTIME_COARSE, &ts);
+
+	if (ret < 0)
+		tst_brk(TBROK | TERRNO, "clock_gettime(CLOCK_REALTIME_COARSE)");
+
+	return ts.tv_sec;
+}

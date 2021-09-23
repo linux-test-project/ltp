@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
+#include "tst_clocks.h"
 #include "libnewipc.h"
 
 #define NCHILD 20
@@ -243,9 +244,9 @@ static int get_shm_idx_from_id(int shm_id)
 
 static void setup(void)
 {
-	ctime_min = get_ipc_timestamp();
+	ctime_min = tst_get_fs_timestamp();
 	shm_id = SAFE_SHMGET(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | SHM_RW);
-	ctime_max = get_ipc_timestamp();
+	ctime_max = tst_get_fs_timestamp();
 
 	shm_idx = get_shm_idx_from_id(shm_id);
 

@@ -23,7 +23,6 @@
 #include "libnewipc.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_sysv_ipc.h"
-#include "tst_clocks.h"
 
 #define BUFSIZE 1024
 
@@ -86,16 +85,4 @@ void *probe_free_addr(const char *file, const int lineno)
 	addr = (void *)(((unsigned long)(addr) + (SHMLBA - 1)) & ~(SHMLBA - 1));
 
 	return addr;
-}
-
-time_t get_ipc_timestamp(void)
-{
-	struct timespec ts;
-	int ret;
-
-	ret = tst_clock_gettime(CLOCK_REALTIME_COARSE, &ts);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clock_gettime(CLOCK_REALTIME_COARSE)");
-
-	return ts.tv_sec;
 }
