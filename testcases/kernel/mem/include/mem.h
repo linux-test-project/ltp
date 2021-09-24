@@ -4,6 +4,7 @@
 #include "tst_test.h"
 #include "tst_cgroup.h"
 #include "ksm_helper.h"
+#include "tst_memutils.h"
 
 #if defined(__powerpc__) || defined(__powerpc64__)
 #define MAXNODES		256

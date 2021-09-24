@@ -83,11 +83,7 @@ static void test_swapping(void)
 static void init_meminfo(void)
 {
 	swap_free_init = SAFE_READ_MEMINFO("SwapFree:");
-	if (FILE_LINES_SCANF("/proc/meminfo", "MemAvailable: %ld",
-		&mem_available_init)) {
-		mem_available_init = SAFE_READ_MEMINFO("MemFree:")
-			+ SAFE_READ_MEMINFO("Cached:");
-	}
+	mem_available_init = tst_available_mem();
 	mem_over = mem_available_init * COE_SLIGHT_OVER;
 	mem_over_max = mem_available_init * COE_DELTA;
 
