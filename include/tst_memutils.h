@@ -19,4 +19,10 @@
  */
 void tst_pollute_memory(size_t maxsize, int fillchar);
 
+/*
+ * Read the value of MemAvailable from /proc/meminfo, if no support on
+ * older kernels, return 'MemFree + Cached' for instead.
+ */
+long long tst_available_mem(void);
+
 #endif /* TST_MEMUTILS_H__ */
