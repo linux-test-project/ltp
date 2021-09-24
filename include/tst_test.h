@@ -42,6 +42,7 @@
 #include "tst_lockdown.h"
 #include "tst_fips.h"
 #include "tst_taint.h"
+#include "tst_memutils.h"
 
 /*
  * Reports testcase result.

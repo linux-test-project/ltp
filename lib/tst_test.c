@@ -892,15 +892,25 @@ static void prepare_and_mount_dev_fs(const char *mntpoint)
 static const char *limit_tmpfs_mount_size(const char *mnt_data,
 		char *buf, size_t buf_size, const char *fs_type)
 {
+	unsigned int tmpfs_size;
+
 	if (strcmp(fs_type, "tmpfs"))
 		return mnt_data;
 
-	if (mnt_data)
-		snprintf(buf, buf_size, "%s,size=%luM", mnt_data, tdev.size);
+	if (!tst_test->dev_min_size)
+		tmpfs_size = 32;
 	else
-		snprintf(buf, buf_size, "size=%luM", tdev.size);
+		tmpfs_size = tdev.size;
 
-	tst_res(TINFO, "Limiting tmpfs size to %luMB", tdev.size);
+	if ((tst_available_mem() / 1024) < (tmpfs_size * 2))
+		tst_brk(TCONF, "No enough memory for tmpfs use");
+
+	if (mnt_data)
+		snprintf(buf, buf_size, "%s,size=%luM", mnt_data, tmpfs_size);
+	else
+		snprintf(buf, buf_size, "size=%luM", tmpfs_size);
+
+	tst_res(TINFO, "Limiting tmpfs size to %luMB", tmpfs_size);
 
 	return buf;
 }
