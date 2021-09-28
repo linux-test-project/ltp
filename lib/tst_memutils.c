@@ -65,9 +65,9 @@ void tst_pollute_memory(size_t maxsize, int fillchar)
 
 long long tst_available_mem(void)
 {
-	long long mem_available;
+	unsigned long long mem_available = 0;
 
-	if (FILE_LINES_SCANF("/proc/meminfo", "MemAvailable: %ld",
+	if (FILE_LINES_SCANF("/proc/meminfo", "MemAvailable: %llu",
 		&mem_available)) {
 		mem_available = SAFE_READ_MEMINFO("MemFree:")
 			+ SAFE_READ_MEMINFO("Cached:");
