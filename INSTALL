@@ -10,7 +10,7 @@ Debian / Ubuntu
 
 openSUSE / SLES
 
-	# zypper install gcc git make pkgconf autoconf automake bison flex m4 linux-glibc-devel glibc-devel
+	# zypper install gcc git make pkg-config autoconf automake bison flex m4 linux-glibc-devel glibc-devel
 
 Fedora / CentOS / RHEL
 
