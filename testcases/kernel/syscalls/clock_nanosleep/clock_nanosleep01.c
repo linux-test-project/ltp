@@ -199,7 +199,7 @@ static void do_test(unsigned int i)
 		}
 
 		if (remain_ms > expect_ms) {
-			tst_res(TFAIL| TTERRNO,
+			tst_res(TFAIL | TTERRNO,
 				"remaining time > requested time (%lld > %lld)",
 				remain_ms, expect_ms);
 			return;
