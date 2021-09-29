@@ -5,9 +5,6 @@
 # define LAPI_RTNETLINK_H__
 
 #include <linux/rtnetlink.h>
-
-#ifndef IFA_FLAGS
-# define IFA_FLAGS 8
-#endif
+#include "lapi/if_addr.h"
 
 #endif	/* LAPI_RTNETLINK_H__ */
