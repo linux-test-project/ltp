@@ -8,7 +8,7 @@ Debian / Ubuntu
 
 	# apt install gcc git make pkgconf autoconf automake bison flex m4 linux-headers-$(uname -r) libc6-dev
 
-OpenSUSE / SLES
+openSUSE / SLES
 
 	# zypper install gcc git make pkgconf autoconf automake bison flex m4 linux-glibc-devel glibc-devel
 
