@@ -27,10 +27,10 @@ static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 }
 
 enum test_type {
-	NORMAL,
-	SEND_SIGINT,
-	BAD_TS_ADDR_REQ,
-	BAD_TS_ADDR_REM,
+	NORMAL = 1,
+	SEND_SIGINT = 2,
+	BAD_TS_ADDR_REQ = 4,
+	BAD_TS_ADDR_REM = 8,
 };
 
 #define TYPE_NAME(x) .ttype = x, .desc = #x
@@ -138,7 +138,14 @@ static void do_test(unsigned int i)
 
 	tst_res(TINFO, "case %s", tc->desc);
 
-	if (tc->ttype == SEND_SIGINT || tc->ttype == BAD_TS_ADDR_REM)
+	if (tc->ttype & (BAD_TS_ADDR_REQ | BAD_TS_ADDR_REM) &&
+	    tv->clock_nanosleep == libc_clock_nanosleep) {
+		tst_res(TCONF,
+			"The libc wrapper may dereference req or rem");
+		return;
+	}
+
+	if (tc->ttype & (SEND_SIGINT | BAD_TS_ADDR_REM))
 		pid = create_sig_proc(SIGINT, 40, 500000);
 
 	tst_ts_set_sec(rq, tc->tv_sec);
