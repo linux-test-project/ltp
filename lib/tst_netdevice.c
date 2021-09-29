@@ -4,7 +4,6 @@
  */
 
 #include <asm/types.h>
-#include <linux/netlink.h>
 #include <linux/veth.h>
 #include <sys/socket.h>
 #include <net/if.h>
