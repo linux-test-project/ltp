@@ -27,11 +27,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <linux/if_addr.h>
 #include <linux/errqueue.h>
 
 #include <sched.h>
 #include <limits.h>
+
+#include "lapi/if_addr.h"
 #include "tst_test.h"
 #include "tst_netdevice.h"
 
