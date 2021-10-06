@@ -16,10 +16,6 @@
   <assertion id="5" tag="ref:XSH6:33594:33595 pt:THR">
     No signal shall be sent if the pthread_kill() function fails.
   </assertion>
-  <assertion id="6" tag="ref:XSH6:33598:33599 pt:THR">
-    [ESRCH] No thread could be found corresponding to that specified by
-    the given thread ID.
-  </assertion>
   <assertion id="7" tag="ref:XSH6:33600:33600 pt:THR">
     [EINVAL] The value of the sig argument is an invalid or unsupported
     signal number.

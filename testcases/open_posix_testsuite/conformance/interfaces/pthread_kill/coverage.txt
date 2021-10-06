@@ -6,6 +6,5 @@ Assertion	Status
 3		YES
 4		IMPLICITLY tested by assertions 6 and 7.
 5		IMPLICITLY tested by assertions 6 and 7.
-6		YES
 7		YES
 8		WON'T test. No way to interrupt the pthread_kill() call.
