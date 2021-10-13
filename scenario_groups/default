@@ -6,6 +6,7 @@ dio
 io
 mm
 ipc
+irq
 sched
 math
 nptl
