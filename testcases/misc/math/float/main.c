@@ -29,13 +29,13 @@
 
 #define SAFE_FREE(p) { if (p) { free(p); (p)=NULL; } }
 /* LTP status reporting */
-char *TCID;			/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+static char *TCID;			/* Test program identifier.    */
+static int TST_TOTAL = 1;		/* Total number of test cases. */
 
 /* To avoid extensive modifications to the code, use this bodge */
 #define exit(x) myexit(x)
 
-void myexit(int x)
+static void myexit(int x)
 {
 	if (x)
 		tst_resm(TFAIL, "Test failed");
@@ -44,47 +44,47 @@ void myexit(int x)
 	tst_exit();
 }
 
-TH_DATA *pcom;
-TH_DATA **tabcom;
-TH_DATA **tabcour;
+static TH_DATA *pcom;
+static TH_DATA **tabcom;
+static TH_DATA **tabcour;
 #ifndef	PATH_MAX
 #define PATH_MAX		1024
 #endif
-char datadir[PATH_MAX];		/* DATA directory */
+static char datadir[PATH_MAX];		/* DATA directory */
 
 #ifndef PTHREAD_THREADS_MAX
 #define PTHREAD_THREADS_MAX	1024
 #endif
 #define DEFAULT_NUM_THREADS	20
-int num_threads = DEFAULT_NUM_THREADS;
-int num_loops = 500;
+static int num_threads = DEFAULT_NUM_THREADS;
+static int num_loops = 500;
 
-int sig_cancel = 0;		/* flag set by handle_signals to tell initial thread
+static int sig_cancel = 0;		/* flag set by handle_signals to tell initial thread
 				   to stop creating new threads (signal caught) */
 
-int indice = 0;			/* # of threads created, to be canceled by handle_signals
+static int indice = 0;			/* # of threads created, to be canceled by handle_signals
 				   or waited for by initial thread */
 
-pthread_mutex_t sig_mutex;
-pthread_t *threads;
+static pthread_mutex_t sig_mutex;
+static pthread_t *threads;
 
-int debug = 0;
-int true = 1;
+static int debug = 0;
+static int is_true = 1;
 
 static void *handle_signals(void *);
 
 static void sys_error(const char *, int);
 
-const double EPS = 0.1e-300;
+static const double EPS = 0.1e-300;
 
-const int nb_func = NB_FUNC;
+static const int nb_func = NB_FUNC;
 
-int generate(char *datadir, char *bin_path)
+static int generate(char *datadir, char *bin_path)
 {
 	char *cmdline;
-	char *fmt = "cd %s; %s/%s %s";
+	const char *fmt = "cd %s; %s/%s %s";
 
-	cmdline = malloc(2 * strlen(bin_path) + strlen(datadir) + strlen(GENERATOR) + strlen(fmt));
+	cmdline = (char *)malloc(2 * strlen(bin_path) + strlen(datadir) + strlen(GENERATOR) + strlen(fmt));
 	if (cmdline == NULL)
 		return (1);
 	sprintf(cmdline, fmt, datadir, bin_path, GENERATOR, bin_path);
@@ -120,12 +120,13 @@ int main(int argc, char *argv[])
 		TCID++;
 	else
 		TCID = argv[0];
+	fprintf(stderr, "main %s\n", TCID);
 	ltproot = getenv("LTPROOT");
 	if (ltproot == NULL || strlen(ltproot) == 0) {
 		tst_brkm(TBROK, NULL,
 			 "You must set $LTPROOT before executing this test");
 	}
-	bin_path = malloc(strlen(ltproot) + 16);
+	bin_path = (char*)malloc(strlen(ltproot) + 16);
 	if (bin_path == NULL) {
 		tst_brkm(TBROK | TERRNO, NULL, "malloc failed");
 	}
@@ -204,11 +205,11 @@ int main(int argc, char *argv[])
 	/*
 	 * Start all calculation threads...
 	 */
-	threads = malloc(nb_func * num_threads * sizeof(pthread_t));
+	threads = (pthread_t *)malloc(nb_func * num_threads * sizeof(pthread_t));
 	if (threads == NULL)
 		tst_brkm(TFAIL | TERRNO, cleanup, "malloc failed");
 
-	tabcom = malloc((sizeof(TH_DATA *) * nb_func * num_threads));
+	tabcom = (TH_DATA **)malloc((sizeof(TH_DATA *) * nb_func * num_threads));
 	if (!tabcom)
 		tst_brkm(TFAIL | TERRNO, cleanup, "malloc failed");
 	tabcour = tabcom;
@@ -229,11 +230,11 @@ int main(int argc, char *argv[])
 
 	indice = 0;
 	for (i = 0; i < nb_func; i++) {
-
+		tst_resm(TINFO, "  > running test %d", i+1);
 		for (th_num = 0; th_num < num_threads; th_num++) {
 
 			/* allocate struct of commucation  with the thread */
-			pcom = calloc(1, sizeof(TH_DATA));
+			pcom = (TH_DATA *)calloc(1, sizeof(TH_DATA));
 			if (pcom == NULL)
 				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "calloc failed");

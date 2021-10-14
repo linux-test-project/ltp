@@ -274,7 +274,7 @@ static void compute_ldexp(TH_DATA * th_data, double *din, double *dex,
  *	pointer to a TH_DATA structure.
  *
  */
-void *thread_code(void *arg)
+static void *thread_code(void *arg)
 {
 	TH_DATA *th_data = (TH_DATA *) arg;
 	size_t fsize, fsize2, fsize3;

@@ -50,11 +50,11 @@
 #define FAILED 0
 #define PASSED 1
 
-char *TCID = "abs01";
-int local_flag = PASSED;
-int block_number;
-FILE *temp;
-int TST_TOTAL = 1;
+static const char *TCID = "abs01";
+static int local_flag = PASSED;
+static int block_number;
+static FILE *temp;
+static int TST_TOTAL = 1;
 
 static void setup(void);
 static int blenter(void);

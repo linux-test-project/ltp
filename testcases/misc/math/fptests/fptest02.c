@@ -61,8 +61,8 @@
 /** LTP Port **/
 #include "test.h"
 
-char *TCID = "fptest02";	/* Test program identifier.    */
-int TST_TOTAL = 1;		/* Total number of test cases. */
+static const char *TCID = "fptest02";	/* Test program identifier.    */
+static int TST_TOTAL = 1;		/* Total number of test cases. */
 /**************/
 
 struct event {
@@ -79,18 +79,18 @@ static int addevent(int, int, double);
 static void gaussinit(double, double, int);
 static double gauss(void);
 
-struct event eventtab[EVENTMX];
-struct event rtrevent;
-int waiting[EVENTMX];		/* array of waiting processors */
-int nwaiting;			/* number of waiting processors */
-double sgtime;			/* global clock */
-double lsttime;			/* time used for editing */
-double dtc, dts, alpha;		/* timing parameters */
-int nproc;			/* number of processors */
-int barcnt;			/* number of processors ATBARRIER */
-int ncycle;			/* number of cycles completed */
-int ncycmax;			/* number of cycles to run */
-int critfree;			/* TRUE if critical section not occupied */
+static struct event eventtab[EVENTMX];
+static struct event rtrevent;
+static int waiting[EVENTMX];		/* array of waiting processors */
+static int nwaiting;			/* number of waiting processors */
+static double sgtime;			/* global clock */
+static double lsttime;			/* time used for editing */
+static double dtc, dts, alpha;		/* timing parameters */
+static int nproc;			/* number of processors */
+static int barcnt;			/* number of processors ATBARRIER */
+static int ncycle;			/* number of cycles completed */
+static int ncycmax;			/* number of cycles to run */
+static int critfree;			/* TRUE if critical section not occupied */
 
 static struct event *nextevent(void );
 
