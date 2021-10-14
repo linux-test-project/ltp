@@ -906,11 +906,11 @@ static const char *limit_tmpfs_mount_size(const char *mnt_data,
 		tst_brk(TCONF, "No enough memory for tmpfs use");
 
 	if (mnt_data)
-		snprintf(buf, buf_size, "%s,size=%luM", mnt_data, tmpfs_size);
+		snprintf(buf, buf_size, "%s,size=%uM", mnt_data, tmpfs_size);
 	else
-		snprintf(buf, buf_size, "size=%luM", tmpfs_size);
+		snprintf(buf, buf_size, "size=%uM", tmpfs_size);
 
-	tst_res(TINFO, "Limiting tmpfs size to %luMB", tmpfs_size);
+	tst_res(TINFO, "Limiting tmpfs size to %uMB", tmpfs_size);
 
 	return buf;
 }
