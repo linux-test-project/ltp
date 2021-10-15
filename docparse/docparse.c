@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2019-2021 Cyril Hrubis <chrubis@suse.cz>
  * Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
  */
 
+#define _GNU_SOURCE
+
+#include <search.h>
 #include <stdio.h>
 #include <string.h>
 #include <libgen.h>
@@ -11,6 +14,9 @@
 #include <unistd.h>
 
 #include "data_storage.h"
+
+static int verbose;
+static char *includepath;
 
 #define WARN(str) fprintf(stderr, "WARNING: " str "\n")
 
@@ -126,7 +132,7 @@ static void maybe_comment(FILE *f, struct data_node *doc)
 	}
 }
 
-const char *next_token(FILE *f, struct data_node *doc)
+static char *next_token(FILE *f, struct data_node *doc)
 {
 	size_t i = 0;
 	static char buf[4096];
@@ -159,6 +165,7 @@ const char *next_token(FILE *f, struct data_node *doc)
 		case ',':
 		case '[':
 		case ']':
+		case '#':
 			if (i) {
 				ungetc(c, f);
 				goto exit;
@@ -195,6 +202,46 @@ exit:
 
 	buf[i] = 0;
 	return buf;
+}
+
+static FILE *open_include(const char *includepath, FILE *f)
+{
+	char buf[256];
+	char *path;
+	FILE *inc;
+
+	if (!fscanf(f, "%s\n", buf))
+		return NULL;
+
+	if (buf[0] != '"')
+		return NULL;
+
+	char *filename = buf + 1;
+
+	if (!buf[0])
+		return NULL;
+
+	filename[strlen(filename)-1] = 0;
+
+	if (asprintf(&path, "%s/%s", includepath, filename) < 0)
+		return NULL;
+
+	inc = fopen(path, "r");
+
+	if (inc && verbose)
+		fprintf(stderr, "INCLUDE %s\n", path);
+
+	free(path);
+
+	return inc;
+}
+
+static void close_include(FILE *inc)
+{
+	if (verbose)
+		fprintf(stderr, "INCLUDE END\n");
+
+	fclose(inc);
 }
 
 static int parse_array(FILE *f, struct data_node *node)
@@ -234,9 +281,28 @@ static int parse_array(FILE *f, struct data_node *node)
 	return 0;
 }
 
+static void try_apply_macro(char **res)
+{
+	ENTRY macro = {
+		.key = *res,
+	};
+
+	ENTRY *ret;
+
+	ret = hsearch(macro, FIND);
+
+	if (!ret)
+		return;
+
+	if (verbose)
+		fprintf(stderr, "APPLYING MACRO %s=%s\n", ret->key, (char*)ret->data);
+
+	*res = ret->data;
+}
+
 static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *node)
 {
-	const char *token;
+	char *token;
 	char *id = NULL;
 	int state = 0;
 	struct data_node *ret;
@@ -280,6 +346,7 @@ static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *n
 			ret = data_node_array();
 			parse_array(f, ret);
 		} else {
+			try_apply_macro(&token);
 			ret = data_node_string(token);
 		}
 
@@ -302,6 +369,122 @@ static const char *tokens[] = {
 	"{",
 };
 
+static void macro_get_string(FILE *f, char *buf, char *buf_end)
+{
+	int c;
+	char *buf_start = buf;
+
+	for (;;) {
+		c = fgetc(f);
+
+		switch (c) {
+		case EOF:
+			*buf = 0;
+			return;
+		case '"':
+			if (buf == buf_start || buf[-1] != '\\') {
+				*buf = 0;
+				return;
+			}
+			buf[-1] = '"';
+		break;
+		default:
+			if (buf < buf_end)
+				*(buf++) = c;
+		}
+	}
+}
+
+static void macro_get_val(FILE *f, char *buf, size_t buf_len)
+{
+	int c, prev = 0;
+	char *buf_end = buf + buf_len - 1;
+
+	while (isspace(c = fgetc(f)));
+
+	if (c == '"') {
+		macro_get_string(f, buf, buf_end);
+		return;
+	}
+
+	for (;;) {
+		switch (c) {
+		case '\n':
+			if (prev == '\\') {
+				buf--;
+			} else {
+				*buf = 0;
+				return;
+			}
+		break;
+		case EOF:
+			*buf = 0;
+			return;
+		case ' ':
+		case '\t':
+		break;
+		default:
+			if (buf < buf_end)
+				*(buf++) = c;
+		}
+
+		prev = c;
+		c = fgetc(f);
+	}
+}
+
+static void parse_macro(FILE *f)
+{
+	char name[128];
+	char val[256];
+
+	if (!fscanf(f, "%s[^\n]", name))
+		return;
+
+	if (fgetc(f) == '\n')
+		return;
+
+	macro_get_val(f, val, sizeof(val));
+
+	ENTRY e = {
+		.key = strdup(name),
+		.data = strdup(val),
+	};
+
+	if (verbose)
+		fprintf(stderr, " MACRO %s=%s\n", e.key, (char*)e.data);
+
+	hsearch(e, ENTER);
+}
+
+static void parse_include_macros(FILE *f)
+{
+	FILE *inc;
+	const char *token;
+	int hash = 0;
+
+	inc = open_include(includepath, f);
+	if (!inc)
+		return;
+
+	while ((token = next_token(inc, NULL))) {
+		if (token[0] == '#') {
+			hash = 1;
+			continue;
+		}
+
+		if (!hash)
+			continue;
+
+		if (!strcmp(token, "define"))
+			parse_macro(inc);
+
+		hash = 0;
+	}
+
+	close_include(inc);
+}
+
 static struct data_node *parse_file(const char *fname)
 {
 	int state = 0, found = 0;
@@ -314,14 +497,28 @@ static struct data_node *parse_file(const char *fname)
 
 	FILE *f = fopen(fname, "r");
 
+	includepath = dirname(strdup(fname));
+
 	struct data_node *res = data_node_hash();
 	struct data_node *doc = data_node_array();
 
 	while ((token = next_token(f, doc))) {
-		if (state < 6 && !strcmp(tokens[state], token))
+		if (state < 6 && !strcmp(tokens[state], token)) {
 			state++;
-		else
+		} else {
+			if (token[0] == '#') {
+				token = next_token(f, doc);
+				if (token) {
+					if (!strcmp(token, "define"))
+						parse_macro(f);
+
+					if (!strcmp(token, "include"))
+						parse_include_macros(f);
+				}
+			}
+
 			state = 0;
+		}
 
 		if (state < 6)
 			continue;
@@ -386,17 +583,42 @@ const char *strip_name(char *path)
 	return name;
 }
 
+static void print_help(const char *prgname)
+{
+	printf("usage: %s [-vh] input.c\n\n", prgname);
+	printf("-v sets verbose mode\n");
+	printf("-h prints this help\n\n");
+	exit(0);
+}
+
 int main(int argc, char *argv[])
 {
 	unsigned int i, j;
 	struct data_node *res;
+	int opt;
 
-	if (argc != 2) {
-		fprintf(stderr, "Usage: docparse filename.c\n");
+	while ((opt = getopt(argc, argv, "hv")) != -1) {
+		switch (opt) {
+		case 'h':
+			print_help(argv[0]);
+		break;
+		case 'v':
+			verbose = 1;
+		break;
+		}
+	}
+
+	if (optind >= argc) {
+		fprintf(stderr, "No input filename.c\n");
 		return 1;
 	}
 
-	res = parse_file(argv[1]);
+	if (!hcreate(128)) {
+		fprintf(stderr, "Failed to initialize hash table\n");
+		return 1;
+	}
+
+	res = parse_file(argv[optind]);
 	if (!res)
 		return 0;
 
@@ -425,8 +647,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	data_node_hash_add(res, "fname", data_node_string(argv[1]));
-	printf("  \"%s\": ", strip_name(argv[1]));
+	data_node_hash_add(res, "fname", data_node_string(argv[optind]));
+	printf("  \"%s\": ", strip_name(argv[optind]));
 	data_to_json(res, stdout, 2);
 	data_node_free(res);
 
