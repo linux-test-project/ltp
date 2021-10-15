@@ -15,12 +15,16 @@ if [ -d .git ]; then
 fi
 
 echo '{'
-echo ' "testsuite": "Linux Test Project",'
-echo ' "testsuite_short": "LTP",'
-echo ' "url": "https://github.com/linux-test-project/ltp/",'
-echo ' "scm_url_base": "https://github.com/linux-test-project/ltp/tree/master/",'
-echo ' "timeout": 300,'
-echo " \"version\": \"$version\","
+echo ' "testsuite": {'
+echo '  "name": "Linux Test Project",'
+echo '  "short_name": "LTP",'
+echo '  "url": "https://github.com/linux-test-project/ltp/",'
+echo '  "scm_url_base": "https://github.com/linux-test-project/ltp/tree/master/",'
+echo "  \"version\": \"$version\""
+echo ' },'
+echo ' "defaults": {'
+echo '  "timeout": 300'
+echo ' },'
 echo ' "tests": {'
 
 first=1

@@ -164,9 +164,9 @@ sub content_about
 	my $json = shift;
 	my $content;
 
-	$content .= print_defined("URL", $json->{'url'});
-	$content .= print_defined("Version", $json->{'version'});
-	$content .= print_defined("Default timeout", $json->{'timeout'}, "seconds");
+	$content .= print_defined("URL", $json->{'testsuite'}->{'url'});
+	$content .= print_defined("Version", $json->{'testsuite'}->{'version'});
+	$content .= print_defined("Default timeout", $json->{'defaults'}->{'timeout'}, "seconds");
 
 	return $content;
 }
@@ -360,10 +360,10 @@ sub content_all_tests
 		$content .= h3($name);
 		$content .= $letters;
 
-		if (defined($json->{'scm_url_base'}) &&
+		if (defined($json->{'testsuite'}->{'scm_url_base'}) &&
 			defined($json->{'tests'}{$name}{fname})) {
 			$content .= paragraph(html_a(tag_url("fname", $json->{'tests'}{$name}{fname},
-					$json->{'scm_url_base'}), "source"));
+					$json->{'testsuite'}->{'scm_url_base'}), "source"));
 		}
 
 		if (defined $json->{'tests'}{$name}{doc}) {
@@ -386,7 +386,7 @@ sub content_all_tests
 				$content .= paragraph("Test timeout is $json->{'tests'}{$name}{timeout} seconds");
 			}
 		} else {
-			$content .= paragraph("Test timeout defaults to $json->{'timeout'} seconds");
+			$content .= paragraph("Test timeout defaults to $json->{'defaults'}->{'timeout'} seconds");
 		}
 
 		my $tmp2 = undef;
@@ -463,7 +463,7 @@ my $json = decode_json(load_json($ARGV[0]));
 my $config = [
     {
 		file => "about.txt",
-		title => h2("About $json->{'testsuite'}"),
+		title => h2("About $json->{'testsuite'}->{'name'}"),
 		content => \&content_about,
     },
     {
@@ -495,7 +495,7 @@ EOL
 	for my $c (@{$config}) {
 		$content .= "include::$c->{'file'}\[\]\n";
 	}
-	print_asciidoc_page($fh, $json, h1($json->{'testsuite_short'} . " test catalog"), $content);
+	print_asciidoc_page($fh, $json, h1($json->{'testsuite'}->{'short_name'} . " test catalog"), $content);
 }
 
 for my $c (@{$config}) {
