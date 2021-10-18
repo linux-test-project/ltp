@@ -15,6 +15,7 @@ enum data_type {
 	DATA_ARRAY,
 	DATA_HASH,
 	DATA_STRING,
+	DATA_INT,
 };
 
 struct data_node_array {
@@ -41,12 +42,18 @@ struct data_node_string {
 	char val[];
 };
 
+struct data_node_int {
+	enum data_type type;
+	long val;
+};
+
 struct data_node {
 	union {
 		enum data_type type;
 		struct data_node_hash hash;
 		struct data_node_array array;
 		struct data_node_string string;
+		struct data_node_int i;
 	};
 };
 
@@ -60,6 +67,19 @@ static inline struct data_node *data_node_string(const char *string)
 
 	node->type = DATA_STRING;
 	strcpy(node->string.val, string);
+
+	return node;
+}
+
+static inline struct data_node *data_node_int(long i)
+{
+	struct data_node *node = malloc(sizeof(struct data_node_int));
+
+	if (!node)
+		return NULL;
+
+	node->type = DATA_INT;
+	node->i.val = i;
 
 	return node;
 }
@@ -122,6 +142,7 @@ static inline void data_node_free(struct data_node *self)
 
 	switch (self->type) {
 	case DATA_STRING:
+	case DATA_INT:
 	break;
 	case DATA_HASH:
 		for (i = 0; i < self->hash.elems_used; i++) {
@@ -209,6 +230,10 @@ static inline void data_node_print_(struct data_node *self, unsigned int padd)
 	unsigned int i;
 
 	switch (self->type) {
+	case DATA_INT:
+		data_print_padd(padd);
+		printf("%li\n", self->i.val);
+	break;
 	case DATA_STRING:
 		data_print_padd(padd);
 		printf("'%s'\n", self->string.val);
@@ -295,6 +320,10 @@ static inline void data_to_json_(struct data_node *self, FILE *f, unsigned int p
 	unsigned int i;
 
 	switch (self->type) {
+	case DATA_INT:
+		padd = do_padd ? padd : 0;
+		data_fprintf(f, padd, "%li", self->i.val);
+	break;
 	case DATA_STRING:
 		padd = do_padd ? padd : 0;
 		data_fprintf_esc(f, padd, self->string.val);
