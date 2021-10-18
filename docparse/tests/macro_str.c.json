@@ -1,0 +1,4 @@
+  "macro_str": {
+   "syscall": "syscall(\"foo\")",
+   "fname": "macro_str.c"
+  }

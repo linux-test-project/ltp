@@ -1,0 +1,13 @@
+  "tags": {
+   "tags": [
+     [
+      "tag-name-1",
+      "tag-value-1"
+     ],
+     [
+      "tag-name-2",
+      "tag-value-2"
+     ]
+    ],
+   "fname": "tags.c"
+  }
