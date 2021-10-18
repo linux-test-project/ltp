@@ -26,7 +26,7 @@ echo ' "tests": {'
 first=1
 
 for test in `find testcases/ -name '*.c'`; do
-	a=$($top_builddir/docparse/docparse "$test")
+	a=$($top_builddir/docparse/docparse -Iinclude -Itestcases/kernel/syscalls/utils/ "$test")
 	if [ -n "$a" ]; then
 		if [ -z "$first" ]; then
 			echo ','

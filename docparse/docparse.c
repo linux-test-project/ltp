@@ -15,7 +15,11 @@
 
 #include "data_storage.h"
 
+#define INCLUDE_PATH_MAX 5
+
 static int verbose;
+static char *cmdline_includepath[INCLUDE_PATH_MAX];
+static unsigned int cmdline_includepaths;
 static char *includepath;
 
 #define WARN(str) fprintf(stderr, "WARNING: " str "\n")
@@ -132,12 +136,13 @@ static void maybe_comment(FILE *f, struct data_node *doc)
 	}
 }
 
-static char *next_token(FILE *f, struct data_node *doc)
+static char *next_token2(FILE *f, char *buf, size_t buf_len, struct data_node *doc)
 {
 	size_t i = 0;
-	static char buf[4096];
 	int c;
 	int in_str = 0;
+
+	buf_len--;
 
 	for (;;) {
 		c = fgetc(f);
@@ -151,7 +156,8 @@ static char *next_token(FILE *f, struct data_node *doc)
 					goto exit;
 			}
 
-			buf[i++] = c;
+			if (i < buf_len)
+				buf[i++] = c;
 			continue;
 		}
 
@@ -171,7 +177,8 @@ static char *next_token(FILE *f, struct data_node *doc)
 				goto exit;
 			}
 
-			buf[i++] = c;
+			if (i < buf_len)
+				buf[i++] = c;
 			goto exit;
 		case '0' ... '9':
 		case 'a' ... 'z':
@@ -204,11 +211,33 @@ exit:
 	return buf;
 }
 
-static FILE *open_include(const char *includepath, FILE *f)
+static char *next_token(FILE *f, struct data_node *doc)
 {
-	char buf[256];
+	static char buf[4096];
+
+	return next_token2(f, buf, sizeof(buf), doc);
+}
+
+static FILE *open_file(const char *dir, const char *fname)
+{
+	FILE *f;
 	char *path;
+
+	if (asprintf(&path, "%s/%s", dir, fname) < 0)
+		return NULL;
+
+	f = fopen(path, "r");
+
+	free(path);
+
+	return f;
+}
+
+static FILE *open_include(FILE *f)
+{
+	char buf[256], *fname;
 	FILE *inc;
+	unsigned int i;
 
 	if (!fscanf(f, "%s\n", buf))
 		return NULL;
@@ -216,24 +245,36 @@ static FILE *open_include(const char *includepath, FILE *f)
 	if (buf[0] != '"')
 		return NULL;
 
-	char *filename = buf + 1;
+	fname = buf + 1;
 
 	if (!buf[0])
 		return NULL;
 
-	filename[strlen(filename)-1] = 0;
+	fname[strlen(fname)-1] = 0;
 
-	if (asprintf(&path, "%s/%s", includepath, filename) < 0)
-		return NULL;
+	inc = open_file(includepath, fname);
+	if (inc) {
+		if (verbose)
+			fprintf(stderr, "INCLUDE %s/%s\n", includepath, fname);
 
-	inc = fopen(path, "r");
+		return inc;
+	}
 
-	if (inc && verbose)
-		fprintf(stderr, "INCLUDE %s\n", path);
+	for (i = 0; i < cmdline_includepaths; i++) {
+		inc = open_file(cmdline_includepath[i], fname);
 
-	free(path);
+		if (!inc)
+			continue;
 
-	return inc;
+		if (verbose) {
+			fprintf(stderr, "INCLUDE %s/%s\n",
+				cmdline_includepath[i], fname);
+		}
+
+		return inc;
+	}
+
+	return NULL;
 }
 
 static void close_include(FILE *inc)
@@ -300,6 +341,136 @@ static void try_apply_macro(char **res)
 	*res = ret->data;
 }
 
+static int parse_get_array_len(FILE *f)
+{
+	const char *token;
+	int cnt = 0, depth = 0, prev_comma = 0;
+
+	if (!(token = next_token(f, NULL)))
+		return 0;
+
+	if (strcmp(token, "{"))
+		return 0;
+
+	for (;;) {
+		if (!(token = next_token(f, NULL)))
+			return 0;
+
+		if (!strcmp(token, "{"))
+			depth++;
+
+		if (!strcmp(token, "}"))
+			depth--;
+		else
+			prev_comma = 0;
+
+		if (!strcmp(token, ",") && !depth) {
+			prev_comma = 1;
+			cnt++;
+		}
+
+		if (depth < 0)
+			return cnt + !prev_comma;
+	}
+}
+
+static void look_for_array_size(FILE *f, const char *arr_id, struct data_node **res)
+{
+	const char *token;
+	char buf[2][2048] = {};
+	int cur_buf = 0;
+	int prev_buf = 1;
+
+	for (;;) {
+		if (!(token = next_token2(f, buf[cur_buf], sizeof(buf[cur_buf]), NULL)))
+			break;
+
+		if (!strcmp(token, "=") && !strcmp(buf[prev_buf], arr_id)) {
+			int arr_len = parse_get_array_len(f);
+
+			if (verbose)
+				fprintf(stderr, "ARRAY %s LENGTH = %i\n", arr_id, arr_len);
+
+			*res = data_node_int(arr_len);
+
+			break;
+		}
+
+		if (strcmp(buf[cur_buf], "]") && strcmp(buf[cur_buf], "[")) {
+			cur_buf = !cur_buf;
+			prev_buf = !prev_buf;
+		}
+	}
+}
+
+static int parse_array_size(FILE *f, struct data_node **res)
+{
+	const char *token;
+	char *arr_id;
+	long pos;
+	int hash = 0;
+
+	*res = NULL;
+
+	if (!(token = next_token(f, NULL)))
+		return 1;
+
+	if (strcmp(token, "("))
+		return 1;
+
+	if (!(token = next_token(f, NULL)))
+		return 1;
+
+	arr_id = strdup(token);
+
+	if (verbose)
+		fprintf(stderr, "COMPUTING ARRAY '%s' LENGHT\n", arr_id);
+
+	pos = ftell(f);
+
+	rewind(f);
+
+	look_for_array_size(f, arr_id, res);
+
+	if (!*res) {
+		FILE *inc;
+
+		rewind(f);
+
+		for (;;) {
+			if (!(token = next_token(f, NULL)))
+				break;
+
+			if (token[0] == '#') {
+				hash = 1;
+				continue;
+			}
+
+			if (!hash)
+				continue;
+
+			if (!strcmp(token, "include")) {
+				inc = open_include(f);
+
+				if (inc) {
+					look_for_array_size(inc, arr_id, res);
+					close_include(inc);
+				}
+			}
+
+			if (*res)
+				break;
+		}
+	}
+
+	free(arr_id);
+
+	if (fseek(f, pos, SEEK_SET))
+		return 1;
+
+	return 0;
+}
+
 static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *node)
 {
 	char *token;
@@ -345,10 +516,16 @@ static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *n
 		if (!strcmp(token, "{")) {
 			ret = data_node_array();
 			parse_array(f, ret);
+		} else if (!strcmp(token, "ARRAY_SIZE")) {
+			if (parse_array_size(f, &ret))
+				return 1;
 		} else {
 			try_apply_macro(&token);
 			ret = data_node_string(token);
 		}
+
+		if (!ret)
+			continue;
 
 		const char *key = id;
 		if (key[0] == '.')
@@ -463,7 +640,7 @@ static void parse_include_macros(FILE *f)
 	const char *token;
 	int hash = 0;
 
-	inc = open_include(includepath, f);
+	inc = open_include(f);
 	if (!inc)
 		return;
 
@@ -527,7 +704,6 @@ static struct data_node *parse_file(const char *fname)
 		parse_test_struct(f, doc, res);
 	}
 
-
 	if (data_node_array_len(doc)) {
 		data_node_hash_add(res, "doc", doc);
 		found = 1;
@@ -587,6 +763,7 @@ static void print_help(const char *prgname)
 {
 	printf("usage: %s [-vh] input.c\n\n", prgname);
 	printf("-v sets verbose mode\n");
+	printf("-I add include path\n");
 	printf("-h prints this help\n\n");
 	exit(0);
 }
@@ -597,10 +774,18 @@ int main(int argc, char *argv[])
 	struct data_node *res;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "hv")) != -1) {
+	while ((opt = getopt(argc, argv, "hI:v")) != -1) {
 		switch (opt) {
 		case 'h':
 			print_help(argv[0]);
+		break;
+		case 'I':
+			if (cmdline_includepaths >= INCLUDE_PATH_MAX) {
+				fprintf(stderr, "Too much include paths!");
+				exit(1);
+			}
+
+			cmdline_includepath[cmdline_includepaths++] = optarg;
 		break;
 		case 'v':
 			verbose = 1;
