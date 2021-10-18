@@ -12,6 +12,7 @@
 #include <libgen.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "data_storage.h"
 
@@ -721,6 +722,61 @@ static struct data_node *parse_file(const char *fname)
 	return res;
 }
 
+static struct typemap {
+	const char *id;
+	enum data_type type;
+} tst_test_typemap[] = {
+	{.id = "test_variants", .type = DATA_INT},
+	{}
+};
+
+static void convert_str2int(struct data_node *res, const char *id, const char *str_val)
+{
+	long val;
+	char *endptr;
+
+	errno = 0;
+	val = strtol(str_val, &endptr, 10);
+
+	if (errno || *endptr) {
+		fprintf(stderr,	"Cannot convert %s value %s to int!\n", id, str_val);
+		exit(1);
+	}
+
+	if (verbose)
+		fprintf(stderr, "NORMALIZING %s TO INT %li\n", id, val);
+
+	data_node_hash_del(res, id);
+	data_node_hash_add(res, id, data_node_int(val));
+}
+
+static void check_normalize_types(struct data_node *res)
+{
+	unsigned int i;
+
+	for (i = 0; tst_test_typemap[i].id; i++) {
+		struct data_node *n;
+		struct typemap *typemap = &tst_test_typemap[i];
+
+		n = data_node_hash_get(res, typemap->id);
+		if (!n)
+			continue;
+
+		if (n->type == typemap->type)
+			continue;
+
+		if (n->type == DATA_STRING && typemap->type == DATA_INT) {
+			convert_str2int(res, typemap->id, n->string.val);
+			continue;
+		}
+
+		fprintf(stderr, "Cannot convert %s from %s to %s!\n",
+			typemap->id, data_type_name(n->type),
+			data_type_name(typemap->type));
+		exit(1);
+	}
+}
+
 static const char *filter_out[] = {
 	"bufs",
 	"cleanup",
@@ -821,6 +877,9 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+
+	/* Normalize types */
+	check_normalize_types(res);
 
 	for (i = 0; implies[i].flag; i++) {
 		if (data_node_hash_get(res, implies[i].flag)) {

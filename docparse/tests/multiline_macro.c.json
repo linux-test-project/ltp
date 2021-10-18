@@ -1,4 +1,4 @@
   "multiline_macro": {
-   "test_variants": "10",
+   "test_variants": 10,
    "fname": "multiline_macro.c"
   }

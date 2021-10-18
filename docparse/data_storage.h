@@ -57,6 +57,22 @@ struct data_node {
 	};
 };
 
+static inline const char* data_type_name(enum data_type type)
+{
+	switch (type) {
+	case DATA_ARRAY:
+		return "array";
+	case DATA_HASH:
+		return "hash";
+	case DATA_STRING:
+		return "string";
+	case DATA_INT:
+		return "int";
+	default:
+		return "???";
+	}
+}
+
 static inline struct data_node *data_node_string(const char *string)
 {
 	size_t size = sizeof(struct data_node_string) + strlen(string) + 1;
