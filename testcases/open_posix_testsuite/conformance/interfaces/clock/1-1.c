@@ -20,45 +20,32 @@
 #include <time.h>
 #include "posixtest.h"
 
-#define BUSY_LOOP_SECONDS 5
+#define MAX_RUNTIME_SECONDS 15
 
 int main(void)
 {
 	clock_t c1, c2;
 	double sec1, sec2;
-	time_t end;
+	time_t end = time(NULL) + MAX_RUNTIME_SECONDS;
 
 	c1 = clock();
-	sec1 = c1 / CLOCKS_PER_SEC;
-
-	end = time(NULL) + BUSY_LOOP_SECONDS;
-
-	while (end >= time(NULL)) {
-		clock();
+	if (c1 == (clock_t)-1) {
+		printf("processor time not available\n");
+		return PTS_UNRESOLVED;
 	}
+	sec1 = (double) c1 / CLOCKS_PER_SEC;
 
-	c2 = clock();
-	sec2 = c2 / CLOCKS_PER_SEC;
-
-	if (sec2 > sec1) {
-		printf("Times T1=%.2f, T2=%.2f\n", sec1, sec2);
-		printf("Test PASSED\n");
-		return PTS_PASS;
-	} else {
-		if (sec2 < sec1) {
-			/*
-			 * probably wrapping happened; however, since
-			 * we do not know the wrap value, results are
-			 * undefined
-			 */
-			printf("TEST AGAIN:  Times probably wrapped\n");
-			return PTS_UNRESOLVED;
-		} else {
-			printf("Error with processor times T1=%.2f, T2=%.2f\n",
-			       sec1, sec2);
-			return PTS_FAIL;
+	do {
+		c2 = clock();
+		sec2 = (double) c2 / CLOCKS_PER_SEC;
+		if (sec2 - sec1 > 1) {
+			printf("Times T1=%.2lf, T2=%.2lf\n", sec1, sec2);
+			printf("Test PASSED\n");
+			return PTS_PASS;
 		}
-	}
+	} while (end >= time(NULL));
 
-	return PTS_UNRESOLVED;
+	printf("Error with processor times T1=%.2lf, T2=%.2lf\n",
+	       sec1, sec2);
+	return PTS_FAIL;
 }
