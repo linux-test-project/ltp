@@ -16,12 +16,18 @@
 void tst_pollute_memory(size_t maxsize, int fillchar)
 {
 	size_t i, map_count = 0, safety = 0, blocksize = BLOCKSIZE;
+	unsigned long min_free;
 	void **map_blocks;
 	struct sysinfo info;
 
+	SAFE_FILE_SCANF("/proc/sys/vm/min_free_kbytes", "%lu", &min_free);
+	min_free *= 1024;
+	/* Apply a margin because we cannot get below "min" watermark */
+	min_free += min_free / 10;
+
 	SAFE_SYSINFO(&info);
 	safety = MAX(4096 * SAFE_SYSCONF(_SC_PAGESIZE), 128 * 1024 * 1024);
-	safety = MAX(safety, (info.freeram / 64));
+	safety = MAX(safety, min_free);
 	safety /= info.mem_unit;
 
 	if (info.freeswap > safety)
