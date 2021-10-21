@@ -16,6 +16,7 @@
 void tst_pollute_memory(size_t maxsize, int fillchar)
 {
 	size_t i, map_count = 0, safety = 0, blocksize = BLOCKSIZE;
+	unsigned long long freeram;
 	unsigned long min_free;
 	void **map_blocks;
 	struct sysinfo info;
@@ -33,15 +34,24 @@ void tst_pollute_memory(size_t maxsize, int fillchar)
 	if (info.freeswap > safety)
 		safety = 0;
 
+	/*
+	 * MemFree usually is lower than MemAvailable, although when setting
+	 * sysctl vm.lowmem_reserve_ratio, this could reverse.
+	 *
+	 * Use the lower value of both for pollutable memory. Usually this
+	 * means we will not evict any caches.
+	 */
+	freeram = MIN(info.freeram, (tst_available_mem() * 1024));
+
 	/* Not enough free memory to avoid invoking OOM killer */
-	if (info.freeram <= safety)
+	if (freeram <= safety)
 		return;
 
 	if (!maxsize)
 		maxsize = SIZE_MAX;
 
-	if (info.freeram - safety < maxsize / info.mem_unit)
-		maxsize = (info.freeram - safety) * info.mem_unit;
+	if (freeram - safety < maxsize / info.mem_unit)
+		maxsize = (freeram - safety) * info.mem_unit;
 
 	blocksize = MIN(maxsize, blocksize);
 	map_count = maxsize / blocksize;
