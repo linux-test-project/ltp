@@ -139,6 +139,23 @@ echo 'cpuinfo:'
 tst_cmd_run lscpu || cat /proc/cpuinfo
 
 echo
+echo 'available filesystems:'
+echo $(cut -f2 /proc/filesystems | sort -u)
+
+echo
+echo 'mounted filesystems (/proc/mounts):'
+cat /proc/mounts
+
+echo
+echo 'mounted filesystems (df):'
+if `df -hT >/dev/null 2>/dev/null`; then
+	df -hT
+else
+	df
+fi
+
+
+echo
 if is_enabled /sys/module/apparmor/parameters/enabled; then
 	echo 'AppArmor enabled'
 	tst_cmd_run aa-status
