@@ -76,6 +76,11 @@ jobs:
               CC: clang
               METADATA: asciidoc-pdf
 
+          - container: "opensuse/tumbleweed"
+            env:
+              CC: gcc
+              METADATA: asciidoctor
+
           - container: "opensuse/leap"
             env:
               CC: gcc
@@ -110,6 +115,7 @@ jobs:
     container:
       image: ${{ matrix.container }}
       env: ${{ matrix.env }}
+      options: --security-opt seccomp=unconfined
 
     steps:
     - name: Show OS
