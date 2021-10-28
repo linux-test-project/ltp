@@ -65,7 +65,7 @@ int tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3)
 	/*
 	 * Check for a short version e.g '2.4'
 	 */
-	if (*str == ' ' || *str == '\0')
+	if (*str == ' ' || *str == '\0' || *str == '-')
 		return 0;
 
 	if (*(str++) != '.')
