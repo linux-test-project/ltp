@@ -38,7 +38,7 @@ static void run(void)
 		return;
 	}
 
-	tst_res(TFAIL| TTERRNO,
+	tst_res(TFAIL | TTERRNO,
 		"stime(2) fails, Caller not root, expected errno:%d", EPERM);
 }
 
