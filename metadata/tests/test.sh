@@ -3,7 +3,7 @@
 fail=0
 
 for i in *.c; do
-	../docparse $i > tmp.json
+	../metaparse $i > tmp.json
 	if ! diff tmp.json $i.json &> /dev/null; then
 		echo "***"
 		echo "$i output differs!"
