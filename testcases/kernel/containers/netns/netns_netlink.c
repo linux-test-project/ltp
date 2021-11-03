@@ -120,6 +120,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_NET_NS=y",
+		"CONFIG_TUN",
 		NULL
 	},
 };
