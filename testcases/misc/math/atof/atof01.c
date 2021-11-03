@@ -49,16 +49,16 @@
 /*****		*****/
 #define ERR		0.0000001
 
-double pi;
+static double pi;
 
 /*char progname[]= "atof1()"; */
 /**	LTP Port	**/
-char *TCID = "atof01";		/* Test program identifier */
+static const char *TCID = "atof01";		/* Test program identifier */
 
-int local_flag = PASSED;
-int block_number;
-FILE *temp;
-int TST_TOTAL = 1;
+static int local_flag = PASSED;
+static int block_number;
+static FILE *temp;
+static int TST_TOTAL = 1;
 
 static void setup(void);
 static void blenter(void);

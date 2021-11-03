@@ -53,11 +53,7 @@
 #define FUNC_LDEXP             7
 #define FUNC_GAM               8
 
-extern void * thread_code(void *);
-
-/* global variables, constants or initialized by main() */
-extern const double EPS; /* 0.1e-300 */
-extern int true, num_threads;
+static void * thread_code(void *);
 
 /*
  * TH_DATA structures
@@ -101,7 +97,5 @@ typedef struct {
         char detail_data[DETAIL_DATA_SIZE];
 	TH_FUNC th_func;
 } TH_DATA;
-
-extern const TH_FUNC th_func[];
 
 #endif /* ifndef _TFLOAT_H */
