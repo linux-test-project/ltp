@@ -4178,7 +4178,7 @@ int alloc_mem(int nbytes)
 #ifdef _CRAYT3E
 		/* T3E requires memory to be aligned on 0x40 word boundaries */
 		ip = (int)cp;
-		if (ip & 0x3F != 0) {
+		if ((ip & 0x3F) != 0) {
 			doio_fprintf(stderr,
 				     "malloc(%d) = 0x%x(0x%x) not aligned by 0x%x\n",
 				     nbytes, cp, ip, ip & 0x3f);
