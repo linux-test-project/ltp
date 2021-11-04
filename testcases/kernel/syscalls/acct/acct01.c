@@ -9,7 +9,7 @@
 
 /*\
  * [DOCUMENTATION]
- *  Verify that acct() returns proper errno on failure.
+ * Verify that acct() returns proper errno on failure.
  */
 
 #include <sys/types.h>

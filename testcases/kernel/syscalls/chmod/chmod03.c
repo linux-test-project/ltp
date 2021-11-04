@@ -7,13 +7,13 @@
 /*\
  * [Description]
  *
- *  Verify that, chmod(2) will succeed to change the mode of a file or directory
- *  and set the sticky bit on it if invoked by non-root (uid != 0)
- *  process with the following constraints:
+ * Verify that, chmod(2) will succeed to change the mode of a file or directory
+ * and set the sticky bit on it if invoked by non-root (uid != 0)
+ * process with the following constraints:
  *
- *	- the process is the owner of the file or directory.
- *	- the effective group ID or one of the supplementary group ID's of the
- *	  process is equal to the group ID of the file or directory.
+ * - the process is the owner of the file or directory.
+ * - the effective group ID or one of the supplementary group ID's of the
+ *   process is equal to the group ID of the file or directory.
  */
 
 #include <pwd.h>
