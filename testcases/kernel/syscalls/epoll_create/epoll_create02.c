@@ -17,6 +17,8 @@
 #include "lapi/epoll.h"
 #include "lapi/syscalls.h"
 
+#include "epoll_create.h"
+
 static struct test_case_t {
 	int size;
 	int exp_err;
@@ -27,11 +29,13 @@ static struct test_case_t {
 
 static void run(unsigned int n)
 {
-	TST_EXP_FAIL(tst_syscall(__NR_epoll_create, tc[n].size),
-		     tc[n].exp_err, "create(%d)", tc[n].size);
+	TST_EXP_FAIL(do_epoll_create(tc[n].size),
+		     tc[n].exp_err, "epoll_create(%d)", tc[n].size);
 }
 
 static struct tst_test test = {
+	.test_variants = 2,
 	.tcnt = ARRAY_SIZE(tc),
+	.setup = variant_info,
 	.test = run,
 };

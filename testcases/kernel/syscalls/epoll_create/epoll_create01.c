@@ -15,16 +15,16 @@
  */
 
 #include <sys/epoll.h>
-
 #include "tst_test.h"
 #include "lapi/epoll.h"
 #include "lapi/syscalls.h"
+#include "epoll_create.h"
 
 static int tc[] = {1, INT_MAX};
 
 static void run(unsigned int n)
 {
-	TST_EXP_FD(tst_syscall(__NR_epoll_create, tc[n]), "epoll_create(%d)", tc[n]);
+	TST_EXP_FD(do_epoll_create(tc[n]), "epoll_create(%d)", tc[n]);
 
 	if (!TST_PASS)
 		return;
@@ -32,6 +32,8 @@ static void run(unsigned int n)
 }
 
 static struct tst_test test = {
+	.test_variants = EPOLL_CREATE_VARIANTS,
 	.tcnt = ARRAY_SIZE(tc),
+	.setup = variant_info,
 	.test = run,
 };
