@@ -207,6 +207,7 @@ ifneq ($(build),$(host))
 	$(error running tests on cross-compile build not supported)
 endif
 	$(call _test)
+	$(MAKE) test-metadata
 
 test-c: lib-all
 ifneq ($(build),$(host))
@@ -219,6 +220,9 @@ ifneq ($(build),$(host))
 	$(error running tests on cross-compile build not supported)
 endif
 	$(call _test,-s)
+
+test-metadata:
+	$(MAKE) -C $(abs_srcdir)/metadata/ test
 
 ## Help
 .PHONY: help
