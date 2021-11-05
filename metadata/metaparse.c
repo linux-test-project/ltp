@@ -624,6 +624,9 @@ static void parse_macro(FILE *f)
 
 	macro_get_val(f, val, sizeof(val));
 
+	if (name[0] == '_')
+		return;
+
 	ENTRY e = {
 		.key = strdup(name),
 		.data = strdup(val),
