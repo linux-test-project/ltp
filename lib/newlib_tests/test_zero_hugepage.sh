@@ -25,7 +25,7 @@ if [ ! -w /proc/sys/vm/nr_hugepages ]; then
 	tconf "no write permission to /proc/sys/vm/nr_hugepages (run as root)"
 fi
 
-echo "128" > /proc/sys/vm/nr_hugepages
+echo 4 > /proc/sys/vm/nr_hugepages
 
 ./test_zero_hugepage
 
