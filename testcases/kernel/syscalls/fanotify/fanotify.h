@@ -78,6 +78,9 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 #define FAN_REPORT_NAME		0x00000800
 #define FAN_REPORT_DFID_NAME     (FAN_REPORT_DIR_FID | FAN_REPORT_NAME)
 #endif
+#ifndef FAN_REPORT_PIDFD
+#define FAN_REPORT_PIDFD	0x00000080
+#endif
 
 /* Non-uapi convenience macros */
 #ifndef FAN_REPORT_DFID_NAME_FID
@@ -125,6 +128,14 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 #define FAN_OPEN_EXEC_PERM	0x00040000
 #endif
 
+/* Additional error status codes that can be returned to userspace */
+#ifndef FAN_NOPIDFD
+#define FAN_NOPIDFD		-1
+#endif
+#ifndef FAN_EPIDFD
+#define FAN_EPIDFD		-2
+#endif
+
 /* Flags required for unprivileged user group */
 #define FANOTIFY_REQUIRED_USER_INIT_FLAGS    (FAN_REPORT_FID)
 
@@ -164,6 +175,9 @@ typedef struct {
 #ifndef FAN_EVENT_INFO_TYPE_DFID
 #define FAN_EVENT_INFO_TYPE_DFID	3
 #endif
+#ifndef FAN_EVENT_INFO_TYPE_PIDFD
+#define FAN_EVENT_INFO_TYPE_PIDFD	4
+#endif
 
 #ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_HEADER
 struct fanotify_event_info_header {
@@ -180,6 +194,13 @@ struct fanotify_event_info_fid {
 	unsigned char handle[0];
 };
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID */
+
+#ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_PIDFD
+struct fanotify_event_info_pidfd {
+	struct fanotify_event_info_header hdr;
+	int32_t pidfd;
+};
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_PIDFD */
 
 /* NOTE: only for struct fanotify_event_info_fid */
 #ifdef HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL
