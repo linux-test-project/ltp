@@ -41,3 +41,4 @@ fspick 433
 pidfd_open 434
 close_range 436
 epoll_pwait2 441
+quotactl_fd 443

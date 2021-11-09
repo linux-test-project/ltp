@@ -415,3 +415,4 @@ faccessat2 4439
 process_madvise 4440
 epoll_pwait2 4441
 mount_setattr 4442
+quotactl_fd 4443

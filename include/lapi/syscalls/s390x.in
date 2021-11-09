@@ -356,3 +356,4 @@ close_range 436
 openat2 437
 pidfd_getfd 438
 epoll_pwait2 441
+quotactl_fd 443

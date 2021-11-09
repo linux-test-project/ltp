@@ -345,3 +345,4 @@ faccessat2 5439
 process_madvise 5440
 epoll_pwait2 5441
 mount_setattr 5442
+quotactl_fd 5443
