@@ -352,6 +352,11 @@ static inline void fanotify_init_flags_err_msg(const char *flags_str,
 		fanotify_init_flags_supported_on_fs(flags, fname)); \
 	} while (0)
 
+#define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_BY_KERNEL(flags) do { \
+	fanotify_init_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
+		fanotify_init_flags_supported_by_kernel(flags)); \
+	} while (0)
+
 static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
 {
 	int fd;
