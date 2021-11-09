@@ -1,50 +1,28 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2013-2019 FUJITSU LIMITED. All rights reserved
+ * Copyright (c) 2013-2021 FUJITSU LIMITED. All rights reserved
  * Author: DAN LI <li.dan@cn.fujitsu.com>
- * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
  */
 
 /*\
  * [Description]
  *
- * This testcase checks basic flags of quotactl(2) for an XFS file system:
+ * This testcases checks that quotactl(2) on xfs filesystem succeeds to:
  *
- * 1. quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
- *    for user.
- *
- * 2. quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
- *    for user.
- *
- * 3. quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
- *    limits for user.
- *
- * 4. quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
- *    quota limits greater than or equal to ID for user.
- *
- * 5. quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
- *    for user.
- *
- * 6. quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
- *    for user.
- *
- * 7. quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
- *    for group.
- *
- * 8. quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
- *    for group.
- *
- * 9. quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
- *    limits for group.
- *
- * 10. quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
- *     quota limits for group.
- *
- * 11. quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
- *     for group.
- *
- * 12. quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
- *     for group.
+ * - turn off xfs quota and get xfs quota off status for user
+ * - turn on xfs quota and get xfs quota on status for user
+ * - set and use Q_XGETQUOTA to get xfs disk quota limits for user
+ * - set and use Q_XGETNEXTQUOTA to get xfs disk quota limits greater than or
+ *   equal to ID for user
+ * - turn off xfs quota and get xfs quota off statv for user
+ * - turn on xfs quota and get xfs quota on statv for user
+ * - turn off xfs quota and get xfs quota off status for group
+ * - turn on xfs quota and get xfs quota on status for group
+ * - set and use Q_XGETQUOTA to get xfs disk quota limits for group
+ * - set and use Q_XGETNEXTQUOTA to get xfs disk quota limits for group
+ * - turn off xfs quota and get xfs quota off statv for group
+ * - turn on xfs quota and get xfs quota on statv for gorup
  */
 
 #include "quotactl02.h"

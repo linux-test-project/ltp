@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
- * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
- *
- * This testcase checks basic flags of quotactl(2) for project on an XFS file
- * system:
- * 1) quotactl(2) succeeds to turn off xfs quota and get xfs quota off status
- *    for project.
- * 2) quotactl(2) succeeds to turn on xfs quota and get xfs quota on status
- *    for project.
- * 3) quotactl(2) succeeds to set and use Q_XGETQUOTA to get xfs disk quota
- *    limits for project.
- * 4) quotactl(2) succeeds to set and use Q_XGETNEXTQUOTA to get xfs disk
- *    quota limits Cgreater than or equal to ID for project.
- * 5) quotactl(2) succeeds to turn off xfs quota and get xfs quota off statv
- *    for project.
- * 6) quotactl(2) succeeds to turn on xfs quota and get xfs quota on statv
- *    for project.
+ * Copyright (c) 2019-2021 FUJITSU LIMITED. All rights reserved.
+ * Author: Yang Xu <xuyang2018.jy@.fujitsu.com>
  */
+
+/*\
+ * [Description]
+ *
+ * This testcases checks that quotactl(2) on xfs filesystem succeeds to:
+ *
+ * - turn off xfs quota and get xfs quota off status for project
+ * - turn on xfs quota and get xfs quota on status for project
+ * - set and use Q_XGETQUOTA to get xfs disk quota limits for project
+ * - set and use Q_XGETNEXTQUOTA to get xfs disk quota limits greater than or
+ *   equal to ID for project
+ * - turn off xfs quota and get xfs quota off statv for project
+ * - turn on xfs quota and get xfs quota on statvfor project
+ */
+
 #include "quotactl02.h"
 #if defined(HAVE_XFS_XQM_H)
 

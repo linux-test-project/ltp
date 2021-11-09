@@ -4,10 +4,9 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Test Name: quotactl03
+/*\
+ * [Description]
  *
- * Description:
  * quotactl(2) with XGETNEXTQUOTA looks for the next active quota for an user
  * equal or higher to a given ID, in this test the ID is specified to a value
  * close to UINT_MAX(max value of unsigned int). When reaching the upper limit
@@ -16,11 +15,11 @@
  *
  * This kernel bug of xfs has been fixed in:
  *
- * commit 657bdfb7f5e68ca5e2ed009ab473c429b0d6af85
- * Author: Eric Sandeen <sandeen@redhat.com>
- * Date:   Tue Jan 17 11:43:38 2017 -0800
+ *  commit 657bdfb7f5e68ca5e2ed009ab473c429b0d6af85
+ *  Author: Eric Sandeen <sandeen@redhat.com>
+ *  Date:   Tue Jan 17 11:43:38 2017 -0800
  *
- *     xfs: don't wrap ID in xfs_dq_get_next_id
+ *  xfs: don't wrap ID in xfs_dq_get_next_id
  */
 
 #define _GNU_SOURCE
@@ -75,6 +74,10 @@ static struct tst_test test = {
 	.dev_fs_type = "xfs",
 	.mntpoint = mntpoint,
 	.mnt_data = "usrquota",
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "657bdfb7f5e6"},
+		{}
+	}
 };
 
 #else

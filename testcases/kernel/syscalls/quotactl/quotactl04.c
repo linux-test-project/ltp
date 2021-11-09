@@ -1,24 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
- * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ * Copyright (c) 2019-2021 FUJITSU LIMITED. All rights reserved.
+ * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
- * This testcase checks the basic flag of quotactl(2) for project quota on
- * non-XFS filesystems.
+ * This testcase checks that quotactl(2) on ext4 filesystem succeeds to:
  *
- * 1) quotactl(2) succeeds to turn on quota with Q_QUOTAON flag for project.
- * 2) quotactl(2) succeeds to set disk quota limits with Q_SETQUOTA flag
- *    for project.
- * 3) quotactl(2) succeeds to get disk quota limits with Q_GETQUOTA flag
- *    for project.
- * 4) quotactl(2) succeeds to set information about quotafile with Q_SETINFO
- *    flag for project.
- * 5) quotactl(2) succeeds to get information about quotafile with Q_GETINFO
- *    flag for project.
- * 6) quotactl(2) succeeds to get quota format with Q_GETFMT flag for project.
- * 7) quotactl(2) succeeds to get disk quota limit greater than or equal to
- *    ID with Q_GETNEXTQUOTA flag for project.
- * 8) quotactl(2) succeeds to turn off quota with Q_QUOTAOFF flag for project.
+ * - turn on quota with Q_QUOTAON flag for project
+ * - set disk quota limits with Q_SETQUOTA flag for project
+ * - get disk quota limits with Q_GETQUOTA flag for project
+ * - set information about quotafile with Q_SETINFO flag for project
+ * - get information about quotafile with Q_GETINFO flag for project
+ * - get quota format with Q_GETFMT flag for project
+ * - get disk quota limit greater than or equal to ID with Q_GETNEXTQUOTA flag for project
+ * - turn off quota with Q_QUOTAOFF flag for project
  *
  * Minimum e2fsprogs version required is 1.43.
  */
@@ -29,14 +27,9 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
-#include "config.h"
-#include "lapi/quotactl.h"
 #include "tst_safe_stdio.h"
 #include "tst_test.h"
-
-#ifndef QFMT_VFS_V1
-# define QFMT_VFS_V1 4
-#endif
+#include "lapi/quotactl.h"
 
 #define FMTID QFMT_VFS_V1
 #define MNTPOINT	"mntpoint"
