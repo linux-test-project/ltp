@@ -141,7 +141,7 @@ static void setup(void)
 		tst_brk(TCONF, "Test needs mkfs.ext4 >= 1.43 for quota,project option, test skipped");
 	pclose(f);
 	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
-	do_mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, "quota");
+	do_mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
 }
 
 static void cleanup(void)
