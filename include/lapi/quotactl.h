@@ -8,6 +8,7 @@
 #ifndef LAPI_QUOTACTL_H__
 #define LAPI_QUOTACTL_H__
 
+#include "config.h"
 #include <sys/quota.h>
 
 #ifdef HAVE_STRUCT_IF_NEXTDQBLK
@@ -73,6 +74,14 @@ struct fs_quota_statv {
 
 #ifndef Q_GETNEXTQUOTA
 # define Q_GETNEXTQUOTA 0x800009 /* get disk limits and usage >= ID */
+#endif
+
+#ifndef QFMT_VFS_V0
+# define QFMT_VFS_V0 2
+#endif
+
+#ifndef QFMT_VFS_V1
+# define QFMT_VFS_V1 4
 #endif
 
 #endif /* LAPI_QUOTACTL_H__ */
