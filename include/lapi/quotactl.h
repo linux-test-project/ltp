@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2017-2019 Fujitsu Ltd.
+ * Copyright (c) 2017-2021 FUJITSU LIMITED. All rights reserved
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
- * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
+ * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
  */
 
 #ifndef LAPI_QUOTACTL_H__
@@ -10,6 +10,14 @@
 
 #include "config.h"
 #include <sys/quota.h>
+#include "lapi/syscalls.h"
+
+#ifndef HAVE_QUOTACTL_FD
+static inline int quotactl_fd(int fd, int cmd, int id, caddr_t addr)
+{
+	return tst_syscall(__NR_quotactl_fd, fd, cmd, id, addr);
+}
+#endif
 
 #ifdef HAVE_STRUCT_IF_NEXTDQBLK
 # include <linux/quota.h>

@@ -122,6 +122,7 @@ AC_CHECK_FUNCS_ONCE([ \
     profil \
     pwritev \
     pwritev2 \
+    quotactl_fd \
     rand_r \
     readlinkat \
     recvmmsg \
