@@ -1,41 +1,49 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
- * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ * Copyright (c) 2019-2021 FUJITSU LIMITED. All rights reserved.
+ * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
- * Tests basic error handling of the quotactl syscall.
- * 1) quotactl fails with EACCES when cmd is Q_QUOTAON and addr
- * existed but not a regular file.
- * 2) quotaclt fails with ENOENT when the file specified by special
- * or addr does not exist.
- * 3) quotactl fails with EBUSTY when  cmd is Q_QUOTAON and another
- * Q_QUOTAON had already been performed.
- * 4) quotactl fails with EFAULT when addr or special is invalid.
- * 5) quotactl fails with EINVAL when cmd or type is invalid.
- * 6) quotactl fails with ENOTBLK when special is not a block device.
- * 7) quotactl fails with ESRCH when no disk quota is found for the
- * indicated user and quotas have not been turned on for this fs.
- * 8) quotactl fails with ESRCH when cmd is Q_QUOTAON, but the quota
- * format was not found.
- * 9) quotactl fails with ESRCH when cmd is Q_GETNEXTQUOTA, but there
- * is no ID greater than or equal to id that has an active quota.
- * 10) quotactl fails with ERANGE when cmd is Q_SETQUOTA, but the
- * specified limits are out of the range allowed by the quota format.
- * 11) quotactl fails with EPERM when the caller lacked the required
- * privilege (CAP_SYS_ADMIN) for the specified operation.
+ * Tests basic error handling of the quotactl syscall with visible quota files
+ * (cover two formats, vfsv0 and vfsv1):
+ *
+ * - EACCES when cmd is Q_QUOTAON and addr existed but not a regular file
+ * - ENOENT when the file specified by special or addr does not exist
+ * - EBUSTY when cmd is Q_QUOTAON and another Q_QUOTAON had already been performed
+ * - EFAULT when addr or special is invalid
+ * - EINVAL when cmd or type is invalid
+ * - ENOTBLK when special is not a block device
+ * - ESRCH when no disk quota is found for the indicated user and quotas have not been
+ *   turned on for this fs
+ * - ESRCH when cmd is Q_QUOTAON, but the quota format was not found
+ * - ESRCH when cmd is Q_GETNEXTQUOTA, but there is no ID greater than or equal to id that
+ *   has an active quota
+ * - ERANGE when cmd is Q_SETQUOTA, but the specified limits are out of the range allowed
+ *   by the quota format
+ * - EPERM when the caller lacked the required privilege (CAP_SYS_ADMIN) for the specified
+ *   operation
+ *
+ * For ERANGE error, the vfsv0 and vfsv1 format's maximum quota limit setting have been
+ * fixed since the following kernel patch:
+ *
+ *  commit 7e08da50cf706151f324349f9235ebd311226997
+ *  Author: Jan Kara <jack@suse.cz>
+ *  Date:   Wed Mar 4 14:42:02 2015 +0100
+ *
+ *  quota: Fix maximum quota limit settings
  */
 
 #include <errno.h>
 #include <sys/quota.h>
 #include "tst_test.h"
-#include "lapi/quotactl.h"
+#include "quotactl_fmt_var.h"
 #include "tst_capability.h"
 
 #define OPTION_INVALID 999
-#define QFMT_VFS_V0     2
 #define USRPATH MNTPOINT "/aquota.user"
-#define FMTID QFMT_VFS_V0
-
 #define MNTPOINT "mntpoint"
 #define TESTDIR1 MNTPOINT "/testdir1"
 #define TESTDIR2 MNTPOINT "/testdir2"
@@ -43,9 +51,9 @@
 static char usrpath[] = USRPATH;
 static char testdir1[] = TESTDIR1;
 static char testdir2[] = TESTDIR2;
-static int32_t fmt_id = FMTID;
+static int32_t fmt_id;
 static int32_t fmt_invalid = 999;
-static int test_invalid;
+static int test_invalid = 1;
 static int test_id;
 static int getnextquota_nsup;
 
@@ -105,7 +113,7 @@ static void verify_quotactl(unsigned int n)
 
 	if (tc->on_flag) {
 		TEST(quotactl(QCMD(Q_QUOTAON, USRQUOTA), tst_device->dev,
-			FMTID, usrpath));
+			fmt_id, usrpath));
 		if (TST_RET == -1)
 			tst_brk(TBROK,
 				"quotactl with Q_QUOTAON returned %ld", TST_RET);
@@ -135,7 +143,7 @@ static void verify_quotactl(unsigned int n)
 
 	if (quota_on) {
 		TEST(quotactl(QCMD(Q_QUOTAOFF, USRQUOTA), tst_device->dev,
-			FMTID, usrpath));
+			fmt_id, usrpath));
 		if (TST_RET == -1)
 			tst_brk(TBROK,
 				"quotactl with Q_QUOTAOFF returned %ld", TST_RET);
@@ -150,10 +158,15 @@ static void verify_quotactl(unsigned int n)
 
 static void setup(void)
 {
-	const char *const cmd[] = {"quotacheck", "-uF", "vfsv0", MNTPOINT, NULL};
 	unsigned int i;
+	const struct quotactl_fmt_variant *var = &fmt_variants[tst_variant];
+	const char *const cmd[] = {"quotacheck", "-ugF", var->fmt_name, MNTPOINT, NULL};
 
+	tst_res(TINFO, "quotactl() with %s format", var->fmt_name);
 	SAFE_CMD(cmd, NULL, NULL);
+	fmt_id = var->fmt_id;
+	/* vfsv0 block limit 2^42, vfsv1 block limit 2^63 - 1 */
+	set_dqmax.dqb_bsoftlimit = tst_variant ? 0x20000000000000 : 0x100000000;
 
 	if (access(USRPATH, F_OK) == -1)
 		tst_brk(TFAIL | TERRNO, "user quotafile didn't exist");
@@ -161,8 +174,6 @@ static void setup(void)
 	tst_require_quota_support(tst_device->dev, fmt_id, usrpath);
 
 	SAFE_MKDIR(TESTDIR1, 0666);
-	test_id = geteuid();
-	test_invalid = test_id + 1;
 
 	TEST(quotactl(QCMD(Q_GETNEXTQUOTA, USRQUOTA), tst_device->dev,
 		test_id, (void *) &res_ndq));
@@ -175,8 +186,15 @@ static void setup(void)
 	}
 }
 
+static void cleanup(void)
+{
+	SAFE_UNLINK(USRPATH);
+	SAFE_RMDIR(TESTDIR1);
+}
+
 static struct tst_test test = {
 	.setup = setup,
+	.cleanup = cleanup,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_QFMT_V2",
 		NULL
@@ -192,4 +210,9 @@ static struct tst_test test = {
 		NULL
 	},
 	.needs_root = 1,
+	.test_variants = QUOTACTL_FMT_VARIANTS,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "7e08da50cf70"},
+		{}
+	}
 };
