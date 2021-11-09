@@ -32,6 +32,12 @@ static const char *kconfig_path(char *path_buf, size_t path_buf_len)
 
 	uname(&un);
 
+	/* Common install module path */
+	snprintf(path_buf, path_buf_len, "/lib/modules/%s/build/.config", un.release);
+
+	if (!access(path_buf, F_OK))
+		return path_buf;
+
 	/* Debian and derivatives */
 	snprintf(path_buf, path_buf_len, "/boot/config-%s", un.release);
 
