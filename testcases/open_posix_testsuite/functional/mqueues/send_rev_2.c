@@ -43,7 +43,7 @@ static int *send_1(void *mq)
 
 	printf("Enter into send_1 \n");
 	for (i = 0; i < MAX_MSG; i++) {
-		if (-1 == mq_send(mq1, s_msg_ptr[i], MSG_SIZE, i)) {
+		if (-1 == mq_send(mq1, s_msg_ptr[i], strlen(s_msg_ptr[i]) + 1, i)) {
 			perror("mq_send doesn't return success \n");
 			pthread_exit((void *)1);
 		}
@@ -61,7 +61,7 @@ static int *send_2(void *mq)
 
 	printf("Enter into send_2 \n");
 	for (i = 0; i < MAX_MSG; i++) {
-		if (-1 == mq_send(mq2, s_msg_ptr[i], MSG_SIZE, i)) {
+		if (-1 == mq_send(mq2, s_msg_ptr[i], strlen(s_msg_ptr[i]) + 1, i)) {
 			perror("mq_send doesn't return success \n");
 			pthread_exit((void *)1);
 		}
