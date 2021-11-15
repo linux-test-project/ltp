@@ -226,6 +226,8 @@ int rt_init_long(const char *options, const struct option *longopts,
 
 	calibrate_busyloop();
 
+	free(all_options);
+
 	/*
 	 * atexit() order matters here - buffer_print() will be called before
 	 * buffer_fini().
@@ -378,6 +380,7 @@ void join_thread(int i)
 		if (t->pthread)
 			pthread_join(t->pthread, NULL);
 		list_del(&t->_threads);
+		free(t);
 	}
 }
 
@@ -397,6 +400,7 @@ void join_threads(void)
 		if (p->pthread)
 			pthread_join(p->pthread, NULL);
 		list_del(&p->_threads);
+		free(p);
 	}
 }
 
