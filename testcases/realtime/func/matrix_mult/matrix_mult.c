@@ -1,40 +1,17 @@
-/******************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines  Corp., 2007, 2008
  *
- *   Copyright © International Business Machines  Corp., 2007, 2008
+ * Authors: Darren Hart <dvhltc@us.ibm.com>
+ *          Dinakar Guniguntala <dino@in.ibm.com>
+ */
+/*\
+ * [Description]
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * NAME
- *      matrix_mult.c
- *
- * DESCRIPTION
- *      Compare running sequential matrix multiplication routines
- *      to running them in parallel to judge mutliprocessor
- *      performance
- *
- * USAGE:
- *      Use run_auto.sh script in current directory to build and run test.
- *
- * AUTHOR
- *      Darren Hart <dvhltc@us.ibm.com>
- *
- * HISTORY
- *      2007-Mar-09:  Initial version by Darren Hart <dvhltc@us.ibm.com>
- *      2008-Feb-26:  Closely emulate jvm Dinakar Guniguntala <dino@in.ibm.com>
- *
- *****************************************************************************/
+ * Compare running sequential matrix multiplication routines
+ * to running them in parallel to judge multiprocessor
+ * performance
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,9 +46,8 @@ static int iterations_percpu;
 stats_container_t sdat, cdat, *curdat;
 stats_container_t shist, chist;
 static pthread_barrier_t mult_start;
-static pthread_mutex_t mutex_cpu;
 
-void usage(void)
+static void usage(void)
 {
 	rt_help();
 	printf("matrix_mult specific options:\n");
@@ -80,7 +56,7 @@ void usage(void)
 	printf("  -i#	   #: number of iterations\n");
 }
 
-int parse_args(int c, char *v)
+static int parse_args(int c, char *v)
 {
 	int handled = 1;
 	switch (c) {
@@ -100,7 +76,7 @@ int parse_args(int c, char *v)
 	return handled;
 }
 
-void matrix_init(double A[MATRIX_SIZE][MATRIX_SIZE],
+static void matrix_init(double A[MATRIX_SIZE][MATRIX_SIZE],
 		 double B[MATRIX_SIZE][MATRIX_SIZE])
 {
 	int i, j;
@@ -112,7 +88,7 @@ void matrix_init(double A[MATRIX_SIZE][MATRIX_SIZE],
 	}
 }
 
-void matrix_mult(int m_size)
+static void matrix_mult(int m_size)
 {
 	double A[m_size][m_size];
 	double B[m_size][m_size];
@@ -131,7 +107,7 @@ void matrix_mult(int m_size)
 	}
 }
 
-void matrix_mult_record(int m_size, int index)
+static void matrix_mult_record(int m_size, int index)
 {
 	nsec_t start, end, delta;
 	int i;
@@ -145,8 +121,9 @@ void matrix_mult_record(int m_size, int index)
 	curdat->records[index].y = delta;
 }
 
-int set_affinity(void)
+static int set_affinity(void)
 {
+	static pthread_mutex_t mutex_cpu = PTHREAD_MUTEX_INITIALIZER;
 	cpu_set_t mask;
 	int cpuid;
 
@@ -166,7 +143,7 @@ int set_affinity(void)
 	return -1;
 }
 
-void *concurrent_thread(void *thread)
+static void *concurrent_thread(void *thread)
 {
 	struct thread *t = (struct thread *)thread;
 	int thread_id = (intptr_t) t->id;
@@ -188,7 +165,7 @@ void *concurrent_thread(void *thread)
 	return NULL;
 }
 
-int main_thread(void)
+static int main_thread(void)
 {
 	int ret, i, j;
 	nsec_t start, end;
@@ -205,12 +182,11 @@ int main_thread(void)
 		exit(1);
 	}
 
-	tids = malloc(sizeof(int) * numcpus);
+	tids = calloc(numcpus, sizeof(int));
 	if (!tids) {
 		perror("malloc");
 		exit(1);
 	}
-	memset(tids, 0, numcpus);
 
 	cpuid = set_affinity();
 	if (cpuid == -1) {
