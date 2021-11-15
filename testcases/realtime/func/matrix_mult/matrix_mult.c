@@ -47,6 +47,12 @@ stats_container_t sdat, cdat, *curdat;
 stats_container_t shist, chist;
 static pthread_barrier_t mult_start;
 
+struct matrices {
+	double A[MATRIX_SIZE][MATRIX_SIZE];
+	double B[MATRIX_SIZE][MATRIX_SIZE];
+	double C[MATRIX_SIZE][MATRIX_SIZE];
+};
+
 static void usage(void)
 {
 	rt_help();
@@ -88,33 +94,30 @@ static void matrix_init(double A[MATRIX_SIZE][MATRIX_SIZE],
 	}
 }
 
-static void matrix_mult(int m_size)
+static void matrix_mult(struct matrices *matrices)
 {
-	double A[m_size][m_size];
-	double B[m_size][m_size];
-	double C[m_size][m_size];
 	int i, j, k;
 
-	matrix_init(A, B);
-	for (i = 0; i < m_size; i++) {
-		int i_m = m_size - i;
-		for (j = 0; j < m_size; j++) {
-			double sum = A[i_m][j] * B[j][i];
-			for (k = 0; k < m_size; k++)
-				sum += A[i_m][k] * B[k][j];
-			C[i][j] = sum;
+	matrix_init(matrices->A, matrices->B);
+	for (i = 0; i < MATRIX_SIZE; i++) {
+		int i_m = MATRIX_SIZE - i;
+		for (j = 0; j < MATRIX_SIZE; j++) {
+			double sum = matrices->A[i_m][j] *  matrices->B[j][i];
+			for (k = 0; k < MATRIX_SIZE; k++)
+				sum +=  matrices->A[i_m][k] *  matrices->B[k][j];
+			 matrices->C[i][j] = sum;
 		}
 	}
 }
 
-static void matrix_mult_record(int m_size, int index)
+static void matrix_mult_record(struct matrices *matrices, int index)
 {
 	nsec_t start, end, delta;
 	int i;
 
 	start = rt_gettime();
 	for (i = 0; i < ops; i++)
-		matrix_mult(MATRIX_SIZE);
+		matrix_mult(matrices);
 	end = rt_gettime();
 	delta = (long)((end - start) / NS_PER_US);
 	curdat->records[index].x = index;
@@ -146,6 +149,7 @@ static int set_affinity(void)
 static void *concurrent_thread(void *thread)
 {
 	struct thread *t = (struct thread *)thread;
+	struct matrices *matrices = (struct matrices *) t->arg;
 	int thread_id = (intptr_t) t->id;
 	int cpuid;
 	int i;
@@ -160,7 +164,7 @@ static void *concurrent_thread(void *thread)
 	index = iterations_percpu * thread_id;	/* To avoid stats overlapping */
 	pthread_barrier_wait(&mult_start);
 	for (i = 0; i < iterations_percpu; i++)
-		matrix_mult_record(MATRIX_SIZE, index++);
+		matrix_mult_record(matrices, index++);
 
 	return NULL;
 }
@@ -172,6 +176,10 @@ static int main_thread(void)
 	long smin = 0, smax = 0, cmin = 0, cmax = 0, delta = 0;
 	float savg, cavg;
 	int cpuid;
+	struct matrices *matrices[numcpus];
+
+	for (i = 0; i < numcpus; ++i)
+		matrices[i] = malloc(sizeof(struct matrices));
 
 	if (stats_container_init(&sdat, iterations) ||
 	    stats_container_init(&shist, HIST_BUCKETS) ||
@@ -200,7 +208,7 @@ static int main_thread(void)
 	printf("\nRunning sequential operations\n");
 	start = rt_gettime();
 	for (i = 0; i < iterations; i++)
-		matrix_mult_record(MATRIX_SIZE, i);
+		matrix_mult_record(matrices[0], i);
 	end = rt_gettime();
 	delta = (long)((end - start) / NS_PER_US);
 
@@ -232,7 +240,7 @@ static int main_thread(void)
 	online_cpu_id = -1;	/* Redispatch cpus */
 	/* Create numcpus-1 concurrent threads */
 	for (j = 0; j < numcpus; j++) {
-		tids[j] = create_fifo_thread(concurrent_thread, NULL, PRIO);
+		tids[j] = create_fifo_thread(concurrent_thread, matrices[j], PRIO);
 		if (tids[j] == -1) {
 			printf
 			    ("Thread creation failed (max threads exceeded?)\n");
@@ -283,6 +291,9 @@ static int main_thread(void)
 	    ("\nCriteria: %.2f * average concurrent time < average sequential time\n",
 	     criteria);
 	printf("Result: %s\n", ret ? "FAIL" : "PASS");
+
+	for (i = 0; i < numcpus; i++)
+		free(matrices[i]);
 
 	return ret;
 }
