@@ -276,7 +276,7 @@ void cleanup(int i)
 		exit(i);
 }
 
-void setup()
+void setup(void)
 {
 	signal(SIGINT, cleanup);
 	signal(SIGQUIT, cleanup);

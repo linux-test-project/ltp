@@ -58,8 +58,8 @@
 #include "list.h"
 #include "realtime_config.h"
 
-extern void setup();
-extern void cleanup();
+extern void setup(void);
+extern void cleanup(int i);
 
 extern int optind, opterr, optopt;
 extern char *optarg;
@@ -147,15 +147,15 @@ static inline void atomic_set(int i, atomic_t *v)
 
 /* buffer_init: initialize the buffered printing system
  */
-void buffer_init();
+void buffer_init(void);
 
 /* buffer_print: prints the contents of the buffer
  */
-void buffer_print();
+void buffer_print(void);
 
 /* buffer_fini: destroy the buffer
  */
-void buffer_fini();
+void buffer_fini(void);
 
 /* debug: do debug prints at level L (see DBG_* below).  If buffer_init
  * has been called previously, this will print to the internal memory
@@ -185,7 +185,7 @@ static volatile int _debug_count = 0;
 #define DBG_DEBUG 4
 
 /* rt_help: print help for standard args */
-void rt_help();
+void rt_help(void);
 
 /* rt_init_long: initialize librttest
  * options: pass in an getopt style string of options -- e.g. "ab:cd::e:"
@@ -269,7 +269,7 @@ void all_threads_quit(void);
 /* join_threads: wait for all threads to finish
  * (calls all_threads_quit interally)
  */
-void join_threads();
+void join_threads(void);
 
 /* get_thread: return a struct thread pointer from the list */
 struct thread * get_thread(int i);
@@ -317,7 +317,7 @@ void rt_nanosleep_until(nsec_t ns);
 
 /* rt_gettime: get CLOCK_MONOTONIC time in nanoseconds
  */
-nsec_t rt_gettime();
+nsec_t rt_gettime(void);
 
 /* busy_work_ms: do busy work for ms milliseconds
  */
