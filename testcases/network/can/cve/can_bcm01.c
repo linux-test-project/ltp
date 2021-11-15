@@ -11,6 +11,10 @@
  *  Date:   Sat Jun 19 13:18:13 2021 -0300
  *
  *  can: bcm: delay release of struct bcm_op after synchronize_rcu()
+ *
+ * The test is skipped when running in 32-bit compat mode. The kernel
+ * compatibility layer for CAN structures is not implemented at the
+ * time of writing.
  */
 
 #include "config.h"
@@ -137,6 +141,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_root = 1,
+	.skip_in_compat = 1,
 	.needs_drivers = (const char *const[]) {
 		"vcan",
 		"can-bcm",

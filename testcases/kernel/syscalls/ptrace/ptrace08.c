@@ -67,14 +67,6 @@ static struct tst_kern_exv kvers[] = {
 static void setup(void)
 {
 	/*
-	 * When running in compat mode we can't pass 64 address to ptrace so we
-	 * have to skip the test.
-	 */
-	if (tst_kernel_bits() != KERN_ADDR_BITS)
-		tst_brk(TCONF, "Cannot pass 64bit kernel address in compat mode");
-
-
-	/*
 	 * The original fix for the kernel haven't rejected the kernel address
 	 * right away when breakpoint was modified from userspace it was
 	 * disabled instead and the EINVAL was returned when dr7 was written to
@@ -164,6 +156,11 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.forks_child = 1,
+	/*
+	 * When running in compat mode we can't pass 64 address to ptrace so we
+	 * have to skip the test.
+	 */
+	.skip_in_compat = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "f67b15037a7a"},
 		{"CVE", "2018-1000199"},

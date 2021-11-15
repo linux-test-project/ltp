@@ -164,6 +164,7 @@ struct tst_test {
 	 */
 	int all_filesystems:1;
 	int skip_in_lockdown:1;
+	int skip_in_compat:1;
 
 	/*
 	 * The skip_filesystem is a NULL terminated list of filesystems the
