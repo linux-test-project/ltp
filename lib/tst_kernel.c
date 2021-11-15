@@ -37,7 +37,12 @@ static int get_kernel_bits_from_uname(struct utsname *buf)
 int tst_kernel_bits(void)
 {
 	struct utsname buf;
-	int kernel_bits = get_kernel_bits_from_uname(&buf);
+	static int kernel_bits;
+
+	if (kernel_bits)
+		return kernel_bits;
+
+	kernel_bits = get_kernel_bits_from_uname(&buf);
 
 	if (kernel_bits == -1)
 		return -1;
