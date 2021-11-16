@@ -4,24 +4,49 @@
  * Email: code@zilogic.com
  */
 
-/*
- * Test statx
+/*\
+ * [Description]
  *
  * This code tests if the attributes field of statx received expected value.
  * File set with following flags by using SAFE_IOCTL:
- * 1) STATX_ATTR_COMPRESSED - The file is compressed by the filesystem.
- * 2) STATX_ATTR_IMMUTABLE - The file cannot be modified.
- * 3) STATX_ATTR_APPEND - The file can only be opened in append mode for
- *                        writing.
- * 4) STATX_ATTR_NODUMP - File is not a candidate for backup when a backup
+ *
+ * - STATX_ATTR_COMPRESSED: The file is compressed by the filesystem.
+ * - STATX_ATTR_IMMUTABLE: The file cannot be modified.
+ * - STATX_ATTR_APPEND: The file can only be opened in append mode for writing.
+ * - STATX_ATTR_NODUMP: File is not a candidate for backup when a backup
  *                        program such as dump(8) is run.
  *
  * Two directories are tested.
- * First directory has all flags set.
- * Second directory has no flags set.
+ * First directory has all flags set. Second directory has no flags set.
  *
- * xfs filesystem doesn't support STATX_ATTR_COMPRESSED flags, so we only test
+ * xfs filesystem doesn't support STATX_ATTR_COMPRESSED flag, so we only test
  * three other flags.
+ *
+ * ext2, ext4, btrfs and xfs support statx syscall since the following commit
+ *
+ *  commit 93bc420ed41df63a18ae794101f7cbf45226a6ef
+ *  Author: yangerkun <yangerkun@huawei.com>
+ *  Date:   Mon Feb 18 09:07:02 2019 +0800
+ *
+ *  ext2: support statx syscall
+ *
+ *  commit 99652ea56a4186bc5bf8a3721c5353f41b35ebcb
+ *  Author: David Howells <dhowells@redhat.com>
+ *  Date:   Fri Mar 31 18:31:56 2017 +0100
+ *
+ *  ext4: Add statx support
+ *
+ *  commit 04a87e3472828f769a93655d7c64a27573bdbc2c
+ *  Author: Yonghong Song <yhs@fb.com>
+ *  Date:   Fri May 12 15:07:43 2017 -0700
+ *
+ *  Btrfs: add statx support
+ *
+ *  commit 5f955f26f3d42d04aba65590a32eb70eedb7f37d
+ *  Author: Darrick J. Wong <darrick.wong@oracle.com>
+ *  Date:   Fri Mar 31 18:32:03 2017 +0100
+ *
+ *  xfs: report crtime and attribute flags to statx
  *
  * Minimum kernel version required is 4.11.
  */
@@ -160,9 +185,6 @@ static void setup(void)
 	SAFE_MKDIR(TESTDIR_FLAGGED, 0777);
 	SAFE_MKDIR(TESTDIR_UNFLAGGED, 0777);
 
-	if (!strcmp(tst_device->fs_type, "btrfs") && tst_kvercmp(4, 13, 0) < 0)
-		tst_brk(TCONF, "Btrfs statx() supported since 4.13");
-
 	caid_flags_setup();
 }
 
@@ -190,4 +212,10 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MOUNT_POINT,
 	.min_kver = "4.11",
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "93bc420ed41d"},
+		{"linux-git", "99652ea56a41"},
+		{"linux-git", "04a87e347282"},
+		{"linux-git", "5f955f26f3d4"},
+	},
 };
