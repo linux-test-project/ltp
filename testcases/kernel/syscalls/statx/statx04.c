@@ -20,6 +20,9 @@
  * First directory has all flags set.
  * Second directory has no flags set.
  *
+ * xfs filesystem doesn't support STATX_ATTR_COMPRESSED flags, so we only test
+ * three other flags.
+ *
  * Minimum kernel version required is 4.11.
  */
 
@@ -47,10 +50,12 @@ static void test_flagged(void)
 		tst_brk(TFAIL | TTERRNO,
 			"sys_statx(AT_FDCWD, %s, 0, 0, &buf)", TESTDIR_FLAGGED);
 
-	if (buf.stx_attributes & STATX_ATTR_COMPRESSED)
-		tst_res(TPASS, "STATX_ATTR_COMPRESSED flag is set");
-	else
-		tst_res(TFAIL, "STATX_ATTR_COMPRESSED flag is not set");
+	if(strcmp(tst_device->fs_type, "xfs")) {
+		if (buf.stx_attributes & STATX_ATTR_COMPRESSED)
+			tst_res(TPASS, "STATX_ATTR_COMPRESSED flag is set");
+		else
+			tst_res(TFAIL, "STATX_ATTR_COMPRESSED flag is not set");
+	}
 
 	if (buf.stx_attributes & STATX_ATTR_APPEND)
 		tst_res(TPASS, "STATX_ATTR_APPEND flag is set");
@@ -135,7 +140,10 @@ static void caid_flags_setup(void)
 		tst_brk(TBROK | TERRNO, "ioctl(%i, FS_IOC_GETFLAGS, ...)", fd);
 	}
 
-	attr |= FS_COMPR_FL | FS_APPEND_FL | FS_IMMUTABLE_FL | FS_NODUMP_FL;
+	if(!strcmp(tst_device->fs_type, "xfs"))
+		attr |= FS_APPEND_FL | FS_IMMUTABLE_FL | FS_NODUMP_FL;
+	else
+		attr |= FS_COMPR_FL | FS_APPEND_FL | FS_IMMUTABLE_FL | FS_NODUMP_FL;
 
 	ret = ioctl(fd, FS_IOC_SETFLAGS, &attr);
 	if (ret < 0) {
