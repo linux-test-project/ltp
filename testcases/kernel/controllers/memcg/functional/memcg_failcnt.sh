@@ -16,7 +16,7 @@ TST_TEST_DATA="--mmap-anon --mmap-file --shm"
 MEMORY_LIMIT=$PAGESIZE
 MEMORY_TO_ALLOCATE=$((MEMORY_LIMIT * 2))
 
-test()
+test1()
 {
 	ROD echo $MEMORY_LIMIT \> memory.limit_in_bytes
 
