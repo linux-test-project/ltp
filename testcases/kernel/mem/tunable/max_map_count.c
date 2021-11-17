@@ -55,7 +55,6 @@
 
 static long old_max_map_count = -1;
 static long old_overcommit = -1;
-static struct utsname un;
 
 static void setup(void)
 {
@@ -66,9 +65,6 @@ static void setup(void)
 	old_max_map_count = get_sys_tune("max_map_count");
 	old_overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 0, 1);
-
-	if (uname(&un) != 0)
-		tst_brk(TBROK | TERRNO, "uname error");
 }
 
 static void cleanup(void)
@@ -91,24 +87,30 @@ static bool filter_map(const char *line)
 	if (ret != 1)
 		return false;
 
-#if defined(__x86_64__) || defined(__x86__)
-	/* On x86, there's an old compat vsyscall page */
-	if (!strcmp(buf, "[vsyscall]"))
-		return true;
-#elif defined(__ia64__)
-	/* On ia64, the vdso is not a proper mapping */
-	if (!strcmp(buf, "[vdso]"))
-		return true;
-#elif defined(__arm__)
-	/* Skip it when run it in aarch64 */
-	if ((!strcmp(un.machine, "aarch64"))
-	|| (!strcmp(un.machine, "aarch64_be")))
-		return false;
+	switch (tst_arch.type) {
+	case TST_X86:
+	case TST_X86_64:
+		/* On x86, there's an old compat vsyscall page */
+		if (!strcmp(buf, "[vsyscall]"))
+			return true;
+		break;
+	case TST_IA64:
+		/* On ia64, the vdso is not a proper mapping */
+		if (!strcmp(buf, "[vdso]"))
+			return true;
+		break;
+	case TST_ARM:
+		/* Skip it when run it in aarch64 */
+		if (tst_kernel_bits() == 64)
+			return false;
 
-	/* Older arm kernels didn't label their vdso maps */
-	if (!strncmp(line, "ffff0000-ffff1000", 17))
-		return true;
-#endif
+		/* Older arm kernels didn't label their vdso maps */
+		if (!strncmp(line, "ffff0000-ffff1000", 17))
+			return true;
+		break;
+	default:
+		break;
+	};
 
 	return false;
 }
