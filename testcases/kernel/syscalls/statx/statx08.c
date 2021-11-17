@@ -36,7 +36,7 @@
 static int fd, clear_flags;
 static int supp_compr = 1, supp_append = 1, supp_immutable = 1, supp_nodump = 1;
 
-static void test_flag(int flag)
+static void run(unsigned int flag)
 {
 	struct statx buf;
 
@@ -84,19 +84,6 @@ static void test_flag(int flag)
 	}
 }
 
-struct test_cases {
-	void (*tfunc)(int);
-	int set_flag;
-} tcases[] = {
-	{&test_flag, 1},
-	{&test_flag, 0},
-};
-
-static void run(unsigned int i)
-{
-	tcases[i].tfunc(tcases[i].set_flag);
-}
-
 static void caid_flags_setup(void)
 {
 	int attr, ret;
@@ -127,9 +114,8 @@ static void caid_flags_setup(void)
 		attr |= FS_NODUMP_FL;
 
 	ret = ioctl(fd, FS_IOC_SETFLAGS, &attr);
-	if (ret < 0) {
+	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "ioctl(%i, FS_IOC_SETFLAGS, %i)", fd, attr);
-	}
 
 	clear_flags = 1;
 }
@@ -185,7 +171,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.test = run,
-	.tcnt = ARRAY_SIZE(tcases),
+	.tcnt = 2,
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,

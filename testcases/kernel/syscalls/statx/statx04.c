@@ -75,7 +75,7 @@ static void test_flagged(void)
 		tst_brk(TFAIL | TTERRNO,
 			"sys_statx(AT_FDCWD, %s, 0, 0, &buf)", TESTDIR_FLAGGED);
 
-	if(strcmp(tst_device->fs_type, "xfs")) {
+	if (strcmp(tst_device->fs_type, "xfs")) {
 		if (buf.stx_attributes & STATX_ATTR_COMPRESSED)
 			tst_res(TPASS, "STATX_ATTR_COMPRESSED flag is set");
 		else
@@ -165,7 +165,7 @@ static void caid_flags_setup(void)
 		tst_brk(TBROK | TERRNO, "ioctl(%i, FS_IOC_GETFLAGS, ...)", fd);
 	}
 
-	if(!strcmp(tst_device->fs_type, "xfs"))
+	if (!strcmp(tst_device->fs_type, "xfs"))
 		attr |= FS_APPEND_FL | FS_IMMUTABLE_FL | FS_NODUMP_FL;
 	else
 		attr |= FS_COMPR_FL | FS_APPEND_FL | FS_IMMUTABLE_FL | FS_NODUMP_FL;
