@@ -72,6 +72,8 @@ static struct tcase tcases[] = {
 		NULL},
 	{"file-not-readable", &fd, "", O_WRONLY | O_CLOEXEC, 0, 0, EBADF, 0,
 		NULL},
+	{"file-readwrite", &fd, "", O_RDWR | O_CLOEXEC, 0, 0, ETXTBSY, 0,
+		NULL},
 	{"directory", &fd_dir, "", O_RDONLY | O_CLOEXEC, 0, 0, 0, 0, dir_setup},
 };
 
@@ -134,6 +136,7 @@ static void run(unsigned int n)
 static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "032146cda855"},
+		{"linux-git", "39d637af5aa7"},
 		{}
 	},
 	.test = run,
