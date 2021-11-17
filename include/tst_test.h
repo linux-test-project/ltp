@@ -43,6 +43,7 @@
 #include "tst_fips.h"
 #include "tst_taint.h"
 #include "tst_memutils.h"
+#include "tst_arch.h"
 
 /*
  * Reports testcase result.
@@ -138,6 +139,12 @@ struct tst_test {
 	struct tst_option *options;
 
 	const char *min_kver;
+
+	/*
+	 * The supported_archs is a NULL terminated list of archs the test
+	 * does support.
+	 */
+	const char *const *supported_archs;
 
 	/* If set the test is compiled out */
 	const char *tconf_msg;

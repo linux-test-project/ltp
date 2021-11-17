@@ -2261,6 +2261,42 @@ struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+1.39 Testing on the specific architecture
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testcases for specific arch should be limited on that only being supported
+platform to run, we now involve a .supported_archs to achieve this feature
+in LTP library. All you need to run a test on the expected arch is to set
+the '.supported_archs' array in the 'struct tst_test' to choose the required
+arch list. e.g.
+
+    .supported_archs = (const char *const []){"x86_64", "ppc64", NULL}
+
+This helps move the TCONF info from code to tst_test metadata as well.
+
+And, we also export a struct tst_arch to save the system architecture for
+using in the whole test cases.
+
+    extern const struct tst_arch {
+             char name[16];
+             enum tst_arch_type type;
+    } tst_arch;
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static struct tst_test test = {
+       ...
+       .setup = setup,
+       .supported_archs = (const char *const []) {
+                 "x86_64",
+                 "ppc64",
+                 "s390x",
+                 NULL
+       },
+};
+-------------------------------------------------------------------------------
+
 2. Common problems
 ------------------
 

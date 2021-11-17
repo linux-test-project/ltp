@@ -976,6 +976,9 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->min_kver)
 		check_kver();
 
+	if (tst_test->supported_archs && !tst_is_on_arch(tst_test->supported_archs))
+		tst_brk(TCONF, "This arch '%s' is not supported for test!", tst_arch.name);
+
 	if (tst_test->skip_in_lockdown && tst_lockdown_enabled())
 		tst_brk(TCONF, "Kernel is locked down, skipping test");
 
