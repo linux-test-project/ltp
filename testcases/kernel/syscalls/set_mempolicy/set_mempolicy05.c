@@ -37,18 +37,10 @@
 #include "config.h"
 #include "tst_test.h"
 
-#if defined(__i386__) || defined(__powerpc__)
-
 #include <string.h>
 
 static unsigned int i;
 static int sys_ret;
-#ifdef __i386__
-static const int sys_num = 276;
-static const int mode;
-static const int node_mask_ptr = UINT_MAX;
-static const int node_mask_sz = UINT_MAX;
-#endif
 static volatile char *stack_ptr;
 
 static void run(void)
@@ -58,6 +50,11 @@ static void run(void)
 	register long mode __asm__("r3");
 	register long node_mask_ptr __asm__("r4");
 	register long node_mask_sz __asm__("r5");
+#else
+	const int sys_num = 276;
+	const int mode;
+	const int node_mask_ptr = UINT_MAX;
+	const int node_mask_sz = UINT_MAX;
 #endif
 	char stack_pattern[0x400];
 
@@ -78,7 +75,8 @@ static void run(void)
 		:
 		"memory", "cr0", "r6", "r7", "r8", "r9", "r10", "r11", "r12");
 	sys_ret = mode;
-#else /* __i386__ */
+#endif
+#ifdef __i386__
 	asm volatile (
 		"add $0x400, %%esp\n\t"
 		"int $0x80\n\t"
@@ -114,15 +112,14 @@ static void run(void)
 
 static struct tst_test test = {
 	.test_all = run,
+	.supported_archs = (const char *const []) {
+		"x86",
+		"ppc",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "cf01fb9985e8"},
 		{"CVE", "CVE-2017-7616"},
 		{}
 	}
 };
-
-#else /* #if defined(__x86_64__) || defined(__powerpc__) */
-
-TST_TEST_TCONF("not i386 or powerpc");
-
-#endif /* #else #if defined(__x86_64__) || defined(__powerpc__) */

@@ -6,8 +6,6 @@
 #include "config.h"
 #include "tst_test.h"
 
-#if defined(__x86_64__) || defined(__i386__)
-
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
@@ -17,6 +15,7 @@
 #include <ctype.h>
 #include <sys/utsname.h>
 
+#ifdef HAVE_EMMINTRIN_H
 #include <emmintrin.h>
 
 #include "tst_tsc.h"
@@ -378,14 +377,17 @@ static struct tst_test test = {
 	.test_all = run,
 	.cleanup = cleanup,
 	.min_kver = "2.6.32",
+	.supported_archs = (const char *const []) {
+		"x86",
+		"x86_64",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-5754"},
 		{}
 	}
 };
 
-#else /* #if defined(__x86_64__) || defined(__i386__) */
-
-TST_TEST_TCONF("not x86_64 or i386");
-
-#endif /* #else #if defined(__x86_64__) || defined(__i386__) */
+#else /* HAVE_EMMINTRIN_H */
+	TST_TEST_TCONF("<emmintrin.h> is not supported");
+#endif

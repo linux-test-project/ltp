@@ -42,6 +42,7 @@ AC_CHECK_DECLS([SEM_STAT_ANY],,,[#include <sys/sem.h>])
 
 AC_CHECK_HEADERS_ONCE([ \
     asm/ldt.h \
+    emmintrin.h \
     ifaddrs.h \
     keyutils.h \
     linux/can.h \

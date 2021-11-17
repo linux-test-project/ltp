@@ -22,7 +22,6 @@
 #include <signal.h>
 #include "tst_test.h"
 
-#if defined(__i386__) || defined(__x86_64__)
 static short watchpoint;
 static pid_t child_pid;
 
@@ -46,6 +45,7 @@ static void run(void)
 {
 	int status;
 
+#if defined(__i386__) || defined(__x86_64__)
 	child_pid = SAFE_FORK();
 
 	if (!child_pid) {
@@ -60,6 +60,7 @@ static void run(void)
 	SAFE_PTRACE(PTRACE_POKEUSER, child_pid,
 		(void *)offsetof(struct user, u_debugreg[7]), (void *)0x30001);
 	SAFE_PTRACE(PTRACE_CONT, child_pid, NULL, NULL);
+#endif
 
 	while (1) {
 		if (SAFE_WAITPID(child_pid, &status, 0) != child_pid)
@@ -92,12 +93,14 @@ static struct tst_test test = {
 	.test_all = run,
 	.cleanup = cleanup,
 	.forks_child = 1,
+	.supported_archs = (const char *const []) {
+		"x86",
+		"x86_64",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "d8ba61ba58c8"},
 		{"CVE", "2018-8897"},
 		{}
 	}
 };
-#else
-TST_TEST_TCONF("This test is only supported on x86 systems");
-#endif

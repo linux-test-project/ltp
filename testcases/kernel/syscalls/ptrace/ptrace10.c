@@ -22,8 +22,6 @@
 #include <signal.h>
 #include "tst_test.h"
 
-#if defined(__i386__) || defined(__x86_64__)
-
 static pid_t child_pid;
 
 static void child_main(void)
@@ -45,6 +43,7 @@ static void run(void)
 	if (SAFE_WAITPID(child_pid, &status, WUNTRACED) != child_pid)
 		tst_brk(TBROK, "Received event from unexpected PID");
 
+#if defined(__i386__) || defined(__x86_64__)
 	SAFE_PTRACE(PTRACE_ATTACH, child_pid, NULL, NULL);
 	SAFE_PTRACE(PTRACE_POKEUSER, child_pid,
 		(void *)offsetof(struct user, u_debugreg[0]), (void *)1);
@@ -53,6 +52,7 @@ static void run(void)
 
 	addr = ptrace(PTRACE_PEEKUSER, child_pid,
 	              (void*)offsetof(struct user, u_debugreg[0]), NULL);
+#endif
 
 	if (addr == 2)
 		tst_res(TPASS, "The rd0 was set on second PTRACE_POKEUSR");
@@ -76,11 +76,13 @@ static struct tst_test test = {
 	.test_all = run,
 	.cleanup = cleanup,
 	.forks_child = 1,
+	.supported_archs = (const char *const []) {
+		"x86",
+		"x86_64",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "bd14406b78e6"},
 		{}
 	}
 };
-#else
-TST_TEST_TCONF("This test is only supported on x86 systems");
-#endif
