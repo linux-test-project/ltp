@@ -217,5 +217,6 @@ static struct tst_test test = {
 		{"linux-git", "99652ea56a41"},
 		{"linux-git", "04a87e347282"},
 		{"linux-git", "5f955f26f3d4"},
+		{}
 	},
 };
