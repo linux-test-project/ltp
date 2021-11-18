@@ -82,6 +82,56 @@ static void do_entrypoint_checks(struct entrypoint *ep)
 	} END_FOR_EACH_PTR(bb);
 }
 
+/* Check for LTP-003 and LTP-004
+ *
+ * Try to find cases where the static keyword was forgotten.
+ */
+static void check_symbol_visibility(const struct symbol *const sym)
+{
+	const unsigned long mod = sym->ctype.modifiers;
+	const char *const name = show_ident(sym->ident);
+	const int has_lib_prefix = !strncmp("tst_", name, 4) ||
+		!strncmp("TST_", name, 4) ||
+		!strncmp("ltp_", name, 4) ||
+		!strncmp("safe_", name, 5);
+
+	if (!(mod & MOD_TOPLEVEL))
+		return;
+
+	if (has_lib_prefix && (mod & MOD_STATIC)) {
+		warning(sym->pos,
+			"LTP-003: Symbol '%s' has the LTP public library prefix, but is static (private).",
+			name);
+		return;
+	}
+
+	if ((mod & MOD_STATIC))
+		return;
+
+	if (tu_kind == LTP_LIB && !has_lib_prefix) {
+		warning(sym->pos,
+			"LTP-003: Symbol '%s' is a public library function, but is missing the 'tst_' prefix",
+			name);
+		return;
+	}
+
+	if (sym->same_symbol)
+		return;
+
+	if (sym->ident == &main_ident)
+		return;
+
+	warning(sym->pos,
+		"Symbol '%s' has no prototype or library ('tst_') prefix. Should it be static?",
+		name);
+}
+
+/* AST level checks */
+static void do_symbol_checks(struct symbol *sym)
+{
+	check_symbol_visibility(sym);
+}
+
 /* Compile the AST into a graph of basicblocks */
 static void process_symbols(struct symbol_list *list)
 {
@@ -89,6 +139,8 @@ static void process_symbols(struct symbol_list *list)
 
 	FOR_EACH_PTR(list, sym) {
 		struct entrypoint *ep;
+
+		do_symbol_checks(sym);
 
 		expand_symbol(sym);
 		ep = linearize_symbol(sym);
