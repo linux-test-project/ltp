@@ -1,177 +1,175 @@
-
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
- *               2004 Open Source Development Lab
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * Module: .c
+ *				 2004 Open Source Development Lab
+ * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-/*
- * Change History:
+/*\
+ * [Description]
  *
- * 2/2004  Marty Ridgeway (mridge@us.ibm.com) Changes to adapt to LTP
+ * This test is mixing direct I/O and truncate operations checking if they can
+ * be used together at the same time. Multiple children are spawned to read a
+ * file that is written to using direct I/O and truncated in a loop.
  *
+ * [Algorithm]
+ *
+ * - Spawn multiple children which start to read on 'file'
+ * - Parent start to fill and truncate 'file' many times with zero char when
+ *   children are reading
+ * - Parent start to fill and truncate a junk file many times with non-zero char
+ *
+ * If no issues occur on direct IO/truncate operations and the file always
+ * contains zero characters, test PASS. Otherwise, test will FAIL.
  */
+
 #define _GNU_SOURCE
 
 #include <stdlib.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <memory.h>
-#include <string.h>
-#include <limits.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include "tst_test.h"
 
-#include "test.h"
+#define NUM_CHILDREN 16
+#define FILE_SIZE (64 * 1024)
 
-#define NUM_CHILDREN 8
+static int *run_child;
 
-char *check_zero(unsigned char *buf, int size)
+static char *check_zero(char *buf, int size)
 {
-	unsigned char *p;
+	char *p;
 
 	p = buf;
 
 	while (size > 0) {
 		if (*buf != 0) {
-			fprintf(stderr,
-				"non zero buffer at buf[%d] => 0x%02x,%02x,%02x,%02x\n",
+			tst_res(TINFO,
+				"non zero buffer at buf[%lu] => 0x%02x,%02x,%02x,%02x",
 				buf - p, (unsigned int)buf[0],
 				size > 1 ? (unsigned int)buf[1] : 0,
 				size > 2 ? (unsigned int)buf[2] : 0,
 				size > 3 ? (unsigned int)buf[3] : 0);
-			fprintf(stderr, "buf %p, p %p\n", buf, p);
+			tst_res(TINFO, "buf %p, p %p", buf, p);
 			return buf;
 		}
 		buf++;
 		size--;
 	}
-	return 0;		/* all zeros */
+
+	return 0;
 }
 
-int dio_read(char *filename)
+static void dio_read(const char *filename, size_t bs)
 {
 	int fd;
 	int r;
-	void *bufptr = NULL;
+	char *bufptr;
 
-	TEST(posix_memalign(&bufptr, 4096, 64 * 1024));
-	if (TEST_RETURN) {
-		tst_resm(TBROK | TRERRNO, "cannot malloc aligned memory");
-		return -1;
-	}
+	bufptr = SAFE_MEMALIGN(getpagesize(), bs);
 
-	while ((fd = open(filename, O_DIRECT | O_RDONLY)) < 0) {
-	}
-	fprintf(stderr, "dio_truncate: child reading file\n");
-	while (1) {
+	while ((fd = open(filename, O_RDONLY | O_DIRECT, 0666)) < 0)
+		usleep(100);
+
+	tst_res(TINFO, "child %i reading file", getpid());
+	while (*run_child) {
 		off_t offset;
 		char *bufoff;
 
-		/* read the file, checking for zeros */
-		offset = lseek(fd, SEEK_SET, 0);
+		offset = SAFE_LSEEK(fd, SEEK_SET, 0);
 		do {
 			r = read(fd, bufptr, 64 * 1024);
 			if (r > 0) {
-				if ((bufoff = check_zero(bufptr, r))) {
-					fprintf(stderr,
-						"non-zero read at offset %p\n",
-						offset + bufoff);
-					exit(1);
+				bufoff = check_zero(bufptr, r);
+				if (bufoff) {
+					tst_res(TINFO, "non-zero read at offset %zu",
+						offset + (bufoff - bufptr));
+					free(bufptr);
+					SAFE_CLOSE(fd);
+					return;
 				}
 				offset += r;
 			}
 		} while (r > 0);
 	}
-	return 0;
+
+	free(bufptr);
+	SAFE_CLOSE(fd);
 }
 
-void dio_append(char *filename, int fill)
+static void dio_append(const char *path, char pattern, size_t bs, size_t bcount)
 {
 	int fd;
-	void *bufptr = NULL;
-	int i;
-	int w;
+	size_t i;
+	char *bufptr;
 
-	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666);
+	bufptr = SAFE_MEMALIGN(getpagesize(), bs);
+	memset(bufptr, pattern, bs);
 
-	if (fd < 0) {
-		perror("cannot create file");
-		return;
-	}
+	fd = SAFE_OPEN(path, O_CREAT | O_WRONLY | O_DIRECT, 0666);
 
-	TEST(posix_memalign(&bufptr, 4096, 64 * 1024));
-	if (TEST_RETURN) {
-		tst_resm(TBROK | TRERRNO, "cannot malloc aligned memory");
-		close(fd);
-		return;
-	}
+	for (i = 0; i < bcount; i++)
+		SAFE_WRITE(1, fd, bufptr, bs);
 
-	memset(bufptr, fill, 64 * 1024);
-
-	for (i = 0; i < 1000; i++) {
-		if ((w = write(fd, bufptr, 64 * 1024)) != 64 * 1024) {
-			fprintf(stderr, "write %d returned %d\n", i, w);
-		}
-	}
-	close(fd);
+	free(bufptr);
+	SAFE_CLOSE(fd);
 }
 
-int main(void)
+static void setup(void)
 {
-	char filename[PATH_MAX];
-	int pid[NUM_CHILDREN];
-	int num_children = 1;
-	int i;
+	run_child = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+}
 
-	snprintf(filename, sizeof(filename), "%s/aiodio/file",
-		 getenv("TMP") ? getenv("TMP") : "/tmp");
+static void cleanup(void)
+{
+	SAFE_MUNMAP(run_child, sizeof(int));
+}
+
+static void run(void)
+{
+	char *filename = "file";
+	int filesize = FILE_SIZE;
+	int num_children = NUM_CHILDREN;
+	int status;
+	int i;
+	int fail = 0;
+
+	*run_child = 1;
 
 	for (i = 0; i < num_children; i++) {
-		if ((pid[i] = fork()) == 0) {
-			/* child */
-			return dio_read(filename);
-		} else if (pid[i] < 0) {
-			/* error */
-			perror("fork error");
-			break;
-		} else {
-			/* Parent */
-			continue;
+		if (!SAFE_FORK()) {
+			dio_read(filename, filesize);
+			return;
 		}
 	}
 
-	/*
-	 * Parent creates a zero file using DIO.
-	 * Truncates it to zero
-	 * Create another file with '0xaa'
-	 */
+	tst_res(TINFO, "parent writes/truncates the file");
+
 	for (i = 0; i < 100; i++) {
-		dio_append(filename, 0);
-		truncate(filename, 0);
-		dio_append("junkfile", 0xaa);
-		truncate("junkfile", 0);
+		dio_append(filename, 0, filesize, 100);
+		SAFE_TRUNCATE(filename, 0);
+		dio_append("junkfile", 0xaa, filesize, 100);
+		SAFE_TRUNCATE("junkfile", 0);
+
+		if (SAFE_WAITPID(-1, &status, WNOHANG)) {
+			fail = 1;
+			break;
+		}
 	}
 
-	for (i = 0; i < num_children; i++) {
-		kill(pid[i], SIGTERM);
-	}
+	if (fail)
+		tst_res(TFAIL, "Non zero bytes read");
+	else
+		tst_res(TPASS, "All bytes read were zeroed");
 
-	return 0;
+	*run_child = 0;
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+	.forks_child = 1,
+};
