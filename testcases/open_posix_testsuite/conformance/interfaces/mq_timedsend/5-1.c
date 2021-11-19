@@ -58,7 +58,6 @@ int main(void)
 	char msgrcd[BUFFER];
 	const char *msgptr = MSGSTR;
 	struct mq_attr attr;
-	int unresolved = 0;
 	unsigned pri;
 
 	sprintf(gqname, "/mq_timedsend_5-1_%d", getpid());
@@ -119,7 +118,10 @@ int main(void)
 		/* receive message and allow blocked send to complete */
 		if (mq_receive(gqueue, msgrcd, BUFFER, &pri) == -1) {
 			perror("mq_receive() did not return success");
-			unresolved = 1;
+			kill(pid, SIGKILL);	//kill child
+			mq_close(gqueue);
+			mq_unlink(gqname);
+			return PTS_UNRESOLVED;
 		}
 
 		if (sleep(3) == 0) {
