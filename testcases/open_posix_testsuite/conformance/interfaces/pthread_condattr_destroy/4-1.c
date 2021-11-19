@@ -15,6 +15,9 @@
  *
  */
 
+/* This test explicitly tries to pass null to a parameter, that should not be NULL */
+#pragma GCC diagnostic ignored "-Wnonnull"
+
 #include <pthread.h>
 #include <stdio.h>
 #include <errno.h>
