@@ -32,12 +32,6 @@
 static void *stack_addr;
 static size_t stack_size;
 
-static void *thread_func()
-{
-	pthread_exit(0);
-	return NULL;
-}
-
 int main(void)
 {
 	pthread_attr_t attr;

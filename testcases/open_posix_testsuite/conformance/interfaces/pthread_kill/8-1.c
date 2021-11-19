@@ -153,14 +153,6 @@ static void sighdl2(int sig PTS_ATTRIBUTE_UNUSED)
 #endif
 }
 
-static int init_ctl;
-/* Init function */
-static void initializer(void)
-{
-	init_ctl++;
-	return;
-}
-
 /* Test function -- calls pthread_kill() and checks that EINTR is never returned. */
 static void *test(void *arg PTS_ATTRIBUTE_UNUSED)
 {

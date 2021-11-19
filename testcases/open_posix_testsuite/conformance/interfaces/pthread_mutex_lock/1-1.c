@@ -36,7 +36,7 @@ static int value;			/* value protected by mutex */
 
 int main(void)
 {
-	int i, rc;
+	int i;
 	pthread_attr_t pta;
 	pthread_t threads[THREAD_NUM];
 	//pthread_t           self = pthread_self();
@@ -47,7 +47,7 @@ int main(void)
 	/* Create threads */
 	fprintf(stderr, "Creating %d threads\n", THREAD_NUM);
 	for (i = 0; i < THREAD_NUM; ++i)
-		rc = pthread_create(&threads[i], &pta, f1, NULL);
+		pthread_create(&threads[i], &pta, f1, NULL);
 
 	/* Wait to join all threads */
 	for (i = 0; i < THREAD_NUM; ++i)

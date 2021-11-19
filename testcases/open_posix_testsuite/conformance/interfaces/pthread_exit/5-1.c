@@ -91,12 +91,7 @@
 static int atctl = 0;
 static pthread_key_t tld[3];
 
-/* atexit() routines */
-static void at1(void)
-{
-	atctl += 1;
-}
-
+/* atexit() routine */
 static void at2(void)
 {
 	atctl += 2;

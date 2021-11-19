@@ -91,12 +91,7 @@
 
 static int global = 0;
 
-/* atexit() routines */
-static void at1(void)
-{
-	global +=1;
-}
-
+/* atexit() routine */
 static void at2(void)
 {
 	global +=2;
@@ -107,7 +102,7 @@ static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 
-	/* Note that this funtion will be registered once again for each scenario.
+	/* Note that this function will be registered once again for each scenario.
 	   POSIX requires the ability to register at least 32 functions so it should
 	   not be an issue in our case, as long as we don't get more than 32 scenarii
 	   (with joinable threads) */
