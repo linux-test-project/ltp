@@ -28,7 +28,7 @@ int main(void)
 {
 	struct tm time_ptr;
 
-	char expected[26];
+	char expected[128];
 	char *real;
 
 	char wday_name[7][3] =
