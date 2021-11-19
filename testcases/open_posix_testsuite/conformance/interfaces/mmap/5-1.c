@@ -34,7 +34,7 @@
 #include "posixtest.h"
 #include "tempfile.h"
 
-static struct testcase {
+struct testcase {
 	int prot;
 	int flags;
 };
