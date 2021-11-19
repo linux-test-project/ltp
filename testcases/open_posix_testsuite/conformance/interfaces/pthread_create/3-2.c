@@ -104,6 +104,8 @@
 
 static sem_t semsync[2];		/* These semaphores will only be used in child process! */
 
+static unsigned int sc;
+
 /* The overflow function is used to test the stack overflow */
 static void *overflow(void *arg)
 {

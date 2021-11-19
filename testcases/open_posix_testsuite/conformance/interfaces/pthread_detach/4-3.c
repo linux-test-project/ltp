@@ -61,6 +61,7 @@ static sem_t semsig1;
 static unsigned long count_sig;
 static long sleep_time;
 static sigset_t usersigs;
+static unsigned int sc;
 
 struct thestruct {
 	int sig;

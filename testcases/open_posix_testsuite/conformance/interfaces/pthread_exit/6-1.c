@@ -98,6 +98,7 @@
 /* This will be used to control that atexit() has been called */
 static int *ctl;
 static long mf;
+static unsigned int sc;
 
 static void clnp(void)
 {

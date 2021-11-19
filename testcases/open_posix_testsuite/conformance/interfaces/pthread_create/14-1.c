@@ -47,6 +47,8 @@ static volatile long sleep_time;
 /* number of pthread_create scenarios tested */
 static unsigned long count_ope;
 
+static unsigned int sc;
+
 static unsigned long long current_time_usec(void)
 {
 	struct timeval now;

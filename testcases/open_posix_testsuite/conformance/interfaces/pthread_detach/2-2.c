@@ -93,6 +93,7 @@
 /********************************************************************************************/
 
 static sem_t sem_sync;
+static unsigned int sc;
 
 static void *threaded(void *arg)
 {

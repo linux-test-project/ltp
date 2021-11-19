@@ -482,9 +482,9 @@ static void scenar_fini(void)
 	}
 }
 
-static unsigned int sc;
-
 #ifdef STD_MAIN
+
+static unsigned int sc;
 
 static void *threaded(void *arg);
 

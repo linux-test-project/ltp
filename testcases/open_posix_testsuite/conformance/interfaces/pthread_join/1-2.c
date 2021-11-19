@@ -48,6 +48,8 @@
 
 #include "../testfrmw/threads_scenarii.c"
 
+static unsigned int sc;
+
 static void *threaded(void *arg)
 {
 	int ret = 0;

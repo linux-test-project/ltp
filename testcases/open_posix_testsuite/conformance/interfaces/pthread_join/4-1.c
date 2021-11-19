@@ -46,6 +46,7 @@
 #include "../testfrmw/threads_scenarii.c"
 
 static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static unsigned int sc;
 
 /* 1st thread function */
 static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
