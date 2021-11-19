@@ -141,7 +141,8 @@ int main(void)
 	int ctl = 0;
 	void *rval;
 	pthread_t child;
-	int i, j;
+	unsigned int i;
+	int j;
 
 	output_init();
 

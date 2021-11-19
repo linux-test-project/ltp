@@ -149,7 +149,7 @@ static void *tf(void *arg)
 int main(void)
 {
 	int ret;
-	int sc;
+	unsigned int sc;
 	pthread_mutexattr_t ma;
 
 	testdata_t *td;

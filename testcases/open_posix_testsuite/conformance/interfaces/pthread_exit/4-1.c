@@ -122,7 +122,7 @@ int main(void)
 	int ret = 0;
 	void *rval;
 	pthread_t child;
-	int i;
+	unsigned int i;
 
 	output_init();
 
