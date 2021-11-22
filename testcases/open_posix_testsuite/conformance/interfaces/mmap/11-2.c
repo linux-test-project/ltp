@@ -33,13 +33,11 @@
 #include "posixtest.h"
 #include "tempfile.h"
 
-#define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
-
 static void sigbus_handler(int signum)
 {
 	if (signum == SIGBUS) {
-		WRITE("SIGBUS triggered\n");
-		WRITE("Test PASSED\n");
+		PTS_WRITE_MSG("SIGBUS triggered\n");
+		PTS_WRITE_MSG("Test PASSED\n");
 		_exit(PTS_PASS);
 	}
 }

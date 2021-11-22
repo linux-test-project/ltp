@@ -23,3 +23,9 @@
 #define PTS_ATTRIBUTE_NORETURN		__attribute__((noreturn))
 #define PTS_ATTRIBUTE_UNUSED		__attribute__((unused))
 #define PTS_ATTRIBUTE_UNUSED_RESULT	__attribute__((warn_unused_result))
+
+#define PTS_WRITE_MSG(msg) do { \
+         if (write(STDOUT_FILENO, msg, sizeof(msg) - 1)) { \
+                 /* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425 */ \
+         } \
+} while (0)

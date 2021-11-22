@@ -10,8 +10,8 @@
  *
  * Steps:
  * 1.  Create a new thread that will go into a never-ending while loop.
- * 2.  If the thread is truly asynchronise, then the main function will
- *     continue instead of waiting for the thread to return (which in never
+ * 2.  If the thread is truly asynchronous, then the main function will
+ *     continue instead of waiting for the thread to return (which it never
  *     does in this test case).
  * 3.  An alarm is set to go off (i.e. send the SIGARLM signal) after 3
  *     seconds. This is done for 'timeing-out' reasons, in case main DOES
@@ -72,11 +72,9 @@ static void *a_thread_function()
 	return NULL;
 }
 
-#define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
-
 /* If this handler is called, that means that the test has failed. */
 static void alarm_handler()
 {
-	WRITE("Test FAILED: Alarm fired while waiting for cancelation\n");
+	PTS_WRITE_MSG("Test FAILED: Alarm fired while waiting for cancelation\n");
 	_exit(PTS_FAIL);
 }

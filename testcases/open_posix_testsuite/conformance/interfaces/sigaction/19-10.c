@@ -40,8 +40,6 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define WRITE(str) write(STDOUT_FILENO, str, sizeof(str) - 1)
-
 static volatile sig_atomic_t called = 0;
 
 static void handler(int sig, siginfo_t *info, void *context)
@@ -50,7 +48,7 @@ static void handler(int sig, siginfo_t *info, void *context)
 	(void) context;
 
 	if (info->si_signo != SIGPIPE) {
-		WRITE("Wrong signal generated?\n");
+		PTS_WRITE_MSG("Wrong signal generated?\n");
 		_exit(PTS_FAIL);
 	}
 
