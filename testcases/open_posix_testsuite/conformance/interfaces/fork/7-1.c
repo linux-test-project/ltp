@@ -49,33 +49,21 @@
 #define MESSCAT_IN  "messcat.txt"
 #define MESSCAT_OUT "messcat.cat"
 
-static void read_catalog(nl_catd cat, char *who)
+static int read_catalog(nl_catd cat)
 {
+	const char *notfound = "not found";
 	char *msg = NULL;
 	int i, j;
-
-#if VERBOSE > 0
-	output("Reading the message catalog from %s...\n", who);
-#endif
-
-	errno = 0;
 
 	for (i = 1; i <= 2; i++) {
 		for (j = 1; j <= 2; j++) {
 
-			msg = catgets(cat, i, j, "not found");
-
-			if (errno != 0)
-				UNRESOLVED(errno, "catgets returned an error");
-#if VERBOSE > 1
-			output("set %i msg %i: %s\n", i, j, msg);
-#endif
+			msg = catgets(cat, i, j, notfound);
+			if (msg == notfound)
+				return 1;
 		}
 	}
-
-#if VERBOSE > 0
-	output("Message catalog read successfully in %s\n", who);
-#endif
+	return 0;
 }
 
 static char *messcat_in =
@@ -132,7 +120,10 @@ int main(void)
 	if (messcat == (nl_catd) - 1)
 		UNRESOLVED(errno, "Could not open ./" MESSCAT_OUT);
 
-	read_catalog(messcat, "parent");
+	if (read_catalog(messcat)) {
+		printf("UNRESOLVED: Unable to read message catalog in parent\n");
+		return PTS_UNRESOLVED;
+	}
 
 	child = fork();
 
@@ -140,8 +131,11 @@ int main(void)
 		UNRESOLVED(errno, "Failed to fork");
 
 	if (child == 0) {
-		read_catalog(messcat, "child");
-		exit(PTS_PASS);
+		if (read_catalog(messcat)) {
+			printf("FAILED: Unable to read message catalog in child\n");
+			return PTS_FAIL;
+		}
+		return PTS_PASS;
 	}
 
 	ctl = waitpid(child, &status, 0);
@@ -157,7 +151,8 @@ int main(void)
 	if (ret != 0)
 		UNRESOLVED(errno, "Failed to close the message catalog");
 
-	system("rm -f " MESSCAT_IN " " MESSCAT_OUT);
+	unlink(MESSCAT_IN);
+	unlink(MESSCAT_OUT);
 
 #if VERBOSE > 0
 	output("Test passed\n");
