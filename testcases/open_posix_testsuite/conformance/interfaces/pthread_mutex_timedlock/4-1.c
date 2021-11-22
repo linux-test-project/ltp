@@ -32,9 +32,7 @@ static void *f1(void *parm);
 static int ret;			/* Save return value of
 				   pthread_mutex_timedlock(). */
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
-static time_t currsec1, currsec2;	/* Variables for saving time before
-				   and afer locking the mutex using
-				   pthread_mutex_timedlock(). */
+
 /****************************
  *
  * MAIN()

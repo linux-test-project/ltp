@@ -48,7 +48,6 @@ int main(void)
 	int i;
 	struct aiocb aiocbs[NUM_AIOCBS];
 	int last_req;
-	int err;
 	int ret;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L
@@ -85,7 +84,7 @@ int main(void)
 	}
 
 	for (i = 0; i < last_req - 1; i++) {
-		err = aio_error(&aiocbs[i]);
+		aio_error(&aiocbs[i]);
 		ret = aio_return(&aiocbs[i]);
 
 	}

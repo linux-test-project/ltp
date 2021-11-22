@@ -5,7 +5,7 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
 
- * Test that the macro PTHREAD_MUTEX_INITIALIZER can be sued to intiailize
+ * Test that the macro PTHREAD_MUTEX_INITIALIZER can be used to initialize
  * mutexes that are statically allocated.
  *
  */
@@ -20,7 +20,7 @@ typedef struct my_data {
 	int value;		/* Access protected by mutex */
 } my_data_t;
 
-static my_data_t data = { PTHREAD_MUTEX_INITIALIZER, 0 };
+static my_data_t data PTS_ATTRIBUTE_UNUSED = { PTHREAD_MUTEX_INITIALIZER, 0 };
 
 int main(void)
 {

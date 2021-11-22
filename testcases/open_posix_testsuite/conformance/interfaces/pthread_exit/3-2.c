@@ -94,7 +94,7 @@ static int global = 0;
 static int tab[4];
 static pthread_key_t tld[3];
 
-#define CLEANUP(n) static void clnp##n(void * arg)\
+#define CLEANUP(n) static void clnp##n(void * arg PTS_ATTRIBUTE_UNUSED)\
 {\
 	tab[global]=n; \
 	global++; \

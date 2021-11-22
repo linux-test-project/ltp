@@ -37,8 +37,6 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-static pthread_mutex_t new_mutex;	/* The mutex. */
-
 int main(void)
 {
 	pthread_mutexattr_t mta;

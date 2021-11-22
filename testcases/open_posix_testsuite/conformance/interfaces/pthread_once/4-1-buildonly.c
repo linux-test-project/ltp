@@ -11,5 +11,6 @@
    */
 
 #include <pthread.h>
+#include "posixtest.h"
 
-static pthread_once_t dummy = PTHREAD_ONCE_INIT;
+static pthread_once_t dummy PTS_ATTRIBUTE_UNUSED = PTHREAD_ONCE_INIT;

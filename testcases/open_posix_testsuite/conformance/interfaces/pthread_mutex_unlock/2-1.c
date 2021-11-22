@@ -39,13 +39,13 @@ static int value;			/* value protected by mutex */
 
 int main(void)
 {
-	int i, rc;
+	int i;
 	pthread_t threads[THREAD_NUM];
 
 	/* Create threads */
 	fprintf(stderr, "Creating %d threads\n", THREAD_NUM);
 	for (i = 0; i < THREAD_NUM; ++i)
-		rc = pthread_create(&threads[i], NULL, func, NULL);
+		pthread_create(&threads[i], NULL, func, NULL);
 
 	/* Wait to join all threads */
 	for (i = 0; i < THREAD_NUM; ++i)
