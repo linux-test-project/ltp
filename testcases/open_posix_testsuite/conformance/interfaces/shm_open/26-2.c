@@ -95,19 +95,22 @@ int main(void)
 	fd = shm_open(SHM_NAME, O_RDWR | O_TRUNC, 0);
 	if (fd == -1) {
 		perror("An error occurs when calling shm_open()");
-		seteuid(getuid());
+		if (seteuid(getuid()))
+			perror("seteuid");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
 
 	if (fstat(fd, &stat_buf) != 0) {
 		perror("An error occurs when calling fstat()");
-		seteuid(getuid());
+		if (seteuid(getuid()))
+			perror("seteuid");
 		shm_unlink(SHM_NAME);
 		return PTS_UNRESOLVED;
 	}
 
-	seteuid(getuid());
+	if (seteuid(getuid()))
+		perror("seteuid");
 	shm_unlink(SHM_NAME);
 
 	if (stat_buf.st_uid == old_uid && stat_buf.st_gid == old_gid) {

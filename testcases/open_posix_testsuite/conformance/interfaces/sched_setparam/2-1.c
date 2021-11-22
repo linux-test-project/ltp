@@ -125,7 +125,10 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	pipe(the_pipe);
+	if (pipe(the_pipe)) {
+		perror("pipe");
+		return PTS_UNRESOLVED;
+	}
 
 	for (i = 0; i < nb_child; i++) {
 		child_pid[i] = fork();

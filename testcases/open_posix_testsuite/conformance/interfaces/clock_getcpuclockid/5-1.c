@@ -35,8 +35,14 @@ int main(void)
 
 		pwd = getpwnam("nobody");
 		if (pwd != NULL) {
-			setgid(pwd->pw_gid);
-			setuid(pwd->pw_uid);
+			if (setgid(pwd->pw_gid)) {
+				perror("setgid");
+				return PTS_UNRESOLVED;
+			}
+			if (setuid(pwd->pw_uid)) {
+				perror("setuid");
+				return PTS_UNRESOLVED;
+			}
 		}
 	}
 

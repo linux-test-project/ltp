@@ -69,12 +69,14 @@ int main(void)
 	result = shm_unlink(SHM_NAME);
 	if (result == -1 && errno == EACCES) {
 		printf("Test PASSED\n");
-		seteuid(getuid());
+		if (seteuid(getuid()))
+			perror("seteuid");
 		shm_unlink(SHM_NAME);
 		return PTS_PASS;
 	} else if (result == -1) {
 		perror("Unexpected error");
-		seteuid(getuid());
+		if (seteuid(getuid()))
+			perror("seteuid");
 		shm_unlink(SHM_NAME);
 		return PTS_FAIL;
 	}

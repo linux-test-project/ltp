@@ -45,18 +45,21 @@ static int child_busy(int fd)
 	alarm(4);
 
 	/* Tell the parent we're ready */
-	write(fd, "go", 2);
+	if (write(fd, "go", 2) == -1) {
+		perror("write");
+		exit(PTS_UNRESOLVED);
+	}
 
 	for (;;) {
 		rc = sched_yield();
 		if (rc) {
 			ERR_LOG("child: sched_yield", rc);
-			exit(1);
+			exit(PTS_FAIL);
 		}
 	}
 
 	/* should not get here */
-	exit(2);
+	exit(PTS_UNRESOLVED);
 }
 
 int main(void)

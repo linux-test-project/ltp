@@ -61,9 +61,13 @@ int main(void)
 		printf(TNAME " Error at open(): %s\n", strerror(errno));
 		return PTS_UNRESOLVED;
 	}
-	/* file is empty now, will cause "Bus error" */
-	write(fd, fname, sizeof(int));
 	unlink(fname);
+
+	if (ftruncate(fd, sizeof(int))) {
+		perror("ftruncate");
+		close(fd);
+		return PTS_UNRESOLVED;
+	}
 
 	pa = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED) {

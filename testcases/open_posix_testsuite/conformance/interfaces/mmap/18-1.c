@@ -124,14 +124,18 @@ int main(void)
 	 * EAGAIN:
 	 * Lock all the memory by mlockall().
 	 * Set resource limit setrlimit()
-	 * Change the user to non-root then only setrmilit is applicable.
+	 * Change the user to non-root then only setrlimit is applicable.
 	 */
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (pa == MAP_FAILED && errno == EAGAIN) {
 		printf("Got EAGAIN: %s\n", strerror(errno));
 		printf("Test PASSED\n");
 		/* Change user to root */
-		seteuid(0);
+		if (seteuid(0)) {
+			close(fd);
+			perror("seteuid");
+			return PTS_UNRESOLVED;
+		}
 		close(fd);
 		munmap(pa, len);
 		return PTS_PASS;

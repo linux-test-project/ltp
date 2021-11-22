@@ -59,7 +59,10 @@ int main(int argc, char *argv[])
 
 		/* Get abs path if needed and exec ourself */
 		if (*argv[0] != '/') {
-			getcwd(path, PATH_MAX);
+			if (getcwd(path, PATH_MAX) == NULL) {
+				perror("getcwd");
+				exit(PTS_UNRESOLVED);
+			}
 			strcat(path, "/");
 			strcat(path, argv[0]);
 		} else {

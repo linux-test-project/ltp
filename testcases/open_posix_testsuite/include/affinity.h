@@ -46,7 +46,8 @@ static int get_online_cpu_from_sysfs(void)
 	f = fopen("/sys/devices/system/cpu/online", "r");
 	if (!f)
 		return -1;
-	fscanf(f, "%d", &cpu);
+	if (!fscanf(f, "%d", &cpu))
+		cpu = -1;
 	fclose(f);
 
 	return cpu;
