@@ -1,3 +1,5 @@
 ID	DESCRIPTION
 LTP-001	Library source files have tst_ prefix
 LTP-002	TST_RET and TST_ERR are never modified by test library functions
+LTP-003 Externally visible library symbols have the tst_ prefix
+LTP-004 Test executable symbols are marked static

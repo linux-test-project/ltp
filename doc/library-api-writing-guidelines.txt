@@ -39,6 +39,16 @@ The macros which are clearly intended to update these variables. That
 is +TEST+ and those in 'tst_test_macros.h'. Are of course allowed to
 update these variables.
 
+2.3 LTP-003: Externally visible library symbols have the tst_ prefix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Functions, types and variables in the public test API should have the
+tst_ prefix. With some exceptions for symbols already prefixed with
+safe_ or ltp_.
+
+Static (private) symbols should not have the prefix.
+
+
 3. Shell API
 ------------
 

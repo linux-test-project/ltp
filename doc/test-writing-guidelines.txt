@@ -133,6 +133,14 @@ script from kernel git tree.
 NOTE: If `make check` does not report any problems, the code still may be wrong
       as all tools used for checking only look for common mistakes.
 
+2.1.1 LTP-004: Test executable symbols are marked static
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Test executables should not export symbols unnecessarily. This means
+that all top-level variables and functions should be marked with the
+static keyword. The only visible symbols should be those included from
+shared object files.
+
 2.2 Shell coding style
 ^^^^^^^^^^^^^^^^^^^^^^
 
