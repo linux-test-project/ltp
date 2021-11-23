@@ -19,10 +19,12 @@ nfs_parse_args()
 	case "$1" in
 	v) VERSION="$(echo $2 | tr ',' ' ')";;
 	t) SOCKET_TYPE="$(echo $2 | tr ',' ' ')";;
+	*) [ "$NFS_PARSE_ARGS_CALLER" ] && $NFS_PARSE_ARGS_CALLER "$@";;
 	esac
 }
 
-TST_OPTS="v:t:"
+NFS_PARSE_ARGS_CALLER="$TST_PARSE_ARGS"
+TST_OPTS="v:t:$TST_OPTS"
 TST_PARSE_ARGS=nfs_parse_args
 TST_USAGE=nfs_usage
 TST_NEEDS_TMPDIR=1
