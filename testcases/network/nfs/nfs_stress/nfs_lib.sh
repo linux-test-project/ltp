@@ -52,6 +52,19 @@ get_socket_type()
 	done
 }
 
+nfs_get_remote_path()
+{
+	local v
+	local type=$(get_socket_type ${2:-0})
+
+	for v in $VERSION; do
+		break;
+	done
+
+	v=${1:-$v}
+	echo "$TST_TMPDIR/$v/$type"
+}
+
 nfs_server_udp_enabled()
 {
 	local config f
