@@ -61,6 +61,17 @@ nfs01_06  nfs06 -v "3,3,3,4,4,4" -t "udp,udp,tcp,tcp,tcp,tcp"
 nfs02_06 nfs06 -v "3,4,4.1,4.2,4.2,4.2" -t "udp,tcp,tcp,tcp,tcp,tcp"
 nfs03_ipv6_06 nfs06 -6 -v "4,4.1,4.1,4.2,4.2,4.2" -t "tcp,tcp,tcp,tcp,tcp,tcp"
 
+nfs3_07 nfs07.sh -v 3 -t udp
+nfs3t_07 nfs07.sh -v 3 -t tcp
+nfs4_07 nfs07.sh -v 4 -t tcp
+nfs41_07 nfs07.sh -v 4.1 -t tcp
+nfs42_07 nfs07.sh -v 4.2 -t tcp
+nfs3_ipv6_07 nfs07.sh -6 -v 3 -t udp
+nfs3t_ipv6_07 nfs07.sh -6 -v 3 -t tcp
+nfs4_ipv6_07 nfs07.sh -6 -v 4 -t tcp
+nfs41_ipv6_07 nfs07.sh -6 -v 4.1 -t tcp
+nfs42_ipv6_07 nfs07.sh -6 -v 4.2 -t tcp
+
 nfslock3_01 nfslock01 -v 3 -t udp
 nfslock3t_01 nfslock01 -v 3 -t tcp
 nfslock4_01 nfslock01 -v 4 -t tcp

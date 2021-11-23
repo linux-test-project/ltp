@@ -15,6 +15,7 @@ INSTALL_TARGETS		:= nfs_lib.sh \
 			   nfs03 \
 			   nfs04 \
 			   nfs05 \
-			   nfs06
+			   nfs06 \
+			   nfs07.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
