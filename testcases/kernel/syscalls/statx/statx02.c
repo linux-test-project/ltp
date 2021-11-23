@@ -90,7 +90,7 @@ static void test_sym_link(void)
 			"Statx symlink flag failed to work as expected");
 }
 
-struct tcase {
+static struct tcase {
 	void (*tfunc)(void);
 } tcases[] = {
 	{&test_empty_path},

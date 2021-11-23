@@ -133,7 +133,7 @@ static void test_unflagged(void)
 		tst_res(TFAIL, "STATX_ATTR_NODUMP flag is set");
 }
 
-struct test_cases {
+static struct test_cases {
 	void (*tfunc)(void);
 } tcases[] = {
 	{&test_flagged},

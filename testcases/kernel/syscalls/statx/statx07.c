@@ -84,7 +84,7 @@ static int get_mode(char *file_name, int flag_type, char *flag_name)
 	return buf.stx_mode;
 }
 
-const struct test_cases {
+static const struct test_cases {
 	int flag;
 	char *flag_name;
 	char *server_file;

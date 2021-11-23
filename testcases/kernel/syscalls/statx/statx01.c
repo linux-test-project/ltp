@@ -138,7 +138,7 @@ static void test_device_file(void)
 }
 
 
-struct tcase {
+static struct tcase {
 	void (*tfunc)(void);
 } tcases[] = {
 	{&test_normal_file},
