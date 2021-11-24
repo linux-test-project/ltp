@@ -71,11 +71,17 @@ static void verify_stat(unsigned int n)
 		fail++;
 	}
 
+	if (stat_buf.st_nlink != 1) {
+		tst_res(TFAIL, "stat_buf.st_nlink = %lu expected 1",
+			stat_buf.st_nlink);
+		fail++;
+	}
+
 	if (!fail)
 		tst_res(TPASS, "stat(%s)", tc->pathname);
 }
 
-void setup(void)
+static void setup(void)
 {
 	unsigned int i;
 

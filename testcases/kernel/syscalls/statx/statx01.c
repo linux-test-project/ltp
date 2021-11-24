@@ -16,6 +16,7 @@
  * 3) mode
  * 4) blocks
  * 5) size
+ * 6) nlink
  *
  * A file is created and metadata values are set with
  * predefined values.
@@ -98,6 +99,12 @@ static void test_normal_file(void)
 	else
 		tst_res(TFAIL, "stx_blocks(%"PRIu64") is invalid",
 			buff.stx_blocks);
+
+	if (buff.stx_nlink == 1)
+		tst_res(TPASS, "stx_nlink(1) is correct");
+	else
+		tst_res(TFAIL, "stx_nlink(%u) is different from expected(1)",
+			buff.stx_nlink);
 
 }
 
