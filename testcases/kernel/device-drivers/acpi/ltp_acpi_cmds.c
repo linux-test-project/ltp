@@ -221,6 +221,7 @@ static int acpi_traverse_from_root(void)
 		if (acpi_failure(status, "acpi_object_info failed"))
 			return 1;
 		prk_info("start from %4.4s", (char *)&dev_info->name);
+		kfree(dev_info);
 	} else {
 		/* continue with the last visited child */
 		parent = start_parent;
@@ -430,6 +431,7 @@ static int acpi_test_resources(void)
 	prk_alert("TEST -- acpi_get_current_resources");
 	status = acpi_get_current_resources(res_handle, &buffer);
 	err = acpi_failure(status, "failed get_current_resources");
+	ACPI_FREE(buffer.pointer);
 
 #ifdef ACPI_FUTURE_USAGE
 	prk_alert("TEST -- acpi_get_possible_resources");
