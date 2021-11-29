@@ -34,7 +34,7 @@
 
 #define TNAME "lio_listio/2-1.c"
 
-#define NUM_AIOCBS	10
+#define NUM_AIOCBS	256
 #define BUF_SIZE	1024
 
 static volatile int received_selected;
@@ -98,7 +98,7 @@ int main(void)
 		memset(aiocbs[i], 0, sizeof(struct aiocb));
 
 		aiocbs[i]->aio_fildes = fd;
-		aiocbs[i]->aio_offset = 0;
+		aiocbs[i]->aio_offset = i * BUF_SIZE;
 		aiocbs[i]->aio_buf = &bufs[i * BUF_SIZE];
 		aiocbs[i]->aio_nbytes = BUF_SIZE;
 		aiocbs[i]->aio_lio_opcode = LIO_WRITE;
