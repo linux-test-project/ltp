@@ -126,10 +126,94 @@ static void check_symbol_visibility(const struct symbol *const sym)
 		name);
 }
 
+/* See base_type() in dissect.c */
+static struct symbol *unwrap_base_type(const struct symbol *sym)
+{
+	switch (sym->ctype.base_type->type) {
+	case SYM_ARRAY:
+	case SYM_NODE:
+	case SYM_PTR:
+		return unwrap_base_type(sym->ctype.base_type);
+	default:
+		return sym->ctype.base_type;
+	}
+}
+
+/* Checks if some struct array initializer is terminated with a blank
+ * (zeroed) item i.e. {}
+ */
+static bool is_terminated_with_null_struct(const struct symbol *const sym)
+{
+	const struct expression *const arr_init = sym->initializer;
+	const struct expression *item_init =
+		last_ptr_list((struct ptr_list *)arr_init->expr_list);
+
+	if (item_init->type == EXPR_POS)
+		item_init = item_init->init_expr;
+
+	return ptr_list_empty((struct ptr_list *)item_init->expr_list);
+}
+
+/* Check for (one instance of) LTP-005
+ *
+ * The tags array is only accessed when the test fails. So we perform
+ * a static check to ensure it ends with {}
+ */
+static void check_tag_initializer(const struct symbol *const sym)
+{
+	if (is_terminated_with_null_struct(sym))
+		return;
+
+	warning(sym->pos,
+		"LTP-005: test.tags array doesn't appear to be null-terminated; did you forget to add '{}' as the final entry?");
+}
+
+/* Find struct tst_test test = { ... } and perform tests on its initializer */
+static void check_test_struct(const struct symbol *const sym)
+{
+	static struct ident *tst_test, *tst_test_test, *tst_tag;
+	struct ident *ctype_name = NULL;
+	struct expression *init = sym->initializer;
+	struct expression *entry;
+
+	if (!sym->ctype.base_type)
+		return;
+
+	ctype_name = sym->ctype.base_type->ident;
+
+	if (!init)
+		return;
+
+	if (!tst_test_test) {
+		tst_test = built_in_ident("tst_test");
+		tst_test_test = built_in_ident("test");
+		tst_tag = built_in_ident("tst_tag");
+	}
+
+	if (sym->ident != tst_test_test)
+		return;
+
+	if (ctype_name != tst_test)
+		return;
+
+	FOR_EACH_PTR(init->expr_list, entry) {
+		if (entry->init_expr->type != EXPR_SYMBOL)
+			continue;
+
+		const struct symbol *entry_init = entry->init_expr->symbol;
+		const struct symbol *entry_ctype = unwrap_base_type(entry_init);
+
+		if (entry_ctype->ident == tst_tag)
+			check_tag_initializer(entry_init);
+	} END_FOR_EACH_PTR(entry);
+
+}
+
 /* AST level checks */
 static void do_symbol_checks(struct symbol *sym)
 {
 	check_symbol_visibility(sym);
+	check_test_struct(sym);
 }
 
 /* Compile the AST into a graph of basicblocks */
