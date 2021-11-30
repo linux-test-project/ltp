@@ -31,35 +31,12 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include "tst_test.h"
+#include "common.h"
 
 #define NUM_CHILDREN 16
 #define FILE_SIZE (64 * 1024)
 
 static int *run_child;
-
-static char *check_zero(char *buf, int size)
-{
-	char *p;
-
-	p = buf;
-
-	while (size > 0) {
-		if (*buf != 0) {
-			tst_res(TINFO,
-				"non zero buffer at buf[%lu] => 0x%02x,%02x,%02x,%02x",
-				buf - p, (unsigned int)buf[0],
-				size > 1 ? (unsigned int)buf[1] : 0,
-				size > 2 ? (unsigned int)buf[2] : 0,
-				size > 3 ? (unsigned int)buf[3] : 0);
-			tst_res(TINFO, "buf %p, p %p", buf, p);
-			return buf;
-		}
-		buf++;
-		size--;
-	}
-
-	return 0;
-}
 
 static void dio_read(const char *filename, size_t bs)
 {
@@ -98,24 +75,6 @@ static void dio_read(const char *filename, size_t bs)
 	SAFE_CLOSE(fd);
 }
 
-static void dio_append(const char *path, char pattern, size_t bs, size_t bcount)
-{
-	int fd;
-	size_t i;
-	char *bufptr;
-
-	bufptr = SAFE_MEMALIGN(getpagesize(), bs);
-	memset(bufptr, pattern, bs);
-
-	fd = SAFE_OPEN(path, O_CREAT | O_WRONLY | O_DIRECT, 0666);
-
-	for (i = 0; i < bcount; i++)
-		SAFE_WRITE(1, fd, bufptr, bs);
-
-	free(bufptr);
-	SAFE_CLOSE(fd);
-}
-
 static void setup(void)
 {
 	run_child = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
@@ -131,6 +90,7 @@ static void run(void)
 	char *filename = "file";
 	int filesize = FILE_SIZE;
 	int num_children = NUM_CHILDREN;
+	int wflags = O_DIRECT | O_WRONLY | O_CREAT;
 	int status;
 	int i;
 	int fail = 0;
@@ -147,9 +107,9 @@ static void run(void)
 	tst_res(TINFO, "parent writes/truncates the file");
 
 	for (i = 0; i < 100; i++) {
-		dio_append(filename, 0, filesize, 100);
+		io_append(filename, 0, wflags, filesize, 100);
 		SAFE_TRUNCATE(filename, 0);
-		dio_append("junkfile", 0xaa, filesize, 100);
+		io_append("junkfile", 0xaa, wflags, filesize, 100);
 		SAFE_TRUNCATE("junkfile", 0);
 
 		if (SAFE_WAITPID(-1, &status, WNOHANG)) {
