@@ -98,7 +98,7 @@ static void check_symbol_visibility(const struct symbol *const sym)
 	if (!(mod & MOD_TOPLEVEL))
 		return;
 
-	if (has_lib_prefix && (mod & MOD_STATIC)) {
+	if (has_lib_prefix && (mod & MOD_STATIC) && !(mod & MOD_INLINE)) {
 		warning(sym->pos,
 			"LTP-003: Symbol '%s' has the LTP public library prefix, but is static (private).",
 			name);
