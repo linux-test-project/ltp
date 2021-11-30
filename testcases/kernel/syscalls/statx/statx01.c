@@ -80,11 +80,11 @@ static void test_normal_file(void)
 
 	if (buff.stx_size == SIZE)
 		tst_res(TPASS,
-			"stx_size(%"PRIu64") is correct", buff.stx_size);
+			"stx_size(%"PRIu64") is correct", (uint64_t)buff.stx_size);
 	else
 		tst_res(TFAIL,
 			"stx_size(%"PRIu64") is different from expected(%u)",
-			buff.stx_size, SIZE);
+			(uint64_t)buff.stx_size, SIZE);
 
 	if ((buff.stx_mode & ~(S_IFMT)) == MODE)
 		tst_res(TPASS, "stx_mode(%u) is correct", buff.stx_mode);
@@ -95,10 +95,10 @@ static void test_normal_file(void)
 
 	if (buff.stx_blocks <= buff.stx_blksize/512 * 2)
 		tst_res(TPASS, "stx_blocks(%"PRIu64") is valid",
-			buff.stx_blocks);
+			(uint64_t)buff.stx_blocks);
 	else
 		tst_res(TFAIL, "stx_blocks(%"PRIu64") is invalid",
-			buff.stx_blocks);
+			(uint64_t)buff.stx_blocks);
 
 	if (buff.stx_nlink == 1)
 		tst_res(TPASS, "stx_nlink(1) is correct");

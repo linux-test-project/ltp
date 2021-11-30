@@ -50,11 +50,11 @@ static void test_empty_path(void)
 
 	if (buf.stx_size == SIZE)
 		tst_res(TPASS,
-			"stx_size(%"PRIu64") is correct", buf.stx_size);
+			"stx_size(%"PRIu64") is correct", (uint64_t)buf.stx_size);
 	else
 		tst_res(TFAIL,
 			"stx_size(%"PRIu64") is not same as expected(%u)",
-			buf.stx_size, SIZE);
+			(uint64_t)buf.stx_size, SIZE);
 
 }
 
