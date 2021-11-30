@@ -17,6 +17,7 @@
  * 4) blocks
  * 5) size
  * 6) nlink
+ * 7) mnt_id
  *
  * A file is created and metadata values are set with
  * predefined values.
@@ -38,10 +39,12 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <sys/sysmacros.h>
 #include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "lapi/stat.h"
+#include "tst_safe_stdio.h"
 #include <string.h>
 #include <inttypes.h>
 
@@ -53,6 +56,49 @@
 #define SIZE 256
 #define MAJOR 8
 #define MINOR 1
+
+static int file_fd = -1;
+
+#ifdef HAVE_STRUCT_STATX_STX_MNT_ID
+static void test_mnt_id(struct statx *buf)
+{
+	FILE *file;
+	char line[PATH_MAX];
+	int pid;
+	unsigned int line_mjr, line_mnr;
+	uint64_t mnt_id;
+
+	if (!(buf->stx_mask & STATX_MNT_ID)) {
+		tst_res(TCONF, "stx_mnt_id is not supported until linux 5.8");
+		return;
+	}
+
+	file = SAFE_FOPEN("/proc/self/mountinfo", "r");
+
+	while (fgets(line, sizeof(line), file)) {
+		if (sscanf(line, "%ld %*d %d:%d", &mnt_id, &line_mjr, &line_mnr) != 3)
+			continue;
+
+		if (line_mjr == buf->stx_dev_major && line_mnr == buf->stx_dev_minor)
+			break;
+	}
+
+	SAFE_FCLOSE(file);
+
+	if (buf->stx_mnt_id == mnt_id)
+		tst_res(TPASS,
+			"statx.stx_mnt_id equals to mount_id(%"PRIu64") in /proc/self/mountinfo",
+			mnt_id);
+	else
+		tst_res(TFAIL,
+			"statx.stx_mnt_id(%"PRIu64") is different from mount_id(%"PRIu64") in /proc/self/mountinfo",
+			(uint64_t)buf->stx_mnt_id, mnt_id);
+
+	pid = getpid();
+	snprintf(line, PATH_MAX, "/proc/%d/fdinfo/%d", pid, file_fd);
+	TST_ASSERT_FILE_INT(line, "mnt_id:", buf->stx_mnt_id);
+}
+#endif
 
 static void test_normal_file(void)
 {
@@ -92,7 +138,6 @@ static void test_normal_file(void)
 		tst_res(TFAIL, "stx_mode(%u) is different from expected(%u)",
 			buff.stx_mode, MODE);
 
-
 	if (buff.stx_blocks <= buff.stx_blksize/512 * 2)
 		tst_res(TPASS, "stx_blocks(%"PRIu64") is valid",
 			(uint64_t)buff.stx_blocks);
@@ -106,6 +151,11 @@ static void test_normal_file(void)
 		tst_res(TFAIL, "stx_nlink(%u) is different from expected(1)",
 			buff.stx_nlink);
 
+#ifdef HAVE_STRUCT_STATX_STX_MNT_ID
+	test_mnt_id(&buff);
+#else
+	tst_res(TCONF, "stx_mnt_id is not defined in struct statx");
+#endif
 }
 
 static void test_device_file(void)
@@ -153,7 +203,6 @@ static void run(unsigned int i)
 static void setup(void)
 {
 	char data_buff[SIZE];
-	int file_fd;
 
 	umask(0);
 
@@ -161,15 +210,21 @@ static void setup(void)
 
 	file_fd =  SAFE_OPEN(TESTFILE, O_RDWR|O_CREAT, MODE);
 	SAFE_WRITE(1, file_fd, data_buff, sizeof(data_buff));
-	SAFE_CLOSE(file_fd);
 
 	SAFE_MKNOD(DEVICEFILE, S_IFBLK | 0777, makedev(MAJOR, MINOR));
+}
+
+static void cleanup(void)
+{
+	if (file_fd > -1)
+		SAFE_CLOSE(file_fd);
 }
 
 static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
+	.cleanup = cleanup,
 	.min_kver = "4.11",
 	.needs_devfs = 1,
 	.mntpoint = MNTPOINT,
