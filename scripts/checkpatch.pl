@@ -6891,7 +6891,7 @@ sub process {
 				if ($count == 1 &&
 				    $format =~ /^"\%(?i:ll[udxi]|[udxi]ll|ll|[hl]h?[udxi]|[udxi][hl]h?|[hl]h?|[udxi])"$/) {
 					WARN("SSCANF_TO_KSTRTO",
-					     "Prefer kstrto<type> to single variable sscanf\n" . "$here\n$stat_real\n");
+					     "Prefer tst_parse_<type> to single variable sscanf\n" . "$here\n$stat_real\n");
 				}
 			}
 		}
