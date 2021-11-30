@@ -4,36 +4,25 @@
  * Email: code@zilogic.com
  */
 
-/*
- * Test statx
+/*\
+ * [Description]
  *
  * This code tests the functionality of statx system call.
  *
- * TESTCASE 1:
- * The metadata for normal file are tested against predefined values:
- * 1) gid
- * 2) uid
- * 3) mode
- * 4) blocks
- * 5) size
- * 6) nlink
- * 7) mnt_id
+ * The metadata for normal file are tested against expected values:
  *
- * A file is created and metadata values are set with
- * predefined values.
- * Then the values obtained using statx is checked against
- * the predefined values.
+ * - gid
+ * - uid
+ * - mode
+ * - blocks
+ * - size
+ * - nlink
+ * - mnt_id
  *
- * TESTCASE 2:
- * The metadata for device file are tested against predefined values:
- * 1) MAJOR number
- * 2) MINOR number
+ * The metadata for device file are tested against expected values:
  *
- * A device file is created seperately using mknod(must be a root user).
- * The major number and minor number are set while creation.
- * Major and minor numbers obtained using statx is checked against
- * predefined values.
- * Minimum kernel version required is 4.11.
+ * - MAJOR number
+ * - MINOR number
  */
 
 #define _GNU_SOURCE

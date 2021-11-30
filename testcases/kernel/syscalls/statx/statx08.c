@@ -19,8 +19,6 @@
  *
  * Two directories are tested.
  * First directory has all flags set. Second directory has no flags set.
- *
- * Minimum kernel version required is 4.11.
  */
 
 #define _GNU_SOURCE

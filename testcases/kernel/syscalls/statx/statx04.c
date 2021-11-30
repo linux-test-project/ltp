@@ -47,8 +47,6 @@
  *  Date:   Fri Mar 31 18:32:03 2017 +0100
  *
  *  xfs: report crtime and attribute flags to statx
- *
- * Minimum kernel version required is 4.11.
  */
 
 #define _GNU_SOURCE

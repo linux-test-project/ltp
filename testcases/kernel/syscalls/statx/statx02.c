@@ -4,12 +4,13 @@
  * Email: code@zilogic.com
  */
 
-/*
- * Test statx
+/*\
+ * [Description]
  *
- * This code tests the following flags:
- * 1) AT_EMPTY_PATH
- * 2) AT_SYMLINK_NOFOLLOW
+ * This code tests the following flags with statx syscall:
+ *
+ * - AT_EMPTY_PATH
+ * - AT_SYMLINK_NOFOLLOW
  *
  * A test file and a link for it is created.
  *
@@ -19,7 +20,6 @@
  * To check symlink no follow flag, the linkname is statxed.
  * To ensure that link is not dereferenced, obtained inode is compared
  * with test file inode.
- * Minimum kernel version required is 4.11.
  */
 
 #define _GNU_SOURCE

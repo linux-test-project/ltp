@@ -1,36 +1,21 @@
 // SPDX-License-Identifier: GPL-2.0 or later
 /*
- *  Copyright (c) Zilogic Systems Pvt. Ltd., 2018
- *  Email : code@zilogic.com
+ * Copyright (c) Zilogic Systems Pvt. Ltd., 2018
+ * Email : code@zilogic.com
  */
 
-/*
- * DESCRIPTION :
+/*\
+ * [Description]
  *
- * Test-Case 1 : Testing btime
- * flow :       The time before and after the execution of the create
- *              system call is noted.
- *		It is checked whether the birth time returned by statx lies in
- *              this range.
+ * Test the following file timestamps of statx syscall:
  *
- * Test-Case 2 : Testing mtime
- * flow :       The time before and after the execution of the write
- *              system call is noted.
- *              It is checked whether the modification time returned
- *              by statx lies in this range.
+ * - btime - The time before and after the execution of the create system call is noted.
  *
- * Test-Case 3 : Testing atime
- * flow :       The time before and after the execution of the read
- *              system call is noted.
- *              It is checked whether the access time returned by statx lies in
- *              this range.
+ * - mtime - The time before and after the execution of the write system call is noted.
  *
- * Test-Case 4 : Testing ctime
- * flow :	The time before and after the execution of the chmod
- *              system call is noted.
- *              It is checked whether the status change time returned by statx
- *              lies in this range.
+ * - atime - The time before and after the execution of the read system call is noted.
  *
+ * - ctime - The time before and after the execution of the chmod system call is noted.
  */
 
 #define _GNU_SOURCE

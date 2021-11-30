@@ -4,27 +4,17 @@
  * Email: code@zilogic.com
  */
 
-/*
- * Test statx
+/*\
+ * [Description]
  *
- * This code tests if expected error values are returned for specific cases by
- * statx.
- * The error cases are simulated and the return value is checked against
- * expected error number value.
- * The following error values are tested:
- * 1) EBADF - Bad file descriptor
- * 2) EFAULT - Bad address
- * 3) EINVAL - Invalid argument
- * 4) ENOENT - No such file or directory
- * 5) ENOTDIR - Not a directory
- * 6) ENAMETOOLONG - Filename too long
+ * Test basic error handling of statx syscall:
  *
- * Error scenario is simulated for each listed flag by passing
- * respective arguments.
- * The obtained error flag is checked against the expected
- * flag value for that scenario.
- *
- * Minimum Kernel version required is 4.11.
+ * - EBADF - Bad file descriptor
+ * - EFAULT - Bad address
+ * - EINVAL - Invalid argument
+ * - ENOENT - No such file or directory
+ * - ENOTDIR - Not a directory
+ * - ENAMETOOLONG - Filename too long
  */
 
 #define _GNU_SOURCE
