@@ -381,3 +381,26 @@ test "x$with_tirpc" = xyes && LTP_CHECK_TIRPC
 LTP_DETECT_HOST_CPU
 
 AC_OUTPUT
+
+cat << EOF
+
+TESTSUITES
+open posix testsuite: ${with_open_posix_testsuite:-no}
+realtime testsuite: ${with_realtime_testsuite:-no}
+
+LIBRARIES
+keyutils: ${have_keyutils:-no}
+libacl: ${have_libacl:-no}
+libaio: ${have_libaio:-no} (aio: ${have_aio:-no})
+libcap: $cap_libs (newer: ${has_newer_libcap:-no})
+libcrypto: $have_libcrypto (sha: ${have_sha:-no})
+libmnl: ${have_libmnl:-no}
+libnuma: ${have_libnuma:-no} (headers: ${have_numa_headers:-no}, v2 headers: ${have_numa_headers_v2:-no})
+libtirpc: ${have_libtirpc:-no}
+glibc SUN-RPC: ${have_rpc_glibc:-no}
+
+METADATA
+metadata generator: $with_metadata_generator
+HTML metadata: $with_metadata_html
+PDF metadata: $with_metadata_pdf
+EOF
