@@ -44,7 +44,7 @@ static void check_mode(struct shmid_ds *ds, short exp_mode)
 	}
 
 	tst_res(TFAIL, "shm_perm.mode=%04o, expected %i",
-	        ds->shm_perm.mode, exp_mode);
+		ds->shm_perm.mode, exp_mode);
 }
 
 static void verify_shmset(void)
@@ -73,10 +73,10 @@ static void verify_shmset(void)
 
 	if (ds.shm_ctime <= old_ctime || ds.shm_ctime > old_ctime + 10) {
 		tst_res(TFAIL, "shm_ctime not updated old %li new %li",
-		        (long)old_ctime, (long)ds.shm_ctime);
+			(long)old_ctime, (long)ds.shm_ctime);
 	} else {
 		tst_res(TPASS, "shm_ctime updated correctly diff=%li",
-		        (long)(ds.shm_ctime - old_ctime));
+			(long)(ds.shm_ctime - old_ctime));
 	}
 
 	ds.shm_perm.mode = old_mode;

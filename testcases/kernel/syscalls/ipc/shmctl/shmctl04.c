@@ -69,7 +69,7 @@ static void parse_proc_sysvipc(struct shm_info *info)
 	 * size.
 	 */
 	while (fscanf(f, "%*i %i %*i %i %*i %*i %*i %*i %*i %*i %*i %*i %*i %*i %i %i",
-	              &shmid, &size, &rss, &swap) > 0) {
+			&shmid, &size, &rss, &swap) > 0) {
 		used_ids++;
 		shm_rss += rss/page_size;
 		shm_swp += swap/page_size;
@@ -80,28 +80,28 @@ static void parse_proc_sysvipc(struct shm_info *info)
 
 	if (info->used_ids != used_ids) {
 		tst_res(TFAIL, "used_ids = %i, expected %i",
-		        info->used_ids, used_ids);
+			info->used_ids, used_ids);
 	} else {
 		tst_res(TPASS, "used_ids = %i", used_ids);
 	}
 
 	if (info->shm_rss != shm_rss) {
 		tst_res(TFAIL, "shm_rss = %li, expected %li",
-		        info->shm_rss, shm_rss);
+			info->shm_rss, shm_rss);
 	} else {
 		tst_res(TPASS, "shm_rss = %li", shm_rss);
 	}
 
 	if (info->shm_swp != shm_swp) {
 		tst_res(TFAIL, "shm_swp = %li, expected %li",
-		        info->shm_swp, shm_swp);
+			info->shm_swp, shm_swp);
 	} else {
 		tst_res(TPASS, "shm_swp = %li", shm_swp);
 	}
 
 	if (info->shm_tot != shm_tot) {
 		tst_res(TFAIL, "shm_tot = %li, expected %li",
-		        info->shm_tot, shm_tot);
+			info->shm_tot, shm_tot);
 	} else {
 		tst_res(TPASS, "shm_tot = %li", shm_tot);
 	}
@@ -146,7 +146,7 @@ static void verify_shminfo(unsigned int n)
 		tst_res(TPASS, "Counted used = %i", cnt);
 	} else {
 		tst_res(TFAIL, "Counted used = %i, used_ids = %i",
-		        cnt, info.used_ids);
+			cnt, info.used_ids);
 	}
 
 	parse_proc_sysvipc(&info);
@@ -156,6 +156,7 @@ static void setup(void)
 {
 	struct passwd *ltpuser = SAFE_GETPWNAM("nobody");
 	struct shmid_ds temp_ds;
+
 	nobody_uid = ltpuser->pw_uid;
 	root_uid = 0;
 

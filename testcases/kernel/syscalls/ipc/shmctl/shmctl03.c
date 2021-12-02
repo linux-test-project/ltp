@@ -23,8 +23,7 @@ static void verify_ipcinfo(void)
 
 	if (TST_RET < 0) {
 		tst_res(TFAIL | TTERRNO,
-		        "shmctl(0, IPC_INFO, ...) returned %li",
-		        TST_RET);
+			"shmctl(0, IPC_INFO, ...) returned %li", TST_RET);
 		return;
 	}
 
