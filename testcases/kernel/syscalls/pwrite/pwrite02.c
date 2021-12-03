@@ -70,20 +70,8 @@ static void verify_pwrite(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TEST(pwrite(*tc->fd, tc->buf, BS, tc->off));
-
-	if (TST_RET >= 0) {
-		tst_res(TFAIL, "call succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != tc->exp_errno) {
-		tst_res(TFAIL | TTERRNO,
-			"pwrite failed unexpectedly, expected %s",
-			tst_strerrno(tc->exp_errno));
-	}
-
-	tst_res(TPASS | TTERRNO, "pwrite failed as expected");
+	TST_EXP_FAIL2(pwrite(*tc->fd, tc->buf, BS, tc->off), tc->exp_errno,
+		"pwrite(%d, %d, %ld)", *tc->fd, BS, tc->off);
 }
 
 static void setup(void)
