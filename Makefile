@@ -221,7 +221,7 @@ ifneq ($(build),$(host))
 endif
 	$(call _test,-s)
 
-test-metadata:
+test-metadata: metadata-all
 	$(MAKE) -C $(abs_srcdir)/metadata/ test
 
 ## Help
