@@ -1,21 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * Test Description:
- *  Verify that,
- *   1) pwrite() fails when attempted to write to an unnamed pipe,
- *      returns ESPIPE.
- *   2) pwrite() fails if the specified offset position was invalid,
- *	returns EINVAL.
- *   3) pwrite() fails if fd is not a valid file descriptor,
- *	returns EBADF.
- *   4) pwrite() fails if fd is not open for writing, return EBADF.
- *   5) pwrite() fails when attempted to write with buf outside
- *      accessible address space, returns EFAULT.
+/*\
+ * [Description]
+ *
+ * Test basic error handling of the pwrite syscall.
+ *
+ * - ESPIPE when attempted to write to an unnamed pipe
+ * - EINVAL the specified offset position was invalid
+ * - EBADF fd is not a valid file descriptor
+ * - EBADF fd is not open for writing
+ * - EFAULT when attempted to write with buf outside accessible address space
  */
 
 #include <errno.h>
@@ -60,10 +57,10 @@ static void sighandler(int sig)
 
 	if (sig != SIGXFSZ) {
 		ret = write(STDOUT_FILENO, "get wrong signal\n",
-		            sizeof("get wrong signal\n"));
+			sizeof("get wrong signal\n"));
 	} else {
 		ret = write(STDOUT_FILENO, "caught SIGXFSZ\n",
-		            sizeof("caught SIGXFSZ\n"));
+			sizeof("caught SIGXFSZ\n"));
 	}
 
 	(void)ret;

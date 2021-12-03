@@ -3,7 +3,10 @@
  * Copyright (c) 2017 Carlo Marcelo Arenas Belon <carlo@gmail.com>
  * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Tests for a special case NULL buffer with size 0 is expected to return 0.
  */
 
