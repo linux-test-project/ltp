@@ -39,7 +39,8 @@ static const char * const ALGORITHM_CANDIDATES[] = {
 	"hmac(sha224-generic)",
 	"hmac(sha256-generic)",
 	"hmac(sha384-generic)",
-	"hmac(md5-generic)"
+	"hmac(md5-generic)",
+	"hmac(sm3-generic)"
 };
 
 static const char* algorithm = NULL;
