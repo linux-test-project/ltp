@@ -8,7 +8,6 @@
  *     Check that dnotify event is reported to both parent and subdir
  */
 
-#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>

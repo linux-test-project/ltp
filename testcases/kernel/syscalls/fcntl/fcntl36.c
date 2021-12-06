@@ -34,7 +34,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
 #include <pthread.h>
 #include <sched.h>
 #include <errno.h>

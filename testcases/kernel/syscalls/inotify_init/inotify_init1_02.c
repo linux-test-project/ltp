@@ -50,7 +50,6 @@
 /*              Ported to LTP                                                 */
 /*                      - Jan 13 2009 - Subrata <subrata@linux.vnet.ibm.com>  */
 /******************************************************************************/
-#include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>

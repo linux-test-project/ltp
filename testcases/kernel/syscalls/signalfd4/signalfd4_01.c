@@ -54,7 +54,6 @@
 /*              Ported to LTP                                                 */
 /*                      - Jan 08 2009 - Subrata <subrata@linux.vnet.ibm.com>  */
 /******************************************************************************/
-#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>

@@ -11,7 +11,6 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <fcntl.h>
 
 #include "tst_test.h"
 #include "lapi/fcntl.h"

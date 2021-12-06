@@ -29,7 +29,6 @@
 #include <string.h>
 #include <sys/syscall.h>
 #include <sys/mount.h>
-#include <fcntl.h>
 #include "tst_test.h"
 #include "lapi/execveat.h"
 #include "lapi/fcntl.h"

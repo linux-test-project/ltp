@@ -13,7 +13,6 @@
 */
 
 #include <errno.h>
-#include <fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

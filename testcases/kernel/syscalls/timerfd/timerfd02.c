@@ -54,7 +54,6 @@
 /*                      - Jan 08 2009 - Subrata <subrata@linux.vnet.ibm.com>  */
 /******************************************************************************/
 
-#include <fcntl.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
