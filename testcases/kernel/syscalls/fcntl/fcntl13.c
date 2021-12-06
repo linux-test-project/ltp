@@ -1,127 +1,63 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) Linux Test Project, 2021
+ * Copyright (c) International Business Machines  Corp., 2001
+ * 07/2001 Ported by Wayne Boyer
  */
 
-/*
- * NAME
- *	fcntl13.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	Testcase to test that fcntl() sets errno correctly.
+ * Tests basic error handling of the fcntl syscall.
  *
- * USAGE
- *	fcntl13
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	NONE
+ * - EFAULT when lock is outside your accessible address space
+ * - EINVAL when cmd argument is not recognized by this kernel
+ * - EINVAL when cmd argument is F_SETLK and flock.l_whence is not equal to
+ *   SEET_CUR,SEEK_SET,SEEK_END
+ * - EBADF when fd refers to an invalid file descriptor
  */
 
 #include <fcntl.h>
-#include <errno.h>
-#include "test.h"
+#include "tst_test.h"
 
-#define F_BADCMD 99999
+#define F_BADCMD 999
 
-char *TCID = "fcntl13";
-int TST_TOTAL = 1;
+static struct flock flock;
 
-void setup(void);
+static struct tcase {
+	int fd;
+	int cmd;
+	struct flock *flock;
+	char *desc;
+	int exp_errno;
+} tcases[] = {
+	{1, F_SETLK, NULL, "F_SETLK", EFAULT},
+	{1, F_BADCMD, &flock, "F_BADCMD", EINVAL},
+	{1, F_SETLK, &flock,  "F_SETLK", EINVAL},
+	{-1, F_GETLK, &flock, "F_GETLK", EBADF}
+};
 
-int main(int ac, char **av)
+static void verify_fcntl(unsigned int n)
 {
-	int lc;
+	struct tcase *tc = &tcases[n];
 
-	struct flock flock;
+	if (!tc->flock)
+		tc->flock = tst_get_bad_addr(NULL);
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		if (fcntl(1, F_BADCMD, 1) != -1)
-			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
-		else if (errno != EINVAL)
-			tst_resm(TFAIL, "Expected EINVAL got %d", errno);
-		else
-			tst_resm(TPASS, "got EINVAL");
-
-#ifndef UCLINUX
-		if (fcntl(1, F_SETLK, (void *)-1) != -1) {
-			tst_resm(TFAIL, "F_SETLK: fcntl(2) failed to FAIL");
-		} else if (errno != EFAULT) {
-			tst_resm(TFAIL, "F_SETLK: Expected EFAULT got %d",
-				 errno);
-		} else {
-			tst_resm(TPASS, "F_SETLK: got EFAULT");
-		}
-
-		if (fcntl(1, F_SETLKW, (void *)-1) != -1) {
-			tst_resm(TFAIL, "F_SETLKW: fcntl(2) failed to FAIL");
-		} else if (errno != EFAULT) {
-			tst_resm(TFAIL, "F_SETLKW: Expected EFAULT got %d",
-				 errno);
-		} else {
-			tst_resm(TPASS, "F_SETLKW: got EFAULT");
-		}
-
-		if (fcntl(1, F_GETLK, (void *)-1) != -1) {
-			tst_resm(TFAIL, "F_GETLK: fcntl(2) failed to FAIL");
-		} else if (errno != EFAULT) {
-			tst_resm(TFAIL, "F_GETLK: Expected EFAULT got %d",
-				 errno);
-		} else {
-			tst_resm(TPASS, "F_GETLK: got EFAULT");
-		}
-
-#else
-		tst_resm(TCONF, "Skip EFAULT on uClinux");
-#endif
-		flock.l_whence = -1;
-		flock.l_type = F_WRLCK;
-		flock.l_start = 0L;
-		flock.l_len = 0L;
-
-		if (fcntl(1, F_SETLK, &flock) != -1)
-			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
-		else if (errno != EINVAL)
-			tst_resm(TFAIL, "Expected EINVAL, got %d", errno);
-		else
-			tst_resm(TPASS, "got EINVAL");
-
-		if (fcntl(-1, F_GETLK, &flock) != -1)
-			tst_resm(TFAIL, "fcntl(2) failed to FAIL");
-		else if (errno != EBADF)
-			tst_resm(TFAIL, "Expected EBADF, got %d", errno);
-		else
-			tst_resm(TPASS, "got EBADFD");
-	}
-
-	tst_exit();
+	TST_EXP_FAIL2(fcntl(tc->fd, tc->cmd, tc->flock), tc->exp_errno,
+		"fcntl(%d, %s, flock)", tc->fd, tc->desc);
 }
 
-void setup(void)
+static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, NULL);
-
-	TEST_PAUSE;
+	flock.l_whence = -1;
+	flock.l_type = F_WRLCK;
+	flock.l_start = 0L;
+	flock.l_len = 0L;
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_fcntl,
+};
