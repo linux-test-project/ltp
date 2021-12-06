@@ -66,6 +66,7 @@ static const char * const hash_algs[] = {
 	"sha256", "sha256-generic",
 	"sha3-256", "sha3-256-generic",
 	"sha3-512", "sha3-512-generic",
+	"sm3", "sm3-generic",
 };
 
 static void do_test(unsigned int i)
