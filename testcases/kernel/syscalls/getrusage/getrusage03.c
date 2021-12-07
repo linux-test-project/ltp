@@ -180,6 +180,7 @@ static struct tst_test test = {
 	.min_kver = "2.6.32",
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "1f10206cf8e9"},
+		{}
 	},
 	.test = run,
 	.tcnt = ARRAY_SIZE(testfunc_list),
