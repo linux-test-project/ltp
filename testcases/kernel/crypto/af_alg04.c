@@ -10,23 +10,31 @@
  * reproducer from the commit message.
  */
 
+#include <stdio.h>
 #include <sys/wait.h>
 
 #include "tst_test.h"
 #include "tst_af_alg.h"
 
-static void run(void)
+static void test_with_symm_enc_algs(const char *symm_enc_algname)
 {
 	int algfd, reqfd;
 	char buf[256] = { 0 };
+	char vmac_algname[64];
 	pid_t pid;
 	int status;
 	int i;
 
-	if (tst_have_alg("hash", "vmac64(aes)"))
-		algfd = tst_alg_setup("hash", "vmac64(aes)", NULL, 16);
-	else
-		algfd = tst_alg_setup("hash", "vmac(aes)", NULL, 16);
+	sprintf(vmac_algname, "vmac64(%s)", symm_enc_algname);
+	if (!tst_have_alg("hash", vmac_algname)) {
+		sprintf(vmac_algname, "vmac(%s)", symm_enc_algname);
+		if (!tst_have_alg("hash", vmac_algname)) {
+			tst_res(TCONF, "kernel doesn't have hash algorithm '%s'",
+				vmac_algname);
+			return;
+		}
+	}
+	algfd = tst_alg_setup("hash", vmac_algname, NULL, 16);
 
 	tst_res(TINFO, "Starting vmac hashing test.  May crash buggy kernels.");
 
@@ -52,8 +60,21 @@ static void run(void)
 	}
 }
 
+/* try several different symmetric encryption algorithms */
+static const char * const symm_enc_algs[] = {
+	"aes",
+	"sm4",
+	"sm4-generic",
+};
+
+static void do_test(unsigned int i)
+{
+	test_with_symm_enc_algs(symm_enc_algs[i]);
+}
+
 static struct tst_test test = {
-	.test_all = run,
+	.test = do_test,
+	.tcnt = ARRAY_SIZE(symm_enc_algs),
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "bb2964810233"},
