@@ -135,8 +135,6 @@ static void setup(void)
 	exported = 1;
 
 	ret = tst_system(cmd);
-	if (WEXITSTATUS(ret) == 127)
-		tst_brk(TCONF | TST_ERR, "%s not found", cmd);
 	if (ret)
 		tst_brk(TBROK | TST_ERR, "failed to exportfs");
 
@@ -172,4 +170,8 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.dev_fs_type = "nfs",
 	.needs_root = 1,
+	.needs_cmds = (const char *[]) {
+		"exportfs",
+		NULL
+	}
 };

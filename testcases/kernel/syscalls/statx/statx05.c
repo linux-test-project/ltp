@@ -111,10 +111,7 @@ static void setup(void)
 
 	ret = tst_system("echo qwery | e4crypt add_key "TESTDIR_FLAGGED);
 
-	if (WEXITSTATUS(ret) == 127)
-		tst_brk(TCONF, "e4crypt not installed!");
-
-	if (WEXITSTATUS(ret))
+	if (ret)
 		tst_brk(TCONF, "e4crypt failed (CONFIG_EXT4_ENCRYPTION not set?)");
 }
 
@@ -136,6 +133,7 @@ static struct tst_test test = {
 	.dev_fs_type = "ext4",
 	.needs_cmds = (const char *[]) {
 		"mkfs.ext4",
+		"e4crypt",
 		NULL
 	}
 };
