@@ -82,6 +82,33 @@ static void do_entrypoint_checks(struct entrypoint *ep)
 	} END_FOR_EACH_PTR(bb);
 }
 
+/* The old API can not comply with the rules. So when we see one of
+ * these symbols we know that it will result in further
+ * warnings. Probably these will suggest inappropriate things. Usually
+ * these symbols should be removed and the new API used
+ * instead. Otherwise they can be ignored until all tests have been
+ * converted to the new API.
+ */
+static bool check_symbol_deprecated(const struct symbol *const sym)
+{
+	static struct ident *TCID_id, *TST_TOTAL_id;
+	const struct ident *id = sym->ident;
+
+	if (!TCID_id) {
+		TCID_id = built_in_ident("TCID");
+		TST_TOTAL_id = built_in_ident("TST_TOTAL");
+	}
+
+	if (id != TCID_id && id != TST_TOTAL_id)
+		return false;
+
+	warning(sym->pos,
+		"Ignoring deprecated API symbol: '%s'. Should this code be converted to the new API?",
+		show_ident(id));
+
+	return true;
+}
+
 /* Check for LTP-003 and LTP-004
  *
  * Try to find cases where the static keyword was forgotten.
@@ -212,6 +239,9 @@ static void check_test_struct(const struct symbol *const sym)
 /* AST level checks */
 static void do_symbol_checks(struct symbol *sym)
 {
+	if (check_symbol_deprecated(sym))
+		return;
+
 	check_symbol_visibility(sym);
 	check_test_struct(sym);
 }
