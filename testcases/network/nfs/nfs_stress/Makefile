@@ -10,12 +10,12 @@ nfs04_create_file: CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 nfs05_make_tree: LDLIBS += -lpthread
 
 INSTALL_TARGETS		:= nfs_lib.sh \
-			   nfs01 \
-			   nfs02 \
-			   nfs03 \
-			   nfs04 \
-			   nfs05 \
-			   nfs06 \
+			   nfs01.sh \
+			   nfs02.sh \
+			   nfs03.sh \
+			   nfs04.sh \
+			   nfs05.sh \
+			   nfs06.sh \
 			   nfs07.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
