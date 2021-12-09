@@ -5,3 +5,4 @@
 /regression/memcg_test_3
 /regression/memcg_test_4
 /stress/memcg_process_stress
+memcontrol01

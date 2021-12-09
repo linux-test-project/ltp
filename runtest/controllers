@@ -16,6 +16,9 @@ memcg_usage_in_bytes	memcg_usage_in_bytes_test.sh
 memcg_stress		memcg_stress_test.sh
 memcg_control		memcg_control_test.sh
 
+# kselftest ports
+memcontrol01 memcontrol01
+
 cgroup_fj_function_debug cgroup_fj_function.sh debug
 cgroup_fj_function_cpuset cgroup_fj_function.sh cpuset
 cgroup_fj_function_cpu cgroup_fj_function.sh cpu
