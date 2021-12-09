@@ -457,17 +457,23 @@ NOTE: The test parameters must not collide with common test parameters defined
 [source,c]
 -------------------------------------------------------------------------------
 int tst_parse_int(const char *str, int *val, int min, int max);
+int tst_parse_long(const char *str, long *val, long min, long max);
 int tst_parse_float(const char *str, float *val, float min, float max);
+int tst_parse_filesize(const char *str, long long *val, long long min, long long max);
 -------------------------------------------------------------------------------
 
 Helpers for parsing the strings returned in the 'struct tst_option'.
 
-Both return zero on success and 'errno', mostly 'EINVAL' or 'ERANGE', on
+Helpers return zero on success and 'errno', mostly 'EINVAL' or 'ERANGE', on
 failure.
 
-Both functions are no-op if 'str' is 'NULL'.
+Helpers functions are no-op if 'str' is 'NULL'.
 
 The valid range for result includes both 'min' and 'max'.
+
+In particular, 'tst_parse_filesize' function accepts prefix multiplies such as
+"k/K for kilobytes, "m/M" for megabytes and "g/G" for gigabytes. For example,
+10K are converted into 10240 bytes.
 
 .Example Usage
 [source,c]
@@ -481,7 +487,7 @@ static int threads = 10;
 static struct tst_option options[] = {
 	{"t:", &str_threads, "Number of threads (default 10)"},
 	...
-	{NULL, NULL, NULL}
+	{}
 };
 
 static void setup(void)
