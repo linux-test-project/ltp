@@ -1153,3 +1153,15 @@ void safe_cgroup_scanf(const char *const file, const int lineno,
 		 "'%s': vsscanf('%s', '%s', ..): Less conversions than expected: %d != %d",
 		 file_name, buf, fmt, ret, conv_cnt);
 }
+
+int safe_cgroup_occursin(const char *const file, const int lineno,
+			 const struct tst_cgroup_group *const cg,
+			 const char *const file_name,
+			 const char *const needle)
+{
+	char buf[BUFSIZ];
+
+	safe_cgroup_read(file, lineno, cg, file_name, buf, sizeof(buf));
+
+	return !!strstr(buf, needle);
+}

@@ -191,5 +191,13 @@ void safe_cgroup_scanf(const char *file, const int lineno,
 		       const char *fmt, ...)
 		       __attribute__ ((format (scanf, 5, 6), nonnull));
 
+#define SAFE_CGROUP_OCCURSIN(cg, file_name, needle)		\
+	safe_cgroup_occursin(__FILE__, __LINE__,		\
+			     (cg), (file_name), (needle))
+
+int safe_cgroup_occursin(const char *file, const int lineno,
+			 const struct tst_cgroup_group *const cg,
+			 const char *const file_name,
+			 const char *const needle);
 
 #endif /* TST_CGROUP_H */
