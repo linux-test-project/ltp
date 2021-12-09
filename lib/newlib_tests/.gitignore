@@ -47,3 +47,4 @@ tst_fuzzy_sync01
 tst_fuzzy_sync02
 tst_fuzzy_sync03
 test_zero_hugepage
+test_parse_filesize
