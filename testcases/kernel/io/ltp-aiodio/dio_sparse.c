@@ -69,13 +69,13 @@ static void setup(void)
 	if (tst_parse_int(str_numchildren, &numchildren, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of children '%s'", str_numchildren);
 
-	if (tst_parse_filesize(str_writesize, &writesize, 1, LONG_LONG_MAX))
+	if (tst_parse_filesize(str_writesize, &writesize, 1, LLONG_MAX))
 		tst_brk(TBROK, "Invalid write blocks size '%s'", str_writesize);
 
-	if (tst_parse_filesize(str_filesize, &filesize, 1, LONG_LONG_MAX))
+	if (tst_parse_filesize(str_filesize, &filesize, 1, LLONG_MAX))
 		tst_brk(TBROK, "Invalid file size '%s'", str_filesize);
 
-	if (tst_parse_filesize(str_offset, &offset, 0, LONG_LONG_MAX))
+	if (tst_parse_filesize(str_offset, &offset, 0, LLONG_MAX))
 		tst_brk(TBROK, "Invalid file offset '%s'", str_offset);
 
 	SAFE_STAT(".", &sb);
