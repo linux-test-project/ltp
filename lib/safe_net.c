@@ -368,11 +368,14 @@ int safe_listen(const char *file, const int lineno, void (cleanup_fn)(void),
 		int socket, int backlog)
 {
 	int rval;
+	int res = TBROK;
 
 	rval = listen(socket, backlog);
 
 	if (rval == -1) {
-		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+		if (errno == ENOSYS)
+			res = TCONF;
+		tst_brkm_(file, lineno, res | TERRNO, cleanup_fn,
 			"listen(%d, %d) failed", socket, backlog);
 	} else if (rval) {
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
