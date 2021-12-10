@@ -24,10 +24,8 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
-#include "tst_safe_stdio.h"
 #include "tst_test.h"
 #include "lapi/quotactl.h"
 
@@ -121,18 +119,9 @@ static void do_mount(const char *source, const char *target,
 
 static void setup(void)
 {
-	FILE *f;
 	const char *const fs_opts[] = {"-I 256", "-O quota,project", NULL};
-	int rc, major, minor, patch;
 
 	test_id = geteuid();
-	f = SAFE_POPEN("mkfs.ext4 -V 2>&1", "r");
-	rc = fscanf(f, "mke2fs %d.%d.%d", &major, &minor, &patch);
-	if (rc != 3)
-		tst_res(TWARN, "Unable parse version number");
-	else if (major * 10000 + minor * 100 + patch < 14300)
-		tst_brk(TCONF, "Test needs mkfs.ext4 >= 1.43 for quota,project option, test skipped");
-	pclose(f);
 	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
 	do_mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
 }
@@ -184,7 +173,7 @@ static struct tst_test test = {
 	.dev_fs_type = "ext4",
 	.mntpoint = MNTPOINT,
 	.needs_cmds = (const char *[]) {
-		"mkfs.ext4",
+		"mkfs.ext4 >= 1.43.0",
 		NULL
 	}
 };

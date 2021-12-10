@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "tst_safe_stdio.h"
 #include "tst_test.h"
 #include "lapi/fs.h"
 #include "lapi/stat.h"
@@ -87,18 +86,9 @@ static void run(unsigned int i)
 
 static void setup(void)
 {
-	FILE *f;
 	char opt_bsize[32];
 	const char *const fs_opts[] = {"-O encrypt", opt_bsize, NULL};
-	int ret, rc, major, minor, patch;
-
-	f = SAFE_POPEN("mkfs.ext4 -V 2>&1", "r");
-	rc = fscanf(f, "mke2fs %d.%d.%d", &major, &minor, &patch);
-	if (rc != 3)
-		tst_res(TWARN, "Unable parse version number");
-	else if (major * 10000 + minor * 100 + patch < 14300)
-		tst_brk(TCONF, "Test needs mkfs.ext4 >= 1.43 for encrypt option, test skipped");
-	pclose(f);
+	int ret;
 
 	snprintf(opt_bsize, sizeof(opt_bsize), "-b %i", getpagesize());
 
@@ -132,7 +122,7 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.dev_fs_type = "ext4",
 	.needs_cmds = (const char *[]) {
-		"mkfs.ext4",
+		"mkfs.ext4 >= 1.43.0",
 		"e4crypt",
 		NULL
 	}
