@@ -2019,6 +2019,21 @@ terminated array of strings such as:
 },
 -------------------------------------------------------------------------------
 
+Also can check required command version whether is satisfied by using 'needs_cmds'
+such as:
+
+[source,c]
+-------------------------------------------------------------------------------
+.needs_cmds = (const char *const []) {
+	"mkfs.ext4 >= 1.43.0",
+	NULL
+},
+-------------------------------------------------------------------------------
+
+Currently, we only support mkfs.ext4 command version check.
+If you want to support more commands, please fill your own .parser and .table_get
+method in the version_parsers structure of lib/tst_cmd.c.
+
 1.36 Assert sys or proc file value
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Using TST_ASSERT_INT/STR(path, val) to assert that integer value or string stored in

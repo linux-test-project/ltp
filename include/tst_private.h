@@ -37,4 +37,13 @@ int tst_get_prefix(const char *ip_str, int is_ipv6);
  */
 char tst_kconfig_get(const char *confname);
 
+/*
+ * If cmd argument is a single command, this function just checks command
+ * whether exists. If not, case skips.
+ * If cmd argument is a complex string ie 'mkfs.ext4 >= 1.43.0', this
+ * function checks command version whether meets this requirement.
+ * If not, case skips.
+ */
+void tst_check_cmd(const char *cmd);
+
 #endif

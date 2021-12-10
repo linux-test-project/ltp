@@ -48,3 +48,11 @@ tst_fuzzy_sync02
 tst_fuzzy_sync03
 test_zero_hugepage
 test_parse_filesize
+tst_needs_cmds01
+tst_needs_cmds02
+tst_needs_cmds03
+tst_needs_cmds04
+tst_needs_cmds05
+tst_needs_cmds06
+tst_needs_cmds07
+tst_needs_cmds08

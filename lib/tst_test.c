@@ -29,7 +29,7 @@
 #include "tst_wallclock.h"
 #include "tst_sys_conf.h"
 #include "tst_kconfig.h"
-
+#include "tst_private.h"
 #include "old_resource.h"
 #include "old_device.h"
 #include "old_tmpdir.h"
@@ -1028,12 +1028,10 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->needs_cmds) {
 		const char *cmd;
-		char path[PATH_MAX];
 		int i;
 
 		for (i = 0; (cmd = tst_test->needs_cmds[i]); ++i)
-			if (tst_get_path(cmd, path, sizeof(path)))
-				tst_brk(TCONF, "Couldn't find '%s' in $PATH", cmd);
+			tst_check_cmd(cmd);
 	}
 
 	if (tst_test->needs_drivers) {
