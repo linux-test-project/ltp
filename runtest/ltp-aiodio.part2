@@ -40,49 +40,45 @@ ADSP038 aiodio_sparse -i 4 -a 8k -w 18192k -n 512
 ADSP039 aiodio_sparse -i 4 -a 8k -w 18192k -n 1000
 ADSP040 dio_sparse
 ADSP041 dio_sparse -s 180k
-ADSP042 dio_sparse -dd -s 1751k -w 11k
-ADSP043 dio_sparse  -d -s 180k -w 18k
-ADSP044 dio_sparse  -a 2k -w 2k -s 2k -n 2
-ADSP045 dio_sparse  -a 4k -w 4k -s 2k -n 2
-ADSP046 dio_sparse  -a 4k -w 4k -s 4k -n 2
-ADSP047 dio_sparse  -a 8k -w 16k -s 16k -n 2
-ADSP048 dio_sparse  -a 8k -w 32k -s 32k -n 2
-ADSP049 dio_sparse  -a 8k -w 64k -s 64k -n 2
-ADSP050 dio_sparse  -a 8k -w 128k -s 128k -n 2
-ADSP051 dio_sparse  -a 8k -w 256k -s 256k -n 2
-ADSP052 dio_sparse  -a 8k -w 512k -s 512k -n 2
-ADSP053 dio_sparse  -a 8k -w 1024k -s 1024k -n 2
-ADSP054 dio_sparse  -a 8k -w 2048k -s 2048k -n 2
-ADSP055 dio_sparse  -a 8k -w 4096k -s 4096k -n 2
-ADSP056 dio_sparse  -a 8k -w 8192k -s 8192k -n 2
-ADSP057 dio_sparse  -a 8k -w 18192k -s 18192k -n 2
-ADSP058 dio_sparse  -a 8k -w 518192k -s 518192k -n 2
-ADSP059 dio_sparse  -a 8k -w 58192k -s 58192k -n 4
-ADSP060 dio_sparse  -a 8k -w 58192k -s 58192k -n 6
-ADSP061 dio_sparse  -a 8k -w 256k -s 256k -n 6
-ADSP062 dio_sparse  -a 8k -w 512k -s 512k -n 6
-ADSP063 dio_sparse  -a 8k -w 1024k -s 1024k -n 6
-ADSP064 dio_sparse  -a 8k -w 2048k -s 2048k -n 6
-ADSP065 dio_sparse  -a 8k -w 2048k -s 4096k -n 6
-ADSP066 dio_sparse  -a 8k -w 8192k -s 8192k -n 6
-ADSP067 dio_sparse  -a 8k -w 18192k -s 18192k -n 6
-ADSP068 dio_sparse  -a 8k -w 58192k -s 518192k -n 6
-ADSP069 dio_sparse  -a 8k -w 58192k -s 58192k -n 6
-ADSP070 dio_sparse  -a 8k -w 518192k -s 518192k -n 6
-ADSP071 dio_sparse  -a 8k -w 256k -s 256k -n 6
-ADSP072 dio_sparse  -a 8k -w 512k -s 512k -n 6
-ADSP073 dio_sparse  -a 8k -w 1024k -s 1024k -n 6
-ADSP074 dio_sparse  -a 8k -w 1024k -s 2048k -n 6
-ADSP075 dio_sparse  -a 8k -w 4096k -s 4096k -n 32
-ADSP076 dio_sparse  -a 8k -w 8192k -s 8192k -n 64
-ADSP077 dio_sparse  -a 8k -w 518192k -s 18192k -n 128
-ADSP078 dio_sparse  -a 8k -w 518192k -s 518192k -n 512
-ADSP079 dio_sparse  -a 8k -w 518192k -s 518192k -n 1000
-ADSP080 dio_sparse  -a 4k -w 4k -s 2k -o 2k -n 2
-ADSP081 dio_sparse  -a 2k -w 2k -s 1k -o 1k -n 2
-ADSP082 dio_sparse  -a 1k -w 1k -s 512 -o 512 -n 2
-ADSP083 dio_sparse  -a 4k -w 4k -s 2k -o 3k -n 2
-ADSP084 dio_sparse  -a 4k -w 4k -s 4k -o 4k -n 2
-ADSP085 dio_sparse  -a 4k -w 4k -s 4k -o 6k -n 2
-ADSP086 dio_sparse  -a 4k -w 4k -s 4k -o 8k -n 2
-ADSP087 dio_sparse  -a 4k -w 16k -s 8k -o 8k -n 2
+ADSP042 dio_sparse -s 1751k -w 11k
+ADSP043 dio_sparse  -s 180k -w 18k
+ADSP044 dio_sparse  -w 2k -s 2k -n 2
+ADSP045 dio_sparse  -w 4k -s 2k -n 2
+ADSP046 dio_sparse  -w 4k -s 4k -n 2
+ADSP047 dio_sparse  -w 16k -s 16k -n 2
+ADSP048 dio_sparse  -w 32k -s 32k -n 2
+ADSP049 dio_sparse  -w 64k -s 64k -n 2
+ADSP050 dio_sparse  -w 128k -s 128k -n 2
+ADSP051 dio_sparse  -w 256k -s 256k -n 2
+ADSP052 dio_sparse  -w 512k -s 512k -n 2
+ADSP053 dio_sparse  -w 1024k -s 1024k -n 2
+ADSP054 dio_sparse  -w 2048k -s 2048k -n 2
+ADSP055 dio_sparse  -w 4096k -s 4096k -n 2
+ADSP056 dio_sparse  -w 8192k -s 8192k -n 2
+ADSP057 dio_sparse  -w 18192k -s 18192k -n 2
+ADSP058 dio_sparse  -w 518192k -s 518192k -n 2
+ADSP059 dio_sparse  -w 58192k -s 58192k -n 4
+ADSP060 dio_sparse  -w 58192k -s 58192k -n 6
+ADSP061 dio_sparse  -w 256k -s 256k -n 6
+ADSP062 dio_sparse  -w 512k -s 512k -n 6
+ADSP063 dio_sparse  -w 1024k -s 1024k -n 6
+ADSP064 dio_sparse  -w 2048k -s 2048k -n 6
+ADSP065 dio_sparse  -w 2048k -s 4096k -n 6
+ADSP066 dio_sparse  -w 8192k -s 8192k -n 6
+ADSP067 dio_sparse  -w 18192k -s 18192k -n 6
+ADSP068 dio_sparse  -w 58192k -s 518192k -n 6
+ADSP069 dio_sparse  -w 518192k -s 518192k -n 6
+ADSP070 dio_sparse  -w 1024k -s 2048k -n 6
+ADSP071 dio_sparse  -w 4096k -s 4096k -n 32
+ADSP072 dio_sparse  -w 8192k -s 8192k -n 64
+ADSP073 dio_sparse  -w 518192k -s 18192k -n 128
+ADSP074 dio_sparse  -w 518192k -s 518192k -n 512
+ADSP075 dio_sparse  -w 518192k -s 518192k -n 1000
+ADSP076 dio_sparse  -w 4k -s 2k -o 2k -n 2
+ADSP077 dio_sparse  -w 2k -s 1k -o 1k -n 2
+ADSP078 dio_sparse  -w 1k -s 512 -o 512 -n 2
+ADSP079 dio_sparse  -w 4k -s 2k -o 3k -n 2
+ADSP080 dio_sparse  -w 4k -s 4k -o 4k -n 2
+ADSP081 dio_sparse  -w 4k -s 4k -o 6k -n 2
+ADSP082 dio_sparse  -w 4k -s 4k -o 8k -n 2
+ADSP083 dio_sparse  -w 16k -s 8k -o 8k -n 2
