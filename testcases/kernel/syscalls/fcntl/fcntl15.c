@@ -75,7 +75,7 @@ static void lock_region_two(int file_flag, int file_mode)
 
 	SAFE_FCNTL(fd, F_SETLK, &lock_two);
 
-	TST_CHECKPOINT_WAIT(1);
+	TST_CHECKPOINT_WAKE_AND_WAIT(1);
 
 	SAFE_CLOSE(fd);
 }
@@ -143,8 +143,11 @@ static int run_test(int file_flag, int file_mode, int dup_flag)
 
 	SAFE_FCNTL(fd[0], F_SETLK, &lock_one);
 
+	// Lock region two or wait until the child locked it
 	if (dup_flag != FORK_)
 		SAFE_FCNTL(fd[1], F_SETLK, &lock_two);
+	else
+		TST_CHECKPOINT_WAIT(1);
 
 	if (!SAFE_FORK()) {
 		do_test(file_flag, file_mode, dup_flag);
