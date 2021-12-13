@@ -86,6 +86,36 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 	SAFE_CLOSE(fd);
 }
 
+static inline void io_read_eof(const char *filename, volatile int *run_child)
+{
+	char buff[4096];
+	int fd;
+	int r;
+
+	while ((fd = open(filename, O_RDONLY, 0666)) < 0)
+		usleep(100);
+
+	tst_res(TINFO, "child %i reading file", getpid());
+
+	while (*run_child) {
+		off_t offset;
+		char *bufoff;
+
+		offset = SAFE_LSEEK(fd, SEEK_END, 0);
+
+		r = SAFE_READ(0, fd, buff, sizeof(buff));
+		if (r > 0) {
+			bufoff = check_zero(buff, r);
+			if (bufoff) {
+				tst_res(TINFO, "non-zero read at offset %p", offset + bufoff);
+				break;
+			}
+		}
+	}
+
+	SAFE_CLOSE(fd);
+}
+
 /*
  * This code tries to create dirty free blocks on
  * the HDD so there is a chance that blocks to be allocated
