@@ -147,6 +147,7 @@ typedef struct cgroup_file files_t[];
 static const files_t cgroup_ctrl_files = {
 	/* procs exists on V1, however it was read-only until kernel v3.0. */
 	{ "cgroup.procs", "tasks", 0 },
+	{ "cgroup.controllers", NULL, 0 },
 	{ "cgroup.subtree_control", NULL, 0 },
 	{ "cgroup.clone_children", "cgroup.clone_children", 0 },
 	{ }
