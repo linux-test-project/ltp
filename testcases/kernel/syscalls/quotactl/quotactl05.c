@@ -62,8 +62,15 @@ static struct t_case {
 
 static void setup(void)
 {
-	test_id = geteuid();
+	quotactl_info();
+	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
 	check_support_cmd(PRJQUOTA);
+}
+
+static void cleanup(void)
+{
+	if (fd > -1)
+		SAFE_CLOSE(fd);
 }
 
 static void verify_quota(unsigned int n)
@@ -85,7 +92,7 @@ static void verify_quota(unsigned int n)
 		return;
 	}
 
-	TEST(quotactl(tc->cmd, tst_device->dev, test_id, tc->addr));
+	TEST(do_quotactl(fd, tc->cmd, tst_device->dev, test_id, tc->addr));
 	if (TST_RET == -1) {
 		tst_res(TFAIL | TTERRNO, "quotactl() failed to %s", tc->des);
 		return;
@@ -107,9 +114,11 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.mount_device = 1,
 	.dev_fs_type = "xfs",
-	.mntpoint = mntpoint,
+	.mntpoint = MNTPOINT,
 	.mnt_data = "prjquota",
 	.setup = setup,
+	.cleanup = cleanup,
+	.test_variants = QUOTACTL_SYSCALL_VARIANTS,
 };
 
 #else
