@@ -139,8 +139,17 @@ const char **tst_get_supported_fs_types(const char *const *skiplist)
 	unsigned int i, j = 0;
 	int skip_fuse;
 	enum tst_fs_impl sup;
+	const char *only_fs;
 
 	skip_fuse = tst_fs_in_skiplist("fuse", skiplist);
+	only_fs = getenv("LTP_SINGLE_FS_TYPE");
+
+	if (only_fs) {
+		tst_res(TINFO, "WARNING: testing only %s", only_fs);
+		if (tst_fs_is_supported(only_fs))
+			fs_types[0] = only_fs;
+		return fs_types;
+	}
 
 	for (i = 0; fs_type_whitelist[i]; i++) {
 		if (tst_fs_in_skiplist(fs_type_whitelist[i], skiplist)) {
