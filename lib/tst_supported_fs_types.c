@@ -80,7 +80,7 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 
 	snprintf(template, sizeof(template), "%s/mountXXXXXX", tmpdir);
 	if (!mkdtemp(template))
-		tst_brk(TBROK | TERRNO , "mkdtemp(%s) failed", template);
+		tst_brk(TBROK | TERRNO, "mkdtemp(%s) failed", template);
 
 	ret = mount("/dev/zero", template, fs_type, 0, NULL);
 	if ((ret && errno != ENODEV) || !ret) {
