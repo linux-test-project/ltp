@@ -200,7 +200,8 @@ static struct cgroup_ctrl controllers[] = {
 static const struct tst_cgroup_opts default_opts = { 0 };
 
 /* We should probably allow these to be set in environment
- * variables */
+ * variables
+ */
 static const char *ltp_cgroup_dir = "ltp";
 static const char *ltp_cgroup_drain_dir = "drain";
 static char test_cgroup_dir[NAME_MAX + 1];
@@ -799,7 +800,8 @@ void tst_cgroup_cleanup(void)
 			continue;
 
 		/* This probably does not result in the CGroup root
-		 * being destroyed */
+		 * being destroyed
+		 */
 		if (umount2(root->mnt_path, MNT_DETACH))
 			continue;
 
@@ -818,7 +820,7 @@ clear_data:
 	memset(roots, 0, sizeof(roots));
 }
 
-__attribute__ ((nonnull (1)))
+__attribute__((nonnull(1)))
 static void cgroup_group_init(struct tst_cgroup_group *const cg,
 			      const char *const group_name)
 {
@@ -833,7 +835,7 @@ static void cgroup_group_init(struct tst_cgroup_group *const cg,
 	strcpy(cg->group_name, group_name);
 }
 
-__attribute__((nonnull (2, 3)))
+__attribute__((nonnull(2, 3)))
 static void cgroup_group_add_dir(const struct tst_cgroup_group *const parent,
 				 struct tst_cgroup_group *const cg,
 				 struct cgroup_dir *const dir)
@@ -857,7 +859,8 @@ static void cgroup_group_add_dir(const struct tst_cgroup_group *const parent,
 				   "+%s", ctrl->ctrl_name);
 	}
 
-	for (i = 0; cg->dirs[i]; i++);
+	for (i = 0; cg->dirs[i]; i++)
+		;
 	cg->dirs[i] = dir;
 }
 
@@ -924,7 +927,7 @@ static const struct cgroup_file *cgroup_file_find(const char *const file,
 	memcpy(ctrl_name, file_name, len);
 	ctrl_name[len] = '\0';
 
-        ctrl = cgroup_find_ctrl(ctrl_name);
+	ctrl = cgroup_find_ctrl(ctrl_name);
 
 	if (!ctrl) {
 		tst_brk_(file, lineno, TBROK,
