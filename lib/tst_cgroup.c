@@ -371,7 +371,8 @@ static void cgroup_root_scan(const char *const mnt_type,
 	SAFE_FILE_READAT(mnt_dfd, "cgroup.controllers", buf, sizeof(buf));
 
 	for (tok = strtok(buf, " "); tok; tok = strtok(NULL, " ")) {
-		if ((const_ctrl = cgroup_find_ctrl(tok)))
+		const_ctrl = cgroup_find_ctrl(tok);
+		if (const_ctrl)
 			add_ctrl(&ctrl_field, const_ctrl);
 	}
 
@@ -387,7 +388,8 @@ static void cgroup_root_scan(const char *const mnt_type,
 
 v1:
 	for (tok = strtok(mnt_opts, ","); tok; tok = strtok(NULL, ",")) {
-		if ((const_ctrl = cgroup_find_ctrl(tok)))
+		const_ctrl = cgroup_find_ctrl(tok);
+		if (const_ctrl)
 			add_ctrl(&ctrl_field, const_ctrl);
 
 		no_prefix |= !strcmp("noprefix", tok);
@@ -1009,8 +1011,9 @@ int safe_cgroup_has(const char *const file, const int lineno,
 		return 0;
 
 	for_each_dir(cg, cfile->ctrl_indx, dir) {
-		if (!(alias = cgroup_file_alias(cfile, *dir)))
-		    continue;
+		alias = cgroup_file_alias(cfile, *dir);
+		if (!alias)
+			continue;
 
 		if (!faccessat((*dir)->dir_fd, alias, F_OK, 0))
 			return 1;
@@ -1078,7 +1081,8 @@ ssize_t safe_cgroup_read(const char *const file, const int lineno,
 	ssize_t read_ret = 0;
 
 	for_each_dir(cg, cfile->ctrl_indx, dir) {
-		if (!(alias = cgroup_file_alias(cfile, *dir)))
+		alias = cgroup_file_alias(cfile, *dir);
+		if (!alias)
 			continue;
 
 		if (prev_len)
@@ -1116,8 +1120,9 @@ void safe_cgroup_printf(const char *const file, const int lineno,
 	va_list va;
 
 	for_each_dir(cg, cfile->ctrl_indx, dir) {
-		if (!(alias = cgroup_file_alias(cfile, *dir)))
-		    continue;
+		alias = cgroup_file_alias(cfile, *dir);
+		if (!alias)
+			continue;
 
 		va_start(va, fmt);
 		safe_file_vprintfat(file, lineno,
@@ -1142,7 +1147,8 @@ void safe_cgroup_scanf(const char *const file, const int lineno,
 		return;
 
 	va_start(va, fmt);
-	if ((ret = vsscanf(buf, fmt, va)) < 1) {
+	ret = vsscanf(buf, fmt, va);
+	if (ret < 1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			 "'%s': vsscanf('%s', '%s', ...)", file_name, buf, fmt);
 	}
