@@ -200,11 +200,11 @@ static const struct tst_cgroup_opts default_opts = { 0 };
 /* We should probably allow these to be set in environment
  * variables
  */
-static const char *ltp_cgroup_dir = "ltp";
-static const char *ltp_cgroup_drain_dir = "drain";
-static char test_cgroup_dir[NAME_MAX + 1];
-static const char *ltp_mount_prefix = "/tmp/cgroup_";
-static const char *ltp_v2_mount = "unified";
+static const char *cgroup_ltp_dir = "ltp";
+static const char *cgroup_ltp_drain_dir = "drain";
+static char cgroup_test_dir[NAME_MAX + 1];
+static const char *cgroup_mount_ltp_prefix = "/tmp/cgroup_";
+static const char *cgroup_v2_ltp_mount = "unified";
 
 #define first_root				\
 	(roots[0].ver ? roots : roots + 1)
@@ -465,7 +465,7 @@ static void cgroup_mount_v2(void)
 {
 	char mnt_path[PATH_MAX];
 
-	sprintf(mnt_path, "%s%s", ltp_mount_prefix, ltp_v2_mount);
+	sprintf(mnt_path, "%s%s", cgroup_mount_ltp_prefix, cgroup_v2_ltp_mount);
 
 	if (!mkdir(mnt_path, 0777)) {
 		roots[0].mnt_dir.we_created_it = 1;
@@ -507,7 +507,7 @@ static void cgroup_mount_v1(struct cgroup_ctrl *const ctrl)
 	char mnt_path[PATH_MAX];
 	int made_dir = 0;
 
-	sprintf(mnt_path, "%s%s", ltp_mount_prefix, ctrl->ctrl_name);
+	sprintf(mnt_path, "%s%s", cgroup_mount_ltp_prefix, ctrl->ctrl_name);
 
 	if (!mkdir(mnt_path, 0777)) {
 		made_dir = 1;
@@ -654,7 +654,7 @@ mkdirs:
 	}
 
 	if (!root->ltp_dir.dir_fd)
-		cgroup_dir_mk(&root->mnt_dir, ltp_cgroup_dir, &root->ltp_dir);
+		cgroup_dir_mk(&root->mnt_dir, cgroup_ltp_dir, &root->ltp_dir);
 	else
 		root->ltp_dir.ctrl_field |= root->mnt_dir.ctrl_field;
 
@@ -669,10 +669,10 @@ mkdirs:
 			cgroup_copy_cpuset(root);
 	}
 
-	cgroup_dir_mk(&root->ltp_dir, ltp_cgroup_drain_dir, &root->drain_dir);
+	cgroup_dir_mk(&root->ltp_dir, cgroup_ltp_drain_dir, &root->drain_dir);
 
-	sprintf(test_cgroup_dir, "test-%d", getpid());
-	cgroup_dir_mk(&root->ltp_dir, test_cgroup_dir, &root->test_dir);
+	sprintf(cgroup_test_dir, "test-%d", getpid());
+	cgroup_dir_mk(&root->ltp_dir, cgroup_test_dir, &root->test_dir);
 }
 
 static void cgroup_drain(const enum tst_cgroup_ver ver,
