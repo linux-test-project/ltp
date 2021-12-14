@@ -610,10 +610,9 @@ void tst_cgroup_require(const char *const ctrl_name,
 	if (!options)
 		options = &default_opts;
 
-	if (ctrl->we_require_it) {
-		tst_res(TWARN, "Duplicate tst_cgroup_require(%s, )",
-			ctrl->ctrl_name);
-	}
+	if (ctrl->we_require_it)
+		tst_res(TWARN, "Duplicate %s(%s, )", __func__, ctrl->ctrl_name);
+
 	ctrl->we_require_it = 1;
 
 	if (ctrl->ctrl_root)
