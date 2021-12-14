@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <netdb.h>
+#include "tst_defaults.h"
 
 #define MAX_IPV4_PREFIX 32
 #define MAX_IPV6_PREFIX 128

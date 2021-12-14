@@ -23,18 +23,7 @@
 #define __LTP_PRIV_H__
 
 #include <stdarg.h>
-
-/*
- * This is the default temporary directory used by tst_tmpdir().
- *
- * This is used when TMPDIR env variable is not set.
- */
-#define TEMPDIR	"/tmp"
-
-/*
- * Default filesystem to be used for tests.
- */
-#define DEFAULT_FS_TYPE "ext2"
+#include "tst_defaults.h"
 
 /* environment variables for controlling  tst_res verbosity */
 #define TOUT_VERBOSE_S  "VERBOSE"	/* All test cases reported */
