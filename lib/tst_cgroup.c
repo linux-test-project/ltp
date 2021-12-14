@@ -141,10 +141,7 @@ struct tst_cgroup_group {
 /* Always use first item for unified hierarchy */
 static struct cgroup_root roots[ROOTS_MAX + 1];
 
-/* Lookup tree for item names. */
-typedef struct cgroup_file files_t[];
-
-static const files_t cgroup_ctrl_files = {
+static const struct cgroup_file cgroup_ctrl_files[] = {
 	/* procs exists on V1, however it was read-only until kernel v3.0. */
 	{ "cgroup.procs", "tasks", 0 },
 	{ "cgroup.controllers", NULL, 0 },
@@ -153,7 +150,7 @@ static const files_t cgroup_ctrl_files = {
 	{ }
 };
 
-static const files_t memory_ctrl_files = {
+static const struct cgroup_file memory_ctrl_files[] = {
 	{ "memory.current", "memory.usage_in_bytes", CTRL_MEMORY },
 	{ "memory.max", "memory.limit_in_bytes", CTRL_MEMORY },
 	{ "memory.swappiness", "memory.swappiness", CTRL_MEMORY },
@@ -164,7 +161,7 @@ static const files_t memory_ctrl_files = {
 	{ }
 };
 
-static const files_t cpu_ctrl_files = {
+static const struct cgroup_file cpu_ctrl_files[] = {
 	/* The V1 quota and period files were combined in the V2 max
 	 * file. The quota is in the first column and if we just print
 	 * a single value to the file, it will be treated as the
@@ -176,13 +173,14 @@ static const files_t cpu_ctrl_files = {
 	{ }
 };
 
-static const files_t cpuset_ctrl_files = {
+static const struct cgroup_file cpuset_ctrl_files[] = {
 	{ "cpuset.cpus", "cpuset.cpus", CTRL_CPUSET },
 	{ "cpuset.mems", "cpuset.mems", CTRL_CPUSET },
 	{ "cpuset.memory_migrate", "cpuset.memory_migrate", CTRL_CPUSET },
 	{ }
 };
 
+/* Lookup tree for item names. */
 static struct cgroup_ctrl controllers[] = {
 	[0] = { "cgroup", cgroup_ctrl_files, 0, NULL, 0 },
 	[CTRL_MEMORY] = {
