@@ -33,21 +33,29 @@
 #include "tst_test.h"
 #include "common.h"
 
-#define NUM_CHILDREN 16
-#define FILE_SIZE (64 * 1024)
-
 static int *run_child;
 
-static void dio_read(const char *filename, size_t bs)
+static char *str_numchildren;
+static char *str_filesize;
+static char *str_numappends;
+static char *str_numwrites;
+
+static int numchildren = 16;
+static long long filesize = 64 * 1024;
+static long long alignment;
+static int numappends = 100;
+static int numwrites = 100;
+
+static void dio_read(const char *filename, long long align, size_t bs)
 {
 	int fd;
 	int r;
 	char *bufptr;
 
-	bufptr = SAFE_MEMALIGN(getpagesize(), bs);
-
 	while ((fd = open(filename, O_RDONLY | O_DIRECT, 0666)) < 0)
 		usleep(100);
+
+	bufptr = SAFE_MEMALIGN(align, bs);
 
 	tst_res(TINFO, "child %i reading file", getpid());
 	while (*run_child) {
@@ -77,19 +85,35 @@ static void dio_read(const char *filename, size_t bs)
 
 static void setup(void)
 {
+	struct stat sb;
+
+	if (tst_parse_int(str_numchildren, &numchildren, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of children '%s'", str_numchildren);
+
+	if (tst_parse_filesize(str_filesize, &filesize, 1, LLONG_MAX))
+		tst_brk(TBROK, "Invalid file size '%s'", str_filesize);
+
+	if (tst_parse_int(str_numappends, &numappends, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of appends '%s'", str_numappends);
+
+	if (tst_parse_int(str_numwrites, &numwrites, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of truncate/append '%s'", str_numwrites);
+
+	SAFE_STAT(".", &sb);
+	alignment = sb.st_blksize;
+
 	run_child = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 }
 
 static void cleanup(void)
 {
+	*run_child = 0;
 	SAFE_MUNMAP(run_child, sizeof(int));
 }
 
 static void run(void)
 {
-	char *filename = "file";
-	int filesize = FILE_SIZE;
-	int num_children = NUM_CHILDREN;
+	char *filename = "file.bin";
 	int wflags = O_DIRECT | O_WRONLY | O_CREAT;
 	int status;
 	int i;
@@ -97,19 +121,19 @@ static void run(void)
 
 	*run_child = 1;
 
-	for (i = 0; i < num_children; i++) {
+	for (i = 0; i < numchildren; i++) {
 		if (!SAFE_FORK()) {
-			dio_read(filename, filesize);
+			dio_read(filename, alignment, filesize);
 			return;
 		}
 	}
 
-	tst_res(TINFO, "parent writes/truncates the file");
+	tst_res(TINFO, "Parent writes/truncates the file");
 
-	for (i = 0; i < 100; i++) {
-		io_append(filename, 0, wflags, filesize, 100);
+	for (i = 0; i < numwrites; i++) {
+		io_append(filename, 0, wflags, filesize, numappends);
 		SAFE_TRUNCATE(filename, 0);
-		io_append("junkfile", 0xaa, wflags, filesize, 100);
+		io_append("junkfile", 0xaa, wflags, filesize, numappends);
 		SAFE_TRUNCATE("junkfile", 0);
 
 		if (SAFE_WAITPID(-1, &status, WNOHANG)) {
@@ -132,4 +156,11 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
+	.options = (struct tst_option[]) {
+		{"n:", &str_numchildren, "Number of threads (default 16)"},
+		{"s:", &str_filesize, "Size of file (default 64K)"},
+		{"a:", &str_numappends, "Number of appends (default 100)"},
+		{"c:", &str_numwrites, "Number of append & truncate (default 100)"},
+		{}
+	},
 };
