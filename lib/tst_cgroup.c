@@ -1161,6 +1161,39 @@ void safe_cgroup_scanf(const char *const file, const int lineno,
 		 file_name, buf, fmt, ret, conv_cnt);
 }
 
+void safe_cgroup_lines_scanf(const char *const file, const int lineno,
+			     const struct tst_cgroup_group *const cg,
+			     const char *const file_name,
+			     const char *const fmt, ...)
+{
+	va_list va;
+	char buf[BUFSIZ];
+	ssize_t len = safe_cgroup_read(file, lineno,
+				       cg, file_name, buf, sizeof(buf));
+	const int conv_cnt = tst_count_scanf_conversions(fmt);
+	int ret = 0;
+	char *line, *buf_ptr;
+
+	if (len < 1)
+		return;
+
+	line = strtok_r(buf, "\n", &buf_ptr);
+	while (line && ret != conv_cnt) {
+		va_start(va, fmt);
+		ret = vsscanf(line, fmt, va);
+		va_end(va);
+
+		line = strtok_r(NULL, "\n", &buf_ptr);
+	}
+
+	if (conv_cnt == ret)
+		return;
+
+	tst_brk_(file, lineno, TBROK,
+		 "'%s': vsscanf('%s', '%s', ..): Less conversions than expected: %d != %d",
+		 file_name, buf, fmt, ret, conv_cnt);
+}
+
 int safe_cgroup_occursin(const char *const file, const int lineno,
 			 const struct tst_cgroup_group *const cg,
 			 const char *const file_name,
