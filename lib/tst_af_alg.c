@@ -31,10 +31,18 @@ void tst_alg_bind_addr(int algfd, const struct sockaddr_alg *addr)
 
 	if (ret == 0)
 		return;
+
+	if (errno == ELIBBAD && tst_fips_enabled()) {
+		tst_brk(TCONF,
+			"FIPS enabled => %s algorithm '%s' disabled",
+			addr->salg_type, addr->salg_name);
+	}
+
 	if (errno == ENOENT) {
 		tst_brk(TCONF, "kernel doesn't support %s algorithm '%s'",
 			addr->salg_type, addr->salg_name);
 	}
+
 	tst_brk(TBROK | TERRNO,
 		"unexpected error binding AF_ALG socket to %s algorithm '%s'",
 		addr->salg_type, addr->salg_name);
@@ -98,6 +106,14 @@ bool tst_have_alg(const char *algtype, const char *algname)
 		tst_res(TCONF, "kernel doesn't have %s algorithm '%s'",
 			algtype, algname);
 		return false;
+	case ELIBBAD:
+		if (tst_fips_enabled()) {
+			tst_res(TCONF,
+				"FIPS enabled => %s algorithm '%s' disabled",
+				algtype, algname);
+			return false;
+		}
+	/* fallthrough */
 	default:
 		errno = ret;
 		tst_brk(TBROK | TERRNO,

@@ -73,7 +73,7 @@ int tst_try_alg(const char *algtype, const char *algname);
  *
  * Return true if the algorithm is available, or false if unavailable
  * and call tst_res() with TCONF. If another error occurs, tst_brk() is called
- * with TBROK.
+ * with TBROK unless algorithm is disabled due FIPS mode (errno ELIBBAD).
  */
 bool tst_have_alg(const char *algtype, const char *algname);
 
