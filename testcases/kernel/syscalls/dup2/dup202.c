@@ -29,7 +29,7 @@ static char testfile[40];
 static int ofd = -1, nfd = -1;
 
 /* set these to a known index into our local file descriptor table */
-static int duprdo = 10, dupwro = 20, duprdwr = 30;
+static int duprdo, dupwro, duprdwr;
 
 static struct tcase {
 	int *nfd;
@@ -47,8 +47,23 @@ static struct tcase {
 
 static void setup(void)
 {
+	int nextfd;
+
 	umask(0);
 	sprintf(testfile, "dup202.%d", getpid());
+
+	/* Pick up fds that are known not to collide with creat */
+	nextfd = SAFE_CREAT(testfile, 0777);
+	duprdo = SAFE_DUP(nextfd);
+	dupwro = SAFE_DUP(nextfd);
+	duprdwr = SAFE_DUP(nextfd);
+	/* SAFE_CLOSE will set fd to -1 */
+	close(duprdwr);
+	close(dupwro);
+	close(duprdo);
+	SAFE_CLOSE(nextfd);
+	SAFE_UNLINK(testfile);
+
 }
 
 static void cleanup(void)
