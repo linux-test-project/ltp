@@ -1,186 +1,183 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2004 Daniel McNeil <daniel@osdl.org>
  *               2004 Open Source Development Lab
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *               2004  Marty Ridgeway <mridge@us.ibm.com>
+ * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
+
+/*\
+ * [Description]
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * Module: .c
- * Change History:
- *
- * 2/2004  Marty Ridgeway (mridge@us.ibm.com) Changes to adapt to LTP
- *
-*/
+ * Append zeroed data to a file using libaio while other processes are doing
+ * buffered reads and check if the buffer reads always see zero.
+ */
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-#include "config.h"
-#include "test.h"
-
-char *TCID = "aiodio_append";
+#include "tst_test.h"
 
 #ifdef HAVE_LIBAIO
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <libaio.h>
+#include "common.h"
 
-#define NUM_CHILDREN 8
+static int *run_child;
 
-#include "common_checkzero.h"
+static char *str_numchildren;
+static char *str_writesize;
+static char *str_numaio;
+static char *str_appends;
 
-int read_eof(char *filename)
-{
-	int fd;
-	int i;
-	int r;
-	char buf[4096];
-
-	while ((fd = open(filename, O_RDONLY)) < 0) {
-		sleep(1);	/* wait for file to be created */
-	}
-
-	for (i = 0; i < 1000000; i++) {
-		off_t offset;
-		char *bufoff;
-
-		offset = lseek(fd, SEEK_END, 0);
-		r = read(fd, buf, 4096);
-		if (r > 0) {
-			if ((bufoff = check_zero(buf, r))) {
-				fprintf(stderr, "non-zero read at offset %p\n",
-					offset + bufoff);
-				exit(1);
-			}
-		}
-	}
-	return 0;
-}
-
-#define NUM_AIO 16
-#define AIO_SIZE 64*1024
+static int numchildren = 8;
+static long long writesize = 64 * 1024;
+static int numaio = 16;
+static int appends = 1000;
+static long long alignment;
 
 /*
  * append to the end of a file using AIO DIRECT.
  */
-void aiodio_append(char *filename)
+static void aiodio_append(char *filename, int bcount, long long align, long long ws, int naio)
 {
 	int fd;
 	void *bufptr;
 	int i;
 	int w;
-	struct iocb iocb_array[NUM_AIO];
-	struct iocb *iocbs[NUM_AIO];
+	struct iocb iocb_array[naio];
+	struct iocb *iocbs[naio];
 	off_t offset = 0;
 	io_context_t myctx;
 	struct io_event event;
-	struct timespec timeout;
 
-	fd = open(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666);
-	if (fd < 0) {
-		perror("cannot create file");
-		return;
-	}
+	fd = SAFE_OPEN(filename, O_DIRECT | O_WRONLY | O_CREAT, 0666);
 
+	/*
+	 * Prepare AIO write context.
+	 */
 	memset(&myctx, 0, sizeof(myctx));
-	io_queue_init(NUM_AIO, &myctx);
+	w = io_queue_init(naio, &myctx);
+	if (w < 0)
+		tst_brk(TBROK, "io_queue_init: %s", tst_strerrno(-w));
 
-	for (i = 0; i < NUM_AIO; i++) {
-		TEST(posix_memalign(&bufptr, 4096, AIO_SIZE));
-		if (TEST_RETURN) {
-			tst_resm(TBROK | TRERRNO, "cannot malloc aligned memory");
-			return;
-		}
-		memset(bufptr, 0, AIO_SIZE);
-		io_prep_pwrite(&iocb_array[i], fd, bufptr, AIO_SIZE, offset);
+	for (i = 0; i < naio; i++) {
+		bufptr = SAFE_MEMALIGN(align, ws);
+		memset(bufptr, 0, ws);
+		io_prep_pwrite(&iocb_array[i], fd, bufptr, ws, offset);
 		iocbs[i] = &iocb_array[i];
-		offset += AIO_SIZE;
+		offset += ws;
 	}
 
 	/*
-	 * Start the 1st NUM_AIO requests
+	 * Start the 1st AIO requests.
 	 */
-	if ((w = io_submit(myctx, NUM_AIO, iocbs)) < 0) {
-		fprintf(stderr, "io_submit write returned %d\n", w);
+	w = io_submit(myctx, naio, iocbs);
+	if (w < 0) {
+		io_destroy(myctx);
+		tst_brk(TBROK, "io_submit (multiple): %s", tst_strerrno(-w));
 	}
 
 	/*
 	 * As AIO requests finish, keep issuing more AIOs.
 	 */
-	for (; i < 1000; i++) {
+	for (; i < bcount; i++) {
 		int n = 0;
 		struct iocb *iocbp;
 
-		n = io_getevents(myctx, 1, 1, &event, &timeout);
+		n = io_getevents(myctx, 1, 1, &event, NULL);
 		if (n > 0) {
 			iocbp = (struct iocb *)event.obj;
-
-			if (n > 0) {
-				io_prep_pwrite(iocbp, fd, iocbp->u.c.buf,
-					       AIO_SIZE, offset);
-				offset += AIO_SIZE;
-				if ((w = io_submit(myctx, 1, &iocbp)) < 0) {
-					fprintf(stderr,
-						"write %d returned %d\n", i, w);
-				}
+			io_prep_pwrite(iocbp, fd, iocbp->u.c.buf, ws, offset);
+			offset += ws;
+			w = io_submit(myctx, 1, &iocbp);
+			if (w < 0) {
+				io_destroy(myctx);
+				tst_brk(TBROK, "io_submit (single): %s", tst_strerrno(-w));
 			}
 		}
 	}
 }
 
-int main(int argc, char **argv)
+static void setup(void)
 {
-	int pid[NUM_CHILDREN];
-	int num_children = 1;
+	struct stat sb;
+	int maxaio;
+
+	if (tst_parse_int(str_numaio, &numaio, 1, INT_MAX))
+		tst_brk(TBROK, "Number of async IO blocks '%s'", str_numaio);
+
+	SAFE_FILE_SCANF("/proc/sys/fs/aio-max-nr", "%d", &maxaio);
+	tst_res(TINFO, "Maximum AIO blocks: %d", maxaio);
+
+	if (numaio > maxaio)
+		tst_res(TCONF, "Number of async IO blocks passed the maximum (%d)", maxaio);
+
+	if (tst_parse_int(str_numchildren, &numchildren, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of children '%s'", str_numchildren);
+
+	if (tst_parse_filesize(str_writesize, &writesize, 1, LLONG_MAX))
+		tst_brk(TBROK, "Size of the file to write '%s'", str_writesize);
+
+	if (tst_parse_int(str_appends, &appends, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid number of appends '%s'", str_appends);
+
+	SAFE_STAT(".", &sb);
+	alignment = sb.st_blksize;
+
+	run_child = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+}
+
+static void cleanup(void)
+{
+	*run_child = 0;
+	SAFE_MUNMAP(run_child, sizeof(int));
+}
+
+static void run(void)
+{
+	char *filename = "aiodio_append";
+	int status;
 	int i;
-	char *filename = argv[1];
 
-	printf("Starting aio/dio append test...\n");
+	*run_child = 1;
 
-	for (i = 0; i < num_children; i++) {
-		if ((pid[i] = fork()) == 0) {
-			/* child */
-			return read_eof(filename);
-		} else if (pid[i] < 0) {
-			/* error */
-			perror("fork error");
-			break;
-		} else {
-			/* Parent */
-			continue;
+	for (i = 0; i < numchildren; i++) {
+		if (!SAFE_FORK()) {
+			io_read_eof(filename, run_child);
+			return;
 		}
 	}
 
-	/*
-	 * Parent appends to end of file using direct i/o
-	 */
+	tst_res(TINFO, "Parent append to file");
 
-	aiodio_append(filename);
+	aiodio_append(filename, appends, alignment, writesize, numaio);
 
-	for (i = 0; i < num_children; i++) {
-		kill(pid[i], SIGTERM);
-	}
+	if (SAFE_WAITPID(-1, &status, WNOHANG))
+		tst_res(TFAIL, "Non zero bytes read");
+	else
+		tst_res(TPASS, "All bytes read were zeroed");
 
-	return 0;
+	*run_child = 0;
+
+	SAFE_UNLINK(filename);
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+	.forks_child = 1,
+	.options = (struct tst_option[]) {
+		{"n:", &str_numchildren, "Number of threads (default 16)"},
+		{"s:", &str_writesize, "Size of the file to write (default 64K)"},
+		{"c:", &str_appends, "Number of appends (default 1000)"},
+		{"b:", &str_numaio, "Number of async IO blocks (default 16)"},
+		{}
+	},
+};
 #else
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "test requires libaio and it's development packages");
-}
+TST_TEST_TCONF("test requires libaio and its development packages");
 #endif
