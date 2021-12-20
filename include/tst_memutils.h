@@ -25,4 +25,24 @@ void tst_pollute_memory(size_t maxsize, int fillchar);
  */
 long long tst_available_mem(void);
 
+/*
+ * Enable OOM protection to prevent process($PID) being killed by OOM Killer.
+ *   echo -1000 >/proc/$PID/oom_score_adj
+ * If the pid is 0 which means it will set on current(self) process.
+ *
+ * Note:
+ *  This exported tst_enable_oom_protection function can be used at anywhere
+ *  you want to protect, but please remember that if you do enable protection
+ *  on a process($PID) that all the children will inherit its score and be
+ *  ignored by OOM Killer as well. So that's why tst_disable_oom_protection
+ *  to be used in combination.
+ */
+void tst_enable_oom_protection(pid_t pid);
+
+/*
+ * Disable the OOM protection for the process($PID).
+ *   echo 0 >/proc/$PID/oom_score_adj
+ */
+void tst_disable_oom_protection(pid_t pid);
+
 #endif /* TST_MEMUTILS_H__ */

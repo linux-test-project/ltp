@@ -3,6 +3,7 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
+#include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
 #include <sys/sysinfo.h>
@@ -90,4 +91,45 @@ long long tst_available_mem(void)
 	}
 
 	return mem_available;
+}
+
+static void set_oom_score_adj(pid_t pid, int value)
+{
+	int val;
+	char score_path[64];
+
+	if (access("/proc/self/oom_score_adj", F_OK) == -1) {
+		tst_res(TINFO, "oom_score_adj does not exist, skipping the adjustement");
+		return;
+	}
+
+	if (pid == 0) {
+		sprintf(score_path, "/proc/self/oom_score_adj");
+	} else {
+		sprintf(score_path, "/proc/%d/oom_score_adj", pid);
+		if (access(score_path, F_OK) == -1)
+			tst_brk(TBROK, "%s does not exist, please check if PID is valid", score_path);
+	}
+
+	FILE_PRINTF(score_path, "%d", value);
+	FILE_SCANF(score_path, "%d", &val);
+
+	if (val != value) {
+		if (value < 0) {
+			tst_res(TWARN, "'%s' cannot be set to %i, are you root?",
+				score_path, value);
+			return;
+		}
+		tst_brk(TBROK, "oom_score_adj = %d, but expect %d.", val, value);
+	}
+}
+
+void tst_enable_oom_protection(pid_t pid)
+{
+	set_oom_score_adj(pid, -1000);
+}
+
+void tst_disable_oom_protection(pid_t pid)
+{
+	set_oom_score_adj(pid, 0);
 }
