@@ -125,8 +125,8 @@ zram_fill_fs()
 			continue
 		fi
 
-		local compr_size=`awk '{print $2}' "/sys/block/zram$i/mm_stat"`
-		local v=$((100 * 1024 * $b / $compr_size))
+		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
+		local v=$((100 * 1024 * $b / $mem_used_total))
 		local r=`echo "scale=2; $v / 100 " | bc`
 
 		if [ "$v" -lt 100 ]; then
