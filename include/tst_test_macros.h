@@ -46,6 +46,10 @@ extern void *TST_RET_PTR;
 	tst_res_(__FILE__, __LINE__, RES, \
 		TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, SCALL) FMT, __VA_ARGS__), PAR)
 
+#define TST_MSGP2_(RES, FMT, PAR, PAR2, SCALL, ...) \
+	tst_res_(__FILE__, __LINE__, RES, \
+		TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, SCALL) FMT, __VA_ARGS__), PAR, PAR2)
+
 #define TST_EXP_POSITIVE_(SCALL, SSCALL, ...)                                  \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
@@ -107,8 +111,8 @@ extern void *TST_RET_PTR;
 		TST_PASS = 0;                                                  \
 		                                                               \
 		if (TST_RET != VAL) {                                          \
-			TST_MSGP_(TFAIL | TTERRNO, " retval not %ld",          \
-			          (long )VAL, SSCALL, ##__VA_ARGS__);          \
+			TST_MSGP2_(TFAIL | TTERRNO, " retval %ld != %ld",      \
+			          TST_RET, (long)VAL, SSCALL, ##__VA_ARGS__);  \
 			break;                                                 \
 		}                                                              \
 		                                                               \
