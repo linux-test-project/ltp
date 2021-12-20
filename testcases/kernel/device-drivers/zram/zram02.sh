@@ -29,7 +29,7 @@ zram_makeswap()
 	tst_require_cmds mkswap swapon swapoff
 	local i=0
 
-	for i in $(seq 0 $(($dev_num - 1))); do
+	for i in $(seq $dev_start $dev_end); do
 		ROD mkswap /dev/zram$i
 		ROD swapon /dev/zram$i
 		tst_res TINFO "done with /dev/zram$i"
@@ -44,7 +44,7 @@ zram_swapoff()
 	tst_require_cmds swapoff
 	local i
 
-	for i in $(seq 0 $dev_makeswap); do
+	for i in $(seq $dev_start $dev_end); do
 		ROD swapoff /dev/zram$i
 	done
 	dev_makeswap=-1
