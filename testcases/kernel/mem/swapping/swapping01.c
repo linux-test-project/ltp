@@ -40,10 +40,10 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "tst_safe_stdio.h"
 #include "lapi/abisize.h"
 #include "mem.h"
 
@@ -67,16 +67,27 @@ static void test_swapping(void)
 #ifdef TST_ABI32
 	tst_brk(TCONF, "test is not designed for 32-bit system.");
 #endif
+	FILE *file;
+	char line[PATH_MAX];
+
+	file = SAFE_FOPEN("/proc/swaps", "r");
+	while (fgets(line, sizeof(line), file)) {
+		if (strstr(line, "/dev/zram")) {
+			SAFE_FCLOSE(file);
+			tst_brk(TCONF, "zram-swap is being used!");
+		}
+	}
+	SAFE_FCLOSE(file);
 
 	init_meminfo();
 
 	switch (pid = SAFE_FORK()) {
-		case 0:
-			do_alloc(0);
-			do_alloc(1);
-			exit(0);
-		default:
-			check_swapping();
+	case 0:
+		do_alloc(0);
+		do_alloc(1);
+		exit(0);
+	default:
+		check_swapping();
 	}
 }
 
