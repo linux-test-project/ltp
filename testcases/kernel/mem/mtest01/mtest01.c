@@ -227,11 +227,11 @@ static void mem_test(void)
 static struct tst_test test = {
 	.forks_child = 1,
 	.options = (struct tst_option[]) {
-		{"c:", &opt_chunksize,	"-c  size of chunk in bytes to malloc on each pass"},
-		{"b:", &opt_maxbytes,	"-b  maximum number of bytes to allocate before stopping"},
-		{"p:", &opt_maxpercent, "-p  percent of total memory used at which the program stops"},
-		{"w",  &dowrite,   	"-w  write to the memory after allocating"},
-		{"v",  &verbose,     	"-v  verbose"},
+		{"c:", &opt_chunksize,	"Size of chunk in bytes to malloc on each pass"},
+		{"b:", &opt_maxbytes,	"Maximum number of bytes to allocate before stopping"},
+		{"p:", &opt_maxpercent, "Percent of total memory used at which the program stops"},
+		{"w",  &dowrite,   	"Write to the memory after allocating"},
+		{"v",  &verbose,     	"Verbose"},
 		{}
 	},
 	.setup = setup,

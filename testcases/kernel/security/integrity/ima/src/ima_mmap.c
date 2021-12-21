@@ -43,7 +43,7 @@ static void run(void)
 
 static struct tst_test test = {
 	.options = (struct tst_option[]) {
-		{"f:", &filename, "-f file  File to mmap"},
+		{"f:", &filename, "File to mmap"},
 		{}
 	},
 	.test_all = run,

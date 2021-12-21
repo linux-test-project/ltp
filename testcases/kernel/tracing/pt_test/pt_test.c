@@ -219,9 +219,9 @@ static void cleanup(void)
 static struct tst_test test = {
 	.test_all = intel_pt_trace_check,
 	.options = (struct tst_option[]) {
-		{"m", &str_mode, "-m different mode, default is full mode"},
-		{"e:", &str_exclude_info, "-e exclude info, user or kernel"},
-		{"b", &str_branch_flag, "-b if disable branch trace"},
+		{"m", &str_mode, "Different mode, default is full mode"},
+		{"e:", &str_exclude_info, "Exclude info, user or kernel"},
+		{"b", &str_branch_flag, "Disable branch trace"},
 		{}
 	},
 	.min_kver = "4.1",

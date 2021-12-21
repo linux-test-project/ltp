@@ -122,7 +122,7 @@ static void setup(void)
 
 static struct tst_test test = {
 	.options = (struct tst_option[]) {
-		{"t:", &str_threads, "-t       Number of threads (default 10)"},
+		{"t:", &str_threads, "Number of threads (default 10)"},
 		{}
 	},
 	.needs_checkpoints = 1,

@@ -50,7 +50,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.options = (struct tst_option[]) {
-		{"f:", &s_fuzz, "-f c     Fuzz factor for valid match (default 2)"},
+		{"f:", &s_fuzz, "Fuzz factor for valid match (default 2)"},
 		{}
 	},
 	.test_all = verify_ioctl,

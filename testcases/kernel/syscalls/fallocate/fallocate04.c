@@ -298,7 +298,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.options = (struct tst_option[]) {
-		{"v", &verbose, "-v       Turns on verbose mode"},
+		{"v", &verbose, "Turns on verbose mode"},
 		{}
 	},
 	.cleanup = cleanup,

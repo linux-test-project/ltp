@@ -86,9 +86,9 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.options = (struct tst_option[]) {
-		{"n:", &str_numchildren, "-n\t Number of processes (default 16)"},
-		{"w:", &str_writesize, "-w\t Write size for each append (default 64K)"},
-		{"c:", &str_appends, "-c\t Number of appends (default 1000)"},
+		{"n:", &str_numchildren, "Number of processes (default 16)"},
+		{"w:", &str_writesize, "Write size for each append (default 64K)"},
+		{"c:", &str_appends, "Number of appends (default 1000)"},
 		{}
 	},
 };

@@ -299,9 +299,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.options = (struct tst_option[]) {
-		{"s",  &opt_sysfs, "-s        Setup hugepages from sysfs"},
-		{"m",  &opt_shmid, "-m        Reserve hugepages by shmget"},
-		{"a:", &opt_alloc, "-a        Number of overcommint hugepages"},
+		{"s",  &opt_sysfs, "Setup hugepages from sysfs"},
+		{"m",  &opt_shmid, "Reserve hugepages by shmget"},
+		{"a:", &opt_alloc, "Number of overcommint hugepages"},
 		{}
 },
 	.setup = setup,

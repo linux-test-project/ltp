@@ -81,7 +81,7 @@ static void setup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.options = (struct tst_option[]) {
-		{"T:", &str_rtime, "-T len   Test iteration runtime in seconds"},
+		{"T:", &str_rtime, "Test iteration runtime in seconds"},
 		{},
 	},
 	.test_all = verify_gettimeofday,

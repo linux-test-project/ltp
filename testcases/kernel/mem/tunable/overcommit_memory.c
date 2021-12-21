@@ -265,7 +265,7 @@ static void calculate_total_batch_size(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.options = (struct tst_option[]) {
-		{"R:", &R_opt, "  -R n    Percentage of overcommitting memory"},
+		{"R:", &R_opt, "Percentage of overcommitting memory"},
 		{}
 	},
 	.setup = setup,

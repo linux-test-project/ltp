@@ -105,7 +105,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.options = (struct tst_option[]) {
-		{"l:", &str_len_data, "-l <num> Length of test data (in bytes)"},
+		{"l:", &str_len_data, "Length of test data (in bytes)"},
 		{}
 	},
 	.min_kver = "2.6.17"

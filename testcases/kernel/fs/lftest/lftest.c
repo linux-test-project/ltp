@@ -70,7 +70,7 @@ static void run(void)
 
 static struct tst_test test = {
 	.options = (struct tst_option[]) {
-		{"n:", &str_bufnum, "-n COUNT Number of megabytes to write (default 100)"},
+		{"n:", &str_bufnum, "COUNT Number of megabytes to write (default 100)"},
 		{}
 	},
 	.needs_tmpdir = 1,

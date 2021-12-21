@@ -116,9 +116,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.options = (struct tst_option[]) {
-		{"n:", &opt_numstr,  "-n       Number of processes"},
-		{"s:", &opt_sizestr, "-s       Memory allocation size in MB"},
-		{"u:", &opt_unitstr, "-u       Memory allocation unit in MB"},
+		{"n:", &opt_numstr,  "Number of processes"},
+		{"s:", &opt_sizestr, "Memory allocation size in MB"},
+		{"u:", &opt_unitstr, "Memory allocation unit in MB"},
 		{}
 	},
 	.setup = setup,

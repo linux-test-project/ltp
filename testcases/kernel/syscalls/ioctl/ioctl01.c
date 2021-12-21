@@ -107,7 +107,7 @@ static struct tst_test test = {
 	.test = verify_ioctl,
 	.tcnt = ARRAY_SIZE(tcases),
 	.options = (struct tst_option[]) {
-		{"D:", &device, "-D <tty device> : for example, /dev/tty[0-9]"},
+		{"D:", &device, "Tty device. For example, /dev/tty[0-9]"},
 		{}
 	}
 };

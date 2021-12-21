@@ -309,12 +309,12 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.options = (struct tst_option[]) {
-		{"6", &ipv6_opt, "-6       Use IPv6 (default is IPv4)"},
-		{"c:", &c_opt, "-c x     Num loops (mandatory)"},
-		{"d:", &d_opt, "-d iface Interface to work on (mandatory)"},
-		{"g:", &g_opt, "-g x     Gateway IP"},
-		{"p:", &p_opt, "-p port  Rhost port (mandatory)"},
-		{"r:", &r_opt, "-r x     Rhost IP (mandatory)\n\n-g, -r IP parameter can contain more IP, separated by "
+		{"6", &ipv6_opt, "Use IPv6 (default is IPv4)"},
+		{"c:", &c_opt, "Num loops (mandatory)"},
+		{"d:", &d_opt, "Interface to work on (mandatory)"},
+		{"g:", &g_opt, "Gateway IP"},
+		{"p:", &p_opt, "Rhost port (mandatory)"},
+		{"r:", &r_opt, "Rhost IP (mandatory)\n\n-g, -r IP parameter can contain more IP, separated by "
 			CHR2STR(IP_ADDR_DELIM)},
 		{}
 	},

@@ -80,7 +80,7 @@ static void setup(void)
 static struct tst_test test = {
 	.test_all = verify_execve,
 	.options = (struct tst_option[]) {
-		{"n:", &opt_nchild, "-n    numbers of children"},
+		{"n:", &opt_nchild, "Numbers of children"},
 		{}
 	},
 	.forks_child = 1,

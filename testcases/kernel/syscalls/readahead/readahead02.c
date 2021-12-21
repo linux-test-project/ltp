@@ -401,7 +401,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.options = (struct tst_option[]) {
-		{"s:", &opt_fsizestr, "-s    testfile size (default 64MB)"},
+		{"s:", &opt_fsizestr, "Testfile size (default 64MB)"},
 		{}
 	},
 	.test = test_readahead,

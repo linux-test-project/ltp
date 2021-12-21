@@ -183,7 +183,7 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.forks_child = 1,
 	.options = (struct tst_option[]) {
-		{"b:", &opt_bug,  "-b       Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
+		{"b:", &opt_bug,  "Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

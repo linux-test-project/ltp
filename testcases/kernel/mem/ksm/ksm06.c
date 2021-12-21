@@ -89,7 +89,7 @@ static void cleanup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.options = (struct tst_option[]) {
-		{"n:", &n_opt,  "-n x    Allocate x pages memory per node"},
+		{"n:", &n_opt,  "Allocate x pages memory per node"},
 		{}
 	},
 	.setup = setup,

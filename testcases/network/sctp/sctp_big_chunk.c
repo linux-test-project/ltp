@@ -178,7 +178,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = run,
 	.options = (struct tst_option[]) {
-		{"a:", &addr_param, "-a       number of additional IP address params"},
+		{"a:", &addr_param, "Number of additional IP address params"},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

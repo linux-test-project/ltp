@@ -498,8 +498,11 @@ static void print_help(void)
 	if (!tst_test->options)
 		return;
 
-	for (i = 0; tst_test->options[i].optstr; i++)
-		fprintf(stderr, "%s\n", tst_test->options[i].help);
+	for (i = 0; tst_test->options[i].optstr; i++) {
+		fprintf(stderr, "-%c\t %s\n",
+			tst_test->options[i].optstr[0],
+			tst_test->options[i].help);
+	}
 }
 
 static void print_test_tags(void)

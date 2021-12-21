@@ -181,10 +181,10 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.options = (struct tst_option[]) {
-		{"l:", &str_loops, "-l uint  Number of map-write-unmap loops"},
-		{"n:", &str_threads, "-n uint  Number of worker threads"},
-		{"p", &map_private, "-p       Turns on MAP_PRIVATE (default MAP_SHARED)"},
-		{"x:", &str_exec_time, "-x float Execution time in hours (default 24H)"},
+		{"l:", &str_loops, "Number of map-write-unmap loops"},
+		{"n:", &str_threads, "Number of worker threads"},
+		{"p", &map_private, "Turns on MAP_PRIVATE (default MAP_SHARED)"},
+		{"x:", &str_exec_time, "float Execution time in hours (default 24H)"},
 		{}
 	},
 	.needs_tmpdir = 1,
