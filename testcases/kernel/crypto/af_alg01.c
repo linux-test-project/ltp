@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2019 Google LLC
+ * Copyright (c) Linux Test Project, 2019-2021
  */
 
 /*
@@ -21,20 +22,15 @@ static void test_with_hash_alg(const char *hash_algname)
 	char hmac_algname[64];
 	char key[4096] = { 0 };
 
-	if (!tst_have_alg("hash", hash_algname)) {
-		tst_res(TCONF, "kernel doesn't have hash algorithm '%s'",
-			hash_algname);
+	if (!tst_have_alg("hash", hash_algname))
 		return;
-	}
+
 	sprintf(hmac_algname, "hmac(%s)", hash_algname);
-	if (!tst_have_alg("hash", hmac_algname)) {
-		tst_res(TCONF, "kernel doesn't have hash algorithm '%s'",
-			hmac_algname);
+	if (!tst_have_alg("hash", hmac_algname))
 		return;
-	}
 
 	sprintf(hmac_algname, "hmac(hmac(%s))", hash_algname);
-	if (tst_have_alg("hash", hmac_algname)) {
+	if (tst_try_alg("hash", hmac_algname) != ENOENT) {
 		int algfd;
 
 		tst_res(TFAIL, "instantiated nested hmac algorithm ('%s')!",

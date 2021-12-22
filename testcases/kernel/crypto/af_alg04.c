@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2019 Google LLC
+ * Copyright (c) Linux Test Project, 2019-2021
  */
 
 /*
@@ -28,11 +29,8 @@ static void test_with_symm_enc_algs(const char *symm_enc_algname)
 	sprintf(vmac_algname, "vmac64(%s)", symm_enc_algname);
 	if (!tst_have_alg("hash", vmac_algname)) {
 		sprintf(vmac_algname, "vmac(%s)", symm_enc_algname);
-		if (!tst_have_alg("hash", vmac_algname)) {
-			tst_res(TCONF, "kernel doesn't have hash algorithm '%s'",
-				vmac_algname);
+		if (!tst_have_alg("hash", vmac_algname))
 			return;
-		}
 	}
 	algfd = tst_alg_setup("hash", vmac_algname, NULL, 16);
 

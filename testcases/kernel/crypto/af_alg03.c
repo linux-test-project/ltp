@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2019 Google LLC
+ * Copyright (c) Linux Test Project, 2019-2021
  */
 
 /*
@@ -17,7 +18,7 @@ static void run(void)
 	tst_require_alg("aead", "rfc7539(chacha20,poly1305)");
 	tst_require_alg("hash", "sha256");
 
-	if (tst_have_alg("aead", "rfc7539(chacha20,sha256)")) {
+	if (tst_try_alg("aead", "rfc7539(chacha20,sha256)") != ENOENT) {
 		tst_res(TFAIL,
 			"instantiated rfc7539 template with wrong digest size");
 	} else {

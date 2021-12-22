@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2019 Google LLC
+ * Copyright (c) Linux Test Project, 2021
  */
 /**
  * @file tst_af_alg.h
@@ -60,8 +61,19 @@ void tst_alg_bind(int algfd, const char *algtype, const char *algname);
  * @param algtype The type of algorithm, such as "hash" or "skcipher"
  * @param algname The name of the algorithm, such as "sha256" or "xts(aes)"
  *
- * Return true if the algorithm is available, or false if unavailable.
- * If another error occurs, tst_brk() is called with TBROK.
+ * Return 0 if the algorithm is available, or errno if unavailable.
+ */
+int tst_try_alg(const char *algtype, const char *algname);
+
+/**
+ * Check for the availability of an algorithm.
+ *
+ * @param algtype The type of algorithm, such as "hash" or "skcipher"
+ * @param algname The name of the algorithm, such as "sha256" or "xts(aes)"
+ *
+ * Return true if the algorithm is available, or false if unavailable
+ * and call tst_res() with TCONF. If another error occurs, tst_brk() is called
+ * with TBROK.
  */
 bool tst_have_alg(const char *algtype, const char *algname);
 
