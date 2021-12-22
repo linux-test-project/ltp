@@ -99,7 +99,7 @@ static void set_oom_score_adj(pid_t pid, int value)
 	char score_path[64];
 
 	if (access("/proc/self/oom_score_adj", F_OK) == -1) {
-		tst_res(TINFO, "oom_score_adj does not exist, skipping the adjustement");
+		tst_res(TINFO, "oom_score_adj does not exist, skipping the adjustment");
 		return;
 	}
 
