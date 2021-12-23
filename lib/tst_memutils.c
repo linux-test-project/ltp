@@ -11,6 +11,8 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
+#include "tst_capability.h"
+#include "lapi/syscalls.h"
 
 #define BLOCKSIZE (16 * 1024 * 1024)
 
@@ -93,6 +95,41 @@ long long tst_available_mem(void)
 	return mem_available;
 }
 
+static int has_caps(void)
+{
+	struct tst_cap_user_header hdr = {
+		.version = 0x20080522,
+		.pid = tst_syscall(__NR_gettid),
+	};
+
+	struct tst_cap_user_data caps[2];
+
+	if (tst_capget(&hdr, caps))
+		tst_brk(TBROK | TERRNO, "tst_capget()");
+
+	if (caps[0].effective & (1U << CAP_SYS_RESOURCE))
+		return 1;
+
+	return 0;
+}
+
+static int write_score(const char *path, int score)
+{
+	FILE *f;
+
+	f = fopen(path, "w");
+	if (!f)
+		return 1;
+
+	if (fprintf(f, "%d", score) <= 0)
+		return 1;
+
+	if (fclose(f))
+		return 1;
+
+	return 0;
+}
+
 static void set_oom_score_adj(pid_t pid, int value)
 {
 	int val;
@@ -111,17 +148,18 @@ static void set_oom_score_adj(pid_t pid, int value)
 			tst_brk(TBROK, "%s does not exist, please check if PID is valid", score_path);
 	}
 
-	FILE_PRINTF(score_path, "%d", value);
+	if (write_score(score_path, value)) {
+		if (!has_caps())
+			return;
+
+		tst_res(TWARN, "Can't adjust score, even with capabilities!?");
+		return;
+	}
+
 	FILE_SCANF(score_path, "%d", &val);
 
-	if (val != value) {
-		if (value < 0) {
-			tst_res(TWARN, "'%s' cannot be set to %i, are you root?",
-				score_path, value);
-			return;
-		}
+	if (val != value)
 		tst_brk(TBROK, "oom_score_adj = %d, but expect %d.", val, value);
-	}
 }
 
 void tst_enable_oom_protection(pid_t pid)
