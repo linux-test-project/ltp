@@ -1,3 +1,5 @@
+# Copyright (c) 2021 Petr Vorel <pvorel@suse.cz>
+
 name: "CI: docker based builds"
 on: [push, pull_request]
 
@@ -91,7 +93,7 @@ jobs:
               CC: clang
               METADATA: asciidoctor-pdf
 
-          - container: "ubuntu:groovy"
+          - container: "ubuntu:impish"
             env:
               CC: gcc
               METADATA: asciidoctor
