@@ -212,6 +212,9 @@ AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
 #include <linux/netfilter_ipv4/ip_tables.h>
 ])
 
+AC_CHECK_TYPES([struct __kernel_old_timeval, struct __kernel_old_timespec, struct __kernel_timespec,
+                struct __kernel_old_itimerspec, struct __kernel_itimerspec],,,[#include <sys/socket.h>])
+
 # Tools knobs
 
 # Bash
