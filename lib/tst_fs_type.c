@@ -86,6 +86,8 @@ const char *tst_fs_type_name(long f_type)
 		return "overlayfs";
 	case TST_FUSE_MAGIC:
 		return "fuse";
+	case TST_EXFAT_MAGIC:
+		return "exfat";
 	default:
 		return "unknown";
 	}
