@@ -195,4 +195,7 @@ extern void *TST_RET_PTR;
 
 #define TST_EXP_FAIL2(SCALL, ERRNO, ...) TST_EXP_FAIL_(TST_RET >= 0, SCALL, #SCALL, ERRNO, ##__VA_ARGS__)
 
+#define TST_EXP_EXPR(EXPR, FMT, ...)						\
+	tst_res_(__FILE__, __LINE__, (EXPR) ? TPASS : TFAIL, "Expect: " FMT, ##__VA_ARGS__);
+
 #endif	/* TST_TEST_MACROS_H__ */
