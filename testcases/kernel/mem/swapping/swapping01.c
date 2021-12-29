@@ -1,27 +1,23 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2012-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
  */
-/*
- * swapping01 - first time swap use results in heavy swapping
+
+/*\
+ * [Description]
  *
- * This case is used for testing upstream commit: 50a1598
+ * Detect heavy swapping during first time swap use.
+ *
+ * This case is used for testing kernel commit:
+ * 50a15981a1fa ("[S390] reference bit testing for unmapped pages")
  *
  * The upstream commit fixed a issue on s390/x platform that heavy
  * swapping might occur in some condition, however since the patch
  * was quite general, this testcase will be run on all supported
  * platforms to ensure no regression been introduced.
  *
- * Details of the upstream fix:
+ * Details of the kernel fix:
+ *
  * On x86 a page without a mapper is by definition not referenced / old.
  * The s390 architecture keeps the reference bit in the storage key and
  * the current code will check the storage key for page without a mapper.
@@ -31,11 +27,12 @@
  * To avoid this behaviour change page_referenced to query the storage
  * key only if there is a mapper of the page.
  *
- * Test Strategy:
+ * [Algorithm]
+ *
  * Try to allocate memory which size is slightly larger than current
  * available memory. After allocation done, continue loop for a while
  * and calculate the used swap size. The used swap size should be small
- * enough, else it indicates that heavy swapping is occured unexpectedly.
+ * enough, else it indicates that heavy swapping is occurred unexpectedly.
  */
 
 #include <sys/types.h>
@@ -166,4 +163,8 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.test_all = test_swapping,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "50a15981a1fa"},
+		{}
+	}
 };
