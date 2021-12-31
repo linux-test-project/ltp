@@ -35,7 +35,7 @@ clockid_t clks[] = {
 };
 
 static gettime_t ptr_vdso_gettime, ptr_vdso_gettime64;
-static long long delta = 5;
+static long long delta = 11;
 
 static inline int do_vdso_gettime(gettime_t vdso, clockid_t clk_id, void *ts)
 {
