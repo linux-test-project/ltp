@@ -74,6 +74,10 @@ sub tag_url {
 		return eval("main::$key") . $value;
 	}
 
+	if ('known-fail') {
+		return '';
+	}
+
 	die("unknown constant '$key' for tag $tag, define it!");
 }
 
@@ -432,6 +436,7 @@ sub content_all_tests
 			}
 			my $k = @$tag[0];
 			my $v = @$tag[1];
+			my $url;
 
 			if (defined($$git_url{$k})) {
 				$commits{$k} = () unless (defined($commits{$k}));
@@ -443,7 +448,11 @@ sub content_all_tests
 				$v .= ' ("' . $commits{$k}{$v} . '")';
 			}
 
-			$v = html_a(tag_url($k, @$tag[1]), $v);
+			$url = tag_url($k, @$tag[1]);
+			if ($url) {
+				$v = html_a($url, $v);
+			}
+
 			$content .= "\n|" . reference($k) . "\n|$v\n";
 			$tmp2 = 1;
 		}
