@@ -94,16 +94,7 @@ static void alloc_pagecache_50M_check(void)
 	const char *const file_key_fmt =
 		TST_CGROUP_VER_IS_V1(cg_test, "memory") ? "cache %zd" : "file %zd";
 
-	TEST(open(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600));
-
-	if (TST_RET < 0) {
-		if (TST_ERR == EOPNOTSUPP)
-			tst_brk(TCONF, "O_TMPFILE not supported by FS");
-
-		tst_brk(TBROK | TTERRNO,
-			"open(%s, O_TMPFILE | O_RDWR | O_EXCL", TMPDIR"/.");
-	}
-	fd = TST_RET;
+	fd = SAFE_OPEN(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600);
 
 	SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zu", &current);
 	tst_res(TINFO, "Created temp file: memory.current=%zu", current);
