@@ -1016,9 +1016,6 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->tconf_msg)
 		tst_brk(TCONF, "%s", tst_test->tconf_msg);
 
-	if (tst_test->needs_kconfigs)
-		tst_kconfig_check(tst_test->needs_kconfigs);
-
 	assert_test_fn();
 
 	TCID = tid = get_tid(argv);
@@ -1027,6 +1024,9 @@ static void do_setup(int argc, char *argv[])
 		tst_test = tst_timer_test_setup(tst_test);
 
 	parse_opts(argc, argv);
+
+	if (tst_test->needs_kconfigs)
+		tst_kconfig_check(tst_test->needs_kconfigs);
 
 	if (tst_test->needs_root && geteuid() != 0)
 		tst_brk(TCONF, "Test needs to be run as root");
