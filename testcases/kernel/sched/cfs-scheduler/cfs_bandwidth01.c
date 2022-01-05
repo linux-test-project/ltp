@@ -43,7 +43,7 @@ static void set_cpu_quota(const struct tst_cgroup_group *const cg,
 	const unsigned int period_us = 10000;
 	const unsigned int quota_us = (quota_percent / 100) * (float)period_us;
 
-	if (TST_CGROUP_VER(cg, "cpu") != TST_CGROUP_V1) {
+	if (!TST_CGROUP_VER_IS_V1(cg, "cpu")) {
 		SAFE_CGROUP_PRINTF(cg, "cpu.max",
 				   "%u %u", quota_us, period_us);
 	} else {

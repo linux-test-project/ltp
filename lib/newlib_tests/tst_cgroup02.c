@@ -24,9 +24,9 @@ static void do_test(void)
 	char buf[BUFSIZ];
 	size_t mem;
 
-	if (TST_CGROUP_VER(cg, "memory") != TST_CGROUP_V1)
+	if (!TST_CGROUP_VER_IS_V1(cg, "memory"))
 		SAFE_CGROUP_PRINT(cg, "cgroup.subtree_control", "+memory");
-	if (TST_CGROUP_VER(cg, "cpuset") != TST_CGROUP_V1)
+	if (!TST_CGROUP_VER_IS_V1(cg, "cpuset"))
 		SAFE_CGROUP_PRINT(cg, "cgroup.subtree_control", "+cpuset");
 
 	cg_child = tst_cgroup_group_mk(cg, "child");

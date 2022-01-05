@@ -49,7 +49,7 @@ static void setup(void)
 	tst_cgroup_require("memory", NULL);
 	cg_test = tst_cgroup_get_test_group();
 
-	if (TST_CGROUP_VER(cg_test, "memory") == TST_CGROUP_V1)
+	if (TST_CGROUP_VER_IS_V1(cg_test, "memory"))
 		tst_brk(TCONF, "V1 controllers do not have subtree control");
 }
 

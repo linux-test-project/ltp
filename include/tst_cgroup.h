@@ -150,6 +150,9 @@ enum tst_cgroup_ver tst_cgroup_ver(const char *const file, const int lineno,
 				   const char *const ctrl_name)
 				   __attribute__ ((nonnull, warn_unused_result));
 
+#define TST_CGROUP_VER_IS_V1(cg, ctrl_name) \
+	(TST_CGROUP_VER((cg), (ctrl_name)) == TST_CGROUP_V1)
+
 #define SAFE_CGROUP_HAS(cg, file_name) \
 	safe_cgroup_has(__FILE__, __LINE__, (cg), (file_name))
 

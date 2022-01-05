@@ -51,6 +51,7 @@ tests_spatch() {
 
         if [ $do_fix = yes ]; then
 	    spatch --dir testcases \
+		   --dir lib/newlib_tests \
 		   --use-gitgrep \
 		   --in-place \
 		   -D fix \
@@ -58,6 +59,7 @@ tests_spatch() {
 		   $*
 	else
 	    spatch --dir testcases \
+		   --dir lib/newlib_tests \
 		   --use-gitgrep \
 		   --include-headers \
 		   $*

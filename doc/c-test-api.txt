@@ -2130,9 +2130,9 @@ static void run(void)
 	cg_child = tst_cgroup_group_mk(cg, "child");
 	SAFE_CGROUP_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-	if (TST_CGROUP_VER(cg, "memory") != TST_CGROUP_V1)
+	if (!TST_CGROUP_VER_IS_V1(cg, "memory"))
 		SAFE_CGROUP_PRINT(cg, "cgroup.subtree_control", "+memory");
-	if (TST_CGROUP_VER(cg, "cpuset") != TST_CGROUP_V1)
+	if (!TST_CGROUP_VER_IS_V1(cg, "cpuset"))
 		SAFE_CGROUP_PRINT(cg, "cgroup.subtree_control", "+cpuset");
 
 	if (!SAFE_FORK()) {
@@ -2222,7 +2222,7 @@ Another example of an edge case is the following.
 
 [source,c]
 -------------------------------------------------------------------------------
-	if (TST_CGROUP_VER(cg, "memory") == TST_CGROUP_V1)
+	if (TST_CGROUP_VER_IS_V1(cg, "memory"))
 		SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", ~0UL);
 	else
 		SAFE_CGROUP_PRINT(cg, "memory.swap.max", "max");

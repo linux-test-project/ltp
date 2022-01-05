@@ -57,14 +57,14 @@ static void verify_oom(void)
 		 * let's scale down the value of 'memory.swap.max' to only
 		 * 1MB for CGroup v2.
 		 */
-		if (TST_CGROUP_VER(cg, "memory") != TST_CGROUP_V1)
+		if (!TST_CGROUP_VER_IS_V1(cg, "memory"))
 			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", MB);
 		else
 			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", TESTMEM + MB);
 
 		testoom(0, 1, ENOMEM, 1);
 
-		if (TST_CGROUP_VER(cg, "memory") == TST_CGROUP_V1)
+		if (TST_CGROUP_VER_IS_V1(cg, "memory"))
 			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", ~0UL);
 		else
 			SAFE_CGROUP_PRINT(cg, "memory.swap.max", "max");
