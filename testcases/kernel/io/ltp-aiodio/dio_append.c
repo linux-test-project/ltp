@@ -77,6 +77,8 @@ static void run(void)
 		tst_res(TPASS, "All bytes read were zeroed");
 
 	*run_child = 0;
+
+	SAFE_UNLINK(filename);
 }
 
 static struct tst_test test = {
