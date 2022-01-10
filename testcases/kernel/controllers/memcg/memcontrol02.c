@@ -23,34 +23,13 @@
  */
 #define _GNU_SOURCE
 
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "tst_test.h"
-#include "tst_cgroup.h"
-
-#define TMPDIR "mntdir"
-#define MB(x) (x << 20)
+#include "memcontrol_common.h"
 
 static size_t page_size;
 static const struct tst_cgroup_group *cg_test;
 static struct tst_cgroup_group *cg_child;
 static int fd;
 static int file_to_all_error = 10;
-
-/*
- * Checks if two given values differ by less than err% of their
- * sum. An extra percent is added for every doubling of the page size
- * to compensate for wastage in page sized allocations.
- */
-static inline int values_close(const ssize_t a,
-			       const ssize_t b,
-			       const ssize_t err)
-{
-	const ssize_t page_adjusted_err = ffs(page_size >> 13) + err;
-
-	return 100 * labs(a - b) <= (a + b) * page_adjusted_err;
-}
 
 static void alloc_anon_50M_check(void)
 {
@@ -76,15 +55,6 @@ static void alloc_anon_50M_check(void)
 	TST_EXP_EXPR(values_close(anon, current, 3),
 		     "(memory.current=%zd) ~= (memory.stat.anon=%zd)",
 		     current, anon);
-}
-
-static void alloc_pagecache(const int fd, size_t size)
-{
-	char buf[BUFSIZ];
-	size_t i;
-
-	for (i = 0; i < size; i += sizeof(buf))
-		SAFE_WRITE(1, fd, buf, sizeof(buf));
 }
 
 static void alloc_pagecache_50M_check(void)
