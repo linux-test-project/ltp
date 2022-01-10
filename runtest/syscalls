@@ -1071,6 +1071,7 @@ quotactl04 quotactl04
 quotactl05 quotactl05
 quotactl06 quotactl06
 quotactl07 quotactl07
+quotactl08 quotactl08
 
 read01 read01
 read02 read02
