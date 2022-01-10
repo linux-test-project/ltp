@@ -19,6 +19,7 @@
  */
 
 #include "quotactl02.h"
+#include "quotactl_syscall_var.h"
 #if defined(HAVE_XFS_XQM_H)
 
 static uint32_t qflagp = XFS_QUOTA_PDQ_ENFD;
