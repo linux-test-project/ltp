@@ -1,0 +1,253 @@
+// SPDX-License-Identifier: GPL-2.0
+/*\
+ *
+ * [Description]
+ *
+ * Conversion of the third kself test in cgroup/test_memcontrol.c.
+ *
+ * Original description:
+ * "First, this test creates the following hierarchy:
+ * A       memory.min = 50M,  memory.max = 200M
+ * A/B     memory.min = 50M,  memory.current = 50M
+ * A/B/C   memory.min = 75M,  memory.current = 50M
+ * A/B/D   memory.min = 25M,  memory.current = 50M
+ * A/B/E   memory.min = 500M, memory.current = 0
+ * A/B/F   memory.min = 0,    memory.current = 50M
+ *
+ * Usages are pagecache, but the test keeps a running
+ * process in every leaf cgroup.
+ * Then it creates A/G and creates a significant
+ * memory pressure in it.
+ *
+ * A/B    memory.current ~= 50M
+ * A/B/C  memory.current ~= 33M
+ * A/B/D  memory.current ~= 17M
+ * A/B/E  memory.current ~= 0
+ *
+ * After that it tries to allocate more than there is unprotected
+ * memory in A available, and checks that memory.min protects
+ * pagecache even in this case."
+ *
+ * memory.min doesn't appear to exist on V1 so we only test on V2 like
+ * the selftest. We do test on more file systems, but not tempfs
+ * becaue it can't evict the page cache without swap. Also we avoid
+ * filesystems which allocate extra memory for buffer heads.
+ *
+ * The tolerances have been increased from the self tests.
+ */
+
+#define _GNU_SOURCE
+
+#include <inttypes.h>
+
+#include "memcontrol_common.h"
+
+#define TMPDIR "mntdir"
+
+static struct tst_cgroup_group *trunk_cg[3];
+static struct tst_cgroup_group *leaf_cg[4];
+static int fd = -1;
+
+enum checkpoints {
+	CHILD_IDLE,
+	TEST_DONE,
+};
+
+enum trunk_cg {
+	A,
+	B,
+	G
+};
+
+enum leaf_cg {
+	C,
+	D,
+	E,
+	F
+};
+
+static void cleanup_sub_groups(void)
+{
+	size_t i;
+
+	for (i = ARRAY_SIZE(leaf_cg); i > 0; i--) {
+		if (!leaf_cg[i - 1])
+			continue;
+
+		TST_CHECKPOINT_WAKE2(TEST_DONE,
+				     ARRAY_SIZE(leaf_cg) - 1);
+		tst_reap_children();
+		break;
+	}
+
+	for (i = ARRAY_SIZE(leaf_cg); i > 0; i--) {
+		if (!leaf_cg[i - 1])
+			continue;
+
+		leaf_cg[i - 1] = tst_cgroup_group_rm(leaf_cg[i - 1]);
+	}
+
+	for (i = ARRAY_SIZE(trunk_cg); i > 0; i--) {
+		if (!trunk_cg[i - 1])
+			continue;
+
+		trunk_cg[i - 1] = tst_cgroup_group_rm(trunk_cg[i - 1]);
+	}
+}
+
+static void alloc_anon_in_child(const struct tst_cgroup_group *const cg,
+				const size_t size, const int expect_oom)
+{
+	int status;
+	const pid_t pid = SAFE_FORK();
+
+	if (!pid) {
+		SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
+
+		tst_res(TINFO, "Child %d in %s: Allocating anon: %"PRIdPTR,
+		getpid(), tst_cgroup_group_name(cg), size);
+		alloc_anon(size);
+		exit(0);
+	}
+
+	SAFE_WAITPID(pid, &status, 0);
+
+	if (expect_oom && WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
+		tst_res(TPASS, "Child %d killed by OOM", pid);
+		return;
+	}
+
+	if (!expect_oom && WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+		tst_res(TPASS, "Child %d exited", pid);
+		return;
+	}
+
+	tst_res(TFAIL,
+		"Expected child %d to %s, but instead %s",
+		pid,
+		expect_oom ? "be killed" : "exit(0)",
+		tst_strstatus(status));
+}
+
+static void alloc_pagecache_in_child(const struct tst_cgroup_group *const cg,
+				     const size_t size)
+{
+	const pid_t pid = SAFE_FORK();
+
+	if (pid) {
+		TST_CHECKPOINT_WAIT(CHILD_IDLE);
+		return;
+	}
+
+	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
+
+	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %"PRIdPTR,
+		getpid(), tst_cgroup_group_name(cg), size);
+	alloc_pagecache(fd, size);
+
+	TST_CHECKPOINT_WAKE(CHILD_IDLE);
+	TST_CHECKPOINT_WAIT(TEST_DONE);
+	exit(0);
+}
+
+static void test_memcg_min(void)
+{
+	long c[4];
+	unsigned int i;
+	size_t attempts;
+
+	fd = SAFE_OPEN(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600);
+	trunk_cg[A] = tst_cgroup_group_mk(tst_cgroup, "trunk_A");
+
+	SAFE_CGROUP_SCANF(trunk_cg[A], "memory.min", "%ld", c);
+	if (c[0]) {
+		tst_brk(TCONF,
+			"memory.min already set to %ld on parent group", c[0]);
+	}
+
+	SAFE_CGROUP_PRINT(trunk_cg[A], "cgroup.subtree_control", "+memory");
+
+	SAFE_CGROUP_PRINT(trunk_cg[A], "memory.max", "200M");
+	SAFE_CGROUP_PRINT(trunk_cg[A], "memory.swap.max", "0");
+
+	trunk_cg[B] = tst_cgroup_group_mk(trunk_cg[A], "trunk_B");
+
+	SAFE_CGROUP_PRINT(trunk_cg[B], "cgroup.subtree_control", "+memory");
+
+	trunk_cg[G] = tst_cgroup_group_mk(trunk_cg[A], "trunk_G");
+
+	for (i = 0; i < ARRAY_SIZE(leaf_cg); i++) {
+		leaf_cg[i] = tst_cgroup_group_mk(trunk_cg[B],
+						 "leaf_%c", 'C' + i);
+
+		if (i == E)
+			continue;
+
+		alloc_pagecache_in_child(leaf_cg[i], MB(50));
+	}
+
+	SAFE_CGROUP_PRINT(trunk_cg[A], "memory.min", "50M");
+	SAFE_CGROUP_PRINT(trunk_cg[B], "memory.min", "50M");
+	SAFE_CGROUP_PRINT(leaf_cg[C], "memory.min", "75M");
+	SAFE_CGROUP_PRINT(leaf_cg[D], "memory.min", "25M");
+	SAFE_CGROUP_PRINT(leaf_cg[E], "memory.min", "500M");
+	SAFE_CGROUP_PRINT(leaf_cg[F], "memory.min", "0");
+
+	for (attempts = 0; attempts < 5; attempts++) {
+		SAFE_CGROUP_SCANF(trunk_cg[B], "memory.current", "%ld", c);
+		if (values_close(c[0], MB(150), 3))
+			break;
+
+		sleep(1);
+	}
+
+	alloc_anon_in_child(trunk_cg[G], MB(148), 0);
+
+	SAFE_CGROUP_SCANF(trunk_cg[B], "memory.current", "%ld", c);
+	TST_EXP_EXPR(values_close(c[0], MB(50), 5),
+		     "(A/B memory.current=%ld) ~= %d", c[0], MB(50));
+
+	for (i = 0; i < ARRAY_SIZE(leaf_cg); i++)
+		SAFE_CGROUP_SCANF(leaf_cg[i], "memory.current", "%ld", c + i);
+
+	TST_EXP_EXPR(values_close(c[0], MB(33), 20),
+		     "(A/B/C memory.current=%ld) ~= %d", c[0], MB(33));
+	TST_EXP_EXPR(values_close(c[1], MB(17), 20),
+		     "(A/B/D memory.current=%ld) ~= %d", c[1], MB(17));
+	TST_EXP_EXPR(values_close(c[2], 0, 1),
+		     "(A/B/E memory.current=%ld) ~= 0", c[2]);
+
+	alloc_anon_in_child(trunk_cg[G], MB(170), 1);
+
+	SAFE_CGROUP_SCANF(trunk_cg[B], "memory.current", "%ld", c);
+	TST_EXP_EXPR(values_close(c[0], MB(50), 5),
+		     "(A/B memory.current=%ld) ~= %d", c[0], MB(50));
+
+	cleanup_sub_groups();
+	SAFE_CLOSE(fd);
+	SAFE_UNLINK(TMPDIR"/tmpfile");
+}
+
+static void cleanup(void)
+{
+	cleanup_sub_groups();
+	if (fd > -1)
+		SAFE_CLOSE(fd);
+}
+
+static struct tst_test test = {
+	.cleanup = cleanup,
+	.test_all = test_memcg_min,
+	.mount_device = 1,
+	.dev_min_size = 256,
+	.mntpoint = TMPDIR,
+	.all_filesystems = 1,
+	.skip_filesystems = (const char *const[]){
+		"exfat", "vfat", "fuse", "ntfs", "tmpfs", NULL
+	},
+	.forks_child = 1,
+	.needs_root = 1,
+	.needs_checkpoints = 1,
+	.needs_cgroup_ver = TST_CGROUP_V2,
+	.needs_cgroup_ctrls = (const char *const[]){ "memory", NULL },
+};
