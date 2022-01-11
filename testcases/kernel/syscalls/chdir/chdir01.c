@@ -50,16 +50,18 @@ static void setup(void)
 	int fd;
 	struct stat statbuf;
 
+	umask(0);
+
+	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
+
 	cwd = SAFE_GETCWD(NULL, 0);
 	workdir = SAFE_MALLOC(strlen(cwd) + strlen(MNTPOINT) + 2);
 	sprintf(workdir, "%s/%s", cwd, MNTPOINT);
 	free(cwd);
 	SAFE_CHDIR(workdir);
 
-	mode_t sys_umask = umask(0);
 	SAFE_MKDIR(DIR_NAME, 0755);
 	SAFE_MKDIR(BLOCKED_NAME, 0644);
-	umask(sys_umask);
 
 	/* FAT and NTFS override file and directory permissions */
 	SAFE_STAT(BLOCKED_NAME, &statbuf);
@@ -132,12 +134,14 @@ static void run(unsigned int n)
 
 static void cleanup(void)
 {
+	SAFE_CHDIR("..");
+	tst_umount(workdir);
 	free(workdir);
 }
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.mount_device = 1,
+	.format_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.test = run,
