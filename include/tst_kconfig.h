@@ -44,7 +44,8 @@ void tst_kconfig_read(struct tst_kconfig_var vars[], size_t vars_len);
 
 /**
  * Checks if required kernel configuration options are set in the kernel
- * config and exits the test with TCONF if at least one is missing.
+ * config. Return 0 if every config is satisfied and return 1 if at least
+ * one is missing.
  *
  * The config options can be passed in two different formats, either
  * "CONFIG_FOO" in which case the option has to be set in order to continue the
@@ -53,6 +54,6 @@ void tst_kconfig_read(struct tst_kconfig_var vars[], size_t vars_len);
  *
  * @param kconfigs NULL-terminated array of config strings needed for the testrun.
  */
-void tst_kconfig_check(const char *const kconfigs[]);
+int tst_kconfig_check(const char *const kconfigs[]);
 
 #endif	/* TST_KCONFIG_H__ */
