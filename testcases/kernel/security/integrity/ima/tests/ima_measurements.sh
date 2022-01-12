@@ -55,7 +55,7 @@ check_iversion_support()
 test1()
 {
 	tst_res TINFO "verify adding record to the IMA measurement list"
-	ROD echo "$(date) this is a test file" \> $TEST_FILE
+	ROD echo "$(cat /proc/uptime) this is a test file" \> $TEST_FILE
 	ima_check $TEST_FILE
 }
 
@@ -64,7 +64,7 @@ test2()
 
 	tst_res TINFO "verify updating record in the IMA measurement list"
 	check_iversion_support || return
-	ROD echo "$(date) modified file" \> $TEST_FILE
+	ROD echo "$(cat /proc/uptime) modified file" \> $TEST_FILE
 	ima_check $TEST_FILE
 }
 
@@ -83,11 +83,11 @@ test3()
 		return
 	fi
 
-	mkdir -m 0700 $dir
+	[ -d "$dir" ] || mkdir -m 0700 $dir
 	chown $user $dir
 	cd $dir
 	# need to read file to get updated $ASCII_MEASUREMENTS
-	sudo -n -u $user sh -c "echo $(date) user file > $file; cat $file > /dev/null"
+	sudo -n -u $user sh -c "echo $(cat /proc/uptime) user file > $file; cat $file > /dev/null"
 	cd ..
 
 	EXPECT_FAIL "grep $file $ASCII_MEASUREMENTS"
