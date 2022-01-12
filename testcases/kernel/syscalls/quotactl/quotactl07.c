@@ -7,7 +7,9 @@
 /*\
  * [Description]
  *
- * This is a regresstion test for kernel commit 3dd4d40b4208
+ * This is not only a functional test but also a error test for Q_XQUOTARM.
+ *
+ * It is a regresstion test for kernel commit 3dd4d40b4208
  * ("xfs: Sanity check flags of Q_XQUOTARM call").
  */
 
@@ -15,51 +17,71 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/quota.h>
+#include <sys/statvfs.h>
 #include "tst_test.h"
-#include "lapi/quotactl.h"
+#include "quotactl_syscall_var.h"
 
 #ifdef HAVE_XFS_XQM_H
 # include <xfs/xqm.h>
 
-#define MNTPOINT    "mntpoint"
-
-static uint32_t qflag_acct = XFS_QUOTA_UDQ_ACCT;
-static unsigned int valid_type = XFS_USER_QUOTA;
 /* Include a valid quota type to avoid other EINVAL error */
 static unsigned int invalid_type = XFS_GROUP_QUOTA << 1 | XFS_USER_QUOTA;
+static unsigned int valid_type = XFS_USER_QUOTA;
+static int mount_flag;
 
 static void verify_quota(void)
 {
-	TEST(quotactl(QCMD(Q_XQUOTARM, USRQUOTA), tst_device->dev, 0, (void *)&invalid_type));
-	if (TST_ERR == EINVAL)
-		tst_res(TPASS, "Q_XQUOTARM has quota type check");
+	struct statfs before, after;
+
+	SAFE_STATFS(MNTPOINT, &before);
+	TST_EXP_PASS(do_quotactl(fd, QCMD(Q_XQUOTARM, USRQUOTA), tst_device->dev, 0,
+			(void *)&valid_type), "do_quotactl(Q_XQUOTARM,valid_type)");
+	SAFE_STATFS(MNTPOINT, &after);
+	if (before.f_bavail <= after.f_bavail)
+		tst_res(TPASS, "Q_XQUOTARM to free space, delta(%lu)", after.f_bavail - before.f_bavail);
 	else
-		tst_res(TFAIL, "Q_XQUOTARM doesn't have quota type check");
+		tst_res(TFAIL, "Q_XQUOTARM to free space, delta(-%lu)", before.f_bavail - after.f_bavail);
+
+	TST_EXP_FAIL(do_quotactl(fd, QCMD(Q_XQUOTARM, USRQUOTA), tst_device->dev, 0,
+			(void *)&invalid_type), EINVAL, "do_quotactl(Q_XQUOTARM, invalid_type)");
 }
 
 static void setup(void)
 {
-	TEST(quotactl(QCMD(Q_XQUOTAOFF, USRQUOTA), tst_device->dev, 0, (void *)&qflag_acct));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "quotactl with Q_XQUOTAOFF failed");
+	quotactl_info();
 
-	TEST(quotactl(QCMD(Q_XQUOTARM, USRQUOTA), tst_device->dev, 0, (void *)&valid_type));
-	if (TST_ERR == EINVAL)
-		tst_brk(TCONF, "current system doesn't support Q_XQUOTARM, skip it");
+	/* ensure superblock has quota data, but not running */
+	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, "usrquota");
+	mount_flag = 1;
+	SAFE_UMOUNT(MNTPOINT);
+	mount_flag = 0;
+	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, "noquota");
+	mount_flag = 1;
+
+	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
+}
+
+static void cleanup(void)
+{
+	if (fd > -1)
+		SAFE_CLOSE(fd);
+	if (mount_flag && tst_umount(MNTPOINT))
+		tst_res(TWARN | TERRNO, "umount(%s)", MNTPOINT);
 }
 
 static struct tst_test test = {
 	.setup = setup,
+	.cleanup = cleanup,
 	.needs_root = 1,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_XFS_QUOTA",
 		NULL
 	},
 	.test_all = verify_quota,
-	.mount_device = 1,
+	.format_device = 1,
 	.dev_fs_type = "xfs",
-	.mnt_data = "usrquota",
 	.mntpoint = MNTPOINT,
+	.test_variants = QUOTACTL_SYSCALL_VARIANTS,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "3dd4d40b4208"},
 		{}
