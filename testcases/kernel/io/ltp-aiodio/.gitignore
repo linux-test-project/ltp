@@ -5,6 +5,6 @@
 /dio_append
 /dio_sparse
 /dio_truncate
+/dio_read
 /dirty
-/ltp-diorh
 /read_checkzero
