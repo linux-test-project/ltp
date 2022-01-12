@@ -25,6 +25,7 @@
 #define BLOCKED_NAME "keep_out"
 #define LINK_NAME1 "symloop"
 #define LINK_NAME2 "symloop2"
+#define TESTUSER "nobody"
 
 static char *workdir;
 static int skip_symlinks, skip_blocked;
@@ -80,7 +81,7 @@ static void setup(void)
 	SAFE_CLOSE(fd);
 
 	if (!ltpuser)
-		ltpuser = SAFE_GETPWNAM("nobody");
+		ltpuser = SAFE_GETPWNAM(TESTUSER);
 }
 
 static void check_result(const char *user, const char *name, int retval,
@@ -108,6 +109,8 @@ static void run(unsigned int n)
 {
 	struct test_case *tc = testcase_list + n;
 
+	tst_res(TINFO, "Testing '%s'", tc->name);
+
 	if (tc->root_err == ELOOP && skip_symlinks) {
 		tst_res(TCONF, "Skipping symlink loop test, not supported");
 		return;
@@ -129,7 +132,7 @@ static void run(unsigned int n)
 	SAFE_SETEUID(ltpuser->pw_uid);
 	TEST(chdir(tc->name));
 	SAFE_SETEUID(0);
-	check_result("nobody", tc->name, tc->nobody_ret, tc->nobody_err);
+	check_result(TESTUSER, tc->name, tc->nobody_ret, tc->nobody_err);
 }
 
 static void cleanup(void)
