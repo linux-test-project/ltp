@@ -74,16 +74,20 @@ int main(int argc, char **argv)
 				continue;
 		}
 
-		if (writeb_lock(fd, offset, SEEK_SET, BYTES) < 0)
-			printf("failed in writeb_lock, Errno = %d", errno);
+		if (writeb_lock(fd, offset, SEEK_SET, BYTES) < 0) {
+			printf("failed in writeb_lock, Errno = %d\n", errno);
+			exit(1);
+		}
 
 		lseek(fd, offset, SEEK_SET);
 
 		/* write to the test file */
 		write(fd, buf, BYTES);
 
-		if (unb_lock(fd, offset, SEEK_SET, BYTES) < 0)
-			printf("failed in unb_lock, Errno = %d", errno);
+		if (unb_lock(fd, offset, SEEK_SET, BYTES) < 0) {
+			printf("failed in unb_lock, Errno = %d\n", errno);
+			exit(1);
+		}
 	}
 	exit(0);
 }
