@@ -81,8 +81,14 @@ nfs_setup_server()
 {
 	local export_cmd="exportfs -i -o fsid=$$,no_root_squash,rw *:$remote_dir"
 
-	if ! tst_rhost_run -c "test -d $remote_dir"; then
-		tst_rhost_run -s -c "mkdir -p $remote_dir; $export_cmd"
+	if tst_net_use_netns; then
+		if ! test -d $remote_dir; then
+			mkdir -p $remote_dir; $export_cmd
+		fi
+	else
+		if ! tst_rhost_run -c "test -d $remote_dir"; then
+			tst_rhost_run -s -c "mkdir -p $remote_dir; $export_cmd"
+		fi
 	fi
 }
 
