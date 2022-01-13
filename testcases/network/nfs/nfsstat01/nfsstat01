@@ -17,7 +17,7 @@ get_calls()
 	local opt=
 	[ "$name" = "rpc" ] && opt="r" || opt="n"
 
-	if [ -n "$LTP_NETNS" -o "$nfs_f" = "nfs" ]; then
+	if tst_net_use_netns || [ "$nfs_f" = "nfs" ]; then
 		calls="$(grep $name /proc/net/rpc/$nfs_f | cut -d' ' -f$field)"
 		ROD nfsstat -c$opt | grep -q "$calls"
 		echo "$calls"

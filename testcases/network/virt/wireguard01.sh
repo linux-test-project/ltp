@@ -12,7 +12,7 @@ TST_CNT=3
 
 setup()
 {
-	if [ -n "$LTP_NETNS" -a "$VIRT_PERF_THRESHOLD" -lt 700 ]; then
+	if tst_net_use_netns && [ "$VIRT_PERF_THRESHOLD" -lt 700 ]; then
 		tst_res TINFO "Adjust threshold for veth (no encap/encrypt)"
 		VIRT_PERF_THRESHOLD=700
 	fi

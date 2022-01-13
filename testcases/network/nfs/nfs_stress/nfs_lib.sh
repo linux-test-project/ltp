@@ -91,7 +91,7 @@ nfs_mount()
 	local host_type=rhost
 	local mount_dir
 
-	[ -n "$LTP_NETNS" ] && host_type=
+	tst_net_use_netns && host_type=
 
 	if [ $TST_IPV6 ]; then
 		mount_dir="[$(tst_ipaddr $host_type)]:$remote_dir"
@@ -102,7 +102,7 @@ nfs_mount()
 	local mnt_cmd="mount -v -t nfs $opts $mount_dir $local_dir"
 
 	tst_res TINFO "Mounting NFS: $mnt_cmd"
-	if [ -n "$LTP_NETNS" ] && [ -z "$LTP_NFS_NETNS_USE_LO" ]; then
+	if tst_net_use_netns && [ -z "$LTP_NFS_NETNS_USE_LO" ]; then
 		tst_rhost_run -c "$mnt_cmd" > mount.log
 	else
 		$mnt_cmd > mount.log
