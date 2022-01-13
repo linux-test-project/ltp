@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/fcntl.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <string.h>
