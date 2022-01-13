@@ -214,7 +214,7 @@ static const char *cgroup_v2_ltp_mount = "unified";
 #define for_each_v1_root(r)			\
 	for ((r) = roots + 1; (r)->ver; (r)++)
 #define for_each_ctrl(ctrl)			\
-	for ((ctrl) = controllers + 1; (ctrl)->ctrl_name; (ctrl)++)
+	for ((ctrl) = controllers; (ctrl)->ctrl_name; (ctrl)++)
 
 /* In all cases except one, this only loops once.
  *
@@ -325,15 +325,14 @@ void tst_cgroup_print_config(void)
 __attribute__ ((nonnull, warn_unused_result))
 static struct cgroup_ctrl *cgroup_find_ctrl(const char *const ctrl_name)
 {
-	struct cgroup_ctrl *ctrl = controllers;
+	struct cgroup_ctrl *ctrl;
 
-	while (ctrl->ctrl_name && strcmp(ctrl_name, ctrl->ctrl_name))
-		ctrl++;
+	for_each_ctrl(ctrl) {
+		if (!strcmp(ctrl_name, ctrl->ctrl_name))
+			return ctrl;
+	}
 
-	if (!ctrl->ctrl_name)
-		ctrl = NULL;
-
-	return ctrl;
+	return NULL;
 }
 
 /* Determine if a mounted cgroup hierarchy is unique and record it if so.
