@@ -29,7 +29,6 @@
 #include "tst_test.h"
 #include <sys/fanotify.h>
 #include <sys/types.h>
-#include <fcntl.h>
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"
@@ -39,12 +38,15 @@
 #endif
 
 #define BUF_SIZE 256
-static char event_buf[BUF_SIZE];
-int fd_notify;
 
 #define MOUNT_PATH "test_mnt"
 #define BASE_DIR "internal_dir"
 #define BAD_DIR BASE_DIR"/bad_dir"
+
+#ifdef HAVE_NAME_TO_HANDLE_AT
+
+static char event_buf[BUF_SIZE];
+int fd_notify;
 
 /* These expected FIDs are common to multiple tests */
 static struct fanotify_fid_t null_fid;
@@ -309,6 +311,9 @@ static struct tst_test test = {
 	}
 };
 
+#else
+	TST_TEST_TCONF("system does not have required name_to_handle_at() support");
+#endif
 #else
 	TST_TEST_TCONF("system doesn't have required fanotify support");
 #endif
