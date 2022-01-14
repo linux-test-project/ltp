@@ -15,6 +15,18 @@
 #include "tst_kconfig.h"
 #include "tst_bool_expr.h"
 
+static int kconfig_skip_check(void)
+{
+	char *skipped = getenv("KCONFIG_SKIP_CHECK");
+
+	if (skipped) {
+		tst_res(TINFO, "Skipping kernel config check as requested");
+		return 1;
+	}
+
+	return 0;
+}
+
 static const char *kconfig_path(char *path_buf, size_t path_buf_len)
 {
 	const char *path = getenv("KCONFIG_PATH");
@@ -485,6 +497,9 @@ int tst_kconfig_check(const char *const kconfigs[])
 	unsigned int i, var_cnt;
 	int ret = 0;
 
+	if (kconfig_skip_check())
+		return 0;
+
 	for (i = 0; i < expr_cnt; i++) {
 		exprs[i] = tst_bool_expr_parse(kconfigs[i]);
 
@@ -525,6 +540,9 @@ int tst_kconfig_check(const char *const kconfigs[])
 char tst_kconfig_get(const char *confname)
 {
 	struct tst_kconfig_var var;
+
+	if (kconfig_skip_check())
+		return 0;
 
 	var.id_len = strlen(confname);
 

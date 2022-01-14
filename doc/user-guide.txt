@@ -10,6 +10,7 @@ For running LTP network tests see `testcases/network/README.md`.
 |==============================================================================
 | 'KCONFIG_PATH'        | The path to the kernel config file, (if not set, it tries
                           the usual paths '/boot/config-RELEASE' or '/proc/config.gz').
+| 'KCONFIG_SKIP_CHECK'  | Skip kernel config check if variable set (not set by default).
 | 'LTPROOT'             | Prefix for installed LTP, the default is '/opt/ltp'.
 | 'LTP_COLORIZE_OUTPUT' | Force colorized output behaviour. 'y' or '1': always colorize
                           'n' or '0': never colorize.
