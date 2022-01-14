@@ -453,6 +453,12 @@ sub content_all_tests
 				$v = html_a($url, $v);
 			}
 
+			# tag value value can be split into more lines if too long
+			# i.e. URL in known-fail
+			for (@$tag[2 .. $#$tag]) {
+				$v .= " $_";
+			}
+
 			$content .= "\n|" . reference($k) . "\n|$v\n";
 			$tmp2 = 1;
 		}
