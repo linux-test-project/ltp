@@ -20,15 +20,14 @@ TST_CLEANUP=cleanup
 TST_CNT=4
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sysctl"
+TST_NEEDS_KCONFIGS="CONFIG_SYSCTL=y, CONFIG_PROC_FS=y"
 sys_name="fs.file-max"
 sys_file="/proc/sys/fs/file-max"
-syms_file="/proc/kallsyms"
 
 . tst_test.sh
 
 setup()
 {
-	[ ! -f "$sys_file" ] && tst_brk TCONF "$sys_file not enabled"
 	orig_value=$(cat "$sys_file")
 }
 
@@ -61,17 +60,15 @@ sysctl_test_overflow()
 
 sysctl_test_zero()
 {
-	[ ! -f "$syms_file" ] && tst_brk TCONF "$syms_file not enabled"
+	tst_check_kconfigs "CONFIG_KALLSYMS=y,CONFIG_KALLSYMS_ALL=y,CONFIG_KASAN=y" \
+		|| tst_brk TCONF "kconfig doesn't meet test's requirement!"
+
 	ROD sysctl -w -q $sys_name=0
 
-	if grep -q kasan_report $syms_file; then
-		if dmesg | grep -q "KASAN: global-out-of-bounds in __do_proc_doulongvec_minmax"; then
-			tst_res TFAIL "$sys_file is set 0 and trigger a KASAN error"
-		else
-			tst_res TPASS "$sys_file is set 0 and doesn't trigger a KASAN error"
-		fi
+	if dmesg | grep -q "KASAN: global-out-of-bounds in __do_proc_doulongvec_minmax"; then
+		tst_res TFAIL "$sys_file is set 0 and trigger a KASAN error"
 	else
-		tst_res TCONF "kernel doesn't support KASAN"
+		tst_res TPASS "$sys_file is set 0 and doesn't trigger a KASAN error"
 	fi
 }
 
