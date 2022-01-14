@@ -93,11 +93,10 @@ static void verify_quota(unsigned int n)
 		return;
 	}
 
-	TEST(do_quotactl(fd, tc->cmd, tst_device->dev, test_id, tc->addr));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "quotactl() failed to %s", tc->des);
+	TST_EXP_PASS_SILENT(do_quotactl(fd, tc->cmd, tst_device->dev, test_id, tc->addr),
+		"do_quotactl()");
+	if (!TST_PASS)
 		return;
-	}
 
 	if (tc->flag)
 		tc->func_check(tc->check_subcmd, tc->des, *(int *)(tc->addr));

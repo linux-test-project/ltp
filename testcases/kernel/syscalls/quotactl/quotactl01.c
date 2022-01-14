@@ -196,11 +196,10 @@ static void verify_quota(unsigned int n)
 		tst_res(TCONF, "current system doesn't support this cmd");
 		return;
 	}
-	TEST(quotactl(tc->cmd, tst_device->dev, *tc->id, tc->addr));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "quotactl failed to %s", tc->des);
+	TST_EXP_PASS_SILENT(quotactl(tc->cmd, tst_device->dev, *tc->id, tc->addr),
+			"quotactl to %s", tc->des);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (memcmp(tc->res_data, tc->set_data, tc->sz)) {
 		tst_res(TFAIL, "quotactl failed to %s", tc->des);

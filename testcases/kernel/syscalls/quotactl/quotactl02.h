@@ -49,15 +49,12 @@ static void check_support_cmd(int quotatype)
 
 static void check_qoff(int subcmd, char *desp, int flag)
 {
-	int res;
 	struct fs_quota_stat res_qstat;
 
-	res = do_quotactl(fd, subcmd, tst_device->dev, test_id, (void *) &res_qstat);
-	if (res == -1) {
-		tst_res(TFAIL | TERRNO,
-			"quotactl() failed to get xfs quota off status");
+	TST_EXP_PASS_SILENT(do_quotactl(fd, subcmd, tst_device->dev, test_id,
+			(void *) &res_qstat), "do_quotactl() to %s", desp);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (res_qstat.qs_flags & flag) {
 		tst_res(TFAIL, "xfs quota enforcement was on unexpectedly");
@@ -69,15 +66,12 @@ static void check_qoff(int subcmd, char *desp, int flag)
 
 static void check_qon(int subcmd, char *desp, int flag)
 {
-	int res;
 	struct fs_quota_stat res_qstat;
 
-	res = do_quotactl(fd, subcmd, tst_device->dev, test_id, (void *) &res_qstat);
-	if (res == -1) {
-		tst_res(TFAIL | TERRNO,
-			"quotactl() failed to get xfs quota on status");
+	TST_EXP_PASS_SILENT(do_quotactl(fd, subcmd, tst_device->dev, test_id,
+			(void *) &res_qstat), "do_quotactl() to %s", desp);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (!(res_qstat.qs_flags & flag)) {
 		tst_res(TFAIL, "xfs quota enforcement was off unexpectedly");
@@ -89,17 +83,14 @@ static void check_qon(int subcmd, char *desp, int flag)
 
 static void check_qoffv(int subcmd, char *desp, int flag)
 {
-	int res;
 	struct fs_quota_statv res_qstatv = {
 		.qs_version = FS_QSTATV_VERSION1,
 	};
 
-	res = do_quotactl(fd, subcmd, tst_device->dev, test_id, (void *) &res_qstatv);
-	if (res == -1) {
-		tst_res(TFAIL | TERRNO,
-			"quotactl() failed to get xfs quota off stav");
+	TST_EXP_PASS_SILENT(do_quotactl(fd, subcmd, tst_device->dev, test_id,
+			(void *) &res_qstatv), "do_quotactl() to %s", desp);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (res_qstatv.qs_flags & flag) {
 		tst_res(TFAIL, "xfs quota enforcement was on unexpectedly");
@@ -111,17 +102,14 @@ static void check_qoffv(int subcmd, char *desp, int flag)
 
 static void check_qonv(int subcmd, char *desp, int flag)
 {
-	int res;
 	struct fs_quota_statv res_qstatv = {
 		.qs_version = FS_QSTATV_VERSION1
 	};
 
-	res = do_quotactl(fd, subcmd, tst_device->dev, test_id, (void *) &res_qstatv);
-	if (res == -1) {
-		tst_res(TFAIL | TERRNO,
-			"quotactl() failed to get xfs quota on statv");
+	TST_EXP_PASS_SILENT(do_quotactl(fd, subcmd, tst_device->dev, test_id,
+			(void *) &res_qstatv), "do_quotactl() to %s", desp);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (!(res_qstatv.qs_flags & flag)) {
 		tst_res(TFAIL, "xfs quota enforcement was off unexpectedly");
@@ -133,17 +121,14 @@ static void check_qonv(int subcmd, char *desp, int flag)
 
 static void check_qlim(int subcmd, char *desp)
 {
-	int res;
 	static struct fs_disk_quota res_dquota;
 
 	res_dquota.d_rtb_softlimit = 0;
 
-	res = do_quotactl(fd, subcmd, tst_device->dev, test_id, (void *) &res_dquota);
-	if (res == -1) {
-		tst_res(TFAIL | TERRNO,
-			"quotactl() failed to get xfs disk quota limits");
+	TST_EXP_PASS_SILENT(do_quotactl(fd, subcmd, tst_device->dev, test_id,
+			(void *) &res_dquota), "do_quotactl() to %s", desp);
+	if (!TST_PASS)
 		return;
-	}
 
 	if (res_dquota.d_id != test_id) {
 		tst_res(TFAIL, "quotactl() got unexpected user id %u, expected %u",

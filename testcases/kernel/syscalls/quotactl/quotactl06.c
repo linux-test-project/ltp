@@ -12,7 +12,7 @@
  *
  * - EACCES when cmd is Q_QUOTAON and addr existed but not a regular file
  * - ENOENT when the file specified by special or addr does not exist
- * - EBUSTY when cmd is Q_QUOTAON and another Q_QUOTAON had already been performed
+ * - EBUSY when cmd is Q_QUOTAON and another Q_QUOTAON had already been performed
  * - EFAULT when addr or special is invalid
  * - EINVAL when cmd or type is invalid
  * - ENOTBLK when special is not a block device
@@ -68,13 +68,13 @@ static struct dqblk set_dqmax = {
 	.dqb_valid = QIF_BLIMITS
 };
 
-struct tst_cap dropadmin = {
+static struct tst_cap dropadmin = {
 	.action = TST_CAP_DROP,
 	.id = CAP_SYS_ADMIN,
 	.name = "CAP_SYS_ADMIN",
 };
 
-struct tst_cap needadmin = {
+static struct tst_cap needadmin = {
 	.action = TST_CAP_REQ,
 	.id = CAP_SYS_ADMIN,
 	.name = "CAP_SYS_ADMIN",
@@ -86,18 +86,40 @@ static struct tcase {
 	void *addr;
 	int exp_err;
 	int on_flag;
+	char *des;
 } tcases[] = {
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, testdir1, EACCES, 0},
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, testdir2, ENOENT, 0},
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath, EBUSY, 1},
-	{QCMD(Q_SETQUOTA, USRQUOTA), &fmt_id, NULL, EFAULT, 1},
-	{QCMD(OPTION_INVALID, USRQUOTA), &fmt_id, usrpath, EINVAL, 0},
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath, ENOTBLK, 0},
-	{QCMD(Q_SETQUOTA, USRQUOTA), &test_id, &set_dq, ESRCH, 0},
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_invalid, usrpath, ESRCH, 0},
-	{QCMD(Q_GETNEXTQUOTA, USRQUOTA), &test_invalid, usrpath, ESRCH, 0},
-	{QCMD(Q_SETQUOTA, USRQUOTA), &test_id, &set_dqmax, ERANGE, 1},
-	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath, EPERM, 0},
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, testdir1, EACCES, 0,
+	"EACCES when cmd is Q_QUOTAON and addr existed but not a regular file"},
+
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, testdir2, ENOENT, 0,
+	"ENOENT when the file specified by special or addr does not exist"},
+
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath, EBUSY, 1,
+	"EBUSY when cmd is Q_QUOTAON and another Q_QUOTAON had already been performed"},
+
+	{QCMD(Q_SETQUOTA, USRQUOTA), &fmt_id, NULL, EFAULT, 1,
+	"EFAULT when addr or special is invalid"},
+
+	{QCMD(OPTION_INVALID, USRQUOTA), &fmt_id, usrpath, EINVAL, 0,
+	"EINVAL when cmd or type is invalid"},
+
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath, ENOTBLK, 0,
+	"ENOTBLK when special is not a block device"},
+
+	{QCMD(Q_SETQUOTA, USRQUOTA), &test_id, &set_dq, ESRCH, 0,
+	"ESRCH is for Q_SETQUOTA but no quota found for the user or quotas are off"},
+
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_invalid, usrpath, ESRCH, 0,
+	"ESRCH when cmd is Q_QUOTAON, but the quota format was not found"},
+
+	{QCMD(Q_GETNEXTQUOTA, USRQUOTA), &test_invalid, usrpath, ESRCH, 0,
+	"ESRCH for Q_GETNEXTQUOTA, but the id was last one"},
+
+	{QCMD(Q_SETQUOTA, USRQUOTA), &test_id, &set_dqmax, ERANGE, 1,
+	"ERANGE for Q_SETQUOTA, but the specified limits are out of range"},
+
+	{QCMD(Q_QUOTAON, USRQUOTA), &fmt_id, usrpath, EPERM, 0,
+	"EPERM when the caller lacks the required privilege (CAP_SYS_ADMIN)"},
 };
 
 static void verify_quotactl(unsigned int n)
@@ -106,17 +128,17 @@ static void verify_quotactl(unsigned int n)
 	int quota_on = 0;
 	int drop_flag = 0;
 
+	tst_res(TINFO, "Testing %s", tc->des);
 	if (tc->cmd == QCMD(Q_GETNEXTQUOTA, USRQUOTA) && getnextquota_nsup) {
 		tst_res(TCONF, "current system doesn't support Q_GETNEXTQUOTA");
 		return;
 	}
 
 	if (tc->on_flag) {
-		TEST(quotactl(QCMD(Q_QUOTAON, USRQUOTA), tst_device->dev,
-			fmt_id, usrpath));
-		if (TST_RET == -1)
-			tst_brk(TBROK,
-				"quotactl with Q_QUOTAON returned %ld", TST_RET);
+		TST_EXP_PASS_SILENT(quotactl(QCMD(Q_QUOTAON, USRQUOTA), tst_device->dev,
+					fmt_id, usrpath), "quotactl with Q_QUOTAON");
+		if (!TST_PASS)
+			return;
 		quota_on = 1;
 	}
 
@@ -126,34 +148,21 @@ static void verify_quotactl(unsigned int n)
 	}
 
 	if (tc->exp_err == ENOTBLK)
-		TEST(quotactl(tc->cmd, "/dev/null", *tc->id, tc->addr));
+		TST_EXP_FAIL(quotactl(tc->cmd, "/dev/null", *tc->id, tc->addr),
+			ENOTBLK, "quotactl()");
 	else
-		TEST(quotactl(tc->cmd, tst_device->dev, *tc->id, tc->addr));
-	if (TST_RET == -1) {
-		if (tc->exp_err == TST_ERR) {
-			tst_res(TPASS | TTERRNO, "quotactl failed as expected");
-		} else {
-			tst_res(TFAIL | TTERRNO,
-				"quotactl failed unexpectedly; expected %s, but got",
-				tst_strerrno(tc->exp_err));
-		}
-	} else {
-		tst_res(TFAIL, "quotactl returned wrong value: %ld", TST_RET);
-	}
+		TST_EXP_FAIL(quotactl(tc->cmd, tst_device->dev, *tc->id, tc->addr),
+			tc->exp_err, "quotactl()");
 
 	if (quota_on) {
-		TEST(quotactl(QCMD(Q_QUOTAOFF, USRQUOTA), tst_device->dev,
-			fmt_id, usrpath));
-		if (TST_RET == -1)
-			tst_brk(TBROK,
-				"quotactl with Q_QUOTAOFF returned %ld", TST_RET);
-		quota_on = 0;
+		TST_EXP_PASS_SILENT(quotactl(QCMD(Q_QUOTAOFF, USRQUOTA), tst_device->dev,
+					fmt_id, usrpath), "quotactl with Q_QUOTAOFF");
+		if (!TST_PASS)
+			return;
 	}
 
-	if (drop_flag) {
+	if (drop_flag)
 		tst_cap_action(&needadmin);
-		drop_flag = 0;
-	}
 }
 
 static void setup(void)
