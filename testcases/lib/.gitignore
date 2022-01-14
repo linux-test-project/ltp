@@ -1,4 +1,5 @@
 /tst_check_drivers
+/tst_check_kconfigs
 /tst_checkpoint
 /tst_device
 /tst_getconf

@@ -412,6 +412,26 @@ tst_require_drivers()
 	return 0
 }
 
+tst_require_kconfigs()
+{
+	local delim
+
+	if [ $# -gt 2 ]; then
+		return 0
+	elif [ $# -eq 1 ]; then
+		delim="$TST_NEEDS_KCONFIGS_IFS"
+	else
+		delim="$2"
+	fi
+
+	[ -z "$1" ] && return 0
+
+	tst_check_kconfigs "$1" "$delim" > /dev/null
+
+	[ $? -ne 0 ] && tst_brk TCONF "Aborting due to unsuitable kernel config, see above!"
+	return 0
+}
+
 tst_is_int()
 {
 	[ "$1" -eq "$1" ] 2>/dev/null
@@ -587,6 +607,7 @@ tst_run()
 			NEEDS_ROOT|NEEDS_TMPDIR|TMPDIR|NEEDS_DEVICE|DEVICE);;
 			NEEDS_CMDS|NEEDS_MODULE|MODPATH|DATAROOT);;
 			NEEDS_DRIVERS|FS_TYPE|MNTPOINT|MNT_PARAMS);;
+			NEEDS_KCONFIGS|NEEDS_KCONFIGS_IFS);;
 			IPV6|IPV6_FLAG|IPVER|TEST_DATA|TEST_DATA_IFS);;
 			RETRY_FUNC|RETRY_FN_EXP_BACKOFF|TIMEOUT);;
 			NET_DATAROOT|NET_MAX_PKT|NET_RHOST_RUN_DEBUG|NETLOAD_CLN_NUMBER);;
@@ -627,6 +648,7 @@ tst_run()
 	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
 
 	tst_require_cmds $TST_NEEDS_CMDS
+	tst_require_kconfigs "$TST_NEEDS_KCONFIGS"
 	tst_require_drivers $TST_NEEDS_DRIVERS
 
 	if [ -n "$TST_MIN_KVER" ]; then
@@ -747,6 +769,8 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 	fi
 
 	TST_TEST_DATA_IFS="${TST_TEST_DATA_IFS:- }"
+
+	TST_NEEDS_KCONFIGS_IFS="${TST_NEEDS_KCONFIGS_IFS:-,}"
 
 	if [ -n "$TST_CNT" ]; then
 		if ! tst_is_int "$TST_CNT"; then

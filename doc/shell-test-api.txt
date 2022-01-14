@@ -193,22 +193,25 @@ simply by setting right '$TST_NEEDS_FOO'.
 
 [options="header"]
 |=============================================================================
-| Variable name      | Action done
-| 'TST_NEEDS_ROOT'   | Exit the test with 'TCONF' unless executed under root.
-|                    | Alternatively the 'tst_require_root' command can be used.
-| 'TST_NEEDS_TMPDIR' | Create test temporary directory and cd into it.
-| 'TST_NEEDS_DEVICE' | Prepare test temporary device, the path to testing
-                       device is stored in '$TST_DEVICE' variable.
-                       The option implies 'TST_NEEDS_TMPDIR'.
-| 'TST_NEEDS_CMDS'   | String with command names that has to be present for
-                       the test (see below).
-| 'TST_NEEDS_MODULE' | Test module name needed for the test (see below).
-| 'TST_NEEDS_DRIVERS'| Checks kernel drivers support for the test.
-| 'TST_TIMEOUT'      | Maximum timeout set for the test in sec. Must be int >= 1,
-                       or -1 (special value to disable timeout), default is 300.
-                       Variable is meant be set in tests, not by user.
-                       It's an equivalent of `tst_test.timeout` in C, can be set
-                       via 'tst_set_timeout(timeout)' after test has started.
+| Variable name            | Action done
+| 'TST_NEEDS_ROOT'         | Exit the test with 'TCONF' unless executed under root.
+|                          | Alternatively the 'tst_require_root' command can be used.
+| 'TST_NEEDS_TMPDIR'       | Create test temporary directory and cd into it.
+| 'TST_NEEDS_DEVICE'       | Prepare test temporary device, the path to testing
+                             device is stored in '$TST_DEVICE' variable.
+                             The option implies 'TST_NEEDS_TMPDIR'.
+| 'TST_NEEDS_CMDS'         | String with command names that has to be present for
+                             the test (see below).
+| 'TST_NEEDS_MODULE'       | Test module name needed for the test (see below).
+| 'TST_NEEDS_DRIVERS'      | Checks kernel drivers support for the test.
+| 'TST_NEEDS_KCONFIGS'     | Checks kernel kconfigs support for the test (see below).
+| 'TST_NEEDS_KCONFIGS_IFS' | Used for splitting '$TST_NEEDS_KCONFIGS' variable,
+                             default value is comma, it only supports single character.
+| 'TST_TIMEOUT'            | Maximum timeout set for the test in sec. Must be int >= 1,
+                             or -1 (special value to disable timeout), default is 300.
+                             Variable is meant be set in tests, not by user.
+                             It's an equivalent of `tst_test.timeout` in C, can be set
+                             via 'tst_set_timeout(timeout)' after test has started.
 |=============================================================================
 
 [options="header"]
@@ -742,3 +745,19 @@ TST_NEEDS_CHECKPOINTS=1
 Since both the implementations are compatible, it's also possible to start
 a child binary process from a shell test and synchronize with it. This process
 must have checkpoints initialized by calling 'tst_reinit()'.
+
+1.7 Parsing kernel .config
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The shell library provides an implementation of the kconfig parsing interface
+compatible with the C version.
+
+It's possible to pass kernel kconfig list for tst_require_kconfigs API with
+'$TST_NEEDS_KCONFIGS'.
+Optional '$TST_NEEDS_KCONFIGS_IFS' is used for splitting, default value is comma.
+
+-------------------------------------------------------------------------------
+#!/bin/sh
+TST_NEEDS_KCONFIGS="CONFIG_EXT4_FS, CONFIG_QUOTACTL=y"
+
+. tst_test.sh
+-------------------------------------------------------------------------------
