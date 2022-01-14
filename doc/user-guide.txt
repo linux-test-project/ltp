@@ -14,8 +14,9 @@ For running LTP network tests see `testcases/network/README.md`.
 | 'LTPROOT'             | Prefix for installed LTP.  **Should be always set**
                           as some tests need it for path to test data files
                           ('LTP_DATAROOT'). LTP is by default installed into '/opt/ltp'.
-| 'LTP_COLORIZE_OUTPUT' | Force colorized output behaviour. 'y' or '1': always colorize
-                          'n' or '0': never colorize.
+| 'LTP_COLORIZE_OUTPUT' | By default LTP colorizes it's output unless it's redirected
+                          to a pipe or file.  Force colorized output behaviour:
+                          'y' or '1': always colorize, 'n' or '0': never colorize.
 | 'LTP_DEV'             | Path to the block device to be used
                           (C: '.needs_device = 1', shell: 'TST_NEEDS_DEVICE=1').
 | 'LTP_SINGLE_FS_TYPE'  | Testing only - specifies filesystem instead all
@@ -35,9 +36,3 @@ For running LTP network tests see `testcases/network/README.md`.
                           and others, which imply it, shell: 'TST_NEEDS_TMPDIR=1').
 | 'TST_NO_CLEANUP'      | Disable running test cleanup (defined in 'TST_CLEANUP').
 |==============================================================================
-
-2. Colorized output
--------------------
-
-By default LTP colorizes it's output unless using pipe or redirect to file.
-It's possible to force behaviour with 'LTP_COLORIZE_OUTPUT' environment variable.
