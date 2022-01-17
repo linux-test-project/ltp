@@ -836,7 +836,7 @@ static struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
-When the '.all_filesystem' flag is set the '.skip_filesystems' list is passed
+When the '.all_filesystems' flag is set the '.skip_filesystems' list is passed
 to the function that detects supported filesystems any listed filesystem is
 not included in the resulting list of supported filesystems.
 
