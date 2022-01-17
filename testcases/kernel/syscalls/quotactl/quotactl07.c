@@ -50,7 +50,11 @@ static void setup(void)
 {
 	quotactl_info();
 
-	/* ensure superblock has quota data, but not running */
+	/*
+	 * Ensure superblock has quota data, but not running. In here, we must unmount
+	 * completely and mount again with '-o no quota' because 'mount -o remount, noquota'
+	 * isn't sufficient to disable accounting feature.
+	 */
 	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, "usrquota");
 	mount_flag = 1;
 	SAFE_UMOUNT(MNTPOINT);
