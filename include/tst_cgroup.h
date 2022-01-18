@@ -93,15 +93,18 @@ enum tst_cgroup_ver {
  * test to request a particular CGroup structure.
  */
 struct tst_cgroup_opts {
-	/* Only try to mount V1 CGroup controllers. This will not
-	 * prevent V2 from being used if it is already mounted, it
-	 * only indicates that we should mount V1 controllers if
-	 * nothing is present. By default we try to mount V2 first. */
-	int only_mount_v1:1;
+	/* Call tst_brk with TCONF if the controller is not on this
+	 * version. Defautls to zero to accept any version.
+	 */
+	enum tst_cgroup_ver needs_ver;
 };
 
 /* A Control Group in LTP's aggregated hierarchy */
 struct tst_cgroup_group;
+
+/* Populated with a reference to this tests's CGroup */
+extern const struct tst_cgroup_group *const tst_cgroup;
+extern const struct tst_cgroup_group *const tst_cgroup_drain;
 
 /* Search the system for mounted cgroups and available
  * controllers. Called automatically by tst_cgroup_require.
@@ -111,22 +114,20 @@ void tst_cgroup_scan(void);
 void tst_cgroup_print_config(void);
 
 /* Ensure the specified controller is available in the test's default
- * CGroup, mounting/enabling it if necessary */
+ * CGroup, mounting/enabling it if necessary. Usually this is not
+ * necesary use tst_test.needs_cgroup_controllers instead.
+ */
 void tst_cgroup_require(const char *const ctrl_name,
 			const struct tst_cgroup_opts *const options)
-			__attribute__ ((nonnull (1)));
+			__attribute__ ((nonnull));
 
 /* Tear down any CGroups created by calls to tst_cgroup_require */
 void tst_cgroup_cleanup(void);
 
-/* Get the default CGroup for the test. It allocates memory (in a
- * guarded buffer) so should always be called from setup
+/* Call this in setup after you call tst_cgroup_require and want to
+ * initialize tst_cgroup and tst_cgroup_drain. See tst_cgroup_require.
  */
-const struct tst_cgroup_group *tst_cgroup_get_test_group(void)
-	__attribute__ ((warn_unused_result));
-/* Get the shared drain group. Also should be called from setup */
-const struct tst_cgroup_group *tst_cgroup_get_drain_group(void)
-	__attribute__ ((warn_unused_result));
+void tst_cgroup_init(void);
 
 /* Create a descendant CGroup */
 struct tst_cgroup_group *

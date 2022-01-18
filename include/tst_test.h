@@ -99,6 +99,7 @@ pid_t safe_fork(const char *filename, unsigned int lineno);
 #include "tst_safe_file_ops.h"
 #include "tst_safe_net.h"
 #include "tst_clone.h"
+#include "tst_cgroup.h"
 
 /*
  * Wait for all children and exit with TBROK if
@@ -280,6 +281,12 @@ struct tst_test {
 
 	/* NULL terminated array of required commands */
 	const char *const *needs_cmds;
+
+	/* Requires a particular CGroup API version. */
+	const enum tst_cgroup_ver needs_cgroup_ver;
+
+	/* {} terminated array of required CGroup controllers */
+	const char *const *needs_cgroup_ctrls;
 };
 
 /*

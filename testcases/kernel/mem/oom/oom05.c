@@ -36,8 +36,6 @@
 
 #ifdef HAVE_NUMA_V2
 
-static const struct tst_cgroup_group *cg;
-
 static void verify_oom(void)
 {
 #ifdef TST_ABI32
@@ -53,29 +51,29 @@ static void verify_oom(void)
 	 * 1 to cpuset.memory_migrate to enable the migration.
 	 */
 	if (is_numa(NULL, NH_MEMS, 2) &&
-	    SAFE_CGROUP_HAS(cg, "cpuset.memory_migrate")) {
-		SAFE_CGROUP_PRINT(cg, "cpuset.memory_migrate", "1");
+	    SAFE_CGROUP_HAS(tst_cgroup, "cpuset.memory_migrate")) {
+		SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.memory_migrate", "1");
 		tst_res(TINFO, "OOM on CPUSET & MEMCG with "
 				"cpuset.memory_migrate=1");
 		testoom(0, 0, ENOMEM, 1);
 	}
 
-	if (SAFE_CGROUP_HAS(cg, "memory.swap.max")) {
+	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swap.max")) {
 		tst_res(TINFO, "OOM on CPUSET & MEMCG with "
 				"special memswap limitation:");
-		if (!TST_CGROUP_VER_IS_V1(cg, "memory"))
-			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", MB);
+		if (!TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
+			SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", MB);
 		else
-			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", TESTMEM + MB);
+			SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", TESTMEM + MB);
 
 		testoom(0, 1, ENOMEM, 1);
 
 		tst_res(TINFO, "OOM on CPUSET & MEMCG with "
 				"disabled memswap limitation:");
-		if (TST_CGROUP_VER_IS_V1(cg, "memory"))
-			SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", ~0UL);
+		if (TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
+			SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", ~0UL);
 		else
-			SAFE_CGROUP_PRINT(cg, "memory.swap.max", "max");
+			SAFE_CGROUP_PRINT(tst_cgroup, "memory.swap.max", "max");
 		testoom(0, 0, ENOMEM, 1);
 	}
 }
@@ -90,10 +88,6 @@ void setup(void)
 	overcommit = get_sys_tune("overcommit_memory");
 	set_sys_tune("overcommit_memory", 1, 1);
 
-	tst_cgroup_require("memory", NULL);
-	tst_cgroup_require("cpuset", NULL);
-	cg = tst_cgroup_get_test_group();
-
 	/*
 	 * Some nodes do not contain memory, so use
 	 * get_allowed_nodes(NH_MEMS) to get a memory
@@ -105,16 +99,15 @@ void setup(void)
 		tst_brk(TBROK, "Failed to get a memory node "
 			      "using get_allowed_nodes()");
 
-	write_cpusets(cg, memnode);
-	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
-	SAFE_CGROUP_PRINTF(cg, "memory.max", "%lu", TESTMEM);
+	write_cpusets(tst_cgroup, memnode);
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%lu", TESTMEM);
 }
 
 void cleanup(void)
 {
 	if (overcommit != -1)
 		set_sys_tune("overcommit_memory", overcommit, 0);
-	tst_cgroup_cleanup();
 }
 
 static struct tst_test test = {
@@ -124,6 +117,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_oom,
+	.needs_cgroup_ctrls = (const char *const []){
+		"memory", "cpuset", NULL
+	},
 };
 
 #else

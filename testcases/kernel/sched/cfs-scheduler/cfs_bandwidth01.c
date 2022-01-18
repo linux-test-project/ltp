@@ -29,10 +29,8 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
-#include "tst_cgroup.h"
 #include "tst_timer.h"
 
-static const struct tst_cgroup_group *cg_test;
 static struct tst_cgroup_group *cg_level2, *cg_level3a, *cg_level3b;
 static struct tst_cgroup_group *cg_workers[3];
 static int may_have_waiters = 0;
@@ -132,11 +130,7 @@ static void do_test(void)
 
 static void setup(void)
 {
-	tst_cgroup_require("cpu", NULL);
-
-	cg_test = tst_cgroup_get_test_group();
-
-	cg_level2 = tst_cgroup_group_mk(cg_test, "level2");
+	cg_level2 = tst_cgroup_group_mk(tst_cgroup, "level2");
 
 	cg_level3a = tst_cgroup_group_mk(cg_level2, "level3a");
 	mk_cpu_cgroup(&cg_workers[0], cg_level3a, "worker1", 30);
@@ -167,8 +161,6 @@ static void cleanup(void)
 		cg_level3b = tst_cgroup_group_rm(cg_level3b);
 	if (cg_level2)
 		cg_level2 = tst_cgroup_group_rm(cg_level2);
-
-	tst_cgroup_cleanup();
 }
 
 static struct tst_test test = {
@@ -182,6 +174,7 @@ static struct tst_test test = {
 		"CONFIG_CFS_BANDWIDTH",
 		NULL
 	},
+	.needs_cgroup_ctrls = (const char *const []){"cpu", NULL},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "39f23ce07b93"},
 		{"linux-git", "b34cb07dde7c"},

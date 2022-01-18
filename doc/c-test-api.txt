@@ -2059,11 +2059,13 @@ the field value of file.
 1.36 Using Control Group
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Some LTP tests need specific Control Group configurations. tst_cgroup.h provides
-APIs to discover and use CGroups. There are many differences between CGroups API
-V1 and V2. We encapsulate the details of configuring CGroups in high-level
-functions which follow the V2 kernel API. Allowing one to use CGroups without
-caring too much about the current system's configuration.
+Some LTP tests need specific Control Group configurations.  'tst_cgroup.h'
+provides APIs to discover and use CGroups. There are many differences between
+CGroups API V1 and V2. We encapsulate the details of configuring CGroups in
+high-level functions which follow the V2 kernel API where possible. Allowing one
+to write code that works on both V1 or V2. At least some of the time anyway;
+often the behavioural differences between V1 and V2 are too great. In such cases
+we revert to branching on the CGroup version.
 
 Also, the LTP library will automatically mount/umount and configure the CGroup
 hierarchies if that is required (e.g. if you run the tests from init with no
@@ -2072,9 +2074,6 @@ system manager).
 [source,c]
 -------------------------------------------------------------------------------
 #include "tst_test.h"
-#include "tst_cgroup.h"
-
-static const struct tst_cgroup_group *cg;
 
 static void run(void)
 {
@@ -2085,34 +2084,24 @@ static void run(void)
 
 static void setup(void)
 {
-	tst_cgroup_require("memory", NULL);
-	cg = tst_cgroup_get_test_group();
-	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
-	SAFE_CGROUP_PRINTF(cg, "memory.max", "%lu", MEMSIZE);
-	if (SAFE_CGROUP_HAS(cg, "memory.swap.max"))
-		SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%zu", memsw);
-}
-
-static void cleanup(void)
-{
-	tst_cgroup_cleanup();
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%lu", MEMSIZE);
+	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swap.max"))
+		SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%zu", memsw);
 }
 
 struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
 	.cleanup = cleanup,
+	.needs_cgroup_controllers = (const char *const []){ "memory", NULL },
 	...
 };
 -------------------------------------------------------------------------------
 
 Above, we first ensure the memory controller is available on the
-test's CGroup with 'tst_cgroup_require'. We then get a structure,
-'cg', which represents the test's CGroup. Note that
-'tst_cgroup_get_test_group' should not be called many times, as it is
-allocated in a guarded buffer (See section 2.2.31). Therefor it is
-best to call it once in 'setup' and not 'run' because 'run' may be
-repeated with the '-i' option.
+test's CGroup with '.needs_cgroup_controllers'. This populates a structure,
+'tst_cgroup', which represents the test's CGroup.
 
 We then write the current processes PID into 'cgroup.procs', which
 moves the current process into the test's CGroup. After which we set
@@ -2132,8 +2121,6 @@ cleanup is also mostly hidden. However things can get much worse.
 
 [source,c]
 -------------------------------------------------------------------------------
-static const struct tst_cgroup_group *cg;
-static const struct tst_cgroup_group *cg_drain;
 static struct tst_cgroup_group *cg_child;
 
 static void run(void)
@@ -2141,19 +2128,21 @@ static void run(void)
 	char buf[BUFSIZ];
 	size_t mem = 0;
 
-	cg_child = tst_cgroup_group_mk(cg, "child");
+	cg_child = tst_cgroup_group_mk(tst_cgroup, "child");
 	SAFE_CGROUP_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-	if (!TST_CGROUP_VER_IS_V1(cg, "memory"))
-		SAFE_CGROUP_PRINT(cg, "cgroup.subtree_control", "+memory");
-	if (!TST_CGROUP_VER_IS_V1(cg, "cpuset"))
-		SAFE_CGROUP_PRINT(cg, "cgroup.subtree_control", "+cpuset");
+	if (!TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
+		SAFE_CGROUP_PRINT(tst_cgroup, "cgroup.subtree_control", "+memory");
+	if (!TST_CGROUP_VER_IS_V1(tst_cgroup, "cpuset"))
+		SAFE_CGROUP_PRINT(tst_cgroup, "cgroup.subtree_control", "+cpuset");
 
 	if (!SAFE_FORK()) {
 		SAFE_CGROUP_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-		if (SAFE_CGROUP_HAS(cg_child, "memory.swap"))
-			SAFE_CGROUP_SCANF(cg_child, "memory.swap.current", "%zu", &mem);
+		if (SAFE_CGROUP_HAS(cg_child, "memory.swap")) {
+			SAFE_CGROUP_SCANF(cg_child,
+					  "memory.swap.current", "%zu", &mem);
+		}
 		SAFE_CGROUP_READ(cg_child, "cpuset.mems", buf, sizeof(buf));
 
 		// Do something with cpuset.mems and memory.current values
@@ -2163,43 +2152,41 @@ static void run(void)
 	}
 
 	tst_reap_children();
-	SAFE_CGROUP_PRINTF(cg_drain, "cgroup.procs", "%d", getpid());
+	SAFE_CGROUP_PRINTF(tst_cgroup_drain, "cgroup.procs", "%d", getpid());
 	cg_child = tst_cgroup_group_rm(cg_child);
-}
-
-static void setup(void)
-{
-	tst_cgroup_require("memory", NULL);
-	tst_cgroup_require("cpuset", NULL);
-
-	cg = tst_cgroup_get_test_group();
-	cg_drain = tst_cgroup_get_drain_group();
 }
 
 static void cleanup(void)
 {
 	if (cg_child) {
-		SAFE_CGROUP_PRINTF(cg_drain, "cgroup.procs", "%d", getpid());
+		SAFE_CGROUP_PRINTF(tst_cgroup_drain, "cgroup.procs", "%d", getpid());
 		cg_child = tst_cgroup_group_rm(cg_child);
 	}
-
-	tst_cgroup_cleanup();
 }
 
 struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
-	.cleanup = cleanup,
+	.needs_cgroup_controllers = (const char *const []){
+		"cpuset",
+		"memory",
+		NULL
+	},
 	...
 };
 -------------------------------------------------------------------------------
 
-Starting with setup; we can see here that we also fetch the 'drain'
+Starting with setup; we can see here that we fetch the 'drain'
 CGroup. This is a shared group (between parallel tests) which may
-contain processes from other tests. It should have default settings and
-these should not be changed by the test. It can be used to remove
+contain processes from other tests. It should have default settings
+and these should not be changed by the test. It can be used to remove
 processes from other CGroups incase the hierarchy root is not
 accessible.
+
+Note that 'tst_cgroup_get_drain_group' should not be called many times,
+as it is allocated in a guarded buffer (See section 2.2.31). Therefor
+it is best to call it once in 'setup' and not 'run' because 'run' may
+be repeated with the '-i' option.
 
 In 'run', we first create a child CGroup with 'tst_cgroup_mk'. As we
 create this CGroup in 'run' we should also remove it at the end of
@@ -2232,22 +2219,23 @@ destroying the child CGroup. So there is no need to transfer the child
 to drain. However the parent process must be moved otherwise we will
 get 'EBUSY' when trying to remove the child CGroup.
 
-Another example of an edge case is the following.
+Another example of a behavioral difference between versions is shown below.
 
 [source,c]
 -------------------------------------------------------------------------------
-	if (TST_CGROUP_VER_IS_V1(cg, "memory"))
-		SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%lu", ~0UL);
+	if (TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
+		SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", ~0UL);
 	else
-		SAFE_CGROUP_PRINT(cg, "memory.swap.max", "max");
+		SAFE_CGROUP_PRINT(tst_cgroup, "memory.swap.max", "max");
 -------------------------------------------------------------------------------
 
 CGroups V2 introduced a feature where 'memory[.swap].max' could be set to
 "max". This does not appear to work on V1 'limit_in_bytes' however. For most
 tests, simply using a large number is sufficient and there is no need to use
 "max". Importantly though, one should be careful to read both the V1 and V2
-kernel docs. The LTP library can not handle all edge cases. It does the minimal
-amount of work to make testing on both V1 and V2 feasible.
+kernel docs. Presently the LTP library does not attempt to handle most
+differences in semantics. It does the minimal amount of work to make testing on
+both V1 and V2 feasible.
 
 1.37 Require minimum numbers of CPU for a testcase
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -59,8 +59,6 @@
 #include "mem.h"
 #include "ksm_common.h"
 
-static const struct tst_cgroup_group *cg;
-
 static void verify_ksm(void)
 {
 	create_same_memory(size, num, unit);
@@ -79,18 +77,16 @@ static void setup(void)
 
 	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
 
-	tst_cgroup_require("memory", NULL);
-	cg = tst_cgroup_get_test_group();
-	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
-	SAFE_CGROUP_PRINTF(cg, "memory.max", "%lu", TESTMEM);
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%lu", TESTMEM);
 }
 
 static void cleanup(void)
 {
-	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
+	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0) {
 		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
-	tst_cgroup_cleanup();
+	}
 }
 
 static struct tst_test test = {
@@ -110,4 +106,5 @@ static struct tst_test test = {
 	},
 	.test_all = verify_ksm,
 	.min_kver = "2.6.32",
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };

@@ -18,7 +18,6 @@
 #include "lapi/mount.h"
 #include "lapi/mkdirat.h"
 #include "tst_safe_file_at.h"
-#include "tst_cgroup.h"
 
 struct cgroup_root;
 
@@ -138,6 +137,14 @@ struct tst_cgroup_group {
 	struct cgroup_dir *dirs[ROOTS_MAX + 1];
 };
 
+/* If controllers are required via the tst_test struct then this is
+ * populated with the test's CGroup.
+ */
+static struct tst_cgroup_group test_group;
+static struct tst_cgroup_group drain_group;
+const struct tst_cgroup_group *const tst_cgroup = &test_group;
+const struct tst_cgroup_group *const tst_cgroup_drain = &drain_group;
+
 /* Always use first item for unified hierarchy */
 static struct cgroup_root roots[ROOTS_MAX + 1];
 
@@ -195,8 +202,6 @@ static struct cgroup_ctrl controllers[] = {
 	},
 	{ }
 };
-
-static const struct tst_cgroup_opts default_opts = { 0 };
 
 /* We should probably allow these to be set in environment
  * variables
@@ -607,9 +612,6 @@ void tst_cgroup_require(const char *const ctrl_name,
 		return;
 	}
 
-	if (!options)
-		options = &default_opts;
-
 	if (ctrl->we_require_it)
 		tst_res(TWARN, "Duplicate %s(%s, )", __func__, ctrl->ctrl_name);
 
@@ -623,13 +625,14 @@ void tst_cgroup_require(const char *const ctrl_name,
 	if (ctrl->ctrl_root)
 		goto mkdirs;
 
-	if (!cgroup_v2_mounted() && !options->only_mount_v1)
+	if (!cgroup_v2_mounted() && options->needs_ver != TST_CGROUP_V1)
 		cgroup_mount_v2();
 
 	if (ctrl->ctrl_root)
 		goto mkdirs;
 
-	cgroup_mount_v1(ctrl);
+	if (options->needs_ver != TST_CGROUP_V2)
+		cgroup_mount_v1(ctrl);
 
 	if (!ctrl->ctrl_root) {
 		tst_brk(TCONF,
@@ -641,6 +644,17 @@ void tst_cgroup_require(const char *const ctrl_name,
 mkdirs:
 	root = ctrl->ctrl_root;
 	add_ctrl(&root->mnt_dir.ctrl_field, ctrl);
+
+	if (cgroup_ctrl_on_v2(ctrl) && options->needs_ver == TST_CGROUP_V1) {
+		tst_brk(TCONF,
+			"V1 '%s' controller required, but it's mounted on V2",
+			ctrl->ctrl_name);
+	}
+	if (!cgroup_ctrl_on_v2(ctrl) && options->needs_ver == TST_CGROUP_V2) {
+		tst_brk(TCONF,
+			"V2 '%s' controller required, but it's mounted on V1",
+			ctrl->ctrl_name);
+	}
 
 	if (cgroup_ctrl_on_v2(ctrl)) {
 		if (root->we_mounted_it) {
@@ -1028,18 +1042,19 @@ int safe_cgroup_has(const char *const file, const int lineno,
 	return 0;
 }
 
-__attribute__ ((warn_unused_result))
-static struct tst_cgroup_group *cgroup_group_from_roots(const size_t tree_off)
+static void group_from_roots(struct tst_cgroup_group *const cg)
 {
 	struct cgroup_root *root;
-	struct cgroup_dir *dir;
-	struct tst_cgroup_group *cg;
 
-	cg = tst_alloc(sizeof(*cg));
-	cgroup_group_init(cg, NULL);
+	if (cg->group_name[0]) {
+		tst_brk(TBROK,
+			"%s CGroup already initialized",
+			cg == &test_group ? "Test" : "Drain");
+	}
 
 	for_each_root(root) {
-		dir = (typeof(dir))(((char *)root) + tree_off);
+		struct cgroup_dir *dir =
+			cg == &test_group ? &root->test_dir : &root->drain_dir;
 
 		if (dir->ctrl_field)
 			cgroup_group_add_dir(NULL, cg, dir);
@@ -1047,23 +1062,17 @@ static struct tst_cgroup_group *cgroup_group_from_roots(const size_t tree_off)
 
 	if (cg->dirs[0]) {
 		strncpy(cg->group_name, cg->dirs[0]->dir_name, NAME_MAX);
-		return cg;
+		return;
 	}
 
 	tst_brk(TBROK,
 		"No CGroups found; maybe you forgot to call tst_cgroup_require?");
-
-	return cg;
 }
 
-const struct tst_cgroup_group *tst_cgroup_get_test_group(void)
+void tst_cgroup_init(void)
 {
-	return cgroup_group_from_roots(offsetof(struct cgroup_root, test_dir));
-}
-
-const struct tst_cgroup_group *tst_cgroup_get_drain_group(void)
-{
-	return cgroup_group_from_roots(offsetof(struct cgroup_root, drain_dir));
+	group_from_roots(&test_group);
+	group_from_roots(&drain_group);
 }
 
 ssize_t safe_cgroup_read(const char *const file, const int lineno,

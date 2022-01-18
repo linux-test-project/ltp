@@ -35,8 +35,6 @@
 
 #ifdef HAVE_NUMA_V2
 
-static const struct tst_cgroup_group *cg;
-
 volatile int end;
 static int *nodes;
 static int nnodes;
@@ -53,10 +51,10 @@ static void test_cpuset(void)
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	char buf[BUFSIZ];
 
-	SAFE_CGROUP_READ(cg, "cpuset.cpus", buf, sizeof(buf));
-	SAFE_CGROUP_PRINT(cg, "cpuset.cpus", buf);
-	SAFE_CGROUP_READ(cg, "cpuset.mems", buf, sizeof(buf));
-	SAFE_CGROUP_PRINT(cg, "cpuset.mems", buf);
+	SAFE_CGROUP_READ(tst_cgroup, "cpuset.cpus", buf, sizeof(buf));
+	SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.cpus", buf);
+	SAFE_CGROUP_READ(tst_cgroup, "cpuset.mems", buf, sizeof(buf));
+	SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.mems", buf);
 
 	child = SAFE_FORK();
 	if (child == 0) {
@@ -70,8 +68,8 @@ static void test_cpuset(void)
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}
 
-	SAFE_CGROUP_PRINTF(cg, "cpuset.mems", "%d", nodes[0]);
-	SAFE_CGROUP_PRINTF(cg, "cpuset.mems", "%d", nodes[1]);
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cpuset.mems", "%d", nodes[0]);
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cpuset.mems", "%d", nodes[1]);
 
 	tst_reap_children();
 
@@ -80,20 +78,13 @@ static void test_cpuset(void)
 
 static void setup(void)
 {
-	tst_cgroup_require("cpuset", NULL);
 	ncpus = count_cpu();
 	if (get_allowed_nodes_arr(NH_MEMS | NH_CPUS, &nnodes, &nodes) < 0)
 		tst_brk(TBROK | TERRNO, "get_allowed_nodes_arr");
 	if (nnodes <= 1)
 		tst_brk(TCONF, "requires a NUMA system.");
 
-	cg = tst_cgroup_get_test_group();
-	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
-}
-
-static void cleanup(void)
-{
-	tst_cgroup_cleanup();
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
 }
 
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
@@ -183,9 +174,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = test_cpuset,
 	.min_kver = "2.6.32",
+	.needs_cgroup_ctrls = (const char *const []){ "cpuset", NULL },
 };
 
 #else

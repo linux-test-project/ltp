@@ -26,7 +26,6 @@
 #include "memcontrol_common.h"
 
 static size_t page_size;
-static const struct tst_cgroup_group *cg_test;
 static struct tst_cgroup_group *cg_child;
 static int fd;
 static int file_to_all_error = 10;
@@ -37,7 +36,7 @@ static void alloc_anon_50M_check(void)
 	char *buf, *ptr;
 	ssize_t anon, current;
 	const char *const anon_key_fmt =
-		TST_CGROUP_VER_IS_V1(cg_test, "memory") ? "rss %zd" : "anon %zd";
+		TST_CGROUP_VER_IS_V1(tst_cgroup, "memory") ? "rss %zd" : "anon %zd";
 
 	buf = SAFE_MALLOC(size);
 	for (ptr = buf; ptr < buf + size; ptr += page_size)
@@ -62,7 +61,7 @@ static void alloc_pagecache_50M_check(void)
 	const size_t size = MB(50);
 	size_t current, file;
 	const char *const file_key_fmt =
-		TST_CGROUP_VER_IS_V1(cg_test, "memory") ? "cache %zd" : "file %zd";
+		TST_CGROUP_VER_IS_V1(tst_cgroup, "memory") ? "cache %zd" : "file %zd";
 
 	fd = SAFE_OPEN(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600);
 
@@ -89,7 +88,7 @@ static void test_memcg_current(unsigned int n)
 {
 	size_t current;
 
-	cg_child = tst_cgroup_group_mk(cg_test, "child");
+	cg_child = tst_cgroup_group_mk(tst_cgroup, "child");
 	SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zu", &current);
 	TST_EXP_EXPR(current == 0, "(current=%zu) == 0", current);
 
@@ -114,9 +113,6 @@ static void setup(void)
 {
 	page_size = SAFE_SYSCONF(_SC_PAGESIZE);
 
-	tst_cgroup_require("memory", NULL);
-	cg_test = tst_cgroup_get_test_group();
-
 	switch (tst_fs_type(TMPDIR)) {
 	case TST_VFAT_MAGIC:
 	case TST_EXFAT_MAGIC:
@@ -130,8 +126,6 @@ static void cleanup(void)
 {
 	if (cg_child)
 		cg_child = tst_cgroup_group_rm(cg_child);
-
-	tst_cgroup_cleanup();
 }
 
 static struct tst_test test = {
@@ -145,4 +139,5 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.forks_child = 1,
 	.needs_root = 1,
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };

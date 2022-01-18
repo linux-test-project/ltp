@@ -16,17 +16,15 @@
 #include <stdio.h>
 
 #include "tst_test.h"
-#include "tst_cgroup.h"
 
-static const struct tst_cgroup_group *cg_test;
 static struct tst_cgroup_group *parent, *child;
 static struct tst_cgroup_group *parent2, *child2;
 
 static void test_memcg_subtree_control(void)
 {
-	parent = tst_cgroup_group_mk(cg_test, "memcg_test_0");
+	parent = tst_cgroup_group_mk(tst_cgroup, "memcg_test_0");
 	child = tst_cgroup_group_mk(parent, "memcg_test_1");
-	parent2 = tst_cgroup_group_mk(cg_test, "memcg_test_2");
+	parent2 = tst_cgroup_group_mk(tst_cgroup, "memcg_test_2");
 	child2 = tst_cgroup_group_mk(parent2, "memcg_test_3");
 
 	SAFE_CGROUP_PRINT(parent2, "cgroup.subtree_control", "-memory");
@@ -44,15 +42,6 @@ static void test_memcg_subtree_control(void)
 	parent = tst_cgroup_group_rm(parent);
 }
 
-static void setup(void)
-{
-	tst_cgroup_require("memory", NULL);
-	cg_test = tst_cgroup_get_test_group();
-
-	if (TST_CGROUP_VER_IS_V1(cg_test, "memory"))
-		tst_brk(TCONF, "V1 controllers do not have subtree control");
-}
-
 static void cleanup(void)
 {
 	if (child2)
@@ -63,12 +52,11 @@ static void cleanup(void)
 		child = tst_cgroup_group_rm(child);
 	if (parent)
 		parent = tst_cgroup_group_rm(parent);
-
-	tst_cgroup_cleanup();
 }
 
 static struct tst_test test = {
-	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_memcg_subtree_control,
+	.needs_cgroup_ver = TST_CGROUP_V2,
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };

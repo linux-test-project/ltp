@@ -48,15 +48,12 @@
 #include <sys/mount.h>
 #include <sys/sysinfo.h>
 #include "tst_test.h"
-#include "tst_cgroup.h"
 
 #define CHUNK_SZ (400*1024*1024L)
 #define MEM_LIMIT (CHUNK_SZ / 2)
 #define MEMSW_LIMIT (2 * CHUNK_SZ)
 #define PASS_THRESHOLD (CHUNK_SZ / 4)
 #define PASS_THRESHOLD_KB (PASS_THRESHOLD / 1024)
-
-static const struct tst_cgroup_group *cg;
 
 static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
 static int pg_sz, stat_refresh_sup;
@@ -73,10 +70,10 @@ static void print_cgmem(const char *name)
 {
 	long ret;
 
-	if (!SAFE_CGROUP_HAS(cg, name))
+	if (!SAFE_CGROUP_HAS(tst_cgroup, name))
 		return;
 
-	SAFE_CGROUP_SCANF(cg, name, "%ld", &ret);
+	SAFE_CGROUP_SCANF(tst_cgroup, name, "%ld", &ret);
 	tst_res(TINFO, "\t%s: %ld Kb", name, ret / 1024);
 }
 
@@ -121,21 +118,18 @@ static void setup(void)
 	check_path("/proc/self/oom_score_adj");
 	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
 
-	tst_cgroup_require("memory", NULL);
-	cg = tst_cgroup_get_test_group();
+	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%ld", MEM_LIMIT);
+	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swap.max"))
+		SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%ld", MEMSW_LIMIT);
 
-	SAFE_CGROUP_PRINTF(cg, "memory.max", "%ld", MEM_LIMIT);
-	if (SAFE_CGROUP_HAS(cg, "memory.swap.max"))
-		SAFE_CGROUP_PRINTF(cg, "memory.swap.max", "%ld", MEMSW_LIMIT);
-
-	if (SAFE_CGROUP_HAS(cg, "memory.swappiness")) {
-		SAFE_CGROUP_PRINT(cg, "memory.swappiness", "60");
+	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swappiness")) {
+		SAFE_CGROUP_PRINT(tst_cgroup, "memory.swappiness", "60");
 	} else {
 		check_path("/proc/sys/vm/swappiness");
 		SAFE_FILE_PRINTF("/proc/sys/vm/swappiness", "%d", 60);
 	}
 
-	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
 
 	meminfo_diag("Initial meminfo, later values are relative to this (except memcg)");
 	init_swap = SAFE_READ_MEMINFO("SwapTotal:") - SAFE_READ_MEMINFO("SwapFree:");
@@ -147,11 +141,6 @@ static void setup(void)
 
 	tst_res(TINFO, "mapping %ld Kb (%ld pages), limit %ld Kb, pass threshold %ld Kb",
 		CHUNK_SZ / 1024, CHUNK_SZ / pg_sz, MEM_LIMIT / 1024, PASS_THRESHOLD_KB);
-}
-
-static void cleanup(void)
-{
-	tst_cgroup_cleanup();
 }
 
 static void dirty_pages(char *ptr, long size)
@@ -237,7 +226,6 @@ static void test_advice_willneed(void)
 static struct tst_test test = {
 	.test_all = test_advice_willneed,
 	.setup = setup,
-	.cleanup = cleanup,
 	.min_kver = "3.10.0",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
@@ -245,6 +233,7 @@ static struct tst_test test = {
 		"?/proc/sys/vm/swappiness",
 		NULL
 	},
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "55231e5c898c"},
 		{"linux-git", "8de15e920dc8"},

@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "tst_test.h"
-#include "tst_cgroup.h"
 
 static char *only_mount_v1;
 static char *no_cleanup;
@@ -22,7 +21,7 @@ static void do_test(void)
 
 static void setup(void)
 {
-	cgopts.only_mount_v1 = !!only_mount_v1,
+	cgopts.needs_ver = !!only_mount_v1 ? TST_CGROUP_V1 : 0;
 
 	tst_cgroup_scan();
 	tst_cgroup_print_config();

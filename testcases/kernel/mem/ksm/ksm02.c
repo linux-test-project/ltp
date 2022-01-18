@@ -59,9 +59,6 @@
 #ifdef HAVE_NUMA_V2
 #include <numaif.h>
 
-static const struct tst_cgroup_group *cg;
-static const struct tst_cgroup_group *cg_drain;
-
 static void verify_ksm(void)
 {
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
@@ -79,19 +76,18 @@ static void verify_ksm(void)
 	}
 	create_same_memory(size, num, unit);
 
-	write_cpusets(cg, node);
-	SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", getpid());
+	write_cpusets(tst_cgroup, node);
+	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
 	create_same_memory(size, num, unit);
-	SAFE_CGROUP_PRINTF(cg_drain, "cgroup.procs", "%d", getpid());
+	SAFE_CGROUP_PRINTF(tst_cgroup_drain, "cgroup.procs", "%d", getpid());
 }
 
 static void cleanup(void)
 {
-	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
+	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0) {
 		FILE_PRINTF(PATH_KSM "merge_across_nodes",
 				 "%d", merge_across_nodes);
-
-	tst_cgroup_cleanup();
+	}
 }
 
 static void setup(void)
@@ -106,10 +102,6 @@ static void setup(void)
 				"%d", &merge_across_nodes);
 		SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "1");
 	}
-
-	tst_cgroup_require("cpuset", NULL);
-	cg = tst_cgroup_get_test_group();
-	cg_drain = tst_cgroup_get_drain_group();
 }
 
 static struct tst_test test = {
@@ -129,6 +121,7 @@ static struct tst_test test = {
 	},
 	.test_all = verify_ksm,
 	.min_kver = "2.6.32",
+	.needs_cgroup_ctrls = (const char *const []){ "cpuset", NULL },
 };
 
 #else

@@ -6,7 +6,6 @@
 #define _MEM_H
 #include "config.h"
 #include "tst_test.h"
-#include "tst_cgroup.h"
 #include "ksm_helper.h"
 #include "tst_memutils.h"
 

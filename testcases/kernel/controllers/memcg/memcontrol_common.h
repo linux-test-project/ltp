@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "tst_test.h"
-#include "tst_cgroup.h"
 
 #define TMPDIR "mntdir"
 #define MB(x) (x << 20)
