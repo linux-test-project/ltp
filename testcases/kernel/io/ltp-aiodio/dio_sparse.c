@@ -33,10 +33,10 @@ static char *str_writesize;
 static char *str_filesize;
 static char *str_offset;
 
-static int numchildren;
-static long long writesize;
-static long long filesize;
-static long long offset;
+static int numchildren = 16;
+static long long writesize = 1024;
+static long long filesize = 100 * 1024 * 1024;
+static long long offset = 0;
 static long long alignment;
 
 static void dio_sparse(int fd, int align, long long fs, int ws, long long off)
@@ -59,12 +59,6 @@ static void dio_sparse(int fd, int align, long long fs, int ws, long long off)
 static void setup(void)
 {
 	struct stat sb;
-
-	numchildren = 1000;
-	writesize = 1024;
-	filesize = 100 * 1024 * 1024;
-	offset = 0;
-	alignment = 512;
 
 	if (tst_parse_int(str_numchildren, &numchildren, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of children '%s'", str_numchildren);
@@ -129,7 +123,7 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.options = (struct tst_option[]) {
-		{"n:", &str_numchildren, "Number of threads (default 1000)"},
+		{"n:", &str_numchildren, "Number of threads (default 16)"},
 		{"w:", &str_writesize, "Size of writing blocks (default 1K)"},
 		{"s:", &str_filesize, "Size of file (default 100M)"},
 		{"o:", &str_offset, "File offset (default 0)"},
