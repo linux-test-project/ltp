@@ -121,9 +121,11 @@ architecture or similarly complicated code, put it into a header instead.
 2.1 C coding style
 ^^^^^^^^^^^^^^^^^^
 
-LTP adopted Linux kernel coding style. If you aren't familiar with its rules
-locate 'linux/Documentation/CodingStyle' in the kernel sources and read it,
-it's a well written introduction.
+LTP adopted Linux kernel coding style:
+https://www.kernel.org/doc/html/latest/process/coding-style.html
+
+If you aren't familiar with its rules please read it, it's a well written
+introduction.
 
 Run `make check` in the test's directory and/or use `make check-$TCID`,
 it uses (among other checks) our vendored version of
