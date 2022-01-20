@@ -1,6 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
  * Copyright (c) 2019 Cyril Hrubis <chrubis@suse.cz>
  */
 

@@ -1,7 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Michael Moese <mmoese@suse.com>
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
  */
 /* The commit 0fb44559ffd6  af_unix: move unix_mknod() out of bindlock
  * changed the behavior of bind() for STREAM UNIX domain sockets if

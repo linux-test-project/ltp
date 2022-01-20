@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2018 Michael Moese <mmoese@suse.com>
+ * Copyright (c) Linux Test Project, 2020
+ */
+
 #define TST_NO_DEFAULT_MAIN
 
 #include "tst_test.h"
