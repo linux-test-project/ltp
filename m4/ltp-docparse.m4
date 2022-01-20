@@ -35,7 +35,13 @@ with_metadata=no
 with_metadata_html=no
 with_metadata_pdf=no
 
-if test "x$enable_metadata" = xyes && test "x$enable_metadata_html" = xyes -o "x$enable_metadata_pdf" = xyes; then
+if test "x$enable_metadata" != xyes; then
+	enable_metadata_html=no
+	enable_metadata_pdf=no
+	with_metadata_generator=none
+fi
+
+if test "x$enable_metadata_html" = xyes -o "x$enable_metadata_pdf" = xyes; then
 	AX_PROG_PERL_MODULES(Cwd File::Basename JSON LWP::Simple)
 fi
 
