@@ -131,8 +131,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	*run_child = 0;
-	SAFE_MUNMAP(run_child, sizeof(int));
+	if (run_child) {
+		*run_child = 0;
+		SAFE_MUNMAP(run_child, sizeof(int));
+	}
 }
 
 static void run(void)
@@ -176,6 +178,10 @@ static struct tst_test test = {
 		{"c:", &str_appends, "Number of appends (default 1000)"},
 		{"b:", &str_numaio, "Number of async IO blocks (default 16)"},
 		{}
+	},
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
 	},
 };
 #else

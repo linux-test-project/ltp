@@ -83,8 +83,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	*run_child = 0;
-	SAFE_MUNMAP(run_child, sizeof(int));
+	if (run_child) {
+		*run_child = 0;
+		SAFE_MUNMAP(run_child, sizeof(int));
+	}
 }
 
 static void run(void)
@@ -128,5 +130,9 @@ static struct tst_test test = {
 		{"s:", &str_filesize, "Size of file (default 100M)"},
 		{"o:", &str_offset, "File offset (default 0)"},
 		{}
+	},
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
 	},
 };

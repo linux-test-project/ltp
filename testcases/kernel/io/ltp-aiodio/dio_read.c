@@ -177,4 +177,8 @@ static struct tst_test test = {
 		{"s:", &str_filesize, "File size (default 128M)"},
 		{}
 	},
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
+	},
 };

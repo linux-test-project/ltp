@@ -93,4 +93,8 @@ static struct tst_test test = {
 		{"c:", &str_appends, "Number of appends (default 1000)"},
 		{}
 	},
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
+	},
 };

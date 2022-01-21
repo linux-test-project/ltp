@@ -107,8 +107,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	*run_child = 0;
-	SAFE_MUNMAP(run_child, sizeof(int));
+	if (run_child) {
+		*run_child = 0;
+		SAFE_MUNMAP(run_child, sizeof(int));
+	}
 }
 
 static void run(void)
@@ -162,5 +164,9 @@ static struct tst_test test = {
 		{"a:", &str_numappends, "Number of appends (default 100)"},
 		{"c:", &str_numwrites, "Number of append & truncate (default 100)"},
 		{}
+	},
+	.skip_filesystems = (const char *[]) {
+		"tmpfs",
+		NULL
 	},
 };
