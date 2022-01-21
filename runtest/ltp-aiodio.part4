@@ -62,7 +62,7 @@ DIT002 dio_truncate
 #Running read_checkzero
 #gread_checkzero
 #Running dio_read
-DOR000 dio_read -n 1 -i 100
-DOR001 dio_read -n 10 -i 30
-DOR002 dio_read -n 20 -i 15
-DOR003 dio_read -n 100 -i 4
+DOR000 dio_read -n 1 -i 100 -r 512k -w 512k -s 32M
+DOR001 dio_read -n 10 -i 30 -r 512k -w 512k -s 32M
+DOR002 dio_read -n 20 -i 15 -r 512k -w 512k -s 32M
+DOR003 dio_read -n 100 -i 4 -r 512k -w 512k -s 32M
