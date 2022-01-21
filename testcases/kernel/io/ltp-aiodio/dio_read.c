@@ -26,7 +26,7 @@ static char *str_readsize;
 static char *str_filesize;
 
 static char *filename = "file.bin";
-static int numchildren = 100;
+static int numchildren = 8;
 static long long writesize = 32 * 1024 * 1024;
 static long long readsize = 32 * 1024 * 1024;
 static long long filesize = 128 * 1024 * 1024;
@@ -171,7 +171,7 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.options = (struct tst_option[]) {
-		{"n:", &str_numchildren, "Number of threads (default 100)"},
+		{"n:", &str_numchildren, "Number of threads (default 8)"},
 		{"w:", &str_writesize, "Size of writing blocks (default 32M)"},
 		{"r:", &str_readsize, "Size of reading blocks (default 32M)"},
 		{"s:", &str_filesize, "File size (default 128M)"},
