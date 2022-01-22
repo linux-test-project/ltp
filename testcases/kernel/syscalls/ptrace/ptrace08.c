@@ -55,25 +55,6 @@ static pid_t child_pid;
 # define KERN_ADDR_BITS 64
 #endif
 
-static int deffered_check;
-
-static struct tst_kern_exv kvers[] = {
-	{"RHEL8", "4.18.0-49"},
-	{NULL, NULL},
-};
-
-static void setup(void)
-{
-	/*
-	 * The original fix for the kernel haven't rejected the kernel address
-	 * right away when breakpoint was modified from userspace it was
-	 * disabled instead and the EINVAL was returned when dr7 was written to
-	 * enable it again. On RHEL8, it has introduced the right fix since
-	 * 4.18.0-49.
-	 */
-	if (tst_kvercmp2(4, 19, 0, kvers) < 0)
-		deffered_check = 1;
-}
 
 static void child_main(void)
 {
@@ -107,9 +88,13 @@ static void ptrace_try_kern_addr(unsigned long kern_addr)
 		(void *)offsetof(struct user, u_debugreg[0]),
 		(void *)kern_addr));
 
-	if (deffered_check) {
-		TEST(ptrace(PTRACE_POKEUSER, child_pid,
-			(void *)offsetof(struct user, u_debugreg[7]), (void *)1));
+	if (TST_RET == -1) {
+		addr = ptrace(PTRACE_PEEKUSER, child_pid,
+					  (void *)offsetof(struct user, u_debugreg[0]), NULL);
+		if (addr == kern_addr) {
+			TEST(ptrace(PTRACE_POKEUSER, child_pid,
+				(void *)offsetof(struct user, u_debugreg[7]), (void *)1));
+		}
 	}
 
 	if (TST_RET != -1) {
@@ -124,12 +109,7 @@ static void ptrace_try_kern_addr(unsigned long kern_addr)
 		}
 	}
 
-	addr = ptrace(PTRACE_PEEKUSER, child_pid,
-	              (void*)offsetof(struct user, u_debugreg[0]), NULL);
 #endif
-
-	if (!deffered_check && addr == kern_addr)
-		tst_res(TFAIL, "Was able to set breakpoint on kernel addr");
 
 	SAFE_PTRACE(PTRACE_DETACH, child_pid, NULL, NULL);
 	SAFE_KILL(child_pid, SIGCONT);
@@ -153,7 +133,6 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.test_all = run,
-	.setup = setup,
 	.cleanup = cleanup,
 	.forks_child = 1,
 	/*
