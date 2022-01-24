@@ -11,7 +11,7 @@ TST_NEEDS_CMDS="rpcinfo wc"
 
 do_setup()
 {
-	check_portmap_rpcbind
+	check_rpc
 
 	# Create file with 1 tcp and 1 udp line. Use for variable assignments.
 	rpcinfo -p $(tst_ipaddr) | grep tcp | sed -n 2p > rpc_out

@@ -45,7 +45,7 @@ rpc_parse_args()
 
 setup()
 {
-	check_portmap_rpcbind
+	check_rpc
 
 	if [ -n "$SERVER" ]; then
 		CLEANER="rpc_cleaner"

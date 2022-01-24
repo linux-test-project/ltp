@@ -19,7 +19,7 @@ do_cleanup()
 
 do_setup()
 {
-	check_portmap_rpcbind
+	check_rpc
 
 	tst_res TINFO "start rpc_server"
 	ROD rpc_server

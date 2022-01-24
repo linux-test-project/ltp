@@ -1,15 +1,21 @@
 #!/bin/sh
-# Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2021 Petr Vorel <pvorel@suse.cz>
 
+TST_NEEDS_CMDS="rpcinfo $TST_NEEDS_CMDS"
 . tst_net.sh
 
-check_portmap_rpcbind()
+check_rpc()
 {
-	if pgrep portmap > /dev/null; then
-		PORTMAPPER="portmap"
-	else
-		pgrep rpcbind > /dev/null && PORTMAPPER="rpcbind" || \
-			tst_brk TCONF "portmap or rpcbind is not running"
+	local services
+
+	tst_res TINFO "check registered RPC with rpcinfo"
+
+	services=$(rpcinfo -p)
+
+	if [ $? -ne 0 ] || ! echo "$services" | grep -q '[0-9]'; then
+		tst_brk TCONF "no RPC services, is rpcbind/portmap running?"
 	fi
-	tst_res TINFO "using $PORTMAPPER"
+
+	tst_res TINFO "registered RPC:"
+	echo "$services"
 }
