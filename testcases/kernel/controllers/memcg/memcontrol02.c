@@ -39,13 +39,17 @@ static int fd;
 static int file_to_all_error = 10;
 
 /*
- * Checks if two given values differ by less than err% of their sum.
+ * Checks if two given values differ by less than err% of their
+ * sum. An extra percent is added for every doubling of the page size
+ * to compensate for wastage in page sized allocations.
  */
 static inline int values_close(const ssize_t a,
 			       const ssize_t b,
 			       const ssize_t err)
 {
-	return 100 * labs(a - b) <= (a + b) * err;
+	const ssize_t page_adjusted_err = ffs(page_size >> 13) + err;
+
+	return 100 * labs(a - b) <= (a + b) * page_adjusted_err;
 }
 
 static void alloc_anon_50M_check(void)
