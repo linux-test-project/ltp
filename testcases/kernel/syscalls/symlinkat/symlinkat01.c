@@ -126,7 +126,7 @@ int TST_TOTAL = sizeof(test_desc) / sizeof(*test_desc);
 static int mysymlinkat(const char *oldfilename,
 		       int newdirfd, const char *newfilename)
 {
-	return ltp_syscall(__NR_symlinkat, oldfilename, newdirfd, newfilename);
+	return tst_syscall(__NR_symlinkat, oldfilename, newdirfd, newfilename);
 }
 
 int main(int ac, char **av)

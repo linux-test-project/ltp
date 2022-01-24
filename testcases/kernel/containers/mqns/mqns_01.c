@@ -59,7 +59,7 @@ int check_mqueue(void *vtest)
 		printf("read(p1[0], ...) failed: %s\n", strerror(errno));
 		exit(1);
 	}
-	mqd = ltp_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
+	mqd = tst_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
 	if (mqd == -1) {
 		if (write(p2[1], "notfnd", strlen("notfnd") + 1) < 0) {
 			perror("write(p2[1], ...) failed");
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK | TERRNO, NULL, "pipe failed");
 	}
 
-	mqd = ltp_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL,
+	mqd = tst_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL,
 		0777, NULL);
 	if (mqd == -1) {
 		perror("mq_open");
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 	if (r < 0) {
 		tst_resm(TFAIL, "failed clone/unshare");
 		mq_close(mqd);
-		ltp_syscall(__NR_mq_unlink, NOSLASH_MQ1);
+		tst_syscall(__NR_mq_unlink, NOSLASH_MQ1);
 		tst_exit();
 	}
 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 	if (mq_close(mqd) == -1) {
 		tst_brkm(TBROK | TERRNO, NULL, "mq_close failed");
 	}
-	ltp_syscall(__NR_mq_unlink, NOSLASH_MQ1);
+	tst_syscall(__NR_mq_unlink, NOSLASH_MQ1);
 
 	tst_exit();
 }

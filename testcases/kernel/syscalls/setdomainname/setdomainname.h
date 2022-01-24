@@ -7,9 +7,9 @@
 #define SETDOMAINNAME_H__
 
 #include <string.h>
+#include "tst_test.h"
 #include "lapi/utsname.h"
 #include "lapi/syscalls.h"
-#include "tst_test.h"
 
 #define TST_VALID_DOMAIN_NAME "test_dom"
 

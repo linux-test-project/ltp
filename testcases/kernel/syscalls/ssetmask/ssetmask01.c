@@ -112,13 +112,13 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			ltp_syscall(__NR_ssetmask, SIGALRM);
-			TEST(ltp_syscall(__NR_sgetmask));
+			tst_syscall(__NR_ssetmask, SIGALRM);
+			TEST(tst_syscall(__NR_sgetmask));
 			if (TEST_RETURN != SIGALRM) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "sgetmask() failed");
 			}
-			TEST(ltp_syscall(__NR_ssetmask, SIGUSR1));
+			TEST(tst_syscall(__NR_ssetmask, SIGUSR1));
 			if (TEST_RETURN != SIGALRM) {
 				tst_brkm(TFAIL | TTERRNO, cleanup,
 					 "ssetmask() failed");

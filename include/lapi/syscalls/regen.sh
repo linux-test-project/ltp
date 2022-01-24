@@ -35,21 +35,17 @@ cat << EOF > "${output_pid}"
 #include <asm/unistd.h>
 #include "cleanup.c"
 
-#define ltp_syscall(NR, ...) ({ \\
-	int __ret; \\
-	if (NR == __LTP__NR_INVALID_SYSCALL) { \\
-		errno = ENOSYS; \\
-		__ret = -1; \\
-	} else { \\
-		__ret = syscall(NR, ##__VA_ARGS__); \\
-	} \\
-	if (__ret == -1 && errno == ENOSYS) { \\
-		tst_brkm(TCONF, CLEANUP, \\
-			"syscall(%d) " #NR " not supported on your arch", \\
-			NR); \\
-	} \\
-	__ret; \\
+#ifdef TST_TEST_H__
+#define TST_SYSCALL_BRK__(NR) ({ \\
+	tst_brk(TCONF, \\
+		"syscall(%d) " #NR " not supported on your arch", NR); \\
 })
+#else
+#define TST_SYSCALL_BRK__(NR) ({ \\
+	tst_brkm(TCONF, CLEANUP, \\
+		"syscall(%d) " #NR " not supported on your arch", NR); \\
+})
+#endif
 
 #define tst_syscall(NR, ...) ({ \\
 	int tst_ret; \\
@@ -60,7 +56,7 @@ cat << EOF > "${output_pid}"
 		tst_ret = syscall(NR, ##__VA_ARGS__); \\
 	} \\
 	if (tst_ret == -1 && errno == ENOSYS) { \\
-		tst_brk(TCONF, "syscall(%d) " #NR " not supported", NR); \\
+		TST_SYSCALL_BRK__(NR); \\
 	} \\
 	tst_ret; \\
 })

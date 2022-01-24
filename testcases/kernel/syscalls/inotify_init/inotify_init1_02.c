@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			fd = ltp_syscall(__NR_inotify_init1, 0);
+			fd = tst_syscall(__NR_inotify_init1, 0);
 			if (fd == -1) {
 				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "inotify_init1(0) failed");
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = ltp_syscall(__NR_inotify_init1, IN_NONBLOCK);
+			fd = tst_syscall(__NR_inotify_init1, IN_NONBLOCK);
 			if (fd == -1) {
 				tst_brkm(TFAIL | TERRNO, cleanup,
 					 "inotify_init1(IN_NONBLOCK) failed");

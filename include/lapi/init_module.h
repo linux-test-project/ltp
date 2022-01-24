@@ -8,8 +8,8 @@
 #define LAPI_INIT_MODULE_H__
 
 #include "config.h"
-#include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 static inline int init_module(void *module_image, unsigned long len,
 			      const char *param_values)

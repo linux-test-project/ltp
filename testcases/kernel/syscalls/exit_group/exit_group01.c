@@ -42,7 +42,7 @@ static void verify_exit_group(void)
 		tst_brkm(TFAIL | TERRNO, NULL, "fork failed");
 
 	if (cpid == 0) {
-		TEST(ltp_syscall(__NR_exit_group, 4));
+		TEST(tst_syscall(__NR_exit_group, 4));
 	} else {
 		w = SAFE_WAIT(NULL, &status);
 

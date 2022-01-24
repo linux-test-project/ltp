@@ -28,7 +28,7 @@
 #if !defined(HAVE_MKNODAT)
 int mknodat(int dirfd, const char *filename, mode_t mode, dev_t dev)
 {
-	return ltp_syscall(__NR_mknodat, dirfd, filename, mode, dev);
+	return tst_syscall(__NR_mknodat, dirfd, filename, mode, dev);
 }
 #endif
 

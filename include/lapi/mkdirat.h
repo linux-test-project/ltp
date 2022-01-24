@@ -13,7 +13,7 @@
 #ifndef HAVE_MKDIRAT
 static inline int mkdirat(int dirfd, const char *dirname, int mode)
 {
-	return ltp_syscall(__NR_mkdirat, dirfd, dirname, mode);
+	return tst_syscall(__NR_mkdirat, dirfd, dirname, mode);
 }
 #endif
 

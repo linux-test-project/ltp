@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
 			sigemptyset(&ss);
 			sigaddset(&ss, SIGUSR1);
-			fd = ltp_syscall(__NR_signalfd4, -1, &ss,
+			fd = tst_syscall(__NR_signalfd4, -1, &ss,
 				SIGSETSIZE, 0);
 			if (fd == -1) {
 				tst_brkm(TFAIL, cleanup,
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
 			}
 			close(fd);
 
-			fd = ltp_syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
+			fd = tst_syscall(__NR_signalfd4, -1, &ss, SIGSETSIZE,
 				     SFD_NONBLOCK);
 			if (fd == -1) {
 				tst_brkm(TFAIL,

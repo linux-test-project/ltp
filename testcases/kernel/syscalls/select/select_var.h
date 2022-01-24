@@ -5,8 +5,8 @@
 #ifndef SELECT_VAR__
 #define SELECT_VAR__
 
-#include "lapi/syscalls.h"
 #include "tst_timer.h"
+#include "lapi/syscalls.h"
 
 struct compat_sel_arg_struct {
 	long _n;

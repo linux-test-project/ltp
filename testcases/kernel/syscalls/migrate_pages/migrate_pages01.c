@@ -62,7 +62,7 @@ static void cleanup(void);
 static void test_sane_nodes(void)
 {
 	tst_resm(TINFO, "test_empty_mask");
-	TEST(ltp_syscall(__NR_migrate_pages, 0, sane_max_node,
+	TEST(tst_syscall(__NR_migrate_pages, 0, sane_max_node,
 		     sane_old_nodes, sane_new_nodes));
 	check_ret(0);
 }
@@ -72,14 +72,14 @@ static void test_invalid_pid(void)
 	pid_t invalid_pid = -1;
 
 	tst_resm(TINFO, "test_invalid_pid -1");
-	TEST(ltp_syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
+	TEST(tst_syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
 		     sane_old_nodes, sane_new_nodes));
 	check_ret(-1);
 	check_errno(ESRCH);
 
 	tst_resm(TINFO, "test_invalid_pid unused pid");
 	invalid_pid = tst_get_unused_pid(cleanup);
-	TEST(ltp_syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
+	TEST(tst_syscall(__NR_migrate_pages, invalid_pid, sane_max_node,
 		     sane_old_nodes, sane_new_nodes));
 	check_ret(-1);
 	check_errno(ESRCH);
@@ -88,7 +88,7 @@ static void test_invalid_pid(void)
 static void test_invalid_masksize(void)
 {
 	tst_resm(TINFO, "test_invalid_masksize");
-	TEST(ltp_syscall(__NR_migrate_pages, 0, -1, sane_old_nodes,
+	TEST(tst_syscall(__NR_migrate_pages, 0, -1, sane_old_nodes,
 		     sane_new_nodes));
 	check_ret(-1);
 	check_errno(EINVAL);
@@ -99,7 +99,7 @@ static void test_invalid_mem(void)
 	unsigned long *p;
 
 	tst_resm(TINFO, "test_invalid_mem -1");
-	TEST(ltp_syscall(__NR_migrate_pages, 0, sane_max_node, -1, -1));
+	TEST(tst_syscall(__NR_migrate_pages, 0, sane_max_node, -1, -1));
 	check_ret(-1);
 	check_errno(EFAULT);
 
@@ -108,13 +108,13 @@ static void test_invalid_mem(void)
 		 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (p == MAP_FAILED)
 		tst_brkm(TBROK | TERRNO, cleanup, "mmap");
-	TEST(ltp_syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
+	TEST(tst_syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
 	check_ret(-1);
 	check_errno(EFAULT);
 
 	SAFE_MUNMAP(cleanup, p, getpagesize());
 	tst_resm(TINFO, "test_invalid_mem unmmaped");
-	TEST(ltp_syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
+	TEST(tst_syscall(__NR_migrate_pages, 0, sane_max_node, p, p));
 	check_ret(-1);
 	check_errno(EFAULT);
 }
@@ -143,7 +143,7 @@ static void test_invalid_nodes(void)
 		memset(new_nodes, 0, sane_nodemask_size);
 		set_bit(new_nodes, invalid_node, 1);
 
-		TEST(ltp_syscall(__NR_migrate_pages, 0, sane_max_node,
+		TEST(tst_syscall(__NR_migrate_pages, 0, sane_max_node,
 			     old_nodes, new_nodes));
 		check_ret(-1);
 		check_errno(EINVAL);
@@ -178,7 +178,7 @@ static void test_invalid_perm(void)
 		if (ltpuser == NULL)
 			tst_brkm(TBROK | TERRNO, NULL, "getpwnam failed");
 		SAFE_SETUID(NULL, ltpuser->pw_uid);
-		TEST(ltp_syscall(__NR_migrate_pages, parent_pid,
+		TEST(tst_syscall(__NR_migrate_pages, parent_pid,
 			     sane_max_node, sane_old_nodes, sane_new_nodes));
 		ret |= check_ret(-1);
 		ret |= check_errno(EPERM);
@@ -215,7 +215,7 @@ static void setup(void)
 	int node, ret;
 
 	tst_require_root();
-	TEST(ltp_syscall(__NR_migrate_pages, 0, 0, NULL, NULL));
+	TEST(tst_syscall(__NR_migrate_pages, 0, 0, NULL, NULL));
 
 	if (!is_numa(NULL, NH_MEMS, 1))
 		tst_brkm(TCONF, NULL, "requires NUMA with at least 1 node");

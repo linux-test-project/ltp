@@ -124,7 +124,7 @@ static void help(void)
 
 static void cma_test_params_read(struct process_vm_params *params)
 {
-	TEST(ltp_syscall(__NR_process_vm_readv,
+	TEST(tst_syscall(__NR_process_vm_readv,
 			 params->pid,
 			 params->lvec, params->liovcnt,
 			 params->rvec, params->riovcnt,
@@ -133,7 +133,7 @@ static void cma_test_params_read(struct process_vm_params *params)
 
 static void cma_test_params_write(struct process_vm_params *params)
 {
-	TEST(ltp_syscall(__NR_process_vm_writev,
+	TEST(tst_syscall(__NR_process_vm_writev,
 			 params->pid,
 			 params->lvec, params->liovcnt,
 			 params->rvec, params->riovcnt,

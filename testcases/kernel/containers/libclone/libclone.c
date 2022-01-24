@@ -56,7 +56,7 @@ int do_unshare_tests(unsigned long clone_flags,
 	}
 	if (pid == 0) {
 		close(retpipe[0]);
-		ret = ltp_syscall(SYS_unshare, clone_flags);
+		ret = tst_syscall(SYS_unshare, clone_flags);
 		if (ret == -1) {
 			if (write(retpipe[1], "0", 2) < 0) {
 				perror("unshare:write(retpipe[1], ..)");

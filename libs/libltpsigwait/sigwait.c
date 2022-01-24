@@ -5,9 +5,9 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "lapi/syscalls.h"
 #include "libsigwait.h"
 #include "tst_sig_proc.h"
+#include "lapi/syscalls.h"
 
 void test_empty_set(swi_func sigwaitinfo, int signo,
 		    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)

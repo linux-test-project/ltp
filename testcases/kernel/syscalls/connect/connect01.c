@@ -129,7 +129,7 @@ static char *argv0;
 static int sys_connect(int sockfd, const struct sockaddr *addr,
 		socklen_t addrlen)
 {
-	return ltp_syscall(__NR_connect, sockfd, addr, addrlen);
+	return tst_syscall(__NR_connect, sockfd, addr, addrlen);
 }
 
 #define connect(sockfd, addr, addrlen) sys_connect(sockfd, addr, addrlen)

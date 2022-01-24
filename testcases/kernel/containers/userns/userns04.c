@@ -35,7 +35,7 @@ int TST_TOTAL = 1;
 static void setup(void)
 {
 	check_newuser();
-	ltp_syscall(__NR_setns, -1, 0);
+	tst_syscall(__NR_setns, -1, 0);
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(NULL);
 }
@@ -56,7 +56,7 @@ static int child_fn2(void *arg)
 	int exit_val = 0;
 	int ret;
 
-	ret = ltp_syscall(__NR_setns, ((long)arg), CLONE_NEWUSER);
+	ret = tst_syscall(__NR_setns, ((long)arg), CLONE_NEWUSER);
 	if (ret != -1) {
 		printf("child2 setns() unexpected success\n");
 		exit_val = 1;
@@ -95,7 +95,7 @@ static void test_cap_sys_admin(void)
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "fork");
 	case 0:
-		if (ltp_syscall(__NR_setns, fd, CLONE_NEWUSER) == -1) {
+		if (tst_syscall(__NR_setns, fd, CLONE_NEWUSER) == -1) {
 			printf("parent pid setns failure: (%d) %s",
 				errno, strerror(errno));
 			exit(1);

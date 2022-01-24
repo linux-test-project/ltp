@@ -36,19 +36,13 @@
 
 #if !defined(HAVE_FALLOCATE)
 
-# ifdef __TEST_H__
-#  define TST_SYSCALL_WRAPPER ltp_syscall
-# else
-#  define TST_SYSCALL_WRAPPER tst_syscall
-# endif /* __TEST_H__ */
-
 static inline long fallocate(int fd, int mode, loff_t offset, loff_t len)
 {
 	/* Deal with 32bit ABIs that have 64bit syscalls. */
 # if LTP_USE_64_ABI
-	return TST_SYSCALL_WRAPPER(__NR_fallocate, fd, mode, offset, len);
+	return tst_syscall(__NR_fallocate, fd, mode, offset, len);
 # else
-	return (long)TST_SYSCALL_WRAPPER(__NR_fallocate, fd, mode,
+	return (long)tst_syscall(__NR_fallocate, fd, mode,
 				 __LONG_LONG_PAIR((off_t) (offset >> 32),
 						  (off_t) offset),
 				 __LONG_LONG_PAIR((off_t) (len >> 32),

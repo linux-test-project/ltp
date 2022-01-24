@@ -45,7 +45,7 @@ int getresgid(gid_t *rgid, gid_t *egid, gid_t *sgid);
 #ifdef TST_USE_COMPAT16_SYSCALL
 # define LTP_CREATE_SYSCALL(sys_name, cleanup, ...) \
 	if (__NR_##sys_name##32 != __LTP__NR_INVALID_SYSCALL) { \
-		return ltp_syscall(__NR_##sys_name, ##__VA_ARGS__); \
+		return tst_syscall(__NR_##sys_name, ##__VA_ARGS__); \
 	} else { \
 		tst_brkm(TCONF, cleanup, \
 			"16-bit version of %s() is not supported on your " \

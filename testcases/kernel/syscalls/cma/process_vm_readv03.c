@@ -180,7 +180,7 @@ static long *fetch_remote_addrs(void)
 	remote.iov_base = foo;
 	remote.iov_len = len;
 
-	TEST(ltp_syscall(__NR_process_vm_readv, pids[0], &local,
+	TEST(tst_syscall(__NR_process_vm_readv, pids[0], &local,
 			 1UL, &remote, 1UL, 0UL));
 	if (TEST_RETURN != len)
 		tst_brkm(TFAIL | TTERRNO, tst_exit, "process_vm_readv");
@@ -213,7 +213,7 @@ static void child_invoke(int *bufsz_arr)
 	tst_resm(TINFO, "child 1: %d local iovecs initialized.",
 		 NUM_LOCAL_VECS);
 
-	TEST(ltp_syscall(__NR_process_vm_readv, pids[0], local,
+	TEST(tst_syscall(__NR_process_vm_readv, pids[0], local,
 			    (unsigned long)NUM_LOCAL_VECS, remote,
 			    (unsigned long)nr_iovecs, 0UL));
 	if (TEST_RETURN != bufsz)
@@ -249,7 +249,7 @@ static void setup(void)
 	tst_require_root();
 
 	/* Just a sanity check of the existence of syscall */
-	ltp_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
+	tst_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
 
 	nr_iovecs = nflag ? SAFE_STRTOL(NULL, nr_opt, 1, IOV_MAX) : 10;
 	bufsz = sflag ? SAFE_STRTOL(NULL, sz_opt, NUM_LOCAL_VECS, LONG_MAX)

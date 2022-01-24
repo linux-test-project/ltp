@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		for (i = 0; i < sizeof(tests) / sizeof(struct test); i++) {
-			TEST(ltp_syscall(tests[i].syscall, tests[i].u_info));
+			TEST(tst_syscall(tests[i].syscall, tests[i].u_info));
 
 			if (TEST_RETURN != tests[i].exp_ret) {
 				tst_resm(TFAIL, "%s returned %li expected %i",

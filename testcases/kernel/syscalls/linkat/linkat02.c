@@ -112,7 +112,7 @@ static void linkat_verify(const struct test_struct *desc)
 		desc->setupfunc();
 	}
 
-	TEST(ltp_syscall(__NR_linkat, AT_FDCWD, desc->oldfname,
+	TEST(tst_syscall(__NR_linkat, AT_FDCWD, desc->oldfname,
 			 AT_FDCWD, desc->newfname, desc->flags));
 
 	if (desc->cleanfunc != NULL)

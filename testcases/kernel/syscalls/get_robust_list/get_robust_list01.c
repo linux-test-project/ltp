@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 		 * argument.
 		 */
 
-		TEST(ltp_syscall(__NR_get_robust_list, 0,
+		TEST(tst_syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head *)&head,
 				      NULL));
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL,
 				 "get_robust_list succeeded unexpectedly");
 
-		TEST(ltp_syscall(__NR_get_robust_list, 0,
+		TEST(tst_syscall(__NR_get_robust_list, 0,
 				      NULL,
 				      &len_ptr));
 
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 		 * find the task specified by the pid argument.
 		 */
 
-		TEST(ltp_syscall(__NR_get_robust_list, unused_pid,
+		TEST(tst_syscall(__NR_get_robust_list, unused_pid,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 			tst_resm(TFAIL,
 				 "get_robust_list succeeded unexpectedly");
 
-		TEST(ltp_syscall(__NR_get_robust_list, 0,
+		TEST(tst_syscall(__NR_get_robust_list, 0,
 				      (struct robust_list_head **)&head,
 				      &len_ptr));
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 
 		SAFE_SETUID(cleanup, 1);
 
-		TEST(ltp_syscall(__NR_get_robust_list, 1,
+		TEST(tst_syscall(__NR_get_robust_list, 1,
 				      (struct robust_list_head *)&head,
 				      &len_ptr));
 

@@ -64,7 +64,7 @@ int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0, 0 };
 
 int myfchmodat(int dirfd, const char *filename, mode_t mode)
 {
-	return ltp_syscall(__NR_fchmodat, dirfd, filename, mode);
+	return tst_syscall(__NR_fchmodat, dirfd, filename, mode);
 }
 
 int main(int ac, char **av)

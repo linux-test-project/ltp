@@ -20,10 +20,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/syscall.h>
 
-#include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 static pid_t unused_tid;
 static pid_t inval_tid = -1;

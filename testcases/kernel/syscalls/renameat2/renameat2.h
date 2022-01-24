@@ -27,7 +27,7 @@
 int renameat2(int olddirfd, const char *oldpath, int newdirfd,
 				const char *newpath, unsigned int flags)
 {
-	return ltp_syscall(__NR_renameat2, olddirfd, oldpath, newdirfd,
+	return tst_syscall(__NR_renameat2, olddirfd, oldpath, newdirfd,
 						newpath, flags);
 }
 #endif

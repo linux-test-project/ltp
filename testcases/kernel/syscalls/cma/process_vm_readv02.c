@@ -134,7 +134,7 @@ static void child_invoke(void)
 	remote.iov_len = len;
 
 	tst_resm(TINFO, "child 1: reading string from same memory location.");
-	TEST(ltp_syscall(__NR_process_vm_readv, pids[0],
+	TEST(tst_syscall(__NR_process_vm_readv, pids[0],
 			 &local, 1UL, &remote, 1UL, 0UL));
 	if (TEST_RETURN != len)
 		tst_brkm(TFAIL | TTERRNO, tst_exit, "process_vm_readv");
@@ -150,7 +150,7 @@ static void setup(void)
 	tst_require_root();
 
 	/* Just a sanity check of the existence of syscall */
-	ltp_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
+	tst_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
 
 	tst_tmpdir();
 	TST_CHECKPOINT_INIT(cleanup);

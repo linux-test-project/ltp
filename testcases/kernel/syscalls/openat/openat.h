@@ -28,7 +28,7 @@
 #if !defined(HAVE_OPENAT)
 int openat(int dirfd, const char *pathname, int flags, mode_t mode)
 {
-	return ltp_syscall(__NR_openat, dirfd, pathname, flags, mode);
+	return tst_syscall(__NR_openat, dirfd, pathname, flags, mode);
 }
 #endif
 

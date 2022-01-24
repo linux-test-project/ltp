@@ -64,7 +64,7 @@ int check_mqueue(void *vtest)
 	} else {
 
 		mqd =
-		    ltp_syscall(__NR_mq_open, NOSLASH_MQ1,
+		    tst_syscall(__NR_mq_open, NOSLASH_MQ1,
 			    O_RDWR | O_CREAT | O_EXCL, 0777, NULL);
 		if (mqd == -1) {
 			if (write(p2[1], "mqfail", strlen("mqfail") + 1) < 0) {
@@ -87,7 +87,7 @@ int check_mqueue(void *vtest)
 					if (mq_close(mqd) < 0) {
 						perror("mq_close(mqd) failed");
 						exit(1);
-					} else if (ltp_syscall(__NR_mq_unlink,
+					} else if (tst_syscall(__NR_mq_unlink,
 							   NOSLASH_MQ1) < 0) {
 						perror("mq_unlink(" NOSLASH_MQ1
 						       ") failed");
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 		tst_resm(TFAIL, "child process could not create mqueue");
 		umount(DEV_MQUEUE);
 	} else {
-		mqd = ltp_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
+		mqd = tst_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDONLY);
 		if (mqd == -1) {
 			tst_resm(TPASS,
 				 "Parent process can't see the mqueue");

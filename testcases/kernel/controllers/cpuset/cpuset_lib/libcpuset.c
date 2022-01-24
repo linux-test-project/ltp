@@ -3083,19 +3083,19 @@ done:
 
 static int sched_setaffinity(pid_t pid, unsigned len, unsigned long *mask)
 {
-	return ltp_syscall(__NR_sched_setaffinity, pid, len, mask);
+	return tst_syscall(__NR_sched_setaffinity, pid, len, mask);
 }
 
 static int get_mempolicy(int *policy, unsigned long *nmask,
 			 unsigned long maxnode, void *addr, int flags)
 {
-	return ltp_syscall(__NR_get_mempolicy, policy, nmask, maxnode,
+	return tst_syscall(__NR_get_mempolicy, policy, nmask, maxnode,
 		addr, flags);
 }
 
 static int set_mempolicy(int mode, unsigned long *nmask, unsigned long maxnode)
 {
-	return ltp_syscall(__NR_set_mempolicy, mode, nmask, maxnode);
+	return tst_syscall(__NR_set_mempolicy, mode, nmask, maxnode);
 }
 
 struct cpuset_placement {

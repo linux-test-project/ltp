@@ -123,7 +123,7 @@ static int perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
 {
 	int ret;
 
-	ret = ltp_syscall(__NR_perf_event_open, hw_event, pid, cpu,
+	ret = tst_syscall(__NR_perf_event_open, hw_event, pid, cpu,
 			  group_fd, flags);
 	return ret;
 }

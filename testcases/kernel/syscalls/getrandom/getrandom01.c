@@ -5,9 +5,9 @@
  * Calls getrandom(2) with a NULL buffer and expects failure.
  */
 
+#include "tst_test.h"
 #include "lapi/getrandom.h"
 #include "lapi/syscalls.h"
-#include "tst_test.h"
 
 static int modes[] = {0, GRND_RANDOM, GRND_NONBLOCK,
 		      GRND_RANDOM | GRND_NONBLOCK};

@@ -7,9 +7,9 @@
  */
 
 #include <sys/resource.h>
+#include "tst_test.h"
 #include "lapi/getrandom.h"
 #include "lapi/syscalls.h"
-#include "tst_test.h"
 
 static void verify_getrandom(void)
 {

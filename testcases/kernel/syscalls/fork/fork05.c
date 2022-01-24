@@ -133,7 +133,7 @@ static int a = 42;
 
 static void modify_ldt(int func, struct modify_ldt_ldt_s *ptr, int bytecount)
 {
-	ltp_syscall(__NR_modify_ldt, func, ptr, bytecount);
+	tst_syscall(__NR_modify_ldt, func, ptr, bytecount);
 }
 
 int main(void)

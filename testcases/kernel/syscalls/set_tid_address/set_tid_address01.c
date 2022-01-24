@@ -112,7 +112,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(ltp_syscall(__NR_set_tid_address, &newtid));
+			TEST(tst_syscall(__NR_set_tid_address, &newtid));
 			if (TEST_RETURN == getpid()) {
 				tst_resm(TPASS,
 					 "set_tid_address call succeeded:  as expected %ld",

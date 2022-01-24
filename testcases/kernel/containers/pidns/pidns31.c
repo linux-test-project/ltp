@@ -93,7 +93,7 @@ static void remove_pipe(int *fd)
 static void remove_mqueue(mqd_t mqd)
 {
 	mq_close(mqd);
-	ltp_syscall(__NR_mq_unlink, mqname);
+	tst_syscall(__NR_mq_unlink, mqname);
 }
 
 /*
@@ -116,7 +116,7 @@ static void cleanup_resources(int step, mqd_t mqd)
 		break;
 
 	case F_STEP_2:
-		ltp_syscall(__NR_mq_notify, mqd, NULL);
+		tst_syscall(__NR_mq_notify, mqd, NULL);
 		/* fall through */
 	case F_STEP_1:
 		remove_mqueue(mqd);
@@ -172,7 +172,7 @@ int child_fn(void *arg)
 	}
 	tst_resm(TINFO, "cinit: my father is ready to receive a message");
 
-	mqd = ltp_syscall(__NR_mq_open, mqname, O_WRONLY, 0, NULL);
+	mqd = tst_syscall(__NR_mq_open, mqname, O_WRONLY, 0, NULL);
 	if (mqd == (mqd_t) - 1) {
 		tst_resm(TBROK, "cinit: mq_open() failed (%s)",
 			 strerror(errno));
@@ -264,9 +264,9 @@ int main(void)
 		cleanup_mqueue(TBROK, NO_STEP, 0);
 	}
 
-	ltp_syscall(__NR_mq_unlink, mqname);
+	tst_syscall(__NR_mq_unlink, mqname);
 	mqd =
-	    ltp_syscall(__NR_mq_open, mqname, O_RDWR | O_CREAT | O_EXCL, 0777,
+	    tst_syscall(__NR_mq_open, mqname, O_RDWR | O_CREAT | O_EXCL, 0777,
 		    NULL);
 	if (mqd == (mqd_t) - 1) {
 		tst_resm(TBROK, "parent: mq_open() failed (%s)",
@@ -289,7 +289,7 @@ int main(void)
 	info.mqd = mqd;
 	info.pid = cpid;
 	notif.sigev_value.sival_ptr = &info;
-	if (ltp_syscall(__NR_mq_notify, mqd, &notif) == (mqd_t) -1) {
+	if (tst_syscall(__NR_mq_notify, mqd, &notif) == (mqd_t) -1) {
 		tst_resm(TBROK, "parent: mq_notify() failed (%s)",
 			 strerror(errno));
 		cleanup_mqueue(TBROK, F_STEP_1, mqd);

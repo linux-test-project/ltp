@@ -52,7 +52,7 @@ void cleanup(void)
 
 static int eventfd2(int count, int flags)
 {
-	return ltp_syscall(__NR_eventfd2, count, flags);
+	return tst_syscall(__NR_eventfd2, count, flags);
 }
 
 static void xsem_wait(int fd)

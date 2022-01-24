@@ -62,17 +62,17 @@ static const int flags[] = { 0, 0, 0, 0, 9999, 0 };
 #if (__NR_fstatat64 > 0)
 int fstatat(int dirfd, const char *filename, struct stat64 *statbuf, int flags)
 {
-	return ltp_syscall(__NR_fstatat64, dirfd, filename, statbuf, flags);
+	return tst_syscall(__NR_fstatat64, dirfd, filename, statbuf, flags);
 }
 #elif (__NR_newfstatat > 0)
 int fstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
-	return ltp_syscall(__NR_newfstatat, dirfd, filename, statbuf, flags);
+	return tst_syscall(__NR_newfstatat, dirfd, filename, statbuf, flags);
 }
 #else
 int fstatat(int dirfd, const char *filename, struct stat *statbuf, int flags)
 {
-	return ltp_syscall(__NR_fstatat, dirfd, filename, statbuf, flags);
+	return tst_syscall(__NR_fstatat, dirfd, filename, statbuf, flags);
 }
 #endif
 #endif

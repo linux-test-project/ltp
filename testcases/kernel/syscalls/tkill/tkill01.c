@@ -17,8 +17,8 @@
 
 #include <signal.h>
 
-#include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 static volatile sig_atomic_t sig_flag;
 

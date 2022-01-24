@@ -115,7 +115,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(ltp_syscall(__NR_uname, &name));
+			TEST(tst_syscall(__NR_uname, &name));
 			if (TEST_RETURN == -1) {
 				tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s",
 					 TCID, TEST_ERRNO,

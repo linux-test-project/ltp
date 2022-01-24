@@ -57,7 +57,7 @@ int main(int ac, char **av)
 	ev.sigev_value = (union sigval) 0;
 	ev.sigev_signo = SIGALRM;
 	ev.sigev_notify = SIGEV_SIGNAL;
-	TEST(ltp_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
+	TEST(tst_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
 
 	if (TEST_RETURN != 0)
 		tst_brkm(TBROK | TTERRNO, cleanup, "Failed to create timer");
@@ -65,7 +65,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 
-		TEST(ltp_syscall(__NR_timer_getoverrun, timer));
+		TEST(tst_syscall(__NR_timer_getoverrun, timer));
 		if (TEST_RETURN == 0) {
 			tst_resm(TPASS,
 			         "timer_getoverrun(CLOCK_REALTIME) Passed");
@@ -74,7 +74,7 @@ int main(int ac, char **av)
 			         "timer_getoverrun(CLOCK_REALTIME) Failed");
 		}
 
-		TEST(ltp_syscall(__NR_timer_getoverrun, -1));
+		TEST(tst_syscall(__NR_timer_getoverrun, -1));
 		if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL) {
 			tst_resm(TPASS,	"timer_gettime(-1) Failed: EINVAL");
 		} else {

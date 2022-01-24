@@ -58,7 +58,7 @@ static const int expected_errno[] = { 0, 0, ENOTDIR, EBADF, 0 };
 
 int myfutimesat(int dirfd, const char *filename, struct timeval *times)
 {
-	return ltp_syscall(__NR_futimesat, dirfd, filename, times);
+	return tst_syscall(__NR_futimesat, dirfd, filename, times);
 }
 
 int main(int ac, char **av)

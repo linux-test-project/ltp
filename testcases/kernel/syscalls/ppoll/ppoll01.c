@@ -17,12 +17,12 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "lapi/syscalls.h"
 #include "ltp_signal.h"
 #include "time64_variants.h"
 #include "tst_sig_proc.h"
 #include "tst_test.h"
 #include "tst_timer.h"
+#include "lapi/syscalls.h"
 
 /* Older versions of glibc don't publish this constant's value. */
 #ifndef POLLRDHUP

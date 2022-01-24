@@ -14,7 +14,7 @@
 static inline int readlinkat(int dirfd, const char *pathname,
                              char *buf, size_t bufsiz)
 {
-	return ltp_syscall(__NR_readlinkat, dirfd, pathname, buf, bufsiz);
+	return tst_syscall(__NR_readlinkat, dirfd, pathname, buf, bufsiz);
 }
 #endif
 

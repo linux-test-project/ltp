@@ -6,9 +6,9 @@
  * number of bytes required and expects success.
  */
 
+#include "tst_test.h"
 #include "lapi/getrandom.h"
 #include "lapi/syscalls.h"
-#include "tst_test.h"
 
 #define MAX_SIZE 256
 

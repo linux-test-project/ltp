@@ -15,7 +15,7 @@
 static inline int renameat(int olddirfd, const char *oldpath, int newdirfd,
                            const char *newpath)
 {
-	return ltp_syscall(__NR_renameat, olddirfd, oldpath, newdirfd,
+	return tst_syscall(__NR_renameat, olddirfd, oldpath, newdirfd,
 					newpath);
 }
 #endif

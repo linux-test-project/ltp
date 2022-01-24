@@ -8,9 +8,9 @@
 
 #define TST_NO_DEFAULT_MAIN
 
-#include "lapi/syscalls.h"
 #include "tst_test.h"
 #include "libswap.h"
+#include "lapi/syscalls.h"
 
 /*
  * Make a swap file

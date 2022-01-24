@@ -14,8 +14,8 @@
  */
 
 #include <sched.h>
-#include "lapi/syscalls.h"
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 #define POLICY_DESC(x) .desc = #x, .policy = x
 

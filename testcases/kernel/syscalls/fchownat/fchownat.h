@@ -29,7 +29,7 @@
 static inline int fchownat(int dirfd, const char *filename, uid_t owner,
 		gid_t group, int flags)
 {
-	return ltp_syscall(__NR_fchownat, dirfd, filename, owner, group, flags);
+	return tst_syscall(__NR_fchownat, dirfd, filename, owner, group, flags);
 }
 #endif
 
