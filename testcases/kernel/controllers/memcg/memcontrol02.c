@@ -67,8 +67,8 @@ static void alloc_anon_50M_check(void)
 	SAFE_CGROUP_LINES_SCANF(cg_child, "memory.stat", anon_key_fmt, &anon);
 
 	TST_EXP_EXPR(anon > 0, "(memory.stat.anon=%zd) > 0", anon);
-	TST_EXP_EXPR(values_close(size, current, 3),
-		     "(size=%zd) ~= (memory.stat.anon=%zd)", size, current);
+	TST_EXP_EXPR(values_close(size, anon, 3),
+		     "(size=%zd) ~= (memory.stat.anon=%zd)", size, anon);
 	TST_EXP_EXPR(values_close(anon, current, 3),
 		     "(memory.current=%zd) ~= (memory.stat.anon=%zd)",
 		     current, anon);
