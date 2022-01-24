@@ -153,6 +153,7 @@ static void setup(void)
 	cg_test = tst_cgroup_get_test_group();
 
 	switch (tst_fs_type(TMPDIR)) {
+	case TST_VFAT_MAGIC:
 	case TST_EXFAT_MAGIC:
 	case TST_EXT234_MAGIC:
 		file_to_all_error = 50;
