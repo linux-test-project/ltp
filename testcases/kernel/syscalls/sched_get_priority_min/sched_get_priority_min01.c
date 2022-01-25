@@ -2,6 +2,7 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Copyright (c) 2021 sujiaxun <sujiaxun@uniontech.com>
+ * Copyright (c) Linux Test Project, 2009-2022
  */
 
 /*\
@@ -9,14 +10,15 @@
  *
  * Basic test for the sched_get_priority_min(2) system call.
  *
- * Obtain different minimum priority scheduling strategies and
+ * Obtain different minimum priority for different schedulling policies and
  * compare them with the expected value.
  */
 
-#include <errno.h>
+#define _GNU_SOURCE
+
 #include <sched.h>
 #include "tst_test.h"
-#include "lapi/syscalls.h"
+#include "lapi/sched.h"
 
 #define POLICY_DESC(x) .desc = #x, .policy = x
 
@@ -25,9 +27,12 @@ static struct test_case {
 	int policy;
 	int retval;
 } tcases[] = {
-	{POLICY_DESC(SCHED_OTHER), 0},
+	{POLICY_DESC(SCHED_BATCH), 0},
+	{POLICY_DESC(SCHED_DEADLINE), 0},
 	{POLICY_DESC(SCHED_FIFO), 1},
-	{POLICY_DESC(SCHED_RR), 1}
+	{POLICY_DESC(SCHED_IDLE), 0},
+	{POLICY_DESC(SCHED_OTHER), 0},
+	{POLICY_DESC(SCHED_RR), 1},
 };
 
 static void run_test(unsigned int nr)
