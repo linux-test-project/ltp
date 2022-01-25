@@ -29,7 +29,6 @@
 #include <linux/types.h>
 #include <sys/syscall.h>
 #include <pthread.h>
-#include <sched.h>
 #include <errno.h>
 
 #include "test.h"

@@ -22,11 +22,9 @@
 #include <linux/types.h>
 #include <sys/syscall.h>
 #include <pthread.h>
-#include <sched.h>
 #include <errno.h>
 
 #include "test.h"
-#include "lapi/syscalls.h"
 #include "lapi/sched.h"
 
 char *TCID = "sched_getattr01";

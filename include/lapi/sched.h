@@ -6,9 +6,10 @@
 #ifndef LAPI_SCHED_H__
 #define LAPI_SCHED_H__
 
-#include "lapi/syscalls.h"
+#include <sched.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include "lapi/syscalls.h"
 
 struct sched_attr {
 	uint32_t size;
