@@ -30,7 +30,6 @@
 char *TCID = "sched_getattr01";
 int TST_TOTAL = 1;
 
-#define SCHED_DEADLINE	6
 #define RUNTIME_VAL 10000000
 #define PERIOD_VAL 30000000
 #define DEADLINE_VAL 30000000
