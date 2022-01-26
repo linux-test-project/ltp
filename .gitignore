@@ -45,7 +45,6 @@ autom4te.cache
 /lib/ltp.pc
 /pan/ltp-bump
 /pan/ltp-pan
-/pan/ltp-scanner
 
 cscope.*
 ncscope.*

@@ -27,8 +27,6 @@ configure file).
 pkgconf is recommended also for compilation from tarball as it
 does automatic detection of some library support.
 
-GNU Bison / Berkeley Yacc is required for ltp-scanner.
-
 Configuration
 -------------
 

@@ -39,17 +39,9 @@ INSTALL_DIR		:= bin
 
 MAKE_TARGETS		:= ltp-bump ltp-pan
 
-ifeq ($(strip $(LEXLIB)),)
-$(warning ltp-scanner will not be built because a working copy of lex was not found)
-else
-MAKE_TARGETS		+= ltp-scanner
-endif
-
 ltp-bump: ltp-bump.o zoolib.o
 
 ltp-pan: ltp-pan.o zoolib.o splitstr.o
-
-ltp-scanner: scan.o ltp-scanner.o reporter.o tag_report.o symbol.o splitstr.o debug.o
 
 # flex does some whacky junk when it generates files on the fly, so let's make
 # sure gcc doesn't get lost...
