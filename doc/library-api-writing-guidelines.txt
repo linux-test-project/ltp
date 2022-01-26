@@ -18,6 +18,10 @@ Library tests are in 'lib/newlib_tests' directory.
 
 Don't forget to update docs when you change the API.
 
+Environment variables should be listed in
+https://github.com/linux-test-project/ltp/wiki/User-Guidelines[LTP User Guidelines]
+and in help output (`-h`) for both C and shell API.
+
 2. C API
 --------
 
