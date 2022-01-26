@@ -1,6 +1,7 @@
 /******************************************************************************/
 /*                                                                            */
 /* Ingo Molnar <mingo@elte.hu>, 2009                                          */
+/* Copyright (c) Linux Test Project, 2014-2022                                */
 /*                                                                            */
 /* This program is free software;  you can redistribute it and/or modify      */
 /* it under the terms of the GNU General Public License as published by       */
@@ -38,9 +39,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include "config.h"
-#if HAVE_PERF_EVENT_ATTR
-# include <linux/perf_event.h>
-#endif
+#include <linux/perf_event.h>
 
 #include "test.h"
 #include "lapi/syscalls.h"
@@ -48,7 +47,6 @@
 
 char *TCID = "perf_event_open01";
 
-#if HAVE_PERF_EVENT_ATTR
 static void setup(void);
 static void cleanup(void);
 
@@ -198,13 +196,3 @@ static void verify(struct test_case_t *tc)
 static void cleanup(void)
 {
 }
-
-#else
-
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "This system doesn't have "
-		 "header file:<linux/perf_event.h> or "
-		 "no struct perf_event_attr defined");
-}
-#endif

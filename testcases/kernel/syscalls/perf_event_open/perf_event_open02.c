@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2009 Paul Mackerras <paulus@samba.org>
- * Copyright (c) 2019 Linux Test Project
+ * Copyright (c) 2014-2022 Linux Test Project
  */
 /*
  * Here's a little test program that checks whether software counters
@@ -45,7 +45,6 @@
 #include "lapi/cpuset.h"
 #include "lapi/syscalls.h"
 
-#if HAVE_PERF_EVENT_ATTR
 #include "perf_event_open.h"
 
 #define MAX_CTRS	1000
@@ -336,8 +335,3 @@ static struct tst_test test = {
 	.test_all = verify,
 	.needs_root = 1,
 };
-
-#else /* HAVE_PERF_EVENT_ATTR */
-TST_TEST_TCONF("This system doesn't have <linux/perf_event.h> or "
-	"struct perf_event_attr is not defined.");
-#endif

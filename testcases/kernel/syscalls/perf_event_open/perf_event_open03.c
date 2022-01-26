@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2021 SUSE LLC <mdoucha@suse.cz>
+ * Copyright (c) 2022 Linux Test Project
  *
  * CVE-2020-25704
  *
@@ -17,7 +18,6 @@
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
-#if HAVE_PERF_EVENT_ATTR
 #include "perf_event_open.h"
 
 #define INTEL_PT_PATH "/sys/bus/event_source/devices/intel_pt/type"
@@ -77,8 +77,3 @@ static struct tst_test test = {
 		{}
 	}
 };
-
-#else /* HAVE_PERF_EVENT_ATTR */
-TST_TEST_TCONF("This system doesn't have <linux/perf_event.h> or "
-	"struct perf_event_attr is not defined.");
-#endif
