@@ -40,7 +40,6 @@
 #include <unistd.h>
 #include "mem.h"
 
-#ifdef HAVE_MREMAP_FIXED
 static int ps;
 static long hps, size;
 
@@ -119,7 +118,3 @@ static struct tst_test test = {
 	.test_all = do_mremap,
 	.forks_child = 1,
 };
-
-#else
-	TST_TEST_TCONF("MREMAP_FIXED not present in <sys/mman.h>");
-#endif /* HAVE_MREMAP_FIXED */

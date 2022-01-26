@@ -45,8 +45,6 @@
 
 char *TCID = "mremap05";
 
-#ifdef HAVE_MREMAP_FIXED
-
 struct test_case_t {
 	char *old_address;
 	char *new_address;
@@ -239,12 +237,3 @@ static void setup(void)
 static void cleanup(void)
 {
 }
-
-#else
-
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "MREMAP_FIXED not present in <sys/mman.h>");
-}
-
-#endif /* HAVE_MREMAP_FIXED */
