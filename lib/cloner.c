@@ -50,11 +50,6 @@ extern int __clone2(int (*fn) (void *arg), void *child_stack_base,
                     pid_t *parent_tid, void *tls, pid_t *child_tid);
 #endif
 
-#ifndef CLONE_SUPPORTS_7_ARGS
-# define clone(fn, stack, flags, arg, ptid, tls, ctid) \
-         clone(fn, stack, flags, arg)
-#endif
-
 /*
  * ltp_clone: wrapper for clone to hide the architecture dependencies.
  *   1. hppa takes bottom of stack and no stacksize (stack grows up)
@@ -109,12 +104,7 @@ int ltp_clone7(unsigned long flags, int (*fn)(void *arg), void *arg,
 	ctid = va_arg(arg_clone, pid_t *);
 	va_end(arg_clone);
 
-#ifdef CLONE_SUPPORTS_7_ARGS
 	return ltp_clone_(flags, fn, arg, stack_size, stack, ptid, tls, ctid);
-#else
-	errno = ENOSYS;
-	return -1;
-#endif
 }
 
 /*
