@@ -29,7 +29,7 @@ echo ' "tests": {'
 
 first=1
 
-for test in `find testcases/ -name '*.c'`; do
+for test in `find testcases/ -name '*.c'|sort`; do
 	a=$($top_builddir/metadata/metaparse -Iinclude -Itestcases/kernel/syscalls/utils/ "$test")
 	if [ -n "$a" ]; then
 		if [ -z "$first" ]; then
