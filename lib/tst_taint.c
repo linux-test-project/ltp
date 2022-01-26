@@ -14,6 +14,27 @@
 
 static unsigned int taint_mask = -1;
 
+static const char *const taint_strings[] = {
+	"G (Propriety module loaded)",
+	"F (Module force loaded)",
+	"S (Running on out of spec system)",
+	"R (Module force unloaded)",
+	"M (Machine check exception)",
+	"B (Bad page reference)",
+	"U (User request)",
+	"D (OOPS/BUG)",
+	"A (ACPI table overridden)",
+	"W (Warning)",
+	"C (Staging driver loaded)",
+	"I (Workaround BIOS/FW bug)",
+	"O (Out of tree module loaded)",
+	"E (Unsigned module loaded)",
+	"L (Soft lock up occured)",
+	"K (Live patched)",
+	"X (Auxilary)",
+	"T (Built with struct randomization)",
+};
+
 static unsigned int tst_taint_read(void)
 {
 	unsigned int val;
@@ -80,6 +101,7 @@ static int tst_taint_check_kver(unsigned int mask)
 void tst_taint_init(unsigned int mask)
 {
 	unsigned int taint = -1;
+	unsigned long i;
 
 	if (mask == 0)
 		tst_brk(TBROK, "mask is not allowed to be 0");
@@ -95,8 +117,14 @@ void tst_taint_init(unsigned int mask)
 		taint_mask &= ~TST_TAINT_W;
 	}
 
-	if ((taint & taint_mask) != 0)
-		tst_brk(TBROK, "Kernel is already tainted: %u", taint);
+	if ((taint & taint_mask) != 0) {
+		for (i = 0; i < ARRAY_SIZE(taint_strings); i++) {
+			if (taint & (1 << i))
+				tst_res(TINFO, "tainted: %s", taint_strings[i]);
+		}
+
+		tst_brk(TBROK, "Kernel is already tainted");
+	}
 }
 
 
