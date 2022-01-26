@@ -193,7 +193,8 @@ int self_exec(const char *argv0, const char *fmt, ...);
  * @dev: path to a device
  * @fs_type: filesystem type
  * @fs_opts: NULL or NULL terminated array of mkfs options
- * @extra_opt: extra mkfs option which is passed after the device name
+ * @extra_opts: NULL or NULL terminated array of extra mkfs options which are
+ * passed after the device name.
  */
 #define tst_mkfs(cleanup, dev, fs_type, fs_opts, extra_opts) \
 	tst_mkfs_(__FILE__, __LINE__, cleanup, dev, fs_type, \

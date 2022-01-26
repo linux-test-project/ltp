@@ -9,7 +9,8 @@
  * @dev: path to a device
  * @fs_type: filesystem type
  * @fs_opts: NULL or NULL terminated array of extra mkfs options
- * @extra_opts: NULL or NULL terminated array of extra mkfs options
+ * @extra_opts: NULL or NULL terminated array of extra mkfs options which are
+ * passed after the device name.
  */
 void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 	       const char *dev, const char *fs_type,
