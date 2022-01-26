@@ -451,11 +451,27 @@ tst_usage()
 		$TST_USAGE
 	else
 		echo "usage: $0"
-		echo "OPTIONS"
+		echo
+		echo "Options"
+		echo "-------"
 	fi
 
 	echo "-h      Prints this help"
 	echo "-i n    Execute test n times"
+
+	cat << EOF
+
+Environment Variables
+---------------------
+KCONFIG_PATH         Specify kernel config file
+KCONFIG_SKIP_CHECK   Skip kernel config check if variable set (not set by default)
+LTPROOT              Prefix for installed LTP (default: /opt/ltp)
+LTP_COLORIZE_OUTPUT  Force colorized output behaviour (y/1 always, n/0: never)
+LTP_DEV              Path to the block device to be used (for .needs_device)
+LTP_DEV_FS_TYPE      Filesystem used for testing (default: ext2)
+LTP_TIMEOUT_MUL      Timeout multiplier (must be a number >=1, ceiled to int)
+TMPDIR               Base directory for template directory (for .needs_tmpdir, default: /tmp)
+EOF
 }
 
 _tst_resstr()
