@@ -8,7 +8,7 @@ include $(top_srcdir)/include/mk/env_pre.mk
 
 FILTER_OUT_MAKE_TARGETS		:= nfs_flock_func
 
-INSTALL_TARGETS			:= nfslock01
+INSTALL_TARGETS			:= *.sh
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 

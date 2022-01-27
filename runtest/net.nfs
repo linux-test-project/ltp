@@ -72,16 +72,16 @@ nfs4_ipv6_07 nfs07.sh -6 -v 4 -t tcp
 nfs41_ipv6_07 nfs07.sh -6 -v 4.1 -t tcp
 nfs42_ipv6_07 nfs07.sh -6 -v 4.2 -t tcp
 
-nfslock3_01 nfslock01 -v 3 -t udp
-nfslock3t_01 nfslock01 -v 3 -t tcp
-nfslock4_01 nfslock01 -v 4 -t tcp
-nfslock41_01 nfslock01 -v 4.1 -t tcp
-nfslock42_01 nfslock01 -v 4.2 -t tcp
-nfslock3_ipv6_01 nfslock01 -6 -v 3 -t udp
-nfslock3t_ipv6_01 nfslock01 -6 -v 3 -t tcp
-nfslock4_ipv6_01 nfslock01 -6 -v 4 -t tcp
-nfslock41_ipv6_01 nfslock01 -6 -v 4.1 -t tcp
-nfslock42_ipv6_01 nfslock01 -6 -v 4.2 -t tcp
+nfslock3_01 nfslock01.sh -v 3 -t udp
+nfslock3t_01 nfslock01.sh -v 3 -t tcp
+nfslock4_01 nfslock01.sh -v 4 -t tcp
+nfslock41_01 nfslock01.sh -v 4.1 -t tcp
+nfslock42_01 nfslock01.sh -v 4.2 -t tcp
+nfslock3_ipv6_01 nfslock01.sh -6 -v 3 -t udp
+nfslock3t_ipv6_01 nfslock01.sh -6 -v 3 -t tcp
+nfslock4_ipv6_01 nfslock01.sh -6 -v 4 -t tcp
+nfslock41_ipv6_01 nfslock01.sh -6 -v 4.1 -t tcp
+nfslock42_ipv6_01 nfslock01.sh -6 -v 4.2 -t tcp
 
 nfsstat3_01 nfsstat01.sh
 
