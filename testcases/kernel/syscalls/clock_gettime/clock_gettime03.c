@@ -37,6 +37,7 @@ static struct tcase {
 
 static struct tst_ts now, then, parent_then;
 static int parent_ns;
+static long long delta = 10;
 
 static struct time64_variants variants[] = {
 	{ .clock_gettime = libc_clock_gettime, .ts_type = TST_LIBC_TIMESPEC, .desc = "vDSO or syscall with libc spec"},
@@ -70,7 +71,7 @@ static void child(struct time64_variants *tv, struct tcase *tc)
 
 	diff = tst_ts_diff_ms(then, now);
 
-	if (diff - tc->off * 1000 > 10) {
+	if (diff - tc->off * 1000 > delta) {
 		tst_res(TFAIL, "Wrong offset (%s) read %llims",
 		        tst_clock_name(tc->clk_id), diff);
 	} else {
@@ -80,7 +81,7 @@ static void child(struct time64_variants *tv, struct tcase *tc)
 
 	diff = tst_ts_diff_ms(parent_then, now);
 
-	if (diff > 10) {
+	if (diff > delta) {
 		tst_res(TFAIL, "Wrong offset (%s) read %llims",
 		        tst_clock_name(tc->clk_id), diff);
 	} else {
@@ -112,6 +113,11 @@ static void verify_ns_clock(unsigned int n)
 static void setup(void)
 {
 	struct time64_variants *tv = &variants[tst_variant];
+
+	if (tst_is_virt(VIRT_ANY)) {
+		tst_res(TINFO, "Running in a VM, multiply the delta by 10.");
+		delta *= 10;
+	}
 
 	now.type = then.type = parent_then.type = tv->ts_type;
 	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
