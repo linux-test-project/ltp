@@ -30,3 +30,4 @@ cve
 crypto
 kernel_misc
 uevent
+watchqueue
