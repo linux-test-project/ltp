@@ -140,6 +140,10 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEYCTL_INVALIDATE 21
 #endif
 
+#ifndef KEYCTL_WATCH_KEY
+# define KEYCTL_WATCH_KEY 32
+#endif
+
 /* key permissions */
 #ifndef KEY_POS_VIEW
 # define KEY_POS_VIEW    0x01000000
