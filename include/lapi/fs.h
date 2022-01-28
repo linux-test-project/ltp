@@ -41,6 +41,10 @@
 #define FS_NODUMP_FL	   0x00000040 /* do not dump file */
 #endif
 
+#ifndef FS_VERITY_FL
+#define FS_VERITY_FL	   0x00100000 /* Verity protected inode */
+#endif
+
 /*
  * Helper function to get MAX_LFS_FILESIZE.
  * Missing PAGE_SHIFT on some libc prevents defining MAX_LFS_FILESIZE.
