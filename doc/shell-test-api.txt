@@ -747,7 +747,7 @@ a child binary process from a shell test and synchronize with it. This process
 must have checkpoints initialized by calling 'tst_reinit()'.
 
 1.7 Parsing kernel .config
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 The shell library provides an implementation of the kconfig parsing interface
 compatible with the C version.
 
