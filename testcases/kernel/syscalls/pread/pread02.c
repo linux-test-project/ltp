@@ -39,7 +39,7 @@ struct test_case_t {
 static void verify_pread(unsigned int n)
 {
 	struct test_case_t *tc = &tcases[n];
-	char buf;
+	char buf[K1];
 
 	TST_EXP_FAIL2(pread(*tc->fd, &buf, tc->nb, tc->offst), tc->exp_errno,
 		"pread(%d, %zu, %ld) %s", *tc->fd, tc->nb, tc->offst, tc->desc);
