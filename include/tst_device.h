@@ -112,4 +112,11 @@ void tst_purge_dir(const char *path);
  */
 void tst_find_backing_dev(const char *path, char *dev);
 
-#endif	/* TST_DEVICE_H__ */
+/*
+ * Returns the size of a physical device block size for the specific path
+ * @path   Path to find the block size
+ * @return Size of the block size
+ */
+int tst_dev_block_size(const char *path);
+
+#endif /* TST_DEVICE_H__ */
