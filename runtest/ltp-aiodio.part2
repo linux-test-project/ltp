@@ -1,84 +1,83 @@
 ADSP000 aiodio_sparse
 ADSP001 aiodio_sparse -s 180k
-ADSP002 aiodio_sparse -dd -s 1751k -w 11k
-ADSP003 aiodio_sparse -i 9 -d -s 180k -w 18k
-ADSP004 aiodio_sparse -i 2 -a 2k -w 2k -s 4k -n 2
-ADSP005 aiodio_sparse -i 2 -a 4k -w 4k -s 8k -n 2
-ADSP006 aiodio_sparse -i 2 -a 4k -w 4k -s 8k -n 2
-ADSP007 aiodio_sparse -i 4 -a 8k -w 8k -s 32k -n 2
-ADSP008 aiodio_sparse -i 4 -a 8k -w 16k -s 64k -n 2
-ADSP009 aiodio_sparse -i 4 -a 8k -w 32k -s 128k -n 2
-ADSP010 aiodio_sparse -i 4 -a 8k -w 64k -s 256k -n 2
-ADSP011 aiodio_sparse -i 4 -a 8k -w 128k -s 512k -n 2
-ADSP012 aiodio_sparse -i 4 -a 8k -w 256k -s 1024k -n 2
-ADSP013 aiodio_sparse -i 4 -a 8k -w 512k -s 2048k -n 2
-ADSP014 aiodio_sparse -i 4 -a 8k -w 1024k -s 4096k -n 2
-ADSP015 aiodio_sparse -i 4 -a 8k -w 2048k -s 8192k -n 2
-ADSP016 aiodio_sparse -i 4 -a 8k -w 4096k -s 16384k -n 2
-ADSP017 aiodio_sparse -i 4 -a 8k -w 8192k -s 32768k -n 2
-ADSP018 aiodio_sparse -i 4 -a 8k -w 16384k -s 65536k -n 2
-ADSP019 aiodio_sparse -i 4 -a 8k -w 16384k -s 65536k -n 4
-ADSP020 aiodio_sparse -i 4 -a 8k -w 16384k -s 65536k -n 6
-ADSP021 aiodio_sparse -i 4 -a 8k -w 128k -s 512k -n 6
-ADSP022 aiodio_sparse -i 4 -a 8k -w 256k -s 1024k -n 6
-ADSP023 aiodio_sparse -i 4 -a 8k -w 512k -s 2048k -n 6
-ADSP024 aiodio_sparse -i 4 -a 8k -w 1024k -s 4096k -n 6
-ADSP025 aiodio_sparse -i 4 -a 8k -w 2048k -s 8192k -n 6
-ADSP026 aiodio_sparse -i 4 -a 8k -w 4096k -s 16384k -n 6
-ADSP027 aiodio_sparse -i 4 -a 8k -w 18192k -s 72768k -n 6
-ADSP028 aiodio_sparse -i 4 -a 8k -w 18192k -s 518192k -n 6
-ADSP029 aiodio_sparse -i 4 -a 8k -w 65536k -s 262144k -n 6
-ADSP030 aiodio_sparse -i 6 -a 8k -w 65536k -n 6
-ADSP031 aiodio_sparse -i 8 -a 8k -w 128k -s 1024k -n 6
-ADSP032 aiodio_sparse -i 16 -a 8k -w 256k -s 4096k -n 6
-ADSP033 aiodio_sparse -i 32 -a 8k -w 512k -s 16384k -n 6
-ADSP034 aiodio_sparse -i 64 -a 8k -w 1024k -s 65536k -n 6
-ADSP035 aiodio_sparse -i 4 -a 8k -w 4096k -s 16384k -n 32
-ADSP036 aiodio_sparse -i 4 -a 8k -w 4096k -s 16384k -n 64
-ADSP037 aiodio_sparse -i 4 -a 8k -w 18192k -s 72768k -n 128
-ADSP038 aiodio_sparse -i 4 -a 8k -w 18192k -n 512
-ADSP039 aiodio_sparse -i 4 -a 8k -w 18192k -n 1000
-ADSP040 dio_sparse
-ADSP041 dio_sparse -s 180k
-ADSP042 dio_sparse -s 1751k -w 11k
-ADSP043 dio_sparse  -s 180k -w 18k
-ADSP044 dio_sparse  -w 2k -s 2k -n 2
-ADSP045 dio_sparse  -w 4k -s 2k -n 2
-ADSP046 dio_sparse  -w 4k -s 4k -n 2
-ADSP047 dio_sparse  -w 16k -s 16k -n 2
-ADSP048 dio_sparse  -w 32k -s 32k -n 2
-ADSP049 dio_sparse  -w 64k -s 64k -n 2
-ADSP050 dio_sparse  -w 128k -s 128k -n 2
-ADSP051 dio_sparse  -w 256k -s 256k -n 2
-ADSP052 dio_sparse  -w 512k -s 512k -n 2
-ADSP053 dio_sparse  -w 1024k -s 1024k -n 2
-ADSP054 dio_sparse  -w 2048k -s 2048k -n 2
-ADSP055 dio_sparse  -w 4096k -s 4096k -n 2
-ADSP056 dio_sparse  -w 8192k -s 8192k -n 2
-ADSP057 dio_sparse  -w 18192k -s 18192k -n 2
-ADSP058 dio_sparse  -w 518192k -s 518192k -n 2
-ADSP059 dio_sparse  -w 58192k -s 58192k -n 4
-ADSP060 dio_sparse  -w 58192k -s 58192k -n 6
-ADSP061 dio_sparse  -w 256k -s 256k -n 6
-ADSP062 dio_sparse  -w 512k -s 512k -n 6
-ADSP063 dio_sparse  -w 1024k -s 1024k -n 6
-ADSP064 dio_sparse  -w 2048k -s 2048k -n 6
-ADSP065 dio_sparse  -w 2048k -s 4096k -n 6
-ADSP066 dio_sparse  -w 8192k -s 8192k -n 6
-ADSP067 dio_sparse  -w 18192k -s 18192k -n 6
-ADSP068 dio_sparse  -w 58192k -s 518192k -n 6
-ADSP069 dio_sparse  -w 518192k -s 518192k -n 6
-ADSP070 dio_sparse  -w 1024k -s 2048k -n 6
-ADSP071 dio_sparse  -w 4096k -s 4096k -n 32
-ADSP072 dio_sparse  -w 8192k -s 8192k -n 64
-ADSP073 dio_sparse  -w 518192k -s 18192k -n 128
-ADSP074 dio_sparse  -w 518192k -s 518192k -n 512
-ADSP075 dio_sparse  -w 518192k -s 518192k -n 1000
-ADSP076 dio_sparse  -w 4k -s 2k -o 2k -n 2
-ADSP077 dio_sparse  -w 2k -s 1k -o 1k -n 2
-ADSP078 dio_sparse  -w 1k -s 512 -o 512 -n 2
-ADSP079 dio_sparse  -w 4k -s 2k -o 3k -n 2
-ADSP080 dio_sparse  -w 4k -s 4k -o 4k -n 2
-ADSP081 dio_sparse  -w 4k -s 4k -o 6k -n 2
-ADSP082 dio_sparse  -w 4k -s 4k -o 8k -n 2
-ADSP083 dio_sparse  -w 16k -s 8k -o 8k -n 2
+ADSP002 aiodio_sparse -s 1751k -w 11k
+ADSP003 aiodio_sparse -o 9 -s 180k -w 18k
+ADSP004 aiodio_sparse -o 2 -w 2k -s 4k -n 2
+ADSP005 aiodio_sparse -o 2 -w 4k -s 8k -n 2
+ADSP006 aiodio_sparse -o 4 -w 8k -s 32k -n 2
+ADSP007 aiodio_sparse -o 4 -w 16k -s 64k -n 2
+ADSP008 aiodio_sparse -o 4 -w 32k -s 128k -n 2
+ADSP009 aiodio_sparse -o 4 -w 64k -s 256k -n 2
+ADSP010 aiodio_sparse -o 4 -w 128k -s 512k -n 2
+ADSP011 aiodio_sparse -o 4 -w 256k -s 1024k -n 2
+ADSP012 aiodio_sparse -o 4 -w 512k -s 2048k -n 2
+ADSP013 aiodio_sparse -o 4 -w 1024k -s 4096k -n 2
+ADSP014 aiodio_sparse -o 4 -w 2048k -s 8192k -n 2
+ADSP015 aiodio_sparse -o 4 -w 4096k -s 16384k -n 2
+ADSP016 aiodio_sparse -o 4 -w 8192k -s 32768k -n 2
+ADSP017 aiodio_sparse -o 4 -w 16384k -s 65536k -n 2
+ADSP018 aiodio_sparse -o 4 -w 16384k -s 65536k -n 4
+ADSP019 aiodio_sparse -o 4 -w 16384k -s 65536k -n 6
+ADSP020 aiodio_sparse -o 4 -w 128k -s 512k -n 6
+ADSP021 aiodio_sparse -o 4 -w 256k -s 1024k -n 6
+ADSP022 aiodio_sparse -o 4 -w 512k -s 2048k -n 6
+ADSP023 aiodio_sparse -o 4 -w 1024k -s 4096k -n 6
+ADSP024 aiodio_sparse -o 4 -w 2048k -s 8192k -n 6
+ADSP025 aiodio_sparse -o 4 -w 4096k -s 16384k -n 6
+ADSP026 aiodio_sparse -o 4 -w 18192k -s 72768k -n 6
+ADSP027 aiodio_sparse -o 4 -w 18192k -s 518192k -n 6
+ADSP028 aiodio_sparse -o 4 -w 65536k -s 262144k -n 6
+ADSP029 aiodio_sparse -o 6 -w 65536k -n 6
+ADSP030 aiodio_sparse -o 8 -w 128k -s 1024k -n 6
+ADSP031 aiodio_sparse -o 16 -w 256k -s 4096k -n 6
+ADSP032 aiodio_sparse -o 32 -w 512k -s 16384k -n 6
+ADSP033 aiodio_sparse -o 64 -w 1024k -s 65536k -n 6
+ADSP034 aiodio_sparse -o 4 -w 4096k -s 16384k -n 32
+ADSP035 aiodio_sparse -o 4 -w 4096k -s 16384k -n 64
+ADSP036 aiodio_sparse -o 4 -w 18192k -s 72768k -n 128
+ADSP037 aiodio_sparse -o 4 -w 18192k -n 512
+ADSP038 aiodio_sparse -o 4 -w 18192k -n 1000
+ADSP039 dio_sparse
+ADSP040 dio_sparse -s 180k
+ADSP041 dio_sparse -s 1751k -w 11k
+ADSP042 dio_sparse  -s 180k -w 18k
+ADSP043 dio_sparse  -w 2k -s 2k -n 2
+ADSP044 dio_sparse  -w 4k -s 2k -n 2
+ADSP045 dio_sparse  -w 4k -s 4k -n 2
+ADSP046 dio_sparse  -w 16k -s 16k -n 2
+ADSP047 dio_sparse  -w 32k -s 32k -n 2
+ADSP048 dio_sparse  -w 64k -s 64k -n 2
+ADSP049 dio_sparse  -w 128k -s 128k -n 2
+ADSP050 dio_sparse  -w 256k -s 256k -n 2
+ADSP051 dio_sparse  -w 512k -s 512k -n 2
+ADSP052 dio_sparse  -w 1024k -s 1024k -n 2
+ADSP053 dio_sparse  -w 2048k -s 2048k -n 2
+ADSP054 dio_sparse  -w 4096k -s 4096k -n 2
+ADSP055 dio_sparse  -w 8192k -s 8192k -n 2
+ADSP056 dio_sparse  -w 18192k -s 18192k -n 2
+ADSP057 dio_sparse  -w 518192k -s 518192k -n 2
+ADSP058 dio_sparse  -w 58192k -s 58192k -n 4
+ADSP059 dio_sparse  -w 58192k -s 58192k -n 6
+ADSP060 dio_sparse  -w 256k -s 256k -n 6
+ADSP061 dio_sparse  -w 512k -s 512k -n 6
+ADSP062 dio_sparse  -w 1024k -s 1024k -n 6
+ADSP063 dio_sparse  -w 2048k -s 2048k -n 6
+ADSP064 dio_sparse  -w 2048k -s 4096k -n 6
+ADSP065 dio_sparse  -w 8192k -s 8192k -n 6
+ADSP066 dio_sparse  -w 18192k -s 18192k -n 6
+ADSP067 dio_sparse  -w 58192k -s 518192k -n 6
+ADSP068 dio_sparse  -w 518192k -s 518192k -n 6
+ADSP069 dio_sparse  -w 1024k -s 2048k -n 6
+ADSP070 dio_sparse  -w 4096k -s 4096k -n 32
+ADSP071 dio_sparse  -w 8192k -s 8192k -n 64
+ADSP072 dio_sparse  -w 518192k -s 18192k -n 128
+ADSP073 dio_sparse  -w 518192k -s 518192k -n 512
+ADSP074 dio_sparse  -w 518192k -s 518192k -n 1000
+ADSP075 dio_sparse  -w 4k -s 2k -o 2k -n 2
+ADSP076 dio_sparse  -w 2k -s 1k -o 1k -n 2
+ADSP077 dio_sparse  -w 1k -s 512 -o 512 -n 2
+ADSP078 dio_sparse  -w 4k -s 2k -o 3k -n 2
+ADSP079 dio_sparse  -w 4k -s 4k -o 4k -n 2
+ADSP080 dio_sparse  -w 4k -s 4k -o 6k -n 2
+ADSP081 dio_sparse  -w 4k -s 4k -o 8k -n 2
+ADSP082 dio_sparse  -w 16k -s 8k -o 8k -n 2
