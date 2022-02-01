@@ -104,11 +104,6 @@ jobs:
               CC: gcc
               METADATA: asciidoc-pdf
 
-          - container: "centos:latest"
-            env:
-              CC: gcc
-              METADATA: asciidoctor
-
     container:
       image: ${{ matrix.container }}
       env: ${{ matrix.env }}
