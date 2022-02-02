@@ -305,6 +305,7 @@ static struct tst_test test = {
 		{"linux-git", "124e7c61deb2"},
 		{}
 	},
+	.timeout = 10,
 	.needs_cmds = (const char *[]) {
 		"debugfs",
 		NULL
