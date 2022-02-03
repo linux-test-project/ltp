@@ -334,3 +334,13 @@ It's easier to maintain a '.gitignore' file per directory with tests, rather
 than having single file in the project root directory. This way, we don't have
 to update all the gitignore files when moving directories, and they get deleted
 automatically when a directory with tests is removed.
+
+7 Testing pre-release kernel features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tests for features not yet in a mainline kernel release are accepted. However
+they must only be added to the +staging+ runtest file. Once a feature is part
+of the stable kernel ABI the associated test must be moved out of staging.
+
+This is primarily to help test kernel RCs by avoiding the need to download
+separate LTP patchsets.
