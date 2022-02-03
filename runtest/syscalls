@@ -585,6 +585,7 @@ inotify07 inotify07
 inotify08 inotify08
 inotify09 inotify09
 inotify10 inotify10
+inotify11 inotify11
 
 fanotify01 fanotify01
 fanotify02 fanotify02
