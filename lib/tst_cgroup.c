@@ -834,21 +834,6 @@ clear_data:
 	memset(roots, 0, sizeof(roots));
 }
 
-__attribute__((nonnull(1)))
-static void cgroup_group_init(struct tst_cgroup_group *const cg,
-			      const char *const group_name)
-{
-	memset(cg, 0, sizeof(*cg));
-
-	if (!group_name)
-		return;
-
-	if (strlen(group_name) > NAME_MAX)
-		tst_brk(TBROK, "Group name is too long");
-
-	strcpy(cg->group_name, group_name);
-}
-
 __attribute__((nonnull(2, 3)))
 static void cgroup_group_add_dir(const struct tst_cgroup_group *const parent,
 				 struct tst_cgroup_group *const cg,
@@ -880,18 +865,28 @@ static void cgroup_group_add_dir(const struct tst_cgroup_group *const parent,
 
 struct tst_cgroup_group *
 tst_cgroup_group_mk(const struct tst_cgroup_group *const parent,
-		    const char *const group_name)
+		    const char *const group_name_fmt, ...)
 {
 	struct tst_cgroup_group *cg;
 	struct cgroup_dir *const *dir;
 	struct cgroup_dir *new_dir;
+	va_list ap;
+	size_t name_len;
 
 	cg = SAFE_MALLOC(sizeof(*cg));
-	cgroup_group_init(cg, group_name);
+	memset(cg, 0, sizeof(*cg));
+
+	va_start(ap, group_name_fmt);
+	name_len = vsnprintf(cg->group_name, NAME_MAX,
+			     group_name_fmt, ap);
+	va_end(ap);
+
+	if (name_len >= NAME_MAX)
+		tst_brk(TBROK, "CGroup name is too long");
 
 	for_each_dir(parent, 0, dir) {
 		new_dir = SAFE_MALLOC(sizeof(*new_dir));
-		cgroup_dir_mk(*dir, group_name, new_dir);
+		cgroup_dir_mk(*dir, cg->group_name, new_dir);
 		cgroup_group_add_dir(parent, cg, new_dir);
 	}
 

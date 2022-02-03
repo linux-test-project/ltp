@@ -56,11 +56,12 @@ static void set_cpu_quota(const struct tst_cgroup_group *const cg,
 }
 
 static void mk_cpu_cgroup(struct tst_cgroup_group **cg,
-		const struct tst_cgroup_group *const cg_parent,
-		const char *const cg_child_name,
-		const float quota_percent)
+			  const struct tst_cgroup_group *const cg_parent,
+			  const char *const cg_child_name,
+			  const float quota_percent)
+
 {
-	*cg = tst_cgroup_group_mk(cg_parent, cg_child_name);
+	*cg = tst_cgroup_group_mk(cg_parent, "%s", cg_child_name);
 
 	set_cpu_quota(*cg, quota_percent);
 }
