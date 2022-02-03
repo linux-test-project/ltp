@@ -134,8 +134,13 @@ static inline int test_socket(int domain, int type, int protocol)
 {
 	int sk = socket(domain, type, protocol);
 
-	if (sk == -1)
+	if (sk == -1) {
+		if (errno == EAFNOSUPPORT)
+			tst_brkm(TCONF | TERRNO, tst_exit, "socket(%i, %i, %i) not supported", domain,
+					 type, protocol);
+
 		tst_brkm(TBROK | TERRNO, tst_exit, "socket()");
+	}
 
 	return sk;
 }
