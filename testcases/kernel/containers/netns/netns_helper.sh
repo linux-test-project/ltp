@@ -1,36 +1,30 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) Linux Test Project, 2014-2021
 # Copyright (c) 2015 Red Hat, Inc.
 
-TST_CLEANUP=netns_ns_exec_cleanup
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="ip ping"
 TST_NEEDS_DRIVERS="veth"
 
-# Set to 1 only for test cases using ifconfig (ioctl).
-USE_IFCONFIG=0
+TST_OPTS="eI"
+TST_PARSE_ARGS="netns_parse_args"
+TST_USAGE="netns_usage"
+TST_SETUP="${TST_SETUP:-netns_setup}"
+TST_CLEANUP="${TST_CLEANUP:-netns_cleanup}"
 
-# Variables which can be used in test cases (set by netns_setup() function):
+TST_NET_SKIP_VARIABLE_INIT=1
 
-# Use in test cases to execute commands inside a namespace. Set to 'ns_exec' or
-# 'ip netns exec' command according to NS_EXEC_PROGRAM argument specified in
-# netns_setup() function call.
-NS_EXEC=
+# from tst_net_vars.c
+IPV4_NET16_UNUSED="10.23"
+IPV6_NET32_UNUSED="fd00:23"
 
 # Set to "net" for ns_create/ns_exec as their options requires
 # to specify a namespace type. Empty for ip command.
 NS_TYPE=
 
-# IP addresses of veth0 (IP0) and veth1 (IP1) devices (ipv4/ipv6 variant
-# is determined according to the IP_VERSION argument specified in netns_setup()
-# function call.
-IP0=
-IP1=
-NETMASK=
-
-# 'ping' or 'ping6' according to the IP_VERSION argument specified
-# in netns_setup() function call.
+# 'ping' or 'ping6'
 tping=
 
 # Network namespaces handles for manipulating and executing commands inside
@@ -45,107 +39,73 @@ NS_HANDLE1=
 # ifconfig <device> $IFCONF_IN6_ARG IP/NETMASK
 IFCONF_IN6_ARG=
 
-# Sets up global variables which can be used in test cases (documented above),
-# creates two network namespaces and a pair of virtual ethernet devices, each
-# device in one namespace. Each device is then enabled and assigned an IP
-# address according to the function parameters. IFCONF_IN6_ARG variable is set
-# only if ipv6 variant of test case is used (determined by IP_VERSION argument).
-#
-# SYNOPSIS:
-# netns_setup <NS_EXEC_PROGRAM> <IP_VERSION> <COMM_TYPE> <IP4_VETH0>
-#             <IP4_VETH1> <IP6_VETH0> <IP6_VETH1>
-#
-# OPTIONS:
-#	* NS_EXEC_PROGRAM (ns_exec|ip)
-#		Program which will be used to enter and run other commands
-#		inside a network namespace.
-#	* IP_VERSION (ipv4|ipv6)
-#		Version of IP. (ipv4|ipv6)
-#	* COMM_TYPE (netlink|ioctl)
-#		Communication type between kernel and user space
-#		for enabling and assigning IP addresses to the virtual
-#		ethernet devices. Uses 'ip' command for netlink and 'ifconfig'
-#		for ioctl. (If set to ioctl, function also checks the existance
-#		of the 'ifconfig' command.)
-#	* IP4_VETH0, IP4_VETH1
-#		IPv4 addresses for veth0 and veth1 devices.
-#	* IP6_VETH0, IP6_VETH1
-#		IPv6 addresses for veth0 and veth1 devices.
-#
-# On success function returns, on error tst_brk is called and TC is terminated.
+# Program which will be used to enter and run other commands inside a network namespace.
+# (ns_exec|ip)
+NS_EXEC="ip"
+
+# Communication type between kernel and user space for basic setup: enabling and
+# assigning IP addresses to the virtual ethernet devices. (Uses 'ip' command for
+# netlink and 'ifconfig' for ioctl.)
+# (netlink|ioctl)
+COMM_TYPE="netlink"
+
+do_cleanup=
+
+netns_parse_args()
+{
+	case $1 in
+	e) NS_EXEC="ns_exec" ;;
+	I) COMM_TYPE="ioctl"; tst_require_cmds ifconfig ;;
+	esac
+}
+
+netns_usage()
+{
+	echo "usage: $0 [ -e ] [ -I ]"
+	echo "OPTIONS"
+	echo "-e      Use ns_exec instead of ip"
+	echo "-I      Test ioctl (with ifconfig) instead of netlink (with ip)"
+}
+
 netns_setup()
 {
-	case "$1" in
-	ns_exec)
+	if [ "$NS_EXEC" = "ip" ]; then
+		netns_ip_setup
+	else
 		setns_check
 		[ $? -eq 32 ] && tst_brk TCONF "setns not supported"
 
 		NS_TYPE="net"
 		netns_ns_exec_setup
-		TST_CLEANUP=netns_ns_exec_cleanup
-		;;
-	ip)
-		netns_ip_setup
-		TST_CLEANUP=netns_ip_cleanup
-		;;
-	*)
-		tst_brk TBROK \
-		"first argument must be a program used to enter a network namespace (ns_exec|ip)"
-		;;
-	esac
-
-	case "$3" in
-	netlink)
-		;;
-	ioctl)
-		USE_IFCONFIG=1
-		tst_require_cmds ifconfig
-		;;
-	*)
-		tst_brk TBROK \
-		"third argument must be a comm. type between kernel and user space (netlink|ioctl)"
-		;;
-	esac
-
-	if [ -z "$4" ]; then
-		tst_brk TBROK "fourth argument must be the IPv4 address for veth0"
-	fi
-	if [ -z "$5" ]; then
-		tst_brk TBROK "fifth argument must be the IPv4 address for veth1"
-	fi
-	if [ -z "$6" ]; then
-		tst_brk TBROK "sixth argument must be the IPv6 address for veth0"
-	fi
-	if [ -z "$7" ]; then
-		tst_brk TBROK "seventh argument must be the IPv6 address for veth1"
 	fi
 
-	case "$2" in
-	ipv4)
-		IP0=$4
-		IP1=$5
-		tping="ping"
-		NETMASK=24
-		;;
-	ipv6)
+	IP0=$(tst_ipaddr_un -c 1)
+	IP1=$(tst_ipaddr_un -c 2)
+
+	if [ "$TST_IPV6" ]; then
 		IFCONF_IN6_ARG="inet6 add"
-		IP0=$6
-		IP1=$7
-
-		if tst_cmd_available ping6; then
-			tping="ping6"
-		else
-			tping="ping -6"
-			tst_res_ TINFO "ping6 binary/symlink is missing, using workaround. Please, report missing ping6 to your distribution."
-		fi
 		NETMASK=64
-		;;
-	*)
-		tst_brk TBROK "second argument must be an ip version (ipv4|ipv6)"
-		;;
-	esac
+	else
+		NETMASK=24
+	fi
+
+	tping=ping$TST_IPV6
 
 	netns_set_ip
+
+	tst_res TINFO "testing netns over $COMM_TYPE with $NS_EXEC $PROG"
+	do_cleanup=1
+}
+
+netns_cleanup()
+{
+	[ "$do_cleanup" ] || return
+
+	if [ "$NS_EXEC" = "ip" ]; then
+		netns_ip_cleanup
+	else
+		netns_ns_exec_cleanup
+	fi
 }
 
 # Sets up NS_EXEC to use 'ns_exec', creates two network namespaces and stores
@@ -197,23 +157,18 @@ netns_ip_setup()
 	ip netns del $NS_HANDLE0 2>/dev/null
 	ip netns del $NS_HANDLE1 2>/dev/null
 
-	ip netns add $NS_HANDLE0 || \
-		tst_brk TBROK "unable to create a new network namespace"
-	ip netns add $NS_HANDLE1 || \
-		tst_brk TBROK "unable to create a new network namespace"
+	ROD ip netns add $NS_HANDLE0
+	ROD ip netns add $NS_HANDLE1
 
-	$NS_EXEC $NS_HANDLE0 ip link add veth0 type veth peer name veth1 || \
-		tst_brk TBROK "unable to create veth pair devices"
-
-	$NS_EXEC $NS_HANDLE0 ip link set veth1 netns $NS_HANDLE1 || \
-		tst_brk TBROK "unable to add device veth1 to the separate network namespace"
+	ROD $NS_EXEC $NS_HANDLE0 ip link add veth0 type veth peer name veth1
+	ROD $NS_EXEC $NS_HANDLE0 ip link set veth1 netns $NS_HANDLE1
 }
 
 # Enables virtual ethernet devices and assigns IP addresses for both
 # of them (IPv4/IPv6 variant is decided by netns_setup() function).
 netns_set_ip()
 {
-	[ "$NS_EXEC" ] || tst_brk TBROK "netns_setup() function must be called first"
+	local cmd="ip"
 
 	# This applies only for ipv6 variant:
 	# Do not accept Router Advertisements (accept_ra) and do not use
@@ -222,35 +177,28 @@ netns_set_ip()
 	# there is no other host with the same address, the address is
 	# considered to be "tentative" (attempts to bind() to the address fail
 	# with EADDRNOTAVAIL) which may cause problems for tests using ipv6.
-	echo 0 | $NS_EXEC $NS_HANDLE0 $NS_TYPE \
-		tee /proc/sys/net/ipv6/conf/veth0/accept_dad \
-		/proc/sys/net/ipv6/conf/veth0/accept_ra >/dev/null
-	echo 0 | $NS_EXEC $NS_HANDLE1 $NS_TYPE \
-		tee /proc/sys/net/ipv6/conf/veth1/accept_dad \
-		/proc/sys/net/ipv6/conf/veth1/accept_ra >/dev/null
+	if [ "$TST_IPV6" ]; then
+		echo 0 | $NS_EXEC $NS_HANDLE0 $NS_TYPE \
+			tee /proc/sys/net/ipv6/conf/veth0/accept_dad \
+			/proc/sys/net/ipv6/conf/veth0/accept_ra >/dev/null
+		echo 0 | $NS_EXEC $NS_HANDLE1 $NS_TYPE \
+			tee /proc/sys/net/ipv6/conf/veth1/accept_dad \
+			/proc/sys/net/ipv6/conf/veth1/accept_ra >/dev/null
+	fi
 
-	case $USE_IFCONFIG in
-	1)
-		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 $IFCONF_IN6_ARG $IP0/$NETMASK ||
-			tst_brk TBROK "adding address to veth0 failed"
-		$NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK ||
-			tst_brk TBROK "adding address to veth1 failed"
-		$NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 up ||
-			tst_brk TBROK "enabling veth0 device failed"
-		$NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 up ||
-			tst_brk TBROK "enabling veth1 device failed"
-		;;
-	*)
-		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP0/$NETMASK dev veth0 ||
-			tst_brk TBROK "adding address to veth0 failed"
-		$NS_EXEC $NS_HANDLE1 $NS_TYPE ip address add $IP1/$NETMASK dev veth1 ||
-			tst_brk TBROK "adding address to veth1 failed"
-		$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set veth0 up ||
-			tst_brk TBROK "enabling veth0 device failed"
-		$NS_EXEC $NS_HANDLE1 $NS_TYPE ip link set veth1 up ||
-			tst_brk TBROK "enabling veth1 device failed"
-		;;
-	esac
+	[ "$COMM_TYPE" = "ioctl" ] && cmd="ifconfig"
+
+	if [ "$COMM_TYPE" = "netlink" ]; then
+		ROD $NS_EXEC $NS_HANDLE0 $NS_TYPE ip address add $IP0/$NETMASK dev veth0
+		ROD $NS_EXEC $NS_HANDLE1 $NS_TYPE ip address add $IP1/$NETMASK dev veth1
+		ROD $NS_EXEC $NS_HANDLE0 $NS_TYPE ip link set veth0 up
+		ROD $NS_EXEC $NS_HANDLE1 $NS_TYPE ip link set veth1 up
+	else
+		ROD $NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 $IFCONF_IN6_ARG $IP0/$NETMASK
+		ROD $NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK
+		ROD $NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth0 up
+		ROD $NS_EXEC $NS_HANDLE1 $NS_TYPE ifconfig veth1 up
+	fi
 }
 
 netns_ns_exec_cleanup()
@@ -276,4 +224,4 @@ netns_ip_cleanup()
 	ip netns del $NS_HANDLE1 2>/dev/null
 }
 
-. tst_test.sh
+. tst_net.sh
