@@ -298,6 +298,9 @@ The 'TST_EXP_FAIL2()' is the same as 'TST_EXP_FAIL()' except the return value is
 expected to be non-negative integer if call passes. These macros build upon the
 +TEST()+ macro and associated variables.
 
+'TST_EXP_FAIL_SILENT()' and 'TST_EXP_FAIL2_SILENT()' variants are less verbose
+and do not print TPASS messages when SCALL fails as expected.
+
 [source,c]
 -------------------------------------------------------------------------------
 TEST(socket(AF_INET, SOCK_RAW, 1));
