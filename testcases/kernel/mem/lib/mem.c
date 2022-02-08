@@ -632,11 +632,11 @@ static void gather_node_cpus(char *cpus, long nd)
 	cpus[strlen(cpus) - 1] = '\0';
 }
 
-void write_cpusets(const struct tst_cgroup_group *cg, long nd)
+void write_cpusets(const struct tst_cg_group *cg, long nd)
 {
 	char cpus[BUFSIZ] = "";
 
-	SAFE_CGROUP_PRINTF(cg, "cpuset.mems", "%ld", nd);
+	SAFE_CG_PRINTF(cg, "cpuset.mems", "%ld", nd);
 
 	gather_node_cpus(cpus, nd);
 	/*
@@ -645,11 +645,11 @@ void write_cpusets(const struct tst_cgroup_group *cg, long nd)
 	 * the value of cpuset.cpus.
 	 */
 	if (strlen(cpus) != 0) {
-		SAFE_CGROUP_PRINT(cg, "cpuset.cpus", cpus);
+		SAFE_CG_PRINT(cg, "cpuset.cpus", cpus);
 	} else {
 		tst_res(TINFO, "No CPUs in the node%ld; "
 				"using only CPU0", nd);
-		SAFE_CGROUP_PRINT(cg, "cpuset.cpus", "0");
+		SAFE_CG_PRINT(cg, "cpuset.cpus", "0");
 	}
 }
 

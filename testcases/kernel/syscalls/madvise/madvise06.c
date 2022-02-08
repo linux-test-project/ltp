@@ -70,10 +70,10 @@ static void print_cgmem(const char *name)
 {
 	long ret;
 
-	if (!SAFE_CGROUP_HAS(tst_cgroup, name))
+	if (!SAFE_CG_HAS(tst_cg, name))
 		return;
 
-	SAFE_CGROUP_SCANF(tst_cgroup, name, "%ld", &ret);
+	SAFE_CG_SCANF(tst_cg, name, "%ld", &ret);
 	tst_res(TINFO, "\t%s: %ld Kb", name, ret / 1024);
 }
 
@@ -118,18 +118,18 @@ static void setup(void)
 	check_path("/proc/self/oom_score_adj");
 	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
 
-	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%ld", MEM_LIMIT);
-	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swap.max"))
-		SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%ld", MEMSW_LIMIT);
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%ld", MEM_LIMIT);
+	if (SAFE_CG_HAS(tst_cg, "memory.swap.max"))
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%ld", MEMSW_LIMIT);
 
-	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swappiness")) {
-		SAFE_CGROUP_PRINT(tst_cgroup, "memory.swappiness", "60");
+	if (SAFE_CG_HAS(tst_cg, "memory.swappiness")) {
+		SAFE_CG_PRINT(tst_cg, "memory.swappiness", "60");
 	} else {
 		check_path("/proc/sys/vm/swappiness");
 		SAFE_FILE_PRINTF("/proc/sys/vm/swappiness", "%d", 60);
 	}
 
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 
 	meminfo_diag("Initial meminfo, later values are relative to this (except memcg)");
 	init_swap = SAFE_READ_MEMINFO("SwapTotal:") - SAFE_READ_MEMINFO("SwapFree:");

@@ -51,10 +51,10 @@ static void test_cpuset(void)
 	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
 	char buf[BUFSIZ];
 
-	SAFE_CGROUP_READ(tst_cgroup, "cpuset.cpus", buf, sizeof(buf));
-	SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.cpus", buf);
-	SAFE_CGROUP_READ(tst_cgroup, "cpuset.mems", buf, sizeof(buf));
-	SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.mems", buf);
+	SAFE_CG_READ(tst_cg, "cpuset.cpus", buf, sizeof(buf));
+	SAFE_CG_PRINT(tst_cg, "cpuset.cpus", buf);
+	SAFE_CG_READ(tst_cg, "cpuset.mems", buf, sizeof(buf));
+	SAFE_CG_PRINT(tst_cg, "cpuset.mems", buf);
 
 	child = SAFE_FORK();
 	if (child == 0) {
@@ -68,8 +68,8 @@ static void test_cpuset(void)
 		exit(mem_hog_cpuset(ncpus > 1 ? ncpus : 1));
 	}
 
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cpuset.mems", "%d", nodes[0]);
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cpuset.mems", "%d", nodes[1]);
+	SAFE_CG_PRINTF(tst_cg, "cpuset.mems", "%d", nodes[0]);
+	SAFE_CG_PRINTF(tst_cg, "cpuset.mems", "%d", nodes[1]);
 
 	tst_reap_children();
 
@@ -84,7 +84,7 @@ static void setup(void)
 	if (nnodes <= 1)
 		tst_brk(TCONF, "requires a NUMA system.");
 
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 }
 
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)

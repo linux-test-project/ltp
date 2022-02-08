@@ -51,29 +51,29 @@ static void verify_oom(void)
 	 * 1 to cpuset.memory_migrate to enable the migration.
 	 */
 	if (is_numa(NULL, NH_MEMS, 2) &&
-	    SAFE_CGROUP_HAS(tst_cgroup, "cpuset.memory_migrate")) {
-		SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.memory_migrate", "1");
+	    SAFE_CG_HAS(tst_cg, "cpuset.memory_migrate")) {
+		SAFE_CG_PRINT(tst_cg, "cpuset.memory_migrate", "1");
 		tst_res(TINFO, "OOM on CPUSET & MEMCG with "
 				"cpuset.memory_migrate=1");
 		testoom(0, 0, ENOMEM, 1);
 	}
 
-	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swap.max")) {
+	if (SAFE_CG_HAS(tst_cg, "memory.swap.max")) {
 		tst_res(TINFO, "OOM on CPUSET & MEMCG with "
 				"special memswap limitation:");
-		if (!TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
-			SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", MB);
+		if (!TST_CG_VER_IS_V1(tst_cg, "memory"))
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", MB);
 		else
-			SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", TESTMEM + MB);
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TESTMEM + MB);
 
 		testoom(0, 1, ENOMEM, 1);
 
 		tst_res(TINFO, "OOM on CPUSET & MEMCG with "
 				"disabled memswap limitation:");
-		if (TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
-			SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", ~0UL);
+		if (TST_CG_VER_IS_V1(tst_cg, "memory"))
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", ~0UL);
 		else
-			SAFE_CGROUP_PRINT(tst_cgroup, "memory.swap.max", "max");
+			SAFE_CG_PRINT(tst_cg, "memory.swap.max", "max");
 		testoom(0, 0, ENOMEM, 1);
 	}
 }
@@ -99,9 +99,9 @@ void setup(void)
 		tst_brk(TBROK, "Failed to get a memory node "
 			      "using get_allowed_nodes()");
 
-	write_cpusets(tst_cgroup, memnode);
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
-	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%lu", TESTMEM);
+	write_cpusets(tst_cg, memnode);
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%lu", TESTMEM);
 }
 
 void cleanup(void)

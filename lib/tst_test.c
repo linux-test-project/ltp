@@ -1015,15 +1015,15 @@ static void prepare_device(void)
 
 static void do_cgroup_requires(void)
 {
-	const struct tst_cgroup_opts cg_opts = {
+	const struct tst_cg_opts cg_opts = {
 		.needs_ver = tst_test->needs_cgroup_ver,
 	};
 	const char *const *ctrl_names = tst_test->needs_cgroup_ctrls;
 
 	for (; *ctrl_names; ctrl_names++)
-		tst_cgroup_require(*ctrl_names, &cg_opts);
+		tst_cg_require(*ctrl_names, &cg_opts);
 
-	tst_cgroup_init();
+	tst_cg_init();
 }
 
 static void do_setup(int argc, char *argv[])
@@ -1220,7 +1220,7 @@ static void do_test_setup(void)
 static void do_cleanup(void)
 {
 	if (tst_test->needs_cgroup_ctrls)
-		tst_cgroup_cleanup();
+		tst_cg_cleanup();
 
 	if (ovl_mounted)
 		SAFE_UMOUNT(OVL_MNT);

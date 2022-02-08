@@ -286,7 +286,7 @@ struct tst_test {
 	const char *const *needs_cmds;
 
 	/* Requires a particular CGroup API version. */
-	const enum tst_cgroup_ver needs_cgroup_ver;
+	const enum tst_cg_ver needs_cgroup_ver;
 
 	/* {} terminated array of required CGroup controllers */
 	const char *const *needs_cgroup_ctrls;

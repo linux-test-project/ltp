@@ -45,13 +45,13 @@ static void verify_oom(void)
 	testoom(0, 0, ENOMEM, 1);
 
 	if (is_numa(NULL, NH_MEMS, 2) &&
-	    SAFE_CGROUP_HAS(tst_cgroup, "cpuset.memory_migrate")) {
+	    SAFE_CG_HAS(tst_cg, "cpuset.memory_migrate")) {
 		/*
 		 * Under NUMA system, the migration of cpuset's memory
 		 * is in charge of cpuset.memory_migrate, we can write
 		 * 1 to cpuset.memory_migrate to enable the migration.
 		 */
-		SAFE_CGROUP_PRINT(tst_cgroup, "cpuset.memory_migrate", "1");
+		SAFE_CG_PRINT(tst_cg, "cpuset.memory_migrate", "1");
 
 		tst_res(TINFO, "OOM on CPUSET with mem migrate:");
 		testoom(0, 0, ENOMEM, 1);
@@ -78,8 +78,8 @@ static void setup(void)
 	if (ret < 0)
 		tst_brk(TBROK, "Failed to get a memory node "
 			      "using get_allowed_nodes()");
-	write_cpusets(tst_cgroup, memnode);
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	write_cpusets(tst_cg, memnode);
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 }
 
 static void cleanup(void)

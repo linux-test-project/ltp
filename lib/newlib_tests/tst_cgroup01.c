@@ -12,7 +12,7 @@ static struct tst_option opts[] = {
 	{"n", &no_cleanup, "-n\tLeave CGroups created by test"},
 	{NULL, NULL, NULL},
 };
-struct tst_cgroup_opts cgopts;
+struct tst_cg_opts cgopts;
 
 static void do_test(void)
 {
@@ -21,15 +21,15 @@ static void do_test(void)
 
 static void setup(void)
 {
-	cgopts.needs_ver = !!only_mount_v1 ? TST_CGROUP_V1 : 0;
+	cgopts.needs_ver = !!only_mount_v1 ? TST_CG_V1 : 0;
 
-	tst_cgroup_scan();
-	tst_cgroup_print_config();
+	tst_cg_scan();
+	tst_cg_print_config();
 
-	tst_cgroup_require("memory", &cgopts);
-	tst_cgroup_print_config();
-	tst_cgroup_require("cpuset", &cgopts);
-	tst_cgroup_print_config();
+	tst_cg_require("memory", &cgopts);
+	tst_cg_print_config();
+	tst_cg_require("cpuset", &cgopts);
+	tst_cg_print_config();
 }
 
 static void cleanup(void)
@@ -38,7 +38,7 @@ static void cleanup(void)
 		tst_res(TINFO, "no cleanup");
 	} else {
 		tst_res(TINFO, "cleanup");
-		tst_cgroup_cleanup();
+		tst_cg_cleanup();
 	}
 }
 

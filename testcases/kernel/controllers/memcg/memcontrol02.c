@@ -26,7 +26,7 @@
 #include "memcontrol_common.h"
 
 static size_t page_size;
-static struct tst_cgroup_group *cg_child;
+static struct tst_cg_group *cg_child;
 static int fd;
 static int file_to_all_error = 10;
 
@@ -36,17 +36,17 @@ static void alloc_anon_50M_check(void)
 	char *buf, *ptr;
 	ssize_t anon, current;
 	const char *const anon_key_fmt =
-		TST_CGROUP_VER_IS_V1(tst_cgroup, "memory") ? "rss %zd" : "anon %zd";
+		TST_CG_VER_IS_V1(tst_cg, "memory") ? "rss %zd" : "anon %zd";
 
 	buf = SAFE_MALLOC(size);
 	for (ptr = buf; ptr < buf + size; ptr += page_size)
 		*ptr = 0;
 
-	SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zd", &current);
+	SAFE_CG_SCANF(cg_child, "memory.current", "%zd", &current);
 	TST_EXP_EXPR(current >= size,
 		     "(memory.current=%zd) >= (size=%zd)", current, size);
 
-	SAFE_CGROUP_LINES_SCANF(cg_child, "memory.stat", anon_key_fmt, &anon);
+	SAFE_CG_LINES_SCANF(cg_child, "memory.stat", anon_key_fmt, &anon);
 
 	TST_EXP_EXPR(anon > 0, "(memory.stat.anon=%zd) > 0", anon);
 	TST_EXP_EXPR(values_close(size, anon, 3),
@@ -61,20 +61,20 @@ static void alloc_pagecache_50M_check(void)
 	const size_t size = MB(50);
 	size_t current, file;
 	const char *const file_key_fmt =
-		TST_CGROUP_VER_IS_V1(tst_cgroup, "memory") ? "cache %zd" : "file %zd";
+		TST_CG_VER_IS_V1(tst_cg, "memory") ? "cache %zd" : "file %zd";
 
 	fd = SAFE_OPEN(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600);
 
-	SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zu", &current);
+	SAFE_CG_SCANF(cg_child, "memory.current", "%zu", &current);
 	tst_res(TINFO, "Created temp file: memory.current=%zu", current);
 
 	alloc_pagecache(fd, size);
 
-	SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zu", &current);
+	SAFE_CG_SCANF(cg_child, "memory.current", "%zu", &current);
 	TST_EXP_EXPR(current >= size,
 			 "(memory.current=%zu) >= (size=%zu)", current, size);
 
-	SAFE_CGROUP_LINES_SCANF(cg_child, "memory.stat", file_key_fmt, &file);
+	SAFE_CG_LINES_SCANF(cg_child, "memory.stat", file_key_fmt, &file);
 	TST_EXP_EXPR(file > 0, "(memory.stat.file=%zd) > 0", file);
 
 	TST_EXP_EXPR(values_close(file, current, file_to_all_error),
@@ -88,14 +88,14 @@ static void test_memcg_current(unsigned int n)
 {
 	size_t current;
 
-	cg_child = tst_cgroup_group_mk(tst_cgroup, "child");
-	SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zu", &current);
+	cg_child = tst_cg_group_mk(tst_cg, "child");
+	SAFE_CG_SCANF(cg_child, "memory.current", "%zu", &current);
 	TST_EXP_EXPR(current == 0, "(current=%zu) == 0", current);
 
 	if (!SAFE_FORK()) {
-		SAFE_CGROUP_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
+		SAFE_CG_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-		SAFE_CGROUP_SCANF(cg_child, "memory.current", "%zu", &current);
+		SAFE_CG_SCANF(cg_child, "memory.current", "%zu", &current);
 		tst_res(TINFO, "Added proc to memcg: memory.current=%zu",
 			current);
 
@@ -105,7 +105,7 @@ static void test_memcg_current(unsigned int n)
 			alloc_pagecache_50M_check();
 	} else {
 		tst_reap_children();
-		cg_child = tst_cgroup_group_rm(cg_child);
+		cg_child = tst_cg_group_rm(cg_child);
 	}
 }
 
@@ -125,7 +125,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (cg_child)
-		cg_child = tst_cgroup_group_rm(cg_child);
+		cg_child = tst_cg_group_rm(cg_child);
 }
 
 static struct tst_test test = {

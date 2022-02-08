@@ -76,10 +76,10 @@ static void verify_ksm(void)
 	}
 	create_same_memory(size, num, unit);
 
-	write_cpusets(tst_cgroup, node);
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
+	write_cpusets(tst_cg, node);
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 	create_same_memory(size, num, unit);
-	SAFE_CGROUP_PRINTF(tst_cgroup_drain, "cgroup.procs", "%d", getpid());
+	SAFE_CG_PRINTF(tst_cg_drain, "cgroup.procs", "%d", getpid());
 }
 
 static void cleanup(void)

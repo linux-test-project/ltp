@@ -84,134 +84,134 @@
 #include <sys/types.h>
 
 /* CGroups Kernel API version */
-enum tst_cgroup_ver {
-	TST_CGROUP_V1 = 1,
-	TST_CGROUP_V2 = 2,
+enum tst_cg_ver {
+	TST_CG_V1 = 1,
+	TST_CG_V2 = 2,
 };
 
 /* Used to specify CGroup hierarchy configuration options, allowing a
  * test to request a particular CGroup structure.
  */
-struct tst_cgroup_opts {
+struct tst_cg_opts {
 	/* Call tst_brk with TCONF if the controller is not on this
 	 * version. Defautls to zero to accept any version.
 	 */
-	enum tst_cgroup_ver needs_ver;
+	enum tst_cg_ver needs_ver;
 };
 
 /* A Control Group in LTP's aggregated hierarchy */
-struct tst_cgroup_group;
+struct tst_cg_group;
 
 /* Populated with a reference to this tests's CGroup */
-extern const struct tst_cgroup_group *const tst_cgroup;
-extern const struct tst_cgroup_group *const tst_cgroup_drain;
+extern const struct tst_cg_group *const tst_cg;
+extern const struct tst_cg_group *const tst_cg_drain;
 
 /* Search the system for mounted cgroups and available
- * controllers. Called automatically by tst_cgroup_require.
+ * controllers. Called automatically by tst_cg_require.
  */
-void tst_cgroup_scan(void);
-/* Print the config detected by tst_cgroup_scan */
-void tst_cgroup_print_config(void);
+void tst_cg_scan(void);
+/* Print the config detected by tst_cg_scan */
+void tst_cg_print_config(void);
 
 /* Ensure the specified controller is available in the test's default
  * CGroup, mounting/enabling it if necessary. Usually this is not
  * necesary use tst_test.needs_cgroup_controllers instead.
  */
-void tst_cgroup_require(const char *const ctrl_name,
-			const struct tst_cgroup_opts *const options)
+void tst_cg_require(const char *const ctrl_name,
+			const struct tst_cg_opts *const options)
 			__attribute__ ((nonnull));
 
-/* Tear down any CGroups created by calls to tst_cgroup_require */
-void tst_cgroup_cleanup(void);
+/* Tear down any CGroups created by calls to tst_cg_require */
+void tst_cg_cleanup(void);
 
-/* Call this in setup after you call tst_cgroup_require and want to
- * initialize tst_cgroup and tst_cgroup_drain. See tst_cgroup_require.
+/* Call this in setup after you call tst_cg_require and want to
+ * initialize tst_cg and tst_cg_drain. See tst_cg_require.
  */
-void tst_cgroup_init(void);
+void tst_cg_init(void);
 
 /* Create a descendant CGroup */
-struct tst_cgroup_group *
-tst_cgroup_group_mk(const struct tst_cgroup_group *const parent,
+struct tst_cg_group *
+tst_cg_group_mk(const struct tst_cg_group *const parent,
 		    const char *const group_name_fmt, ...)
 	    __attribute__ ((nonnull, warn_unused_result, format (printf, 2, 3)));
 
 const char *
-tst_cgroup_group_name(const struct tst_cgroup_group *const cg)
+tst_cg_group_name(const struct tst_cg_group *const cg)
 		      __attribute__ ((nonnull, warn_unused_result));
 
 /* Remove a descendant CGroup */
-struct tst_cgroup_group *
-tst_cgroup_group_rm(struct tst_cgroup_group *const cg)
+struct tst_cg_group *
+tst_cg_group_rm(struct tst_cg_group *const cg)
 		    __attribute__ ((nonnull, warn_unused_result));
 
-#define TST_CGROUP_VER(cg, ctrl_name) \
-	tst_cgroup_ver(__FILE__, __LINE__, (cg), (ctrl_name))
+#define TST_CG_VER(cg, ctrl_name) \
+	tst_cg_ver(__FILE__, __LINE__, (cg), (ctrl_name))
 
-enum tst_cgroup_ver tst_cgroup_ver(const char *const file, const int lineno,
-				   const struct tst_cgroup_group *const cg,
+enum tst_cg_ver tst_cg_ver(const char *const file, const int lineno,
+				   const struct tst_cg_group *const cg,
 				   const char *const ctrl_name)
 				   __attribute__ ((nonnull, warn_unused_result));
 
-#define TST_CGROUP_VER_IS_V1(cg, ctrl_name) \
-	(TST_CGROUP_VER((cg), (ctrl_name)) == TST_CGROUP_V1)
+#define TST_CG_VER_IS_V1(cg, ctrl_name) \
+	(TST_CG_VER((cg), (ctrl_name)) == TST_CG_V1)
 
-#define SAFE_CGROUP_HAS(cg, file_name) \
-	safe_cgroup_has(__FILE__, __LINE__, (cg), (file_name))
+#define SAFE_CG_HAS(cg, file_name) \
+	safe_cg_has(__FILE__, __LINE__, (cg), (file_name))
 
-int safe_cgroup_has(const char *const file, const int lineno,
-		    const struct tst_cgroup_group *const cg,
+int safe_cg_has(const char *const file, const int lineno,
+		    const struct tst_cg_group *const cg,
 		    const char *const file_name)
 		    __attribute__ ((nonnull, warn_unused_result));
 
-#define SAFE_CGROUP_READ(cg, file_name, out, len)			\
-	safe_cgroup_read(__FILE__, __LINE__,				\
+#define SAFE_CG_READ(cg, file_name, out, len)			\
+	safe_cg_read(__FILE__, __LINE__,				\
 			 (cg), (file_name), (out), (len))
 
-ssize_t safe_cgroup_read(const char *const file, const int lineno,
-			 const struct tst_cgroup_group *const cg,
+ssize_t safe_cg_read(const char *const file, const int lineno,
+			 const struct tst_cg_group *const cg,
 			 const char *const file_name,
 			 char *const out, const size_t len)
 			 __attribute__ ((nonnull));
 
-#define SAFE_CGROUP_PRINTF(cg, file_name, fmt, ...)			\
-	safe_cgroup_printf(__FILE__, __LINE__,				\
+#define SAFE_CG_PRINTF(cg, file_name, fmt, ...)			\
+	safe_cg_printf(__FILE__, __LINE__,				\
 			   (cg), (file_name), (fmt), __VA_ARGS__)
 
-#define SAFE_CGROUP_PRINT(cg, file_name, str)				\
-	safe_cgroup_printf(__FILE__, __LINE__, (cg), (file_name), "%s", (str))
+#define SAFE_CG_PRINT(cg, file_name, str)				\
+	safe_cg_printf(__FILE__, __LINE__, (cg), (file_name), "%s", (str))
 
-void safe_cgroup_printf(const char *const file, const int lineno,
-			const struct tst_cgroup_group *const cg,
+void safe_cg_printf(const char *const file, const int lineno,
+			const struct tst_cg_group *const cg,
 			const char *const file_name,
 			const char *const fmt, ...)
 			__attribute__ ((format (printf, 5, 6), nonnull));
 
-#define SAFE_CGROUP_SCANF(cg, file_name, fmt, ...)			\
-	safe_cgroup_scanf(__FILE__, __LINE__,				\
+#define SAFE_CG_SCANF(cg, file_name, fmt, ...)			\
+	safe_cg_scanf(__FILE__, __LINE__,				\
 			  (cg), (file_name), (fmt), __VA_ARGS__)
 
-void safe_cgroup_scanf(const char *file, const int lineno,
-		       const struct tst_cgroup_group *const cg,
+void safe_cg_scanf(const char *file, const int lineno,
+		       const struct tst_cg_group *const cg,
 		       const char *const file_name,
 		       const char *const fmt, ...)
 		       __attribute__ ((format (scanf, 5, 6), nonnull));
 
-#define SAFE_CGROUP_LINES_SCANF(cg, file_name, fmt, ...)		\
-	safe_cgroup_lines_scanf(__FILE__, __LINE__,			\
+#define SAFE_CG_LINES_SCANF(cg, file_name, fmt, ...)		\
+	safe_cg_lines_scanf(__FILE__, __LINE__,			\
 				(cg), (file_name), (fmt), __VA_ARGS__)
 
-void safe_cgroup_lines_scanf(const char *const file, const int lineno,
-			     const struct tst_cgroup_group *const cg,
+void safe_cg_lines_scanf(const char *const file, const int lineno,
+			     const struct tst_cg_group *const cg,
 			     const char *const file_name,
 			     const char *const fmt, ...)
 			__attribute__ ((format (scanf, 5, 6), nonnull));
 
-#define SAFE_CGROUP_OCCURSIN(cg, file_name, needle)		\
-	safe_cgroup_occursin(__FILE__, __LINE__,		\
+#define SAFE_CG_OCCURSIN(cg, file_name, needle)		\
+	safe_cg_occursin(__FILE__, __LINE__,		\
 			     (cg), (file_name), (needle))
 
-int safe_cgroup_occursin(const char *file, const int lineno,
-			 const struct tst_cgroup_group *const cg,
+int safe_cg_occursin(const char *file, const int lineno,
+			 const struct tst_cg_group *const cg,
 			 const char *const file_name,
 			 const char *const needle);
 

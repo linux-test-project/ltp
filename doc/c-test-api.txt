@@ -2084,10 +2084,10 @@ static void run(void)
 
 static void setup(void)
 {
-	SAFE_CGROUP_PRINTF(tst_cgroup, "cgroup.procs", "%d", getpid());
-	SAFE_CGROUP_PRINTF(tst_cgroup, "memory.max", "%lu", MEMSIZE);
-	if (SAFE_CGROUP_HAS(tst_cgroup, "memory.swap.max"))
-		SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%zu", memsw);
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%lu", MEMSIZE);
+	if (SAFE_CG_HAS(tst_cg, "memory.swap.max"))
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%zu", memsw);
 }
 
 struct tst_test test = {
@@ -2101,7 +2101,7 @@ struct tst_test test = {
 
 Above, we first ensure the memory controller is available on the
 test's CGroup with '.needs_cgroup_controllers'. This populates a structure,
-'tst_cgroup', which represents the test's CGroup.
+'tst_cg', which represents the test's CGroup.
 
 We then write the current processes PID into 'cgroup.procs', which
 moves the current process into the test's CGroup. After which we set
@@ -2112,7 +2112,7 @@ on both CGroup versions, then we use the V2 naming.
 
 Some controller features, such as 'memory.swap', can be
 disabled. Therefor we need to check if they exist before accessing
-them. This can be done with 'SAFE_CGROUP_HAS' which can be called on
+them. This can be done with 'SAFE_CG_HAS' which can be called on
 any control file or feature.
 
 Most tests only require setting a few limits similar to the above. In
@@ -2121,29 +2121,29 @@ cleanup is also mostly hidden. However things can get much worse.
 
 [source,c]
 -------------------------------------------------------------------------------
-static struct tst_cgroup_group *cg_child;
+static struct tst_cg_group *cg_child;
 
 static void run(void)
 {
 	char buf[BUFSIZ];
 	size_t mem = 0;
 
-	cg_child = tst_cgroup_group_mk(tst_cgroup, "child");
-	SAFE_CGROUP_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
+	cg_child = tst_cg_group_mk(tst_cg, "child");
+	SAFE_CG_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-	if (!TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
-		SAFE_CGROUP_PRINT(tst_cgroup, "cgroup.subtree_control", "+memory");
-	if (!TST_CGROUP_VER_IS_V1(tst_cgroup, "cpuset"))
-		SAFE_CGROUP_PRINT(tst_cgroup, "cgroup.subtree_control", "+cpuset");
+	if (!TST_CG_VER_IS_V1(tst_cg, "memory"))
+		SAFE_CG_PRINT(tst_cg, "cgroup.subtree_control", "+memory");
+	if (!TST_CG_VER_IS_V1(tst_cg, "cpuset"))
+		SAFE_CG_PRINT(tst_cg, "cgroup.subtree_control", "+cpuset");
 
 	if (!SAFE_FORK()) {
-		SAFE_CGROUP_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
+		SAFE_CG_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-		if (SAFE_CGROUP_HAS(cg_child, "memory.swap")) {
-			SAFE_CGROUP_SCANF(cg_child,
+		if (SAFE_CG_HAS(cg_child, "memory.swap")) {
+			SAFE_CG_SCANF(cg_child,
 					  "memory.swap.current", "%zu", &mem);
 		}
-		SAFE_CGROUP_READ(cg_child, "cpuset.mems", buf, sizeof(buf));
+		SAFE_CG_READ(cg_child, "cpuset.mems", buf, sizeof(buf));
 
 		// Do something with cpuset.mems and memory.current values
 		...
@@ -2152,15 +2152,15 @@ static void run(void)
 	}
 
 	tst_reap_children();
-	SAFE_CGROUP_PRINTF(tst_cgroup_drain, "cgroup.procs", "%d", getpid());
-	cg_child = tst_cgroup_group_rm(cg_child);
+	SAFE_CG_PRINTF(tst_cg_drain, "cgroup.procs", "%d", getpid());
+	cg_child = tst_cg_group_rm(cg_child);
 }
 
 static void cleanup(void)
 {
 	if (cg_child) {
-		SAFE_CGROUP_PRINTF(tst_cgroup_drain, "cgroup.procs", "%d", getpid());
-		cg_child = tst_cgroup_group_rm(cg_child);
+		SAFE_CG_PRINTF(tst_cg_drain, "cgroup.procs", "%d", getpid());
+		cg_child = tst_cg_group_rm(cg_child);
 	}
 }
 
@@ -2183,12 +2183,12 @@ and these should not be changed by the test. It can be used to remove
 processes from other CGroups incase the hierarchy root is not
 accessible.
 
-Note that 'tst_cgroup_get_drain_group' should not be called many times,
+Note that 'tst_cg_get_drain_group' should not be called many times,
 as it is allocated in a guarded buffer (See section 2.2.31). Therefor
 it is best to call it once in 'setup' and not 'run' because 'run' may
 be repeated with the '-i' option.
 
-In 'run', we first create a child CGroup with 'tst_cgroup_mk'. As we
+In 'run', we first create a child CGroup with 'tst_cg_mk'. As we
 create this CGroup in 'run' we should also remove it at the end of
 run. We also need to check if it exists and remove it in cleanup as
 well. Because there are 'SAFE_' functions which may jump to cleanup.
@@ -2223,10 +2223,10 @@ Another example of a behavioral difference between versions is shown below.
 
 [source,c]
 -------------------------------------------------------------------------------
-	if (TST_CGROUP_VER_IS_V1(tst_cgroup, "memory"))
-		SAFE_CGROUP_PRINTF(tst_cgroup, "memory.swap.max", "%lu", ~0UL);
+	if (TST_CG_VER_IS_V1(tst_cg, "memory"))
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", ~0UL);
 	else
-		SAFE_CGROUP_PRINT(tst_cgroup, "memory.swap.max", "max");
+		SAFE_CG_PRINT(tst_cg, "memory.swap.max", "max");
 -------------------------------------------------------------------------------
 
 CGroups V2 introduced a feature where 'memory[.swap].max' could be set to

@@ -31,37 +31,37 @@
 #include "tst_test.h"
 #include "tst_timer.h"
 
-static struct tst_cgroup_group *cg_level2, *cg_level3a, *cg_level3b;
-static struct tst_cgroup_group *cg_workers[3];
+static struct tst_cg_group *cg_level2, *cg_level3a, *cg_level3b;
+static struct tst_cg_group *cg_workers[3];
 static int may_have_waiters = 0;
 
-static void set_cpu_quota(const struct tst_cgroup_group *const cg,
+static void set_cpu_quota(const struct tst_cg_group *const cg,
 			  const float quota_percent)
 {
 	const unsigned int period_us = 10000;
 	const unsigned int quota_us = (quota_percent / 100) * (float)period_us;
 
-	if (!TST_CGROUP_VER_IS_V1(cg, "cpu")) {
-		SAFE_CGROUP_PRINTF(cg, "cpu.max",
+	if (!TST_CG_VER_IS_V1(cg, "cpu")) {
+		SAFE_CG_PRINTF(cg, "cpu.max",
 				   "%u %u", quota_us, period_us);
 	} else {
-		SAFE_CGROUP_PRINTF(cg, "cpu.cfs_period_us",
+		SAFE_CG_PRINTF(cg, "cpu.cfs_period_us",
 				  "%u", period_us);
-		SAFE_CGROUP_PRINTF(cg, "cpu.max",
+		SAFE_CG_PRINTF(cg, "cpu.max",
 				   "%u", quota_us);
 	}
 
 	tst_res(TINFO, "Set '%s/cpu.max' = '%d %d'",
-		tst_cgroup_group_name(cg), quota_us, period_us);
+		tst_cg_group_name(cg), quota_us, period_us);
 }
 
-static void mk_cpu_cgroup(struct tst_cgroup_group **cg,
-			  const struct tst_cgroup_group *const cg_parent,
+static void mk_cpu_cgroup(struct tst_cg_group **cg,
+			  const struct tst_cg_group *const cg_parent,
 			  const char *const cg_child_name,
 			  const float quota_percent)
 
 {
-	*cg = tst_cgroup_group_mk(cg_parent, "%s", cg_child_name);
+	*cg = tst_cg_group_mk(cg_parent, "%s", cg_child_name);
 
 	set_cpu_quota(*cg, quota_percent);
 }
@@ -83,7 +83,7 @@ static void busy_loop(const unsigned int sleep_ms)
 	}
 }
 
-static void fork_busy_procs_in_cgroup(const struct tst_cgroup_group *const cg)
+static void fork_busy_procs_in_cgroup(const struct tst_cg_group *const cg)
 {
 	const unsigned int sleeps_ms[] = {3000, 1000, 10};
 	const pid_t worker_pid = SAFE_FORK();
@@ -98,7 +98,7 @@ static void fork_busy_procs_in_cgroup(const struct tst_cgroup_group *const cg)
 		if (!busy_pid)
 			busy_loop(sleeps_ms[i]);
 
-		SAFE_CGROUP_PRINTF(cg, "cgroup.procs", "%d", busy_pid);
+		SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", busy_pid);
 	}
 
 	tst_reap_children();
@@ -131,13 +131,13 @@ static void do_test(void)
 
 static void setup(void)
 {
-	cg_level2 = tst_cgroup_group_mk(tst_cgroup, "level2");
+	cg_level2 = tst_cg_group_mk(tst_cg, "level2");
 
-	cg_level3a = tst_cgroup_group_mk(cg_level2, "level3a");
+	cg_level3a = tst_cg_group_mk(cg_level2, "level3a");
 	mk_cpu_cgroup(&cg_workers[0], cg_level3a, "worker1", 30);
 	mk_cpu_cgroup(&cg_workers[1], cg_level3a, "worker2", 20);
 
-	cg_level3b = tst_cgroup_group_mk(cg_level2, "level3b");
+	cg_level3b = tst_cg_group_mk(cg_level2, "level3b");
 	mk_cpu_cgroup(&cg_workers[2], cg_level3b, "worker3", 30);
 }
 
@@ -153,15 +153,15 @@ static void cleanup(void)
 
 	for (i = 0; i < ARRAY_SIZE(cg_workers); i++) {
 		if (cg_workers[i])
-			cg_workers[i] = tst_cgroup_group_rm(cg_workers[i]);
+			cg_workers[i] = tst_cg_group_rm(cg_workers[i]);
 	}
 
 	if (cg_level3a)
-		cg_level3a = tst_cgroup_group_rm(cg_level3a);
+		cg_level3a = tst_cg_group_rm(cg_level3a);
 	if (cg_level3b)
-		cg_level3b = tst_cgroup_group_rm(cg_level3b);
+		cg_level3b = tst_cg_group_rm(cg_level3b);
 	if (cg_level2)
-		cg_level2 = tst_cgroup_group_rm(cg_level2);
+		cg_level2 = tst_cg_group_rm(cg_level2);
 }
 
 static struct tst_test test = {
