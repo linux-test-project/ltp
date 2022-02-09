@@ -346,3 +346,4 @@ process_madvise 5440
 epoll_pwait2 5441
 mount_setattr 5442
 quotactl_fd 5443
+futex_waitv 5449

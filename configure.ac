@@ -50,6 +50,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/close_range.h \
     linux/dccp.h \
     linux/fs.h \
+    linux/futex.h \
     linux/genetlink.h \
     linux/if_alg.h \
     linux/if_ether.h \
@@ -214,6 +215,8 @@ AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
 
 AC_CHECK_TYPES([struct __kernel_old_timeval, struct __kernel_old_timespec, struct __kernel_timespec,
                 struct __kernel_old_itimerspec, struct __kernel_itimerspec],,,[#include <sys/socket.h>])
+
+AC_CHECK_TYPES([struct futex_waitv],,,[#include <linux/futex.h>])
 
 # Tools knobs
 

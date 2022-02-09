@@ -11,7 +11,6 @@
 #include <errno.h>
 #include <sched.h>
 #include <sys/wait.h>
-#include <linux/futex.h>
 
 #include "tst_test.h"
 #include "clone_platform.h"
