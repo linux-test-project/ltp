@@ -2321,6 +2321,12 @@ static struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+1.40 Require minimum size of MemAvailable for a testcase
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some tests require more than specific size(MB) of MemAvailable. It can be defined
+with `.min_mem_avail = N`.
+
 2. Common problems
 ------------------
 
