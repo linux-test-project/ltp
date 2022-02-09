@@ -26,7 +26,7 @@
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
@@ -41,7 +41,7 @@ static unsigned long long event_set[EVENT_MAX];
 
 static char event_buf[EVENT_BUF_LEN];
 
-void test01(void)
+static void test01(void)
 {
 	int ret, len, i = 0, test_num = 0;
 
@@ -139,27 +139,27 @@ void test01(void)
 				"get unnecessary event: mask=%llx "
 				"pid=%u fd=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		} else if (!(event->mask & event_set[test_num])) {
 			tst_res(TFAIL,
 				"got event: mask=%llx (expected %llx) "
 				"pid=%u fd=%d",
 				(unsigned long long)event->mask,
 				event_set[test_num],
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		} else if (event->pid != getpid()) {
 			tst_res(TFAIL,
 				"got event: mask=%llx pid=%u "
 				"(expected %u) fd=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid,
-				(unsigned)getpid(),
+				(unsigned int)event->pid,
+				(unsigned int)getpid(),
 				event->fd);
 		} else {
 			tst_res(TPASS,
 				"got event: mask=%llx pid=%u fd=%u",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		}
 		event->mask &= ~event_set[test_num];
 		/* No events left in current mask? Go for next event */

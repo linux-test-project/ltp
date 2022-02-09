@@ -46,7 +46,7 @@
 #ifdef HAVE_NAME_TO_HANDLE_AT
 
 static char event_buf[BUF_SIZE];
-int fd_notify;
+static int fd_notify;
 
 /* These expected FIDs are common to multiple tests */
 static struct fanotify_fid_t null_fid;
@@ -125,7 +125,7 @@ static struct test_case {
 	}
 };
 
-int check_error_event_info_fid(struct fanotify_event_info_fid *fid,
+static int check_error_event_info_fid(struct fanotify_event_info_fid *fid,
 				 const struct test_case *ex)
 {
 	struct file_handle *fh = (struct file_handle *) &fid->handle;
@@ -158,7 +158,7 @@ int check_error_event_info_fid(struct fanotify_event_info_fid *fid,
 	return 0;
 }
 
-int check_error_event_info_error(struct fanotify_event_info_error *info_error,
+static int check_error_event_info_error(struct fanotify_event_info_error *info_error,
 				 const struct test_case *ex)
 {
 	int fail = 0;
@@ -178,7 +178,7 @@ int check_error_event_info_error(struct fanotify_event_info_error *info_error,
 	return fail;
 }
 
-int check_error_event_metadata(struct fanotify_event_metadata *event)
+static int check_error_event_metadata(struct fanotify_event_metadata *event)
 {
 	int fail = 0;
 
@@ -196,7 +196,7 @@ int check_error_event_metadata(struct fanotify_event_metadata *event)
 	return fail;
 }
 
-void check_event(char *buf, size_t len, const struct test_case *ex)
+static void check_event(char *buf, size_t len, const struct test_case *ex)
 {
 	struct fanotify_event_metadata *event =
 		(struct fanotify_event_metadata *) buf;

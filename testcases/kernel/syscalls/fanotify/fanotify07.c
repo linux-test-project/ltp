@@ -137,13 +137,11 @@ static void loose_fanotify_events(void)
 				"pid=%u fd=%d",
 				(unsigned long long)event.mask,
 				(unsigned long long)FAN_ACCESS_PERM,
-				(unsigned)event.pid, event.fd);
+				(unsigned int)event.pid, event.fd);
 			break;
 		}
 
-		/*
-		 * We respond to permission event with 95% percent
-		 * probability. */
+		/* We respond to permission event with 95% percent probability. */
 		if (random() % 100 > 5) {
 			/* Write response to permission event */
 			resp.fd = event.fd;

@@ -34,9 +34,9 @@
 /* Size of the event structure, not including file handle */
 #define EVENT_SIZE (sizeof(struct fanotify_event_metadata) + \
 		    sizeof(struct fanotify_event_info_fid))
+
 /* Double events buffer size to account for file handles */
 #define EVENT_BUF_LEN (EVENT_MAX * EVENT_SIZE * 2)
-
 
 #define MOUNT_POINT "mntpoint"
 #define TEST_DIR MOUNT_POINT"/test_dir"
@@ -187,6 +187,7 @@ static void do_test(unsigned int number)
 	for (i = 0, metadata = (struct fanotify_event_metadata *) events_buf;
 		FAN_EVENT_OK(metadata, len); i++) {
 		struct event_t *expected = &event_set[i];
+
 		event_fid = (struct fanotify_event_info_fid *) (metadata + 1);
 		event_file_handle = (struct file_handle *) event_fid->handle;
 
@@ -208,15 +209,15 @@ static void do_test(unsigned int number)
 				"Got event: mask=%llx (expected %llx) "
 				"pid=%u fd=%d",
 				(unsigned long long) metadata->mask,
-				expected->mask, (unsigned) metadata->pid,
+				expected->mask, (unsigned int) metadata->pid,
 				metadata->fd);
 		} else if (metadata->pid != getpid()) {
 			tst_res(TFAIL,
 				"Got event: mask=%llx pid=%u "
 				"(expected %u) fd=%d",
 				(unsigned long long) metadata->mask,
-				(unsigned) metadata->pid,
-				(unsigned) getpid(),
+				(unsigned int) metadata->pid,
+				(unsigned int) getpid(),
 				metadata->fd);
 		} else if (event_file_handle->handle_bytes !=
 			   expected->fid->handle.handle_bytes) {

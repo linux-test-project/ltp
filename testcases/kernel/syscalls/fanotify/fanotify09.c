@@ -47,7 +47,7 @@
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
@@ -179,6 +179,7 @@ static void event_res(int ttype, int group,
 {
 	if (event->fd != FAN_NOFD) {
 		int len = 0;
+
 		sprintf(symlnk, "/proc/self/fd/%d", event->fd);
 		len = readlink(symlnk, fdpath, sizeof(fdpath));
 		if (len < 0)
@@ -186,9 +187,10 @@ static void event_res(int ttype, int group,
 		fdpath[len] = 0;
 		filename = fdpath;
 	}
+
 	tst_res(ttype, "group %d got event: mask %llx pid=%u fd=%d filename=%s",
 		group, (unsigned long long)event->mask,
-		(unsigned)event->pid, event->fd, filename);
+		(unsigned int)event->pid, event->fd, filename);
 }
 
 static const char *event_filename(struct fanotify_event_metadata *event)
@@ -218,16 +220,16 @@ static void verify_event(int group, struct fanotify_event_metadata *event,
 		tst_res(TFAIL, "group %d got event: mask %llx (expected %llx) "
 			"pid=%u fd=%d filename=%s", group, (unsigned long long)event->mask,
 			(unsigned long long)expect,
-			(unsigned)event->pid, event->fd, filename);
+			(unsigned int)event->pid, event->fd, filename);
 	} else if (event->pid != getpid()) {
 		tst_res(TFAIL, "group %d got event: mask %llx pid=%u "
 			"(expected %u) fd=%d filename=%s", group,
-			(unsigned long long)event->mask, (unsigned)event->pid,
-			(unsigned)getpid(), event->fd, filename);
+			(unsigned long long)event->mask, (unsigned int)event->pid,
+			(unsigned int)getpid(), event->fd, filename);
 	} else if (strcmp(filename, expect_filename)) {
 		tst_res(TFAIL, "group %d got event: mask %llx pid=%u "
 			"fd=%d filename='%s' (expected '%s')", group,
-			(unsigned long long)event->mask, (unsigned)event->pid,
+			(unsigned long long)event->mask, (unsigned int)event->pid,
 			event->fd, filename, expect_filename);
 	} else {
 		event_res(TPASS, group, event, filename);
@@ -323,9 +325,8 @@ static void test_fanotify(unsigned int n)
 			continue;
 		}
 
-		if (ret == 0) {
+		if (ret == 0)
 			tst_brk(TBROK, "zero length read from fanotify fd");
-		}
 
 		if (errno != EAGAIN) {
 			tst_brk(TBROK | TERRNO,

@@ -12,7 +12,7 @@
  * calls statfs(2) and name_to_handle_at(2).
  */
 
- /*
+/*
  * This is also regression test for:
  *     c285a2f01d69 ("fanotify: update connector fsid cache on add mark")
  */
@@ -109,6 +109,7 @@ static void create_objects(void)
 static void get_object_stats(void)
 {
 	unsigned int i;
+
 	for (i = 0; i < ARRAY_SIZE(objects); i++)
 		fanotify_save_fid(objects[i].path, &objects[i].fid);
 }
@@ -181,6 +182,7 @@ static void do_test(unsigned int number)
 		FAN_EVENT_OK(metadata, len);
 		metadata = FAN_EVENT_NEXT(metadata, len), i++) {
 		struct fanotify_fid_t *expected_fid = &objects[i].fid;
+
 		event_fid = (struct fanotify_event_info_fid *) (metadata + 1);
 		event_file_handle = (struct file_handle *) event_fid->handle;
 

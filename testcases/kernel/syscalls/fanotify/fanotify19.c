@@ -29,7 +29,7 @@
 #include "fanotify.h"
 
 #define EVENT_MAX 1024
-#define EVENT_SIZE (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE (sizeof(struct fanotify_event_metadata))
 #define EVENT_BUF_LEN (EVENT_MAX * EVENT_SIZE)
 #define EVENT_SET_MAX 48
 
@@ -143,13 +143,14 @@ static void test_fanotify(unsigned int n)
 	unsigned int test_number = 0;
 	struct fanotify_event_metadata *event;
 	struct test_case_t *tc = &test_cases[n];
+	struct passwd *nobody;
 
 	tst_res(TINFO, "Test #%d %s", n, tc->name);
 
 	/* Relinquish privileged user */
 	if (euid == 0) {
 		tst_res(TINFO, "Running as privileged user, revoking");
-		struct passwd *nobody = SAFE_GETPWNAM("nobody");
+		nobody = SAFE_GETPWNAM("nobody");
 		SAFE_SETEUID(nobody->pw_uid);
 	}
 
@@ -161,10 +162,10 @@ static void test_fanotify(unsigned int n)
 			tst_res(TCONF,
 				"unprivileged fanotify not supported by kernel?");
 			return;
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_init(FAN_CLASS_NOTIF, O_RDONLY) failed");
 		}
+
+		tst_brk(TBROK | TERRNO,
+			"fanotify_init(FAN_CLASS_NOTIF, O_RDONLY) failed");
 	}
 
 	/* Place mark on object */
@@ -202,7 +203,7 @@ static void test_fanotify(unsigned int n)
 				"Received unexpected event mask: mask=%llx "
 				"pid=%u fd=%d",
 				(unsigned long long) event->mask,
-				(unsigned) event->pid,
+				(unsigned int) event->pid,
 				event->fd);
 		} else if ((!tc->fork && event->pid != pid) ||
 			   (tc->fork && event->pid != 0)) {
@@ -210,7 +211,7 @@ static void test_fanotify(unsigned int n)
 				"Received unexpected pid in event: "
 				"mask=%llx pid=%u (expected %u) fd=%d",
 				(unsigned long long) event->mask,
-				(unsigned) event->pid,
+				(unsigned int) event->pid,
 				(tc->fork ? 0 : pid),
 				event->fd);
 		} else if (event->fd != FAN_NOFD) {
@@ -218,7 +219,7 @@ static void test_fanotify(unsigned int n)
 				"Received unexpected file descriptor: "
 				"mask=%llx pid=%u fd=%d (expected %d)",
 				(unsigned long long) event->pid,
-				(unsigned) event->pid,
+				(unsigned int) event->pid,
 				event->fd,
 				FAN_NOFD);
 			SAFE_CLOSE(event->fd);
@@ -226,7 +227,7 @@ static void test_fanotify(unsigned int n)
 			tst_res(TPASS,
 				"Received event: mask=%llx, pid=%u fd=%d",
 				(unsigned long long) event->mask,
-				(unsigned) event->pid,
+				(unsigned int) event->pid,
 				event->fd);
 		}
 

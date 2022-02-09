@@ -35,11 +35,10 @@ static void test_init_bit(unsigned int fan_bit,
 
 	ret = SAFE_FCNTL(fd_notify, F_GETFD);
 
-	if ((ret & FD_CLOEXEC) == fd_bit) {
+	if ((ret & FD_CLOEXEC) == fd_bit)
 		tst_res(TPASS, "%s", msg);
-	} else {
+	else
 		tst_res(TFAIL, "%s", msg);
-	}
 
 	SAFE_CLOSE(fd_notify);
 }

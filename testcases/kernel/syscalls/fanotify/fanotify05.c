@@ -63,23 +63,24 @@ static char symlnk[BUF_SIZE];
 static char fdpath[BUF_SIZE];
 static int fd, fd_notify;
 
-struct fanotify_event_metadata event;
+static struct fanotify_event_metadata event;
 
 static void event_res(struct fanotify_event_metadata *event, int i)
 {
 	int len = 0;
 	const char *filename;
+
 	sprintf(symlnk, "/proc/self/fd/%d", event->fd);
 	len = readlink(symlnk, fdpath, sizeof(fdpath));
 	if (len < 0)
 		len = 0;
 	fdpath[len] = 0;
 	filename = basename(fdpath);
-	if (len > FNAME_PREFIX_LEN && atoi(filename + FNAME_PREFIX_LEN) != i) {
+
+	if (len > FNAME_PREFIX_LEN && atoi(filename + FNAME_PREFIX_LEN) != i)
 		tst_res(TFAIL, "Got event #%d out of order filename=%s", i, filename);
-	} else if (i == 0) {
+	else if (i == 0)
 		tst_res(TINFO, "Got event #%d filename=%s", i, filename);
-	}
 }
 
 static void generate_events(int open_flags, int num_files)
@@ -161,7 +162,7 @@ static void test_fanotify(unsigned int n)
 				"got event: mask=%llx (expected %llx) pid=%u fd=%d",
 				(unsigned long long)event.mask,
 				(unsigned long long)FAN_OPEN,
-				(unsigned)event.pid, event.fd);
+				(unsigned int)event.pid, event.fd);
 			break;
 		}
 		if (event.mask == FAN_Q_OVERFLOW) {
@@ -170,13 +171,13 @@ static void test_fanotify(unsigned int n)
 					"%s overflow event: mask=%llx pid=%u fd=%d",
 					got_overflow ? "unexpected" : "invalid",
 					(unsigned long long)event.mask,
-					(unsigned)event.pid,
+					(unsigned int)event.pid,
 					event.fd);
 				break;
 			}
 			tst_res(expect_overflow ? TPASS : TFAIL,
 				"Got an overflow event: pid=%u fd=%d",
-				(unsigned)event.pid, event.fd);
+				(unsigned int)event.pid, event.fd);
 			got_overflow = 1;
 		}
 	}

@@ -36,9 +36,9 @@
 /* Size of the event structure, not including file handle */
 #define EVENT_SIZE (sizeof(struct fanotify_event_metadata) + \
 		    sizeof(struct fanotify_event_info_fid))
+
 /* Tripple events buffer size to account for file handles and names */
 #define EVENT_BUF_LEN (EVENT_MAX * EVENT_SIZE * 3)
-
 
 #define BUF_SIZE 256
 
@@ -386,7 +386,7 @@ check_match:
 				"pid=%u fd=%d name='%s' "
 				"len=%d info_type=%d info_len=%d fh_len=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
 		} else if (!fhlen || namelen < 0) {
@@ -394,7 +394,7 @@ check_match:
 				"got event without fid: mask=%llx pid=%u fd=%d, "
 				"len=%d info_type=%d info_len=%d fh_len=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd,
+				(unsigned int)event->pid, event->fd,
 				event->event_len, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
 		} else if (!mask_match) {
@@ -403,7 +403,7 @@ check_match:
 				"pid=%u fd=%d name='%s' "
 				"len=%d info_type=%d info_len=%d fh_len=%d",
 				(unsigned long long)event->mask, expected->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
 		} else if (info_type != event_fid->hdr.info_type) {
@@ -411,7 +411,7 @@ check_match:
 				"got event: mask=%llx pid=%u fd=%d, "
 				"len=%d info_type=%d expected(%d) info_len=%d fh_len=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd,
+				(unsigned int)event->pid, event->fd,
 				event->event_len, event_fid->hdr.info_type,
 				info_type, event_fid->hdr.len, fhlen);
 		} else if (fhlen != expected_fid->handle.handle_bytes) {
@@ -420,7 +420,7 @@ check_match:
 				"len=%d info_type=%d info_len=%d fh_len=%d expected(%d) "
 				"fh_type=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, info_type,
 				event_fid->hdr.len, fhlen,
 				expected_fid->handle.handle_bytes,
@@ -432,7 +432,7 @@ check_match:
 				"len=%d info_type=%d info_len=%d fh_len=%d "
 				"fh_type=%d expected(%x)",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, info_type,
 				event_fid->hdr.len, fhlen,
 				file_handle->handle_type,
@@ -444,7 +444,7 @@ check_match:
 				"len=%d info_type=%d info_len=%d fh_len=%d "
 				"fh_type=%d unexpected file handle (%x...)",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, info_type,
 				event_fid->hdr.len, fhlen,
 				file_handle->handle_type,
@@ -456,7 +456,7 @@ check_match:
 				"len=%d info_type=%d info_len=%d fh_len=%d "
 				"fsid=%x.%x (expected %x.%x)",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, info_type,
 				event_fid->hdr.len, fhlen,
 				FSID_VAL_MEMBER(event_fid->fsid, 0),
@@ -469,7 +469,7 @@ check_match:
 				"pid=%u fd=%d name='%s' expected('%s') "
 				"len=%d info_type=%d info_len=%d fh_len=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd,
+				(unsigned int)event->pid, event->fd,
 				filename, expected->name,
 				event->event_len, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
@@ -479,8 +479,8 @@ check_match:
 				"(expected %u) fd=%d name='%s' "
 				"len=%d info_type=%d info_len=%d fh_len=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid,
-				(unsigned)getpid(),
+				(unsigned int)event->pid,
+				(unsigned int)getpid(),
 				event->fd, filename,
 				event->event_len, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
@@ -490,7 +490,7 @@ check_match:
 				"pid=%u fd=%d name='%s' num_info=%d (expected %d) "
 				"len=%d info_type=%d info_len=%d fh_len=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd,
+				(unsigned int)event->pid, event->fd,
 				filename, 1 + !!child_fid, 1 + !!expected_child_fid,
 				event->event_len, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
@@ -515,7 +515,7 @@ check_match:
 				"got event #%d: mask=%llx pid=%u fd=%d name='%s' "
 				"len=%d; info #%d: info_type=%d info_len=%d fh_len=%d",
 				test_num, (unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd, filename,
+				(unsigned int)event->pid, event->fd, filename,
 				event->event_len, info_id, event_fid->hdr.info_type,
 				event_fid->hdr.len, fhlen);
 		}

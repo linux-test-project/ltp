@@ -115,14 +115,13 @@ static void test_fanotify(unsigned int n)
 		    ((tc->init_flags & DISALLOWED_INIT_FLAGS) ||
 		     (tc->init_flags & FANOTIFY_REQUIRED_USER_INIT_FLAGS) !=
 		      FANOTIFY_REQUIRED_USER_INIT_FLAGS)) {
-			tst_res(TPASS,
-				"Received result EPERM, as expected");
+			tst_res(TPASS, "Received result EPERM, as expected");
 			return;
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_init(0x%lx, O_RDONLY) failed",
-				tc->init_flags);
 		}
+
+		tst_brk(TBROK | TERRNO,
+			"fanotify_init(0x%lx, O_RDONLY) failed",
+			tc->init_flags);
 	}
 
 	/* Attempt to place mark on object */
@@ -159,6 +158,7 @@ out:
 static void setup(void)
 {
 	int fd;
+	struct passwd *nobody;
 
 	SAFE_TOUCH(TEST_FILE, 0666, NULL);
 
@@ -169,7 +169,7 @@ static void setup(void)
 	if (geteuid() == 0) {
 		tst_res(TINFO,
 			"Running as privileged user, revoking permissions.");
-		struct passwd *nobody = SAFE_GETPWNAM("nobody");
+		nobody = SAFE_GETPWNAM("nobody");
 		SAFE_SETUID(nobody->pw_uid);
 	}
 

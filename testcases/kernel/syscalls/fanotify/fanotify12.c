@@ -28,7 +28,7 @@
 #include "fanotify.h"
 
 #define EVENT_MAX 1024
-#define EVENT_SIZE (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE (sizeof(struct fanotify_event_metadata))
 #define EVENT_BUF_LEN (EVENT_MAX * EVENT_SIZE)
 #define EVENT_SET_BUF 32
 
@@ -190,21 +190,21 @@ static void do_test(unsigned int n)
 				"pid=%u, fd=%d",
 				(unsigned long long) event->mask,
 				*(tc->event_set + event_num),
-				(unsigned) event->pid,
+				(unsigned int) event->pid,
 				event->fd);
 		} else if (event->pid != child_pid) {
 			tst_res(TFAIL,
 				"Received event: mask=%llx, pid=%u (expected "
 				"%u), fd=%d",
 				(unsigned long long) event->mask,
-				(unsigned) event->pid,
-				(unsigned) child_pid,
+				(unsigned int) event->pid,
+				(unsigned int) child_pid,
 				event->fd);
 		} else {
 			tst_res(TPASS,
 				"Received event: mask=%llx, pid=%u, fd=%d",
 				(unsigned long long) event->mask,
-				(unsigned) event->pid,
+				(unsigned int) event->pid,
 				event->fd);
 		}
 

@@ -25,7 +25,7 @@
 #include "fanotify.h"
 
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 
 #define BUF_SIZE 256
 #define TST_TOTAL 9
@@ -162,7 +162,7 @@ static void test_open_symlink(char *file)
 	verify_no_event();
 }
 
-void test01(void)
+static void test01(void)
 {
 	/* Check ONLYDIR on a directory */
 	CHECK_MARK(".", FAN_MARK_ONLYDIR, 0, NULL);

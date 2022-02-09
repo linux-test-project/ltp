@@ -30,7 +30,7 @@
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 /* Size large enough to hold a reasonable amount of expected event objects */
@@ -273,20 +273,20 @@ static void test_fanotify(unsigned int n)
 				"pid=%u fd=%d",
 				(unsigned long long)event->mask,
 				event_set[test_num].mask,
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		} else if (event->pid != child_pid) {
 			tst_res(TFAIL,
 				"got event: mask=%llx pid=%u "
 				"(expected %u) fd=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid,
-				(unsigned)child_pid,
+				(unsigned int)event->pid,
+				(unsigned int)child_pid,
 				event->fd);
 		} else {
 			tst_res(TPASS,
 				"got event: mask=%llx pid=%u fd=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		}
 
 		/* Write response to the permission event */

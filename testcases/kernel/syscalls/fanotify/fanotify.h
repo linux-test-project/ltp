@@ -15,7 +15,7 @@
 #include <sys/fanotify.h>
 #include "lapi/fcntl.h"
 
-int safe_fanotify_init(const char *file, const int lineno,
+static inline int safe_fanotify_init(const char *file, const int lineno,
 	unsigned int flags, unsigned int event_f_flags)
 {
 	int rval;
@@ -433,7 +433,7 @@ static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
 		fanotify_events_supported_by_kernel(mask, init_flags, mark_type)); \
 } while (0)
 
-struct fanotify_event_info_header *get_event_info(
+static inline struct fanotify_event_info_header *get_event_info(
 					struct fanotify_event_metadata *event,
 					int info_type)
 {

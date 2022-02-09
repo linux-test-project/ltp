@@ -49,7 +49,7 @@
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
@@ -365,16 +365,16 @@ static void verify_event(int p, int group, struct fanotify_event_metadata *event
 			"pid=%u fd=%u", group, fanotify_class[p],
 			(unsigned long long) event->mask,
 			(unsigned long long) expected_mask,
-			(unsigned)event->pid, event->fd);
+			(unsigned int)event->pid, event->fd);
 	} else if (event->pid != child_pid) {
 		tst_res(TFAIL, "group %d (%x) got event: mask %llx pid=%u "
 			"(expected %u) fd=%u", group, fanotify_class[p],
-			(unsigned long long)event->mask, (unsigned)event->pid,
-			(unsigned)getpid(), event->fd);
+			(unsigned long long)event->mask, (unsigned int)event->pid,
+			(unsigned int)getpid(), event->fd);
 	} else {
 		tst_res(TPASS, "group %d (%x) got event: mask %llx pid=%u fd=%u",
 			group, fanotify_class[p], (unsigned long long)event->mask,
-			(unsigned)event->pid, event->fd);
+			(unsigned int)event->pid, event->fd);
 	}
 }
 

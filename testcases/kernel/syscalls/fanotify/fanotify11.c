@@ -38,7 +38,7 @@ static int tid;
 
 static int fan_report_tid_unsupported;
 
-void *thread_create_file(void *arg LTP_ATTRIBUTE_UNUSED)
+static void *thread_create_file(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	char tid_file[64] = {0};
 
@@ -54,7 +54,7 @@ static unsigned int tcases[] = {
 	FAN_CLASS_NOTIF | FAN_REPORT_TID
 };
 
-void test01(unsigned int i)
+static void test01(unsigned int i)
 {
 	pthread_t p_id;
 	struct fanotify_event_metadata event;

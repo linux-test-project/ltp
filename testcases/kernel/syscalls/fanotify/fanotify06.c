@@ -45,11 +45,11 @@
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
-unsigned int fanotify_prio[] = {
+static unsigned int fanotify_prio[] = {
 	FAN_CLASS_PRE_CONTENT,
 	FAN_CLASS_CONTENT,
 	FAN_CLASS_NOTIF
@@ -124,16 +124,16 @@ static void verify_event(int group, struct fanotify_event_metadata *event)
 		tst_res(TFAIL, "group %d got event: mask %llx (expected %llx) "
 			"pid=%u fd=%d", group, (unsigned long long)event->mask,
 			(unsigned long long)FAN_MODIFY,
-			(unsigned)event->pid, event->fd);
+			(unsigned int)event->pid, event->fd);
 	} else if (event->pid != getpid()) {
 		tst_res(TFAIL, "group %d got event: mask %llx pid=%u "
 			"(expected %u) fd=%d", group,
-			(unsigned long long)event->mask, (unsigned)event->pid,
-			(unsigned)getpid(), event->fd);
+			(unsigned long long)event->mask, (unsigned int)event->pid,
+			(unsigned int)getpid(), event->fd);
 	} else {
 		tst_res(TPASS, "group %d got event: mask %llx pid=%u fd=%d",
 			group, (unsigned long long)event->mask,
-			(unsigned)event->pid, event->fd);
+			(unsigned int)event->pid, event->fd);
 	}
 }
 
@@ -148,7 +148,7 @@ static void close_events_fd(struct fanotify_event_metadata *event, int buflen)
 	}
 }
 
-void test_fanotify(unsigned int n)
+static void test_fanotify(unsigned int n)
 {
 	int ret;
 	unsigned int p, i;
@@ -158,8 +158,7 @@ void test_fanotify(unsigned int n)
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
 	if (tc->use_overlay && !ovl_mounted) {
-		tst_res(TCONF,
-		        "overlayfs is not configured in this kernel.");
+		tst_res(TCONF, "overlayfs is not configured in this kernel");
 		return;
 	}
 

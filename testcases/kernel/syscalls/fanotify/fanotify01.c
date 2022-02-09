@@ -26,7 +26,7 @@
 
 #define EVENT_MAX 1024
 /* size of the event structure, not counting name */
-#define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
+#define EVENT_SIZE  (sizeof(struct fanotify_event_metadata))
 /* reasonable guess as to size of 1024 events */
 #define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
@@ -252,21 +252,21 @@ static void test_fanotify(unsigned int n)
 				"got unnecessary event: mask=%llx "
 				"pid=%u fd=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		} else if (!(event->mask & event_set[test_num])) {
 			tst_res(TFAIL,
 				"got event: mask=%llx (expected %llx) "
 				"pid=%u fd=%d",
 				(unsigned long long)event->mask,
 				event_set[test_num],
-				(unsigned)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd);
 		} else if (event->pid != getpid()) {
 			tst_res(TFAIL,
 				"got event: mask=%llx pid=%u "
 				"(expected %u) fd=%d",
 				(unsigned long long)event->mask,
-				(unsigned)event->pid,
-				(unsigned)getpid(),
+				(unsigned int)event->pid,
+				(unsigned int)getpid(),
 				event->fd);
 		} else {
 			if (event->fd == -2 || (event->fd == FAN_NOFD &&
@@ -279,7 +279,7 @@ static void test_fanotify(unsigned int n)
 					"of event: mask=%llx pid=%u "
 					"fd=%d ret=%d (errno=%d)",
 					(unsigned long long)event->mask,
-					(unsigned)event->pid,
+					(unsigned int)event->pid,
 					event->fd, ret, errno);
 			} else if (memcmp(buf, fname, strlen(fname))) {
 				tst_res(TFAIL,
@@ -287,16 +287,17 @@ static void test_fanotify(unsigned int n)
 					"of event: mask=%llx pid=%u "
 					"fd=%d",
 					(unsigned long long)event->mask,
-					(unsigned)event->pid,
+					(unsigned int)event->pid,
 					event->fd);
 			} else {
 pass:
 				tst_res(TPASS,
 					"got event: mask=%llx pid=%u fd=%d",
 					(unsigned long long)event->mask,
-					(unsigned)event->pid, event->fd);
+					(unsigned int)event->pid, event->fd);
 			}
 		}
+
 		/*
 		 * We have verified the data now so close fd and
 		 * invalidate it so that we don't check it again
@@ -306,17 +307,20 @@ pass:
 			SAFE_CLOSE(event->fd);
 		event->fd = -2;
 		event->mask &= ~event_set[test_num];
+
 		/* No events left in current mask? Go for next event */
-		if (event->mask == 0) {
+		if (event->mask == 0)
 			i += event->event_len;
-		}
+
 		test_num++;
 	}
+
 	for (; test_num < TST_TOTAL; test_num++) {
 		tst_res(TFAIL, "didn't get event: mask=%llx",
 			event_set[test_num]);
 
 	}
+
 	/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_REMOVE | mark->flag,
 			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
