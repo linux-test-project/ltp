@@ -10,57 +10,16 @@
  *      Darren Hart <dvhltc@us.ibm.com>
  */
 
-#ifndef _FUTEXTEST_H
-#define _FUTEXTEST_H
+#ifndef FUTEXTEST_H
+#define FUTEXTEST_H
 
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
-#include <linux/futex.h>
 #include "lapi/futex.h"
 #include "tst_timer.h"
 
 #define FUTEX_INITIALIZER 0
-
-#ifndef FUTEX_CMP_REQUEUE
-# define FUTEX_CMP_REQUEUE	4
-#endif
-#ifndef FUTEX_WAKE_OP
-# define FUTEX_WAKE_OP		5
-#endif
-#ifndef FUTEX_LOCK_PI
-# define FUTEX_LOCK_PI		6
-#endif
-#ifndef FUTEX_UNLOCK_PI
-# define FUTEX_UNLOCK_PI	7
-#endif
-#ifndef FUTEX_WAIT_BITSET
-# define FUTEX_WAIT_BITSET	9
-#endif
-#ifndef FUTEX_WAKE_BITSET
-# define FUTEX_WAKE_BITSET	10
-#endif
-#ifndef FUTEX_WAIT_REQUEUE_PI
-# define FUTEX_WAIT_REQUEUE_PI	11
-#endif
-#ifndef FUTEX_CMP_REQUEUE_PI
-# define FUTEX_CMP_REQUEUE_PI	12
-#endif
-#ifndef FUTEX_PRIVATE_FLAG
-# define FUTEX_PRIVATE_FLAG	128
-#endif
-#ifndef FUTEX_WAIT_REQUEUE_PI_PRIVATE
-# define FUTEX_WAIT_REQUEUE_PI_PRIVATE	(FUTEX_WAIT_REQUEUE_PI | \
-					 FUTEX_PRIVATE_FLAG)
-#endif
-#ifndef FUTEX_REQUEUE_PI_PRIVATE
-# define FUTEX_CMP_REQUEUE_PI_PRIVATE	(FUTEX_CMP_REQUEUE_PI | \
-					 FUTEX_PRIVATE_FLAG)
-#endif
-
-#ifndef FUTEX_CLOCK_REALTIME
-# define FUTEX_CLOCK_REALTIME 256
-#endif
 
 enum futex_fn_type {
 	FUTEX_FN_FUTEX,
@@ -318,4 +277,4 @@ futex_set(futex_t *uaddr, u_int32_t newval)
 	return newval;
 }
 
-#endif
+#endif /* _FUTEXTEST_H */

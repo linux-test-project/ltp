@@ -1,20 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
- * Licensed under the GNU GPLv2 or later.
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
 #ifndef FUTEX_UTILS_H__
@@ -22,6 +9,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#if __NR_futex != __LTP__NR_INVALID_SYSCALL && __NR_futex_time64 != __LTP__NR_INVALID_SYSCALL
+# define FUTEX_VARIANTS 2
+#else
+# define FUTEX_VARIANTS 1
+#endif
+
+static inline struct futex_test_variants futex_variant(void)
+{
+	struct futex_test_variants variants[] = {
+	#if (__NR_futex != __LTP__NR_INVALID_SYSCALL)
+		{ .fntype = FUTEX_FN_FUTEX, .desc = "syscall with old kernel spec" },
+	#endif
+
+	#if (__NR_futex_time64 != __LTP__NR_INVALID_SYSCALL)
+		{ .fntype = FUTEX_FN_FUTEX64, .desc = "syscall time64 with kernel spec" },
+	#endif
+	};
+
+	return variants[tst_variant];
+}
 
 /*
  * Wait for nr_threads to be sleeping
