@@ -173,24 +173,16 @@ static void run(unsigned int i)
 	}
 }
 
-static void setup(void)
-{
-	long long mem_avail = tst_available_mem();
-
-	if (mem_avail < 512L*1024)
-		tst_brk(TCONF, "Needed > 512MB available, only have: %ld kB", mem_avail);
-}
-
 static struct tst_test test = {
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.resource_files = resource,
 	.min_kver = "2.6.32",
+	.min_mem_avail = 512,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "1f10206cf8e9"},
 		{}
 	},
-	.setup = setup,
 	.test = run,
 	.tcnt = ARRAY_SIZE(testfunc_list),
 };

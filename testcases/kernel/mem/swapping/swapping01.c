@@ -95,10 +95,6 @@ static void init_meminfo(void)
 	mem_over = mem_available_init * COE_SLIGHT_OVER;
 	mem_over_max = mem_available_init * COE_DELTA;
 
-	/* at least 10MB available physical memory needed */
-	if (mem_available_init < 10240)
-		tst_brk(TCONF, "Not enough available mem to test.");
-
 	if (swap_free_init < mem_over_max)
 		tst_brk(TCONF, "Not enough swap space to test: swap_free_init(%ldkB) < mem_over_max(%ldkB)",
 				swap_free_init, mem_over_max);
@@ -162,6 +158,7 @@ static void check_swapping(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
+	.min_mem_avail = 10,
 	.test_all = test_swapping,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "50a15981a1fa"},

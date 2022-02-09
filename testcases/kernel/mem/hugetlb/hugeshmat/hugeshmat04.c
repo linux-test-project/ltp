@@ -81,19 +81,15 @@ static void shared_hugepage(void)
 
 static void setup(void)
 {
-	long mem_total, hpage_size, orig_hugepages;
+	long hpage_size, orig_hugepages;
 
 	if (tst_hugepages == 0)
 		tst_brk(TCONF, "Not enough hugepages for testing.");
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
-	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
 	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", (long)SIZE);
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &new_shmmax);
-
-	if (mem_total < 2L*1024*1024)
-		tst_brk(TCONF,	"Needed > 2GB RAM, have: %ld", mem_total);
 
 	if (new_shmmax < SIZE)
 		tst_brk(TCONF,	"shmmax too low, have: %ld", new_shmmax);
@@ -122,6 +118,7 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.tcnt = 3,
 	.test = test_hugeshmat,
+	.min_mem_avail = 2048,
 	.setup = setup,
 	.cleanup = cleanup,
 	.request_hugepages = 1,
