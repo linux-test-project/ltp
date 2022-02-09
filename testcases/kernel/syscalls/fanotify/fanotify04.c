@@ -24,11 +24,8 @@
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"
 
-#define EVENT_MAX 1024
 /* size of the event structure, not counting name */
 #define EVENT_SIZE  (sizeof (struct fanotify_event_metadata))
-/* reasonable guess as to size of 1024 events */
-#define EVENT_BUF_LEN        (EVENT_MAX * EVENT_SIZE)
 
 #define BUF_SIZE 256
 #define TST_TOTAL 9
@@ -37,9 +34,7 @@ static char fname[BUF_SIZE];
 static char sname[BUF_SIZE];
 static char dir[BUF_SIZE];
 static int fd_notify;
-
-static int len;
-static char event_buf[EVENT_BUF_LEN];
+static char event_buf[EVENT_SIZE];
 
 static char *expect_str_fail(int expect)
 {
@@ -104,16 +99,12 @@ static void open_dir(char *file)
 
 static void verify_event(int mask)
 {
-	int ret;
 	struct fanotify_event_metadata *event;
 	struct stat st;
 
 	/* Read the event */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
-			EVENT_BUF_LEN - len);
-	event = (struct fanotify_event_metadata *)&event_buf[len];
-	len += ret;
-
+	SAFE_READ(0, fd_notify, event_buf, EVENT_SIZE);
+	event = (struct fanotify_event_metadata *)&event_buf;
 	if (event->mask != FAN_OPEN) {
 		tst_res(TFAIL, "got unexpected event %llx",
 			(unsigned long long)event->mask);
@@ -146,11 +137,11 @@ static void verify_no_event(void)
 {
 	int ret;
 
-	ret = read(fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	ret = read(fd_notify, event_buf, EVENT_SIZE);
 	if (ret != -1) {
 		struct fanotify_event_metadata *event;
 
-		event = (struct fanotify_event_metadata *)&event_buf[len];
+		event = (struct fanotify_event_metadata *)&event_buf;
 		tst_res(TFAIL, "seen unexpected event (mask %llx)",
 			(unsigned long long)event->mask);
 		/* Cleanup fd from the event */
@@ -158,7 +149,7 @@ static void verify_no_event(void)
 			SAFE_CLOSE(event->fd);
 	} else if (errno != EAGAIN) {
 		tst_res(TFAIL | TERRNO, "read(%d, buf, %zu) failed", fd_notify,
-			EVENT_BUF_LEN);
+			EVENT_SIZE);
 	} else {
 		tst_res(TPASS, "No event as expected");
 	}
