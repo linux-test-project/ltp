@@ -155,11 +155,18 @@ static void check_swapping(void)
 	SAFE_WAITPID(pid, &status, 0);
 }
 
+static void setup(void)
+{
+	if (access("/proc/swaps", F_OK))
+		tst_brk(TCONF, "swap not supported by kernel");
+}
+
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.min_mem_avail = 10,
 	.test_all = test_swapping,
+	.setup = setup,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "50a15981a1fa"},
 		{}
