@@ -17,8 +17,10 @@
 #include "tst_safe_macros.h"
 
 #define TESTFILE        "test_file"
+#define LINK_TESTFILE   "link_test_file"
 #define FILE_SIZE       1024
 #define FILE_MODE	0644
+#define NLINK	        2
 
 static struct stat stat_buf;
 static uid_t user_id;
@@ -61,6 +63,12 @@ static void run(void)
 		fail++;
 	}
 
+	if (stat_buf.st_nlink != NLINK) {
+		tst_res(TFAIL, "stat_buf.st_nlink = %li expected %i",
+			(long)stat_buf.st_nlink, NLINK);
+		fail++;
+	}
+
 	if (fail)
 		return;
 
@@ -78,6 +86,8 @@ static void setup(void)
 
 	if (tst_fill_file(TESTFILE, 'a', FILE_SIZE, 1))
 		tst_brk(TBROK, "Could not fill Testfile!");
+
+	SAFE_LINK(TESTFILE, LINK_TESTFILE);
 }
 
 static void cleanup(void)
