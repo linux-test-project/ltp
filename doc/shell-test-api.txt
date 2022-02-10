@@ -202,7 +202,13 @@ simply by setting right '$TST_FOO'.
 |                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
 |                          | See also 'TST_DEV_EXTRA_OPTS', 'TST_DEV_FS_OPTS', 'TST_FS_TYPE'.
 |                          | Implies 'TST_NEEDS_DEVICE=1' (no need to set it).
+| 'TST_DEVICE'             | Block device name for 'tst_mount' and 'tst_mkfs', see
+|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
 | 'TST_FS_TYPE'            | Override the default filesystem to be used.
+| 'TST_MNTPOINT'           | Holds path to mountpoint used in 'tst_mount', see
+|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
+| 'TST_MNT_PARAMS'         | Extra mount params for 'tst_mount', see
+|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
 | 'TST_NEEDS_ROOT'         | Exit the test with 'TCONF' unless executed under root.
 |                          | Alternatively the 'tst_require_root' command can be used.
 | 'TST_NEEDS_TMPDIR'       | Create test temporary directory and cd into it.
