@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * This program opens the PID file descriptor of the child process created with
  * fork(). It then uses poll to monitor the file descriptor for process exit, as
  * indicated by an EPOLLIN event.
@@ -27,11 +30,9 @@ static void run(void)
 		exit(EXIT_SUCCESS);
 	}
 
-	TEST(pidfd_open(pid, 0));
+	TST_EXP_FD_SILENT(pidfd_open(pid, 0), "pidfd_open(%d, 0)", pid);
 
 	fd = TST_RET;
-	if (fd == -1)
-		tst_brk(TFAIL | TTERRNO, "pidfd_open() failed");
 
 	TST_CHECKPOINT_WAKE(0);
 
@@ -50,7 +51,7 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.min_kver = "5.3",
+	.setup = pidfd_open_supported,
 	.test_all = run,
 	.forks_child = 1,
 	.needs_checkpoints = 1,

@@ -9,10 +9,14 @@
 
 #include <sys/syscall.h>
 #include <sys/types.h>
-
 #include "lapi/syscalls.h"
-
 #include "config.h"
+
+static inline void pidfd_open_supported(void)
+{
+	/* allow the tests to fail early */
+	tst_syscall(__NR_pidfd_open);
+}
 
 #ifndef HAVE_PIDFD_OPEN
 static inline int pidfd_open(pid_t pid, unsigned int flags)

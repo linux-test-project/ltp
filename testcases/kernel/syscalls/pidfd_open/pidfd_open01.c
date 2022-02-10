@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * Basic pidfd_open() test:
- * 1) Fetch the PID of the current process and try to get its file descriptor.
- * 2) Check that the close-on-exec flag is set on the file descriptor.
+ *
+ * - Fetch the PID of the current process and try to get its file descriptor.
+ * - Check that the close-on-exec flag is set on the file descriptor.
  */
 
 #include <unistd.h>
@@ -17,10 +21,7 @@ static void run(void)
 {
 	int flag;
 
-	TEST(pidfd_open(getpid(), 0));
-
-	if (TST_RET == -1)
-		tst_brk(TFAIL | TTERRNO, "pidfd_open(getpid(), 0) failed");
+	TST_EXP_FD_SILENT(pidfd_open(getpid(), 0), "pidfd_open(getpid(), 0)");
 
 	flag = fcntl(TST_RET, F_GETFD);
 
@@ -36,6 +37,6 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.min_kver = "5.3",
+	.setup = pidfd_open_supported,
 	.test_all = run,
 };

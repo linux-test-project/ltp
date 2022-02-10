@@ -1,14 +1,21 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
+ */
+
+/*\
+ * [Description]
  *
- * Description:
- * Basic pidfd_open() test to test invalid arguments.
+ * Tests basic error handling of the pidfd_open syscall.
+ *
+ * - ESRCH the process specified by pid does not exist
+ * - EINVAL pid is not valid
+ * - EINVAL flags is not valid
  */
 #include "tst_test.h"
 #include "lapi/pidfd_open.h"
 
-pid_t expired_pid, my_pid, invalid_pid = -1;
+static pid_t expired_pid, my_pid, invalid_pid = -1;
 
 static struct tcase {
 	char *name;
@@ -23,6 +30,7 @@ static struct tcase {
 
 static void setup(void)
 {
+	pidfd_open_supported();
 	expired_pid = tst_get_unused_pid();
 	my_pid = getpid();
 }
@@ -31,27 +39,11 @@ static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	TEST(pidfd_open(*tc->pid, tc->flags));
-
-	if (TST_RET != -1) {
-		SAFE_CLOSE(TST_RET);
-		tst_res(TFAIL, "%s: pidfd_open succeeded unexpectedly (index: %d)",
-			tc->name, n);
-		return;
-	}
-
-	if (tc->exp_errno != TST_ERR) {
-		tst_res(TFAIL | TTERRNO, "%s: pidfd_open() should fail with %s",
-			tc->name, tst_strerrno(tc->exp_errno));
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "%s: pidfd_open() failed as expected",
-		tc->name);
+	TST_EXP_FAIL2(pidfd_open(*tc->pid, tc->flags), tc->exp_errno,
+			"pidfd_open with %s", tc->name);
 }
 
 static struct tst_test test = {
-	.min_kver = "5.3",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = run,
 	.setup = setup,
