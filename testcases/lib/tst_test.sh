@@ -17,6 +17,10 @@ export TST_ITERATIONS=1
 export TST_TMPDIR_RHOST=0
 export TST_LIB_LOADED=1
 
+if [ -z "$TST_FS_TYPE" ]; then
+	export TST_FS_TYPE="${LTP_DEV_FS_TYPE:-ext2}"
+fi
+
 . tst_ansi_color.sh
 . tst_security.sh
 
@@ -342,10 +346,6 @@ tst_mkfs()
 	[ $# -ge 1 ] && shift
 	[ $# -ge 1 ] && shift
 	local fs_opts="$@"
-
-	if [ -z "$fs_type" ]; then
-		tst_brk TBROK "No fs_type specified"
-	fi
 
 	if [ -z "$device" ]; then
 		tst_brk TBROK "No device specified"

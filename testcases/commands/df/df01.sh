@@ -28,8 +28,6 @@ OPTIONS
 EOF
 }
 
-TST_FS_TYPE=ext2
-
 parse_args()
 {
 	TST_FS_TYPE="$2"
