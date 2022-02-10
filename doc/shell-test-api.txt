@@ -189,11 +189,20 @@ space as default value is used. Of course, it's possible to use separate functio
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Similarily to the C library various checks and preparations can be requested
-simply by setting right '$TST_NEEDS_FOO'.
+simply by setting right '$TST_FOO'.
 
 [options="header"]
 |=============================================================================
 | Variable name            | Action done
+| 'TST_DEV_EXTRA_OPTS'     | Pass extra 'mkfs' options _after_ device name,
+|                          | to 'tst_mkfs', use with 'TST_FORMAT_DEVICE=1'.
+| 'TST_DEV_FS_OPTS'        | Pass 'mkfs' options _before_ the device name,
+|                          | to 'tst_mkfs', use with 'TST_FORMAT_DEVICE=1'.
+| 'TST_FORMAT_DEVICE'      | Format a block device with a filesystem, see
+|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
+|                          | See also 'TST_DEV_EXTRA_OPTS', 'TST_DEV_FS_OPTS', 'TST_FS_TYPE'.
+|                          | Implies 'TST_NEEDS_DEVICE=1' (no need to set it).
+| 'TST_FS_TYPE'            | Override the default filesystem to be used.
 | 'TST_NEEDS_ROOT'         | Exit the test with 'TCONF' unless executed under root.
 |                          | Alternatively the 'tst_require_root' command can be used.
 | 'TST_NEEDS_TMPDIR'       | Create test temporary directory and cd into it.
@@ -495,7 +504,24 @@ tst_random 0 1000
 Formatting device with a filesystem
 +++++++++++++++++++++++++++++++++++
 
-The 'tst_mkfs' helper will format device with the filesystem.
+'TST_FORMAT_DEVICE=1' can be used to format device before running the test.
+Uses '$TST_FS_TYPE' (by default ext2), '$TST_DEVICE' a block device to be
+formatted, usually prepared by the library (TST_NEEDS_DEVICE=1 must be set).
+'$TST_DEV_FS_OPTS' a 'mkfs' options _before_ the device path and
+'$TST_DEV_EXTRA_OPTS' extra 'mkfs'' options _after_ the device path.
+
+[source,sh]
+-------------------------------------------------------------------------------
+TST_FORMAT_DEVICE=1
+TST_DEV_FS_OPTS="-b 1024 -O quota"
+TST_DEV_EXTRA_OPTS="5m"
+TST_TESTFUNC=test
+
+test()
+{
+	tst_res TPASS "device formatted"
+}
+-------------------------------------------------------------------------------
 
 [source,sh]
 -------------------------------------------------------------------------------
