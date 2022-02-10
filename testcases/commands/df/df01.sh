@@ -13,7 +13,7 @@ TST_OPTS="f:"
 TST_USAGE=usage
 TST_PARSE_ARGS=parse_args
 TST_NEEDS_ROOT=1
-TST_NEEDS_DEVICE=1
+TST_FORMAT_DEVICE=1
 . tst_test.sh
 
 usage()
@@ -35,7 +35,6 @@ parse_args()
 
 setup()
 {
-	tst_mkfs
 	tst_mount
 	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk 'NR==1{print $5}')
 }
