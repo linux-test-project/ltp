@@ -1,205 +1,128 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2012
  * Copyright (c) Linux Test Project, 2012
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-#define _GNU_SOURCE
+/*\
+ * [Description]
+ *
+ * Fork two children, the first one allocates a chunk of memory and the
+ * other one call process_vm_writev to write known data into the first
+ * child. Then first child verifies that the data is as expected.
+ */
+
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/uio.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <limits.h>
-
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
 #include "lapi/syscalls.h"
 
-char *TCID = "process_vm_writev02";
-int TST_TOTAL = 1;
+static uintptr_t *data_ptr;
+static char *str_buffsize;
+static int bufsize = 100000;
 
-#define PADDING_SIZE 10
-#define DEFAULT_CHAR 53
-
-static int sflag;
-static char *sz_opt;
-static option_t options[] = {
-	{"s:", &sflag, &sz_opt},
-	{NULL, NULL, NULL}
-};
-
-static long bufsz;
-static int pipe_fd[2];
-static pid_t pids[2];
-
-static void child_init_and_verify(void);
-static void child_write(void);
-static void setup(void);
-static void cleanup(void);
-static void help(void);
-
-int main(int argc, char **argv)
+static void child_alloc_and_verify(int buffsize)
 {
-	int lc, status;
+	char foo[buffsize];
+	int i;
+	int err;
 
-	tst_parse_opts(argc, argv, options, &help);
+	tst_res(TINFO, "child 0: allocate memory");
 
-	setup();
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+	memset(foo, 'a', buffsize);
+	*data_ptr = (uintptr_t)foo;
 
-		SAFE_PIPE(cleanup, pipe_fd);
+	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
-		/* the start of child_init_and_verify and child_write is
-		 * already synchronized via pipe */
-		pids[0] = fork();
-		switch (pids[0]) {
-		case -1:
-			tst_brkm(TBROK | TERRNO, cleanup, "fork #0");
-		case 0:
-			child_init_and_verify();
-			exit(0);
-		default:
-			break;
-		}
+	err = 0;
+	for (i = 0; i < buffsize; i++)
+		if (foo[i] != 'w')
+			err++;
 
-		pids[1] = fork();
-		switch (pids[1]) {
-		case -1:
-			tst_brkm(TBROK | TERRNO, cleanup, "fork #1");
-		case 0:
-			child_write();
-			exit(0);
-		}
-
-		/* wait until child_write writes into
-		 * child_init_and_verify's VM */
-		SAFE_WAITPID(cleanup, pids[1], &status, 0);
-		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-			tst_resm(TFAIL, "child 1 returns %d", status);
-
-		/* signal child_init_and_verify to verify its VM now */
-		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
-
-		SAFE_WAITPID(cleanup, pids[0], &status, 0);
-		if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-			tst_resm(TFAIL, "child 0 returns %d", status);
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-static void child_init_and_verify(void)
-{
-	unsigned char *foo;
-	char buf[bufsz];
-	long i, nr_err;
-
-	foo = SAFE_MALLOC(tst_exit, bufsz);
-	for (i = 0; i < bufsz; i++)
-		foo[i] = DEFAULT_CHAR;
-	tst_resm(TINFO, "child 0: memory allocated.");
-
-	/* passing addr of string "foo" via pipe */
-	SAFE_CLOSE(tst_exit, pipe_fd[0]);
-	snprintf(buf, bufsz, "%p", foo);
-	SAFE_WRITE(tst_exit, 1, pipe_fd[1], buf, strlen(buf) + 1);
-	SAFE_CLOSE(tst_exit, pipe_fd[1]);
-
-	/* wait until child_write() is done writing to our VM */
-	TST_SAFE_CHECKPOINT_WAIT(cleanup, 0);
-
-	nr_err = 0;
-	for (i = 0; i < bufsz; i++) {
-		if (foo[i] != i % 256) {
-#if DEBUG
-			tst_resm(TFAIL, "child 0: expected %i, got %i for "
-				 "byte seq %ld", i % 256, foo[i], i);
-#endif
-			nr_err++;
-		}
-	}
-	if (nr_err)
-		tst_brkm(TFAIL, tst_exit, "child 0: got %ld incorrect bytes.",
-			 nr_err);
+	if (err)
+		tst_res(TFAIL, "child 0: found %d differences from expected data", err);
 	else
-		tst_resm(TPASS, "child 0: all bytes are expected.");
+		tst_res(TPASS, "child 0: read back expected data");
 }
 
-static void child_write(void)
+static void child_write(int buffsize, pid_t pid_alloc)
 {
-	unsigned char *lp, *rp;
-	char buf[bufsz];
+	char lp[buffsize];
 	struct iovec local, remote;
-	long i;
 
-	/* get addr from pipe */
-	SAFE_CLOSE(tst_exit, pipe_fd[1]);
-	SAFE_READ(tst_exit, 0, pipe_fd[0], buf, bufsz);
-	SAFE_CLOSE(tst_exit, pipe_fd[0]);
-	if (sscanf(buf, "%p", &rp) != 1)
-		tst_brkm(TBROK | TERRNO, tst_exit, "sscanf");
+	tst_res(TINFO, "child 1: write to the same memory location");
 
-	lp = SAFE_MALLOC(tst_exit, bufsz + PADDING_SIZE * 2);
+	memset(lp, 'w', buffsize);
 
-	for (i = 0; i < bufsz + PADDING_SIZE * 2; i++)
-		lp[i] = DEFAULT_CHAR;
-	for (i = 0; i < bufsz; i++)
-		lp[i + PADDING_SIZE] = i % 256;
+	local.iov_base = lp;
+	local.iov_len = buffsize;
+	remote.iov_base = (void *)*data_ptr;
+	remote.iov_len = buffsize;
 
-	local.iov_base = lp + PADDING_SIZE;
-	local.iov_len = bufsz;
-	remote.iov_base = rp;
-	remote.iov_len = bufsz;
+	TST_EXP_POSITIVE(tst_syscall(__NR_process_vm_writev, pid_alloc, &local,
+				     1UL, &remote, 1UL, 0UL));
 
-	tst_resm(TINFO, "child 2: write to the same memory location.");
-	TEST(tst_syscall(__NR_process_vm_writev, pids[0], &local,
-			 1UL, &remote, 1UL, 0UL));
-	if (TEST_RETURN != bufsz)
-		tst_brkm(TFAIL | TTERRNO, tst_exit, "process_vm_readv");
+	if (TST_RET != buffsize) {
+		tst_brk(TBROK, "process_vm_writev: expected %d bytes but got %ld",
+			buffsize, TST_RET);
+	}
 }
 
 static void setup(void)
 {
-	tst_require_root();
-
-	/* Just a sanity check of the existence of syscall */
 	tst_syscall(__NR_process_vm_writev, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
 
-	bufsz =
-	    sflag ? SAFE_STRTOL(NULL, sz_opt, 1, LONG_MAX - PADDING_SIZE * 2)
-	    : 100000;
+	if (tst_parse_int(str_buffsize, &bufsize, 1, INT_MAX))
+		tst_brk(TBROK, "Invalid buffer size '%s'", str_buffsize);
 
-	tst_tmpdir();
-	TST_CHECKPOINT_INIT(cleanup);
-
-	TEST_PAUSE;
+	data_ptr = SAFE_MMAP(NULL, sizeof(uintptr_t), PROT_READ | PROT_WRITE,
+			     MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 }
 
 static void cleanup(void)
 {
-	tst_rmdir();
+	if (data_ptr)
+		SAFE_MUNMAP(data_ptr, sizeof(uintptr_t));
 }
 
-static void help(void)
+static void run(void)
 {
-	printf("    -s NUM  Set the size of total buffer size.\n");
+	pid_t pid_alloc;
+	pid_t pid_write;
+	int status;
+
+	pid_alloc = SAFE_FORK();
+	if (!pid_alloc) {
+		child_alloc_and_verify(bufsize);
+		return;
+	}
+
+	TST_CHECKPOINT_WAIT(0);
+
+	pid_write = SAFE_FORK();
+	if (!pid_write) {
+		child_write(bufsize, pid_alloc);
+		return;
+	}
+
+	SAFE_WAITPID(pid_write, &status, 0);
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+		tst_res(TFAIL, "write child: %s", tst_strstatus(status));
+
+	TST_CHECKPOINT_WAKE(0);
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.forks_child = 1,
+	.needs_checkpoints = 1,
+	.options =
+		(struct tst_option[]){
+			{ "s:", &str_buffsize, "Total buffer size (default 100000)" },
+			{},
+		},
+};
