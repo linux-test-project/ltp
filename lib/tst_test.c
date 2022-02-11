@@ -1495,6 +1495,9 @@ static int fork_testrun(void)
 		return TFAIL;
 	}
 
+	if (tst_test->forks_child && kill(-test_pid, SIGKILL) == 0)
+		tst_res(TINFO, "Killed the leftover descendant processes");
+
 	if (WIFEXITED(status) && WEXITSTATUS(status))
 		return WEXITSTATUS(status);
 
