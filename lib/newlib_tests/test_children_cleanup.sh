@@ -3,7 +3,7 @@
 # Copyright (c) 2022 SUSE LLC <mdoucha@suse.cz>
 
 TMPFILE="/tmp/ltp_children_cleanup_$$.log"
-./test_children_cleanup &>"$TMPFILE"
+./test_children_cleanup 1>$TMPFILE 2>&1
 CHILD_PID=`sed -n 's/^.*Forked child \([0-9]*\)$/\1/p' "$TMPFILE"`
 rm "$TMPFILE"
 
