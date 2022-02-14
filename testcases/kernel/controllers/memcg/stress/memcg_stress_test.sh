@@ -29,7 +29,7 @@ setup()
 
 	echo 3 > /proc/sys/vm/drop_caches
 	sleep 2
-	local mem_free=`cat /proc/meminfo | grep MemFree | awk '{ print $2 }'`
+	local mem_free=`cat /proc/meminfo | grep MemAvailable | awk '{ print $2 }'`
 	local swap_free=`cat /proc/meminfo | grep SwapFree | awk '{ print $2 }'`
 	local pgsize=`tst_getconf PAGESIZE`
 
