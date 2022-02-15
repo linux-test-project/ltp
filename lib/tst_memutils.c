@@ -121,8 +121,10 @@ static int write_score(const char *path, int score)
 	if (!f)
 		return 1;
 
-	if (fprintf(f, "%d", score) <= 0)
+	if (fprintf(f, "%d", score) <= 0) {
+		fclose(f);
 		return 1;
+	}
 
 	if (fclose(f))
 		return 1;
