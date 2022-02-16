@@ -50,7 +50,7 @@ static void verify_fchmod(unsigned int i)
 	}
 
 	tst_res(TFAIL | TTERRNO,
-	        "fchmod() failed unexpectedly, expected %i - %s",
+		"fchmod() failed unexpectedly, expected %i - %s",
 		TST_ERR, tst_strerrno(TST_ERR));
 }
 
