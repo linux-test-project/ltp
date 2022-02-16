@@ -1,116 +1,65 @@
-/******************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines  Corp., 2006
  *
- *   Copyright (c) International Business Machines  Corp., 2006
+ * 08/28/2006 AUTHOR: Yi Yang <yyangcdl@cn.ibm.com>
+ */
+
+/*\
+ * [Description]
  *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * NAME
- *      fchmodat01.c
- *
- * DESCRIPTION
- *	This test case will verify basic function of fchmodat
- *	added by kernel 2.6.16 or up.
- *
- * Author
- *	Yi Yang <yyangcdl@cn.ibm.com>
- *
- * History
- *      08/28/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
- *
- *****************************************************************************/
+ * This test case will verify basic function of fchmodat.
+ */
 
 #define _GNU_SOURCE
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <errno.h>
 #include <string.h>
-#include <signal.h>
-#include "test.h"
-#include "safe_macros.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "tst_test.h"
 #include "lapi/syscalls.h"
 
-#define TEST_CASES 6
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
 #endif
-void setup();
-void cleanup();
 
-char *TCID = "fchmodat01";
-int TST_TOTAL = TEST_CASES;
-char pathname[256];
-char testfile[256];
-char testfile2[256];
-char testfile3[256];
-int fds[TEST_CASES];
-char *filenames[TEST_CASES];
-int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0, 0 };
+static char pathname[256];
+static char testfile[256];
+static char testfile2[256];
+static char testfile3[256];
 
-int myfchmodat(int dirfd, const char *filename, mode_t mode)
+static struct tcase {
+	int exp_errno;
+	char *exp_errval;
+} tcases[] = {
+	{ 0, NULL},
+	{ 0, NULL},
+	{ ENOTDIR, "ENOTDIR"},
+	{ EBADF, "EBADF"},
+	{ 0, NULL},
+	{ 0, NULL},
+};
+static int fds[ARRAY_SIZE(tcases)];
+static char *filenames[ARRAY_SIZE(tcases)];
+
+static void verify_fchmodat(unsigned int i)
 {
-	return tst_syscall(__NR_fchmodat, dirfd, filename, mode);
+	struct tcase *tc = &tcases[i];
+
+	if (tc->exp_errno == 0)
+		TST_EXP_PASS(tst_syscall(__NR_fchmodat, fds[i], filenames[i], 0600),
+			     "fchmodat() returned the expected errno %d: %s",
+			     TST_ERR, strerror(TST_ERR));
+	else
+		TST_EXP_FAIL(tst_syscall(__NR_fchmodat, fds[i], filenames[i], 0600),
+			     tc->exp_errno,
+			     "fchmodat() returned the expected errno %d: %s",
+			     TST_ERR, strerror(TST_ERR));
 }
 
-int main(int ac, char **av)
+static void setup(void)
 {
-	int lc;
-	int i;
-
-	/* Disable test if the version of the kernel is less than 2.6.16 */
-	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
-	}
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(myfchmodat(fds[i], filenames[i], 0600));
-
-			if (TEST_ERRNO == expected_errno[i]) {
-				tst_resm(TPASS,
-					 "fchmodat() returned the expected  errno %d: %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL,
-					 "fchmodat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
-		}
-	}
-
-	cleanup();
-	tst_exit();
-}
-
-void setup(void)
-{
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	tst_tmpdir();
-
 	/* Initialize test dir and file names */
 	char *abs_path = tst_get_tmpdir();
 	int p = getpid();
@@ -122,31 +71,36 @@ void setup(void)
 
 	free(abs_path);
 
-	SAFE_MKDIR(cleanup, pathname, 0700);
+	SAFE_MKDIR(pathname, 0700);
 
-	fds[0] = SAFE_OPEN(cleanup, pathname, O_DIRECTORY);
+	fds[0] = SAFE_OPEN(pathname, O_DIRECTORY);
 	fds[1] = fds[4] = fds[0];
 
-	SAFE_FILE_PRINTF(cleanup, testfile, "%s", testfile);
-	SAFE_FILE_PRINTF(cleanup, testfile2, "%s", testfile2);
+	SAFE_FILE_PRINTF(testfile, "%s", testfile);
+	SAFE_FILE_PRINTF(testfile2, "%s", testfile2);
 
-	fds[2] = SAFE_OPEN(cleanup, testfile3, O_CREAT | O_RDWR, 0600);
+	fds[2] = SAFE_OPEN(testfile3, O_CREAT | O_RDWR, 0600);
 	fds[3] = 100;
 	fds[5] = AT_FDCWD;
 
 	filenames[0] = filenames[2] = filenames[3] = filenames[4] = testfile;
 	filenames[1] = testfile2;
 	filenames[5] = testfile3;
-
-	TEST_PAUSE;
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (fds[0] > 0)
 		close(fds[0]);
 	if (fds[2] > 0)
 		close(fds[2]);
-
-	tst_rmdir();
 }
+
+static struct tst_test test = {
+	.min_kver = "2.6.16",
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_fchmodat,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+};
