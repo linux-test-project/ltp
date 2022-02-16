@@ -391,7 +391,7 @@ int LTP_fs_open_block_device()
 {
 	dev_t devt;
 	struct stat statbuf;
-	int rc;
+	int rc = 0;
 
 	if (ltp_block_dev_handle == 0) {
 
