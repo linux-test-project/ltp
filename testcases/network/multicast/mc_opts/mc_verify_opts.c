@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	unsigned i1, i2, i3, i4;
 	struct hostent *hp, *gethostbyname();
 
-	char sintf[20], gintf[20];
+	char sintf[20], gintf[20] = {0};
 	unsigned char ttl;
 	char loop = 0;
 	unsigned int len = 0;
