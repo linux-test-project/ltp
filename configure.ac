@@ -115,6 +115,7 @@ AC_CHECK_FUNCS_ONCE([ \
     open_tree \
     openat \
     openat2 \
+    pidfd_getfd \
     pidfd_open \
     pidfd_send_signal \
     pkey_mprotect \
