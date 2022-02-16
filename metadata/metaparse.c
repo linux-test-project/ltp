@@ -876,7 +876,7 @@ int main(int argc, char *argv[])
 			for (j = 0; implies[i].implies[j]; j++) {
 				if (data_node_hash_get(res, implies[i].implies[j]))
 					fprintf(stderr, "%s: useless tag: %s\n",
-						argv[1], implies[i].implies[j]);
+						argv[optind], implies[i].implies[j]);
 			}
 		}
 	}
