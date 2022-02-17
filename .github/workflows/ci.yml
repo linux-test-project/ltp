@@ -55,6 +55,12 @@ jobs:
               TREE: out
               VARIANT: minimal
 
+         - container: "uos:stable"
+            env:
+              CC: gcc
+              TREE: out
+              VARIANT: minima
+
           # other builds
           - container: "fedora:latest"
             env:

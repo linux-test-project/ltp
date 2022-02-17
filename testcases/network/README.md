@@ -49,7 +49,7 @@ HTTP stress tests require configured and running web server (Apache2, Nginx, etc
 
 ### NFS setup
 NFS tests require running NFS server, enable and start `nfs-server.service`
-(Debian/Ubuntu and openSUSE/SLES: `nfs-kernel-server` package, others:
+(Debian/Ubuntu/Uos and openSUSE/SLES: `nfs-kernel-server` package, others:
 `nfs-server` package).
 
 There is no detection whether service is running, test will simply fail without

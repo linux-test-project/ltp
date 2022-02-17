@@ -4,7 +4,7 @@
 #        Author: Darren Hart <dvhltc@us.ibm.com>
 #   Description: Plot the time and frequency domain plots of a times and
 #                counts log file pair from the FTQ benchmark.
-# Prerequisites: numpy, scipy, and pylab packages.  For debian/ubuntu:
+# Prerequisites: numpy, scipy, and pylab packages.  For debian/ubuntu/uos:
 #                o python-numeric
 #                o python-scipy
 #                o python-matplotlib

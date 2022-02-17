@@ -32,7 +32,7 @@ EOF
     if [ -x "/sbin/chkconfig" ]; then
         /sbin/chkconfig "${cron}" on
 
-    # Debian and Ubuntu.
+    # Debian and Ubuntu and Uos
     elif [ -x "/sbin/update-rc.d" ]; then
         /sbin/update-rc.d "${cron}" defaults
     fi
@@ -48,7 +48,7 @@ SetupKdump ()
     if [ -x "/sbin/chkconfig" ]; then
         /sbin/chkconfig kdump on
 
-    # Debian and Ubuntu.
+    # Debian and Ubuntu and Uos
     elif [ -x "/sbin/update-rc.d" ]; then
         /sbin/update-rc.d kdump defaults
     fi

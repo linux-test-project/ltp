@@ -4,7 +4,7 @@ Requirements
 Tools are needed for LTP compilation. They should be available as a
 package in any Linux distribution (no specific version is required).
 
-Debian / Ubuntu
+Debian / Ubuntu / Uos
 
 	# apt install gcc git make pkgconf autoconf automake bison flex m4 linux-headers-$(uname -r) libc6-dev
 
