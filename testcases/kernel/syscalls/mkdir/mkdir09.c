@@ -137,7 +137,6 @@ static void setup(void)
 
 static struct tst_test test = {
 	.test_all = verify_mkdir,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.setup = setup,
 	.mount_device = 1,
