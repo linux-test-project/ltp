@@ -70,5 +70,6 @@ cve-2021-3444 bpf_prog05
 cve-2021-3609 can_bcm01
 cve-2021-22555 setsockopt08 -i 100
 cve-2021-26708 vsock01
+cve-2021-22600 setsockopt09
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
