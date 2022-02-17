@@ -360,6 +360,9 @@ cpuset_regression_test cpuset_regression_test.sh
 
 cgroup_xattr	cgroup_xattr
 
+# V2 IO controller (was blkio)
+io_control01 io_control01
+
 pids_1_1 pids.sh 1 1 0
 pids_1_2 pids.sh 1 2 0
 pids_1_10 pids.sh 1 10 0
