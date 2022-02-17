@@ -8,8 +8,7 @@
 /*\
  * [Description]
  *
- * This test is checking if waitid() syscall returns EINVAL when passing
- * invalid set of input values.
+ * This test is checking if waitid() syscall filters children which exited.
  */
 
 #include <sys/wait.h>
@@ -18,9 +17,17 @@
 static void run(void)
 {
 	siginfo_t infop;
+	pid_t pid_child;
+
+	/* dummy fork */
+	pid_child = SAFE_FORK();
+	if (!pid_child)
+		return;
+
+	tst_res(TINFO, "filter child by WEXITED");
 
 	memset(&infop, 0, sizeof(infop));
-	TST_EXP_FAIL(waitid(P_ALL, 0, &infop, WNOHANG), EINVAL);
+	TST_EXP_PASS(waitid(P_PID, pid_child, &infop, WEXITED));
 
 	tst_res(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
 		infop.si_pid, infop.si_code, infop.si_status);
@@ -28,4 +35,5 @@ static void run(void)
 
 static struct tst_test test = {
 	.test_all = run,
+	.forks_child = 1,
 };
