@@ -36,14 +36,14 @@ cat << EOF > "${output_pid}"
 #include "cleanup.c"
 
 #ifdef TST_TEST_H__
-#define TST_SYSCALL_BRK__(NR) ({ \\
+#define TST_SYSCALL_BRK__(NR, SNR) ({ \\
 	tst_brk(TCONF, \\
-		"syscall(%d) " #NR " not supported on your arch", NR); \\
+		"syscall(%d) " SNR " not supported on your arch", NR); \\
 })
 #else
-#define TST_SYSCALL_BRK__(NR) ({ \\
+#define TST_SYSCALL_BRK__(NR, SNR) ({ \\
 	tst_brkm(TCONF, CLEANUP, \\
-		"syscall(%d) " #NR " not supported on your arch", NR); \\
+		"syscall(%d) " SNR " not supported on your arch", NR); \\
 })
 #endif
 
@@ -56,7 +56,7 @@ cat << EOF > "${output_pid}"
 		tst_ret = syscall(NR, ##__VA_ARGS__); \\
 	} \\
 	if (tst_ret == -1 && errno == ENOSYS) { \\
-		TST_SYSCALL_BRK__(NR); \\
+		TST_SYSCALL_BRK__(NR, #NR); \\
 	} \\
 	tst_ret; \\
 })
