@@ -338,6 +338,20 @@ see 'tst_test_macros.h'.
 
 [source,c]
 -------------------------------------------------------------------------------
+TST_EXP_EQ_LI(val1, val2);
+TST_EXP_EQ_UI(val1, val2);
+TST_EXP_EQ_SZ(val1, val2);
+TST_EXP_EQ_SSZ(val1, val2);
+
+/* Use as */
+TST_EXP_EQ_LI(sig_caught, SIGCHLD);
+-------------------------------------------------------------------------------
+
+Set of macros for different integer type comparsions. These macros print the
+variable names as well as values in both pass and fail scenarios.
+
+[source,c]
+-------------------------------------------------------------------------------
 const char *tst_strsig(int sig);
 -------------------------------------------------------------------------------
 

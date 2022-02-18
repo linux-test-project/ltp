@@ -214,4 +214,29 @@ extern void *TST_RET_PTR;
 #define TST_EXP_EXPR(EXPR, FMT, ...)						\
 	tst_res_(__FILE__, __LINE__, (EXPR) ? TPASS : TFAIL, "Expect: " FMT, ##__VA_ARGS__);
 
+#define TST_EXP_EQ_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS) do {\
+	TYPE tst_tmp_a__ = VAL_A; \
+	TYPE tst_tmp_b__ = VAL_B; \
+	if (tst_tmp_a__ == tst_tmp_b__) { \
+		tst_res_(__FILE__, __LINE__, TPASS, \
+			SVAL_A " == " SVAL_B " (" PFS ")", tst_tmp_a__); \
+	} else { \
+		tst_res_(__FILE__, __LINE__, TFAIL, \
+			SVAL_A " (" PFS ") != " SVAL_B " (" PFS ")", \
+			tst_tmp_a__, tst_tmp_b__); \
+	} \
+} while (0)
+
+#define TST_EXP_EQ_LI(VAL_A, VAL_B) \
+		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli")
+
+#define TST_EXP_EQ_LU(VAL_A, VAL_B) \
+		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
+
+#define TST_EXP_EQ_SZ(VAL_A, VAL_B) \
+		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu")
+
+#define TST_EXP_EQ_SSZ(VAL_A, VAL_B) \
+		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, ssize_t, "%zi")
+
 #endif	/* TST_TEST_MACROS_H__ */
