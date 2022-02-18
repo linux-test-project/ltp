@@ -713,10 +713,14 @@ static void server_cleanup(void)
 
 static void move_to_background(void)
 {
-	if (SAFE_FORK())
+	if (SAFE_FORK()) {
+		TST_CHECKPOINT_WAIT(0);
 		exit(0);
+	}
 
 	SAFE_SETSID();
+
+	TST_CHECKPOINT_WAKE(0);
 
 	close(STDIN_FILENO);
 	SAFE_OPEN("/dev/null", O_RDONLY);
@@ -1024,4 +1028,5 @@ static struct tst_test test = {
 		{"B:", &server_bg, "Run in background, arg is the process directory"},
 		{}
 	},
+	.needs_checkpoints = 1,
 };
