@@ -185,4 +185,8 @@ static struct tst_test test = {
 	},
 	.test = run,
 	.tcnt = ARRAY_SIZE(testfunc_list),
+	.caps = (struct tst_cap []) {
+		TST_CAP(TST_CAP_REQ, CAP_IPC_LOCK),
+		{}
+	},
 };

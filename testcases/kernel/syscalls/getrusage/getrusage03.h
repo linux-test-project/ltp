@@ -16,6 +16,8 @@ static void consume_mb(int consume_nr)
 	size_t size;
 	unsigned long vmswap_size;
 
+	mlockall(MCL_CURRENT|MCL_FUTURE);
+
 	size = consume_nr * 1024 * 1024;
 	ptr = SAFE_MALLOC(size);
 	memset(ptr, 0, size);
