@@ -8,24 +8,23 @@
 /*\
  * [Description]
  *
- * This test is checking if waitid() syscall returns EINVAL when passing
- * invalid set of input values.
+ * Tests if waitid() returns EINVAL when passed invalid options flag value.
  */
 
 #include <sys/wait.h>
 #include "tst_test.h"
 
+static siginfo_t *infop;
+
 static void run(void)
 {
-	siginfo_t infop;
-
-	memset(&infop, 0, sizeof(infop));
-	TST_EXP_FAIL(waitid(P_ALL, 0, &infop, WNOHANG), EINVAL);
-
-	tst_res(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
-		infop.si_pid, infop.si_code, infop.si_status);
+	TST_EXP_FAIL(waitid(P_ALL, 0, infop, WNOHANG), EINVAL);
 }
 
 static struct tst_test test = {
 	.test_all = run,
+	.bufs = (struct tst_buffers[]) {
+		{&infop, .size = sizeof(*infop)},
+		{}
+	}
 };

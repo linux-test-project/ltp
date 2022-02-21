@@ -8,37 +8,30 @@
 /*\
  * [Description]
  *
- * This test is checking that waitid() syscall filters not a child of the
- * current process.
+ * Test that waitid() fails with ECHILD with process that is not child of the
+ * current process. We fork() one child just to be sure that there are unwaited
+ * for children available while the test runs.
  */
 
+#include <stdlib.h>
 #include <sys/wait.h>
 #include "tst_test.h"
 
+static siginfo_t *infop;
+
 static void run(void)
 {
-	siginfo_t infop;
-	pid_t pid_child;
+	if (!SAFE_FORK())
+		exit(0);
 
-	pid_child = SAFE_FORK();
-	if (!pid_child) {
-		TST_CHECKPOINT_WAIT(0);
-		return;
-	}
-
-	tst_res(TINFO, "filter not a child of the current process by WEXITED");
-
-	memset(&infop, 0, sizeof(infop));
-	TST_EXP_FAIL(waitid(P_PID, 1, &infop, WEXITED), ECHILD);
-
-	tst_res(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
-		infop.si_pid, infop.si_code, infop.si_status);
-
-	TST_CHECKPOINT_WAKE(0);
+	TST_EXP_FAIL(waitid(P_PID, 1, infop, WEXITED), ECHILD);
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
+	.bufs = (struct tst_buffers[]) {
+		{&infop, .size = sizeof(*infop)},
+		{}
+	}
 };

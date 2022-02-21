@@ -8,32 +8,42 @@
 /*\
  * [Description]
  *
- * This test is checking if waitid() syscall filters children which exited.
+ * Tests if waitid() filters children correctly by the PID.
+ *
+ * - waitid() with PID + 1 returns ECHILD
+ * - waitid() with PID returns correct data
  */
 
+#include <stdlib.h>
 #include <sys/wait.h>
 #include "tst_test.h"
 
+static siginfo_t *infop;
+
 static void run(void)
 {
-	siginfo_t infop;
 	pid_t pid_child;
 
-	/* dummy fork */
 	pid_child = SAFE_FORK();
 	if (!pid_child)
-		return;
+		exit(0);
 
-	tst_res(TINFO, "filter child by WEXITED");
+	TST_EXP_FAIL(waitid(P_PID, pid_child+1, infop, WEXITED), ECHILD);
 
-	memset(&infop, 0, sizeof(infop));
-	TST_EXP_PASS(waitid(P_PID, pid_child, &infop, WEXITED));
+	memset(infop, 0, sizeof(*infop));
+	TST_EXP_PASS(waitid(P_PID, pid_child, infop, WEXITED));
 
-	tst_res(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
-		infop.si_pid, infop.si_code, infop.si_status);
+	TST_EXP_EQ_LI(infop->si_pid, pid_child);
+	TST_EXP_EQ_LI(infop->si_status, 0);
+	TST_EXP_EQ_LI(infop->si_signo, SIGCHLD);
+	TST_EXP_EQ_LI(infop->si_code, CLD_EXITED);
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.forks_child = 1,
+	.bufs = (struct tst_buffers[]) {
+		{&infop, .size = sizeof(*infop)},
+		{}
+	}
 };

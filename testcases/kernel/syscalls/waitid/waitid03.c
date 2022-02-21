@@ -8,24 +8,24 @@
 /*\
  * [Description]
  *
- * This test is checking if waitid() syscall returns ECHILD when the calling
- * process has no existing unwaited-for child processes.
+ * Tests if waitid() syscall returns ECHILD when the calling process has no
+ * child processes.
  */
 
 #include <sys/wait.h>
 #include "tst_test.h"
 
+static siginfo_t *infop;
+
 static void run(void)
 {
-	siginfo_t infop;
-
-	memset(&infop, 0, sizeof(infop));
-	TST_EXP_FAIL(waitid(P_ALL, 0, &infop, WNOHANG | WEXITED), ECHILD);
-
-	tst_res(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
-		infop.si_pid, infop.si_code, infop.si_status);
+	TST_EXP_FAIL(waitid(P_ALL, 0, infop, WNOHANG | WEXITED), ECHILD);
 }
 
 static struct tst_test test = {
 	.test_all = run,
+	.bufs = (struct tst_buffers[]) {
+		{&infop, .size = sizeof(*infop)},
+		{}
+	}
 };

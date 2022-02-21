@@ -8,16 +8,16 @@
 /*\
  * [Description]
  *
- * This test is checking if waitid() syscall filters children killed with
- * SIGSTOP.
+ * Test if waitid() filters children killed with SIGSTOP.
  */
 
 #include <sys/wait.h>
 #include "tst_test.h"
 
+static siginfo_t *infop;
+
 static void run(void)
 {
-	siginfo_t infop;
 	pid_t pid_child;
 
 	pid_child = SAFE_FORK();
@@ -27,13 +27,13 @@ static void run(void)
 		return;
 	}
 
-	tst_res(TINFO, "filter child by WSTOPPED | WNOWAIT");
+	memset(infop, 0, sizeof(*infop));
+	TST_EXP_PASS(waitid(P_PID, pid_child, infop, WSTOPPED | WNOWAIT));
 
-	memset(&infop, 0, sizeof(infop));
-	TST_EXP_PASS(waitid(P_PID, pid_child, &infop, WSTOPPED | WNOWAIT));
-
-	tst_res(TINFO, "si_pid = %d ; si_code = %d ; si_status = %d",
-		infop.si_pid, infop.si_code, infop.si_status);
+	TST_EXP_EQ_LI(infop->si_pid, pid_child);
+	TST_EXP_EQ_LI(infop->si_status, SIGSTOP);
+	TST_EXP_EQ_LI(infop->si_signo, SIGCHLD);
+	TST_EXP_EQ_LI(infop->si_code, CLD_STOPPED);
 
 	SAFE_KILL(pid_child, SIGCONT);
 
@@ -44,4 +44,8 @@ static struct tst_test test = {
 	.test_all = run,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
+	.bufs = (struct tst_buffers[]) {
+		{&infop, .size = sizeof(*infop)},
+		{}
+	}
 };
