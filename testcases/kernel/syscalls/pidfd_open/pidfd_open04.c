@@ -21,9 +21,11 @@
 #define P_PIDFD  3
 #endif
 
+static int pidfd = -1;
+
 static void run(void)
 {
-	int flag, pid, pidfd, ret;
+	int flag, pid, ret;
 	siginfo_t info;
 
 	pid = SAFE_FORK();
@@ -36,9 +38,7 @@ static void run(void)
 				"pidfd_open(%d,  PIDFD_NONBLOCK)", pid);
 
 	pidfd = TST_RET;
-	flag = fcntl(pidfd, F_GETFL);
-	if (flag == -1)
-		tst_brk(TFAIL | TERRNO, "fcntl(F_GETFL) failed");
+	flag = SAFE_FCNTL(pidfd, F_GETFL);
 
 	if (!(flag & O_NONBLOCK))
 		tst_brk(TFAIL, "pidfd_open(%d, O_NONBLOCK) didn't set O_NONBLOCK flag", pid);
@@ -77,10 +77,17 @@ static void setup(void)
 	SAFE_CLOSE(TST_RET);
 }
 
+static void cleanup(void)
+{
+	if (pidfd > -1)
+		SAFE_CLOSE(pidfd);
+}
+
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.setup = setup,
+	.cleanup = cleanup,
 	.test_all = run,
 };
