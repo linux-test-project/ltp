@@ -13,7 +13,7 @@
  * - EINVAL flags is not valid
  */
 #include "tst_test.h"
-#include "lapi/pidfd_open.h"
+#include "lapi/pidfd.h"
 
 static pid_t expired_pid, my_pid, invalid_pid = -1;
 

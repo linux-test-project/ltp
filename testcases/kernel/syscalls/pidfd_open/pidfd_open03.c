@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
-#include "lapi/pidfd_open.h"
+#include "lapi/pidfd.h"
 
 static void run(void)
 {

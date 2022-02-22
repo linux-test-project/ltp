@@ -12,15 +12,10 @@
  */
 
 #include <unistd.h>
-#include <fcntl.h>
 #include <sys/wait.h>
 #include <stdlib.h>
 #include "tst_test.h"
-#include "lapi/pidfd_open.h"
-
-#ifndef PIDFD_NONBLOCK
-#define PIDFD_NONBLOCK O_NONBLOCK
-#endif
+#include "lapi/pidfd.h"
 
 #ifndef P_PIDFD
 #define P_PIDFD  3

@@ -23,7 +23,7 @@
 #include <string.h>
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
-#include "lapi/pidfd_open.h"
+#include "lapi/pidfd.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"

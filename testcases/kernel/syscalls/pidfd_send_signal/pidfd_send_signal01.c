@@ -12,7 +12,8 @@
 #define _GNU_SOURCE
 #include <signal.h>
 #include <stdlib.h>
-#include "lapi/pidfd_send_signal.h"
+#include "tst_test.h"
+#include "lapi/pidfd.h"
 #include "tst_safe_pthread.h"
 
 #define SIGNAL  SIGUSR1
