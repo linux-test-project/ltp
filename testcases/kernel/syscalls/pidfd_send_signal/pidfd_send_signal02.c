@@ -3,22 +3,21 @@
  * Copyright (c) 2019 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Tests basic error handling of the pidfd_send_signal
  * system call.
  *
- * 1) Pass invalid flag value to syscall (value chosen
- *    to be unlikely to collide with future extensions)
- *    -> EINVAL
- * 2) Pass a file descriptor that is corresponding to a
- *    regular file instead of a pid directory
- *    -> EBADF
- * 3) Pass a signal that is different from the one used
- *    to initialize the siginfo_t struct
- *    -> EINVAL
- * 4) Try to send signal to other process (init) with
- *    missing privileges
- *    -> EPERM
+ * - EINVAL Pass invalid flag value to syscall (value chosen
+ *   to be unlikely to collide with future extensions)
+ * - EBADF Pass a file descriptor that is corresponding to a
+ *   regular file instead of a pid directory
+ * - EINVAL Pass a signal that is different from the one used
+ *   to initialize the siginfo_t struct
+ * - EPERM Try to send signal to other process (init) with
+ *   missing privileges
  */
 
 #define _GNU_SOURCE

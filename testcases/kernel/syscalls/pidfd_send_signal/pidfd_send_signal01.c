@@ -3,7 +3,10 @@
  * Copyright (c) 2019 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Tests if the pidfd_send_signal syscall behaves
  * like rt_sigqueueinfo when a pointer to a siginfo_t
  * struct is passed.
