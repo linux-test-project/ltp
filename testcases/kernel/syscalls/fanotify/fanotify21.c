@@ -23,7 +23,7 @@
 #include <string.h>
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
-#include "lapi/pidfd.h"
+#include "tst_safe_macros.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"
@@ -124,12 +124,7 @@ static void do_setup(void)
 	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD, FAN_OPEN, AT_FDCWD,
 			   TEST_FILE);
 
-	pidfd = pidfd_open(getpid(), 0);
-	if (pidfd < 0) {
-		tst_brk(TBROK | TERRNO,
-			"pidfd=%d, pidfd_open(%d, 0) failed",
-			pidfd, getpid());
-	}
+	pidfd = SAFE_PIDFD_OPEN(getpid(), 0);
 
 	self_pidfd_fdinfo = read_pidfd_fdinfo(pidfd);
 	if (self_pidfd_fdinfo == NULL) {
