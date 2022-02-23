@@ -7,10 +7,11 @@
 /*\
  * [Description]
  *
- * This test is checking if waitid() syscall does wait for WEXITED and check for
- * the return value.
+ * This test is checking if waitid() syscall recognizes a process that has been
+ * killed with SIGKILL.
  */
 
+#include <time.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include "tst_test.h"
@@ -22,20 +23,24 @@ static void run(void)
 	pid_t pidchild;
 
 	pidchild = SAFE_FORK();
-	if (!pidchild)
-		exit(123);
+	if (!pidchild) {
+		pause();
+		return;
+	}
+
+	SAFE_KILL(pidchild, SIGKILL);
 
 	TST_EXP_PASS(waitid(P_ALL, 0, infop, WEXITED));
 	TST_EXP_EQ_LI(infop->si_pid, pidchild);
-	TST_EXP_EQ_LI(infop->si_status, 123);
+	TST_EXP_EQ_LI(infop->si_status, SIGKILL);
 	TST_EXP_EQ_LI(infop->si_signo, SIGCHLD);
-	TST_EXP_EQ_LI(infop->si_code, CLD_EXITED);
+	TST_EXP_EQ_LI(infop->si_code, CLD_KILLED);
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.forks_child = 1,
-	.bufs = (struct tst_buffers[]) {
+	.bufs =	(struct tst_buffers[]) {
 		{&infop, .size = sizeof(*infop)},
 		{},
 	},

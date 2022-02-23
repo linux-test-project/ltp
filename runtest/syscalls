@@ -1706,6 +1706,8 @@ waitid06 waitid06
 waitid07 waitid07
 waitid08 waitid08
 waitid09 waitid09
+waitid10 waitid10
+waitid11 waitid11
 
 write01 write01
 write02 write02
