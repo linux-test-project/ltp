@@ -31,12 +31,14 @@
 #include "lapi/if_packet.h"
 
 static int sock = -1;
+static unsigned int pagesize;
 
 static void setup(void)
 {
 	int real_uid = getuid();
 	int real_gid = getgid();
 
+	pagesize = SAFE_SYSCONF(_SC_PAGESIZE);
 	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
 
 	SAFE_UNSHARE(CLONE_NEWUSER);
@@ -50,7 +52,7 @@ static void run(void)
 {
 	unsigned int version = TPACKET_V3;
 	struct tpacket_req3 req = {
-		.tp_block_size = 16384,
+		.tp_block_size = 4 * pagesize,
 		.tp_block_nr = 256,
 		.tp_frame_size = TPACKET_ALIGNMENT << 7,
 		.tp_retire_blk_tov = 64,
