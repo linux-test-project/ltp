@@ -13,7 +13,6 @@ $apt \
 	libcap-dev \
 	libcap2 \
 	libkeyutils-dev \
-	libmm-dev \
 	libnuma-dev \
 	libnuma1 \
 	libselinux1-dev \

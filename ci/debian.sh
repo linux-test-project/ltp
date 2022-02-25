@@ -37,7 +37,6 @@ $apt \
 	libjson-perl \
 	libkeyutils-dev \
 	libkeyutils1 \
-	libmm-dev \
 	libmnl-dev \
 	libnuma-dev \
 	libnuma1 \
