@@ -565,6 +565,9 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 #endif
 
 		memset(memory[i], 10, length);
+
+		if (mlock(memory[i], length))
+			tst_res(TWARN | TERRNO, "mlock() failed");
 	}
 
 	SAFE_FILE_PRINTF(PATH_KSM "sleep_millisecs", "0");
