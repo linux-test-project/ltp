@@ -594,6 +594,11 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 		    0, 0, 0, nr_pages * num_nodes);
 
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
+
+	for (i = 0; i < num_nodes; i++)
+		SAFE_MUNMAP(memory[i], length);
+
+	free(memory);
 }
 
 /* THP */
