@@ -471,6 +471,7 @@ void tst_cg_scan(void)
 
 static void cgroup_mount_v2(void)
 {
+	int ret;
 	char mnt_path[PATH_MAX];
 
 	sprintf(mnt_path, "%s%s", cgroup_mount_ltp_prefix, cgroup_v2_ltp_mount);
@@ -494,7 +495,13 @@ static void cgroup_mount_v2(void)
 	return;
 
 mount:
-	if (!mount("cgroup2", mnt_path, "cgroup2", 0, NULL)) {
+	ret = mount("cgroup2", mnt_path, "cgroup2",
+		    0, "memory_recursiveprot");
+
+	if (ret && errno == EINVAL)
+		ret = mount("cgroup2", mnt_path, "cgroup2", 0, NULL);
+
+	if (!ret) {
 		tst_res(TINFO, "Mounted V2 CGroups on %s", mnt_path);
 		tst_cg_scan();
 		roots[0].we_mounted_it = 1;
