@@ -951,6 +951,8 @@ pause03 pause03
 personality01 personality01
 personality02 personality02
 
+pidfd_getfd01 pidfd_getfd01
+
 pidfd_open01 pidfd_open01
 pidfd_open02 pidfd_open02
 pidfd_open03 pidfd_open03
