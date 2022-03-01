@@ -1,89 +1,64 @@
-/* Copyright (c) 2014 Red Hat, Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ***********************************************************************
- * File: mountns04.c
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
+
+/*\
+ * [Description]
  *
  * Tests an unbindable mount: unbindable mount is an unbindable
  * private mount.
- * Description:
- * 1. Creates directories "A", "B" and files "A/A", "B/B"
- * 2. Unshares mount namespace and makes it private (so mounts/umounts
- *    have no effect on a real system)
- * 3. Bind mounts directory "A" to "A"
- * 4. Makes directory directory "A" unbindable
- * 5. Tries to bind mount unbindable "A" to "B":
- *    - if it fails, test passes
- *    - if it passes, test fails
- ***********************************************************************/
+ *
+ * - Creates directories "A", "B" and files "A/A", "B/B"
+ * - Unshares mount namespace and makes it private (so mounts/umounts have no
+ *   effect on a real system)
+ * - Bind mounts directory "A" to "A"
+ * - Makes directory "A" unbindable
+ * - Check if bind mount unbindable "A" to "B" fails as expected
+ */
 
-#define _GNU_SOURCE
 #include <sys/wait.h>
 #include <sys/mount.h>
-#include <stdio.h>
-#include <errno.h>
-#include "mountns_helper.h"
-#include "test.h"
-#include "safe_macros.h"
+#include "mountns.h"
+#include "tst_test.h"
 
-char *TCID	= "mountns04";
-int TST_TOTAL	= 1;
-
-#if defined(MS_SHARED) && defined(MS_PRIVATE) \
-    && defined(MS_REC) && defined(MS_UNBINDABLE)
-
-static void test(void)
+static void run(void)
 {
-	/* unshares the mount ns */
-	if (unshare(CLONE_NEWNS) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "unshare failed");
+	SAFE_UNSHARE(CLONE_NEWNS);
+
 	/* makes sure mounts/umounts have no effect on a real system */
-	SAFE_MOUNT(cleanup, "none", "/", "none", MS_REC|MS_PRIVATE, NULL);
+	SAFE_MOUNT("none", "/", "none", MS_REC | MS_PRIVATE, NULL);
 
-	/* bind mounts DIRA to itself */
-	SAFE_MOUNT(cleanup, DIRA, DIRA, "none", MS_BIND, NULL);
-	/* makes mount DIRA unbindable */
-	SAFE_MOUNT(cleanup, "none", DIRA, "none", MS_UNBINDABLE, NULL);
+	SAFE_MOUNT(DIRA, DIRA, "none", MS_BIND, NULL);
 
-	/* tries to bind mount unbindable DIRA to DIRB which should fail */
+	SAFE_MOUNT("none", DIRA, "none", MS_UNBINDABLE, NULL);
+
 	if (mount(DIRA, DIRB, "none", MS_BIND, NULL) == -1) {
-		tst_resm(TPASS, "unbindable mount passed");
+		tst_res(TPASS, "unbindable mount passed");
 	} else {
-		SAFE_UMOUNT(cleanup, DIRB);
-		tst_resm(TFAIL, "unbindable mount faled");
+		SAFE_UMOUNT(DIRB);
+		tst_res(TFAIL, "unbindable mount faled");
 	}
 
-	SAFE_UMOUNT(cleanup, DIRA);
+	SAFE_UMOUNT(DIRA);
 }
 
-int main(int argc, char *argv[])
+static void setup(void)
 {
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		test();
-
-	cleanup();
-	tst_exit();
+	check_newns();
+	create_folders();
 }
 
-#else
-int main(void)
+static void cleanup(void)
 {
-	tst_brkm(TCONF, NULL, "needed mountflags are not defined");
+	umount_folders();
 }
-#endif
+
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = run,
+	.needs_root = 1,
+	.needs_checkpoints = 1,
+};
