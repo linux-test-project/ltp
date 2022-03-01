@@ -107,6 +107,25 @@ int safe_personality(const char *filename, unsigned int lineno,
 	return prev_persona;
 }
 
+int safe_pidfd_open(const char *file, const int lineno, pid_t pid,
+		   unsigned int flags)
+{
+	int rval;
+
+	rval = pidfd_open(pid, flags);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "pidfd_open(%i, %i) failed", pid, flags);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid pidfd_open(%i, %i) return value %d",
+			 pid, flags, rval);
+	}
+
+	return rval;
+}
+
 int safe_setregid(const char *file, const int lineno,
 		  gid_t rgid, gid_t egid)
 {
