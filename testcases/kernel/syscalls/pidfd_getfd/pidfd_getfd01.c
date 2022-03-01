@@ -22,6 +22,7 @@
 #include "tst_test.h"
 #include "lapi/kcmp.h"
 #include "tst_safe_macros.h"
+#include "lapi/pidfd.h"
 
 #define TESTFILE "testfile"
 

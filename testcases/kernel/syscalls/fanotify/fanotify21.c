@@ -24,6 +24,7 @@
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_macros.h"
+#include "lapi/pidfd.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"

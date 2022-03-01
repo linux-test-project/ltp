@@ -18,6 +18,7 @@
 #include "lapi/setns.h"
 #include "tst_safe_macros.h"
 #include "lapi/personality.h"
+#include "lapi/pidfd.h"
 
 int safe_setpgid(const char *file, const int lineno, pid_t pid, pid_t pgid)
 {

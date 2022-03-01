@@ -23,6 +23,7 @@
 #include <pwd.h>
 #include "tst_test.h"
 #include "tst_safe_macros.h"
+#include "lapi/pidfd.h"
 
 static int valid_pidfd = -1, invalid_pidfd = -1, pidfd = -1;
 static uid_t uid;

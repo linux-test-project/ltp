@@ -23,7 +23,6 @@
 
 #include "safe_macros_fn.h"
 #include "tst_cmd.h"
-#include "lapi/pidfd.h"
 
 #define SAFE_BASENAME(path) \
 	safe_basename(__FILE__, __LINE__, NULL, (path))
