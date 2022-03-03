@@ -121,6 +121,13 @@ void tst_cg_scan(void);
  */
 void tst_cg_print_config(void);
 
+/* Load the config printed out by tst_cg_print_config and configure the internal
+ * libary state to match the config. Used to allow tst_cg_cleanup to properly
+ * cleanup mounts and directories created by tst_cg_require between program
+ * invocations.
+ */
+void tst_cg_load_config(const char *const config);
+
 /* Ensure the specified controller is available in the test's default
  * CGroup, mounting/enabling it if necessary. Usually this is not
  * necesary use tst_test.needs_cgroup_controllers instead.
