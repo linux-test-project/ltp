@@ -178,7 +178,7 @@ static void setup(void)
 	set_dqmax.dqb_bsoftlimit = tst_variant ? 0x20000000000000 : 0x100000000;
 
 	if (access(USRPATH, F_OK) == -1)
-		tst_brk(TFAIL | TERRNO, "user quotafile didn't exist");
+		tst_brk(TBROK | TERRNO, "user quotafile didn't exist");
 
 	tst_require_quota_support(tst_device->dev, fmt_id, usrpath);
 
