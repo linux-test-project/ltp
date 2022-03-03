@@ -318,24 +318,35 @@ opendir:
 				  O_PATH | O_DIRECTORY);
 }
 
+#define CONFIG_HEADER "ctrl_name ver we_require_it mnt_path we_mounted_it ltp_dir.we_created_it test_dir.dir_name"
+#define CONFIG_FORMAT "%s\t%d\t%d\t%s\t%d\t%d\t%s"
+/* Prints out the state associated with each controller to be consumed by
+ * tst_cg_load_config.
+ *
+ * The config keeps track of the minimal state needed for tst_cg_cleanup
+ * to cleanup mounts and directories made by tst_cg_require.
+ */
 void tst_cg_print_config(void)
 {
-	struct cgroup_root *root;
 	const struct cgroup_ctrl *ctrl;
 
-	tst_res(TINFO, "Detected Controllers:");
+	printf("%s\n", CONFIG_HEADER);
 
 	for_each_ctrl(ctrl) {
-		root = ctrl->ctrl_root;
+		struct cgroup_root *root = ctrl->ctrl_root;
 
 		if (!root)
 			continue;
 
-		tst_res(TINFO, "\t%.10s %s @ %s:%s",
+		printf(CONFIG_FORMAT,
 			ctrl->ctrl_name,
-			root->no_cpuset_prefix ? "[noprefix]" : "",
-			root->ver == TST_CG_V1 ? "V1" : "V2",
-			root->mnt_path);
+			root->ver,
+			ctrl->we_require_it,
+			root->mnt_path,
+			root->we_mounted_it,
+			root->ltp_dir.we_created_it,
+			root->test_dir.dir_name ? root->test_dir.dir_name : "NULL");
+		printf("\n");
 	}
 }
 
