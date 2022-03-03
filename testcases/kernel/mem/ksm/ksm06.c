@@ -1,24 +1,24 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2013-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
  */
-
-/*
- * The case is designed to test new sysfs boolean knob
- * /sys/kernel/mm/ksm/merge_across_nodes, which was introduced by
- * commit 90bd6fd31c8097ee (ksm: allow trees per NUMA node).
- * when merge_across_nodes is set to zero only pages from the same
+/*\
+ * [Description]
+ *
+ * The case is designed to test sysfs boolean knob
+ * /sys/kernel/mm/ksm/merge_across_nodes.
+ *
+ * When merge_across_nodes is set to zero only pages from the same
  * node are merged, otherwise pages from all nodes can be merged
  * together.
+ *
+ * Introduced in commit:
+ *
+ *  commit 90bd6fd31c8097ee4ddcb74b7e08363134863de5
+ *   Author: Petr Holasek <pholasek@redhat.com>
+ *   Date:   Fri Feb 22 16:35:00 2013 -0800
+ *
+ *   ksm: allow trees per NUMA node
  */
 
 #include "config.h"
