@@ -717,6 +717,11 @@ static void cgroup_mount_v1(struct cgroup_ctrl *const ctrl)
 	char mnt_path[PATH_MAX];
 	int made_dir = 0;
 
+	if (ctrl->ctrl_indx == CTRL_BLKIO && controllers[CTRL_IO].ctrl_root) {
+		tst_brk(TCONF,
+			"IO controller found on V2 root, skipping blkio mount that would unmount IO controller");
+	}
+
 	sprintf(mnt_path, "%s%s", cgroup_mount_ltp_prefix, ctrl->ctrl_name);
 
 	if (!mkdir(mnt_path, 0777)) {
