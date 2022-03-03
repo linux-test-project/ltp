@@ -39,9 +39,6 @@
 #ifdef HAVE_NUMA_V2
 #include <numaif.h>
 
-static int run = -1;
-static int sleep_millisecs = -1;
-static int merge_across_nodes = -1;
 static unsigned long nr_pages = 100;
 
 static char *n_opt;
@@ -133,35 +130,11 @@ static void test_ksm(void)
 
 static void setup(void)
 {
-	if (access(PATH_KSM "merge_across_nodes", F_OK) == -1)
-		tst_brk(TCONF, "no merge_across_nodes sysfs knob");
-
 	if (!is_numa(NULL, NH_MEMS, 2))
 		tst_brk(TCONF, "The case needs a NUMA system.");
 
 	if (n_opt)
 		nr_pages = SAFE_STRTOUL(n_opt, 0, ULONG_MAX);
-
-	/* save the current value */
-	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &run);
-	SAFE_FILE_SCANF(PATH_KSM "merge_across_nodes",
-			"%d", &merge_across_nodes);
-	SAFE_FILE_SCANF(PATH_KSM "sleep_millisecs",
-			"%d", &sleep_millisecs);
-}
-
-static void cleanup(void)
-{
-	if (merge_across_nodes != -1) {
-		FILE_PRINTF(PATH_KSM "merge_across_nodes",
-			    "%d", merge_across_nodes);
-	}
-
-	if (sleep_millisecs != -1)
-		FILE_PRINTF(PATH_KSM "sleep_millisecs", "%d", sleep_millisecs);
-
-	if (run != -1)
-		FILE_PRINTF(PATH_KSM "run", "%d", run);
 }
 
 static struct tst_test test = {
@@ -171,10 +144,17 @@ static struct tst_test test = {
 		{}
 	},
 	.setup = setup,
-	.cleanup = cleanup,
 	.save_restore = (const char * const[]) {
 		"?/sys/kernel/mm/ksm/max_page_sharing",
+		"!/sys/kernel/mm/ksm/run",
+		"!/sys/kernel/mm/ksm/sleep_millisecs",
+		"/sys/kernel/mm/ksm/merge_across_nodes",
 		NULL,
+	},
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_KSM=y",
+		"CONFIG_NUMA=y",
+		NULL
 	},
 	.test_all = test_ksm,
 };
