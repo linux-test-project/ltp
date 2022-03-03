@@ -271,9 +271,9 @@ static void final_group_check(int run, int pages_shared, int pages_sharing,
 	check("pages_to_scan", pages_to_scan);
 }
 
-static void group_check(int run, int pages_shared, int pages_sharing,
-			int pages_volatile, int pages_unshared,
-			int sleep_millisecs, int pages_to_scan)
+void ksm_group_check(int run, int pages_shared, int pages_sharing,
+		     int pages_volatile, int pages_unshared,
+		     int sleep_millisecs, int pages_to_scan)
 {
 	if (run != 1) {
 		tst_res(TFAIL, "group_check run is not 1, %d.", run);
@@ -489,19 +489,19 @@ void create_same_memory(int size, int num, int unit)
 
 	resume_ksm_children(child, num);
 	stop_ksm_children(child, num);
-	group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
+	ksm_group_check(1, 2, size * num * pages - 2, 0, 0, 0, size * pages * num);
 
 	resume_ksm_children(child, num);
 	stop_ksm_children(child, num);
-	group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
+	ksm_group_check(1, 3, size * num * pages - 3, 0, 0, 0, size * pages * num);
 
 	resume_ksm_children(child, num);
 	stop_ksm_children(child, num);
-	group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
+	ksm_group_check(1, 1, size * num * pages - 1, 0, 0, 0, size * pages * num);
 
 	resume_ksm_children(child, num);
 	stop_ksm_children(child, num);
-	group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
+	ksm_group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
 
 	tst_res(TINFO, "KSM unmerging...");
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
@@ -586,15 +586,15 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages)
 	tst_res(TINFO, "Start to test KSM with merge_across_nodes=1");
 	SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "1");
 	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-	group_check(1, 1, nr_pages * num_nodes - 1, 0, 0, 0,
-		    nr_pages * num_nodes);
+	ksm_group_check(1, 1, nr_pages * num_nodes - 1, 0, 0, 0,
+		        nr_pages * num_nodes);
 
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
 	tst_res(TINFO, "Start to test KSM with merge_across_nodes=0");
 	SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "0");
 	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-	group_check(1, num_nodes, nr_pages * num_nodes - num_nodes,
-		    0, 0, 0, nr_pages * num_nodes);
+	ksm_group_check(1, num_nodes, nr_pages * num_nodes - num_nodes,
+		        0, 0, 0, nr_pages * num_nodes);
 
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
 
