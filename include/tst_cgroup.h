@@ -97,6 +97,10 @@ struct tst_cg_opts {
 	 * version. Defautls to zero to accept any version.
 	 */
 	enum tst_cg_ver needs_ver;
+	/* Pass in a specific pid to create and identify the test
+	 * directory as opposed to the default pid of the calling process.
+	 */
+	int test_pid;
 };
 
 /* A Control Group in LTP's aggregated hierarchy */
