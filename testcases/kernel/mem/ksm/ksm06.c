@@ -42,17 +42,12 @@
 static int run = -1;
 static int sleep_millisecs = -1;
 static int merge_across_nodes = -1;
-static unsigned long nr_pages;
+static unsigned long nr_pages = 100;
 
 static char *n_opt;
 
 static void test_ksm(void)
 {
-	if (n_opt)
-		nr_pages = SAFE_STRTOUL(n_opt, 0, ULONG_MAX);
-	else
-		nr_pages = 100;
-
 	test_ksm_merge_across_nodes(nr_pages);
 }
 
@@ -63,6 +58,9 @@ static void setup(void)
 
 	if (!is_numa(NULL, NH_MEMS, 2))
 		tst_brk(TCONF, "The case needs a NUMA system.");
+
+	if (n_opt)
+		nr_pages = SAFE_STRTOUL(n_opt, 0, ULONG_MAX);
 
 	/* save the current value */
 	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &run);
