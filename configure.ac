@@ -97,6 +97,7 @@ AC_CHECK_FUNCS_ONCE([ \
     fspick \
     fstatat \
     getauxval \
+    getcontext \
     getdents \
     getdents64 \
     io_pgetevents \
