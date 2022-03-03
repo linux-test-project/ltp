@@ -34,41 +34,30 @@
 #include <limits.h>
 
 #include "mem.h"
-#include "numa_helper.h"
+#include "tst_numa.h"
 
 #ifdef HAVE_NUMA_V2
-#include <numaif.h>
+# include <numa.h>
+# include <numaif.h>
 
 static unsigned long nr_pages = 100;
-
 static char *n_opt;
+
+static size_t page_size;
+static struct tst_nodemap *nodes;
 
 static void test_ksm(void)
 {
 	char **memory;
-	int i, ret;
-	int num_nodes, *nodes;
+	unsigned int i;
+	int ret;
 	unsigned long length;
-	unsigned long pagesize;
+	struct bitmask *bm = numa_allocate_nodemask();
 
-#ifdef HAVE_NUMA_V2
-	unsigned long nmask[MAXNODES / BITS_PER_LONG] = { 0 };
-#endif
+	length = nr_pages * page_size;
 
-	ret = get_allowed_nodes_arr(NH_MEMS, &num_nodes, &nodes);
-	if (ret != 0)
-		tst_brk(TBROK|TERRNO, "get_allowed_nodes_arr");
-	if (num_nodes < 2) {
-		tst_res(TINFO, "need NUMA system support");
-		free(nodes);
-		return;
-	}
-
-	pagesize = sysconf(_SC_PAGE_SIZE);
-	length = nr_pages * pagesize;
-
-	memory = SAFE_MALLOC(num_nodes * sizeof(char *));
-	for (i = 0; i < num_nodes; i++) {
+	memory = SAFE_MALLOC(nodes->cnt * sizeof(char *));
+	for (i = 0; i < nodes->cnt; i++) {
 		memory[i] = SAFE_MMAP(NULL, length, PROT_READ|PROT_WRITE,
 			    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 #ifdef HAVE_DECL_MADV_MERGEABLE
@@ -77,15 +66,13 @@ static void test_ksm(void)
 #endif
 
 #ifdef HAVE_NUMA_V2
-		clean_node(nmask);
-		set_node(nmask, nodes[i]);
-		/*
-		 * Use mbind() to make sure each node contains
-		 * length size memory.
-		 */
-		ret = mbind(memory[i], length, MPOL_BIND, nmask, MAXNODES, 0);
+		numa_bitmask_setbit(bm, nodes->map[i]);
+
+		ret = mbind(memory[i], length, MPOL_BIND, bm->maskp, bm->size+1, 0);
 		if (ret == -1)
 			tst_brk(TBROK|TERRNO, "mbind");
+
+		numa_bitmask_clearbit(bm, nodes->map[i]);
 #endif
 
 		memset(memory[i], 10, length);
@@ -94,9 +81,11 @@ static void test_ksm(void)
 			tst_res(TWARN | TERRNO, "mlock() failed");
 	}
 
+	numa_free_nodemask(bm);
+
 	SAFE_FILE_PRINTF(PATH_KSM "sleep_millisecs", "0");
 	SAFE_FILE_PRINTF(PATH_KSM "pages_to_scan", "%ld",
-			 nr_pages * num_nodes);
+			 nr_pages * nodes->cnt);
 	/*
 	 * merge_across_nodes and max_page_sharing setting can be changed
 	 * only when there are no ksm shared pages in system, so set run 2
@@ -106,23 +95,23 @@ static void test_ksm(void)
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
 	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
 		SAFE_FILE_PRINTF(PATH_KSM "max_page_sharing",
-			"%ld", nr_pages * num_nodes);
+			"%ld", nr_pages * nodes->cnt);
 	tst_res(TINFO, "Start to test KSM with merge_across_nodes=1");
 	SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "1");
 	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-	ksm_group_check(1, 1, nr_pages * num_nodes - 1, 0, 0, 0,
-			nr_pages * num_nodes);
+	ksm_group_check(1, 1, nr_pages * nodes->cnt - 1, 0, 0, 0,
+			nr_pages * nodes->cnt);
 
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
 	tst_res(TINFO, "Start to test KSM with merge_across_nodes=0");
 	SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "0");
 	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-	ksm_group_check(1, num_nodes, nr_pages * num_nodes - num_nodes,
-			0, 0, 0, nr_pages * num_nodes);
+	ksm_group_check(1, nodes->cnt, nr_pages * nodes->cnt - nodes->cnt,
+			0, 0, 0, nr_pages * nodes->cnt);
 
 	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
 
-	for (i = 0; i < num_nodes; i++)
+	for (i = 0; i < nodes->cnt; i++)
 		SAFE_MUNMAP(memory[i], length);
 
 	free(memory);
@@ -130,11 +119,14 @@ static void test_ksm(void)
 
 static void setup(void)
 {
-	if (!is_numa(NULL, NH_MEMS, 2))
-		tst_brk(TCONF, "The case needs a NUMA system.");
-
 	if (n_opt)
 		nr_pages = SAFE_STRTOUL(n_opt, 0, ULONG_MAX);
+
+	page_size = getpagesize();
+
+	nodes = tst_get_nodemap(TST_NUMA_MEM, nr_pages * page_size / 1024);
+	if (nodes->cnt <= 1)
+		tst_brk(TCONF, "Test requires at least two NUMA memory nodes");
 }
 
 static struct tst_test test = {
