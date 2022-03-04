@@ -206,8 +206,11 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_UNLINK(USRPATH);
-	SAFE_RMDIR(TESTDIR1);
+	if (!access(USRPATH, F_OK))
+		SAFE_UNLINK(USRPATH);
+
+	if (!access(TESTDIR1, F_OK))
+		SAFE_RMDIR(TESTDIR1);
 }
 
 static struct tst_test test = {
