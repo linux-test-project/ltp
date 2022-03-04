@@ -6,7 +6,7 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-pty03 pty05 pty06: CFLAGS += -pthread
-pty03 pty05 pty06: LDLIBS += -lrt
+pty03 pty05 pty06 pty07: CFLAGS += -pthread
+pty03 pty05 pty06 pty07: LDLIBS += -lrt
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

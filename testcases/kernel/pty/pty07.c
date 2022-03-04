@@ -1,0 +1,101 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2022 xiaoshoukui <xiaoshoukui@ruijie.com.cn>
+ */
+
+/*\
+ * [Description]
+ *
+ * The VT_DISALLOCATE ioctl can free a virtual console while VT_RESIZEX ioctl is
+ * still running, causing a use-after-free in vt_ioctl(). Because VT_RESIZEX ioctl
+ * have not make sure vc_cons[i].d is not NULL after grabbing console_lock().
+ *
+ * Fixed by commit:
+ *
+ *  commit 6cd1ed50efd88261298577cd92a14f2768eddeeb
+ *  Author: Eric Dumazet <edumazet@google.com>
+ *  Date:   Mon Feb 10 11:07:21 2020 -0800
+ *
+ *    vt: vt_ioctl: fix race in VT_RESIZEX
+ */
+
+#define _GNU_SOURCE
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <termios.h>
+#include <linux/vt.h>
+#include "lapi/ioctl.h"
+
+#include "tst_test.h"
+#include "tst_safe_stdio.h"
+#include "tst_fuzzy_sync.h"
+
+#define BUF_SIZE 256
+#define MAX_NR_CONSOLES 63
+
+static char tty_path[BUF_SIZE];
+static int test_tty_port = 8;
+static int fd = -1;
+static struct tst_fzsync_pair fzp;
+
+static void *open_close(void *unused)
+{
+	int i;
+
+	while (tst_fzsync_run_b(&fzp)) {
+		tst_fzsync_start_race_b(&fzp);
+		for (i = test_tty_port; i < MAX_NR_CONSOLES; i++) {
+			ioctl(fd, VT_ACTIVATE, i);
+			ioctl(fd, VT_DISALLOCATE, i);
+		}
+		tst_fzsync_end_race_b(&fzp);
+	}
+
+	return unused;
+}
+
+static void do_test(void)
+{
+	struct vt_consize sz = { 0x1, 0x1, 0x1, 0x1, 0x1, 0x1 };
+
+	tst_fzsync_pair_reset(&fzp, open_close);
+
+	while (tst_fzsync_run_a(&fzp)) {
+		tst_fzsync_start_race_a(&fzp);
+		ioctl(fd, VT_RESIZEX, &sz);
+		tst_fzsync_end_race_a(&fzp);
+		if (tst_taint_check()) {
+			tst_res(TFAIL, "Kernel is buggy");
+			break;
+		}
+	}
+	tst_res(TPASS, "Did not crash with VT_RESIZE");
+}
+
+static void setup(void)
+{
+	sprintf(tty_path, "/dev/tty%d", test_tty_port);
+	fd = SAFE_OPEN(tty_path, O_RDWR);
+	tst_fzsync_pair_init(&fzp);
+}
+
+static void cleanup(void)
+{
+	tst_fzsync_pair_cleanup(&fzp);
+	if (fd >= 0)
+		SAFE_CLOSE(fd);
+}
+
+static struct tst_test test = {
+	.test_all = do_test,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_root = 1,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
+	.tags = (const struct tst_tag[]) {
+		{ "linux-git", "6cd1ed50efd8"},
+		{}
+	}
+};
