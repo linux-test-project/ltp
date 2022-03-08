@@ -500,10 +500,14 @@ static unsigned long get_num_switches()
 
 	if ((fp = fopen("/proc/stat", "r")) == NULL)
 		return (0);
+
 	while (fgets(line, sizeof line, fp) != NULL) {
-		sscanf(line, "%s %lu", name, &val);
+		if (sscanf(line, "%s %lu", name, &val) != 2)
+			continue;
+
 		if (strcasecmp(name, "ctxt") != 0)
 			continue;
+
 		fclose(fp);
 		return (val);
 	}
