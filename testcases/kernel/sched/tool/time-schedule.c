@@ -494,7 +494,7 @@ static unsigned long get_num_switches()
     [RETURNS] The number of context switches on success, else 0.
 */
 {
-	unsigned long val;
+	unsigned long val = 0;
 	FILE *fp;
 	char line[256], name[64];
 
