@@ -9,8 +9,6 @@
 
 #include "tst_test.h"
 
-int merge_across_nodes;
-
 int size = 128, num = 3, unit = 1;
 char *opt_sizestr, *opt_numstr, *opt_unitstr;
 

@@ -66,30 +66,7 @@ static void verify_ksm(void)
 
 static void setup(void)
 {
-	if (access(PATH_KSM, F_OK) == -1)
-		tst_brk(TCONF, "KSM configuration is not enabled");
-
 	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
-
-	/*
-	 * kernel commit 90bd6fd introduced a new KSM sysfs knob
-	 * /sys/kernel/mm/ksm/merge_across_nodes, setting it to '0'
-	 * will prevent KSM pages being merged across numa nodes,
-	 * which will cause the case fail, so we need to make sure
-	 * it is enabled before testing.
-	 */
-	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0) {
-		SAFE_FILE_SCANF(PATH_KSM "merge_across_nodes",
-				"%d", &merge_across_nodes);
-		SAFE_FILE_PRINTF(PATH_KSM "merge_across_nodes", "1");
-	}
-}
-
-static void cleanup(void)
-{
-	if (access(PATH_KSM "merge_across_nodes", F_OK) == 0)
-		FILE_PRINTF(PATH_KSM "merge_across_nodes",
-				 "%d", merge_across_nodes);
 }
 
 static struct tst_test test = {
@@ -102,10 +79,16 @@ static struct tst_test test = {
 		{}
 	},
 	.setup = setup,
-	.cleanup = cleanup,
 	.save_restore = (const struct tst_path_val const[]) {
+		{"!/sys/kernel/mm/ksm/run", NULL},
+		{"!/sys/kernel/mm/ksm/sleep_millisecs", NULL},
 		{"?/sys/kernel/mm/ksm/max_page_sharing", NULL},
+		{"?/sys/kernel/mm/ksm/merge_across_nodes", "1"},
 		NULL,
+	},
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_KSM=y",
+		NULL
 	},
 	.test_all = verify_ksm,
 	.min_kver = "2.6.32",

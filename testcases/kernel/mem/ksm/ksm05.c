@@ -83,32 +83,19 @@ static void sighandler(int sig)
 	_exit((sig == SIGSEGV) ? 0 : sig);
 }
 
-static void setup(void)
-{
-	if (access(PATH_KSM, F_OK) == -1)
-		tst_brk(TCONF, "KSM configuration is not enabled");
-
-	/* save original /sys/kernel/mm/ksm/run value */
-	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &ksm_run_orig);
-
-	/* echo 1 > /sys/kernel/mm/ksm/run */
-	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-}
-
-static void cleanup(void)
-{
-	/* restore /sys/kernel/mm/ksm/run value */
-	if (ksm_run_orig > 0)
-		FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
-}
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = test_ksm,
 	.min_kver = "2.6.32",
+	.save_restore = (const struct tst_path_val const[]) {
+		{"!/sys/kernel/mm/ksm/run", "1"},
+		NULL,
+	},
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_KSM=y",
+		NULL
+	},
 };
 
 #else
