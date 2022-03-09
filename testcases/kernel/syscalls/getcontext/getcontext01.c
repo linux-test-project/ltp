@@ -8,7 +8,9 @@
 /*\
  * [Description]
  *
- * Test getting user context functionality.
+ * Basic test for getcontext().
+ *
+ * Calls a getcontext() then jumps back with a setcontext().
  */
 
 #include "config.h"
@@ -18,11 +20,23 @@
 
 #include <ucontext.h>
 
+static volatile int flag;
+
 static void run(void)
 {
 	ucontext_t ptr;
 
-	TST_EXP_PASS(getcontext(&ptr));
+	flag = 0;
+
+	TST_EXP_PASS(getcontext(&ptr), "getcontext() flag=%i", flag);
+
+	if (flag)
+		return;
+
+	flag = 1;
+	setcontext(&ptr);
+
+	tst_res(TFAIL, "setcontext() did return");
 }
 
 static struct tst_test test = {
