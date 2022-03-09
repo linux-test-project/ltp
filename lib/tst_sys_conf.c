@@ -12,6 +12,12 @@
 #include "tst_test.h"
 #include "tst_sys_conf.h"
 
+struct tst_sys_conf {
+	char path[PATH_MAX];
+	char value[PATH_MAX];
+	struct tst_sys_conf *next;
+};
+
 static struct tst_sys_conf *save_restore_data;
 
 void tst_sys_conf_dump(void)
