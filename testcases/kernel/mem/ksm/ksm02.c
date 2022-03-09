@@ -115,8 +115,8 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.cleanup = cleanup,
-	.save_restore = (const char * const[]) {
-		"?/sys/kernel/mm/ksm/max_page_sharing",
+	.save_restore = (const struct tst_path_val const[]) {
+		{"?/sys/kernel/mm/ksm/max_page_sharing", NULL},
 		NULL,
 	},
 	.test_all = verify_ksm,

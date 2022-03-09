@@ -134,8 +134,8 @@ static struct tst_test test = {
 		"CONFIG_USER_NS",
 		NULL
 	},
-	.save_restore = (const char * const[]) {
-		"?/proc/sys/user/max_user_namespaces",
+	.save_restore = (const struct tst_path_val const[]) {
+		{"?/proc/sys/user/max_user_namespaces", NULL},
 		NULL,
 	},
 	.tags = (const struct tst_tag[]) {

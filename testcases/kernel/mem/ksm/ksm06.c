@@ -136,11 +136,11 @@ static struct tst_test test = {
 		{}
 	},
 	.setup = setup,
-	.save_restore = (const char * const[]) {
-		"?/sys/kernel/mm/ksm/max_page_sharing",
-		"!/sys/kernel/mm/ksm/run",
-		"!/sys/kernel/mm/ksm/sleep_millisecs",
-		"/sys/kernel/mm/ksm/merge_across_nodes",
+	.save_restore = (const struct tst_path_val const[]) {
+		{"?/sys/kernel/mm/ksm/max_page_sharing", NULL},
+		{"!/sys/kernel/mm/ksm/run", NULL},
+		{"!/sys/kernel/mm/ksm/sleep_millisecs", NULL},
+		{"/sys/kernel/mm/ksm/merge_across_nodes", NULL},
 		NULL,
 	},
 	.needs_kconfigs = (const char *const[]){

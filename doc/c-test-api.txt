@@ -1561,10 +1561,12 @@ itself is not available on the system.
 
 LTP library can be instructed to save and restore value of specified
 (/proc|sys) files. This is achieved by initialized tst_test struct
-field 'save_restore'. It is a 'NULL' terminated array of strings where
-each string represents a file, whose value is saved at the beginning
-and restored at the end of the test. Only first line of a specified
-file is saved and restored.
+field 'save_restore'. It is a NULL-terminated array of struct
+'tst_path_val' where each tst_path_val.path represents a file, whose
+value is saved at the beginning and restored at the end of the test.
+If non-NULL value is passed it is written to the respective file at
+the beginning of the test. Only the first line of a specified file
+is saved and restored.
 
 Pathnames can be optionally prefixed to specify how strictly (during
 'store') are handled errors:
@@ -1578,8 +1580,8 @@ Pathnames can be optionally prefixed to specify how strictly (during
 
 [source,c]
 -------------------------------------------------------------------------------
-static const char *save_restore[] = {
-	"/proc/sys/kernel/core_pattern",
+static const struct tst_path_val save_restore[] = {
+	{"/proc/sys/kernel/core_pattern", NULL},
 	NULL,
 };
 

@@ -202,13 +202,6 @@ static void do_test(unsigned int n)
 	return;
 }
 
-static void setup(void)
-{
-	SAFE_FILE_PRINTF("/proc/sys/kernel/keys/gc_delay", "1");
-	SAFE_FILE_PRINTF("/proc/sys/kernel/keys/maxkeys", "200");
-	SAFE_FILE_PRINTF("/proc/sys/kernel/keys/maxbytes", "20000");
-}
-
 static void cleanup(void)
 {
 	while (usern--)
@@ -220,12 +213,11 @@ static struct tst_test test = {
 	.tcnt = 2,
 	.needs_root = 1,
 	.forks_child = 1,
-	.setup = setup,
 	.cleanup = cleanup,
-	.save_restore = (const char * const[]) {
-		"?/proc/sys/kernel/keys/gc_delay",
-		"?/proc/sys/kernel/keys/maxkeys",
-		"?/proc/sys/kernel/keys/maxbytes",
+	.save_restore = (const struct tst_path_val const[]) {
+		{"?/proc/sys/kernel/keys/gc_delay", "1"},
+		{"?/proc/sys/kernel/keys/maxkeys", "200"},
+		{"?/proc/sys/kernel/keys/maxbytes", "20000"},
 		NULL,
 	},
 	.bufs = (struct tst_buffers []) {

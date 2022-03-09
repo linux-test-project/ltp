@@ -11,11 +11,6 @@
 #include "tst_hugepage.h"
 #include "tst_sys_conf.h"
 
-static const char * const save_restore[] = {
-	"!/proc/sys/kernel/numa_balancing",
-	NULL,
-};
-
 static void do_test(void) {
 
 	unsigned long val, hpages;
@@ -41,5 +36,8 @@ static void do_test(void) {
 static struct tst_test test = {
 	.test_all = do_test,
 	.request_hugepages = 2,
-	.save_restore = save_restore,
+	.save_restore = (const struct tst_path_val const[]) {
+		{"!/proc/sys/kernel/numa_balancing", "0"},
+		NULL,
+	},
 };

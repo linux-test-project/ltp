@@ -1105,11 +1105,12 @@ static void do_setup(int argc, char *argv[])
 		tst_tmpdir();
 
 	if (tst_test->save_restore) {
-		const char * const *name = tst_test->save_restore;
+		const struct tst_path_val const *pvl = tst_test->save_restore;
 
-		while (*name) {
-			tst_sys_conf_save(*name);
-			name++;
+		while (pvl->path) {
+			if (!tst_sys_conf_save(pvl->path))
+				tst_sys_conf_set(pvl->path, pvl->val);
+			pvl++;
 		}
 	}
 

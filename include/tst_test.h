@@ -259,7 +259,7 @@ struct tst_test {
 	 * NULL terminated array of (/proc, /sys) files to save
 	 * before setup and restore after cleanup
 	 */
-	const char * const *save_restore;
+	const struct tst_path_val const *save_restore;
 
 	/*
 	 * NULL terminated array of kernel config options required for the

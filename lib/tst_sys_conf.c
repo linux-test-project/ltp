@@ -96,6 +96,16 @@ int tst_sys_conf_save(const char *path)
 	return tst_sys_conf_save_str(path, line);
 }
 
+void tst_sys_conf_set(const char *path, const char *value)
+{
+	char flag = path[0];
+	if (flag  == '?' || flag == '!')
+		path++;
+
+	if (value)
+		SAFE_FILE_PRINTF(path, "%s", value);
+}
+
 void tst_sys_conf_restore(int verbose)
 {
 	struct tst_sys_conf *i;

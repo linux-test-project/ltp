@@ -276,7 +276,6 @@ static void setup(void)
 	else if (tst_kvercmp(2, 6, 18) < 0)
 		tst_brk(TCONF, "2.6.18 or greater kernel required");
 
-	FILE_PRINTF("/proc/sys/kernel/numa_balancing", "0");
 	/*
 	 * find 2 nodes, which can hold NODE_MIN_FREEMEM bytes
 	 * The reason is that:
@@ -327,8 +326,8 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = run,
 	.setup = setup,
-	.save_restore = (const char * const[]) {
-		"?/proc/sys/kernel/numa_balancing",
+	.save_restore = (const struct tst_path_val const[]) {
+		{"?/proc/sys/kernel/numa_balancing", "0"},
 		NULL,
 	},
 };

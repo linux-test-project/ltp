@@ -8,13 +8,6 @@
 #include "tst_test.h"
 #include "tst_sys_conf.h"
 
-static const char * const save_restore[] = {
-	"?/proc/nonexistent",
-	"!/proc/sys/kernel/numa_balancing",
-	"/proc/sys/kernel/core_pattern",
-	NULL,
-};
-
 static void setup(void)
 {
 	SAFE_FILE_PRINTF("/proc/sys/kernel/core_pattern", "changed");
@@ -30,5 +23,10 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.test_all = run,
 	.setup = setup,
-	.save_restore = save_restore,
+	.save_restore = (const struct tst_path_val const[]) {
+		{"?/proc/nonexistent", NULL},
+		{"!/proc/sys/kernel/numa_balancing", NULL},
+		{"/proc/sys/kernel/core_pattern", NULL},
+		NULL,
+	},
 };

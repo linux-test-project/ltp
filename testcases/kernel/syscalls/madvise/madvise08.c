@@ -213,8 +213,8 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,
-	.save_restore = (const char * const[]) {
-		CORE_PATTERN,
+	.save_restore = (const struct tst_path_val const[]) {
+		{CORE_PATTERN, NULL},
 		NULL,
 	},
 };
