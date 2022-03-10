@@ -14,5 +14,5 @@ rename01A symlink01 -T rename01
 splice02 splice02 -s 20
 df01_ext4_sh df01.sh -f ext4
 shell_test01 echo "SUCCESS" | shell_pipe01.sh
-ping01 ping01.sh
 ping602 ping02.sh -6
+macsec02 macsec02.sh
