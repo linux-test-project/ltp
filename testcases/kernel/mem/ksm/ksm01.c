@@ -79,7 +79,7 @@ static struct tst_test test = {
 		{}
 	},
 	.setup = setup,
-	.save_restore = (const struct tst_path_val const[]) {
+	.save_restore = (const struct tst_path_val[]) {
 		{"!/sys/kernel/mm/ksm/run", NULL},
 		{"!/sys/kernel/mm/ksm/sleep_millisecs", NULL},
 		{"?/sys/kernel/mm/ksm/max_page_sharing", NULL},

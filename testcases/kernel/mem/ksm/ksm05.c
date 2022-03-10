@@ -88,7 +88,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = test_ksm,
 	.min_kver = "2.6.32",
-	.save_restore = (const struct tst_path_val const[]) {
+	.save_restore = (const struct tst_path_val[]) {
 		{"!/sys/kernel/mm/ksm/run", "1"},
 		NULL,
 	},

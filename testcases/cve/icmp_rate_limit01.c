@@ -268,7 +268,7 @@ static struct tst_test test = {
 		"CONFIG_NET_NS=y",
 		NULL
 	},
-	.save_restore = (const struct tst_path_val const[]) {
+	.save_restore = (const struct tst_path_val[]) {
 		{"?/proc/sys/user/max_user_namespaces", NULL},
 		NULL,
 	},

@@ -326,7 +326,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = run,
 	.setup = setup,
-	.save_restore = (const struct tst_path_val const[]) {
+	.save_restore = (const struct tst_path_val[]) {
 		{"?/proc/sys/kernel/numa_balancing", "0"},
 		NULL,
 	},

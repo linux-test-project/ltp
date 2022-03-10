@@ -36,7 +36,7 @@ static void do_test(void) {
 static struct tst_test test = {
 	.test_all = do_test,
 	.request_hugepages = 2,
-	.save_restore = (const struct tst_path_val const[]) {
+	.save_restore = (const struct tst_path_val[]) {
 		{"!/proc/sys/kernel/numa_balancing", "0"},
 		NULL,
 	},

@@ -214,7 +214,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.cleanup = cleanup,
-	.save_restore = (const struct tst_path_val const[]) {
+	.save_restore = (const struct tst_path_val[]) {
 		{"?/proc/sys/kernel/keys/gc_delay", "1"},
 		{"?/proc/sys/kernel/keys/maxkeys", "200"},
 		{"?/proc/sys/kernel/keys/maxbytes", "20000"},

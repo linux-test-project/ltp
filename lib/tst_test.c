@@ -1105,7 +1105,7 @@ static void do_setup(int argc, char *argv[])
 		tst_tmpdir();
 
 	if (tst_test->save_restore) {
-		const struct tst_path_val const *pvl = tst_test->save_restore;
+		const struct tst_path_val *pvl = tst_test->save_restore;
 
 		while (pvl->path) {
 			if (!tst_sys_conf_save(pvl->path))
