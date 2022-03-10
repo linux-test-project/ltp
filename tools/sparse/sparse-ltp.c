@@ -178,27 +178,31 @@ static bool is_terminated_with_null_struct(const struct symbol *const sym)
 	if (item_init->type == EXPR_POS)
 		item_init = item_init->init_expr;
 
+	if (item_init->type != EXPR_INITIALIZER)
+		return false;
+
 	return ptr_list_empty((struct ptr_list *)item_init->expr_list);
 }
 
-/* Check for (one instance of) LTP-005
+/* LTP-005: Check array sentinel value
  *
- * The tags array is only accessed when the test fails. So we perform
- * a static check to ensure it ends with {}
+ * This is most important for the tags array. It is only accessed when
+ * the test fails. So we perform a static check to ensure it ends with
+ * {}.
  */
-static void check_tag_initializer(const struct symbol *const sym)
+static void check_struct_array_initializer(const struct symbol *const sym)
 {
 	if (is_terminated_with_null_struct(sym))
 		return;
 
 	warning(sym->pos,
-		"LTP-005: test.tags array doesn't appear to be null-terminated; did you forget to add '{}' as the final entry?");
+		"LTP-005: Struct array doesn't appear to be null-terminated; did you forget to add '{}' as the final entry?");
 }
 
 /* Find struct tst_test test = { ... } and perform tests on its initializer */
 static void check_test_struct(const struct symbol *const sym)
 {
-	static struct ident *tst_test, *tst_test_test, *tst_tag;
+	static struct ident *tst_test, *tst_test_test;
 	struct ident *ctype_name = NULL;
 	struct expression *init = sym->initializer;
 	struct expression *entry;
@@ -214,7 +218,6 @@ static void check_test_struct(const struct symbol *const sym)
 	if (!tst_test_test) {
 		tst_test = built_in_ident("tst_test");
 		tst_test_test = built_in_ident("test");
-		tst_tag = built_in_ident("tst_tag");
 	}
 
 	if (sym->ident != tst_test_test)
@@ -227,11 +230,19 @@ static void check_test_struct(const struct symbol *const sym)
 		if (entry->init_expr->type != EXPR_SYMBOL)
 			continue;
 
+		switch (entry->ctype->ctype.base_type->type) {
+		case SYM_PTR:
+		case SYM_ARRAY:
+			break;
+		default:
+			return;
+		}
+
 		const struct symbol *entry_init = entry->init_expr->symbol;
 		const struct symbol *entry_ctype = unwrap_base_type(entry_init);
 
-		if (entry_ctype->ident == tst_tag)
-			check_tag_initializer(entry_init);
+		if (entry_ctype->type == SYM_STRUCT)
+			check_struct_array_initializer(entry_init);
 	} END_FOR_EACH_PTR(entry);
 
 }
