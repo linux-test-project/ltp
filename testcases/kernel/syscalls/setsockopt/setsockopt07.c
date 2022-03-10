@@ -143,7 +143,7 @@ static struct tst_test test = {
 	},
 	.save_restore = (const struct tst_path_val[]) {
 		{"?/proc/sys/user/max_user_namespaces", NULL},
-		NULL,
+		{}
 	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "c27927e372f0"},

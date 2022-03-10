@@ -141,7 +141,7 @@ static struct tst_test test = {
 		{"!/sys/kernel/mm/ksm/run", NULL},
 		{"!/sys/kernel/mm/ksm/sleep_millisecs", NULL},
 		{"/sys/kernel/mm/ksm/merge_across_nodes", NULL},
-		NULL,
+		{}
 	},
 	.needs_kconfigs = (const char *const[]){
 		"CONFIG_KSM=y",

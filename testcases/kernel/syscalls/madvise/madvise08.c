@@ -215,6 +215,6 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.save_restore = (const struct tst_path_val[]) {
 		{CORE_PATTERN, NULL},
-		NULL,
+		{}
 	},
 };

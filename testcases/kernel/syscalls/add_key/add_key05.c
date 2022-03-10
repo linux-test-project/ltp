@@ -218,7 +218,7 @@ static struct tst_test test = {
 		{"?/proc/sys/kernel/keys/gc_delay", "1"},
 		{"?/proc/sys/kernel/keys/maxkeys", "200"},
 		{"?/proc/sys/kernel/keys/maxbytes", "20000"},
-		NULL,
+		{}
 	},
 	.bufs = (struct tst_buffers []) {
 		{&user_buf, .size = 64},

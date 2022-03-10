@@ -328,7 +328,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
 		{"?/proc/sys/kernel/numa_balancing", "0"},
-		NULL,
+		{}
 	},
 };
 #else

@@ -27,6 +27,6 @@ static struct tst_test test = {
 		{"?/proc/nonexistent", NULL},
 		{"!/proc/sys/kernel/numa_balancing", NULL},
 		{"/proc/sys/kernel/core_pattern", NULL},
-		NULL,
+		{}
 	},
 };

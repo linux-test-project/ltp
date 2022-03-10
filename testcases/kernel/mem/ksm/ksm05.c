@@ -90,7 +90,7 @@ static struct tst_test test = {
 	.min_kver = "2.6.32",
 	.save_restore = (const struct tst_path_val[]) {
 		{"!/sys/kernel/mm/ksm/run", "1"},
-		NULL,
+		{}
 	},
 	.needs_kconfigs = (const char *const[]){
 		"CONFIG_KSM=y",

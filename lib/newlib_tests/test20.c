@@ -38,6 +38,6 @@ static struct tst_test test = {
 	.request_hugepages = 2,
 	.save_restore = (const struct tst_path_val[]) {
 		{"!/proc/sys/kernel/numa_balancing", "0"},
-		NULL,
+		{}
 	},
 };

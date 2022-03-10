@@ -1582,7 +1582,7 @@ Pathnames can be optionally prefixed to specify how strictly (during
 -------------------------------------------------------------------------------
 static const struct tst_path_val save_restore[] = {
 	{"/proc/sys/kernel/core_pattern", NULL},
-	NULL,
+	{}
 };
 
 static void setup(void)

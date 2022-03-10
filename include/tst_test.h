@@ -256,7 +256,7 @@ struct tst_test {
 	const char * const *needs_drivers;
 
 	/*
-	 * NULL terminated array of (/proc, /sys) files to save
+	 * {NULL, NULL} terminated array of (/proc, /sys) files to save
 	 * before setup and restore after cleanup
 	 */
 	const struct tst_path_val *save_restore;
@@ -268,12 +268,12 @@ struct tst_test {
 	const char *const *needs_kconfigs;
 
 	/*
-	 * NULL-terminated array to be allocated buffers.
+	 * {NULL, NULL} terminated array to be allocated buffers.
 	 */
 	struct tst_buffers *bufs;
 
 	/*
-	 * NULL-terminated array of capability settings
+	 * {NULL, NULL} terminated array of capability settings
 	 */
 	struct tst_cap *caps;
 
