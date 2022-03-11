@@ -10,7 +10,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define TEMPLATE "ltpXXXXXX"
+#define TEMPLATE_PREFIX "ltp"
+#define TEMPLATE_PREFIX_LEN (sizeof(TEMPLATE_PREFIX) - 1)
+#define TEMPLATE TEMPLATE_PREFIX "XXXXXX"
 
 int write_something(int);
 void delete_files(void);
@@ -101,7 +103,7 @@ void delete_files(void)
 
 	dirp = opendir(".");
 	for (entp = readdir(dirp); entp; entp = readdir(dirp))
-		if (!strncmp(entp->d_name, "apt", 3)) {
+		if (!strncmp(entp->d_name, TEMPLATE_PREFIX, TEMPLATE_PREFIX_LEN)) {
 			if (stat(entp->d_name, &stat_buffer))
 				abortx("stat() failed for \"%s\", errno = %d",
 				       entp->d_name, errno);
