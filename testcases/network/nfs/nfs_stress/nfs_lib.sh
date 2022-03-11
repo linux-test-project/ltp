@@ -79,7 +79,11 @@ nfs_server_udp_enabled()
 
 nfs_setup_server()
 {
-	local export_cmd="exportfs -i -o fsid=$$,no_root_squash,rw *:$remote_dir"
+
+	local fsid="$1"
+	local export_cmd="exportfs -i -o fsid=$fsid,no_root_squash,rw *:$remote_dir"
+
+	[ -z "$fsid" ] && tst_brk TBROK "empty fsid"
 
 	if tst_net_use_netns; then
 		if ! test -d $remote_dir; then
@@ -161,7 +165,7 @@ nfs_setup()
 		remote_dir="$TST_TMPDIR/$i/$type"
 		mkdir -p $local_dir
 
-		nfs_setup_server
+		nfs_setup_server $(($$ + n))
 
 		opts="-o proto=$type,vers=$i"
 		nfs_mount
