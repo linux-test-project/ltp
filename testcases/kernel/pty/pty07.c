@@ -40,6 +40,8 @@ static int test_tty_port = 8;
 static int fd = -1;
 static struct tst_fzsync_pair fzp;
 
+static unsigned short vt_active;
+
 static void *open_close(void *unused)
 {
 	int i;
@@ -76,16 +78,27 @@ static void do_test(void)
 
 static void setup(void)
 {
+	struct vt_stat stat;
+
 	sprintf(tty_path, "/dev/tty%d", test_tty_port);
 	fd = SAFE_OPEN(tty_path, O_RDWR);
+	SAFE_IOCTL(fd, VT_GETSTATE, &stat);
+	vt_active = stat.v_active;
+
+	tst_res(TINFO, "Saving active console %i", vt_active);
+
 	tst_fzsync_pair_init(&fzp);
 }
 
 static void cleanup(void)
 {
 	tst_fzsync_pair_cleanup(&fzp);
-	if (fd >= 0)
+
+	if (fd >= 0) {
+		tst_res(TINFO, "Restoring active console");
+		SAFE_IOCTL(fd, VT_ACTIVATE, vt_active);
 		SAFE_CLOSE(fd);
+	}
 }
 
 static struct tst_test test = {
