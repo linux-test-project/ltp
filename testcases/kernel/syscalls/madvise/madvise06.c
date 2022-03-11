@@ -229,9 +229,9 @@ static struct tst_test test = {
 	.min_kver = "3.10.0",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
-	.save_restore = (const char * const[]) {
-		"?/proc/sys/vm/swappiness",
-		NULL
+	.save_restore = (const struct tst_path_val[]) {
+		{"?/proc/sys/vm/swappiness", NULL},
+		{}
 	},
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.tags = (const struct tst_tag[]) {
