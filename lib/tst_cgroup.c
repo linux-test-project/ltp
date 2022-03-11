@@ -1116,7 +1116,7 @@ ssize_t safe_cg_read(const char *const file, const int lineno,
 		prev_len = MIN(sizeof(prev_buf), (size_t)read_ret);
 	}
 
-	out[MAX(read_ret, 0)] = '\0';
+	out[MAX(read_ret, (ssize_t)0)] = '\0';
 
 	return read_ret;
 }

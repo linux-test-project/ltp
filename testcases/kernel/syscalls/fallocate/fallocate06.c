@@ -95,7 +95,7 @@ static void setup(void)
 	TEST(toggle_cow(fd, 0));
 	SAFE_FSTAT(fd, &statbuf);
 	blocksize = statbuf.st_blksize;
-	block_offset = MIN(blocksize / 2, 512);
+	block_offset = MIN(blocksize / 2, (blksize_t)512);
 	wbuf_size = MAX(WRITE_BLOCKS, FALLOCATE_BLOCKS) * blocksize;
 	rbuf_size = (DEALLOCATE_BLOCKS + 1) * blocksize;
 	SAFE_CLOSE(fd);

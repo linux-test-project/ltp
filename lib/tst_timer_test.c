@@ -67,7 +67,7 @@ static const char *table_heading = " Time: us ";
  */
 static unsigned int header_len(long long max_sample)
 {
-	unsigned int l = 1;
+	size_t l = 1;
 
 	while (max_sample/=10)
 		l++;
@@ -184,7 +184,7 @@ static int cmp(const void *a, const void *b)
 static long long compute_threshold(long long requested_us,
 				   unsigned int nsamples)
 {
-	unsigned int slack_per_scall = MIN(100000, requested_us / 1000);
+	unsigned int slack_per_scall = MIN(100000LL, requested_us / 1000);
 
 	slack_per_scall = MAX(slack_per_scall, timerslack);
 

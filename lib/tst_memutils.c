@@ -30,7 +30,7 @@ void tst_pollute_memory(size_t maxsize, int fillchar)
 	min_free += min_free / 10;
 
 	SAFE_SYSINFO(&info);
-	safety = MAX(4096 * SAFE_SYSCONF(_SC_PAGESIZE), 128 * 1024 * 1024);
+	safety = MAX(4096 * SAFE_SYSCONF(_SC_PAGESIZE), 128L * 1024 * 1024);
 	safety = MAX(safety, min_free);
 	safety /= info.mem_unit;
 
@@ -44,7 +44,7 @@ void tst_pollute_memory(size_t maxsize, int fillchar)
 	 * Use the lower value of both for pollutable memory. Usually this
 	 * means we will not evict any caches.
 	 */
-	freeram = MIN(info.freeram, (tst_available_mem() * 1024));
+	freeram = MIN((long long)info.freeram, (tst_available_mem() * 1024));
 
 	/* Not enough free memory to avoid invoking OOM killer */
 	if (freeram <= safety)
