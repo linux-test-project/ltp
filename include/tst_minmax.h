@@ -9,6 +9,7 @@
 # define MIN(a, b) ({ \
 	typeof(a) _a = (a); \
 	typeof(b) _b = (b); \
+	(void) (&_a == &_b); \
 	_a < _b ? _a : _b; \
 })
 #endif /* MIN */
@@ -17,6 +18,7 @@
 # define MAX(a, b) ({ \
 	typeof(a) _a = (a); \
 	typeof(b) _b = (b); \
+	(void) (&_a == &_b); \
 	_a > _b ? _a : _b; \
 })
 #endif /* MAX */
