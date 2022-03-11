@@ -29,7 +29,7 @@ TST_PARSE_ARGS=nfs_parse_args
 TST_USAGE=nfs_usage
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
-TST_NEEDS_CMDS="$TST_NEEDS_CMDS mount exportfs"
+TST_NEEDS_CMDS="$TST_NEEDS_CMDS mount exportfs mount.nfs"
 TST_SETUP="${TST_SETUP:-nfs_setup}"
 TST_CLEANUP="${TST_CLEANUP:-nfs_cleanup}"
 TST_NEEDS_DRIVERS="nfsd"
@@ -152,6 +152,8 @@ nfs_setup()
 			pgrep $i > /dev/null || tst_brk TCONF "$i not running"
 		done
 	fi
+
+	tst_res TINFO "$(mount.nfs -V)"
 
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
