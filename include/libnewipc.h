@@ -31,7 +31,6 @@
 #define MSGSIZE	1024
 #define MSGTYPE	1
 #define NR_MSGQUEUES	16
-#define min(a, b)	(((a) < (b)) ? (a) : (b))
 
 #define SEM_RD	0400
 #define SEM_ALT	0200

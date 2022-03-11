@@ -115,18 +115,17 @@ int main(void)
 	 * We could test using kernel API, but that's what we're
 	 * testing...  So let's take an insanely high value */
 #define INSANE 63
-#define max(x,y) (x > y ? x : y)
 #if HAVE_DECL_PR_CAPBSET_DROP
-	ret = prctl(PR_CAPBSET_DROP, max(INSANE, CAP_LAST_CAP + 1));
+	ret = prctl(PR_CAPBSET_DROP, MAX(INSANE, CAP_LAST_CAP + 1));
 #else
 	errno = ENOSYS;
 	ret = -1;
 #endif
 	if (ret != -1) {
 		tst_resm(TFAIL, "prctl(PR_CAPBSET_DROP, %d) returned %d",
-			 max(INSANE, CAP_LAST_CAP + 1), ret);
+			 MAX(INSANE, CAP_LAST_CAP + 1), ret);
 		tst_resm(TINFO, " %d is should not exist",
-			 max(INSANE, CAP_LAST_CAP + 1));
+			 MAX(INSANE, CAP_LAST_CAP + 1));
 		tst_exit();
 	}
 	for (i = 0; i <= cap_last_cap; i++) {

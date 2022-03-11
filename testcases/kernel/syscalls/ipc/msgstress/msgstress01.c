@@ -280,7 +280,7 @@ void setup(void)
 	 * that are not necessary for this test.
 	 * That's why we define NR_MSGQUEUES as a high boundary for it.
 	 */
-	MSGMNI = min(nr_msgqs, NR_MSGQUEUES);
+	MSGMNI = MIN(nr_msgqs, NR_MSGQUEUES);
 }
 
 void cleanup(void)

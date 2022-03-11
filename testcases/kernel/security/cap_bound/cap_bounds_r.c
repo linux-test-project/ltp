@@ -85,9 +85,8 @@ int main(void)
 	 * We could test using kernel API, but that's what we're
 	 * testing...  So let's take an insanely high value */
 #define INSANE 63
-#define max(x,y) (x > y ? x : y)
 #if HAVE_DECL_PR_CAPBSET_READ
-	ret = prctl(PR_CAPBSET_READ, max(INSANE, CAP_LAST_CAP + 1));
+	ret = prctl(PR_CAPBSET_READ, MAX(INSANE, CAP_LAST_CAP + 1));
 #else
 	errno = ENOSYS;
 	ret = -1;

@@ -95,7 +95,6 @@ void ok_exit();
 #undef roundup
 #endif
 #define roundup(x, y)	((((x)+((y)-1))/(y))*(y))
-#define min(x, y)	(((x) < (y)) ? (x) : (y))
 
 extern time_t time(time_t *);
 extern char *ctime(const time_t *);
@@ -311,7 +310,7 @@ int main(int argc, char *argv[])
 		anyfail();
 	}
 	for (bytes_left = filesize; bytes_left; bytes_left -= c) {
-		write_cnt = min(pagesize, bytes_left);
+		write_cnt = MIN(pagesize, bytes_left);
 		if ((c = write(fd, buf, write_cnt)) != write_cnt) {
 			if (c == -1) {
 				perror("write error");

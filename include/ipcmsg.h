@@ -43,8 +43,6 @@ void setup(void);
 
 #define NR_MSGQUEUES	16	/* MSGMNI as defined in linux/msg.h */
 
-#define min(a, b)	(((a) < (b)) ? (a) : (b))
-
 typedef struct mbuf {		/* a generic message structure */
 	long mtype;
 	char mtext[MSGSIZE + 1];  /* add 1 here so the message can be 1024   */
