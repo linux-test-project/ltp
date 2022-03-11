@@ -98,6 +98,7 @@ nfs_setup_server()
 
 nfs_mount()
 {
+	local opts="$1"
 	local host_type=rhost
 	local mount_dir
 
@@ -138,7 +139,6 @@ nfs_setup()
 	local i
 	local type
 	local n=0
-	local opts
 	local local_dir
 	local remote_dir
 	local mount_dir
@@ -169,8 +169,7 @@ nfs_setup()
 
 		nfs_setup_server $(($$ + n))
 
-		opts="-o proto=$type,vers=$i"
-		nfs_mount
+		nfs_mount "-o proto=$type,vers=$i"
 
 		n=$(( n + 1 ))
 	done
