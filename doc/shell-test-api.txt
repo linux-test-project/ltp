@@ -195,22 +195,22 @@ simply by setting right '$TST_FOO'.
 |=============================================================================
 | Variable name            | Action done
 | 'TST_DEV_EXTRA_OPTS'     | Pass extra 'mkfs' options _after_ device name,
-|                          | to 'tst_mkfs', use with 'TST_FORMAT_DEVICE=1'.
+                             to 'tst_mkfs', use with 'TST_FORMAT_DEVICE=1'.
 | 'TST_DEV_FS_OPTS'        | Pass 'mkfs' options _before_ the device name,
-|                          | to 'tst_mkfs', use with 'TST_FORMAT_DEVICE=1'.
+                             to 'tst_mkfs', use with 'TST_FORMAT_DEVICE=1'.
 | 'TST_FORMAT_DEVICE'      | Format a block device with a filesystem, see
-|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
-|                          | See also 'TST_DEV_EXTRA_OPTS', 'TST_DEV_FS_OPTS', 'TST_FS_TYPE'.
-|                          | Implies 'TST_NEEDS_DEVICE=1' (no need to set it).
+                             https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem].
+                             See also 'TST_DEV_EXTRA_OPTS', 'TST_DEV_FS_OPTS', 'TST_FS_TYPE'.
+                             Implies 'TST_NEEDS_DEVICE=1' (no need to set it).
 | 'TST_DEVICE'             | Block device name for 'tst_mount' and 'tst_mkfs', see
-|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
+                             https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem].
 | 'TST_FS_TYPE'            | Override the default filesystem to be used.
 | 'TST_MNTPOINT'           | Holds path to mountpoint used in 'tst_mount', see
-|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
+                             https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem].
 | 'TST_MNT_PARAMS'         | Extra mount params for 'tst_mount', see
-|                          | https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem]
+                             https://github.com/linux-test-project/ltp/wiki/Shell-Test-API#formatting-device-with-a-filesystem[Formatting device with a filesystem].
 | 'TST_NEEDS_ROOT'         | Exit the test with 'TCONF' unless executed under root.
-|                          | Alternatively the 'tst_require_root' command can be used.
+                             Alternatively the 'tst_require_root' command can be used.
 | 'TST_NEEDS_TMPDIR'       | Create test temporary directory and cd into it.
 | 'TST_NEEDS_DEVICE'       | Prepare test temporary device, the path to testing
                              device is stored in '$TST_DEVICE' variable.
