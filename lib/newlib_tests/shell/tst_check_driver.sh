@@ -4,7 +4,7 @@
 
 TST_TESTFUNC=test
 TST_SETUP=setup
-TST_CNT=3
+TST_CNT=4
 TST_NEEDS_CMDS="tst_check_drivers find grep head sed"
 
 MODULES_DIR="${MODULES_DIR:-/lib/modules/$(uname -r)}"
@@ -53,10 +53,19 @@ test3()
 
 	tst_res TINFO "check built-in module detection"
 
-	[ -f "$f" ] || \
-		tst_brk TCONF "missing '$f'"
+	[ -f "$f" ] || tst_brk TCONF "missing '$f'"
 
 	test_drivers $(grep -E '_[^/]+\.ko' $f | head -3)
+}
+
+test4()
+{
+	local f="$MODULES_DIR/modules.builtin"
+
+	tst_res TINFO "check for x68_64 arch module detection"
+
+	[ -f "$f" ] || tst_brk TCONF "missing '$f'"
+	test_drivers $(grep -E '[^/]+[-_]x86[-_]64.*\.ko' $f | head -3)
 }
 
 . tst_test.sh
