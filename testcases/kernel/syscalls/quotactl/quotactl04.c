@@ -162,8 +162,8 @@ static void verify_quota(unsigned int n)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_kconfigs = (const char *[]) {
-		"CONFIG_QFMT_V2",
+	.needs_drivers = (const char *const []) {
+		"quota_v2",
 		NULL
 	},
 	.min_kver = "4.10", /* commit 689c958cbe6b (ext4: add project quota support) */
