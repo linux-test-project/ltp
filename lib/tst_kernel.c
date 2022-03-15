@@ -116,6 +116,11 @@ static int tst_search_driver(const char *driver, const char *file)
 		return -1;
 	}
 
+	/* always search for x86_64 */
+	char *fix = strstr(driver, "x86-64");
+	if (fix)
+		fix[3] = '_';
+
 	SAFE_ASPRINTF(NULL, &search, "/%s.ko", driver);
 
 	f = SAFE_FOPEN(NULL, path, "r");
