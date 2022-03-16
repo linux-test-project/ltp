@@ -434,6 +434,19 @@ tst_require_kconfigs()
 	return 0
 }
 
+tst_flag2mask()
+{
+	case "$1" in
+	TPASS) return 0;;
+	TFAIL) return 1;;
+	TBROK) return 2;;
+	TWARN) return 4;;
+	TINFO) return 16;;
+	TCONF) return 32;;
+	*) tst_brk TBROK "Invalid res type '$1'";;
+	esac
+}
+
 tst_is_int()
 {
 	[ "$1" -eq "$1" ] 2>/dev/null
