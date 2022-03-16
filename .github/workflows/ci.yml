@@ -99,7 +99,7 @@ jobs:
               METADATA: asciidoctor
               TREE: out
 
-          - container: "ubuntu:xenial"
+          - container: "ubuntu:bionic"
             env:
               CC: gcc
               METADATA: asciidoc-pdf
