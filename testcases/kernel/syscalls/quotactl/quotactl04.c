@@ -96,35 +96,14 @@ static struct tcase {
 
 };
 
-static void do_mount(const char *source, const char *target,
-	const char *filesystemtype, unsigned long mountflags,
-	const void *data)
-{
-	TEST(mount(source, target, filesystemtype, mountflags, data));
-
-	if (TST_RET == -1 && TST_ERR == ESRCH)
-		tst_brk(TCONF, "Kernel or device does not support FS quotas");
-
-	if (TST_RET == -1) {
-		tst_brk(TBROK | TTERRNO, "mount(%s, %s, %s, %lu, %p) failed",
-			source, target, filesystemtype, mountflags, data);
-	}
-
-	if (TST_RET) {
-		tst_brk(TBROK | TTERRNO, "mount(%s, %s, %s, %lu, %p) failed",
-			source, target, filesystemtype, mountflags, data);
-	}
-
-	mount_flag = 1;
-}
-
 static void setup(void)
 {
 	const char *const fs_opts[] = {"-I 256", "-O quota,project", NULL};
 
 	quotactl_info();
 	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
-	do_mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
+	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
+	mount_flag = 1;
 	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
 
 	TEST(do_quotactl(fd, QCMD(Q_GETNEXTQUOTA, PRJQUOTA), tst_device->dev,
