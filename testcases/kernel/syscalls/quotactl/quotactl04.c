@@ -47,6 +47,7 @@ static struct dqinfo res_qf;
 static int32_t fmt_buf;
 
 static struct if_nextdqblk res_ndq;
+static int getnextquota_nsup;
 
 static struct tcase {
 	int cmd;
@@ -125,6 +126,11 @@ static void setup(void)
 	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
 	do_mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
 	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
+
+	TEST(do_quotactl(fd, QCMD(Q_GETNEXTQUOTA, PRJQUOTA), tst_device->dev,
+		test_id, (void *) &res_ndq));
+	if (TST_ERR == EINVAL || TST_ERR == ENOSYS)
+		getnextquota_nsup = 1;
 }
 
 static void cleanup(void)
@@ -144,6 +150,11 @@ static void verify_quota(unsigned int n)
 	fmt_buf = 0;
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
+
+	if (tc->cmd == QCMD(Q_GETNEXTQUOTA, PRJQUOTA) && getnextquota_nsup) {
+		tst_res(TCONF, "current system doesn't support this cmd");
+		return;
+	}
 
 	TST_EXP_PASS_SILENT(do_quotactl(fd, tc->cmd, tst_device->dev, *tc->id, tc->addr),
 			"do_quotactl to %s", tc->des);
@@ -166,7 +177,7 @@ static struct tst_test test = {
 		"quota_v2",
 		NULL
 	},
-	.min_kver = "4.10", /* commit 689c958cbe6b (ext4: add project quota support) */
+	.min_kver = "4.5", /* commit 689c958cbe6b (ext4: add project quota support) */
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
