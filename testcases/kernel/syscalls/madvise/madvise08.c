@@ -110,8 +110,7 @@ static int find_sequence(int pid)
 
 	snprintf(dumpname, 256, "dump-%d", pid);
 	tst_res(TINFO, "Dump file should be %s", dumpname);
-	if (access(dumpname, F_OK))
-		tst_brk(TBROK | TERRNO, "Dump file was not found.");
+	SAFE_ACCESS(dumpname, F_OK);
 
 	dfd = SAFE_OPEN(dumpname, O_RDONLY);
 

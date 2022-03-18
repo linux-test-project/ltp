@@ -58,9 +58,7 @@ static long old_overcommit = -1;
 
 static void setup(void)
 {
-	if (access(PATH_SYSVM "max_map_count", F_OK) != 0)
-		tst_brk(TBROK | TERRNO,
-			 "Can't support to test max_map_count");
+	SAFE_ACCESS(PATH_SYSVM "max_map_count", F_OK);
 
 	old_max_map_count = get_sys_tune("max_map_count");
 	old_overcommit = get_sys_tune("overcommit_memory");

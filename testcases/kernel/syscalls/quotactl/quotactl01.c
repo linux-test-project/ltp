@@ -160,11 +160,9 @@ static void setup(void)
 	SAFE_CMD(cmd, NULL, NULL);
 	fmt_id = var->fmt_id;
 
-	if (access(USRPATH, F_OK) == -1)
-		tst_brk(TFAIL | TERRNO, "user quotafile didn't exist");
+	SAFE_ACCESS(USRPATH, F_OK);
 
-	if (access(GRPPATH, F_OK) == -1)
-		tst_brk(TFAIL | TERRNO, "group quotafile didn't exist");
+	SAFE_ACCESS(GRPPATH, F_OK);
 
 	TEST(quotactl(QCMD(Q_GETNEXTQUOTA, USRQUOTA), tst_device->dev,
 		test_id, (void *) &res_ndq));

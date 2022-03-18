@@ -186,8 +186,7 @@ static void setup(void)
 	/* vfsv0 block limit 2^42, vfsv1 block limit 2^63 - 1 */
 	set_dqmax.dqb_bsoftlimit = tst_variant ? 0x20000000000000 : 0x100000000;
 
-	if (access(USRPATH, F_OK) == -1)
-		tst_brk(TBROK | TERRNO, "user quotafile didn't exist");
+	SAFE_ACCESS(USRPATH, F_OK);
 
 	SAFE_MKDIR(TESTDIR1, 0666);
 
