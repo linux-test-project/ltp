@@ -24,6 +24,11 @@
 #include "safe_macros_fn.h"
 #include "tst_cmd.h"
 
+int safe_access(const char *filename, const int lineno, const char *pathname,
+		   int mode);
+#define SAFE_ACCESS(path, mode) \
+	safe_access(__FILE__, __LINE__, (path), (mode))
+
 #define SAFE_BASENAME(path) \
 	safe_basename(__FILE__, __LINE__, NULL, (path))
 

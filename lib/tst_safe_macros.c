@@ -20,6 +20,25 @@
 #include "lapi/personality.h"
 #include "lapi/pidfd.h"
 
+int safe_access(const char *file, const int lineno,
+	    const char *pathname, int mode)
+{
+	int rval;
+
+	rval = access(pathname, mode);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"access(%s,%d) failed", pathname, mode);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid access(%s,%d) return value %d", pathname,
+			mode, rval);
+	}
+
+	return rval;
+}
+
 int safe_setpgid(const char *file, const int lineno, pid_t pid, pid_t pgid)
 {
 	int rval;
