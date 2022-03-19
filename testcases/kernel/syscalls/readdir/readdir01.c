@@ -59,6 +59,8 @@ static void verify_readdir(void)
 		tst_res(TFAIL, "found %s files than were created, created: %d, found: %d",
 					cnt > nfiles ? "more" : "less", nfiles, cnt);
 	}
+
+	SAFE_CLOSEDIR(test_dir);
 }
 
 static struct tst_test test = {
