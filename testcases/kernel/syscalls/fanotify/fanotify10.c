@@ -74,16 +74,19 @@ static int filesystem_mark_unsupported;
 
 #define MOUNT_PATH "fs_mnt"
 #define MNT2_PATH "mntpoint"
+#define DIR_NAME "testdir"
 #define FILE_NAME "testfile"
 #define FILE2_NAME "testfile2"
 #define TEST_APP "fanotify_child"
 #define TEST_APP2 "fanotify_child2"
-#define FILE_PATH MOUNT_PATH"/"FILE_NAME
-#define FILE2_PATH MOUNT_PATH"/"FILE2_NAME
+#define DIR_PATH MOUNT_PATH"/"DIR_NAME
+#define FILE_PATH DIR_PATH"/"FILE_NAME
+#define FILE2_PATH DIR_PATH"/"FILE2_NAME
 #define FILE_EXEC_PATH MOUNT_PATH"/"TEST_APP
 #define FILE2_EXEC_PATH MOUNT_PATH"/"TEST_APP2
-#define FILE_MNT2 MNT2_PATH"/"FILE_NAME
-#define FILE2_MNT2 MNT2_PATH"/"FILE2_NAME
+#define DIR_MNT2 MNT2_PATH"/"DIR_NAME
+#define FILE_MNT2 DIR_MNT2"/"FILE_NAME
+#define FILE2_MNT2 DIR_MNT2"/"FILE2_NAME
 #define FILE_EXEC_PATH2 MNT2_PATH"/"TEST_APP
 #define FILE2_EXEC_PATH2 MNT2_PATH"/"TEST_APP2
 
@@ -239,7 +242,7 @@ static struct tcase {
 	},
 	{
 		"ignore events on children of directory created on a specific file",
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_MNT2, FANOTIFY_INODE,
 		FILE_PATH, FANOTIFY_INODE,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
@@ -247,42 +250,42 @@ static struct tcase {
 	{
 		"ignore events on file created inside a parent watching children",
 		FILE_PATH, FANOTIFY_INODE,
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"don't ignore events on file created inside a parent not watching children",
 		FILE_PATH, FANOTIFY_INODE,
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
 	{
 		"ignore mount events created inside a parent watching children",
 		FILE_PATH, FANOTIFY_MOUNT,
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"don't ignore mount events created inside a parent not watching children",
 		FILE_PATH, FANOTIFY_MOUNT,
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
 	{
 		"ignore fs events created inside a parent watching children",
 		FILE_PATH, FANOTIFY_FILESYSTEM,
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"don't ignore fs events created inside a parent not watching children",
 		FILE_PATH, FANOTIFY_FILESYSTEM,
-		MNT2_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
@@ -525,6 +528,7 @@ static void setup(void)
 	SAFE_MOUNT(MOUNT_PATH, MNT2_PATH, "none", MS_BIND, NULL);
 	bind_mount_created = 1;
 
+	SAFE_MKDIR(DIR_PATH, 0755);
 	SAFE_FILE_PRINTF(FILE_PATH, "1");
 	SAFE_FILE_PRINTF(FILE2_PATH, "1");
 
