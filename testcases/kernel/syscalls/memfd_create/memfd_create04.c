@@ -79,6 +79,8 @@ static void memfd_huge_x_controller(unsigned int n)
 	tst_res(TPASS,
 		"memfd_create succeeded for %s page size",
 		tflag.h_size);
+
+	SAFE_CLOSE(fd);
 }
 
 static void setup(void)
