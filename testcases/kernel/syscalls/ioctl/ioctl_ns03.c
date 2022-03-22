@@ -33,10 +33,8 @@ static void run(void)
 
 	owner_fd = ioctl(fd, NS_GET_OWNER_UID, &uid);
 	if (owner_fd == -1) {
-		if (errno == ENOTTY) {
-			tst_brk(TCONF,
-			        "ioctl(NS_GET_OWNER_UID) not implemented");
-		}
+		if (errno == ENOTTY)
+			tst_brk(TCONF, "ioctl(NS_GET_OWNER_UID) not implemented");
 
 		if (errno == EINVAL)
 			tst_res(TPASS, "NS_GET_OWNER_UID fails, UTS namespace");
