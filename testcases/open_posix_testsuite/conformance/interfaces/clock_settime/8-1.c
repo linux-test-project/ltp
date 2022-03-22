@@ -23,6 +23,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 #include "helpers.h"
+#include "timespec.h"
 
 #define SLEEPSEC 5
 #define SMALLTIME 2
@@ -35,6 +36,10 @@ int main(void)
 {
 	struct timespec tsT0, tssleep;
 	int pid;
+	long diffnano, diffnano_low, diffnano_high;
+
+	diffnano_low = (long)(SLEEPSEC - SMALLTIME) * NSEC_IN_SEC;
+	diffnano_high = (long)(SLEEPSEC - SMALLTIME + ACCEPTABLEDELTA) * NSEC_IN_SEC;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if (getuid() != 0) {
@@ -66,6 +71,11 @@ int main(void)
 		}
 
 		expectedsec = tsT0.tv_sec + (SLEEPSEC - SMALLTIME);
+
+		diffnano = timespec_nsec_diff(&tsT0, &tsend);
+
+		printf("diffnano: %ld, > low: %d, < high: %d\n", diffnano, diffnano >= diffnano_low, diffnano <= diffnano_high);
+		  
 
 		if (tsend.tv_sec >= expectedsec) {
 			if ((tsend.tv_sec - expectedsec) <= ACCEPTABLEDELTA) {
