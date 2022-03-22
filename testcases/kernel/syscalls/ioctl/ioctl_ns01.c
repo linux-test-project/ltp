@@ -58,9 +58,9 @@ static void test_ns_get_parent(void)
 		else
 			tst_res(TFAIL | TERRNO, "unexpected ioctl error");
 	} else {
-		SAFE_CLOSE(fd);
 		tst_res(TFAIL, "call to ioctl succeded");
 	}
+	SAFE_CLOSE(fd);
 }
 
 static int child(void *arg LTP_ATTRIBUTE_UNUSED)

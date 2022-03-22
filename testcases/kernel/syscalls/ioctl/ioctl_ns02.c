@@ -40,9 +40,9 @@ static void run(void)
 		else
 			tst_res(TFAIL | TERRNO, "unexpected ioctl error");
 	} else {
-		SAFE_CLOSE(fd);
 		tst_res(TFAIL, "call to ioctl succeded");
 	}
+	SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
