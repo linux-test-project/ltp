@@ -2,17 +2,19 @@
 /*
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
- * This is a basic ioctl test about loopdevice.
- *
- * It is designed to test LO_FLAGS_READ_ONLY (similar as losetup -r)
- * and LOOP_CHANGE_FD.
+ * Tests ioctl() on loopdevice with LO_FLAGS_READ_ONLY (similar as losetup -r) and
+ * LOOP_CHANGE_FD flags.
  *
  * For LOOP_CHANGE_FD, this operation is possible only if the loop device
  * is read-only and the new backing store is the same size and type as the
  * old backing store.
  *
- * If using LOOP_CONFIGURE ioctl, we can set LO_FLAGS_READ_ONLY
+ * When using LOOP_CONFIGURE ioctl(), it can set LO_FLAGS_READ_ONLY
  * flag even though backing file with write mode.
  */
 

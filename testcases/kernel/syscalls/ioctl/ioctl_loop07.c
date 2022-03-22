@@ -2,16 +2,18 @@
 /*
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
- * This is a basic ioctl test about loopdevice LOOP_SET_STATUS64
- * and LOOP_GET_STATUS64.
- * Test its lo_sizelimit field. If lo_sizelimit is 0,it means max
+ * Tests ioctl() on loopdevice with LOOP_SET_STATUS64 and LOOP_GET_STATUS64 flags.
+ *
+ * Tests lo_sizelimit field. If lo_sizelimit is 0, it means max
  * available. If sizelimit is less than loop_size, loopsize will
  * be truncated.
  *
- * We also use LOOP_CONFIGURE ioctl to test lo_sizelimit field. It is
- * also a regression test for
- * commit 79e5dc59e297 ("loop: Set correct device size when using LOOP_CONFIGURE").
+ * Also uses LOOP_CONFIGURE ioctl to test lo_sizelimit field.
  */
 
 #include <stdio.h>

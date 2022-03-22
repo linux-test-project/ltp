@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
+ * Copyright (c) Linux Test Project, 2022
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Test ioctl_ns with NS_GET_* request for file descriptors
  * that aren't namespaces.
  *
  * Calling ioctl with test directory's file descriptor
  * should make the call fail with ENOTTY.
- *
  */
 
 #define _GNU_SOURCE

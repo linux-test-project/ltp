@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
+ * Copyright (c) Linux Test Project, 2019-2022
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Test ioctl_ns with NS_GET_PARENT request.
  *
- * Tries to get namespace parent for UTS namespace, which
+ * Test tries to get namespace parent for UTS namespace, which
  * should make the call fail with EINVAL, being a nonhierarchical
  * namespace.
- *
  */
+
 #define _GNU_SOURCE
 
 #include <errno.h>

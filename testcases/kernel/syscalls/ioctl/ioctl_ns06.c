@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
+ * Copyright (c) Linux Test Project, 2019-2022
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Test ioctl_ns with NS_GET_USERNS request.
  *
  * After the call to clone with the CLONE_NEWUSER flag,
  * child is created in a new user namespace. That's checked by
  * comparing its /proc/self/ns/user symlink and the parent's one,
  * which should be different.
- *
  */
+
 #define _GNU_SOURCE
 
 #include <errno.h>

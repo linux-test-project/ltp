@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
+ * Copyright (c) Linux Test Project, 2019-2022
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Test ioctl_ns with NS_GET_OWNER_UID request.
  *
  * Calls ioctl for a UTS namespace, which isn't a user namespace.

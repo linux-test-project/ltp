@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
+ * Copyright (c) Linux Test Project, 2019-2022
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Test ioctl_ns with NS_GET_PARENT request.
  *
  * Child cloned with the CLONE_NEWPID flag is created in a new pid namespace.
  * That's checked by comparing its /proc/self/ns/pid symlink and the parent's
  * one. Also child thinks its pid is 1.
- *
  */
+
 #define _GNU_SOURCE
 
 #include <errno.h>
