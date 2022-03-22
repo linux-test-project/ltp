@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 Federico Bonfiglio fedebonfi95@gmail.com
+ * Copyright (c) 2019 Federico Bonfiglio <fedebonfi95@gmail.com>
+ * Copyright (c) Linux Test Project, 2019-2022
  */
 
 /*\
