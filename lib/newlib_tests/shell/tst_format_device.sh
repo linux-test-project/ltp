@@ -7,7 +7,6 @@ TST_TESTFUNC=test
 TST_CNT=2
 TST_DEV_FS_OPTS="-b 1024 -O quota"
 TST_DEV_EXTRA_OPTS="5m"
-TST_NEEDS_CMDS="df"
 . tst_test.sh
 
 test1()
