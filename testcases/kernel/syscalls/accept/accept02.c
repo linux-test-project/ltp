@@ -67,6 +67,7 @@ static void *server_thread(void *arg)
 
 	TEST(setsockopt(clone_server_sockfd, SOL_IP, MCAST_LEAVE_GROUP,
 			mc_group, mc_group_len));
+	SAFE_CLOSE(clone_server_sockfd);
 
 	if (TST_RET != -1)
 		tst_res(TFAIL, "Multicast group was copied!");
