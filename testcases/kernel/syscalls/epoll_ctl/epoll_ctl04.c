@@ -60,6 +60,7 @@ static void verify_epoll_ctl(void)
 	events.data.fd = epfd;
 	TST_EXP_FAIL(epoll_ctl(new_epfd, EPOLL_CTL_ADD, epfd, &events), EINVAL,
 		     "epoll_clt(..., EPOLL_CTL_ADD, ...) with number of nesting is 5");
+	SAFE_CLOSE(new_epfd);
 }
 
 static struct tst_test test = {
