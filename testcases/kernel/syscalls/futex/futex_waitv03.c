@@ -26,11 +26,11 @@ static char *str_numfutex;
 static int numfutex = 30;
 
 static struct futex_waitv *waitv;
+static int *shmids;
 
 static void setup(void)
 {
 	struct futex_test_variants tv = futex_variant();
-	int shm_id;
 	int i;
 
 	tst_res(TINFO, "Testing variant: %s", tv.desc);
@@ -41,10 +41,12 @@ static void setup(void)
 
 	waitv = tst_alloc(sizeof(struct futex_waitv) * numfutex);
 	memset(waitv, 0, sizeof(struct futex_waitv) * numfutex);
+	shmids = tst_alloc(sizeof(int*) * numfutex);
+	memset(shmids, 0, sizeof(int*) * numfutex);
 
 	for (i = 0; i < numfutex; i++) {
-		shm_id = SAFE_SHMGET(IPC_PRIVATE, 4096, IPC_CREAT | 0666);
-		waitv[i].uaddr = (uintptr_t)SAFE_SHMAT(shm_id, NULL, 0);
+		shmids[i] = SAFE_SHMGET(IPC_PRIVATE, 4096, IPC_CREAT | 0666);
+		waitv[i].uaddr = (uintptr_t)SAFE_SHMAT(shmids[i], NULL, 0);
 		waitv[i].flags = FUTEX_32;
 		waitv[i].val = 0;
 	}
@@ -59,6 +61,7 @@ static void cleanup(void)
 			continue;
 
 		SAFE_SHMDT((void *)(uintptr_t)waitv[i].uaddr);
+		SAFE_SHMCTL(shmids[i], IPC_RMID, NULL);
 	}
 }
 
