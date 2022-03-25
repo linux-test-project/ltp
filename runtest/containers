@@ -57,9 +57,9 @@ msg_comm msg_comm
 sem_nstest_none sem_nstest -m none
 sem_nstest_clone sem_nstest -m clone
 sem_nstest_unshare sem_nstest -m unshare
-semtest_2ns_none semtest_2ns none
-semtest_2ns_clone semtest_2ns clone
-semtest_2ns_unshare semtest_2ns unshare
+semtest_2ns_none semtest_2ns -m none
+semtest_2ns_clone semtest_2ns -m clone
+semtest_2ns_unshare semtest_2ns -m unshare
 sem_comm sem_comm
 
 utstest_unshare_1 utstest unshare 1
