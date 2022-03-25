@@ -43,9 +43,9 @@ netns_comm_ns_exec_ipv4_ioctl netns_comm.sh -eI
 netns_comm_ns_exec_ipv6_ioctl netns_comm.sh -6eI
 netns_sysfs netns_sysfs.sh
 
-shmnstest_none shmnstest none
-shmnstest_clone shmnstest clone
-shmnstest_unshare shmnstest unshare
+shmnstest_none shmnstest -m none
+shmnstest_clone shmnstest -m clone
+shmnstest_unshare shmnstest -m unshare
 shmem_2nstest_none shmem_2nstest none
 shmem_2nstest_clone shmem_2nstest clone
 shmem_2nstest_unshare shmem_2nstest unshare
