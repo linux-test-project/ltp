@@ -1,20 +1,16 @@
-/* Copyright (c) 2014 Red Hat, Inc.
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (C) 2022 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
+
+/*\
+ * [Description]
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
+ * Test SysV IPC message passing through different processes.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * [Algorithm]
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ***********************************************************************
- * File: msg_comm.c
- *
- * Description:
  * 1. Clones two child processes with CLONE_NEWIPC flag, each child
  *    gets System V message queue (msg) with the _identical_ key.
  * 2. Child1 appends a message with identifier #1 to the message queue.
@@ -27,152 +23,86 @@
  */
 
 #define _GNU_SOURCE
-#include <sys/ipc.h>
+
+#include <sys/wait.h>
 #include <sys/msg.h>
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#include <errno.h>
-#include "ipcns_helper.h"
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_safe_sysv_ipc.h"
+#include "tst_test.h"
+#include "common.h"
 
 #define TESTKEY 124426L
-#define MSGSIZE 50
-char *TCID	= "msg_comm";
-int TST_TOTAL	= 1;
 
 struct sysv_msg {
 	long mtype;
-	char mtext[MSGSIZE];
+	char mtext[1];
 };
 
-static void cleanup(void)
+static int chld1_msg(LTP_ATTRIBUTE_UNUSED void *arg)
 {
-	tst_rmdir();
+	int id;
+	struct sysv_msg m = {
+		.mtype = 1,
+		.mtext = "A",
+	};
+	struct sysv_msg rec;
+
+	id = SAFE_MSGGET(TESTKEY, IPC_CREAT | 0600);
+
+	SAFE_MSGSND(id, &m, sizeof(m.mtext), 0);
+
+	TST_CHECKPOINT_WAIT(0);
+
+	TEST(msgrcv(id, &rec, sizeof(rec.mtext), 2, IPC_NOWAIT));
+	if (TST_RET < 0 && TST_ERR != ENOMSG)
+		tst_brk(TBROK | TERRNO, "msgrcv error");
+
+	/* if child1 message queue has changed (by child2) report fail */
+	if (TST_RET > 0)
+		tst_res(TFAIL, "messages leak between namespacess");
+	else
+		tst_res(TPASS, "messages does not leak between namespaces");
+
+	TST_CHECKPOINT_WAKE(0);
+
+	SAFE_MSGCTL(id, IPC_RMID, NULL);
+
+	return 0;
+}
+
+static int chld2_msg(LTP_ATTRIBUTE_UNUSED void *arg)
+{
+	int id;
+	struct sysv_msg m = {
+		.mtype = 2,
+		.mtext = "B",
+	};
+
+	id = SAFE_MSGGET(TESTKEY, IPC_CREAT | 0600);
+
+	SAFE_MSGSND(id, &m, sizeof(m.mtext), 0);
+
+	TST_CHECKPOINT_WAKE_AND_WAIT(0);
+
+	SAFE_MSGCTL(id, IPC_RMID, NULL);
+
+	return 0;
+}
+
+static void run(void)
+{
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_msg, NULL);
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_msg, NULL);
 }
 
 static void setup(void)
 {
-	tst_require_root();
 	check_newipc();
-	tst_tmpdir();
-	TST_CHECKPOINT_INIT(tst_rmdir);
 }
 
-int chld1_msg(void *arg)
-{
-	int id, n, rval = 0;
-	struct sysv_msg m;
-	struct sysv_msg rec;
-
-	id = msgget(TESTKEY, IPC_CREAT | 0600);
-	if (id == -1) {
-		perror("msgget");
-		return 2;
-	}
-
-	m.mtype = 1;
-	m.mtext[0] = 'A';
-	if (msgsnd(id, &m, sizeof(struct sysv_msg) - sizeof(long), 0) == -1) {
-		perror("msgsnd");
-		msgctl(id, IPC_RMID, NULL);
-		return 2;
-	}
-
-	/* wait for child2 to write into the message queue */
-	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
-
-	/* if child1 message queue has changed (by child2) report fail */
-	n = msgrcv(id, &rec, sizeof(struct sysv_msg) - sizeof(long),
-		   2, IPC_NOWAIT);
-	if (n == -1 && errno != ENOMSG) {
-		perror("msgrcv");
-		msgctl(id, IPC_RMID, NULL);
-		return 2;
-	}
-	/* if mtype #2 was found in the message queue, it is fail */
-	if (n > 0) {
-		rval = 1;
-	}
-
-	/* tell child2 to continue */
-	TST_SAFE_CHECKPOINT_WAKE(NULL, 0);
-
-	msgctl(id, IPC_RMID, NULL);
-	return rval;
-}
-
-int chld2_msg(void *arg)
-{
-	int id;
-	struct sysv_msg m;
-
-	id = msgget(TESTKEY, IPC_CREAT | 0600);
-	if (id == -1) {
-		perror("msgget");
-		return 2;
-	}
-
-	m.mtype = 2;
-	m.mtext[0] = 'B';
-	if (msgsnd(id, &m, sizeof(struct sysv_msg) - sizeof(long), 0) == -1) {
-		perror("msgsnd");
-		msgctl(id, IPC_RMID, NULL);
-		return 2;
-	}
-
-	/* tell child1 to continue and wait for it */
-	TST_SAFE_CHECKPOINT_WAKE_AND_WAIT(NULL, 0);
-
-	msgctl(id, IPC_RMID, NULL);
-	return 0;
-}
-
-static void test(void)
-{
-	int status, ret = 0;
-
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_msg, NULL);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
-
-	ret = do_clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_msg, NULL);
-	if (ret == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
-
-
-	while (wait(&status) > 0) {
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
-			ret = 1;
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 2)
-			tst_brkm(TBROK | TERRNO, cleanup, "error in child");
-		if (WIFSIGNALED(status)) {
-			tst_resm(TFAIL, "child was killed with signal %s",
-					tst_strsig(WTERMSIG(status)));
-			return;
-		}
-	}
-
-	if (ret)
-		tst_resm(TFAIL, "SysV msg: communication with identical keys"
-				" between namespaces");
-	else
-		tst_resm(TPASS, "SysV msg: communication with identical keys"
-				" between namespaces");
-}
-
-int main(int argc, char *argv[])
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		test();
-
-	cleanup();
-	tst_exit();
-}
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.needs_root = 1,
+	.needs_checkpoints = 1,
+};
