@@ -26,6 +26,7 @@ static char *str_numfutex;
 static int numfutex = 30;
 
 static struct futex_waitv *waitv;
+static unsigned int waitv_allocated;
 static int *shmids;
 
 static void setup(void)
@@ -50,11 +51,15 @@ static void setup(void)
 		waitv[i].flags = FUTEX_32;
 		waitv[i].val = 0;
 	}
+	waitv_allocated = tst_variant + 1;
 }
 
 static void cleanup(void)
 {
 	int i;
+
+	if (waitv_allocated != (tst_variant + 1))
+		return;
 
 	for (i = 0; i < numfutex; i++) {
 		if (!waitv[i].uaddr)
