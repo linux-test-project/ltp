@@ -54,9 +54,9 @@ mesgq_nstest_none mesgq_nstest -m none
 mesgq_nstest_clone mesgq_nstest -m clone
 mesgq_nstest_unshare mesgq_nstest -m unshare
 msg_comm msg_comm
-sem_nstest_none sem_nstest none
-sem_nstest_clone sem_nstest clone
-sem_nstest_unshare sem_nstest unshare
+sem_nstest_none sem_nstest -m none
+sem_nstest_clone sem_nstest -m clone
+sem_nstest_unshare sem_nstest -m unshare
 semtest_2ns_none semtest_2ns none
 semtest_2ns_clone semtest_2ns clone
 semtest_2ns_unshare semtest_2ns unshare
