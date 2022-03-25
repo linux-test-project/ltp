@@ -46,9 +46,9 @@ netns_sysfs netns_sysfs.sh
 shmnstest_none shmnstest -m none
 shmnstest_clone shmnstest -m clone
 shmnstest_unshare shmnstest -m unshare
-shmem_2nstest_none shmem_2nstest none
-shmem_2nstest_clone shmem_2nstest clone
-shmem_2nstest_unshare shmem_2nstest unshare
+shmem_2nstest_none shmem_2nstest -m none
+shmem_2nstest_clone shmem_2nstest -m clone
+shmem_2nstest_unshare shmem_2nstest -m unshare
 shm_comm shm_comm
 mesgq_nstest_none mesgq_nstest -m none
 mesgq_nstest_clone mesgq_nstest -m clone
