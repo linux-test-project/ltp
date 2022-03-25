@@ -1,117 +1,82 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Huawei Technologies Co., Ltd., 2015
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
+ * Copyright (C) 2022 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-/*
- * Verify that:
- *  The user ID and group ID, which are inside a container, can be modified
- * by its parent process.
+/*\
+ * [Description]
+ *
+ * Verify that the user ID and group ID, which are inside a container,
+ * can be modified by its parent process.
  */
 
 #define _GNU_SOURCE
-#include <sys/wait.h>
-#include <assert.h>
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include "userns_helper.h"
-#include "test.h"
-
-char *TCID = "user_namespace2";
-int TST_TOTAL = 1;
-
-static void cleanup(void)
-{
-	tst_rmdir();
-}
+#include "common.h"
+#include "tst_test.h"
 
 /*
  * child_fn1() - Inside a new user namespace
  */
-static int child_fn1(void)
+static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
 {
-	int exit_val;
 	int uid, gid;
 
-	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
+	TST_CHECKPOINT_WAIT(0);
+
 	uid = geteuid();
 	gid = getegid();
 
-	if (uid == 100 && gid == 100) {
-		printf("Got expected uid and gid.\n");
-		exit_val = 0;
-	} else {
-		printf("Got unexpected result of uid=%d gid=%d\n", uid, gid);
-		exit_val = 1;
-	}
+	if (uid == 100 && gid == 100)
+		tst_res(TPASS, "got expected uid and gid");
+	else
+		tst_res(TFAIL, "got unexpected uid=%d gid=%d", uid, gid);
 
-	return exit_val;
+	return 0;
 }
 
 static void setup(void)
 {
 	check_newuser();
-	tst_tmpdir();
-	TST_CHECKPOINT_INIT(NULL);
 }
 
-int main(int argc, char *argv[])
+static void run(void)
 {
-	int lc;
 	int childpid;
 	int parentuid;
 	int parentgid;
 	char path[BUFSIZ];
-	char content[BUFSIZ];
-	int fd;
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-	setup();
+	childpid = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, child_fn1, NULL);
+	if (childpid < 0)
+		tst_brk(TBROK | TTERRNO, "clone failed");
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		childpid = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD,
-			(void *)child_fn1, NULL);
+	parentuid = geteuid();
+	parentgid = getegid();
 
-		if (childpid < 0)
-			tst_brkm(TFAIL | TERRNO, cleanup, "clone failed");
+	sprintf(path, "/proc/%d/uid_map", childpid);
+	SAFE_FILE_PRINTF(path, "100 %d 1", parentuid);
 
-		parentuid = geteuid();
-		parentgid = getegid();
-		sprintf(path, "/proc/%d/uid_map", childpid);
-		sprintf(content, "100 %d 1", parentuid);
-		fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-		SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
-		SAFE_CLOSE(cleanup, fd);
-
-		if (access("/proc/self/setgroups", F_OK) == 0) {
-			sprintf(path, "/proc/%d/setgroups", childpid);
-			fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-			SAFE_WRITE(cleanup, 1, fd, "deny", 4);
-			SAFE_CLOSE(cleanup, fd);
-		}
-
-		sprintf(path, "/proc/%d/gid_map", childpid);
-		sprintf(content, "100 %d 1", parentgid);
-		fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-		SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
-		SAFE_CLOSE(cleanup, fd);
-
-		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
-
-		tst_record_childstatus(cleanup, childpid);
+	if (access("/proc/self/setgroups", F_OK) == 0) {
+		sprintf(path, "/proc/%d/setgroups", childpid);
+		SAFE_FILE_PRINTF(path, "deny");
 	}
-	cleanup();
-	tst_exit();
+
+	sprintf(path, "/proc/%d/gid_map", childpid);
+	SAFE_FILE_PRINTF(path, "100 %d 1", parentgid);
+
+	TST_CHECKPOINT_WAKE(0);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.needs_root = 1,
+	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		NULL,
+	},
+};
