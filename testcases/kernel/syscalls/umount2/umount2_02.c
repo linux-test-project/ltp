@@ -53,12 +53,12 @@ static struct tcase {
 
 static int umount2_retry(const char *target, int flags)
 {
-	int i;
+	int i, ret;
 
 	for (i = 0; i < 50; i++) {
-		TEST(umount2(target, flags));
-		if (TST_RET == 0 || TST_ERR != EBUSY)
-			return TST_RET;
+		ret = umount2(target, flags);
+		if (ret == 0 || errno != EBUSY)
+			return ret;
 
 		tst_res(TINFO, "umount('%s', %i) failed with EBUSY, try %2i...",
 			target, flags, i);
@@ -69,7 +69,7 @@ static int umount2_retry(const char *target, int flags)
 	tst_res(TWARN, "Failed to umount('%s', %i) after 50 retries",
 		target, flags);
 
-	TST_ERR = EBUSY;
+	errno = EBUSY;
 	return -1;
 }
 
