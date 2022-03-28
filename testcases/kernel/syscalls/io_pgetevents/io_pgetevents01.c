@@ -28,12 +28,6 @@ static void setup(void)
 	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
 }
 
-static void cleanup(void)
-{
-	if (fd > 0)
-		SAFE_CLOSE(fd);
-}
-
 static void run(void)
 {
 	struct time64_variants *tv = &variants[tst_variant];
@@ -71,6 +65,8 @@ static void run(void)
 
 	if (io_destroy(ctx) < 0)
 		tst_brk(TBROK | TERRNO, "io_destroy() failed");
+
+	SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
@@ -78,7 +74,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.test_variants = ARRAY_SIZE(variants),
 	.needs_tmpdir = 1,
-	.cleanup = cleanup,
 	.setup = setup,
 };
 
