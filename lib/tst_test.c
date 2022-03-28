@@ -436,6 +436,9 @@ pid_t safe_fork(const char *filename, unsigned int lineno)
 	return pid;
 }
 
+/* too fast creating namespaces => retrying */
+#define TST_CHECK_ENOSPC(x) ((x) >= 0 || !(errno == ENOSPC))
+
 pid_t safe_clone(const char *file, const int lineno,
 		 const struct tst_clone_args *args)
 {
@@ -444,7 +447,7 @@ pid_t safe_clone(const char *file, const int lineno,
 	if (!tst_test->forks_child)
 		tst_brk(TBROK, "test.forks_child must be set!");
 
-	pid = tst_clone(args);
+	pid = TST_RETRY_FUNC(tst_clone(args), TST_CHECK_ENOSPC);
 
 	switch (pid) {
 	case -1:
