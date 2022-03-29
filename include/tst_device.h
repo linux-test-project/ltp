@@ -8,6 +8,7 @@
 
 #include <unistd.h>
 #include <stdint.h>
+#include <sys/stat.h>
 
 struct tst_device {
 	const char *dev;
@@ -111,6 +112,11 @@ void tst_purge_dir(const char *path);
  * @dev   The block dev
  */
 void tst_find_backing_dev(const char *path, char *dev);
+
+/*
+ * Stat the device mounted on a given path.
+ */
+void tst_stat_mount_dev(const char *const mnt_path, struct stat *const st);
 
 /*
  * Returns the size of a physical device block size for the specific path
