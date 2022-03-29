@@ -35,7 +35,7 @@ clockid_t clks[] = {
 };
 
 static gettime_t ptr_vdso_gettime, ptr_vdso_gettime64;
-static long long delta = 5;
+static long long delta, precise_delta, coarse_delta;
 
 static inline int do_vdso_gettime(gettime_t vdso, clockid_t clk_id, void *ts)
 {
@@ -92,9 +92,18 @@ static struct time64_variants variants[] = {
 
 static void setup(void)
 {
+	struct timespec res;
+
+	clock_getres(CLOCK_REALTIME, &res);
+	precise_delta = 5 + res.tv_nsec / 1000000;
+
+	clock_getres(CLOCK_REALTIME_COARSE, &res);
+	coarse_delta = 5 + res.tv_nsec / 1000000;
+
 	if (tst_is_virt(VIRT_ANY)) {
 		tst_res(TINFO, "Running in a virtual machine, multiply the delta by 10.");
-		delta *= 10;
+		precise_delta *= 10;
+		coarse_delta *= 10;
 	}
 
 	find_clock_gettime_vdso(&ptr_vdso_gettime, &ptr_vdso_gettime64);
@@ -107,6 +116,11 @@ static void run(unsigned int i)
 	struct time64_variants *tv;
 	int count = 10000, ret;
 	unsigned int j;
+
+	if (clks[i] == CLOCK_REALTIME_COARSE || clks[i] == CLOCK_MONOTONIC_COARSE)
+		delta = coarse_delta;
+	else
+		delta = precise_delta;
 
 	do {
 		for (j = 0; j < ARRAY_SIZE(variants); j++) {
