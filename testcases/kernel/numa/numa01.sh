@@ -35,7 +35,7 @@ get_node_index()
                -v node="$nid" '{ for (i = 1; i <= NF; ++i) if($i==node) print i; exit }')
 }
 
-# Convert the value of given numa node from the `numastat -p` output,
+# Convert the value of given NUMA node from the `numastat -p` output,
 # multiply by size.
 # $1 - Pid number
 # $2 - Node number
@@ -82,9 +82,9 @@ setup()
 	done
 
 	tst_res TINFO "The system contains $total_nodes nodes: $nodes_list"
+
 	if [ $total_nodes -le 1 ]; then
-		tst_brk TCONF "your machine does not support numa policy
-		or your machine is not a NUMA machine"
+		tst_brk TCONF "SUT does not support NUMA policy or not a NUMA machine"
 	fi
 }
 
@@ -292,10 +292,10 @@ test7()
 			RC=$(awk '{ if ( NR == 1 ) {print $2;} }' gavail_nodes)
 			tst_res TPASS "NUMA policy on lib NUMA_NODE_SIZE API"
 		else
-			tst_res TFAIL "Failed with numa policy"
+			tst_res TFAIL "Failed with NUMA policy"
 		fi
 	else
-		tst_res TFAIL "Failed with numa policy"
+		tst_res TFAIL "Failed with NUMA policy"
 	fi
 }
 
