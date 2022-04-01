@@ -2,7 +2,7 @@
 # Copyright (c) 2018-2021 Petr Vorel <pvorel@suse.cz>
 set -ex
 
-yum="yum -y install"
+yum="yum -y install --skip-broken"
 
 $yum \
 	asciidoc \
