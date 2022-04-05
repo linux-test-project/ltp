@@ -2,17 +2,18 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2002
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
- *
- * Jay Huie
- * Robbie Williamson
+ * Author: Jay Huie, Robbie Williamson
  */
-/*
- * Test Description:
- *  Verify that,
- *  1)ftruncate() fails with EINVAL if the file is a socket.
- *  2)ftruncate() fails with EINVAL if the file descriptor opens with O_RDONLY.
- *  3)ftruncate() fails with EINVAL if the length is negative.
- *  4)ftruncate() fails with EBADF if the file descriptor is invalid.
+
+/*\
+ * [Description]
+ *
+ * Verify that ftruncate(2) system call returns appropriate error number:
+ *
+ * 1. EINVAL &ndash; the file is a socket
+ * 2. EINVAL &ndash; the file descriptor was opened with O_RDONLY
+ * 3. EINVAL &ndash; the length is negative
+ * 4. EBADF &ndash; the file descriptor is invalid
  */
 
 #include <sys/types.h>
