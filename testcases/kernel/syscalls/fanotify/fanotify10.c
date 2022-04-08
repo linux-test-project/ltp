@@ -71,6 +71,7 @@ static char event_buf[EVENT_BUF_LEN];
 static int exec_events_unsupported;
 static int fan_report_dfid_unsupported;
 static int filesystem_mark_unsupported;
+static int evictable_mark_unsupported;
 
 #define MOUNT_PATH "fs_mnt"
 #define MNT2_PATH "mntpoint"
@@ -90,6 +91,10 @@ static int filesystem_mark_unsupported;
 #define FILE_EXEC_PATH2 MNT2_PATH"/"TEST_APP
 #define FILE2_EXEC_PATH2 MNT2_PATH"/"TEST_APP2
 
+#define DROP_CACHES_FILE "/proc/sys/vm/drop_caches"
+#define CACHE_PRESSURE_FILE "/proc/sys/vm/vfs_cache_pressure"
+
+static int old_cache_pressure;
 static pid_t child_pid;
 static int bind_mount_created;
 static unsigned int num_classes = NUM_CLASSES;
@@ -98,12 +103,14 @@ enum {
 	FANOTIFY_INODE,
 	FANOTIFY_MOUNT,
 	FANOTIFY_FILESYSTEM,
+	FANOTIFY_EVICTABLE,
 };
 
 static struct fanotify_mark_type fanotify_mark_types[] = {
 	INIT_FANOTIFY_MARK_TYPE(INODE),
 	INIT_FANOTIFY_MARK_TYPE(MOUNT),
 	INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+	INIT_FANOTIFY_MARK_TYPE(EVICTABLE),
 };
 
 static struct tcase {
@@ -289,7 +296,51 @@ static struct tcase {
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
+	/* Evictable ignore mark test cases */
+	{
+		"don't ignore mount events created on file with evicted ignore mark",
+		MOUNT_PATH, FANOTIFY_MOUNT,
+		FILE_PATH, FANOTIFY_EVICTABLE,
+		0,
+		FILE_PATH, FAN_OPEN, FAN_OPEN
+	},
+	{
+		"don't ignore fs events created on a file with evicted ignore mark",
+		MOUNT_PATH, FANOTIFY_FILESYSTEM,
+		FILE_PATH, FANOTIFY_EVICTABLE,
+		0,
+		FILE_PATH, FAN_OPEN, FAN_OPEN
+	},
+	{
+		"don't ignore mount events created inside a parent with evicted ignore mark",
+		MOUNT_PATH, FANOTIFY_MOUNT,
+		DIR_PATH, FANOTIFY_EVICTABLE,
+		FAN_EVENT_ON_CHILD,
+		FILE_PATH, FAN_OPEN, FAN_OPEN
+	},
+	{
+		"don't ignore fs events created inside a parent with evicted ignore mark",
+		MOUNT_PATH, FANOTIFY_FILESYSTEM,
+		DIR_PATH, FANOTIFY_EVICTABLE,
+		FAN_EVENT_ON_CHILD,
+		FILE_PATH, FAN_OPEN, FAN_OPEN
+	},
 };
+
+static void show_fanotify_marks(int fd)
+{
+	unsigned int mflags, mask, ignored_mask;
+	char procfdinfo[100];
+
+	sprintf(procfdinfo, "/proc/%d/fdinfo/%d", (int)getpid(), fd);
+	if (FILE_LINES_SCANF(procfdinfo, "fanotify ino:%*x sdev:%*x mflags: %x mask:%x ignored_mask:%x",
+				&mflags, &mask, &ignored_mask)) {
+		tst_res(TPASS, "No fanotify inode marks as expected");
+	} else {
+		tst_res(TFAIL, "Unexpected inode mark (mflags=%x, mask=%x ignored_mask=%x)",
+				mflags, mask, ignored_mask);
+	}
+}
 
 static int create_fanotify_groups(unsigned int n)
 {
@@ -297,6 +348,7 @@ static int create_fanotify_groups(unsigned int n)
 	struct fanotify_mark_type *mark, *ignore_mark;
 	unsigned int mark_ignored, mask;
 	unsigned int p, i;
+	int evictable_ignored = (tc->ignore_mark_type == FANOTIFY_EVICTABLE);
 
 	mark = &fanotify_mark_types[tc->mark_type];
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
@@ -345,6 +397,20 @@ add_mark:
 			}
 		}
 	}
+
+	/*
+	 * drop_caches should evict inode from cache and remove evictable marks
+	 */
+	if (evictable_ignored) {
+		SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
+		for (p = 0; p < num_classes; p++) {
+			for (i = 0; i < GROUPS_PER_PRIO; i++) {
+				if (fd_notify[p][i] > 0)
+					show_fanotify_marks(fd_notify[p][i]);
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -439,6 +505,11 @@ static void test_fanotify(unsigned int n)
 		return;
 	}
 
+	if (evictable_mark_unsupported && tc->ignore_mark_type == FANOTIFY_EVICTABLE) {
+		tst_res(TCONF, "FAN_MARK_EVICTABLE not supported in kernel?");
+		return;
+	}
+
 	if (tc->ignored_onchild && tst_kvercmp(5, 9, 0) < 0) {
 		tst_res(TCONF, "ignored mask in combination with flag FAN_EVENT_ON_CHILD"
 				" has undefined behavior on kernel < 5.9");
@@ -527,6 +598,7 @@ static void setup(void)
 	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC,
 								      FAN_CLASS_CONTENT, 0);
 	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
+	evictable_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_EVICTABLE);
 	fan_report_dfid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
 									  MOUNT_PATH);
 	if (fan_report_dfid_unsupported) {
@@ -545,6 +617,10 @@ static void setup(void)
 	/* Create another bind mount at another path for generating events */
 	SAFE_MKDIR(MNT2_PATH, 0755);
 	mount_cycle();
+
+	SAFE_FILE_SCANF(CACHE_PRESSURE_FILE, "%d", &old_cache_pressure);
+	/* Set high priority for evicting inodes */
+	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "500");
 }
 
 static void cleanup(void)
@@ -553,6 +629,8 @@ static void cleanup(void)
 
 	if (bind_mount_created)
 		SAFE_UMOUNT(MNT2_PATH);
+
+	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "%d", old_cache_pressure);
 }
 
 static const char *const resource_files[] = {
