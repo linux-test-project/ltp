@@ -98,6 +98,20 @@ static void test_invalid_clockid(void)
 		     "futex_waitv invalid clockid");
 }
 
+static void test_invalid_nr_futex(void)
+{
+	struct timespec to;
+
+	init_waitv();
+	init_timeout(&to);
+
+	/* Valid nr_futexes is [1, 128] */
+	TST_EXP_FAIL(futex_waitv(waitv, 129, 0, &to, CLOCK_REALTIME), EINVAL,
+		     "futex_waitv invalid nr_futexes");
+	TST_EXP_FAIL(futex_waitv(waitv, 0, 0, &to, CLOCK_REALTIME), EINVAL,
+		     "futex_waitv invalid nr_futexes");
+}
+
 static void run(void)
 {
 	test_invalid_flags();
@@ -105,6 +119,7 @@ static void run(void)
 	test_null_address();
 	test_null_waiters();
 	test_invalid_clockid();
+	test_invalid_nr_futex();
 }
 
 static struct tst_test test = {
