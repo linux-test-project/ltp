@@ -360,6 +360,17 @@ static void cleanup_fanotify_groups(void)
 	}
 }
 
+/* Flush out all pending dirty inodes and destructing marks */
+static void mount_cycle(void)
+{
+	if (bind_mount_created)
+		SAFE_UMOUNT(MNT2_PATH);
+	SAFE_UMOUNT(MOUNT_PATH);
+	SAFE_MOUNT(tst_device->dev, MOUNT_PATH, tst_device->fs_type, 0, NULL);
+	SAFE_MOUNT(MOUNT_PATH, MNT2_PATH, "none", MS_BIND, NULL);
+	bind_mount_created = 1;
+}
+
 static void verify_event(int p, int group, struct fanotify_event_metadata *event,
 			 unsigned long long expected_mask)
 {
@@ -508,6 +519,7 @@ static void test_fanotify(unsigned int n)
 	}
 cleanup:
 	cleanup_fanotify_groups();
+	mount_cycle();
 }
 
 static void setup(void)
@@ -523,25 +535,24 @@ static void setup(void)
 		num_classes = NUM_PRIORITIES;
 	}
 
-	/* Create another bind mount at another path for generating events */
-	SAFE_MKDIR(MNT2_PATH, 0755);
-	SAFE_MOUNT(MOUNT_PATH, MNT2_PATH, "none", MS_BIND, NULL);
-	bind_mount_created = 1;
-
 	SAFE_MKDIR(DIR_PATH, 0755);
 	SAFE_FILE_PRINTF(FILE_PATH, "1");
 	SAFE_FILE_PRINTF(FILE2_PATH, "1");
 
 	SAFE_CP(TEST_APP, FILE_EXEC_PATH);
 	SAFE_CP(TEST_APP, FILE2_EXEC_PATH);
+
+	/* Create another bind mount at another path for generating events */
+	SAFE_MKDIR(MNT2_PATH, 0755);
+	mount_cycle();
 }
 
 static void cleanup(void)
 {
 	cleanup_fanotify_groups();
 
-	if (bind_mount_created && tst_umount(MNT2_PATH) < 0)
-		tst_brk(TBROK | TERRNO, "bind umount failed");
+	if (bind_mount_created)
+		SAFE_UMOUNT(MNT2_PATH);
 }
 
 static const char *const resource_files[] = {
