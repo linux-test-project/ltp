@@ -57,7 +57,7 @@ static void child_func(void)
 	SAFE_BIND(fd, (struct sockaddr *) &sa, sizeof(sa));
 
 	/* waits for parent to create an interface */
-	TST_CHECKPOINT_WAIT(0);
+	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	/*
 	 * To get rid of "resource temporarily unavailable" errors
@@ -97,6 +97,9 @@ static void test_netns_netlink(void)
 
 	if (SAFE_FORK() == 0)
 		child_func();
+
+	/* wait until child opens netlink socket */
+	TST_CHECKPOINT_WAIT(0);
 
 	/* creates TAP network interface dummy0 */
 	if (WEXITSTATUS(system("ip tuntap add dev dummy0 mode tap")))
