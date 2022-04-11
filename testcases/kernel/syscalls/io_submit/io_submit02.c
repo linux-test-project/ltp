@@ -70,12 +70,21 @@ static void cleanup(void)
 
 static void run(unsigned int i)
 {
+	struct io_event evbuf;
+	struct timespec timeout = { .tv_sec = 1 };
+	long j;
+
 	TEST(tst_syscall(__NR_io_submit, *tc[i].ctx, tc[i].nr, tc[i].iocbs));
 
 	if (TST_RET == tc[i].nr)
 		tst_res(TPASS, "io_submit() %s", tc[i].desc);
 	else
 		tst_res(TFAIL, "io_submit() returns %ld, expected %ld", TST_RET, tc[i].nr);
+
+	for (j = 0; j < TST_RET; j++) {
+		tst_syscall(__NR_io_getevents, *tc[i].ctx, 1, 1, &evbuf,
+			&timeout);
+	}
 }
 
 static struct tst_test test = {
