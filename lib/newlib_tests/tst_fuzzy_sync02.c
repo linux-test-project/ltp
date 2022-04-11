@@ -125,16 +125,11 @@ static void run(unsigned int i)
 {
 	const struct window a = to_abs(races[i].a);
 	const struct window ad = to_abs(races[i].ad);
-	struct tst_fzsync_run_thread wrap_run_b = {
-		.func = worker,
-		.arg = &i,
-	};
 	int critical = 0;
 	int now, fin;
 
 	tst_fzsync_pair_reset(&pair, NULL);
-	SAFE_PTHREAD_CREATE(&pair.thread_b, 0, tst_fzsync_thread_wrapper,
-			    &wrap_run_b);
+	SAFE_PTHREAD_CREATE(&pair.thread_b, 0, worker, &i);
 
 	while (tst_fzsync_run_a(&pair)) {
 		c = 0;
