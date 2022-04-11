@@ -161,6 +161,8 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 		break;
 		case PKEY_DISABLE_WRITE:
 			*buffer = 'a';
+			tst_res(TFAIL | TERRNO,
+				"Write buffer success, buffer[0] = %d", *buffer);
 		break;
 		}
 		exit(0);
@@ -183,6 +185,7 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 	break;
 	case PROT_WRITE:
 		*buffer = 'a';
+		tst_res(TPASS, "Write buffer success, buffer[0] = %d", *buffer);
 	break;
 	case PROT_READ | PROT_WRITE:
 	case PROT_READ | PROT_WRITE | PROT_EXEC:
