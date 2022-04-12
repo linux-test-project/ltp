@@ -20,7 +20,7 @@ $(SPARSE_SRC)/libsparse.a: $(SPARSE_SRC)/Makefile
 
 HOST_MAKE_TARGETS	:= sparse-ltp
 MAKE_DEPS		+= $(SPARSE_SRC)/libsparse.a
-HOST_CFLAGS		+= -I$(SPARSE_SRC) -Werror
+HOST_CFLAGS		+= -I$(SPARSE_SRC) -Werror -Wno-null-pointer-subtraction
 HOST_LDLIBS		+= $(SPARSE_SRC)/libsparse.a
 
 
