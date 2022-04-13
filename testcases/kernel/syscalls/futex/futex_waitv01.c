@@ -10,6 +10,7 @@
  */
 
 #include <time.h>
+#include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/futex.h"
 #include "futex2test.h"
@@ -32,7 +33,7 @@ static void init_timeout(struct timespec *to)
 
 static void init_waitv(void)
 {
-	waitv->uaddr = (uintptr_t)&futex;
+	waitv->uaddr = (uintptr_t)futex;
 	waitv->flags = FUTEX_32 | FUTEX_PRIVATE_FLAG;
 	waitv->val = 0;
 }
@@ -98,7 +99,7 @@ static void test_invalid_clockid(void)
 		     "futex_waitv invalid clockid");
 }
 
-static void test_invalid_nr_futex(void)
+static void test_invalid_nr_futexes(void)
 {
 	struct timespec to;
 
@@ -112,6 +113,11 @@ static void test_invalid_nr_futex(void)
 		     "futex_waitv invalid nr_futexes");
 }
 
+static void cleanup(void)
+{
+	free(futex);
+}
+
 static void run(void)
 {
 	test_invalid_flags();
@@ -119,12 +125,13 @@ static void run(void)
 	test_null_address();
 	test_null_waiters();
 	test_invalid_clockid();
-	test_invalid_nr_futex();
+	test_invalid_nr_futexes();
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
+	.cleanup = cleanup,
 	.min_kver = "5.16",
 	.bufs =
 		(struct tst_buffers[]){
