@@ -79,6 +79,7 @@ static struct test_case_t {
 	unsigned long mask;
 	struct fanotify_mark_type sub_mark;
 	unsigned long sub_mask;
+	unsigned long tmpdir_ignored_mask;
 } test_cases[] = {
 	{
 		"FAN_REPORT_DFID_NAME monitor filesystem for create/delete/move/open/close",
@@ -88,6 +89,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME monitor directories for create/delete/move/open/close",
@@ -98,6 +100,7 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
 	},
 	{
 		"FAN_REPORT_DIR_FID monitor filesystem for create/delete/move/open/close",
@@ -107,6 +110,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DIR_FID monitor directories for create/delete/move/open/close",
@@ -117,6 +121,7 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_FID monitor filesystem for create/delete/move/open/close",
@@ -126,6 +131,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_FID monitor directories for create/delete/move/open/close",
@@ -136,6 +142,7 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_FID monitor filesystem for create/delete/move/open/close",
@@ -145,6 +152,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_FID monitor directories for create/delete/move/open/close",
@@ -155,6 +163,7 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_TARGET monitor filesystem for create/delete/move/open/close",
@@ -164,6 +173,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_TARGET monitor directories for create/delete/move/open/close",
@@ -174,6 +184,7 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_FID monitor filesystem for create/delete/move/rename/open/close",
@@ -183,6 +194,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_FID monitor directories for create/delete/move/rename/open/close",
@@ -193,6 +205,7 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_TARGET monitor filesystem for create/delete/move/rename/open/close",
@@ -202,6 +215,7 @@ static struct test_case_t {
 		/* Mount watch for events possible on children */
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		0,
 	},
 	{
 		"FAN_REPORT_DFID_NAME_TARGET monitor directories for create/delete/move/rename/open/close",
@@ -212,6 +226,30 @@ static struct test_case_t {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		0,
+	},
+	{
+		"FAN_REPORT_DFID_NAME_FID monitor directories and ignore FAN_RENAME events to/from temp directory",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_FID),
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_ONDIR,
+		/* Watches for self events on subdir and events on subdir's children */
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
+		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+		/* Ignore FAN_RENAME to/from tmpdir */
+		FAN_MOVE | FAN_RENAME,
+	},
+	{
+		"FAN_REPORT_DFID_NAME_FID monitor filesystem and ignore FAN_RENAME events to/from temp directory",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_FID),
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR,
+		/* Mount watch for events possible on children */
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+		/* Ignore FAN_RENAME to/from tmpdir */
+		FAN_MOVE | FAN_RENAME,
 	},
 };
 
@@ -228,6 +266,7 @@ static void do_test(unsigned int number)
 	int report_target_fid = (group->flag & FAN_REPORT_TARGET_FID);
 	int report_rename = (tc->mask & FAN_RENAME);
 	int fs_mark = (mark->flag == FAN_MARK_FILESYSTEM);
+	int rename_ignored = (tc->tmpdir_ignored_mask & FAN_RENAME);
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
 
@@ -269,6 +308,17 @@ static void do_test(unsigned int number)
 	if (tc->sub_mask)
 		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | sub_mark->flag,
 				   tc->sub_mask, AT_FDCWD, dname1);
+	/*
+	 * ignore FAN_RENAME to/from tmpdir, so we won't get the FAN_RENAME events
+	 * when subdir is moved via tmpdir.
+	 * FAN_MOVE is also set in ignored mark of tmpdir, but it will have no effect
+	 * and the MOVED_FROM/TO events will still be reported.
+	 */
+	if (tc->tmpdir_ignored_mask)
+		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD |
+				   FAN_MARK_IGNORED_MASK |
+				   FAN_MARK_IGNORED_SURV_MODIFY,
+				   tc->tmpdir_ignored_mask, AT_FDCWD, TEMP_DIR);
 
 	memset(event_set, 0, sizeof(event_set));
 	event_set[tst_count].mask = FAN_CREATE | FAN_ONDIR;
@@ -410,8 +460,11 @@ static void do_test(unsigned int number)
 	 * will observe the same MOVED_FROM/MOVED_TO events as a direct rename,
 	 * but will observe 2 FAN_RENAME events with 1 info dir+name record each
 	 * instead of 1 FAN_RENAME event with 2 dir+name info records.
+	 *
+	 * If tmpdir is ignoring FAN_RENAME, we will get the MOVED_FROM/MOVED_TO
+	 * events and will not get the FAN_RENAME event for rename via tmpdir.
 	 */
-	if (!fs_mark) {
+	if (!fs_mark || rename_ignored) {
 		SAFE_RENAME(dname1, tmpdir);
 		SAFE_RENAME(tmpdir, dname2);
 	} else {
@@ -428,8 +481,9 @@ static void do_test(unsigned int number)
 	 * When renamed via an unwatched tmpdir, the 1st FAN_RENAME event has the
 	 * info record of root_fid+DIR_NAME1 and the 2nd FAN_RENAME event has the
 	 * info record of root_fid+DIR_NAME2.
+	 * If tmpdir is ignoring FAN_RENAME, we get no FAN_RENAME events at all.
 	 */
-	if (report_rename) {
+	if (report_rename && !rename_ignored) {
 		event_set[tst_count].mask = FAN_RENAME | FAN_ONDIR;
 		event_set[tst_count].fid = &root_fid;
 		event_set[tst_count].child_fid = subdir_fid;
@@ -446,7 +500,7 @@ static void do_test(unsigned int number)
 	event_set[tst_count].child_fid = subdir_fid;
 	strcpy(event_set[tst_count].name, DIR_NAME1);
 	tst_count++;
-	if (report_rename && !fs_mark) {
+	if (report_rename && !fs_mark && !rename_ignored) {
 		event_set[tst_count].mask = FAN_RENAME | FAN_ONDIR;
 		event_set[tst_count].fid = &root_fid;
 		event_set[tst_count].child_fid = subdir_fid;
