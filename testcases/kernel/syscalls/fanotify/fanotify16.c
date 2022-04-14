@@ -49,6 +49,7 @@ struct event_t {
 	struct fanotify_fid_t *fid;
 	struct fanotify_fid_t *child_fid;
 	char name[BUF_SIZE];
+	char name2[BUF_SIZE];
 };
 
 static char fname1[BUF_SIZE + 11], fname2[BUF_SIZE + 11];
@@ -66,6 +67,7 @@ static char event_buf[EVENT_BUF_LEN];
 #define MOUNT_PATH "fs_mnt"
 
 static int fan_report_target_fid_unsupported;
+static int rename_events_unsupported;
 
 static struct test_case_t {
 	const char *tname;
@@ -170,6 +172,44 @@ static struct test_case_t {
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
 	},
+	{
+		"FAN_REPORT_DFID_NAME_FID monitor filesystem for create/delete/move/rename/open/close",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_FID),
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR,
+		/* Mount watch for events possible on children */
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+	},
+	{
+		"FAN_REPORT_DFID_NAME_FID monitor directories for create/delete/move/rename/open/close",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_FID),
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_ONDIR,
+		/* Watches for self events on subdir and events on subdir's children */
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
+		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+	},
+	{
+		"FAN_REPORT_DFID_NAME_TARGET monitor filesystem for create/delete/move/rename/open/close",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_TARGET),
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR,
+		/* Mount watch for events possible on children */
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+	},
+	{
+		"FAN_REPORT_DFID_NAME_TARGET monitor directories for create/delete/move/rename/open/close",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_TARGET),
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_ONDIR,
+		/* Watches for self events on subdir and events on subdir's children */
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_RENAME | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
+		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+	},
 };
 
 static void do_test(unsigned int number)
@@ -183,8 +223,14 @@ static void do_test(unsigned int number)
 	struct fanotify_fid_t *child_fid = NULL, *subdir_fid = NULL;
 	int report_name = (group->flag & FAN_REPORT_NAME);
 	int report_target_fid = (group->flag & FAN_REPORT_TARGET_FID);
+	int report_rename = (tc->mask & FAN_RENAME);
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
+
+	if (report_rename && rename_events_unsupported) {
+		tst_res(TCONF, "FAN_RENAME not supported in kernel?");
+		return;
+	}
 
 	if (fan_report_target_fid_unsupported && report_target_fid) {
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TARGET_FID,
@@ -268,6 +314,18 @@ static void do_test(unsigned int number)
 		strcpy(event_set[tst_count].name, FILE_NAME1);
 		tst_count++;
 	}
+	/*
+	 * FAN_RENAME event is independent of MOVED_FROM/MOVED_TO and not merged
+	 * with any other event because it has different info records.
+	 */
+	if (report_rename) {
+		event_set[tst_count].mask = FAN_RENAME;
+		event_set[tst_count].fid = &dir_fid;
+		event_set[tst_count].child_fid = child_fid;
+		strcpy(event_set[tst_count].name, FILE_NAME1);
+		strcpy(event_set[tst_count].name2, FILE_NAME2);
+		tst_count++;
+	}
 
 	event_set[tst_count].mask = FAN_DELETE | FAN_MOVED_TO;
 	/*
@@ -346,6 +404,18 @@ static void do_test(unsigned int number)
 	/* Read more events on dirs */
 	len += SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
 
+	/*
+	 * FAN_RENAME event is independent of MOVED_FROM/MOVED_TO and not merged
+	 * with any other event because it has different info records.
+	 */
+	if (report_rename) {
+		event_set[tst_count].mask = FAN_RENAME | FAN_ONDIR;
+		event_set[tst_count].fid = &root_fid;
+		event_set[tst_count].child_fid = subdir_fid;
+		strcpy(event_set[tst_count].name, DIR_NAME1);
+		strcpy(event_set[tst_count].name2, DIR_NAME2);
+		tst_count++;
+	}
 	event_set[tst_count].mask = FAN_MOVED_FROM | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;
 	event_set[tst_count].child_fid = subdir_fid;
@@ -401,7 +471,11 @@ static void do_test(unsigned int number)
 		if (!report_name)
 			expected->name[0] = 0;
 
-		if (expected->name[0]) {
+		if (expected->mask & FAN_RENAME) {
+			info_type = FAN_EVENT_INFO_TYPE_OLD_DFID_NAME;
+			/* The 2nd fid is same as 1st becaue we rename in same parent */
+			expected_child_fid = expected_fid;
+		} else if (expected->name[0]) {
 			info_type = FAN_EVENT_INFO_TYPE_DFID_NAME;
 		} else if (expected->mask & FAN_ONDIR) {
 			info_type = FAN_EVENT_INFO_TYPE_DFID;
@@ -548,6 +622,16 @@ check_match:
 			expected_fid = expected->child_fid;
 			info_id = 1;
 			info_type = FAN_EVENT_INFO_TYPE_FID;
+			/*
+			 * With FAN_RENAME event, expect a second record of
+			 * type NEW_DFID_NAME, which in our case
+			 * has the same fid as the source dir in 1st record.
+			 * TODO: check the 2nd name and the 3rd child fid record.
+			 */
+			if (event->mask & FAN_RENAME) {
+				info_type = FAN_EVENT_INFO_TYPE_NEW_DFID_NAME;
+				expected_fid = expected->fid;
+			}
 			file_handle = (struct file_handle *)event_fid->handle;
 			fhlen = file_handle->handle_bytes;
 			child_fid = NULL;
@@ -590,6 +674,8 @@ static void setup(void)
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_DIR_FID, MOUNT_PATH);
 	fan_report_target_fid_unsupported =
 		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MOUNT_PATH);
+	rename_events_unsupported =
+		fanotify_events_supported_by_kernel(FAN_RENAME, FAN_REPORT_DFID_NAME, 0);
 
 	sprintf(dname1, "%s/%s", MOUNT_PATH, DIR_NAME1);
 	sprintf(dname2, "%s/%s", MOUNT_PATH, DIR_NAME2);
