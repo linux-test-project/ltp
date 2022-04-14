@@ -14,6 +14,7 @@
  * - FAN_REPORT_DIR_FID   (dir fid)
  * - FAN_REPORT_DIR_FID | FAN_REPORT_FID   (dir fid + child fid)
  * - FAN_REPORT_DFID_NAME | FAN_REPORT_FID (dir fid + name + child fid)
+ * - FAN_REPORT_DFID_NAME_TARGET (dir fid + name + created/deleted file fid)
  */
 
 #define _GNU_SOURCE
@@ -63,6 +64,8 @@ static char event_buf[EVENT_BUF_LEN];
 #define FILE_NAME1 "test_file1"
 #define FILE_NAME2 "test_file2"
 #define MOUNT_PATH "fs_mnt"
+
+static int fan_report_target_fid_unsupported;
 
 static struct test_case_t {
 	const char *tname;
@@ -148,6 +151,25 @@ static struct test_case_t {
 		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
 		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
 	},
+	{
+		"FAN_REPORT_DFID_NAME_TARGET monitor filesystem for create/delete/move/open/close",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_TARGET),
+		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR,
+		/* Mount watch for events possible on children */
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_OPEN | FAN_CLOSE | FAN_ONDIR,
+	},
+	{
+		"FAN_REPORT_DFID_NAME_TARGET monitor directories for create/delete/move/open/close",
+		INIT_FANOTIFY_GROUP_TYPE(REPORT_DFID_NAME_TARGET),
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_ONDIR,
+		/* Watches for self events on subdir and events on subdir's children */
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_CREATE | FAN_DELETE | FAN_MOVE | FAN_DELETE_SELF | FAN_MOVE_SELF | FAN_ONDIR |
+		FAN_OPEN | FAN_CLOSE | FAN_EVENT_ON_CHILD,
+	},
 };
 
 static void do_test(unsigned int number)
@@ -158,8 +180,17 @@ static void do_test(unsigned int number)
 	struct fanotify_mark_type *mark = &tc->mark;
 	struct fanotify_mark_type *sub_mark = &tc->sub_mark;
 	struct fanotify_fid_t root_fid, dir_fid, file_fid;
+	struct fanotify_fid_t *child_fid = NULL, *subdir_fid = NULL;
+	int report_name = (group->flag & FAN_REPORT_NAME);
+	int report_target_fid = (group->flag & FAN_REPORT_TARGET_FID);
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
+
+	if (fan_report_target_fid_unsupported && report_target_fid) {
+		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TARGET_FID,
+					    fan_report_target_fid_unsupported);
+		return;
+	}
 
 	fd_notify = SAFE_FANOTIFY_INIT(group->flag, 0);
 
@@ -181,6 +212,9 @@ static void do_test(unsigned int number)
 
 	/* Save the subdir fid */
 	fanotify_save_fid(dname1, &dir_fid);
+	/* With FAN_REPORT_TARGET_FID, report subdir fid also for dirent events */
+	if (report_target_fid)
+		subdir_fid = &dir_fid;
 
 	if (tc->sub_mask)
 		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | sub_mark->flag,
@@ -188,7 +222,7 @@ static void do_test(unsigned int number)
 
 	event_set[tst_count].mask = FAN_CREATE | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;
-	event_set[tst_count].child_fid = NULL;
+	event_set[tst_count].child_fid = subdir_fid;
 	strcpy(event_set[tst_count].name, DIR_NAME1);
 	tst_count++;
 
@@ -197,6 +231,9 @@ static void do_test(unsigned int number)
 
 	/* Save the file fid */
 	fanotify_save_fid(fname1, &file_fid);
+	/* With FAN_REPORT_TARGET_FID, report child fid also for dirent events */
+	if (report_target_fid)
+		child_fid = &file_fid;
 
 	SAFE_WRITE(1, fd, "1", 1);
 	SAFE_RENAME(fname1, fname2);
@@ -214,7 +251,7 @@ static void do_test(unsigned int number)
 	 */
 	event_set[tst_count].mask = FAN_CREATE | FAN_MOVED_FROM;
 	event_set[tst_count].fid = &dir_fid;
-	event_set[tst_count].child_fid = NULL;
+	event_set[tst_count].child_fid = child_fid;
 	strcpy(event_set[tst_count].name, FILE_NAME1);
 	tst_count++;
 	/*
@@ -224,7 +261,7 @@ static void do_test(unsigned int number)
 	 * FAN_REPORT_NAME is not set, then FAN_CREATE above is merged with
 	 * FAN_DELETE below and FAN_OPEN will be merged with FAN_CLOSE.
 	 */
-	if (group->flag & FAN_REPORT_NAME) {
+	if (report_name) {
 		event_set[tst_count].mask = FAN_OPEN;
 		event_set[tst_count].fid = &dir_fid;
 		event_set[tst_count].child_fid = &file_fid;
@@ -233,15 +270,22 @@ static void do_test(unsigned int number)
 	}
 
 	event_set[tst_count].mask = FAN_DELETE | FAN_MOVED_TO;
+	/*
+	 * With FAN_REPORT_TARGET_FID, close of FILE_NAME2 is merged with
+	 * moved_to and delete events, because they all have parent and
+	 * child fid records.
+	 */
+	if (report_target_fid)
+		event_set[tst_count].mask |= FAN_CLOSE_WRITE;
 	event_set[tst_count].fid = &dir_fid;
-	event_set[tst_count].child_fid = NULL;
+	event_set[tst_count].child_fid = child_fid;
 	strcpy(event_set[tst_count].name, FILE_NAME2);
 	tst_count++;
 	/*
 	 * When not reporting name, open of FILE_NAME1 is merged
 	 * with close of FILE_NAME2.
 	 */
-	if (!(group->flag & FAN_REPORT_NAME)) {
+	if (!report_name) {
 		event_set[tst_count].mask = FAN_OPEN | FAN_CLOSE_WRITE;
 		event_set[tst_count].fid = &dir_fid;
 		event_set[tst_count].child_fid = &file_fid;
@@ -261,11 +305,10 @@ static void do_test(unsigned int number)
 		tst_count++;
 	}
 	/*
-	 * When reporting name, close of FILE_NAME2 is not merged with
-	 * open of FILE_NAME1 and it is received after the merged self
-	 * events.
+	 * Without FAN_REPORT_TARGET_FID, close of FILE_NAME2 is not merged with
+	 * open of FILE_NAME1 and it is received after the merged self events.
 	 */
-	if (group->flag & FAN_REPORT_NAME) {
+	if (report_name && !report_target_fid) {
 		event_set[tst_count].mask = FAN_CLOSE_WRITE;
 		event_set[tst_count].fid = &dir_fid;
 		event_set[tst_count].child_fid = &file_fid;
@@ -305,12 +348,12 @@ static void do_test(unsigned int number)
 
 	event_set[tst_count].mask = FAN_MOVED_FROM | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;
-	event_set[tst_count].child_fid = NULL;
+	event_set[tst_count].child_fid = subdir_fid;
 	strcpy(event_set[tst_count].name, DIR_NAME1);
 	tst_count++;
 	event_set[tst_count].mask = FAN_DELETE | FAN_MOVED_TO | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;
-	event_set[tst_count].child_fid = NULL;
+	event_set[tst_count].child_fid = subdir_fid;
 	strcpy(event_set[tst_count].name, DIR_NAME2);
 	tst_count++;
 	/* Expect no more events */
@@ -355,7 +398,7 @@ static void do_test(unsigned int number)
 		if (!(group->flag & FAN_REPORT_FID))
 			expected_child_fid = NULL;
 
-		if (!(group->flag & FAN_REPORT_NAME))
+		if (!report_name)
 			expected->name[0] = 0;
 
 		if (expected->name[0]) {
@@ -545,6 +588,8 @@ check_match:
 static void setup(void)
 {
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_DIR_FID, MOUNT_PATH);
+	fan_report_target_fid_unsupported =
+		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MOUNT_PATH);
 
 	sprintf(dname1, "%s/%s", MOUNT_PATH, DIR_NAME1);
 	sprintf(dname2, "%s/%s", MOUNT_PATH, DIR_NAME2);
