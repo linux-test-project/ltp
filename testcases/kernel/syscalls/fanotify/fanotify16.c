@@ -50,10 +50,12 @@ struct event_t {
 	struct fanotify_fid_t *child_fid;
 	char name[BUF_SIZE];
 	char name2[BUF_SIZE];
+	char *old_name;
+	char *new_name;
 };
 
 static char fname1[BUF_SIZE + 11], fname2[BUF_SIZE + 11];
-static char dname1[BUF_SIZE], dname2[BUF_SIZE];
+static char dname1[BUF_SIZE], dname2[BUF_SIZE], tmpdir[BUF_SIZE];
 static int fd_notify;
 
 static struct event_t event_set[EVENT_MAX];
@@ -65,6 +67,7 @@ static char event_buf[EVENT_BUF_LEN];
 #define FILE_NAME1 "test_file1"
 #define FILE_NAME2 "test_file2"
 #define MOUNT_PATH "fs_mnt"
+#define TEMP_DIR MOUNT_PATH "/temp_dir"
 
 static int fan_report_target_fid_unsupported;
 static int rename_events_unsupported;
@@ -224,6 +227,7 @@ static void do_test(unsigned int number)
 	int report_name = (group->flag & FAN_REPORT_NAME);
 	int report_target_fid = (group->flag & FAN_REPORT_TARGET_FID);
 	int report_rename = (tc->mask & FAN_RENAME);
+	int fs_mark = (mark->flag == FAN_MARK_FILESYSTEM);
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
 
@@ -266,6 +270,7 @@ static void do_test(unsigned int number)
 		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | sub_mark->flag,
 				   tc->sub_mask, AT_FDCWD, dname1);
 
+	memset(event_set, 0, sizeof(event_set));
 	event_set[tst_count].mask = FAN_CREATE | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;
 	event_set[tst_count].child_fid = subdir_fid;
@@ -324,6 +329,8 @@ static void do_test(unsigned int number)
 		event_set[tst_count].child_fid = child_fid;
 		strcpy(event_set[tst_count].name, FILE_NAME1);
 		strcpy(event_set[tst_count].name2, FILE_NAME2);
+		event_set[tst_count].old_name = event_set[tst_count].name;
+		event_set[tst_count].new_name = event_set[tst_count].name2;
 		tst_count++;
 	}
 
@@ -355,7 +362,7 @@ static void do_test(unsigned int number)
 	 * Filesystem watch gets self event w/o name info if FAN_REPORT_FID
 	 * is set.
 	 */
-	if (mark->flag == FAN_MARK_FILESYSTEM && (group->flag & FAN_REPORT_FID)) {
+	if (fs_mark && (group->flag & FAN_REPORT_FID)) {
 		event_set[tst_count].mask = FAN_DELETE_SELF | FAN_MOVE_SELF;
 		event_set[tst_count].fid = &file_fid;
 		event_set[tst_count].child_fid = NULL;
@@ -398,7 +405,18 @@ static void do_test(unsigned int number)
 	strcpy(event_set[tst_count].name, ".");
 	tst_count++;
 
-	SAFE_RENAME(dname1, dname2);
+	/*
+	 * If only root dir and subdir are watched, a rename via an unwatched tmpdir
+	 * will observe the same MOVED_FROM/MOVED_TO events as a direct rename,
+	 * but will observe 2 FAN_RENAME events with 1 info dir+name record each
+	 * instead of 1 FAN_RENAME event with 2 dir+name info records.
+	 */
+	if (!fs_mark) {
+		SAFE_RENAME(dname1, tmpdir);
+		SAFE_RENAME(tmpdir, dname2);
+	} else {
+		SAFE_RENAME(dname1, dname2);
+	}
 	SAFE_RMDIR(dname2);
 
 	/* Read more events on dirs */
@@ -407,13 +425,20 @@ static void do_test(unsigned int number)
 	/*
 	 * FAN_RENAME event is independent of MOVED_FROM/MOVED_TO and not merged
 	 * with any other event because it has different info records.
+	 * When renamed via an unwatched tmpdir, the 1st FAN_RENAME event has the
+	 * info record of root_fid+DIR_NAME1 and the 2nd FAN_RENAME event has the
+	 * info record of root_fid+DIR_NAME2.
 	 */
 	if (report_rename) {
 		event_set[tst_count].mask = FAN_RENAME | FAN_ONDIR;
 		event_set[tst_count].fid = &root_fid;
 		event_set[tst_count].child_fid = subdir_fid;
 		strcpy(event_set[tst_count].name, DIR_NAME1);
-		strcpy(event_set[tst_count].name2, DIR_NAME2);
+		event_set[tst_count].old_name = event_set[tst_count].name;
+		if (fs_mark) {
+			strcpy(event_set[tst_count].name2, DIR_NAME2);
+			event_set[tst_count].new_name = event_set[tst_count].name2;
+		}
 		tst_count++;
 	}
 	event_set[tst_count].mask = FAN_MOVED_FROM | FAN_ONDIR;
@@ -421,6 +446,14 @@ static void do_test(unsigned int number)
 	event_set[tst_count].child_fid = subdir_fid;
 	strcpy(event_set[tst_count].name, DIR_NAME1);
 	tst_count++;
+	if (report_rename && !fs_mark) {
+		event_set[tst_count].mask = FAN_RENAME | FAN_ONDIR;
+		event_set[tst_count].fid = &root_fid;
+		event_set[tst_count].child_fid = subdir_fid;
+		strcpy(event_set[tst_count].name, DIR_NAME2);
+		event_set[tst_count].new_name = event_set[tst_count].name;
+		tst_count++;
+	}
 	event_set[tst_count].mask = FAN_DELETE | FAN_MOVED_TO | FAN_ONDIR;
 	event_set[tst_count].fid = &root_fid;
 	event_set[tst_count].child_fid = subdir_fid;
@@ -472,9 +505,13 @@ static void do_test(unsigned int number)
 			expected->name[0] = 0;
 
 		if (expected->mask & FAN_RENAME) {
-			info_type = FAN_EVENT_INFO_TYPE_OLD_DFID_NAME;
+			/* If old name is not reported, first record is new name */
+			info_type = expected->old_name ?
+				FAN_EVENT_INFO_TYPE_OLD_DFID_NAME :
+				FAN_EVENT_INFO_TYPE_NEW_DFID_NAME;
 			/* The 2nd fid is same as 1st becaue we rename in same parent */
-			expected_child_fid = expected_fid;
+			if (expected->name2[0])
+				expected_child_fid = expected_fid;
 		} else if (expected->name[0]) {
 			info_type = FAN_EVENT_INFO_TYPE_DFID_NAME;
 		} else if (expected->mask & FAN_ONDIR) {
@@ -628,7 +665,7 @@ check_match:
 			 * has the same fid as the source dir in 1st record.
 			 * TODO: check the 2nd name and the 3rd child fid record.
 			 */
-			if (event->mask & FAN_RENAME) {
+			if (event->mask & FAN_RENAME && expected->name2[0]) {
 				info_type = FAN_EVENT_INFO_TYPE_NEW_DFID_NAME;
 				expected_fid = expected->fid;
 			}
@@ -677,8 +714,10 @@ static void setup(void)
 	rename_events_unsupported =
 		fanotify_events_supported_by_kernel(FAN_RENAME, FAN_REPORT_DFID_NAME, 0);
 
+	SAFE_MKDIR(TEMP_DIR, 0755);
 	sprintf(dname1, "%s/%s", MOUNT_PATH, DIR_NAME1);
 	sprintf(dname2, "%s/%s", MOUNT_PATH, DIR_NAME2);
+	sprintf(tmpdir, "%s/%s", TEMP_DIR, DIR_NAME2);
 	sprintf(fname1, "%s/%s", dname1, FILE_NAME1);
 	sprintf(fname2, "%s/%s", dname1, FILE_NAME2);
 }
