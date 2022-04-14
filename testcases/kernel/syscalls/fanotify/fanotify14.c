@@ -62,6 +62,18 @@ static struct test_case_t {
 		/* FAN_REPORT_NAME without FAN_REPORT_DIR_FID is not valid */
 		FAN_CLASS_NOTIF | FAN_REPORT_FID | FAN_REPORT_NAME, 0, 0
 	},
+	{
+		/* FAN_REPORT_TARGET_FID without FAN_REPORT_FID is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_TARGET_FID | FAN_REPORT_DFID_NAME, 0, 0
+	},
+	{
+		/* FAN_REPORT_TARGET_FID without FAN_REPORT_NAME is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_TARGET_FID | FAN_REPORT_DFID_FID, 0, 0
+	},
+	{
+		/* FAN_RENAME without FAN_REPORT_NAME is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_FID, 0, FAN_RENAME
+	},
 };
 
 static void do_test(unsigned int number)
