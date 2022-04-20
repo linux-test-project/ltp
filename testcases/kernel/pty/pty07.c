@@ -81,6 +81,9 @@ static void setup(void)
 	struct vt_stat stat;
 
 	sprintf(tty_path, "/dev/tty%d", test_tty_port);
+	if (access(tty_path, F_OK))
+		tst_brk(TCONF, "TTY (/dev/tty%d) under test not available in system", test_tty_port);
+
 	fd = SAFE_OPEN(tty_path, O_RDWR);
 	SAFE_IOCTL(fd, VT_GETSTATE, &stat);
 	vt_active = stat.v_active;
