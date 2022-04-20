@@ -84,8 +84,19 @@ enum cgroup_ctrl_indx {
 	CTRL_CPU,
 	CTRL_CPUSET,
 	CTRL_IO,
+	CTRL_PIDS,
+	CTRL_HUGETLB,
+	CTRL_CPUACCT,
+	CTRL_DEVICES,
+	CTRL_FREEZER,
+	CTRL_NETCLS,
+	CTRL_NETPRIO,
+	CTRL_BLKIO,
+	CTRL_MISC,
+	CTRL_PERFEVENT,
+	CTRL_DEBUG
 };
-#define CTRLS_MAX CTRL_CPUSET
+#define CTRLS_MAX CTRL_DEBUG
 
 /* At most we can have one cgroup V1 tree for each controller and one
  * (empty) v2 tree.
@@ -197,6 +208,52 @@ static const struct cgroup_file io_ctrl_files[] = {
 	{ }
 };
 
+static const struct cgroup_file pids_ctrl_files[] = {
+	{ "pids.max", "pids.max", CTRL_PIDS },
+	{ "pids.current", "pids.current", CTRL_PIDS },
+	{ }
+};
+
+static const struct cgroup_file hugetlb_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file cpuacct_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file devices_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file freezer_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file netcls_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file netprio_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file blkio_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file misc_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file perf_event_ctrl_files[] = {
+	{ }
+};
+
+static const struct cgroup_file debug_ctrl_files[] = {
+	{ }
+};
+
 #define CTRL_NAME_MAX 31
 /* Lookup tree for item names. */
 static struct cgroup_ctrl controllers[] = {
@@ -212,6 +269,39 @@ static struct cgroup_ctrl controllers[] = {
 	},
 	[CTRL_IO] = {
 		"io", io_ctrl_files, CTRL_IO, NULL, 0
+	},
+	[CTRL_PIDS] = {
+		"pids", pids_ctrl_files, CTRL_PIDS, NULL, 0
+	},
+	[CTRL_HUGETLB] = {
+		"hugetlb", hugetlb_ctrl_files, CTRL_HUGETLB, NULL, 0
+	},
+	[CTRL_CPUACCT] = {
+		"cpuacct", cpuacct_ctrl_files, CTRL_CPUACCT, NULL, 0
+	},
+	[CTRL_DEVICES] = {
+		"devices", devices_ctrl_files, CTRL_DEVICES, NULL, 0
+	},
+	[CTRL_FREEZER] = {
+		"freezer", freezer_ctrl_files, CTRL_FREEZER, NULL, 0
+	},
+	[CTRL_NETCLS] = {
+		"net_cls", netcls_ctrl_files, CTRL_NETCLS, NULL, 0
+	},
+	[CTRL_NETPRIO] = {
+		"net_prio", netprio_ctrl_files, CTRL_NETPRIO, NULL, 0
+	},
+	[CTRL_BLKIO] = {
+		"blkio", blkio_ctrl_files, CTRL_BLKIO, NULL, 0
+	},
+	[CTRL_MISC] = {
+		"misc", misc_ctrl_files, CTRL_MISC, NULL, 0
+	},
+	[CTRL_PERFEVENT] = {
+		"perf_event", perf_event_ctrl_files, CTRL_PERFEVENT, NULL, 0
+	},
+	[CTRL_DEBUG] = {
+		"debug", debug_ctrl_files, CTRL_DEBUG, NULL, 0
 	},
 	{ }
 };
