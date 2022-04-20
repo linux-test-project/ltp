@@ -45,8 +45,6 @@ static struct tst_fzsync_pair fzp;
 
 static void *open_close(void *unused)
 {
-	sprintf(tty_path_b, "/dev/tty%d", test_tty_port);
-
 	while (tst_fzsync_run_b(&fzp)) {
 		tst_fzsync_start_race_b(&fzp);
 		int fd = SAFE_OPEN(tty_path_b, O_RDWR);
@@ -60,7 +58,6 @@ static void *open_close(void *unused)
 
 static void do_test(void)
 {
-	sprintf(tty_path_a, "/dev/tty%d", test_tty_port + 1);
 	int fd = SAFE_OPEN(tty_path_a, O_RDWR);
 
 	tst_fzsync_pair_reset(&fzp, open_close);
@@ -80,6 +77,12 @@ static void do_test(void)
 
 static void setup(void)
 {
+	sprintf(tty_path_a, "/dev/tty%d", test_tty_port + 1);
+	sprintf(tty_path_b, "/dev/tty%d", test_tty_port);
+
+	if (access(tty_path_a, F_OK) || access(tty_path_b, F_OK))
+		tst_brk(TCONF, "TTY(s) under test not available in system");
+
 	tst_fzsync_pair_init(&fzp);
 }
 
