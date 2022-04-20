@@ -36,6 +36,9 @@ extern void *TST_RET_PTR;
 
 #define TST_2_(_1, _2, ...) _2
 
+#define _TST_TOSTR(STR) #STR
+#define TST_TOSTR(STR) _TST_TOSTR(STR)
+
 #define TST_FMT_(FMT, _1, ...) FMT, ##__VA_ARGS__
 
 #define TST_MSG_(RES, FMT, SCALL, ...) \
