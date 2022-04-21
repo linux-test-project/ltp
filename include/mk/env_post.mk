@@ -32,6 +32,7 @@ ENV_POST_LOADED = 1
 # poor software design if you need more than one search directory, and
 # would suggest creating a general purpose static library to that end.
 vpath %.c $(abs_srcdir)
+vpath %.S $(abs_srcdir)
 
 # For config.h, et all.
 CPPFLAGS			+= -I$(top_srcdir)/include -I$(top_builddir)/include -I$(top_srcdir)/include/old/

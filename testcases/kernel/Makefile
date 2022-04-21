@@ -29,6 +29,7 @@ SUBDIRS			+= connectors \
 			   io \
 			   ipc \
 			   irq \
+			   kvm \
 			   logging \
 			   mem \
 			   numa \

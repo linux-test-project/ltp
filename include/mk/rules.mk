@@ -1,5 +1,13 @@
 target_rel_dir := $(if $(cwd_rel_from_top),$(cwd_rel_from_top)/,)
 
+%.o: %.S
+ifdef VERBOSE
+	$(AS) $(ASFLAGS) -c -o $@ $<
+else
+	@$(AS) $(ASFLAGS) -c -o $@ $<
+	@echo AS $(target_rel_dir)$@
+endif
+
 %.o: %.c
 ifdef VERBOSE
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
