@@ -79,9 +79,11 @@ static void setup(void)
 {
 	TEST(io_setup(1, &ctx));
 	if (TST_RET == -ENOSYS)
-		tst_brk(TCONF | TRERRNO, "io_setup(): AIO not supported by kernel");
-	else if (TST_RET)
-		tst_brk(TBROK | TRERRNO, "io_setup() failed");
+		tst_brk(TCONF, "io_setup(): AIO not supported by kernel");
+	else if (TST_RET) {
+		tst_brk(TBROK, "io_setup() returned %ld(%s)",
+			TST_RET, tst_strerrno(-TST_RET));
+	}
 
 	io_prep_pread(&inv_fd_iocb, -1, buf, sizeof(buf), 0);
 

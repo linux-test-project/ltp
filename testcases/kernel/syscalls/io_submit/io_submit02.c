@@ -79,7 +79,7 @@ static void run(unsigned int i)
 	if (TST_RET == tc[i].nr)
 		tst_res(TPASS, "io_submit() %s", tc[i].desc);
 	else
-		tst_res(TFAIL, "io_submit() returns %ld, expected %ld", TST_RET, tc[i].nr);
+		tst_res(TFAIL | TTERRNO, "io_submit() returns %ld, expected %ld", TST_RET, tc[i].nr);
 
 	for (j = 0; j < TST_RET; j++) {
 		tst_syscall(__NR_io_getevents, *tc[i].ctx, 1, 1, &evbuf,
