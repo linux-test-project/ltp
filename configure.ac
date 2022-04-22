@@ -59,6 +59,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/keyctl.h \
     linux/mempolicy.h \
     linux/module.h \
+    linux/mount.h \
     linux/netlink.h \
     linux/seccomp.h \
     linux/securebits.h \

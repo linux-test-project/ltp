@@ -1,10 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2015-2022
  * Copyright (c) 2015 Cui Bixuan <cuibixuan@huawei.com>
  */
 
 #ifndef LAPI_MOUNT_H__
 #define LAPI_MOUNT_H__
+
+#ifdef HAVE_LINUX_MOUNT_H
+# include <linux/mount.h>
+#else
+# include <sys/mount.h>
+#endif
 
 #ifndef MS_REC
 #define MS_REC 16384
