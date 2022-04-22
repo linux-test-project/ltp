@@ -61,3 +61,24 @@ API source code is in 'tst_test.sh', 'tst_security.sh' and 'tst_net.sh'
 
 Changes in the shell API should not introduce uncommon dependencies
 (use basic commands installed everywhere by default).
+
+3.1 Shell libraries
+~~~~~~~~~~~~~~~~~~~
+
+Aside from shell API libraries in 'testcases/lib', it's worth putting
+common code for a group of tests into a shell library. The filename
+should end with '_lib.sh' and the library should load 'tst_test.sh' or
+'tst_net.sh'.
+
+Shell libraries should have conditional expansion for 'TST_SETUP' or 'TST_CLEANUP',
+to avoid surprises when test specific setup/cleanup function is redefined by
+shell library.
+
+[source,sh]
+-------------------------------------------------------------------------------
+# ipsec_lib.sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+TST_SETUP=${TST_SETUP:-ipsec_lib_setup}
+. tst_test.sh
+...
+-------------------------------------------------------------------------------
