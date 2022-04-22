@@ -7,8 +7,8 @@
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_MIN_KVER=2.6.15
-TST_SETUP=fs_bind_setup
-TST_CLEANUP=fs_bind_cleanup
+TST_SETUP="${TST_SETUP:-fs_bind_setup}"
+TST_CLEANUP="${TST_CLEANUP:-fs_bind_cleanup}"
 TST_TESTFUNC=fs_bind_test
 TST_NEEDS_CMDS="mount umount awk sed"
 

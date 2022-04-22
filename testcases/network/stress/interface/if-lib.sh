@@ -5,7 +5,11 @@
 
 CMD="${CMD:-ip}"
 
-TST_SETUP="${TST_SETUP:-if_setup}"
+if [ -z "$TST_SETUP" ]; then
+	TST_SETUP="if_setup"
+	TST_CLEANUP="${TST_CLEANUP:-netstress_cleanup}"
+fi
+
 TST_TESTFUNC="test_body"
 TST_PARSE_ARGS="if_parse_args"
 TST_USAGE="if_usage"
@@ -32,7 +36,6 @@ if_setup()
 
 	tst_require_cmds "$CMD"
 	netstress_setup
-	TST_CLEANUP="${TST_CLEANUP:-netstress_cleanup}"
 }
 
 if_cleanup_restore()

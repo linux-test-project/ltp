@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
@@ -10,8 +10,8 @@ IPSEC_MODE="transport"
 
 TST_NEEDS_TMPDIR=1
 TST_TESTFUNC=virt_netperf_msg_sizes
-TST_SETUP=macsec_lib_setup
-TST_CLEANUP=macsec_lib_cleanup
+TST_SETUP="${TST_SETUP:-macsec_lib_setup}"
+TST_CLEANUP="${TST_CLEANUP:-macsec_lib_cleanup}"
 TST_NEEDS_DRIVERS="macsec"
 . ipsec_lib.sh
 . virt_lib.sh

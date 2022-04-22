@@ -4,8 +4,8 @@
 # Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
 # Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 
-TST_SETUP=binfmt_misc_setup
-TST_CLEANUP=binfmt_misc_cleanup
+TST_SETUP="${TST_SETUP:-binfmt_misc_setup}"
+TST_CLEANUP="${TST_CLEANUP:-binfmt_misc_cleanup}"
 TST_NEEDS_DRIVERS="binfmt_misc"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1

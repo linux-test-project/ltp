@@ -10,8 +10,8 @@ TST_NEEDS_CHECKPOINTS=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="killall find kill"
-TST_CLEANUP=memcg_cleanup
-TST_SETUP=memcg_setup
+TST_SETUP="${TST_SETUP:-memcg_setup}"
+TST_CLEANUP="${TST_CLEANUP:-memcg_cleanup}"
 TST_TESTFUNC=memcg_testfunc
 
 MEMCG_SHMMAX=${MEMCG_SHMMAX:-0}
