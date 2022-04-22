@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2021-2022
  * Copyright (c) 2020 Linaro Limited. All rights reserved.
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
@@ -7,11 +8,11 @@
 #ifndef LAPI_FSMOUNT_H__
 #define LAPI_FSMOUNT_H__
 
-#include <sys/mount.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 
 #include "config.h"
+#include "lapi/mount.h"
 #include "lapi/fcntl.h"
 #include "lapi/syscalls.h"
 
