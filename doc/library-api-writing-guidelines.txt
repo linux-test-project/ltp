@@ -28,9 +28,9 @@ and in help output (`-h`) for both C and shell API.
 2.1 LTP-001: Sources have tst_ prefix
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-API source code is in headers `include/*.h`, `include/lapi/*.h` (backward
-compatibility for old kernel and libc) and C sources in `lib/*.c`. Files have
-'tst_' prefix.
+API source code is in headers in 'include/{empty}*.h', 'include/lapi/{empty}*.h'
+(backward compatibility for old kernel and libc) and C sources in 'lib/{empty}*.c'.
+Files have `tst_` prefix.
 
 2.2 LTP-002: TST_RET and TST_ERR are not modified
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,7 +40,7 @@ variables. This prevents silent errors where the return value and
 errno are overwritten before the test has chance to check them.
 
 The macros which are clearly intended to update these variables. That
-is +TEST+ and those in 'tst_test_macros.h'. Are of course allowed to
+is `TEST` and those in 'tst_test_macros.h'. Are of course allowed to
 update these variables.
 
 2.3 LTP-003: Externally visible library symbols have the tst_ prefix
@@ -48,7 +48,7 @@ update these variables.
 
 Functions, types and variables in the public test API should have the
 tst_ prefix. With some exceptions for symbols already prefixed with
-safe_ or ltp_.
+`safe_` or `ltp_`.
 
 Static (private) symbols should not have the prefix.
 
@@ -56,7 +56,7 @@ Static (private) symbols should not have the prefix.
 3. Shell API
 ------------
 
-API source code is in `tst_test.sh`, `tst_security.sh` and `tst_net.sh`
+API source code is in 'tst_test.sh', 'tst_security.sh' and 'tst_net.sh'
 (all in 'testcases/lib' directory).
 
 Changes in the shell API should not introduce uncommon dependencies
