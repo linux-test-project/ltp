@@ -11,8 +11,6 @@
 #define FAIL 0
 #define SUCCESS 1
 
-int openlog[2] = { 0, 0 };
-
 #define MAXNUM 0x100000
 
 #define  MAXERROR 1024

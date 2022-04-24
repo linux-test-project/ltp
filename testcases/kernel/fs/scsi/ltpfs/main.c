@@ -38,7 +38,7 @@ int startc = 0;
 int showchar[] = { 124, 47, 45, 92, 124, 47, 45, 92 };
 
 int nullFileHandle;
-int openlog[2] = { 0, 0 };
+static int openlog[2] = { 0, 0 };
 
 int cFileCount, dFileCount, errorCount;
 static int disk_space_pool = 0;
