@@ -33,7 +33,7 @@ static int sigs_map[NUMSIGS];
 
 static int skip_sig(int sig)
 {
-	if (sig >= __SIGRTMIN && sig < SIGRTMIN)
+	if (sig >= 32 && sig < SIGRTMIN)
 		return 1;
 
 	switch (sig) {
