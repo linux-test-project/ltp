@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
 		tst_res(TFAIL, "unexpected effective/permitted caps at %d", i);
 	else
 		tst_res(TPASS, "expected caps at %d", i);
+
+	return 0;
 }
 
 #else
@@ -61,5 +63,7 @@ int main(void)
 	tst_reinit();
 
 	tst_brk(TCONF, "System is missing libcap");
+
+	return 0;
 }
 #endif
