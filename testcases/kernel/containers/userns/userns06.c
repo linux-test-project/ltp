@@ -1,163 +1,136 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Huawei Technologies Co., Ltd., 2015
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version. This program is distributed in the hope that it will be
- * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details. You should have received a copy of the GNU
- * General Public License along with this program.
+ * Copyright (C) 2022 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-/*
- * Verify that:
- * When a process with non-zero user IDs performs an execve(), the process's
- * capability sets are cleared.
+/*\
+ * [Description]
+ *
+ * Verify that when a process with non-zero user IDs performs an execve(),
+ * the process's capability sets are cleared.
  * When a process with zero user IDs performs an execve(), the process's
  * capability sets are set.
- *
  */
 
-#define _GNU_SOURCE
-#include <sys/wait.h>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include "libclone.h"
-#include "test.h"
+#include "tst_test.h"
 #include "config.h"
-#include "userns_helper.h"
+
+#ifdef HAVE_LIBCAP
+#define _GNU_SOURCE
+
+#include <stdio.h>
+#include "common.h"
+
+#define TEST_APP "userns06_capcheck"
 
 #define CHILD1UID 0
 #define CHILD1GID 0
 #define CHILD2UID 200
 #define CHILD2GID 200
 
-char *TCID = "user_namespace6";
-int TST_TOTAL = 1;
-
-static int cpid1, parentuid, parentgid;
-
-/*
- * child_fn1() - Inside a new user namespace
- */
 static int child_fn1(void)
 {
-	int exit_val = 0;
-	char *const args[] = { "userns06_capcheck", "privileged", NULL };
+	char *const args[] = { TEST_APP, "privileged", NULL };
+	int ret;
 
-	TST_SAFE_CHECKPOINT_WAIT(NULL, 0);
+	TST_CHECKPOINT_WAIT(0);
 
-	if (execve(args[0], args, NULL) == -1) {
-		printf("execvp unexpected error: (%d) %s\n",
-			errno, strerror(errno));
-		exit_val = 1;
-	}
+	ret = execv(args[0], args);
+	if (ret == -1)
+		tst_brk(TBROK | TERRNO, "execv: unexpected error");
 
-	return exit_val;
+	return 0;
 }
 
-/*
- * child_fn2() - Inside a new user namespace
- */
 static int child_fn2(void)
 {
-	int exit_val = 0;
-	int uid, gid;
-	char *const args[] = { "userns06_capcheck", "unprivileged", NULL };
+	int uid, gid, ret;
+	char *const args[] = { TEST_APP, "unprivileged", NULL };
 
-	TST_SAFE_CHECKPOINT_WAIT(NULL, 1);
+	TST_CHECKPOINT_WAIT(1);
 
 	uid = geteuid();
 	gid = getegid();
 
 	if (uid != CHILD2UID || gid != CHILD2GID) {
-		printf("unexpected uid=%d gid=%d\n", uid, gid);
-		exit_val = 1;
+		tst_res(TFAIL, "unexpected uid=%d gid=%d", uid, gid);
+		return 1;
 	}
 
-	if (execve(args[0], args, NULL) == -1) {
-		printf("execvp unexpected error: (%d) %s\n",
-			errno, strerror(errno));
-		exit_val = 1;
-	}
+	tst_res(TPASS, "expected uid and gid");
 
-	return exit_val;
-}
+	ret = execv(args[0], args);
+	if (ret == -1)
+		tst_brk(TBROK | TERRNO, "execv: unexpected error");
 
-static void cleanup(void)
-{
-	tst_rmdir();
+	return 0;
 }
 
 static void setup(void)
 {
 	check_newuser();
-	tst_tmpdir();
-	TST_CHECKPOINT_INIT(NULL);
-	TST_RESOURCE_COPY(cleanup, "userns06_capcheck", NULL);
 }
 
-int main(int argc, char *argv[])
+static void run(void)
 {
+	pid_t cpid1;
 	pid_t cpid2;
+	int parentuid;
+	int parentgid;
 	char path[BUFSIZ];
-	int lc;
 	int fd;
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-#ifndef HAVE_LIBCAP
-	tst_brkm(TCONF, NULL, "System is missing libcap.");
-#endif
-	setup();
+	parentuid = geteuid();
+	parentgid = getegid();
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+	cpid1 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, (void *)child_fn1, NULL);
+	if (cpid1 < 0)
+		tst_brk(TBROK | TTERRNO, "cpid1 clone failed");
 
-		parentuid = geteuid();
-		parentgid = getegid();
+	cpid2 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, (void *)child_fn2, NULL);
+	if (cpid2 < 0)
+		tst_brk(TBROK | TTERRNO, "cpid2 clone failed");
 
-		cpid1 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD,
-			(void *)child_fn1, NULL);
-		if (cpid1 < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				"cpid1 clone failed");
+	if (access("/proc/self/setgroups", F_OK) == 0) {
+		sprintf(path, "/proc/%d/setgroups", cpid1);
 
-		cpid2 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD,
-			(void *)child_fn2, NULL);
-		if (cpid2 < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				"cpid2 clone failed");
+		fd = SAFE_OPEN(path, O_WRONLY, 0644);
+		SAFE_WRITE(1, fd, "deny", 4);
+		SAFE_CLOSE(fd);
 
-		if (access("/proc/self/setgroups", F_OK) == 0) {
-			sprintf(path, "/proc/%d/setgroups", cpid1);
-			fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-			SAFE_WRITE(cleanup, 1, fd, "deny", 4);
-			SAFE_CLOSE(cleanup, fd);
+		sprintf(path, "/proc/%d/setgroups", cpid2);
 
-			sprintf(path, "/proc/%d/setgroups", cpid2);
-			fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-			SAFE_WRITE(cleanup, 1, fd, "deny", 4);
-			SAFE_CLOSE(cleanup, fd);
-		}
-
-		updatemap(cpid1, UID_MAP, CHILD1UID, parentuid, cleanup);
-		updatemap(cpid2, UID_MAP, CHILD2UID, parentuid, cleanup);
-
-		updatemap(cpid1, GID_MAP, CHILD1GID, parentgid, cleanup);
-		updatemap(cpid2, GID_MAP, CHILD2GID, parentgid, cleanup);
-
-		TST_SAFE_CHECKPOINT_WAKE(cleanup, 0);
-		TST_SAFE_CHECKPOINT_WAKE(cleanup, 1);
-
-		tst_record_childstatus(cleanup, cpid1);
-		tst_record_childstatus(cleanup, cpid2);
+		fd = SAFE_OPEN(path, O_WRONLY, 0644);
+		SAFE_WRITE(1, fd, "deny", 4);
+		SAFE_CLOSE(fd);
 	}
-	cleanup();
-	tst_exit();
+
+	updatemap(cpid1, UID_MAP, CHILD1UID, parentuid);
+	updatemap(cpid2, UID_MAP, CHILD2UID, parentuid);
+
+	updatemap(cpid1, GID_MAP, CHILD1GID, parentgid);
+	updatemap(cpid2, GID_MAP, CHILD2GID, parentgid);
+
+	TST_CHECKPOINT_WAKE(0);
+	TST_CHECKPOINT_WAKE(1);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.needs_root = 1,
+	.needs_checkpoints = 1,
+	.resource_files = (const char *[]) {
+		TEST_APP,
+		NULL,
+	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		NULL,
+	},
+};
+
+#else
+TST_TEST_TCONF("System is missing libcap");
+#endif
