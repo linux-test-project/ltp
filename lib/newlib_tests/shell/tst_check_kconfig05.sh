@@ -3,7 +3,6 @@
 # Copyright (c) 2022 FUJITSU LIMITED. All rights reserved.
 
 TST_TESTFUNC=do_test
-. tst_test.sh
 
 do_test()
 {
@@ -13,4 +12,5 @@ do_test()
 	tst_require_kconfigs "CONFIG_EXT4"
 	tst_res TFAIL "kernel .config has CONFIG_EXT4"
 }
+. tst_test.sh
 tst_run

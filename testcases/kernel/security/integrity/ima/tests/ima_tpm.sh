@@ -10,8 +10,6 @@ TST_CNT=2
 TST_NEEDS_CMDS="awk cut tail"
 TST_SETUP="setup"
 
-. ima_setup.sh
-
 EVMCTL_REQUIRED='1.3.1'
 ERRMSG_EVMCTL="=> install evmctl >= $EVMCTL_REQUIRED"
 ERRMSG_TPM="TPM hardware support not enabled in kernel or no TPM chip found"
@@ -296,4 +294,5 @@ test2()
 	fi
 }
 
+. ima_setup.sh
 tst_run

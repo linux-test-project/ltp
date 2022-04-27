@@ -13,5 +13,4 @@ EALGO="aes"
 MACSEC_LIB_SETUP="replay on window 300 encrypt on protect on"
 
 . macsec_lib.sh
-
 tst_run

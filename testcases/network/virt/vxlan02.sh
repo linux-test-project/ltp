@@ -10,12 +10,10 @@
 TST_OPTS="hi:d:"
 TST_PARSE_ARGS=virt_lib_parse_args
 TST_USAGE=virt_lib_usage
+TST_TESTFUNC=do_test
 
 virt_type="vxlan"
 start_id=16700000
-
-TST_TESTFUNC=do_test
-. virt_lib.sh
 
 do_test()
 {
@@ -25,4 +23,5 @@ do_test()
 	virt_add_delete_test "id $start_id group $mult_addr"
 }
 
+. virt_lib.sh
 tst_run

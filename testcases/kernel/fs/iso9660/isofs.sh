@@ -14,8 +14,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP=setup
 TST_TESTFUNC=do_test
 
-. tst_test.sh
-
 MAX_DEPTH=3
 MAX_DIRS=4
 
@@ -97,4 +95,5 @@ do_test()
 	done
 }
 
+. tst_test.sh
 tst_run

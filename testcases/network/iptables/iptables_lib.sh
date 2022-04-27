@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2019-2022
 # Copyright (c) 2018-2019 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 #
@@ -13,8 +14,6 @@ TST_NEEDS_ROOT=1
 TST_SETUP="${TST_SETUP:-init}"
 TST_CLEANUP="${TST_CLEANUP:-cleanup}"
 TST_NEEDS_CMDS="grep telnet"
-
-. tst_net.sh
 
 NFRUN()
 {
@@ -379,3 +378,5 @@ test6()
 	tst_res TINFO "$toolname limited logging succsess"
 	tst_res TPASS "$toolname can log packets with limited rate"
 }
+
+. tst_net.sh

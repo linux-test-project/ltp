@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2022 Petr Vorel <pvorel@suse.cz>
 # Author: Petr Vorel <pvorel@suse.cz>
 
 CMD="${CMD:-ip}"
@@ -14,7 +14,6 @@ TST_TESTFUNC="test_body"
 TST_PARSE_ARGS="if_parse_args"
 TST_USAGE="if_usage"
 TST_OPTS="c:"
-. tst_net_stress.sh
 
 if_usage()
 {
@@ -44,3 +43,5 @@ if_cleanup_restore()
 	restore_ipaddr
 	restore_ipaddr rhost
 }
+
+. tst_net_stress.sh

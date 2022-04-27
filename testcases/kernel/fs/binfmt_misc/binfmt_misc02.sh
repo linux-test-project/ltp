@@ -21,7 +21,6 @@ TST_CNT=6
 TST_TESTFUNC=do_test
 TST_NEEDS_CMDS="cat head"
 
-. binfmt_misc_lib.sh
 
 recognised_unrecognised()
 {
@@ -106,4 +105,5 @@ do_test()
 	esac
 }
 
+. binfmt_misc_lib.sh
 tst_run

@@ -7,7 +7,6 @@ TST_TESTFUNC=test
 TST_CNT=2
 TST_DEV_FS_OPTS="-b 1024 -O quota"
 TST_DEV_EXTRA_OPTS="5m"
-. tst_test.sh
 
 test1()
 {
@@ -20,4 +19,5 @@ test2()
 	EXPECT_PASS "df $TST_DEVICE | grep -q /dev"
 }
 
+. tst_test.sh
 tst_run

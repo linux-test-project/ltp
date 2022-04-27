@@ -12,7 +12,6 @@
 # Created by: Robbie Williamson (robbiew@us.ibm.com)
 
 TST_TESTFUNC="do_test"
-. nfs_lib.sh
 
 do_test()
 {
@@ -21,4 +20,5 @@ do_test()
     tst_res TPASS "Test finished"
 }
 
+. nfs_lib.sh
 tst_run

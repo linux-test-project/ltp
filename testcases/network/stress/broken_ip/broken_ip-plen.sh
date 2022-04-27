@@ -6,7 +6,6 @@
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
 TST_TESTFUNC="do_test"
-. tst_net.sh
 
 do_test()
 {
@@ -15,4 +14,5 @@ do_test()
 	tst_ping
 }
 
+. tst_net.sh
 tst_run

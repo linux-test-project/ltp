@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2009 FUJITSU LIMITED
 # Author: Li Zefan <lizf@cn.fujitsu.com>
 
@@ -11,8 +11,6 @@ TST_CNT=9
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="awk dmesg find mountpoint rmdir"
-
-. cgroup_lib.sh
 
 do_setup()
 {
@@ -439,4 +437,5 @@ test9()
 	check_kernel_bug
 }
 
+. cgroup_lib.sh
 tst_run

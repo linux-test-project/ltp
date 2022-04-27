@@ -23,7 +23,6 @@ TST_TOTAL=2
 TST_CLEANUP="cleanup"
 
 TST_USE_LEGACY_API=1
-. tst_net.sh
 
 # Minimum host ID in the zone file.
 # The ID is used as the host portion of the address
@@ -196,13 +195,10 @@ test02()
 	tst_resm TPASS "Test is finished successfully"
 }
 
+. tst_net.sh
 common_setup
-
 setup_$TST_IPVER
-
 start_named
-
 test01
 test02
-
 tst_exit

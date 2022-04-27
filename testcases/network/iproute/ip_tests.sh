@@ -15,7 +15,6 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="cat awk diff"
 TST_NEEDS_DRIVERS="dummy"
 
-. tst_net.sh
 
 rm_dummy=
 
@@ -251,4 +250,5 @@ test6()
 	tst_res TPASS "'ip maddr' command successfully tested"
 }
 
+. tst_net.sh
 tst_run

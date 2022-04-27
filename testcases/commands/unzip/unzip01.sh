@@ -10,7 +10,6 @@ TST_SETUP=setup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="unzip"
-. tst_test.sh
 
 EXTRACT_MATCH="extracting"
 
@@ -83,4 +82,5 @@ do_test()
 	ROD rm -rf "dir/"
 }
 
+. tst_test.sh
 tst_run

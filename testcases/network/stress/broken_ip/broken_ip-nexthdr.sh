@@ -6,17 +6,17 @@
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
 TST_TESTFUNC="do_test"
-. tst_net.sh
 
 do_test()
 {
-	# not supported on IPv4
-	TST_IPV6=6
-	TST_IPVER=6
-
 	tst_res TINFO "Sending ICMPv6 with wrong next header for $NS_DURATION sec"
 	tst_icmp -t $NS_DURATION -s "0 100 500 1000 $NS_ICMPV6_SENDER_DATA_MAXSIZE" -n
 	tst_ping
 }
+
+. tst_net.sh
+# not supported on IPv4
+TST_IPV6=6
+TST_IPVER=6
 
 tst_run

@@ -14,7 +14,6 @@ TST_USAGE=usage
 TST_PARSE_ARGS=parse_args
 TST_NEEDS_ROOT=1
 TST_FORMAT_DEVICE=1
-. tst_test.sh
 
 usage()
 {
@@ -192,4 +191,5 @@ test12()
 	fi
 }
 
+. tst_test.sh
 tst_run

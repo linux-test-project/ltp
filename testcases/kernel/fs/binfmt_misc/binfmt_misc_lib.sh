@@ -11,8 +11,6 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="${TST_NEEDS_CMDS} modprobe mount umount mkdir rm"
 
-. tst_test.sh
-
 rmod_binfmt_misc=0
 umount_binfmt_misc=0
 binfmt_misc_mntpoint="ltp_binfmt_misc"
@@ -72,3 +70,5 @@ binfmt_misc_cleanup()
 		rmod_binfmt_misc=0
 	fi
 }
+
+. tst_test.sh

@@ -12,8 +12,6 @@
 TST_SETUP="do_setup"
 TST_TESTFUNC="do_test"
 
-. nfs_lib.sh
-
 LUSER=${LUSER:=root}
 
 do_setup()
@@ -62,4 +60,5 @@ do_test()
 	fi
 }
 
+. nfs_lib.sh
 tst_run

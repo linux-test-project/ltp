@@ -19,8 +19,6 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_CHECKPOINTS=1
 TST_TEST_DATA="fork exec exit uid gid"
 
-. tst_test.sh
-
 num_events=10
 
 LISTENER_ID=0
@@ -146,4 +144,5 @@ test()
 	fi
 }
 
+. tst_test.sh
 tst_run

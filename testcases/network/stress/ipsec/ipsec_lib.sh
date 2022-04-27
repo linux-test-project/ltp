@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2016 Red Hat Inc.,  All Rights Reserved.
 # Copyright (c) 2016 Oracle and/or its affiliates. All Rights Reserved.
 # Author: Hangbin Liu <haliu@redhat.com>
@@ -15,6 +15,11 @@ AALGO="sha1"
 CALGO="deflate"
 
 IPSEC_REQUESTS="500"
+
+TST_OPTS="l:m:p:s:S:k:A:e:a:c:r:"
+TST_PARSE_ARGS=ipsec_lib_parse_args
+TST_SETUP=${TST_SETUP:-ipsec_lib_setup}
+TST_USAGE=ipsec_lib_usage
 
 ipsec_lib_usage()
 {
@@ -88,12 +93,6 @@ ipsec_lib_setup()
 		cleanup_xfrm=1
 	fi
 }
-
-TST_OPTS="l:m:p:s:S:k:A:e:a:c:r:"
-TST_PARSE_ARGS=ipsec_lib_parse_args
-TST_SETUP=${TST_SETUP:-ipsec_lib_setup}
-TST_USAGE=ipsec_lib_usage
-. tst_net.sh
 
 get_key()
 {
@@ -318,3 +317,5 @@ tst_ipsec_setup_vti()
 	ROD ip addr add $ip_loc_tun/$mask dev $tst_vti $address_opt
 	tst_rhost_run -s -c "ip addr add $ip_rmt_tun/$mask dev $tst_vti"
 }
+
+. tst_net.sh

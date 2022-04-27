@@ -8,8 +8,6 @@ TST_TESTFUNC=cpio_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="cpio"
 TST_SETUP="setup"
-. tst_test.sh
-
 
 setup()
 {
@@ -47,4 +45,5 @@ cpio_test()
 	fi
 }
 
+. tst_test.sh
 tst_run

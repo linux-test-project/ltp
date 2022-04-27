@@ -8,7 +8,6 @@
 TST_CLEANUP="do_cleanup"
 TST_TESTFUNC="test_body"
 TST_NEEDS_CMDS="ifconfig"
-. tst_net.sh
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
 # Maximum host portion of the IPv4 address on the local host
@@ -61,4 +60,5 @@ test_body()
 	tst_ping
 }
 
+. tst_net.sh
 tst_run

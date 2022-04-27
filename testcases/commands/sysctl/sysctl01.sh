@@ -13,8 +13,6 @@ TST_TESTFUNC=sysctl_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sysctl"
 
-. tst_test.sh
-
 sysctl_test()
 {
 	# With commit d00535d, sched_time_avg was renamed as sched_time_avg_ms
@@ -38,4 +36,5 @@ sysctl_test()
 	fi
 }
 
+. tst_test.sh
 tst_run

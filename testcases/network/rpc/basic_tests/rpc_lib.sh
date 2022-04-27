@@ -1,8 +1,7 @@
 #!/bin/sh
-# Copyright (c) 2020-2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2022 Petr Vorel <pvorel@suse.cz>
 
 TST_NEEDS_CMDS="rpcinfo $TST_NEEDS_CMDS"
-. tst_net.sh
 
 check_rpc()
 {
@@ -19,3 +18,5 @@ check_rpc()
 	tst_res TINFO "registered RPC:"
 	echo "$services"
 }
+
+. tst_net.sh

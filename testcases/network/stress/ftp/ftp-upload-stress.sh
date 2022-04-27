@@ -24,7 +24,6 @@ TST_TOTAL=2
 TST_CLEANUP="cleanup"
 
 TST_USE_LEGACY_API=1
-. tst_net.sh
 
 # Big file size to upload (byte)
 UPLOAD_BIGFILESIZE=${UPLOAD_BIGFILESIZE:-2147483647}  # 2GB - 1
@@ -98,9 +97,8 @@ test02()
 	tst_resm TPASS "Test is finished successfully"
 }
 
+. tst_net.sh
 setup
-
 test01
 test02
-
 tst_exit

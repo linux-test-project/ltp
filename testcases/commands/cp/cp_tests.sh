@@ -10,7 +10,6 @@ TST_CNT=5
 TST_TESTFUNC=do_test
 TST_SETUP=setup
 TST_NEEDS_TMPDIR=1
-. tst_test.sh
 
 create_tree()
 {
@@ -91,4 +90,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

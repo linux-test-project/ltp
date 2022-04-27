@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2018-2022
 # Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
 
 TST_MIN_KVER="4.3"
@@ -9,7 +10,6 @@ TST_NEEDS_DRIVERS="mpls_router mpls_iptunnel mpls_gso"
 TST_NEEDS_CMDS="sysctl modprobe"
 TST_TEST_DATA="icmp tcp udp"
 TST_NETLOAD_BINDTODEVICE=
-. tst_net.sh
 
 mpls_cleanup()
 {
@@ -96,3 +96,5 @@ mpls_virt_test()
 		tst_netload -S $ip6_virt_local -H $ip6_virt_remote -T $type -A $max_size
 	fi
 }
+
+. tst_net.sh

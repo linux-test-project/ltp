@@ -13,8 +13,6 @@ TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="readelf"
 
-. tst_test.sh
-
 setup()
 {
 	case $(readelf -h /bin/sh) in
@@ -90,4 +88,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

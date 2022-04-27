@@ -25,6 +25,7 @@
 TST_TOTAL=1
 TCID="tcpdump01"
 TST_CLEANUP=do_cleanup
+TST_USE_LEGACY_API=1
 
 do_setup()
 {
@@ -64,10 +65,8 @@ do_cleanup()
 	tst_rmdir
 }
 
-TST_USE_LEGACY_API=1
 . tst_net.sh
 
 do_setup
 do_test
-
 tst_exit

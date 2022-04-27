@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2022 Petr Vorel <pvorel@suse.cz>
 #
 # Change route interface
 # gw (on rhost): 10.23.x.1, rhost: 10.23.0.1, switching ifaces on lhost
@@ -9,7 +9,6 @@
 TST_SETUP="setup"
 TST_CLEANUP="cleanup_if"
 TST_TESTFUNC="test_netlink"
-. route-lib.sh
 
 setup()
 {
@@ -36,4 +35,5 @@ setup()
 	ROUTE_CHANGE_NETLINK_PARAMS="-d '$iface_all' -g '$gw_all' -r $rhost"
 }
 
+. route-lib.sh
 tst_run

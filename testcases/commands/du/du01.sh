@@ -10,7 +10,6 @@ TST_SETUP=setup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="dd du stat"
-. tst_test.sh
 
 setup()
 {
@@ -108,4 +107,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

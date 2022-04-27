@@ -19,8 +19,6 @@ TST_OPTS="t:w:"
 TST_USAGE=rcutorture_usage
 TST_PARSE_ARGS=rcutorture_parse_args
 
-. tst_test.sh
-
 # default options
 test_time=30
 num_writers=5
@@ -92,4 +90,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

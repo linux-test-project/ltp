@@ -14,7 +14,6 @@ TST_TESTFUNC=test
 TST_SETUP=setup
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="$CC $LD"
-. tst_test.sh
 
 setup()
 {
@@ -78,4 +77,5 @@ test5()
 	fi
 }
 
+. tst_test.sh
 tst_run

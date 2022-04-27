@@ -33,7 +33,6 @@ TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="unshare id mount umount"
-. tst_test.sh
 
 max_userns_path="/proc/sys/user/max_user_namespaces"
 max_mntns_path="/proc/sys/user/max_mnt_namespaces"
@@ -157,4 +156,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

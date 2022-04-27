@@ -13,8 +13,6 @@ TST_NEEDS_CMDS="cat chgrp chown id sg sudo"
 TST_CNT=1
 TST_NEEDS_DEVICE=1
 
-. ima_setup.sh
-
 verify_measurement()
 {
 	local request="$1"
@@ -63,4 +61,5 @@ test1()
 	verify_measurement fgroup
 }
 
+. ima_setup.sh
 tst_run

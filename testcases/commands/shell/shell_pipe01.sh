@@ -4,8 +4,6 @@
 
 TST_TESTFUNC=do_test
 
-. tst_test.sh
-
 do_test()
 {
 	tst_res TINFO "expecting SUCCESS string passed from stdin"
@@ -14,4 +12,5 @@ do_test()
 	EXPECT_PASS [ "$line" = "SUCCESS" ]
 }
 
+. tst_test.sh
 tst_run

@@ -6,8 +6,6 @@
 TST_TESTFUNC="do_test"
 TST_NEEDS_CMDS="nfsstat"
 
-. nfs_lib.sh
-
 get_calls()
 {
 	local name=$1
@@ -93,4 +91,5 @@ do_test()
 	fi
 }
 
+. nfs_lib.sh
 tst_run

@@ -9,8 +9,6 @@ TST_TESTFUNC="do_test"
 TST_CLEANUP="cleanup"
 TST_MIN_KVER="3.18"
 
-. tcp_cc_lib.sh
-
 cleanup()
 {
 	tc qdisc del dev $(tst_iface) root netem loss 0.5% ecn
@@ -36,4 +34,5 @@ do_test()
 	tcp_cc_test01 dctcp 10
 }
 
+. tcp_cc_lib.sh
 tst_run

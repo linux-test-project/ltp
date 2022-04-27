@@ -22,8 +22,6 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="awk bc numactl numastat"
 
-. tst_test.sh
-
 # Awk the field matching the node value for numastat
 # $1 - Pid number
 # $2 - Node number
@@ -383,4 +381,5 @@ test9()
 	tst_res TPASS "NUMA preferred node policy verified with THP enabled"
 }
 
+. tst_test.sh
 tst_run

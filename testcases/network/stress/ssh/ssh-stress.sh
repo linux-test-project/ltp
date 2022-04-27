@@ -13,7 +13,6 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="sshd ssh ssh-keygen od pkill pgrep"
 
-. tst_net.sh
 
 # SSH config file on the remote host
 RHOST_SSH_CONF=
@@ -230,4 +229,5 @@ test3()
 	tst_res TPASS "Test finished successfully"
 }
 
+. tst_net.sh
 tst_run

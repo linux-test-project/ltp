@@ -13,7 +13,6 @@ MEMCG_TESTFUNC=test
 MEMCG_SHMMAX=1
 TST_CNT=10
 
-. memcg_lib.sh
 
 # Test the management and counting of memory
 test1()
@@ -68,4 +67,5 @@ test10()
 	test_mem_stat "--mmap-lock1" $PAGESIZES $PAGESIZES "rss" $PAGESIZES $PAGESIZES true
 }
 
+. memcg_lib.sh
 tst_run

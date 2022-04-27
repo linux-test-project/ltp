@@ -14,7 +14,6 @@ TST_CNT=2
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="gzip gunzip"
-. tst_test.sh
 
 creat_dirnfiles()
 {
@@ -149,4 +148,5 @@ test2()
 	ROD_SILENT rm -rf tst_gzip.tmp/
 }
 
+. tst_test.sh
 tst_run

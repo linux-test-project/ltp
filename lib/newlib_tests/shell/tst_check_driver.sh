@@ -6,7 +6,6 @@ TST_TESTFUNC=test
 TST_SETUP=setup
 TST_CNT=3
 TST_NEEDS_CMDS="tst_check_drivers find grep head sed"
-. tst_test.sh
 
 MODULES_DIR="${MODULES_DIR:-/lib/modules/$(uname -r)}"
 
@@ -60,4 +59,5 @@ test3()
 	test_drivers $(grep -E '_[^/]+\.ko' $f | head -3)
 }
 
+. tst_test.sh
 tst_run

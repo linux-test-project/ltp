@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2019-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines Corp., 2006
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 # Rewrite into new shell API: Petr Vorel
@@ -11,8 +11,6 @@
 TST_SETUP="setup"
 TST_CLEANUP="route_cleanup"
 TST_TESTFUNC="test_dst"
-. route-lib.sh
-TST_CNT=$ROUTE_CHANGE_IP
 
 setup()
 {
@@ -34,4 +32,6 @@ test_dst()
 	tst_del_ipaddr -s -q -a $rhost rhost
 }
 
+. route-lib.sh
+TST_CNT=$ROUTE_CHANGE_IP
 tst_run

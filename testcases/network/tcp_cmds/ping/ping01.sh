@@ -14,7 +14,6 @@
 TST_SETUP="do_setup"
 TST_TESTFUNC="do_test"
 
-. tst_net.sh
 
 do_setup()
 {
@@ -37,4 +36,5 @@ do_test()
 	done
 }
 
+. tst_net.sh
 tst_run

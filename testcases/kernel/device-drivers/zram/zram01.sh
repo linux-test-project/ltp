@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2019-2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 # Test creates several zram devices with different filesystems on them.
@@ -9,7 +9,6 @@
 TST_CNT=7
 TST_TESTFUNC="do_test"
 TST_NEEDS_CMDS="awk bc dd"
-. zram_lib.sh
 TST_SETUP="setup"
 
 check_space_for_btrfs()
@@ -151,4 +150,5 @@ do_test()
 	esac
 }
 
+. zram_lib.sh
 tst_run

@@ -12,10 +12,6 @@ TST_CLEANUP="${TST_CLEANUP:-fs_bind_cleanup}"
 TST_TESTFUNC=fs_bind_test
 TST_NEEDS_CMDS="mount umount awk sed"
 
-. tst_test.sh
-
-[ -z "$FS_BIND_TESTFUNC" ] && tst_brk TBROK "Please set FS_BIND_TESTFUNC before sourcing fs_bind_lib.sh"
-
 # Test interface:
 #
 # FS_BIND_TESTFUNC is the real testfunction. Please do not use
@@ -245,3 +241,6 @@ fs_bind_test()
 
 	_fs_bind_cleanup_test
 }
+
+. tst_test.sh
+[ -z "$FS_BIND_TESTFUNC" ] && tst_brk TBROK "Please set FS_BIND_TESTFUNC before sourcing fs_bind_lib.sh"

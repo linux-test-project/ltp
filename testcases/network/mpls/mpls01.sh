@@ -12,7 +12,6 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_DRIVERS="mpls_router"
 TST_NEEDS_CMDS="sysctl modprobe"
 
-. tst_net.sh
 
 cleanup()
 {
@@ -67,4 +66,5 @@ test3()
 	tst_res TPASS "created and removed mpls routes"
 }
 
+. tst_net.sh
 tst_run

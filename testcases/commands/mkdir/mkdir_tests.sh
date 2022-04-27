@@ -9,7 +9,6 @@ TST_CNT=3
 TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
-. tst_test.sh
 
 setup()
 {
@@ -50,4 +49,5 @@ test3()
 	ROD rm -rf "$LONG_PATH"
 }
 
+. tst_test.sh
 tst_run

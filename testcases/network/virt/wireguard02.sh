@@ -1,13 +1,11 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2020 Oracle and/or its affiliates. All Rights Reserved.
 
 TST_CLEANUP=cleanup
 TST_TESTFUNC=test1
 TST_SETUP=wireguard_lib_setup
-
-. ipsec_lib.sh
-. wireguard_lib.sh
 
 IPSEC_MODE="tunnel"
 IPSEC_PROTO="esp_aead"
@@ -45,4 +43,6 @@ test1()
 	tst_netload_compare $time_ipsec $time_wg -100
 }
 
+. ipsec_lib.sh
+. wireguard_lib.sh
 tst_run

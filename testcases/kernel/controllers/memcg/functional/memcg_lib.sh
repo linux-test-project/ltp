@@ -1,7 +1,7 @@
 #! /bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2012 FUJITSU LIMITED
-# Copyright (c) 2014-2019 Linux Test Project
+# Copyright (c) 2014-2022 Linux Test Project
 # Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
 #
 # Author: Peng Haitao <penght@cn.fujitsu.com>
@@ -13,35 +13,6 @@ TST_NEEDS_CMDS="killall find kill"
 TST_SETUP="${TST_SETUP:-memcg_setup}"
 TST_CLEANUP="${TST_CLEANUP:-memcg_cleanup}"
 TST_TESTFUNC=memcg_testfunc
-
-MEMCG_SHMMAX=${MEMCG_SHMMAX:-0}
-MEMCG_TESTFUNC=${MEMCG_TESTFUNC:-memcg_no_testfunc}
-
-. cgroup_lib.sh
-
-PAGESIZE=$(tst_getconf PAGESIZE)
-if [ $? -ne 0 ]; then
-	tst_brk TBROK "tst_getconf PAGESIZE failed"
-fi
-
-# Post 4.16 kernel updates stat in batch (> 32 pages) every time
-PAGESIZES=$(($PAGESIZE * 33))
-
-# On recent Linux kernels (at least v5.4) updating stats happens in batches
-# (PAGESIZES) and also might depend on workload and number of CPUs.  The kernel
-# caches the data and does not prioritize stats precision.  This is especially
-# visible for max_usage_in_bytes where it usually exceeds
-# actual memory allocation.
-# When checking for usage_in_bytes and max_usage_in_bytes accept also higher values
-# from given range:
-MEM_USAGE_RANGE=$((PAGESIZES))
-
-HUGEPAGESIZE=$(awk '/Hugepagesize/ {print $2}' /proc/meminfo)
-[ -z $HUGEPAGESIZE ] && HUGEPAGESIZE=0
-HUGEPAGESIZE=$(($HUGEPAGESIZE * 1024))
-
-orig_memory_use_hierarchy=
-orig_shmmax=
 
 memcg_require_memsw()
 {
@@ -415,3 +386,32 @@ memcg_no_testfunc()
 {
 	tst_brk TBROK "No testfunc specified, set MEMCG_TESTFUNC"
 }
+
+. cgroup_lib.sh
+
+MEMCG_SHMMAX=${MEMCG_SHMMAX:-0}
+MEMCG_TESTFUNC=${MEMCG_TESTFUNC:-memcg_no_testfunc}
+
+PAGESIZE=$(tst_getconf PAGESIZE)
+if [ $? -ne 0 ]; then
+	tst_brk TBROK "tst_getconf PAGESIZE failed"
+fi
+
+# Post 4.16 kernel updates stat in batch (> 32 pages) every time
+PAGESIZES=$(($PAGESIZE * 33))
+
+# On recent Linux kernels (at least v5.4) updating stats happens in batches
+# (PAGESIZES) and also might depend on workload and number of CPUs.  The kernel
+# caches the data and does not prioritize stats precision.  This is especially
+# visible for max_usage_in_bytes where it usually exceeds
+# actual memory allocation.
+# When checking for usage_in_bytes and max_usage_in_bytes accept also higher values
+# from given range:
+MEM_USAGE_RANGE=$((PAGESIZES))
+
+HUGEPAGESIZE=$(awk '/Hugepagesize/ {print $2}' /proc/meminfo)
+[ -z $HUGEPAGESIZE ] && HUGEPAGESIZE=0
+HUGEPAGESIZE=$(($HUGEPAGESIZE * 1024))
+
+orig_memory_use_hierarchy=
+orig_shmmax=

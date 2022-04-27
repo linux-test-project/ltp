@@ -6,7 +6,6 @@
 
 FS_BIND_TESTFUNC=test
 
-. fs_bind_lib.sh
 
 test()
 {
@@ -50,4 +49,5 @@ test()
 	EXPECT_PASS umount share2
 }
 
+. fs_bind_lib.sh
 tst_run

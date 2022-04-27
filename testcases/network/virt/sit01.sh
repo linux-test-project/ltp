@@ -7,7 +7,6 @@ TST_TESTFUNC=virt_netperf_msg_sizes
 TST_SETUP=do_setup
 TST_CLEANUP=virt_cleanup
 virt_type="sit"
-. virt_lib.sh
 
 do_setup()
 {
@@ -20,4 +19,5 @@ do_setup()
 		   "local $(tst_ipaddr rhost) remote $(tst_ipaddr)"
 }
 
+. virt_lib.sh
 tst_run

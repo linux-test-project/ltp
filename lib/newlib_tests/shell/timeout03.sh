@@ -28,7 +28,6 @@ TST_TESTFUNC=do_test
 TST_CLEANUP=cleanup
 
 TST_TIMEOUT=1
-. tst_test.sh
 
 do_test()
 {
@@ -46,4 +45,5 @@ cleanup()
 	tst_res TFAIL "cleanup: running after TST_TIMEOUT"
 }
 
+. tst_test.sh
 tst_run

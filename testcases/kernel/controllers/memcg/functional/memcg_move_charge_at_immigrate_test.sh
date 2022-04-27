@@ -9,7 +9,6 @@
 MEMCG_TESTFUNC=test
 TST_CNT=4
 
-. memcg_lib.sh
 
 
 # Run test cases which test memory.move_charge_at_immigrate
@@ -80,4 +79,5 @@ test4()
 		$((PAGESIZES * 2)) 3 $PAGESIZES $PAGESIZES 0 0
 }
 
+. memcg_lib.sh
 tst_run

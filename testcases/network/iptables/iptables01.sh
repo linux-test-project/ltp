@@ -5,5 +5,4 @@
 use_iptables=1
 
 . iptables_lib.sh
-
 tst_run

@@ -6,8 +6,6 @@
 
 TST_TEST_DATA="udp udp_lite"
 
-. busy_poll_lib.sh
-
 cleanup()
 {
 	[ -n "$busy_poll_old" ] && \
@@ -42,4 +40,5 @@ test()
 	tst_netload_compare $(cat res_0) $(cat res_50) 1
 }
 
+. busy_poll_lib.sh
 tst_run

@@ -1,10 +1,9 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2019-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="ip"
-. tst_net.sh
 
 ROUTE_RHOST_PORT=${ROUTE_RHOST_PORT:-65535}
 ROUTE_MAX_IP=${ROUTE_MAX_IP:-5}
@@ -107,3 +106,5 @@ test_netlink()
 	fi
 	tst_res TPASS "$cmd passed"
 }
+
+. tst_net.sh

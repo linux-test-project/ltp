@@ -6,8 +6,6 @@ TST_SETUP="setup"
 TST_TESTFUNC="do_test"
 TST_CLEANUP="cleanup"
 
-. mpls_lib.sh
-
 cleanup()
 {
 	ip route del $ip_rmt/$mask > /dev/null 2>&1
@@ -50,4 +48,5 @@ do_test()
 	fi
 }
 
+. mpls_lib.sh
 tst_run

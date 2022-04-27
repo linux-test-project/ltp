@@ -24,7 +24,6 @@ TST_TOTAL=2
 TST_CLEANUP="cleanup"
 
 TST_USE_LEGACY_API=1
-. tst_net.sh
 
 # Big file size to upload/download in ftp tests (byte)
 DOWNLOAD_BIGFILESIZE=${DOWNLOAD_BIGFILESIZE:-2147483647}
@@ -90,9 +89,8 @@ test02()
 	tst_resm TPASS "Test is finished successfully"
 }
 
+. tst_net.sh
 setup
-
 test01
 test02
-
 tst_exit

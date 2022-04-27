@@ -8,8 +8,6 @@ TST_CLEANUP="nfs03_cleanup"
 TST_SETUP="nfs03_setup"
 TST_TESTFUNC="do_test"
 
-. nfs_lib.sh
-
 DIR_NUM=${DIR_NUM:-"100"}
 FILE_NUM=${FILE_NUM:-"100"}
 THREAD_NUM=${THREAD_NUM:-"1"}
@@ -92,4 +90,5 @@ nfs03_cleanup()
 	nfs_cleanup
 }
 
+. nfs_lib.sh
 tst_run

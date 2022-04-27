@@ -7,7 +7,6 @@ TST_TESTFUNC=do_test
 TST_SETUP=do_setup
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="rpcinfo wc"
-. rpc_lib.sh
 
 do_setup()
 {
@@ -53,4 +52,5 @@ do_test()
 	EXPECT_RHOST_FAIL rpcinfo -u $thost 100000 5
 }
 
+. rpc_lib.sh
 tst_run

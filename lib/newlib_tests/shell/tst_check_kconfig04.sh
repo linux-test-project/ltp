@@ -3,7 +3,6 @@
 # Copyright (c) 2022 FUJITSU LIMITED. All rights reserved.
 
 TST_TESTFUNC=do_test
-. tst_test.sh
 
 do_test()
 {
@@ -21,4 +20,5 @@ do_test()
 		tst_res TPASS "kernel .config doesn't have CONFIG_EXT4"
 	fi
 }
+. tst_test.sh
 tst_run

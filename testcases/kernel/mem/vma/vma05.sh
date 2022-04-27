@@ -23,8 +23,6 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="gdb"
 
-. tst_test.sh
-
 CORE_LIMIT=$(ulimit -c)
 CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
 
@@ -64,4 +62,5 @@ vma_report_check()
 	fi
 }
 
+. tst_test.sh
 tst_run

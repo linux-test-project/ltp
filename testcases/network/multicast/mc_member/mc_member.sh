@@ -32,9 +32,8 @@ ERRFILE=${ERRFILE:-errors}
 TCID=mc_member
 TST_TOTAL=1
 TST_COUNT=1
-
+TST_CLEANUP=do_cleanup
 TST_USE_LEGACY_API=1
-. tst_net.sh
 
 setup()
 {
@@ -133,7 +132,6 @@ do_cleanup()
 	tst_rmdir
 }
 
+. tst_net.sh
 setup
-TST_CLEANUP=do_cleanup
-
 do_test

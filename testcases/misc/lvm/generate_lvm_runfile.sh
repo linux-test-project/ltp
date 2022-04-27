@@ -7,7 +7,6 @@
 TST_TESTFUNC=generate_runfile
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sed"
-. tst_test.sh
 
 LVM_DIR="${LVM_DIR:-/tmp}"
 LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
@@ -30,4 +29,5 @@ generate_runfile()
 	tst_res TPASS "Runfile $OUTFILE successfully created"
 }
 
+. tst_test.sh
 tst_run

@@ -13,7 +13,6 @@ TST_OPTS="c:"
 TST_PARSE_ARGS="parse_args"
 TST_USAGE="usage"
 TST_NEEDS_ROOT=1
-. tst_net.sh
 
 do_setup()
 {
@@ -85,4 +84,5 @@ do_test()
 	tst_res TPASS "verified adding/removing $entry_name cache entry"
 }
 
+. tst_net.sh
 tst_run

@@ -10,7 +10,6 @@
 
 TST_TESTFUNC="do_test"
 TST_CLEANUP="do_cleanup"
-. nfs_lib.sh
 
 THREAD_NUM=${THREAD_NUM:-"2"}
 
@@ -42,4 +41,5 @@ do_test()
 	tst_res TPASS "all fsstress processes completed on '$n' NFS mounts"
 }
 
+. nfs_lib.sh
 tst_run

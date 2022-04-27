@@ -11,7 +11,6 @@
 MEMCG_TESTFUNC=test
 TST_CNT=6
 
-. memcg_lib.sh
 
 # Test memory.force_empty
 test1()
@@ -54,4 +53,5 @@ test6()
 	EXPECT_FAIL echo 1 \> /dev/memcg/memory.force_empty
 }
 
+. memcg_lib.sh
 tst_run

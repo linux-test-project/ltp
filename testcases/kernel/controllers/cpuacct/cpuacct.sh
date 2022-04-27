@@ -21,8 +21,6 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="awk"
 
-. tst_test.sh
-
 mounted=1
 max=$1
 nbprocess=$2
@@ -178,4 +176,5 @@ do_test()
 	fi
 }
 
+. tst_test.sh
 tst_run

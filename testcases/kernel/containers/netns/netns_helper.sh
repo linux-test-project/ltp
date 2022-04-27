@@ -7,7 +7,6 @@ TST_CLEANUP=netns_ns_exec_cleanup
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="ip ping"
 TST_NEEDS_DRIVERS="veth"
-. tst_test.sh
 
 # Set to 1 only for test cases using ifconfig (ioctl).
 USE_IFCONFIG=0
@@ -276,3 +275,5 @@ netns_ip_cleanup()
 	ip netns del $NS_HANDLE0 2>/dev/null
 	ip netns del $NS_HANDLE1 2>/dev/null
 }
+
+. tst_test.sh

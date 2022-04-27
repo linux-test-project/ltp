@@ -10,11 +10,11 @@
 virt_type="vlan"
 
 TST_TESTFUNC=do_test
-. virt_lib.sh
 
 do_test()
 {
 	virt_add_delete_test "id 4094"
 }
 
+. virt_lib.sh
 tst_run

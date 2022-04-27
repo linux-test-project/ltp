@@ -14,8 +14,6 @@ THREAD_NUM=${THREAD_NUM:-"8"}
 TST_NEEDS_CMDS="make gcc"
 TST_TESTFUNC="do_test"
 
-. nfs_lib.sh
-
 do_test()
 {
     tst_res TINFO "start nfs05_make_tree -d $DIR_NUM -f $FILE_NUM -t $THREAD_NUM"
@@ -24,4 +22,5 @@ do_test()
     tst_res TPASS "test finished"
 }
 
+. nfs_lib.sh
 tst_run

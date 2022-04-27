@@ -21,7 +21,6 @@ TCID="telnet01"
 TST_TOTAL=1
 
 TST_USE_LEGACY_API=1
-. tst_net.sh
 
 setup()
 {
@@ -82,6 +81,8 @@ telnet_test()
 	tst_rhost_run -u $RUSER -c "grep -q 9 $RUSER.$RHOST" || return 1
 	tst_rhost_run -u $RUSER -c "rm -f $RUSER.$RHOST"
 }
+
+. tst_net.sh
 
 setup
 

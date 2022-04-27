@@ -11,9 +11,6 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="cat $dhcp_name awk ip pgrep pkill dhclient"
 
-. tst_net.sh
-. daemonlib.sh
-
 iface0="ltp_veth0"
 iface1="ltp_veth1"
 
@@ -174,3 +171,6 @@ EOF
 
 	stop_dhcp
 }
+
+. tst_net.sh
+. daemonlib.sh

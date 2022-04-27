@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2022 Petr Vorel <pvorel@suse.cz>
 #
 # Change route destination via netlink
 # rhost: 10.23.x.1
@@ -9,7 +9,6 @@
 TST_SETUP="setup"
 TST_CLEANUP="route_cleanup"
 TST_TESTFUNC="test_netlink"
-. route-lib.sh
 
 setup()
 {
@@ -33,4 +32,5 @@ setup()
 	ROUTE_CHANGE_NETLINK_PARAMS="-d $(tst_iface) -r '$rhost_all'"
 }
 
+. route-lib.sh
 tst_run

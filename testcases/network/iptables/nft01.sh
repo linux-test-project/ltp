@@ -9,8 +9,6 @@ use_iptables=0
 cleanup_table=0
 cleanup_chain=0
 
-. iptables_lib.sh
-
 do_setup()
 {
 	init
@@ -35,4 +33,5 @@ do_cleanup()
 	cleanup
 }
 
+. iptables_lib.sh
 tst_run

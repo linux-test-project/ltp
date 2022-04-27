@@ -13,8 +13,6 @@ TST_USAGE=usage
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="killall"
 
-. tst_test.sh
-
 caseno=$1
 max=$2
 subcgroup_num=$3
@@ -393,4 +391,5 @@ do_test()
 	case$caseno
 }
 
+. tst_test.sh
 tst_run

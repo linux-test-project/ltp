@@ -7,7 +7,6 @@
 TST_TESTFUNC=cleanup_lvm
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="losetup umount vgremove"
-. tst_test.sh
 
 LVM_DIR="${LVM_DIR:-/tmp}"
 LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
@@ -32,4 +31,5 @@ cleanup_lvm()
 	tst_res TPASS "LVM configuration for LTP removed successfully."
 }
 
+. tst_test.sh
 tst_run

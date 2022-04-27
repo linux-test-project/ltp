@@ -17,16 +17,12 @@ TST_NEEDS_ROOT=1
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 
-. tst_test.sh
-
-
 DEBUGFS_WAS_MOUNTED=0
 DEBUGFS_PATH=""
 DEBUGFS_CONTROL=""
 DYNDEBUG_STATEMENTS="./debug_statements"
 EMPTY_FLAG="-"
 NEW_INTERFACE=0
-
 
 mount_debugfs()
 {
@@ -153,4 +149,5 @@ cleanup()
 	fi
 }
 
+. tst_test.sh
 tst_run

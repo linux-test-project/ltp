@@ -9,7 +9,6 @@ TST_NEEDS_CMDS="traceroute"
 TST_SETUP="setup"
 TST_TESTFUNC="test"
 TST_NEEDS_TMPDIR=1
-. tst_net.sh
 
 setup()
 {
@@ -67,4 +66,5 @@ test2()
 	run_trace -T
 }
 
+. tst_net.sh
 tst_run

@@ -18,7 +18,6 @@ TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="keyctl"
-. tst_test.sh
 
 check_keyctl()
 {
@@ -109,4 +108,5 @@ do_test()
 	tst_res TPASS "Bug not reproduced"
 }
 
+. tst_test.sh
 tst_run

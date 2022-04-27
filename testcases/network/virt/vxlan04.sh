@@ -16,7 +16,6 @@ virt_type="vxlan"
 start_id=16700000
 vxlan_dst_addr="uni"
 VIRT_PERF_THRESHOLD_MIN=160
-. virt_lib.sh
 
 do_test()
 {
@@ -29,4 +28,5 @@ do_test()
 	virt_cleanup_rmt
 }
 
+. virt_lib.sh
 tst_run

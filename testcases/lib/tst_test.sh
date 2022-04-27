@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2014-2021
+# Copyright (c) Linux Test Project, 2014-2022
 # Author: Cyril Hrubis <chrubis@suse.cz>
 #
 # LTP test library for shell.
@@ -642,17 +642,6 @@ tst_run()
 		done
 	fi
 
-	OPTIND=1
-
-	while getopts ":hi:$TST_OPTS" _tst_name $TST_ARGS; do
-		case $_tst_name in
-		'h') tst_usage; exit 0;;
-		'i') TST_ITERATIONS=$OPTARG;;
-		'?') tst_usage; exit 2;;
-		*) $TST_PARSE_ARGS "$_tst_name" "$OPTARG";;
-		esac
-	done
-
 	if ! tst_is_int "$TST_ITERATIONS"; then
 		tst_brk TBROK "Expected number (-i) not '$TST_ITERATIONS'"
 	fi
@@ -818,22 +807,26 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 
 	TST_ARGS="$@"
 
-	while getopts ":hi:$TST_OPTS" tst_name; do
-		case $tst_name in
-		'h') TST_PRINT_HELP=1;;
-		*);;
+	OPTIND=1
+
+	while getopts ":hi:$TST_OPTS" _tst_name $TST_ARGS; do
+		case $_tst_name in
+		'h') tst_usage; exit 0;;
+		'i') TST_ITERATIONS=$OPTARG;;
+		'?') tst_usage; exit 2;;
+		*) $TST_PARSE_ARGS "$_tst_name" "$OPTARG";;
 		esac
 	done
 
 	shift $((OPTIND - 1))
 
 	if [ -n "$TST_POS_ARGS" ]; then
-		if [ -z "$TST_PRINT_HELP" -a $# -ne "$TST_POS_ARGS" ]; then
+		if [ $# -ne "$TST_POS_ARGS" ]; then
 			tst_brk TBROK "Invalid number of positional parameters:"\
 					  "have ($@) $#, expected ${TST_POS_ARGS}"
 		fi
 	else
-		if [ -z "$TST_PRINT_HELP" -a $# -ne 0 ]; then
+		if [ $# -ne 0 ]; then
 			tst_brk TBROK "Unexpected positional arguments '$@'"
 		fi
 	fi

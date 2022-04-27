@@ -13,8 +13,6 @@ TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="$AR"
 
-. tst_test.sh
-
 setup()
 {
 	MOD=
@@ -348,4 +346,5 @@ test17()
 	ROD rm -f lib.a file2.in
 }
 
+. tst_test.sh
 tst_run

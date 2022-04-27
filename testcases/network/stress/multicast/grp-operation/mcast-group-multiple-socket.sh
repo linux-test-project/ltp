@@ -9,7 +9,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP="do_setup"
 TST_CLEANUP="mcast_cleanup"
 TST_TESTFUNC="do_test"
-. mcast-lib.sh
 
 do_setup()
 {
@@ -28,4 +27,5 @@ do_test()
 	do_multicast_test_multiple_join $MCASTNUM_HEAVY true
 }
 
+. mcast-lib.sh
 tst_run

@@ -11,5 +11,4 @@
 IPSEC_PROTO="ah"
 
 . macsec_lib.sh
-
 tst_run

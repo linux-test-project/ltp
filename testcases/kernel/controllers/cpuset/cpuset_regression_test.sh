@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2016-2022
 # Copyright (c) 2015 Fujitsu Ltd.
 # Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
 #
@@ -15,8 +16,6 @@ TST_TESTFUNC=test
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_MIN_KVER="3.18"
-
-. cgroup_lib.sh
 
 LOCAL_MOUNTPOINT="cpuset_test"
 BACKUP_DIRECTORY="cpuset_backup"
@@ -218,4 +217,5 @@ test()
 	tst_res TPASS "Bug is not reproducible"
 }
 
+. cgroup_lib.sh
 tst_run

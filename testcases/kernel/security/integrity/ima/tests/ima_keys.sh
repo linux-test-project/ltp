@@ -12,8 +12,6 @@ TST_NEEDS_DEVICE=1
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 
-. ima_setup.sh
-
 FUNC_KEYCHECK='func=KEY_CHECK'
 REQUIRED_POLICY="^measure.*$FUNC_KEYCHECK"
 
@@ -27,7 +25,6 @@ cleanup()
 {
 	tst_is_num $KEYRING_ID && keyctl clear $KEYRING_ID
 }
-
 
 require_valid_policy_template()
 {
@@ -145,4 +142,5 @@ test2()
 	fi
 }
 
+. ima_setup.sh
 tst_run

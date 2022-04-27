@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2017-2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2015-2017 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2005
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
@@ -8,7 +8,6 @@
 IF_CMD='ifconfig'
 TST_SETUP="do_setup"
 TST_CLEANUP="do_cleanup"
-. if-lib.sh
 
 # CHANGE_INTERVAL: The interval of the mtu change
 TST_TIMEOUT=1
@@ -117,4 +116,5 @@ test_body()
 	done
 }
 
+. if-lib.sh
 tst_run

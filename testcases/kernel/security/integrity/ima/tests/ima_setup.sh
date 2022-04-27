@@ -14,8 +14,6 @@ TST_NEEDS_ROOT=1
 # TST_NEEDS_DEVICE can be unset, therefore specify explicitly
 TST_NEEDS_TMPDIR=1
 
-. tst_test.sh
-
 SYSFS="/sys"
 UMOUNT=
 TST_FS_TYPE="ext3"
@@ -349,6 +347,8 @@ require_evmctl()
 		tst_brk TCONF "evmctl >= $required required"
 	fi
 }
+
+. tst_test.sh
 
 # loop device is needed to use only for tmpfs
 TMPDIR="${TMPDIR:-/tmp}"

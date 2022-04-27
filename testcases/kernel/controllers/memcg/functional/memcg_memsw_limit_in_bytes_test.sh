@@ -9,7 +9,6 @@
 MEMCG_TESTFUNC=test
 TST_CNT=12
 
-. memcg_lib.sh
 
 test1()
 {
@@ -88,4 +87,5 @@ test12()
 	EXPECT_FAIL echo xx \> memory.memsw.limit_in_bytes
 }
 
+. memcg_lib.sh
 tst_run

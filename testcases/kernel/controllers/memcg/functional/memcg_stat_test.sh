@@ -9,7 +9,6 @@
 MEMCG_TESTFUNC=test
 TST_CNT=8
 
-. memcg_lib.sh
 
 test1()
 {
@@ -115,4 +114,5 @@ test8()
 	rmdir subgroup
 }
 
+. memcg_lib.sh
 tst_run

@@ -10,7 +10,6 @@ TST_OPTS="t:"
 TST_PARSE_ARGS="parse_args"
 
 virt_type="fou"
-. virt_lib.sh
 
 GRE_IP_PROTO=47
 
@@ -58,4 +57,5 @@ do_setup()
 		   "local $rmt_ip remote $loc_ip $encap_cmd $FOU_PORT"
 }
 
+. virt_lib.sh
 tst_run

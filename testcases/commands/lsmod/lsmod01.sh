@@ -11,7 +11,6 @@ TST_SETUP=setup
 TST_TESTFUNC=lsmod_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="lsmod"
-. tst_test.sh
 
 module_inserted=
 
@@ -82,4 +81,5 @@ lsmod_test()
 	tst_res TFAIL "'lsmod' doesn't match /proc/modules output"
 }
 
+. tst_test.sh
 tst_run

@@ -1,9 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2018-2019 ARM Ltd. All Rights Reserved.
-
-. tst_test.sh
 
 # Find mountpoint to given subsystem
 # get_cgroup_mountpoint SUBSYSTEM
@@ -37,3 +35,5 @@ is_cgroup_subsystem_available_and_enabled()
 
 	return 1
 }
+
+. tst_test.sh

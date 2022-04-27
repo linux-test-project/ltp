@@ -4,8 +4,6 @@
 #
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
-. busy_poll_lib.sh
-
 cleanup()
 {
 	[ -n "$busy_read_old" ] && \
@@ -47,4 +45,5 @@ test()
 	tst_netload_compare $(cat res_0) $(cat res_50) 1
 }
 
+. busy_poll_lib.sh
 tst_run

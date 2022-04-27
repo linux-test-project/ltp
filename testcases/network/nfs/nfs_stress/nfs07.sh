@@ -8,9 +8,10 @@
 FILE_COUNT=5000
 
 TST_OPTS="n:"
-TST_PARSE_ARGS=do_parse_args
+TST_PARSE_ARGS="do_parse_args"
 TST_TESTFUNC="do_test"
 TST_SETUP="do_setup"
+TST_USAGE="show_usage"
 
 do_parse_args()
 {
@@ -18,10 +19,6 @@ do_parse_args()
 	n) FILE_COUNT="$2";;
 	esac
 }
-
-. nfs_lib.sh
-
-TST_USAGE="show_usage"
 
 show_usage()
 {
@@ -64,4 +61,5 @@ do_test()
 	tst_res TPASS "All files and directories were correctly listed"
 }
 
+. nfs_lib.sh
 tst_run

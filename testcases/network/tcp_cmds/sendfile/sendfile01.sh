@@ -12,7 +12,6 @@ TST_CLEANUP=do_cleanup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="diff ss stat"
-. tst_net.sh
 
 do_setup()
 {
@@ -50,4 +49,5 @@ do_cleanup()
 	[ -n "$server_started" ] && tst_rhost_run -c "pkill $server"
 }
 
+. tst_net.sh
 tst_run

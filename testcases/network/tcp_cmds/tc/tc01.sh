@@ -24,8 +24,6 @@ TST_NEEDS_ROOT=1
 TST_NEEDS_DRIVERS="sch_teql"
 TST_NEEDS_CMDS="tc modprobe dmesg grep"
 
-. tst_test.sh
-
 setup()
 {
 	ROD modprobe $TST_NEEDS_DRIVERS
@@ -44,4 +42,5 @@ do_test()
 	fi
 }
 
+. tst_test.sh
 tst_run

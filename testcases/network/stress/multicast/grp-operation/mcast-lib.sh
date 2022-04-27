@@ -1,12 +1,10 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2017-2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) International Business Machines Corp., 2006
 # Author: Petr Vorel <pvorel@suse.cz>
 #
 # Setup script for multicast stress tests.
-
-. tst_net_stress.sh
 
 mcast_setup4()
 {
@@ -164,3 +162,5 @@ do_multicast_test_join_single_socket()
 	[ "$TST_IPV6" ] && params="-S $(tst_ipaddr) -m"
 	EXPECT_RHOST_PASS $MCAST_RCMD -t $NS_DURATION -r 0 $params $extra
 }
+
+. tst_net_stress.sh

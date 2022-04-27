@@ -11,8 +11,6 @@ TST_SETUP="setup"
 TST_CNT=3
 TST_NEEDS_DEVICE=1
 
-. ima_setup.sh
-
 setup()
 {
 	require_ima_policy_cmdline "tcb"
@@ -93,4 +91,5 @@ test3()
 	EXPECT_FAIL "grep $file $ASCII_MEASUREMENTS"
 }
 
+. ima_setup.sh
 tst_run

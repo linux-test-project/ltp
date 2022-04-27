@@ -11,9 +11,6 @@ TST_CLEANUP="cleanup"
 TST_CNT=3
 TST_NEEDS_DEVICE=1
 
-. ima_setup.sh
-. daemonlib.sh
-
 setup()
 {
 	FILE="test.txt"
@@ -153,4 +150,6 @@ test3()
 	tst_sleep 2s
 }
 
+. ima_setup.sh
+. daemonlib.sh
 tst_run

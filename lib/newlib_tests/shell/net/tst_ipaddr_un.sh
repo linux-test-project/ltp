@@ -13,7 +13,6 @@ TST_NET_SKIP_VARIABLE_INIT=1
 IPV4_NET16_UNUSED="10.23"
 IPV6_NET32_UNUSED="fd00:23"
 
-. tst_net.sh
 
 IPV4_DATA="
 0 0|10.23.0.0
@@ -168,4 +167,5 @@ do_test()
 	esac
 }
 
+. tst_net.sh
 tst_run

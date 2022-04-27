@@ -10,8 +10,6 @@
 
 TST_TESTFUNC="do_test"
 
-. nfs_lib.sh
-
 do_test()
 {
 	tst_res TINFO "starting 'nfs01_open_files $NFILES'"
@@ -19,4 +17,5 @@ do_test()
 	tst_res TPASS "test finished successfully"
 }
 
+. nfs_lib.sh
 tst_run

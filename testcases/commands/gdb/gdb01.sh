@@ -8,8 +8,6 @@
 TST_TESTFUNC=simple_test
 TST_NEEDS_CMDS="gdb /bin/cat"
 
-. tst_test.sh
-
 simple_test()
 {
 	gdb /bin/cat -ex "run /etc/passwd" -ex quit < /dev/null
@@ -21,4 +19,5 @@ simple_test()
 	fi
 }
 
+. tst_test.sh
 tst_run

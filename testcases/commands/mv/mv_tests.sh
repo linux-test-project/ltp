@@ -13,7 +13,6 @@ TST_CNT=2
 TST_SETUP=setup
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
-. tst_test.sh
 
 setup()
 {
@@ -149,4 +148,5 @@ test2()
 	fi
 }
 
+. tst_test.sh
 tst_run

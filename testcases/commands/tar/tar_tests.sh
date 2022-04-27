@@ -11,8 +11,6 @@ TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="gzip bzip2"
 
-. tst_test.sh
-
 TAR_FILES="file1 file2 file3"
 
 check_listing()
@@ -133,4 +131,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

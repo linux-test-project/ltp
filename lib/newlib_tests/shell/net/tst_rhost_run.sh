@@ -4,7 +4,6 @@
 
 TST_TESTFUNC=do_test
 PATH="$(dirname $0)/../../../../testcases/lib/:$PATH"
-. tst_net.sh
 
 export TST_NET_RHOST_RUN_DEBUG=1
 
@@ -24,4 +23,5 @@ do_test()
 	tst_res TPASS "tst_rhost_run is working"
 }
 
+. tst_net.sh
 tst_run

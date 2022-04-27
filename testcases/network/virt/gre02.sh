@@ -6,6 +6,6 @@ TST_NEEDS_TMPDIR=1
 TST_TESTFUNC=virt_netperf_rand_sizes
 TST_SETUP=virt_gre_setup
 TST_CLEANUP=virt_cleanup
-. virt_lib.sh
 
+. virt_lib.sh
 tst_run

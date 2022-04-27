@@ -8,7 +8,6 @@
 TST_CNT=2
 TST_SETUP=setup
 TST_TESTFUNC=test
-. tst_test.sh
 
 LDD=${LDD:=ldd}
 
@@ -39,4 +38,5 @@ test2()
 	fi
 }
 
+. tst_test.sh
 tst_run

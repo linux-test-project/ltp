@@ -14,7 +14,6 @@ TST_PARSE_ARGS=parse_args
 TST_NEEDS_ROOT=1
 TST_NEEDS_DEVICE=1
 TST_NEEDS_CMDS="blkid df"
-. tst_test.sh
 
 usage()
 {
@@ -174,4 +173,5 @@ test5()
 	mkfs_test "-h"
 }
 
+. tst_test.sh
 tst_run

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2006 International Business Machines  Corp.
 # Copyright (c) 2020 Joerg Vehlow <joerg.vehlow@aox-tech.de>
+# Copyright (c) 2022 Petr Vorel <pvorel@suse.cz>
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 #
 # Verify the kernel is not crashed when the route is modified by
@@ -12,8 +13,6 @@ TST_CLEANUP=cleanup
 TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="ip"
-
-. route-lib.sh
 
 DST_HOST=
 DST_PORT="7"
@@ -59,4 +58,5 @@ do_test()
 	tst_res TPASS "test finished successfully"
 }
 
+. route-lib.sh
 tst_run

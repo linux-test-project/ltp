@@ -15,7 +15,6 @@ TST_NEEDS_ROOT=1
 TST_SETUP="${TST_SETUP:-zram_load}"
 TST_CLEANUP="${TST_CLEANUP:-zram_cleanup}"
 TST_NEEDS_DRIVERS="zram"
-. tst_test.sh
 
 zram_cleanup()
 {
@@ -193,3 +192,5 @@ zram_set_memlimit()
 
 	tst_res TPASS "test succeeded"
 }
+
+. tst_test.sh

@@ -7,7 +7,6 @@
 TST_CNT=3
 FS_BIND_TESTFUNC=test
 
-. fs_bind_lib.sh
 
 test1()
 {
@@ -53,4 +52,5 @@ test3()
 	EXPECT_PASS umount dir2
 }
 
+. fs_bind_lib.sh
 tst_run

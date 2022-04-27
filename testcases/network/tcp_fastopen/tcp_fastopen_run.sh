@@ -30,7 +30,6 @@ tcp_fastopen_parse_args()
 	esac
 }
 
-. tst_net.sh
 
 cleanup()
 {
@@ -71,4 +70,5 @@ test2()
 	tst_netload_compare $time_tfo_off $time_tfo_on 3
 }
 
+. tst_net.sh
 tst_run

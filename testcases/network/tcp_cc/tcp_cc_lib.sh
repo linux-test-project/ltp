@@ -1,14 +1,13 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sysctl tc"
 TST_NEEDS_DRIVERS="sch_netem"
-
-. tst_net.sh
 
 def_alg="cubic"
 prev_qlen=
@@ -104,3 +103,5 @@ tcp_cc_test01()
 
 	tst_netload_compare $res0 $res1 $threshold
 }
+
+. tst_net.sh

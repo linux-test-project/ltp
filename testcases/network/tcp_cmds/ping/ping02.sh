@@ -5,7 +5,6 @@
 TST_TESTFUNC="do_test"
 TST_NEEDS_ROOT=1
 
-. tst_net.sh
 
 do_test()
 {
@@ -13,4 +12,5 @@ do_test()
 		 -p "000102030405060708090a0b0c0d0e0f" -c "${COUNT:-3}"
 }
 
+. tst_net.sh
 tst_run

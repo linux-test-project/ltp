@@ -8,7 +8,6 @@ TST_MIN_KVER="4.2"
 TST_NEEDS_TMPDIR=1
 TST_TEST_DATA="tcp udp udp_lite dccp"
 
-. tst_net.sh
 
 test1()
 {
@@ -31,4 +30,5 @@ test2()
 }
 
 
+. tst_net.sh
 tst_run

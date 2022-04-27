@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2022
 # Copyright (c) 2020 Oracle and/or its affiliates. All Rights Reserved.
 
 TST_NEEDS_TMPDIR=1
@@ -11,7 +12,6 @@ TST_NEEDS_DRIVERS="wireguard"
 VIRT_PERF_THRESHOLD_MIN=${VIRT_PERF_THRESHOLD_MIN:-200}
 
 virt_type="wireguard"
-. virt_lib.sh
 
 # Usage: wireguard_lib_setup [TYPE]
 # TYPE: [ default | invalid_allowed_ips | invalid_pub_keys ]
@@ -64,3 +64,5 @@ wireguard_lib_cleanup()
 {
 	virt_cleanup
 }
+
+. virt_lib.sh

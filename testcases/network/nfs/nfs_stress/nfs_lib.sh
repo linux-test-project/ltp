@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2016-2022
 # Copyright (c) 2015-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 
@@ -38,8 +39,6 @@ TST_NEEDS_DRIVERS="nfsd"
 # through lo interface instead of ltp_ns_veth* netns interfaces (useful for
 # debugging whether test failures are related to veth/netns).
 LTP_NFS_NETNS_USE_LO=${LTP_NFS_NETNS_USE_LO:-}
-
-. tst_net.sh
 
 get_socket_type()
 {
@@ -205,3 +204,5 @@ nfs_cleanup()
 		n=$(( n + 1 ))
 	done
 }
+
+. tst_net.sh

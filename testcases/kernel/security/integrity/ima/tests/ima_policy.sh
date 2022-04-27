@@ -9,8 +9,6 @@
 TST_SETUP="setup"
 TST_CNT=2
 
-. ima_setup.sh
-
 setup()
 {
 	require_policy_writable
@@ -75,4 +73,5 @@ test2()
 	fi
 }
 
+. ima_setup.sh
 tst_run

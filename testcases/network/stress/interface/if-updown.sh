@@ -1,13 +1,12 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2017-2018 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2017-2022 Petr Vorel <pvorel@suse.cz>
 # Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2005
 # Author: Mitsuru Chinen <mitch@jp.ibm.com>
 
 IF_CMD='ifconfig'
 TST_CLEANUP="if_cleanup_restore"
-. if-lib.sh
 
 CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
 
@@ -47,4 +46,5 @@ test_body()
 	tst_res TPASS "Test is finished correctly"
 }
 
+. if-lib.sh
 tst_run

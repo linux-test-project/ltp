@@ -30,9 +30,8 @@ OUTFILE=mc_commo_out
 
 TCID=mc_commo
 TST_TOTAL=2
-
+TST_CLEANUP=do_cleanup
 TST_USE_LEGACY_API=1
-. tst_net.sh
 
 do_setup()
 {
@@ -88,8 +87,8 @@ do_cleanup()
 	tst_rmdir
 }
 
+. tst_net.sh
 do_setup
-TST_CLEANUP=do_cleanup
 
 for i in $(seq 1 $TST_TOTAL); do
 	do_test

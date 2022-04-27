@@ -32,11 +32,6 @@
 TST_POS_ARGS=3
 TST_SETUP=do_setup
 TST_TESTFUNC=do_test
-. netns_helper.sh
-
-PROG=$1
-IP_VER=$2
-COM_TYPE=$3
 
 do_setup()
 {
@@ -66,5 +61,11 @@ do_test()
 	esac
 	EXPECT_PASS $NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I lo $ip_lo 1>/dev/null
 }
+
+. netns_helper.sh
+
+PROG=$1
+IP_VER=$2
+COM_TYPE=$3
 
 tst_run

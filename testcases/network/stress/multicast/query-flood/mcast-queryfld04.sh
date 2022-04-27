@@ -12,7 +12,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP="mcast_setup_normal"
 TST_CLEANUP="mcast_cleanup"
 TST_TESTFUNC="do_test"
-. mcast-lib.sh
 
 do_test()
 {
@@ -32,4 +31,5 @@ do_test()
 	EXPECT_RHOST_PASS $MCAST_RCMD -t $NS_DURATION -r 0 $params
 }
 
+. mcast-lib.sh
 tst_run

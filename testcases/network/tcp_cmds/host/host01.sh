@@ -9,7 +9,6 @@
 TST_TESTFUNC="do_test"
 TST_NEEDS_CMDS="awk grep host hostname tail"
 
-. tst_net.sh
 
 do_test()
 {
@@ -30,4 +29,5 @@ do_test()
 	fi
 }
 
+. tst_net.sh
 tst_run

@@ -9,7 +9,6 @@
 MEMCG_TESTFUNC=test
 TST_CNT=4
 
-. memcg_lib.sh
 
 MEM_TO_ALLOC=$((PAGESIZE * 1024))
 MEM_EXPECTED_UPPER=$((MEM_TO_ALLOC + MEM_USAGE_RANGE))
@@ -88,4 +87,5 @@ test4()
 	test_max_usage_in_bytes 1 1
 }
 
+. memcg_lib.sh
 tst_run

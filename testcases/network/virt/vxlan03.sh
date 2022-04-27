@@ -32,7 +32,6 @@ TST_CLEANUP=virt_cleanup
 # switch, VxLAN can be much slower when comparing to the performance without
 # any encapsulation.
 VIRT_PERF_THRESHOLD_MIN=160
-. virt_lib.sh
 
 do_test()
 {
@@ -51,4 +50,5 @@ do_test()
 	virt_cleanup_rmt
 }
 
+. virt_lib.sh
 tst_run

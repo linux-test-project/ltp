@@ -7,7 +7,6 @@ TST_TESTFUNC=do_test
 TST_SETUP=do_setup
 TST_CLEANUP=do_cleanup
 TST_NEEDS_CMDS="pkill rpcinfo"
-. rpc_lib.sh
 
 NUMLOOPS=${NUMLOOPS:-3}
 DATAFILES="${DATAFILES:-file.1 file.2}"
@@ -45,4 +44,5 @@ do_test()
 	done
 }
 
+. rpc_lib.sh
 tst_run

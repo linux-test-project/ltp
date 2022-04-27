@@ -12,7 +12,6 @@ TST_TESTFUNC="do_test"
 TST_CNT=2
 
 . daemonlib.sh
-. tst_net.sh
 
 setup()
 {
@@ -109,4 +108,5 @@ do_test()
 	esac
 }
 
+. tst_net.sh
 tst_run

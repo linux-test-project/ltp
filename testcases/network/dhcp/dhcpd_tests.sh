@@ -7,10 +7,9 @@
 # Author:       Manoj Iyer, manjo@mail.utexas.edu
 # Author:       Alexey Kodanev alexey.kodanev@oracle.com
 
-dhcp_name="dhcpd"
-
-. dhcp_lib.sh
 TST_SETUP="setup_dhcp"
+
+dhcp_name="dhcpd"
 lease_dir="/var/lib/misc"
 lease_file="$lease_dir/dhcpd.leases_tst"
 
@@ -84,4 +83,5 @@ print_dhcp_version()
 	dhcpd --version 2>&1
 }
 
+. dhcp_lib.sh
 tst_run

@@ -9,7 +9,6 @@ TST_NEEDS_ROOT=1
 TST_TEST_DATA=",-A 65000"
 TST_TEST_DATA_IFS=","
 
-. tst_net.sh
 
 test()
 {
@@ -26,4 +25,5 @@ test()
 	tst_netload_compare $res0 $res1 -200 200
 }
 
+. tst_net.sh
 tst_run

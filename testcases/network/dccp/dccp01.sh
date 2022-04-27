@@ -7,7 +7,6 @@ TST_TESTFUNC="test"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 
-. tst_net.sh
 
 test1()
 {
@@ -30,4 +29,5 @@ test3()
 	tst_netload_compare $res0 $res1 -100 100
 }
 
+. tst_net.sh
 tst_run

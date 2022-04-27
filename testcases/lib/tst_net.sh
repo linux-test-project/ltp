@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2016-2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2016-2022 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 [ -n "$TST_LIB_NET_LOADED" ] && return 0
@@ -70,8 +70,6 @@ tst_net_setup()
 		fi
 	fi
 }
-
-[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
 
 if [ "$TST_PARSE_ARGS_CALLER" = "$TST_PARSE_ARGS" ]; then
 	tst_res TWARN "TST_PARSE_ARGS_CALLER same as TST_PARSE_ARGS, unset it ($TST_PARSE_ARGS)"
@@ -937,7 +935,8 @@ tst_default_max_pkt()
 	echo "$((mtu + mtu / 10))"
 }
 
-[ -n "$TST_PRINT_HELP" -o -n "$TST_NET_SKIP_VARIABLE_INIT" ] && return 0
+[ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
+[ -n "$TST_NET_SKIP_VARIABLE_INIT" ] && return 0
 
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"

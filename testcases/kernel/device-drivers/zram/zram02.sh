@@ -7,7 +7,6 @@
 
 TST_CNT=6
 TST_TESTFUNC="do_test"
-. zram_lib.sh
 
 # List of parameters for zram devices.
 # For each number the test creates own zram device.
@@ -64,4 +63,5 @@ do_test()
 	esac
 }
 
+. zram_lib.sh
 tst_run

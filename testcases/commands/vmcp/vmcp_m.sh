@@ -14,7 +14,6 @@
 TST_CNT=2
 TST_TESTFUNC=vmcp_main
 TST_NEEDS_CMDS="vmcp"
-. tst_test.sh
 
 vmcp_run()
 {
@@ -45,5 +44,5 @@ vmcp_main2()
         vmcp_run 1 "vmcp dasddasddasd"
 }
 
-
+. tst_test.sh
 tst_run

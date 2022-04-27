@@ -14,7 +14,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP="mcast_setup_normal"
 TST_CLEANUP="mcast_cleanup"
 TST_TESTFUNC="do_test"
-. mcast-lib.sh
 
 do_test()
 {
@@ -27,4 +26,5 @@ do_test()
 	do_multicast_test_join_single_socket "$extra"
 }
 
+. mcast-lib.sh
 tst_run

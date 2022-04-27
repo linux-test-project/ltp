@@ -10,8 +10,6 @@
 # NOTE: More information about network variables can be found
 # in tst_net.sh and testcases/network/stress/README.
 
-. tst_net.sh
-
 # Netmask of for the tested network
 IPV4_NETMASK="255.255.255.0"
 IPV4_NETMASK_NUM=24
@@ -122,3 +120,5 @@ test_rt_ip()
 	2) test_body 'ip_cmd';;
 	esac
 }
+
+. tst_net.sh

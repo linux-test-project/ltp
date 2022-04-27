@@ -7,8 +7,6 @@ TST_TESTFUNC="do_test"
 TST_CLEANUP="cleanup"
 TST_MIN_KVER="4.13"
 
-. tcp_cc_lib.sh
-
 cleanup()
 {
 	tc qdisc del dev $(tst_iface) root netem > /dev/null 2>&1
@@ -30,4 +28,5 @@ do_test()
 	tcp_cc_test01 bbr -100
 }
 
+. tcp_cc_lib.sh
 tst_run

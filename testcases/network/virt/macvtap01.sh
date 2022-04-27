@@ -11,6 +11,6 @@ virt_type="macvtap"
 TST_TEST_DATA="mode private,mode vepa,mode bridge,mode passthru"
 TST_TEST_DATA_IFS=","
 TST_TESTFUNC=virt_test_02
-. virt_lib.sh
 
+. virt_lib.sh
 tst_run

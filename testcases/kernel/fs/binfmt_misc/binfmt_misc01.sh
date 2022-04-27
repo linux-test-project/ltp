@@ -25,7 +25,6 @@ TST_CNT=9
 TST_TESTFUNC=do_test
 TST_NEEDS_CMDS="cat"
 
-. binfmt_misc_lib.sh
 
 verify_binfmt_misc()
 {
@@ -61,4 +60,5 @@ do_test()
 	esac
 }
 
+. binfmt_misc_lib.sh
 tst_run

@@ -13,7 +13,6 @@ TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="eject"
-. tst_test.sh
 
 setup()
 {
@@ -144,4 +143,5 @@ test4()
 	fi
 }
 
+. tst_test.sh
 tst_run

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 FUJITSU LIMITED
 # Copyright (c) 2018-2019 ARM Ltd. All Rights Reserved.
-# Copyright (c) 2019 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2019-2022 Petr Vorel <pvorel@suse.cz>
 #
 # Author: Li Zefan <lizf@cn.fujitsu.com>
 # Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>
@@ -18,8 +18,6 @@ TST_NEEDS_CMDS="mount umount cat kill mkdir rmdir grep awk cut"
 # Each test case runs for 900 secs when everything fine
 # therefore the default 5 mins timeout is not enough.
 TST_TIMEOUT=2100
-
-. cgroup_lib.sh
 
 setup()
 {
@@ -111,4 +109,5 @@ test2()
 	run_stress 1 $(( $MEM - $THREAD_SPARE_MB)) 5 $RUN_TIME
 }
 
+. cgroup_lib.sh
 tst_run

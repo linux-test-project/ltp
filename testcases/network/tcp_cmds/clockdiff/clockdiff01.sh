@@ -7,7 +7,6 @@ TST_TESTFUNC="do_test"
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="cut clockdiff"
 
-. tst_net.sh
 
 do_test()
 {
@@ -27,4 +26,5 @@ do_test()
 	fi
 }
 
+. tst_net.sh
 tst_run

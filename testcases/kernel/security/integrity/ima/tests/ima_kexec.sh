@@ -13,8 +13,6 @@ TST_CNT=3
 TST_NEEDS_DEVICE=1
 TST_SETUP="setup"
 
-. ima_setup.sh
-
 IMA_KEXEC_IMAGE="${IMA_KEXEC_IMAGE:-/boot/vmlinuz-$(uname -r)}"
 REQUIRED_POLICY='^measure.*func=KEXEC_CMDLINE'
 
@@ -117,4 +115,5 @@ test()
 	esac
 }
 
+. ima_setup.sh
 tst_run

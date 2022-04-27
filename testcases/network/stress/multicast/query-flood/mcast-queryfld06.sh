@@ -13,7 +13,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP="mcast_setup_normal"
 TST_CLEANUP="mcast_cleanup"
 TST_TESTFUNC="do_test"
-. mcast-lib.sh
 
 SRC_ADDR_IPV4=10.10.10.1
 SRC_ADDR_IPV6=fec0:100:100:100::1
@@ -60,4 +59,5 @@ do_test()
 	tst_res TPASS "test finished successfully"
 }
 
+. mcast-lib.sh
 tst_run

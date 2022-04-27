@@ -26,7 +26,6 @@ TST_TEST_DATA_IFS=","
 TST_TESTFUNC=do_test
 TST_SETUP=virt_lib_setup
 TST_CLEANUP=virt_cleanup
-. virt_lib.sh
 
 do_test()
 {
@@ -44,4 +43,5 @@ do_test()
 	virt_cleanup_rmt
 }
 
+. virt_lib.sh
 tst_run

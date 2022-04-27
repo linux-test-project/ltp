@@ -19,6 +19,6 @@ TST_TEST_DATA=",$p0 $lb0 $rh0,$p0 $lb0 $rh1,$p0 $lb1 $rh0,$p0 $lb1 $rh1,\
 $p1 $lb0 $rh0,$p1 $lb0 $rh1,$p1 $lb1 $rh0,$p1 $lb1 $rh1"
 TST_TEST_DATA_IFS=","
 TST_TESTFUNC=virt_test_01
-. virt_lib.sh
 
+. virt_lib.sh
 tst_run

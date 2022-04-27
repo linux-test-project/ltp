@@ -14,8 +14,6 @@ TST_CNT=2
 TST_NEEDS_DEVICE=1
 TST_SETUP="setup"
 
-. ima_setup.sh
-
 FUNC_CRITICAL_DATA='func=CRITICAL_DATA'
 REQUIRED_POLICY="^measure.*$FUNC_CRITICAL_DATA"
 
@@ -168,4 +166,5 @@ test2()
 	validate_policy_capabilities $measured_data
 }
 
+. ima_setup.sh
 tst_run

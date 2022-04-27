@@ -8,7 +8,6 @@
 TST_TESTFUNC="do_test"
 TST_NEEDS_CMDS="netstat"
 
-. tst_net.sh
 
 do_test()
 {
@@ -23,4 +22,5 @@ do_test()
 	done
 }
 
+. tst_net.sh
 tst_run

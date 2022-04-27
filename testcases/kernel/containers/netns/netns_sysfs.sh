@@ -11,7 +11,6 @@ TST_CLEANUP=do_cleanup
 TST_SETUP=do_setup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
-. tst_test.sh
 
 do_setup()
 {
@@ -50,7 +49,6 @@ do_cleanup()
 	kill -9 $NS_HANDLE 2>/dev/null
 }
 
-
 do_test()
 {
 	EXPECT_PASS ns_exec $NS_HANDLE $NS_TYPE test -e /sys/class/net/$DUMMYDEV
@@ -58,4 +56,5 @@ do_test()
 	EXPECT_FAIL test -e /sys/class/net/$DUMMYDEV
 }
 
+. tst_test.sh
 tst_run

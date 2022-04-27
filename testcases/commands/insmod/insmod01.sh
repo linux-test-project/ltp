@@ -10,7 +10,6 @@ TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="rmmod insmod"
 TST_NEEDS_MODULE="ltp_insmod01.ko"
-. tst_test.sh
 
 inserted=0
 
@@ -46,4 +45,5 @@ do_test()
 	tst_res TPASS "insmod passed"
 }
 
+. tst_test.sh
 tst_run

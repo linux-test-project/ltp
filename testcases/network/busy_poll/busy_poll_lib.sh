@@ -12,8 +12,6 @@ TST_NEEDS_CMDS="pkill sysctl ethtool"
 # for more stable results set to a single thread
 TST_NETLOAD_CLN_NUMBER=1
 
-. tst_net.sh
-
 busy_poll_check_config()
 {
 	if [ ! -f "/proc/sys/net/core/busy_read" -a \
@@ -27,3 +25,5 @@ busy_poll_check_config()
 			tst_brk TCONF "busy poll not supported by driver"
 	fi
 }
+
+. tst_net.sh

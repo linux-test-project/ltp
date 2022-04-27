@@ -7,9 +7,6 @@ TST_TESTFUNC="do_test"
 TST_CLEANUP="cleanup"
 TST_MIN_KVER="4.13"
 TST_TEST_DATA="pfifo_fast codel pfifo fq hfsc hhf htb pie prio sfb sfq"
-
-. tcp_cc_lib.sh
-
 TST_CLEANUP="cleanup"
 
 cleanup()
@@ -37,4 +34,5 @@ do_test()
 	tcp_cc_test01 bbr -100
 }
 
+. tcp_cc_lib.sh
 tst_run

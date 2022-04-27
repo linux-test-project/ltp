@@ -10,7 +10,6 @@ TST_CNT=6
 TST_TESTFUNC=do_test
 TST_SETUP=setup
 TST_NEEDS_TMPDIR=1
-. tst_test.sh
 
 setup()
 {
@@ -78,4 +77,5 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run

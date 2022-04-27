@@ -5,11 +5,11 @@
 TST_TESTFUNC=do_test
 
 TST_TIMEOUT=2
-. tst_test.sh
 
 do_test()
 {
 	tst_res TPASS "timeout $TST_TIMEOUT set (LTP_TIMEOUT_MUL='$LTP_TIMEOUT_MUL')"
 }
 
+. tst_test.sh
 tst_run

@@ -29,11 +29,6 @@
 TST_POS_ARGS=3
 TST_SETUP=do_setup
 TST_TESTFUNC=do_test
-. netns_helper.sh
-
-PROG=$1
-IP_VER=$2
-COM_TYPE=$3
 
 do_setup()
 {
@@ -48,5 +43,11 @@ do_test()
 	tst_require_cmds ifconfig
 	EXPECT_FAIL $NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK
 }
+
+. netns_helper.sh
+
+PROG=$1
+IP_VER=$2
+COM_TYPE=$3
 
 tst_run

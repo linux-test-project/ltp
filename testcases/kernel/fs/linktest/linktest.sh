@@ -11,8 +11,6 @@ TST_OPTS="a:s:"
 TST_PARSE_ARGS=parse_args
 TST_USAGE=usage
 
-. tst_test.sh
-
 hard_links=1000
 soft_links=1000
 
@@ -72,4 +70,5 @@ do_test()
 	rm -rf hlink.$$ slink.$$
 }
 
+. tst_test.sh
 tst_run

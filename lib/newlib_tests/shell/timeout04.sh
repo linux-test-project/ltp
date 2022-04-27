@@ -5,7 +5,6 @@
 TST_TESTFUNC=do_test
 
 TST_TIMEOUT=1
-. tst_test.sh
 
 do_test()
 {
@@ -19,4 +18,5 @@ do_cleanup()
     tst_res TINFO "cleanup"
 }
 
+. tst_test.sh
 tst_run

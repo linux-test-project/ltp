@@ -12,8 +12,6 @@ TST_CNT=3
 TST_TESTFUNC="do_test"
 LTP_DATAFILES="$LTPROOT/testcases/bin/datafiles"
 
-. nfs_lib.sh
-
 do_test1()
 {
 	tst_res TINFO "do_test1 $TC"
@@ -48,4 +46,5 @@ do_test3()
 	tst_res TPASS "test3 passed"
 }
 
+. nfs_lib.sh
 tst_run

@@ -21,10 +21,9 @@ TST_CNT=4
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sysctl"
 TST_NEEDS_KCONFIGS="CONFIG_SYSCTL=y, CONFIG_PROC_FS=y"
+
 sys_name="fs.file-max"
 sys_file="/proc/sys/fs/file-max"
-
-. tst_test.sh
 
 setup()
 {
@@ -77,4 +76,5 @@ cleanup()
 	[ -n "$orig_value" ] && sysctl -w -q $sys_name=$orig_value
 }
 
+. tst_test.sh
 tst_run

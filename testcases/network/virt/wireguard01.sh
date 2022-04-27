@@ -8,8 +8,6 @@ TST_CLEANUP=cleanup
 TST_TESTFUNC=test
 TST_CNT=3
 
-. wireguard_lib.sh
-
 setup()
 {
 	if tst_net_use_netns && [ "$VIRT_PERF_THRESHOLD" -lt 700 ]; then
@@ -53,4 +51,5 @@ test3()
 	virt_compare_netperf "fail"
 }
 
+. wireguard_lib.sh
 tst_run

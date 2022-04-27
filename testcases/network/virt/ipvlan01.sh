@@ -11,6 +11,6 @@ virt_type="ipvlan"
 TST_TEST_DATA="mode l2,mode l3,mode l3s"
 TST_TEST_DATA_IFS=","
 TST_TESTFUNC=virt_test_02
-. virt_lib.sh
 
+. virt_lib.sh
 tst_run

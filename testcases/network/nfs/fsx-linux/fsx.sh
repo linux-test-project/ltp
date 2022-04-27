@@ -10,8 +10,6 @@
 
 TST_TESTFUNC="do_test"
 
-. nfs_lib.sh
-
 do_test()
 {
 	ITERATIONS=${ITERATIONS:=50000}
@@ -25,4 +23,5 @@ do_test()
 	fi
 }
 
+. nfs_lib.sh
 tst_run

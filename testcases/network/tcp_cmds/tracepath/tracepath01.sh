@@ -6,7 +6,6 @@
 
 TST_TESTFUNC="do_test"
 TST_SETUP="setup"
-. tst_net.sh
 
 setup()
 {
@@ -53,4 +52,5 @@ do_test()
 	tst_res TPASS "traced path to '$rhost' in $hops_num hops"
 }
 
+. tst_net.sh
 tst_run

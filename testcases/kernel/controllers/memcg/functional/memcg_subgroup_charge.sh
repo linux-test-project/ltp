@@ -12,7 +12,6 @@
 MEMCG_TESTFUNC=test
 TST_CNT=3
 
-. memcg_lib.sh
 
 # Allocate memory bigger than per-cpu kernel memory
 MEM_TO_ALLOC=$((PAGESIZES * 2))
@@ -67,4 +66,5 @@ test3()
 	test_subgroup 0
 }
 
+. memcg_lib.sh
 tst_run
