@@ -40,6 +40,7 @@ do_test()
 	fi
 }
 
+. tst_test.sh
 tst_run
 -------------------------------------------------------------------------------
 
@@ -90,6 +91,7 @@ test2()
 	tst_res TPASS "Test $1 passed"
 }
 
+. tst_test.sh
 tst_run
 # output:
 # foo 1 TPASS: Test 1 passed
@@ -118,6 +120,7 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run
 # output:
 # foo 1 TPASS: Test 1 passed
@@ -145,6 +148,7 @@ do_test()
 	tst_res TPASS "Test $1 passed with data '$2'"
 }
 
+. tst_test.sh
 tst_run
 # output:
 # foo 1 TPASS: Test 1 passed with data 'foo'
@@ -174,6 +178,7 @@ do_test()
 	esac
 }
 
+. tst_test.sh
 tst_run
 # output:
 # foo 1 TPASS: Test 1 passed with data 'foo'
@@ -278,6 +283,7 @@ do_test()
 	...
 }
 
+. tst_test.sh
 tst_run
 -------------------------------------------------------------------------------
 
@@ -337,6 +343,7 @@ do_test()
 	...
 }
 
+. tst_test.sh
 tst_run
 -------------------------------------------------------------------------------
 
@@ -379,6 +386,7 @@ do_test()
 	...
 }
 
+. tst_test.sh
 tst_run
 -------------------------------------------------------------------------------
 

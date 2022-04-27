@@ -78,7 +78,7 @@ shell library.
 -------------------------------------------------------------------------------
 # ipsec_lib.sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-TST_SETUP=${TST_SETUP:-ipsec_lib_setup}
-. tst_test.sh
+TST_SETUP="${TST_SETUP:-ipsec_lib_setup}"
 ...
+. tst_test.sh
 -------------------------------------------------------------------------------
