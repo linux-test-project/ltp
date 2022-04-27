@@ -1,118 +1,48 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * NAME
- *	shmdt02.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	shmdt02 - check for EINVAL error
+ * Tests basic error handing of the shmdt syscall.
  *
- * ALGORITHM
- *	loop if that option was specified
- *	  call shmdt() using an invalid shared memory address
- *	  check the errno value
- *	    issue a PASS message if we get EINVAL
- *	  otherwise, the tests fails
- *	    issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  shmdt02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * -EINVAL there is no shared memory segment attached at shmaddr.
+ * -EINVAL shmaddr is not aligned on a page boundary.
  */
 
-#include "ipcshm.h"
+#include <sys/types.h>
+#include <sys/shm.h>
+#include "tst_test.h"
+#include "libnewipc.h"
 
-char *TCID = "shmdt02";
-int TST_TOTAL = 1;
+static void *non_attched_addr;
+static void *unaligned_addr;
 
-int main(int ac, char **av)
+struct tcase {
+	void **addr;
+	char *des;
+} tcases[] = {
+	{&non_attched_addr, "shmdt(non_attched_addr)"},
+	{&unaligned_addr, "shmdt(unaligned_addr)"}
+};
+
+static void verify_shmdt(unsigned int n)
 {
-	int lc;
-	int unshared;		/* a local variable to use to produce *//* the error in the shmdt() call */
+	struct tcase *tc = &tcases[n];
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * make the call using the TEST() macro - attempt to
-		 * remove an invalid shared memory address
-		 */
-
-		TEST(shmdt(&unshared));
-
-		if (TEST_RETURN != -1) {
-			tst_brkm(TFAIL, cleanup, "call succeeded unexpectedly");
-		}
-
-		switch (TEST_ERRNO) {
-		case EINVAL:
-			tst_resm(TPASS, "expected failure - errno = %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_resm(TFAIL, "call failed with an unexpected error "
-				 "- %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-
-		}
-	}
-
-	cleanup();
-
-	tst_exit();
+	TST_EXP_FAIL(shmdt(*tc->addr), EINVAL, "%s", tc->des);
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
+	non_attched_addr = PROBE_FREE_ADDR();
+	unaligned_addr = non_attched_addr + SHMLBA - 1;
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-
-}
+static struct tst_test test = {
+	.setup = setup,
+	.test = verify_shmdt,
+	.tcnt = ARRAY_SIZE(tcases),
+};
