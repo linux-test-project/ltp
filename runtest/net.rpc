@@ -4,4 +4,3 @@
 #
 rpc01 rpc01.sh
 rpcinfo rpcinfo01.sh
-rusers rusers01.sh
