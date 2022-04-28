@@ -220,6 +220,13 @@ AC_CHECK_TYPES([struct __kernel_old_timeval, struct __kernel_old_timespec, struc
                 struct __kernel_old_itimerspec, struct __kernel_itimerspec],,,[#include <sys/socket.h>])
 
 AC_CHECK_TYPES([struct futex_waitv],,,[#include <linux/futex.h>])
+AC_CHECK_TYPES([struct mount_attr],,,[
+#ifdef HAVE_LINUX_MOUNT_H
+# include <linux/mount.h>
+#else
+# include <sys/mount.h>
+#endif
+])
 
 # Tools knobs
 

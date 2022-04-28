@@ -19,6 +19,44 @@
 #include "lapi/fcntl.h"
 #include "lapi/syscalls.h"
 
+/*
+ * Mount attributes.
+ */
+#ifndef MOUNT_ATTR_RDONLY
+# define MOUNT_ATTR_RDONLY       0x00000001 /* Mount read-only */
+#endif
+#ifndef MOUNT_ATTR_NOSUID
+# define MOUNT_ATTR_NOSUID       0x00000002 /* Ignore suid and sgid bits */
+#endif
+#ifndef MOUNT_ATTR_NODEV
+# define MOUNT_ATTR_NODEV        0x00000004 /* Disallow access to device special files */
+#endif
+#ifndef MOUNT_ATTR_NOEXEC
+# define MOUNT_ATTR_NOEXEC       0x00000008 /* Disallow program execution */
+#endif
+#ifndef MOUNT_ATTR_NODIRATIME
+# define MOUNT_ATTR_NODIRATIME   0x00000080 /* Do not update directory access times */
+#endif
+#ifndef MOUNT_ATTR_NOSYMFOLLOW
+# define MOUNT_ATTR_NOSYMFOLLOW  0x00200000 /* Do not follow symlinks */
+#endif
+
+#ifndef ST_NOSYMFOLLOW
+# define ST_NOSYMFOLLOW 0x2000 /* do not follow symlinks */
+#endif
+
+#ifndef HAVE_STRUCT_MOUNT_ATTR
+/*
+ * mount_setattr()
+ */
+struct mount_attr {
+	uint64_t attr_set;
+	uint64_t attr_clr;
+	uint64_t propagation;
+	uint64_t userns_fd;
+};
+#endif
+
 #ifndef HAVE_FSOPEN
 static inline int fsopen(const char *fsname, unsigned int flags)
 {
@@ -64,6 +102,15 @@ static inline int open_tree(int dirfd, const char *pathname, unsigned int flags)
 	return tst_syscall(__NR_open_tree, dirfd, pathname, flags);
 }
 #endif /* HAVE_OPEN_TREE */
+
+#ifndef HAVE_MOUNT_SETATTR
+static inline int mount_setattr(int dirfd, const char *from_pathname, unsigned int flags,
+				struct mount_attr *attr, size_t size)
+{
+	return tst_syscall(__NR_mount_setattr, dirfd, from_pathname, flags,
+			   attr, size);
+}
+#endif /* HAVE_MOUNT_SETATTR */
 
 /*
  * New headers added in kernel after 5.2 release, create them for old userspace.
