@@ -50,19 +50,23 @@ static int rtc_tm_cmp(struct rtc_time *set_tm, struct rtc_time *read_tm)
 
 static void set_rtc_test(void)
 {
-	struct rtc_time read_tm;
+	struct rtc_time read_tm, set_tm;
 	int ret;
 
-	struct rtc_time set_tm = {
-		.tm_sec = 30,
-		.tm_min = 23,
-		.tm_hour = 13,
-		.tm_mday = 9,
-		.tm_mon = 9,
-		.tm_year = 120,
-	};
+	/* Read current RTC Time */
+	ret = tst_rtc_gettime(rtc_dev, &read_tm);
+	if (ret != 0) {
+		tst_res(TFAIL | TERRNO, "ioctl() RTC_RD_TIME");
+		return;
+	}
 
-	/* set rtc to 2020.10.9 13:23:30 */
+	/* set rtc to +/-1 hour */
+	set_tm = read_tm;
+	if (set_tm.tm_hour == 0)
+		set_tm.tm_hour += 1;
+	else
+		set_tm.tm_hour -= 1;
+
 	tst_res(TINFO, "To set RTC date/time is: %s", rtctime_to_str(&set_tm));
 
 	ret = tst_rtc_settime(rtc_dev, &set_tm);
@@ -71,7 +75,7 @@ static void set_rtc_test(void)
 		return;
 	}
 
-	/* Read current RTC Time */
+	/* Read new RTC Time */
 	ret = tst_rtc_gettime(rtc_dev, &read_tm);
 	if (ret != 0) {
 		tst_res(TFAIL | TERRNO, "ioctl() RTC_RD_TIME");
@@ -84,7 +88,6 @@ static void set_rtc_test(void)
 		return;
 	}
 	tst_res(TPASS, "The read RTC time is consistent with set time");
-
 }
 
 static void rtc_setup(void)
