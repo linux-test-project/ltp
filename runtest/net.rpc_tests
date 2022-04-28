@@ -1,3 +1,6 @@
+rpc01 rpc01.sh
+rpcinfo rpcinfo01.sh
+
 rpc_pmap_set rpc_test.sh -c rpc_pmap_set
 rpc_pmap_unset rpc_test.sh -c rpc_pmap_unset
 rpc_pmap_getport rpc_test.sh -s rpc_svc_1 -c rpc_pmap_getport

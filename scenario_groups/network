@@ -4,7 +4,6 @@ net.ipv6
 net.ipv6_lib
 net.tcp_cmds
 net.multicast
-net.rpc
 net.nfs
 net.rpc_tests
 net.tirpc_tests

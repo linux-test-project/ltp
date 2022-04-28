@@ -1,6 +1,0 @@
-#DESCRIPTION:Remote Procedure Call
-#
-# PLEASE READ THE README FILE IN /rpc BEFORE RUNNING THESE.
-#
-rpc01 rpc01.sh
-rpcinfo rpcinfo01.sh
