@@ -20,7 +20,6 @@
  * - succeed when target is a mount point
  */
 
-#include <sys/mount.h>
 #include "lapi/mount.h"
 #include "tst_test.h"
 

@@ -9,8 +9,6 @@
 #include <errno.h>
 #include <lapi/syscalls.h>
 #include <sched.h>
-
-#include <sys/mount.h>
 #include <stdlib.h>
 
 #include "tst_test.h"

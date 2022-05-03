@@ -23,7 +23,6 @@
  */
 
 #include <errno.h>
-#include <sys/mount.h>
 
 #include "test.h"
 #include "safe_macros.h"

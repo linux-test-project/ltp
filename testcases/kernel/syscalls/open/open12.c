@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/mount.h>
 #include <unistd.h>
 #include <mntent.h>
 #include <errno.h>

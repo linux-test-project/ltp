@@ -20,7 +20,6 @@
 
 #define _GNU_SOURCE
 #include <stdio.h>
-#include <sys/mount.h>
 #include <time.h>
 
 #include "tst_test.h"

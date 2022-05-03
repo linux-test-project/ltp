@@ -11,7 +11,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <mntent.h>
-#include <sys/mount.h>
 
 #include "tst_test.h"
 #include "lapi/fcntl.h"
