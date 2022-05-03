@@ -7,11 +7,7 @@
 #ifndef LAPI_MOUNT_H__
 #define LAPI_MOUNT_H__
 
-#ifdef HAVE_LINUX_MOUNT_H
-# include <linux/mount.h>
-#else
-# include <sys/mount.h>
-#endif
+#include <sys/mount.h>
 
 #ifndef MS_REC
 # define MS_REC 16384

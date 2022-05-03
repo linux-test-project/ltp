@@ -8,11 +8,14 @@
 #ifndef LAPI_FSMOUNT_H__
 #define LAPI_FSMOUNT_H__
 
+#include "config.h"
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include "config.h"
-#include "lapi/mount.h"
+#ifdef HAVE_LINUX_MOUNT_H
+# include <linux/mount.h>
+#endif
+
 #include "lapi/fcntl.h"
 #include "lapi/syscalls.h"
 
