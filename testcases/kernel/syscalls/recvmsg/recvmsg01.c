@@ -268,8 +268,10 @@ void setup(void)
 
 void cleanup(void)
 {
-	if (pid > 0)
+	if (pid > 0) {
 		(void)kill(pid, SIGKILL);	/* kill server */
+		wait(NULL);
+	}
 	if (tmpsunpath[0] != '\0')
 		(void)unlink(tmpsunpath);
 	tst_rmdir();
