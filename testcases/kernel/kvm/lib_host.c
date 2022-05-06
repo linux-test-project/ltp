@@ -36,15 +36,85 @@ void tst_kvm_validate_result(int value)
 	tst_brk(TBROK, "KVM test returned invalid result value %d", value);
 }
 
+uint64_t tst_kvm_get_phys_address(const struct tst_kvm_instance *inst,
+	uint64_t addr)
+{
+	struct kvm_translation trans = { .linear_address = addr };
+
+	TEST(ioctl(inst->vcpu_fd, KVM_TRANSLATE, &trans));
+
+	/* ioctl(KVM_TRANSLATE) is not implemented for this arch */
+	if (TST_RET == -1 && TST_ERR == EINVAL)
+		return addr;
+
+	if (TST_RET == -1)
+		tst_brk(TBROK | TTERRNO, "ioctl(KVM_TRANSLATE) failed");
+
+	if (TST_RET) {
+		tst_brk(TBROK | TTERRNO,
+			"Invalid ioctl(KVM_TRANSLATE) return value");
+	}
+
+	return trans.valid ? trans.physical_address : 0;
+}
+
+int tst_kvm_find_phys_memslot(const struct tst_kvm_instance *inst,
+	uint64_t paddr)
+{
+	int i;
+	uint64_t base;
+
+	for (i = 0; i < MAX_KVM_MEMSLOTS; i++) {
+		if (!inst->ram[i].userspace_addr)
+			continue;
+
+		base = inst->ram[i].guest_phys_addr;
+
+		if (paddr >= base && paddr - base < inst->ram[i].memory_size)
+			return i;
+	}
+
+	return -1;
+}
+
+int tst_kvm_find_memslot(const struct tst_kvm_instance *inst, uint64_t addr)
+{
+	addr = tst_kvm_get_phys_address(inst, addr);
+
+	if (!addr)
+		return -1;
+
+	return tst_kvm_find_phys_memslot(inst, addr);
+}
+
+void *tst_kvm_get_memptr(const struct tst_kvm_instance *inst, uint64_t addr)
+{
+	int slot;
+	char *ret;
+
+	addr = tst_kvm_get_phys_address(inst, addr);
+
+	if (!addr)
+		return NULL;
+
+	slot = tst_kvm_find_phys_memslot(inst, addr);
+
+	if (slot < 0)
+		return NULL;
+
+	ret = (char *)(uintptr_t)inst->ram[slot].userspace_addr;
+	return ret + (addr - inst->ram[slot].guest_phys_addr);
+}
+
 void tst_kvm_print_result(const struct tst_kvm_instance *inst)
 {
 	int ttype;
 	const struct tst_kvm_result *result = inst->result;
-	const char *file = inst->ram;
+	const char *file;
 
 	tst_kvm_validate_result(result->result);
 	ttype = TTYPE_RESULT(result->result);
-	file += result->file_addr;
+	file = tst_kvm_get_memptr(inst, result->file_addr);
 
 	if (ttype == TBROK)
 		tst_brk_(file, result->lineno, ttype, "%s", result->message);
@@ -52,26 +122,29 @@ void tst_kvm_print_result(const struct tst_kvm_instance *inst)
 		tst_res_(file, result->lineno, ttype, "%s", result->message);
 }
 
-void *tst_kvm_alloc_memory(int vm, unsigned int slot, uint64_t baseaddr,
-	size_t size, unsigned int flags)
+void *tst_kvm_alloc_memory(struct tst_kvm_instance *inst, unsigned int slot,
+	uint64_t baseaddr, size_t size, unsigned int flags)
 {
-	size_t pagesize;
-	void *ret;
+	size_t pagesize, offset;
+	char *ret;
 	struct kvm_userspace_memory_region memslot = {
 		.slot = slot,
 		.flags = flags
 	};
 
+	if (slot >= MAX_KVM_MEMSLOTS)
+		tst_brk(TBROK, "Invalid KVM memory slot %u", slot);
+
 	pagesize = SAFE_SYSCONF(_SC_PAGESIZE);
-	size += (baseaddr % pagesize) + pagesize - 1;
-	baseaddr -= baseaddr % pagesize;
-	size -= size % pagesize;
+	offset = baseaddr % pagesize;
+	size = LTP_ALIGN(size + offset, pagesize);
 	ret = tst_alloc(size);
 
-	memslot.guest_phys_addr = baseaddr;
+	memslot.guest_phys_addr = baseaddr - offset;
 	memslot.memory_size = size;
 	memslot.userspace_addr = (uintptr_t)ret;
-	SAFE_IOCTL(vm, KVM_SET_USER_MEMORY_REGION, &memslot);
+	SAFE_IOCTL(inst->vm_fd, KVM_SET_USER_MEMORY_REGION, &memslot);
+	inst->ram[slot] = memslot;
 	return ret;
 }
 
@@ -108,7 +181,7 @@ void tst_kvm_create_instance(struct tst_kvm_instance *inst, size_t ram_size)
 {
 	int sys_fd;
 	size_t pagesize, result_pageaddr = KVM_RESULT_BASEADDR;
-	char *vm_result, *reset_ptr;
+	char *buf, *reset_ptr;
 	struct kvm_cpuid2 *cpuid_data;
 	const size_t payload_size = kvm_payload_end - kvm_payload_start;
 
@@ -122,8 +195,7 @@ void tst_kvm_create_instance(struct tst_kvm_instance *inst, size_t ram_size)
 
 	if (payload_size + MIN_FREE_RAM > ram_size - VM_KERNEL_BASEADDR) {
 		ram_size = payload_size + MIN_FREE_RAM + VM_KERNEL_BASEADDR;
-		ram_size += 1024 * 1024 - 1;
-		ram_size -= ram_size % (1024 * 1024);
+		ram_size = LTP_ALIGN(ram_size, 1024 * 1024);
 		tst_res(TWARN, "RAM size increased to %zu bytes", ram_size);
 	}
 
@@ -148,15 +220,15 @@ void tst_kvm_create_instance(struct tst_kvm_instance *inst, size_t ram_size)
 	inst->vcpu_info = SAFE_MMAP(NULL, inst->vcpu_info_size,
 		PROT_READ | PROT_WRITE, MAP_SHARED, inst->vcpu_fd, 0);
 
-	inst->ram = tst_kvm_alloc_memory(inst->vm_fd, 0, 0, ram_size, 0);
-	vm_result = tst_kvm_alloc_memory(inst->vm_fd, 1, KVM_RESULT_BASEADDR,
+	buf = tst_kvm_alloc_memory(inst, 0, 0, ram_size, 0);
+	memcpy(buf + VM_KERNEL_BASEADDR, kvm_payload_start, payload_size);
+	buf = tst_kvm_alloc_memory(inst, 1, KVM_RESULT_BASEADDR,
 		KVM_RESULT_SIZE, 0);
-	memset(vm_result, 0, KVM_RESULT_SIZE);
-	memcpy(inst->ram + VM_KERNEL_BASEADDR, kvm_payload_start, payload_size);
+	memset(buf, 0, KVM_RESULT_SIZE);
 
-	reset_ptr = vm_result + (VM_RESET_BASEADDR % pagesize);
+	reset_ptr = buf + (VM_RESET_BASEADDR % pagesize);
 	memcpy(reset_ptr, tst_kvm_reset_code, sizeof(tst_kvm_reset_code));
-	inst->result = (struct tst_kvm_result *)(vm_result +
+	inst->result = (struct tst_kvm_result *)(buf +
 		(KVM_RESULT_BASEADDR % pagesize));
 	inst->result->result = KVM_TNONE;
 	inst->result->message[0] = '\0';

@@ -45,12 +45,13 @@
 
 #define MIN_FREE_RAM (10 * 1024 * 1024)
 #define DEFAULT_RAM_SIZE (16 * 1024 * 1024)
+#define MAX_KVM_MEMSLOTS 8
 
 struct tst_kvm_instance {
 	int vm_fd, vcpu_fd;
 	struct kvm_run *vcpu_info;
 	size_t vcpu_info_size;
-	void *ram;
+	struct kvm_userspace_memory_region ram[MAX_KVM_MEMSLOTS];
 	struct tst_kvm_result *result;
 };
 
@@ -82,8 +83,29 @@ void tst_kvm_validate_result(int value);
  * to free() it. Any extra space added at the beginning or end for page
  * alignment will be writable.
  */
-void *tst_kvm_alloc_memory(int vm, unsigned int slot, uint64_t baseaddr,
-	size_t size, unsigned int flags);
+void *tst_kvm_alloc_memory(struct tst_kvm_instance *inst, unsigned int slot,
+	uint64_t baseaddr, size_t size, unsigned int flags);
+
+/*
+ * Translate VM virtual memory address to the corresponding physical address.
+ * Returns 0 if the virtual address is unmapped or otherwise invalid.
+ */
+uint64_t tst_kvm_get_phys_address(const struct tst_kvm_instance *inst,
+	uint64_t addr);
+
+/*
+ * Find the struct tst_kvm_instance memory slot ID for the give virtual
+ * or physical VM memory address. Returns -1 if the address is not backed
+ * by any memory buffer.
+ */
+int tst_kvm_find_phys_memslot(const struct tst_kvm_instance *inst,
+	uint64_t paddr);
+int tst_kvm_find_memslot(const struct tst_kvm_instance *inst, uint64_t addr);
+
+/*
+ * Convert VM virtual memory address to a directly usable pointer.
+ */
+void *tst_kvm_get_memptr(const struct tst_kvm_instance *inst, uint64_t addr);
 
 /*
  * Find CPUIDs supported by KVM. x86_64 tests must set non-default CPUID,
