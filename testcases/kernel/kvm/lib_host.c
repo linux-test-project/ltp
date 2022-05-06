@@ -197,16 +197,20 @@ void tst_kvm_destroy_instance(struct tst_kvm_instance *inst)
 		SAFE_CLOSE(inst->vcpu_fd);
 
 	SAFE_CLOSE(inst->vm_fd);
+	memset(inst->ram, 0, sizeof(inst->ram));
 }
 
 void tst_kvm_setup(void)
 {
-	tst_kvm_create_instance(&test_vm, DEFAULT_RAM_SIZE);
+
 }
 
 void tst_kvm_run(void)
 {
+	tst_kvm_create_instance(&test_vm, DEFAULT_RAM_SIZE);
 	tst_kvm_run_instance(&test_vm);
+	tst_kvm_destroy_instance(&test_vm);
+	tst_free_all();
 }
 
 void tst_kvm_cleanup(void)
