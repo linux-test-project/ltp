@@ -46,6 +46,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/signal.h>
