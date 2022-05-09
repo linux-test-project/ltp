@@ -9,16 +9,6 @@ IF_CMD='ifconfig'
 TST_SETUP="do_setup"
 TST_CLEANUP="do_cleanup"
 
-# CHANGE_INTERVAL: The interval of the mtu change
-TST_TIMEOUT=1
-if tst_net_use_netns; then
-    CHANGE_INTERVAL=${CHANGE_INTERVAL:-100ms}
-else
-    CHANGE_INTERVAL=${CHANGE_INTERVAL:-5}
-fi
-tst_is_int $CHANGE_INTERVAL && TST_TIMEOUT=$CHANGE_INTERVAL
-TST_TIMEOUT=$(((TST_TIMEOUT + 30) * MTU_CHANGE_TIMES))
-
 # The array of the value which MTU is changed into sequentially
 # 552 - net.ipv4.route.min_pmtu
 CHANGE_VALUES="784 1142 552 1500 552 1500 552 748 552 1142 1500"
@@ -26,6 +16,36 @@ CHANGE6_VALUES="1280 1445 1335 1390 1500 1280 1500 1280 1335 1500"
 saved_mtu=
 
 MAX_PACKET_SIZE=65507
+
+do_setup()
+{
+	# CHANGE_INTERVAL: The interval of the mtu change
+	if tst_net_use_netns; then
+		CHANGE_INTERVAL=${CHANGE_INTERVAL:-100ms}
+	else
+		CHANGE_INTERVAL=${CHANGE_INTERVAL:-5}
+	fi
+
+	local timeout=1
+	tst_is_int $CHANGE_INTERVAL && timeout=$CHANGE_INTERVAL
+	tst_set_timeout $(((timeout + 30) * MTU_CHANGE_TIMES))
+
+	[ "$TST_IPV6" ] && CHANGE_VALUES=$CHANGE6_VALUES
+
+	if_setup
+	saved_mtu="$(cat /sys/class/net/$(tst_iface)/mtu)"
+	[ "$TST_IPV6" ] || find_ipv4_max_packet_size
+}
+
+do_cleanup()
+{
+	if_cleanup_restore
+
+	if [ "$saved_mtu" ]; then
+		ip link set $(tst_iface) mtu $saved_mtu
+		tst_rhost_run -c "ip link set $(tst_iface rhost) mtu $saved_mtu"
+	fi
+}
 
 set_mtu()
 {
@@ -65,24 +85,6 @@ find_ipv4_max_packet_size()
 		size=$((size - 500))
 	done
 	tst_brk TBROK "failed to find max MTU"
-}
-
-do_setup()
-{
-
-	[ "$TST_IPV6" ] && CHANGE_VALUES=$CHANGE6_VALUES
-	if_setup
-	saved_mtu="$(cat /sys/class/net/$(tst_iface)/mtu)"
-	[ "$TST_IPV6" ] || find_ipv4_max_packet_size
-}
-
-do_cleanup()
-{
-	if_cleanup_restore
-	if [ "$saved_mtu" ]; then
-		ip link set $(tst_iface) mtu $saved_mtu
-		tst_rhost_run -c "ip link set $(tst_iface rhost) mtu $saved_mtu"
-	fi
 }
 
 test_body()
