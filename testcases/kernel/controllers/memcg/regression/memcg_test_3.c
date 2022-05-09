@@ -21,6 +21,7 @@
 
 static volatile int sigcounter;
 static struct tst_cg_group *test_cg;
+static pid_t ppid;
 
 static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 {
@@ -29,8 +30,8 @@ static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 
 static void do_child(void)
 {
-	while (1)
-		SAFE_KILL(getppid(), SIGUSR1);
+	while (getppid() == ppid)
+		SAFE_KILL(ppid, SIGUSR1);
 
 	exit(0);
 }
@@ -40,6 +41,7 @@ static void do_test(void)
 	pid_t cpid;
 
 	SAFE_SIGNAL(SIGUSR1, sighandler);
+	ppid = getpid();
 
 	cpid = SAFE_FORK();
 	if (cpid == 0)
