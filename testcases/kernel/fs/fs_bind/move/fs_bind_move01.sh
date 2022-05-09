@@ -6,7 +6,6 @@
 
 FS_BIND_TESTFUNC=test
 
-
 test()
 {
 	tst_res TINFO "move: shared child to shared parent"
@@ -23,12 +22,12 @@ test()
 	EXPECT_PASS mount --move dir parent2/child2
 
 	EXPECT_PASS mount --bind "$FS_BIND_DISK1" parent2/child2/grandchild
-	fs_bind_fs_bind_check parent2/child2/grandchild share1/grandchild share2/child2/grandchild
-	fs_bind_fs_bind_check -n dir/grandchild parent2/child2/grandchild
+	fs_bind_check parent2/child2/grandchild share1/grandchild share2/child2/grandchild
+	fs_bind_check -n dir/grandchild parent2/child2/grandchild
 
 	EXPECT_PASS mount --bind "$FS_BIND_DISK2" share1/grandchild/a
 
-	fs_bind_fs_bind_check parent2/child2/grandchild/a share1/grandchild/a share2/child2/grandchild/a
+	fs_bind_check parent2/child2/grandchild/a share1/grandchild/a share2/child2/grandchild/a
 
 	EXPECT_PASS umount share1/grandchild/a
 	EXPECT_PASS umount share1/grandchild/
