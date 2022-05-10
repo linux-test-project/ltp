@@ -22,5 +22,5 @@ do_test()
 	EXPECT_FAIL $NS_EXEC $NS_HANDLE0 $NS_TYPE ifconfig veth1 $IFCONF_IN6_ARG $IP1/$NETMASK
 }
 
-. netns_helper.sh
+. netns_lib.sh
 tst_run

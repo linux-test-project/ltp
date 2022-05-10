@@ -34,5 +34,5 @@ do_test()
 	EXPECT_PASS $NS_EXEC $NS_HANDLE0 $NS_TYPE $tping -q -c2 -I lo $ip_lo 1>/dev/null
 }
 
-. netns_helper.sh
+. netns_lib.sh
 tst_run
