@@ -40,12 +40,54 @@ static char *rtctime_to_str(struct rtc_time *tm)
 
 static int rtc_tm_cmp(struct rtc_time *set_tm, struct rtc_time *read_tm)
 {
-	return !((set_tm->tm_sec == read_tm->tm_sec)
-		&& (set_tm->tm_min == read_tm->tm_min)
-		&& (set_tm->tm_hour == read_tm->tm_hour)
-		&& (set_tm->tm_mday == read_tm->tm_mday)
-		&& (set_tm->tm_mon == read_tm->tm_mon)
-		&& (set_tm->tm_year == read_tm->tm_year));
+	long delta, seconds1, seconds2;
+
+	if (set_tm->tm_year != read_tm->tm_year)
+		return 1;
+
+	if (set_tm->tm_mon != read_tm->tm_mon)
+		return 1;
+
+	if (set_tm->tm_mday != read_tm->tm_mday)
+		return 1;
+
+	/*
+	 * Convert hour/min/sec into seconds to handle the normal
+	 * and special situations:
+	 * 1#
+	 *       set_tm:  2022-04-28 13:00:50
+	 *       read_tm: 2022-04-28 13:00:50
+	 * 2#
+	 *       set_tm:  2022-04-28 13:00:50
+	 *       read_tm: 2022-04-28 13:00:51
+	 * 3#
+	 *       set_tm:  2022-04-28 13:00:59
+	 *       read_tm: 2022-04-28 13:01:00
+	 * 4#
+	 *       set_tm:  2022-04-28 13:59:59
+	 *       read_tm: 2022-04-28 14:00:00
+	 *
+	 * Note: as we have avoided testing around the zero
+	 * clock, so it's impossible to hit situation 5#
+	 *       set_tm:  2022-04-28 23:59:59
+	 *       read_tm: 2022-04-29 00:00:00
+	 */
+	if ((set_tm->tm_hour != read_tm->tm_hour)
+		|| (set_tm->tm_min != read_tm->tm_min)
+		|| (set_tm->tm_sec != read_tm->tm_sec)) {
+
+		seconds1 = (set_tm->tm_hour  * 3600) + (set_tm->tm_min  * 60) + set_tm->tm_sec;
+		seconds2 = (read_tm->tm_hour * 3600) + (read_tm->tm_min * 60) + read_tm->tm_sec;
+
+		delta = seconds2 - seconds1;
+
+		if (delta < 0 || delta > 3) {
+			tst_res(TFAIL, "seconds1 is %ld, seconds2 is %ld", seconds1, seconds2);
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 static void set_rtc_test(void)
