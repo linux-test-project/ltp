@@ -41,8 +41,6 @@
 #define ALLOC_THRESHOLD		(6*FIVE_HUNDRED_MB)
 #endif
 
-#define STOP_THRESHOLD 15	/* seconds remaining before reaching timeout */
-
 static pid_t *pid_list;
 static sig_atomic_t children_done;
 static int max_pids;
@@ -137,6 +135,7 @@ static void child_loop_alloc(unsigned long long alloc_bytes)
 {
 	unsigned long bytecount = 0;
 	char *mem;
+	int runtime_rem;
 
 	tst_res(TINFO, "... child %d starting", getpid());
 
@@ -153,12 +152,15 @@ static void child_loop_alloc(unsigned long long alloc_bytes)
 		if (bytecount >= alloc_bytes)
 			break;
 	}
+
+	runtime_rem = tst_remaining_runtime();
+
 	if (dowrite)
 		tst_res(TINFO, "... [t=%d] %lu bytes allocated and used in child %d",
-				tst_timeout_remaining(), bytecount, getpid());
+				runtime_rem, bytecount, getpid());
 	else
 		tst_res(TINFO, "... [t=%d] %lu bytes allocated only in child %d",
-				tst_timeout_remaining(), bytecount, getpid());
+				runtime_rem, bytecount, getpid());
 
 	kill(getppid(), SIGRTMIN);
 	raise(SIGSTOP);
@@ -195,10 +197,9 @@ static void mem_test(void)
 
 	/* wait in the loop for all children finish allocating */
 	while (children_done < pid_cntr) {
-		if (tst_timeout_remaining() < STOP_THRESHOLD) {
+		if (!tst_remaining_runtime()) {
 			tst_res(TWARN,
 				"the remaininig time is not enough for testing");
-
 			break;
 		}
 
@@ -234,6 +235,7 @@ static struct tst_test test = {
 		{"v",  &verbose,     	"Verbose"},
 		{}
 	},
+	.max_runtime = 300,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = mem_test,
