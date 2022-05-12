@@ -97,6 +97,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
+	.max_runtime = 150,
 	.tags = (const struct tst_tag[]) {
 	    { "linux-git", "ca4463bf8438"},
 	    {}

@@ -160,15 +160,6 @@ struct tst_fzsync_pair {
 	int b_cntr;
 	/** Internal; Used by tst_fzsync_pair_exit() and fzsync_pair_wait() */
 	int exit;
-	/**
-	 * The maximum desired execution time as a proportion of the timeout
-	 *
-	 * A value x so that 0 < x < 1 which decides how long the test should
-	 * be run for (assuming the loop limit is not exceeded first).
-	 *
-	 * Defaults to 0.5 (~150 seconds with default timeout).
-	 */
-	float exec_time_p;
 	/** Internal; The test time remaining on tst_fzsync_pair_reset() */
 	float exec_time_start;
 	/**
@@ -214,7 +205,6 @@ static inline void tst_fzsync_pair_init(struct tst_fzsync_pair *pair)
 	CHK(avg_alpha, 0, 1, 0.25);
 	CHK(min_samples, 20, INT_MAX, 1024);
 	CHK(max_dev_ratio, 0, 1, 0.1);
-	CHK(exec_time_p, 0, 1, 0.5);
 	CHK(exec_loops, 20, INT_MAX, 3000000);
 
 	if (tst_ncpus_available() <= 1)
@@ -291,7 +281,7 @@ static inline void tst_fzsync_pair_reset(struct tst_fzsync_pair *pair,
 	if (run_b)
 		SAFE_PTHREAD_CREATE(&pair->thread_b, 0, run_b, 0);
 
-	pair->exec_time_start = (float)tst_timeout_remaining();
+	pair->exec_time_start = (float)tst_remaining_runtime();
 }
 
 /**
@@ -644,10 +634,9 @@ static inline void tst_fzsync_wait_b(struct tst_fzsync_pair *pair)
  */
 static inline int tst_fzsync_run_a(struct tst_fzsync_pair *pair)
 {
-	float rem_p = 1 - tst_timeout_remaining() / pair->exec_time_start;
+	float rem_p = 1 - tst_remaining_runtime() / pair->exec_time_start;
 
-	if ((pair->exec_time_p * SAMPLING_SLICE < rem_p)
-		&& (pair->sampling > 0)) {
+	if ((SAMPLING_SLICE < rem_p) && (pair->sampling > 0)) {
 		tst_res(TINFO, "Stopped sampling at %d (out of %d) samples, "
 			"sampling time reached 50%% of the total time limit",
 			pair->exec_loop, pair->min_samples);
@@ -655,7 +644,7 @@ static inline int tst_fzsync_run_a(struct tst_fzsync_pair *pair)
 		tst_fzsync_pair_info(pair);
 	}
 
-	if (pair->exec_time_p < rem_p) {
+	if (rem_p >= 1) {
 		tst_res(TINFO,
 			"Exceeded execution time, requesting exit");
 		tst_atomic_store(1, &pair->exit);

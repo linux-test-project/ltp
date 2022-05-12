@@ -46,7 +46,6 @@ static void setup(void)
 	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1", real_gid);
 
 	fzsync_pair.exec_loops = 100000;
-	fzsync_pair.exec_time_p = 0.9;
 	tst_fzsync_pair_init(&fzsync_pair);
 }
 
@@ -123,6 +122,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.max_runtime = 270,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS=y",

@@ -135,7 +135,6 @@ static void do_test(unsigned int n)
 static void setup(void)
 {
 	fzp.min_samples = 20;
-	fzp.exec_time_p = 0.1;
 
 	tst_fzsync_pair_init(&fzp);
 }
@@ -151,6 +150,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
+	.max_runtime = 30,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "0ace17d568241"},
 		{"CVE", "2020-14416"},
