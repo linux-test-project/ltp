@@ -261,14 +261,31 @@ static void final_group_check(int run, int pages_shared, int pages_sharing,
 			  int pages_volatile, int pages_unshared,
 			  int sleep_millisecs, int pages_to_scan)
 {
+	int ksm_run_orig;
+
 	tst_res(TINFO, "check!");
 	check("run", run);
+
+	/*
+	 * Temporarily stop the KSM scan during the checks: during the
+	 * KSM scan the rmap_items in the stale unstable tree of the
+	 * old pass are removed from it and are later reinserted in
+	 * the new unstable tree of the current pass. So if the checks
+	 * run in the race window between removal and re-insertion, it
+	 * can lead to unexpected false positives where page_volatile
+	 * is elevated and page_unshared is recessed.
+	 */
+	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &ksm_run_orig);
+	SAFE_FILE_PRINTF(PATH_KSM "run", "0");
+
 	check("pages_shared", pages_shared);
 	check("pages_sharing", pages_sharing);
 	check("pages_volatile", pages_volatile);
 	check("pages_unshared", pages_unshared);
 	check("sleep_millisecs", sleep_millisecs);
 	check("pages_to_scan", pages_to_scan);
+
+	SAFE_FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
 }
 
 void ksm_group_check(int run, int pages_shared, int pages_sharing,
