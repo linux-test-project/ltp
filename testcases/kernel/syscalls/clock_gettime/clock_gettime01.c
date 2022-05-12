@@ -126,5 +126,4 @@ static struct tst_test test = {
 	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
 	.needs_root = 1,
-	.timeout = 10,
 };
