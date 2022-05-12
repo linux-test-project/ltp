@@ -87,6 +87,11 @@ static void verify_inotify(void)
 			myinotify_add_watch(inotify_fd, names[i], IN_MODIFY);
 		}
 		SAFE_CLOSE(inotify_fd);
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "Test out of runtime, exiting");
+			break;
+		}
 	}
 	/* We survived for given time - test succeeded */
 	tst_res(TPASS, "kernel survived inotify beating");
@@ -108,7 +113,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.timeout = 600,
+	.max_runtime = 600,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
