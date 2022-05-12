@@ -59,8 +59,6 @@ ADI009 dio_append
 DIT000 dio_truncate
 DIT001 dio_truncate
 DIT002 dio_truncate
-#Running read_checkzero
-#gread_checkzero
 #Running dio_read
 DOR000 dio_read -n 1 -i 100 -r 512k -w 512k -s 32M
 DOR001 dio_read -n 10 -i 30 -r 512k -w 512k -s 32M
