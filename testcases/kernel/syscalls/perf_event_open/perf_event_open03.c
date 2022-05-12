@@ -25,7 +25,7 @@
 
 const int iterations = 12000000;
 static int fd = -1;
-static int timeout;
+static int runtime;
 
 static void setup(void)
 {
@@ -43,12 +43,12 @@ static void setup(void)
 	SAFE_FILE_SCANF(INTEL_PT_PATH, "%d", &ev.type);
 	fd = perf_event_open(&ev, getpid(), -1, -1, 0);
 
-	timeout = tst_timeout_remaining();
+	runtime = tst_remaining_runtime();
 }
 
 /*
  * Check how fast we can do the iterations after 5 seconds of runtime.
- * If the rate is too small to complete for current timeout then
+ * If the rate is too small to complete for current runtime then
  * stop the test.
  */
 static void check_progress(int i)
@@ -67,11 +67,11 @@ static void check_progress(int i)
 	if (elapsed_ms > 5000) {
 		iter_per_ms = (float) i / elapsed_ms;
 		tst_res(TINFO, "rate: %f iters/ms", iter_per_ms);
-		tst_res(TINFO, "needed rate for current test timeout: %f iters/ms",
-			(float) iterations / (timeout * 1000));
+		tst_res(TINFO, "needed rate for current test runtime: %f iters/ms",
+			(float) iterations / (runtime * 1000));
 
-		if (iter_per_ms * 1000 * (timeout - 1) < iterations)
-			tst_brk(TCONF, "System too slow to complete test in specified timeout");
+		if (iter_per_ms * 1000 * (runtime - 1) < iterations)
+			tst_brk(TCONF, "System too slow to complete test in specified runtime");
 	}
 }
 
@@ -108,6 +108,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
+	.max_runtime = 300,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "7bdb157cdebb"},
 		{"CVE", "2020-25704"},
