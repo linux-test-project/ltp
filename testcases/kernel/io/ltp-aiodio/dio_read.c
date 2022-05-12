@@ -51,6 +51,9 @@ static void do_buffered_writes(int fd, char *bufptr, long long fsize, long long 
 			tst_brk(TBROK, "pwrite: wrote %lld bytes out of %lld", w, wsize);
 
 		SAFE_FSYNC(fd);
+
+		if (!tst_remaining_runtime())
+			return;
 	}
 }
 
@@ -70,8 +73,13 @@ static int do_direct_reads(char *filename, char *bufptr, long long fsize, long l
 
 			if (*children_completed >= numchildren) {
 				tst_res(TINFO,
-					"Writers finshed, exitting reader (iteration %i)",
+					"Writers finshed, exiting reader (iteration %i)",
 					iter);
+				goto exit;
+			}
+
+			if (!tst_remaining_runtime()) {
+				tst_res(TINFO, "Test out of runtime, exiting");
 				goto exit;
 			}
 
@@ -170,6 +178,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
+	.max_runtime = 1800,
 	.options = (struct tst_option[]) {
 		{"n:", &str_numchildren, "Number of threads (default 8)"},
 		{"w:", &str_writesize, "Size of writing blocks (default 32M)"},
