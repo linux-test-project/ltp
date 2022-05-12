@@ -236,8 +236,6 @@ struct tst_test {
 	unsigned int mnt_flags;
 	void *mnt_data;
 
-	/* override default timeout per test run, disabled == -1 */
-	int timeout;
 	/*
 	 * Maximal test runtime in seconds.
 	 *
@@ -333,9 +331,7 @@ const char *tst_strsig(int sig);
  */
 const char *tst_strstatus(int status);
 
-unsigned int tst_timeout_remaining(void);
 unsigned int tst_multiply_timeout(unsigned int timeout);
-void tst_set_timeout(int timeout);
 
 /*
  * Returns remaining test runtime. Test that runs for more than a few seconds

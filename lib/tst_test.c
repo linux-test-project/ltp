@@ -1473,12 +1473,6 @@ static void sigint_handler(int sig LTP_ATTRIBUTE_UNUSED)
 	}
 }
 
-unsigned int tst_timeout_remaining(void)
-{
-	tst_brk(TBROK, "Stub called!");
-	return 0;
-}
-
 unsigned int tst_remaining_runtime(void)
 {
 	static struct timespec now;
@@ -1509,11 +1503,6 @@ unsigned int tst_multiply_timeout(unsigned int timeout)
 		tst_brk(TBROK, "timeout must to be >= 1! (%d)", timeout);
 
 	return timeout * timeout_mul;
-}
-
-void tst_set_timeout(int timeout)
-{
-	tst_brk(TBROK, "Stub called!");
 }
 
 static void set_timeout(void)
