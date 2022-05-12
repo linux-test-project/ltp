@@ -62,7 +62,7 @@ static void my_yield(void)
  *  0: success
  *  1: failure
  */
-int allocate_free(int scheme)
+int allocate_free(int scheme, int threadnum)
 {
 	int loop;
 	const int MAXPTRS = 50;	/* only 42 or so get used on 32 bit machine */
@@ -127,6 +127,11 @@ int allocate_free(int scheme)
 		}
 
 		my_yield();
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "Thread [%d]: Test runtime is over, exiting", threadnum);
+			break;
+		}
 	}
 
 	/* Success! */
@@ -141,7 +146,7 @@ void *alloc_mem(void *threadnum)
 	TST_CHECKPOINT_WAIT(0);
 
 	/* thread N will use growth scheme N mod 4 */
-	err = allocate_free(((uintptr_t)threadnum) % 4);
+	err = allocate_free(((uintptr_t)threadnum) % 4, (uintptr_t)threadnum);
 	tst_res(TINFO,
 		"Thread [%d]: allocate_free() returned %d, %s.  Thread exiting.\n",
 		(int)(uintptr_t)threadnum, err,
@@ -189,7 +194,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.timeout = 600,
+	.max_runtime = 600,
 	.needs_checkpoints = 1,
 	.setup = setup,
 	.cleanup = cleanup,
