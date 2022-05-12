@@ -121,7 +121,6 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.min_kver = "4.3",
-	.timeout = 20
 };
 
 #else
