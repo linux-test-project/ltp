@@ -45,6 +45,8 @@ const char *TCID __attribute__((weak));
 #define GLIBC_GIT_URL "https://sourceware.org/git/?p=glibc.git;a=commit;h="
 #define CVE_DB_URL "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-"
 
+#define DEFAULT_TIMEOUT 30
+
 struct tst_test *tst_test;
 
 static const char *tid;
@@ -63,6 +65,7 @@ struct results {
 	int warnings;
 	int broken;
 	unsigned int timeout;
+	int max_runtime;
 };
 
 static struct results *results;
@@ -464,6 +467,40 @@ pid_t safe_clone(const char *file, const int lineno,
 	return pid;
 }
 
+static void parse_mul(float *mul, const char *env_name, float min, float max)
+{
+	char *str_mul;
+	int ret;
+
+	if (*mul > 0)
+		return;
+
+	str_mul = getenv(env_name);
+
+	if (!str_mul) {
+		*mul = 1;
+		return;
+	}
+
+	ret = tst_parse_float(str_mul, mul, min, max);
+	if (ret) {
+		tst_brk(TBROK, "Failed to parse %s: %s",
+			env_name, tst_strerrno(ret));
+	}
+}
+
+static int multiply_runtime(int max_runtime)
+{
+	static float runtime_mul = -1;
+
+	if (max_runtime <= 0)
+		return max_runtime;
+
+	parse_mul(&runtime_mul, "LTP_RUNTIME_MUL", 0.0099, 100);
+
+	return max_runtime * runtime_mul;
+}
+
 static struct option {
 	char *optstr;
 	char *help;
@@ -477,6 +514,7 @@ static struct option {
 static void print_help(void)
 {
 	unsigned int i;
+	int timeout, runtime;
 
 	/* see doc/user-guide.txt, which lists also shell API variables */
 	fprintf(stderr, "Environment Variables\n");
@@ -489,8 +527,30 @@ static void print_help(void)
 	fprintf(stderr, "LTP_DEV_FS_TYPE      Filesystem used for testing (default: %s)\n", DEFAULT_FS_TYPE);
 	fprintf(stderr, "LTP_SINGLE_FS_TYPE   Testing only - specifies filesystem instead all supported (for .all_filesystems)\n");
 	fprintf(stderr, "LTP_TIMEOUT_MUL      Timeout multiplier (must be a number >=1)\n");
+	fprintf(stderr, "LTP_RUNTIME_MUL      Runtime multiplier (must be a number >=1)\n");
 	fprintf(stderr, "LTP_VIRT_OVERRIDE    Overrides virtual machine detection (values: \"\"|kvm|microsoft|xen|zvm)\n");
 	fprintf(stderr, "TMPDIR               Base directory for template directory (for .needs_tmpdir, default: %s)\n", TEMPDIR);
+	fprintf(stderr, "\n");
+
+	fprintf(stderr, "Timeout and runtime\n");
+	fprintf(stderr, "-------------------\n");
+
+	if (tst_test->max_runtime) {
+		runtime = multiply_runtime(tst_test->max_runtime);
+
+		if (runtime == TST_UNLIMITED_RUNTIME) {
+			fprintf(stderr, "Test iteration runtime is not limited\n");
+		} else {
+			fprintf(stderr, "Test iteration runtime cap %ih %im %is\n",
+				runtime/3600, (runtime%3600)/60, runtime % 60);
+		}
+	}
+
+	timeout = tst_multiply_timeout(DEFAULT_TIMEOUT);
+
+	fprintf(stderr, "Test timeout (not including runtime) %ih %im %is\n",
+		timeout/3600, (timeout%3600)/60, timeout % 60);
+
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "Options\n");
@@ -620,7 +680,10 @@ static void parse_opts(int argc, char *argv[])
 			iterations = atoi(optarg);
 		break;
 		case 'I':
-			duration = atof(optarg);
+			if (tst_test->max_runtime > 0)
+				tst_test->max_runtime = atoi(optarg);
+			else
+				duration = atof(optarg);
 		break;
 		case 'C':
 #ifdef UCLINUX
@@ -1034,6 +1097,11 @@ static void do_setup(int argc, char *argv[])
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
 
+	if (tst_test->max_runtime < -1) {
+		tst_brk(TBROK, "Invalid runtime value %i",
+			results->max_runtime);
+	}
+
 	if (tst_test->tconf_msg)
 		tst_brk(TCONF, "%s", tst_test->tconf_msg);
 
@@ -1405,38 +1473,35 @@ static void sigint_handler(int sig LTP_ATTRIBUTE_UNUSED)
 
 unsigned int tst_timeout_remaining(void)
 {
+	tst_brk(TBROK, "Stub called!");
+	return 0;
+}
+
+unsigned int tst_remaining_runtime(void)
+{
 	static struct timespec now;
-	unsigned int elapsed;
+	int elapsed;
+
+	if (results->max_runtime == TST_UNLIMITED_RUNTIME)
+		return UINT_MAX;
+
+	if (results->max_runtime == 0)
+		tst_brk(TBROK, "Runtime not set!");
 
 	if (tst_clock_gettime(CLOCK_MONOTONIC, &now))
 		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
 
-	elapsed = (tst_timespec_diff_ms(now, tst_start_time) + 500) / 1000;
-	if (results->timeout > elapsed)
-		return results->timeout - elapsed;
+	elapsed = tst_timespec_diff_ms(now, tst_start_time) / 1000;
+	if (results->max_runtime > elapsed)
+		return results->max_runtime - elapsed;
 
 	return 0;
 }
 
+
 unsigned int tst_multiply_timeout(unsigned int timeout)
 {
-	char *mul;
-	int ret;
-
-	if (timeout_mul == -1) {
-		mul = getenv("LTP_TIMEOUT_MUL");
-		if (mul) {
-			if ((ret = tst_parse_float(mul, &timeout_mul, 1, 10000))) {
-				tst_brk(TBROK, "Failed to parse LTP_TIMEOUT_MUL: %s",
-						tst_strerrno(ret));
-			}
-		} else {
-			timeout_mul = 1;
-		}
-	}
-	if (timeout_mul < 1)
-		tst_brk(TBROK, "LTP_TIMEOUT_MUL must to be int >= 1! (%.2f)",
-				timeout_mul);
+	parse_mul(&timeout_mul, "LTP_TIMEOUT_MUL", 0.099, 10000);
 
 	if (timeout < 1)
 		tst_brk(TBROK, "timeout must to be >= 1! (%d)", timeout);
@@ -1446,36 +1511,46 @@ unsigned int tst_multiply_timeout(unsigned int timeout)
 
 void tst_set_timeout(int timeout)
 {
-	if (timeout == -1) {
+	tst_brk(TBROK, "Stub called!");
+}
+
+static void set_timeout(void)
+{
+	unsigned int timeout = DEFAULT_TIMEOUT;
+
+	if (results->max_runtime == TST_UNLIMITED_RUNTIME) {
 		tst_res(TINFO, "Timeout per run is disabled");
 		return;
 	}
 
-	if (timeout < 1)
-		tst_brk(TBROK, "timeout must to be >= 1! (%d)", timeout);
+	if (results->max_runtime < 0) {
+		tst_brk(TBROK, "max_runtime must to be >= -1! (%d)",
+			results->max_runtime);
+	}
 
-	results->timeout = tst_multiply_timeout(timeout);
+	results->timeout = tst_multiply_timeout(timeout) + results->max_runtime;
 
 	tst_res(TINFO, "Timeout per run is %uh %02um %02us",
 		results->timeout/3600, (results->timeout%3600)/60,
 		results->timeout % 60);
+}
 
-	if (getpid() == lib_pid)
-		alarm(results->timeout);
-	else
-		heartbeat();
+void tst_set_max_runtime(int max_runtime)
+{
+	results->max_runtime = multiply_runtime(max_runtime);
+	tst_res(TINFO, "Updating max runtime to %uh %02um %02us",
+		max_runtime/3600, (max_runtime%3600)/60, max_runtime % 60);
+	set_timeout();
+	heartbeat();
 }
 
 static int fork_testrun(void)
 {
 	int status;
 
-	if (tst_test->timeout)
-		tst_set_timeout(tst_test->timeout);
-	else
-		tst_set_timeout(300);
-
 	SAFE_SIGNAL(SIGINT, sigint_handler);
+
+	alarm(results->timeout);
 
 	test_pid = fork();
 	if (test_pid < 0)
@@ -1567,6 +1642,11 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
+
+	if (tst_test->max_runtime)
+		results->max_runtime = multiply_runtime(tst_test->max_runtime);
+
+	set_timeout();
 
 	if (tst_test->test_variants)
 		test_variants = tst_test->test_variants;

@@ -22,9 +22,13 @@ For running LTP network tests see `testcases/network/README.md`.
 | 'LTP_SINGLE_FS_TYPE'  | Testing only - specifies filesystem instead all
                           supported (for tests with '.all_filesystems').
 | 'LTP_DEV_FS_TYPE'     | Filesystem used for testing (default: 'ext2').
-| 'LTP_TIMEOUT_MUL'     | Multiply timeout, must be number >= 1 (> 1 is useful for
+| 'LTP_TIMEOUT_MUL'     | Multiplies timeout, must be number >= 0.1 (> 1 is useful for
                           slow machines to avoid unexpected timeout).
                           Variable is also used in shell tests, but ceiled to int.
+| 'LTP_RUNTIME_MUL'     | Multiplies maximal test iteration runtime. Tests
+                          that run for more than a second or two are capped on
+			  runtime. You can scale the default runtime both up
+			  and down with this multiplier.
 | 'LTP_VIRT_OVERRIDE'   | Overrides virtual machine detection in the test
                           library. Setting it to empty string tell the library
                           that system is not a virtual machine. Other possible
@@ -36,3 +40,27 @@ For running LTP network tests see `testcases/network/README.md`.
                           and others, which imply it, shell: 'TST_NEEDS_TMPDIR=1').
 | 'TST_NO_CLEANUP'      | Disable running test cleanup (defined in 'TST_CLEANUP').
 |==============================================================================
+
+
+2. Test execution time and timeout
+----------------------------------
+
+The limit on how long a test can run does compose of two parts max_runtime and
+timeout. The limit does apply to a single test variant, that means for example
+that tests that run for all available filesystems will apply this limit for a
+single filesytem only.
+
+The max_runtime is a cap on how long the run() function can take, for most
+testcases this part is set to zero. For tests that do run for more than a
+second or two the max_runtime has to be defined and the run() function has to
+check actively how much runtime is left.
+
+Test runtime can be scaled up and down with 'LTP_RUNTIME_MUL' environment
+variable or set on a commandline by the '-I' parameter. Hoewever be vary that
+setting the runtime too low will cause long running tests to exit prematurely
+possibly before the have a chance actually test anyting.
+
+The timeout part is a limit for the test setup and cleanup and also safety
+margin for the runtime accounting. It's currently set to 30 seconds but may
+change later. If your target machine is too slow it can be scaled up with the
+'LTP_TIMEOUT_MUL' environment variable.

@@ -7,9 +7,7 @@ test06
 test07
 test08
 test09
-test10
 test11
-test12
 test13
 test14
 test15
@@ -22,7 +20,6 @@ tst_safe_fileops
 tst_res_hexd
 tst_strstatus
 tst_print_result
-test18
 test19
 test20
 test22
@@ -56,3 +53,5 @@ tst_needs_cmds05
 tst_needs_cmds06
 tst_needs_cmds07
 tst_needs_cmds08
+test_runtime01
+test_runtime02

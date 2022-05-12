@@ -93,14 +93,35 @@ in range of [0, '.tcnt' - 1].
 
 IMPORTANT: Only one of '.test' and '.test_all' can be set at a time.
 
-Each test has a default timeout set to 300s. The default timeout can be
-overridden by setting '.timeout' in the test structure or by calling
-'tst_set_timeout()' in the test 'setup()'. There are a few testcases whose run
-time may vary arbitrarily, for these timeout can be disabled by setting it to
--1.
+Each test has a limit on how long it can run and the limit composes of two
+parts max_runtime and timeout. The max_runtime is a limit for how long can the
+'.test_all' or a set of '.test' functions take and the timeout is static part
+that should cover the duration of test setup and cleanup plus some safety.
 
-Test can find out how much time (in seconds) is remaining to timeout,
-by calling 'tst_timeout_remaining()'.
+Any test that runs for more than a second or two has to make sure to:
+
+- set the runtime either by setting the '.max_runtime' in tst_test or by
+  calling 'tst_set_runtime()' in the test setup
+
+- monitor remaning runtime by regular calls to 'tst_remaining_runtime()' and
+  exit when runtime has been used up
+
+Test is free to exit before max_runtime has been used up for example when
+minimal number of iteration was finished.
+
+The limit is applied to a single call of the '.test_all' function that means
+that for example when '.test_variants' or '.all_filesystems' is set the whole
+test will be limited by 'variants * (max_runtime + timeout)' seconds and the
+test runtime will be likely close to 'variants * max_runtime' seconds.
+
+[source,c]
+-------------------------------------------------------------------------------
+/*
+ * Returns number of seconds or zero in case that runtime has been used up.
+ */
+
+int tst_remaining_runtime(void);
+-------------------------------------------------------------------------------
 
 LAPI headers
 ++++++++++++
@@ -377,12 +398,13 @@ WARNING: This function is not thread safe.
 
 [source,c]
 -------------------------------------------------------------------------------
-void tst_set_timeout(unsigned int timeout);
+void tst_set_max_runtime(int max_runtime);
 -------------------------------------------------------------------------------
 
-Allows for setting timeout per test iteration dynamically in the test setup(),
+Allows for setting max_runtime per test iteration dynamically in the test setup(),
 the timeout is specified in seconds. There are a few testcases whose runtime
-can vary arbitrarily, these can disable timeouts by setting it to -1.
+can vary arbitrarily, these can disable timeouts by setting it to
+TST_UNLIMITED_RUNTIME.
 
 [source,c]
 -------------------------------------------------------------------------------

@@ -134,6 +134,8 @@ extern unsigned int tst_variant;
 
 #define TST_NO_HUGEPAGES ((unsigned long)-1)
 
+#define TST_UNLIMITED_RUNTIME (-1)
+
 struct tst_test {
 	/* number of tests available in test() function */
 	unsigned int tcnt;
@@ -236,6 +238,18 @@ struct tst_test {
 
 	/* override default timeout per test run, disabled == -1 */
 	int timeout;
+	/*
+	 * Maximal test runtime in seconds.
+	 *
+	 * Any test that runs for more than a second or two should set this and
+	 * also use tst_remaining_runtime() to exit when runtime was used up.
+	 * Tests may finish sooner, for example if requested number of
+	 * iterations was reached before the runtime runs out.
+	 *
+	 * If test runtime cannot be know in advance it should be set to
+	 * TST_UNLIMITED_RUNTIME.
+	 */
+	int max_runtime;
 
 	void (*setup)(void);
 	void (*cleanup)(void);
@@ -323,6 +337,19 @@ unsigned int tst_timeout_remaining(void);
 unsigned int tst_multiply_timeout(unsigned int timeout);
 void tst_set_timeout(int timeout);
 
+/*
+ * Returns remaining test runtime. Test that runs for more than a few seconds
+ * should check if they should exit by calling this function regularly.
+ *
+ * The function returns remaining runtime in seconds. If runtime was used up
+ * zero is returned.
+ */
+unsigned int tst_remaining_runtime(void);
+
+/*
+ * Sets maximal test runtime in seconds.
+ */
+void tst_set_max_runtime(int max_runtime);
 
 /*
  * Returns path to the test temporary directory in a newly allocated buffer.

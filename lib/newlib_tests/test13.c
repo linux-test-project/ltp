@@ -20,7 +20,6 @@ static void do_test(void)
 }
 
 static struct tst_test test = {
-	.timeout = 1,
 	.forks_child = 1,
 	.test_all = do_test,
 };
