@@ -25,8 +25,6 @@
 #include "lapi/syscalls.h"
 
 static volatile sig_atomic_t done;
-static char *str_rtime;
-static int rtime = 10;
 
 static void breakout(int sig)
 {
@@ -37,6 +35,7 @@ static void verify_gettimeofday(void)
 {
 	struct __kernel_old_timeval tv1, tv2;
 	unsigned long long cnt = 0;
+	int rtime = tst_remaining_runtime();
 
 	done = 0;
 
@@ -68,21 +67,11 @@ static void verify_gettimeofday(void)
 
 static void setup(void)
 {
-	if (str_rtime) {
-		rtime = atoi(str_rtime);
-		if (rtime <= 0)
-			tst_brk(TBROK, "Invalid runtime '%s'", str_rtime);
-		tst_set_timeout(rtime + 60);
-	}
-
 	SAFE_SIGNAL(SIGALRM, breakout);
 }
 
 static struct tst_test test = {
 	.setup = setup,
-	.options = (struct tst_option[]) {
-		{"T:", &str_rtime, "Test iteration runtime in seconds"},
-		{},
-	},
+	.max_runtime = 10,
 	.test_all = verify_gettimeofday,
 };
