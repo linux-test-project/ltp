@@ -23,11 +23,9 @@
 static char *str_loops;
 static char *str_threads;
 static char *map_private;
-static char *str_exec_time;
 
 static int loops = 1000;
 static int threads = 40;
-static float exec_time = 24;
 
 static volatile int sig_caught;
 static int threads_running;
@@ -109,7 +107,7 @@ static void test_mmap(void)
 	long i;
 	pthread_t thids[threads];
 
-	alarm(exec_time * 3600);
+	alarm(tst_remaining_runtime());
 
 	while (!sig_caught) {
 		for (i = 0; i < threads; i++) {
@@ -138,11 +136,6 @@ static void setup(void)
 	if (tst_parse_int(str_threads, &threads, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of threads '%s'", str_threads);
 
-	if (tst_parse_float(str_exec_time, &exec_time, 0.0005, 9000))
-		tst_brk(TBROK, "Invalid execution time '%s'", str_exec_time);
-
-	tst_set_timeout(exec_time * 3600 + 300);
-
 	SAFE_SIGNAL(SIGALRM, sig_handler);
 	SAFE_SIGNAL(SIGBUS, sig_handler);
 	SAFE_SIGNAL(SIGSEGV, sig_handler);
@@ -155,7 +148,6 @@ static void setup(void)
 	tst_res(TINFO, "Number of loops %i", loops);
 	tst_res(TINFO, "Number of threads %i", threads);
 	tst_res(TINFO, "MAP_PRIVATE = %i", map_private ? 1 : 0);
-	tst_res(TINFO, "Execution time %fH", exec_time);
 }
 
 static void cleanup(void)
@@ -184,11 +176,11 @@ static struct tst_test test = {
 		{"l:", &str_loops, "Number of map-write-unmap loops"},
 		{"n:", &str_threads, "Number of worker threads"},
 		{"p", &map_private, "Turns on MAP_PRIVATE (default MAP_SHARED)"},
-		{"x:", &str_exec_time, "float Execution time in hours (default 24H)"},
 		{}
 	},
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_mmap,
+	.max_runtime = 60,
 };

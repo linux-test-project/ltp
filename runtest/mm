@@ -15,8 +15,8 @@ mtest01w mtest01 -p80 -w
 #test for race conditions
 mtest05   mmstress
 mtest06   mmap1
-mtest06_2 mmap2 -x 0.002 -a -p
-mtest06_3 mmap3 -x 0.002 -p
+mtest06_2 mmap2 -a -p
+mtest06_3 mmap3 -p
 # Remains diabled till the infinite loop problem is solved
 #mtest-6_4 shmat1 -x 0.00005
 
