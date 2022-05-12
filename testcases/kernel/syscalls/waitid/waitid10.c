@@ -23,13 +23,15 @@ static void run(void)
 {
 	pid_t pidchild;
 
+	/*
+	 * Triggering SIGFPE by invalid instruction is not always possible,
+	 * some architectures does not trap division-by-zero at all and even
+	 * when it's possible we would have to fight the compiler optimizations
+	 * that have tendency to remove undefined operations.
+	 */
 	pidchild = SAFE_FORK();
-	if (!pidchild) {
-		volatile int a, zero = 0;
-
-		a = 1 / zero;
-		exit(a);
-	}
+	if (!pidchild)
+		raise(SIGFPE);
 
 	TST_EXP_PASS(waitid(P_ALL, 0, infop, WEXITED));
 	TST_EXP_EQ_LI(infop->si_pid, pidchild);
