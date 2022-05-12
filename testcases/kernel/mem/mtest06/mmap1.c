@@ -42,10 +42,8 @@
 
 static int file_size = 1024;
 static int num_iter = 5000;
-static float exec_time = 0.05; /* default is 3 min */
 
 static void *distant_area;
-static char *str_exec_time;
 static jmp_buf jmpbuf;
 static volatile unsigned char *map_address;
 static unsigned long page_sz;
@@ -206,17 +204,10 @@ static void setup(void)
 	SAFE_MUNMAP(distant_area, distant_mmap_size);
 	distant_area += distant_mmap_size / 2;
 
-	if (tst_parse_float(str_exec_time, &exec_time, 0, FLT_MAX)) {
-		tst_brk(TBROK, "Invalid number for exec_time '%s'",
-			str_exec_time);
-	}
-
 	sigptr.sa_sigaction = sig_handler;
 	sigemptyset(&sigptr.sa_mask);
 	sigptr.sa_flags = SA_SIGINFO | SA_NODEFER;
 	SAFE_SIGACTION(SIGSEGV, &sigptr, NULL);
-
-	tst_set_timeout((int)(exec_time * 3600));
 }
 
 static void run(void)
@@ -224,8 +215,8 @@ static void run(void)
 	pthread_t thid[2];
 	int start, last_update;
 
-	start = last_update = tst_timeout_remaining();
-	while (tst_timeout_remaining() > STOP_THRESHOLD) {
+	start = last_update = tst_remaining_runtime();
+	while (tst_remaining_runtime()) {
 		int fd = mkfile(file_size);
 
 		tst_atomic_store(0, &mapcnt);
@@ -240,11 +231,11 @@ static void run(void)
 
 		close(fd);
 
-		if (last_update - tst_timeout_remaining() >= PROGRESS_SEC) {
-			last_update = tst_timeout_remaining();
+		if (last_update - tst_remaining_runtime() >= PROGRESS_SEC) {
+			last_update = tst_remaining_runtime();
 			tst_res(TINFO, "[%03d] mapped: %lu, sigsegv hit: %lu, "
 				"threads spawned: %lu",
-				start - tst_timeout_remaining(),
+				start - last_update,
 				map_count, mapped_sigsegv_count,
 				threads_spawned);
 			tst_res(TINFO, "      repeated_reads: %ld, "
@@ -258,9 +249,6 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.options = (struct tst_option[]) {
-		{"x:", &str_exec_time, "Exec time (hours)"},
-		{}
-	},
+	.max_runtime = 180,
 	.needs_tmpdir = 1,
 };
