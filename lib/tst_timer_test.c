@@ -420,6 +420,9 @@ static struct tst_option options[] = {
 
 static void parse_timer_opts(void)
 {
+	size_t i;
+	long long runtime_us = 0;
+
 	if (str_sleep_time) {
 		if (tst_parse_int(str_sleep_time, &sleep_time, 0, INT_MAX)) {
 			tst_brk(TBROK,
@@ -441,14 +444,17 @@ static void parse_timer_opts(void)
 		if (!sample_cnt)
 			sample_cnt = 500;
 
-		long long timeout = sleep_time * sample_cnt / 1000000;
-
-		tst_set_timeout(timeout + timeout/10);
+		runtime_us = sleep_time * sample_cnt;
 
 		test->test_all = single_timer_test;
 		test->test = NULL;
 		test->tcnt = 0;
+	} else {
+		for (i = 0; i < ARRAY_SIZE(tcases); i++)
+			runtime_us += tcases[i].usec * tcases[i].samples;
 	}
+
+	tst_set_max_runtime((runtime_us + runtime_us/10)/1000000);
 }
 
 struct tst_test *tst_timer_test_setup(struct tst_test *timer_test)
