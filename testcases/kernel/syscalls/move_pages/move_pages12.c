@@ -153,7 +153,6 @@ static void do_test(unsigned int n)
 	void *ptr;
 	pid_t cpid = -1;
 	int status;
-	unsigned int twenty_percent = (tst_timeout_remaining() / 5);
 
 	addr = SAFE_MMAP(NULL, tcases[n].tpages * hpsz, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
@@ -198,7 +197,7 @@ static void do_test(unsigned int n)
 
 		SAFE_MUNMAP(addr, tcases[n].tpages * hpsz);
 
-		if (tst_timeout_remaining() < twenty_percent)
+		if (!tst_remaining_runtime())
 			break;
 	}
 
@@ -341,6 +340,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcases),
+	.max_runtime = 240,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "e66f17ff7177"},
 		{"linux-git", "c9d398fa2378"},
