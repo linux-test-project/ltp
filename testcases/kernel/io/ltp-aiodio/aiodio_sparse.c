@@ -189,7 +189,7 @@ static void run(void)
 {
 	char *filename = "file.bin";
 	int status;
-	int i;
+	int i, pid;
 
 	*run_child = 1;
 
@@ -200,9 +200,27 @@ static void run(void)
 		}
 	}
 
-	tst_res(TINFO, "Parent create a sparse file");
+	pid = SAFE_FORK();
+	if (!pid) {
+		aiodio_sparse(filename, alignment, writesize, filesize, numaio);
+		return;
+	}
 
-	aiodio_sparse(filename, alignment, writesize, filesize, numaio);
+	tst_res(TINFO, "Child %i creates a sparse file", pid);
+
+	for (;;) {
+		if (SAFE_WAITPID(pid, NULL, WNOHANG))
+			break;
+
+		sleep(1);
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "Test out of runtime, exiting");
+			kill(pid, SIGKILL);
+			SAFE_WAITPID(pid, NULL, 0);
+			break;
+		}
+	}
 
 	if (SAFE_WAITPID(-1, &status, WNOHANG))
 		tst_res(TFAIL, "Non zero bytes read");
@@ -229,7 +247,7 @@ static struct tst_test test = {
 		"tmpfs",
 		NULL
 	},
-	.timeout = 1800,
+	.max_runtime = 1800,
 };
 #else
 TST_TEST_TCONF("test requires libaio and its development packages");

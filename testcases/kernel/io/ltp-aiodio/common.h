@@ -63,7 +63,7 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 
 	tst_res(TINFO, "child %i reading file", getpid());
 
-	while (*run_child) {
+	for (;;) {
 		off_t offset = 0;
 		char *bufoff;
 
@@ -80,9 +80,13 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 				}
 				offset += r;
 			}
+
+			if (!*run_child)
+				goto exit;
 		}
 	}
 
+exit:
 	SAFE_CLOSE(fd);
 }
 
