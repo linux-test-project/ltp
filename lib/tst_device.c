@@ -506,6 +506,16 @@ unsigned long tst_dev_bytes_written(const char *dev)
 	return dev_bytes_written;
 }
 
+static int count_match_len(const char *first, const char *second)
+{
+	int len = 0;
+
+	while (*first && *first++ == *second++)
+		len++;
+
+	return len;
+}
+
 void tst_find_backing_dev(const char *path, char *dev)
 {
 	struct stat buf;
@@ -514,6 +524,8 @@ void tst_find_backing_dev(const char *path, char *dev)
 	char *pre = NULL;
 	char *next = NULL;
 	unsigned int dev_major, dev_minor, line_mjr, line_mnr;
+	unsigned int len, best_match_len = 1;
+	char mnt_point[PATH_MAX];
 
 	if (stat(path, &buf) < 0)
 		tst_brkm(TWARN | TERRNO, NULL, "stat() failed");
@@ -524,16 +536,24 @@ void tst_find_backing_dev(const char *path, char *dev)
 	*dev = '\0';
 
 	while (fgets(line, sizeof(line), file)) {
-		if (sscanf(line, "%*d %*d %d:%d", &line_mjr, &line_mnr) != 2)
+		if (sscanf(line, "%*d %*d %d:%d %*s %s",
+			&line_mjr, &line_mnr, mnt_point) != 3)
 			continue;
 
+		pre = strstr(line, " - ");
+		pre = strtok_r(pre, " ", &next);
+		pre = strtok_r(NULL, " ", &next);
+		pre = strtok_r(NULL, " ", &next);
+
 		if (line_mjr == dev_major && line_mnr == dev_minor) {
-			pre = strstr(line, " - ");
-			pre = strtok_r(pre, " ", &next);
-			pre = strtok_r(NULL, " ", &next);
-			pre = strtok_r(NULL, " ", &next);
 			strcpy(dev, pre);
 			break;
+		}
+
+		len = count_match_len(path, mnt_point);
+		if (len > best_match_len) {
+			strcpy(dev, pre);
+			best_match_len = len;
 		}
 	}
 
