@@ -92,7 +92,7 @@ static struct ldisc_info ldiscs[] = {
 	{N_SLCAN, "N_SLCAN", CAN_MTU},
 };
 
-static int ptmx, pts, sk, mtu, no_check;
+static int ptmx = -1, pts = -1, sk = -1, mtu, no_check;
 
 static int set_ldisc(int tty, const struct ldisc_info *ldisc)
 {
@@ -455,9 +455,14 @@ static void do_test(unsigned int n)
 
 static void cleanup(void)
 {
-	ioctl(pts, TIOCVHANGUP);
-	ioctl(ptmx, TIOCVHANGUP);
-	close(sk);
+	if (pts >= 0)
+		ioctl(pts, TIOCVHANGUP);
+
+	if (ptmx >= 0)
+		ioctl(ptmx, TIOCVHANGUP);
+
+	if (sk >= 0)
+		close(sk);
 
 	tst_reap_children();
 }
