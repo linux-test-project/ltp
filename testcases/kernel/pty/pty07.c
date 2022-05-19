@@ -40,6 +40,7 @@ static int test_tty_port = 8;
 static int fd = -1;
 static struct tst_fzsync_pair fzp;
 
+static struct vt_consize consize;
 static unsigned short vt_active;
 
 static void *open_close(void *unused)
@@ -60,13 +61,12 @@ static void *open_close(void *unused)
 
 static void do_test(void)
 {
-	struct vt_consize sz = { 0x1, 0x1, 0x1, 0x1, 0x1, 0x1 };
 
 	tst_fzsync_pair_reset(&fzp, open_close);
 
 	while (tst_fzsync_run_a(&fzp)) {
 		tst_fzsync_start_race_a(&fzp);
-		ioctl(fd, VT_RESIZEX, &sz);
+		ioctl(fd, VT_RESIZEX, &consize);
 		tst_fzsync_end_race_a(&fzp);
 		if (tst_taint_check()) {
 			tst_res(TFAIL, "Kernel is buggy");
@@ -79,6 +79,7 @@ static void do_test(void)
 static void setup(void)
 {
 	struct vt_stat stat;
+	struct winsize wsize;
 
 	sprintf(tty_path, "/dev/tty%d", test_tty_port);
 	if (access(tty_path, F_OK))
@@ -90,6 +91,9 @@ static void setup(void)
 
 	tst_res(TINFO, "Saving active console %i", vt_active);
 
+	SAFE_IOCTL(fd, TIOCGWINSZ, &wsize);
+	consize.v_rows = wsize.ws_row;
+	consize.v_cols = wsize.ws_col;
 	tst_fzsync_pair_init(&fzp);
 }
 
