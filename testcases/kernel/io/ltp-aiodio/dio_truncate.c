@@ -33,7 +33,7 @@
 #include "tst_test.h"
 #include "common.h"
 
-static int *run_child;
+static volatile int *run_child;
 
 static char *str_numchildren;
 static char *str_filesize;
@@ -109,7 +109,7 @@ static void cleanup(void)
 {
 	if (run_child) {
 		*run_child = 0;
-		SAFE_MUNMAP(run_child, sizeof(int));
+		SAFE_MUNMAP((void *)run_child, sizeof(int));
 	}
 }
 

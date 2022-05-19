@@ -19,7 +19,7 @@
 #include "tst_test.h"
 #include "common.h"
 
-static int *run_child;
+static volatile int *run_child;
 
 static char *str_numchildren;
 static char *str_writesize;
@@ -49,7 +49,10 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_MUNMAP(run_child, sizeof(int));
+	if (run_child) {
+		*run_child = 0;
+		SAFE_MUNMAP((void *)run_child, sizeof(int));
+	}
 }
 
 static void run(void)
