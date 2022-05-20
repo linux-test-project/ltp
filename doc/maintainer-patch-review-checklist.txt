@@ -30,6 +30,7 @@ New test should
 * Have a record in runtest file
 * Test should work fine with more than one iteration
   (e.g. run with `-i 100`)
+* Run with `-i 0` to check that setup and cleanup are coded properly (no test is being run)
 * Have a brief description
 * License: the default license for new tests is GPL v2 or later, use
   GPL-2.0-or-later; the licence for test (e.g. GPL-2.0) should not change
