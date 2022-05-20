@@ -646,8 +646,8 @@ tst_run()
 		tst_brk TBROK "Expected number (-i) not '$TST_ITERATIONS'"
 	fi
 
-	if [ "$TST_ITERATIONS" -le 0 ]; then
-		tst_brk TBROK "Number of iterations (-i) must be > 0"
+	if [ "$TST_ITERATIONS" -lt 0 ]; then
+		tst_brk TBROK "Number of iterations (-i) must be >= 0"
 	fi
 
 	[ "$TST_NEEDS_ROOT" = 1 ] && tst_require_root
