@@ -678,6 +678,8 @@ static void parse_opts(int argc, char *argv[])
 			exit(0);
 		case 'i':
 			iterations = atoi(optarg);
+			if (iterations < 0)
+				tst_brk(TBROK, "Number of iterations (-i) must be >= 0");
 		break;
 		case 'I':
 			if (tst_test->max_runtime > 0)
