@@ -1317,6 +1317,24 @@ static void do_cleanup(void)
 	cleanup_ipc();
 }
 
+static void heartbeat(void)
+{
+	if (tst_clock_gettime(CLOCK_MONOTONIC, &tst_start_time))
+		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
+
+	if (getppid() == 1) {
+		tst_res(TFAIL, "Main test process might have exit!");
+		/*
+		 * We need kill the task group immediately since the
+		 * main process has exit.
+		 */
+		kill(0, SIGKILL);
+		exit(TBROK);
+	}
+
+	kill(getppid(), SIGUSR1);
+}
+
 static void run_tests(void)
 {
 	unsigned int i;
@@ -1324,6 +1342,7 @@ static void run_tests(void)
 
 	if (!tst_test->test) {
 		saved_results = *results;
+		heartbeat();
 		tst_test->test_all();
 
 		if (getpid() != main_pid) {
@@ -1339,6 +1358,7 @@ static void run_tests(void)
 
 	for (i = 0; i < tst_test->tcnt; i++) {
 		saved_results = *results;
+		heartbeat();
 		tst_test->test(i);
 
 		if (getpid() != main_pid) {
@@ -1377,24 +1397,6 @@ static void add_paths(void)
 
 	SAFE_SETENV("PATH", new_path, 1);
 	free(new_path);
-}
-
-static void heartbeat(void)
-{
-	if (tst_clock_gettime(CLOCK_MONOTONIC, &tst_start_time))
-		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
-
-	if (getppid() == 1) {
-		tst_res(TFAIL, "Main test process might have exit!");
-		/*
-		 * We need kill the task group immediately since the
-		 * main process has exit.
-		 */
-		kill(0, SIGKILL);
-		exit(TBROK);
-	}
-
-	kill(getppid(), SIGUSR1);
 }
 
 static void testrun(void)
