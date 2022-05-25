@@ -32,6 +32,8 @@
 static timer_t timer;
 static volatile int handler_called, overrun, saved_errno;
 
+static struct timespec realtime_resolution;
+
 static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 	struct itimerspec spec;
@@ -61,6 +63,11 @@ static void setup(void)
 
 	SAFE_SIGNAL(SIGUSR1, sighandler);
 	SAFE_TIMER_CREATE(CLOCK_REALTIME, &sev, &timer);
+
+	SAFE_CLOCK_GETRES(CLOCK_REALTIME, &realtime_resolution);
+
+	tst_res(TINFO, "CLOCK_REALTIME resolution %lins",
+	        (long)realtime_resolution.tv_nsec);
 }
 
 static void run(void)
@@ -81,9 +88,9 @@ static void run(void)
 
 	/* spec.it_value = now - 1.4 * max overrun value */
 	/* IOW, overflow will land right in the middle of negative range */
-	spec.it_value.tv_sec -= handler_delay / 100000000;
+	spec.it_value.tv_sec -= (handler_delay / 100000000) * realtime_resolution.tv_nsec;
 	spec.it_value.tv_nsec -= nsec;
-	spec.it_interval.tv_nsec = 1;
+	spec.it_interval.tv_nsec = realtime_resolution.tv_nsec;
 
 	SAFE_TIMER_SETTIME(timer, TIMER_ABSTIME, &spec, NULL);
 	while (!handler_called);
@@ -115,10 +122,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_kconfigs = (const char *[]) {
-		"CONFIG_HIGH_RES_TIMERS=y",
-		NULL
-	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "78c9c4dfbf8c"},
 		{"CVE", "2018-12896"},
