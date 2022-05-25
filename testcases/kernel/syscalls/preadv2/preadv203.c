@@ -199,7 +199,6 @@ static void *cache_dropper(void *unused)
 static void verify_preadv2(void)
 {
 	pthread_t reader, dropper, writer;
-	unsigned int max_runtime = 600;
 	void *eagains;
 
 	stop = 0;
@@ -210,7 +209,7 @@ static void verify_preadv2(void)
 	SAFE_PTHREAD_CREATE(&reader, NULL, nowait_reader, NULL);
 	SAFE_PTHREAD_CREATE(&writer, NULL, writer_thread, NULL);
 
-	while (!stop && max_runtime-- > 0)
+	while (!stop && tst_remaining_runtime())
 		usleep(100000);
 
 	stop = 1;
@@ -279,5 +278,6 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
 	.all_filesystems = 1,
+	.max_runtime = 60,
 	.needs_root = 1,
 };
