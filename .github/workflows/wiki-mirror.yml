@@ -45,6 +45,7 @@ jobs:
           cp -v $dir/supported-kernel-libc-versions.txt Supported-kernel,-libc,-toolchain-versions.asciidoc
           cp -v $dir/test-writing-guidelines.txt Test-Writing-Guidelines.asciidoc
           cp -v $dir/user-guide.txt User-Guidelines.asciidoc
+          cp -v $dir/kvm-test-api.txt KVM-Test-API.asciidoc
 
           git add .
           # only commit if there are changes
