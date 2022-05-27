@@ -62,7 +62,7 @@ static void generate_stime(void)
 	/*
 	 * At least some CPU time must be used in system space. This is
 	 * achieved by executing the times(2) call for
-	 * atleast 2 secs. This logic makes it independant
+	 * at least 2 secs. This logic makes it independent
 	 * of the processor speed.
 	 */
 	start_time = time(NULL);
