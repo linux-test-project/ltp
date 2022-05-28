@@ -195,7 +195,7 @@ static volatile int Rec_signal;
 static volatile int Received_callback = 0;	/* number of callbacks received */
 static volatile int Rec_callback;
 #endif
-static char Errormsg[500];
+static char Errormsg[PATH_MAX*2];
 static int Debug_level = 0;
 
 /***********************************************************************
