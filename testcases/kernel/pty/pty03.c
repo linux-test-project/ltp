@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 SUSE
- *
- * CVE-2020-14416
+ */
+
+/*\
+ * [Description]
  *
  * Test based on Syzkaller reproducer:
  * https://syzkaller.appspot.com/bug?id=680c24ff647dd7241998e19da52e8136d2fd3523
@@ -22,11 +24,11 @@
  * We also test a selection of other line disciplines, but only SLIP and SLCAN
  * are known to have the problem.
  *
- * Fixed by commit 0ace17d568241:
- * "can, slip: Protect tty->disc_data in write_wakeup and close with RCU"
- *
- * This is also regression test for commit:
- * dd42bf1197144 ("tty: Prevent ldisc drivers from re-using stale tty fields")
+ * Fixed by commit from v5.5:
+ * 0ace17d56824 ("can, slip: Protect tty->disc_data in write_wakeup and close with RCU")
+
+ * This is also regression test for commit from v4.5-rc1:
+ * dd42bf119714 ("tty: Prevent ldisc drivers from re-using stale tty fields")
  */
 
 #define _GNU_SOURCE
