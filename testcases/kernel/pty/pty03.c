@@ -8,7 +8,7 @@
  * https://syzkaller.appspot.com/bug?id=680c24ff647dd7241998e19da52e8136d2fd3523
  *
  * The SLIP and SLCAN disciplines can have a race between write_wakeup and
- * close/hangup. This atleast allows the netdev private data (tty->disc_data)
+ * close/hangup. This at least allows the netdev private data (tty->disc_data)
  * to be set to NULL or possibly freed while a transmit operation is being
  * added to a workqueue.
  *

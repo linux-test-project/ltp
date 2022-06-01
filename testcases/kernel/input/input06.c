@@ -178,7 +178,7 @@ static int parse_key(struct input_event *iev)
 		iev = next_event();
 	}
 
-	/* make sure we have atleast one auto-repeated key event */
+	/* make sure we have at least one auto-repeated key event */
 	if (!autorep_count) {
 		tst_resm(TFAIL,
 			 "Didn't get autorepeat events for the key - KEY_X");

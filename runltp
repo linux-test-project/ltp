@@ -756,7 +756,7 @@ EOF
 			fi
 		done
 		if $use_faultinjection; then
-			#If atleast one of the Framework is available
+			#If at least one of the Framework is available
 			#Go ahead to Inject Fault & Create required
 			#Command Files for LTP run
 			echo Running tests with Fault Injection Enabled in the Kernel...
