@@ -55,3 +55,4 @@ tst_needs_cmds07
 tst_needs_cmds08
 test_runtime01
 test_runtime02
+test_children_cleanup
