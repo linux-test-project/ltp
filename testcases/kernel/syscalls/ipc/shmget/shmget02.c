@@ -148,5 +148,5 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcases),
-	.request_hugepages = TST_NO_HUGEPAGES,
+	.hugepages = {TST_NO_HUGEPAGES},
 };

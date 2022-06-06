@@ -52,7 +52,7 @@ static void setup(void)
 
 	check_pkey_support();
 
-	if (tst_hugepages == test.request_hugepages)
+	if (tst_hugepages == test.hugepages.number)
 		size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	else
 		size = getpagesize();
@@ -221,5 +221,5 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test = verify_pkey,
 	.setup = setup,
-	.request_hugepages = 1,
+	.hugepages = {1, TST_REQUEST},
 };

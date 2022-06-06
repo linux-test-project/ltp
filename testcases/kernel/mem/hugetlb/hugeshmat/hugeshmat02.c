@@ -107,5 +107,5 @@ static struct tst_test test = {
 	.test = verify_hugeshmat,
 	.setup = setup,
 	.cleanup = cleanup,
-	.request_hugepages = 128,
+	.hugepages = {128, TST_REQUEST},
 };

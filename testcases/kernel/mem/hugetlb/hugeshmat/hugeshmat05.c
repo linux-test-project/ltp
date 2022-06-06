@@ -35,9 +35,6 @@ static long hpage_size;
 
 void setup(void)
 {
-	if (tst_hugepages != test.request_hugepages)
-		tst_brk(TCONF, "Not enough hugepages for testing.");
-
 	page_size = getpagesize();
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 }
@@ -91,7 +88,7 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.test_all = test_hugeshmat,
 	.setup = setup,
-	.request_hugepages = N + 1,
+	.hugepages = {N+1, TST_NEEDS},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "091d0d55b286"},
 		{"linux-git", "af73e4d9506d"},

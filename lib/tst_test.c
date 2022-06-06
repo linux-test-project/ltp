@@ -1166,8 +1166,8 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->min_mem_avail > (unsigned long)(tst_available_mem() / 1024))
 		tst_brk(TCONF, "Test needs at least %luMB MemAvailable", tst_test->min_mem_avail);
 
-	if (tst_test->request_hugepages)
-		tst_request_hugepages(tst_test->request_hugepages);
+	if (tst_test->hugepages.number)
+		tst_reserve_hugepages(&tst_test->hugepages);
 
 	setup_ipc();
 

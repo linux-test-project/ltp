@@ -191,17 +191,27 @@ struct tst_test {
 	unsigned long min_mem_avail;
 
 	/*
-	 * If set non-zero number of request_hugepages, test will try to reserve the
-	 * expected number of hugepage for testing in setup phase. If system does not
-	 * have enough hpage for using, it will try the best to reserve 80% available
-	 * number of hpages. With success test stores the reserved hugepage number in
-	 * 'tst_hugepages. For the system without hugetlb supporting, variable
-	 * 'tst_hugepages' will be set to 0. If the hugepage number needs to be set to
-	 * 0 on supported hugetlb system, please use '.request_hugepages = TST_NO_HUGEPAGES'.
+	 * Two policies for reserving hugepage:
+	 *
+	 * TST_REQUEST:
+	 *   It will try the best to reserve available huge pages and return the number
+	 *   of available hugepages in tst_hugepages, which may be 0 if hugepages are
+	 *   not supported at all.
+	 *
+	 * TST_NEEDS:
+	 *   This is an enforced requirement, LTP should strictly do hpages applying and
+	 *   guarantee the 'HugePages_Free' no less than pages which makes that test can
+	 *   use these specified numbers correctly. Otherwise, test exits with TCONF if
+	 *   the attempt to reserve hugepages fails or reserves less than requested.
+	 *
+	 * With success test stores the reserved hugepage number in 'tst_hugepages. For
+	 * the system without hugetlb supporting, variable 'tst_hugepages' will be set to 0.
+	 * If the hugepage number needs to be set to 0 on supported hugetlb system, please
+	 * use '.hugepages = {TST_NO_HUGEPAGES}'.
 	 *
 	 * Also, we do cleanup and restore work for the hpages resetting automatically.
 	 */
-	unsigned long request_hugepages;
+	struct tst_hugepage hugepages;
 
 	/*
 	 * If set to non-zero, call tst_taint_init(taint_check) during setup

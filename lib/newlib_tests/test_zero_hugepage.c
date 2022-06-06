@@ -4,7 +4,7 @@
  */
 
 /*
- * Tests .request_hugepages = TST_NO_HUGEPAGES
+ * Tests .hugepages = {TST_NO_HUGEPAGES}
  */
 
 #include "tst_test.h"
@@ -19,17 +19,18 @@ static void do_test(void)
 	if (val != 0)
 		tst_brk(TBROK, "nr_hugepages = %lu, but expect 0", val);
 	else
-		tst_res(TPASS, "test .request_hugepages = TST_NO_HUGEPAGES");
+		tst_res(TPASS, "test .hugepages = {TST_NO_HUGEPAGES}");
 
-	hpages = tst_request_hugepages(3);
+	struct tst_hugepage hp = { 3, TST_REQUEST };
+	hpages = tst_reserve_hugepages(&hp);
 	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
 	if (val != hpages)
 		tst_brk(TBROK, "nr_hugepages = %lu, but expect %lu", val, hpages);
 	else
-		tst_res(TPASS, "tst_request_hugepages");
+		tst_res(TPASS, "tst_reserve_hugepages");
 }
 
 static struct tst_test test = {
 	.test_all = do_test,
-	.request_hugepages = TST_NO_HUGEPAGES,
+	.hugepages = {TST_NO_HUGEPAGES},
 };

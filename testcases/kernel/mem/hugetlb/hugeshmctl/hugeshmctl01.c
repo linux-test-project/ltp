@@ -310,5 +310,5 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = test_hugeshmctl,
 	.needs_checkpoints = 1,
-	.request_hugepages = 128,
+	.hugepages = {128, TST_REQUEST},
 };

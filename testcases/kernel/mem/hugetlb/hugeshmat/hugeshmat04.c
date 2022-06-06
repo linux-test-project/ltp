@@ -27,7 +27,6 @@
 
 static long huge_free;
 static long huge_free2;
-static long hugepages;
 static long orig_shmmax = -1, new_shmmax;
 
 static void shared_hugepage(void);
@@ -83,9 +82,6 @@ static void setup(void)
 {
 	long hpage_size, orig_hugepages;
 
-	if (tst_hugepages == 0)
-		tst_brk(TCONF, "Not enough hugepages for testing.");
-
 	orig_hugepages = get_sys_tune("nr_hugepages");
 	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
 	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", (long)SIZE);
@@ -96,10 +92,8 @@ static void setup(void)
 
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
-	hugepages = orig_hugepages + SIZE / hpage_size;
-	tst_request_hugepages(hugepages);
-	if (tst_hugepages != (unsigned long)hugepages)
-		tst_brk(TCONF, "No enough hugepages for testing.");
+	struct tst_hugepage hp = { orig_hugepages + SIZE / hpage_size, TST_NEEDS };
+	tst_reserve_hugepages(&hp);
 }
 
 static void cleanup(void)
@@ -121,5 +115,5 @@ static struct tst_test test = {
 	.min_mem_avail = 2048,
 	.setup = setup,
 	.cleanup = cleanup,
-	.request_hugepages = 1,
+	.hugepages = {1, TST_NEEDS},
 };
