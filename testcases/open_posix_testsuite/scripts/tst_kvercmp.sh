@@ -10,6 +10,7 @@ r1=$(echo ${ker_ver} | awk -F. '{print $1}')
 r2=$(echo ${ker_ver} | awk -F. '{print $2}')
 r3=$(echo ${ker_ver} | awk -F. '{print $3}')
 r3=${r3%%-*}
+r3=${r3%%+*}
 
 test_ver=$(($1 * 65536 + $2 * 256 + $3))
 curr_ver=$((${r1} * 65536 + ${r2} * 256 + ${r3}))
