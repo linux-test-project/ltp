@@ -17,9 +17,12 @@ FILTER_OUT_MAKE_TARGETS := lib_guest lib_host lib_x86
 ifeq ($(HOST_CPU),x86_64)
 	ifneq (,$(findstring m32,$(CFLAGS)))
 		HOST_CPU = x86
-		GUEST_CFLAGS += -m32
-		ASFLAGS += --32
 	endif
+endif
+
+ifeq ($(HOST_CPU),x86)
+	GUEST_CFLAGS += -m32
+	ASFLAGS += --32
 endif
 
 # Some distros enable -pie by default. That breaks KVM payload linking.
