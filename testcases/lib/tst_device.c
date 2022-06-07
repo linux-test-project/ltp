@@ -40,11 +40,10 @@ static int acquire_device(int argc, char *argv[])
 		}
 	}
 
-	if (argc >= 4) {
+	if (argc >= 4)
 		device = tst_acquire_loop_device(size, argv[3]);
-	} else {
+	else
 		device = tst_acquire_device__(size);
-	}
 
 	if (!device)
 		return 1;
