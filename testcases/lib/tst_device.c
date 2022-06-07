@@ -18,8 +18,10 @@ static struct tst_test test = {
 
 static void print_help(void)
 {
-	fprintf(stderr, "\nUsage: tst_device acquire [size [filename]]\n");
-	fprintf(stderr, "   or: tst_device release /path/to/device\n\n");
+	fprintf(stderr, "\nUsage:\n");
+	fprintf(stderr, "tst_device acquire [size [filename]]\n");
+	fprintf(stderr, "tst_device release /path/to/device\n");
+	fprintf(stderr, "tst_device clear /path/to/device\n\n");
 }
 
 static int acquire_device(int argc, char *argv[])
@@ -72,6 +74,17 @@ static int release_device(int argc, char *argv[])
 	return tst_detach_device(argv[2]);
 }
 
+static int clear_device(int argc, char *argv[])
+{
+	if (argc != 3)
+		return 1;
+
+	if (tst_clear_device(argv[2]))
+		return 1;
+
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	/*
@@ -93,6 +106,9 @@ int main(int argc, char *argv[])
 			goto help;
 	} else if (!strcmp(argv[1], "release")) {
 		if (release_device(argc, argv))
+			goto help;
+	} else if (!strcmp(argv[1], "clear")) {
+		if (clear_device(argc, argv))
 			goto help;
 	} else {
 		fprintf(stderr, "ERROR: Invalid COMMAND '%s'\n", argv[1]);
