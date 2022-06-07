@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ $# -ne 3 ]; then
 	echo "Usage: ./tst_kvercmp.sh r1 r2 r3"
