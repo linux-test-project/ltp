@@ -1,4 +1,5 @@
 #! /bin/sh
+# Copyright (c) Linux Test Project, 2010-2022
 # Copyright (c) 2002, Intel Corporation. All rights reserved.
 # Created by:  julie.n.fleischer REMOVE-THIS AT intel DOT com
 # This file is licensed under the GPL license.  For the full content
@@ -22,7 +23,16 @@ EOF
 
 run_option_group_tests()
 {
-	for test_script in $(find $1 -name '*.run-test' | sort); do
+	local list_of_tests
+
+	list_of_tests=`find $1 -name '*.run-test' | sort`
+
+	if [ -z "$list_of_tests" ]; then
+		echo ".run-test files not found under $1, have been the tests compiled?"
+		exit 1
+	fi
+
+	for test_script in $list_of_tests; do
 		(cd "$(dirname "$test_script")" && ./$(basename "$test_script"))
 	done
 }
