@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Linux Test Project, 2001-2022
+ */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -13,7 +18,7 @@ int main(int argc, char *argv[])
 	int s;
 	struct in_addr simr, gimr;
 
-	unsigned i1, i2, i3, i4;
+	unsigned int i1, i2, i3, i4;
 	struct hostent *hp, *gethostbyname();
 
 	unsigned char ttl;
