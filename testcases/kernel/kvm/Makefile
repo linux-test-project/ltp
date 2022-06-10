@@ -9,7 +9,7 @@ ASFLAGS =
 CPPFLAGS += -I$(abs_srcdir)/include
 GUEST_CPPFLAGS = $(CPPFLAGS) -DCOMPILE_PAYLOAD
 GUEST_CFLAGS = -ffreestanding -O2 -Wall -fno-asynchronous-unwind-tables -mno-mmx -mno-sse
-GUEST_LDFLAGS = -nostdlib -Wl,--build-id=none
+GUEST_LDFLAGS = -nostdlib -Wl,--build-id=none -fno-stack-protector
 GUEST_LDLIBS =
 
 FILTER_OUT_MAKE_TARGETS := lib_guest lib_host lib_x86
