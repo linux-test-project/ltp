@@ -397,6 +397,23 @@ LTP_CHECK_TASKSTATS
 test "x$with_tirpc" = xyes && LTP_CHECK_TIRPC
 LTP_DETECT_HOST_CPU
 
+AC_MSG_CHECKING([whether linker can handle KVM payloads])
+ltp_backup_ldflags="$LDFLAGS"
+ltp_backup_flags="$[]_AC_LANG_PREFIX[]FLAGS"
+LDFLAGS="-T ${srcdir}/testcases/kernel/kvm/linker/${HOST_CPU}.lds"
+_AC_LANG_PREFIX[]FLAGS=
+AC_LINK_IFELSE([AC_LANG_PROGRAM()],
+  [
+    AC_MSG_RESULT([yes])
+    AC_SUBST([WITH_KVM_TESTSUITE],["yes"])
+  ],
+  [
+    AC_MSG_RESULT([no])
+    AC_SUBST([WITH_KVM_TESTSUITE],["no"])
+  ])
+_AC_LANG_PREFIX[]FLAGS="$ltp_backup_flags"
+LDFLAGS="$ltp_backup_ldflags"
+
 AC_OUTPUT
 
 cat << EOF

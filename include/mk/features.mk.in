@@ -52,3 +52,6 @@ WITH_REALTIME_TESTSUITE		:= no
 else
 WITH_REALTIME_TESTSUITE		:= @WITH_REALTIME_TESTSUITE@
 endif
+
+# Enable testcases/kernel/kvm compile and install?
+WITH_KVM_TESTSUITE		:= @WITH_KVM_TESTSUITE@
