@@ -1,1 +1,2 @@
 # Tests for features that are not yet in the stable kernel ABI
+fanotify23 fanotify23
