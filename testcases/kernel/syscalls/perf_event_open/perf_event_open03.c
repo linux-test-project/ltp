@@ -16,7 +16,7 @@
 
 #include "config.h"
 #include "tst_test.h"
-#include "tst_timer_test.h"
+#include "tst_timer.h"
 #include "lapi/syscalls.h"
 
 #include "perf_event_open.h"
