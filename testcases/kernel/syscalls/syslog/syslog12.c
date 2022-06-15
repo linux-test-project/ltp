@@ -10,13 +10,13 @@
  *
  * Verify that syslog(2) system call fails with appropriate error number:
  *
- * 1. EINVAL &ndash; invalid type/command
- * 2. EFAULT &ndash; buffer outside program's accessible address space
- * 3. EINVAL &ndash; NULL buffer argument
- * 4. EINVAL &ndash; length argument set to negative value
- * 5. EINVAL &ndash; console level less than 0
- * 6. EINVAL &ndash; console level greater than 8
- * 7. EPERM &ndash; non-root user
+ * 1. EINVAL -- invalid type/command
+ * 2. EFAULT -- buffer outside program's accessible address space
+ * 3. EINVAL -- NULL buffer argument
+ * 4. EINVAL -- length argument set to negative value
+ * 5. EINVAL -- console level less than 0
+ * 6. EINVAL -- console level greater than 8
+ * 7. EPERM -- non-root user
  */
 
 #include <errno.h>

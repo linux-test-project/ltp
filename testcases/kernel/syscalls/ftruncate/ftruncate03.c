@@ -10,10 +10,10 @@
  *
  * Verify that ftruncate(2) system call returns appropriate error number:
  *
- * 1. EINVAL &ndash; the file is a socket
- * 2. EINVAL &ndash; the file descriptor was opened with O_RDONLY
- * 3. EINVAL &ndash; the length is negative
- * 4. EBADF &ndash; the file descriptor is invalid
+ * 1. EINVAL -- the file is a socket
+ * 2. EINVAL -- the file descriptor was opened with O_RDONLY
+ * 3. EINVAL -- the length is negative
+ * 4. EBADF -- the file descriptor is invalid
  */
 
 #include <sys/types.h>
