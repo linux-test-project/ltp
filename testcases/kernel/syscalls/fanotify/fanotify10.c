@@ -243,7 +243,7 @@ static struct tcase {
 	{
 		"ignore events on children of directory created on a specific file",
 		DIR_MNT2, FANOTIFY_INODE,
-		FILE_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_INODE,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
