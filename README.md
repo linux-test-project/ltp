@@ -150,7 +150,7 @@ $ testcases/bin/abort01
 Some have arguments
 
 ```
-$ testcases/bin/fork13 -i 37
+$ testcases/bin/mesgq\_nstest -m none
 ```
 
 The vast majority of test cases accept the -h (help) switch
