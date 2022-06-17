@@ -93,7 +93,7 @@ jobs:
               CC: clang
               METADATA: asciidoctor-pdf
 
-          - container: "ubuntu:impish"
+          - container: "ubuntu:jammy"
             env:
               CC: gcc
               METADATA: asciidoctor
