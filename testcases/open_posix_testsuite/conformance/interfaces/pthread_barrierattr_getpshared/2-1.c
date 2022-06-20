@@ -141,7 +141,9 @@ int main(void)
 	if (pid == -1) {
 		perror("Error at fork()");
 		return PTS_UNRESOLVED;
-	} else if (pid == 0) {
+	}
+
+	if (pid == 0) {
 		/* Child */
 		/* Map the shared object to child's memory */
 		barrier =
@@ -175,44 +177,40 @@ int main(void)
 
 	}
 
-	if (pid > 0) {
-		/* parent */
-		if (wait(&status) != pid) {
-			printf("parent: error at waitpid()\n");
-			return PTS_UNRESOLVED;
-		}
+	if (pid == 0)
+		return serial;
 
-		if (!WIFEXITED(status)) {
-			printf("Child exited abnormally\n");
-			return PTS_UNRESOLVED;
-		}
-
-		if ((WEXITSTATUS(status) + serial) != LOOP_NUM) {
-			printf("status = %d\n", status);
-			printf("serial = %d\n", serial);
-			printf
-			    ("Test FAILED: One of the two processes should get "
-			     "PTHREAD_BARRIER_SERIAL_THREAD\n");
-			return PTS_FAIL;
-		}
-
-		/* Cleanup */
-		if (pthread_barrier_destroy(barrier) != 0) {
-			printf("Error at pthread_barrier_destroy()\n");
-			return PTS_UNRESOLVED;
-		}
-
-		if ((shm_unlink(shm_name)) != 0) {
-			perror("Error at shm_unlink()");
-			return PTS_UNRESOLVED;
-		}
-
-		printf("Test PASSED\n");
-		return PTS_PASS;
+	/* parent */
+	if (wait(&status) != pid) {
+		printf("parent: error at waitpid()\n");
+		return PTS_UNRESOLVED;
 	}
 
-	if (pid == 0) {
-		exit(serial);
+	if (!WIFEXITED(status)) {
+		printf("Child exited abnormally\n");
+		return PTS_UNRESOLVED;
 	}
 
+	if ((WEXITSTATUS(status) + serial) != LOOP_NUM) {
+		printf("status = %d\n", status);
+		printf("serial = %d\n", serial);
+		printf
+		    ("Test FAILED: One of the two processes should get "
+		     "PTHREAD_BARRIER_SERIAL_THREAD\n");
+		return PTS_FAIL;
+	}
+
+	/* Cleanup */
+	if (pthread_barrier_destroy(barrier) != 0) {
+		printf("Error at pthread_barrier_destroy()\n");
+		return PTS_UNRESOLVED;
+	}
+
+	if ((shm_unlink(shm_name)) != 0) {
+		perror("Error at shm_unlink()");
+		return PTS_UNRESOLVED;
+	}
+
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
