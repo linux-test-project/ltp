@@ -238,6 +238,15 @@ static void verify_event(int group, struct fanotify_event_metadata *event,
 		SAFE_CLOSE(event->fd);
 }
 
+static void close_event_fds(struct fanotify_event_metadata *event, int buflen)
+{
+	/* Close all file descriptors of read events */
+	for (; FAN_EVENT_OK(event, buflen); FAN_EVENT_NEXT(event, buflen)) {
+		if (event->fd != FAN_NOFD)
+			SAFE_CLOSE(event->fd);
+	}
+}
+
 static void test_fanotify(unsigned int n)
 {
 	int ret, dirfd;
@@ -262,8 +271,7 @@ static void test_fanotify(unsigned int n)
 	 * generate FAN_CLOSE_NOWRITE event on a child, subdir or "."
 	 */
 	dirfd = SAFE_OPEN(tc->close_nowrite, O_RDONLY);
-	if (dirfd >= 0)
-		SAFE_CLOSE(dirfd);
+	SAFE_CLOSE(dirfd);
 
 	/*
 	 * First verify the first group got the file MODIFY event and got just
@@ -278,15 +286,17 @@ static void test_fanotify(unsigned int n)
 				"reading fanotify events failed");
 		}
 	}
+	event = (struct fanotify_event_metadata *)event_buf;
 	if (ret < tc->nevents * (int)FAN_EVENT_METADATA_LEN) {
-		tst_brk(TBROK,
+		tst_res(TFAIL,
 			"short read when reading fanotify events (%d < %d)",
 			ret, tc->nevents * (int)FAN_EVENT_METADATA_LEN);
 	}
-	event = (struct fanotify_event_metadata *)event_buf;
-	verify_event(0, event, FAN_MODIFY, tc->report_name ? fname : "");
-	event = FAN_EVENT_NEXT(event, ret);
-	if (tc->nevents > 1) {
+	if (FAN_EVENT_OK(event, ret)) {
+		verify_event(0, event, FAN_MODIFY, tc->report_name ? fname : "");
+		event = FAN_EVENT_NEXT(event, ret);
+	}
+	if (tc->nevents > 1 && FAN_EVENT_OK(event, ret)) {
 		verify_event(0, event, FAN_CLOSE_NOWRITE,
 			     tc->report_name ? (tc->ondir ? "." : tc->close_nowrite) : "");
 		event = FAN_EVENT_NEXT(event, ret);
@@ -296,11 +306,7 @@ static void test_fanotify(unsigned int n)
 			"first group got more than %d events (%d bytes)",
 			tc->nevents, ret);
 	}
-	/* Close all file descriptors of read events */
-	for (; FAN_EVENT_OK(event, ret); FAN_EVENT_NEXT(event, ret)) {
-		if (event->fd != FAN_NOFD)
-			SAFE_CLOSE(event->fd);
-	}
+	close_event_fds(event, ret);
 
 	/*
 	 * Then verify the rest of the groups did not get the MODIFY event and
@@ -318,15 +324,14 @@ static void test_fanotify(unsigned int n)
 			verify_event(i, event, expect, "");
 			event = FAN_EVENT_NEXT(event, ret);
 
-			for (; FAN_EVENT_OK(event, ret); FAN_EVENT_NEXT(event, ret)) {
-				if (event->fd != FAN_NOFD)
-					SAFE_CLOSE(event->fd);
-			}
+			close_event_fds(event, ret);
 			continue;
 		}
 
-		if (ret == 0)
-			tst_brk(TBROK, "zero length read from fanotify fd");
+		if (ret == 0) {
+			tst_res(TFAIL, "group %d zero length read from fanotify fd", i);
+			continue;
+		}
 
 		if (errno != EAGAIN) {
 			tst_brk(TBROK | TERRNO,
@@ -360,8 +365,8 @@ static void cleanup(void)
 
 	SAFE_CHDIR("../");
 
-	if (mount_created && tst_umount(MOUNT_NAME) < 0)
-		tst_brk(TBROK | TERRNO, "umount failed");
+	if (mount_created)
+		SAFE_UMOUNT(MOUNT_NAME);
 }
 
 static struct tst_test test = {
