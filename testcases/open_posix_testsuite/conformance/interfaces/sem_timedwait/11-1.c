@@ -24,7 +24,7 @@
 #include "posixtest.h"
 
 #define TIMEOUT 2
-#define INVALIDTIMEOUT -2
+#define NEGATIVETIMEOUT -2
 #define TEST "11-1"
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
@@ -45,7 +45,7 @@ int main(void)
 			ts[i].tv_sec = time(NULL) + TIMEOUT;
 			ts[i].tv_nsec = 0;
 		} else if (i == 1) {
-			ts[i].tv_sec = time(NULL) + INVALIDTIMEOUT;
+			ts[i].tv_sec = time(NULL) + NEGATIVETIMEOUT;
 			ts[i].tv_nsec = 0;
 		}
 		/* Lock Semaphore */
@@ -61,15 +61,15 @@ int main(void)
 			return PTS_UNRESOLVED;
 		}
 
+		sem_destroy(&mysemp[i]);
+
 		/* Checking if the value of the Semaphore decremented by one */
-		if ((val[i] == 0) && (sts[i] == 0)) {
-			puts("TEST PASSED");
-			sem_destroy(&mysemp[i]);
-			return PTS_PASS;
-		} else {
+		if ((val[i] != 0) || (sts[i] != 0)) {
 			puts("TEST FAILED");
-			sem_destroy(&mysemp[i]);
 			return PTS_FAIL;
 		}
 	}
+
+	puts("TEST PASSED");
+	return PTS_PASS;
 }
