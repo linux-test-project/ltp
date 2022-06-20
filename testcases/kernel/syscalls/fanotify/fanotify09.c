@@ -12,21 +12,21 @@
  */
 
 /*
- * This is a regression test for commit 54a307ba8d3c:
+ * This is a regression test for commit:
  *
- *      fanotify: fix logic of events on child
+ *      54a307ba8d3c fanotify: fix logic of events on child
  *
- * Test case #1 is a regression test for commit b469e7e47c8a:
+ * Test case #1 is a regression test for commit:
  *
- *      fanotify: fix handling of events on child sub-directory
+ *      b469e7e47c8a fanotify: fix handling of events on child sub-directory
  *
- * Test case #2 is a regression test for commit 55bf882c7f13:
+ * Test case #2 is a regression test for commit:
  *
- *      fanotify: fix merging marks masks with FAN_ONDIR
+ *      55bf882c7f13 fanotify: fix merging marks masks with FAN_ONDIR
  *
- * Test case #5 is a regression test for commit 7372e79c9eb9:
+ * Test case #5 is a regression test for commit:
  *
- *      fanotify: fix logic of reporting name info with watched parent
+ *      7372e79c9eb9 fanotify: fix logic of reporting name info with watched parent
  */
 
 #define _GNU_SOURCE
@@ -131,13 +131,26 @@ static struct tcase {
 static void create_fanotify_groups(struct tcase *tc)
 {
 	struct fanotify_mark_type *mark = &tc->mark;
-	unsigned int i, onchild, report_name, ondir = tc->ondir;
+	int i;
 
 	for (i = 0; i < NUM_GROUPS; i++) {
 		/*
-		 * The first group may request events with filename info.
+		 * The first group may request events with filename info and
+		 * events on subdirs and always request events on children.
 		 */
-		report_name = (i == 0) ? tc->report_name : 0;
+		unsigned int report_name = tc->report_name;
+		unsigned int mask_flags = tc->ondir | FAN_EVENT_ON_CHILD;
+		unsigned int parent_mask;
+
+		/*
+		 * The non-first groups do not request events on children and
+		 * subdirs.
+		 */
+		if (i > 0) {
+			report_name = 0;
+			mask_flags = 0;
+		}
+
 		fd_notify[i] = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | report_name |
 						  FAN_NONBLOCK, O_RDONLY);
 
@@ -145,21 +158,20 @@ static void create_fanotify_groups(struct tcase *tc)
 		 * Add subdir or mount mark for each group with CLOSE event,
 		 * but only the first group requests events on dir.
 		 */
-		onchild = (i == 0) ? FAN_EVENT_ON_CHILD | ondir : 0;
 		SAFE_FANOTIFY_MARK(fd_notify[i],
 				    FAN_MARK_ADD | mark->flag,
-				    FAN_CLOSE_NOWRITE | onchild,
+				    FAN_CLOSE_NOWRITE | mask_flags,
 				    AT_FDCWD, tc->close_nowrite);
 
 		/*
 		 * Add inode mark on parent for each group with MODIFY event,
 		 * but only the first group requests events on child.
 		 * The one mark with FAN_EVENT_ON_CHILD is needed for
-		 * setting the DCACHE_FSNOTIFY_PARENT_WATCHED dentry
-		 * flag.
+		 * setting the DCACHE_FSNOTIFY_PARENT_WATCHED dentry flag.
 		 */
+		parent_mask = FAN_MODIFY | tc->ondir | mask_flags;
 		SAFE_FANOTIFY_MARK(fd_notify[i], FAN_MARK_ADD,
-				    FAN_MODIFY | ondir | onchild,
+				    parent_mask,
 				    AT_FDCWD, ".");
 	}
 }
