@@ -126,7 +126,11 @@ int main(void)
 	if (pid == -1) {
 		perror("Error at fork()");
 		return PTS_UNRESOLVED;
-	} else if (pid > 0) {
+	}
+
+	if (pid > 0) {
+		int status;
+
 		/* Parent */
 		/* wait until child do wrlock */
 		while (rwlock_data->data == 0) {
@@ -141,7 +145,7 @@ int main(void)
 		printf("Parent unlocked.\n");
 
 		/* Wait for child to end */
-		wait(NULL);
+		wait(&status);
 
 		if ((shm_unlink(shm_name)) != 0) {
 			perror("Error at shm_unlink()");
@@ -152,6 +156,16 @@ int main(void)
 			printf
 			    ("Test FAILED: child did not block on write lock\n");
 			return PTS_FAIL;
+		}
+
+		if (!WIFEXITED(status)) {
+			printf("Parent: did not exit properly!\n");
+			return PTS_FAIL;
+		}
+
+		if (WEXITSTATUS(status)) {
+			printf("Parent: failure in child\n");
+			return WEXITSTATUS(status);
 		}
 
 		printf("Test PASSED\n");
@@ -195,5 +209,7 @@ int main(void)
 			rwlock_data->data = -1;
 			return PTS_FAIL;
 		}
+
+		return PTS_PASS;
 	}
 }
