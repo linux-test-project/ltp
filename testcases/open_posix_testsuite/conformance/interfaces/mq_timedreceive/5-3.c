@@ -110,5 +110,6 @@ int main(void)
 		sleep(1);	/* give time to parent to set up handler */
 		/* send signal to parent */
 		kill(getppid(), SIGABRT);
+		return 0;
 	}
 }
