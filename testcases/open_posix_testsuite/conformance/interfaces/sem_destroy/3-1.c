@@ -19,11 +19,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <string.h>
 #include "posixtest.h"
 
 #define TEST "3-1"
 #define FUNCTION "sem_destroy"
-#define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
 static sem_t psem, csem;
 static int n;
@@ -33,6 +33,7 @@ static void *consumer(void *);
 int main(void)
 {
 	pthread_t prod, cons;
+	int err;
 	long cnt = 3;
 
 	n = 0;
@@ -40,28 +41,40 @@ int main(void)
 		perror("sem_init");
 		return PTS_UNRESOLVED;
 	}
+
 	if (sem_init(&psem, 0, 1) < 0) {
 		perror("sem_init");
 		return PTS_UNRESOLVED;
 	}
+
 	if (pthread_create(&prod, NULL, producer, (void *)cnt) != 0) {
 		perror("pthread_create");
 		return PTS_UNRESOLVED;
 	}
+
 	if (pthread_create(&cons, NULL, consumer, (void *)cnt) != 0) {
 		perror("pthread_create");
 		return PTS_UNRESOLVED;
 	}
 
-	if (pthread_join(prod, NULL) == 0 && pthread_join(cons, NULL) == 0) {
+	err = pthread_join(prod, NULL);
+	if (err) {
+		printf("Failed to join thread: %s", strerror(err));
+		return PTS_UNRESOLVED;
+	}
+
+	err = pthread_join(cons, NULL);
+	if (err) {
+		printf("Failed to join thread: %s", strerror(err));
+		return PTS_UNRESOLVED;
+	}
+
+	if (sem_destroy(&psem) == 0 && sem_destroy(&csem) == 0) {
 		puts("TEST PASS");
-		pthread_exit(NULL);
-		if ((sem_destroy(&psem) == 0) && sem_destroy(&csem) == 0) {
-			return PTS_PASS;
-		} else {
-			puts("TEST FAILED");
-			return PTS_FAIL;
-		}
+		return PTS_PASS;
+	} else {
+		puts("TEST FAILED");
+		return PTS_FAIL;
 	}
 }
 
