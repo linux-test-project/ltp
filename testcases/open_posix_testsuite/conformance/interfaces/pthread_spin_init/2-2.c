@@ -106,7 +106,11 @@ int main(void)
 	if (pid == -1) {
 		perror("Error at fork()");
 		return PTS_UNRESOLVED;
-	} else if (pid > 0) {
+	}
+
+	if (pid > 0) {
+		int status;
+
 		/* Parent */
 		/* wait until child writes to spinlock data */
 		while (spinlock_data->data != 1)
@@ -122,11 +126,21 @@ int main(void)
 		spinlock_data->data = 2;
 
 		/* Wait until child ends */
-		wait(NULL);
+		wait(&status);
 
 		if ((shm_unlink(shm_name)) != 0) {
 			perror("Error at shm_unlink()");
 			return PTS_UNRESOLVED;
+		}
+
+		if (!WIFEXITED(status)) {
+			printf("Parent: did not exit properly!\n");
+			return PTS_FAIL;
+		}
+
+		if (WEXITSTATUS(status)) {
+			printf("Parent: failure in child\n");
+			return WEXITSTATUS(status);
 		}
 
 		printf("Test PASSED\n");
@@ -175,5 +189,7 @@ int main(void)
 			printf("Child: error at pthread_spin_destroy()\n");
 			return PTS_UNRESOLVED;
 		}
+
+		return PTS_PASS;
 	}
 }
