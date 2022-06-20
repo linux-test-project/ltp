@@ -76,6 +76,7 @@ static struct tcase {
 	unsigned int report_name;
 	const char *close_nowrite;
 	int nevents;
+	unsigned int nonfirst_event;
 } tcases[] = {
 	{
 		"Events on non-dir child with both parent and mount marks",
@@ -83,7 +84,7 @@ static struct tcase {
 		0,
 		0,
 		DIR_NAME,
-		1,
+		1, 0,
 	},
 	{
 		"Events on non-dir child and subdir with both parent and mount marks",
@@ -91,7 +92,7 @@ static struct tcase {
 		FAN_ONDIR,
 		0,
 		DIR_NAME,
-		2,
+		2, 0,
 	},
 	{
 		"Events on non-dir child and parent with both parent and mount marks",
@@ -99,7 +100,7 @@ static struct tcase {
 		FAN_ONDIR,
 		0,
 		".",
-		2,
+		2, 0
 	},
 	{
 		"Events on non-dir child and subdir with both parent and subdir marks",
@@ -107,7 +108,7 @@ static struct tcase {
 		FAN_ONDIR,
 		0,
 		DIR_NAME,
-		2,
+		2, 0,
 	},
 	{
 		"Events on non-dir children with both parent and mount marks",
@@ -115,7 +116,7 @@ static struct tcase {
 		0,
 		0,
 		FILE2_NAME,
-		2,
+		2, FAN_CLOSE_NOWRITE,
 	},
 	{
 		"Events on non-dir child with both parent and mount marks and filename info",
@@ -123,7 +124,7 @@ static struct tcase {
 		0,
 		FAN_REPORT_DFID_NAME,
 		FILE2_NAME,
-		2,
+		2, FAN_CLOSE_NOWRITE,
 	},
 };
 
@@ -315,13 +316,8 @@ static void test_fanotify(unsigned int n)
 	for (i = 1; i < NUM_GROUPS; i++) {
 		ret = read(fd_notify[i], event_buf, EVENT_BUF_LEN);
 		if (ret > 0) {
-			uint32_t expect = 0;
-
-			if (tc->nevents > 1 && !tc->ondir)
-				expect = FAN_CLOSE_NOWRITE;
-
 			event = (struct fanotify_event_metadata *)event_buf;
-			verify_event(i, event, expect, "");
+			verify_event(i, event, tc->nonfirst_event, "");
 			event = FAN_EVENT_NEXT(event, ret);
 
 			close_event_fds(event, ret);
@@ -338,7 +334,10 @@ static void test_fanotify(unsigned int n)
 				"reading fanotify events failed");
 		}
 
-		tst_res(TPASS, "group %d got no event", i);
+		if (tc->nonfirst_event)
+			tst_res(TFAIL, "group %d expected and got no event", i);
+		else
+			tst_res(TPASS, "group %d got no event as expected", i);
 	}
 	cleanup_fanotify_groups();
 }
