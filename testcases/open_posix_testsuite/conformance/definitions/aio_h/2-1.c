@@ -25,4 +25,6 @@ int main(void)
 	aiocb.aio_nbytes = 0;
 	aiocb.aio_sigevent = sigevent;
 	aiocb.aio_reqprio = -1;
+
+	return 0;
 }
