@@ -27,6 +27,11 @@
  * Test case #5 is a regression test for commit:
  *
  *      7372e79c9eb9 fanotify: fix logic of reporting name info with watched parent
+ *
+ * Test cases #6-#7 are regression tests for commit:
+ * (from v5.19, unlikely to be backported thus not in .tags):
+ *
+ *      e730558adffb fanotify: consistent behavior for parent not watching children
  */
 
 #define _GNU_SOURCE
@@ -73,6 +78,7 @@ static struct tcase {
 	const char *tname;
 	struct fanotify_mark_type mark;
 	unsigned int ondir;
+	unsigned int ignore;
 	unsigned int report_name;
 	const char *close_nowrite;
 	int nevents;
@@ -83,6 +89,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
 		0,
+		0,
 		DIR_NAME,
 		1, 0,
 	},
@@ -90,6 +97,7 @@ static struct tcase {
 		"Events on non-dir child and subdir with both parent and mount marks",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_ONDIR,
+		0,
 		0,
 		DIR_NAME,
 		2, 0,
@@ -99,6 +107,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_ONDIR,
 		0,
+		0,
 		".",
 		2, 0
 	},
@@ -106,6 +115,7 @@ static struct tcase {
 		"Events on non-dir child and subdir with both parent and subdir marks",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_ONDIR,
+		0,
 		0,
 		DIR_NAME,
 		2, 0,
@@ -115,6 +125,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
 		0,
+		0,
 		FILE2_NAME,
 		2, FAN_CLOSE_NOWRITE,
 	},
@@ -122,7 +133,26 @@ static struct tcase {
 		"Events on non-dir child with both parent and mount marks and filename info",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
+		0,
 		FAN_REPORT_DFID_NAME,
+		FILE2_NAME,
+		2, FAN_CLOSE_NOWRITE,
+	},
+	{
+		"Events on non-dir child with ignore mask on parent",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		0,
+		FAN_MARK_IGNORED_MASK,
+		0,
+		DIR_NAME,
+		1, 0,
+	},
+	{
+		"Events on non-dir children with surviving ignore mask on parent",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		0,
+		FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY,
+		0,
 		FILE2_NAME,
 		2, FAN_CLOSE_NOWRITE,
 	},
@@ -140,13 +170,14 @@ static void create_fanotify_groups(struct tcase *tc)
 		 */
 		unsigned int report_name = tc->report_name;
 		unsigned int mask_flags = tc->ondir | FAN_EVENT_ON_CHILD;
-		unsigned int parent_mask;
+		unsigned int parent_mask, ignore = 0;
 
 		/*
 		 * The non-first groups do not request events on children and
-		 * subdirs.
+		 * subdirs and may set an ignore mask on parent dir.
 		 */
 		if (i > 0) {
+			ignore = tc->ignore;
 			report_name = 0;
 			mask_flags = 0;
 		}
@@ -168,10 +199,15 @@ static void create_fanotify_groups(struct tcase *tc)
 		 * but only the first group requests events on child.
 		 * The one mark with FAN_EVENT_ON_CHILD is needed for
 		 * setting the DCACHE_FSNOTIFY_PARENT_WATCHED dentry flag.
+		 *
+		 * The inode mark on non-first group is either with FAN_MODIFY
+		 * in mask or FAN_CLOSE_NOWRITE in ignore mask. In either case,
+		 * it is not expected to get the modify event on a child, nor
+		 * the close event on dir.
 		 */
 		parent_mask = FAN_MODIFY | tc->ondir | mask_flags;
-		SAFE_FANOTIFY_MARK(fd_notify[i], FAN_MARK_ADD,
-				    parent_mask,
+		SAFE_FANOTIFY_MARK(fd_notify[i], FAN_MARK_ADD | ignore,
+				    ignore ? FAN_CLOSE_NOWRITE : parent_mask,
 				    AT_FDCWD, ".");
 	}
 }
@@ -183,6 +219,21 @@ static void cleanup_fanotify_groups(void)
 	for (i = 0; i < NUM_GROUPS; i++) {
 		if (fd_notify[i] > 0)
 			SAFE_CLOSE(fd_notify[i]);
+	}
+}
+
+static void check_ignore_mask(int fd)
+{
+	unsigned int ignored_mask, mflags;
+	char procfdinfo[100];
+
+	sprintf(procfdinfo, "/proc/%d/fdinfo/%d", (int)getpid(), fd);
+	if (FILE_LINES_SCANF(procfdinfo, "fanotify ino:%*x sdev:%*x mflags: %x mask:0 ignored_mask:%x",
+				&mflags, &ignored_mask) || !ignored_mask) {
+		tst_res(TFAIL, "The ignore mask did not survive");
+	} else {
+		tst_res(TPASS, "Found mark with ignore mask (ignored_mask=%x, mflags=%x) in %s",
+				ignored_mask, mflags, procfdinfo);
 	}
 }
 
@@ -274,6 +325,12 @@ static void test_fanotify(unsigned int n)
 		return;
 	}
 
+	if (tc->ignore && tst_kvercmp(5, 19, 0) < 0) {
+		tst_res(TCONF, "ignored mask on parent dir has undefined "
+				"behavior on kernel < 5.19");
+		return;
+	}
+
 	create_fanotify_groups(tc);
 
 	/*
@@ -326,6 +383,13 @@ static void test_fanotify(unsigned int n)
 	 * got the FAN_CLOSE_NOWRITE event only on a non-directory.
 	 */
 	for (i = 1; i < NUM_GROUPS; i++) {
+		/*
+		 * Verify that ignore mask survived the modify event on child,
+		 * which was not supposed to be sent to this group.
+		 */
+		if (tc->ignore)
+			check_ignore_mask(fd_notify[i]);
+
 		ret = read(fd_notify[i], event_buf, EVENT_BUF_LEN);
 		if (ret > 0) {
 			event = (struct fanotify_event_metadata *)event_buf;
