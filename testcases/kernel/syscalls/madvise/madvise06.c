@@ -164,7 +164,7 @@ static int get_page_fault_num(void)
 
 static void test_advice_willneed(void)
 {
-	int loops = 50, res;
+	int loops = 100, res;
 	char *target;
 	long swapcached_start, swapcached;
 	int page_fault_num_1, page_fault_num_2;
@@ -202,23 +202,32 @@ static void test_advice_willneed(void)
 		"%s than %ld Kb were moved to the swap cache",
 		res ? "more" : "less", PASS_THRESHOLD_KB);
 
-
-	TEST(madvise(target, PASS_THRESHOLD, MADV_WILLNEED));
+	loops = 100;
+	SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapCached: %ld", &swapcached_start);
+	TEST(madvise(target, pg_sz * 3, MADV_WILLNEED));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "madvise failed");
+	do {
+		loops--;
+		usleep(100000);
+		if (stat_refresh_sup)
+			SAFE_FILE_PRINTF("/proc/sys/vm/stat_refresh", "1");
+		SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapCached: %ld",
+				&swapcached);
+	} while (swapcached < swapcached_start + pg_sz*3/1024 && loops > 0);
 
 	page_fault_num_1 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / no mem access): %d",
 			page_fault_num_1);
-	dirty_pages(target, PASS_THRESHOLD);
+	dirty_pages(target, pg_sz * 3);
 	page_fault_num_2 = get_page_fault_num();
 	tst_res(TINFO, "PageFault(madvice / mem access): %d",
 			page_fault_num_2);
 	meminfo_diag("After page access");
 
 	res = page_fault_num_2 - page_fault_num_1;
-	tst_res(res < 3 ? TPASS : TFAIL,
-		"%d pages were faulted out of 2 max", res);
+	tst_res(res == 0 ? TPASS : TFAIL,
+		"%d pages were faulted out of 3 max", res);
 
 	SAFE_MUNMAP(target, CHUNK_SZ);
 }
