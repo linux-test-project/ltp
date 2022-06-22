@@ -10,8 +10,8 @@
 #include "tst_test.h"
 #include "lapi/namespaces_constants.h"
 
-#define DIRA "A"
-#define DIRB "B"
+#define DIRA "LTP_DIR_A"
+#define DIRB "LTP_DIR_B"
 
 static int dummy_child(void *v)
 {

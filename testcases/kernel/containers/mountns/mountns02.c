@@ -12,22 +12,22 @@
  *
  * [Algorithm]
  *
- * - Creates directories "A", "B" and files "A/A", "B/B"
+ * - Creates directories DIR_A, DIR_B and files DIR_A/"A", DIR_B/"B"
  * - Unshares mount namespace and makes it private (so mounts/umounts have no
  *   effect on a real system)
- * - Bind mounts directory "A" to "A"
- * - Makes directory "A" private
+ * - Bind mounts directory DIR_A to DIR_A
+ * - Makes directory DIR_A private
  * - Clones a new child process with CLONE_NEWNS flag
  * - There are two test cases (where X is parent namespace and Y child
  *   namespace):
  *  1. First test case
- *   .. X: bind mounts "B" to "A"
- *   .. Y: must see "A/A" and must not see "A/B"
- *   .. X: umounts "A"
+ *   .. X: bind mounts DIR_B to DIR_A
+ *   .. Y: must see DIR_A/"A" and must not see DIR_A/"B"
+ *   .. X: umounts DIR_A
  *  2. Second test case
- *   .. Y: bind mounts "B" to "A"
- *   .. X: must see "A/A" and must not see "A/B"
- *   .. Y: umounts A
+ *   .. Y: bind mounts DIR_B to DIR_A
+ *   .. X: must see DIR_A/"A" and must not see DIR_A/"B"
+ *   .. Y: umounts DIRA
  */
 
 #include <sys/wait.h>

@@ -12,24 +12,24 @@
  *
  * [Algorithm]
  *
- * - Creates directories "A", "B" and files "A/A", "B/B"
+ * - Creates directories DIRA, DIRB and files DIRA/"A", DIRB/"B"
  * - Unshares mount namespace and makes it private (so mounts/umounts have no
  *   effect on a real system)
- * - Bind mounts directory "A" to itself
- * - Makes directory "A" shared
+ * - Bind mounts directory DIRA to itself
+ * - Makes directory DIRA shared
  * - Clones a new child process with CLONE_NEWNS flag and makes "A" a slave
  *   mount
  * - There are two testcases (where X is parent namespace and Y child
  *   namespace):
  *  1. First test case
- *   .. X: bind mounts "B" to "A"
- *   .. Y: must see the file "A/B"
- *   .. X: umounts "A"
+ *   .. X: bind mounts DIRB to DIRA
+ *   .. Y: must see the file DIRA/"B"
+ *   .. X: umounts DIRA
  *  2. Second test case
- *   .. Y: bind mounts "B" to "A"
- *   .. X: must see only the "A/A" and must not see "A/B" (as slave mount does
+ *   .. Y: bind mounts DIRB to DIRA
+ *   .. X: must see only the DIRA/"A" and must not see DIRA/"B" (as slave mount does
  *         not forward propagation)
- *   .. Y: umounts "A"
+ *   .. Y: umounts DIRA
  */
 
 #include <sys/wait.h>

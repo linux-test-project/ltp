@@ -10,12 +10,12 @@
  * Tests an unbindable mount: unbindable mount is an unbindable
  * private mount.
  *
- * - Creates directories "A", "B" and files "A/A", "B/B"
+ * - Creates directories DIRA, DIRB and files DIRA/"A", DIRB/"B"
  * - Unshares mount namespace and makes it private (so mounts/umounts have no
  *   effect on a real system)
- * - Bind mounts directory "A" to "A"
- * - Makes directory "A" unbindable
- * - Check if bind mount unbindable "A" to "B" fails as expected
+ * - Bind mounts directory DIRA to DIRA
+ * - Makes directory DIRA unbindable
+ * - Check if bind mount unbindable DIRA to DIRB fails as expected
  */
 
 #include <sys/wait.h>
