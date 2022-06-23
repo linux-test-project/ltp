@@ -18,10 +18,8 @@
  * - The user ID of the process has write access to the file.
  */
 
-#include <sys/types.h>
 #include <pwd.h>
 #include <utime.h>
-#include <sys/stat.h>
 #include <time.h>
 
 #include "tst_test.h"
