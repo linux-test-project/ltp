@@ -8,8 +8,6 @@
 IF_CMD='ifconfig'
 TST_CLEANUP="if_cleanup_restore"
 
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
-
 test_body()
 {
 	local cmd="$CMD"
@@ -47,4 +45,7 @@ test_body()
 }
 
 . if-lib.sh
+
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($IF_UPDOWN_TIMES / 20))}
+
 tst_run

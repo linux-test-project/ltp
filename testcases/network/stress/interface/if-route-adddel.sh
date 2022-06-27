@@ -7,8 +7,6 @@
 
 IF_CMD='route'
 
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
-
 test_body()
 {
 	local cmd="$CMD"
@@ -64,4 +62,7 @@ test_body()
 }
 
 . if-lib.sh
+
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
+
 tst_run

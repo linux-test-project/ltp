@@ -7,9 +7,6 @@
 
 IF_CMD='ifconfig'
 
-# The interval of the check interface activity
-CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
-
 test_body()
 {
 	local cmd="$CMD"
@@ -89,4 +86,8 @@ test_body()
 }
 
 . if-lib.sh
+
+# The interval of the check interface activity
+CHECK_INTERVAL=${CHECK_INTERVAL:-$(($NS_TIMES / 20))}
+
 tst_run
