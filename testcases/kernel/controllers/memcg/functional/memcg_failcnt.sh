@@ -12,9 +12,6 @@ MEMCG_TESTFUNC=test
 MEMCG_SHMMAX=1
 TST_TEST_DATA="--mmap-anon --mmap-file --shm"
 
-MEMORY_LIMIT=$PAGESIZE
-MEMORY_TO_ALLOCATE=$((MEMORY_LIMIT * 2))
-
 test()
 {
 	ROD echo $MEMORY_LIMIT \> memory.limit_in_bytes
@@ -36,4 +33,8 @@ test()
 }
 
 . memcg_lib.sh
+
+MEMORY_LIMIT=$PAGESIZE
+MEMORY_TO_ALLOCATE=$((MEMORY_LIMIT * 2))
+
 tst_run
