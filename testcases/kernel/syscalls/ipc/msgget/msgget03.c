@@ -41,7 +41,8 @@ static void setup(void)
 	tst_res(TINFO, "Current environment %d message queues are already in use",
 		used_cnt);
 
-	SAFE_FILE_SCANF("/proc/sys/kernel/msgmni", "%i", &maxmsgs);
+	maxmsgs = used_cnt + 32;
+	SAFE_FILE_PRINTF("/proc/sys/kernel/msgmni", "%i", maxmsgs);
 
 	queues = SAFE_MALLOC((maxmsgs - used_cnt) * sizeof(int));
 
@@ -73,5 +74,9 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.cleanup = cleanup,
-	.test_all = verify_msgget
+	.test_all = verify_msgget,
+	.save_restore = (const struct tst_path_val[]){
+		{"/proc/sys/kernel/msgmni", NULL},
+		{}
+	}
 };
