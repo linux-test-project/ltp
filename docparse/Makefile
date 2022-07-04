@@ -19,7 +19,7 @@ METADATA_GENERATOR_PARAMS_HTML := -f xhtml
 METADATA_GENERATOR_PARAMS_PDF := -f pdf
 METADATA_GENERATOR_PARAMS_HTML_CHUNKED := -f chunked
 else ifeq ($(METADATA_GENERATOR),)
-$(error 'METADATA_GENERATOR' not not configured, run ./configure in the root directory)
+$(error 'METADATA_GENERATOR' not configured, run ./configure in the root directory)
 else
 $(error '$(METADATA_GENERATOR)' not supported, only asciidoctor and asciidoc are supported)
 endif
