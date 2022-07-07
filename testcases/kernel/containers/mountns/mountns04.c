@@ -60,5 +60,5 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = run,
 	.needs_root = 1,
-	.needs_checkpoints = 1,
+	.needs_tmpdir = 1,
 };
