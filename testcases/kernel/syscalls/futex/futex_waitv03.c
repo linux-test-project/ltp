@@ -70,19 +70,19 @@ static void cleanup(void)
 	}
 }
 
-static void *threaded(void *arg)
+static void *threaded(LTP_ATTRIBUTE_UNUSED void *arg)
 {
 	struct futex_test_variants tv = futex_variant();
-	int tid = *(int *)arg;
 
-	TST_THREAD_STATE_WAIT(tid, 'S', 0);
-
-	TEST(futex_wake(tv.fntype, (void *)(uintptr_t)waitv[numfutex - 1].uaddr,
+	do {
+		TEST(futex_wake(tv.fntype, (void *)(uintptr_t)waitv[numfutex - 1].uaddr,
 			1, 0));
-	if (TST_RET < 0) {
-		tst_brk(TBROK | TTERRNO,
-			"futex_wake private returned: %ld", TST_RET);
-	}
+		if (TST_RET < 0) {
+			tst_brk(TBROK | TTERRNO,
+				"futex_wake private returned: %ld", TST_RET);
+		}
+		usleep(1000);
+	} while (TST_RET < 1);
 
 	return NULL;
 }
@@ -90,16 +90,13 @@ static void *threaded(void *arg)
 static void run(void)
 {
 	struct timespec to;
-	int tid;
 	pthread_t t;
 
-	tid = tst_syscall(__NR_gettid);
-
-	SAFE_PTHREAD_CREATE(&t, NULL, threaded, (void *)&tid);
+	SAFE_PTHREAD_CREATE(&t, NULL, threaded, NULL);
 
 	/* setting absolute timeout for futex2 */
 	SAFE_CLOCK_GETTIME(CLOCK_MONOTONIC, &to);
-	to.tv_sec++;
+	to.tv_sec += 5;
 
 	TEST(futex_waitv(waitv, numfutex, 0, &to, CLOCK_MONOTONIC));
 	if (TST_RET < 0) {
