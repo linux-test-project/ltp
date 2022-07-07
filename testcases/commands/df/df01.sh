@@ -102,6 +102,11 @@ df_check()
 
 	grep ${TST_DEVICE} output | grep -q "${total}.*${used}"
 	if [ $? -ne 0 ]; then
+		echo "total: ${total}, used: ${used}"
+		echo "df saved output:"
+		cat output
+		echo "df output:"
+		$@
 		return 1
 	fi
 }
