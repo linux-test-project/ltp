@@ -87,6 +87,8 @@ static void run(void)
 
 	TST_CHECKPOINT_WAKE(0);
 
+	SAFE_WAIT(NULL);
+
 	SAFE_UMOUNT(DIRA);
 }
 
