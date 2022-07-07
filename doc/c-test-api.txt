@@ -16,8 +16,9 @@ Let's start with an example, following code is a simple test for a 'getenv()'.
 
 [source,c]
 -------------------------------------------------------------------------------
-/*
- * This is test for basic functionality of getenv().
+/*\
+ * [Description]
+ * Tests basic functionality of getenv().
  *
  *  - create an env variable and verify that getenv() can get get it
  *  - call getenv() with nonexisting variable name, check that it returns NULL
