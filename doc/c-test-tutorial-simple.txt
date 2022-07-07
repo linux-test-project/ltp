@@ -228,12 +228,12 @@ the lines starting with a +++.
 --------------------------------------------------------------------------------
  statvfs01 statvfs01
  statvfs02 statvfs02
- 
+
 +statx01 statx01
 +
  stime01 stime01
  stime02 stime02
- 
+
 --------------------------------------------------------------------------------
 
 The +runtest+ files are in a two column format. The first column is the test
@@ -1053,7 +1053,7 @@ systems programming across multiple Kernel and C lib versions as well as
 different hardware architectures. The important thing to take away from this
 is that you have to be conscientious of what will happen on systems different
 from yours. The LTP has a huge and varied user base, so situations you may
-thing are unlikely can and do happen to somebody.
+think are unlikely can and do happen to somebody.
 
 Of course you don't want to spend time allowing for situations which may never
 arise either, so you have to do your research and think about each situation

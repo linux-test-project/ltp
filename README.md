@@ -206,4 +206,4 @@ Although we accept GitHub pull requests, the preferred way is sending patches to
 It's a good idea to test patches on GitHub Actions before posting to mailing
 list. Our GitHub Actions setup covers various architectures and distributions in
 order to make sure LTP compiles cleanly on most common configurations.
-For testing you need to just to push your changes to your own LTP fork on GitHub.
+For testing you need to just push your changes to your own LTP fork on GitHub.

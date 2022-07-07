@@ -150,7 +150,7 @@ When writing testcases in shell write in *portable shell* only, it's a good
 idea to try to run the test using alternative shell (alternative to bash, for
 example dash) too.
 
-*Portable shell* means Shell Command Language as defined by POSIX with a
+*Portable shell* means Shell Command Language as defined by POSIX with an
 exception of few widely used extensions, namely 'local' keyword used inside of
 functions and '-o' and '-a' test parameters (that are marked as obsolete in
 POSIX).
@@ -215,7 +215,7 @@ expression of kernel config variables that has to be satisfied in order for a
 test to run. This is mostly used for kernel namespaces at the moment.
 
 Sometimes it also makes sense to define a few macros instead of creating
-configure test. One example are Linux specific POSIX clock ids in
+configure test. One example is Linux specific POSIX clock ids in
 'include/lapi/posix_clocks.h'.
 
 3.1 Dealing with messed up legacy code
@@ -304,7 +304,7 @@ See 'testcases/commands/file/' for example.
 5.3 Subexecutables
 ^^^^^^^^^^^^^^^^^^
 
-If you test needs to execute a binary, place it in the same directory as the
+If your test needs to execute a binary, place it in the same directory as the
 testcase and name the file starting with '${test_binary_name}_'.  Once the
 test is executed by the framework, the path to the directory with all LTP
 binaries is added to the '$PATH' and you can execute it just by its name.
