@@ -115,7 +115,7 @@ void tst_cg_print_config(void);
 
 /* Ensure the specified controller is available in the test's default
  * CGroup, mounting/enabling it if necessary. Usually this is not
- * necesary use tst_test.needs_cgroup_controllers instead.
+ * necessary use tst_test.needs_cgroup_ctrls instead.
  */
 void tst_cg_require(const char *const ctrl_name,
 			const struct tst_cg_opts *const options)

@@ -2144,13 +2144,13 @@ struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
 	.cleanup = cleanup,
-	.needs_cgroup_controllers = (const char *const []){ "memory", NULL },
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	...
 };
 -------------------------------------------------------------------------------
 
 Above, we first ensure the memory controller is available on the
-test's CGroup with '.needs_cgroup_controllers'. This populates a structure,
+test's CGroup with '.needs_cgroup_ctrls'. This populates a structure,
 'tst_cg', which represents the test's CGroup.
 
 We then write the current processes PID into 'cgroup.procs', which
@@ -2217,7 +2217,7 @@ static void cleanup(void)
 struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
-	.needs_cgroup_controllers = (const char *const []){
+	.needs_cgroup_ctrls = (const char *const []){
 		"cpuset",
 		"memory",
 		NULL
