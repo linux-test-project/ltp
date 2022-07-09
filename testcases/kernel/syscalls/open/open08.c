@@ -4,38 +4,22 @@
  *   Copyright (c) 2018 Linux Test Project
  */
 
-/*
- * DESCRIPTION
- *	Check for the following errors:
- *	1.	EEXIST
- *	2.	EISDIR
- *	3.	ENOTDIR
- *	4.	ENAMETOOLONG
- *	5.	EACCES
- *	6.	EFAULT
+/*\
+ * [Description]
  *
- * ALGORITHM
- *	1. Open a file with O_CREAT and O_EXCL, when the file already
- *	   exists. Check the errno for EEXIST
+ * Verify that open() fails with:
  *
- *	2. Pass a directory as the pathname and request a write access,
- *	   check for errno for EISDIR
- *
- *	3. Specify O_DIRECTORY as a parameter to open and pass a file as the
- *	   pathname, check errno for ENOTDIR
- *
- *	4. Attempt to open() a filename which is more than VFS_MAXNAMLEN, and
- *	   check for errno to be ENAMETOOLONG.
- *
- *	5. Attempt to open a (0600) file owned by different user in WRONLY mode,
- *	   open(2) should fail with EACCES.
- *
- *	6. Attempt to pass an invalid pathname with an address pointing outside
- *	   the accessible address space of the process, as the argument to open(),
- *	   and expect to get EFAULT.
+ * - EEXIST when pathname already exists and O_CREAT and O_EXCL were used
+ * - EISDIR when pathname refers to a directory and the access requested
+ * involved writing
+ * - ENOTDIR when O_DIRECTORY was specified and pathname was not a directory
+ * - ENAMETOOLONG when pathname was too long
+ * - EACCES when requested access to the file is not allowed
+ * - EFAULT when pathname points outside the accessible address space
  */
 
 #define _GNU_SOURCE		/* for O_DIRECTORY */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
