@@ -4,11 +4,13 @@
  * Ported to LTP: Wayne Boyer
  *	06/2017 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
-/*
- * DESCRIPTION
- *	1. open a new file without O_CREAT, ENOENT should be returned.
- *	2. open a file with O_RDONLY | O_NOATIME and the caller was not
- *	   privileged, EPERM should be returned.
+
+/*\
+ * [Description]
+ *
+ * 1. open a new file without O_CREAT, ENOENT should be returned.
+ * 2. open a file with O_RDONLY | O_NOATIME and the caller was not
+ * privileged, EPERM should be returned.
  */
 
 #define _GNU_SOURCE
