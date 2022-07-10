@@ -15,11 +15,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <pwd.h>
 #include "tst_test.h"
 
@@ -33,7 +28,7 @@ static struct tcase {
 	const char *desc;
 } tcases[] = {
 	{TEST_FILE, O_RDWR, ENOENT, "new file without O_CREAT"},
-	{TEST_FILE2, O_RDONLY | O_NOATIME, EPERM, "unpriviledget O_RDONLY | O_NOATIME"},
+	{TEST_FILE2, O_RDONLY | O_NOATIME, EPERM, "unprivileged O_RDONLY | O_NOATIME"},
 };
 
 void setup(void)
