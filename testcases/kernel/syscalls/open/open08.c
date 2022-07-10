@@ -23,6 +23,8 @@
 #include <pwd.h>
 #include "tst_test.h"
 
+#define FLAGS_DESC(x) .flags = x, .desc = #x
+
 static char *existing_fname = "open08_testfile";
 static char *toolong_fname = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyzabcdefghijklmnopqrstmnopqrstuvwxyz";
 static char *dir_fname = "/tmp";
@@ -34,35 +36,21 @@ struct test_case_t;
 static struct test_case_t {
 	char **fname;
 	int flags;
+	const char *desc;
 	int error;
 } tcases[] = {
-	{&existing_fname, O_CREAT | O_EXCL, EEXIST},
-	{&dir_fname, O_RDWR, EISDIR},
-	{&existing_fname, O_DIRECTORY, ENOTDIR},
-	{&toolong_fname, O_RDWR, ENAMETOOLONG},
-	{&user2_fname, O_WRONLY, EACCES},
-	{&unmapped_fname, O_CREAT, EFAULT}
+	{&existing_fname, FLAGS_DESC(O_CREAT | O_EXCL), EEXIST},
+	{&dir_fname, FLAGS_DESC(O_RDWR), EISDIR},
+	{&existing_fname, FLAGS_DESC(O_DIRECTORY), ENOTDIR},
+	{&toolong_fname, FLAGS_DESC(O_RDWR), ENAMETOOLONG},
+	{&user2_fname, FLAGS_DESC(O_WRONLY), EACCES},
+	{&unmapped_fname, FLAGS_DESC(O_CREAT), EFAULT},
 };
 
-void verify_open(unsigned int i)
+static void verify_open(unsigned int i)
 {
-	TEST(open(*tcases[i].fname, tcases[i].flags,
-		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "call succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == tcases[i].error) {
-		tst_res(TPASS, "expected failure - "
-				"errno = %d : %s", TST_ERR,
-				strerror(TST_ERR));
-	} else {
-		tst_res(TFAIL, "unexpected error - %d : %s - "
-				"expected %d", TST_ERR,
-				strerror(TST_ERR), tcases[i].error);
-	}
+	TST_EXP_FAIL2(open(*tcases[i].fname, tcases[i].flags, 0644),
+				tcases[i].error, "%s", tcases[i].desc);
 }
 
 static void setup(void)
@@ -81,7 +69,7 @@ static void setup(void)
 	SAFE_SETUID(ltpuser->pw_uid);
 
 	fildes = SAFE_CREAT(existing_fname, 0600);
-	close(fildes);
+	SAFE_CLOSE(fildes);
 
 	unmapped_fname = tst_get_bad_addr(NULL);
 }
