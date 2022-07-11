@@ -53,7 +53,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.mount_device = 1,
 	.mntpoint = MNT_POINT,
 	.all_filesystems = 1,
