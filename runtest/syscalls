@@ -1133,7 +1133,6 @@ removexattr02 removexattr02
 
 rename01 rename01
 rename01A symlink01 -T rename01
-rename02 rename02
 rename03 rename03
 rename04 rename04
 rename05 rename05
