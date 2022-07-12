@@ -184,7 +184,7 @@ static void sanitize_str(char *buf, ssize_t count)
 {
 	int i;
 
-	for (i = 0; i < MIN(count, MAX_DISPLAY); i++)
+	for (i = 0; i < MIN(count, (ssize_t)MAX_DISPLAY); i++)
 		if (!isprint(buf[i]))
 			buf[i] = ' ';
 
@@ -552,7 +552,7 @@ static void setup(void)
 		tst_brk(TBROK, "The directory argument (-d) is required");
 
 	if (!worker_count)
-		worker_count = MIN(MAX(tst_ncpus() - 1, 1), max_workers);
+		worker_count = MIN(MAX(tst_ncpus() - 1, 1L), max_workers);
 	workers = SAFE_MALLOC(worker_count * sizeof(*workers));
 
 	if (tst_parse_int(str_worker_timeout, &worker_timeout, 1, INT_MAX)) {
