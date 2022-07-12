@@ -72,5 +72,6 @@ cve-2021-4034 execve06
 cve-2021-22555 setsockopt08 -i 100
 cve-2021-26708 vsock01
 cve-2021-22600 setsockopt09
+cve-2022-0847 dirtypipe
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
