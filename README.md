@@ -16,8 +16,11 @@ Project pages are located at: http://linux-test-project.github.io/
 The latest image is always available at:
 https://github.com/linux-test-project/ltp/releases
 
-The discussion about the project happens at ltp mailing list:
+The discussion about the project happens at LTP mailing list:
 http://lists.linux.it/listinfo/ltp
+
+LTP mailing list is archived at:
+https://lore.kernel.org/ltp/
 
 The git repository is located at GitHub at:
 https://github.com/linux-test-project/ltp
