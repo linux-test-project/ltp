@@ -4,10 +4,13 @@
  * Ported to LTP: Wayne Boyer
  * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
- *  Verify that any user can successfully increase the nice value of
- *  the process by passing an increment value (< max. applicable limits) to
- *  nice() system call.
+
+/*\
+ * [Description]
+ *
+ * Verify that any user can successfully increase the nice value of
+ * the process by passing an increment value (< max. applicable limits) to
+ * nice() system call.
  */
 #include <unistd.h>
 #include <stdlib.h>

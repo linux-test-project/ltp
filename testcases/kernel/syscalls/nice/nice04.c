@@ -4,9 +4,12 @@
  * Ported to LTP: Wayne Boyer
  * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
- *  Verify that, nice(2) fails when, a non-root user attempts to increase
- *  the priority of a process by specifying a negative increment value.
+
+/*\
+ * [Description]
+ *
+ * Verify that, nice(2) fails when, a non-root user attempts to increase
+ * the priority of a process by specifying a negative increment value.
  */
 #include <pwd.h>
 #include <unistd.h>

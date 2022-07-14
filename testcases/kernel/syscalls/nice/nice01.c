@@ -5,10 +5,12 @@
  * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- *  Verify that root can provide a negative value to nice()
- *  and hence root can decrease the nice value of the process
- *  using nice() system call
+/*\
+ * [Description]
+ *
+ * Verify that root can provide a negative value to nice()
+ * and hence root can decrease the nice value of the process
+ * using nice() system call
  */
 #include <unistd.h>
 #include <errno.h>
