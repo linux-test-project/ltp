@@ -1,133 +1,64 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) 2022 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-/*
- * DESCRIPTION
- *	Testcase to check that open(2) sets EMFILE if a process opens files
- *	more than its descriptor size
+/*\
+ * [Description]
  *
- * ALGORITHM
- *	First get the file descriptor table size which is set for a process.
- *	Use open(2) for creating files till the descriptor table becomes full.
- *	These open(2)s should succeed. Finally use open(2) to open another
- *	file. This attempt should fail with EMFILE.
+ * Verify that open(2) fails with EMFILE when per-process limit on the number
+ * of open file descriptors has been reached.
  */
 
 #include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include "test.h"
+#include <stdlib.h>
+#include "tst_test.h"
 
-char *TCID = "open04";
-int TST_TOTAL = 1;
+#define FNAME "open04"
 
-static int fd, ifile, mypid, first;
-static int nfile;
-static int *buf;
-static char fname[40];
-
-static void setup(void);
-static void cleanup(void);
-
-int main(int ac, char **av)
-{
-	int lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		TEST(open(fname, O_RDWR | O_CREAT, 0777));
-
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded unexpectedly");
-			continue;
-		}
-
-		if (TEST_ERRNO != EMFILE)
-			tst_resm(TFAIL, "Expected EMFILE, got %d", TEST_ERRNO);
-		else
-			tst_resm(TPASS, "call returned expected EMFILE error");
-	}
-
-	close(first);
-	close(fd);
-	cleanup();
-	tst_exit();
-}
+static int fds_limit, first, i;
+static int *fds;
+static char fname[20];
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	int fd;
 
-	TEST_PAUSE;
+	fds_limit = getdtablesize();
+	first = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0777);
 
-	/* make a temporary directory and cd to it */
-	tst_tmpdir();
+	fds = SAFE_MALLOC(sizeof(int) * (fds_limit - first));
+	fds[0] = first;
 
-	mypid = getpid();
-	nfile = getdtablesize();
-	sprintf(fname, "open04.%d", mypid);
-
-	first = fd = open(fname, O_RDWR | O_CREAT, 0777);
-	if (first == -1)
-		tst_brkm(TBROK, cleanup, "Cannot open first file");
-
-	close(fd);
-	close(first);
-	unlink(fname);
-
-	/* Allocate memory for stat and ustat structure variables */
-	buf = malloc(sizeof(int) * nfile - first);
-	if (buf == NULL)
-		tst_brkm(TBROK, NULL, "Failed to allocate Memory");
-
-	for (ifile = first; ifile <= nfile; ifile++) {
-		sprintf(fname, "open04.%d.%d", ifile, mypid);
-		fd = open(fname, O_RDWR | O_CREAT, 0777);
-		if (fd == -1) {
-			if (errno != EMFILE) {
-				tst_brkm(TBROK, cleanup, "Expected EMFILE got "
-					 "%d", errno);
-			}
-			break;
-		}
-		buf[ifile - first] = fd;
+	for (i = first + 1; i < fds_limit; i++) {
+		sprintf(fname, FNAME ".%d", i);
+		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0777);
+		fds[i - first] = fd;
 	}
+}
+
+static void run(void)
+{
+	sprintf(fname, FNAME ".%d", fds_limit);
+	TST_EXP_FAIL2(open(fname, O_RDWR | O_CREAT, 0777), EMFILE);
 }
 
 static void cleanup(void)
 {
-	close(first);
+	if (!first || !fds)
+		return;
 
-	for (ifile = first; ifile < nfile; ifile++) {
-		sprintf(fname, "open04.%d.%d", ifile, mypid);
-		close(buf[ifile - first]);
-		unlink(fname);
-	}
+	for (i = first; i < fds_limit; i++)
+		SAFE_CLOSE(fds[i - first]);
 
-	free(buf);
-
-	/* delete the test directory created in setup() */
-	tst_rmdir();
+	if (fds)
+		free(fds);
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1
+};
