@@ -30,20 +30,7 @@ static void verify_write(void)
 {
 	char wbuf[8 * page_size];
 
-	TEST(write(wfd, wbuf, sizeof(wbuf)));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "write() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != EAGAIN) {
-		tst_res(TFAIL | TTERRNO,
-			"write() failed unexpectedly, expected EAGAIN");
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "write() failed expectedly");
+	TST_EXP_FAIL(write(wfd, wbuf, sizeof(wbuf)), EAGAIN);
 }
 
 static void setup(void)
