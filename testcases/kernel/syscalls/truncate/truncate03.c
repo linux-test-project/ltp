@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2001-2022
  * Copyright (c) International Business Machines  Corp., 2001
  * 07/2001 John George
  */
@@ -116,25 +117,7 @@ static void verify_truncate(unsigned int n)
 {
 	struct test_case_t *tc = &test_cases[n];
 
-	TEST(truncate(tc->pathname, tc->length));
-	if (TST_RET == 0) {
-		tst_res(TFAIL, "truncate() succeeded when failure expected");
-		return;
-	}
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "truncate() returned invalid value %ld",
-			TST_RET);
-		return;
-	}
-
-	if (TST_ERR == tc->exp_errno) {
-		tst_res(TPASS | TTERRNO, "truncate() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO,
-			"truncate() failed unexpectedly; expected: %d - %s",
-			tc->exp_errno, strerror(tc->exp_errno));
-	}
+	TST_EXP_FAIL(truncate(tc->pathname, tc->length), tc->exp_errno);
 }
 
 static struct tst_test test = {
