@@ -2,19 +2,27 @@
 /*
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
  * Test PR_GET_TIMERSLACK and PR_SET_TIMERSLACK of prctl(2).
- * 1)Each thread has two associated timer slack values: a "default"
+ *
+ * - Each thread has two associated timer slack values: a "default"
  *   value, and a "current" value. PR_SET_TIMERSLACK sets the "current"
  *   timer slack value for the calling thread.
- * 2)When a new thread is created, the two timer slack values are made
+ *
+ * - When a new thread is created, the two timer slack values are made
  *   the same as the "current" value of the creating thread.
- * 3)The maximum timer slack value is ULONG_MAX. On 32bit machines, it
+ *
+ * - The maximum timer slack value is ULONG_MAX. On 32bit machines, it
  *   is a valid value(about 4s). On 64bit machines, it is about 500 years
  *   and no person will set this over 4s.  prctl return value is int, so
  *   we test themaximum value is INT_MAX.
- * 4)we also check current value via /proc/self/timerslack_ns if it is
- *  supported.
+ *
+ * - we also check current value via /proc/self/timerslack_ns if it is
+ *   supported.
  */
 
 #include <sys/prctl.h>

@@ -2,19 +2,23 @@
 /*
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
  * Test PR_GET_NO_NEW_PRIVS and PR_SET_NO_NEW_PRIVS of prctl(2).
  *
- * 1)Return the value of the no_new_privs bit for the calling thread.
- *  A value of 0 indicates the regular execve(2) behavior.  A value of
- *  1 indicates execve(2) will operate in the privilege-restricting mode.
- * 2)With no_new_privs set to 1, diables privilege granting operations
- *  at execve-time. For example, a process will not be able to execute a
- *  setuid binary to change their uid or gid if this bit is set. The same
- *  is true for file capabilities.
- * 3)The setting of this bit is inherited by children created by fork(2),
- *  and preserved across execve(2). We also check NoNewPrivs field in
- *  /proc/self/status if it supports.
+ * - Return the value of the no_new_privs bit for the calling thread.
+ *   A value of 0 indicates the regular execve(2) behavior.  A value of
+ *   1 indicates execve(2) will operate in the privilege-restricting mode.
+ * - With no_new_privs set to 1, diables privilege granting operations
+ *   at execve-time. For example, a process will not be able to execute a
+ *   setuid binary to change their uid or gid if this bit is set. The same
+ *   is true for file capabilities.
+ * - The setting of this bit is inherited by children created by fork(2),
+ *   and preserved across execve(2). We also check NoNewPrivs field in
+ *   /proc/self/status if it supports.
  */
 
 #include "prctl06.h"

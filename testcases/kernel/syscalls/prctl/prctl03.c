@@ -2,17 +2,22 @@
 /*
  * Copyright (c) 2018 FUJITSU LIMITED. All rights reserved.
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
  * Test PR_SET_CHILD_SUBREAPER and PR_GET_CHILD_SUBREAPER of prctl(2).
- * 1) If PR_SET_CHILD_SUBREAPER marks a process as a child subreaper, it
- *    fulfills the role of init(1) for its descendant orphaned process.
- *    The PPID of its orphaned process will be reparented to the subreaper
- *    process, and the subreaper process can receive a SIGCHLD signal and
- *    wait(2) on the orphaned process to discover corresponding termination
- *    status.
- * 2) The setting of PR_SET_CHILD_SUBREAPER is not inherited by children
- *    created by fork(2).
- * 3) PR_GET_CHILD_SUBREAPER can get the setting of PR_SET_CHILD_SUBREAPER.
+ *
+ * - If PR_SET_CHILD_SUBREAPER marks a process as a child subreaper, it
+ *   fulfills the role of init(1) for its descendant orphaned process.
+ *   The PPID of its orphaned process will be reparented to the subreaper
+ *   process, and the subreaper process can receive a SIGCHLD signal and
+ *   wait(2) on the orphaned process to discover corresponding termination
+ *   status.
+ * - The setting of PR_SET_CHILD_SUBREAPER is not inherited by children
+ *   reated by fork(2).
+ * - PR_GET_CHILD_SUBREAPER can get the setting of PR_SET_CHILD_SUBREAPER.
  *
  * These flags was added by kernel commit ebec18a6d3aa:
  * "prctl: add PR_{SET,GET}_CHILD_SUBREAPER to allow simple process supervision"

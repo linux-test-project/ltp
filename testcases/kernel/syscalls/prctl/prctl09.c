@@ -4,9 +4,10 @@
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
  */
 
-/*
- * Test Description:
- *  This is a timer sample test that timer slack is 200us.
+/*\
+ * [Description]
+ *
+ * This is a timer sample test that timer slack is 200us.
  */
 
 #include <errno.h>

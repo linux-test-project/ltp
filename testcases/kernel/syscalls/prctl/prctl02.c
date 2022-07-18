@@ -1,36 +1,39 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ */
+
+/*\
+ * [Description]
  *
- * 1) prctl() fails with EINVAL when an invalid value is given for option
- * 2) prctl() fails with EINVAL when option is PR_SET_PDEATHSIG & arg2 is
- * not zero or a valid signal number.
- * 3) prctl() fails with EINVAL when option is PR_SET_DUMPABLE & arg2 is
- * neither SUID_DUMP_DISABLE nor SUID_DUMP_USER.
- * 4) prctl() fails with EFAULT when arg2 is an invalid address.
- * 5) prctl() fails with EFAULT when option is PR_SET_SECCOMP & arg2 is
- * SECCOMP_MODE_FILTER & arg3 is an invalid address.
- * 6) prctl() fails with EACCES when option is PR_SET_SECCOMP & arg2 is
- * SECCOMP_MODE_FILTER & the process does not have the CAP_SYS_ADMIN
- * capability.
- * 7) prctl() fails with EINVAL when option is PR_SET_TIMING & arg2 is not
- * not PR_TIMING_STATISTICAL.
- * 8,9) prctl() fails with EINVAL when option is PR_SET_NO_NEW_PRIVS & arg2
- * is not equal to 1 or arg3 is nonzero.
- * 10) prctl() fails with EINVAL when options is PR_GET_NO_NEW_PRIVS & arg2,
- * arg3, arg4, or arg5 is nonzero.
- * 11) prctl() fails with EINVAL when options is PR_SET_THP_DISABLE & arg3,
- * arg4, arg5 is non-zero.
- * 12) prctl() fails with EINVAL when options is PR_GET_THP_DISABLE & arg2,
- * arg3, arg4, or arg5 is nonzero.
- * 13) prctl() fails with EINVAL when options is PR_CAP_AMBIENT & an unused
- * argument such as arg4 is nonzero.
- * 14) prctl() fails with EINVAL when option is PR_GET_SPECULATION_CTRL and
- * unused arguments is nonzero.
- * 15) prctl() fails with EPERM when option is PR_SET_SECUREBITS and the
- * caller does not have the CAP_SETPCAP capability.
- * 16) prctl() fails with EPERM when option is PR_CAPBSET_DROP and the caller
- * does not have the CAP_SETPCAP capability.
+ * - EINVAL when an invalid value is given for option
+ * - EINVAL when option is PR_SET_PDEATHSIG & arg2 is not zero or a valid
+ *   signal number
+ * - EINVAL when option is PR_SET_DUMPABLE & arg2 is neither
+ *   SUID_DUMP_DISABLE nor SUID_DUMP_USER
+ * - EFAULT when arg2 is an invalid address
+ * - EFAULT when option is PR_SET_SECCOMP & arg2 is SECCOMP_MODE_FILTER &
+ *   arg3 is an invalid address
+ * - EACCES when option is PR_SET_SECCOMP & arg2 is SECCOMP_MODE_FILTER &
+ *   the process does not have the CAP_SYS_ADMIN capability
+ * - EINVAL when option is PR_SET_TIMING & arg2 is not PR_TIMING_STATISTICAL
+ * - EINVAL when option is PR_SET_NO_NEW_PRIVS & arg2 is not equal to 1 &
+ *   arg3 is zero
+ * - EINVAL when option is PR_SET_NO_NEW_PRIVS & arg2 is equal to 1 & arg3
+ *   is nonzero
+ * - EINVAL when options is PR_GET_NO_NEW_PRIVS & arg2, arg3, arg4, or arg5
+ *   is nonzero
+ * - EINVAL when options is PR_SET_THP_DISABLE & arg3, arg4, arg5 is non-zero.
+ * - EINVAL when options is PR_GET_THP_DISABLE & arg2, arg3, arg4, or arg5 is
+ *   nonzero
+ * - EINVAL when options is PR_CAP_AMBIENT & an unused argument such as arg4
+ *   is nonzero
+ * - EINVAL when option is PR_GET_SPECULATION_CTRL and unused arguments is
+ *   nonzero
+ * - EPERM when option is PR_SET_SECUREBITS and the caller does not have the
+ *   CAP_SETPCAP capability
+ * - EPERM when option is PR_CAPBSET_DROP and the caller does not have the
+ *   CAP_SETPCAP capability
  */
 
 #include <errno.h>

@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ */
+
+/*\
+ * [Description]
  *
- * This is a Phase I test for the prctl(2) system call.
- * It is intended to provide a limited exposure of the system call.
+ * Basic test for PR_SET_PDEATHSIG/PR_GET_PDEATHSIG
+ *
+ * Use PR_SET_PDEATHSIG to set SIGUSR2 signal and PR_GET_PDEATHSIG should
+ * receive this signal.
  */
 
 #include <errno.h>
