@@ -57,6 +57,10 @@ static void run(unsigned int n)
 
 static struct tst_test test = {
 	.test = run,
+	.save_restore = (const struct tst_path_val[]) {
+		{"!/proc/sys/kernel/printk", NULL},
+		{}
+	},
 	.needs_root = 1,
 	.tcnt = ARRAY_SIZE(tcases),
 };
