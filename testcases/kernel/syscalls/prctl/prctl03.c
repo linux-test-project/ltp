@@ -15,8 +15,10 @@
  *   process, and the subreaper process can receive a SIGCHLD signal and
  *   wait(2) on the orphaned process to discover corresponding termination
  *   status.
+ *
  * - The setting of PR_SET_CHILD_SUBREAPER is not inherited by children
  *   reated by fork(2).
+ *
  * - PR_GET_CHILD_SUBREAPER can get the setting of PR_SET_CHILD_SUBREAPER.
  *
  * These flags was added by kernel commit ebec18a6d3aa:

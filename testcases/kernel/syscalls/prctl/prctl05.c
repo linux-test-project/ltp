@@ -12,8 +12,10 @@
  * - Set the name of the calling thread, the name can be up to 16 bytes
  *   long, including the terminating null byte. If exceeds 16 bytes, the
  *   string is silently truncated.
+ *
  * - Return the name of the calling thread, the buffer should allow space
  *   for up to 16 bytes, the returned string will be null-terminated.
+ *
  * - Check /proc/self/task/[tid]/comm and /proc/self/comm name whether
  *   matches the thread name.
  */
@@ -55,8 +57,8 @@ static void verify_prctl(unsigned int n)
 
 	if (strncmp(tc->expname, buf, sizeof(buf))) {
 		tst_res(TFAIL,
-		        "prctl(PR_GET_NAME) failed, expected %s, got %s",
-		        tc->expname, buf);
+			"prctl(PR_GET_NAME) failed, expected %s, got %s",
+			tc->expname, buf);
 		return;
 	}
 	tst_res(TPASS, "prctl(PR_GET_NAME) succeeded, thread name is %s", buf);

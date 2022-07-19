@@ -14,11 +14,13 @@
  *   write(2),_exit(2)(but not exit_group(2)), and sigreturn(2).  Other
  *   system calls result in the delivery of a SIGKILL signal. This operation
  *   is available only if the kernel is configured with CONFIG_SECCOMP enabled.
+ *
  * - If PR_SET_SECCOMP sets the SECCOMP_MODE_FILTER for the calling thread,
  *   the system calls allowed are defined by a pointer to a Berkeley Packet
  *   Filter. Other system calls result int the delivery of a SIGSYS signal
  *   with SECCOMP_RET_KILL. The SECCOMP_SET_MODE_FILTER operation is available
  *   only if the kernel is configured with CONFIG_SECCOMP_FILTER enabled.
+ *
  * - If SECCOMP_MODE_FILTER filters permit fork(2), then the seccomp mode
  *   is inherited by children created by fork(2).
  */
@@ -41,7 +43,7 @@
 #define FNAME "filename"
 
 static const struct sock_filter  strict_filter[] = {
-	BPF_STMT(BPF_LD | BPF_W | BPF_ABS, (offsetof (struct seccomp_data, nr))),
+	BPF_STMT(BPF_LD | BPF_W | BPF_ABS, (offsetof(struct seccomp_data, nr))),
 
 	BPF_JUMP(BPF_JMP | BPF_JEQ, __NR_close, 5, 0),
 	BPF_JUMP(BPF_JMP | BPF_JEQ, __NR_exit,  4, 0),

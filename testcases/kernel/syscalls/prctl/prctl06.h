@@ -23,7 +23,7 @@
 #define BIN_PATH           MNTPOINT"/"TESTBIN
 #define SUID_MODE          (S_ISUID|S_ISGID|S_IXUSR|S_IXGRP|S_IXOTH)
 
-void check_no_new_privs(int val, char *name, int flag)
+static void check_no_new_privs(int val, char *name, int flag)
 {
 	TEST(prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0));
 	if (TST_RET == val)
