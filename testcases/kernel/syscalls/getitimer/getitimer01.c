@@ -1,39 +1,17 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *	03/2001 - Written by Wayne Boyer
+ * Copyright (c) 2022 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-/*
-  HISTORY
-    03/2001 - Written by Wayne Boyer
+/*\
+ * [Description]
+ *
+ * Check that a correct call to getitimer() succeeds.
+ */
 
-  TEST ITEMS:
-    Check that a correct call to getitimer() succeeds.
-*/
-
-#include "test.h"
-
-#include <errno.h>
-#include <sys/time.h>
-
-static void cleanup(void);
-static void setup(void);
-
-char *TCID = "getitimer01";
-int TST_TOTAL = 3;
+#include "tst_test.h"
 
 static int itimer_name[] = {
 	ITIMER_REAL,
@@ -41,52 +19,18 @@ static int itimer_name[] = {
 	ITIMER_PROF,
 };
 
-int main(int ac, char **av)
+static void run(void)
 {
-	int lc;
-	int i;
+	long unsigned int i;
 	struct itimerval value;
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		for (i = 0; i < 3; i++) {
-
-			TEST(getitimer(itimer_name[i], &value));
-
-			if (TEST_RETURN != 0)
-				tst_resm(TFAIL, "call failed - errno = %d - %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-
-			/*
-			 * Since ITIMER is effectively disabled (we did
-			 * not set it before the getitimer call), the
-			 * elements in it_value should be zero.
-			 */
-			if ((value.it_value.tv_sec == 0) &&
-				(value.it_value.tv_usec == 0)) {
-				tst_resm(TPASS, "functionality is ok");
-			} else {
-				tst_resm(TFAIL, "timer are non zero");
-			}
-		}
+	for (i = 0; i < ARRAY_SIZE(itimer_name); i++) {
+		TST_EXP_PASS(getitimer(itimer_name[i], &value));
+		TST_EXP_EQ_LI(value.it_value.tv_sec, 0);
+		TST_EXP_EQ_LI(value.it_value.tv_usec, 0);
 	}
-
-	cleanup();
-	tst_exit();
 }
 
-static void setup(void)
-{
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = run
+};
