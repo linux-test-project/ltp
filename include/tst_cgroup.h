@@ -110,7 +110,11 @@ extern const struct tst_cg_group *const tst_cg_drain;
  * controllers. Called automatically by tst_cg_require.
  */
 void tst_cg_scan(void);
-/* Print the config detected by tst_cg_scan */
+/* Print the config detected by tst_cg_scan and print the internal
+ * state associated with each controller. Output can be passed to
+ * tst_cg_load_config to configure the internal state to that of the
+ * config between program invocations.
+ */
 void tst_cg_print_config(void);
 
 /* Ensure the specified controller is available in the test's default
