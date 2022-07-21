@@ -318,8 +318,9 @@ opendir:
 				  O_PATH | O_DIRECTORY);
 }
 
+#define PATH_MAX_STRLEN 4095
 #define CONFIG_HEADER "ctrl_name ver we_require_it mnt_path we_mounted_it ltp_dir.we_created_it test_dir.dir_name"
-#define CONFIG_FORMAT "%s\t%d\t%d\t%s\t%d\t%d\t%s"
+#define CONFIG_FORMAT "%" TST_TO_STR(CTRL_NAME_MAX) "s\t%d\t%d\t%" TST_TO_STR(PATH_MAX_STRLEN) "s\t%d\t%d\t%" TST_TO_STR(NAME_MAX) "s"
 /* Prints out the state associated with each controller to be consumed by
  * tst_cg_load_config.
  *
@@ -338,7 +339,7 @@ void tst_cg_print_config(void)
 		if (!root)
 			continue;
 
-		printf(CONFIG_FORMAT,
+		printf("%s\t%d\t%d\t%s\t%d\t%d\t%s\n",
 			ctrl->ctrl_name,
 			root->ver,
 			ctrl->we_require_it,
@@ -346,7 +347,6 @@ void tst_cg_print_config(void)
 			root->we_mounted_it,
 			root->ltp_dir.we_created_it,
 			root->test_dir.dir_name ? root->test_dir.dir_name : "NULL");
-		printf("\n");
 	}
 }
 
@@ -375,6 +375,77 @@ static struct cgroup_root *cgroup_find_root(const char *const mnt_path)
 	return NULL;
 }
 
+static void cgroup_parse_config_line(const char *const config_entry)
+{
+	char ctrl_name[CTRL_NAME_MAX + 1], mnt_path[PATH_MAX_STRLEN + 1], test_dir_name[NAME_MAX + 1];
+	int ver, we_require_it, we_mounted_it, ltp_dir_we_created_it, vars_read;
+	size_t len;
+	struct cgroup_root *root;
+	struct cgroup_ctrl *ctrl;
+
+	vars_read = sscanf(config_entry, CONFIG_FORMAT,
+		ctrl_name, &ver, &we_require_it, mnt_path, &we_mounted_it,
+		&ltp_dir_we_created_it, test_dir_name);
+
+	if (vars_read != 7)
+		tst_brk(TBROK, "Incorrect number of vars read from config. Config possibly malformed?");
+
+	ctrl = cgroup_find_ctrl(ctrl_name);
+	if (!ctrl)
+		tst_brk(TBROK, "Could not find ctrl from config. Ctrls changing between calls?");
+
+	ctrl->we_require_it = we_require_it;
+
+	root = cgroup_find_root(mnt_path);
+	if (!root)
+		tst_brk(TBROK, "Could not find root from config. Config possibly malformed?");
+
+	if (we_mounted_it)
+		root->we_mounted_it = 1;
+
+	if (!root->ltp_dir.dir_name) {
+		cgroup_dir_mk(&root->mnt_dir, cgroup_ltp_dir, &root->ltp_dir);
+		cgroup_dir_mk(&root->ltp_dir, cgroup_ltp_drain_dir, &root->drain_dir);
+		if (ltp_dir_we_created_it) {
+			root->ltp_dir.we_created_it = 1;
+			root->drain_dir.we_created_it = 1;
+		}
+	}
+
+	if (!root->test_dir.dir_name && strcmp(test_dir_name, "NULL")) {
+		strncpy(cgroup_test_dir, test_dir_name, NAME_MAX);
+		cgroup_dir_mk(&root->ltp_dir, cgroup_test_dir, &root->test_dir);
+		root->test_dir.we_created_it = 1;
+	}
+}
+
+/* Load the test state config provided by tst_cg_print_config
+ *
+ * This will reload some internal tst_cgroup state given by the config
+ * that might otherwise have been lost between calls or between different
+ * processes. In particular this is used by testcases/lib/tst_cgctl to
+ * provide access to this C api to shell scripts.
+ *
+ * The config keeps track of the minimal state needed for tst_cg_cleanup
+ * to cleanup mounts and directories created by tst_cg_require.
+ */
+void tst_cg_load_config(const char *const config)
+{
+	char temp_config[BUFSIZ];
+	char *line;
+	const size_t config_len = strlen(config) + 1;
+
+	if (config_len >= BUFSIZ)
+		tst_brk(TBROK, "Config has exceeded buffer size?");
+
+	memcpy(temp_config, config, config_len);
+	temp_config[config_len] = '\0';
+
+	line = strtok(temp_config, "\n");
+	/* Make sure to consume the header. */
+	for (line = strtok(NULL, "\n"); line; line = strtok(NULL, "\n"))
+		cgroup_parse_config_line(line);
+}
 
 /* Determine if a mounted cgroup hierarchy is unique and record it if so.
  *
