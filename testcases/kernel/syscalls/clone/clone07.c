@@ -7,7 +7,7 @@
 /*\
  * [Description]
  *
- * Test for a libc bug where exitting child function by returning from
+ * Test for a libc bug where exiting child function by returning from
  * it caused SIGSEGV.
  */
 

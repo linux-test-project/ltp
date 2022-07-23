@@ -129,7 +129,7 @@ static void migrate_test(void)
 		}
 
 		if (!tst_remaining_runtime()) {
-			tst_res(TINFO, "Out of runtime, exitting...");
+			tst_res(TINFO, "Out of runtime, exiting...");
 			break;
 		}
 	}
