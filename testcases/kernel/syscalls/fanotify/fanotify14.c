@@ -41,38 +41,43 @@ static struct test_case_t {
 	unsigned int init_flags;
 	unsigned int mark_flags;
 	unsigned long long mask;
+	int expected_errno;
 } test_cases[] = {
 	{
-		FAN_CLASS_CONTENT | FAN_REPORT_FID, 0, 0
+		/* FAN_REPORT_FID without class FAN_CLASS_NOTIF is not valid */
+		FAN_CLASS_CONTENT | FAN_REPORT_FID, 0, 0, EINVAL
 	},
 	{
-		FAN_CLASS_PRE_CONTENT | FAN_REPORT_FID, 0, 0
+		/* FAN_REPORT_FID without class FAN_CLASS_NOTIF is not valid */
+		FAN_CLASS_PRE_CONTENT | FAN_REPORT_FID, 0, 0, EINVAL
 	},
 	{
-		FAN_CLASS_NOTIF, 0, INODE_EVENTS
+		/* INODE_EVENTS in mask without class FAN_REPORT_FID are not valid */
+		FAN_CLASS_NOTIF, 0, INODE_EVENTS, EINVAL
 	},
 	{
-		FAN_CLASS_NOTIF | FAN_REPORT_FID, FAN_MARK_MOUNT, INODE_EVENTS
+		/* INODE_EVENTS in mask with FAN_MARK_MOUNT are not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_FID, FAN_MARK_MOUNT, INODE_EVENTS, EINVAL
 	},
 	{
 		/* FAN_REPORT_NAME without FAN_REPORT_DIR_FID is not valid */
-		FAN_CLASS_NOTIF | FAN_REPORT_NAME, 0, 0
+		FAN_CLASS_NOTIF | FAN_REPORT_NAME, 0, 0, EINVAL
 	},
 	{
 		/* FAN_REPORT_NAME without FAN_REPORT_DIR_FID is not valid */
-		FAN_CLASS_NOTIF | FAN_REPORT_FID | FAN_REPORT_NAME, 0, 0
+		FAN_CLASS_NOTIF | FAN_REPORT_FID | FAN_REPORT_NAME, 0, 0, EINVAL
 	},
 	{
 		/* FAN_REPORT_TARGET_FID without FAN_REPORT_FID is not valid */
-		FAN_CLASS_NOTIF | FAN_REPORT_TARGET_FID | FAN_REPORT_DFID_NAME, 0, 0
+		FAN_CLASS_NOTIF | FAN_REPORT_TARGET_FID | FAN_REPORT_DFID_NAME, 0, 0, EINVAL
 	},
 	{
 		/* FAN_REPORT_TARGET_FID without FAN_REPORT_NAME is not valid */
-		FAN_CLASS_NOTIF | FAN_REPORT_TARGET_FID | FAN_REPORT_DFID_FID, 0, 0
+		FAN_CLASS_NOTIF | FAN_REPORT_TARGET_FID | FAN_REPORT_DFID_FID, 0, 0, EINVAL
 	},
 	{
 		/* FAN_RENAME without FAN_REPORT_NAME is not valid */
-		FAN_CLASS_NOTIF | FAN_REPORT_DFID_FID, 0, FAN_RENAME
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_FID, 0, FAN_RENAME, EINVAL
 	},
 };
 
@@ -83,17 +88,12 @@ static void do_test(unsigned int number)
 
 	fanotify_fd = fanotify_init(tc->init_flags, O_RDONLY);
 	if (fanotify_fd < 0) {
-		/*
-		 * EINVAL is to be returned to the calling process when
-		 * an invalid notification class is specified in
-		 * conjunction with FAN_REPORT_FID.
-		 */
-		if (errno == EINVAL) {
+		if (errno == tc->expected_errno) {
 			tst_res(TPASS,
 				"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-				"failed with error EINVAL as expected",
+				"failed with error %d as expected",
 				fanotify_fd,
-				tc->init_flags);
+				tc->init_flags, tc->expected_errno);
 			return;
 		}
 		tst_brk(TBROK | TERRNO,
@@ -120,22 +120,16 @@ static void do_test(unsigned int number)
 	ret = fanotify_mark(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
 				tc->mask, AT_FDCWD, FILE1);
 	if (ret < 0) {
-		/*
-		 * EINVAL is to be returned to the calling process when
-		 * attempting to use INODE_EVENTS without FAN_REPORT_FID
-		 * specified on the notification group, or using
-		 * INODE_EVENTS with mark type FAN_MARK_MOUNT.
-		 */
-		if (errno == EINVAL) {
+		if (errno == tc->expected_errno) {
 			tst_res(TPASS,
 				"ret=%d, fanotify_mark(%d, FAN_MARK_ADD | %x, "
-				"%llx, AT_FDCWD, %s) failed with error EINVAL "
+				"%llx, AT_FDCWD, %s) failed with error %d "
 				"as expected",
 				ret,
 				fanotify_fd,
 				tc->mark_flags,
 				tc->mask,
-				FILE1);
+				FILE1, tc->expected_errno);
 			goto out;
 		}
 		tst_brk(TBROK | TERRNO,
