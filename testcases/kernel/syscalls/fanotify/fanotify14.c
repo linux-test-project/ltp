@@ -13,6 +13,13 @@
  * mask value has been specified in conjunction with FAN_REPORT_FID.
  */
 
+/*
+ * The ENOTDIR test cases are regression tests for commits:
+ *
+ *     ceaf69f8eadc fanotify: do not allow setting dirent events in mask of non-dir
+ *     8698e3bab4dd fanotify: refine the validation checks on non-dir inode mask
+ */
+
 #define _GNU_SOURCE
 #include "tst_test.h"
 #include <errno.h>
@@ -31,6 +38,7 @@
 		      FAN_DELETE_SELF | FAN_MOVE_SELF)
 
 static int fanotify_fd;
+static int fan_report_target_fid_unsupported;
 
 /*
  * Each test case has been designed in a manner whereby the values defined
@@ -79,12 +87,38 @@ static struct test_case_t {
 		/* FAN_RENAME without FAN_REPORT_NAME is not valid */
 		FAN_CLASS_NOTIF | FAN_REPORT_DFID_FID, 0, FAN_RENAME, EINVAL
 	},
+	{
+		/* With FAN_MARK_ONLYDIR on non-dir is not valid */
+		FAN_CLASS_NOTIF, FAN_MARK_ONLYDIR, FAN_OPEN, ENOTDIR
+	},
+	{
+		/* With FAN_REPORT_TARGET_FID, FAN_DELETE on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME_TARGET, 0, FAN_DELETE, ENOTDIR
+	},
+	{
+		/* With FAN_REPORT_TARGET_FID, FAN_RENAME on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME_TARGET, 0, FAN_RENAME, ENOTDIR
+	},
+	{
+		/* With FAN_REPORT_TARGET_FID, FAN_ONDIR on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME_TARGET, 0, FAN_OPEN | FAN_ONDIR, ENOTDIR
+	},
+	{
+		/* With FAN_REPORT_TARGET_FID, FAN_EVENT_ON_CHILD on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME_TARGET, 0, FAN_OPEN | FAN_EVENT_ON_CHILD, ENOTDIR
+	},
 };
 
 static void do_test(unsigned int number)
 {
 	int ret;
 	struct test_case_t *tc = &test_cases[number];
+
+	if (fan_report_target_fid_unsupported && tc->init_flags & FAN_REPORT_TARGET_FID) {
+		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TARGET_FID,
+					    fan_report_target_fid_unsupported);
+		return;
+	}
 
 	fanotify_fd = fanotify_init(tc->init_flags, O_RDONLY);
 	if (fanotify_fd < 0) {
@@ -117,8 +151,11 @@ static void do_test(unsigned int number)
 		goto out;
 	}
 
+	/* Set mark on non-dir only when expecting error ENOTDIR */
+	const char *path = tc->expected_errno == ENOTDIR ? FILE1 : MNTPOINT;
+
 	ret = fanotify_mark(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
-				tc->mask, AT_FDCWD, FILE1);
+				tc->mask, AT_FDCWD, path);
 	if (ret < 0) {
 		if (errno == tc->expected_errno) {
 			tst_res(TPASS,
@@ -129,7 +166,30 @@ static void do_test(unsigned int number)
 				fanotify_fd,
 				tc->mark_flags,
 				tc->mask,
-				FILE1, tc->expected_errno);
+				path, tc->expected_errno);
+			/*
+			 * ENOTDIR are errors for events/flags not allowed on a non-dir inode.
+			 * Try to set an inode mark on a directory and it should succeed.
+			 * Try to set directory events in filesystem mark mask on non-dir
+			 * and it should succeed.
+			 */
+			if (tc->expected_errno == ENOTDIR) {
+				SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
+						   tc->mask, AT_FDCWD, MNTPOINT);
+				tst_res(TPASS,
+					"Adding an inode mark on directory did not fail with "
+					"ENOTDIR error as on non-dir inode");
+			}
+			if (tc->expected_errno == ENOTDIR &&
+			    !(tc->mark_flags & FAN_MARK_ONLYDIR)) {
+				SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | tc->mark_flags |
+						   FAN_MARK_FILESYSTEM, tc->mask,
+						   AT_FDCWD, FILE1);
+				tst_res(TPASS,
+					"Adding a filesystem mark on non-dir did not fail with "
+					"ENOTDIR error as with an inode mark");
+			}
+
 			goto out;
 		}
 		tst_brk(TBROK | TERRNO,
@@ -165,6 +225,9 @@ static void do_setup(void)
 	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 	SAFE_CLOSE(fd);
 
+	fan_report_target_fid_unsupported =
+		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MNTPOINT);
+
 	/* Create temporary test file to place marks on */
 	SAFE_FILE_PRINTF(FILE1, "0");
 }
@@ -183,7 +246,12 @@ static struct tst_test test = {
 	.cleanup = do_cleanup,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
-	.all_filesystems = 1
+	.all_filesystems = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "ceaf69f8eadc"},
+		{"linux-git", "8698e3bab4dd"},
+		{}
+	}
 };
 
 #else

@@ -48,7 +48,9 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 	rval = fanotify_mark(fd, flags, mask, dfd, pathname);
 
 	if (rval == -1) {
-		tst_brk_(file, lineno, TBROK | TERRNO, "fanotify_mark() failed");
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "fanotify_mark(%d, 0x%x, 0x%lx, ..., %s) failed",
+			 fd, flags, mask, pathname);
 	}
 
 	if (rval < -1) {
