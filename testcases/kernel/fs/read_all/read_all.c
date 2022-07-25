@@ -95,7 +95,6 @@ static int timeout_warnings_left = 15;
 
 static char *blacklist[] = {
 	NULL, /* reserved for -e parameter */
-	"/sys/power/wakeup_count",
 	"/sys/kernel/debug/*",
 	"/sys/devices/platform/*/eeprom",
 	"/sys/devices/platform/*/nvmem",
