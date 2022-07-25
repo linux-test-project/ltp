@@ -145,6 +145,11 @@ $(CPPFLAGS)		: Preprocessor flags, e.g. -I arguments.
 
 $(DEBUG_CFLAGS)		: Debug flags to pass to $(CC), -g, etc.
 
+$(KVM_LD)		: Special linker for wrapping KVM payload binaries
+			  into linkable object files. Defaults to $(LD).
+			  Change this variable if the KVM Makefile fails
+			  to build files named *-payload.o.
+
 $(LD)			: The system linker (typically $(CC), but not
 			  necessarily).
 
