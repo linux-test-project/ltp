@@ -168,17 +168,8 @@ test3()
 		return
 	fi
 
-	cpu_subsys_path=$(get_cgroup_mountpoint "cpu")
-
-	# Run the test for 30 secs
-	if [ -z "$cpu_subsys_path" ]; then
-		mount -t cgroup -o cpu xxx cgroup/
-		if [ $? -ne 0 ]; then
-			tst_res TFAIL "Failed to mount cpu subsys"
-			return
-		fi
-		cpu_subsys_path=cgroup
-	fi
+	cgroup_require "cpu"
+	cpu_subsys_path=$(cgroup_get_mountpoint "cpu")
 
 	cgroup_regression_3_1.sh $cpu_subsys_path &
 	pid1=$!
@@ -191,7 +182,7 @@ test3()
 	wait $pid2 2>/dev/null
 
 	rmdir $cpu_subsys_path/0 2> /dev/null
-	tst_umount $PWD/cgroup
+	cgroup_cleanup
 	check_kernel_bug
 }
 
@@ -303,21 +294,15 @@ test6()
 test_7_1()
 {
 	local subsys=$1
+	local subsys_path
 	# we should be careful to select a $subsys_path which is related to
 	# cgroup only: if cgroup debugging is enabled a 'debug' $subsys
 	# could be passed here as params and this will lead to ambiguity and
 	# errors when grepping simply for 'debug' in /proc/mounts since we'll
 	# find also /sys/kernel/debug. Helper takes care of this.
-	local subsys_path=$(get_cgroup_mountpoint $subsys)
 
-	if [ -z "$subsys_path" ]; then
-		mount -t cgroup -o $subsys xxx cgroup/
-		if [ $? -ne 0 ]; then
-			tst_res TFAIL "failed to mount $subsys"
-			return
-		fi
-		subsys_path=cgroup
-	fi
+	cgroup_require "$subsys"
+	subsys_path=$(cgroup_get_mountpoint "$subsys")
 
 	mkdir $subsys_path/0
 	sleep 100 < $subsys_path/0 &	# add refcnt to this dir
@@ -332,6 +317,8 @@ test_7_1()
 		wait $! 2>/dev/null
 		umount cgroup/
 	fi
+
+	cgroup_cleanup
 }
 
 test_7_2()
