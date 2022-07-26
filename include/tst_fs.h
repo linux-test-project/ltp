@@ -193,7 +193,7 @@ const char **tst_get_supported_fs_types(const char *const *skiplist);
  * Returns 1 if filesystem is in skiplist 0 otherwise.
  *
  * @fs_type A filesystem type to lookup.
- * @skiplist A NULL terminated array of fileystemsytems to skip.
+ * @skiplist A NULL terminated array of filesystems to skip.
  */
 int tst_fs_in_skiplist(const char *fs_type, const char *const *skiplist);
 

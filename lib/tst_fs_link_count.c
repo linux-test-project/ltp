@@ -119,7 +119,7 @@ int tst_fs_fill_subdirs_(void (*cleanup) (void), const char *dir)
 		return 0;
 	}
 
-	/* for current kernel, subdir limit is not availiable for all fs */
+	/* for current kernel, subdir limit is not available for all fs */
 	fs_type = tst_fs_type(cleanup, dir);
 
 	whitelist_size = ARRAY_SIZE(subdir_limit_whitelist);
