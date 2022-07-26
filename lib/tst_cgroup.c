@@ -502,7 +502,7 @@ static void cgroup_parse_config_line(const char *const config_entry)
 	}
 
 	if (!root->test_dir.dir_name && strcmp(test_dir_name, "NULL")) {
-		strncpy(cgroup_test_dir, test_dir_name, NAME_MAX);
+		strncpy(cgroup_test_dir, test_dir_name, NAME_MAX + 1);
 		cgroup_dir_mk(&root->ltp_dir, cgroup_test_dir, &root->test_dir);
 		root->test_dir.we_created_it = 1;
 	}
