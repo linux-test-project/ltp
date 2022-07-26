@@ -469,7 +469,6 @@ static void cgroup_parse_config_line(const char *const config_entry)
 {
 	char ctrl_name[CTRL_NAME_MAX + 1], mnt_path[PATH_MAX_STRLEN + 1], test_dir_name[NAME_MAX + 1];
 	int ver, we_require_it, we_mounted_it, ltp_dir_we_created_it, vars_read;
-	size_t len;
 	struct cgroup_root *root;
 	struct cgroup_ctrl *ctrl;
 
