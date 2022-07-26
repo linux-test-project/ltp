@@ -57,6 +57,15 @@ else
 	@-$(CHECK) $(CHECK_FLAGS) $(CPPFLAGS) $(CFLAGS) $<
 endif
 
+.PHONY: $(CHECK_HEADER_TARGETS)
+$(CHECK_HEADER_TARGETS): check-%.h: %.h
+ifdef VERBOSE
+	-$(CHECK_NOFLAGS) $<
+else
+	@echo CHECK $(target_rel_dir)$<
+	@-$(CHECK_NOFLAGS) $<
+endif
+
 .PHONY: $(SHELL_CHECK_TARGETS)
 $(SHELL_CHECK_TARGETS): check-%.sh: %.sh
 ifdef VERBOSE
