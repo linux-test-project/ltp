@@ -229,11 +229,11 @@ static const struct cgroup_file freezer_ctrl_files[] = {
 	{ }
 };
 
-static const struct cgroup_file netcls_ctrl_files[] = {
+static const struct cgroup_file net_cls_ctrl_files[] = {
 	{ }
 };
 
-static const struct cgroup_file netprio_ctrl_files[] = {
+static const struct cgroup_file net_prio_ctrl_files[] = {
 	{ }
 };
 
@@ -254,54 +254,27 @@ static const struct cgroup_file debug_ctrl_files[] = {
 };
 
 #define CTRL_NAME_MAX 31
+#define CGROUP_CTRL_MEMBER(x, y)[y] = { .ctrl_name = #x, .files = \
+	x ## _ctrl_files, .ctrl_indx = y, NULL, 0 }
+
 /* Lookup tree for item names. */
 static struct cgroup_ctrl controllers[] = {
-	[0] = { "cgroup", cgroup_ctrl_files, 0, NULL, 0 },
-	[CTRL_MEMORY] = {
-		"memory", memory_ctrl_files, CTRL_MEMORY, NULL, 0
-	},
-	[CTRL_CPU] = {
-		"cpu", cpu_ctrl_files, CTRL_CPU, NULL, 0
-	},
-	[CTRL_CPUSET] = {
-		"cpuset", cpuset_ctrl_files, CTRL_CPUSET, NULL, 0
-	},
-	[CTRL_IO] = {
-		"io", io_ctrl_files, CTRL_IO, NULL, 0
-	},
-	[CTRL_PIDS] = {
-		"pids", pids_ctrl_files, CTRL_PIDS, NULL, 0
-	},
-	[CTRL_HUGETLB] = {
-		"hugetlb", hugetlb_ctrl_files, CTRL_HUGETLB, NULL, 0
-	},
-	[CTRL_CPUACCT] = {
-		"cpuacct", cpuacct_ctrl_files, CTRL_CPUACCT, NULL, 0
-	},
-	[CTRL_DEVICES] = {
-		"devices", devices_ctrl_files, CTRL_DEVICES, NULL, 0
-	},
-	[CTRL_FREEZER] = {
-		"freezer", freezer_ctrl_files, CTRL_FREEZER, NULL, 0
-	},
-	[CTRL_NETCLS] = {
-		"net_cls", netcls_ctrl_files, CTRL_NETCLS, NULL, 0
-	},
-	[CTRL_NETPRIO] = {
-		"net_prio", netprio_ctrl_files, CTRL_NETPRIO, NULL, 0
-	},
-	[CTRL_BLKIO] = {
-		"blkio", blkio_ctrl_files, CTRL_BLKIO, NULL, 0
-	},
-	[CTRL_MISC] = {
-		"misc", misc_ctrl_files, CTRL_MISC, NULL, 0
-	},
-	[CTRL_PERFEVENT] = {
-		"perf_event", perf_event_ctrl_files, CTRL_PERFEVENT, NULL, 0
-	},
-	[CTRL_DEBUG] = {
-		"debug", debug_ctrl_files, CTRL_DEBUG, NULL, 0
-	},
+	CGROUP_CTRL_MEMBER(cgroup, 0),
+	CGROUP_CTRL_MEMBER(memory, CTRL_MEMORY),
+	CGROUP_CTRL_MEMBER(cpu, CTRL_CPU),
+	CGROUP_CTRL_MEMBER(cpuset, CTRL_CPUSET),
+	CGROUP_CTRL_MEMBER(io, CTRL_IO),
+	CGROUP_CTRL_MEMBER(pids, CTRL_PIDS),
+	CGROUP_CTRL_MEMBER(hugetlb, CTRL_HUGETLB),
+	CGROUP_CTRL_MEMBER(cpuacct, CTRL_CPUACCT),
+	CGROUP_CTRL_MEMBER(devices, CTRL_DEVICES),
+	CGROUP_CTRL_MEMBER(freezer, CTRL_FREEZER),
+	CGROUP_CTRL_MEMBER(net_cls, CTRL_NETCLS),
+	CGROUP_CTRL_MEMBER(net_prio, CTRL_NETPRIO),
+	CGROUP_CTRL_MEMBER(blkio, CTRL_BLKIO),
+	CGROUP_CTRL_MEMBER(misc, CTRL_MISC),
+	CGROUP_CTRL_MEMBER(perf_event, CTRL_PERFEVENT),
+	CGROUP_CTRL_MEMBER(debug, CTRL_DEBUG),
 	{ }
 };
 
