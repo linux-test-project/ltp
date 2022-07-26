@@ -35,23 +35,14 @@ static void run(unsigned int i)
 {
 	struct stat oldbuf, newbuf;
 
-	TEST(dup2(fd[i], nfd[i]));
-	if (TST_RET == -1) {
-		tst_res(TFAIL, "call failed unexpectedly");
+	TST_EXP_VAL(dup2(fd[i], nfd[i]), nfd[i]);
+	if (TST_RET == -1)
 		return;
-	}
 
 	SAFE_FSTAT(fd[i], &oldbuf);
 	SAFE_FSTAT(nfd[i], &newbuf);
 
-	if (oldbuf.st_ino != newbuf.st_ino)
-		tst_res(TFAIL,
-			"original inode(%ld) and duped inode(%ld) do not match",
-			oldbuf.st_ino, newbuf.st_ino);
-	else
-		tst_res(TPASS,
-			"original inode(%ld) and duped inode(%ld) are the same",
-			oldbuf.st_ino, newbuf.st_ino);
+	TST_EXP_EQ_LU(oldbuf.st_ino, newbuf.st_ino);
 
 	SAFE_CLOSE(TST_RET);
 }
