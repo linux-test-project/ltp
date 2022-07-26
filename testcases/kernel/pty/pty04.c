@@ -78,7 +78,6 @@ struct can_frame {
 
 #include "tst_safe_stdio.h"
 
-#define str(s) #s
 #define SLCAN_FRAME "t00185f5f5f5f5f5f5f5f\r"
 
 struct ldisc_info {
@@ -296,7 +295,7 @@ static void check_data(const struct ldisc_info *ldisc,
 		}
 
 		if (frm.can_dlc != CAN_MAX_DLEN) {
-			tst_res(TFAIL, "can_dlc = %d != " str(CAN_MAX_DLEN),
+			tst_res(TFAIL, "can_dlc = %d != " TST_TO_STR_(CAN_MAX_DLEN),
 				frm.can_dlc);
 			no_check = 1;
 		}
