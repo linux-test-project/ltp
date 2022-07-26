@@ -22,8 +22,6 @@
 #include "lapi/fcntl.h"
 #include "lapi/syscalls.h"
 
-#define PORT_NUM 33333
-
 static const char *variant_desc[] = {
 	"libc accept4()",
 	"__NR_accept4 syscall",
@@ -54,7 +52,7 @@ static int create_listening_socket(void)
 	memset(&svaddr, 0, sizeof(struct sockaddr_in));
 	svaddr.sin_family = AF_INET;
 	svaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	svaddr.sin_port = htons(PORT_NUM);
+	svaddr.sin_port = 0;
 
 	lfd = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
 
@@ -68,14 +66,16 @@ static int create_listening_socket(void)
 
 static void setup(void)
 {
+	socklen_t slen = sizeof(*conn_addr);
+
 	tst_res(TINFO, "Testing variant: %s", variant_desc[tst_variant]);
 
-	memset(conn_addr, 0, sizeof(*conn_addr));
-	conn_addr->sin_family = AF_INET;
-	conn_addr->sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-	conn_addr->sin_port = htons(PORT_NUM);
-
 	listening_fd = create_listening_socket();
+
+	memset(conn_addr, 0, sizeof(*conn_addr));
+	SAFE_GETSOCKNAME(listening_fd, (struct sockaddr *)conn_addr, &slen);
+	conn_addr->sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	tst_res(TINFO, "server listening on: %d", ntohs(conn_addr->sin_port));
 }
 
 static void cleanup(void)
