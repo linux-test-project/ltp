@@ -45,6 +45,7 @@ To build and run the tests, you should be in the main posix test suite
 directory.
 
 From there, execute:
+    # ./configure
     # make all
 
 This will build all of the conformance, functional, and stress tests.

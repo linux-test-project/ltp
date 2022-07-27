@@ -10,8 +10,6 @@ No worries! Here's a quick doc to help you around POSIX** Test Suite.
 Setting up your machine
 ========================
 
-* There is nothing to install, the suite is intended to be run directly.
-
 * See the "BUILD" file for info on how to set up the Makefile and your machine,
   depending on what specific area you are concentrating on.
 (Signals, Semaphores, Threads, Timers or Message Queues).
@@ -20,8 +18,8 @@ Setting up your machine
 Running the tests
 ===================
 
-* Easiest way to run all the tests is to do a "make all" in the top-level
-  directory.
+* Easiest way to run all the tests is to do a "./configure && make all"
+  in the top-level directory.
 
 * To run tests for a specific directory, do the following
   - make generate-makefiles # only required for the first shot.

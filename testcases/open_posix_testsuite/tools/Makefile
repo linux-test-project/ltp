@@ -4,14 +4,15 @@
 # Ngie Cooper, June 2010
 #
 
--include ../../../include/mk/config-openposix.mk
+top_srcdir ?= ..
+srcdir     =  $(top_srcdir)/tools
 
-top_srcdir?=	..
+include ../include/mk/env.mk
 
-srcdir=		$(top_srcdir)/tools
-
+.PHONY: all
 all: ../bin/t0
 
+.PHONY: clean
 clean:
 	@rm -f ../bin/t0
 

@@ -8,7 +8,9 @@
 #
 # Use to build and run tests for a specific area
 
-BASEDIR="$(dirname "$0")/../conformance/interfaces"
+TESTPATH=""
+
+BASEDIR="$(dirname "$0")/../${TESTPATH}/conformance/interfaces"
 
 usage()
 {

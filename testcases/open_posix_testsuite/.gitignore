@@ -15,3 +15,8 @@
 run.sh
 
 logfile
+
+/configure
+/config.log
+/config.status
+include/mk/config.mk

@@ -20,8 +20,8 @@ released files.
 4.  Download the *.tar.gz file from the SF interface and untar it in
     a sandbox.
 
-5.  Run "make" to try to build and execute all files in the release, and
-    ensure that they all build and execute correctly.
+5.  Run "./configure && make" to try to build and execute all files
+    in the release, and ensure that they all build and execute correctly.
 
 6.  Craft a release message and send to:  posixtest-announce.
 
