@@ -136,7 +136,7 @@ EOF
 EOF
 
 		for var in CFLAGS LDFLAGS LDLIBS; do
-			if [ -f "${TOP_SRCDIR}/$var" ]; then
+			if [ -f "${prereq_cache_dir}/$var" ]; then
 				cat >> "$makefile.1" <<EOF
 ${var}+=		`cat "${prereq_cache_dir}/${var}" 2>/dev/null`
 EOF
