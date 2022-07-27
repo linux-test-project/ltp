@@ -27,12 +27,17 @@ AUTOHEADER	?= autoheader
 AUTOMAKE	?= automake
 
 AUTOCONFED_SUBDIRS	= \
-			testcases/realtime
+			testcases/realtime \
+			testcases/open_posix_testsuite
 
 # We want to run this every single time to ensure that all of the prereq files
 # are there.
 .PHONY: testcases/realtime/configure
 testcases/realtime/configure:
+	$(MAKE) -C $(@D) autotools
+
+.PHONY: testcases/open_posix_testsuite/configure
+testcases/open_posix_testsuite/configure:
 	$(MAKE) -C $(@D) autotools
 
 .PHONY: autotools
