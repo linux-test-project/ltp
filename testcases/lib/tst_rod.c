@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	execvp(argv[1], args);
+	execvp(args[0], args);
 
 	/* Fall back to shell if command wasn't found */
 	FILE *sin = popen("/bin/sh", "w");
