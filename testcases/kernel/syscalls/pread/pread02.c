@@ -42,7 +42,7 @@ static void verify_pread(unsigned int n)
 	char buf[K1];
 
 	TST_EXP_FAIL2(pread(*tc->fd, &buf, tc->nb, tc->offst), tc->exp_errno,
-		"pread(%d, %zu, %ld) %s", *tc->fd, tc->nb, tc->offst, tc->desc);
+		"pread(%d, %zu, %lld) %s", *tc->fd, tc->nb, (long long)tc->offst, tc->desc);
 }
 
 static void setup(void)
