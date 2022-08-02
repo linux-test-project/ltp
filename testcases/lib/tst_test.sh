@@ -345,10 +345,11 @@ tst_umount()
 
 tst_mkfs()
 {
+	local opts
 	local fs_type=${1:-$TST_FS_TYPE}
 	[ $# -ge 1 ] && shift
 
-	local opts="$@"
+	opts="$@"
 
 	if [ -z "$opts" ]; then
 		if [ "$TST_NEEDS_DEVICE" != 1 ]; then
