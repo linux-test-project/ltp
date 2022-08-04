@@ -1,124 +1,61 @@
-/* Copyright (c) 2014 Red Hat, Inc. All rights reserved.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ***********************************************************************
- * File: pidns03.c
- *
- * Description:
- * Clones a new child process with CLONE_NEWPID flag - the new child
- * process mounts procfs to a "proc" directory and checks if it belongs
- * to a new pid namespace by:
- * 1. reading value of "proc/self", which is symlink
- *    to directory named after current pid number
- * 2. comparing read value (PID) with "1"
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2014 Red Hat, Inc. All rights reserved.
+ * Copyright (C) 2022 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-#define _GNU_SOURCE
-#include <sys/wait.h>
+/*\
+ * [Description]
+ *
+ * Clone a process with CLONE_NEWPID flag and check if procfs mounted folder
+ * belongs to the new pid namespace by looking at /proc/self .
+ */
+
 #include <sys/mount.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include "pidns_helper.h"
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
+#include "lapi/namespaces_constants.h"
 
 #define PROCDIR "proc"
-char *TCID = "pidns03";
-int TST_TOTAL	= 1;
 
-
-static void cleanup(void)
+static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
 {
-	tst_rmdir();
-}
+	char proc_self[10];
 
-static void setup(void)
-{
-	tst_require_root();
-	check_newpid();
-	tst_tmpdir();
-	SAFE_MKDIR(cleanup, PROCDIR, 0555);
-}
+	SAFE_MOUNT("none", PROCDIR, "proc", MS_RDONLY, NULL);
 
-int child_func(void *arg)
-{
-	ssize_t r;
-	char buf[10];
+	SAFE_READLINK(PROCDIR"/self", proc_self, sizeof(proc_self) - 1);
 
-	if (mount("none", PROCDIR, "proc", MS_RDONLY, NULL) == -1) {
-		perror("mount");
-		return 1;
-	}
+	SAFE_UMOUNT(PROCDIR);
 
-	/* self is symlink to directory named after current pid number */
-	r = readlink(PROCDIR"/self", buf, sizeof(buf)-1);
-	if (r == -1) {
-		perror("readlink");
-		umount(PROCDIR);
-		return 1;
-	}
-
-	buf[r] = '\0';
-
-	umount(PROCDIR);
-
-	/* child should have PID 1 in a new pid namespace - if true
-	 * procfs belongs to the new pid namespace */
-	if (strcmp(buf, "1")) {
-		fprintf(stderr, "%s contains: %s\n", PROCDIR"/self", buf);
-		return 1;
-	}
+	TST_EXP_PASS(strcmp(proc_self, "1"), PROCDIR"/self contains 1:");
 
 	return 0;
 }
 
-static void test(void)
+static void setup(void)
 {
-	int status;
-
-	if (do_clone_tests(CLONE_NEWPID, child_func, NULL, NULL, NULL) == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "clone failed");
-
-	SAFE_WAIT(cleanup, &status);
-
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-		tst_resm(TPASS, "mounting procfs in a new namespace");
-		return;
-	}
-
-	if (WIFSIGNALED(status)) {
-		tst_resm(TFAIL, "child was killed with signal %s",
-			 tst_strsig(WTERMSIG(status)));
-		return;
-	}
-
-	tst_resm(TFAIL, "mounting procfs in a new namespace");
+	SAFE_MKDIR(PROCDIR, 0555);
 }
 
-int main(int argc, char *argv[])
+static void cleanup(void)
 {
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++)
-		test();
-
-	cleanup();
-	tst_exit();
+	if (tst_is_mounted_at_tmpdir(PROCDIR))
+		SAFE_UMOUNT(PROCDIR);
 }
+
+static void run(void)
+{
+	int ret;
+
+	ret = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_func, NULL);
+	if (ret < 0)
+		tst_brk(TBROK | TERRNO, "clone failed");
+}
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_root = 1,
+	.needs_tmpdir = 1,
+};
