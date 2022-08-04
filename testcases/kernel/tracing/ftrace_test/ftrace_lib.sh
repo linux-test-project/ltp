@@ -60,7 +60,7 @@ save_old_setting()
 {
 	cd $TRACING_PATH
 
-	old_trace_options=( `cat trace_options` )
+	old_trace_options=`cat trace_options`
 	old_tracing_on=`cat tracing_on`
 	old_buffer_size=`cat buffer_size_kb`
 	old_tracing_cpumask=`cat tracing_cpumask`
