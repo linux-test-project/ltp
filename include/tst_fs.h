@@ -51,8 +51,8 @@ enum {
  * @mult: mult should be TST_KB, TST_MB or TST_GB
  * the required free space is calculated by @size * @mult
  */
-int tst_fs_has_free_(void (*cleanup)(void), const char *path,
-                     unsigned int size, unsigned int mult);
+int tst_fs_has_free_(void (*cleanup)(void), const char *path, unsigned int size,
+		     unsigned int mult);
 
 /*
  * Returns filesystem magick for a given path.
@@ -186,7 +186,7 @@ enum tst_fs_impl tst_fs_is_supported(const char *fs_type);
  * Returns NULL-terminated array of kernel-supported filesystems.
  *
  * @skiplist A NULL terminated array of filesystems to skip.
-*/
+ */
 const char **tst_get_supported_fs_types(const char *const *skiplist);
 
 /*
@@ -214,7 +214,7 @@ static inline long tst_fs_type(const char *path)
 }
 
 static inline int tst_fs_has_free(const char *path, unsigned int size,
-                                  unsigned int mult)
+				  unsigned int mult)
 {
 	return tst_fs_has_free_(NULL, path, size, mult);
 }
@@ -240,7 +240,7 @@ static inline long tst_fs_type(void (*cleanup)(void), const char *path)
 }
 
 static inline int tst_fs_has_free(void (*cleanup)(void), const char *path,
-                                  unsigned int size, unsigned int mult)
+				  unsigned int size, unsigned int mult)
 {
 	return tst_fs_has_free_(cleanup, path, size, mult);
 }
