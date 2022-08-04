@@ -14,6 +14,7 @@
 #include "tst_test.h"
 #include "tst_fs.h"
 
+/* NOTE: new filesystem should be also added to tst_skip_filesystems.sh */
 static const char *const fs_type_whitelist[] = {
 	"ext2",
 	"ext3",

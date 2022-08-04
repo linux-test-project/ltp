@@ -628,6 +628,7 @@ tst_run()
 	local _tst_max
 	local _tst_name
 	local _tst_pattern='[='\''"} \t\/:`$\;].*'
+	local ret
 
 	if [ -n "$TST_TEST_PATH" ]; then
 		for _tst_i in $(grep '^[^#]*\bTST_' "$TST_TEST_PATH" | sed "s/.*TST_//; s/$_tst_pattern//"); do
@@ -646,6 +647,7 @@ tst_run()
 			CHECKPOINT_WAIT|CHECKPOINT_WAKE);;
 			CHECKPOINT_WAKE2|CHECKPOINT_WAKE_AND_WAIT);;
 			DEV_EXTRA_OPTS|DEV_FS_OPTS|FORMAT_DEVICE|MOUNT_DEVICE);;
+			SKIP_FILESYSTEMS);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done
@@ -676,6 +678,10 @@ tst_run()
 		tst_kvcmp -lt "$TST_MIN_KVER" && \
 			tst_brk TCONF "test requires kernel $TST_MIN_KVER+"
 	fi
+
+	tst_supported_fs -s "$TST_SKIP_FILESYSTEMS" $TST_FS_TYPE
+	ret=$?
+	[ $ret -ne 0 ] && return $ret
 
 	_tst_setup_timer
 
