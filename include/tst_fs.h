@@ -92,7 +92,7 @@ const char *tst_fs_type_name(long f_type);
  * The code uses link(2) to create hard links to a single file until it gets
  * EMLINK or creates 65535 links.
  *
- * If limit is hit maximal number of hardlinks is returned and the the @dir is
+ * If limit is hit maximal number of hardlinks is returned and the @dir is
  * filled with hardlinks in format "testfile%i" where i belongs to [0, limit)
  * interval.
  *
@@ -176,7 +176,7 @@ enum tst_fs_impl {
 };
 
 /*
- * Returns if filesystem is suppored and if driver is in kernel or FUSE.
+ * Returns if filesystem is supported and if driver is in kernel or FUSE.
  *
  * @fs_type A filesystem name to check the support for.
  */

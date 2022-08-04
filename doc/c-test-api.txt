@@ -1340,7 +1340,7 @@ long long tst_timer_elapsed_us(void);
 int tst_timer_expired_ms(long long ms);
 -------------------------------------------------------------------------------
 
-The 'tst_timer_check()' function checks if specified 'clk_id' is suppored and
+The 'tst_timer_check()' function checks if specified 'clk_id' is supported and
 exits the test with 'TCONF' otherwise. It's expected to be used in test
 'setup()' before any resources that needs to be cleaned up are initialized,
 hence it does not include a cleanup function parameter.
