@@ -17,13 +17,23 @@
 
 static void usage(void)
 {
-	fprintf(stderr, "Usage: tst_supported_fs fs_type\n");
-	fprintf(stderr, "Usage: tst_supported_fs [-s skip_list]\n");
-	fprintf(stderr, "   If fs_type is supported, return 0\n");
-	fprintf(stderr, "   If fs_type isn't supported, return 1\n");
-	fprintf(stderr, "   If fs_type isn't specified, print the list of supported filesystems\n");
-	fprintf(stderr, "   fs_type - a specified filesystem type\n");
-	fprintf(stderr, "   skip_list - filesystems to skip, delimiter: '%c'\n",
+	fprintf(stderr, "Usage:\n");
+	fprintf(stderr, "* all filesystems\n");
+	fprintf(stderr, "tst_supported_fs [-s skip_list]\n");
+	fprintf(stderr, "   print the list of supported filesystems\n");
+	fprintf(stderr, "   if fs_type is supported and not in skip_list (optional),\n"
+			"   print list of supported filesystems and return 0\n");
+	fprintf(stderr, "   if fs_type isn't supported or in skip_list, return 1\n\n");
+
+	fprintf(stderr, "* single filesystem\n");
+	fprintf(stderr, "tst_supported_fs fs_type\n");
+	fprintf(stderr, "   if fs_type is supported, return 0 otherwise return 1\n\n");
+
+	fprintf(stderr, "tst_supported_fs -s skip_list fs_type\n");
+	fprintf(stderr, "   if fs_type is in skip_list, return 1 otherwise return 0\n\n");
+
+	fprintf(stderr, "fs_type - a specified filesystem type\n");
+	fprintf(stderr, "skip_list - filesystems to skip, delimiter: '%c'\n",
 			SKIP_DELIMITER);
 }
 
@@ -82,10 +92,29 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	if (optind < argc)
-		return !tst_fs_is_supported(argv[optind]);
+	/* fs_type */
+	if (optind < argc) {
+		if (argv[optind][0] == '\0')
+			tst_brk(TCONF, "fs_type is empty");
 
+		if (skiplist) {
+			if (tst_fs_in_skiplist(argv[optind], (const char * const*)skiplist))
+				tst_brk(TCONF, "%s is skipped", argv[optind]);
+			else
+				tst_res(TINFO, "%s is not skipped", argv[optind]);
 
+			return 0;
+		}
+
+		if (tst_fs_is_supported(argv[optind]) == TST_FS_UNSUPPORTED)
+			tst_brk(TCONF, "%s is not supported", argv[optind]);
+		else
+			tst_res(TINFO, "%s is supported", argv[optind]);
+
+		return 0;
+	}
+
+	/* all filesystems */
 	filesystems = tst_get_supported_fs_types((const char * const*)skiplist);
 
 	if (!filesystems[0])
