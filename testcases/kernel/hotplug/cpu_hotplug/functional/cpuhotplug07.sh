@@ -100,9 +100,9 @@ until [ $LOOP_COUNT -gt $HOTPLUG07_LOOPS ]; do
 	# Move spin_loop.sh to the CPU to offline.
 	set_affinity ${KCOMPILE_LOOP_PID} ${CPU_TO_TEST}
 
-	offline_cpu ${CPU_TO_TEST}
-	RC=$?
-	echo "Offlining cpu${CPU_TO_TEST}: Return Code = ${RC}"
+	if ! offline_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
+	fi
 
 	NEW_CPU=`ps --pid=${KCOMPILE_LOOP_PID} -o psr --no-headers`
 	if [ -z "${NEW_CPU}" ]; then
@@ -113,9 +113,9 @@ until [ $LOOP_COUNT -gt $HOTPLUG07_LOOPS ]; do
 		tst_exit
 	fi
 
-	online_cpu ${CPU_TO_TEST}
-	RC=$?
-	echo "Onlining cpu${CPU_TO_TEST}: Return Code = ${RC}"
+	if ! online_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
+	fi
 
 	LOOP_COUNT=$((LOOP_COUNT+1))
 

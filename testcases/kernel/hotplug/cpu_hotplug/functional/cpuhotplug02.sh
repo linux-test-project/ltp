@@ -90,7 +90,10 @@ until [ $LOOP_COUNT -gt $HOTPLUG02_LOOPS ]; do
 	set_affinity ${SPIN_LOOP_PID} ${CPU_TO_TEST}
 
 	# Verify the process migrated to the CPU we intended it to go to
-	offline_cpu ${CPU_TO_TEST}
+	if ! offline_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
+	fi
+
 	NEW_CPU=`ps --pid=${SPIN_LOOP_PID} -o psr --no-headers`
 	if [ -z "${NEW_CPU}" ]; then
 		tst_brkm TBROK "PID ${SPIN_LOOP_PID} no longer running"
@@ -101,7 +104,10 @@ until [ $LOOP_COUNT -gt $HOTPLUG02_LOOPS ]; do
 	fi
 
 	# Turn the CPU back online just to see what happens.
-	online_cpu ${CPU_TO_TEST}
+	if ! online_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
+	fi
+
 	LOOP_COUNT=$((LOOP_COUNT+1))
 done
 

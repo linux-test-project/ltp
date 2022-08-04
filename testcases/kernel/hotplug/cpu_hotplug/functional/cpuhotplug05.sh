@@ -36,7 +36,9 @@ EOF
 do_clean()
 {
 	pid_is_valid ${SAR_PID} && kill_pid ${SAR_PID}
-	online_cpu "$CPU_TO_TEST"
+	if ! online_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
+	fi
 }
 
 get_field()
@@ -149,7 +151,10 @@ until [ $LOOP_COUNT -gt $HOTPLUG05_LOOPS ]; do
 		tst_exit
 	fi
 
-	offline_cpu ${CPU_TO_TEST}
+	if ! offline_cpu ${CPU_TO_TEST}; then
+		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be offlined"
+	fi
+
 	kill_pid ${SAR_PID}
 
 	LOOP_COUNT=$((LOOP_COUNT+1))
