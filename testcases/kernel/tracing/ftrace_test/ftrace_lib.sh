@@ -128,12 +128,11 @@ restore_old_setting()
 	echo $old_buffer_size > buffer_size_kb
 	echo $old_tracing_on > tracing_on
 
-	if [ -e tracing_enabled ];then
+	if [ -e tracing_enabled ]; then
 		echo $old_tracing_enabled > tracing_enabled
 	fi
 
-	for option in $old_trace_options
-	do
+	for option in $old_trace_options; do
 		echo $option > trace_options 2> /dev/null
 	done
 
