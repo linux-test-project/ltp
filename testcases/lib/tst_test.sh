@@ -348,6 +348,11 @@ tst_mkfs()
 
 	opts="$@"
 
+	if [ "$fs_type" = tmpfs ]; then
+		tst_res TINFO "Skipping mkfs for TMPFS filesystem"
+		return
+	fi
+
 	if [ -z "$opts" ]; then
 		if [ "$TST_NEEDS_DEVICE" != 1 ]; then
 			tst_brk "Using default parameters in tst_mkfs requires TST_NEEDS_DEVICE=1"
