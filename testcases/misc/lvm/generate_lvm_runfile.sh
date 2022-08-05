@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/sh -e
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
+# Copyright (c) Linux Test Project, 2020-2022
 #
 # Generate LTP runfile for LVM tests (runtest/lvm.local)
 
@@ -13,7 +14,7 @@ LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
 
 generate_runfile()
 {
-	trap 'tst_brk TBROK "Cannot create LVM runfile"' ERR
+	trap '[ $? -eq 0 ] || tst_brk TBROK "Cannot create LVM runfile"' EXIT
 	INFILE="$LTPROOT/testcases/data/lvm/runfile.tpl"
 	OUTFILE="$LTPROOT/runtest/lvm.local"
 	FS_LIST=`tst_supported_fs`
