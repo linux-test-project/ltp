@@ -113,6 +113,7 @@ AC_CHECK_FUNCS_ONCE([ \
     mkdirat \
     mknodat \
     modify_ldt \
+    mount_setattr \
     move_mount \
     name_to_handle_at \
     open_tree \

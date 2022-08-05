@@ -6,8 +6,10 @@
  * Email: code@zilogic.com
  */
 
-#ifdef HAVE_LINUX_FS_H
-# include <linux/fs.h>
+#ifndef HAVE_MOUNT_SETATTR
+# ifdef HAVE_LINUX_FS_H
+#  include <linux/fs.h>
+# endif
 #endif
 
 #include <sys/user.h>
