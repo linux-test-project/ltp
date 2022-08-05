@@ -8,6 +8,9 @@
 #define LAPI_PIDFD_H__
 
 #include <fcntl.h>
+#ifdef HAVE_SYS_PIDFD_H
+# include <sys/pidfd.h>
+#endif
 #include "config.h"
 #include "lapi/syscalls.h"
 

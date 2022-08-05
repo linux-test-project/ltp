@@ -71,6 +71,7 @@ AC_CHECK_HEADERS_ONCE([ \
     sys/epoll.h \
     sys/fanotify.h \
     sys/inotify.h \
+    sys/pidfd.h
     sys/prctl.h \
     sys/shm.h \
     sys/timerfd.h \
