@@ -18,7 +18,6 @@
  */
 
 #define _GNU_SOURCE
-#include <sys/mount.h>
 #include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/fs.h"
