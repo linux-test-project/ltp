@@ -24,15 +24,16 @@ and has some general knowledge of Operating Systems. Experienced Linux
 developers may find it too verbose while people new to system level Linux
 development may find it overwhelming.
 
-Comments and feedback are welcome, please direct them to the mailing list (see
-+README+).
+Comments and feedback are welcome, please direct them to
+https://lists.linux.it/listinfo/ltp[the mailing list].
 
 1. Getting Started
 ------------------
 
-Git-clone the main LTP repository as described in the +README+ and change
-directory to the checked-out Git repository. We recommend installing the LTP
-and running one of the tests mentioned in the Quick guide (in the +README+) to
+Git-clone the main LTP repository as described in
+https://github.com/linux-test-project/ltp#quick-guide-to-running-the-tests[the +README.md+]
+and change directory to the checked-out Git repository. We recommend installing the LTP
+and running one of the tests mentioned in the Quick guide (in the +README.md+) to
 ensure you are starting from a good state.
 
 We also recommended cloning the Linux kernel repository for reference, this
@@ -220,7 +221,7 @@ $ ./statx01
 
 This should build the test and then run it. However, even though the test is
 in the +syscalls+ directory it won't be automatically ran as part of the
-_syscalls_ test group (remember +./runltp -f syscalls+ from the +README+?). For
+_syscalls_ test group (remember +./runltp -f syscalls+ from the +README.md+?). For
 this we need to add it to the +runtest+ file. So open +runtest/statx+ and add
 the lines starting with a +++.
 
@@ -315,7 +316,7 @@ Check coding style with `make check`
 3.4 Install the LTP and run the test with runtest
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Run +statx01+ on its own; similar to the +madvise+ tests in the +README+.
+Run +statx01+ on its own; similar to the +madvise+ tests in the +README.md+.
 
 4. Call the system call
 -----------------------
@@ -980,9 +981,9 @@ of the conflict. Usually, all you need to do is remove the lines you don't
 want, stage the changes and continue the 'rebase' with +git rebase
 --continue+.
 
-In order to create a patch e-mail we use +git format-patch+, we can then send
-that e-mail using +git send-email+. It is also possible to import the patch
-(+mbox+) file into a number of e-mail programs.
+In order to create a patch e-mail we use https://git-scm.com/docs/git-format-patch[+git format-patch+],
+we can then send that e-mail using https://git-scm.com/docs/git-send-email[+git send-email+].
+It is also possible to import the patch (+mbox+) file into a number of e-mail programs.
 
 [source,shell]
 --------------------------------------------------------------------------------
