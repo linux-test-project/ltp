@@ -8,7 +8,7 @@ tst_fuzzy_sync03 test_zero_hugepage.sh test_kconfig.sh
 test_children_cleanup.sh}"
 
 LTP_SHELL_API_TESTS="${LTP_SHELL_API_TESTS:-shell/tst_check_driver.sh
-shell/tst_check_kconfig0[1-5].sh shell/net/*.sh}"
+shell/tst_check_kconfig0[1-5].sh shell/tst_errexit.sh shell/net/*.sh}"
 
 cd $(dirname $0)
 PATH="$PWD/../../testcases/lib/:$PATH"
