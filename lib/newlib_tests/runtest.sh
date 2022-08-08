@@ -48,9 +48,6 @@ runtest_res()
 	local res="$1"
 	shift
 
-	tst_color_enabled
-	local color=$?
-
 	printf "runtest " >&2
 	tst_print_colored $res "$res: " >&2
 	echo "$@" >&2

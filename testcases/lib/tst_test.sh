@@ -112,9 +112,6 @@ tst_res()
 	local res=$1
 	shift
 
-	tst_color_enabled
-	local color=$?
-
 	_tst_inc_res "$res"
 
 	printf "$TST_ID $TST_COUNT " >&2
