@@ -518,7 +518,8 @@ _tst_cleanup_timer()
 {
 	if [ -n "$_tst_setup_timer_pid" ]; then
 		kill -TERM $_tst_setup_timer_pid 2>/dev/null
-		wait $_tst_setup_timer_pid 2>/dev/null
+		# kill is succesful only on test timeout
+		wait $_tst_setup_timer_pid 2>/dev/null || true
 	fi
 }
 
