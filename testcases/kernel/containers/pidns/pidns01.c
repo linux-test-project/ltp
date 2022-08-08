@@ -8,7 +8,7 @@
 /*\
  * [Description]
  *
- * Clone a process with CLONE_NEWPID flag and check:
+ * Clone a process with CLONE_NEWNS flag and check:
  *
  * - child process ID must be 1
  * - parent process ID must be 0
