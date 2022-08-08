@@ -24,18 +24,26 @@ tst_flag2color()
 
 tst_color_enabled()
 {
-	[ "$LTP_COLORIZE_OUTPUT" = "n" ] || [ "$LTP_COLORIZE_OUTPUT" = "0" ] && return 0
-	[ "$LTP_COLORIZE_OUTPUT" = "y" ] || [ "$LTP_COLORIZE_OUTPUT" = "1" ] && return 1
+	if [ "$LTP_COLORIZE_OUTPUT" = "n" -o "$LTP_COLORIZE_OUTPUT" = "0" ]; then
+		return 0
+	fi
+
+	if [ "$LTP_COLORIZE_OUTPUT" = "y" -o "$LTP_COLORIZE_OUTPUT" = "1" ]; then
+		return 1
+	fi
+
 	[ -t 1 ] || return 0
+
 	return 1
 }
 
 tst_print_colored()
 {
-	tst_color_enabled
-	local color=$?
+	local color=0
 
-	[ "$color" = "1" ] && tst_flag2color "$1"
+	tst_color_enabled || color=$?
+
+	[ "$color" != 1 ] || tst_flag2color "$1"
 	printf "$2"
-	[ "$color" = "1" ] && printf '\033[0m'
+	[ "$color" != 1 ] || printf '\033[0m'
 }
