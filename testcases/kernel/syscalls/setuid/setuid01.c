@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2009-2022
  */
 
-/* DESCRIPTION
- *	This test will verify that setuid(2) syscall basic functionality.
- *	setuid(2) returns a value of 0 and uid has been set successfully
- *	as a normal or super user.
+/*\
+ * [Description]
+ *
+ * Verify that setuid(2) returns 0 and effective uid has
+ * been set successfully as a normal or super user.
  */
 
 #include <errno.h>
@@ -19,15 +21,10 @@ static void verify_setuid(void)
 {
 	uid_t uid;
 
-	/* Set the effective user ID to the current real uid */
 	uid = getuid();
 	UID16_CHECK(uid, setuid);
 
-	TEST(SETUID(uid));
-	if (TST_RET == -1)
-		tst_res(TFAIL | TTERRNO, "setuid(%d) failed", uid);
-	else
-		tst_res(TPASS, "setuid(%d) successfully", uid);
+	TST_EXP_PASS(SETUID(uid), "setuid(%d)", uid);
 }
 
 static struct tst_test test = {
