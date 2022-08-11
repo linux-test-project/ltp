@@ -2,28 +2,19 @@
 /*
  * Copyright (c) International Business Machines Corp., 2001
  * Copyright (C) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2002-2022
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Check the functionality of the Alarm system call when the time input
- * parameter is zero.
+/*\
+ * [Description]
  *
- * Expected Result:
- * The previously specified alarm request should be cancelled and the
- * SIGALRM should not be received.
+ * Verify that any pending alarm() is canceled when seconds is zero.
  */
-
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
 
 #include "tst_test.h"
 
-static volatile int alarms_received = 0;
+static volatile int alarms_received;
 
 static void sigproc(int sig)
 {
@@ -38,25 +29,15 @@ static void setup(void)
 
 static void verify_alarm(void)
 {
-	int ret;
-
-	alarm(2);
+	TST_EXP_PASS_SILENT(alarm(2));
 	sleep(1);
 
-	ret = alarm(0);
+	TST_EXP_VAL(alarm(0), 1);
 
 	/* Wait for signal SIGALRM */
 	sleep(2);
 
-	if (alarms_received)
-		tst_res(TFAIL, "Received %i alarms", alarms_received);
-	else
-		tst_res(TPASS, "Received 0 alarms");
-
-	if (ret == 1)
-		tst_res(TPASS, "alarm(0) returned 1");
-	else
-		tst_res(TFAIL, "alarm(0) returned %i, expected 1", ret);
+	TST_EXP_EQ_LU(alarms_received, 0);
 }
 
 static struct tst_test test = {
