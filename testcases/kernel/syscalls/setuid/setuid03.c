@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2009-2022
  */
 
-/* DESCRIPTION
+/*\
+ * [Description]
+ *
  * This test will switch to nobody user for correct error code collection.
  * Verify setuid returns errno EPERM when it switches to root_user.
  */
@@ -19,16 +22,7 @@
 
 static void verify_setuid(void)
 {
-	TEST(SETUID(ROOT_USER));
-	if (TST_RET != -1) {
-		tst_res(TFAIL | TTERRNO, "setuid() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == EPERM)
-		tst_res(TPASS, "setuid() returned errno EPERM");
-	else
-		tst_res(TFAIL | TTERRNO, "setuid() returned unexpected errno");
+	TST_EXP_FAIL(SETUID(ROOT_USER), EPERM);
 }
 
 static void setup(void)
@@ -39,10 +33,7 @@ static void setup(void)
 	pw = SAFE_GETPWNAM("nobody");
 	uid = pw->pw_uid;
 
-	if (SETUID(uid) == -1) {
-		tst_brk(TBROK,
-			"setuid() failed to set the effective uid to %d", uid);
-	}
+	SAFE_SETUID(uid);
 
 	umask(0);
 }
