@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+/*
+ * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Author: Billy Jean Horne
- *
- * Test Description:
- *  1) alarm() return UINT_MAX if seconds is UINT_MAX.
- *  2) alarm() return UINT_MAX/2 if seconds is UINT_MAX/2.
- *  3) alarm() return UINT_MAX/4 if seconds is UINT_MAX/4.
+ * Copyright (c) Linux Test Project, 2009-2022
  */
 
-#include <unistd.h>
-#include <errno.h>
-#include <sys/signal.h>
-#include <limits.h>
+/*\
+ * [Description]
+ *
+ * Verify that alarm() returns:
+ * - zero when there was no previously scheduled alarm
+ * - number of seconds remaining until any previously scheduled alarm
+ */
 
 #include "tst_test.h"
 
@@ -29,37 +29,17 @@ static struct tcase {
 static void verify_alarm(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
-	unsigned int ret;
 
 	alarms_received = 0;
 
-	ret = alarm(tc->sec);
-	if (ret != 0) {
-		tst_res(TFAIL,
-			"alarm(%u) returned %ld, when 0 was ",
-			tc->sec, TST_RET);
-		return;
-	}
+	TST_EXP_PASS(alarm(tc->sec), "alarm(%u)", tc->sec);
 
-	TEST(alarm(0));
+	TST_EXP_VAL(alarm(0), tc->sec);
+
 	if (alarms_received == 1) {
-		tst_res(TFAIL,
-			"alarm(%u) signal was received for value %s",
-			tc->sec, tc->str);
-			return;
+		tst_res(TFAIL, "alarm(%u) delivered SIGALRM for seconds value %s",
+				tc->sec, tc->str);
 	}
-
-	if (tc->sec != TST_RET) {
-		tst_res(TFAIL,
-			"alarm(%u) returned %ld as unexpected",
-			tc->sec, TST_RET);
-			return;
-	}
-
-	tst_res(TPASS,
-		"alarm(%u) returned %ld as expected "
-		"for value %s",
-		tc->sec, TST_RET, tc->str);
 }
 
 static void sighandler(int sig)
