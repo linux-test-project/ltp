@@ -5,10 +5,12 @@
  *	06/2005 Test for alarm cleanup by Amos Waterland
  *
  * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2006-2022
  */
 
-/*
- * Test Description:
+/*\
+ * [Description]
+ *
  *  The return value of the alarm system call should be equal to the
  *  amount previously remaining in the alarm clock.
  *  A SIGALRM signal should be received after the specified amount of
@@ -17,34 +19,17 @@
 
 #include "tst_test.h"
 
-static volatile int alarms_fired = 0;
+static volatile int alarms_fired;
 
 static void run(void)
 {
-	unsigned int ret;
-
 	alarms_fired = 0;
 
-	ret = alarm(10);
-	if (ret)
-		tst_res(TFAIL, "alarm() returned non-zero");
-	else
-		tst_res(TPASS, "alarm() returned zero");
-
+	TST_EXP_PASS(alarm(10));
 	sleep(1);
-
-	ret = alarm(1);
-	if (ret == 9)
-		tst_res(TPASS, "alarm() returned remainder correctly");
-	else
-		tst_res(TFAIL, "alarm() returned wrong remained %u", ret);
-
+	TST_EXP_VAL(alarm(1), 9);
 	sleep(2);
-
-	if (alarms_fired == 1)
-		tst_res(TPASS, "alarm handler fired once");
-	else
-		tst_res(TFAIL, "alarm handler filred %u times", alarms_fired);
+	TST_EXP_EQ_LU(alarms_fired, 1);
 }
 
 static void sighandler(int sig)
