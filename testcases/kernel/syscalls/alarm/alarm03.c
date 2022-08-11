@@ -2,53 +2,32 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Author: Richard Logan
- *
- * Test Description:
- *  The process does a fork:
- *	1) By the value returned by child's alarm(0), check whether child
- *	   process cleared the previously specified alarm request or not.
- *	2) By the value returned by parent's alarm(0), check whether parent
- *	   process cleared the previously specified alarm request or not.
+ * Copyright (c) Linux Test Project, 2001-2022
  */
 
-#include <errno.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
+/*\
+ * [Description]
+ *
+ * Verify that alarms created by alarm() are not inherited by children
+ * created via fork.
+ */
 
+#include <stdlib.h>
 #include "tst_test.h"
 
 static void verify_alarm(void)
 {
 	pid_t pid;
 
-	TEST(alarm(100));
+	TST_EXP_PASS_SILENT(alarm(100));
 
 	pid = SAFE_FORK();
 	if (pid == 0) {
-		TEST(alarm(0));
-		if (TST_RET != 0) {
-			tst_res(TFAIL,
-				"alarm(100), fork, alarm(0) child's "
-				"alarm returned %ld", TST_RET);
-		} else {
-			tst_res(TPASS,
-				"alarm(100), fork, alarm(0) child's "
-				"alarm returned %ld", TST_RET);
-		}
+		TST_EXP_PASS(alarm(0), "alarm(0) in child process");
 		exit(0);
 	}
 
-	TEST(alarm(0));
-	if (TST_RET != 100) {
-		tst_res(TFAIL,
-			"alarm(100), fork, alarm(0) parent's "
-			"alarm returned %ld", TST_RET);
-	} else {
-		tst_res(TPASS,
-			"alarm(100), fork, alarm(0) parent's "
-			"alarm returned %ld", TST_RET);
-	}
+	TST_EXP_VAL(alarm(0), 100, "alarm(0) in parent process");
 }
 
 static struct tst_test test = {
