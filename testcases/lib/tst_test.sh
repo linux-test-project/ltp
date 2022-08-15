@@ -293,9 +293,11 @@ tst_mount()
 		mnt_opt="-t $TST_FS_TYPE"
 		mnt_err=" $TST_FS_TYPE type"
 	fi
+	local cmd="mount $mnt_opt $TST_DEVICE $TST_MNTPOINT $TST_MNT_PARAMS"
 
 	ROD_SILENT mkdir -p $TST_MNTPOINT
-	mount $mnt_opt $TST_DEVICE $TST_MNTPOINT $TST_MNT_PARAMS
+	tst_res TINFO "Mounting device: $cmd"
+	$cmd
 	local ret=$?
 
 	if [ $ret -eq 32 ]; then
