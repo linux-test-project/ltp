@@ -2,15 +2,16 @@
 /* Copyright (c) International Business Machines  Corp., 2001
  *	07/2001 John George
  *		-Ported
+ * Copyright (c) Linux Test Project, 2002-2022
+ */
+
+/*\
+ * [Description]
  *
  * check stat() with various error conditions that should produce
  * EACCES, EFAULT, ENAMETOOLONG,  ENOENT, ENOTDIR, ELOOP
  */
 
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <pwd.h>
 #include "tst_test.h"
 
@@ -23,7 +24,7 @@
 #define MODE_RW	        0666
 #define DIR_MODE        0755
 
-struct passwd *ltpuser;
+static struct passwd *ltpuser;
 
 static char long_dir[PATH_MAX + 2] = {[0 ... PATH_MAX + 1] = 'a'};
 static char loop_dir[PATH_MAX] = ".";
@@ -45,19 +46,7 @@ static void verify_stat(unsigned int n)
 	struct tcase *tc = TC + n;
 	struct stat stat_buf;
 
-	TEST(stat(tc->pathname, &stat_buf));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "stat() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_errno) {
-		tst_res(TPASS | TTERRNO, "stat() failed as expected");
-	} else {
-		tst_res(TFAIL | TTERRNO,
-			"stat() failed unexpectedly; expected: %d - %s",
-			tc->exp_errno, tst_strerrno(tc->exp_errno));
-	}
+	TST_EXP_FAIL(stat(tc->pathname, &stat_buf), tc->exp_errno);
 }
 
 static void setup(void)
