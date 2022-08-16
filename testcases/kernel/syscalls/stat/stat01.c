@@ -2,16 +2,17 @@
 /* Copyright (c) International Business Machines  Corp., 2001
  *	07/2001 John George
  *		-Ported
+ * Copyright (c) Linux Test Project, 2002-2022
+ */
+
+/*\
+ * [Description]
  *
  *  Verify that, stat(2) succeeds to get the status of a file and fills the
  *  stat structure elements regardless of whether process has or doesn't
  *  have read access to the file.
  */
 
-#include <sys/types.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <errno.h>
 #include <pwd.h>
 #include "tst_test.h"
 
@@ -22,9 +23,9 @@
 #define NEW_MODE         0222
 #define MASK             0777
 
-uid_t user_id;
-gid_t group_id;
-struct passwd *ltpuser;
+static uid_t user_id;
+static gid_t group_id;
+static struct passwd *ltpuser;
 
 static struct tcase{
 	char *pathname;
@@ -38,47 +39,14 @@ static void verify_stat(unsigned int n)
 {
 	struct tcase *tc = TC + n;
 	struct stat stat_buf;
-	int fail = 0;
 
-	TEST(stat(tc->pathname, &stat_buf));
+	TST_EXP_PASS(stat(tc->pathname, &stat_buf));
 
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "stat(%s) failed", tc->pathname);
-		return;
-	}
-
-	if (stat_buf.st_uid != user_id) {
-		tst_res(TFAIL, "stat_buf.st_uid = %i expected %i",
-			stat_buf.st_uid, user_id);
-		fail++;
-	}
-
-	if (stat_buf.st_gid != group_id) {
-		tst_res(TFAIL, "stat_buf.st_gid = %i expected %i",
-			stat_buf.st_gid, group_id);
-		fail++;
-	}
-
-	if (stat_buf.st_size != FILE_SIZE) {
-		tst_res(TFAIL, "stat_buf.st_size = %li expected %i",
-			(long)stat_buf.st_size, FILE_SIZE);
-		fail++;
-	}
-
-	if ((stat_buf.st_mode & MASK) != tc->mode) {
-		tst_res(TFAIL, "stat_buf.st_mode = %o expected %o",
-			(stat_buf.st_mode & MASK), tc->mode);
-		fail++;
-	}
-
-	if (stat_buf.st_nlink != 1) {
-		tst_res(TFAIL, "stat_buf.st_nlink = %lu expected 1",
-			stat_buf.st_nlink);
-		fail++;
-	}
-
-	if (!fail)
-		tst_res(TPASS, "stat(%s)", tc->pathname);
+	TST_EXP_EQ_LU(stat_buf.st_uid, user_id);
+	TST_EXP_EQ_LU(stat_buf.st_gid, group_id);
+	TST_EXP_EQ_LI(stat_buf.st_size, FILE_SIZE);
+	TST_EXP_EQ_LU(stat_buf.st_mode & MASK, tc->mode);
+	TST_EXP_EQ_LU(stat_buf.st_nlink, 1);
 }
 
 static void setup(void)
