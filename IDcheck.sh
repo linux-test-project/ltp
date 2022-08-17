@@ -26,9 +26,11 @@ echo "Checking for required user/group ids"
 echo ""
 
 # Check ids and create if needed.
+NO_ROOT_ID=1
 NO_NOBODY_ID=1
 NO_BIN_ID=1
 NO_DAEMON_ID=1
+NO_ROOT_GRP=1
 NO_NOBODY_GRP=1
 NO_BIN_GRP=1
 NO_DAEMON_GRP=1
@@ -49,7 +51,7 @@ fe() {
 prompt_for_create() {
 	if [ -z "$CREATE_ENTRIES" ] ; then
 
-		if [ $NO_NOBODY_ID -ne 0 -o $NO_BIN_ID -ne 0 -o $NO_DAEMON_ID -ne 0 -o $NO_NOBODY_GRP -ne 0 -o $NO_BIN_GRP -ne 0 -o $NO_DAEMON_GRP -ne 0 -o $NO_USERS_GRP -ne 0 -o $NO_SYS_GRP -ne 0 ] ; then
+		if [ $NO_ROOT_ID -ne 0 -o $NO_NOBODY_ID -ne 0 -o $NO_BIN_ID -ne 0 -o $NO_DAEMON_ID -ne 0 -o $NO_ROOT_GRP -ne 0 -o $NO_NOBODY_GRP -ne 0 -o $NO_BIN_GRP -ne 0 -o $NO_DAEMON_GRP -ne 0 -o $NO_USERS_GRP -ne 0 -o $NO_SYS_GRP -ne 0 ] ; then
 			echo -n "If any required user ids and/or groups are missing, would you like these created? [y/N]"
 			read ans
 			case "$ans" in
@@ -74,10 +76,12 @@ for i in "$passwd" "$group"; do
     fi
 done
 
+fe root "$passwd"; NO_ROOT_ID=$?
 fe bin "$passwd"; NO_BIN_ID=$?
 fe daemon "$passwd"; NO_DAEMON_ID=$?
 fe nobody "$passwd"; NO_NOBODY_ID=$?
 
+fe root "$group"; NO_ROOT_GRP=$?
 fe bin "$group"; NO_BIN_GRP=$?
 fe daemon "$group"; NO_DAEMON_GRP=$?
 fe nobody "$group" || fe nogroup "$group"; NO_NOBODY_GRP=$?
@@ -91,9 +95,11 @@ debug_vals() {
 echo "Missing the following group / user entries:"
 echo "Group file:		$group"
 echo "Password file:		$passwd"
+echo "root			$NO_ROOT_ID"
 echo "nobody:			$NO_NOBODY_ID"
 echo "bin:			$NO_BIN_ID"
 echo "daemon:			$NO_DAEMON_ID"
+echo "root grp:			$NO_ROOT_GRP"
 echo "nobody[/nogroup] grp:	$NO_NOBODY_GRP"
 echo "bin grp:			$NO_BIN_GRP"
 echo "daemon grp:		$NO_DAEMON_GRP"
@@ -130,6 +136,7 @@ make_user_group() {
 		fi
 	fi
 }
+make_user_group root 0 $NO_ROOT_ID $NO_ROOT_GRP
 make_user_group nobody 65534 $NO_NOBODY_ID $NO_NOBODY_GRP
 make_user_group bin 1 $NO_BIN_ID $NO_BIN_GRP
 make_user_group daemon 2 $NO_DAEMON_ID $NO_DAEMON_GRP
@@ -149,7 +156,7 @@ fi
 MISSING_ENTRY=0
 
 # For entries that exist in both $group and $passwd.
-for i in bin daemon; do
+for i in root bin daemon; do
     for file in "$group" "$passwd"; do
         if ! fe "$i" "$file"; then
             MISSING_ENTRY=1
