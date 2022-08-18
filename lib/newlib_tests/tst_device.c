@@ -15,7 +15,7 @@
 #include "tst_test.h"
 
 #define DEVBLOCKSIZE 2048
-#define DEV_MIN_SIZE 300
+#define DEV_MIN_SIZE 310
 
 static char *mntpoint;
 static uint64_t ltp_dev_size;
