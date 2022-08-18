@@ -14,8 +14,6 @@
 #include <linux/proc_fs.h>
 #include <linux/kernel.h>
 
-static int dummy_func_test(void);
-
 /* Dummy function called by dependent module */
 int dummy_func_test(void)
 {
