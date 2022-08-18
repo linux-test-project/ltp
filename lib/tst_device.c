@@ -44,7 +44,7 @@
 #define LOOP_CONTROL_FILE "/dev/loop-control"
 
 #define DEV_FILE "test_dev.img"
-#define DEV_SIZE_MB 256u
+#define DEV_SIZE_MB 300u
 
 static char dev_path[1024];
 static int device_acquired;
