@@ -17,7 +17,7 @@
  * xfs filesystem doesn't support STATX_ATTR_COMPRESSED flag, so we only test
  * three other flags.
  *
- * ext2, ext4, btrfs and xfs support statx syscall since the following commit
+ * ext2, ext4, btrfs, xfs and tmpfs support statx syscall since the following commit
  *
  *  commit 93bc420ed41df63a18ae794101f7cbf45226a6ef
  *  Author: yangerkun <yangerkun@huawei.com>
@@ -42,6 +42,13 @@
  *  Date:   Fri Mar 31 18:32:03 2017 +0100
  *
  *  xfs: report crtime and attribute flags to statx
+ *
+ *  commit e408e695f5f1f60d784913afc45ff2c387a5aeb8
+ *  Author: Theodore Ts'o <tytso@mit.edu>
+ *  Date:   Thu Jul 14 21:59:12 2022 -0400
+ *
+ *  mm/shmem: support FS_IOC_[SG]ETFLAGS in tmpfs
+ *
  */
 
 #define _GNU_SOURCE
@@ -88,8 +95,8 @@ static void setup(void)
 	for (i = 0, expected_mask = 0; i < ARRAY_SIZE(attr_list); i++)
 		expected_mask |= attr_list[i].attr;
 
-	/* STATX_ATTR_COMPRESSED not supported on XFS */
-	if (!strcmp(tst_device->fs_type, "xfs"))
+	/* STATX_ATTR_COMPRESSED not supported on XFS, TMPFS */
+	if (!strcmp(tst_device->fs_type, "xfs") || !strcmp(tst_device->fs_type, "tmpfs"))
 		expected_mask &= ~STATX_ATTR_COMPRESSED;
 
 	/* Attribute support was added to Btrfs statx() in kernel v4.13 */
@@ -132,6 +139,7 @@ static struct tst_test test = {
 		{"linux-git", "99652ea56a41"},
 		{"linux-git", "04a87e347282"},
 		{"linux-git", "5f955f26f3d4"},
+		{"linux-git", "e408e695f5f1"},
 		{}
 	},
 };
