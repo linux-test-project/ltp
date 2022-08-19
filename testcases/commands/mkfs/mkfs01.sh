@@ -37,8 +37,6 @@ setup()
 	if [ -n "$TST_FS_TYPE" ]; then
 		tst_require_cmds mkfs.$TST_FS_TYPE
 	fi
-
-	ROD_SILENT mkdir -p mntpoint
 }
 
 mkfs_verify_type()
@@ -57,7 +55,7 @@ mkfs_verify_type()
 mkfs_verify_size()
 {
 	tst_mount
-	local blocknum=`df -P -B 1k mntpoint | tail -n1 | awk '{print $2}'`
+	local blocknum=`df -P -B 1k $TST_MNTPOINT | tail -n1 | awk '{print $2}'`
 	tst_umount
 
 	if [ $blocknum -gt "$2" ]; then
