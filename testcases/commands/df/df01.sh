@@ -52,7 +52,7 @@ df_test()
 		return
 	fi
 
-	ROD_SILENT dd if=/dev/zero of=mntpoint/testimg bs=1024 count=1024
+	ROD_SILENT dd if=/dev/zero of=$TST_MNTPOINT/testimg bs=1024 count=1024
 
 	df_verify $cmd
 
@@ -63,7 +63,7 @@ df_test()
 		tst_res TFAIL "'$cmd' failed."
 	fi
 
-	ROD_SILENT rm -rf mntpoint/testimg
+	ROD_SILENT rm -rf $TST_MNTPOINT/testimg
 
 	# flush file system buffers, then we can get the actual sizes.
 	sync
@@ -88,14 +88,14 @@ df_verify()
 df_check()
 {
 	if [ "$(echo $@)" = "df -i -P" ]; then
-		local total=$(stat -f mntpoint --printf=%c)
-		local free=$(stat -f mntpoint --printf=%d)
+		local total=$(stat -f $TST_MNTPOINT --printf=%c)
+		local free=$(stat -f $TST_MNTPOINT --printf=%d)
 		local used=$((total-free))
 	else
-		local total=$(stat -f mntpoint --printf=%b)
-		local free=$(stat -f mntpoint --printf=%f)
+		local total=$(stat -f $TST_MNTPOINT --printf=%b)
+		local free=$(stat -f $TST_MNTPOINT --printf=%f)
 		local used=$((total-free))
-		local bsize=$(stat -f mntpoint --printf=%s)
+		local bsize=$(stat -f $TST_MNTPOINT --printf=%s)
 		total=$((($total * $bsize + 512)/ 1024))
 		used=$((($used * $bsize + 512) / 1024))
 	fi
@@ -187,7 +187,7 @@ test12()
 		return
 	fi
 
-	grep ${TST_DEVICE} output | grep -q mntpoint
+	grep $TST_DEVICE output | grep -q $TST_MNTPOINT
 	if [ $? -ne 0 ]; then
 		tst_res TPASS "'$cmd' passed."
 	else
