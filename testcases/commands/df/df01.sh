@@ -100,7 +100,7 @@ df_check()
 		used=$((($used * $bsize + 512) / 1024))
 	fi
 
-	grep ${TST_DEVICE} output | grep -q "${total}.*${used}"
+	grep $TST_DEVICE output | grep -q "${total}.*${used}"
 	if [ $? -ne 0 ]; then
 		echo "total: ${total}, used: ${used}"
 		echo "df saved output:"
@@ -133,7 +133,7 @@ test4()
 
 test5()
 {
-	df_test "df -t ${DF_FS_TYPE}"
+	df_test "df -t $DF_FS_TYPE"
 }
 
 test6()
@@ -143,7 +143,7 @@ test6()
 
 test7()
 {
-	df_test "df -v ${TST_DEVICE}"
+	df_test "df -v $TST_DEVICE"
 }
 
 test8()
@@ -180,7 +180,7 @@ test11()
 
 test12()
 {
-	local cmd="df -x ${DF_FS_TYPE} -P"
+	local cmd="df -x $DF_FS_TYPE -P"
 
 	df_verify $cmd
 	if [ $? -ne 0 ]; then
