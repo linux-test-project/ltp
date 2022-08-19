@@ -72,8 +72,8 @@ void test(void)
 	while (D == VALUE && loop < LOOPS) {
 		/* sys_tkill(pid, SIGHUP); asm to avoid save/reload
 		 * fp regs around c call */
-		asm ("" : : "a"(__NR_tkill), "D"(pid), "S"(SIGHUP));
-		asm ("syscall" : : : "ax");
+		int unused;
+		asm volatile ("syscall" : "=a"(unused) : "a"(__NR_tkill), "D"(pid), "S"(SIGHUP) : "rcx", "r11");
 
 		loop++;
 	}
