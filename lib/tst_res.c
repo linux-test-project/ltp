@@ -82,17 +82,26 @@ void *TST_RET_PTR;
 	assert(strlen(buf) > 0);		\
 } while (0)
 
-#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-# ifdef __ANDROID__
-#  define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP \
-	PTHREAD_RECURSIVE_MUTEX_INITIALIZER
-# else
-/* MUSL: http://www.openwall.com/lists/musl/2017/02/20/5 */
-#  define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP  { {PTHREAD_MUTEX_RECURSIVE} }
-# endif
+#if !defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP) && defined(__ANDROID__)
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 #endif
 
+#ifdef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 static pthread_mutex_t tmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#else
+static pthread_mutex_t tmutex;
+
+__attribute__((constructor))
+static void init_tmutex(void)
+{
+	pthread_mutexattr_t mutattr = {0};
+
+	pthread_mutexattr_init(&mutattr);
+	pthread_mutexattr_settype(&mutattr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&tmutex, &mutattr);
+	pthread_mutexattr_destroy(&mutattr);
+}
+#endif
 
 static void check_env(void);
 static void tst_condense(int tnum, int ttype, const char *tmesg);
