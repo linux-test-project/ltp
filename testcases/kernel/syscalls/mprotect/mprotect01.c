@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
+#include "lapi/syscalls.h"
 #include "safe_macros.h"
 
 char *TCID = "mprotect01";
@@ -97,7 +98,7 @@ int main(int ac, char **av)
 			if (TC[i].setupfunc != NULL)
 				TC[i].setupfunc(&TC[i]);
 
-			TEST(mprotect(TC[i].addr, TC[i].len, TC[i].prot));
+			TEST(tst_syscall(__NR_mprotect, TC[i].addr, TC[i].len, TC[i].prot));
 
 			if (TEST_RETURN != -1) {
 				tst_resm(TFAIL, "call succeeded unexpectedly");
