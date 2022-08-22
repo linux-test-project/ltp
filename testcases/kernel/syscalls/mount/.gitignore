@@ -1,7 +1,7 @@
 /mount01
 /mount02
 /mount03
-/mount03_setuid_test
+/mount03_suid_child
 /mount04
 /mount05
 /mount06
