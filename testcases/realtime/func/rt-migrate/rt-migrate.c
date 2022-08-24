@@ -394,7 +394,7 @@ static void stop_log(int sig)
 
 int main(int argc, char **argv)
 {
-	pthread_t *threads;
+	int *threads;
 	long i;
 	int ret;
 	struct timespec intv;
