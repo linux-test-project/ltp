@@ -66,6 +66,14 @@
 # define MADV_KEEPONFORK 19
 #endif
 
+#ifndef MADV_COLD
+# define MADV_COLD	20
+#endif
+
+#ifndef MADV_PAGEOUT
+# define MADV_PAGEOUT	21
+#endif
+
 #ifndef MAP_FIXED_NOREPLACE
 
 #ifdef __alpha__
