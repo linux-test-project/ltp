@@ -132,6 +132,7 @@ static struct tst_test test = {
 	.min_kver = "4.11",
 	.skip_filesystems = (const char *const[]) {
 		"fuse",
+		"ntfs",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
