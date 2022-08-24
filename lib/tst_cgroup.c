@@ -93,9 +93,10 @@ enum cgroup_ctrl_indx {
 	CTRL_BLKIO,
 	CTRL_MISC,
 	CTRL_PERFEVENT,
-	CTRL_DEBUG
+	CTRL_DEBUG,
+	CTRL_RDMA
 };
-#define CTRLS_MAX CTRL_DEBUG
+#define CTRLS_MAX CTRL_RDMA
 
 /* At most we can have one cgroup V1 tree for each controller and one
  * (empty) v2 tree.
@@ -253,6 +254,10 @@ static const struct cgroup_file debug_ctrl_files[] = {
 	{ }
 };
 
+static const struct cgroup_file rdma_ctrl_files[] = {
+	{ }
+};
+
 #define CTRL_NAME_MAX 31
 #define CGROUP_CTRL_MEMBER(x, y)[y] = { .ctrl_name = #x, .files = \
 	x ## _ctrl_files, .ctrl_indx = y, NULL, 0 }
@@ -275,6 +280,7 @@ static struct cgroup_ctrl controllers[] = {
 	CGROUP_CTRL_MEMBER(misc, CTRL_MISC),
 	CGROUP_CTRL_MEMBER(perf_event, CTRL_PERFEVENT),
 	CGROUP_CTRL_MEMBER(debug, CTRL_DEBUG),
+	CGROUP_CTRL_MEMBER(rdma, CTRL_RDMA),
 	{ }
 };
 
