@@ -41,3 +41,68 @@ int safe_pthread_join(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_pthread_barrier_wait(const char *file, const int lineno,
+			      pthread_barrier_t *barrier)
+{
+	int rval;
+
+	rval =  pthread_barrier_wait(barrier);
+
+	if (rval && rval != PTHREAD_BARRIER_SERIAL_THREAD) {
+		tst_brk_(file, lineno, TBROK,
+			 "pthread_barrier_wait(%p) failed: %s",
+			 barrier, tst_strerrno(rval));
+	}
+
+	return rval;
+}
+
+int safe_pthread_barrier_destroy(const char *file, const int lineno,
+				 pthread_barrier_t *barrier)
+{
+	int rval;
+
+	rval = pthread_barrier_destroy(barrier);
+
+	if (rval) {
+		tst_brk_(file, lineno, TBROK,
+			 "pthread_barrier_destroy(%p) failed: %s",
+			 barrier, tst_strerrno(rval));
+	}
+
+	return rval;
+}
+
+int safe_pthread_cancel(const char *file, const int lineno,
+			pthread_t thread_id)
+{
+	int rval;
+
+	rval = pthread_cancel(thread_id);
+
+	if (rval) {
+		tst_brk_(file, lineno, TBROK,
+			 "pthread_cancel(...) failed: %s", tst_strerrno(rval));
+	}
+
+	return rval;
+}
+
+int safe_pthread_barrier_init(const char *file, const int lineno,
+			      pthread_barrier_t *restrict barrier,
+			      const pthread_barrierattr_t *restrict attr,
+			      unsigned count)
+{
+	int rval;
+
+	rval = pthread_barrier_init(barrier, attr, count);
+
+	if (rval) {
+		tst_brk_(file, lineno, TBROK,
+			 "pthread_barrier_init(%p, %p, %u)failed: %s",
+			 barrier, attr, count, tst_strerrno(rval));
+	}
+
+	return rval;
+}

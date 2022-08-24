@@ -30,4 +30,26 @@ int safe_pthread_join(const char *file, const int lineno,
 #define SAFE_PTHREAD_JOIN(thread_id, retval) \
 	safe_pthread_join(__FILE__, __LINE__, thread_id, retval)
 
+int safe_pthread_barrier_wait(const char *file, const int lineno,
+			      pthread_barrier_t *barrier);
+#define SAFE_PTHREAD_BARRIER_WAIT(barrier) \
+	safe_pthread_barrier_wait(__FILE__, __LINE__, barrier);
+
+int safe_pthread_barrier_destroy(const char *file, const int lineno,
+				 pthread_barrier_t *barrier);
+#define SAFE_PTHREAD_BARRIER_DESTROY(barrier) \
+	safe_pthread_barrier_destroy(__FILE__, __LINE__, barrier);
+
+int safe_pthread_barrier_init(const char *file, const int lineno,
+			      pthread_barrier_t *restrict barrier,
+			      const pthread_barrierattr_t *restrict attr,
+			      unsigned count);
+#define SAFE_PTHREAD_BARRIER_INIT(barrier, attr, count) \
+	safe_pthread_barrier_init(__FILE__, __LINE__, barrier, attr, count);
+
+int safe_pthread_cancel(const char *file, const int lineno,
+			pthread_t thread_id);
+#define SAFE_PTHREAD_CANCEL(thread_id) \
+	safe_pthread_cancel(__FILE__, __LINE__, thread_id);
+
 #endif /* TST_SAFE_PTHREAD_H__ */
