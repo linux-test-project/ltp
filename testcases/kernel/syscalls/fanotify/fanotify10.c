@@ -342,6 +342,17 @@ static void show_fanotify_marks(int fd)
 	}
 }
 
+static void drop_caches(const char *path)
+{
+	int fd = SAFE_OPEN(path, O_RDONLY);
+
+	if (syncfs(fd) < 0)
+		tst_brk(TBROK | TERRNO, "Unexpected error when syncing filesystem");
+
+	SAFE_CLOSE(fd);
+	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
+}
+
 static int create_fanotify_groups(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
@@ -402,7 +413,7 @@ add_mark:
 	 * drop_caches should evict inode from cache and remove evictable marks
 	 */
 	if (evictable_ignored) {
-		SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
+		drop_caches(tc->mark_path);
 		for (p = 0; p < num_classes; p++) {
 			for (i = 0; i < GROUPS_PER_PRIO; i++) {
 				if (fd_notify[p][i] > 0)
