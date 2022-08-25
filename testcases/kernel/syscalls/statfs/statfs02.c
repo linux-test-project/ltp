@@ -20,6 +20,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <sys/statfs.h>
 #include <sys/wait.h>
 #include "tst_test.h"
@@ -49,7 +50,26 @@ static struct test_case_t {
 
 static void statfs_verify(unsigned int n)
 {
-	TST_EXP_FAIL(statfs(tests[n].path, tests[n].buf), tests[n].exp_error, "statfs()");
+	int pid, status;
+
+	pid = SAFE_FORK();
+	if (!pid) {
+		TST_EXP_FAIL(statfs(tests[n].path, tests[n].buf), tests[n].exp_error, "statfs()");
+		exit(0);
+	}
+
+	SAFE_WAITPID(pid, &status, 0);
+
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+		return;
+
+	if (tests[n].exp_error == EFAULT &&
+	    WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV) {
+		tst_res(TPASS, "Got SIGSEGV instead of EFAULT");
+		return;
+	}
+
+	tst_res(TFAIL, "Child %s", tst_strstatus(status));
 }
 
 static void setup(void)
@@ -81,4 +101,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
+	.forks_child = 1,
 };
