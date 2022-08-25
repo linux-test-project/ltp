@@ -28,11 +28,21 @@ static union semun arg = {0};
 
 static int libc_semctl(int semid, int semnum, int cmd, ...)
 {
+	va_list ap;
+
+	va_start(ap, cmd);
+	arg = va_arg(ap, union semun);
+	va_end(ap);
 	return semctl(semid, semnum, cmd, arg);
 }
 
 static int sys_semctl(int semid, int semnum, int cmd, ...)
 {
+	va_list ap;
+
+	va_start(ap, cmd);
+	arg = va_arg(ap, union semun);
+	va_end(ap);
 	return tst_syscall(__NR_semctl, semid, semnum, cmd, arg);
 }
 
@@ -88,7 +98,7 @@ static void setup(void)
 	bad_ptr = tst_get_bad_addr(NULL);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (sem_id != -1)
 		SAFE_SEMCTL(sem_id, 0, IPC_RMID);
