@@ -50,7 +50,7 @@ static void verify_nice(void)
 
 	TEST(nice(DEFAULT_PRIO));
 	if (TST_ERR)
-		tst_brk(TBROK | TTERRNO, "nice(-NICEINC) failed");
+		tst_brk(TBROK | TTERRNO, "nice(%d) failed", DEFAULT_PRIO);
 }
 
 static struct tst_test test = {

@@ -18,19 +18,23 @@
 #include "tst_test.h"
 
 #define	NICEINC		-12
+#define MIN_PRIO	-20
 
 static void verify_nice(void)
 {
 	int new_nice;
 	int orig_nice;
+	int exp_nice;
 
 	orig_nice = SAFE_GETPRIORITY(PRIO_PROCESS, 0);
 
 	TEST(nice(NICEINC));
 
-	if (TST_RET != (orig_nice + NICEINC)) {
+	exp_nice = MAX(MIN_PRIO, (orig_nice + NICEINC));
+
+	if (TST_RET != exp_nice) {
 		tst_res(TFAIL | TTERRNO, "nice(%d) returned %li, expected %i",
-			NICEINC, TST_RET, orig_nice + NICEINC);
+			NICEINC, TST_RET, exp_nice);
 		return;
 	}
 
@@ -41,9 +45,9 @@ static void verify_nice(void)
 
 	new_nice = SAFE_GETPRIORITY(PRIO_PROCESS, 0);
 
-	if (new_nice != (orig_nice + NICEINC)) {
+	if (new_nice != exp_nice) {
 		tst_res(TFAIL, "Process priority %i, expected %i",
-		        new_nice, orig_nice + NICEINC);
+				new_nice, orig_nice + NICEINC);
 		return;
 	}
 
@@ -51,7 +55,7 @@ static void verify_nice(void)
 
 	TEST(nice(-NICEINC));
 	if (TST_ERR)
-		tst_brk(TBROK | TTERRNO, "nice(-NICEINC) failed");
+		tst_brk(TBROK | TTERRNO, "nice(%d) failed", -NICEINC);
 }
 
 static struct tst_test test = {
