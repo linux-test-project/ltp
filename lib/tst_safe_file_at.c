@@ -195,3 +195,23 @@ int safe_unlinkat(const char *const file, const int lineno,
 
 	return rval;
 }
+
+int safe_fchownat(const char *const file, const int lineno,
+		  const int dirfd, const char *const path, uid_t owner, gid_t group, int flags)
+{
+	int rval;
+
+	rval = fchownat(dirfd, path, owner, group, flags);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "fchownat(%d<%s>, '%s', %d, %d, %d) failed", dirfd,
+			 tst_decode_fd(dirfd), path, owner, group, flags);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid fchownat(%d<%s>, '%s', %d, %d, %d) return value %d",
+			 dirfd, tst_decode_fd(dirfd), path, owner, group, flags, rval);
+	}
+
+	return rval;
+}
