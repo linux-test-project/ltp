@@ -89,6 +89,9 @@ enum tst_cg_ver {
 	TST_CG_V2 = 2,
 };
 
+/* This value is greater than ROOTS_MAX in tst_cgroup.c. */
+#define TST_CG_ROOTS_MAX 32
+
 /* Used to specify CGroup hierarchy configuration options, allowing a
  * test to request a particular CGroup structure.
  */
@@ -200,6 +203,24 @@ void safe_cg_printf(const char *const file, const int lineno,
 			const char *const file_name,
 			const char *const fmt, ...)
 			__attribute__ ((format (printf, 5, 6), nonnull));
+
+#define SAFE_CG_OPEN(cg, file_name, flags, fds)			\
+	safe_cg_open(__FILE__, __LINE__, (cg), (file_name), (flags), (fds))
+
+int safe_cg_open(const char *const file, const int lineno,
+			const struct tst_cg_group *const cg,
+			const char *const file_name,
+			int flags, int *fds)
+			__attribute__ ((nonnull));
+
+#define SAFE_CG_FCHOWN(cg, file_name, owner, group)		\
+	safe_cg_fchown(__FILE__, __LINE__, (cg), (file_name), (owner), (group))
+
+void safe_cg_fchown(const char *const file, const int lineno,
+			const struct tst_cg_group *const cg,
+			const char *const file_name,
+			uid_t owner, gid_t group)
+			__attribute__ ((nonnull));
 
 #define SAFE_CG_SCANF(cg, file_name, fmt, ...)			\
 	safe_cg_scanf(__FILE__, __LINE__,				\

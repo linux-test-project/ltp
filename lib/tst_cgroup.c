@@ -1326,6 +1326,47 @@ void safe_cg_printf(const char *const file, const int lineno,
 	}
 }
 
+int safe_cg_open(const char *const file, const int lineno,
+		      const struct tst_cg_group *cg,
+		      const char *const file_name, int flags, int *fds)
+{
+	const struct cgroup_file *const cfile =
+		cgroup_file_find(file, lineno, file_name);
+	struct cgroup_dir *const *dir;
+	const char *alias;
+	int i = 0;
+
+	for_each_dir(cg, cfile->ctrl_indx, dir) {
+		alias = cgroup_file_alias(cfile, *dir);
+		if (!alias)
+			continue;
+
+		fds[i++] = safe_openat(file, lineno, (*dir)->dir_fd, alias, flags);
+	}
+
+	return i;
+}
+
+void safe_cg_fchown(const char *const file, const int lineno,
+			const struct tst_cg_group *cg,
+			const char *const file_name,
+			uid_t owner, gid_t group)
+{
+	const struct cgroup_file *const cfile =
+		cgroup_file_find(file, lineno, file_name);
+	struct cgroup_dir *const *dir;
+	const char *alias;
+
+	for_each_dir(cg, cfile->ctrl_indx, dir) {
+		alias = cgroup_file_alias(cfile, *dir);
+		if (!alias)
+			continue;
+
+		safe_fchownat(file, lineno, (*dir)->dir_fd, alias, owner, group, 0);
+	}
+}
+
+
 void safe_cg_scanf(const char *const file, const int lineno,
 		       const struct tst_cg_group *const cg,
 		       const char *const file_name,
