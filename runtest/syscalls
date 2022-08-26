@@ -1032,7 +1032,7 @@ profil01 profil01
 process_vm_readv01 process_vm01 -r
 process_vm_readv02 process_vm_readv02
 process_vm_readv03 process_vm_readv03
-process_vm_writev01 process_vm01 -w
+process_vm_writev01 process_vm01
 process_vm_writev02 process_vm_writev02
 
 prot_hsymlinks prot_hsymlinks
