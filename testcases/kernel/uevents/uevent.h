@@ -163,7 +163,7 @@ static inline void wait_for_pid(int pid)
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 			return;
 
-		tst_res(TFAIL, "Child exitted with %s", tst_strstatus(status));
+		tst_res(TFAIL, "Child exited with %s", tst_strstatus(status));
 	}
 
 	SAFE_KILL(pid, SIGKILL);

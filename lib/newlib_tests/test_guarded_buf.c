@@ -67,7 +67,7 @@ static void do_test(unsigned int n)
 
 	if (n < 3) {
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-			tst_res(TPASS, "Exitted normally");
+			tst_res(TPASS, "exited normally");
 			return;
 		}
 	} else {

@@ -102,7 +102,7 @@ we did in setup().
 
 Once the test process exits or leaves the run() or run\_all() function the test
 library wakes up from the waitpid() call, and checks if the test process
-exitted normally.
+exited normally.
 
 Once the testrun is finished the test library does a cleanup() as well to clean
 up resources set up in the test library setup(), reports test results and
