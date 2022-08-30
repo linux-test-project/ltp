@@ -27,6 +27,9 @@ setup()
 	# BLOCKSIZE environment variables. Here we need to
 	# set DU_BLOCK_SIZE to 1024 to ensure the result is expected.
 	export DU_BLOCK_SIZE=1024
+
+	# Some subtests are language dependent
+	export LC_ALL=C
 }
 
 du_test()
