@@ -1011,7 +1011,8 @@ int safe_setxattr(const char *file, const int lineno, const char *path,
 	if (rval == -1) {
 		if (errno == ENOTSUP) {
 			tst_brkm_(file, lineno, TCONF, NULL,
-				"no xattr support in fs or mounted without user_xattr option");
+				"no xattr support in fs, mounted without user_xattr option "
+				"or invalid namespace/name format");
 			return rval;
 		}
 
@@ -1037,7 +1038,8 @@ int safe_lsetxattr(const char *file, const int lineno, const char *path,
 	if (rval == -1) {
 		if (errno == ENOTSUP) {
 			tst_brkm_(file, lineno, TCONF, NULL,
-				"no xattr support in fs or mounted without user_xattr option");
+				"no xattr support in fs, mounted without user_xattr option "
+				"or invalid namespace/name format");
 			return rval;
 		}
 
@@ -1063,7 +1065,8 @@ int safe_fsetxattr(const char *file, const int lineno, int fd, const char *name,
 	if (rval == -1) {
 		if (errno == ENOTSUP) {
 			tst_brkm_(file, lineno, TCONF, NULL,
-				"no xattr support in fs or mounted without user_xattr option");
+				"no xattr support in fs, mounted without user_xattr option "
+				"or invalid namespace/name format");
 			return rval;
 		}
 
