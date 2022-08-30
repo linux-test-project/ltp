@@ -14,7 +14,7 @@ TST_NEEDS_CMDS="dd du stat"
 setup()
 {
 	ROD_SILENT mkdir basedir
-	ROD_SILENT cd basedir
+	cd basedir || tst_brk TBROK "cd basedir failed"
 
 	ROD_SILENT dd if=/dev/zero of=testfile bs=1M count=10
 
