@@ -1,81 +1,27 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
  *   Copyright (c) International Business Machines  Corp., 2001
  *   Copyright (c) 2012 Cyril Hrubis <chrubis@suse.cz>
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *   Copyright (c) 2022 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-#define _GNU_SOURCE 1
+/*\
+ * [Description]
+ *
+ * Verify that getsid(2) fails with ESRCH errno when there is no
+ * process found with process ID pid.
+ */
 
-#include "test.h"
+#include "tst_test.h"
 
-#include <errno.h>
-
-char *TCID = "getsid02";
-int TST_TOTAL = 1;
-
-static pid_t unused_pid;
-
-static void cleanup(void);
-static void setup(void);
-
-int main(int ac, char **av)
+static void run(void)
 {
-	int lc;
+	pid_t unused_pid;
+	unused_pid = tst_get_unused_pid();
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		TEST(getsid(unused_pid));
-
-		if (TEST_RETURN == 0) {
-			tst_resm(TFAIL, "call succeed when failure expected");
-			continue;
-		}
-
-		switch (TEST_ERRNO) {
-		case ESRCH:
-			tst_resm(TPASS, "expected failure - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_resm(TFAIL, "call failed to produce "
-				 "expected error - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		}
-	}
-
-	cleanup();
-	tst_exit();
+	TST_EXP_FAIL(getsid(unused_pid), ESRCH);
 }
 
-void setup(void)
-{
-	unused_pid = tst_get_unused_pid(cleanup);
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = run
+};
