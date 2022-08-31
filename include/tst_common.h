@@ -83,4 +83,8 @@
 #define TST_RES_SUPPORTS_TCONF_TFAIL_TINFO_TPASS_TWARN(condition) \
 	TST_BUILD_BUG_ON(condition)
 
+/* stringification */
+#define TST_TO_STR_(s) #s
+#define TST_TO_STR(s) TST_TO_STR_(s)
+
 #endif /* TST_COMMON_H__ */
