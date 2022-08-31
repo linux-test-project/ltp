@@ -1603,20 +1603,21 @@ Pathnames can be optionally prefixed to specify how strictly (during
 
 [source,c]
 -------------------------------------------------------------------------------
-static const struct tst_path_val save_restore[] = {
-	{"/proc/sys/kernel/core_pattern", NULL},
-	{}
-};
-
 static void setup(void)
 {
 	FILE_PRINTF("/proc/sys/kernel/core_pattern", "/mypath");
+	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
 }
 
 static struct tst_test test = {
 	...
 	.setup = setup,
-	.save_restore = save_restore,
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/kernel/core_pattern", NULL},
+		{"?/proc/sys/user/max_user_namespaces", NULL},
+		{"!/sys/kernel/mm/ksm/run", "1"},
+		{}
+	},
 };
 -------------------------------------------------------------------------------
 
