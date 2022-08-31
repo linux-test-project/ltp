@@ -1596,7 +1596,7 @@ static int run_tcases_per_fs(void)
 
 	for (i = 0; filesystems[i]; i++) {
 
-		tst_res(TINFO, "Testing on %s", filesystems[i]);
+		tst_res(TINFO, "=== Testing on %s ===", filesystems[i]);
 		tdev.fs_type = filesystems[i];
 
 		prepare_device();
