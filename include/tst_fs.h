@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
- * Copyright (c) 2015-2016 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2017-2022
  */
 
 #ifndef TST_FS_H__
