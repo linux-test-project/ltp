@@ -837,6 +837,8 @@ start for you. See 'testcases/kernel/device-drivers/block' for details.
 1.12 Useful macros
 ~~~~~~~~~~~~~~~~~~
 
+These macros are defined in 'include/tst_common.h'.
+
 [source,c]
 -------------------------------------------------------------------------------
 ARRAY_SIZE(arr)
@@ -851,6 +853,14 @@ LTP_ALIGN(x, a)
 -------------------------------------------------------------------------------
 
 Aligns the x to be next multiple of a. The a must be power of 2.
+
+[source,c]
+-------------------------------------------------------------------------------
+TST_TO_STR(s)  /* stringification */
+TST_TO_STR_(s) /* macro expansion */
+-------------------------------------------------------------------------------
+
+Macros for stringification.
 
 1.13 Filesystem type detection and skiplist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
