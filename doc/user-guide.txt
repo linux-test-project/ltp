@@ -48,7 +48,7 @@ For running LTP network tests see `testcases/network/README.md`.
 The limit on how long a test can run does compose of two parts max_runtime and
 timeout. The limit does apply to a single test variant, that means for example
 that tests that run for all available filesystems will apply this limit for a
-single filesytem only.
+single filesystem only.
 
 The max_runtime is a cap on how long the run() function can take, for most
 testcases this part is set to zero. For tests that do run for more than a

@@ -167,7 +167,7 @@ struct tst_test {
 	int restore_wallclock:1;
 	/*
 	 * If set the test function will be executed for all available
-	 * filesystems and the current filesytem type would be set in the
+	 * filesystems and the current filesystem type would be set in the
 	 * tst_device->fs_type.
 	 *
 	 * The test setup and cleanup are executed before/after __EACH__ call
