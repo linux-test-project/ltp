@@ -124,8 +124,8 @@ check_input() {
 
 is_multi_socket() {
 	no_of_sockets=`cat \
-		/sys/devices/system/cpu/cpu?/topology/physical_package_id \
-		| uniq | wc -l`
+		/sys/devices/system/cpu/cpu*/topology/physical_package_id \
+		| sort -u | wc -l`
 	[ $no_of_sockets -gt 1 ] ; echo $?
 }
 
