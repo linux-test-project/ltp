@@ -9,10 +9,10 @@
 
 #include <sys/syscall.h>
 #include "config.h"
+#include "tst_test.h"
 #include "lapi/syscalls.h"
 #include "lapi/fcntl.h"
 #include "tst_buffers.h"
-#include "tst_test.h"
 
 #ifndef HAVE_NAME_TO_HANDLE_AT
 static inline int name_to_handle_at(int dfd, const char *pathname,
