@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2002-2022
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * DESCRIPTION
- *	Testcase to check that write() sets errno to EAGAIN
+/*\
+ * [Description]
  *
- * ALGORITHM
- *	Create a named pipe (fifo), open it in O_NONBLOCK mode, and
- *	attempt to write to it when it is full, write(2) should fail
+ * Verify that write(2) fails with errno EAGAIN when attempt to write to fifo
+ * opened in O_NONBLOCK mode.
  */
 
 #include <sys/stat.h>
