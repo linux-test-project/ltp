@@ -1,23 +1,24 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2002-2022
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  */
 
-/*
- * Description:
- * The testcase checks the various errnos of the unlink(2).
- * 1) unlink() returns EACCES when deleting file in unwritable directory
- *    as an unprivileged user.
- * 2) unlink() returns EACCES when deleting file in "unsearchable directory
- *    as an unprivileged user.
- * 3) unlink() returns EISDIR when deleting directory for root
- * 4) unlink() returns EISDIR when deleting directory for regular user
+/*\
+ * [Description]
+ *
+ * Verify that unlink(2) fails with
+ *
+ * - EACCES when no write access to the directory containing pathname
+ * - EACCES when one of the directories in pathname did not allow search
+ * - EISDIR when deleting directory as root user
+ * - EISDIR when deleting directory as non-root user
  */
 
 #include <errno.h>
-#include <stdlib.h>
-#include <sys/types.h>
 #include <pwd.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "tst_test.h"
 
 static struct passwd *pw;
@@ -36,21 +37,7 @@ static struct test_case_t {
 
 static void verify_unlink(struct test_case_t *tc)
 {
-	TEST(unlink(tc->name));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "unlink(<%s>) succeeded unexpectedly",
-			tc->desc);
-		return;
-	}
-
-	if (TST_ERR == tc->exp_errno) {
-		tst_res(TPASS | TTERRNO, "unlink(<%s>) failed as expected",
-			tc->desc);
-	} else {
-		tst_res(TFAIL | TTERRNO,
-			"unlink(<%s>) failed, expected errno: %s",
-			tc->desc, tst_strerrno(tc->exp_errno));
-	}
+	TST_EXP_FAIL(unlink(tc->name), tc->exp_errno, "%s", tc->desc);
 }
 
 static void do_unlink(unsigned int n)
@@ -65,7 +52,6 @@ static void do_unlink(unsigned int n)
 			verify_unlink(cases);
 			exit(0);
 		}
-
 		SAFE_WAITPID(pid, NULL, 0);
 	} else {
 		verify_unlink(cases);
