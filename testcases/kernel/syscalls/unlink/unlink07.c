@@ -1,23 +1,27 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2002-2022
  */
 
-/*
- * Description:
- * The testcase checks the various errnos of the unlink(2).
- * 1) unlink() returns ENOENT if file doesn't exist.
- * 2) unlink() returns ENOENT if path is empty.
- * 3) unlink() returns ENOENT if path contains a non-existent file.
- * 4) unlink() returns EFAULT if address is invalid.
- * 5) unlink() returns ENOTDIR if path contains a regular file.
- * 6) unlink() returns ENAMETOOLONG if path contains a regular file.
+/*\
+ * [Description]
+ *
+ * Verify that unlink() fails with
+ *
+ * - ENOENT when file does not exist
+ * - ENOENT when pathname is empty
+ * - ENOENT when a component in pathname does not exist
+ * - EFAULT when pathname points outside the accessible address space
+ * - ENOTDIR when a component used as a directory in pathname is not,
+ * in fact, a directory
+ * - ENAMETOOLONG when pathname is too long
  */
 
 #include <errno.h>
+#include <limits.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/param.h>	/* for PATH_MAX */
 #include "tst_test.h"
 
 static char longpathname[PATH_MAX + 2];
@@ -39,26 +43,12 @@ static void verify_unlink(unsigned int n)
 {
 	struct test_case_t *tc = &tcases[n];
 
-	TEST(unlink(tc->name));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "unlink(<%s>) succeeded unexpectedly",
-			tc->desc);
-		return;
-	}
-
-	if (TST_ERR == tc->exp_errno) {
-		tst_res(TPASS | TTERRNO, "unlink(<%s>) failed as expected",
-			tc->desc);
-	} else {
-		tst_res(TFAIL | TTERRNO,
-			"unlink(<%s>) failed, expected errno: %s",
-			tc->desc, tst_strerrno(tc->exp_errno));
-	}
+	TST_EXP_FAIL(unlink(tc->name), tc->exp_errno, "%s", tc->desc);
 }
 
 static void setup(void)
 {
-	unsigned int n;
+	size_t n;
 
 	SAFE_TOUCH("file", 0777, NULL);
 
