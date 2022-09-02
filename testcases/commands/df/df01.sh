@@ -6,35 +6,16 @@
 #
 # Test df command with some basic options.
 
+TST_ALL_FILESYSTEMS=1
+TST_MOUNT_DEVICE=1
 TST_CNT=12
 TST_SETUP=setup
 TST_TESTFUNC=test
-TST_OPTS="f:"
-TST_USAGE=usage
-TST_PARSE_ARGS=parse_args
 TST_NEEDS_ROOT=1
-TST_MOUNT_DEVICE=1
-
-usage()
-{
-	cat << EOF
-usage: $0 [-f <ext2|ext3|ext4|vfat|...>]
-
-OPTIONS
--f	Specify the type of filesystem to be built.  If not
-	specified, the default filesystem type (currently ext2)
-	is used.
-EOF
-}
-
-parse_args()
-{
-	TST_FS_TYPE="$2"
-}
 
 setup()
 {
-	DF_FS_TYPE=$(mount | grep "$TST_DEVICE" | awk 'NR==1{print $5}')
+	DF_FS_TYPE="$(grep -E "$TST_MNTPOINT ($TST_FS_TYPE|fuseblk)" /proc/mounts | awk 'NR==1{print $3}')"
 }
 
 df_test()
@@ -180,7 +161,9 @@ test11()
 
 test12()
 {
-	local cmd="df -x $DF_FS_TYPE -P"
+	local fs="$DF_FS_TYPE"
+
+	local cmd="df -x $fs -P"
 
 	df_verify $cmd
 	if [ $? -ne 0 ]; then

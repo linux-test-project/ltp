@@ -14,13 +14,7 @@ ln01_sh ln_tests.sh
 mkdir01_sh mkdir_tests.sh
 mv01_sh mv_tests.sh
 du01_sh du01.sh
-df01_ext2_sh df01.sh -f ext2
-df01_ext3_sh df01.sh -f ext3
-df01_ext4_sh df01.sh -f ext4
-df01_xfs_sh df01.sh -f xfs
-df01_vfat_sh df01.sh -f vfat
-df01_exfat_sh df01.sh -f exfat
-df01_ntfs_sh df01.sh -f ntfs
+df01_sh df01.sh
 mkfs01_sh mkfs01.sh
 mkfs01_ext2_sh mkfs01.sh -f ext2
 mkfs01_ext3_sh mkfs01.sh -f ext3
