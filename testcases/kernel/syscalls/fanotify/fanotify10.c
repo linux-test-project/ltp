@@ -66,6 +66,7 @@ static unsigned int fanotify_class[] = {
 #define GROUPS_PER_PRIO 3
 
 static int fd_notify[NUM_CLASSES][GROUPS_PER_PRIO];
+static int fd_syncfs;
 
 static char event_buf[EVENT_BUF_LEN];
 static int exec_events_unsupported;
@@ -342,14 +343,11 @@ static void show_fanotify_marks(int fd)
 	}
 }
 
-static void drop_caches(const char *path)
+static void drop_caches(void)
 {
-	int fd = SAFE_OPEN(path, O_RDONLY);
-
-	if (syncfs(fd) < 0)
+	if (syncfs(fd_syncfs) < 0)
 		tst_brk(TBROK | TERRNO, "Unexpected error when syncing filesystem");
 
-	SAFE_CLOSE(fd);
 	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
 }
 
@@ -363,6 +361,9 @@ static int create_fanotify_groups(unsigned int n)
 
 	mark = &fanotify_mark_types[tc->mark_type];
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
+
+	/* Open fd for syncfs before creating groups to avoid the FAN_OPEN event */
+	fd_syncfs = SAFE_OPEN(MOUNT_PATH, O_RDONLY);
 
 	for (p = 0; p < num_classes; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
@@ -413,7 +414,7 @@ add_mark:
 	 * drop_caches should evict inode from cache and remove evictable marks
 	 */
 	if (evictable_ignored) {
-		drop_caches(tc->mark_path);
+		drop_caches();
 		for (p = 0; p < num_classes; p++) {
 			for (i = 0; i < GROUPS_PER_PRIO; i++) {
 				if (fd_notify[p][i] > 0)
@@ -435,6 +436,8 @@ static void cleanup_fanotify_groups(void)
 				SAFE_CLOSE(fd_notify[p][i]);
 		}
 	}
+	if (fd_syncfs > 0)
+		SAFE_CLOSE(fd_syncfs);
 }
 
 /* Flush out all pending dirty inodes and destructing marks */
