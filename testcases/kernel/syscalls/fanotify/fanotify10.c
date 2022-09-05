@@ -102,6 +102,7 @@ static unsigned int num_classes = NUM_CLASSES;
 
 enum {
 	FANOTIFY_INODE,
+	FANOTIFY_PARENT,
 	FANOTIFY_MOUNT,
 	FANOTIFY_FILESYSTEM,
 	FANOTIFY_EVICTABLE,
@@ -109,6 +110,7 @@ enum {
 
 static struct fanotify_mark_type fanotify_mark_types[] = {
 	INIT_FANOTIFY_MARK_TYPE(INODE),
+	INIT_FANOTIFY_MARK_TYPE(PARENT),
 	INIT_FANOTIFY_MARK_TYPE(MOUNT),
 	INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 	INIT_FANOTIFY_MARK_TYPE(EVICTABLE),
@@ -243,57 +245,57 @@ static struct tcase {
 	},
 	{
 		"ignore child exec events created on a specific mount point",
-		MOUNT_PATH, FANOTIFY_INODE,
+		MOUNT_PATH, FANOTIFY_PARENT,
 		MOUNT_PATH, FANOTIFY_MOUNT,
 		0,
 		FILE_EXEC_PATH, FAN_OPEN_EXEC, FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		"ignore events on children of directory created on a specific file",
-		DIR_MNT2, FANOTIFY_INODE,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
+		DIR_PATH, FANOTIFY_PARENT,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"ignore events on file created inside a parent watching children",
 		FILE_PATH, FANOTIFY_INODE,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"don't ignore events on file created inside a parent not watching children",
 		FILE_PATH, FANOTIFY_INODE,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
 	{
 		"ignore mount events created inside a parent watching children",
 		FILE_PATH, FANOTIFY_MOUNT,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"don't ignore mount events created inside a parent not watching children",
 		FILE_PATH, FANOTIFY_MOUNT,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
 	{
 		"ignore fs events created inside a parent watching children",
 		FILE_PATH, FANOTIFY_FILESYSTEM,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, 0, FAN_OPEN
 	},
 	{
 		"don't ignore fs events created inside a parent not watching children",
 		FILE_PATH, FANOTIFY_FILESYSTEM,
-		DIR_PATH, FANOTIFY_INODE,
+		DIR_PATH, FANOTIFY_PARENT,
 		0,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
