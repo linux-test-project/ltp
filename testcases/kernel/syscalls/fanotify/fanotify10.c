@@ -418,6 +418,34 @@ add_mark:
 				mark_ignored = 0;
 				goto add_mark;
 			}
+
+			/*
+			 * When using FAN_MARK_IGNORE, verify that the FAN_EVENT_ON_CHILD
+			 * flag in mark mask does not affect the ignore mask.
+			 *
+			 * If parent does not want to ignore FAN_OPEN events on children,
+			 * set a mark mask to watch FAN_CLOSE_WRITE events on children
+			 * to make sure we do not ignore FAN_OPEN events from children.
+			 *
+			 * If parent wants to ignore FAN_OPEN events on childern,
+			 * set a mark mask to watch FAN_CLOSE events only on parent itself
+			 * to make sure we do not get FAN_CLOSE events from children.
+			 *
+			 * If we had already set the FAN_EVENT_ON_CHILD in the parent
+			 * mark mask (mark_type == FANOTIFY_PARENT), then FAN_CLOSE mask
+			 * will apply also to childern, so we skip this verification.
+			 */
+			if (mark_ignored & FAN_MARK_IGNORE &&
+			    tc->ignore_mark_type == FANOTIFY_PARENT) {
+				if (!tc->ignored_onchild)
+					mask = FAN_CLOSE_WRITE | FAN_EVENT_ON_CHILD;
+				else if (tc->mark_type == FANOTIFY_PARENT)
+					continue;
+				else
+					mask = FAN_CLOSE | FAN_ONDIR;
+				mark_ignored = 0;
+				goto add_mark;
+			}
 		}
 	}
 
