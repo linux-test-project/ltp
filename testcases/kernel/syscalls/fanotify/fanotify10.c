@@ -73,6 +73,7 @@ static int exec_events_unsupported;
 static int fan_report_dfid_unsupported;
 static int filesystem_mark_unsupported;
 static int evictable_mark_unsupported;
+static int ignore_mark_unsupported;
 
 #define MOUNT_PATH "fs_mnt"
 #define MNT2_PATH "mntpoint"
@@ -393,24 +394,27 @@ static int create_fanotify_groups(unsigned int n)
 			if (p == 0)
 				continue;
 
-			mask = FAN_OPEN;
-			mark_ignored = FAN_MARK_IGNORED_MASK |
-					FAN_MARK_IGNORED_SURV_MODIFY;
+			/*
+			 * Run tests in two variants:
+			 * 1. Legacy FAN_MARK_IGNORED_MASK
+			 * 2. FAN_MARK_IGNORE
+			 */
+			mark_ignored = tst_variant ? FAN_MARK_IGNORE_SURV : FAN_MARK_IGNORED_SURV;
+			mask = FAN_OPEN | tc->ignored_onchild;
 add_mark:
 			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | ignore_mark->flag | mark_ignored,
 					    mask, AT_FDCWD, tc->ignore_path);
 
 			/*
-			 * If ignored mask is on a parent watching children,
-			 * also set the flag FAN_EVENT_ON_CHILD in mark mask.
+			 * FAN_MARK_IGNORE respects FAN_EVENT_ON_CHILD flag, but legacy
+			 * FAN_MARK_IGNORED_MASK does not. When using legacy ignore mask,
+			 * if ignored mask is on a parent watching children, we need to
+			 * also set the event and flag FAN_EVENT_ON_CHILD in mark mask.
 			 * This is needed to indicate that parent ignored mask
 			 * should be applied to events on children.
 			 */
-			if (tc->ignored_onchild && mark_ignored) {
-				mask = tc->ignored_onchild;
-				/* XXX: temporary hack may be removed in the future */
-				mask |= FAN_OPEN;
+			if (tc->ignored_onchild && mark_ignored & FAN_MARK_IGNORED_MASK) {
 				mark_ignored = 0;
 				goto add_mark;
 			}
@@ -535,6 +539,11 @@ static void test_fanotify(unsigned int n)
 		return;
 	}
 
+	if (ignore_mark_unsupported && tst_variant) {
+		tst_res(TCONF, "FAN_MARK_IGNORE not supported in kernel?");
+		return;
+	}
+
 	if (tc->ignored_onchild && tst_kvercmp(5, 9, 0) < 0) {
 		tst_res(TCONF, "ignored mask in combination with flag FAN_EVENT_ON_CHILD"
 				" has undefined behavior on kernel < 5.9");
@@ -628,6 +637,7 @@ static void setup(void)
 								      FAN_CLASS_CONTENT, 0);
 	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
 	evictable_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_EVICTABLE);
+	ignore_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_IGNORE_SURV);
 	fan_report_dfid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
 									  MOUNT_PATH);
 	if (fan_report_dfid_unsupported) {
@@ -660,11 +670,17 @@ static void cleanup(void)
 		SAFE_UMOUNT(MNT2_PATH);
 
 	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "%d", old_cache_pressure);
+
+	SAFE_UNLINK(FILE_PATH);
+	SAFE_UNLINK(FILE2_PATH);
+	SAFE_RMDIR(DIR_PATH);
+	SAFE_RMDIR(MNT2_PATH);
 }
 
 static struct tst_test test = {
 	.test = test_fanotify,
 	.tcnt = ARRAY_SIZE(tcases),
+	.test_variants = 2,
 	.setup = setup,
 	.cleanup = cleanup,
 	.mount_device = 1,
