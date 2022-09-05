@@ -473,6 +473,7 @@ static void child_inherit_test(int fd)
 	}
 }
 
+#ifdef HAVE_IO_SET_EVENTFD
 /*
  * Test whether counter overflow is detected and handled correctly.
  *
@@ -648,6 +649,22 @@ static void overflow_read_test(int evfd)
 	}
 	cleanup_overflow(fd, ctx);
 }
+#else
+static void overflow_select_test(int evfd)
+{
+	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
+}
+
+static void overflow_poll_test(int evfd)
+{
+	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
+}
+
+static void overflow_read_test(int evfd)
+{
+	tst_resm(TCONF, "eventfd support is not available in AIO subsystem");
+}
+#endif
 
 int main(int argc, char **argv)
 {
