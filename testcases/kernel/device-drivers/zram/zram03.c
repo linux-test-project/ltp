@@ -187,16 +187,15 @@ static void setup(void)
 
 	 /* zram module was built in or being used on old kernel */
 	SAFE_CMD(cmd_modprobe, NULL, NULL);
-	if (access(ZRAM_CONTROL_PATH, F_OK)) {
-		file = SAFE_FOPEN("/proc/modules", "r");
-		while (fgets(line, sizeof(line), file)) {
-			if (strstr(line, "zram")) {
-				modprobe = 1;
-				break;
-			}
+	file = SAFE_FOPEN("/proc/modules", "r");
+	while (fgets(line, sizeof(line), file)) {
+		if (strstr(line, "zram")) {
+			modprobe = 1;
+			break;
 		}
-		SAFE_FCLOSE(file);
-
+	}
+	SAFE_FCLOSE(file);
+	if (access(ZRAM_CONTROL_PATH, F_OK)) {
 		if (modprobe) {
 			tst_res(TINFO,
 				"rmmod zram before test on old kernel without zram-control interface");
