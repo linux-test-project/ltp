@@ -73,12 +73,14 @@ static char event_buf[EVENT_BUF_LEN];
 static int mount_created;
 
 static int fan_report_dfid_unsupported;
+static int ignore_mark_unsupported;
 
 static struct tcase {
 	const char *tname;
 	struct fanotify_mark_type mark;
 	unsigned int ondir;
 	unsigned int ignore;
+	unsigned int ignore_flags;
 	unsigned int report_name;
 	const char *close_nowrite;
 	int nevents;
@@ -88,7 +90,7 @@ static struct tcase {
 		"Events on non-dir child with both parent and mount marks",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
-		0,
+		0, 0,
 		0,
 		DIR_NAME,
 		1, 0,
@@ -97,7 +99,7 @@ static struct tcase {
 		"Events on non-dir child and subdir with both parent and mount marks",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_ONDIR,
-		0,
+		0, 0,
 		0,
 		DIR_NAME,
 		2, 0,
@@ -106,7 +108,7 @@ static struct tcase {
 		"Events on non-dir child and parent with both parent and mount marks",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_ONDIR,
-		0,
+		0, 0,
 		0,
 		".",
 		2, 0
@@ -115,7 +117,7 @@ static struct tcase {
 		"Events on non-dir child and subdir with both parent and subdir marks",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_ONDIR,
-		0,
+		0, 0,
 		0,
 		DIR_NAME,
 		2, 0,
@@ -124,7 +126,7 @@ static struct tcase {
 		"Events on non-dir children with both parent and mount marks",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
-		0,
+		0, 0,
 		0,
 		FILE2_NAME,
 		2, FAN_CLOSE_NOWRITE,
@@ -133,7 +135,7 @@ static struct tcase {
 		"Events on non-dir child with both parent and mount marks and filename info",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
-		0,
+		0, 0,
 		FAN_REPORT_DFID_NAME,
 		FILE2_NAME,
 		2, FAN_CLOSE_NOWRITE,
@@ -142,7 +144,7 @@ static struct tcase {
 		"Events on non-dir child with ignore mask on parent",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
-		FAN_MARK_IGNORED_MASK,
+		FAN_MARK_IGNORED_MASK, 0,
 		0,
 		DIR_NAME,
 		1, 0,
@@ -151,10 +153,74 @@ static struct tcase {
 		"Events on non-dir children with surviving ignore mask on parent",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		0,
-		FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY,
+		FAN_MARK_IGNORED_MASK | FAN_MARK_IGNORED_SURV_MODIFY, 0,
 		0,
 		FILE2_NAME,
 		2, FAN_CLOSE_NOWRITE,
+	},
+	/* FAN_MARK_IGNORE test cases: */
+	{
+		"Events on dir with ignore mask that does not apply to dirs",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_ONDIR,
+		FAN_MARK_IGNORE_SURV, 0,
+		0,
+		".",
+		2, FAN_CLOSE_NOWRITE,
+	},
+	{
+		"Events on dir with ignore mask that does apply to dirs",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_ONDIR,
+		FAN_MARK_IGNORE_SURV, FAN_ONDIR,
+		0,
+		".",
+		2, 0,
+	},
+	{
+		"Events on child with ignore mask on parent that does not apply to children",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		0,
+		FAN_MARK_IGNORE_SURV, 0,
+		0,
+		FILE2_NAME,
+		2, FAN_CLOSE_NOWRITE,
+	},
+	{
+		"Events on child with ignore mask on parent that does apply to children",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		0,
+		FAN_MARK_IGNORE_SURV, FAN_EVENT_ON_CHILD,
+		0,
+		FILE2_NAME,
+		2, 0,
+	},
+	{
+		"Events on subdir with ignore mask on parent that does not apply to children",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_ONDIR,
+		FAN_MARK_IGNORE_SURV, FAN_ONDIR,
+		0,
+		DIR_NAME,
+		2, FAN_CLOSE_NOWRITE,
+	},
+	{
+		"Events on subdir with ignore mask on parent that does not apply to dirs",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_ONDIR,
+		FAN_MARK_IGNORE_SURV, FAN_EVENT_ON_CHILD,
+		0,
+		DIR_NAME,
+		2, FAN_CLOSE_NOWRITE,
+	},
+	{
+		"Events on subdir with ignore mask on parent that does apply to subdirs",
+		INIT_FANOTIFY_MARK_TYPE(MOUNT),
+		FAN_ONDIR,
+		FAN_MARK_IGNORE_SURV, FAN_EVENT_ON_CHILD | FAN_ONDIR,
+		0,
+		DIR_NAME,
+		2, 0,
 	},
 };
 
@@ -170,16 +236,19 @@ static void create_fanotify_groups(struct tcase *tc)
 		 */
 		unsigned int report_name = tc->report_name;
 		unsigned int mask_flags = tc->ondir | FAN_EVENT_ON_CHILD;
-		unsigned int parent_mask, ignore = 0;
+		unsigned int parent_mask, ignore_mask, ignore = 0;
 
 		/*
-		 * The non-first groups do not request events on children and
-		 * subdirs and may set an ignore mask on parent dir.
+		 * The non-first groups may request events on children and
+		 * subdirs only when setting an ignore mask on parent dir.
+		 * The parent ignore mask may request to ignore events on
+		 * children or subdirs.
 		 */
 		if (i > 0) {
 			ignore = tc->ignore;
 			report_name = 0;
-			mask_flags = 0;
+			if (!ignore)
+				mask_flags = 0;
 		}
 
 		fd_notify[i] = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | report_name |
@@ -206,8 +275,9 @@ static void create_fanotify_groups(struct tcase *tc)
 		 * the close event on dir.
 		 */
 		parent_mask = FAN_MODIFY | tc->ondir | mask_flags;
+		ignore_mask = FAN_CLOSE_NOWRITE | tc->ignore_flags;
 		SAFE_FANOTIFY_MARK(fd_notify[i], FAN_MARK_ADD | ignore,
-				    ignore ? FAN_CLOSE_NOWRITE : parent_mask,
+				    ignore ? ignore_mask : parent_mask,
 				    AT_FDCWD, ".");
 	}
 }
@@ -331,6 +401,11 @@ static void test_fanotify(unsigned int n)
 		return;
 	}
 
+	if (ignore_mark_unsupported && tc->ignore & FAN_MARK_IGNORE) {
+		tst_res(TCONF, "FAN_MARK_IGNORE not supported in kernel?");
+		return;
+	}
+
 	create_fanotify_groups(tc);
 
 	/*
@@ -422,6 +497,7 @@ static void setup(void)
 {
 	fan_report_dfid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
 									  MOUNT_PATH);
+	ignore_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_IGNORE_SURV);
 
 	SAFE_MKDIR(MOUNT_NAME, 0755);
 	SAFE_MOUNT(MOUNT_PATH, MOUNT_NAME, "none", MS_BIND, NULL);
