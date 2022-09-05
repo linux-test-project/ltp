@@ -80,11 +80,13 @@ static int ignore_mark_unsupported;
 #define DIR_NAME "testdir"
 #define FILE_NAME "testfile"
 #define FILE2_NAME "testfile2"
+#define SUBDIR_NAME "testdir2"
 #define TEST_APP "fanotify_child"
 #define TEST_APP2 "fanotify_child2"
 #define DIR_PATH MOUNT_PATH"/"DIR_NAME
 #define FILE_PATH DIR_PATH"/"FILE_NAME
 #define FILE2_PATH DIR_PATH"/"FILE2_NAME
+#define SUBDIR_PATH DIR_PATH"/"SUBDIR_NAME
 #define FILE_EXEC_PATH MOUNT_PATH"/"TEST_APP
 #define FILE2_EXEC_PATH MOUNT_PATH"/"TEST_APP2
 #define DIR_MNT2 MNT2_PATH"/"DIR_NAME
@@ -104,6 +106,7 @@ static unsigned int num_classes = NUM_CLASSES;
 enum {
 	FANOTIFY_INODE,
 	FANOTIFY_PARENT,
+	FANOTIFY_SUBDIR,
 	FANOTIFY_MOUNT,
 	FANOTIFY_FILESYSTEM,
 	FANOTIFY_EVICTABLE,
@@ -112,6 +115,7 @@ enum {
 static struct fanotify_mark_type fanotify_mark_types[] = {
 	INIT_FANOTIFY_MARK_TYPE(INODE),
 	INIT_FANOTIFY_MARK_TYPE(PARENT),
+	INIT_FANOTIFY_MARK_TYPE(SUBDIR),
 	INIT_FANOTIFY_MARK_TYPE(MOUNT),
 	INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 	INIT_FANOTIFY_MARK_TYPE(EVICTABLE),
@@ -123,7 +127,7 @@ static struct tcase {
 	int mark_type;
 	const char *ignore_path;
 	int ignore_mark_type;
-	unsigned int ignored_onchild;
+	unsigned int ignored_flags;
 	const char *event_path;
 	unsigned long long expected_mask_with_ignore;
 	unsigned long long expected_mask_without_ignore;
@@ -329,6 +333,28 @@ static struct tcase {
 		FAN_EVENT_ON_CHILD,
 		FILE_PATH, FAN_OPEN, FAN_OPEN
 	},
+	/* FAN_MARK_IGNORE specific test cases */
+	{
+		"ignore events on subdir inside a parent watching subdirs",
+		SUBDIR_PATH, FANOTIFY_SUBDIR,
+		DIR_PATH, FANOTIFY_PARENT,
+		FAN_EVENT_ON_CHILD | FAN_ONDIR,
+		SUBDIR_PATH, 0, FAN_OPEN | FAN_ONDIR
+	},
+	{
+		"don't ignore events on subdir inside a parent not watching children",
+		SUBDIR_PATH, FANOTIFY_SUBDIR,
+		DIR_PATH, FANOTIFY_PARENT,
+		FAN_ONDIR,
+		SUBDIR_PATH, FAN_OPEN | FAN_ONDIR, FAN_OPEN | FAN_ONDIR
+	},
+	{
+		"don't ignore events on subdir inside a parent watching non-dir children",
+		SUBDIR_PATH, FANOTIFY_SUBDIR,
+		DIR_PATH, FANOTIFY_PARENT,
+		FAN_EVENT_ON_CHILD,
+		SUBDIR_PATH, FAN_OPEN | FAN_ONDIR, FAN_OPEN | FAN_ONDIR
+	},
 };
 
 static void show_fanotify_ignore_marks(int fd, int expected)
@@ -365,6 +391,7 @@ static int create_fanotify_groups(unsigned int n)
 	unsigned int p, i;
 	int evictable_ignored = (tc->ignore_mark_type == FANOTIFY_EVICTABLE);
 	int ignore_mark_type;
+	int ignored_onchild = tc->ignored_flags & FAN_EVENT_ON_CHILD;
 
 	mark = &fanotify_mark_types[tc->mark_type];
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
@@ -387,7 +414,7 @@ static int create_fanotify_groups(unsigned int n)
 			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | mark->flag,
 					    tc->expected_mask_without_ignore |
-					    FAN_EVENT_ON_CHILD,
+					    FAN_EVENT_ON_CHILD | FAN_ONDIR,
 					    AT_FDCWD, tc->mark_path);
 
 			/* Do not add ignore mark for first priority groups */
@@ -400,7 +427,7 @@ static int create_fanotify_groups(unsigned int n)
 			 * 2. FAN_MARK_IGNORE
 			 */
 			mark_ignored = tst_variant ? FAN_MARK_IGNORE_SURV : FAN_MARK_IGNORED_SURV;
-			mask = FAN_OPEN | tc->ignored_onchild;
+			mask = FAN_OPEN | tc->ignored_flags;
 add_mark:
 			SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | ignore_mark->flag | mark_ignored,
@@ -414,7 +441,7 @@ add_mark:
 			 * This is needed to indicate that parent ignored mask
 			 * should be applied to events on children.
 			 */
-			if (tc->ignored_onchild && mark_ignored & FAN_MARK_IGNORED_MASK) {
+			if (ignored_onchild && mark_ignored & FAN_MARK_IGNORED_MASK) {
 				mark_ignored = 0;
 				goto add_mark;
 			}
@@ -437,10 +464,12 @@ add_mark:
 			 */
 			if (mark_ignored & FAN_MARK_IGNORE &&
 			    tc->ignore_mark_type == FANOTIFY_PARENT) {
-				if (!tc->ignored_onchild)
-					mask = FAN_CLOSE_WRITE | FAN_EVENT_ON_CHILD;
+				if (!ignored_onchild)
+					mask = FAN_CLOSE_WRITE | FAN_EVENT_ON_CHILD | FAN_ONDIR;
 				else if (tc->mark_type == FANOTIFY_PARENT)
 					continue;
+				else if (tc->ignored_flags & FAN_ONDIR)
+					mask = FAN_CLOSE | ignored_onchild;
 				else
 					mask = FAN_CLOSE | FAN_ONDIR;
 				mark_ignored = 0;
@@ -497,6 +526,10 @@ static void mount_cycle(void)
 static void verify_event(int p, int group, struct fanotify_event_metadata *event,
 			 unsigned long long expected_mask)
 {
+	/* Only FAN_REPORT_FID reports the FAN_ONDIR flag in events on dirs */
+	if (!(fanotify_class[p] & FAN_REPORT_FID))
+		expected_mask &= ~FAN_ONDIR;
+
 	if (event->mask != expected_mask) {
 		tst_res(TFAIL, "group %d (%x) got event: mask %llx (expected %llx) "
 			"pid=%u fd=%u", group, fanotify_class[p],
@@ -572,9 +605,16 @@ static void test_fanotify(unsigned int n)
 		return;
 	}
 
-	if (tc->ignored_onchild && tst_kvercmp(5, 9, 0) < 0) {
+	if (tc->ignored_flags & FAN_EVENT_ON_CHILD && tst_kvercmp(5, 9, 0) < 0) {
 		tst_res(TCONF, "ignored mask in combination with flag FAN_EVENT_ON_CHILD"
 				" has undefined behavior on kernel < 5.9");
+		return;
+	}
+
+	if (tc->ignored_flags && tc->ignore_mark_type == FANOTIFY_PARENT &&
+			!tst_variant && tc->mark_type == FANOTIFY_SUBDIR) {
+		tst_res(TCONF, "flags FAN_EVENT_ON_CHILD and FAN_ONDIR do not take effect"
+				" with legacy FAN_MARK_IGNORED_MASK");
 		return;
 	}
 
@@ -675,6 +715,7 @@ static void setup(void)
 	}
 
 	SAFE_MKDIR(DIR_PATH, 0755);
+	SAFE_MKDIR(SUBDIR_PATH, 0755);
 	SAFE_FILE_PRINTF(FILE_PATH, "1");
 	SAFE_FILE_PRINTF(FILE2_PATH, "1");
 
@@ -701,6 +742,7 @@ static void cleanup(void)
 
 	SAFE_UNLINK(FILE_PATH);
 	SAFE_UNLINK(FILE2_PATH);
+	SAFE_RMDIR(SUBDIR_PATH);
 	SAFE_RMDIR(DIR_PATH);
 	SAFE_RMDIR(MNT2_PATH);
 }

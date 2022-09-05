@@ -119,6 +119,9 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 #ifndef FAN_MARK_PARENT
 #define FAN_MARK_PARENT		FAN_MARK_ONLYDIR
 #endif
+#ifndef FAN_MARK_SUBDIR
+#define FAN_MARK_SUBDIR		FAN_MARK_ONLYDIR
+#endif
 #ifndef FAN_MARK_TYPES
 #define FAN_MARK_TYPES (FAN_MARK_INODE | FAN_MARK_MOUNT | FAN_MARK_FILESYSTEM)
 #endif
