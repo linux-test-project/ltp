@@ -39,6 +39,7 @@
 
 static int fanotify_fd;
 static int fan_report_target_fid_unsupported;
+static int ignore_mark_unsupported;
 
 /*
  * Each test case has been designed in a manner whereby the values defined
@@ -107,6 +108,34 @@ static struct test_case_t {
 		/* With FAN_REPORT_TARGET_FID, FAN_EVENT_ON_CHILD on non-dir is not valid */
 		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME_TARGET, 0, FAN_OPEN | FAN_EVENT_ON_CHILD, ENOTDIR
 	},
+	{
+		/* FAN_MARK_IGNORE_SURV with FAN_DELETE on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME, FAN_MARK_IGNORE_SURV, FAN_DELETE, ENOTDIR
+	},
+	{
+		/* FAN_MARK_IGNORE_SURV with FAN_RENAME on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME, FAN_MARK_IGNORE_SURV, FAN_RENAME, ENOTDIR
+	},
+	{
+		/* FAN_MARK_IGNORE_SURV with FAN_ONDIR on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME, FAN_MARK_IGNORE_SURV, FAN_OPEN | FAN_ONDIR, ENOTDIR
+	},
+	{
+		/* FAN_MARK_IGNORE_SURV with FAN_EVENT_ON_CHILD on non-dir is not valid */
+		FAN_CLASS_NOTIF | FAN_REPORT_DFID_NAME, FAN_MARK_IGNORE_SURV, FAN_OPEN | FAN_EVENT_ON_CHILD, ENOTDIR
+	},
+	{
+		/* FAN_MARK_IGNORE without FAN_MARK_IGNORED_SURV_MODIFY on directory is not valid */
+		FAN_CLASS_NOTIF, FAN_MARK_IGNORE, FAN_OPEN, EISDIR
+	},
+	{
+		/* FAN_MARK_IGNORE without FAN_MARK_IGNORED_SURV_MODIFY on mount mark is not valid */
+		FAN_CLASS_NOTIF, FAN_MARK_MOUNT | FAN_MARK_IGNORE, FAN_OPEN, EINVAL
+	},
+	{
+		/* FAN_MARK_IGNORE without FAN_MARK_IGNORED_SURV_MODIFY on filesystem mark is not valid */
+		FAN_CLASS_NOTIF, FAN_MARK_FILESYSTEM | FAN_MARK_IGNORE, FAN_OPEN, EINVAL
+	},
 };
 
 static void do_test(unsigned int number)
@@ -117,6 +146,11 @@ static void do_test(unsigned int number)
 	if (fan_report_target_fid_unsupported && tc->init_flags & FAN_REPORT_TARGET_FID) {
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TARGET_FID,
 					    fan_report_target_fid_unsupported);
+		return;
+	}
+
+	if (ignore_mark_unsupported && tc->mark_flags & FAN_MARK_IGNORE) {
+		tst_res(TCONF, "FAN_MARK_IGNORE not supported in kernel?");
 		return;
 	}
 
@@ -224,6 +258,7 @@ static void do_setup(void)
 
 	fan_report_target_fid_unsupported =
 		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MNTPOINT);
+	ignore_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_IGNORE_SURV);
 
 	/* Create temporary test file to place marks on */
 	SAFE_FILE_PRINTF(FILE1, "0");
