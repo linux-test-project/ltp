@@ -328,18 +328,21 @@ static struct tcase {
 	},
 };
 
-static void show_fanotify_marks(int fd)
+static void show_fanotify_ignore_marks(int fd, int expected)
 {
 	unsigned int mflags, mask, ignored_mask;
 	char procfdinfo[100];
 
 	sprintf(procfdinfo, "/proc/%d/fdinfo/%d", (int)getpid(), fd);
 	if (FILE_LINES_SCANF(procfdinfo, "fanotify ino:%*x sdev:%*x mflags: %x mask:%x ignored_mask:%x",
-				&mflags, &mask, &ignored_mask)) {
-		tst_res(TPASS, "No fanotify inode marks as expected");
+				&mflags, &mask, &ignored_mask) || !ignored_mask) {
+		tst_res(!expected ? TPASS : TFAIL,
+			"No fanotify inode ignore marks %sexpected",
+			!expected ? "as " : "is un");
 	} else {
-		tst_res(TFAIL, "Unexpected inode mark (mflags=%x, mask=%x ignored_mask=%x)",
-				mflags, mask, ignored_mask);
+		tst_res(expected ? TPASS : TFAIL,
+			"Found %sexpected inode ignore mark (mflags=%x, mask=%x ignored_mask=%x)",
+			expected ? "" : "un", mflags, mask, ignored_mask);
 	}
 }
 
@@ -358,9 +361,11 @@ static int create_fanotify_groups(unsigned int n)
 	unsigned int mark_ignored, mask;
 	unsigned int p, i;
 	int evictable_ignored = (tc->ignore_mark_type == FANOTIFY_EVICTABLE);
+	int ignore_mark_type;
 
 	mark = &fanotify_mark_types[tc->mark_type];
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
+	ignore_mark_type = ignore_mark->flag & FAN_MARK_TYPES;
 
 	/* Open fd for syncfs before creating groups to avoid the FAN_OPEN event */
 	fd_syncfs = SAFE_OPEN(MOUNT_PATH, O_RDONLY);
@@ -382,7 +387,7 @@ static int create_fanotify_groups(unsigned int n)
 					    FAN_EVENT_ON_CHILD,
 					    AT_FDCWD, tc->mark_path);
 
-			/* Add ignore mark for groups with higher priority */
+			/* Do not add ignore mark for first priority groups */
 			if (p == 0)
 				continue;
 
@@ -411,14 +416,18 @@ add_mark:
 	}
 
 	/*
-	 * drop_caches should evict inode from cache and remove evictable marks
+	 * Verify that first priority groups have no ignore inode marks and that
+	 * drop_caches evicted the evictable ignore marks of other groups.
 	 */
-	if (evictable_ignored) {
+	if (evictable_ignored)
 		drop_caches();
+
+	if (ignore_mark_type == FAN_MARK_INODE) {
 		for (p = 0; p < num_classes; p++) {
 			for (i = 0; i < GROUPS_PER_PRIO; i++) {
 				if (fd_notify[p][i] > 0)
-					show_fanotify_marks(fd_notify[p][i]);
+					show_fanotify_ignore_marks(fd_notify[p][i],
+								   p > 0 && !evictable_ignored);
 			}
 		}
 	}
@@ -464,7 +473,7 @@ static void verify_event(int p, int group, struct fanotify_event_metadata *event
 		tst_res(TFAIL, "group %d (%x) got event: mask %llx pid=%u "
 			"(expected %u) fd=%u", group, fanotify_class[p],
 			(unsigned long long)event->mask, (unsigned int)event->pid,
-			(unsigned int)getpid(), event->fd);
+			(unsigned int)child_pid, event->fd);
 	} else {
 		tst_res(TPASS, "group %d (%x) got event: mask %llx pid=%u fd=%u",
 			group, fanotify_class[p], (unsigned long long)event->mask,
@@ -582,14 +591,18 @@ static void test_fanotify(unsigned int n)
 	for (p = 1; p < num_classes && !tc->expected_mask_with_ignore; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
 			ret = read(fd_notify[p][i], event_buf, EVENT_BUF_LEN);
-			if (ret == 0) {
+			if (ret >= 0 && ret < (int)FAN_EVENT_METADATA_LEN) {
 				tst_brk(TBROK,
-					"zero length read from fanotify fd");
+					"short read when reading fanotify "
+					"events (%d < %d)", ret,
+					(int)EVENT_BUF_LEN);
 			}
+			event = (struct fanotify_event_metadata *)event_buf;
 			if (ret > 0) {
 				tst_res(TFAIL, "group %d (%x) with %s and "
-					"%s ignore mask got event",
-					i, fanotify_class[p], mark->name, ignore_mark->name);
+					"%s ignore mask got unexpected event (mask %llx)",
+					i, fanotify_class[p], mark->name, ignore_mark->name,
+					event->mask);
 				if (event->fd != FAN_NOFD)
 					SAFE_CLOSE(event->fd);
 			} else if (errno == EAGAIN) {
