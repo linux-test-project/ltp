@@ -7,7 +7,7 @@
 /*\
  * [Description]
  *
- * Verify that unlink() fails with
+ * Verify that unlink(2) fails with
  *
  * - ENOENT when file does not exist
  * - ENOENT when pathname is empty
