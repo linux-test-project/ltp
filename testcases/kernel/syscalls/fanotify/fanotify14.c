@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2018 Matthew Bobrowski. All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2020-2022
  *
  * Started by Matthew Bobrowski <mbobrowski@mbobrowski.org>
  */
@@ -49,6 +50,7 @@ static int ignore_mark_unsupported;
 static struct test_case_t {
 	unsigned int init_flags;
 	unsigned int mark_flags;
+	/* zero mask expects to fail on fanotify_init() */
 	unsigned long long mask;
 	int expected_errno;
 } test_cases[] = {
@@ -140,7 +142,6 @@ static struct test_case_t {
 
 static void do_test(unsigned int number)
 {
-	int ret;
 	struct test_case_t *tc = &test_cases[number];
 
 	if (fan_report_target_fid_unsupported && tc->init_flags & FAN_REPORT_TARGET_FID) {
@@ -154,101 +155,48 @@ static void do_test(unsigned int number)
 		return;
 	}
 
-	fanotify_fd = fanotify_init(tc->init_flags, O_RDONLY);
-	if (fanotify_fd < 0) {
-		if (errno == tc->expected_errno) {
-			tst_res(TPASS,
-				"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-				"failed with error %d as expected",
-				fanotify_fd,
-				tc->init_flags, tc->expected_errno);
-			return;
-		}
-		tst_brk(TBROK | TERRNO,
-			"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) failed",
-			fanotify_fd,
-			tc->init_flags);
-	}
+	TST_EXP_FD_OR_FAIL(fanotify_fd = fanotify_init(tc->init_flags, O_RDONLY),
+			   !tc->mask && tc->expected_errno ? tc->expected_errno : 0);
 
-	/*
-	 * A test case with a mask set to zero indicate that they've been
-	 * specifically designed to test and fail on the fanotify_init()
-	 * system call.
-	 */
-	if (tc->mask == 0) {
-		tst_res(TFAIL,
-			"fanotify_fd=%d fanotify_init(%x, O_RDONLY) "
-			"unexpectedly succeeded when tests with mask 0 are "
-			"expected to fail when calling fanotify_init()",
-			fanotify_fd,
-			tc->init_flags);
+	if (fanotify_fd < 0)
+		return;
+
+	if (!tc->mask)
 		goto out;
-	}
 
 	/* Set mark on non-dir only when expecting error ENOTDIR */
 	const char *path = tc->expected_errno == ENOTDIR ? FILE1 : MNTPOINT;
 
-	ret = fanotify_mark(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
-				tc->mask, AT_FDCWD, path);
-	if (ret < 0) {
-		if (errno == tc->expected_errno) {
-			tst_res(TPASS,
-				"ret=%d, fanotify_mark(%d, FAN_MARK_ADD | %x, "
-				"%llx, AT_FDCWD, %s) failed with error %d "
-				"as expected",
-				ret,
-				fanotify_fd,
-				tc->mark_flags,
-				tc->mask,
-				path, tc->expected_errno);
-			/*
-			 * ENOTDIR are errors for events/flags not allowed on a non-dir inode.
-			 * Try to set an inode mark on a directory and it should succeed.
-			 * Try to set directory events in filesystem mark mask on non-dir
-			 * and it should succeed.
-			 */
-			if (tc->expected_errno == ENOTDIR) {
-				SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
-						   tc->mask, AT_FDCWD, MNTPOINT);
-				tst_res(TPASS,
-					"Adding an inode mark on directory did not fail with "
-					"ENOTDIR error as on non-dir inode");
-			}
-			if (tc->expected_errno == ENOTDIR &&
-			    !(tc->mark_flags & FAN_MARK_ONLYDIR)) {
-				SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | tc->mark_flags |
-						   FAN_MARK_FILESYSTEM, tc->mask,
-						   AT_FDCWD, FILE1);
-				tst_res(TPASS,
-					"Adding a filesystem mark on non-dir did not fail with "
-					"ENOTDIR error as with an inode mark");
-			}
+	TST_EXP_FD_OR_FAIL(fanotify_mark(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
+					 tc->mask, AT_FDCWD, path),
+					 tc->expected_errno);
 
-			goto out;
+	/*
+	 * ENOTDIR are errors for events/flags not allowed on a non-dir inode.
+	 * Try to set an inode mark on a directory and it should succeed.
+	 * Try to set directory events in filesystem mark mask on non-dir
+	 * and it should succeed.
+	 */
+	if (TST_PASS && tc->expected_errno == ENOTDIR) {
+		SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | tc->mark_flags,
+				   tc->mask, AT_FDCWD, MNTPOINT);
+		tst_res(TPASS,
+			"Adding an inode mark on directory did not fail with "
+			"ENOTDIR error as on non-dir inode");
+
+		if (!(tc->mark_flags & FAN_MARK_ONLYDIR)) {
+			SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | tc->mark_flags |
+					   FAN_MARK_FILESYSTEM, tc->mask,
+					   AT_FDCWD, FILE1);
+			tst_res(TPASS,
+				"Adding a filesystem mark on non-dir did not fail with "
+				"ENOTDIR error as with an inode mark");
 		}
-		tst_brk(TBROK | TERRNO,
-			"ret=%d, fanotify_mark(%d, FAN_MARK_ADD | %x, %llx, "
-			"AT_FDCWD, %s) failed",
-			ret,
-			fanotify_fd,
-			tc->mark_flags,
-			tc->mask,
-			FILE1);
 	}
 
-	tst_res(TFAIL,
-		"fanotify_fd=%d, ret=%d, fanotify_init(%x, O_RDONLY) and "
-		"fanotify_mark(%d, FAN_MARK_ADD | %x, %llx, AT_FDCWD, %s) did "
-		"not return any errors as expected",
-		fanotify_fd,
-		ret,
-		tc->init_flags,
-		fanotify_fd,
-		tc->mark_flags,
-		tc->mask,
-		FILE1);
 out:
-	SAFE_CLOSE(fanotify_fd);
+	if (fanotify_fd > 0)
+		SAFE_CLOSE(fanotify_fd);
 }
 
 static void do_setup(void)
