@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015-2020 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2021-2022
  */
 
 #ifndef TST_TEST_MACROS_H__
@@ -91,6 +92,15 @@ extern void *TST_RET_PTR;
 		if (TST_PASS)                                                  \
 			TST_MSGP_(TPASS, " returned fd %ld", TST_RET,          \
 				#SCALL, ##__VA_ARGS__);                        \
+	} while (0)
+
+#define TST_EXP_FD_OR_FAIL(SCALL, ERRNO, ...)                                    \
+	do {                                                                   \
+		if (ERRNO)                                                     \
+			TST_EXP_FAIL(SCALL, ERRNO, ##__VA_ARGS__);             \
+		else                                                           \
+			TST_EXP_FD(SCALL, ##__VA_ARGS__);                      \
+		                                                               \
 	} while (0)
 
 #define TST_EXP_PID_SILENT(SCALL, ...)	TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__)
