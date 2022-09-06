@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2021 Google. All Rights Reserved.
+ * Copyright (c) 2022 Petr Vorel <pvorel@suse.cz>
  *
  * Started by Matthew Bobrowski <repnop@google.com>
  */
@@ -25,26 +26,21 @@
 #include "fanotify.h"
 
 #define MOUNT_PATH	"fs_mnt"
+#define FLAGS_DESC(x) .flags = x, .desc = #x
 
-static int fanotify_fd;
+static int fd;
 
 static struct test_case_t {
-	char *name;
-	unsigned int init_flags;
-	int want_err;
-	int want_errno;
+	unsigned int flags;
+	char *desc;
+	int exp_errno;
 } test_cases[] = {
 	{
-		"fail on FAN_REPORT_PIDFD | FAN_REPORT_TID",
-		FAN_REPORT_PIDFD | FAN_REPORT_TID,
-		1,
-		EINVAL,
+		FLAGS_DESC(FAN_REPORT_PIDFD | FAN_REPORT_TID),
+		.exp_errno = EINVAL,
 	},
 	{
-		"pass on FAN_REPORT_PIDFD | FAN_REPORT_FID | FAN_REPORT_DFID_NAME",
-		FAN_REPORT_PIDFD | FAN_REPORT_FID | FAN_REPORT_DFID_NAME,
-		0,
-		0,
+		FLAGS_DESC(FAN_REPORT_PIDFD | FAN_REPORT_FID | FAN_REPORT_DFID_NAME),
 	},
 };
 
@@ -57,63 +53,24 @@ static void do_setup(void)
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_BY_KERNEL(FAN_REPORT_PIDFD);
 }
 
-static void do_test(unsigned int num)
+static void do_test(unsigned int i)
 {
-	struct test_case_t *tc = &test_cases[num];
+	struct test_case_t *tc = &test_cases[i];
 
-	tst_res(TINFO, "Test #%d: %s", num, tc->name);
+	tst_res(TINFO, "Test %s on %s", tc->exp_errno ? "fail" : "pass",
+		tc->desc);
 
-	fanotify_fd = fanotify_init(tc->init_flags, O_RDONLY);
-	if (fanotify_fd < 0) {
-		if (!tc->want_err) {
-			tst_res(TFAIL,
-				"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-				"failed with error -%d but wanted success",
-				fanotify_fd, tc->init_flags, errno);
-			return;
-		}
+	TST_EXP_FD_OR_FAIL(fd = fanotify_init(tc->flags, O_RDONLY),
+			   tc->exp_errno);
 
-		if (errno != tc->want_errno) {
-			tst_res(TFAIL,
-				"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-				"failed with an unexpected error code -%d but "
-				"wanted -%d",
-				fanotify_fd, tc->init_flags,
-				errno, tc->want_errno);
-			return;
-		}
-
-		tst_res(TPASS,
-			"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-			"failed with error -%d as expected",
-			fanotify_fd, tc->init_flags, errno);
-		return;
-	}
-
-	/*
-	 * Catch test cases that had expected to receive an error upon calling
-	 * fanotify_init() but had unexpectedly resulted in a success.
-	 */
-	if (tc->want_err) {
-		tst_res(TFAIL,
-			"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-			"unexpectedly returned successfully, wanted error -%d",
-			fanotify_fd, tc->init_flags, tc->want_errno);
-		return;
-	}
-
-	tst_res(TPASS,
-		"fanotify_fd=%d, fanotify_init(%x, O_RDONLY) "
-		"successfully initialized notification group",
-		fanotify_fd, tc->init_flags);
-
-	SAFE_CLOSE(fanotify_fd);
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 }
 
 static void do_cleanup(void)
 {
-	if (fanotify_fd >= 0)
-		SAFE_CLOSE(fanotify_fd);
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
