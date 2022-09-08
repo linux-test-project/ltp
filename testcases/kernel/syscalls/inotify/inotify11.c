@@ -61,14 +61,15 @@ static void verify_inotify(void)
 	struct inotify_event *event;
 	int inotify_fd;
 
+	inotify_fd = SAFE_MYINOTIFY_INIT();
+	SAFE_MYINOTIFY_ADD_WATCH(inotify_fd, ".", IN_DELETE);
+
 	pid = SAFE_FORK();
 	if (pid == 0) {
+		SAFE_CLOSE(inotify_fd);
 		churn();
 		return;
 	}
-
-	inotify_fd = SAFE_MYINOTIFY_INIT();
-	SAFE_MYINOTIFY_ADD_WATCH(inotify_fd, ".", IN_DELETE);
 
 	while (!opened && nevents < CHURN_FILES) {
 		int i, fd, len;
