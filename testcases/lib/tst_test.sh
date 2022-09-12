@@ -83,13 +83,15 @@ _tst_do_exit()
 		_tst_check_security_modules
 	fi
 
-	echo
-	echo "Summary:"
-	echo "passed   $TST_PASS"
-	echo "failed   $TST_FAIL"
-	echo "broken   $TST_BROK"
-	echo "skipped  $TST_CONF"
-	echo "warnings $TST_WARN"
+	cat >&2 << EOF
+
+Summary:
+passed   $TST_PASS
+failed   $TST_FAIL
+broken   $TST_BROK
+skipped  $TST_CONF
+warnings $TST_WARN
+EOF
 
 	exit $ret
 }
