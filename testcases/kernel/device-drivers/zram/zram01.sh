@@ -38,8 +38,7 @@ initialize_vars()
 	local fs limit size stream=-1
 	dev_num=0
 
-	for fs in $(tst_supported_fs); do
-		[ "$fs" = "tmpfs" ] && continue
+	for fs in $(tst_supported_fs -s tmpfs); do
 		size="26214400"
 		limit="25M"
 		if [ "$fs" = "btrfs" ]; then
