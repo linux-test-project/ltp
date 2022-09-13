@@ -645,7 +645,7 @@ tst_run()
 	local _tst_fs
 	local _tst_max
 	local _tst_name
-	local _tst_pattern='[='\''"} \t\/:`$\;].*'
+	local _tst_pattern='[='\''"} \t\/:`$\;|].*'
 	local ret
 
 	if [ -n "$TST_TEST_PATH" ]; then
