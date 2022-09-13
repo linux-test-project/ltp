@@ -60,7 +60,7 @@ int main(int ac, char **av)
 	int lc;
 
 	int bytes_to_write, fd;
-	unsigned int num_bytes;
+	size_t num_bytes;
 	pid_t pid;
 
 	tst_parse_opts(ac, av, NULL, NULL);

@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
 		anyfail();
 	}
 	for (bytes_left = filesize; bytes_left; bytes_left -= c) {
-		write_cnt = MIN(pagesize, bytes_left);
+		write_cnt = MIN(pagesize, (int)bytes_left);
 		if ((c = write(fd, buf, write_cnt)) != write_cnt) {
 			if (c == -1) {
 				perror("write error");
