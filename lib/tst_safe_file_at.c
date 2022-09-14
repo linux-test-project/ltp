@@ -215,3 +215,23 @@ int safe_fchownat(const char *const file, const int lineno,
 
 	return rval;
 }
+
+int safe_fstatat(const char *const file, const int lineno,
+		 const int dirfd, const char *const path, struct stat *statbuf, int flags)
+{
+	int rval;
+
+	rval = fstatat(dirfd, path, statbuf, flags);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "fstatat(%d<%s>, '%s', %p, %d) failed", dirfd,
+			 tst_decode_fd(dirfd), path, statbuf, flags);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid fstatat(%d<%s>, '%s', %p, %d) return value %d",
+			 dirfd, tst_decode_fd(dirfd), path, statbuf, flags, rval);
+	}
+
+	return rval;
+}
