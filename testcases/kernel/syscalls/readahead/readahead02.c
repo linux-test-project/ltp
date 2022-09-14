@@ -38,7 +38,9 @@ static char testfile[PATH_MAX] = "testfile";
 #define DROP_CACHES_FNAME "/proc/sys/vm/drop_caches"
 #define MEMINFO_FNAME "/proc/meminfo"
 #define PROC_IO_FNAME "/proc/self/io"
-static size_t testfile_size = 64 * 1024 * 1024;
+#define DEFAULT_FILESIZE (64 * 1024 * 1024)
+
+static size_t testfile_size = DEFAULT_FILESIZE;
 static char *opt_fsizestr;
 static int pagesize;
 static unsigned long cached_max;
@@ -365,8 +367,10 @@ static void setup_readahead_length(void)
 
 static void setup(void)
 {
-	if (opt_fsizestr)
+	if (opt_fsizestr) {
 		testfile_size = SAFE_STRTOL(opt_fsizestr, 1, INT_MAX);
+		tst_set_max_runtime(1 + testfile_size / (DEFAULT_FILESIZE/32));
+	}
 
 	if (access(PROC_IO_FNAME, F_OK))
 		tst_brk(TCONF, "Requires " PROC_IO_FNAME);
@@ -406,6 +410,7 @@ static struct tst_test test = {
 	},
 	.test = test_readahead,
 	.tcnt = ARRAY_SIZE(tcases),
+	.max_runtime = 30,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "b833a3660394"},
 		{"linux-git", "5b910bd615ba"},
