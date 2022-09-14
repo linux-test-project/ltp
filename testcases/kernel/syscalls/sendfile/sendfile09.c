@@ -97,6 +97,7 @@ static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(tc),
 	.min_kver = "2.6.33",
+	.max_runtime = 120,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "5d73320a96fcc"},
 		{}
