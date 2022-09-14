@@ -232,4 +232,5 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.test = copy_file_range_verify,
 	.test_variants = TEST_VARIANTS,
+	.max_runtime = 5
 };
