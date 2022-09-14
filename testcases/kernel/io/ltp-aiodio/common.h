@@ -85,7 +85,7 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 				offset += r;
 			}
 
-			if (!*run_child)
+			if (!*run_child || !tst_remaining_runtime())
 				goto exit;
 		}
 	}

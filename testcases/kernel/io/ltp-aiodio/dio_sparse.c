@@ -96,7 +96,6 @@ static void cleanup(void)
 static void run(void)
 {
 	char *filename = "dio_sparse";
-	int status;
 	int fd;
 	int i;
 
@@ -113,13 +112,10 @@ static void run(void)
 	}
 
 	dio_sparse(fd, alignment, filesize, writesize, offset);
-
-	if (SAFE_WAITPID(-1, &status, WNOHANG))
-		tst_res(TFAIL, "Non zero bytes read");
-	else
-		tst_res(TPASS, "All bytes read were zeroed");
-
 	*run_child = 0;
+
+	if (!tst_validate_children(numchildren))
+		tst_res(TPASS, "All bytes read were zeroed");
 }
 
 static struct tst_test test = {

@@ -188,7 +188,6 @@ static void cleanup(void)
 static void run(void)
 {
 	char *filename = "file.bin";
-	int status;
 	int i, pid;
 
 	*run_child = 1;
@@ -222,12 +221,10 @@ static void run(void)
 		}
 	}
 
-	if (SAFE_WAITPID(-1, &status, WNOHANG))
-		tst_res(TFAIL, "Non zero bytes read");
-	else
-		tst_res(TPASS, "All bytes read were zeroed");
-
 	*run_child = 0;
+
+	if (!tst_validate_children(numchildren))
+		tst_res(TPASS, "All bytes read were zeroed");
 }
 
 static struct tst_test test = {
