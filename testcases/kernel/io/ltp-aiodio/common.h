@@ -78,9 +78,11 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 			if (r > 0) {
 				bufoff = check_zero(buff, r);
 				if (bufoff) {
-					tst_res(TINFO, "non-zero read at offset %zu",
+					tst_res(TFAIL,
+						"non-zero read at offset %zu",
 						offset + (bufoff - buff));
-					break;
+					SAFE_CLOSE(fd);
+					exit(1);
 				}
 				offset += r;
 			}
