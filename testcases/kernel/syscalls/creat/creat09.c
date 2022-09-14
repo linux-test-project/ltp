@@ -28,6 +28,16 @@
  *  Date:   Fri Jan 22 16:48:18 2021 -0800
  *
  *  xfs: fix up non-directory creation in SGID directories
+ *
+ * When use acl or umask, it still has bug.
+ *
+ * Fixed in:
+ *
+ *  commit 1639a49ccdce58ea248841ed9b23babcce6dbb0b
+ *  Author: Yang Xu <xuyang2018.jy@fujitsu.com>
+ *  Date:   Thu July 14 14:11:27 2022 +0800
+ *
+ *  fs: move S_ISGID stripping into the vfs_*() helpers
  */
 
 #include <stdlib.h>
@@ -46,6 +56,14 @@
 
 static gid_t free_gid;
 static int fd = -1;
+
+static struct tcase {
+	const char *msg;
+	int mask;
+} tcases[] = {
+	{"umask(0)", 0},
+	{"umask(S_IXGRP)", S_IXGRP}
+};
 
 static void setup(void)
 {
@@ -94,8 +112,13 @@ static void file_test(const char *name)
 		tst_res(TPASS, "%s: Setgid bit not set", name);
 }
 
-static void run(void)
+static void run(unsigned int n)
 {
+	struct tcase *tc = &tcases[n];
+
+	umask(tc->mask);
+	tst_res(TINFO, "File created with %s", tc->msg);
+
 	fd = SAFE_CREAT(CREAT_FILE, MODE_SGID);
 	SAFE_CLOSE(fd);
 	file_test(CREAT_FILE);
@@ -115,13 +138,14 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.test_all = run,
+	.test = run,
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.all_filesystems = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
+	.tcnt = ARRAY_SIZE(tcases),
 	.skip_filesystems = (const char*[]) {
 		"exfat",
 		"ntfs",
@@ -132,6 +156,8 @@ static struct tst_test test = {
 		{"linux-git", "0fa3ecd87848"},
 		{"CVE", "2018-13405"},
 		{"linux-git", "01ea173e103e"},
+		{"linux-git", "1639a49ccdce"},
+		{"linux-git", "426b4ca2d6a5"},
 		{}
 	},
 };
