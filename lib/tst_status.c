@@ -49,3 +49,23 @@ const char *tst_strstatus(int status)
 
 	return invalid(status);
 }
+
+int tst_validate_children_(const char *file, const int lineno,
+	unsigned int count)
+{
+	unsigned int i;
+	int status;
+	pid_t pid;
+
+	for (i = 0; i < count; i++) {
+		pid = SAFE_WAITPID(-1, &status, 0);
+
+		if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+			tst_res_(file, lineno, TFAIL, "Child %d: %s", pid,
+				tst_strstatus(status));
+			return 1;
+		}
+	}
+
+	return 0;
+}

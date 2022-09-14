@@ -362,6 +362,14 @@ void tst_set_max_runtime(int max_runtime);
  */
 char *tst_get_tmpdir(void);
 
+/*
+ * Validates exit status of child processes
+ */
+int tst_validate_children_(const char *file, const int lineno,
+	unsigned int count);
+#define tst_validate_children(child_count) \
+	tst_validate_children_(__FILE__, __LINE__, (child_count))
+
 #ifndef TST_NO_DEFAULT_MAIN
 
 static struct tst_test test;
