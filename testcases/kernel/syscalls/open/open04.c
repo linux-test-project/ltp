@@ -33,7 +33,13 @@ static void setup(void)
 
 	for (i = first + 1; i < fds_limit; i++) {
 		sprintf(fname, FNAME ".%d", i);
-		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0777);
+		fd = open(fname, O_RDWR | O_CREAT, 0777);
+		if (fd == -1) {
+			if (errno != EMFILE)
+				tst_brk(TBROK, "Expected EMFILE but got %d", errno);
+			fds_limit = i;
+			break;
+		}
 		fds[i - first] = fd;
 	}
 }
