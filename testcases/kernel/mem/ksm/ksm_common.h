@@ -9,7 +9,9 @@
 
 #include "tst_test.h"
 
-int size = 128, num = 3, unit = 1;
+#define DEFAULT_MEMSIZE 128
+
+int size = DEFAULT_MEMSIZE, num = 3, unit = 1;
 char *opt_sizestr, *opt_numstr, *opt_unitstr;
 
 static inline void parse_ksm_options(char *str_size, int *size,
