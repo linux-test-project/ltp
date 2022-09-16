@@ -300,7 +300,7 @@ static inline void io_uring_setup_supported_by_kernel(void)
 	ret = syscall(__NR_io_uring_setup, NULL, 0);
 	if (ret != -1) {
 		SAFE_CLOSE(ret);
-		return
+		return;
 	}
 
 	if (errno == ENOSYS) {
