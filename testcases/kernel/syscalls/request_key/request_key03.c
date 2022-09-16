@@ -39,10 +39,65 @@
 
 static char *opt_bug;
 
+static void run_child_add(const char *type, const char *payload, int effort)
+{
+	int i;
+
+	/*
+	 * Depending on the state of the key, add_key() should either succeed or
+	 * fail with one of several errors:
+	 *
+	 * (1) key didn't exist at all: either add_key() should succeed (if the
+	 *     payload is valid), or it should fail with EINVAL (if the payload
+	 *     is invalid; this is needed for the "encrypted" and "trusted" key
+	 *     types because they have a quirk where the payload syntax differs
+	 *     for creating new keys vs. updating existing keys)
+	 *
+	 * (2) key was negative: add_key() should succeed
+	 *
+	 * (3) key was uninstantiated: add_key() should wait for the key to be
+	 *     negated, then fail with ENOKEY
+	 *
+	 * For now we also accept EDQUOT because the kernel frees up the keys
+	 * quota asynchronously after keys are unlinked.  So it may be hit.
+	 */
+	for (i = 0; i < 100 * effort; i++) {
+		usleep(rand() % 1024);
+		TEST(add_key(type, "desc", payload, strlen(payload),
+			KEY_SPEC_SESSION_KEYRING));
+		if (TST_RET < 0 && TST_ERR != EINVAL && TST_ERR != ENOKEY &&
+			TST_ERR != EDQUOT) {
+			tst_brk(TBROK | TTERRNO,
+				"unexpected error adding key of type '%s'",
+				type);
+		}
+
+		TEST(keyctl(KEYCTL_CLEAR, KEY_SPEC_SESSION_KEYRING));
+
+		if (TST_RET < 0)
+			tst_brk(TBROK | TTERRNO, "unable to clear keyring");
+	}
+}
+
+static void run_child_request(const char *type, int effort)
+{
+	int i;
+
+	for (i = 0; i < 5000 * effort; i++) {
+		TEST(request_key(type, "desc", "callout_info",
+			KEY_SPEC_SESSION_KEYRING));
+		if (TST_RET < 0 && TST_ERR != ENOKEY && TST_ERR != ENOENT &&
+			TST_ERR != EDQUOT) {
+			tst_brk(TBROK | TTERRNO,
+				"unexpected error requesting key of type '%s'",
+				type);
+		}
+	}
+}
+
 static void test_with_key_type(const char *type, const char *payload,
 			       int effort)
 {
-	int i;
 	int status;
 	pid_t add_key_pid;
 	pid_t request_key_pid;
@@ -68,56 +123,16 @@ static void test_with_key_type(const char *type, const char *payload,
 	/*
 	 * Fork a subprocess which repeatedly tries to "add" a key of the given
 	 * type.  This actually will try to update the key if it already exists.
-	 * Depending on the state of the key, add_key() should either succeed or
-	 * fail with one of several errors:
-	 *
-	 * (1) key didn't exist at all: either add_key() should succeed (if the
-	 *     payload is valid), or it should fail with EINVAL (if the payload
-	 *     is invalid; this is needed for the "encrypted" and "trusted" key
-	 *     types because they have a quirk where the payload syntax differs
-	 *     for creating new keys vs. updating existing keys)
-	 *
-	 * (2) key was negative: add_key() should succeed
-	 *
-	 * (3) key was uninstantiated: add_key() should wait for the key to be
-	 *     negated, then fail with ENOKEY
-	 *
-	 * For now we also accept EDQUOT because the kernel frees up the keys
-	 * quota asynchronously after keys are unlinked.  So it may be hit.
 	 */
 	add_key_pid = SAFE_FORK();
 	if (add_key_pid == 0) {
-		for (i = 0; i < 100 * effort; i++) {
-			usleep(rand() % 1024);
-			TEST(add_key(type, "desc", payload, strlen(payload),
-				     KEY_SPEC_SESSION_KEYRING));
-			if (TST_RET < 0 && TST_ERR != EINVAL &&
-			    TST_ERR != ENOKEY && TST_ERR != EDQUOT) {
-				tst_brk(TBROK | TTERRNO,
-					"unexpected error adding key of type '%s'",
-					type);
-			}
-			TEST(keyctl(KEYCTL_CLEAR, KEY_SPEC_SESSION_KEYRING));
-			if (TST_RET < 0) {
-				tst_brk(TBROK | TTERRNO,
-					"unable to clear keyring");
-			}
-		}
+		run_child_add(type, payload, effort);
 		exit(0);
 	}
 
 	request_key_pid = SAFE_FORK();
 	if (request_key_pid == 0) {
-		for (i = 0; i < 5000 * effort; i++) {
-			TEST(request_key(type, "desc", "callout_info",
-					 KEY_SPEC_SESSION_KEYRING));
-			if (TST_RET < 0 && TST_ERR != ENOKEY &&
-			    TST_ERR != ENOENT && TST_ERR != EDQUOT) {
-				tst_brk(TBROK | TTERRNO,
-					"unexpected error requesting key of type '%s'",
-					type);
-			}
-		}
+		run_child_request(type, effort);
 		exit(0);
 	}
 
