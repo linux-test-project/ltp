@@ -297,13 +297,18 @@ static inline int io_uring_enter(int fd, unsigned int to_submit,
 static inline void io_uring_setup_supported_by_kernel(void)
 {
 	long ret;
-	if ((tst_kvercmp(5, 1, 0)) < 0) {
-		ret = syscall(__NR_io_uring_setup, NULL, 0);
-		if (ret != -1)
-			SAFE_CLOSE(ret);
-		else if (errno == ENOSYS)
+	ret = syscall(__NR_io_uring_setup, NULL, 0);
+	if (ret != -1) {
+		SAFE_CLOSE(ret);
+		return
+	}
+
+	if (errno == ENOSYS) {
+		if ((tst_kvercmp(5, 1, 0)) < 0) {
 			tst_brk(TCONF,
 				"Test not supported on kernel version < v5.1");
+		}
+		tst_brk(TCONF, "CONFIG_IO_URING not set?");
 	}
 }
 
