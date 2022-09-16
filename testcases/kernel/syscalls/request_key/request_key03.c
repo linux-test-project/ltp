@@ -100,6 +100,11 @@ static void run_child_add(const char *type, const char *payload, int effort)
 
 		if (TST_RET < 0)
 			tst_brk(TBROK | TTERRNO, "unable to clear keyring");
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "add_key() process runtime exceeded");
+			break;
+		}
 	}
 }
 
@@ -115,6 +120,12 @@ static void run_child_request(const char *type, int effort)
 			tst_brk(TBROK | TTERRNO,
 				"unexpected error requesting key of type '%s'",
 				type);
+		}
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO,
+				"request_key() process runtime exceeded");
+			break;
 		}
 	}
 }
@@ -201,6 +212,7 @@ static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(testcase_list),
 	.forks_child = 1,
+	.max_runtime = 20,
 	.options = (struct tst_option[]) {
 		{"b:", &opt_bug,  "Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
 		{}
