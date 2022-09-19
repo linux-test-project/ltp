@@ -18,11 +18,77 @@
 #include <linux/if.h>
 #include <linux/if_tun.h>
 
+#include "tst_kconfig.h"
 #include "tst_test.h"
 
 #include "uevent.h"
 
 #define TUN_PATH "/dev/net/tun"
+#define CONFIG_RPS "CONFIG_RPS"
+#define MAX_UEVENTS 7
+
+static struct uevent_desc add = {
+	.msg = "add@/devices/virtual/net/ltp-tun0",
+	.value_cnt = 4,
+	.values = (const char*[]) {
+		"ACTION=add",
+		"DEVPATH=/devices/virtual/net/ltp-tun0",
+		"SUBSYSTEM=net",
+		"INTERFACE=ltp-tun0",
+	}
+};
+
+static struct uevent_desc add_rx = {
+	.msg = "add@/devices/virtual/net/ltp-tun0/queues/rx-0",
+	.value_cnt = 3,
+	.values = (const char*[]) {
+		"ACTION=add",
+		"DEVPATH=/devices/virtual/net/ltp-tun0/queues/rx-0",
+		"SUBSYSTEM=queues",
+	}
+};
+
+static struct uevent_desc add_tx = {
+	.msg = "add@/devices/virtual/net/ltp-tun0/queues/tx-0",
+	.value_cnt = 3,
+	.values = (const char*[]) {
+		"ACTION=add",
+		"DEVPATH=/devices/virtual/net/ltp-tun0/queues/tx-0",
+		"SUBSYSTEM=queues",
+	}
+};
+
+static struct uevent_desc rem_rx = {
+	.msg = "remove@/devices/virtual/net/ltp-tun0/queues/rx-0",
+	.value_cnt = 3,
+	.values = (const char*[]) {
+		"ACTION=remove",
+		"DEVPATH=/devices/virtual/net/ltp-tun0/queues/rx-0",
+		"SUBSYSTEM=queues",
+	}
+};
+
+static struct uevent_desc rem_tx = {
+	.msg = "remove@/devices/virtual/net/ltp-tun0/queues/tx-0",
+	.value_cnt = 3,
+	.values = (const char*[]) {
+		"ACTION=remove",
+		"DEVPATH=/devices/virtual/net/ltp-tun0/queues/tx-0",
+		"SUBSYSTEM=queues",
+	}
+};
+
+static struct uevent_desc rem = {
+	.msg = "remove@/devices/virtual/net/ltp-tun0",
+	.value_cnt = 4,
+	.values = (const char*[]) {
+		"ACTION=remove",
+		"DEVPATH=/devices/virtual/net/ltp-tun0",
+		"SUBSYSTEM=net",
+		"INTERFACE=ltp-tun0",
+	}
+};
+static const struct uevent_desc *uevents[MAX_UEVENTS];
 
 static void generate_tun_uevents(void)
 {
@@ -44,78 +110,6 @@ static void verify_uevent(void)
 {
 	int pid, fd;
 
-	struct uevent_desc add = {
-		.msg = "add@/devices/virtual/net/ltp-tun0",
-		.value_cnt = 4,
-		.values = (const char*[]) {
-			"ACTION=add",
-			"DEVPATH=/devices/virtual/net/ltp-tun0",
-			"SUBSYSTEM=net",
-			"INTERFACE=ltp-tun0",
-		}
-	};
-
-	struct uevent_desc add_rx = {
-		.msg = "add@/devices/virtual/net/ltp-tun0/queues/rx-0",
-		.value_cnt = 3,
-		.values = (const char*[]) {
-			"ACTION=add",
-			"DEVPATH=/devices/virtual/net/ltp-tun0/queues/rx-0",
-			"SUBSYSTEM=queues",
-		}
-	};
-
-	struct uevent_desc add_tx = {
-		.msg = "add@/devices/virtual/net/ltp-tun0/queues/tx-0",
-		.value_cnt = 3,
-		.values = (const char*[]) {
-			"ACTION=add",
-			"DEVPATH=/devices/virtual/net/ltp-tun0/queues/tx-0",
-			"SUBSYSTEM=queues",
-		}
-	};
-
-	struct uevent_desc rem_rx = {
-		.msg = "remove@/devices/virtual/net/ltp-tun0/queues/rx-0",
-		.value_cnt = 3,
-		.values = (const char*[]) {
-			"ACTION=remove",
-			"DEVPATH=/devices/virtual/net/ltp-tun0/queues/rx-0",
-			"SUBSYSTEM=queues",
-		}
-	};
-
-	struct uevent_desc rem_tx = {
-		.msg = "remove@/devices/virtual/net/ltp-tun0/queues/tx-0",
-		.value_cnt = 3,
-		.values = (const char*[]) {
-			"ACTION=remove",
-			"DEVPATH=/devices/virtual/net/ltp-tun0/queues/tx-0",
-			"SUBSYSTEM=queues",
-		}
-	};
-
-	struct uevent_desc rem = {
-		.msg = "remove@/devices/virtual/net/ltp-tun0",
-		.value_cnt = 4,
-		.values = (const char*[]) {
-			"ACTION=remove",
-			"DEVPATH=/devices/virtual/net/ltp-tun0",
-			"SUBSYSTEM=net",
-			"INTERFACE=ltp-tun0",
-		}
-	};
-
-	const struct uevent_desc *const uevents[] = {
-		&add,
-		&add_rx,
-		&add_tx,
-		&rem_rx,
-		&rem_tx,
-		&rem,
-		NULL
-	};
-
 	pid = SAFE_FORK();
 	if (!pid) {
 		fd = open_uevent_netlink();
@@ -131,7 +125,29 @@ static void verify_uevent(void)
 	wait_for_pid(pid);
 }
 
+static void setup(void)
+{
+	struct tst_kconfig_var kconfig = {
+		.id = CONFIG_RPS,
+		.id_len = sizeof(CONFIG_RPS) - 1,
+	};
+	int i = 0;
+
+	tst_kconfig_read(&kconfig, 1);
+
+	uevents[i++] = &add;
+	if (kconfig.choice == 'y')
+		uevents[i++] = &add_rx;
+	uevents[i++] = &add_tx;
+	if (kconfig.choice == 'y')
+		uevents[i++] = &rem_rx;
+	uevents[i++] = &rem_tx;
+	uevents[i++] = &rem;
+	uevents[i++] = NULL;
+}
+
 static struct tst_test test = {
+	.setup = setup,
 	.test_all = verify_uevent,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
