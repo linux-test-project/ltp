@@ -3,11 +3,11 @@ abs01 abs01
 
 atof01 atof01
 
-float_bessel cd $LTPROOT/testcases/bin; float_bessel -v
-float_exp_log cd $LTPROOT/testcases/bin; float_exp_log -v
-float_iperb cd $LTPROOT/testcases/bin; float_iperb -v
-float_power cd $LTPROOT/testcases/bin; float_power -v
-float_trigo cd $LTPROOT/testcases/bin; float_trigo -v
+float_bessel float_bessel -v
+float_exp_log float_exp_log -v
+float_iperb float_iperb -v
+float_power float_power -v
+float_trigo float_trigo -v
 
 fptest01 fptest01
 fptest02 fptest02
