@@ -74,15 +74,9 @@ static void *threaded(LTP_ATTRIBUTE_UNUSED void *arg)
 {
 	struct futex_test_variants tv = futex_variant();
 
-	do {
-		TEST(futex_wake(tv.fntype, (void *)(uintptr_t)waitv[numfutex - 1].uaddr,
-			1, 0));
-		if (TST_RET < 0) {
-			tst_brk(TBROK | TTERRNO,
-				"futex_wake private returned: %ld", TST_RET);
-		}
-		usleep(1000);
-	} while (TST_RET < 1);
+	TST_RETRY_FUNC(futex_wake(tv.fntype,
+		(void *)(uintptr_t)waitv[numfutex - 1].uaddr,
+		1, 0), futex_waked_someone);
 
 	return NULL;
 }

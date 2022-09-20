@@ -277,4 +277,19 @@ futex_set(futex_t *uaddr, u_int32_t newval)
 	return newval;
 }
 
+/**
+ * futex_waked_someone() - ECHCK func for TST_RETRY_FUNC
+ * @ret:	return value of futex_wake
+ *
+ * Return value drives TST_RETRY_FUNC macro.
+ */
+static inline int
+futex_waked_someone(int ret)
+{
+	if (ret < 0)
+		tst_brk(TBROK | TERRNO, "futex_wake returned: %d", ret);
+
+	return ret;
+}
+
 #endif /* _FUTEXTEST_H */
