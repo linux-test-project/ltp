@@ -702,12 +702,6 @@ tst_run()
 	[ "$TST_FORMAT_DEVICE" = 1 -o "$TST_ALL_FILESYSTEMS" = 1 ] && TST_NEEDS_DEVICE=1
 	[ "$TST_NEEDS_DEVICE" = 1 ] && TST_NEEDS_TMPDIR=1
 
-	if [ "$TST_ALL_FILESYSTEMS" != 1 ]; then
-		if ! tst_supported_fs -s "$TST_SKIP_FILESYSTEMS" $TST_FS_TYPE > /dev/null; then
-			tst_brk TCONF "$TST_FS_TYPE is skipped by the test"
-		fi
-	fi
-
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
 		TST_DEVICE=$(tst_device acquire)
 
@@ -733,6 +727,14 @@ tst_run()
 
 		TST_STARTWD=$(pwd)
 		cd "$TST_TMPDIR"
+	fi
+
+	if [ "$TST_ALL_FILESYSTEMS" != 1 -a "$TST_SKIP_FILESYSTEMS" ]; then
+		if ! tst_supported_fs -s "$TST_SKIP_FILESYSTEMS" -d . > /dev/null; then
+			tst_brk TCONF "filesystem is not supported by the test"
+		fi
+
+		tst_res TINFO "filesystem is supported by the test"
 	fi
 
 	[ -n "$TST_NEEDS_CHECKPOINTS" ] && _tst_init_checkpoints
