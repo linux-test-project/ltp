@@ -642,7 +642,6 @@ tst_run()
 {
 	local _tst_i
 	local _tst_data
-	local _tst_fs
 	local _tst_max
 	local _tst_name
 	local _tst_pattern='[='\''"} \t\/:`$\;|].*'
