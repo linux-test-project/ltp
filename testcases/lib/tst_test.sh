@@ -29,6 +29,7 @@ _tst_do_exit()
 	local ret=0
 	TST_DO_EXIT=1
 
+	cd "$LTPROOT"
 	[ "$TST_MOUNT_FLAG" = 1 ] && tst_umount
 
 	if [ "$TST_NEEDS_DEVICE" = 1 -a "$TST_DEVICE_FLAG" = 1 ]; then
@@ -38,7 +39,6 @@ _tst_do_exit()
 	fi
 
 	if [ "$TST_NEEDS_TMPDIR" = 1 -a -n "$TST_TMPDIR" ]; then
-		cd "$LTPROOT"
 		rm -r "$TST_TMPDIR"
 		[ "$TST_TMPDIR_RHOST" = 1 ] && tst_cleanup_rhost
 	fi
@@ -794,6 +794,7 @@ _tst_run_iterations()
 	fi
 
 	if [ "$TST_MOUNT_FLAG" = 1 ]; then
+		cd "$LTPROOT"
 		tst_umount
 		TST_MOUNT_FLAG=
 	fi
