@@ -15,6 +15,25 @@
 #include "tst_test.h"
 #include "tst_fs.h"
 
+#define err_exit(...) ({ \
+	fprintf(stderr, __VA_ARGS__); \
+	fprintf(stderr, "\n"); \
+	usage(); \
+	exit(2); \
+})
+
+#define fail_exit(...) ({ \
+	fprintf(stderr, __VA_ARGS__); \
+	fprintf(stderr, "\n"); \
+	exit(1); \
+})
+
+#define info_exit(...) ({ \
+	fprintf(stderr, __VA_ARGS__); \
+	fprintf(stderr, "\n"); \
+	exit(0); \
+})
+
 static void usage(void)
 {
 	fprintf(stderr, "Usage:\n");
@@ -90,67 +109,50 @@ int main(int argc, char *argv[])
 			break;
 
 		case 'd':
-			if (fsname) {
-				fprintf(stderr,
-					"Can't specify multiple paths\n");
-				usage();
-				return 2;
-			}
+			if (fsname)
+				err_exit("Can't specify multiple paths");
 
 			fsname = tst_fs_type_name(tst_fs_type(optarg));
 			break;
 		}
 	}
 
-	if (fsname && !skiplist) {
-		fprintf(stderr, "Parameter -d requires skiplist\n");
-		usage();
-		return 2;
-	}
+	if (fsname && !skiplist)
+		err_exit("Parameter -d requires skiplist");
 
-	if (argc - optind > 1) {
-		fprintf(stderr, "Can't specify multiple fs_type\n");
-		usage();
-		return 2;
-	}
+	if (argc - optind > 1)
+		err_exit("Can't specify multiple fs_type");
 
 	/* fs_type */
 	if (optind < argc) {
-		if (fsname) {
-			fprintf(stderr, "Can't specify fs_type and -d together\n");
-			usage();
-			return 2;
-		}
+		if (fsname)
+			err_exit("Can't specify fs_type and -d together");
 
 		fsname = argv[optind];
 	}
 
 	if (fsname) {
 		if (fsname[0] == '\0')
-			tst_brk(TCONF, "fs_type is empty");
+			err_exit("fs_type is empty");
 
 		if (skiplist) {
 			if (tst_fs_in_skiplist(fsname, (const char * const*)skiplist))
-				tst_brk(TCONF, "%s is skipped", fsname);
-			else
-				tst_res(TINFO, "%s is not skipped", fsname);
+				fail_exit("%s is skipped", fsname);
 
-			return 0;
+			info_exit("%s is not skipped", fsname);
 		}
 
 		if (tst_fs_is_supported(fsname) == TST_FS_UNSUPPORTED)
-			tst_brk(TCONF, "%s is not supported", fsname);
-		else
-			tst_res(TINFO, "%s is supported", fsname);
+			fail_exit("%s is not supported", fsname);
 
-		return 0;
+		info_exit("%s is supported", fsname);
 	}
 
 	/* all filesystems */
 	filesystems = tst_get_supported_fs_types((const char * const*)skiplist);
 
 	if (!filesystems[0])
-		tst_brk(TCONF, "There are no supported filesystems or all skipped");
+		fail_exit("There are no supported filesystems or all skipped");
 
 	for (i = 0; filesystems[i]; i++)
 		printf("%s\n", filesystems[i]);
