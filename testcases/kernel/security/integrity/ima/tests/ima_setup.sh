@@ -10,8 +10,9 @@ TST_SETUP="ima_setup"
 TST_CLEANUP_CALLER="$TST_CLEANUP"
 TST_CLEANUP="ima_cleanup"
 TST_NEEDS_ROOT=1
+TST_MOUNT_DEVICE=1
 
-# TST_NEEDS_DEVICE can be unset, therefore specify explicitly
+# TST_MOUNT_DEVICE can be unset, therefore specify explicitly
 TST_NEEDS_TMPDIR=1
 
 SYSFS="/sys"
@@ -142,15 +143,6 @@ mount_helper()
 	echo $default_dir
 }
 
-mount_loop_device()
-{
-	local ret
-
-	tst_mkfs
-	tst_mount
-	cd $TST_MNTPOINT
-}
-
 print_ima_config()
 {
 	local config="${KCONFIG_PATH:-/boot/config-$(uname -r)}"
@@ -183,9 +175,9 @@ ima_setup()
 
 	print_ima_config
 
-	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
+	if [ "$TST_MOUNT_DEVICE" = 1 ]; then
 		tst_res TINFO "\$TMPDIR is on tmpfs => run on loop device"
-		mount_loop_device
+		cd "$TST_MNTPOINT"
 	fi
 
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
@@ -200,11 +192,6 @@ ima_cleanup()
 	for dir in $UMOUNT; do
 		umount $dir
 	done
-
-	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
-		cd $TST_TMPDIR
-		tst_umount
-	fi
 }
 
 set_digest_index()
@@ -348,10 +335,10 @@ require_evmctl()
 	fi
 }
 
-. tst_test.sh
-
 # loop device is needed to use only for tmpfs
 TMPDIR="${TMPDIR:-/tmp}"
-if [ "$(df -T $TMPDIR | tail -1 | awk '{print $2}')" != "tmpfs" -a -n "$TST_NEEDS_DEVICE" ]; then
-	unset TST_NEEDS_DEVICE
+if [ "$(df -T $TMPDIR | tail -1 | awk '{print $2}')" != "tmpfs" -a -n "$TST_MOUNT_DEVICE" ]; then
+	unset TST_MOUNT_DEVICE
 fi
+
+. tst_test.sh
