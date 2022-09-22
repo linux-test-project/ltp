@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 		switch (ret) {
 		case '?':
 			usage();
-			return 1;
+			return 2;
 
 		case 'h':
 			usage();
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		case 's':
 			skiplist = parse_skiplist(optarg);
 			if (!skiplist)
-				return 1;
+				return 2;
 			break;
 
 		case 'd':
