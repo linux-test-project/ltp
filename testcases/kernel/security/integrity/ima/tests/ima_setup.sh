@@ -337,7 +337,7 @@ require_evmctl()
 
 # loop device is needed to use only for tmpfs
 TMPDIR="${TMPDIR:-/tmp}"
-if [ "$(df -T $TMPDIR | tail -1 | awk '{print $2}')" != "tmpfs" -a -n "$TST_MOUNT_DEVICE" ]; then
+if tst_supported_fs -d $TMPDIR -s "tmpfs"; then
 	unset TST_MOUNT_DEVICE
 fi
 
