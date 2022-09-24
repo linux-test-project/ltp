@@ -3,6 +3,9 @@
 name: "CI: docker based builds"
 on: [push, pull_request]
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   job:
     runs-on: ubuntu-latest
