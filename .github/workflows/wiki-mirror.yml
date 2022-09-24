@@ -8,8 +8,12 @@ on:
     branches:
       - master
 
+permissions: {}
 jobs:
   mirror:
+    permissions:
+      contents: write # for git push
+
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'linux-test-project/ltp' }}
     steps:
