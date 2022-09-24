@@ -33,7 +33,7 @@
 #define MOUNT_PATH	"fs_mnt"
 #define TEST_FILE	MOUNT_PATH "/testfile"
 
-static struct pidfd_fdinfo_t {
+struct pidfd_fdinfo_t {
 	int pos;
 	int flags;
 	int mnt_id;
