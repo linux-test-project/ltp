@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// SPDX-License-Identifier: GPL-2.0 or later
 /*
  *  Copyright (c) Zilogic Systems Pvt. Ltd., 2018
  *  Email : code@zilogic.com
