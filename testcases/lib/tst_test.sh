@@ -24,10 +24,24 @@ export TST_LIB_LOADED=1
 trap "tst_brk TBROK 'test interrupted'" INT
 trap "unset _tst_setup_timer_pid; tst_brk TBROK 'test terminated'" TERM
 
+_tst_do_cleanup()
+{
+	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
+		if command -v $TST_CLEANUP >/dev/null 2>/dev/null; then
+			$TST_CLEANUP
+		else
+			tst_res TWARN "TST_CLEANUP=$TST_CLEANUP declared, but function not defined (or cmd not found)"
+		fi
+	fi
+	TST_DO_CLEANUP=
+}
+
 _tst_do_exit()
 {
 	local ret=0
 	TST_DO_EXIT=1
+
+	_tst_do_cleanup
 
 	cd "$LTPROOT"
 	[ "$TST_MOUNT_FLAG" = 1 ] && tst_umount
@@ -785,13 +799,7 @@ _tst_run_iterations()
 		_tst_i=$((_tst_i-1))
 	done
 
-	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
-		if command -v $TST_CLEANUP >/dev/null 2>/dev/null; then
-			$TST_CLEANUP
-		else
-			tst_res TWARN "TST_CLEANUP=$TST_CLEANUP declared, but function not defined (or cmd not found)"
-		fi
-	fi
+	_tst_do_cleanup
 
 	if [ "$TST_MOUNT_FLAG" = 1 ]; then
 		cd "$LTPROOT"
