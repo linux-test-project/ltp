@@ -524,20 +524,42 @@ int safe_symlink(const char *file, const int lineno,
 }
 
 ssize_t safe_write(const char *file, const int lineno, void (cleanup_fn) (void),
-                   char len_strict, int fildes, const void *buf, size_t nbyte)
+		   enum safe_write_opts len_strict, int fildes, const void *buf,
+		   size_t nbyte)
 {
 	ssize_t rval;
+	const void *wbuf = buf;
+	size_t len = nbyte;
+	int iter = 0;
 
-	rval = write(fildes, buf, nbyte);
+	do {
+		iter++;
+		rval = write(fildes, wbuf, len);
+		if (rval == -1) {
+			if (len_strict == SAFE_WRITE_RETRY)
+				tst_resm_(file, lineno, TINFO,
+					"write() wrote %zu bytes in %d calls",
+					nbyte-len, iter);
+			tst_brkm_(file, lineno, TBROK | TERRNO,
+				cleanup_fn, "write(%d,%p,%zu) failed",
+				fildes, buf, nbyte);
+		}
 
-	if (rval == -1 || (len_strict && (size_t)rval != nbyte)) {
-		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
-			"write(%d,%p,%zu) failed", fildes, buf, nbyte);
-	} else if (rval < 0) {
-		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
-			"Invalid write(%d,%p,%zu) return value %zd", fildes,
-			buf, nbyte, rval);
-	}
+		if (len_strict == SAFE_WRITE_ANY)
+			return rval;
+
+		if (len_strict == SAFE_WRITE_ALL) {
+			if ((size_t)rval != nbyte)
+				tst_brkm_(file, lineno, TBROK | TERRNO,
+					cleanup_fn, "short write(%d,%p,%zu) "
+					"return value %zd",
+					fildes, buf, nbyte, rval);
+			return rval;
+		}
+
+		wbuf += rval;
+		len -= rval;
+	} while (len > 0);
 
 	return rval;
 }

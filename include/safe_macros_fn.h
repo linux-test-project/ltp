@@ -24,6 +24,18 @@
 #include <unistd.h>
 #include <dirent.h>
 
+/* supported values for safe_write() len_strict parameter */
+enum safe_write_opts {
+	/* no length strictness, short writes are ok */
+	SAFE_WRITE_ANY = 0,
+
+	/* strict length, short writes raise TBROK */
+	SAFE_WRITE_ALL = 1,
+
+	/* retry/resume after short write */
+	SAFE_WRITE_RETRY = 2,
+};
+
 char* safe_basename(const char *file, const int lineno,
                     void (*cleanup_fn)(void), char *path);
 
@@ -111,8 +123,8 @@ int safe_symlink(const char *file, const int lineno,
                  const char *newpath);
 
 ssize_t safe_write(const char *file, const int lineno,
-                   void (cleanup_fn)(void), char len_strict, int fildes,
-                   const void *buf, size_t nbyte);
+		   void (cleanup_fn)(void), enum safe_write_opts len_strict,
+		   int fildes, const void *buf, size_t nbyte);
 
 long safe_strtol(const char *file, const int lineno,
                  void (cleanup_fn)(void), char *str, long min, long max);

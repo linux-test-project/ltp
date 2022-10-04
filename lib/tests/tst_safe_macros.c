@@ -31,9 +31,9 @@ int main(int argc LTP_ATTRIBUTE_UNUSED, char **argv)
 	printf("buf: %s\n", buf);
 	SAFE_READ(cleanup, 1, fd, buf, 9);
 	printf("buf: %s\n", buf);
-	SAFE_WRITE(cleanup, 0, -1, buf, 9);
-	SAFE_WRITE(NULL, 0, fd, buf, 9);
-	SAFE_WRITE(NULL, 1, fd, buf, 9);
+	SAFE_WRITE(cleanup, SAFE_WRITE_ANY, -1, buf, 9);
+	SAFE_WRITE(NULL, SAFE_WRITE_ANY, fd, buf, 9);
+	SAFE_WRITE(NULL, SAFE_WRITE_ALL, fd, buf, 9);
 	SAFE_PIPE(NULL, fds);
 
 	return 0;
