@@ -178,9 +178,9 @@ struct tst_test {
 	int skip_in_compat:1;
 
 	/*
-	 * The skip_filesystem is a NULL terminated list of filesystems the
+	 * The skip_filesystems is a NULL terminated list of filesystems the
 	 * test does not support. It can also be used to disable whole class of
-	 * filesystems with a special keyworks such as "fuse".
+	 * filesystems with a special keywords such as "fuse".
 	 */
 	const char *const *skip_filesystems;
 
