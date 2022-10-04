@@ -336,7 +336,7 @@ to update all the gitignore files when moving directories, and they get deleted
 automatically when a directory with tests is removed.
 
 7 Testing pre-release kernel features
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 Tests for features not yet in a mainline kernel release are accepted. However
 they must only be added to the +staging+ runtest file. Once a feature is part
