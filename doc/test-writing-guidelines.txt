@@ -344,3 +344,67 @@ of the stable kernel ABI the associated test must be moved out of staging.
 
 This is primarily to help test kernel RCs by avoiding the need to download
 separate LTP patchsets.
+
+8 LTP C And Shell Test API Comparison
+-------------------------------------
+
+Comparison of
+https://github.com/linux-test-project/ltp/wiki/C-Test-API[C Test API] and
+https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
+
+[options="header"]
+|================================================================================
+|  C API ('struct tst_test' members) | shell API ('$TST_*' environment variables)
+| '.all_filesystems' | 'TST_ALL_FILESYSTEMS'
+| '.bufs' | –
+| '.caps' | –
+| '.child_needs_reinit' | not applicable
+| '.cleanup' | 'TST_CLEANUP'
+| '.dev_extra_opts' | 'TST_DEV_EXTRA_OPTS'
+| '.dev_fs_opts' | 'TST_DEV_FS_OPTS'
+| '.dev_fs_type' | 'TST_FS_TYPE'
+| '.dev_min_size' | not applicable
+| '.format_device' | 'TST_FORMAT_DEVICE'
+| '.max_runtime' | –
+| '.min_cpus' | not applicable
+| '.min_kver' | 'TST_MIN_KVER'
+| '.min_mem_avail' | not applicable
+| '.mnt_flags' | 'TST_MNT_PARAMS'
+| '.mntpoint', '.mnt_data' | 'TST_MNTPOINT'
+| '.mount_device' | 'TST_MOUNT_DEVICE'
+| '.needs_cgroup_ctrls' | –
+| '.needs_checkpoints' | 'NEEDS_CHECKPOINTS'
+| '.needs_cmds' | 'TST_NEEDS_CMDS'
+| '.needs_devfs' | –
+| '.needs_device' | 'TST_NEEDS_DEVICE'
+| '.needs_drivers' | 'TST_NEEDS_DRIVERS'
+| '.needs_kconfigs' | 'TST_NEEDS_KCONFIGS'
+| '.needs_overlay' |
+| '.needs_rofs' | –
+| '.needs_root' | 'TST_NEEDS_ROOT'
+| '.needs_tmpdir' | 'TST_NEEDS_TMPDIR'
+| '.options' | 'TST_PARSE_ARGS', 'TST_OPTS'
+| '.resource_files' | –
+| '.restore_wallclock' | not applicable
+| '.sample' | –
+| '.save_restore' | –
+| '.scall' | not applicable
+| '.setup' | 'TST_SETUP'
+| '.skip_filesystems' | 'TST_SKIP_FILESYSTEMS'
+| '.skip_in_compat' | –
+| '.skip_in_lockdown' | –
+| '.supported_archs' | not applicable
+| '.tags' | –
+| '.taint_check' | –
+| '.tcnt' | 'TST_CNT'
+| '.tconf_msg' | not applicable
+| '.test', '.test_all' | 'TST_TESTFUNC'
+| '.test_variants' | –
+| '.timeout' | 'TST_TIMEOUT'
+| '.tst_hugepage' | not applicable
+| .format_device | 'TST_DEVICE'
+| not applicable | 'TST_NEEDS_KCONFIGS_IFS'
+| not applicable | 'TST_NEEDS_MODULE'
+| not applicable | 'TST_POS_ARGS'
+| not applicable | 'TST_USAGE'
+|================================================================================
