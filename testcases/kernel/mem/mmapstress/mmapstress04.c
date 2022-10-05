@@ -32,17 +32,6 @@ static void setup(void)
 		MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 }
 
-static void write_fully(int fd, void *buf, int len)
-{
-	int ret;
-
-	do {
-		ret = SAFE_WRITE(0, fd, buf, len);
-		buf += ret;
-		len -= ret;
-	} while (len > 0);
-}
-
 static void mmapstress04(void)
 {
 	int i, j, rofd, rwfd;
@@ -85,7 +74,7 @@ static void mmapstress04(void)
 	buf = SAFE_MALLOC(page_size);
 	memset(buf, 'a', page_size);
 	for (i = 0; i < 6 * 64; i++)
-		write_fully(rwfd, buf, page_size);
+		SAFE_WRITE(SAFE_WRITE_RETRY, rwfd, buf, page_size);
 	free(buf);
 	SAFE_CLOSE(rwfd);
 
