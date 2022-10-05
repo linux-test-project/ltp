@@ -96,7 +96,7 @@ static void child_fn(unsigned int cinit_no)
 		SAFE_CLOSE(pipe_fd[0]);
 
 		TST_CHECKPOINT_WAIT(1);
-		SAFE_WRITE(pipe_fd[1], 1, "test\n", 5);
+		SAFE_WRITE(SAFE_WRITE_ALL, pipe_fd[1], "test\n", 5);
 	}
 
 	exit(0);

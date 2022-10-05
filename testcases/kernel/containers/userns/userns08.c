@@ -118,7 +118,7 @@ static void setup(void)
 {
 	int fd = SAFE_OPEN("restricted", O_CREAT | O_WRONLY, 0700);
 
-	SAFE_WRITE(fd, 1, "\n", 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, "\n", 1);
 	SAFE_CLOSE(fd);
 
 	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
