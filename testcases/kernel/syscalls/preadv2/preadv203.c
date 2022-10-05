@@ -254,7 +254,7 @@ static void setup(void)
 
 		for (j = 0; j < CHUNKS; j++) {
 			memset(buf, '0' + j, sizeof(buf));
-			SAFE_WRITE(1, fds[i], buf, sizeof(buf));
+			SAFE_WRITE(SAFE_WRITE_RETRY, fds[i], buf, sizeof(buf));
 		}
 	}
 }
