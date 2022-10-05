@@ -94,7 +94,7 @@ static void setup(void)
 		buffer[i] = i & 0xff;
 
 	fd_in = SAFE_OPEN(TESTFILE1, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	SAFE_WRITE(1, fd_in, buffer, TEST_BLOCK_SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd_in, buffer, TEST_BLOCK_SIZE);
 	SAFE_CLOSE(fd_in);
 }
 

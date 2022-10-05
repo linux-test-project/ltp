@@ -145,7 +145,7 @@ static void write_data(int fd, int num)
 	char buf[64];
 
 	sprintf(buf, "data%02dsuffix", num);
-	SAFE_WRITE(1, fd, buf, strlen(buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, strlen(buf));
 }
 
 static void setup(void)

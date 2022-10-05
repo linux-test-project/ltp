@@ -146,7 +146,7 @@ static void loose_fanotify_events(void)
 			/* Write response to permission event */
 			resp.fd = event.fd;
 			resp.response = FAN_ALLOW;
-			SAFE_WRITE(1, fd_notify, &resp, sizeof(resp));
+			SAFE_WRITE(SAFE_WRITE_ALL, fd_notify, &resp, sizeof(resp));
 		} else {
 			not_responded++;
 		}

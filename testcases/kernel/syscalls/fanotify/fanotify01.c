@@ -132,7 +132,7 @@ static void test_fanotify(unsigned int n)
 	event_set[tst_count] = FAN_OPEN;
 	tst_count++;
 
-	SAFE_WRITE(1, fd, fname, strlen(fname));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, fname, strlen(fname));
 	event_set[tst_count] = FAN_MODIFY;
 	tst_count++;
 
@@ -172,7 +172,7 @@ static void test_fanotify(unsigned int n)
 
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 	/* Generate modify event to clear ignore mask */
-	SAFE_WRITE(1, fd, fname, 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, fname, 1);
 	event_set[tst_count] = FAN_MODIFY;
 	tst_count++;
 
@@ -204,7 +204,7 @@ static void test_fanotify(unsigned int n)
 	/* This event should be ignored */
 	fd = SAFE_OPEN(fname, O_RDWR);
 
-	SAFE_WRITE(1, fd, fname, 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, fname, 1);
 	event_set[tst_count] = FAN_MODIFY;
 	tst_count++;
 

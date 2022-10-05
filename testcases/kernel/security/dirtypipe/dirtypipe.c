@@ -80,7 +80,7 @@ static void prepare_pipe(void)
 	 */
 	for (total = pipe_size; total > 0;) {
 		n = total > sizeof(buffer) ? sizeof(buffer) : total;
-		len = SAFE_WRITE(1, p[1], buffer, n);
+		len = SAFE_WRITE(SAFE_WRITE_ALL, p[1], buffer, n);
 		total -= len;
 	}
 
@@ -128,7 +128,7 @@ static void run(void)
 	 * will instead write into the page cache, because of the
 	 * PIPE_BUF_FLAG_CAN_MERGE flag
 	 */
-	len = SAFE_WRITE(1, p[1], TEXT, data_size);
+	len = SAFE_WRITE(SAFE_WRITE_ALL, p[1], TEXT, data_size);
 	if (len < nbytes)
 		tst_brk(TFAIL, "short write");
 

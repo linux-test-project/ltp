@@ -54,7 +54,7 @@ static void verify_lseek(unsigned int n)
 		return;
 	}
 
-	SAFE_WRITE(1, *tc->fd, WR_STR2, sizeof(WR_STR2) - 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, *tc->fd, WR_STR2, sizeof(WR_STR2) - 1);
 
 	SAFE_CLOSE(*tc->fd);
 
@@ -76,8 +76,8 @@ static void setup(void)
 	fd1 = SAFE_OPEN(TFILE1, O_RDWR | O_CREAT, 0644);
 	fd2 = SAFE_OPEN(TFILE2, O_RDWR | O_CREAT, 0644);
 
-	SAFE_WRITE(1, fd1, WR_STR1, sizeof(WR_STR1) - 1);
-	SAFE_WRITE(1, fd2, WR_STR1, sizeof(WR_STR1) - 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd1, WR_STR1, sizeof(WR_STR1) - 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd2, WR_STR1, sizeof(WR_STR1) - 1);
 }
 
 static void cleanup(void)

@@ -65,7 +65,7 @@ void *thread_fn_01(void *arg)
 		my_fcntl(fd, F_OFD_SETLKW, &lck);
 
 		SAFE_LSEEK(fd, 0, SEEK_END);
-		SAFE_WRITE(1, fd, buf, write_size);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, write_size);
 
 		lck.l_type = F_UNLCK;
 		my_fcntl(fd, F_OFD_SETLKW, &lck);

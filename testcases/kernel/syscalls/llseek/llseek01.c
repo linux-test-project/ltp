@@ -70,7 +70,7 @@ static void setup(void)
 
 	fildes = SAFE_OPEN(TEMP_FILE, O_RDWR | O_CREAT, FILE_MODE);
 
-	SAFE_WRITE(1, fildes, write_buff, BUFSIZ);
+	SAFE_WRITE(SAFE_WRITE_ALL, fildes, write_buff, BUFSIZ);
 }
 
 static struct tst_test test = {

@@ -47,7 +47,7 @@ static int mkfile(int *size)
 
 	while (index < *size) {
 		index += sizeof(buf);
-		SAFE_WRITE(1, fd, buf, sizeof(buf));
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, sizeof(buf));
 	}
 
 	fsync(fd);

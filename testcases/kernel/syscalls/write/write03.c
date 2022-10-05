@@ -29,7 +29,7 @@ static void verify_write(void)
 {
 	fd = SAFE_CREAT("testfile", 0644);
 
-	SAFE_WRITE(1, fd, wbuf, 100);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, wbuf, 100);
 
 	if (write(fd, bad_addr, 100) != -1) {
 		tst_res(TFAIL, "write() failed to fail");

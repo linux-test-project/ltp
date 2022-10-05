@@ -142,7 +142,7 @@ static void setup(void)
 
 	/* Writing 16 pages of random data into this file */
 	for (i = 0; i < (pagesize / 2); i++)
-		SAFE_WRITE(1, fd, STR, sizeof(STR) - 1);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, STR, sizeof(STR) - 1);
 
 	SAFE_FSTAT(fd, &st);
 

@@ -80,7 +80,7 @@ static void run(void)
 	fd = SAFE_OPEN("mnt/dat", O_WRONLY | O_CREAT, 0600);
 
 	for (i = 0; i < 4; i++) {
-		SAFE_WRITE(1, fd, buf, pgsz);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, pgsz);
 		SAFE_FSYNC(fd);
 		TST_EXP_PASS_SILENT(posix_fadvise(fd, pgsz * i, pgsz, POSIX_FADV_DONTNEED));
 	}

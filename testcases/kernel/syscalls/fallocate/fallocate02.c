@@ -124,7 +124,7 @@ static void setup(void)
 	char buf[BLOCK_SIZE];
 	memset(buf, 'A', BLOCK_SIZE);
 	for (i = 0; i < BLOCKS_WRITTEN; i++)
-		SAFE_WRITE(cleanup, 1, fdw, buf, BLOCK_SIZE);
+		SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fdw, buf, BLOCK_SIZE);
 }
 
 static void fallocate_verify(int i)

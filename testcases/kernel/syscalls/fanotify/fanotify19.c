@@ -111,7 +111,7 @@ static void generate_events(void)
 	SAFE_READ(0, fd, buf, BUF_SIZE);
 
 	/* FAN_MODIFY */
-	SAFE_WRITE(1, fd, TEST_FILE, 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, TEST_FILE, 1);
 
 	/* FAN_CLOSE */
 	SAFE_CLOSE(fd);

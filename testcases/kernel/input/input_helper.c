@@ -175,7 +175,7 @@ void send_event(int fd, int event, int code, int value)
 		.value = value,
 	};
 
-	SAFE_WRITE(NULL, 1, fd, &ev, sizeof(ev));
+	SAFE_WRITE(NULL, SAFE_WRITE_ALL, fd, &ev, sizeof(ev));
 }
 
 void send_rel_move(int fd, int x, int y)
@@ -198,7 +198,7 @@ void create_device(int fd)
 		}
 	};
 
-	SAFE_WRITE(NULL, 1, fd, &uidev, sizeof(uidev));
+	SAFE_WRITE(NULL, SAFE_WRITE_ALL, fd, &uidev, sizeof(uidev));
 	SAFE_IOCTL(NULL, fd, UI_DEV_CREATE, NULL);
 
 	for (nb = 100; nb > 0; nb--) {

@@ -62,7 +62,7 @@ static void pipe_socket(void)
 	SAFE_PIPE(pp2);
 	SAFE_SOCKETPAIR(AF_UNIX, SOCK_STREAM, 0, sv);
 
-	SAFE_WRITE(1, pp1[1], arr_in, num_len_data);
+	SAFE_WRITE(SAFE_WRITE_ALL, pp1[1], arr_in, num_len_data);
 	for (i = num_len_data; i > 0; i = i - ret) {
 		ret = splice(pp1[0], NULL, sv[0], 0, i, 0);
 		if (ret == -1) {

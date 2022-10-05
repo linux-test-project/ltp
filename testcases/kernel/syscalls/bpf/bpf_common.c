@@ -136,7 +136,7 @@ void bpf_run_prog(const int prog_fd,
 	SAFE_SETSOCKOPT(sk[1], SOL_SOCKET, SO_ATTACH_BPF,
 			&prog_fd, sizeof(prog_fd));
 
-	SAFE_WRITE(1, sk[0], msg, msg_len);
+	SAFE_WRITE(SAFE_WRITE_ALL, sk[0], msg, msg_len);
 
 	SAFE_CLOSE(sk[0]);
 	SAFE_CLOSE(sk[1]);

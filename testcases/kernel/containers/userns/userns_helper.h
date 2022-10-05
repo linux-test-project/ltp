@@ -56,7 +56,7 @@ LTP_ATTRIBUTE_UNUSED static int updatemap(int cpid, bool type, int idnum,
 
 	sprintf(content, "%d %d 1", idnum, parentmappid);
 	fd = SAFE_OPEN(cleanup, path, O_WRONLY, 0644);
-	SAFE_WRITE(cleanup, 1, fd, content, strlen(content));
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, content, strlen(content));
 	SAFE_CLOSE(cleanup, fd);
 	return 0;
 }

@@ -183,7 +183,8 @@ static void mysymlinkat_test(struct test_struct *desc)
 			int tnum = rand(), vnum = ~tnum;
 
 			fd = SAFE_OPEN(cleanup, desc->referencefn1, O_RDWR);
-			SAFE_WRITE(cleanup, 1, fd, &tnum, sizeof(tnum));
+			SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, &tnum,
+				sizeof(tnum));
 			SAFE_CLOSE(cleanup, fd);
 
 			fd = SAFE_OPEN(cleanup, desc->referencefn2, O_RDONLY);

@@ -133,7 +133,7 @@ static void generate_events(void)
 	 */
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 
-	SAFE_WRITE(0, fd, fname, 1);
+	SAFE_WRITE(SAFE_WRITE_ANY, fd, fname, 1);
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 
 	if (read(fd, buf, BUF_SIZE) != -1)
@@ -295,7 +295,7 @@ static void test_fanotify(unsigned int n)
 
 			resp.fd = event->fd;
 			resp.response = event_set[test_num].response;
-			SAFE_WRITE(1, fd_notify, &resp, sizeof(resp));
+			SAFE_WRITE(SAFE_WRITE_ALL, fd_notify, &resp, sizeof(resp));
 		}
 
 		i += event->event_len;

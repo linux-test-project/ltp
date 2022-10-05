@@ -91,7 +91,7 @@ static void test01(void)
 
 	fill_tst_buf(buf);
 
-	SAFE_WRITE(1, fd, buf, buf_size);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, buf_size);
 
 	tst_res(TPASS, "test-case succeeded");
 }

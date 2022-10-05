@@ -93,7 +93,7 @@ static void setup(void)
 	memset(buf, 0x42, sizeof(buf));
 
 	fd = SAFE_OPEN("data_file", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	SAFE_WRITE(1, fd, buf, sizeof(buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, sizeof(buf));
 	SAFE_CLOSE(fd);
 	fd = SAFE_OPEN("data_file", O_RDONLY);
 }

@@ -44,7 +44,7 @@ static void setup(void)
 
 	fd = SAFE_CREAT(IN_FILE, 00700);
 	sprintf(buf, "abcdefghijklmnopqrstuvwxyz");
-	SAFE_WRITE(1, fd, buf, strlen(buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, strlen(buf));
 	SAFE_CLOSE(fd);
 
 	fd = SAFE_CREAT(OUT_FILE, 00700);

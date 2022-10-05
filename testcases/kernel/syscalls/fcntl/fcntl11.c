@@ -100,7 +100,7 @@ void setup(void)
 	if ((fd = mkstemp(template)) < 0)
 		tst_resm(TFAIL, "Couldn't open temp file! errno = %d", errno);
 
-	SAFE_WRITE(cleanup, 0, fd, buf, STRINGSIZE);
+	SAFE_WRITE(cleanup, SAFE_WRITE_ANY, fd, buf, STRINGSIZE);
 
 	memset(&act, 0, sizeof(act));
 	act.sa_handler = catch_child;
@@ -203,7 +203,7 @@ char *str_type(int type)
 
 void parent_put(struct flock *l)
 {
-	SAFE_WRITE(cleanup, 1, parent_pipe[1], l, sizeof(*l));
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, parent_pipe[1], l, sizeof(*l));
 }
 
 void parent_get(struct flock *l)
@@ -213,7 +213,7 @@ void parent_get(struct flock *l)
 
 void child_put(struct flock *l)
 {
-	SAFE_WRITE(NULL, 1, child_pipe[1], l, sizeof(*l));
+	SAFE_WRITE(NULL, SAFE_WRITE_ALL, child_pipe[1], l, sizeof(*l));
 }
 
 void child_get(struct flock *l)

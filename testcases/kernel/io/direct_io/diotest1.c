@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < numblks; i++) {
 		fillbuf(buf, bufsize, (char)(i % 256));
-		SAFE_WRITE(cleanup, 1, fd1, buf, bufsize);
+		SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd1, buf, bufsize);
 	}
 
 	/* Copy infile to outfile using direct read and direct write */
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	while ((n = read(fd1, buf, bufsize)) > 0) {
 		SAFE_LSEEK(cleanup, fd2, offset, SEEK_SET);
 
-		SAFE_WRITE(cleanup, 1, fd2, buf, n);
+		SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd2, buf, n);
 
 		offset += n;
 		SAFE_LSEEK(cleanup, fd1, offset, SEEK_SET);

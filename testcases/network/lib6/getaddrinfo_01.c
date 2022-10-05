@@ -294,7 +294,7 @@ static void setup(void)
 
 		SAFE_ASPRINTF(&entry, "%s %s %s\n",
 			      tcases[i].addr, tcases[i].name, tcases[i].alias);
-		SAFE_WRITE(0, fd, entry, strlen(entry));
+		SAFE_WRITE(SAFE_WRITE_ANY, fd, entry, strlen(entry));
 		free(entry);
 	}
 	SAFE_CLOSE(fd);

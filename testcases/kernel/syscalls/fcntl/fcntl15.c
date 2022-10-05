@@ -124,7 +124,7 @@ static void do_test(int file_flag, int file_mode, int dup_flag)
 static int run_test(int file_flag, int file_mode, int dup_flag)
 {
 	fd[0] = SAFE_OPEN(tmpname, file_flag, file_mode);
-	SAFE_WRITE(1, fd[0], DATA, 10);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd[0], DATA, 10);
 
 	switch (dup_flag) {
 	case FORK_:

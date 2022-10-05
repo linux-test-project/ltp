@@ -51,7 +51,7 @@ static inline void updatemap(int cpid, int type, int idnum, int parentmappid)
 	sprintf(content, "%d %d 1", idnum, parentmappid);
 
 	fd = SAFE_OPEN(path, O_WRONLY, 0644);
-	SAFE_WRITE(1, fd, content, strlen(content));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, content, strlen(content));
 	SAFE_CLOSE(fd);
 }
 

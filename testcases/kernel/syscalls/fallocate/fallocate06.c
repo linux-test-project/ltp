@@ -184,7 +184,7 @@ static void run(unsigned int n)
 
 	/* Prepare test data for deallocation test */
 	size = WRITE_BLOCKS * blocksize;
-	SAFE_WRITE(1, fd, wbuf, size);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, wbuf, size);
 
 	/* Allocation test */
 	offset = size + block_offset;

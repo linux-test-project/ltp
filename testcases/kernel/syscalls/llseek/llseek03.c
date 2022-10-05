@@ -30,7 +30,7 @@ static void setup(void)
 
 	fd = SAFE_CREAT(TEST_FILE, 0644);
 
-	SAFE_WRITE(1, fd, STR, sizeof(STR) - 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, STR, sizeof(STR) - 1);
 
 	SAFE_CLOSE(fd);
 }

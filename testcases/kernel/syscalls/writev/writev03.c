@@ -47,7 +47,7 @@ static void setup(void)
 		buf[i] = i & 0xff;
 
 	mapfd = SAFE_OPEN(MAPFILE, O_CREAT|O_RDWR|O_TRUNC, 0644);
-	SAFE_WRITE(1, mapfd, buf, BUF_SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, mapfd, buf, BUF_SIZE);
 
 	tst_fzsync_pair_init(&fzsync_pair);
 }

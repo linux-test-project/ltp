@@ -28,7 +28,7 @@ static void setup(void)
 {
 	memset(buf, '*', SIZE);
 	fd = SAFE_OPEN("testfile", O_RDWR | O_CREAT, 0700);
-	SAFE_WRITE(1, fd, buf, SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, SIZE);
 }
 
 static void cleanup(void)

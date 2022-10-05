@@ -140,7 +140,7 @@ static void run(void)
 		for (i = 0; i < size; i++)
 			buf[i] = get_letter(file_size - to_write + i);
 
-		written = SAFE_WRITE(1, pipe_fd[1], &buf, size);
+		written = SAFE_WRITE(SAFE_WRITE_ALL, pipe_fd[1], &buf, size);
 		to_write -= written;
 	}
 

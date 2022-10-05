@@ -49,7 +49,7 @@ static void pipe_pipe(void)
 
 	SAFE_PIPE(pp1);
 	SAFE_PIPE(pp2);
-	SAFE_WRITE(1, pp1[1], arr_in, num_len_data);
+	SAFE_WRITE(SAFE_WRITE_ALL, pp1[1], arr_in, num_len_data);
 	for (i = num_len_data; i > 0; i = i - ret) {
 		ret = splice(pp1[0], NULL, pp2[1], NULL, i, 0);
 		if (ret == -1) {

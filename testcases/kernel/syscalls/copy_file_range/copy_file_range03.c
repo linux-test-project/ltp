@@ -66,7 +66,7 @@ static void setup(void)
 
 	fd_dest = SAFE_OPEN(FILE_DEST_PATH, O_RDWR | O_CREAT, 0664);
 	fd_src  = SAFE_OPEN(FILE_SRC_PATH,  O_RDWR | O_CREAT, 0664);
-	SAFE_WRITE(1, fd_src,  CONTENT,  CONTSIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd_src,  CONTENT,  CONTSIZE);
 	SAFE_CLOSE(fd_src);
 	fd_src = SAFE_OPEN(FILE_SRC_PATH, O_RDONLY);
 }

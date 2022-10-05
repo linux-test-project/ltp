@@ -198,7 +198,7 @@ static void setup(void)
 	memset(data_buff, '@', sizeof(data_buff));
 
 	file_fd =  SAFE_OPEN(TESTFILE, O_RDWR|O_CREAT, MODE);
-	SAFE_WRITE(1, file_fd, data_buff, sizeof(data_buff));
+	SAFE_WRITE(SAFE_WRITE_ALL, file_fd, data_buff, sizeof(data_buff));
 
 	SAFE_MKNOD(DEVICEFILE, S_IFBLK | 0777, makedev(MAJOR, MINOR));
 }

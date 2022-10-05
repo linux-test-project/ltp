@@ -49,7 +49,7 @@ static void test_msync(void)
 
 	test_fd = SAFE_OPEN("msync04/testfile", O_CREAT | O_TRUNC | O_RDWR,
 		0644);
-	SAFE_WRITE(0, test_fd, STRING_TO_WRITE, sizeof(STRING_TO_WRITE) - 1);
+	SAFE_WRITE(SAFE_WRITE_ANY, test_fd, STRING_TO_WRITE, sizeof(STRING_TO_WRITE) - 1);
 	mmaped_area = SAFE_MMAP(NULL, pagesize, PROT_READ | PROT_WRITE,
 			MAP_SHARED, test_fd, 0);
 	SAFE_CLOSE(test_fd);

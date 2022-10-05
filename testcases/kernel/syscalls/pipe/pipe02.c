@@ -25,11 +25,11 @@ static void do_child(void)
 {
 	SAFE_SIGNAL(SIGPIPE, SIG_DFL);
 	SAFE_CLOSE(fd[0]);
-	SAFE_WRITE(1, fd[1], wrbuf, SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd[1], wrbuf, SIZE);
 
 	TST_CHECKPOINT_WAIT(0);
 
-	SAFE_WRITE(1, fd[1], wrbuf, SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd[1], wrbuf, SIZE);
 	exit(0);
 }
 

@@ -55,7 +55,7 @@ static void do_child(void)
 	childfd = SAFE_OPEN(FILE_CHILD, O_RDWR | O_CREAT, 0666);
 
 	memset(buf, 'a', FS_BLOCKSIZE);
-	SAFE_WRITE(1, childfd, buf, FS_BLOCKSIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, childfd, buf, FS_BLOCKSIZE);
 
 	/*
 	 * In case mremap() may fail because that memory area can not be

@@ -59,7 +59,7 @@ static void setup(void)
 
 	fd = SAFE_OPEN(TEST_FILE, O_RDWR | O_CREAT, 0664);
 	for (i = 0; i < 128; i++)
-		SAFE_WRITE(1, fd, STR, strlen(STR));
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, STR, strlen(STR));
 
 	SAFE_CLOSE(fd);
 }

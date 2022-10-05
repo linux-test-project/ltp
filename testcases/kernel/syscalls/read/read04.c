@@ -49,7 +49,7 @@ static void setup(void)
 	int fd;
 
 	fd = SAFE_CREAT(fname, 0777);
-	SAFE_WRITE(1, fd, palfa, PALFA_LEN);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, palfa, PALFA_LEN);
 	SAFE_CLOSE(fd);
 }
 

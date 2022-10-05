@@ -40,11 +40,11 @@ static void run(unsigned int i)
 	tst_res(TINFO, "%s", tc->desc);
 
 	fd0 = SAFE_CREAT(filename0, 0666);
-	SAFE_WRITE(1, fd0, filename0, strlen(filename0));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd0, filename0, strlen(filename0));
 	SAFE_CLOSE(fd0);
 
 	fd1 = SAFE_CREAT(filename1, 0666);
-	SAFE_WRITE(1, fd1, filename1, strlen(filename1));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd1, filename1, strlen(filename1));
 
 	fd0 = SAFE_OPEN(filename0, O_RDONLY);
 	SAFE_FCNTL(fd0, F_SETFD, 1);

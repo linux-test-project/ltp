@@ -55,7 +55,7 @@ static void dio_sparse(int fd, int align, long long fs, int ws, long long off)
 			tst_res(TINFO, "Test runtime is over, exiting");
 			return;
 		}
-		w = SAFE_WRITE(0, fd, bufptr, ws);
+		w = SAFE_WRITE(SAFE_WRITE_ANY, fd, bufptr, ws);
 		i += w;
 	}
 }

@@ -35,7 +35,7 @@ static void do_child(void)
 
 	SAFE_CLOSE(fds[0]);
 	fd = SAFE_CREAT(TESTFILE, 0644);
-	SAFE_WRITE(1, fds[1], &fd, sizeof(fd));
+	SAFE_WRITE(SAFE_WRITE_ALL, fds[1], &fd, sizeof(fd));
 	TST_CHECKPOINT_WAIT(0);
 	SAFE_CLOSE(fd);
 	SAFE_CLOSE(fds[1]);

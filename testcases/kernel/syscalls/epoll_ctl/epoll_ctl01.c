@@ -81,7 +81,7 @@ static void check_epoll_ctl(int opt, int exp_num)
 	if (exp_num == 2)
 		events |= EPOLLOUT;
 
-	SAFE_WRITE(1, fd[1], write_buf, sizeof(write_buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd[1], write_buf, sizeof(write_buf));
 
 	while (events) {
 		int events_matched = 0;

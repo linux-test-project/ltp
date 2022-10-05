@@ -44,7 +44,7 @@ void verify(const char *fname, size_t bytes, size_t decrement)
 	fd = SAFE_OPEN(fname, O_CREAT | O_TRUNC | O_RDWR, 0777);
 	while (bytes > 0) {
 		for (i = 0; i < NUM_WRITES; i++) {
-			SAFE_WRITE(1, fd, buffer, bytes);
+			SAFE_WRITE(SAFE_WRITE_ALL, fd, buffer, bytes);
 			bytes_written += bytes;
 		}
 		bytes -= bytes > decrement ? decrement : bytes;

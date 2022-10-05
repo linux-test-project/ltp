@@ -33,7 +33,7 @@ static int get_writesize(void)
 	memset(buf, 'a', sizeof(buf));
 
 	do {
-		write_size += SAFE_WRITE(0, fds[1], buf, sizeof(buf));
+		write_size += SAFE_WRITE(SAFE_WRITE_ANY, fds[1], buf, sizeof(buf));
 		nfd = poll(pfd, 1, 1);
 		if (nfd == -1)
 			tst_brk(TBROK | TERRNO, "poll() failed");
@@ -136,7 +136,7 @@ static void verify_epollin(void)
 
 	memset(write_buf, 'a', sizeof(write_buf));
 
-	SAFE_WRITE(1, fds[1], write_buf, sizeof(write_buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fds[1], write_buf, sizeof(write_buf));
 
 	TEST(epoll_wait(epfd, &ret_evs, 1, -1));
 
@@ -176,7 +176,7 @@ static void verify_epollio(void)
 	uint32_t events = EPOLLIN | EPOLLOUT;
 	struct epoll_event ret_evs[2];
 
-	SAFE_WRITE(1, fds[1], write_buf, sizeof(write_buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fds[1], write_buf, sizeof(write_buf));
 
 	while (events) {
 		int events_matched = 0;

@@ -38,7 +38,7 @@ static void verify_write(void)
 	struct stat statbuf;
 
 	fd = SAFE_OPEN(DATA_FILE, O_RDWR | O_CREAT | O_TRUNC, 0666);
-	SAFE_WRITE(1, fd, write_buf[0], K2);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, write_buf[0], K2);
 	SAFE_CLOSE(fd);
 
 	fd = SAFE_OPEN(DATA_FILE, O_RDWR | O_APPEND);
@@ -50,7 +50,7 @@ static void verify_write(void)
 	if (off != K1)
 		tst_brk(TBROK, "Failed to seek to K1");
 
-	SAFE_WRITE(1, fd, write_buf[1], K1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, write_buf[1], K1);
 
 	off = SAFE_LSEEK(fd, 0, SEEK_CUR);
 	if (off != K3)

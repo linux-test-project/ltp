@@ -45,7 +45,7 @@ static void run(unsigned int n)
 	timeout.tv_usec = 100000;
 
 	if (tc->writefd) {
-		SAFE_WRITE(0, *tc->writefd, &buf, sizeof(buf));
+		SAFE_WRITE(SAFE_WRITE_ANY, *tc->writefd, &buf, sizeof(buf));
 		exp_ret++;
 	}
 

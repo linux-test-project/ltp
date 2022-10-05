@@ -21,7 +21,7 @@ static void child_write(void)
 	int fd;
 
 	fd = SAFE_CREAT(FNAME, 0666);
-	SAFE_WRITE(1, fd, FNAME, sizeof(FNAME));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, FNAME, sizeof(FNAME));
 	exit(0);
 }
 

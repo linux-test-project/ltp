@@ -55,8 +55,8 @@ static void verify_ioctl(unsigned int n)
 	fd_src  = SAFE_OPEN(FILE_SRC_PATH,  O_RDWR | O_CREAT, 0664);
 	fd_dest = SAFE_OPEN(FILE_DEST_PATH, O_RDWR | O_CREAT, 0664);
 
-	SAFE_WRITE(1, fd_src,  tc->src_fcontents,  strlen(tc->src_fcontents));
-	SAFE_WRITE(1, fd_dest, tc->dest_fcontents, strlen(tc->dest_fcontents));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd_src,  tc->src_fcontents,  strlen(tc->src_fcontents));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd_dest, tc->dest_fcontents, strlen(tc->dest_fcontents));
 
 	memset(fdr, 0, sizeof(struct file_dedupe_range) +
 			sizeof(struct file_dedupe_range_info));

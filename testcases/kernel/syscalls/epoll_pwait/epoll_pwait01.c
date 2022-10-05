@@ -63,7 +63,7 @@ static void run(unsigned int n)
 		SAFE_KILL(pid, SIGUSR1);
 
 		usleep(10000);
-		SAFE_WRITE(1, sfd[1], "w", 1);
+		SAFE_WRITE(SAFE_WRITE_ALL, sfd[1], "w", 1);
 		exit(0);
 	}
 

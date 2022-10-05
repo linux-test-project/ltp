@@ -20,7 +20,7 @@ static void verify_fsync(void)
 	unsigned int i;
 
 	for (i = 0; i < 10; i++) {
-		SAFE_WRITE(1, fd, BUF, sizeof(BUF));
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, BUF, sizeof(BUF));
 
 		TEST(fsync(fd));
 

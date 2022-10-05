@@ -46,7 +46,7 @@ static void *write_seek(void *unused)
 
 	while (tst_fzsync_run_b(&fzsync_pair)) {
 		tst_fzsync_start_race_b(&fzsync_pair);
-		SAFE_WRITE(0, fd, buf, sizeof(buf));
+		SAFE_WRITE(SAFE_WRITE_ANY, fd, buf, sizeof(buf));
 		SAFE_LSEEK(fd, 0, SEEK_SET);
 		tst_fzsync_end_race_b(&fzsync_pair);
 	}

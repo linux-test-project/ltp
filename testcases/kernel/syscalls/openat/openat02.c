@@ -126,7 +126,7 @@ void testfunc_append(void)
 		return;
 	}
 
-	SAFE_WRITE(cleanup, 1, TEST_RETURN, STR, sizeof(STR) - 1);
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, TEST_RETURN, STR, sizeof(STR) - 1);
 
 	file_offset = SAFE_LSEEK(cleanup, TEST_RETURN, 0, SEEK_CUR);
 
@@ -202,7 +202,7 @@ void testfunc_largefile(void)
 	if (offset == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "lseek64 failed");
 
-	SAFE_WRITE(cleanup, 1, fd, STR, sizeof(STR) - 1);
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, STR, sizeof(STR) - 1);
 
 	SAFE_CLOSE(cleanup, fd);
 

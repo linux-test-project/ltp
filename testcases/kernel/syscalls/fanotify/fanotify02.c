@@ -58,7 +58,7 @@ static void test01(void)
 	event_set[tst_count] = FAN_OPEN;
 	tst_count++;
 
-	SAFE_WRITE(1, fd, fname, strlen(fname));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, fname, strlen(fname));
 	event_set[tst_count] = FAN_MODIFY;
 	tst_count++;
 

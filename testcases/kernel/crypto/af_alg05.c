@@ -30,7 +30,7 @@ static void run(void)
 
 	reqfd = tst_alg_setup_reqfd("skcipher", "cbc(aes-generic)", NULL, 16);
 
-	SAFE_WRITE(1, reqfd, buffer, 15);
+	SAFE_WRITE(SAFE_WRITE_ALL, reqfd, buffer, 15);
 	/* with the bug, this crashed the kernel on some architectures */
 	TEST(read(reqfd, buffer, 15));
 

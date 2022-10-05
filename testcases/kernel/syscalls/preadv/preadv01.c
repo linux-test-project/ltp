@@ -88,10 +88,10 @@ void setup(void)
 	fd = SAFE_OPEN("file", O_RDWR | O_CREAT, 0644);
 
 	memset(buf, 'a', sizeof(buf));
-	SAFE_WRITE(1, fd, buf, sizeof(buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, sizeof(buf));
 
 	memset(buf, 'b', sizeof(buf));
-	SAFE_WRITE(1, fd, buf, sizeof(buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, sizeof(buf));
 }
 
 void cleanup(void)

@@ -72,8 +72,8 @@ static void setup(void)
 	f1 = SAFE_OPEN(tmp1, O_RDWR | O_CREAT, S_IREAD | S_IWRITE);
 	f2 = SAFE_OPEN(tmp2, O_RDWR | O_CREAT, S_IREAD | S_IWRITE);
 
-	SAFE_WRITE(1, f1, str1, strlen(str1));
-	SAFE_WRITE(1, f2, str2, strlen(str2));
+	SAFE_WRITE(SAFE_WRITE_ALL, f1, str1, strlen(str1));
+	SAFE_WRITE(SAFE_WRITE_ALL, f2, str2, strlen(str2));
 }
 
 static void cleanup(void)

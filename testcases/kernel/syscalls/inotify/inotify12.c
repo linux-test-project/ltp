@@ -89,7 +89,7 @@ static void verify_inotify(unsigned int n)
 	}
 
 	fd = SAFE_OPEN(TEST_FILE, O_RDWR);
-	SAFE_WRITE(1, fd, "2", 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, "2", 1);
 
 	/*
 	 * Read the 1st IN_MODIFY event
@@ -111,7 +111,7 @@ static void verify_inotify(unsigned int n)
 	 * was already generated.
 	 */
 	SAFE_UNLINK(TEST_FILE);
-	SAFE_WRITE(1, fd, "3", 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, "3", 1);
 	SAFE_CLOSE(fd);
 
 	/*

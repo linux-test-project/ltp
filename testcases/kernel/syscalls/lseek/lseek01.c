@@ -72,7 +72,7 @@ static void setup(void)
 {
 	fd = SAFE_OPEN(TFILE, O_RDWR | O_CREAT, 0644);
 
-	SAFE_WRITE(1, fd, WRITE_STR, sizeof(WRITE_STR) - 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, WRITE_STR, sizeof(WRITE_STR) - 1);
 }
 
 static void cleanup(void)

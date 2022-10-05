@@ -52,12 +52,12 @@ static void run(void)
 static void setup(void)
 {
 	in_fd = SAFE_CREAT(IN_FILE, 0700);
-	SAFE_WRITE(1, in_fd, TEST_MSG_IN, strlen(TEST_MSG_IN));
+	SAFE_WRITE(SAFE_WRITE_ALL, in_fd, TEST_MSG_IN, strlen(TEST_MSG_IN));
 	SAFE_CLOSE(in_fd);
 	in_fd = SAFE_OPEN(IN_FILE, O_RDONLY);
 
 	out_fd = SAFE_OPEN(OUT_FILE, O_TRUNC | O_CREAT | O_RDWR, 0777);
-	SAFE_WRITE(1, out_fd, TEST_MSG_OUT, strlen(TEST_MSG_OUT));
+	SAFE_WRITE(SAFE_WRITE_ALL, out_fd, TEST_MSG_OUT, strlen(TEST_MSG_OUT));
 }
 
 static void cleanup(void)

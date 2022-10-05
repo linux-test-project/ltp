@@ -77,7 +77,7 @@ static void run(unsigned int tcase)
 
 	SAFE_PIPE(fds);
 
-	SAFE_WRITE(1, fds[1], buf, read_per_child * nchilds);
+	SAFE_WRITE(SAFE_WRITE_ALL, fds[1], buf, read_per_child * nchilds);
 
 	for (i = 0; i < nchilds; i++) {
 		pid = SAFE_FORK();

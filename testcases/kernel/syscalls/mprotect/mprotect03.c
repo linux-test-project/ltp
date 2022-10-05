@@ -79,7 +79,7 @@ int main(int ac, char **av)
 		if ((fd = open(file1, O_RDWR | O_CREAT, 0777)) < 0)
 			tst_brkm(TBROK, cleanup, "open failed");
 
-		SAFE_WRITE(cleanup, 1, fd, buf, strlen(buf));
+		SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, buf, strlen(buf));
 
 		/*
 		 * mmap the PAGESIZE bytes as read only.

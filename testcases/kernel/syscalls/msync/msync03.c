@@ -116,7 +116,7 @@ static void setup(void)
 
 	memset(write_buf, 'a', BUF_SIZE);
 	while (nwrite < page_sz) {
-		SAFE_WRITE(cleanup, 1, fd, write_buf, BUF_SIZE);
+		SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, write_buf, BUF_SIZE);
 		nwrite += BUF_SIZE;
 	}
 

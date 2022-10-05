@@ -67,7 +67,7 @@ static inline int verify_cross_fs_copy_support(const char *path_in, const char *
 	fd = SAFE_OPEN(path_in, O_RDWR | O_CREAT, 0664);
 	/* Writing page_size * 4 of data into test file */
 	for (i = 0; i < (int)(getpagesize() * 4); i++)
-		SAFE_WRITE(1, fd, CONTENT, CONTSIZE);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, CONTENT, CONTSIZE);
 
 	fd_test = SAFE_OPEN(path_out, O_RDWR | O_CREAT, 0664);
 	TEST(sys_copy_file_range(fd, 0, fd_test, 0, CONTSIZE, 0));

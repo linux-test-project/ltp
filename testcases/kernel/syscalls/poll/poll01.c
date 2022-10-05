@@ -51,7 +51,7 @@ static void verify_pollin(void)
 		{.fd = fildes[0], .events = POLLIN},
 	};
 
-	SAFE_WRITE(1, fildes[1], write_buf, sizeof(write_buf));
+	SAFE_WRITE(SAFE_WRITE_ALL, fildes[1], write_buf, sizeof(write_buf));
 
 	TEST(poll(infds, 1, -1));
 

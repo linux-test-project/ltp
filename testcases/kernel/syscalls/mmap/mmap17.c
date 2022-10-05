@@ -61,11 +61,11 @@ static void test_mmap(void)
 
 	str_len = strlen(str);
 
-	SAFE_WRITE(1, fd_file1, str, str_len);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd_file1, str, str_len);
 	mapped_address = SAFE_MMAP(NULL, str_len, PROT_WRITE,
 				   MAP_PRIVATE, fd_file1, 0);
 
-	SAFE_WRITE(1, fd_file2, str, str_len);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd_file2, str, str_len);
 
 	address = mmap(mapped_address, str_len, PROT_WRITE,
 		  MAP_PRIVATE | MAP_FIXED_NOREPLACE, fd_file2, 0);

@@ -34,7 +34,7 @@ static void setup(void)
 	for (i = 0; i < nfiles; i++) {
 		sprintf(fname, "%s_%d", prefix, i);
 		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
-		SAFE_WRITE(1, fd, "hello\n", 6);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, "hello\n", 6);
 		SAFE_CLOSE(fd);
 	}
 }

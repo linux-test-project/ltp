@@ -25,7 +25,7 @@ static void test_sockets(canid_t can_id, int expect_rxs, int expect_rxt)
 
 	frame.can_id = can_id;
 	frame.can_dlc = 0;
-	SAFE_WRITE(1, s, &frame, sizeof(frame));
+	SAFE_WRITE(SAFE_WRITE_ALL, s, &frame, sizeof(frame));
 
 	while (have_rx) {
 

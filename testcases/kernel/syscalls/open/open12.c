@@ -128,7 +128,8 @@ static void test_append(void)
 	}
 
 	len1 = SAFE_LSEEK(cleanup, TEST_RETURN, 0, SEEK_CUR);
-	SAFE_WRITE(cleanup, 1, TEST_RETURN, TEST_FILE, sizeof(TEST_FILE));
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, TEST_RETURN, TEST_FILE,
+		sizeof(TEST_FILE));
 	len2 = SAFE_LSEEK(cleanup, TEST_RETURN, 0, SEEK_CUR);
 	SAFE_CLOSE(cleanup, TEST_RETURN);
 
@@ -242,7 +243,8 @@ static void test_largefile(void)
 	if (offset == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "lseek64 failed");
 
-	SAFE_WRITE(cleanup, 1, fd, LARGE_FILE, sizeof(LARGE_FILE));
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, LARGE_FILE,
+		sizeof(LARGE_FILE));
 
 	SAFE_CLOSE(cleanup, fd);
 

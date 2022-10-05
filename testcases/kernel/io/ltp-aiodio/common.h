@@ -45,7 +45,7 @@ static inline void io_append(const char *path, char pattern, int flags, size_t b
 	fd = SAFE_OPEN(path, flags, 0666);
 
 	for (i = 0; i < bcount; i++) {
-		SAFE_WRITE(1, fd, bufptr, bs);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, bufptr, bs);
 
 		if (!tst_remaining_runtime())
 			break;

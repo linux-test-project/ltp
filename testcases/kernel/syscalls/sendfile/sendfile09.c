@@ -51,7 +51,7 @@ static void setup(void)
 	fd = SAFE_CREAT(IN_FILE, 00700);
 	for (i = 1; i <= (4 * 1024); ++i) {
 		SAFE_LSEEK(fd, 1024 * 1024 - 1, SEEK_CUR);
-		SAFE_WRITE(1, fd, "C", 1);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, "C", 1);
 	}
 	SAFE_CLOSE(fd);
 

@@ -133,7 +133,7 @@ static void create_testfile(int use_overlay)
 
 	fd = SAFE_CREAT(testfile, 0644);
 	for (i = 0; i < testfile_size; i += pagesize)
-		SAFE_WRITE(1, fd, tmp, pagesize);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, tmp, pagesize);
 	SAFE_FSYNC(fd);
 	SAFE_CLOSE(fd);
 	free(tmp);

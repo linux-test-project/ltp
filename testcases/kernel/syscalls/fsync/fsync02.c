@@ -53,7 +53,7 @@ static void setup(void) {
 
 #ifdef LARGEFILE
 	SAFE_FCNTL(fd, F_SETFL, O_LARGEFILE);
-	SAFE_WRITE(1, fd, pbuf, BUF_SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, pbuf, BUF_SIZE);
 #endif
 }
 
@@ -74,7 +74,7 @@ static void run(void) {
 		offset = i * ((BLOCKSIZE * max_block) / data_blocks);
 		offset -= BUF_SIZE;
 		SAFE_LSEEK(fd, offset, SEEK_SET);
-		SAFE_WRITE(1, fd, pbuf, BUF_SIZE);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, pbuf, BUF_SIZE);
 	}
 	time_start = time(0);
 

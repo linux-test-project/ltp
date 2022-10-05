@@ -107,7 +107,7 @@ static void setup(void)
 	char data_buf[SIZE] = "LinusTorvalds";
 
 	file_fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, MODE);
-	SAFE_WRITE(0, file_fd, data_buf, sizeof(data_buf));
+	SAFE_WRITE(SAFE_WRITE_ANY, file_fd, data_buf, sizeof(data_buf));
 
 	SAFE_SYMLINK(TESTFILE, LINK_FILE);
 }

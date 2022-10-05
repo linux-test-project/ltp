@@ -87,7 +87,7 @@ static void *fn_ofd_w(void *arg)
 		my_fcntl(fd, F_OFD_SETLKW, &lck);
 
 		SAFE_LSEEK(fd, pa->offset, SEEK_SET);
-		SAFE_WRITE(1, fd, buf, pa->length);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, pa->length);
 
 		lck.l_type = F_UNLCK;
 		my_fcntl(fd, F_OFD_SETLKW, &lck);
@@ -126,7 +126,7 @@ static void *fn_posix_w(void *arg)
 		SAFE_FCNTL(fd, F_SETLKW, &lck);
 
 		SAFE_LSEEK(fd, pa->offset, SEEK_SET);
-		SAFE_WRITE(1, fd, buf, pa->length);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, pa->length);
 
 		lck.l_type = F_UNLCK;
 		SAFE_FCNTL(fd, F_SETLKW, &lck);

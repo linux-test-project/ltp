@@ -52,7 +52,7 @@ void verify_inotify(void)
 		SAFE_LSEEK(fd, 0, SEEK_SET);
 		SAFE_READ(1, fd, buf, BUF_SIZE);
 		SAFE_LSEEK(fd, 0, SEEK_SET);
-		SAFE_WRITE(1, fd, buf, BUF_SIZE);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, BUF_SIZE);
 	}
 
 	SAFE_CLOSE(fd);
@@ -125,7 +125,7 @@ static void setup(void)
 {
 	sprintf(fname, "tfile_%d", getpid());
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
-	SAFE_WRITE(1, fd, buf, BUF_SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, BUF_SIZE);
 	SAFE_CLOSE(fd);
 
 	fd_notify = SAFE_MYINOTIFY_INIT1(O_NONBLOCK);

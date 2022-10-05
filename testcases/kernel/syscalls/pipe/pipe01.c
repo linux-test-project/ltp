@@ -28,7 +28,7 @@ static void verify_pipe(void)
 		return;
 	}
 
-	wr_size = SAFE_WRITE(1, fds[1], wrbuf, sizeof(wrbuf));
+	wr_size = SAFE_WRITE(SAFE_WRITE_ALL, fds[1], wrbuf, sizeof(wrbuf));
 	rd_size = SAFE_READ(0, fds[0], rdbuf, sizeof(rdbuf));
 
 	if (rd_size != wr_size) {

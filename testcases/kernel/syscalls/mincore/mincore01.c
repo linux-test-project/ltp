@@ -175,7 +175,7 @@ static void setup(void)
 	fd = SAFE_OPEN(cleanup, "mincore01", O_CREAT | O_RDWR,
 		       S_IRUSR | S_IWUSR);
 
-	SAFE_WRITE(cleanup, 1, fd, buf, global_len);
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, buf, global_len);
 
 	free(buf);
 

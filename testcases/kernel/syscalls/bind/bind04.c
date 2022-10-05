@@ -97,7 +97,7 @@ static void *peer_thread(void *tc_ptr)
 	else
 		response = "Invalid request value";
 
-	SAFE_WRITE(1, sock, response, strlen(response) + 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, sock, response, strlen(response) + 1);
 	SAFE_CLOSE(sock);
 	return NULL;
 }
@@ -139,7 +139,7 @@ static void test_bind(unsigned int n)
 		&remote_len);
 
 	rand_index = rand() % ARRAY_SIZE(testcase_list);
-	SAFE_WRITE(1, sock, &rand_index, sizeof(rand_index));
+	SAFE_WRITE(SAFE_WRITE_ALL, sock, &rand_index, sizeof(rand_index));
 
 	size = SAFE_READ(0, sock, buffer, BUFFER_SIZE - 1);
 	buffer[size] = '\0';

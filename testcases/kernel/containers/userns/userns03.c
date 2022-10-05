@@ -158,7 +158,7 @@ static void run(void)
 		sprintf(path, "/proc/%d/setgroups", cpid1);
 
 		fd = SAFE_OPEN(path, O_WRONLY, 0644);
-		SAFE_WRITE(1, fd, "deny", 4);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, "deny", 4);
 		SAFE_CLOSE(fd);
 
 		/* If the setgroups file has the value "deny",
@@ -184,7 +184,7 @@ static void run(void)
 		sprintf(path, "/proc/%d/setgroups", cpid2);
 
 		fd = SAFE_OPEN(path, O_WRONLY, 0644);
-		SAFE_WRITE(1, fd, "deny", 4);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, "deny", 4);
 		SAFE_CLOSE(fd);
 	}
 

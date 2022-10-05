@@ -140,7 +140,7 @@ void create_input_device(int fd)
 		}
 	};
 
-	SAFE_WRITE(1, fd, &uidev, sizeof(uidev));
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, &uidev, sizeof(uidev));
 	SAFE_IOCTL(fd, UI_DEV_CREATE, NULL);
 
 	for (nb = 100; nb > 0; nb--) {

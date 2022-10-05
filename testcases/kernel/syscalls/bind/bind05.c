@@ -99,7 +99,7 @@ static void *peer_thread(void *tc_ptr)
 			sizeof(struct sockaddr_un));
 
 	SAFE_CONNECT(sock, tc->address, tc->addrlen);
-	SAFE_WRITE(1, sock, &request, sizeof(request));
+	SAFE_WRITE(SAFE_WRITE_ALL, sock, &request, sizeof(request));
 	SAFE_READ(1, sock, &request, sizeof(request));
 
 	if (request < ARRAY_SIZE(testcase_list))
@@ -107,7 +107,7 @@ static void *peer_thread(void *tc_ptr)
 	else
 		response = "Invalid request value";
 
-	SAFE_WRITE(1, sock, response, strlen(response) + 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, sock, response, strlen(response) + 1);
 	SAFE_CLOSE(sock);
 
 	if (tc->address->sa_family == AF_UNIX)

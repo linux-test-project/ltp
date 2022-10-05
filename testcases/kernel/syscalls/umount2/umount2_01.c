@@ -117,7 +117,7 @@ static void umount2_verify(void)
 	 * check the old fd still points to the file
 	 * in previous mount point and is available
 	 */
-	SAFE_WRITE(cleanup, 1, fd, str, strlen(str));
+	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, str, strlen(str));
 
 	SAFE_CLOSE(cleanup, fd);
 

@@ -48,7 +48,7 @@ static void verify_pread(unsigned int n)
 static void setup(void)
 {
 	SAFE_PIPE(pipe_fd);
-	SAFE_WRITE(1, pipe_fd[1], "x", 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, pipe_fd[1], "x", 1);
 
 	fd = SAFE_OPEN(PREAD_TEMPFILE, O_RDWR | O_CREAT, 0666);
 

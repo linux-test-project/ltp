@@ -27,7 +27,7 @@ static void vmsplice_test(void)
 	memset(iov->iov_base, 0, iov->iov_len);
 
 	SAFE_PIPE(pipes);
-	SAFE_WRITE(1, pipes[1], buffer, TEST_BLOCK_SIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, pipes[1], buffer, TEST_BLOCK_SIZE);
 	written = vmsplice(pipes[0], iov, 1, 0);
 
 	if (written < 0)

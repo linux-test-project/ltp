@@ -128,7 +128,7 @@ static void run(void)
 		tst_fzsync_start_race_a(&fzsync_pair);
 		SAFE_LSEEK(writefd, (off_t)write_ptr, SEEK_SET);
 		madvise(write_thp, thp_size, MADV_DONTNEED);
-		SAFE_WRITE(1, writefd, &c, sizeof(int));
+		SAFE_WRITE(SAFE_WRITE_ALL, writefd, &c, sizeof(int));
 		tst_fzsync_end_race_a(&fzsync_pair);
 
 		/* Check the other huge zero page for pollution */

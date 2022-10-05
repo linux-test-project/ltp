@@ -70,7 +70,7 @@ static void verify_pwrite(void)
 	l_seek(fildes, 0, SEEK_CUR, K1 / 2);
 	l_seek(fildes, K3, SEEK_SET, K3);
 
-	SAFE_WRITE(1, fildes, write_buf[3], K1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fildes, write_buf[3], K1);
 	l_seek(fildes, 0, SEEK_CUR, K4);
 
 	SAFE_PWRITE(1, fildes, write_buf[1], K1, K1);

@@ -41,7 +41,7 @@ static void test_with_symm_enc_algs(const char *symm_enc_algname)
 	reqfd = tst_alg_accept(algfd);
 
 	for (i = 0; i < 500000; i++)
-		SAFE_WRITE(1, reqfd, buf, sizeof(buf));
+		SAFE_WRITE(SAFE_WRITE_ALL, reqfd, buf, sizeof(buf));
 
 	close(reqfd);
 

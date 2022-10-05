@@ -171,8 +171,8 @@ int mkfile(int size)
 	SAFE_UNLINK(TEST_FILENAME);
 
 	for (i = 0; i < size; i++)
-		SAFE_WRITE(1, fd, "a", 1);
-	SAFE_WRITE(1, fd, "\0", 1);
+		SAFE_WRITE(SAFE_WRITE_ALL, fd, "a", 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, "\0", 1);
 
 	if (fsync(fd) == -1)
 		tst_brk(TBROK | TERRNO, "fsync()");

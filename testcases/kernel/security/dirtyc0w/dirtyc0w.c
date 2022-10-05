@@ -62,7 +62,7 @@ void dirtyc0w_test(void)
 
 	/* Create file */
 	fd = SAFE_OPEN(FNAME, O_WRONLY|O_CREAT|O_EXCL, 0444);
-	SAFE_WRITE(1, fd, STR, sizeof(STR)-1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, STR, sizeof(STR)-1);
 	SAFE_CLOSE(fd);
 
 	pid = SAFE_FORK();

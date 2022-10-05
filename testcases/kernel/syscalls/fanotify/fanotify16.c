@@ -336,7 +336,7 @@ static void do_test(unsigned int number)
 	if (report_target_fid)
 		child_fid = &file_fid;
 
-	SAFE_WRITE(1, fd, "1", 1);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, "1", 1);
 	SAFE_RENAME(fname1, fname2);
 
 	SAFE_CLOSE(fd);
