@@ -894,6 +894,15 @@ If test needs to adjust expectations based on filesystem type it's also
 possible to detect filesystem type at the runtime. This is preferably used
 when only subset of the test is not applicable for a given filesystem.
 
+NOTE: ext2, ext3 or ext4 in '.skip_filesystems' on tests which does *not* use
+      '.all_filesystems' needs to be defined as 'ext2/ext3/ext4'. The reason
+      is that it is hard to detect used filesystem due to overlapping the functionality.
+      OTOH tests which use '.skip_filesystems' *with* '.all_filesystems' can skip
+      only filesystems which are actually used in '.all_filesystems': ext2, ext3,
+      ext4, xfs, btrfs, vfat, exfat, ntfs, tmpfs (defined in 'fs_type_whitelist[]').
+      It does not make sense to list other filesystems.
+
+
 [source,c]
 -------------------------------------------------------------------------------
 #include "tst_test.h"
