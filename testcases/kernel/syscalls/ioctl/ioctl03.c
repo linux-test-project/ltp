@@ -40,6 +40,10 @@
 #define IFF_NAPI_FRAGS	0x0020
 #endif
 
+#ifndef IFF_NO_CARRIER
+#define IFF_NO_CARRIER	0x0040
+#endif
+
 static struct {
 	unsigned int flag;
 	const char *name;
@@ -51,7 +55,8 @@ static struct {
 	{IFF_VNET_HDR, "VNET_HDR"},
 	{IFF_MULTI_QUEUE, "MULTI_QUEUE"},
 	{IFF_NAPI, "IFF_NAPI"},
-	{IFF_NAPI_FRAGS, "IFF_NAPI_FRAGS"}
+	{IFF_NAPI_FRAGS, "IFF_NAPI_FRAGS"},
+	{IFF_NO_CARRIER, "IFF_NO_CARRIER"}
 };
 
 static void verify_features(void)
