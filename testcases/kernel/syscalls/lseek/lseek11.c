@@ -159,7 +159,7 @@ static void setup(void)
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0666);
 
 	get_blocksize();
-	tst_res(TINFO, "The block size is %lu", block_size);
+	tst_res(TINFO, "The block size is %lld", (long long int)block_size);
 
 	/*
 	 * truncate to the expected file size directly, to keep away the effect
@@ -202,14 +202,15 @@ static void test_lseek(unsigned int n)
 
 	if (rc != 0) {
 		tst_res(TFAIL,
-		        "The %uth test failed: %s from startblock %ld offset %ld, expect \'%s\' return \'%s\'",
+		        "The %uth test failed: %s from startblock %lld offset %lld, expect \'%s\' return \'%s\'",
 		        n, (tp->whence == SEEK_DATA) ? "SEEK_DATA" : "SEEK_HOLE",
-		        tp->startblock, tp->offset, tp->data ? tp->data : "", buf);
+		        (long long int)tp->startblock, (long long int)tp->offset,
+		        tp->data ? tp->data : "", buf);
 	} else {
 		tst_res(TPASS,
-		        "The %uth test passed: %s from startblock %ld offset %ld",
+		        "The %uth test passed: %s from startblock %lld offset %lld",
 		        n, (tp->whence == SEEK_DATA) ? "SEEK_DATA" : "SEEK_HOLE",
-		        tp->startblock, tp->offset);
+		        (long long int)tp->startblock, (long long int)tp->offset);
 	}
 }
 

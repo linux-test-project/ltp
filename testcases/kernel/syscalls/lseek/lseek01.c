@@ -46,25 +46,26 @@ static void verify_lseek(unsigned int n)
 
 	TEST(lseek(fd, tc->off, tc->whence));
 	if (TST_RET == (off_t) -1) {
-		tst_res(TFAIL | TTERRNO, "lseek(%s, %ld, %s) failed", TFILE,
-			tc->off, tc->wname);
+		tst_res(TFAIL | TTERRNO, "lseek(%s, %lld, %s) failed", TFILE,
+			(long long int)tc->off, tc->wname);
 		return;
 	}
 
 	if (TST_RET != tc->exp_off) {
-		tst_res(TFAIL, "lseek(%s, %ld, %s) returned %ld, expected %ld",
-			TFILE, tc->off, tc->wname, TST_RET, tc->exp_off);
+		tst_res(TFAIL, "lseek(%s, %lld, %s) returned %ld, expected %lld",
+			TFILE, (long long int)tc->off, tc->wname, TST_RET,
+			(long long int)tc->exp_off);
 		return;
 	}
 
 	SAFE_READ(1, fd, read_buf, tc->exp_size);
 
 	if (tc->exp_data && strcmp(read_buf, tc->exp_data)) {
-		tst_res(TFAIL, "lseek(%s, %ld, %s) read incorrect data",
-			TFILE, tc->off, tc->wname);
+		tst_res(TFAIL, "lseek(%s, %lld, %s) read incorrect data",
+			TFILE, (long long int)tc->off, tc->wname);
 	} else {
-		tst_res(TPASS, "lseek(%s, %ld, %s) read correct data",
-			TFILE, tc->off, tc->wname);
+		tst_res(TPASS, "lseek(%s, %lld, %s) read correct data",
+			TFILE, (long long int)tc->off, tc->wname);
 	}
 }
 

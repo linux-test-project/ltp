@@ -39,7 +39,8 @@ static void run(void)
 	off_t offset = -1;
 
 	TST_EXP_FAIL(sendfile(out_fd, in_fd, &offset, 1), EINVAL,
-		     "sendfile(out, in, &offset, ..) with offset=%ld", offset);
+		     "sendfile(out, in, &offset, ..) with offset=%lld",
+		     (long long int)offset);
 }
 
 static struct tst_test test = {
