@@ -28,8 +28,9 @@ static struct tcase {
        struct itimerval **val;
        int exp_errno;
 } tcases[] = {
-       {ITIMER_REAL, &invalid, EFAULT},
-       {-ITIMER_PROF, &value, EINVAL},
+       {ITIMER_REAL,    &invalid, EFAULT},
+       {ITIMER_VIRTUAL, &invalid, EFAULT},
+       {-ITIMER_PROF,   &value,   EINVAL},
 };
 
 static int sys_getitimer(int which, void *curr_value)
