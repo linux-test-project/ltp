@@ -8,7 +8,6 @@
 
 TST_NEEDS_CMDS="cmp cut grep sed"
 TST_CNT=2
-TST_NEEDS_DEVICE=1
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 

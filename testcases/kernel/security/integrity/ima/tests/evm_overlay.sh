@@ -8,7 +8,6 @@
 
 TST_SETUP="setup"
 TST_CLEANUP="cleanup"
-TST_NEEDS_DEVICE=1
 TST_CNT=4
 
 setup()

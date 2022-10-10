@@ -11,7 +11,6 @@
 
 TST_NEEDS_CMDS="cat chgrp chown id sg sudo"
 TST_CNT=1
-TST_NEEDS_DEVICE=1
 
 verify_measurement()
 {

@@ -9,7 +9,6 @@
 TST_NEEDS_CMDS="awk cut sed"
 TST_SETUP="setup"
 TST_CNT=3
-TST_NEEDS_DEVICE=1
 
 setup()
 {

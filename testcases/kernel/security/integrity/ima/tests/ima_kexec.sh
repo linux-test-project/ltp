@@ -10,7 +10,6 @@
 
 TST_NEEDS_CMDS="grep kexec sed"
 TST_CNT=3
-TST_NEEDS_DEVICE=1
 TST_SETUP="setup"
 
 IMA_KEXEC_IMAGE="${IMA_KEXEC_IMAGE:-/boot/vmlinuz-$(uname -r)}"
