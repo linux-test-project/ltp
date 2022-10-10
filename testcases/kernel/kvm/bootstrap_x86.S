@@ -159,7 +159,7 @@ init_memlayout:
 	 * Do just enough of initialization to get to a working
 	 * -ffreestanding environment and call tst_main(void).
 	 */
-	lea __preinit_array_begin, %edi
+	lea __preinit_array_start, %edi
 	lea __preinit_array_end, %esi
 1:
 	cmp %edi, %esi
@@ -169,7 +169,7 @@ init_memlayout:
 	jmp 1b
 2:
 
-	lea __init_array_begin, %edi
+	lea __init_array_start, %edi
 	lea __init_array_end, %esi
 1:
 	cmp %edi, %esi

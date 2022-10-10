@@ -264,7 +264,7 @@ long_mode_entry:
 	 * Do just enough of initialization to get to a working
 	 * -ffreestanding environment and call tst_main(void).
 	 */
-	lea __preinit_array_begin, %rdi
+	lea __preinit_array_start, %rdi
 1:
 	lea __preinit_array_end, %rsi
 	cmp %rdi, %rsi
@@ -276,7 +276,7 @@ long_mode_entry:
 	jmp 1b
 2:
 
-	lea __init_array_begin, %rdi
+	lea __init_array_start, %rdi
 1:
 	lea __init_array_end, %rsi
 	cmp %rdi, %rsi
