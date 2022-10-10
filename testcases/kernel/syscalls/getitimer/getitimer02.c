@@ -9,8 +9,9 @@
  * [Description]
  *
  * Check that getitimer() call fails:
- *   1. EFAULT with invalid itimerval pointer
- *   2. EINVAL when called with an invalid first argument
+ *
+ * 1. EFAULT with invalid itimerval pointer
+ * 2. EINVAL when called with an invalid first argument
  */
 
 #include <stdlib.h>
