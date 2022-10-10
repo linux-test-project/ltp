@@ -15,7 +15,8 @@
 #include <ctype.h>
 #include <sys/utsname.h>
 
-#ifdef HAVE_EMMINTRIN_H
+/* emmintrin.h may exist for some non-x86 systems as an emulation */
+#if defined(HAVE_EMMINTRIN_H) && (defined(__x86_64__) || defined(__i386__))
 #include <emmintrin.h>
 
 #include "tst_tsc.h"
