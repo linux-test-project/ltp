@@ -19,6 +19,13 @@
 # define PR_SET_SECCOMP  22
 #endif
 
+#ifndef PR_SET_TSC
+# define PR_GET_TSC 25
+# define PR_SET_TSC 26
+# define PR_TSC_ENABLE  1
+# define PR_TSC_SIGSEGV 2
+#endif
+
 #ifndef PR_SET_TIMERSLACK
 # define PR_SET_TIMERSLACK 29
 # define PR_GET_TIMERSLACK 30
