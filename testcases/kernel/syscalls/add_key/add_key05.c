@@ -232,6 +232,7 @@ static struct tst_test test = {
 	.needs_cmds = (const char *const []) {
 		"useradd",
 		"userdel",
+		"groupdel",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
