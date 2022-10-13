@@ -272,7 +272,7 @@ the below
 --------------------------------------------------------------------------------
 
 Obviously you need to at least change your name and e-mail. The SMTP server is
-useful for +git send-mail+, which we will discuss later. The editor value is
+useful for +git send-email+, which we will discuss later. The editor value is
 used for things like writing commits (without the +-m+ option).
 
 [source,shell]
