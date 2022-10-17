@@ -102,6 +102,7 @@ static struct tst_test test = {
 	.needs_cgroup_ctrls = (const char *const[]){"memory",  NULL},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "e57457641613"},
+		{"CVE", "2021-4197"},
 		{}
 	},
 };
