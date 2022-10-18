@@ -35,6 +35,7 @@
 #include "config.h"
 #include "ptrace.h"
 #include "tst_test.h"
+#include "tst_safe_macros.h"
 #include "lapi/cpuid.h"
 
 #ifndef PTRACE_GETREGSET
@@ -95,7 +96,7 @@ static void do_test(void)
 	 * of the XSAVE/XRSTOR save area) required by enabled features in XCR0.
 	 */
 	__cpuid_count(CPUID_LEAF_XSTATE, ecx, eax, ebx, ecx, edx);
-	xstate = aligned_alloc(64, ebx);
+	xstate = SAFE_MEMALIGN(64, ebx);
 	struct iovec iov = { .iov_base = xstate, .iov_len = ebx };
 	int status;
 	bool okay;
