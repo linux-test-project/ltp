@@ -90,8 +90,8 @@ int safe_pthread_cancel(const char *file, const int lineno,
 }
 
 int safe_pthread_barrier_init(const char *file, const int lineno,
-			      pthread_barrier_t *restrict barrier,
-			      const pthread_barrierattr_t *restrict attr,
+			      pthread_barrier_t *barrier,
+			      const pthread_barrierattr_t *attr,
 			      unsigned count)
 {
 	int rval;

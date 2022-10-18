@@ -41,8 +41,8 @@ int safe_pthread_barrier_destroy(const char *file, const int lineno,
 	safe_pthread_barrier_destroy(__FILE__, __LINE__, barrier);
 
 int safe_pthread_barrier_init(const char *file, const int lineno,
-			      pthread_barrier_t *restrict barrier,
-			      const pthread_barrierattr_t *restrict attr,
+			      pthread_barrier_t *barrier,
+			      const pthread_barrierattr_t *attr,
 			      unsigned count);
 #define SAFE_PTHREAD_BARRIER_INIT(barrier, attr, count) \
 	safe_pthread_barrier_init(__FILE__, __LINE__, barrier, attr, count);
