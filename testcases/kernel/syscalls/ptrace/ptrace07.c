@@ -35,7 +35,7 @@
 #include "config.h"
 #include "ptrace.h"
 #include "tst_test.h"
-#include "cpuid.h"
+#include "lapi/cpuid.h"
 
 #ifndef PTRACE_GETREGSET
 # define PTRACE_GETREGSET 0x4204

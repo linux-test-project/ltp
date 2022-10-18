@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include <cpuid.h>
+#ifdef HAVE_CPUID_H
+#  include <cpuid.h>
+#endif
 
 #ifndef LAPI_CPUID_H__
 #define LAPI_CPUID_H__
