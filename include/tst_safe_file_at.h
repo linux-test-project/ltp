@@ -7,6 +7,8 @@
 #define TST_SAFE_FILE_AT_H
 
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdarg.h>
 
 #define SAFE_OPENAT(dirfd, path, oflags, ...)			\
