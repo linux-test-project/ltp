@@ -50,6 +50,11 @@ static const char *kconfig_path(char *path_buf, size_t path_buf_len)
 	if (!access(path_buf, F_OK))
 		return path_buf;
 
+	snprintf(path_buf, path_buf_len, "/lib/modules/%s/config", un.release);
+
+	if (!access(path_buf, F_OK))
+		return path_buf;
+
 	/* Debian and derivatives */
 	snprintf(path_buf, path_buf_len, "/boot/config-%s", un.release);
 
