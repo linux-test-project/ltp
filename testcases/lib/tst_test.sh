@@ -835,6 +835,8 @@ _tst_run_test()
 	TST_COUNT=$((TST_COUNT+1))
 }
 
+export LC_ALL=C
+
 if [ -z "$TST_ID" ]; then
 	_tst_filename=$(basename $0) || \
 		tst_brk TCONF "Failed to set TST_ID from \$0 ('$0'), fix it with setting TST_ID before sourcing tst_test.sh"
