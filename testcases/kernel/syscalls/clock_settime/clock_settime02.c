@@ -14,7 +14,6 @@
 #include "tst_safe_clocks.h"
 
 #define DELTA_SEC 10
-#define NSEC_PER_SEC (1000000000L)
 
 static void *bad_addr;
 
