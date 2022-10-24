@@ -24,6 +24,10 @@
  * know about the architecture-dependent FPU state.
  */
 
+#include "tst_test.h"
+
+#ifdef __x86_64__
+
 #include <errno.h>
 #include <inttypes.h>
 #include <sched.h>
@@ -34,7 +38,6 @@
 
 #include "config.h"
 #include "ptrace.h"
-#include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "lapi/cpuid.h"
 
@@ -60,7 +63,6 @@ static void check_regs_loop(uint32_t initval)
 	uint32_t xmm0[4] = { initval, initval, initval, initval };
 	int status = 1;
 
-#ifdef __x86_64__
 	asm volatile("   movdqu %0, %%xmm0\n"
 		     "   mov %0, %%rbx\n"
 		     "1: dec %2\n"
@@ -74,7 +76,6 @@ static void check_regs_loop(uint32_t initval)
 		     "3:\n"
 		     : "+m" (xmm0), "+r" (status)
 		     : "r" (num_iters) : "rax", "rbx", "xmm0");
-#endif
 
 	if (status) {
 		tst_res(TFAIL,
@@ -212,3 +213,7 @@ static struct tst_test test = {
 	}
 
 };
+
+#else
+TST_TEST_TCONF("Tests an x86_64 feature");
+#endif	/* if x86 */

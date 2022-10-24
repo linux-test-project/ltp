@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#if !(defined(__i386__) || defined(__x86_64__))
+#  error "cpuid.h should only be included on x86"
+#endif
+
 #ifdef HAVE_CPUID_H
 #  include <cpuid.h>
 #endif
