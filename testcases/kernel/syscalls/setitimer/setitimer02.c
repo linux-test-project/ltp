@@ -8,8 +8,10 @@
 /*\
  * [Description]
  *
- * Check that a setitimer() call fails with EFAULT with invalid itimerval
- * pointer.
+ * Check that setitimer() call fails:
+ *
+ * 1. EFAULT with invalid itimerval pointer
+ * 2. EINVAL when called with an invalid first argument
  */
 
 #include <errno.h>
@@ -18,17 +20,26 @@
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
-static struct itimerval *value;
+static struct itimerval *value, *ovalue;
 
 static int sys_setitimer(int which, void *new_value, void *old_value)
 {
 	return tst_syscall(__NR_setitimer, which, new_value, old_value);
 }
 
-static void verify_setitimer(void)
+static void verify_setitimer(unsigned int i)
 {
-	TST_EXP_FAIL(sys_setitimer(ITIMER_REAL, value, (struct itimerval *)-1),
-	             EFAULT);
+	switch (i) {
+	case 0:
+		TST_EXP_FAIL(sys_setitimer(ITIMER_REAL, value, (void *)-1), EFAULT);
+		break;
+	case 1:
+		TST_EXP_FAIL(sys_setitimer(ITIMER_VIRTUAL, value, (void *)-1), EFAULT);
+		break;
+	case 2:
+		TST_EXP_FAIL(sys_setitimer(-ITIMER_PROF, value, ovalue), EINVAL);
+		break;
+	}
 }
 
 static void setup(void)
@@ -40,10 +51,12 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-	.test_all = verify_setitimer,
+	.tcnt = 3,
+	.test = verify_setitimer,
 	.setup = setup,
 	.bufs = (struct tst_buffers[]) {
-		{&value, .size = sizeof(struct itimerval)},
+		{&value,  .size = sizeof(struct itimerval)},
+		{&ovalue, .size = sizeof(struct itimerval)},
 		{}
 	}
 };
