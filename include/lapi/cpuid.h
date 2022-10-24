@@ -16,15 +16,11 @@
  * have __cpuid_count().
  */
 #ifndef __cpuid_count
-#  if defined(__i386__) || defined(__x86_64__)
 #define __cpuid_count(level, count, a, b, c, d) ({			\
 	__asm__ __volatile__ ("cpuid\n\t"				\
 			      : "=a" (a), "=b" (b), "=c" (c), "=d" (d)	\
 			      : "0" (level), "2" (count));		\
 })
-#  else
-#define __cpuid_count(level, count, a, b, c, d)
-#  endif
 #endif
 
 #endif /* LAPI_CPUID_H__ */
