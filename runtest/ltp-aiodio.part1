@@ -1,216 +1,142 @@
 #DESCRIPTION:ltp A-sync IO and Direct IO tests
 #
-AD001 time aiocp -b 1k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD002 time aiocp -b 1k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD003 time aiocp -b 1k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD004 time aiocp -b 1k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD005 time aiocp -b 1k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD006 time aiocp -b 1k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD007 time aiocp -b 1k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD008 time aiocp -b 1k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD009 time aiocp -b 1k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD010 time aiocp -b 1k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD012 time aiocp -b 1k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD013 time aiocp -b 1k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD014 time aiocp -b 1k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD015 time aiocp -b 1k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD016 time aiocp -b 1k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD017 time aiocp -b 1k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD018 time aiocp -b 1k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD019 time aiocp -b 1k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD020 time aiocp -b 1k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD021 time aiocp -b 1k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD022 time aiocp -b 1k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD023 time aiocp -b 2k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD024 time aiocp -b 2k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD025 time aiocp -b 2k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD026 time aiocp -b 2k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD027 time aiocp -b 2k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD028 time aiocp -b 2k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD029 time aiocp -b 2k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD030 time aiocp -b 2k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD031 time aiocp -b 2k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD032 time aiocp -b 2k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD033 time aiocp -b 2k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD034 time aiocp -b 2k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD035 time aiocp -b 2k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD036 time aiocp -b 2k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD037 time aiocp -b 2k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD038 time aiocp -b 2k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD039 time aiocp -b 2k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD040 time aiocp -b 2k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD041 time aiocp -b 2k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD042 time aiocp -b 2k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD043 time aiocp -b 2k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD044 time aiocp -b 4k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD045 time aiocp -b 4k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD046 time aiocp -b 4k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD047 time aiocp -b 4k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD048 time aiocp -b 4k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD049 time aiocp -b 4k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD050 time aiocp -b 4k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD051 time aiocp -b 4k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD052 time aiocp -b 4k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD053 time aiocp -b 4k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD054 time aiocp -b 4k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD055 time aiocp -b 4k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD056 time aiocp -b 4k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD057 time aiocp -b 4k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD058 time aiocp -b 4k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD059 time aiocp -b 4k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD060 time aiocp -b 4k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD061 time aiocp -b 4k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD062 time aiocp -b 4k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD063 time aiocp -b 4k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD064 time aiocp -b 41k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD065 time aiocp -b 8k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD066 time aiocp -b 8k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD067 time aiocp -b 8k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD068 time aiocp -b 8k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD069 time aiocp -b 8k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD070 time aiocp -b 8k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD071 time aiocp -b 8k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD072 time aiocp -b 8k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD073 time aiocp -b 8k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD074 time aiocp -b 8k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD075 time aiocp -b 8k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD076 time aiocp -b 8k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD077 time aiocp -b 8k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD078 time aiocp -b 8k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD079 time aiocp -b 8k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD080 time aiocp -b 8k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD081 time aiocp -b 8k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD082 time aiocp -b 8k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD083 time aiocp -b 8k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD084 time aiocp -b 8k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD085 time aiocp -b 8k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD086 time aiocp -b 16k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD087 time aiocp -b 16k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD088 time aiocp -b 16k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD089 time aiocp -b 16k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD090 time aiocp -b 16k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD091 time aiocp -b 16k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD092 time aiocp -b 16k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD093 time aiocp -b 16k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD094 time aiocp -b 16k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD095 time aiocp -b 16k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD096 time aiocp -b 16k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD097 time aiocp -b 16k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD098 time aiocp -b 16k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD099 time aiocp -b 16k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD101 time aiocp -b 16k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD102 time aiocp -b 16k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD103 time aiocp -b 16k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD104 time aiocp -b 16k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD105 time aiocp -b 16k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD106 time aiocp -b 16k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD107 time aiocp -b 16k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD108 time aiocp -b 32k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD109 time aiocp -b 32k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD110 time aiocp -b 32k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD112 time aiocp -b 32k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD113 time aiocp -b 32k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD114 time aiocp -b 32k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD115 time aiocp -b 32k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD116 time aiocp -b 32k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD117 time aiocp -b 32k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD118 time aiocp -b 32k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD119 time aiocp -b 32k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD120 time aiocp -b 32k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD121 time aiocp -b 32k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD122 time aiocp -b 32k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD123 time aiocp -b 32k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD124 time aiocp -b 32k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD125 time aiocp -b 32k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD126 time aiocp -b 32k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD127 time aiocp -b 32k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD128 time aiocp -b 32k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD129 time aiocp -b 32k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD130 time aiocp -b 64k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD131 time aiocp -b 64k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD132 time aiocp -b 64k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD133 time aiocp -b 64k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD134 time aiocp -b 64k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD135 time aiocp -b 64k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD136 time aiocp -b 64k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD137 time aiocp -b 64k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD138 time aiocp -b 64k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD139 time aiocp -b 64k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD140 time aiocp -b 64k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD141 time aiocp -b 64k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD142 time aiocp -b 64k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD143 time aiocp -b 64k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD144 time aiocp -b 64k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD145 time aiocp -b 64k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD146 time aiocp -b 64k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD147 time aiocp -b 64k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD148 time aiocp -b 64k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD149 time aiocp -b 64k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD150 time aiocp -b 64k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD151 time aiocp -b 128k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD152 time aiocp -b 128k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD153 time aiocp -b 128k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD154 time aiocp -b 128k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD155 time aiocp -b 128k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD156 time aiocp -b 128k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD157 time aiocp -b 128k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD158 time aiocp -b 128k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD159 time aiocp -b 128k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD160 time aiocp -b 128k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD161 time aiocp -b 128k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD162 time aiocp -b 12k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD163 time aiocp -b 128k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD164 time aiocp -b 128k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD165 time aiocp -b 128k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD166 time aiocp -b 128k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD167 time aiocp -b 128k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD168 time aiocp -b 128k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD169 time aiocp -b 128k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD170 time aiocp -b 128k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD171 time aiocp -b 128k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD172 time aiocp -b 256k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD173 time aiocp -b 256k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD174 time aiocp -b 256k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD175 time aiocp -b 256k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD176 time aiocp -b 256k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD177 time aiocp -b 256k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD178 time aiocp -b 256k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD179 time aiocp -b 256k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD180 time aiocp -b 256k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD181 time aiocp -b 256k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD182 time aiocp -b 256k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD183 time aiocp -b 256k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD184 time aiocp -b 256k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD185 time aiocp -b 256k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD186 time aiocp -b 256k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD187 time aiocp -b 256k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD188 time aiocp -b 256k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD189 time aiocp -b 256k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD190 time aiocp -b 256k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD191 time aiocp -b 256k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD192 time aiocp -b 256k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD193 time aiocp -b 512k -n 1 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD194 time aiocp -b 512k -n 1 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD195 time aiocp -b 512k -n 1 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD196 time aiocp -b 512k -n 2 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD197 time aiocp -b 512k -n 2 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD198 time aiocp -b 512k -n 2 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD199 time aiocp -b 512k -n 4 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD200 time aiocp -b 512k -n 4 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD201 time aiocp -b 512k -n 4 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD202 time aiocp -b 512k -n 8 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD203 time aiocp -b 512k -n 8 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD204 time aiocp -b 512k -n 8 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD205 time aiocp -b 512k -n 16 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD206 time aiocp -b 512k -n 16 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD207 time aiocp -b 512k -n 16 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD208 time aiocp -b 512k -n 32 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD209 time aiocp -b 512k -n 32 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD210 time aiocp -b 512k -n 32 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD211 time aiocp -b 512k -n 64 -f DIRECT $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD212 time aiocp -b 512k -n 64 -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD213 time aiocp -b 512k -n 64 -f DIRECT -f SYNC $TMPDIR/aiodio.$$/junkfile $TMPDIR/aiodio.$$/ff2
-AD301 aiocp -b 128k -n 32 -f CREAT -f DIRECT $TMPDIR/aiodio.$$/fff $TMPDIR/aiodio.$$/junkdir/fff
-AD302 aiocp -b 128k -n 32 -f CREAT -f DIRECT $TMPDIR/aiodio.$$/ff1 $TMPDIR/aiodio.$$/junkdir/ff1
-AD303 aiocp -b 128k -n 32 -f CREAT -f DIRECT $TMPDIR/aiodio.$$/ff2 $TMPDIR/aiodio.$$/junkdir/ff2
-AD304 aiocp -b 128k -n 32 -f CREAT -f DIRECT $TMPDIR/aiodio.$$/ff3 $TMPDIR/aiodio.$$/junkdir/ff3
+AD001 aiocp -b 1k -n 1 -f DIRECT
+AD002 aiocp -b 1k -n 1 -f SYNC
+AD003 aiocp -b 1k -n 2 -f DIRECT
+AD004 aiocp -b 1k -n 2 -f SYNC
+AD005 aiocp -b 1k -n 4 -f DIRECT
+AD006 aiocp -b 1k -n 4 -f SYNC
+AD007 aiocp -b 1k -n 8 -f DIRECT
+AD008 aiocp -b 1k -n 8 -f SYNC
+AD009 aiocp -b 1k -n 16 -f DIRECT
+AD010 aiocp -b 1k -n 16 -f SYNC
+AD011 aiocp -b 1k -n 32 -f DIRECT
+AD012 aiocp -b 1k -n 32 -f SYNC
+AD013 aiocp -b 1k -n 64 -f DIRECT
+AD014 aiocp -b 1k -n 64 -f SYNC
+AD015 aiocp -b 2k -n 1 -f DIRECT
+AD016 aiocp -b 2k -n 1 -f SYNC
+AD017 aiocp -b 2k -n 2 -f DIRECT
+AD018 aiocp -b 2k -n 2 -f SYNC
+AD019 aiocp -b 2k -n 4 -f DIRECT
+AD020 aiocp -b 2k -n 4 -f SYNC
+AD021 aiocp -b 2k -n 8 -f DIRECT
+AD022 aiocp -b 2k -n 8 -f SYNC
+AD023 aiocp -b 2k -n 16 -f DIRECT
+AD024 aiocp -b 2k -n 16 -f SYNC
+AD025 aiocp -b 2k -n 32 -f DIRECT
+AD026 aiocp -b 2k -n 32 -f SYNC
+AD027 aiocp -b 2k -n 64 -f DIRECT
+AD028 aiocp -b 2k -n 64 -f SYNC
+AD029 aiocp -b 4k -n 1 -f DIRECT
+AD030 aiocp -b 4k -n 1 -f SYNC
+AD031 aiocp -b 4k -n 2 -f DIRECT
+AD032 aiocp -b 4k -n 2 -f SYNC
+AD033 aiocp -b 4k -n 4 -f DIRECT
+AD034 aiocp -b 4k -n 4 -f SYNC
+AD035 aiocp -b 4k -n 8 -f DIRECT
+AD036 aiocp -b 4k -n 8 -f SYNC
+AD037 aiocp -b 4k -n 16 -f DIRECT
+AD038 aiocp -b 4k -n 16 -f SYNC
+AD039 aiocp -b 4k -n 32 -f DIRECT
+AD040 aiocp -b 4k -n 32 -f SYNC
+AD041 aiocp -b 4k -n 64 -f DIRECT
+AD042 aiocp -b 4k -n 64 -f SYNC
+AD043 aiocp -b 8k -n 1 -f DIRECT
+AD044 aiocp -b 8k -n 1 -f SYNC
+AD045 aiocp -b 8k -n 2 -f DIRECT
+AD046 aiocp -b 8k -n 2 -f SYNC
+AD047 aiocp -b 8k -n 4 -f DIRECT
+AD048 aiocp -b 8k -n 4 -f SYNC
+AD049 aiocp -b 8k -n 8 -f DIRECT
+AD050 aiocp -b 8k -n 8 -f SYNC
+AD051 aiocp -b 8k -n 16 -f DIRECT
+AD052 aiocp -b 8k -n 16 -f SYNC
+AD053 aiocp -b 8k -n 32 -f DIRECT
+AD054 aiocp -b 8k -n 32 -f SYNC
+AD055 aiocp -b 8k -n 64 -f DIRECT
+AD056 aiocp -b 8k -n 64 -f SYNC
+AD057 aiocp -b 16k -n 1 -f DIRECT
+AD058 aiocp -b 16k -n 1 -f SYNC
+AD059 aiocp -b 16k -n 2 -f DIRECT
+AD060 aiocp -b 16k -n 2 -f SYNC
+AD061 aiocp -b 16k -n 4 -f DIRECT
+AD062 aiocp -b 16k -n 4 -f SYNC
+AD063 aiocp -b 16k -n 8 -f DIRECT
+AD064 aiocp -b 16k -n 8 -f SYNC
+AD065 aiocp -b 16k -n 16 -f DIRECT
+AD066 aiocp -b 16k -n 16 -f SYNC
+AD067 aiocp -b 16k -n 32 -f DIRECT
+AD068 aiocp -b 16k -n 32 -f SYNC
+AD069 aiocp -b 16k -n 64 -f DIRECT
+AD070 aiocp -b 16k -n 64 -f SYNC
+AD071 aiocp -b 32k -n 1 -f DIRECT
+AD072 aiocp -b 32k -n 1 -f SYNC
+AD073 aiocp -b 32k -n 2 -f DIRECT
+AD074 aiocp -b 32k -n 2 -f SYNC
+AD075 aiocp -b 32k -n 4 -f DIRECT
+AD076 aiocp -b 32k -n 4 -f SYNC
+AD077 aiocp -b 32k -n 8 -f DIRECT
+AD078 aiocp -b 32k -n 8 -f SYNC
+AD079 aiocp -b 32k -n 16 -f DIRECT
+AD080 aiocp -b 32k -n 16 -f SYNC
+AD081 aiocp -b 32k -n 32 -f DIRECT
+AD082 aiocp -b 32k -n 32 -f SYNC
+AD083 aiocp -b 32k -n 64 -f DIRECT
+AD084 aiocp -b 32k -n 64 -f SYNC
+AD085 aiocp -b 64k -n 1 -f DIRECT
+AD086 aiocp -b 64k -n 1 -f SYNC
+AD087 aiocp -b 64k -n 2 -f DIRECT
+AD088 aiocp -b 64k -n 2 -f SYNC
+AD089 aiocp -b 64k -n 4 -f DIRECT
+AD090 aiocp -b 64k -n 4 -f SYNC
+AD091 aiocp -b 64k -n 8 -f DIRECT
+AD092 aiocp -b 64k -n 8 -f SYNC
+AD093 aiocp -b 64k -n 16 -f DIRECT
+AD094 aiocp -b 64k -n 16 -f SYNC
+AD095 aiocp -b 64k -n 32 -f DIRECT
+AD096 aiocp -b 64k -n 32 -f SYNC
+AD097 aiocp -b 64k -n 64 -f DIRECT
+AD098 aiocp -b 64k -n 64 -f SYNC
+AD099 aiocp -b 128k -n 1 -f DIRECT
+AD100 aiocp -b 128k -n 1 -f SYNC
+AD101 aiocp -b 128k -n 2 -f DIRECT
+AD102 aiocp -b 128k -n 2 -f SYNC
+AD103 aiocp -b 128k -n 4 -f DIRECT
+AD104 aiocp -b 128k -n 4 -f SYNC
+AD105 aiocp -b 128k -n 8 -f DIRECT
+AD106 aiocp -b 128k -n 8 -f SYNC
+AD107 aiocp -b 128k -n 16 -f DIRECT
+AD108 aiocp -b 128k -n 16 -f SYNC
+AD109 aiocp -b 128k -n 32 -f DIRECT
+AD110 aiocp -b 128k -n 32 -f SYNC
+AD111 aiocp -b 128k -n 64 -f DIRECT
+AD112 aiocp -b 128k -n 64 -f SYNC
+AD113 aiocp -b 256k -n 1 -f DIRECT
+AD114 aiocp -b 256k -n 1 -f SYNC
+AD115 aiocp -b 256k -n 2 -f DIRECT
+AD116 aiocp -b 256k -n 2 -f SYNC
+AD117 aiocp -b 256k -n 4 -f DIRECT
+AD118 aiocp -b 256k -n 4 -f SYNC
+AD119 aiocp -b 256k -n 8 -f DIRECT
+AD120 aiocp -b 256k -n 8 -f SYNC
+AD121 aiocp -b 256k -n 16 -f DIRECT
+AD122 aiocp -b 256k -n 16 -f SYNC
+AD123 aiocp -b 256k -n 32 -f DIRECT
+AD124 aiocp -b 256k -n 32 -f SYNC
+AD125 aiocp -b 256k -n 64 -f DIRECT
+AD126 aiocp -b 256k -n 64 -f SYNC
+AD127 aiocp -b 512k -n 1 -f DIRECT
+AD128 aiocp -b 512k -n 1 -f SYNC
+AD129 aiocp -b 512k -n 2 -f DIRECT
+AD130 aiocp -b 512k -n 2 -f SYNC
+AD131 aiocp -b 512k -n 4 -f DIRECT
+AD132 aiocp -b 512k -n 4 -f SYNC
+AD133 aiocp -b 512k -n 8 -f DIRECT
+AD134 aiocp -b 512k -n 8 -f SYNC
+AD135 aiocp -b 512k -n 16 -f DIRECT
+AD136 aiocp -b 512k -n 16 -f SYNC
+AD137 aiocp -b 512k -n 32 -f DIRECT
+AD138 aiocp -b 512k -n 32 -f SYNC
+AD139 aiocp -b 512k -n 64 -f DIRECT
+AD140 aiocp -b 512k -n 64 -f SYNC
