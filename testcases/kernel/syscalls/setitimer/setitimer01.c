@@ -1,157 +1,97 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) International Business Machines  Corp., 2001
+ * 03/2001 - Written by Wayne Boyer
  *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
- * NAME
- *	setitimer01.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	setitimer01 - check that a resonable setitimer() call succeeds.
- *
- * ALGORITHM
- *	loop if that option was specified
- *	allocate needed space and set up needed values
- *	issue the system call
- *	check the errno value
- *	  issue a PASS message if we get zero
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	  break any remaining tests
- *	  call cleanup
- *
- * USAGE:  <for command-line>
- *  setitimer01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * Check that a setitimer() call pass with timer seting.
+ * Check if signal is generated correctly when timer expiration.
  */
-
-#include "test.h"
 
 #include <errno.h>
 #include <sys/time.h>
+#include <stdlib.h>
+#include "tst_test.h"
+#include "lapi/syscalls.h"
 
-void cleanup(void);
-void setup(void);
+#define USEC1	10000
+#define USEC2	20000
 
-char *TCID = "setitimer01";
-int TST_TOTAL = 1;
+static struct itimerval *value, *ovalue;
 
-#define SEC0	0
-#define SEC1	20
-#define SEC2	40
+static struct tcase {
+	int which;
+	char *des;
+	int signo;
+} tcases[] = {
+	{ITIMER_REAL,    "ITIMER_REAL",    SIGALRM},
+	{ITIMER_VIRTUAL, "ITIMER_VIRTUAL", SIGVTALRM},
+	{ITIMER_PROF,    "ITIMER_PROF",    SIGPROF},
+};
 
-int main(int ac, char **av)
+static int sys_setitimer(int which, void *new_value, void *old_value)
 {
-	int lc;
-	struct itimerval *value, *ovalue;
+	return tst_syscall(__NR_setitimer, which, new_value, old_value);
+}
 
-	tst_parse_opts(ac, av, NULL, NULL);
+static void set_setitimer_value(int usec, int o_usec)
+{
+	value->it_value.tv_sec = 0;
+	value->it_value.tv_usec = usec;
+	value->it_interval.tv_sec = 0;
+	value->it_interval.tv_usec = 0;
 
-	setup();		/* global setup */
+	ovalue->it_value.tv_sec = o_usec;
+	ovalue->it_value.tv_usec = o_usec;
+	ovalue->it_interval.tv_sec = 0;
+	ovalue->it_interval.tv_usec = 0;
+}
 
-	/* The following loop checks looping state if -i option given */
+static void verify_setitimer(unsigned int i)
+{
+	pid_t pid;
+	int status;
+	struct tcase *tc = &tcases[i];
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
+	pid = SAFE_FORK();
 
-		/* allocate some space for the timer structures */
+	if (pid == 0) {
+		tst_res(TINFO, "tc->which = %s", tc->des);
 
-		if ((value = malloc((size_t)sizeof(struct itimerval))) ==
-		    NULL) {
-			tst_brkm(TBROK, cleanup, "value malloc failed");
-		}
+		tst_no_corefile(0);
 
-		if ((ovalue = malloc((size_t)sizeof(struct itimerval))) ==
-		    NULL) {
-			tst_brkm(TBROK, cleanup, "ovalue malloc failed");
-		}
+		set_setitimer_value(USEC1, 0);
+		TST_EXP_PASS(sys_setitimer(tc->which, value, NULL));
 
-		/* set up some reasonable values */
+		set_setitimer_value(USEC2, USEC2);
+		TST_EXP_PASS(sys_setitimer(tc->which, value, ovalue));
 
-		value->it_value.tv_sec = SEC1;
-		value->it_value.tv_usec = SEC0;
-		value->it_interval.tv_sec = 0;
-		value->it_interval.tv_usec = 0;
-		/*
-		 * issue the system call with the TEST() macro
-		 * ITIMER_REAL = 0, ITIMER_VIRTUAL = 1 and ITIMER_PROF = 2
-		 */
+		if (ovalue->it_value.tv_sec != 0 || ovalue->it_value.tv_usec >= USEC2)
+			tst_brk(TFAIL, "old timer value is not within the expected range");
 
-		TEST(setitimer(ITIMER_REAL, value, ovalue));
-
-		if (TEST_RETURN != 0) {
-			tst_resm(TFAIL, "call failed - errno = %d - %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			continue;
-		}
-
-		/*
-		 * call setitimer again with new values.
-		 * the old values should be stored in ovalue
-		 */
-		value->it_value.tv_sec = SEC2;
-		value->it_value.tv_usec = SEC0;
-
-		if ((setitimer(ITIMER_REAL, value, ovalue)) == -1) {
-			tst_brkm(TBROK, cleanup, "second setitimer "
-				 "call failed");
-		}
-
-		if (ovalue->it_value.tv_sec <= SEC1) {
-			tst_resm(TPASS, "functionality is correct");
-		} else {
-			tst_brkm(TFAIL, cleanup, "old timer value is "
-				 "not equal to expected value");
-		}
+		for (;;)
+			;
 	}
 
-	cleanup();
-	tst_exit();
+	SAFE_WAITPID(pid, &status, 0);
+
+	if (WIFSIGNALED(status) && WTERMSIG(status) == tc->signo)
+		tst_res(TPASS, "Child received signal: %s", tst_strsig(tc->signo));
+	else
+		tst_res(TFAIL, "Child: %s", tst_strstatus(status));
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-
-}
+static struct tst_test test = {
+	.tcnt = ARRAY_SIZE(tcases),
+	.forks_child = 1,
+	.test = verify_setitimer,
+	.bufs = (struct tst_buffers[]) {
+		{&value,  .size = sizeof(struct itimerval)},
+		{&ovalue, .size = sizeof(struct itimerval)},
+		{}
+	}
+};
