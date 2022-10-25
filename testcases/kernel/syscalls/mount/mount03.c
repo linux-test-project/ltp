@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/vfs.h>
 #include <pwd.h>
 #include "tst_test.h"
 #include "lapi/mount.h"
@@ -113,16 +114,18 @@ static void test_noatime(void)
 	TST_EXP_EQ_LI(st.st_atime, atime);
 }
 
-#define FLAG_DESC(x) .flag = x, .desc = #x
+#define FLAG_DESC(x) .flag = x, .flag2 = x, .desc = #x
+#define FLAG_DESC2(x) .flag2 = x, .desc = #x
 static struct tcase {
 	unsigned int flag;
+	unsigned int flag2;
 	char *desc;
 	void (*test)(void);
 } tcases[] = {
 	{FLAG_DESC(MS_RDONLY), test_rdonly},
 	{FLAG_DESC(MS_NODEV), test_nodev},
 	{FLAG_DESC(MS_NOEXEC), test_noexec},
-	{MS_RDONLY, "MS_REMOUNT", test_remount},
+	{MS_RDONLY, FLAG_DESC2(MS_REMOUNT), test_remount},
 	{FLAG_DESC(MS_NOSUID), test_nosuid},
 	{FLAG_DESC(MS_NOATIME), test_noatime},
 };
@@ -148,6 +151,7 @@ static void cleanup(void)
 static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
+	struct statfs stfs;
 
 	tst_res(TINFO, "Testing flag %s", tc->desc);
 
@@ -158,6 +162,12 @@ static void run(unsigned int n)
 
 	if (tc->test)
 		tc->test();
+
+	SAFE_STATFS(MNTPOINT, &stfs);
+	if (stfs.f_flags & tc->flag2)
+		tst_res(TPASS, "statfs() gets the correct mount flag");
+	else
+		tst_res(TFAIL, "statfs() gets the incorrect mount flag");
 
 	cleanup();
 }
