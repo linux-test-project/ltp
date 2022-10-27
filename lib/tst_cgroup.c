@@ -290,7 +290,7 @@ static struct cgroup_ctrl controllers[] = {
 static const char *cgroup_ltp_dir = "ltp";
 static const char *cgroup_ltp_drain_dir = "drain";
 static char cgroup_test_dir[NAME_MAX + 1];
-static const char *cgroup_mount_ltp_prefix = "/tmp/cgroup_";
+static const char *cgroup_mount_ltp_prefix = "cgroup_";
 static const char *cgroup_v2_ltp_mount = "unified";
 
 #define first_root				\
@@ -645,8 +645,13 @@ static void cgroup_mount_v2(void)
 {
 	int ret;
 	char mnt_path[PATH_MAX];
+	const char *tmpdir = getenv("TMPDIR");
 
-	sprintf(mnt_path, "%s%s", cgroup_mount_ltp_prefix, cgroup_v2_ltp_mount);
+	if (!tmpdir)
+		tmpdir = "/tmp";
+
+	sprintf(mnt_path, "%s/%s%s",
+		tmpdir, cgroup_mount_ltp_prefix, cgroup_v2_ltp_mount);
 
 	if (!mkdir(mnt_path, 0777)) {
 		roots[0].mnt_dir.we_created_it = 1;
@@ -693,6 +698,10 @@ static void cgroup_mount_v1(struct cgroup_ctrl *const ctrl)
 {
 	char mnt_path[PATH_MAX];
 	int made_dir = 0;
+	const char *tmpdir = getenv("TMPDIR");
+
+	if (!tmpdir)
+		tmpdir = "/tmp";
 
 	if (ctrl->ctrl_indx == CTRL_BLKIO && controllers[CTRL_IO].ctrl_root) {
 		tst_res(TCONF,
@@ -700,7 +709,8 @@ static void cgroup_mount_v1(struct cgroup_ctrl *const ctrl)
 		return;
 	}
 
-	sprintf(mnt_path, "%s%s", cgroup_mount_ltp_prefix, ctrl->ctrl_name);
+	sprintf(mnt_path, "%s/%s%s",
+		tmpdir, cgroup_mount_ltp_prefix, ctrl->ctrl_name);
 
 	if (!mkdir(mnt_path, 0777)) {
 		made_dir = 1;
