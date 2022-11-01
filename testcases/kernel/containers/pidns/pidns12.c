@@ -18,9 +18,11 @@
 #include "tst_test.h"
 #include "lapi/namespaces_constants.h"
 
+static volatile pid_t sig_pid = -1;
+
 static void child_signal_handler(LTP_ATTRIBUTE_UNUSED int sig, siginfo_t *si, LTP_ATTRIBUTE_UNUSED void *unused)
 {
-	TST_EXP_EQ_LI(si->si_pid, 0);
+	sig_pid = si->si_pid;
 }
 
 static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
@@ -37,6 +39,8 @@ static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
 	SAFE_SIGACTION(SIGUSR1, &sa, NULL);
 
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
+
+	TST_EXP_EQ_LI(sig_pid, 0);
 
 	return 0;
 }
