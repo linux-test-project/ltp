@@ -524,12 +524,6 @@ In particular, 'tst_parse_filesize' function accepts prefix multiplies such as
 static char *str_threads;
 static int threads = 10;
 
-static struct tst_option options[] = {
-	{"t:", &str_threads, "Number of threads (default 10)"},
-	...
-	{}
-};
-
 static void setup(void)
 {
 	if (tst_parse_int(str_threads, &threads, 1, INT_MAX))
@@ -551,7 +545,9 @@ static void test_threads(void)
 
 static struct tst_test test = {
 	...
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"t:", &str_threads, "Number of threads (default 10)"},
+		{},
 	...
 };
 -------------------------------------------------------------------------------
