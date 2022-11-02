@@ -39,6 +39,7 @@ For running LTP network tests see `testcases/network/README.md`.
                           `PATH="$PATH:$LTPROOT/testcases/bin"`
 | 'TMPDIR'              | Base directory for template directory (C: '.needs_tmpdir = 1'
                           and others, which imply it, shell: 'TST_NEEDS_TMPDIR=1').
+                          Must be an absolute path (default: '/tmp').
 | 'TST_NO_CLEANUP'      | Disable running test cleanup (defined in 'TST_CLEANUP').
 |==============================================================================
 

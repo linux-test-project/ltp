@@ -74,13 +74,10 @@ int tst_fs_in_skiplist(const char *fs_type, const char *const *skiplist)
 static enum tst_fs_impl has_kernel_support(const char *fs_type)
 {
 	static int fuse_supported = -1;
-	const char *tmpdir = getenv("TMPDIR");
+	const char *tmpdir = tst_get_tmpdir_root();
 	char buf[128];
 	char template[PATH_MAX];
 	int ret;
-
-	if (!tmpdir)
-		tmpdir = "/tmp";
 
 	snprintf(template, sizeof(template), "%s/mountXXXXXX", tmpdir);
 	if (!mkdtemp(template))

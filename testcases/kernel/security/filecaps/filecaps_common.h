@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <stdlib.h>
+#include <old_tmpdir.h>
 
 static char *fifofile;
 
@@ -9,10 +10,8 @@ static const char *get_caps_fifo(void)
 		fifofile = getenv("FIFOFILE");
 
 		if (!fifofile) {
-			const char *tmpdir = getenv("TMPDIR");
+			const char *tmpdir = tst_get_tmpdir_root();
 
-			if (!tmpdir)
-				tmpdir = "/tmp";
 			fifofile = malloc(PATH_MAX);
 			snprintf(fifofile, PATH_MAX, "%s/caps_fifo", tmpdir);
 		}

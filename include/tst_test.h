@@ -363,6 +363,11 @@ void tst_set_max_runtime(int max_runtime);
 char *tst_get_tmpdir(void);
 
 /*
+ * Returns path to the test temporary directory root (TMPDIR).
+ */
+const char *tst_get_tmpdir_root(void);
+
+/*
  * Validates exit status of child processes
  */
 int tst_validate_children_(const char *file, const int lineno,

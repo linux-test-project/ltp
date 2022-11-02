@@ -46,6 +46,11 @@ void tst_rmdir(void);
 char *tst_get_tmpdir(void);
 
 /*
+ * Returns path to the test temporary directory root (TMPDIR).
+ */
+const char *tst_get_tmpdir_root(void);
+
+/*
  * Returns 1 if temp directory was created.
  */
 int tst_tmpdir_created(void);

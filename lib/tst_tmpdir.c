@@ -122,6 +122,21 @@ char *tst_get_tmpdir(void)
 	return ret;
 }
 
+const char *tst_get_tmpdir_root(void)
+{
+	const char *env_tmpdir = getenv("TMPDIR");
+
+	if (!env_tmpdir)
+		env_tmpdir = TEMPDIR;
+
+	if (env_tmpdir[0] != '/') {
+		tst_brkm(TBROK, NULL, "You must specify an absolute "
+				"pathname for environment variable TMPDIR");
+		return NULL;
+	}
+	return env_tmpdir;
+}
+
 const char *tst_get_startwd(void)
 {
 	return test_start_work_dir;
@@ -245,31 +260,16 @@ static int rmobj(const char *obj, char **errmsg)
 void tst_tmpdir(void)
 {
 	char template[PATH_MAX];
-	char *env_tmpdir;
-	char *errmsg, *c;
+	const char *env_tmpdir;
+	char *errmsg;
 
 	/*
 	 * Create a template for the temporary directory.  Use the
 	 * environment variable TMPDIR if it is available, otherwise
 	 * use our default TEMPDIR.
 	 */
-	env_tmpdir = getenv("TMPDIR");
-	if (env_tmpdir) {
-		c = strchr(env_tmpdir, '/');
-		/*
-		 * Now we force environment variable TMPDIR to be an absolute
-		 * pathname, which dose not make much sense, but it will
-		 * greatly simplify code in tst_rmdir().
-		 */
-		if (c != env_tmpdir) {
-			tst_brkm(TBROK, NULL, "You must specify an absolute "
-				 "pathname for environment variable TMPDIR");
-			return;
-		}
-		snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", env_tmpdir, TCID);
-	} else {
-		snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", TEMPDIR, TCID);
-	}
+	env_tmpdir = tst_get_tmpdir_root();
+	snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", env_tmpdir, TCID);
 
 	/* Make the temporary directory in one shot using mkdtemp. */
 	if (mkdtemp(template) == NULL) {

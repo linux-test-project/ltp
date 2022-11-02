@@ -645,10 +645,7 @@ static void cgroup_mount_v2(void)
 {
 	int ret;
 	char mnt_path[PATH_MAX];
-	const char *tmpdir = getenv("TMPDIR");
-
-	if (!tmpdir)
-		tmpdir = "/tmp";
+	const char *tmpdir = tst_get_tmpdir_root();
 
 	sprintf(mnt_path, "%s/%s%s",
 		tmpdir, cgroup_mount_ltp_prefix, cgroup_v2_ltp_mount);
@@ -698,10 +695,7 @@ static void cgroup_mount_v1(struct cgroup_ctrl *const ctrl)
 {
 	char mnt_path[PATH_MAX];
 	int made_dir = 0;
-	const char *tmpdir = getenv("TMPDIR");
-
-	if (!tmpdir)
-		tmpdir = "/tmp";
+	const char *tmpdir = tst_get_tmpdir_root();
 
 	if (ctrl->ctrl_indx == CTRL_BLKIO && controllers[CTRL_IO].ctrl_root) {
 		tst_res(TCONF,
