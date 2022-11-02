@@ -373,7 +373,7 @@ https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
 | '.mntpoint', '.mnt_data' | 'TST_MNTPOINT'
 | '.mount_device' | 'TST_MOUNT_DEVICE'
 | '.needs_cgroup_ctrls' | –
-| '.needs_checkpoints' | 'NEEDS_CHECKPOINTS'
+| '.needs_checkpoints' | 'TST_NEEDS_CHECKPOINTS'
 | '.needs_cmds' | 'TST_NEEDS_CMDS'
 | '.needs_devfs' | –
 | '.needs_device' | 'TST_NEEDS_DEVICE'
