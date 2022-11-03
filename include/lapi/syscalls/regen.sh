@@ -48,7 +48,7 @@ cat << EOF > "${output_pid}"
 #endif
 
 #define tst_syscall(NR, ...) ({ \\
-	int tst_ret; \\
+	intptr_t tst_ret; \\
 	if (NR == __LTP__NR_INVALID_SYSCALL) { \\
 		errno = ENOSYS; \\
 		tst_ret = -1; \\
