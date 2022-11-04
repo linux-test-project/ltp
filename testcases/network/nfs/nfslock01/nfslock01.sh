@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2002-2022
 # Copyright (c) 2016-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 #
@@ -11,8 +12,6 @@
 
 TST_SETUP="do_setup"
 TST_TESTFUNC="do_test"
-
-LUSER=${LUSER:=root}
 
 do_setup()
 {
