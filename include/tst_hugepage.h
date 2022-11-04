@@ -8,6 +8,13 @@
 
 #define PATH_HUGEPAGES	"/sys/kernel/mm/hugepages/"
 #define PATH_NR_HPAGES	"/proc/sys/vm/nr_hugepages"
+#define PATH_OC_HPAGES "/proc/sys/vm/nr_overcommit_hugepages"
+
+#define MEMINFO_HPAGE_TOTAL  "HugePages_Total:"
+#define MEMINFO_HPAGE_FREE   "HugePages_Free:"
+#define MEMINFO_HPAGE_RSVD   "HugePages_Rsvd:"
+#define MEMINFO_HPAGE_SURP   "HugePages_Surp:"
+#define MEMINFO_HPAGE_SIZE   "Hugepagesize:"
 
 extern char *nr_opt; /* -s num   Set the number of the been allocated hugepages */
 extern char *Hopt;   /* -H /..   Location of hugetlbfs, i.e.  -H /var/hugetlbfs */

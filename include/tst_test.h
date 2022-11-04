@@ -176,6 +176,10 @@ struct tst_test {
 	int all_filesystems:1;
 	int skip_in_lockdown:1;
 	int skip_in_compat:1;
+	/*
+	 * If set, the hugetlbfs will be mounted at .mntpoint.
+	 */
+	int needs_hugetlbfs:1;
 
 	/*
 	 * The skip_filesystems is a NULL terminated list of filesystems the
@@ -356,6 +360,12 @@ unsigned int tst_remaining_runtime(void);
  * Sets maximal test runtime in seconds.
  */
 void tst_set_max_runtime(int max_runtime);
+
+/*
+ * Create and open a random file inside the given dir path.
+ * It unlinks the file after opening and return file descriptor.
+ */
+int tst_creat_unlinked(const char *path);
 
 /*
  * Returns path to the test temporary directory in a newly allocated buffer.
