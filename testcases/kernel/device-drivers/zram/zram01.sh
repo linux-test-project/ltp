@@ -93,7 +93,7 @@ zram_makefs()
 
 zram_mount()
 {
-	local i=0
+	local i
 
 	for i in $(seq $dev_start $dev_end); do
 		tst_res TINFO "mount /dev/zram$i"
@@ -107,9 +107,12 @@ zram_mount()
 
 zram_fill_fs()
 {
+	local mem_used_total
+	local b i r v
+
 	for i in $(seq $dev_start $dev_end); do
 		tst_res TINFO "filling zram$i (it can take long time)"
-		local b=0
+		b=0
 		while true; do
 			dd conv=notrunc if=/dev/zero of=zram${i}/file \
 				oflag=append count=1 bs=1024 status=none \
@@ -130,9 +133,9 @@ zram_fill_fs()
 			continue
 		fi
 
-		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
-		local v=$((100 * 1024 * $b / $mem_used_total))
-		local r=`echo "scale=2; $v / 100 " | bc`
+		mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
+		v=$((100 * 1024 * $b / $mem_used_total))
+		r=`echo "scale=2; $v / 100 " | bc`
 
 		if [ "$v" -lt 100 ]; then
 			tst_res TFAIL "compression ratio: $r:1"
