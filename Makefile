@@ -1,7 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2009-2021
+# Copyright (c) Linux Test Project, 2009-2022
 # Copyright (c) Cisco Systems Inc., 2009-2010
 # Ngie Cooper, July 2009
+
+# Avoid funny character set dependencies
+unexport LC_ALL
+LC_COLLATE=C
+LC_NUMERIC=C
+export LC_COLLATE LC_NUMERIC
 
 top_srcdir		?= $(CURDIR)
 
