@@ -37,7 +37,7 @@
 #define DIO_MESSAGE "In dio mode"
 #define NON_DIO_MESSAGE "In non dio mode"
 
-static char dev_path[1024], sys_loop_diopath[1024], backing_file_path[1024];;
+static char dev_path[1024], sys_loop_diopath[1024], backing_file_path[1024];
 static int dev_num, dev_fd, block_devfd, attach_flag, logical_block_size;
 
 static void check_dio_value(int flag)
