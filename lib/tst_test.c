@@ -1568,6 +1568,7 @@ static int fork_testrun(void)
 	int status;
 
 	SAFE_SIGNAL(SIGINT, sigint_handler);
+	SAFE_SIGNAL(SIGTERM, sigint_handler);
 
 	alarm(results->timeout);
 
@@ -1579,6 +1580,7 @@ static int fork_testrun(void)
 		tst_disable_oom_protection(0);
 		SAFE_SIGNAL(SIGALRM, SIG_DFL);
 		SAFE_SIGNAL(SIGUSR1, SIG_DFL);
+		SAFE_SIGNAL(SIGTERM, SIG_DFL);
 		SAFE_SIGNAL(SIGINT, SIG_DFL);
 		SAFE_SETPGID(0, 0);
 		testrun();
@@ -1586,6 +1588,7 @@ static int fork_testrun(void)
 
 	SAFE_WAITPID(test_pid, &status, 0);
 	alarm(0);
+	SAFE_SIGNAL(SIGTERM, SIG_DFL);
 	SAFE_SIGNAL(SIGINT, SIG_DFL);
 
 	if (tst_test->taint_check && tst_taint_check()) {
