@@ -510,16 +510,6 @@ unsigned long tst_dev_bytes_written(const char *dev)
 	return dev_bytes_written;
 }
 
-static int count_match_len(const char *first, const char *second)
-{
-	int len = 0;
-
-	while (*first && *first++ == *second++)
-		len++;
-
-	return len;
-}
-
 __attribute__((nonnull))
 void tst_find_backing_dev(const char *path, char *dev)
 {
