@@ -1075,12 +1075,9 @@ is created for that intention.
 void tst_find_backing_dev(const char *path, char *dev);
 -------------------------------------------------------------------------------
 
-This function finds the block dev that this path belongs to, it uses stat function
-to get the major/minor number of the path.
-This function finds the block dev that this path belongs to, it uses the unevent
-file in sysfs to find the device name. It needs to discriminate between btrfs
-and not btrfs. For non btrfs filesystems it uses the minor, major numbers. For
-btrfs it uses the fs uuid.
+This function finds the block dev that this path belongs to, using uevent in sysfs.
+For Btrfs it uses '/sys/fs/btrfs/UUID/devices/DEV_NAME/uevent'; for other
+filesystems it uses '/sys/dev/block/MAJOR:MINOR/uevent'.
 
 [source,c]
 -------------------------------------------------------------------------------
