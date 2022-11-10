@@ -1072,7 +1072,7 @@ is created for that intention.
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
-voud tst_find_backing_dev(const char *path, char *dev);
+void tst_find_backing_dev(const char *path, char *dev);
 -------------------------------------------------------------------------------
 
 This function finds the block dev that this path belongs to, it uses stat function
