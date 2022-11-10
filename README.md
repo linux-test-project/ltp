@@ -22,6 +22,8 @@ http://lists.linux.it/listinfo/ltp
 LTP mailing list is archived at:
 https://lore.kernel.org/ltp/
 
+IRC #ltp at: [irc.libera.chat](https://libera.chat/)
+
 The git repository is located at GitHub at:
 https://github.com/linux-test-project/ltp
 
