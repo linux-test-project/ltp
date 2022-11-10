@@ -8,9 +8,9 @@
 /*\
  * [Description]
  *
- * Spawn a child and verify that setitimer() syscall passes, and it ends up
- * counting inside expected boundaries. Then verify from the parent that our
- * syscall sent the correct signal to the child.
+ * Spawn a child, verify that setitimer() syscall passes and it ends up
+ * counting inside expected boundaries. Then verify from the parent that
+ * the syscall sent the correct signal to the child.
  */
 
 #include <time.h>
@@ -22,7 +22,8 @@
 #include "tst_safe_clocks.h"
 
 static struct itimerval *value, *ovalue;
-static unsigned long time_step;
+static long time_step;
+static long time_count;
 
 static struct tcase {
 	int which;
@@ -56,7 +57,7 @@ static void verify_setitimer(unsigned int i)
 {
 	pid_t pid;
 	int status;
-	int usec = 3 * time_step;
+	long margin;
 	struct tcase *tc = &tcases[i];
 
 	pid = SAFE_FORK();
@@ -66,7 +67,7 @@ static void verify_setitimer(unsigned int i)
 
 		tst_no_corefile(0);
 
-		set_setitimer_value(usec, 0);
+		set_setitimer_value(time_count, 0);
 		TST_EXP_PASS(sys_setitimer(tc->which, value, NULL));
 
 		set_setitimer_value(5 * time_step, 7 * time_step);
@@ -76,7 +77,14 @@ static void verify_setitimer(unsigned int i)
 			ovalue->it_value.tv_sec,
 			ovalue->it_value.tv_usec);
 
-		if (ovalue->it_value.tv_sec != 0 || ovalue->it_value.tv_usec > usec)
+		/*
+		 * ITIMER_VIRTUAL and ITIMER_PROF timers always expire a
+		 * time_step afterward the elapsed time to make sure that
+		 * at least counters take effect.
+		 */
+		margin = tc->which == ITIMER_REAL ? 0 : time_step;
+
+		if (ovalue->it_value.tv_sec != 0 || ovalue->it_value.tv_usec > time_count + margin)
 			tst_res(TFAIL, "Ending counters are out of range");
 
 		for (;;)
@@ -93,24 +101,30 @@ static void verify_setitimer(unsigned int i)
 
 static void setup(void)
 {
-	struct timespec res;
+	struct timespec time_res;
 
-	SAFE_CLOCK_GETRES(CLOCK_MONOTONIC, &res);
+	/*
+	 * Use CLOCK_MONOTONIC_COARSE resolution for all timers, since its value is
+	 * bigger than CLOCK_MONOTONIC and therefore can used for both realtime and
+	 * virtual/prof timers resolutions.
+	 */
+	SAFE_CLOCK_GETRES(CLOCK_MONOTONIC_COARSE, &time_res);
 
-	time_step = res.tv_nsec / 1000;
-	if (time_step < 10000)
-		time_step = 10000;
+	time_step = time_res.tv_nsec / 1000;
+	if (time_step <= 0)
+		time_step = 1000;
 
-	tst_res(TINFO, "clock resolution: %luns, time step: %luus",
-		res.tv_nsec,
-		time_step);
+	time_count = 3 * time_step;
+
+	tst_res(TINFO, "low-resolution: %luns, time step: %luus, time count: %luus",
+		time_res.tv_nsec, time_step, time_count);
 }
 
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.forks_child = 1,
-	.test = verify_setitimer,
 	.setup = setup,
+	.test = verify_setitimer,
 	.bufs = (struct tst_buffers[]) {
 		{&value,  .size = sizeof(struct itimerval)},
 		{&ovalue, .size = sizeof(struct itimerval)},
