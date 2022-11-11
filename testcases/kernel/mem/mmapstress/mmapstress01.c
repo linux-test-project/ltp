@@ -71,25 +71,6 @@ static long long sparseoffset;
 static size_t pagesize;
 static int pattern;
 
-static struct tst_option options[] = {
-	{"d", &debug, "Enable debug output"},
-	{"f:", &opt_filesize, "Initial filesize (default 4096)"},
-	{"m", &do_sync, "Do random msync/fsyncs as well"},
-	{"o", &do_offset, "Randomize the offset of file to map"},
-	{"p:", &opt_nprocs,
-	 "Number of mapping children to create (default 1 < ncpus < 20)"},
-	{"P:", &opt_pattern,
-	 "Use a fixed pattern (default random)"},
-	{"r", &randloops,
-	 "Randomize number of pages map children check (random % 500), "
-	 "otherwise each child checks 500 pages"},
-	{"S:", &opt_sparseoffset,
-	 "When non-zero, causes the sparse area to be left before the data, "
-	 "so that the actual initial filesize is sparseoffset + filesize "
-	 "(default 0)"},
-	{},
-};
-
 static void setup(void)
 {
 	struct sigaction sa;
@@ -362,7 +343,24 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.options = options,
+	.options = (struct tst_option[]) {
+		{"d", &debug, "Enable debug output"},
+		{"f:", &opt_filesize, "Initial filesize (default 4096)"},
+		{"m", &do_sync, "Do random msync/fsyncs as well"},
+		{"o", &do_offset, "Randomize the offset of file to map"},
+		{"p:", &opt_nprocs,
+		 "Number of mapping children to create (default 1 < ncpus < 20)"},
+		{"P:", &opt_pattern,
+		 "Use a fixed pattern (default random)"},
+		{"r", &randloops,
+		 "Randomize number of pages map children check (random % 500), "
+		 "otherwise each child checks 500 pages"},
+		{"S:", &opt_sparseoffset,
+		 "When non-zero, causes the sparse area to be left before the data, "
+		 "so that the actual initial filesize is sparseoffset + filesize "
+		 "(default 0)"},
+		{},
+	},
 	.cleanup = cleanup,
 	.max_runtime = 12,
 	.needs_tmpdir = 1,
