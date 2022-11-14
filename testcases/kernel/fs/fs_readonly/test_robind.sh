@@ -200,6 +200,8 @@ for fstype in $FSTYPES; do
 		opts="-F"
 	elif [ "$fstype" = "xfs" ]; then
 		opts="-f"
+	elif [ "$fstype" = "f2fs" ]; then
+		opts="-f"
 	elif [ "$fstype" = "btrfs" ]; then
 		opts="-f"
 	fi
