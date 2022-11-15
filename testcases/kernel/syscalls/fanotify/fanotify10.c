@@ -43,6 +43,7 @@
 #include <sys/mount.h>
 #include <sys/syscall.h>
 #include "tst_test.h"
+#include "tst_safe_stdio.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"
@@ -69,6 +70,7 @@ static int fd_notify[NUM_CLASSES][GROUPS_PER_PRIO];
 static int fd_syncfs;
 
 static char event_buf[EVENT_BUF_LEN];
+static int event_buf_pos, event_buf_len;
 static int exec_events_unsupported;
 static int fan_report_dfid_unsupported;
 static int filesystem_mark_unsupported;
@@ -123,346 +125,377 @@ static struct fanotify_mark_type fanotify_mark_types[] = {
 
 static struct tcase {
 	const char *tname;
-	const char *mark_path;
+	int mark_path_cnt;
+	const char *mark_path_fmt;
 	int mark_type;
-	const char *ignore_path;
+	int ignore_path_cnt;
+	const char *ignore_path_fmt;
 	int ignore_mark_type;
 	unsigned int ignored_flags;
-	const char *event_path;
+	int event_path_cnt;
+	const char *event_path_fmt;
 	unsigned long long expected_mask_with_ignore;
 	unsigned long long expected_mask_without_ignore;
 } tcases[] = {
 	{
 		.tname = "ignore mount events created on a specific file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = FILE_MNT2,
+		.ignore_path_fmt = FILE_MNT2,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore exec mount events created on a specific file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = FILE_EXEC_PATH2,
+		.ignore_path_fmt = FILE_EXEC_PATH2,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE_EXEC_PATH,
+		.event_path_fmt = FILE_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "don't ignore mount events created on another file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = FILE_PATH,
+		.ignore_path_fmt = FILE_PATH,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE2_PATH,
+		.event_path_fmt = FILE2_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore exec mount events created on another file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = FILE_EXEC_PATH,
+		.ignore_path_fmt = FILE_EXEC_PATH,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE2_EXEC_PATH,
+		.event_path_fmt = FILE2_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN | FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "ignore inode events created on a specific mount point",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_INODE,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_MNT2,
+		.event_path_fmt = FILE_MNT2,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore exec inode events created on a specific mount point",
-		.mark_path = FILE_EXEC_PATH,
+		.mark_path_fmt = FILE_EXEC_PATH,
 		.mark_type = FANOTIFY_INODE,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_EXEC_PATH2,
+		.event_path_fmt = FILE_EXEC_PATH2,
 		.expected_mask_with_ignore = FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "don't ignore inode events created on another mount point",
-		.mark_path = FILE_MNT2,
+		.mark_path_fmt = FILE_MNT2,
 		.mark_type = FANOTIFY_INODE,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore exec inode events created on another mount point",
-		.mark_path = FILE_EXEC_PATH2,
+		.mark_path_fmt = FILE_EXEC_PATH2,
 		.mark_type = FANOTIFY_INODE,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_EXEC_PATH,
+		.event_path_fmt = FILE_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN | FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "ignore fs events created on a specific file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = FILE_PATH,
+		.ignore_path_fmt = FILE_PATH,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore exec fs events created on a specific file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = FILE_EXEC_PATH,
+		.ignore_path_fmt = FILE_EXEC_PATH,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE_EXEC_PATH,
+		.event_path_fmt = FILE_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "don't ignore mount events created on another file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = FILE_PATH,
+		.ignore_path_fmt = FILE_PATH,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE2_PATH,
+		.event_path_fmt = FILE2_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore exec mount events created on another file",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = FILE_EXEC_PATH,
+		.ignore_path_fmt = FILE_EXEC_PATH,
 		.ignore_mark_type = FANOTIFY_INODE,
-		.event_path = FILE2_EXEC_PATH,
+		.event_path_fmt = FILE2_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN | FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "ignore fs events created on a specific mount point",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_MNT2,
+		.event_path_fmt = FILE_MNT2,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore exec fs events created on a specific mount point",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_EXEC_PATH2,
+		.event_path_fmt = FILE_EXEC_PATH2,
 		.expected_mask_with_ignore = FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "don't ignore fs events created on another mount point",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore exec fs events created on another mount point",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = MNT2_PATH,
+		.ignore_path_fmt = MNT2_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_EXEC_PATH,
+		.event_path_fmt = FILE_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN | FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "ignore child exec events created on a specific mount point",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_PARENT,
-		.ignore_path = MOUNT_PATH,
+		.ignore_path_fmt = MOUNT_PATH,
 		.ignore_mark_type = FANOTIFY_MOUNT,
-		.event_path = FILE_EXEC_PATH,
+		.event_path_fmt = FILE_EXEC_PATH,
 		.expected_mask_with_ignore = FAN_OPEN_EXEC,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_OPEN_EXEC
 	},
 	{
 		.tname = "ignore events on children of directory created on a specific file",
-		.mark_path = DIR_PATH,
+		.mark_path_fmt = DIR_PATH,
 		.mark_type = FANOTIFY_PARENT,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore events on file created inside a parent watching children",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_INODE,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore events on file created inside a parent not watching children",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_INODE,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore mount events created inside a parent watching children",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore mount events created inside a parent not watching children",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "ignore fs events created inside a parent watching children",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore fs events created inside a parent not watching children",
-		.mark_path = FILE_PATH,
+		.mark_path_fmt = FILE_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	/* Evictable ignore mark test cases */
 	{
 		.tname = "don't ignore mount events created on file with evicted ignore mark",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = FILE_PATH,
+		.ignore_path_fmt = FILE_PATH,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore fs events created on a file with evicted ignore mark",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = FILE_PATH,
+		.ignore_path_fmt = FILE_PATH,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore mount events created inside a parent with evicted ignore mark",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	{
 		.tname = "don't ignore fs events created inside a parent with evicted ignore mark",
-		.mark_path = MOUNT_PATH,
+		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = FILE_PATH,
+		.event_path_fmt = FILE_PATH,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
 	/* FAN_MARK_IGNORE specific test cases */
 	{
 		.tname = "ignore events on subdir inside a parent watching subdirs",
-		.mark_path = SUBDIR_PATH,
+		.mark_path_fmt = SUBDIR_PATH,
 		.mark_type = FANOTIFY_SUBDIR,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_EVENT_ON_CHILD | FAN_ONDIR,
-		.event_path = SUBDIR_PATH,
+		.event_path_fmt = SUBDIR_PATH,
 		.expected_mask_with_ignore = 0,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_ONDIR
 	},
 	{
 		.tname = "don't ignore events on subdir inside a parent not watching children",
-		.mark_path = SUBDIR_PATH,
+		.mark_path_fmt = SUBDIR_PATH,
 		.mark_type = FANOTIFY_SUBDIR,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_ONDIR,
-		.event_path = SUBDIR_PATH,
+		.event_path_fmt = SUBDIR_PATH,
 		.expected_mask_with_ignore = FAN_OPEN | FAN_ONDIR,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_ONDIR
 	},
 	{
 		.tname = "don't ignore events on subdir inside a parent watching non-dir children",
-		.mark_path = SUBDIR_PATH,
+		.mark_path_fmt = SUBDIR_PATH,
 		.mark_type = FANOTIFY_SUBDIR,
-		.ignore_path = DIR_PATH,
+		.ignore_path_fmt = DIR_PATH,
 		.ignore_mark_type = FANOTIFY_PARENT,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path = SUBDIR_PATH,
+		.event_path_fmt = SUBDIR_PATH,
 		.expected_mask_with_ignore = FAN_OPEN | FAN_ONDIR,
 		.expected_mask_without_ignore = FAN_OPEN | FAN_ONDIR
 	},
 };
 
-static void show_fanotify_ignore_marks(int fd, int expected)
+static int format_path_check(char *buf, const char *fmt, int count, int i)
+{
+	int limit = count ? : 1;
+
+	if (i >= limit)
+		return 0;
+
+	if (count)
+		sprintf(buf, fmt, i);
+	else
+		strcpy(buf, fmt);
+	return 1;
+}
+
+#define foreach_path(tc, buf, pname) \
+	for (int piter = 0; format_path_check((buf), (tc)->pname##_fmt,	\
+					(tc)->pname##_cnt, piter); piter++)
+
+static void show_fanotify_ignore_marks(int fd, int min, int max)
 {
 	unsigned int mflags, mask, ignored_mask;
 	char procfdinfo[100];
+	char line[BUFSIZ];
+	int marks = 0;
+	FILE *f;
 
 	sprintf(procfdinfo, "/proc/%d/fdinfo/%d", (int)getpid(), fd);
-	if (FILE_LINES_SCANF(procfdinfo, "fanotify ino:%*x sdev:%*x mflags: %x mask:%x ignored_mask:%x",
-				&mflags, &mask, &ignored_mask) || !ignored_mask) {
-		tst_res(!expected ? TPASS : TFAIL,
-			"No fanotify inode ignore marks %sexpected",
-			!expected ? "as " : "is un");
-	} else {
-		tst_res(expected ? TPASS : TFAIL,
-			"Found %sexpected inode ignore mark (mflags=%x, mask=%x ignored_mask=%x)",
-			expected ? "" : "un", mflags, mask, ignored_mask);
+	f = SAFE_FOPEN(procfdinfo, "r");
+	while (fgets(line, BUFSIZ, f)) {
+		if (sscanf(line, "fanotify ino:%*x sdev:%*x mflags: %x mask:%x ignored_mask:%x",
+			   &mflags, &mask, &ignored_mask) == 3) {
+			if (ignored_mask != 0)
+				marks++;
+		}
 	}
+	if (marks < min) {
+		tst_res(TFAIL, "Found %d ignore marks but at least %d expected", marks, min);
+		return;
+	}
+	if (marks > max) {
+		tst_res(TFAIL, "Found %d ignore marks but at most %d expected", marks, max);
+		return;
+	}
+	tst_res(TPASS, "Found %d ignore marks which is in expected range %d-%d", marks, min, max);
 }
 
 static void drop_caches(void)
@@ -482,6 +515,7 @@ static int create_fanotify_groups(unsigned int n)
 	int evictable_ignored = (tc->ignore_mark_type == FANOTIFY_EVICTABLE);
 	int ignore_mark_type;
 	int ignored_onchild = tc->ignored_flags & FAN_EVENT_ON_CHILD;
+	char path[PATH_MAX];
 
 	mark = &fanotify_mark_types[tc->mark_type];
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
@@ -501,11 +535,12 @@ static int create_fanotify_groups(unsigned int n)
 			 * FAN_EVENT_ON_CHILD has no effect on filesystem/mount
 			 * or inode mark on non-directory.
 			 */
-			SAFE_FANOTIFY_MARK(fd_notify[p][i],
+			foreach_path(tc, path, mark_path)
+				SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | mark->flag,
 					    tc->expected_mask_without_ignore |
 					    FAN_EVENT_ON_CHILD | FAN_ONDIR,
-					    AT_FDCWD, tc->mark_path);
+					    AT_FDCWD, path);
 
 			/* Do not add ignore mark for first priority groups */
 			if (p == 0)
@@ -519,9 +554,10 @@ static int create_fanotify_groups(unsigned int n)
 			mark_ignored = tst_variant ? FAN_MARK_IGNORE_SURV : FAN_MARK_IGNORED_SURV;
 			mask = FAN_OPEN | tc->ignored_flags;
 add_mark:
-			SAFE_FANOTIFY_MARK(fd_notify[p][i],
+			foreach_path(tc, path, ignore_path)
+				SAFE_FANOTIFY_MARK(fd_notify[p][i],
 					    FAN_MARK_ADD | ignore_mark->flag | mark_ignored,
-					    mask, AT_FDCWD, tc->ignore_path);
+					    mask, AT_FDCWD, path);
 
 			/*
 			 * FAN_MARK_IGNORE respects FAN_EVENT_ON_CHILD flag, but legacy
@@ -578,9 +614,24 @@ add_mark:
 	if (ignore_mark_type == FAN_MARK_INODE) {
 		for (p = 0; p < num_classes; p++) {
 			for (i = 0; i < GROUPS_PER_PRIO; i++) {
-				if (fd_notify[p][i] > 0)
+				if (fd_notify[p][i] > 0) {
+					int minexp, maxexp;
+
+					if (p == 0) {
+						minexp = maxexp = 0;
+					} else if (evictable_ignored) {
+						minexp = 0;
+						/*
+						 * Check at least half the
+						 * marks get evicted by reclaim
+						 */
+						maxexp = tc->ignore_path_cnt / 2;
+					} else {
+						minexp = maxexp = tc->ignore_path_cnt ? : 1;
+					}
 					show_fanotify_ignore_marks(fd_notify[p][i],
-								   p > 0 && !evictable_ignored);
+								   minexp, maxexp);
+				}
 			}
 		}
 	}
@@ -613,7 +664,7 @@ static void mount_cycle(void)
 	bind_mount_created = 1;
 }
 
-static void verify_event(int p, int group, struct fanotify_event_metadata *event,
+static int verify_event(int p, int group, struct fanotify_event_metadata *event,
 			 unsigned long long expected_mask)
 {
 	/* Only FAN_REPORT_FID reports the FAN_ONDIR flag in events on dirs */
@@ -626,33 +677,35 @@ static void verify_event(int p, int group, struct fanotify_event_metadata *event
 			(unsigned long long) event->mask,
 			(unsigned long long) expected_mask,
 			(unsigned int)event->pid, event->fd);
+		return 0;
 	} else if (event->pid != child_pid) {
 		tst_res(TFAIL, "group %d (%x) got event: mask %llx pid=%u "
 			"(expected %u) fd=%u", group, fanotify_class[p],
 			(unsigned long long)event->mask, (unsigned int)event->pid,
 			(unsigned int)child_pid, event->fd);
-	} else {
-		tst_res(TPASS, "group %d (%x) got event: mask %llx pid=%u fd=%u",
-			group, fanotify_class[p], (unsigned long long)event->mask,
-			(unsigned int)event->pid, event->fd);
+		return 0;
 	}
+	return 1;
 }
 
-static int generate_event(const char *event_path,
-			  unsigned long long expected_mask)
+static int generate_event(struct tcase *tc, unsigned long long expected_mask)
 {
 	int fd, status;
 
 	child_pid = SAFE_FORK();
 
 	if (child_pid == 0) {
-		if (expected_mask & FAN_OPEN_EXEC) {
-			SAFE_EXECL(event_path, event_path, NULL);
-		} else {
-			fd = SAFE_OPEN(event_path, O_RDONLY);
+		char path[PATH_MAX];
 
-			if (fd > 0)
-				SAFE_CLOSE(fd);
+		foreach_path(tc, path, event_path) {
+			if (expected_mask & FAN_OPEN_EXEC) {
+				SAFE_EXECL(path, path, NULL);
+			} else {
+				fd = SAFE_OPEN(path, O_RDONLY);
+
+				if (fd > 0)
+					SAFE_CLOSE(fd);
+			}
 		}
 
 		exit(0);
@@ -665,6 +718,33 @@ static int generate_event(const char *event_path,
 	return 0;
 }
 
+static struct fanotify_event_metadata *fetch_event(int fd, int *retp)
+{
+	int ret;
+	struct fanotify_event_metadata *event;
+
+	*retp = 0;
+	if (event_buf_pos >= event_buf_len) {
+		event_buf_pos = 0;
+		ret = read(fd, event_buf, EVENT_BUF_LEN);
+		if (ret < 0) {
+			if (errno == EAGAIN)
+				return NULL;
+			tst_brk(TBROK | TERRNO, "reading fanotify events failed");
+		}
+		event_buf_len = ret;
+	}
+	if (event_buf_len - event_buf_pos < (int)FAN_EVENT_METADATA_LEN) {
+		tst_brk(TBROK,
+			"too short event when reading fanotify events (%d < %d)",
+			event_buf_len - event_buf_pos,
+			(int)FAN_EVENT_METADATA_LEN);
+	}
+	event = (struct fanotify_event_metadata *)(event_buf + event_buf_pos);
+	event_buf_pos += event->event_len;
+	return event;
+}
+
 static void test_fanotify(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
@@ -672,6 +752,7 @@ static void test_fanotify(unsigned int n)
 	int ret;
 	unsigned int p, i;
 	struct fanotify_event_metadata *event;
+	int event_count;
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
@@ -715,7 +796,7 @@ static void test_fanotify(unsigned int n)
 	ignore_mark = &fanotify_mark_types[tc->ignore_mark_type];
 
 	/* Generate event in child process */
-	if (!generate_event(tc->event_path, tc->expected_mask_with_ignore))
+	if (!generate_event(tc, tc->expected_mask_with_ignore))
 		tst_brk(TBROK, "Child process terminated incorrectly");
 
 	/* First verify all groups without matching ignore mask got the event */
@@ -724,64 +805,52 @@ static void test_fanotify(unsigned int n)
 			break;
 
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
-			ret = read(fd_notify[p][i], event_buf, EVENT_BUF_LEN);
-			if (ret < 0) {
-				if (errno == EAGAIN) {
-					tst_res(TFAIL, "group %d (%x) "
-						"with %s did not get event",
-						i, fanotify_class[p], mark->name);
-					continue;
-				}
-				tst_brk(TBROK | TERRNO,
-					"reading fanotify events failed");
-			}
-			if (ret < (int)FAN_EVENT_METADATA_LEN) {
-				tst_brk(TBROK,
-					"short read when reading fanotify "
-					"events (%d < %d)", ret,
-					(int)EVENT_BUF_LEN);
-			}
-			event = (struct fanotify_event_metadata *)event_buf;
-			if (ret > (int)event->event_len) {
-				tst_res(TFAIL, "group %d (%x) with %s "
-					"got more than one event (%d > %d)",
-					i, fanotify_class[p], mark->name, ret,
-					event->event_len);
-			} else {
-				verify_event(p, i, event, p == 0 ?
+			event_count = 0;
+			event_buf_pos = event_buf_len = 0;
+			while ((event = fetch_event(fd_notify[p][i], &ret))) {
+				event_count++;
+				if (!verify_event(p, i, event, p == 0 ?
 						tc->expected_mask_without_ignore :
-						tc->expected_mask_with_ignore);
+						tc->expected_mask_with_ignore))
+					break;
+				if (event->fd != FAN_NOFD)
+					SAFE_CLOSE(event->fd);
 			}
-			if (event->fd != FAN_NOFD)
-				SAFE_CLOSE(event->fd);
+			if (ret < 0)
+				continue;
+			if (event_count != (tc->event_path_cnt ? : 1)) {
+				tst_res(TFAIL, "group %d (%x) with %s "
+					"got unexpected number of events (%d != %d)",
+					i, fanotify_class[p], mark->name,
+					event_count, tc->event_path_cnt);
+			} else {
+				tst_res(TPASS, "group %d (%x) got %d events: mask %llx pid=%u",
+					i, fanotify_class[p], event_count,
+					(unsigned long long)(p == 0 ?
+					tc->expected_mask_without_ignore :
+					tc->expected_mask_with_ignore),
+					(unsigned int)child_pid);
+			}
 		}
 	}
 	/* Then verify all groups with matching ignore mask did got the event */
 	for (p = 1; p < num_classes && !tc->expected_mask_with_ignore; p++) {
 		for (i = 0; i < GROUPS_PER_PRIO; i++) {
-			ret = read(fd_notify[p][i], event_buf, EVENT_BUF_LEN);
-			if (ret >= 0 && ret < (int)FAN_EVENT_METADATA_LEN) {
-				tst_brk(TBROK,
-					"short read when reading fanotify "
-					"events (%d < %d)", ret,
-					(int)EVENT_BUF_LEN);
-			}
-			event = (struct fanotify_event_metadata *)event_buf;
-			if (ret > 0) {
-				tst_res(TFAIL, "group %d (%x) with %s and "
-					"%s ignore mask got unexpected event (mask %llx)",
-					i, fanotify_class[p], mark->name, ignore_mark->name,
-					event->mask);
+			event_count = 0;
+			event_buf_pos = event_buf_len = 0;
+			while ((event = fetch_event(fd_notify[p][i], &ret))) {
+				event_count++;
 				if (event->fd != FAN_NOFD)
 					SAFE_CLOSE(event->fd);
-			} else if (errno == EAGAIN) {
-				tst_res(TPASS, "group %d (%x) with %s and "
-					"%s ignore mask got no event",
-					i, fanotify_class[p], mark->name, ignore_mark->name);
-			} else {
-				tst_brk(TBROK | TERRNO,
-					"reading fanotify events failed");
 			}
+			if (ret < 0)
+				continue;
+			if (event_count > tc->event_path_cnt / 2)
+				tst_res(TFAIL, "group %d (%x) with %s and "
+					"%s ignore mask got unexpectedly many events (%d > %d)",
+					i, fanotify_class[p], mark->name,
+					ignore_mark->name, event_count,
+					tc->event_path_cnt / 2);
 		}
 	}
 cleanup:
