@@ -86,7 +86,10 @@ static int ignore_mark_unsupported;
 #define TEST_APP "fanotify_child"
 #define TEST_APP2 "fanotify_child2"
 #define DIR_PATH MOUNT_PATH"/"DIR_NAME
+#define DIR_PATH_MULTI DIR_PATH"%d"
 #define FILE_PATH DIR_PATH"/"FILE_NAME
+#define FILE_PATH_MULTI FILE_PATH"%d"
+#define FILE_PATH_MULTIDIR DIR_PATH_MULTI"/"FILE_NAME
 #define FILE2_PATH DIR_PATH"/"FILE2_NAME
 #define SUBDIR_PATH DIR_PATH"/"SUBDIR_NAME
 #define FILE_EXEC_PATH MOUNT_PATH"/"TEST_APP
@@ -104,6 +107,7 @@ static int old_cache_pressure;
 static pid_t child_pid;
 static int bind_mount_created;
 static unsigned int num_classes = NUM_CLASSES;
+static int max_file_multi;
 
 enum {
 	FANOTIFY_INODE,
@@ -378,9 +382,11 @@ static struct tcase {
 		.tname = "don't ignore mount events created on file with evicted ignore mark",
 		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path_fmt = FILE_PATH,
+		.ignore_path_cnt = 16,
+		.ignore_path_fmt = FILE_PATH_MULTI,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
-		.event_path_fmt = FILE_PATH,
+		.event_path_cnt = 16,
+		.event_path_fmt = FILE_PATH_MULTI,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
@@ -388,9 +394,11 @@ static struct tcase {
 		.tname = "don't ignore fs events created on a file with evicted ignore mark",
 		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path_fmt = FILE_PATH,
+		.ignore_path_cnt = 16,
+		.ignore_path_fmt = FILE_PATH_MULTI,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
-		.event_path_fmt = FILE_PATH,
+		.event_path_cnt = 16,
+		.event_path_fmt = FILE_PATH_MULTI,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
@@ -398,10 +406,12 @@ static struct tcase {
 		.tname = "don't ignore mount events created inside a parent with evicted ignore mark",
 		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_MOUNT,
-		.ignore_path_fmt = DIR_PATH,
+		.ignore_path_cnt = 16,
+		.ignore_path_fmt = DIR_PATH_MULTI,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path_fmt = FILE_PATH,
+		.event_path_cnt = 16,
+		.event_path_fmt = FILE_PATH_MULTIDIR,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
@@ -409,10 +419,12 @@ static struct tcase {
 		.tname = "don't ignore fs events created inside a parent with evicted ignore mark",
 		.mark_path_fmt = MOUNT_PATH,
 		.mark_type = FANOTIFY_FILESYSTEM,
-		.ignore_path_fmt = DIR_PATH,
+		.ignore_path_cnt = 16,
+		.ignore_path_fmt = DIR_PATH_MULTI,
 		.ignore_mark_type = FANOTIFY_EVICTABLE,
 		.ignored_flags = FAN_EVENT_ON_CHILD,
-		.event_path_fmt = FILE_PATH,
+		.event_path_cnt = 16,
+		.event_path_fmt = FILE_PATH_MULTIDIR,
 		.expected_mask_with_ignore = FAN_OPEN,
 		.expected_mask_without_ignore = FAN_OPEN
 	},
@@ -860,6 +872,8 @@ cleanup:
 
 static void setup(void)
 {
+	int i;
+
 	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC,
 								      FAN_CLASS_CONTENT, 0);
 	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
@@ -876,7 +890,24 @@ static void setup(void)
 	SAFE_MKDIR(DIR_PATH, 0755);
 	SAFE_MKDIR(SUBDIR_PATH, 0755);
 	SAFE_FILE_PRINTF(FILE_PATH, "1");
-	SAFE_FILE_PRINTF(FILE2_PATH, "1");
+	for (i = 0; i < (int)ARRAY_SIZE(tcases); i++) {
+		if (tcases[i].mark_path_cnt > max_file_multi)
+			max_file_multi = tcases[i].mark_path_cnt;
+		if (tcases[i].ignore_path_cnt > max_file_multi)
+			max_file_multi = tcases[i].ignore_path_cnt;
+		if (tcases[i].event_path_cnt > max_file_multi)
+			max_file_multi = tcases[i].event_path_cnt;
+	}
+	for (i = 0; i < max_file_multi; i++) {
+		char path[PATH_MAX];
+
+		sprintf(path, FILE_PATH_MULTI, i);
+		SAFE_FILE_PRINTF(path, "1");
+		sprintf(path, DIR_PATH_MULTI, i);
+		SAFE_MKDIR(path, 0755);
+		sprintf(path, FILE_PATH_MULTIDIR, i);
+		SAFE_FILE_PRINTF(path, "1");
+	}
 
 	SAFE_CP(TEST_APP, FILE_EXEC_PATH);
 	SAFE_CP(TEST_APP, FILE2_EXEC_PATH);
@@ -892,6 +923,8 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	int i;
+
 	cleanup_fanotify_groups();
 
 	if (bind_mount_created)
@@ -899,8 +932,17 @@ static void cleanup(void)
 
 	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "%d", old_cache_pressure);
 
+	for (i = 0; i < max_file_multi; i++) {
+		char path[PATH_MAX];
+
+		sprintf(path, FILE_PATH_MULTIDIR, i);
+		SAFE_UNLINK(path);
+		sprintf(path, DIR_PATH_MULTI, i);
+		SAFE_RMDIR(path);
+		sprintf(path, FILE_PATH_MULTI, i);
+		SAFE_UNLINK(path);
+	}
 	SAFE_UNLINK(FILE_PATH);
-	SAFE_UNLINK(FILE2_PATH);
 	SAFE_RMDIR(SUBDIR_PATH);
 	SAFE_RMDIR(DIR_PATH);
 	SAFE_RMDIR(MNT2_PATH);
