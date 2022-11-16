@@ -158,12 +158,14 @@ static void check_filter_mode(int val)
 
 	TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &strict));
 	if (TST_RET == -1) {
-		if (TST_ERR == EINVAL)
+		if (TST_ERR == EINVAL) {
 			tst_res(TCONF,
 				"kernel doesn't support SECCOMP_MODE_FILTER");
-		else
+			exit(1);
+		} else {
 			tst_res(TFAIL | TERRNO,
 				"prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_FILTER failed");
+		}
 		return;
 	}
 
@@ -208,7 +210,7 @@ static void verify_prctl(unsigned int n)
 			return;
 		}
 
-		if (tc->pass_flag == 2)
+		if (!(WIFEXITED(status) && WEXITSTATUS(status) == 1) && tc->pass_flag == 2)
 			tst_res(TFAIL,
 				"SECCOMP_MODE_FILTER permits exit() unexpectedly");
 	}
