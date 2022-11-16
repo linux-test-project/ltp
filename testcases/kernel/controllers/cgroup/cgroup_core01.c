@@ -16,11 +16,11 @@
  *
  * It is a regression test for
  *
- * commit e57457641613fef0d147ede8bd6a3047df588b95
+ * commit 1756d7994ad85c2479af6ae5a9750b92324685af
  * Author: Tejun Heo <tj@kernel.org>
- * Date:   Thu Jan 6 11:02:29 2022 -1000
+ * Date:   Thu Jan 6 11:02:28 2022 -1000
  *
- * cgroup: Use open-time cgroup namespace for process migration perm checks
+ * cgroup: Use open-time credentials for process migraton perm checks
  */
 
 #include <stdlib.h>
@@ -101,7 +101,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_cgroup_ctrls = (const char *const[]){"memory",  NULL},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "e57457641613"},
+		{"linux-git", "1756d7994ad8"},
 		{"CVE", "2021-4197"},
 		{}
 	},
