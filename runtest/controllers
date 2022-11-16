@@ -1,5 +1,6 @@
 #DESCRIPTION:Resource Management testing
 cgroup_core01	cgroup_core01
+cgroup_core02	cgroup_core02
 cgroup		cgroup_regression_test.sh
 memcg_regression	memcg_regression_test.sh
 memcg_test_3	memcg_test_3
