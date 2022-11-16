@@ -21,9 +21,12 @@
 #include "lapi/syscalls.h"
 #include "tst_safe_clocks.h"
 
+static struct timeval tv;
 static struct itimerval *value, *ovalue;
+static volatile unsigned long sigcnt;
 static long time_step;
-static long time_count;
+static long time_sec;
+static long time_usec;
 
 static struct tcase {
 	int which;
@@ -40,17 +43,17 @@ static int sys_setitimer(int which, void *new_value, void *old_value)
 	return tst_syscall(__NR_setitimer, which, new_value, old_value);
 }
 
-static void set_setitimer_value(int usec, int o_usec)
+static void sig_routine(int signo LTP_ATTRIBUTE_UNUSED)
 {
-	value->it_value.tv_sec = 0;
-	value->it_value.tv_usec = usec;
-	value->it_interval.tv_sec = 0;
-	value->it_interval.tv_usec = 0;
+	sigcnt++;
+}
 
-	ovalue->it_value.tv_sec = o_usec;
-	ovalue->it_value.tv_usec = o_usec;
-	ovalue->it_interval.tv_sec = 0;
-	ovalue->it_interval.tv_usec = 0;
+static void set_setitimer_value(int sec, int usec)
+{
+	value->it_value.tv_sec = sec;
+	value->it_value.tv_usec = usec;
+	value->it_interval.tv_sec = sec;
+	value->it_interval.tv_usec = usec;
 }
 
 static void verify_setitimer(unsigned int i)
@@ -60,22 +63,31 @@ static void verify_setitimer(unsigned int i)
 	long margin;
 	struct tcase *tc = &tcases[i];
 
+	tst_res(TINFO, "tc->which = %s", tc->des);
+
+	if (tc->which == ITIMER_REAL) {
+		if (gettimeofday(&tv, NULL) == -1)
+			tst_brk(TBROK | TERRNO, "gettimeofday(&tv1, NULL) failed");
+		else
+			tst_res(TINFO, "Test begin time: %ld.%lds", tv.tv_sec, tv.tv_usec);
+	}
+
 	pid = SAFE_FORK();
 
 	if (pid == 0) {
-		tst_res(TINFO, "tc->which = %s", tc->des);
-
 		tst_no_corefile(0);
 
-		set_setitimer_value(time_count, 0);
+		set_setitimer_value(time_sec, time_usec);
 		TST_EXP_PASS(sys_setitimer(tc->which, value, NULL));
 
-		set_setitimer_value(5 * time_step, 7 * time_step);
+		set_setitimer_value(5 * time_sec, 7 * time_usec);
 		TST_EXP_PASS(sys_setitimer(tc->which, value, ovalue));
 
-		tst_res(TINFO, "tv_sec=%ld, tv_usec=%ld",
-			ovalue->it_value.tv_sec,
-			ovalue->it_value.tv_usec);
+		TST_EXP_EQ_LI(ovalue->it_interval.tv_sec, time_sec);
+		TST_EXP_EQ_LI(ovalue->it_interval.tv_usec, time_usec);
+
+		tst_res(TINFO, "ovalue->it_value.tv_sec=%ld, ovalue->it_value.tv_usec=%ld",
+			ovalue->it_value.tv_sec, ovalue->it_value.tv_usec);
 
 		/*
 		 * ITIMER_VIRTUAL and ITIMER_PROF timers always expire a
@@ -84,10 +96,29 @@ static void verify_setitimer(unsigned int i)
 		 */
 		margin = tc->which == ITIMER_REAL ? 0 : time_step;
 
-		if (ovalue->it_value.tv_sec != 0 || ovalue->it_value.tv_usec > time_count + margin)
-			tst_res(TFAIL, "Ending counters are out of range");
+		if (ovalue->it_value.tv_sec == time_sec) {
+			if (ovalue->it_value.tv_usec < 0 ||
+					ovalue->it_value.tv_usec > time_usec + margin)
+				tst_res(TFAIL, "ovalue->it_value.tv_usec is out of range: %ld",
+					ovalue->it_value.tv_usec);
+		} else {
+			if (ovalue->it_value.tv_sec < 0 ||
+					ovalue->it_value.tv_sec > time_sec)
+				tst_res(TFAIL, "ovalue->it_value.tv_sec is out of range: %ld",
+					ovalue->it_value.tv_sec);
+		}
 
-		for (;;)
+		SAFE_SIGNAL(tc->signo, sig_routine);
+
+		set_setitimer_value(0, time_usec);
+		TST_EXP_PASS(sys_setitimer(tc->which, value, NULL));
+
+		while (sigcnt <= 10UL)
+			;
+
+		SAFE_SIGNAL(tc->signo, SIG_DFL);
+
+		while (1)
 			;
 	}
 
@@ -97,6 +128,13 @@ static void verify_setitimer(unsigned int i)
 		tst_res(TPASS, "Child received signal: %s", tst_strsig(tc->signo));
 	else
 		tst_res(TFAIL, "Child: %s", tst_strstatus(status));
+
+	if (tc->which == ITIMER_REAL) {
+		if (gettimeofday(&tv, NULL) == -1)
+			tst_brk(TBROK | TERRNO, "gettimeofday(&tv1, NULL) failed");
+		else
+			tst_res(TINFO, "Test end time: %ld.%lds", tv.tv_sec, tv.tv_usec);
+	}
 }
 
 static void setup(void)
@@ -114,10 +152,11 @@ static void setup(void)
 	if (time_step <= 0)
 		time_step = 1000;
 
-	time_count = 3 * time_step;
+	tst_res(TINFO, "clock low-resolution: %luns, time step: %luus",
+		time_res.tv_nsec, time_step);
 
-	tst_res(TINFO, "low-resolution: %luns, time step: %luus, time count: %luus",
-		time_res.tv_nsec, time_step, time_count);
+	time_sec  = 9 + time_step / 1000;
+	time_usec = 3 * time_step;
 }
 
 static struct tst_test test = {
