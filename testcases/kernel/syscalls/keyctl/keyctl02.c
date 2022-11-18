@@ -81,6 +81,11 @@ static void do_test(void)
 		SAFE_PTHREAD_JOIN(pth[1], NULL);
 		SAFE_PTHREAD_JOIN(pth[2], NULL);
 		SAFE_PTHREAD_JOIN(pth[3], NULL);
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "Runtime exhausted, exiting after %d loops", i);
+			break;
+		}
 	}
 
 	/*
@@ -135,6 +140,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,
+	.max_runtime = 60,
 	.test_all = do_test,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "b4a1b4f5047e"},
