@@ -117,7 +117,7 @@ static void run_test(unsigned int test_type)
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
-	huge_fd = tst_creat_unlinked(MNTPOINT);
+	huge_fd = tst_creat_unlinked(MNTPOINT, 0);
 }
 
 static void cleanup(void)

@@ -1027,18 +1027,26 @@ static void prepare_and_mount_hugetlb_fs(void)
 	mntpoint_mounted = 1;
 }
 
-int tst_creat_unlinked(const char *path)
+int tst_creat_unlinked(const char *path, int flags)
 {
 	char template[PATH_MAX];
+	int len, c, range;
 	int fd;
+	int start[3] = {'0', 'a', 'A'};
 
 	snprintf(template, PATH_MAX, "%s/ltp_%.3sXXXXXX",
 			path, tid);
 
-	fd = mkstemp(template);
-	if (fd < 0)
-		tst_brk(TBROK | TERRNO, "mkstemp(%s) failed", template);
+	len = strlen(template) - 1;
+	while (template[len] == 'X') {
+		c = rand() % 3;
+		range = start[c] == '0' ? 10 : 26;
+		c = start[c] + (rand() % range);
+		template[len--] = (char)c;
+	}
 
+	flags |= O_CREAT|O_EXCL|O_RDWR;
+	fd = SAFE_OPEN(template, flags);
 	SAFE_UNLINK(template);
 	return fd;
 }

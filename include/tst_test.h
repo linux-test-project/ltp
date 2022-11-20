@@ -365,7 +365,7 @@ void tst_set_max_runtime(int max_runtime);
  * Create and open a random file inside the given dir path.
  * It unlinks the file after opening and return file descriptor.
  */
-int tst_creat_unlinked(const char *path);
+int tst_creat_unlinked(const char *path, int flags);
 
 /*
  * Returns path to the test temporary directory in a newly allocated buffer.
