@@ -34,8 +34,8 @@ static void run(void)
 	UID16_CHECK(uid, setfsuid);
 
 	SAFE_SETEUID(0);
-	TST_EXP_VAL(setfsuid(nobody_uid), uid, "setfsuid(%d)", nobody_uid);
-	TST_EXP_VAL(setfsuid(-1), nobody_uid);
+	TST_EXP_VAL(SETFSUID(nobody_uid), uid, "setfsuid(%d)", nobody_uid);
+	TST_EXP_VAL(SETFSUID(-1), nobody_uid);
 }
 
 static struct tst_test test = {

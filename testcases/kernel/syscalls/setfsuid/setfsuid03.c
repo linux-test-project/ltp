@@ -36,8 +36,8 @@ static void run(void)
 	SAFE_SETEUID(nobody_uid);
 	UID16_CHECK(ruid, setfsuid);
 
-	TST_EXP_VAL_SILENT(setfsuid(ruid), nobody_uid);
-	TST_EXP_VAL(setfsuid(-1), ruid, "setfsuid(fsuid) by non-root user:");
+	TST_EXP_VAL_SILENT(SETFSUID(ruid), nobody_uid);
+	TST_EXP_VAL(SETFSUID(-1), ruid, "setfsuid(fsuid) by non-root user:");
 }
 
 static struct tst_test test = {
