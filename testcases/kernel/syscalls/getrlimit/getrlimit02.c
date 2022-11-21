@@ -18,33 +18,28 @@
 #include <sys/resource.h>
 #include "tst_test.h"
 
-#define RLIMIT_TOO_HIGH 1000
+#define INVALID_RES_TYPE 1000
 
 static struct rlimit rlim;
 
 static struct tcase {
-	int exp_errno;		/* Expected error no            */
-	char *exp_errval;	/* Expected error value string  */
-	struct rlimit *rlim;	/* rlimit structure             */
-	int res_type;		/* resource type                */
+	int exp_errno;
+	char *desc;
+	struct rlimit *rlim;
+	int res_type;
 } tcases[] = {
-	{ EINVAL, "EINVAL", &rlim, RLIMIT_TOO_HIGH}
+	{EFAULT, "invalid address", (void *)-1, RLIMIT_CORE},
+	{EINVAL, "invalid resource type", &rlim, INVALID_RES_TYPE}
 };
 
 static void verify_getrlimit(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TEST(getrlimit(tc->res_type, tc->rlim));
-
-	if ((TST_RET == -1) && (TST_ERR == tc->exp_errno)) {
-		tst_res(TPASS, "expected failure; got %s",
-			 tc->exp_errval);
-	} else {
-		tst_res(TFAIL, "call failed to produce "
-			 "expected error;  errno: %d : %s",
-			 TST_ERR, strerror(TST_ERR));
-	}
+	TST_EXP_FAIL(getrlimit(tc->res_type, tc->rlim),
+				tc->exp_errno,
+				"getrlimit() with %s",
+				tc->desc);
 }
 
 static struct tst_test test = {
