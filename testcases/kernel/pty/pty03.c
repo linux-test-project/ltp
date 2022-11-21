@@ -153,6 +153,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.max_runtime = 30,
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_SERIO_SERPORT",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "0ace17d568241"},
 		{"CVE", "2020-14416"},
