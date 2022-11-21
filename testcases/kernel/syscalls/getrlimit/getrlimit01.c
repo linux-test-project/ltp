@@ -47,17 +47,9 @@ static void verify_getrlimit(unsigned int i)
 	struct rlimit rlim;
 	struct tcase *tc = &tcases[i];
 
-	TEST(getrlimit(tc->res, &rlim));
-
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO,
-			"getrlimit() test %s failed",
-			tc->res_str);
-	} else {
-		tst_res(TPASS,
-			"getrlimit() test %s success",
-			tc->res_str);
-	}
+	TST_EXP_PASS(getrlimit(tc->res, &rlim),
+				"getrlimit() test for %s",
+				tc->res_str);
 }
 
 static struct tst_test test = {
