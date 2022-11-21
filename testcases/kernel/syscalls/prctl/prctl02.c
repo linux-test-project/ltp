@@ -180,7 +180,7 @@ static void setup(void)
 	if (TST_ERR == EINVAL)
 		thpdisable_nsup = 1;
 
-	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0, 0));
+	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0));
 	if (TST_ERR == EINVAL)
 		capambient_nsup = 1;
 

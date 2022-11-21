@@ -45,7 +45,7 @@
 
 static inline void check_cap_raise(unsigned int cap, char *message, int fail_flag)
 {
-	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, cap, 0, 0, 0));
+	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, cap, 0, 0));
 	switch (fail_flag) {
 	case 0:
 	if (TST_RET == 0)
@@ -71,7 +71,7 @@ static inline void check_cap_raise(unsigned int cap, char *message, int fail_fla
 
 static inline void check_cap_is_set(unsigned int cap, char *message, int val)
 {
-	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_IS_SET, cap, 0, 0, 0));
+	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_IS_SET, cap, 0, 0));
 	if (TST_RET == 1)
 		tst_res(val ? TPASS : TFAIL,
 			"PR_CAP_AMBIENT_IS_SET %s in AmbientCap", message);
@@ -84,7 +84,7 @@ static inline void check_cap_is_set(unsigned int cap, char *message, int val)
 
 static inline void check_cap_lower(unsigned int cap, char *message)
 {
-	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_LOWER, cap, 0, 0, 0));
+	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_LOWER, cap, 0, 0));
 	if (TST_RET == -1)
 		tst_res(TFAIL | TTERRNO,
 			"PR_CAP_AMBIENT_LOWER %s failed", message);
@@ -139,9 +139,9 @@ static void verify_prctl(void)
 	tst_res(TINFO, "After PR_CAP_AMBIENT_LORWER");
 	TST_ASSERT_FILE_STR(PROC_STATUS, "CapAmb", ZERO_STRING);
 
-	prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, CAP_NET_BIND_SERVICE, 0, 0, 0);
+	prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, CAP_NET_BIND_SERVICE, 0, 0);
 	tst_res(TINFO, "raise cap for clear");
-	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0, 0));
+	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0));
 	if (TST_RET == 0)
 		tst_res(TPASS, "PR_CAP_AMBIENT_CLEAR ALL succeeded");
 	else
@@ -158,7 +158,7 @@ static void verify_prctl(void)
 
 static void setup(void)
 {
-	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0, 0));
+	TEST(prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0));
 	if (TST_RET == 0) {
 		tst_res(TINFO, "kernel supports PR_CAP_AMBIENT");
 		return;
