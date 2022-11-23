@@ -47,7 +47,11 @@ test1()
 	tst_res TINFO "Test #1: Checking if the memory usage limit imposed by the topmost group is enforced"
 
 	ROD echo "$ACTIVE_MEM_LIMIT" \> "$test_dir/$memory_limit"
-	ROD echo "$TOT_MEM_LIMIT" \> "$test_dir/$memsw_memory_limit"
+
+	# If the kernel is built without swap, the $memsw_memory_limit file is missing
+	if [ -e "$test_dir/$memsw_memory_limit" ]; then
+		ROD echo "$TOT_MEM_LIMIT" \> "$test_dir/$memsw_memory_limit"
+	fi
 
 	KILLED_CNT=0
 	test_proc_kill
