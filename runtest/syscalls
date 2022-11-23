@@ -1036,6 +1036,7 @@ process_vm_writev02 process_vm_writev02
 
 prot_hsymlinks prot_hsymlinks
 dirtyc0w dirtyc0w
+dirtyc0w_shmem dirtyc0w_shmem
 dirtypipe dirtypipe
 
 pselect01 pselect01
