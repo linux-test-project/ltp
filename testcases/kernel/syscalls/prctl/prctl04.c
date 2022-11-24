@@ -93,6 +93,9 @@ static struct tcase {
 	"SECCOMP_MODE_FILTER doesn't permit exit()"}
 };
 
+
+static int mode_filter_not_supported;
+
 static void check_filter_mode_inherit(void)
 {
 	int childpid;
@@ -154,16 +157,17 @@ static void check_filter_mode(int val)
 {
 	int fd;
 
+	if (mode_filter_not_supported == 1) {
+		tst_res(TCONF, "kernel doesn't support SECCOMP_MODE_FILTER");
+		return;
+	}
+
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0666);
 
 	TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &strict));
 	if (TST_RET == -1) {
-		if (TST_ERR == EINVAL)
-			tst_res(TCONF,
-				"kernel doesn't support SECCOMP_MODE_FILTER");
-		else
-			tst_res(TFAIL | TERRNO,
-				"prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_FILTER failed");
+		tst_res(TFAIL | TERRNO,
+			"prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_FILTER failed");
 		return;
 	}
 
@@ -208,7 +212,7 @@ static void verify_prctl(unsigned int n)
 			return;
 		}
 
-		if (tc->pass_flag == 2)
+		if (tc->pass_flag == 2 && mode_filter_not_supported == 0)
 			tst_res(TFAIL,
 				"SECCOMP_MODE_FILTER permits exit() unexpectedly");
 	}
@@ -218,7 +222,15 @@ static void setup(void)
 {
 	TEST(prctl(PR_GET_SECCOMP));
 	if (TST_RET == 0) {
-		tst_res(TINFO, "kernel support PR_GET/SET_SECCOMP");
+		tst_res(TINFO, "kernel supports PR_GET/SET_SECCOMP");
+
+		TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, NULL));
+		if (TST_RET == -1 && TST_ERR == EINVAL) {
+			mode_filter_not_supported = 1;
+			return;
+		}
+
+		tst_res(TINFO, "kernel supports SECCOMP_MODE_FILTER");
 		return;
 	}
 
