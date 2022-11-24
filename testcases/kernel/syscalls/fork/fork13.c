@@ -113,7 +113,7 @@ static struct tst_test test = {
 	.max_runtime = 600,
 	.test_all = check,
 	.save_restore = (const struct tst_path_val[]) {
-		{"!/proc/sys/kernel/pid_max", PID_MAX_STR},
+		{"/proc/sys/kernel/pid_max", PID_MAX_STR, TST_SR_TBROK},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

@@ -143,7 +143,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"?/proc/sys/user/max_user_namespaces", NULL},
+		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

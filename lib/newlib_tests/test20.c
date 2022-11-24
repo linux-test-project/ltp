@@ -39,7 +39,7 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.hugepages = {2, TST_NEEDS},
 	.save_restore = (const struct tst_path_val[]) {
-		{"!/proc/sys/kernel/numa_balancing", "0"},
+		{"/proc/sys/kernel/numa_balancing", "0", TST_SR_TBROK},
 		{}
 	},
 };

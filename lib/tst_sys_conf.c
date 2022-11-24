@@ -20,6 +20,15 @@ struct tst_sys_conf {
 
 static struct tst_sys_conf *save_restore_data;
 
+static void print_error(const int lineno, int info_only, const char *err,
+	const char *path)
+{
+	if (info_only)
+		tst_res_(__FILE__, lineno, TINFO | TERRNO, err, path);
+	else
+		tst_brk_(__FILE__, lineno, TBROK | TERRNO, err, path);
+}
+
 void tst_sys_conf_dump(void)
 {
 	struct tst_sys_conf *i;
@@ -28,7 +37,7 @@ void tst_sys_conf_dump(void)
 		tst_res(TINFO, "%s = %s", i->path, i->value);
 }
 
-int tst_sys_conf_save_str(const char *path, const char *value)
+void tst_sys_conf_save_str(const char *path, const char *value)
 {
 	struct tst_sys_conf *n = SAFE_MALLOC(sizeof(*n));
 
@@ -40,45 +49,45 @@ int tst_sys_conf_save_str(const char *path, const char *value)
 
 	n->next = save_restore_data;
 	save_restore_data = n;
-
-	return 0;
 }
 
-int tst_sys_conf_save(const char *path)
+int tst_sys_conf_save(const struct tst_path_val *conf)
 {
 	char line[PATH_MAX];
+	int ttype, iret;
 	FILE *fp;
 	void *ret;
-	char flag;
 
-	if (!path)
+	if (!conf || !conf->path)
 		tst_brk(TBROK, "path is empty");
 
-	flag = path[0];
-	if (flag  == '?' || flag == '!')
-		path++;
-
-	if (access(path, F_OK) != 0) {
-		switch (flag) {
-		case '?':
-			tst_res(TINFO, "Path not found: '%s'", path);
-			break;
-		case '!':
-			tst_brk(TBROK|TERRNO, "Path not found: '%s'", path);
-			break;
-		default:
-			tst_brk(TCONF|TERRNO, "Path not found: '%s'", path);
+	if (access(conf->path, F_OK) != 0) {
+		if (conf->flags & TST_SR_SKIP_MISSING) {
+			tst_res(TINFO | TERRNO, "Path not found: %s",
+				conf->path);
+			return 1;
 		}
-		return 1;
+
+		ttype = (conf->flags & TST_SR_TBROK_MISSING) ? TBROK : TCONF;
+		tst_brk(ttype | TERRNO, "Path not found: %s", conf->path);
 	}
 
-	fp = fopen(path, "r");
-	if (fp == NULL) {
-		if (flag == '?')
+	if (access(conf->path, W_OK) != 0) {
+		if (conf->flags & TST_SR_SKIP_RO) {
+			tst_res(TINFO | TERRNO, "Path is not writable: %s",
+				conf->path);
 			return 1;
+		}
 
-		tst_brk(TBROK | TERRNO, "Failed to open FILE '%s' for reading",
-			path);
+		ttype = (conf->flags & TST_SR_TBROK_RO) ? TBROK : TCONF;
+		tst_brk(ttype | TERRNO, "Path is not writable: %s", conf->path);
+	}
+
+	fp = fopen(conf->path, "r");
+
+	if (fp == NULL) {
+		print_error(__LINE__, conf->flags & TST_SR_IGNORE_ERR,
+			"Failed to open '%s' for reading", conf->path);
 		return 1;
 	}
 
@@ -86,24 +95,41 @@ int tst_sys_conf_save(const char *path)
 	fclose(fp);
 
 	if (ret == NULL) {
-		if (flag == '?')
+		if (conf->flags & TST_SR_IGNORE_ERR)
 			return 1;
 
 		tst_brk(TBROK | TERRNO, "Failed to read anything from '%s'",
-			path);
+			conf->path);
 	}
 
-	return tst_sys_conf_save_str(path, line);
-}
+	tst_sys_conf_save_str(conf->path, line);
 
-void tst_sys_conf_set(const char *path, const char *value)
-{
-	char flag = path[0];
-	if (flag  == '?' || flag == '!')
-		path++;
+	if (!conf->val)
+		return 0;
 
-	if (value)
-		SAFE_FILE_PRINTF(path, "%s", value);
+	fp = fopen(conf->path, "w");
+
+	if (fp == NULL) {
+		print_error(__LINE__, conf->flags & TST_SR_IGNORE_ERR,
+			"Failed to open '%s' for writing", conf->path);
+		return 0;
+	}
+
+	iret = fputs(conf->val, fp);
+
+	if (iret < 0) {
+		print_error(__LINE__, conf->flags & TST_SR_IGNORE_ERR,
+			"Failed to write into '%s'", conf->path);
+	}
+
+	iret = fclose(fp);
+
+	if (iret < 0) {
+		print_error(__LINE__, conf->flags & TST_SR_IGNORE_ERR,
+			"Failed to close '%s'", conf->path);
+	}
+
+	return 0;
 }
 
 void tst_sys_conf_restore(int verbose)

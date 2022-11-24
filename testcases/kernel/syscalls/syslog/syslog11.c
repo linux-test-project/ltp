@@ -58,7 +58,7 @@ static void run(unsigned int n)
 static struct tst_test test = {
 	.test = run,
 	.save_restore = (const struct tst_path_val[]) {
-		{"!/proc/sys/kernel/printk", NULL},
+		{"/proc/sys/kernel/printk", NULL, TST_SR_TBROK},
 		{}
 	},
 	.needs_root = 1,

@@ -24,9 +24,9 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
-		{"?/proc/nonexistent", NULL},
-		{"!/proc/sys/kernel/numa_balancing", NULL},
-		{"/proc/sys/kernel/core_pattern", NULL},
+		{"/proc/nonexistent", NULL, TST_SR_SKIP},
+		{"/proc/sys/kernel/numa_balancing", NULL, TST_SR_TBROK},
+		{"/proc/sys/kernel/core_pattern", NULL, TST_SR_TCONF},
 		{}
 	},
 };

@@ -76,7 +76,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_msgget,
 	.save_restore = (const struct tst_path_val[]){
-		{"/proc/sys/kernel/msgmni", NULL},
+		{"/proc/sys/kernel/msgmni", NULL, TST_SR_TCONF},
 		{}
 	}
 };

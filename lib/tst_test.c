@@ -1211,8 +1211,7 @@ static void do_setup(int argc, char *argv[])
 		const struct tst_path_val *pvl = tst_test->save_restore;
 
 		while (pvl->path) {
-			if (!tst_sys_conf_save(pvl->path))
-				tst_sys_conf_set(pvl->path, pvl->val);
+			tst_sys_conf_save(pvl);
 			pvl++;
 		}
 	}

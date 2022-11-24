@@ -217,7 +217,8 @@ static struct tst_test test = {
 	.cleanup = tst_kvm_cleanup,
 	.needs_root = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{"?/sys/module/kvm/parameters/tdp_mmu", "0"},
+		{"/sys/module/kvm/parameters/tdp_mmu", "0",
+			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
 		{}
 	},
 	.supported_archs = (const char *const []) {
