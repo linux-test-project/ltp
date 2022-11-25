@@ -18,6 +18,7 @@
  * - MS_REMOUNT - alter flags of a mounted FS
  * - MS_NOSUID - ignore suid and sgid bits
  * - MS_NOATIME - do not update access times
+ * - MS_NODIRATIME - only update access_time for directory instead of all types
  */
 
 #include <stdio.h>
@@ -40,6 +41,7 @@
 
 static int otfd;
 static char file[PATH_MAX];
+static char dir[PATH_MAX];
 static uid_t nobody_uid;
 static gid_t nobody_gid;
 
@@ -95,23 +97,71 @@ static void test_nosuid(void)
 	tst_reap_children();
 }
 
-static void test_noatime(void)
+static void test_file_dir_noatime(int update_fatime, int update_datime)
 {
-	time_t atime;
-	struct stat st;
+	time_t atime, dir_atime;
+	struct stat st, dir_st;
 	char readbuf[20];
+	DIR *test_dir;
 
 	snprintf(file, PATH_MAX, "%s/noatime", MNTPOINT);
 	TST_EXP_FD_SILENT(otfd = open(file, O_CREAT | O_RDWR, 0700));
 
+	snprintf(dir, PATH_MAX, "%s/nodiratime", MNTPOINT);
+	if (access(dir, F_OK) == -1 && errno == ENOENT)
+		SAFE_MKDIR(dir, 0700);
+
 	SAFE_WRITE(1, otfd, TEST_STR, strlen(TEST_STR));
 	SAFE_FSTAT(otfd, &st);
 	atime = st.st_atime;
+
+	test_dir = SAFE_OPENDIR(dir);
+	SAFE_STAT(dir, &dir_st);
+	SAFE_READDIR(test_dir);
+	SAFE_CLOSEDIR(test_dir);
+	dir_atime = dir_st.st_atime;
+
 	sleep(1);
 
 	SAFE_READ(0, otfd, readbuf, sizeof(readbuf));
 	SAFE_FSTAT(otfd, &st);
-	TST_EXP_EQ_LI(st.st_atime, atime);
+
+	test_dir = SAFE_OPENDIR(dir);
+	SAFE_READDIR(test_dir);
+	SAFE_CLOSEDIR(test_dir);
+	SAFE_STAT(dir, &dir_st);
+
+	if (update_fatime) {
+		if (st.st_atime > atime)
+			tst_res(TPASS, "st.st_atime(%ld) > atime(%ld)",
+					st.st_atime, atime);
+		else
+			tst_res(TFAIL, "st.st_atime(%ld) < atime(%ld)",
+					st.st_atime, atime);
+	} else {
+		TST_EXP_EQ_LI(st.st_atime, atime);
+	}
+
+	if (update_datime) {
+		if (dir_st.st_atime > dir_atime)
+			tst_res(TPASS, "dir_st.st_atime(%ld) > dir_atime(%ld)",
+					dir_st.st_atime, dir_atime);
+		else
+			tst_res(TFAIL, "dir_st.st_atime(%ld) < dir_atime(%ld)",
+					dir_st.st_atime, dir_atime);
+	} else {
+		TST_EXP_EQ_LI(dir_st.st_atime, dir_atime);
+	}
+}
+
+static void test_noatime(void)
+{
+	test_file_dir_noatime(0, 0);
+}
+
+static void test_nodiratime(void)
+{
+	test_file_dir_noatime(1, 0);
 }
 
 #define FLAG_DESC(x) .flag = x, .flag2 = x, .desc = #x
@@ -128,6 +178,7 @@ static struct tcase {
 	{MS_RDONLY, FLAG_DESC2(MS_REMOUNT), test_remount},
 	{FLAG_DESC(MS_NOSUID), test_nosuid},
 	{FLAG_DESC(MS_NOATIME), test_noatime},
+	{FLAG_DESC(MS_NODIRATIME), test_nodiratime},
 };
 
 static void setup(void)
