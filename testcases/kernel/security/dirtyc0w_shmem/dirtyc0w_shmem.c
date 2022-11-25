@@ -108,7 +108,6 @@ static struct tst_test test = {
 	.needs_checkpoints = 1,
 	.forks_child = 1,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.max_runtime = 120,
 	.setup = setup,
 	.cleanup = cleanup,
