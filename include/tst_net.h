@@ -32,4 +32,20 @@ void safe_getaddrinfo(const char *file, const int lineno, const char *src_addr,
 					  const char *port, const struct addrinfo *hints,
 					  struct addrinfo **addr_info);
 
+/*
+ * Create new network namespace for netdevice/socket tests. A test which calls
+ * tst_setup_netns() must declare the following entries in its struct tst_test:
+ *
+ * .needs_kconfigs = (const char *[]) {
+ *	"CONFIG_USER_NS=y",
+ *	"CONFIG_NET_NS=y",
+ *	NULL
+ * },
+ * .save_restore = (const struct tst_path_val[]) {
+ *	{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+ *	{}
+ * },
+ */
+void tst_setup_netns(void);
+
 #endif /* TST_NET_H_ */

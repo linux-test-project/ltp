@@ -8,11 +8,13 @@
 #include <netdb.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_net.h"
 #include "tst_private.h"
+#include "lapi/namespaces_constants.h"
 
 void tst_print_svar(const char *name, const char *val)
 {
@@ -219,4 +221,25 @@ void safe_getaddrinfo(const char *file, const int lineno, const char *src_addr,
 
 	if (!*addr_info)
 		tst_brk_(file, lineno, TBROK, "failed to get the address");
+}
+
+void tst_setup_netns(void)
+{
+	int real_uid = getuid();
+	int real_gid = getgid();
+	int nscount = 1;
+
+	if (!access("/proc/sys/user/max_user_namespaces", F_OK)) {
+		SAFE_FILE_SCANF("/proc/sys/user/max_user_namespaces", "%d",
+			&nscount);
+	}
+
+	if (!nscount)
+		tst_brk(TCONF, "User namespaces are disabled");
+
+	SAFE_UNSHARE(CLONE_NEWUSER);
+	SAFE_UNSHARE(CLONE_NEWNET);
+	SAFE_FILE_PRINTF("/proc/self/setgroups", "deny");
+	SAFE_FILE_PRINTF("/proc/self/uid_map", "0 %d 1", real_uid);
+	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1", real_gid);
 }
