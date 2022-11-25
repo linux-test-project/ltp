@@ -162,6 +162,9 @@ retry:
 			"Could not create userfault file descriptor");
 	}
 
+	if (!(uffdio_api.features & UFFD_FEATURE_MINOR_SHMEM))
+		tst_brk(TCONF, "System does not have userfaultfd minor fault support for shmem");
+
 	uffdio_register.range.start = (unsigned long) map;
 	uffdio_register.range.len = page_size;
 	uffdio_register.mode = UFFDIO_REGISTER_MODE_MINOR;
