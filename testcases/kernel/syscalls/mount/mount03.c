@@ -19,6 +19,7 @@
  * - MS_NOSUID - ignore suid and sgid bits
  * - MS_NOATIME - do not update access times
  * - MS_NODIRATIME - only update access_time for directory instead of all types
+ * - MS_STRICTATIME - always update access times
  */
 
 #include <stdio.h>
@@ -164,6 +165,11 @@ static void test_nodiratime(void)
 	test_file_dir_noatime(1, 0);
 }
 
+static void test_strictatime(void)
+{
+	test_file_dir_noatime(1, 1);
+}
+
 #define FLAG_DESC(x) .flag = x, .flag2 = x, .desc = #x
 #define FLAG_DESC2(x) .flag2 = x, .desc = #x
 static struct tcase {
@@ -179,6 +185,7 @@ static struct tcase {
 	{FLAG_DESC(MS_NOSUID), test_nosuid},
 	{FLAG_DESC(MS_NOATIME), test_noatime},
 	{FLAG_DESC(MS_NODIRATIME), test_nodiratime},
+	{FLAG_DESC(MS_STRICTATIME), test_strictatime}
 };
 
 static void setup(void)
@@ -215,6 +222,15 @@ static void run(unsigned int n)
 		tc->test();
 
 	SAFE_STATFS(MNTPOINT, &stfs);
+	if (tc->flag == MS_STRICTATIME) {
+		if (stfs.f_flags & (MS_NOATIME | MS_RELATIME))
+			tst_res(TFAIL, "statfs() gets the incorrect mount flag");
+		else
+			tst_res(TPASS, "statfs() gets the correct mount flag");
+		cleanup();
+		return;
+	}
+
 	if (stfs.f_flags & tc->flag2)
 		tst_res(TPASS, "statfs() gets the correct mount flag");
 	else
