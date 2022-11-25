@@ -17,13 +17,11 @@
  *  udp: consistently apply ufo or fragmentation
  */
 
-#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
-#include <sched.h>
 
 #include "tst_test.h"
 #include "tst_net.h"
@@ -35,18 +33,10 @@ static int dst_sock = -1;
 
 static void setup(void)
 {
-	int real_uid = getuid();
-	int real_gid = getgid();
 	struct ifreq ifr;
 	socklen_t addrlen = sizeof(addr);
 
-	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
-
-	SAFE_UNSHARE(CLONE_NEWUSER);
-	SAFE_UNSHARE(CLONE_NEWNET);
-	SAFE_FILE_PRINTF("/proc/self/setgroups", "deny");
-	SAFE_FILE_PRINTF("/proc/self/uid_map", "0 %d 1", real_uid);
-	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1", real_gid);
+	tst_setup_netns();
 
 	tst_init_sockaddr_inet_bin(&addr, INADDR_LOOPBACK, 0);
 	dst_sock = SAFE_SOCKET(AF_INET, SOCK_DGRAM, 0);
@@ -102,7 +92,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

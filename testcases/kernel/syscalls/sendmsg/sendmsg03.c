@@ -15,11 +15,9 @@
  *
  *  net: ipv4: fix for a race condition in raw_sendmsg
  */
-#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <sched.h>
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
 
@@ -38,8 +36,8 @@ static void setup(void)
 {
 	int i;
 
-	SAFE_UNSHARE(CLONE_NEWUSER);
-	SAFE_UNSHARE(CLONE_NEWNET);
+	tst_setup_netns();
+
 	sockfd = SAFE_SOCKET(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 
 	memset(buf, 0xcc, PACKET_SIZE);
@@ -106,6 +104,15 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.max_runtime = 150,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS=y",
+		"CONFIG_NET_NS=y",
+		NULL
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "8f659a03a0ba"},
 		{"CVE", "2017-17712"},

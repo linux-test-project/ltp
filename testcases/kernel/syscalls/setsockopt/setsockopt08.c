@@ -84,7 +84,6 @@
 #include "tst_test.h"
 #include "tst_safe_net.h"
 #include "lapi/ip_tables.h"
-#include "lapi/namespaces_constants.h"
 
 static void *buffer;
 
@@ -95,10 +94,7 @@ void setup(void)
 			"The vulnerability was only present in 32-bit compat mode");
 	}
 
-	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
-
-	SAFE_UNSHARE(CLONE_NEWUSER);
-	SAFE_UNSHARE(CLONE_NEWNET);
+	tst_setup_netns();
 }
 
 void run(void)
@@ -159,7 +155,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

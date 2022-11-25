@@ -13,7 +13,6 @@
  * See blogpost in copyright notice for more details.
  */
 #include <errno.h>
-#include <sched.h>
 #include <sys/types.h>
 #include <net/if.h>
 #include <linux/if_packet.h>
@@ -22,7 +21,6 @@
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
 #include "lapi/if_packet.h"
-#include "lapi/namespaces_constants.h"
 
 static struct tst_fzsync_pair pair;
 static int fd;
@@ -30,21 +28,7 @@ static struct sockaddr_ll addr;
 
 void setup(void)
 {
-	int real_uid = getuid();
-	int real_gid = getgid();
-
-	TEST(unshare(CLONE_NEWUSER));
-	if (TST_RET)
-		tst_brk(TBROK | TTERRNO, "Can't create new user namespace");
-
-	TEST(unshare(CLONE_NEWNET));
-	if (TST_RET)
-		tst_brk(TBROK | TTERRNO, "Can't create new net namespace");
-
-	FILE_PRINTF("/proc/self/setgroups", "deny");
-	FILE_PRINTF("/proc/self/uid_map", "0 %d 1\n", real_uid);
-	FILE_PRINTF("/proc/self/gid_map", "0 %d 1\n", real_gid);
-
+	tst_setup_netns();
 	tst_fzsync_pair_init(&pair);
 }
 
@@ -107,6 +91,15 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.max_runtime = 180,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS=y",
+		"CONFIG_NET_NS=y",
+		NULL
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-15649"},
 		{"linux-git", "4971613c1639"},

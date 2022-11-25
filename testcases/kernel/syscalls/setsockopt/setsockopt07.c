@@ -19,11 +19,9 @@
  *  packet: fix tp_reserve race in packet_set_ring
  */
 
-#define _GNU_SOURCE
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sched.h>
 
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
@@ -36,17 +34,8 @@ static struct tst_fzsync_pair fzsync_pair;
 
 static void setup(void)
 {
-	int real_uid = getuid();
-	int real_gid = getgid();
-
 	pagesize = SAFE_SYSCONF(_SC_PAGESIZE);
-	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
-
-	SAFE_UNSHARE(CLONE_NEWUSER);
-	SAFE_UNSHARE(CLONE_NEWNET);
-	SAFE_FILE_PRINTF("/proc/self/setgroups", "deny");
-	SAFE_FILE_PRINTF("/proc/self/uid_map", "0 %d 1", real_uid);
-	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1", real_gid);
+	tst_setup_netns();
 
 	/*
 	 * Reproducing the bug on unpatched system takes <15 loops. The test
@@ -143,7 +132,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

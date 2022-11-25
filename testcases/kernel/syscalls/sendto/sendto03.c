@@ -17,7 +17,6 @@
  *  net/packet: fix overflow in tpacket_rcv
  */
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <limits.h>
 #include <sys/types.h>
@@ -25,7 +24,6 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <net/ethernet.h>
-#include <sched.h>
 
 #include "tst_test.h"
 #include "tst_net.h"
@@ -39,17 +37,9 @@ static struct sockaddr_ll bind_addr, addr;
 
 static void setup(void)
 {
-	int real_uid = getuid();
-	int real_gid = getgid();
 	struct ifreq ifr;
 
-	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
-
-	SAFE_UNSHARE(CLONE_NEWUSER);
-	SAFE_UNSHARE(CLONE_NEWNET);
-	SAFE_FILE_PRINTF("/proc/self/setgroups", "deny");
-	SAFE_FILE_PRINTF("/proc/self/uid_map", "0 %d 1", real_uid);
-	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1", real_gid);
+	tst_setup_netns();
 
 	sock = SAFE_SOCKET(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 	strcpy(ifr.ifr_name, "lo");
@@ -218,7 +208,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

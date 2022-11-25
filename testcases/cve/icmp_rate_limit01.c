@@ -29,12 +29,12 @@
 #include <arpa/inet.h>
 #include <linux/errqueue.h>
 
-#include <sched.h>
 #include <limits.h>
 
 #include "lapi/if_addr.h"
 #include "tst_test.h"
 #include "tst_netdevice.h"
+#include "lapi/namespaces_constants.h"
 
 #define DSTNET 0xfa444e00 /* 250.68.78.0 */
 #define SRCNET 0xfa444e40 /* 250.68.78.64 */
@@ -53,19 +53,11 @@ static void setup(void)
 	struct sockaddr_in ipaddr = { .sin_family = AF_INET };
 	uint32_t addr;
 	int i;
-	int real_uid = getuid();
-	int real_gid = getgid();
 
 	for (i = 0; i < SRCADDR_COUNT; i++)
 		fds[i] = -1;
 
-	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
-
-	SAFE_UNSHARE(CLONE_NEWUSER);
-	SAFE_UNSHARE(CLONE_NEWNET);
-	SAFE_FILE_PRINTF("/proc/self/setgroups", "deny");
-	SAFE_FILE_PRINTF("/proc/self/uid_map", "0 %d 1\n", real_uid);
-	SAFE_FILE_PRINTF("/proc/self/gid_map", "0 %d 1\n", real_gid);
+	tst_setup_netns();
 
 	/*
 	 * Create network namespace to hide the destination interface from
@@ -269,7 +261,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
+		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
