@@ -20,17 +20,11 @@
 #include <sys/syscall.h>
 #include <sys/ioctl.h>
 
-#ifdef HAVE_LINUX_USERFAULTFD_H
-#include <linux/userfaultfd.h>
-#endif
-
-#ifdef UFFD_FEATURE_MINOR_SHMEM
-
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "tst_safe_pthread.h"
-#include "lapi/syscalls.h"
+#include "lapi/userfaultfd.h"
 
 #define TMP_DIR "tmp_dirtyc0w_shmem"
 #define TEST_FILE TMP_DIR"/testfile"
@@ -238,7 +232,3 @@ int main(void)
 
 	return 0;
 }
-#else /* UFFD_FEATURE_MINOR_SHMEM */
-#include "tst_test.h"
-TST_TEST_TCONF("System does not have userfaultfd minor fault support for shmem");
-#endif /* UFFD_FEATURE_MINOR_SHMEM */
