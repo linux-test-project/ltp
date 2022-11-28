@@ -12,13 +12,11 @@
 #include "config.h"
 #include "tst_test.h"
 
-#ifdef HAVE_LINUX_USERFAULTFD_H
-#include <linux/userfaultfd.h>
 #include <poll.h>
 
 #include "tst_safe_macros.h"
 #include "tst_safe_pthread.h"
-#include "lapi/syscalls.h"
+#include "lapi/userfaultfd.h"
 
 static int page_size;
 static char *page;
@@ -122,7 +120,3 @@ static struct tst_test test = {
 	.test_all = run,
 	.min_kver = "4.3",
 };
-
-#else
-	TST_TEST_TCONF("This system does not provide userfaultfd support");
-#endif
