@@ -21,6 +21,9 @@
 #ifndef CLONE_NEWUSER
 #  define CLONE_NEWUSER	0x10000000
 #endif
+#ifndef CLONE_NEWCGROUP
+#  define CLONE_NEWCGROUP 0x02000000
+#endif
 #ifndef CLONE_NEWUTS
 #  define CLONE_NEWUTS	0x04000000
 #endif
