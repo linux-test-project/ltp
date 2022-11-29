@@ -95,6 +95,18 @@ pid_t safe_fork(const char *filename, unsigned int lineno);
 	({int ret = expr;                                           \
 	  ret != 0 ? tst_res(TINFO, #expr " failed"), ret : ret; }) \
 
+/*
+ * Functions to convert ERRNO to its name and SIGNAL to its name.
+ */
+const char *tst_strerrno(int err);
+const char *tst_strsig(int sig);
+/*
+ * Returns string describing status as returned by wait().
+ *
+ * BEWARE: Not thread safe.
+ */
+const char *tst_strstatus(int status);
+
 #include "tst_safe_macros.h"
 #include "tst_safe_file_ops.h"
 #include "tst_safe_net.h"
@@ -332,18 +344,6 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
  * The LTP_IPC_PATH variable must be passed to the program environment.
  */
 void tst_reinit(void);
-
-/*
- * Functions to convert ERRNO to its name and SIGNAL to its name.
- */
-const char *tst_strerrno(int err);
-const char *tst_strsig(int sig);
-/*
- * Returns string describing status as returned by wait().
- *
- * BEWARE: Not thread safe.
- */
-const char *tst_strstatus(int status);
 
 unsigned int tst_multiply_timeout(unsigned int timeout);
 
