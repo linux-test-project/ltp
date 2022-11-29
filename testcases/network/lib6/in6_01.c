@@ -2,7 +2,12 @@
 /*
  * Copyright (c) International Business Machines Corp., 2001
  * Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
+ * Copyright (c) Linux Test Project, 2005-2022
  * Author: David L Stevens
+ */
+
+/*\
+ * [Description]
  *
  * Verify that in6 and sockaddr fields are present.
  */
