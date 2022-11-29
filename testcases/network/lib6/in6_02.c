@@ -2,11 +2,15 @@
 /*
  * Copyright (c) International Business Machines Corp., 2001
  * Copyright (c) 2018 Petr Vorel <pvorel@suse.cz>
+ * Copyright (c) Linux Test Project, 2005-2022
  * Author: David L Stevens
- *
- * IPv6 name to index and index to name function tests
  */
 
+/*\
+ * [Description]
+ *
+ * IPv6 name to index and index to name function tests.
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
