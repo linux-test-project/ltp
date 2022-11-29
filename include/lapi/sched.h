@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include "config.h"
 #include "lapi/syscalls.h"
 
 struct sched_attr {
@@ -43,6 +44,32 @@ static inline int sched_getattr(pid_t pid, struct sched_attr *attr,
 	return syscall(__NR_sched_getattr, pid, attr, size, flags);
 }
 
+#ifndef HAVE_CLONE3
+struct clone_args {
+	uint64_t __attribute__((aligned(8))) flags;
+	uint64_t __attribute__((aligned(8))) pidfd;
+	uint64_t __attribute__((aligned(8))) child_tid;
+	uint64_t __attribute__((aligned(8))) parent_tid;
+	uint64_t __attribute__((aligned(8))) exit_signal;
+	uint64_t __attribute__((aligned(8))) stack;
+	uint64_t __attribute__((aligned(8))) stack_size;
+	uint64_t __attribute__((aligned(8))) tls;
+};
+
+static inline int clone3(struct clone_args *args, size_t size)
+{
+	return tst_syscall(__NR_clone3, args, size);
+}
+#endif
+
+static inline void clone3_supported_by_kernel(void)
+{
+	if ((tst_kvercmp(5, 3, 0)) < 0) {
+		/* Check if the syscall is backported on an older kernel */
+		tst_syscall(__NR_clone3, NULL, 0);
+	}
+}
+
 #ifndef SCHED_DEADLINE
 # define SCHED_DEADLINE	6
 #endif
@@ -53,6 +80,10 @@ static inline int sched_getattr(pid_t pid, struct sched_attr *attr,
 
 #ifndef CLONE_FS
 # define CLONE_FS	0x00000200
+#endif
+
+#ifndef CLONE_PIDFD
+# define CLONE_PIDFD	0x00001000
 #endif
 
 #ifndef CLONE_NEWNS

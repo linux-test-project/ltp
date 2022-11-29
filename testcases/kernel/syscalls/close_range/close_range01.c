@@ -28,7 +28,7 @@
 #include "tst_test.h"
 #include "tst_clone.h"
 
-#include "lapi/clone.h"
+#include "lapi/sched.h"
 #include "lapi/close_range.h"
 
 static int fd[3];

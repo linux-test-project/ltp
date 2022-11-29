@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "tst_test.h"
-#include "lapi/clone.h"
+#include "lapi/sched.h"
 
 pid_t tst_clone(const struct tst_clone_args *tst_args)
 {

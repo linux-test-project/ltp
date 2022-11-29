@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
-#include "lapi/clone.h"
+#include "lapi/sched.h"
 
 static struct clone_args *valid_args, *invalid_args;
 unsigned long stack;
