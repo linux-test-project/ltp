@@ -16,7 +16,7 @@
 #define _GNU_SOURCE 1
 #include <signal.h>
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 static volatile pid_t sig_pid = -1;
 

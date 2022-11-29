@@ -17,7 +17,7 @@
 #ifndef __NS_COMMON_H__
 #define __NS_COMMON_H__
 #include <sched.h>
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define PROC_PATH "/proc"
 #define NS_TOTAL 6

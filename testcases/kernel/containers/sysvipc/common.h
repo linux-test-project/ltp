@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 enum {
 	T_CLONE,

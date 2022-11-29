@@ -33,11 +33,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <sched.h>
 
 #include "tst_test.h"
 #include "tst_safe_macros.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define MAX_TRIES 1000
 

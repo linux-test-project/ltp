@@ -18,7 +18,7 @@
 #include "time64_variants.h"
 #include "tst_safe_clocks.h"
 #include "tst_timer.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 static struct tcase {
 	int clk_id;

@@ -20,11 +20,10 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sched.h>
 #include <stdlib.h>
 
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"

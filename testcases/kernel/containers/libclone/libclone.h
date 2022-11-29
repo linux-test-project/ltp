@@ -19,7 +19,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sched.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -28,7 +27,7 @@
 #include <signal.h>
 #include "lapi/syscalls.h"
 #include "test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define T_UNSHARE 0
 #define T_CLONE 1

@@ -19,7 +19,7 @@
 #include "tst_safe_clocks.h"
 #include "tst_safe_timerfd.h"
 #include "tst_timer.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define SLEEP_US 40000
 

@@ -14,7 +14,7 @@
  */
 
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
 {

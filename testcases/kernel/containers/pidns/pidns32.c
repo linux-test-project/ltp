@@ -15,7 +15,7 @@
 
 #include <sys/mman.h>
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define MAXNEST 32
 

@@ -34,7 +34,7 @@
 #include "lapi/if_addr.h"
 #include "tst_test.h"
 #include "tst_netdevice.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define DSTNET 0xfa444e00 /* 250.68.78.0 */
 #define SRCNET 0xfa444e40 /* 250.68.78.64 */

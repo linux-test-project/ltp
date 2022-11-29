@@ -13,7 +13,7 @@
 
 #include <sys/mount.h>
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define PROCDIR "proc"
 

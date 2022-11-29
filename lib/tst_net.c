@@ -14,7 +14,7 @@
 #include "tst_test.h"
 #include "tst_net.h"
 #include "tst_private.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 void tst_print_svar(const char *name, const char *val)
 {

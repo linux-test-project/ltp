@@ -15,7 +15,7 @@
 #define _GNU_SOURCE 1
 #include <signal.h>
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 static volatile int signals;
 static volatile int last_signo;

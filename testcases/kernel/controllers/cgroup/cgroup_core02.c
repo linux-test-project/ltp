@@ -24,14 +24,13 @@
  */
 
 #define _GNU_SOURCE
-#include <sched.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <pwd.h>
 #include "tst_test.h"
 #include "tst_safe_file_at.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 static struct tst_cg_group *cg_child_a, *cg_child_b;
 static uid_t nobody_uid;

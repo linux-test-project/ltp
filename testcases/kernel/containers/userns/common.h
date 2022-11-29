@@ -8,7 +8,7 @@
 #define COMMON_H
 
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define UID_MAP 0
 #define GID_MAP 1

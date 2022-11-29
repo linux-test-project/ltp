@@ -4,7 +4,7 @@
  */
 
 #include <stdio.h>
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define NS_MAX 5
 static int ns_types[NS_MAX];

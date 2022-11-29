@@ -8,7 +8,7 @@
 #define COMMON_H
 
 #include "tst_test.h"
-#include "lapi/namespaces_constants.h"
+#include "lapi/sched.h"
 
 #define DIRA "LTP_DIR_A"
 #define DIRB "LTP_DIR_B"
