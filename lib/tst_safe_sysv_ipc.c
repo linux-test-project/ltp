@@ -4,12 +4,12 @@
  */
 
 #include <sys/types.h>
-#include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
+#include "lapi/ipc.h"
 #include "lapi/sem.h"
 
 /*
@@ -232,13 +232,22 @@ int safe_semctl(const char *file, const int lineno, int semid, int semnum,
 {
 	int rval;
 	va_list va;
-	union semun un;
+	union semun un = {0};
 
-	va_start(va, cmd);
-
-	un = va_arg(va, union semun);
-
-	va_end(va);
+	switch (cmd) {
+	case SETVAL:
+	case GETALL:
+	case SETALL:
+	case IPC_STAT:
+	case IPC_SET:
+	case SEM_STAT:
+	case SEM_STAT_ANY:
+	case IPC_INFO:
+	case SEM_INFO:
+		va_start(va, cmd);
+		un = va_arg(va, union semun);
+		va_end(va);
+	}
 
 	rval = semctl(semid, semnum, cmd, un);
 
