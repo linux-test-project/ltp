@@ -48,7 +48,7 @@ static void verify_fgetxattr(void)
 static void setup(void)
 {
 	SAFE_TOUCH(FILENAME, 0644, NULL);
-	fd = SAFE_OPEN(FILENAME, O_RDONLY, NULL);
+	fd = SAFE_OPEN(FILENAME, O_RDONLY);
 
 	SAFE_FSETXATTR(fd, XATTR_TEST_KEY, XATTR_TEST_VALUE,
 			XATTR_TEST_VALUE_SIZE, XATTR_CREATE);

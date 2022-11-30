@@ -211,7 +211,7 @@ static void setup(void)
 	for (i = 0; i < ARRAY_SIZE(tc); i++) {
 
 		if (!tc[i].issocket) {
-			tc[i].fd = SAFE_OPEN(tc[i].fname, tc[i].fflags, NULL);
+			tc[i].fd = SAFE_OPEN(tc[i].fname, tc[i].fflags);
 			continue;
 		}
 

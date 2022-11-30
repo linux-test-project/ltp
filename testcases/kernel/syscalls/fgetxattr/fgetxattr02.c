@@ -244,7 +244,7 @@ static void setup(void)
 			SAFE_BIND(tc[i].fd, (const struct sockaddr *) &sun,
 					sizeof(struct sockaddr_un));
 		} else {
-			tc[i].fd = SAFE_OPEN(tc[i].fname, tc[i].fflags, NULL);
+			tc[i].fd = SAFE_OPEN(tc[i].fname, tc[i].fflags);
 		}
 
 		if (tc[i].exp_ret >= 0) {

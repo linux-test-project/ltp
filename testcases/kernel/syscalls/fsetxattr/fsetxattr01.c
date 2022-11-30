@@ -205,7 +205,7 @@ static void setup(void)
 	long_value[XATTR_SIZE_MAX + 1] = '\0';
 
 	SAFE_TOUCH(FNAME, 0644, NULL);
-	fd = SAFE_OPEN(FNAME, O_RDONLY, NULL);
+	fd = SAFE_OPEN(FNAME, O_RDONLY);
 
 	for (i = 0; i < ARRAY_SIZE(tc); i++) {
 		if (!tc[i].key)
