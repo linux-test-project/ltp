@@ -35,13 +35,16 @@ const char *tst_decode_fd(const int fd)
 int safe_openat(const char *const file, const int lineno,
 		const int dirfd, const char *const path, const int oflags, ...)
 {
-	va_list ap;
 	int fd;
-	mode_t mode;
+	mode_t mode = 0;
 
-	va_start(ap, oflags);
-	mode = va_arg(ap, int);
-	va_end(ap);
+	if (TST_OPEN_NEEDS_MODE(oflags)) {
+		va_list ap;
+
+		va_start(ap, oflags);
+		mode = va_arg(ap, int);
+		va_end(ap);
+	}
 
 	fd = openat(dirfd, path, oflags, mode);
 	if (fd > -1)

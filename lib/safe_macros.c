@@ -13,7 +13,6 @@
 #include <sys/xattr.h>
 #include <sys/sysinfo.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <libgen.h>
 #include <limits.h>
 #include <pwd.h>
@@ -21,6 +20,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <malloc.h>
+#include "lapi/fcntl.h"
 #include "test.h"
 #include "safe_macros.h"
 
@@ -236,18 +236,21 @@ int safe_munmap(const char *file, const int lineno, void (*cleanup_fn) (void),
 int safe_open(const char *file, const int lineno, void (*cleanup_fn) (void),
               const char *pathname, int oflags, ...)
 {
-	va_list ap;
 	int rval;
-	mode_t mode;
+	mode_t mode = 0;
 
-	va_start(ap, oflags);
+	if (TST_OPEN_NEEDS_MODE(oflags)) {
+		va_list ap;
 
-	/* Android's NDK's mode_t is smaller than an int, which results in
-	 * SIGILL here when passing the mode_t type.
-	 */
-	mode = va_arg(ap, int);
+		va_start(ap, oflags);
 
-	va_end(ap);
+		/* Android's NDK's mode_t is smaller than an int, which results in
+		 * SIGILL here when passing the mode_t type.
+		 */
+		mode = va_arg(ap, int);
+
+		va_end(ap);
+	}
 
 	rval = open(pathname, oflags, mode);
 

@@ -141,6 +141,9 @@
 # define MAX_HANDLE_SZ	128
 #endif
 
+#define TST_OPEN_NEEDS_MODE(oflag) \
+	(((oflag) & O_CREAT) != 0 || ((oflag) & O_TMPFILE) == O_TMPFILE)
+
 #ifndef HAVE_STRUCT_FILE_HANDLE
 struct file_handle {
 	unsigned int handle_bytes;
