@@ -60,7 +60,7 @@ test_put()
             echo lcd $TST_NET_DATAROOT
             echo $1
             echo cd $TST_TMPDIR
-            echo post $file
+            echo put $file
             echo quit
         } | ftp -nv $RHOST
 
