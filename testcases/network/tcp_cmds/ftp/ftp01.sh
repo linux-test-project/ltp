@@ -25,8 +25,8 @@ do_test()
 list_files()
 {
     case $1 in
-    binary) echo 'ascii.sm ascii.med ascii.lg ascii.jmb';;
-    ascii) echo 'bin.sm bin.med bin.lg bin.jmb';;
+    ascii) echo 'ascii.sm ascii.med ascii.lg ascii.jmb';;
+    binary) echo 'bin.sm bin.med bin.lg bin.jmb';;
     esac
 }
 
