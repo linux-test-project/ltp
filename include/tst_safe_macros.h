@@ -186,6 +186,9 @@ int safe_getgroups(const char *file, const int lineno, int size, gid_t list[]);
 #define SAFE_STRTOUL(str, min, max) \
 	safe_strtoul(__FILE__, __LINE__, NULL, (str), (min), (max))
 
+#define SAFE_STRTOF(str, min, max) \
+	safe_strtof(__FILE__, __LINE__, NULL, (str), (min), (max))
+
 #define SAFE_SYSCONF(name) \
 	safe_sysconf(__FILE__, __LINE__, NULL, name)
 

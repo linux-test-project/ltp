@@ -133,6 +133,9 @@ unsigned long safe_strtoul(const char *file, const int lineno,
                            void (cleanup_fn)(void),
                            char *str, unsigned long min, unsigned long max);
 
+float safe_strtof(const char *file, const int lineno,
+                 void (cleanup_fn)(void), char *str, float min, float max);
+
 long safe_sysconf(const char *file, const int lineno,
 		  void (cleanup_fn)(void), int name);
 

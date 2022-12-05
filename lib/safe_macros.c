@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <malloc.h>
+#include <math.h>
 #include "lapi/fcntl.h"
 #include "test.h"
 #include "safe_macros.h"
@@ -626,6 +627,38 @@ unsigned long safe_strtoul(const char *file, const int lineno,
 	if (endptr == str || (*endptr != '\0' && *endptr != '\n')) {
 		tst_brkm_(file, lineno, TBROK, cleanup_fn,
 			"Invalid value: '%s'", str);
+		return 0;
+	}
+
+	return rval;
+}
+
+float safe_strtof(const char *file, const int lineno,
+		  void (cleanup_fn) (void), char *str,
+		  float min, float max)
+{
+	float rval;
+	char *endptr;
+
+	errno = 0;
+	rval = strtof(str, &endptr);
+
+	if (errno) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+			"strtof(%s) failed", str);
+		return rval;
+	}
+
+	if (endptr == str || (*endptr != '\0' && *endptr != '\n')) {
+		tst_brkm_(file, lineno, TBROK, cleanup_fn,
+			"Invalid value: '%s'", str);
+		return 0;
+	}
+
+	if (rval > max || rval < min) {
+		tst_brkm_(file, lineno, TBROK, cleanup_fn,
+			"strtof(%s): %f is out of range %f - %f",
+			str, rval, min, max);
 		return 0;
 	}
 
