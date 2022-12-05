@@ -617,16 +617,16 @@ unsigned long safe_strtoul(const char *file, const int lineno,
 		return rval;
 	}
 
+	if (endptr == str || (*endptr != '\0' && *endptr != '\n')) {
+		tst_brkm_(file, lineno, TBROK, cleanup_fn,
+			"Invalid value: '%s'", str);
+		return 0;
+	}
+
 	if (rval > max || rval < min) {
 		tst_brkm_(file, lineno, TBROK, cleanup_fn,
 			"strtoul(%s): %lu is out of range %lu - %lu",
 			str, rval, min, max);
-		return 0;
-	}
-
-	if (endptr == str || (*endptr != '\0' && *endptr != '\n')) {
-		tst_brkm_(file, lineno, TBROK, cleanup_fn,
-			"Invalid value: '%s'", str);
 		return 0;
 	}
 
