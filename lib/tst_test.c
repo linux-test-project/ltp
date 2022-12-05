@@ -14,6 +14,7 @@
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <math.h>
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
@@ -677,15 +678,13 @@ static void parse_opts(int argc, char *argv[])
 			print_test_tags();
 			exit(0);
 		case 'i':
-			iterations = atoi(optarg);
-			if (iterations < 0)
-				tst_brk(TBROK, "Number of iterations (-i) must be >= 0");
+			iterations = SAFE_STRTOL(optarg, 1, INT_MAX);
 		break;
 		case 'I':
 			if (tst_test->max_runtime > 0)
-				tst_test->max_runtime = atoi(optarg);
+				tst_test->max_runtime = SAFE_STRTOL(optarg, 1, INT_MAX);
 			else
-				duration = atof(optarg);
+				duration = SAFE_STRTOF(optarg, 0.1, HUGE_VALF);
 		break;
 		case 'C':
 #ifdef UCLINUX
