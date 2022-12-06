@@ -109,6 +109,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.max_runtime = 60,
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
