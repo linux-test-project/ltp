@@ -11,26 +11,12 @@
 #define _GNU_SOURCE
 #include <dirent.h>
 #include <errno.h>
-#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include "lapi/syscalls.h"
-#include "lapi/cpuset.h"
 #include "tst_test.h"
-#include "config.h"
-
-static inline int get_cpu(unsigned *cpu_id,
-			  unsigned *node_id LTP_ATTRIBUTE_UNUSED,
-			  void *cache_struct LTP_ATTRIBUTE_UNUSED)
-{
-#ifndef HAVE_SCHED_GETCPU
-	return tst_syscall(__NR_getcpu, cpu_id, node_id, cache_struct);
-#else
-	*cpu_id = sched_getcpu();
-#endif
-	return 0;
-}
+#include "lapi/cpuset.h"
+#include "lapi/sched.h"
 
 static unsigned int max_cpuid(size_t size, cpu_set_t * set)
 {
@@ -78,7 +64,6 @@ realloc:
 	return cpu_max;
 }
 
-#ifdef __i386__
 static unsigned int get_nodeid(unsigned int cpu_id)
 {
 	DIR *directory_parent, *directory_node;
@@ -119,33 +104,26 @@ static unsigned int get_nodeid(unsigned int cpu_id)
 	}
 	return node_id;
 }
-#endif
 
 static void run(void)
 {
 	unsigned int cpu_id, node_id = 0;
 	unsigned int cpu_set;
-#ifdef __i386__
 	unsigned int node_set;
-#endif
 
 	cpu_set = set_cpu_affinity();
-#ifdef __i386__
 	node_set = get_nodeid(cpu_set);
-#endif
 
-	TEST(get_cpu(&cpu_id, &node_id, NULL));
+	TEST(getcpu(&cpu_id, &node_id));
 	if (TST_RET == 0) {
 		if (cpu_id != cpu_set)
 			tst_res(TFAIL, "getcpu() returned wrong value"
 				" expected cpuid:%d, returned value cpuid: %d",
 				cpu_set, cpu_id);
-#ifdef __i386__
 		else if (node_id != node_set)
 			tst_res(TFAIL, "getcpu() returned wrong value"
 				" expected  node id:%d returned  node id:%d",
 				node_set, node_id);
-#endif
 		else
 			tst_res(TPASS, "getcpu() returned proper"
 				" cpuid:%d, node id:%d", cpu_id,

@@ -101,6 +101,7 @@ AC_CHECK_FUNCS_ONCE([ \
     fstatat \
     getauxval \
     getcontext \
+    getcpu \
     getdents \
     getdents64 \
     io_pgetevents \

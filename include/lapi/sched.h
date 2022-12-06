@@ -70,6 +70,13 @@ static inline void clone3_supported_by_kernel(void)
 	}
 }
 
+#ifndef HAVE_GETCPU
+static inline int getcpu(unsigned *cpu, unsigned *node)
+{
+	return tst_syscall(__NR_getcpu, cpu, node, NULL);
+}
+#endif
+
 #ifndef SCHED_DEADLINE
 # define SCHED_DEADLINE	6
 #endif
