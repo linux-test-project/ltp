@@ -9,14 +9,31 @@
 #include <errno.h>
 
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
-void verify_brk(void)
+static void verify_brk(void)
 {
-	uintptr_t cur_brk, new_brk;
-	uintptr_t inc = getpagesize() * 2 - 1;
+	void *cur_brk, *new_brk;
+	size_t inc = getpagesize() * 2 - 1;
 	unsigned int i;
 
-	cur_brk = (uintptr_t)sbrk(0);
+	if (tst_variant) {
+		tst_res(TINFO, "Testing syscall variant");
+		cur_brk = (void *)tst_syscall(__NR_brk, 0);
+	} else {
+		tst_res(TINFO, "Testing libc variant");
+		cur_brk = (void *)sbrk(0);
+
+		if (cur_brk == (void *)-1)
+			tst_brk(TCONF, "sbrk() not implemented");
+
+		/*
+		 * Check if brk itself is implemented: updating to the current break
+		 * should be a no-op.
+		 */
+		if (brk(cur_brk) != 0)
+			tst_brk(TCONF, "brk() not implemented");
+	}
 
 	for (i = 0; i < 33; i++) {
 		switch (i % 3) {
@@ -31,16 +48,17 @@ void verify_brk(void)
 		break;
 		}
 
-		TST_EXP_PASS_SILENT(brk((void *)new_brk), "brk()");
-		if (!TST_PASS)
-			return;
-
-		cur_brk = (uintptr_t)sbrk(0);
+		if (tst_variant) {
+			cur_brk = (void *)tst_syscall(__NR_brk, new_brk);
+		} else {
+			TST_EXP_PASS_SILENT(brk(new_brk), "brk()");
+			cur_brk = sbrk(0);
+		}
 
 		if (cur_brk != new_brk) {
 			tst_res(TFAIL,
 				"brk() failed to set address have %p expected %p",
-				(void *)cur_brk, (void *)new_brk);
+				cur_brk, new_brk);
 			return;
 		}
 
@@ -54,4 +72,5 @@ void verify_brk(void)
 
 static struct tst_test test = {
 	.test_all = verify_brk,
+	.test_variants = 2,
 };
