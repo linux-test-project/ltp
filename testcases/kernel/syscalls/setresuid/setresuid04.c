@@ -52,7 +52,7 @@ static void run(void)
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		tst_res(TFAIL, "child process exited with status: %d", status);
 
-	SAFE_SETRESUID(0, 0, 0);
+	SAFE_SETRESUID(-1, 0, -1);
 	TST_EXP_FD(open(TEMP_FILE, O_RDWR));
 	SAFE_CLOSE(TST_RET);
 }
@@ -68,5 +68,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.cleanup = cleanup,
 	.needs_root = 1,
+	.needs_tmpdir = 1,
 	.forks_child = 1
 };
