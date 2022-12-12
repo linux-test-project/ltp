@@ -25,6 +25,7 @@ static int enospc_cnt;
 static struct worker *workers;
 
 struct worker {
+	enum tst_fill_access_pattern pattern;
 	char dir[PATH_MAX];
 };
 
@@ -36,7 +37,7 @@ static void *worker(void *p)
 	char file[PATH_MAX];
 
 	while (run) {
-		tst_fill_fs(w->dir, 0);
+		tst_fill_fs(w->dir, 1, w->pattern);
 
 		tst_atomic_inc(&enospc_cnt);
 
@@ -61,22 +62,26 @@ static void *worker(void *p)
 	return NULL;
 }
 
-static void testrun(void)
+static void testrun(unsigned int n)
 {
 	pthread_t threads[nthreads];
 	unsigned int i, ms;
 
+	tst_atomic_store(0, &enospc_cnt);
+
 	run = 1;
-	for (i = 0; i < nthreads; i++)
+	for (i = 0; i < nthreads; i++) {
+		workers[i].pattern = n;
 		SAFE_PTHREAD_CREATE(&threads[i], NULL, worker, &workers[i]);
+	}
 
 	for (ms = 0; ; ms++) {
 		usleep(1000);
 
-		if (ms >= 1000 && enospc_cnt)
+		if (ms >= 1000 && tst_atomic_load(&enospc_cnt))
 			break;
 
-		if (enospc_cnt > 100)
+		if (tst_atomic_load(&enospc_cnt) > 100)
 			break;
 	}
 
@@ -116,5 +121,6 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.setup = setup,
 	.cleanup = cleanup,
-	.test_all = testrun,
+	.test = testrun,
+	.tcnt = 2
 };

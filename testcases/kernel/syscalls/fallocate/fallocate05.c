@@ -68,7 +68,7 @@ static void run(void)
 		tst_brk(TBROK | TTERRNO, "fallocate(fd, 0, 0, %ld)", bufsize);
 	}
 
-	tst_fill_fs(MNTPOINT, 1);
+	tst_fill_fs(MNTPOINT, 1, TST_FILL_RANDOM);
 
 	TEST(write(fd, buf, bufsize));
 

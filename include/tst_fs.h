@@ -34,6 +34,11 @@
 #define TST_VFAT_MAGIC     0x4d44 /* AKA MSDOS */
 #define TST_EXFAT_MAGIC    0x2011BAB0UL
 
+enum tst_fill_access_pattern {
+	TST_FILL_BLOCKS,
+	TST_FILL_RANDOM
+};
+
 enum {
 	TST_BYTES = 1,
 	TST_KB = 1024,
@@ -201,7 +206,7 @@ int tst_fs_in_skiplist(const char *fs_type, const char *const *skiplist);
 /*
  * Creates and writes to files on given path until write fails with ENOSPC
  */
-void tst_fill_fs(const char *path, int verbose);
+void tst_fill_fs(const char *path, int verbose, enum tst_fill_access_pattern pattern);
 
 /*
  * test if FIBMAP ioctl is supported

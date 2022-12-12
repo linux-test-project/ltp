@@ -7,13 +7,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/statvfs.h>
+#include <sys/uio.h>
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
+#include "lapi/fcntl.h"
 #include "tst_fs.h"
 #include "tst_rand_data.h"
+#include "tst_safe_file_at.h"
 
-void tst_fill_fs(const char *path, int verbose)
+void fill_random(const char *path, int verbose)
 {
 	int i = 0;
 	char file[PATH_MAX];
@@ -65,5 +68,59 @@ void tst_fill_fs(const char *path, int verbose)
 		}
 
 		SAFE_CLOSE(fd);
+	}
+}
+
+void fill_flat_vec(const char *path, int verbose)
+{
+	int dir = SAFE_OPEN(path, O_PATH | O_DIRECTORY | O_FSYNC);
+	int fd = SAFE_OPENAT(dir, "AOF", O_WRONLY | O_CREAT, 0600);
+	struct iovec iov[512];
+	int iovcnt = ARRAY_SIZE(iov);
+	int retries = 3;
+
+	SAFE_CLOSE(dir);
+
+	for (int i = 0; i < iovcnt; i++) {
+		iov[i] = (struct iovec) {
+			(void *)tst_rand_data,
+			tst_rand_data_len
+		};
+	}
+
+	while (retries) {
+		const int ret = writev(fd, iov, iovcnt);
+
+		if (!ret)
+			tst_res(TWARN | TERRNO, "writev returned 0; not sure what this means");
+
+		if (ret > -1) {
+			if (verbose && retries < 3)
+				tst_res(TINFO, "writev(\"%s/AOF\", iov, %d) = %d", path, iovcnt, ret);
+
+			retries = 3;
+			continue;
+		}
+
+		if (errno != ENOSPC)
+			tst_brk(TBROK | TERRNO, "writev(\"%s/AOF\", iov, %d)", path, iovcnt);
+
+		if (verbose)
+			tst_res(TINFO, "writev(\"%s/AOF\", iov, %d): ENOSPC", path, iovcnt);
+
+		retries--;
+	}
+
+	SAFE_CLOSE(fd);
+}
+
+void tst_fill_fs(const char *path, int verbose, enum tst_fill_access_pattern pattern)
+{
+
+	switch (pattern) {
+	case TST_FILL_BLOCKS:
+		return fill_flat_vec(path, verbose);
+	case TST_FILL_RANDOM:
+		return fill_random(path, verbose);
 	}
 }
