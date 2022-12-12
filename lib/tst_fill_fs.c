@@ -73,7 +73,7 @@ void fill_random(const char *path, int verbose)
 
 void fill_flat_vec(const char *path, int verbose)
 {
-	int dir = SAFE_OPEN(path, O_PATH | O_DIRECTORY | O_FSYNC);
+	int dir = SAFE_OPEN(path, O_PATH | O_DIRECTORY);
 	int fd = SAFE_OPENAT(dir, "AOF", O_WRONLY | O_CREAT, 0600);
 	struct iovec iov[512];
 	int iovcnt = ARRAY_SIZE(iov);
