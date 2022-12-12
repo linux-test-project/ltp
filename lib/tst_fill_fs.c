@@ -11,16 +11,17 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_fs.h"
+#include "tst_rand_data.h"
 
 void tst_fill_fs(const char *path, int verbose)
 {
 	int i = 0;
 	char file[PATH_MAX];
-	char buf[4096];
 	size_t len;
 	ssize_t ret;
 	int fd;
 	struct statvfs fi;
+
 	statvfs(path, &fi);
 
 	for (;;) {
@@ -41,7 +42,7 @@ void tst_fill_fs(const char *path, int verbose)
 		}
 
 		while (len) {
-			ret = write(fd, buf, MIN(len, sizeof(buf)));
+			ret = write(fd, tst_rand_data, MIN(len, tst_rand_data_len));
 
 			if (ret < 0) {
 				/* retry on ENOSPC to make sure filesystem is really full */
