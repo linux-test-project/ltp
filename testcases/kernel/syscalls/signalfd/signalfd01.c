@@ -249,8 +249,7 @@ void do_test2(int fd, uint32_t sig)
 		goto out;
 	} else {
 		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.ssi_signo),
-			 strsignal(fdsi.ssi_signo);
+			 fdsi.ssi_signo, strsignal(fdsi.ssi_signo));
 		goto out;
 	}
 
