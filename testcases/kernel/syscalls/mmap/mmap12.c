@@ -135,5 +135,4 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_mmap,
 	.needs_tmpdir = 1,
-	.min_kver = "2.6.25",
 };

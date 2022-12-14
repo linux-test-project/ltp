@@ -83,5 +83,4 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = verify_fadvise,
 	.tcnt = ARRAY_SIZE(defined_advise),
-	.min_kver = "2.6.16",
 };

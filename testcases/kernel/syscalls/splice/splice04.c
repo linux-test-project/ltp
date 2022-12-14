@@ -83,5 +83,4 @@ static struct tst_test test = {
 		{"l:", &str_len_data, "Length of test data (in bytes)"},
 		{}
 	},
-	.min_kver = "2.6.31"
 };

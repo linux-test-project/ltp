@@ -71,7 +71,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = run,
-	.min_kver = "2.6.33",
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "2cb4b05e76478"},
 		{}

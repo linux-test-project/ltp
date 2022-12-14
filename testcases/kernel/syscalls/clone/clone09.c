@@ -87,5 +87,4 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.min_kver = "2.6.24",
 };

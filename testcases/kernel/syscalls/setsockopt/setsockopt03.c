@@ -74,7 +74,6 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.min_kver = "2.6.32",
 	.setup = setup,
 	.test_all = run,
 	.needs_root = 1,

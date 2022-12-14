@@ -123,5 +123,4 @@ static struct tst_test test = {
 	.test = splice_verify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_tmpdir = 1,
-	.min_kver = "2.6.17",
 };

@@ -92,7 +92,6 @@ static void run(void)
 
 static struct tst_test test = {
 	.test_all = run,
-	.min_kver = "2.6.31",
 	.needs_root = 1,
 	.forks_child = 1
 };

@@ -126,6 +126,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = verify_preadv,
-	.min_kver = "2.6.30",
 	.needs_tmpdir = 1,
 };

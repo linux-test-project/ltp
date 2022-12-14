@@ -155,7 +155,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
-	.min_kver = "2.6.17",
 	.options = (struct tst_option[]) {
 		{"s:", &sarg, "Size of output file in bytes (default: 16x max pipe size, i.e. 1M on intel)"},
 		{}

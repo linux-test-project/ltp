@@ -96,6 +96,5 @@ static struct tst_test test = {
 		NULL
 	},
 	.test_all = verify_ksm,
-	.min_kver = "2.6.32",
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };

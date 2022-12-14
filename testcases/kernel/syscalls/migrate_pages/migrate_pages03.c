@@ -140,7 +140,6 @@ static void migrate_test(void)
 
 static struct tst_test test = {
 	.max_runtime = 300,
-	.min_kver = "2.6.32",
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,

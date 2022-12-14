@@ -106,5 +106,4 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = tee_test,
 	.needs_tmpdir = 1,
-	.min_kver = "2.6.17",
 };

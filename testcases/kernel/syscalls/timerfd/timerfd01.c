@@ -158,5 +158,4 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
-	.min_kver = "2.6.25",
 };

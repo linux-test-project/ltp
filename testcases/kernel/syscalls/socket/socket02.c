@@ -68,6 +68,5 @@ static void cleanup(void)
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_socket,
-	.min_kver = "2.6.27",
 	.cleanup = cleanup
 };

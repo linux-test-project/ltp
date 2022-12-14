@@ -44,7 +44,6 @@ static void run(unsigned int n)
 }
 
 static struct tst_test test = {
-	.min_kver = "2.6.27",
 	.tcnt = ARRAY_SIZE(tc),
 	.test = run,
 };

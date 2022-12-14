@@ -90,5 +90,4 @@ static struct tst_test test = {
 	.test = tee_verify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_tmpdir = 1,
-	.min_kver = "2.6.17",
 };

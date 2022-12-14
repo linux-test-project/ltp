@@ -130,7 +130,6 @@ static struct tst_test test = {
 	.test_all = wakeup_thread2,
 	.test_variants = ARRAY_SIZE(variants),
 	.needs_root = 1,
-	.min_kver = "2.6.32",
 	.needs_tmpdir = 1,
 	.hugepages = {1, TST_NEEDS},
 };

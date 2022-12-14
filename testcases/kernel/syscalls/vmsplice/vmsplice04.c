@@ -88,6 +88,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = vmsplice_test,
-	.min_kver = "2.6.17",
 	.forks_child = 1,
 };

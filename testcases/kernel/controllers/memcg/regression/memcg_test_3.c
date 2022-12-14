@@ -81,7 +81,6 @@ static void cleanup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.min_kver = "2.6.24",
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = do_test,

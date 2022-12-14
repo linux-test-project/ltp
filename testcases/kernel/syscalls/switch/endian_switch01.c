@@ -93,7 +93,6 @@ static void endian_test(void)
 
 static struct tst_test test = {
 	.test_all = endian_test,
-	.min_kver = "2.6.26",
 	.forks_child = 1,
 };
 

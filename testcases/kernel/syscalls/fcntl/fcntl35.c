@@ -113,7 +113,6 @@ static void do_test(unsigned int n)
 }
 
 static struct tst_test test = {
-	.min_kver = "2.6.35",
 	.needs_root = 1,
 	.forks_child = 1,
 	.tcnt = ARRAY_SIZE(tcases),

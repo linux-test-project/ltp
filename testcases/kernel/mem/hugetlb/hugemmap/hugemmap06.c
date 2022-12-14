@@ -114,7 +114,6 @@ static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 }
 
 static struct tst_test test = {
-	.min_kver = "2.6.32",
 	.needs_root = 1,
 	.tcnt = LOOP,
 	.needs_tmpdir = 1,

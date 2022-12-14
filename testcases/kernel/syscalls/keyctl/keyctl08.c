@@ -28,7 +28,6 @@ void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
-	.min_kver = "2.6.13",
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2016-9604"},
 		{"linux-git", "ee8f844e3c5a"},

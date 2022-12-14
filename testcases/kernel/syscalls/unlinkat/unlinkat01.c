@@ -107,7 +107,6 @@ static void cleanup(void)
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.tcnt = ARRAY_SIZE(tc),
-	.min_kver = "2.6.16",
 	.setup = setup,
 	.test = run,
 	.cleanup = cleanup,

@@ -144,5 +144,4 @@ static struct tst_test test = {
 	.test = verify_mlock2,
 	.setup = setup,
 	.needs_root = 1,
-	.min_kver = "2.6.9",
 };

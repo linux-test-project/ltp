@@ -62,7 +62,6 @@ static void setup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = vmsplice_test,
-	.min_kver = "2.6.23",
 	.bufs = (struct tst_buffers []) {
 		{&iov, .iov_sizes = (int[]){TEST_BLOCK_SIZE, -1}},
 		{}

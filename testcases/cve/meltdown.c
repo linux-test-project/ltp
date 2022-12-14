@@ -377,7 +377,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
 	.cleanup = cleanup,
-	.min_kver = "2.6.32",
 	.supported_archs = (const char *const []) {
 		"x86",
 		"x86_64",

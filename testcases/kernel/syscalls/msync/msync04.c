@@ -102,5 +102,4 @@ static struct tst_test test = {
 		"tmpfs",
 		NULL
 	},
-	.min_kver = "2.6.25",
 };

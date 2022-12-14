@@ -175,7 +175,6 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.setup = setup,
 	.test_all = test_cpuset,
-	.min_kver = "2.6.32",
 	.needs_cgroup_ctrls = (const char *const []){ "cpuset", NULL },
 };
 

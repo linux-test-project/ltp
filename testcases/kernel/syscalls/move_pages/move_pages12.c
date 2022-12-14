@@ -333,7 +333,6 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.min_kver = "2.6.32",
 	.needs_root = 1,
 	.forks_child = 1,
 	.setup = setup,
