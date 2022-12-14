@@ -59,8 +59,7 @@ setup()
 		tst_brk TBROK "Unable to find $DEBUGFS_CONTROL"
 	fi
 
-	# Both patches with changes were backported to RHEL6 kernel 2.6.32-547
-	if tst_kvcmp -ge '3.4 RHEL6:2.6.32-547' ; then
+	if tst_kvcmp -ge 3.4 ; then
 		NEW_INTERFACE=1
 		EMPTY_FLAG="=_"
 	fi

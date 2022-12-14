@@ -134,18 +134,6 @@ const char *tst_kvcmp_distname(const char *kver)
 	char *ret = distname;
 	char *p = distname;
 
-	if (strstr(kver, ".el5uek"))
-		return "OL5UEK";
-
-	if (strstr(kver, ".el5"))
-		return "RHEL5";
-
-	if (strstr(kver, ".el6uek"))
-		return "OL6UEK";
-
-	if (strstr(kver, ".el6"))
-		return "RHEL6";
-
 	if (strstr(kver, ".el7"))
 		return "RHEL7";
 
