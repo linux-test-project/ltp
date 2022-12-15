@@ -5,8 +5,8 @@
  */
 /*
  * Description:
- * 1) lseek64(2) fails and sets errno to EINVAL when whence is invalid.
- * 2) lseek64(2) fails ans sets errno to EBADF when fd is not an open
+ * 1) lseek(2) fails and sets errno to EINVAL when whence is invalid.
+ * 2) lseek(2) fails ans sets errno to EBADF when fd is not an open
  * file descriptor.
  */
 
@@ -39,17 +39,17 @@ static void verify_llseek(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	TEST(lseek64(*tc->fd, (loff_t) 1, tc->whence));
+	TEST(lseek(*tc->fd, (loff_t) 1, tc->whence));
 	if (TST_RET != (off_t) -1) {
-		tst_res(TFAIL, "lseek64(%d, 1, %d) succeeded unexpectedly (%ld)",
+		tst_res(TFAIL, "lseek(%d, 1, %d) succeeded unexpectedly (%ld)",
 			*tc->fd, tc->whence, TST_RET);
 		return;
 	}
 	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "lseek64(%d, 1, %d) failed as expected",
+		tst_res(TPASS | TTERRNO, "lseek(%d, 1, %d) failed as expected",
 			*tc->fd, tc->whence);
 	} else {
-		tst_res(TFAIL | TTERRNO, "lseek64(%d, 1, %d) failed "
+		tst_res(TFAIL | TTERRNO, "lseek(%d, 1, %d) failed "
 		        "unexpectedly, expected %s", *tc->fd, tc->whence,
 		        tst_strerrno(tc->exp_err));
 	}

@@ -62,7 +62,7 @@ int TST_TOTAL = 3;
 
 static int iter = 100;
 static int bufsize = BUFSIZE;
-static off64_t offset = 0;
+static off_t offset = 0;
 static int nvector = 20;
 static char filename[LEN];
 static int fd1 = -1;
@@ -84,7 +84,7 @@ static void prg_usage(void)
 */
 int runtest(int fd_r, int fd_w, int childnum, int action)
 {
-	off64_t seekoff;
+	off_t seekoff;
 	int i, ret = -1;
 	ssize_t n = 0;
 	struct iovec *iov_r, *iov_w;

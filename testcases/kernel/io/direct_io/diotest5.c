@@ -75,14 +75,14 @@ int TST_TOTAL = 3;		/* Total number of test conditions */
 static int bufsize = BUFSIZE;	/* Buffer size. Default 4k */
 static int iter = 20;		/* Iterations. Default 20 */
 static int nvector = 20;	/* Vector array. Default 20 */
-static off64_t offset = 0;	/* Start offset. Default 0 */
+static off_t offset = 0;	/* Start offset. Default 0 */
 static char filename[LEN];	/* Test data file */
 static int fd1 = -1;
 /*
  * runtest: Write the data in vector array to the file. Read the data
  *	from the file into another vectory array and verify. Repeat the test.
 */
-int runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
+int runtest(int fd_r, int fd_w, int iter, off_t offset, int action)
 {
 	int i;
 	struct iovec *iov1, *iov2, *iovp;
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "fd_w open failed for %s: %s",
 			 filename, strerror(errno));
 	}
-	if ((fd_r = open64(filename, O_DIRECT | O_RDONLY | O_CREAT, 0666)) < 0) {
+	if ((fd_r = open(filename, O_DIRECT | O_RDONLY | O_CREAT, 0666)) < 0) {
 		tst_brkm(TBROK, cleanup, "fd_r open failed for %s: %s",
 			 filename, strerror(errno));
 	}
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "fd_w open failed for %s: %s",
 			 filename, strerror(errno));
 	}
-	if ((fd_r = open64(filename, O_RDONLY | O_CREAT, 0666)) < 0) {
+	if ((fd_r = open(filename, O_RDONLY | O_CREAT, 0666)) < 0) {
 		tst_brkm(TBROK, cleanup, "fd_r open failed for %s: %s",
 			 filename, strerror(errno));
 	}
@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
 		tst_brkm(TBROK, cleanup, "fd_w open failed for %s: %s",
 			 filename, strerror(errno));
 	}
-	if ((fd_r = open64(filename, O_DIRECT | O_RDONLY | O_CREAT, 0666)) < 0) {
+	if ((fd_r = open(filename, O_DIRECT | O_RDONLY | O_CREAT, 0666)) < 0) {
 		tst_brkm(TBROK, cleanup, "fd_r open failed for %s: %s",
 			 filename, strerror(errno));
 	}

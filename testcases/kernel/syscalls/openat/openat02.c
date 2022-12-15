@@ -22,7 +22,7 @@
  *   2)openat() succeeds to enable the close-on-exec flag for a
  *     file descriptor, when 'flags' is set to O_CLOEXEC.
  *   3)openat() succeeds to allow files whose sizes cannot be
- *     represented in an off_t but can be represented in an off64_t
+ *     represented in an off_t but can be represented in an off_t
  *     to be opened, when 'flags' is set to O_LARGEFILE.
  *   4)openat() succeeds to not update the file last access time
  *     (st_atime in the inode) when the file is read, when 'flags'
@@ -193,12 +193,12 @@ void testfunc_cloexec(void)
 void testfunc_largefile(void)
 {
 	int fd;
-	off64_t offset;
+	off_t offset;
 
 	fd = SAFE_OPEN(cleanup, LARGE_FILE,
 				O_LARGEFILE | O_RDWR | O_CREAT, 0777);
 
-	offset = lseek64(fd, 4.1*1024*1024*1024, SEEK_SET);
+	offset = lseek(fd, 4.1*1024*1024*1024, SEEK_SET);
 	if (offset == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "lseek64 failed");
 

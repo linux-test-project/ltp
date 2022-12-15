@@ -31,10 +31,10 @@
 
 struct testcase {
 	char *fname;
-	off64_t sync_off;
-	off64_t sync_size;
+	off_t sync_off;
+	off_t sync_size;
 	size_t exp_sync_size;
-	off64_t write_off;
+	off_t write_off;
 	size_t write_size_mb;
 	const char *desc;
 };

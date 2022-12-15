@@ -103,11 +103,11 @@ int main(int ac, char **av)
 	tst_resm(TINFO, "Enter block 2");
 	fail = 0;
 	/* Error condition if address is bad */
-	retval = fcntl(fd, F_GETLK64, (struct flock *)INVAL_FLAG);
+	retval = fcntl(fd, F_GETLK, (struct flock *)INVAL_FLAG);
 	if (errno == EFAULT) {
-		tst_resm(TPASS, "Test F_GETLK64: for errno EFAULT PASSED");
+		tst_resm(TPASS, "Test F_GETLK: for errno EFAULT PASSED");
 	} else {
-		tst_resm(TFAIL, "Test F_GETLK64: for errno EFAULT FAILED");
+		tst_resm(TFAIL, "Test F_GETLK: for errno EFAULT FAILED");
 		fail = 1;
 	}
 	if (fail) {

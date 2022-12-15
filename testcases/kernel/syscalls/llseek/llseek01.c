@@ -4,7 +4,7 @@
  *   07/2001 Ported by Wayne Boyer
  */
 /*
- * Verify that lseek64() call succeeds to set the file pointer position to an
+ * Verify that lseek() call succeeds to set the file pointer position to an
  * offset larger than file size limit (RLIMIT_FSIZE). Also, verify that any
  * attempt to write to this location fails.
  */
@@ -27,22 +27,22 @@ static int fildes;
 
 static void verify_llseek(void)
 {
-	TEST(lseek64(fildes, (loff_t) (80 * BUFSIZ), SEEK_SET));
+	TEST(lseek(fildes, (loff_t) (80 * BUFSIZ), SEEK_SET));
 	if (TST_RET == (80 * BUFSIZ))
-		tst_res(TPASS, "lseek64() can set file pointer position larger than file size limit");
+		tst_res(TPASS, "lseek() can set file pointer position larger than file size limit");
 	else
-		tst_res(TFAIL, "lseek64() returned wrong value %ld when write past file size", TST_RET);
+		tst_res(TFAIL, "lseek() returned wrong value %ld when write past file size", TST_RET);
 
 	if (write(fildes, write_buff, BUFSIZ) == -1)
 		tst_res(TPASS,"write failed after file size limit");
 	else
 		tst_brk(TFAIL, "write successful after file size limit");
 
-	TEST(lseek64(fildes, (loff_t) BUFSIZ, SEEK_SET));
+	TEST(lseek(fildes, (loff_t) BUFSIZ, SEEK_SET));
 	if (TST_RET == BUFSIZ)
-		tst_res(TPASS,"lseek64() can set file pointer position under filer size limit");
+		tst_res(TPASS,"lseek() can set file pointer position under filer size limit");
 	else
-		tst_brk(TFAIL,"lseek64() returns wrong value %ld when write under file size", TST_RET);
+		tst_brk(TFAIL,"lseek() returns wrong value %ld when write under file size", TST_RET);
 
 	if (write(fildes, write_buff, BUFSIZ) != -1)
 		tst_res(TPASS, "write succcessfully under file size limit");

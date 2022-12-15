@@ -234,14 +234,14 @@ static void test_cloexec(void)
 static void test_largefile(void)
 {
 	int fd;
-	off64_t offset;
+	off_t offset;
 
 	fd = SAFE_OPEN(cleanup, LARGE_FILE,
 				O_LARGEFILE | O_RDWR | O_CREAT, 0777);
 
-	offset = lseek64(fd, 4.1*1024*1024*1024, SEEK_SET);
+	offset = lseek(fd, 4.1*1024*1024*1024, SEEK_SET);
 	if (offset == -1)
-		tst_brkm(TBROK | TERRNO, cleanup, "lseek64 failed");
+		tst_brkm(TBROK | TERRNO, cleanup, "lseek failed");
 
 	SAFE_WRITE(cleanup, SAFE_WRITE_ALL, fd, LARGE_FILE,
 		sizeof(LARGE_FILE));

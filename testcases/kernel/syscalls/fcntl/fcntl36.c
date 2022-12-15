@@ -72,7 +72,7 @@ static void *fn_ofd_w(void *arg)
 	int fd = SAFE_OPEN(fname, O_RDWR);
 	long wt = pa->cnt;
 
-	struct flock64 lck = {
+	struct flock lck = {
 		.l_whence = SEEK_SET,
 		.l_start  = pa->offset,
 		.l_len    = pa->length,
@@ -151,7 +151,7 @@ static void *fn_ofd_r(void *arg)
 	int i;
 	int fd = SAFE_OPEN(fname, O_RDWR);
 
-	struct flock64 lck = {
+	struct flock lck = {
 		.l_whence = SEEK_SET,
 		.l_start  = pa->offset,
 		.l_len    = pa->length,

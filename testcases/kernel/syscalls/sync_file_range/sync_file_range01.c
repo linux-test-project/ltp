@@ -44,8 +44,8 @@ static int bfd = -1;
 
 struct test_case {
 	int *fd;
-	off64_t offset;
-	off64_t nbytes;
+	off_t offset;
+	off_t nbytes;
 	unsigned int flags;
 	int error;
 } tcases[] = {

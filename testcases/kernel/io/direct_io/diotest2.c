@@ -78,7 +78,7 @@ int bufsize = BUFSIZE;
  *	For each iteration, write data starting at offse+iter*bufsize
  *	location in the file and read from there.
 */
-int runtest(int fd_r, int fd_w, int iter, off64_t offset, int action)
+int runtest(int fd_r, int fd_w, int iter, off_t offset, int action)
 {
 	char *buf1;
 	char *buf2;
@@ -136,7 +136,7 @@ static void cleanup(void);
 int main(int argc, char *argv[])
 {
 	int iter = 100;		/* Iterations. Default 100 */
-	off64_t offset = 0;	/* Offset. Default 0 */
+	off_t offset = 0;	/* Offset. Default 0 */
 	int i, action, fd_r, fd_w;
 	int fail_count = 0, total = 0, failed = 0;
 

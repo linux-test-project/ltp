@@ -5,7 +5,7 @@ top_srcdir			?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-CFLAGS				+= -DSHARED_OFILE -D_GNU_SOURCE
+CFLAGS				+= -DSHARED_OFILE -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 
 LDLIBS				+= -lpthread
 

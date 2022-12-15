@@ -72,7 +72,7 @@ static const char *str_whence(int whence)
 	}
 }
 
-static void verify_lseek64(unsigned int n)
+static void verify_lseek(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 	char read_buf[128];
@@ -82,7 +82,7 @@ static void verify_lseek64(unsigned int n)
 
 	SAFE_READ(1, fd, read_buf, 4);
 
-	TEST(lseek64(fd, tc->off, tc->whence));
+	TEST(lseek(fd, tc->off, tc->whence));
 
 	if (TST_RET == -1) {
                 tst_res(TFAIL | TTERRNO, "llseek failed on %s ", TEST_FILE);
@@ -121,6 +121,6 @@ exit:
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.setup = setup,
-	.test = verify_lseek64,
+	.test = verify_lseek,
 	.tcnt = ARRAY_SIZE(tcases),
 };
