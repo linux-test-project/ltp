@@ -262,12 +262,6 @@ int main(int argc, char **argv)
 	int lc;
 	int sfd;
 
-	if ((tst_kvercmp(2, 6, 22)) < 0) {
-		tst_resm(TWARN,
-			 "This test can only run on kernels that are 2.6.22 and higher");
-		exit(0);
-	}
-
 	tst_parse_opts(argc, argv, NULL, NULL);
 
 	setup();

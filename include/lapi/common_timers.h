@@ -63,11 +63,6 @@ static inline int possibly_unsupported(clock_t clock)
 	}
 }
 
-static inline int have_cputime_timers(void)
-{
-	return tst_kvercmp(2, 6, 12) >= 0;
-}
-
 #include "lapi/syscalls.h"
 
 #include <time.h>

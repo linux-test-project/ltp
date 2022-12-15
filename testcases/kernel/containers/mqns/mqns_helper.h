@@ -36,9 +36,6 @@ static void check_mqns(void)
 	int pid, status;
 	mqd_t mqd;
 
-	if (tst_kvercmp(2, 6, 30) < 0)
-		tst_brkm(TCONF, NULL, "Kernel version is lower than expected");
-
 	mq_unlink("/checkmqnsenabled");
 	mqd =
 	    mq_open("/checkmqnsenabled", O_RDWR | O_CREAT | O_EXCL, 0777, NULL);

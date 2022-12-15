@@ -89,14 +89,6 @@ static void setup(void)
 	if (tst_path_has_mnt_flags(cleanup, NULL, mount_flags)) {
 		const char *fs_type;
 
-		if ((tst_kvercmp(2, 6, 30)) < 0) {
-			tst_resm(TCONF,
-				"MS_STRICTATIME flags for mount(2) needs kernel 2.6.30 "
-				"or higher");
-			skip_noatime = 1;
-			return;
-		}
-
 		fs_type = tst_dev_fs_type();
 		device = tst_acquire_device(cleanup);
 
@@ -144,13 +136,6 @@ static void test_noatime(void)
 	char read_buf;
 	struct stat old_stat, new_stat;
 
-	if ((tst_kvercmp(2, 6, 8)) < 0) {
-		tst_resm(TCONF,
-			 "O_NOATIME flags test for open(2) needs kernel 2.6.8 "
-			 "or higher");
-		return;
-	}
-
 	if (skip_noatime) {
 		tst_resm(TCONF,
 		         "test O_NOATIME flag for open needs filesystems which "
@@ -183,13 +168,6 @@ static void test_cloexec(void)
 	pid_t pid;
 	int status;
 	char buf[20];
-
-	if ((tst_kvercmp(2, 6, 23)) < 0) {
-		tst_resm(TCONF,
-			 "O_CLOEXEC flags test for open(2) needs kernel 2.6.23 "
-			 "or higher");
-		return;
-	}
 
 	TEST(open(TEST_FILE, O_RDWR | O_APPEND | O_CLOEXEC, 0777));
 

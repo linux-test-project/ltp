@@ -25,9 +25,6 @@ static int check_newpid(void)
 {
 	int pid, status;
 
-	if (tst_kvercmp(2, 6, 24) < 0)
-		tst_brkm(TCONF, NULL, "CLONE_NEWPID not supported");
-
 	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWPID, dummy_child, NULL);
 	if (pid == -1)
 		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWPID not supported");

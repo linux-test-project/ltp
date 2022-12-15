@@ -68,14 +68,10 @@ static void verify_sysctl(void)
 
 static void setup(void)
 {
-	if ((tst_kvercmp(2, 6, 32)) <= 0) {
-		exp_eno = EPERM;
-	} else {
-		/* Look above this warning. */
-		tst_res(TINFO,
-			 "this test's results are based on potentially undocumented behavior in the kernel. read the NOTE in the source file for more details");
-		exp_eno = EACCES;
-	}
+	/* Look above this warning. */
+	tst_res(TINFO,
+		 "this test's results are based on potentially undocumented behavior in the kernel. read the NOTE in the source file for more details");
+	exp_eno = EACCES;
 }
 
 static void do_test(void)

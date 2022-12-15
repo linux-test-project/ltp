@@ -103,11 +103,6 @@ static void test02(void)
 	tst_res(TINFO, "read allocated file size '%zu'", alloc_size0);
 	tst_res(TINFO, "make a hole with FALLOC_FL_PUNCH_HOLE");
 
-	if (tst_kvercmp(2, 6, 38) < 0) {
-		tst_brk(TCONF,
-			"FALLOC_FL_PUNCH_HOLE needs Linux 2.6.38 or newer");
-	}
-
 	if (fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
 	    block_size, block_size) == -1) {
 		if (errno == EOPNOTSUPP) {

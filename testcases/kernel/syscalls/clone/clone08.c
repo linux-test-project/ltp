@@ -28,11 +28,6 @@ static void test_clone_tid(int t);
 static int child_clone_child_settid(void *);
 static int child_clone_parent_settid(void *);
 
-#ifdef CLONE_STOPPED
-static void test_clone_stopped(int t);
-static int child_clone_stopped(void *);
-static int stopped_flag;
-#endif
 
 static void test_clone_thread(int t);
 static int child_clone_thread(void *);
@@ -57,10 +52,6 @@ static struct test_case {
 	 test_clone_tid, child_clone_child_settid},
 	{"CLONE_PARENT_SETTID", CLONE_PARENT_SETTID | CLONE_VM | SIGCHLD,
 	 test_clone_tid, child_clone_parent_settid},
-#ifdef CLONE_STOPPED
-	{"CLONE_STOPPED", CLONE_STOPPED | CLONE_VM | SIGCHLD,
-	 test_clone_stopped, child_clone_stopped},
-#endif
 	{"CLONE_THREAD", CLONE_THREAD | CLONE_SIGHAND | CLONE_VM |
 	 CLONE_CHILD_CLEARTID | SIGCHLD,
 	 test_clone_thread, child_clone_thread},
@@ -146,40 +137,6 @@ static int child_clone_parent_settid(void *arg LTP_ATTRIBUTE_UNUSED)
 	tst_syscall(__NR_exit, 0);
 	return 0;
 }
-
-#ifdef CLONE_STOPPED
-static void test_clone_stopped(int t)
-{
-	pid_t child;
-
-	if (tst_kvercmp(2, 6, 38) >= 0) {
-		tst_res(TCONF, "CLONE_STOPPED skipped for kernels >= 2.6.38");
-		return;
-	}
-
-	child = clone_child(&test_cases[t]);
-
-	TST_PROCESS_STATE_WAIT(child, 'T', 0);
-
-	stopped_flag = 0;
-
-	SAFE_KILL(child, SIGCONT);
-
-	tst_reap_children();
-
-	if (stopped_flag == 1)
-		tst_res(TPASS, "clone stopped and resumed as expected");
-	else
-		tst_res(TFAIL, "clone not stopped, flag %d", stopped_flag);
-}
-
-static int child_clone_stopped(void *arg LTP_ATTRIBUTE_UNUSED)
-{
-	stopped_flag = 1;
-	tst_syscall(__NR_exit, 0);
-	return 0;
-}
-#endif
 
 static void test_clone_thread(int t)
 {

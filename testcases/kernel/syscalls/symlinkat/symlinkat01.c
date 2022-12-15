@@ -134,13 +134,6 @@ int main(int ac, char **av)
 	int lc;
 	int i;
 
-	/* Disable test if the version of the kernel is less than 2.6.16 */
-	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_resm(TWARN, "This test can only run on kernels that are ");
-		tst_resm(TWARN, "2.6.16 and higher");
-		exit(0);
-	}
-
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();

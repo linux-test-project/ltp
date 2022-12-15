@@ -66,27 +66,7 @@ static void verify_socket(unsigned int n)
 	tst_res(TPASS, "%s successful", tc->desc);
 }
 
-/*
- * See:
- * commit 86c8f9d158f68538a971a47206a46a22c7479bac
- * ...
- * [IPV4] Fix EPROTONOSUPPORT error in inet_create
- */
-static void setup(void)
-{
-	unsigned int i;
-
-	if (tst_kvercmp(2, 6, 16) >= 0)
-		return;
-
-	for (i = 0; i < ARRAY_SIZE(tdat); i++) {
-		if (tdat[i].experrno == EPROTONOSUPPORT)
-				tdat[i].experrno = ESOCKTNOSUPPORT;
-	}
-}
-
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tdat),
-	.setup = setup,
 	.test = verify_socket
 };

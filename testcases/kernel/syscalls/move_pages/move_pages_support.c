@@ -400,13 +400,12 @@ void check_config(unsigned int min_nodes)
 	if (ret < 0)
 		tst_brkm(TBROK | TERRNO, NULL, "get_allowed_nodes(): %d", ret);
 
-	if (numa_available() < 0) {
+	if (numa_available() < 0)
 		tst_brkm(TCONF, NULL, "NUMA support is not available");
-	} else if (num_allowed_nodes < min_nodes) {
+
+	if (num_allowed_nodes < min_nodes) {
 		tst_brkm(TCONF, NULL, "at least %d allowed NUMA nodes"
 			 " are required", min_nodes);
-	} else if (tst_kvercmp(2, 6, 18) < 0) {
-		tst_brkm(TCONF, NULL, "2.6.18 or greater kernel required");
 	}
 #else
 	tst_brkm(TCONF, NULL, NUMA_ERROR_MSG);

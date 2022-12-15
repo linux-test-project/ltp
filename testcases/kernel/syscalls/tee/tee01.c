@@ -84,12 +84,6 @@ static void setup(void)
 {
 	int i;
 
-	if (tst_fs_type(".") == TST_NFS_MAGIC) {
-		if ((tst_kvercmp(2, 6, 32)) < 0)
-			tst_brk(TCONF, "Cannot do tee on a file"
-				" on NFS filesystem before 2.6.32");
-	}
-
 	for (i = 0; i < TEST_BLOCK_SIZE; i++)
 		buffer[i] = i & 0xff;
 

@@ -191,29 +191,25 @@ int setup_test(int i)
 				 "for mlockall error %s\n", TC[i].edesc);
 			return 1;
 		}
-		if (tst_kvercmp(2, 6, 9) >= 0) {
-			ltpuser = getpwnam(nobody_uid);
-			if (seteuid(ltpuser->pw_uid) == -1) {
-				tst_brkm(TBROK, cleanup, "seteuid() "
-					 "failed to change euid to %d "
-					 "errno = %d : %s",
-					 ltpuser->pw_uid, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
+		ltpuser = getpwnam(nobody_uid);
+		if (seteuid(ltpuser->pw_uid) == -1) {
+			tst_brkm(TBROK, cleanup, "seteuid() "
+				"failed to change euid to %d "
+				"errno = %d : %s",
+				ltpuser->pw_uid, TEST_ERRNO,
+				strerror(TEST_ERRNO));
 				return 1;
-			}
 		}
 		return 0;
 	case 1:
-		if (tst_kvercmp(2, 6, 9) >= 0) {
-			rl.rlim_max = 0;
-			rl.rlim_cur = 0;
-			if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0) {
-				tst_resm(TWARN, "setrlimit failed to "
-					 "set the resource for "
-					 "RLIMIT_MEMLOCK to check for "
-					 "mlockall error %s\n", TC[i].edesc);
+		rl.rlim_max = 0;
+		rl.rlim_cur = 0;
+		if (setrlimit(RLIMIT_MEMLOCK, &rl) != 0) {
+			tst_resm(TWARN, "setrlimit failed to "
+				"set the resource for "
+				"RLIMIT_MEMLOCK to check for "
+				"mlockall error %s\n", TC[i].edesc);
 				return 1;
-			}
 		}
 		ltpuser = getpwnam(nobody_uid);
 		if (seteuid(ltpuser->pw_uid) == -1) {

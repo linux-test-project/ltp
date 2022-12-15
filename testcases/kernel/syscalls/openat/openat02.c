@@ -144,12 +144,6 @@ void testfunc_cloexec(void)
 	int status;
 	char buf[20];
 
-	if ((tst_kvercmp(2, 6, 23)) < 0) {
-		tst_resm(TCONF, "test O_CLOEXEC flags for openat "
-						"needs kernel 2.6.23 or higher");
-		return;
-	}
-
 	TEST(openat(AT_FDCWD, TEST_FILE, O_CLOEXEC | O_RDWR, 0777));
 
 	if (TEST_RETURN == -1) {
@@ -222,12 +216,6 @@ void testfunc_noatime(void)
 	char buf;
 	const char *flags[] = {"noatime", "relatime", NULL};
 	int ret;
-
-	if ((tst_kvercmp(2, 6, 8)) < 0) {
-		tst_resm(TCONF, "test O_NOATIME flags for openat "
-						"needs kernel 2.6.8 or higher");
-		return;
-	}
 
 	ret = tst_path_has_mnt_flags(cleanup, NULL, flags);
 	if (ret > 0) {

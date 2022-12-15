@@ -102,25 +102,10 @@ int main(int argc, char **argv)
 		ret = numa_move_pages(0, TEST_PAGES, pages, nodes,
 				      status, MPOL_MF_MOVE);
 
-		/*
-		 * commit e78bbfa8262424417a29349a8064a535053912b9
-		 * Author: Brice Goglin <Brice.Goglin@inria.fr>
-		 * Date:   Sat Oct 18 20:27:15 2008 -0700
-		 *     mm: stop returning -ENOENT from sys_move_pages() if nothing got migrated
-		 */
-		if ((tst_kvercmp(2, 6, 28)) >= 0) {
-			if (ret >= 0)
-				tst_resm(TPASS, "move_pages succeeded");
-			else
-				tst_resm(TFAIL | TERRNO, "move_pages");
-		} else {
-			if (ret == -1 && errno == ENOENT)
-				tst_resm(TPASS, "move_pages failed with "
-					 "ENOENT as expected");
-			else
-				tst_resm(TFAIL | TERRNO, "move_pages did not "
-					"fail with ENOENT ret: %d", ret);
-		}
+		if (ret >= 0)
+			tst_resm(TPASS, "move_pages succeeded");
+		else
+			tst_resm(TFAIL | TERRNO, "move_pages");
 
 		free_pages(pages, TEST_PAGES);
 	}

@@ -124,20 +124,6 @@ void verify_inotify(void)
 		struct inotify_event *event;
 		event = (struct inotify_event *)&event_buf[i];
 		if (test_num >= test_cnt) {
-			if (tst_kvercmp(2, 6, 25) < 0
-			    && event_set[test_cnt - 1].mask == event->mask)
-				tst_res(TWARN,
-					"This may be kernel bug. "
-					"Before kernel 2.6.25, a kernel bug "
-					"meant that the kernel code that was "
-					"intended to coalesce successive identical "
-					"events (i.e., the two most recent "
-					"events could potentially be coalesced "
-					"if the older had not yet been read) "
-					"instead checked if the most recent event "
-					"could be coalesced with the oldest "
-					"unread event. This has been fixed by commit"
-					"1c17d18e3775485bf1e0ce79575eb637a94494a2.");
 			tst_res(TFAIL,
 				"got unnecessary event: "
 				"wd=%d mask=%04x cookie=%u len=%u "

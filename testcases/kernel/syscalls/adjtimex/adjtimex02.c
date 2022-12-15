@@ -93,7 +93,7 @@ static void verify_adjtimex(unsigned int i)
 			if (tc[i].highlimit)
 				buf->tick = tc[i].highlimit + tc[i].delta;
 		}
-		if (tc[i].modes == ADJ_OFFSET && (tst_kvercmp(2, 6, 25) > 0)) {
+		if (tc[i].modes == ADJ_OFFSET) {
 			if (tc[i].lowlimit || tc[i].highlimit) {
 				tst_res(TCONF, "Newer kernels normalize offset value outside range");
 				return;

@@ -59,16 +59,6 @@ static void run(unsigned int n)
 		evp.sigev_signo  = nt->sigev_signo;
 		evp.sigev_notify = nt->sigev_notify;
 
-		if (clock == CLOCK_PROCESS_CPUTIME_ID ||
-			clock == CLOCK_THREAD_CPUTIME_ID) {
-			/* (PROCESS_CPUTIME_ID &
-			 *  THREAD_CPUTIME_ID)
-			 * is not supported on kernel versions
-			 * lower than 2.6.12
-			 */
-			if (!have_cputime_timers())
-				continue;
-		}
 		if (clock == CLOCK_MONOTONIC_RAW)
 			continue;
 

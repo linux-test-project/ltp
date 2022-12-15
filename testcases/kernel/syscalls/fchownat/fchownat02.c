@@ -71,9 +71,6 @@ static void setup(void)
 {
 	struct stat c_buf, l_buf;
 
-	if ((tst_kvercmp(2, 6, 16)) < 0)
-		tst_brkm(TCONF, NULL, "This test needs kernel 2.6.16 or newer");
-
 	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

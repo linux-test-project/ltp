@@ -273,9 +273,6 @@ static void setup(void)
 	if (num_nodes < 2)
 		tst_brk(TCONF, "at least 2 allowed NUMA nodes"
 			 " are required");
-	else if (tst_kvercmp(2, 6, 18) < 0)
-		tst_brk(TCONF, "2.6.18 or greater kernel required");
-
 	/*
 	 * find 2 nodes, which can hold NODE_MIN_FREEMEM bytes
 	 * The reason is that:

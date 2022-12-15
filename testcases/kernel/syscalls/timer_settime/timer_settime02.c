@@ -87,12 +87,6 @@ static void run(unsigned int n)
 	for (i = 0; i < CLOCKS_DEFINED; ++i) {
 		clock_t clock = clock_list[i];
 
-		if (clock == CLOCK_PROCESS_CPUTIME_ID ||
-			clock == CLOCK_THREAD_CPUTIME_ID) {
-			if (!have_cputime_timers())
-				continue;
-		}
-
 		/* Init temporary timer */
 		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer));
 		if (TST_RET != 0) {

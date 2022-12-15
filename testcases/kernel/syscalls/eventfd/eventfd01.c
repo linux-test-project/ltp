@@ -720,9 +720,6 @@ static void setup(void)
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
-	if (tst_kvercmp(2, 6, 22) < 0)
-		tst_brkm(TCONF, NULL, "2.6.22 or greater kernel required");
-
 	tst_tmpdir();
 
 	TEST_PAUSE;

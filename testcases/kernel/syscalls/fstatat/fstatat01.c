@@ -86,9 +86,6 @@ int main(int ac, char **av)
 	static struct stat statbuf;
 #endif
 
-	if (tst_kvercmp(2, 6, 16) < 0)
-		tst_brkm(TCONF, NULL, "Test must be run with kernel 2.6.16+");
-
 	tst_parse_opts(ac, av, NULL, NULL);
 
 	setup();

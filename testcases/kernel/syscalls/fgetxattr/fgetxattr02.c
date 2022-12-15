@@ -188,14 +188,6 @@ static void verify_fgetxattr(unsigned int i)
 				fname);
 	}
 
-	/*
-	 * Before kernel 3.0.0, fgetxattr(2) will set errno with 'EPERM'
-	 * when the file is not a regular file and directory, refer to
-	 * commitid 55b23bd
-	 */
-	if (tc[i].exp_err == ENODATA && tst_kvercmp(3, 0, 0) < 0)
-		tc[i].exp_err = EPERM;
-
 	if (tc[i].exp_err == TST_ERR) {
 		tst_res(TPASS | TTERRNO, "fgetxattr(2) on %s passed",
 				fname);

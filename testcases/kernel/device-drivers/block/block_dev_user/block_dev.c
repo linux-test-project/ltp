@@ -61,11 +61,6 @@ void setup(int argc, char *argv[])
 
 	tst_require_root();
 
-	if (tst_kvercmp(2, 6, 0) < 0) {
-		tst_brkm(TCONF, NULL,
-			"Test must be run with kernel 2.6 or newer");
-	}
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 }
 

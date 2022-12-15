@@ -30,12 +30,6 @@ static void run(void)
 	for (i = 0; i < CLOCKS_DEFINED; ++i) {
 		clock_t clock = clock_list[i];
 
-		if (clock == CLOCK_PROCESS_CPUTIME_ID ||
-			clock == CLOCK_THREAD_CPUTIME_ID) {
-			if (!have_cputime_timers())
-				continue;
-		}
-
 		tst_res(TINFO, "Testing %s", get_clock_str(clock));
 
 		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer_id));

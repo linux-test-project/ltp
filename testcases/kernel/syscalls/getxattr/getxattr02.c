@@ -91,16 +91,7 @@ int main(int argc, char *argv[])
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
-
-		/*
-		 * Before kernel 3.0.0, getxattr(2) will set errno with 'EPERM'
-		 * when the file is not a regular file and directory, refer to
-		 * commitid 55b23bd
-		 */
-		if (tst_kvercmp(3, 0, 0) >= 0)
-			exp_eno = ENODATA;
-		else
-			exp_eno = EPERM;
+		exp_eno = ENODATA;
 
 		for (i = 0; i < TST_TOTAL; i++) {
 			TEST(getxattr(tc[0], XATTR_TEST_KEY, buf, BUFSIZ));

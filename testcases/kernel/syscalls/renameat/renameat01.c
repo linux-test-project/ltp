@@ -133,12 +133,6 @@ static void setup(void)
 	const char *fs_type;
 	int i;
 
-	if ((tst_kvercmp(2, 6, 16)) < 0) {
-		tst_brkm(TCONF, NULL,
-			"This test can only run on kernels that are "
-			"2.6.16 and higher");
-	}
-
 	tst_require_root();
 
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);

@@ -19,22 +19,6 @@
 
 const char *TCID = "pm_get_sched_values";
 
-int get_supp_sched_mc(void)
-{
-	if (tst_kvercmp(2, 6, 29) < 0)
-		return 1;
-	else
-		return 2;
-}
-
-int get_supp_sched_smt(void)
-{
-	if (tst_kvercmp(2, 6, 29) < 0)
-		return 1;
-	else
-		return 2;
-}
-
 int main(int argc, char **argv)
 {
 	char *param;
@@ -43,9 +27,9 @@ int main(int argc, char **argv)
 	else {
 		param = argv[1];
 		if (strcmp(param, "sched_mc") == 0)
-			return get_supp_sched_mc();
+			return 2;
 		if (strcmp(param, "sched_smt") == 0)
-			return get_supp_sched_smt();
+			return 2;
 	}
 
 	return 1;

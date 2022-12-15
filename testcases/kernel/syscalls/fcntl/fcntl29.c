@@ -84,10 +84,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	if ((tst_kvercmp(2, 6, 24)) < 0) {
-		tst_brkm(TCONF, NULL, "Kernels >= 2.6.24 required");
-	}
-
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();

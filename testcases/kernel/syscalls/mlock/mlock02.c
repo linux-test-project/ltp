@@ -98,24 +98,6 @@ static void test_enomem1(void)
 	void *addr;
 	struct rlimit rl;
 
-	/*
-	 * RLIMIT_MEMLOCK resource limit.
-	 * In Linux kernels before 2.6.9, this limit controlled the amount
-	 * of  memory that could be locked by a privileged process. Since
-	 * Linux 2.6.9, no limits are placed on the amount of memory that a
-	 * privileged process may lock, and this limit instead governs the
-	 * amount of memory that an unprivileged process may lock. So here
-	 * we set RLIMIT_MEMLOCK resource limit to RLIM_INFINITY when kernel
-	 * is under 2.6.9, to make sure this ENOMEM error is indeed caused by
-	 * that some of the specified address range does not correspond to
-	 * mapped pages in the address space of the process.
-	 */
-	if ((tst_kvercmp(2, 6, 9)) < 0) {
-		rl.rlim_cur = RLIM_INFINITY;
-		rl.rlim_max = RLIM_INFINITY;
-		SAFE_SETRLIMIT(cleanup, RLIMIT_MEMLOCK, &rl);
-	}
-
 	addr = SAFE_MMAP(cleanup, NULL, len, PROT_READ,
 			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 
@@ -128,13 +110,6 @@ static void test_enomem2(void)
 {
 	void *addr;
 	struct rlimit rl;
-
-	if ((tst_kvercmp(2, 6, 9)) < 0) {
-		tst_resm(TCONF,
-			 "ENOMEM error value test for this condition needs "
-			 "kernel 2.6.9 or higher");
-		return;
-	}
 
 	rl.rlim_max = len - 1;
 	rl.rlim_cur = len - 1;
@@ -158,12 +133,6 @@ static void test_eperm(void)
 {
 	void *addr;
 	struct rlimit rl;
-
-	if ((tst_kvercmp(2, 6, 9)) < 0) {
-		tst_resm(TCONF,
-			 "EPERM error value test needs kernel 2.6.9 or higher");
-		return;
-	}
 
 	rl.rlim_max = 0;
 	rl.rlim_cur = 0;

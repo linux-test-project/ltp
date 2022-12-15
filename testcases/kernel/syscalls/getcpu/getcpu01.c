@@ -134,13 +134,6 @@ static void run(void)
 	}
 }
 
-static void setup(void)
-{
-	if (tst_kvercmp(2, 6, 20) < 0)
-		tst_brk(TCONF, "kernel >= 2.6.20 required");
-}
-
 static struct tst_test test = {
 	.test_all = run,
-	.setup = setup,
 };

@@ -121,12 +121,6 @@ static void setup(void)
 {
 	unsigned int i;
 
-#if defined (__s390__) || (__s390x__) || (__ia64__)
-	if ((tst_kvercmp(2, 6, 12)) < 0)
-		tst_brk(TCONF,
-			 "This test can only run on kernels that are 2.6.12 and higher");
-#endif
-
 	page_sz = getpagesize();
 
 	fd = SAFE_OPEN("cache", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);

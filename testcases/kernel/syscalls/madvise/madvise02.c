@@ -96,15 +96,8 @@ static void tcases_filter(void)
 			tc->skip = 0;
 #endif /* if !defined(UCLINUX) */
 		break;
-		case MADV_REMOVE:
-			if ((tst_kvercmp(2, 6, 16)) < 0)
-				tc->skip = 1;
-		break;
 		case MADV_MERGEABLE:
 		case MADV_UNMERGEABLE:
-			if ((tst_kvercmp(2, 6, 32)) < 0)
-				tc->skip = 1;
-
 			/* kernel configured with CONFIG_KSM,
 			 * skip EINVAL test for MADV_MERGEABLE. */
 			if (access(KSM_SYS_DIR, F_OK) == 0)

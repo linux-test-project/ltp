@@ -127,13 +127,6 @@ static void test_einval2(void)
 	char *addr = global_addr;
 	size_t map_len = 0;
 
-	if (tst_kvercmp(2, 6, 12) < 0) {
-		tst_resm(TCONF,
-			 "EINVAL error value test for this condition needs "
-			 "kernel 2.6.12 or higher");
-		return;
-	}
-
 	TEST(munmap(addr, map_len));
 
 	check_and_print(EINVAL);
