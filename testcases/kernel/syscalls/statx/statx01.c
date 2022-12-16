@@ -53,7 +53,7 @@ static void test_mnt_id(struct statx *buf)
 {
 	FILE *file;
 	char line[PATH_MAX];
-	int pid, falg = 0;
+	int pid, flag = 0;
 	unsigned int line_mjr, line_mnr;
 	uint64_t mnt_id;
 
