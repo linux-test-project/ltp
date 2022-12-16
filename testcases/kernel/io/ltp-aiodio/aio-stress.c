@@ -1209,10 +1209,13 @@ static void setup(void)
 	if (tst_parse_int(str_num_threads, &num_threads, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of threads '%s'", str_num_threads);
 
-	if (str_o_flag)
+	if (str_o_flag) {
+		if (tst_fs_type(".") == TST_TMPFS_MAGIC)
+			tst_brk(TCONF, "O_DIRECT not supported on tmpfs");
 		o_flag = O_DIRECT;
-	else
+	} else {
 		o_flag = O_SYNC;
+	}
 
 	if (str_use_shm) {
 		if (!strcmp(str_use_shm, "shm")) {
