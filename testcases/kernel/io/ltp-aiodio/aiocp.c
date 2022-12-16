@@ -240,6 +240,9 @@ static void setup(void)
 		if (strncmp(str_oflag, "SYNC", 4) == 0) {
 			dstflags |= O_SYNC;
 		} else if (strncmp(str_oflag, "DIRECT", 6) == 0) {
+			if (tst_fs_type(".") == TST_TMPFS_MAGIC)
+				tst_brk(TCONF, "O_DIRECT not supported on tmpfs");
+
 			srcflags |= O_DIRECT;
 			dstflags |= O_DIRECT;
 		}
