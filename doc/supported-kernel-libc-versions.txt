@@ -51,7 +51,12 @@ distribution you may as well reconsider you life choices.
 | s390x         | cross compilation
 |==================================
 
-1.3 Supported libc
+1.3 Minimal supported kernel version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Minimal supported kernel version is 3.10.
+
+1.4 Supported libc
 ~~~~~~~~~~~~~~~~~~
 
 [align="center",options="header"]
