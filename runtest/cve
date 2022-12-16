@@ -76,3 +76,4 @@ cve-2022-0847 dirtypipe
 cve-2022-2590 dirtyc0w_shmem
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
+cve-2022-4378 cve-2022-4378
