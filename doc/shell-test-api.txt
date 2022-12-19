@@ -656,9 +656,9 @@ with syntax similar to the shell test command.
 
 [source,sh]
 -------------------------------------------------------------------------------
-# Exit the test if kernel version is older or equal to 2.6.8
-if tst_kvcmp -le 2.6.8; then
-	tst_brk TCONF "Kernel newer than 2.6.8 is needed"
+# Exit the test if kernel version is older or equal to 4.0.0
+if tst_kvcmp -le 4.0.0; then
+	tst_brk TCONF "Kernel newer than 4.0.0 is needed"
 fi
 
 # Exit the test if kernel is newer than 3.8 and older than 4.0.1
