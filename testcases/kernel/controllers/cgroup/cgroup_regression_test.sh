@@ -7,7 +7,7 @@
 TST_TESTFUNC=test
 TST_SETUP=do_setup
 TST_CLEANUP=do_cleanup
-TST_CNT=9
+TST_CNT=8
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="awk dmesg find mountpoint rmdir"
@@ -244,38 +244,26 @@ test5()
 }
 
 #---------------------------------------------------------------------------
-# Bug:    There was a race between cgroup_clone and umount
-# Kernel: 2.6.24 - 2.6.28, 2.6.29-rcX
-# Links:  http://lkml.org/lkml/2008/12/24/124
-# Fix:    commit 7b574b7b0124ed344911f5d581e9bc2d83bbeb19
+# Bug:    When running 2 concurrent mount/umount threads, lockdep warning
+#         may be triggered, it's a false positive, and it's VFS' issue but
+#         not cgroup.
+# Kernel: 2.6.24 - 2.6.29-rcX
+# Links:  http://lkml.org/lkml/2009/1/4/352
+# Fix:    commit ada723dcd681e2dffd7d73345cc8fda0eb0df9bd
 #---------------------------------------------------------------------------
 test6()
 {
-	if tst_kvcmp -ge "3.0"; then
-		tst_res TCONF "CONFIG_CGROUP_NS is NOT supported in Kernels >= 3.0"
-		return
-	fi
-
-	if ! grep -q -w "ns" /proc/cgroups; then
-		tst_res TCONF "CONFIG_CGROUP_NS is NOT enabled"
-		return
-	fi
-
 	cgroup_regression_6_1.sh &
 	local pid1=$!
-	cgroup_regression_6_2 &
+	cgroup_regression_6_2.sh &
 	local pid2=$!
 
-	tst_res TINFO "run test for 30 sec"
 	sleep 30
-	kill -USR1 $pid1
-	kill -TERM $pid2
+	kill -USR1 $pid1 $pid2
 	wait $pid1 2>/dev/null
 	wait $pid2 2>/dev/null
 
-	mount -t cgroup -o ns xxx cgroup/ > /dev/null 2>&1
-	rmdir cgroup/[1-9]* > /dev/null 2>&1
-	tst_umount $PWD/cgroup
+	umount cgroup/ 2> /dev/null
 	check_kernel_bug
 }
 
@@ -393,30 +381,6 @@ test8()
 	fi
 
 	umount cgroup/
-	check_kernel_bug
-}
-
-#---------------------------------------------------------------------------
-# Bug:    When running 2 concurrent mount/umount threads, lockdep warning
-#         may be triggered, it's a false positive, and it's VFS' issue but
-#         not cgroup.
-# Kernel: 2.6.24 - 2.6.29-rcX
-# Links:  http://lkml.org/lkml/2009/1/4/352
-# Fix:    commit ada723dcd681e2dffd7d73345cc8fda0eb0df9bd
-#---------------------------------------------------------------------------
-test9()
-{
-	cgroup_regression_9_1.sh &
-	local pid1=$!
-	cgroup_regression_9_2.sh &
-	local pid2=$!
-
-	sleep 30
-	kill -USR1 $pid1 $pid2
-	wait $pid1 2>/dev/null
-	wait $pid2 2>/dev/null
-
-	umount cgroup/ 2> /dev/null
 	check_kernel_bug
 }
 

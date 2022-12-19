@@ -6,7 +6,7 @@
 trap exit USR1
 
 while true; do
-	mount -t cgroup -o ns xxx cgroup/ > /dev/null 2>&1
-	rmdir cgroup/[1-9]* > /dev/null 2>&1
+	mount -t cgroup xxx cgroup/ > /dev/null 2>&1
+	cat cgroup/release_agent > /dev/null 2>&1
 	umount cgroup/ > /dev/null 2>&1
 done
