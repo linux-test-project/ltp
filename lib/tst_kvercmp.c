@@ -140,6 +140,9 @@ const char *tst_kvcmp_distname(const char *kver)
 	if (strstr(kver, ".el8"))
 		return "RHEL8";
 
+	if (strstr(kver, ".el9"))
+		return "RHEL9";
+
 	if (access(OSRELEASE_PATH, F_OK) != -1) {
 		SAFE_FILE_LINES_SCANF(NULL, OSRELEASE_PATH, "ID=%s", distname);
 
