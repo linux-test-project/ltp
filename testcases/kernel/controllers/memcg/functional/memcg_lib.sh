@@ -403,7 +403,9 @@ fi
 
 # Post 4.16 kernel updates stat in batch (> 32 pages) every time
 # Post 6.1 kernel updates stat in batch (> 64 pages) every time
-if tst_kvcmp -lt "6.1"; then
+# 1813e51eece0ad6 ("memcg: increase MEMCG_CHARGE_BATCH to 64")
+# has been merged since 5.14.0-191.el9.
+if tst_kvcmp -lt "6.1 RHEL9:5.14.0-191" ; then
 	PAGESIZES=$(($PAGESIZE * 33))
 else
 	PAGESIZES=$(($PAGESIZE * 65))
