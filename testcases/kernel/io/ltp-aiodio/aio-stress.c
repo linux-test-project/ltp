@@ -88,7 +88,6 @@ static int shm_id;
 static char *unaligned_buffer;
 static char *aligned_buffer;
 static int padded_reclen;
-static char *no_stonewall;
 static char *verify;
 static char *verify_buf;
 static char *unlink_files;
@@ -227,10 +226,7 @@ struct thread_info {
 };
 
 /* pthread mutexes and other globals for keeping the threads in sync */
-static pthread_cond_t stage_cond = PTHREAD_COND_INITIALIZER;
-static pthread_mutex_t stage_mutex = PTHREAD_MUTEX_INITIALIZER;
-static int threads_ending;
-static int threads_starting;
+static pthread_barrier_t worker_barrier;
 static struct timeval global_stage_start_time;
 static struct thread_info *global_thread_info;
 
@@ -1025,9 +1021,6 @@ static void global_thread_throughput(struct thread_info *t, char *this_stage)
 	if (total_mb) {
 		tst_res(TINFO, "%s throughput (%.2f MB/s)", this_stage, total_mb / runtime);
 		tst_res(TINFO, "%.2f MB in %.2fs", total_mb, runtime);
-
-		if (no_stonewall)
-			tst_res(TINFO, "min transfer %.2fMB", min_trans);
 	}
 }
 
@@ -1053,18 +1046,8 @@ static int *worker(struct thread_info *t)
 
 restart:
 	if (num_threads > 1) {
-		pthread_mutex_lock(&stage_mutex);
-		threads_starting++;
-
-		if (threads_starting == num_threads) {
-			threads_ending = 0;
+		if (pthread_barrier_wait(&worker_barrier))
 			gettimeofday(&global_stage_start_time, NULL);
-			pthread_cond_broadcast(&stage_cond);
-		}
-
-		while (threads_starting != num_threads)
-			pthread_cond_wait(&stage_cond, &stage_mutex);
-		pthread_mutex_unlock(&stage_mutex);
 	}
 
 	if (t->active_opers) {
@@ -1077,14 +1060,7 @@ restart:
 
 	/* first we send everything through aio */
 	while (t->active_opers && cnt < iterations) {
-		if (!no_stonewall && threads_ending) {
-			oper = t->active_opers;
-			oper->stonewalled = 1;
-			oper_list_del(oper, &t->active_opers);
-			oper_list_add(oper, &t->finished_opers);
-		} else {
-			run_active_list(t, io_iter, max_io_submit);
-		}
+		run_active_list(t, io_iter, max_io_submit);
 		cnt++;
 	}
 
@@ -1135,18 +1111,8 @@ restart:
 	}
 
 	if (num_threads > 1) {
-		pthread_mutex_lock(&stage_mutex);
-		threads_ending++;
-
-		if (threads_ending == num_threads) {
-			threads_starting = 0;
-			pthread_cond_broadcast(&stage_cond);
+		if (pthread_barrier_wait(&worker_barrier))
 			global_thread_throughput(t, this_stage);
-		}
-
-		while (threads_ending != num_threads)
-			pthread_cond_wait(&stage_cond, &stage_mutex);
-		pthread_mutex_unlock(&stage_mutex);
 	}
 
 	/* someone got restarted, go back to the beginning */
@@ -1177,6 +1143,8 @@ static int run_workers(struct thread_info *t, int num_threads)
 	int ret = 0;
 	int i;
 
+	pthread_barrier_init(&worker_barrier, NULL, num_threads);
+
 	for (i = 0; i < num_threads; i++)
 		SAFE_PTHREAD_CREATE(&t[i].tid, NULL, (start_routine)worker, t + i);
 
@@ -1184,6 +1152,8 @@ static int run_workers(struct thread_info *t, int num_threads)
 		SAFE_PTHREAD_JOIN(t[i].tid, &retval);
 		ret |= (intptr_t)retval;
 	}
+
+	pthread_barrier_destroy(&worker_barrier);
 
 	return ret;
 }
@@ -1397,7 +1367,6 @@ static struct tst_test test = {
 		{ "t:", &str_num_threads, "Number of threads to run" },
 		{ "u", &unlink_files, "Unlink files after completion" },
 		{ "v", &verify, "Verification of bytes written" },
-		{ "x", &no_stonewall, "Turn off thread stonewalling" },
 		{},
 	},
 };
