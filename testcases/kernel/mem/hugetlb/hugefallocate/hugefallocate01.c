@@ -21,6 +21,7 @@
 #include <sys/types.h>
 
 #include "hugetlb.h"
+#include "lapi/fallocate.h"
 
 #define MNTPOINT "hugetlbfs/"
 
