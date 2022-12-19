@@ -27,10 +27,10 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/mount.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include "tst_test.h"
+#include "lapi/fcntl.h"
 #include "tst_uid.h"
 #include "tst_safe_file_at.h"
 
