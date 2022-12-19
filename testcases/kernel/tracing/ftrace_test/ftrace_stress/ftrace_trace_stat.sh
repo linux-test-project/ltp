@@ -22,12 +22,6 @@ if [ ! -e "$TRACING_PATH"/function_profile_enabled ]; then
         should_skip=1
 fi
 
-# For kernels older than 2.6.36, this testcase can result in
-# divide-by-zero kernel bug
-if tst_kvcmp -lt "2.6.36"; then
-	should_skip=1
-fi
-
 while true; do
 	if [ $should_skip -eq 1 ]; then
 		sleep 2

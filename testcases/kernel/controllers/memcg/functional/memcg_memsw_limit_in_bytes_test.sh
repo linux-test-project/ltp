@@ -56,11 +56,7 @@ test9()
 
 	ROD echo 10M \> memory.limit_in_bytes
 
-	if tst_kvcmp -lt "2.6.31"; then
-		EXPECT_FAIL echo -1 \> memory.memsw.limit_in_bytes
-	else
-		EXPECT_PASS echo -1 \> memory.memsw.limit_in_bytes
-	fi
+	EXPECT_PASS echo -1 \> memory.memsw.limit_in_bytes
 }
 
 test10()

@@ -25,15 +25,10 @@ export TST_TOTAL=2
 . pm_include.sh
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
-if tst_kvcmp -gt "2.6.29"; then
-	max_sched_mc=2
-	max_sched_smt=2
-else
-	max_sched_mc=1
-	max_sched_smt=1
-fi
+max_sched_mc=2
+max_sched_smt=2
 
 tst_require_cmds python3
 

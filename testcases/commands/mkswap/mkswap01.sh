@@ -51,12 +51,7 @@ mkswap_verify()
 		local pagesize=$PAGE_SIZE
 	fi
 
-	if tst_kvcmp -lt "2.6.35" && [ -n "$dev_file" ]; then
-		tst_res TINFO "Waiting for $dev_file to appear"
-		tst_sleep 100ms
-	else
-		TST_RETRY_FUNC "check_for_file $dev_file" 0
-	fi
+	TST_RETRY_FUNC "check_for_file $dev_file" 0
 
 	swapon $swapfile 2>/dev/null
 

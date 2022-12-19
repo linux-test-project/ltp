@@ -88,11 +88,7 @@ test11()
 test12()
 {
 	tst_res TINFO "Test invalid memory.limit_in_bytes"
-	if tst_kvcmp -lt "2.6.31"; then
-		EXPECT_FAIL echo -1 \> memory.limit_in_bytes
-	else
 		EXPECT_PASS echo -1 \> memory.limit_in_bytes
-	fi
 }
 
 test13()

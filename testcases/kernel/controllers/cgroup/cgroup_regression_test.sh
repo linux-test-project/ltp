@@ -16,10 +16,6 @@ do_setup()
 {
 	mkdir cgroup/
 
-	if tst_kvcmp -lt "2.6.29"; then
-		tst_brk TCONF ignored "test must be run with kernel 2.6.29 or newer"
-	fi
-
 	if [ ! -f /proc/cgroups ]; then
 		tst_brk TCONF ignored "Kernel does not support for control groups; skipping testcases";
 	fi

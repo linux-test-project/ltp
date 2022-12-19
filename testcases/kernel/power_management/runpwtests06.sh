@@ -45,13 +45,9 @@ test_timer_migration() {
 }
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
-if tst_kvcmp -ge "2.6.31"; then
-	timer_migr_support_compatible=0
-else
-	timer_migr_support_compatible=1
-fi
+timer_migr_support_compatible=0
 
 if [ $timer_migr_support_compatible -eq 1 ]; then
 	tst_brkm TCONF "Kernel version does not support Timer migration"

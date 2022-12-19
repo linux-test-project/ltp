@@ -47,7 +47,7 @@ test_sched_mc() {
 }
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
 # Checking sched_mc sysfs interface
 multi_socket=$(is_multi_socket)

@@ -25,7 +25,7 @@ export TST_TOTAL=2
 . pm_include.sh
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
 tst_require_cmds python3
 

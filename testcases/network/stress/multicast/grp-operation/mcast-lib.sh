@@ -27,7 +27,6 @@ mcast_setup4()
 mcast_setup6()
 {
 	local default_mld_max_msf=64
-	tst_kvcmp -lt '2.6.15' && default_mld_max_msf=10
 
 	SYSCTL_ALL_FORCE_MLD_VERSION=$(sysctl -b net.ipv6.conf.all.force_mld_version)
 	SYSCTL_FORCE_MLD_VERSION=$(sysctl -b net.ipv6.conf.$(tst_iface).force_mld_version)

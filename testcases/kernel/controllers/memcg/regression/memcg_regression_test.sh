@@ -60,10 +60,6 @@ check_kernel_bug()
 
 setup()
 {
-	if tst_kvcmp -lt "2.6.30"; then
-		tst_brk TBROK "Test should be run with kernel 2.6.30 or newer"
-	fi
-
 	cgroup_require "memory"
 	cgroup_version=$(cgroup_get_version "memory")
 	mount_point=$(cgroup_get_mountpoint "memory")

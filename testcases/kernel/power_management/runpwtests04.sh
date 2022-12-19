@@ -46,7 +46,7 @@ check_cpuidle_sysfs_files() {
 }
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
 # Checking cpuidle sysfs interface files
 if check_cpuidle_sysfs_files ; then

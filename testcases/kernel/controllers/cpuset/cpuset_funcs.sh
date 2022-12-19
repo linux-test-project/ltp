@@ -79,13 +79,6 @@ cpuset_log_error()
 	done < "$1"
 }
 
-version_check()
-{
-	if tst_kvcmp -lt "2.6.28"; then
-		tst_brkm TCONF "kernel is below 2.6.28"
-	fi
-}
-
 ncpus_check()
 {
 	if [ $NR_CPUS -lt $1 ]; then
@@ -149,8 +142,6 @@ check()
 	user_check
 
 	cpuset_check
-
-	version_check
 
 	ncpus_check ${1:-2}
 

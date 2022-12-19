@@ -145,7 +145,7 @@ pwkm_load_unload() {
 }
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
 # Checking cpufreq sysfs interface files
 if [ ! -d /sys/devices/system/cpu/cpu0/cpufreq ] ; then

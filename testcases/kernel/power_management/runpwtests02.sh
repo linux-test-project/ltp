@@ -46,7 +46,7 @@ test_sched_smt() {
 }
 
 # Checking test environment
-check_kervel_arch
+check_arch
 
 # Check sched_smt_power_savings interface on HT machines
 hyper_threaded=$(is_hyper_threaded)

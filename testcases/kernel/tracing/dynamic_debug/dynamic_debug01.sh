@@ -46,10 +46,6 @@ mount_debugfs()
 
 setup()
 {
-	if tst_kvcmp -lt 2.6.30 ; then
-		tst_brk TCONF "Dynamic debug is available since version 2.6.30"
-	fi
-
 	mount_debugfs
 	if [ ! -d "$DEBUGFS_PATH/dynamic_debug" ] ; then
 		tst_brk TBROK "Unable to find $DEBUGFS_PATH/dynamic_debug"
