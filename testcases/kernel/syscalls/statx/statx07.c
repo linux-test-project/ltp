@@ -149,6 +149,9 @@ static void setup(void)
 
 static void cleanup(void)
 {
+	if (mounted)
+		SAFE_UMOUNT(CLI_PATH);
+
 	if (!exported)
 		return;
 	snprintf(cmd, sizeof(cmd),
@@ -156,9 +159,6 @@ static void cleanup(void)
 
 	if (tst_system(cmd) == -1)
 		tst_res(TWARN | TST_ERR, "failed to clear exportfs");
-
-	if (mounted)
-		SAFE_UMOUNT(CLI_PATH);
 }
 
 static struct tst_test test = {
