@@ -83,7 +83,6 @@ static struct tst_test test = {
 		"CONFIG_CHECKPOINT_RESTORE",
 		NULL
 	},
-	.min_kver = "3.8.0",
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_msgrcv,
 	.setup = setup,

@@ -559,7 +559,7 @@ static struct tst_test test = {
 Testcases for newly added kernel functionality require kernel newer than a
 certain version to run. All you need to skip a test on older kernels is to
 set the '.min_kver' string in the 'struct tst_test' to a minimal required
-kernel version, e.g. '.min_kver = "2.6.30"'.
+kernel version, e.g. '.min_kver = "4.10.0"'.
 
 For more complicated operations such as skipping a test for a certain range
 of kernel versions, following functions could be used:

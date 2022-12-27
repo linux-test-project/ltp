@@ -573,5 +573,4 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.test_all = test_kmsg,
-	.min_kver = "3.5.0"
 };

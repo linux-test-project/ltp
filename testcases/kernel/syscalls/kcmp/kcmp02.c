@@ -94,6 +94,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = verify_kcmp,
-	.min_kver = "3.5.0",
 	.needs_tmpdir = 1
 };

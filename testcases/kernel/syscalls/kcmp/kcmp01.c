@@ -103,6 +103,5 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.test = verify_kcmp,
-	.min_kver = "3.5.0",
 	.needs_tmpdir = 1,
 };

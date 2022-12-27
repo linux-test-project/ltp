@@ -208,7 +208,6 @@ static struct tst_test test = {
 	.tcnt = 2,
 	.setup = setup,
 	.cleanup = cleanup,
-	.min_kver = "3.4.0",
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,

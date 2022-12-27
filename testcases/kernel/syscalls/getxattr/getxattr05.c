@@ -175,7 +175,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = do_getxattr,
-	.min_kver = "3.8",
 };
 
 #else /* HAVE_SYS_XATTR_H && HAVE_LIBACL*/
