@@ -81,8 +81,6 @@ static void setup(void)
 {
 	unsigned long int i;
 
-	finit_module_supported_by_kernel();
-
 	tst_module_exists(MODULE_NAME, &mod_path);
 
 	kernel_lockdown = tst_lockdown_enabled();

@@ -107,8 +107,7 @@ static void tcases_filter(void)
 			/* In kernel commit 1998cc0, madvise(MADV_WILLNEED) to
 			 * anon mem doesn't return -EBADF now, as now we support
 			 * swap prefretch. */
-			if ((tst_kvercmp(3, 9, 0)) > 0 &&
-					tc->exp_errno == EBADF)
+			if (tc->exp_errno == EBADF)
 				tc->skip = 1;
 		break;
 		case MADV_FREE:

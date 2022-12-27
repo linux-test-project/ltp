@@ -29,9 +29,6 @@ static int check_newuser(void)
 {
 	int pid, status;
 
-	if (tst_kvercmp(3, 8, 0) < 0)
-		tst_brkm(TCONF, NULL, "CLONE_NEWUSER not supported");
-
 	pid = do_clone_unshare_test(T_CLONE, CLONE_NEWUSER, dummy_child, NULL);
 	if (pid == -1)
 		tst_brkm(TCONF | TERRNO, NULL, "CLONE_NEWUSER not supported");

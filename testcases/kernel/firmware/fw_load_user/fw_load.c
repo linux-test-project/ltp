@@ -114,11 +114,6 @@ void setup(int argc, char *argv[])
 
 	tst_require_root();
 
-	if (tst_kvercmp(3, 7, 0) < 0) {
-		tst_brkm(TCONF, NULL,
-			"Test must be run with kernel 3.7 or newer");
-	}
-
 	char fw_size_param[19];
 	snprintf(fw_size_param, 19, "fw_size=%d", fw_size);
 	char *const mod_params[2] = { fw_size_param, NULL };

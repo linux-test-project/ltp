@@ -247,8 +247,7 @@ static void setup(void)
 {
 	msgkey = GETIPCKEY();
 
-	if (tst_kvercmp(3, 8, 0) >= 0)
-		msg_copy_sup = 1;
+	msg_copy_sup = 1;
 }
 
 static void (*testfunc[])(void) = {test_msg_except, test_msg_noerror,

@@ -57,8 +57,6 @@ static int tc_acpi_str(void)
 	int res, ret = 0;
 	char descr[4096], sysfs_path[4096];
 
-	int not_kver_3_7 = tst_kvercmp(3, 7, 0) < 0;
-
 	while (1) {
 
 		SAFE_FILE_PRINTF(cleanup, dev_tcase, "%d", ACPI_TRAVERSE);
@@ -83,19 +81,6 @@ static int tc_acpi_str(void)
 			 * Device doesn't have sysfs entry
 			 * continue, because others might have it
 			 */
-			continue;
-		}
-
-		/*
-		 * Find device description in sysfs.
-		 *
-		 * New sysfs interface to export device description
-		 * implemented since Linux 3.7
-		 */
-		if (not_kver_3_7) {
-			tst_resm(TINFO, "sysfs _STR check required Linux 3.7+");
-			ret = TCONF;
-			/* continue, we can still traverse ACPI devices */
 			continue;
 		}
 

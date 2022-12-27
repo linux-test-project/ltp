@@ -230,8 +230,7 @@ void cleanup_test(int i)
 
 	switch (i) {
 	case 0:
-		if (tst_kvercmp(2, 6, 9) >= 0)
-			seteuid(0);
+		seteuid(0);
 
 		rl.rlim_max = -1;
 		rl.rlim_cur = -1;

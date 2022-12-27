@@ -190,8 +190,7 @@ static void setup0(void)
 		 * changed -EINVAL to -ENOIOCTLCMD, so vfs_ioctl now
 		 * returns -ENOTTY.
 		 */
-		if ((tst_kvercmp(3, 5, 0)) >= 0)
-			tdat[testno].experrno = ENOTTY;
+		tdat[testno].experrno = ENOTTY;
 	}
 }
 

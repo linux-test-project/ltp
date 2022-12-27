@@ -121,13 +121,8 @@ static void test02(void)
 			tst_brk(TFAIL | TERRNO,
 				 "fallocate() or lseek() failed");
 		}
-		if (tst_kvercmp(3, 1, 0) < 0) {
-			tst_res(TINFO, "lseek() doesn't support SEEK_HOLE, "
-				 "this is expected for < 3.1 kernels");
-		} else {
-			tst_brk(TBROK | TERRNO,
-				 "lseek() doesn't support SEEK_HOLE");
-		}
+		tst_brk(TBROK | TERRNO,
+			"lseek() doesn't support SEEK_HOLE");
 	} else {
 		tst_res(TINFO, "found a hole at '%ld' offset", ret);
 	}

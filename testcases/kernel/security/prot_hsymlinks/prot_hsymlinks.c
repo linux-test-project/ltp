@@ -193,10 +193,6 @@ static void setup(int argc, char *argv[])
 
 	tst_require_root();
 
-	if (tst_kvercmp(3, 7, 0) < 0)
-		tst_brkm(TCONF, NULL,
-			"Test must be run with kernel 3.7 or newer");
-
 	if (eaccess("/etc/passwd", W_OK)) {
 		tst_brkm(TCONF, NULL,
 			"/etc/passwd is not accessible");

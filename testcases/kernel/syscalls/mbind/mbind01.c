@@ -197,12 +197,6 @@ static void do_test(unsigned int i)
 	tst_res(TINFO, "case %s", tc->desc);
 
 	if (tc->policy == MPOL_LOCAL) {
-		if ((tst_kvercmp(3, 8, 0)) < 0) {
-			tst_res(TCONF, "%s is not supported",
-				tst_mempolicy_mode_name(tc->policy));
-			return;
-		}
-
 		if ((tst_kvercmp(5, 14, 0)) >= 0)
 			tc->check_policy = NULL;
 	}

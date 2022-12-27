@@ -882,9 +882,6 @@ static void setup(void)
 	if (!clients_num)
 		clients_num = sysconf(_SC_NPROCESSORS_ONLN);
 
-	if (tfo_value > 0 && tst_kvercmp(3, 7, 0) < 0)
-		tst_brk(TCONF, "Test must be run with kernel 3.7 or newer");
-
 	if (busy_poll >= 0 && tst_kvercmp(3, 11, 0) < 0)
 		tst_brk(TCONF, "Test must be run with kernel 3.11 or newer");
 

@@ -150,11 +150,6 @@ void setup(int argc, char *argv[])
 	if (access("/proc/cgroups", F_OK) == -1)
 		tst_brkm(TCONF, NULL, "Kernel doesn't support cgroups");
 
-	if (tst_kvercmp(3, 7, 0) < 0) {
-		tst_brkm(TCONF, NULL,
-			"Test must be run with kernel 3.7 or newer");
-	}
-
 	for (i = 0; i < ARRAY_SIZE(tkeys); ++i) {
 		if (!strcmp(tkeys[i].name, "security.")) {
 			tkeys[i].good = tst_kvercmp(3, 15, 0) < 0;

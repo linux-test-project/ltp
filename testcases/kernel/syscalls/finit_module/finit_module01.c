@@ -25,8 +25,6 @@ static char *mod_path;
 
 static void setup(void)
 {
-	finit_module_supported_by_kernel();
-
 	tst_module_exists(MODULE_NAME, &mod_path);
 
 	fd = SAFE_OPEN(mod_path, O_RDONLY|O_CLOEXEC);

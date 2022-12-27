@@ -54,10 +54,6 @@ static void verify_pipe2(unsigned int n)
 	int get_flag = 0, i = 0;
 
 	tst_res(TINFO, "%s ", tc->message);
-	if ((tc->flags ==  O_DIRECT) && (tst_kvercmp(3, 4, 0)) < 0) {
-		tst_res(TCONF, "O_DIRECT needs Linux 3.4 or newer");
-		return;
-	}
 
 	SAFE_PIPE2(fds, tc->flags);
 	for (i = 0; i < 2; i++) {
