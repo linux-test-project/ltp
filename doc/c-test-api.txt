@@ -584,8 +584,21 @@ positive means that it's newer.
 
 The second function 'tst_kvercmp2()' allows for specifying per-vendor table of
 kernel versions as vendors typically backport fixes to their kernels and the
-test may be relevant even if the kernel version does not suggests so. See
-'testcases/kernel/syscalls/inotify/inotify04.c' for example usage.
+test may be relevant even if the kernel version does not suggests so.
+
+[source,c]
+-------------------------------------------------------------------------------
+if (tst_kvercmp(5, 19, 0) >= 0)
+	tst_res(TCONF, "Test valid only for kernel < 5.19");
+
+static struct tst_kern_exv kvers[] = {
+	{ "UBUNTU", "4.4.0-48.69" },
+	{ NULL, NULL},
+};
+
+if (tst_kvercmp2(4, 4, 27, kvers) < 0)
+	/* code for kernel < v4.4.27 or ubuntu kernel < 4.4.0-48.69 */
+-------------------------------------------------------------------------------
 
 WARNING: The shell 'tst_kvercmp' maps the result into unsigned integer - the
          process exit value.
