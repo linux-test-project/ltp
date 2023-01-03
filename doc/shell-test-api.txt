@@ -665,6 +665,10 @@ fi
 if tst_kvcmp -gt 3.16 -a -lt 4.0.1; then
 	tst_brk TCONF "Kernel must be older than 3.16 or newer than 4.0.1"
 fi
+
+if tst_kvcmp -lt "6.1 RHEL9:5.14.0-191"; then
+	# code for kernel < 6.1 or RHEL9 kernel < 5.14.0-191
+fi
 -------------------------------------------------------------------------------
 
 [options="header"]
@@ -682,6 +686,12 @@ fi
 
 The format for kernel version has to either be with one dot e.g. '2.6' or with
 two dots e.g. '4.8.1'.
+
+Kernel version can also be followed by a space separated list of extra versions
+prefixed by distribution which when matched take precedence, e.g. '6.1 RHEL9:5.14.0-191'.
+
+For more info see 'tst_kvercmp()' and 'tst_kvercmp2()' in
+https://github.com/linux-test-project/ltp/wiki/C-Test-API#16-runtime-kernel-version-detection[C Test API].
 
 tst_fs_has_free
 +++++++++++++++
