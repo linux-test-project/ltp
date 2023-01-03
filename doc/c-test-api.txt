@@ -515,7 +515,6 @@ In particular, 'tst_parse_filesize' function accepts prefix multiplies such as
 "k/K for kilobytes, "m/M" for megabytes and "g/G" for gigabytes. For example,
 10K are converted into 10240 bytes.
 
-.Example Usage
 [source,c]
 -------------------------------------------------------------------------------
 #include <limits.h>

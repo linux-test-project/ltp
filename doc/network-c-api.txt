@@ -108,7 +108,8 @@ address structures:
   using binary IPv6 address +ip_val+ and port number +port+, both in host byte
   order.
 
-.Example Usage
+Example Usage
++++++++++++++
 [source,c]
 -------------------------------------------------------------------------------
 
@@ -246,7 +247,8 @@ WARNING: Moving a network device to another namespace will erase previous
   the same meaning as in +NETDEV_ADD_ROUTE_INET()+. Returns 1 on success,
   0 on error.
 
-.Example Usage
+Example Usage
++++++++++++++
 [source,c]
 -------------------------------------------------------------------------------
 #include <arpa/inet.h>
@@ -426,7 +428,8 @@ structures with the last item having +NULL+ in the +header+ field. Call
   +RTNL_ADD_MESSAGE()+ above.  Returns the number of added attributes on
   success (nested attributes are not counted), -1 on error.
 
-.Example Usage
+Example Usage
++++++++++++++
 [source,c]
 -------------------------------------------------------------------------------
 #include <asm/types.h>
