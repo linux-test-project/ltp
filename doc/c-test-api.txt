@@ -603,6 +603,9 @@ if (tst_kvercmp2(4, 4, 27, kvers) < 0)
 WARNING: The shell 'tst_kvercmp' maps the result into unsigned integer - the
          process exit value.
 
+NOTE: See also LTP
+      https://github.com/linux-test-project/ltp/wiki/Supported-kernel,-libc,-toolchain-versions#13-minimal-supported-kernel-version[minimal supported kernel version].
+
 1.7 Fork()-ing
 ~~~~~~~~~~~~~~
 

@@ -693,6 +693,9 @@ prefixed by distribution which when matched take precedence, e.g. '6.1 RHEL9:5.1
 For more info see 'tst_kvercmp()' and 'tst_kvercmp2()' in
 https://github.com/linux-test-project/ltp/wiki/C-Test-API#16-runtime-kernel-version-detection[C Test API].
 
+NOTE: See also LTP
+      https://github.com/linux-test-project/ltp/wiki/Supported-kernel,-libc,-toolchain-versions#13-minimal-supported-kernel-version[minimal supported kernel version].
+
 tst_fs_has_free
 +++++++++++++++
 
