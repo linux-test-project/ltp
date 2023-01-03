@@ -21,7 +21,7 @@
 #include "time64_variants.h"
 #include "tst_timer.h"
 
-#define MNTPOINT 	"mntpoint"
+#define MNTPOINT	"mntpoint"
 #define TEST_FILE	MNTPOINT"/test_file"
 #define TEST_DIR	MNTPOINT"/test_dir"
 
@@ -42,7 +42,7 @@ static struct mytime tno = {0, UTIME_NOW, 0, UTIME_OMIT, 1, 0};
 static struct mytime ton = {0, UTIME_OMIT, 0, UTIME_NOW, 0, 1};
 static struct mytime t11 = {1, 1, 1, 1, 1, 1};
 
-struct test_case {
+static struct test_case {
 	int dirfd;
 	char *pathname;
 	struct mytime *mytime;
@@ -100,7 +100,7 @@ struct test_case {
 };
 
 static inline int sys_utimensat(int dirfd, const char *pathname,
-                                void *times, int flags)
+				void *times, int flags)
 {
 	return tst_syscall(__NR_utimensat, dirfd, pathname, times, flags);
 }
@@ -121,13 +121,13 @@ static struct time64_variants variants[] = {
 #endif
 };
 
-union tst_multi {
+static union tst_multi {
 	struct timespec libc_ts[2];
 	struct __kernel_old_timespec kern_old_ts[2];
 	struct __kernel_timespec kern_ts[2];
 } ts;
 
-static void tst_multi_set_time(enum tst_ts_type type, struct mytime *mytime)
+static void multi_set_time(enum tst_ts_type type, struct mytime *mytime)
 {
 	switch (type) {
 	case TST_LIBC_TIMESPEC:
@@ -243,7 +243,7 @@ static void run(unsigned int i)
 	}
 
 	if (mytime) {
-		tst_multi_set_time(tv->ts_type, mytime);
+		multi_set_time(tv->ts_type, mytime);
 		tsp = &ts;
 	} else if (tc->exp_err == EFAULT) {
 		tsp = bad_addr;
