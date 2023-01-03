@@ -1,4 +1,4 @@
-AC_PREREQ(2.61)
+AC_PREREQ(2.64)
 AC_INIT([ltp], [LTP_VERSION], [ltp@lists.linux.it])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
