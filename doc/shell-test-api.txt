@@ -661,9 +661,9 @@ if tst_kvcmp -le 4.0.0; then
 	tst_brk TCONF "Kernel newer than 4.0.0 is needed"
 fi
 
-# Exit the test if kernel is newer than 3.8 and older than 4.0.1
-if tst_kvcmp -gt 3.8 -a -lt 4.0.1; then
-	tst_brk TCONF "Kernel must be older than 3.8 or newer than 4.0.1"
+# Exit the test if kernel is newer than 3.16 and older than 4.0.1
+if tst_kvcmp -gt 3.16 -a -lt 4.0.1; then
+	tst_brk TCONF "Kernel must be older than 3.16 or newer than 4.0.1"
 fi
 -------------------------------------------------------------------------------
 

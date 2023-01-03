@@ -21,8 +21,7 @@ DEBUGFS_WAS_MOUNTED=0
 DEBUGFS_PATH=""
 DEBUGFS_CONTROL=""
 DYNDEBUG_STATEMENTS="./debug_statements"
-EMPTY_FLAG="-"
-NEW_INTERFACE=0
+EMPTY_FLAG="=_"
 
 mount_debugfs()
 {
@@ -55,11 +54,6 @@ setup()
 		tst_brk TBROK "Unable to find $DEBUGFS_CONTROL"
 	fi
 
-	if tst_kvcmp -ge 3.4 ; then
-		NEW_INTERFACE=1
-		EMPTY_FLAG="=_"
-	fi
-
 	grep -v "^#" "$DEBUGFS_CONTROL" > "$DYNDEBUG_STATEMENTS"
 }
 
@@ -83,10 +77,8 @@ do_all_flags()
 
 	for INPUT_LINE in $ALL_INPUTS; do
 		do_flag "+p" "$OPTION" "$INPUT_LINE"
-		if tst_kvcmp -ge 3.2 || [ $NEW_INTERFACE -eq 1 ] ; then
-			do_flag "+flmt" "$OPTION" "$INPUT_LINE"
-			do_flag "-flmt" "$OPTION" "$INPUT_LINE"
-		fi
+		do_flag "+flmt" "$OPTION" "$INPUT_LINE"
+		do_flag "-flmt" "$OPTION" "$INPUT_LINE"
 		do_flag "-p" "$OPTION" "$INPUT_LINE"
 	done
 
@@ -131,10 +123,9 @@ cleanup()
 		FLAGS_SET=$(awk -v emp="$EMPTY_FLAG" '$3 != emp' $DYNDEBUG_STATEMENTS)
 	fi
 	if [ "$FLAGS_SET" ] ; then
-		FLAG_PREFIX=$([ $NEW_INTERFACE -eq 1 ] && echo "" || echo "+")
 		/bin/echo "$FLAGS_SET" | while read -r FLAG_LINE ; do
 			/bin/echo -n "$FLAG_LINE" \
-				| awk -v prf="$FLAG_PREFIX" -F " |:" \
+				| awk -v prf=-F " |:" \
 				'{print "file "$1" line "$2" "prf $4}' \
 				> "$DEBUGFS_CONTROL"
 		done

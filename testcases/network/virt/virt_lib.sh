@@ -44,10 +44,6 @@ virt_lib_setup()
 {
 	case "$virt_type" in
 	vxlan|geneve)
-		if tst_kvcmp -lt "3.8"; then
-			tst_brk TCONF "test must be run with kernel 3.8 or newer"
-		fi
-
 		if [ "$TST_IPV6" ] && tst_kvcmp -lt "3.12"; then
 			tst_brk TCONF "test must be run with kernels >= 3.12"
 		fi
@@ -252,10 +248,6 @@ virt_minimize_timeout()
 
 vxlan_setup_subnet_uni()
 {
-	if tst_kvcmp -lt "3.10"; then
-		tst_brk TCONF "test must be run with kernel 3.10 or newer"
-	fi
-
 	[ "$(ip link add type $virt_type help 2>&1 | grep remote)" ] || \
 		tst_brk TCONF "iproute doesn't support remote unicast address"
 
