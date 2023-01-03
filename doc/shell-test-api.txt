@@ -683,7 +683,9 @@ fi
 The format for kernel version has to either be with one dot e.g. '2.6' or with
 two dots e.g. '4.8.1'.
 
-.tst_fs_has_free
+tst_fs_has_free
++++++++++++++++
+
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
@@ -703,7 +705,9 @@ satisfied, 1 if not, and 2 on error.
 
 The second argument supports suffixes kB, MB and GB, the default unit is Byte.
 
-.tst_retry
+tst_retry
++++++++++
+
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
@@ -755,7 +759,9 @@ correct daemon name.
 | SYSLOG_DAEMON | Syslog daemon name (syslog, syslog-ng, rsyslog).
 |==============================================================================
 
-.Cron daemon restart example
+Cron daemon restart example
++++++++++++++++++++++++++++
+
 [source,sh]
 -------------------------------------------------------------------------------
 #!/bin/sh
