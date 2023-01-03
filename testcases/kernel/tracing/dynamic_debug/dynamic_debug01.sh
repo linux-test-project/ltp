@@ -125,7 +125,7 @@ cleanup()
 	if [ "$FLAGS_SET" ] ; then
 		/bin/echo "$FLAGS_SET" | while read -r FLAG_LINE ; do
 			/bin/echo -n "$FLAG_LINE" \
-				| awk -v prf=-F " |:" \
+				| awk -v prf= -F " |:" \
 				'{print "file "$1" line "$2" "prf $4}' \
 				> "$DEBUGFS_CONTROL"
 		done
