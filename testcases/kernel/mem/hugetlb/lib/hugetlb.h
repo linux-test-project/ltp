@@ -30,6 +30,15 @@
 #define SHM_HUGETLB	04000	/* segment is mapped via hugetlb */
 #endif
 
+#ifndef barrier
+# ifdef mb
+	/* Redefining the mb() */
+#   define barrier() mb()
+# else
+#   define barrier() __asm__ __volatile__ ("" : : : "memory")
+# endif
+#endif
+
 /*
  * to get the lower nine permission bits
  * from shmid_ds.ipc_perm.mode
