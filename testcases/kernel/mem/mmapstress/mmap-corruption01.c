@@ -177,5 +177,6 @@ int main(int argc, char **argv)
 void finish(int sig)
 {
 	printf("mmap-corruption PASSED\n");
+	tst_rmdir();
 	exit(0);
 }
