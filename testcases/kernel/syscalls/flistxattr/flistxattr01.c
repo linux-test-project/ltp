@@ -47,7 +47,7 @@ static int has_attribute(const char *list, int llen, const char *attr)
 
 static void verify_flistxattr(void)
 {
-	char buf[64];
+	char buf[128];
 
 	TEST(flistxattr(fd, buf, sizeof(buf)));
 	if (TST_RET == -1) {
