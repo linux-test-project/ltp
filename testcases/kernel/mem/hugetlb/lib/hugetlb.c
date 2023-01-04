@@ -111,3 +111,22 @@ void rm_shm(int shm_id)
 		tst_res(TINFO, "id = %d", shm_id);
 	}
 }
+
+#define RANDOM_CONSTANT 0x1234ABCD
+int do_readback(void *p, size_t size, char *desc)
+{
+	unsigned int *q = p;
+	size_t i;
+
+	for (i = 0; i < (size / sizeof(*q)); i++)
+		q[i] = RANDOM_CONSTANT ^ i;
+
+	for (i = 0; i < (size / sizeof(*q)); i++) {
+		if (q[i] != (RANDOM_CONSTANT ^ i)) {
+			tst_res(TFAIL, "At \"%s\": Mismatch at offset 0x%lx: 0x%x "
+					"instead of 0x%lx", desc, i, q[i], RANDOM_CONSTANT ^ i);
+			return -1;
+		}
+	}
+	return 0;
+}
