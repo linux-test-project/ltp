@@ -56,7 +56,7 @@ ADI007 dio_append
 ADI008 dio_append
 ADI009 dio_append
 #Running dio_truncate
-DIT000 dio_truncate
+DIT000 dio_truncate -n 1
 DIT001 dio_truncate
 DIT002 dio_truncate
 #Running dio_read

@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "common.h"
 
 static volatile int *run_child;
@@ -86,6 +87,7 @@ static void dio_read(const char *filename, long long align, size_t bs)
 static void setup(void)
 {
 	struct stat sb;
+	static const char * const kconf_rt[] = {"CONFIG_PREEMPT_RT", NULL};
 
 	if (tst_parse_int(str_numchildren, &numchildren, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of children '%s'", str_numchildren);
@@ -103,6 +105,11 @@ static void setup(void)
 	alignment = sb.st_blksize;
 
 	run_child = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+	if (numchildren > 2 && !tst_kconfig_check(kconf_rt)) {
+		tst_res(TINFO, "Warning: This test may deadlock on RT kernels");
+		tst_res(TINFO, "If it does, reduce number of threads to 2");
+	}
 }
 
 static void cleanup(void)
