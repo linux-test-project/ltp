@@ -128,6 +128,9 @@ tst_net_require_ipv6()
 
 init_ltp_netspace()
 {
+	PATH="$PWD/../../testcases/kernel/containers/share/:$PATH"
+	tst_res TINFO "PATH='$PATH'"
+
 	local pid
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
