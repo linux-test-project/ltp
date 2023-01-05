@@ -1,38 +1,71 @@
 #ifndef FCNTL_COMMON_H__
 #define FCNTL_COMMON_H__
 
+#include <inttypes.h>
+
+#include "tst_test.h"
+#include "tst_kernel.h"
+
 #include "lapi/syscalls.h"
 #include "lapi/abisize.h"
+#include "lapi/fcntl.h"
+
+struct my_flock64 {
+	int16_t l_type;
+	int16_t l_whence;
+	int64_t l_start;
+	int64_t l_len;
+	int32_t l_pid;
+#if defined(__sparc__)
+	int16_t padding;
+#endif
+};
 
 /*
- * glibc commit:
- *   06ab719d30b0 ("Fix Linux fcntl OFD locks for non-LFS architectures (BZ#20251)")
- * changed behavior of arg parameter for OFD commands. It is no
- * longer passing arg directly to syscall, but expects it to be
- * 'struct flock'.
+ * F_OFD_* commands always require flock64 struct. Older GLibc (pre 2.29) would
+ * pass the flock sturct directly to the kernel even if it had 32-bit
+ * offsets.
  *
- * On 64-bit or _FILE_OFFSET_BITS == 64 we can use fcntl() and
- * struct flock64 with any glibc version. struct flock and flock64
- * should be identical.
+ * Also, if and only if, we are on 32-bit kernel we need to use the
+ * fcntl64 compat syscall.
  *
- * On 32-bit, older glibc would pass arg directly, recent one treats
- * it as 'struct flock' and converts it to 'struct flock64'.
- * So, to support both version, on 32-bit we use fcntl64 syscall
- * directly with struct flock64.
+ * See:
+ * glibc: 06ab719d30 Fix Linux fcntl OFD locks for non-LFS architectures (BZ#20251)
+ * kernel: fs/fcntl.c
  */
-#if defined(TST_ABI64) || _FILE_OFFSET_BITS == 64
-static int my_fcntl(int fd, int cmd, void *lck)
+static inline int fcntl_compat(const char *file, const int line, const char *cmd_name,
+			       int fd, int cmd, struct flock *lck)
 {
-	return SAFE_FCNTL(fd, cmd, lck);
-}
-#else
-static int my_fcntl(int fd, int cmd, void *lck)
-{
-	int ret = tst_syscall(__NR_fcntl64, fd, cmd, lck);
-	if (ret == -1)
-		tst_brk(TBROK|TERRNO, "fcntl64");
+	struct my_flock64 l64 = {
+		.l_type = lck->l_type,
+		.l_whence = lck->l_whence,
+		.l_start = lck->l_start,
+		.l_len = lck->l_len,
+		.l_pid = lck->l_pid,
+	};
+	const int sysno = tst_kernel_bits() > 32 ? __NR_fcntl : __NR_fcntl64;
+	const int ret = tst_syscall(sysno, fd, cmd, &l64);
+
+	lck->l_type = l64.l_type;
+	lck->l_whence = l64.l_whence;
+	lck->l_start = l64.l_start;
+	lck->l_len = l64.l_len;
+	lck->l_pid = l64.l_pid;
+
+	if (ret != -1)
+		return ret;
+
+	tst_brk_(file, line, TBROK | TERRNO,
+		 "%s(%d, %s, { %d, %d, %"PRId64", %"PRId64", %d })",
+		 tst_kernel_bits() > 32 ? "fcntl" : "fcntl64",
+		 fd,
+		 cmd_name,
+		 l64.l_type, l64.l_whence, l64.l_start, l64.l_len, l64.l_pid);
+
 	return ret;
 }
-#endif
+
+#define FCNTL_COMPAT(fd, cmd, flock) \
+	fcntl_compat(__FILE__, __LINE__, #cmd, fd, cmd, flock)
 
 #endif /* FCNTL_COMMON_H__ */

@@ -84,13 +84,13 @@ static void *fn_ofd_w(void *arg)
 		memset(buf, wt, pa->length);
 
 		lck.l_type = F_WRLCK;
-		my_fcntl(fd, F_OFD_SETLKW, &lck);
+		FCNTL_COMPAT(fd, F_OFD_SETLKW, &lck);
 
 		SAFE_LSEEK(fd, pa->offset, SEEK_SET);
 		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, pa->length);
 
 		lck.l_type = F_UNLCK;
-		my_fcntl(fd, F_OFD_SETLKW, &lck);
+		FCNTL_COMPAT(fd, F_OFD_SETLKW, &lck);
 
 		wt++;
 		if (wt >= 255)
@@ -163,7 +163,7 @@ static void *fn_ofd_r(void *arg)
 		memset(buf, 0, pa->length);
 
 		lck.l_type = F_RDLCK;
-		my_fcntl(fd, F_OFD_SETLKW, &lck);
+		FCNTL_COMPAT(fd, F_OFD_SETLKW, &lck);
 
 		/* rlock acquired */
 		SAFE_LSEEK(fd, pa->offset, SEEK_SET);
@@ -194,7 +194,7 @@ static void *fn_ofd_r(void *arg)
 		}
 
 		lck.l_type = F_UNLCK;
-		my_fcntl(fd, F_OFD_SETLK, &lck);
+		FCNTL_COMPAT(fd, F_OFD_SETLK, &lck);
 
 		sched_yield();
 	}
