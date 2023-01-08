@@ -57,8 +57,8 @@ int main(void)
 		}
 
 		if (errno != EINVAL) {
-			printf("errno != EINVAL for mq_maxmsg %ld\n",
-			       attr.mq_maxmsg);
+			printf("errno(%s) != EINVAL for mq_maxmsg %ld\n",
+			       strerror(errno), attr.mq_maxmsg);
 			failed++;
 #ifdef DEBUG
 		} else {
@@ -87,8 +87,8 @@ int main(void)
 		}
 
 		if (errno != EINVAL) {
-			printf("errno != EINVAL for mq_msgsize %ld\n",
-			       attr.mq_msgsize);
+			printf("errno(%s) != EINVAL for mq_msgsize %ld\n",
+			       strerror(errno), attr.mq_msgsize);
 			failed++;
 #ifdef DEBUG
 		} else {

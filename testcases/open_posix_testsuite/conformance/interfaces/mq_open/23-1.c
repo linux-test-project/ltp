@@ -56,7 +56,7 @@ int main(void)
 #endif
 
 	if (errno != EEXIST) {
-		printf("errno != EEXIST\n");
+		printf("errno(%s) != EEXIST\n", strerror(errno));
 		printf("Test FAILED\n");
 		mq_close(queue);
 		mq_unlink(qname);

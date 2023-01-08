@@ -48,7 +48,7 @@ int main(void)
 #endif
 
 	if (errno != ENAMETOOLONG) {
-		printf("errno != ENAMETOOLONG\n");
+		printf("errno(%s) != ENAMETOOLONG\n", strerror(errno));
 		printf("Test FAILED\n");
 		return PTS_FAIL;
 	}

@@ -40,7 +40,7 @@ int main(void)
 	}
 
 	if (errno != ENOENT) {
-		printf("errno != ENOENT\n");
+		printf("errno(%s) != ENOENT\n", strerror(errno));
 		printf("Test FAILED\n");
 		mq_close(queue);
 		mq_unlink(qname);

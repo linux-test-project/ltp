@@ -66,7 +66,7 @@ int main(void)
 		printf("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
 	} else {
 		if (errno != EMFILE) {
-			printf("errno != EMFILE on > ");
+			printf("errno(%s) != EMFILE on > ", strerror(errno));
 			printf
 			    ("_POSIX_OPEN_MAX  or _POSIX_MQ_OPEN_MAX queues\n");
 			failure = 1;
