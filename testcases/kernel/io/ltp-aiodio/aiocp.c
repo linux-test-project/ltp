@@ -27,6 +27,8 @@
 #include <sys/stat.h>
 #include "common.h"
 
+#include "tst_rand_data.h"
+
 static const char *srcname = "srcfile.bin";
 static const char *dstname = "dstfile.bin";
 
@@ -55,35 +57,13 @@ static int iocb_free_count;
 
 static void fill_with_rand_data(int fd, long long size)
 {
-	const int bufsize = 64 * 1024;
-	const int lower = 'a';
-	const int upper = 'z';
-	char buf[bufsize];
-	long long i = 0, j;
-	long long length, towrite;
+	long long i = size;
 
-	srand(time(NULL));
-
-	for (j = 0; j < bufsize; j++)
-		buf[j] = (rand() % (upper - lower + 1)) + lower;
-
-	if (size <= bufsize) {
-		SAFE_WRITE(0, fd, buf, size);
-		return;
+	while (i > 0) {
+		SAFE_WRITE(1, fd, tst_rand_data,
+			   MIN((long long)tst_rand_data_len, i));
+		i -= tst_rand_data_len;
 	}
-
-	while (i < size) {
-		if (!tst_remaining_runtime())
-			tst_brk(TCONF, "Out of runtime!");
-
-		length = rand() % (bufsize / 2) + bufsize / 2;
-		towrite = MIN(length, size - i);
-
-		i += towrite;
-
-		SAFE_WRITE(1, fd, buf, towrite);
-	}
-
 	SAFE_FSYNC(fd);
 }
 
@@ -266,7 +246,7 @@ static void setup(void)
 
 	tst_res(TINFO, "Fill %s with random data", srcname);
 
-	srcfd = SAFE_OPEN(srcname, srcflags | O_RDWR | O_CREAT, 0666);
+	srcfd = SAFE_OPEN(srcname, (srcflags & ~O_DIRECT) | O_RDWR | O_CREAT, 0666);
 	fill_with_rand_data(srcfd, filesize);
 	SAFE_CLOSE(srcfd);
 }
