@@ -228,7 +228,10 @@ static void setup(void)
 		}
 	}
 
-	alignment = tst_dev_block_size(".");
+	if (tst_fs_type(".") == TST_TMPFS_MAGIC)
+		alignment = getpagesize();
+	else
+		alignment = tst_dev_block_size(".");
 
 	if (dstflags & O_DIRECT && aio_blksize % alignment)
 		tst_brk(TCONF, "Block size is not multiple of drive block size");
