@@ -269,7 +269,7 @@ void tst_tmpdir(void)
 	 * use our default TEMPDIR.
 	 */
 	env_tmpdir = tst_get_tmpdir_root();
-	snprintf(template, PATH_MAX, "%s/%.3sXXXXXX", env_tmpdir, TCID);
+	snprintf(template, PATH_MAX, "%s/LTP_%.3sXXXXXX", env_tmpdir, TCID);
 
 	/* Make the temporary directory in one shot using mkdtemp. */
 	if (mkdtemp(template) == NULL) {
