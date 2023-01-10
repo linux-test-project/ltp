@@ -190,6 +190,8 @@ static void *test(void *arg PTS_ATTRIBUTE_UNUSED)
 			UNRESOLVED(ret,
 				   "pthread_kill returned an unexpected error");
 		}
+
+		usleep(10000);
 	}
 
 	return NULL;
