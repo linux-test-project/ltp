@@ -26,13 +26,13 @@ static void run(void)
 	euid = geteuid();
 	UID16_CHECK(euid, setreuid);
 
-	TST_EXP_PASS(setreuid(-1, -1));
-	TST_EXP_PASS(setreuid(-1, euid));
-	TST_EXP_PASS(setreuid(ruid, -1));
-	TST_EXP_PASS(setreuid(-1, ruid));
-	TST_EXP_PASS(setreuid(euid, -1));
-	TST_EXP_PASS(setreuid(euid, euid));
-	TST_EXP_PASS(setreuid(ruid, ruid));
+	TST_EXP_PASS(SETREUID(-1, -1));
+	TST_EXP_PASS(SETREUID(-1, euid));
+	TST_EXP_PASS(SETREUID(ruid, -1));
+	TST_EXP_PASS(SETREUID(-1, ruid));
+	TST_EXP_PASS(SETREUID(euid, -1));
+	TST_EXP_PASS(SETREUID(euid, euid));
+	TST_EXP_PASS(SETREUID(ruid, ruid));
 }
 
 static struct tst_test test = {
