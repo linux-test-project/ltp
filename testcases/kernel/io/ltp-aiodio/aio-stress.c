@@ -1039,7 +1039,6 @@ static int *worker(struct thread_info *t)
 	char *this_stage = NULL;
 	struct timeval stage_time;
 	int status = 0;
-	int iteration = 0;
 	int cnt;
 
 	aio_setup(&t->io_ctx, 512);
@@ -1116,10 +1115,8 @@ restart:
 	}
 
 	/* someone got restarted, go back to the beginning */
-	if (t->active_opers && cnt < iterations) {
-		iteration++;
+	if (t->active_opers && cnt < iterations)
 		goto restart;
-	}
 
 	/* finally, free all the ram */
 	while (t->finished_opers) {
