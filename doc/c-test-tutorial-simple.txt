@@ -333,16 +333,16 @@ call in the +*.in+ files (e.g. +x86_64.in+) which are used to generate
 may find the system call number is missing from the +*.in+ files and will need
 to add it (see +include/lapi/syscalls/strip_syscall.awk+).
 
-System call numbers vary between architectures, hence why there are multiple
+System call numbers vary between architectures, hence there are multiple
 +*.in+ files for each architecture. You can find the various values for the
-+statx+ system call across a number of +uinstd.h+ files in the Linux kernel.
++statx+ system call across a number of +unistd.h+ files in the Linux kernel.
 
 Note that we don't use the system-call-identifier value available in
 +/usr/include/linux/uinstd.h+ because the kernel might be much newer than the
 user land development packages.
 
-For +statx+ we had to add +statx 332+ to +testcases/kernel/include/x86_64.in+,
-+statx 383+ to +testcases/kernel/include/powerpc.in+, etc.  Now lets look at
+For +statx+ we had to add +statx 332+ to +include/lapi/syscalls/x86_64.in+,
++statx 383+ to +include/lapi/syscalls/powerpc.in+, etc.  Now lets look at
 the code, which I will explain in more detail further down.
 
 [source,c]
@@ -1007,7 +1007,7 @@ We can then send this patch with the following command sans +--dry-run+.
 $ git send-email --dry-run output/v2-0001-tutorial-Add-a-step-by-step-C-test-tutorial.patch
 --------------------------------------------------------------------------------
 
-Git will ask some questions (which you an ignore) and then tell you what it
+Git will ask some questions (which you can ignore) and then tell you what it
 would do if this weren't a dry-run. In order for this to work you have to have
 a valid SMTP server set in +.gitconfig+ and also be signed up to the LTP
 mailing list under the same e-mail address you have configured in Git. You can
