@@ -13,8 +13,8 @@
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
-#define ENCRYPTED_KEY_VALID_PAYLOAD	"new enc32 user:masterkey 32 abcdefABCDEF1234567890aaaaaaaaaa"
-#define ENCRYPTED_KEY_INVALID_PAYLOAD	"new enc32 user:masterkey 32 plaintext123@123!123@123!123@123"
+#define ENCRYPTED_KEY_VALID_PAYLOAD	"new enc32 user:masterkey 32 abcdefABCDEF1234567890aaaaaaaaaaabcdefABCDEF1234567890aaaaaaaaaa"
+#define ENCRYPTED_KEY_INVALID_PAYLOAD	"new enc32 user:masterkey 32 plaintext123@123!123@123!123@123plaintext123@123!123@123!123@123"
 
 static void do_test(void)
 {
@@ -28,7 +28,8 @@ static void do_test(void)
 
 	TST_EXP_POSITIVE(add_key("encrypted", "ltptestkey1",
 			    ENCRYPTED_KEY_VALID_PAYLOAD,
-			    60, KEY_SPEC_PROCESS_KEYRING));
+			    strlen(ENCRYPTED_KEY_VALID_PAYLOAD),
+			    KEY_SPEC_PROCESS_KEYRING));
 
 	if (!TST_PASS)
 		return;
@@ -39,7 +40,8 @@ static void do_test(void)
 		return;
 
 	TST_EXP_FAIL2(add_key("encrypted", "ltptestkey2",
-			    ENCRYPTED_KEY_INVALID_PAYLOAD, 60,
+			    ENCRYPTED_KEY_INVALID_PAYLOAD,
+			    strlen(ENCRYPTED_KEY_INVALID_PAYLOAD),
 			    KEY_SPEC_PROCESS_KEYRING), EINVAL);
 
 	keyctl(KEYCTL_CLEAR, KEY_SPEC_PROCESS_KEYRING);
@@ -50,5 +52,9 @@ static struct tst_test test = {
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_DECRYPTED_DATA=y",
 		NULL
+	},
+	.tags = (const struct tst_tag[]) {
+		{ "linux-git", "5adedd42245af"},
+		{}
 	}
 };
