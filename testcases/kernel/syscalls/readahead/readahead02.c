@@ -69,7 +69,7 @@ static struct tcase {
 	int use_overlay;
 	int use_fadvise;
 	/* Use either readahead() syscall or POSIX_FADV_WILLNEED */
-	int (*readahead)(int, off_t, size_t);
+	int (*readahead)(int fd, off_t offset, size_t len);
 } tcases[] = {
 	{ "readahead on file", 0, 0, libc_readahead },
 	{ "readahead on overlayfs file", 1, 0, libc_readahead },
@@ -223,8 +223,7 @@ static void test_readahead(unsigned int n)
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
 	if (tc->use_overlay && !ovl_mounted) {
-		tst_res(TCONF,
-		        "overlayfs is not configured in this kernel.");
+		tst_res(TCONF, "overlayfs is not configured in this kernel");
 		return;
 	}
 
@@ -252,7 +251,7 @@ static void test_readahead(unsigned int n)
 	cached_low = get_cached_size();
 	tst_res(TINFO, "read_testfile(1)");
 	ret = read_testfile(tc, 1, testfile, testfile_size, &read_bytes_ra,
-		            &usec_ra, &cached_ra);
+			    &usec_ra, &cached_ra);
 
 	if (ret == EINVAL) {
 		if (tc->use_fadvise &&
