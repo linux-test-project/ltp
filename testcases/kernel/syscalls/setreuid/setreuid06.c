@@ -1,95 +1,52 @@
+// SPDX-License-Identifier: GPL-2.0-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
  * Ported by John George
+ * Copyright (c) 2023 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-/*
- * Test that EPERM is set when setreuid is given an invalid user id.
+/*\
+ * [Description]
+ *
+ * Verify that setreuid(2) syscall fails with EPERM errno when the calling
+ * process is not privileged and a change other than
+ * (i) swapping the effective user ID with the real user ID, or
+ * (ii) setting one to the value of the other or
+ * (iii) setting the effective user ID to the value of the saved set-user-ID
+ * was specified.
  */
 
-#include <sys/wait.h>
-#include <limits.h>
-#include <signal.h>
-#include <errno.h>
-#include <unistd.h>
 #include <pwd.h>
-#include <sys/param.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include "test.h"
-#include "safe_macros.h"
-#include "compat_16.h"
-
-#define INVAL_USER		 (USHRT_MAX-2)
-
-TCID_DEFINE(setreuid06);
-int TST_TOTAL = 1;
+#include "tst_test.h"
+#include "tst_uid.h"
+#include "compat_tst_16.h"
 
 static struct passwd *ltpuser;
-
-static void setup(void);
-static void cleanup(void);
-
-int main(int argc, char **argv)
-{
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		TEST(SETREUID(cleanup, -1, INVAL_USER));
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "%s did not fail as expected", TCID);
-		} else if (TEST_ERRNO == EPERM) {
-			tst_resm(TPASS, "setreuid set errno to EPERM as "
-				 "expected");
-		} else {
-			tst_resm(TFAIL, "setreuid FAILED, expected 1 but "
-				 "returned %d", TEST_ERRNO);
-		}
-
-	}
-	cleanup();
-	tst_exit();
-}
+static uid_t other_uid;
 
 static void setup(void)
 {
-	tst_require_root();
+	tst_get_uids(&other_uid, 0, 1);
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	UID16_CHECK(other_uid, setreuid);
 
-	umask(0);
-
-	ltpuser = getpwnam("nobody");
-	if (ltpuser == NULL)
-		tst_brkm(TBROK, NULL, "nobody must be a valid user.");
-
-	SAFE_SETUID(NULL, ltpuser->pw_uid);
-
-	TEST_PAUSE;
+	ltpuser = SAFE_GETPWNAM("nobody");
+	SAFE_SETUID(ltpuser->pw_uid);
 }
 
-static void cleanup(void)
+static void run(void)
 {
+
+	TST_EXP_FAIL(SETREUID(-1, other_uid), EPERM,
+				"setreuid(%d, %d)", -1, other_uid);
+	TST_EXP_FAIL(SETREUID(other_uid, -1), EPERM,
+				"setreuid(%d, %d)", other_uid, -1);
+	TST_EXP_FAIL(SETREUID(other_uid, other_uid), EPERM,
+				"setreuid(%d, %d)", other_uid, other_uid);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.needs_root = 1
+};
