@@ -131,7 +131,7 @@ init_ltp_netspace()
 	local pid
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
-		tst_require_cmds ip
+		tst_require_cmds ip ns_create ns_exec ns_ifmove
 		tst_require_root
 
 		tst_require_drivers veth
