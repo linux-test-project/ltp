@@ -1,18 +1,7 @@
-/* Copyright (c) 2015 Red Hat, Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- ***********************************************************************/
+/* SPDX-License-Identifier: GPL-2.0-or-later
+ * Copyright (c) 2015 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2015-2023
+ */
 
 #ifndef __NS_COMMON_H__
 #define __NS_COMMON_H__
@@ -20,15 +9,13 @@
 #include "lapi/sched.h"
 
 #define PROC_PATH "/proc"
-#define NS_TOTAL 6
-
 
 struct param {
 	const char *name;
 	int flag;
 };
 
-struct param params[] = {
+static struct param params[] = {
 	{"ipc",  CLONE_NEWIPC},
 	{"mnt",  CLONE_NEWNS},
 	{"net",  CLONE_NEWNET},
@@ -38,8 +25,9 @@ struct param params[] = {
 	{NULL,   0}
 };
 
+#define NS_TOTAL (ARRAY_SIZE(params) - 1)
 
-struct param *get_param(const char *name)
+static struct param *get_param(const char *name)
 {
 	int i;
 
@@ -50,6 +38,5 @@ struct param *get_param(const char *name)
 
 	return NULL;
 }
-
 
 #endif
