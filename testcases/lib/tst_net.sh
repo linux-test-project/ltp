@@ -1004,6 +1004,7 @@ IPV6_RHOST="${IPV6_RHOST:-fd00:1:1:1::1/64}"
 # tst_net_ip_prefix -h
 # tst_net_iface_prefix -h
 # tst_net_vars -h
+tst_require_cmds tst_net_iface_prefix tst_net_ip_prefix tst_net_vars
 eval $(tst_net_ip_prefix $IPV4_LHOST || echo "exit $?")
 eval $(tst_net_ip_prefix -r $IPV4_RHOST || echo "exit $?")
 
