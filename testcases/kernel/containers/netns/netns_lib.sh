@@ -72,9 +72,6 @@ netns_setup()
 	if [ "$NS_EXEC" = "ip" ]; then
 		netns_ip_setup
 	else
-		setns_check
-		[ $? -eq 32 ] && tst_brk TCONF "setns not supported"
-
 		NS_TYPE="net"
 		netns_ns_exec_setup
 	fi

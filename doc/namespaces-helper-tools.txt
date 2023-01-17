@@ -14,8 +14,6 @@ located in ltp/testcases/kernel/containers/share directory and include:
 ** PID of the daemonized child process is printed on the stdout
 ** the new namespace(s) is(are) maintained by the daemonized child process
 ** namespace(s) can be removed by killing the daemonized process
-* setns_check
-** check for setns() availability, should be called before using ns_exec
 * ns_exec
 ** enters the namespace(s) of a process specified by a PID
 ** then executes the indicated program inside that namespace(s)

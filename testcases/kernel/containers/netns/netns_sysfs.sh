@@ -18,11 +18,6 @@ do_setup()
 	DUMMYDEV_HOST="dummy_test0"
 	DUMMYDEV="dummy_test1"
 
-	setns_check
-	if [ $? -eq 32 ]; then
-		tst_brk TCONF "setns not supported"
-	fi
-
 	NS_HANDLE=$(ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
 		tst_res TINFO "$NS_HANDLE"
