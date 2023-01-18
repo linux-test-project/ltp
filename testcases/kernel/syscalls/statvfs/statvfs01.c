@@ -38,6 +38,9 @@ static void run(void)
 	memset(valid_fname, 'a', valid_len);
 	memset(toolong_fname, 'b', valid_len + 1);
 
+	valid_fname[valid_len] = 0;
+	toolong_fname[valid_len+1] = 0;
+
 	TST_EXP_FD(creat(valid_fname, 0444));
 	SAFE_CLOSE(TST_RET);
 
