@@ -42,7 +42,8 @@ static void run(void)
 	toolong_fname[valid_len+1] = 0;
 
 	TST_EXP_FD(creat(valid_fname, 0444));
-	SAFE_CLOSE(TST_RET);
+	if (TST_PASS)
+		SAFE_CLOSE(TST_RET);
 
 	TST_EXP_FAIL(creat(toolong_fname, 0444), ENAMETOOLONG);
 }
