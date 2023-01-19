@@ -814,7 +814,7 @@ master.
 
 [source,shell]
 --------------------------------------------------------------------------------
-$ git log -oneline master..HEAD
+$ git log --oneline master..HEAD
 152d39fe7 (HEAD -> tutorial-rebase2, tutorial-rebase) tutorial: Start Submitting patch section
 70f7ce7ce statx01: Stop checkpatch from complaining
 bb0332bd7 tutorial: Fix review problems
