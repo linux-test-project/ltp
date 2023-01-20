@@ -15,6 +15,9 @@ int safe_io_uring_init(const char *file, const int lineno,
 	uring->fd = io_uring_setup(entries, params);
 
 	if (uring->fd == -1) {
+		if (errno == EOPNOTSUPP)
+			tst_brk(TCONF, "CONFIG_IO_URING is not enabled");
+
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"io_uring_setup() failed");
 		return uring->fd;
