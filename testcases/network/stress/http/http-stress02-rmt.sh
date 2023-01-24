@@ -60,7 +60,7 @@ while true ; do
 		-o /dev/null &
 done
 
-killall -qw -s SIGPIPE curl
+killall -qw curl
 
 out=$(curl --noproxy '*' -sS -g "http://$server_ipaddr/$filename" -o /dev/null \
 	-w "time=%{time_total} size=%{size_download} speed=%{speed_download}")
