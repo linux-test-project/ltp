@@ -9,6 +9,7 @@
 
 #include "config.h"
 #include <sys/fanotify.h>
+#include <linux/types.h>
 
 #ifndef FAN_REPORT_TID
 #define FAN_REPORT_TID		0x00000100
