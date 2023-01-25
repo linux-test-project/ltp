@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  * Copyright (C) 2005-2006 David Gibson & Adam Litke, IBM Corporation.
+ * Copyright (c) Linux Test Project, 2022-2023
  * Author: David Gibson & Adam Litke
  */
 
@@ -19,6 +20,13 @@
  */
 
 #define _GNU_SOURCE
+#include "hugetlb.h"
+
+#if defined(__powerpc__) || defined(__powerpc64__) || defined(__ia64__) || \
+	defined(__s390__) || defined(__s390x__) || defined(__sparc__) || \
+	defined(__aarch64__) || (defined(__riscv) && __riscv_xlen == 64) || \
+	defined(__i386__) || defined(__x86_64__) || defined(__arm__)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
@@ -29,8 +37,6 @@
 #include <limits.h>
 #include <sys/param.h>
 #include <sys/types.h>
-
-#include "hugetlb.h"
 
 #define SUCC_JMP 1
 #define FAIL_JMP 2
@@ -142,8 +148,6 @@ static void sig_handler(int signum, siginfo_t *si, void *uc)
 		siglongjmp(sig_escape, FAIL_JMP + SIGSEGV);
 	}
 #endif
-#else
-#error "Need to setup signal conditions for this arch"
 #endif
 }
 
@@ -241,3 +245,6 @@ static struct tst_test test = {
 	.test_all = run_test,
 	.hugepages = {3, TST_NEEDS},
 };
+#else
+	TST_TEST_TCONF("Signal handler for this architecture hasn't been written");
+#endif
