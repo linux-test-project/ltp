@@ -59,7 +59,7 @@ tst_net_remote_tmpdir()
 
 tst_net_setup()
 {
-	[ "$TST_IPVER" = 6 ] && tst_net_require_ipv6
+	[ "$TST_IPV6" ] && tst_net_require_ipv6
 
 	tst_net_remote_tmpdir
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
@@ -1094,6 +1094,7 @@ export NS_ICMPV6_SENDER_DATA_MAXSIZE=1452
 # in the following document: testcases/network/stress/README
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
+	[ "$TST_IPV6" ] && tst_net_require_ipv6
 	tst_net_remote_tmpdir
 fi
 
