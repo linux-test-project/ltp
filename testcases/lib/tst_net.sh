@@ -151,8 +151,6 @@ init_ltp_netspace()
 	LHOST_IFACES="${LHOST_IFACES:-ltp_ns_veth2}"
 	RHOST_IFACES="${RHOST_IFACES:-ltp_ns_veth1}"
 
-	export TST_INIT_NETNS="no"
-
 	pid="$(echo $(readlink /var/run/netns/ltp_ns) | cut -f3 -d'/')"
 	export LTP_NETNS="${LTP_NETNS:-ns_exec $pid net,mnt}"
 
@@ -1016,7 +1014,7 @@ if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
 	eval $(tst_net_ip_prefix -r $IPV6_RHOST || echo "exit $?")
 fi
 
-[ -n "$TST_USE_NETNS" -a "$TST_INIT_NETNS" != "no" ] && init_ltp_netspace
+tst_net_use_netns && init_ltp_netspace
 
 eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
 eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
