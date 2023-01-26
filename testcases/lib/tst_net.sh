@@ -1006,46 +1006,40 @@ IPV6_RHOST="${IPV6_RHOST:-fd00:1:1:1::1/64}"
 # tst_net_ip_prefix -h
 # tst_net_iface_prefix -h
 # tst_net_vars -h
-if [ -z "$_tst_net_parse_variables" ]; then
-	eval $(tst_net_ip_prefix $IPV4_LHOST || echo "exit $?")
-	eval $(tst_net_ip_prefix -r $IPV4_RHOST || echo "exit $?")
+eval $(tst_net_ip_prefix $IPV4_LHOST || echo "exit $?")
+eval $(tst_net_ip_prefix -r $IPV4_RHOST || echo "exit $?")
 
-	[ "$TST_NET_IPV6_ENABLED" = 1 ] && tst_net_detect_ipv6 rhost
+[ "$TST_NET_IPV6_ENABLED" = 1 ] && tst_net_detect_ipv6 rhost
 
-	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
-		eval $(tst_net_ip_prefix $IPV6_LHOST || echo "exit $?")
-		eval $(tst_net_ip_prefix -r $IPV6_RHOST || echo "exit $?")
-	fi
+if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
+	eval $(tst_net_ip_prefix $IPV6_LHOST || echo "exit $?")
+	eval $(tst_net_ip_prefix -r $IPV6_RHOST || echo "exit $?")
 fi
 
 [ -n "$TST_USE_NETNS" -a "$TST_INIT_NETNS" != "no" ] && init_ltp_netspace
 
-if [ -z "$_tst_net_parse_variables" ]; then
-	eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
-	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
+eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
+eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
+	|| echo "exit $?")
+
+if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
+	eval $(tst_net_iface_prefix $IPV6_LHOST || echo "exit $?")
+	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
 		|| echo "exit $?")
-
-	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
-		eval $(tst_net_iface_prefix $IPV6_LHOST || echo "exit $?")
-		eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
-			|| echo "exit $?")
-	fi
-
-	eval $(tst_net_vars $IPV4_LHOST/$IPV4_LPREFIX \
-		$IPV4_RHOST/$IPV4_RPREFIX || echo "exit $?")
-
-	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
-		eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
-			$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
-	fi
-
-	tst_res_ TINFO "Network config (local -- remote):"
-	tst_res_ TINFO "$LHOST_IFACES -- $RHOST_IFACES"
-	tst_res_ TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
-	tst_res_ TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
-
-	export _tst_net_parse_variables="yes"
 fi
+
+eval $(tst_net_vars $IPV4_LHOST/$IPV4_LPREFIX \
+	$IPV4_RHOST/$IPV4_RPREFIX || echo "exit $?")
+
+if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
+	eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
+		$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
+fi
+
+tst_res_ TINFO "Network config (local -- remote):"
+tst_res_ TINFO "$LHOST_IFACES -- $RHOST_IFACES"
+tst_res_ TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
+tst_res_ TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
 
 export TST_NET_DATAROOT="$LTPROOT/testcases/bin/datafiles"
 
