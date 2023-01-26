@@ -1,9 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2020-2023
  */
 
 #ifndef TST_MINMAX_H__
 #define TST_MINMAX_H__
+
+#include <sys/param.h>
 
 #ifndef MIN
 # define MIN(a, b) ({ \
