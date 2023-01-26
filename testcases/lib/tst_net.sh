@@ -73,32 +73,33 @@ tst_net_setup()
 	fi
 }
 
+# old vs. new API compatibility layer
+tst_res_()
+{
+	[ -z "$TST_USE_LEGACY_API" ] && tst_res $@ || tst_resm $@
+}
+
+tst_brk_()
+{
+	[ -z "$TST_USE_LEGACY_API" ] && tst_brk $@ || tst_brkm $@
+}
+
 if [ "$TST_PARSE_ARGS_CALLER" = "$TST_PARSE_ARGS" ]; then
-	tst_res TWARN "TST_PARSE_ARGS_CALLER same as TST_PARSE_ARGS, unset it ($TST_PARSE_ARGS)"
+	tst_res_ TWARN "TST_PARSE_ARGS_CALLER same as TST_PARSE_ARGS, unset it ($TST_PARSE_ARGS)"
 	unset TST_PARSE_ARGS_CALLER
 fi
 if [ "$TST_SETUP_CALLER" = "$TST_SETUP" ]; then
-	tst_res TWARN "TST_SETUP_CALLER same as TST_SETUP, unset it ($TST_SETUP)"
+	tst_res_ TWARN "TST_SETUP_CALLER same as TST_SETUP, unset it ($TST_SETUP)"
 	unset TST_SETUP_CALLER
 fi
 if [ "$TST_USAGE_CALLER" = "$TST_USAGE" ]; then
-	tst_res TWARN "TST_USAGE_CALLER same as TST_USAGE, unset it ($TST_USAGE)"
+	tst_res_ TWARN "TST_USAGE_CALLER same as TST_USAGE, unset it ($TST_USAGE)"
 	unset TST_USAGE_CALLER
 fi
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
 	tst_net_read_opts "$@"
 fi
-
-# old vs. new API compatibility layer
-tst_res_()
-{
-	[ -z "$TST_USE_LEGACY_API" ] && tst_res $@ || tst_resm $@
-}
-tst_brk_()
-{
-	[ -z "$TST_USE_LEGACY_API" ] && tst_brk $@ || tst_brkm $@
-}
 
 tst_net_detect_ipv6()
 {
@@ -117,7 +118,7 @@ tst_net_detect_ipv6()
 		TST_NET_IPV6_ENABLED=1
 	else
 		TST_NET_IPV6_ENABLED=0
-		tst_res TINFO "IPv6 disabled on $type"
+		tst_res_ TINFO "IPv6 disabled on $type"
 	fi
 }
 
