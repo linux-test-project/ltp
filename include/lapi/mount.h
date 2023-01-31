@@ -33,4 +33,8 @@
 # define UMOUNT_NOFOLLOW 8
 #endif
 
+#ifndef MS_NOSYMFOLLOW
+# define MS_NOSYMFOLLOW 256
+#endif
+
 #endif /* LAPI_MOUNT_H__ */
