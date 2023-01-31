@@ -111,4 +111,5 @@ static struct tst_test test = {
 	.tcnt = 6,
 	.forks_child = 1,
 	.test = run,
+	.setup = close_range_supported_by_kernel,
 };

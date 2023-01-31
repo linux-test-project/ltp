@@ -53,6 +53,8 @@ static inline void do_close_range(unsigned int fd, unsigned int max_fd,
 
 static void setup(void)
 {
+	close_range_supported_by_kernel();
+
 	struct rlimit nfd;
 
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &nfd);

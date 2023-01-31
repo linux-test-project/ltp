@@ -25,4 +25,17 @@ static inline int close_range(unsigned int fd, unsigned int max_fd,
 	return tst_syscall(__NR_close_range, fd, max_fd, flags);
 }
 # endif
+
+static inline void close_range_supported_by_kernel(void)
+{
+	long ret;
+
+	if ((tst_kvercmp(5, 9, 0)) < 0) {
+		/* Check if the syscall is backported on an older kernel */
+		ret = syscall(__NR_close_range, 1, 0, 0);
+		if (ret == -1 && errno == ENOSYS)
+			tst_brk(TCONF, "Test not supported on kernel version < v5.9");
+	}
+}
+
 #endif	/* LAPI_CLOSE_RANGE_H__ */
