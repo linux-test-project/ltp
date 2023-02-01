@@ -461,7 +461,7 @@ tst_ipaddr_un()
 				;;
 			m)
 				! tst_is_int "$OPTARG" || [ "$OPTARG" -lt 0 ]|| [ "$OPTARG" -gt $max_net_id ] && \
-					tst_brk TBROK "tst_ipaddr_un: -m must be integer <0,$max_net_id> ($OPTARG)"
+					tst_brk_ TBROK "tst_ipaddr_un: -m must be integer <0,$max_net_id> ($OPTARG)"
 				[ "$OPTARG" -gt $max_net_id ] && \
 					tst_brk_ TBROK "tst_ipaddr_un: -m cannot be higher than $max_net_id ($OPTARG)"
 				max_host_id="$OPTARG"
@@ -482,16 +482,16 @@ tst_ipaddr_un()
 	! tst_is_int "$min_host_id" || ! tst_is_int "$max_host_id" || \
 		[ $min_host_id -lt 0 -o $min_host_id -gt $default_max ] || \
 		[ $max_host_id -lt 0 -o $max_host_id -gt $default_max ] && \
-		tst_brk TBROK "tst_ipaddr_un: HOST_ID must be int in range <0,$default_max> ($min_host_id,$max_host_id)"
+		tst_brk_ TBROK "tst_ipaddr_un: HOST_ID must be int in range <0,$default_max> ($min_host_id,$max_host_id)"
 	! tst_is_int "$min_net_id" || ! tst_is_int "$max_net_id" || \
 		[ $min_net_id -lt 0 -o $min_net_id -gt $default_max ] || \
 		[ $max_net_id -lt 0 -o $max_net_id -gt $default_max ] && \
-		tst_brk TBROK "tst_ipaddr_un: NET_ID must be int in range <0,$default_max> ($min_net_id,$max_net_id)"
+		tst_brk_ TBROK "tst_ipaddr_un: NET_ID must be int in range <0,$default_max> ($min_net_id,$max_net_id)"
 
 	[ $min_host_id -gt $max_host_id ] && \
-		tst_brk TBROK "tst_ipaddr_un: max HOST_ID ($max_host_id) must be >= min HOST_ID ($min_host_id)"
+		tst_brk_ TBROK "tst_ipaddr_un: max HOST_ID ($max_host_id) must be >= min HOST_ID ($min_host_id)"
 	[ $min_net_id -gt $max_net_id ] && \
-		tst_brk TBROK "tst_ipaddr_un: max NET_ID ($max_net_id) must be >= min NET_ID ($min_net_id)"
+		tst_brk_ TBROK "tst_ipaddr_un: max NET_ID ($max_net_id) must be >= min NET_ID ($min_net_id)"
 
 	# counter
 	host_range=$((max_host_id - min_host_id + 1))
@@ -585,7 +585,7 @@ tst_add_ipaddr()
 		d) action="del" ;;
 		q) quiet=1 ;;
 		s) lsafe="ROD"; rsafe="-s" ;;
-		*) tst_brk TBROK "tst_add_ipaddr: unknown option: $OPTARG" ;;
+		*) tst_brk_ TBROK "tst_add_ipaddr: unknown option: $OPTARG" ;;
 		esac
 	done
 	shift $((OPTIND - 1))
