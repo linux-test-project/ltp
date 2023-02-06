@@ -2,17 +2,21 @@
 /*
  * Copyright (c) International Business Machines Corp., 2001
  * Copyright (c) 2020 Petr Vorel <petr.vorel@gmail.com>
+ * Copyright (c) Linux Test Project, 2002-2023
  * 07/2001 Ported by Wayne Boyer
  * 04/2002 Fixes by wjhuie
+ */
+
+/*\
+ * [Description]
  *
- *	Testcase to check the errnos set by the ioctl(2) system call.
+ * Testcase to check the errnos set by the ioctl(2) system call.
  *
- * ALGORITHM
- *	1. EBADF: Pass an invalid fd to ioctl(fd, ..) and expect EBADF.
- *	2. EFAULT: Pass an invalid address of arg in ioctl(fd, .., arg)
- *	3. EINVAL: Pass invalid cmd in ioctl(fd, cmd, arg)
- *	4. ENOTTY: Pass an non-streams fd in ioctl(fd, cmd, arg)
- *	5. EFAULT: Pass a NULL address for termio
+ * - EBADF: Pass an invalid fd to ioctl(fd, ...) and expect EBADF
+ * - EFAULT: Pass an invalid address of arg in ioctl(fd, ..., arg)
+ * - EINVAL: Pass invalid cmd in ioctl(fd, cmd, arg)
+ * - ENOTTY: Pass an non-streams fd in ioctl(fd, cmd, arg)
+ * - EFAULT: Pass a NULL address for termio
  */
 
 #include <errno.h>
@@ -54,27 +58,12 @@ static char *device;
 
 static void verify_ioctl(unsigned int i)
 {
-	TEST(ioctl(*(tcases[i].fd), tcases[i].request, tcases[i].s_tio));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "call succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != tcases[i].error) {
-		tst_res(TFAIL | TTERRNO,
-			"failed unexpectedly; expected %s",
-		        tst_strerrno(tcases[i].error));
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "failed as expected");
+	TST_EXP_FAIL(ioctl(*(tcases[i].fd), tcases[i].request, tcases[i].s_tio),
+		     tcases[i].error);
 }
 
 static void setup(void)
 {
-	unsigned int i;
-
 	if (!device)
 		tst_brk(TBROK, "You must specify a tty device with -D option");
 
