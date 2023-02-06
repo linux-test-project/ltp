@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Zilogic Systems Pvt. Ltd, 2020. All Rights Reserved.
- * Email: <code@zilogic.com>
+ * Copyright (c) Zilogic Systems Pvt. Ltd <code@zilogic.com>, 2020
+ * Copyright (c) Linux Test Project, 2021-2023
  *
  * Based on testcases/kernel/syscalls/adjtimex/adjtimex01.c
  * Copyright (c) Wipro Technologies Ltd, 2002.
+ */
+
+/*\
+ * [Description]
  *
- * CVE-2018-11508
- *
- * Test 4-byte kernel data leak via adjtimex
+ * CVE-2018-11508: Test 4-byte kernel data leak via adjtimex.
  *
  * On calling the adjtimex() function call with invalid mode (let's say
  * 0x8000), ideally all the parameters should return with null data. But,
@@ -64,6 +66,7 @@ void verify_adjtimex(void)
 			break;
 		}
 	}
+
 	if (data_leak != 0)
 		tst_res(TFAIL, "Data leak observed");
 	else
