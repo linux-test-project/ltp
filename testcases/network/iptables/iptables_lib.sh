@@ -22,7 +22,7 @@ NFRUN()
 	if [ "$use_iptables" = 1 ]; then
 		ip${TST_IPV6}tables $@
 	else
-		$(ip${TST_IPV6}tables-translate $@ | sed 's,\\,,g')
+		$(ip${TST_IPV6}tables-translate $@ | sed "s/[\']//g")
 	fi
 }
 
