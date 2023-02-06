@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- *  Verify that, fchmod() will succeed to change the mode of a file/directory
- *  set the sticky bit on it if invoked by root (uid = 0) process with
- *  the following constraints,
- *	- the process is not the owner of the file/directory.
- *	- the effective group ID or one of the supplementary group ID's of the
- *	  process is equal to the group ID of the file/directory.
+ * Verify that, fchmod(2) will succeed to change the mode of a file/directory
+ * set the sticky bit on it if invoked by root (uid = 0) process with
+ * the following constraints:
  *
- * Expected Result:
- *  fchmod() should return value 0 on success and succeeds to set sticky bit
- *  on the specified file.
+ * - the process is not the owner of the file/directory
+ * - the effective group ID or one of the supplementary group ID's of the
+ *   process is equal to the group ID of the file/directory
  */
 
 #include <pwd.h>

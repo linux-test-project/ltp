@@ -9,11 +9,12 @@
  * [Description]
  *
  * Verify that system call utime() fails with
- * - EACCES when times argument is NULL and user does not have rights
- * to modify the file.
+ *
+ * - EACCES when times argument is NULL and user does not have rights to modify
+ *   the file.
  * - ENOENT when specified file does not exist.
- * - EPERM when times argument is not NULL and user does not have rights
- * to modify the file.
+ * - EPERM when times argument is not NULL and user does not have rights to
+ *   modify the file.
  * - EROFS when the path resides on a read-only filesystem.
  */
 

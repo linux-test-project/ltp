@@ -11,17 +11,17 @@
  *
  * Test for ENOENT, EEXIST, EINVAL, EACCES, EPERM errors.
  *
- * ENOENT - No segment exists for the given key and IPC_CREAT was not specified.
- * EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given.
- * EINVAL - A new segment was to be created and size is less than SHMMIN or
- * greater than SHMMAX. Or a segment for the given key exists, but size is
- * gran eater than the size of that segment.
- * EACCES - The user does not have permission to access the shared memory segment.
- * EPERM - The SHM_HUGETLB flag was specified, but the caller was not privileged
- * (did not have the CAP_IPC_LOCK capability) and is not a member of the
- * sysctl_hugetlb_shm_group group.
- * ENOMEM - The SHM_HUGETLB flag was specified, the caller was privileged but not
- * have enough hugepage memory space.
+ * - ENOENT - No segment exists for the given key and IPC_CREAT was not specified.
+ * - EEXIST - the segment exists and IPC_CREAT | IPC_EXCL is given.
+ * - EINVAL - A new segment was to be created and size is less than SHMMIN or
+ *   greater than SHMMAX. Or a segment for the given key exists, but size is
+ *   gran eater than the size of that segment.
+ * - EACCES - The user does not have permission to access the shared memory segment.
+ * - EPERM - The SHM_HUGETLB flag was specified, but the caller was not
+ *   privileged (did not have the CAP_IPC_LOCK capability) and is not a member
+ *   of the sysctl_hugetlb_shm_group group.
+ * - ENOMEM - The SHM_HUGETLB flag was specified, the caller was privileged but
+ *   not have enough hugepage memory space.
  */
 
 #include <errno.h>

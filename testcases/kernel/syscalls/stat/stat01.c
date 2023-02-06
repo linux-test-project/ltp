@@ -8,9 +8,9 @@
 /*\
  * [Description]
  *
- *  Verify that, stat(2) succeeds to get the status of a file and fills the
- *  stat structure elements regardless of whether process has or doesn't
- *  have read access to the file.
+ * Verify that, stat(2) succeeds to get the status of a file and fills the
+ * stat structure elements regardless of whether process has or doesn't
+ * have read access to the file.
  */
 
 #include <pwd.h>

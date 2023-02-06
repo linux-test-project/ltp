@@ -10,6 +10,7 @@
  * [Description]
  *
  * Verify that fchown(2) invoked by super-user:
+ *
  *  - clears setuid and setgid bits set on an executable file
  *  - preserves setgid bit set on a non-group-executable file
  */

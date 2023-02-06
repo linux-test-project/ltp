@@ -14,6 +14,7 @@
  * [Algorithm]
  *
  * Given wrong address or protected buffer as OFFSET argument to sendfile:
+ *
  * - a wrong address is created by munmap a buffer allocated by mmap
  * - a protected buffer is created by mmap with specifying protection
  */

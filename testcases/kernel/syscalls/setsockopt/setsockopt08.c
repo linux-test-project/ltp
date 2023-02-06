@@ -35,20 +35,23 @@
  * this slab.
  *
  * The table will consist of
- *  - the mandatory struct compat_ipt_replace header,
- *  - a single entry consisting of
- *    - the mandatory compat_ipt_entry header
- *    - a single 'state' match entry of appropriate size for
+ *
+ *  * the mandatory struct compat_ipt_replace header,
+ *  * a single entry consisting of
+ *    ** the mandatory compat_ipt_entry header
+ *    ** a single 'state' match entry of appropriate size for
  *      controlling the out-of-bounds write when converting
  *      the target entry following next,
- *    - a single 'REJECT' target entry.
+ *    ** a single 'REJECT' target entry.
+ *
  * The kernel will transform this into a buffer containing (in
  * this order)
- * - a xt_table_info
- * - a single entry consisting of
- *   - its ipt_entry header
- *   - a single 'state' match entry
- *   - followed by a single 'REJECT' target entry.
+ *
+ * * a xt_table_info
+ * * a single entry consisting of
+ *   ** its ipt_entry header
+ *   ** a single 'state' match entry
+ *   ** followed by a single 'REJECT' target entry.
  *
  * The expected sizes for the 'state' match entries as well as the
  * 'REJECT' target are the size of the base header struct (32 bytes)

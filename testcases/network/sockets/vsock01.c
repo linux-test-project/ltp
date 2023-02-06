@@ -8,10 +8,11 @@
  *
  * Reproducer of CVE-2021-26708
  *
- * Based on POC https://github.com/jordan9001/vsock_poc
+ * Based on POC https://github.com/jordan9001/vsock_poc.
  * Fuzzy Sync has been substituted for userfaultfd.
  *
  * Fixed by: c518adafa39f ("vsock: fix the race conditions in multi-transport support")
+ *
  * Fixes: c0cfa2d8a788fcf4 ("vsock: add multi-transports support")
  *
  * Note that in many testing environments this will reproduce the race

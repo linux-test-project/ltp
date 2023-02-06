@@ -10,6 +10,7 @@
  * [Description]
  *
  * Verify that statvfs() fails with:
+ *
  * - EFAULT when path points to an invalid address.
  * - ELOOP when too many symbolic links were encountered in translating path.
  * - ENAMETOOLONG when path is too long.

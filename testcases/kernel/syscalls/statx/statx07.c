@@ -27,12 +27,7 @@
  * but mode has been chaged in server file.
  *
  * The support for SYNC flags was implemented in NFS in:
- *
- *  commit 9ccee940bd5b766b6dab6c1a80908b9490a4850d
- *  Author: Trond Myklebust <trond.myklebust@primarydata.com>
- *  Date:   Thu Jan 4 17:46:09 2018 -0500
- *
- *  Support statx() mask and query flags parameters
+ * 9ccee940bd5b ("Support statx() mask and query flags parameters")
  */
 
 #define _GNU_SOURCE
