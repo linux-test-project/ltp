@@ -1,21 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Guangwen Feng <fenggw-fnst@cn.fujitsu.com>, 2016
+ * Copyright (c) Linux Test Project, 2002-2023
+ * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Test Description:
- *  Verify that access() succeeds to check the existence or read/write/execute
- *  permissions on a file if the mode argument passed was F_OK/R_OK/W_OK/X_OK.
+/*\
+ * [Description]
  *
- *  Also verify that, access() succeeds to test the accessibility of the file
- *  referred to by symbolic link if the pathname points to a symbolic link.
+ * Test access(2) syscall
  *
- *  As well as verify that, these test files can be
- *  stat/read/written/executed indeed as root and nobody respectively.
- *
- * Ported to LTP: Wayne Boyer
- *	06/2016 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ * - check the existence or read/write/execute permissions on a file (mode argument: F_OK/R_OK/W_OK/X_OK)
+ * - test the accessibility of the file referred to by symbolic link if the pathname points to a symbolic link
+ * - file can be stat/read/written/executed as root and nobody
  */
 
 #include <sys/types.h>
