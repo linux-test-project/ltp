@@ -14,11 +14,6 @@
  * - EFAULT with SET_MODE and invalid timex pointer
  * - EINVAL with ADJ_TICK greater than max tick
  * - EINVAL with ADJ_TICK smaller than min tick
- *
- * On kernels older than 2.6.26:
- *
- * - EINVAL with AJD_OFFSET smaller than min offset
- * - EINVAL with AJD_OFFSET greater than max offset
  */
 
 #include <errno.h>
@@ -57,8 +52,6 @@ static struct test_case {
 	{.modes = SET_MODE, .exp_err = EFAULT},
 	{.modes = ADJ_TICK, .lowlimit = 900000, .delta = 1, .exp_err = EINVAL},
 	{.modes = ADJ_TICK, .highlimit = 1100000, .delta = 1, .exp_err = EINVAL},
-	{.modes = ADJ_OFFSET, .highlimit = 512000L, .delta = 1, .exp_err = EINVAL},
-	{.modes = ADJ_OFFSET, .lowlimit = -512000L, .delta = -1, .exp_err = EINVAL},
 };
 
 static struct test_variants
@@ -92,12 +85,6 @@ static void verify_adjtimex(unsigned int i)
 
 			if (tc[i].highlimit)
 				buf->tick = tc[i].highlimit + tc[i].delta;
-		}
-		if (tc[i].modes == ADJ_OFFSET) {
-			if (tc[i].lowlimit || tc[i].highlimit) {
-				tst_res(TCONF, "Newer kernels normalize offset value outside range");
-				return;
-			}
 		}
 	}
 
