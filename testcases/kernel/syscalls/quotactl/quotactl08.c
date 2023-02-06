@@ -28,6 +28,7 @@
  * - turn off quota with Q_QUOTAOFF flag for group
  *
  * It is similar to quotactl01.c, only two difference
+ *
  * - use new quotactl_fd syscalls if supports
  * - quota file hidden in filesystem
  *

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) International Business Machines  Corp., 2001
- *		07/2001 ported by John George
- *   Copyright (c) 2022 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
+ * Copyright (c) International Business Machines  Corp., 2001
+ * 07/2001 ported by John George
+ * Copyright (c) 2022 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
 /*\
@@ -11,6 +11,7 @@
  * Verify that the system call utime() successfully changes the last
  * access and modification times of a file to the values specified by
  * times argument, under the following constraints:
+ *
  * - The times argument is not NULL.
  * - The user ID of the process is "root".
  */

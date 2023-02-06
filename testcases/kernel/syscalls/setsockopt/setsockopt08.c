@@ -26,13 +26,13 @@
  * ->targetsize: if OTOH the user specified ->u.user.target_size is
  * too small, then the memset() destination address calculated by
  * adding ->targetsize to the payload start will not point at, but
- * into or even past the padding. For the table's last entry's target
- * record, this will result in an out-of-bounds write past the
- * destination buffer allocated for the converted table. The code
- * below will create a (compat) table such that the converted table's
- * calculated size will fit exactly into a slab size of 1024 bytes and
- * that the memset() in xt_compat_target_from_user() will write past
- * this slab.
+ * into or even past the padding.
+ *
+ * For the table's last entry's target record, this will result in an
+ * out-of-bounds write past the destination buffer allocated for the converted
+ * table. The code below will create a (compat) table such that the converted
+ * table's calculated size will fit exactly into a slab size of 1024 bytes and
+ * that the memset() in xt_compat_target_from_user() will write past this slab.
  *
  * The table will consist of
  *
@@ -55,31 +55,34 @@
  *
  * The expected sizes for the 'state' match entries as well as the
  * 'REJECT' target are the size of the base header struct (32 bytes)
- * plus the size of an unsigned int (4 bytes) each. In the course of
- * the compat => non-compat conversion, the kernel will insert four
- * bytes of padding after the unsigned int payload (c.f.  'off'
- * adjustments via xt_compat_match_offset() and
- * xt_compat_target_offset() in xt_compat_match_from_user() and
- * xt_compat_target_from_user() resp.). This code is based on the
- * premise that the user sets the given ->u.user.match_size or
- * ->u.user.target_size consistent to the COMPAT_XT_ALIGN()ed payload
- * size as specified by the corresponding xt_match instance's
- * ->matchsize or xt_target instance's ->targetsize. That is, the
- * padding gets inserted unconditionally during the transformation,
+ * plus the size of an unsigned int (4 bytes) each.
+ *
+ * In the course of the compat => non-compat conversion, the kernel will insert
+ * four bytes of padding after the unsigned int payload (c.f. 'off' adjustments
+ * via xt_compat_match_offset() and xt_compat_target_offset() in
+ * xt_compat_match_from_user() and xt_compat_target_from_user() resp.).
+ *
+ * This code is based on the premise that the user sets the given
+ * ->u.user.match_size or ->u.user.target_size consistent to the
+ * COMPAT_XT_ALIGN()ed payload size as specified by the corresponding xt_match
+ * instance's ->matchsize or xt_target instance's ->targetsize.
+ *
+ * That is, the padding gets inserted unconditionally during the transformation,
  * independent of the actual values of ->u.user.match_size or
- * ->u.user.target_size and the result ends up getting layed out with
- * proper alignment only if said values match the expectations. That's
- * not a problem in itself, but this unconditional insertion of
- * padding must be taken into account in the match_size calculation
- * below.
+ * ->u.user.target_size and the result ends up getting layed out with proper
+ *  alignment only if said values match the expectations.
+ *
+ * That's not a problem in itself, but this unconditional insertion of padding
+ * must be taken into account in the match_size calculation below.
  *
  * For the match_size calculation below, note that the chosen
  * target slab size is 1024 and that
- *  - sizeof(xt_table_info) = 64
- *  - sizeof(ipt_entry) = 112
- *  - the kernel will insert four bytes of padding
+ *
+ *  * sizeof(xt_table_info) = 64
+ *  * sizeof(ipt_entry) = 112
+ *  * the kernel will insert four bytes of padding
  *    after the match and target entries each.
- *  - sizeof(struct xt_entry_target) = 32
+ *  * sizeof(struct xt_entry_target) = 32
  */
 
 #include <netinet/in.h>

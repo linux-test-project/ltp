@@ -11,6 +11,7 @@
  * Verify that the system call utime() successfully changes the last
  * access and modification times of a file to the current time,
  * under the following constraints:
+ *
  * - The times argument is NULL.
  * - The user ID of the process is not "root".
  * - The file is owned by the user ID of the process.

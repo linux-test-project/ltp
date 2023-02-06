@@ -9,6 +9,7 @@
  * [Description]
  *
  * Verify that alarm() returns:
+ *
  * - zero when there was no previously scheduled alarm
  * - number of seconds remaining until any previously scheduled alarm
  */
