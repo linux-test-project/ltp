@@ -678,7 +678,7 @@ static void parse_opts(int argc, char *argv[])
 			print_test_tags();
 			exit(0);
 		case 'i':
-			iterations = SAFE_STRTOL(optarg, 1, INT_MAX);
+			iterations = SAFE_STRTOL(optarg, 0, INT_MAX);
 		break;
 		case 'I':
 			if (tst_test->max_runtime > 0)
