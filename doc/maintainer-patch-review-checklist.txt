@@ -39,7 +39,7 @@ New test should
 
 ### C tests
 * Use new https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#22-writing-a-test-in-c[C API]
-* Test binaries are added into corresponding '.gitignore' files
+* Test binaries are added into corresponding `.gitignore` files
 * Check coding style with `make check`
   (more in https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#21-c-coding-style[C coding style])
 * Docparse documentation
