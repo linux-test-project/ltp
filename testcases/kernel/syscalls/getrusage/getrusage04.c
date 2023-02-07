@@ -104,8 +104,9 @@ int main(int argc, char *argv[])
 		tst_count = 0;
 		i = 0;
 		SAFE_GETRUSAGE(cleanup, RUSAGE_THREAD, &usage);
-		tst_resm(TINFO, "utime:%12luus; stime:%12luus",
-			 usage.ru_utime.tv_usec, usage.ru_stime.tv_usec);
+		tst_resm(TINFO, "utime:%12lldus; stime:%12lldus",
+			 (long long)usage.ru_utime.tv_usec,
+			 (long long)usage.ru_stime.tv_usec);
 		ulast = usage.ru_utime.tv_usec;
 		slast = usage.ru_stime.tv_usec;
 
@@ -115,9 +116,9 @@ int main(int argc, char *argv[])
 			sdelta = usage.ru_stime.tv_usec - slast;
 			if (udelta > 0 || sdelta > 0) {
 				i++;
-				tst_resm(TINFO, "utime:%12luus; stime:%12luus",
-					 usage.ru_utime.tv_usec,
-					 usage.ru_stime.tv_usec);
+				tst_resm(TINFO, "utime:%12lldus; stime:%12lldus",
+					 (long long)usage.ru_utime.tv_usec,
+					 (long long)usage.ru_stime.tv_usec);
 				if ((long)udelta > 1000 + (BIAS_MAX * factor_nr)) {
 					sprintf(msg_string,
 						"utime increased > %ldus:",
