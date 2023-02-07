@@ -66,9 +66,9 @@ init()
 cleanup()
 {
 	if lsmod | grep -q "ip${TST_IPV6}_tables"; then
-		NFTRUN -F -t filter > /dev/null 2>&1
-		NFTRUN -F -t nat > /dev/null 2>&1
-		NFTRUN -F -t mangle > /dev/null 2>&1
+		NFRUN -F -t filter > /dev/null 2>&1
+		NFRUN -F -t nat > /dev/null 2>&1
+		NFRUN -F -t mangle > /dev/null 2>&1
 		rmmod -v ipt_limit ipt_multiport ipt_LOG ipt_REJECT \
 			 ip${TST_IPV6}table_mangle ip${TST_IPV6}table_nat ip_conntrack \
 			 ip${TST_IPV6}table_filter ip${TST_IPV6}_tables nf_nat_ipv${TST_IPVER} nf_nat \
