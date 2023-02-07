@@ -31,6 +31,7 @@
 #include "tst_safe_macros.h"
 
 #define PID_MAX_PATH "/proc/sys/kernel/pid_max"
+#define THREADS_MAX_PATH "/proc/sys/kernel/threads-max"
 #define CGROUPS_V1_SLICE_FMT "/sys/fs/cgroup/pids/user.slice/user-%d.slice/pids.max"
 #define CGROUPS_V2_SLICE_FMT "/sys/fs/cgroup/user.slice/user-%d.slice/pids.max"
 /* Leave some available processes for the OS */
@@ -113,7 +114,7 @@ static int get_session_pids_limit(void (*cleanup_fn) (void))
 int tst_get_free_pids_(void (*cleanup_fn) (void))
 {
 	FILE *f;
-	int rc, used_pids, max_pids, max_session_pids;
+	int rc, used_pids, max_pids, max_session_pids, max_threads;
 
 	f = popen("ps -eT | wc -l", "r");
 	if (!f) {
@@ -129,6 +130,8 @@ int tst_get_free_pids_(void (*cleanup_fn) (void))
 	}
 
 	SAFE_FILE_SCANF(cleanup_fn, PID_MAX_PATH, "%d", &max_pids);
+	SAFE_FILE_SCANF(cleanup_fn, THREADS_MAX_PATH, "%d", &max_threads);
+	max_pids = MIN(max_pids, max_threads);
 
 	max_session_pids = get_session_pids_limit(cleanup_fn);
 	if ((max_session_pids > 0) && (max_session_pids < max_pids))
