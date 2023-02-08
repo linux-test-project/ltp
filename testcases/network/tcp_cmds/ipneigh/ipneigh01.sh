@@ -25,7 +25,7 @@ do_setup()
 		if [ -n "$TST_IPV6" ]; then
 			tst_brk TCONF "'arp' doesn't support IPv6"
 		fi
-		SHOW_CMD="arp -a"
+		SHOW_CMD="arp -an"
 		DEL_CMD="ROD arp -d $(tst_ipaddr rhost) -i $(tst_iface)"
 		;;
 	*)
