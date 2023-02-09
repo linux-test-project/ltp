@@ -297,8 +297,8 @@ static void run(void)
 		return;
 	}
 
-	srcfd = SAFE_OPEN(srcname, srcflags | O_RDONLY, 0666);
-	dstfd = SAFE_OPEN(dstname, srcflags | O_RDONLY, 0666);
+	srcfd = SAFE_OPEN(srcname, O_RDONLY, 0666);
+	dstfd = SAFE_OPEN(dstname, O_RDONLY, 0666);
 
 	reads = howmany(filesize, buffsize);
 
