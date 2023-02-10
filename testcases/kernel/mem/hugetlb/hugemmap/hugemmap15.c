@@ -19,6 +19,10 @@
  * remap, or because the icache happens to get flushed in the interim.
  */
 
+#if defined(__clang__)
+	#pragma clang optimize off
+#endif
+
 #define _GNU_SOURCE
 #include "hugetlb.h"
 
