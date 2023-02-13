@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Huawei Technologies Co., Ltd., 2015
- * Copyright (C) 2022 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
 /*\
@@ -12,32 +12,32 @@
  */
 
 #define _GNU_SOURCE
-
 #include <sys/mman.h>
 #include "tst_test.h"
+#include "tst_atomic.h"
 #include "lapi/sched.h"
 
 #define MAXNEST 32
 
+static const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
 static int *level;
 
-static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
+static pid_t child_func(void)
 {
-	pid_t cpid;
-	int status;
+	pid_t cpid = 0;
 
-	if (*level == MAXNEST)
-		return 0;
+	if (tst_atomic_inc(level) == MAXNEST)
+		return cpid;
 
-	(*level)++;
+	cpid = SAFE_CLONE(&args);
+	if (!cpid) {
+		child_func();
+		return cpid;
+	}
 
-	cpid = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_func, 0);
-	if (cpid < 0)
-		tst_brk(TBROK | TERRNO, "clone failed");
+	tst_reap_children();
 
-	SAFE_WAITPID(cpid, &status, 0);
-
-	return 0;
+	return cpid;
 }
 
 static void setup(void)
@@ -45,28 +45,25 @@ static void setup(void)
 	level = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 }
 
+static void cleanup(void)
+{
+	SAFE_MUNMAP(level, sizeof(int));
+}
+
 static void run(void)
 {
-	int ret, status;
+	*level = 0;
 
-	*level = 1;
-
-	ret = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_func, 0);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clone failed");
-
-	SAFE_WAITPID(ret, &status, 0);
-
-	if (*level < MAXNEST) {
-		tst_res(TFAIL, "Nested containers should be %d, but they are %d", MAXNEST, *level);
+	if (!child_func())
 		return;
-	}
 
-	tst_res(TPASS, "All %d containers have been nested", MAXNEST);
+	TST_EXP_EQ_LI(*level, MAXNEST);
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.setup = setup,
+	.cleanup = cleanup,
+	.forks_child = 1,
 };
