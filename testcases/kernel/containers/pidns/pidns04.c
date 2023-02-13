@@ -1,150 +1,51 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
-* Copyright (c) International Business Machines Corp., 2007
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
-* the GNU General Public License for more details.
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-*
-***************************************************************************
+ * Copyright (C) International Business Machines Corp., 2008
+ * Copyright (C) 2022 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
 
-* File: pidns04.c
-*
-* Description:
-*  The pidns04.c testcase builds into the ltp framework to verify
-*  the basic functionality of PID Namespace.
-*
-* Verify that:
-* 1. When parent clone a process with flag CLONE_NEWPID, the process ID of
-* child should be one.
-*
-* 2. When parent clone a process with flag CLONE_NEWPID, the parent process ID
-* of should be zero.
-*
-* 3. The container init process (one), should not get killed by the SIGKILL in
-* the childNS
-*
-* Total Tests:
-*
-* Test Name: pidns04
-*
-* Test Assertion & Strategy:
-*
-* From main() clone a new child process with passing the clone_flag as
-* CLONE_NEWPID.
-* The container init, should not get killed by the SIGKILL inside the child NS.
-* Usage: <for command-line>
-* pidns04
-*
-* History:
-*
-* FLAG DATE     	NAME	   			DESCRIPTION
-* 08/10/08      Veerendra C <vechandr@in.ibm.com> Verifies killing of cont init.
-*
-*******************************************************************************/
-#define _GNU_SOURCE 1
+/*\
+ * [Description]
+ *
+ * Clone a process with CLONE_NEWPID flag and check that child container does
+ * not get kill itself with SIGKILL.
+ */
+
 #include <sys/wait.h>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#define CLEANUP cleanup
-#include "pidns_helper.h"
-#include "test.h"
+#include "tst_test.h"
+#include "lapi/sched.h"
 
-#define INIT_PID	1
-#define CHILD_PID       1
-#define PARENT_PID      0
-
-char *TCID = "pidns04";
-int TST_TOTAL = 1;
-int fd[2];
-
-/*
- * child_fn1() - Inside container
-*/
-static int child_fn1(void *ttype)
+static void child_func(void)
 {
-	int exit_val;
-	pid_t cpid, ppid;
-	cpid = getpid();
-	ppid = getppid();
-	char mesg[] = "I was not killed !";
-	/* Child process closes up read side of pipe */
-	close(fd[0]);
+	pid_t cpid = getpid();
+	pid_t ppid = getppid();
 
-	/* Comparing the values to make sure pidns is created correctly */
-	if ((cpid == CHILD_PID) && (ppid == PARENT_PID)) {
-		printf("PIDNS test is running inside container\n");
-		kill(INIT_PID, SIGKILL);
-		/* Verifying whether the container init is not killed, "
-		   If so writing into the pipe created in the parent NS" */
+	TST_EXP_EQ_LI(cpid, 1);
+	TST_EXP_EQ_LI(ppid, 0);
 
-		/* Send "mesg" through the write side of pipe */
-		write(fd[1], mesg, (strlen(mesg) + 1));
-		exit_val = 0;
-	} else {
-		printf("got unexpected result of cpid=%d ppid=%d\n",
-		       cpid, ppid);
-		exit_val = 1;
-	}
-	exit(exit_val);
+	tst_res(TINFO, "Trying to kill container from within container");
+
+	SAFE_KILL(1, SIGKILL);
+
+	tst_res(TINFO, "Container is up and running");
 }
 
-static void setup(void)
+static void run(void)
 {
-	tst_require_root();
-	check_newpid();
-}
+	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	pid_t pid;
 
-int main(void)
-{
-	int nbytes, status;
-	char readbuffer[80];
-
-	setup();
-
-	pipe(fd);
-	TEST(do_clone_unshare_test(T_CLONE, CLONE_NEWPID, child_fn1, NULL));
-	if (TEST_RETURN == -1) {
-		tst_brkm(TFAIL | TTERRNO, CLEANUP, "clone failed");
-	} else if (wait(&status) == -1) {
-		tst_brkm(TFAIL | TERRNO, CLEANUP, "wait failed");
+	pid = SAFE_CLONE(&args);
+	if (!pid) {
+		child_func();
+		return;
 	}
 
-	/* Parent process closes up write side of pipe */
-	close(fd[1]);
-	/* Read in a string from the pipe */
-	nbytes = read(fd[0], readbuffer, sizeof(readbuffer));
-
-	if (0 <= nbytes) {
-		tst_resm(TPASS, "Container init : %s", readbuffer);
-	} else {
-		tst_brkm(TFAIL, CLEANUP,
-			 "Container init is killed by SIGKILL !!!");
-	}
-
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-		tst_resm(TFAIL, "Container init pid exited abnormally");
-	} else if (WIFSIGNALED(status)) {
-		tst_resm(TFAIL, "Container init pid got killed by signal %d",
-			 WTERMSIG(status));
-	}
-	CLEANUP();
-
-	tst_exit();
-
+	tst_reap_children();
 }
 
-static void cleanup(void)
-{
-	close(fd[0]);
-}
+static struct tst_test test = {
+	.test_all = run,
+	.needs_root = 1,
+	.forks_child = 1,
+};
