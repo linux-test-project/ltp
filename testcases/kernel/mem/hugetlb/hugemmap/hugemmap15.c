@@ -31,16 +31,7 @@
 	defined(__aarch64__) || (defined(__riscv) && __riscv_xlen == 64) || \
 	defined(__i386__) || defined(__x86_64__) || defined(__arm__)
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <setjmp.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/mman.h>
-#include <ucontext.h>
-#include <limits.h>
-#include <sys/param.h>
-#include <sys/types.h>
 
 #define SUCC_JMP 1
 #define FAIL_JMP 2
