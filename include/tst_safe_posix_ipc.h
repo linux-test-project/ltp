@@ -121,7 +121,7 @@ static inline int safe_mq_send(const char *file, const int lineno,
 
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			"mq_send(%d,%s,%lu,%d) failed", mqdes, msg_ptr,
+			"mq_send(%d,%s,%zu,%d) failed", mqdes, msg_ptr,
 			msg_len, msg_prio);
 	}
 
