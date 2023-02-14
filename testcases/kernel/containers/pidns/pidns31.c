@@ -69,7 +69,6 @@ static void cleanup(void)
 static void run(void)
 {
 	pid_t cpid;
-	int status;
 	struct sigaction sa;
 	struct sigevent notif;
 	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
