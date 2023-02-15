@@ -8,27 +8,9 @@
 #define COMMON_H
 
 #include "tst_test.h"
-#include "lapi/sched.h"
 
 #define UID_MAP 0
 #define GID_MAP 1
-
-static int dummy_child(void *v)
-{
-	(void)v;
-	return 0;
-}
-
-static inline void check_newuser(void)
-{
-	int pid, status;
-
-	pid = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, dummy_child, NULL);
-	if (pid == -1)
-		tst_brk(TCONF | TTERRNO, "CLONE_NEWUSER not supported");
-
-	SAFE_WAIT(&status);
-}
 
 static inline void updatemap(int cpid, int type, int idnum, int parentmappid)
 {
@@ -36,7 +18,7 @@ static inline void updatemap(int cpid, int type, int idnum, int parentmappid)
 	char content[BUFSIZ];
 	int fd;
 
-	switch(type) {
+	switch (type) {
 	case UID_MAP:
 		sprintf(path, "/proc/%d/uid_map", cpid);
 		break;
