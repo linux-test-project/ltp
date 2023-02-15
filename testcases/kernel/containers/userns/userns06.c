@@ -20,6 +20,7 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include "lapi/sched.h"
 #include "common.h"
 
 #define TEST_APP "userns06_capcheck"
@@ -29,7 +30,7 @@
 #define CHILD2UID 200
 #define CHILD2GID 200
 
-static int child_fn1(void)
+static void child_fn1(void)
 {
 	char *const args[] = { TEST_APP, "privileged", NULL };
 	int ret;
@@ -39,11 +40,9 @@ static int child_fn1(void)
 	ret = execv(args[0], args);
 	if (ret == -1)
 		tst_brk(TBROK | TERRNO, "execv: unexpected error");
-
-	return 0;
 }
 
-static int child_fn2(void)
+static void child_fn2(void)
 {
 	int uid, gid, ret;
 	char *const args[] = { TEST_APP, "unprivileged", NULL };
@@ -53,27 +52,17 @@ static int child_fn2(void)
 	uid = geteuid();
 	gid = getegid();
 
-	if (uid != CHILD2UID || gid != CHILD2GID) {
-		tst_res(TFAIL, "unexpected uid=%d gid=%d", uid, gid);
-		return 1;
-	}
-
-	tst_res(TPASS, "expected uid and gid");
+	TST_EXP_EQ_LI(uid, CHILD2UID);
+	TST_EXP_EQ_LI(gid, CHILD2GID);
 
 	ret = execv(args[0], args);
 	if (ret == -1)
 		tst_brk(TBROK | TERRNO, "execv: unexpected error");
-
-	return 0;
-}
-
-static void setup(void)
-{
-	check_newuser();
 }
 
 static void run(void)
 {
+	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
 	pid_t cpid1;
 	pid_t cpid2;
 	int parentuid;
@@ -84,13 +73,17 @@ static void run(void)
 	parentuid = geteuid();
 	parentgid = getegid();
 
-	cpid1 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, (void *)child_fn1, NULL);
-	if (cpid1 < 0)
-		tst_brk(TBROK | TTERRNO, "cpid1 clone failed");
+	cpid1 = SAFE_CLONE(&args);
+	if (!cpid1) {
+		child_fn1();
+		return;
+	}
 
-	cpid2 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, (void *)child_fn2, NULL);
-	if (cpid2 < 0)
-		tst_brk(TBROK | TTERRNO, "cpid2 clone failed");
+	cpid2 = SAFE_CLONE(&args);
+	if (!cpid2) {
+		child_fn2();
+		return;
+	}
 
 	if (access("/proc/self/setgroups", F_OK) == 0) {
 		sprintf(path, "/proc/%d/setgroups", cpid1);
@@ -117,9 +110,9 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.setup = setup,
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.resource_files = (const char *[]) {
 		TEST_APP,

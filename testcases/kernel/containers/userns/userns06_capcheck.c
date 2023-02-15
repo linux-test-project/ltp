@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
 {
 	cap_t caps;
 	int i, last_cap;
-	cap_flag_value_t flag_val;
-	cap_flag_value_t expected_flag = 1;
+	cap_flag_value_t cap_flag;
+	cap_flag_value_t expected_cap_flag = 1;
 
 	tst_reinit();
 
@@ -35,24 +35,21 @@ int main(int argc, char *argv[])
 	SAFE_FILE_SCANF("/proc/sys/kernel/cap_last_cap", "%d", &last_cap);
 
 	if (strcmp("privileged", argv[1]))
-		expected_flag = 0;
+		expected_cap_flag = 0;
 
 	caps = cap_get_proc();
 
 	for (i = 0; i <= last_cap; i++) {
-		cap_get_flag(caps, i, CAP_EFFECTIVE, &flag_val);
-		if (flag_val != expected_flag)
+		cap_get_flag(caps, i, CAP_EFFECTIVE, &cap_flag);
+		if (cap_flag != expected_cap_flag)
 			break;
 
-		cap_get_flag(caps, i, CAP_PERMITTED, &flag_val);
-		if (flag_val != expected_flag)
+		cap_get_flag(caps, i, CAP_PERMITTED, &cap_flag);
+		if (cap_flag != expected_cap_flag)
 			break;
 	}
 
-	if (flag_val != expected_flag)
-		tst_res(TFAIL, "unexpected effective/permitted caps at %d", i);
-	else
-		tst_res(TPASS, "expected caps at %d", i);
+	TST_EXP_EQ_LI(cap_flag, expected_cap_flag);
 
 	return 0;
 }
