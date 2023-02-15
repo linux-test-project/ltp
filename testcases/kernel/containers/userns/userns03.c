@@ -32,8 +32,9 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "common.h"
 #include "tst_test.h"
+#include "lapi/sched.h"
+#include "common.h"
 
 #define CHILD1UID 0
 #define CHILD1GID 0
@@ -42,23 +43,12 @@
 #define UID_MAP 0
 #define GID_MAP 1
 
-static int cpid1;
-static int parentuid;
-static int parentgid;
-
-/*
- * child_fn1() - Inside a new user namespace
- */
-static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_fn1(void)
 {
 	TST_CHECKPOINT_WAIT(0);
-	return 0;
 }
 
-/*
- * child_fn2() - Inside a new user namespace
- */
-static int child_fn2(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_fn2(int cpid1, int parentuid, int parentgid)
 {
 	int uid, gid;
 	char cpid1uidpath[BUFSIZ];
@@ -70,12 +60,8 @@ static int child_fn2(LTP_ATTRIBUTE_UNUSED void *arg)
 	uid = geteuid();
 	gid = getegid();
 
-	tst_res(TINFO, "uid=%d, gid=%d", uid, gid);
-
-	if (uid != CHILD2UID || gid != CHILD2GID)
-		tst_res(TFAIL, "unexpected uid=%d gid=%d", uid, gid);
-	else
-		tst_res(TPASS, "expected uid and gid");
+	TST_EXP_EQ_LI(uid, CHILD2UID);
+	TST_EXP_EQ_LI(gid, CHILD2GID);
 
 	/* Get the uid parameters of the child_fn2 process */
 	SAFE_FILE_SCANF("/proc/self/uid_map", "%d %d %d", &idinsidens, &idoutsidens, &length);
@@ -127,32 +113,31 @@ static int child_fn2(LTP_ATTRIBUTE_UNUSED void *arg)
 
 	TST_CHECKPOINT_WAKE(0);
 	TST_CHECKPOINT_WAKE(1);
-
-	return 0;
-}
-
-static void setup(void)
-{
-	check_newuser();
 }
 
 static void run(void)
 {
-	pid_t cpid2;
+	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	pid_t cpid1, cpid2;
+	uid_t parentuid;
+	gid_t parentgid;
 	char path[BUFSIZ];
 	int fd;
-	int ret;
 
 	parentuid = geteuid();
 	parentgid = getegid();
 
-	cpid1 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, child_fn1, NULL);
-	if (cpid1 < 0)
-		tst_brk(TBROK | TTERRNO, "cpid1 clone failed");
+	cpid1 = SAFE_CLONE(&args);
+	if (!cpid1) {
+		child_fn1();
+		return;
+	}
 
-	cpid2 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, child_fn2, NULL);
-	if (cpid2 < 0)
-		tst_brk(TBROK | TTERRNO, "cpid2 clone failed");
+	cpid2 = SAFE_CLONE(&args);
+	if (!cpid2) {
+		child_fn2(cpid1, parentuid, parentgid);
+		return;
+	}
 
 	if (access("/proc/self/setgroups", F_OK) == 0) {
 		sprintf(path, "/proc/%d/setgroups", cpid1);
@@ -168,18 +153,11 @@ static void run(void)
 		 * do so will fail with the error EPERM.)
 		 */
 
-		/* test that setgroups can't be re-enabled */
+		tst_res(TINFO, "Check if setgroups can be re-enabled");
+
 		fd = SAFE_OPEN(path, O_WRONLY, 0644);
-		ret = write(fd, "allow", 5);
-
-		if (ret != -1)
-			tst_brk(TBROK, "write action should fail");
-		else if (errno != EPERM)
-			tst_brk(TBROK | TTERRNO, "unexpected error");
-
+		TST_EXP_FAIL(write(fd, "allow", 5), EPERM);
 		SAFE_CLOSE(fd);
-
-		tst_res(TPASS, "setgroups can't be re-enabled");
 
 		sprintf(path, "/proc/%d/setgroups", cpid2);
 
@@ -198,9 +176,9 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.setup = setup,
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS",
