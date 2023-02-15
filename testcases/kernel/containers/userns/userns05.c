@@ -18,15 +18,12 @@
 
 #include <stdio.h>
 #include "tst_test.h"
+#include "lapi/sched.h"
 #include "common.h"
 
-/*
- * child_fn1() - Inside a new user namespace
- */
-static int child_fn1(void)
+static void child_fn1(void)
 {
 	TST_CHECKPOINT_WAIT(0);
-	return 0;
 }
 
 static unsigned int getusernsidbypid(int pid)
@@ -47,14 +44,18 @@ static unsigned int getusernsidbypid(int pid)
 
 static void run(void)
 {
+	const struct tst_clone_args args1 = { .exit_signal = SIGCHLD };
+	const struct tst_clone_args args2 = { CLONE_NEWUSER, SIGCHLD };
 	int cpid1, cpid2, cpid3;
 	unsigned int parentuserns, cpid1userns, cpid2userns, newparentuserns;
 
 	parentuserns = getusernsidbypid(getpid());
 
-	cpid1 = ltp_clone_quick(SIGCHLD, (void *)child_fn1, NULL);
-	if (cpid1 < 0)
-		tst_brk(TBROK | TTERRNO, "clone failed");
+	cpid1 = SAFE_CLONE(&args1);
+	if (!cpid1) {
+		child_fn1();
+		return;
+	}
 
 	cpid1userns = getusernsidbypid(cpid1);
 
@@ -64,23 +65,20 @@ static void run(void)
 	 * CLONE_NEWUSER flag is a member of the same user namespace as its
 	 * parent
 	 */
-	if (parentuserns != cpid1userns)
-		tst_res(TFAIL, "userns:parent should be equal to cpid1");
-	else
-		tst_res(TPASS, "userns:parent is equal to cpid1");
+	TST_EXP_EQ_LI(parentuserns, cpid1userns);
 
-	cpid2 = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, (void *)child_fn1, NULL);
-	if (cpid2 < 0)
-		tst_brk(TBROK | TTERRNO, "clone failed");
+	cpid2 = SAFE_CLONE(&args2);
+	if (!cpid2) {
+		child_fn1();
+		return;
+	}
 
 	cpid2userns = getusernsidbypid(cpid2);
 
 	TST_CHECKPOINT_WAKE(0);
 
-	if (parentuserns == cpid2userns)
-		tst_res(TFAIL, "userns:parent should be not equal to cpid2");
-	else
-		tst_res(TPASS, "userns:parent is not equal to cpid2");
+	TST_EXP_EXPR(parentuserns != cpid2userns,
+		"parent namespace != child namespace");
 
 	cpid3 = SAFE_FORK();
 	if (!cpid3) {
@@ -91,20 +89,12 @@ static void run(void)
 		 * is moved into a new user namespace which is not shared
 		 * with any previously existing process
 		 */
-		if (parentuserns == newparentuserns)
-			tst_res(TFAIL, "unshared namespaces with same id");
-		else
-			tst_res(TPASS, "unshared namespaces with different id");
+		TST_EXP_EXPR(parentuserns != newparentuserns,
+			"parent namespace != unshared child namespace");
 	}
 }
 
-static void setup(void)
-{
-	check_newuser();
-}
-
 static struct tst_test test = {
-	.setup = setup,
 	.test_all = run,
 	.needs_root = 1,
 	.forks_child = 1,
