@@ -20,9 +20,9 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
-#include "common.h"
 #include "config.h"
 #include <sys/capability.h>
+#include "lapi/sched.h"
 
 #define OVERFLOWUIDPATH "/proc/sys/kernel/overflowuid"
 #define OVERFLOWGIDPATH "/proc/sys/kernel/overflowgid"
@@ -30,10 +30,7 @@
 static long overflowuid;
 static long overflowgid;
 
-/*
- * child_fn1() - Inside a new user namespace
- */
-static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_fn1(void)
 {
 	int uid, gid;
 	cap_t caps;
@@ -45,10 +42,8 @@ static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
 
 	tst_res(TINFO, "USERNS test is running in a new user namespace.");
 
-	if (uid != overflowuid || gid != overflowgid)
-		tst_res(TFAIL, "got unexpected uid=%d gid=%d", uid, gid);
-	else
-		tst_res(TPASS, "got expected uid and gid");
+	TST_EXP_EQ_LI(uid, overflowuid);
+	TST_EXP_EQ_LI(gid, overflowgid);
 
 	caps = cap_get_proc();
 
@@ -68,31 +63,29 @@ static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
 		tst_res(TFAIL, "unexpected effective/permitted caps at %d", i);
 	else
 		tst_res(TPASS, "expected capabilities");
-
-	return 0;
 }
 
 static void setup(void)
 {
-	check_newuser();
-
 	SAFE_FILE_SCANF(OVERFLOWUIDPATH, "%ld", &overflowuid);
 	SAFE_FILE_SCANF(OVERFLOWGIDPATH, "%ld", &overflowgid);
 }
 
 static void run(void)
 {
-	int pid;
+	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
 
-	pid = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, child_fn1, NULL);
-	if (pid < 0)
-		tst_brk(TBROK | TTERRNO, "clone failed");
+	if (!SAFE_CLONE(&args)) {
+		child_fn1();
+		return;
+	}
 }
 
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
 	.caps = (struct tst_cap []) {
 		TST_CAP(TST_CAP_DROP, CAP_NET_RAW),
 		{}
