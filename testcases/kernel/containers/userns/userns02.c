@@ -14,13 +14,10 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
-#include "common.h"
 #include "tst_test.h"
+#include "lapi/sched.h"
 
-/*
- * child_fn1() - Inside a new user namespace
- */
-static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_fn1(void)
 {
 	int uid, gid;
 
@@ -29,29 +26,23 @@ static int child_fn1(LTP_ATTRIBUTE_UNUSED void *arg)
 	uid = geteuid();
 	gid = getegid();
 
-	if (uid == 100 && gid == 100)
-		tst_res(TPASS, "got expected uid and gid");
-	else
-		tst_res(TFAIL, "got unexpected uid=%d gid=%d", uid, gid);
-
-	return 0;
-}
-
-static void setup(void)
-{
-	check_newuser();
+	TST_EXP_EQ_LI(uid, 100);
+	TST_EXP_EQ_LI(gid, 100);
 }
 
 static void run(void)
 {
+	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
 	int childpid;
 	int parentuid;
 	int parentgid;
 	char path[BUFSIZ];
 
-	childpid = ltp_clone_quick(CLONE_NEWUSER | SIGCHLD, child_fn1, NULL);
-	if (childpid < 0)
-		tst_brk(TBROK | TTERRNO, "clone failed");
+	childpid = SAFE_CLONE(&args);
+	if (!childpid) {
+		child_fn1();
+		return;
+	}
 
 	parentuid = geteuid();
 	parentgid = getegid();
@@ -71,9 +62,9 @@ static void run(void)
 }
 
 static struct tst_test test = {
-	.setup = setup,
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS",
