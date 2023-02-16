@@ -4,6 +4,7 @@ arm
 hppa
 i386
 ia64
+loongarch
 mips_n32
 mips_n64
 mips_o32
