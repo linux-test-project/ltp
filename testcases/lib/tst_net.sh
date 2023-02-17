@@ -951,6 +951,62 @@ tst_default_max_pkt()
 	echo "$((mtu + mtu / 10))"
 }
 
+# Setup LTP network.
+#
+# Used tools:
+# * tst_net_ip_prefix
+# Strip prefix from IP address and save both If no prefix found sets
+# default prefix.
+# * tst_net_iface_prefix reads prefix and interface from rtnetlink.
+# If nothing found sets default prefix value.
+# * tst_net_vars exports environment variables related to test links and
+# networks that aren't reachable through the test links.
+#
+# For full list of exported environment variables see:
+# tst_net_ip_prefix -h
+# tst_net_iface_prefix -h
+# tst_net_vars -h
+tst_net_setup_network()
+{
+	tst_require_cmds tst_net_iface_prefix tst_net_ip_prefix tst_net_vars
+
+	eval $(tst_net_ip_prefix $IPV4_LHOST || echo "exit $?")
+	eval $(tst_net_ip_prefix -r $IPV4_RHOST || echo "exit $?")
+
+	[ "$TST_NET_IPV6_ENABLED" = 1 ] && tst_net_detect_ipv6 rhost
+
+	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
+		eval $(tst_net_ip_prefix $IPV6_LHOST || echo "exit $?")
+		eval $(tst_net_ip_prefix -r $IPV6_RHOST || echo "exit $?")
+	fi
+
+	tst_net_use_netns && init_ltp_netspace
+
+	eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
+	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
+		|| echo "exit $?")
+	eval $(tst_net_vars $IPV4_LHOST/$IPV4_LPREFIX \
+		$IPV4_RHOST/$IPV4_RPREFIX || echo "exit $?")
+
+	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
+		eval $(tst_net_iface_prefix $IPV6_LHOST || echo "exit $?")
+		eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
+			|| echo "exit $?")
+		eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
+			$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
+	fi
+
+	tst_res_ TINFO "Network config (local -- remote):"
+	tst_res_ TINFO "$LHOST_IFACES -- $RHOST_IFACES"
+	tst_res_ TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
+	tst_res_ TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
+
+	if [ -n "$TST_USE_LEGACY_API" ]; then
+		[ "$TST_IPV6" ] && tst_net_require_ipv6
+		tst_net_remote_tmpdir
+	fi
+}
+
 [ -n "$TST_USE_LEGACY_API" ] && . test.sh || . tst_test.sh
 
 if [ -n "$TST_USE_LEGACY_API" ]; then
@@ -990,55 +1046,10 @@ IPV4_RHOST="${IPV4_RHOST:-10.0.0.1/24}"
 IPV6_LHOST="${IPV6_LHOST:-fd00:1:1:1::2/64}"
 IPV6_RHOST="${IPV6_RHOST:-fd00:1:1:1::1/64}"
 
-# tst_net_ip_prefix
-# Strip prefix from IP address and save both If no prefix found sets
-# default prefix.
-#
-# tst_net_iface_prefix reads prefix and interface from rtnetlink.
-# If nothing found sets default prefix value.
-#
-# tst_net_vars exports environment variables related to test links and
-# networks that aren't reachable through the test links.
-#
-# For full list of exported environment variables see:
-# tst_net_ip_prefix -h
-# tst_net_iface_prefix -h
-# tst_net_vars -h
-tst_require_cmds tst_net_iface_prefix tst_net_ip_prefix tst_net_vars
-eval $(tst_net_ip_prefix $IPV4_LHOST || echo "exit $?")
-eval $(tst_net_ip_prefix -r $IPV4_RHOST || echo "exit $?")
+tst_net_setup_network
 
-[ "$TST_NET_IPV6_ENABLED" = 1 ] && tst_net_detect_ipv6 rhost
-
-if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
-	eval $(tst_net_ip_prefix $IPV6_LHOST || echo "exit $?")
-	eval $(tst_net_ip_prefix -r $IPV6_RHOST || echo "exit $?")
-fi
-
-tst_net_use_netns && init_ltp_netspace
-
-eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
-eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
-	|| echo "exit $?")
-
-if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
-	eval $(tst_net_iface_prefix $IPV6_LHOST || echo "exit $?")
-	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
-		|| echo "exit $?")
-fi
-
-eval $(tst_net_vars $IPV4_LHOST/$IPV4_LPREFIX \
-	$IPV4_RHOST/$IPV4_RPREFIX || echo "exit $?")
-
-if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
-	eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
-		$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
-fi
-
-tst_res_ TINFO "Network config (local -- remote):"
-tst_res_ TINFO "$LHOST_IFACES -- $RHOST_IFACES"
-tst_res_ TINFO "$IPV4_LHOST/$IPV4_LPREFIX -- $IPV4_RHOST/$IPV4_RPREFIX"
-tst_res_ TINFO "$IPV6_LHOST/$IPV6_LPREFIX -- $IPV6_RHOST/$IPV6_RPREFIX"
+# More information about network parameters can be found
+# in the following document: testcases/network/stress/README
 
 export TST_NET_DATAROOT="$LTPROOT/testcases/bin/datafiles"
 
@@ -1083,14 +1094,6 @@ export RHOST_HWADDRS="${RHOST_HWADDRS:-$(tst_get_hwaddrs rhost)}"
 
 export NS_ICMPV4_SENDER_DATA_MAXSIZE=1472
 export NS_ICMPV6_SENDER_DATA_MAXSIZE=1452
-
-# More information about network parameters can be found
-# in the following document: testcases/network/stress/README
-
-if [ -n "$TST_USE_LEGACY_API" ]; then
-	[ "$TST_IPV6" ] && tst_net_require_ipv6
-	tst_net_remote_tmpdir
-fi
 
 if [ -z "$TST_USE_LEGACY_API" ] && ! tst_cmd_available ping6; then
 	ping6()
