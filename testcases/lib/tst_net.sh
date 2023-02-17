@@ -84,25 +84,41 @@ tst_brk_()
 	[ -z "$TST_USE_LEGACY_API" ] && tst_brk $@ || tst_brkm $@
 }
 
+# Detect IPv6 disabled via 1) CONFIG_IPV6=n or 2) ipv6.disable=1 kernel cmdline
+# parameter or 3) sysctl net.ipv6.conf.all.disable_ipv6=1 (disables IPv6 on all
+# interfaces (including both already created and later created).
+# $TST_NET_IPV6_ENABLED: 1 on IPv6 enabled, 0 on IPv6 disabled.
 tst_net_detect_ipv6()
 {
 	local type="${1:-lhost}"
 	local cmd='[ -f /proc/net/if_inet6 ]'
-	local ret
+	local disabled iface ret
 
 	if [ "$type" = "lhost" ]; then
 		$cmd
 	else
 		tst_rhost_run -c "$cmd"
 	fi
-	ret=$?
 
-	if [ $ret -eq 0 ]; then
-		TST_NET_IPV6_ENABLED=1
-	else
+	if [ $? -ne 0 ]; then
 		TST_NET_IPV6_ENABLED=0
-		tst_res_ TINFO "IPv6 disabled on $type"
+		tst_res_ TINFO "IPv6 disabled on $type via kernel command line or not compiled in"
+		return
 	fi
+
+	cmd='cat /proc/sys/net/ipv6/conf/all/disable_ipv6'
+	if [ "$type" = "lhost" ]; then
+		disabled=$($cmd)
+	else
+		disabled=$(tst_rhost_run -c "$cmd")
+	fi
+	if [ $disabled = 1 ]; then
+		tst_res_ TINFO "IPv6 disabled on $type net.ipv6.conf.all.disable_ipv6=1"
+		TST_NET_IPV6_ENABLED=0
+		return
+	fi
+
+	TST_NET_IPV6_ENABLED=1
 }
 
 tst_net_require_ipv6()
