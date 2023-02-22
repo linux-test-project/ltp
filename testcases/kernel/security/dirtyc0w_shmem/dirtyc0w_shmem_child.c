@@ -115,7 +115,7 @@ static void *uffd_thread_fn(void *arg)
 		if (ioctl(uffd, UFFDIO_CONTINUE, &uffdio) < 0) {
 			if (errno == EEXIST) {
 				uffdio_wake.start = (unsigned long) map;
-				uffdio_wake.len = 4096;
+				uffdio_wake.len = page_size;
 				SAFE_IOCTL(uffd, UFFDIO_WAKE, &uffdio_wake);
 			}
 		}
