@@ -37,7 +37,11 @@ static void verify_getuid(void)
 	uid_t u1, u2;
 
 	u1 = getuid();
+#ifdef SYS_getuid32
+	u2 = syscall(SYS_getuid32);
+#else
 	u2 = syscall(SYS_getuid);
+#endif
 
 	if (u1 == u2) {
 		tst_res(TPASS, "getuid() == syscall(SYS_getuid)");
@@ -52,7 +56,11 @@ static void verify_getgid(void)
 	gid_t g1, g2;
 
 	g1 = getgid();
+#ifdef SYS_getgid32
+	g2 = syscall(SYS_getgid32);
+#else
 	g2 = syscall(SYS_getgid);
+#endif
 
 	if (g1 == g2) {
 		tst_res(TPASS, "getgid() == syscall(SYS_getgid)");
