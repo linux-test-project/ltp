@@ -40,7 +40,7 @@ setup()
 	MEM=$(( $mem_free + $swap_free / 2 ))
 	MEM=$(( $MEM / 1024 ))
 	RUN_TIME=$(( 15 * 60 ))
-	[ "$pgsize" = "4096" ] && THREAD_SPARE_MB=1 || THREAD_SPARE_MB=8
+	RESERVED_MEMORY=$(( $MEM * 10/100 ))
 
 	tst_res TINFO "Calculated available memory $MEM MB"
 }
@@ -93,12 +93,12 @@ run_stress()
 
 test1()
 {
-	run_stress 150 $(( ($MEM - 150 * $THREAD_SPARE_MB) / 150 )) 5 $RUN_TIME
+	run_stress 150 $(( ($MEM - $RESERVED_MEMORY) / 150 )) 5 $RUN_TIME
 }
 
 test2()
 {
-	run_stress 1 $(( $MEM - $THREAD_SPARE_MB)) 5 $RUN_TIME
+	run_stress 1 $(( $MEM - $RESERVED_MEMORY)) 5 $RUN_TIME
 }
 
 . cgroup_lib.sh
