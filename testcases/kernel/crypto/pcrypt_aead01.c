@@ -7,7 +7,7 @@
  * Originally found by syzkaller:
  * https://groups.google.com/forum/#!topic/syzkaller-bugs/NKn_ivoPOpk
  *
- * Test for CVE-2017-5754 - pcrypt mishandles freeing instances.
+ * Test for CVE-2017-18075 - pcrypt mishandles freeing instances.
  *
  * The test works by adding and then removing pcrypt-AEAD instances.
  * See commit d76c68109f37 crypto: pcrypt - fix freeing pcrypt instances.
@@ -78,7 +78,7 @@ static struct tst_test test = {
 	.max_runtime = 300,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "d76c68109f37"},
-		{"CVE", "2017-5754"},
+		{"CVE", "2017-18075"},
 		{}
 	}
 };
