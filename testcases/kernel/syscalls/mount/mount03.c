@@ -122,7 +122,7 @@ static void test_file_dir_noatime(int update_fatime, int update_datime)
 	SAFE_CLOSEDIR(test_dir);
 	dir_atime = dir_st.st_atime;
 
-	sleep(1);
+	usleep(1001000);
 
 	SAFE_READ(0, otfd, readbuf, sizeof(readbuf));
 	SAFE_FSTAT(otfd, &st);
