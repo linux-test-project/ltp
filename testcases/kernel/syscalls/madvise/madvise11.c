@@ -42,7 +42,7 @@ static int number_threads;
 static int run_iterations;
 static int maximum_pfns;
 
-static int sigbus_received;
+static volatile int sigbus_received;
 static pthread_cond_t sigbus_received_cv;
 static pthread_mutex_t sigbus_received_mtx = PTHREAD_MUTEX_INITIALIZER;
 
