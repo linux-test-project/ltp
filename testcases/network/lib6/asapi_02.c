@@ -32,7 +32,7 @@
 #include "test.h"
 #include "safe_macros.h"
 
-char *TCID = "asapi_05";
+char *TCID = "asapi_02";
 
 static void setup(void);
 

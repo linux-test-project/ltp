@@ -33,7 +33,7 @@
 #include "test.h"
 #include "safe_macros.h"
 
-char *TCID = "asapi_04";
+char *TCID = "asapi_01";
 
 static pid_t pid;
 

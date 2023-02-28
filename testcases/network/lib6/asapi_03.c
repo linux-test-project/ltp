@@ -43,7 +43,7 @@
 #include "test.h"
 #include "safe_macros.h"
 
-char *TCID = "asapi_06";
+char *TCID = "asapi_03";
 
 int TST_TOTAL = 1;
 
