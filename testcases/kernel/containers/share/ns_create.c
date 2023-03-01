@@ -1,43 +1,34 @@
-/* Copyright (c) 2015 Red Hat, Inc.
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2015 Red Hat, Inc.
+ *               Matus Marhefka <mmarhefk@redhat.com>
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
+
+/*\
+ * [Description]
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Written by Matus Marhefka <mmarhefk@redhat.com>
- *
- ***********************************************************************
  * Creates a child process in the new specified namespace(s), child is then
  * daemonized and is running in the background. PID of the daemonized child
  * process is printed on the stdout. As the new namespace(s) is(are) maintained
  * by the daemonized child process it(they) can be removed by killing this
  * process.
- *
  */
 
-#define _GNU_SOURCE
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#define TST_NO_DEFAULT_MAIN
+
+#include <stdio.h>
 #include <string.h>
-#include <errno.h>
-#include "test.h"
-#include "lapi/sched.h"
+#include "tst_test.h"
 #include "ns_common.h"
 
-char *TCID = "ns_create";
+extern struct tst_test *tst_test;
 
+static struct tst_test test = {
+	.forks_child = 1, /* Needed by SAFE_CLONE */
+};
 
-void print_help(void)
+static void print_help(void)
 {
 	int i;
 
@@ -45,64 +36,56 @@ void print_help(void)
 
 	for (i = 1; params[i].name; i++)
 		printf("|,%s", params[i].name);
-	printf(">\nThe only argument is a comma separated list "
-	       "of namespaces to create.\nExample: ns_create net,ipc\n");
+
+	printf(">\n");
 }
 
-static int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
+static void child_fn(void)
 {
 	int i;
 
-	if (setsid() == -1) {
-		tst_resm(TINFO | TERRNO, "setsid");
-		exit(1);
-	}
+	SAFE_SETSID();
+	SAFE_CHDIR("/");
 
-	if (chdir("/") == -1) {
-		tst_resm(TINFO | TERRNO, "chdir");
-		exit(1);
-	}
-
-	/* close all inherrited file descriptors */
-	for (i = 0; i < sysconf(_SC_OPEN_MAX); i++)
+	for (i = 0; i < SAFE_SYSCONF(_SC_OPEN_MAX); i++)
 		close(i);
 
+	printf("pausing child\n");
 	pause();
-	return 0;
 }
 
-/*
- * ./ns_create <ipc,mnt,net,pid,user,uts>
- */
 int main(int argc, char *argv[])
 {
-	int pid, flags;
+	struct tst_clone_args args = { 0, SIGCHLD };
 	char *token;
+	int pid;
 
 	if (argc < 2) {
 		print_help();
 		return 1;
 	}
 
-	flags = 0;
+	tst_test = &test;
+
 	while ((token = strsep(&argv[1], ","))) {
 		struct param *p = get_param(token);
 
 		if (!p) {
-			tst_resm(TINFO, "Unknown namespace: %s", token);
+			printf("Unknown namespace: %s\n", token);
 			print_help();
 			return 1;
 		}
 
-		flags |= p->flag;
+		args.flags |= p->flag;
 	}
 
-	pid = ltp_clone_quick(flags | SIGCHLD, child_fn, NULL);
-	if (pid == -1) {
-		tst_resm(TINFO | TERRNO, "ltp_clone_quick");
-		return 1;
+	pid = SAFE_CLONE(&args);
+	if (!pid) {
+		child_fn();
+		return 0;
 	}
 
 	printf("%d", pid);
+
 	return 0;
 }
