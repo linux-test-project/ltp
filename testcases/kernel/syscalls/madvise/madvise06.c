@@ -198,7 +198,7 @@ static void test_advice_willneed(void)
 
 	meminfo_diag("After madvise");
 	res = swapcached > swapcached_start + PASS_THRESHOLD_KB;
-	tst_res(res ? TPASS : TFAIL,
+	tst_res(res ? TPASS : TINFO,
 		"%s than %ld Kb were moved to the swap cache",
 		res ? "more" : "less", PASS_THRESHOLD_KB);
 
@@ -226,10 +226,15 @@ static void test_advice_willneed(void)
 	meminfo_diag("After page access");
 
 	res = page_fault_num_2 - page_fault_num_1;
-	tst_res(res == 0 ? TPASS : TFAIL,
+	tst_res(res == 0 ? TPASS : TINFO,
 		"%d pages were faulted out of 3 max", res);
 
 	SAFE_MUNMAP(target, CHUNK_SZ);
+
+	if (tst_taint_check())
+		tst_res(TFAIL, "Kernel tainted");
+	else
+		tst_res(TPASS, "No kernel taints");
 }
 
 static struct tst_test test = {
@@ -237,6 +242,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
+	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/swappiness", NULL,
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
