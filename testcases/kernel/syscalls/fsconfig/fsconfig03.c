@@ -45,11 +45,21 @@ static void run(void)
 		/* use same logic in kernel legacy_parse_param function */
 		const size_t len = i * (strlen(val) + 2) + (strlen(val) + 1) + 2;
 
-		if (!strcmp(tst_device->fs_type, "btrfs") && len <= (size_t)pagesize)
-			TST_EXP_PASS_SILENT(fsconfig(fd, FSCONFIG_SET_STRING, "\x00", val, 0));
-		else
-			TST_EXP_FAIL_SILENT(fsconfig(fd, FSCONFIG_SET_STRING, "\x00", val, 0),
-					    EINVAL);
+		TEST(fsconfig(fd, FSCONFIG_SET_STRING, "\x00", val, 0));
+
+		/* Legacy fsconfig() just copies arguments to buffer */
+		if (!TST_RET && len <= (size_t)pagesize)
+			continue;
+
+		if (!TST_RET) {
+			tst_res(TFAIL, "fsconfig() passed unexpectedly");
+		} else if (TST_RET != -1) {
+			tst_brk(TBROK | TTERRNO,
+				"Invalid fsconfig() return value %ld", TST_RET);
+		} else if (TST_ERR != EINVAL) {
+			tst_res(TFAIL | TTERRNO,
+				"fsconfig() failed with unexpected error");
+		}
 	}
 
 	if (fd != -1)
@@ -63,9 +73,16 @@ static void run(void)
 			tst_device->fs_type);
 }
 
+static void cleanup(void)
+{
+	if (fd >= 0)
+		SAFE_CLOSE(fd);
+}
+
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
+	.cleanup = cleanup,
 	.needs_root = 1,
 	.format_device = 1,
 	.mntpoint = MNTPOINT,
