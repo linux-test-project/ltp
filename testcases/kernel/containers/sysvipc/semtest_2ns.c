@@ -40,7 +40,7 @@
 static char *str_op;
 static int use_clone;
 
-static int check_sem1(LTP_ATTRIBUTE_UNUSED void *vtest)
+static void check_sem1(void)
 {
 	int id;
 	struct sembuf sm = {
@@ -62,11 +62,9 @@ static int check_sem1(LTP_ATTRIBUTE_UNUSED void *vtest)
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	SAFE_SEMCTL(id, IPC_RMID, 0);
-
-	return 0;
 }
 
-static int check_sem2(LTP_ATTRIBUTE_UNUSED void *vtest)
+static void check_sem2(void)
 {
 	int id;
 	struct sembuf sm = {
@@ -112,22 +110,17 @@ static int check_sem2(LTP_ATTRIBUTE_UNUSED void *vtest)
 	}
 
 	TST_CHECKPOINT_WAKE(0);
-
-	return 0;
 }
 
 static void run(void)
 {
-	clone_unshare_test(use_clone, CLONE_NEWIPC, check_sem1, NULL);
-	clone_unshare_test(use_clone, CLONE_NEWIPC, check_sem2, NULL);
+	clone_unshare_test(use_clone, CLONE_NEWIPC, check_sem1);
+	clone_unshare_test(use_clone, CLONE_NEWIPC, check_sem2);
 }
 
 static void setup(void)
 {
 	use_clone = get_clone_unshare_enum(str_op);
-
-	if (use_clone != T_NONE)
-		check_newipc();
 }
 
 static void cleanup(void)

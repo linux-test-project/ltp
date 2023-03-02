@@ -38,7 +38,7 @@ struct sysv_msg {
 	char mtext[1];
 };
 
-static int chld1_msg(LTP_ATTRIBUTE_UNUSED void *arg)
+static void chld1_msg(void)
 {
 	int id;
 	struct sysv_msg m = {
@@ -66,11 +66,9 @@ static int chld1_msg(LTP_ATTRIBUTE_UNUSED void *arg)
 	TST_CHECKPOINT_WAKE(0);
 
 	SAFE_MSGCTL(id, IPC_RMID, NULL);
-
-	return 0;
 }
 
-static int chld2_msg(LTP_ATTRIBUTE_UNUSED void *arg)
+static void chld2_msg(void)
 {
 	int id;
 	struct sysv_msg m = {
@@ -85,24 +83,17 @@ static int chld2_msg(LTP_ATTRIBUTE_UNUSED void *arg)
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	SAFE_MSGCTL(id, IPC_RMID, NULL);
-
-	return 0;
 }
 
 static void run(void)
 {
-	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_msg, NULL);
-	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_msg, NULL);
-}
-
-static void setup(void)
-{
-	check_newipc();
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_msg);
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_msg);
 }
 
 static struct tst_test test = {
 	.test_all = run,
-	.setup = setup,
 	.needs_root = 1,
 	.needs_checkpoints = 1,
+	.forks_child = 1,
 };

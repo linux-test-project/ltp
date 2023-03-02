@@ -42,7 +42,7 @@ struct msg_buf {
 	char mtext[80];
 };
 
-static int check_mesgq(LTP_ATTRIBUTE_UNUSED void *vtest)
+static void check_mesgq(void)
 {
 	int id, n;
 	struct msg_buf msg = {};
@@ -55,7 +55,7 @@ static int check_mesgq(LTP_ATTRIBUTE_UNUSED void *vtest)
 		else
 			tst_res(TPASS, "%s: container didn't find mesgq", str_op);
 
-		return 0;
+		return;
 	}
 
 	if (use_clone == T_NONE) {
@@ -68,11 +68,10 @@ static int check_mesgq(LTP_ATTRIBUTE_UNUSED void *vtest)
 		if (strcmp(msg.mtext, MSG_TEXT))
 			tst_res(TFAIL, "Received the wrong text message");
 
-		return 0;
+		return;
 	}
 
 	tst_res(TFAIL, "%s: container init process found mesgq", str_op);
-	return 0;
 }
 
 static void run(void)
@@ -87,16 +86,12 @@ static void run(void)
 
 	tst_res(TINFO, "mesgq namespaces test: %s", str_op);
 
-	clone_unshare_test(use_clone, CLONE_NEWIPC, check_mesgq, NULL);
+	clone_unshare_test(use_clone, CLONE_NEWIPC, check_mesgq);
 }
 
 static void setup(void)
 {
 	use_clone = get_clone_unshare_enum(str_op);
-
-	if (use_clone != T_NONE)
-		check_newipc();
-
 	ipc_id = SAFE_MSGGET(KEY_VAL, IPC_CREAT | IPC_EXCL | 0600);
 }
 

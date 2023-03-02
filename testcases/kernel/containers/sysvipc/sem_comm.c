@@ -33,7 +33,7 @@
 
 #define TESTKEY 124426L
 
-static int chld1_sem(LTP_ATTRIBUTE_UNUSED void *arg)
+static void chld1_sem(void)
 {
 	int id;
 	struct sembuf sm = {
@@ -56,11 +56,9 @@ static int chld1_sem(LTP_ATTRIBUTE_UNUSED void *arg)
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	SAFE_SEMCTL(id, 0, IPC_RMID);
-
-	return 0;
 }
 
-static int chld2_sem(LTP_ATTRIBUTE_UNUSED void *arg)
+static void chld2_sem(void)
 {
 	int id;
 	struct sembuf sm = {
@@ -93,24 +91,17 @@ static int chld2_sem(LTP_ATTRIBUTE_UNUSED void *arg)
 	TST_CHECKPOINT_WAKE(0);
 
 	SAFE_SEMCTL(id, 0, IPC_RMID);
-
-	return 0;
 }
 
 static void run(void)
 {
-	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_sem, NULL);
-	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_sem, NULL);
-}
-
-static void setup(void)
-{
-	check_newipc();
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_sem);
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_sem);
 }
 
 static struct tst_test test = {
 	.test_all = run,
-	.setup = setup,
 	.needs_root = 1,
 	.needs_checkpoints = 1,
+	.forks_child = 1,
 };

@@ -27,7 +27,7 @@ static char *str_op;
 static int use_clone;
 static int ipc_id = -1;
 
-static int check_shmid(LTP_ATTRIBUTE_UNUSED void *vtest)
+static void check_shmid(void)
 {
 	TEST(shmget(TESTKEY, 100, 0));
 	if (TST_RET < 0) {
@@ -41,22 +41,16 @@ static int check_shmid(LTP_ATTRIBUTE_UNUSED void *vtest)
 		else
 			tst_res(TFAIL, "%s: child process found shmid", str_op);
 	}
-
-	return 0;
 }
 
 static void run(void)
 {
-	clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmid, NULL);
+	clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmid);
 }
 
 static void setup(void)
 {
 	use_clone = get_clone_unshare_enum(str_op);
-
-	if (use_clone != T_NONE)
-		check_newipc();
-
 	ipc_id = shmget(TESTKEY, 100, IPC_CREAT);
 }
 

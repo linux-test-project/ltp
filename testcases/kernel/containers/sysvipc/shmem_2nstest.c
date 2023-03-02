@@ -40,7 +40,7 @@
 static char *str_op;
 static int use_clone;
 
-static int check_shmem1(LTP_ATTRIBUTE_UNUSED void *vtest)
+static void check_shmem1(void)
 {
 	int id;
 
@@ -51,11 +51,9 @@ static int check_shmem1(LTP_ATTRIBUTE_UNUSED void *vtest)
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	SAFE_SHMCTL(id, IPC_RMID, NULL);
-
-	return 0;
 }
 
-static int check_shmem2(LTP_ATTRIBUTE_UNUSED void *vtest)
+static void check_shmem2(void)
 {
 	TST_CHECKPOINT_WAIT(0);
 
@@ -74,22 +72,17 @@ static int check_shmem2(LTP_ATTRIBUTE_UNUSED void *vtest)
 	}
 
 	TST_CHECKPOINT_WAKE(0);
-
-	return 0;
 }
 
 static void run(void)
 {
-	clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem1, NULL);
-	clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem2, NULL);
+	clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem1);
+	clone_unshare_test(use_clone, CLONE_NEWIPC, check_shmem2);
 }
 
 static void setup(void)
 {
 	use_clone = get_clone_unshare_enum(str_op);
-
-	if (use_clone != T_NONE)
-		check_newipc();
 }
 
 static struct tst_test test = {

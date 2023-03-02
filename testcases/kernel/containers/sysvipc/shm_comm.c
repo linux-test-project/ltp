@@ -35,7 +35,7 @@
 #define TESTKEY 124426L
 #define SHMSIZE 50
 
-static int chld1_shm(LTP_ATTRIBUTE_UNUSED void *arg)
+static void chld1_shm(void)
 {
 	int id;
 	char *shmem;
@@ -56,11 +56,9 @@ static int chld1_shm(LTP_ATTRIBUTE_UNUSED void *arg)
 
 	SAFE_SHMDT(shmem);
 	SAFE_SHMCTL(id, IPC_RMID, NULL);
-
-	return 0;
 }
 
-static int chld2_shm(LTP_ATTRIBUTE_UNUSED void *arg)
+static void chld2_shm(void)
 {
 	int id;
 	char *shmem;
@@ -77,24 +75,17 @@ static int chld2_shm(LTP_ATTRIBUTE_UNUSED void *arg)
 
 	SAFE_SHMDT(shmem);
 	SAFE_SHMCTL(id, IPC_RMID, NULL);
-
-	return 0;
 }
 
 static void run(void)
 {
-	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_shm, NULL);
-	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_shm, NULL);
-}
-
-static void setup(void)
-{
-	check_newipc();
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld1_shm);
+	clone_unshare_test(T_CLONE, CLONE_NEWIPC, chld2_shm);
 }
 
 static struct tst_test test = {
 	.test_all = run,
-	.setup = setup,
 	.needs_root = 1,
 	.needs_checkpoints = 1,
+	.forks_child = 1,
 };
