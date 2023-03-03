@@ -1,44 +1,35 @@
-/* Copyright (c) 2015 Red Hat, Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Written by Matus Marhefka <mmarhefk@redhat.com>
- *
- ***********************************************************************
- * Enters the namespace(s) of a process specified by a PID and then executes
- * the indicated program inside that namespace(s).
- *
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2015 Red Hat, Inc.
+ *               Matus Marhefka <mmarhefk@redhat.com>
+ * Copyright (c) Linux Test Project, 2015-2022
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-#define _GNU_SOURCE
-#include <sys/syscall.h>
-#include <sys/types.h>
+/*\
+ * [Description]
+ *
+ * Enters the namespace(s) of a process specified by a PID and then executes
+ * the indicated program inside that namespace(s).
+ */
+
+#define TST_NO_DEFAULT_MAIN
+
+#include <stdio.h>
 #include <sys/wait.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include "test.h"
-#include "lapi/syscalls.h"
-#include "lapi/sched.h"
+#include "tst_test.h"
 #include "ns_common.h"
 
-char *TCID = "ns_exec";
-int ns_fd[NS_TOTAL];
-int ns_fds;
+extern struct tst_test *tst_test;
 
+static struct tst_test test = {
+	.forks_child = 1, /* Needed by SAFE_CLONE */
+};
 
-void print_help(void)
+static int ns_fd[NS_TOTAL];
+static int ns_fds;
+
+static void print_help(void)
 {
 	int i;
 
@@ -46,30 +37,24 @@ void print_help(void)
 
 	for (i = 1; params[i].name; i++)
 		printf("|,%s", params[i].name);
+
 	printf("> <PROGRAM> [ARGS]\nSecond argument indicates the types"
-	       " of a namespaces maintained by NS_PID\nand is specified"
-	       " as a comma separated list.\nExample: ns_exec 1234 net,ipc"
-	       " ip a\n");
+		" of a namespaces maintained by NS_PID\nand is specified"
+		" as a comma separated list.\n"
+		"Example: ns_exec 1234 net,ipc ip a\n");
 }
 
-static int open_ns_fd(const char *pid, const char *ns)
+static void open_ns_fd(const char *pid, const char *ns)
 {
 	int fd;
-	char file_buf[30];
+	char file_buf[64];
 
 	sprintf(file_buf, "%s/%s/ns/%s", PROC_PATH, pid, ns);
 
-	fd = open(file_buf, O_RDONLY);
-	if (fd > 0) {
-		ns_fd[ns_fds] = fd;
-		++ns_fds;
-		return 0;
-	} else if (fd == -1 && errno != ENOENT) {
-		tst_resm(TINFO | TERRNO, "open");
-		return -1;
-	}
+	fd = SAFE_OPEN(file_buf, O_RDONLY);
+	ns_fd[ns_fds] = fd;
 
-	return 0;
+	++ns_fds;
 }
 
 static void close_ns_fd(void)
@@ -77,31 +62,16 @@ static void close_ns_fd(void)
 	int i;
 
 	for (i = 0; i < ns_fds; i++)
-		close(ns_fd[i]);
+		SAFE_CLOSE(ns_fd[i]);
 }
 
-static int child_fn(void *arg)
-{
-	char **args = (char **)arg;
-
-	execvp(args[3], args+3);
-	tst_resm(TINFO | TERRNO, "execvp");
-	return 1;
-}
-
-/*
- * ./ns_exec <NS_PID> <ipc,mnt,net,pid,user,uts> <PROGRAM> [ARGS]
- */
 int main(int argc, char *argv[])
 {
-	int i, rv, pid;
+	struct tst_clone_args args = { 0, SIGCHLD };
+	int i, status, pid;
 	char *token;
 
-	rv = syscall(__NR_setns, -1, 0);
-	if (rv == -1 && errno == ENOSYS) {
-		tst_resm(TINFO, "setns is not supported in the kernel");
-		return 1;
-	}
+	tst_test = &test;
 
 	if (argc < 4) {
 		print_help();
@@ -109,49 +79,37 @@ int main(int argc, char *argv[])
 	}
 
 	memset(ns_fd, 0, sizeof(ns_fd));
+
 	while ((token = strsep(&argv[2], ","))) {
 		struct param *p = get_param(token);
 
 		if (!p) {
-			tst_resm(TINFO, "Unknown namespace: %s", token);
+			printf("Unknown namespace: %s\n", token);
 			print_help();
 			return 1;
 		}
 
-		if (open_ns_fd(argv[1], token) != 0)
-			return 1;
+		open_ns_fd(argv[1], token);
 	}
 
-	if (ns_fds == 0) {
-		tst_resm(TINFO, "no namespace entries in /proc/%s/ns/",
-			 argv[1]);
+	if (!ns_fds) {
+		printf("no namespace entries in /proc/%s/ns/\n", argv[1]);
 		return 1;
 	}
 
-	for (i = 0; i < ns_fds; i++) {
-		if (syscall(__NR_setns, ns_fd[i], 0) == -1) {
-			tst_resm(TINFO | TERRNO, "setns");
-			close_ns_fd();
-			return 1;
-		}
-	}
+	for (i = 0; i < ns_fds; i++)
+		SAFE_SETNS(ns_fd[i], 0);
 
-	pid = ltp_clone_quick(SIGCHLD, (void *)child_fn, (void *)argv);
-	if (pid == -1) {
-		tst_resm(TINFO | TERRNO, "ltp_clone_quick");
-		close_ns_fd();
-		return 1;
-	}
+	pid = SAFE_CLONE(&args);
+	if (!pid)
+		SAFE_EXECVP(argv[3], argv+3);
 
-	if (waitpid(pid, &rv, 0) == -1) {
-		tst_resm(TINFO | TERRNO, "waitpid");
-		return 1;
-	}
+	SAFE_WAITPID(pid, &status, 0);
 
 	close_ns_fd();
 
-	if (WIFEXITED(rv))
-		return WEXITSTATUS(rv);
+	if (WIFEXITED(status))
+		return WEXITSTATUS(status);
 
 	return 0;
 }
