@@ -2,7 +2,7 @@
 /*
  * Copyright (c) 2015 Red Hat, Inc.
  *               Matus Marhefka <mmarhefk@redhat.com>
- * Copyright (c) Linux Test Project, 2015-2022
+ * Copyright (c) Linux Test Project, 2015-2023
  * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include "tst_test.h"
-#include "ns_common.h"
+#include "tst_ns_common.h"
 
 extern struct tst_test *tst_test;
 
@@ -33,7 +33,7 @@ static void print_help(void)
 {
 	int i;
 
-	printf("usage: ns_exec <NS_PID> <%s", params[0].name);
+	printf("usage: tst_ns_exec <NS_PID> <%s", params[0].name);
 
 	for (i = 1; params[i].name; i++)
 		printf("|,%s", params[i].name);
@@ -41,7 +41,7 @@ static void print_help(void)
 	printf("> <PROGRAM> [ARGS]\nSecond argument indicates the types"
 		" of a namespaces maintained by NS_PID\nand is specified"
 		" as a comma separated list.\n"
-		"Example: ns_exec 1234 net,ipc ip a\n");
+		"Example: tst_ns_exec 1234 net,ipc ip a\n");
 }
 
 static void open_ns_fd(const char *pid, const char *ns)

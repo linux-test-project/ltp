@@ -3,8 +3,8 @@
  * Copyright (c) Linux Test Project, 2015-2023
  */
 
-#ifndef __NS_COMMON_H__
-#define __NS_COMMON_H__
+#ifndef TST_NS_COMMON_H__
+#define TST_NS_COMMON_H__
 #include <sched.h>
 #include "lapi/sched.h"
 
@@ -39,4 +39,4 @@ static struct param *get_param(const char *name)
 	return NULL;
 }
 
-#endif
+#endif /* TST_NS_COMMON_H__ */

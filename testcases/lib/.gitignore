@@ -13,6 +13,8 @@
 /tst_net_iface_prefix
 /tst_net_ip_prefix
 /tst_net_vars
+/tst_ns_create
+/tst_ns_exec
 /tst_random
 /tst_rod
 /tst_sleep

@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2022 Petr Vorel <pvorel@suse.cz>
-# Copyright (c) Linux Test Project, 2014-2021
+# Copyright (c) Linux Test Project, 2014-2023
 # Copyright (c) 2015 Red Hat, Inc.
 
 TST_NEEDS_ROOT=1
@@ -20,7 +20,7 @@ TST_NET_SKIP_VARIABLE_INIT=1
 IPV4_NET16_UNUSED="10.23"
 IPV6_NET32_UNUSED="fd00:23"
 
-# Set to "net" for ns_create/ns_exec as their options requires
+# Set to "net" for tst_ns_create/tst_ns_exec as their options requires
 # to specify a namespace type. Empty for ip command.
 NS_TYPE=
 
@@ -28,7 +28,7 @@ NS_TYPE=
 tping=
 
 # Network namespaces handles for manipulating and executing commands inside
-# namespaces. For 'ns_exec' handles are PIDs of daemonized processes running
+# namespaces. For 'tst_ns_exec' handles are PIDs of daemonized processes running
 # in namespaces.
 NS_HANDLE0=
 NS_HANDLE1=
@@ -40,7 +40,7 @@ NS_HANDLE1=
 IFCONF_IN6_ARG=
 
 # Program which will be used to enter and run other commands inside a network namespace.
-# (ns_exec|ip)
+# (tst_ns_exec|ip)
 NS_EXEC="ip"
 
 # Communication type between kernel and user space for basic setup: enabling and
@@ -54,7 +54,7 @@ do_cleanup=
 netns_parse_args()
 {
 	case $1 in
-	e) NS_EXEC="ns_exec" ;;
+	e) NS_EXEC="tst_ns_exec" ;;
 	I) COMM_TYPE="ioctl"; tst_require_cmds ifconfig ;;
 	esac
 }
@@ -63,7 +63,7 @@ netns_usage()
 {
 	echo "usage: $0 [ -e ] [ -I ]"
 	echo "OPTIONS"
-	echo "-e      Use ns_exec instead of ip"
+	echo "-e      Use tst_ns_exec instead of ip"
 	echo "-I      Test ioctl (with ifconfig) instead of netlink (with ip)"
 }
 
@@ -105,7 +105,7 @@ netns_cleanup()
 	fi
 }
 
-# Sets up NS_EXEC to use 'ns_exec', creates two network namespaces and stores
+# Sets up NS_EXEC to use 'tst_ns_exec', creates two network namespaces and stores
 # their handles into NS_HANDLE0 and NS_HANDLE1 variables (in this case handles
 # are PIDs of daemonized processes running in these namespaces). Virtual
 # ethernet device is then created for each namespace.
@@ -113,15 +113,15 @@ netns_ns_exec_setup()
 {
 	local ret
 
-	NS_EXEC="ns_exec"
+	NS_EXEC="tst_ns_exec"
 
-	NS_HANDLE0=$(ns_create $NS_TYPE)
+	NS_HANDLE0=$(tst_ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
 		tst_res TINFO "$NS_HANDLE0"
 		tst_brk TBROK "unable to create a new network namespace"
 	fi
 
-	NS_HANDLE1=$(ns_create $NS_TYPE)
+	NS_HANDLE1=$(tst_ns_create $NS_TYPE)
 	if [ $? -eq 1 ]; then
 		tst_res TINFO "$NS_HANDLE1"
 		tst_brk TBROK "unable to create a new network namespace"

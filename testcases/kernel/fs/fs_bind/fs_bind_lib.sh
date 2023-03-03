@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) International Business Machines  Corp., 2005
 # Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
+# Copyright (c) Linux Test Project, 2022-2023
 # Based on work by: Avantika Mathur (mathurav@us.ibm.com)
 
 TST_NEEDS_TMPDIR=1
@@ -109,7 +110,7 @@ fs_bind_check()
 	    fi
 
 		if [ $use_ns -eq 1 ]; then
-			output="$(ns_exec ${FS_BIND_MNTNS_PID} mnt diff -r "$PWD/$dir1" "$PWD/$dir2" 2> /dev/null)"
+			output="$(tst_ns_exec ${FS_BIND_MNTNS_PID} mnt diff -r "$PWD/$dir1" "$PWD/$dir2" 2> /dev/null)"
 		else
 			output="$(diff -r "$dir1" "$dir2" 2> /dev/null)"
 		fi
@@ -197,13 +198,13 @@ _fs_bind_setup_test()
 fs_bind_create_ns()
 {
 	[ -n "$FS_BIND_MNTNS_PID" ] && tst_brk TBROK "Namespace exist already"
-	FS_BIND_MNTNS_PID=$(ns_create mnt)
+	FS_BIND_MNTNS_PID=$(tst_ns_create mnt)
 }
 
 fs_bind_exec_ns()
 {
 	[ -z "$FS_BIND_MNTNS_PID" ] && tst_brk TBROK "Namespace does not exist"
-	EXPECT_PASS ns_exec $FS_BIND_MNTNS_PID mnt "$@"
+	EXPECT_PASS tst_ns_exec $FS_BIND_MNTNS_PID mnt "$@"
 }
 
 fs_bind_destroy_ns()

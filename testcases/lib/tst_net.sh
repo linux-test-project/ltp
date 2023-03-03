@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2016-2022 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2016-2023 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 [ -n "$TST_LIB_NET_LOADED" ] && return 0
@@ -172,18 +172,18 @@ init_ltp_netspace()
 	local pid
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
-		tst_require_cmds ip ns_create ns_exec ns_ifmove
+		tst_require_cmds ip tst_ns_create tst_ns_exec ns_ifmove
 		tst_require_root
 
 		tst_require_drivers veth
 		ROD ip link add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
-		pid="$(ROD ns_create net,mnt)"
+		pid="$(ROD tst_ns_create net,mnt)"
 		mkdir -p /var/run/netns
 		ROD ln -s /proc/$pid/ns/net /var/run/netns/ltp_ns
-		ROD ns_exec $pid net,mnt mount --make-rprivate /sys
-		ROD ns_exec $pid net,mnt mount -t sysfs none /sys
+		ROD tst_ns_exec $pid net,mnt mount --make-rprivate /sys
+		ROD tst_ns_exec $pid net,mnt mount -t sysfs none /sys
 		ROD ns_ifmove ltp_ns_veth1 $pid
-		ROD ns_exec $pid net,mnt ip link set lo up
+		ROD tst_ns_exec $pid net,mnt ip link set lo up
 	elif [ -n "$LTP_NETNS" ]; then
 		tst_res_ TINFO "using not default LTP netns: '$LTP_NETNS'"
 	fi
@@ -192,7 +192,7 @@ init_ltp_netspace()
 	RHOST_IFACES="${RHOST_IFACES:-ltp_ns_veth1}"
 
 	pid="$(echo $(readlink /var/run/netns/ltp_ns) | cut -f3 -d'/')"
-	export LTP_NETNS="${LTP_NETNS:-ns_exec $pid net,mnt}"
+	export LTP_NETNS="${LTP_NETNS:-tst_ns_exec $pid net,mnt}"
 
 	tst_restore_ipaddr
 	tst_restore_ipaddr rhost
