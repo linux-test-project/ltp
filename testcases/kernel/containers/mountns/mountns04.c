@@ -22,6 +22,7 @@
 #include <sys/mount.h>
 #include "mountns.h"
 #include "tst_test.h"
+#include "lapi/sched.h"
 
 static void run(void)
 {
@@ -46,7 +47,6 @@ static void run(void)
 
 static void setup(void)
 {
-	check_newns();
 	create_folders();
 }
 
@@ -61,4 +61,8 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		NULL,
+	},
 };

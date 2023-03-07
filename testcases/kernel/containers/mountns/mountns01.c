@@ -33,8 +33,9 @@
 #include <sys/mount.h>
 #include "mountns.h"
 #include "tst_test.h"
+#include "lapi/sched.h"
 
-static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_func(void)
 {
 	TST_CHECKPOINT_WAIT(0);
 
@@ -51,13 +52,11 @@ static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	SAFE_UMOUNT(DIRA);
-
-	return 0;
 }
 
 static void run(void)
 {
-	int ret;
+	const struct tst_clone_args args = { CLONE_NEWNS, SIGCHLD };
 
 	SAFE_UNSHARE(CLONE_NEWNS);
 
@@ -67,9 +66,10 @@ static void run(void)
 	SAFE_MOUNT(DIRA, DIRA, "none", MS_BIND, NULL);
 	SAFE_MOUNT("none", DIRA, "none", MS_SHARED, NULL);
 
-	ret = ltp_clone_quick(CLONE_NEWNS | SIGCHLD, child_func, NULL);
-	if (ret < 0)
-		tst_brk(TBROK, "clone failed");
+	if (!SAFE_CLONE(&args)) {
+		child_func();
+		return;
+	}
 
 	SAFE_MOUNT(DIRB, DIRA, "none", MS_BIND, NULL);
 
@@ -93,7 +93,6 @@ static void run(void)
 
 static void setup(void)
 {
-	check_newns();
 	create_folders();
 }
 
@@ -107,5 +106,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
 	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		NULL,
+	},
 };

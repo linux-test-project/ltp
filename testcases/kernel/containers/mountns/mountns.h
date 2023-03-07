@@ -8,27 +8,9 @@
 #define COMMON_H
 
 #include "tst_test.h"
-#include "lapi/sched.h"
 
 #define DIRA "LTP_DIR_A"
 #define DIRB "LTP_DIR_B"
-
-static int dummy_child(void *v)
-{
-	(void)v;
-	return 0;
-}
-
-static void check_newns(void)
-{
-	int pid, status;
-
-	pid = ltp_clone_quick(CLONE_NEWNS | SIGCHLD, dummy_child, NULL);
-	if (pid < 0)
-		tst_brk(TCONF, "CLONE_NEWNS not supported");
-
-	SAFE_WAIT(&status);
-}
 
 static void umount_folders(void)
 {
