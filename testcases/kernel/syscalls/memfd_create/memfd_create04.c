@@ -25,8 +25,6 @@
 #include <errno.h>
 #include <stdio.h>
 
-#define PATH_HUGEPAGES "/sys/kernel/mm/hugepages"
-
 static  struct test_flag {
 	int flag;
 	char *h_size;
@@ -48,7 +46,7 @@ static void check_hugepage_support(struct test_flag *test_flags)
 	char pattern[64];
 
 	sprintf(pattern, PATH_HUGEPAGES);
-	strcat(pattern, "/hugepages-");
+	strcat(pattern, "hugepages-");
 	strcat(pattern, test_flags->h_size);
 
 	if (access(pattern, F_OK))
