@@ -32,7 +32,8 @@
 
 #include "config.h"
 #include "global.h"
-#include <tst_common.h>
+#include "tst_common.h"
+
 #ifdef HAVE_SYS_PRCTL_H
 # include <sys/prctl.h>
 #endif

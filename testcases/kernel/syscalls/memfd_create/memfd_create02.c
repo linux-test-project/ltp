@@ -13,10 +13,8 @@
 #define _GNU_SOURCE
 
 #include <errno.h>
-
-#include <tst_test.h>
-
 #include "memfd_create_common.h"
+#include "tst_test.h"
 
 static char buf[2048];
 static char term_buf[2048];

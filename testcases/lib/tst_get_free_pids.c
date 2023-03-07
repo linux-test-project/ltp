@@ -2,7 +2,7 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include <stdio.h>
-#include <tst_test.h>
+#include "tst_test.h"
 
 extern struct tst_test *tst_test;
 
