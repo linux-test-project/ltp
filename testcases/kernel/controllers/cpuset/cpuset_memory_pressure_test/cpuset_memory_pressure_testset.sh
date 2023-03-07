@@ -33,10 +33,12 @@ check
 exit_status=0
 
 # usable physical memory
-py_mem=$(free -m | awk '{if(NR==2) print $4 + $6 + $7}')
+py_mem=$(awk '/MemAvailable/ {print $2}' /proc/meminfo)
+py_mem=$(( $py_mem / 1024 ))
 
 # free swap space
-sw_mem=$(free -m | awk '{if(NR==4) print $4}')
+sw_mem=$(awk '/SwapFree/ {print $2}' /proc/meminfo)
+sw_mem=$(( $sw_mem / 1024 ))
 
 # the memory which is going to be used
 usemem=$((py_mem - 20))
