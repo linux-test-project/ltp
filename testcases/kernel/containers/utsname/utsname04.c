@@ -29,7 +29,15 @@ static void run(void)
 	SAFE_SETRESUID(pw->pw_uid, pw->pw_uid, pw->pw_uid);
 
 	if (!str_op || !strcmp(str_op, "clone")) {
-		TST_EXP_EQ_LI(tst_clone(&cargs), -1);
+		TEST(tst_clone(&cargs));
+
+		if (TST_RET == -1)
+			tst_res(TPASS, "clone3() fails as expected");
+		else if (TST_RET == -2)
+			tst_res(TPASS, "clone() fails as expected");
+		else
+			tst_res(TFAIL, "tst_clone returns %ld", TST_RET);
+
 		TST_EXP_PASS(errno == EPERM);
 	} else {
 		if (!SAFE_FORK()) {
