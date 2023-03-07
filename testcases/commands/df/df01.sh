@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2015 Fujitsu Ltd.
-# Copyright (c) 2018-2022 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2023 Petr Vorel <pvorel@suse.cz>
 # Author: Zhang Jin <jy_zhangjin@cn.fujitsu.com>
 #
 # Test df command with some basic options.
@@ -45,6 +45,11 @@ df_test()
 	fi
 
 	ROD_SILENT rm -rf $TST_MNTPOINT/testimg
+
+	# force all the background garbage collection to run to completion
+	if [ "$TST_FS_TYPE" = "xfs" ]; then
+		tst_fsfreeze $TST_MNTPOINT
+	fi
 
 	# flush file system buffers, then we can get the actual sizes.
 	sync
