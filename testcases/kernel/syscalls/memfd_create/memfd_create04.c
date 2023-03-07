@@ -1,20 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 /*
- *  Copyright (c) Zilogic Systems Pvt. Ltd., 2018
- *  Email: code@zilogic.com
+ * Copyright (c) Zilogic Systems Pvt. Ltd. <code@zilogic.com>, 2018
+ * Copyright (c) Linux Test Project, 2019-2023
  */
 
-/*
- * Test: Validating memfd_create() with MFD_HUGETLB and MFD_HUGE_x flags.
+/*\
+ * [Description]
  *
- * Test cases: Attempt to create files in the hugetlbfs filesystem using
- *             different huge page sizes.
+ * Validating memfd_create() with MFD_HUGETLB and MFD_HUGE_x flags.
  *
- * Test logic: memfd_create() should return non-negative value (fd)
- *             if the system supports that particular huge page size.
- *             On success, fd is returned.
- *             On failure, -1 is returned with ENODEV error.
+ * Attempt to create files in the hugetlbfs filesystem using different huge page
+ * sizes.
+ *
+ * [Algorithm]
+ *
+ * memfd_create() should return non-negative value (fd) if the system supports
+ * that particular huge page size.
+ * On success, fd is returned. On failure, -1 is returned with ENODEV error.
  */
 
 #define _GNU_SOURCE
