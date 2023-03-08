@@ -46,10 +46,8 @@ setup()
 		tst_brk TCONF "kernel image not found, specify path in \$IMA_KEXEC_IMAGE"
 	fi
 
-	if check_policy_readable; then
-		require_ima_policy_content "$REQUIRED_POLICY"
-		policy_readable=1
-	fi
+	require_ima_policy_content "$REQUIRED_POLICY"
+	policy_readable=1
 }
 
 kexec_failure_hint()
