@@ -1,118 +1,37 @@
-/******************************************************************************/
-/*                                                                            */
-/* Copyright (c) Ulrich Drepper <drepper@redhat.com>                          */
-/* Copyright (c) International Business Machines  Corp., 2009                 */
-/*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*                                                                            */
-/******************************************************************************/
-/******************************************************************************/
-/*                                                                            */
-/* File:        eventfd2_02.c                                                 */
-/*                                                                            */
-/* Description: This Program tests the new system call introduced in 2.6.27.  */
-/*              Ulrich´s comment as in:                                       */
-/* http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=e7d476dfdf0bcfed478a207aecfdc84f81efecaf */
-/* which says:                                                                */
-/* This patch adds support for the EFD_NONBLOCK flag to eventfd2.  The        */
-/* additional changes needed are minimal. The following test must be adjusted */
-/* or architectures other than x86 and x86-64 and in case the syscall numbers */
-/* changed.                                                                   */
-/*                                                                            */
-/* Usage:  <for command-line>                                                 */
-/* eventfd2_02 [-c n] [-e][-i n] [-I x] [-p x] [-t]                          */
-/*      where,  -c n : Run n copies concurrently.                             */
-/*              -e   : Turn on errno logging.                                 */
-/*              -i n : Execute test n times.                                  */
-/*              -I x : Execute test for x seconds.                            */
-/*              -P x : Pause for x seconds between iterations.                */
-/*              -t   : Turn on syscall timing.                                */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   eventfd2_02                                                  */
-/*                                                                            */
-/* Author:      Ulrich Drepper <drepper@redhat.com>                           */
-/*                                                                            */
-/* History:     Created - Jan 13 2009 - Ulrich Drepper <drepper@redhat.com>   */
-/*              Ported to LTP                                                 */
-/*                      - Jan 13 2009 - Subrata <subrata@linux.vnet.ibm.com>  */
-/******************************************************************************/
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <errno.h>
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Ulrich Drepper <drepper@redhat.com>
+ * Copyright (c) International Business Machines  Corp., 2009
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
 
-#include "test.h"
-#include "lapi/fcntl.h"
-#include "lapi/syscalls.h"
+/*\
+ * [Description]
+ *
+ * This test verifies that eventfd2 correctly set O_NONBLOCK flag on file when
+ * EFD_NONBLOCK flag is used.
+ */
 
-#define EFD_NONBLOCK O_NONBLOCK
+#include <fcntl.h>
+#include <sys/eventfd.h>
+#include "tst_test.h"
+#include "eventfd2.h"
 
-char *TCID = "eventfd2_02";
-int testno;
-int TST_TOTAL = 1;
-
-void cleanup(void)
+static void run(void)
 {
-	tst_rmdir();
+	int fd, flags;
+
+	fd = eventfd2(1, 0);
+	flags = SAFE_FCNTL(fd, F_GETFL);
+	TST_EXP_EXPR(!(flags & O_NONBLOCK), "O_NONBLOCK is not set");
+	SAFE_CLOSE(fd);
+
+	fd = eventfd2(1, EFD_NONBLOCK);
+	flags = SAFE_FCNTL(fd, F_GETFL);
+	TST_EXP_EXPR((flags & O_NONBLOCK), "O_NONBLOCK is set");
+	SAFE_CLOSE(fd);
 }
 
-void setup(void)
-{
-	TEST_PAUSE;
-	tst_tmpdir();
-}
-
-int main(int argc, char *argv[])
-{
-	int fd, fl;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	tst_count = 0;
-	fd = tst_syscall(__NR_eventfd2, 1, 0);
-	if (fd == -1) {
-		tst_brkm(TFAIL, cleanup, "eventfd2(0) failed");
-	}
-	fl = fcntl(fd, F_GETFL);
-	if (fl == -1) {
-		tst_brkm(TBROK, cleanup, "fcntl failed");
-	}
-	if (fl & O_NONBLOCK) {
-		tst_brkm(TFAIL, cleanup, "eventfd2(0) sets non-blocking mode");
-	}
-	close(fd);
-
-	fd = tst_syscall(__NR_eventfd2, 1, EFD_NONBLOCK);
-	if (fd == -1) {
-		tst_brkm(TFAIL, cleanup, "eventfd2(EFD_NONBLOCK) failed");
-	}
-	fl = fcntl(fd, F_GETFL);
-	if (fl == -1) {
-		tst_brkm(TBROK, cleanup, "fcntl failed");
-	}
-	if ((fl & O_NONBLOCK) == 0) {
-		tst_brkm(TFAIL, cleanup,
-			 "eventfd2(EFD_NONBLOCK) didn't set non-blocking mode");
-	}
-	close(fd);
-	tst_resm(TPASS, "eventfd2(EFD_NONBLOCK) PASSED");
-
-	cleanup();
-	tst_exit();
-}
+static struct tst_test test = {
+	.test_all = run,
+};
