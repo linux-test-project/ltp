@@ -146,7 +146,6 @@ clean:: $(CLEAN_TARGETS)
 
 $(foreach tgt,$(MAKE_TARGETS) include-all lib-all $(filter-out clean_install_dir,$(CLEAN_TARGETS)) $(INSTALL_TARGETS) include-install lib-install,$(eval $(call target_to_dir_dep_mapping,$(tgt))))
 
-BINDIR_INSTALL_SCRIPTS	:= execltp
 SRCDIR_INSTALL_SCRIPTS	:= IDcheck.sh runltp ver_linux
 SRCDIR_INSTALL_READONLY	:= Version
 SRCDIR_INSTALL_TARGETS	:= $(SRCDIR_INSTALL_SCRIPTS) $(SRCDIR_INSTALL_READONLY)
