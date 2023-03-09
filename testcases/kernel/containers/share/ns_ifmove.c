@@ -1,43 +1,31 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) 2015 Red Hat, Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of version 2 the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * Copyright (c) Linux Test Project, 2015-2022
+ * Copyright (c) 2023 Petr Vorel <pvorel@suse.cz>
  * Written by Matus Marhefka <mmarhefk@redhat.com>
- *
- ***********************************************************************
- * Moves a network interface to the namespace of a process specified by a PID.
- *
  */
 
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
-#include <asm/types.h>
-#include <sys/socket.h>
-#include <linux/rtnetlink.h>
-#include <sys/ioctl.h>
-#include <linux/if.h>
-#include <net/ethernet.h>
-#include <arpa/inet.h>
-#include "test.h"
+/*\
+ * [Description]
+ *
+ * Moves a network interface to the namespace of a process specified by a PID.
+ */
 
 #include "config.h"
 
-char *TCID = "ns_ifmove";
+#define TST_NO_DEFAULT_MAIN
+#include "tst_test.h"
+#include "tst_safe_macros.h"
+#include "tst_safe_net.h"
 
-#if HAVE_DECL_IFLA_NET_NS_PID
+#include <linux/if.h>
+#include <linux/rtnetlink.h>
+#include <net/ethernet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef HAVE_DECL_IFLA_NET_NS_PID
 
 struct {
 	struct nlmsghdr nh;
@@ -55,50 +43,28 @@ int get_intf_index_from_name(const char *intf_name)
 	strncpy(ifr.ifr_name, intf_name, sizeof(ifr.ifr_name) - 1);
 	ifr.ifr_name[sizeof(ifr.ifr_name)-1] = '\0';
 
-	sock_fd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-	if (sock_fd == -1) {
-		tst_resm(TINFO | TERRNO, "socket");
-		return -1;
-	}
+	sock_fd = SAFE_SOCKET(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 
-	/* gets interface index */
-	if (ioctl(sock_fd, SIOCGIFINDEX, &ifr) == -1) {
-		tst_resm(TINFO | TERRNO, "ioctl");
-		close(sock_fd);
-		return -1;
-	}
+	/* interface index */
+	SAFE_IOCTL(sock_fd, SIOCGIFINDEX, &ifr);
+	SAFE_CLOSE(sock_fd);
 
-	close(sock_fd);
 	return ifr.ifr_ifindex;
 }
 
-/*
- * ./ns_ifmove <INTERFACE_NAME> <NAMESPACE_PID>
- */
 int main(int argc, char **argv)
 {
 	struct rtattr *rta;
 	int intf_index, pid, rtnetlink_socket;
 
 	if (argc != 3) {
-		tst_resm(TINFO, "%s <INTERFACE_NAME> <NAMESPACE_PID>",
-			 argv[0]);
+		printf("ns_ifmove <INTERFACE_NAME> <NAMESPACE_PID>\n");
 		return 1;
 	}
 
 	intf_index = get_intf_index_from_name(argv[1]);
-	if (intf_index == -1) {
-		tst_resm(TINFO , "unable to get interface index");
-		return 1;
-	}
-
 	pid = atoi(argv[2]);
-
-	rtnetlink_socket = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
-	if (rtnetlink_socket == -1) {
-		tst_resm(TINFO | TERRNO, "socket");
-		return 1;
-	}
+	rtnetlink_socket = SAFE_SOCKET(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
 
 	memset(&req, 0, sizeof(req));
 	req.nh.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg));
@@ -115,20 +81,12 @@ int main(int argc, char **argv)
 		RTA_LENGTH(sizeof(pid));
 	memcpy(RTA_DATA(rta), &pid, sizeof(pid));
 
-	if (send(rtnetlink_socket, &req, req.nh.nlmsg_len, 0) == -1) {
-		tst_resm(TINFO | TERRNO, "send");
-		return 1;
-	}
+	SAFE_SEND(1, rtnetlink_socket, &req, req.nh.nlmsg_len, 0);
+	SAFE_CLOSE(rtnetlink_socket);
 
-	close(rtnetlink_socket);
 	return 0;
 }
 
 #else
-
-int main(void)
-{
-	tst_brkm(TCONF, NULL, "IFLA_NET_NS_PID not defined in linux/if_link.h");
-}
-
+	TST_TEST_TCONF("IFLA_NET_NS_PID not defined in linux/if_link.h");
 #endif
