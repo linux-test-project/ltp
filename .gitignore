@@ -33,8 +33,6 @@ autom4te.cache
 /m4/Makefile
 /m4/Makefile.in
 
-/ltp-devel.spec
-/README.ltp-devel
 /tags
 /Version
 /include/mk/config.mk
