@@ -26,7 +26,7 @@
 #include "tst_common.h"
 
 #ifdef TST_USE_COMPAT16_SYSCALL
-typedef __kernel_old_uid_t UID_T;
+typedef unsigned short UID_T;
 int UID_SIZE_CHECK(uid_t uid)
 {
 	/* See high2lowuid in linux/highuid.h
