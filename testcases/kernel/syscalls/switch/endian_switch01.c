@@ -24,8 +24,6 @@
 # define PPC_FEATURE_TRUE_LE              0x00000002
 # endif
 
-# define TST_NO_DEFAULT_MAIN
-
 /*
  * Make minimal call to 0x1ebe. If we get ENOSYS then syscall is not
  * available, likely because of:
