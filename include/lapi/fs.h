@@ -6,6 +6,10 @@
  * Email: code@zilogic.com
  */
 
+#ifndef LAPI_FS_H__
+#define LAPI_FS_H__
+
+#include "config.h"
 #ifndef HAVE_MOUNT_SETATTR
 # ifdef HAVE_LINUX_FS_H
 #  include <linux/fs.h>
@@ -16,35 +20,32 @@
 #include <limits.h>
 #include "lapi/abisize.h"
 
-#ifndef LAPI_FS_H__
-#define LAPI_FS_H__
-
 #ifndef FS_IOC_GETFLAGS
-#define	FS_IOC_GETFLAGS	_IOR('f', 1, long)
+# define	FS_IOC_GETFLAGS	_IOR('f', 1, long)
 #endif
 
 #ifndef FS_IOC_SETFLAGS
-#define	FS_IOC_SETFLAGS	_IOW('f', 2, long)
+# define	FS_IOC_SETFLAGS	_IOW('f', 2, long)
 #endif
 
 #ifndef FS_COMPR_FL
-#define	FS_COMPR_FL        0x00000004 /* Compress file */
+# define	FS_COMPR_FL        0x00000004 /* Compress file */
 #endif
 
 #ifndef FS_IMMUTABLE_FL
-#define FS_IMMUTABLE_FL	   0x00000010 /* Immutable file */
+# define FS_IMMUTABLE_FL	   0x00000010 /* Immutable file */
 #endif
 
 #ifndef FS_APPEND_FL
-#define FS_APPEND_FL	   0x00000020 /* writes to file may only append */
+# define FS_APPEND_FL	   0x00000020 /* writes to file may only append */
 #endif
 
 #ifndef FS_NODUMP_FL
-#define FS_NODUMP_FL	   0x00000040 /* do not dump file */
+# define FS_NODUMP_FL	   0x00000040 /* do not dump file */
 #endif
 
 #ifndef FS_VERITY_FL
-#define FS_VERITY_FL	   0x00100000 /* Verity protected inode */
+# define FS_VERITY_FL	   0x00100000 /* Verity protected inode */
 #endif
 
 /*
