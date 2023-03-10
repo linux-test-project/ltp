@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <elf.h>
+#include <sys/auxv.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "tst_test.h"
@@ -39,6 +40,9 @@ void check_le_switch_supported(void)
 		syscall(0x1ebe);
 		exit(errno);
 	}
+
+	if (!(getauxval(AT_HWCAP) & PPC_FEATURE_TRUE_LE))
+		tst_brk(TCONF, "Processor does not support little-endian mode");
 
 	SAFE_WAIT(&status);
 	if (WIFSIGNALED(status)) {
@@ -93,19 +97,6 @@ static struct tst_test test = {
 	.test_all = endian_test,
 	.forks_child = 1,
 };
-
-int main4(int argc, char **argv, LTP_ATTRIBUTE_UNUSED char **envp,
-	unsigned long *auxv)
-{
-	for (; *auxv != AT_NULL && *auxv != AT_HWCAP; auxv += 2)
-		;
-
-	if (!(auxv[0] == AT_HWCAP && (auxv[1] & PPC_FEATURE_TRUE_LE)))
-		tst_brk(TCONF, "Processor does not support little-endian mode");
-
-	tst_run_tcases(argc, argv, &test);
-	return 0;
-}
 
 #else /* defined (__powerpc64__) || (__powerpc__) */
 TST_TEST_TCONF("This system does not support running of switch() syscall");
