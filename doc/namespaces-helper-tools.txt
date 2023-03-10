@@ -17,7 +17,7 @@ located in ltp/testcases/kernel/containers/share directory and include:
 * tst_ns_exec
 ** enters the namespace(s) of a process specified by a PID
 ** then executes the indicated program inside that namespace(s)
-* ns_ifmove
+* tst_ns_ifmove
 ** moves a network interface to the namespace of a process specified by a PID
 
 Purpose of these helper tools is the ability to execute test cases utilizing
@@ -44,7 +44,7 @@ tst_ns_exec $myns net,ipc ip a
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
 
 # Moves interface veth1 into the namespace specified by PID in myns variable
-ns_ifmove veth1 $myns
+tst_ns_ifmove veth1 $myns
 tst_ns_exec $myns net,ipc ip a
 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00

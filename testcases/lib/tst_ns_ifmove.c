@@ -27,14 +27,14 @@
 
 #ifdef HAVE_DECL_IFLA_NET_NS_PID
 
-struct {
+static struct {
 	struct nlmsghdr nh;
 	struct ifinfomsg ifi;
 	char attrbuf[512];
 } req;
 
 
-int get_intf_index_from_name(const char *intf_name)
+static int get_intf_index_from_name(const char *intf_name)
 {
 	struct ifreq ifr;
 	int sock_fd;
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	int intf_index, pid, rtnetlink_socket;
 
 	if (argc != 3) {
-		printf("ns_ifmove <INTERFACE_NAME> <NAMESPACE_PID>\n");
+		printf("tst_ns_ifmove <INTERFACE_NAME> <NAMESPACE_PID>\n");
 		return 1;
 	}
 

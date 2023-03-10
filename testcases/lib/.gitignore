@@ -15,6 +15,7 @@
 /tst_net_vars
 /tst_ns_create
 /tst_ns_exec
+/tst_ns_ifmove
 /tst_random
 /tst_rod
 /tst_sleep

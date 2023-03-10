@@ -130,7 +130,7 @@ netns_ns_exec_setup()
 	$NS_EXEC $NS_HANDLE0 $NS_TYPE ip link add veth0 type veth peer name veth1 || \
 		tst_brk TBROK "unable to create veth pair devices"
 
-	$NS_EXEC $NS_HANDLE0 $NS_TYPE ns_ifmove veth1 $NS_HANDLE1
+	$NS_EXEC $NS_HANDLE0 $NS_TYPE tst_ns_ifmove veth1 $NS_HANDLE1
 	ret=$?
 	[ $ret -eq 0 ] && return
 	[ $ret -eq 32 ] && tst_brk TCONF "IFLA_NET_NS_PID not supported"

@@ -172,7 +172,7 @@ init_ltp_netspace()
 	local pid
 
 	if [ ! -f /var/run/netns/ltp_ns -a -z "$LTP_NETNS" ]; then
-		tst_require_cmds ip tst_ns_create tst_ns_exec ns_ifmove
+		tst_require_cmds ip tst_ns_create tst_ns_exec tst_ns_ifmove
 		tst_require_root
 
 		tst_require_drivers veth
@@ -182,7 +182,7 @@ init_ltp_netspace()
 		ROD ln -s /proc/$pid/ns/net /var/run/netns/ltp_ns
 		ROD tst_ns_exec $pid net,mnt mount --make-rprivate /sys
 		ROD tst_ns_exec $pid net,mnt mount -t sysfs none /sys
-		ROD ns_ifmove ltp_ns_veth1 $pid
+		ROD tst_ns_ifmove ltp_ns_veth1 $pid
 		ROD tst_ns_exec $pid net,mnt ip link set lo up
 	elif [ -n "$LTP_NETNS" ]; then
 		tst_res_ TINFO "using not default LTP netns: '$LTP_NETNS'"
