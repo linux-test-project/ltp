@@ -33,14 +33,17 @@ setup()
 
 	echo 3 > /proc/sys/vm/drop_caches
 	sleep 2
-	local mem_free=`cat /proc/meminfo | grep MemFree | awk '{ print $2 }'`
-	local swap_free=`cat /proc/meminfo | grep SwapFree | awk '{ print $2 }'`
-	local pgsize=`tst_getconf PAGESIZE`
+	local mem_free=$(awk '/MemFree/ {print $2}' /proc/meminfo)
+	local mem_available=$(awk '/MemAvailable/ {print $2}' /proc/meminfo)
+	local swap_free=$(awk '/SwapFree/ {print $2}' /proc/meminfo)
+	local mem_min=$(cat /proc/sys/vm/min_free_kbytes)
 
-	MEM=$(( $mem_free + $swap_free / 2 ))
+	mem_min=$(( $mem_min + $mem_min/10 ))
+	[ $swap_free -gt $mem_min ] && RESERVED_MEM=0 || RESERVED_MEM=$mem_min
+	[ $mem_free -lt $mem_available ] && MEM=$mem_free || MEM=$mem_available
+	MEM=$(( $MEM - $RESERVED_MEM ))
 	MEM=$(( $MEM / 1024 ))
 	RUN_TIME=$(( 15 * 60 ))
-	[ "$pgsize" = "4096" ] && THREAD_SPARE_MB=1 || THREAD_SPARE_MB=8
 
 	tst_res TINFO "Calculated available memory $MEM MB"
 }
@@ -93,12 +96,12 @@ run_stress()
 
 test1()
 {
-	run_stress 150 $(( ($MEM - 150 * $THREAD_SPARE_MB) / 150 )) 5 $RUN_TIME
+	run_stress 150 $(( $MEM  / 150 )) 5 $RUN_TIME
 }
 
 test2()
 {
-	run_stress 1 $(( $MEM - $THREAD_SPARE_MB)) 5 $RUN_TIME
+	run_stress 1 $MEM 5 $RUN_TIME
 }
 
 . cgroup_lib.sh
