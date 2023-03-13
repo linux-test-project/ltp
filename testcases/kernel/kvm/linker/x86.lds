@@ -4,6 +4,7 @@ PHDRS
 {
 	headers PT_PHDR PHDRS ;
 	text PT_LOAD FILEHDR PHDRS ;
+	data PT_LOAD ;
 	bss PT_LOAD ;
 }
 
@@ -18,7 +19,7 @@ SECTIONS
 	.init.boot :
 	{
 		*(.init.protected_mode)
-		*(.data.gdt32)
+		*(.init.gdt32)
 		*(.init.memlayout)
 	} :text
 
@@ -40,7 +41,7 @@ SECTIONS
 	{
 		*(.data.strings)
 		*(.data)
-	}
+	} :data
 
 	.preinit_array :
 	{

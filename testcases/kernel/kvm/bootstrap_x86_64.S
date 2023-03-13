@@ -32,7 +32,7 @@ protected_mode_entry:
 	mov %eax, %es
 	jmp init_memlayout
 
-.section .data.gdt32, "a", @progbits
+.section .init.gdt32, "a", @progbits
 
 .macro gdt32_entry type:req l=0 d=0 dpl=0 limit=0xfffff g=1 p=1
 	.4byte \limit & 0xffff
