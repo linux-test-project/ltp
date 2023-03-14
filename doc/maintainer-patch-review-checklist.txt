@@ -1,4 +1,86 @@
-# Maintainer Patch Review Checklist
+# Patch Review
+
+Anyone can and should review patches. It's the only way to get good at
+patch review and for the project to scale.
+
+## Goals of patch review
+
+1. Prevent false positive test results
+2. Prevent false negative test results
+3. Keep the code as simple as possible, but no simpler
+
+## How to find clear errors
+
+A clear error is one where there is unlikely to be any argument if you
+provide evidence of it. Evidence being an error trace or logical proof
+that an error will occur in a common situation.
+
+The following are examples and may not be appropriate for all tests.
+
+* Merge the patch locally. It should apply cleanly to master.
+* Compile the patch with default and non-default configurations.
+  - Use sanitizers e.g. undefined behaviour, address.
+  - Compile on non-x86
+  - Compile on x86 with -m32
+* Use `make check`
+* Run effected tests in a VM
+  - Use single vCPU
+  - Use many vCPUs and enable NUMA
+  - Restrict RAM to < 1GB.
+* Run effected tests on an embedded device
+* Run effected tests on non-x86 machine in general
+* Run reproducers on a kernel where the bug is present
+* Run tests with "-i0"
+* Compare usage of system calls with man page descriptions
+* Compare usage of system calls with kernel code
+* Search the LTP library for existing helper functions
+
+## How to find subtle errors
+
+A subtle error is one where you can expect some argument because you
+do not have clear evidence of an error. It is best to state these as
+questions and not make assertions if possible.
+
+Although if it is a matter of style or "taste" then senior maintainers
+can assert what is correct to avoid bike shedding.
+
+* Ask what happens if there is an error, could it be debugged just
+  with the test output?
+* Are we testing undefined behavior?
+  - Could future kernel behaviour change without "breaking userland"?
+  - Does the kernel behave differently depending on hardware?
+  - Does it behave differently depending on kernel configuration?
+  - Does it behave differently depending on the compiler?
+  - Would it behave differently if the order of checks on syscall parameters
+    changed in the kernel?
+* Will it scale to tiny and huge systems?
+  - What happens if there are 100+ CPUs?
+  - What happens if each CPU core is very slow?
+  - What happens if there are 2TB of RAM?
+* Are we repeating a pattern that can be turned into a library function?
+* Is a single test trying to do too much?
+* Could multiple similar tests be merged?
+* Race conditions
+  - What happens if a process gets preempted?
+  - Could checkpoints or fuzzsync by used instead?
+  - Note, usually you can insert a sleep to prove a race condition
+    exists however finding them is hard
+* Is there a simpler way to achieve the same kernel coverage?
+
+## How to get patches merged
+
+Once you think a patch is good enough you should add your Reviewed-by
+and/or Tested-by tags. This means you will get some credit for getting
+the patch merged. Also some blame if there are problems.
+
+If you ran the test you can add the Tested-by tag. If you read the
+code or used static analysis tools on it, you can add the Reviewed-by
+tag.
+
+In addition you can expect others to review your patches and add their
+tags. This will speed up the process of getting your patches merged.
+
+## Maintainers Checklist
 
 Patchset should be tested locally and ideally also in maintainer's fork in
 GitHub Actions on GitHub.
