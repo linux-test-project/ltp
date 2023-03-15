@@ -3,9 +3,8 @@
 Patchset should be tested locally and ideally also in maintainer's fork in
 GitHub Actions on GitHub.
 
-NOTE: Travis does only build testing, passing the CI means only that the
-      test compiles fine on variety of different distributions and
-      releases.
+NOTE: GitHub Actions do only build testing, passing the CI means only that
+      the test compiles fine on variety of different distributions and releases.
 
 The test should be executed at least once locally and should PASS as well.
 
