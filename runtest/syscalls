@@ -182,6 +182,11 @@ epoll_pwait04 epoll_pwait04
 epoll_pwait05 epoll_pwait05
 
 eventfd01 eventfd01
+eventfd02 eventfd02
+eventfd03 eventfd03
+eventfd04 eventfd04
+eventfd05 eventfd05
+eventfd06 eventfd06
 
 eventfd2_01 eventfd2_01
 eventfd2_02 eventfd2_02

@@ -9,31 +9,37 @@
 /*\
  * [Description]
  *
- * Verify read operation for eventfd fail with:
+ * Verify write operation for eventfd fail with:
  *
  * - EAGAIN when counter is zero on non blocking fd
- * - EINVAL when buffer size is less than 8 bytes
+ * - EINVAL when buffer size is less than 8 bytes, or if an attempt is made to
+ *	write the value 0xffffffffffffffff
  */
 
 #include <stdlib.h>
 #include <sys/eventfd.h>
 #include "tst_test.h"
 
-#define EVENT_COUNT 10
-
 static void run(void)
 {
 	int fd;
-	uint64_t val;
+	uint64_t val = 12;
+	uint64_t buf;
 	uint32_t invalid;
 
-	fd = TST_EXP_FD(eventfd(EVENT_COUNT, EFD_NONBLOCK));
+	fd = TST_EXP_FD(eventfd(0, EFD_NONBLOCK));
 
-	SAFE_READ(0, fd, &val, sizeof(val));
-	TST_EXP_EQ_LI(val, EVENT_COUNT);
+	SAFE_WRITE(0, fd, &val, sizeof(val));
+	SAFE_READ(0, fd, &buf, sizeof(buf));
+	TST_EXP_EQ_LI(buf, val);
 
-	TST_EXP_FAIL(read(fd, &val, sizeof(val)), EAGAIN);
-	TST_EXP_FAIL(read(fd, &invalid, sizeof(invalid)), EINVAL);
+	val = UINT64_MAX - 1;
+	SAFE_WRITE(0, fd, &val, sizeof(val));
+	TST_EXP_FAIL(write(fd, &val, sizeof(val)), EAGAIN);
+	TST_EXP_FAIL(write(fd, &invalid, sizeof(invalid)), EINVAL);
+
+	val = 0xffffffffffffffffLL;
+	TST_EXP_FAIL(write(fd, &val, sizeof(val)), EINVAL);
 
 	SAFE_CLOSE(fd);
 }
