@@ -28,5 +28,3 @@ pipeio_8 pipeio -T pipeio_8 -c 5 -s 5000 -i 10 -u -f x80
 # spawns 5 children to write 10 chunks of 5000 bytes to an unnamed pipe
 # using non-blocking I/O
 
-sem01 sem01
-sem02 sem02
