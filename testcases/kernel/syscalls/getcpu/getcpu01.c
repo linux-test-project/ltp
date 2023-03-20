@@ -69,6 +69,7 @@ static unsigned int get_nodeid(unsigned int cpu_id)
 	DIR *directory_parent, *directory_node;
 	struct dirent *de, *dn;
 	char directory_path[PATH_MAX];
+	char *invalid_number;
 	unsigned int cpu;
 	int node_id = 0;
 
@@ -91,7 +92,9 @@ static unsigned int get_nodeid(unsigned int cpu_id)
 			while ((dn = readdir(directory_node)) != NULL) {
 				if (strncmp(dn->d_name, "cpu", 3))
 					continue;
-				cpu = strtoul(dn->d_name + 3, NULL, 0);
+				cpu = strtoul(dn->d_name + 3, &invalid_number, 0);
+				if (strcmp(invalid_number, "\0"))
+					continue;
 				if (cpu == cpu_id) {
 					node_id =
 					    strtoul(de->d_name + 4, NULL, 0);
