@@ -50,7 +50,7 @@
 #define UUID_STR_SZ 37
 #define UUID_FMT "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x"
 
-static char dev_path[1024];
+static char dev_path[PATH_MAX];
 static int device_acquired;
 static unsigned long prev_dev_sec_write;
 
@@ -79,7 +79,7 @@ int tst_find_free_loopdev(char *path, size_t path_len)
 {
 	int ctl_fd, dev_fd, rc, i;
 	struct loop_info loopinfo;
-	char buf[1024];
+	char buf[PATH_MAX];
 
 	/* since Linux 3.1 */
 	ctl_fd = open(LOOP_CONTROL_FILE, O_RDWR);
@@ -489,7 +489,7 @@ int find_stat_file(const char *dev, char *path, size_t path_len)
 unsigned long tst_dev_bytes_written(const char *dev)
 {
 	unsigned long dev_sec_write = 0, dev_bytes_written, io_ticks = 0;
-	char dev_stat_path[1024];
+	char dev_stat_path[PATH_MAX];
 
 	if (!find_stat_file(dev, dev_stat_path, sizeof(dev_stat_path)))
 		tst_brkm(TCONF, NULL, "Test device stat file: %s not found",
@@ -641,7 +641,7 @@ int tst_dev_block_size(const char *path)
 {
 	int fd;
 	int size;
-	char dev_name[1024];
+	char dev_name[PATH_MAX];
 
 	tst_find_backing_dev(path, dev_name);
 
