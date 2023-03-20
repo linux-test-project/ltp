@@ -1,165 +1,102 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * NAME
- *	semget02.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	semget02 - test for EACCES and EEXIST errors
+ * This basic error handing of the semget syscall.
  *
- * ALGORITHM
- *	create a semaphore set without read or alter permissions
- *	loop if that option was specified
- *	call semget() using two different invalid cases
- *	check the errno value
- *	  issue a PASS message if we get EACCES or EEXIST
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- *  semget02 [-c n] [-e] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -e   : Turn on errno logging.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *
- * RESTRICTIONS
- *	none
+ * - EACCES - a semaphore set exists for key, but the calling process does not
+ *   have permission to access the set
+ * - EEXIST - a semaphore set already exists for key and IPC_CREAT | IPC_EXCL
+ *   is given
+ * - ENOENT - No semaphore set exists for key and semflg did not specify
+ *   IPC_CREAT
+ * - EINVAL - nsems is less than 0 or greater than the limit on the number of
+ *   semaphores per semaphore set(SEMMSL)
+ * - EINVAL - a semaphore set corresponding to key already exists, but nsems is
+ *   larger than the number of semaphores in that set
  */
+
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/types.h>
 #include <pwd.h>
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
+#include "lapi/sem.h"
 
-#include "ipcsem.h"
-
-char *TCID = "semget02";
-int TST_TOTAL = 2;
-
-char nobody_uid[] = "nobody";
-struct passwd *ltpuser;
-
-int sem_id_1 = -1;
-
-struct test_case_t {
+static int sem_id = -1;
+static key_t semkey, semkey1;
+static struct passwd *pw;
+static struct tcase {
+	int *key;
+	int nsems;
 	int flags;
-	int error;
-} TC[] = {
-	/* EACCES - the semaphore has no read or alter permissions */
-	{
-	SEM_RA, EACCES},
-	    /* EEXIST - the semaphore id exists and semget() was called with  */
-	    /* IPC_CREAT and IPC_EXCL                                         */
-	{
-	IPC_CREAT | IPC_EXCL, EEXIST}
+	int exp_err;
+	/*1: nobody expected, 0: root expected */
+	int exp_user;
+} tcases[] = {
+	{&semkey, PSEMS, SEM_RA, EACCES, 1},
+	{&semkey, PSEMS, IPC_CREAT | IPC_EXCL, EEXIST, 0},
+	{&semkey1, PSEMS, SEM_RA, ENOENT, 0},
+	{&semkey1, -1, IPC_CREAT | IPC_EXCL, EINVAL, 0},
+	{&semkey1, SEMMSL + 1, IPC_CREAT | IPC_EXCL, EINVAL, 0},
+	{&semkey, PSEMS + 1, SEM_RA, EINVAL, 0},
 };
 
-int main(int ac, char **av)
+static void verify_semget(struct tcase *tc)
 {
-	int lc;
-	int i;
+	TST_EXP_FAIL2(semget(*tc->key, tc->nsems, tc->flags), tc->exp_err,
+			"semget(%i, %i, %i)", *tc->key, tc->nsems, tc->flags);
+}
 
-	tst_parse_opts(ac, av, NULL, NULL);
+static void do_test(unsigned int n)
+{
+	pid_t pid;
+	struct tcase *tc = &tcases[n];
 
-	setup();		/* global setup */
-
-	/* The following loop checks looping state if -i option given */
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		for (i = 0; i < TST_TOTAL; i++) {
-			/* use the TEST macro to make the call */
-
-			TEST(semget(semkey, PSEMS, TC[i].flags));
-
-			if (TEST_RETURN != -1) {
-				sem_id_1 = TEST_RETURN;
-				tst_resm(TFAIL, "call succeeded");
-				continue;
-			}
-
-			if (TEST_ERRNO == TC[i].error) {
-				tst_resm(TPASS, "expected failure - errno "
-					 "= %d : %s", TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL, "unexpected error - %d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
+	if (tc->exp_user == 0) {
+		verify_semget(tc);
+	} else {
+		pid = SAFE_FORK();
+		if (pid) {
+			tst_reap_children();
+		} else {
+			SAFE_SETUID(pw->pw_uid);
+			verify_semget(tc);
+			exit(0);
 		}
 	}
-
-	cleanup();
-
-	tst_exit();
 }
 
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
-	tst_require_root();
+	semkey = GETIPCKEY();
+	semkey1 = GETIPCKEY();
 
-	/* Switch to nobody user for correct error code collection */
-	ltpuser = getpwnam(nobody_uid);
-	if (seteuid(ltpuser->pw_uid) == -1) {
-		tst_resm(TINFO, "setreuid failed to "
-			 "to set the effective uid to %d", ltpuser->pw_uid);
-		perror("setreuid");
-	}
+	sem_id = SAFE_SEMGET(semkey, PSEMS, IPC_CREAT | IPC_EXCL);
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/*
-	 * Create a temporary directory and cd into it.
-	 * This helps to ensure that a unique msgkey is created.
-	 * See libs/libltpipc/libipc.c for more information.
-	 */
-	tst_tmpdir();
-
-	/* get an IPC resource key */
-	semkey = getipckey();
-
-	/* create a semaphore set without read or alter permissions */
-	if ((sem_id_1 = semget(semkey, PSEMS, IPC_CREAT | IPC_EXCL)) == -1) {
-		tst_brkm(TBROK, cleanup, "couldn't create semaphore in setup");
-	}
+	pw = SAFE_GETPWNAM("nobody");
 }
 
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
-	/* if it exists, remove the semaphore resource */
-	rm_sema(sem_id_1);
-
-	tst_rmdir();
-
+	if (sem_id != -1)
+		SAFE_SEMCTL(sem_id, PSEMS, IPC_RMID);
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.forks_child = 1,
+	.tcnt = ARRAY_SIZE(tcases),
+	.setup = setup,
+	.cleanup = cleanup,
+	.test = do_test,
+};

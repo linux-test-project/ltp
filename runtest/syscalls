@@ -1236,9 +1236,7 @@ semctl09 semctl09
 
 semget01 semget01
 semget02 semget02
-semget03 semget03
 semget05 semget05
-semget06 semget06
 
 semop01 semop01
 semop02 semop02
