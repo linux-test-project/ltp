@@ -53,6 +53,8 @@ int get_used_sysvipc(const char *file, const int lineno, const char *sysvipc_fil
 	get_used_sysvipc(__FILE__, __LINE__, "/proc/sysvipc/msg")
 #define GET_USED_SEGMENTS() \
 	get_used_sysvipc(__FILE__, __LINE__, "/proc/sysvipc/shm")
+#define GET_USED_ARRAYS() \
+	get_used_sysvipc(__FILE__, __LINE__, "/proc/sysvipc/sem")
 
 void *probe_free_addr(const char *file, const int lineno);
 #define PROBE_FREE_ADDR() \
