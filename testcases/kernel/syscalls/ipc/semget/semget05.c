@@ -1,152 +1,79 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * NAME
- *	semget05.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	semget05 - test for ENOSPC error
+ * Test for ENOSPC error.
  *
- * ALGORITHM
- *	create semaphore sets in a loop until the system limit is reached
- *	loop if that option was specified
- *	attempt to create yet another semaphore set
- *	check the errno value
- *	  issue a PASS message if we get ENOSPC
- *	otherwise, the tests fails
- *	  issue a FAIL message
- *	call cleanup
- *
- * USAGE:  <for command-line>
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *      07/2006 - Changes By Michael Reed
- *                - Changed the value of MAXIDS for the specific machine by reading
- *                  the system limit for SEMMNI - The maximum number of sempahore sets
- *      03/2008 - Matthieu Fertré  (mfertre@irisa.fr)
- *                - Fix concurrency issue. Create private semaphores to
- *                  avoid conflict with concurrent processes.
- *
- * RESTRICTIONS
- *	none
+ * ENOSPC - a semaphore set exceed the maximum number of semaphore sets(SEMMNI)
  */
 
-#include "ipcsem.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include "lapi/sem.h"
+#include "tst_test.h"
+#include "libnewipc.h"
+#include "tst_safe_sysv_ipc.h"
 
-char *TCID = "semget05";
-int TST_TOTAL = 1;
+static int *sem_id_arr;
+static int maxsems, array_cnt, used_cnt;
+static key_t semkey;
 
-/*
- * The MAXIDS value is somewhat arbitrary and may need to be increased
- * depending on the system being tested.
- */
-
-int MAXIDS = 2048;
-
-int *sem_id_arr = NULL;
-int num_sems = 0;		/* count the semaphores created */
-
-int main(int ac, char **av)
+static void verify_semget(void)
 {
-	int lc;
-	FILE *fp;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	/* Set the MAXIDS for the specific machine by reading the system limit
-	 * for SEMMNI - The maximum number of sempahore sets
-	 */
-	fp = fopen("/proc/sys/kernel/sem", "r");
-	if (fp != NULL) {
-		int getmaxid;
-		if (fscanf(fp, "%*d %*d %*d %d", &getmaxid) == 1)
-			MAXIDS = getmaxid + 1;
-		fclose(fp);
-	}
-
-	sem_id_arr = malloc(sizeof(int) * MAXIDS);
-	if (sem_id_arr == NULL)
-		tst_brkm(TBROK, cleanup, "malloc failed");
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-
-		TEST(semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA));
-		if (TEST_RETURN != -1) {
-			tst_resm(TFAIL, "call succeeded when error expected");
-			continue;
-		}
-
-		switch (TEST_ERRNO) {
-		case ENOSPC:
-			tst_resm(TPASS, "expected failure - errno "
-				 "= %d : %s", TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		default:
-			tst_resm(TFAIL, "unexpected error - %d : %s",
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-			break;
-		}
-	}
-
-	cleanup();
-
-	tst_exit();
+	TST_EXP_FAIL2(semget(semkey + maxsems, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA),
+		ENOSPC, "semget(%i, %i, %i)", semkey + maxsems, PSEMS,
+		IPC_CREAT | IPC_EXCL | SEM_RA);
 }
 
-void setup(void)
+static void setup(void)
 {
-	int sem_q;
+	int res, num;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	semkey = GETIPCKEY();
+	used_cnt = GET_USED_ARRAYS();
+	tst_res(TINFO, "Current environment %d semaphore arrays are already in use",
+		used_cnt);
+	SAFE_FILE_SCANF("/proc/sys/kernel/sem", "%*d %*d %*d %d", &maxsems);
 
-	TEST_PAUSE;
+	sem_id_arr = SAFE_MALLOC((maxsems - used_cnt) * sizeof(int));
+	for (num = 0; num < maxsems - used_cnt; num++) {
+		res = semget(semkey + num, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
+		if (res == -1)
+			tst_brk(TBROK | TERRNO, "semget failed unexpectedly");
 
-	tst_tmpdir();
-
-	while ((sem_q = semget(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL)) != -1) {
-		sem_id_arr[num_sems++] = sem_q;
-		if (num_sems == MAXIDS) {
-			tst_brkm(TBROK, cleanup, "The maximum number of "
-				 "semaphore ID's has been\n\t reached.  Please "
-				 "increase the MAXIDS value in the test.");
-		}
+		sem_id_arr[array_cnt++] = res;
 	}
-
-	if (errno != ENOSPC) {
-		tst_brkm(TBROK, cleanup, "Didn't get ENOSPC in test setup"
-			 " - errno = %d : %s", errno, strerror(errno));
-	}
+	tst_res(TINFO, "The maximum number of semaphore arrays (%d) has been reached",
+		maxsems);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
-	int i;
+	int num;
 
-	for (i = 0; i < num_sems; i++) {
-		rm_sema(sem_id_arr[i]);
-	}
+	if (!sem_id_arr)
+		return;
+
+	for (num = 0; num < array_cnt; num++)
+		SAFE_SEMCTL(sem_id_arr[num], PSEMS, IPC_RMID);
 
 	free(sem_id_arr);
-	tst_rmdir();
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_semget,
+	.save_restore = (const struct tst_path_val[]){
+		{"/proc/sys/kernel/sem", NULL, TST_SR_TCONF},
+		{}
+	}
+};
