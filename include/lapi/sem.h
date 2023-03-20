@@ -24,4 +24,8 @@ union semun {
 # define SEM_STAT_ANY 20
 #endif
 
+#ifndef SEMMSL
+# define SEMMSL 32000
+#endif
+
 #endif /* LAPI_SEM_H__ */
