@@ -24,7 +24,7 @@
 
 #include "hugetlb.h"
 
-#define FOURGB (1UL << 32)
+#define FOURGB (1ULL << 32)
 #define MNTPOINT "hugetlbfs/"
 static int  fd = -1;
 static unsigned long hpage_size;
@@ -33,16 +33,16 @@ static int page_size;
 static void run_test(void)
 {
 	void *p, *q = NULL;
-	unsigned long lowaddr;
-	unsigned long below_start;
-	unsigned long above_end;
+	unsigned long long lowaddr;
+	unsigned long long below_start;
+	unsigned long long above_end;
 
 	p = mmap((void *)FOURGB, hpage_size, PROT_READ|PROT_WRITE,
 		 MAP_SHARED | MAP_FIXED, fd, 0);
 	if (p == MAP_FAILED) {
 		/* slice 0 (high) spans from 4G-1T */
 		below_start = FOURGB;
-		above_end = 1024L*1024*1024*1024;
+		above_end = 1024ULL*1024*1024*1024;
 
 		if (range_is_mapped(below_start, above_end) == 1) {
 			tst_res(TINFO|TERRNO, "region 4G-IT is not free & "

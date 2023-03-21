@@ -24,30 +24,30 @@
 
 #include "hugetlb.h"
 
-#define FOURGB (1UL << 32)
+#define FOURGB (1ULL << 32)
 #define MNTPOINT "hugetlbfs/"
 static int  fd = -1;
-static unsigned long hpage_size;
+static unsigned long long hpage_size;
 static int page_size;
 
 static void run_test(void)
 {
 	void *p, *q = NULL, *r = NULL;
-	unsigned long lowaddr, highaddr;
-	unsigned long below_start;
-	unsigned long above_end;
+	unsigned long long lowaddr, highaddr;
+	unsigned long long below_start;
+	unsigned long long above_end;
 
 	/*
 	 * We use a low address right below 4GB so we can test for
 	 * off-by-one errors
 	 */
 	lowaddr = FOURGB - hpage_size;
-	tst_res(TINFO, "Mapping hugepage at %lx...", lowaddr);
+	tst_res(TINFO, "Mapping hugepage at %llx...", lowaddr);
 	p = mmap((void *)lowaddr, hpage_size, PROT_READ|PROT_WRITE,
 		 MAP_SHARED|MAP_FIXED, fd, 0);
 	if (p == MAP_FAILED) {
 		/* This is last low slice - 256M just before 4G */
-		below_start = FOURGB - 256L*1024*1024;
+		below_start = FOURGB - 256ULL*1024*1024;
 		above_end = FOURGB;
 
 		if (range_is_mapped(below_start, above_end) == 1) {
@@ -66,7 +66,7 @@ static void run_test(void)
 
 	/* Test for off by one errors */
 	highaddr = FOURGB;
-	tst_res(TINFO, "Mapping normal page at %lx...", highaddr);
+	tst_res(TINFO, "Mapping normal page at %llx...", highaddr);
 	q = mmap((void *)highaddr, page_size, PROT_READ|PROT_WRITE,
 		 MAP_SHARED|MAP_FIXED|MAP_ANONYMOUS, 0, 0);
 	if (q == MAP_FAILED) {
@@ -94,7 +94,7 @@ static void run_test(void)
 	 * greater.
 	 */
 	highaddr = ((lowaddr >> 28) + 128) << 28;
-	tst_res(TINFO, "Mapping normal page at %lx...", highaddr);
+	tst_res(TINFO, "Mapping normal page at %llx...", highaddr);
 	r = mmap((void *)highaddr, page_size, PROT_READ|PROT_WRITE,
 		 MAP_SHARED|MAP_FIXED|MAP_ANONYMOUS, 0, 0);
 	if (r == MAP_FAILED) {
