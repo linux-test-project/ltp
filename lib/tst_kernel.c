@@ -90,7 +90,7 @@ int tst_kernel_bits(void)
 	return kernel_bits;
 }
 
-static int tst_search_driver(const char *driver, const char *file)
+static int tst_search_driver_(const char *driver, const char *file)
 {
 	struct stat st;
 	char buf[PATH_MAX];
@@ -144,28 +144,19 @@ static int tst_search_driver(const char *driver, const char *file)
 	return ret;
 }
 
-static int tst_check_driver_(const char *driver)
-{
-	if (!tst_search_driver(driver, "modules.dep") ||
-		!tst_search_driver(driver, "modules.builtin"))
-		return 0;
-
-	return -1;
-}
-
-int tst_check_driver(const char *driver)
+static int tst_search_driver(const char *driver, const char *file)
 {
 #ifdef __ANDROID__
 	/*
 	 * Android may not have properly installed modules.* files. We could
-	 * search modules in /system/lib/modules, but to to determine built-in
+	 * search modules in /system/lib/modules, but to determine built-in
 	 * drivers we need modules.builtin. Therefore assume all drivers are
 	 * available.
 	 */
 	return 0;
 #endif
 
-	if (!tst_check_driver_(driver))
+	if (!tst_search_driver_(driver, file))
 		return 0;
 
 	int ret = -1;
@@ -183,9 +174,26 @@ int tst_check_driver(const char *driver)
 		while ((ix = strchr(ix, find)))
 			*ix++ = replace;
 
-		ret = tst_check_driver_(driver2);
+		ret = tst_search_driver_(driver2, file);
 		free(driver2);
 	}
 
 	return ret;
+}
+
+int tst_check_builtin_driver(const char *driver)
+{
+	if (!tst_search_driver(driver, "modules.builtin"))
+		return 0;
+
+	return -1;
+}
+
+int tst_check_driver(const char *driver)
+{
+	if (!tst_search_driver(driver, "modules.dep") ||
+		!tst_search_driver(driver, "modules.builtin"))
+		return 0;
+
+	return -1;
 }
