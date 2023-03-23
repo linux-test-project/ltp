@@ -794,6 +794,7 @@ mmap16 mmap16
 mmap17 mmap17
 mmap18 mmap18
 mmap19 mmap19
+mmap20 mmap20
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
