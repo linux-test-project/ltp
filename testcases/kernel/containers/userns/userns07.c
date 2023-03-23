@@ -88,4 +88,8 @@ static struct tst_test test = {
 		"CONFIG_USER_NS",
 		NULL,
 	},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/kernel/unprivileged_userns_clone", "1", TST_SR_SKIP},
+		{}
+	},
 };
