@@ -300,7 +300,7 @@ static int open_unpoison_pfn(void)
 	struct mntent *mnt;
 	FILE *mntf;
 
-	if (!find_in_file("/proc/modules", HW_MODULE))
+	if (!find_in_file("/proc/modules", HW_MODULE) && tst_check_builtin_driver(HW_MODULE))
 		hwpoison_probe = 1;
 
 	/* probe hwpoison only if it isn't already there */
