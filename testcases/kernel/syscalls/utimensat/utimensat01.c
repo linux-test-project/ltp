@@ -233,7 +233,7 @@ static void run(unsigned int i)
 		dfd = SAFE_OPEN(TEST_DIR, tc->oflags);
 
 	if (tc->pathname) {
-		fd = SAFE_OPEN(tc->pathname, O_WRONLY | O_CREAT);
+		fd = SAFE_OPEN(tc->pathname, O_WRONLY | O_CREAT, 0200);
 		pathname = tc->pathname;
 		SAFE_CHMOD(tc->pathname, tc->mode);
 		reset_time(pathname, dfd, tc->flags, i);

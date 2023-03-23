@@ -55,7 +55,7 @@ static void setup(void)
 	dir_fd = SAFE_OPEN(TEST_DIR, O_DIRECTORY);
 	SAFE_CHDIR(TEST_DIR);
 	SAFE_TOUCH(TEST_FILE, 0600, NULL);
-	file_fd = SAFE_OPEN("foo_file", O_RDWR | O_CREAT);
+	file_fd = SAFE_OPEN("foo_file", O_RDWR | O_CREAT, 0600);
 
 	f_fhp = allocate_file_handle(AT_FDCWD, TEST_FILE);
 	d_fhp = allocate_file_handle(AT_FDCWD, TEST_FILE);
