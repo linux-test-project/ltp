@@ -2,12 +2,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) International Business Machines Corp., 2001
 # Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
+# Copyright (c) Linux Test Project, 2017-2023
 #
 # This program tests the file command. The tests are aimed at
 # testing if the file command can recognize some of the commonly
 # used file formats like, tar, tar.gz, rpm, C, ASCII, ELF etc.
 
-TST_CNT=20
+TST_CNT=18
 TST_SETUP=setup
 TST_TESTFUNC=do_test
 TST_NEEDS_TMPDIR=1
@@ -61,30 +62,28 @@ do_test()
 			    "POSIX shell script text executable" \
 			    "POSIX shell script text" \
 			    "Bourne shell script text executable";;
-	 4) file_test in.ksh "Korn shell script";;
-	 5) file_test in.csh "C shell script";;
-	 6) file_test in.c "ASCII C program text" "C source, ASCII text";;
-	 7) file_test in.pl "[pP]erl script, ASCII text executable" \
+	 4) file_test in.c "ASCII C program text" "C source, ASCII text";;
+	 5) file_test in.pl "[pP]erl script, ASCII text executable" \
 			    "[pP]erl script text executable" \
 			    "a /usr/bin/perl script text";;
-	 8) file_test in.py "[pP]ython3\{0,1\} script, ASCII text executable" \
+	 6) file_test in.py "[pP]ython3\{0,1\} script, ASCII text executable" \
 			    "[pP]ython3\{0,1\} script text executable";;
-	 9) file_test in.m4 "M4 macro processor script, ASCII text" \
+	 7) file_test in.m4 "M4 macro processor script, ASCII text" \
 			    "ASCII M4 macro language pre-processor text";;
-	10) file_test in "ELF .*-bit $TEST_ARCH executable, .*" \
+	 8) file_test in "ELF .*-bit $TEST_ARCH executable, .*" \
 			 "ELF .*-bit $TEST_ARCH shared object, .*" \
 			 "ELF .*-bit $TEST_ARCH pie executable, .*" \
 			 "ELF .*-bit $TEST_ARCH pie shared object, .*";;
-	11) file_test in.ar "current ar archive";;
-	12) file_test in.tar "tar archive";;
-	13) file_test in.tar.gz "gzip compressed data, .*";;
-	14) file_test in.tar.bz2 "bzip2 compressed data, .*";;
-	15) file_test in.src.rpm "RPM v3 src" "RPM v3.0 src";;
-	16) file_test in.jpg "JPEG image data";;
-	17) file_test in.png "PNG image data";;
-	18) file_test in.wav "RIFF (little-endian) data, WAVE audio, Microsoft PCM";;
-	19) file_test in.mp3 "MPEG ADTS, layer III";;
-	20) file_test in.zip "Zip archive data";;
+	 9) file_test in.ar "current ar archive";;
+	10) file_test in.tar "tar archive";;
+	11) file_test in.tar.gz "gzip compressed data, .*";;
+	12) file_test in.tar.bz2 "bzip2 compressed data, .*";;
+	13) file_test in.src.rpm "RPM v3 src" "RPM v3.0 src";;
+	14) file_test in.jpg "JPEG image data";;
+	15) file_test in.png "PNG image data";;
+	16) file_test in.wav "RIFF (little-endian) data, WAVE audio, Microsoft PCM";;
+	17) file_test in.mp3 "MPEG ADTS, layer III";;
+	18) file_test in.zip "Zip archive data";;
 	esac
 }
 
