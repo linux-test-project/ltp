@@ -103,7 +103,7 @@ int tst_find_free_loopdev(char *path, size_t path_len)
 	break;
 	case EACCES:
 		tst_resm(TINFO | TERRNO,
-		         "Not allowed to open " LOOP_CONTROL_FILE ". "
+			 "Not allowed to open " LOOP_CONTROL_FILE ". "
 			 "Are you root?");
 	break;
 	default:
@@ -239,7 +239,8 @@ int tst_detach_device_by_fd(const char *dev, int dev_fd)
 	int ret, i;
 
 	/* keep trying to clear LOOPDEV until we get ENXIO, a quick succession
-	 * of attach/detach might not give udev enough time to complete */
+	 * of attach/detach might not give udev enough time to complete
+	 */
 	for (i = 0; i < 40; i++) {
 		ret = ioctl(dev_fd, LOOP_CLR_FD, 0);
 
@@ -340,7 +341,7 @@ const char *tst_acquire_device_(void (cleanup_fn)(void), unsigned int size)
 
 	if (!tst_tmpdir_created()) {
 		tst_brkm(TBROK, cleanup_fn,
-		         "Cannot acquire device without tmpdir() created");
+			 "Cannot acquire device without tmpdir() created");
 		return NULL;
 	}
 
@@ -396,17 +397,17 @@ int tst_umount(const char *path)
 
 		if (err != EBUSY) {
 			tst_resm(TWARN, "umount('%s') failed with %s",
-		         path, tst_strerrno(err));
+				 path, tst_strerrno(err));
 			errno = err;
 			return ret;
 		}
 
 		tst_resm(TINFO, "umount('%s') failed with %s, try %2i...",
-		         path, tst_strerrno(err), i+1);
+			 path, tst_strerrno(err), i+1);
 
 		if (i == 0) {
 			tst_resm(TINFO, "Likely gvfsd-trash is probing newly "
-			         "mounted fs, kill it to speed up tests.");
+				 "mounted fs, kill it to speed up tests.");
 		}
 
 		usleep(100000);
