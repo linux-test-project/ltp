@@ -30,7 +30,6 @@
  * corruption and no data corruption (nor userland nor kernel).
  */
 
-#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <fcntl.h>

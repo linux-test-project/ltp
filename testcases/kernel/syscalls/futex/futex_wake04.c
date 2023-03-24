@@ -21,7 +21,6 @@
  */
 
 #include <stdio.h>
-#include <sys/mman.h>
 #include <fcntl.h>
 #include <sys/time.h>
 #include <string.h>

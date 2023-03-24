@@ -62,7 +62,6 @@
 #include <sys/file.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <sys/mman.h>
 #include <sys/syscall.h>
 #include <errno.h>
 

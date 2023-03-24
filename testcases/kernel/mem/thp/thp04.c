@@ -26,8 +26,6 @@
  * commit 8310d48b125d("huge_memory.c: respect FOLL_FORCE/FOLL_COW for thp").
  */
 
-#include <sys/mman.h>
-
 #include "tst_test.h"
 #include "lapi/mmap.h"
 #include "tst_fuzzy_sync.h"
