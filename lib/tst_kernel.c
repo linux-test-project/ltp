@@ -85,7 +85,7 @@ int tst_kernel_bits(void)
 #endif  /* __ANDROID__ */
 
 	tst_resm(TINFO, "uname.machine=%s kernel is %ibit",
-	         buf.machine, kernel_bits);
+		 buf.machine, kernel_bits);
 
 	return kernel_bits;
 }
@@ -118,6 +118,7 @@ static int tst_search_driver_(const char *driver, const char *file)
 
 	/* always search for x86_64 */
 	char *fix = strstr(driver, "x86-64");
+
 	if (fix)
 		fix[3] = '_';
 
