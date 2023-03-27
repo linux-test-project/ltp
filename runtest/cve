@@ -5,9 +5,9 @@ cve-2011-2496 vma03
 cve-2012-0957 uname04
 cve-2014-0196 cve-2014-0196
 cve-2015-0235 gethostbyname_r01
+cve-2015-3290 cve-2015-3290
 cve-2015-7550 keyctl02
 cve-2016-4470 keyctl01.sh
-cve-2015-3290 cve-2015-3290
 cve-2016-4997 setsockopt03
 cve-2016-5195 dirtyc0w
 cve-2016-7042 cve-2016-7042
@@ -19,6 +19,7 @@ cve-2016-10044 cve-2016-10044
 cve-2017-2618 cve-2017-2618
 cve-2017-2636 pty05
 cve-2017-2671 cve-2017-2671
+cve-2017-5754 meltdown
 cve-2017-6951 request_key05
 cve-2017-7308 setsockopt02
 cve-2017-7472 keyctl04
@@ -31,19 +32,18 @@ cve-2017-15299 request_key03 -b cve-2017-15299
 cve-2017-15537 ptrace07
 cve-2017-15649 fanout01
 cve-2017-15951 request_key03 -b cve-2017-15951
+cve-2017-16939 cve-2017-16939
+cve-2017-16995 bpf_prog03
+cve-2017-17052 cve-2017-17052
+cve-2017-17053 cve-2017-17053
 cve-2017-17712 sendmsg03
 cve-2017-17805 af_alg02
 cve-2017-17806 af_alg01
 cve-2017-17807 request_key04
-cve-2017-1000364 stack_clash
-cve-2017-5754 meltdown
-cve-2017-17052 cve-2017-17052
-cve-2017-16939 cve-2017-16939
-cve-2017-16995 bpf_prog03
-cve-2017-17053 cve-2017-17053
 cve-2017-18075 pcrypt_aead01
 cve-2017-1000111 setsockopt07
 cve-2017-1000112 setsockopt05
+cve-2017-1000364 stack_clash
 cve-2017-1000380 snd_timer01
 cve-2017-1000405 thp04
 cve-2018-5803 sctp_big_chunk
@@ -51,15 +51,15 @@ cve-2018-7566 snd_seq01
 cve-2018-8897 ptrace09
 cve-2018-9568 connect02
 cve-2018-10124 kill13
-cve-2018-1000001 realpath01
-cve-2018-1000199 ptrace08
-cve-2018-1000204 ioctl_sg01
 cve-2018-12896 timer_settime03
 cve-2018-13405 creat09
 cve-2018-18445 bpf_prog04
 cve-2018-18559 bind06
 cve-2018-18955 userns08
 cve-2018-19854 crypto_user01
+cve-2018-1000001 realpath01
+cve-2018-1000199 ptrace08
+cve-2018-1000204 ioctl_sg01
 cve-2019-8912 af_alg07
 cve-2020-11494 pty04
 cve-2020-14386 sendto03
@@ -72,10 +72,10 @@ cve-2021-4034 execve06
 cve-2021-22555 setsockopt08 -i 100
 cve-2021-26708 vsock01
 cve-2021-22600 setsockopt09
+cve-2021-38604 mq_notify03
 cve-2022-0847 dirtypipe
 cve-2022-2590 dirtyc0w_shmem
-cve-2021-38604 mq_notify03
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
-cve-2022-4378 cve-2022-4378
 cve-2022-0185 fsconfig03
+cve-2022-4378 cve-2022-4378
