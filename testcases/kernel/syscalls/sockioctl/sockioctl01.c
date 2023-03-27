@@ -52,7 +52,7 @@ static struct ifreq ifr;
 static int sinlen;
 static int optval;
 
-static char buf[8192];
+static struct ifreq buf[200];
 
 static void setup(void);
 static void setup0(void);
@@ -218,7 +218,7 @@ static void setup2(void)
 	s = SAFE_SOCKET(cleanup, tdat[testno].domain, tdat[testno].type,
 			tdat[testno].proto);
 	ifc.ifc_len = sizeof(buf);
-	ifc.ifc_buf = buf;
+	ifc.ifc_buf = (char *)buf;
 }
 
 static void setup3(void)
