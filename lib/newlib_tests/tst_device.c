@@ -71,7 +71,7 @@ static void test_tst_find_backing_dev(void)
 {
 	char block_dev[100];
 
-	tst_find_backing_dev(mntpoint, block_dev);
+	tst_find_backing_dev(mntpoint, block_dev, sizeof(block_dev));
 
 	if (!strcmp(tst_device->dev, block_dev))
 		tst_res(TPASS, "%s belongs to %s block dev", mntpoint,

@@ -125,7 +125,7 @@ static void setup(void)
 	 *   needn't transform transfer.
 	 */
 	sprintf(backing_file_path, "%s/test.img", tst_get_tmpdir());
-	tst_find_backing_dev(backing_file_path, bd_path);
+	tst_find_backing_dev(backing_file_path, bd_path, sizeof(bd_path));
 	block_devfd = SAFE_OPEN(bd_path, O_RDWR);
 	SAFE_IOCTL(block_devfd, BLKSSZGET, &logical_block_size);
 	tst_res(TINFO, "backing dev(%s) logical_block_size is %d", bd_path, logical_block_size);

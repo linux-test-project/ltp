@@ -108,10 +108,11 @@ void tst_purge_dir(const char *path);
 
 /*
  * Find the file or path belongs to which block dev
- * @path  Path to find the backing dev
- * @dev   The block dev
+ * @path       Path to find the backing dev
+ * @dev        The buffer to store the block dev in
+ * @dev_size   The length of the block dev buffer
  */
-void tst_find_backing_dev(const char *path, char *dev);
+void tst_find_backing_dev(const char *path, char *dev, size_t dev_size);
 
 /*
  * Stat the device mounted on a given path.

@@ -1087,7 +1087,7 @@ is created for that intention.
 -------------------------------------------------------------------------------
 #include "tst_test.h"
 
-void tst_find_backing_dev(const char *path, char *dev);
+void tst_find_backing_dev(const char *path, char *dev, size_t dev_size);
 -------------------------------------------------------------------------------
 
 This function finds the block dev that this path belongs to, using uevent in sysfs.
