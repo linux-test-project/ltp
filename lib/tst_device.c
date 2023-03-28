@@ -37,13 +37,13 @@ static char dev_path[PATH_MAX];
 static int device_acquired;
 static unsigned long prev_dev_sec_write;
 
-static const char *dev_loop_variants[] = {
+static const char * const dev_loop_variants[] = {
 	"/dev/loop%i",
 	"/dev/loop/%i",
 	"/dev/block/loop%i"
 };
 
-static const char *dev_variants[] = {
+static const char * const dev_variants[] = {
 	"/dev/%s",
 	"/dev/block/%s"
 };
