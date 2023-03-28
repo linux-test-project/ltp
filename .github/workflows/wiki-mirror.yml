@@ -38,20 +38,10 @@ jobs:
           commit=$(git log --pretty=format:"%h (\"%s\")" -1 .)
 
           cd $GITHUB_WORKSPACE/ltp.wiki
-
-          # Don't forget to update this list, keep it sorted
-          cp -v $dir/c-test-api.txt C-Test-API.asciidoc
-          cp -v $dir/c-test-tutorial-simple.txt C-Test-Case-Tutorial.asciidoc
-          cp -v $dir/library-api-writing-guidelines.txt LTP-Library-API-Writing-Guidelines.asciidoc
-          cp -v $dir/maintainer-patch-review-checklist.txt Maintainer-Patch-Review-Checklist.asciidoc
-          cp -v $dir/network-c-api.txt C-Test-Network-API.asciidoc
-          cp -v $dir/shell-test-api.txt Shell-Test-API.asciidoc
-          cp -v $dir/supported-kernel-libc-versions.txt Supported-kernel,-libc,-toolchain-versions.asciidoc
-          cp -v $dir/test-writing-guidelines.txt Test-Writing-Guidelines.asciidoc
-          cp -v $dir/user-guide.txt User-Guidelines.asciidoc
-          cp -v $dir/kvm-test-api.txt KVM-Test-API.asciidoc
-
+          # don't forget to add new extensions
+          cp -v $dir/*.asciidoc $dir/*.rest .
           git add .
+
           # only commit if there are changes
           git diff-index --quiet HEAD -- || git commit -m "Update to $commit" .
           git push
