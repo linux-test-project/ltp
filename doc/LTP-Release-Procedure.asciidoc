@@ -1,0 +1,67 @@
+LTP Release Procedure
+=====================
+
+This page contains quick summary of what needs to be done to do a LTP release. It's expected that LTP git is frozen and git HEAD was properly tested and that LTP git tree is cloned to a directory named 'ltp'.
+
+NOTE: The string YYYYMMDD should be substituted to the current date.
+
+1. Tag the git
+--------------
+
+[source,sh]
+--------------------------------------------------------------------
+cd ltp
+echo YYYYMMDD > VERSION
+git commit -s -m 'LTP YYYYMMDD' VERSION
+git tag -a YYYYMMDD -m 'LTP YYYYMMDD'
+--------------------------------------------------------------------
+
+2. Push changes to github
+-------------------------
+[source,sh]
+--------------------------------------------------------------------
+git push
+git push --tags
+--------------------------------------------------------------------
+
+3. Prepare tarballs
+-------------------
+[source,sh]
+--------------------------------------------------------------------
+cd ..
+git clone ltp ltp-full-YYYYMMDD
+cd ltp-full-YYYYMMDD
+# Update mce-inject submodule
+git submodule init
+git submodule update
+# Generate configure script
+make autotools
+# Prepare the archives
+cd ..
+tar -cjf ltp-full-YYYYMMDD.tar.bz2 ltp-full-YYYYMMDD --exclude .git
+tar -cJf ltp-full-YYYYMMDD.tar.xz ltp-full-YYYYMMDD --exclude .git
+--------------------------------------------------------------------
+
+4. Upload the tarballs to GitHub
+--------------------------------
+
+Click on 'releases' then switch to 'tags' then click on 'Add release notes' there should be 'Attach binaries ...' link at the bottom of the page.
+
+Don't forget to upload md5 and sha-1 sums for the tarballs as well.
+
+5. Send release announcement
+----------------------------
+
+Have a look at http://sourceforge.net/p/ltp/mailman/message/34429656/ to get the idea how it should look.
+
+The announcement is send to:
+
+* ltp at lists.linux.it
+* linux-kernel at vger.kernel.org
+* libc-alpha at sourceware.org
+
+CCed to:
+
+* lwn at lwn.net
+* akpm at linux-foundation.org
+* torvalds at linux-foundation.org.
