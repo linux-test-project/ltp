@@ -55,6 +55,7 @@ static void run(void)
 	char *buf = SAFE_MALLOC(MAX((size_t)BUFSIZ, pgsz));
 	struct io_stats start;
 
+	memset(&start, 0, sizeof(struct io_stats));
 	SAFE_CG_READ(tst_cg, "io.stat", buf, BUFSIZ - 1);
 	line = strtok_r(buf, "\n", &buf_ptr);
 	while (line) {
