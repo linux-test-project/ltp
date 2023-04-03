@@ -100,7 +100,7 @@ static void matrix_mult(struct matrices *matrices)
 
 	matrix_init(matrices->A, matrices->B);
 	for (i = 0; i < MATRIX_SIZE; i++) {
-		int i_m = MATRIX_SIZE - i;
+		int i_m = MATRIX_SIZE - i - 1;
 		for (j = 0; j < MATRIX_SIZE; j++) {
 			double sum = matrices->A[i_m][j] *  matrices->B[j][i];
 			for (k = 0; k < MATRIX_SIZE; k++)
