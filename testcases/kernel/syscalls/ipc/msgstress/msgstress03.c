@@ -110,11 +110,12 @@ int main(int argc, char **argv)
 	}
 
 	free_pids = tst_get_free_pids(cleanup);
-	if (nprocs >= free_pids) {
+	/* Each forked child forks once, take it into account here. */
+	if (nprocs * 2 >= free_pids) {
 		tst_resm(TINFO,
 			 "Requested number of processes higher than limit (%d > %d), "
-			 "setting to %d", nprocs, free_pids, free_pids);
-		nprocs = free_pids;
+			 "setting to %d", nprocs * 2, free_pids, free_pids);
+		nprocs = free_pids / 2;
 	}
 
 	srand(getpid());
