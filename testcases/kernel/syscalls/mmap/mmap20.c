@@ -20,7 +20,7 @@
 
 #define TEST_FILE "file_to_mmap"
 #define TEST_FILE_SIZE 1024
-#define INVALID_FLAG (1 << 7)
+#define INVALID_FLAG (1 << 10)
 
 static int fd = -1;
 static void *addr;
