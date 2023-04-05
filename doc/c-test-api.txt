@@ -353,8 +353,8 @@ if (!TST_PASS)
 	return;
 -------------------------------------------------------------------------------
 
-If the return value of 'wait' is positive. This macro will print a pass result
-and set +TST_PASS+ appropriately. If the return value is zero or negative, then
+If the return value of 'wait' is positive or zero, this macro will print a pass
+result and set +TST_PASS+ appropriately. If the return value is negative, then
 it will print fail.  There are many similar macros to those shown here, please
 see 'tst_test_macros.h'.
 
