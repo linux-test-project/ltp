@@ -271,8 +271,6 @@ fcntl04 fcntl04
 fcntl04_64 fcntl04_64
 fcntl05 fcntl05
 fcntl05_64 fcntl05_64
-fcntl06 fcntl06
-fcntl06_64 fcntl06_64
 fcntl07 fcntl07
 fcntl07_64 fcntl07_64
 fcntl08 fcntl08
