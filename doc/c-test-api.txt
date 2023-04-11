@@ -447,16 +447,16 @@ Instead of writing:
 
 [source,c]
 -------------------------------------------------------------------------------
-	fd = open("/dev/null", O_RDONLY);
-	if (fd < 0)
-		tst_brk(TBROK | TERRNO, "opening /dev/null failed");
+fd = open("/dev/null", O_RDONLY);
+if (fd < 0)
+	tst_brk(TBROK | TERRNO, "opening /dev/null failed");
 -------------------------------------------------------------------------------
 
 You write just:
 
 [source,c]
 -------------------------------------------------------------------------------
-	fd = SAFE_OPEN("/dev/null", O_RDONLY);
+fd = SAFE_OPEN("/dev/null", O_RDONLY);
 -------------------------------------------------------------------------------
 
 IMPORTANT: The SAFE_CLOSE() function also sets the passed file descriptor to -1
@@ -467,7 +467,7 @@ example, do:
 
 [source,c]
 -------------------------------------------------------------------------------
-	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%lu", &pid_max);
+SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%lu", &pid_max);
 -------------------------------------------------------------------------------
 
 See 'include/tst_safe_macros.h', 'include/tst_safe_stdio.h' and
