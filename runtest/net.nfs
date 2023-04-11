@@ -72,6 +72,17 @@ nfs4_ipv6_07 nfs07.sh -6 -v 4 -t tcp
 nfs41_ipv6_07 nfs07.sh -6 -v 4.1 -t tcp
 nfs42_ipv6_07 nfs07.sh -6 -v 4.2 -t tcp
 
+nfs3_08 nfs08.sh -v 3 -t udp
+nfs3t_08 nfs08.sh -v 3 -t tcp
+nfs4_08 nfs08.sh -v 4 -t tcp
+nfs41_08 nfs08.sh -v 4.1 -t tcp
+nfs42_08 nfs08.sh -v 4.2 -t tcp
+nfs3_ipv6_08 nfs08.sh -6 -v 3 -t udp
+nfs3t_ipv6_08 nfs08.sh -6 -v 3 -t tcp
+nfs4_ipv6_08 nfs08.sh -6 -v 4 -t tcp
+nfs41_ipv6_08 nfs08.sh -6 -v 4.1 -t tcp
+nfs42_ipv6_08 nfs08.sh -6 -v 4.2 -t tcp
+
 nfslock3_01 nfslock01.sh -v 3 -t udp
 nfslock3t_01 nfslock01.sh -v 3 -t tcp
 nfslock4_01 nfslock01.sh -v 4 -t tcp
