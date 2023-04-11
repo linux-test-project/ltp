@@ -9,7 +9,7 @@
 /*\
  * [Description]
  *
- * Tests setpgid() erorrs:
+ * Tests setpgid(2) errors:
  *
  * - EPERM The calling process, process specified by pid and the target
  *         process group must be in the same session.
