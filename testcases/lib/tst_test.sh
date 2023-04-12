@@ -722,6 +722,8 @@ tst_run()
 		fi
 
 		TST_TMPDIR=$(mktemp -d "$TMPDIR/LTP_$TST_ID.XXXXXXXXXX")
+		# remove possible trailing slash or double slashes from TMPDIR
+		TST_TMPDIR=$(echo "$TST_TMPDIR" | sed 's~/\+~/~g')
 
 		chmod 777 "$TST_TMPDIR"
 
