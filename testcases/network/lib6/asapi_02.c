@@ -246,8 +246,6 @@ static void icmp6_ft(void)
 			if (ic6_send1(ftab[i].ft_tname, ftab[i].ft_sndtype))
 				continue;
 			rv = ic6_recv1(ftab[i].ft_tname, sall, sf);
-		} else {
-			rv = -1;
 		}
 
 		if (rv < 0)
