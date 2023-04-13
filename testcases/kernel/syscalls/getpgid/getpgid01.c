@@ -1,145 +1,49 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2001
+ *   07/2001 Ported by Wayne Boyer
+ * Copyright (c) 2023 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-/*
- * NAME
- * 	getpgid01.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	Testcase to check the basic functionality of getpgid().
- *
- * ALGORITHM
- * 	block1: Does getpgid(0), and checks for error.
- * 	block2: Does getpgid(getpid()) and checks for error.
- * 	block3: Does getpgid(getppid()) and checks for error.
- * 	block4: Verifies that getpgid(getpgid(0)) == getpgid(0).
- * 	block5: Does getpgid(1) and checks for error.
- *
- * USAGE
- * 	getpgid01
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	Expects that there are no EPERM limitations on getting the
- *	process group ID from proc 1 (init).
+ * Verify the basic functionality of getpgid(2) syscall.
  */
-#define _GNU_SOURCE 1
 
-#include <errno.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include "test.h"
+#include "tst_test.h"
 
-void setup(void);
-void cleanup(void);
-
-char *TCID = "getpgid01";
-int TST_TOTAL = 1;
-
-int main(int ac, char **av)
+static void run(void)
 {
-	int lc;
+	pid_t pid_1, child_pid, pgid;
 
-	register int pgid_0, pgid_1;
-	register int my_pid, my_ppid;
-	int ex_stat;
+	pgid = getpgid(0);
+	tst_res(TINFO, "getpgid(0) in parent = %d", pgid);
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	pid_1 = SAFE_FORK();
+	if (!pid_1) {
+		child_pid = getpid();
 
-	setup();
+		tst_res(TINFO, "getpid() in child = %d", child_pid);
+		tst_res(TINFO, "Running getpgid() in child");
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+		TST_EXP_PID(getpgid(0));
+		TST_EXP_EQ_LI(TST_RET, pgid);
 
-		if ((pgid_0 = FORK_OR_VFORK()) == -1)
-			tst_brkm(TBROK, cleanup, "fork failed");
-		if (pgid_0 > 0) {
-			while ((pgid_0 = wait(&ex_stat)) != -1) ;
+		TST_EXP_PID(getpgid(child_pid), "getpgid(%d)", child_pid);
+		TST_EXP_EQ_LI(TST_RET, pgid);
 
-			if (WEXITSTATUS(ex_stat) == 0)
-				tst_resm(TPASS, "%s PASSED", TCID);
-			else
-				tst_resm(TFAIL, "%s FAILED", TCID);
+		TST_EXP_PID(getpgid(pgid), "getpgid(%d)", pgid);
+		TST_EXP_EQ_LI(TST_RET, pgid);
 
-			exit(0);
-		}
-
-		if ((pgid_0 = getpgid(0)) == -1)
-			tst_resm(TFAIL | TERRNO, "getpgid(0) failed");
-		else
-			tst_resm(TPASS, "getpgid(0) PASSED");
-
-//block2:
-		my_pid = getpid();
-		if ((pgid_1 = getpgid(my_pid)) == -1)
-			tst_resm(TFAIL | TERRNO, "getpgid(%d) failed", my_pid);
-
-		if (pgid_0 != pgid_1) {
-			tst_resm(TFAIL, "getpgid(my_pid=%d) != getpgid(0) "
-				 "[%d != %d]", my_pid, pgid_1, pgid_0);
-		} else
-			tst_resm(TPASS, "getpgid(getpid()) PASSED");
-
-//block3:
-		my_ppid = getppid();
-		if ((pgid_1 = getpgid(my_ppid)) == -1)
-			tst_resm(TFAIL | TERRNO, "getpgid(%d) failed", my_ppid);
-
-		if (pgid_0 != pgid_1) {
-			tst_resm(TFAIL, "getpgid(%d) != getpgid(0) [%d != %d]",
-				 my_ppid, pgid_1, pgid_0);
-		} else
-			tst_resm(TPASS, "getpgid(getppid()) PASSED");
-
-//block4:
-		if ((pgid_1 = getpgid(pgid_0)) < 0)
-			tst_resm(TFAIL | TERRNO, "getpgid(%d) failed", pgid_0);
-
-		if (pgid_0 != pgid_1) {
-			tst_resm(TFAIL, "getpgid(%d) != getpgid(0) [%d != %d]",
-				 pgid_0, pgid_1, pgid_0);
-		} else
-			tst_resm(TPASS, "getpgid(%d) PASSED", pgid_0);
-
-//block5:
-		if (getpgid(1) < 0)
-			tst_resm(TFAIL | TERRNO, "getpgid(1) failed");
-		else
-			tst_resm(TPASS, "getpgid(1) PASSED");
+		TST_EXP_PID(getpgid(1));
+		TST_EXP_EQ_LI(TST_RET, 1);
 	}
-	cleanup();
-	tst_exit();
 
+	tst_reap_children();
 }
 
-void setup(void)
-{
-
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = run,
+	.forks_child = 1
+};
