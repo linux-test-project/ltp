@@ -11,7 +11,8 @@
 TST_TESTFUNC="do_test"
 TST_CLEANUP="do_cleanup"
 
-THREAD_NUM=${THREAD_NUM:-"2"}
+THREAD_NUM="${THREAD_NUM:-2}"
+OPERATION_NUM="${OPERATION_NUM:-1000}"
 
 do_cleanup()
 {
@@ -26,7 +27,7 @@ do_test()
 	local n=0
 	local pids
 	for i in $VERSION; do
-		fsstress -l 1 -d $TST_TMPDIR/$i/$n -n 1000 -p $THREAD_NUM -r -c > /dev/null &
+		fsstress -l 1 -d $TST_TMPDIR/$i/$n -n $OPERATION_NUM -p $THREAD_NUM -r -c > /dev/null &
 		pids="$pids $!"
 		n=$(( n + 1 ))
 	done
