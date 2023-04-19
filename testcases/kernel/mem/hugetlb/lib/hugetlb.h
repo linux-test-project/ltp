@@ -39,6 +39,12 @@
 # endif
 #endif
 
+/* Check if hugetlb page is gigantic */
+static inline int is_hugetlb_gigantic(unsigned long hpage_size)
+{
+	return (hpage_size / getpagesize()) >> 11;
+}
+
 /*
  * to get the lower nine permission bits
  * from shmid_ds.ipc_perm.mode
