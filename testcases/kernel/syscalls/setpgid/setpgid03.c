@@ -11,6 +11,8 @@
  *
  * Tests setpgid(2) errors:
  *
+ * - EPERM The process specified by pid must not be a session leader.
+ *
  * - EPERM The calling process, process specified by pid and the target
  *         process group must be in the same session.
  *
@@ -43,6 +45,8 @@ static void run(void)
 	TST_CHECKPOINT_WAIT(0);
 
 	TST_EXP_FAIL(setpgid(child_pid, getppid()), EPERM);
+	/* Child did setsid(), so its PGID is set to its PID. */
+	TST_EXP_FAIL(setpgid(0, child_pid), EPERM);
 
 	TST_CHECKPOINT_WAKE(0);
 
