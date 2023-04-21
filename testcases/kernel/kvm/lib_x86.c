@@ -5,7 +5,9 @@
  * x86-specific KVM helper functions
  */
 
-#include "kvm_x86.h"
+#include "kvm_x86_svm.h"
+
+void kvm_svm_guest_entry(void);
 
 struct kvm_interrupt_frame {
 	uintptr_t eip, cs, eflags, esp, ss;
@@ -239,4 +241,155 @@ void kvm_wrmsr(unsigned int msr, uint64_t value)
 uintptr_t kvm_get_interrupt_ip(const struct kvm_interrupt_frame *ifrm)
 {
 	return ifrm->eip;
+}
+
+int kvm_is_svm_supported(void)
+{
+	struct kvm_cpuid buf;
+
+	kvm_get_cpuid(CPUID_GET_INPUT_RANGE, 0, &buf);
+
+	if (buf.eax < CPUID_GET_EXT_FEATURES)
+		return 0;
+
+	kvm_get_cpuid(CPUID_GET_EXT_FEATURES, 0, &buf);
+	return buf.ecx & 0x4;
+}
+
+int kvm_get_svm_state(void)
+{
+	return kvm_rdmsr(MSR_EFER) & EFER_SVME;
+}
+
+void kvm_set_svm_state(int enabled)
+{
+	uint64_t value;
+
+	if (!kvm_is_svm_supported())
+		tst_brk(TCONF, "CPU does not support SVM");
+
+	if (kvm_rdmsr(MSR_VM_CR) & VM_CR_SVMDIS)
+		tst_brk(TCONF, "SVM is supported but disabled");
+
+	value = kvm_rdmsr(MSR_EFER);
+
+	if (enabled)
+		value |= EFER_SVME;
+	else
+		value &= ~EFER_SVME;
+
+	kvm_wrmsr(MSR_EFER, value);
+}
+
+struct kvm_vmcb *kvm_alloc_vmcb(void)
+{
+	struct kvm_vmcb *ret;
+
+	ret = tst_heap_alloc_aligned(sizeof(struct kvm_vmcb), PAGESIZE);
+	memset(ret, 0, sizeof(struct kvm_vmcb));
+	return ret;
+}
+
+void kvm_init_svm(void)
+{
+	kvm_set_svm_state(1);
+	kvm_wrmsr(MSR_VM_HSAVE_PA, (uintptr_t)kvm_alloc_vmcb());
+}
+
+void kvm_vmcb_copy_gdt_descriptor(struct kvm_vmcb_descriptor *dst,
+	unsigned int gdt_id)
+{
+	uint64_t baseaddr;
+	uint32_t limit;
+	unsigned int flags;
+
+	if (gdt_id >= KVM_GDT_SIZE)
+		tst_brk(TBROK, "GDT descriptor ID out of range");
+
+	kvm_parse_segment_descriptor(kvm_gdt + gdt_id, &baseaddr, &limit,
+		&flags);
+
+	if (!(flags & SEGFLAG_PRESENT)) {
+		memset(dst, 0, sizeof(struct kvm_vmcb_descriptor));
+		return;
+	}
+
+	if (flags & SEGFLAG_PAGE_LIMIT)
+		limit = (limit << 12) | 0xfff;
+
+	dst->selector = gdt_id << 3;
+	dst->attrib = flags;
+	dst->limit = limit;
+	dst->base = baseaddr;
+}
+
+void kvm_vmcb_set_intercept(struct kvm_vmcb *vmcb, unsigned int id,
+	unsigned int state)
+{
+	unsigned int addr = id / 8, bit = 1 << (id % 8);
+
+	if (id >= SVM_INTERCEPT_MAX)
+		tst_brk(TBROK, "Invalid SVM intercept ID");
+
+	if (state)
+		vmcb->intercepts[addr] |= bit;
+	else
+		vmcb->intercepts[addr] &= ~bit;
+}
+
+void kvm_init_guest_vmcb(struct kvm_vmcb *vmcb, uint32_t asid, uint16_t ss,
+	void *rsp, int (*guest_main)(void))
+{
+	struct kvm_cregs cregs;
+	struct kvm_sregs sregs;
+
+	kvm_read_cregs(&cregs);
+	kvm_read_sregs(&sregs);
+
+	kvm_vmcb_set_intercept(vmcb, SVM_INTERCEPT_VMRUN, 1);
+	kvm_vmcb_set_intercept(vmcb, SVM_INTERCEPT_HLT, 1);
+
+	kvm_vmcb_copy_gdt_descriptor(&vmcb->es, sregs.es >> 3);
+	kvm_vmcb_copy_gdt_descriptor(&vmcb->cs, sregs.cs >> 3);
+	kvm_vmcb_copy_gdt_descriptor(&vmcb->ss, ss);
+	kvm_vmcb_copy_gdt_descriptor(&vmcb->ds, sregs.ds >> 3);
+	kvm_vmcb_copy_gdt_descriptor(&vmcb->fs, sregs.fs >> 3);
+	kvm_vmcb_copy_gdt_descriptor(&vmcb->gs, sregs.gs >> 3);
+	vmcb->gdtr.base = (uintptr_t)kvm_gdt;
+	vmcb->gdtr.limit = (KVM_GDT_SIZE*sizeof(struct segment_descriptor)) - 1;
+	vmcb->idtr.base = (uintptr_t)kvm_idt;
+	vmcb->idtr.limit = (X86_INTR_COUNT*sizeof(struct intr_descriptor)) - 1;
+
+	vmcb->guest_asid = asid;
+	vmcb->efer = kvm_rdmsr(MSR_EFER);
+	vmcb->cr0 = cregs.cr0;
+	vmcb->cr3 = cregs.cr3;
+	vmcb->cr4 = cregs.cr4;
+	vmcb->rip = (uintptr_t)kvm_svm_guest_entry;
+	vmcb->rax = (uintptr_t)guest_main;
+	vmcb->rsp = (uintptr_t)rsp;
+	vmcb->rflags = 0x200;	/* Interrupts enabled */
+}
+
+struct kvm_svm_vcpu *kvm_create_svm_vcpu(int (*guest_main)(void),
+	int alloc_stack)
+{
+	uint16_t ss = 0;
+	char *stack = NULL;
+	struct kvm_vmcb *vmcb;
+	struct kvm_svm_vcpu *ret;
+
+	vmcb = kvm_alloc_vmcb();
+
+	if (alloc_stack) {
+		stack = tst_heap_alloc_aligned(2 * PAGESIZE, PAGESIZE);
+		ss = kvm_create_stack_descriptor(kvm_gdt, KVM_GDT_SIZE, stack);
+		stack += 2 * PAGESIZE;
+	}
+
+	kvm_init_guest_vmcb(vmcb, 1, ss, stack, guest_main);
+	ret = tst_heap_alloc(sizeof(struct kvm_svm_vcpu));
+	memset(ret, 0, sizeof(struct kvm_svm_vcpu));
+	ret->vmcb = vmcb;
+	return ret;
 }

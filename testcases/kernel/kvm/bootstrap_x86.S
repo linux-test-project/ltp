@@ -9,6 +9,8 @@
 .set RESULT_ADDRESS, 0xfffff000
 .set KVM_GDT_SIZE, 32
 
+.set MSR_VM_HSAVE_PA, 0xc0010117
+
 /*
  * This section will be allocated at address 0x1000 and
  * jumped to from the reset stub provided by kvm_run.
@@ -349,6 +351,83 @@ kvm_exit:
 .global kvm_yield
 kvm_yield:
 	hlt
+	ret
+
+.global kvm_svm_guest_entry
+kvm_svm_guest_entry:
+	call *%eax
+1:	hlt
+	jmp 1b
+
+.global kvm_svm_vmrun
+kvm_svm_vmrun:
+	push %edi
+	mov 8(%esp), %edi
+	push %ebx
+	push %esi
+	push %ebp
+
+	clgi
+
+	/* Save full host state */
+	movl $MSR_VM_HSAVE_PA, %ecx
+	rdmsr
+	vmsave
+	push %eax
+
+	/* Load guest registers */
+	push %edi
+	movl (%edi), %eax
+	/* %eax is loaded by vmrun from VMCB */
+	movl 0x0c(%edi), %ebx
+	movl 0x14(%edi), %ecx
+	movl 0x1c(%edi), %edx
+	movl 0x2c(%edi), %esi
+	movl 0x34(%edi), %ebp
+	/* %esp is loaded by vmrun from VMCB */
+	movl 0x24(%edi), %edi
+
+	vmload
+	vmrun
+	vmsave
+
+	/* Clear guest register buffer */
+	push %edi
+	push %ecx
+	movl 8(%esp), %edi
+	addl $4, %edi
+	xorl %eax, %eax
+	mov $32, %ecx
+	pushfl
+	cld
+	rep stosl
+	popfl
+
+	/* Save guest registers */
+	pop %ecx
+	pop %eax
+	pop %edi
+	movl %ebx, 0x0c(%edi)
+	movl %ecx, 0x14(%edi)
+	movl %edx, 0x1c(%edi)
+	movl %eax, 0x24(%edi)
+	movl %esi, 0x2c(%edi)
+	movl %ebp, 0x34(%edi)
+	/* Copy %eax and %esp from VMCB */
+	movl (%edi), %esi
+	movl 0x5f8(%esi), %eax
+	movl %eax, 0x04(%edi)
+	movl 0x5d8(%esi), %eax
+	movl %eax, 0x3c(%edi)
+
+	pop %eax
+	vmload
+	stgi
+
+	pop %ebp
+	pop %esi
+	pop %ebx
+	pop %edi
 	ret
 
 

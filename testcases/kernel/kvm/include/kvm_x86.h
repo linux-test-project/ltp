@@ -64,16 +64,25 @@
 /* CPUID constants */
 #define CPUID_GET_INPUT_RANGE 0x80000000
 #define CPUID_GET_EXT_FEATURES 0x80000001
+#define CPUID_GET_SVM_FEATURES 0x8000000a
 
 
 /* Model-specific CPU register constants */
 #define MSR_EFER 0xc0000080
+#define MSR_VM_CR 0xc0010114
+#define MSR_VM_HSAVE_PA 0xc0010117
 
 #define EFER_SCE (1 << 0)	/* SYSCALL/SYSRET instructions enabled */
 #define EFER_LME (1 << 8)	/* CPU is running in 64bit mode */
 #define EFER_LMA (1 << 10)	/* CPU uses 64bit memory paging (read-only) */
 #define EFER_NXE (1 << 11)	/* Execute disable bit active */
+#define EFER_SVME (1 << 12)	/* AMD SVM instructions enabled */
 
+#define VM_CR_DPD (1 << 0)
+#define VM_CR_R_INIT (1 << 1)
+#define VM_CR_DIS_A20M (1 << 2)
+#define VM_CR_LOCK (1 << 3)
+#define VM_CR_SVMDIS (1 << 4)
 
 /* Control register constants */
 #define CR4_VME (1 << 0)
@@ -160,6 +169,11 @@ struct kvm_cregs {
 
 struct kvm_sregs {
 	uint16_t cs, ds, es, fs, gs, ss;
+};
+
+struct kvm_regs64 {
+	uint64_t rax, rbx, rcx, rdx, rdi, rsi, rbp, rsp;
+	uint64_t r8, r9, r10, r11, r12, r13, r14, r15;
 };
 
 extern struct page_table_entry_pae kvm_pagetable[];

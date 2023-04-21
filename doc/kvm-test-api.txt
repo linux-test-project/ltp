@@ -390,6 +390,79 @@ Developer's Manual, Volume 3, Chapter 4 for explanation of the fields.
 See Intel(R) 64 and IA-32 Architectures Software Developer's Manual
 for documentation of standard and model-specific x86 registers.
 
+3.5 AMD SVM helper functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`#include "kvm_test.h"` +
+`#include "kvm_x86.h"` +
+`#include "kvm_x86_svm.h"`
+
+The KVM guest library provides basic helper functions for creating and running
+nested virtual machines using the AMD SVM technology.
+
+.Example code to execute nested VM
+[source,c]
+-------------------------------------------------------------------------------
+int guest_main(void)
+{
+	...
+	return 0;
+}
+
+void main(void)
+{
+	struct kvm_svm_vcpu *vm;
+
+	kvm_init_svm();
+	vm = kvm_create_svm_vcpu(guest_main, 1);
+	kvm_svm_vmrun(vm);
+}
+-------------------------------------------------------------------------------
+
+- `int kvm_is_svm_supported(void)` - Returns non-zero value if the CPU
+  supports AMD SVM, otherwise returns 0.
+
+- `int kvm_get_svm_state(void)` - Returns non-zero value if SVM is currently
+  enabled, otherwise returns 0.
+
+- `void kvm_set_svm_state(int enabled)` - Enable or disable SVM according
+  to argument. If SVM is disabled by host or not supported, the test will exit
+  with `TCONF`.
+
+- `void kvm_init_svm(void)` - Enable and fully initialize SVM, including
+  allocating and setting up host save area VMCB. If SVM is disabled by host or
+  not supported, the test will exit with `TCONF`.
+
+- `struct kvm_vmcb *kvm_alloc_vmcb(void)` - Allocate new VMCB structure
+  with correct memory alignment and fill it with zeroes.
+
+- `void kvm_vmcb_set_intercept(struct kvm_vmcb *vmcb, unsigned int id, unsigned int state)` -
+  Set SVM intercept bit `id` to given `state`.
+
+- `void kvm_init_guest_vmcb(struct kvm_vmcb *vmcb, uint32_t asid, uint16_t ss, void *rsp, int (*guest_main)(void))` -
+  Initialize new SVM virtual machine. The `asid` parameter is the nested
+  page table ID. The `ss` and `rsp` parameters set the stack segment and stack
+  pointer values, respectively. The `guest_main` parameter sets the code entry
+  point of the virtual machine. All control registers, segment registers
+  (except stack segment register), GDTR and IDTR will be copied
+  from the current CPU state.
+
+- `struct kvm_svm_vcpu *kvm_create_svm_vcpu(int (*guest_main)(void), int alloc_stack)` -
+  Convenience function for allocating and initializing new SVM virtual CPU.
+  The `guest_main` parameter is passed to `kvm_init_guest_vmcb()`,
+  the `alloc_stack` parameter controls whether a new 8KB stack will be
+  allocated and registered in GDT. Interception will be enabled for `VMSAVE`
+  and `HLT` instructions. If you set `alloc_stack` to zero, you must configure
+  the stack segment register and stack pointer manually.
+
+- `void kvm_svm_vmrun(struct kvm_svm_vcpu *cpu)` - Start or continue execution
+  of a nested virtual machine. Beware that FPU state is not saved.  Do not use
+  floating point types or values in nested guest code. Also do not use
+  `tst_res()` or `tst_brk()` functions in nested guest code.
+
+See AMD64 Architecture Programmer's Manual Volume 2 for documentation
+of the Secure Virtual Machine (SVM) technology.
+
 4. KVM guest environment
 ------------------------
 

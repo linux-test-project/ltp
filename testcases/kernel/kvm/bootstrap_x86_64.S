@@ -10,6 +10,8 @@
 .set RESULT_ADDRESS, 0xfffff000
 .set KVM_GDT_SIZE, 32
 
+.set MSR_VM_HSAVE_PA, 0xc0010117
+
 /*
  * This section will be allocated at address 0x1000 and
  * jumped to from the reset stub provided by kvm_run.
@@ -474,6 +476,93 @@ kvm_yield:
 	hlt
 	ret
 
+.global kvm_svm_guest_entry
+kvm_svm_guest_entry:
+	call *%rax
+1:	hlt
+	jmp 1b
+
+.global kvm_svm_vmrun
+kvm_svm_vmrun:
+	pushq %rbx
+	pushq %rbp
+	pushq %r12
+	pushq %r13
+	pushq %r14
+	pushq %r15
+
+	clgi
+
+	/* Save full host state */
+	movq $MSR_VM_HSAVE_PA, %rcx
+	rdmsr
+	shlq $32, %rdx
+	orq %rdx, %rax
+	vmsave
+	pushq %rax
+
+	/* Load guest registers */
+	pushq %rdi
+	movq (%rdi), %rax
+	/* %rax is loaded by vmrun from VMCB */
+	movq 0x10(%rdi), %rbx
+	movq 0x18(%rdi), %rcx
+	movq 0x20(%rdi), %rdx
+	movq 0x30(%rdi), %rsi
+	movq 0x38(%rdi), %rbp
+	/* %rsp is loaded by vmrun from VMCB */
+	movq 0x48(%rdi), %r8
+	movq 0x50(%rdi), %r9
+	movq 0x58(%rdi), %r10
+	movq 0x60(%rdi), %r11
+	movq 0x68(%rdi), %r12
+	movq 0x70(%rdi), %r13
+	movq 0x78(%rdi), %r14
+	movq 0x80(%rdi), %r15
+	movq 0x28(%rdi), %rdi
+
+	vmload
+	vmrun
+	vmsave
+
+	/* Save guest registers */
+	movq %rdi, %rax
+	popq %rdi
+	movq %rbx, 0x10(%rdi)
+	movq %rcx, 0x18(%rdi)
+	movq %rdx, 0x20(%rdi)
+	/* %rax contains guest %rdi */
+	movq %rax, 0x28(%rdi)
+	movq %rsi, 0x30(%rdi)
+	movq %rbp, 0x38(%rdi)
+	movq %r8,  0x48(%rdi)
+	movq %r9,  0x50(%rdi)
+	movq %r10, 0x58(%rdi)
+	movq %r11, 0x60(%rdi)
+	movq %r12, 0x68(%rdi)
+	movq %r13, 0x70(%rdi)
+	movq %r14, 0x78(%rdi)
+	movq %r15, 0x80(%rdi)
+	/* copy guest %rax and %rsp from VMCB*/
+	movq (%rdi), %rsi
+	movq 0x5f8(%rsi), %rax
+	movq %rax, 0x08(%rdi)
+	movq 0x5d8(%rsi), %rax
+	movq %rax, 0x40(%rdi)
+
+	/* Reload host state */
+	popq %rax
+	vmload
+
+	stgi
+
+	popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
+	popq %rbp
+	popq %rbx
+	retq
 
 .section .bss.pgtables, "aw", @nobits
 .global kvm_pagetable
