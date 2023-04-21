@@ -82,7 +82,7 @@ char *ptr2hex(char *dest, uintptr_t val)
 	uintptr_t tmp;
 	char *ret = dest;
 
-	for (i = 4; val >> i; i += 4)
+	for (i = 4, tmp = val >> 4; tmp; i += 4, tmp >>= 4)
 		;
 
 	do {
