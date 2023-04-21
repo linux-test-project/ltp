@@ -8,6 +8,7 @@
 .set KVM_TCONF, 32
 .set KVM_TEXIT, 0xff
 .set RESULT_ADDRESS, 0xfffff000
+.set KVM_GDT_SIZE, 32
 
 /*
  * This section will be allocated at address 0x1000 and
@@ -478,7 +479,7 @@ kvm_pgtable_l4:
 kvm_gdt:
 	.8byte 0
 	gdt32_entry type=0x1a l=1 limit=0 g=0 /* Code segment long mode */
-	.skip 16 /* TSS segment descriptor */
+	.skip (KVM_GDT_SIZE-2)*8 /* TSS and other segment descriptors */
 
 .Lgdt_end:
 .global kvm_gdt_desc

@@ -7,6 +7,7 @@
 
 .set KVM_TEXIT, 0xff
 .set RESULT_ADDRESS, 0xfffff000
+.set KVM_GDT_SIZE, 32
 
 /*
  * This section will be allocated at address 0x1000 and
@@ -44,7 +45,7 @@ kvm_gdt:
 	.8byte 0
 	gdt32_entry type=0x1a l=0 d=1 /* Code segment protected_mode, 32bits */
 	gdt32_entry type=0x12 /* Data segment, writable */
-	.skip 16 /* Stack and TSS segment descriptors */
+	.skip (KVM_GDT_SIZE-3)*8 /* Stack, TSS and other segment descriptors */
 
 .Lgdt_end:
 .global kvm_gdt_desc

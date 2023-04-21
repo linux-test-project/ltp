@@ -10,6 +10,9 @@
 
 #include "kvm_test.h"
 
+#define PAGESIZE 0x1000
+#define KVM_GDT_SIZE 32
+
 /* Interrupts */
 #define X86_INTR_COUNT 256
 
@@ -36,6 +39,26 @@
 #define INTR_HV_INJECTION 28
 #define INTR_VMM_COMM 29
 #define INTR_SECURITY_ERROR 30
+
+
+/* Segment descriptor flags */
+#define SEGTYPE_LDT 0x02
+#define SEGTYPE_TSS 0x09
+#define SEGTYPE_TSS_BUSY 0x0b
+#define SEGTYPE_CALL_GATE 0x0c
+#define SEGTYPE_INTR_GATE 0x0e
+#define SEGTYPE_TRAP_GATE 0x0f
+#define SEGTYPE_RODATA 0x10
+#define SEGTYPE_RWDATA 0x12
+#define SEGTYPE_STACK 0x16
+#define SEGTYPE_CODE 0x1a
+#define SEGTYPE_MASK 0x1f
+
+#define SEGFLAG_NSYSTEM 0x10
+#define SEGFLAG_PRESENT 0x80
+#define SEGFLAG_CODE64 0x200
+#define SEGFLAG_32BIT 0x400
+#define SEGFLAG_PAGE_LIMIT 0x800
 
 
 /* CPUID constants */
@@ -91,6 +114,25 @@ struct intr_descriptor {
 #endif /* defined(__x86_64__) */
 } __attribute__((__packed__));
 
+struct segment_descriptor {
+	unsigned int limit_lo : 16;
+	unsigned int baseaddr_lo : 24;
+	unsigned int flags_lo : 8;
+	unsigned int limit_hi : 4;
+	unsigned int flags_hi : 4;
+	unsigned int baseaddr_hi : 8;
+} __attribute__((__packed__));
+
+struct segment_descriptor64 {
+	unsigned int limit_lo : 16;
+	unsigned int baseaddr_lo : 24;
+	unsigned int flags_lo : 8;
+	unsigned int limit_hi : 4;
+	unsigned int flags_hi : 4;
+	uint64_t baseaddr_hi : 40;
+	uint32_t reserved;
+} __attribute__((__packed__));
+
 struct page_table_entry_pae {
 	unsigned int present: 1;
 	unsigned int writable: 1;
@@ -118,9 +160,20 @@ struct kvm_cregs {
 
 extern struct page_table_entry_pae kvm_pagetable[];
 extern struct intr_descriptor kvm_idt[X86_INTR_COUNT];
+extern struct segment_descriptor kvm_gdt[KVM_GDT_SIZE];
 
 /* Page table helper functions */
 uintptr_t kvm_get_page_address_pae(const struct page_table_entry_pae *entry);
+
+/* Segment descriptor table functions */
+void kvm_set_segment_descriptor(struct segment_descriptor *dst,
+	uint64_t baseaddr, uint32_t limit, unsigned int flags);
+void kvm_parse_segment_descriptor(struct segment_descriptor *src,
+	uint64_t *baseaddr, uint32_t *limit, unsigned int *flags);
+int kvm_find_free_descriptor(const struct segment_descriptor *table,
+	size_t size);
+unsigned int kvm_create_stack_descriptor(struct segment_descriptor *table,
+	size_t tabsize, void *stack_base);
 
 /* Functions for querying CPU info and status */
 void kvm_get_cpuid(unsigned int eax, unsigned int ecx, struct kvm_cpuid *buf);

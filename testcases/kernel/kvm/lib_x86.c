@@ -110,6 +110,98 @@ uintptr_t kvm_get_page_address_pae(const struct page_table_entry_pae *entry)
 	return entry->address << 12;
 }
 
+#ifdef __x86_64__
+static void kvm_set_segment_descriptor64(struct segment_descriptor64 *dst,
+	uint64_t baseaddr, uint32_t limit, unsigned int flags)
+{
+
+	dst->baseaddr_lo = baseaddr & 0xffffff;
+	dst->baseaddr_hi = baseaddr >> 24;
+	dst->limit_lo = limit & 0xffff;
+	dst->limit_hi = limit >> 16;
+	dst->flags_lo = flags & 0xff;
+	dst->flags_hi = (flags >> 8) & 0xf;
+	dst->reserved = 0;
+}
+#endif
+
+void kvm_set_segment_descriptor(struct segment_descriptor *dst,
+	uint64_t baseaddr, uint32_t limit, unsigned int flags)
+{
+	if (limit >> 20)
+		tst_brk(TBROK, "Segment limit out of range");
+
+#ifdef __x86_64__
+	/* System descriptors have double size in 64bit mode */
+	if (!(flags & SEGFLAG_NSYSTEM)) {
+		kvm_set_segment_descriptor64((struct segment_descriptor64 *)dst,
+			baseaddr, limit, flags);
+		return;
+	}
+#endif
+
+	if (baseaddr >> 32)
+		tst_brk(TBROK, "Segment base address out of range");
+
+	dst->baseaddr_lo = baseaddr & 0xffffff;
+	dst->baseaddr_hi = baseaddr >> 24;
+	dst->limit_lo = limit & 0xffff;
+	dst->limit_hi = limit >> 16;
+	dst->flags_lo = flags & 0xff;
+	dst->flags_hi = (flags >> 8) & 0xf;
+}
+
+void kvm_parse_segment_descriptor(struct segment_descriptor *src,
+	uint64_t *baseaddr, uint32_t *limit, unsigned int *flags)
+{
+	if (baseaddr) {
+		*baseaddr = (((uint64_t)src->baseaddr_hi) << 24) |
+			src->baseaddr_lo;
+	}
+
+	if (limit)
+		*limit = (((uint32_t)src->limit_hi) << 16) | src->limit_lo;
+
+	if (flags)
+		*flags = (((uint32_t)src->flags_hi) << 8) | src->flags_lo;
+}
+
+int kvm_find_free_descriptor(const struct segment_descriptor *table,
+	size_t size)
+{
+	const struct segment_descriptor *ptr;
+	size_t i;
+
+	for (i = 0, ptr = table; i < size; i++, ptr++) {
+		if (!(ptr->flags_lo & SEGFLAG_PRESENT))
+			return i;
+
+#ifdef __x86_64__
+		/* System descriptors have double size in 64bit mode */
+		if (!(ptr->flags_lo & SEGFLAG_NSYSTEM)) {
+			ptr++;
+			i++;
+		}
+#endif
+	}
+
+	return -1;
+}
+
+unsigned int kvm_create_stack_descriptor(struct segment_descriptor *table,
+	size_t tabsize, void *stack_base)
+{
+	int ret = kvm_find_free_descriptor(table, tabsize);
+
+	if (ret < 0)
+		tst_brk(TBROK, "Descriptor table is full");
+
+	kvm_set_segment_descriptor(table + ret, 0,
+		(((uintptr_t)stack_base) - 1) >> 12, SEGTYPE_STACK |
+		SEGFLAG_PRESENT | SEGFLAG_32BIT | SEGFLAG_PAGE_LIMIT);
+	return ret;
+}
+
 void kvm_get_cpuid(unsigned int eax, unsigned int ecx, struct kvm_cpuid *buf)
 {
 	asm (

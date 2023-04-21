@@ -343,6 +343,26 @@ Developer's Manual, Volume 3, Chapter 4 for explanation of the fields.
   the known position in page table hierarchy and `entry->page_type`. Returns
   zero if the `entry` does not reference any memory page.
 
+- `void kvm_set_segment_descriptor(struct segment_descriptor *dst, uint64_t baseaddr, uint32_t limit, unsigned int flags)` -
+  Fill the `dst` segment descriptor with given values. The maximum value
+  of `limit` is `0xfffff` (inclusive) regardless of `flags`.
+
+- `void kvm_parse_segment_descriptor(struct segment_descriptor *src, uint64_t *baseaddr, uint32_t *limit, unsigned int *flags)` -
+  Parse data in the `src` segment descriptor and copy them to variables
+  pointed to by the other arguments. Any parameter except the first one can
+  be `NULL`.
+
+- `int kvm_find_free_descriptor(const struct segment_descriptor *table, size_t size)` -
+  Find the first segment descriptor in `table` which does not have
+  the `SEGFLAG_PRESENT` bit set. The function handles double-size descriptors
+  correctly. Returns index of the first available descriptor or -1 if all
+  `size` descriptors are taken.
+
+- `unsigned int kvm_create_stack_descriptor(struct segment_descriptor *table, size_t tabsize, void *stack_base)` -
+  Convenience function for registering a stack segment descriptor. It'll
+  automatically find a free slot in `table` and fill the necessary flags.
+  The `stack_base` pointer must point to the bottom of the stack.
+
 - `void kvm_get_cpuid(unsigned int eax, unsigned int ecx,
   struct kvm_cpuid *buf)` – Executes the CPUID instruction with the given
   `eax` and `ecx` arguments and stores the results in `buf`.
