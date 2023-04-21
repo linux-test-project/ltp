@@ -303,6 +303,22 @@ kvm_read_cregs:
 	mov %rax, 24(%rdi)
 	retq
 
+.global kvm_read_sregs
+kvm_read_sregs:
+	mov %cs, %ax
+	movw %ax, (%rdi)
+	mov %ds, %ax
+	movw %ax, 2(%rdi)
+	mov %es, %ax
+	movw %ax, 4(%rdi)
+	mov %fs, %ax
+	movw %ax, 6(%rdi)
+	mov %gs, %ax
+	movw %ax, 8(%rdi)
+	mov %ss, %ax
+	movw %ax, 10(%rdi)
+	retq
+
 handle_interrupt:
 	/* push CPU state */
 	push %rbp

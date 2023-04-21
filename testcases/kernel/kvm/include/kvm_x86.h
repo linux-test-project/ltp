@@ -158,6 +158,10 @@ struct kvm_cregs {
 	unsigned long cr0, cr2, cr3, cr4;
 };
 
+struct kvm_sregs {
+	uint16_t cs, ds, es, fs, gs, ss;
+};
+
 extern struct page_table_entry_pae kvm_pagetable[];
 extern struct intr_descriptor kvm_idt[X86_INTR_COUNT];
 extern struct segment_descriptor kvm_gdt[KVM_GDT_SIZE];
@@ -178,6 +182,7 @@ unsigned int kvm_create_stack_descriptor(struct segment_descriptor *table,
 /* Functions for querying CPU info and status */
 void kvm_get_cpuid(unsigned int eax, unsigned int ecx, struct kvm_cpuid *buf);
 void kvm_read_cregs(struct kvm_cregs *buf);
+void kvm_read_sregs(struct kvm_sregs *buf);
 uint64_t kvm_rdmsr(unsigned int msr);
 void kvm_wrmsr(unsigned int msr, uint64_t value);
 

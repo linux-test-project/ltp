@@ -197,6 +197,25 @@ kvm_read_cregs:
 	pop %edi
 	ret
 
+.global kvm_read_sregs
+kvm_read_sregs:
+	push %edi
+	mov 8(%esp), %edi
+	mov %cs, %ax
+	movw %ax, (%edi)
+	mov %ds, %ax
+	movw %ax, 2(%edi)
+	mov %es, %ax
+	movw %ax, 4(%edi)
+	mov %fs, %ax
+	movw %ax, 6(%edi)
+	mov %gs, %ax
+	movw %ax, 8(%edi)
+	mov %ss, %ax
+	movw %ax, 10(%edi)
+	pop %edi
+	ret
+
 handle_interrupt:
 	/* save CPU state */
 	push %ebp

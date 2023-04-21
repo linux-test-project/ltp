@@ -329,6 +329,10 @@ struct kvm_cpuid {
 struct kvm_cregs {
 	unsigned long cr0, cr2, cr3, cr4;
 };
+
+struct kvm_sregs {
+	uint16_t cs, ds, es, fs, gs, ss;
+};
 -------------------------------------------------------------------------------
 
 `struct page_table_entry_pae` is the page table entry structure for PAE and
@@ -369,6 +373,9 @@ Developer's Manual, Volume 3, Chapter 4 for explanation of the fields.
 
 - `void kvm_read_cregs(struct kvm_cregs *buf)` – Copies the current values
   of control registers to `buf`.
+
+- `void kvm_read_sregs(struct kvm_sregs *buf)` - Copies the current values
+  of segment registers to `buf`.
 
 - `uint64_t kvm_rdmsr(unsigned int msr)` – Returns the current value
   of model-specific register `msr`.
