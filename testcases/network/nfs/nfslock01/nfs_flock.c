@@ -24,7 +24,8 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-	if ((fd = open(argv[2], O_RDWR)) < 0) {
+	fd = open(argv[2], O_RDWR);
+	if (fd < 0) {
 		perror("opening a file");
 		exit(1);
 	}
