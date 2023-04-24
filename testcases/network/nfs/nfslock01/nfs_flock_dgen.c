@@ -1,5 +1,14 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * This program generates data for testing file locking
+ * Copyright (c) Linux Test Project, 2001-2023
+ * Copyright (c) International Business Machines Corp., 2001
+ */
+
+/*\
+ * [Description]
+ *
+ * Tool to generate data for testing file locking.
+ * Used in nfslock01.sh.
  */
 
 #include <stdio.h>

@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Linux Test Project, 2001-2012
+ * Copyright (c) International Business Machines Corp., 2001
+ */
+
 #include <stdlib.h>
 #include <unistd.h>
 
