@@ -67,9 +67,8 @@ int main(int argn, char *argc[])
 	svcr = svcudp_create(RPC_ANYSOCK);
 
 	//call routine
-	rslt =
-	    registerrpc(progNum, VERSNUM, PROCNUM, simplePing, xdr_int,
-			xdr_int);
+	rslt = registerrpc(progNum, VERSNUM, PROCNUM, simplePing,
+			  (xdrproc_t) xdr_int, (xdrproc_t) xdr_int);
 
 	if (run_mode) {
 		printf("SVC : %p\n", svcr);
