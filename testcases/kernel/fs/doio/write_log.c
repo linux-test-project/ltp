@@ -87,7 +87,7 @@
 /*#define PATH_MAX pathconf("/", _PC_PATH_MAX)*/
 #endif
 
-char Wlog_Error_String[256];
+char Wlog_Error_String[2048];
 
 #if __STDC__
 static int wlog_rec_pack(struct wlog_rec *wrec, char *buf, int flag);
@@ -129,7 +129,7 @@ int wlog_open(struct wlog_file *wfile, int trunc, int mode)
 	umask(omask);
 
 	if (wfile->w_afd == -1) {
-		sprintf(Wlog_Error_String,
+		snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 			"Could not open write_log - open(%s, %#o, %#o) failed:  %s\n",
 			wfile->w_file, oflags, mode, strerror(errno));
 		return -1;
@@ -141,7 +141,7 @@ int wlog_open(struct wlog_file *wfile, int trunc, int mode)
 
 	oflags = O_RDWR;
 	if ((wfile->w_rfd = open(wfile->w_file, oflags)) == -1) {
-		sprintf(Wlog_Error_String,
+		snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 			"Could not open write log - open(%s, %#o) failed:  %s\n",
 			wfile->w_file, oflags, strerror(errno));
 		close(wfile->w_afd);
@@ -218,14 +218,14 @@ int wlog_record_write(struct wlog_file *wfile, struct wlog_rec *wrec,
 		reclen += 2;
 
 		if (write(wfile->w_afd, wbuf, reclen) == -1) {
-			sprintf(Wlog_Error_String,
+			snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 				"Could not write log - write(%s, %s, %d) failed:  %s\n",
 				wfile->w_file, wbuf, reclen, strerror(errno));
 			return -1;
 		} else {
 			offset = lseek(wfile->w_afd, 0, SEEK_CUR) - reclen;
 			if (offset == -1) {
-				sprintf(Wlog_Error_String,
+				snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 					"Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
 					wfile->w_file, strerror(errno));
 				return -1;
@@ -233,13 +233,13 @@ int wlog_record_write(struct wlog_file *wfile, struct wlog_rec *wrec,
 		}
 	} else {
 		if ((lseek(wfile->w_rfd, offset, SEEK_SET)) == -1) {
-			sprintf(Wlog_Error_String,
+			snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 				"Could not reposition file pointer - lseek(%s, %ld, SEEK_SET) failed:  %s\n",
 				wfile->w_file, offset, strerror(errno));
 			return -1;
 		} else {
 			if ((write(wfile->w_rfd, wbuf, reclen)) == -1) {
-				sprintf(Wlog_Error_String,
+				snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 					"Could not write log - write(%s, %s, %d) failed:  %s\n",
 					wfile->w_file, wbuf, reclen,
 					strerror(errno));
@@ -274,14 +274,14 @@ int wlog_scan_backward(struct wlog_file *wfile, int nrecs,
 	 */
 
 	if ((lseek(fd, 0, SEEK_END)) == -1) {
-		sprintf(Wlog_Error_String,
+		snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 			"Could not reposition file pointer - lseek(%s, 0, SEEK_END) failed:  %s\n",
 			wfile->w_file, strerror(errno));
 		return -1;
 	}
 	offset = lseek(fd, 0, SEEK_CUR);
 	if ((offset == -1)) {
-		sprintf(Wlog_Error_String,
+		snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 			"Could not reposition file pointer - lseek(%s, 0, SEEK_CUR) failed:  %s\n",
 			wfile->w_file, strerror(errno));
 		return -1;
@@ -309,7 +309,7 @@ int wlog_scan_backward(struct wlog_file *wfile, int nrecs,
 		 * Move to the proper file offset, and read into buf
 		 */
 		if ((lseek(fd, offset, SEEK_SET)) == -1) {
-			sprintf(Wlog_Error_String,
+			snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 				"Could not reposition file pointer - lseek(%s, %d, SEEK_SET) failed:  %s\n",
 				wfile->w_file, offset, strerror(errno));
 			return -1;
@@ -318,7 +318,7 @@ int wlog_scan_backward(struct wlog_file *wfile, int nrecs,
 		nbytes = read(fd, bufstart, bufend - bufstart - leftover);
 
 		if (nbytes == -1) {
-			sprintf(Wlog_Error_String,
+			snprintf(Wlog_Error_String, sizeof(Wlog_Error_String),
 				"Could not read history file at offset %d - read(%d, %p, %d) failed:  %s\n",
 				offset, fd, bufstart,
 				(int)(bufend - bufstart - leftover),
