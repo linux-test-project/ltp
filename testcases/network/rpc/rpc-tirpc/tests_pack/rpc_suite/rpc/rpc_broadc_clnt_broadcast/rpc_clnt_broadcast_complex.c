@@ -78,7 +78,8 @@ int main(int argn, char *argc[])
 	//Call broadcast routine
 	cs = clnt_broadcast(progNum, VERSNUM, PROCNUM,
 			    (xdrproc_t) xdr_int, (char *)&varSnd,
-			    (xdrproc_t) xdr_int, (char *)&varRec, eachResult);
+			    (xdrproc_t) xdr_int, (char *)&varRec,
+			    (resultproc_t) eachResult);
 
 	if (currentAnswer == maxAnswer)
 		test_status = 0;

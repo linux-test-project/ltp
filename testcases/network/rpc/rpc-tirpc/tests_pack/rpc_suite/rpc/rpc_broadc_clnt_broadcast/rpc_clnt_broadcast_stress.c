@@ -65,7 +65,7 @@ int main(int argn, char *argc[])
 		cs = clnt_broadcast(progNum, VERSNUM, PROCNUM,
 				    (xdrproc_t) xdr_int, (char *)&varSnd,
 				    (xdrproc_t) xdr_int, (char *)&varRec,
-				    eachResult);
+				    (resultproc_t) eachResult);
 		if (cs == RPC_SUCCESS)
 			nbOk++;
 	}

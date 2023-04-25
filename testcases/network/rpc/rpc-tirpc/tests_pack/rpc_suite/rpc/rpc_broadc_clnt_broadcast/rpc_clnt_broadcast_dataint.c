@@ -72,7 +72,8 @@ int main(int argn, char *argc[])
 
 	clnt_broadcast(progNum, VERSNUM, INTPROCNUM,
 		       (xdrproc_t) xdr_int, (char *)&intSnd,
-		       (xdrproc_t) xdr_int, (char *)&intRec, eachResult);
+		       (xdrproc_t) xdr_int, (char *)&intRec,
+		       (resultproc_t) eachResult);
 
 	if (intSnd != intRec)
 		test_status = 1;
@@ -84,7 +85,8 @@ int main(int argn, char *argc[])
 
 	clnt_broadcast(progNum, VERSNUM, INTPROCNUM,
 		       (xdrproc_t) xdr_int, (char *)&intSnd,
-		       (xdrproc_t) xdr_int, (char *)&intRec, eachResult);
+		       (xdrproc_t) xdr_int, (char *)&intRec,
+		       (resultproc_t) eachResult);
 
 	if (intSnd != intRec)
 		test_status = 1;
@@ -96,7 +98,8 @@ int main(int argn, char *argc[])
 
 	clnt_broadcast(progNum, VERSNUM, LNGPROCNUM,
 		       (xdrproc_t) xdr_long, (char *)&lngSnd,
-		       (xdrproc_t) xdr_long, (char *)&lngRec, eachResult);
+		       (xdrproc_t) xdr_long, (char *)&lngRec,
+		       (resultproc_t) eachResult);
 
 	if (lngSnd != lngRec)
 		test_status = 1;
@@ -108,7 +111,8 @@ int main(int argn, char *argc[])
 
 	clnt_broadcast(progNum, VERSNUM, LNGPROCNUM,
 		       (xdrproc_t) xdr_double, (char *)&dblSnd,
-		       (xdrproc_t) xdr_double, (char *)&dblRec, eachResult);
+		       (xdrproc_t) xdr_double, (char *)&dblRec,
+		       (resultproc_t) eachResult);
 
 	if (dblSnd != dblRec)
 		test_status = 1;
@@ -121,7 +125,8 @@ int main(int argn, char *argc[])
 
 	clnt_broadcast(progNum, VERSNUM, LNGPROCNUM,
 		       (xdrproc_t) xdr_wrapstring, (char *)&strSnd,
-		       (xdrproc_t) xdr_wrapstring, (char *)&strRec, eachResult);
+		       (xdrproc_t) xdr_wrapstring, (char *)&strRec,
+		       (resultproc_t) eachResult);
 
 	if (strcmp(strSnd, strRec))
 		test_status = 1;
