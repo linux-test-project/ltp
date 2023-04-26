@@ -51,7 +51,7 @@ extern void *TST_RET_PTR;
 	tst_res_(__FILE__, __LINE__, RES, \
 		TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, SCALL) FMT, __VA_ARGS__), PAR, PAR2)
 
-#define TST_EXP_POSITIVE_(SCALL, SSCALL, ...)                                  \
+#define TST_EXP_POSITIVE__(SCALL, SSCALL, ...)                                 \
 	do {                                                                   \
 		TEST(SCALL);                                                   \
 		                                                               \
@@ -73,46 +73,59 @@ extern void *TST_RET_PTR;
                                                                                \
 	} while (0)
 
+#define TST_EXP_POSITIVE_(SCALL, ...)                                          \
+	({                                                                     \
+		TST_EXP_POSITIVE__(SCALL, #SCALL, ##__VA_ARGS__);              \
+		TST_RET;                                                       \
+	})
+
 #define TST_EXP_POSITIVE(SCALL, ...)                                           \
-	do {                                                                   \
-		TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__);               \
+	({                                                                     \
+		TST_EXP_POSITIVE__(SCALL, #SCALL, ##__VA_ARGS__);              \
 		                                                               \
 		if (TST_PASS) {                                                \
 			TST_MSGP_(TPASS, " returned %ld",                      \
 			          TST_RET, #SCALL, ##__VA_ARGS__);             \
 		}                                                              \
-	} while (0)
+		                                                               \
+		TST_RET;                                                       \
+	})
 
 #define TST_EXP_FD_SILENT(SCALL, ...)	TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__)
 
 #define TST_EXP_FD(SCALL, ...)                                                 \
-	do {                                                                   \
-		TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__);               \
+	({                                                                     \
+		TST_EXP_POSITIVE__(SCALL, #SCALL, ##__VA_ARGS__);              \
 		                                                               \
 		if (TST_PASS)                                                  \
 			TST_MSGP_(TPASS, " returned fd %ld", TST_RET,          \
 				#SCALL, ##__VA_ARGS__);                        \
-	} while (0)
+		                                                               \
+		TST_RET;                                                       \
+	})
 
-#define TST_EXP_FD_OR_FAIL(SCALL, ERRNO, ...)                                    \
-	do {                                                                   \
+#define TST_EXP_FD_OR_FAIL(SCALL, ERRNO, ...)                                  \
+	({                                                                     \
 		if (ERRNO)                                                     \
 			TST_EXP_FAIL(SCALL, ERRNO, ##__VA_ARGS__);             \
 		else                                                           \
 			TST_EXP_FD(SCALL, ##__VA_ARGS__);                      \
 		                                                               \
-	} while (0)
+		TST_RET;                                                       \
+	})
 
 #define TST_EXP_PID_SILENT(SCALL, ...)	TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__)
 
 #define TST_EXP_PID(SCALL, ...)                                                \
-	do {                                                                   \
-		TST_EXP_POSITIVE_(SCALL, #SCALL, ##__VA_ARGS__);               \
+	({                                                                     \
+		TST_EXP_POSITIVE__(SCALL, #SCALL, ##__VA_ARGS__);              \
 									       \
 		if (TST_PASS)                                                  \
 			TST_MSGP_(TPASS, " returned pid %ld", TST_RET,         \
 				#SCALL, ##__VA_ARGS__);                        \
-	} while (0)
+		                                                               \
+		TST_RET;                                                       \
+	})
 
 #define TST_EXP_VAL_SILENT_(SCALL, VAL, SSCALL, ...)                           \
 	do {                                                                   \
