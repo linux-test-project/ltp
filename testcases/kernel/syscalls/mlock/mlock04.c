@@ -1,102 +1,68 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
- * This is a reproducer copied from one of LKML patch submission,
+ * Copyright (C) 2010  Red Hat, Inc.
+ */
+
+/*\
+ * [Description]
+ *
+ * This is a reproducer copied from one of LKML patch submission
  * which subject is
  *
  * [PATCH] mlock: revert the optimization for dirtying pages and triggering writeback.
+ * url see https://www.spinics.net/lists/kernel/msg1141090.html
  *
  * "In 5ecfda0, we do some optimization in mlock, but it causes
  * a very basic test case(attached below) of mlock to fail. So
  * this patch revert it with some tiny modification so that it
  * apply successfully with the lastest 38-rc2 kernel."
  *
- * Copyright (C) 2010  Red Hat, Inc.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * This bug was fixed by kernel
+ * commit fdf4c587a7 ("mlock: operate on any regions with protection != PROT_NONE")
  *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it
- * is free of the rightful claim of any third person regarding
- * infringement or the like.  Any license provided herein, whether
- * implied or otherwise, applies only to this software file.  Patent
- * licenses, if any, provided herein do not apply to combinations of
- * this program with other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
+ * As this case does, mmaps a file with PROT_WRITE permissions but without
+ * PROT_READ, so attempt to not unnecessarity break COW during mlock ended up
+ * causing mlock to fail with a permission problem on unfixed kernel.
  */
-#include "test.h"
-#include "safe_macros.h"
-#include "config.h"
-
-char *TCID = "mlock04";
-int TST_TOTAL = 1;
 
 #include <sys/mman.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
+#include "tst_test.h"
+#include "tst_safe_macros.h"
 
-int fd, file_len = 40960;
-char *testfile = "test_mlock";
+static int fd = -1, file_len = 40960;
+static char *testfile = "test_mlock";
 
-static void setup(void);
-static void cleanup(void);
-
-int main(void)
+static void verify_mlock(void)
 {
 	char *buf;
-	int lc;
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		buf = mmap(NULL, file_len, PROT_WRITE, MAP_SHARED, fd, 0);
-
-		if (buf == MAP_FAILED)
-			tst_brkm(TBROK | TERRNO, cleanup, "mmap");
-
-		if (mlock(buf, file_len) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "mlock");
-
-		tst_resm(TINFO, "locked %d bytes from %p", file_len, buf);
-
-		if (munlock(buf, file_len) == -1)
-			tst_brkm(TBROK | TERRNO, cleanup, "munlock");
-
-		SAFE_MUNMAP(cleanup, buf, file_len);
-	}
-
-	tst_resm(TPASS, "test succeeded.");
-
-	cleanup();
-
-	tst_exit();
+	buf = SAFE_MMAP(NULL, file_len, PROT_WRITE, MAP_SHARED, fd, 0);
+	TST_EXP_PASS(mlock(buf, file_len), "mlock(%p, %d)", buf, file_len);
+	SAFE_MUNLOCK(buf, file_len);
+	SAFE_MUNMAP(buf, file_len);
 }
 
 static void setup(void)
 {
-	tst_tmpdir();
-
-	fd = SAFE_OPEN(cleanup, testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-
-	SAFE_FTRUNCATE(cleanup, fd, file_len);
-
-	TEST_PAUSE;
+	fd = SAFE_OPEN(testfile, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	SAFE_FTRUNCATE(fd, file_len);
 }
 
 static void cleanup(void)
 {
-	close(fd);
-
-	tst_rmdir();
+	if (fd > -1)
+		SAFE_CLOSE(fd);
 }
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = verify_mlock,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "fdf4c587a793"},
+		{}
+	}
+};
