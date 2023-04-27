@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *
  * 06/1994 AUTHOR: Richard Logan CO-PILOT: William Roske
+ * Copyright (c) 2023 SUSE LLC
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
  * Basic test for dup(2) of a system pipe descriptor.
  */
@@ -17,38 +17,18 @@
 
 #include "tst_test.h"
 
-int fd[2];
+static int fd[2];
 
 static void run(void)
 {
-	TEST(dup(fd[0]));
+	TST_EXP_FD(dup(fd[0]), "dup(%d) read end of the pipe", fd[0]);
+	SAFE_CLOSE(TST_RET);
 
-	if (TST_RET == -1)
-		tst_res(TFAIL | TTERRNO,
-			 "dup of read side of pipe failed");
-	else {
-		tst_res(TPASS,
-			 "dup(%d) read side of syspipe returned %ld",
-			 fd[0], TST_RET);
-
-		SAFE_CLOSE(TST_RET);
-	}
-
-	TEST(dup(fd[1]));
-
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO,
-			 "dup of write side of pipe failed");
-	} else {
-		tst_res(TPASS,
-			 "dup(%d) write side of syspipe returned %ld",
-			 fd[1], TST_RET);
-
-		SAFE_CLOSE(TST_RET);
-	}
+	TST_EXP_FD(dup(fd[1]), "dup(%d) write end of the pipe", fd[1]);
+	SAFE_CLOSE(TST_RET);
 }
 
-void setup(void)
+static void setup(void)
 {
 	fd[0] = -1;
 
@@ -56,7 +36,7 @@ void setup(void)
 }
 
 static struct tst_test test = {
-        .test_all = run,
-        .setup = setup,
-        .needs_tmpdir = 1,
+	.test_all = run,
+	.setup = setup,
+	.needs_tmpdir = 1,
 };
