@@ -16,13 +16,13 @@
 
 #else
 struct my_flock64 {
-	int16_t l_type;
-	int16_t l_whence;
-	int64_t l_start;
-	int64_t l_len;
-	int32_t l_pid;
+	short l_type;
+	short l_whence;
+	off64_t l_start;
+	off64_t l_len;
+	pid_t l_pid;
 #if defined(__sparc__)
-	int16_t padding;
+	short padding;
 #endif
 };
 
