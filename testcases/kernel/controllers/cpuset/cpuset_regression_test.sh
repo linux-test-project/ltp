@@ -12,7 +12,7 @@
 
 TST_SETUP=setup
 TST_CLEANUP=cleanup
-TST_TESTFUNC=test
+TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_MIN_KVER="3.18"
@@ -178,7 +178,7 @@ cleanup()
 	cgroup_cleanup
 }
 
-test()
+do_test()
 {
 	local cpu_exclusive_tmp cpus_value
 
