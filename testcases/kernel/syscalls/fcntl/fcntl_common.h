@@ -10,6 +10,11 @@
 #include "lapi/abisize.h"
 #include "lapi/fcntl.h"
 
+#if defined(TST_ABI64)
+#define FCNTL_COMPAT(fd, cmd, flock) \
+	SAFE_FCNTL(fd, cmd, flock)
+
+#else
 struct my_flock64 {
 	int16_t l_type;
 	int16_t l_whence;
@@ -26,8 +31,7 @@ struct my_flock64 {
  * pass the flock sturct directly to the kernel even if it had 32-bit
  * offsets.
  *
- * Also, if and only if, we are on 32-bit kernel we need to use the
- * fcntl64 compat syscall.
+ * If we are on 32-bit abi we need to use the fcntl64 compat syscall.
  *
  * See:
  * glibc: 06ab719d30 Fix Linux fcntl OFD locks for non-LFS architectures (BZ#20251)
@@ -43,8 +47,8 @@ static inline int fcntl_compat(const char *file, const int line, const char *cmd
 		.l_len = lck->l_len,
 		.l_pid = lck->l_pid,
 	};
-	const int sysno = tst_kernel_bits() > 32 ? __NR_fcntl : __NR_fcntl64;
-	const int ret = tst_syscall(sysno, fd, cmd, &l64);
+
+	const int ret = tst_syscall(__NR_fcntl64, fd, cmd, &l64);
 
 	lck->l_type = l64.l_type;
 	lck->l_whence = l64.l_whence;
@@ -56,8 +60,7 @@ static inline int fcntl_compat(const char *file, const int line, const char *cmd
 		return ret;
 
 	tst_brk_(file, line, TBROK | TERRNO,
-		 "%s(%d, %s, { %d, %d, %"PRId64", %"PRId64", %d })",
-		 tst_kernel_bits() > 32 ? "fcntl" : "fcntl64",
+		 "fcntl64(%d, %s, { %d, %d, %"PRId64", %"PRId64", %d })",
 		 fd,
 		 cmd_name,
 		 l64.l_type, l64.l_whence, l64.l_start, l64.l_len, l64.l_pid);
@@ -67,5 +70,6 @@ static inline int fcntl_compat(const char *file, const int line, const char *cmd
 
 #define FCNTL_COMPAT(fd, cmd, flock) \
 	fcntl_compat(__FILE__, __LINE__, #cmd, fd, cmd, flock)
+#endif
 
 #endif /* FCNTL_COMMON_H__ */
