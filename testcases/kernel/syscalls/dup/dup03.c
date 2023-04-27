@@ -6,48 +6,30 @@
  */
 /*\
  * [Description]
- * Negative test for dup(2) (too many fds).
  *
- * [Algorithm]
- * Open the maximum allowed number of file descriptors and then try to call
- * dup() once more and verify it fails with EMFILE.
+ * Verify that dup(2) syscall fails with errno EMFILE when the per-process
+ * limit on the number of open file descriptors has been reached.
  */
 
 #include <stdlib.h>
 #include "tst_test.h"
 
-int *fd;
-int nfds;
+static int *fd;
+static int nfds;
 
 static void run(void)
 {
-	TEST(dup(fd[0]));
+	TST_EXP_FAIL2(dup(fd[0]), EMFILE, "dup(%d)", fd[0]);
 
-	if (TST_RET < -1) {
-		tst_res(TFAIL, "Invalid dup() return value %ld", TST_RET);
-		return;
-	}
-
-	if (TST_RET == -1) {
-		if (TST_ERR == EMFILE)
-			tst_res(TPASS | TTERRNO, "dup() failed as expected");
-		else
-			tst_res(TFAIL | TTERRNO, "dup() failed unexpectedly");
-		return;
-	}
-
-	tst_res(TFAIL, "dup() succeeded unexpectedly");
-	SAFE_CLOSE(TST_RET);
+	if (TST_RET != -1)
+		SAFE_CLOSE(TST_RET);
 }
 
 static void setup(void)
 {
 	long maxfds;
 
-	maxfds = sysconf(_SC_OPEN_MAX);
-	if (maxfds == -1)
-		tst_brk(TBROK, "sysconf(_SC_OPEN_MAX) failed");
-
+	maxfds = SAFE_SYSCONF(_SC_OPEN_MAX);
 	fd = SAFE_MALLOC(maxfds * sizeof(int));
 
 	fd[0] = SAFE_OPEN("dupfile", O_RDWR | O_CREAT, 0700);
