@@ -1,55 +1,43 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *
  * 06/1994 AUTHOR: Richard Logan CO-PILOT: William Roske
+ * Copyright (c) 2012-2023 SUSE LLC
  */
 
 /*\
- * [DESCRIPTION]
+ * [Description]
  *
- * Basic test for dup(2) of a named pipe descriptor
+ * Basic test for dup(2) of a named pipe descriptor.
  */
-#include <stdio.h>
+
 #include "tst_test.h"
 
-char Fname[255];
-int fd;
+#define FNAME "dupfile"
+
+static int fd = -1;
 
 static void run(void)
 {
-	TEST(dup(fd));
-
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "dup failed");
-	} else {
-		tst_res(TPASS, "dup returned %ld",
-			 TST_RET);
-
-		SAFE_CLOSE(TST_RET);
-	}
+	TST_EXP_FD(dup(fd), "dup(%d)", fd);
+	SAFE_CLOSE(TST_RET);
 }
 
-void setup(void)
+static void setup(void)
 {
-	fd = -1;
-
-	sprintf(Fname, "dupfile");
-	SAFE_MKFIFO(Fname, 0777);
-	if ((fd = open(Fname, O_RDWR, 0700)) == -1)
-		tst_brk(TBROK, "open failed");
+	SAFE_MKFIFO(FNAME, 0777);
+	fd = SAFE_OPEN(FNAME, O_RDWR, 0700);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (fd != -1)
-		if (close(fd) == -1)
-			tst_res(TWARN | TERRNO, "close failed");
+		SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
-        .test_all = run,
-        .setup = setup,
-        .cleanup = cleanup,
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
 	.needs_tmpdir = 1,
 };
