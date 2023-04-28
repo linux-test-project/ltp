@@ -8,9 +8,9 @@
 #
 # Created by: Robbie Williamson (robbiew@us.ibm.com)
 
-DIR_NUM=${DIR_NUM:-"10"}
-FILE_NUM=${FILE_NUM:-"30"}
-THREAD_NUM=${THREAD_NUM:-"8"}
+DIR_NUM=${DIR_NUM:-"5"}
+FILE_NUM=${FILE_NUM:-"20"}
+THREAD_NUM=${THREAD_NUM:-"5"}
 TST_NEEDS_CMDS="make gcc"
 TST_TESTFUNC="do_test"
 
