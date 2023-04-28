@@ -7,7 +7,7 @@
 
 TCID="cgroup_fj_stress"
 TST_CNT=1
-TST_TESTFUNC=test
+TST_TESTFUNC=do_test
 TST_SETUP=setup
 TST_CLEANUP=cleanup
 TST_POS_ARGS=4
@@ -126,7 +126,7 @@ cleanup()
     common_cleanup
 }
 
-test()
+do_test()
 {
     tst_res TINFO "Creating subgroups ..."
 

@@ -8,11 +8,11 @@
 # Restructure for LTP: Shi Weihua <shiwh@cn.fujitsu.com>
 # Added memcg enable/disable functionality: Rishikesh K Rajak <risrajak@linux.vnet.ibm.com>
 
-MEMCG_TESTFUNC=test
+MEMCG_TESTFUNC=do_test
 MEMCG_SHMMAX=1
 TST_TEST_DATA="--mmap-anon --mmap-file --shm"
 
-test()
+do_test()
 {
 	ROD echo $MEMORY_LIMIT \> memory.limit_in_bytes
 
