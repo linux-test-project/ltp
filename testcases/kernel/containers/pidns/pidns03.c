@@ -17,7 +17,7 @@
 
 #define PROCDIR "proc"
 
-static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_func(void)
 {
 	char proc_self[10];
 
@@ -28,8 +28,6 @@ static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
 	SAFE_UMOUNT(PROCDIR);
 
 	TST_EXP_PASS(strcmp(proc_self, "1"), PROCDIR"/self contains 1:");
-
-	return 0;
 }
 
 static void setup(void)
@@ -45,11 +43,12 @@ static void cleanup(void)
 
 static void run(void)
 {
-	int ret;
+	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
 
-	ret = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_func, NULL);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clone failed");
+	if (!SAFE_CLONE(&args)) {
+		child_func();
+		return;
+	}
 }
 
 static struct tst_test test = {
@@ -57,5 +56,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
+	.forks_child = 1,
 	.needs_tmpdir = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

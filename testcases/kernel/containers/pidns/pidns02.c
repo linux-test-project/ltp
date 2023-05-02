@@ -7,7 +7,7 @@
 /*\
  * [Description]
  *
- * Clone a process with CLONE_NEWNS flag and check:
+ * Clone a process with CLONE_NEWPID flag and check:
  *
  * - child session ID must be 1
  * - parent process group ID must be 1
@@ -16,29 +16,34 @@
 #include "tst_test.h"
 #include "lapi/sched.h"
 
-static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_func(void)
 {
-	pid_t sid, pgid;
+	TST_EXP_EQ_LI(getsid(0), 0);
+	TST_EXP_EQ_LI(getpgid(0), 0);
 
-	sid = getsid(0);
-	pgid = getpgid(0);
+	tst_res(TINFO, "setsid()");
+	SAFE_SETSID();
 
-	TST_EXP_PASS(sid == 1);
-	TST_EXP_PASS(pgid == 1);
-
-	return 0;
+	TST_EXP_EQ_LI(getsid(0), 1);
+	TST_EXP_EQ_LI(getpgid(0), 1);
 }
 
 static void run(void)
 {
-	int ret;
+	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
 
-	ret = ltp_clone_quick(CLONE_NEWNS | SIGCHLD, child_func, NULL);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clone failed");
+	if (!SAFE_CLONE(&args)) {
+		child_func();
+		return;
+	}
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

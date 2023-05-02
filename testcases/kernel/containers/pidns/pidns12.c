@@ -25,7 +25,7 @@ static void child_signal_handler(LTP_ATTRIBUTE_UNUSED int sig, siginfo_t *si, LT
 	sig_pid = si->si_pid;
 }
 
-static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
+static void child_func(void)
 {
 	struct sigaction sa;
 
@@ -41,21 +41,22 @@ static int child_func(LTP_ATTRIBUTE_UNUSED void *arg)
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	TST_EXP_EQ_LI(sig_pid, 0);
-
-	return 0;
 }
 
 static void run(void)
 {
-	int ret;
+	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	int pid;
 
-	ret = ltp_clone_quick(CLONE_NEWPID | SIGCHLD, child_func, NULL);
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clone failed");
+	pid = SAFE_CLONE(&args);
+	if (!pid) {
+		child_func();
+		return;
+	}
 
 	TST_CHECKPOINT_WAIT(0);
 
-	SAFE_KILL(ret, SIGUSR1);
+	SAFE_KILL(pid, SIGUSR1);
 
 	TST_CHECKPOINT_WAKE(0);
 }
@@ -63,5 +64,10 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
+	.forks_child = 1,
 	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };
