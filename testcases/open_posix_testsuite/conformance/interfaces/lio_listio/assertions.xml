@@ -36,7 +36,7 @@
 	</assertion>
 	<assertion id="11" tag="ref:XSH6TC2:23084:23085">
 	if mode is LIO_NOWAIT, lio_listio() shall return the value -1 and set
-	errno to indicate error if the operation is not succesfully queued.
+	errno to indicate error if the operation is not successfully queued.
 	</assertion>
 	<assertion id="12" tag="ref:XSH6TC2:23086:23087">
 	if mode is LIO_WAIT, lio_listio() shall return the value zero when

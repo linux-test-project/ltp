@@ -21,7 +21,7 @@
 	</assertion>
 	<assertion id="6" tag="ref:XSH6TC2:4348:4349">
 	The aio_write() function shall return the value -1 and set errno to
-	indicate error if the operation is not succesfully queued.
+	indicate error if the operation is not successfully queued.
 	</assertion>
 	<assertion id="7" tag="ref:XSH6TC2:4352:4353">
 	aio_write() shall fail with [EAGAIN] if:
@@ -38,17 +38,17 @@
 	aio_nbytes is an invalid value.
 	</assertion>
 	<assertion id="10" tag="ref:XSH6TC2:4369:4369">
-	The error status of a succesfully queued  operation shall be:
+	The error status of a successfully queued  operation shall be:
 	[EBADF] if the aio_fildes argument is not a valid file descriptor open for
 	writing.
 	</assertion>
 	<assertion id="11"  tag="ref:XSH6TC2:4370:4370">
-	The error status of a succesfully queued  operation shall be:
+	The error status of a successfully queued  operation shall be:
 	[EINVAL] if aio_offset would be invalid, or aio_reqprio is not a valid
 	value, or aio_nbytes is an invalid value.
 	</assertion>
 	<assertion id="12" tag="ref:XSH6TC2:4371:4372">
-	The error status of a succesfully queued  operation shall be:
+	The error status of a successfully queued  operation shall be:
 	[ECANCELED] The requested I/O was canceled before the I/O completed.
 	</assertion>
 	<assertion id="13" tag="ref:XSH6TC2:4374:4376">

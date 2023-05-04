@@ -10,7 +10,7 @@
  * assertion:
  *
  *	if mode is LIO_WAIT, lio_listio() shall return the value -1 and set
- *	errno to indicate error if the operation is not succesfully queued.
+ *	errno to indicate error if the operation is not successfully queued.
  *
  * method:
  *

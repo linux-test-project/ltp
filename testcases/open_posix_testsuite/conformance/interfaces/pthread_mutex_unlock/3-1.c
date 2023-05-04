@@ -6,8 +6,7 @@
  * source tree.
 
  * Test that pthread_mutex_unlock()
- *   Upon succesful completion, it shall return zero
- *
+ * Upon successful completion, it shall return zero
  */
 
 #include <pthread.h>

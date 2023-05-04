@@ -10,7 +10,7 @@
  * assertion:
  *
  * The aio_read() function shall return the value -1 and set errno to
- * indicate error if the operation is not succesfully queued.
+ * indicate error if the operation is not successfully queued.
  *
  * method:
  *

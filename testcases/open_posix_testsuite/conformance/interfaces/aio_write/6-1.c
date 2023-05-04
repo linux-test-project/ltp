@@ -10,7 +10,7 @@
  * assertion:
  *
  *	The aio_write() function shall return the value -1 and set errno to
-	indicate error if the operation is not succesfully queued.
+	indicate error if the operation is not successfully queued.
  *
  * method:
  *
@@ -18,7 +18,6 @@
  *	  aiocb with invalid aio_reqprio
  *	- call aio_write
  *	- check aio_write return value
- *
  */
 
 #include <stdio.h>

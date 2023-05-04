@@ -71,7 +71,7 @@ int main(void)
 	munmap(pa, size);
 	close(fd);
 
-	printf("Succesfully mapped readonly file with "
+	printf("Successfully mapped readonly file with "
 	       "PROT_WRITE, MAP_PRIVATE\n" "Test PASSED\n");
 	return PTS_PASS;
 }

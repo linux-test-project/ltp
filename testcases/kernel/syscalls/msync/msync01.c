@@ -25,7 +25,7 @@
  *  of, or all of a mapped region.
  *
  * Expected Result:
- *  msync() should succeed with a return value of 0, and succesfully
+ *  msync() should succeed with a return value of 0, and successfully
  *  synchronize the memory region.  Data read from mapped region should be
  *  the same as the initialized data.
  *

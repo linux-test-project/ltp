@@ -658,10 +658,10 @@ int creat_symlink(char *path1, char *path2, char *_path3)
 			path1, errno, strerror(errno));
 		return 0;
 	} else {
-		sprintf(Buf, "symlink(%s, %s) was succesful.\n", path1, path2);
+		sprintf(Buf, "symlink(%s, %s) was successful.\n", path1, path2);
 		strcat(Buffer, Buf);
 #if DEBUG
-		tst_resm(TPASS, "symlink(%s, %s) was succesful.", path1, path2);
+		tst_resm(TPASS, "symlink(%s, %s) was successful.", path1, path2);
 #endif
 	}
 	return 1;
@@ -685,10 +685,10 @@ int creat_object(char *path1, char *_path2, char *_path3)
 			path1, errno, strerror(errno));
 		return 0;
 	} else {
-		sprintf(Buf, "creat(%s, %#o) was succesful.\n", path1, MODE);
+		sprintf(Buf, "creat(%s, %#o) was successful.\n", path1, MODE);
 		strcat(Buffer, Buf);
 #if DEBUG
-		tst_resm(TPASS, "creat(%s, %#o) was succesful.", path1, MODE);
+		tst_resm(TPASS, "creat(%s, %#o) was successful.", path1, MODE);
 #endif
 	}
 	if (close(fd) == -1) {

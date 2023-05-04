@@ -144,7 +144,7 @@ NUM_CPUS=`tst_ncpus`
 			cleanup;
 			exit -1;
 		else
-			echo "Succesfully launched def task $! too";
+			echo "Successfully launched def task $! too";
 		fi
 		;;
 	"4" )
@@ -210,7 +210,7 @@ NUM_CPUS=`tst_ncpus`
 			cleanup;
 			exit -1;
 		else
-			echo "Succesfully launched def task $! too";
+			echo "Successfully launched def task $! too";
 		fi
 		;;
 	"5" )
@@ -270,7 +270,7 @@ NUM_CPUS=`tst_ncpus`
 			cleanup;
 			exit -1;
 		else
-			echo "Succesfully launched def task $! too";
+			echo "Successfully launched def task $! too";
 		fi
 		;;
 

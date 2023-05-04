@@ -28,7 +28,7 @@
 	</assertion>
 	<assertion id="8" tag="ref:XSH6TC2:4155:4155">
 	The aio_read() function shall return the value -1 and set errno to
-	indicate error if the operation is not succesfully queued.
+	indicate error if the operation is not successfully queued.
 	</assertion>
 	<assertion id="9" tag="ref:XSH6TC2:4158:4159">
 	aio_read() shall fail with [EAGAIN] if:
@@ -46,16 +46,16 @@
 	value, or aio_nbytes is an invalid value.
 	</assertion>
 	<assertion id="12" tag="ref:XSH6TC2:4174:4174">
-	The error status of a succesfully queued operation shall be:
+	The error status of a successfully queued operation shall be:
 	[EBADF] if the aio_fildes argument is not a valid file descriptor open for
 	reading.
 	</assertion>
 	<assertion id="13" tag="ref:XSH6TC2:4375:4376">
-	The error status of a succesfully queued operation shall be:
+	The error status of a successfully queued operation shall be:
 	[ECANCELED] if The requested I/O was canceled before the I/O completed.
 	</assertion>
 	<assertion id="14"  tag="ref:XSH6TC2:4177:4177">
-	The error status of a succesfully queued operation shall be:
+	The error status of a successfully queued operation shall be:
 	[EINVAL] if aio_offset would be invalid, or aio_reqprio is not a valid
 	value, or aio_nbytes is an invalid value.
 	</assertion>

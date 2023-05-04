@@ -24,10 +24,10 @@
  *  5. Both children and father increment a counter in a basic loop.
  *  6. The father send SIGTERM to the last child and get its counter. If child
  *     counter is reasonably lower than the fathers one, the test is
- *     succesfull.
+ *     successfull.
  *  7. The father kill all other children.
- *
  */
+
 #include "affinity.h"
 
 #include <sched.h>

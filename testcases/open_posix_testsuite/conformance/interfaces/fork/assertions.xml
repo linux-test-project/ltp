@@ -83,7 +83,7 @@
   </assertion>
   <assertion id="23" tag="ref:XSH6TC2:13060:13062">
     fork() returns 0 to the child and the child PID to the parent process when
-   succesful.
+   successful.
   </assertion>
   <assertion id="24" tag="ref:XSH6TC2:13063:13069">
     fork() returns -1, errno is set to EAGAIN, and no child process

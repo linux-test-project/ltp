@@ -99,7 +99,7 @@ test3()
 	if grep -q "$CD_DRIVE" /proc/mounts; then
 		tst_res TFAIL "$CD_DRIVE is stil moutned"
 	else
-		tst_res TPASS "$CD_DRIVE umounted succesfully"
+		tst_res TPASS "$CD_DRIVE umounted successfully"
 	fi
 }
 

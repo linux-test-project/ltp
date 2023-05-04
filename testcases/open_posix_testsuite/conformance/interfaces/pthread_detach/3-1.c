@@ -6,14 +6,12 @@
  * source tree.
 
  * Test that pthread_detach()
- *
- * Upon succesful completion, it shall return a 0;
+ * Upon successful completion, it shall return 0.
  *
  * STEPS:
  * 1.Create a joinable thread
  * 2.Detach that thread
  * 3.Check the return value
- *
  */
 
 #include <pthread.h>

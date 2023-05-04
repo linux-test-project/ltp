@@ -200,7 +200,7 @@ usage ()
 			cleanup;
 			exit -1;
 		else
-			echo "Succesfully launched def task $! too";
+			echo "Successfully launched def task $! too";
 		fi
 		;;
 	"9" )
@@ -279,7 +279,7 @@ usage ()
 			cleanup;
 			exit -1;
 		else
-			echo "Succesfully launched def task $! too";
+			echo "Successfully launched def task $! too";
 		fi
 		;;
 	"10" )
@@ -346,7 +346,7 @@ usage ()
 			cleanup;
 			exit -1;
 		else
-			echo "Succesfully launched def task $! too";
+			echo "Successfully launched def task $! too";
 		fi
 		;;
 	  * )

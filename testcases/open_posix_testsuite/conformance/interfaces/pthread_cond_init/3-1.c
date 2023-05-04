@@ -6,8 +6,7 @@
  * source tree.
 
  * Test that pthread_cond_init()
- *   Upon succesful completion, it shall return a 0
- *
+ * Upon successful completion, it shall return 0.
  */
 
 #include <pthread.h>
