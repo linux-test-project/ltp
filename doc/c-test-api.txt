@@ -102,7 +102,7 @@ that should cover the duration of test setup and cleanup plus some safety.
 Any test that runs for more than a second or two has to make sure to:
 
 - set the runtime either by setting the '.max_runtime' in tst_test or by
-  calling 'tst_set_runtime()' in the test setup
+  calling 'tst_set_max_runtime()' in the test setup
 
 - monitor remaning runtime by regular calls to 'tst_remaining_runtime()' and
   exit when runtime has been used up
