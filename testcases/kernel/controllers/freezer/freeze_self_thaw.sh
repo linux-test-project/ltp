@@ -22,7 +22,7 @@
 # This bash script tests freezer code by starting a long subshell process.
 # The subshell process sleeps and then freezes the control group it is a
 # part of. We then thaw the subshell process. We expect the unthawed subshell
-# process to need cleanup afterwards (allows us to test successfull thawing).
+# process to need cleanup afterwards (allows us to test successful thawing).
 #
 
 . "${CGROUPS_TESTROOT}/libcgroup_freezer"

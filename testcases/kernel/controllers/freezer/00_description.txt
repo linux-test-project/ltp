@@ -21,7 +21,7 @@ freeze_self_thaw.sh
 	The subshell process sleeps and then freezes the control group it is a
 	part of. We then thaw the subshell process. We expect the unthawed
 	subshell process to need cleanup afterwards (allows us to test
-	successfull thawing).
+	successful thawing).
 
 freeze_sleep_thaw.sh
 	This bash script tests freezer code by starting a long sleep process.

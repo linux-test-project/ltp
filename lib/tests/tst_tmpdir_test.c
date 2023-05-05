@@ -26,7 +26,7 @@
  *
  * This program creates and deletes a temporary file in order to test
  * the functionality of the tst_tmpdir functionality.
- * On successfull completion it prints the message:
+ * On successful completion it prints the message:
  * "Test completed successfully!"
  */
 
