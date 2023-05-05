@@ -101,8 +101,7 @@ $ make install
 ```
 
 This will install LTP to `/opt/ltp`.
-* If you have a problem see `doc/mini-howto-building-ltp-from-git.txt`.
-* If you still have a problem see `INSTALL` and `./configure --help`.
+* If you have a problem see `INSTALL` and `./configure --help`.
 * Failing that, ask for help on the mailing list or Github.
 
 Some tests will be disabled if the configure script can not find their build
