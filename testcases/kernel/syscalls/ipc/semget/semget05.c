@@ -73,7 +73,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_semget,
 	.save_restore = (const struct tst_path_val[]){
-		{"/proc/sys/kernel/sem", NULL, TST_SR_TCONF},
+		{"/proc/sys/kernel/sem", NULL,
+			TST_SR_TCONF_MISSING | TST_SR_SKIP_RO},
 		{}
 	}
 };
