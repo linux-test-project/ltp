@@ -2,7 +2,7 @@
 /*
  * Copyright (c) International Business Machines Corp., 2008
  * Copyright (c) Paul Mackerras, IBM Corp., 2008
- * Copyright (c) 2018 Linux Test Project
+ * Copyright (c) 2018-2023 Linux Test Project
  */
 
 /*
@@ -15,15 +15,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <elf.h>
-#include <sys/auxv.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
 #include "tst_test.h"
 
 #if defined(__powerpc64__) || defined(__powerpc__)
+
 # ifndef PPC_FEATURE_TRUE_LE
-# define PPC_FEATURE_TRUE_LE              0x00000002
+#  define PPC_FEATURE_TRUE_LE              0x00000002
 # endif
+
+# ifdef HAVE_GETAUXVAL
+#  include <sys/auxv.h>
 
 /*
  * Make minimal call to 0x1ebe. If we get ENOSYS then syscall is not
@@ -97,6 +101,10 @@ static struct tst_test test = {
 	.test_all = endian_test,
 	.forks_child = 1,
 };
+
+# else
+TST_TEST_TCONF("Toolchain does not have <sys/auxv.h>");
+# endif /* HAVE_GETAUXVAL */
 
 #else /* defined (__powerpc64__) || (__powerpc__) */
 TST_TEST_TCONF("This system does not support running of switch() syscall");
