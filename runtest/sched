@@ -9,6 +9,7 @@ trace_sched01		trace_sched -c 1
 cfs_bandwidth01 cfs_bandwidth01 -i 5
 hackbench01 hackbench 50 process 1000
 hackbench02 hackbench 20 thread 1000
+starvation starvation
 
 sched_cli_serv run_sched_cliserv.sh
 # Run this stress test for 2 minutes
