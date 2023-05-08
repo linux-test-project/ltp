@@ -60,6 +60,12 @@ static void setup(void)
 		tst_brk(TCONF, "Gigantic hugepages not supported");
 
 	SAFE_CLOSEDIR(dir);
+
+	if (tst_available_mem() < (long long)hpage_size) {
+		g_hpage_path[0] = '\0';
+		tst_brk(TCONF, "No enough memory for gigantic hugepage reservation");
+	}
+
 	SAFE_FILE_LINES_SCANF(g_hpage_path, "%d", &org_g_hpages);
 }
 
