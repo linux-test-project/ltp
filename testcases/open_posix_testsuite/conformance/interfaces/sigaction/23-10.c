@@ -123,6 +123,8 @@ int main(void)
 
 	struct sigaction sa;
 
+        called = 0;
+
 	/* Initialize output */
 	output_init();
 
