@@ -63,7 +63,7 @@ cleanup()
 		return 0
 	}
 
-	find $CPUCTL -type d | sort | sed -n '2,$p' | tac | while read tmpdir
+	find $CPUCTL -type d | sort | sed -n '2,$p' | tac | while read -r tmpdir
 	do
 		while read tmppid
 		do
