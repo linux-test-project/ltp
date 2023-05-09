@@ -31,7 +31,7 @@ int main(void)
 	static pthread_rwlock_t rwlock;
 	int rc;
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__NuttX__)
 	printf("Unlocking uninitialized rwlock is undefined on Linux\n");
 	return PTS_UNSUPPORTED;
 #endif
