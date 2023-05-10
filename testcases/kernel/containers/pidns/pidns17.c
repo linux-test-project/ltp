@@ -24,7 +24,7 @@ static void child_func(void)
 	unsigned int i;
 	pid_t cpid, ppid;
 
-	cpid = getpid();
+	cpid = tst_getpid();
 	ppid = getppid();
 
 	TST_EXP_EQ_LI(cpid, 1);

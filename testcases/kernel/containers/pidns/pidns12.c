@@ -29,7 +29,7 @@ static void child_func(void)
 {
 	struct sigaction sa;
 
-	TST_EXP_EQ_LI(getpid(), 1);
+	TST_EXP_EQ_LI(tst_getpid(), 1);
 	TST_EXP_EQ_LI(getppid(), 0);
 
 	sa.sa_flags = SA_SIGINFO;

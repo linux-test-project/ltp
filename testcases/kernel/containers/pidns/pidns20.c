@@ -32,7 +32,7 @@ static void child_func(void)
 	sigset_t newset;
 	pid_t cpid, ppid;
 
-	cpid = getpid();
+	cpid = tst_getpid();
 	ppid = getppid();
 
 	if (cpid != 1 || ppid != 0) {

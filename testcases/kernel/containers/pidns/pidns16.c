@@ -30,7 +30,7 @@ static void child_func(void)
 	struct sigaction sa;
 	pid_t cpid, ppid;
 
-	cpid = getpid();
+	cpid = tst_getpid();
 	ppid = getppid();
 
 	TST_EXP_EQ_LI(cpid, 1);

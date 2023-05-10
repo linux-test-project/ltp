@@ -16,7 +16,7 @@
 
 static void child_func(void)
 {
-	pid_t cpid = getpid();
+	pid_t cpid = tst_getpid();
 	pid_t ppid = getppid();
 
 	TST_EXP_EQ_LI(cpid, 1);

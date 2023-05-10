@@ -47,7 +47,7 @@ static void child_func(void)
 	struct sigevent notif;
 	mqd_t mqd_child;
 
-	cpid = getpid();
+	cpid = tst_getpid();
 	ppid = getppid();
 
 	TST_EXP_EQ_LI(cpid, 1);

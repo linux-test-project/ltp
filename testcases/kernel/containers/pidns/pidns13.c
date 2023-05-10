@@ -42,7 +42,7 @@ static void child_signal_handler(int sig, siginfo_t *si,
 				 void *unused LTP_ATTRIBUTE_UNUSED)
 {
 	tst_res(TWARN, "cinit(pid %d): Caught signal! sig=%d, si_fd=%d, si_code=%d",
-		getpid(), sig, si->si_fd, si->si_code);
+		tst_getpid(), sig, si->si_fd, si->si_code);
 }
 
 static void child_fn(unsigned int cinit_no)
@@ -54,7 +54,7 @@ static void child_fn(unsigned int cinit_no)
 	pid_t pid, ppid;
 	int flags;
 
-	pid = tst_syscall(__NR_getpid);
+	pid = tst_getpid();
 	ppid = getppid();
 	if (pid != CHILD_PID || ppid != PARENT_PID)
 		tst_brk(TBROK, "cinit%u: pidns not created.", cinit_no);
