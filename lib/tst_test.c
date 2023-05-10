@@ -336,7 +336,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
 	 * specified but CLONE_THREAD is not. Use direct syscall to avoid
 	 * cleanup running in the child.
 	 */
-	if (syscall(SYS_getpid) == main_pid)
+	if (tst_getpid() == main_pid)
 		do_test_cleanup();
 
 	if (getpid() == lib_pid)
@@ -1316,7 +1316,7 @@ static void do_test_setup(void)
 	if (tst_test->setup)
 		tst_test->setup();
 
-	if (main_pid != getpid())
+	if (main_pid != tst_getpid())
 		tst_brk(TBROK, "Runaway child in setup()!");
 
 	if (tst_test->caps)
@@ -1379,7 +1379,7 @@ static void run_tests(void)
 		heartbeat();
 		tst_test->test_all();
 
-		if (getpid() != main_pid) {
+		if (tst_getpid() != main_pid) {
 			exit(0);
 		}
 
@@ -1395,7 +1395,7 @@ static void run_tests(void)
 		heartbeat();
 		tst_test->test(i);
 
-		if (getpid() != main_pid) {
+		if (tst_getpid() != main_pid) {
 			exit(0);
 		}
 

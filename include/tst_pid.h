@@ -42,4 +42,12 @@ static inline int tst_get_free_pids(void (*cleanup_fn)(void))
 }
 #endif
 
+/*
+ * Direct getpid() syscall. Some glibc versions cache getpid() return value
+ * which can cause confusing issues for example in processes created by
+ * direct clone() syscall (without using the glibc wrapper). Use this function
+ * whenever the current process may be a child of the main test process.
+ */
+pid_t tst_getpid(void);
+
 #endif /* TST_PID_H__ */
