@@ -16,7 +16,8 @@ pidns31 pidns31
 pidns32 pidns32
 
 mqns_01 mqns_01
-mqns_01_clone mqns_01 -clone
+mqns_01_clone mqns_01 -m clone
+mqns_01_unshare mqns_01 -m unshare
 mqns_02 mqns_02
 mqns_02_clone mqns_02 -clone
 mqns_03 mqns_03
