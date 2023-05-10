@@ -127,8 +127,8 @@ static int node_has_enough_memory(int node, size_t min_kb)
 {
 	char path[1024];
 	char buf[1024];
-	long mem_total = 0;
-	long mem_used = 0;
+	long mem_total = -1;
+	long mem_used = -1;
 	long file_pages = 0;
 	long mem_avail;
 
@@ -161,7 +161,7 @@ static int node_has_enough_memory(int node, size_t min_kb)
 
 	fclose(fp);
 
-	if (!mem_total || !mem_used) {
+	if (mem_total == -1 || mem_used == -1) {
 		tst_res(TWARN, "Failed to parse '%s'", path);
 		return 0;
 	}
