@@ -19,7 +19,8 @@ mqns_01 mqns_01
 mqns_01_clone mqns_01 -m clone
 mqns_01_unshare mqns_01 -m unshare
 mqns_02 mqns_02
-mqns_02_clone mqns_02 -clone
+mqns_02_clone mqns_02 -m clone
+mqns_02_unshare mqns_02 -m unshare
 mqns_03 mqns_03
 mqns_03_clone mqns_03 -clone
 mqns_04 mqns_04
