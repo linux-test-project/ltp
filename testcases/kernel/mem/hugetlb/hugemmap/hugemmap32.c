@@ -47,6 +47,9 @@ static void setup(void)
 	struct dirent *ent;
 	unsigned long hpage_size;
 
+	if (access(PATH_HUGEPAGE, F_OK))
+		tst_brk(TCONF, "hugetlbfs is not supported");
+
 	dir = SAFE_OPENDIR(PATH_HUGEPAGE);
 	while ((ent = SAFE_READDIR(dir))) {
 		if ((sscanf(ent->d_name, "hugepages-%lukB", &hpage_size) == 1) &&
