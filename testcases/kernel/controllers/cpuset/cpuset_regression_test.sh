@@ -130,6 +130,11 @@ setup()
 
 	tst_res TINFO "test starts with cgroup version $cgroup_version"
 
+	if [ "$cgroup_version" = "2" ]; then
+		tst_brk TCONF "cgroup v2 found, skipping test"
+		return
+	fi
+
 	if ! [ -f ${root_cpuset_dir}/${cpu_exclusive} ]; then
 		cpu_exclusive=cpu_exclusive
 		cpus=cpus
