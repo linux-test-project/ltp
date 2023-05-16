@@ -539,6 +539,8 @@ int lio_write_buffer(int fd,		/* open file descriptor */
 		long wrd)	/* to allow future features, use zero for now */
 {
 	int ret = 0;		/* syscall return or used to get random method */
+	int totally_written = 0;/* as we cycle writes in case of partial writes, */
+				/* we have to report up total bytes written */
 	char *io_type;		/* Holds string of type of io */
 	int omethod = method;
 	int listio_cmd;		/* Holds the listio/lio_listio cmd */
@@ -745,13 +747,14 @@ int lio_write_buffer(int fd,		/* open file descriptor */
 						fd, size, ret);
 					size -= ret;
 					buffer += ret;
+					totally_written += ret;
 				} else {
 					if (Debug_level > 1)
 						printf
 						    ("DEBUG %s/%d: write completed without error (ret %d)\n",
 						     __FILE__, __LINE__, ret);
 
-					return ret;
+					return totally_written + ret;
 				}
 			}
 			wait4sync_io(fd, 0);
