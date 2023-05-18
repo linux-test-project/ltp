@@ -26,7 +26,6 @@ WARNING: All identifiers starting with 'TST_' or 'tst_' are reserved for the
 # This is a basic test for true shell builtin
 
 TST_TESTFUNC=do_test
-. tst_test.sh
 
 do_test()
 {
@@ -79,7 +78,6 @@ not trigger calling it.
 
 TST_TESTFUNC=test
 TST_CNT=2
-. tst_test.sh
 
 test1()
 {
@@ -110,7 +108,6 @@ found they are executed one by one. The test number is passed to it in the '$1'.
 
 TST_TESTFUNC=do_test
 TST_CNT=2
-. tst_test.sh
 
 do_test()
 {
@@ -141,7 +138,6 @@ to it in the '$1'.
 TST_TESTFUNC=do_test
 TST_TEST_DATA="foo:bar:d dd"
 TST_TEST_DATA_IFS=":"
-. tst_test.sh
 
 do_test()
 {
@@ -168,7 +164,6 @@ It's possible to pass data for function with '$TST_TEST_DATA'. Optional
 TST_TESTFUNC=do_test
 TST_CNT=2
 TST_TEST_DATA="foo bar"
-. tst_test.sh
 
 do_test()
 {
@@ -285,7 +280,6 @@ as it doesn't exit (it issues 'tst_res TCONF'). Expected usage is:
 #!/bin/sh
 
 TST_TESTFUNC=do_test
-. tst_test.sh
 
 do_test()
 {
@@ -324,8 +318,6 @@ TST_OPTS="af:"
 TST_USAGE=usage
 TST_PARSE_ARGS=parse_args
 TST_TESTFUNC=do_test
-
-. tst_test.sh
 
 ALTERNATIVE=0
 MODE="foo"
@@ -377,8 +369,6 @@ and, if option has argument, its value in the '$2'.
 TST_POS_ARGS=3
 TST_USAGE=usage
 TST_TESTFUNC=do_test
-
-. tst_test.sh
 
 usage()
 {
