@@ -32,7 +32,6 @@
 #include <sys/statvfs.h>
 #include "tst_test.h"
 #include "lapi/fsmount.h"
-#include "lapi/stat.h"
 
 #define MNTPOINT        "mntpoint"
 #define OT_MNTPOINT     "ot_mntpoint"

@@ -33,6 +33,7 @@
 #include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "lapi/stat.h"
+#include "lapi/fcntl.h"
 #include "tst_safe_stdio.h"
 #include <string.h>
 #include <inttypes.h>

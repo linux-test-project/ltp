@@ -24,6 +24,7 @@
 #include "lapi/fs.h"
 #include "lapi/fsverity.h"
 #include "lapi/stat.h"
+#include "lapi/fcntl.h"
 #include <inttypes.h>
 
 #define MNTPOINT "mnt_point"

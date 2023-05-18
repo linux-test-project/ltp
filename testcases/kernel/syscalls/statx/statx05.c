@@ -27,6 +27,7 @@
 #include "tst_test.h"
 #include "lapi/fs.h"
 #include "lapi/stat.h"
+#include "lapi/fcntl.h"
 
 #define MNTPOINT "mnt_point"
 #define TESTDIR_FLAGGED MNTPOINT"/test_dir1"

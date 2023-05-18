@@ -52,10 +52,11 @@
  */
 
 #define _GNU_SOURCE
+#include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/fs.h"
-#include <stdlib.h>
 #include "lapi/stat.h"
+#include "lapi/fcntl.h"
 
 #define MOUNT_POINT "mntpoint"
 #define TESTDIR MOUNT_POINT "/testdir"

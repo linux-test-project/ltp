@@ -24,6 +24,7 @@
 #include "tst_safe_macros.h"
 #include "tst_get_bad_addr.h"
 #include "lapi/stat.h"
+#include "lapi/fcntl.h"
 
 #define TESTFILE "test_file"
 #define MODE 0644
