@@ -10,7 +10,9 @@
 
 #include <stdint.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include "lapi/syscalls.h"
+
 /*
  * Timestamp structure for the timestamps in struct statx.
  *
@@ -21,9 +23,7 @@
  *
  * __reserved is held in case we need a yet finer resolution.
  */
-#if defined(HAVE_STRUCT_STATX_TIMESTAMP)
-#include <sys/stat.h>
-#else
+#ifndef HAVE_STRUCT_STATX_TIMESTAMP
 struct statx_timestamp {
 	int64_t tv_sec;
 	uint32_t tv_nsec;
@@ -67,9 +67,7 @@ struct statx_timestamp {
  * will have values installed for compatibility purposes so that stat() and
  * co. can be emulated in userspace.
  */
-#if defined(HAVE_STRUCT_STATX)
-#include <sys/stat.h>
-#else
+#ifndef HAVE_STRUCT_STATX
 struct statx {
 	/* 0x00 */
 	uint32_t	stx_mask;
@@ -102,7 +100,7 @@ struct statx {
 };
 #endif
 
-#if !defined(HAVE_STATX)
+#ifndef HAVE_STATX
 
 /*
  * statx: wrapper function of statx
