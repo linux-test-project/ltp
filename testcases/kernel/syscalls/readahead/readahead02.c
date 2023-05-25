@@ -352,7 +352,7 @@ static void setup_readahead_length(void)
 	/* raise bdi limit as much as kernel allows */
 	ra_new_limit = testfile_size / 1024;
 	while (ra_new_limit > pagesize / 1024) {
-		FILE_PRINTF(sys_bdi_ra_path, "%d", ra_new_limit);
+		SAFE_FILE_PRINTF(sys_bdi_ra_path, "%d", ra_new_limit);
 		SAFE_FILE_SCANF(sys_bdi_ra_path, "%d", &ra_limit);
 
 		if (ra_limit == ra_new_limit) {

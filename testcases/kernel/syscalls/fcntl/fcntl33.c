@@ -209,7 +209,7 @@ static void cleanup(void)
 		SAFE_CLOSE(fd);
 
 	/* Restore the lease-break-time. */
-	FILE_PRINTF(PATH_LS_BRK_T, "%d", ls_brk_t);
+	SAFE_FILE_PRINTF(PATH_LS_BRK_T, "%d", ls_brk_t);
 }
 
 static struct tst_test test = {
