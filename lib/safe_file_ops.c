@@ -76,7 +76,7 @@ int file_scanf(const char *file, const int lineno,
 	f = fopen(path, "r");
 
 	if (f == NULL) {
-		tst_resm_(file, lineno, TWARN, "Failed to open FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to open FILE '%s'",
 			path);
 		return 1;
 	}
@@ -88,20 +88,20 @@ int file_scanf(const char *file, const int lineno,
 	va_end(va);
 
 	if (ret == EOF) {
-		tst_resm_(file, lineno, TWARN,
+		tst_resm_(file, lineno, TINFO,
 			"The FILE '%s' ended prematurely", path);
 		goto err;
 	}
 
 	if (ret != exp_convs) {
-		tst_resm_(file, lineno, TWARN,
+		tst_resm_(file, lineno, TINFO,
 			"Expected %i conversions got %i FILE '%s'",
 			exp_convs, ret, path);
 		goto err;
 	}
 
 	if (fclose(f)) {
-		tst_resm_(file, lineno, TWARN, "Failed to close FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to close FILE '%s'",
 			path);
 		return 1;
 	}
@@ -110,7 +110,7 @@ int file_scanf(const char *file, const int lineno,
 
 err:
 	if (fclose(f)) {
-		tst_resm_(file, lineno, TWARN, "Failed to close FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to close FILE '%s'",
 			path);
 	}
 
@@ -218,7 +218,7 @@ int file_printf(const char *file, const int lineno,
 	f = fopen(path, "w");
 
 	if (f == NULL) {
-		tst_resm_(file, lineno, TWARN, "Failed to open FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to open FILE '%s'",
 			path);
 		return 1;
 	}
@@ -226,7 +226,7 @@ int file_printf(const char *file, const int lineno,
 	va_start(va, fmt);
 
 	if (vfprintf(f, fmt, va) < 0) {
-		tst_resm_(file, lineno, TWARN, "Failed to print to FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to print to FILE '%s'",
 			path);
 		goto err;
 	}
@@ -234,7 +234,7 @@ int file_printf(const char *file, const int lineno,
 	va_end(va);
 
 	if (fclose(f)) {
-		tst_resm_(file, lineno, TWARN, "Failed to close FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to close FILE '%s'",
 			path);
 		return 1;
 	}
@@ -243,7 +243,7 @@ int file_printf(const char *file, const int lineno,
 
 err:
 	if (fclose(f)) {
-		tst_resm_(file, lineno, TWARN, "Failed to close FILE '%s'",
+		tst_resm_(file, lineno, TINFO, "Failed to close FILE '%s'",
 			path);
 	}
 
