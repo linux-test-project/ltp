@@ -155,6 +155,22 @@ void tst_brk_(const char *file, const int lineno, int result,
 	kvm_exit();
 }
 
+void tst_signal_host(void *data)
+{
+	test_result->file_addr = (uintptr_t)data;
+	test_result->result = KVM_TSYNC;
+}
+
+void tst_wait_host(void *data)
+{
+	volatile int32_t *vres = &test_result->result;
+
+	tst_signal_host(data);
+
+	while (*vres != KVM_TNONE)
+		;
+}
+
 void tst_handle_interrupt(struct kvm_interrupt_frame *ifrm, long vector,
 	unsigned long errcode)
 {

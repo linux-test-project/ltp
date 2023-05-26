@@ -64,6 +64,20 @@ void tst_brk_(const char *file, const int lineno, int result,
 	const char *message) __attribute__((noreturn));
 #define tst_brk(result, msg) tst_brk_(__FILE__, __LINE__, (result), (msg))
 
+/*
+ * Send asynchronous notification to host without stopping VM execution and
+ * return immediately. The notification must be handled by another host thread.
+ * The data argument will be passed to host in test_result->file_addr and
+ * can be used to send additional data both ways.
+ */
+void tst_signal_host(void *data);
+
+/*
+ * Call tst_signal_host(data) and wait for host to call
+ * tst_kvm_clear_guest_signal().
+ */
+void tst_wait_host(void *data);
+
 void *tst_heap_alloc_aligned(size_t size, size_t align);
 void *tst_heap_alloc(size_t size);
 

@@ -136,4 +136,18 @@ int tst_kvm_run_instance(struct tst_kvm_instance *inst, int exp_errno);
  */
 void tst_kvm_destroy_instance(struct tst_kvm_instance *inst);
 
+/*
+ * Wait for given VM to call tst_signal_host() or tst_wait_host(). Timeout
+ * value is in milliseconds. Zero means no wait, negative value means wait
+ * forever. Returns 0 if signal was received, KVM_TEXIT if the VM exited
+ * without sending a signal, or -1 if timeout was reached.
+ */
+int tst_kvm_wait_guest(struct tst_kvm_instance *inst, int timeout_ms);
+
+/*
+ * Clear VM signal sent by tst_signal_host(). If the VM is waiting
+ * in tst_wait_host(), this function will signal the VM to resume execution.
+ */
+void tst_kvm_clear_guest_signal(struct tst_kvm_instance *inst);
+
 #endif /* KVM_HOST_H_ */

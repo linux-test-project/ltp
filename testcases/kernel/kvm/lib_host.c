@@ -10,6 +10,8 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
+#include "tst_clocks.h"
+#include "tst_timer.h"
 #include "kvm_host.h"
 
 static struct tst_kvm_instance test_vm = { .vm_fd = -1 };
@@ -286,6 +288,37 @@ void tst_kvm_destroy_instance(struct tst_kvm_instance *inst)
 
 	SAFE_CLOSE(inst->vm_fd);
 	memset(inst->ram, 0, sizeof(inst->ram));
+}
+
+int tst_kvm_wait_guest(struct tst_kvm_instance *inst, int timeout_ms)
+{
+	volatile struct tst_kvm_result *result = inst->result;
+	int32_t res;
+	struct timespec start, now;
+
+	if (timeout_ms >= 0)
+		tst_clock_gettime(CLOCK_MONOTONIC, &start);
+
+	while ((res = result->result) != KVM_TSYNC) {
+		if (res == KVM_TEXIT)
+			return res;
+
+		if (timeout_ms >= 0) {
+			tst_clock_gettime(CLOCK_MONOTONIC, &now);
+
+			if (tst_timespec_diff_ms(now, start) >= timeout_ms)
+				return -1;
+		}
+
+		usleep(1000);
+	}
+
+	return 0;
+}
+
+void tst_kvm_clear_guest_signal(struct tst_kvm_instance *inst)
+{
+	inst->result->result = KVM_TNONE;
 }
 
 void tst_kvm_setup(void)
