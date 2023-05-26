@@ -106,3 +106,164 @@ int safe_pthread_barrier_init(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_pthread_mutexattr_init(const char *file, const int lineno,
+	pthread_mutexattr_t *attr)
+{
+	int ret;
+
+	ret = pthread_mutexattr_init(attr);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutexattr_init(%p) failed: %s",
+			attr, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutexattr_destroy(const char *file, const int lineno,
+	pthread_mutexattr_t *attr)
+{
+	int ret;
+
+	ret = pthread_mutexattr_destroy(attr);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutexattr_destroy(%p) failed: %s",
+			attr, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutexattr_settype(const char *file, const int lineno,
+	pthread_mutexattr_t *attr, int type)
+{
+	int ret;
+
+	ret = pthread_mutexattr_settype(attr, type);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutexattr_settype(%p, %d) failed: %s",
+			attr, type, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutex_init(const char *file, const int lineno,
+	pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
+{
+	int ret;
+
+	ret = pthread_mutex_init(mutex, attr);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutex_init(%p, %p) failed: %s",
+			mutex, attr, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutex_destroy(const char *file, const int lineno,
+	pthread_mutex_t *mutex)
+{
+	int ret;
+
+	ret = pthread_mutex_destroy(mutex);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutex_destroy(%p) failed: %s",
+			mutex, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutex_lock(const char *file, const int lineno,
+	pthread_mutex_t *mutex)
+{
+	int ret;
+
+	ret = pthread_mutex_lock(mutex);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutex_lock(%p) failed: %s",
+			mutex, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutex_trylock(const char *file, const int lineno,
+	pthread_mutex_t *mutex)
+{
+	int ret;
+
+	ret = pthread_mutex_trylock(mutex);
+
+	if (ret && ret != EBUSY) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutex_trylock(%p) failed: %s",
+			mutex, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutex_timedlock(const char *file, const int lineno,
+	pthread_mutex_t *mutex, const struct timespec *abstime)
+{
+	int ret;
+
+	ret = pthread_mutex_timedlock(mutex, abstime);
+
+	if (ret && ret != ETIMEDOUT) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutex_timedlock(%p, {%lld, %ld}) failed: %s",
+			mutex, (long long)abstime->tv_sec, abstime->tv_nsec,
+			tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_mutex_unlock(const char *file, const int lineno,
+	pthread_mutex_t *mutex)
+{
+	int ret;
+
+	ret = pthread_mutex_unlock(mutex);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_mutex_unlock(%p) failed: %s",
+			mutex, tst_strerrno(ret));
+	}
+
+	return ret;
+}
+
+int safe_pthread_kill(const char *file, const int lineno,
+	pthread_t thread, int sig)
+{
+	int ret;
+
+	ret = pthread_kill(thread, sig);
+
+	if (ret) {
+		tst_brk_(file, lineno, TBROK,
+			"pthread_kill(..., %d) failed: %s",
+			sig, tst_strerrno(ret));
+	}
+
+	return ret;
+}
