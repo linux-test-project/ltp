@@ -234,14 +234,28 @@ void tst_kvm_create_instance(struct tst_kvm_instance *inst, size_t ram_size)
 	inst->result->message[0] = '\0';
 }
 
-void tst_kvm_run_instance(struct tst_kvm_instance *inst)
+int tst_kvm_run_instance(struct tst_kvm_instance *inst, int exp_errno)
 {
 	struct kvm_regs regs;
+	int ret;
 
 	while (1) {
 		inst->result->result = KVM_TNONE;
 		inst->result->message[0] = '\0';
-		SAFE_IOCTL(inst->vcpu_fd, KVM_RUN, 0);
+		errno = 0;
+		ret = ioctl(inst->vcpu_fd, KVM_RUN, 0);
+
+		if (ret == -1) {
+			if (errno == exp_errno)
+				return ret;
+
+			tst_brk(TBROK | TERRNO, "ioctl(KVM_RUN) failed");
+		}
+
+		if (ret < 0) {
+			tst_brk(TBROK | TERRNO,
+				"Invalid ioctl(KVM_RUN) return value %d", ret);
+		}
 
 		if (inst->vcpu_info->exit_reason != KVM_EXIT_HLT) {
 			SAFE_IOCTL(inst->vcpu_fd, KVM_GET_REGS, &regs);
@@ -255,6 +269,8 @@ void tst_kvm_run_instance(struct tst_kvm_instance *inst)
 
 		tst_kvm_print_result(inst);
 	}
+
+	return ret;
 }
 
 void tst_kvm_destroy_instance(struct tst_kvm_instance *inst)
@@ -280,7 +296,7 @@ void tst_kvm_setup(void)
 void tst_kvm_run(void)
 {
 	tst_kvm_create_instance(&test_vm, DEFAULT_RAM_SIZE);
-	tst_kvm_run_instance(&test_vm);
+	tst_kvm_run_instance(&test_vm, 0);
 	tst_kvm_destroy_instance(&test_vm);
 	tst_free_all();
 }

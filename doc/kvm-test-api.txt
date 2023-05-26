@@ -194,9 +194,12 @@ previously allocated guarded buffers.
   with at least `ram_size` bytes of memory. The VM instance info will be
   stored in `inst`.
 
-- `void tst_kvm_run_instance(struct tst_kvm_instance *inst)` – Executes
-  the program installed in KVM virtual machine `inst`. Any result messages
-  returned by the VM will be automatically printed to controller program output.
+- `int tst_kvm_run_instance(struct tst_kvm_instance *inst, int exp_errno)` –
+  Executes the program installed in KVM virtual machine `inst`. Any result
+  messages returned by the VM will be automatically printed to controller
+  program output. Returns zero. If `exp_errno` is non-zero, the VM execution
+  syscall is allowed to fail with the `exp_errno` error code and
+  `tst_kvm_run_instance()` will return -1 instead of terminating the test.
 
 - `void tst_kvm_destroy_instance(struct tst_kvm_instance *inst)` – Deletes
   the KVM virtual machine `inst`. Note that the guarded buffers assigned

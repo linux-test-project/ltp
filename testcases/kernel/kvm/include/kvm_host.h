@@ -125,9 +125,11 @@ struct kvm_cpuid2 *tst_kvm_get_cpuid(int sysfd);
 void tst_kvm_create_instance(struct tst_kvm_instance *inst, size_t ram_size);
 
 /*
- * Execute the given KVM instance and print results.
+ * Execute the given KVM instance and print results. If ioctl(KVM_RUN) is
+ * expected to fail, pass the expected error code in exp_errno, otherwise
+ * set it to zero. Returns last value returned by ioctl(KVM_RUN).
  */
-void tst_kvm_run_instance(struct tst_kvm_instance *inst);
+int tst_kvm_run_instance(struct tst_kvm_instance *inst, int exp_errno);
 
 /*
  * Close the given KVM instance.
