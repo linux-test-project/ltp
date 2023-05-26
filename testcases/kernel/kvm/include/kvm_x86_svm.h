@@ -37,10 +37,15 @@
 /* SVM event intercept IDs */
 #define SVM_INTERCEPT_HLT 0x78
 #define SVM_INTERCEPT_VMRUN 0x80
+#define SVM_INTERCEPT_VMLOAD 0x82
+#define SVM_INTERCEPT_VMSAVE 0x83
 #define SVM_INTERCEPT_MAX 0x95
 
 /* SVM vmrun exit codes */
 #define SVM_EXIT_HLT 0x78
+#define SVM_EXIT_VMRUN 0x80
+#define SVM_EXIT_VMLOAD 0x82
+#define SVM_EXIT_VMSAVE 0x83
 #define SVM_EXIT_AVIC_NOACCEL 0x402
 #define SVM_EXIT_INVALID ((uint64_t)-1)
 
