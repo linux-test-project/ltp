@@ -48,6 +48,9 @@ endif
 lib_guest.o $(ARCH_OBJ): CPPFLAGS	:= $(GUEST_CPPFLAGS)
 lib_guest.o $(ARCH_OBJ): CFLAGS		:= $(GUEST_CFLAGS)
 
+kvm_svm03: CFLAGS += -pthread
+kvm_svm03: LDLIBS += -pthread
+
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
 
 %-payload.o: %.c lib_guest.o $(ARCH_OBJ)
