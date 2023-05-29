@@ -47,6 +47,7 @@ unsigned long tst_reserve_hugepages(struct tst_hugepage *hp)
 	}
 
 	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
+	SAFE_FILE_PRINTF("/proc/sys/vm/compact_memory", "1");
 	if (hp->policy == TST_NEEDS) {
 		tst_hugepages += SAFE_READ_MEMINFO("HugePages_Total:");
 		goto set_hugepages;
