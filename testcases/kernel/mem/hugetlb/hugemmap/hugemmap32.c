@@ -64,6 +64,7 @@ static void setup(void)
 
 	SAFE_CLOSEDIR(dir);
 
+	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
 	if (tst_available_mem() < (long long)hpage_size) {
 		g_hpage_path[0] = '\0';
 		tst_brk(TCONF, "No enough memory for gigantic hugepage reservation");
