@@ -56,7 +56,7 @@ static struct tcase {
 	{&shmkey1, SHM_SIZE, IPC_EXCL, 0, 0, ENOENT},
 	{&shmkey, SHM_SIZE, IPC_CREAT | IPC_EXCL, 0, 0, EEXIST},
 	{&shmkey1, SHMMIN - 1, IPC_CREAT | IPC_EXCL, 0, 0, EINVAL},
-	{&shmkey1, SHMMAX + 1, IPC_CREAT | IPC_EXCL, 0, 0, EINVAL},
+	{&shmkey1, 8192 + 1, IPC_CREAT | IPC_EXCL, 0, 0, EINVAL},
 	{&shmkey, SHM_SIZE * 2, IPC_EXCL, 0, 0, EINVAL},
 	{&shmkey, SHM_SIZE, SHM_RD, 1, 0, EACCES},
 	{&shmkey1, SHM_SIZE, IPC_CREAT | SHM_HUGETLB, 0, 1, EPERM},
@@ -149,4 +149,8 @@ static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcases),
 	.hugepages = {TST_NO_HUGEPAGES},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/kernel/shmmax", "8192", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
+		{}
+	},
 };
