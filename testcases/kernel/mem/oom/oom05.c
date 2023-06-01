@@ -85,9 +85,6 @@ void setup(void)
 	if (!is_numa(NULL, NH_MEMS, 1))
 		tst_brk(TCONF, "requires NUMA with at least 1 node");
 
-	overcommit = get_sys_tune("overcommit_memory");
-	set_sys_tune("overcommit_memory", 1, 1);
-
 	/*
 	 * Some nodes do not contain memory, so use
 	 * get_allowed_nodes(NH_MEMS) to get a memory
@@ -104,21 +101,18 @@ void setup(void)
 	SAFE_CG_PRINTF(tst_cg, "memory.max", "%lu", TESTMEM);
 }
 
-void cleanup(void)
-{
-	if (overcommit != -1)
-		set_sys_tune("overcommit_memory", overcommit, 0);
-}
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.max_runtime = TST_UNLIMITED_RUNTIME,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = verify_oom,
 	.needs_cgroup_ctrls = (const char *const []){
 		"memory", "cpuset", NULL
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/vm/overcommit_memory", "1", TST_SR_TBROK},
+		{}
 	},
 };
 

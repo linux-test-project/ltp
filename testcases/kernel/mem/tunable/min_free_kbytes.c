@@ -41,7 +41,6 @@
 
 volatile int end;
 static long default_tune = -1;
-static long orig_overcommit = -1;
 static unsigned long total_mem;
 
 static void test_tune(unsigned long overcommit_policy);
@@ -217,15 +216,12 @@ static void setup(void)
 	total_mem = SAFE_READ_MEMINFO("MemTotal:") + SAFE_READ_MEMINFO("SwapTotal:");
 
 	default_tune = get_sys_tune("min_free_kbytes");
-	orig_overcommit = get_sys_tune("overcommit_memory");
 }
 
 static void cleanup(void)
 {
 	if (default_tune != -1)
 		set_sys_tune("min_free_kbytes", default_tune, 0);
-	if (orig_overcommit != -1)
-		set_sys_tune("overcommit_memory", orig_overcommit, 0);
 }
 
 static struct tst_test test = {
@@ -235,4 +231,8 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = min_free_kbytes_test,
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
+		{}
+	},
 };

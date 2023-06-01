@@ -42,7 +42,6 @@ static inline void clean_node(unsigned long *array)
 #define MLOCK			2
 #define KSM			3
 
-extern long overcommit;
 void oom(int testcase, int lite, int retcode, int allow_sigkill);
 void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
 

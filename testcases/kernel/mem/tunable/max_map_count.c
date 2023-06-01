@@ -54,21 +54,16 @@
 #define MAX_MAP_COUNT		65536L
 
 static long old_max_map_count = -1;
-static long old_overcommit = -1;
 
 static void setup(void)
 {
 	SAFE_ACCESS(PATH_SYSVM "max_map_count", F_OK);
 
 	old_max_map_count = get_sys_tune("max_map_count");
-	old_overcommit = get_sys_tune("overcommit_memory");
-	set_sys_tune("overcommit_memory", 0, 1);
 }
 
 static void cleanup(void)
 {
-	if (old_overcommit != -1)
-		set_sys_tune("overcommit_memory", old_overcommit, 0);
 	if (old_max_map_count != -1)
 		set_sys_tune("max_map_count", old_max_map_count, 0);
 }
@@ -213,4 +208,8 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = max_map_count_test,
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/vm/overcommit_memory", "0", TST_SR_TBROK},
+		{}
+	},
 };
