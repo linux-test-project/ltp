@@ -214,11 +214,11 @@ char *str_type(int type)
 	static char buf[20];
 
 	switch (type) {
-	case 1:
+	case F_RDLCK:
 		return ("F_RDLCK");
-	case 2:
+	case F_WRLCK:
 		return ("F_WRLCK");
-	case 3:
+	case F_UNLCK:
 		return ("F_UNLCK");
 	default:
 		sprintf(buf, "BAD VALUE: %d", type);
