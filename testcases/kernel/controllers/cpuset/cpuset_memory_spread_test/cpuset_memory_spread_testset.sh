@@ -38,7 +38,7 @@ nr_mems=$N_NODES
 # on which it is running. The other nodes' slab space has littler change.(less
 # than 1000 kb).
 upperlimit=10000
-lowerlimit=2000
+lowerlimit=5000
 
 cpus_all="$(seq -s, 0 $((nr_cpus-1)))"
 mems_all="$(seq -s, 0 $((nr_mems-1)))"
