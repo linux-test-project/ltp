@@ -61,10 +61,10 @@ static inline int sys_ioprio_set(int which, int who, int ioprio)
 	return tst_syscall(__NR_ioprio_set, which, who, ioprio);
 }
 
-/* Priority range from 0 (highest) to 7 (lowest) */
+/* Priority range from 0 (highest) to IOPRIO_PRIO_NUM (lowest) */
 static inline int prio_in_range(int prio)
 {
-	if ((prio < 0) || (prio > 7))
+	if ((prio < 0) || (prio >= IOPRIO_PRIO_NUM))
 		return 0;
 	return 1;
 }

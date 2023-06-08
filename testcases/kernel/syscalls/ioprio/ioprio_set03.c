@@ -27,7 +27,7 @@ static void run(void)
 	sys_ioprio_set(IOPRIO_WHO_PROCESS, 0,
 		       IOPRIO_PRIO_VALUE(class, 4));
 	TEST(sys_ioprio_set(IOPRIO_WHO_PROCESS, 0,
-			    IOPRIO_PRIO_VALUE(class, 8)));
+			    IOPRIO_PRIO_VALUE(class, IOPRIO_PRIO_NUM)));
 	if (TST_RET == -1) {
 		ioprio_check_setting(class, 4, 1);
 		if (errno == EINVAL)
