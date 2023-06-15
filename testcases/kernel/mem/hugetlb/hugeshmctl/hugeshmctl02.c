@@ -27,6 +27,7 @@
 #include <pwd.h>
 #include <limits.h>
 #include "hugetlb.h"
+#include "lapi/syscalls.h"
 
 static size_t shm_size;
 static int shm_id_1 = -1;
@@ -50,9 +51,37 @@ struct tcase {
 	{&shm_id_2, -1, &buf, EINVAL},
 };
 
+static int libc_shmctl(int shmid, int cmd, void *buf)
+{
+	return shmctl(shmid, cmd, buf);
+}
+
+static int sys_shmctl(int shmid, int cmd, void *buf)
+{
+	return tst_syscall(__NR_shmctl, shmid, cmd, buf);
+}
+
+static struct test_variants
+{
+	int (*shmctl)(int shmid, int cmd, void *buf);
+	char *desc;
+} variants[] = {
+	{ .shmctl = libc_shmctl, .desc = "libc shmctl()"},
+#if (__NR_shmctl != __LTP__NR_INVALID_SYSCALL)
+	{ .shmctl = sys_shmctl,  .desc = "__NR_shmctl syscall"},
+#endif
+};
+
 static void test_hugeshmctl(unsigned int i)
 {
-	TEST(shmctl(*(tcases[i].shmid), tcases[i].cmd, tcases[i].sbuf));
+	struct test_variants *tv = &variants[tst_variant];
+
+	if (tcases[i].error == EFAULT && tv->shmctl == libc_shmctl) {
+		tst_res(TCONF, "EFAULT is skipped for libc variant");
+		return;
+	}
+
+	TEST(tv->shmctl(*(tcases[i].shmid), tcases[i].cmd, tcases[i].sbuf));
 	if (TST_RET != -1) {
 		tst_res(TFAIL, "shmctl succeeded unexpectedly");
 		return;
@@ -70,7 +99,10 @@ static void test_hugeshmctl(unsigned int i)
 
 static void setup(void)
 {
+	struct test_variants *tv = &variants[tst_variant];
 	long hpage_size;
+
+	tst_res(TINFO, "Testing variant: %s", tv->desc);
 
 	if (tst_hugepages == 0)
 		tst_brk(TCONF, "No enough hugepages for testing.");
@@ -101,6 +133,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.test = test_hugeshmctl,
+	.test_variants = ARRAY_SIZE(variants),
 	.tcnt = ARRAY_SIZE(tcases),
 	.needs_root = 1,
 	.needs_tmpdir = 1,
