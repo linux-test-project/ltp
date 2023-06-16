@@ -905,7 +905,7 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 			"Mounting %s to %s fstyp=%s flags=%lx",
 			source, mpath, filesystemtype, mountflags);
 	} else {
-		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+		tst_resm_(file, lineno, TINFO | TERRNO,
 			"Cannot resolve the absolute path of %s", target);
 	}
 	/*
@@ -962,7 +962,7 @@ int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	if (realpath(target, mpath)) {
 		tst_resm_(file, lineno, TINFO, "Umounting %s", mpath);
 	} else {
-		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+		tst_resm_(file, lineno, TINFO | TERRNO,
 			"Cannot resolve the absolute path of %s", target);
 	}
 
