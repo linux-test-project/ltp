@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2021-2023 Petr Vorel <pvorel@suse.cz>
 
 name: "CI: docker based builds"
 on: [push, pull_request]
@@ -79,7 +79,6 @@ jobs:
           - container: "debian:oldstable"
             env:
               CC: clang
-              METADATA: asciidoc-pdf
 
           - container: "opensuse/leap"
             env:
