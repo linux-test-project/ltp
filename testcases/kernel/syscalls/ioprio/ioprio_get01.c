@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Linus Walleij <linus.walleij@linaro.org>
+ * Copyright (c) 2023 Linux Test Project
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * Basic ioprio_get() test. Gets the current process I/O priority and
  * checks that the values are sane.
  */

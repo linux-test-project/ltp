@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Linus Walleij <linus.walleij@linaro.org>
+ * Copyright (c) 2023 Linux Test Project
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * Negative ioprio_set() test. Test some non-working priorities to make
  * sure they don't work.
  */
