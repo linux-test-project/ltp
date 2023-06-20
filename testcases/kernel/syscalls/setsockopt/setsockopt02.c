@@ -96,4 +96,8 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2017-7308"},
+		{}
+	}
 };
