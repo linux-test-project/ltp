@@ -7,11 +7,8 @@
  * bumps it up one notch, then down two notches and checks that the
  * new priority is reported back correctly.
  */
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 #include "ioprio.h"
 
 static int orig_class;

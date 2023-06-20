@@ -6,11 +6,8 @@
  * Basic ioprio_get() test. Gets the current process I/O priority and
  * checks that the values are sane.
  */
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 #include "ioprio.h"
 
 static void run(void)

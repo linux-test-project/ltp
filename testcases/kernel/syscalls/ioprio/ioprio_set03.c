@@ -6,11 +6,8 @@
  * Negative ioprio_set() test. Test some non-working priorities to make
  * sure they don't work.
  */
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 #include "ioprio.h"
 
 static void run(void)

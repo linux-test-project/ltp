@@ -7,11 +7,8 @@
  * Tests to set all 8 priority levels for best effort priority, then
  * switches to test all 8 priority levels for idle priority.
  */
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 #include "ioprio.h"
 
 static void run(void)
