@@ -53,21 +53,6 @@
 #define MAP_COUNT_DEFAULT	1024
 #define MAX_MAP_COUNT		65536L
 
-static long old_max_map_count = -1;
-
-static void setup(void)
-{
-	SAFE_ACCESS(PATH_SYSVM "max_map_count", F_OK);
-
-	old_max_map_count = get_sys_tune("max_map_count");
-}
-
-static void cleanup(void)
-{
-	if (old_max_map_count != -1)
-		set_sys_tune("max_map_count", old_max_map_count, 0);
-}
-
 /* This is a filter to exclude map entries which aren't accounted
  * for in the vm_area_struct's map_count.
  */
@@ -205,11 +190,10 @@ static void max_map_count_test(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = max_map_count_test,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/overcommit_memory", "0", TST_SR_TBROK},
+		{"/proc/sys/vm/max_map_count", NULL, TST_SR_TBROK},
 		{}
 	},
 };

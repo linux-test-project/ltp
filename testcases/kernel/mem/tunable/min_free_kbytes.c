@@ -218,21 +218,15 @@ static void setup(void)
 	default_tune = get_sys_tune("min_free_kbytes");
 }
 
-static void cleanup(void)
-{
-	if (default_tune != -1)
-		set_sys_tune("min_free_kbytes", default_tune, 0);
-}
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.max_runtime = TST_UNLIMITED_RUNTIME,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = min_free_kbytes_test,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
+		{"/proc/sys/vm/min_free_kbytes", NULL, TST_SR_TBROK},
 		{}
 	},
 };
