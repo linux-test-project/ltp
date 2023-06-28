@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+/*
+ * Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2019-2023
+ */
+
+/*\
+ * [Description]
  *
- * Regression test-case for the crash caused by over-sized SCTP chunk,
+ * Regression test for the crash caused by over-sized SCTP chunk,
  * fixed by upstream commit 07f2c7ab6f8d ("sctp: verify size of a new
- * chunk in _sctp_make_chunk()")
+ * chunk in _sctp_make_chunk()").
  */
 
 #include <stdlib.h>
