@@ -33,6 +33,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#define _GNU_SOURCE
+
 /* xfs-specific includes */
 
 #if defined(NO_XFS)
@@ -58,9 +60,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-
-#ifndef O_DIRECT
-#define O_DIRECT 040000
-#endif
+#include "lapi/fcntl.h"
 
 #endif
