@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2014-2023
  */
 
 #ifndef LAPI_FCNTL_H__
@@ -10,9 +11,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 
-#ifndef O_DIRECT
-# define O_DIRECT 040000
-#endif
+/* NOTE: #define _GNU_SOURCE if you need O_DIRECT in tests */
 
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 02000000
