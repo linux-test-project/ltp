@@ -35,16 +35,12 @@
 
 #define _GNU_SOURCE
 
-/* xfs-specific includes */
-
 #if defined(NO_XFS)
 # include "xfscompat.h"
 #else
 # include <xfs/libxfs.h>
 # include <attr/attributes.h>
 #endif
-
-/* libc includes */
 
 #include <sys/stat.h>
 #include <sys/statvfs.h>
