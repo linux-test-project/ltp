@@ -612,6 +612,7 @@ fanotify19 fanotify19
 fanotify20 fanotify20
 fanotify21 fanotify21
 fanotify22 fanotify22
+fanotify23 fanotify23
 
 ioperm01 ioperm01
 ioperm02 ioperm02
