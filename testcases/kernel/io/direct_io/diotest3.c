@@ -292,6 +292,7 @@ int main(int argc, char *argv[])
 	}
 	unlink(filename);
 	free(pidlst);
+	fflush(stdout);
 	total++;
 
 	/* Testblock-2: Write with Direct IO, Read without */
@@ -309,6 +310,7 @@ int main(int argc, char *argv[])
 	}
 	unlink(filename);
 	free(pidlst);
+	fflush(stdout);
 	total++;
 
 	/* Testblock-3: Read, Write with Direct IO. */
