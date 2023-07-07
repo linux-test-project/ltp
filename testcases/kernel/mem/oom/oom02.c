@@ -56,15 +56,6 @@ static void setup(void)
 {
 	if (!is_numa(NULL, NH_MEMS, 2))
 		tst_brk(TCONF, "The case need a NUMA system.");
-
-	overcommit = get_sys_tune("overcommit_memory");
-	set_sys_tune("overcommit_memory", 1, 1);
-}
-
-static void cleanup(void)
-{
-	if (overcommit != -1)
-		set_sys_tune("overcommit_memory", overcommit, 0);
 }
 
 static struct tst_test test = {
@@ -72,8 +63,11 @@ static struct tst_test test = {
 	.forks_child = 1,
         .max_runtime = TST_UNLIMITED_RUNTIME,
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = verify_oom,
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/vm/overcommit_memory", "1", TST_SR_TBROK},
+		{}
+	},
 };
 
 #else

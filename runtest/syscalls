@@ -612,6 +612,7 @@ fanotify19 fanotify19
 fanotify20 fanotify20
 fanotify21 fanotify21
 fanotify22 fanotify22
+fanotify23 fanotify23
 
 ioperm01 ioperm01
 ioperm02 ioperm02
@@ -988,6 +989,7 @@ pipe10 pipe10
 pipe11 pipe11
 pipe12 pipe12
 pipe13 pipe13
+pipe14 pipe14
 
 pipe2_01 pipe2_01
 pipe2_02 pipe2_02
@@ -1767,6 +1769,7 @@ statx08 statx08
 statx09 statx09
 statx10 statx10
 statx11 statx11
+statx12 statx12
 
 membarrier01 membarrier01
 

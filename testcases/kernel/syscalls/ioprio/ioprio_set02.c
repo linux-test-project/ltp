@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Linus Walleij <linus.walleij@linaro.org>
+ * Copyright (c) 2023 Linux Test Project
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * Extended ioprio_set() test.
  * Tests to set all 8 priority levels for best effort priority, then
  * switches to test all 8 priority levels for idle priority.
  */
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 #include "ioprio.h"
 
 static void run(void)

@@ -70,7 +70,6 @@
 #define EXPECT_FAIL		1
 
 static char *R_opt;
-static long old_overcommit_memory = -1;
 static long old_overcommit_ratio = -1;
 static long overcommit_ratio;
 static long sum_total;
@@ -90,16 +89,11 @@ static void setup(void)
 	long mem_total, swap_total;
 	struct rlimit lim;
 
-	if (access(PATH_SYSVM "overcommit_memory", F_OK) == -1 ||
-	    access(PATH_SYSVM "overcommit_ratio", F_OK) == -1)
-		tst_brk(TCONF, "system doesn't support overcommit_memory");
-
 	if (R_opt)
 		overcommit_ratio = SAFE_STRTOL(R_opt, 0, LONG_MAX);
 	else
 		overcommit_ratio = DEFAULT_OVER_RATIO;
 
-	old_overcommit_memory = get_sys_tune("overcommit_memory");
 	old_overcommit_ratio = get_sys_tune("overcommit_ratio");
 
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
@@ -126,14 +120,6 @@ static void setup(void)
 
 	calculate_total_batch_size();
 	tst_res(TINFO, "TotalBatchSize is %ld kB", total_batch_size);
-}
-
-static void cleanup(void)
-{
-	if (old_overcommit_memory != -1)
-		set_sys_tune("overcommit_memory", old_overcommit_memory, 0);
-	if (old_overcommit_ratio != -1)
-		set_sys_tune("overcommit_ratio", old_overcommit_ratio, 0);
 }
 
 static void overcommit_memory_test(void)
@@ -269,6 +255,10 @@ static struct tst_test test = {
 		{}
 	},
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = overcommit_memory_test,
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
+		{"/proc/sys/vm/overcommit_ratio", NULL, TST_SR_TBROK},
+		{}
+	},
 };

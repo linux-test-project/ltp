@@ -56,6 +56,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/if_ether.h \
     linux/if_packet.h \
     linux/io_uring.h \
+    linux/ioprio.h \
     linux/keyctl.h \
     linux/mempolicy.h \
     linux/module.h \

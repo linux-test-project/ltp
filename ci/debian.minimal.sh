@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2023 Petr Vorel <pvorel@suse.cz>
 set -ex
 
 apt="apt remove -y"
@@ -11,7 +11,6 @@ $apt \
 	libaio-dev \
 	libaio1 \
 	libcap-dev \
-	libcap2 \
 	libkeyutils-dev \
 	libnuma-dev \
 	libnuma1 \

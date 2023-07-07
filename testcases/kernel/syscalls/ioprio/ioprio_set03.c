@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Linus Walleij <linus.walleij@linaro.org>
+ * Copyright (c) 2023 Linux Test Project
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * Negative ioprio_set() test. Test some non-working priorities to make
  * sure they don't work.
  */
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 #include "ioprio.h"
 
 static void run(void)
@@ -27,7 +28,7 @@ static void run(void)
 	sys_ioprio_set(IOPRIO_WHO_PROCESS, 0,
 		       IOPRIO_PRIO_VALUE(class, 4));
 	TEST(sys_ioprio_set(IOPRIO_WHO_PROCESS, 0,
-			    IOPRIO_PRIO_VALUE(class, 8)));
+			    IOPRIO_PRIO_VALUE(class, IOPRIO_PRIO_NUM)));
 	if (TST_RET == -1) {
 		ioprio_check_setting(class, 4, 1);
 		if (errno == EINVAL)

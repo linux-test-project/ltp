@@ -79,4 +79,8 @@ static void run(unsigned int test_nr)
 static struct tst_test test = {
 	.test = run,
 	.tcnt = 2,
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2012-0957"},
+		{}
+	}
 };

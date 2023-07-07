@@ -1,33 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (c) 2019 Linus Walleij <linus.walleij@linaro.org>
+ * Copyright (c) 2023 Linux Test Project
  */
 
 #ifndef LTP_IOPRIO_H
 #define LTP_IOPRIO_H
 
-enum {
-	IOPRIO_CLASS_NONE = 0,
-	IOPRIO_CLASS_RT,
-	IOPRIO_CLASS_BE,
-	IOPRIO_CLASS_IDLE,
-};
-
-enum {
-	IOPRIO_WHO_PROCESS = 1,
-	IOPRIO_WHO_PGRP,
-	IOPRIO_WHO_USER,
-};
-
-/* The I/O scheduler classes have 8 priorities 0..7 except for the IDLE class */
-#define IOPRIO_PRIO_NUM		8
-
-#define IOPRIO_CLASS_SHIFT	(13)
-#define IOPRIO_PRIO_MASK	((1UL << IOPRIO_CLASS_SHIFT) - 1)
-
-#define IOPRIO_PRIO_CLASS(data)	((data) >> IOPRIO_CLASS_SHIFT)
-#define IOPRIO_PRIO_LEVEL(data)	((data) & IOPRIO_PRIO_MASK)
-#define IOPRIO_PRIO_VALUE(class, data)	(((class) << IOPRIO_CLASS_SHIFT) | data)
+#include "lapi/ioprio.h"
+#include "lapi/syscalls.h"
 
 static const char * const to_class_str[] = {
 	[IOPRIO_CLASS_NONE] = "NONE",
@@ -46,10 +27,10 @@ static inline int sys_ioprio_set(int which, int who, int ioprio)
 	return tst_syscall(__NR_ioprio_set, which, who, ioprio);
 }
 
-/* Priority range from 0 (highest) to 7 (lowest) */
+/* Priority range from 0 (highest) to IOPRIO_PRIO_NUM (lowest) */
 static inline int prio_in_range(int prio)
 {
-	if ((prio < 0) || (prio > 7))
+	if ((prio < 0) || (prio >= IOPRIO_PRIO_NUM))
 		return 0;
 	return 1;
 }
@@ -91,4 +72,4 @@ static inline void ioprio_check_setting(int class, int prio, int report)
 			newprio);
 }
 
-#endif
+#endif /* LTP_IOPRIO_H */

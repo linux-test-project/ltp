@@ -95,6 +95,10 @@ static struct tst_test test = {
 		"CONFIG_KSM=y",
 		NULL
 	},
+	.tags = (const struct tst_tag[]) {
+		{"CVE", "2011-2183"},
+		{}
+	}
 };
 
 #else

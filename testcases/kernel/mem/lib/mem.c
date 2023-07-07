@@ -27,8 +27,6 @@
 
 /* OOM */
 
-long overcommit = -1;
-
 static int alloc_mem(long int length, int testcase)
 {
 	char *s;

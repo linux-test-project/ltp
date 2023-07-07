@@ -323,7 +323,22 @@ static int open_unpoison_pfn(void)
 	if (!mnt)
 		return -1;
 
-	return SAFE_OPEN(debugfs_fp, O_WRONLY);
+	TEST(open(debugfs_fp, O_WRONLY));
+
+	if (TST_RET == -1 && TST_ERR == EPERM && tst_lockdown_enabled()) {
+		tst_res(TINFO,
+			"Cannot restore soft-offlined memory due to lockdown");
+		return TST_RET;
+	}
+
+	if (TST_RET == -1) {
+		tst_brk(TBROK | TTERRNO, "open(%s) failed", debugfs_fp);
+	} else if (TST_RET < 0) {
+		tst_brk(TBROK | TTERRNO, "Invalid open() return value %ld",
+			TST_RET);
+	}
+
+	return TST_RET;
 }
 
 /*

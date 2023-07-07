@@ -221,6 +221,10 @@ static inline int statx(int dirfd, const char *pathname, unsigned int flags,
 # define STATX_ATTR_AUTOMOUNT	0x00001000
 #endif
 
+#ifndef STATX_ATTR_MOUNT_ROOT
+# define STATX_ATTR_MOUNT_ROOT	0x00002000
+#endif
+
 #ifndef STATX_ATTR_VERITY
 # define STATX_ATTR_VERITY	0x00100000
 #endif

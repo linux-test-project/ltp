@@ -49,22 +49,13 @@ static void verify_oom(void)
 	testoom(0, 0, ENOMEM, 1);
 }
 
-static void setup(void)
-{
-	overcommit = get_sys_tune("overcommit_memory");
-}
-
-static void cleanup(void)
-{
-	if (overcommit != -1)
-		set_sys_tune("overcommit_memory", overcommit, 0);
-}
-
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.max_runtime = TST_UNLIMITED_RUNTIME,
-	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = verify_oom,
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
+		{}
+	},
 };

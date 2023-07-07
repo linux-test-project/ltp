@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+/*
+ * Copyright (c) 2018 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2019-2023
+ */
+
+/*\
+ * [Description]
  *
- * Regression test-case for the crash caused by over-sized SCTP chunk,
+ * Regression test for the crash caused by over-sized SCTP chunk,
  * fixed by upstream commit 07f2c7ab6f8d ("sctp: verify size of a new
- * chunk in _sctp_make_chunk()")
+ * chunk in _sctp_make_chunk()").
  */
 
 #include <stdlib.h>
@@ -34,6 +40,26 @@ static int addr_num = 3273;
 
 static void setup_server(void)
 {
+	const char hmac_algo_path[] = "/proc/sys/net/sctp/cookie_hmac_alg";
+	char hmac_algo[CHAR_MAX];
+	int hmac_algo_changed = 0;
+	int fd;
+
+	/* Disable md5 if fips is enabled. Set it to none */
+	if (tst_fips_enabled()) {
+		/* Load sctp module */
+		if (access(hmac_algo_path, F_OK) < 0) {
+			fd = SAFE_SOCKET(PF_INET, SOCK_STREAM, IPPROTO_SCTP);
+			SAFE_CLOSE(fd);
+		}
+
+		if (!access(hmac_algo_path, F_OK)) {
+			SAFE_FILE_SCANF(hmac_algo_path, "%s", hmac_algo);
+			SAFE_FILE_PRINTF(hmac_algo_path, "%s", "none");
+			hmac_algo_changed = 1;
+		}
+	}
+
 	loc.sin6_family = AF_INET6;
 	loc.sin6_addr = in6addr_loopback;
 
@@ -46,6 +72,9 @@ static void setup_server(void)
 	SAFE_LISTEN(sfd, 1);
 
 	srand(port);
+
+	if (hmac_algo_changed)
+		SAFE_FILE_PRINTF(hmac_algo_path, "%s", hmac_algo);
 }
 
 static void update_packet_field(size_t *off, void *buf, size_t buf_len)

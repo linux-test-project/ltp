@@ -33,7 +33,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-/* xfs-specific includes */
+#define _GNU_SOURCE
 
 #if defined(NO_XFS)
 # include "xfscompat.h"
@@ -41,8 +41,6 @@
 # include <xfs/libxfs.h>
 # include <attr/attributes.h>
 #endif
-
-/* libc includes */
 
 #include <sys/stat.h>
 #include <sys/statvfs.h>
@@ -58,9 +56,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-
-#ifndef O_DIRECT
-#define O_DIRECT 040000
-#endif
+#include "lapi/fcntl.h"
 
 #endif

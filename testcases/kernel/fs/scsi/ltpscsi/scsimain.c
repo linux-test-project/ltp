@@ -28,6 +28,7 @@
 [0x12][   |lu][pg cde][res   ][al len][cntrl ]
 */
 
+#define _GNU_SOURCE
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -52,10 +53,6 @@
 #include "llseek.h"
 
 #define ME "scsimain: "
-
-#ifndef O_DIRECT
-#define O_DIRECT 040000
-#endif
 
 #define NUMERIC_SCAN_DEF 1	/* change to 0 to make alpha scan default */
 //static char * version_str = "0.21 20030513";

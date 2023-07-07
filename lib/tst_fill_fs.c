@@ -73,11 +73,28 @@ void fill_random(const char *path, int verbose)
 
 void fill_flat_vec(const char *path, int verbose)
 {
-	int dir = SAFE_OPEN(path, O_PATH | O_DIRECTORY);
-	int fd = SAFE_OPENAT(dir, "AOF", O_WRONLY | O_CREAT, 0600);
+	int dir, fd;
 	struct iovec iov[512];
 	int iovcnt = ARRAY_SIZE(iov);
 	int retries = 3;
+
+	dir = open(path, O_PATH | O_DIRECTORY);
+	if (dir == -1) {
+		if (errno == ENOSPC) {
+			tst_res(TINFO | TERRNO, "open()");
+			return;
+		}
+		tst_brk(TBROK | TERRNO, "open(%s, %d) failed", path, O_PATH | O_DIRECTORY);
+	}
+
+	fd = openat(dir, "AOF", O_WRONLY | O_CREAT, 0600);
+	if (fd == -1) {
+		if (errno == ENOSPC) {
+			tst_res(TINFO | TERRNO, "openat()");
+			return;
+		}
+		tst_brk(TBROK | TERRNO, "openat(%s, %d, 0600) failed", dir, O_PATH | O_DIRECTORY);
+	}
 
 	SAFE_CLOSE(dir);
 
