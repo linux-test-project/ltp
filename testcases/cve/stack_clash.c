@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Pavel Boldin <pboldin@cloudlinux.com>
+ * Copyright (c) 2023 Rick Edgecombe <rick.p.edgecombe@intel.com>
  */
 
 /* This is a regression test of the Stack Clash [1] vulnerability. This tests
@@ -18,11 +19,18 @@
  * to infinity and preallocate REQ_STACK_SIZE bytes of stack so that no calls
  * after `mmap` are moving stack further.
  *
+ * If the architecture meets certain requirements (only x86_64 is verified)
+ * then the test also tests that new mmap()s can't be placed in the stack's
+ * guard gap. This part of the test works by forcing a bottom up search. The
+ * assumptions are that the stack grows down (start gap) and either:
+ *   1. The default search is top down, and will switch to bottom up if
+ *      space is exhausted.
+ *   2. The default search is bottom up and the stack is above mmap base
+ *
  * [1] https://blog.qualys.com/securitylabs/2017/06/19/the-stack-clash
  * [2] https://bugzilla.novell.com/show_bug.cgi?id=CVE-2017-1000364
  */
 
-#include <sys/mman.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -32,6 +40,7 @@
 
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
+#include "lapi/mmap.h"
 
 static unsigned long page_size;
 static unsigned long page_mask;
@@ -76,6 +85,49 @@ void segv_handler(int sig, siginfo_t *info, void *data LTP_ATTRIBUTE_UNUSED)
 		_exit(EXIT_FAILURE);
 	else
 		_exit(EXIT_SUCCESS);
+}
+
+static void force_bottom_up(void)
+{
+	FILE *fh;
+	char buf[1024];
+	unsigned long start, end, size, lastend = 0;
+
+	/* start filling from mmap_min_addr */
+	SAFE_FILE_SCANF("/proc/sys/vm/mmap_min_addr", "%lu", &lastend);
+
+	fh = SAFE_FOPEN("/proc/self/maps", "r");
+
+	while (!feof(fh)) {
+		if (fgets(buf, sizeof(buf), fh) == NULL)
+			goto out;
+
+		if (sscanf(buf, "%lx-%lx", &start, &end) != 2) {
+			tst_brk(TBROK | TERRNO, "sscanf");
+			goto out;
+		}
+
+		size = start - lastend;
+
+		/* Skip the PROT_NONE that was just added (!size). */
+		if (!size) {
+			lastend = end;
+			continue;
+		}
+
+		/* If the next area is the stack, quit. */
+		if (!!strstr(buf, "[stack]"))
+			break;
+
+		/* This is not cleaned up. */
+		SAFE_MMAP((void *)lastend, size, PROT_NONE,
+			  MAP_ANON|MAP_PRIVATE|MAP_FIXED_NOREPLACE, -1, 0);
+
+		lastend = end;
+	}
+
+out:
+	SAFE_FCLOSE(fh);
 }
 
 unsigned long read_stack_addr_from_proc(unsigned long *stack_size)
@@ -130,6 +182,28 @@ void __attribute__((noinline)) preallocate_stack(unsigned long required)
 	garbage[0] = garbage[required - 1] = '\0';
 }
 
+static void do_mmap_placement_test(unsigned long stack_addr, unsigned long gap)
+{
+	void *map_test_gap;
+
+	force_bottom_up();
+
+	/*
+	 * force_bottom_up() used up all the spaces below the stack. The search down
+	 * path should fail, and search up might take a look at the guard gap
+	 * region. If it avoids it, the allocation will be above the stack. If it
+	 * uses it, the allocation will be in the gap and the test should fail.
+	 */
+	map_test_gap = SAFE_MMAP(0, MAPPED_LEN,
+				 PROT_READ|PROT_WRITE, MAP_ANON|MAP_PRIVATE, 0, 0);
+
+	if (stack_addr - gap <= (unsigned long)map_test_gap &&
+		(unsigned long)map_test_gap <= stack_addr) {
+		tst_res(TFAIL, "New mmap was placed in the guard gap.");
+		SAFE_MUNMAP(map_test_gap, MAPPED_LEN);
+	}
+}
+
 void do_child(void)
 {
 	unsigned long stack_addr, stack_size;
@@ -179,6 +253,11 @@ void do_child(void)
 	dump_proc_self_maps();
 #endif
 
+#ifdef __x86_64__
+	do_mmap_placement_test(stack_addr, gap);
+#endif
+
+	/* Now see if it can grow too close to an adjacent region. */
 	exhaust_stack_into_sigsegv();
 }
 
@@ -252,6 +331,7 @@ static struct tst_test test = {
 	.test_all = stack_clash_test,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-1000364"},
+		{"linux-git", "58c5d0d6d522"},
 		{}
 	}
 };
