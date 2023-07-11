@@ -35,7 +35,7 @@ static int shm_id_2 = -1;
 static int shm_id_3 = -1;
 static struct shmid_ds buf;
 
-struct tcase {
+static struct tcase {
 	int *shmid;
 	int cmd;
 	struct shmid_ds *sbuf;
