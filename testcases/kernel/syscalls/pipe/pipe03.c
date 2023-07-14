@@ -1,51 +1,42 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2002
+ * Copyright (c) 2003-2023 Linux Test Project
  */
 
-/*
- * Make sure that writing to the read end of a pipe and reading from
- * the write end of a pipe both fail.
+/*\
+ * [Description]
+ *
+ * Verify that, an attempt to write to the read end of a pipe fails with EBADF
+ * and an attempt to read from the write end of a pipe also fails with EBADF.
  */
 
-#include <unistd.h>
-#include <errno.h>
 #include "tst_test.h"
 
 static int fd[2];
 
 static void verify_pipe(void)
 {
-	char buf[2];
+	char buf[] = "abcdef";
 
-	TEST(pipe(fd));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "pipe() failed unexpectedly");
-		return;
-	}
+	SAFE_PIPE(fd);
 
-	TEST(write(fd[0], "A", 1));
-	if (TST_RET == -1 && errno == EBADF) {
-		tst_res(TPASS | TTERRNO, "expected failure writing "
-			"to read end of pipe");
-	} else {
-		tst_res(TFAIL | TTERRNO, "unexpected failure writing "
-			"to read end of pipe");
-	}
-
-	TEST(read(fd[1], buf, 1));
-	if (TST_RET == -1 && errno == EBADF) {
-		tst_res(TPASS | TTERRNO, "expected failure reading "
-			"from write end of pipe");
-	} else {
-		tst_res(TFAIL | TTERRNO, "unexpected failure reading "
-			"from write end of pipe");
-	}
+	TST_EXP_FAIL2(write(fd[0], "A", 1), EBADF);
+	TST_EXP_FAIL2(read(fd[1], buf, 1), EBADF);
 
 	SAFE_CLOSE(fd[0]);
 	SAFE_CLOSE(fd[1]);
 }
 
+static void cleanup(void)
+{
+	if (fd[0] > 0)
+		SAFE_CLOSE(fd[0]);
+	if (fd[1] > 0)
+		SAFE_CLOSE(fd[1]);
+}
+
 static struct tst_test test = {
 	.test_all = verify_pipe,
+	.cleanup = cleanup
 };
