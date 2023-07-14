@@ -80,8 +80,10 @@ static void flag_setup(void)
 {
 	int fd, attr, ret;
 	struct fsverity_enable_arg enable;
+	struct stat statbuf;
 
 	fd = SAFE_OPEN(TESTFILE_FLAGGED, O_RDONLY, 0664);
+	SAFE_FSTAT(fd, &statbuf);
 
 	ret = ioctl(fd, FS_IOC_GETFLAGS, &attr);
 	if (ret < 0) {
@@ -94,7 +96,7 @@ static void flag_setup(void)
 	memset(&enable, 0, sizeof(enable));
 	enable.version = 1;
 	enable.hash_algorithm = hash_algorithms[0];
-	enable.block_size = 4096;
+	enable.block_size = statbuf.st_blksize;
 	enable.salt_size = 0;
 	enable.salt_ptr = (intptr_t)NULL;
 	enable.sig_size = 0;
