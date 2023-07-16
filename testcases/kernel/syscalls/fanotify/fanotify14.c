@@ -19,6 +19,9 @@
  *
  *     ceaf69f8eadc fanotify: do not allow setting dirent events in mask of non-dir
  *     8698e3bab4dd fanotify: refine the validation checks on non-dir inode mask
+ *
+ * The pipes test cases are regression tests for commit:
+ *     69562eb0bd3e fanotify: disallow mount/sb marks on kernel internal pseudo fs
  */
 
 #define _GNU_SOURCE
@@ -40,6 +43,7 @@
 
 #define FLAGS_DESC(flags) {(flags), (#flags)}
 
+static int pipes[2] = {-1, -1};
 static int fanotify_fd;
 static int fan_report_target_fid_unsupported;
 static int ignore_mark_unsupported;
@@ -60,6 +64,7 @@ static struct test_case_t {
 	/* when mask.flags == 0, fanotify_init() is expected to fail */
 	struct test_case_flags_t mask;
 	int expected_errno;
+	int *pfd;
 } test_cases[] = {
 	/* FAN_REPORT_FID without class FAN_CLASS_NOTIF is not valid */
 	{
@@ -216,6 +221,22 @@ static struct test_case_t {
 		.mask = FLAGS_DESC(FAN_OPEN),
 		.expected_errno = EINVAL,
 	},
+	/* mount mark on anonymous pipe is not valid */
+	{
+		.init = FLAGS_DESC(FAN_CLASS_NOTIF),
+		.mark = FLAGS_DESC(FAN_MARK_MOUNT),
+		.mask = { FAN_ACCESS, "anonymous pipe"},
+		.pfd = pipes,
+		.expected_errno = EINVAL,
+	},
+	/* filesystem mark on anonymous pipe is not valid */
+	{
+		.init = FLAGS_DESC(FAN_CLASS_NOTIF),
+		.mark = FLAGS_DESC(FAN_MARK_FILESYSTEM),
+		.mask = { FAN_ACCESS, "anonymous pipe"},
+		.pfd = pipes,
+		.expected_errno = EINVAL,
+	},
 };
 
 static void do_test(unsigned int number)
@@ -253,11 +274,17 @@ static void do_test(unsigned int number)
 
 	/* Set mark on non-dir only when expecting error ENOTDIR */
 	const char *path = tc->expected_errno == ENOTDIR ? FILE1 : MNTPOINT;
+	int dirfd = AT_FDCWD;
 
-	tst_res(TINFO, "Testing fanotify_mark(FAN_MARK_ADD | %s, %s)",
+	if (tc->pfd) {
+		dirfd = tc->pfd[0];
+		path = NULL;
+	}
+
+	tst_res(TINFO, "Testing %s with %s",
 		tc->mark.desc, tc->mask.desc);
 	TST_EXP_FD_OR_FAIL(fanotify_mark(fanotify_fd, FAN_MARK_ADD | tc->mark.flags,
-					 tc->mask.flags, AT_FDCWD, path),
+					 tc->mask.flags, dirfd, path),
 					 tc->expected_errno);
 
 	/*
@@ -299,12 +326,18 @@ static void do_setup(void)
 
 	/* Create temporary test file to place marks on */
 	SAFE_FILE_PRINTF(FILE1, "0");
+	/* Create anonymous pipes to place marks on */
+	SAFE_PIPE2(pipes, O_CLOEXEC);
 }
 
 static void do_cleanup(void)
 {
 	if (fanotify_fd > 0)
 		SAFE_CLOSE(fanotify_fd);
+	if (pipes[0] != -1)
+		SAFE_CLOSE(pipes[0]);
+	if (pipes[1] != -1)
+		SAFE_CLOSE(pipes[1]);
 }
 
 static struct tst_test test = {
@@ -319,6 +352,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "ceaf69f8eadc"},
 		{"linux-git", "8698e3bab4dd"},
+		{"linux-git", "69562eb0bd3e"},
 		{}
 	}
 };
