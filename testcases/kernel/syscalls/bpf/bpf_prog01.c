@@ -63,7 +63,7 @@ int load_prog(int fd)
 		BPF_EXIT_INSN(),		         /* return r0 */
 	};
 
-	bpf_init_prog_attr(attr, PROG, sizeof(PROG), log, BUFSIZ);
+	bpf_init_prog_attr(attr, PROG, sizeof(PROG), log, BUFSIZE);
 	return bpf_load_prog(attr, log);
 }
 

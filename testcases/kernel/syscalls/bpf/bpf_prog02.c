@@ -64,7 +64,7 @@ static int load_prog(int fd)
 		BPF_EXIT_INSN(),		        /* 26: return r0 */
 	};
 
-	bpf_init_prog_attr(attr, insn, sizeof(insn), log, BUFSIZ);
+	bpf_init_prog_attr(attr, insn, sizeof(insn), log, BUFSIZE);
 	return bpf_load_prog(attr, log);
 }
 
@@ -117,7 +117,7 @@ static struct tst_test test = {
 	.bufs = (struct tst_buffers []) {
 		{&key, .size = sizeof(*key)},
 		{&val, .size = sizeof(*val)},
-		{&log, .size = BUFSIZ},
+		{&log, .size = BUFSIZE},
 		{&attr, .size = sizeof(*attr)},
 		{&msg, .size = sizeof(MSG)},
 		{},

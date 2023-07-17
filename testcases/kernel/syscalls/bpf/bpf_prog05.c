@@ -52,8 +52,6 @@
 #include "tst_capability.h"
 #include "bpf_common.h"
 
-#define BUFSIZE 8192
-
 static const char MSG[] = "Ahoj!";
 static char *msg;
 

@@ -13,6 +13,7 @@
 #include "lapi/socket.h"
 
 #define BPF_MEMLOCK_ADD (2*1024*1024)
+#define BUFSIZE 8192
 
 /* map[array_indx] = reg_to_save
  *

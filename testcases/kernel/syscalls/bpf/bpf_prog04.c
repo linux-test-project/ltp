@@ -28,7 +28,6 @@
 #include "tst_capability.h"
 #include "bpf_common.h"
 
-#define BUFSIZE 8192
 #define CHECK_BPF_RET(x) ((x) >= 0 || ((x) == -1 && errno != EACCES))
 
 static const char MSG[] = "Ahoj!";

@@ -46,8 +46,6 @@
 #include "lapi/bpf.h"
 #include "bpf_common.h"
 
-#define BUFSIZE 8192
-
 static const char MSG[] = "Ahoj!";
 static char *msg;
 
