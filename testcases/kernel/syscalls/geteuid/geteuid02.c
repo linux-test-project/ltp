@@ -1,79 +1,36 @@
+//SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- *  Ported by Wayne Boyer
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) Linux Test Project, 2003-2023
+ * Ported by Wayne Boyer
  */
 
-#include <pwd.h>
-#include <errno.h>
+/*\
+ *[Description]
+ *
+ * Check that geteuid() return value matches value from /proc/self/status.
+ */
 
-#include "test.h"
-#include "compat_16.h"
+#include "tst_test.h"
+#include "compat_tst_16.h"
 
-TCID_DEFINE(geteuid02);
-int TST_TOTAL = 1;
-
-static void setup(void);
-static void cleanup(void);
-
-int main(int ac, char **av)
+static void verify_geteuid(void)
 {
-	struct passwd *pwent;
-	int lc;
-	uid_t uid;
+	long uid[4];
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	TST_EXP_POSITIVE(GETEUID(), "geteuid()");
 
-	setup();
+	if (!TST_PASS)
+		return;
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+	SAFE_FILE_LINES_SCANF("/proc/self/status", "Uid: %ld %ld %ld %ld",
+			      &uid[0], &uid[1], &uid[2], &uid[3]);
 
-		TEST(GETEUID(cleanup));
-
-		if (TEST_RETURN == -1)
-			tst_brkm(TBROK | TTERRNO, cleanup, "geteuid* failed");
-
-		uid = geteuid();
-		pwent = getpwuid(uid);
-
-		if (pwent == NULL)
-			tst_resm(TFAIL | TERRNO, "getpwuid failed");
-
-		UID16_CHECK(pwent->pw_uid, geteuid, cleanup);
-		if (pwent->pw_uid != TEST_RETURN)
-			tst_resm(TFAIL, "getpwuid value, %d, "
-				 "does not match geteuid "
-				 "value, %ld", pwent->pw_uid,
-				 TEST_RETURN);
-		else
-			tst_resm(TPASS, "values from geteuid "
-				 "and getpwuid match");
-	}
-
-	cleanup();
-	tst_exit();
+	TST_EXP_EXPR(TST_RET == uid[1],
+		     "geteuid() ret %ld == /proc/self/status EUID: %ld",
+		     TST_RET, uid[1]);
 }
 
-static void setup(void)
-{
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = verify_geteuid,
+};
