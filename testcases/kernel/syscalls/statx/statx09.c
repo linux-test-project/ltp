@@ -20,6 +20,7 @@
 #define _GNU_SOURCE
 #include <sys/mount.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "tst_test.h"
 #include "lapi/fs.h"
 #include "lapi/fsverity.h"
@@ -120,6 +121,12 @@ static void flag_setup(void)
 
 static void setup(void)
 {
+	char opt_bsize[32];
+	const char *const fs_opts[] = {"-O verity", opt_bsize, NULL};
+
+	snprintf(opt_bsize, sizeof(opt_bsize), "-b %i", getpagesize());
+	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
+
 	TEST(mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL));
 	if (TST_RET) {
 		if (TST_ERR == EINVAL)
@@ -147,10 +154,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
+	.needs_device = 1,
 	.mntpoint = MNTPOINT,
-	.format_device = 1,
 	.dev_fs_type = "ext4",
-	.dev_fs_opts = (const char *const []){"-O verity", NULL},
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_FS_VERITY",
 		NULL
