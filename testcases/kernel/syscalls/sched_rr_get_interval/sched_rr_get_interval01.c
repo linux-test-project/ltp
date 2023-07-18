@@ -69,7 +69,7 @@ static void run(void)
 	}
 
 	if (proc_flag)
-		TST_ASSERT_INT("/proc/sys/kernel/sched_rr_timeslice_ms", tst_ts_to_ms(tp));
+		TST_ASSERT_INT(PROC_SCHED_RR_TIMESLICE_MS, tst_ts_to_ms(tp));
 }
 
 static struct tst_test test = {
