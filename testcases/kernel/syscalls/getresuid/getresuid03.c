@@ -76,6 +76,11 @@
 #include <pwd.h>
 
 #include "test.h"
+
+/*
+ * Don't forget to remove USE_LEGACY_COMPAT_16_H from Makefile after
+ * rewriting all tests to the new API.
+ */
 #include "compat_16.h"
 
 char *TCID = "getresuid03";

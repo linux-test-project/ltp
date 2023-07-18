@@ -54,6 +54,11 @@
 #include <sys/types.h>
 
 #include "test.h"
+
+/*
+ * Don't forget to remove USE_LEGACY_COMPAT_16_H from Makefile after
+ * rewriting all tests to the new API.
+ */
 #include "compat_16.h"
 
 static void setup(void);

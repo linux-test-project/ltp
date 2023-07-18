@@ -3,6 +3,9 @@
 
 top_srcdir		?= ../../../..
 
+# Remove after rewriting all tests to the new API.
+USE_LEGACY_COMPAT_16_H := 1
+
 include $(top_srcdir)/include/mk/testcases.mk
 
 SRCS			:= $(sort $(wildcard $(abs_srcdir)/lchown*.c))

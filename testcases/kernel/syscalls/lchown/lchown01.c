@@ -41,6 +41,11 @@
 
 #include "test.h"
 #include "safe_macros.h"
+
+/*
+ * Don't forget to remove USE_LEGACY_COMPAT_16_H from Makefile after
+ * rewriting all tests to the new API.
+ */
 #include "compat_16.h"
 
 #define FILE_MODE	(S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)

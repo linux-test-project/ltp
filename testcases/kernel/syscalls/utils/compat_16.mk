@@ -60,7 +60,7 @@ MAKE_TARGETS		+= $(addsuffix _16,$(MAKE_TARGETS))
 # (no .h file, no TST_USE_NEWER64_SYSCALL def).
 DEF_16			:= TST_USE_COMPAT16_SYSCALL
 
-ifneq ($(COMPAT_TST_16_H),1)
+ifeq ($(USE_LEGACY_COMPAT_16_H),1)
 COMPAT_16_H		:= $(abs_srcdir)/../utils/compat_16.h
 else
 COMPAT_16_H     := $(abs_srcdir)/../utils/compat_tst_16.h
