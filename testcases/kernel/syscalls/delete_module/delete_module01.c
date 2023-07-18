@@ -2,15 +2,16 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Copyright (c) 2018 Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2002-2023
+ * Author: Madhu T L <madhu.tarikere@wipro.com>
  */
 
-/*
- * AUTHOR: Madhu T L <madhu.tarikere@wipro.com>
+/*\
+ * [Description]
  *
- * DESCRIPTION:
- * Basic tests for delete_module(2)
- * 1) insmod dummy_del_mod.ko
- * 2) call delete_module(2) to remove dummy_del_mod.ko
+ * Basic test for delete_module(2).
+ *
+ * Install dummy_del_mod.ko and delete it with delete_module(2).
  */
 
 #include <errno.h>
