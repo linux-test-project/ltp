@@ -39,7 +39,6 @@ autom4te.cache
 /include/mk/config-openposix.mk
 /include/mk/features.mk
 /m4/ltp-version.m4
-/lib/ltp.pc
 /pan/ltp-bump
 /pan/ltp-pan
 
@@ -61,20 +60,3 @@ patches/
 logfile.*
 
 /utils/benchmark/ebizzy-0.3/ebizzy
-/lib/tests/tst_tmpdir_test
-/lib/tests/tst_checkpoint
-/lib/tests/tst_checkpoint_wait_timeout
-/lib/tests/tst_checkpoint_wake_timeout
-/lib/tests/tst_process_state
-/lib/tests/tst_cleanup_once
-/lib/tests/tst_safe_macros
-/lib/tests/tst_strsig
-/lib/tests/tst_strerrno
-/lib/tests/tst_fs_fill_subdirs
-/lib/tests/tst_fs_fill_hardlinks
-/lib/tests/tst_device
-/lib/tests/tst_record_childstatus
-/lib/tests/trerrno
-/lib/tests/tst_dataroot01
-/lib/tests/tst_dataroot02
-/lib/tests/tst_dataroot03

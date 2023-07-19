@@ -1,0 +1,17 @@
+/tst_tmpdir_test
+/tst_checkpoint
+/tst_checkpoint_wait_timeout
+/tst_checkpoint_wake_timeout
+/tst_process_state
+/tst_cleanup_once
+/tst_safe_macros
+/tst_strsig
+/tst_strerrno
+/tst_fs_fill_subdirs
+/tst_fs_fill_hardlinks
+/tst_device
+/tst_record_childstatus
+/trerrno
+/tst_dataroot01
+/tst_dataroot02
+/tst_dataroot03
