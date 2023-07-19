@@ -34,6 +34,7 @@
 #include "old_resource.h"
 #include "old_device.h"
 #include "old_tmpdir.h"
+#include "ltp-version.h"
 
 /*
  * Hack to get TCID defined in newlib tests
@@ -509,6 +510,7 @@ static struct option {
 	{"h",  "-h       Prints this help"},
 	{"i:", "-i n     Execute test n times"},
 	{"I:", "-I x     Execute test for n seconds"},
+	{"V",  "-V       Prints LTP version"},
 	{"C:", "-C ARG   Run child process with ARG arguments (used internally)"},
 };
 
@@ -686,6 +688,10 @@ static void parse_opts(int argc, char *argv[])
 				tst_test->max_runtime = SAFE_STRTOL(optarg, 1, INT_MAX);
 			else
 				duration = SAFE_STRTOF(optarg, 0.1, HUGE_VALF);
+		break;
+		case 'V':
+			fprintf(stderr, "LTP version: " LTP_VERSION "\n");
+			exit(0);
 		break;
 		case 'C':
 #ifdef UCLINUX
