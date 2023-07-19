@@ -41,7 +41,7 @@ mems_all="$(seq -s, 0 $((nr_mems-1)))"
 cpu_of_node0=0
 
 HUGEPAGESIZE=$(awk '/Hugepagesize/{ print $2 }' /proc/meminfo)
-HUGEPAGESIZE=$(($HUGEPAGESIZE * 1024))
+HUGEPAGESIZE=$((${HUGEPAGESIZE:-0} * 1024))
 
 MEMORY_RESULT="$CPUSET_TMP/memory_result"
 
