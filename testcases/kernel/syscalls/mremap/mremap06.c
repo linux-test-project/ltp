@@ -125,6 +125,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = do_test,
+	.needs_tmpdir = 1,
 	.tcnt = ARRAY_SIZE(tcases),
 	.tags = (struct tst_tag[]) {
 		{"linux-git", "7e7757876f25"},
