@@ -2379,7 +2379,7 @@ struct tst_test test = {
 1.40 Testing on the specific architecture
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Testcases for specific arch should be limited on that only being supported
-platform to run, we now involve a .supported_archs to achieve this feature
+platform to run, we now involve a '.supported_archs' to achieve this feature
 in LTP library. All you need to run a test on the expected arch is to set
 the '.supported_archs' array in the 'struct tst_test' to choose the required
 arch list. e.g.
