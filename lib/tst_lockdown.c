@@ -50,11 +50,10 @@ int tst_lockdown_enabled(void)
 
 	if (access(PATH_LOCKDOWN, F_OK) != 0) {
 		char flag;
-
-		flag = tst_kconfig_get("CONFIG_EFI_SECURE_BOOT_LOCK_DOWN");
-
-		/* SecureBoot enabled could mean integrity lockdown */
-		if (flag == 'y' && tst_secureboot_enabled() > 0)
+		/* SecureBoot enabled could mean integrity lockdown (non-mainline version) */
+		flag = tst_kconfig_get("CONFIG_EFI_SECURE_BOOT_LOCK_DOWN") == 'y';
+		flag |= tst_kconfig_get("CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT") == 'y';
+		if (flag && tst_secureboot_enabled() > 0)
 			return 1;
 
 		tst_res(TINFO, "Unable to determine system lockdown state");
