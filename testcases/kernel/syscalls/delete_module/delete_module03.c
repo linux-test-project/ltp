@@ -72,8 +72,9 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	/* lockdown requires signed modules */
+	/* lockdown and SecureBoot requires signed modules */
 	.skip_in_lockdown = 1,
+	.skip_in_secureboot = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = do_delete_module,

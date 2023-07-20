@@ -25,7 +25,7 @@
 static char *mod_path;
 
 static int fd, fd_zero, fd_invalid = -1, fd_dir;
-static int kernel_lockdown;
+static int kernel_lockdown, secure_boot;
 
 static struct tst_cap cap_req = TST_CAP(TST_CAP_REQ, CAP_SYS_MODULE);
 static struct tst_cap cap_drop = TST_CAP(TST_CAP_DROP, CAP_SYS_MODULE);
@@ -84,6 +84,8 @@ static void setup(void)
 	tst_module_exists(MODULE_NAME, &mod_path);
 
 	kernel_lockdown = tst_lockdown_enabled();
+	secure_boot = tst_secureboot_enabled();
+
 	SAFE_MKDIR(TEST_DIR, 0700);
 	fd_dir = SAFE_OPEN(TEST_DIR, O_DIRECTORY);
 
@@ -102,8 +104,8 @@ static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	if (tc->skip_in_lockdown && kernel_lockdown) {
-		tst_res(TCONF, "Kernel is locked down, skipping %s", tc->name);
+	if (tc->skip_in_lockdown && (kernel_lockdown || secure_boot)) {
+		tst_res(TCONF, "Cannot load unsigned modules, skipping %s", tc->name);
 		return;
 	}
 
