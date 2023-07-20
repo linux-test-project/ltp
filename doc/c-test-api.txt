@@ -2412,6 +2412,12 @@ static struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
+1.41 Skipping test based on system state
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test can be skipped on various conditions: on enabled SecureBoot
+('.skip_in_secureboot = 1'), lockdown ('.skip_in_lockdown = 1') or in 32-bit
+compat mode ('.skip_in_compat = 1').
+
 2. Common problems
 ------------------
 
