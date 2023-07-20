@@ -393,6 +393,7 @@ https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
 | '.skip_filesystems' | 'TST_SKIP_FILESYSTEMS'
 | '.skip_in_compat' | –
 | '.skip_in_lockdown' | –
+| '.skip_in_secureboot' | –
 | '.supported_archs' | not applicable
 | '.tags' | –
 | '.taint_check' | –

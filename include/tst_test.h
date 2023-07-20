@@ -177,6 +177,7 @@ struct tst_test {
 	int child_needs_reinit:1;
 	int needs_devfs:1;
 	int restore_wallclock:1;
+
 	/*
 	 * If set the test function will be executed for all available
 	 * filesystems and the current filesystem type would be set in the
@@ -186,8 +187,11 @@ struct tst_test {
 	 * to the test function.
 	 */
 	int all_filesystems:1;
+
 	int skip_in_lockdown:1;
+	int skip_in_secureboot:1;
 	int skip_in_compat:1;
+
 	/*
 	 * If set, the hugetlbfs will be mounted at .mntpoint.
 	 */

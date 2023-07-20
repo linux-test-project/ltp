@@ -1160,6 +1160,9 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->skip_in_lockdown && tst_lockdown_enabled())
 		tst_brk(TCONF, "Kernel is locked down, skipping test");
 
+	if (tst_test->skip_in_secureboot && tst_secureboot_enabled())
+		tst_brk(TCONF, "SecureBoot enabled, skipping test");
+
 	if (tst_test->skip_in_compat && TST_ABI != tst_kernel_bits())
 		tst_brk(TCONF, "Not supported in 32-bit compat mode");
 
