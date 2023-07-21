@@ -47,6 +47,7 @@ int tst_lockdown_enabled(void)
 {
 	char line[BUFSIZ];
 	FILE *file;
+	int ret;
 
 	if (access(PATH_LOCKDOWN, F_OK) != 0) {
 		char flag;
@@ -65,5 +66,8 @@ int tst_lockdown_enabled(void)
 		tst_brk(TBROK | TERRNO, "fgets %s", PATH_LOCKDOWN);
 	SAFE_FCLOSE(file);
 
-	return (strstr(line, "[none]") == NULL);
+	ret = strstr(line, "[none]") == NULL;
+	tst_res(TINFO, "Kernel lockdown: %s", ret ? "on" : "off");
+
+	return ret;
 }
