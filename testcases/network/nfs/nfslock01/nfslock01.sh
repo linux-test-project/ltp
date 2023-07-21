@@ -13,6 +13,9 @@
 TST_SETUP="do_setup"
 TST_TESTFUNC="do_test"
 
+NCHARS=${NCHARS:-64}
+NLINES=${NLINES:-16384}
+
 generate_file()
 {
 	local file="$1"
@@ -32,15 +35,20 @@ generate_file()
 
 do_setup()
 {
-	local nchars=64
-	local nlines=16384
+	if ! tst_is_int $NCHARS || [ $NCHARS -lt 1 ]; then
+		tst_res TBROK "NCHARS must be > 0"
+	fi
+
+	if ! tst_is_int $NLINES || [ $NLINES -lt 1 ]; then
+		tst_res TBROK "NLINES must be > 0"
+	fi
 
 	nfs_setup
 
-	tst_res TINFO "creating test files"
+	tst_res TINFO "creating test files (chars: $NCHARS, lines: $NLINES)"
 
-	generate_file flock_data $nchars $nlines 0
-	generate_file flock_odata $nchars $nlines 1
+	generate_file flock_data $NCHARS $NLINES 0
+	generate_file flock_odata $NCHARS $NLINES 1
 }
 
 do_test()
@@ -51,9 +59,9 @@ do_test()
 
 	tst_res TINFO "locking 'flock_idata' file and writing data"
 
-	nfs_flock 0 flock_idata &
+	nfs_flock 0 flock_idata $NCHARS $NLINES &
 	local pids=$!
-	nfs_flock 1 flock_idata &
+	nfs_flock 1 flock_idata $NCHARS $NLINES &
 	pids="$pids $!"
 
 	tst_res TINFO "waiting for pids: $pids"
