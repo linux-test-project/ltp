@@ -28,7 +28,7 @@ static void verify_write(void)
 {
 	char wbuf[8 * page_size];
 
-	TST_EXP_FAIL(write(wfd, wbuf, sizeof(wbuf)), EAGAIN);
+	TST_EXP_FAIL2(write(wfd, wbuf, sizeof(wbuf)), EAGAIN);
 }
 
 static void setup(void)
