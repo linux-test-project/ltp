@@ -96,8 +96,10 @@ int main(int argc, char **argv)
 
 		lseek(fd, offset, SEEK_SET);
 
-		/* write to the test file */
-		write(fd, buf, nchars);
+		if (write(fd, buf, nchars) < 0) {
+			fprintf(stderr, "failed to write buffer to test file, errno = %d\n", errno);
+			exit(1);
+		}
 
 		if (unb_lock(fd, offset, SEEK_SET, nchars) < 0) {
 			printf("failed in unb_lock, Errno = %d\n", errno);
