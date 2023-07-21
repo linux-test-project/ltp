@@ -2,9 +2,13 @@
 /*
  * Copyright (c) 2017 Pavel Boldin <pboldin@cloudlinux.com>
  * Copyright (c) 2023 Rick Edgecombe <rick.p.edgecombe@intel.com>
+ * Copyright (c) Linux Test Project, 2017-2023
  */
 
-/* This is a regression test of the Stack Clash [1] vulnerability. This tests
+/*\
+ * [Description]
+ *
+ * This is a regression test of the Stack Clash [1] vulnerability. This tests
  * that there is at least 256 PAGE_SIZE of stack guard gap which is considered
  * hard to hop above. Code adapted from the Novell's bugzilla [2].
  *
@@ -23,9 +27,10 @@
  * then the test also tests that new mmap()s can't be placed in the stack's
  * guard gap. This part of the test works by forcing a bottom up search. The
  * assumptions are that the stack grows down (start gap) and either:
- *   1. The default search is top down, and will switch to bottom up if
+ *
+ * 1. The default search is top down, and will switch to bottom up if
  *      space is exhausted.
- *   2. The default search is bottom up and the stack is above mmap base
+ * 2. The default search is bottom up and the stack is above mmap base.
  *
  * [1] https://blog.qualys.com/securitylabs/2017/06/19/the-stack-clash
  * [2] https://bugzilla.novell.com/show_bug.cgi?id=CVE-2017-1000364
