@@ -1,19 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines Corp., 2001
- *	07/2001 Ported by John George
- *      04/2002 wjhuie sigset cleanups
- *      08/2007 Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
+ * Copyright (c) International Business Machines Corp., 2001
+ * 07/2001 Ported by John George
+ * 04/2002 wjhuie sigset cleanups
+ * 08/2007 Ricardo Salveti de Araujo <rsalveti@linux.vnet.ibm.com>
+ * Copyright (c) Linux Test Project, 2002-2023
  */
 
-/*
- * DESCRIPTION
+/*\
+ * [Description]
+ *
  *	Check the return value, and errnos of write(2)
+ *
  *	- when the file descriptor is invalid - EBADF
  *	- when the buf parameter is invalid - EFAULT
  *	- on an attempt to write to a pipe that is not open for reading - EPIPE
  */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
