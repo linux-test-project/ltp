@@ -1,12 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2020-2023
  * Author: Saji Kumar.V.R <saji.kumar@wipro.com>
+ */
+
+/*\
+ * [Description]
  *
- * Tests whether we can use capset() to modify the capabilities of a thread
+ * Test whether capset() can be used to modify the capabilities of a thread
  * other than itself. Now, most linux distributions with kernel supporting
  * VFS capabilities, this should be never permitted.
  */
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
