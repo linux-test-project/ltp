@@ -1,11 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
- * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com
+ * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
+ * Copyright (c) Linux Test Project, 2020-2023
+ * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
  * capset() fails with errno set or EPERM if the new_Inheritable is
  * not a subset of old_Inheritable and old_Permitted without CAP_SETPCAP.
  */
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
