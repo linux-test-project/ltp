@@ -9,6 +9,12 @@
  * Copyright (c) Linux Test Project, 2003-2023
  */
 
+/*\
+ * [Description]
+ *
+ * Test capset() with with LINUX_CAPABILITY_VERSION_{1,2,3}.
+ */
+
 #include <sys/types.h>
 #include <unistd.h>
 #include "tst_test.h"
