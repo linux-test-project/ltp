@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2021 SUSE LLC <rpalethorpe@suse.com> */
+/*
+ * Copyright (c) 2021 SUSE LLC <rpalethorpe@suse.com>
+ * Copyright (c) Linux Test Project, 2021-2023
+ */
+
 /*\
- *
  * [Description]
  *
  * Creates a multi-level CGroup hierarchy with the cpu controller
@@ -15,7 +18,8 @@
  * them to be unthrottle.
  *
  * The test is known to reproduce an issue with an update to
- * SLE-15-SP1 (kernel 4.12.14-197.64, bsc#1179093).
+ * SLE-15-SP1 (kernel 4.12.14-197.64,
+ * https://bugzilla.suse.com/show_bug.cgi?id=1179093).
  *
  * Also as an reproducer for another bug:
  *
