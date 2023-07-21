@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 		else
 			c = 'A' + k;
 
-		for (j = 0; j < nchars; j++)
+		for (j = 0; j < nchars - 1; j++)
 
 			buf[j] = c;
 

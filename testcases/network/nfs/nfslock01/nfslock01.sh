@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2002-2022
+# Copyright (c) Linux Test Project, 2002-2023
 # Copyright (c) 2016-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 #
@@ -15,16 +15,20 @@ TST_TESTFUNC="do_test"
 
 do_setup()
 {
+	local nchars=64
+	local nlines=16384
+	local exp_size="$((nchars*nlines))"
+
 	nfs_setup
 
 	tst_res TINFO "creating test files"
-	ROD nfs_flock_dgen flock_data 63 16384 0
-	ROD nfs_flock_dgen flock_odata 63 16384 1
+	ROD nfs_flock_dgen flock_data $nchars $nlines 0
+	ROD nfs_flock_dgen flock_odata $nchars $nlines 1
 
-	[ "$(wc -c flock_data | awk '{print $1}')" -ne 1048576 ] && \
+	[ "$(wc -c flock_data | awk '{print $1}')" -ne $exp_size ] && \
 		tst_brk TBROK "could not create 'flock_data'"
 
-	[ "$(wc -c flock_odata | awk '{print $1}')" -ne 1048576 ] && \
+	[ "$(wc -c flock_odata | awk '{print $1}')" -ne $exp_size ] && \
 		tst_brk TBROK "could not create 'flock_odata'"
 }
 
