@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 		}
 
 		if (writeb_lock(fd, offset, SEEK_SET, nchars) < 0) {
-			printf("failed in writeb_lock, Errno = %d\n", errno);
+			fprintf(stderr, "failed in writeb_lock, errno = %d\n", errno);
 			exit(1);
 		}
 
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 		}
 
 		if (unb_lock(fd, offset, SEEK_SET, nchars) < 0) {
-			printf("failed in unb_lock, Errno = %d\n", errno);
+			fprintf(stderr, "failed in unb_lock, errno = %d\n", errno);
 			exit(1);
 		}
 	}
