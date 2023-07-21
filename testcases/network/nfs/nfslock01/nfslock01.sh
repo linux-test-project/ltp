@@ -13,23 +13,34 @@
 TST_SETUP="do_setup"
 TST_TESTFUNC="do_test"
 
+generate_file()
+{
+	local file="$1"
+	local nchars="$2"
+	local nlines="$3"
+	local val="$4"
+	local exp_size="$((nchars*nlines))"
+	local size
+
+	ROD nfs_flock_dgen $file $nchars $nlines $val
+
+	size="$(wc -c $file | awk '{print $1}')"
+	if [ $size -ne $exp_size ]; then
+		tst_brk TBROK "could not create '$file' (size: $size, expected: $exp_size)"
+	fi
+}
+
 do_setup()
 {
 	local nchars=64
 	local nlines=16384
-	local exp_size="$((nchars*nlines))"
 
 	nfs_setup
 
 	tst_res TINFO "creating test files"
-	ROD nfs_flock_dgen flock_data $nchars $nlines 0
-	ROD nfs_flock_dgen flock_odata $nchars $nlines 1
 
-	[ "$(wc -c flock_data | awk '{print $1}')" -ne $exp_size ] && \
-		tst_brk TBROK "could not create 'flock_data'"
-
-	[ "$(wc -c flock_odata | awk '{print $1}')" -ne $exp_size ] && \
-		tst_brk TBROK "could not create 'flock_odata'"
+	generate_file flock_data $nchars $nlines 0
+	generate_file flock_odata $nchars $nlines 1
 }
 
 do_test()
