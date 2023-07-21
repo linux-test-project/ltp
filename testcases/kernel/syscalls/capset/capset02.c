@@ -2,21 +2,27 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Author: Saji Kumar.V.R <saji.kumar@wipro.com>
- *
+ * Copyright (c) Linux Test Project, 2003-2023
+ */
+
+/*\
+ * [Description]
  * Tests basic error handling of the capset syscall.
- * 1) capset() fails with errno set to EFAULT if an invalid address
+ *
+ * 1. capset() fails with errno set to EFAULT if an invalid address
  * is given for header.
- * 2) capset() fails with errno set to EFAULT if an invalid address
+ * 2. capset() fails with errno set to EFAULT if an invalid address
  * is given for data.
- * 3) capset() fails with errno set to EINVAL if an invalid value
+ * 3. capset() fails with errno set to EINVAL if an invalid value
  * is given for header->version.
- * 4) capset() fails with errno set to EPERM if the new_Effective is
+ * 4. capset() fails with errno set to EPERM if the new_Effective is
  * not a subset of the new_Permitted.
- * 5) capset() fails with errno set to EPERM if the new_Permitted is
+ * 5. capset() fails with errno set to EPERM if the new_Permitted is
  * not a subset of the old_Permitted.
- * 6) capset() fails with errno set ot EPERM if the new_Inheritable is
+ * 6. capset() fails with errno set ot EPERM if the new_Inheritable is
  * not a subset of  the old_Inheritable and bounding set.
  */
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
