@@ -87,8 +87,7 @@ static void setup(void)
 
 	global_maplen = page_sz * 2;
 	global_addr = SAFE_MMAP(cleanup, NULL, global_maplen, PROT_READ |
-				PROT_WRITE, MAP_PRIVATE_EXCEPT_UCLINUX |
-				MAP_ANONYMOUS, -1, 0);
+				PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
 static void check_and_print(int expected_errno)

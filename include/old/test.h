@@ -68,18 +68,13 @@
 /*
  * fork() can't be used on uClinux systems, so use FORK_OR_VFORK instead,
  * which will run vfork() on uClinux.
- * mmap() doesn't support MAP_PRIVATE on uClinux systems, so use
- * MAP_PRIVATE_EXCEPT_UCLINUX instead, which will skip the option on uClinux.
- * If MAP_PRIVATE really is required, the test can not be run on uClinux.
  */
 #ifdef UCLINUX
 # define FORK_OR_VFORK			tst_vfork
-# define MAP_PRIVATE_EXCEPT_UCLINUX	0
 /* tst_old_flush() + vfork() */
 pid_t tst_vfork(void);
 #else
 # define FORK_OR_VFORK			tst_fork
-# define MAP_PRIVATE_EXCEPT_UCLINUX	MAP_PRIVATE
 #endif
 
 /*
