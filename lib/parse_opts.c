@@ -88,11 +88,6 @@ static struct std_option_t {
 	{"h", "  -h      Show this help screen\n", NULL, NULL},
 	{"i:", "  -i n    Execute test n times\n", NULL, NULL},
 	{"I:", "  -I x    Execute test for x seconds\n", NULL, NULL},
-#ifdef UCLINUX
-	{"C:",
-	      "  -C ARG  Run the child process with arguments ARG (for internal use)\n",
-		    NULL, NULL},
-#endif
 	{NULL, NULL, NULL, NULL}
 };
 
@@ -117,11 +112,6 @@ static void usc_recressive_func();
 #define OPT_iteration		01
 #define OPT_duration		04
 #define OPT_delay		010
-
-#ifdef UCLINUX
-/* Allocated and used in self_exec.c: */
-extern char *child_args;	/* Arguments to child when -C is used */
-#endif
 
 static void print_help(void (*user_help)(void))
 {
@@ -219,11 +209,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 			print_help(uhf);
 			exit(0);
 			break;
-#ifdef UCLINUX
-		case 'C':	/* Run child */
-			child_args = optarg;
-			break;
-#endif
 		default:
 
 			/* Check all the user specified options */
@@ -400,7 +385,7 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 				     STD_TP_sbrk);
 		}
 	}
-#if !defined(UCLINUX)
+
 	if ((ptr = getenv("USC_LP_SBRK")) != NULL) {
 		if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
 			STD_LP_sbrk = k;
@@ -410,7 +395,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
 				     STD_LP_sbrk);
 		}
 	}
-#endif /* if !defined(UCLINUX) */
 
 	if ((ptr = getenv("USC_LP_RECFUN")) != NULL) {
 		if (sscanf(ptr, "%i", &k) == 1 && k >= 0) {
@@ -453,7 +437,6 @@ const char *parse_opts(int ac, char **av, const option_t * user_optarr,
  ***********************************************************************/
 int usc_global_setup_hook(void)
 {
-#ifndef UCLINUX
 	if (STD_TP_sbrk || STD_LP_sbrk)
 		STD_start_break = sbrk(0);	/* get original sbreak size */
 
@@ -462,7 +445,6 @@ int usc_global_setup_hook(void)
 		if (Debug)
 			printf("after sbrk(%d)\n", STD_TP_sbrk);
 	}
-#endif
 	return 0;
 }
 
@@ -538,13 +520,12 @@ int usc_test_looping(int counter)
 			     STD_LP_recfun);
 		usc_recressive_func(0, STD_LP_recfun, *STD_bigstack);
 	}
-#if !defined(UCLINUX)
+
 	if (STD_LP_sbrk) {
 		if (Debug)
 			printf("about to do sbrk(%d)\n", STD_LP_sbrk);
 		sbrk(STD_LP_sbrk);
 	}
-#endif
 
 	if (keepgoing)
 		return 1;
