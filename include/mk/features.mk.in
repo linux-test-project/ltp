@@ -36,13 +36,6 @@ WITH_METADATA_PDF		:= @WITH_METADATA_PDF@
 
 # Test suite knobs
 
-# Enable testcases/kernel/power_management's compile and install?
-ifeq ($(UCLINUX),1)
-WITH_POWER_MANAGEMENT_TESTSUITE	:= no
-else
-WITH_POWER_MANAGEMENT_TESTSUITE	:= yes
-endif
-
 # Enable testcases/open_posix_testsuite's compile and install?
 WITH_OPEN_POSIX_TESTSUITE	:= @WITH_OPEN_POSIX_TESTSUITE@
 
