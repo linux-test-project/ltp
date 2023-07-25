@@ -471,14 +471,6 @@ void tst_record_childstatus(void (*cleanup)(void), pid_t child)
 	}
 }
 
-pid_t tst_vfork(void)
-{
-	NO_NEWLIB_ASSERT("Unknown", 0);
-
-	tst_old_flush();
-	return vfork();
-}
-
 /*
  * Make tst_brk reentrant so that one can call the SAFE_* macros from within
  * user-defined cleanup functions.

@@ -66,18 +66,6 @@
 					/* If not set, TOUT_VERBOSE_S is assumed */
 
 /*
- * fork() can't be used on uClinux systems, so use FORK_OR_VFORK instead,
- * which will run vfork() on uClinux.
- */
-#ifdef UCLINUX
-# define FORK_OR_VFORK			tst_vfork
-/* tst_old_flush() + vfork() */
-pid_t tst_vfork(void);
-#else
-# define FORK_OR_VFORK			tst_fork
-#endif
-
-/*
  * Macro to use for making functions called only once in
  * multi-threaded tests such as init or cleanup function.
  * The first call to @name_fn function by any thread shall

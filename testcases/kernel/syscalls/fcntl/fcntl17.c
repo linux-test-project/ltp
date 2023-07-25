@@ -467,7 +467,7 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		tst_resm(TINFO, "Enter preparation phase");
-		if ((child_pid1 = FORK_OR_VFORK()) == 0) {	/* first child */
+		if ((child_pid1 = tst_fork()) == 0) {	/* first child */
 #ifdef UCLINUX
 			if (self_exec(av[0], "nddddddddd", 1, file_fd,
 				      parent_pipe[0], parent_pipe[1],

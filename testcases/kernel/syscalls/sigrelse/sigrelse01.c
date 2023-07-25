@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 		/*
 		 * fork off a child process
 		 */
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
 
 		} else if (pid > 0) {

@@ -54,7 +54,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		cpid = FORK_OR_VFORK();
+		cpid = tst_fork();
 		switch (cpid) {
 		case -1:
 			tst_brkm(TBROK, cleanup, "fork() failed");

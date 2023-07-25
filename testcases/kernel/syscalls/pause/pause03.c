@@ -53,7 +53,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		if ((cpid = FORK_OR_VFORK()) == -1)
+		if ((cpid = tst_fork()) == -1)
 			tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
 
 		if (cpid == 0) {

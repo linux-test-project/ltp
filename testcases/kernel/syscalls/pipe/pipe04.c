@@ -98,7 +98,7 @@ int main(int ac, char **av)
 
 		SAFE_PIPE(cleanup, fildes);
 
-		if ((c1pid = FORK_OR_VFORK()) == -1)
+		if ((c1pid = tst_fork()) == -1)
 			tst_brkm(TBROK, cleanup, "fork() failed - "
 				 "errno %d", errno);
 		if (c1pid == 0)
@@ -110,7 +110,7 @@ int main(int ac, char **av)
 #else
 			c1func();
 #endif
-		if ((c2pid = FORK_OR_VFORK()) == -1)
+		if ((c2pid = tst_fork()) == -1)
 			tst_brkm(TBROK, cleanup, "fork() failed - "
 				 "errno %d", errno);
 		if (c2pid == 0)

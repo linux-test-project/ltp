@@ -240,7 +240,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 	}
 	SAFE_GETSOCKNAME(cleanup, sfd, (struct sockaddr *)sin0, &slen);
 
-	switch ((pid = FORK_OR_VFORK())) {
+	switch ((pid = tst_fork())) {
 	case 0:		/* child */
 #ifdef UCLINUX
 		if (self_exec(argv0, "d", sfd) < 0)

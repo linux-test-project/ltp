@@ -90,10 +90,10 @@ int main(int ac, char **av)
 		 * and then it attached itself to another process
 		 * group and tries to setsid
 		 */
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 
 		if (pid == 0) {
-			if ((pid = FORK_OR_VFORK()) == -1) {
+			if ((pid = tst_fork()) == -1) {
 				tst_resm(TFAIL, "Fork failed");
 
 			}
@@ -161,7 +161,7 @@ void do_child_1(void)
 		exno = 1;
 	}
 
-	if ((pid = FORK_OR_VFORK()) == -1) {
+	if ((pid = tst_fork()) == -1) {
 		tst_brkm(TFAIL, NULL, "Fork failed");
 	}
 	if (pid == 0) {

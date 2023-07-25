@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 		fflush(temp);
 		chflag = 0;
 
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 		if (pid < 0) {
 			forkfail();
 		}

@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 
 	for (i = 0; i < nprocs; i++) {
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			tst_brkm(TFAIL,
 				 NULL,
 				 "\tFork failed (may be OK if under stress)");
@@ -249,7 +249,7 @@ static int dotest(key_t key, int child_process)
 
 	for (i = 0; i < nkids; i++) {
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			printf("Fork failure in the first child of child group %d\n",
 				child_process);
 			cleanup_msgqueue(i, tid);
@@ -263,7 +263,7 @@ static int dotest(key_t key, int child_process)
 		}
 		rkidarray[i] = pid;
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			printf("Fork failure in the second child of child group %d\n",
 				child_process);
 			/*

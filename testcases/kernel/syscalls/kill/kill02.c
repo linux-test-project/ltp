@@ -231,8 +231,8 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		if ((pid1 = FORK_OR_VFORK()) > 0) {
-			if ((pid2 = FORK_OR_VFORK()) > 0) {
+		if ((pid1 = tst_fork()) > 0) {
+			if ((pid2 = tst_fork()) > 0) {
 				(void)parent_rout();
 			} else if (pid2 == 0) {
 #ifdef UCLINUX
@@ -452,11 +452,11 @@ void child1_rout(void)
 	/*
 	 *  Create children A & B.
 	 */
-	if ((pidA = FORK_OR_VFORK()) > 0) {
+	if ((pidA = tst_fork()) > 0) {
 		/*
 		 *  This is the parent(child1), fork again to create child B.
 		 */
-		if ((pidB = FORK_OR_VFORK()) == 0) {
+		if ((pidB = tst_fork()) == 0) {
 			/* This is child B. */
 #ifdef UCLINUX
 			if (self_exec(argv0, "nd", 2, pipeB_fd[1]) < 0) {

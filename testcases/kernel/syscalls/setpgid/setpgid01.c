@@ -108,7 +108,7 @@ static void setpgid_test2(void)
 	int ret;
 	pid_t pgid, pid;
 
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid == -1)
 		tst_brkm(TBROK | TERRNO, cleanup, "fork()");
 

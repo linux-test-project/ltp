@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	}
 
 	for (i = 0; i < NPROCS; i++) {
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			tst_resm(TFAIL,
 				 "\tFork failed (may be OK if under stress)");
 
@@ -188,7 +188,7 @@ static void dotest(key_t key)
 	}
 
 	for (i = 0; i < NKIDS; i++) {
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			tst_resm(TFAIL, "\tfork failed");
 		}
 		if (pid == 0)

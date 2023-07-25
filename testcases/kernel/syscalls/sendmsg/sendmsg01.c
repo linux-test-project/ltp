@@ -457,7 +457,7 @@ static pid_t start_server(struct sockaddr_in *sin0, struct sockaddr_un *sun0)
 		return -1;
 	}
 
-	switch ((pid = FORK_OR_VFORK())) {
+	switch ((pid = tst_fork())) {
 	case 0:
 #ifdef UCLINUX
 		if (self_exec(argv0, "dd", sfd, ufd) < 0)

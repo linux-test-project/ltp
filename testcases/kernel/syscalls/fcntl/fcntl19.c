@@ -296,7 +296,7 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		if ((child_pid = FORK_OR_VFORK()) == 0) {	/* child */
+		if ((child_pid = tst_fork()) == 0) {	/* child */
 #ifdef UCLINUX
 			if (self_exec
 			    (av[0], "ddddd", parent_pipe[0], parent_pipe[1],

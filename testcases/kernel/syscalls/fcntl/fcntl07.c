@@ -101,7 +101,7 @@ static void verify_cloexec(struct tcase *tc)
 
 	sprintf(pidname, "%d", fd);
 
-	switch (pid = FORK_OR_VFORK()) {
+	switch (pid = tst_fork()) {
 	case -1:
 		tst_resm(TBROK | TERRNO, "fork() failed");
 		return;

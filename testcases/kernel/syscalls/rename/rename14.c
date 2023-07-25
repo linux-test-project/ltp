@@ -89,14 +89,14 @@ int main(int argc, char *argv[])
 	parent_pid = getpid();
 	tst_tmpdir();
 
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid < 0)
 		tst_brkm(TBROK, NULL, "fork() returned %d", pid);
 	if (pid == 0)
 		dochild1();
 
 	kidpid[0] = pid;
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid < 0) {
 		(void)kill(kidpid[0], SIGTERM);
 		(void)unlink("./rename14");

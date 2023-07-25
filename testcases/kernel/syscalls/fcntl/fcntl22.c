@@ -60,7 +60,7 @@ int main(int ac, char **av)
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		tst_count = 0;
 
-		child_pid = FORK_OR_VFORK();
+		child_pid = tst_fork();
 		switch (child_pid) {
 		case 0:
 			TEST(fcntl(file, F_SETLK, &fl));

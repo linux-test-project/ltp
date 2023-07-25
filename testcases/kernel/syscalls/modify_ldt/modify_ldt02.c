@@ -119,7 +119,7 @@ int main(int ac, char **av)
 		}
 
 		tst_old_flush();
-		if ((pid = FORK_OR_VFORK()) == 0) {
+		if ((pid = tst_fork()) == 0) {
 			signal(SIGSEGV, SIG_DFL);
 			val = read_segment(0);
 			exit(1);

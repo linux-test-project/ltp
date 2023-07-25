@@ -145,7 +145,7 @@ int main(int ac, char **av)
 
 		tst_count = 0;
 
-		if ((fork_pid = FORK_OR_VFORK()) == -1)
+		if ((fork_pid = tst_fork()) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 
 		if (fork_pid == 0) {

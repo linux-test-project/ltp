@@ -143,7 +143,7 @@ do {					\
 	int kid_status;			\
 					\
 	tst_old_flush();			\
-	kid_pid = FORK_OR_VFORK();	\
+	kid_pid = tst_fork();	\
 	if (kid_pid == 0) {
 
 #define PROTECT_REGION_EXIT(errval) return (errval);
@@ -177,7 +177,7 @@ do {					\
 	int kid_status;								\
 										\
 	tst_old_flush();								\
-	kid_pid = FORK_OR_VFORK();						\
+	kid_pid = tst_fork();						\
 	if (kid_pid == 0) { /* Run the function */				\
 		return fn(epoll_fd);						\
 	} else {								\

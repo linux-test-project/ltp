@@ -62,7 +62,7 @@ int main(int ac, char **av)
 
 	setup();
 
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid < 0)
 		tst_brkm(TBROK, cleanup, "Fork failed");
 
@@ -106,7 +106,7 @@ static void do_master_child(void)
 	/* Test 2: Check a son process cannot open the file
 	 *         with RDWR permissions.
 	 */
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid < 0) {
 		perror("Fork failed");
 		exit(TFAIL);

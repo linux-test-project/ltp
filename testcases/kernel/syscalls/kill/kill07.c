@@ -124,7 +124,7 @@ int main(int ac, char **av)
 		/* setup the signal handler */
 		ret = sigaction(TEST_SIG, &my_act, &old_act);
 
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 		if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "Fork of child failed");
 		} else if (pid == 0) {

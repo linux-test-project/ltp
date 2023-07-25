@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 
 	for (i = 0; i < nprocs; i++) {
 		fflush(stdout);
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			tst_brkm(TFAIL,
 				 NULL,
 				 "\tFork failed (may be OK if under stress)");
@@ -216,7 +216,7 @@ static int dotest(key_t key, int child_process)
 	sigrelse(SIGTERM);
 
 	fflush(stdout);
-	if ((pid = FORK_OR_VFORK()) < 0) {
+	if ((pid = tst_fork()) < 0) {
 		printf("\tFork failed (may be OK if under stress)\n");
 		TEST(msgctl(tid, IPC_RMID, 0));
 		if (TEST_RETURN < 0) {

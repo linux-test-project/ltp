@@ -200,7 +200,7 @@ static void dotest_iteration(int off)
 	for (i = 0; i < nprocs; i++) {
 		key = keyarray[off + i];
 
-		if ((pid = FORK_OR_VFORK()) < 0)
+		if ((pid = tst_fork()) < 0)
 			tst_brkm(TFAIL, cleanup,
 				 "Fork failed (may be OK if under stress)");
 
@@ -275,7 +275,7 @@ static int dotest(key_t key, int child_process)
 	exit_status = PASS;
 
 	for (i = 0; i < nkids; i++) {
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			printf("Fork failure in the first child of child group %d\n",
 				child_process);
 			cleanup_msgqueue(i, tid);
@@ -288,7 +288,7 @@ static int dotest(key_t key, int child_process)
 					child_process, nreps));
 		}
 		rkidarray[i] = pid;
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0) {
 			printf("Fork failure in the second child of child group %d\n",
 				child_process);
 			/*

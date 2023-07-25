@@ -738,7 +738,7 @@ void dochild(void)
 		 * need some way to have fcntl() atomically unblock a
 		 * signal and wait for the lock.)
 		 */
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 		switch (pid) {
 		case -1:
 			tst_resm(TFAIL, "Fork failed");
@@ -828,7 +828,7 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		/* flush the stdout to avoid garbled output */
 		fflush(stdout);
 
-		if ((child = FORK_OR_VFORK()) == 0) {
+		if ((child = tst_fork()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
 				      thiscase->c_whence, thiscase->c_start,
@@ -1079,7 +1079,7 @@ int main(int ac, char **av)
 		if (sighold(SIGUSR1) < 0)
 			tst_brkm(TBROK, cleanup, "sighold failed");
 
-		if ((child = FORK_OR_VFORK()) == 0) {
+		if ((child = tst_fork()) == 0) {
 #ifdef UCLINUX
 			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
 				      thiscase->c_whence, thiscase->c_start,

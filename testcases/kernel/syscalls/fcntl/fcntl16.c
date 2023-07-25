@@ -497,7 +497,7 @@ int run_test(int file_flag, int file_mode, int start, int end)
 		/* spawn child processes */
 		for (i = 0; i < 2; i++) {
 			if (thislock->l_type != IGNORED) {
-				if ((child = FORK_OR_VFORK()) == 0) {
+				if ((child = tst_fork()) == 0) {
 #ifdef UCLINUX
 					if (self_exec(argv0, "ddddd", i, parent,
 						      test, thislock, fd) < 0) {
