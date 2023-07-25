@@ -108,7 +108,7 @@
 #include <string.h>
 #endif
 #if defined(__linux__) || defined(__sun) || defined(__hpux) || defined(_AIX)
-#if !defined(UCLINUX) && !defined(__UCLIBC__)
+#ifndef __UCLIBC__
 #include <aio.h>
 #endif
 #endif
