@@ -15,7 +15,6 @@ SUBDIRS			:= syscalls
 # Build lib
 SUBDIRS			+= lib
 
-ifneq ($(UCLINUX),1)
 # KEEP THIS LIST ALPHABETIZED PLEASE!
 SUBDIRS			+= connectors \
 			   containers \
@@ -43,7 +42,6 @@ SUBDIRS			+= connectors \
 
 ifeq ($(WITH_KVM_TESTSUITE),yes)
 SUBDIRS			+= kvm
-endif
 
 endif
 

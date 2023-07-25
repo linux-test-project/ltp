@@ -40,11 +40,7 @@ WITH_METADATA_PDF		:= @WITH_METADATA_PDF@
 WITH_OPEN_POSIX_TESTSUITE	:= @WITH_OPEN_POSIX_TESTSUITE@
 
 # Enable testcases/realtime's compile and install?
-ifeq ($(UCLINUX),1)
-WITH_REALTIME_TESTSUITE		:= no
-else
 WITH_REALTIME_TESTSUITE		:= @WITH_REALTIME_TESTSUITE@
-endif
 
 # Enable testcases/kernel/kvm compile and install?
 WITH_KVM_TESTSUITE		:= @WITH_KVM_TESTSUITE@

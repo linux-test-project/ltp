@@ -3,10 +3,6 @@
 
 top_srcdir		?= ../../../..
 
-ifeq ($(UCLINUX),1)
-FILTER_OUT_MAKE_TARGETS	+= writev02
-endif
-
 include $(top_srcdir)/include/mk/testcases.mk
 
 writev03: CFLAGS += -pthread

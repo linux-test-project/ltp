@@ -24,10 +24,6 @@ vpath %.in		$(top_srcdir)/include
 vpath %.m4		$(top_srcdir)/m4
 vpath %.mk		$(top_srcdir)/mk:$(top_srcdir)/mk/include
 
-# User wants uclinux binaries?
-UCLINUX			?= 0
-export UCLINUX
-
 # CLEAN_TARGETS:	Targets which exist solely in clean.
 # COMMON_TARGETS:	Targets which exist in all, clean, and install.
 # INSTALL_TARGETS:	Targets which exist in clean and install (contains
@@ -35,10 +31,7 @@ export UCLINUX
 # BOOTSTRAP_TARGETS:	Directories required to bootstrap out-of-build-tree
 # 			support.
 
-# We're not using uclinux based targets (default).
-ifneq ($(UCLINUX),1)
 COMMON_TARGETS		:= pan utils
-endif
 
 define target_to_dir_dep_mapping
 ifeq ($$(filter %-clean,$(1)),) # not *-clean
