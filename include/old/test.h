@@ -167,10 +167,6 @@ extern int tst_count;
 /* lib/tst_sig.c */
 void tst_sig(int fork_flag, void (*handler)(), void (*cleanup)());
 
-/* lib/self_exec.c */
-void maybe_run_child(void (*child)(), const char *fmt, ...);
-int self_exec(const char *argv0, const char *fmt, ...);
-
 /* lib/tst_mkfs.c
  *
  * @dev: path to a device
