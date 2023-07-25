@@ -94,7 +94,7 @@ static void setup_ipc(void)
 
 	if (access("/dev/shm", F_OK) == 0) {
 		snprintf(shm_path, sizeof(shm_path), "/dev/shm/ltp_%s_%d",
-		         tid, getpid());
+			 tid, getpid());
 	} else {
 		char *tmpdir;
 
@@ -103,7 +103,7 @@ static void setup_ipc(void)
 
 		tmpdir = tst_get_tmpdir();
 		snprintf(shm_path, sizeof(shm_path), "%s/ltp_%s_%d",
-		         tmpdir, tid, getpid());
+			 tmpdir, tid, getpid());
 		free(tmpdir);
 	}
 
@@ -127,7 +127,7 @@ static void setup_ipc(void)
 	SAFE_CLOSE(ipc_fd);
 
 	if (tst_test->needs_checkpoints) {
-		tst_futexes = (char*)results + sizeof(struct results);
+		tst_futexes = (char *)results + sizeof(struct results);
 		tst_max_futexes = (size - sizeof(struct results))/sizeof(futex_t);
 	}
 }
@@ -143,8 +143,8 @@ static void cleanup_ipc(void)
 		tst_res(TWARN | TERRNO, "unlink(%s) failed", shm_path);
 
 	if (results) {
-		msync((void*)results, size, MS_SYNC);
-		munmap((void*)results, size);
+		msync((void *)results, size, MS_SYNC);
+		munmap((void *)results, size);
 		results = NULL;
 	}
 }
@@ -164,7 +164,7 @@ void tst_reinit(void)
 	fd = SAFE_OPEN(path, O_RDWR);
 
 	results = SAFE_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	tst_futexes = (char*)results + sizeof(struct results);
+	tst_futexes = (char *)results + sizeof(struct results);
 	tst_max_futexes = (size - sizeof(struct results))/sizeof(futex_t);
 
 	SAFE_CLOSE(fd);
@@ -195,7 +195,7 @@ static void update_results(int ttype)
 }
 
 static void print_result(const char *file, const int lineno, int ttype,
-                         const char *fmt, va_list va)
+			 const char *fmt, va_list va)
 {
 	char buf[1024];
 	char *str = buf;
@@ -286,16 +286,16 @@ static void print_result(const char *file, const int lineno, int ttype,
 	}
 }
 
-void tst_vres_(const char *file, const int lineno, int ttype,
-               const char *fmt, va_list va)
+void tst_vres_(const char *file, const int lineno, int ttype, const char *fmt,
+	       va_list va)
 {
 	print_result(file, lineno, ttype, fmt, va);
 
 	update_results(TTYPE_RESULT(ttype));
 }
 
-void tst_vbrk_(const char *file, const int lineno, int ttype,
-               const char *fmt, va_list va);
+void tst_vbrk_(const char *file, const int lineno, int ttype, const char *fmt,
+	       va_list va);
 
 static void (*tst_brk_handler)(const char *file, const int lineno, int ttype,
 			       const char *fmt, va_list va) = tst_vbrk_;
@@ -324,8 +324,8 @@ static void do_test_cleanup(void)
 	tst_brk_handler = tst_vbrk_;
 }
 
-void tst_vbrk_(const char *file, const int lineno, int ttype,
-               const char *fmt, va_list va)
+void tst_vbrk_(const char *file, const int lineno, int ttype, const char *fmt,
+	       va_list va)
 {
 	print_result(file, lineno, ttype, fmt, va);
 	update_results(TTYPE_RESULT(ttype));
@@ -346,7 +346,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype,
 }
 
 void tst_res_(const char *file, const int lineno, int ttype,
-              const char *fmt, ...)
+	      const char *fmt, ...)
 {
 	va_list va;
 
@@ -356,7 +356,7 @@ void tst_res_(const char *file, const int lineno, int ttype,
 }
 
 void tst_brk_(const char *file, const int lineno, int ttype,
-              const char *fmt, ...)
+	      const char *fmt, ...)
 {
 	va_list va;
 
@@ -379,8 +379,8 @@ static void check_child_status(pid_t pid, int status)
 	int ret;
 
 	if (WIFSIGNALED(status)) {
-		tst_brk(TBROK, "Child (%i) killed by signal %s",
-		        pid, tst_strsig(WTERMSIG(status)));
+		tst_brk(TBROK, "Child (%i) killed by signal %s", pid,
+			tst_strsig(WTERMSIG(status)));
 	}
 
 	if (!(WIFEXITED(status)))
@@ -609,7 +609,7 @@ static void check_option_collision(void)
 		for (j = 0; j < ARRAY_SIZE(options); j++) {
 			if (toptions[i].optstr[0] == options[j].optstr[0]) {
 				tst_brk(TBROK, "Option collision '%s'",
-				        options[j].help);
+					options[j].help);
 			}
 		}
 	}
@@ -622,7 +622,8 @@ static unsigned int count_options(void)
 	if (!tst_test->options)
 		return 0;
 
-	for (i = 0; tst_test->options[i].optstr; i++);
+	for (i = 0; tst_test->options[i].optstr; i++)
+		;
 
 	return i;
 }
@@ -891,13 +892,13 @@ void check_kver(void)
 
 	if (tst_parse_kver(tst_test->min_kver, &v1, &v2, &v3)) {
 		tst_res(TWARN,
-		        "Invalid kernel version %s, expected %%d.%%d.%%d",
-		        tst_test->min_kver);
+			"Invalid kernel version %s, expected %%d.%%d.%%d",
+			tst_test->min_kver);
 	}
 
 	if (tst_kvercmp(v1, v2, v3) < 0) {
 		tst_brk(TCONF, "The test requires kernel %s or newer",
-		        tst_test->min_kver);
+			tst_test->min_kver);
 	}
 }
 
@@ -980,9 +981,8 @@ static void assert_test_fn(void)
 		tst_brk(TBROK, "You can define tcnt only for test()");
 }
 
-static int prepare_and_mount_ro_fs(const char *dev,
-                                   const char *mntpoint,
-                                   const char *fs_type)
+static int prepare_and_mount_ro_fs(const char *dev, const char *mntpoint,
+				   const char *fs_type)
 {
 	char buf[PATH_MAX];
 
@@ -1078,10 +1078,10 @@ static const char *limit_tmpfs_mount_size(const char *mnt_data,
 
 static const char *get_device_name(const char *fs_type)
 {
-       if (!strcmp(fs_type, "tmpfs"))
-               return "ltp-tmpfs";
-       else
-               return tdev.dev;
+	if (!strcmp(fs_type, "tmpfs"))
+		return "ltp-tmpfs";
+	else
+		return tdev.dev;
 }
 
 static void prepare_device(void)
@@ -1096,7 +1096,7 @@ static void prepare_device(void)
 
 	if (tst_test->needs_rofs) {
 		prepare_and_mount_ro_fs(tdev.dev, tst_test->mntpoint,
-		                        tdev.fs_type);
+					tdev.fs_type);
 		return;
 	}
 
@@ -1243,7 +1243,7 @@ static void do_setup(int argc, char *argv[])
 		 */
 		if (prepare_and_mount_ro_fs(NULL, tst_test->mntpoint, "tmpfs")) {
 			tst_res(TINFO, "Can't mount tmpfs read-only, "
-			        "falling back to block device...");
+				"falling back to block device...");
 			tst_test->needs_device = 1;
 			tst_test->format_device = 1;
 		}
@@ -1271,12 +1271,12 @@ static void do_setup(int argc, char *argv[])
 			prepare_device();
 	}
 
-	if (tst_test->needs_overlay && !tst_test->mount_device) {
+	if (tst_test->needs_overlay && !tst_test->mount_device)
 		tst_brk(TBROK, "tst_test->mount_device must be set");
-	}
-	if (tst_test->needs_overlay && !mntpoint_mounted) {
+
+	if (tst_test->needs_overlay && !mntpoint_mounted)
 		tst_brk(TBROK, "tst_test->mntpoint must be mounted");
-	}
+
 	if (tst_test->needs_overlay && !ovl_mounted) {
 		SAFE_MOUNT_OVERLAY();
 		ovl_mounted = 1;
@@ -1382,9 +1382,8 @@ static void run_tests(void)
 		heartbeat();
 		tst_test->test_all();
 
-		if (tst_getpid() != main_pid) {
+		if (tst_getpid() != main_pid)
 			exit(0);
-		}
 
 		tst_reap_children();
 
@@ -1398,9 +1397,8 @@ static void run_tests(void)
 		heartbeat();
 		tst_test->test(i);
 
-		if (tst_getpid() != main_pid) {
+		if (tst_getpid() != main_pid)
 			exit(0);
-		}
 
 		tst_reap_children();
 
