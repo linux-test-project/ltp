@@ -438,23 +438,6 @@ int main(int ac, char **av)
 	int fail = 0;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child1, "nddddddddd", 1, &file_fd,
-			&parent_pipe[0], &parent_pipe[1],
-			&child_pipe1[0], &child_pipe1[1],
-			&child_pipe2[0], &child_pipe2[1],
-			&child_pipe3[0], &child_pipe3[1]);
-	maybe_run_child(&do_child2, "nddddddddd", 2, &file_fd,
-			&parent_pipe[0], &parent_pipe[1],
-			&child_pipe1[0], &child_pipe1[1],
-			&child_pipe2[0], &child_pipe2[1],
-			&child_pipe3[0], &child_pipe3[1]);
-	maybe_run_child(&do_child3, "nddddddddd", 3, &file_fd,
-			&parent_pipe[0], &parent_pipe[1],
-			&child_pipe1[0], &child_pipe1[1],
-			&child_pipe2[0], &child_pipe2[1],
-			&child_pipe3[0], &child_pipe3[1]);
-#endif
 
 	if (setup()) {		/* global testup */
 		tst_resm(TINFO, "setup failed");
@@ -467,56 +450,22 @@ int main(int ac, char **av)
 		tst_count = 0;
 
 		tst_resm(TINFO, "Enter preparation phase");
-		if ((child_pid1 = tst_fork()) == 0) {	/* first child */
-#ifdef UCLINUX
-			if (self_exec(av[0], "nddddddddd", 1, file_fd,
-				      parent_pipe[0], parent_pipe[1],
-				      child_pipe1[0], child_pipe1[1],
-				      child_pipe2[0], child_pipe2[1],
-				      child_pipe3[0], child_pipe3[1]) < 0) {
-				perror("self_exec failed, child 1");
-				cleanup();
-			}
-#else
+		if ((child_pid1 = tst_fork()) == 0)	/* first child */
 			do_child1();
-#endif
-		} else if (child_pid1 < 0)
+		else if (child_pid1 < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed: child 1");
 
 		/* parent */
 
-		if ((child_pid2 = fork()) == 0) {	/* second child */
-#ifdef UCLINUX
-			if (self_exec(av[0], "nddddddddd", 2, file_fd,
-				      parent_pipe[0], parent_pipe[1],
-				      child_pipe1[0], child_pipe1[1],
-				      child_pipe2[0], child_pipe2[1],
-				      child_pipe3[0], child_pipe3[1]) < 0) {
-				perror("self_exec failed, child 2");
-				cleanup();
-			}
-#else
+		if ((child_pid2 = fork()) == 0)	/* second child */
 			do_child2();
-#endif
-		} else if (child_pid2 < 0) {
+		else if (child_pid2 < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed: child 2");
-		}
 
 		/* parent */
 
 		if ((child_pid3 = fork()) == 0) {	/* third child */
-#ifdef UCLINUX
-			if (self_exec(av[0], "nddddddddd", 3, file_fd,
-				      parent_pipe[0], parent_pipe[1],
-				      child_pipe1[0], child_pipe1[1],
-				      child_pipe2[0], child_pipe2[1],
-				      child_pipe3[0], child_pipe3[1]) < 0) {
-				perror("self_exec failed, child 3");
-				cleanup();
-			}
-#else
 			do_child3();
-#endif
 			do_child3();
 		} else if (child_pid3 < 0) {
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed: child 3");

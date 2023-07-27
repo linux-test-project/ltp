@@ -279,10 +279,6 @@ extern void catch_int(int sig);	/* signal catching subroutine */
 char *TCID = "fcntl16";
 int TST_TOTAL = 1;
 
-#ifdef UCLINUX
-static char *argv0;
-#endif
-
 /*
  * cleanup - performs all the ONE TIME cleanup for this test at completion or
  *	premature exit
@@ -338,15 +334,6 @@ void dochild(int kid)
 	}
 	exit(0);
 }				/* end of child process */
-
-#ifdef UCLINUX
-static int kid_uc;
-
-void dochild_uc(void)
-{
-	dochild(kid_uc);
-}
-#endif
 
 void catch_alarm(int sig)
 {
@@ -497,17 +484,8 @@ int run_test(int file_flag, int file_mode, int start, int end)
 		/* spawn child processes */
 		for (i = 0; i < 2; i++) {
 			if (thislock->l_type != IGNORED) {
-				if ((child = tst_fork()) == 0) {
-#ifdef UCLINUX
-					if (self_exec(argv0, "ddddd", i, parent,
-						      test, thislock, fd) < 0) {
-						perror("self_exec failed");
-						return 1;
-					}
-#else
+				if ((child = tst_fork()) == 0)
 					dochild(i);
-#endif
-				}
 				if (child < 0) {
 					perror("Fork failed");
 					return 1;
@@ -654,11 +632,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(dochild_uc, "ddddd", &kid_uc, &parent, &test,
-			&thislock, &fd);
-	argv0 = av[0];
-#endif
 
 	setup();		/* global setup */
 

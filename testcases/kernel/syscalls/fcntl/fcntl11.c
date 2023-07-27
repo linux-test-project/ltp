@@ -245,10 +245,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "ddddd", &parent_pipe[0],
-			&parent_pipe[1], &child_pipe[0], &child_pipe[1], &fd);
-#endif
 
 	setup();		/* global setup */
 
@@ -257,17 +253,9 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		if ((child_pid = tst_fork()) == 0) {	/* parent */
-#ifdef UCLINUX
-			if (self_exec(av[0], "ddddd", parent_pipe[0],
-				      parent_pipe[1], child_pipe[0],
-				      child_pipe[1], fd) < 0)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "self_exec failed");
-#else
+		if ((child_pid = tst_fork()) == 0) /* parent */
 			do_child();
-#endif
-		} else if (child_pid == -1)
+		else if (child_pid == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 
 		SAFE_CLOSE(cleanup, parent_pipe[0]);

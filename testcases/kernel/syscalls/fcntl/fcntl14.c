@@ -547,10 +547,6 @@ char *TCID = "fcntl14";
 int TST_TOTAL = 1;
 int NO_NFS = 1;
 
-#ifdef UCLINUX
-static char *argv0;
-#endif
-
 void cleanup(void)
 {
 	tst_rmdir();
@@ -745,14 +741,7 @@ void dochild(void)
 			fail = 1;
 			break;
 		case 0:
-#ifdef UCLINUX
-			if (self_exec(argv0, "nd", 1, parent) < 0) {
-				tst_resm(TFAIL, "self_exec failed");
-				break;
-			}
-#else
 			do_usleep_child();
-#endif
 			break;
 
 		default:
@@ -828,19 +817,9 @@ void run_test(int file_flag, int file_mode, int seek, int start, int end)
 		/* flush the stdout to avoid garbled output */
 		fflush(stdout);
 
-		if ((child = tst_fork()) == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
-				      thiscase->c_whence, thiscase->c_start,
-				      thiscase->c_len, thiscase->c_flag,
-				      thiscase->a_type, fd, test, parent) < 0) {
-				tst_resm(TFAIL, "self_exec failed");
-				cleanup();
-			}
-#else
+		if ((child = tst_fork()) == 0)
 			dochild();
-#endif
-		}
+
 		if (child < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
 
@@ -943,17 +922,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	argv0 = av[0];
-
-	maybe_run_child(&do_usleep_child, "nd", 1, &parent);
-	thiscase = malloc(sizeof(testcase));
-
-	maybe_run_child(&dochild, "nddddddddd", 2, &thiscase->c_type,
-			&thiscase->c_whence, &thiscase->c_start,
-			&thiscase->c_len, &thiscase->c_flag, &thiscase->a_type,
-			&fd, &test, &parent);
-#endif
 
 	setup();
 
@@ -1079,19 +1047,9 @@ int main(int ac, char **av)
 		if (sighold(SIGUSR1) < 0)
 			tst_brkm(TBROK, cleanup, "sighold failed");
 
-		if ((child = tst_fork()) == 0) {
-#ifdef UCLINUX
-			if (self_exec(argv0, "nddddddddd", 2, thiscase->c_type,
-				      thiscase->c_whence, thiscase->c_start,
-				      thiscase->c_len, thiscase->c_flag,
-				      thiscase->a_type, fd, test, parent) < 0) {
-				tst_resm(TFAIL, "self_exec failed");
-				cleanup();
-			}
-#else
+		if ((child = tst_fork()) == 0)
 			dochild();
-#endif
-		}
+
 		if (child < 0)
 			tst_brkm(TBROK|TERRNO, cleanup, "Fork failed");
 
