@@ -83,13 +83,10 @@ struct test_case_t {		/* test case structure */
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
 		    sizeof(struct sockaddr_in), -1, EBADF, setup0,
 		    cleanup0, "bad file descriptor"},
-#ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
 	{
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)-1,
 		    sizeof(struct sockaddr_in), -1, EFAULT, setup1,
 		    cleanup1, "invalid socket buffer"},
-#endif
 	{
 	PF_INET, SOCK_STREAM, 0, (struct sockaddr *)&sin1,
 		    3, -1, EINVAL, setup1, cleanup1, "invalid salen"}, {
@@ -111,10 +108,6 @@ struct test_case_t {		/* test case structure */
 ,};
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
-
-#ifdef UCLINUX
-static char *argv0;
-#endif
 
 /**
  * bionic's connect() implementation calls netdClientInitConnect() before
@@ -139,10 +132,6 @@ int main(int argc, char *argv[])
 	int lc;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
-#ifdef UCLINUX
-	argv0 = argv[0];
-	maybe_run_child(&do_child, "d", &sfd);
-#endif
 
 	setup();
 
@@ -263,11 +252,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 
 	switch ((pid = tst_fork())) {
 	case 0:		/* child */
-#ifdef UCLINUX
-		self_exec(argv0, "d", sfd);
-#else
 		do_child();
-#endif
 		break;
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
