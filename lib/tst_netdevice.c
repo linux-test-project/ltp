@@ -332,6 +332,9 @@ static int change_ns(const char *file, const int lineno, const char *ifname,
 
 	ctx = create_request(file, lineno, RTM_NEWLINK, 0, &info, sizeof(info));
 
+	if (!ctx)
+		return 0;
+
 	if (!tst_rtnl_add_attr_string(file, lineno, ctx, IFLA_IFNAME, ifname)) {
 		tst_rtnl_destroy_context(file, lineno, ctx);
 		return 0;
@@ -410,6 +413,9 @@ static int modify_route(const char *file, const int lineno, unsigned int action,
 		info.rtm_scope = RT_SCOPE_UNIVERSE;
 
 	ctx = create_request(file, lineno, action, flags, &info, sizeof(info));
+
+	if (!ctx)
+		return 0;
 
 	if (srcaddr && !tst_rtnl_add_attr(file, lineno, ctx, RTA_SRC, srcaddr,
 		srclen)) {
