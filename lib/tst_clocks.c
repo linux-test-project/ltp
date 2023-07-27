@@ -17,8 +17,9 @@ typedef int (*mysyscall)(clockid_t clk_id, void *ts);
 int syscall_supported_by_kernel(long sysnr)
 {
 	int ret;
+	struct timespec foo;
 
-	ret = syscall(sysnr, 0, NULL);
+	ret = syscall(sysnr, 0, &foo);
 	if (ret == -1 && errno == ENOSYS)
 		return 0;
 
