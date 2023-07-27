@@ -7,6 +7,7 @@
 #include <linux/veth.h>
 #include <sys/socket.h>
 #include <net/if.h>
+#include <linux/pkt_sched.h>
 #include "lapi/rtnetlink.h"
 
 #define TST_NO_DEFAULT_MAIN
@@ -517,4 +518,117 @@ int tst_netdev_remove_route_inet(const char *file, const int lineno,
 {
 	return modify_route_inet(file, lineno, RTM_DELROUTE, 0, ifname,
 		srcaddr, srcprefix, dstaddr, dstprefix, gateway);
+}
+
+static int modify_qdisc(const char *file, const int lineno, const char *object,
+	unsigned int action, unsigned int nl_flags, const char *ifname,
+	unsigned int family, unsigned int parent, unsigned int handle,
+	unsigned int info, const char *qd_kind,
+	const struct tst_rtnl_attr_list *config)
+{
+	struct tst_rtnl_context *ctx;
+	int ret;
+	struct tcmsg msg = {
+		.tcm_family = family,
+		.tcm_handle = handle,
+		.tcm_parent = parent,
+		.tcm_info = info
+	};
+
+	if (!qd_kind) {
+		tst_brk_(file, lineno, TBROK,
+			"Queueing discipline name required");
+		return 0;
+	}
+
+	if (ifname) {
+		msg.tcm_ifindex = tst_netdev_index_by_name(file, lineno,
+			ifname);
+
+		if (msg.tcm_ifindex < 0) {
+			tst_brk_(file, lineno, TBROK, "Interface %s not found",
+				ifname);
+			return 0;
+		}
+	}
+
+	ctx = create_request(file, lineno, action, nl_flags, &msg, sizeof(msg));
+
+	if (!ctx)
+		return 0;
+
+	if (!tst_rtnl_add_attr_string(file, lineno, ctx, TCA_KIND, qd_kind)) {
+		tst_rtnl_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	if (config && !tst_rtnl_add_attr_list(file, lineno, ctx, config)) {
+		tst_rtnl_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	ret = tst_rtnl_send_validate(file, lineno, ctx);
+	tst_rtnl_destroy_context(file, lineno, ctx);
+
+	if (!ret) {
+		tst_brk_(file, lineno, TBROK,
+			"Failed to modify %s: %s", object,
+			tst_strerrno(tst_rtnl_errno));
+	}
+
+	return ret;
+}
+
+int tst_netdev_add_qdisc(const char *file, const int lineno,
+	const char *ifname, unsigned int family, unsigned int parent,
+	unsigned int handle, const char *qd_kind,
+	const struct tst_rtnl_attr_list *config)
+{
+	return modify_qdisc(file, lineno, "queueing discipline", RTM_NEWQDISC,
+		NLM_F_CREATE | NLM_F_EXCL, ifname, family, parent, handle, 0,
+		qd_kind, config);
+}
+
+int tst_netdev_remove_qdisc(const char *file, const int lineno,
+	const char *ifname, unsigned int family, unsigned int parent,
+	unsigned int handle, const char *qd_kind)
+{
+	return modify_qdisc(file, lineno, "queueing discipline", RTM_DELQDISC,
+		0, ifname, family, parent, handle, 0, qd_kind, NULL);
+}
+
+int tst_netdev_add_traffic_class(const char *file, const int lineno,
+	const char *ifname, unsigned int parent, unsigned int handle,
+	const char *qd_kind, const struct tst_rtnl_attr_list *config)
+{
+	return modify_qdisc(file, lineno, "traffic class", RTM_NEWTCLASS,
+		NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC, parent, handle,
+		0, qd_kind, config);
+}
+
+int tst_netdev_remove_traffic_class(const char *file, const int lineno,
+	const char *ifname, unsigned int parent, unsigned int handle,
+	const char *qd_kind)
+{
+	return modify_qdisc(file, lineno, "traffic class", RTM_DELTCLASS, 0,
+		ifname, AF_UNSPEC, parent, handle, 0, qd_kind, NULL);
+}
+
+int tst_netdev_add_traffic_filter(const char *file, const int lineno,
+	const char *ifname, unsigned int parent, unsigned int handle,
+	unsigned int protocol, unsigned int priority, const char *f_kind,
+	const struct tst_rtnl_attr_list *config)
+{
+	return modify_qdisc(file, lineno, "traffic filter", RTM_NEWTFILTER,
+		NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC, parent, handle,
+		TC_H_MAKE(priority << 16, htons(protocol)), f_kind, config);
+}
+
+int tst_netdev_remove_traffic_filter(const char *file, const int lineno,
+	const char *ifname, unsigned int parent, unsigned int handle,
+	unsigned int protocol, unsigned int priority, const char *f_kind)
+{
+	return modify_qdisc(file, lineno, "traffic filter", RTM_DELTFILTER,
+		0, ifname, AF_UNSPEC, parent, handle,
+		TC_H_MAKE(priority << 16, htons(protocol)), f_kind, NULL);
 }
