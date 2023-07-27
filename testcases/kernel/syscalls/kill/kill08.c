@@ -78,9 +78,6 @@ int main(int ac, char **av)
 	int exno, status, nsig, i;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "");
-#endif
 
 	setup();		/* global setup */
 
@@ -105,15 +102,7 @@ int main(int ac, char **av)
 				if (pid2 < 0) {
 					tst_brkm(TBROK, cleanup, "Fork failed");
 				} else if (pid2 == 0) {
-#ifdef UCLINUX
-					if (self_exec(av[0], "") < 0) {
-						tst_brkm(TBROK, cleanup,
-							 "self_exec of "
-							 "child failed");
-					}
-#else
 					do_child();
-#endif
 				}
 			}
 			/* Kill all processes in this process group */

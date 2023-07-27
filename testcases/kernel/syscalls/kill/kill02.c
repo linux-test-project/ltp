@@ -203,27 +203,11 @@ void cleanup();
 char *TCID = "kill02";
 int TST_TOTAL = 2;
 
-#ifdef UCLINUX
-static char *argv0;
-void childA_rout_uclinux();
-void childB_rout_uclinux();
-#endif
-
 int main(int ac, char **av)
 {
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-
-#ifdef UCLINUX
-	argv0 = av[0];
-
-	maybe_run_child(&childA_rout_uclinux, "nd", 1, &pipeA_fd[1]);
-	maybe_run_child(&childB_rout_uclinux, "nd", 2, &pipeB_fd[1]);
-	maybe_run_child(&child1_rout, "ndddddd", 3, &pipe1_fd[1], &pipe2_fd[1],
-			&pipeA_fd[0], &pipeA_fd[1], &pipeB_fd[0], &pipeB_fd[1]);
-	maybe_run_child(&child2_rout, "nd", 4, &pipe2_fd[1]);
-#endif
 
 	setup();
 
@@ -235,19 +219,7 @@ int main(int ac, char **av)
 			if ((pid2 = tst_fork()) > 0) {
 				(void)parent_rout();
 			} else if (pid2 == 0) {
-#ifdef UCLINUX
-				if (self_exec(argv0, "nd", 4, pipe2_fd[1]) < 0) {
-					if (kill(pid1, SIGKILL) == -1
-					    && errno != ESRCH) {
-						tst_resm(TWARN,
-							 "Child process may not have been killed.");
-					}
-					tst_brkm(TBROK | TERRNO, cleanup,
-						 "fork failed");
-				}
-#else
 				(void)child2_rout();
-#endif
 			} else {
 				/*
 				 *  The second fork failed kill the first child.
@@ -264,17 +236,7 @@ int main(int ac, char **av)
 			/*
 			 *  This is child 1.
 			 */
-#ifdef UCLINUX
-			if (self_exec
-			    (argv0, "ndddddd", 3, pipe1_fd[1], pipe2_fd[1],
-			     pipeA_fd[0], pipeA_fd[1], pipeB_fd[0],
-			     pipeB_fd[1]) < 0) {
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "self_exec() failed");
-			}
-#else
 			(void)child1_rout();
-#endif
 		} else {
 			/*
 			 * Fork failed.
@@ -456,18 +418,10 @@ void child1_rout(void)
 		/*
 		 *  This is the parent(child1), fork again to create child B.
 		 */
+
 		if ((pidB = tst_fork()) == 0) {
 			/* This is child B. */
-#ifdef UCLINUX
-			if (self_exec(argv0, "nd", 2, pipeB_fd[1]) < 0) {
-				tst_brkm(TBROK | TERRNO, NULL,
-					 "self_exec() failed");
-				(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
-				exit(0);
-			}
-#else
 			(void)childB_rout();
-#endif
 		}
 
 		else if (pidB == -1) {
@@ -485,16 +439,7 @@ void child1_rout(void)
 
 	else if (pidA == 0) {
 		/* This is child A. */
-#ifdef UCLINUX
-		if (self_exec(argv0, "nd", 1, pipeA_fd[1]) < 0) {
-			tst_brkm(TBROK | TERRNO, NULL, "self_exec() failed");
-			(void)write(pipe1_fd[1], CHAR_SET_FAILED, 1);
-			exit(0);
-		}
-#else
 		(void)childA_rout();
-#endif
-
 	}
 
 	else if (pidA == -1) {
@@ -625,24 +570,6 @@ void childA_rout(void)
 	exit(0);
 }				/*End of childA_rout */
 
-#ifdef UCLINUX
-/*******************************************************************************
- *  This is the routine for child A after self_exec
- ******************************************************************************/
-void childA_rout_uclinux(void)
-{
-	/* Setup the signal handler again */
-	if (signal(SIGUSR1, usr1_rout) == SIG_ERR) {
-		tst_brkm(TBROK, NULL,
-			 "Could not set to catch the childrens signal.");
-		(void)write(pipeA_fd[1], CHAR_SET_FAILED, 1);
-		exit(0);
-	}
-
-	childA_rout();
-}
-#endif
-
 /*******************************************************************************
  *  This is the routine for child B, which should not receive the parents signal.
  ******************************************************************************/
@@ -666,24 +593,6 @@ void childB_rout(void)
 
 	exit(0);
 }
-
-#ifdef UCLINUX
-/*******************************************************************************
- *  This is the routine for child B after self_exec
- ******************************************************************************/
-void childB_rout_uclinux(void)
-{
-	/* Setup the signal handler again */
-	if (signal(SIGUSR1, usr1_rout) == SIG_ERR) {
-		tst_brkm(TBROK, NULL,
-			 "Could not set to catch the childrens signal.");
-		(void)write(pipeB_fd[1], CHAR_SET_FAILED, 1);
-		exit(0);
-	}
-
-	childB_rout();
-}
-#endif
 
 /*******************************************************************************
  *  This routine sets up the interprocess communication pipes, signal handling,

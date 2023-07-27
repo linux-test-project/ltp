@@ -135,10 +135,6 @@ int main(int ac, char **av)
 
 	tst_parse_opts(ac, av, NULL, NULL);
 
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "");
-#endif
-
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -149,14 +145,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 
 		if (fork_pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
-				tst_brkm(TBROK, cleanup,
-					 "self_exec of child failed");
-			}
-#else
 			do_child();
-#endif
 		}
 
 		TEST(kill(fork_pid, SIGKILL));

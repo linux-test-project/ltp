@@ -91,9 +91,6 @@ int main(int ac, char **av)
 	struct sigaction my_act, old_act;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "");
-#endif
 
 	setup();		/* global setup */
 
@@ -128,14 +125,7 @@ int main(int ac, char **av)
 		if (pid < 0) {
 			tst_brkm(TBROK, cleanup, "Fork of child failed");
 		} else if (pid == 0) {
-#ifdef UCLINUX
-			if (self_exec(av[0], "") < 0) {
-				tst_brkm(TBROK, cleanup,
-					 "self_exec of child failed");
-			}
-#else
 			do_child();
-#endif
 		} else {
 			/* sighandler should not catch this signal */
 			/* if it does flag will be set to 1 */
