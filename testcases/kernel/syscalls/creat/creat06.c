@@ -60,9 +60,7 @@
 static void setup(void);
 static void test6_setup(void);
 static void test6_cleanup(void);
-#if !defined(UCLINUX)
 static void bad_addr_setup(int);
-#endif
 
 static struct passwd *ltpuser;
 static char long_name[PATH_MAX+2];
@@ -78,9 +76,7 @@ static struct test_case_t {
 	{long_name, MODE1, ENAMETOOLONG, NULL, NULL},
 	{NO_DIR, MODE1, ENOENT, NULL, NULL},
 	{NOT_DIR, MODE1, ENOTDIR, NULL, NULL},
-#if !defined(UCLINUX)
 	{NULL, MODE1, EFAULT, bad_addr_setup, NULL},
-#endif
 	{TEST6_FILE, MODE1, EACCES, test6_setup, test6_cleanup},
 	{TEST7_FILE, MODE1, ELOOP, NULL, NULL},
 	{TEST8_FILE, MODE1, EROFS, NULL, NULL},
@@ -127,7 +123,6 @@ static void setup(void)
 	SAFE_SYMLINK("test_file_eloop2", TEST7_FILE);
 }
 
-#if !defined(UCLINUX)
 static void bad_addr_setup(int i)
 {
 	if (tcases[i].fname)
@@ -136,7 +131,6 @@ static void bad_addr_setup(int i)
 	tcases[i].fname = SAFE_MMAP(0, 1, PROT_NONE,
 	                            MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 }
-#endif
 
 static void test6_setup(void)
 {
