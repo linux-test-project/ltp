@@ -49,11 +49,6 @@
  *			test failed
  */
 
-#if defined UCLINUX && !__THROW
-/* workaround for libc bug */
-#define __THROW
-#endif
-
 #define _GNU_SOURCE
 
 #include <errno.h>
