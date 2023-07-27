@@ -44,11 +44,6 @@
 
 #define DEBUG 0
 
-#ifdef UCLINUX
-#define _GNU_SOURCE
-#include <stdio.h>
-#endif
-
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
