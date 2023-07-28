@@ -821,3 +821,8 @@ TST_NEEDS_KCONFIGS="CONFIG_EXT4_FS, CONFIG_QUOTACTL=y"
 
 . tst_test.sh
 -------------------------------------------------------------------------------
+
+1.8 Skipping test based on system state
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test can be skipped on various conditions: on enabled SecureBoot
+('TST_SKIP_IN_SECUREBOOT=1'), lockdown ('TST_SKIP_IN_LOCKDOWN=1').
