@@ -10,6 +10,7 @@
 /tst_get_unused_port
 /tst_hexdump
 /tst_kvcmp
+/tst_lockdown_enabled
 /tst_net_iface_prefix
 /tst_net_ip_prefix
 /tst_net_vars

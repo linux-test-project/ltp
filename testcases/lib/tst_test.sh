@@ -678,7 +678,7 @@ tst_run()
 			CHECKPOINT_WAIT|CHECKPOINT_WAKE);;
 			CHECKPOINT_WAKE2|CHECKPOINT_WAKE_AND_WAIT);;
 			DEV_EXTRA_OPTS|DEV_FS_OPTS|FORMAT_DEVICE|MOUNT_DEVICE);;
-			SKIP_FILESYSTEMS);;
+			SKIP_FILESYSTEMS|SKIP_IN_LOCKDOWN);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done
@@ -697,6 +697,10 @@ tst_run()
 	fi
 
 	[ "$TST_NEEDS_ROOT" = 1 ] && tst_require_root
+
+	if [ "$TST_SKIP_IN_LOCKDOWN" = 1 ] && tst_lockdown_enabled; then
+		tst_brk TCONF "Kernel is locked down, skipping test"
+	fi
 
 	[ "$TST_DISABLE_APPARMOR" = 1 ] && tst_disable_apparmor
 	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
