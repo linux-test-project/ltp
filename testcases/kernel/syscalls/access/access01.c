@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *   AUTHOR		: William Roske
+ * Copyright (c) Linux Test Project, 2003-2023
+ * Author: William Roske
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Basic test for access(2) using F_OK, R_OK, W_OK and X_OK
  */
+
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
