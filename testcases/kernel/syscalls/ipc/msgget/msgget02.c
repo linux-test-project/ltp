@@ -8,11 +8,11 @@
  *
  * Test for EEXIST, ENOENT, EACCES errors.
  *
- * 1) msgget(2) fails if a message queue exists for key and msgflg
+ * -  msgget(2) fails if a message queue exists for key and msgflg
  *    specified both IPC_CREAT and IPC_EXCL.
- * 2) msgget(2) fails if no message queue exists for key and msgflg
+ * -  msgget(2) fails if no message queue exists for key and msgflg
  *    did not specify IPC_CREAT.
- * 3) msgget(2) fails if a message queue exists for key, but the
+ * -  msgget(2) fails if a message queue exists for key, but the
  *    calling process does not have permission to access the queue,
  *    and does not have the CAP_IPC_OWNER capability.
  *

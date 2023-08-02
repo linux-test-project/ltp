@@ -11,17 +11,17 @@
 /*\
  * [Description]
  *
- * 1. access() fails with -1 return value and sets errno to EINVAL
+ * -  access() fails with -1 return value and sets errno to EINVAL
  *    if the specified access mode argument is invalid.
- * 2. access() fails with -1 return value and sets errno to ENOENT
+ * -  access() fails with -1 return value and sets errno to ENOENT
  *    if the specified file doesn't exist (or pathname is NULL).
- * 3. access() fails with -1 return value and sets errno to ENAMETOOLONG
+ * -  access() fails with -1 return value and sets errno to ENAMETOOLONG
  *    if the pathname size is > PATH_MAX characters.
- * 4. access() fails with -1 return value and sets errno to ENOTDIR
+ * -  access() fails with -1 return value and sets errno to ENOTDIR
  *    if a component used as a directory in pathname is not a directory.
- * 5. access() fails with -1 return value and sets errno to ELOOP
+ * -  access() fails with -1 return value and sets errno to ELOOP
  *    if too many symbolic links were encountered in resolving pathname.
- * 6. access() fails with -1 return value and sets errno to EROFS
+ * -  access() fails with -1 return value and sets errno to EROFS
  *    if write permission was requested for files on a read-only file system.
  */
 
