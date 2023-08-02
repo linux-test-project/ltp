@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2003-2023
  */
 
-/*
+/*\
+ * [Description]
+ *
  * access(2) test for errno(s) EFAULT as root and nobody respectively.
  */
 
