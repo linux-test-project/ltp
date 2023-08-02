@@ -2,26 +2,27 @@
 /*
  * Copyright (c) International Business Machines Corp., 2001
  * Copyright (c) 2013 Fujitsu Ltd.
+ * Copyright (c) Linux Test Project, 2003-2023
+ * Ported to LTP: Wayne Boyer
+ * 11/2013 Ported by Xiaoguang Wang <wangxg.fnst@cn.fujitsu.com>
+ * 11/2016 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
-/*
- * Verify that,
- *  1) access() fails with -1 return value and sets errno to EINVAL
- *     if the specified access mode argument is invalid.
- *  2) access() fails with -1 return value and sets errno to ENOENT
- *     if the specified file doesn't exist (or pathname is NULL).
- *  3) access() fails with -1 return value and sets errno to ENAMETOOLONG
- *     if the pathname size is > PATH_MAX characters.
- *  4) access() fails with -1 return value and sets errno to ENOTDIR
- *     if a component used as a directory in pathname is not a directory.
- *  5) access() fails with -1 return value and sets errno to ELOOP
- *     if too many symbolic links were encountered in resolving pathname.
- *  6) access() fails with -1 return value and sets errno to EROFS
- *     if write permission was requested for files on a read-only file system.
+/*\
+ * [Description]
  *
- * Ported to LTP: Wayne Boyer
- *  11/2013 Ported by Xiaoguang Wang <wangxg.fnst@cn.fujitsu.com>
- *  11/2016 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ * 1. access() fails with -1 return value and sets errno to EINVAL
+ *    if the specified access mode argument is invalid.
+ * 2. access() fails with -1 return value and sets errno to ENOENT
+ *    if the specified file doesn't exist (or pathname is NULL).
+ * 3. access() fails with -1 return value and sets errno to ENAMETOOLONG
+ *    if the pathname size is > PATH_MAX characters.
+ * 4. access() fails with -1 return value and sets errno to ENOTDIR
+ *    if a component used as a directory in pathname is not a directory.
+ * 5. access() fails with -1 return value and sets errno to ELOOP
+ *    if too many symbolic links were encountered in resolving pathname.
+ * 6. access() fails with -1 return value and sets errno to EROFS
+ *    if write permission was requested for files on a read-only file system.
  */
 
 #include <errno.h>
