@@ -1,137 +1,59 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2001
+ *  07/2001 Ported by Wayne Boyer
+ * Copyright (c) 2023 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-/*
- * NAME
- *	pipe08.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	Check that a SIGPIPE signal is generated when a write is
- *	attempted on an empty pipe.
- *
- * ALGORITHM
- *	1. Write to a pipe after closing the read side.
- *	2. Check for the signal SIGPIPE to be received.
- *
- * USAGE:  <for command-line>
- *  pipe08 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *             -i n : Execute test n times.
- *             -I x : Execute test for x seconds.
- *             -P x : Pause for x seconds between iterations.
- *             -t   : Turn on syscall timing.
- *
- * USAGE
- *	pipe08
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	None
+ * Verify that, on any attempt to write to a pipe which is closed for
+ * reading will generate a SIGPIPE signal and write will fail with
+ * EPIPE errno.
  */
-#include <errno.h>
-#include <unistd.h>
-#include <signal.h>
-#include <string.h>
-#include "test.h"
 
-char *TCID = "pipe08";
-int TST_TOTAL = 1;
+#include "tst_test.h"
 
-void setup(void);
-void cleanup(void);
-void sighandler(int);
+static int pipefd[2];
+static volatile int sigpipe_cnt;
 
-int main(int ac, char **av)
+static void sighandler(int sig)
 {
-	int lc;
-
-	int pipefd[2];		/* fds for pipe read/write */
-	char wrbuf[BUFSIZ];
-	int written, length;
-	int close_stat;		/*  exit status of close(read fd) */
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		TEST(pipe(pipefd));
-
-		if (TEST_RETURN != 0) {
-			tst_resm(TFAIL, "call failed unexpectedly");
-			continue;
-		}
-
-		if ((close_stat = close(pipefd[0])) == -1) {
-			tst_brkm(TBROK, cleanup, "close of read side failed");
-		}
-
-		strcpy(wrbuf, "abcdefghijklmnopqrstuvwxyz\0");
-		length = strlen(wrbuf);
-
-		/*
-		 * the SIGPIPE signal will be caught here or else
-		 * the program will dump core when the signal is
-		 * sent
-		 */
-		written = write(pipefd[1], wrbuf, length);
-		if (written > 0)
-			tst_brkm(TBROK, cleanup, "write succeeded unexpectedly");
-	}
-	cleanup();
-	tst_exit();
-
+	if (sig == SIGPIPE)
+		sigpipe_cnt++;
 }
 
-/*
- * sighandler - catch signals and look for SIGPIPE
- */
-void sighandler(int sig)
+static void run(void)
 {
-	if (sig != SIGPIPE)
-		tst_resm(TFAIL, "expected SIGPIPE, got %d", sig);
-	else
-		tst_resm(TPASS, "got expected SIGPIPE signal");
+	char wrbuf[] = "abcdefghijklmnopqrstuvwxyz";
+
+	sigpipe_cnt = 0;
+
+	SAFE_PIPE(pipefd);
+	SAFE_CLOSE(pipefd[0]);
+
+	TST_EXP_FAIL2_SILENT(write(pipefd[1], wrbuf, sizeof(wrbuf)), EPIPE);
+	TST_EXP_EQ_LI(sigpipe_cnt, 1);
+
+	SAFE_CLOSE(pipefd[1]);
 }
 
-/*
- * setup() - performs all ONE TIME setup for this test.
- */
-void setup(void)
+static void setup(void)
 {
-
-	tst_sig(NOFORK, sighandler, cleanup);
-
-	TEST_PAUSE;
+	SAFE_SIGNAL(SIGPIPE, sighandler);
 }
 
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *	       completion or premature exit.
- */
-void cleanup(void)
+static void cleanup(void)
 {
+	if (pipefd[0] > 0)
+		SAFE_CLOSE(pipefd[0]);
+	if (pipefd[1] > 0)
+		SAFE_CLOSE(pipefd[1]);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.cleanup = cleanup
+};
