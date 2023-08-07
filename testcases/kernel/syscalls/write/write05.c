@@ -45,7 +45,7 @@ static struct tcase {
 	{&pipefd[1], &buf, sizeof(buf), EPIPE},
 };
 
-static int sigpipe_cnt;
+static volatile int sigpipe_cnt;
 
 static void sighandler(int sig)
 {
