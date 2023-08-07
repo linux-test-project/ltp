@@ -27,7 +27,6 @@
 
 static long huge_free;
 static long huge_free2;
-static long orig_shmmax = -1, new_shmmax;
 
 static void shared_hugepage(void);
 
@@ -81,25 +80,18 @@ static void shared_hugepage(void)
 static void setup(void)
 {
 	long hpage_size, orig_hugepages;
+	unsigned long new_shmmax;
 
 	orig_hugepages = get_sys_tune("nr_hugepages");
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &orig_shmmax);
-	SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", (long)SIZE);
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%ld", &new_shmmax);
+	SAFE_FILE_SCANF(PATH_SHMMAX, "%lu", &new_shmmax);
 
 	if (new_shmmax < SIZE)
-		tst_brk(TCONF,	"shmmax too low, have: %ld", new_shmmax);
+		tst_brk(TCONF,	"shmmax too low, have: %lu", new_shmmax);
 
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 
 	struct tst_hugepage hp = { orig_hugepages + SIZE / hpage_size, TST_NEEDS };
 	tst_reserve_hugepages(&hp);
-}
-
-static void cleanup(void)
-{
-	if (orig_shmmax != -1)
-		SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld", orig_shmmax);
 }
 
 static struct tst_test test = {
@@ -114,6 +106,9 @@ static struct tst_test test = {
 	.test = test_hugeshmat,
 	.min_mem_avail = 2048,
 	.setup = setup,
-	.cleanup = cleanup,
 	.hugepages = {1, TST_NEEDS},
+	.save_restore = (const struct tst_path_val[]) {
+		{PATH_SHMMAX, "1073741824", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
+		{}
+	},
 };
