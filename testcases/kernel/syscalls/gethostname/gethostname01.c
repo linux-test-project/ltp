@@ -4,7 +4,7 @@
  * Copyright (c) 2023 SUSE LLC Ioannis Bonatakis <ybonatakis@suse.com>
  */
 
-/*
+/*\
  * [Description]
  *
  * Test is checking that gethostname() succeeds.
@@ -16,6 +16,7 @@
 static void run(void)
 {
 	char hname[100];
+
 	TST_EXP_PASS(gethostname(hname, sizeof(hname)));
 }
 
