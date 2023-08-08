@@ -255,6 +255,11 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_REQ, CAP_SYS_CHROOT),
 		{}
 	},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/kernel/io_uring_disabled", "0",
+			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9392a27d88b9"},
 		{"linux-git", "ff002b30181d"},

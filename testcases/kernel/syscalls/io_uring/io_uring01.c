@@ -264,5 +264,10 @@ static struct tst_test test = {
 	.bufs = (struct tst_buffers []) {
 		{&iov, .iov_sizes = (int[]){BLOCK_SZ, -1}},
 		{}
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{"/proc/sys/kernel/io_uring_disabled", "0",
+			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
+		{}
 	}
 };
