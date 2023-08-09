@@ -1,101 +1,52 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-/*
- * DESCRIPTION
- *	Check sbrk() with error condition that should produce ENOMEM.
+ * Copyright (c) 2023 SUSE LLC Avinesh Kumar <avinesh.kumar@suse.com>
  */
 
-#include <errno.h>
-#include <unistd.h>
-#include "test.h"
+/*\
+ * [Description]
+ *
+ * Verify that sbrk() on failure sets errno to ENOMEM.
+ */
 
-#define INC 16*1024*1024
 
-char *TCID = "sbrk02";
-int TST_TOTAL = 1;
+#include "tst_test.h"
 
-static void setup(void);
-static void sbrk_verify(void);
-static void cleanup(void);
-
+#define INC (16*1024*1024)
 static long increment = INC;
 
-int main(int argc, char *argv[])
+static void run(void)
 {
-	int lc;
-	int i;
+	TESTPTR(sbrk(increment));
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		for (i = 0; i < TST_TOTAL; i++)
-			sbrk_verify();
+	if (TST_RET_PTR != (void *)-1) {
+		tst_res(TFAIL, "sbrk(%ld) unexpectedly passed and returned %p, "
+						"expected (void *)-1 with errno=%d",
+						increment, TST_RET_PTR, ENOMEM);
+		return;
 	}
 
-	cleanup();
-	tst_exit();
+	if (TST_ERR == ENOMEM)
+		tst_res(TPASS | TTERRNO, "sbrk(%ld) failed as expected", increment);
+	else
+		tst_res(TFAIL | TTERRNO, "sbrk(%ld) failed but unexpected errno, "
+								"expected errno=%d - %s",
+								increment, ENOMEM, strerror(ENOMEM));
 }
 
 static void setup(void)
 {
 	void *ret = NULL;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/* call sbrk until it fails or increment overflows */
 	while (ret != (void *)-1 && increment > 0) {
 		ret = sbrk(increment);
 		increment += INC;
 	}
-	tst_resm(TINFO | TERRNO, "setup() bailing inc: %ld, ret: %p, sbrk: %p",
-		increment, ret, sbrk(0));
-
-	errno = 0;
 }
 
-static void sbrk_verify(void)
-{
-	void *tret;
-
-	tret = sbrk(increment);
-	TEST_ERRNO = errno;
-
-	if (tret != (void *)-1) {
-		tst_resm(TFAIL,
-			 "sbrk(%ld) returned %p, expected (void *)-1, errno=%d",
-			 increment, tret, ENOMEM);
-		return;
-	}
-
-	if (TEST_ERRNO == ENOMEM) {
-		tst_resm(TPASS | TTERRNO, "sbrk(%ld) failed as expected",
-			 increment);
-	} else {
-		tst_resm(TFAIL | TTERRNO,
-			 "sbrk(%ld) failed unexpectedly; expected: %d - %s",
-			 increment, ENOMEM, strerror(ENOMEM));
-	}
-}
-
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup
+};
