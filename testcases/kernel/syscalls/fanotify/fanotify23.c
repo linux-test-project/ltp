@@ -160,9 +160,15 @@ static void test_fanotify(void)
 	}
 
 	/*
-	 * drop_caches should evict inode from cache and remove evictable mark
+	 * drop_caches should evict inode from cache and remove evictable mark.
+	 * We call drop_caches twice as once the dentries will just cycle
+	 * through the LRU without being reclaimed and if there are no other
+	 * objects to reclaim, the slab reclaim will just stop instead of
+	 * retrying. Note that this relies on how reclaim of fs objects work
+	 * for the filesystem but this test is restricted to ext2...
 	 */
 	fsync_file(TEST_FILE);
+	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
 	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
 
 	verify_mark_removed(TEST_FILE, "after drop_caches");
