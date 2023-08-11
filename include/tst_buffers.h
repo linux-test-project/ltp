@@ -25,6 +25,11 @@ struct tst_buffers {
 	 * Array of iov buffer sizes terminated by -1.
 	 */
 	int *iov_sizes;
+	/*
+	 * If size and iov_sizes is NULL this is the string we want to strdup()
+	 * into the buffer.
+	 */
+	char *str;
 };
 
 /*
@@ -45,6 +50,12 @@ char *tst_strdup(const char *str);
  * Allocates size bytes, returns pointer to the allocated buffer.
  */
 void *tst_alloc(size_t size);
+
+/*
+ * Printf into a guarded buffer.
+ */
+char *tst_aprintf(const char *fmt, ...)
+      __attribute__((format (printf, 1, 2)));
 
 /*
  * Allocates iovec structure including the buffers.
