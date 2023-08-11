@@ -31,18 +31,27 @@ static char *workdir;
 static int skip_symlinks, skip_blocked;
 static struct passwd *ltpuser;
 
+static char *file_name;
+static char *blocked_name;
+static char *dir_name;
+static char *cwd_name;
+static char *parent_name;
+static char *root_name;
+static char *missing_name;
+static char *link_name;
+
 static struct test_case {
-	const char *name;
+	char **name;
 	int root_ret, root_err, nobody_ret, nobody_err;
 } testcase_list[] = {
-	{FILE_NAME, -1, ENOTDIR, -1, ENOTDIR},
-	{BLOCKED_NAME, 0, 0, -1, EACCES},
-	{DIR_NAME, 0, 0, 0, 0},
-	{".", 0, 0, 0, 0},
-	{"..", 0, 0, 0, 0},
-	{"/", 0, 0, 0, 0},
-	{"missing", -1, ENOENT, -1, ENOENT},
-	{LINK_NAME1, -1, ELOOP, -1, ELOOP},
+	{&file_name, -1, ENOTDIR, -1, ENOTDIR},
+	{&blocked_name, 0, 0, -1, EACCES},
+	{&dir_name, 0, 0, 0, 0},
+	{&cwd_name, 0, 0, 0, 0},
+	{&parent_name, 0, 0, 0, 0},
+	{&root_name, 0, 0, 0, 0},
+	{&missing_name, -1, ENOENT, -1, ENOENT},
+	{&link_name, -1, ELOOP, -1, ELOOP},
 };
 
 static void setup(void)
@@ -52,8 +61,6 @@ static void setup(void)
 	struct stat statbuf;
 
 	umask(0);
-
-	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
 
 	cwd = SAFE_GETCWD(NULL, 0);
 	workdir = SAFE_MALLOC(strlen(cwd) + strlen(MNTPOINT) + 2);
@@ -109,7 +116,7 @@ static void run(unsigned int n)
 {
 	struct test_case *tc = testcase_list + n;
 
-	tst_res(TINFO, "Testing '%s'", tc->name);
+	tst_res(TINFO, "Testing '%s'", *tc->name);
 
 	if (tc->root_err == ELOOP && skip_symlinks) {
 		tst_res(TCONF, "Skipping symlink loop test, not supported");
@@ -119,8 +126,8 @@ static void run(unsigned int n)
 	/* Reset current directory to mountpoint */
 	SAFE_CHDIR(workdir);
 
-	TEST(chdir(tc->name));
-	check_result("root", tc->name, tc->root_ret, tc->root_err);
+	TEST(chdir(*tc->name));
+	check_result("root", *tc->name, tc->root_ret, tc->root_err);
 
 	if (tc->nobody_err == EACCES && skip_blocked) {
 		tst_res(TCONF, "Skipping unprivileged permission test, "
@@ -130,25 +137,35 @@ static void run(unsigned int n)
 
 	SAFE_CHDIR(workdir);
 	SAFE_SETEUID(ltpuser->pw_uid);
-	TEST(chdir(tc->name));
+	TEST(chdir(*tc->name));
 	SAFE_SETEUID(0);
-	check_result(TESTUSER, tc->name, tc->nobody_ret, tc->nobody_err);
+	check_result(TESTUSER, *tc->name, tc->nobody_ret, tc->nobody_err);
 }
 
 static void cleanup(void)
 {
 	SAFE_CHDIR("..");
-	tst_umount(workdir);
 	free(workdir);
 }
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.format_device = 1,
+	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.test = run,
 	.tcnt = ARRAY_SIZE(testcase_list),
 	.setup = setup,
-	.cleanup = cleanup
+	.cleanup = cleanup,
+	.bufs = (struct tst_buffers []) {
+		{&file_name, .str = FILE_NAME},
+		{&blocked_name, .str = BLOCKED_NAME},
+		{&dir_name, .str = DIR_NAME},
+		{&cwd_name, .str = "."},
+		{&parent_name, .str = ".."},
+		{&root_name, .str = "/"},
+		{&missing_name, .str = "does_not_exist"},
+		{&link_name, .str = LINK_NAME1},
+		{}
+	}
 };
