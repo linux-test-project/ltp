@@ -40,26 +40,32 @@
 #define SNAME1	"symlink1"
 #define SNAME2	"symlink2"
 #define MNT_POINT	"mntpoint"
+#define LONGPATHSIZE (PATH_MAX + 2)
 
 static uid_t uid;
-static char longpathname[PATH_MAX + 2];
+static char *longpathname;
+static char *fname1;
+static char *fname2;
+static char *sname1;
+static char *empty_fname;
+static char *mnt_point;
 
 static struct tcase {
-	const char *pathname;
+	char **pathname;
 	int mode;
 	int exp_errno;
 } tcases[] = {
-	{FNAME1, -1, EINVAL},
-	{"", W_OK, ENOENT},
-	{longpathname, R_OK, ENAMETOOLONG},
-	{FNAME2, R_OK, ENOTDIR},
-	{SNAME1, R_OK, ELOOP},
-	{MNT_POINT, W_OK, EROFS}
+	{&fname1, -1, EINVAL},
+	{&empty_fname, W_OK, ENOENT},
+	{&longpathname, R_OK, ENAMETOOLONG},
+	{&fname2, R_OK, ENOTDIR},
+	{&sname1, R_OK, ELOOP},
+	{&mnt_point, W_OK, EROFS}
 };
 
 static void access_test(struct tcase *tc, const char *user)
 {
-	TST_EXP_FAIL(access(tc->pathname, tc->mode), tc->exp_errno,
+	TST_EXP_FAIL(access(*tc->pathname, tc->mode), tc->exp_errno,
 	             "access as %s", user);
 }
 
@@ -87,7 +93,8 @@ static void setup(void)
 
 	uid = pw->pw_uid;
 
-	memset(longpathname, 'a', sizeof(longpathname) - 1);
+	memset(longpathname, 'a', LONGPATHSIZE - 1);
+	longpathname[LONGPATHSIZE-1] = 0;
 
 	SAFE_TOUCH(FNAME1, 0333, NULL);
 	SAFE_TOUCH(DNAME, 0644, NULL);
@@ -104,4 +111,13 @@ static struct tst_test test = {
 	.mntpoint = MNT_POINT,
 	.setup = setup,
 	.test = verify_access,
+	.bufs = (struct tst_buffers []) {
+		{&fname1, .str = FNAME1},
+		{&fname2, .str = FNAME2},
+		{&sname1, .str = SNAME1},
+		{&empty_fname, .str = ""},
+		{&longpathname, .size = LONGPATHSIZE},
+		{&mnt_point, .str = MNT_POINT},
+		{}
+	}
 };
