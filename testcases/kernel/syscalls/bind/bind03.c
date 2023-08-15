@@ -43,8 +43,12 @@ static void run(void)
 	 * locks the socket and does all the checks and the node is not removed
 	 * in the error path. For now we will unlink the node here so that the
 	 * test works fine when the run() function is executed in a loop.
+	 * From v5.14-rc1 the kernel has fix above issue.
 	 */
-	unlink(SNAME_B);
+	if (tst_kvercmp(5, 14, 0) >= 0)
+		TST_EXP_FAIL(unlink(SNAME_B), ENOENT, "check exist of SNAME_B");
+	else
+		unlink(SNAME_B);
 }
 
 static void setup(void)
