@@ -62,7 +62,7 @@ Minimal supported kernel version is 3.10.
 [align="center",options="header"]
 |==================================
 | Libc      | Note
-| https://www.gnu.org/software/libc/[GNU C Library (glibc)] | Targetted libc, tested both compilation and actual test results.
+| https://www.gnu.org/software/libc/[GNU C Library (glibc)] | Targeted libc, tested both compilation and actual test results.
 | https://uclibc-ng.org/[uClibc-ng] | Although not being tested it should work as well as it attempt to maintain a glibc compatible interface.
 | https://www.uclibc.org/[uClibc]   | Older https://www.uclibc.org/[uClibc] might have problems.
 | https://musl.libc.org/[musl] | Not yet fully supported (see

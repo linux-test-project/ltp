@@ -20,7 +20,7 @@ Let's start with an example, following code is a simple test for a 'getenv()'.
  * [Description]
  * Tests basic functionality of getenv().
  *
- *  - create an env variable and verify that getenv() can get get it
+ *  - create an env variable and verify that getenv() can get it
  *  - call getenv() with nonexisting variable name, check that it returns NULL
  */
 
@@ -579,7 +579,7 @@ These two functions are intended for runtime kernel version detection. They
 parse the output from 'uname()' and compare it to the passed values.
 
 The return value is similar to the 'strcmp()' function, i.e. zero means equal,
-negative value means that the kernel is older than than the expected value and
+negative value means that the kernel is older than the expected value and
 positive means that it's newer.
 
 The second function 'tst_kvercmp2()' allows for specifying per-vendor table of
@@ -1949,7 +1949,7 @@ available to the children (see the capabilities (7) manual pages).
 
 However a lot of problems can be solved by using 'tst_cap_action(struct
 tst_cap  *cap)' directly which can be called at any time. This also helps if
-you wish to drop a capability at the begining of setup.
+you wish to drop a capability at the beginning of setup.
 
 1.33 Reproducing race-conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

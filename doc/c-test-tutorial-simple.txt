@@ -940,7 +940,7 @@ the 'index' where you are then able to un-stage some parts before
 re-committing.
 
 You can also use +edit+ and +git commit --amend+ together to change a commit
-deep in your history, but without reseting the 'index'. The 'index' contains
+deep in your history, but without resetting the 'index'. The 'index' contains
 changes which you have staged with +git add+, but not yet committed.
 
 So now that the commit history has been cleaned up, we need to submit a patch

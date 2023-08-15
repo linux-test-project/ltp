@@ -106,7 +106,7 @@ The 'REQ_VERSION_MAJOR' and 'REQ_VERSION_PATCH' describe minimal kernel
 version for which the build system tries to build the module.
 
 The buildsystem is also forward compatible with changes in Linux kernel
-internal API so that if modul fails to build the failure is ignored both on
+internal API so that if module fails to build the failure is ignored both on
 build and installation. If the userspace counterpart of the test fails to load
 the module because the file does not exists, the test is skipped.
 
