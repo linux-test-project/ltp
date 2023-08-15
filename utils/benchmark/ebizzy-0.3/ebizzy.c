@@ -50,6 +50,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <stdint.h>
 
 #include "ebizzy.h"
 
@@ -83,7 +84,6 @@ static char **hole_mem;
 static unsigned int page_size;
 static time_t start_time;
 static volatile int threads_go;
-static unsigned int records_read;
 
 static void usage(void)
 {
@@ -366,13 +366,13 @@ static inline unsigned int rand_num(unsigned int max, unsigned int *state)
  *
  */
 
-static unsigned int search_mem(void)
+static uintptr_t search_mem(void)
 {
 	record_t key, *found;
 	record_t *src, *copy;
 	unsigned int chunk;
 	size_t copy_size = chunk_size;
-	unsigned int i;
+	uintptr_t i;
 	unsigned int state = 0;
 
 	for (i = 0; threads_go == 1; i++) {
@@ -423,6 +423,8 @@ static unsigned int search_mem(void)
 
 static void *thread_run(void *arg __attribute__((unused)))
 {
+	uintptr_t records_thread;
+
 	if (verbose > 1)
 		printf("Thread started\n");
 
@@ -430,13 +432,13 @@ static void *thread_run(void *arg __attribute__((unused)))
 
 	while (threads_go == 0) ;
 
-	records_read += search_mem();
+	records_thread = search_mem();
 
 	if (verbose > 1)
 		printf("Thread finished, %f seconds\n",
 		       difftime(time(NULL), start_time));
 
-	return NULL;
+	return (void *)records_thread;
 }
 
 static struct timeval difftimeval(struct timeval *end, struct timeval *start)
@@ -454,6 +456,7 @@ static void start_threads(void)
 	unsigned int i;
 	struct rusage start_ru, end_ru;
 	struct timeval usr_time, sys_time;
+	uintptr_t records_read = 0;
 	int err;
 
 	if (verbose)
@@ -484,18 +487,20 @@ static void start_threads(void)
 	 */
 
 	for (i = 0; i < threads; i++) {
-		err = pthread_join(thread_array[i], NULL);
+		uintptr_t record_thread;
+		err = pthread_join(thread_array[i], (void *)&record_thread);
 		if (err) {
 			fprintf(stderr, "Error joining thread %d\n", i);
 			exit(1);
 		}
+		records_read += record_thread;
 	}
 
 	if (verbose)
 		printf("Threads finished\n");
 
-	printf("%u records/s\n",
-	       (unsigned int)(((double)records_read) / elapsed));
+	printf("%tu records/s\n",
+	       (uintptr_t)(((double)records_read) / elapsed));
 
 	usr_time = difftimeval(&end_ru.ru_utime, &start_ru.ru_utime);
 	sys_time = difftimeval(&end_ru.ru_stime, &start_ru.ru_stime);
