@@ -402,7 +402,7 @@ WARNING: This function is not thread safe.
 void tst_set_max_runtime(int max_runtime);
 -------------------------------------------------------------------------------
 
-Allows for setting max_runtime per test iteration dynamically in the test setup(),
+Allows for setting max_runtime per test iteration dynamically in the test 'setup()',
 the timeout is specified in seconds. There are a few testcases whose runtime
 can vary arbitrarily, these can disable timeouts by setting it to
 TST_UNLIMITED_RUNTIME.
@@ -459,7 +459,7 @@ You write just:
 fd = SAFE_OPEN("/dev/null", O_RDONLY);
 -------------------------------------------------------------------------------
 
-IMPORTANT: The SAFE_CLOSE() function also sets the passed file descriptor to -1
+IMPORTANT: The 'SAFE_CLOSE()' function also sets the passed file descriptor to -1
            after it's successfully closed.
 
 They can also simplify reading and writing of sysfs files, you can, for
@@ -831,7 +831,7 @@ type defined in C99 but this one *DOES NOT* imply 'volatile' (it's just a
 signal handler is either 'volatile int' or 'volatile sig_atomic_t'.
 
 If a crash (e.g. triggered by signal SIGSEGV) is expected in testing, you
-can avoid creation of core files by calling tst_no_corefile() function.
+can avoid creation of core files by calling 'tst_no_corefile()' function.
 This takes effect for process (and its children) which invoked it, unless
 they subsequently modify RLIMIT_CORE.
 
