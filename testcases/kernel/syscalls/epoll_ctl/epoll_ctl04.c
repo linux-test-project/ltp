@@ -36,7 +36,7 @@ static void setup(void)
 
 		events.data.fd = epfd;
 		if (epoll_ctl(new_epfd, EPOLL_CTL_ADD, epfd, &events))
-			tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
+			tst_brk(TBROK | TERRNO, "epoll_ctl(..., EPOLL_CTL_ADD, ...)");
 
 		epfd = new_epfd;
 	}
@@ -59,7 +59,7 @@ static void verify_epoll_ctl(void)
 
 	events.data.fd = epfd;
 	TST_EXP_FAIL(epoll_ctl(new_epfd, EPOLL_CTL_ADD, epfd, &events), EINVAL,
-		     "epoll_clt(..., EPOLL_CTL_ADD, ...) with number of nesting is 5");
+		     "epoll_ctl(..., EPOLL_CTL_ADD, ...) with number of nesting is 5");
 	SAFE_CLOSE(new_epfd);
 }
 

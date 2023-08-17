@@ -67,7 +67,7 @@ static void setup(void)
 	events[1].data.fd = fd[1];
 
 	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd[0], &events[0]))
-		tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
+		tst_brk(TBROK | TERRNO, "epoll_ctl(..., EPOLL_CTL_ADD, ...)");
 }
 
 static void cleanup(void)
@@ -85,7 +85,7 @@ static void cleanup(void)
 static void verify_epoll_ctl(unsigned int n)
 {
 	TST_EXP_FAIL(epoll_ctl(*tc[n].epfd, tc[n].opt, *tc[n].fd, tc[n].event),
-		     tc[n].exp_err, "epoll_clt(...) if %s", tc[n].desc);
+		     tc[n].exp_err, "epoll_ctl(...) if %s", tc[n].desc);
 }
 
 static struct tst_test test = {

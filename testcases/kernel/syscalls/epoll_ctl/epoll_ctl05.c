@@ -40,12 +40,12 @@ static void setup(void)
 
 		events.data.fd = epfd;
 		if (epoll_ctl(new_epfd, EPOLL_CTL_ADD, epfd, &events))
-			tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
+			tst_brk(TBROK | TERRNO, "epoll_ctl(..., EPOLL_CTL_ADD, ...)");
 	}
 
 	events.data.fd = fd[0];
 	if (epoll_ctl(origin_epfd, EPOLL_CTL_DEL, fd[0], &events))
-		tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_DEL, ...)");
+		tst_brk(TBROK | TERRNO, "epoll_ctl(..., EPOLL_CTL_DEL, ...)");
 }
 
 static void cleanup(void)
@@ -61,7 +61,7 @@ static void verify_epoll_ctl(void)
 {
 	events.data.fd = epfd;
 	TST_EXP_FAIL(epoll_ctl(origin_epfd, EPOLL_CTL_ADD, epfd, &events),
-		     ELOOP, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
+		     ELOOP, "epoll_ctl(..., EPOLL_CTL_ADD, ...)");
 }
 
 static struct tst_test test = {
