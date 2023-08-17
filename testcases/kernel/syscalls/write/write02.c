@@ -2,27 +2,24 @@
 /*
  * Copyright (c) 2017 Carlo Marcelo Arenas Belon <carlo@gmail.com>
  * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2003-2023
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Tests for a special case NULL buffer with size 0 is expected to return 0.
  */
 
-#include <errno.h>
 #include "tst_test.h"
 
 static int fd;
 
 static void verify_write(void)
 {
-	TEST(write(fd, NULL, 0));
+	TST_EXP_POSITIVE(write(fd, NULL, 0));
 
-	if (TST_RET != 0) {
-		tst_res(TFAIL | TTERRNO,
-			"write() should have succeeded with ret=0");
-		return;
-	}
-
-	tst_res(TPASS, "write(fd, NULL, 0) == 0");
+	TST_EXP_EXPR(TST_RET == 0, "write(fd, NULL, %ld) == %d", TST_RET, 0);
 }
 
 static void setup(void)
