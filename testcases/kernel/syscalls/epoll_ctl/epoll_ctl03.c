@@ -55,7 +55,7 @@ static void setup(void)
 	events.data.fd = fds[0];
 
 	if (epoll_ctl(epfd, EPOLL_CTL_ADD, fds[0], &events))
-		tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
+		tst_brk(TBROK | TERRNO, "epoll_ctl(..., EPOLL_CTL_ADD, ...)");
 }
 
 static void cleanup(void)

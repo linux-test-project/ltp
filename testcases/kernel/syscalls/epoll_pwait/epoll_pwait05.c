@@ -46,7 +46,7 @@ static void setup(void)
 
 	e.events = EPOLLIN;
 	if (epoll_ctl(efd, EPOLL_CTL_ADD, sfd[0], &e))
-		tst_brk(TBROK | TERRNO, "epoll_clt(..., EPOLL_CTL_ADD, ...)");
+		tst_brk(TBROK | TERRNO, "epoll_ctl(..., EPOLL_CTL_ADD, ...)");
 	SAFE_WRITE(SAFE_WRITE_ALL, sfd[1], "w", 1);
 }
 
