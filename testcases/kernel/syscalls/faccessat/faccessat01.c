@@ -1,151 +1,88 @@
-/******************************************************************************
- *
- *   Copyright (c) International Business Machines  Corp., 2006
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * NAME
- *      faccessat01.c
- *
- * DESCRIPTION
- *	This test case will verify basic function of faccessat
- *	added by kernel 2.6.16 or up.
- *
- * Author
- *	Yi Yang <yyangcdl@cn.ibm.com>
- *
- * History
- *      08/28/2006      Created first by Yi Yang <yyangcdl@cn.ibm.com>
- *
- *****************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines  Corp., 2006
+ * Copyright (c) Linux Test Project, 2003-2023
+ * Author: Yi Yang <yyangcdl@cn.ibm.com>
+ */
 
-#define _GNU_SOURCE
+/*\
+ * [Description]
+ *
+ * Check the basic functionality of the faccessat() system call.
+ *
+ * - faccessat() passes if dir_fd is file descriptor to the directory
+ *   where the file is located and pathname is relative path of the file.
+ *
+ * - faccessat() passes if dir_fd is a bad file descriptor and pathname is
+ *   absolute path of the file.
+ *
+ * - faccessat() passes if dir_fd is AT_FDCWD and pathname is interpreted
+ *   relative to the current working directory of the calling process.
+ */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
-#include "test.h"
-#include "safe_macros.h"
-#include "lapi/syscalls.h"
+#include <stdio.h>
+#include "tst_test.h"
 
-#define TEST_CASES 6
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
-void setup();
-void cleanup();
+#define TESTDIR         "faccessatdir"
+#define TESTFILE        "faccessatfile"
+#define FILEPATH        "faccessatdir/faccessatfile"
 
-char *TCID = "faccessat01";
-int TST_TOTAL = TEST_CASES;
-static char pathname[256];
-static char testfile[256];
-static char testfile2[256];
-static char testfile3[256];
-static int fds[TEST_CASES];
-static char *filenames[TEST_CASES];
-static int expected_errno[TEST_CASES] = { 0, 0, ENOTDIR, EBADF, 0, 0 };
+static int dir_fd, file_fd;
+static int atcwd_fd = AT_FDCWD;
+static char *abs_path;
+static char *test_file;
+static char *file_path;
 
-int myfaccessat(int dirfd, const char *filename, int mode)
+static struct tcase {
+	int *fd;
+	char **filename;
+	int exp_errno;
+} tcases[] = {
+	{&dir_fd, &test_file, 0},
+	{&dir_fd, &abs_path, 0},
+	{&atcwd_fd, &file_path, 0},
+};
+
+static void verify_faccessat(unsigned int i)
 {
-	return tst_syscall(__NR_faccessat, dirfd, filename, mode);
+	struct tcase *tc = &tcases[i];
+
+	TST_EXP_PASS(faccessat(*tc->fd, *tc->filename, R_OK, 0),
+		     "faccessat(%d, %s, R_OK, 0)",
+		     *tc->fd, *tc->filename);
 }
 
-int main(int ac, char **av)
+static void setup(void)
 {
-	int lc;
-	int i;
+	char *tmpdir_path = tst_get_tmpdir();
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	abs_path = tst_aprintf("%s/%s", tmpdir_path, FILEPATH);
+	free(tmpdir_path);
 
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		/*
-		 * Call faccessat
-		 */
-		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(myfaccessat(fds[i], filenames[i], R_OK));
-
-			/* check return code */
-			if (TEST_ERRNO == expected_errno[i]) {
-				tst_resm(TPASS,
-					 "faccessat() returned the expected  errno %d: %s",
-					 TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TFAIL,
-					 "faccessdat() Failed, errno=%d : %s",
-					 TEST_ERRNO, strerror(TEST_ERRNO));
-			}
-		}
-	}
-
-	cleanup();
-	tst_exit();
+	SAFE_MKDIR(TESTDIR, 0700);
+	dir_fd = SAFE_OPEN(TESTDIR, O_DIRECTORY);
+	file_fd = SAFE_OPEN(FILEPATH, O_CREAT | O_RDWR, 0600);
 }
 
-void setup(void)
+static void cleanup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	if (dir_fd > -1)
+		SAFE_CLOSE(dir_fd);
 
-	tst_tmpdir();
-
-	char *abs_path = tst_get_tmpdir();
-	int p = getpid();
-
-	/* Initialize test dir and file names */
-	sprintf(pathname, "faccessattestdir%d", p);
-	sprintf(testfile, "faccessattestfile%d.txt", p);
-	sprintf(testfile2, "%s/faccessattestfile%d.txt", abs_path, p);
-	sprintf(testfile3, "faccessattestdir%d/faccessattestfile%d.txt", p, p);
-
-	free(abs_path);
-
-	SAFE_MKDIR(cleanup, pathname, 0700);
-
-	fds[0] = SAFE_OPEN(cleanup, pathname, O_DIRECTORY);
-	fds[1] = fds[4] = fds[0];
-
-	SAFE_FILE_PRINTF(cleanup, testfile, "%s", testfile);
-	SAFE_FILE_PRINTF(cleanup, testfile2, "%s", testfile2);
-
-	fds[2] = SAFE_OPEN(cleanup, testfile3, O_CREAT | O_RDWR, 0600);
-
-	fds[3] = 100;
-	fds[5] = AT_FDCWD;
-
-	filenames[0] = filenames[2] = filenames[3] = filenames[4] = testfile;
-	filenames[1] = testfile2;
-	filenames[5] = testfile3;
-
-	TEST_PAUSE;
+	if (file_fd > -1)
+		SAFE_CLOSE(file_fd);
 }
 
-void cleanup(void)
-{
-	if (fds[0] > 0)
-		close(fds[0]);
-	if (fds[2] > 0)
-		close(fds[2]);
-
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.test = verify_faccessat,
+	.tcnt = ARRAY_SIZE(tcases),
+	.setup = setup,
+	.cleanup = cleanup,
+	.bufs = (struct tst_buffers []) {
+		{&test_file, .str = TESTFILE},
+		{&file_path, .str = FILEPATH},
+		{},
+	},
+	.needs_tmpdir = 1,
+};
