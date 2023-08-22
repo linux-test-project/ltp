@@ -92,6 +92,7 @@ AC_CHECK_FUNCS_ONCE([ \
     epoll_pwait \
     epoll_pwait2 \
     execveat \
+    faccessat2 \
     fallocate \
     fchownat \
     fsconfig \

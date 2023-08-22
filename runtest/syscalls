@@ -216,6 +216,9 @@ exit_group01 exit_group01
 #faccessat test cases
 faccessat01 faccessat01
 
+#faccessat2 test cases
+faccessat201 faccessat201
+
 #fallocate test cases
 fallocate01 fallocate01
 fallocate02 fallocate02
