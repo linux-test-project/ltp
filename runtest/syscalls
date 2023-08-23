@@ -218,6 +218,7 @@ faccessat01 faccessat01
 
 #faccessat2 test cases
 faccessat201 faccessat201
+faccessat202 faccessat202
 
 #fallocate test cases
 fallocate01 fallocate01
