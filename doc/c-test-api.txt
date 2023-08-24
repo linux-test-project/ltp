@@ -2141,7 +2141,7 @@ the prefix field of file pointed by path equals to the value passed to this func
 Also having a similar api pair TST_ASSERT_FILE_INT/STR(path, prefix, val) to assert
 the field value of file.
 
-1.36 Using Control Group
+1.37 Using Control Group
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some LTP tests need specific Control Group configurations.  'tst_cgroup.h'
@@ -2322,19 +2322,19 @@ kernel docs. Presently the LTP library does not attempt to handle most
 differences in semantics. It does the minimal amount of work to make testing on
 both V1 and V2 feasible.
 
-1.37 Require minimum numbers of CPU for a testcase
+1.38 Require minimum numbers of CPU for a testcase
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some tests require more than specific number of CPU. It can be defined with
 `.min_cpus = N`.
 
-1.38 Require minimum size of MemAvailable for a testcase
+1.39 Require minimum size of MemAvailable for a testcase
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some tests require more than specific size(MB) of MemAvailable. It can be defined
 with `.min_mem_avail = N`.
 
-1.39 Test tags
+1.40 Test tags
 ~~~~~~~~~~~~~~
 
 Test tags are name-value pairs that can hold any test metadata.
@@ -2376,7 +2376,7 @@ struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
-1.40 Testing on the specific architecture
+1.41 Testing on the specific architecture
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Testcases for specific arch should be limited on that only being supported
 platform to run, we now involve a '.supported_archs' to achieve this feature
@@ -2412,7 +2412,7 @@ static struct tst_test test = {
 };
 -------------------------------------------------------------------------------
 
-1.41 Skipping test based on system state
+1.42 Skipping test based on system state
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Test can be skipped on various conditions: on enabled SecureBoot
 ('.skip_in_secureboot = 1'), lockdown ('.skip_in_lockdown = 1') or in 32-bit
