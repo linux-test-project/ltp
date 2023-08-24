@@ -36,7 +36,7 @@ static void setup(void)
 		tst_brk(TBROK | TERRNO, "setenv() failed");
 }
 
-static void test(void)
+static void run(void)
 {
 	char *ret;
 
@@ -64,7 +64,7 @@ next:
 }
 
 static struct tst_test test = {
-	.test_all = test,
+	.test_all = run,
 	.setup = setup,
 };
 -------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ value and errno and reports the test result.
 
 [source,c]
 -------------------------------------------------------------------------------
-static void test(void)
+static void run(void)
 {
 	...
 	TST_EXP_PASS(stat(fname, &statbuf), "stat(%s, ...)", fname);
@@ -278,7 +278,7 @@ begin with a format string and then appropriate values to be formatted.
 
 [source,c]
 -------------------------------------------------------------------------------
-static void test(void)
+static void run(void)
 {
 	...
 	TST_EXP_FD(open(fname, O_RDONLY), "open(%s, O_RDONLY)", fname);
@@ -294,7 +294,7 @@ positive integer is returned.
 
 [source,c]
 -------------------------------------------------------------------------------
-static void test(void)
+static void run(void)
 {
 	...
 	TST_EXP_FAIL(stat(fname, &statbuf), ENOENT, "stat(%s, ...)", fname);
@@ -308,7 +308,7 @@ passed as the second argument.
 
 [source,c]
 -------------------------------------------------------------------------------
-static void test(void)
+static void run(void)
 {
 	...
 	TST_EXP_FAIL2(msgget(key, flags), EINVAL, "msgget(%i, %i)", key, flags);
