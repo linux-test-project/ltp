@@ -384,6 +384,7 @@ void *client_fn(void *id)
 
 	inf.raddr_len = sizeof(inf.raddr);
 	inf.etime_cnt = 0;
+	inf.eshutdown_cnt = 0;
 	inf.timeout = wait_timeout;
 	inf.pmtu_err_cnt = 0;
 
