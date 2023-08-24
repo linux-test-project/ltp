@@ -32,7 +32,7 @@ static void run(void)
 
 static void setup(void)
 {
-	epoll_pwait_info();
+	epoll_pwait_init();
 
 	SAFE_SOCKETPAIR(AF_UNIX, SOCK_STREAM, 0, sfd);
 

@@ -32,12 +32,15 @@ static int do_epoll_pwait(int epfd, struct epoll_event *events, int
 
 }
 
-static void epoll_pwait_info(void)
+static void epoll_pwait_init(void)
 {
-	if (tst_variant == 0)
+	if (tst_variant == 0) {
 		tst_res(TINFO, "Test epoll_pwait()");
-	else
+		epoll_pwait_supported();
+	} else {
 		tst_res(TINFO, "Test epoll_pwait2()");
+		epoll_pwait2_supported();
+	}
 }
 
 #endif /* LTP_EPOLL_PWAIT_VAR_H */

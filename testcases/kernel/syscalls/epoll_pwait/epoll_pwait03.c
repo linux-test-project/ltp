@@ -40,7 +40,7 @@ int sample_fn(int clk_id, long long usec)
 
 static void setup(void)
 {
-	epoll_pwait_info();
+	epoll_pwait_init();
 
 	SAFE_SOCKETPAIR(AF_UNIX, SOCK_STREAM, 0, sfd);
 

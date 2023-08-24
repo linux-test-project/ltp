@@ -38,6 +38,8 @@ static void run_all(unsigned int n)
 
 static void setup(void)
 {
+	epoll_pwait2_supported();
+
 	SAFE_SOCKETPAIR(AF_UNIX, SOCK_STREAM, 0, sfd);
 
 	efd = epoll_create(1);

@@ -73,16 +73,10 @@ static void run(unsigned int n)
 	tst_reap_children();
 }
 
-static void epoll_pwait_support(void)
-{
-	if (tst_variant == 0)
-		epoll_pwait_supported();
-	else
-		epoll_pwait2_supported();
-}
-
 static void setup(void)
 {
+	epoll_pwait_init();
+
 	SAFE_SIGEMPTYSET(&signalset);
 	SAFE_SIGADDSET(&signalset, SIGUSR1);
 
@@ -90,9 +84,6 @@ static void setup(void)
 	sa.sa_handler = sighandler;
 	SAFE_SIGEMPTYSET(&sa.sa_mask);
 	SAFE_SIGACTION(SIGUSR1, &sa, NULL);
-
-	epoll_pwait_info();
-	epoll_pwait_support();
 
 	SAFE_SOCKETPAIR(AF_UNIX, SOCK_STREAM, 0, sfd);
 
