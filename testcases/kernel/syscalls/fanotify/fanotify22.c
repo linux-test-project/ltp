@@ -42,6 +42,7 @@
 #define MOUNT_PATH "test_mnt"
 #define BASE_DIR "internal_dir"
 #define BAD_DIR BASE_DIR"/bad_dir"
+#define BAD_LINK BASE_DIR"/bad_link"
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
 
@@ -51,6 +52,7 @@ static int fd_notify;
 /* These expected FIDs are common to multiple tests */
 static struct fanotify_fid_t null_fid;
 static struct fanotify_fid_t bad_file_fid;
+static struct fanotify_fid_t bad_link_fid;
 
 static void trigger_fs_abort(void)
 {
@@ -65,7 +67,7 @@ static void do_debugfs_request(const char *dev, char *request)
 	SAFE_CMD(cmd, NULL, NULL);
 }
 
-static void tcase2_trigger_lookup(void)
+static void trigger_bad_file_lookup(void)
 {
 	int ret;
 
@@ -76,15 +78,27 @@ static void tcase2_trigger_lookup(void)
 			ret, BAD_DIR, errno, EUCLEAN);
 }
 
+static void trigger_bad_link_lookup(void)
+{
+	int ret;
+
+	/* SAFE_OPEN cannot be used here because we expect it to fail. */
+	ret = open(MOUNT_PATH"/"BAD_LINK, O_RDONLY, 0);
+	if (ret != -1 && errno != EUCLEAN)
+		tst_res(TFAIL, "Unexpected open result(%d) of %s (%d!=%d)",
+			ret, BAD_LINK, errno, EUCLEAN);
+}
+
+
 static void tcase3_trigger(void)
 {
-	trigger_fs_abort();
-	tcase2_trigger_lookup();
+	trigger_bad_link_lookup();
+	trigger_bad_file_lookup();
 }
 
 static void tcase4_trigger(void)
 {
-	tcase2_trigger_lookup();
+	trigger_bad_file_lookup();
 	trigger_fs_abort();
 }
 
@@ -104,7 +118,7 @@ static struct test_case {
 	},
 	{
 		.name = "Lookup of inode with invalid mode",
-		.trigger_error = &tcase2_trigger_lookup,
+		.trigger_error = &trigger_bad_file_lookup,
 		.error_count = 1,
 		.error = EFSCORRUPTED,
 		.fid = &bad_file_fid,
@@ -113,8 +127,8 @@ static struct test_case {
 		.name = "Multiple error submission",
 		.trigger_error = &tcase3_trigger,
 		.error_count = 2,
-		.error = ESHUTDOWN,
-		.fid = &null_fid,
+		.error = EFSCORRUPTED,
+		.fid = &bad_link_fid,
 	},
 	{
 		.name = "Multiple error submission 2",
@@ -248,6 +262,9 @@ static void do_test(unsigned int i)
 			   FAN_FS_ERROR, AT_FDCWD, MOUNT_PATH);
 
 	check_event(event_buf, read_len, tcase);
+	/* Unmount and mount the filesystem to get it out of the error state */
+	SAFE_UMOUNT(MOUNT_PATH);
+	SAFE_MOUNT(tst_device->dev, MOUNT_PATH, tst_device->fs_type, 0, NULL);
 }
 
 static void pre_corrupt_fs(void)
@@ -256,9 +273,11 @@ static void pre_corrupt_fs(void)
 	SAFE_MKDIR(MOUNT_PATH"/"BAD_DIR, 0777);
 
 	fanotify_save_fid(MOUNT_PATH"/"BAD_DIR, &bad_file_fid);
+	fanotify_save_fid(MOUNT_PATH"/"BASE_DIR, &bad_link_fid);
 
 	SAFE_UMOUNT(MOUNT_PATH);
 	do_debugfs_request(tst_device->dev, "sif " BAD_DIR " mode 0xff");
+	do_debugfs_request(tst_device->dev, "ln <1> " BAD_LINK);
 	SAFE_MOUNT(tst_device->dev, MOUNT_PATH, tst_device->fs_type, 0, NULL);
 }
 
