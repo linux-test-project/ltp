@@ -456,7 +456,7 @@ static void start_threads(void)
 	unsigned int i;
 	struct rusage start_ru, end_ru;
 	struct timeval usr_time, sys_time;
-	uintptr_t records_read = 0;
+	double records_per_sec = 0.0;
 	int err;
 
 	if (verbose)
@@ -493,14 +493,13 @@ static void start_threads(void)
 			fprintf(stderr, "Error joining thread %d\n", i);
 			exit(1);
 		}
-		records_read += record_thread;
+		records_per_sec += ((double)record_thread / elapsed);
 	}
 
 	if (verbose)
 		printf("Threads finished\n");
 
-	printf("%tu records/s\n",
-	       (uintptr_t)(((double)records_read) / elapsed));
+	printf("%tu records/s\n", (uintptr_t) records_per_sec);
 
 	usr_time = difftimeval(&end_ru.ru_utime, &start_ru.ru_utime);
 	sys_time = difftimeval(&end_ru.ru_stime, &start_ru.ru_stime);
