@@ -41,10 +41,10 @@
 static size_t shm_size;
 static int shm_id_1 = -1;
 static struct shmid_ds buf;
-static uid_t ltp_uid;
-static char *ltp_user = "nobody";
+static uid_t test_uid;
+static char *test_user = "nobody";
 
-struct tcase {
+static struct tcase {
 	int *shmid;
 	int cmd;
 	struct shmid_ds *sbuf;
@@ -68,7 +68,7 @@ static void test_hugeshmctl(void)
 	switch (pid = SAFE_FORK()) {
 	case 0:
 		/* set the user ID of the child to the non root user */
-		SAFE_SETUID(ltp_uid);
+		SAFE_SETUID(test_uid);
 		do_child();
 		exit(0);
 	default:
@@ -97,7 +97,7 @@ static void do_child(void)
 	}
 }
 
-void setup(void)
+static void setup(void)
 {
 	long hpage_size;
 
@@ -115,10 +115,10 @@ void setup(void)
 		tst_brk(TBROK | TERRNO, "shmget");
 
 	/* get the userid for a non root user */
-	ltp_uid = getuserid(ltp_user);
+	test_uid = getuserid(test_user);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	rm_shm(shm_id_1);
 }
