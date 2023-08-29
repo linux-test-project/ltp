@@ -53,10 +53,10 @@ static void func_set(void);
 static void func_rmid(void);
 static void *set_shmat(void);
 
-struct tcase {
+static struct tcase {
 	int cmd;
-	void (*func_test) (void);
-	void (*func_setup) (void);
+	void (*func_test)(void);
+	void (*func_setup)(void);
 } tcases[] = {
 	{IPC_STAT, func_stat, stat_setup_1},
 	{IPC_STAT, func_stat, stat_setup_2},
@@ -90,7 +90,7 @@ static void test_hugeshmctl(unsigned int i)
 /*
  * set_shmat() - Attach the shared memory and return the pointer.
  */
-void *set_shmat(void)
+static void *set_shmat(void)
 {
 	void *rval;
 
@@ -103,8 +103,8 @@ void *set_shmat(void)
 
 /*
  * stat_setup_2() - Set up for the IPC_STAT command with shmctl().
- * 		  Attach the shared memory to parent process and
- * 		  some children will inherit the shared memory.
+ *                Attach the shared memory to parent process and
+ *                some children will inherit the shared memory.
  */
 static void stat_setup_2(void)
 {
@@ -139,7 +139,7 @@ static void stat_setup_1(void)
 			/* now we're back - detach the memory and exit */
 			if (shmdt(test) == -1)
 				tst_brk(TBROK | TERRNO,
-					 "shmdt in stat_setup()");
+					 "shmdt in this function broke");
 
 			exit(0);
 		default:
@@ -220,7 +220,8 @@ static void stat_cleanup(void)
 	/* remove the parent's shared memory if we set*/
 	if (attach_to_parent) {
 		if (shmdt(attach_to_parent) == -1)
-			tst_res(TFAIL | TERRNO, "shmdt in stat_cleanup()");
+			tst_res(TFAIL | TERRNO,
+				"shmdt in this function failed");
 		attach_to_parent = NULL;
 	}
 }
@@ -244,7 +245,7 @@ static void func_set(void)
 {
 	/* first stat the shared memory to get the new data */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) == -1) {
-		tst_res(TFAIL | TERRNO, "shmctl in func_set()");
+		tst_res(TFAIL | TERRNO, "shmctl in this function failed");
 		return;
 	}
 
@@ -268,18 +269,18 @@ static void func_rmid(void)
 {
 	/* Do another shmctl() - we should get EINVAL */
 	if (shmctl(shm_id_1, IPC_STAT, &buf) != -1)
-		tst_brk(TBROK, "shmctl in func_rmid() "
+		tst_brk(TBROK, "shmctl in this function "
 			 "succeeded unexpectedly");
 	if (errno != EINVAL)
-		tst_res(TFAIL | TERRNO, "shmctl in func_rmid() failed "
+		tst_res(TFAIL | TERRNO, "shmctl in this function failed "
 			 "unexpectedly - expect errno=EINVAL, got");
 	else
-		tst_res(TPASS, "shmctl in func_rmid() failed as expected, "
+		tst_res(TPASS, "shmctl in this function failed as expected, "
 			 "shared memory appears to be removed");
 	shm_id_1 = -1;
 }
 
-void setup(void)
+static void setup(void)
 {
 	long hpage_size;
 
@@ -293,7 +294,7 @@ void setup(void)
 	shmkey = getipckey();
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	rm_shm(shm_id_1);
 }
