@@ -38,7 +38,15 @@ nr_mems=$N_NODES
 # on which it is running. The other nodes' slab space has littler change.(less
 # than 1000 kb).
 upperlimit=10000
-lowerlimit=2000
+
+# set lowerlimit according to pagesize
+# pagesize(bytes)  | lowerlimit(kb)
+# ------------------------------------
+#  4096            | 2048
+#  16384           | 8192
+
+PAGE_SIZE=`tst_getconf PAGESIZE`
+lowerlimit=$((PAGE_SIZE * 512 / 1024))
 
 cpus_all="$(seq -s, 0 $((nr_cpus-1)))"
 mems_all="$(seq -s, 0 $((nr_mems-1)))"
