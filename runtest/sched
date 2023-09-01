@@ -11,6 +11,8 @@ hackbench01 hackbench 50 process 1000
 hackbench02 hackbench 20 thread 1000
 starvation starvation
 
+proc_sched_rt01 proc_sched_rt01
+
 sched_cli_serv run_sched_cliserv.sh
 # Run this stress test for 2 minutes
 sched_stress sched_stress.sh
