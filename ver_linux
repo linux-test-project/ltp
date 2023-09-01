@@ -131,12 +131,16 @@ if [ -e /proc/modules ]; then
 fi
 
 echo
+echo 'cpuinfo:'
+tst_cmd_run lscpu || cat /proc/cpuinfo
+
+echo
 echo 'free reports:'
 free
 
 echo
-echo 'cpuinfo:'
-tst_cmd_run lscpu || cat /proc/cpuinfo
+echo 'memory (/proc/meminfo):'
+cat /proc/meminfo
 
 echo
 echo 'available filesystems:'
