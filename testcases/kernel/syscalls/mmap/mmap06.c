@@ -8,27 +8,35 @@
 /*\
  * [Description]
  *
- * Verify that, mmap() call fails when a file mapping is requested but the
- * file descriptor is not open for reading, and errno is set to EACCES.
+ * Verify that, mmap() call fails with errno:
+ *
+ * - EACCES, when a file mapping is requested but the file descriptor is not open for reading.
+ * - EINVAL, when length argument is 0.
+ * - EINVAL, when flags contains none of MAP_PRIVATE, MAP_SHARED, or MAP_SHARED_VALIDATE.
  */
 
 #include <stdlib.h>
 #include "tst_test.h"
 
+#define MMAPSIZE 1024
 #define TEMPFILE "mmapfile"
 static size_t page_sz;
 static int fd;
 
 static struct tcase {
+	size_t length;
 	int prot;
 	int flags;
+	int exp_errno;
 } tcases[] = {
-	{PROT_WRITE, MAP_FILE | MAP_PRIVATE},
-	{PROT_WRITE, MAP_FILE | MAP_SHARED},
-	{PROT_READ, MAP_FILE | MAP_PRIVATE},
-	{PROT_READ, MAP_FILE | MAP_SHARED},
-	{PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE},
-	{PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED}
+	{MMAPSIZE, PROT_WRITE, MAP_FILE | MAP_PRIVATE, EACCES},
+	{MMAPSIZE, PROT_WRITE, MAP_FILE | MAP_SHARED, EACCES},
+	{MMAPSIZE, PROT_READ, MAP_FILE | MAP_PRIVATE, EACCES},
+	{MMAPSIZE, PROT_READ, MAP_FILE | MAP_SHARED, EACCES},
+	{MMAPSIZE, PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, EACCES},
+	{MMAPSIZE, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, EACCES},
+	{0, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, EINVAL},
+	{MMAPSIZE, PROT_READ | PROT_WRITE, MAP_FILE, EINVAL}
 };
 
 static void setup(void)
@@ -48,15 +56,15 @@ static void run(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TESTPTR(mmap(NULL, page_sz, tc->prot, tc->flags, fd, 0));
+	TESTPTR(mmap(NULL, tc->length, tc->prot, tc->flags, fd, 0));
 
 	if (TST_RET_PTR != MAP_FAILED) {
 		tst_res(TFAIL, "mmap() was successful unexpectedly");
-		SAFE_MUNMAP(TST_RET_PTR, page_sz);
-	} else if (TST_ERR == EACCES) {
-		tst_res(TPASS, "mmap() failed with errno EACCES");
+		SAFE_MUNMAP(TST_RET_PTR, MMAPSIZE);
+	} else if (TST_ERR == tc->exp_errno) {
+		tst_res(TPASS | TERRNO, "mmap() failed with");
 	} else {
-		tst_res(TFAIL | TERRNO, "mmap() failed but unexpected errno");
+		tst_res(TFAIL | TERRNO, "mmap() failed unexpectedly");
 	}
 }
 
