@@ -712,7 +712,7 @@ int main(void)
 The 'tst_res()' function can be also used from binaries started by 'exec()',
 the parent test process has to set the '.child_needs_reinit' flag so that the
 library prepares for it and has to make sure the 'LTP_IPC_PATH' environment
-variable is passed down, then the very fist thing the program has to call in
+variable is passed down, then the very first thing the program has to call in
 'main()' is 'tst_reinit()' that sets up the IPC.
 
 1.9 Fork() and Parent-child synchronization
