@@ -24,7 +24,7 @@ void create_overlay_dirs(void)
 	closedir(dir);
 }
 
-int mount_overlay(const char *file, const int lineno, int skip)
+int mount_overlay(const char *file, const int lineno, int strict)
 {
 	int ret;
 
@@ -35,14 +35,14 @@ int mount_overlay(const char *file, const int lineno, int skip)
 		return 0;
 
 	if (errno == ENODEV) {
-		if (skip) {
+		if (strict) {
 			tst_brk_(file, lineno, TCONF,
 				TST_FS_SETUP_OVERLAYFS_MSG);
 		} else {
 			tst_res_(file, lineno, TINFO,
 				TST_FS_SETUP_OVERLAYFS_MSG);
 		}
-	} else {
+	} else if (strict) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"overlayfs mount failed");
 	}

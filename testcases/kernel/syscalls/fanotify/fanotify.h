@@ -72,6 +72,10 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 #define MAX_HANDLE_SZ		128
 #endif
 
+#ifndef AT_HANDLE_FID
+#define AT_HANDLE_FID		0x200
+#endif
+
 /*
  * Helper function used to obtain fsid and file_handle for a given path.
  * Used by test files correlated to FAN_REPORT_FID functionality.
@@ -260,9 +264,26 @@ static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
 	return rval;
 }
 
+static inline int fanotify_handle_supported_by_kernel(int flag)
+{
+	/*
+	 * On Kernel that does not support AT_HANDLE_FID this will result
+	 * with EINVAL. On older kernels, this will result in EBADF.
+	 */
+	if (name_to_handle_at(-1, "", NULL, NULL, AT_EMPTY_PATH | flag)) {
+		if (errno == EINVAL)
+			return -1;
+	}
+	return 0;
+}
+
 #define REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(mark_type) \
 	fanotify_init_flags_err_msg(#mark_type, __FILE__, __LINE__, tst_brk_, \
 				    fanotify_mark_supported_by_kernel(mark_type))
+
+#define REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(handle_type) \
+	fanotify_init_flags_err_msg(#handle_type, __FILE__, __LINE__, tst_brk_, \
+				    fanotify_handle_supported_by_kernel(handle_type))
 
 #define REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(init_flags, mark_type, mask, fname) do { \
 	if (mark_type)							\
