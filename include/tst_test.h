@@ -210,6 +210,9 @@ struct tst_test {
 	/* Minimum size(MB) of MemAvailable required by the test */
 	unsigned long min_mem_avail;
 
+	/* Minimum size(MB) of SwapFree required by the test */
+	unsigned long min_swap_avail;
+
 	/*
 	 * Two policies for reserving hugepage:
 	 *

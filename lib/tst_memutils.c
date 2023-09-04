@@ -95,6 +95,15 @@ long long tst_available_mem(void)
 	return mem_available;
 }
 
+long long tst_available_swap(void)
+{
+	unsigned long long swap_available = 0;
+
+	FILE_LINES_SCANF("/proc/meminfo", "SwapFree: %llu", &swap_available);
+
+	return swap_available;
+}
+
 static int has_caps(void)
 {
 	struct tst_cap_user_header hdr = {
