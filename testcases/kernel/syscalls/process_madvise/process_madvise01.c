@@ -123,4 +123,9 @@ static struct tst_test test = {
 	.min_kver = "5.10",
 	.needs_checkpoints = 1,
 	.needs_root = 1,
+	.min_swap_avail = MEM_CHILD / TST_KB,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_SWAP=y",
+		NULL
+	},
 };
