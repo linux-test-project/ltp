@@ -1,143 +1,103 @@
-/******************************************************************************
- *
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
  * Copyright (c) International Business Machines  Corp., 2006
- *  Author: Yi Yang <yyangcdl@cn.ibm.com>
  * Copyright (c) Cyril Hrubis 2014 <chrubis@suse.cz>
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * This test case will verify basic function of readlinkat
- * added by kernel 2.6.16 or up.
- *
- *****************************************************************************/
+ * Copyright (c) Linux Test Project, 2003-2023
+ * Author: Yi Yang <yyangcdl@cn.ibm.com>
+ */
 
-#define _GNU_SOURCE
+/*\
+ * [Description]
+ *
+ * Check the basic functionality of the readlinkat() system call.
+ *
+ * - readlinkat() passes if dirfd is directory file descriptor
+ *   and the pathname is relative.
+ * - readlinkat() passes if the pathname is abspath, then dirfd
+ *   is ignored.
+ * - readlinkat() passes if dirfd is the special value AT_FDCWD
+ *   and the pathname is relative.
+ * - readlinkat() passes if pathname is an empty string, in which
+ *   case the call operates on the symbolic link referred to by dirfd.
+ */
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <fcntl.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
-#include "test.h"
-#include "safe_macros.h"
-#include "lapi/readlinkat.h"
+#include <stdio.h>
+#include "tst_test.h"
+#include "lapi/fcntl.h"
 
-static void setup(void);
-static void cleanup(void);
+#define TEST_FILE       "readlink_file"
+#define TEST_SYMLINK    "readlink_symlink"
 
-char *TCID = "readlinkat01";
-
-static int dir_fd, fd;
-static int fd_invalid = 100;
+static int file_fd, dir_fd, dir_fd2;
 static int fd_atcwd = AT_FDCWD;
+static const char *abspath;
+static const char *testsymlink;
+static const char *emptypath;
 
-#define TEST_SYMLINK "readlink_symlink"
-#define TEST_FILE "readlink_file"
-
-static char abspath[1024];
-
-static struct test_case {
-	int *dir_fd;
-	const char *path;
-	const char *exp_buf;
-	int exp_ret;
-	int exp_errno;
-} test_cases[] = {
-	{&dir_fd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
-	{&dir_fd, abspath, TEST_FILE, sizeof(TEST_FILE)-1, 0},
-	{&fd, TEST_SYMLINK, NULL, -1, ENOTDIR},
-	{&fd_invalid, TEST_SYMLINK, NULL, -1, EBADF},
-	{&fd_atcwd, TEST_SYMLINK, TEST_FILE, sizeof(TEST_FILE)-1, 0},
+static struct tcase {
+	int *fd;
+	const char **path;
+} tcases[] = {
+	{&dir_fd, &testsymlink},
+	{&dir_fd, &abspath},
+	{&file_fd, &abspath},
+	{&fd_atcwd, &abspath},
+	{&fd_atcwd, &testsymlink},
+	{&dir_fd2, &emptypath},
 };
 
-int TST_TOTAL = ARRAY_SIZE(test_cases);
-
-static void verify_readlinkat(struct test_case *test)
+static void verify_readlinkat(unsigned int i)
 {
 	char buf[1024];
+	struct tcase *tc = &tcases[i];
 
 	memset(buf, 0, sizeof(buf));
 
-	TEST(readlinkat(*test->dir_fd, test->path, buf, sizeof(buf)));
+	TST_EXP_POSITIVE(readlinkat(*tc->fd, *tc->path, buf, sizeof(buf)),
+		     "readlinkat(%d, %s, %s, %ld)",
+		     *tc->fd, *tc->path, buf, sizeof(buf));
 
-	if (TEST_RETURN != test->exp_ret) {
-		tst_resm(TFAIL | TTERRNO,
-		         "readlinkat() returned %ld, expected %d",
-		         TEST_RETURN, test->exp_ret);
-		return;
-	}
-
-	if (TEST_ERRNO != test->exp_errno) {
-		tst_resm(TFAIL | TTERRNO,
-		         "readlinkat() returned %ld, expected %d",
-		         TEST_RETURN, test->exp_ret);
-		return;
-	}
-
-	if (test->exp_ret > 0 && strcmp(test->exp_buf, buf)) {
-		tst_resm(TFAIL, "Unexpected buffer have '%s', expected '%s'",
-		         buf, test->exp_buf);
-		return;
-	}
-
-	tst_resm(TPASS | TTERRNO, "readlinkat() returned %ld", TEST_RETURN);
-}
-
-int main(int ac, char **av)
-{
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		for (i = 0; i < TST_TOTAL; i++)
-			verify_readlinkat(&test_cases[i]);
-	}
-
-	cleanup();
-	tst_exit();
+	if (strcmp(buf, TEST_FILE) == 0)
+		tst_res(TPASS, "The filename in buffer is correct");
+	else
+		tst_res(TFAIL, "Wrong filename in buffer '%s'", buf);
 }
 
 static void setup(void)
 {
-	tst_tmpdir();
 	char *tmpdir = tst_get_tmpdir();
 
-	snprintf(abspath, sizeof(abspath), "%s/" TEST_SYMLINK, tmpdir);
+	abspath = tst_aprintf("%s/" TEST_SYMLINK, tmpdir);
 	free(tmpdir);
 
-	fd = SAFE_OPEN(cleanup, TEST_FILE, O_CREAT, 0600);
-	SAFE_SYMLINK(cleanup, TEST_FILE, TEST_SYMLINK);
-	dir_fd = SAFE_OPEN(cleanup, ".", O_DIRECTORY);
-
-	TEST_PAUSE;
+	file_fd = SAFE_OPEN(TEST_FILE, O_CREAT, 0600);
+	SAFE_SYMLINK(TEST_FILE, TEST_SYMLINK);
+	dir_fd = SAFE_OPEN(".", O_DIRECTORY);
+	dir_fd2 = SAFE_OPEN(TEST_SYMLINK, O_PATH | O_NOFOLLOW);
 }
 
 static void cleanup(void)
 {
-	if (fd > 0 && close(fd))
-		tst_resm(TWARN | TERRNO, "Failed to close fd");
+	if (file_fd > -1)
+		SAFE_CLOSE(file_fd);
 
-	if (dir_fd > 0 && close(dir_fd))
-		tst_resm(TWARN | TERRNO, "Failed to close dir_fd");
+	if (dir_fd > -1)
+		SAFE_CLOSE(dir_fd);
 
-	tst_rmdir();
+	if (dir_fd2 > -1)
+		SAFE_CLOSE(dir_fd2);
 }
+
+static struct tst_test test = {
+	.test = verify_readlinkat,
+	.needs_tmpdir = 1,
+	.setup = setup,
+	.cleanup = cleanup,
+	.bufs = (struct tst_buffers []) {
+		{&testsymlink, .str = TEST_SYMLINK},
+		{&emptypath, .str = ""},
+		{},
+	},
+	.tcnt = ARRAY_SIZE(tcases),
+};
