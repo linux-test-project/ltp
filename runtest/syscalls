@@ -1603,7 +1603,6 @@ times03 times03
 
 timerfd01 timerfd01
 timerfd02 timerfd02
-timerfd03 timerfd03
 timerfd04 timerfd04
 timerfd_create01 timerfd_create01
 timerfd_gettime01 timerfd_gettime01
