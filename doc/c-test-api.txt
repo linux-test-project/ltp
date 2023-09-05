@@ -2328,11 +2328,16 @@ both V1 and V2 feasible.
 Some tests require more than specific number of CPU. It can be defined with
 `.min_cpus = N`.
 
-1.39 Require minimum size of MemAvailable for a testcase
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1.39 Require minimum memory or swap size for a testcase
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Some tests require more than specific size(MB) of MemAvailable. It can be defined
-with `.min_mem_avail = N`.
+Some tests require at least size(MB) of free RAM or Swap.
+
+To make sure that test will run only on systems with more than minimal
+required amount of RAM set `.min_mem_avail = N`.
+
+Similarily for tests that require certain amount of free Swap use
+`.min_swap_avail = N`.
 
 1.40 Test tags
 ~~~~~~~~~~~~~~

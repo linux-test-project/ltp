@@ -370,6 +370,7 @@ https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
 | '.min_kver' | 'TST_MIN_KVER'
 | '.min_mem_avail' | not applicable
 | '.mnt_flags' | 'TST_MNT_PARAMS'
+| '.min_swap_avail' | not applicable
 | '.mntpoint', '.mnt_data' | 'TST_MNTPOINT'
 | '.mount_device' | 'TST_MOUNT_DEVICE'
 | '.needs_cgroup_ctrls' | –
