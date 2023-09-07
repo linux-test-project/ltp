@@ -12,6 +12,7 @@
 #define _GNU_SOURCE
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include "tst_test.h"
 #include "lapi/sched.h"
@@ -34,7 +35,7 @@ static struct tcase {
 } tcases[] = {
 	{"invalid args", &invalid_args, sizeof(*valid_args), 0, NULL, SIGCHLD, 0, 0, 0, EFAULT},
 	{"zero size", &valid_args, 0, 0, NULL, SIGCHLD, 0, 0, 0, EINVAL},
-	{"short size", &valid_args, sizeof(*valid_args) - 1, 0, NULL, SIGCHLD, 0, 0, 0, EINVAL},
+	{"short size", &valid_args, sizeof(struct clone_args_minimal) - 1, 0, NULL, SIGCHLD, 0, 0, 0, EINVAL},
 	{"extra size", &valid_args, sizeof(*valid_args) + 1, 0, NULL, SIGCHLD, 0, 0, 0, EFAULT},
 	{"sighand-no-VM", &valid_args, sizeof(*valid_args), CLONE_SIGHAND, NULL, SIGCHLD, 0, 0, 0, EINVAL},
 	{"thread-no-sighand", &valid_args, sizeof(*valid_args), CLONE_THREAD, NULL, SIGCHLD, 0, 0, 0, EINVAL},
@@ -58,6 +59,8 @@ static struct tcase {
 static void setup(void)
 {
 	clone3_supported_by_kernel();
+
+	TST_EXP_EQ_SZ(sizeof(struct clone_args_minimal), 64);
 
 	void *p = tst_get_bad_addr(NULL);
 
