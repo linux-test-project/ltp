@@ -37,23 +37,26 @@ static struct termios termios;
 static struct tcase {
 	int *fd;
 	int request;
-	struct termio *s_tio;
-	struct termios *s_tios;
+	void *s_tio;
 	int error;
 } tcases[] = {
 	/* file descriptor is invalid */
-	{&bfd, TCGETA, &termio, &termios, EBADF},
+	{&bfd, TCGETA, &termio, EBADF},
+	{&bfd, TCGETS, &termios, EBADF},
 	/* termio address is invalid */
-	{&fd, TCGETA, (struct termio *)-1, (struct termios *)-1, EFAULT},
-	/* command is invalid */
+	{&fd, TCGETA, (struct termio *)-1, EFAULT},
+	{&fd, TCGETS, (struct termios *)-1, EFAULT},
+	// /* command is invalid */
 	/* This errno value was changed from EINVAL to ENOTTY
 	 * by kernel commit 07d106d0 and bbb63c51
 	 */
-	{&fd, INVAL_IOCTL, &termio, &termios, ENOTTY},
+	{&fd, INVAL_IOCTL, &termio, ENOTTY},
 	/* file descriptor is for a regular file */
-	{&fd_file, TCGETA, &termio, &termios, ENOTTY},
+	{&fd_file, TCGETA, &termio, ENOTTY},
+	{&fd_file, TCGETS, &termios, ENOTTY},
 	/* termio is NULL */
-	{&fd, TCGETA, NULL, NULL, EFAULT}
+	{&fd, TCGETA, NULL, EFAULT},
+	{&fd, TCGETS, NULL, EFAULT}
 };
 
 static char *device;
@@ -61,9 +64,6 @@ static char *device;
 static void verify_ioctl(unsigned int i)
 {
 	TST_EXP_FAIL(ioctl(*(tcases[i].fd), tcases[i].request, tcases[i].s_tio),
-		     tcases[i].error);
-
-	TST_EXP_FAIL(ioctl(*(tcases[i].fd), tcases[i].request, tcases[i].s_tios),
 		     tcases[i].error);
 }
 
