@@ -222,7 +222,7 @@ $ ./statx01
 This should build the test and then run it. However, even though the test is
 in the +syscalls+ directory it won't be automatically ran as part of the
 _syscalls_ test group (remember +./runltp -f syscalls+ from the +README.md+?). For
-this we need to add it to the +runtest+ file. So open +runtest/statx+ and add
+this we need to add it to the +runtest+ file. So open +runtest/syscalls+ and add
 the lines starting with a +++.
 
 [source,diff]
