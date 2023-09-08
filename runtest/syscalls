@@ -379,12 +379,12 @@ fork01 fork01
 fork03 fork03
 fork04 fork04
 fork05 fork05
-fork06 fork06
+fork06 fork_procs -n 1000
 fork07 fork07
 fork08 fork08
 fork09 fork09
 fork10 fork10
-fork11 fork11
+fork11 fork_procs -n 100
 fork13 fork13
 fork14 fork14
 
