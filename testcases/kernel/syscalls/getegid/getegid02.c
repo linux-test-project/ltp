@@ -1,90 +1,39 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) International Business Machines  Corp., 2001
- *  Ported by Wayne Boyer
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ *   William Roske, Dave Fenner
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-/*
- * Testcase to check the basic functionality of getegid().
+/*\
+ * [Description]
  *
- * For functionality test the return value from getegid() is compared to passwd
- * entry.
+ * This test checks if getegid() returns the same effective group given by
+ * passwd entry via getpwuid().
  */
 
 #include <pwd.h>
-#include <errno.h>
 
-#include "test.h"
-#include "compat_16.h"
+#include "tst_test.h"
+#include "compat_tst_16.h"
 
-static void cleanup(void);
-static void setup(void);
-
-TCID_DEFINE(getegid02);
-int TST_TOTAL = 1;
-
-int main(int ac, char **av)
+static void run(void)
 {
-	int lc;
 	uid_t euid;
+	gid_t egid;
 	struct passwd *pwent;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	UID16_CHECK((euid = geteuid()), "geteuid");
 
-	setup();
+	pwent = getpwuid(euid);
+	if (!pwent)
+		tst_brk(TBROK | TERRNO, "getpwuid() error");
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
+	GID16_CHECK((egid = getegid()), "getegid");
 
-		TEST(GETEGID(cleanup));
-
-		if (TEST_RETURN < 0) {
-			tst_brkm(TBROK, cleanup, "This should never happen");
-		}
-
-		euid = geteuid();
-		pwent = getpwuid(euid);
-
-		if (pwent == NULL)
-			tst_brkm(TBROK, cleanup, "geteuid() returned "
-				 "unexpected value %d", euid);
-
-		GID16_CHECK(pwent->pw_gid, getegid, cleanup);
-
-		if (pwent->pw_gid != TEST_RETURN) {
-			tst_resm(TFAIL, "getegid() return value"
-				 " %ld unexpected - expected %d",
-				 TEST_RETURN, pwent->pw_gid);
-		} else {
-			tst_resm(TPASS,
-				 "effective group id %ld "
-				 "is correct", TEST_RETURN);
-		}
-	}
-
-	cleanup();
-	tst_exit();
+	TST_EXP_EQ_LI(pwent->pw_gid, egid);
 }
 
-static void setup(void)
-{
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-	TEST_PAUSE;
-}
-
-static void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = run,
+};
