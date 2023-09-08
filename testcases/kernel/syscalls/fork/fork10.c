@@ -1,159 +1,100 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- *
- * NAME
- *	fork10.c
- *
- * DESCRIPTION
- *	Check inheritance of file descriptor by children, they
- *	should all be refering to the same file.
- *
- * ALGORITHM
- *	Child reads several chars and exits.
- *	Parent forks another child, have the child and parent attempt to use
- *	that location
- *
- * USAGE
- *	fork10
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- * RESTRICTIONS
- *	None
+ * Copyright (c) International Business Machines  Corp., 2001
+ *    07/2001 Ported by Wayne Boyer
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
-#include "test.h"
-#include "safe_macros.h"
+/*\
+ * [Description]
+ *
+ * This test verifies inheritance of file descriptors from parent to child
+ * process. We open a file from parent, then we check if file offset changes
+ * accordingly with file descriptor usage.
+ *
+ * [Algorithm]
+ *
+ * Test steps are the following:
+ * - create a file made in three parts -> | aa..a | bb..b | cc..c |
+ * - from parent, open the file
+ * - from child, move file offset after the first part
+ * - from parent, read second part and check if it's | bb..b |
+ * - from child, read third part and check if it's | cc..c |
+ *
+ * Test passes if we were able to read the correct file parts from parent and
+ * child.
+ */
 
-char *TCID = "fork10";
-int TST_TOTAL = 1;
+#include <stdlib.h>
+#include "tst_test.h"
 
-static void setup(void);
-static void cleanup(void);
+#define FILENAME "file.txt"
+#define DATASIZE 1024
 
-static char pidbuf[10];
-static char fnamebuf[40];
+static int fd = -1;
 
-int main(int ac, char **av)
+static void run(void)
 {
-	int status, pid, fildes;
-	char parchar[2];
-	char chilchar[2];
+	int status;
+	char buff[DATASIZE];
+	char data[DATASIZE];
 
-	int lc;
+	fd = SAFE_OPEN(FILENAME, 0);
 
-	fildes = -1;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		fildes = SAFE_CREAT(cleanup, fnamebuf, 0600);
-		write(fildes, "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n", 27);
-		close(fildes);
-
-		fildes = SAFE_OPEN(cleanup, fnamebuf, 0);
-
-		pid = fork();
-		if (pid == -1)
-			tst_brkm(TBROK, cleanup, "fork() #1 failed");
-
-		if (pid == 0) {	/* child */
-			tst_resm(TINFO, "fork child A");
-			if (lseek(fildes, 10L, 0) == -1L) {
-				tst_resm(TFAIL, "bad lseek by child");
-				exit(1);
-			}
-			exit(0);
-		} else {	/* parent */
-			wait(&status);
-
-			/* parent starts second child */
-			pid = fork();
-			if (pid == -1)
-				tst_brkm(TBROK, cleanup, "fork() #2 failed");
-
-			if (pid == 0) {	/* child */
-				if (read(fildes, chilchar, 1) <= 0) {
-					tst_resm(TFAIL, "Child can't read "
-						 "file");
-					exit(1);
-				} else {
-					if (chilchar[0] != 'K') {
-						chilchar[1] = '\n';
-						exit(1);
-					} else {
-						exit(0);
-					}
-				}
-			} else {	/* parent */
-				(void)wait(&status);
-				if (status >> 8 != 0) {
-					tst_resm(TFAIL, "Bad return from "
-						 "second child");
-					continue;
-				}
-				/* parent reads */
-				if (read(fildes, parchar, 1) <= 0) {
-					tst_resm(TFAIL, "Parent cannot read "
-						 "file");
-					continue;
-				} else {
-					write(fildes, parchar, 1);
-					if (parchar[0] != 'L') {
-						parchar[1] = '\n';
-						tst_resm(TFAIL, "Test failed");
-						continue;
-					}
-				}
-			}
-		}
-		tst_resm(TPASS, "test 1 PASSED");
+	if (!SAFE_FORK()) {
+		SAFE_LSEEK(fd, DATASIZE, SEEK_SET);
+		exit(0);
 	}
 
-	close(fildes);
-	cleanup();
-	tst_exit();
+	SAFE_WAIT(&status);
+
+	memset(buff, 'b', DATASIZE);
+	SAFE_READ(1, fd, data, DATASIZE);
+
+	TST_EXP_EXPR(strncmp(buff, data, DATASIZE) == 0,
+		"read first part of data from parent process");
+
+	if (!SAFE_FORK()) {
+		memset(buff, 'c', DATASIZE);
+		SAFE_READ(1, fd, data, DATASIZE);
+
+		TST_EXP_EXPR(strncmp(buff, data, DATASIZE) == 0,
+			"read second part of data from child process");
+
+		exit(0);
+	}
+
+	SAFE_CLOSE(fd);
 }
 
 static void setup(void)
 {
-	tst_sig(FORK, DEF_HANDLER, cleanup);
-	umask(0);
-	TEST_PAUSE;
-	tst_tmpdir();
+	char buff[DATASIZE];
 
-	strcpy(fnamebuf, "fork10.");
-	sprintf(pidbuf, "%d", getpid());
-	strcat(fnamebuf, pidbuf);
+	fd = SAFE_CREAT(FILENAME, 0600);
+
+	memset(buff, 'a', DATASIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buff, DATASIZE);
+
+	memset(buff, 'b', DATASIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buff, DATASIZE);
+
+	memset(buff, 'c', DATASIZE);
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, buff, DATASIZE);
+
+	SAFE_CLOSE(fd);
 }
 
 static void cleanup(void)
 {
-	tst_rmdir();
+	if (fd >= 0)
+		SAFE_CLOSE(fd);
 }
+
+static struct tst_test test = {
+	.forks_child = 1,
+	.needs_tmpdir = 1,
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+};
