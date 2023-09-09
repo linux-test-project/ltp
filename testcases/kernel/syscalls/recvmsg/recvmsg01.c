@@ -220,14 +220,14 @@ static void run(unsigned int n)
 	struct tcase *tc = &tcases[n];
 	int ret = tc->exp_errno ? -1 : 0;
 
-	setup_all();
-
 	if ((tst_kvercmp(3, 17, 0) < 0)
 			&& (tc->flags & MSG_ERRQUEUE)
 			&& (tc->type & SOCK_STREAM)) {
 		tst_res(TCONF, "MSG_ERRQUEUE requires kernel >= 3.17");
+		return;
 	}
 
+	setup_all();
 	tc->setup(n);
 
 	iov[0].iov_base = tc->recv_buf;
