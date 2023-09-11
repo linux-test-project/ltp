@@ -23,11 +23,13 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <termios.h>
+#include <pty.h>
 #include "tst_test.h"
 #include "lapi/ioctl.h"
 
 #define	INVAL_IOCTL	9999999
 
+static int amaster, aslave;
 static int fd, fd_file;
 static int bfd = -1;
 
@@ -55,8 +57,6 @@ static struct tcase {
 	{"Termios is NULL", &fd, TCGETS, NULL, EFAULT}
 };
 
-static char *device;
-
 static void verify_ioctl(unsigned int i)
 {
 	TST_EXP_FAIL(ioctl(*(tcases[i].fd), tcases[i].request, tcases[i].s_tio),
@@ -65,31 +65,27 @@ static void verify_ioctl(unsigned int i)
 
 static void setup(void)
 {
-	if (!device)
-		tst_brk(TBROK, "You must specify a tty device with -D option");
+	if (openpty(&amaster, &aslave, NULL, NULL, NULL) < 0)
+		tst_brk(TBROK | TERRNO, "unable to open pty");
 
-	fd = SAFE_OPEN(device, O_RDWR, 0777);
+	fd = amaster;
 	fd_file = SAFE_OPEN("x", O_CREAT, 0777);
 }
 
 static void cleanup(void)
 {
-	if (fd > 0)
-		SAFE_CLOSE(fd);
-
+	if (amaster > 0)
+		SAFE_CLOSE(amaster);
+	if (aslave > 0)
+		SAFE_CLOSE(aslave);
 	if (fd_file > 0)
 		SAFE_CLOSE(fd_file);
 }
 
 static struct tst_test test = {
-	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test = verify_ioctl,
-	.tcnt = ARRAY_SIZE(tcases),
-	.options = (struct tst_option[]) {
-		{"D:", &device, "Tty device. For example, /dev/tty[0-9]"},
-		{}
-	}
+	.tcnt = ARRAY_SIZE(tcases)
 };

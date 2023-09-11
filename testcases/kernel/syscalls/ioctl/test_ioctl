@@ -41,29 +41,6 @@ case "$device_no" in
 [0-9]|[0-9][0-9])
     has_tty $tttype
     if [ $? -eq 0 ]; then
-        tst_resm TINFO "Skipping ioctl01 with $tttype"
-        continue
-    fi
-    tst_resm TINFO "Testing ioctl01 with $tttype"
-    ioctl01 -D $tttype
-    RC=$?
-    if  [ $RC -eq 0 ]
-    then
-     tst_resm TPASS "ioctl01 Passed with $tttype"
-    else
-     tst_resm TFAIL "ioctl01 Failed with $tttype"
-    fi
-echo;;
-esac
-done
-
-for tttype in `ls /dev/tty*`
-do
-device_no=${tttype#/dev/tty}
-case "$device_no" in
-[0-9]|[0-9][0-9])
-    has_tty $tttype
-    if [ $? -eq 0 ]; then
         tst_resm TINFO "Skipping ioctl02 with $tttype"
         continue
     fi
