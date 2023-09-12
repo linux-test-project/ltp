@@ -74,6 +74,9 @@
 
 #define VERSION_STRING "V 0.4LTP"
 
+#define CLAMP(x, lower, upper) (MIN(upper, MAX(x, lower)))
+#define CLAMP_PRIO(prio) CLAMP(prio, prio_min, prio_max)
+
 int nr_tasks;
 int lfd;
 
@@ -137,7 +140,7 @@ static unsigned long long interval = INTERVAL;
 static unsigned long long run_interval = RUN_INTERVAL;
 static unsigned long long max_err = MAX_ERR;
 static int nr_runs = NR_RUNS;
-static int prio_start = PRIO_START;
+static int prio_start = PRIO_START, prio_min, prio_max;
 static int check = 1;
 static int stop;
 
@@ -284,8 +287,8 @@ static void print_results(void)
 	printf("Parent pid: %d\n", getpid());
 
 	for (t = 0; t < nr_tasks; t++) {
-		printf(" Task %d (prio %d) (pid %ld):\n", t, t + prio_start,
-		       thread_pids[t]);
+		printf(" Task %d (prio %d) (pid %ld):\n", t,
+			   CLAMP_PRIO(t + prio_start), thread_pids[t]);
 		printf("   Max: %lld us\n", tasks_max[t]);
 		printf("   Min: %lld us\n", tasks_min[t]);
 		printf("   Tot: %lld us\n", tasks_avg[t] * nr_runs);
@@ -394,6 +397,13 @@ static void stop_log(int sig)
 
 int main(int argc, char **argv)
 {
+	/*
+	 * Determine the valid priority range; subtracting one from the
+	 * maximum to reserve the highest prio for main thread.
+	 */
+	prio_min = sched_get_priority_min(SCHED_FIFO);
+	prio_max = sched_get_priority_max(SCHED_FIFO) - 1;
+
 	int *threads;
 	long i;
 	int ret;
@@ -448,7 +458,7 @@ int main(int argc, char **argv)
 
 	for (i = 0; i < nr_tasks; i++) {
 		threads[i] = create_fifo_thread(start_task, (void *)i,
-						prio_start + i);
+						CLAMP_PRIO(prio_start + i));
 	}
 
 	/*
@@ -460,7 +470,8 @@ int main(int argc, char **argv)
 
 	/* up our prio above all tasks */
 	memset(&param, 0, sizeof(param));
-	param.sched_priority = nr_tasks + prio_start;
+	param.sched_priority = CLAMP(nr_tasks + prio_start, prio_min,
+								 prio_max + 1);
 	if (sched_setscheduler(0, SCHED_FIFO, &param))
 		debug(DBG_WARN, "Warning, can't set priority of main thread!\n");
 	intv.tv_sec = INTERVAL / NS_PER_SEC;
