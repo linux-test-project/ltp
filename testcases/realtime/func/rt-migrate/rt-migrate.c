@@ -419,6 +419,10 @@ int main(int argc, char **argv)
 		numcpus = sysconf(_SC_NPROCESSORS_ONLN);
 		nr_tasks = numcpus + 1;
 	}
+	if (nr_tasks < 0) {
+		printf("The number of tasks must not be negative.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	intervals = malloc(sizeof(stats_container_t) * nr_tasks);
 	if (!intervals)
