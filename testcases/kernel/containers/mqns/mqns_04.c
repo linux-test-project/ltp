@@ -1,187 +1,148 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) International Business Machines Corp., 2009
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
-* the GNU General Public License for more details.
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-*
-* Author: Serge Hallyn <serue@us.ibm.com>
-*
-* Check mqueuefs lifetime
-* . parent creates /dev/mqueue2
-* . child mounts mqueue there
-* . child does mq_open("/ab")
-* . parent checks for /dev/mqueue2
-* . child exits
-* . parent checks for /dev/mqueue2
-* . parent tries 'touch /dev/mqueue2/dd' -> should fail
-* . parent umounts /dev/mqueue2
+ * Copyright (c) International Business Machines Corp., 2009
+ * Copyright (c) Serge Hallyn <serue@us.ibm.com>
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
 
-***************************************************************************/
+/*\
+ * [Description]
+ *
+ * Test mqueuefs manipulation from child/parent namespaces.
+ *
+ * [Algorithm]
+ *
+ * - parent creates mqueue folder in <tmpdir>
+ * - child mq_open() /MQ1 mqueue
+ * - child mounts mqueue there
+ * - parent checks for <tmpdir>/mqueue/MQ1 existence
+ * - child exits
+ * - parent checks for <tmpdir>/mqueue/MQ1 existence
+ * - parent tries 'touch <tmpdir>/mqueue/MQ2' -> should fail
+ * - parent umount mqueuefs
+ */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/wait.h>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include "mqns.h"
-#include "mqns_helper.h"
+#include "tst_test.h"
+#include "lapi/sched.h"
+#include "tst_safe_posix_ipc.h"
+#include "tst_safe_stdio.h"
+#include "tst_safe_macros.h"
 
-char *TCID = "posixmq_namespace_04";
-int TST_TOTAL = 1;
+#define CHECK_MQ_OPEN_RET(x) ((x) >= 0 || ((x) == -1 && errno != EMFILE))
 
-int p1[2];
-int p2[2];
+#define DEVDIR "ltp_mqueue"
+#define MQNAME1 "/MQ1"
+#define MQNAME2 "/MQ2"
+#define MQUEUE1 DEVDIR MQNAME1
+#define MQUEUE2 DEVDIR MQNAME2
 
-#define FNAM1 DEV_MQUEUE2 SLASH_MQ1
-#define FNAM2 DEV_MQUEUE2 SLASH_MQ2
+static char *str_op;
 
-int check_mqueue(void *vtest)
+static void check_mqueue(void)
 {
-	char buf[30];
 	mqd_t mqd;
-	int rc;
 
-	(void) vtest;
+	tst_res(TINFO, "Creating %s mqueue from within child process", MQNAME1);
 
-	close(p1[1]);
-	close(p2[0]);
+	mqd = TST_RETRY_FUNC(
+		mq_open(MQNAME1, O_RDWR | O_CREAT | O_EXCL, 0755, NULL),
+		CHECK_MQ_OPEN_RET);
+	if (mqd == -1)
+		tst_brk(TBROK | TERRNO, "mq_open failed");
 
-	read(p1[0], buf, 3);	/* go */
+	SAFE_MQ_CLOSE(mqd);
 
-	mqd = tst_syscall(__NR_mq_open, NOSLASH_MQ1, O_RDWR | O_CREAT | O_EXCL,
-		0755, NULL);
-	if (mqd == -1) {
-		write(p2[1], "mqfail", 7);
-		tst_exit();
+	tst_res(TINFO, "Mount %s from within child process", DEVDIR);
+
+	SAFE_MOUNT("mqueue", DEVDIR, "mqueue", 0, NULL);
+
+	TST_CHECKPOINT_WAKE_AND_WAIT(0);
+}
+
+static void run(void)
+{
+	const struct tst_clone_args clone_args = {
+		.flags = CLONE_NEWIPC,
+		.exit_signal = SIGCHLD
+	};
+
+	if (str_op && !strcmp(str_op, "clone")) {
+		tst_res(TINFO, "Spawning isolated process");
+
+		if (!SAFE_CLONE(&clone_args)) {
+			check_mqueue();
+			return;
+		}
+	} else if (str_op && !strcmp(str_op, "unshare")) {
+		tst_res(TINFO, "Spawning unshared process");
+
+		if (!SAFE_FORK()) {
+			SAFE_UNSHARE(CLONE_NEWIPC);
+			check_mqueue();
+			return;
+		}
 	}
 
-	mq_close(mqd);
+	TST_CHECKPOINT_WAIT(0);
 
-	rc = mount("mqueue", DEV_MQUEUE2, "mqueue", 0, NULL);
-	if (rc == -1) {
-		perror("mount");
-		write(p2[1], "mount", 6);
-		tst_exit();
-	}
+	if (access(MQUEUE1, F_OK))
+		tst_res(TFAIL, MQUEUE1 " can't be accessed from parent");
+	else
+		tst_res(TPASS, MQUEUE1 " can be accessed from parent");
 
-	write(p2[1], "go", 3);
-	read(p1[0], buf, 3);
+	TST_CHECKPOINT_WAKE(0);
 
-	tst_exit();
+	tst_res(TINFO, "Waiting child to exit");
+
+	tst_reap_children();
+
+	if (access(MQUEUE1, F_OK))
+		tst_res(TFAIL, MQUEUE1 " can't be accessed from parent");
+	else
+		tst_res(TPASS, MQUEUE1 " can be accessed from parent");
+
+	tst_res(TINFO, "Try to create %s from parent", MQUEUE2);
+
+	TST_EXP_FAIL(creat(MQUEUE2, 0755), EACCES);
+
+	SAFE_UMOUNT(DEVDIR);
 }
 
 static void setup(void)
 {
-	tst_require_root();
-	check_mqns();
+	if (!str_op || (strcmp(str_op, "clone") && strcmp(str_op, "unshare")))
+		tst_brk(TCONF, "Please specify clone|unshare child isolation");
+
+	SAFE_MKDIR(DEVDIR, 0755);
 }
 
-int main(int argc, char *argv[])
+static void cleanup(void)
 {
-	int rc;
-	int status;
-	char buf[30];
-	struct stat statbuf;
-	int use_clone = T_UNSHARE;
+	if (!access(MQUEUE1, F_OK))
+		SAFE_MQ_UNLINK(MQNAME1);
 
-	setup();
+	if (!access(MQUEUE2, F_OK))
+		SAFE_MQ_UNLINK(MQNAME2);
 
-	if (argc == 2 && strcmp(argv[1], "-clone") == 0) {
-		tst_resm(TINFO,
-			 "Testing posix mq namespaces through clone(2).");
-		use_clone = T_CLONE;
-	} else
-		tst_resm(TINFO,
-			 "Testing posix mq namespaces through unshare(2).");
-
-	if (pipe(p1) == -1) {
-		perror("pipe");
-		exit(EXIT_FAILURE);
-	}
-	if (pipe(p2) == -1) {
-		perror("pipe");
-		exit(EXIT_FAILURE);
-	}
-
-	mkdir(DEV_MQUEUE2, 0755);
-
-	tst_resm(TINFO, "Checking mqueue filesystem lifetime");
-
-	/* fire off the test */
-	rc = do_clone_unshare_test(use_clone, CLONE_NEWIPC, check_mqueue, NULL);
-	if (rc < 0) {
-		tst_resm(TFAIL, "failed clone/unshare");
-		goto fail;
-	}
-
-	close(p1[0]);
-	close(p2[1]);
-	write(p1[1], "go", 3);
-
-	read(p2[0], buf, 7);
-	if (!strcmp(buf, "mqfail")) {
-		tst_resm(TFAIL, "child process could not create mqueue");
-		goto fail;
-	} else if (!strcmp(buf, "mount")) {
-		tst_resm(TFAIL, "child process could not mount mqueue");
-		goto fail;
-	}
-
-	rc = stat(FNAM1, &statbuf);
-	if (rc == -1) {
-		perror("stat");
-		write(p1[1], "go", 3);
-		tst_resm(TFAIL, "parent could not see child's created mq");
-		goto fail;
-	}
-	write(p1[1], "go", 3);
-
-	rc = wait(&status);
-	if (rc == -1) {
-		perror("wait");
-		tst_resm(TFAIL, "error while parent waited on child to exit");
-		goto fail;
-	}
-	if (!WIFEXITED(status)) {
-		tst_resm(TFAIL, "Child did not exit normally (status %d)",
-			 status);
-		goto fail;
-	}
-	rc = stat(FNAM1, &statbuf);
-	if (rc == -1) {
-		tst_resm(TFAIL,
-			 "parent's view of child's mq died with child");
-		goto fail;
-	}
-
-	rc = creat(FNAM2, 0755);
-	if (rc != -1) {
-		tst_resm(TFAIL,
-			 "parent was able to create a file in dead child's mqfs");
-		goto fail;
-	}
-
-	tst_resm(TPASS, "Child mqueue fs still visible for parent");
-
-fail:
-	umount(DEV_MQUEUE2);
-	rmdir(DEV_MQUEUE2);
-
-	tst_exit();
+	if (tst_is_mounted(DEVDIR))
+		SAFE_UMOUNT(DEVDIR);
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_root = 1,
+	.forks_child = 1,
+	.needs_tmpdir = 1,
+	.needs_checkpoints = 1,
+	.options = (struct tst_option[]) {
+		{ "m:", &str_op, "Child process isolation <clone|unshare>" },
+		{},
+	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		NULL
+	},
+};

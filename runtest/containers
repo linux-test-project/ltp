@@ -23,8 +23,8 @@ mqns_02_clone mqns_02 -m clone
 mqns_02_unshare mqns_02 -m unshare
 mqns_03_unshare mqns_03 -m unshare
 mqns_03_clone mqns_03 -m clone
-mqns_04 mqns_04
-mqns_04_clone mqns_04 -clone
+mqns_04_unshare mqns_04 -m unshare
+mqns_04_clone mqns_04 -m clone
 
 netns_netlink netns_netlink
 netns_breakns_ip_ipv4_netlink netns_breakns.sh
