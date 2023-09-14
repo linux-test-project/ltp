@@ -84,31 +84,26 @@ static void setup(void)
 
 static void run(void)
 {
-	unsigned int i;
+	int ret;
 
-	for (i = 0; i < 100; i++) {
-		NETDEV_ADD_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle,
-			"htb", qd_config);
-		NETDEV_ADD_TRAFFIC_CLASS(DEVNAME, qd_handle, clsid, "htb",
-			cls_config);
-		NETDEV_ADD_TRAFFIC_FILTER(DEVNAME, qd_handle, 10, ETH_P_IP, 1,
-			"tcindex", f_config);
-		NETDEV_REMOVE_TRAFFIC_FILTER(DEVNAME, qd_handle, 10, ETH_P_IP,
-			1, "tcindex");
+	NETDEV_ADD_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle, "htb",
+		qd_config);
+	NETDEV_ADD_TRAFFIC_CLASS(DEVNAME, qd_handle, clsid, "htb", cls_config);
+	NETDEV_ADD_TRAFFIC_FILTER(DEVNAME, qd_handle, 10, ETH_P_IP, 1,
+		"tcindex", f_config);
+	NETDEV_REMOVE_TRAFFIC_FILTER(DEVNAME, qd_handle, 10, ETH_P_IP,
+		1, "tcindex");
+	ret = tst_netdev_add_traffic_filter(__FILE__, __LINE__, 0, DEVNAME,
+		qd_handle, 10, ETH_P_IP, 1, "tcindex", f_config);
+	TST_ERR = tst_rtnl_errno;
+	NETDEV_REMOVE_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle, "htb");
 
-		/* Wait at least one jiffy for use-after-free */
-		usleep(10000);
-
-		NETDEV_REMOVE_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle,
-			"htb");
-	}
-
-	if (tst_taint_check()) {
-		tst_res(TFAIL, "Kernel is vulnerable");
-		return;
-	}
-
-	tst_res(TPASS, "Nothing bad happened (yet)");
+	if (ret)
+		tst_res(TPASS, "Removing tcindex filter works correctly");
+	else if (TST_ERR == EEXIST)
+		tst_res(TFAIL, "Kernel traffic filter list is corrupted");
+	else
+		tst_brk(TBROK | TTERRNO, "Unexpected rtnetlink error");
 }
 
 static void cleanup(void)
