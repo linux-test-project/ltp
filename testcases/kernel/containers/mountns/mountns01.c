@@ -56,7 +56,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWNS, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWNS,
+		.exit_signal = SIGCHLD,
+	};
 
 	SAFE_UNSHARE(CLONE_NEWNS);
 

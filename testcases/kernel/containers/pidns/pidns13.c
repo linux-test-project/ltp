@@ -104,7 +104,10 @@ static void child_fn(unsigned int cinit_no)
 
 static void run(void)
 {
-	const struct tst_clone_args cargs = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args cargs = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 
 	SAFE_PIPE(pipe_fd);
 

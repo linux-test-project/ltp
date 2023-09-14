@@ -30,7 +30,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 
 	if (!SAFE_CLONE(&args)) {
 		child_func();

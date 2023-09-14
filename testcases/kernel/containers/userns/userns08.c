@@ -31,8 +31,8 @@
 static pid_t clone_newuser(void)
 {
 	const struct tst_clone_args cargs = {
-		CLONE_NEWUSER,
-		SIGCHLD
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
 	};
 
 	return SAFE_CLONE(&cargs);

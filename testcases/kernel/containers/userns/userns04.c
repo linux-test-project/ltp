@@ -31,7 +31,10 @@ static void child_fn2(int fd)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid1, cpid2, cpid3;
 	char path[BUFSIZ];
 	int fd;

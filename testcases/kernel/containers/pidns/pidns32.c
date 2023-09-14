@@ -19,7 +19,10 @@
 
 #define MAXNEST 32
 
-static const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+static const struct tst_clone_args args = {
+	.flags = CLONE_NEWPID,
+	.exit_signal = SIGCHLD,
+};
 static int *level;
 
 static pid_t child_func(void)

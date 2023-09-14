@@ -39,7 +39,10 @@ static inline int get_clone_unshare_enum(const char *str_op)
 
 static void clone_test(unsigned long clone_flags, void (*fn1)())
 {
-	const struct tst_clone_args clone_args = { clone_flags, SIGCHLD };
+	const struct tst_clone_args clone_args = {
+		.flags = clone_flags,
+		.exit_signal = SIGCHLD,
+	};
 	int pid;
 
 	pid = SAFE_CLONE(&clone_args);

@@ -73,7 +73,10 @@ static void setup(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 
 	if (!SAFE_CLONE(&args)) {
 		child_fn1();

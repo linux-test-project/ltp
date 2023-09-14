@@ -24,7 +24,10 @@ static char *str_op;
 
 static void run(void)
 {
-	const struct tst_clone_args clone_args = { CLONE_NEWIPC, SIGCHLD };
+	const struct tst_clone_args clone_args = {
+		.flags = CLONE_NEWIPC,
+		.exit_signal = SIGCHLD,
+	};
 
 	tst_res(TINFO, "Checking namespaces isolation from parent to child");
 

@@ -22,7 +22,10 @@
 
 static void child_fn1(const int level)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid;
 	int parentuid;
 	int parentgid;
@@ -53,7 +56,10 @@ static void child_fn1(const int level)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid;
 	int parentuid;
 	int parentgid;

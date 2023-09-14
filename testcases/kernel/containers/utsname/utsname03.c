@@ -45,7 +45,10 @@ static void child2_run(void)
 
 static void run(void)
 {
-	const struct tst_clone_args cargs = { CLONE_NEWUTS, SIGCHLD };
+	const struct tst_clone_args cargs = {
+		.flags = CLONE_NEWUTS,
+		.exit_signal = SIGCHLD,
+	};
 
 	memset(hostname1, 0, HOST_NAME_MAX);
 	memset(hostname2, 0, HOST_NAME_MAX);

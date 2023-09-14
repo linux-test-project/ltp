@@ -20,7 +20,10 @@ static char *str_op;
 
 static void run(void)
 {
-	const struct tst_clone_args cargs = { CLONE_NEWUTS, SIGCHLD };
+	const struct tst_clone_args cargs = {
+		.flags = CLONE_NEWUTS,
+		.exit_signal = SIGCHLD,
+	};
 	struct passwd *pw;
 
 	tst_res(TINFO, "Dropping root privileges");
