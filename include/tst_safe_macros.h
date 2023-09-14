@@ -86,6 +86,12 @@ void *safe_realloc(const char *file, const int lineno, void *ptr, size_t size);
 #define SAFE_MUNMAP(addr, length) \
 	safe_munmap(__FILE__, __LINE__, NULL, (addr), (length))
 
+int safe_msync(const char *file, const int lineno, void *addr,
+				size_t length, int flags);
+
+#define SAFE_MSYNC(addr, length, flags) \
+	safe_msync(__FILE__, __LINE__, (addr), (length), (flags))
+
 #define SAFE_OPEN(pathname, oflags, ...) \
 	safe_open(__FILE__, __LINE__, NULL, (pathname), (oflags), \
 	    ##__VA_ARGS__)

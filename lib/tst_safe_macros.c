@@ -591,3 +591,22 @@ void safe_cmd(const char *file, const int lineno, const char *const argv[],
 		tst_brk_(file, lineno, TBROK, "%s failed (%d)", argv[0], rval);
 	}
 }
+
+int safe_msync(const char *file, const int lineno, void *addr,
+				size_t length, int flags)
+{
+	int rval;
+
+	rval = msync(addr, length, flags);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"msync(%p, %zu, %d) failed", addr, length, flags);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid msync(%p, %zu, %d) return value %d",
+			addr, length, flags, rval);
+	}
+
+	return rval;
+}
