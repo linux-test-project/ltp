@@ -98,7 +98,7 @@ int tst_netdev_set_state(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_create_veth_pair(const char *file, const int lineno,
+int tst_create_veth_pair(const char *file, const int lineno, int strict,
 	const char *ifname1, const char *ifname2)
 {
 	int ret;
@@ -148,7 +148,7 @@ int tst_create_veth_pair(const char *file, const int lineno,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to create veth interfaces %s+%s: %s", ifname1,
 			ifname2, tst_strerrno(tst_rtnl_errno));
@@ -157,7 +157,7 @@ int tst_create_veth_pair(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_netdev_add_device(const char *file, const int lineno,
+int tst_netdev_add_device(const char *file, const int lineno, int strict,
 	const char *ifname, const char *devtype)
 {
 	int ret;
@@ -192,7 +192,7 @@ int tst_netdev_add_device(const char *file, const int lineno,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to create %s device %s: %s", devtype, ifname,
 			tst_strerrno(tst_rtnl_errno));
@@ -201,7 +201,7 @@ int tst_netdev_add_device(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_netdev_remove_device(const char *file, const int lineno,
+int tst_netdev_remove_device(const char *file, const int lineno, int strict,
 	const char *ifname)
 {
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
@@ -227,7 +227,7 @@ int tst_netdev_remove_device(const char *file, const int lineno,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to remove netdevice %s: %s", ifname,
 			tst_strerrno(tst_rtnl_errno));
@@ -236,7 +236,7 @@ int tst_netdev_remove_device(const char *file, const int lineno,
 	return ret;
 }
 
-static int modify_address(const char *file, const int lineno,
+static int modify_address(const char *file, const int lineno, int strict,
 	unsigned int action, unsigned int nl_flags, const char *ifname,
 	unsigned int family, const void *address, unsigned int prefix,
 	size_t addrlen, uint32_t addr_flags)
@@ -277,7 +277,7 @@ static int modify_address(const char *file, const int lineno,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to modify %s network address: %s", ifname,
 			tst_strerrno(tst_rtnl_errno));
@@ -286,40 +286,40 @@ static int modify_address(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_netdev_add_address(const char *file, const int lineno,
+int tst_netdev_add_address(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, const void *address,
 	unsigned int prefix, size_t addrlen, unsigned int flags)
 {
-	return modify_address(file, lineno, RTM_NEWADDR,
+	return modify_address(file, lineno, strict, RTM_NEWADDR,
 		NLM_F_CREATE | NLM_F_EXCL, ifname, family, address, prefix,
 		addrlen, flags);
 }
 
-int tst_netdev_add_address_inet(const char *file, const int lineno,
+int tst_netdev_add_address_inet(const char *file, const int lineno, int strict,
 	const char *ifname, in_addr_t address, unsigned int prefix,
 	unsigned int flags)
 {
-	return tst_netdev_add_address(file, lineno, ifname, AF_INET,
+	return tst_netdev_add_address(file, lineno, strict, ifname, AF_INET,
 		&address, prefix, sizeof(address), flags);
 }
 
-int tst_netdev_remove_address(const char *file, const int lineno,
+int tst_netdev_remove_address(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, const void *address,
 	size_t addrlen)
 {
-	return modify_address(file, lineno, RTM_DELADDR, 0, ifname, family,
-		address, 0, addrlen, 0);
+	return modify_address(file, lineno, strict, RTM_DELADDR, 0, ifname,
+		family, address, 0, addrlen, 0);
 }
 
 int tst_netdev_remove_address_inet(const char *file, const int lineno,
-	const char *ifname, in_addr_t address)
+	int strict, const char *ifname, in_addr_t address)
 {
-	return tst_netdev_remove_address(file, lineno, ifname, AF_INET,
+	return tst_netdev_remove_address(file, lineno, strict, ifname, AF_INET,
 		&address, sizeof(address));
 }
 
-static int change_ns(const char *file, const int lineno, const char *ifname,
-	unsigned short attr, uint32_t value)
+static int change_ns(const char *file, const int lineno, int strict,
+	const char *ifname, unsigned short attr, uint32_t value)
 {
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
 	struct tst_rtnl_context *ctx;
@@ -350,7 +350,7 @@ static int change_ns(const char *file, const int lineno, const char *ifname,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to move %s to another namespace: %s", ifname,
 			tst_strerrno(tst_rtnl_errno));
@@ -359,23 +359,23 @@ static int change_ns(const char *file, const int lineno, const char *ifname,
 	return ret;
 }
 
-int tst_netdev_change_ns_fd(const char *file, const int lineno,
+int tst_netdev_change_ns_fd(const char *file, const int lineno, int strict,
 	const char *ifname, int nsfd)
 {
-	return change_ns(file, lineno, ifname, IFLA_NET_NS_FD, nsfd);
+	return change_ns(file, lineno, strict, ifname, IFLA_NET_NS_FD, nsfd);
 }
 
-int tst_netdev_change_ns_pid(const char *file, const int lineno,
+int tst_netdev_change_ns_pid(const char *file, const int lineno, int strict,
 	const char *ifname, pid_t nspid)
 {
-	return change_ns(file, lineno, ifname, IFLA_NET_NS_PID, nspid);
+	return change_ns(file, lineno, strict, ifname, IFLA_NET_NS_PID, nspid);
 }
 
-static int modify_route(const char *file, const int lineno, unsigned int action,
-	unsigned int flags, const char *ifname, unsigned int family,
-	const void *srcaddr, unsigned int srcprefix, size_t srclen,
-	const void *dstaddr, unsigned int dstprefix, size_t dstlen,
-	const void *gateway, size_t gatewaylen)
+static int modify_route(const char *file, const int lineno, int strict,
+	unsigned int action, unsigned int flags, const char *ifname,
+	unsigned int family, const void *srcaddr, unsigned int srcprefix,
+	size_t srclen, const void *dstaddr, unsigned int dstprefix,
+	size_t dstlen, const void *gateway, size_t gatewaylen)
 {
 	struct tst_rtnl_context *ctx;
 	int ret;
@@ -445,7 +445,7 @@ static int modify_route(const char *file, const int lineno, unsigned int action,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to modify network route: %s",
 			tst_strerrno(tst_rtnl_errno));
@@ -454,7 +454,7 @@ static int modify_route(const char *file, const int lineno, unsigned int action,
 	return ret;
 }
 
-static int modify_route_inet(const char *file, const int lineno,
+static int modify_route_inet(const char *file, const int lineno, int strict,
 	unsigned int action, unsigned int flags, const char *ifname,
 	in_addr_t srcaddr, unsigned int srcprefix, in_addr_t dstaddr,
 	unsigned int dstprefix, in_addr_t gateway)
@@ -477,53 +477,55 @@ static int modify_route_inet(const char *file, const int lineno,
 		gwlen = sizeof(gateway);
 	}
 
-	return modify_route(file, lineno, action, flags, ifname, AF_INET, src,
-		srcprefix, srclen, dst, dstprefix, dstlen, gw, gwlen);
+	return modify_route(file, lineno, strict, action, flags, ifname,
+		AF_INET, src, srcprefix, srclen, dst, dstprefix, dstlen, gw,
+		gwlen);
 }
 
-int tst_netdev_add_route(const char *file, const int lineno,
+int tst_netdev_add_route(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, const void *srcaddr,
 	unsigned int srcprefix, size_t srclen, const void *dstaddr,
 	unsigned int dstprefix, size_t dstlen, const void *gateway,
 	size_t gatewaylen)
 {
-	return modify_route(file, lineno, RTM_NEWROUTE,
+	return modify_route(file, lineno, strict, RTM_NEWROUTE,
 		NLM_F_CREATE | NLM_F_EXCL, ifname, family, srcaddr, srcprefix,
 		srclen, dstaddr, dstprefix, dstlen, gateway, gatewaylen);
 }
 
-int tst_netdev_add_route_inet(const char *file, const int lineno,
+int tst_netdev_add_route_inet(const char *file, const int lineno, int strict,
 	const char *ifname, in_addr_t srcaddr, unsigned int srcprefix,
 	in_addr_t dstaddr, unsigned int dstprefix, in_addr_t gateway)
 {
-	return modify_route_inet(file, lineno, RTM_NEWROUTE,
+	return modify_route_inet(file, lineno, strict, RTM_NEWROUTE,
 		NLM_F_CREATE | NLM_F_EXCL, ifname, srcaddr, srcprefix, dstaddr,
 		dstprefix, gateway);
 }
 
-int tst_netdev_remove_route(const char *file, const int lineno,
+int tst_netdev_remove_route(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, const void *srcaddr,
 	unsigned int srcprefix, size_t srclen, const void *dstaddr,
 	unsigned int dstprefix, size_t dstlen, const void *gateway,
 	size_t gatewaylen)
 {
-	return modify_route(file, lineno, RTM_DELROUTE, 0, ifname, family,
-		srcaddr, srcprefix, srclen, dstaddr, dstprefix, dstlen,
+	return modify_route(file, lineno, strict, RTM_DELROUTE, 0, ifname,
+		family, srcaddr, srcprefix, srclen, dstaddr, dstprefix, dstlen,
 		gateway, gatewaylen);
 }
 
 int tst_netdev_remove_route_inet(const char *file, const int lineno,
-	const char *ifname, in_addr_t srcaddr, unsigned int srcprefix,
-	in_addr_t dstaddr, unsigned int dstprefix, in_addr_t gateway)
+	int strict, const char *ifname, in_addr_t srcaddr,
+	unsigned int srcprefix, in_addr_t dstaddr, unsigned int dstprefix,
+	in_addr_t gateway)
 {
-	return modify_route_inet(file, lineno, RTM_DELROUTE, 0, ifname,
+	return modify_route_inet(file, lineno, strict, RTM_DELROUTE, 0, ifname,
 		srcaddr, srcprefix, dstaddr, dstprefix, gateway);
 }
 
-static int modify_qdisc(const char *file, const int lineno, const char *object,
-	unsigned int action, unsigned int nl_flags, const char *ifname,
-	unsigned int family, unsigned int parent, unsigned int handle,
-	unsigned int info, const char *qd_kind,
+static int modify_qdisc(const char *file, const int lineno, int strict,
+	const char *object, unsigned int action, unsigned int nl_flags,
+	const char *ifname, unsigned int family, unsigned int parent,
+	unsigned int handle, unsigned int info, const char *qd_kind,
 	const struct tst_rtnl_attr_list *config)
 {
 	struct tst_rtnl_context *ctx;
@@ -570,7 +572,7 @@ static int modify_qdisc(const char *file, const int lineno, const char *object,
 	ret = tst_rtnl_send_validate(file, lineno, ctx);
 	tst_rtnl_destroy_context(file, lineno, ctx);
 
-	if (!ret) {
+	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to modify %s: %s", object,
 			tst_strerrno(tst_rtnl_errno));
@@ -579,56 +581,61 @@ static int modify_qdisc(const char *file, const int lineno, const char *object,
 	return ret;
 }
 
-int tst_netdev_add_qdisc(const char *file, const int lineno,
+int tst_netdev_add_qdisc(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, unsigned int parent,
 	unsigned int handle, const char *qd_kind,
 	const struct tst_rtnl_attr_list *config)
 {
-	return modify_qdisc(file, lineno, "queueing discipline", RTM_NEWQDISC,
-		NLM_F_CREATE | NLM_F_EXCL, ifname, family, parent, handle, 0,
-		qd_kind, config);
+	return modify_qdisc(file, lineno, strict, "queueing discipline",
+		RTM_NEWQDISC, NLM_F_CREATE | NLM_F_EXCL, ifname, family,
+		parent, handle, 0, qd_kind, config);
 }
 
-int tst_netdev_remove_qdisc(const char *file, const int lineno,
+int tst_netdev_remove_qdisc(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, unsigned int parent,
 	unsigned int handle, const char *qd_kind)
 {
-	return modify_qdisc(file, lineno, "queueing discipline", RTM_DELQDISC,
-		0, ifname, family, parent, handle, 0, qd_kind, NULL);
+	return modify_qdisc(file, lineno, strict, "queueing discipline",
+		RTM_DELQDISC, 0, ifname, family, parent, handle, 0, qd_kind,
+		NULL);
 }
 
 int tst_netdev_add_traffic_class(const char *file, const int lineno,
-	const char *ifname, unsigned int parent, unsigned int handle,
-	const char *qd_kind, const struct tst_rtnl_attr_list *config)
+	int strict, const char *ifname, unsigned int parent,
+	unsigned int handle, const char *qd_kind,
+	const struct tst_rtnl_attr_list *config)
 {
-	return modify_qdisc(file, lineno, "traffic class", RTM_NEWTCLASS,
-		NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC, parent, handle,
-		0, qd_kind, config);
+	return modify_qdisc(file, lineno, strict, "traffic class",
+		RTM_NEWTCLASS, NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC,
+		parent, handle, 0, qd_kind, config);
 }
 
 int tst_netdev_remove_traffic_class(const char *file, const int lineno,
-	const char *ifname, unsigned int parent, unsigned int handle,
-	const char *qd_kind)
+	int strict, const char *ifname, unsigned int parent,
+	unsigned int handle, const char *qd_kind)
 {
-	return modify_qdisc(file, lineno, "traffic class", RTM_DELTCLASS, 0,
-		ifname, AF_UNSPEC, parent, handle, 0, qd_kind, NULL);
+	return modify_qdisc(file, lineno, strict, "traffic class",
+		RTM_DELTCLASS, 0, ifname, AF_UNSPEC, parent, handle, 0,
+		qd_kind, NULL);
 }
 
 int tst_netdev_add_traffic_filter(const char *file, const int lineno,
-	const char *ifname, unsigned int parent, unsigned int handle,
-	unsigned int protocol, unsigned int priority, const char *f_kind,
-	const struct tst_rtnl_attr_list *config)
+	int strict, const char *ifname, unsigned int parent,
+	unsigned int handle, unsigned int protocol, unsigned int priority,
+	const char *f_kind, const struct tst_rtnl_attr_list *config)
 {
-	return modify_qdisc(file, lineno, "traffic filter", RTM_NEWTFILTER,
-		NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC, parent, handle,
-		TC_H_MAKE(priority << 16, htons(protocol)), f_kind, config);
+	return modify_qdisc(file, lineno, strict, "traffic filter",
+		RTM_NEWTFILTER, NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC,
+		parent, handle, TC_H_MAKE(priority << 16, htons(protocol)),
+		f_kind, config);
 }
 
 int tst_netdev_remove_traffic_filter(const char *file, const int lineno,
-	const char *ifname, unsigned int parent, unsigned int handle,
-	unsigned int protocol, unsigned int priority, const char *f_kind)
+	int strict, const char *ifname, unsigned int parent,
+	unsigned int handle, unsigned int protocol, unsigned int priority,
+	const char *f_kind)
 {
-	return modify_qdisc(file, lineno, "traffic filter", RTM_DELTFILTER,
-		0, ifname, AF_UNSPEC, parent, handle,
+	return modify_qdisc(file, lineno, strict, "traffic filter",
+		RTM_DELTFILTER, 0, ifname, AF_UNSPEC, parent, handle,
 		TC_H_MAKE(priority << 16, htons(protocol)), f_kind, NULL);
 }
