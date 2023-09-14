@@ -230,7 +230,7 @@ while [ $ipaddr_pair_num -lt $IP_TOTAL_FOR_TCPIP ]; do
 	# Set IPv6 addresses to the interfaces
 	ip addr add ${lhost_addr}/${network_mask} dev $lhost_ifname
 
-	if [ $ret -eq 2 ]; then
+	if [ $? -eq 2 ]; then
 	ip addr del ${lhost_addr}/${network_mask} dev $lhost_ifname  2>&1
 	ip addr add ${lhost_addr}/${network_mask} dev $lhost_ifname
 	fi
