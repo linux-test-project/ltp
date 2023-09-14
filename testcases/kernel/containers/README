@@ -44,7 +44,5 @@ posixmq/*
 	enabled in the kernel without SYSV IPC support.
 utsname/*
 	Contains all the testcases related to utsname tests.
-libclone/*
-	Contains the library API for clone() .
 netns/*
         Contains the testcases related to the network NS tests.
