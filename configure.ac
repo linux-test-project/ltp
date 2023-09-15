@@ -135,7 +135,6 @@ AC_CHECK_FUNCS_ONCE([ \
     rand_r \
     readlinkat \
     recvmmsg \
-    renameat \
     renameat2 \
     sched_getcpu \
     sendmmsg \

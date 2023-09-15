@@ -50,7 +50,6 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
-#include "lapi/renameat.h"
 
 #define MNTPOINT "mntpoint"
 #define TESTDIR "testdir"
