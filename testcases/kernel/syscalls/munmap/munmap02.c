@@ -197,7 +197,7 @@ void setup(void)
 	/*
 	 * map the open file 'TEMPFILE' from its beginning up to the maplength
 	 * into the calling process's address space at the system choosen
-	 * with read/write permissions to the the mapped region.
+	 * with read/write permissions to the mapped region.
 	 */
 #ifdef UCLINUX
 	/* mmap() doesn't support MAP_SHARED on uClinux */

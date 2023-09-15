@@ -95,7 +95,7 @@ int main(int ac, char **av)
 
 		/*
 		 * Check that if ngrps is zero that the number of groups is
-		 * return and the the gidset array is not modified.
+		 * return and the gidset array is not modified.
 		 * This is a POSIX special case.
 		 */
 		memset(gidset, 052, NGROUPS * sizeof(GID_T));

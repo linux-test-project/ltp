@@ -8,7 +8,7 @@
  *
  * The test performs several ioctl() parallel with readv() on the same
  * file descriptor to /dev/snd/timer. A buggy kernel will leak memory
- * to the process, which may contain information from the the kernel or
+ * to the process, which may contain information from the kernel or
  * any other process on the system.
  *
  * The issue was fixed with

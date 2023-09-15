@@ -5,7 +5,7 @@
  * of this license, see the COPYING file at the top level of this
  * source tree.
 
- *  Test that the the raise() function does not return until after the
+ *  Test that the raise() function does not return until after the
  *  signal handler it calls returns.
  *  This test is only performed on one signal.  All other signals are
  *  considered to be in the same equivalence class.

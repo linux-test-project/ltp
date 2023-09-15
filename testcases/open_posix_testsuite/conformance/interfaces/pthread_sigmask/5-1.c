@@ -5,7 +5,7 @@
 * of this license, see the COPYING file at the top level of this
 * source tree.
 
-The resulting set shall be the the signal set pointed to by set
+The resulting set shall be the signal set pointed to by set
 
 Steps:
 1. Have main create a new thread and wait for its termination.

@@ -6,7 +6,7 @@
  */
 
 /*
- * Test that IPC_STAT command succeeds and the the buffer is filled with
+ * Test that IPC_STAT command succeeds and the buffer is filled with
  * correct data.
  */
 #include <errno.h>

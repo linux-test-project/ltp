@@ -237,7 +237,7 @@ static void write_to_file(void)
  * What we do here is:
  *
  * * Take nsamples measurements of the timer function, the function
- *   to be sampled is defined in the the actual test.
+ *   to be sampled is defined in the actual test.
  *
  * * We sort the array of samples, then:
  *

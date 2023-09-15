@@ -9,7 +9,7 @@
  * tokenizer runs twice and we only count number of tokens in the first pass in
  * order to simplify the memory allocation.
  *
- * Secondly the the expression is transformed to a postfix (RPN) notation by
+ * Secondly the expression is transformed to a postfix (RPN) notation by
  * the shunting yard algorithm and the correctness of the expression is checked
  * during the transformation as well. The fact that parenthesis are matched is
  * asserted by the shunting yard algorithm itself while the rest is checked

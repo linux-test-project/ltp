@@ -11,7 +11,7 @@ Before loading nlsTest.ko the nls_base.ko module must already be loaded.
 
 Building
 --------
-To build nlsTest.ko you will need to have the the Linux kernel sources installed
+To build nlsTest.ko you will need to have the Linux kernel sources installed
 on your build environment. Execute "make" from the current directory should
 build the nlsTest.ko.
 

@@ -5,7 +5,7 @@
   </assertion>
   <assertion id="2" tag="ref:XSH6:42291:42293 pt:RTS">
         Error checking is performed but no signal is actually sent, if signo is zero (the null signal).
-        Using the null signal can be used to check the the validity of pid.
+        Using the null signal can be used to check the validity of pid.
   </assertion>
   <assertion id="3" tag="ref:XSH6:42294:42295 pt:RTS">
 	For a process to have permission to queue a signal to another process

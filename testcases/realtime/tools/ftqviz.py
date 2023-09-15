@@ -45,7 +45,7 @@ def smooth(x, wlen):
 
     # generate the smoothed signal
     y = convolve(w/w.sum(), s, mode='same')
-    # recenter the the smoothed signal over the originals (slide along x)
+    # recenter the smoothed signal over the originals (slide along x)
     y1 = y[wlen-1:-wlen+1]
     return y1
 
