@@ -36,6 +36,10 @@
 # define CAP_SYS_ADMIN        21
 #endif
 
+#ifndef CAP_SYS_NICE
+# define CAP_SYS_NICE         23
+#endif
+
 #ifndef CAP_SYS_TIME
 # define CAP_SYS_TIME         25
 #endif
