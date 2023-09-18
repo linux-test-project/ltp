@@ -93,7 +93,8 @@ void fill_flat_vec(const char *path, int verbose)
 			tst_res(TINFO | TERRNO, "openat()");
 			return;
 		}
-		tst_brk(TBROK | TERRNO, "openat(%s, %d, 0600) failed", dir, O_PATH | O_DIRECTORY);
+		tst_brk(TBROK | TERRNO, "openat(%d, %d, 0600) failed for path %s",
+			dir, O_PATH | O_DIRECTORY, path);
 	}
 
 	SAFE_CLOSE(dir);
