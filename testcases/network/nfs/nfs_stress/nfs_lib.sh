@@ -191,7 +191,9 @@ nfs_setup()
 
 		remote_dir="$(get_remote_dir $i $type)"
 		nfs_setup_server "$remote_dir" "$(($$ + n))"
-		nfs_mount "$(get_local_dir $i $n)" "$remote_dir" "-o proto=$type,vers=$i"
+		local_dir="$(get_local_dir $i $n)"
+		tst_res TINFO "Mounting $local_dir"
+		nfs_mount "$local_dir" "$remote_dir" "-o proto=$type,vers=$i"
 
 		n=$(( n + 1 ))
 	done
@@ -210,7 +212,10 @@ nfs_cleanup()
 	local n=0
 	for i in $VERSION; do
 		local_dir="$(get_local_dir $i $n)"
-		grep -q "$local_dir" /proc/mounts && umount $local_dir
+		if grep -q "$local_dir" /proc/mounts; then
+			tst_res TINFO "Unmounting $local_dir"
+			umount $local_dir
+		fi
 		n=$(( n + 1 ))
 	done
 	sleep 2
