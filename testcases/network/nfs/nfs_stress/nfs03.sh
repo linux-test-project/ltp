@@ -66,11 +66,13 @@ do_test()
 	cd ../dir1
 	wait $pid1
 	rm_files &
+	pid3=$!
 
 	tst_res TINFO "cd dir2 & removing files"
 	cd ../dir2
 	wait $pid2
 	rm_files
+	wait $pid3
 
 	tst_res TPASS "test done"
 }
