@@ -214,7 +214,7 @@ nfs_cleanup()
 		local_dir="$(get_local_dir $i $n)"
 		if grep -q "$local_dir" /proc/mounts; then
 			tst_res TINFO "Unmounting $local_dir"
-			umount $local_dir
+			umount $local_dir || tst_res TWARN "Unmount failed"
 		fi
 		n=$(( n + 1 ))
 	done
