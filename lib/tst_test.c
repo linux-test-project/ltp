@@ -1163,10 +1163,10 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->supported_archs && !tst_is_on_arch(tst_test->supported_archs))
 		tst_brk(TCONF, "This arch '%s' is not supported for test!", tst_arch.name);
 
-	if (tst_test->skip_in_lockdown && tst_lockdown_enabled())
+	if (tst_test->skip_in_lockdown && tst_lockdown_enabled() > 0)
 		tst_brk(TCONF, "Kernel is locked down, skipping test");
 
-	if (tst_test->skip_in_secureboot && tst_secureboot_enabled())
+	if (tst_test->skip_in_secureboot && tst_secureboot_enabled() > 0)
 		tst_brk(TCONF, "SecureBoot enabled, skipping test");
 
 	if (tst_test->skip_in_compat && TST_ABI != tst_kernel_bits())
