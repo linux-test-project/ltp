@@ -1,60 +1,163 @@
 LTP Release Procedure
 =====================
 
-This page contains quick summary of what needs to be done to do a LTP release. It's expected that LTP git is frozen and git HEAD was properly tested and that LTP git tree is cloned to a directory named 'ltp'.
+1. Release preparations
+-----------------------
 
-NOTE: The string YYYYMMDD should be substituted to the current date.
+The release procedure generally takes a few weeks. In the first week or two,
+patches that should go into the release are reviewed and possibly merged. These
+patches are either fixes or patches pointed out by the community.
 
-1. Tag the git
---------------
+Patch review, when finished, is followed by a git freeze, which is a period
+where only fixes are pushed to the git. During that period community is
+expected to run a LTP pre-release tests, reports problems, and/or send fixes to
+the mailing list. In this period we are especially making sure that there are
+no regressions in the test results on a wide range of distributions and
+architectures.
+
+Once the stabilization period has ended the time has finally come to proceed
+with the release.
+
+2. Prepare the release notes
+----------------------------
+
+Part of the preparation is also to write the release notes, which are then
+added to the GitHub release and also sent as announcement to various mailing
+lists (see below).
+
+Have a look at https://lore.kernel.org/ltp/ZGNiQ1sMGvPU_ETp@yuki/ to get the
+idea how it should look.
+
+3. Tag the git and push changes to github
+-----------------------------------------
 
 [source,sh]
 --------------------------------------------------------------------
 cd ltp
 echo YYYYMMDD > VERSION
-git commit -s -m 'LTP YYYYMMDD' VERSION
-git tag -a YYYYMMDD -m 'LTP YYYYMMDD'
+git commit -S -s -m 'LTP YYYYMMDD' VERSION
+git tag -s -a YYYYMMDD -m 'LTP YYYYMMDD'
+git push origin master:master
+git push origin YYYYMMDD
 --------------------------------------------------------------------
 
-2. Push changes to github
--------------------------
+NOTE: The string YYYYMMDD should be substituted to the current date.
+
+NOTE: You can use './tools/tag-release.sh' script to have the above automated.
+      It allows you to verify the tag before pushing it and does other checks.
+
 [source,sh]
 --------------------------------------------------------------------
-git push
-git push --tags
+$ ./tools/tag-release.sh
+===== git push =====
+new tag: 'YYYYMMDD', previous tag: '20230127'
+tag YYYYMMDD
+Tagger: Person-who-released LTP <foo@example.com>
+Date:   ...
+
+LTP YYYYMMDD
+-----BEGIN PGP SIGNATURE-----
+...
+-----END PGP SIGNATURE-----
+
+commit 3ebc2dfa85c2445bb68d8c0d66e33c4da1e1b3a7
+gpg:                using RSA key ...
+...
+Primary key fingerprint: ...
+Author: Person-who-released LTP <foo@example.com>
+Date:   ...
+
+    LTP YYYYMMDD
+
+    Signed-off-by: Person-who-released LTP <foo@example.com>
+
+diff --git a/VERSION b/VERSION
+index af4c41fec..ae488c0e7 100644
+--- a/VERSION
++++ b/VERSION
+@@ -1 +1 @@
+-20230127
++YYYYMMDD
+
+Please check tag and signature. Proceed? [N/y]: y
+Pushing changes to upstream git. Proceed? [N/y]: y
+...
+To github.com:linux-test-project/ltp.git
+ * [new tag]             YYYYMMDD -> YYYYMMDD
 --------------------------------------------------------------------
 
-3. Prepare tarballs
--------------------
+4. Prepare tarballs and metadata documentation
+----------------------------------------------
+
 [source,sh]
 --------------------------------------------------------------------
+# clone already clonned git repository to new folder
 cd ..
 git clone ltp ltp-full-YYYYMMDD
 cd ltp-full-YYYYMMDD
-# Update mce-inject submodule
-git submodule init
-git submodule update
+
+# update all submodules
+git submodule update --init
+
 # Generate configure script
 make autotools
-# Prepare the archives
+
+# Generate tarballs
 cd ..
 tar -cjf ltp-full-YYYYMMDD.tar.bz2 ltp-full-YYYYMMDD --exclude .git
 tar -cJf ltp-full-YYYYMMDD.tar.xz ltp-full-YYYYMMDD --exclude .git
+
+# Generate checksums
+md5 ltp-full-YYYYMMDD.tar.xz > ltp-full-YYYYMMDD.tar.xz.md5
+sha1 ltp-full-YYYYMMDD.tar.xz > ltp-full-YYYYMMDD.tar.xz.sha1
+sha256sum ltp-full-YYYYMMDD.tar.xz > ltp-full-YYYYMMDD.tar.xz.sha256
+
+# Generate metadata documentation
+./configure --with-metadata-generator=asciidoctor
+make -C metadata
+cp -v docparse/metadata.html ../metadata.YYYYMMDD.html
 --------------------------------------------------------------------
 
-4. Upload the tarballs to GitHub
---------------------------------
+NOTE: You can use './tools/create-tarballs-metadata.sh' script to have the
+	  above automated. All generated files are placed in ltp-release-YYYYMMDD
+	  directory.
 
-Click on 'releases' then switch to 'tags' then click on 'Add release notes' there should be 'Attach binaries ...' link at the bottom of the page.
+[source,sh]
+--------------------------------------------------------------------
+$ ./tools/create-tarballs-metadata.sh
+===== git clone =====
+Cloning into 'ltp-full-YYYYMMDD'...
+done.
+===== Update submodules =====
+Submodule 'tools/kirk' (https://github.com/linux-test-project/kirk.git) registered for path 'tools/kirk'
+...
+===== Generate configure script =====
+sed -n '1{s:LTP-:m4_define([LTP_VERSION],[:;s:$:]):;p;q}' VERSION > m4/ltp-version.m4
+aclocal -I m4
+...
+===== Generate tarballs =====
+===== Generate checksums =====
+===== Generate metadata documentation =====
+checking for a BSD-compatible install... /usr/bin/install -c
+...
+'docparse/metadata.html' -> '/home/foo/ltp-release-YYYYMMDD/metadata.YYYYMMDD.html'
+Generated files are in '/home/foo/ltp-release-YYYYMMDD', upload them to github
+--------------------------------------------------------------------
 
-Don't forget to upload md5 and sha-1 sums for the tarballs as well.
+5. Upload the generated files to GitHub
+---------------------------------------
+
+Click on https://github.com/linux-test-project/ltp/releases['Releases'] then
+switch to https://github.com/linux-test-project/ltp/tags['Tags'], then click on
+'Add release notes'.  There should be 'Attach binaries ...' link at the
+bottom of the page.
+
+Don't forget to upload checksums for the tarballs and metadata documentation as well.
 
 5. Send release announcement
 ----------------------------
 
-Have a look at http://sourceforge.net/p/ltp/mailman/message/34429656/ to get the idea how it should look.
-
-The announcement is send to:
+The announcement is sent to:
 
 * ltp at lists.linux.it
 * linux-kernel at vger.kernel.org
@@ -64,4 +167,4 @@ CCed to:
 
 * lwn at lwn.net
 * akpm at linux-foundation.org
-* torvalds at linux-foundation.org.
+* torvalds at linux-foundation.org
