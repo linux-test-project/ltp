@@ -135,7 +135,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.forks_child = 1,
-	.needs_tmpdir = 1,
 	.needs_checkpoints = 1,
 	.options = (struct tst_option[]) {
 		{ "m:", &str_op, "Child process isolation <clone|unshare>" },
