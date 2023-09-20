@@ -281,7 +281,7 @@ find_kernel_symbol(const char *name)
 
 	if (uname(&utsname) < 0)
 		tst_brk(TBROK | TERRNO, "uname");
-	sprintf(systemmap, "/boot/System.map-%s", utsname.release);
+	snprintf(systemmap, sizeof(systemmap), "/boot/System.map-%s", utsname.release);
 	addr = find_symbol_in_file(systemmap, name);
 	return addr;
 }
