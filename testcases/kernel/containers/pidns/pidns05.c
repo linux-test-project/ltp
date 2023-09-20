@@ -28,7 +28,7 @@ static void child_func(int *level)
 {
 	pid_t cpid, ppid;
 
-	cpid = getpid();
+	cpid = tst_getpid();
 	ppid = getppid();
 
 	TST_EXP_EQ_LI(cpid, 1);
@@ -55,7 +55,7 @@ static int find_cinit_pids(pid_t *pids)
 	int next = 0;
 	pid_t parentpid, pgid, pgid2;
 
-	parentpid = getpid();
+	parentpid = tst_getpid();
 	pgid = SAFE_GETPGID(parentpid);
 
 	for (pid = 2; pid < pid_max; pid++) {
