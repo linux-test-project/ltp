@@ -8,5 +8,5 @@
 
 int main(void)
 {
-	return !tst_secureboot_enabled();
+	return tst_secureboot_enabled() <= 0;
 }

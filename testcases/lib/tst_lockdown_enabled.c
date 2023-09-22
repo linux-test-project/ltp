@@ -8,5 +8,5 @@
 
 int main(void)
 {
-	return !tst_lockdown_enabled();
+	return tst_lockdown_enabled() <= 0;
 }
