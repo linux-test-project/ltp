@@ -53,8 +53,8 @@ static void setup(void)
 
 	tst_module_exists(MODULE_NAME, NULL);
 
-	kernel_lockdown = tst_lockdown_enabled();
-	secure_boot = tst_secureboot_enabled();
+	kernel_lockdown = tst_lockdown_enabled() > 0;
+	secure_boot = tst_secureboot_enabled() > 0;
 	fd = SAFE_OPEN(MODULE_NAME, O_RDONLY|O_CLOEXEC);
 	SAFE_FSTAT(fd, &sb);
 	size = sb.st_size;

@@ -83,8 +83,8 @@ static void setup(void)
 
 	tst_module_exists(MODULE_NAME, &mod_path);
 
-	kernel_lockdown = tst_lockdown_enabled();
-	secure_boot = tst_secureboot_enabled();
+	kernel_lockdown = tst_lockdown_enabled() > 0;
+	secure_boot = tst_secureboot_enabled() > 0;
 
 	SAFE_MKDIR(TEST_DIR, 0700);
 	fd_dir = SAFE_OPEN(TEST_DIR, O_DIRECTORY);
