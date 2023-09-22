@@ -325,7 +325,7 @@ static int open_unpoison_pfn(void)
 
 	TEST(open(debugfs_fp, O_WRONLY));
 
-	if (TST_RET == -1 && TST_ERR == EPERM && tst_lockdown_enabled()) {
+	if (TST_RET == -1 && TST_ERR == EPERM && tst_lockdown_enabled() > 0) {
 		tst_res(TINFO,
 			"Cannot restore soft-offlined memory due to lockdown");
 		return TST_RET;
