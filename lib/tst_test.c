@@ -880,8 +880,10 @@ static void do_exit(int ret)
 		if (results->warnings)
 			ret |= TWARN;
 
-		if (results->broken)
+		if (results->broken) {
 			ret |= TBROK;
+			print_failure_hints();
+		}
 
 		fprintf(stderr, "\nSummary:\n");
 		fprintf(stderr, "passed   %d\n", results->passed);
