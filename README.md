@@ -184,6 +184,37 @@ Network tests
 Network tests require certain setup, described in `testcases/network/README.md`
 (online at https://github.com/linux-test-project/ltp/tree/master/testcases/network).
 
+Containers
+----------
+
+*Presently running the LTP inside a container is not a shortcut. It
+will make things much harder for you.*
+
+There is a Containerfile which can be used with Docker or
+Podman. Currently it can build Alpine and OpenSUSE images.
+
+The container can be built with a command like:
+
+```
+$ podman build -t tumbleweed/ltp \
+       --build-arg PREFIX=registry.opensuse.org/opensuse/ \
+       --build-arg DISTRO_NAME=tumbleweed \
+       --build-arg DISTRO_RELEASE=20230925 .
+```
+
+Or just `podman build .` which will create an Alpine container.
+
+It contains Kirk in /opt/kirk. So the following will run some tests.
+
+```
+$ podman run -it --rm tumbleweed/ltp:latest
+$ cd /opt/kirk && ./kirk -f ltp -r syscalls
+```
+
+SUSE also publishes a
+[smaller LTP container](https://registry.opensuse.org/cgi-bin/cooverview?srch_term=project%3D%5Ebenchmark+container%3D.*)
+that is not based on the Containerfile.
+
 Developers corner
 =================
 
