@@ -383,6 +383,9 @@ static void cgroup_dir_mk(const struct cgroup_dir *const parent,
 		tst_brk(TCONF | TERRNO,
 			"Lack permission to make '%s/%s'; premake it or run as root",
 			dpath, dir_name);
+	} else if (errno == EROFS) {
+		tst_brk(TCONF | TERRNO, "'%s/%s' must not be read-only",
+			dpath, dir_name);
 	} else {
 		tst_brk(TBROK | TERRNO,
 			"mkdirat(%d<%s>, '%s', 0777)",
