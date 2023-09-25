@@ -48,7 +48,7 @@ given test, as obviously we cannot run two tests that monopolize the same
 resource. In some cases we would also need to partition the system resource
 accordingly, e.g. if we have two memory stress tests running at the same time
 we will need to cap each of these tests on half of the available memory, or
-make sure that sum of the memory used by these two tests is not greater an
+make sure that sum of the memory used by these two tests is not greater than
 available memory.
 
 Examples of such tests are:
