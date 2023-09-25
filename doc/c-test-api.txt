@@ -2369,13 +2369,14 @@ NOTE: We don't track all backports to stable kernel but just those which are
       stable branch specific (unique), i.e. no commit in mainline. Example of
       commits: c4a23c852e80, cac68d12c531.
 
-Glibc git commit in a regression test for a glibc bug:
+Glibc and musl git commits in a regression test for glibc and musl bugs:
 [source,c]
 -------------------------------------------------------------------------------
 struct tst_test test = {
 	...
 	.tags = (const struct tst_tag[]) {
 		{"glibc-git", "574500a108be"},
+		{"musl-git", "fa4a8abd06a4"},
 		{}
 	}
 };
