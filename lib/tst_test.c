@@ -45,6 +45,7 @@ const char *TCID __attribute__((weak));
 #define LINUX_GIT_URL "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id="
 #define LINUX_STABLE_GIT_URL "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id="
 #define GLIBC_GIT_URL "https://sourceware.org/git/?p=glibc.git;a=commit;h="
+#define MUSL_GIT_URL "https://git.musl-libc.org/cgit/musl/commit/src/linux/clone.c?id="
 #define CVE_DB_URL "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-"
 
 #define DEFAULT_TIMEOUT 30
@@ -592,6 +593,8 @@ static void print_test_tags(void)
 			fprintf(stderr, LINUX_STABLE_GIT_URL "%s\n", tags[i].value);
 		else if (!strcmp(tags[i].name, "glibc-git"))
 			fprintf(stderr, GLIBC_GIT_URL "%s\n", tags[i].value);
+		else if (!strcmp(tags[i].name, "musl-git"))
+			fprintf(stderr, MUSL_GIT_URL "%s\n", tags[i].value);
 		else
 			fprintf(stderr, "%s: %s\n", tags[i].name, tags[i].value);
 	}
@@ -855,6 +858,7 @@ static void print_failure_hints(void)
 	print_failure_hint("linux-stable-git", "missing stable kernel fixes",
 					   LINUX_STABLE_GIT_URL);
 	print_failure_hint("glibc-git", "missing glibc fixes", GLIBC_GIT_URL);
+	print_failure_hint("musl-git", "missing musl fixes", MUSL_GIT_URL);
 	print_failure_hint("CVE", "vulnerable to CVE(s)", CVE_DB_URL);
 	print_failure_hint("known-fail", "hit by known kernel failures", NULL);
 }

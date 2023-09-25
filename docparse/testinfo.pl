@@ -13,12 +13,13 @@ use File::Basename qw(dirname);
 use constant OUTDIR => dirname(abs_path($0));
 
 # tags which expect git tree, also need constant for URL
-our @TAGS_GIT = ("linux-git", "linux-stable-git", "glibc-git");
+our @TAGS_GIT = ("linux-git", "linux-stable-git", "glibc-git", "musl-git");
 
 # tags should map these in lib/tst_test.c
 use constant LINUX_GIT_URL => "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=";
 use constant LINUX_STABLE_GIT_URL => "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=";
 use constant GLIBC_GIT_URL => "https://sourceware.org/git/?p=glibc.git;a=commit;h=";
+use constant MUSL_GIT_URL => "https://git.musl-libc.org/cgit/musl/commit/src/linux/clone.c?id=";
 use constant CVE_DB_URL => "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-";
 
 sub load_json
