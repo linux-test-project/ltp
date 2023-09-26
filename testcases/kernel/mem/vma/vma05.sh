@@ -54,6 +54,8 @@ vma_report_check()
 
 	rm -rf core*
 	{ vma05_vdso; } > /dev/null 2>&1
+	[ -f core ] || tst_brk TBROK "missing core file"
+
 	TRACE=$(gdb -silent -ex="thread apply all backtrace" -ex="quit"\
 		vma05_vdso ./core* 2> /dev/null)
 	if echo "$TRACE" | grep -qF "??"; then
