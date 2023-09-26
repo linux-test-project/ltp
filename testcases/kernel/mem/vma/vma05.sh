@@ -30,6 +30,7 @@ setup()
 {
 	ulimit -c unlimited
 	echo "core" > /proc/sys/kernel/core_pattern
+	unset DEBUGINFOD_URLS
 }
 
 cleanup()
