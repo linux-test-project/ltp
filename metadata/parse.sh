@@ -23,7 +23,7 @@ echo '  "scm_url_base": "https://github.com/linux-test-project/ltp/tree/master/"
 echo "  \"version\": \"$version\""
 echo ' },'
 echo ' "defaults": {'
-echo '  "timeout": 300'
+echo '  "timeout": 30'
 echo ' },'
 echo ' "tests": {'
 
