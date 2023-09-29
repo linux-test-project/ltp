@@ -41,9 +41,10 @@ git push origin master:master
 git push origin YYYYMMDD
 --------------------------------------------------------------------
 
-NOTE: The string YYYYMMDD should be substituted to the current date.
+NOTE: The string `YYYYMMDD` should be substituted to the current date.
 
-NOTE: You can use './tools/tag-release.sh' script to have the above automated.
+NOTE: You can use https://github.com/linux-test-project/ltp/blob/master/tools/tag-release.sh[`tools/tag-release.sh`]
+      script to have the above automated.
       It allows you to verify the tag before pushing it and does other checks.
 
 [source,sh]
@@ -118,9 +119,9 @@ make -C metadata
 cp -v docparse/metadata.html ../metadata.YYYYMMDD.html
 --------------------------------------------------------------------
 
-NOTE: You can use './tools/create-tarballs-metadata.sh' script to have the
-	  above automated. All generated files are placed in ltp-release-YYYYMMDD
-	  directory.
+NOTE: You can use https://github.com/linux-test-project/ltp/blob/master/tools/create-tarballs-metadata.sh[`tools/create-tarballs-metadata.sh`]
+	  script to have the above automated. All generated files are placed in
+	  ltp-release-YYYYMMDD directory.
 
 [source,sh]
 --------------------------------------------------------------------
@@ -147,7 +148,7 @@ Generated files are in '/home/foo/ltp-release-YYYYMMDD', upload them to github
 5. Upload the generated files to GitHub
 ---------------------------------------
 
-Click on https://github.com/linux-test-project/ltp/releases['Releases'] then
+Click on https://github.com/linux-test-project/ltp/releases['Releases'], then
 switch to https://github.com/linux-test-project/ltp/tags['Tags'], then click on
 'Add release notes'.  There should be 'Attach binaries ...' link at the
 bottom of the page.
