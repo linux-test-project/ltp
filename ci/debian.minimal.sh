@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/sh -eux
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2018-2023 Petr Vorel <pvorel@suse.cz>
-set -ex
 
 apt="apt remove -y"
 
