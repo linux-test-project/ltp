@@ -45,6 +45,8 @@ static int record_open_fds(void)
 		opened_fds[num_opened_fds++] = fd;
 	}
 
+	SAFE_CLOSEDIR(dir);
+
 	return num_opened_fds;
 }
 
