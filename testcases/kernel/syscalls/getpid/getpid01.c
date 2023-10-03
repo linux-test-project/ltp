@@ -6,7 +6,7 @@
 /*\
  * [Description]
  *
- * Verify that getpid() system call returns process ID in range 2 ... PID_MAX
+ * Verify that getpid() system call returns process ID in range <2, PID_MAX>.
  */
 
 #include <stdlib.h>
@@ -30,7 +30,7 @@ static void verify_getpid(void)
 			pid = getpid();
 
 			/* pid should not be 1 or out of maximum */
-			if (1 < pid && pid <= pid_max)
+			if (pid > 1 && pid <= pid_max)
 				tst_res(TPASS, "getpid() returns %d", pid);
 			else
 				tst_res(TFAIL,
