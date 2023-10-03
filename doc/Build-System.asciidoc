@@ -112,7 +112,7 @@ the module because the file does not exists, the test is skipped.
 
 Note the 'ifneq($(KERNELRELEASE),)', the reason it's there is that the
 Makefile is executed twice, once by LTP build system and once by kernel
-kbuild, see 'Documentation/kbuild/modules.txt' in the Linux kernel tree for
+kbuild, see 'Documentation/kbuild/modules.rst' in the Linux kernel tree for
 details on external module build.
 
 Make Rules and Make Variables
