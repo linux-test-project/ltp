@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2006-2023
  */
 
 /*\
@@ -12,11 +13,16 @@
 #include <errno.h>
 #include "tst_test.h"
 
+static pid_t pid_max;
+
+static void setup(void)
+{
+	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%d\n", &pid_max);
+}
+
 static void verify_getppid(void)
 {
-	pid_t ppid, pid_max;
-
-	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%d\n", &pid_max);
+	pid_t ppid;
 
 	ppid = getppid();
 	if (ppid > pid_max)
@@ -26,5 +32,6 @@ static void verify_getppid(void)
 }
 
 static struct tst_test test = {
+	.setup = setup,
 	.test_all = verify_getppid,
 };
