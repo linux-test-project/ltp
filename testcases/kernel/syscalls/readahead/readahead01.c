@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2012 Linux Test Project, Inc.
+ * Copyright (C) 2023-2024 Cyril Hrubis <chrubis@suse.cz>
  */
 
 /*\
@@ -30,43 +31,44 @@
 
 static void test_bad_fd(void)
 {
-	char tempname[PATH_MAX] = "readahead01_XXXXXX";
-	int fd;
-
-	tst_res(TINFO, "%s -1", __func__);
-	TST_EXP_FAIL(readahead(-1, 0, getpagesize()), EBADF);
-
-	tst_res(TINFO, "%s O_WRONLY", __func__);
-	fd = mkstemp(tempname);
-	if (fd == -1)
-		tst_res(TFAIL | TERRNO, "mkstemp failed");
-	SAFE_CLOSE(fd);
-	fd = SAFE_OPEN(tempname, O_WRONLY);
-	TST_EXP_FAIL(readahead(fd, 0, getpagesize()), EBADF);
-	SAFE_CLOSE(fd);
-	unlink(tempname);
-}
-
-static void test_invalid_fd(void)
-{
 	int fd[2];
 
-	tst_res(TINFO, "%s pipe", __func__);
+	TST_EXP_FAIL(readahead(-1, 0, getpagesize()), EBADF,
+	             "readahead() with fd = -1");
+
 	SAFE_PIPE(fd);
-	TST_EXP_FAIL(readahead(fd[0], 0, getpagesize()), EINVAL);
 	SAFE_CLOSE(fd[0]);
 	SAFE_CLOSE(fd[1]);
 
-	tst_res(TINFO, "%s socket", __func__);
-	fd[0] = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
-	TST_EXP_FAIL(readahead(fd[0], 0, getpagesize()), EINVAL);
-	SAFE_CLOSE(fd[0]);
+	TST_EXP_FAIL(readahead(fd[0], 0, getpagesize()), EBADF,
+	             "readahead() with invalid fd");
+}
+
+static void test_invalid_fd(struct tst_fd *fd)
+{
+
+	switch (fd->type) {
+	/* These succeed */
+	case TST_FD_FILE:
+	case TST_FD_MEMFD:
+	case TST_FD_PROC_MAPS:
+		return;
+	default:
+		break;
+	}
+
+	int exp_errnos[] = {EBADF, EINVAL, ESPIPE};
+
+	TST_EXP_FAIL_ARR(readahead(fd->fd, 0, getpagesize()), exp_errnos,
+			"readahead() on %s", tst_fd_desc(fd));
 }
 
 static void test_readahead(void)
 {
 	test_bad_fd();
-	test_invalid_fd();
+
+	TST_FD_FOREACH(fd)
+		test_invalid_fd(&fd);
 }
 
 static void setup(void)
