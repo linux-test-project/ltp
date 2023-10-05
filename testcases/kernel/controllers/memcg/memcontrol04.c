@@ -232,7 +232,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = test_memcg_low,
 	.mount_device = 1,
-	.dev_min_size = 256,
 	.mntpoint = TMPDIR,
 	.all_filesystems = 1,
 	.skip_filesystems = (const char *const[]){

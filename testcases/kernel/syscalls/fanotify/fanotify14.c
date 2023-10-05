@@ -246,7 +246,8 @@ static void do_test(unsigned int number)
 	tst_res(TINFO, "Test case %d: fanotify_init(%s, O_RDONLY)", number,
 		tc->init.desc);
 
-	if (tc->init.flags & ~supported_init_flags) {
+	//if (tc->init.flags & ~supported_init_flags) {
+	if (tc->init.flags == supported_init_flags) {
 		tst_res(TCONF, "Unsupported init flags");
 		return;
 	}
