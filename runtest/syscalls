@@ -538,6 +538,7 @@ getsockopt01 getsockopt01
 getsockopt02 getsockopt02
 
 gettid01 gettid01
+gettid02 gettid02
 
 gettimeofday01 gettimeofday01
 gettimeofday02 gettimeofday02
