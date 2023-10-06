@@ -97,13 +97,10 @@ Commit messages should have
 * Check also mailing lists for other reviewers / testers tags, notes and failure reports
 * `Fixes: hash` if it fixes particular LTP commit
 * `Fixes: #N` if it fixes github issue number N, so it's automatically closed
+* LTP WIKI (git: https://github.com/linux-test-project/ltp.wiki.git) should be kept up to date.
 
 After patch is accepted or rejected, set correct state and archive in
 https://patchwork.ozlabs.org/project/ltp/list/[LTP patchwork instance].
-
-Also update `.github/workflows/wiki-mirror.yml` script which mirrors
-`doc/*.txt` to LTP wiki (git URL https://github.com/linux-test-project/ltp.wiki.git)
-if new wiki page is added.
 
 ## New tests
 New test should
