@@ -68,9 +68,19 @@
 #################################################################################
 
 
+deprecated()
+{
+    echo "-------------------------------------------"
+    echo "INFO: runltp script is deprecated, try kirk"
+    echo "https://github.com/linux-test-project/kirk"
+    echo "-------------------------------------------"
+}
+
 
 setup()
 {
+    deprecated
+
     cd `dirname $0` || \
     {
         echo "FATAL: unable to change directory to $(dirname $0)"
@@ -921,6 +931,9 @@ EOF
 
 	EOF
     }
+
+    deprecated
+
     exit $VALUE
 }
 
