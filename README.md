@@ -190,7 +190,7 @@ Developers corner
 Before you start you should read following documents:
 
 * `doc/test-writing-guidelines.txt`
-* `doc/build-system-guide.txt`
+* `doc/Build-System.asciidoc`
 * `doc/library-api-writing-guidelines.txt`
 
 There is also a step-by-step tutorial:

@@ -39,7 +39,7 @@ jobs:
 
           cd $GITHUB_WORKSPACE/ltp.wiki
           # don't forget to add new extensions
-          cp -v $dir/*.asciidoc $dir/*.rest .
+          cp -v $dir/*.asciidoc .
           git add .
 
           # only commit if there are changes
