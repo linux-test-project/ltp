@@ -11,7 +11,7 @@ NOTE: See also
 
 For extending library API it applies the same general rules as for writing tests,
 (see https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines[Test Writing Guidelines],
-offline: 'doc/test-writing-guidelines.txt'),
+offline: 'doc/Test-Writing-Guidelines.asciidoc'),
 with strong focus on readability and simplicity.
 
 Library tests are in 'lib/newlib_tests' directory.

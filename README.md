@@ -176,7 +176,7 @@ Note that all shell scripts need the `PATH` to be set. However this is not
 limited to shell scripts, many C based tests need environment variables as
 well.
 
-For more info see `doc/user-guide.txt` or online at
+For more info see `doc/User-Guidelines.asciidoc` or online at
 https://github.com/linux-test-project/ltp/wiki/User-Guidelines.
 
 Network tests
@@ -189,13 +189,13 @@ Developers corner
 
 Before you start you should read following documents:
 
-* `doc/test-writing-guidelines.txt`
+* `doc/Test-Writing-Guidelines.asciidoc`
 * `doc/Build-System.asciidoc`
-* `doc/library-api-writing-guidelines.txt`
+* `doc/LTP-Library-API-Writing-Guidelines.asciidoc`
 
 There is also a step-by-step tutorial:
 
-* `doc/c-test-tutorial-simple.txt`
+* `doc/C-Test-Case-Tutorial.asciidoc`
 
 If something is not covered there don't hesitate to ask on the LTP mailing
 list. Also note that these documents are available online at:

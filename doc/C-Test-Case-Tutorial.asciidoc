@@ -298,7 +298,7 @@ the database into a branch.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Maybe the test should report "TCONF: Not implemented" instead or perhaps
-+TBROK+. Try changing it do so (see +doc/test-writing-guidelines.txt+ or
++TBROK+. Try changing it do so (see +doc/Test-Writing-Guidelines.asciidoc+ or
 https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines[the
 Wiki]).
 
