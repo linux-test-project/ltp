@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2023 Petr Vorel <pvorel@suse.cz>
 # Tag LTP release.
 # https://github.com/linux-test-project/ltp/wiki/LTP-Release-Procedure
