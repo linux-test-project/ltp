@@ -1,9 +1,8 @@
-#!/bin/sh
+#!/bin/sh -eu
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2023 Petr Vorel <pvorel@suse.cz>
 # Create tarballs and metadata for uploading after tagging release.
 # https://github.com/linux-test-project/ltp/wiki/LTP-Release-Procedure
-set -e
 
 tag="$(date +%Y%m%d)"
 tarball_dir="ltp-full-$tag"
