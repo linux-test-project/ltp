@@ -4,14 +4,15 @@
 # Create tarballs and metadata for uploading after tagging release.
 # https://github.com/linux-test-project/ltp/wiki/LTP-Release-Procedure
 
+basedir="$(dirname "$0")"
+. "$basedir/lib.sh"
+
 tag="$(date +%Y%m%d)"
 tarball_dir="ltp-full-$tag"
 extensions="bz2 xz"
 checksums="md5 sha1 sha256"
-git_dir=$(cd $(dirname "$0")/..; pwd)
-dir="$(cd $git_dir/../; pwd)/ltp-release-$tag"
-
-. $(dirname "$0")/lib.sh
+git_dir=$(cd "$basedir/.."; pwd)
+dir="$(cd "$git_dir/../"; pwd)/ltp-release-$tag"
 
 if [ -d $dir ]; then
 	ask "Directory '$dir' exists, will be deleted"
