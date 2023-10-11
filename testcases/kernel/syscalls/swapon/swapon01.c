@@ -40,6 +40,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.test_all = verify_swapon,
 	.setup = setup
