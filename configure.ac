@@ -64,6 +64,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/netlink.h \
     linux/seccomp.h \
     linux/securebits.h \
+    linux/tls.h \
     linux/tty.h \
     linux/types.h \
     linux/userfaultfd.h \
