@@ -215,6 +215,13 @@ SUSE also publishes a
 [smaller LTP container](https://registry.opensuse.org/cgi-bin/cooverview?srch_term=project%3D%5Ebenchmark+container%3D.*)
 that is not based on the Containerfile.
 
+Debugging with gdb
+==================
+
+The new test library runs the actual test, i.e. the `test()` function in a
+forked process. To get stack trace of a crashing test in gdb it's needed to
+[`set follow-fork-mode child`](https://ftp.gnu.org/old-gnu/Manuals/gdb/html_node/gdb_25.html).
+
 Developers corner
 =================
 
