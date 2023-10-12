@@ -89,7 +89,7 @@ static void verify_device(void)
 	SAFE_CLOSE(fd);
 }
 
-static void reset(void)
+static void reset_zram(void)
 {
 	char reset_path[200];
 
@@ -163,7 +163,7 @@ static void run(void)
 	dump_info();
 	verify_device();
 
-	reset();
+	reset_zram();
 	dump_info();
 }
 
@@ -181,7 +181,7 @@ static void setup(void)
 		tst_res(TINFO,
 			"zram module already loaded, kernel supports zram-control interface");
 		SAFE_FILE_SCANF(HOT_ADD_PATH, "%d", &dev_num);
-		hot_add_flag =1;
+		hot_add_flag = 1;
 		goto fill_path;
 	}
 
