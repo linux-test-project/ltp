@@ -262,6 +262,18 @@ The list of tests to be executed is stored in runtest files under the
 stored in 'scenario_groups/default'. When you add a test you should add
 corresponding entries into some runtest file(s) as well.
 
+Each line of runtest file contain one test. First item is the test name
+('shell_test01', 'splice02'). All other items, separated by space will be
+executed ('echo "SUCCESS" | shell_pipe01.sh', 'splice02 -s 20').
+
+[source,sh]
+-------------------------------------------------------------------------------
+shell_test01 echo "SUCCESS" | shell_pipe01.sh
+splice02 splice02 -s 20
+-------------------------------------------------------------------------------
+
+Blank lines and lines starting with a '#' (comments) are ignored.
+
 For syscall tests (these placed under 'testcases/kernel/syscalls/') use
 'runtest/syscalls' file, for kernel related tests for memory management we
 have 'runtest/mm', etc.
