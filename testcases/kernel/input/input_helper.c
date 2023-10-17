@@ -185,6 +185,29 @@ void send_rel_move(int fd, int x, int y)
 	send_event(fd, EV_SYN, 0, 0);
 }
 
+static void check_ui_get_sysname_ioctl(int fd)
+{
+	char sys_name[256];
+	char dev_name[256];
+	char *path;
+
+	SAFE_IOCTL(NULL, fd, UI_GET_SYSNAME(sizeof(sys_name)), sys_name, NULL);
+	SAFE_ASPRINTF(NULL, &path, "/sys/devices/virtual/input/%s/name", sys_name);
+
+	if (FILE_SCANF(path, "%s", dev_name)) {
+		tst_resm(TFAIL|TERRNO, "Failed to read '%s'", path);
+		free(path);
+		return;
+	}
+
+	if (!strcmp(VIRTUAL_DEVICE, dev_name))
+		tst_resm(TPASS, "ioctl UI_GET_SYSNAME returned correct name");
+	else
+		tst_resm(TFAIL, "ioctl UI_GET_SYSNAME returned wrong name");
+
+	free(path);
+}
+
 void create_device(int fd)
 {
 	int nb;
@@ -202,8 +225,10 @@ void create_device(int fd)
 	SAFE_IOCTL(NULL, fd, UI_DEV_CREATE, NULL);
 
 	for (nb = 100; nb > 0; nb--) {
-		if (check_device())
+		if (check_device()) {
+			check_ui_get_sysname_ioctl(fd);
 			return;
+		}
 		usleep(10000);
 	}
 
