@@ -15,7 +15,6 @@
 #include "tst_test.h"
 #include "lapi/fcntl.h"
 #include "lapi/mount.h"
-#include "lapi/mkdirat.h"
 #include "tst_safe_file_at.h"
 
 struct cgroup_root;

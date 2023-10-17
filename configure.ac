@@ -113,7 +113,6 @@ AC_CHECK_FUNCS_ONCE([ \
     mallinfo \
     mallinfo2 \
     mallopt \
-    mkdirat \
     mknodat \
     modify_ldt \
     mount_setattr \

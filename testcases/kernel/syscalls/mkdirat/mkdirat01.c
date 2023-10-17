@@ -35,7 +35,6 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "lapi/mkdirat.h"
 #include "safe_macros.h"
 
 static void setup(void);
