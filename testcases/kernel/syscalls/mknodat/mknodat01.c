@@ -35,7 +35,6 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "lapi/fcntl.h"
-#include "mknodat.h"
 
 #define PATHNAME "mknodattestdir"
 
