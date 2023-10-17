@@ -25,11 +25,11 @@
 
 #define BUF_SIZE 100
 #define PIPE_MAX_INIT_SIZE 65536
-#define PIPE_MAX_TEST_SIZE 4096
 #define DOMAIN_INIT_NAME "LTP_INIT"
 #define DOMAIN_TEST_NAME "LTP_TEST"
 #define INTEGER_PROCFILE "/proc/sys/fs/pipe-max-size"
 #define STRING_PROCFILE "/proc/sys/kernel/domainname"
+static int pipe_max_test_size;
 
 static void format_str(char *str)
 {
@@ -179,9 +179,9 @@ static void splice_test(void)
 	else
 		tst_brk(TBROK | TERRNO, "Read num through splice failed");
 
-	splice_write_num(INTEGER_PROCFILE, PIPE_MAX_TEST_SIZE);
+	splice_write_num(INTEGER_PROCFILE, pipe_max_test_size);
 
-	if (file_read_num(INTEGER_PROCFILE) == PIPE_MAX_TEST_SIZE)
+	if (file_read_num(INTEGER_PROCFILE) == pipe_max_test_size)
 		tst_res(TPASS, "Write num through splice correctly");
 	else
 		tst_brk(TBROK | TERRNO, "Write num through splice failed");
@@ -210,6 +210,7 @@ static void splice_test(void)
 
 static void setup(void)
 {
+	pipe_max_test_size = getpagesize();
 	file_write_str(STRING_PROCFILE, DOMAIN_INIT_NAME);
 	file_write_num(STRING_PROCFILE, PIPE_MAX_INIT_SIZE);
 }
