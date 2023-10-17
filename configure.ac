@@ -95,7 +95,6 @@ AC_CHECK_FUNCS_ONCE([ \
     execveat \
     faccessat2 \
     fallocate \
-    fchownat \
     fsconfig \
     fsmount \
     fsopen \
