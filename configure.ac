@@ -134,7 +134,6 @@ AC_CHECK_FUNCS_ONCE([ \
     pwritev2 \
     quotactl_fd \
     rand_r \
-    readlinkat \
     recvmmsg \
     renameat2 \
     sched_getcpu \
