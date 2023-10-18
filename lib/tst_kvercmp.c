@@ -92,8 +92,8 @@ int tst_kvcmp(const char *cur_kver, int r1, int r2, int r3)
 		         cur_kver);
 	}
 
-	testver = (r1 << 16) + (r2 << 8) + r3;
-	currver = (a1 << 16) + (a2 << 8) + a3;
+	testver = (r1 << 20) + (r2 << 10) + r3;
+	currver = (a1 << 20) + (a2 << 10) + a3;
 
 	return currver - testver;
 }
