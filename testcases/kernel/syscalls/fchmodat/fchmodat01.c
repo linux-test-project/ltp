@@ -1,99 +1,82 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2006
- *
+ * Copyright (c) Linux Test Project, 2003-2023
  * 08/28/2006 AUTHOR: Yi Yang <yyangcdl@cn.ibm.com>
  */
 
 /*\
  * [Description]
  *
- * This test case will verify basic function of fchmodat.
+ * Check the basic functionality of the fchmodat() system call.
+ *
+ * - fchmodat() passes if dir_fd is file descriptor to the directory
+ *   where the file is located and pathname is relative path of the file.
+ * - fchmodat() passes if pathname is absolute, then dirfd is ignored.
+ * - fchmodat() passes if dir_fd is AT_FDCWD and pathname is interpreted
+ *   relative to the current working directory of the calling process.
  */
 
-#define _GNU_SOURCE
-
-#include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "tst_test.h"
-#include "lapi/syscalls.h"
 
-#ifndef AT_FDCWD
-#define AT_FDCWD -100
-#endif
+#define TESTDIR         "fchmodatdir"
+#define TESTFILE        "fchmodatfile"
+#define FILEPATH        "fchmodatdir/fchmodatfile"
 
-static char pathname[256];
-static char testfile[256];
-static char testfile2[256];
-static char testfile3[256];
+static int dir_fd, file_fd;
+static int atcwd_fd = AT_FDCWD;
+static char *abs_path;
+static char *test_file;
+static char *file_path;
 
 static struct tcase {
-	int exp_errno;
-	char *exp_errval;
+	int *fd;
+	char **filenames;
+	char **full_path;
 } tcases[] = {
-	{ 0, NULL},
-	{ 0, NULL},
-	{ ENOTDIR, "ENOTDIR"},
-	{ EBADF, "EBADF"},
-	{ 0, NULL},
-	{ 0, NULL},
+	{&dir_fd, &test_file, &file_path},
+	{&file_fd, &abs_path, &abs_path},
+	{&atcwd_fd, &file_path, &file_path},
 };
-static int fds[ARRAY_SIZE(tcases)];
-static char *filenames[ARRAY_SIZE(tcases)];
 
 static void verify_fchmodat(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
+	struct stat st;
 
-	if (tc->exp_errno == 0)
-		TST_EXP_PASS(tst_syscall(__NR_fchmodat, fds[i], filenames[i], 0600),
-			     "fchmodat() returned the expected errno %d: %s",
-			     TST_ERR, strerror(TST_ERR));
+	TST_EXP_PASS(fchmodat(*tc->fd, *tc->filenames, 0600, 0),
+		     "fchmodat(%d, %s, 0600, 0)",
+		     *tc->fd, *tc->filenames);
+
+	SAFE_LSTAT(*tc->full_path, &st);
+
+	if ((st.st_mode & ~S_IFREG) == 0600)
+		tst_res(TPASS, "File permission changed correctly");
 	else
-		TST_EXP_FAIL(tst_syscall(__NR_fchmodat, fds[i], filenames[i], 0600),
-			     tc->exp_errno,
-			     "fchmodat() returned the expected errno %d: %s",
-			     TST_ERR, strerror(TST_ERR));
+		tst_res(TFAIL, "File permission not changed correctly");
 }
 
 static void setup(void)
 {
-	/* Initialize test dir and file names */
-	char *abs_path = tst_get_tmpdir();
-	int p = getpid();
+	char *tmpdir_path = tst_get_tmpdir();
 
-	sprintf(pathname, "fchmodattestdir%d", p);
-	sprintf(testfile, "fchmodattest%d.txt", p);
-	sprintf(testfile2, "%s/fchmodattest%d.txt", abs_path, p);
-	sprintf(testfile3, "fchmodattestdir%d/fchmodattest%d.txt", p, p);
+	abs_path = tst_aprintf("%s/%s", tmpdir_path, FILEPATH);
+	free(tmpdir_path);
 
-	free(abs_path);
-
-	SAFE_MKDIR(pathname, 0700);
-
-	fds[0] = SAFE_OPEN(pathname, O_DIRECTORY);
-	fds[1] = fds[4] = fds[0];
-
-	SAFE_FILE_PRINTF(testfile, "%s", testfile);
-	SAFE_FILE_PRINTF(testfile2, "%s", testfile2);
-
-	fds[2] = SAFE_OPEN(testfile3, O_CREAT | O_RDWR, 0600);
-	fds[3] = 100;
-	fds[5] = AT_FDCWD;
-
-	filenames[0] = filenames[2] = filenames[3] = filenames[4] = testfile;
-	filenames[1] = testfile2;
-	filenames[5] = testfile3;
+	SAFE_MKDIR(TESTDIR, 0700);
+	dir_fd = SAFE_OPEN(TESTDIR, O_DIRECTORY);
+	file_fd = SAFE_OPEN(FILEPATH, O_CREAT | O_RDWR, 0600);
 }
 
 static void cleanup(void)
 {
-	if (fds[0] > 0)
-		close(fds[0]);
-	if (fds[2] > 0)
-		close(fds[2]);
+	if (dir_fd > -1)
+		SAFE_CLOSE(dir_fd);
+
+	if (file_fd > -1)
+		SAFE_CLOSE(file_fd);
 }
 
 static struct tst_test test = {
@@ -101,5 +84,10 @@ static struct tst_test test = {
 	.test = verify_fchmodat,
 	.setup = setup,
 	.cleanup = cleanup,
+	.bufs = (struct tst_buffers []) {
+		{&test_file, .str = TESTFILE},
+		{&file_path, .str = FILEPATH},
+		{},
+	},
 	.needs_tmpdir = 1,
 };
