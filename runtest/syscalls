@@ -259,6 +259,7 @@ fchmod06 fchmod06
 
 #fchmodat test cases
 fchmodat01 fchmodat01
+fchmodat02 fchmodat02
 
 fchown01 fchown01
 fchown01_16 fchown01_16
