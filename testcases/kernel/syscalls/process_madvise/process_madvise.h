@@ -54,7 +54,7 @@ static inline void read_address_mapping(unsigned long address, struct addr_mappi
 		if (!found)
 			continue;
 
-		if (found && strcmp(line, "VmFlags") >= 0)
+		if (found && strncmp(line, "VmFlags", 7) == 0)
 			break;
 
 		if (sscanf(line, "%31[^:]: %d", label, &value) > 0) {
