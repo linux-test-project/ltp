@@ -49,10 +49,11 @@
 #ifdef HAVE_LINUX_TLS_H
 
 #include <linux/tls.h>
-#include "netinet/in.h"
-#include "netinet/tcp.h"
+#include <netinet/in.h>
 
 #include "lapi/sched.h"
+#include "lapi/socket.h"
+#include "lapi/tcp.h"
 #include "tst_checkpoint.h"
 #include "tst_net.h"
 #include "tst_safe_net.h"
