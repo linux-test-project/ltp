@@ -217,6 +217,49 @@ static inline int fanotify_init_flags_supported_by_kernel(unsigned int flags)
 	return fanotify_init_flags_supported_on_fs(flags, NULL);
 }
 
+#define TST_FANOTIFY_INIT_KNOWN_FLAGS                                      \
+	(FAN_REPORT_DFID_NAME_TARGET | FAN_REPORT_TID | FAN_REPORT_PIDFD | \
+	FAN_CLASS_NOTIF | FAN_CLASS_CONTENT | FAN_CLASS_PRE_CONTENT)
+
+/*
+ * Check support of given init flags one by one and return those which are
+ * supported.
+ */
+static inline unsigned int fanotify_get_supported_init_flags(unsigned int flags,
+	const char *fname)
+{
+	unsigned int i, flg, arg, ret = 0;
+	static const struct { unsigned int flag, deps; } deplist[] = {
+		{FAN_REPORT_NAME, FAN_REPORT_DIR_FID},
+		{FAN_REPORT_TARGET_FID, FAN_REPORT_DFID_NAME_FID},
+		{0, 0}
+	};
+
+	if (flags & ~TST_FANOTIFY_INIT_KNOWN_FLAGS) {
+		tst_brk(TBROK, "fanotify_init() feature check called with unknown flags %x, please update flag dependency table if needed",
+			flags & ~TST_FANOTIFY_INIT_KNOWN_FLAGS);
+	}
+
+	for (flg = 1; flg; flg <<= 1) {
+		if (!(flags & flg))
+			continue;
+
+		arg = flg;
+
+		for (i = 0; deplist[i].flag; i++) {
+			if (deplist[i].flag == flg) {
+				arg |= deplist[i].deps;
+				break;
+			}
+		}
+
+		if (!fanotify_init_flags_supported_on_fs(arg, fname))
+			ret |= flg;
+	}
+
+	return ret;
+}
+
 typedef void (*tst_res_func_t)(const char *file, const int lineno,
 			       int ttype, const char *fmt, ...);
 
