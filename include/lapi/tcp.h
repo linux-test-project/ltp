@@ -12,6 +12,10 @@
 # define TCP_FASTOPEN	23
 #endif
 
+#ifndef TCP_ULP
+# define TCP_ULP          31
+#endif
+
 #ifndef TCP_FASTOPEN_CONNECT
 # define TCP_FASTOPEN_CONNECT	30	/* Attempt FastOpen with connect */
 #endif

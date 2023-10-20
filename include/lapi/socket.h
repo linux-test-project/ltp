@@ -62,6 +62,10 @@
 # define SOL_ALG		279
 #endif
 
+#ifndef SOL_TLS
+# define SOL_TLS         282
+#endif
+
 #ifndef HAVE_STRUCT_MMSGHDR
 struct mmsghdr {
 	struct msghdr msg_hdr;
