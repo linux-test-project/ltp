@@ -45,8 +45,8 @@
 
 static int pipes[2] = {-1, -1};
 static int fanotify_fd;
-static int fan_report_target_fid_unsupported;
 static int ignore_mark_unsupported;
+static unsigned int supported_init_flags;
 
 struct test_case_flags_t {
 	unsigned long long flags;
@@ -246,9 +246,8 @@ static void do_test(unsigned int number)
 	tst_res(TINFO, "Test case %d: fanotify_init(%s, O_RDONLY)", number,
 		tc->init.desc);
 
-	if (fan_report_target_fid_unsupported && tc->init.flags & FAN_REPORT_TARGET_FID) {
-		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TARGET_FID,
-					    fan_report_target_fid_unsupported);
+	if (tc->init.flags & ~supported_init_flags) {
+		tst_res(TCONF, "Unsupported init flags");
 		return;
 	}
 
@@ -317,11 +316,15 @@ out:
 
 static void do_setup(void)
 {
+	unsigned int all_init_flags = FAN_REPORT_DFID_NAME_TARGET |
+		FAN_CLASS_NOTIF | FAN_CLASS_CONTENT | FAN_CLASS_PRE_CONTENT;
+
 	/* Require FAN_REPORT_FID support for all tests to simplify per test case requirements */
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, MNTPOINT);
 
-	fan_report_target_fid_unsupported =
-		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MNTPOINT);
+	supported_init_flags = fanotify_get_supported_init_flags(all_init_flags,
+		MNTPOINT);
+
 	ignore_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_IGNORE_SURV);
 
 	/* Create temporary test file to place marks on */
