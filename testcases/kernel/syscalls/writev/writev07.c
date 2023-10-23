@@ -18,6 +18,10 @@
  *
  *   See: [RFC] writev() semantics with invalid iovec in the middle
  *        https://marc.info/?l=linux-kernel&m=147388891614289&w=2
+ *
+ * This is also regression test for kernel commits:
+ *   20c64ec83a9f ("iomap: fix a regression for partial write errors")
+ *   3ac974796e5d ("iomap: fix short copy in iomap_write_iter()")
  */
 
 #include <errno.h>
