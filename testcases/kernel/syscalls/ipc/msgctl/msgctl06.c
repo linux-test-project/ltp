@@ -139,12 +139,16 @@ static void verify_msgctl(unsigned int n)
 static void setup(void)
 {
 	struct msqid_ds temp_buf;
+	struct buf {
+		long type;
+		char text[5];
+	} msgbuf = {MSGTYPE, "abcd"};
 	ltpuser = SAFE_GETPWNAM("nobody");
 	nobody_uid = ltpuser->pw_uid;
 	root_uid = 0;
 
 	msg_id = SAFE_MSGGET(IPC_PRIVATE, IPC_CREAT | MSG_RW);
-	SAFE_MSGSND(msg_id, "abcd", 4, 0);
+	SAFE_MSGSND(msg_id, &msgbuf, sizeof(msgbuf.text), 0);
 
 	TEST(msgctl(msg_id, MSG_STAT_ANY, &temp_buf));
 	if (TST_RET == -1) {
