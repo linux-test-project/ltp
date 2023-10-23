@@ -34,16 +34,8 @@
 #ifndef __USCTEST_H__
 #define __USCTEST_H__
 
-/*
- * Ensure that PATH_MAX is defined
- */
-#ifndef PATH_MAX
-#ifdef MAXPATHLEN
-#define PATH_MAX  MAXPATHLEN
-#else
-#define PATH_MAX  1024
-#endif
-#endif
+/* For PATH_MAX */
+#include <linux/limits.h>
 
 /***********************************************************************
  * The following globals are defined in parse_opts.c but must be

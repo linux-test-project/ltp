@@ -18,7 +18,7 @@
 #define MNT_POINT "mntpoint"
 #define TEMP_FILE "tmpfile"
 
-static char long_path[NAME_MAX + 1] = {[0 ... NAME_MAX] = 'a'};
+static char long_path[PATH_MAX + 1] = {[0 ... PATH_MAX] = 'a'};
 
 static void setup(void)
 {
