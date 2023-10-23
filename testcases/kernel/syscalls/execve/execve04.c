@@ -8,7 +8,9 @@
  *  04/2008 Roy Lee <roylee@andestech.com>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Attempt to execve(2) a file which is being opened by another process for
  * writing fails with ETXTBSY.
  */
