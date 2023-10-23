@@ -137,7 +137,7 @@ static void verify_setxattr(unsigned int i)
 {
 	/* some tests might require existing keys for each iteration */
 	if (tc[i].keyneeded) {
-		SAFE_SETXATTR(FNAME, tc[i].key, tc[i].value, tc[i].size,
+		SAFE_SETXATTR(FNAME, tc[i].key, *tc[i].value, tc[i].size,
 				XATTR_CREATE);
 	}
 

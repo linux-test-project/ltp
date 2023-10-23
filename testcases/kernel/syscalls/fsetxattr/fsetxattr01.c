@@ -140,7 +140,7 @@ static void verify_fsetxattr(unsigned int i)
 {
 	/* some tests might require existing keys for each iteration */
 	if (tc[i].keyneeded) {
-		SAFE_FSETXATTR(fd, tc[i].key, tc[i].value, tc[i].size,
+		SAFE_FSETXATTR(fd, tc[i].key, *tc[i].value, tc[i].size,
 				XATTR_CREATE);
 	}
 
