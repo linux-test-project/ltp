@@ -25,6 +25,7 @@
 #include "test.h"
 #include "safe_macros.h"
 #include "input_helper.h"
+#include "lapi/uinput.h"
 
 #define VIRTUAL_DEVICE "virtual-device-ltp"
 
