@@ -92,6 +92,7 @@ void segv_handler(int sig, siginfo_t *info, void *data LTP_ATTRIBUTE_UNUSED)
 		_exit(EXIT_SUCCESS);
 }
 
+#ifdef __x86_64__
 static void force_bottom_up(void)
 {
 	FILE *fh;
@@ -134,6 +135,7 @@ static void force_bottom_up(void)
 out:
 	SAFE_FCLOSE(fh);
 }
+#endif
 
 unsigned long read_stack_addr_from_proc(unsigned long *stack_size)
 {
@@ -187,6 +189,7 @@ void __attribute__((noinline)) preallocate_stack(unsigned long required)
 	garbage[0] = garbage[required - 1] = '\0';
 }
 
+#ifdef __x86_64__
 static void do_mmap_placement_test(unsigned long stack_addr, unsigned long gap)
 {
 	void *map_test_gap;
@@ -208,6 +211,7 @@ static void do_mmap_placement_test(unsigned long stack_addr, unsigned long gap)
 		SAFE_MUNMAP(map_test_gap, MAPPED_LEN);
 	}
 }
+#endif
 
 void do_child(void)
 {
