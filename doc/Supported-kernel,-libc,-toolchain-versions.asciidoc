@@ -21,9 +21,9 @@ NOTE: GitHub Actions does only build testing, passing the CI means only that
 [align="center",options="header"]
 |==============================================================
 | Distro                       | kernel  | glibc | gcc   | clang
-| CentOS 7                     | 3.10    | 2.17  | 4.8.5 | -
+| openSUSE Leap 42.2           | 4.4     | 2.22  | 4.8.5 | -
+| Ubuntu 16.04 LTS xenial      | 4.4     | 2.23  | 5.3.1 | -
 | Ubuntu 18.04 LTS bionic      | 4.15    | 2.27  | 7.3.0 | -
-| Debian 10 oldstable (buster) | 4.19.37 | 2.28  | 8.3.0 | 7.0
 |==============================================================
 
 Older distributions are not officially supported, which means that it
