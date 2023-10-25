@@ -432,9 +432,20 @@ __attribute__ ((nonnull, warn_unused_result))
 static struct cgroup_ctrl *cgroup_find_ctrl(const char *const ctrl_name)
 {
 	struct cgroup_ctrl *ctrl;
+	int l = 0;
+	char c = ctrl_name[l];
+
+	while (c == '_' || (c >= 'a' && c <= 'z'))
+		c = ctrl_name[++l];
+
+	if (l > 32)
+		tst_res(TWARN, "Subsys name len greater than max known value of MAX_CGROUP_TYPE_NAMELEN: %d > 32", l);
+
+	if (!(c == '\n' || c == '\0'))
+		tst_brk(TBROK, "Unexpected char in %s: %c", ctrl_name, c);
 
 	for_each_ctrl(ctrl) {
-		if (!strcmp(ctrl_name, ctrl->ctrl_name))
+		if (!strncmp(ctrl_name, ctrl->ctrl_name, l))
 			return ctrl;
 	}
 
