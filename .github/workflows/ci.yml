@@ -80,7 +80,7 @@ jobs:
             env:
               CC: clang
 
-          - container: "opensuse/leap"
+          - container: "opensuse/leap:latest"
             env:
               CC: gcc
               METADATA: asciidoc-pdf
