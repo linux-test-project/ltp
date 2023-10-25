@@ -58,14 +58,12 @@ jobs:
               TREE: out
               VARIANT: minimal
 
-          # other builds
-          - container: "fedora:latest"
+          # oldest distros
+          - container: "opensuse/archive:42.2"
             env:
-              CC: clang
-              MAKE_INSTALL: 1
-              METADATA: asciidoctor-pdf
+              CC: gcc
 
-          - container: "centos:7"
+          - container: "ubuntu:xenial"
             env:
               CC: gcc
               METADATA: asciidoc-pdf
@@ -79,6 +77,13 @@ jobs:
           - container: "debian:oldstable"
             env:
               CC: clang
+
+          # other builds
+          - container: "fedora:latest"
+            env:
+              CC: clang
+              MAKE_INSTALL: 1
+              METADATA: asciidoctor-pdf
 
           - container: "opensuse/leap:latest"
             env:
