@@ -20,8 +20,6 @@
  * 5. ENAMETOOLONG if pathname was longer than MAXPATHLEN.
  */
 
-#include <errno.h>
-#include <string.h>
 #include <sys/mount.h>
 #include "tst_test.h"
 
@@ -47,21 +45,7 @@ static void verify_umount(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	TEST(umount(tc->mntpoint));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "umount() succeeds unexpectedly");
-		return;
-	}
-
-	if (tc->exp_errno != TST_ERR) {
-		tst_res(TFAIL | TTERRNO, "umount() should fail with %s",
-			tst_strerrno(tc->exp_errno));
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "umount() fails as expected: %s",
-		tc->err_desc);
+	TST_EXP_FAIL(umount(tc->mntpoint), tc->exp_errno);
 }
 
 static void setup(void)
