@@ -13,6 +13,14 @@
 
 #include "tst_test.h"
 
+static int get_init_pgid(void)
+{
+	int pgid;
+
+	SAFE_FILE_SCANF("/proc/1/stat", "%*d %*s %*c %*d %d", &pgid);
+	return pgid;
+}
+
 static void run(void)
 {
 	pid_t pid_1, child_pid, pgid;
@@ -37,7 +45,7 @@ static void run(void)
 		TST_EXP_EQ_LI(TST_RET, pgid);
 
 		TST_EXP_PID(getpgid(1));
-		TST_EXP_EQ_LI(TST_RET, 1);
+		TST_EXP_EQ_LI(TST_RET, get_init_pgid());
 	}
 
 	tst_reap_children();
