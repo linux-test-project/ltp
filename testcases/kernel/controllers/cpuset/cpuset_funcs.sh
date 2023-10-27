@@ -165,8 +165,7 @@ setup()
 	mount -t cgroup -o cpuset cpuset "$CPUSET" 2> /dev/null
 	if [ $? -ne 0 ]; then
 		cleanup
-		tst_brkm TFAIL "Could not mount cgroup filesystem with"\
-					" cpuset on $CPUSET..Exiting test"
+		tst_brkm TCONF "Could not mount cgroup filesystem with cpuset on $CPUSET"
 	fi
 
 	CHILDREN_VALUE="`cat $CLONE_CHILDREN`"
