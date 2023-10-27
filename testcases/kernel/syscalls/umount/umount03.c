@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2002-2023
  * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
+ */
+
+/*\
+ * [Description]
  *
- * Verify that umount(2) returns -1 and sets errno to  EPERM if the user
+ * Verify that umount(2) returns -1 and sets errno to EPERM if the user
  * is not the super-user.
  */
 
