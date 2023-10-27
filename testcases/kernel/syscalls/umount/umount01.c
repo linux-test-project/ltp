@@ -2,9 +2,13 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
+ * Copyright (c) Linux Test Project, 2002-2023
+ */
+
+/*\
+ * [Description]
  *
- * Phase I test for the umount(2) system call.
- * It is intended to provide a limited exposure of the system call.
+ * Check the basic functionality of the umount(2) system call.
  */
 
 #include <sys/mount.h>
