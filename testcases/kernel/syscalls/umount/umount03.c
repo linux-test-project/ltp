@@ -7,11 +7,8 @@
  * is not the super-user.
  */
 
-#include <errno.h>
 #include <pwd.h>
 #include <sys/mount.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include "tst_test.h"
 
 #define MNTPOINT	"mntpoint"
@@ -20,19 +17,7 @@ static int mount_flag;
 
 static void verify_umount(void)
 {
-	TEST(umount(MNTPOINT));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "umount() succeeds unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != EPERM) {
-		tst_res(TFAIL | TTERRNO, "umount() should fail with EPERM");
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "umount() fails as expected");
+	TST_EXP_FAIL(umount(MNTPOINT), EPERM);
 }
 
 static void setup(void)
