@@ -1,7 +1,6 @@
 syscalls
 fs
 fs_perms_simple
-fsx
 dio
 io
 mm
