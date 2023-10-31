@@ -2,14 +2,20 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
+ */
+/*\
+ * [Description]
  *
- * Verify that
- *  1) sched_rr_get_interval() fails with errno set to EINVAL for an
- *     invalid pid
- *  2) sched_rr_get_interval() fails with errno set to ESRCH if the
- *     process with specified pid does not exists
- *  3) sched_rr_get_interval() fails with errno set to EFAULT if the
- *     address specified as &tp is invalid
+ * Verify that:
+ *
+ * - sched_rr_get_interval() fails with errno set to EINVAL for an
+ *   invalid pid
+ *
+ * - sched_rr_get_interval() fails with errno set to ESRCH if the
+ *   process with specified pid does not exists
+ *
+ * - sched_rr_get_interval() fails with errno set to EFAULT if the
+ *   address specified as &tp is invalid
  */
 
 #include "time64_variants.h"

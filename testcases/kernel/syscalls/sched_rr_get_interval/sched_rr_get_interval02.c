@@ -2,6 +2,9 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
+ */
+/*\
+ * [Description]
  *
  * Verify that for a process with scheduling policy SCHED_FIFO,
  * sched_rr_get_interval() writes zero into timespec structure
