@@ -26,10 +26,13 @@
 #undef FU_ia64_fpreg
 #undef FU_pt_all_user_regs
 
+#define HAVE_STRUCT_PTRACE_REGS 1
 #if defined(HAVE_STRUCT_PT_REGS)
 typedef struct pt_regs ptrace_regs;
 #elif defined(HAVE_STRUCT_USER_REGS_STRUCT)
 typedef struct user_regs_struct ptrace_regs;
+#else
+#undef HAVE_STRUCT_PTRACE_REGS
 #endif
 
 #endif
