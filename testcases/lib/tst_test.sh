@@ -906,6 +906,8 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 
 	TST_ARGS="$@"
 
+	tst_res TINFO "Running: $(basename $0) $TST_ARGS"
+
 	OPTIND=1
 
 	while getopts ":hi:$TST_OPTS" _tst_name $TST_ARGS; do
