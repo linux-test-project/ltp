@@ -49,7 +49,7 @@ int TST_TOTAL = 2;
 
 void compare_registers(unsigned char poison)
 {
-#ifdef HAVE_STRUCT_PTRACE_REGS
+#if defined(HAVE_STRUCT_PTRACE_REGS) && defined(PTRACE_GETREGS)
 	ptrace_regs _pt_regs;
 	size_t i;
 	long ret;
