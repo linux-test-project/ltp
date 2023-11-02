@@ -69,6 +69,12 @@ jobs:
               METADATA: asciidoc-pdf
               TREE: out
 
+          - container: "quay.io/centos/centos:stream9"
+            env:
+              CC: gcc
+              METADATA: asciidoc-pdf
+              TREE: out
+
           - container: "debian:testing"
             env:
               CC: gcc
