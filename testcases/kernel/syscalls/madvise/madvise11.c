@@ -307,9 +307,9 @@ static int open_unpoison_pfn(void)
 		SAFE_CMD(cmd_modprobe, NULL, NULL);
 
 	/* debugfs mount point */
-	mntf = setmntent("/etc/mtab", "r");
+	mntf = setmntent("/proc/mounts", "r");
 	if (!mntf) {
-		tst_brk(TBROK | TERRNO, "Can't open /etc/mtab");
+		tst_brk(TBROK | TERRNO, "Can't open /proc/mounts");
 		return -1;
 	}
 	while ((mnt = getmntent(mntf)) != NULL) {
