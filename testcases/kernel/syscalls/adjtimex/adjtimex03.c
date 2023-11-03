@@ -23,7 +23,7 @@
  * To test that, Pass struct timex buffer filled with zero with
  * some INVALID mode to the system call adjtimex. Passing an invalid
  * parameters will not call do_adjtimex() and before that, it shall throw
- * an error(On error test shall not break). Therefore, none of the parameters
+ * an error (on error test shall not break). Therefore, none of the parameters
  * will get initialized.
  *
  * On reading the last attribute tai of the struct, if the attribute is non-
