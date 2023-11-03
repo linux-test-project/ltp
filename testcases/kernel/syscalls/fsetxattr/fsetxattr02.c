@@ -1,27 +1,33 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Linaro Limited. All rights reserved.
+ * Copyright (c) Linux Test Project, 2018-2023
  * Author: Rafael David Tinoco <rafael.tinoco@linaro.org>
+ */
+
+/*\
+ * [Description]
+ *
+ * Verify basic fsetxattr(2) syscall functionality:
+ *
+ * - Set attribute to a regular file, fsetxattr(2) should succeed.
+ * - Set attribute to a directory, fsetxattr(2) should succeed.
+ * - Set attribute to a symlink which points to the regular file,
+ *   fsetxattr(2) should return -1 and set errno to EEXIST.
+ * - Set attribute to a FIFO, fsetxattr(2) should return -1 and set
+ *   errno to EPERM.
+ * - Set attribute to a char special file, fsetxattr(2) should
+ *   return -1 and set errno to EPERM.
+ * - Set attribute to a block special file, fsetxattr(2) should
+ *   return -1 and set errno to EPERM.
+ * - Set attribute to a UNIX domain socket, fsetxattr(2) should
+ *   return -1 and set errno to EPERM.
  */
 
 /*
  * In the user.* namespace, only regular files and directories can
  * have extended attributes. Otherwise fsetxattr(2) will return -1
  * and set errno to EPERM.
- *
- * There are 7 test cases:
- * 1. Set attribute to a regular file, fsetxattr(2) should succeed
- * 2. Set attribute to a directory, fsetxattr(2) should succeed
- * 3. Set attribute to a symlink which points to the regular file,
- *    fsetxattr(2) should return -1 and set errno to EEXIST
- * 4. Set attribute to a FIFO, fsetxattr(2) should return -1 and set
- *    errno to EPERM
- * 5. Set attribute to a char special file, fsetxattr(2) should
- *    return -1 and set errno to EPERM
- * 6. Set attribute to a block special file, fsetxattr(2) should
- *    return -1 and set errno to EPERM
- * 7. Set attribute to a UNIX domain socket, fsetxattr(2) should
- *    return -1 and set errno to EPERM
  */
 
 #include "config.h"
