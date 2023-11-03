@@ -18,14 +18,16 @@ enum tst_cmd_flags {
 
 /*
  * vfork() + execvp() specified program.
- * @argv: a list of two (at least program name + NULL) or more pointers that
+ *
+ * @param argv A list of two (at least program name + NULL) or more pointers that
  * represent the argument list to the new program. The array of pointers
  * must be terminated by a NULL pointer.
- * @stdout_fd: file descriptor where to redirect stdout. Set -1 if
+ * @param stdout_fd File descriptor where to redirect stdout. Set -1 if
  * redirection is not needed.
- * @stderr_fd: file descriptor where to redirect stderr. Set -1 if
+ * @param stderr_fd File descriptor where to redirect stderr. Set -1 if
  * redirection is not needed.
- * @flags: enum tst_cmd_flags
+ * @param flags enum tst_cmd_flags.
+ * @return The exit status of the program.
  */
 int tst_cmd_fds_(void (cleanup_fn)(void),
 			const char *const argv[],
@@ -33,12 +35,15 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 			int stderr_fd,
 			enum tst_cmd_flags flags);
 
-/* Executes tst_cmd_fds() and redirects its output to a file
- * @stdout_path: path where to redirect stdout. Set NULL if redirection is
+/*
+ * Executes tst_cmd_fds() and redirects its output to a file.
+ *
+ * @param stdout_path Path where to redirect stdout. Set NULL if redirection is
  * not needed.
- * @stderr_path: path where to redirect stderr. Set NULL if redirection is
+ * @param stderr_path Path where to redirect stderr. Set NULL if redirection is
  * not needed.
- * @flags: enum tst_cmd_flags
+ * @param flags enum tst_cmd_flags.
+ * @return The exit status of the program.
  */
 int tst_cmd_(void (cleanup_fn)(void),
 		const char *const argv[],
@@ -87,7 +92,7 @@ static inline int tst_cmd(void (cleanup_fn)(void),
 #endif
 
 /* Wrapper function for system(3), ignorcing SIGCHLD signal.
- * @command: the command to be run.
+ * @param command The command to be run.
  */
 int tst_system(const char *command);
 
