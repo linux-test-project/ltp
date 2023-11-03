@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2019 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2019-2023
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Very simple uevent netlink socket test.
  *
  * We fork a child that listens for a kernel events while parents creates and
