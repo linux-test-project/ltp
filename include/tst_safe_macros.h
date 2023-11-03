@@ -653,9 +653,20 @@ int safe_unshare(const char *file, const int lineno, int flags);
 int safe_setns(const char *file, const int lineno, int fd, int nstype);
 #define SAFE_SETNS(fd, nstype) safe_setns(__FILE__, __LINE__, (fd), (nstype))
 
+/*
+ * SAFE_CMD() is a wrapper for tst_cmd(). It runs a command passed via argv[]
+ * and handles non-zero exit (exits with 'TBROK') and 'ENOENT' (the program not
+ * in '$PATH', exits with 'TCONF').
+ *
+ * @param argv[] a 'NULL' terminated array of strings starting with the program
+ * name which is followed by optional arguments.
+ * @param stdout_path: path where to redirect stdout. Set NULL if redirection is
+ * not needed.
+ * @param stderr_path: path where to redirect stderr. Set NULL if redirection is
+ * not needed.
+ */
 void safe_cmd(const char *file, const int lineno, const char *const argv[],
 	const char *stdout_path, const char *stderr_path);
-
 #define SAFE_CMD(argv, stdout_path, stderr_path) \
 	safe_cmd(__FILE__, __LINE__, (argv), (stdout_path), (stderr_path))
 /*
