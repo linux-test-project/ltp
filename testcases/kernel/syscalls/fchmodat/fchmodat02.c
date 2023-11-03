@@ -8,6 +8,8 @@
 /*\
  * [Description]
  *
+ * Tests basic error handling of the fchmodat() syscall.
+ *
  * - fchmodat() fails with ENOTDIR if dir_fd is file descriptor
  *   to the file and pathname is relative path of the file.
  * - fchmodat() fails with EBADF if dir_fd is invalid.
