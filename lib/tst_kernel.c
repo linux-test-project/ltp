@@ -193,7 +193,7 @@ int tst_check_builtin_driver(const char *driver)
 int tst_check_driver(const char *driver)
 {
 	if (!tst_search_driver(driver, "modules.dep") ||
-		!tst_search_driver(driver, "modules.builtin"))
+		!tst_check_builtin_driver(driver))
 		return 0;
 
 	return -1;
