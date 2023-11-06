@@ -63,12 +63,6 @@ jobs:
             env:
               CC: gcc
 
-          - container: "ubuntu:xenial"
-            env:
-              CC: gcc
-              METADATA: asciidoc-pdf
-              TREE: out
-
           - container: "quay.io/centos/centos:stream9"
             env:
               CC: gcc
