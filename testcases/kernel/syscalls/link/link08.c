@@ -1,23 +1,26 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
+ * Copyright (c) Linux Test Project, 2014-2023
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
  */
-/*
- * Test Description:
- *  Verify that,
- *   1. link() fails with -1 return value and sets errno to EPERM
- *      if oldpath is a directory.
- *   2. link() fails with -1 return value and sets errno to EXDEV
- *      if oldpath and newpath are not on the same mounted file system( Linux
- *      permits a file system to be mounted at multiple points, but link()
- *      does not work across different mount points, even if the same
- *      file system is mounted on both. ).
- *   3. link() fails with -1 return value and sets errno to EROFS
- *      if the file is on a read-only file system.
- *   4. link() fails with -1 return value and sets errno to ELOOP
- *      if too many symbolic links were encountered in resolving path.
+
+/*\
+ * [Description]
+ *
+ * Verify that:
+ *
+ * - link() fails with EPERM if the old path is a directory.
+ * - link() fails with EXDEV if the old path and the new path
+ *   are not on the same mounted file system(Linux permits
+ *   a file system to be mounted at multiple points, but link()
+ *   does not work across different mount points, even if the same
+ *   file system is mounted on both).
+ * - link() fails with EROFS if the file is on a read-only file system.
+ * - link() fails with ELOOP if too many symbolic links were encountered
+ *   in resolving path.
  */
+
 #include <errno.h>
 #include "tst_test.h"
 
