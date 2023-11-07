@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *  AUTHOR		: Richard Logan
- *  CO-PILOT		: William Roske
+ * Authors: Richard Logan, William Roske
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2001-2023
  */
 
-/*
- * Test if link(2) fails with EMLINK.
+/*\
+ * [Description]
+ *
+ * Tests that link(2) succeeds with creating 1000 links.
  */
 
 #include <stdio.h>
