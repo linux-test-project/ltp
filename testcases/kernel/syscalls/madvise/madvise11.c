@@ -426,6 +426,10 @@ static struct tst_test test = {
 		"rmmod",
 		NULL
 	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_MEMORY_FAILURE=y",
+		NULL
+	},
 	.max_runtime = 30,
 	.needs_checkpoints = 1,
 	.setup = setup,
