@@ -41,10 +41,8 @@ static void verify_link(void)
 		    (fbuf.st_nlink != lbuf.st_nlink)) {
 
 			tst_res(TFAIL,
-				 "link(%s, %s[1-%d]) ret %ld for %d "
-			         "files, stat values do not match %d %d",
-				 fname, fname, nlinks,
-				 TST_RET, nlinks,
+				 "link(%s, %s[1-%d]) ret %ld for %d files, stat values do not match %d %d",
+				 fname, fname, nlinks, TST_RET, nlinks,
 				 (int)fbuf.st_nlink, (int)lbuf.st_nlink);
 			break;
 		}
@@ -52,10 +50,8 @@ static void verify_link(void)
 
 	if (cnt >= nlinks) {
 		tst_res(TPASS,
-			 "link(%s, %s[1-%d]) ret %ld for %d files, "
-		         "stat linkcounts match %d",
-			 fname, fname, nlinks, TST_RET,
-			 nlinks, (int)fbuf.st_nlink);
+			 "link(%s, %s[1-%d]) ret %ld for %d files, stat linkcounts match %d",
+			 fname, fname, nlinks, TST_RET, nlinks, (int)fbuf.st_nlink);
 	}
 
 	for (cnt = 1; cnt < nlinks; cnt++) {
@@ -71,7 +67,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
-        .test_all = verify_link,
-        .setup = setup,
-        .needs_tmpdir = 1,
+	.test_all = verify_link,
+	.setup = setup,
+	.needs_tmpdir = 1,
 };
