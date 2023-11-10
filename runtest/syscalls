@@ -695,7 +695,6 @@ lgetxattr02 lgetxattr02
 
 link01 symlink01 -T link01
 link02 link02
-link03 link03
 link04 link04
 link05 link05
 link08 link08
