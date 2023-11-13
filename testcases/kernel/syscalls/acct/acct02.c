@@ -55,10 +55,7 @@ static union acct_union {
 
 static int acct_version_is_3(void)
 {
-	struct tst_kconfig_var kconfig = {
-		.id = ACCT_V3,
-		.id_len = sizeof(ACCT_V3)-1,
-	};
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT(ACCT_V3);
 
 	tst_kconfig_read(&kconfig, 1);
 
