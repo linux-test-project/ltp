@@ -29,6 +29,7 @@
 
 #include "tst_safe_pthread.h"
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "lapi/keyctl.h"
 
 #define LOOPS	20000
@@ -36,6 +37,7 @@
 #define PATH_KEY_COUNT_QUOTA	"/proc/sys/kernel/keys/root_maxkeys"
 
 static int orig_maxkeys;
+static int realtime_kernel;
 
 static void *do_read(void *arg)
 {
@@ -86,6 +88,15 @@ static void do_test(void)
 			tst_res(TINFO, "Runtime exhausted, exiting after %d loops", i);
 			break;
 		}
+
+		/*
+		 * Realtime kernel has deferred post-join thread cleanup which
+		 * may result in exhaustion of cgroup thread limit. Add delay
+		 * to limit the maximum number of stale threads to 4000
+		 * even with CONFIG_HZ=100.
+		 */
+		if (realtime_kernel)
+			usleep(100);
 	}
 
 	/*
@@ -126,8 +137,19 @@ static void do_test(void)
 
 static void setup(void)
 {
+	unsigned int i;
+	struct tst_kconfig_var rt_kconfigs[] = {
+		TST_KCONFIG_INIT("CONFIG_PREEMPT_RT"),
+		TST_KCONFIG_INIT("CONFIG_PREEMPT_RT_FULL")
+	};
+
 	SAFE_FILE_SCANF(PATH_KEY_COUNT_QUOTA, "%d", &orig_maxkeys);
 	SAFE_FILE_PRINTF(PATH_KEY_COUNT_QUOTA, "%d", orig_maxkeys + LOOPS + 1);
+
+	tst_kconfig_read(rt_kconfigs, ARRAY_SIZE(rt_kconfigs));
+
+	for (i = 0; i < ARRAY_SIZE(rt_kconfigs); i++)
+		realtime_kernel |= rt_kconfigs[i].choice == 'y';
 }
 
 static void cleanup(void)
