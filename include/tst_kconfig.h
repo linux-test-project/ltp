@@ -6,6 +6,14 @@
 #ifndef TST_KCONFIG_H__
 #define TST_KCONFIG_H__
 
+/**
+ * Initialization helper macro for struct tst_kconfig_var. Requires <string.h>
+ */
+#define TST_KCONFIG_INIT(confname) { \
+	.id = confname, \
+	.id_len = strlen(confname) \
+}
+
 struct tst_kconfig_var {
 	char id[64];
 	unsigned int id_len;
