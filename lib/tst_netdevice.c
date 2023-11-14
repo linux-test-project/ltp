@@ -15,23 +15,24 @@
 #include "tst_rtnetlink.h"
 #include "tst_netdevice.h"
 
-static struct tst_rtnl_context *create_request(const char *file,
+static struct tst_netlink_context *create_request(const char *file,
 	const int lineno, unsigned int type, unsigned int flags,
 	const void *payload, size_t psize)
 {
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	struct nlmsghdr header = {
 		.nlmsg_type = type,
 		.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | flags,
 	};
 
-	ctx = tst_rtnl_create_context(file, lineno);
+	ctx = tst_netlink_create_context(file, lineno, NETLINK_ROUTE);
 
 	if (!ctx)
 		return NULL;
 
-	if (!tst_rtnl_add_message(file, lineno, ctx, &header, payload, psize)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+	if (!tst_netlink_add_message(file, lineno, ctx, &header, payload,
+		psize)) {
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return NULL;
 	}
 
@@ -103,7 +104,7 @@ int tst_create_veth_pair(const char *file, const int lineno, int strict,
 {
 	int ret;
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	struct tst_rtnl_attr_list peerinfo[] = {
 		{IFLA_IFNAME, ifname2, strlen(ifname2) + 1, NULL},
 		{0, NULL, -1, NULL}
@@ -141,17 +142,17 @@ int tst_create_veth_pair(const char *file, const int lineno, int strict,
 		return 0;
 
 	if (tst_rtnl_add_attr_list(file, lineno, ctx, attrs) != 2) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to create veth interfaces %s+%s: %s", ifname1,
-			ifname2, tst_strerrno(tst_rtnl_errno));
+			ifname2, tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;
@@ -162,7 +163,7 @@ int tst_netdev_add_device(const char *file, const int lineno, int strict,
 {
 	int ret;
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	struct tst_rtnl_attr_list attrs[] = {
 		{IFLA_IFNAME, ifname, strlen(ifname) + 1, NULL},
 		{IFLA_LINKINFO, NULL, 0, (const struct tst_rtnl_attr_list[]){
@@ -185,17 +186,17 @@ int tst_netdev_add_device(const char *file, const int lineno, int strict,
 		return 0;
 
 	if (tst_rtnl_add_attr_list(file, lineno, ctx, attrs) != 2) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to create %s device %s: %s", devtype, ifname,
-			tst_strerrno(tst_rtnl_errno));
+			tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;
@@ -205,7 +206,7 @@ int tst_netdev_remove_device(const char *file, const int lineno, int strict,
 	const char *ifname)
 {
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	int ret;
 
 	if (strlen(ifname) >= IFNAMSIZ) {
@@ -220,17 +221,17 @@ int tst_netdev_remove_device(const char *file, const int lineno, int strict,
 		return 0;
 
 	if (!tst_rtnl_add_attr_string(file, lineno, ctx, IFLA_IFNAME, ifname)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to remove netdevice %s: %s", ifname,
-			tst_strerrno(tst_rtnl_errno));
+			tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;
@@ -241,7 +242,7 @@ static int modify_address(const char *file, const int lineno, int strict,
 	unsigned int family, const void *address, unsigned int prefix,
 	size_t addrlen, uint32_t addr_flags)
 {
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	int index, ret;
 	struct ifaddrmsg info = {
 		.ifa_family = family,
@@ -264,23 +265,23 @@ static int modify_address(const char *file, const int lineno, int strict,
 
 	if (!tst_rtnl_add_attr(file, lineno, ctx, IFA_FLAGS, &addr_flags,
 		sizeof(uint32_t))) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
 	if (!tst_rtnl_add_attr(file, lineno, ctx, IFA_LOCAL, address,
 		addrlen)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to modify %s network address: %s", ifname,
-			tst_strerrno(tst_rtnl_errno));
+			tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;
@@ -322,7 +323,7 @@ static int change_ns(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned short attr, uint32_t value)
 {
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	int ret;
 
 	if (strlen(ifname) >= IFNAMSIZ) {
@@ -337,23 +338,23 @@ static int change_ns(const char *file, const int lineno, int strict,
 		return 0;
 
 	if (!tst_rtnl_add_attr_string(file, lineno, ctx, IFLA_IFNAME, ifname)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
 	if (!tst_rtnl_add_attr(file, lineno, ctx, attr, &value,
 		sizeof(uint32_t))) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to move %s to another namespace: %s", ifname,
-			tst_strerrno(tst_rtnl_errno));
+			tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;
@@ -377,7 +378,7 @@ static int modify_route(const char *file, const int lineno, int strict,
 	size_t srclen, const void *dstaddr, unsigned int dstprefix,
 	size_t dstlen, const void *gateway, size_t gatewaylen)
 {
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	int ret;
 	int32_t index;
 	struct rtmsg info = {
@@ -420,35 +421,35 @@ static int modify_route(const char *file, const int lineno, int strict,
 
 	if (srcaddr && !tst_rtnl_add_attr(file, lineno, ctx, RTA_SRC, srcaddr,
 		srclen)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
 	if (dstaddr && !tst_rtnl_add_attr(file, lineno, ctx, RTA_DST, dstaddr,
 		dstlen)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
 	if (gateway && !tst_rtnl_add_attr(file, lineno, ctx, RTA_GATEWAY,
 		gateway, gatewaylen)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
 	if (ifname && !tst_rtnl_add_attr(file, lineno, ctx, RTA_OIF, &index,
 		sizeof(index))) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to modify network route: %s",
-			tst_strerrno(tst_rtnl_errno));
+			tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;
@@ -528,7 +529,7 @@ static int modify_qdisc(const char *file, const int lineno, int strict,
 	unsigned int handle, unsigned int info, const char *qd_kind,
 	const struct tst_rtnl_attr_list *config)
 {
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	int ret;
 	struct tcmsg msg = {
 		.tcm_family = family,
@@ -560,22 +561,22 @@ static int modify_qdisc(const char *file, const int lineno, int strict,
 		return 0;
 
 	if (!tst_rtnl_add_attr_string(file, lineno, ctx, TCA_KIND, qd_kind)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
 	if (config && !tst_rtnl_add_attr_list(file, lineno, ctx, config)) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return 0;
 	}
 
-	ret = tst_rtnl_send_validate(file, lineno, ctx);
-	tst_rtnl_destroy_context(file, lineno, ctx);
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
 
 	if (strict && !ret) {
 		tst_brk_(file, lineno, TBROK,
 			"Failed to modify %s: %s", object,
-			tst_strerrno(tst_rtnl_errno));
+			tst_strerrno(tst_netlink_errno));
 	}
 
 	return ret;

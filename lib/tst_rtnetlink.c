@@ -15,7 +15,7 @@
 #include "tst_test.h"
 #include "tst_rtnetlink.h"
 
-struct tst_rtnl_context {
+struct tst_netlink_context {
 	int socket;
 	pid_t pid;
 	uint32_t seq;
@@ -24,10 +24,10 @@ struct tst_rtnl_context {
 	struct nlmsghdr *curmsg;
 };
 
-int tst_rtnl_errno;
+int tst_netlink_errno;
 
-static int tst_rtnl_grow_buffer(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx, size_t size)
+static int netlink_grow_buffer(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, size_t size)
 {
 	size_t needed, offset, curlen = NLMSG_ALIGN(ctx->datalen);
 	char *buf;
@@ -52,21 +52,22 @@ static int tst_rtnl_grow_buffer(const char *file, const int lineno,
 	return 1;
 }
 
-void tst_rtnl_destroy_context(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx)
+void tst_netlink_destroy_context(const char *file, const int lineno,
+	struct tst_netlink_context *ctx)
 {
 	safe_close(file, lineno, NULL, ctx->socket);
 	free(ctx->buffer);
 	free(ctx);
 }
 
-struct tst_rtnl_context *tst_rtnl_create_context(const char *file,
-	const int lineno)
+struct tst_netlink_context *tst_netlink_create_context(const char *file,
+	const int lineno, int protocol)
 {
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	struct sockaddr_nl addr = { .nl_family = AF_NETLINK };
 
-	ctx = safe_malloc(file, lineno, NULL, sizeof(struct tst_rtnl_context));
+	ctx = safe_malloc(file, lineno, NULL,
+		sizeof(struct tst_netlink_context));
 
 	if (!ctx)
 		return NULL;
@@ -78,7 +79,7 @@ struct tst_rtnl_context *tst_rtnl_create_context(const char *file,
 	ctx->datalen = 0;
 	ctx->curmsg = NULL;
 	ctx->socket = safe_socket(file, lineno, NULL, AF_NETLINK,
-		SOCK_DGRAM | SOCK_CLOEXEC, NETLINK_ROUTE);
+		SOCK_DGRAM | SOCK_CLOEXEC, protocol);
 
 	if (ctx->socket < 0) {
 		free(ctx);
@@ -87,14 +88,14 @@ struct tst_rtnl_context *tst_rtnl_create_context(const char *file,
 
 	if (safe_bind(file, lineno, NULL, ctx->socket, (struct sockaddr *)&addr,
 		sizeof(addr))) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return NULL;
 	}
 
 	ctx->buffer = safe_malloc(file, lineno, NULL, ctx->bufsize);
 
 	if (!ctx->buffer) {
-		tst_rtnl_destroy_context(file, lineno, ctx);
+		tst_netlink_destroy_context(file, lineno, ctx);
 		return NULL;
 	}
 
@@ -103,7 +104,7 @@ struct tst_rtnl_context *tst_rtnl_create_context(const char *file,
 	return ctx;
 }
 
-void tst_rtnl_free_message(struct tst_rtnl_message *msg)
+void tst_netlink_free_message(struct tst_netlink_message *msg)
 {
 	if (!msg)
 		return;
@@ -114,8 +115,8 @@ void tst_rtnl_free_message(struct tst_rtnl_message *msg)
 	free(msg);
 }
 
-int tst_rtnl_send(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx)
+int tst_netlink_send(const char *file, const int lineno,
+	struct tst_netlink_context *ctx)
 {
 	int ret;
 	struct sockaddr_nl addr = { .nl_family = AF_NETLINK };
@@ -136,7 +137,7 @@ int tst_rtnl_send(const char *file, const int lineno,
 	if (ctx->curmsg->nlmsg_flags & NLM_F_MULTI) {
 		struct nlmsghdr eom = { .nlmsg_type = NLMSG_DONE };
 
-		if (!tst_rtnl_add_message(file, lineno, ctx, &eom, NULL, 0))
+		if (!tst_netlink_add_message(file, lineno, ctx, &eom, NULL, 0))
 			return 0;
 
 		/* NLMSG_DONE message must not have NLM_F_MULTI flag */
@@ -153,7 +154,7 @@ int tst_rtnl_send(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_rtnl_wait(struct tst_rtnl_context *ctx)
+int tst_netlink_wait(struct tst_netlink_context *ctx)
 {
 	struct pollfd fdinfo = {
 		.fd = ctx->socket,
@@ -163,11 +164,11 @@ int tst_rtnl_wait(struct tst_rtnl_context *ctx)
 	return poll(&fdinfo, 1, 1000);
 }
 
-struct tst_rtnl_message *tst_rtnl_recv(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx)
+struct tst_netlink_message *tst_netlink_recv(const char *file,
+	const int lineno, struct tst_netlink_context *ctx)
 {
 	char tmp, *tmpbuf, *buffer = NULL;
-	struct tst_rtnl_message *ret;
+	struct tst_netlink_message *ret;
 	struct nlmsghdr *ptr;
 	size_t retsize, bufsize = 0;
 	ssize_t size;
@@ -215,7 +216,7 @@ struct tst_rtnl_message *tst_rtnl_recv(const char *file, const int lineno,
 	for (; size_left > 0 && NLMSG_OK(ptr, size_left); msgcount++)
 		ptr = NLMSG_NEXT(ptr, size_left);
 
-	retsize = (msgcount + 1) * sizeof(struct tst_rtnl_message);
+	retsize = (msgcount + 1) * sizeof(struct tst_netlink_message);
 	ret = safe_malloc(file, lineno, NULL, retsize);
 
 	if (!ret) {
@@ -239,14 +240,14 @@ struct tst_rtnl_message *tst_rtnl_recv(const char *file, const int lineno,
 	return ret;
 }
 
-int tst_rtnl_add_message(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx, const struct nlmsghdr *header,
+int tst_netlink_add_message(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, const struct nlmsghdr *header,
 	const void *payload, size_t payload_size)
 {
 	size_t size;
 	unsigned int extra_flags = 0;
 
-	if (!tst_rtnl_grow_buffer(file, lineno, ctx, NLMSG_SPACE(payload_size)))
+	if (!netlink_grow_buffer(file, lineno, ctx, NLMSG_SPACE(payload_size)))
 		return 0;
 
 	if (!ctx->curmsg) {
@@ -280,7 +281,7 @@ int tst_rtnl_add_message(const char *file, const int lineno,
 }
 
 int tst_rtnl_add_attr(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx, unsigned short type,
+	struct tst_netlink_context *ctx, unsigned short type,
 	const void *data, unsigned short len)
 {
 	size_t size;
@@ -292,7 +293,7 @@ int tst_rtnl_add_attr(const char *file, const int lineno,
 		return 0;
 	}
 
-	if (!tst_rtnl_grow_buffer(file, lineno, ctx, RTA_SPACE(len)))
+	if (!netlink_grow_buffer(file, lineno, ctx, RTA_SPACE(len)))
 		return 0;
 
 	size = NLMSG_ALIGN(ctx->curmsg->nlmsg_len);
@@ -307,7 +308,7 @@ int tst_rtnl_add_attr(const char *file, const int lineno,
 }
 
 int tst_rtnl_add_attr_string(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx, unsigned short type,
+	struct tst_netlink_context *ctx, unsigned short type,
 	const char *data)
 {
 	return tst_rtnl_add_attr(file, lineno, ctx, type, data,
@@ -315,7 +316,7 @@ int tst_rtnl_add_attr_string(const char *file, const int lineno,
 }
 
 int tst_rtnl_add_attr_list(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx,
+	struct tst_netlink_context *ctx,
 	const struct tst_rtnl_attr_list *list)
 {
 	int i, ret;
@@ -359,8 +360,8 @@ int tst_rtnl_add_attr_list(const char *file, const int lineno,
 	return i;
 }
 
-int tst_rtnl_check_acks(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx, struct tst_rtnl_message *res)
+int tst_netlink_check_acks(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, struct tst_netlink_message *res)
 {
 	struct nlmsghdr *msg = (struct nlmsghdr *)ctx->buffer;
 	int size_left = ctx->datalen;
@@ -382,7 +383,7 @@ int tst_rtnl_check_acks(const char *file, const int lineno,
 		}
 
 		if (res->err->error) {
-			tst_rtnl_errno = -res->err->error;
+			tst_netlink_errno = -res->err->error;
 			return 0;
 		}
 	}
@@ -390,25 +391,25 @@ int tst_rtnl_check_acks(const char *file, const int lineno,
 	return 1;
 }
 
-int tst_rtnl_send_validate(const char *file, const int lineno,
-	struct tst_rtnl_context *ctx)
+int tst_netlink_send_validate(const char *file, const int lineno,
+	struct tst_netlink_context *ctx)
 {
-	struct tst_rtnl_message *response;
+	struct tst_netlink_message *response;
 	int ret;
 
-	tst_rtnl_errno = 0;
+	tst_netlink_errno = 0;
 
-	if (tst_rtnl_send(file, lineno, ctx) <= 0)
+	if (tst_netlink_send(file, lineno, ctx) <= 0)
 		return 0;
 
-	tst_rtnl_wait(ctx);
-	response = tst_rtnl_recv(file, lineno, ctx);
+	tst_netlink_wait(ctx);
+	response = tst_netlink_recv(file, lineno, ctx);
 
 	if (!response)
 		return 0;
 
-	ret = tst_rtnl_check_acks(file, lineno, ctx, response);
-	tst_rtnl_free_message(response);
+	ret = tst_netlink_check_acks(file, lineno, ctx, response);
+	tst_netlink_free_message(response);
 
 	return ret;
 }

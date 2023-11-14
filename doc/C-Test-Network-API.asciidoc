@@ -143,7 +143,7 @@ static void setup(void)
 When opening a localhost socket isn't enough and the test needs special device
 or routing configuration, the netdevice library can create the required network
 setup without calling external programs. Internally, the netdevice functions
-use a rtnetlink socket to communicate with the kernel.
+use a netlink socket to communicate with the kernel.
 
 All of these functions will call +tst_brk()+ on failure, unless stated
 otherwise. Error values described below are returned only during test cleanup
@@ -274,12 +274,12 @@ static void setup(void)
 }
 -------------------------------------------------------------------------------
 
-3 rtnetlink API
----------------
+3 Netlink API
+-------------
 
 +#include "tst_rtnetlink.h"+
 
-The rtnetlink library provides helper functions for constructing and sending
+The netlink library provides helper functions for constructing and sending
 arbitrary messages and parsing kernel responses.
 
 All of the functions below will call +tst_brk()+ on failure, unless stated
@@ -291,7 +291,7 @@ stage.
 
 [source,c]
 -------------------------------------------------------------------------------
-struct tst_rtnl_context;
+struct tst_netlink_context;
 
 struct tst_rtnl_attr_list {
 	unsigned short type;
@@ -300,7 +300,7 @@ struct tst_rtnl_attr_list {
 	const struct tst_rtnl_attr_list *sublist;
 };
 
-struct tst_rtnl_message {
+struct tst_netlink_message {
 	struct nlmsghdr *header;
 	struct nlmsgerr *err;
 	void *payload;
@@ -308,10 +308,10 @@ struct tst_rtnl_message {
 };
 -------------------------------------------------------------------------------
 
-+struct tst_rtnl_context+ is an opaque rtnetlink socket with buffer for
++struct tst_netlink_context+ is an opaque netlink socket with buffer for
 constructing and sending arbitrary messages using the functions described
-below. Create a new context using +RTNL_CREATE_CONTEXT()+, then free it using
-+RTNL_DESTROY_CONTEXT()+ when you're done with it.
+below. Create a new context using +NETLINK_CREATE_CONTEXT()+, then free it
+using +NETLINK_DESTROY_CONTEXT()+ when you're done with it.
 
 +struct tst_rtnl_attr_list+ is a helper structure for defining complex
 rtnetlink message attribute payloads, including nested attribute lists. Every
@@ -331,10 +331,10 @@ negative +len+.
   to the +len+ field. If you do not want to add nested attributes, set
   +sublist+ to +NULL+.
 
-+struct tst_rtnl_message+ is a structure holding partially parsed rtnetlink
-messages received from the kernel. +RTNL_RECV()+ returns an array of these
++struct tst_netlink_message+ is a structure holding partially parsed netlink
+messages received from the kernel. +NETLINK_RECV()+ returns an array of these
 structures with the last item having +NULL+ in the +header+ field. Call
-+RTNL_FREE_MESSAGE()+ to free a message list returned by +RTNL_RECV()+.
++NETLINK_FREE_MESSAGE()+ to free a message list returned by +NETLINK_RECV()+.
 
 - +header+ is the netlink header structure of the message. +NULL+ in the header
   field terminates a list of messages.
@@ -349,83 +349,86 @@ structures with the last item having +NULL+ in the +header+ field. Call
 3.2 Sending and receiving messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- +struct tst_rtnl_context *RTNL_CREATE_CONTEXT(void)+ – Creates a new
-  rtnetlink communication context for use with the functions described below.
-  Returns +NULL+ on error.
+- +struct tst_netlink_context *NETLINK_CREATE_CONTEXT(int protocol)+ – Creates
+  a new netlink communication context with given netlink protocol for use
+  with the functions described below. Returns +NULL+ on error.
 
-- +void RTNL_FREE_MESSAGE(struct tst_rtnl_message *msg)+ – Frees an array of
-  messages returned by +RTNL_RECV()+.
+- +void NETLINK_FREE_MESSAGE(struct tst_netlink_message *msg)+ – Frees
+  an array of messages returned by +NETLINK_RECV()+.
 
-- +void RTNL_DESTROY_CONTEXT(struct tst_rtnl_context *ctx)+ – Closes a
-  communication context created by +RTNL_CREATE_CONTEXT()+.
+- +void NETLINK_DESTROY_CONTEXT(struct tst_netlink_context *ctx)+ – Closes a
+  communication context created by +NETLINK_CREATE_CONTEXT()+.
 
-- +int RTNL_SEND(struct tst_rtnl_context *ctx)+ – Sends all messages waiting
-  in +ctx+ buffer to the kernel. If there are multiple messages to send, a new
-  +NLMSG_DONE+ message will be added automatically. Returns the number of
-  bytes sent on success. Return 0 or negative value on error.
+- +int NETLINK_SEND(struct tst_netlink_context *ctx)+ – Sends all messages
+  waiting in +ctx+ buffer to the kernel. If there are multiple messages
+  to send, a new +NLMSG_DONE+ message will be added automatically. Returns
+  the number of bytes sent on success. Return 0 or negative value on error.
 
-- +int RTNL_SEND_VALIDATE(struct tst_rtnl_context *ctx)+ – Sends all messages
-  just like +RTNL_SEND()+, then receives the response from the kernel and
-  validates results of requests sent with the +NLM_F_ACK+ flag. This function
-  calls +tst_brk()+ as usual if communication fails but it will return error
-  status without terminating the test if one of the received messages contains
-  error code. See +RTNL_CHECK_ACKS()+ below for explanation of the return
-  value.
+- +int NETLINK_SEND_VALIDATE(struct tst_netlink_context *ctx)+ – Sends all
+  messages just like +NETLINK_SEND()+, then receives the response from
+  the kernel and validates results of requests sent with the +NLM_F_ACK+ flag.
+  This function calls +tst_brk()+ as usual if communication fails but it will
+  return error status without terminating the test if one of the received
+  messages contains error code. See +NETLINK_CHECK_ACKS()+ below for
+  explanation of the return value.
 
-- +int RTNL_WAIT(struct tst_rtnl_context *ctx)+ – Waits until data becomes
-  available to read from the rtnetlink socket (timeout: 1 second). Returns 1
+- +int NETLINK_WAIT(struct tst_netlink_context *ctx)+ – Waits until data becomes
+  available to read from the netlink socket (timeout: 1 second). Returns 1
   if there is data to read, 0 on timeout or -1 on error.
 
-- +struct tst_rtnl_message *RTNL_RECV(struct tst_rtnl_context *ctx)+ – Receives
-  rtnetlink messages from the kernel. The messages are received in non-blocking
-  mode so calling +RTNL_WAIT()+ first is recommended. Returns an array of
-  partially parsed messages terminated by an item with +NULL+ in the +header+
-  field. On error or when there are no messages to receive, returns +NULL+.
-  Call +RTNL_FREE_MESSAGE()+ to free the returned data.
+- +struct tst_netlink_message *NETLINK_RECV(struct tst_netlink_context *ctx)+ –
+  Receives netlink messages from the kernel. The messages are received
+  in non-blocking mode so calling +NETLINK_WAIT()+ first is recommended.
+  Returns an array of partially parsed messages terminated by an item with
+  +NULL+ in the +header+ field. On error or when there are no messages
+  to receive, returns +NULL+. Call +NETLINK_FREE_MESSAGE()+ to free
+  the returned data.
 
-- +int RTNL_CHECK_ACKS(struct tst_rtnl_context *ctx, struct tst_rtnl_message
-  *response)+ – Validate results of requests sent with the +NLM_F_ACK+ flag.
-  Do not call +RTNL_ADD_MESSAGE()+ between +RTNL_SEND()+ and
-  +RTNL_CHECK_ACKS()+ because it will reset the state of +ctx+ and prevent
-  result validation. Returns 1 if all messages sent with the +NLM_F_ACK+ flag
-  have a corresponding message in +response+ and the error code is 0. If any
-  of the expected response messages is missing, this function will call
-  +tst_brk()+ (or return 0 during test cleanup phase). If any of the response
-  messages has non-zero error code, this function will return 0 and store the
-  first non-zero error code in global variable +tst_rtnl_errno+ (sign-flipped
-  just like regular libc +errno+).
+- +int NETLINK_CHECK_ACKS(struct tst_netlink_context *ctx,
+  struct tst_netlink_message *response)+ – Validate results of requests sent
+  with the +NLM_F_ACK+ flag. Do not call +NETLINK_ADD_MESSAGE()+ between
+  +NETLINK_SEND()+ and +NETLINK_CHECK_ACKS()+ because it will reset the state
+  of +ctx+ and prevent result validation. Returns 1 if all messages sent
+  with the +NLM_F_ACK+ flag have a corresponding message in +response+ and
+  the error code is 0. If any of the expected response messages is missing,
+  this function will call +tst_brk()+ (or return 0 during test cleanup phase).
+  If any of the response messages has non-zero error code, this function will
+  return 0 and store the first non-zero error code in global variable
+  +tst_netlink_errno+ (sign-flipped just like regular libc +errno+).
 
 3.3 Creating messages
 ~~~~~~~~~~~~~~~~~~~~~
 
-- +int RTNL_ADD_MESSAGE(struct tst_rtnl_context *ctx, const struct nlmsghdr
-  *header, const void *payload, size_t payload_size)+ – Adds new rtnetlink
-  message to +ctx+ buffer. You need to provide message +header+ and optional
-  +payload+. +payload_size+ is the size of +payload+ data in bytes. If you
-  don't want to add any payload data, set +payload+ to +NULL+ and
+- +int NETLINK_ADD_MESSAGE(struct tst_netlink_context *ctx, const struct
+  nlmsghdr *header, const void *payload, size_t payload_size)+ – Adds new
+  netlink message to +ctx+ buffer. You need to provide message +header+ and
+  optional +payload+. +payload_size+ is the size of +payload+ data in bytes.
+  If you don't want to add any payload data, set +payload+ to +NULL+ and
   +payload_size+ to 0. This function will automatically fill the +nlmsg_len+,
   +nlmsg_seq+ and +nlmsg_pid+ fields of the new message header. You don't need
   to set those. It'll also automatically add +NLM_F_MULTI+ flag when needed.
   Returns 1 on success, 0 on error. Note that the first call of
-  +RTNL_ADD_MESSAGE()+ after +RTNL_SEND()+ will reset the state of +ctx+
-  and +RTNL_CHECK_ACKS()+ will not work correctly until the next +RTNL_SEND()+.
+  +NETLINK_ADD_MESSAGE()+ after +NETLINK_SEND()+ will reset the state of +ctx+
+  and +NETLINK_CHECK_ACKS()+ will not work correctly until the next
+  +NETLINK_SEND()+.
 
-- +int RTNL_ADD_ATTR(struct tst_rtnl_context *ctx, unsigned short type, const
-  void *data, unsigned short len)+ – Adds new attribute to the last message
-  in +ctx+ buffer. See +RTNL_ADD_MESSAGE()+. You need to provide attribute
-  +type+ which will be stored in +struct rtattr.rta_type+, optional payload
-  +data+ and payload size +len+ in bytes. If you don't want to add any payload,
-  set +data+ to +NULL+ and +len+ to 0. Returns 1 on success, 0 on error.
+- +int RTNL_ADD_ATTR(struct tst_netlink_context *ctx, unsigned short type,
+  const void *data, unsigned short len)+ – Adds new attribute to the last
+  message in +ctx+ buffer. See +NETLINK_ADD_MESSAGE()+. You need to provide
+  attribute +type+ which will be stored in +struct rtattr.rta_type+, optional
+  payload +data+ and payload size +len+ in bytes. If you don't want to add any
+  payload, set +data+ to +NULL+ and +len+ to 0. Returns 1 on success,
+  0 on error.
 
-- +int RTNL_ADD_ATTR_STRING(struct tst_rtnl_context *ctx, unsigned short type,
-  const char *data)+ – Adds new string attribute to the last message in +ctx+
-  buffer. Parameters and return value are the same as for +RTNL_ADD_ATTR()+,
-  except the payload length is calculated using +strlen()+.
+- +int RTNL_ADD_ATTR_STRING(struct tst_netlink_context *ctx, unsigned short
+  type, const char *data)+ – Adds new string attribute to the last message
+  in +ctx+ buffer. Parameters and return value are the same as for
+  +RTNL_ADD_ATTR()+, except the payload length is calculated using +strlen()+.
 
-- +int RTNL_ADD_ATTR_LIST(struct tst_rtnl_context *ctx, const struct
+- +int RTNL_ADD_ATTR_LIST(struct tst_netlink_context *ctx, const struct
   tst_rtnl_attr_list *list)+ – Adds a list of attributes to the last message
   in +ctx+ buffer. See description of +struct tst_rtnl_attr_list+ and
-  +RTNL_ADD_MESSAGE()+ above.  Returns the number of added attributes on
+  +NETLINK_ADD_MESSAGE()+ above.  Returns the number of added attributes on
   success (nested attributes are not counted), -1 on error.
 
 Example Usage
@@ -447,7 +450,7 @@ Example Usage
 
 void setup(void)
 {
-	struct tst_rtnl_context *ctx;
+	struct tst_netlink_context *ctx;
 	int index, ret;
 	in_addr_t addr;
 
@@ -465,12 +468,12 @@ void setup(void)
 	index = NETDEV_INDEX_BY_NAME("ltp_veth1");
 	info.ifa_index = index;
 
-	ctx = RTNL_CREATE_CONTEXT();
-	RTNL_ADD_MESSAGE(ctx, &header, &info, sizeof(info));
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_ROUTE);
+	NETLINK_ADD_MESSAGE(ctx, &header, &info, sizeof(info));
 	addr = inet_addr("192.168.123.45");
 	RTNL_ADD_ATTR(ctx, IFA_LOCAL, &addr, sizeof(addr));
-	ret = RTNL_SEND_VALIDATE(ctx);
-	RTNL_DESTROY_CONTEXT(ctx);
+	ret = NETLINK_SEND_VALIDATE(ctx);
+	NETLINK_DESTROY_CONTEXT(ctx);
 
 	if (!ret) {
 		tst_brk(TBROK, "Failed to set ltp_veth1 address");

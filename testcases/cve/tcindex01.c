@@ -95,7 +95,7 @@ static void run(void)
 		1, "tcindex");
 	ret = tst_netdev_add_traffic_filter(__FILE__, __LINE__, 0, DEVNAME,
 		qd_handle, 10, ETH_P_IP, 1, "tcindex", f_config);
-	TST_ERR = tst_rtnl_errno;
+	TST_ERR = tst_netlink_errno;
 	NETDEV_REMOVE_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle, "htb");
 
 	if (ret)
