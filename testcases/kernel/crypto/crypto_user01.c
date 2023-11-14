@@ -17,7 +17,6 @@
 
 #include "tst_test.h"
 #include "tst_crypto.h"
-#include "tst_netlink.h"
 
 /*
  * include after <sys/socket.h> (via tst_test.h), to work around dependency bug
@@ -25,11 +24,11 @@
  */
 #include <linux/rtnetlink.h>
 
-static struct tst_crypto_session ses = TST_CRYPTO_SESSION_INIT;
+static struct tst_netlink_context *ctx;
 
 static void setup(void)
 {
-	tst_crypto_open(&ses);
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_CRYPTO);
 }
 
 static void do_check_for_leaks(const char *name, const char *value, size_t vlen)
@@ -131,25 +130,20 @@ static void validate_one_alg(const struct nlmsghdr *nh)
 	}
 }
 
-static void validate_alg_list(const void *buf, size_t remaining)
+static void validate_alg_list(const struct tst_netlink_message *msg)
 {
-	const struct nlmsghdr *nh;
-
-	for (nh = buf; NLMSG_OK(nh, remaining);
-	     nh = NLMSG_NEXT(nh, remaining)) {
-		if (nh->nlmsg_seq != ses.seq_num) {
-			tst_brk(TBROK,
-				"Message out of sequence; type=0%hx, seq_num=%u (not %u)",
-				nh->nlmsg_type, nh->nlmsg_seq, ses.seq_num);
-		}
-		if (nh->nlmsg_type == NLMSG_DONE)
+	for (; msg->header; msg++) {
+		if (msg->header->nlmsg_type == NLMSG_DONE)
 			return;
-		if (nh->nlmsg_type != CRYPTO_MSG_GETALG) {
+
+		if (msg->header->nlmsg_type != CRYPTO_MSG_GETALG) {
 			tst_brk(TBROK,
 				"Unexpected message type; type=0x%hx, seq_num=%u",
-				nh->nlmsg_type, nh->nlmsg_seq);
+				msg->header->nlmsg_type,
+				msg->header->nlmsg_seq);
 		}
-		validate_one_alg(nh);
+
+		validate_one_alg(msg->header);
 	}
 }
 
@@ -157,35 +151,23 @@ static void run(void)
 {
 	struct crypto_user_alg payload = { 0 };
 	struct nlmsghdr nh = {
-		.nlmsg_len = sizeof(payload),
 		.nlmsg_type = CRYPTO_MSG_GETALG,
 		.nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP,
-		.nlmsg_seq = ++(ses.seq_num),
-		.nlmsg_pid = 0,
 	};
-	/*
-	 * Due to an apparent kernel bug, this API cannot be used incrementally,
-	 * so we just use a large recvmsg() buffer.  This is good enough since
-	 * we don't necessarily have to check every algorithm for this test to
-	 * be effective...
-	 */
-	const size_t bufsize = 1048576;
-	void *buf = SAFE_MALLOC(bufsize);
-	size_t res;
+	struct tst_netlink_message *msg;
 
-	SAFE_NETLINK_SEND(ses.fd, &nh, &payload);
-
-	res = SAFE_NETLINK_RECV(ses.fd, buf, bufsize);
-
-	validate_alg_list(buf, res);
-
-	free(buf);
+	NETLINK_ADD_MESSAGE(ctx, &nh, &payload, sizeof(payload));
+	NETLINK_SEND(ctx);
+	NETLINK_WAIT(ctx);
+	msg = NETLINK_RECV(ctx);
+	validate_alg_list(msg);
+	NETLINK_FREE_MESSAGE(msg);
 	tst_res(TPASS, "No information leaks found");
 }
 
 static void cleanup(void)
 {
-	tst_crypto_close(&ses);
+	NETLINK_DESTROY_CONTEXT(ctx);
 }
 
 static struct tst_test test = {

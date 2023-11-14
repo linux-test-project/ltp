@@ -5,7 +5,7 @@
 #ifndef TST_NETDEVICE_H
 #define TST_NETDEVICE_H
 
-#include "tst_rtnetlink.h"
+#include "tst_netlink.h"
 
 /* Find device index for given network interface name. */
 int tst_netdev_index_by_name(const char *file, const int lineno,

@@ -12,7 +12,7 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
-#include "tst_rtnetlink.h"
+#include "tst_netlink.h"
 #include "tst_netdevice.h"
 
 static struct tst_netlink_context *create_request(const char *file,

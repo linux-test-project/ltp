@@ -13,7 +13,7 @@
 #include <sys/poll.h>
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
-#include "tst_rtnetlink.h"
+#include "tst_netlink.h"
 
 struct tst_netlink_context {
 	int socket;

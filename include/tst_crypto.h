@@ -13,67 +13,12 @@
 #define TST_CRYPTO_H
 
 #include "lapi/cryptouser.h"
-
-/**
- * A reference to a crypto session and associated state.
- *
- * Holds state relevant to a netlink crypto connection. The seq_num is used
- * to tag each message sent to the netlink layer and is automatically
- * incremented by the tst_crypto_ functions. When the netlink layer sends a
- * response (ack) it will use the sequences number from the request.
- *
- * Some functions, such as delete ALG, may return EBUSY in which case it is
- * safe to retry them. The retries field allows you to set the number of
- * times this should be done. If set to zero the operation will only be tried
- * once. For operations which do not return EBUSY, the field is ignored.
- *
- * Use TST_CRYPTO_SESSION_INIT to statically initialize this struct with sane
- * defaults.
- */
-struct tst_crypto_session {
-	/** File descriptor for the netlink socket */
-	int fd;
-	/** A sequence number used to identify responses from the kernel. */
-	uint32_t seq_num;
-	/** Number of times some operations will be retried. */
-	uint32_t retries;
-};
-
-/**
- * Default static definition of tst_crypto_session.
- *
- * @relates tst_crypto_session
- */
-#define TST_CRYPTO_SESSION_INIT {\
-	.fd = 0,                 \
-	.seq_num = 0,            \
-	.retries = 1000          \
-}
-
-/**
- * Creates a crypto session.
- *
- * @relates tst_crypto_session
- * @param ses Session structure to use, it can be uninitialized.
- *
- * If some necessary feature is missing then it will call tst_brk() with
- * TCONF, for any other error it will use TBROK.
- */
-void tst_crypto_open(struct tst_crypto_session *ses);
-
-/**
- * Close a crypto session.
- *
- * @relates tst_crypto_session
- * @param ses The session to close.
- */
-void tst_crypto_close(struct tst_crypto_session *ses);
+#include "tst_netlink.h"
 
 /**
  * Add a crypto algorithm to a session.
  *
- * @relates tst_crypto_session
- * @param ses An open session.
+ * @param ctx Initialized netlink context
  * @param alg The crypto algorithm or module to add.
  *
  * This requests a new crypto algorithm/engine/module to be initialized by the
@@ -84,15 +29,15 @@ void tst_crypto_close(struct tst_crypto_session *ses);
  * @return On success it will return 0 otherwise it will return an inverted
  *         error code from the crypto layer.
  */
-int tst_crypto_add_alg(struct tst_crypto_session *ses,
+int tst_crypto_add_alg(struct tst_netlink_context *ctx,
 		       const struct crypto_user_alg *alg);
 
 /**
  * Delete a crypto algorithm from a session.
  *
- * @relates tst_crypto_session
- * @param ses An open session.
+ * @param ctx Initialized netlink context
  * @param alg The crypto algorithm to delete.
+ * @param retries Number of retries before giving up. Recommended value: 1000
  *
  * Request that the kernel remove an existing crypto algorithm. This behaves
  * in a similar way to tst_crypto_add_alg() except that it is the inverse
@@ -106,7 +51,7 @@ int tst_crypto_add_alg(struct tst_crypto_session *ses,
  *         library, you don't need to log this error as it will already have
  *         been printed by tst_brk().
  */
-int tst_crypto_del_alg(struct tst_crypto_session *ses,
-		       const struct crypto_user_alg *alg);
+int tst_crypto_del_alg(struct tst_netlink_context *ctx,
+	const struct crypto_user_alg *alg, unsigned int retries);
 
 #endif	/* TST_CRYPTO_H */

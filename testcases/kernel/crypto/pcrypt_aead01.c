@@ -26,11 +26,11 @@
 
 #define ATTEMPTS 10000
 
-static struct tst_crypto_session ses = TST_CRYPTO_SESSION_INIT;
+static struct tst_netlink_context *ctx;
 
 void setup(void)
 {
-	tst_crypto_open(&ses);
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_CRYPTO);
 }
 
 void run(void)
@@ -43,7 +43,7 @@ void run(void)
 	};
 
 	for (i = 0; i < ATTEMPTS; ++i) {
-		TEST(tst_crypto_add_alg(&ses, &a));
+		TEST(tst_crypto_add_alg(ctx, &a));
 		if (TST_RET && TST_RET == -ENOENT) {
 			tst_brk(TCONF | TRERRNO,
 				"pcrypt, hmac, sha256, cbc or aes not supported");
@@ -51,7 +51,7 @@ void run(void)
 		if (TST_RET && TST_RET != -EEXIST)
 			tst_brk(TBROK | TRERRNO, "add_alg");
 
-		TEST(tst_crypto_del_alg(&ses, &a));
+		TEST(tst_crypto_del_alg(ctx, &a, 1000));
 		if (TST_RET)
 			tst_brk(TBROK | TRERRNO, "del_alg");
 
@@ -67,7 +67,7 @@ void run(void)
 
 void cleanup(void)
 {
-	tst_crypto_close(&ses);
+	NETLINK_DESTROY_CONTEXT(ctx);
 }
 
 static struct tst_test test = {

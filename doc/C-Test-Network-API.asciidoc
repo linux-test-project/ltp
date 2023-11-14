@@ -277,7 +277,7 @@ static void setup(void)
 3 Netlink API
 -------------
 
-+#include "tst_rtnetlink.h"+
++#include "tst_netlink.h"+
 
 The netlink library provides helper functions for constructing and sending
 arbitrary messages and parsing kernel responses.
@@ -443,7 +443,7 @@ Example Usage
 #include <arpa/inet.h>
 
 #include "tst_test.h"
-#include "tst_rtnetlink.h"
+#include "tst_netlink.h"
 #include "tst_netdevice.h"
 
 ...

@@ -24,7 +24,7 @@
 #include <linux/pkt_sched.h>
 #include <linux/pkt_cls.h>
 #include "tst_test.h"
-#include "tst_rtnetlink.h"
+#include "tst_netlink.h"
 #include "tst_netdevice.h"
 #include "lapi/sched.h"
 #include "lapi/if_ether.h"
