@@ -55,6 +55,9 @@ static int netlink_grow_buffer(const char *file, const int lineno,
 void tst_netlink_destroy_context(const char *file, const int lineno,
 	struct tst_netlink_context *ctx)
 {
+	if (!ctx)
+		return;
+
 	safe_close(file, lineno, NULL, ctx->socket);
 	free(ctx->buffer);
 	free(ctx);
