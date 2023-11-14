@@ -79,8 +79,11 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 /*
  * Helper function used to obtain fsid and file_handle for a given path.
  * Used by test files correlated to FAN_REPORT_FID functionality.
+ *
+ * Returns 0 if normal NFS file handles are supported.
+ * Returns AT_HANDLE_FID, if only non-decodeable file handles are supported.
  */
-static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
+static inline int fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 				    struct file_handle *handle)
 {
 	int mount_id;
@@ -93,6 +96,11 @@ static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 
 	if (name_to_handle_at(AT_FDCWD, path, handle, &mount_id, 0) == -1) {
 		if (errno == EOPNOTSUPP) {
+			/* Try to request non-decodeable fid instead */
+			if (name_to_handle_at(AT_FDCWD, path, handle, &mount_id,
+					      AT_HANDLE_FID) == 0)
+				return AT_HANDLE_FID;
+
 			tst_brk(TCONF,
 				"filesystem %s does not support file handles",
 				tst_device->fs_type);
@@ -100,6 +108,7 @@ static inline void fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 		tst_brk(TBROK | TERRNO,
 			"name_to_handle_at(AT_FDCWD, %s, ...) failed", path);
 	}
+	return 0;
 }
 
 #ifndef FILEID_INVALID
@@ -112,18 +121,21 @@ struct fanotify_fid_t {
 	char buf[MAX_HANDLE_SZ];
 };
 
-static inline void fanotify_save_fid(const char *path,
+static inline int fanotify_save_fid(const char *path,
 				     struct fanotify_fid_t *fid)
 {
 	int *fh = (int *)(fid->handle.f_handle);
+	int ret;
 
 	fh[0] = fh[1] = fh[2] = 0;
 	fid->handle.handle_bytes = MAX_HANDLE_SZ;
-	fanotify_get_fid(path, &fid->fsid, &fid->handle);
+	ret = fanotify_get_fid(path, &fid->fsid, &fid->handle);
 
 	tst_res(TINFO,
 		"fid(%s) = %x.%x.%x.%x.%x...", path, fid->fsid.val[0],
 		fid->fsid.val[1], fh[0], fh[1], fh[2]);
+
+	return ret;
 }
 #endif /* HAVE_NAME_TO_HANDLE_AT */
 
@@ -179,6 +191,7 @@ static inline int fanotify_events_supported_by_kernel(uint64_t mask,
  * @return  0: fanotify supported both in kernel and on tested filesystem
  * @return -1: @flags not supported in kernel
  * @return -2: @flags not supported on tested filesystem (tested if @fname is not NULL)
+ * @return -3: @flags not supported on overlayfs (tested if @fname == OVL_MNT)
  */
 static inline int fanotify_init_flags_supported_on_fs(unsigned int flags, const char *fname)
 {
@@ -199,7 +212,7 @@ static inline int fanotify_init_flags_supported_on_fs(unsigned int flags, const 
 
 	if (fname && fanotify_mark(fd, FAN_MARK_ADD, FAN_ACCESS, AT_FDCWD, fname) < 0) {
 		if (errno == ENODEV || errno == EOPNOTSUPP || errno == EXDEV) {
-			rval = -2;
+			rval = strcmp(fname, OVL_MNT) ? -2 : -3;
 		} else {
 			tst_brk(TBROK | TERRNO,
 				"fanotify_mark (%d, FAN_MARK_ADD, ..., AT_FDCWD, %s) failed",
@@ -269,10 +282,11 @@ static inline void fanotify_init_flags_err_msg(const char *flags_str,
 	if (fail == -1)
 		res_func(file, lineno, TCONF,
 			 "%s not supported in kernel?", flags_str);
-	if (fail == -2)
+	if (fail == -2 || fail == -3)
 		res_func(file, lineno, TCONF,
-			 "%s not supported on %s filesystem",
-			 flags_str, tst_device->fs_type);
+			 "%s not supported on %s%s filesystem",
+			 flags_str, fail == -3 ? "overlayfs over " : "",
+			 tst_device->fs_type);
 }
 
 #define FANOTIFY_INIT_FLAGS_ERR_MSG(flags, fail) \

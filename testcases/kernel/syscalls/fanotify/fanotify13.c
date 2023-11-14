@@ -91,8 +91,10 @@ static struct test_case_t {
 
 static int ovl_mounted;
 static int bind_mounted;
+static int ovl_bind_mounted;
 static int nofid_fd;
 static int fanotify_fd;
+static int at_handle_fid;
 static int filesystem_mark_unsupported;
 static char events_buf[BUF_SIZE];
 static struct event_t event_set[EVENT_MAX];
@@ -113,8 +115,10 @@ static void get_object_stats(void)
 {
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(objects); i++)
-		fanotify_save_fid(objects[i].path, &objects[i].fid);
+	for (i = 0; i < ARRAY_SIZE(objects); i++) {
+		at_handle_fid |=
+			fanotify_save_fid(objects[i].path, &objects[i].fid);
+	}
 }
 
 static int setup_marks(unsigned int fd, struct test_case_t *tc)
@@ -154,6 +158,11 @@ static void do_test(unsigned int number)
 		return;
 	}
 
+	if (at_handle_fid && mark->flag != FAN_MARK_INODE) {
+		tst_res(TCONF, "overlayfs does not support decodeable file handles required by %s", mark->name);
+		return;
+	}
+
 	if (filesystem_mark_unsupported && mark->flag & FAN_MARK_FILESYSTEM) {
 		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
 		return;
@@ -169,7 +178,7 @@ static void do_test(unsigned int number)
 		goto out;
 
 	/* Watching base fs - open files on overlayfs */
-	if (tst_variant) {
+	if (tst_variant && !ovl_bind_mounted) {
 		if (mark->flag & FAN_MARK_MOUNT) {
 			tst_res(TCONF, "overlayfs base fs cannot be watched with mount mark");
 			goto out;
@@ -191,7 +200,7 @@ static void do_test(unsigned int number)
 			SAFE_CLOSE(fds[i]);
 	}
 
-	if (tst_variant)
+	if (tst_variant && !ovl_bind_mounted)
 		SAFE_UMOUNT(MOUNT_PATH);
 
 	/* Read events from event queue */
@@ -288,13 +297,17 @@ static void do_setup(void)
 	 * Variant #0: watch base fs - open files on base fs
 	 * Variant #1: watch lower fs - open lower files on overlayfs
 	 * Variant #2: watch upper fs - open upper files on overlayfs
+	 * Variant #3: watch overlayfs - open lower files on overlayfs
+	 * Variant #4: watch overlayfs - open upper files on overlayfs
 	 *
 	 * Variants 1,2 test a bug whose fix bc2473c90fca ("ovl: enable fsnotify
 	 * events on underlying real files") in kernel 6.5 is not likely to be
 	 * backported to older kernels.
 	 * To avoid waiting for events that won't arrive when testing old kernels,
-	 * require that kernel supports encoding fid with new flag AT_HADNLE_FID,
+	 * require that kernel supports encoding fid with new flag AT_HANDLE_FID,
 	 * also merged to 6.5 and not likely to be backported to older kernels.
+	 * Variants 3,4 test overlayfs watch with FAN_REPORT_FID, which also
+	 * requires kernel with support for AT_HANDLE_FID.
 	 */
 	if (tst_variant) {
 		REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(AT_HANDLE_FID);
@@ -319,6 +332,12 @@ static void do_setup(void)
 	/* Create file and directory objects for testing on base fs */
 	create_objects();
 
+	if (tst_variant > 2) {
+		/* Setup watches on overlayfs */
+		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
+		ovl_bind_mounted = 1;
+	}
+
 	/*
 	 * Create a mark on first inode without FAN_REPORT_FID, to test
 	 * uninitialized connector->fsid cache. This mark remains for all test
@@ -337,6 +356,8 @@ static void do_cleanup(void)
 		SAFE_CLOSE(nofid_fd);
 	if (fanotify_fd > 0)
 		SAFE_CLOSE(fanotify_fd);
+	if (ovl_bind_mounted)
+		SAFE_UMOUNT(MOUNT_PATH);
 	if (bind_mounted) {
 		SAFE_UMOUNT(MOUNT_PATH);
 		SAFE_RMDIR(MOUNT_PATH);
@@ -348,7 +369,7 @@ static void do_cleanup(void)
 static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(test_cases),
-	.test_variants = 3,
+	.test_variants = 5,
 	.setup = do_setup,
 	.cleanup = do_cleanup,
 	.needs_root = 1,
