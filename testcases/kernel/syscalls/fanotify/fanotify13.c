@@ -168,10 +168,10 @@ static void do_test(unsigned int number)
 	if (setup_marks(fanotify_fd, tc) != 0)
 		goto out;
 
-	/* Variant #1: watching upper fs - open files on overlayfs */
-	if (tst_variant == 1) {
+	/* Watching base fs - open files on overlayfs */
+	if (tst_variant) {
 		if (mark->flag & FAN_MARK_MOUNT) {
-			tst_res(TCONF, "overlayfs upper fs cannot be watched with mount mark");
+			tst_res(TCONF, "overlayfs base fs cannot be watched with mount mark");
 			goto out;
 		}
 		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
@@ -191,7 +191,7 @@ static void do_test(unsigned int number)
 			SAFE_CLOSE(fds[i]);
 	}
 
-	if (tst_variant == 1)
+	if (tst_variant)
 		SAFE_UMOUNT(MOUNT_PATH);
 
 	/* Read events from event queue */
@@ -286,9 +286,10 @@ static void do_setup(void)
 	/*
 	 * Bind mount to either base fs or to overlayfs over base fs:
 	 * Variant #0: watch base fs - open files on base fs
-	 * Variant #1: watch upper fs - open files on overlayfs
+	 * Variant #1: watch lower fs - open lower files on overlayfs
+	 * Variant #2: watch upper fs - open upper files on overlayfs
 	 *
-	 * Variant #1 tests a bug whose fix bc2473c90fca ("ovl: enable fsnotify
+	 * Variants 1,2 test a bug whose fix bc2473c90fca ("ovl: enable fsnotify
 	 * events on underlying real files") in kernel 6.5 is not likely to be
 	 * backported to older kernels.
 	 * To avoid waiting for events that won't arrive when testing old kernels,
@@ -298,7 +299,10 @@ static void do_setup(void)
 	if (tst_variant) {
 		REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(AT_HANDLE_FID);
 		ovl_mounted = TST_MOUNT_OVERLAY();
-		mnt = OVL_UPPER;
+		if (!ovl_mounted)
+			return;
+
+		mnt = tst_variant & 1 ? OVL_LOWER : OVL_UPPER;
 	} else {
 		mnt = OVL_BASE_MNTPOINT;
 
@@ -312,7 +316,7 @@ static void do_setup(void)
 
 	nofid_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 
-	/* Create file and directory objects for testing */
+	/* Create file and directory objects for testing on base fs */
 	create_objects();
 
 	/*
@@ -329,7 +333,8 @@ static void do_setup(void)
 
 static void do_cleanup(void)
 {
-	SAFE_CLOSE(nofid_fd);
+	if (nofid_fd > 0)
+		SAFE_CLOSE(nofid_fd);
 	if (fanotify_fd > 0)
 		SAFE_CLOSE(fanotify_fd);
 	if (bind_mounted) {
@@ -343,7 +348,7 @@ static void do_cleanup(void)
 static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(test_cases),
-	.test_variants = 2,
+	.test_variants = 3,
 	.setup = do_setup,
 	.cleanup = do_cleanup,
 	.needs_root = 1,
