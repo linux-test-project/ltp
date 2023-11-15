@@ -36,9 +36,7 @@ static void do_work(int thread, size_t size, int fd)
 	for (i = 0; i < size; i++)
 		memcpy((char *)addr+i, &pattern, 1);
 
-	if (msync(addr, size, MS_SYNC))
-		tst_brk(TBROK | TERRNO, "Thread %d (pid %d): msync() failed",
-				thread, getpid());
+	SAFE_MSYNC(addr, size, MS_SYNC);
 
 	for (i = 0; i < size; i++) {
 		if (addr[i] != pattern) {
