@@ -187,13 +187,13 @@ static void child_mapper(char *file, unsigned int procno, unsigned int nprocs)
 			*(paddr + i) = (procno + pattern) & 0xff;
 		}
 	}
+
 	if (do_sync) {
 		randpage = lrand48() % mappages;
 		paddr = maddr + (randpage * pagesize);	/* page address */
-		if (msync(paddr, (mappages - randpage) * pagesize,
-			  MS_SYNC) == -1)
-			tst_brk(TBROK | TERRNO, "msync failed");
+		SAFE_MSYNC(paddr, (mappages - randpage) * pagesize, MS_SYNC);
 	}
+
 	SAFE_MUNMAP(maddr, mapsize);
 	exit(0);
 }
