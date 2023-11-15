@@ -328,7 +328,7 @@ int Open_flags[] = {
 #define USECS_PER_SEC	1000000	/* microseconds per second */
 
 /*
- * Define marcos used when dealing with file locks.
+ * Define macros used when dealing with file locks.
  */
 #define LKLVL0		1	/* file lock around write/read/trunc */
 #define LKLVL1		2	/* file lock after open to before close */
