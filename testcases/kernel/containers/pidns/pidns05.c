@@ -24,7 +24,7 @@ static struct tst_clone_args clone_args = {
 };
 static pid_t pid_max;
 
-static void child_func(int *level)
+static void child_func(const int level)
 {
 	pid_t cpid, ppid;
 
@@ -34,15 +34,13 @@ static void child_func(int *level)
 	TST_EXP_EQ_LI(cpid, 1);
 	TST_EXP_EQ_LI(ppid, 0);
 
-	if (*level >= MAX_DEPTH) {
+	if (level >= MAX_DEPTH - 1) {
 		TST_CHECKPOINT_WAKE(0);
 		return;
 	}
 
-	(*level)++;
-
 	if (!SAFE_CLONE(&clone_args)) {
-		child_func(level);
+		child_func(level + 1);
 		return;
 	}
 
@@ -81,14 +79,13 @@ static void setup(void)
 static void run(void)
 {
 	int i, status, children;
-	int level = 0;
 	pid_t pids_new[MAX_DEPTH];
 	pid_t pids[MAX_DEPTH];
 	pid_t pid;
 
 	pid = SAFE_CLONE(&clone_args);
 	if (!pid) {
-		child_func(&level);
+		child_func(0);
 		return;
 	}
 
