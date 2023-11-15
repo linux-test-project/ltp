@@ -114,7 +114,7 @@
 #endif
 #include <stdlib.h>		/* atoi, abs */
 
-#include "tlibio.h"		/* defines LIO* marcos */
+#include "tlibio.h"		/* defines LIO* macros */
 #include "random_range.h"
 
 #ifndef PATH_MAX
