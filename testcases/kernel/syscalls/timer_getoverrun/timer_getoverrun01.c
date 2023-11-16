@@ -1,88 +1,45 @@
-/******************************************************************************
- * Copyright (c) Crackerjack Project., 2007                                   *
- * Porting from Crackerjack to LTP is done by:                                *
- *              Manas Kumar Nayak <maknayak@in.ibm.com>                       *
- * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>                          *
- *                                                                            *
- * This program is free software;  you can redistribute it and/or modify      *
- * it under the terms of the GNU General Public License as published by       *
- * the Free Software Foundation; either version 2 of the License, or          *
- * (at your option) any later version.                                        *
- *                                                                            *
- * This program is distributed in the hope that it will be useful,            *
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of            *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  *
- * the GNU General Public License for more details.                           *
- *                                                                            *
- * You should have received a copy of the GNU General Public License          *
- * along with this program;  if not, write to the Free Software Foundation,   *
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA           *
- *                                                                            *
- ******************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines Corp., 2001
+ * Porting from Crackerjack to LTP is done by:
+ *              Manas Kumar Nayak <maknayak@in.ibm.com>
+ *
+ * Copyright (c) Linux Test Project, 2009-2023
+ * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
 
-#include <stdio.h>
-#include <errno.h>
-#include <time.h>
+/*\
+ * [Description]
+ *
+ * This test checks base timer_getoverrun() functionality.
+ */
+
 #include <signal.h>
-#include <sys/syscall.h>
-
-#include "test.h"
+#include <time.h>
+#include "tst_safe_clocks.h"
 #include "lapi/syscalls.h"
 
-char *TCID = "timer_getoverrun01";
-int TST_TOTAL = 1;
-
-static void cleanup(void)
+static void run(void)
 {
-
-	tst_rmdir();
-}
-
-static void setup(void)
-{
-	TEST_PAUSE;
-	tst_tmpdir();
-}
-
-int main(int ac, char **av)
-{
-	int lc;
-	int timer;
+	timer_t timer;
 	struct sigevent ev;
 
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
 	ev.sigev_value = (union sigval) 0;
-	ev.sigev_signo = SIGALRM;
 	ev.sigev_notify = SIGEV_SIGNAL;
-	TEST(tst_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer));
+	ev.sigev_signo = SIGALRM;
 
-	if (TEST_RETURN != 0)
-		tst_brkm(TBROK | TTERRNO, cleanup, "Failed to create timer");
+	if (tst_syscall(__NR_timer_create, CLOCK_REALTIME, &ev, &timer))
+		tst_brk(TBROK | TERRNO, "timer_create() failed");
 
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		tst_count = 0;
+	TST_EXP_POSITIVE(tst_syscall(__NR_timer_getoverrun, timer));
 
-		TEST(tst_syscall(__NR_timer_getoverrun, timer));
-		if (TEST_RETURN == 0) {
-			tst_resm(TPASS,
-			         "timer_getoverrun(CLOCK_REALTIME) Passed");
-		} else {
-			tst_resm(TFAIL | TTERRNO,
-			         "timer_getoverrun(CLOCK_REALTIME) Failed");
-		}
+	if (tst_syscall(__NR_timer_delete, timer))
+		tst_brk(TBROK | TERRNO, "timer_delete() failed");
 
-		TEST(tst_syscall(__NR_timer_getoverrun, -1));
-		if (TEST_RETURN == -1 && TEST_ERRNO == EINVAL) {
-			tst_resm(TPASS,	"timer_gettime(-1) Failed: EINVAL");
-		} else {
-			tst_resm(TFAIL | TTERRNO,
-			         "timer_gettime(-1) = %li", TEST_RETURN);
-		}
-	}
-
-	cleanup();
-	tst_exit();
+	TST_EXP_FAIL(tst_syscall(__NR_timer_getoverrun, timer), EINVAL);
 }
+
+static struct tst_test test = {
+	.test_all = run,
+};
