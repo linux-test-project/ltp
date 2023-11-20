@@ -449,8 +449,6 @@ getdents02 getdents02
 
 getdomainname01 getdomainname01
 
-getdtablesize01 getdtablesize01
-
 getegid01 getegid01
 getegid01_16 getegid01_16
 getegid02 getegid02
