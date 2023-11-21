@@ -94,6 +94,10 @@
 # define AT_REMOVEDIR		0x200
 #endif
 
+#ifndef AT_HANDLE_FID
+# define AT_HANDLE_FID		AT_REMOVEDIR
+#endif
+
 #ifndef AT_SYMLINK_FOLLOW
 # define AT_SYMLINK_FOLLOW	0x400
 #endif
