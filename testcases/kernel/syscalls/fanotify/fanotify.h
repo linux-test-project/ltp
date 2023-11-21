@@ -68,10 +68,6 @@ static inline int safe_fanotify_mark(const char *file, const int lineno,
 
 #ifdef HAVE_NAME_TO_HANDLE_AT
 
-#ifndef MAX_HANDLE_SZ
-#define MAX_HANDLE_SZ		128
-#endif
-
 #ifndef AT_HANDLE_FID
 #define AT_HANDLE_FID		0x200
 #endif
