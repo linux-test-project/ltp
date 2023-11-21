@@ -86,6 +86,7 @@ cve-2022-2590 dirtyc0w_shmem
 cve-2022-23222 bpf_prog07
 cve-2023-1829 tcindex01
 cve-2023-0461 setsockopt10
+cve-2023-31248 nft02
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
 cve-2022-0185 fsconfig03
