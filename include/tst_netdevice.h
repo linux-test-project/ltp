@@ -132,7 +132,7 @@ int tst_netdev_remove_route_inet(const char *file, const int lineno,
 int tst_netdev_add_qdisc(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, unsigned int parent,
 	unsigned int handle, const char *qd_kind,
-	const struct tst_rtnl_attr_list *config);
+	const struct tst_netlink_attr_list *config);
 #define NETDEV_ADD_QDISC(ifname, family, parent, handle, qd_kind, config) \
 	tst_netdev_add_qdisc(__FILE__, __LINE__, 1, (ifname), (family), \
 		(parent), (handle), (qd_kind), (config))
@@ -154,7 +154,7 @@ int tst_netdev_remove_qdisc(const char *file, const int lineno, int strict,
 int tst_netdev_add_traffic_class(const char *file, const int lineno,
 	int strict, const char *ifname, unsigned int parent,
 	unsigned int handle, const char *qd_kind,
-	const struct tst_rtnl_attr_list *config);
+	const struct tst_netlink_attr_list *config);
 #define NETDEV_ADD_TRAFFIC_CLASS(ifname, parent, handle, qd_kind, config) \
 	tst_netdev_add_traffic_class(__FILE__, __LINE__, 1, (ifname), \
 		(parent), (handle), (qd_kind), (config))
@@ -173,7 +173,7 @@ int tst_netdev_remove_traffic_class(const char *file, const int lineno,
 int tst_netdev_add_traffic_filter(const char *file, const int lineno,
 	int strict, const char *ifname, unsigned int parent,
 	unsigned int handle, unsigned int protocol, unsigned int priority,
-	const char *f_kind, const struct tst_rtnl_attr_list *config);
+	const char *f_kind, const struct tst_netlink_attr_list *config);
 #define NETDEV_ADD_TRAFFIC_FILTER(ifname, parent, handle, protocol, priority, \
 	f_kind, config) \
 	tst_netdev_add_traffic_filter(__FILE__, __LINE__, 1, (ifname), \

@@ -293,11 +293,11 @@ stage.
 -------------------------------------------------------------------------------
 struct tst_netlink_context;
 
-struct tst_rtnl_attr_list {
+struct tst_netlink_attr_list {
 	unsigned short type;
 	const void *data;
 	ssize_t len;
-	const struct tst_rtnl_attr_list *sublist;
+	const struct tst_netlink_attr_list *sublist;
 };
 
 struct tst_netlink_message {
@@ -313,12 +313,13 @@ constructing and sending arbitrary messages using the functions described
 below. Create a new context using +NETLINK_CREATE_CONTEXT()+, then free it
 using +NETLINK_DESTROY_CONTEXT()+ when you're done with it.
 
-+struct tst_rtnl_attr_list+ is a helper structure for defining complex
++struct tst_netlink_attr_list+ is a helper structure for defining complex
 rtnetlink message attribute payloads, including nested attribute lists. Every
 list and sublist defined using this structure is terminated by item with
 negative +len+.
 
-- +type+ is the attribute type that will be stored in +struct rtattr.rta_type+.
+- +type+ is the attribute type that will be stored in +struct nlattr.nla_type+
+  or +struct rtattr.rta_type+.
 
 - +data+ contains arbitrary attribute payload.
 
@@ -326,10 +327,10 @@ negative +len+.
   set +len+ to 0. The last item in a list or sublist must have negative length.
 
 - +sublist+ contains a nested attribute list which will be appended after
-  +data+ as part of the attribute payload. +struct rtattr.rta_len+ will be
-  calculated automatically with proper alignment, do _not_ add the sublist size
-  to the +len+ field. If you do not want to add nested attributes, set
-  +sublist+ to +NULL+.
+  +data+ as part of the attribute payload. +struct nlattr.nla_len+ or
+  +struct rtattr.rta_len+ will be calculated automatically with proper
+  alignment, do _not_ add the sublist size to the +len+ field. If you do not
+  want to add nested attributes, set +sublist+ to +NULL+.
 
 +struct tst_netlink_message+ is a structure holding partially parsed netlink
 messages received from the kernel. +NETLINK_RECV()+ returns an array of these
@@ -412,24 +413,47 @@ structures with the last item having +NULL+ in the +header+ field. Call
   and +NETLINK_CHECK_ACKS()+ will not work correctly until the next
   +NETLINK_SEND()+.
 
+- +int NETLINK_ADD_ATTR(struct tst_netlink_context *ctx, unsigned short type,
+  const void *data, unsigned short len)+ – Adds new +struct nlattr+ attribute
+  to the last message in +ctx+ buffer. See +NETLINK_ADD_MESSAGE()+. You need
+  to provide attribute +type+ which will be stored in +struct nlattr.nla_type+,
+  optional payload +data+ and payload size +len+ in bytes. If you don't want
+  to add any payload, set +data+ to +NULL+ and +len+ to 0. Returns 1 on
+  success, 0 on error.
+
+- +int NETLINK_ADD_ATTR_STRING(struct tst_netlink_context *ctx, unsigned short
+  type, const char *data)+ – Adds new +struct nlattr+ string attribute to the
+  last message in +ctx+ buffer. Parameters and return value are the same as
+  for +NETLINK_ADD_ATTR()+, except the payload length is calculated using
+  +strlen()+.
+
+- +int NETLINK_ADD_ATTR_LIST(struct tst_netlink_context *ctx, const struct
+  tst_netlink_attr_list *list)+ – Adds a list of +struct nlattr+ attributes
+  to the last message in +ctx+ buffer. See description of
+  +struct tst_netlink_attr_list+ and +NETLINK_ADD_MESSAGE()+ above. Returns
+  the number of added attributes on success (nested attributes are not
+  counted), -1 on error.
+
 - +int RTNL_ADD_ATTR(struct tst_netlink_context *ctx, unsigned short type,
-  const void *data, unsigned short len)+ – Adds new attribute to the last
-  message in +ctx+ buffer. See +NETLINK_ADD_MESSAGE()+. You need to provide
-  attribute +type+ which will be stored in +struct rtattr.rta_type+, optional
-  payload +data+ and payload size +len+ in bytes. If you don't want to add any
-  payload, set +data+ to +NULL+ and +len+ to 0. Returns 1 on success,
-  0 on error.
+  const void *data, unsigned short len)+ – Adds new +struct rtattr+ attribute
+  to the last message in +ctx+ buffer. See +NETLINK_ADD_MESSAGE()+. You need
+  to provide attribute +type+ which will be stored in +struct rtattr.rta_type+,
+  optional payload +data+ and payload size +len+ in bytes. If you don't want
+  to add any payload, set +data+ to +NULL+ and +len+ to 0. Returns 1 on
+  success, 0 on error.
 
 - +int RTNL_ADD_ATTR_STRING(struct tst_netlink_context *ctx, unsigned short
-  type, const char *data)+ – Adds new string attribute to the last message
-  in +ctx+ buffer. Parameters and return value are the same as for
-  +RTNL_ADD_ATTR()+, except the payload length is calculated using +strlen()+.
+  type, const char *data)+ – Adds new +struct rtattr+ string attribute to the
+  last message in +ctx+ buffer. Parameters and return value are the same as
+  for +RTNL_ADD_ATTR()+, except the payload length is calculated using
+  +strlen()+.
 
 - +int RTNL_ADD_ATTR_LIST(struct tst_netlink_context *ctx, const struct
-  tst_rtnl_attr_list *list)+ – Adds a list of attributes to the last message
-  in +ctx+ buffer. See description of +struct tst_rtnl_attr_list+ and
-  +NETLINK_ADD_MESSAGE()+ above.  Returns the number of added attributes on
-  success (nested attributes are not counted), -1 on error.
+  tst_netlink_attr_list *list)+ – Adds a list of +struct rtattr+ attributes
+  to the last message in +ctx+ buffer. See description of
+  +struct tst_netlink_attr_list+ and +NETLINK_ADD_MESSAGE()+ above. Returns
+  the number of added attributes on success (nested attributes are not
+  counted), -1 on error.
 
 Example Usage
 +++++++++++++

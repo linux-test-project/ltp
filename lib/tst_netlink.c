@@ -283,6 +283,86 @@ int tst_netlink_add_message(const char *file, const int lineno,
 	return 1;
 }
 
+int tst_netlink_add_attr(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, unsigned short type,
+	const void *data, unsigned short len)
+{
+	size_t size = NLA_HDRLEN + NLA_ALIGN(len);
+	struct nlattr *attr;
+
+	if (!ctx->curmsg) {
+		tst_brk_(file, lineno, TBROK,
+			"%s(): No message to add attributes to", __func__);
+		return 0;
+	}
+
+	if (!netlink_grow_buffer(file, lineno, ctx, size))
+		return 0;
+
+	size = NLMSG_ALIGN(ctx->curmsg->nlmsg_len);
+	attr = (struct nlattr *)(((char *)ctx->curmsg) + size);
+	attr->nla_type = type;
+	attr->nla_len = NLA_HDRLEN + len;
+	memcpy(((char *)attr) + NLA_HDRLEN, data, len);
+	ctx->curmsg->nlmsg_len = size + attr->nla_len;
+	ctx->datalen = NLMSG_ALIGN(ctx->datalen) + attr->nla_len;
+
+	return 1;
+}
+
+int tst_netlink_add_attr_string(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, unsigned short type,
+	const char *data)
+{
+	return tst_netlink_add_attr(file, lineno, ctx, type, data,
+		strlen(data) + 1);
+}
+
+int tst_netlink_add_attr_list(const char *file, const int lineno,
+	struct tst_netlink_context *ctx,
+	const struct tst_netlink_attr_list *list)
+{
+	int i, ret;
+	size_t offset;
+
+	for (i = 0; list[i].len >= 0; i++) {
+		if (list[i].len > USHRT_MAX) {
+			tst_brk_(file, lineno, TBROK,
+				"%s(): Attribute value too long", __func__);
+			return -1;
+		}
+
+		offset = NLMSG_ALIGN(ctx->datalen);
+		ret = tst_netlink_add_attr(file, lineno, ctx, list[i].type,
+			list[i].data, list[i].len);
+
+		if (!ret)
+			return -1;
+
+		if (list[i].sublist) {
+			struct rtattr *attr;
+
+			ret = tst_netlink_add_attr_list(file, lineno, ctx,
+				list[i].sublist);
+
+			if (ret < 0)
+				return ret;
+
+			attr = (struct rtattr *)(ctx->buffer + offset);
+
+			if (ctx->datalen - offset > USHRT_MAX) {
+				tst_brk_(file, lineno, TBROK,
+					"%s(): Sublist too long", __func__);
+				return -1;
+			}
+
+			attr->rta_len = ctx->datalen - offset;
+		}
+	}
+
+	return i;
+}
+
 int tst_rtnl_add_attr(const char *file, const int lineno,
 	struct tst_netlink_context *ctx, unsigned short type,
 	const void *data, unsigned short len)
@@ -320,7 +400,7 @@ int tst_rtnl_add_attr_string(const char *file, const int lineno,
 
 int tst_rtnl_add_attr_list(const char *file, const int lineno,
 	struct tst_netlink_context *ctx,
-	const struct tst_rtnl_attr_list *list)
+	const struct tst_netlink_attr_list *list)
 {
 	int i, ret;
 	size_t offset;

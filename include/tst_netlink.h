@@ -9,11 +9,11 @@
 
 struct tst_netlink_context;
 
-struct tst_rtnl_attr_list {
+struct tst_netlink_attr_list {
 	unsigned short type;
 	const void *data;
 	ssize_t len;
-	const struct tst_rtnl_attr_list *sublist;
+	const struct tst_netlink_attr_list *sublist;
 };
 
 struct tst_netlink_message {
@@ -72,25 +72,49 @@ int tst_netlink_add_message(const char *file, const int lineno,
 	tst_netlink_add_message(__FILE__, __LINE__, (ctx), (header), \
 		(payload), (psize))
 
-/* Add arbitrary attribute to last message */
+/* Add arbitrary nlattr attribute to last message */
+int tst_netlink_add_attr(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, unsigned short type, const void *data,
+	unsigned short len);
+#define NETLINK_ADD_ATTR(ctx, type, data, len) \
+	tst_netlink_add_attr(__FILE__, __LINE__, (ctx), (type), (data), (len))
+
+/* Add string nlattr attribute to last message */
+int tst_netlink_add_attr_string(const char *file, const int lineno,
+	struct tst_netlink_context *ctx, unsigned short type, const char *data);
+#define NETLINK_ADD_ATTR_STRING(ctx, type, data) \
+	tst_netlink_add_attr_string(__FILE__, __LINE__, (ctx), (type), (data))
+
+/*
+ * Add list of arbitrary nlattr attributes to last message. The list is
+ * terminated by attribute with negative length. Nested sublists are supported.
+ */
+int tst_netlink_add_attr_list(const char *file, const int lineno,
+	struct tst_netlink_context *ctx,
+	const struct tst_netlink_attr_list *list);
+#define NETLINK_ADD_ATTR_LIST(ctx, list) \
+	tst_netlink_add_attr_list(__FILE__, __LINE__, (ctx), (list))
+
+/* Add arbitrary rtattr attribute to last message */
 int tst_rtnl_add_attr(const char *file, const int lineno,
 	struct tst_netlink_context *ctx, unsigned short type, const void *data,
 	unsigned short len);
 #define RTNL_ADD_ATTR(ctx, type, data, len) \
 	tst_rtnl_add_attr(__FILE__, __LINE__, (ctx), (type), (data), (len))
 
-/* Add string attribute to last message */
+/* Add string rtattr attribute to last message */
 int tst_rtnl_add_attr_string(const char *file, const int lineno,
 	struct tst_netlink_context *ctx, unsigned short type, const char *data);
 #define RTNL_ADD_ATTR_STRING(ctx, type, data) \
 	tst_rtnl_add_attr_string(__FILE__, __LINE__, (ctx), (type), (data))
 
 /*
- * Add list of arbitrary attributes to last message. The list is terminated
- * by attribute with negative length. Nested sublists are supported.
+ * Add list of arbitrary rtattr attributes to last message. The list is
+ * terminated by attribute with negative length. Nested sublists are supported.
  */
 int tst_rtnl_add_attr_list(const char *file, const int lineno,
-	struct tst_netlink_context *ctx, const struct tst_rtnl_attr_list *list);
+	struct tst_netlink_context *ctx,
+	const struct tst_netlink_attr_list *list);
 #define RTNL_ADD_ATTR_LIST(ctx, list) \
 	tst_rtnl_add_attr_list(__FILE__, __LINE__, (ctx), (list))
 

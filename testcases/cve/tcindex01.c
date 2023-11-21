@@ -46,15 +46,15 @@ static const struct tc_htb_glob qd_opt = {
 static struct tc_htb_opt cls_opt = {};
 
 /* htb qdisc and class options */
-static const struct tst_rtnl_attr_list qd_config[] = {
-	{TCA_OPTIONS, NULL, 0, (const struct tst_rtnl_attr_list[]){
+static const struct tst_netlink_attr_list qd_config[] = {
+	{TCA_OPTIONS, NULL, 0, (const struct tst_netlink_attr_list[]){
 		{TCA_HTB_INIT, &qd_opt, sizeof(qd_opt), NULL},
 		{0, NULL, -1, NULL}
 	}},
 	{0, NULL, -1, NULL}
 };
-static const struct tst_rtnl_attr_list cls_config[] = {
-	{TCA_OPTIONS, NULL, 0, (const struct tst_rtnl_attr_list[]){
+static const struct tst_netlink_attr_list cls_config[] = {
+	{TCA_OPTIONS, NULL, 0, (const struct tst_netlink_attr_list[]){
 		{TCA_HTB_PARMS, &cls_opt, sizeof(cls_opt), NULL},
 		{0, NULL, -1, NULL}
 	}},
@@ -62,8 +62,8 @@ static const struct tst_rtnl_attr_list cls_config[] = {
 };
 
 /* tcindex filter options */
-static const struct tst_rtnl_attr_list f_config[] = {
-	{TCA_OPTIONS, NULL, 0, (const struct tst_rtnl_attr_list[]){
+static const struct tst_netlink_attr_list f_config[] = {
+	{TCA_OPTIONS, NULL, 0, (const struct tst_netlink_attr_list[]){
 		{TCA_TCINDEX_MASK, &mask, sizeof(mask), NULL},
 		{TCA_TCINDEX_SHIFT, &shift, sizeof(shift), NULL},
 		{TCA_TCINDEX_CLASSID, &clsid, sizeof(clsid), NULL},

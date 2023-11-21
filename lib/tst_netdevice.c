@@ -105,17 +105,17 @@ int tst_create_veth_pair(const char *file, const int lineno, int strict,
 	int ret;
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
 	struct tst_netlink_context *ctx;
-	struct tst_rtnl_attr_list peerinfo[] = {
+	struct tst_netlink_attr_list peerinfo[] = {
 		{IFLA_IFNAME, ifname2, strlen(ifname2) + 1, NULL},
 		{0, NULL, -1, NULL}
 	};
-	struct tst_rtnl_attr_list peerdata[] = {
+	struct tst_netlink_attr_list peerdata[] = {
 		{VETH_INFO_PEER, &info, sizeof(info), peerinfo},
 		{0, NULL, -1, NULL}
 	};
-	struct tst_rtnl_attr_list attrs[] = {
+	struct tst_netlink_attr_list attrs[] = {
 		{IFLA_IFNAME, ifname1, strlen(ifname1) + 1, NULL},
-		{IFLA_LINKINFO, NULL, 0, (const struct tst_rtnl_attr_list[]){
+		{IFLA_LINKINFO, NULL, 0, (const struct tst_netlink_attr_list[]){
 			{IFLA_INFO_KIND, "veth", 4, NULL},
 			{IFLA_INFO_DATA, NULL, 0, peerdata},
 			{0, NULL, -1, NULL}
@@ -164,9 +164,9 @@ int tst_netdev_add_device(const char *file, const int lineno, int strict,
 	int ret;
 	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
 	struct tst_netlink_context *ctx;
-	struct tst_rtnl_attr_list attrs[] = {
+	struct tst_netlink_attr_list attrs[] = {
 		{IFLA_IFNAME, ifname, strlen(ifname) + 1, NULL},
-		{IFLA_LINKINFO, NULL, 0, (const struct tst_rtnl_attr_list[]){
+		{IFLA_LINKINFO, NULL, 0, (const struct tst_netlink_attr_list[]){
 			{IFLA_INFO_KIND, devtype, strlen(devtype), NULL},
 			{0, NULL, -1, NULL}
 		}},
@@ -527,7 +527,7 @@ static int modify_qdisc(const char *file, const int lineno, int strict,
 	const char *object, unsigned int action, unsigned int nl_flags,
 	const char *ifname, unsigned int family, unsigned int parent,
 	unsigned int handle, unsigned int info, const char *qd_kind,
-	const struct tst_rtnl_attr_list *config)
+	const struct tst_netlink_attr_list *config)
 {
 	struct tst_netlink_context *ctx;
 	int ret;
@@ -585,7 +585,7 @@ static int modify_qdisc(const char *file, const int lineno, int strict,
 int tst_netdev_add_qdisc(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, unsigned int parent,
 	unsigned int handle, const char *qd_kind,
-	const struct tst_rtnl_attr_list *config)
+	const struct tst_netlink_attr_list *config)
 {
 	return modify_qdisc(file, lineno, strict, "queueing discipline",
 		RTM_NEWQDISC, NLM_F_CREATE | NLM_F_EXCL, ifname, family,
@@ -604,7 +604,7 @@ int tst_netdev_remove_qdisc(const char *file, const int lineno, int strict,
 int tst_netdev_add_traffic_class(const char *file, const int lineno,
 	int strict, const char *ifname, unsigned int parent,
 	unsigned int handle, const char *qd_kind,
-	const struct tst_rtnl_attr_list *config)
+	const struct tst_netlink_attr_list *config)
 {
 	return modify_qdisc(file, lineno, strict, "traffic class",
 		RTM_NEWTCLASS, NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC,
@@ -623,7 +623,7 @@ int tst_netdev_remove_traffic_class(const char *file, const int lineno,
 int tst_netdev_add_traffic_filter(const char *file, const int lineno,
 	int strict, const char *ifname, unsigned int parent,
 	unsigned int handle, unsigned int protocol, unsigned int priority,
-	const char *f_kind, const struct tst_rtnl_attr_list *config)
+	const char *f_kind, const struct tst_netlink_attr_list *config)
 {
 	return modify_qdisc(file, lineno, strict, "traffic filter",
 		RTM_NEWTFILTER, NLM_F_CREATE | NLM_F_EXCL, ifname, AF_UNSPEC,
