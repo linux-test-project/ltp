@@ -339,7 +339,15 @@ static void do_test(unsigned int number)
 	tst_count++;
 
 	/* Generate modify events "on child" */
-	fd = SAFE_CREAT(fname1, 0755);
+
+	/*
+	 * Split SAFE_CREAT() into explicit SAFE_MKNOD() and SAFE_OPEN(),
+	 * because with atomic open (e.g. fuse), SAFE_CREAT() generates
+	 * FAN_OPEN before FAN_CREATE and it is inconsistent with the order
+	 * of events expectated from other filesystems.
+	 */
+	SAFE_MKNOD(fname1, S_IFREG | 0644, 0);
+	fd = SAFE_OPEN(fname1, O_WRONLY);
 
 	/* Save the file fid */
 	fanotify_save_fid(fname1, &file_fid);
