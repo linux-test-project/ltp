@@ -455,18 +455,19 @@ int tst_netlink_check_acks(const char *file, const int lineno,
 		if (!(msg->nlmsg_flags & NLM_F_ACK))
 			continue;
 
-		while (res->header && res->header->nlmsg_seq != msg->nlmsg_seq)
+		while (res->header && !(res->err && res->err->error) &&
+			res->header->nlmsg_seq != msg->nlmsg_seq)
 			res++;
 
-		if (!res->err || res->header->nlmsg_seq != msg->nlmsg_seq) {
-			tst_brk_(file, lineno, TBROK,
-				"No ACK found for Netlink message %u",
-				msg->nlmsg_seq);
+		if (res->err && res->err->error) {
+			tst_netlink_errno = -res->err->error;
 			return 0;
 		}
 
-		if (res->err->error) {
-			tst_netlink_errno = -res->err->error;
+		if (!res->header || res->header->nlmsg_seq != msg->nlmsg_seq) {
+			tst_brk_(file, lineno, TBROK,
+				"No ACK found for Netlink message %u",
+				msg->nlmsg_seq);
 			return 0;
 		}
 	}
