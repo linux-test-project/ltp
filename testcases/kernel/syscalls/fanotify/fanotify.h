@@ -107,10 +107,6 @@ static inline int fanotify_get_fid(const char *path, __kernel_fsid_t *fsid,
 	return 0;
 }
 
-#ifndef FILEID_INVALID
-#define FILEID_INVALID		0xff
-#endif
-
 struct fanotify_fid_t {
 	__kernel_fsid_t fsid;
 	struct file_handle handle;

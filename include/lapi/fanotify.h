@@ -208,4 +208,9 @@ struct fanotify_event_info_error {
 # define FSID_VAL_MEMBER(fsid, i) (fsid.val[i])
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL */
 
+/* linux/exportfs.h */
+#ifndef FILEID_INVALID
+# define FILEID_INVALID		0xff
+#endif
+
 #endif /* LAPI_FANOTIFY_H__ */
