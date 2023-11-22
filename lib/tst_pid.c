@@ -166,3 +166,8 @@ pid_t tst_getpid(void)
 {
 	return syscall(SYS_getpid);
 }
+
+pid_t tst_gettid(void)
+{
+	return syscall(SYS_gettid);
+}
