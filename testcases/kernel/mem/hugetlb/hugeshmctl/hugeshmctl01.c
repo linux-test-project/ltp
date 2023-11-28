@@ -1,35 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2004
- * Copyright (c) Linux Test Project, 2004-2020
+ * Copyright (c) Linux Test Project, 2004-2023
+ * Original author: Wayne Boyer, modified by Robbie Williamson
  */
 
-/*
- * DESCRIPTION
- *	hugeshmctl01 - test the IPC_STAT, IPC_SET and IPC_RMID commands as
- *		   they are used with shmctl()
+/*\
+ * [Description]
  *
- * ALGORITHM
- *	loop if that option was specified
- *	create a large shared memory segment with read and write permission
- *	set up any test case specific conditions
- *	call shmctl() using the TEST macro
- *	check the return code
- *	  if failure, issue a FAIL message.
- *	otherwise,
- *	  if doing functionality testing
- *		call the correct test function
- *		if the conditions are correct,
- *			issue a PASS message
- *		otherwise
- *			issue a FAIL message
- *	  otherwise
- *	    issue a PASS message
- *	call cleanup
- *
- * HISTORY
- *	03/2001 - Written by Wayne Boyer
- *	04/2004 - Updated by Robbie Williamson
+ * Test the IPC_STAT, IPC_SET and IPC_RMID commands used by shmctl().
  */
 
 #include <limits.h>
@@ -71,9 +50,11 @@ static void test_hugeshmctl(unsigned int i)
 	 * permissions.  Do this here instead of in setup()
 	 * so that looping (-i) will work correctly.
 	 */
-	if (i == 0)
+	if (i == 0) {
 		shm_id_1 = shmget(shmkey, shm_size,
 			SHM_HUGETLB | IPC_CREAT | IPC_EXCL | SHM_RW);
+	}
+
 	if (shm_id_1 == -1)
 		tst_brk(TBROK | TERRNO, "shmget #main");
 
