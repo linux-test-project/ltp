@@ -14,6 +14,7 @@
 #include "hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
+#define FLAGS_DESC(x) .flags = x, .flags_str = #x
 
 static int fd = -1;
 static unsigned long hpage_size;
@@ -22,10 +23,10 @@ static struct tcase {
 	int flags;
 	char *flags_str;
 } tcases[] = {
-	{MAP_PRIVATE, "MAP_PRIVATE"},
-	{MAP_SHARED, "MAP_SHARED"},
-	{MAP_PRIVATE | MAP_LOCKED, "MAP_PRIVATE | MAP_LOCKED"},
-	{MAP_SHARED | MAP_LOCKED, "MAP_SHARED | MAP_LOCKED"},
+	{ FLAGS_DESC(MAP_PRIVATE) },
+	{ FLAGS_DESC(MAP_SHARED) },
+	{ FLAGS_DESC(MAP_PRIVATE | MAP_LOCKED) },
+	{ FLAGS_DESC(MAP_SHARED | MAP_LOCKED) },
 };
 
 static void run_test(unsigned int i)
