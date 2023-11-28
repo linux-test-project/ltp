@@ -1,13 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2002-2023
 # Copyright (c) International Business Machines  Corp., 2001
 
 top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-# - ptrace06 is a broken test ; it hangs the target consistently, chewing up
-#   CPU. See: `Issue 3 - ptrace06 hung for 7 hours' --
-# http://sourceforge.net/mailarchive/forum.php?thread_name=364299f40910062300s65c43c93w9cccdfe8835c2334%40mail.gmail.com&forum_name=ltp-list
 # - simple_tracer is a utility that Mike Frysinger added that shouldn't be
 #   compiled by default:
 #
@@ -29,6 +27,6 @@ include $(top_srcdir)/include/mk/testcases.mk
 #  make: *** [testcases-all] Error 2
 #
 
-FILTER_OUT_MAKE_TARGETS	:= ptrace06 simple_tracer
+FILTER_OUT_MAKE_TARGETS	:= simple_tracer
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
