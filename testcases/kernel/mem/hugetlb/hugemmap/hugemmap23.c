@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  * Copyright (C) 2005-2006 IBM Corporation.
+ * Copyright (c) Linux Test Project, 2023
  * Author: David Gibson & Adam Litke
  */
 
@@ -11,11 +12,13 @@
  * perform read/write operation. It checks if the operation results in
  * expected behaviour as per the protection.
  */
+
 #include <setjmp.h>
 #include "hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 #define RANDOM_CONSTANT 0x1234ABCD
+#define FLAGS_DESC(x) x, #x
 
 static int fd = -1;
 static sigjmp_buf sig_escape;
@@ -32,23 +35,12 @@ static struct tcase {
 	int prot2;
 	char *prot2_str;
 } tcases[] = {
-	{"R->RW", 1, PROT_READ, "PROT_READ",
-		1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE"},
-
-	{"RW->R", 1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE",
-		1, PROT_READ, "PROT_READ"},
-
-	{"R->RW 1/2", 2, PROT_READ, "PROT_READ",
-		1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE"},
-
-	{"RW->R 1/2", 2, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE",
-		1, PROT_READ, "PROT_READ"},
-
-	{"NONE->R", 1, PROT_NONE, "PROT_NONE",
-		1, PROT_READ, "PROT_READ"},
-
-	{"NONE->RW", 1, PROT_NONE, "PROT_NONE",
-		1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE"},
+	{"R->RW", 1, FLAGS_DESC(PROT_READ), 1, FLAGS_DESC(PROT_READ|PROT_WRITE)},
+	{"RW->R", 1, FLAGS_DESC(PROT_READ | PROT_WRITE), 1, FLAGS_DESC(PROT_READ)},
+	{"R->RW 1/2", 2, FLAGS_DESC(PROT_READ), 1, FLAGS_DESC(PROT_READ | PROT_WRITE)},
+	{"RW->R 1/2", 2, FLAGS_DESC(PROT_READ | PROT_WRITE), 1, FLAGS_DESC(PROT_READ)},
+	{"NONE->R", 1, FLAGS_DESC(PROT_NONE), 1, FLAGS_DESC(PROT_READ)},
+	{"NONE->RW", 1, FLAGS_DESC(PROT_NONE), 1, FLAGS_DESC(PROT_READ | PROT_WRITE)},
 };
 
 static void sig_handler(int signum, siginfo_t *si, void *uc)
