@@ -1,24 +1,28 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015-2017 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2018-2023
  *
- * DESCRIPTION
+ * Authors:
+ * Herton R. Krzesinski <herton@redhat.com>
+ * Li Wang <liwang@redhat.com>
+ */
+
+/*\
+ * [Description]
  *
- *   There is a race condition if we map a same file on different processes.
- *   Region tracking is protected by mmap_sem and hugetlb_instantiation_mutex.
- *   When we do mmap, we don't grab a hugetlb_instantiation_mutex, but only
- *   mmap_sem (exclusively).  This doesn't prevent other tasks from modifying
- *   the region structure, so it can be modified by two processes concurrently.
+ * There is a race condition if we map a same file on different processes.
+ * Region tracking is protected by mmap_sem and hugetlb_instantiation_mutex.
+ * When we do mmap, we don't grab a hugetlb_instantiation_mutex, but only
+ * mmap_sem (exclusively).  This doesn't prevent other tasks from modifying
+ * the region structure, so it can be modified by two processes concurrently.
  *
- *   This bug was fixed on stable kernel by commits:
- *       f522c3ac00a4(mm, hugetlb: change variable name reservations to resv)
- *       9119a41e9091(mm, hugetlb: unify region structure handling)
- *       7b24d8616be3(mm, hugetlb: fix race in region tracking)
- *       1406ec9ba6c6(mm, hugetlb: improve, cleanup resv_map parameters)
+ * This bug was fixed on stable kernel by commits:
  *
- * AUTHOR:
- *    Herton R. Krzesinski <herton@redhat.com>
- *    Li Wang <liwang@redhat.com>
+ * f522c3ac00a4 (mm, hugetlb: change variable name reservations to resv)
+ * 9119a41e9091 (mm, hugetlb: unify region structure handling)
+ * 7b24d8616be3 (mm, hugetlb: fix race in region tracking)
+ * 1406ec9ba6c6 (mm, hugetlb: improve, cleanup resv_map parameters)
  */
 
 #define _GNU_SOURCE
@@ -73,8 +77,7 @@ static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 
 	if (addr == MAP_FAILED) {
 		if (errno == ENOMEM) {
-			tst_brk(TCONF,
-				"Cannot allocate hugepage, memory too fragmented?");
+			tst_brk(TCONF, "Cannot allocate hugepage, memory too fragmented?");
 		}
 
 		tst_brk(TBROK | TERRNO, "Cannot allocate hugepage");
@@ -86,8 +89,7 @@ static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 
 		TEST(pthread_create(&tid[i], NULL, thr, &mmap_sz[i]));
 		if (TST_RET)
-			tst_brk(TBROK | TRERRNO,
-					"pthread_create failed");
+			tst_brk(TBROK | TRERRNO, "pthread_create failed");
 
 		new_addr = mmap(addr, (sz - 1) * hpage_size,
 				PROT_READ | PROT_WRITE,
@@ -103,14 +105,13 @@ static void do_mmap(unsigned int j LTP_ATTRIBUTE_UNUSED)
 	for (i = 0; i < ARSZ; ++i) {
 		TEST(pthread_join(tid[i], NULL));
 		if (TST_RET)
-			tst_brk(TBROK | TRERRNO,
-					"pthread_join failed");
+			tst_brk(TBROK | TRERRNO, "pthread_join failed");
 	}
 
 	if (munmap(addr, sz * hpage_size) == -1)
 		tst_brk(TFAIL | TERRNO, "huge munmap failed");
 
-	tst_res(TPASS, "No regression found.");
+	tst_res(TPASS, "No regression found");
 }
 
 static struct tst_test test = {
