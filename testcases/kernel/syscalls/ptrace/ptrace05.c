@@ -33,9 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <config.h>
-#include "ptrace.h"
+#include <sys/ptrace.h>
 
 #include "test.h"
 #include "lapi/signal.h"

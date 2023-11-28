@@ -11,9 +11,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <pwd.h>
-#include <config.h>
 #include <stdlib.h>
-#include "ptrace.h"
+#include <sys/ptrace.h>
 #include "tst_test.h"
 
 uid_t uid;

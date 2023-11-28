@@ -35,9 +35,8 @@
 #include <stdlib.h>
 #include <sys/uio.h>
 #include <sys/wait.h>
+#include <sys/ptrace.h>
 
-#include "config.h"
-#include "ptrace.h"
 #include "tst_safe_macros.h"
 #include "lapi/cpuid.h"
 

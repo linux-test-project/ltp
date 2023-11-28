@@ -29,6 +29,7 @@
  * until vfork returns. This can delay delivery of signals to the parent
  * process, even delay or stop system suspend.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,9 +40,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <sys/ptrace.h>
 #include "test.h"
-#include "config.h"
-#include "../../syscalls/ptrace/ptrace.h"
 
 #define str_expand(s) str(s)
 #define str(s) #s

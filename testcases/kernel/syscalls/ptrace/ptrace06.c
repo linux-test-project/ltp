@@ -16,13 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#include <config.h>
-#include "ptrace.h"
+#include <sys/ptrace.h>
 
 #include "test.h"
 #include "spawn_ptrace_child.h"
-#include "config.h"
 
 /* this should be sizeof(struct user), but that info is only found
  * in the kernel asm/user.h which is not exported to userspace.
