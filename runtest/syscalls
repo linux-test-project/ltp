@@ -972,6 +972,7 @@ madvise11 madvise11
 newuname01 newuname01
 
 pathconf01 pathconf01
+pathconf02 pathconf02
 
 pause01 pause01
 pause02 pause02
