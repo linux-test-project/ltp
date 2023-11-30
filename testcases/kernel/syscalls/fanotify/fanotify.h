@@ -229,6 +229,11 @@ static inline int fanotify_init_flags_supported_by_kernel(unsigned int flags)
 	return fanotify_init_flags_supported_on_fs(flags, NULL);
 }
 
+static inline int fanotify_mark_supported_on_fs(uint64_t flag, const char *fname)
+{
+	return fanotify_flags_supported_on_fs(FAN_CLASS_NOTIF, flag, FAN_ACCESS, fname);
+}
+
 #define TST_FANOTIFY_INIT_KNOWN_FLAGS                                      \
 	(FAN_REPORT_DFID_NAME_TARGET | FAN_REPORT_TID | FAN_REPORT_PIDFD | \
 	FAN_CLASS_NOTIF | FAN_CLASS_CONTENT | FAN_CLASS_PRE_CONTENT)
@@ -336,9 +341,9 @@ static inline int fanotify_handle_supported_by_kernel(int flag)
 	return 0;
 }
 
-#define REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(mark_type) \
+#define REQUIRE_MARK_TYPE_SUPPORTED_ON_FS(mark_type, fname) \
 	fanotify_flags_err_msg(#mark_type, __FILE__, __LINE__, tst_brk_, \
-		fanotify_mark_supported_by_kernel(mark_type))
+		fanotify_mark_supported_on_fs(mark_type, fname))
 
 #define REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(handle_type) \
 	fanotify_flags_err_msg(#handle_type, __FILE__, __LINE__, tst_brk_, \
@@ -346,7 +351,7 @@ static inline int fanotify_handle_supported_by_kernel(int flag)
 
 #define REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(init_flags, mark_type, mask, fname) do { \
 	if (mark_type)							\
-		REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(mark_type);	\
+		REQUIRE_MARK_TYPE_SUPPORTED_ON_FS(mark_type, fname);	\
 	if (init_flags)							\
 		REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(init_flags, fname); \
 	fanotify_flags_err_msg(#mask, __FILE__, __LINE__, tst_brk_, \
