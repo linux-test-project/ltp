@@ -201,11 +201,6 @@ static inline int fanotify_init_flags_supported_on_fs(unsigned int flags, const 
 	return fanotify_flags_supported_on_fs(flags, FAN_MARK_INODE, FAN_ACCESS, fname);
 }
 
-static inline int fanotify_init_flags_supported_by_kernel(unsigned int flags)
-{
-	return fanotify_init_flags_supported_on_fs(flags, NULL);
-}
-
 static inline int fanotify_mark_supported_on_fs(uint64_t flag, const char *fname)
 {
 	return fanotify_flags_supported_on_fs(FAN_CLASS_NOTIF, flag, FAN_ACCESS, fname);
@@ -279,10 +274,6 @@ static inline void fanotify_flags_err_msg(const char *flags_str,
 #define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(flags, fname) \
 	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
 		fanotify_init_flags_supported_on_fs(flags, fname))
-
-#define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_BY_KERNEL(flags) \
-	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
-		fanotify_init_flags_supported_by_kernel(flags))
 
 static inline int fanotify_handle_supported_by_kernel(int flag)
 {
