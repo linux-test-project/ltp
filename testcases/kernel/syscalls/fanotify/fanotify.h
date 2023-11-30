@@ -152,29 +152,6 @@ static inline void require_fanotify_access_permissions_supported_by_kernel(void)
 	SAFE_CLOSE(fd);
 }
 
-static inline int fanotify_events_supported_by_kernel(uint64_t mask,
-						      unsigned int init_flags,
-						      unsigned int mark_flags)
-{
-	int fd;
-	int rval = 0;
-
-	fd = SAFE_FANOTIFY_INIT(init_flags, O_RDONLY);
-
-	if (fanotify_mark(fd, FAN_MARK_ADD | mark_flags, mask, AT_FDCWD, ".") < 0) {
-		if (errno == EINVAL) {
-			rval = -1;
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark (%d, FAN_MARK_ADD, ..., AT_FDCWD, \".\") failed", fd);
-		}
-	}
-
-	SAFE_CLOSE(fd);
-
-	return rval;
-}
-
 /*
  * @return  0: fanotify flags supported both in kernel and on tested filesystem
  * @return -1: @init_flags not supported in kernel
@@ -306,27 +283,6 @@ static inline void fanotify_flags_err_msg(const char *flags_str,
 #define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_BY_KERNEL(flags) \
 	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
 		fanotify_init_flags_supported_by_kernel(flags))
-
-static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
-{
-	int fd;
-	int rval = 0;
-
-	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
-
-	if (fanotify_mark(fd, FAN_MARK_ADD | flag, FAN_ACCESS, AT_FDCWD, ".") < 0) {
-		if (errno == EINVAL) {
-			rval = -1;
-		} else {
-			tst_brk(TBROK | TERRNO,
-				"fanotify_mark (%d, FAN_MARK_ADD, ..., FAN_ACCESS, AT_FDCWD, \".\") failed", fd);
-		}
-	}
-
-	SAFE_CLOSE(fd);
-
-	return rval;
-}
 
 static inline int fanotify_handle_supported_by_kernel(int flag)
 {
