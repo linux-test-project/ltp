@@ -195,7 +195,9 @@ static inline int fanotify_flags_supported_on_fs(unsigned int init_flags,
 		if (errno == ENOSYS)
 			tst_brk(TCONF, "fanotify not configured in kernel");
 		if (errno != EINVAL)
-			tst_brk(TBROK | TERRNO, "fanotify_init() failed");
+			tst_brk(TBROK | TERRNO,
+				"fanotify_init(%x, O_RDONLY) failed",
+				init_flags);
 		return -1;
 	}
 
@@ -204,8 +206,9 @@ static inline int fanotify_flags_supported_on_fs(unsigned int init_flags,
 			rval = strcmp(fname, OVL_MNT) ? -2 : -3;
 		} else if (errno != EINVAL) {
 			tst_brk(TBROK | TERRNO,
-				"fanotify_mark (%d, FAN_MARK_ADD, ..., AT_FDCWD, %s) failed",
-				fd, fname);
+				"fanotify_mark (%d, FAN_MARK_ADD | %x, %llx, AT_FDCWD, %s) failed",
+				fd, mark_flags, (unsigned long long)event_flags,
+				fname);
 		} else {
 			rval = -1;
 		}
