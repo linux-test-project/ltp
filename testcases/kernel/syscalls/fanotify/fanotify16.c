@@ -766,7 +766,8 @@ static void setup(void)
 	fan_report_target_fid_unsupported =
 		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MOUNT_PATH);
 	rename_events_unsupported =
-		fanotify_events_supported_by_kernel(FAN_RENAME, FAN_REPORT_DFID_NAME, 0);
+		fanotify_flags_supported_on_fs(FAN_REPORT_DFID_NAME, 0,
+					       FAN_RENAME, MOUNT_PATH);
 
 	SAFE_MKDIR(TEMP_DIR, 0755);
 	sprintf(dname1, "%s/%s", MOUNT_PATH, DIR_NAME1);

@@ -355,7 +355,7 @@ static inline int fanotify_handle_supported_by_kernel(int flag)
 	if (init_flags)							\
 		REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(init_flags, fname); \
 	fanotify_flags_err_msg(#mask, __FILE__, __LINE__, tst_brk_, \
-		fanotify_events_supported_by_kernel(mask, init_flags, mark_type)); \
+		fanotify_flags_supported_on_fs(init_flags, mark_type, mask, fname)); \
 } while (0)
 
 static inline struct fanotify_event_info_header *get_event_info(

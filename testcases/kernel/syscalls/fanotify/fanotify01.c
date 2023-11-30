@@ -341,7 +341,7 @@ static void setup(void)
 	SAFE_FILE_PRINTF(fname, "1");
 
 	fan_report_fid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FID, fname);
-	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
+	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM, fname);
 }
 
 static void cleanup(void)

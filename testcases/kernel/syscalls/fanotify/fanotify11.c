@@ -94,7 +94,7 @@ static void test01(unsigned int i)
 
 static void setup(void)
 {
-	fan_report_tid_unsupported = fanotify_init_flags_supported_by_kernel(FAN_REPORT_TID);
+	fan_report_tid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_TID, ".");
 }
 
 static struct tst_test test = {

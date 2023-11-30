@@ -325,7 +325,8 @@ static void do_setup(void)
 	supported_init_flags = fanotify_get_supported_init_flags(all_init_flags,
 		MNTPOINT);
 
-	ignore_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_IGNORE_SURV);
+	ignore_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_IGNORE_SURV,
+								MNTPOINT);
 
 	/* Create temporary test file to place marks on */
 	SAFE_FILE_PRINTF(FILE1, "0");

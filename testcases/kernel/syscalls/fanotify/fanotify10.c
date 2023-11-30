@@ -874,11 +874,14 @@ static void setup(void)
 {
 	int i;
 
-	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC,
-								      FAN_CLASS_CONTENT, 0);
-	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
-	evictable_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_EVICTABLE);
-	ignore_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_IGNORE_SURV);
+	exec_events_unsupported = fanotify_flags_supported_on_fs(FAN_CLASS_CONTENT,
+					0, FAN_OPEN_EXEC, MOUNT_PATH);
+	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM,
+								    MOUNT_PATH);
+	evictable_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_EVICTABLE,
+								   MOUNT_PATH);
+	ignore_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_IGNORE_SURV,
+								MOUNT_PATH);
 	fan_report_dfid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
 									  MOUNT_PATH);
 	if (fan_report_dfid_unsupported) {

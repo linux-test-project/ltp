@@ -222,11 +222,10 @@ cleanup:
 
 static void do_setup(void)
 {
-	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC,
-								      FAN_CLASS_NOTIF, 0);
-
 	sprintf(fname, "fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
+	exec_events_unsupported = fanotify_flags_supported_on_fs(FAN_CLASS_NOTIF,
+					0, FAN_OPEN_EXEC, fname);
 }
 
 static void do_cleanup(void)

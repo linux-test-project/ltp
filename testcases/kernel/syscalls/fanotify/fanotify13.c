@@ -325,7 +325,8 @@ static void do_setup(void)
 	SAFE_MOUNT(mnt, MOUNT_PATH, "none", MS_BIND, NULL);
 	bind_mounted = 1;
 
-	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
+	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM,
+								    MOUNT_PATH);
 
 	nofid_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 
