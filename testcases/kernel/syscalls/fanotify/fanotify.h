@@ -176,41 +176,49 @@ static inline int fanotify_events_supported_by_kernel(uint64_t mask,
 }
 
 /*
- * @return  0: fanotify supported both in kernel and on tested filesystem
- * @return -1: @flags not supported in kernel
- * @return -2: @flags not supported on tested filesystem (tested if @fname is not NULL)
- * @return -3: @flags not supported on overlayfs (tested if @fname == OVL_MNT)
+ * @return  0: fanotify flags supported both in kernel and on tested filesystem
+ * @return -1: @init_flags not supported in kernel
+ * @return -2: @mark_flags not supported on tested filesystem (tested if @fname is not NULL)
+ * @return -3: @mark_flags not supported on overlayfs (tested if @fname == OVL_MNT)
  */
-static inline int fanotify_init_flags_supported_on_fs(unsigned int flags, const char *fname)
+static inline int fanotify_flags_supported_on_fs(unsigned int init_flags,
+						 unsigned int mark_flags,
+						 uint64_t event_flags,
+						 const char *fname)
 {
 	int fd;
 	int rval = 0;
 
-	fd = fanotify_init(flags, O_RDONLY);
+	fd = fanotify_init(init_flags, O_RDONLY);
 
 	if (fd < 0) {
 		if (errno == ENOSYS)
 			tst_brk(TCONF, "fanotify not configured in kernel");
-
-		if (errno == EINVAL)
-			return -1;
-
-		tst_brk(TBROK | TERRNO, "fanotify_init() failed");
+		if (errno != EINVAL)
+			tst_brk(TBROK | TERRNO, "fanotify_init() failed");
+		return -1;
 	}
 
-	if (fname && fanotify_mark(fd, FAN_MARK_ADD, FAN_ACCESS, AT_FDCWD, fname) < 0) {
+	if (fname && fanotify_mark(fd, FAN_MARK_ADD | mark_flags, event_flags, AT_FDCWD, fname) < 0) {
 		if (errno == ENODEV || errno == EOPNOTSUPP || errno == EXDEV) {
 			rval = strcmp(fname, OVL_MNT) ? -2 : -3;
-		} else {
+		} else if (errno != EINVAL) {
 			tst_brk(TBROK | TERRNO,
 				"fanotify_mark (%d, FAN_MARK_ADD, ..., AT_FDCWD, %s) failed",
 				fd, fname);
+		} else {
+			rval = -1;
 		}
 	}
 
 	SAFE_CLOSE(fd);
 
 	return rval;
+}
+
+static inline int fanotify_init_flags_supported_on_fs(unsigned int flags, const char *fname)
+{
+	return fanotify_flags_supported_on_fs(flags, FAN_MARK_INODE, FAN_ACCESS, fname);
 }
 
 static inline int fanotify_init_flags_supported_by_kernel(unsigned int flags)
@@ -264,7 +272,7 @@ static inline unsigned int fanotify_get_supported_init_flags(unsigned int flags,
 typedef void (*tst_res_func_t)(const char *file, const int lineno,
 			       int ttype, const char *fmt, ...);
 
-static inline void fanotify_init_flags_err_msg(const char *flags_str,
+static inline void fanotify_flags_err_msg(const char *flags_str,
 	const char *file, const int lineno, tst_res_func_t res_func, int fail)
 {
 	if (fail == -1)
@@ -278,14 +286,17 @@ static inline void fanotify_init_flags_err_msg(const char *flags_str,
 }
 
 #define FANOTIFY_INIT_FLAGS_ERR_MSG(flags, fail) \
-	fanotify_init_flags_err_msg(#flags, __FILE__, __LINE__, tst_res_, (fail))
+	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_res_, (fail))
+
+#define FANOTIFY_MARK_FLAGS_ERR_MSG(mark, fail) \
+	fanotify_flags_err_msg((mark)->name, __FILE__, __LINE__, tst_res_, (fail))
 
 #define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(flags, fname) \
-	fanotify_init_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
+	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
 		fanotify_init_flags_supported_on_fs(flags, fname))
 
 #define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_BY_KERNEL(flags) \
-	fanotify_init_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
+	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
 		fanotify_init_flags_supported_by_kernel(flags))
 
 static inline int fanotify_mark_supported_by_kernel(uint64_t flag)
@@ -323,19 +334,19 @@ static inline int fanotify_handle_supported_by_kernel(int flag)
 }
 
 #define REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(mark_type) \
-	fanotify_init_flags_err_msg(#mark_type, __FILE__, __LINE__, tst_brk_, \
-				    fanotify_mark_supported_by_kernel(mark_type))
+	fanotify_flags_err_msg(#mark_type, __FILE__, __LINE__, tst_brk_, \
+		fanotify_mark_supported_by_kernel(mark_type))
 
 #define REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(handle_type) \
-	fanotify_init_flags_err_msg(#handle_type, __FILE__, __LINE__, tst_brk_, \
-				    fanotify_handle_supported_by_kernel(handle_type))
+	fanotify_flags_err_msg(#handle_type, __FILE__, __LINE__, tst_brk_, \
+		fanotify_handle_supported_by_kernel(handle_type))
 
 #define REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(init_flags, mark_type, mask, fname) do { \
 	if (mark_type)							\
 		REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(mark_type);	\
 	if (init_flags)							\
 		REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(init_flags, fname); \
-	fanotify_init_flags_err_msg(#mask, __FILE__, __LINE__, tst_brk_, \
+	fanotify_flags_err_msg(#mask, __FILE__, __LINE__, tst_brk_, \
 		fanotify_events_supported_by_kernel(mask, init_flags, mark_type)); \
 } while (0)
 
