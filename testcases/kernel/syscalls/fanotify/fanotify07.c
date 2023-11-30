@@ -189,10 +189,9 @@ static void test_fanotify(void)
 
 static void setup(void)
 {
-	require_fanotify_access_permissions_supported_by_kernel();
-
 	sprintf(fname, "fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "%s", fname);
+	require_fanotify_access_permissions_supported_on_fs(fname);
 }
 
 static void cleanup(void)

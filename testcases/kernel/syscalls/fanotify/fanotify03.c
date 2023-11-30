@@ -320,11 +320,10 @@ static void test_fanotify(unsigned int n)
 
 static void setup(void)
 {
-	require_fanotify_access_permissions_supported_by_kernel();
-
 	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
 
+	require_fanotify_access_permissions_supported_on_fs(fname);
 	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM, fname);
 	exec_events_unsupported = fanotify_flags_supported_on_fs(FAN_CLASS_CONTENT,
 					0, FAN_OPEN_EXEC_PERM, fname);
