@@ -93,6 +93,19 @@ static struct ldisc_info ldiscs[] = {
 
 static int ptmx = -1, pts = -1, sk = -1, mtu, no_check;
 
+static void setup(void)
+{
+	int fd = SAFE_OPEN("/dev/ptmx", O_RDWR);
+
+	TEST(ioctl(fd, TIOCVHANGUP));
+	SAFE_CLOSE(fd);
+
+	if (TST_RET && TST_ERR == ENOTTY)
+		tst_brk(TCONF | TTERRNO, "ioctl(TIOCVHANGUP) not supported");
+	else if (TST_RET)
+		tst_brk(TBROK | TTERRNO, "ioctl(TIOCVHANGUP) failed");
+}
+
 static int set_ldisc(int tty, const struct ldisc_info *ldisc)
 {
 	TEST(ioctl(tty, TIOCSETD, &ldisc->n));
@@ -467,6 +480,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.setup = setup,
 	.test = do_test,
 	.cleanup = cleanup,
 	.tcnt = 2,
