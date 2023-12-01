@@ -109,8 +109,9 @@ static void setup(void)
 	unalign_value = pg_size - 1;
 
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
+	ret = ioctl(dev_fd, LOOP_SET_BLOCK_SIZE, 512);
 
-	if (ioctl(dev_fd, LOOP_SET_BLOCK_SIZE, 512) && errno == EINVAL)
+	if (ret && (errno == EINVAL || errno == ENOTTY))
 		tst_brk(TCONF, "LOOP_SET_BLOCK_SIZE is not supported");
 
 	file_fd = SAFE_OPEN("test.img", O_RDWR);
