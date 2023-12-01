@@ -14,17 +14,17 @@
  *
  * Expected Result:
  * 1) getcwd(2) should return NULL and set errno to EFAULT.
- * 2) getcwd(2) should return NULL and set errno to ENOMEM.
- * 3) getcwd(2) should return NULL and set errno to EINVAL.
+ * 2) getcwd(2) should return NULL and set errno to EFAULT.
+ * 3) getcwd(2) should return NULL and set errno to ERANGE.
  * 4) getcwd(2) should return NULL and set errno to ERANGE.
  * 5) getcwd(2) should return NULL and set errno to ERANGE.
- *
  */
 
 #include <errno.h>
 #include <unistd.h>
 #include <limits.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 static char buffer[5];
 
@@ -34,32 +34,18 @@ static struct t_case {
 	int exp_err;
 } tcases[] = {
 	{(void *)-1, PATH_MAX, EFAULT},
-	{NULL, (size_t)-1, ENOMEM},
-	{buffer, 0, EINVAL},
+	{NULL, (size_t)-1, EFAULT},
+	{buffer, 0, ERANGE},
 	{buffer, 1, ERANGE},
 	{NULL, 1, ERANGE}
 };
 
+
 static void verify_getcwd(unsigned int n)
 {
 	struct t_case *tc = &tcases[n];
-	char *res;
 
-	errno = 0;
-	res = getcwd(tc->buf, tc->size);
-	TST_ERR = errno;
-	if (res) {
-		tst_res(TFAIL, "getcwd() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != tc->exp_err) {
-		tst_res(TFAIL | TTERRNO, "getcwd() failed unexpectedly, expected %s",
-			tst_strerrno(tc->exp_err));
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "getcwd() failed as expected");
+	TST_EXP_FAIL2(tst_syscall(__NR_getcwd, tc->buf, tc->size), tc->exp_err);
 }
 
 static struct tst_test test = {
