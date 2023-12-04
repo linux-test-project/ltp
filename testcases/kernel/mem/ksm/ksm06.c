@@ -142,6 +142,8 @@ static struct tst_test test = {
 		{"/sys/kernel/mm/ksm/run", NULL, TST_SR_TBROK},
 		{"/sys/kernel/mm/ksm/sleep_millisecs", NULL, TST_SR_TBROK},
 		{"/sys/kernel/mm/ksm/merge_across_nodes", NULL, TST_SR_TCONF},
+		{"/sys/kernel/mm/ksm/smart_scan", "0",
+			TST_SR_SKIP_MISSING | TST_SR_TBROK_RO},
 		{}
 	},
 	.needs_kconfigs = (const char *const[]){
