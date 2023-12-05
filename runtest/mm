@@ -70,6 +70,7 @@ ksm05 ksm05 -I 10
 ksm06 ksm06
 ksm06_1 ksm06 -n 10
 ksm06_2 ksm06 -n 8000
+ksm07 ksm07
 
 cpuset01 cpuset01
 
