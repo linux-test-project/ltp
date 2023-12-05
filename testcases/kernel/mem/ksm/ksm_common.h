@@ -3,16 +3,16 @@
  * Copyright (C) 2017  Red Hat, Inc.
  */
 
- /*
-  * Parse the ksm0* test options in funcion parse_ksm_options().
-  */
+/*
+ * Parse the ksm0* test options in funcion parse_ksm_options().
+ */
 
 #include "tst_test.h"
 
 #define DEFAULT_MEMSIZE 128
 
-int size = DEFAULT_MEMSIZE, num = 3, unit = 1;
-char *opt_sizestr, *opt_numstr, *opt_unitstr;
+static int size = DEFAULT_MEMSIZE, num = 3, unit = 1;
+static char *opt_sizestr, *opt_numstr, *opt_unitstr;
 
 static inline void parse_ksm_options(char *str_size, int *size,
 		char *str_num, int *num, char *str_unit, int *unit)
