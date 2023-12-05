@@ -43,7 +43,6 @@
 
 #ifdef HAVE_DECL_MADV_MERGEABLE
 
-static int ksm_run_orig = -1;
 static void sighandler(int sig);
 
 static void test_ksm(void)
