@@ -1,34 +1,19 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2010-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * Kernel Samepage Merging (KSM) for Memory Resource Controller and NUMA
- *
- * Basic tests were to start several programs with same and different
- * memory contents and ensure only to merge the ones with the same
- * contents. When changed the content of one of merged pages in a
- * process and to the mode "unmerging", it should discard all merged
- * pages there. Also tested it is possible to disable KSM. There are
- * also command-line options to specify the memory allocation size, and
- * number of processes have same memory contents so it is possible to
- * test more advanced things like KSM + OOM etc.
+ */
+
+/*\
+ * [Description]
  *
  * Prerequisites:
  *
- * 1) ksm and ksmtuned daemons need to be disabled. Otherwise, it could
- *    distrub the testing as they also change some ksm tunables depends
- *    on current workloads.
+ * ksm and ksmtuned daemons need to be disabled. Otherwise, it could
+ * distrub the testing as they also change some ksm tunables depends
+ * on current workloads.
  *
- * The test steps are:
+ * [Algorithm]
+ *
  * - Check ksm feature and backup current run setting.
  * - Change run setting to 1 - merging.
  * - 3 memory allocation programs have the memory contents that 2 of
