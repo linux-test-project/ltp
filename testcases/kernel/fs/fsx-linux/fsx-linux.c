@@ -98,8 +98,7 @@ static void update_file_size(struct file_pos_t const *pos)
 {
 	if (pos->offset + pos->size > file_size) {
 		file_size = pos->offset + pos->size;
-
-		tst_res(TINFO, "File size changed: %llu", file_size);
+		tst_res(TDEBUG, "File size changed: %llu", file_size);
 	}
 }
 
@@ -114,8 +113,7 @@ static int memory_compare(
 	for (long long i = 0; i < size; i++) {
 		diff = a[i] - b[i];
 		if (diff) {
-			tst_res(TINFO,
-				"File memory differs at offset=%llu ('%c' != '%c')",
+			tst_res(TDEBUG, "File memory differs at offset=%llu ('%c' != '%c')",
 				offset + i, a[i], b[i]);
 			break;
 		}
@@ -135,10 +133,8 @@ static int op_read(void)
 
 	op_file_position(file_size, op_read_align, &pos);
 
-	tst_res(TINFO,
-		"Reading at offset=%llu, size=%llu",
-		pos.offset,
-		pos.size);
+	tst_res(TDEBUG, "Reading at offset=%llu, size=%llu",
+		pos.offset, pos.size);
 
 	memset(temp_buff, 0, file_max_size);
 
@@ -176,10 +172,8 @@ static int op_write(void)
 		temp_buff[i] = data;
 	}
 
-	tst_res(TINFO,
-		"Writing at offset=%llu, size=%llu",
-		pos.offset,
-		pos.size);
+	tst_res(TDEBUG, "Writing at offset=%llu, size=%llu",
+		pos.offset, pos.size);
 
 	SAFE_LSEEK(file_desc, (off_t)pos.offset, SEEK_SET);
 	SAFE_WRITE(SAFE_WRITE_ALL, file_desc, temp_buff, pos.size);
@@ -194,10 +188,9 @@ static int op_truncate(void)
 	struct file_pos_t pos;
 
 	op_file_position(file_max_size, op_trunc_align, &pos);
-
 	file_size = pos.offset + pos.size;
 
-	tst_res(TINFO, "Truncating to %llu", file_size);
+	tst_res(TDEBUG, "Truncating to %llu", file_size);
 
 	SAFE_FTRUNCATE(file_desc, file_size);
 	memset(file_buff + file_size, 0, file_max_size - file_size);
@@ -218,10 +211,8 @@ static int op_map_read(void)
 	op_file_position(file_size, op_read_align, &pos);
 	op_align_pages(&pos);
 
-	tst_res(TINFO,
-		"Map reading at offset=%llu, size=%llu",
-		pos.offset,
-		pos.size);
+	tst_res(TDEBUG, "Map reading at offset=%llu, size=%llu",
+		pos.offset, pos.size);
 
 	addr = SAFE_MMAP(
 		0, pos.size,
@@ -261,10 +252,8 @@ static int op_map_write(void)
 	if (file_size < pos.offset + pos.size)
 		SAFE_FTRUNCATE(file_desc, pos.offset + pos.size);
 
-	tst_res(TINFO,
-		"Map writing at offset=%llu, size=%llu",
-		pos.offset,
-		pos.size);
+	tst_res(TDEBUG, "Map writing at offset=%llu, size=%llu",
+		pos.offset, pos.size);
 
 	for (long long i = 0; i < pos.size; i++)
 		file_buff[pos.offset + i] = random() % 10 + 'l';
