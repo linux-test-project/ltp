@@ -41,6 +41,7 @@ For running LTP network tests see `testcases/network/README.md`.
                           and others, which imply it, shell: 'TST_NEEDS_TMPDIR=1').
                           Must be an absolute path (default: '/tmp').
 | 'TST_NO_CLEANUP'      | Disable running test cleanup (defined in 'TST_CLEANUP').
+| 'TST_ENABLE_DEBUG'    | Enable debug info (value '1' or 'y').
 |==============================================================================
 
 

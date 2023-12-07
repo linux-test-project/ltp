@@ -224,10 +224,12 @@ void tst_res(int ttype, char *arg_fmt, ...);
 Printf-like function to report test result, it's mostly used with ttype:
 
 |==============================
-| 'TPASS' | Test has passed.
-| 'TFAIL' | Test has failed.
-| 'TINFO' | General message.
-| 'TWARN' | Something went wrong but we decided to continue. Mostly used in cleanup functions.
+| 'TPASS'  | Test has passed.
+| 'TFAIL'  | Test has failed.
+| 'TINFO'  | General message.
+| 'TDEBUG' | Debug message (new C API only, printed with '-D' or via 'TST_ENABLE_DEBUG=1' or 'y'
+             environment variable), only for messages which would be too verbose for normal run.
+| 'TWARN'  | Something went wrong but we decided to continue. Mostly used in cleanup functions.
 |==============================
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print

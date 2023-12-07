@@ -174,6 +174,11 @@ static void tst_res__(const char *file, const int lineno, int ttype,
 	int len = 0;
 	int ttype_result = TTYPE_RESULT(ttype);
 
+	if (ttype_result == TDEBUG) {
+		printf("%s: %i: TDEBUG is not supported\n", __func__, __LINE__);
+		abort();
+	}
+
 	if (file && (ttype_result != TPASS && ttype_result != TINFO))
 		len = sprintf(tmesg, "%s:%d: ", file, lineno);
 	EXPAND_VAR_ARGS(tmesg + len, arg_fmt, USERMESG - len);

@@ -13,6 +13,7 @@
 static struct tcase {
 	int flag;
 	const char *str;
+	const char *note;
 } tcases[] = {
 	{FLAG(TPASS)},
 	{FLAG(TFAIL)},
@@ -20,6 +21,7 @@ static struct tcase {
 	{FLAG(TCONF)},
 	{FLAG(TWARN)},
 	{FLAG(TINFO)},
+	{FLAG(TDEBUG), " (printed only with -D or TST_ENABLE_DEBUG=1)"},
 };
 
 static void do_cleanup(void)
@@ -32,7 +34,8 @@ static void do_test(void)
 	size_t i;
 
 	for (i = 0; i < ARRAY_SIZE(tcases); i++)
-		tst_res(tcases[i].flag, "%s message", tcases[i].str);
+		tst_res(tcases[i].flag, "%s message%s", tcases[i].str,
+			tcases[i].note ?: "");
 }
 
 static struct tst_test test = {

@@ -60,6 +60,7 @@ static pid_t main_pid, lib_pid;
 static int mntpoint_mounted;
 static int ovl_mounted;
 static struct timespec tst_start_time; /* valid only for test pid */
+static int tdebug;
 
 struct results {
 	int passed;
@@ -224,6 +225,9 @@ static void print_result(const char *file, const int lineno, int ttype,
 	case TINFO:
 		res = "TINFO";
 	break;
+	case TDEBUG:
+		res = "TDEBUG";
+	break;
 	default:
 		tst_brk(TBROK, "Invalid ttype value %i", ttype);
 		abort();
@@ -351,6 +355,9 @@ void tst_res_(const char *file, const int lineno, int ttype,
 	      const char *fmt, ...)
 {
 	va_list va;
+
+	if (ttype == TDEBUG && !tdebug)
+		return;
 
 	va_start(va, fmt);
 	tst_vres_(file, lineno, ttype, fmt, va);
@@ -511,6 +518,7 @@ static struct option {
 	{"h",  "-h       Prints this help"},
 	{"i:", "-i n     Execute test n times"},
 	{"I:", "-I x     Execute test for n seconds"},
+	{"D",  "-D       Prints debug information"},
 	{"V",  "-V       Prints LTP version"},
 	{"C:", "-C ARG   Run child process with ARG arguments (used internally)"},
 };
@@ -678,6 +686,10 @@ static void parse_opts(int argc, char *argv[])
 		case '?':
 			print_help();
 			tst_brk(TBROK, "Invalid option");
+		break;
+		case 'D':
+			tst_res(TINFO, "Enabling debug info");
+			tdebug = 1;
 		break;
 		case 'h':
 			print_help();
@@ -1137,6 +1149,8 @@ static void do_cgroup_requires(void)
 
 static void do_setup(int argc, char *argv[])
 {
+	char *tdebug_env = getenv("TST_ENABLE_DEBUG");
+
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
 
@@ -1156,6 +1170,11 @@ static void do_setup(int argc, char *argv[])
 		tst_test = tst_timer_test_setup(tst_test);
 
 	parse_opts(argc, argv);
+
+	if (tdebug_env && (!strcmp(tdebug_env, "1") || !strcmp(tdebug_env, "y"))) {
+		tst_res(TINFO, "Enabling debug info");
+		tdebug = 1;
+	}
 
 	if (tst_test->needs_kconfigs && tst_kconfig_check(tst_test->needs_kconfigs))
 		tst_brk(TCONF, "Aborting due to unsuitable kernel config, see above!");

@@ -54,8 +54,9 @@ void tst_res_(const char *file, const int lineno, int ttype,
 
 #define tst_res(ttype, arg_fmt, ...) \
 	({									\
-		TST_RES_SUPPORTS_TCONF_TFAIL_TINFO_TPASS_TWARN(!((TTYPE_RESULT(ttype) ?: TCONF) & \
-			(TCONF | TFAIL | TINFO | TPASS | TWARN))); 				\
+		TST_RES_SUPPORTS_TCONF_TDEBUG_TFAIL_TINFO_TPASS_TWARN(\
+			!((TTYPE_RESULT(ttype) ?: TCONF) & \
+			(TCONF | TDEBUG | TFAIL | TINFO | TPASS | TWARN))); 				\
 		tst_res_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__);\
 	})
 
