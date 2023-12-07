@@ -36,6 +36,8 @@ const char *tst_fs_type_name(long f_type)
 		return "9p";
 	case TST_RAMFS_MAGIC:
 		return "ramfs";
+	case TST_BCACHE_MAGIC:
+		return "bcachefs";
 	case TST_BTRFS_MAGIC:
 		return "btrfs";
 	case TST_XFS_MAGIC:

@@ -34,6 +34,9 @@
 #define TST_VFAT_MAGIC     0x4d44 /* AKA MSDOS */
 #define TST_EXFAT_MAGIC    0x2011BAB0UL
 
+/* fs/bcachefs/bcachefs_format.h */
+#define TST_BCACHE_MAGIC		0xca451a4e
+
 enum tst_fill_access_pattern {
 	TST_FILL_BLOCKS,
 	TST_FILL_RANDOM
