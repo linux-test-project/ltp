@@ -96,8 +96,9 @@ static void setup(void)
 	for (i = 0, expected_mask = 0; i < ARRAY_SIZE(attr_list); i++)
 		expected_mask |= attr_list[i].attr;
 
-	/* STATX_ATTR_COMPRESSED not supported on XFS, TMPFS */
-	if (!strcmp(tst_device->fs_type, "xfs") || !strcmp(tst_device->fs_type, "tmpfs"))
+	/* STATX_ATTR_COMPRESSED not supported on Bcachefs, TMPFS, XFS */
+	if (!strcmp(tst_device->fs_type, "bcachefs") || !strcmp(tst_device->fs_type, "tmpfs") ||
+	    !strcmp(tst_device->fs_type, "xfs"))
 		expected_mask &= ~STATX_ATTR_COMPRESSED;
 
 	/* Attribute support was added to Btrfs statx() in kernel v4.13 */
