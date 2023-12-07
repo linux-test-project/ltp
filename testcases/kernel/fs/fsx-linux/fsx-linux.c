@@ -277,10 +277,8 @@ static int op_map_write(void)
 		(off_t)pos.offset);
 
 	memcpy(addr, file_buff + pos.offset, pos.size);
-	msync(addr, pos.size, MS_SYNC);
-
+	SAFE_MSYNC(addr, pos.size, MS_SYNC);
 	SAFE_MUNMAP(addr, pos.size);
-
 	update_file_size(&pos);
 
 	return 1;
