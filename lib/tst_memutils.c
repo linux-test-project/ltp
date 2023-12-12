@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
+ * Copyright (c) Linux Test Project, 2021-2023
  */
 
 #include <stdio.h>
@@ -11,6 +12,7 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
+#include "tst_memutils.h"
 #include "tst_capability.h"
 #include "lapi/syscalls.h"
 
