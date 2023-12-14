@@ -172,7 +172,7 @@ static void run(unsigned int n)
 static struct tst_test test = {
 	.tcnt = TC,
 	.options = (struct tst_option[]) {
-		{"D:", &can_dev_name, "CAN device name"},
+		{"d:", &can_dev_name, "CAN device name"},
 		{}
 	},
 	.setup = setup,
