@@ -766,7 +766,7 @@ tst_netload()
 		f) cs_opts="${cs_opts}-f " ;;
 		F) cs_opts="${cs_opts}-F " ;;
 		e) expect_res="$OPTARG" ;;
-		D) [ "$TST_NETLOAD_BINDTODEVICE" = 1 ] && cs_opts="${cs_opts}-D $OPTARG "
+		D) [ "$TST_NETLOAD_BINDTODEVICE" = 1 ] && cs_opts="${cs_opts}-d $OPTARG "
 		   bind_to_device=0 ;;
 		*) tst_brk_ TBROK "tst_netload: unknown option: $OPTARG" ;;
 		esac
@@ -776,8 +776,8 @@ tst_netload()
 	[ "$setup_srchost" = 1 ] && s_opts="${s_opts}-S $hostopt "
 
 	if [ "$bind_to_device" = 1 -a "$TST_NETLOAD_BINDTODEVICE" = 1 ]; then
-		c_opts="${c_opts}-D $(tst_iface) "
-		s_opts="${s_opts}-D $(tst_iface rhost) "
+		c_opts="${c_opts}-d $(tst_iface) "
+		s_opts="${s_opts}-d $(tst_iface rhost) "
 	fi
 
 	local expect_ret=0
