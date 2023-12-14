@@ -33,7 +33,7 @@ test()
 	for x in 50 0; do
 		tst_res TINFO "set low latency busy poll to $x per $2 socket"
 		set_busy_poll $x
-		tst_netload -H $(tst_ipaddr rhost) -n 10 -N 10 -d res_$x \
+		tst_netload -H $(tst_ipaddr rhost) -n 10 -N 10 -f res_$x \
 			    -b $x -T $2
 	done
 
