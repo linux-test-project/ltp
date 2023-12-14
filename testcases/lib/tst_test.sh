@@ -28,6 +28,7 @@ _tst_do_cleanup()
 {
 	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
 		if command -v $TST_CLEANUP >/dev/null 2>/dev/null; then
+			TST_DO_CLEANUP=
 			$TST_CLEANUP
 		else
 			tst_res TWARN "TST_CLEANUP=$TST_CLEANUP declared, but function not defined (or cmd not found)"
@@ -126,8 +127,10 @@ tst_brk()
 	local res=$1
 	shift
 
-	if [ "$TST_DO_EXIT" = 1 ]; then
+	# TBROK => TWARN on cleanup or exit
+	if [ "$res" = TBROK ] && [ "$TST_DO_EXIT" = 1 -o -z "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" ]; then
 		tst_res TWARN "$@"
+		TST_DO_CLEANUP=
 		return
 	fi
 
