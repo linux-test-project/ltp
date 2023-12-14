@@ -223,7 +223,7 @@ static void do_child(void)
 static void setup(void)
 {
 	if (!device)
-		tst_brk(TBROK, "You must specify a tty device with -D option");
+		tst_brk(TBROK, "You must specify a tty device with -d option");
 
 	int fd = SAFE_OPEN(device, O_RDWR, 0777);
 
@@ -250,7 +250,7 @@ static struct tst_test test = {
 	.test_all = verify_ioctl,
 	.test_variants = 2,
 	.options = (struct tst_option[]) {
-		{"D:", &device, "Tty device. For example, /dev/tty[0-9]"},
+		{"d:", &device, "Tty device. For example, /dev/tty[0-9]"},
 		{}
 	}
 };

@@ -45,7 +45,7 @@ case "$device_no" in
         continue
     fi
     tst_resm TINFO "Testing ioctl02 with $tttype"
-    ioctl02 -D $tttype
+    ioctl02 -d $tttype
     RC=$?
     if  [ $RC -eq 0 ]
     then

@@ -557,7 +557,7 @@ init_module01 init_module01
 init_module02 init_module02
 
 #Needs tty device.
-#ioctl02 ioctl02 -D /dev/tty0
+#ioctl02 ioctl02 -d /dev/tty0
 
 # Introducing ioctl tests for all /dev/tty* devices
 ioctl01      ioctl01
