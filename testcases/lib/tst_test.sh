@@ -134,7 +134,12 @@ tst_brk()
 		return
 	fi
 
-	tst_res "$res" "$@"
+	if [ "$res" != TBROK -a "$res" != TCONF ]; then
+		tst_res TBROK "tst_brk can be called only with TBROK or TCONF"
+	else
+		tst_res "$res" "$@"
+	fi
+
 	_tst_do_exit
 }
 
