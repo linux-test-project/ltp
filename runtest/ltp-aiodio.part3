@@ -1,21 +1,21 @@
-FSX032 fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -N 10000
-FSX033 fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -N 10000
-FSX034 fsx-linux -l 500000 -r 4096 -N 10000
-FSX035 fsx-linux -N 10000
-FSX040 fsx-linux -N 10000 -o 1024
-FSX041 fsx-linux -N 10000 -o 2048
-FSX042 fsx-linux -N 10000 -o 4096
-FSX043 fsx-linux -N 10000 -o 8192
-FSX044 fsx-linux -N 10000 -o 16384
-FSX045 fsx-linux -N 10000 -o 32768
-FSX046 fsx-linux -N 10000 -o 128000
-FSX054 fsx-linux -N 10000 -o 1024 -l 500000 -r 4096 -t 4096 -w 4096
-FSX055 fsx-linux -N 10000 -o 2048 -l 500000 -r 4096 -t 2048 -w 2048
-FSX056 fsx-linux -N 10000 -o 4096 -l 500000 -r 4096 -t 4096 -w 4096
-FSX057 fsx-linux -N 10000 -o 8192 -l 500000 -r 4096 -t 2048 -w 2048
-FSX058 fsx-linux -N 10000 -o 16384 -l 500000 -r 4096 -t 4096 -w 4096
-FSX059 fsx-linux -N 10000 -o 32768 -l 500000 -r 4096 -t 2048 -w 2048
-FSX060 fsx-linux -N 10000 -o 128000 -l 500000 -r 4096 -t 4096 -w 4096
-FSX073 fsx-linux -N 10000 -o 128000 -l 500000 -r 4096 -t 4096 -w 40963
-FSX076 fsx-linux -N 10000 -o 128000 -l 500000 -r 4096 -t 4096 -w 40966
-FSX078 fsx-linux -N 100000
+fsx01 fsx-linux -l 500000 -r 4096 -t 4096 -w 4096 -N 10000
+fsx02 fsx-linux -l 500000 -r 4096 -t 2048 -w 2048 -N 10000
+fsx03 fsx-linux -l 500000 -r 4096 -N 10000
+fsx04 fsx-linux -N 10000
+fsx05 fsx-linux -N 10000 -o 1024
+fsx06 fsx-linux -N 10000 -o 2048
+fsx07 fsx-linux -N 10000 -o 4096
+fsx08 fsx-linux -N 10000 -o 8192
+fsx09 fsx-linux -N 10000 -o 16384
+fsx10 fsx-linux -N 10000 -o 32768
+fsx12 fsx-linux -N 10000 -o 128000
+fsx13 fsx-linux -N 10000 -o 1024 -l 500000 -r 4096 -t 4096 -w 4096
+fsx14 fsx-linux -N 10000 -o 2048 -l 500000 -r 4096 -t 2048 -w 2048
+fsx15 fsx-linux -N 10000 -o 4096 -l 500000 -r 4096 -t 4096 -w 4096
+fsx16 fsx-linux -N 10000 -o 8192 -l 500000 -r 4096 -t 2048 -w 2048
+fsx17 fsx-linux -N 10000 -o 16384 -l 500000 -r 4096 -t 4096 -w 4096
+fsx18 fsx-linux -N 10000 -o 32768 -l 500000 -r 4096 -t 2048 -w 2048
+fsx19 fsx-linux -N 10000 -o 128000 -l 500000 -r 4096 -t 4096 -w 4096
+fsx20 fsx-linux -N 10000 -o 128000 -l 500000 -r 4096 -t 4096 -w 40963
+fsx21 fsx-linux -N 10000 -o 128000 -l 500000 -r 4096 -t 4096 -w 40966
+fsx22 fsx-linux -N 100000
