@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *   Copyright (c) Linux Test Project, 2001-2023
+ * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) Linux Test Project, 2001-2023
  */
 
 /*\
- * DESCRIPTION
+ * [Description]
  *
  * Test for EFAULT error.
  *
@@ -21,7 +20,6 @@ static void verify_gettimeofday(void)
 {
 	TST_EXP_FAIL(tst_syscall(__NR_gettimeofday, (void *)-1, (void *)-1), EFAULT);
 }
-
 
 static struct tst_test test = {
 	.test_all  = verify_gettimeofday,

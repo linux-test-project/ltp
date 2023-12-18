@@ -5,8 +5,9 @@
  */
 
 /*\
- * DESCRIPTION
- * Check if gettimeofday is monotonous during 10s
+ * [Description]
+ *
+ * Check if gettimeofday() is monotonous during 10s:
  *
  * - Call gettimeofday() to get a t1 (fist value)
  * - Call it again to get t2, see if t2 < t1, set t2 = t1, repeat for 10 sec
