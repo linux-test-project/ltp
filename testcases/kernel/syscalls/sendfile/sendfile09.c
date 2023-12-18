@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2014
+ * Copyright (c) Linux Test Project, 2013-2023
  */
 
 /*\
@@ -20,11 +21,7 @@
 
 #include <inttypes.h>
 #include <sys/sendfile.h>
-
 #include "tst_test.h"
-#include "lapi/abisize.h"
-
-#ifndef TST_ABI32
 
 #define ONE_GB		(INT64_C(1) << 30)
 #define IN_FILE		"in_file"
@@ -97,12 +94,9 @@ static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(tc),
 	.max_runtime = 120,
+	.skip_in_compat = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "5d73320a96fcc"},
 		{}
 	}
 };
-
-#else
-TST_TEST_TCONF("This test is only for 64bit");
-#endif
