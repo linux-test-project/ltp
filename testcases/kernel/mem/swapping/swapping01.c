@@ -83,7 +83,9 @@ static void test_swapping(void)
 
 	switch (pid = SAFE_FORK()) {
 	case 0:
+		TST_PRINT_MEMINFO();
 		do_alloc(0);
+		TST_PRINT_MEMINFO();
 		do_alloc(1);
 		exit(0);
 	default:
@@ -138,6 +140,7 @@ static void check_swapping(void)
 		swap_free_now = SAFE_READ_MEMINFO("SwapFree:");
 		sleep(1);
 		long diff = labs(swap_free_now - SAFE_READ_MEMINFO("SwapFree:"));
+
 		if (diff < 10)
 			break;
 
@@ -146,6 +149,7 @@ static void check_swapping(void)
 
 	swapped = SAFE_READ_PROC_STATUS(pid, "VmSwap:");
 	if (swapped > mem_over_max) {
+		TST_PRINT_MEMINFO();
 		kill(pid, SIGCONT);
 		tst_brk(TFAIL, "heavy swapping detected: "
 				"%ld MB swapped.", swapped / 1024);
