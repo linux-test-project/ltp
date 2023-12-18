@@ -610,3 +610,18 @@ int safe_msync(const char *file, const int lineno, void *addr,
 
 	return rval;
 }
+
+void safe_print_file(const char *file, const int lineno, char *path)
+{
+	FILE *pfile;
+	char line[PATH_MAX];
+
+	tst_res(TINFO, "=== %s ===", path);
+
+	pfile = safe_fopen(file, lineno, NULL, path, "r");
+
+	while (fgets(line, sizeof(line), pfile))
+		fprintf(stderr, "%s", line);
+
+	safe_fclose(file, lineno, NULL, pfile);
+}

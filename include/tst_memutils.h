@@ -58,4 +58,6 @@ void tst_enable_oom_protection(pid_t pid);
  */
 void tst_disable_oom_protection(pid_t pid);
 
+#define TST_PRINT_MEMINFO() safe_print_file(__FILE__, __LINE__, "/proc/meminfo")
+
 #endif /* TST_MEMUTILS_H__ */

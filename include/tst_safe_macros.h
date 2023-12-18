@@ -21,6 +21,7 @@
 #include <dirent.h>
 #include <grp.h>
 
+#include "safe_stdio_fn.h"
 #include "safe_macros_fn.h"
 #include "tst_cmd.h"
 
@@ -670,5 +671,7 @@ long tst_safe_ptrace(const char *file, const int lineno, int req, pid_t pid,
 int safe_sysinfo(const char *file, const int lineno, struct sysinfo *info);
 #define SAFE_SYSINFO(info) \
 	safe_sysinfo(__FILE__, __LINE__, (info))
+
+void safe_print_file(const char *file, const int lineno, char *path);
 
 #endif /* SAFE_MACROS_H__ */
