@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2012-2020 Linux Test Project
+ * Copyright (c) 2012-2023 Linux Test Project
  * Copyright (c) 2012-2017 Red Hat, Inc.
  *
  * There are two tunables overcommit_memory and overcommit_ratio under
@@ -62,7 +62,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "lapi/abisize.h"
 #include "mem.h"
 
 #define DEFAULT_OVER_RATIO	50L
@@ -124,10 +123,6 @@ static void setup(void)
 
 static void overcommit_memory_test(void)
 {
-
-#ifdef TST_ABI32
-	tst_brk(TCONF, "test is not designed for 32-bit system.");
-#endif
 	/* start to test overcommit_memory=2 */
 	set_sys_tune("overcommit_memory", 2, 1);
 
@@ -256,6 +251,7 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.test_all = overcommit_memory_test,
+	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
 		{"/proc/sys/vm/overcommit_ratio", NULL, TST_SR_TBROK},
