@@ -30,7 +30,6 @@
 #include <numa.h>
 #endif
 
-#include "lapi/abisize.h"
 #include "numa_helper.h"
 #include "mem.h"
 
@@ -38,9 +37,6 @@
 
 static void verify_oom(void)
 {
-#ifdef TST_ABI32
-	tst_brk(TCONF, "test is not designed for 32-bit system.");
-#endif
 	tst_res(TINFO, "OOM on CPUSET...");
 	testoom(0, 0, ENOMEM, 1);
 
@@ -86,6 +82,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_oom,
 	.needs_cgroup_ctrls = (const char *const []){ "cpuset", NULL },
+	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/overcommit_memory", "1", TST_SR_TBROK},
 		{}

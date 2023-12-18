@@ -27,15 +27,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "lapi/abisize.h"
 #include "mem.h"
 
 static void verify_oom(void)
 {
-#ifdef TST_ABI32
-	tst_brk(TCONF, "test is not designed for 32-bit system.");
-#endif
-
 	/* we expect mmap to fail before OOM is hit */
 	set_sys_tune("overcommit_memory", 2, 1);
 	oom(NORMAL, 0, ENOMEM, 0);
@@ -54,6 +49,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.max_runtime = TST_UNLIMITED_RUNTIME,
 	.test_all = verify_oom,
+	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
 		{}
