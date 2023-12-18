@@ -4,13 +4,12 @@
  * Copyright (C) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
+/*\
  * DESCRIPTION
- *	Check if gettimeofday is monotonous
+ * Check if gettimeofday is monotonous during 10s
  *
- * ALGORITHM
- *	Call gettimeofday() to get a t1 (fist value)
- *	call it again to get t2, see if t2 < t1, set t2 = t1, repeat for 10 sec
+ * - Call gettimeofday() to get a t1 (fist value)
+ * - Call it again to get t2, see if t2 < t1, set t2 = t1, repeat for 10 sec
  */
 
 #include <stdint.h>
