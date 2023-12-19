@@ -39,7 +39,7 @@ test()
 	for x in 50 0; do
 		tst_res TINFO "set low latency busy poll to $x"
 		set_busy_poll $x
-		tst_netload -H $(tst_ipaddr rhost) -n 10 -N 10 -f res_$x
+		tst_netload -H $(tst_ipaddr rhost) -n 10 -N 10 -c res_$x
 	done
 
 	tst_netload_compare $(cat res_0) $(cat res_50) 1

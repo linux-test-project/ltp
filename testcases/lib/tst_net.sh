@@ -745,12 +745,12 @@ tst_netload()
 	fi
 
 	OPTIND=0
-	while getopts :a:f:H:n:N:r:R:S:b:t:T:fFe:m:A:D: opt; do
+	while getopts :a:c:H:n:N:r:R:S:b:t:T:fFe:m:A:D: opt; do
 		case "$opt" in
 		a) c_num="$OPTARG" ;;
 		H) c_opts="${c_opts}-H $OPTARG "
 		   hostopt="$OPTARG" ;;
-		f) rfile="$OPTARG" ;;
+		c) rfile="$OPTARG" ;;
 		n) c_opts="${c_opts}-n $OPTARG " ;;
 		N) c_opts="${c_opts}-N $OPTARG " ;;
 		r) c_requests="$OPTARG" ;;
@@ -790,7 +790,7 @@ tst_netload()
 	fi
 
 	s_opts="${cs_opts}${s_opts}-R $s_replies -B $TST_TMPDIR"
-	c_opts="${cs_opts}${c_opts}-a $c_num -r $((c_requests / run_cnt)) -f $PWD/$rfile"
+	c_opts="${cs_opts}${c_opts}-a $c_num -r $((c_requests / run_cnt)) -c $PWD/$rfile"
 
 	tst_res_ TINFO "run server 'netstress $s_opts'"
 	tst_res_ TINFO "run client 'netstress -l $c_opts' $run_cnt times"

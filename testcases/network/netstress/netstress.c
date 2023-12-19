@@ -1019,7 +1019,7 @@ static struct tst_test test = {
 		{"n:", &narg, "Client message size"},
 		{"N:", &Narg, "Server message size"},
 		{"m:", &Targ, "Receive timeout in milliseconds (not used by UDP/DCCP client)"},
-		{"d:", &rpath, "Path to file where result is saved"},
+		{"c:", &rpath, "Path to file where result is saved"},
 		{"A:", &Aarg, "Max payload length (generated randomly)"},
 
 		{"R:", &Rarg, "Server requests after which conn.closed"},
