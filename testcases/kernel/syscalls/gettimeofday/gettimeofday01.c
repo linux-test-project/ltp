@@ -7,20 +7,36 @@
 /*\
  * [Description]
  *
- * Test for EFAULT error.
+ * Test for gettimeofday error.
  *
- * - gettimeofday fail with EFAULT when one of tv or tz pointed outside the accessible
- *   address space
+ * - EFAULT: tv pointed outside the accessible address space
+ * - EFAULT: tz pointed outside the accessible address space
+ * - EFAULT: both tv and tz pointed outside the accessible address space
  */
 
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
-static void verify_gettimeofday(void)
+static struct timeval tv1;
+
+static struct tcase {
+	void *tv;
+	void *tz;
+} tcases[] = {
+	/* timezone structure is obsolete, tz should be treated as null */
+	{(void *)-1, NULL},
+	{&tv1, (void *)-1},
+	{(void *)-1, (void *)-1},
+};
+
+static void verify_gettimeofday(unsigned int n)
 {
-	TST_EXP_FAIL(tst_syscall(__NR_gettimeofday, (void *)-1, (void *)-1), EFAULT);
+	struct tcase *tc = &tcases[n];
+
+	TST_EXP_FAIL(tst_syscall(__NR_gettimeofday, tc->tv, tc->tz), EFAULT);
 }
 
 static struct tst_test test = {
-	.test_all  = verify_gettimeofday,
+	.tcnt = ARRAY_SIZE(tcases),
+	.test = verify_gettimeofday,
 };
