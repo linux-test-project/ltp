@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Out Of Memory (OOM) for Memory Resource Controller
- *
- * The program is designed to cope with unpredictable like amount and
- * system physical memory, swap size and other VMM technology like KSM,
- * memcg, memory hotplug and so on which may affect the OOM
- * behaviours. It simply increase the memory consumption 3G each time
- * until all the available memory is consumed and OOM is triggered.
- *
  * Copyright (C) 2010-2017  Red Hat, Inc.
  * Copyright (c) Linux Test Project, 2011-2023
+ */
+/*\
+ * [Description]
+ *
+ * Out Of Memory (OOM) test for Memory Resource Controller
  */
 
 #include "config.h"
