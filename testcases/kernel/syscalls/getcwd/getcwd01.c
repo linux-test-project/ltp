@@ -13,9 +13,17 @@
  * 5) getcwd(2) fails if buf points to NULL and the size is set to 1.
  *
  * Expected Result:
+ * linux syscall
  * 1) getcwd(2) should return NULL and set errno to EFAULT.
  * 2) getcwd(2) should return NULL and set errno to EFAULT.
  * 3) getcwd(2) should return NULL and set errno to ERANGE.
+ * 4) getcwd(2) should return NULL and set errno to ERANGE.
+ * 5) getcwd(2) should return NULL and set errno to ERANGE.
+ *
+ * glibc
+ * 1) getcwd(2) should return NULL and set errno to EFAULT.
+ * 2) getcwd(2) should return NULL and set errno to ENOMEM.
+ * 3) getcwd(2) should return NULL and set errno to EINVAL.
  * 4) getcwd(2) should return NULL and set errno to ERANGE.
  * 5) getcwd(2) should return NULL and set errno to ERANGE.
  */
@@ -24,7 +32,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include "tst_test.h"
-#include "lapi/syscalls.h"
+#include "getcwd.h"
 
 static char buffer[5];
 
@@ -32,23 +40,30 @@ static struct t_case {
 	char *buf;
 	size_t size;
 	int exp_err;
+	int exp_err2;
 } tcases[] = {
-	{(void *)-1, PATH_MAX, EFAULT},
-	{NULL, (size_t)-1, EFAULT},
-	{buffer, 0, ERANGE},
-	{buffer, 1, ERANGE},
-	{NULL, 1, ERANGE}
+	{(void *)-1, PATH_MAX, EFAULT, EFAULT},
+	{NULL, (size_t)-1, EFAULT, ENOMEM},
+	{buffer, 0, ERANGE, EINVAL},
+	{buffer, 1, ERANGE, ERANGE},
+	{NULL, 1, ERANGE, ERANGE},
 };
 
-
-static void verify_getcwd(unsigned int n)
+static void run(unsigned int n)
 {
 	struct t_case *tc = &tcases[n];
 
-	TST_EXP_FAIL2(tst_syscall(__NR_getcwd, tc->buf, tc->size), tc->exp_err);
+	tst_getcwd(tc->buf, tc->size, tc->exp_err, tc->exp_err2);
+}
+
+static void setup(void)
+{
+	getcwd_info();
 }
 
 static struct tst_test test = {
+	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),
-	.test = verify_getcwd
+	.test = run,
+	.test_variants = TEST_VARIANTS,
 };
