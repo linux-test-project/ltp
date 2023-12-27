@@ -3,6 +3,9 @@
  * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
+#ifndef EVENTFD2_H__
+#define EVENTFD2_H__
+
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
@@ -16,3 +19,5 @@ static inline int eventfd2(unsigned int count, unsigned int flags)
 
 	return ret;
 }
+
+#endif /* EVENTFD2_H__ */
