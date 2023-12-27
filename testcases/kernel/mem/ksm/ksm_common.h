@@ -7,6 +7,9 @@
  * Parse the ksm0* test options in funcion parse_ksm_options().
  */
 
+#ifndef KSM_COMMON_H__
+#define KSM_COMMON_H__
+
 #include "tst_test.h"
 
 #define DEFAULT_MEMSIZE 128
@@ -29,3 +32,5 @@ static inline void parse_ksm_options(char *str_size, int *size,
 	if (*size % *unit != 0)
 		tst_brk(TBROK, "the remainder of division of size by unit is not zero.");
 }
+
+#endif /* KSM_COMMON_H__ */
