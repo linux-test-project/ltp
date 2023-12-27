@@ -4,6 +4,9 @@
  * Author: Rafael David Tinoco <rafael.tinoco@linaro.org>
  */
 
+#ifndef CLOCK_ADJTIME_H__
+#define CLOCK_ADJTIME_H__
+
 #include "config.h"
 #include "tst_test.h"
 #include "tst_timer.h"
@@ -246,3 +249,5 @@ TIMEX_GET_SET_FIELD_TYPE(uint, uint);
 TIMEX_GET_SET_FIELD_TYPE(long, long long);
 
 #undef TIMEX_GET_SET_FIELD_TYPE
+
+#endif /* CLOCK_ADJTIME_H__ */
