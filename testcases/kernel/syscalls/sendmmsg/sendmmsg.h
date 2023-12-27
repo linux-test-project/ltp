@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#ifndef SENDMMSG_H__
+#define SENDMMSG_H__
+
 #include <netinet/ip.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,3 +28,5 @@ static struct time64_variants variants[] = {
 	{ .recvmmsg = sys_recvmmsg64, .sendmmsg = sys_sendmmsg, .ts_type = TST_KERN_TIMESPEC, .desc = "syscall time64 with kernel spec"},
 #endif
 };
+
+#endif /* SENDMMSG_H__ */
