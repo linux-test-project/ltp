@@ -27,6 +27,7 @@ NF && ! /^#/ {
 	for (i = 2; i <= NF; i++) {
 		s = s " " $i
 	}
+	sub(/[;]+$/, "", s)
 	s = s "; dmesg > " DMESG_DIR "/" $1 ".dmesg.log"
 	print s
 }
