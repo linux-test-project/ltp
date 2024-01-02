@@ -56,6 +56,12 @@
 	safe_touch(__FILE__, __LINE__, NULL, \
 			(pathname), (mode), (times))
 
+/* New API only functions */
+
+/* helper functions to setup overlayfs mountpoint */
+void create_overlay_dirs(void);
+int mount_overlay(const char *file, const int lineno, int strict);
+
 #define SAFE_MOUNT_OVERLAY() \
 	((void) mount_overlay(__FILE__, __LINE__, 1))
 
