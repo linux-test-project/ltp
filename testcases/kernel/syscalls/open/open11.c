@@ -1,28 +1,34 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2013 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2013-2022
+ */
+
+/*\
+ * [Description]
  *
  * Basic tests for open(2) and make sure open(2) works and handles error
  * conditions correctly.
  *
  * There are 28 test cases:
+ *
  * 1. Open regular file O_RDONLY
  * 2. Open regular file O_WRONLY
  * 3. Open regular file O_RDWR
  * 4. Open regular file O_RDWR | O_SYNC
  * 5. Open regular file O_RDWR | O_TRUNC
- * 6. Open dir O_RDONLY
- * 7. Open dir O_RDWR, expect EISDIR
+ * 6. Open directory O_RDONLY
+ * 7. Open directory O_RDWR, expect EISDIR
  * 8. Open regular file O_DIRECTORY, expect ENOTDIR
  * 9. Open hard link file O_RDONLY
  * 10. Open hard link file O_WRONLY
  * 11. Open hard link file O_RDWR
- * 12. Open sym link file O_RDONLY
- * 13. Open sym link file O_WRONLY
- * 14. Open sym link file O_RDWR
- * 15. Open sym link dir O_RDONLY
- * 16. Open sym link dir O_WRONLY, expect EISDIR
- * 17. Open sym link dir O_RDWR, expect EISDIR
+ * 12. Open symlink file O_RDONLY
+ * 13. Open symlink file O_WRONLY
+ * 14. Open symlink file O_RDWR
+ * 15. Open symlink directory O_RDONLY
+ * 16. Open symlink directory O_WRONLY, expect EISDIR
+ * 17. Open symlink directory O_RDWR, expect EISDIR
  * 18. Open device special file O_RDONLY
  * 19. Open device special file O_WRONLY
  * 20. Open device special file O_RDWR
@@ -30,8 +36,8 @@
  * 22. Open link file O_RDONLY | O_CREAT
  * 23. Open symlink file O_RDONLY | O_CREAT
  * 24. Open regular file O_RDONLY | O_CREAT
- * 25. Open symlink dir O_RDONLY | O_CREAT, expect EISDIR
- * 26. Open dir O_RDONLY | O_CREAT, expect EISDIR
+ * 25. Open symlink directory O_RDONLY | O_CREAT, expect EISDIR
+ * 26. Open directory O_RDONLY | O_CREAT, expect EISDIR
  * 27. Open regular file O_RDONLY | O_TRUNC, behaviour is undefined but should
  *     not oops or hang
  * 28. Open regular file(non-empty) O_RDONLY | O_TRUNC, behaviour is undefined
