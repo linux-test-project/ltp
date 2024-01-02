@@ -59,13 +59,13 @@
 /* New API only functions */
 
 /* helper functions to setup overlayfs mountpoint */
-void create_overlay_dirs(void);
-int mount_overlay(const char *file, const int lineno, int strict);
+void tst_create_overlay_dirs(void);
+int tst_mount_overlay(const char *file, const int lineno, int strict);
 
 #define SAFE_MOUNT_OVERLAY() \
-	((void) mount_overlay(__FILE__, __LINE__, 1))
+	((void) tst_mount_overlay(__FILE__, __LINE__, 1))
 
 #define TST_MOUNT_OVERLAY() \
-	(mount_overlay(__FILE__, __LINE__, 0) == 0)
+	(tst_mount_overlay(__FILE__, __LINE__, 0) == 0)
 
 #endif /* TST_SAFE_FILE_OPS */
