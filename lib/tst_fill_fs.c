@@ -16,7 +16,7 @@
 #include "tst_rand_data.h"
 #include "tst_safe_file_at.h"
 
-void fill_random(const char *path, int verbose)
+static void fill_random(const char *path, int verbose)
 {
 	int i = 0;
 	char file[PATH_MAX];
@@ -71,7 +71,7 @@ void fill_random(const char *path, int verbose)
 	}
 }
 
-void fill_flat_vec(const char *path, int verbose)
+static void fill_flat_vec(const char *path, int verbose)
 {
 	int dir, fd;
 	struct iovec iov[512];
