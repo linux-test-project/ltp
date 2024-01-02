@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "lapi/fallocate.h"
+#include "tst_fs.h"
 
 int tst_fill_fd(int fd, char pattern, size_t bs, size_t bcount)
 {
