@@ -60,7 +60,7 @@
 #define T_LINK_REG "t_link_reg"		/* hard link to T_REG */
 #define T_NEW_REG "t_new_reg"		/* new regular file to be created */
 #define T_SYMLINK_REG "t_symlink_reg"	/* symlink to T_REG */
-#define T_DIR "t_dir"			/* test dir */
+#define T_DIR "t_dir"			/* test directory */
 #define T_SYMLINK_DIR "t_symlink_dir"	/* symlink to T_DIR */
 #define T_DEV MNTPOINT"/t_dev"		/* test device special file */
 
@@ -74,205 +74,191 @@ static struct test_case {
 	int err;
 } tc[] = {
 	/* Test open(2) regular file */
-	{	/* open regular file O_RDONLY */
-		.desc = "Open regular file O_RDONLY",
+	{
+		.desc = "open regular file O_RDONLY",
 		.path = T_REG_EMPTY,
 		.flags = O_RDONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open regular file O_WRONLY */
-		.desc = "Open regular file O_WRONLY",
+	{
+		.desc = "open regular file O_WRONLY",
 		.path = T_REG_EMPTY,
 		.flags = O_WRONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open regular file O_RDWR */
-		.desc = "Open regular file O_RDWR",
+	{
+		.desc = "open regular file O_RDWR",
 		.path = T_REG_EMPTY,
 		.flags = O_RDWR,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open regular file O_RDWR | O_SYNC*/
-		.desc = "Open regular file O_RDWR | O_SYNC",
+	{
+		.desc = "open regular file O_RDWR | O_SYNC",
 		.path = T_REG_EMPTY,
 		.flags = O_RDWR | O_SYNC,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open regular file O_RDWR | O_TRUNC */
-		.desc = "Open regular file O_RDWR | O_TRUNC",
+	{
+		.desc = "open regular file O_RDWR | O_TRUNC",
 		.path = T_REG_EMPTY,
 		.flags = O_RDWR | O_TRUNC,
 		.mode = 0644,
-		.err = 0,
 	},
+
 	/* Test open(2) directory */
-	{	/* open dir O_RDONLY */
-		.desc = "Open dir O_RDONLY",
+	{
+		.desc = "open directory O_RDONLY",
 		.path = T_DIR,
 		.flags = O_RDONLY,
 		.mode = 0755,
-		.err = 0,
 	},
-	{	/* open dir O_RDWR */
-		.desc = "Open dir O_RDWR, expect EISDIR",
+	{
+		.desc = "open directory O_RDWR",
 		.path = T_DIR,
 		.flags = O_RDWR,
 		.mode = 0755,
 		.err = EISDIR,
 	},
-	{	/* open regular file O_DIRECTORY */
-		.desc = "Open regular file O_DIRECTORY, expect ENOTDIR",
+	{
+		.desc = "open regular file O_DIRECTORY",
 		.path = T_REG_EMPTY,
 		.flags = O_RDONLY | O_DIRECTORY,
 		.mode = 0644,
 		.err = ENOTDIR,
 	},
 	/* Test open(2) hard link */
-	{	/* open hard link file O_RDONLY */
-		.desc = "Open hard link file O_RDONLY",
+	{
+		.desc = "open hard link file O_RDONLY",
 		.path = T_LINK_REG,
 		.flags = O_RDONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open hard link file O_WRONLY */
-		.desc = "Open hard link file O_WRONLY",
+	{
+		.desc = "open hard link file O_WRONLY",
 		.path = T_LINK_REG,
 		.flags = O_WRONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open hard link file O_RDWR */
-		.desc = "Open hard link file O_RDWR",
+	{
+		.desc = "open hard link file O_RDWR",
 		.path = T_LINK_REG,
 		.flags = O_RDWR,
 		.mode = 0644,
-		.err = 0,
 	},
-	/* Test open(2) sym link */
-	{	/* open sym link file O_RDONLY */
-		.desc = "Open sym link file O_RDONLY",
+
+	/* Test open(2) symlink */
+	{
+		.desc = "open symlink file O_RDONLY",
 		.path = T_SYMLINK_REG,
 		.flags = O_RDONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open sym link file O_WRONLY */
-		.desc = "Open sym link file O_WRONLY",
+	{
+		.desc = "open symlink file O_WRONLY",
 		.path = T_SYMLINK_REG,
 		.flags = O_WRONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open sym link file O_RDWR */
-		.desc = "Open sym link file O_RDWR",
+	{
+		.desc = "open symlink file O_RDWR",
 		.path = T_SYMLINK_REG,
 		.flags = O_RDWR,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open sym link dir O_RDONLY */
-		.desc = "Open sym link dir O_RDONLY",
+	{
+		.desc = "open symlink directory O_RDONLY",
 		.path = T_SYMLINK_DIR,
 		.flags = O_RDONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open sym link dir O_WRONLY */
-		.desc = "Open sym link dir O_WRONLY, expect EISDIR",
+	{
+		.desc = "open symlink directory O_WRONLY",
 		.path = T_SYMLINK_DIR,
 		.flags = O_WRONLY,
 		.mode = 0644,
 		.err = EISDIR,
 	},
-	{	/* open sym link dir O_RDWR */
-		.desc = "Open sym link dir O_RDWR, expect EISDIR",
+	{
+		.desc = "open symlink directory O_RDWR",
 		.path = T_SYMLINK_DIR,
 		.flags = O_RDWR,
 		.mode = 0644,
 		.err = EISDIR,
 	},
-	/* * Test open(2) device special */
-	{	/* open device special file O_RDONLY */
-		.desc = "Open device special file O_RDONLY",
+
+	/* Test open(2) device special */
+	{
+		.desc = "open device special file O_RDONLY",
 		.path = T_DEV,
 		.flags = O_RDONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open device special file O_WRONLY */
-		.desc = "Open device special file O_WRONLY",
+	{
+		.desc = "open device special file O_WRONLY",
 		.path = T_DEV,
 		.flags = O_WRONLY,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open device special file O_RDWR */
-		.desc = "Open device special file O_RDWR",
+	{
+		.desc = "open device special file O_RDWR",
 		.path = T_DEV,
 		.flags = O_RDWR,
 		.mode = 0644,
-		.err = 0,
 	},
-	/* * Test open(2) non-existing file */
-	{	/* open non-existing regular file in existing dir */
-		.desc = "Open non-existing regular file in existing dir",
+
+	/* Test open(2) non-existing file */
+	{
+		.desc = "open non-existing regular file in existing dir",
 		.path = T_DIR"/"T_NEW_REG,
 		.flags = O_RDWR | O_CREAT,
 		.mode = 0644,
-		.err = 0,
 	},
+
 	/* test open(2) with O_CREAT */
-	{	/* open hard link file O_RDONLY | O_CREAT */
-		.desc = "Open link file O_RDONLY | O_CREAT",
+	{
+		.desc = "open link file O_RDONLY | O_CREAT",
 		.path = T_LINK_REG,
 		.flags = O_RDONLY | O_CREAT,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open sym link file O_RDONLY | O_CREAT */
-		.desc = "Open symlink file O_RDONLY | O_CREAT",
+	{
+		.desc = "open symlink file O_RDONLY | O_CREAT",
 		.path = T_SYMLINK_REG,
 		.flags = O_RDONLY | O_CREAT,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open regular file O_RDONLY | O_CREAT */
-		.desc = "Open regular file O_RDONLY | O_CREAT",
+	{
+		.desc = "open regular file O_RDONLY | O_CREAT",
 		.path = T_REG_EMPTY,
 		.flags = O_RDONLY | O_CREAT,
 		.mode = 0644,
-		.err = 0,
 	},
-	{	/* open symlink dir O_RDONLY | O_CREAT */
-		.desc = "Open symlink dir O_RDONLY | O_CREAT, expect EISDIR",
+	{
+		.desc = "open symlink directory O_RDONLY | O_CREAT",
 		.path = T_SYMLINK_DIR,
 		.flags = O_RDONLY | O_CREAT,
 		.mode = 0644,
 		.err = EISDIR,
 	},
-	{	/* open dir O_RDONLY | O_CREAT */
-		.desc = "Open dir O_RDONLY | O_CREAT, expect EISDIR",
+	{
+		.desc = "open directory O_RDONLY | O_CREAT",
 		.path = T_DIR,
 		.flags = O_RDONLY | O_CREAT,
 		.mode = 0644,
 		.err = EISDIR,
 	},
+
 	/* Other random open(2) tests */
-	{	/* open regular file O_RDONLY | O_TRUNC */
-		.desc = "Open regular file O_RDONLY | O_TRUNC, "
+	{
+		.desc = "open regular file O_RDONLY | O_TRUNC, "
 			"behaviour is undefined but should not oops or hang",
 		.path = T_REG_EMPTY,
 		.flags = O_RDONLY | O_TRUNC,
 		.mode = 0644,
 		.err = -1,
 	},
-	{	/* open regular(non-empty) file O_RDONLY | O_TRUNC */
-		.desc = "Open regular file(non-empty) O_RDONLY | O_TRUNC, "
+	{
+		.desc = "open regular file(non-empty) O_RDONLY | O_TRUNC, "
 			"behaviour is undefined but should not oops or hang",
 		.path = T_REG,
 		.flags = O_RDONLY | O_TRUNC,
