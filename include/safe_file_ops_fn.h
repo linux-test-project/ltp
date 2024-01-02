@@ -92,6 +92,6 @@ int safe_touch(const char *file, const int lineno,
 
 /* helper functions to setup overlayfs mountpoint */
 void create_overlay_dirs(void);
-int mount_overlay(const char *file, const int lineno, int skip);
+int mount_overlay(const char *file, const int lineno, int strict);
 
 #endif /* SAFE_FILE_OPS_FN */
