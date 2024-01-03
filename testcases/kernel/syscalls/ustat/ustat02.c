@@ -30,9 +30,7 @@ static struct test_case_t {
 	struct ustat *buf;
 } tc[] = {
 	{"Invalid parameter", EINVAL, "EINVAL", &invalid_dev, &ubuf},
-#ifndef UCLINUX
 	{"Bad address", EFAULT, "EFAULT", &root_dev, (void*)-1}
-#endif
 };
 
 int TST_TOTAL = ARRAY_SIZE(tc);
