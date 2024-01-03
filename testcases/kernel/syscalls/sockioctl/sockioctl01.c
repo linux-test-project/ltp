@@ -87,13 +87,11 @@ struct test_case_t {
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
 		    EINVAL, setup0, cleanup0, "not a socket"}
 	,
-#if !defined(UCLINUX)
 	{
 	PF_INET, SOCK_STREAM, 0, SIOCATMARK, 0,
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,
 		    EFAULT, setup1, cleanup1, "invalid option buffer"}
 	,
-#endif
 	{
 	PF_INET, SOCK_DGRAM, 0, SIOCATMARK, &optval,
 		    (struct sockaddr *)&fsin1, sizeof(fsin1), -1,

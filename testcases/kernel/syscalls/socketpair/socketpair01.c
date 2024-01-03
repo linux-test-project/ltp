@@ -34,10 +34,8 @@ struct test_case_t {
 	{PF_INET, 75, 0, fds, -1, EINVAL, "invalid type"},
 	{PF_UNIX, SOCK_DGRAM, 0, fds, 0, 0, "UNIX domain dgram"},
 	{PF_INET, SOCK_RAW, 0, fds, -1, EPROTONOSUPPORT, "raw open as non-root"},
-#ifndef UCLINUX
 	{PF_UNIX, SOCK_STREAM, 0, 0, -1, EFAULT, "bad aligned pointer"},
 	{PF_UNIX, SOCK_STREAM, 0, (int *)7, -1, EFAULT, "bad unaligned pointer"},
-#endif
 	{PF_INET, SOCK_DGRAM, 17, fds, -1, EOPNOTSUPP, "UDP socket"},
 	{PF_INET, SOCK_DGRAM, 6, fds, -1, EPROTONOSUPPORT, "TCP dgram"},
 	{PF_INET, SOCK_STREAM, 6, fds, -1, EOPNOTSUPP, "TCP socket"},
