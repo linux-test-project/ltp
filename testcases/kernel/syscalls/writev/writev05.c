@@ -83,8 +83,6 @@ long l_seek(int, long, int);
 void setup(void);
 void cleanup(void);
 
-#if !defined(UCLINUX)
-
 int main(int argc, char **argv)
 {
 	int lc;
@@ -177,16 +175,6 @@ int main(int argc, char **argv)
 	tst_exit();
 
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
 
 /*
  * setup()
