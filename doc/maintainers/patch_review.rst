@@ -152,10 +152,6 @@ C tests
 * Docparse documentation
 * If a test is a regression test it should include ``.tags`` in the
   ``struct tst_test`` definition
-* When rewriting old tests, `uClinux <https://en.wikipedia.org/wiki/%CE%9CClinux>`_
-  support should be removed (project has been discontinued).
-  E.g. remove ``#ifdef UCLINUX``, replace ``FORK_OR_VFORK()`` with simple
-  ``fork()`` or ``SAFE_FORK()``.
 
 Shell tests
 ~~~~~~~~~~~

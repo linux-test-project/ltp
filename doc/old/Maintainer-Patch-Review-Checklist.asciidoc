@@ -127,9 +127,6 @@ New test should
 * Docparse documentation
 * If a test is a regression test it should include tags
   (more in https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#2238-test-tags[Test tags])
-* When rewriting old tests, https://en.wikipedia.org/wiki/%CE%9CClinux[uClinux]
-  support should be removed (project has been discontinued).
-  E.g. remove `#ifdef UCLINUX`, replace `tst_fork()` with simple `fork()` or `SAFE_FORK()`.
 
 ### Shell tests
 * Use new https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines#23-writing-a-testcase-in-shell[shell API]
