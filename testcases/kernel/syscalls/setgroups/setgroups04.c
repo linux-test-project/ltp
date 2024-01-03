@@ -84,8 +84,6 @@ GID_T groups_list[NGROUPS];
 void setup();			/* setup function for the test */
 void cleanup();			/* cleanup function for the test */
 
-#if !defined(UCLINUX)
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -134,16 +132,6 @@ int main(int ac, char **av)
 	tst_exit();
 
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
 
 /*
  * setup()
