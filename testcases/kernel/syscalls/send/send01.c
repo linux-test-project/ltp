@@ -100,8 +100,6 @@ static struct test_case_t tdat[] = {
 	 .cleanup = cleanup0,
 	 .desc = "invalid socket"}
 	,
-#ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
 	{.domain = PF_INET,
 	 .type = SOCK_STREAM,
 	 .proto = 0,
@@ -114,7 +112,6 @@ static struct test_case_t tdat[] = {
 	 .cleanup = cleanup1,
 	 .desc = "invalid send buffer"}
 	,
-#endif
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -139,8 +136,6 @@ static struct test_case_t tdat[] = {
 	 .cleanup = cleanup1,
 	 .desc = "local endpoint shutdown"}
 	,
-#ifndef UCLINUX
-	/* Skip since uClinux does not implement memory protection */
 	{.domain = PF_INET,
 	 .type = SOCK_DGRAM,
 	 .proto = 0,
@@ -152,14 +147,9 @@ static struct test_case_t tdat[] = {
 	 .setup = setup1,
 	 .cleanup = cleanup1,
 	 .desc = "invalid flags set"}
-#endif
 };
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
-
-#ifdef UCLINUX
-static char *argv0;
-#endif
 
 static pid_t start_server(struct sockaddr_in *sin0)
 {
@@ -187,13 +177,7 @@ static pid_t start_server(struct sockaddr_in *sin0)
 
 	switch ((pid = tst_fork())) {
 	case 0:
-#ifdef UCLINUX
-		if (self_exec(argv0, "d", sfd) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "server self_exec failed");
-#else
 		do_child();
-#endif
 		break;
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
@@ -252,11 +236,6 @@ int main(int ac, char *av[])
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-
-#ifdef UCLINUX
-	argv0 = av[0];
-	maybe_run_child(&do_child, "d", &sfd);
-#endif
 
 	setup();
 
