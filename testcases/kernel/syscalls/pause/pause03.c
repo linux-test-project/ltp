@@ -44,9 +44,6 @@ int main(int ac, char **av)
 	int status;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "");
-#endif
 
 	setup();
 
@@ -56,14 +53,8 @@ int main(int ac, char **av)
 		if ((cpid = tst_fork()) == -1)
 			tst_brkm(TBROK | TERRNO, NULL, "fork() failed");
 
-		if (cpid == 0) {
-#ifdef UCLINUX
-			if (self_exec(av[0], "") < 0)
-				tst_brkm(TBROK, cleanup, "self_exec failed");
-#else
+		if (cpid == 0)
 			do_child();
-#endif
-		}
 
 		TST_PROCESS_STATE_WAIT(cleanup, cpid, 'S');
 
