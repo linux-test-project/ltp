@@ -27,16 +27,16 @@
 
 When a test is executed the very first thing to happen is that we check for
 various test prerequisites. These are described in the tst\_test structure and
-range from simple '.require\_root' to a more complicated kernel .config boolean
+range from simple '.needs\_root' to a more complicated kernel .config boolean
 expressions such as: "CONFIG\_X86\_INTEL\_UMIP=y | CONFIG\_X86\_UMIP=y".
 
-If all checks are passed the process carries on with setting up the test
+If all checks are passed, the process continues with setting up the test
 environment as requested in the tst\_test structure. There are many different
 setup steps that have been put into the test library again ranging from rather
 simple creation of a unique test temporary directory to a bit more complicated
 ones such as preparing, formatting, and mounting a block device.
 
-The test library also intializes shrared memory used for IPC at this step.
+The test library also initializes shared memory used for IPC at this step.
 
 Once all the prerequisites are checked and test environment has been prepared
 we can move on executing the testcase itself. The actual test is executed in a
@@ -62,9 +62,9 @@ for test_variants:
 		fork_testrun()
 ```
 
-Before we fork() the test process the test library sets up a timeout alarm and
-also a heartbeat signal handlers and also sets up an alarm(2) accordingly to
-the test timeout. When a test times out the test library gets SIGALRM and the
+Before we fork the test process, the test library sets up a timeout alarm and
+a heartbeat signal handler and it also sets up an alarm(2) accordingly to
+the test timeout. When a test times out, the test library gets SIGALRM and the
 alarm handler mercilessly kills all forked children by sending SIGKILL to the
 whole process group. The heartbeat handler is used by the test process to reset
 this timer for example when the test functions run in a loop.
@@ -97,14 +97,14 @@ usually better option than exiting it in the middle.
 The test cleanup() is also called by the tst\_brk() handler in order to cleanup
 before exiting the test process, hence it must be able to cope even with
 partial test setup. Usually it suffices to make sure to clean up only
-resources that already have been set up and to do that in an inverse order that
-we did in setup().
+resources that already have been set up and to do that in the reverse order
+that we did in setup().
 
 Once the test process exits or leaves the run() or run\_all() function the test
 library wakes up from the waitpid() call, and checks if the test process
 exited normally.
 
-Once the testrun is finished the test library does a cleanup() as well to clean
+Once the testrun is finished, the test library does a cleanup() as well to clean
 up resources set up in the test library setup(), reports test results and
 finally exits the process.
 
@@ -126,8 +126,8 @@ This especially means that:
 - While the test results are, by the design, propagated to the test library
   we may still miss a child that gets killed by a signal or exits unexpectedly.
 
-The test writer should, because of this, take care for reaping these proceses
-properly, in most cases this could be simply done by calling
+The test writer should, because of this, take care of reaping these
+processes properly, in most cases this could be simply done by calling
 tst\_reap\_children() to collect and dissect deceased.
 
 Also note that tst\_brk() does exit only the current process, so if a child
@@ -136,9 +136,9 @@ exits.
 
 ### Test library and exec()
 
-The piece of mapped memory to store the results to is not preserved over
+The piece of mapped memory to store the results is not preserved over
 exec(2), hence to use the test library from a binary started by an exec() it
-has to be remaped. In this case the process must to call tst\_reinit() before
+has to be remapped. In this case, the process must call tst\_reinit() before
 calling any other library functions. In order to make this happen the program
 environment carries LTP\_IPC\_PATH variable with a path to the backing file on
 tmpfs. This also allows us to use the test library from shell testcases.
@@ -148,5 +148,5 @@ tmpfs. This also allows us to use the test library from shell testcases.
 The piece of mapped memory is also used as a base for a futex-based
 synchronization primitives called checkpoints. And as said previously the
 memory can be mapped to any process by calling the tst\_reinit() function. As a
-matter of a fact there is even a tst\_checkpoint binary that allows us to use
+matter of a fact, there is even a tst\_checkpoint binary that allows us to use
 the checkpoints from shell code as well.
