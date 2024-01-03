@@ -78,8 +78,6 @@ void cleanup();
 char *TCID = "sysinfo02";
 int TST_TOTAL = 1;
 
-#if !defined(UCLINUX)
-
 int main(int ac, char **av)
 {
 	struct sysinfo *sysinfo_buf;
@@ -114,16 +112,6 @@ int main(int ac, char **av)
 	tst_exit();
 
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
 
 /*
  * setup()
