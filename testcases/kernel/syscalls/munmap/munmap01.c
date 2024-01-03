@@ -114,13 +114,7 @@ int main(int ac, char **av)
 				 TEST_ERRNO, strerror(TEST_ERRNO));
 			continue;
 		}
-#ifdef UCLINUX
-		/*
-		 * No SIGSEGV on uClinux since
-		 * MMU not implemented on uClinux
-		 */
-		tst_resm(TPASS, "call succedded");
-#else
+
 		/*
 		 * Check whether further reference is possible
 		 * to the unmapped memory region by writing
@@ -130,9 +124,7 @@ int main(int ac, char **av)
 		*addr = 50;
 
 		/* This message is printed if no SIGSEGV */
-		tst_resm(TFAIL, "process succeeds to refer unmapped "
-			 "memory region");
-#endif
+		tst_resm(TFAIL, "process succeeds to refer unmapped memory region");
 
 		cleanup();
 
@@ -195,14 +187,8 @@ void setup(void)
 	 * into the calling process's address space at the system choosen
 	 * with read/write permissions to the mapped region.
 	 */
-#ifdef UCLINUX
-	/* MAP_SHARED is not implemented on uClinux */
-	addr = mmap(0, map_len, PROT_READ | PROT_WRITE,
-		    MAP_FILE | MAP_PRIVATE, fildes, 0);
-#else
 	addr = mmap(0, map_len, PROT_READ | PROT_WRITE,
 		    MAP_FILE | MAP_SHARED, fildes, 0);
-#endif
 
 	/* check for the return value of mmap system call */
 	if (addr == (char *)MAP_FAILED) {

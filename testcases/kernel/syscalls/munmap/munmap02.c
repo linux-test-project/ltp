@@ -92,8 +92,6 @@ void setup();			/* Main setup function of test */
 void cleanup();			/* cleanup function for the test */
 void sig_handler();		/* signal catching function */
 
-#ifndef UCLINUX
-
 int main(int ac, char **av)
 {
 	int lc;
@@ -135,16 +133,6 @@ int main(int ac, char **av)
 	}
 	tst_exit();
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "munmap02 test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* ifndef UCLINUX */
 
 /*
  * setup() - performs all ONE TIME setup for this test.
@@ -199,14 +187,8 @@ void setup(void)
 	 * into the calling process's address space at the system choosen
 	 * with read/write permissions to the mapped region.
 	 */
-#ifdef UCLINUX
-	/* mmap() doesn't support MAP_SHARED on uClinux */
-	addr = mmap(0, map_len, PROT_READ | PROT_WRITE,
-		    MAP_FILE | MAP_PRIVATE, fildes, 0);
-#else
 	addr = mmap(0, map_len, PROT_READ | PROT_WRITE,
 		    MAP_FILE | MAP_SHARED, fildes, 0);
-#endif
 
 	/* check for the return value of mmap system call */
 	if (addr == (char *)MAP_FAILED) {
