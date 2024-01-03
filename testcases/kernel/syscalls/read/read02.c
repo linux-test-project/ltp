@@ -52,9 +52,7 @@ static struct tcase {
 } tcases[] = {
 	{&badfd, &bufaddr, 1, EBADF},
 	{&fd2, &bufaddr, 1, EISDIR},
-#ifndef UCLINUX
 	{&fd3, &outside_buf, 1, EFAULT},
-#endif
 	{&fd4, &addr4, 1, EINVAL},
 	{&fd4, &addr5, 4096, EINVAL},
 };
@@ -98,10 +96,8 @@ static void setup(void)
 
 	fd3 = SAFE_OPEN("test_file", O_RDWR);
 
-#if !defined(UCLINUX)
 	outside_buf = SAFE_MMAP(0, 1, PROT_NONE,
 				MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-#endif
 
 	addr4 = SAFE_MEMALIGN(getpagesize(), (4096 * 10));
 	addr5 = addr4 + 1;
