@@ -41,10 +41,6 @@ static void verify_pipe(void)
 
 	memset(wrbuf, 'a', SIZE);
 
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "dd", &fd[0], &fd[1]);
-#endif
-
 	TEST(pipe(fd));
 	if (TST_RET == -1) {
 		tst_res(TFAIL|TTERRNO, "pipe() failed");
@@ -53,12 +49,7 @@ static void verify_pipe(void)
 
 	pid = SAFE_FORK();
 	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(av[0], "dd", fd[0], fd[1]) < 0)
-			tst_brk(TBROK, "self_exec failed");
-#else
 		do_child();
-#endif
 	}
 
 	memset(rdbuf, 0, SIZE);

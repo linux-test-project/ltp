@@ -84,11 +84,6 @@ int main(int ac, char **av)
 	char rbuf[BUFSIZ];
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&c1func, "ndd", 1, &fildes[0], &fildes[1]);
-	maybe_run_child(&c2func, "ndd", 2, &fildes[0], &fildes[1]);
-#endif
-
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
@@ -102,26 +97,12 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "fork() failed - "
 				 "errno %d", errno);
 		if (c1pid == 0)
-#ifdef UCLINUX
-			if (self_exec(av[0], "ndd", 1, fildes[0], fildes[1]) <
-			    0) {
-				tst_brkm(TBROK, cleanup, "self_exec failed");
-			}
-#else
 			c1func();
-#endif
 		if ((c2pid = tst_fork()) == -1)
 			tst_brkm(TBROK, cleanup, "fork() failed - "
 				 "errno %d", errno);
 		if (c2pid == 0)
-#ifdef UCLINUX
-			if (self_exec(av[0], "ndd", 2, fildes[0], fildes[1]) <
-			    0) {
-				tst_brkm(TBROK, cleanup, "self_exec failed");
-			}
-#else
 			c2func();
-#endif
 
 		/* PARENT */
 		if (close(fildes[1]) == -1)
