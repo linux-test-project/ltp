@@ -192,9 +192,6 @@ int main(int argc, char **argv)
 	 * parse standard options
 	 */
 	tst_parse_opts(argc, argv, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&child, "dd", &pipe_fd[1], &pipe_fd2[0]);
-#endif
 
 	/*
 	 * perform global setup for test
@@ -208,23 +205,12 @@ int main(int argc, char **argv)
 		/*
 		 * fork off a child process
 		 */
-		if ((pid = tst_fork()) < 0) {
+		if ((pid = tst_fork()) < 0)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
-
-		} else if (pid > 0) {
+		else if (pid > 0)
 			parent();
-
-		} else {
-#ifdef UCLINUX
-			if (self_exec(argv[0], "dd", pipe_fd[1], pipe_fd2[0]) <
-			    0) {
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "self_exec() failed");
-			}
-#else
+		else
 			child();
-#endif
-		}
 
 	}
 
