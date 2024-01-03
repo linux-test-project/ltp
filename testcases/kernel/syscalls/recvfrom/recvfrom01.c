@@ -126,20 +126,11 @@ struct test_case_t {		/* test case structure */
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-#ifdef UCLINUX
-static char *argv0;
-#endif
-
 int main(int argc, char *argv[])
 {
 	int lc;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
-
-#ifdef UCLINUX
-	argv0 = argv[0];
-	maybe_run_child(&do_child, "d", &sfd);
-#endif
 
 	setup();
 
@@ -271,13 +262,7 @@ pid_t start_server(struct sockaddr_in *sin0)
 
 	switch ((pid = tst_fork())) {
 	case 0:		/* child */
-#ifdef UCLINUX
-		if (self_exec(argv0, "d", sfd) < 0) {
-			tst_brkm(TBROK, cleanup, "server self_exec failed");
-		}
-#else
 		do_child();
-#endif
 		break;
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");
