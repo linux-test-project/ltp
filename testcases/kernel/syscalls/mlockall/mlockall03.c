@@ -92,8 +92,6 @@ void cleanup();
 char *TCID = "mlockall03";
 int TST_TOTAL = 3;
 
-#if !defined(UCLINUX)
-
 char *ref_release = "2.6.8\0";
 
 struct test_case_t {
@@ -285,16 +283,6 @@ void cleanup_test(int i)
 
 	}
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
 
 /*
  * cleanup() - performs all ONE TIME cleanup for this test at

@@ -99,8 +99,6 @@ struct test_case_t {
 	0, EINVAL, "Unknown flag"}
 };
 
-#if !defined(UCLINUX)
-
 int main(int ac, char **av)
 {
 	int lc, i;
@@ -258,13 +256,3 @@ void cleanup(void)
 {
 	return;
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
