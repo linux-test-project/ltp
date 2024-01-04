@@ -7,6 +7,10 @@ For running LTP network tests see `testcases/network/README.md`.
 1. Library environment variables
 --------------------------------
 
+Following environment variables are expected to be set by LTP users. Therefore,
+with some exceptions, they have 'LTP_' prefix. Environment variables with 'TST_'
+prefix are used inside LTP shell API and should *not* be set by users.
+
 |==============================================================================
 | 'KCONFIG_PATH'        | The path to the kernel config file, (if not set, it tries
                           the usual paths '/boot/config-RELEASE' or '/proc/config.gz').
@@ -44,7 +48,6 @@ For running LTP network tests see `testcases/network/README.md`.
                           Shell API only.
 | 'LTP_ENABLE_DEBUG'    | Enable debug info (value '1' or 'y').
 |==============================================================================
-
 
 2. Test execution time and timeout
 ----------------------------------
