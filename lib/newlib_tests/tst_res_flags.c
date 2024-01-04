@@ -21,7 +21,7 @@ static struct tcase {
 	{FLAG(TCONF)},
 	{FLAG(TWARN)},
 	{FLAG(TINFO)},
-	{FLAG(TDEBUG), " (printed only with -D or TST_ENABLE_DEBUG=1)"},
+	{FLAG(TDEBUG), " (printed only with -D or LTP_ENABLE_DEBUG=1)"},
 };
 
 static void do_cleanup(void)

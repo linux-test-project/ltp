@@ -1149,7 +1149,7 @@ static void do_cgroup_requires(void)
 
 static void do_setup(int argc, char *argv[])
 {
-	char *tdebug_env = getenv("TST_ENABLE_DEBUG");
+	char *tdebug_env = getenv("LTP_ENABLE_DEBUG");
 
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
