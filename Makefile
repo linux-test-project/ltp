@@ -13,7 +13,6 @@ top_srcdir		?= $(CURDIR)
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/automake.mk
-include $(top_srcdir)/include/mk/gitignore.mk
 
 .SUFFIXES:
 .SUFFIXES: .am .default .h .in .m4 .mk
