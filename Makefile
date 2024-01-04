@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2009-2022
+# Copyright (c) Linux Test Project, 2009-2024
 # Copyright (c) Cisco Systems Inc., 2009-2010
 # Ngie Cooper, July 2009
 
@@ -178,6 +178,9 @@ INSTALL_TARGETS		+= $(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS))
 
 $(INSTALL_TARGETS): $(INSTALL_DIR) $(DESTDIR)/$(bindir)
 
+.PHONY: doc
+doc: metadata-all
+
 .PHONY: check
 check: $(CHECK_TARGETS)
 
@@ -209,7 +212,7 @@ endif
 	$(call _test,-s)
 
 test-metadata: metadata-all
-	$(MAKE) -C $(abs_srcdir)/metadata/ test
+	$(MAKE) -C $(abs_srcdir)/metadata test
 
 ## Help
 .PHONY: help
