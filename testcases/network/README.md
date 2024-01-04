@@ -84,6 +84,10 @@ Where
 Default values for all LTP network parameters are set in `testcases/lib/tst_net.sh`.
 Network stress parameters are documented in `testcases/network/stress/README`.
 
+Tests which use `tst_netload_compare()` test also performance. They can fail on
+overloaded SUT.  To ignore performance failure and test only the network functionality,
+set `LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1` environment variable.
+
 ## Debugging
 Both single and two host configurations support debugging via
 `TST_NET_RHOST_RUN_DEBUG=1` environment variable.

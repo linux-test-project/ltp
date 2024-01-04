@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2016-2023 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2016-2024 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 [ -n "$TST_LIB_NET_LOADED" ] && return 0
@@ -863,22 +863,33 @@ tst_netload()
 # TIME: time that is compared to the base one
 # THRESHOD_LOW: lower limit for TFAIL
 # THRESHOD_HIGH: upper limit for TWARN
+#
+# Slow performance can be ignored with setting environment variable
+# LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1
 tst_netload_compare()
 {
 	local base_time=$1
 	local new_time=$2
 	local threshold_low=$3
 	local threshold_hi=$4
+	local ttype='TFAIL'
+	local msg res
 
 	if [ -z "$base_time" -o -z "$new_time" -o -z "$threshold_low" ]; then
 		tst_brk_ TBROK "tst_netload_compare: invalid argument(s)"
 	fi
 
-	local res=$(((base_time - new_time) * 100 / base_time))
-	local msg="performance result is ${res}%"
+	res=$(((base_time - new_time) * 100 / base_time))
+	msg="performance result is ${res}%"
 
 	if [ "$res" -lt "$threshold_low" ]; then
-		tst_res_ TFAIL "$msg < threshold ${threshold_low}%"
+		if [ "$LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE" = 1 ]; then
+			ttype='TINFO';
+			tst_res_ TINFO "WARNING: slow performance is not treated as error due LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1"
+		else
+			tst_res_ TINFO "Following slow performance can be ignored with LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1"
+		fi
+		tst_res_ $ttype "$msg < threshold ${threshold_low}%"
 		return
 	fi
 
