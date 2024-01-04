@@ -3,9 +3,10 @@
  * Copyright (C) 2017 Red Hat, Inc.
  */
 
-/*
- * Test description: Test retrieving of peer credentials (SO_PEERCRED)
+/*\
+ * [Description]
  *
+ * Test getsockopt(2) for retrieving peer credentials (SO_PEERCRED).
  */
 
 #define _GNU_SOURCE
@@ -53,6 +54,7 @@ static void test_function(void)
 		tst_res(TFAIL | TERRNO, "Error with accepting connection");
 		goto clean;
 	}
+
 	if (getsockopt(accepted, SOL_SOCKET,
 				SO_PEERCRED, &cred, &cred_len) < 0) {
 		tst_res(TFAIL | TERRNO, "Error while getting socket option");
@@ -67,6 +69,7 @@ static void test_function(void)
 clean:
 	if (accepted >= 0)
 		SAFE_CLOSE(accepted);
+
 	TST_CHECKPOINT_WAKE(0);
 }
 
@@ -74,6 +77,7 @@ static void cleanup(void)
 {
 	if (accepted >= 0)
 		SAFE_CLOSE(accepted);
+
 	if (socket_fd >= 0)
 		SAFE_CLOSE(socket_fd);
 }
