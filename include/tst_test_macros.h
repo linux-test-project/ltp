@@ -73,9 +73,9 @@ extern void *TST_RET_PTR;
                                                                                \
 	} while (0)
 
-#define TST_EXP_POSITIVE_(SCALL, ...)                                          \
+#define TST_EXP_POSITIVE_(SCALL, SSCALL, ...)                                  \
 	({                                                                     \
-		TST_EXP_POSITIVE__(SCALL, #SCALL, ##__VA_ARGS__);              \
+		TST_EXP_POSITIVE__(SCALL, SSCALL, ##__VA_ARGS__);              \
 		TST_RET;                                                       \
 	})
 
