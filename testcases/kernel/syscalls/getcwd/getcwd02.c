@@ -3,12 +3,14 @@
  * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * DESCRIPTION
+/*\
+ * [Description]
+ *
  * Testcase to check the basic functionality of the getcwd(2) system call.
- * 1) getcwd(2) works fine if buf and size are valid.
- * 2) getcwd(2) works fine if buf points to NULL and size is set to 0.
- * 3) getcwd(2) works fine if buf points to NULL and size is greater than strlen(path).
+ *
+ * 1. getcwd(2) works fine if buf and size are valid.
+ * 2. getcwd(2) works fine if buf points to NULL and size is set to 0.
+ * 3. getcwd(2) works fine if buf points to NULL and size is greater than strlen(path).
  */
 
 #include <errno.h>

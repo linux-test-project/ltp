@@ -3,18 +3,20 @@
  * Copyright (c) International Business Machines Corp., 2001
  */
 
-/*
- * DESCRIPTION
+/*\
+ * [Description]
+ *
  * Testcase to check the basic functionality of the getcwd(2)
  * system call on a symbolic link.
  *
- * ALGORITHM
- * 1) create a directory, and create a symbolic link to it at the
+ * [Algorithm]
+ *
+ * 1. create a directory, and create a symbolic link to it at the
  *    same directory level.
- * 2) get the working directory of a directory, and its pathname.
- * 3) get the working directory of a symbolic link, and its pathname,
+ * 2. get the working directory of a directory, and its pathname.
+ * 3. get the working directory of a symbolic link, and its pathname,
  *    and its readlink info.
- * 4) compare the working directories and link information.
+ * 4. compare the working directories and link information.
  */
 
 #define _GNU_SOURCE 1
