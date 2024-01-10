@@ -198,8 +198,12 @@ static void do_test(unsigned int i)
 	/*
 	 * We need to pass check in dns_resolver_preparse(),
 	 * give it dummy server list request.
+	 * From v6.7-rc8 commit 1997b3cb4217b09e49659b634c94da47f0340409:
+	 * the incoming data for add_key syscall should be larger than 6 bytes,
+	 * because struct dns_server_list_v1_header without body is 6 bytes.
 	 */
-	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00 };
+	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00, \
+					  0x00, 0x00 };
 
 	switch (i) {
 	case 0:
