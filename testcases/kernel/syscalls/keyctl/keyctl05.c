@@ -34,6 +34,8 @@
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
+#define MODULE "dns_resolver"
+
 /*
  * A valid payload for the "asymmetric" key type.  This is an x509 certificate
  * in DER format, generated using:
@@ -193,6 +195,9 @@ static void test_update_setperm_race(void)
 
 static void setup(void)
 {
+	/* There is no way to trigger automatic dns_resolver module loading. */
+	tst_cmd((const char*[]){"modprobe", MODULE, NULL}, NULL, NULL, 0);
+
 	fips_enabled = tst_fips_enabled();
 }
 
@@ -213,7 +218,7 @@ static void do_test(unsigned int i)
 					 x509_cert, sizeof(x509_cert));
 		break;
 	case 1:
-		test_update_nonupdatable("dns_resolver", dns_res_payload,
+		test_update_nonupdatable(MODULE, dns_res_payload,
 			sizeof(dns_res_payload));
 		break;
 	case 2:
