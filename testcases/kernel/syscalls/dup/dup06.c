@@ -1,41 +1,23 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) International Business Machines  Corp., 2002
- *    ported from SPIE, section2/iosuite/dup1.c, by Airong Zhang
- *   Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2002
+ * Ported from SPIE, section2/iosuite/dup1.c, by Airong Zhang
+ * Copyright (c) 2013 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2003-2024
  */
 
-/*
-  WHAT:  Does dup return -1 on the 21st file?
-  HOW:   Create up to _NFILE (20) files and check for -1 return on the
-         next attempt
-         Should check NOFILE as well as _NFILE.  19-Jun-84 Dale.
-*/
+/*\
+ * [Description]
+ *
+ * Test for dup(2) syscall with max open file descriptors.
+ */
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-#include "test.h"
+#include <stdlib.h>
+#include "tst_test.h"
 
-char *TCID = "dup06";
-int TST_TOTAL = 1;
+static int *pfildes;
+static int minfd, maxfd, freefds;
+static char pfilname[40];
 
 static int cnt_free_fds(int maxfd)
 {
@@ -45,70 +27,53 @@ static int cnt_free_fds(int maxfd)
 		if (fcntl(maxfd, F_GETFD) == -1 && errno == EBADF)
 			freefds++;
 
-	return (freefds);
-}
-
-static void setup(void);
-static void cleanup(void);
-
-int main(int ac, char **av)
-{
-	int *fildes, i;
-	int min;
-	int freefds;
-	int lc;
-	const char *pfilname = "dup06";
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	min = getdtablesize();
-	freefds = cnt_free_fds(min);
-	fildes = malloc((min + 5) * sizeof(int));
-
-	for (i = 0; i < min + 5; i++)
-		fildes[i] = 0;
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		unlink(pfilname);
-
-		if ((fildes[0] = creat(pfilname, 0666)) == -1) {
-			tst_resm(TFAIL, "Cannot open first file");
-		} else {
-			for (i = 1; i < min + 5; i++) {
-				if ((fildes[i] = dup(fildes[i - 1])) == -1)
-					break;
-			}
-			if (i < freefds) {
-				tst_resm(TFAIL, "Not enough files duped");
-			} else if (i > freefds) {
-				tst_resm(TFAIL, "Too many files duped");
-			} else {
-				tst_resm(TPASS, "Test passed.");
-			}
-		}
-
-		unlink(pfilname);
-
-		for (i = 0; i < min + 5; i++) {
-			if (fildes[i] != 0 && fildes[i] != -1)
-				close(fildes[i]);
-
-			fildes[i] = 0;
-		}
-	}
-
-	cleanup();
-	tst_exit();
+	return freefds;
 }
 
 static void setup(void)
 {
-	tst_tmpdir();
+	minfd = getdtablesize();	/* get number of files allowed open */
+	maxfd = minfd + 5;
+	freefds = cnt_free_fds(minfd);
+	pfildes = SAFE_MALLOC(maxfd * sizeof(int));
+	memset(pfildes, -1, maxfd * sizeof(int));
+	sprintf(pfilname, "./dup06.%d\n", getpid());
 }
 
 static void cleanup(void)
 {
-	tst_rmdir();
+	if (pfildes != NULL)
+		free(pfildes);
 }
+
+static void run(void)
+{
+	int i;
+
+	pfildes[0] = SAFE_CREAT(pfilname, 0666);
+	for (i = 1; i < maxfd; i++) {
+		pfildes[i] = dup(pfildes[i - 1]);
+		if (pfildes[i] == -1)
+			break;
+	}
+	if (i < freefds)
+		tst_res(TFAIL, "Not enough files duped");
+	else if (i > freefds)
+		tst_res(TFAIL, "Too many files duped");
+	else
+		tst_res(TPASS, "Test passed");
+
+	SAFE_UNLINK(pfilname);
+
+	for (i = 0; i < maxfd; i++) {
+		if (pfildes[i] != 0 && pfildes[i] != -1)
+			SAFE_CLOSE(pfildes[i]);
+	}
+}
+
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+};
