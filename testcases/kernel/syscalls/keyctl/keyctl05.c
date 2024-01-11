@@ -205,8 +205,7 @@ static void do_test(unsigned int i)
 	 * the incoming data for add_key syscall should be larger than 6 bytes,
 	 * because struct dns_server_list_v1_header without body is 6 bytes.
 	 */
-	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00, \
-					  0x00, 0x00 };
+	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00, 0x00, 0x00 };
 
 	switch (i) {
 	case 0:
