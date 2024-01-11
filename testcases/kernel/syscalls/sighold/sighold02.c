@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *  AUTHOR          : Bob Clark
- *  CO-PILOT        : Barrie Kletscher
- *  DATE STARTED    : 9/26/86
+ * Authors: Bob Clark, Barrie Kletscher
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
@@ -12,8 +10,9 @@
  * [Description]
  *
  * This test checks following conditions:
- *	1. sighold action to turn off the receipt of all signals was done without error.
- *	2. After signals were held, and sent, no signals were trapped.
+ *
+ * 1. sighold action to turn off the receipt of all signals was done without error.
+ * 2. After signals were held, and sent, no signals were trapped.
  */
 
 #define _XOPEN_SOURCE 600
