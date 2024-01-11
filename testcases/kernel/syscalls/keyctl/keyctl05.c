@@ -206,11 +206,12 @@ static void do_test(unsigned int i)
 	/*
 	 * We need to pass check in dns_resolver_preparse(),
 	 * give it dummy server list request.
-	 * From v6.7-rc8 commit 1997b3cb4217b09e49659b634c94da47f0340409:
-	 * the incoming data for add_key syscall should be larger than 6 bytes,
-	 * because struct dns_server_list_v1_header without body is 6 bytes.
+	 * From v6.8-rc1 commit acc657692aed438e9931438f8c923b2b107aebf9:
+	 * the incoming data for add_key() sysdall should be not less than 6
+	 * bytes, because struct dns_server_list_v1_header is 6 bytes.
+	 * The minimum payload will be tested here for boundary testing.
 	 */
-	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00, 0x00, 0x00 };
+	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00, 0x00 };
 
 	switch (i) {
 	case 0:
@@ -235,6 +236,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "63a0b0509e70"},
+		{"linux-git", "acc657692aed"},
 		{}
 	}
 };
