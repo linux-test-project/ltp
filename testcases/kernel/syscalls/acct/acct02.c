@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *  Copyright (c) SUSE LLC, 2019
- *  Author: Christian Amann <camann@suse.com>
+ * Copyright (c) SUSE LLC, 2019
+ * Copyright (c) Linux Test Project, 2019-2023
+ * Author: Christian Amann <camann@suse.com>
  */
 /*\
- * [DOCUMENTATION]
+ * [Description]
  *
  * This tests if the kernel writes correct data to the
  * process accounting file.
@@ -19,8 +20,8 @@
  * file, the contents get parsed until the correct entry is found, or EOF
  * is reached.
  *
- * This is also accidental regression test for:
- * 4d9570158b626 kernel/acct.c: fix the acct->needcheck check in check_free_space()
+ * This is also regression test for commit:
+ * 4d9570158b62 ("kernel/acct.c: fix the acct->needcheck check in check_free_space()")
  */
 
 #include <sys/stat.h>

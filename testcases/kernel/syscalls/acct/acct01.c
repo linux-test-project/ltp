@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 /*
- *  Copyright (c) International Business Machines  Corp., 2002
+ * Copyright (c) International Business Machines  Corp., 2002
+ * Copyright (c) Linux Test Project, 2003-2023
+ * 12/03/2002	Port to LTP     robbiew@us.ibm.com
+ * 06/30/2001	Port to Linux	nsharoff@us.ibm.com
  */
 
-/* 12/03/2002	Port to LTP     robbiew@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-
 /*\
- * [DOCUMENTATION]
+ * [Description]
+ *
  * Verify that acct() returns proper errno on failure.
  */
 
