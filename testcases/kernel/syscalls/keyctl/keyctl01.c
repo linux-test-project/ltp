@@ -2,14 +2,17 @@
 /*
  * Copyright (c) Crackerjack Project., 2007
  * Copyright (c) 2017 Fujitsu Ltd.
- */
-
-/*
- * Description: This tests the keyctl() syscall
- *		Manipulate the kernel's key management facility
- *
+ * Copyright (c) Linux Test Project, 2009-2024
  * Ported by Manas Kumar Nayak maknayak@in.ibm.com>
  * Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ */
+
+/*\
+ * [Description]
+ *
+ * Tests the keyctl(2) syscall.
+ *
+ * Manipulate the kernel's key management facility.
  */
 
 #include <errno.h>

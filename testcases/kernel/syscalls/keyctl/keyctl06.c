@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2017-2024
  */
 
-/*
- * Regression test for:
+/*\
+ * [Description]
  *
- *	commit e645016abc80 ("KEYS: fix writing past end of user-supplied buffer
- *	in keyring_read()").
+ * Regression test for commit:
+ *
+ * e645016abc80 ("KEYS: fix writing past end of user-supplied buffer in keyring_read()")
  *
  * as well as its follow-on fix:
  *
- *	commit 3239b6f29bdf ("KEYS: return full count in keyring_read() if
- *	buffer is too small")
- *
+ * commit 3239b6f29bdf ("KEYS: return full count in keyring_read() if buffer is too small")
  */
 
 #include <errno.h>

@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2017-2024
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Regression test for commit 63a0b0509e70 ("KEYS: fix freeing uninitialized
  * memory in key_update()").  Try to reproduce the crash in two different ways:
  *
