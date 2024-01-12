@@ -93,7 +93,7 @@ static void collect_irq_info(void)
 	char path[PATH_MAX];
 	size_t row, col, len;
 	long acc;
-	unsigned int cpu_total, bit;
+	unsigned int cpu_total, bit, row_parsed;
 
 	nr_cpus = 0;
 	nr_irqs = 0;
@@ -136,7 +136,7 @@ static void collect_irq_info(void)
 
 	c = first_row;
 	acc = -1;
-	row = col = 0;
+	row = col = row_parsed = 0;
 	/* Parse columns containing IRQ counts and IRQ IDs into acc. Ignore
 	 * everything else.
 	 */
@@ -154,7 +154,9 @@ static void collect_irq_info(void)
 			if (acc != -1)
 				tst_brk(TBROK, "Unexpected EOL");
 			col = 0;
-			row++;
+			if (row_parsed)
+				row++;
+			row_parsed = 0;
 			break;
 		case '0' ... '9':
 			if (acc == -1)
@@ -168,6 +170,7 @@ static void collect_irq_info(void)
 				tst_brk(TBROK, "Unexpected ':'");
 			irq_ids[row] = acc;
 			acc = -1;
+			row_parsed = 1;
 			break;
 		default:
 			acc = -1;
