@@ -32,6 +32,23 @@
 
 #define DEVNAME "ltp_dummy1"
 
+#ifndef TCA_TCINDEX_MAX
+enum {
+       TCA_TCINDEX_UNSPEC,
+       TCA_TCINDEX_HASH,
+       TCA_TCINDEX_MASK,
+       TCA_TCINDEX_SHIFT,
+       TCA_TCINDEX_FALL_THROUGH,
+       TCA_TCINDEX_CLASSID,
+       TCA_TCINDEX_POLICE,
+       TCA_TCINDEX_ACT,
+       __TCA_TCINDEX_MAX
+};
+
+#define TCA_TCINDEX_MAX     (__TCA_TCINDEX_MAX - 1)
+#endif
+
+
 static const uint32_t qd_handle = TC_H_MAKE(1 << 16, 0);
 static const uint32_t clsid = TC_H_MAKE(1 << 16, 1);
 static const uint32_t shift = 10;
