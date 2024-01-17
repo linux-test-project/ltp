@@ -14,7 +14,6 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <stdlib.h>
-#include <linux/fs.h>
 
 #include "lapi/syscalls.h"
 
