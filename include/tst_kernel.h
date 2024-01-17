@@ -11,6 +11,11 @@
 int tst_kernel_bits(void);
 
 /*
+ * Returns non-zero if the test process is running in compat mode.
+ */
+int tst_is_compat_mode(void);
+
+/*
  * Checks if the kernel module is built-in.
  *
  * @param driver The name of the driver.

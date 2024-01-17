@@ -23,6 +23,7 @@
 #include "test.h"
 #include "tst_kernel.h"
 #include "old_safe_stdio.h"
+#include "lapi/abisize.h"
 
 static int get_kernel_bits_from_uname(struct utsname *buf)
 {
@@ -88,6 +89,11 @@ int tst_kernel_bits(void)
 		 buf.machine, kernel_bits);
 
 	return kernel_bits;
+}
+
+int tst_is_compat_mode(void)
+{
+	return TST_ABI != tst_kernel_bits();
 }
 
 static int tst_search_driver_(const char *driver, const char *file)

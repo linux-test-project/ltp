@@ -1217,7 +1217,7 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->skip_in_secureboot && tst_secureboot_enabled() > 0)
 		tst_brk(TCONF, "SecureBoot enabled, skipping test");
 
-	if (tst_test->skip_in_compat && TST_ABI != tst_kernel_bits())
+	if (tst_test->skip_in_compat && tst_is_compat_mode())
 		tst_brk(TCONF, "Not supported in 32-bit compat mode");
 
 	if (tst_test->needs_cmds) {
