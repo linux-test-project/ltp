@@ -211,6 +211,7 @@ static void setownex_tid_test(void)
 	}
 	test_set_and_get_sig(SIGUSR1, "F_GETOWN_EX, F_SETOWN_EX for thread ID");
 
+	memcpy(&orig_own_ex, &tst_own_ex, sizeof(struct f_owner_ex));
 	setownex_cleanup();
 }
 
@@ -229,6 +230,7 @@ static void setownex_pid_test(void)
 	test_set_and_get_sig(SIGUSR1,
 			     "F_GETOWN_EX, F_SETOWN_EX for process ID");
 
+	memcpy(&orig_own_ex, &tst_own_ex, sizeof(struct f_owner_ex));
 	setownex_cleanup();
 }
 
@@ -247,6 +249,7 @@ static void setownex_pgrp_test(void)
 	test_set_and_get_sig(SIGUSR1,
 			     "F_GETOWN_EX, F_SETOWN_EX for process group ID");
 
+	memcpy(&orig_own_ex, &tst_own_ex, sizeof(struct f_owner_ex));
 	setownex_cleanup();
 }
 #endif
