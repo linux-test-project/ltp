@@ -33,6 +33,11 @@ static const char *const fs_type_whitelist[] = {
 	NULL
 };
 
+static const char *const fs_type_fuse_blacklist[] = {
+	"bcachefs",
+	NULL,
+};
+
 static const char *fs_types[ARRAY_SIZE(fs_type_whitelist)];
 
 static int has_mkfs(const char *fs_type)
@@ -95,6 +100,11 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 	}
 
 	SAFE_RMDIR(template);
+
+	if (tst_fs_in_skiplist(fs_type, fs_type_fuse_blacklist)) {
+		tst_res(TINFO, "Skipping %s because of FUSE blacklist", fs_type);
+		return TST_FS_UNSUPPORTED;
+	}
 
 	/* Is FUSE supported by kernel? */
 	if (fuse_supported == -1) {
