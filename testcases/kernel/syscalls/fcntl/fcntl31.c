@@ -131,6 +131,10 @@ static void setup(void)
 	}
 #endif
 
+	if(fcntl(test_fd, F_SETOWN, pid) == -1) {
+                 perror("Failed to set owner");
+        }
+
 	/* get original pid info */
 	TEST(fcntl(test_fd, F_GETOWN));
 	if (TEST_RETURN < 0) {
