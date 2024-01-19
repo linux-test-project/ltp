@@ -30,7 +30,8 @@ int make_swapfile(const char *swapfile, int safe)
 	argv[1] = swapfile;
 	argv[2] = NULL;
 
-	return tst_cmd(argv, "/dev/null", "/dev/null", safe);
+	return tst_cmd(argv, "/dev/null", "/dev/null", safe ?
+				   TST_CMD_PASS_RETVAL | TST_CMD_TCONF_ON_MISSING : 0);
 }
 
 /*
