@@ -4,10 +4,12 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
+/*\
+ * [Description]
+ *
  * Check the basic functionality of the pwritev(2) for the file
  * opened with O_DIRECT in all filesystem.
+ *
  * pwritev(2) should succeed to write the expected content of data
  * and after writing the file, the file offset is not changed.
  */

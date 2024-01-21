@@ -4,27 +4,17 @@
 * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 */
 
-/*
-* Test Name: pwritev02
-*
-* Description:
-* 1) pwritev(2) fails if iov_len is invalid.
-* 2) pwritev(2) fails if the vector count iovcnt is less than zero.
-* 3) pwritev(2) fails if offset is negative.
-* 4) pwritev(2) fails when attempts to write from a invalid address
-* 5) pwritev(2) fails if file descriptor is invalid.
-* 6) pwritev(2) fails if file descriptor is not open for writing.
-* 7) pwritev(2) fails if fd is associated with a pipe.
-*
-* Expected Result:
-* 1) pwritev(2) should return -1 and set errno to EINVAL.
-* 2) pwritev(2) should return -1 and set errno to EINVAL.
-* 3) pwritev(2) should return -1 and set errno to EINVAL.
-* 4) pwritev(2) should return -1 and set errno to EFAULT.
-* 5) pwritev(2) should return -1 and set errno to EBADF.
-* 6) pwritev(2) should return -1 and set errno to EBADF.
-* 7) pwritev(2) should return -1 and set errno to ESPIPE.
-*/
+/*\
+ * [Description]
+ *
+ * - EINVAL when iov_len is invalid.
+ * - EINVAL when the vector count iovcnt is less than zero.
+ * - EINVAL when offset is negative.
+ * - EFAULT when attempts to write from a invalid address
+ * - EBADF when file descriptor is invalid.
+ * - EBADF when file descriptor is not open for writing.
+ * - ESPIPE when fd is associated with a pipe.
+ */
 
 #define _GNU_SOURCE
 

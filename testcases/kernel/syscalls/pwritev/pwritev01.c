@@ -4,14 +4,14 @@
 * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 */
 
-/*
-* Test Name: pwritev01
-*
-* Test Description:
-* Testcase to check the basic functionality of the pwritev(2).
-* pwritev(2) should succeed to write the expected content of data
-* and after writing the file, the file offset is not changed.
-*/
+/*\
+ * [Description]
+ *
+ * Testcase to check the basic functionality of the pwritev(2).
+ *
+ * pwritev(2) should succeed to write the expected content of data
+ * and after writing the file, the file offset is not changed.
+ */
 
 #define _GNU_SOURCE
 #include <string.h>
