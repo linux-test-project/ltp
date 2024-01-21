@@ -4,29 +4,18 @@
 * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 */
 
-/*
-* Test Name: preadv02
-*
-* Description:
-* 1) preadv(2) fails if iov_len is invalid.
-* 2) preadv(2) fails if the vector count iovcnt is less than zero.
-* 3) preadv(2) fails if offset is negative.
-* 4) preadv(2) fails when attempts to read into a invalid address.
-* 5) preadv(2) fails if file descriptor is invalid.
-* 6) preadv(2) fails if file descriptor is not open for reading.
-* 7) preadv(2) fails when fd refers to a directory.
-* 8) preadv(2) fails if fd is associated with a pipe.
-*
-* Expected Result:
-* 1) preadv(2) should return -1 and set errno to EINVAL.
-* 2) preadv(2) should return -1 and set errno to EINVAL.
-* 3) preadv(2) should return -1 and set errno to EINVAL.
-* 4) preadv(2) should return -1 and set errno to EFAULT.
-* 5) preadv(2) should return -1 and set errno to EBADF.
-* 6) preadv(2) should return -1 and set errno to EBADF.
-* 7) preadv(2) should return -1 and set errno to EISDIR.
-* 8) preadv(2) should return -1 and set errno to ESPIPE.
-*/
+/*\
+ * [Description]
+ *
+ * - EINVAL when iov_len is invalid.
+ * - EINVAL when the vector count iovcnt is less than zero.
+ * - EINVAL when offset is negative.
+ * - EFAULT when attempts to read into a invalid address.
+ * - EBADF when file descriptor is invalid.
+ * - EBADF when file descriptor is not open for reading.
+ * - EISDIR when fd refers to a directory.
+ * - ESPIPE when fd is associated with a pipe.
+ */
 
 #define _GNU_SOURCE
 

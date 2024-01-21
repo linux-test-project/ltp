@@ -4,14 +4,14 @@
 * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
 */
 
-/*
-* Test Name: preadv01
-*
-* Test Description:
-* Testcase to check the basic functionality of the preadv(2).
-* Preadv(2) should succeed to read the expected content of data
-* and after reading the file, the file offset is not changed.
-*/
+/*\
+ * [Description]
+ *
+ * Testcase to check the basic functionality of the preadv(2).
+ *
+ * Preadv(2) should succeed to read the expected content of data
+ * and after reading the file, the file offset is not changed.
+ */
 
 #define _GNU_SOURCE
 
