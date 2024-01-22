@@ -228,6 +228,7 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
+	.needs_root = 1,
 	.tcnt = 3,
 	.setup = setup,
 	.test = do_test,
