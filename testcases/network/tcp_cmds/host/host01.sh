@@ -21,11 +21,12 @@ do_test()
 	if addr=$(host $lhost); then
 		addr=$(echo "$addr" | grep address | tail -1 | awk '{print $NF}')
 		if [ -z "$addr" ]; then
-			tst_brk TFAIL "empty address"
+			tst_res TFAIL "empty address"
+			return
 		fi
 		EXPECT_PASS host $addr \>/dev/null
 	else
-		tst_brk TFAIL "host $lhost on local machine failed"
+		tst_res TFAIL "host $lhost on local machine failed"
 	fi
 }
 

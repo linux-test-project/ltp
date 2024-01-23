@@ -93,8 +93,10 @@ IdentityFile $TST_TMPDIR/id_rsa\n\" > $RHOST_SSH_CONF"
 
 test_ssh_connectivity()
 {
-	tst_rhost_run -c "$RHOST_SSH 'true >/dev/null 2>&1' >/dev/null"
-	[ $? -ne 0 ] && tst_brk TFAIL "SSH not reachable"
+	if ! tst_rhost_run -c "$RHOST_SSH 'true >/dev/null 2>&1' >/dev/null"; then
+		tst_res TFAIL "SSH not reachable"
+		return
+	fi
 }
 
 test1()
@@ -121,7 +123,10 @@ test1()
 		[ $? -ne 0 ] && num=$((num + 1))
 	done
 
-	[ $num -ne 0 ] && tst_brk TFAIL "$num ssh processes died unexpectedly during execution"
+	if [ $num -ne 0 ]; then
+		tst_res TFAIL "$num ssh processes died unexpectedly during execution"
+		return
+	fi
 
 	test_ssh_connectivity
 
@@ -216,7 +221,10 @@ test3()
 
 	# Setup an ssh tunnel from the remote host to testhost
 	tst_rhost_run -c "$RHOST_SSH -f -N -L $lport:$rhost:$port </dev/null >/dev/null 2>&1"
-	[ "$?" -ne 0 ] && tst_brk TFAIL "Failed to create an SSH session with port forwarding"
+	if [ "$?" -ne 0 ]; then
+		tst_res TFAIL "Failed to create an SSH session with port forwarding"
+		return
+	fi
 	RHOST_PIDS=$(tst_rhost_run -c "pgrep -f '^ssh .*$lport:$rhost:$port'")
 
 	# Start the TCP traffic clients

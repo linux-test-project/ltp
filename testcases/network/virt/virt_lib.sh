@@ -175,7 +175,7 @@ virt_multiple_add_test()
 
 	for i in $(seq $start_id $max); do
 		virt_add ltp_v$i id $i $opt || \
-			tst_brk TFAIL "failed to create 'ltp_v$i $opt'"
+			tst_brk TBROK "failed to create 'ltp_v$i $opt'"
 		ROD_SILENT "ip link set ltp_v$i up"
 	done
 
@@ -197,7 +197,7 @@ virt_add_delete_test()
 
 	for i in $(seq 0 $max); do
 		virt_add ltp_v0 $opt || \
-			tst_brk TFAIL "failed to create 'ltp_v0 $opt'"
+			tst_brk TBROK "failed to create 'ltp_v0 $opt'"
 		ROD_SILENT "ip link set ltp_v0 up"
 		ROD_SILENT "ip link delete ltp_v0"
 	done

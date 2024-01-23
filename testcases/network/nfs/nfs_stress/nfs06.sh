@@ -34,7 +34,10 @@ do_test()
 
 	tst_res TINFO "waiting for pids:$pids"
 	for p in $pids; do
-		wait $p || tst_brk TFAIL "fsstress process failed"
+		if ! wait $p; then
+			tst_res TFAIL "fsstress process failed"
+			return
+		fi
 		tst_res TINFO "fsstress '$p' completed"
 	done
 	pids=
