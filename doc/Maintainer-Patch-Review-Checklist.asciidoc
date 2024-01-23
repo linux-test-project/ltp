@@ -22,6 +22,8 @@ The following are examples and may not be appropriate for all tests.
   - Use sanitizers e.g. undefined behaviour, address.
   - Compile on non-x86
   - Compile on x86 with -m32
+  - Compile testing patches with GitHub Actions in LTP repo fork can cover
+    various distros/architectures
 * Use `make check`
 * Run effected tests in a VM
   - Use single vCPU
@@ -30,10 +32,12 @@ The following are examples and may not be appropriate for all tests.
 * Run effected tests on an embedded device
 * Run effected tests on non-x86 machine in general
 * Run reproducers on a kernel where the bug is present
-* Run tests with "-i0"
+* Run tests with "-i0" and "-i2"
 * Compare usage of system calls with man page descriptions
 * Compare usage of system calls with kernel code
+* Double check commit message
 * Search the LTP library for existing helper functions
+* Check doc formatting, i.e. make doc && chromium docparse/metadata.html
 
 ## How to find subtle errors
 
