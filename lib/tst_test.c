@@ -1147,6 +1147,29 @@ static void do_cgroup_requires(void)
 	tst_cg_init();
 }
 
+#define tst_set_ulimit(conf) \
+	set_ulimit_(__FILE__, __LINE__, (conf))
+
+/*
+ * Set resource limits.
+ */
+static void set_ulimit_(const char *file, const int lineno, const struct tst_ulimit_val *conf)
+{
+	struct rlimit rlim;
+
+	safe_getrlimit(file, lineno, conf->resource, &rlim);
+
+	rlim.rlim_cur = conf->rlim_cur;
+
+	if (conf->rlim_cur > rlim.rlim_max)
+		rlim.rlim_max = conf->rlim_cur;
+
+	tst_res_(file, lineno, TINFO, "Set ulimit resource: %d rlim_cur: %lu rlim_max: %lu",
+		conf->resource, rlim.rlim_cur, rlim.rlim_max);
+
+	safe_setrlimit(file, lineno, conf->resource, &rlim);
+}
+
 static void do_setup(int argc, char *argv[])
 {
 	char *tdebug_env = getenv("LTP_ENABLE_DEBUG");
@@ -1248,6 +1271,15 @@ static void do_setup(int argc, char *argv[])
 
 		while (pvl->path) {
 			tst_sys_conf_save(pvl);
+			pvl++;
+		}
+	}
+
+	if (tst_test->ulimit) {
+		const struct tst_ulimit_val *pvl = tst_test->ulimit;
+
+		while (pvl->resource) {
+			tst_set_ulimit(pvl);
 			pvl++;
 		}
 	}

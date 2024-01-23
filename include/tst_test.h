@@ -15,6 +15,7 @@
 #include <limits.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/resource.h>
 
 #include "tst_common.h"
 #include "tst_res_flags.h"
@@ -149,6 +150,11 @@ extern unsigned int tst_variant;
 #define TST_NO_HUGEPAGES ((unsigned long)-1)
 
 #define TST_UNLIMITED_RUNTIME (-1)
+
+struct tst_ulimit_val {
+	int resource;
+	rlim_t rlim_cur;
+};
 
 struct tst_test {
 	/* number of tests available in test() function */
@@ -307,6 +313,11 @@ struct tst_test {
 	 * before setup and restore after cleanup
 	 */
 	const struct tst_path_val *save_restore;
+
+	/*
+	 * {} terminated array of ulimit resource type and value.
+	 */
+	const struct tst_ulimit_val *ulimit;
 
 	/*
 	 * NULL terminated array of kernel config options required for the

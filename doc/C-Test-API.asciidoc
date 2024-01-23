@@ -2426,6 +2426,25 @@ Test can be skipped on various conditions: on enabled SecureBoot
 ('.skip_in_secureboot = 1'), lockdown ('.skip_in_lockdown = 1') or in 32-bit
 compat mode ('.skip_in_compat = 1').
 
+1.43 Set resource limits
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+'.ulimit' allows to set resource limits on particular resource. NOTE: It sets 'rlim_max'
+only if it's higher than 'rlim_cur'.
+
+[source,c]
+-------------------------------------------------------------------------------
+#include "tst_test.h"
+
+static struct tst_test test = {
+	...
+	.ulimit = (const struct tst_ulimit_val[]) {
+		{RLIMIT_STACK, RLIM_INFINITY},
+		{}
+	},
+};
+-------------------------------------------------------------------------------
+
 2. Common problems
 ------------------
 
