@@ -67,7 +67,8 @@ do_test()
 	newblocks=$(get_blocks)
 
 	if [ $blocks -eq $newblocks ]; then
-	   tst_brk TFAIL "usage did not change after remount"
+	   tst_res TFAIL "usage did not change after remount"
+	   return
 	fi
 
 	tst_res TPASS "quota on remount passed"

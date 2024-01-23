@@ -159,7 +159,8 @@ get_pcr10_aggregate()
 		$cmd > hash.txt 2>&1
 		ret=$?
 	elif [ $ret -ne 0 -a "$MISSING_EVMCTL" = 1 ]; then
-		tst_brk TFAIL "evmctl failed $msg"
+		tst_res TFAIL "evmctl failed $msg"
+		return
 	fi
 
 	[ $ret -ne 0 ] && tst_res TWARN "evmctl failed, trying to continue $msg"

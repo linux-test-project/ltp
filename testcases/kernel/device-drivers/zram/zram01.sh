@@ -82,7 +82,9 @@ zram_makefs()
 		mkfs.$fs /dev/zram$i > err.log 2>&1
 		if [ $? -ne 0 ]; then
 			cat err.log
-			tst_brk TFAIL "failed to make $fs on /dev/zram$i"
+			tst_res TFAIL "Failed to make $fs on /dev/zram$i"
+			tst_brk TBROK "Can't continue with mounting the FS"
+			return
 		fi
 
 		i=$(($i + 1))
