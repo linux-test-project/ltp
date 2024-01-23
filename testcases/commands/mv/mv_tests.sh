@@ -88,7 +88,8 @@ test1()
 	mv tst_mv.old tst_mv.new > tst_mv.err 2>&1
 	if [ $? -ne 0 ]; then
 		cat tst_mv.err
-		tst_brk TFAIL "Test #1: 'mv tst_mv.old tst_mv.new' failed"
+		tst_res TFAIL "Test #1: 'mv tst_mv.old tst_mv.new' failed"
+		return
 	fi
 
 	tst_res TINFO "Test #1: creating output file"
