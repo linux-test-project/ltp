@@ -17,8 +17,8 @@
 #include "tst_test.h"
 #include <stdio.h>
 
-#define MMAPSIZE 1024
-static char *addr;
+static char *addr1;
+static char *addr2;
 
 static struct tcase {
 	int prot;
@@ -44,14 +44,23 @@ static struct tcase {
 static void run(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
-	char addr_str[20];
 	char perms[8];
 	char fmt[1024];
+	unsigned int pagesize;
+	int flag;
 
-	addr = SAFE_MMAP(NULL, MMAPSIZE, tc->prot, tc->flags, -1, 0);
+	pagesize = SAFE_SYSCONF(_SC_PAGESIZE);
 
-	sprintf(addr_str, "%" PRIxPTR, (uintptr_t)addr);
-	sprintf(fmt, "%s-%%*x %%s", addr_str);
+	/* To avoid new mapping getting merged with existing mappings, we first
+	 * create a 2-page mapping with the different permissions, and then remap
+	 * the 2nd page with the perms being tested.
+	 */
+	flag = (tc->flags & MAP_PRIVATE) ? MAP_SHARED : MAP_PRIVATE;
+	addr1 = SAFE_MMAP(NULL, pagesize * 2, PROT_NONE, MAP_ANONYMOUS | flag, -1, 0);
+
+	addr2 = SAFE_MMAP(addr1 + pagesize, pagesize, tc->prot, tc->flags | MAP_FIXED, -1, 0);
+
+	sprintf(fmt, "%" PRIxPTR "-%%*x %%s", (uintptr_t)addr2);
 	SAFE_FILE_LINES_SCANF("/proc/self/maps", fmt, perms);
 
 	if (!strcmp(perms, tc->exp_perms)) {
@@ -61,7 +70,7 @@ static void run(unsigned int i)
 						tc->exp_perms, perms);
 	}
 
-	SAFE_MUNMAP(addr, MMAPSIZE);
+	SAFE_MUNMAP(addr1, pagesize * 2);
 }
 
 static struct tst_test test = {
