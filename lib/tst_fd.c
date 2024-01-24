@@ -103,7 +103,7 @@ static void open_epoll(struct tst_fd *fd)
 	fd->fd = epoll_create(1);
 
 	if (fd->fd < 0)
-		tst_brk(TBROK | TERRNO, "epoll_create()");
+		tst_res(TCONF | TERRNO, "epoll_create()");
 }
 
 static void open_eventfd(struct tst_fd *fd)
@@ -141,7 +141,7 @@ static void open_pidfd(struct tst_fd *fd)
 {
 	fd->fd = syscall(__NR_pidfd_open, getpid(), 0);
 	if (fd->fd < 0)
-		tst_brk(TBROK | TERRNO, "pidfd_open()");
+		tst_res(TCONF | TERRNO, "pidfd_open()");
 }
 
 static void open_fanotify(struct tst_fd *fd)
