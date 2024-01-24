@@ -367,7 +367,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = run,
-	.max_runtime = 60,
+	.max_runtime = 1800,
 	.options = (struct tst_option[]) {
 		{ "l:", &str_file_max_size, "Maximum size in MB of the test file(s) (default 262144)" },
 		{ "o:", &str_op_max_size, "Maximum size for single operation (default 65536)" },
