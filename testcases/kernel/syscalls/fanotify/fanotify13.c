@@ -158,13 +158,8 @@ static void do_test(unsigned int number)
 		return;
 	}
 
-	if (at_handle_fid && mark->flag != FAN_MARK_INODE) {
-		tst_res(TCONF, "overlayfs does not support decodeable file handles required by %s", mark->name);
-		return;
-	}
-
-	if (filesystem_mark_unsupported && mark->flag & FAN_MARK_FILESYSTEM) {
-		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
+	if (filesystem_mark_unsupported && mark->flag != FAN_MARK_INODE) {
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
 		return;
 	}
 
@@ -325,9 +320,6 @@ static void do_setup(void)
 	SAFE_MOUNT(mnt, MOUNT_PATH, "none", MS_BIND, NULL);
 	bind_mounted = 1;
 
-	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM,
-								    MOUNT_PATH);
-
 	nofid_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 
 	/* Create file and directory objects for testing on base fs */
@@ -338,6 +330,10 @@ static void do_setup(void)
 		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
 		ovl_bind_mounted = 1;
 	}
+
+	filesystem_mark_unsupported =
+		fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_FILESYSTEM, FAN_OPEN,
+					       ovl_bind_mounted ? OVL_MNT : MOUNT_PATH);
 
 	/*
 	 * Create a mark on first inode without FAN_REPORT_FID, to test
