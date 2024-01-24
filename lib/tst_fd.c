@@ -139,7 +139,7 @@ static void open_timerfd(struct tst_fd *fd)
 
 static void open_pidfd(struct tst_fd *fd)
 {
-	fd->fd = pidfd_open(getpid(), 0);
+	fd->fd = syscall(__NR_pidfd_open, getpid(), 0);
 	if (fd->fd < 0)
 		tst_brk(TBROK | TERRNO, "pidfd_open()");
 }
@@ -194,7 +194,7 @@ static void open_io_uring(struct tst_fd *fd)
 {
 	struct io_uring_params uring_params = {};
 
-	fd->fd = io_uring_setup(1, &uring_params);
+	fd->fd = syscall(__NR_io_uring_setup, 1, &uring_params);
 	if (fd->fd < 0) {
 		tst_res(TCONF | TERRNO,
 			"Skipping %s", tst_fd_desc(fd));
@@ -210,7 +210,7 @@ static void open_bpf_map(struct tst_fd *fd)
 		.max_entries = 1,
 	};
 
-	fd->fd = bpf(BPF_MAP_CREATE, &array_attr, sizeof(array_attr));
+	fd->fd = syscall(__NR_bpf, BPF_MAP_CREATE, &array_attr, sizeof(array_attr));
 	if (fd->fd < 0) {
 		tst_res(TCONF | TERRNO,
 			"Skipping %s", tst_fd_desc(fd));
@@ -219,7 +219,7 @@ static void open_bpf_map(struct tst_fd *fd)
 
 static void open_fsopen(struct tst_fd *fd)
 {
-	fd->fd = fsopen("ext2", 0);
+	fd->fd = syscall(__NR_fsopen, "ext2", 0);
 	if (fd->fd < 0) {
 		tst_res(TCONF | TERRNO,
 			"Skipping %s", tst_fd_desc(fd));
@@ -228,7 +228,7 @@ static void open_fsopen(struct tst_fd *fd)
 
 static void open_fspick(struct tst_fd *fd)
 {
-	fd->fd = fspick(AT_FDCWD, "/", 0);
+	fd->fd = syscall(__NR_fspick, AT_FDCWD, "/", 0);
 	if (fd->fd < 0) {
 		tst_res(TCONF | TERRNO,
 			"Skipping %s", tst_fd_desc(fd));
@@ -237,7 +237,7 @@ static void open_fspick(struct tst_fd *fd)
 
 static void open_open_tree(struct tst_fd *fd)
 {
-	fd->fd = open_tree(AT_FDCWD, "/", 0);
+	fd->fd = syscall(__NR_open_tree, AT_FDCWD, "/", 0);
 	if (fd->fd < 0) {
 		tst_res(TCONF | TERRNO,
 			"Skipping %s", tst_fd_desc(fd));
