@@ -70,6 +70,7 @@ static char event_buf[EVENT_BUF_LEN];
 #define TEMP_DIR MOUNT_PATH "/temp_dir"
 
 static int fan_report_target_fid_unsupported;
+static int filesystem_mark_unsupported;
 static int rename_events_unsupported;
 
 static struct test_case_t {
@@ -279,6 +280,16 @@ static void do_test(unsigned int number)
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_TARGET_FID,
 					    fan_report_target_fid_unsupported);
 		return;
+	}
+
+	if (filesystem_mark_unsupported) {
+		if (sub_mark && sub_mark->flag != FAN_MARK_INODE)
+			mark = sub_mark;
+
+		if (mark->flag != FAN_MARK_INODE) {
+			FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+			return;
+		}
 	}
 
 	fd_notify = SAFE_FANOTIFY_INIT(group->flag, 0);
@@ -765,6 +776,9 @@ static void setup(void)
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_DIR_FID, MOUNT_PATH);
 	fan_report_target_fid_unsupported =
 		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MOUNT_PATH);
+	filesystem_mark_unsupported =
+		fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_FILESYSTEM, FAN_OPEN,
+						MOUNT_PATH);
 	rename_events_unsupported =
 		fanotify_flags_supported_on_fs(FAN_REPORT_DFID_NAME, 0,
 					       FAN_RENAME, MOUNT_PATH);

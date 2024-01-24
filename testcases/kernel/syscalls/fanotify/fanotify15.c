@@ -52,6 +52,7 @@ struct event_t {
 };
 
 static int fanotify_fd;
+static int filesystem_mark_unsupported;
 static char events_buf[EVENT_BUF_LEN];
 static struct event_t event_set[EVENT_MAX];
 
@@ -84,6 +85,11 @@ static void do_test(unsigned int number)
 	struct fanotify_fid_t root_fid, dir_fid, file_fid;
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
+
+	if (filesystem_mark_unsupported && mark->flag != FAN_MARK_INODE) {
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+		return;
+	}
 
 	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | mark->flag, tc->mask |
 				FAN_CREATE | FAN_DELETE | FAN_MOVE |
@@ -274,6 +280,10 @@ static void do_setup(void)
 {
 	SAFE_MKDIR(TEST_DIR, 0755);
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, TEST_DIR);
+	filesystem_mark_unsupported =
+		fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_FILESYSTEM, FAN_OPEN,
+						MOUNT_POINT);
+
 	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_REPORT_FID, O_RDONLY);
 }
 
