@@ -77,6 +77,7 @@ static char buf[BUF_SIZE];
 static int fd_notify;
 static int fan_report_fid_unsupported;
 static int mount_mark_fid_unsupported;
+static int inode_mark_fid_xdev;
 static int filesystem_mark_unsupported;
 
 static unsigned long long event_set[EVENT_MAX];
@@ -328,6 +329,17 @@ pass:
 
 	}
 
+
+	/*
+	 * Try to setup a bogus mark on test tmp dir, to check if marks on
+	 * different filesystems are supported.
+	 * When tested fs has zero fsid (e.g. fuse) and events are reported
+	 * with fsid+fid, watching different filesystems is not supported.
+	 */
+	ret = report_fid ? inode_mark_fid_xdev : 0;
+	TST_EXP_FD_OR_FAIL(fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_CLOSE_WRITE,
+					 AT_FDCWD, "."), ret);
+
 	/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_REMOVE | mark->flag,
 			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
@@ -352,6 +364,20 @@ static void setup(void)
 	mount_mark_fid_unsupported = fanotify_flags_supported_on_fs(FAN_REPORT_FID,
 								    FAN_MARK_MOUNT,
 								    FAN_OPEN, fname);
+	/*
+	 * When mount mark is not supported due to zero fsid (e.g. fuse) or if TMPDIR has
+	 * non-uniform fsid (e.g. btrfs subvol), multi fs inode marks are not supported.
+	 */
+	if (mount_mark_fid_unsupported && errno == ENODEV) {
+		tst_res(TINFO, "filesystem %s does not support reporting events with fid from multi fs",
+				tst_device->fs_type);
+		inode_mark_fid_xdev = EXDEV;
+	}
+
+	if (fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_MOUNT, FAN_OPEN, ".")) {
+		inode_mark_fid_xdev = errno;
+		tst_res(TINFO, "TMPDIR does not support reporting events with fid from multi fs");
+	}
 }
 
 static void cleanup(void)
@@ -368,6 +394,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
+	.all_filesystems = 1,
 };
 
 #else
