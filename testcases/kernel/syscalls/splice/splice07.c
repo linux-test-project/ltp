@@ -38,6 +38,7 @@ static void check_splice(struct tst_fd *fd_in, struct tst_fd *fd_out)
 	if (fd_out->type == TST_FD_PIPE_WRITE) {
 		switch (fd_in->type) {
 		/* While these combinations succeeed */
+		case TST_FD_DEV_ZERO:
 		case TST_FD_FILE:
 		case TST_FD_MEMFD:
 			return;
