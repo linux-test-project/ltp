@@ -179,7 +179,10 @@ AC_CHECK_TYPES([struct file_handle],,,[
 #include <fcntl.h>
 ])
 
-AC_CHECK_TYPES([struct fs_quota_statv],,,[#include <xfs/xqm.h>])
+AC_CHECK_TYPES([struct fs_quota_statv],,,[
+#define _GNU_SOURCE
+#include <xfs/xqm.h>
+])
 AC_CHECK_TYPES([struct if_nextdqblk],,,[#include <linux/quota.h>])
 AC_CHECK_TYPES([struct iovec],,,[#include <sys/uio.h>])
 AC_CHECK_TYPES([struct ipc64_perm],,,[#include <sys/ipcbuf.h>])
