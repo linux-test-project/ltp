@@ -882,8 +882,9 @@ static void setup(void)
 								   MOUNT_PATH);
 	ignore_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_IGNORE_SURV,
 								MOUNT_PATH);
-	fan_report_dfid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
-									  MOUNT_PATH);
+	fan_report_dfid_unsupported = fanotify_flags_supported_on_fs(FAN_REPORT_DFID_NAME,
+								     FAN_MARK_MOUNT,
+								     FAN_OPEN, MOUNT_PATH);
 	if (fan_report_dfid_unsupported) {
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_DFID_NAME, fan_report_dfid_unsupported);
 		/* Limit tests to legacy priority classes */

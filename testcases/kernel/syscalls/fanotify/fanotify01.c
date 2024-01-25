@@ -76,6 +76,7 @@ static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static int fd_notify;
 static int fan_report_fid_unsupported;
+static int mount_mark_fid_unsupported;
 static int filesystem_mark_unsupported;
 
 static unsigned long long event_set[EVENT_MAX];
@@ -88,16 +89,22 @@ static void test_fanotify(unsigned int n)
 	struct fanotify_mark_type *mark = &tc->mark;
 	int fd, ret, len, i = 0, test_num = 0;
 	int tst_count = 0;
+	int report_fid = (tc->init_flags & FAN_REPORT_FID);
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
-	if (fan_report_fid_unsupported && (tc->init_flags & FAN_REPORT_FID)) {
+	if (fan_report_fid_unsupported && report_fid) {
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_FID, fan_report_fid_unsupported);
 		return;
 	}
 
 	if (filesystem_mark_unsupported && mark->flag == FAN_MARK_FILESYSTEM) {
-		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+		return;
+	}
+
+	if (mount_mark_fid_unsupported && report_fid && mark->flag != FAN_MARK_INODE) {
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, mount_mark_fid_unsupported);
 		return;
 	}
 
@@ -342,6 +349,9 @@ static void setup(void)
 
 	fan_report_fid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FID, fname);
 	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM, fname);
+	mount_mark_fid_unsupported = fanotify_flags_supported_on_fs(FAN_REPORT_FID,
+								    FAN_MARK_MOUNT,
+								    FAN_OPEN, fname);
 }
 
 static void cleanup(void)
