@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2018 FUJITSU LIMITED. All rights reserved.
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2019-2023
  */
 
 /*\
@@ -92,7 +93,7 @@ static void verify_direct_pwritev(unsigned int n)
 static void setup(void)
 {
 	int dev_fd, ret;
-	
+
 	dev_fd = SAFE_OPEN(tst_device->dev, O_RDWR);
 	SAFE_IOCTL(dev_fd, BLKSSZGET, &ret);
 	SAFE_CLOSE(dev_fd);
