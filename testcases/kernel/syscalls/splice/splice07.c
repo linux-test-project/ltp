@@ -40,6 +40,7 @@ static void check_splice(struct tst_fd *fd_in, struct tst_fd *fd_out)
 		/* While these combinations succeeed */
 		case TST_FD_DEV_ZERO:
 		case TST_FD_FILE:
+		case TST_FD_PROC_MAPS:
 		case TST_FD_MEMFD:
 			return;
 		/* And this complains about socket not being connected */
