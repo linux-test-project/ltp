@@ -1,6 +1,6 @@
-# 3/2006
-# Malcles Jacky: this file is a copy from Ridgeway Marty's aio script
-#     goal: all aio tests using the same framework
+aio01 aio01
+aio02 aio02
+
 #Running dio_sparse & dirty tests
 DI000 dirty
 DS000 dio_sparse
