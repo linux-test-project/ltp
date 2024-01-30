@@ -42,7 +42,6 @@ static int init_slice_boundary(int fd)
 
 	/* dummy malloc so we know where is heap */
 	heap = malloc(1);
-	free(heap);
 
 	 /* Avoid underflow on systems with large huge pages.
 	  * The additionally plus heap address is to reduce the possibility
@@ -50,6 +49,8 @@ static int init_slice_boundary(int fd)
 	  */
 	while (slice_boundary + slice_size < (unsigned long)heap + 2*hpage_size)
 		slice_boundary += slice_size;
+
+	free(heap);
 
 	/* Find 2 neighbour slices with couple huge pages free
 	 * around slice boundary.
