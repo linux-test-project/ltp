@@ -1,4 +1,7 @@
-#DESCRIPTION:securebits tests
+# various capability related tests
+cap_bounds run_capbounds.sh
+filecaps filecapstest.sh
+
 check_keepcaps01 check_keepcaps 1
 check_keepcaps02 check_keepcaps 2
 check_keepcaps03 check_keepcaps 3
