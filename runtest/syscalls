@@ -1708,7 +1708,6 @@ wait402 wait402
 wait403 wait403
 
 waitpid01 waitpid01
-waitpid02 waitpid02
 waitpid03 waitpid03
 waitpid04 waitpid04
 waitpid05 waitpid05
