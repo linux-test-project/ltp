@@ -94,7 +94,7 @@ nfslock4_ipv6_01 nfslock01.sh -6 -v 4 -t tcp
 nfslock41_ipv6_01 nfslock01.sh -6 -v 4.1 -t tcp
 nfslock42_ipv6_01 nfslock01.sh -6 -v 4.2 -t tcp
 
-nfsstat3_01 nfsstat01.sh
+nfsstat3_01 nfsstat01.sh -v 3
 
 nfsx3 fsx.sh -v 3 -t udp
 nfsx3t fsx.sh -v 3 -t tcp
