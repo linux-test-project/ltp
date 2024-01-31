@@ -62,8 +62,12 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 	int i;
 	int r;
 
-	while ((fd = open(filename, O_RDONLY, 0666)) < 0)
+	while ((fd = open(filename, O_RDONLY, 0666)) < 0) {
+		if (!*run_child)
+			return;
+
 		usleep(100);
+	}
 
 	tst_res(TINFO, "child %i reading file", getpid());
 
@@ -102,8 +106,12 @@ static inline void io_read_eof(const char *filename, volatile int *run_child)
 	int fd;
 	int r;
 
-	while ((fd = open(filename, O_RDONLY, 0666)) < 0)
+	while ((fd = open(filename, O_RDONLY, 0666)) < 0) {
+		if (!*run_child)
+			return;
+
 		usleep(100);
+	}
 
 	tst_res(TINFO, "child %i reading file", getpid());
 
