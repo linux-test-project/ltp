@@ -2,8 +2,11 @@
 /*
  * Copyright (c) 2015 SUSE Linux.  All Rights Reserved.
  * Author: Jan Kara <jack@suse.cz>
+ */
+
+/*\
+ * [Description]
  *
- * DESCRIPTION
  * Test for inotify mark destruction race.
  *
  * Kernels prior to 4.2 have a race when inode is being deleted while
@@ -11,7 +14,7 @@
  * hit, the kernel crashes or loops.
  *
  * The problem has been fixed by commit:
- *  8f2f3eb59dff "fsnotify: fix oops in fsnotify_clear_marks_by_group_flags()".
+ * 8f2f3eb59dff ("fsnotify: fix oops in fsnotify_clear_marks_by_group_flags()").
  */
 
 #include "config.h"

@@ -2,12 +2,12 @@
 /*
  * Copyright (c) 2007 SWSoft.  All Rights Reserved.
  * Author: Andrew Vagin <avagin@sw.ru>
+ */
+
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *     Check that inotify work for a directory
- *
- * ALGORITHM
- *     Execute sequence file's operation and check return events
+ * Basic test for inotify events on directory.
  */
 
 #include "config.h"

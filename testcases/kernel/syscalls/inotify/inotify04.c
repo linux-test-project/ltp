@@ -2,17 +2,21 @@
 /*
  * Copyright (c) 2012 Linux Test Project.  All Rights Reserved.
  * Ngie Cooper, April 2012
+ */
+
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *     verify that IN_DELETE_SELF functions as expected
+ * Test for inotify IN_DELETE_SELF event.
  *
- * ALGORITHM
- *     This testcase creates a temporary directory, then add watches to a
- *     predefined file and subdirectory, and delete the file and directory to
- *     ensure that the IN_DELETE_SELF event is captured properly.
+ * [Algorithm]
  *
- *     Because of how the inotify(7) API is designed, we also need to catch the
- *     IN_ATTRIB and IN_IGNORED events.
+ * This testcase creates a temporary directory, then add watches to a
+ * predefined file and subdirectory, and delete the file and directory
+ * to ensure that the IN_DELETE_SELF event is captured properly.
+ *
+ * Because of how the inotify(7) API is designed, we also need to catch
+ * the IN_ATTRIB and IN_IGNORED events.
  */
 
 #include "config.h"

@@ -7,10 +7,11 @@
 
 /*\
  * [Description]
+ *
  * Test special inotify mask flags.
  *
  * Regression test for kernel commit:
- * a32e697cda27 ("inotify: show inotify mask flags in proc fdinfo")
+ * a32e697cda27 ("inotify: show inotify mask flags in proc fdinfo").
  */
 
 #include "config.h"

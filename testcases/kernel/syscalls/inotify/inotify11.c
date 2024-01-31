@@ -8,12 +8,13 @@
 
 /*\
  * [Description]
+ *
  * Test opening files after receiving IN_DELETE.
  *
  * Kernel v5.13 has a regression allowing files to be open after IN_DELETE.
  *
  * The problem has been fixed by commit:
- *  a37d9a17f099 "fsnotify: invalidate dcache before IN_DELETE event".
+ * a37d9a17f099 ("fsnotify: invalidate dcache before IN_DELETE event").
  */
 
 #include "config.h"

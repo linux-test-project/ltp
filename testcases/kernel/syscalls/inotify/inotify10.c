@@ -3,15 +3,18 @@
  * Copyright (c) 2020 CTERA Networks. All Rights Reserved.
  *
  * Started by Amir Goldstein <amir73il@gmail.com>
+ */
+
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *     Check that event is reported to watching parent and watching child
- *     based on their interest
+ * Check that event is reported to watching parent and watching child
+ * based on their interest.
  *
  * Test case #3 is a regression test for commit fecc4559780d that fixes
  * a bug introduced in kernel v5.9:
  *
- *     fsnotify: fix events reported to watching parent and child
+ * fecc4559780d ("fsnotify: fix events reported to watching parent and child").
  */
 
 #include "config.h"

@@ -2,13 +2,14 @@
 /*
  * Copyright (c) 2007 SWSoft.  All Rights Reserved.
  * Author: Andrew Vagin <avagin@sw.ru>
- *
- * DESCRIPTION
- *     Check that inotify work for a file
- *
- * ALGORITHM
- *     Execute sequence file's operation and check return events
  */
+
+/*\
+ * [Description]
+ *
+ * Basic test for inotify events on file.
+ */
+
 #include "config.h"
 
 #include <stdio.h>

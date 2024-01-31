@@ -2,22 +2,26 @@
 /*
  * Copyright (c) 2018 CTERA Networks.  All Rights Reserved.
  * Author: Amir Goldstein <amir73il@gmail.com>
+ */
+
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *     Check that inotify work for an overlayfs file after copy up and
- *     drop caches.
+ * Check that inotify work for an overlayfs file after copy up and
+ * drop caches.
  *
- *     An inotify watch pins the file inode in cache, but not the dentry.
- *     The watch will not report events on the file if overlayfs does not
- *     obtain the pinned inode to the new allocated dentry after drop caches.
+ * An inotify watch pins the file inode in cache, but not the dentry.
+ * The watch will not report events on the file if overlayfs does not
+ * obtain the pinned inode to the new allocated dentry after drop caches.
  *
- *     The problem has been fixed by commit:
- *       764baba80168 "ovl: hash non-dir by lower inode for fsnotify"
+ * The problem has been fixed by commit:
+ * 764baba80168 ("ovl: hash non-dir by lower inode for fsnotify").
  *
- * ALGORITHM
- *     Add watch on an overlayfs lower file then chmod file and drop dentry
- *     and inode caches. Execute operations on file and expect events to be
- *     reported on file watch.
+ * [Algorithm]
+ *
+ * Add watch on an overlayfs lower file then chmod file and drop dentry
+ * and inode caches. Execute operations on file and expect events to be
+ * reported on file watch.
  */
 
 #include "config.h"

@@ -2,13 +2,12 @@
 /*
  * Copyright (c) 2008 Parallels.  All Rights Reserved.
  * Author: Andrew Vagin <avagin@gmail.com>
+ */
+
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	Check that inotify get IN_UNMOUNT event and
- *	don't block the umount command.
- *
- * ALGORITHM
- *	Execute sequence file's operation and check return events
+ * Check that inotify get IN_UNMOUNT event and don't block the umount command.
  */
 
 #include "config.h"
