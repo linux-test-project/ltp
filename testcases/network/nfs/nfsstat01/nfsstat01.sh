@@ -45,7 +45,9 @@ get_calls()
 #           tracking using the 'nfsstat' command and /proc/net/rpc
 do_test()
 {
-	local client_calls server_calls new_server_calls new_client_calls field
+	local client_calls server_calls new_server_calls new_client_calls
+	local client_field server_field
+	local client_v=$VERSION server_v=$VERSION
 
 	tst_res TINFO "checking RPC calls for server/client"
 
@@ -75,21 +77,23 @@ do_test()
 
 	tst_res TINFO "checking NFS calls for server/client"
 	case $VERSION in
-	2) field=13
+	2) client_field=13 server_field=13
 	;;
-	*) field=15
+	3) client_field=15 server_field=15
+	;;
+	4*) client_field=24 server_field=31 client_v=4 server_v=4ops
 	;;
 	esac
 
-	server_calls="$(get_calls proc$VERSION $field nfsd)"
-	client_calls="$(get_calls proc$VERSION $field nfs)"
+	server_calls="$(get_calls proc$server_v $server_field nfsd)"
+	client_calls="$(get_calls proc$client_v $client_field nfs)"
 	tst_res TINFO "calls $server_calls/$client_calls"
 
 	tst_res TINFO "Checking for tracking of NFS calls for server/client"
 	rm -f nfsstat01.tmp
 
-	new_server_calls="$(get_calls proc$VERSION $field nfsd)"
-	new_client_calls="$(get_calls proc$VERSION $field nfs)"
+	new_server_calls="$(get_calls proc$server_v $server_field nfsd)"
+	new_client_calls="$(get_calls proc$client_v $client_field nfs)"
 	tst_res TINFO "new calls $new_server_calls/$new_client_calls"
 
 	if [ "$new_server_calls" -le "$server_calls" ]; then
