@@ -94,7 +94,16 @@ nfslock01_v40_ip6t nfslock01.sh -6 -v 4 -t tcp
 nfslock01_v41_ip6t nfslock01.sh -6 -v 4.1 -t tcp
 nfslock01_v42_ip6t nfslock01.sh -6 -v 4.2 -t tcp
 
-nfsstat01_v30 nfsstat01.sh -v 3
+nfsstat01_v30_ip4u nfsstat01.sh -v 3 -t udp
+nfsstat01_v30_ip4t nfsstat01.sh -v 3 -t tcp
+nfsstat01_v40_ip4t nfsstat01.sh -v 4 -t tcp
+nfsstat01_v41_ip4t nfsstat01.sh -v 4.1 -t tcp
+nfsstat01_v42_ip4t nfsstat01.sh -v 4.2 -t tcp
+nfsstat01_v30_ip6u nfsstat01.sh -6 -v 3 -t udp
+nfsstat01_v30_ip6t nfsstat01.sh -6 -v 3 -t tcp
+nfsstat01_v40_ip6t nfsstat01.sh -6 -v 4 -t tcp
+nfsstat01_v41_ip6t nfsstat01.sh -6 -v 4.1 -t tcp
+nfsstat01_v42_ip6t nfsstat01.sh -6 -v 4.2 -t tcp
 
 fsx_v30_ip4u fsx.sh -v 3 -t udp
 fsx_v30_ip4t fsx.sh -v 3 -t tcp
