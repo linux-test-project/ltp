@@ -155,7 +155,7 @@ static int setup_swap(void)
 			}
 
 			/* Create the swapfile */
-			make_swapfile(filename, 0);
+			make_swapfile(filename, 10, 0);
 
 			/* turn on the swap file */
 			res = tst_syscall(__NR_swapon, filename, 0);
@@ -178,7 +178,7 @@ static int setup_swap(void)
 
 	/* Create all needed extra swapfiles for testing */
 	for (j = 0; j < testfiles; j++)
-		make_swapfile(swap_testfiles[j].filename, 0);
+		make_swapfile(swap_testfiles[j].filename, 10, 0);
 
 	return 0;
 }

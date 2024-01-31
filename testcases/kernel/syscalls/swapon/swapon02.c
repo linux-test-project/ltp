@@ -44,8 +44,8 @@ static void setup(void)
 	is_swap_supported("./tstswap");
 
 	SAFE_TOUCH("notswap", 0777, NULL);
-	make_swapfile("swapfile01", 0);
-	make_swapfile("alreadyused", 0);
+	make_swapfile("swapfile01", 10, 0);
+	make_swapfile("alreadyused", 10, 0);
 
 	if (tst_syscall(__NR_swapon, "alreadyused", 0))
 		tst_res(TWARN | TERRNO, "swapon(alreadyused) failed");

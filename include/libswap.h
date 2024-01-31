@@ -14,7 +14,7 @@
 /*
  * Make a swap file
  */
-int make_swapfile(const char *swapfile, int safe);
+int make_swapfile(const char *swapfile, int blocks, int safe);
 
 /*
  * Check swapon/swapoff support status of filesystems or files

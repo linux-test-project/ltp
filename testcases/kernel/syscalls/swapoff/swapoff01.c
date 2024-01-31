@@ -44,11 +44,8 @@ static void setup(void)
 		tst_brk(TBROK,
 			"Insufficient disk space to create swap file");
 
-	if (tst_fill_file("swapfile01", 0x00, 1024, 65536))
+	if (make_swapfile("swapfile01", 65536, 1))
 		tst_brk(TBROK, "Failed to create file for swap");
-
-	if (system("mkswap swapfile01 > tmpfile 2>&1") != 0)
-		tst_brk(TBROK, "Failed to make swapfile");
 }
 
 static struct tst_test test = {

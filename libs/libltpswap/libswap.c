@@ -4,6 +4,7 @@
  * Author: Stanislav Kholmanskikh <stanislav.kholmanskikh@oracle.com>
  */
 
+#include <sys/statvfs.h>
 #include <linux/fs.h>
 #include <errno.h>
 #include <linux/fiemap.h>
@@ -129,19 +130,34 @@ out:
 /*
  * Make a swap file
  */
-int make_swapfile(const char *swapfile, int safe)
+int make_swapfile(const char *swapfile, int blocks, int safe)
 {
-	if (!tst_fs_has_free(".", sysconf(_SC_PAGESIZE) * 10, TST_BYTES))
-		tst_brk(TBROK, "Insufficient disk space to create swap file");
+	struct statvfs fs_info;
+	unsigned long blk_size, bs;
+	size_t pg_size = sysconf(_SC_PAGESIZE);
+
+	if (statvfs(".", &fs_info) == -1)
+		return -1;
+
+	blk_size = fs_info.f_bsize;
+
+	/* To guarantee at least one page can be swapped out */
+	if (blk_size * blocks < pg_size)
+		bs = pg_size;
+	else
+		bs = blk_size;
+
+	if (!tst_fs_has_free(".", bs * blocks, TST_BYTES))
+		tst_brk(TCONF, "Insufficient disk space to create swap file");
 
 	/* create file */
-	if (prealloc_contiguous_file(swapfile, sysconf(_SC_PAGESIZE), 10) != 0)
+	if (prealloc_contiguous_file(swapfile, bs, blocks) != 0)
 		tst_brk(TBROK, "Failed to create swapfile");
 
-	/* Full the file to make old xfs happy*/
+	/* Fill the file if needed (specific to old xfs filesystems) */
 	if (tst_fs_type(swapfile) == TST_XFS_MAGIC) {
-		if (tst_fill_file(swapfile, 0, sysconf(_SC_PAGESIZE), 10) != 0)
-			tst_brk(TBROK, "Failed to create swapfile");
+		if (tst_fill_file(swapfile, 0, bs, blocks) != 0)
+			tst_brk(TBROK, "Failed to fill swapfile");
 	}
 
 	/* make the file swapfile */
@@ -162,7 +178,7 @@ int make_swapfile(const char *swapfile, int safe)
 void is_swap_supported(const char *filename)
 {
 	int i, sw_support = 0;
-	int ret = make_swapfile(filename, 1);
+	int ret = make_swapfile(filename, 10, 1);
 	int fi_contiguous = file_is_contiguous(filename);
 	long fs_type = tst_fs_type(filename);
 	const char *fstype = tst_fs_type_name(fs_type);
