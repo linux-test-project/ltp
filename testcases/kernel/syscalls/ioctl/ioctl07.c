@@ -2,11 +2,14 @@
 /*
  * Copyright (c) 2017 Carlo Marcelo Arenas Belón <carenas@gmail.com>
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Very basic test for the RND* ioctls.
  *
  * Reads the entropy available from both /proc and the ioctl and compares
- * they are similar enough (within a configured fuzz factor)
+ * they are similar enough (within a configured fuzz factor).
  *
  */
 

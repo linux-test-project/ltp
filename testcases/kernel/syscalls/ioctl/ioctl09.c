@@ -2,6 +2,10 @@
 /*
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
+ */
+
+/*\
+ * [Description]
  *
  * Basic test for the BLKRRPART ioctl, it is the same as blockdev
  * --rereadpt command.

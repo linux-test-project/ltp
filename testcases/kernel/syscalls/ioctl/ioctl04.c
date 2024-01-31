@@ -2,7 +2,10 @@
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Basic test for the BLKROSET and BLKROGET ioctls.
  *
  * - Set the device read only, read the value back.

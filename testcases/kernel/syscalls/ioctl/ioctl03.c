@@ -4,12 +4,14 @@
  * Copyright (c) Linux Test Project, 2017-2019
  * Author: Rusty Russell <rusty@rustcorp.com.au>
  * Ported to LTP: subrata <subrata@linux.vnet.ibm.com>
+ * Test ioriginally written for kernel 2.6.27.
  */
 
-/*
- * This program tests whether all the valid IFF flags are
- * returned properly by implementation of TUNGETFEATURES ioctl
- * on kernel 2.6.27
+/*\
+ * [Description]
+ *
+ * Test whether all the valid IFF flags are returned properly by implementation
+ * of TUNGETFEATURES ioctl.
  */
 
 #include <sys/types.h>
