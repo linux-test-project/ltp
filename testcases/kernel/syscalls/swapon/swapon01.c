@@ -20,10 +20,14 @@
 
 #define MNTPOINT	"mntpoint"
 #define SWAP_FILE	MNTPOINT"/swapfile01"
+#define TESTMEM		(1UL<<30)
 
 static void verify_swapon(void)
 {
 	TST_EXP_PASS(tst_syscall(__NR_swapon, SWAP_FILE, 0));
+
+	tst_pollute_memory(TESTMEM, 0x41);
+	tst_res(TINFO, "SwapCached: %ld Kb", SAFE_READ_MEMINFO("SwapCached:"));
 
 	if (TST_PASS && tst_syscall(__NR_swapoff, SWAP_FILE) != 0) {
 		tst_brk(TBROK | TERRNO,
@@ -35,6 +39,9 @@ static void setup(void)
 {
 	is_swap_supported(SWAP_FILE);
 	make_swapfile(SWAP_FILE, 0);
+
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%lu", TESTMEM);
 }
 
 static struct tst_test test = {
@@ -42,6 +49,7 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.needs_root = 1,
 	.all_filesystems = 1,
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.test_all = verify_swapon,
 	.setup = setup
 };
