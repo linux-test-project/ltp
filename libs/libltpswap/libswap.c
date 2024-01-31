@@ -4,6 +4,7 @@
  * Author: Stanislav Kholmanskikh <stanislav.kholmanskikh@oracle.com>
  */
 
+#include <linux/fs.h>
 #include <errno.h>
 
 #define TST_NO_DEFAULT_MAIN
@@ -13,6 +14,7 @@
 #include "lapi/syscalls.h"
 
 static const char *const swap_supported_fs[] = {
+	"btrfs",
 	"ext2",
 	"ext3",
 	"ext4",
@@ -23,6 +25,50 @@ static const char *const swap_supported_fs[] = {
 	NULL
 };
 
+static void set_nocow_attr(const char *filename)
+{
+	int fd;
+	int attrs;
+
+	tst_res(TINFO, "FS_NOCOW_FL attribute set on %s", filename);
+
+	fd = SAFE_OPEN(filename, O_RDONLY);
+
+	SAFE_IOCTL(fd, FS_IOC_GETFLAGS, &attrs);
+
+	attrs |= FS_NOCOW_FL;
+
+	SAFE_IOCTL(fd, FS_IOC_SETFLAGS, &attrs);
+
+	SAFE_CLOSE(fd);
+}
+
+static int prealloc_contiguous_file(const char *path, size_t bs, size_t bcount)
+{
+	int fd;
+
+	fd = open(path, O_CREAT|O_WRONLY|O_TRUNC, 0600);
+	if (fd < 0)
+		return -1;
+
+	/* Btrfs file need set 'nocow' attribute */
+	if (tst_fs_type(path) == TST_BTRFS_MAGIC)
+		set_nocow_attr(path);
+
+	if (tst_prealloc_size_fd(fd, bs, bcount)) {
+		close(fd);
+		unlink(path);
+		return -1;
+	}
+
+	if (close(fd) < 0) {
+		unlink(path);
+		return -1;
+	}
+
+	return 0;
+}
+
 /*
  * Make a swap file
  */
@@ -32,8 +78,14 @@ int make_swapfile(const char *swapfile, int safe)
 		tst_brk(TBROK, "Insufficient disk space to create swap file");
 
 	/* create file */
-	if (tst_fill_file(swapfile, 0, sysconf(_SC_PAGESIZE), 10) != 0)
+	if (prealloc_contiguous_file(swapfile, sysconf(_SC_PAGESIZE), 10) != 0)
 		tst_brk(TBROK, "Failed to create swapfile");
+
+	/* Full the file to make old xfs happy*/
+	if (tst_fs_type(swapfile) == TST_XFS_MAGIC) {
+		if (tst_fill_file(swapfile, 0, sysconf(_SC_PAGESIZE), 10) != 0)
+			tst_brk(TBROK, "Failed to create swapfile");
+	}
 
 	/* make the file swapfile */
 	const char *argv[2 + 1];
