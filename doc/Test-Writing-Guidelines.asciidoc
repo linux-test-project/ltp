@@ -366,7 +366,7 @@ https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
 
 [options="header"]
 |================================================================================
-|  C API ('struct tst_test' members) | shell API ('$TST_*' environment variables)
+| C API ('struct tst_test' members) | shell API ('$TST_*' environment variables)
 | '.all_filesystems' | 'TST_ALL_FILESYSTEMS'
 | '.bufs' | –
 | '.caps' | –
@@ -416,9 +416,15 @@ https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
 | '.test_variants' | –
 | '.timeout' | 'TST_TIMEOUT'
 | '.tst_hugepage' | not applicable
-| .format_device | 'TST_DEVICE'
+| '.ulimit' | not applicable
 | not applicable | 'TST_NEEDS_KCONFIGS_IFS'
 | not applicable | 'TST_NEEDS_MODULE'
 | not applicable | 'TST_POS_ARGS'
 | not applicable | 'TST_USAGE'
+|================================================================================
+
+[options="header"]
+|================================================================================
+| C API (other structs) | shell API ('$TST_*' environment variables)
+| 'struct tst_device' | 'TST_DEVICE'
 |================================================================================
