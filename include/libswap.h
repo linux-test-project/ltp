@@ -20,5 +20,5 @@ int make_swapfile(const char *swapfile, int blocks, int safe);
  * Check swapon/swapoff support status of filesystems or files
  * we are testing on.
  */
-void is_swap_supported(const char *filename);
+bool is_swap_supported(const char *filename);
 #endif /* __LIBSWAP_H__ */
