@@ -33,7 +33,7 @@ static void setup(void)
 {
 	numchildren = 16;
 	writesize = 64 * 1024;
-	appends = 1000;
+	appends = 10000;
 
 	if (tst_parse_int(str_numchildren, &numchildren, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of children '%s'", str_numchildren);
@@ -43,6 +43,9 @@ static void setup(void)
 
 	if (tst_parse_int(str_appends, &appends, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of appends '%s'", str_appends);
+
+	if (!tst_fs_has_free(".", appends, writesize))
+		tst_brk(TCONF, "Not enough space to run the test");
 
 	run_child = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 }
@@ -97,7 +100,7 @@ static struct tst_test test = {
 	.options = (struct tst_option[]) {
 		{"n:", &str_numchildren, "Number of processes (default 16)"},
 		{"w:", &str_writesize, "Write size for each append (default 64K)"},
-		{"c:", &str_appends, "Number of appends (default 1000)"},
+		{"c:", &str_appends, "Number of appends (default 10000)"},
 		{}
 	},
 	.skip_filesystems = (const char *[]) {
