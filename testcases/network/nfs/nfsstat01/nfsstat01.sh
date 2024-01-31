@@ -11,20 +11,33 @@ get_calls()
 	local name=$1
 	local field=$2
 	local nfs_f=$3
-	local calls=
-	local opt=
-	[ "$name" = "rpc" ] && opt="r" || opt="n"
+	local type="lhost"
+	local calls opt
 
-	if tst_net_use_netns || [ "$nfs_f" = "nfs" ]; then
+	[ "$name" = "rpc" ] && opt="r" || opt="n"
+	! tst_net_use_netns && [ "$nfs_f" != "nfs" ] && type="rhost"
+
+	if [ "$type" = "lhost" ]; then
 		calls="$(grep $name /proc/net/rpc/$nfs_f | cut -d' ' -f$field)"
 		ROD nfsstat -c$opt | grep -q "$calls"
-		echo "$calls"
-		return
+	else
+		calls=$(tst_rhost_run -c "grep $name /proc/net/rpc/$nfs_f" | \
+			cut -d' ' -f$field)
+		tst_rhost_run -s -c "nfsstat -s$opt" | grep -q "$calls"
 	fi
 
-	calls=$(tst_rhost_run -c "grep $name /proc/net/rpc/$nfs_f" | \
-		cut -d' ' -f$field)
-	tst_rhost_run -s -c "nfsstat -s$opt" | grep -q "$calls"
+	if ! tst_is_int "$calls"; then
+		if [ "$type" = "lhost" ]; then
+			tst_res TINFO "lhost /proc/net/rpc/$nfs_f"
+			cat /proc/net/rpc/$nfs_f >&2
+		else
+			tst_res TINFO "rhost /proc/net/rpc/$nfs_f"
+			tst_rhost_run -c "cat /proc/net/rpc/$nfs_f" >&2
+		fi
+
+		tst_res TWARN "get_calls: failed to get integer value (args: $@)"
+	fi
+
 	echo "$calls"
 }
 
