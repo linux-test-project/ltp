@@ -32,18 +32,20 @@ get_calls()
 #           tracking using the 'nfsstat' command and /proc/net/rpc
 do_test()
 {
+	local client_calls server_calls new_server_calls new_client_calls field
+
 	tst_res TINFO "checking RPC calls for server/client"
 
-	local server_calls="$(get_calls rpc 2 nfsd)"
-	local client_calls="$(get_calls rpc 2 nfs)"
+	server_calls="$(get_calls rpc 2 nfsd)"
+	client_calls="$(get_calls rpc 2 nfs)"
 
 	tst_res TINFO "calls $server_calls/$client_calls"
 
 	tst_res TINFO "Checking for tracking of RPC calls for server/client"
 	cat /proc/cpuinfo > nfsstat01.tmp
 
-	local new_server_calls="$(get_calls rpc 2 nfsd)"
-	local new_client_calls="$(get_calls rpc 2 nfs)"
+	new_server_calls="$(get_calls rpc 2 nfsd)"
+	new_client_calls="$(get_calls rpc 2 nfs)"
 	tst_res TINFO "new calls $new_server_calls/$new_client_calls"
 
 	if [ "$new_server_calls" -le "$server_calls" ]; then
@@ -59,7 +61,6 @@ do_test()
 	fi
 
 	tst_res TINFO "checking NFS calls for server/client"
-	local field=
 	case $VERSION in
 	2) field=13
 	;;
