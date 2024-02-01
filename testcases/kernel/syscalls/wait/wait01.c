@@ -16,7 +16,7 @@
 
 static void verify_wait(void)
 {
-	TST_EXP_FAIL(wait(NULL), ECHILD);
+	TST_EXP_FAIL2(wait(NULL), ECHILD);
 }
 
 static struct tst_test test = {
