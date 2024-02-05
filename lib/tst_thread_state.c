@@ -20,7 +20,7 @@ int tst_thread_state_wait(pid_t tid, const char state,
 	snprintf(proc_path, sizeof(proc_path), "/proc/self/task/%i/stat", tid);
 
 	for (;;) {
-		SAFE_FILE_SCANF(proc_path, "%*i %*s %c", &cur_state);
+		SAFE_FILE_SCANF(proc_path, "%*[^)]%*c %c", &cur_state);
 
 		if (state == cur_state)
 			break;

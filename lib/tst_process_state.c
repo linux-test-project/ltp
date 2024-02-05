@@ -22,7 +22,7 @@ int tst_process_state_wait(const char *file, const int lineno,
 
 	for (;;) {
 		safe_file_scanf(file, lineno, cleanup_fn, proc_path,
-				"%*i %*s %c", &cur_state);
+				"%*[^)]%*c %c", &cur_state);
 
 		if (state == cur_state)
 			break;
@@ -54,7 +54,7 @@ int tst_process_state_wait2(pid_t pid, const char state)
 			return 1;
 		}
 
-		if (fscanf(f, "%*i %*s %c", &cur_state) != 1) {
+		if (fscanf(f, "%*[^)]%*c %c", &cur_state) != 1) {
 			fclose(f);
 			fprintf(stderr, "Failed to read '%s': %s\n",
 				proc_path, strerror(errno));
