@@ -60,11 +60,11 @@ static void verify_swapon(void)
 			"(%d). System reboot recommended.",
 			expected_errno);
 	} else {
-		/* Probably the system supports MAX_SWAPFILES > 30,
-		 * let's try with MAX_SWAPFILES == 32 */
-
-		/* Call swapon sys call once again for 32
-		 * now we can't receive an error */
+		/*
+		 * Probably the system supports MAX_SWAPFILES > 30, let's try with
+		 * MAX_SWAPFILES == 32. Call swapon sys call once again for 32
+		 * now we can't receive an error.
+		 */
 		TEST(tst_syscall(__NR_swapon, swap_testfiles[1].filename, 0));
 
 		/* Check return code (now we're expecting success) */
@@ -72,8 +72,9 @@ static void verify_swapon(void)
 			tst_res(TFAIL | TTERRNO,
 				"swapon(2) got an unexpected failure");
 		} else {
-			/* Call swapon sys call once again for 33
-			 * now we have to receive an error */
+			/*
+			 * Call swapon sys call once again for 33 now we have to receive an error.
+			 */
 			TEST(tst_syscall(__NR_swapon, swap_testfiles[2].filename, 0));
 
 			/* Check return code (should be an error) */
