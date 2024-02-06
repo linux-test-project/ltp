@@ -3,15 +3,18 @@
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Jinhui Huang <huangjh.jy@cn.fujitsu.com>
  */
-/*
- * Description:
+
+/*\
+ * [Description]
+ *
  * Testcase to check the basic functionality of the pwritev2(2).
- * 1) If the file offset argument is not -1, pwritev2() should succeed
- *    in writing the expected content of data and the file offset is
- *    not changed after writing.
- * 2) If the file offset argument is -1, pwritev2() should succeed in
- *    writing the expected content of data and the current file offset
- *    is used and changed after writing.
+ *
+ * - If the file offset argument is not -1, pwritev2() should succeed
+ *   in writing the expected content of data and the file offset is
+ *   not changed after writing.
+ * - If the file offset argument is -1, pwritev2() should succeed in
+ *   writing the expected content of data and the current file offset
+ *   is used and changed after writing.
  */
 
 #define _GNU_SOURCE
