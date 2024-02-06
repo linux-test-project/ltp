@@ -36,7 +36,7 @@ static int testcase_list[] = {
 	SIGTERM,
 	SIGTRAP,
 	SIGUSR1,
-	SIGUSR1,
+	SIGUSR2,
 	SIGVTALRM,
 	SIGXCPU,
 	SIGXFSZ
