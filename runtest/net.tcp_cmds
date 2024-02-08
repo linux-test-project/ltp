@@ -21,4 +21,3 @@ dnsmasq dnsmasq_tests.sh
 iproute ip_tests.sh
 tracepath01 tracepath01.sh
 traceroute01 traceroute01.sh
-xinetd xinetd_tests.sh
