@@ -13,7 +13,6 @@ ping02 ping02.sh
 sendfile sendfile01.sh
 tc01 tc01.sh
 tcpdump tcpdump01.sh
-telnet telnet01.sh
 iptables iptables01.sh
 nft nft01.sh
 dhcpd dhcpd_tests.sh
