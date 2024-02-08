@@ -7,7 +7,6 @@ ipneigh01_ip ipneigh01.sh -c ip
 arping01 arping01.sh
 clockdiff01 clockdiff01.sh
 ftp ftp01.sh
-host host01.sh
 netstat netstat01.sh
 ping01 ping01.sh
 ping02 ping02.sh
