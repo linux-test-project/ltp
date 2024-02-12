@@ -52,8 +52,7 @@ static void verify_swapon(void)
 	TEST(tst_syscall(__NR_swapon, swap_testfiles[0].filename, 0));
 
 	if ((TST_RET == -1) && (TST_ERR == expected_errno)) {
-		tst_res(TPASS, "swapon(2) got expected failure (%d),",
-			expected_errno);
+		tst_res(TPASS | TTERRNO, "swapon(2) got expected failure");
 	} else if (TST_RET < 0) {
 		tst_res(TFAIL | TTERRNO,
 			"swapon(2) failed to produce expected error "
@@ -151,14 +150,8 @@ static int setup_swap(void)
 		/*create and turn on remaining swapfiles */
 		for (j = 0; j < swapfiles; j++) {
 
-			/* prepare filename for the iteration */
-			if (sprintf(filename, "swapfile%02d", j + 2) < 0) {
-				printf("sprintf() failed to create "
-				       "filename");
-				exit(1);
-			}
-
 			/* Create the swapfile */
+			snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
 			make_swapfile(filename, 10, 0);
 
 			/* turn on the swap file */
@@ -196,14 +189,8 @@ static int clean_swap(void)
 	char filename[FILENAME_MAX];
 
 	for (j = 0; j < swapfiles; j++) {
-		if (snprintf(filename, sizeof(filename),
-			     "swapfile%02d", j + 2) < 0) {
-			tst_res(TWARN, "sprintf() failed to create filename");
-			tst_res(TWARN, "Failed to turn off swap files. System"
-				 " reboot after execution of LTP test"
-				 " suite is recommended");
-			return -1;
-		}
+		snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
+
 		if (check_and_swapoff(filename) != 0) {
 			tst_res(TWARN, "Failed to turn off swap file %s.", filename);
 			return -1;
