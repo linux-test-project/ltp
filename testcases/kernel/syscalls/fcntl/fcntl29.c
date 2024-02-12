@@ -1,102 +1,49 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Xiaoguang Wang <wangxg.fnst@cn.fujitsu.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Copyright (C) 2024 SUSE LLC Andrea Manzini <andrea.manzini@suse.com>
  */
 
-/*
- * Description:
- * Verify that,
- *   Basic test for fcntl(2) using F_DUPFD_CLOEXEC argument.
+/*\
+ * [Description]
+ *
+ * Basic test for fcntl(2) using F_DUPFD_CLOEXEC and getting FD_CLOEXEC.
  */
 
-#include <stdio.h>
-#include <errno.h>
-#include <unistd.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <pwd.h>
-
-#include "test.h"
-#include "safe_macros.h"
 #include "lapi/fcntl.h"
+#include <tst_test.h>
 
-char *TCID = "fcntl29";
-int TST_TOTAL = 1;
-
-static void setup(void);
-static void cleanup(void);
-
-static int test_fd;
-
-int main(int ac, char **av)
-{
-	int lc, dup_fd;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		TEST(fcntl(test_fd, F_DUPFD_CLOEXEC, 0));
-		if (TEST_RETURN < 0) {
-			tst_brkm(TFAIL | TTERRNO, cleanup, "fcntl "
-				 "test F_DUPFD_CLOEXEC failed");
-		}
-		dup_fd = TEST_RETURN;
-
-		TEST(fcntl(dup_fd, F_GETFD));
-		if (TEST_RETURN < 0) {
-			SAFE_CLOSE(cleanup, dup_fd);
-			tst_brkm(TFAIL | TTERRNO, cleanup, "fcntl "
-				 "test F_GETFD failed");
-		}
-
-		if (TEST_RETURN & FD_CLOEXEC) {
-			tst_resm(TPASS, "fcntl test "
-				 "F_DUPFD_CLOEXEC success");
-		} else {
-			tst_resm(TFAIL, "fcntl test "
-				 "F_DUPFD_CLOEXEC fail");
-		}
-
-		SAFE_CLOSE(cleanup, dup_fd);
-	}
-
-	cleanup();
-	tst_exit();
-}
+static int fd;
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	tst_tmpdir();
-
-	TEST_PAUSE;
-
-	test_fd = SAFE_CREAT(cleanup, "testfile", 0644);
+	fd = SAFE_CREAT("testfile", 0644);
 }
 
 static void cleanup(void)
 {
-	if (test_fd > 0)
-		SAFE_CLOSE(NULL, test_fd);
-
-	tst_rmdir();
+	if (fd > 0)
+		SAFE_CLOSE(fd);
 }
+
+static void run(void)
+{
+	TST_EXP_FD(fcntl(fd, F_DUPFD_CLOEXEC, 0));
+	int dup_fd = TST_RET;
+
+	TST_EXP_POSITIVE(fcntl(dup_fd, F_GETFD), "fcntl test F_GETFD");
+	if (TST_RET & FD_CLOEXEC)
+		tst_res(TPASS, "fcntl() set FD_CLOEXEC");
+	else
+		tst_res(TFAIL, "fcntl() did not set FD_CLOEXEC");
+
+	SAFE_CLOSE(dup_fd);
+}
+
+static struct tst_test test = {
+	.test_all = run,
+	.setup = setup,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1,
+};
