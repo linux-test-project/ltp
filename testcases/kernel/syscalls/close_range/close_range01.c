@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Taken from the kernel self tests, which in turn were based on
  * a Syzkaller reproducer.

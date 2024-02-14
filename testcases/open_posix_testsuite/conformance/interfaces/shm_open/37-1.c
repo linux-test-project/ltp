@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Test that the shm_open() function sets errno = EINVAL if the shm_open()
  * operation is not supported for the given name.

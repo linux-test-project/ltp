@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 
 #ifndef MEMCONTROL_COMMON_H__
 #define MEMCONTROL_COMMON_H__
