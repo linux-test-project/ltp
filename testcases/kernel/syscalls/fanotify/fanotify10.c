@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2014 SUSE.  All Rights Reserved.
  * Copyright (c) 2018 CTERA Networks.  All Rights Reserved.

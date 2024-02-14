@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2012-2014 Cyril Hrubis chrubis@suse.cz
  * Copyright (c) 2021 Xie Ziyao <xieziyao@huawei.com>

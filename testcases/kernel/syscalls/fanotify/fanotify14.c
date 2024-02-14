@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Matthew Bobrowski. All Rights Reserved.
  * Copyright (c) Linux Test Project, 2020-2022
