@@ -340,7 +340,7 @@ if (TST_RET > -1) {
 -------------------------------------------------------------------------------
 
 The +TEST+ macro sets +TST_RET+ to its argument's return value and +TST_ERR+ to
-+errno+. The +TTERNO+ flag can be used to print the error number's symbolic
++errno+. The +TTERRNO+ flag can be used to print the error number's symbolic
 value.
 
 No LTP library function or macro, except those in 'tst_test_macros.h', will
