@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- * Ported to LTP 07/2001 John George
- * Testcase to check that settimeofday() sets errnos correctly.
+ * Copyright (c) Linux Test Project, 2001-2024
+ */
+
+/*\
+ * [Description]
+ *
+ * Check that settimeofday() sets errnos correctly.
  */
 
 #include <stdio.h>
@@ -27,16 +32,7 @@ static void verify_settimeofday(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	tst_res(TINFO, "%s", tc->message);
-	TEST(settimeofday(&tc->tv, NULL));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "settimeofday() succeeded unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != tc->exp_errno)
-		tst_res(TFAIL | TTERRNO, "Expected %s got ", tst_strerrno(tc->exp_errno));
-	else
-		tst_res(TPASS | TTERRNO, "Received expected errno");
+	TST_EXP_FAIL(settimeofday(&tc->tv, NULL), tc->exp_errno);
 }
 
 static struct tst_test test = {
