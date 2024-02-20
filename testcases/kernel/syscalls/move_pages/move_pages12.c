@@ -154,6 +154,8 @@ static void do_test(unsigned int n)
 	pid_t cpid = -1;
 	int status;
 
+	SAFE_FILE_PRINTF("/proc/sys/vm/compact_memory", "1");
+
 	addr = SAFE_MMAP(NULL, tcases[n].tpages * hpsz, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
 
@@ -269,6 +271,7 @@ static void setup(void)
 	pgsz = (int)get_page_size();
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "Hugepagesize: %d", &hpsz);
 
+	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "MemFree: %ld", &memfree);
 	tst_res(TINFO, "Free RAM %ld kB", memfree);
 
