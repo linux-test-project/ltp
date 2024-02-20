@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- * Ported to LTP 07/2001 John George
- * Testcase to check the basic functionality of settimeofday().
+ * Copyright (c) Linux Test Project, 2001-2024
+ */
+
+/*\
+ * [Description]
+ *
+ * Check the basic functionality of settimeofday().
  */
 
 #include <sys/time.h>
