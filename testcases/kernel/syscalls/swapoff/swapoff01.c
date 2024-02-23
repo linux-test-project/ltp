@@ -54,7 +54,6 @@ static struct tst_test test = {
 	.dev_min_size = 350,
 	.all_filesystems = 1,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.test_all = verify_swapoff,
 	.setup = setup
 };

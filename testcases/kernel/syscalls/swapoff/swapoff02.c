@@ -97,7 +97,6 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.all_filesystems = 1,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.test = verify_swapoff,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup
