@@ -10,9 +10,9 @@
 #include <sys/eventfd.h>
 #include <sys/signalfd.h>
 #include <sys/timerfd.h>
-#include <sys/fanotify.h>
 #include <sys/inotify.h>
 #include <linux/perf_event.h>
+#include <linux/fanotify.h>
 
 #include "tst_test.h"
 #include "tst_safe_macros.h"
@@ -146,7 +146,7 @@ static void open_pidfd(struct tst_fd *fd)
 
 static void open_fanotify(struct tst_fd *fd)
 {
-	fd->fd = fanotify_init(FAN_CLASS_NOTIF, O_RDONLY);
+	fd->fd = syscall(__NR_fanotify_init, FAN_CLASS_NOTIF, O_RDONLY);
 	if (fd->fd < 0) {
 		tst_res(TCONF | TERRNO,
 			"Skipping %s", tst_fd_desc(fd));
