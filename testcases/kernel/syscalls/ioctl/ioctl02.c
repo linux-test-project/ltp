@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <termios.h>
+#include <asm/termbits.h>
 
 #include "lapi/ioctl.h"
 #include "tst_test.h"
