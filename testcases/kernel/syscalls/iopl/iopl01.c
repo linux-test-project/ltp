@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *  Copyright (c) Linux Test Project, 2020
- *  Copyright (c) Wipro Technologies Ltd, 2002
+ * Copyright (c) Linux Test Project, 2003-2024
+ * Copyright (c) Wipro Technologies Ltd, 2002
+ * Author: Subhab Biswas <subhabrata.biswas@wipro.com>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * This is a basic test for iopl(2) system call.
  *
- * Test the system call for possible privelege levels.
- * As the privelge level for a normal process is 0, start by
+ * Test the system call for possible privilege levels.
+ * As the privilege level for a normal process is 0, start by
  * setting/changing the level to 0.
- *
- * Author: Subhab Biswas <subhabrata.biswas@wipro.com>
  */
 
 #include <errno.h>
