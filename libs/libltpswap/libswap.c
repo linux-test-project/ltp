@@ -261,3 +261,28 @@ int tst_max_swapfiles(void)
 
 	return DEFAULT_MAX_SWAPFILE - swp_migration_num - swp_hwpoison_num - swp_device_num - swp_pte_marker_num;
 }
+
+/*
+ * Get the used swapfiles number.
+ */
+int tst_count_swaps(void)
+{
+	FILE *fp;
+	int used = -1;
+	char c;
+
+	fp = SAFE_FOPEN("/proc/swaps", "r");
+	if (fp == NULL)
+		return -1;
+
+	while ((c = fgetc(fp)) != EOF) {
+		if (c == '\n')
+			used++;
+	}
+
+	SAFE_FCLOSE(fp);
+	if (used < 0)
+		tst_brk(TBROK, "can't read /proc/swaps to get used swapfiles resource total");
+
+	return used;
+}
