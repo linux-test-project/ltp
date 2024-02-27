@@ -1,19 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *  Copyright (c) Linux Test Project, 2020
- *  Copyright (c) Wipro Technologies Ltd, 2002
+ * Copyright (c) Linux Test Project, 2020
+ * Copyright (c) Wipro Technologies Ltd, 2002
+ * Author: Subhab Biswas <subhabrata.biswas@wipro.com>
  */
 
-/*
- * This is an error test for iopl(2) system call.
+/*\
+ * [Description]
  *
- * Verify that
- *  1) iopl(2) returns -1 and sets errno to EINVAL for privilege
- *     level greater than 3.
- *  2) iopl(2) returns -1 and sets errno to EPERM if the current
- *     user is not the super-user.
+ * Test for iopl(2) system call error.
  *
- * Author: Subhab Biswas <subhabrata.biswas@wipro.com>
+ * - iopl(2) fail with EINVAL when privilege level greater than 3.
+ * - iopl(2) fail with EPERM when the current user is not the super-user.
  */
 
 #include <errno.h>
