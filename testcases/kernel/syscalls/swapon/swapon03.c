@@ -19,7 +19,6 @@
 
 #include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "swaponoff.h"
 #include "libswap.h"
 
 #define MNTPOINT	"mntpoint"
@@ -104,47 +103,20 @@ static void verify_swapon(void)
 static int setup_swap(void)
 {
 	pid_t pid;
-	int j, fd;
 	int status;
+	int j, max_swapfiles, used_swapfiles;
 	int res = 0;
 	char filename[FILENAME_MAX];
-	char buf[BUFSIZ + 1];
 
-	/* Find out how many swapfiles (1 line per entry) already exist */
-	swapfiles = 0;
-
-	if (seteuid(0) < 0)
-		tst_brk(TFAIL | TERRNO, "Failed to call seteuid");
-
-	/* This includes the first (header) line */
-	if ((fd = open("/proc/swaps", O_RDONLY)) == -1) {
-		tst_brk(TFAIL | TERRNO,
-			"Failed to find out existing number of swap files");
-	}
-	do {
-		char *p = buf;
-		res = read(fd, buf, BUFSIZ);
-		if (res < 0) {
-			tst_brk(TFAIL | TERRNO,
-				 "Failed to find out existing number of swap files");
-		}
-		buf[res] = '\0';
-		while ((p = strchr(p, '\n'))) {
-			p++;
-			swapfiles++;
-		}
-	} while (BUFSIZ <= res);
-	close(fd);
-	if (swapfiles)
-		swapfiles--;	/* don't count the /proc/swaps header */
-
-	if (swapfiles < 0)
-		tst_brk(TFAIL, "Failed to find existing number of swapfiles");
+	SAFE_SETEUID(0);
 
 	/* Determine how many more files are to be created */
-	swapfiles = MAX_SWAPFILES - swapfiles;
-	if (swapfiles > MAX_SWAPFILES)
-		swapfiles = MAX_SWAPFILES;
+	max_swapfiles = tst_max_swapfiles();
+	used_swapfiles = tst_count_swaps();
+	swapfiles = max_swapfiles - used_swapfiles;
+	if (swapfiles > max_swapfiles)
+		swapfiles = max_swapfiles;
+
 	pid = SAFE_FORK();
 	if (pid == 0) {
 		/*create and turn on remaining swapfiles */
