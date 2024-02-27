@@ -21,4 +21,11 @@ int make_swapfile(const char *swapfile, int blocks, int safe);
  * we are testing on.
  */
 bool is_swap_supported(const char *filename);
+
+/*
+ * Get kernel constant MAX_SWAPFILES value.
+ *
+ */
+int tst_max_swapfiles(void);
+
 #endif /* __LIBSWAP_H__ */
