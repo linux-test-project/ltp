@@ -55,11 +55,7 @@
 */
 void fillbuf(char *buf, int count, char value)
 {
-	while (count > 0) {
-		strncpy(buf, &value, 1);
-		buf++;
-		count = count - 1;
-	}
+	memset(buf, value, count);
 }
 
 void vfillbuf(struct iovec *iv, int vcnt, char value)
