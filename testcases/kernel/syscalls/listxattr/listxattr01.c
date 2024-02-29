@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-*  Copyright (c) 2016 RT-RK Institute for Computer Based Systems
-*  Author: Dejan Jovicevic <dejan.jovicevic@rt-rk.com>
-*/
+ * Copyright (c) 2016 RT-RK Institute for Computer Based Systems
+ * Copyright (c) Linux Test Project, 2016-2024
+ * Author: Dejan Jovicevic <dejan.jovicevic@rt-rk.com>
+ */
 
-/*
-* Test Name: listxattr01
-*
-* Description:
-* The testcase checks the basic functionality of the listxattr(2).
-* listxattr(2) retrieves the list of extended attribute names
-* associated with the file itself in the filesystem.
-*
-*/
+/*\
+ * [Description]
+ *
+ * Test for listxattr(2) system call.
+ *
+ * listxattr(2) retrieves the list of extended attribute names
+ * associated with the file itself in the filesystem.
+ */
 
 #include "config.h"
 #include <errno.h>
