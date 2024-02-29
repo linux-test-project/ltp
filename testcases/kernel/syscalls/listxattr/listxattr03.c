@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-*  Copyright (c) 2016 RT-RK Institute for Computer Based Systems
-*  Author: Dejan Jovicevic <dejan.jovicevic@rt-rk.com>
-*/
+ * Copyright (c) 2016 RT-RK Institute for Computer Based Systems
+ * Copyright (c) Linux Test Project, 2016-2024
+ * Author: Dejan Jovicevic <dejan.jovicevic@rt-rk.com>
+ */
 
 /*
-* Test Name: listxattr03
-*
-* Description:
-* An empty buffer of size zero can return the current size of the list
-* of extended attribute names, which can be used to estimate a suitable buffer.
-*/
+ * [Description]
+ *
+ * Test for returning the current size of the list of extended attribute names,
+ * with size specified as zero.
+ */
 
 #include "config.h"
 #include <errno.h>
