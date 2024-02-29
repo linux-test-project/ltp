@@ -1,25 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-*  Copyright (c) 2016 RT-RK Institute for Computer Based Systems
-*  Author: Dejan Jovicevic <dejan.jovicevic@rt-rk.com>
-*/
+ * Copyright (c) 2016 RT-RK Institute for Computer Based Systems
+ * Copyright (c) Linux Test Project, 2016-2024
+ * Author: Dejan Jovicevic <dejan.jovicevic@rt-rk.com>
+ */
 
-/*
-* Test Name: listxattr02
-*
-* Description:
-* 1) listxattr(2) fails if the size of the list buffer is too small
-* to hold the result.
-* 2) listxattr(2) fails if path is an empty string.
-* 3) listxattr(2) fails when attempted to read from a invalid address.
-* 4) listxattr(2) fails if path is longer than allowed.
-*
-* Expected Result:
-* 1) listxattr(2) should return -1 and set errno to ERANGE.
-* 2) listxattr(2) should return -1 and set errno to ENOENT.
-* 3) listxattr(2) should return -1 and set errno to EFAULT.
-* 4) listxattr(2) should return -1 and set errno to ENAMETOOLONG.
-*/
+/*\
+ * [Description]
+ *
+ * Test for listxattr error.
+ *
+ * - ERANGE - the size of the list buffer is too small to hold the result.
+ * - ENOENT - path is an empty string.
+ * - EFAULT - attempted to read from a invalid address.
+ * - ENAMETOOLONG - path is longer than allowed.
+ */
 
 #include "config.h"
 #include <errno.h>
@@ -38,7 +33,7 @@
 #define VALUE_SIZE	(sizeof(VALUE) - 1)
 #define TESTFILE    "testfile"
 
-char longpathname[PATH_MAX + 2];
+static char longpathname[PATH_MAX + 2];
 
 static struct test_case {
 	const char *path;
