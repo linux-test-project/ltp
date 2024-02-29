@@ -175,6 +175,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = do_getxattr,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "82c9a927bc5"},
+		{}
+},
 };
 
 #else /* HAVE_SYS_XATTR_H && HAVE_LIBACL*/
