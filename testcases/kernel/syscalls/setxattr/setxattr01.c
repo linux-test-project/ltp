@@ -1,31 +1,24 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2011-2024
  */
 
-/*
- * Basic tests for setxattr(2) and make sure setxattr(2) handles error
+/*\
+ * [Description]
+ *
+ * Tests for setxattr(2) and make sure setxattr(2) handles error
  * conditions correctly.
  *
- * There are 7 test cases:
- * 1. Any other flags being set except XATTR_CREATE and XATTR_REPLACE,
- *    setxattr(2) should return -1 and set errno to EINVAL
- * 2. With XATTR_REPLACE flag set but the attribute does not exist,
- *    setxattr(2) should return -1 and set errno to ENODATA
- * 3. Create new attr with name length greater than XATTR_NAME_MAX(255)
- *    setxattr(2) should return -1 and set errno to ERANGE
- * 4. Create new attr whose value length is greater than XATTR_SIZE_MAX(65536)
- *    setxattr(2) should return -1 and set errno to E2BIG
- * 5. Create new attr whose value length is zero,
- *    setxattr(2) should succeed
- * 6. Replace the attr value without XATTR_REPLACE flag being set,
- *    setxattr(2) should return -1 and set errno to EEXIST
- * 7. Replace attr value with XATTR_REPLACE flag being set,
- *    setxattr(2) should succeed
- * 8. Create new attr whose key length is zero,
- *    setxattr(2) should return -1 and set errno to ERANGE
- * 9. Create new attr whose key is NULL,
- *    setxattr(2) should return -1 and set errno to EFAULT
+ * - EINVAL - any other flags being set except XATTR_CREATE and XATTR_REPLACE
+ * - ENODATA - with XATTR_REPLACE flag set but the attribute does not exist
+ * - ERANGE - create new attr with name length greater than XATTR_NAME_MAX(255)
+ * - E2BIG - create new attr whose value length is greater than XATTR_SIZE_MAX(65536)
+ * - SUCCEED - create new attr whose value length is zero
+ * - EEXIST - replace the attr value without XATTR_REPLACE flag being set
+ * - SUCCEED - replace attr value with XATTR_REPLACE flag being set
+ * - ERANGE - create new attr whose key length is zero
+ * - EFAULT - create new attr whose key is NULL
  */
 
 #include "config.h"
