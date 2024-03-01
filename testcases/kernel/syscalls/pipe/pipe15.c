@@ -60,8 +60,9 @@ static void setup(void)
 	tst_res(TINFO, "Creating %i pipes", pipe_count);
 
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &nfd);
-	if (nfd.rlim_max < (unsigned long)pipe_count)
+	if (nfd.rlim_max < (unsigned long)pipe_count * 2 + 3)
 		tst_brk(TCONF, "NOFILE limit max too low: %lu < %i", nfd.rlim_max, pipe_count);
+
 	if (nfd.rlim_cur < nfd.rlim_max) {
 		nfd.rlim_cur = nfd.rlim_max;
 		SAFE_SETRLIMIT(RLIMIT_NOFILE, &nfd);
