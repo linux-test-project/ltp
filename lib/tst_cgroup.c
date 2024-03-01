@@ -361,6 +361,7 @@ static void cgroup_dir_mk(const struct cgroup_dir *const parent,
 			  struct cgroup_dir *const new)
 {
 	const char *dpath;
+	mode_t old_umask = umask(0);
 
 	new->dir_root = parent->dir_root;
 	new->dir_name = dir_name;
@@ -394,6 +395,7 @@ static void cgroup_dir_mk(const struct cgroup_dir *const parent,
 opendir:
 	new->dir_fd = SAFE_OPENAT(parent->dir_fd, dir_name,
 				  O_PATH | O_DIRECTORY);
+	umask(old_umask);
 }
 
 #define PATH_MAX_STRLEN 4095
