@@ -48,6 +48,7 @@ static void setup(void)
 
 	SAFE_PIPE(pipe);
 	const int buffer_size = SAFE_FCNTL(pipe[1], F_GETPIPE_SZ);
+
 	SAFE_CLOSE(pipe[0]);
 	SAFE_CLOSE(pipe[1]);
 
@@ -75,11 +76,14 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	for (int i = 0; i < pipe_count * 2; i++)
-		if (pipes[i] > 0)
-			SAFE_CLOSE(pipes[i]);
-	if (pipes)
+	if (pipes) {
+		for (int i = 0; i < pipe_count * 2; i++) {
+			if (pipes[i] > 0)
+				SAFE_CLOSE(pipes[i]);
+		}
 		free(pipes);
+	}
+
 	if (buffer)
 		free(buffer);
 }
