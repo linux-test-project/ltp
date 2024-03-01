@@ -1,26 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2011-2024
  */
 
-/*
+/*\
+ * [Description]
+ *
  * In the user.* namespace, only regular files and directories can
  * have extended attributes. Otherwise setxattr(2) will return -1
  * and set errno to EPERM.
  *
- * There are 7 test cases:
- * 1. Set attribute to a regular file, setxattr(2) should succeed
- * 2. Set attribute to a directory, setxattr(2) should succeed
- * 3. Set attribute to a symlink which points to the regular file,
- *    setxattr(2) should return -1 and set errno to EEXIST
- * 4. Set attribute to a FIFO, setxattr(2) should return -1 and set
- *    errno to EPERM
- * 5. Set attribute to a char special file, setxattr(2) should
- *    return -1 and set errno to EPERM
- * 6. Set attribute to a block special file, setxattr(2) should
- *    return -1 and set errno to EPERM
- * 7. Set attribute to a UNIX domain socket, setxattr(2) should
- *    return -1 and set errno to EPERM
+ * - SUCCEED - set attribute to a regular file
+ * - SUCCEED - set attribute to a directory
+ * - EEXIST - set attribute to a symlink which points to the regular file
+ * - EPERM - set attribute to a FIFO
+ * - EPERM - set attribute to a char special file
+ * - EPERM - set attribute to a block special file
+ * - EPERM - set attribute to a UNIX domain socket
  */
 
 #include "config.h"
