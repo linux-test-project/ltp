@@ -60,7 +60,7 @@ enum {
  * @mult: mult should be TST_KB, TST_MB or TST_GB
  * the required free space is calculated by @size * @mult
  */
-int tst_fs_has_free_(void (*cleanup)(void), const char *path, unsigned int size,
+int tst_fs_has_free_(void (*cleanup)(void), const char *path, uint64_t size,
 		     unsigned int mult);
 
 /*
@@ -225,7 +225,7 @@ static inline long tst_fs_type(const char *path)
 	return tst_fs_type_(NULL, path);
 }
 
-static inline int tst_fs_has_free(const char *path, unsigned int size,
+static inline int tst_fs_has_free(const char *path, uint64_t size,
 				  unsigned int mult)
 {
 	return tst_fs_has_free_(NULL, path, size, mult);
@@ -252,7 +252,7 @@ static inline long tst_fs_type(void (*cleanup)(void), const char *path)
 }
 
 static inline int tst_fs_has_free(void (*cleanup)(void), const char *path,
-				  unsigned int size, unsigned int mult)
+				  uint64_t size, unsigned int mult)
 {
 	return tst_fs_has_free_(cleanup, path, size, mult);
 }
