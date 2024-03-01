@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2012-2024
  */
 
-/*
+/*\
+ * [Description]
+ *
  * setxattr(2) to immutable and append-only files should get EPERM
  *
- * There are 2 test cases:
- * 1. Set attribute to a immutable file, setxattr(2) should return -1
- *    and set errno to EPERM
- * 2. Set attribute to a append-only file, setxattr(2) should return
- *    -1 and set errno to EPERM
+ * - Set attribute to a immutable file
+ * - Set attribute to a append-only file
  */
 
 #define _GNU_SOURCE
