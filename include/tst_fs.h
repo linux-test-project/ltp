@@ -37,6 +37,8 @@
 /* fs/bcachefs/bcachefs_format.h */
 #define TST_BCACHE_MAGIC		0xca451a4e
 
+#include <stdint.h>
+
 enum tst_fill_access_pattern {
 	TST_FILL_BLOCKS,
 	TST_FILL_RANDOM
