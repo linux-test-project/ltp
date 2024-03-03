@@ -118,10 +118,14 @@ static void setup(void)
 
 	cwd = tst_get_tmpdir();
 
+	mode_t old_umask = umask(0);
+
 	SAFE_MKDIR(SERV_PATH, DEFAULT_MODE);
 	SAFE_MKDIR(CLI_PATH, DEFAULT_MODE);
 	SAFE_CREAT(SERV_FORCE_SYNC, DEFAULT_MODE);
 	SAFE_CREAT(SERV_DONT_SYNC, DEFAULT_MODE);
+
+	umask(old_umask);
 
 	snprintf(server_path, sizeof(server_path), ":%s/%s", cwd, SERV_PATH);
 
