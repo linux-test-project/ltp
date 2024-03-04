@@ -1,119 +1,74 @@
-/*
- * Copyright (c) International Business Machines  Corp., 2003
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 /*
- * Test Description:
+ * Copyright (c) International Business Machines  Corp., 2003
+ * HISTORY
+ *	04/2003 Written by Paul Larson
+ * Copyright (C) 2024 SUSE LLC Andrea Manzini <andrea.manzini@suse.com>
+ */
+
+/*\
+ * [Description]
  *  Verify that truncating a mmaped file works correctly.
  *
  * Expected Result:
  *  ftruncate should be allowed to increase, decrease, or zero the
  *  size of a file that has been mmaped
  *
- *  Test:
- *   Use ftruncate to shrink the file while it is mapped
- *   Use ftruncate to grow the file while it is mapped
- *   Use ftruncate to zero the size of the file while it is mapped
+ *  Test - Use ftruncate to:
+ *   1. shrink the file while it is mapped
+ *   2. grow the file while it is mapped
+ *   3. zero the size of the file while it is mapped
  *
- * HISTORY
- *	04/2003 Written by Paul Larson
  */
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include "test.h"
 
-#define mapsize (1 << 14)
+#include "tst_test.h"
 
-char *TCID = "mmap09";
-int TST_TOTAL = 3;
+/* size of the test file = 64 KB */
+#define MAPSIZE (64 * 1024)
 
 static int fd;
 static char *maddr;
 
-static struct test_case_t {
+static struct test_case
+{
 	off_t newsize;
 	char *desc;
-} TC[] = {
-	{mapsize - 8192, "ftruncate mmaped file to a smaller size"},
-	{mapsize + 1024, "ftruncate mmaped file to a larger size"},
+} tcases[] = {
+	{MAPSIZE - 8192, "ftruncate mmaped file to a smaller size"},
+	{MAPSIZE + 1024, "ftruncate mmaped file to a larger size"},
 	{0, "ftruncate mmaped file to 0 size"},
 };
 
-static void setup(void);
-static void cleanup(void);
-
-int main(int argc, char **argv)
+static void verify_mmap(unsigned int nr)
 {
-	int lc;
-	int i;
+	struct test_case *tc = &tcases[nr];
 
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		for (i = 0; i < TST_TOTAL; i++) {
-			TEST(ftruncate(fd, TC[i].newsize));
-
-			if (TEST_RETURN == -1) {
-				tst_resm(TFAIL | TTERRNO, "%s", TC[i].desc);
-			} else {
-				tst_resm(TPASS, "%s", TC[i].desc);
-			}
-		}
-
-	}
-
-	cleanup();
-	tst_exit();
+	TST_EXP_PASS(ftruncate(fd, tc->newsize), "%s", tc->desc);
 }
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	if ((fd = open("mmaptest", O_RDWR | O_CREAT, 0666)) < 0)
-		tst_brkm(TFAIL | TERRNO, cleanup, "opening mmaptest failed");
-
-	/* ftruncate the file to 16k */
-	if (ftruncate(fd, mapsize) < 0)
-		tst_brkm(TFAIL | TERRNO, cleanup, "ftruncate file failed");
-
-	maddr = mmap(0, mapsize, PROT_READ | PROT_WRITE,
-		     MAP_FILE | MAP_SHARED, fd, 0);
-	if (maddr == MAP_FAILED)
-		tst_brkm(TFAIL | TERRNO, cleanup, "mmapping mmaptest failed");
-
+	fd = SAFE_OPEN("/tmp/mmaptest", O_RDWR | O_CREAT, 0666);
+	/* set the file to initial size */
+	SAFE_FTRUNCATE(fd, MAPSIZE);
+	maddr = SAFE_MMAP(0, MAPSIZE, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, fd, 0);
 	/* fill up the file with A's */
-	memset(maddr, 'A', mapsize);
+	memset(maddr, 'A', MAPSIZE);
 }
 
 static void cleanup(void)
 {
-	munmap(maddr, mapsize);
-	close(fd);
-	tst_rmdir();
+	if (maddr)
+		SAFE_MUNMAP(maddr, MAPSIZE);
+	if (fd)
+		SAFE_CLOSE(fd);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test = verify_mmap,
+	.tcnt = ARRAY_SIZE(tcases),
+	.needs_tmpdir = 1,
+};
