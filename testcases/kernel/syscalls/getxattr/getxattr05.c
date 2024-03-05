@@ -4,15 +4,18 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
- * 1) Witout a user namespace, getxattr(2) should get same data when
- *    acquiring the value of system.posix_acl_access twice.
- * 2) With/Without mapped root UID in a user namespaces, getxattr(2) should
- *    get same data when acquiring the value of system.posix_acl_access twice.
+/*\
+ * [Description]
+ *
+ * This test verifies that:
+ *
+ * - Without a user namespace, getxattr(2) should get same data when
+ *   acquiring the value of system.posix_acl_access twice.
+ * - With/Without mapped root UID in a user namespaces, getxattr(2) should
+ *   get same data when acquiring the value of system.posix_acl_access twice.
  *
  * This issue included by getxattr05 has been fixed in kernel:
- * '82c9a927bc5d ("getxattr: use correct xattr length")'
+ * 82c9a927bc5d ("getxattr: use correct xattr length")
  */
 
 #define _GNU_SOURCE
@@ -176,7 +179,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = do_getxattr,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "82c9a927bc5"},
+		{"linux-git", "82c9a927bc5d"},
 		{}
 },
 };
