@@ -13,6 +13,7 @@
 
 #define TST_NO_DEFAULT_MAIN
 #define DEFAULT_MAX_SWAPFILE 32
+#define BUFSIZE 200
 
 #include "tst_test.h"
 #include "libswap.h"
@@ -279,16 +280,14 @@ int tst_count_swaps(void)
 {
 	FILE *fp;
 	int used = -1;
-	char c;
+	char buf[BUFSIZE];
 
 	fp = SAFE_FOPEN("/proc/swaps", "r");
 	if (fp == NULL)
 		return -1;
 
-	while ((c = fgetc(fp)) != EOF) {
-		if (c == '\n')
-			used++;
-	}
+	while (fgets(buf, BUFSIZE, fp) != NULL)
+		used++;
 
 	SAFE_FCLOSE(fp);
 	if (used < 0)
