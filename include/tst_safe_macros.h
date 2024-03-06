@@ -750,4 +750,9 @@ int safe_sysinfo(const char *file, const int lineno, struct sysinfo *info);
 
 void safe_print_file(const char *file, const int lineno, char *path);
 
-#endif /* SAFE_MACROS_H__ */
+int safe_sscanf(const char *file, const int lineno, const char *restrict buffer, 
+	const char *restrict format, ...);
+#define SAFE_SSCANF(buffer, format, ...) \
+	safe_sscanf(__FILE__, __LINE__, (buffer), (format),	##__VA_ARGS__)
+
+#endif /* TST_SAFE_MACROS_H__ */

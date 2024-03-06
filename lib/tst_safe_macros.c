@@ -622,3 +622,22 @@ void safe_print_file(const char *file, const int lineno, char *path)
 
 	safe_fclose(file, lineno, NULL, pfile);
 }
+
+int safe_sscanf(const char *file, const int lineno, const char *restrict buffer, const char *restrict format, ...)
+{
+	va_list args;
+	
+	va_start(args, format);
+	int ret = vsscanf(buffer, format, args);
+
+	va_end(args);
+	int placeholders = tst_count_scanf_conversions(format);
+
+	if (ret == EOF)
+		tst_brk_(file, lineno, TBROK | TERRNO, "got EOF from sscanf()");
+
+	if (ret != placeholders)
+		tst_brk_(file, lineno, TBROK | TERRNO, "wrong number of conversion, expected %d, got %d", placeholders, ret);
+
+	return ret;
+}
