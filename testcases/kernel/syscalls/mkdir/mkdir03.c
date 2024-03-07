@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2002-2024
  * Ported to LTP: Wayne Boyer
  */
-/*
- * DESCRIPTION
- *	check mkdir() with various error conditions that should produce
- *	EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, ELOOP and EROFS
+
+/*\
+ * [Description]
+ *
+ * Check mkdir() with various error conditions that should produce
+ * EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, ELOOP and EROFS.
+ *
+ * Testing on various types of files (symlinks, directories, pipes, devices, etc).
  */
 
 #include <paths.h>
