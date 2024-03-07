@@ -1,134 +1,46 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
+ * Copyright Red Hat
+ * Author: Dennis Brendel <dbrendel@redhat.com>
  */
-/**************************************************************************
+
+/*\
+ * [Description]
  *
- *    TEST IDENTIFIER	: munlockall01
- *
- *    EXECUTED BY	: root / superuser
- *
- *    TEST TITLE	: Basic test for munlockall(2)
- *
- *    TEST CASE TOTAL	: 1
- *
- *    AUTHOR		: sowmya adiga<sowmya.adiga@wipro.com>
- *
- *    SIGNALS
- * 	Uses SIGUSR1 to pause before test if option set.
- * 	(See the parse_opts(3) man page).
- *
- *    DESCRIPTION
- *	This is a phase I test for the munlockall(2) system call.
- *	It is intended to provide a limited exposure of the system call.
- *
- * 	Setup:
- *	  Setup signal handling.
- *	  Pause for SIGUSR1 if option specified.
- *
- * 	Test:
- *        Execute system call
- *	  Check return code, if system call failed (return=-1)
- *	  Log the errno and Issue a FAIL message.
- *	  Otherwise, Issue a PASS message.
- *
- * 	Cleanup:
- * 	  Print errno log and/or timing stats if options given
- *
- * USAGE:  <for command-line>
- *  munlockall01 [-c n] [-e] [-i n] [-I x] [-p x] [-t]
- *		where,		-c n : Run n copies concurrently
- *	               		-e   : Turn on errno logging.
- *				-h   : Show this help screen
- *				-i n : Execute test n times.
- *				-I x : Execute test for x seconds.
- *				-p   : Pause for SIGUSR1 before starting
- *                      	-P x : Pause for x seconds between iterations.
- *                       	 t   : Turn on syscall timing.
- *
- * RESTRICTIONS
- * Must be root/superuser to run it.
- *****************************************************************************/
-#include <errno.h>
+ * Verify that munlockall(2) unlocks all previously locked memory.
+ */
+
 #include <sys/mman.h>
-#include "test.h"
 
-void setup();
-void cleanup();
+#include "tst_test.h"
 
-char *TCID = "munlockall01";
-int TST_TOTAL = 1;
-
-#if !defined(UCLINUX)
-
-int main(int ac, char **av)
+static void verify_munlockall(void)
 {
-	int lc;
+	unsigned long size = 0;
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	SAFE_FILE_LINES_SCANF("/proc/self/status", "VmLck: %ld", &size);
 
-	setup();
+	if (size != 0UL)
+		tst_brk(TBROK, "Locked memory after init should be 0 but is %ld", size);
 
-	/* check looping state */
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+	if (mlockall(MCL_CURRENT | MCL_FUTURE) != 0)
+		tst_brk(TBROK | TERRNO, "Could not lock memory using mlockall()");
 
-		tst_count = 0;
+	SAFE_FILE_LINES_SCANF("/proc/self/status", "VmLck: %ld", &size);
 
-		TEST(munlockall());
+	if (size == 0UL)
+		tst_brk(TBROK, "Locked memory after mlockall() should be > 0");
 
-		/* check return code */
-		if (TEST_RETURN == -1) {
-			tst_resm(TFAIL | TTERRNO, "munlockall() Failed with"
-				 " return=%ld", TEST_RETURN);
-		} else {
-			tst_resm(TPASS, "munlockall() passed with"
-				 " return=%ld ", TEST_RETURN);
+	TST_EXP_PASS(munlockall(), "Unlock memory using munlockall()");
 
-		}
-	}
+	SAFE_FILE_LINES_SCANF("/proc/self/status", "VmLck: %ld", &size);
 
-	/* cleanup and exit */
-	cleanup();
-	tst_exit();
-
+	if (size != 0UL)
+		tst_res(TFAIL, "Locked memory after munlockall() should be 0 but is %ld", size);
+	else
+		tst_res(TPASS, "Memory successfully locked and unlocked");
 }
 
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
-
-/* setup() - performs all ONE TIME setup for this test. */
-void setup(void)
-{
-	tst_require_root();
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all ONE TIME cleanup for this test at
- *		completion or premature exit.
- */
-void cleanup(void)
-{
-}
+static struct tst_test test = {
+	.test_all = verify_munlockall,
+};
