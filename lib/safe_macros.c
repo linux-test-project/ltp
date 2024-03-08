@@ -913,7 +913,10 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	 * the kernel's NTFS driver doesn't have proper write support.
 	 */
 	if (!filesystemtype || strcmp(filesystemtype, "ntfs")) {
+		mode_t old_umask = umask(0);
+
 		rval = mount(source, target, filesystemtype, mountflags, data);
+		umask(old_umask);
 		if (!rval)
 			return 0;
 	}
