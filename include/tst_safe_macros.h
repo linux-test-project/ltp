@@ -6,6 +6,7 @@
 #ifndef TST_SAFE_MACROS_H__
 #define TST_SAFE_MACROS_H__
 
+#include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -268,6 +269,36 @@ int safe_getgroups(const char *file, const int lineno, int size, gid_t list[]);
  * -D_FILE_OFFSET_BITS=64 compile flag
  */
 
+#define PROT_FLAG_STR(f) #f " | "
+
+static void safe_prot_to_str(const int prot, char *buf)
+{
+	char *ptr = buf;
+
+	if (prot == PROT_NONE) {
+		strcpy(buf, "PROT_NONE");
+		return;
+	}
+
+	if (prot & PROT_READ) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_READ));
+		ptr += sizeof(PROT_FLAG_STR(PROT_READ)) - 1;
+	}
+
+	if (prot & PROT_WRITE) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_WRITE));
+		ptr += sizeof(PROT_FLAG_STR(PROT_WRITE)) - 1;
+	}
+
+	if (prot & PROT_EXEC) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_EXEC));
+		ptr += sizeof(PROT_FLAG_STR(PROT_EXEC)) - 1;
+	}
+
+	if (buf != ptr)
+		ptr[-3] = 0;
+}
+
 static inline void *safe_mmap(const char *file, const int lineno,
                               void *addr, size_t length,
                               int prot, int flags, int fd, off_t offset)
@@ -286,6 +317,33 @@ static inline void *safe_mmap(const char *file, const int lineno,
 #define SAFE_MMAP(addr, length, prot, flags, fd, offset) \
 	safe_mmap(__FILE__, __LINE__, (addr), (length), (prot), \
 	(flags), (fd), (offset))
+
+static inline int safe_mprotect(const char *file, const int lineno,
+	char *addr, size_t len, int prot)
+{
+	int rval;
+	char prot_buf[512];
+
+	safe_prot_to_str(prot, prot_buf);
+
+	tst_res_(file, lineno, TDEBUG,
+		"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
+
+	rval = mprotect(addr, len, prot);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mprotect(%p, %ld, %s(%x)) return value %d",
+			addr, len, prot_buf, prot, rval);
+	}
+
+	return rval;
+}
+#define SAFE_MPROTECT(addr, len, prot) \
+	safe_mprotect(__FILE__, __LINE__, (addr), (len), (prot))
 
 static inline int safe_ftruncate(const char *file, const int lineno,
                                  int fd, off_t length)
