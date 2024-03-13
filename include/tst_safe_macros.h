@@ -304,12 +304,19 @@ static inline void *safe_mmap(const char *file, const int lineno,
                               int prot, int flags, int fd, off_t offset)
 {
 	void *rval;
+	char prot_buf[512];
+
+	safe_prot_to_str(prot, prot_buf);
+
+	tst_res_(file, lineno, TDEBUG,
+		"mmap(%p, %ld, %s(%x), %d, %d, %ld)",
+		addr, length, prot_buf, prot, flags, fd, offset);
 
 	rval = mmap(addr, length, prot, flags, fd, offset);
 	if (rval == MAP_FAILED) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			"mmap(%p,%zu,%d,%d,%d,%ld) failed",
-			addr, length, prot, flags, fd, (long) offset);
+			"mmap(%p,%zu,%s(%x),%d,%d,%ld) failed",
+			addr, length, prot_buf, prot, flags, fd, (long) offset);
 	}
 
 	return rval;
