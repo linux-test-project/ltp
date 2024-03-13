@@ -34,6 +34,17 @@ cleanup()
 	rm -rf /var/log/tst_largelogfile*
 }
 
+check_log()
+{
+	local file="$1"
+
+	EXPECT_PASS [ -f "$file" ]
+
+	if ! file "$file" | grep -q "gzip compressed data"; then
+		tst_res TFAIL "Failed to create a compressed file"
+	fi
+}
+
 test1()
 {
 	local group="syslog"
@@ -73,11 +84,8 @@ test1()
 	EXPECT_PASS grep -q "reading config file tst_logrotate.conf" tst_logrotate.out
 	EXPECT_PASS grep -q "forced from command line (5 rotations)" tst_logrotate.out
 	EXPECT_PASS grep -E -q "compressing new|log with" tst_logrotate.out
-	ROD test -f /var/log/tst_logfile.1.gz
 
-	if ! file /var/log/tst_logfile.1.gz | grep -q "gzip compressed data"; then
-		tst_res TFAIL "Failed to create a compressed file"
-	fi
+	check_log /var/log/tst_logfile.1.gz
 }
 
 test2()
@@ -117,11 +125,7 @@ test2()
 	tst_res TINFO "sleep 1 min to wait for rotating logs"
 	tst_sleep 65s
 
-	EXPECT_PASS test -f /var/log/tst_largelogfile.1.gz
-
-	if ! file /var/log/tst_largelogfile.1.gz | grep -q "gzip compressed data"; then
-		tst_res TFAIL "Failed to create a compressed file"
-	fi
+	check_log /var/log/tst_largelogfile.1.gz
 }
 
 . tst_test.sh
