@@ -3,9 +3,11 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Check that the kernel correctly handles send()/sendto()/sendmsg() calls
- * with MSG_MORE flag
+ * with MSG_MORE flag.
  */
 
 #define _GNU_SOURCE
