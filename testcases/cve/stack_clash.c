@@ -44,6 +44,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "tst_safe_stdio.h"
 #include "lapi/mmap.h"
 
@@ -272,19 +273,14 @@ void do_child(void)
 
 void setup(void)
 {
-	char buf[4096], *p;
-
 	page_size = sysconf(_SC_PAGESIZE);
 	page_mask = ~(page_size - 1);
 
-	buf[4095] = '\0';
-	SAFE_FILE_SCANF("/proc/cmdline", "%4095[^\n]", buf);
+	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("stack_guard_gap");
+	tst_kcmdline_parse(&params, 1);
 
-	if ((p = strstr(buf, "stack_guard_gap=")) != NULL) {
-		if (sscanf(p, "stack_guard_gap=%ld", &GAP_PAGES) != 1) {
-			tst_brk(TBROK | TERRNO, "sscanf");
-			return;
-		}
+	if (params.found) {
+		GAP_PAGES= atol(params.value);
 		tst_res(TINFO, "stack_guard_gap = %ld", GAP_PAGES);
 	}
 
