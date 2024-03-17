@@ -6,6 +6,8 @@
 #ifndef TST_KCONFIG_H__
 #define TST_KCONFIG_H__
 
+#include <stdbool.h>
+
 /**
  * Initialization helper macro for struct tst_kconfig_var. Requires <string.h>
  */
@@ -63,5 +65,37 @@ void tst_kconfig_read(struct tst_kconfig_var vars[], size_t vars_len);
  * @param kconfigs NULL-terminated array of config strings needed for the testrun.
  */
 int tst_kconfig_check(const char *const kconfigs[]);
+
+/**
+ * Macro to prepare a tst_kcmdline_var structure with a given parameter name.
+ *
+ * It initializes the .key field with the provided name, sets the .value field
+ * to an empty string, and marks the parameter as not found (.found = false).
+ *
+ * This macro is typically used to prepopulate an array with configuration
+ * parameters before processing the actual command line arguments.
+ */
+#define TST_KCMDLINE_INIT(paraname) { \
+	.key = paraname, \
+	.value = "", \
+	.found = false \
+}
+
+/**
+ * Structure for storing command-line parameter key and its corresponding
+ * value, and a flag indicating whether the parameter was found.
+ */
+struct tst_kcmdline_var {
+	const char *key;
+	char value[128];
+	bool found;
+};
+
+/**
+ * Parses command-line parameters from /proc/cmdline and stores them in params array.
+ * params: The array of tst_kcmdline_var structures to be filled with parsed key-value pairs.
+ * params_len: The length of the params array, indicating how many parameters to parse.
+ */
+void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len);
 
 #endif	/* TST_KCONFIG_H__ */

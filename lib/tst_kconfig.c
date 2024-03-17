@@ -14,6 +14,7 @@
 #include "tst_private.h"
 #include "tst_kconfig.h"
 #include "tst_bool_expr.h"
+#include "tst_safe_stdio.h"
 
 static int kconfig_skip_check(void)
 {
@@ -564,4 +565,69 @@ char tst_kconfig_get(const char *confname)
 		free(var.val);
 
 	return var.choice;
+}
+
+void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len)
+{
+	char buf[128], line[512];
+	size_t b_pos = 0,l_pos =0, i;
+	int var_id = -1;
+
+	FILE *f = SAFE_FOPEN("/proc/cmdline", "r");
+
+	if (fgets(line, sizeof(line), f) == NULL) {
+		SAFE_FCLOSE(f);
+		tst_brk(TBROK, "Failed to read /proc/cmdline");
+	}
+
+	for (l_pos = 0; line[l_pos] != '\0'; l_pos++) {
+		char c = line[l_pos];
+
+		switch (c) {
+		case '=':
+			buf[b_pos] = '\0';
+			for (i = 0; i < params_len; i++) {
+				if (strcmp(buf, params[i].key) == 0) {
+					var_id = (int)i;
+					params[i].found = true;
+				}
+			}
+
+			b_pos = 0;
+		break;
+		case ' ':
+		case '\n':
+			buf[b_pos] = '\0';
+			if (var_id >= 0 && var_id < (int)params_len)
+				strcpy(params[var_id].value, buf);
+
+			var_id = -1;
+			b_pos = 0;
+		break;
+		default:
+			if (b_pos + 1 >= sizeof(buf)) {
+				tst_res(TWARN, "Buffer overflowed while parsing /proc/cmdline");
+				while (line[l_pos] != '\0' && line[l_pos] != ' ' && line[l_pos] != '\n')
+					l_pos++;
+
+				var_id = -1;
+				b_pos = 0;
+
+				if (line[l_pos] != '\0')
+					l_pos--;
+			} else {
+				buf[b_pos++] = c;
+			}
+		break;
+		}
+	}
+
+	for (i = 0; i < params_len; i++) {
+		if (params[i].found)
+			tst_res(TINFO, "%s is found in /proc/cmdline", params[i].key);
+		else
+			tst_res(TINFO, "%s is not found in /proc/cmdline", params[i].key);
+	}
+
+	SAFE_FCLOSE(f);
 }
