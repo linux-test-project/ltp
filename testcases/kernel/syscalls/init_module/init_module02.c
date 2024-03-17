@@ -14,15 +14,17 @@
  */
 
 #include <linux/capability.h>
+#include <stdlib.h>
 #include <errno.h>
 #include "lapi/init_module.h"
+#include "tst_kconfig.h"
 #include "tst_module.h"
 #include "tst_capability.h"
 
 #define MODULE_NAME	"init_module.ko"
 
 static unsigned long size, zero_size;
-static int kernel_lockdown, secure_boot;
+static int kernel_lockdown, secure_boot, sig_enforce;
 static void *buf, *faulty_buf, *null_buf;
 
 static struct tst_cap cap_req = TST_CAP(TST_CAP_REQ, CAP_SYS_MODULE);
@@ -44,12 +46,18 @@ static struct tcase {
 	{"invalid_param", &buf, &size, "status=invalid", 0, 1, EINVAL},
 	{"no-perm", &buf, &size, "", 1, 0, EPERM},
 	{"module-exists", &buf, &size, "", 0, 1, EEXIST},
+	{"module-unsigned", &buf, &size, "", 0, 1, EKEYREJECTED},
 };
 
 static void setup(void)
 {
 	struct stat sb;
 	int fd;
+	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
+
+	tst_kcmdline_parse(&params, 1);
+	if (params.found)
+		sig_enforce = atoi(params.value);
 
 	tst_module_exists(MODULE_NAME, NULL);
 
@@ -70,6 +78,16 @@ static void run(unsigned int n)
 
 	if (tc->skip_in_lockdown && (kernel_lockdown || secure_boot)) {
 		tst_res(TCONF, "Cannot load unsigned modules, skipping %s", tc->name);
+		return;
+	}
+
+	if ((sig_enforce == 1) && (tc->exp_errno != EKEYREJECTED)) {
+		tst_res(TCONF, "module signature is enforced, skipping %s", tc->name);
+		return;
+	}
+
+	if ((sig_enforce != 1) && (tc->exp_errno == EKEYREJECTED)) {
+		tst_res(TCONF, "module signature is not enforced, skipping %s", tc->name);
 		return;
 	}
 

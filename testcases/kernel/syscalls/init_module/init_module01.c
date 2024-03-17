@@ -13,18 +13,26 @@
  * Inserts a simple module after opening and mmaping the module file.
  */
 
+#include <stdlib.h>
 #include <errno.h>
 #include "lapi/init_module.h"
 #include "tst_module.h"
+#include "tst_kconfig.h"
 
 #define MODULE_NAME	"init_module.ko"
 
 static struct stat sb;
 static void *buf;
+static int sig_enforce;
 
 static void setup(void)
 {
 	int fd;
+	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
+
+	tst_kcmdline_parse(&params, 1);
+	if (params.found)
+		sig_enforce = atoi(params.value);
 
 	tst_module_exists(MODULE_NAME, NULL);
 
@@ -36,6 +44,12 @@ static void setup(void)
 
 static void run(void)
 {
+	if (sig_enforce == 1) {
+		tst_res(TINFO, "module signature is enforced");
+		TST_EXP_FAIL(init_module(buf, sb.st_size, "status=valid"), EKEYREJECTED);
+		return;
+	}
+
 	TST_EXP_PASS(init_module(buf, sb.st_size, "status=valid"));
 	if (!TST_PASS)
 		return;
