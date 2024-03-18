@@ -225,8 +225,8 @@ int safe_setresuid(const char *file, const int lineno,
 }
 
 int safe_sigaction(const char *file, const int lineno,
-                   int signum, const struct sigaction *act,
-                   struct sigaction *oldact)
+				   int signum, const struct sigaction *act,
+				   struct sigaction *oldact)
 {
 	int rval;
 
@@ -246,7 +246,7 @@ int safe_sigaction(const char *file, const int lineno,
 }
 
 int safe_sigaddset(const char *file, const int lineno,
-                    sigset_t *sigs, int signo)
+				   sigset_t *sigs, int signo)
 {
 	int rval;
 
@@ -265,8 +265,7 @@ int safe_sigaddset(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_sigdelset(const char *file, const int lineno,
-                    sigset_t *sigs, int signo)
+int safe_sigdelset(const char *file, const int lineno, sigset_t *sigs, int signo)
 {
 	int rval;
 
@@ -285,8 +284,7 @@ int safe_sigdelset(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_sigemptyset(const char *file, const int lineno,
-                      sigset_t *sigs)
+int safe_sigemptyset(const char *file, const int lineno, sigset_t *sigs)
 {
 	int rval;
 
@@ -334,7 +332,7 @@ static const char *strhow(int how)
 }
 
 int safe_sigprocmask(const char *file, const int lineno,
-                      int how, sigset_t *set, sigset_t *oldset)
+					 int how, sigset_t *set, sigset_t *oldset)
 {
 	int rval;
 
@@ -353,8 +351,7 @@ int safe_sigprocmask(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_sigwait(const char *file, const int lineno,
-                  sigset_t *set, int *sig)
+int safe_sigwait(const char *file, const int lineno, sigset_t *set, int *sig)
 {
 	int rval;
 
