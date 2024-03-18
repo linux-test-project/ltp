@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2017-2024 Linux Test Project
  */
 
 #define _GNU_SOURCE
@@ -640,4 +641,58 @@ int safe_sscanf(const char *file, const int lineno, const char *restrict buffer,
 		tst_brk_(file, lineno, TBROK | TERRNO, "wrong number of conversion, expected %d, got %d", placeholders, ret);
 
 	return ret;
+}
+
+#define PROT_FLAG_STR(f) #f " | "
+void tst_prot_to_str(const int prot, char *buf)
+{
+	char *ptr = buf;
+
+	if (prot == PROT_NONE) {
+		strcpy(buf, "PROT_NONE");
+		return;
+	}
+
+	if (prot & PROT_READ) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_READ));
+		ptr += sizeof(PROT_FLAG_STR(PROT_READ)) - 1;
+	}
+
+	if (prot & PROT_WRITE) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_WRITE));
+		ptr += sizeof(PROT_FLAG_STR(PROT_WRITE)) - 1;
+	}
+
+	if (prot & PROT_EXEC) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_EXEC));
+		ptr += sizeof(PROT_FLAG_STR(PROT_EXEC)) - 1;
+	}
+
+	if (buf != ptr)
+		ptr[-3] = 0;
+}
+
+int safe_mprotect(const char *file, const int lineno,
+	char *addr, size_t len, int prot)
+{
+	int rval;
+	char prot_buf[512];
+
+	tst_prot_to_str(prot, prot_buf);
+
+	tst_res_(file, lineno, TDEBUG,
+		"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
+
+	rval = mprotect(addr, len, prot);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mprotect(%p, %ld, %s(%x)) return value %d",
+			addr, len, prot_buf, prot, rval);
+	}
+
+	return rval;
 }

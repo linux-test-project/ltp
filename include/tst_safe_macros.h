@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
- * Copyright (c) 2010-2018 Linux Test Project
+ * Copyright (c) 2010-2024 Linux Test Project
  * Copyright (c) 2011-2015 Cyril Hrubis <chrubis@suse.cz>
  */
 
@@ -264,49 +264,15 @@ int safe_getgroups(const char *file, const int lineno, int size, gid_t list[]);
 	            "fcntl(%i,%s,...) failed", fd, #cmd), 0 \
 	 : tst_ret_;})
 
-/*
- * following functions are inline because the behaviour may depend on
- * -D_FILE_OFFSET_BITS=64 compile flag
- */
-
-#define PROT_FLAG_STR(f) #f " | "
-
-static void safe_prot_to_str(const int prot, char *buf)
-{
-	char *ptr = buf;
-
-	if (prot == PROT_NONE) {
-		strcpy(buf, "PROT_NONE");
-		return;
-	}
-
-	if (prot & PROT_READ) {
-		strcpy(ptr, PROT_FLAG_STR(PROT_READ));
-		ptr += sizeof(PROT_FLAG_STR(PROT_READ)) - 1;
-	}
-
-	if (prot & PROT_WRITE) {
-		strcpy(ptr, PROT_FLAG_STR(PROT_WRITE));
-		ptr += sizeof(PROT_FLAG_STR(PROT_WRITE)) - 1;
-	}
-
-	if (prot & PROT_EXEC) {
-		strcpy(ptr, PROT_FLAG_STR(PROT_EXEC));
-		ptr += sizeof(PROT_FLAG_STR(PROT_EXEC)) - 1;
-	}
-
-	if (buf != ptr)
-		ptr[-3] = 0;
-}
+void tst_prot_to_str(const int prot, char *buf);
 
 static inline void *safe_mmap(const char *file, const int lineno,
-                              void *addr, size_t length,
-                              int prot, int flags, int fd, off_t offset)
+	void *addr, size_t length, int prot, int flags, int fd, off_t offset)
 {
 	void *rval;
 	char prot_buf[512];
 
-	safe_prot_to_str(prot, prot_buf);
+	tst_prot_to_str(prot, prot_buf);
 
 	tst_res_(file, lineno, TDEBUG,
 		"mmap(%p, %ld, %s(%x), %d, %d, %ld)",
@@ -321,36 +287,22 @@ static inline void *safe_mmap(const char *file, const int lineno,
 
 	return rval;
 }
+
+
 #define SAFE_MMAP(addr, length, prot, flags, fd, offset) \
 	safe_mmap(__FILE__, __LINE__, (addr), (length), (prot), \
 	(flags), (fd), (offset))
 
-static inline int safe_mprotect(const char *file, const int lineno,
-	char *addr, size_t len, int prot)
-{
-	int rval;
-	char prot_buf[512];
+int safe_mprotect(const char *file, const int lineno,
+	char *addr, size_t len, int prot);
 
-	safe_prot_to_str(prot, prot_buf);
-
-	tst_res_(file, lineno, TDEBUG,
-		"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
-
-	rval = mprotect(addr, len, prot);
-
-	if (rval == -1) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-			"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
-	} else if (rval) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
-			"mprotect(%p, %ld, %s(%x)) return value %d",
-			addr, len, prot_buf, prot, rval);
-	}
-
-	return rval;
-}
 #define SAFE_MPROTECT(addr, len, prot) \
 	safe_mprotect(__FILE__, __LINE__, (addr), (len), (prot))
+
+/*
+ * Following functions are inline because the behaviour may depend on
+ * -D_FILE_OFFSET_BITS=64 compile flag.
+ */
 
 static inline int safe_ftruncate(const char *file, const int lineno,
                                  int fd, off_t length)
