@@ -31,6 +31,7 @@ test_exec_child
 test_kconfig
 test_kconfig01
 test_kconfig02
+test_kconfig03
 variant
 test_guarded_buf
 tst_bool_expr
