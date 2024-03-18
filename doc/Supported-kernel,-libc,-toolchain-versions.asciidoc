@@ -19,11 +19,12 @@ NOTE: GitHub Actions does only build testing, passing the CI means only that
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [align="center",options="header"]
-|===============================================================
-| Distro                       | kernel  | glibc | gcc   | clang
-| openSUSE Leap 42.2           | 4.4     | 2.22  | 4.8.5 | -
-| Ubuntu 18.04 LTS bionic      | 4.15    | 2.27  | 7.3.0 | -
-|===============================================================
+|=================================================================
+| Distro                       | kernel  | glibc | gcc    | clang
+| openSUSE Leap 42.2           | 4.4     | 2.22  | 4.8.5  | -
+| Ubuntu 18.04 LTS bionic      | 4.15    | 2.27  | 7.3.0  | -
+| Debian 11 (bullseye)         | 5.10    | 2.31  | 10.2.1 | 11.0.1
+|=================================================================
 
 Older distributions are not officially supported, which means that it
 may or may not work. It all depends on your luck. It should be possible
