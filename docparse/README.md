@@ -234,7 +234,7 @@ with a header describing the testsuite:
 Open Points
 ===========
 
-There are stil some loose ends. Mostly it's not well defined where to put
+There are still some loose ends. Mostly it's not well defined where to put
 things and how to format them.
 
 * Some of the hardware requirements are already listed in the tst\_test. Should
