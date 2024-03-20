@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Linux Test Project, 2020-2023
+ */
 
 #define TST_NO_DEFAULT_MAIN
 
