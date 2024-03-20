@@ -7,6 +7,7 @@
 
 #define PATH_FIPS	"/proc/sys/crypto/fips_enabled"
 #define PATH_LOCKDOWN	"/sys/kernel/security/lockdown"
+#define SELINUX_STATUS_PATH "/sys/fs/selinux/enforce"
 
 #if defined(__powerpc64__) || defined(__ppc64__)
 # define SECUREBOOT_VAR "/proc/device-tree/ibm,secure-boot"
@@ -16,6 +17,7 @@
 # define VAR_DATA_SIZE 5
 #endif
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mount.h>
@@ -30,11 +32,11 @@ int tst_fips_enabled(void)
 {
 	int fips = 0;
 
-	if (access(PATH_FIPS, R_OK) == 0) {
+	if (access(PATH_FIPS, R_OK) == 0)
 		SAFE_FILE_SCANF(PATH_FIPS, "%d", &fips);
-	}
 
 	tst_res(TINFO, "FIPS: %s", fips ? "on" : "off");
+
 	return fips;
 }
 
@@ -98,4 +100,16 @@ int tst_secureboot_enabled(void)
 	SAFE_CLOSE(fd);
 	tst_res(TINFO, "SecureBoot: %s", data[VAR_DATA_SIZE - 1] ? "on" : "off");
 	return data[VAR_DATA_SIZE - 1];
+}
+
+int tst_selinux_enforcing(void)
+{
+	int res = 0;
+
+	if (access(SELINUX_STATUS_PATH, F_OK) == 0)
+		SAFE_FILE_SCANF(SELINUX_STATUS_PATH, "%d", &res);
+
+	tst_res(TINFO, "SELinux enforcing: %s", res ? "on" : "off");
+
+	return res;
 }
