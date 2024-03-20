@@ -1,21 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Linux Test Project, 2020-2023
+ * Copyright (c) Linux Test Project, 2020-2024
  */
 
 #define TST_NO_DEFAULT_MAIN
 
+#define PATH_FIPS	"/proc/sys/crypto/fips_enabled"
 #define PATH_LOCKDOWN	"/sys/kernel/security/lockdown"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/mount.h>
-
-#include "tst_test.h"
-#include "tst_safe_macros.h"
-#include "tst_safe_stdio.h"
-#include "tst_lockdown.h"
-#include "tst_private.h"
 
 #if defined(__powerpc64__) || defined(__ppc64__)
 # define SECUREBOOT_VAR "/proc/device-tree/ibm,secure-boot"
@@ -25,30 +16,26 @@
 # define VAR_DATA_SIZE 5
 #endif
 
-int tst_secureboot_enabled(void)
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mount.h>
+
+#include "tst_test.h"
+#include "tst_safe_macros.h"
+#include "tst_safe_stdio.h"
+#include "tst_security.h"
+#include "tst_private.h"
+
+int tst_fips_enabled(void)
 {
-	int fd;
-	char data[5];
+	int fips = 0;
 
-	if (access(SECUREBOOT_VAR, F_OK)) {
-		tst_res(TINFO, "SecureBoot sysfs file not available");
-		return -1;
+	if (access(PATH_FIPS, R_OK) == 0) {
+		SAFE_FILE_SCANF(PATH_FIPS, "%d", &fips);
 	}
 
-	fd = open(SECUREBOOT_VAR, O_RDONLY);
-
-	if (fd == -1) {
-		tst_res(TINFO | TERRNO,
-			"Cannot open SecureBoot file");
-		return -1;
-	} else if (fd < 0) {
-		tst_brk(TBROK | TERRNO, "Invalid open() return value %d", fd);
-		return -1;
-	}
-	SAFE_READ(1, fd, data, VAR_DATA_SIZE);
-	SAFE_CLOSE(fd);
-	tst_res(TINFO, "SecureBoot: %s", data[VAR_DATA_SIZE - 1] ? "on" : "off");
-	return data[VAR_DATA_SIZE - 1];
+	tst_res(TINFO, "FIPS: %s", fips ? "on" : "off");
+	return fips;
 }
 
 int tst_lockdown_enabled(void)
@@ -85,4 +72,30 @@ int tst_lockdown_enabled(void)
 	tst_res(TINFO, "Kernel lockdown: %s", ret ? "on" : "off");
 
 	return ret;
+}
+
+int tst_secureboot_enabled(void)
+{
+	int fd;
+	char data[5];
+
+	if (access(SECUREBOOT_VAR, F_OK)) {
+		tst_res(TINFO, "SecureBoot sysfs file not available");
+		return -1;
+	}
+
+	fd = open(SECUREBOOT_VAR, O_RDONLY);
+
+	if (fd == -1) {
+		tst_res(TINFO | TERRNO,
+			"Cannot open SecureBoot file");
+		return -1;
+	} else if (fd < 0) {
+		tst_brk(TBROK | TERRNO, "Invalid open() return value %d", fd);
+		return -1;
+	}
+	SAFE_READ(1, fd, data, VAR_DATA_SIZE);
+	SAFE_CLOSE(fd);
+	tst_res(TINFO, "SecureBoot: %s", data[VAR_DATA_SIZE - 1] ? "on" : "off");
+	return data[VAR_DATA_SIZE - 1];
 }
