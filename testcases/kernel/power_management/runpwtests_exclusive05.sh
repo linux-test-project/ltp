@@ -26,6 +26,7 @@ export TST_TOTAL=2
 
 # Checking test environment
 check_arch
+check_kernel_version
 
 max_sched_mc=2
 max_sched_smt=2
