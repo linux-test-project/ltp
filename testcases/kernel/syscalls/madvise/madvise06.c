@@ -242,6 +242,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
+	.max_runtime = 60,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/swappiness", NULL,
