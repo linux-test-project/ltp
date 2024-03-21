@@ -19,10 +19,11 @@
 #include <time.h>
 #include "tst_safe_clocks.h"
 #include "lapi/syscalls.h"
+#include "lapi/common_timers.h"
 
 static void run(void)
 {
-	timer_t timer;
+	kernel_timer_t timer;
 	struct sigevent ev;
 
 	ev.sigev_value = (union sigval) 0;
