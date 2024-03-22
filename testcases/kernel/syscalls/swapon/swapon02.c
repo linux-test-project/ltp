@@ -50,8 +50,8 @@ static void setup(void)
 	is_swap_supported(TEST_FILE);
 
 	SAFE_TOUCH(NOTSWAP_FILE, 0777, NULL);
-	make_swapfile(SWAP_FILE, 10, 0);
-	make_swapfile(USED_FILE, 10, 0);
+	MAKE_SWAPFILE_BLKS(SWAP_FILE, 10);
+	MAKE_SWAPFILE_BLKS(USED_FILE, 10);
 
 	if (tst_syscall(__NR_swapon, USED_FILE, 0))
 		tst_res(TWARN | TERRNO, "swapon(alreadyused) failed");

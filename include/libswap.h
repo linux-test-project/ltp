@@ -11,10 +11,49 @@
 #ifndef __LIBSWAP_H__
 #define __LIBSWAP_H__
 
+enum swapfile_method {
+    SWAPFILE_BY_SIZE,
+    SWAPFILE_BY_BLKS
+};
+
 /*
- * Make a swap file
+ * Create a swapfile of a specified size or number of blocks.
  */
-int make_swapfile(const char *swapfile, int blocks, int safe);
+int make_swapfile_(const char *file, const int lineno,
+			const char *swapfile, unsigned int num,
+			int safe, enum swapfile_method method);
+
+static inline int make_swapfile(const char *swapfile, unsigned int num,
+			int safe, enum swapfile_method method)
+{
+	return make_swapfile_(__FILE__, __LINE__, swapfile, num, safe, method);
+}
+
+/**
+ * Macro to create swapfile size in megabytes (MB).
+ */
+#define MAKE_SWAPFILE_SIZE(swapfile, size) \
+    make_swapfile(swapfile, size, 0, SWAPFILE_BY_SIZE)
+
+/**
+ * Macro to create swapfile size in block numbers.
+ */
+#define MAKE_SWAPFILE_BLKS(swapfile, blocks) \
+    make_swapfile(swapfile, blocks, 0, SWAPFILE_BY_BLKS)
+
+/**
+ * Macro to safely create swapfile size in megabytes (MB).
+ * Includes safety checks to handle potential errors.
+ */
+#define SAFE_MAKE_SWAPFILE_SIZE(swapfile, size) \
+    make_swapfile(swapfile, size, 1, SWAPFILE_BY_SIZE)
+
+/**
+ * Macro to safely create swapfile size in block numbers.
+ * Includes safety checks to handle potential errors.
+ */
+#define SAFE_MAKE_SWAPFILE_BLKS(swapfile, blocks) \
+    make_swapfile(swapfile, blocks, 1, SWAPFILE_BY_BLKS)
 
 /*
  * Check swapon/swapoff support status of filesystems or files

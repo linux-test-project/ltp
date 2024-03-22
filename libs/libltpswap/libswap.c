@@ -133,55 +133,66 @@ out:
 	return contiguous;
 }
 
-int make_swapfile(const char *swapfile, int blocks, int safe)
+int make_swapfile_(const char *file, const int lineno,
+			const char *swapfile, unsigned int num,
+			int safe, enum swapfile_method method)
 {
 	struct statvfs fs_info;
-	unsigned long blk_size, bs;
+	unsigned long blk_size;
+	unsigned int blocks = 0;
 	size_t pg_size = sysconf(_SC_PAGESIZE);
-	char mnt_path[100];
+	char mnt_path[PATH_MAX];
 
 	if (statvfs(".", &fs_info) == -1)
-		return -1;
+		tst_brk_(file, lineno, TBROK, "statvfs failed");
 
 	blk_size = fs_info.f_bsize;
 
+	if (method == SWAPFILE_BY_SIZE) {
+		tst_res(TINFO, "create a swapfile size of %u megabytes (MB)", num);
+		blocks = num * 1024 * 1024 / blk_size;
+	} else if (method == SWAPFILE_BY_BLKS) {
+		blocks = num;
+		tst_res(TINFO, "create a swapfile with %u block numbers", blocks);
+	} else {
+		tst_brk_(file, lineno, TBROK, "Invalid method, please see include/libswap.h");
+	}
+
 	/* To guarantee at least one page can be swapped out */
-	if (blk_size * blocks < pg_size)
-		bs = pg_size;
-	else
-		bs = blk_size;
+	if (blk_size * blocks < pg_size) {
+		tst_res(TWARN, "Swapfile size is less than the system page size. "
+			"Using page size (%lu bytes) instead of block size (%lu bytes).",
+			(unsigned long)pg_size, blk_size);
+		blk_size = pg_size;
+	}
 
 	if (sscanf(swapfile, "%[^/]", mnt_path) != 1)
-		tst_brk(TBROK, "sscanf failed");
+		tst_brk_(file, lineno, TBROK, "sscanf failed");
 
-	if (!tst_fs_has_free(mnt_path, bs * blocks, TST_BYTES))
-		tst_brk(TCONF, "Insufficient disk space to create swap file");
+	if (!tst_fs_has_free(mnt_path, blk_size * blocks, TST_BYTES))
+		tst_brk_(file, lineno, TCONF, "Insufficient disk space to create swap file");
 
 	/* create file */
-	if (prealloc_contiguous_file(swapfile, bs, blocks) != 0)
-		tst_brk(TBROK, "Failed to create swapfile");
+	if (prealloc_contiguous_file(swapfile, blk_size, blocks) != 0)
+		tst_brk_(file, lineno, TBROK, "Failed to create swapfile");
 
 	/* Fill the file if needed (specific to old xfs filesystems) */
 	if (tst_fs_type(swapfile) == TST_XFS_MAGIC) {
-		if (tst_fill_file(swapfile, 0, bs, blocks) != 0)
-			tst_brk(TBROK, "Failed to fill swapfile");
+		if (tst_fill_file(swapfile, 0, blk_size, blocks) != 0)
+			tst_brk_(file, lineno, TBROK, "Failed to fill swapfile");
 	}
 
 	/* make the file swapfile */
-	const char *argv[2 + 1];
-
-	argv[0] = "mkswap";
-	argv[1] = swapfile;
-	argv[2] = NULL;
+	const char *const argv[] = {"mkswap", swapfile, NULL};
 
 	return tst_cmd(argv, "/dev/null", "/dev/null", safe ?
-				   TST_CMD_PASS_RETVAL | TST_CMD_TCONF_ON_MISSING : 0);
+			TST_CMD_PASS_RETVAL | TST_CMD_TCONF_ON_MISSING : 0);
 }
 
 bool is_swap_supported(const char *filename)
 {
 	int i, sw_support = 0;
-	int ret = make_swapfile(filename, 10, 1);
+	int ret = SAFE_MAKE_SWAPFILE_BLKS(filename, 10);
 	int fi_contiguous = file_is_contiguous(filename);
 	long fs_type = tst_fs_type(filename);
 	const char *fstype = tst_fs_type_name(fs_type);
