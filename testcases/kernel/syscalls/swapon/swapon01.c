@@ -38,7 +38,7 @@ static void verify_swapon(void)
 static void setup(void)
 {
 	is_swap_supported(SWAP_FILE);
-	MAKE_SWAPFILE_BLKS(SWAP_FILE, 10);
+	MAKE_SWAPFILE_SIZE(SWAP_FILE, 128);
 
 	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 	SAFE_CG_PRINTF(tst_cg, "memory.max", "%lu", TESTMEM);
