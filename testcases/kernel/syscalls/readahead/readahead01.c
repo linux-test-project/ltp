@@ -61,7 +61,7 @@ static void test_invalid_fd(struct tst_fd *fd)
 	int exp_errnos[] = {EBADF, EINVAL, ESPIPE};
 
 	TST_EXP_FAIL_ARR(readahead(fd->fd, 0, getpagesize()), exp_errnos,
-			"readahead() on %s", tst_fd_desc(fd));
+			ARRAY_SIZE(exp_errnos), "readahead() on %s", tst_fd_desc(fd));
 }
 
 static void test_readahead(void)

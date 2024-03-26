@@ -242,9 +242,9 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
                                   ##__VA_ARGS__);                              \
 	} while (0)
 
-#define TST_EXP_FAIL_ARR(SCALL, EXP_ERRS, ...)                                 \
+#define TST_EXP_FAIL_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)                   \
 		TST_EXP_FAIL_ARR_(SCALL, #SCALL, EXP_ERRS,                     \
-				  ARRAY_SIZE(EXP_ERRS), ##__VA_ARGS__);
+				  EXP_ERRS_CNT, ##__VA_ARGS__);
 
 #define TST_EXP_FAIL2_ARR_(SCALL, SSCALL, EXP_ERRS, EXP_ERRS_CNT, ...)         \
 	do {                                                                   \
@@ -254,9 +254,9 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 			TST_MSG_(TPASS | TTERRNO, " ", SSCALL, ##__VA_ARGS__); \
 	} while (0)
 
-#define TST_EXP_FAIL2_ARR(SCALL, EXP_ERRS, ...)                                \
+#define TST_EXP_FAIL2_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)                \
 		TST_EXP_FAIL2_ARR_(SCALL, #SCALL, EXP_ERRS,                    \
-		                  ARRAY_SIZE(EXP_ERRS), ##__VA_ARGS__);
+		                  EXP_ERRS_CNT, ##__VA_ARGS__);
 
 #define TST_EXP_FAIL2(SCALL, EXP_ERR, ...)                                     \
 	do {                                                                   \

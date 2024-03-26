@@ -39,9 +39,9 @@ static void do_test(void)
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
 	TST_EXP_FAIL(inval_ret_fn(), ENOTTY, "inval_ret_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL_ARR(fail_fn(), exp_errs_pass, "fail_fn()");
+	TST_EXP_FAIL_ARR(fail_fn(), exp_errs_pass, ARRAY_SIZE(exp_errs_pass), "fail_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL_ARR(fail_fn(), exp_errs_fail, "fail_fn()");
+	TST_EXP_FAIL_ARR(fail_fn(), exp_errs_fail, ARRAY_SIZE(exp_errs_fail), "fail_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
 
 	tst_res(TINFO, "Testing TST_EXP_FAIL2 macro");
@@ -53,9 +53,9 @@ static void do_test(void)
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
 	TST_EXP_FAIL2(inval_ret_fn(), ENOTTY, "inval_ret_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2_ARR(fail_fn(), exp_errs_pass, "fail_fn()");
+	TST_EXP_FAIL2_ARR(fail_fn(), exp_errs_pass, ARRAY_SIZE(exp_errs_pass), "fail_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2_ARR(fail_fn(), exp_errs_fail, "fail_fn()");
+	TST_EXP_FAIL2_ARR(fail_fn(), exp_errs_fail, ARRAY_SIZE(exp_errs_fail), "fail_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
 }
 

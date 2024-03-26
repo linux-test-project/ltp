@@ -54,7 +54,7 @@ static void check_splice(struct tst_fd *fd_in, struct tst_fd *fd_out)
 	const int exp_errnos[] = {EBADF, EINVAL};
 
 	TST_EXP_FAIL2_ARR(splice(fd_in->fd, NULL, fd_out->fd, NULL, 1, 0),
-		exp_errnos, "splice() on %s -> %s",
+		exp_errnos, ARRAY_SIZE(exp_errnos), "splice() on %s -> %s",
 		tst_fd_desc(fd_in), tst_fd_desc(fd_out));
 }
 
