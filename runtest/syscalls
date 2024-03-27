@@ -1653,6 +1653,7 @@ unlink01 symlink01 -T unlink01
 unlink05 unlink05
 unlink07 unlink07
 unlink08 unlink08
+unlink09 unlink09
 
 #unlinkat test cases
 unlinkat01 unlinkat01
