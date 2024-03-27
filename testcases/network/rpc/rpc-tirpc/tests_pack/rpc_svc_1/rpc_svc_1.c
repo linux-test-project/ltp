@@ -103,10 +103,10 @@ char *simplePing(union u_argument *inVar, SVCXPRT * transp)
 char *svc_getcaller_test(union u_argument *inVar, SVCXPRT * transp)
 {
 	//In this function we test svc_getcaller function basically (simple call)
-	struct sockaddr_in *sa = NULL;
+	struct sockaddr *sa = NULL;
 	static int result;
 
-	sa = svc_getcaller(transp);
+	sa = (struct sockaddr *) svc_getcaller(transp);
 	//If the result is not NULL we consider that function call succeeds
 	//so returns 0 (PASS)
 	result = (sa != NULL) ? 0 : 1;
