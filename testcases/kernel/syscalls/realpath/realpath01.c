@@ -24,16 +24,7 @@ static void setup(void)
 
 static void run(void)
 {
-	TESTPTR(realpath(".", NULL));
-
-	if (TST_ERR != ENOENT) {
-		tst_res(TFAIL | TTERRNO, "returned unexpected errno");
-	} else	if (TST_RET_PTR != NULL) {
-		tst_res(TFAIL, "syscall didn't return NULL: '%s'",
-				(char *)TST_RET_PTR);
-	} else {
-		tst_res(TPASS, "bug not reproduced");
-	}
+	TST_EXP_FAIL_PTR_NULL(realpath(".", NULL), ENOENT);
 }
 
 static struct tst_test test = {
