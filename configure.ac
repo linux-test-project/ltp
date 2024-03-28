@@ -221,7 +221,8 @@ AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
 ])
 
 AC_CHECK_TYPES([struct __kernel_old_timeval, struct __kernel_old_timespec, struct __kernel_timespec,
-                struct __kernel_old_itimerspec, struct __kernel_itimerspec],,,[#include <sys/socket.h>])
+                struct __kernel_old_itimerspec, struct __kernel_itimerspec,
+                struct __kernel_old_itimerval],,,[#include <sys/socket.h>])
 
 AC_CHECK_TYPES([struct futex_waitv],,,[#include <linux/futex.h>])
 AC_CHECK_TYPES([struct mount_attr],,,[

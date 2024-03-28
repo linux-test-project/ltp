@@ -19,13 +19,9 @@
 #include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "tst_timer.h"
 
-static struct itimerval *value, *ovalue;
-
-static int sys_setitimer(int which, void *new_value, void *old_value)
-{
-	return tst_syscall(__NR_setitimer, which, new_value, old_value);
-}
+static struct __kernel_old_itimerval *value, *ovalue;
 
 static void verify_setitimer(unsigned int i)
 {
@@ -55,8 +51,8 @@ static struct tst_test test = {
 	.test = verify_setitimer,
 	.setup = setup,
 	.bufs = (struct tst_buffers[]) {
-		{&value,  .size = sizeof(struct itimerval)},
-		{&ovalue, .size = sizeof(struct itimerval)},
+		{&value,  .size = sizeof(struct __kernel_old_itimerval)},
+		{&ovalue, .size = sizeof(struct __kernel_old_itimerval)},
 		{}
 	}
 };

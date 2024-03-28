@@ -20,9 +20,10 @@
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 #include "tst_safe_clocks.h"
+#include "tst_timer.h"
 
 static struct timeval tv;
-static struct itimerval *value, *ovalue;
+static struct __kernel_old_itimerval *value, *ovalue;
 static volatile unsigned long sigcnt;
 static long time_step;
 static long time_sec;
@@ -37,11 +38,6 @@ static struct tcase {
 	{ITIMER_VIRTUAL, "ITIMER_VIRTUAL", SIGVTALRM},
 	{ITIMER_PROF,    "ITIMER_PROF",    SIGPROF},
 };
-
-static int sys_setitimer(int which, void *new_value, void *old_value)
-{
-	return tst_syscall(__NR_setitimer, which, new_value, old_value);
-}
 
 static void sig_routine(int signo LTP_ATTRIBUTE_UNUSED)
 {
