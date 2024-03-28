@@ -1,10 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2021-2024
  */
 
 /*
- * Test TST_EXP_FAIL and TST_EXP_FAIL2 macro.
+ * Test macros:
+ *
+ * - TST_EXP_FAIL
+ * - TST_EXP_FAIL_ARR
+ * - TST_EXP_FAIL2
+ * - TST_EXP_FAIL2_ARR
  */
 
 #include "tst_test.h"
@@ -25,38 +31,30 @@ static int inval_ret_fn(void)
 	return 42;
 }
 
+#define TEST_MACRO(macro, macro_arr, fail_fn, pass_fn, inval_fn) \
+	do { \
+		tst_res(TINFO, "Testing " #macro " macro"); \
+		macro(fail_fn(), EINVAL, #fail_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(fail_fn(), ENOTTY); /* skip msg parameter */ \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(pass_fn(), ENOTTY, #pass_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(inval_fn(), ENOTTY, #inval_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro_arr(fail_fn(), exp_errs_pass, ARRAY_SIZE(exp_errs_pass), #fail_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro_arr(fail_fn(), exp_errs_fail, ARRAY_SIZE(exp_errs_fail)); /* skip msg parameter */ \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+	} while (0)
+
 static void do_test(void)
 {
 	const int exp_errs_pass[] = {ENOTTY, EINVAL};
 	const int exp_errs_fail[] = {ENOTTY, EISDIR};
 
-	tst_res(TINFO, "Testing TST_EXP_FAIL macro");
-	TST_EXP_FAIL(fail_fn(), EINVAL, "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL(fail_fn(), ENOTTY, "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL(pass_fn(), ENOTTY, "pass_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL(inval_ret_fn(), ENOTTY, "inval_ret_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL_ARR(fail_fn(), exp_errs_pass, ARRAY_SIZE(exp_errs_pass), "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL_ARR(fail_fn(), exp_errs_fail, ARRAY_SIZE(exp_errs_fail), "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-
-	tst_res(TINFO, "Testing TST_EXP_FAIL2 macro");
-	TST_EXP_FAIL2(fail_fn(), EINVAL, "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2(fail_fn(), ENOTTY, "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2(pass_fn(), ENOTTY, "pass_fn");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2(inval_ret_fn(), ENOTTY, "inval_ret_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2_ARR(fail_fn(), exp_errs_pass, ARRAY_SIZE(exp_errs_pass), "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_FAIL2_ARR(fail_fn(), exp_errs_fail, ARRAY_SIZE(exp_errs_fail), "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
+	TEST_MACRO(TST_EXP_FAIL, TST_EXP_FAIL_ARR, fail_fn, pass_fn, inval_ret_fn);
+	TEST_MACRO(TST_EXP_FAIL2, TST_EXP_FAIL2_ARR, fail_fn, pass_fn, inval_ret_fn);
 }
 
 static struct tst_test test = {
