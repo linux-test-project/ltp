@@ -227,6 +227,41 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 		}                                                              \
 	} while (0)
 
+#define TST_EXP_FAIL_SILENT_PTR_(SCALL, SSCALL, FAIL_PTR_VAL,                  \
+	ERRNOS, ERRNOS_CNT, ...)                                               \
+	do {                                                                   \
+		TESTPTR(SCALL);                                                \
+		                                                               \
+		TST_PASS = 0;                                                  \
+		                                                               \
+		if (TST_RET_PTR != FAIL_PTR_VAL) {                             \
+			TST_MSG_(TFAIL, " succeeded", SSCALL, ##__VA_ARGS__);  \
+		        break;                                                 \
+		}                                                              \
+		                                                               \
+		if (!tst_errno_in_set(TST_ERR, ERRNOS, ERRNOS_CNT)) {          \
+			char tst_str_buf__[ERRNOS_CNT * 20];                   \
+			TST_MSGP_(TFAIL | TTERRNO, " expected %s",             \
+				  tst_errno_names(tst_str_buf__,               \
+						  ERRNOS, ERRNOS_CNT),         \
+				  SSCALL, ##__VA_ARGS__);                      \
+			break;                                                 \
+		}                                                              \
+                                                                               \
+		TST_PASS = 1;                                                  \
+                                                                               \
+	} while (0)
+
+#define TST_EXP_FAIL_PTR_(SCALL, SSCALL, FAIL_PTR_VAL,                         \
+	ERRNOS, ERRNOS_CNT, ...)                                               \
+	do {                                                                   \
+		TST_EXP_FAIL_SILENT_PTR_(SCALL, SSCALL, FAIL_PTR_VAL,          \
+	        ERRNOS, ERRNOS_CNT, ##__VA_ARGS__);                            \
+		if (TST_PASS)                                                  \
+			TST_MSG_(TPASS | TTERRNO, " ", SSCALL, ##__VA_ARGS__); \
+	} while (0)
+
+
 #define TST_EXP_FAIL_ARR_(SCALL, SSCALL, EXP_ERRS, EXP_ERRS_CNT, ...)          \
 	do {                                                                   \
 		TST_EXP_FAIL_SILENT_(TST_RET == 0, SCALL, SSCALL,              \
@@ -257,6 +292,32 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 #define TST_EXP_FAIL2_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)                \
 		TST_EXP_FAIL2_ARR_(SCALL, #SCALL, EXP_ERRS,                    \
 		                  EXP_ERRS_CNT, ##__VA_ARGS__);
+
+#define TST_EXP_FAIL_PTR_NULL(SCALL, EXP_ERR, ...)                          \
+	do {                                                                   \
+		int tst_exp_err__ = EXP_ERR;                                   \
+		TST_EXP_FAIL_PTR_(SCALL, #SCALL, NULL,                         \
+			&tst_exp_err__, 1, ##__VA_ARGS__);                     \
+	} while (0)
+
+#define TST_EXP_FAIL_PTR_NULL_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)      \
+	do {                                                                   \
+		TST_EXP_FAIL_PTR_(SCALL, #SCALL, NULL,                         \
+			EXP_ERRS, EXP_ERRS_CNT, ##__VA_ARGS__);        \
+	} while (0)
+
+#define TST_EXP_FAIL_PTR_VOID(SCALL, EXP_ERR, ...)                         \
+	do {                                                                   \
+		int tst_exp_err__ = EXP_ERR;                                   \
+		TST_EXP_FAIL_PTR_(SCALL, #SCALL, (void *)-1,                   \
+			&tst_exp_err__, 1, ##__VA_ARGS__);                     \
+	} while (0)
+
+#define TST_EXP_FAIL_PTR_VOID_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)      \
+	do {                                                                   \
+		TST_EXP_FAIL_PTR_(SCALL, #SCALL, (void *)-1,                   \
+			EXP_ERRS, EXP_ERRS_CNT, ##__VA_ARGS__);        \
+	} while (0)
 
 #define TST_EXP_FAIL2(SCALL, EXP_ERR, ...)                                     \
 	do {                                                                   \

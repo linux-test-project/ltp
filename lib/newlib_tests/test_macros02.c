@@ -11,6 +11,10 @@
  * - TST_EXP_FAIL_ARR
  * - TST_EXP_FAIL2
  * - TST_EXP_FAIL2_ARR
+ * - TST_EXP_FAIL_PTR_NULL
+ * - TST_EXP_FAIL_PTR_NULL_ARR
+ * - TST_EXP_FAIL_PTR_VOID
+ * - TST_EXP_FAIL_PTR_VOID_ARR
  */
 
 #include "tst_test.h"
@@ -29,6 +33,28 @@ static int pass_fn(void)
 static int inval_ret_fn(void)
 {
 	return 42;
+}
+
+static char *fail_fn_null(void)
+{
+	errno = EINVAL;
+	return NULL;
+}
+
+static char *fail_fn_void(void)
+{
+	errno = EINVAL;
+	return (void *)-1;
+}
+
+static char *inval_ret_fn_char(void)
+{
+	return (void *)-1;
+}
+
+static char *pass_fn_char(void)
+{
+	return "pass";
 }
 
 #define TEST_MACRO(macro, macro_arr, fail_fn, pass_fn, inval_fn) \
@@ -55,6 +81,10 @@ static void do_test(void)
 
 	TEST_MACRO(TST_EXP_FAIL, TST_EXP_FAIL_ARR, fail_fn, pass_fn, inval_ret_fn);
 	TEST_MACRO(TST_EXP_FAIL2, TST_EXP_FAIL2_ARR, fail_fn, pass_fn, inval_ret_fn);
+	TEST_MACRO(TST_EXP_FAIL_PTR_NULL, TST_EXP_FAIL_PTR_NULL_ARR, fail_fn_null,
+			   pass_fn_char, inval_ret_fn_char);
+	TEST_MACRO(TST_EXP_FAIL_PTR_VOID, TST_EXP_FAIL_PTR_VOID_ARR, fail_fn_void,
+			   pass_fn_char, inval_ret_fn_char);
 }
 
 static struct tst_test test = {
