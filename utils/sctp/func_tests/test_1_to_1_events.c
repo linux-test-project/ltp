@@ -96,6 +96,7 @@ main(void)
 	/* Create the client socket.  */
 	clt_sk = test_socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
 
+	memset(&event, 0, sizeof(struct sctp_event_subscribe));
 	event.sctp_data_io_event = 1;
 	event.sctp_association_event = 1;
 	event.sctp_shutdown_event = 1;
