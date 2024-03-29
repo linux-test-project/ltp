@@ -82,11 +82,11 @@ netns_setup()
 	if [ "$TST_IPV6" ]; then
 		IFCONF_IN6_ARG="inet6 add"
 		NETMASK=64
+		tping="ping -6"
 	else
 		NETMASK=24
+		tping=ping
 	fi
-
-	tping=ping$TST_IPV6
 
 	netns_set_ip
 
