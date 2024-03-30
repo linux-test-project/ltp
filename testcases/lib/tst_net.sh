@@ -928,7 +928,10 @@ tst_ping()
 		c) ping_count="$OPTARG";;
 		s) msg_sizes="$OPTARG";;
 		p) pattern_opt="-p $OPTARG";;
-		I) src_iface="$OPTARG";;
+		I) src_iface="$OPTARG"
+		   tst_ping_opt_unsupported -I $OPTARG && \
+			   tst_brk_ TCONF "unsupported ping version (ping from inetutils?)"
+		   ;;
 		H) dst_addr="$OPTARG";;
 		*) tst_brk_ TBROK "tst_ping: unknown option: $OPTARG";;
 		esac
