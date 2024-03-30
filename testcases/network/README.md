@@ -88,6 +88,13 @@ Tests which use `tst_netload_compare()` test also performance. They can fail on
 overloaded SUT.  To ignore performance failure and test only the network functionality,
 set `LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1` environment variable.
 
+## Dependencies
+
+Some network tests which use `tst_ping()` function require `ping` with `-I` support,
+which is not supported by `ping` from [inetutils](https://www.gnu.org/software/inetutils/).
+Use `ping` from [iputils](https://github.com/iputils/iputils/) or from [BusyBox](https://busybox.net/)
+(configured with `CONFIG_FEATURE_IPV6=y` `CONFIG_FEATURE_FANCY_PING=y`).
+
 ## Debugging
 Both single and two host configurations support debugging via
 `TST_NET_RHOST_RUN_DEBUG=1` environment variable.
