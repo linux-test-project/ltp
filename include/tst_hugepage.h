@@ -24,6 +24,8 @@ enum tst_hp_policy {
 	TST_NEEDS,
 };
 
+#define TST_NO_HUGEPAGES ((unsigned long)-1)
+
 struct tst_hugepage {
 	const unsigned long number;
 	enum  tst_hp_policy policy;
