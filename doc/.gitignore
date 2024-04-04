@@ -1,0 +1,4 @@
+html/
+build/
+_static/syscalls.rst
+syscalls.tbl

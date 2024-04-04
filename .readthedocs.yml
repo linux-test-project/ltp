@@ -1,0 +1,18 @@
+version: 2
+
+build:
+  os: "ubuntu-22.04"
+  tools:
+    python: "3.6"
+  apt_packages:
+    - enchant-2
+    - hunspell-en-us
+
+# Build from the doc/ directory with Sphinx
+sphinx:
+  configuration: doc/conf.py
+
+# Explicitly set the version of Python and its requirements
+python:
+  install:
+    - requirements: doc/requirements.txt

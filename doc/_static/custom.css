@@ -1,0 +1,4 @@
+/* set multiline tables cells */
+.wy-table-responsive table td {
+    white-space: normal;
+}
