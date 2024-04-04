@@ -57,7 +57,7 @@ static void child_fn(void)
 
 int main(int argc, char *argv[])
 {
-	struct tst_clone_args args = { 0, SIGCHLD };
+	struct tst_clone_args args = { .exit_signal = SIGCHLD };
 	char *token;
 	int pid;
 

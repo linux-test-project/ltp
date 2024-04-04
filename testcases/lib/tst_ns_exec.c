@@ -67,7 +67,7 @@ static void close_ns_fd(void)
 
 int main(int argc, char *argv[])
 {
-	struct tst_clone_args args = { 0, SIGCHLD };
+	struct tst_clone_args args = { .exit_signal = SIGCHLD };
 	int i, status, pid;
 	char *token;
 
