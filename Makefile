@@ -38,7 +38,6 @@ export UCLINUX
 # We're not using uclinux based targets (default).
 ifneq ($(UCLINUX),1)
 COMMON_TARGETS		:= pan utils
-INSTALL_TARGETS		:= doc
 endif
 
 define target_to_dir_dep_mapping
