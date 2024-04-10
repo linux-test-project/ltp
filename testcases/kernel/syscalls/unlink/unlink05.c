@@ -16,17 +16,6 @@
 #include <stdio.h>
 #include "tst_test.h"
 
-static void file_create(char *);
-static void fifo_create(char *);
-
-static struct test_case_t {
-	void (*setupfunc)(char *);
-	char *desc;
-} tcases[] = {
-	{file_create, "file"},
-	{fifo_create, "fifo"},
-};
-
 static void file_create(char *name)
 {
 	sprintf(name, "tfile_%d", getpid());
@@ -38,6 +27,14 @@ static void fifo_create(char *name)
 	sprintf(name, "tfifo_%d", getpid());
 	SAFE_MKFIFO(name, 0777);
 }
+
+static struct test_case_t {
+	void (*setupfunc)(char *name);
+	char *desc;
+} tcases[] = {
+	{file_create, "file"},
+	{fifo_create, "fifo"},
+};
 
 static void verify_unlink(unsigned int n)
 {
