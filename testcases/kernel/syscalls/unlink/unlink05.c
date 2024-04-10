@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2006-2024
  */
 
-/*
- * Description:
- * The testcase checks the basic functionality of the unlink(2).
- * 1) unlink() can delete regular file successfully.
- * 2) unlink() can delete fifo file successfully.
+/*\
+ * [Description]
+ *
+ * Check the basic functionality of the unlink(2):
+ *
+ * - unlink(2) can delete regular file successfully.
+ * - unlink(2) can delete fifo file successfully.
  */
 
 #include <errno.h>
