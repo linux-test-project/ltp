@@ -33,8 +33,6 @@ print_dhcp_version()
 	dnsmasq --version | head -2
 }
 
-. dhcp_lib.sh
-
 lease_dir="/var/lib/misc"
 tst_selinux_enforced && lease_dir="/var/lib/dnsmasq"
 
@@ -47,4 +45,5 @@ common_opt="--no-hosts --no-resolv --dhcp-authoritative \
 	--log-facility=$log --interface=$iface0 \
 	--dhcp-leasefile=$lease_file --port=0 --conf-file= "
 
+. dhcp_lib.sh
 tst_run
