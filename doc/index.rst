@@ -27,6 +27,7 @@
    developers/ltp_library
    developers/build_system
    developers/debugging
+   developers/documentation
 
 .. toctree::
    :maxdepth: 3
@@ -87,6 +88,9 @@ For developers
 
 :doc:`developers/debugging`
    How to debug LTP tests
+
+:doc:`developers/documentation`
+   How to use and develop LTP documentation
 
 For maintainers
 ---------------
