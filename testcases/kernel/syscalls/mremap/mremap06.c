@@ -104,8 +104,13 @@ static void setup(void)
 	fd = SAFE_OPEN("testfile", O_CREAT | O_RDWR | O_TRUNC, 0600);
 
 	ret = fallocate(fd, 0, 0, mmap_size);
-	if (ret == -1)
+	if (ret != 0) {
+		if (tst_fs_type(".") == TST_NFS_MAGIC && (errno == EOPNOTSUPP ||
+							  errno == ENOSYS)) {
+			tst_brk(TCONF, "fallocate system call is not implemented");
+		}
 		tst_brk(TBROK, "fallocate() failed");
+	}
 
 	buf = SAFE_MMAP(0, mmap_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
