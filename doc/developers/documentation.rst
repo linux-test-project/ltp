@@ -47,3 +47,11 @@ To check documentation words spelling, we provide support for
 documentation can be tested via ``make spelling`` command. Output will be
 visible in the ``doc/build`` folder and, if any error will be found, a warning
 message will be shown.
+
+C API documentation
+~~~~~~~~~~~~~~~~~~~
+
+The C API documentation is generated from headers using
+`kernel-doc <https://return42.github.io/linuxdoc/linuxdoc-howto/kernel-doc-syntax.html>`_
+syntax which is supported by Sphinx via
+`linuxdoc <https://pypi.org/project/linuxdoc/>`_ extension.
