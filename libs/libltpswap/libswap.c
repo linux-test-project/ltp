@@ -133,7 +133,7 @@ out:
 	return contiguous;
 }
 
-int make_swapfile_(const char *file, const int lineno,
+int make_swapfile(const char *file, const int lineno,
 			const char *swapfile, unsigned int num,
 			int safe, enum swapfile_method method)
 {
