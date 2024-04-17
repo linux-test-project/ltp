@@ -11,7 +11,7 @@ and it's built on top of `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
 Building documentation
 ~~~~~~~~~~~~~~~~~~~~~~
 
-First of all, to build the documentation we must be sure that all dependences
+First of all, to build the documentation we must be sure that all dependencies
 have been installed (please check ``doc/requirements.txt`` file). Sometimes the
 Linux distros are providing them, but the best way is to use ``virtualenv``
 command as following:
@@ -36,7 +36,7 @@ Once the procedure has been completed, documentation will be visible at
 .. warning::
 
     The current ``.readthedocs.yml`` workflow is using ``Python 3.6`` because
-    other Python versions were causing issues. No other version has been tested,
+    older Python versions were causing issues. No other version has been tested,
     but it should work anyway.
 
 Validating spelling
