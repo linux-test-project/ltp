@@ -149,18 +149,18 @@ int make_swapfile(const char *file, const int lineno,
 	blk_size = fs_info.f_bsize;
 
 	if (method == SWAPFILE_BY_SIZE) {
-		tst_res(TINFO, "create a swapfile size of %u megabytes (MB)", num);
+		tst_res_(file, lineno, TINFO, "create a swapfile size of %u megabytes (MB)", num);
 		blocks = num * 1024 * 1024 / blk_size;
 	} else if (method == SWAPFILE_BY_BLKS) {
 		blocks = num;
-		tst_res(TINFO, "create a swapfile with %u block numbers", blocks);
+		tst_res_(file, lineno, TINFO, "create a swapfile with %u block numbers", blocks);
 	} else {
 		tst_brk_(file, lineno, TBROK, "Invalid method, please see include/libswap.h");
 	}
 
 	/* To guarantee at least one page can be swapped out */
 	if (blk_size * blocks < pg_size) {
-		tst_res(TWARN, "Swapfile size is less than the system page size. "
+		tst_res_(file, lineno, TWARN, "Swapfile size is less than the system page size. "
 			"Using page size (%lu bytes) instead of block size (%lu bytes).",
 			(unsigned long)pg_size, blk_size);
 		blk_size = pg_size;
