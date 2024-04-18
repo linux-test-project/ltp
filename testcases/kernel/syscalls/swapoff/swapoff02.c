@@ -87,9 +87,7 @@ static void setup(void)
 	nobody_uid = nobody->pw_uid;
 
 	is_swap_supported(TEST_FILE);
-
-	if (SAFE_MAKE_SWAPFILE_BLKS(SWAP_FILE, 10))
-		tst_brk(TBROK, "Failed to create file for swap");
+	SAFE_MAKE_SWAPFILE_BLKS(SWAP_FILE, 10);
 }
 
 static struct tst_test test = {

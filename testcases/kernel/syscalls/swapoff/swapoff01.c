@@ -43,9 +43,7 @@ static void verify_swapoff(void)
 static void setup(void)
 {
 	is_swap_supported(TEST_FILE);
-
-	if (SAFE_MAKE_SWAPFILE_BLKS(SWAP_FILE, 65536))
-		tst_brk(TBROK, "Failed to create file for swap");
+	SAFE_MAKE_SWAPFILE_BLKS(SWAP_FILE, 65536);
 }
 
 static struct tst_test test = {
