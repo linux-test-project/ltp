@@ -87,7 +87,7 @@ static void setup(void)
 	nobody_uid = nobody->pw_uid;
 
 	is_swap_supported(TEST_FILE);
-	SAFE_MAKE_SWAPFILE_BLKS(SWAP_FILE, 10);
+	SAFE_MAKE_SMALL_SWAPFILE(SWAP_FILE);
 }
 
 static struct tst_test test = {

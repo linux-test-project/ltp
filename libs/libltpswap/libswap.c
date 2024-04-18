@@ -192,7 +192,7 @@ int make_swapfile(const char *file, const int lineno,
 bool is_swap_supported(const char *filename)
 {
 	int i, sw_support = 0;
-	int ret = SAFE_MAKE_SWAPFILE_BLKS(filename, 10);
+	int ret = SAFE_MAKE_SMALL_SWAPFILE(filename);
 	int fi_contiguous = file_is_contiguous(filename);
 	long fs_type = tst_fs_type(filename);
 	const char *fstype = tst_fs_type_name(fs_type);

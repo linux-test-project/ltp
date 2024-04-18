@@ -49,7 +49,7 @@ static int setup_swap(void)
 
 			/* Create the swapfile */
 			snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
-			MAKE_SWAPFILE_BLKS(filename, 10);
+			MAKE_SMALL_SWAPFILE(filename);
 
 			/* turn on the swap file */
 			TST_EXP_PASS_SILENT(swapon(filename, 0));
@@ -62,7 +62,7 @@ static int setup_swap(void)
 		tst_brk(TFAIL, "Failed to setup swap files");
 
 	tst_res(TINFO, "Successfully created %d swap files", swapfiles);
-	MAKE_SWAPFILE_BLKS(TEST_FILE, 10);
+	MAKE_SMALL_SWAPFILE(TEST_FILE);
 
 	return 0;
 }
