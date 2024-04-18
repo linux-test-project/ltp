@@ -23,6 +23,24 @@ int make_swapfile(const char *file, const int lineno,
 			const char *swapfile, unsigned int num,
 			int safe, enum swapfile_method method);
 
+/** 65536 bytes is minimum for 64kb page size, let's use 1 MB */
+#define MINIMAL_SWAP_SIZE_MB 1
+
+/**
+ * Macro to create minimal swapfile.
+ */
+#define MAKE_SMALL_SWAPFILE(swapfile) \
+    make_swapfile(__FILE__, __LINE__, swapfile, MINIMAL_SWAP_SIZE_MB, 0, \
+		  SWAPFILE_BY_SIZE)
+
+/**
+ * Macro to create minimal swapfile.
+ * Includes safety checks to handle potential errors.
+ */
+#define SAFE_MAKE_SMALL_SWAPFILE(swapfile) \
+    make_swapfile(__FILE__, __LINE__, swapfile, MINIMAL_SWAP_SIZE_MB, 1, \
+		  SWAPFILE_BY_SIZE)
+
 /**
  * Macro to create swapfile size in megabytes (MB).
  */
