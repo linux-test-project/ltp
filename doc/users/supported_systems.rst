@@ -44,6 +44,8 @@ Oldest tested distributions
       - 2.17
       - \-
 
+For a full list of tested distros, please check :master:`.github/workflows/ci.yml`.
+
 Older distributions are not officially supported, which means that it
 may or may not work. It all depends on your luck. It should be possible
 to compile latest LTP even on slightly older distributions than we
@@ -99,10 +101,10 @@ Supported C libraries
       - Older uClibc might have problems.
 
     * - `musl <https://musl.libc.org/>`_
-      - Not yet fully supported. Check ``ci/alpine.sh`` script.
+      - Not yet fully supported. Check :master:`ci/alpine.sh` script.
 
     * - Android
-      - Please use `AOSP fork <https://android.googlesource.com/platform/external/ltp>`_
+      - Please use `AOSP fork <https://android.googlesource.com/platform/external/ltp>`_.
 
 C version
 ---------

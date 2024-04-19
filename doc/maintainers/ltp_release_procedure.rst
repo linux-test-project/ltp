@@ -44,9 +44,9 @@ Tag the git and push changes to github
 
 The string ``YYYYMMDD`` should be substituted to the current date.
 
-You can use `tools/tag-release.sh <https://github.com/linux-test-project/ltp/blob/master/tools/tag-release.sh>`_
-script to have the above automated process.
-It allows you to verify the tag before pushing it and does other checks.
+You can use :master:`tools/tag-release.sh` script to have the above automated
+process. It allows you to verify the tag before pushing it and does other
+checks.
 
 .. code-block:: bash
 
@@ -121,9 +121,9 @@ metadata documentation:
     make -C metadata
     cp -v docparse/metadata.html ../metadata.YYYYMMDD.html
 
-You can use `tools/create-tarballs-metadata.sh <https://github.com/linux-test-project/ltp/blob/master/tools/create-tarballs-metadata.sh>`_
-script to have the above procedure automated. All generated files are placed
-in the ``ltp-release-YYYYMMDD`` directory.
+You can use :master:`tools/create-tarballs-metadata.sh` script to have the above
+procedure automated. All generated files are placed in the
+``ltp-release-YYYYMMDD`` directory.
 
 .. code-block:: bash
 
@@ -149,10 +149,8 @@ in the ``ltp-release-YYYYMMDD`` directory.
 Upload the generated files to GitHub
 ------------------------------------
 
-Click on `Releases <https://github.com/linux-test-project/ltp/releases>`_, then
-switch to `Tags <https://github.com/linux-test-project/ltp/tags>`_. Click on
-'Add release notes'.  There should be 'Attach binaries ...' link at the
-bottom of the page.
+Go to :repo:`tags`. Click on ``Add release notes``.
+There should be ``Attach binaries ...`` link at the bottom of the page.
 
 Don't forget to upload checksums for the tarballs and metadata documentation
 as well.

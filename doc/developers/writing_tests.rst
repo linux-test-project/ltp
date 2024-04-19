@@ -343,11 +343,11 @@ of the stable kernel ABI, the associated test must be moved out of staging.
 Testing builds with GitHub Actions
 ----------------------------------
 
-Master branch is tested in `GitHub Actions <https://github.com/linux-test-project/ltp/actions>`_
+Master branch is tested in GitHub :repo:`actions`
 to ensure LTP builds in various distributions, including old, current and
 bleeding edge. ``gcc`` and ``clang`` toolchains are also tested for various
 architectures using cross-compilation. For a full list of tested distros, please
-check ``.github/workflows/ci.yml``.
+check :repo:`.github/workflows/ci.yml`.
 
 .. note::
 

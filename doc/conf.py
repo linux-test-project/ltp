@@ -22,10 +22,15 @@ release = '1.0'
 
 extensions = [
     'linuxdoc.rstKernelDoc',
-    'sphinxcontrib.spelling'
+    'sphinxcontrib.spelling',
+    'sphinx.ext.extlinks'
 ]
 
 exclude_patterns = ["html*", '_static*']
+extlinks = {
+    'repo': ('https://github.com/linux-test-project/ltp/%s', '%s'),
+    'master': ('https://github.com/linux-test-project/ltp/blob/master/%s', '%s')
+}
 
 spelling_lang = "en_US"
 spelling_warning = True

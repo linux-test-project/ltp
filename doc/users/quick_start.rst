@@ -24,7 +24,7 @@ Basics requirements to build LTP are the following:
 
 .. note::
 
-   For optional library dependencies, take a look at the scripts inside ``ci/``
+   For optional library dependencies, take a look at the scripts inside :master:`ci/`
    directory.
 
 Running single tests
