@@ -473,6 +473,7 @@ gethostbyname_r01 gethostbyname_r01
 gethostid01 gethostid01
 
 gethostname01 gethostname01
+gethostname02 gethostname02
 
 getitimer01 getitimer01
 getitimer02 getitimer02
