@@ -627,9 +627,7 @@ again on the hard-link, then ``stat`` the file".
 
 Because we are now opening a file, we need a ``cleanup`` function to close the
 file descriptors. We have to manually close the files to ensure the temporary
-directory is deleted by the test harness (see the
-https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines[test
-writing guidelines] for details).
+directory is deleted by the test harness (see :doc:`writing_tests` for details).
 
 As a matter of good practice, the file descriptors are closed in reverse
 order. In some circumstances the order which ``cleanup`` is performed is
