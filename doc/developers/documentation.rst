@@ -21,10 +21,10 @@ command as following:
     cd doc
 
     # prepare virtual enviroment
-    python -m virtualenv .venv
-    source .venv/bin/activate
+    python3 -m virtualenv .venv
+    . .venv/bin/activate
 
-    pip install sphinx
+    pip install sphinx # usually packaged in distros
     pip install -r requirements.txt
 
     # build documentation
