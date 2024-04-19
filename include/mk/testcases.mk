@@ -44,8 +44,8 @@ LDLIBS		+= -lltp
 
 ifdef LTPLIBS
 
-LTPLIBS_DIRS = $(addprefix $(abs_top_builddir)/libs/lib, $(LTPLIBS))
-LTPLIBS_FILES = $(addsuffix .a, $(addprefix $(abs_top_builddir)/libs/, $(foreach LIB,$(LTPLIBS),lib$(LIB)/lib$(LIB))))
+LTPLIBS_DIRS = $(addprefix $(abs_top_builddir)/libs/, $(LTPLIBS))
+LTPLIBS_FILES = $(addsuffix .a, $(addprefix $(abs_top_builddir)/libs/, $(foreach LIB,$(LTPLIBS),$(LIB)/lib$(LIB))))
 
 MAKE_DEPS += $(LTPLIBS_FILES)
 
@@ -61,7 +61,7 @@ else
 	@$(MAKE) --no-print-directory -C "$(dir $@)" -f "$(subst $(abs_top_builddir),$(abs_top_srcdir),$(dir $@))/Makefile" all
 endif
 
-LDFLAGS += $(addprefix -L$(top_builddir)/libs/lib, $(LTPLIBS))
+LDFLAGS += $(addprefix -L$(top_builddir)/libs/, $(LTPLIBS))
 
 endif
 

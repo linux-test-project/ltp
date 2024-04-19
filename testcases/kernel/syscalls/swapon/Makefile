@@ -3,7 +3,7 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ltpswap
+LTPLIBS = swap
 
 include $(top_srcdir)/include/mk/testcases.mk
 

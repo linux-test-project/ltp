@@ -3,7 +3,7 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ltpvdso
+LTPLIBS = vdso
 
 include $(top_srcdir)/include/mk/testcases.mk
 

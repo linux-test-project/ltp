@@ -3,7 +3,7 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ltpnuma
+LTPLIBS = numa
 ksm06: LTPLDLIBS = -lltpnuma
 
 include $(top_srcdir)/include/mk/testcases.mk

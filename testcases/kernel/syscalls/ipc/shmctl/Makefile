@@ -3,7 +3,7 @@
 
 top_srcdir              ?= ../../../../..
 
-LTPLIBS = ltpnewipc
+LTPLIBS = newipc
 
 shmctl05: CFLAGS += -pthread
 shmctl05: LDLIBS += -lrt

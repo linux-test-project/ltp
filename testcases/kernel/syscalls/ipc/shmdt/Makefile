@@ -3,7 +3,7 @@
 
 top_srcdir              ?= ../../../../..
 
-LTPLIBS = ltpnewipc
+LTPLIBS = newipc
 
 include $(top_srcdir)/include/mk/testcases.mk
 
