@@ -461,7 +461,8 @@ struct tst_ulimit_val {
  * @needs_cgroup_ver: If set the test will run only if the specified cgroup
  *                    version is present on the system.
  *
- * @needs_cgroup_ctrls: List of cgroup controllers the test needs to run.
+ * @needs_cgroup_ctrls: A {} terminated array of cgroup controllers the test
+ *                      needs to run.
  */
 
  struct tst_test {
@@ -548,7 +549,6 @@ struct tst_ulimit_val {
 
 	const enum tst_cg_ver needs_cgroup_ver;
 
-	/* {} terminated array of required CGroup controllers */
 	const char *const *needs_cgroup_ctrls;
 };
 
