@@ -6,7 +6,7 @@ Supported systems
 Kernel version
 --------------
 
-Minimal supported kernel version is **3.10**.
+Minimal supported kernel version is **4.4**.
 
 Oldest tested distributions
 ---------------------------
@@ -37,12 +37,6 @@ Oldest tested distributions
       - 2.31
       - 10.2.1
       - 11.0.1
-
-    * - RHEL-7.9 Maipo
-      - 3.10
-      - 4.8.5
-      - 2.17
-      - \-
 
 For a full list of tested distros, please check :master:`.github/workflows/ci-docker-build.yml`.
 

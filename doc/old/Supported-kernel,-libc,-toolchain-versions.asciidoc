@@ -54,7 +54,7 @@ distribution you may as well reconsider you life choices.
 1.3 Minimal supported kernel version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Minimal supported kernel version is 3.10.
+Minimal supported kernel version is 4.4.
 
 1.4 Supported libc
 ~~~~~~~~~~~~~~~~~~
