@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * 07/2001 Ported by Wayne Boyer
@@ -15,6 +14,7 @@
  * - ENOTSOCK on a file descriptor not linked to a socket
  * - EFAULT on invalid address of value or length
  * - EOPNOTSUPP on invalid option name or protocol
+ * - EINVAL on an invalid optlen
  */
 
 #include "tst_test.h"
@@ -24,6 +24,7 @@ static struct sockaddr_in sin0;
 static int sinlen;
 static int optval;
 static socklen_t optlen;
+static socklen_t optleninval = -1;
 
 static struct test_case {
 	int *sockfd;
@@ -56,7 +57,10 @@ static struct test_case {
 	.optlen = &optlen, .experrno = ENOPROTOOPT, .desc =  "invalid option name (IP)"},
 
 	{.sockfd = &sock_bind, .level = IPPROTO_TCP, .optname = -1, .optval = &optval,
-	.optlen = &optlen, .experrno = ENOPROTOOPT, .desc = "invalid option name (TCP)"}
+	.optlen = &optlen, .experrno = ENOPROTOOPT, .desc = "invalid option name (TCP)"},
+
+	{.sockfd = &sock_bind, .level = SOL_SOCKET, .optname = SO_OOBINLINE, .optval = &optval,
+	.optlen = &optleninval, .experrno = EINVAL, .desc = "invalid optlen"},
 };
 
 
