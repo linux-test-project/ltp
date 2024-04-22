@@ -47,6 +47,7 @@
 #define COE_DELTA       1
 /* will try to alloc 1.3 * phy_mem */
 #define COE_SLIGHT_OVER 0.3
+#define MEM_SIZE 1024 * 1024
 
 static void init_meminfo(void);
 static void do_alloc(int allow_raise);
@@ -101,6 +102,13 @@ static void init_meminfo(void)
 				swap_free_init, mem_over_max);
 }
 
+static void memset_blocks(char *ptr, int mem_count, int sleep_time_ms) {
+	for (int i = 0; i < mem_count / 1024; i++) {
+		memset(ptr + (i * MEM_SIZE), 1, MEM_SIZE);
+		usleep(sleep_time_ms * 1000);
+	}
+}
+
 static void do_alloc(int allow_raise)
 {
 	long mem_count;
@@ -115,7 +123,7 @@ static void do_alloc(int allow_raise)
 	if (allow_raise == 1)
 		tst_res(TINFO, "try to allocate: %ld MB", mem_count / 1024);
 	s = SAFE_MALLOC(mem_count * 1024);
-	memset(s, 1, mem_count * 1024);
+	memset_blocks(s, mem_count, 1);
 
 	if ((allow_raise == 1) && (raise(SIGSTOP) == -1)) {
 		tst_res(TINFO, "memory allocated: %ld MB", mem_count / 1024);
