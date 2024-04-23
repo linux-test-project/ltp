@@ -55,13 +55,13 @@
  * 64 bit: macro taken from kernel from include/linux/fs.h
  * 32 bit: own implementation
  */
-static inline loff_t tst_max_lfs_filesize(void)
+static inline long long tst_max_lfs_filesize(void)
 {
 #ifdef TST_ABI64
-	return (loff_t)LLONG_MAX;
+	return LLONG_MAX;
 #else
         long page_size = getpagesize();
-        loff_t ret = ULONG_MAX;
+        long long ret = ULONG_MAX;
 
         while (page_size >>= 1)
                 ret <<= 1;
