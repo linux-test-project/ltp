@@ -53,6 +53,7 @@ static void test_invalid_fd(struct tst_fd *fd)
 	case TST_FD_MEMFD:
 	case TST_FD_MEMFD_SECRET:
 	case TST_FD_PROC_MAPS:
+	case TST_FD_PIDFD:
 		return;
 	default:
 		break;
