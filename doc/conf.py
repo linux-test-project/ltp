@@ -76,14 +76,31 @@ def generate_syscalls_stats(_):
         'io_uring_register',
         'epoll_pwait2',
         'quotactl_fd',
+        'pread64',
+        'pwrite64',
+        'fadvise64',
+        'getmsg',
+        'getpmsg',
+        'putmsg',
+        'putpmsg',
     ]
 
-    # populate with non-syscalls which are present in the kernel sources
-    # syscalls file
+    # populate with not implemented, reserved, unmaintained syscalls defined
+    # inside the syscalls file
     black_list = [
         'reserved177',
         'reserved193',
-        'rseq'
+        'rseq',
+        '_newselect',
+        '_sysctl',
+        'create_module',
+        'get_kernel_syms',
+        'query_module',
+        'nfsservctl',
+        'afs_syscall',
+        'sysmips',
+        'mq_getsetattr',
+        'vserver',
     ]
 
     # fetch syscalls file
@@ -184,12 +201,12 @@ def generate_syscalls_stats(_):
 
     left = index_tested % 3
     if left > 0:
-        for index in range(0, left + 1):
+        for index in range(0, 3 - left):
             table_tested.append(f'      -\n')
 
     left = index_untest % 3
     if left > 0:
-        for index in range(0, left + 1):
+        for index in range(0, 3 - left):
             table_untest.append(f'      -\n')
 
     text.extend(table_tested)
