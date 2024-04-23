@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2024 FUJITSU LIMITED. All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2024
  * Author: Yang Xu <xuyang2018.jy@fujitsu.com>
  */
 
@@ -13,8 +14,8 @@
  * - EINVAL when flag is invalid
  */
 
-#include <sys/random.h>
 #include "tst_test.h"
+#include "lapi/getrandom.h"
 
 static char buff_efault[64];
 static char buff_einval[64];
