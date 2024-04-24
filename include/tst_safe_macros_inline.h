@@ -8,7 +8,8 @@
 
 /*
  * Following functions are inline because the behaviour may depend on
- * -D_FILE_OFFSET_BITS=64 compile flag.
+ * -D_FILE_OFFSET_BITS=64 compile flag (type off_t or structures containing
+ *  off_t fields), see man off_t(3type).
  *
  * Do not add other functions here.
  */
