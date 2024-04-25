@@ -26,12 +26,8 @@ static void run(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TESTPTR(sbrk(tc->increment));
-
-	if (TST_RET_PTR == (void *) -1)
-		tst_res(TFAIL | TTERRNO, "sbrk(%ld) failed", tc->increment);
-	else
-		tst_res(TPASS, "sbrk(%ld) returned %p", tc->increment, TST_RET_PTR);
+	TST_EXP_PASS_PTR_VOID(sbrk(tc->increment),
+		"sbrk(%ld) returned %p", tc->increment, TST_RET_PTR);
 }
 
 static struct tst_test test = {
