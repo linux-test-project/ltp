@@ -347,7 +347,7 @@ Master branch is tested in GitHub :repo:`actions`
 to ensure LTP builds in various distributions, including old, current and
 bleeding edge. ``gcc`` and ``clang`` toolchains are also tested for various
 architectures using cross-compilation. For a full list of tested distros, please
-check :repo:`.github/workflows/ci.yml`.
+check :master:`.github/workflows/ci.yml`.
 
 .. note::
 
