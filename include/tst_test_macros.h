@@ -178,6 +178,28 @@ extern void *TST_RET_PTR;
                                                                                \
 	} while (0)
 
+#define TST_EXP_PASS_SILENT_PTR_(SCALL, SSCALL, FAIL_PTR_VAL, ...)             \
+	do {                                                                   \
+		TESTPTR(SCALL);                                                \
+		                                                               \
+		TST_PASS = 0;                                                  \
+		                                                               \
+		if (TST_RET_PTR == FAIL_PTR_VAL) {                             \
+			TST_MSG_(TFAIL | TTERRNO, " failed",                   \
+			         SSCALL, ##__VA_ARGS__);                       \
+		        break;                                                 \
+		}                                                              \
+		                                                               \
+		if (TST_RET != 0) {                                            \
+			TST_MSGP_(TFAIL | TTERRNO, " invalid retval %ld",      \
+			          TST_RET, SSCALL, ##__VA_ARGS__);             \
+			break;                                                 \
+		}                                                              \
+                                                                               \
+		TST_PASS = 1;                                                  \
+                                                                               \
+	} while (0)
+
 #define TST_EXP_PASS_SILENT(SCALL, ...) TST_EXP_PASS_SILENT_(SCALL, #SCALL, ##__VA_ARGS__)
 
 #define TST_EXP_PASS(SCALL, ...)                                               \
@@ -187,6 +209,18 @@ extern void *TST_RET_PTR;
 		if (TST_PASS)                                                  \
 			TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);     \
 	} while (0)                                                            \
+
+#define TST_EXP_PASS_PTR_(SCALL, SSCALL, FAIL_PTR_VAL, ...)                    \
+	do {                                                                   \
+		TST_EXP_PASS_SILENT_PTR_(SCALL, SSCALL,                        \
+					FAIL_PTR_VAL, ##__VA_ARGS__);          \
+		                                                               \
+		if (TST_PASS)                                                  \
+			TST_MSG_(TPASS, " passed", #SCALL, ##__VA_ARGS__);     \
+	} while (0)
+
+#define TST_EXP_PASS_PTR_VOID(SCALL, ...)                                      \
+               TST_EXP_PASS_PTR_(SCALL, #SCALL, (void *)-1, ##__VA_ARGS__);
 
 /*
  * Returns true if err is in the exp_err array.
@@ -301,10 +335,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	} while (0)
 
 #define TST_EXP_FAIL_PTR_NULL_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)      \
-	do {                                                                   \
 		TST_EXP_FAIL_PTR_(SCALL, #SCALL, NULL,                         \
-			EXP_ERRS, EXP_ERRS_CNT, ##__VA_ARGS__);        \
-	} while (0)
+			EXP_ERRS, EXP_ERRS_CNT, ##__VA_ARGS__);
 
 #define TST_EXP_FAIL_PTR_VOID(SCALL, EXP_ERR, ...)                         \
 	do {                                                                   \
@@ -314,10 +346,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	} while (0)
 
 #define TST_EXP_FAIL_PTR_VOID_ARR(SCALL, EXP_ERRS, EXP_ERRS_CNT, ...)      \
-	do {                                                                   \
 		TST_EXP_FAIL_PTR_(SCALL, #SCALL, (void *)-1,                   \
-			EXP_ERRS, EXP_ERRS_CNT, ##__VA_ARGS__);        \
-	} while (0)
+			EXP_ERRS, EXP_ERRS_CNT, ##__VA_ARGS__);
 
 #define TST_EXP_FAIL2(SCALL, EXP_ERR, ...)                                     \
 	do {                                                                   \
