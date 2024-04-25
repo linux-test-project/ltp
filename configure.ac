@@ -76,6 +76,7 @@ AC_CHECK_HEADERS_ONCE([ \
     sys/inotify.h \
     sys/pidfd.h
     sys/prctl.h \
+    sys/random.h \
     sys/shm.h \
     sys/timerfd.h \
     sys/ustat.h \

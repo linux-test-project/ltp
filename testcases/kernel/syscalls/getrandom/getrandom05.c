@@ -13,7 +13,11 @@
  * - EINVAL when flag is invalid
  */
 
+#ifdef HAVE_SYS_RANDOM_H
 #include <sys/random.h>
+#else
+#include <sys/syscall.h>
+#endif
 #include "tst_test.h"
 
 static char buff_efault[64];
@@ -30,6 +34,13 @@ static struct test_case_t {
 		"buf address is outside the accessible address space"},
 	{buff_einval, sizeof(buff_einval), -1, EINVAL, "flag is invalid"},
 };
+
+#ifndef HAVE_SYS_RANDOM_H
+ssize_t getrandom(void *buffer, size_t length, unsigned int flags)
+{
+	return syscall(SYS_getrandom, buffer, length, flags);
+}
+#endif
 
 static void verify_getrandom(unsigned int i)
 {
