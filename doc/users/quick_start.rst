@@ -123,4 +123,4 @@ Network tests
 -------------
 
 Network tests usually require a certain setup that is described in
-``testcases/network/README.md``.
+:master:`testcases/network/README.md`.

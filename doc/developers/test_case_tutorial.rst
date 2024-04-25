@@ -56,7 +56,7 @@ test. At the time of writing there is no test for this call which was
 introduced in Linux kernel version 4.11.
 
 Linux system call specific tests are primarily contained in
-``testcases/kernel/syscalls``, but you should also ``git grep`` the entire LTP
+:master:`testcases/kernel/syscalls`, but you should also ``git grep`` the entire LTP
 repository to check for any existing usages of a system call.
 
 One way to find a system call which is not currently tested by the LTP is to
@@ -195,7 +195,7 @@ following line after ``testcases.mk``.
 
     statx01: CFLAGS += -pthread
 
-Assuming you are in the test's subdirectory ``testcases/kernel/syscalls/statx``,
+Assuming you are in the test's subdirectory :master:`testcases/kernel/syscalls/statx`,
 please do:
 
 .. code-block:: bash
@@ -204,10 +204,10 @@ please do:
     ./statx01
 
 This should build the test and then run it. However, even though the test is
-in the ``syscalls`` directory it won't be automatically ran as part of the
-syscalls test group (e.g. ``./runltp -f syscalls``).
-For this we need to add it to the ``runtest`` file. So open
-``runtest/syscalls`` and add the lines starting with a ``+``.
+in :master:`testcases/kernel/syscalls/` directory it won't be automatically ran
+as part of the syscalls test group (e.g. not run via ``kirk -r math`` or
+``./runltp -f syscalls``). For this we need to add it to the runtest file. So
+open :master:`runtest/syscalls` and add the lines starting with a ``+``.
 
 .. code-block::
 
@@ -219,9 +219,9 @@ For this we need to add it to the ``runtest`` file. So open
     stime01 stime01
     stime02 stime02
 
-The ``runtest`` files are in a two column format. The first column is the test
-name, which is mainly used by test runners for reporting and filtering. It is
-just a single string of text with no spaces. The second column, which can
+The :master:`runtest` files are in a two column format. The first column is the
+test name, which is mainly used by test runners for reporting and filtering. It
+is just a single string of text with no spaces. The second column, which can
 contain spaces, is passed to the shell in order to execute the test. Often it
 is just the executable name, but some tests also take arguments (the LTP has a
 library for argument parsing, by the way).

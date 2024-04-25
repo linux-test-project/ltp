@@ -162,7 +162,7 @@ def generate_syscalls_stats(_):
 
     # generate the statistics file
     tested_syscalls = [key for key, val in syscalls.items() if val]
-    text.append('syscalls which are tested under **testcases/kernel/syscalls**:\n\n')
+    text.append('syscalls which are tested under :master:`testcases/kernel/syscalls`:\n\n')
     text.append(f'* kernel syscalls: {len(ker_syscalls)}\n')
     text.append(f'* tested syscalls: {len(tested_syscalls)}\n\n')
 

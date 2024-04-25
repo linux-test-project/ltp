@@ -211,7 +211,7 @@ There are several types of checks we use:
 
 * Sometimes it makes sense to define a few macros instead of creating a
   configure test. One example is Linux specific POSIX clock ids in
-  ``include/lapi/posix_clocks.h``
+  :master:`include/lapi/posix_clocks.h`.
 
 Dealing with messed up legacy code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -242,11 +242,11 @@ portable shell or C. The test gets a configuration via environment variables
 and/or command line parameters, it prints additional information into the
 stdout and reports overall success/failure via the exit value.
 
-Tests are generally placed under the ``testcases/`` directory. Everything that
+Tests are generally placed under the :master:`testcases/` directory. Everything that
 is a syscall or (slightly confusingly) libc syscall wrapper, goes under
-``testcases/kernel/syscalls/``.
+:master:`testcases/kernel/syscalls/`.
 
-There is also ``testcases/open_posix_testsuite/`` which is a well maintained
+There is also :master:`testcases/open_posix_testsuite/` which is a well maintained
 fork of the Open POSIX testsuite project, that has been dead since 2005.
 
 We also have a number of directories with tests for more specific features, such
@@ -256,8 +256,8 @@ Runtest Files
 ~~~~~~~~~~~~~
 
 The list of tests to be executed is stored in runtest files under the
-``runtest/`` directory. The default set of runtest files to be executed is
-stored in ``scenario_groups/default``. When you add a test, you should add
+:master:`runtest/` directory. The default set of runtest files to be executed is
+stored in :master:`scenario_groups/default`. When you add a test, you should add
 corresponding entries into some runtest file(s) as well.
 
 Each line of runtest file contains one test. The first item is the test name.
@@ -270,9 +270,9 @@ All other items, separated by space will be executed as a command.
 
 Blank lines and lines starting with a ``#`` (comments) are ignored.
 
-Syscalls tests, placed under ``testcases/kernel/syscalls/``, use
-``runtest/syscalls`` file. For kernel related tests for memory management we
-have ``runtest/mm``, etc.
+Syscalls tests, placed under :master:`testcases/kernel/syscalls/`, use
+:master:`runtest/syscalls` file. For kernel related tests for memory management we
+have :master:`runtest/mm`, etc.
 
 .. note::
 
@@ -286,7 +286,7 @@ Datafiles
 If your test needs data files, these should be put into a subdirectory
 named ``datafiles`` and installed into the ``testcases/data/$TCID`` directory.
 This will require to add ``INSTALL_DIR := testcases/data/TCID`` into
-``datafiles/Makefile``.
+correspondent ``datafiles/Makefile``.
 
 You can obtain path to datafiles via ``$TST_DATAROOT`` provided by ``test.sh``
 or via C function ``tst_dataroot()`` provided by libltp:
@@ -337,7 +337,7 @@ Testing pre-release kernel features
 -----------------------------------
 
 Tests for features not yet in the mainline kernel release are accepted. However,
-they must be added only to the **staging** runtest file. Once a feature is part
+they must be added only to :master:`runtest/staging`. Once a feature is part
 of the stable kernel ABI, the associated test must be moved out of staging.
 
 Testing builds with GitHub Actions
