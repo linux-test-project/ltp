@@ -31,3 +31,7 @@ Capabilities
 ------------
 
 .. kernel-doc:: ../../include/tst_capability.h
+
+libltpswap
+----------
+.. kernel-doc:: ../../include/libswap.h
