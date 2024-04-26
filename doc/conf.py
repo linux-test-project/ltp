@@ -39,7 +39,7 @@ extlinks = {
 
 spelling_lang = "en_US"
 spelling_warning = True
-spelling_exclude_patterns=['users/stats.rst']
+spelling_exclude_patterns = ['users/stats.rst']
 spelling_word_list_filename = "spelling_wordlist"
 
 # -- Options for HTML output -------------------------------------------------
@@ -62,49 +62,53 @@ def generate_syscalls_stats(_):
     # part of a more complex scenario. In the following list, we define syscalls
     # which we know they are 100% tested already.
     white_list = [
-        'rt_sigpending',
-        'sethostname',
-        'lsetxattr',
-        'inotify_add_watch',
-        'inotify_rm_watch',
-        'newfstatat',
-        'pselect6',
+        'epoll_pwait2',
+        'fadvise64',
         'fanotify_init',
         'fanotify_mark',
-        'prlimit64',
         'getdents64',
-        'pkey_mprotect',
-        'pkey_alloc',
-        'pkey_free',
-        'io_uring_setup',
-        'io_uring_enter',
-        'io_uring_register',
-        'epoll_pwait2',
-        'quotactl_fd',
-        'pread64',
-        'pwrite64',
-        'fadvise64',
         'getmsg',
         'getpmsg',
+        'inotify_add_watch',
+        'inotify_rm_watch',
+        'io_uring_enter',
+        'io_uring_register',
+        'io_uring_setup',
+        'lsetxattr',
+        'newfstatat',
         'putmsg',
         'putpmsg',
+        'pkey_alloc',
+        'pkey_free',
+        'pkey_mprotect',
+        'prlimit64',
+        'pread64',
+        'pselect6',
+        'pwrite64',
+        'quotactl_fd',
+        'rt_sigpending',
+        'seccomp',
+        'semtimedop',
+        'sethostname',
     ]
 
     # populate with not implemented, reserved, unmaintained syscalls defined
     # inside the syscalls file
     black_list = [
-        'reserved177',
-        'reserved193',
-        'rseq',
         '_newselect',
         '_sysctl',
+        'afs_syscall',
+        'cachectl',
         'create_module',
         'get_kernel_syms',
-        'query_module',
-        'nfsservctl',
-        'afs_syscall',
-        'sysmips',
         'mq_getsetattr',
+        'nfsservctl',
+        'query_module',
+        'reserved177',
+        'reserved193',
+        'restart_syscall',
+        'rseq',
+        'sysmips',
         'vserver',
     ]
 
@@ -167,7 +171,8 @@ def generate_syscalls_stats(_):
 
     # generate the statistics file
     tested_syscalls = [key for key, val in syscalls.items() if val]
-    text.append('syscalls which are tested under :master:`testcases/kernel/syscalls`:\n\n')
+    text.append(
+        'syscalls which are tested under :master:`testcases/kernel/syscalls`:\n\n')
     text.append(f'* kernel syscalls: {len(ker_syscalls)}\n')
     text.append(f'* tested syscalls: {len(tested_syscalls)}\n\n')
 
