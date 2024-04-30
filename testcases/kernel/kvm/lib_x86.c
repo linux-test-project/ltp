@@ -174,7 +174,7 @@ int kvm_find_free_descriptor(const struct segment_descriptor *table,
 	const struct segment_descriptor *ptr;
 	size_t i;
 
-	for (i = 0, ptr = table; i < size; i++, ptr++) {
+	for (i = 1, ptr = table + 1; i < size; i++, ptr++) {
 		if (!(ptr->flags_lo & SEGFLAG_PRESENT))
 			return i;
 
