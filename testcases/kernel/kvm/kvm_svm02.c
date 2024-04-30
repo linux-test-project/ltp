@@ -96,7 +96,7 @@ void main(void)
 	vmsave_buf = kvm_alloc_vmcb();
 
 	/* Save allocated stack for later VM reinit */
-	ss = vcpu->vmcb->ss.selector;
+	ss = vcpu->vmcb->ss.selector >> 3;
 	rsp = vcpu->vmcb->rsp;
 
 	/* Load partial state from vmsave_buf and save it to vcpu->vmcb */
