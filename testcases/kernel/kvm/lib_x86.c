@@ -393,3 +393,21 @@ struct kvm_svm_vcpu *kvm_create_svm_vcpu(int (*guest_main)(void),
 	ret->vmcb = vmcb;
 	return ret;
 }
+
+void kvm_svm_vmload(struct kvm_vmcb *buf)
+{
+	asm (
+		"vmload %0\n"
+		:
+		: "a" (buf)
+	);
+}
+
+void kvm_svm_vmsave(struct kvm_vmcb *buf)
+{
+	asm (
+		"vmsave %0\n"
+		:
+		: "a" (buf)
+	);
+}

@@ -33,22 +33,14 @@ static void *vmsave_buf;
 /* Load FS, GS, TR and LDTR state from vmsave_buf */
 static int guest_vmload(void)
 {
-	asm (
-		"vmload %0\n"
-		:
-		: "a" (vmsave_buf)
-	);
+	kvm_svm_vmload(vmsave_buf);
 	return 0;
 }
 
 /* Save current FS, GS, TR and LDTR state to vmsave_buf */
 static int guest_vmsave(void)
 {
-	asm (
-		"vmsave %0\n"
-		:
-		: "a" (vmsave_buf)
-	);
+	kvm_svm_vmsave(vmsave_buf);
 	return 0;
 }
 
