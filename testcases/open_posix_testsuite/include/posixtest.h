@@ -20,9 +20,29 @@
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
 
-#define PTS_ATTRIBUTE_NORETURN		__attribute__((noreturn))
-#define PTS_ATTRIBUTE_UNUSED		__attribute__((unused))
-#define PTS_ATTRIBUTE_UNUSED_RESULT	__attribute__((warn_unused_result))
+/* __attribute__ is a non portable gcc extension */
+/* TODO: Add support for C23 attributes */
+#if defined __has_attribute
+# if __has_attribute(noreturn)
+#  define PTS_ATTRIBUTE_NORETURN      __attribute__((noreturn))
+# endif
+# if __has_attribute(unused)
+#  define PTS_ATTRIBUTE_UNUSED        __attribute__((unused))
+# endif
+# if __has_attribute(warn_unused_result)
+#  define PTS_ATTRIBUTE_UNUSED_RESULT __attribute__((warn_unused_result))
+# endif
+#endif
+
+#ifndef PTS_ATTRIBUTE_NORETURN
+# define PTS_ATTRIBUTE_NORETURN
+#endif
+#ifndef PTS_ATTRIBUTE_UNUSED
+# define PTS_ATTRIBUTE_UNUSED
+#endif
+#ifndef PTS_ATTRIBUTE_UNUSED_RESULT
+# define PTS_ATTRIBUTE_UNUSED_RESULT
+#endif
 
 #define PTS_WRITE_MSG(msg) do { \
          if (write(STDOUT_FILENO, msg, sizeof(msg) - 1)) { \
