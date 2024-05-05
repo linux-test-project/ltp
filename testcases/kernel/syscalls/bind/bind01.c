@@ -17,11 +17,16 @@
 
 #include "tst_test.h"
 
-int inet_socket;
-int dev_null;
+#define DIR_ENOTDIR "dir_enotdir"
+#define TEST_ENOTDIR "test_enotdir"
 
-struct sockaddr_in sin1, sin2, sin3;
-struct sockaddr_un sun;
+static int inet_socket;
+static int dev_null;
+static int fd_ebadf = -1;
+static int fd_enotdir;
+
+static struct sockaddr_in sin1, sin2, sin3;
+static struct sockaddr_un sun, sock_enotdir;
 
 static struct test_case {
 	int *socket_fd;
@@ -41,24 +46,28 @@ static struct test_case {
 	  EAFNOSUPPORT, "UNIX-domain of current directory" },
 	{ &inet_socket, (struct sockaddr *)&sin3, sizeof(sin3), -1,
 	  EADDRNOTAVAIL, "non-local address" },
+	{ &fd_ebadf, (struct sockaddr *)&sin1, sizeof(sin1), -1,
+	  EBADF, "sockfd is not a valid file descriptor" },
+	{ &fd_enotdir, (struct sockaddr *)&sock_enotdir, sizeof(sock_enotdir), -1,
+	  ENOTDIR, "a component of addr prefix is not a directory"},
 };
 
-void verify_bind(unsigned int nr)
+static void verify_bind(unsigned int nr)
 {
 	struct test_case *tcase = &tcases[nr];
 
 	if (tcase->experrno) {
 		TST_EXP_FAIL(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
-		             tcase->experrno, "%s", tcase->desc);
+				tcase->experrno, "%s", tcase->desc);
 	} else {
 		TST_EXP_PASS(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
-		             "%s", tcase->desc);
+				"%s", tcase->desc);
 		SAFE_CLOSE(inet_socket);
 		inet_socket = SAFE_SOCKET(PF_INET, SOCK_STREAM, 0);
 	}
 }
 
-void test_setup(void)
+static void test_setup(void)
 {
 	/* initialize sockaddr's */
 	sin1.sin_family = AF_INET;
@@ -78,14 +87,21 @@ void test_setup(void)
 	sun.sun_family = AF_UNIX;
 	strncpy(sun.sun_path, ".", sizeof(sun.sun_path));
 
+	SAFE_TOUCH(DIR_ENOTDIR, 0777, NULL);
+	sock_enotdir.sun_family = AF_UNIX;
+	strncpy(sock_enotdir.sun_path, DIR_ENOTDIR "/" TEST_ENOTDIR,
+		sizeof(sock_enotdir.sun_path));
+
 	inet_socket = SAFE_SOCKET(PF_INET, SOCK_STREAM, 0);
 	dev_null = SAFE_OPEN("/dev/null", O_WRONLY);
+	fd_enotdir = SAFE_SOCKET(AF_UNIX, SOCK_STREAM, 0);
 }
 
-void test_cleanup(void)
+static void test_cleanup(void)
 {
 	SAFE_CLOSE(inet_socket);
 	SAFE_CLOSE(dev_null);
+	SAFE_CLOSE(fd_enotdir);
 }
 
 static struct tst_test test = {
@@ -93,4 +109,5 @@ static struct tst_test test = {
 	.setup = test_setup,
 	.cleanup = test_cleanup,
 	.test = verify_bind,
+	.needs_tmpdir = 1,
 };
