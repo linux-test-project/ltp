@@ -476,26 +476,26 @@ struct tst_ulimit_val {
 
 	const char *tconf_msg;
 
-	int needs_tmpdir:1;
-	int needs_root:1;
-	int forks_child:1;
-	int needs_device:1;
-	int needs_checkpoints:1;
-	int needs_overlay:1;
-	int format_device:1;
-	int mount_device:1;
-	int needs_rofs:1;
-	int child_needs_reinit:1;
-	int needs_devfs:1;
-	int restore_wallclock:1;
+	unsigned int needs_tmpdir:1;
+	unsigned int needs_root:1;
+	unsigned int forks_child:1;
+	unsigned int needs_device:1;
+	unsigned int needs_checkpoints:1;
+	unsigned int needs_overlay:1;
+	unsigned int format_device:1;
+	unsigned int mount_device:1;
+	unsigned int needs_rofs:1;
+	unsigned int child_needs_reinit:1;
+	unsigned int needs_devfs:1;
+	unsigned int restore_wallclock:1;
 
-	int all_filesystems:1;
+	unsigned int all_filesystems:1;
 
-	int skip_in_lockdown:1;
-	int skip_in_secureboot:1;
-	int skip_in_compat:1;
+	unsigned int skip_in_lockdown:1;
+	unsigned int skip_in_secureboot:1;
+	unsigned int skip_in_compat:1;
 
-	int needs_hugetlbfs:1;
+	unsigned int needs_hugetlbfs:1;
 
 	const char *const *skip_filesystems;
 
