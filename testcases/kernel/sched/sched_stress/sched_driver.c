@@ -136,7 +136,7 @@ int debug = 0;
 /*
  * Function prototypes
  */
-void startup(long);
+void startup(time_t);
 int start_testcase(char *, char *, char *, char *, char *, char *);
 int process_slots_in_use();
 int available_user_process_slots();
@@ -251,7 +251,7 @@ int main(int argc, char **argv)
  * information to the screen and .  It also initializes the	 *
  * process id list and other global variables.	 			 *
  *-----------------------------------------------------------------------*/
-void startup(long start_time)
+void startup(time_t start_time)
 {
 	char tempbuffer[50];	/* temporary buffer to hold names */
 
@@ -734,7 +734,7 @@ void kill_short_term_testcases()
 void finishup(start_time)
 long start_time;		/* starting time to calculate elapsed time */
 {
-	long end_time;		/* time when program finished */
+	time_t end_time;		/* time when program finished */
 
 	/*
 	 * Get the end time and calculate elapsed time; write all this out
