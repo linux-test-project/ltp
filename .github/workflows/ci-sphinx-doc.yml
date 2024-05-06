@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2024 Petr Vorel <pvorel@suse.cz>
+
+name: "Test building sphinx doc"
+
+on: [push, pull_request]
+
+permissions: {}
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LTP
+        uses: actions/checkout@v2
+        with:
+          path: ltp
+
+      - name: Install sphinx
+        run: |
+          sudo apt update
+          sudo apt install python3-sphinx python3-virtualenv
+
+      - name: Install sphinx dependencies
+        run: |
+          cd "$GITHUB_WORKSPACE/ltp/doc/"
+          python3 -m virtualenv .venv
+          . .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Build doc
+        run: |
+          cd "$GITHUB_WORKSPACE/ltp/doc/"
+          . .venv/bin/activate
+          make
