@@ -6,16 +6,17 @@
 /*\
  * [Description]
  *
- *  Utilize kernel's symbol table for unauthorized address access.
+ * Utilize kernel's symbol table for unauthorized address access.
  *
- *  Access the system symbols with root permission to test whether it's
- *  possible to read and write the memory addresses of kernel-space
- *  from user-space. This helps in identifying potential vulnerabilities
- *  where user-space processes can inappropriately access kernel memory.
+ * Access the system symbols with root permission to test whether it's
+ * possible to read and write the memory addresses of kernel-space
+ * from user-space. This helps in identifying potential vulnerabilities
+ * where user-space processes can inappropriately access kernel memory.
  *
  * Steps:
+ *
  *  1. Start a process that reads all symbols and their addresses from
- *     '/proc/kallsyms' and stores them in a linked list.
+ *     /proc/kallsyms and stores them in a linked list.
  *
  *  2. Attempt to write to each kernel address found in the linked list.
  *     The expectation is that each attempt will fail with a SIGSEGV
@@ -30,7 +31,6 @@
  *
  *  5. Observe and log the behavior and any system responses to these
  *     unauthorized access attempts.
- *
  */
 
 #include <stdio.h>
