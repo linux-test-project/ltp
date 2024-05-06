@@ -3,10 +3,5 @@
 
 top_srcdir              ?= ../../../../..
 
-LTPLIBS = ltpipc
-
 include $(top_srcdir)/include/mk/testcases.mk
-
-LTPLDLIBS  += -lltpipc
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
