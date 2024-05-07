@@ -44,7 +44,7 @@ Oldest tested distributions
       - 2.17
       - \-
 
-For a full list of tested distros, please check :master:`.github/workflows/ci.yml`.
+For a full list of tested distros, please check :master:`.github/workflows/ci-docker-build.yml`.
 
 Older distributions are not officially supported, which means that it
 may or may not work. It all depends on your luck. It should be possible

@@ -8,7 +8,7 @@ We test master branch in https://github.com/linux-test-project/ltp/actions[GitHu
 to ensure LTP builds on various distributions including old, current and bleeding edge.
 We test both gcc and clang toolchains, various architectures with cross-compilation.
 For list of tested distros see
-https://github.com/linux-test-project/ltp/blob/master/.github/workflows/ci.yml[.github/workflows/ci.yml].
+https://github.com/linux-test-project/ltp/blob/master/.github/workflows/ci-docker-build.yml[.github/workflows/ci-docker-build.yml].
 
 
 NOTE: GitHub Actions does only build testing, passing the CI means only that
