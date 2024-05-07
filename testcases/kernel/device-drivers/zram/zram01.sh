@@ -84,7 +84,6 @@ zram_makefs()
 			cat err.log
 			tst_res TFAIL "Failed to make $fs on /dev/zram$i"
 			tst_brk TBROK "Can't continue with mounting the FS"
-			return
 		fi
 
 		i=$(($i + 1))
