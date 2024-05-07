@@ -281,7 +281,7 @@ static inline void *safe_mmap(const char *file, const int lineno,
 	tst_prot_to_str(prot, prot_buf);
 
 	tst_res_(file, lineno, TDEBUG,
-		"mmap(%p, %ld, %s(%x), %d, %d, %ld)",
+		"mmap(%p, %zu, %s(%x), %d, %d, %ld)",
 		addr, length, prot_buf, prot, flags, fd, offset);
 
 	rval = mmap(addr, length, prot, flags, fd, offset);
