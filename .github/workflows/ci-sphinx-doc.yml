@@ -3,7 +3,11 @@
 
 name: "Test building sphinx doc"
 
-on: [push, pull_request]
+on:
+  push:
+    paths: ['doc/**']
+  pull_request:
+    paths: ['doc/**']
 
 permissions: {}
 
