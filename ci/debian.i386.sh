@@ -8,13 +8,13 @@ apt update
 apt install -y --no-install-recommends \
 	linux-libc-dev:i386 \
 	gcc-multilib \
-	libacl1:i386 \
+	libacl1-dev:i386 \
 	libaio-dev:i386 \
-	libcap2:i386 \
+	libcap-dev:i386 \
 	libc6-dev-i386 \
 	libc6:i386 \
-	libkeyutils1:i386 \
-	libnuma1:i386 \
+	libkeyutils-dev:i386 \
+	libnuma-dev:i386 \
 	libssl-dev:i386 \
 	libtirpc-dev:i386 \
 	pkg-config:i386

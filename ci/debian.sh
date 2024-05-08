@@ -26,19 +26,15 @@ $apt \
 	gcc \
 	git \
 	iproute2 \
-	libacl1 \
 	libacl1-dev \
 	libaio-dev \
 	libcap-dev \
-	libcap2 \
 	libc6 \
 	libc6-dev \
 	libjson-perl \
 	libkeyutils-dev \
-	libkeyutils1 \
 	libmnl-dev \
 	libnuma-dev \
-	libnuma1 \
 	libselinux1-dev \
 	libsepol-dev \
 	libssl-dev \
