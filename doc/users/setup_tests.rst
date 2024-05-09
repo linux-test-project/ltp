@@ -78,7 +78,7 @@ users.
        Shell API only.
 
    * - LTP_ENABLE_DEBUG
-     - Enable debug info (value ``1`` or ``y``).
+     - Enable debug info (value ``1`` or ``y``). Equivalent of ``-D`` parameter.
 
 Test execution time and timeout
 -------------------------------

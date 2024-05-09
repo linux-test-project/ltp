@@ -8,8 +8,9 @@ This section explains some tricks which can be used to debug test binaries.
 Debug messages
 --------------
 
-The LTP framework currently supports ``TDEBUG`` flag test debug messages. These
-messages can be enabled using the ``-D`` test's argument.
+The LTP framework supports ``TDEBUG`` flag test debug messages. These
+messages can be enabled using the ``-D`` parameter or setting ``LTP_ENABLE_DEBUG=1``
+environment variable (see :doc:`../users/setup_tests`).
 
 Tracing and debugging syscalls
 ------------------------------
