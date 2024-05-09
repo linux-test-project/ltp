@@ -56,8 +56,8 @@ test. At the time of writing there is no test for this call which was
 introduced in Linux kernel version 4.11.
 
 Linux system call specific tests are primarily contained in
-:master:`testcases/kernel/syscalls`, but you should also ``git grep`` the entire LTP
-repository to check for any existing usages of a system call.
+:master:`testcases/kernel/syscalls`, but you should also :git_man:`grep` the
+entire LTP repository to check for any existing usages of a system call.
 
 One way to find a system call which is not currently tested by the LTP is to
 look at :kernel_tree:`include/linux/syscalls.h` in the Linux kernel tree.
@@ -252,7 +252,7 @@ to the below:
         smtpServer = smtp.server.address
 
 Obviously you need to at least change your name and e-mail. The SMTP server is
-useful for ``git send-email``, which we will discuss later. The editor value is
+useful for :git_man:`send-email`, which we will discuss later. The editor value is
 used for things like writing commits (without the ``-m`` option).
 
 .. code-block:: bash
@@ -903,7 +903,7 @@ re-committing.
 
 You can also use ``edit`` and ``git commit --amend`` together to change a commit
 deep in your history, but without resetting the 'index'. The 'index' contains
-changes which you have staged with ``git add``, but not yet committed.
+changes which you have staged with :git_man:`add`, but not yet committed.
 
 So now that the commit history has been cleaned up, we need to submit a patch
 to the mailing list or make a pull request on GitHub. The mailing list is the
@@ -941,10 +941,8 @@ of the conflict. Usually, all you need to do is remove the lines you don't
 want, stage the changes and continue the ``rebase`` with ``git rebase
 --continue``.
 
-In order to create a patch e-mail we use
-`git format-patch <https://git-scm.com/docs/git-format-patch>`_,
-we can then send that e-mail using
-`git send-email <https://git-scm.com/docs/git-send-email>`_.
+In order to create a patch e-mail we use :git_man:`format-patch`,
+we can then send that e-mail using :git_man:`send-email`.
 It is also possible to import the patch (``mbox``) file into a number of e-mail
 programs.
 
@@ -991,9 +989,8 @@ are the most important errors to find as they always result in false test
 results. Once someone points out such an error it is usually obvious to
 everyone that it is a bug and needs to be fixed.
 
-Obviously testing the patch is one way of finding errors. You can apply
-patches using ``git am``. Then it is just a case of compiling and running the
-tests.
+Obviously testing the patch is one way of finding errors. You can apply patches
+using :git_man:`am`. Then it is just a case of compiling and running the tests.
 
 Finally, reading and attempting to comment on other peoples patches, gives
 you a better understanding of the reviewers perspective. This is better for

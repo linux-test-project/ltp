@@ -60,7 +60,7 @@ For developers
 .. descriptions here are active
 
 :doc:`developers/setup_mailinglist`
-   How to configure git and to start sending patches via ``git send-email``
+   How to configure git and to start sending patches via :git_man:`send-email`.
 
 :doc:`developers/writing_tests`
    Starting guide on writing tests
