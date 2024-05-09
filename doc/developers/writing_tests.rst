@@ -242,7 +242,7 @@ portable shell or C. The test gets a configuration via environment variables
 and/or command line parameters, it prints additional information into the
 stdout and reports overall success/failure via the exit value.
 
-Tests are generally placed under the :master:`testcases/` directory. Everything that
+Tests are generally placed under the :master:`testcases` directory. Everything that
 is a syscall or (slightly confusingly) libc syscall wrapper, goes under
 :master:`testcases/kernel/syscalls/`.
 
@@ -256,7 +256,7 @@ Runtest Files
 ~~~~~~~~~~~~~
 
 The list of tests to be executed is stored in runtest files under the
-:master:`runtest/` directory. The default set of runtest files to be executed is
+:master:`runtest` directory. The default set of runtest files to be executed is
 stored in :master:`scenario_groups/default`. When you add a test, you should add
 corresponding entries into some runtest file(s) as well.
 

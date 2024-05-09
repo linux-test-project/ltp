@@ -195,7 +195,7 @@ Make System Variables
 
 A series of variables are used within the make system that direct what actions
 need to be taken. Rather than listing the variables here, please refer to the
-comments contained in ``.../include/mk/env_pre.mk``.
+comments contained in :master:`include/mk/env_pre.mk`.
 
 Guidelines and Recommendations
 ------------------------------

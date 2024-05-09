@@ -204,7 +204,7 @@ please do:
     ./statx01
 
 This should build the test and then run it. However, even though the test is
-in :master:`testcases/kernel/syscalls/` directory it won't be automatically ran
+in :master:`testcases/kernel/syscalls` directory it won't be automatically ran
 as part of the syscalls test group (e.g. not run via ``kirk -r math`` or
 ``./runltp -f syscalls``). For this we need to add it to the runtest file. So
 open :master:`runtest/syscalls` and add the lines starting with a ``+``.
@@ -303,11 +303,11 @@ cut down C library in comparison to the GNU one. So we must call ``statx()``
 using the general ``syscall()`` interface.
 
 The LTP contains a library for dealing with the ``syscall`` interface, which is
-located in ``include/lapi``. System call numbers are listed against the relevant
+located in :master:`include/lapi`. System call numbers are listed against the relevant
 call in the ``*.in`` files (e.g. ``x86_64.in``) which are used to generate
 ``syscalls.h``, which is the header you should include. On rare occasions you
 may find the system call number is missing from the ``*.in`` files and will need
-to add it (see ``include/lapi/syscalls/strip_syscall.awk``).
+to add it (see :master:`include/lapi/syscalls/strip_syscall.awk`).
 
 System call numbers vary between architectures, hence there are multiple
 ``*.in`` files for each architecture. You can find the various values for the
@@ -317,8 +317,8 @@ Note that we don't use the system-call-identifier value available in
 ``/usr/include/linux/uinstd.h`` because the kernel might be much newer than the
 user land development packages.
 
-For ``statx`` we had to add ``statx 332`` to ``include/lapi/syscalls/x86_64.in``,
-``statx 383`` to ``include/lapi/syscalls/powerpc.in``, etc.  Now lets look at
+For ``statx`` we had to add ``statx 332`` to :master:`include/lapi/syscalls/x86_64.in`,
+``statx 383`` to :master:`include/lapi/syscalls/powerpc.in`, etc.  Now lets look at
 the code, which I will explain in more detail further down.
 
 .. code-block:: c
@@ -402,7 +402,7 @@ first choice.
 The final test should do a check during configuration (i.e. when we run
 ``./configure`` before building) which checks if the ``statx`` system call and
 associated structures exists. This requires writing an ``m4`` file for use with
-``configure.ac`` which is processed during ``make autotools`` and produces the
+:master:`configure.ac` which is processed during ``make autotools`` and produces the
 configure script.
 
 For the time being though we shall just ignore this. All you need to know for
@@ -457,7 +457,7 @@ being run.
 What are the differences between ``tst_brk`` and ``tst_res``?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See ``include/tst_test.h``. Also what do they have in common?
+See :master:`include/tst_test.h`. Also what do they have in common?
 
 What happens if you call ``tst_res(TINFO, ...)`` after ``sys_statx``?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -514,13 +514,13 @@ that should be by setting ``.needs_tmpdir = 1``.
     /*************** statx structure and wrapper goes here ! ***************/
     ...
 
-We have added an extra include ``lapi/fcntl.h`` which wraps the system header by
+We have added an extra include :master:`lapi/fcntl.h` which wraps the system header by
 the same name (``#include <fcntl.h>``). This header ensures we have definitions
 for recently added macros such as ``AT_FDCWD`` by providing fall backs if the
-system header does not have them. The ``lapi`` directory contains a number of
+system header does not have them. The :master:`lapi/` directory contains a number of
 headers like this.
 
-At some point we may wish to add ``lapi/stat.h`` to provide a fall back for
+At some point we may wish to add :master:`lapi/stat.h` to provide a fall back for
 macros such as ``STATX_BASIC_STATS``. However for the time being we have just
 defined it in the test.
 
@@ -756,7 +756,7 @@ the next section and come back later.
 Submitting the test for review
 ------------------------------
 
-Ignoring the fact we should probably create ``lapi/stat.h`` along with a bunch
+Ignoring the fact we should probably create :master:`lapi/stat.h` along with a bunch
 of fallback logic in the build system. We can now get our test ready for
 submission.
 
