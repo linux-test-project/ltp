@@ -13,10 +13,9 @@
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
 #include "lapi/syscalls.h"
+#include "lapi/arch_prctl.h"
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_ASM_PRCTL_H
-#include <asm/prctl.h>
 
 static int arch_prctl_get(int code)
 {
@@ -76,7 +75,3 @@ static struct tst_test test = {
 	.min_kver = "4.12",
 	.supported_archs = (const char *const []){"x86_64", "x86", NULL}
 };
-
-#else /* HAVE_ASM_PRCTL_H */
-TST_TEST_TCONF("missing <asm/prctl.h>");
-#endif
