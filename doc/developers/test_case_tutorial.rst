@@ -60,7 +60,7 @@ Linux system call specific tests are primarily contained in
 repository to check for any existing usages of a system call.
 
 One way to find a system call which is not currently tested by the LTP is to
-look at ``include/linux/syscalls.h`` in the kernel tree.
+look at :kernel_tree:`include/linux/syscalls.h` in the Linux kernel tree.
 
 Something the LTP excels to ensure bug-fixes are back ported to
 maintenance releases, so targeting a specific regression is another
@@ -384,7 +384,7 @@ So from the top we include the ``stdint.h`` library which gives us the standard
 ``(u)int*_t`` type definitions. We use these in place of the Kernel type
 definitions such as ``__u64`` in ``linux/types.h``. We then have a couple of
 structure definitions which form part of the ``statx`` API. These were copied
-from ``include/uapi/linux/stat.h`` in the Kernel tree.
+from :kernel_tree:`include/uapi/linux/stat.h` in the Linux kernel tree.
 
 After that, there is a wrapper function, which saves us from writing
 ``tst_syscall(__NR_statx, ...``, every time we want to make a call to

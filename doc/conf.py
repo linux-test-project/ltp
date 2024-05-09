@@ -30,6 +30,7 @@ exclude_patterns = ["html*", '_static*']
 extlinks = {
     'repo': ('https://github.com/linux-test-project/ltp/%s', '%s'),
     'master': ('https://github.com/linux-test-project/ltp/blob/master/%s', '%s'),
+    'kernel_tree': ('https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/%s', '%s'),
 }
 
 spelling_lang = "en_US"
