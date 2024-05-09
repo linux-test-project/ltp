@@ -106,9 +106,9 @@ build and installation. If the userspace counterpart of the test fails to load
 the module because the file does not exists, the test is skipped.
 
 Note the ``ifneq($(KERNELRELEASE),)``. The reason it exists, it is that the
-Makefile is executed twice: once by LTP build system and once by kernel
-kbuild, see ``Documentation/kbuild/modules.rst`` in the Linux kernel tree for
-details on external module build.
+Makefile is executed twice: once by LTP build system and once by kernel kbuild,
+see :kernel_doc:`kbuild/modules` in the Linux kernel documentation for details
+on external module build.
 
 Make Rules and Make Variables
 -----------------------------
