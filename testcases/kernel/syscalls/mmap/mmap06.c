@@ -56,16 +56,10 @@ static void run(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TESTPTR(mmap(NULL, tc->length, tc->prot, tc->flags, fd, 0));
+	TST_EXP_FAIL_PTR_VOID(mmap(NULL, tc->length, tc->prot, tc->flags, fd, 0), tc->exp_errno);
 
-	if (TST_RET_PTR != MAP_FAILED) {
-		tst_res(TFAIL, "mmap() was successful unexpectedly");
-		SAFE_MUNMAP(TST_RET_PTR, MMAPSIZE);
-	} else if (TST_ERR == tc->exp_errno) {
-		tst_res(TPASS | TERRNO, "mmap() failed with");
-	} else {
-		tst_res(TFAIL | TERRNO, "mmap() failed unexpectedly");
-	}
+	if (TST_RET_PTR != MAP_FAILED)
+		SAFE_MUNMAP(TST_RET_PTR, page_sz);
 }
 
 static void cleanup(void)
