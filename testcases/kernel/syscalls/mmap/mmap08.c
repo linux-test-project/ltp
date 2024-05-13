@@ -8,7 +8,7 @@
 /*\
  * [Description]
  *
- * verify that, mmap() calls fails with errno EBADF when a file mapping
+ * Verify that, mmap() calls fails with errno EBADF when a file mapping
  * is requested but the fd is not a valid file descriptor.
  */
 
@@ -27,16 +27,11 @@ static void setup(void)
 
 static void run(void)
 {
-	TESTPTR(mmap(NULL, page_sz, PROT_WRITE, MAP_FILE | MAP_SHARED, fd, 0));
+	TST_EXP_FAIL_PTR_VOID(mmap(NULL, page_sz, PROT_WRITE,
+				   MAP_FILE | MAP_SHARED, fd, 0), EBADF);
 
-	if (TST_RET_PTR != MAP_FAILED) {
-		tst_res(TFAIL, "mmap() passed unexpectedly");
+	if (TST_RET_PTR != MAP_FAILED)
 		SAFE_MUNMAP(TST_RET_PTR, page_sz);
-	} else if (TST_ERR == EBADF) {
-		tst_res(TPASS, "mmap() failed with EBADF");
-	} else {
-		tst_res(TFAIL | TERRNO, "mmap() failed with an invalid errno");
-	}
 }
 
 static void cleanup(void)
