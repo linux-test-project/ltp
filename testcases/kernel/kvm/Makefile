@@ -24,6 +24,10 @@ endif
 ifeq ($(HOST_CPU),x86)
 	GUEST_CFLAGS += -m32
 	ASFLAGS += --32
+
+	ifdef LTP_CFLAGS_FFIXED_EBP
+		GUEST_CFLAGS += -ffixed-ebp
+	endif
 endif
 
 # Some distros enable -pie by default. That breaks KVM payload linking.
