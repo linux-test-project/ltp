@@ -8,6 +8,8 @@
 #ifndef KVM_GUEST_H_
 #define KVM_GUEST_H_
 
+#include <stdarg.h>
+
 /* The main LTP include dir is intentionally excluded during payload build */
 #include "../../../../include/tst_res_flags.h"
 #undef TERRNO
@@ -49,6 +51,11 @@ void *memcpy(void *dest, const void *src, size_t size);
 char *strcpy(char *dest, const char *src);
 char *strcat(char *dest, const char *src);
 size_t strlen(const char *str);
+char *strchr(const char *s, int c);
+char *strrchr(const char *s, int c);
+
+int vsprintf(char *dest, const char *fmt, va_list ap);
+int sprintf(char *dest, const char *fmt, ...);
 
 /* Exit the VM by looping on a HLT instruction forever */
 void kvm_exit(void) __attribute__((noreturn));
