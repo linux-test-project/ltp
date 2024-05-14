@@ -350,3 +350,5 @@ futex_waitv 1473
 cachestat 1475
 fchmodat2 1476
 mseal 1486
+statmount 1481
+listmount 1482
