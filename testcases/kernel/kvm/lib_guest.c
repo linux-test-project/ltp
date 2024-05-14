@@ -443,6 +443,7 @@ static void tst_fatal_error(const char *file, const int lineno,
 	test_result->result = TBROK;
 	test_result->lineno = lineno;
 	test_result->file_addr = (uintptr_t)file;
+	/* Avoid sprintf() here in case of bugs */
 	strcpy(test_result->message, message);
 	strcat(test_result->message, " at address 0x");
 	ptr2hex(test_result->message + strlen(test_result->message), ip);
@@ -451,19 +452,46 @@ static void tst_fatal_error(const char *file, const int lineno,
 }
 
 void tst_res_(const char *file, const int lineno, int result,
-	const char *message)
+	const char *fmt, ...)
 {
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
 	test_result->result = result;
 	test_result->lineno = lineno;
 	test_result->file_addr = (uintptr_t)file;
-	strcpy(test_result->message, message);
+	ret = vsprintf(test_result->message, fmt, args);
+	va_end(args);
+
+	if (ret < 0) {
+		tst_brk_(file, lineno, TBROK, "Invalid tst_res() format: %s",
+			fmt);
+	}
+
 	kvm_yield();
 }
 
 void tst_brk_(const char *file, const int lineno, int result,
-	const char *message)
+	const char *fmt, ...)
 {
-	tst_res_(file, lineno, result, message);
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	test_result->result = result;
+	test_result->lineno = lineno;
+	test_result->file_addr = (uintptr_t)file;
+	ret = vsprintf(test_result->message, fmt, args);
+	va_end(args);
+
+	if (ret < 0) {
+		test_result->result = TBROK;
+		strcpy(test_result->message, "Invalid tst_brk() format: ");
+		strcat(test_result->message, fmt);
+	}
+
+	kvm_yield();
 	kvm_exit();
 }
 

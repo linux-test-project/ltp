@@ -64,12 +64,16 @@ void kvm_exit(void) __attribute__((noreturn));
 void kvm_yield(void);
 
 void tst_res_(const char *file, const int lineno, int result,
-	const char *message);
-#define tst_res(result, msg) tst_res_(__FILE__, __LINE__, (result), (msg))
+	const char *fmt, ...)
+	__attribute__ ((format (printf, 4, 5)));
+#define tst_res(result, fmt, ...) \
+	tst_res_(__FILE__, __LINE__, (result), (fmt), ##__VA_ARGS__)
 
 void tst_brk_(const char *file, const int lineno, int result,
-	const char *message) __attribute__((noreturn));
-#define tst_brk(result, msg) tst_brk_(__FILE__, __LINE__, (result), (msg))
+	const char *fmt, ...) __attribute__((noreturn))
+	__attribute__ ((format (printf, 4, 5)));
+#define tst_brk(result, fmt, ...) \
+	tst_brk_(__FILE__, __LINE__, (result), (fmt), ##__VA_ARGS__)
 
 /*
  * Send asynchronous notification to host without stopping VM execution and
