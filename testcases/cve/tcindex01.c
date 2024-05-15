@@ -106,12 +106,23 @@ static void run(void)
 	NETDEV_ADD_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle, "htb",
 		qd_config);
 	NETDEV_ADD_TRAFFIC_CLASS(DEVNAME, qd_handle, clsid, "htb", cls_config);
-	NETDEV_ADD_TRAFFIC_FILTER(DEVNAME, qd_handle, 10, ETH_P_IP, 1,
-		"tcindex", f_config);
+	ret = NETDEV_ADD_TRAFFIC_FILTER_RET(DEVNAME, qd_handle, 10, ETH_P_IP,
+		1, "tcindex", f_config);
+	TST_ERR = tst_netlink_errno;
+
+	if (!ret && TST_ERR == ENOENT) {
+		tst_res(TPASS | TTERRNO,
+			"tcindex module is blacklisted or unavailable");
+		return;
+	}
+
+	if (!ret)
+		tst_brk(TBROK | TTERRNO, "Cannot add tcindex filter");
+
 	NETDEV_REMOVE_TRAFFIC_FILTER(DEVNAME, qd_handle, 10, ETH_P_IP,
 		1, "tcindex");
-	ret = tst_netdev_add_traffic_filter(__FILE__, __LINE__, 0, DEVNAME,
-		qd_handle, 10, ETH_P_IP, 1, "tcindex", f_config);
+	ret = NETDEV_ADD_TRAFFIC_FILTER_RET(DEVNAME, qd_handle, 10, ETH_P_IP,
+		1, "tcindex", f_config);
 	TST_ERR = tst_netlink_errno;
 	NETDEV_REMOVE_QDISC(DEVNAME, AF_UNSPEC, TC_H_ROOT, qd_handle, "htb");
 
