@@ -179,6 +179,11 @@ int tst_netdev_add_traffic_filter(const char *file, const int lineno,
 	tst_netdev_add_traffic_filter(__FILE__, __LINE__, 1, (ifname), \
 		(parent), (handle), (protocol), (priority), (f_kind), (config))
 
+#define NETDEV_ADD_TRAFFIC_FILTER_RET(ifname, parent, handle, protocol, \
+	priority, f_kind, config) \
+	tst_netdev_add_traffic_filter(__FILE__, __LINE__, 0, (ifname), \
+		(parent), (handle), (protocol), (priority), (f_kind), (config))
+
 int tst_netdev_remove_traffic_filter(const char *file, const int lineno,
 	int strict, const char *ifname, unsigned int parent,
 	unsigned int handle, unsigned int protocol, unsigned int priority,
