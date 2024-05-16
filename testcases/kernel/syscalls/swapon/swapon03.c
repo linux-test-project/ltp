@@ -9,6 +9,7 @@
  * [Description]
  *
  * This test case checks whether swapon(2) system call returns:
+ *
  *  - EPERM when there are more than MAX_SWAPFILES already in use.
  */
 

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * 07/2001 Ported by Wayne Boyer
@@ -9,6 +8,7 @@
 /*\
  * [Description]
  * Verify that getsockname() returns the proper errno for various failure cases:
+ *
  * - EBADF on a not open file
  * - ENOTSOCK on a file descriptor not linked to a socket
  * - EFAULT on invalid socket buffer o invalid socklen
