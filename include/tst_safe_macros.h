@@ -509,4 +509,10 @@ int safe_prctl(const char *file, const int lineno,
 #define SAFE_PRCTL(option, arg2, arg3, arg4, arg5) \
 	safe_prctl(__FILE__, __LINE__, (option), (arg2), (arg3), (arg4), (arg5))
 
+int safe_symlinkat(const char *file, const int lineno,
+	const char *oldpath, const int newdirfd, const char *newpath);
+
+#define SAFE_SYMLINKAT(oldpath, newdirfd, newpath) \
+	safe_symlinkat(__FILE__, __LINE__, (oldpath), (newdirfd), (newpath))
+
 #endif /* TST_SAFE_MACROS_H__ */
