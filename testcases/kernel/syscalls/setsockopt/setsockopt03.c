@@ -3,7 +3,10 @@
  * Copyright (c) 2017 Richard Palethorpe <rpalethorpe@suse.com>
  * Based on repro-compatReleaseEntry.c by NCC group
  */
-/*
+
+/*\
+ * [Description]
+ *
  * Test for CVE-2016-4997
  *
  * For a full explanation of how the vulnerability works see:
