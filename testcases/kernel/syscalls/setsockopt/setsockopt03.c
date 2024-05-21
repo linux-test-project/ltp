@@ -14,7 +14,7 @@
  *
  * The original vulnerability was present in the 32-bit compatibility system
  * call, so the test should be compiled with -m32 and run on a 64-bit kernel.
- * For simplicities sake the test requests root privliges instead of creating
+ * For simplicities sake the test requests root privileges instead of creating
  * a user namespace.
  */
 
