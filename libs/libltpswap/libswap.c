@@ -241,9 +241,6 @@ bool is_swap_supported(const char *filename)
 	return true;
 }
 
-/*
- * Get kernel constant MAX_SWAPFILES value.
- */
 int tst_max_swapfiles(void)
 {
 	unsigned int swp_migration_num = 0, swp_hwpoison_num = 0,
@@ -296,9 +293,6 @@ int tst_max_swapfiles(void)
 		- swp_device_num - swp_pte_marker_num;
 }
 
-/*
- * Get the used swapfiles number.
- */
 int tst_count_swaps(void)
 {
 	FILE *fp;
