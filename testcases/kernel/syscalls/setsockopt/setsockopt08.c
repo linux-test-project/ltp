@@ -3,6 +3,7 @@
  * Copyright (c) 2021 SUSE LLC <rpalethorpe@suse.com>
  * Based on reproducer by Nicolai Stange based on PoC Andy Nguyen
  */
+
 /*\
  * [Description]
  *
@@ -95,10 +96,8 @@ static void *buffer;
 
 void setup(void)
 {
-	if (tst_kernel_bits() == 32 || sizeof(long) > 4) {
-		tst_res(TINFO,
-			"The vulnerability was only present in 32-bit compat mode");
-	}
+	if (!tst_is_compat_mode())
+		tst_res(TINFO, "The vulnerability was only present in 32-bit compat mode");
 
 	tst_setup_netns();
 }

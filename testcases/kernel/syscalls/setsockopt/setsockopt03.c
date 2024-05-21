@@ -48,9 +48,8 @@ struct payload {
 
 static void setup(void)
 {
-	if (tst_kernel_bits() == 32 || sizeof(long) > 4)
-		tst_res(TCONF,
-			"The vulnerability was only present in 32-bit compat mode");
+	if (!tst_is_compat_mode())
+		tst_res(TINFO, "The vulnerability was only present in 32-bit compat mode");
 }
 
 static void run(void)
