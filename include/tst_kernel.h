@@ -5,33 +5,44 @@
 #ifndef TST_KERNEL_H__
 #define TST_KERNEL_H__
 
-/*
- * Returns 32 if we are running on 32bit kernel and 64 if on 64bit kernel.
+/**
+ * tst_kernel_bits() - Detect if running on 32bit or 64bit kernel.
+ *
+ * Return: 32 if the test process is running on 32bit kernel and 64 if on 64bit
+ * kernel.
  */
 int tst_kernel_bits(void);
 
-/*
- * Returns non-zero if the test process is running in compat mode.
+/**
+ * tst_is_compat_mode() - Detect if running in compat mode.
+ *
+ * Detect if the test is 32bit binary executed on a 64bit kernel,
+ * i.e. we are testing the kernel compat layer.
+ *
+ * Return: non-zero if the test process is running in compat mode.
  */
 int tst_is_compat_mode(void);
 
-/*
- * Checks if the kernel module is built-in.
+/**
+ * tst_check_builtin_driver() - Check if the kernel module is built-in.
  *
- * @param driver The name of the driver.
- * @return Returns 0 if builtin driver
- * -1 when driver is missing or config file not available.
- * On Android *always* 0 (always expect the driver is available).
+ * @driver: the name of the driver.
+ *
+ * Return: 0 if builtin driver or -1 when driver is missing or config file not
+ * available. On Android *always* 0 (always expect the driver is available).
  */
 int tst_check_builtin_driver(const char *driver);
 
-/*
- * Checks support for the kernel module (both built-in and loadable).
+/**
+ * tst_check_driver() - Check support for the kernel module.
  *
- * @param driver The name of the driver.
- * @return Returns 0 if the kernel has the driver,
- * -1 when driver is missing or config file not available.
- * On Android *always* 0 (always expect the driver is available).
+ * Check support for the kernel module (both built-in and loadable).
+ *
+ * @driver: the name of the driver.
+ *
+ * Return: 0 if the kernel has the driver, -1 when driver is missing or config
+ * file not available. On Android *always* 0 (always expect the driver is
+ * available).
  */
 int tst_check_driver(const char *driver);
 

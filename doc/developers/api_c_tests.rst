@@ -1,4 +1,5 @@
 .. SPDX-License-Identifier: GPL-2.0-or-later
+.. Copyright (c) Linux Test Project, 2024
 
 .. Include headers in this file with:
 .. .. kernel-doc:: ../../include/tst_test.h
@@ -11,6 +12,7 @@ Core LTP API
 
 .. kernel-doc:: ../../include/tst_res_flags.h
 .. kernel-doc:: ../../include/tst_test.h
+.. kernel-doc:: ../../include/tst_kernel.h
 
 Option parsing
 --------------
