@@ -93,7 +93,9 @@ static int file_is_contiguous(const char *filename)
 
 	fd = SAFE_OPEN(filename, O_RDONLY);
 
-	fiemap = (struct fiemap *)SAFE_MALLOC(sizeof(struct fiemap) + sizeof(struct fiemap_extent));
+	fiemap = (struct fiemap *)SAFE_MALLOC(sizeof(struct fiemap)
+					      + sizeof(struct fiemap_extent));
+
 	memset(fiemap, 0, sizeof(struct fiemap) + sizeof(struct fiemap_extent));
 
 	fiemap->fm_start = 0;
@@ -243,7 +245,8 @@ bool is_swap_supported(const char *filename)
  */
 int tst_max_swapfiles(void)
 {
-	unsigned int swp_migration_num = 0, swp_hwpoison_num = 0, swp_device_num = 0, swp_pte_marker_num = 0;
+	unsigned int swp_migration_num = 0, swp_hwpoison_num = 0,
+		     swp_device_num = 0, swp_pte_marker_num = 0;
 	struct tst_kconfig_var migration = TST_KCONFIG_INIT("CONFIG_MIGRATION");
 	struct tst_kconfig_var memory = TST_KCONFIG_INIT("CONFIG_MEMORY_FAILURE");
 	struct tst_kconfig_var device = TST_KCONFIG_INIT("CONFIG_DEVICE_PRIVATE");
@@ -281,7 +284,8 @@ int tst_max_swapfiles(void)
 		swp_pte_marker_num = 1;
 	}
 
-	return DEFAULT_MAX_SWAPFILE - swp_migration_num - swp_hwpoison_num - swp_device_num - swp_pte_marker_num;
+	return DEFAULT_MAX_SWAPFILE - swp_migration_num - swp_hwpoison_num
+		- swp_device_num - swp_pte_marker_num;
 }
 
 /*
