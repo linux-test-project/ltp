@@ -39,7 +39,6 @@
 
 static void sbrk_test(void)
 {
-#if defined(__s390__) && defined(TST_ABI32)
 	void *ret1, *ret2;
 
 	/* set bkr to 0x10000000 */
@@ -59,13 +58,15 @@ static void sbrk_test(void)
 	}
 
 	tst_res(TPASS, "sbrk verify: %p", ret2);
-#else
-	tst_res(TCONF, "Only works in 32bit on s390 series system");
-#endif
 }
 
 static struct tst_test test = {
 	.test_all = sbrk_test,
+	.supported_archs = (const char *const []) {
+		"s390",
+		NULL
+	},
+	.needs_abi_bits = 32,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "473a06572fcd"},
 		{}
