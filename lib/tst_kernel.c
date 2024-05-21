@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  * Copyright (c) 2020-2021 Petr Vorel <pvorel@suse.cz>
+ * Copyright (c) Linux Test Project, 2017-2024
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +19,7 @@
 
 #include <sys/personality.h>
 #include <sys/utsname.h>
+#include <stdbool.h>
 #include <limits.h>
 
 #include "test.h"
@@ -94,6 +96,14 @@ int tst_kernel_bits(void)
 int tst_is_compat_mode(void)
 {
 	return TST_ABI != tst_kernel_bits();
+}
+
+bool tst_abi_bits(int abi)
+{
+	if (abi != 32 && abi != 64)
+		tst_brkm(TBROK | TERRNO, NULL, "abi parameter can be only 32 or 64");
+
+	return abi == TST_ABI;
 }
 
 static int tst_search_driver_(const char *driver, const char *file)

@@ -1,9 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2018-2024
  */
 
 #ifndef TST_KERNEL_H__
 #define TST_KERNEL_H__
+
+#include <stdbool.h>
 
 /**
  * tst_kernel_bits() - Detect if running on 32bit or 64bit kernel.
@@ -22,6 +25,15 @@ int tst_kernel_bits(void);
  * Return: non-zero if the test process is running in compat mode.
  */
 int tst_is_compat_mode(void);
+
+/**
+ * tst_abi_bits() - Detect if compiled for required kernel ABI.
+ *
+ * @abi: kernel ABI bits (32 or 64).
+ *
+ * Return: true if compiled for required ABI or false otherwise.
+ */
+bool tst_abi_bits(int abi);
 
 /**
  * tst_check_builtin_driver() - Check if the kernel module is built-in.
