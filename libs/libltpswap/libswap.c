@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2014-2024
  * Author: Stanislav Kholmanskikh <stanislav.kholmanskikh@oracle.com>
  */
 
@@ -251,9 +252,15 @@ int tst_max_swapfiles(void)
 	struct tst_kconfig_var memory = TST_KCONFIG_INIT("CONFIG_MEMORY_FAILURE");
 	struct tst_kconfig_var device = TST_KCONFIG_INIT("CONFIG_DEVICE_PRIVATE");
 	struct tst_kconfig_var marker = TST_KCONFIG_INIT("CONFIG_PTE_MARKER");
-	struct tst_kern_exv kvers[] = {
+	struct tst_kern_exv kvers_marker_migration[] = {
 		/* RHEL9 kernel has patch 6c287605f and 679d10331 since 5.14.0-179 */
 		{ "RHEL9", "5.14.0-179" },
+		{ NULL, NULL},
+	};
+
+	struct tst_kern_exv kvers_device[] = {
+		/* SLES12-SP4 has patch 5042db43cc26 since 4.12.14-5.5 */
+		{ "SLES", "4.12.14-5.5" },
 		{ NULL, NULL},
 	};
 
@@ -263,7 +270,7 @@ int tst_max_swapfiles(void)
 	tst_kconfig_read(&marker, 1);
 
 	if (migration.choice == 'y') {
-		if (tst_kvercmp2(5, 19, 0, kvers) < 0)
+		if (tst_kvercmp2(5, 19, 0, kvers_marker_migration) < 0)
 			swp_migration_num = 2;
 		else
 			swp_migration_num = 3;
@@ -273,14 +280,15 @@ int tst_max_swapfiles(void)
 		swp_hwpoison_num = 1;
 
 	if (device.choice == 'y') {
-		if (tst_kvercmp(4, 14, 0) >= 0)
+		if (tst_kvercmp2(4, 14, 0, kvers_device) >= 0)
 			swp_device_num = 2;
 		if (tst_kvercmp(5, 14, 0) >= 0)
 			swp_device_num = 4;
 	}
 
-	if ((marker.choice == 'y' && tst_kvercmp2(5, 19, 0, kvers) >= 0) ||
-		tst_kvercmp(6, 2, 0) >= 0) {
+	if ((marker.choice == 'y' &&
+	     tst_kvercmp2(5, 19, 0, kvers_marker_migration) >= 0)
+	    || tst_kvercmp(6, 2, 0) >= 0) {
 		swp_pte_marker_num = 1;
 	}
 
