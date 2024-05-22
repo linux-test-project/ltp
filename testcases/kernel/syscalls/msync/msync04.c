@@ -45,7 +45,7 @@ static uint64_t get_dirty_bit(void *data)
 
 static void test_msync(void)
 {
-	uint64_t dirty;
+	char buffer[20];
 
 	test_fd = SAFE_OPEN("msync04/testfile", O_CREAT | O_TRUNC | O_RDWR,
 		0644);
@@ -54,22 +54,26 @@ static void test_msync(void)
 			MAP_SHARED, test_fd, 0);
 	SAFE_CLOSE(test_fd);
 	mmaped_area[8] = 'B';
-	dirty = get_dirty_bit(mmaped_area);
-	if (!dirty) {
-		tst_res(TFAIL, "Expected dirty bit to be set after writing to"
-				" mmap()-ed area");
-		goto clean;
+
+	if (!get_dirty_bit(mmaped_area)) {
+		tst_res(TINFO, "Not see dirty bit so we check content of file instead");
+		test_fd = SAFE_OPEN("msync04/testfile", O_RDONLY);
+		SAFE_READ(0, test_fd, buffer, 9);
+		if (buffer[8] == 'B')
+			tst_res(TCONF, "write file ok but msync couldn't be tested"
+				" because the storage was written to too quickly");
+		else
+			tst_res(TFAIL, "write file failed");
+	} else {
+		if (msync(mmaped_area, pagesize, MS_SYNC) < 0) {
+			tst_res(TFAIL | TERRNO, "msync() failed");
+			goto clean;
+		}
+		if (get_dirty_bit(mmaped_area))
+			tst_res(TFAIL, "msync() failed to write dirty page despite succeeding");
+		else
+			tst_res(TPASS, "msync() working correctly");
 	}
-	if (msync(mmaped_area, pagesize, MS_SYNC) < 0) {
-		tst_res(TFAIL | TERRNO, "msync() failed");
-		goto clean;
-	}
-	dirty = get_dirty_bit(mmaped_area);
-	if (dirty)
-		tst_res(TFAIL, "msync() failed to write dirty page despite"
-				" succeeding");
-	else
-		tst_res(TPASS, "msync() working correctly");
 
 clean:
 	SAFE_MUNMAP(mmaped_area, pagesize);
