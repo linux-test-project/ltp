@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2002-2024
  */
 
-/*
- * DESCRIPTION
- * 1) msgsnd(2) fails and sets errno to EAGAIN if the message can't be
- *    sent due to the msg_qbytes limit for the queue and IPC_NOWAIT is
- *    specified.
- * 2) msgsnd(2) fails and sets errno to EINTR if msgsnd(2) sleeps on a
- *    full message queue condition and the process catches a signal.
+/*\
+ * [Description]
+ *
+ * Verify that msgsnd(2) fails and sets correct errno:
+ *
+ * - EAGAIN if the message can't be sent due to the msg_qbytes limit for the
+ *   queue and IPC_NOWAIT is specified
+ * - EINTR if msgsnd(2) sleeps on a full message queue condition and the process
+ *   catches a signal
  */
 
 #include <errno.h>
