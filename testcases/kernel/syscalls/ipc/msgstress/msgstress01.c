@@ -160,7 +160,7 @@ static void reader(const int id, const int pos)
 			return;
 		}
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < msg_recv.data.len; i++) {
 			if (msg_recv.data.pbytes[i] != buff->msg.data.pbytes[i]) {
 				tst_res(TFAIL, "Received wrong data at index %d: %x != %x", i,
 					msg_recv.data.pbytes[i],
