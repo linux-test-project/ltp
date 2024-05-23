@@ -50,6 +50,9 @@ static char *str_num_iterations;
 static int num_messages = 1000;
 static int num_iterations = MAXNREPS;
 static volatile int *stop;
+static volatile int *fail;
+static int *finished;
+static int *flags;
 
 static int get_used_sysvipc(void)
 {
@@ -77,6 +80,10 @@ static void reset_messages(void)
 
 	for (int i = 0; i < num_messages; i++)
 		ipc_data[i].id = -1;
+
+	*stop = 0;
+	*fail = 0;
+	*finished = 0;
 }
 
 static int create_message(const int id)
@@ -113,6 +120,8 @@ static void writer(const int id, const int pos)
 			tst_brk(TBROK | TERRNO, "msgsnd() failed");
 		}
 	}
+
+	tst_atomic_inc(finished);
 }
 
 static void reader(const int id, const int pos)
@@ -139,6 +148,7 @@ static void reader(const int id, const int pos)
 			tst_res(TFAIL, "Received the wrong message type");
 
 			*stop = 1;
+			*fail = 1;
 			return;
 		}
 
@@ -146,6 +156,7 @@ static void reader(const int id, const int pos)
 			tst_res(TFAIL, "Received the wrong message data length");
 
 			*stop = 1;
+			*fail = 1;
 			return;
 		}
 
@@ -156,6 +167,7 @@ static void reader(const int id, const int pos)
 					buff->msg.data.pbytes[i]);
 
 				*stop = 1;
+				*fail = 1;
 				return;
 			}
 		}
@@ -164,6 +176,8 @@ static void reader(const int id, const int pos)
 		tst_res(TDEBUG, "msg_recv.type = %ld", msg_recv.type);
 		tst_res(TDEBUG, "msg_recv.data.len = %d", msg_recv.data.len);
 	}
+
+	tst_atomic_inc(finished);
 }
 
 static void remove_queues(void)
@@ -198,12 +212,37 @@ static void run(void)
 
 		if (*stop)
 			break;
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TWARN, "Out of runtime during forking...");
+			*stop = 1;
+			break;
+		}
+	}
+
+	if (!(*stop))
+		tst_res(TINFO, "All processes running");
+
+	for (;;) {
+		if (tst_atomic_load(finished) == 2 * num_messages)
+			break;
+
+		if (*stop)
+			break;
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "Out of runtime, stopping processes...");
+			*stop = 1;
+			break;
+		}
+
+		sleep(1);
 	}
 
 	tst_reap_children();
 	remove_queues();
 
-	if (!(*stop))
+	if (!(*fail))
 		tst_res(TPASS, "Test passed. All messages have been received");
 }
 
@@ -244,14 +283,16 @@ static void setup(void)
 		MAP_SHARED | MAP_ANONYMOUS,
 		-1, 0);
 
-	stop = SAFE_MMAP(
+	flags = SAFE_MMAP(
 		NULL,
-		sizeof(int),
+		sizeof(int) * 3,
 		PROT_READ | PROT_WRITE,
 		MAP_SHARED | MAP_ANONYMOUS,
 		-1, 0);
 
-	reset_messages();
+	stop = &flags[0];
+	fail = &flags[1];
+	finished = &flags[2];
 }
 
 static void cleanup(void)
@@ -262,7 +303,7 @@ static void cleanup(void)
 	remove_queues();
 
 	SAFE_MUNMAP(ipc_data, sizeof(struct sysv_data) * num_messages);
-	SAFE_MUNMAP((void *)stop, sizeof(int));
+	SAFE_MUNMAP(flags, sizeof(int) * 3);
 }
 
 static struct tst_test test = {
@@ -273,7 +314,8 @@ static struct tst_test test = {
 	.max_runtime = 180,
 	.options = (struct tst_option[]) {
 		{"n:", &str_num_messages, "Number of messages to send (default: 1000)"},
-		{"l:", &str_num_iterations, "Number iterations per message (default: 10000)"},
+		{"l:", &str_num_iterations, "Number iterations per message (default: "
+			TST_TO_STR(MAXNREPS) ")"},
 		{},
 	},
 };
