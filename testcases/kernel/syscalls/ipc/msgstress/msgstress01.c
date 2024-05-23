@@ -101,8 +101,18 @@ static void writer(const int id, const int pos)
 	struct sysv_data *buff = &ipc_data[pos];
 	int iter = num_iterations;
 
-	while (--iter >= 0 && !(*stop))
-		SAFE_MSGSND(id, &buff->msg, 100, 0);
+	while (--iter >= 0 && !(*stop)) {
+		int size = msgsnd(id, &buff->msg, 100, IPC_NOWAIT);
+
+		if (size < 0) {
+			if (errno == EAGAIN) {
+				usleep(10);
+				continue;
+			}
+
+			tst_brk(TBROK | TERRNO, "msgsnd() failed");
+		}
+	}
 }
 
 static void reader(const int id, const int pos)
@@ -115,7 +125,15 @@ static void reader(const int id, const int pos)
 	while (--iter >= 0 && !(*stop)) {
 		memset(&msg_recv, 0, sizeof(struct sysv_msg));
 
-		size = SAFE_MSGRCV(id, &msg_recv, 100, MSGTYPE, 0);
+		size = msgrcv(id, &msg_recv, 100, MSGTYPE, IPC_NOWAIT);
+		if (size < 0) {
+			if (errno == ENOMSG) {
+				usleep(10);
+				continue;
+			}
+
+			tst_brk(TBROK | TERRNO, "msgrcv() failed");
+		}
 
 		if (msg_recv.type != buff->msg.type) {
 			tst_res(TFAIL, "Received the wrong message type");
@@ -152,6 +170,7 @@ static void remove_queues(void)
 {
 	for (int pos = 0; pos < num_messages; pos++) {
 		struct sysv_data *buff = &ipc_data[pos];
+
 		if (buff->id != -1)
 			SAFE_MSGCTL(buff->id, IPC_RMID, NULL);
 	}
