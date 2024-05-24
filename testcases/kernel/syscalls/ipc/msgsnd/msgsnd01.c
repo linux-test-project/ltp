@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2002-2024
  */
 
-/*
- * DESCRIPTION
- * test that msgsnd() enqueues a message correctly.
+/*\
+ * [Description]
+ *
+ * Verify that msgsnd(2) enqueues a message correctly.
  */
 
 #include <errno.h>
