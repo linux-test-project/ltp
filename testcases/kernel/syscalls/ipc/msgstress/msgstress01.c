@@ -260,7 +260,7 @@ static void setup(void)
 	free_msgs = total_msg - get_used_sysvipc();
 
 	/* We remove 10% of free pids, just to be sure
-	 * we won't saturate the sysyem with processes.
+	 * we won't saturate the system with processes.
 	 */
 	free_pids = tst_get_free_pids() / 2.1;
 
