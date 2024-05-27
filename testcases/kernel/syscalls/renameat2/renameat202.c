@@ -78,11 +78,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	if ((tst_kvercmp(3, 15, 0)) < 0) {
-		tst_brkm(TCONF, NULL,
-			"This test can only run on kernels that are 3.15. and higher");
-	}
-
 	tst_tmpdir();
 
 	fs_type = tst_fs_type(cleanup, ".");
