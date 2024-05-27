@@ -148,11 +148,6 @@ static void test03(void)
 {
 	tst_res(TINFO, "zeroing file space with FALLOC_FL_ZERO_RANGE");
 
-	if (tst_kvercmp(3, 15, 0) < 0) {
-		tst_brk(TCONF,
-			"FALLOC_FL_ZERO_RANGE needs Linux 3.15 or newer");
-	}
-
 	size_t alloc_size0 = get_allocsize();
 
 	tst_res(TINFO, "read current allocated file size '%zu'", alloc_size0);
