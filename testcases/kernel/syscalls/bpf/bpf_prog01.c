@@ -107,7 +107,6 @@ void run(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
-	.min_kver = "3.19",
 	.bufs = (struct tst_buffers []) {
 		{&log, .size = BUFSIZ},
 		{&attr, .size = sizeof(*attr)},

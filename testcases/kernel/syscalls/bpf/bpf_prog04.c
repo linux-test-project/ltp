@@ -105,7 +105,6 @@ static void run(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
-	.min_kver = "3.18",
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.caps = (struct tst_cap []) {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
