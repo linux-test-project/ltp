@@ -7,7 +7,6 @@
 TST_SETUP="setup"
 TST_TESTFUNC="do_test"
 TST_CLEANUP="cleanup"
-TST_MIN_KVER="3.18"
 
 cleanup()
 {
