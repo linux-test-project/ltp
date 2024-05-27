@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Richard Palethorpe <rpalethorpe@suse.com>
+ */
+
+/*\
+ * [Description]
  *
  * Trivial Extended Berkeley Packet Filter (eBPF) test.
  *
  * Sanity check creating and updating maps.
  */
-/*
- * If test is executed in a loop and limit for locked memory (ulimit -l) is
+
+ /*
+ * If the test is executed in a loop and limit for locked memory (ulimit -l) is
  * too low bpf() call can fail with EPERM due to deffered freeing.
  */
 

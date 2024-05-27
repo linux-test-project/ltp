@@ -1,13 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Richard Palethorpe <rpalethorpe@suse.com>
+ */
+
+/*\
+ * [Description]
  *
  * Check if eBPF can do arithmetic with 64bits. This targets a specific
  * regression which only effects unprivileged users who are subject to extra
  * pointer arithmetic checks during verification.
  *
- * Fixed by commit 3612af783cf52c74a031a2f11b82247b2599d3cd.
- * https://new.blog.cloudflare.com/ebpf-cant-count/
+ * Fixed by kernel commit
+ * 3612af783cf5 ("bpf: fix sanitation rewrite in case of non-pointers")
+ *
+ * https://blog.cloudflare.com/ebpf-cant-count/
  *
  * This test is very similar in structure to bpf_prog01 which is better
  * annotated.

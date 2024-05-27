@@ -1,19 +1,24 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Richard Palethorpe <rpalethorpe@suse.com>
- * Original byte code was provided by jannh@google.com
+ * Original byte code was provided by Jann Horn <jannh@google.com>
+ */
  *
- * Check for the bug fixed by 95a762e2c8c942780948091f8f2a4f32fce1ac6f
- * "bpf: fix incorrect sign extension in check_alu_op()"
+/*\
+ * [Description]
+ *
  * CVE-2017-16995
  *
- * This test is very similar to the reproducer found here:
+ * Test for the bug fixed by kernel commit
+ * 95a762e2c8c9 ("bpf: fix incorrect sign extension in check_alu_op()")
+ *
+ * The test is very similar to the original reproducer:
  * https://bugs.chromium.org/p/project-zero/issues/detail?id=1454
  *
  * However it has been modified to try to corrupt the map struct instead of
  * writing to a noncanonical pointer. This appears to be more reliable at
  * producing stack traces and confirms we would be able to overwrite the ops
- * function pointers, as suggested by Jan.
+ * function pointers, as suggested by Jan Horn.
  *
  * If the eBPF code is loaded then this is considered a failure regardless of
  * whether it is able to cause any visible damage.
