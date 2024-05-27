@@ -137,14 +137,6 @@ int main(int argc, char *argv[])
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if ((tst_kvercmp(3, 17, 0) < 0)
-			    && (tdat[testno].flags & MSG_ERRQUEUE)
-			    && (tdat[testno].type & SOCK_STREAM)) {
-				tst_resm(TCONF, "skip MSG_ERRQUEUE test, "
-						"it's supported from 3.17");
-				continue;
-			}
-
 			tdat[testno].setup();
 			TEST(recvfrom(s, tdat[testno].buf, tdat[testno].buflen,
 				      tdat[testno].flags, tdat[testno].from,
