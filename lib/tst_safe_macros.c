@@ -695,16 +695,16 @@ int safe_mprotect(const char *file, const int lineno,
 	tst_prot_to_str(prot, prot_buf);
 
 	tst_res_(file, lineno, TDEBUG,
-		"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
+		"mprotect(%p, %zi, %s(%x))", addr, len, prot_buf, prot);
 
 	rval = mprotect(addr, len, prot);
 
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			"mprotect(%p, %ld, %s(%x))", addr, len, prot_buf, prot);
+			"mprotect(%p, %zi, %s(%x))", addr, len, prot_buf, prot);
 	} else if (rval) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			"mprotect(%p, %ld, %s(%x)) return value %d",
+			"mprotect(%p, %zi, %s(%x)) return value %d",
 			addr, len, prot_buf, prot, rval);
 	}
 
