@@ -281,8 +281,8 @@ static inline void *safe_mmap(const char *file, const int lineno,
 	tst_prot_to_str(prot, prot_buf);
 
 	tst_res_(file, lineno, TDEBUG,
-		"mmap(%p, %zu, %s(%x), %d, %d, %ld)",
-		addr, length, prot_buf, prot, flags, fd, offset);
+		"mmap(%p, %zu, %s(%x), %d, %d, %lld)",
+		addr, length, prot_buf, prot, flags, fd, (long long int)offset);
 
 	rval = mmap(addr, length, prot, flags, fd, offset);
 	if (rval == MAP_FAILED) {
