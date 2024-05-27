@@ -96,9 +96,6 @@ int main(int argc, char **argv)
 
 	tst_require_root();
 
-	if ((tst_kvercmp(3, 14, 0)) < 0)
-		tst_brkm(TCONF, NULL, "EDF needs kernel 3.14 or higher");
-
 	for (lc = 0; TEST_LOOPING(lc); lc++) {
 		pthread_create(&thread, NULL, run_deadline, NULL);
 		pthread_join(thread, NULL);

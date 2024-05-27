@@ -101,8 +101,5 @@ void setup(void)
 {
 	unused_pid = tst_get_unused_pid(setup);
 
-	if ((tst_kvercmp(3, 14, 0)) < 0)
-		tst_brkm(TCONF, NULL, "EDF needs kernel 3.14 or higher");
-
 	TEST_PAUSE;
 }
