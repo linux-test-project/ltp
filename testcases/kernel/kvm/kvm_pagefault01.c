@@ -193,16 +193,14 @@ static void reload_module(const char *module, char *arg)
 
 static void disable_tdp(void)
 {
-	if (!access(TDP_MMU_SYSFILE, F_OK)) {
-		/* FIXME: Is setting tdp_mmu=0 sufficient to disable TDP? */
-		return;
-	}
-
 	if (read_bool_sys_param(TDP_AMD_SYSFILE) > 0)
 		reload_module("kvm_amd", "npt=0");
 
 	if (read_bool_sys_param(TDP_INTEL_SYSFILE) > 0)
 		reload_module("kvm_intel", "ept=0");
+
+	if (read_bool_sys_param(TDP_MMU_SYSFILE) > 0)
+		tst_res(TINFO, "WARNING: tdp_mmu is enabled, beware of false negatives");
 }
 
 static void setup(void)
@@ -216,11 +214,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = tst_kvm_cleanup,
 	.needs_root = 1,
-	.save_restore = (const struct tst_path_val[]) {
-		{"/sys/module/kvm/parameters/tdp_mmu", "0",
-			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
-		{}
-	},
 	.supported_archs = (const char *const []) {
 		"x86_64",
 		NULL
