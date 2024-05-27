@@ -3,7 +3,7 @@
  * Copyright (c) 2019 Richard Palethorpe <rpalethorpe@suse.com>
  * Original byte code was provided by Jann Horn <jannh@google.com>
  */
- *
+
 /*\
  * [Description]
  *
