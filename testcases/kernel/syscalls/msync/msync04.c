@@ -20,7 +20,7 @@ static long pagesize;
 
 #define STRING_TO_WRITE	"AAAAAAAAAA"
 
-uint64_t get_dirty_bit(void *data)
+static uint64_t get_dirty_bit(void *data)
 {
 	int pagemap_fd, pageflags_fd;
 	unsigned long addr;
