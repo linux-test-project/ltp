@@ -12,7 +12,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP=do_setup
 TST_CLEANUP=do_clean
 TST_TESTFUNC=do_test
-TST_MIN_KVER="2.6.26"
 
 do_setup()
 {
