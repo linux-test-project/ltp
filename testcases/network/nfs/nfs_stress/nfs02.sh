@@ -8,7 +8,7 @@
 #
 # Ported by: Robbie Williamson (robbiew@us.ibm.com)
 
-TST_CNT=3
+TST_CNT=4
 TST_TESTFUNC="do_test"
 LTP_DATAFILES="$LTPROOT/testcases/bin/datafiles"
 
@@ -44,6 +44,21 @@ do_test3()
 	ROD ls -l ascii.sm | grep -q "r--"
 	ROD chmod a+w ascii.sm
 	tst_res TPASS "test3 passed"
+}
+
+do_test4()
+{
+	tst_require_cmds dd diff
+
+	tst_res TINFO "do_test4, copy data in direct mode"
+	ROD dd oflag=direct if="$LTP_DATAFILES/ascii.jmb" of=ascii2.jmb
+	echo 3 >/proc/sys/vm/drop_caches
+	ROD dd iflag=direct if=ascii2.jmb of="$TST_TMPDIR/ascii2.jmb"
+	echo 3 >/proc/sys/vm/drop_caches
+	tst_res TINFO "compare both ascii.jmbs"
+	ROD diff "$LTP_DATAFILES/ascii.jmb" ascii2.jmb
+	ROD diff "$LTP_DATAFILES/ascii.jmb" "$TST_TMPDIR/ascii2.jmb"
+	tst_res TPASS "test4 passed"
 }
 
 . nfs_lib.sh
