@@ -1,302 +1,73 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) Red Hat Inc., 2008
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) Red Hat Inc., 2008
+ * Copyright (c) Linux Test Project, 2006-2024
  */
 
-/*
- * NAME
- *	signalfd01.c
+/*\
+ * [Description]
  *
- * DESCRIPTION
- *	Check signalfd can receive signals
+ * Verify that signalfd() works as expected.
  *
- * USAGE
- * 	signalfd01
- *
- * HISTORY
- *	9/2008 Initial version by Masatake YAMATO <yamato@redhat.com>
- *
- * RESTRICTIONS
- * 	None
+ * - signalfd() can create fd, and fd can receive signal.
+ * - signalfd() can reassign fd, and fd can receive signal.
  */
-#define _GNU_SOURCE
 
-#include "config.h"
-
-#include "test.h"
-
-#include <errno.h>
-#include <signal.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <inttypes.h>
-#include "ltp_signal.h"
-
-TCID_DEFINE(signalfd01);
-int TST_TOTAL = 1;
-
-#ifndef HAVE_SIGNALFD
-#define  USE_STUB
-#endif
-
-#if defined HAVE_SYS_SIGNALFD_H
 #include <sys/signalfd.h>
-#elif defined HAVE_LINUX_SIGNALFD_H
-#include <linux/signalfd.h>
-#define USE_OWNIMPL
-#else
-#define  USE_STUB
-#endif
+#include "tst_test.h"
 
-#ifndef HAVE_STRUCT_SIGNALFD_SIGINFO_SSI_SIGNO
-#define USE_STUB
-#endif
+static int fd_signal = -1;
+static sigset_t mask1;
+static sigset_t mask2;
 
-#ifdef USE_STUB
-int main(void)
+static void check_signal(int fd, uint32_t signal)
 {
-	tst_brkm(TCONF, NULL, "System doesn't support execution of the test");
+	pid_t pid = getpid();
+	ssize_t bytes;
+	struct signalfd_siginfo siginfo;
+
+	SAFE_KILL(pid, signal);
+	bytes = SAFE_READ(0, fd, &siginfo, sizeof(siginfo));
+	TST_EXP_EQ_LI(bytes, sizeof(siginfo));
+	TST_EXP_EQ_LI(siginfo.ssi_signo, signal);
 }
 
-#else
-#if defined USE_OWNIMPL
-#include "lapi/syscalls.h"
-int signalfd(int fd, const sigset_t * mask, int flags)
+static void setup(void)
 {
-	/* Taken from GLIBC. */
-	return tst_syscall(__NR_signalfd, fd, mask, SIGSETSIZE);
-}
-#endif
-
-void cleanup(void);
-void setup(void);
-
-int do_test1(uint32_t sig)
-{
-	int sfd_for_next;
-	int sfd;
-	sigset_t mask;
-	pid_t pid;
-	struct signalfd_siginfo fdsi;
-	ssize_t s;
-
-	sigemptyset(&mask);
-	sigaddset(&mask, sig);
-	if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0) {
-		tst_brkm(TBROK, cleanup,
-			 "sigprocmask() Failed: errno=%d : %s",
-			 errno, strerror(errno));
-	}
-
-	TEST(signalfd(-1, &mask, 0));
-
-	if ((sfd = TEST_RETURN) == -1) {
-		tst_resm(TFAIL,
-			 "signalfd() Failed, errno=%d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-		sfd_for_next = -1;
-		return sfd_for_next;
-
-	} else {
-		tst_resm(TPASS, "signalfd is created successfully");
-		sfd_for_next = sfd;
-		goto out;
-	}
-
-	if (fcntl(sfd, F_SETFL, O_NONBLOCK) == -1) {
-		close(sfd);
-		tst_brkm(TBROK, cleanup,
-			 "setting signalfd nonblocking mode failed: errno=%d : %s",
-			 errno, strerror(errno));
-	}
-
-	pid = getpid();
-	if (kill(pid, sig) == -1) {
-		close(sfd);
-		tst_brkm(TBROK, cleanup,
-			 "kill(self, %s) failed: errno=%d : %s",
-			 strsignal(sig), errno, strerror(errno));
-	}
-
-	s = read(sfd, &fdsi, sizeof(struct signalfd_siginfo));
-	if ((s > 0) && (s != sizeof(struct signalfd_siginfo))) {
-		tst_resm(TFAIL,
-			 "getting incomplete signalfd_siginfo data: "
-			 "actual-size=%zd, expected-size=%zu",
-			 s, sizeof(struct signalfd_siginfo));
-		sfd_for_next = -1;
-		close(sfd);
-		goto out;
-	} else if (s < 0) {
-		if (errno == EAGAIN) {
-			tst_resm(TFAIL,
-				 "signalfd_siginfo data is not delivered yet");
-			sfd_for_next = -1;
-			close(sfd);
-			goto out;
-		} else {
-			close(sfd);
-			tst_brkm(TBROK, cleanup,
-				 "read signalfd_siginfo data failed: errno=%d : %s",
-				 errno, strerror(errno));
-		}
-	} else if (s == 0) {
-		tst_resm(TFAIL, "got EOF unexpectedly");
-		sfd_for_next = -1;
-		close(sfd);
-		goto out;
-	}
-
-	if (fdsi.ssi_signo == sig) {
-		tst_resm(TPASS, "got expected signal");
-		sfd_for_next = sfd;
-		goto out;
-	} else {
-		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.ssi_signo, strsignal(fdsi.ssi_signo));
-		sfd_for_next = -1;
-		close(sfd);
-		goto out;
-	}
-
-out:
-	return sfd_for_next;
+	SAFE_SIGEMPTYSET(&mask1);
+	SAFE_SIGADDSET(&mask1, SIGUSR1);
+	SAFE_SIGPROCMASK(SIG_BLOCK, &mask1, NULL);
+	SAFE_SIGEMPTYSET(&mask2);
+	SAFE_SIGADDSET(&mask2, SIGUSR2);
+	SAFE_SIGPROCMASK(SIG_BLOCK, &mask2, NULL);
 }
 
-void do_test2(int fd, uint32_t sig)
+static void cleanup(void)
 {
-	int sfd;
-	sigset_t mask;
-	pid_t pid;
-	struct signalfd_siginfo fdsi;
-	ssize_t s;
+	if (fd_signal > 0)
+		SAFE_CLOSE(fd_signal);
+}
 
-	sigemptyset(&mask);
-	sigaddset(&mask, sig);
-	if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0) {
-		close(fd);
-		tst_brkm(TBROK, cleanup,
-			 "sigprocmask() Failed: errno=%d : %s",
-			 errno, strerror(errno));
-	}
-
-	TEST(signalfd(fd, &mask, 0));
-
-	if ((sfd = TEST_RETURN) == -1) {
-		tst_resm(TFAIL,
-			 "reassignment the file descriptor by signalfd() failed, errno=%d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
+static void verify_signalfd(void)
+{
+	/* create fd */
+	TST_EXP_FD(signalfd(fd_signal, &mask1, 0),
+		"%s", "signalfd() create fd");
+	if (TST_RET == -1)
 		return;
-	} else if (sfd != fd) {
-		tst_resm(TFAIL,
-			 "different fd is returned in reassignment: expected-fd=%d, actual-fd=%d",
-			 fd, sfd);
-		close(sfd);
+	fd_signal = TST_RET;
+	check_signal(fd_signal, SIGUSR1);
+	/* reassign fd */
+	TST_EXP_FD(signalfd(fd_signal, &mask2, 0), "%s",
+		"signalfd() reassign fd");
+	if (TST_RET == -1)
 		return;
-
-	} else {
-		tst_resm(TPASS, "signalfd is successfully reassigned");
-		goto out;
-	}
-
-	pid = getpid();
-	if (kill(pid, sig) == -1) {
-		close(sfd);
-		tst_brkm(TBROK, cleanup,
-			 "kill(self, %s) failed: errno=%d : %s",
-			 strsignal(sig), errno, strerror(errno));
-	}
-
-	s = read(sfd, &fdsi, sizeof(struct signalfd_siginfo));
-	if ((s > 0) && (s != sizeof(struct signalfd_siginfo))) {
-		tst_resm(TFAIL,
-			 "getting incomplete signalfd_siginfo data: "
-			 "actual-size=%zd, expected-size= %zu",
-			 s, sizeof(struct signalfd_siginfo));
-		goto out;
-	} else if (s < 0) {
-		if (errno == EAGAIN) {
-			tst_resm(TFAIL,
-				 "signalfd_siginfo data is not delivered yet");
-			goto out;
-		} else {
-			close(sfd);
-			tst_brkm(TBROK, cleanup,
-				 "read signalfd_siginfo data failed: errno=%d : %s",
-				 errno, strerror(errno));
-		}
-	} else if (s == 0) {
-		tst_resm(TFAIL, "got EOF unexpectedly");
-		goto out;
-	}
-
-	if (fdsi.ssi_signo == sig) {
-		tst_resm(TPASS, "got expected signal");
-		goto out;
-	} else {
-		tst_resm(TFAIL, "got unexpected signal: signal=%d : %s",
-			 fdsi.ssi_signo, strsignal(fdsi.ssi_signo));
-		goto out;
-	}
-
-out:
-	return;
+	TST_EXP_EQ_LI(TST_RET, fd_signal);
+	check_signal(fd_signal, SIGUSR2);
 }
 
-int main(int argc, char **argv)
-{
-	int lc;
-	int sfd;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		sfd = do_test1(SIGUSR1);
-		if (sfd < 0)
-			continue;
-
-		do_test2(sfd, SIGUSR2);
-		close(sfd);
-	}
-
-	cleanup();
-
-	tst_exit();
-}
-
-/*
- * setup() - performs all the ONE TIME setup for this test.
- */
-void setup(void)
-{
-
-	TEST_PAUSE;
-}
-
-/*
- * cleanup() - performs all the ONE TIME cleanup for this test at completion
- * 	       or premature exit.
- */
-void cleanup(void)
-{
-
-}
-
-#endif
+static struct tst_test test = {
+	.test_all = verify_signalfd,
+	.setup = setup,
+	.cleanup = cleanup,
+};
