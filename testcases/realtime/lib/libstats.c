@@ -46,12 +46,6 @@
 #include <libstats.h>
 #include <librttest.h>
 
-#include "../include/realtime_config.h"
-
-#ifndef HAVE_EXP10
-# define exp10(x) (exp((x) * log(10)))
-#endif
-
 int save_stats = 0;
 
 /* static helper functions */
