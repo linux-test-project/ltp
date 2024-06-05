@@ -2,17 +2,21 @@
 /* Copyright (c) International Business Machines Corp., 2001
  * Ported to LTP: Wayne Boyer
  */
-/*
- * Description:
- *   1) attempt to rmdir() non-empty directory -> ENOTEMPTY
- *   2) attempt to rmdir() directory with long path name -> ENAMETOOLONG
- *   3) attempt to rmdir() non-existing directory -> ENOENT
- *   4) attempt to rmdir() a file -> ENOTDIR
- *   5) attempt to rmdir() invalid pointer -> EFAULT
- *   6) attempt to rmdir() symlink loop -> ELOOP
- *   7) attempt to rmdir() dir on RO mounted FS -> EROFS
- *   8) attempt to rmdir() mount point -> EBUSY
- *   9) attempt to rmdir() current directory "." -> EINVAL
+
+/*\
+ * [Description]
+ *
+ * Verify that, rmdir(2) returns -1 and sets errno to
+ *
+ * 1. ENOTEMPTY when removing a non-empty directory
+ * 2. ENAMETOOLONG when removing a directory with long path name
+ * 3. ENOENT when removing a non-existing directory
+ * 4. ENOTDIR when removing a a file
+ * 5. EFAULT when removing a invalid pointer
+ * 6. ELOOP when removing a symlink loop
+ * 7. EROFS when removing a dir on RO mounted FS
+ * 8. EBUSY when removing a mount point
+ * 9. EINVAL when removing "." (current directory)
  */
 
 #include <errno.h>
