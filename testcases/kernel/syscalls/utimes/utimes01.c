@@ -1,25 +1,24 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Crackerjack Project., 2007 ,Hitachi, Ltd
+ * Copyright (c) Crackerjack Project., 2007, Hitachi, Ltd
  * Author(s): Takahiro Yasui <takahiro.yasui.mp@hitachi.com>
+ * Copyright (c) Linux Test Project, 2014-2018
  * Ported to LTP: Manas Kumar Nayak maknayak@in.ibm.com>
  */
-/*
- * Description:
- *   Verify that,
- *   1) utimes() returns -1 and sets errno to EACCES if times
- *      is NULL, the caller's effective user ID does not match
- *      the owner of the file, the caller does not have write
- *      access to the file, and the caller is not privileged.
- *   2) utimes() returns -1 and sets errno to ENOENT if filename
- *      does not exist.
- *   3) utimes() returns -1 and sets errno to EFAULT if filename
- *      is NULL.
- *   4) utimes() returns -1 and sets errno to EPERM if times is
- *      not NULL, the caller's effective UID does not match the
- *      owner of the file, and the caller is not privileged.
- *   5) utimes() returns -1 and sets errno to EROFS if path resides
- *      on a read-only file system.
+
+/*\
+ * [Description]
+ *
+ * Verify that, utimes(2) returns -1 and sets errno to
+ *
+ * 1. EACCES if times is NULL, the caller's effective user ID does not match
+ * the owner of the file, the caller does not have write access to the file,
+ * and the caller is not privileged
+ * 2. ENOENT if filename does not exist
+ * 3. EFAULT if filename is NULL
+ * 4. EPERM if times is not NULL, the caller's effective UID does not match
+ * the owner of the file, and the caller is not privileged
+ * 5. EROFS if path resides on a read-only file system
  */
 
 #include <sys/types.h>
