@@ -5,25 +5,20 @@
  * Copyright (c) 2014-2018 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * Test Name: chmod06
+/*\
+ * [Description]
  *
- * Test Description:
- *   Verify that,
- *   1) chmod(2) returns -1 and sets errno to EPERM if the effective user id
- *	of process does not match the owner of the file and the process is
- *	not super user.
- *   2) chmod(2) returns -1 and sets errno to EACCES if search permission is
- *	denied on a component of the path prefix.
- *   3) chmod(2) returns -1 and sets errno to EFAULT if pathname points
- *	outside user's accessible address space.
- *   4) chmod(2) returns -1 and sets errno to ENAMETOOLONG if the pathname
- *	component is too long.
- *   5) chmod(2) returns -1 and sets errno to ENOTDIR if the directory
- *	component in pathname is not a directory.
- *   6) chmod(2) returns -1 and sets errno to ENOENT if the specified file
- *	does not exists.
+ * Verify that, chmod(2) returns -1 and sets errno to
+ *
+ * 1. EPERM if the effective user id of process does not match the owner of the
+ * file and the process is not super user
+ * 2. EACCES if search permission is denied on a component of the path prefix
+ * 3. EFAULT if pathname points outside user's accessible address space
+ * 4. ENAMETOOLONG if the pathname component is too long
+ * 5. ENOTDIR if the directory component in pathname is not a directory
+ * 6. ENOENT if the specified file does not exists
  */
+
 #include <pwd.h>
 #include <errno.h>
 #include "tst_test.h"
