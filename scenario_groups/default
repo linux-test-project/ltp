@@ -2,7 +2,6 @@ syscalls
 fs
 fs_perms_simple
 dio
-io
 mm
 ipc
 irq
@@ -13,8 +12,6 @@ pty
 containers
 fs_bind
 controllers
-filecaps
-cap_bounds
 fcntl-locktests
 power_management_tests
 hugetlb
