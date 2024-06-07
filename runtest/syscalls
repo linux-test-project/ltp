@@ -1465,6 +1465,8 @@ shmget04 shmget04
 shmget05 shmget05
 shmget06 shmget06
 
+shutdown01 shutdown01
+
 sigaction01 sigaction01
 sigaction02 sigaction02
 
