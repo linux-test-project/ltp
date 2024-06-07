@@ -210,9 +210,3 @@ test-metadata: metadata-all
 help:
 	@echo "Please read the Configuration section in $(top_srcdir)/INSTALL"
 	@exit 1
-
-## Menuconfig
-menuconfig:
-	@$(SHELL) "$(top_srcdir)/ltpmenu"
-
-## End misc targets.
