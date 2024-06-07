@@ -146,17 +146,17 @@ New test should
 C tests
 ~~~~~~~
 
-* Use the new C API, implementing ``struct tst_test``
+* Use :doc:`../developers/api_c_tests`, implementing :ref:`struct tst_test`
 * Test binaries are added into corresponding ``.gitignore`` files
 * Check coding style with ``make check``
 * Docparse documentation
-* If a test is a regression test it should include ``.tags`` in the
-  ``struct tst_test`` definition
+* If a test is a regression test it should include :ref:`.tags<struct tst_tag>` in the
+  :ref:`struct tst_test` definition
 
 Shell tests
 ~~~~~~~~~~~
 
-* Use new shell API
+* Use :doc:`../developers/api_shell_tests`
 * Check coding style with ``make check``
 * If a test is a regression test it should include related kernel or glibc
   commits as a comment
@@ -164,4 +164,4 @@ Shell tests
 LTP library
 ~~~~~~~~~~~
 
-For patchset touching the LTP library, follow the LTP library guidelines.
+For patchset touching the LTP library, follow :doc:`../developers/ltp_library`.

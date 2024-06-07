@@ -23,6 +23,7 @@ release = '1.0'
 extensions = [
     'linuxdoc.rstKernelDoc',
     'sphinxcontrib.spelling',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.extlinks'
 ]
 

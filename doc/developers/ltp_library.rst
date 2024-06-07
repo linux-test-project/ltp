@@ -6,8 +6,9 @@ LTP Library guidelines
 General Rules
 -------------
 
-When we extend library API, we need to apply the same general rules that we use
-when writing tests, plus:
+For extending the LTP library API it applies the same general rules as
+for :doc:`writing tests <../developers/writing_tests>`
+(with strong focus on readability and simplicity), plus:
 
 #. LTP library tests must go inside :master:`lib/newlib_tests` directory
 #. LTP documentation has to be updated according to API changes
