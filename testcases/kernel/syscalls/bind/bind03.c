@@ -74,8 +74,11 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_CLOSE(sock1);
-	SAFE_CLOSE(sock2);
+	if (sock1 > 0)
+		SAFE_CLOSE(sock1);
+
+	if (sock2 > 0)
+		SAFE_CLOSE(sock2);
 }
 
 static struct tst_test test = {

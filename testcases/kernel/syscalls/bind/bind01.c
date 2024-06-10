@@ -99,9 +99,14 @@ static void test_setup(void)
 
 static void test_cleanup(void)
 {
-	SAFE_CLOSE(inet_socket);
-	SAFE_CLOSE(dev_null);
-	SAFE_CLOSE(fd_enotdir);
+	if (inet_socket > 0)
+		SAFE_CLOSE(inet_socket);
+
+	if (dev_null > 0)
+		SAFE_CLOSE(dev_null);
+
+	if (fd_enotdir > 0)
+		SAFE_CLOSE(fd_enotdir);
 }
 
 static struct tst_test test = {
