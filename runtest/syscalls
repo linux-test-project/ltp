@@ -881,6 +881,8 @@ mremap04 mremap04
 mremap05 mremap05
 mremap06 mremap06
 
+mseal01 mseal01
+
 msgctl01 msgctl01
 msgctl02 msgctl02
 msgctl03 msgctl03
