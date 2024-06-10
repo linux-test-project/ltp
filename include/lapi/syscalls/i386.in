@@ -436,3 +436,4 @@ landlock_restrict_self 446
 futex_waitv 449
 cachestat 451
 fchmodat2 452
+mseal 462

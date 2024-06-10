@@ -307,3 +307,4 @@ futex_waitv 449
 set_mempolicy_home_node 450
 cachestat 451
 fchmodat2 452
+mseal 462
