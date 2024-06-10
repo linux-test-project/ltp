@@ -37,7 +37,7 @@ static void run(void)
 	servaddr.sin_port = htons(TCP_PRIVILEGED_PORT);
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	TST_EXP_FAIL(bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)),
-	             EACCES, "bind()");
+				 EACCES, "bind()");
 	SAFE_CLOSE(sockfd);
 }
 

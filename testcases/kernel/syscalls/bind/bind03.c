@@ -29,14 +29,14 @@ static void run(void)
 	 * rebound.
 	 */
 	TST_EXP_FAIL(bind(sock1, (struct sockaddr *)&sun2, sizeof(sun2)),
-	             EINVAL, "re-bind() socket");
+		     EINVAL, "re-bind() socket");
 
 	/*
 	 * Since a socket is already bound to the pathname, it can't be bound
 	 * to a second socket. Expected error is EADDRINUSE.
 	 */
 	TST_EXP_FAIL(bind(sock2, (struct sockaddr *)&sun1, sizeof(sun1)),
-	             EADDRINUSE, "bind() with bound pathname");
+		     EADDRINUSE, "bind() with bound pathname");
 
 	/*
 	 * Kernel is buggy since it creates the node in fileystem first, then
