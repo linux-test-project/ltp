@@ -1022,7 +1022,6 @@ ppoll01 ppoll01
 prctl01 prctl01
 prctl02 prctl02
 prctl03 prctl03
-prctl04 prctl04
 prctl05 prctl05
 prctl06 prctl06
 prctl07 prctl07
@@ -1239,6 +1238,8 @@ sched_getaffinity01 sched_getaffinity01
 sched_setattr01 sched_setattr01
 sched_getattr01 sched_getattr01
 sched_getattr02 sched_getattr02
+
+seccomp01 seccomp01
 
 select01 select01
 select02 select02

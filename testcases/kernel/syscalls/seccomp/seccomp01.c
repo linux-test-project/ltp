@@ -2,12 +2,14 @@
 /*
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.fujitsu.com>
+ * Copyright (C) 2024 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
 /*\
  * [Description]
  *
- * Test PR_GET_SECCOMP and PR_SET_SECCOMP of prctl(2).
+ * Test PR_GET_SECCOMP and PR_SET_SECCOMP with both prctl(2) and seccomp(2).
+ * The second one is called via __NR_seccomp using tst_syscall().
  *
  * - If PR_SET_SECCOMP sets the SECCOMP_MODE_STRICT for the calling thread,
  *   the only system call that the thread is permitted to make are read(2),
@@ -27,7 +29,6 @@
 
 #include <errno.h>
 #include <signal.h>
-#include <sys/prctl.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <linux/filter.h>
@@ -35,6 +36,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "lapi/syscalls.h"
 #include "lapi/prctl.h"
 #include "config.h"
@@ -62,11 +64,11 @@ static const struct sock_fprog  strict = {
 	.filter = (struct sock_filter *)strict_filter
 };
 
-static void check_strict_mode(int);
-static void check_filter_mode(int);
+static void check_strict_mode(int mode);
+static void check_filter_mode(int mode);
 
 static struct tcase {
-	void (*func_check)();
+	void (*func_check)(int mode);
 	int pass_flag;
 	int val;
 	int exp_signal;
@@ -94,8 +96,8 @@ static struct tcase {
 	"SECCOMP_MODE_FILTER doesn't permit exit()"}
 };
 
-
-static int mode_filter_not_supported;
+static int strict_not_supported;
+static int filter_not_supported;
 
 static void check_filter_mode_inherit(void)
 {
@@ -122,13 +124,20 @@ static void check_strict_mode(int val)
 	int fd;
 	char buf[2];
 
+	if (strict_not_supported)
+		return;
+
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0666);
 
-	TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO,
-			"prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_STRICT failed");
-		return;
+	if (tst_variant == 1) {
+		TEST(tst_syscall(__NR_seccomp, SECCOMP_SET_MODE_STRICT, 0, NULL));
+		if (TST_RET == -1)
+			tst_brk(TBROK | TERRNO, "seccomp(SECCOMP_SET_MODE_STRICT) error");
+	} else {
+		TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT, 0, NULL));
+
+		if (TST_RET == -1)
+			tst_brk(TBROK | TERRNO, "prctl(SECCOMP_MODE_STRICT) error");
 	}
 
 	switch (val) {
@@ -158,18 +167,20 @@ static void check_filter_mode(int val)
 {
 	int fd;
 
-	if (mode_filter_not_supported == 1) {
-		tst_res(TCONF, "kernel doesn't support SECCOMP_MODE_FILTER");
+	if (filter_not_supported)
 		return;
-	}
 
 	fd = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0666);
 
-	TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &strict));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TERRNO,
-			"prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_FILTER failed");
-		return;
+	if (tst_variant == 1) {
+		TEST(tst_syscall(__NR_seccomp, SECCOMP_SET_MODE_FILTER, 0, &strict));
+		if (TST_RET == -1)
+			tst_brk(TBROK | TERRNO, "seccomp(SECCOMP_SET_MODE_FILTER) error");
+	} else {
+		TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &strict));
+
+		if (TST_RET == -1)
+			tst_brk(TBROK | TERRNO, "prctl(SECCOMP_MODE_FILTER) error");
 	}
 
 	switch (val) {
@@ -213,39 +224,43 @@ static void verify_prctl(unsigned int n)
 			return;
 		}
 
-		if (tc->pass_flag == 2 && mode_filter_not_supported == 0)
-			tst_res(TFAIL,
-				"SECCOMP_MODE_FILTER permits exit() unexpectedly");
+		if (tc->pass_flag == 2)
+			tst_res(TFAIL, "SECCOMP_MODE_FILTER permits exit() unexpectedly");
 	}
 }
 
 static void setup(void)
 {
-	TEST(prctl(PR_GET_SECCOMP));
-	if (TST_RET == 0) {
-		tst_res(TINFO, "kernel supports PR_GET/SET_SECCOMP");
+	static const char * const kconf_strict[] = {"CONFIG_SECCOMP=y", NULL};
+	static const char * const kconf_filter[] = {"CONFIG_SECCOMP_FILTER=y", NULL};
 
-		TEST(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, NULL));
-		if (TST_RET == -1 && TST_ERR == EINVAL) {
-			mode_filter_not_supported = 1;
-			return;
-		}
+	tst_res(TINFO, "Testing variant: %s",
+		tst_variant == 1 ? "seccomp()" : "pctrl(PR_SET_SECCOMP)");
 
-		tst_res(TINFO, "kernel supports SECCOMP_MODE_FILTER");
-		return;
+	if (tst_kconfig_check(kconf_strict)) {
+		tst_brk(TCONF, "kernel doesn't support SECCOMP_MODE_STRICT. "
+				"Skipping CONFIG_SECCOMP tests");
+
+		strict_not_supported = 1;
+	} else {
+		tst_res(TINFO, "kernel supports SECCOMP_MODE_STRICT");
 	}
 
-	if (TST_ERR == EINVAL)
-		tst_brk(TCONF, "kernel doesn't support PR_GET/SET_SECCOMP");
+	if (tst_kconfig_check(kconf_filter)) {
+		tst_brk(TCONF, "kernel doesn't support SECCOMP_MODE_FILTER. "
+				"Skipping CONFIG_SECCOMP_FILTER tests");
 
-	tst_brk(TBROK | TTERRNO,
-		"current environment doesn't permit PR_GET/SET_SECCOMP");
+		filter_not_supported = 1;
+	} else {
+		tst_res(TINFO, "kernel supports SECCOMP_MODE_FILTER");
+	}
 }
 
 static struct tst_test test = {
 	.setup = setup,
 	.test = verify_prctl,
 	.tcnt = ARRAY_SIZE(tcases),
+	.test_variants = 2,
 	.forks_child = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
