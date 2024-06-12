@@ -641,9 +641,16 @@ int hogvm(long long forks, long long chunks, long long bytes)
 			/* Use a backoff sleep to ensure we get good fork throughput.  */
 			usleep(backoff);
 
+			/* If chunks is 0, ptr will allocate 0 bytes's
+			 * memory, it will cause the process to crash
+			 * during runtime, so adjust to 1 */
+			if (chunks == 0)
+				chunks = 1;
+
 			while (1) {
-				ptr = (char **)malloc(chunks * 2);
-				for (j = 0; chunks == 0 || j < chunks; j++) {
+				ptr = (char **)malloc(chunks *
+						sizeof(char *));
+				for (j = 0; j < chunks; j++) {
 					if ((ptr[j] =
 					     (char *)malloc(bytes *
 							    sizeof(char)))) {
@@ -674,10 +681,8 @@ int hogvm(long long forks, long long chunks, long long bytes)
 				if (retval == 0) {
 					dbg(stdout,
 					    "hogvm worker freeing memory and starting over\n");
-					for (j = 0; chunks == 0 || j < chunks;
-					     j++) {
+					for (j = 0; j < chunks; j++)
 						free(ptr[j]);
-					}
 					free(ptr);
 					continue;
 				}
