@@ -216,9 +216,14 @@ static struct tst_test test = {
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
 	.mount_device = 1,
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mnt_data = "usrquota,grpquota",
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
-	.mnt_data = "usrquota,grpquota",
 	.needs_cmds = (const char *const []) {
 		"quotacheck",
 		NULL

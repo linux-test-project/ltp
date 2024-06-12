@@ -155,7 +155,12 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mntpoint = MOUNT_POINT,
 	.mount_device = 1,
-	.dev_fs_type = "ext4",
-	.dev_fs_opts = (const char *const []){"-I", "256", NULL},
-	.mnt_flags = MS_STRICTATIME,
+	.filesystems = (struct tst_fs[]) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const []){"-I", "256", NULL},
+			.mnt_flags = MS_STRICTATIME,
+		},
+		{}
+	},
 };

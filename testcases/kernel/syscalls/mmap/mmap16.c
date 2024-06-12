@@ -176,19 +176,15 @@ static struct tst_test test = {
 	.needs_checkpoints = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "ext4",
-	.dev_fs_opts = (const char *const[]){
-		"-b",
-		"1024",
-		NULL,
-	},
-	.dev_extra_opts = (const char *const[]){
-		"10240",
-		NULL,
-	},
-	.needs_cmds = (const char *const[]){
-		"mkfs.ext4",
-		NULL,
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const[]){
+				"-b", "1024", NULL
+			},
+			.mkfs_size_opt = "10240",
+		},
+		{}
 	},
 	.tags = (const struct tst_tag[]){
 		{"linux-git", "d6320cbfc929"},

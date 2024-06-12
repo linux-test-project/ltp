@@ -105,7 +105,10 @@ static void setup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
-	.dev_fs_type = "xfs",
+	.filesystems = (struct tst_fs []){
+		{.type = "xfs"},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.forks_child = 1,
 	.test_all = verify_getxattr,

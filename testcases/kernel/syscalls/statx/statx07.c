@@ -168,7 +168,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.min_kver = "4.16",
 	.needs_tmpdir = 1,
-	.dev_fs_type = "nfs",
+	.filesystems = (struct tst_fs []) {
+		{.type = "nfs"},
+		{}
+	},
 	.needs_root = 1,
 	.needs_cmds = (const char *[]) {
 		"exportfs",

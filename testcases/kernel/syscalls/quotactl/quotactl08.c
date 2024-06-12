@@ -216,7 +216,10 @@ static struct tst_test test = {
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []) {
+		{.type = "ext4"},
+		{}
+	},
 	.needs_device = 1,
 	.setup = setup,
 	.cleanup = cleanup,

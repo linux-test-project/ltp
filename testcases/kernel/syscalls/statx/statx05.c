@@ -121,7 +121,10 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_device = 1,
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []) {
+		{.type = "ext4"},
+		{}
+	},
 	.needs_cmds = (const char *[]) {
 		"mkfs.ext4 >= 1.43.0",
 		"e4crypt",

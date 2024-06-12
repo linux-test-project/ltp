@@ -176,8 +176,13 @@ static struct tst_test test = {
 	},
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_quotactl,
-	.dev_fs_opts = (const char *const[]){"-O quota", NULL},
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const[]){"-O quota", NULL},
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
 	.needs_root = 1,

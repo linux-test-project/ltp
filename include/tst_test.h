@@ -248,6 +248,36 @@ struct tst_ulimit_val {
 };
 
 /**
+ * struct tst_fs - A file system type, mkfs and mount options
+ *
+ * @type A filesystem type to use.
+ *
+ * @mkfs_opts: A NULL terminated array of options passed to mkfs in the case
+ *             of 'tst_test.format_device'. These options are passed to mkfs
+ *             before the device path.
+ *
+ * @mkfs_size_opt: An option passed to mkfs in the case of
+ *                 'tst_test.format_device'. The device size in blocks is
+ *                 passed to mkfs after the device path and can be used to
+ *                 limit the file system not to use the whole block device.
+ *
+ * @mnt_flags: MS_* flags passed to mount(2) when the test library mounts a
+ *             device in the case of 'tst_test.mount_device'.
+ *
+ * @mnt_data: The data passed to mount(2) when the test library mounts a device
+ *            in the case of 'tst_test.mount_device'.
+ */
+struct tst_fs {
+	const char *type;
+
+	const char *const *mkfs_opts;
+	const char *mkfs_size_opt;
+
+	const unsigned int mnt_flags;
+	const void *mnt_data;
+};
+
+/**
  * struct tst_test - A test description.
  *
  * @tcnt: A number of tests. If set the test() callback is called tcnt times
@@ -290,7 +320,7 @@ struct tst_ulimit_val {
  *                 file system at tst_test.mntpoint.
  *
  * @format_device: Does all tst_test.needs_device would do and also formats
- *                 the device with tst_test.dev_fs_type file system as well.
+ *                 the device with a file system as well.
  *
  * @mount_device: Does all tst_test.format_device would do and also mounts the
  *                device at tst_test.mntpoint.
@@ -377,28 +407,21 @@ struct tst_ulimit_val {
  *
  * @dev_min_size: A minimal device size in megabytes.
  *
- * @dev_fs_type: If set overrides the default file system type for the device and
- *               sets the tst_device.fs_type.
- *
- * @dev_fs_opts: A NULL terminated array of options passed to mkfs in the case
- *               of 'tst_test.format_device'. These options are passed to mkfs
- *               before the device path.
- *
- * @dev_extra_opts: A NULL terminated array of extra options passed to mkfs in
- *                  the case of 'tst_test.format_device'. Extra options are
- *                  passed to mkfs after the device path. Commonly the option
- *                  after mkfs is the number of blocks and can be used to limit
- *                  the file system not to use the whole block device.
+ * @filesystems: A NULL type terminated array of per file system type
+ *               parameters for mkfs and mount. If the first entry type is NULL
+ *               it describes a default parameters for all file system tests.
+ *               The rest of the entries the describes per file system type
+ *               parameters. If tst_test.all_filesystems is set, the test runs
+ *               for all filesystems and uses the array to lookup the mkfs
+ *               and mount options. If tst_test.all_filesystems is not set
+ *               the test iterates over file system types defined in the array.
+ *               If there is only a single entry in the array with a NULL type,
+ *               the test runs just once for the default file sytem i.e.
+ *               $TST_FS_TYPE.
  *
  * @mntpoint: A mount point where the test library mounts requested file system.
  *            The directory is created by the library, the test must not create
  *            it itself.
- *
- * @mnt_flags: MS_* flags passed to mount(2) when the test library mounts a
- *             device in the case of 'tst_test.mount_device'.
- *
- * @mnt_data: The data passed to mount(2) when the test library mounts a device
- *            in the case of 'tst_test.mount_device'.
  *
  * @max_runtime: Maximal test runtime in seconds. Any test that runs for more
  *               than a second or two should set this and also use
@@ -516,14 +539,9 @@ struct tst_ulimit_val {
 
 	unsigned int dev_min_size;
 
-	const char *dev_fs_type;
-
-	const char *const *dev_fs_opts;
-	const char *const *dev_extra_opts;
+	struct tst_fs *filesystems;
 
 	const char *mntpoint;
-	unsigned int mnt_flags;
-	void *mnt_data;
 
 	int max_runtime;
 

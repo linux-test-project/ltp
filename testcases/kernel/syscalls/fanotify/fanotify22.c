@@ -319,7 +319,10 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
 	.needs_root = 1,
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []){
+		{.type = "ext4"},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "124e7c61deb2"},
 		{}

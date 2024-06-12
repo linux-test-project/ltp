@@ -83,9 +83,14 @@ static struct tst_test test = {
 	},
 	.test_all = verify_quota,
 	.mount_device = 1,
-	.dev_fs_type = "xfs",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "xfs",
+			.mnt_data = "usrquota",
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
-	.mnt_data = "usrquota",
 	.test_variants = QUOTACTL_SYSCALL_VARIANTS,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "657bdfb7f5e6"},
