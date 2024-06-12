@@ -32,7 +32,7 @@
 #define FMTID QFMT_VFS_V1
 
 static int32_t fmt_id = FMTID;
-static int test_id, mount_flag;
+static int test_id;
 static struct dqblk set_dq = {
 	.dqb_bsoftlimit = 100,
 	.dqb_valid = QIF_BLIMITS
@@ -98,12 +98,8 @@ static struct tcase {
 
 static void setup(void)
 {
-	const char *const fs_opts[] = {"-I 256", "-O quota,project", NULL};
-
 	quotactl_info();
-	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
-	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
-	mount_flag = 1;
+
 	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
 
 	TEST(do_quotactl(fd, QCMD(Q_GETNEXTQUOTA, PRJQUOTA), tst_device->dev,
@@ -116,8 +112,6 @@ static void cleanup(void)
 {
 	if (fd > -1)
 		SAFE_CLOSE(fd);
-	if (mount_flag && tst_umount(MNTPOINT))
-		tst_res(TWARN | TERRNO, "umount(%s)", MNTPOINT);
 }
 
 static void verify_quota(unsigned int n)
@@ -161,9 +155,14 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_device = 1,
+	.mount_device = 1,
 	.filesystems = (struct tst_fs []) {
-		{.type = "ext4"},
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const[]) {
+				"-I 256", "-O quota,project", NULL
+			},
+		},
 		{}
 	},
 	.mntpoint = MNTPOINT,
