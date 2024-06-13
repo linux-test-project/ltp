@@ -11,6 +11,7 @@
  * is no longer dirty after msync() call.
  */
 
+#define _GNU_SOURCE
 #include <errno.h>
 #include "tst_test.h"
 
@@ -43,10 +44,34 @@ static uint64_t get_dirty_bit(void *data)
 	return pageflag_entry & (1ULL << 4);
 }
 
+static void verify_mmaped(void)
+{
+	char *buffer = SAFE_MEMALIGN(getpagesize(), getpagesize());
+
+	tst_res(TINFO, "Haven't seen dirty bit so we check content of file instead");
+	test_fd = SAFE_OPEN("msync04/testfile", O_RDONLY | O_DIRECT);
+	SAFE_READ(0, test_fd, buffer, getpagesize());
+
+	if (buffer[8] == 'B')
+		tst_res(TCONF, "Write was too fast, couldn't test msync()");
+	else
+		tst_res(TFAIL, "write file failed");
+
+	free(buffer);
+}
+
+static void verify_dirty(void)
+{
+	TST_EXP_PASS_SILENT(msync(mmaped_area, pagesize, MS_SYNC));
+
+	if (TST_RET == 0 && !get_dirty_bit(mmaped_area))
+		tst_res(TPASS, "msync() verify dirty page ok");
+	else
+		tst_res(TFAIL, "msync() verify dirty page failed");
+}
+
 static void test_msync(void)
 {
-	char buffer[20];
-
 	test_fd = SAFE_OPEN("msync04/testfile", O_CREAT | O_TRUNC | O_RDWR,
 		0644);
 	SAFE_WRITE(SAFE_WRITE_ANY, test_fd, STRING_TO_WRITE, sizeof(STRING_TO_WRITE) - 1);
@@ -55,27 +80,11 @@ static void test_msync(void)
 	SAFE_CLOSE(test_fd);
 	mmaped_area[8] = 'B';
 
-	if (!get_dirty_bit(mmaped_area)) {
-		tst_res(TINFO, "Not see dirty bit so we check content of file instead");
-		test_fd = SAFE_OPEN("msync04/testfile", O_RDONLY);
-		SAFE_READ(0, test_fd, buffer, 9);
-		if (buffer[8] == 'B')
-			tst_res(TCONF, "write file ok but msync couldn't be tested"
-				" because the storage was written to too quickly");
-		else
-			tst_res(TFAIL, "write file failed");
-	} else {
-		if (msync(mmaped_area, pagesize, MS_SYNC) < 0) {
-			tst_res(TFAIL | TERRNO, "msync() failed");
-			goto clean;
-		}
-		if (get_dirty_bit(mmaped_area))
-			tst_res(TFAIL, "msync() failed to write dirty page despite succeeding");
-		else
-			tst_res(TPASS, "msync() working correctly");
-	}
+	if (!get_dirty_bit(mmaped_area))
+		verify_mmaped();
+	else
+		verify_dirty();
 
-clean:
 	SAFE_MUNMAP(mmaped_area, pagesize);
 	mmaped_area = NULL;
 }
