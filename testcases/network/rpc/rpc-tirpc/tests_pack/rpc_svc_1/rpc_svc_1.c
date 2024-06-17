@@ -106,7 +106,7 @@ char *svc_getcaller_test(union u_argument *inVar, SVCXPRT * transp)
 	struct sockaddr_in *sa = NULL;
 	static int result;
 
-	sa = svc_getcaller(transp);
+	sa = (struct sockaddr_in *) svc_getcaller(transp);
 	//If the result is not NULL we consider that function call succeeds
 	//so returns 0 (PASS)
 	result = (sa != NULL) ? 0 : 1;
