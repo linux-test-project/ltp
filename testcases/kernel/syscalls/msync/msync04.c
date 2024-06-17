@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2017 Red Hat, Inc.
- *
+ * Copyright (c) Linux Test Project, 2017-2024
  */
 
-/*
- * Test description: Verify msync() after writing into mmap()-ed file works.
+/*\
+ * [Description]
+ *
+ * Verify msync() after writing into mmap()-ed file works.
  *
  * Write to mapped region and sync the memory back with file. Check the page
  * is no longer dirty after msync() call.
+ *
+ * In case the dirty bit is not set, check the content of file to verify
+ * the data is stored on disk.
  */
 
 #define _GNU_SOURCE
