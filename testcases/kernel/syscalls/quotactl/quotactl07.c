@@ -13,6 +13,8 @@
  * ("xfs: Sanity check flags of Q_XQUOTARM call").
  */
 
+#define _GNU_SOURCE
+#include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
