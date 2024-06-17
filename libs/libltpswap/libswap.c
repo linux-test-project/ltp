@@ -255,6 +255,12 @@ int tst_max_swapfiles(void)
 		{ NULL, NULL},
 	};
 
+	struct tst_kern_exv kvers_marker_migration2[] = {
+		/* RHEL9 kernel has patch ca92ea3dc5a since 5.14.0-441 */
+		{ "RHEL9", "5.14.0-441" },
+		{ NULL, NULL},
+	};
+
 	struct tst_kern_exv kvers_device[] = {
 		/* SLES12-SP4 has patch 5042db43cc26 since 4.12.14-5.5 */
 		{ "SLES", "4.12.14-5.5" },
@@ -285,7 +291,7 @@ int tst_max_swapfiles(void)
 
 	if ((marker.choice == 'y' &&
 	     tst_kvercmp2(5, 19, 0, kvers_marker_migration) >= 0)
-	    || tst_kvercmp(6, 2, 0) >= 0) {
+	    || tst_kvercmp2(6, 2, 0, kvers_marker_migration2) >= 0) {
 		swp_pte_marker_num = 1;
 	}
 
