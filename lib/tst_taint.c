@@ -60,43 +60,8 @@ static int tst_taint_check_kver(unsigned int mask)
 	} else if (mask & TST_TAINT_K) {
 		r1 = 4;
 		r2 = 0;
-	} else if (mask & TST_TAINT_L) {
-		r1 = 3;
-		r2 = 17;
-	} else if (mask & TST_TAINT_E) {
-		r1 = 3;
-		r2 = 15;
-	} else if (mask & TST_TAINT_O) {
-		r1 = 3;
-		r2 = 2;
-	} else if (mask & TST_TAINT_I) {
-		r1 = 2;
-		r2 = 6;
-		r3 = 35;
-	} else if (mask & TST_TAINT_C) {
-		r1 = 2;
-		r2 = 6;
-		r3 = 28;
-	} else if (mask & TST_TAINT_W) {
-		r1 = 2;
-		r2 = 6;
-		r3 = 26;
-	} else if (mask & TST_TAINT_A) {
-		r1 = 2;
-		r2 = 6;
-		r3 = 25;
-	} else if (mask & TST_TAINT_D) {
-		r1 = 2;
-		r2 = 6;
-		r3 = 23;
-	} else if (mask & TST_TAINT_U) {
-		r1 = 2;
-		r2 = 6;
-		r3 = 21;
 	} else {
-		r1 = 2;
-		r2 = 6;
-		r3 = 16;
+		return 1;
 	}
 
 	return tst_kvercmp(r1, r2, r3);
