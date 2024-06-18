@@ -64,6 +64,7 @@
 #define TST_TAINT_K     (1 << 15) /* kernel has been live-patched */
 #define TST_TAINT_X     (1 << 16) /* auxiliary taint, for distro's use */
 #define TST_TAINT_T     (1 << 17) /* kernel was built with the struct randomization plugin */
+#define TST_TAINT_N     (1 << 18) /* an in-kernel test has been run */
 
 /*
  * Initialize and prepare support for checking tainted kernel. Called

@@ -33,6 +33,7 @@ static const char *const taint_strings[] = {
 	"K (Live patched)",
 	"X (Auxilary)",
 	"T (Built with struct randomization)",
+	"N (In-kernel test has been run)",
 };
 
 static unsigned int tst_taint_read(void)
@@ -50,7 +51,10 @@ static int tst_taint_check_kver(unsigned int mask)
 	int r2;
 	int r3 = 0;
 
-	if (mask & TST_TAINT_X) {
+	if (mask & TST_TAINT_N) {
+		r1 = 6;
+		r2 = 0;
+	} else if (mask & TST_TAINT_X) {
 		r1 = 4;
 		r2 = 15;
 	} else if (mask & TST_TAINT_K) {
