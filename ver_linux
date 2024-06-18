@@ -158,6 +158,9 @@ else
 	df
 fi
 
+echo
+echo 'tainted (/proc/sys/kernel/tainted):'
+cat /proc/sys/kernel/tainted
 
 echo
 if is_enabled /sys/module/apparmor/parameters/enabled; then
