@@ -46,6 +46,7 @@
 #include "tst_memutils.h"
 #include "tst_arch.h"
 #include "tst_fd.h"
+#include "tst_tmpdir.h"
 
 void tst_res_(const char *file, const int lineno, int ttype,
               const char *fmt, ...)

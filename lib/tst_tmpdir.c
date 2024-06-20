@@ -72,6 +72,7 @@
 
 #include "test.h"
 #include "safe_macros.h"
+#include "tst_tmpdir.h"
 #include "ltp_priv.h"
 #include "lapi/futex.h"
 

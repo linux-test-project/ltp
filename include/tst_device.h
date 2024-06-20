@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2016-2019 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2019-2024
  */
 
 #ifndef TST_DEVICE_H__
@@ -100,11 +101,6 @@ int tst_dev_sync(int fd);
  * @dev: test block device
  */
 unsigned long tst_dev_bytes_written(const char *dev);
-
-/*
- * Wipe the contents of given directory but keep the directory itself
- */
-void tst_purge_dir(const char *path);
 
 /*
  * Find the file or path belongs to which block dev
