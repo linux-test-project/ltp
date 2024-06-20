@@ -23,6 +23,7 @@
 
 TST_NEEDS_CMDS="crontab file grep logrotate"
 TST_TESTFUNC=test
+TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
 TST_CNT=2
 TST_SETUP=setup
