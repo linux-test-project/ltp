@@ -569,7 +569,7 @@ char tst_kconfig_get(const char *confname)
 
 void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len)
 {
-	char buf[128], line[512];
+	char buf[256], line[1024];
 	size_t b_pos = 0,l_pos =0, i;
 	int var_id = -1;
 
@@ -606,7 +606,7 @@ void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len)
 		break;
 		default:
 			if (b_pos + 1 >= sizeof(buf)) {
-				tst_res(TWARN, "Buffer overflowed while parsing /proc/cmdline");
+				tst_res(TINFO, "WARNING: Buffer overflowed while parsing /proc/cmdline");
 				while (line[l_pos] != '\0' && line[l_pos] != ' ' && line[l_pos] != '\n')
 					l_pos++;
 

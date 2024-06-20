@@ -87,7 +87,7 @@ int tst_kconfig_check(const char *const kconfigs[]);
  */
 struct tst_kcmdline_var {
 	const char *key;
-	char value[128];
+	char value[256];
 	bool found;
 };
 
