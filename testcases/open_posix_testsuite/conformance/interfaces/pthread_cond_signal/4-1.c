@@ -79,6 +79,9 @@ int main(void)
 	int i, rc;
 	struct sigaction act;
 
+	waken_num = 0;
+	start_num = 0;
+
 	if (pthread_mutex_init(&td.mutex, NULL) != 0) {
 		fprintf(stderr, "Fail to initialize mutex\n");
 		return PTS_UNRESOLVED;
