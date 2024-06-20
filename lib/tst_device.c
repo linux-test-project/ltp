@@ -245,6 +245,8 @@ int tst_detach_device_by_fd(const char *dev, int dev_fd)
 	 * of attach/detach might not give udev enough time to complete
 	 */
 	for (i = 0; i < 40; i++) {
+		usleep(500000);
+
 		ret = ioctl(dev_fd, LOOP_CLR_FD, 0);
 
 		if (ret && (errno == ENXIO))
@@ -256,8 +258,6 @@ int tst_detach_device_by_fd(const char *dev, int dev_fd)
 				 dev, tst_strerrno(errno));
 			return 1;
 		}
-
-		usleep(50000);
 	}
 
 	tst_resm(TWARN,
