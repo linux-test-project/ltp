@@ -452,6 +452,10 @@ struct tst_fs {
  *            can be set. May be executed several times if test was passed '-i'
  *            or '-d' command line parameters.
  *
+ * @scall: Internal only (timer measurement library).
+ *
+ * @sample: Internal only (timer measurement library).
+ *
  * @resource_files: A NULL terminated array of filenames that will be copied
  *                  to the test temporary directory from the LTP datafiles
  *                  directory.
@@ -660,6 +664,8 @@ int main(int argc, char *argv[])
 
 /**
  * TST_TEST_TCONF() - Exit tests with a TCONF message.
+ *
+ * @message: Error message (the reason to skip test).
  *
  * This macro is used in test that couldn't be compiled either because current
  * CPU architecture is unsupported or because of missing development libraries.
