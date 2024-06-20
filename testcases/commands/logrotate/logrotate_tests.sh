@@ -25,7 +25,18 @@ TST_NEEDS_CMDS="crontab file grep logrotate"
 TST_TESTFUNC=test
 TST_NEEDS_TMPDIR=1
 TST_CNT=2
+TST_SETUP=setup
 TST_CLEANUP=cleanup
+
+PERMISSION=
+
+setup()
+{
+	local group="syslog"
+
+	grep -q $group /etc/group || group="root"
+	PERMISSION="su root $group"
+}
 
 cleanup()
 {
@@ -47,10 +58,6 @@ check_log()
 
 test1()
 {
-	local group="syslog"
-
-	grep -q $group /etc/group || group="root"
-
 	cat >tst_logrotate.conf <<-EOF
         #****** Begin Config file *******
         # create new (empty) log files after rotating old ones
@@ -60,7 +67,7 @@ test1()
         compress
 
         /var/log/tst_logfile {
-                su root $group
+                $PERMISSION
                 rotate 5
                 weekly
         }
@@ -95,9 +102,8 @@ test2()
         create
         # compress the log files
         compress
-        # RPM packages drop log rotation information into this directory
-        include /etc/logrotate.d
         /var/log/tst_largelogfile {
+            $PERMISSION
             rotate 5
             size=2k
         }
