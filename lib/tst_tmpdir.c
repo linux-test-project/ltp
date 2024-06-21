@@ -92,7 +92,7 @@
  * Define global variables.
  */
 extern char *TCID;		/* defined/initialized in main() */
-static char *TESTDIR = NULL;	/* the directory created */
+static char *TESTDIR;	/* the directory created */
 
 static char test_start_work_dir[PATH_MAX];
 
