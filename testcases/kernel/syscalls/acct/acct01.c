@@ -34,6 +34,7 @@
 #define FILE_TMPFILE		"./tmpfile"
 #define FILE_ELOOP		"test_file_eloop1"
 #define FILE_EROFS		"ro_mntpoint/file"
+#define FILE_EFAULT		"invalid/file/name"
 
 static struct passwd *ltpuser;
 
@@ -46,6 +47,7 @@ static char *file_eloop;
 static char *file_enametoolong;
 static char *file_erofs;
 static char *file_null;
+static char *file_efault;
 
 static void setup_euid(void)
 {
@@ -55,6 +57,16 @@ static void setup_euid(void)
 static void cleanup_euid(void)
 {
 	SAFE_SETEUID(0);
+}
+
+static void setup_emem(void)
+{
+	file_efault = SAFE_MMAP(NULL, 1, PROT_NONE,
+			MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+}
+static void cleanup_emem(void)
+{
+	SAFE_MUNMAP(file_efault, 1);
 }
 
 static struct test_case {
@@ -73,6 +85,7 @@ static struct test_case {
 	{&file_eloop,   FILE_ELOOP,   ELOOP,        NULL, NULL},
 	{&file_enametoolong, "aaaa...", ENAMETOOLONG, NULL, NULL},
 	{&file_erofs,   FILE_EROFS,   EROFS,        NULL, NULL},
+	{&file_efault,	"Invalid address",  EFAULT,  setup_emem, cleanup_emem},
 };
 
 static void setup(void)
