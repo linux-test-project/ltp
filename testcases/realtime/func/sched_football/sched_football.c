@@ -67,15 +67,16 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <librttest.h>
+#include <tst_atomic.h>
 
 #define DEF_GAME_LENGTH 5
 
 /* Here's the position of the ball */
-volatile int the_ball;
+static int the_ball;
 
 static int players_per_team = 0;
 static int game_length = DEF_GAME_LENGTH;
-static atomic_t players_ready;
+static int players_ready;
 
 void usage(void)
 {
@@ -110,7 +111,7 @@ int parse_args(int c, char *v)
 /* This is the defensive team. They're trying to block the offense */
 void *thread_defense(void *arg)
 {
-	atomic_inc(&players_ready);
+	tst_atomic_add_return(1, &players_ready);
 	/*keep the ball from being moved */
 	while (1) {
 	}
@@ -120,9 +121,9 @@ void *thread_defense(void *arg)
 /* This is the offensive team. They're trying to move the ball */
 void *thread_offense(void *arg)
 {
-	atomic_inc(&players_ready);
+	tst_atomic_add_return(1, &players_ready);
 	while (1) {
-		the_ball++;	/* move the ball ahead one yard */
+		tst_atomic_add_return(1, &the_ball); /* move the ball ahead one yard */
 	}
 	return NULL;
 }
@@ -138,16 +139,16 @@ int referee(int game_length)
 	now = start;
 
 	/* Start the game! */
-	the_ball = 0;
+	tst_atomic_store(0, &the_ball);
 
 	/* Watch the game */
 	while ((now.tv_sec - start.tv_sec) < game_length) {
 		sleep(1);
 		gettimeofday(&now, NULL);
 	}
+	final_ball = tst_atomic_load(&the_ball);
 	/* Blow the whistle */
 	printf("Game Over!\n");
-	final_ball = the_ball;
 	printf("Final ball position: %d\n", final_ball);
 	return final_ball != 0;
 }
@@ -165,7 +166,7 @@ int main(int argc, char *argv[])
 	if (players_per_team == 0)
 		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
 
-	atomic_set(0, &players_ready);
+	tst_atomic_store(0, &players_ready);
 
 	printf("Running with: players_per_team=%d game_length=%d\n",
 	       players_per_team, game_length);
@@ -185,7 +186,7 @@ int main(int argc, char *argv[])
 		create_fifo_thread(thread_offense, NULL, priority);
 
 	/* Wait for the offense threads to start */
-	while (atomic_get(&players_ready) < players_per_team)
+	while (tst_atomic_load(&players_ready) < players_per_team)
 		usleep(100);
 
 	/* Start the defense */
@@ -196,7 +197,7 @@ int main(int argc, char *argv[])
 		create_fifo_thread(thread_defense, NULL, priority);
 
 	/* Wait for the defense threads to start */
-	while (atomic_get(&players_ready) < players_per_team * 2)
+	while (tst_atomic_load(&players_ready) < players_per_team * 2)
 		usleep(100);
 
 	/* Ok, everyone is on the field, bring out the ref */
