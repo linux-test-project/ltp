@@ -68,6 +68,7 @@
 #include <errno.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include <sys/prctl.h>
 #include <sys/time.h>
 #include <librttest.h>
 #include <tst_atomic.h>
@@ -119,6 +120,7 @@ int parse_args(int c, char *v)
 /* These are fans running across the field. They're trying to interrupt/distract everyone */
 void *thread_fan(void *arg)
 {
+	prctl(PR_SET_NAME, "crazy_fan", 0, 0, 0);
 	tst_atomic_add_return(1, &players_ready);
 	/*occasionally wake up and run across the field */
 	while (1) {
@@ -142,6 +144,7 @@ void *thread_fan(void *arg)
 /* This is the defensive team. They're trying to block the offense */
 void *thread_defense(void *arg)
 {
+	prctl(PR_SET_NAME, "defense", 0, 0, 0);
 	tst_atomic_add_return(1, &players_ready);
 	/*keep the ball from being moved */
 	while (1) {
@@ -152,6 +155,7 @@ void *thread_defense(void *arg)
 /* This is the offensive team. They're trying to move the ball */
 void *thread_offense(void *arg)
 {
+	prctl(PR_SET_NAME, "offense", 0, 0, 0);
 	tst_atomic_add_return(1, &players_ready);
 	while (1) {
 		tst_atomic_add_return(1, &the_ball); /* move the ball ahead one yard */
@@ -164,6 +168,7 @@ int referee(int game_length)
 	struct timeval start, now;
 	int final_ball;
 
+	prctl(PR_SET_NAME, "referee", 0, 0, 0);
 	printf("Game On (%d seconds)!\n", game_length);
 
 	gettimeofday(&start, NULL);
