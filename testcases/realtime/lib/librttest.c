@@ -732,3 +732,34 @@ void latency_trace_print(void)
 {
 	read_and_print("/proc/latency_trace", STDOUT_FILENO);
 }
+
+static int trace_marker_fd = -1;
+
+void trace_marker_prep(void)
+{
+	if (trace_marker_fd != -1)
+		return;
+	trace_marker_fd = open("/sys/kernel/tracing/trace_marker", O_RDWR, 0);
+}
+
+int trace_marker_write(char *buf, int len)
+{
+	if (trace_marker_fd == -1)
+		trace_marker_prep();
+
+	if (trace_marker_fd < 0)
+		return -1;
+
+	return write(trace_marker_fd, buf, len);
+}
+
+#define TRACE_BUF_LEN 256
+static char trace_buf[TRACE_BUF_LEN];
+
+int atrace_marker_write(char *tag, char *msg)
+{
+	/* Uses atrace format perfetto can visualize */
+	snprintf(trace_buf, TRACE_BUF_LEN, "I|%i|%s: %s\n", getpid(), tag, msg);
+	return trace_marker_write(trace_buf,
+				  strnlen(trace_buf, TRACE_BUF_LEN));
+}

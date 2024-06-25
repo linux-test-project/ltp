@@ -342,4 +342,17 @@ void latency_trace_stop(void);
  */
 void latency_trace_print(void);
 
+/* trace_marker_prep: open trace_marker file (optional)
+ */
+void trace_marker_prep(void);
+
+/* trace_marker_write: write buf to trace_marker.
+ * Will open trace_marker file if not already open
+ */
+int trace_marker_write(char *buf, int len);
+
+/* atrace_marker_write: write atrace format message to trace_marker
+ */
+int atrace_marker_write(char *tag, char *msg);
+
 #endif /* LIBRTTEST_H */

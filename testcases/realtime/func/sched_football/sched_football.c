@@ -66,6 +66,7 @@
 #include <pthread.h>
 #include <sched.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <sys/prctl.h>
@@ -171,17 +172,21 @@ int referee(int game_length)
 	prctl(PR_SET_NAME, "referee", 0, 0, 0);
 	printf("Game On (%d seconds)!\n", game_length);
 
+	/* open trace marker early to avoid latency with the first message */
+	trace_marker_prep();
 	gettimeofday(&start, NULL);
 	now = start;
 
 	/* Start the game! */
 	tst_atomic_store(0, &the_ball);
+	atrace_marker_write("sched_football", "Game_started!");
 
 	/* Watch the game */
 	while ((now.tv_sec - start.tv_sec) < game_length) {
 		sleep(1);
 		gettimeofday(&now, NULL);
 	}
+	atrace_marker_write("sched_football", "Game_Over!");
 	final_ball = tst_atomic_load(&the_ball);
 	/* Blow the whistle */
 	printf("Game Over!\n");
