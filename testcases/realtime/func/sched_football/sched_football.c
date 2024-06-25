@@ -22,19 +22,23 @@
  * DESCRIPTION
  *      This is a scheduler test that uses a football analogy.
  *      The premise is that we want to make sure that lower priority threads
- *      (defensive team). The offense is trying to increment the balls position,
- *      while the defense is trying to block that from happening.
+ *      don't run while we have runnable higher priority threads.
+ *      The offense is trying to increment the balls position, while the
+ *      defense is trying to block that from happening.
  *      And the ref (highest priority thread) will blow the wistle if the
  *      ball moves. Finally, we have crazy fans (higer prority) that try to
  *      distract the defense by occasionally running onto the field.
  *
  *      Steps:
- *       - Create a fixed number of offense threads (lower priority)
+ *       - Create NR_CPU offense threads (lower priority)
+ *       - Create NR_CPU defense threads (mid priority)
+ *       - Create 2*NR_CPU fan threads (high priority)
  *       - Create a referee thread (highest priority)
- *       - Once everyone is on the field, the offense thread increments the
- *         value of 'the_ball'. The defense thread tries to block
- *         the ball by never letting the offense players get the CPU (it just
- *         spins).
+ *       - Once everyone is on the field, the offense thread spins incrementing
+ *         the value of 'the_ball'. The defense thread tries to block the ball
+ *         by never letting the offense players get the CPU (it just spins).
+ *         The crazy fans sleep a bit, then jump the rail and run across the
+ *         field, disrupting the players on the field.
  *       - The refree threads wakes up regularly to check if the game is over :)
  *       - In the end, if the value of 'the_ball' is >0, the test is considered
  *         to have failed.
@@ -52,7 +56,6 @@
  *		bugfixes and cleanups. -- Josh Triplett
  *     2009-06-23 Simplified atomic startup mechanism, avoiding thundering herd
  *		scheduling at the beginning of the game. -- Darren Hart
- *
  *****************************************************************************/
 
 #include <stdio.h>
@@ -68,6 +71,9 @@
 #include <sys/time.h>
 #include <librttest.h>
 #include <tst_atomic.h>
+#define TST_NO_DEFAULT_MAIN
+#include <tst_timer.h>
+
 
 #define DEF_GAME_LENGTH 5
 
@@ -106,6 +112,31 @@ int parse_args(int c, char *v)
 		break;
 	}
 	return handled;
+}
+
+#define SPIN_TIME_NS 200000000ULL
+#define SLEEP_TIME_NS 50000000ULL
+/* These are fans running across the field. They're trying to interrupt/distract everyone */
+void *thread_fan(void *arg)
+{
+	tst_atomic_add_return(1, &players_ready);
+	/*occasionally wake up and run across the field */
+	while (1) {
+		struct timespec start, stop;
+		nsec_t nsec;
+
+		start.tv_sec = 0;
+		start.tv_nsec = SLEEP_TIME_NS;
+		clock_nanosleep(CLOCK_MONOTONIC, 0, &start, NULL);
+		clock_gettime(CLOCK_MONOTONIC, &start);
+		clock_gettime(CLOCK_MONOTONIC, &stop);
+		nsec = tst_timespec_diff_ns(stop, start);
+		while (nsec < SPIN_TIME_NS) {
+			clock_gettime(CLOCK_MONOTONIC, &stop);
+			nsec = tst_timespec_diff_ns(stop, start);
+		}
+	}
+	return NULL;
 }
 
 /* This is the defensive team. They're trying to block the offense */
@@ -198,6 +229,17 @@ int main(int argc, char *argv[])
 
 	/* Wait for the defense threads to start */
 	while (tst_atomic_load(&players_ready) < players_per_team * 2)
+		usleep(100);
+
+	/* Start the crazy fans*/
+	priority = 50;
+	printf("Starting %d fan threads at priority %d\n",
+	       players_per_team, priority);
+	for (i = 0; i < players_per_team*2; i++)
+		create_fifo_thread(thread_fan, NULL, priority);
+
+	/* Wait for the crazy fan threads to start */
+	while (tst_atomic_load(&players_ready) < players_per_team * 4)
 		usleep(100);
 
 	/* Ok, everyone is on the field, bring out the ref */
