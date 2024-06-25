@@ -214,7 +214,7 @@ static void run(void)
 			break;
 
 		if (!tst_remaining_runtime()) {
-			tst_res(TWARN, "Out of runtime during forking...");
+			tst_res(TCONF, "Out of runtime during forking...");
 			*stop = 1;
 			break;
 		}
@@ -243,7 +243,7 @@ static void run(void)
 	remove_queues();
 
 	if (!(*fail))
-		tst_res(TPASS, "Test passed. All messages have been received");
+		tst_res(TPASS, "Some messages received");
 }
 
 static void setup(void)
