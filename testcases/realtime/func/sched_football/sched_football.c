@@ -32,12 +32,12 @@
  *       - Create a fixed number of offense threads (lower priority)
  *       - Create a referee thread (highest priority)
  *       - Once everyone is on the field, the offense thread increments the
- *	 value of 'the_ball' and yields. The defense thread tries to block
- *	 the ball by never letting the offense players get the CPU (it just
- * 	   does a sched_yield).
+ *         value of 'the_ball'. The defense thread tries to block
+ *         the ball by never letting the offense players get the CPU (it just
+ *         spins).
  *       - The refree threads wakes up regularly to check if the game is over :)
  *       - In the end, if the value of 'the_ball' is >0, the test is considered
- *	 to have failed.
+ *         to have failed.
  *
  * USAGE:
  *      Use run_auto.sh script in current directory to build and run test.
@@ -113,7 +113,6 @@ void *thread_defense(void *arg)
 	atomic_inc(&players_ready);
 	/*keep the ball from being moved */
 	while (1) {
-		sched_yield();	/* let other defenders run */
 	}
 	return NULL;
 }
@@ -124,7 +123,6 @@ void *thread_offense(void *arg)
 	atomic_inc(&players_ready);
 	while (1) {
 		the_ball++;	/* move the ball ahead one yard */
-		sched_yield();	/* let other offensive players run */
 	}
 	return NULL;
 }
