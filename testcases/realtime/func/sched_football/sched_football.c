@@ -242,6 +242,8 @@ int main(int argc, char *argv[])
 	while (tst_atomic_load(&players_ready) < players_per_team * 4)
 		usleep(100);
 
+	/* let things get into steady state */
+	sleep(2);
 	/* Ok, everyone is on the field, bring out the ref */
 	printf("Starting referee thread\n");
 	result = referee(game_length);
