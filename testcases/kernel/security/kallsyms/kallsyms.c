@@ -141,5 +141,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.max_runtime = 60,
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_KALLSYMS=y",
+		NULL
+	},
 	.test_all = test_access_kernel_address,
 };
