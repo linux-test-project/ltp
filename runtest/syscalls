@@ -1658,6 +1658,7 @@ unlink05 unlink05
 unlink07 unlink07
 unlink08 unlink08
 unlink09 unlink09
+unlink10 unlink10
 
 #unlinkat test cases
 unlinkat01 unlinkat01
