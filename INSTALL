@@ -55,13 +55,10 @@ in the same directory where the source files reside.
 	$ make all
 	$ make \
 	  "DESTDIR=$SYSROOT" \
-	  SKIP_IDCHECK=[0|1] \
 	  install
 
 - Specifying DESTDIR is optional, but required when installing to a non-host
   sysroot, as opposed to the host system's sysroot.
-- Specify SKIP_IDCHECK=1 if and when you don't want to modify /etc/{group,passwd}
-  on the target system's sysroot.
 
 If you get a build error, please report it to ltp@lists.linux.it with
 following information,
@@ -95,13 +92,10 @@ items which need fixing in the LTP tree.
 	  "top_srcdir=$TOP_SRCDIR" \
 	  "top_builddir=$OUT_OF_BUILD_TREE_DIR" \
 	  "DESTDIR=$SYSROOT" \
-	  SKIP_IDCHECK=[0|1]
 	  install
 
 - Specifying DESTDIR is optional, but required when installing to a non-host
   sysroot, as opposed to the host system's sysroot.
-- Specify SKIP_IDCHECK=1 if and when you don't want to modify /etc/{group,passwd}
-  on the target system's sysroot.
 
 Quick Start
 -----------

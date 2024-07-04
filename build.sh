@@ -138,7 +138,7 @@ install_in_tree()
 install_out_tree()
 {
 	cd $BUILD_DIR
-	make $MAKE_OPTS_OUT_TREE DESTDIR="$prefix" SKIP_IDCHECK=1 install
+	make $MAKE_OPTS_OUT_TREE DESTDIR="$prefix" install
 }
 
 usage()
