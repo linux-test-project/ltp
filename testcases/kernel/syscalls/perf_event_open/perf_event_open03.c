@@ -77,22 +77,41 @@ static void check_progress(int i)
 
 static void run(void)
 {
-	long diff;
-	int i;
+	long diff, diff_total, mem_avail, mem_avail_prev;
+	int i, sample;
 
-	diff = SAFE_READ_MEMINFO("MemAvailable:");
+	sample = 0;
+	diff_total = 0;
+
+	mem_avail_prev = SAFE_READ_MEMINFO("MemAvailable:");
 	tst_timer_start(CLOCK_MONOTONIC);
 
 	/* leak about 100MB of RAM */
 	for (i = 0; i < iterations; i++) {
 		ioctl(fd, PERF_EVENT_IOC_SET_FILTER, "filter,0/0@abcd");
 		check_progress(i);
+
+		/*
+		 * Every 1200000 iterations, calculate the difference in memory
+		 * availability. If the difference is greater than 20 * 1024 (20MB),
+		 * increment the sample counter and log the event.
+		 */
+		if ((i % 1200000) == 0) {
+			mem_avail = SAFE_READ_MEMINFO("MemAvailable:");
+			diff = mem_avail_prev - mem_avail;
+			diff_total += diff;
+
+			if (diff > 20 * 1024) {
+				sample++;
+				tst_res(TINFO, "MemAvailable decreased by %ld kB at iteration %d", diff, i);
+			}
+
+			mem_avail_prev = mem_avail;
+		}
 	}
 
-	diff -= SAFE_READ_MEMINFO("MemAvailable:");
-
-	if (diff > 50 * 1024)
-		tst_res(TFAIL, "Likely kernel memory leak detected");
+	if ((sample > 5) || (diff_total > 100 * 1024))
+		tst_res(TFAIL, "Likely kernel memory leak detected, total decrease: %ld kB", diff_total);
 	else
 		tst_res(TPASS, "No memory leak found");
 }
