@@ -50,10 +50,17 @@ struct kallsym {
 	char name[128];
 };
 
+struct range_struct {
+	unsigned long start, end;
+
+};
+
 static struct kallsym *sym_table;
 static unsigned int nr_symbols;
 static sigjmp_buf jmpbuf;
 volatile sig_atomic_t segv_caught;
+static struct range_struct *ranges;
+static int ranges_size, ranges_len;
 
 static void segv_handler(int sig)
 {
@@ -89,6 +96,49 @@ static unsigned int read_kallsyms(struct kallsym *table, unsigned int table_size
 	return nr_syms;
 }
 
+static void read_proc_self_maps(void)
+{
+	FILE *fp;
+
+	ranges_len = 0;
+	fp = fopen("/proc/self/maps", "r");
+	if (fp == NULL)
+		tst_brk(TBROK | TERRNO, "Failed to open /proc/self/maps.");
+
+	while (!feof(fp)) {
+		unsigned long start, end;
+		int ret;
+
+		ret = fscanf(fp, "%lx-%lx %*[^\n]\n", &start, &end);
+		if (ret != 2) {
+			fclose(fp);
+			tst_brk(TBROK | TERRNO, "Couldn't parse /proc/self/maps line.");
+		}
+
+		if (ranges_size < ranges_len + 1) {
+			ranges_size += 128;
+			ranges = SAFE_REALLOC(ranges,
+				ranges_size*sizeof(struct range_struct));
+		}
+		ranges[ranges_len].start = start;
+		ranges[ranges_len].end = end;
+		ranges_len++;
+	}
+
+	fclose(fp);
+}
+
+static int is_address_mapped(unsigned long addr)
+{
+	int i;
+
+	for (i = 0; i < ranges_len; i++) {
+		if (ranges[i].start <= addr && addr < ranges[i].end)
+			return 1;
+	}
+	return 0;
+}
+
 static void setup(void)
 {
 	struct sigaction sa;
@@ -117,17 +167,30 @@ static void access_ksymbols_address(struct kallsym *table)
 	}
 }
 
+
 static void test_access_kernel_address(void)
 {
+	int skipped = 0;
+
 	segv_caught = 0;
+	read_proc_self_maps();
 
-	for (unsigned int i = 0; i < nr_symbols; i++)
+	for (unsigned int i = 0; i < nr_symbols; i++) {
+		if (is_address_mapped(sym_table[i].addr)) {
+			tst_res(TDEBUG, "Skipping userspace mapped address 0x%lx",
+				sym_table[i].addr);
+			skipped++;
+			continue;
+		}
 		access_ksymbols_address(&sym_table[i]);
+	}
 
-	if (segv_caught == (sig_atomic_t)nr_symbols)
-		tst_res(TPASS, "Caught %d SIGSEGV in access ksymbols addr", segv_caught);
+	if (segv_caught == (sig_atomic_t)nr_symbols - skipped)
+		tst_res(TPASS, "Caught %d SIGSEGV in access ksymbols addr, skipped %d",
+			segv_caught, skipped);
 	else
-		tst_res(TFAIL, "Caught %d SIGSEGV but expected %d", segv_caught, nr_symbols);
+		tst_res(TFAIL, "Caught %d SIGSEGV but expected %d, skipped %d",
+			segv_caught, nr_symbols-skipped, skipped);
 }
 
 static void cleanup(void)
