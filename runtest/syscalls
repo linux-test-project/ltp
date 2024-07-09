@@ -1528,6 +1528,7 @@ sigprocmask01 sigprocmask01
 sigrelse01 sigrelse01
 
 sigsuspend01 sigsuspend01
+sigsuspend02 sigsuspend02
 
 sigtimedwait01 sigtimedwait01
 
