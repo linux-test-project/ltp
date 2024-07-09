@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) International Business Machines  Corp., 2001
+ * Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2003-2024
+ */
+
+/*\
+ * [Description]
  *
- * Description:
- * Verify the basic function of sigsuspend():
- * 1) sigsuspend() can replace process's current signal mask
- *    by the specified signal mask and suspend the process
- *    execution until the delivery of a signal.
- * 2) sigsuspend() should return after the execution of signal
- *    handler and restore the previous signal mask.
+ * Verify the basic sigsuspend(2) syscall functionality:
+ *
+ * - sigsuspend(2) can replace process's current signal mask by the specified
+ *   signal mask and suspend the process execution until the delivery of a
+ *   signal.
+ * - sigsuspend(2) should return after the execution of signal handler and
+ *   restore the previous signal mask.
  */
 
 #include <errno.h>
