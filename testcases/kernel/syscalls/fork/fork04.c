@@ -29,7 +29,7 @@ static void run_child(void)
 
 	TST_EXP_EXPR(strcmp(ENV_VAL0, val) == 0,
 		"%s environ variable has been inherited by the child",
-		ENV_KEY)
+		ENV_KEY);
 
 	tst_res(TINFO, "Unset %s environ variable inside child", ENV_KEY);
 
@@ -72,7 +72,7 @@ static void run(void)
 	} else {
 		TST_EXP_EXPR(strcmp(ENV_VAL0, val) == 0,
 			"%s environ variable is still present inside parent",
-			ENV_KEY)
+			ENV_KEY);
 	}
 
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
@@ -85,7 +85,7 @@ static void run(void)
 	else {
 		TST_EXP_EXPR(strcmp(ENV_VAL0, val) == 0,
 			"%s environ variable didn't change inside parent",
-			ENV_KEY)
+			ENV_KEY);
 	}
 }
 
