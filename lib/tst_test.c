@@ -1101,6 +1101,9 @@ static void prepare_device(struct tst_fs *fs)
 {
 	const char *mnt_data;
 	char buf[1024];
+	struct tst_fs dummy = {};
+
+	fs = fs ?: &dummy;
 
 	const char *const extra[] = {fs->mkfs_size_opt, NULL};
 
@@ -1355,8 +1358,8 @@ static void do_setup(int argc, char *argv[])
 
 		tdev.fs_type = default_fs_type();
 
-		if (!tst_test->all_filesystems && count_fs_descs() == 1)
-			prepare_device(&tst_test->filesystems[0]);
+		if (!tst_test->all_filesystems && count_fs_descs() <= 1)
+			prepare_device(tst_test->filesystems);
 	}
 
 	if (tst_test->needs_overlay && !tst_test->mount_device)
