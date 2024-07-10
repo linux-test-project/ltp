@@ -59,6 +59,7 @@
  *
  *****************************************************************************/
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -287,6 +288,19 @@ void *master_thread(void *arg)
 	return NULL;
 }
 
+int get_numcpus(void)
+{
+	long numcpus_conf = sysconf(_SC_NPROCESSORS_CONF);
+	size_t size = CPU_ALLOC_SIZE(numcpus_conf);
+	cpu_set_t *cpuset = CPU_ALLOC(numcpus_conf);
+
+	CPU_ZERO_S(size, cpuset);
+	/* Get the number of cpus accessible to the current process */
+	sched_getaffinity(0, size, cpuset);
+
+	return CPU_COUNT_S(size, cpuset);
+}
+
 int main(int argc, char *argv[])
 {
 	int pri_boost, numcpus;
@@ -295,10 +309,10 @@ int main(int argc, char *argv[])
 	pass_criteria = CHECK_LIMIT;
 	rt_init("hin:", parse_args, argc, argv);
 
-	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
+	numcpus = get_numcpus();
 
-	/* Max no. of busy threads should always be less than/equal the no. of cpus
-	   Otherwise, the box will hang */
+	/* Max no. of busy threads should always be less than/equal the no. of
+	   housekeeping cpus. Otherwise, the box will hang */
 
 	if (rt_threads == -1 || rt_threads > numcpus) {
 		rt_threads = numcpus;
