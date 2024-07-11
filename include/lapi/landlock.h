@@ -12,6 +12,8 @@
 # include <linux/landlock.h>
 #endif
 
+#include "lapi/syscalls.h"
+
 #ifndef HAVE_STRUCT_LANDLOCK_RULESET_ATTR
 struct landlock_ruleset_attr
 {
@@ -119,5 +121,64 @@ struct landlock_net_port_attr
 #ifndef LANDLOCK_ACCESS_NET_CONNECT_TCP
 # define LANDLOCK_ACCESS_NET_CONNECT_TCP	(1ULL << 1)
 #endif
+
+static inline int safe_landlock_create_ruleset(const char *file, const int lineno,
+	const struct landlock_ruleset_attr *attr,
+	size_t size , uint32_t flags)
+{
+	int rval;
+
+	rval = tst_syscall(__NR_landlock_create_ruleset, attr, size, flags);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"landlock_create_ruleset(%p, %lu, %u)",
+			attr, size, flags);
+	}
+
+	return rval;
+}
+
+static inline int safe_landlock_add_rule(const char *file, const int lineno,
+	int ruleset_fd, enum landlock_rule_type rule_type,
+	const void *rule_attr, uint32_t flags)
+{
+	int rval;
+
+	rval = tst_syscall(__NR_landlock_add_rule,
+		ruleset_fd, rule_type, rule_attr, flags);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"landlock_add_rule(%d, %d, %p, %u)",
+			ruleset_fd, rule_type, rule_attr, flags);
+	}
+
+	return rval;
+}
+
+static inline int safe_landlock_restrict_self(const char *file, const int lineno,
+	int ruleset_fd, int flags)
+{
+	int rval;
+
+	rval = tst_syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"landlock_restrict_self(%d, %u)",
+			ruleset_fd, flags);
+	}
+
+	return rval;
+}
+
+#define SAFE_LANDLOCK_CREATE_RULESET(attr, size, flags) \
+	safe_landlock_create_ruleset(__FILE__, __LINE__, (attr), (size), (flags))
+
+#define SAFE_LANDLOCK_ADD_RULE(ruleset_fd, rule_type, rule_attr, flags) \
+	safe_landlock_add_rule(__FILE__, __LINE__, \
+		(ruleset_fd), (rule_type), (rule_attr), (flags))
+
+#define SAFE_LANDLOCK_RESTRICT_SELF(ruleset_fd, flags) \
+	safe_landlock_restrict_self(__FILE__, __LINE__, (ruleset_fd), (flags))
 
 #endif
