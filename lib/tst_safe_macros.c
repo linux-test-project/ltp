@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <sched.h>
 #include <sys/ptrace.h>
+#include <sys/prctl.h>
 #include "config.h"
 #ifdef HAVE_SYS_FANOTIFY_H
 # include <sys/fanotify.h>
@@ -706,6 +707,22 @@ int safe_mprotect(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"mprotect(%p, %zi, %s(%x)) return value %d",
 			addr, len, prot_buf, prot, rval);
+	}
+
+	return rval;
+}
+
+int safe_prctl(const char *file, const int lineno,
+	int option, unsigned long arg2, unsigned long arg3,
+	unsigned long arg4, unsigned long arg5)
+{
+	int rval;
+
+	rval = prctl(option, arg2, arg3, arg4, arg5);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"prctl(%d, %lu, %lu, %lu, %lu)",
+			option, arg2, arg3, arg4, arg5);
 	}
 
 	return rval;
