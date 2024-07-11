@@ -133,6 +133,10 @@ static inline int safe_landlock_create_ruleset(const char *file, const int linen
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"landlock_create_ruleset(%p, %zi, %u)",
 			attr, size, flags);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid landlock_create_ruleset(%p, %lu, %u) return value %d",
+			attr, size, flags, rval);
 	}
 
 	return rval;
@@ -151,6 +155,10 @@ static inline int safe_landlock_add_rule(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"landlock_add_rule(%d, %d, %p, %u)",
 			ruleset_fd, rule_type, rule_attr, flags);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid landlock_add_rule(%d, %d, %p, %u) return value %d",
+			ruleset_fd, rule_type, rule_attr, flags, rval);
 	}
 
 	return rval;
@@ -166,6 +174,10 @@ static inline int safe_landlock_restrict_self(const char *file, const int lineno
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"landlock_restrict_self(%d, %u)",
 			ruleset_fd, flags);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid landlock_restrict_self(%d, %u) return value %d",
+			ruleset_fd, flags, rval);
 	}
 
 	return rval;

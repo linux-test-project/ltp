@@ -723,6 +723,10 @@ int safe_prctl(const char *file, const int lineno,
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"prctl(%d, %lu, %lu, %lu, %lu)",
 			option, arg2, arg3, arg4, arg5);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid prctl(%d, %lu, %lu, %lu, %lu) return value %d",
+			option, arg2, arg3, arg4, arg5, rval);
 	}
 
 	return rval;
