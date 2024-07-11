@@ -370,4 +370,7 @@ process_madvise 6440
 epoll_pwait2 6441
 mount_setattr 6442
 quotactl_fd 6443
+landlock_create_ruleset 6444
+landlock_add_rule 6445
+landlock_restrict_self 6446
 futex_waitv 6449
