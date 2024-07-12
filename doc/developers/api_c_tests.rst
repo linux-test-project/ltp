@@ -37,3 +37,7 @@ Capabilities
 libltpswap
 ----------
 .. kernel-doc:: ../../include/libswap.h
+
+Temporary directory
+-------------------
+.. kernel-doc:: ../../include/tst_tmpdir.h
