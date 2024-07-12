@@ -17,7 +17,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "tst_test.h"
-#include "old_tmpdir.h"
 #include "mem.h"
 
 #define PALIGN(p, a) ((void *)LTP_ALIGN((unsigned long)(p), (a)))

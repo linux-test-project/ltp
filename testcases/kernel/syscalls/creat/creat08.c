@@ -29,7 +29,6 @@
 #define NOSETGID_B	DIR_B "/nosetgid"
 #define ROOT_SETGID	DIR_B "/root_setgid"
 
-static char *tmpdir;
 static uid_t orig_uid, nobody_uid;
 static gid_t nobody_gid, free_gid;
 static int fd = -1;
@@ -44,7 +43,6 @@ static void setup(void)
 	tst_res(TINFO, "User nobody: uid = %d, gid = %d", (int)nobody_uid,
 		(int)nobody_gid);
 	free_gid = tst_get_free_gid(nobody_gid);
-	tmpdir = tst_get_tmpdir();
 }
 
 static void file_test(const char *name, mode_t mode, int sgid, gid_t gid)
@@ -125,15 +123,13 @@ static void run(void)
 	file_test(ROOT_SETGID, MODE_SGID, 1, free_gid);
 
 	/* Cleanup between loops */
-	tst_purge_dir(tmpdir);
+	tst_purge_dir(tst_tmpdir_path());
 }
 
 static void cleanup(void)
 {
 	if (fd >= 0)
 		SAFE_CLOSE(fd);
-
-	free(tmpdir);
 }
 
 static struct tst_test test = {

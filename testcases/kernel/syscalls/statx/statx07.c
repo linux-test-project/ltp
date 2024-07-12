@@ -54,7 +54,6 @@
 #define SERV_FORCE_SYNC "server/force_sync_file"
 #define SERV_DONT_SYNC "server/dont_sync_file"
 
-static char *cwd;
 static char cmd[BUFF_SIZE];
 static int mounted;
 static int exported;
@@ -116,8 +115,6 @@ static void setup(void)
 	int ret;
 	char server_path[BUFF_SIZE];
 
-	cwd = tst_get_tmpdir();
-
 	mode_t old_umask = umask(0);
 
 	SAFE_MKDIR(SERV_PATH, DEFAULT_MODE);
@@ -127,7 +124,7 @@ static void setup(void)
 
 	umask(old_umask);
 
-	snprintf(server_path, sizeof(server_path), ":%s/%s", cwd, SERV_PATH);
+	snprintf(server_path, sizeof(server_path), ":%s/%s", tst_tmpdir_path(), SERV_PATH);
 
 	snprintf(cmd, sizeof(cmd),
 		 "exportfs -i -o no_root_squash,rw,sync,no_subtree_check,fsid=%d *%.1024s",
@@ -155,7 +152,7 @@ static void cleanup(void)
 	if (!exported)
 		return;
 	snprintf(cmd, sizeof(cmd),
-		 "exportfs -u *:%s/%s", cwd, SERV_PATH);
+		 "exportfs -u *:%s/%s", tst_tmpdir_path(), SERV_PATH);
 
 	if (tst_system(cmd) == -1)
 		tst_res(TWARN | TST_ERR, "failed to clear exportfs");

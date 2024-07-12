@@ -27,18 +27,12 @@ static void setup(void)
 {
 	struct passwd *ltpuser;
 
-	path = tst_get_tmpdir();
+	path = tst_tmpdir_path();
 	ltpuser = SAFE_GETPWNAM("nobody");
 	SAFE_SETEUID(ltpuser->pw_uid);
 }
 
-static void cleanup(void)
-{
-	free(path);
-}
-
 static struct tst_test test = {
-	.cleanup = cleanup,
 	.setup = setup,
 	.test_all = verify_chroot,
 	.needs_root = 1,

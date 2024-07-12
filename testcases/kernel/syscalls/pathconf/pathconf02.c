@@ -70,12 +70,9 @@ static void setup(void)
 
 	SAFE_TOUCH("testfile", 0777, NULL);
 
-	char *tmpdir =  tst_get_tmpdir();
+	abs_path = tst_tmpdir_mkpath(FILEPATH);
 
-	abs_path = tst_aprintf("%s/%s", tmpdir, FILEPATH);
-
-	SAFE_CHMOD(tmpdir, 0);
-	free(tmpdir);
+	SAFE_CHMOD(tst_tmpdir_path(), 0);
 
 	memset(path, 'a', PATH_LEN);
 

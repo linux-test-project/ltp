@@ -44,16 +44,13 @@ static void run(void)
 static void setup(void)
 {
 	char opt_bsize[32];
-	char *tmpdir;
 	const char *const fs_opts[] = {opt_bsize, NULL};
 	struct stat sb;
 	int pagesize;
 	int fd;
 
-	tmpdir = tst_get_tmpdir();
-	SAFE_ASPRINTF(&file_path, "%s/%s", tmpdir, FILENAME);
-	SAFE_ASPRINTF(&symb_path, "%s/%s", tmpdir, SYMBNAME);
-	free(tmpdir);
+	file_path = tst_tmpdir_mkpath(FILENAME);
+	symb_path = tst_tmpdir_mkpath(SYMBNAME);
 
 	/* change st_blksize / st_dev */
 	SAFE_STAT(".", &sb);
@@ -84,12 +81,6 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (file_path)
-		free(file_path);
-
-	if (symb_path)
-		free(symb_path);
-
 	if (tst_is_mounted(MNTPOINT))
 		SAFE_UMOUNT(MNTPOINT);
 }

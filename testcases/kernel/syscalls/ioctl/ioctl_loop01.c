@@ -27,7 +27,8 @@
 #include "lapi/loop.h"
 #include "tst_test.h"
 
-static char dev_path[1024], backing_path[1024], backing_file_path[1024];
+static char dev_path[1024], backing_path[1024];
+static char *backing_file_path;
 static int dev_num, attach_flag, dev_fd, parted_sup;
 
 /*
@@ -124,7 +125,7 @@ static void setup(void)
 	sprintf(autoclear_path, "/sys/block/loop%d/loop/autoclear", dev_num);
 	sprintf(backing_path, "/sys/block/loop%d/loop/backing_file", dev_num);
 	sprintf(sys_loop_partpath, "/sys/block/loop%d/loop%dp1", dev_num, dev_num);
-	sprintf(backing_file_path, "%s/test.img", tst_get_tmpdir());
+	backing_file_path = tst_tmpdir_mkpath("test.img");
 	sprintf(loop_partpath, "%sp1", dev_path);
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 }

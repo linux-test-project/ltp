@@ -43,7 +43,7 @@ static void test_utime(void)
 
 	tst_res(TINFO, "Test if utime() changes access time");
 
-	create_symlink(tst_get_tmpdir(), symname);
+	create_symlink(tst_tmpdir_path(), symname);
 	SAFE_STAT(symname, &oldsym_stat);
 
 	struct utimbuf utimes = {

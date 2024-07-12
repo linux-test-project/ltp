@@ -45,7 +45,7 @@ static void verify_pathconf(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	path = tst_get_tmpdir();
+	path = tst_tmpdir_path();
 
 	TEST(pathconf(path, tc->value));
 
@@ -55,14 +55,8 @@ static void verify_pathconf(unsigned int i)
 		tst_res(TPASS, "pathconf(%s, %s)", path, tc->name);
 }
 
-static void cleanup(void)
-{
-	free(path);
-}
-
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.test = verify_pathconf,
 	.tcnt = ARRAY_SIZE(tcases),
-	.cleanup = cleanup,
 };

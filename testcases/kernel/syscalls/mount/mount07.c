@@ -31,9 +31,9 @@
 
 #define MNTPOINT "mntpoint"
 
-static char test_file[PATH_MAX];
-static char link_file[PATH_MAX];
-static char temp_link_file[PATH_MAX];
+static char *test_file;
+static char *link_file;
+static char *temp_link_file;
 static int flag;
 
 static void setup_symlink(void)
@@ -114,15 +114,9 @@ static void test_statfs(bool nosymfollow)
 
 static void setup(void)
 {
-	char *tmpdir = tst_get_tmpdir();
-
-	snprintf(test_file, PATH_MAX, "%s/%s/test_file", tst_get_tmpdir(),
-			MNTPOINT);
-	snprintf(link_file, PATH_MAX, "%s/%s/link_file", tst_get_tmpdir(),
-			MNTPOINT);
-	snprintf(temp_link_file, PATH_MAX, "%s/%s/temp_link_file",
-			tst_get_tmpdir(), MNTPOINT);
-	free(tmpdir);
+	test_file = tst_tmpdir_mkpath("%s/test_file", MNTPOINT);
+	link_file = tst_tmpdir_mkpath("%s/link_file", MNTPOINT);
+	temp_link_file = tst_tmpdir_mkpath("%s/temp_link_file", MNTPOINT);
 }
 
 static void cleanup(void)

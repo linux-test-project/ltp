@@ -28,11 +28,8 @@ static int set_block_size(int fd)
 static void setup(void)
 {
 	int fd;
-	int ret;
 
-	ret = asprintf(&mntpoint, "%s/mnt", tst_get_tmpdir());
-	if (ret < 0)
-		tst_brk(TBROK, "asprintf failure");
+	mntpoint = tst_tmpdir_mkpath("mnt");
 
 	fd = SAFE_OPEN(tst_device->dev, O_RDONLY);
 

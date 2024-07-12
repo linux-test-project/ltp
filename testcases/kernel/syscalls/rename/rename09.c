@@ -27,14 +27,12 @@
 #define PERMS    0700
 
 static uid_t orig_uid, test_users[2];
-static char *tmpdir;
 
 static void setup(void)
 {
 	umask(0);
 	orig_uid = getuid();
 	tst_get_uids(test_users, 0, 2);
-	tmpdir = tst_get_tmpdir();
 }
 
 static void run(void)
@@ -54,18 +52,12 @@ static void run(void)
 
 	/* Cleanup between loops */
 	SAFE_SETEUID(orig_uid);
-	tst_purge_dir(tmpdir);
-}
-
-static void cleanup(void)
-{
-	free(tmpdir);
+	tst_purge_dir(tst_tmpdir_path());
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.cleanup = cleanup,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 };

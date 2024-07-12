@@ -37,17 +37,11 @@ static void verify_chroot(void)
 
 static void setup(void)
 {
-	path = tst_get_tmpdir();
+	path = tst_tmpdir_path();
 	SAFE_TOUCH(TMP_FILENAME, 0666, NULL);
 }
 
-static void cleanup(void)
-{
-	free(path);
-}
-
 static struct tst_test test = {
-	.cleanup = cleanup,
 	.setup = setup,
 	.test_all = verify_chroot,
 	.needs_root = 1,

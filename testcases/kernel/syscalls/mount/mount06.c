@@ -27,14 +27,14 @@
 #define MNTPOINT_DST "mntpoint2"
 
 static char *tmppath;
-static char mntpoint_src[PATH_MAX];
-static char mntpoint_dst[PATH_MAX];
-static char tstfiles_src[PATH_MAX];
-static char tstfiles_dst[PATH_MAX];
+static char *mntpoint_src;
+static char *mntpoint_dst;
+static char *tstfiles_src;
+static char *tstfiles_dst;
 
 static void setup(void)
 {
-	tmppath = tst_get_tmpdir();
+	tmppath = tst_tmpdir_path();
 
 	/*
 	 * Turn current dir into a private mount point being a parent
@@ -43,11 +43,10 @@ static void setup(void)
 	SAFE_MOUNT(tmppath, tmppath, "none", MS_BIND, NULL);
 	SAFE_MOUNT("none", tmppath, "none", MS_PRIVATE, NULL);
 
-	snprintf(mntpoint_src, PATH_MAX, "%s/%s", tmppath, MNTPOINT_SRC);
-	snprintf(mntpoint_dst, PATH_MAX, "%s/%s", tmppath, MNTPOINT_DST);
-
-	snprintf(tstfiles_src, PATH_MAX, "%s/%s/testfile", tmppath, MNTPOINT_SRC);
-	snprintf(tstfiles_dst, PATH_MAX, "%s/%s/testfile", tmppath, MNTPOINT_DST);
+	mntpoint_src = tst_tmpdir_mkpath(MNTPOINT_SRC);
+	mntpoint_dst = tst_tmpdir_mkpath(MNTPOINT_DST);
+	tstfiles_src = tst_tmpdir_mkpath("%s/testfile", MNTPOINT_SRC);
+	tstfiles_dst = tst_tmpdir_mkpath("%s/testfile", MNTPOINT_DST);
 
 	SAFE_MKDIR(mntpoint_dst, 0750);
 }

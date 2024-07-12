@@ -64,13 +64,12 @@ static struct msghdr beef_header = {
 
 static void setup(void)
 {
-	char *tmpdir = tst_get_tmpdir();
+	char *tmpdir = tst_tmpdir_path();
 	int ret;
 
 	addr.sun_family = AF_UNIX;
 	ret = snprintf(addr.sun_path, sizeof(addr.sun_path), "%s/%s", tmpdir,
 		SOCK_NAME);
-	free(tmpdir);
 
 	if (ret >= (int)sizeof(addr.sun_path))
 		tst_brk(TBROK, "Tempdir path is too long");

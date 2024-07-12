@@ -93,7 +93,7 @@ void setup(void)
 		tst_brk(TCONF, "Not enough hugepages for testing!");
 
 	if (!Hopt)
-		Hopt = tst_get_tmpdir();
+		Hopt = tst_tmpdir_path();
 	SAFE_MOUNT("none", Hopt, "hugetlbfs", 0, NULL);
 
 	snprintf(TEMPFILE, sizeof(TEMPFILE), "%s/mmapfile%d", Hopt, getpid());

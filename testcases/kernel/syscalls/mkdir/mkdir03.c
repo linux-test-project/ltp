@@ -85,10 +85,8 @@ static void verify_mkdir(unsigned int n)
 static void setup(void)
 {
 	unsigned int i;
-	char *tmpdir = tst_get_tmpdir();
 
-	SAFE_SYMLINK(tmpdir, TST_SYMLINK);
-	free(tmpdir);
+	SAFE_SYMLINK(tst_tmpdir_path(), TST_SYMLINK);
 
 	SAFE_MKFIFO(TST_PIPE, 0777);
 	SAFE_MKDIR(TST_FOLDER, 0777);

@@ -27,7 +27,9 @@
 #include "tst_test.h"
 
 static int file_fd, file_change_fd, file_fd_invalid;
-static char backing_path[1024], backing_file_path[1024], backing_file_change_path[1024];
+static char backing_path[1024];
+static char *backing_file_path;
+static char *backing_file_change_path;
 static int attach_flag, dev_fd, loop_configure_sup = 1;
 static char loop_ro_path[1024], dev_path[1024];
 static struct loop_config loopconfig;
@@ -109,7 +111,6 @@ static void setup(void)
 	int dev_num;
 	int ret;
 
-	char *tmpdir = tst_get_tmpdir();
 	dev_num = tst_find_free_loopdev(dev_path, sizeof(dev_path));
 	if (dev_num < 0)
 		tst_brk(TBROK, "Failed to find free loop device");
@@ -119,11 +120,9 @@ static void setup(void)
 	tst_fill_file("test2.img", 0, 2048, 20);
 
 	sprintf(backing_path, "/sys/block/loop%d/loop/backing_file", dev_num);
-	sprintf(backing_file_path, "%s/test.img", tmpdir);
-	sprintf(backing_file_change_path, "%s/test1.img", tmpdir);
+	backing_file_path = tst_tmpdir_mkpath("test.img");
+	backing_file_change_path = tst_tmpdir_mkpath("test1.img");
 	sprintf(loop_ro_path, "/sys/block/loop%d/ro", dev_num);
-
-	free(tmpdir);
 
 	file_change_fd = SAFE_OPEN("test1.img", O_RDWR);
 	file_fd_invalid = SAFE_OPEN("test2.img", O_RDWR);

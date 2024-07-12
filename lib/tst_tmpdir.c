@@ -71,6 +71,7 @@
 #include <fcntl.h>
 
 #include "test.h"
+#include "tst_buffers.h"
 #include "safe_macros.h"
 #include "tst_tmpdir.h"
 #include "ltp_priv.h"
@@ -351,4 +352,40 @@ void tst_purge_dir(const char *path)
 
 	if (purge_dir(path, &err))
 		tst_brkm(TBROK, NULL, "%s: %s", __func__, err);
+}
+
+char *tst_tmpdir_path(void)
+{
+	static char *tmpdir;
+
+	if (tmpdir)
+		return tmpdir;
+
+	tmpdir = tst_strdup(TESTDIR);
+
+	return tmpdir;
+}
+
+char *tst_tmpdir_mkpath(const char *fmt, ...)
+{
+	size_t testdir_len = strlen(TESTDIR);
+	size_t path_len = testdir_len;
+	va_list va, vac;
+	char *ret;
+
+	va_start(va, fmt);
+	va_copy(vac, va);
+	path_len += vsnprintf(NULL, 0, fmt, va) + 2;
+	va_end(va);
+
+	ret = tst_alloc(path_len);
+
+	strcpy(ret, TESTDIR);
+
+	ret[testdir_len] = '/';
+
+	vsprintf(ret + testdir_len + 1, fmt, vac);
+	va_end(vac);
+
+	return ret;
 }

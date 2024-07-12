@@ -634,11 +634,6 @@ void tst_set_max_runtime(int max_runtime);
 int tst_creat_unlinked(const char *path, int flags);
 
 /*
- * Returns path to the test temporary directory in a newly allocated buffer.
- */
-char *tst_get_tmpdir(void);
-
-/*
  * Returns path to the test temporary directory root (TMPDIR).
  */
 const char *tst_get_tmpdir_root(void);
