@@ -3,6 +3,12 @@
  * Copyright (c) 2008 Michael Kerrisk <mtk.manpages@gmail.com>
  * Copyright (c) 2008 Subrata Modak <subrata@linux.vnet.ibm.com>
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
+ * Copyright (c) Linux Test Project, 2020-2024
+ *
+ */
+
+/*\
+ * [Description]
  *
  * Basic utimnsat() test.
  */
