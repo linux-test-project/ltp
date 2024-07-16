@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright © International Business Machines  Corp., 2007, 2008
+ * Copyright (c) Linux Test Project, 2009-2024
  *
- * Test Description:
- *  The test process is affined to a CPU. It then calls getcpu and
- *  checks that the CPU and node (if supported) match the expected
- *  values.
+ */
+
+/*\
+ * [Description]
+ *
+ * The test process is affined to a CPU. It then calls getcpu and
+ * checks that the CPU and node (if supported) match the expected
+ * values.
  */
 
 #define _GNU_SOURCE
