@@ -131,7 +131,7 @@ static inline int safe_landlock_create_ruleset(const char *file, const int linen
 	rval = tst_syscall(__NR_landlock_create_ruleset, attr, size, flags);
 	if (rval == -1) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
-			"landlock_create_ruleset(%p, %lu, %u)",
+			"landlock_create_ruleset(%p, %zi, %u)",
 			attr, size, flags);
 	}
 
