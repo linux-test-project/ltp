@@ -435,10 +435,12 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM()],
   [
     AC_MSG_RESULT([yes])
     AC_SUBST([WITH_KVM_TESTSUITE],["yes"])
+    have_kvm=yes
   ],
   [
     AC_MSG_RESULT([no])
     AC_SUBST([WITH_KVM_TESTSUITE],["no"])
+    have_kvm=no
   ])
 _AC_LANG_PREFIX[]FLAGS="$ltp_backup_flags"
 LDFLAGS="$ltp_backup_ldflags"
@@ -448,6 +450,7 @@ AC_OUTPUT
 cat << EOF
 
 TESTSUITES
+KVM testsuite: $have_kvm
 open posix testsuite: ${with_open_posix_testsuite:-no}
 realtime testsuite: ${with_realtime_testsuite:-no}
 TI-RPC testsuite: ${with_tirpc:-yes}
