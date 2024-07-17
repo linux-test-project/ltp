@@ -374,7 +374,7 @@ fi
 # TODO: testcases/realtime requires bash and python.
 AC_ARG_WITH([realtime-testsuite],
   [AS_HELP_STRING([--with-realtime-testsuite],
-    [compile and install the realtime testsuite])],
+    [unused, kept for compatibility reason])],
   [with_realtime_testsuite=$withval],
   [with_realtime_testsuite=no]
 )
@@ -452,7 +452,6 @@ cat << EOF
 TESTSUITES
 KVM testsuite: $have_kvm
 open posix testsuite: ${with_open_posix_testsuite:-no}
-realtime testsuite: ${with_realtime_testsuite:-no}
 TI-RPC testsuite: ${with_tirpc:-yes}
 
 LIBRARIES
@@ -471,3 +470,7 @@ metadata generator: $with_metadata_generator
 HTML metadata: $with_metadata_html
 PDF metadata: $with_metadata_pdf
 EOF
+
+if test "x$with_realtime_testsuite" = xyes; then
+    AC_MSG_WARN([--with-realtime-testsuite has no effect and is kept for compatibilty reason. It will be removed in the future.])
+fi

@@ -39,8 +39,5 @@ WITH_METADATA_PDF		:= @WITH_METADATA_PDF@
 # Enable testcases/open_posix_testsuite's compile and install?
 WITH_OPEN_POSIX_TESTSUITE	:= @WITH_OPEN_POSIX_TESTSUITE@
 
-# Enable testcases/realtime's compile and install?
-WITH_REALTIME_TESTSUITE		:= @WITH_REALTIME_TESTSUITE@
-
 # Enable testcases/kernel/kvm compile and install?
 WITH_KVM_TESTSUITE		:= @WITH_KVM_TESTSUITE@
