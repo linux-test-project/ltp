@@ -109,7 +109,6 @@ static struct tst_test test = {
 	.test = verify_unlink,
 	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.format_device = 1,
 	.mount_device = 1,
 	.all_filesystems = 1,
 	.skip_filesystems = (const char *const[]) {

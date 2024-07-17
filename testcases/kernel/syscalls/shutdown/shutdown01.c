@@ -114,7 +114,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.needs_tmpdir = 1,
 	.bufs = (struct tst_buffers []) {
 		{&sock_addr, .size = sizeof(struct sockaddr_un)},
 		{}
