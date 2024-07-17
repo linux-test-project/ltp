@@ -452,6 +452,7 @@ cat << EOF
 TESTSUITES
 open posix testsuite: ${with_open_posix_testsuite:-no}
 realtime testsuite: ${with_realtime_testsuite:-no}
+TI-RPC testsuite: ${with_tirpc:-yes}
 
 LIBRARIES
 keyutils: ${have_keyutils:-yes}
