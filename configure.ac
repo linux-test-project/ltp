@@ -381,8 +381,6 @@ AC_ARG_WITH([realtime-testsuite],
 
 if test "x$with_realtime_testsuite" = xyes; then
     AC_SUBST([WITH_REALTIME_TESTSUITE],["yes"])
-    # Run configure on testcases/realtime as well.
-    AC_CONFIG_SUBDIRS([testcases/realtime])
 else
     AC_SUBST([WITH_REALTIME_TESTSUITE],["no"])
 fi
