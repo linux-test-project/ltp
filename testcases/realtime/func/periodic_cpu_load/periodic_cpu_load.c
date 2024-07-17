@@ -38,8 +38,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define PRIO_A 63
 #define PRIO_B 53

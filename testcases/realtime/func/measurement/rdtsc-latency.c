@@ -43,7 +43,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <stdint.h>
-#include <librttest.h>
+#include "librttest.h"
 
 #include "tst_tsc.h"
 

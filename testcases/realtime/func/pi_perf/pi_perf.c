@@ -47,8 +47,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define LOWPRIO 30
 #define HIGHPRIO 40

@@ -44,8 +44,8 @@
 #include <sys/poll.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 #define PASS_US 100
 pthread_mutex_t child_mutex;
 volatile int *child_waiting = NULL;

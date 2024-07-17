@@ -68,7 +68,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <sys/syscall.h>
-#include <librttest.h>
+#include "librttest.h"
 
 #define NUM_WORKERS	27
 #define CHECK_LIMIT	1

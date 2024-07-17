@@ -43,8 +43,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <math.h>
-#include <libstats.h>
-#include <librttest.h>
+#include "libstats.h"
+#include "librttest.h"
 
 int save_stats = 0;
 

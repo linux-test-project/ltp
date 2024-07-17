@@ -16,8 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define MAX_CPUS	8192
 #define PRIO		43

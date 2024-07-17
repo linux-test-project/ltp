@@ -52,8 +52,8 @@
 #include <sched.h>
 #include <errno.h>
 #include <limits.h>
-#include <libstats.h>
-#include <librttest.h>
+#include "libstats.h"
+#include "librttest.h"
 #include <sys/mman.h>
 
 #define ITERATIONS 10000000

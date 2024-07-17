@@ -50,7 +50,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sched.h>
-#include <librttest.h>
+#include "librttest.h"
 #include <sys/mman.h>
 #include <unistd.h>
 #include <signal.h>

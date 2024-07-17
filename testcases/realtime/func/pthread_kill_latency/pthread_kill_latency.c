@@ -51,8 +51,8 @@
 #include <sched.h>
 #include <signal.h>
 #include <errno.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define PRIO 89
 #define ITERATIONS 10000

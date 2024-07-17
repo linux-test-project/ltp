@@ -67,8 +67,8 @@
 #include <errno.h>
 #include <sched.h>
 #include <pthread.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define gettid() syscall(__NR_gettid)
 

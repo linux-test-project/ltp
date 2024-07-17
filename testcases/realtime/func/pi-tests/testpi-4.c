@@ -45,7 +45,7 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#include <librttest.h>
+#include "librttest.h"
 
 pthread_barrier_t barrier;
 

@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
-#include <librttest.h>
+#include "librttest.h"
 
 void usage(void)
 {

@@ -40,8 +40,8 @@
  *
  *****************************************************************************/
 
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #include <stdio.h>
 #include <stdlib.h>

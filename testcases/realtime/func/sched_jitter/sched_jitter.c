@@ -47,8 +47,8 @@
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
-#include <libstats.h>
-#include <librttest.h>
+#include "libstats.h"
+#include "librttest.h"
 
 #define NUMRUNS 1000
 #define NUMLOOPS 1000000

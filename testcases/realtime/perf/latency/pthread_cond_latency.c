@@ -41,7 +41,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <librttest.h>
+#include "librttest.h"
 
 pthread_mutex_t child_mutex = PTHREAD_MUTEX_INITIALIZER;
 volatile int child_waiting = 0;
