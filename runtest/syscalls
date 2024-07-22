@@ -65,6 +65,7 @@ cacheflush01 cacheflush01
 cachestat01 cachestat01
 cachestat02 cachestat02
 cachestat03 cachestat03
+cachestat04 cachestat04
 
 chdir01 chdir01
 chdir01A symlink01 -T chdir01
