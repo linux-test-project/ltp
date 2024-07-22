@@ -21,11 +21,38 @@
 #include <sched.h>
 
 #include "tst_test.h"
+#include "tst_safe_clocks.h"
+#include "tst_timer.h"
 
 static char *str_loop;
-static long loop = 2000000;
+static long loop = 1000000;
 static char *str_timeout;
-static int timeout = 240;
+static int timeout;
+
+#define CALLIBRATE_LOOPS 120000000
+
+static int callibrate(void)
+{
+	int i;
+	struct timespec start, stop;
+	long long diff;
+
+	for (i = 0; i < CALLIBRATE_LOOPS; i++)
+		__asm__ __volatile__ ("" : "+g" (i) : :);
+
+	SAFE_CLOCK_GETTIME(CLOCK_MONOTONIC_RAW, &start);
+
+	for (i = 0; i < CALLIBRATE_LOOPS; i++)
+		__asm__ __volatile__ ("" : "+g" (i) : :);
+
+	SAFE_CLOCK_GETTIME(CLOCK_MONOTONIC_RAW, &stop);
+
+	diff = tst_timespec_diff_us(stop, start);
+
+	tst_res(TINFO, "CPU did %i loops in %llius", CALLIBRATE_LOOPS, diff);
+
+	return diff;
+}
 
 static int wait_for_pid(pid_t pid)
 {
@@ -78,6 +105,8 @@ static void setup(void)
 
 	if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
+	else
+		timeout = callibrate() / 1000;
 
 	tst_set_max_runtime(timeout);
 }
@@ -114,7 +143,13 @@ static void do_test(void)
 		sleep(1);
 
 	SAFE_KILL(child_pid, SIGTERM);
-	TST_EXP_PASS(wait_for_pid(child_pid));
+
+	if (!tst_remaining_runtime())
+		tst_res(TFAIL, "Scheduller starvation reproduced.");
+	else
+		tst_res(TPASS, "Haven't reproduced scheduller starvation.");
+
+	TST_EXP_PASS_SILENT(wait_for_pid(child_pid));
 }
 
 static struct tst_test test = {
