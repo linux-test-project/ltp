@@ -91,6 +91,7 @@ AC_SUBST(HAVE_FTS_H, $have_fts)
 AC_CHECK_HEADERS(linux/vm_sockets.h, [], [], [#include <sys/socket.h>])
 
 AC_CHECK_FUNCS_ONCE([ \
+    cachestat \
     clone3 \
     close_range \
     copy_file_range \
@@ -242,6 +243,9 @@ AC_CHECK_TYPES([struct mount_attr],,,[
 # include <linux/mount.h>
 #endif
 ])
+
+AC_CHECK_TYPES([struct cachestat_range],,,[#include <sys/mman.h>])
+AC_CHECK_TYPES([struct cachestat],,,[#include <sys/mman.h>])
 
 # Tools knobs
 
