@@ -599,6 +599,7 @@ ioctl_sg01 ioctl_sg01
 
 ioctl_ficlone01 ioctl_ficlone01
 ioctl_ficlone02 ioctl_ficlone02
+ioctl_ficlone03 ioctl_ficlone03
 
 inotify_init1_01 inotify_init1_01
 inotify_init1_02 inotify_init1_02
