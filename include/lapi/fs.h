@@ -18,7 +18,17 @@
 
 #include <sys/user.h>
 #include <limits.h>
+#include <stdint.h>
 #include "lapi/abisize.h"
+
+#ifndef HAVE_FILE_CLONE_RANGE
+struct file_clone_range {
+	int64_t src_fd;
+	uint64_t src_offset;
+	uint64_t src_length;
+	uint64_t dest_offset;
+};
+#endif
 
 #ifndef FS_IOC_GETFLAGS
 # define	FS_IOC_GETFLAGS	_IOR('f', 1, long)
@@ -46,6 +56,14 @@
 
 #ifndef FS_VERITY_FL
 # define FS_VERITY_FL	   0x00100000 /* Verity protected inode */
+#endif
+
+#ifndef FICLONE
+# define FICLONE		_IOW(0x94, 9, int)
+#endif
+
+#ifndef FICLONERANGE
+# define FICLONERANGE		_IOW(0x94, 13, struct file_clone_range)
 #endif
 
 /*
