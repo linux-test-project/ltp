@@ -48,7 +48,7 @@ static inline void do_close_range(unsigned int fd, unsigned int max_fd,
 			tst_brk(TCONF | TERRNO, "No CLOSE_RANGE_CLOEXEC");
 	}
 
-	tst_brk(TBROK | TERRNO, "close_range(%d, %d, %d)", fd, max_fd, flags);
+	tst_brk(TBROK | TERRNO, "close_range(%u, %u, %u)", fd, max_fd, flags);
 }
 
 static void setup(void)
