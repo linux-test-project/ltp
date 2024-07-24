@@ -312,6 +312,9 @@ void tst_tmpdir(void)
 
 		tst_exit();
 	}
+
+	tst_resm(TINFO, "Using %s as tmpdir (%s filesystem)", TESTDIR,
+			 tst_fs_type_name(tst_fs_type(NULL, TESTDIR)));
 }
 
 void tst_rmdir(void)
