@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include "lapi/abisize.h"
 
-#ifndef HAVE_FILE_CLONE_RANGE
+#ifndef HAVE_STRUCT_FILE_CLONE_RANGE
 struct file_clone_range {
 	int64_t src_fd;
 	uint64_t src_offset;
