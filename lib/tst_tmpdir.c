@@ -358,6 +358,9 @@ char *tst_tmpdir_path(void)
 {
 	static char *tmpdir;
 
+	if (!TESTDIR)
+		tst_brkm(TBROK, NULL, ".needs_tmpdir must be set!");
+
 	if (tmpdir)
 		return tmpdir;
 
@@ -368,10 +371,15 @@ char *tst_tmpdir_path(void)
 
 char *tst_tmpdir_mkpath(const char *fmt, ...)
 {
-	size_t testdir_len = strlen(TESTDIR);
-	size_t path_len = testdir_len;
+	size_t testdir_len, path_len;
 	va_list va, vac;
 	char *ret;
+
+	if (!TESTDIR)
+		tst_brkm(TBROK, NULL, ".needs_tmpdir must be set!");
+
+	testdir_len = strlen(TESTDIR);
+	path_len = testdir_len;
 
 	va_start(va, fmt);
 	va_copy(vac, va);
