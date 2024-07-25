@@ -3,10 +3,15 @@
  * Copyright (c) International Business Machines Corp., 2002
  * 01/02/2003	Port to LTP avenkat@us.ibm.com
  * 06/30/2001	Port to Linux nsharoff@us.ibm.com
+ * Copyright (c) Linux Test Project, 2002-2024
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Basic test for syscall().
+ *
+ * Compare raw get{g,p,u}id results with their glibc wrappers.
  */
 
 #define _GNU_SOURCE
