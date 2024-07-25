@@ -45,11 +45,9 @@ directly tie into applications, e.g. baz.c -> baz):
             --> baz.c
 
 .. code-block:: make
-  :caption: .../foo/Makefile
+    :caption: .../foo/Makefile
 
-    #
-    # Copyright disclaimer goes here -- please use GPLv2.
-    #
+    # SPDX-License-Identifier: GPL-2.0-or-later
 
     top_srcdir		?= ..
 
@@ -57,11 +55,9 @@ directly tie into applications, e.g. baz.c -> baz):
     include $(top_srcdir)/include/mk/generic_trunk_target.mk
 
 .. code-block:: make
-  :caption: .../foo/bar/Makefile
+    :caption: .../foo/bar/Makefile
 
-    #
-    # Copyright disclaimer goes here -- please use GPLv2.
-    #
+    # SPDX-License-Identifier: GPL-2.0-or-later
 
     top_srcdir		?= ../..
 
