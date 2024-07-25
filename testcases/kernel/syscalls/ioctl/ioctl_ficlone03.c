@@ -11,7 +11,7 @@
  */
 
 #include "tst_test.h"
-#include "lapi/fs.h"
+#include "lapi/ficlone.h"
 
 #define MNTPOINT "mnt"
 
