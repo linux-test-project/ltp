@@ -3,7 +3,8 @@
  * Copyright (C) 2024 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-#ifndef LANDLOCK_COMMON_H
+#ifndef LANDLOCK_COMMON_H__
+#define LANDLOCK_COMMON_H__
 
 #include "tst_test.h"
 #include "lapi/prctl.h"
@@ -71,4 +72,4 @@ static inline void apply_landlock_layer(
 	SAFE_CLOSE(ruleset_fd);
 }
 
-#endif
+#endif /* LANDLOCK_COMMON_H__ */
