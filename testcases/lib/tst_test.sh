@@ -907,6 +907,7 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 	TST_ARGS="$@"
 
 	tst_res TINFO "Running: $(basename $0) $TST_ARGS"
+	tst_res TINFO "Tested kernel: $(uname -a)"
 
 	OPTIND=1
 
