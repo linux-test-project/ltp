@@ -82,7 +82,6 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
-	.min_kver = "6.5",
 	.bufs = (struct tst_buffers []) {
 		{&cs, .size = sizeof(struct cachestat)},
 		{&cs_range, .size = sizeof(struct cachestat_range)},

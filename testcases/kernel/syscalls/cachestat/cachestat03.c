@@ -70,7 +70,6 @@ static struct tst_test test = {
 	.needs_hugetlbfs = 1,
 	.hugepages = {1, TST_NEEDS},
 	.tcnt = ARRAY_SIZE(tcases),
-	.min_kver = "6.5",
 	.needs_tmpdir = 1,
 	.bufs = (struct tst_buffers []) {
 		{&cs, .size = sizeof(struct cachestat)},

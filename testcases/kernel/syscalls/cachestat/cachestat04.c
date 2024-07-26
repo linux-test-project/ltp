@@ -48,7 +48,6 @@ static void run(void)
 
 static struct tst_test test = {
 	.test_all = run,
-	.min_kver = "6.5",
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.bufs = (struct tst_buffers []) {
