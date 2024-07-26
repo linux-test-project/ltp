@@ -745,6 +745,7 @@ tst_run()
 
 		TST_STARTWD=$(pwd)
 		cd "$TST_TMPDIR"
+		tst_res TINFO "Using $TST_TMPDIR as tmpdir ($(stat -f -c '%T' $TST_TMPDIR) filesystem)"
 	fi
 
 	# needs to be after cd $TST_TMPDIR to keep test_dev.img under $TST_TMPDIR
