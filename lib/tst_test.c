@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <sys/mount.h>
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <sys/wait.h>
 #include <math.h>
 
@@ -1794,6 +1795,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 {
 	int ret = 0;
 	unsigned int test_variants = 1;
+	struct utsname uval;
 
 	lib_pid = getpid();
 	tst_test = self;
@@ -1805,6 +1807,10 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
 
 	tst_res(TINFO, "LTP version: "LTP_VERSION);
+
+
+	uname(&uval);
+	tst_res(TINFO, "Tested kernel: %s %s %s", uval.release, uval.version, uval.machine);
 
 	if (tst_test->max_runtime)
 		results->max_runtime = multiply_runtime(tst_test->max_runtime);
