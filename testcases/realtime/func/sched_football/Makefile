@@ -6,9 +6,10 @@
 
 top_srcdir		?= ../../../..
 
-INSTALL_TARGETS		:= run_auto.sh
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(abs_srcdir)/../../config.mk
+
+INSTALL_DIR=testcases/bin
 
 # TODO: integrate properly with LTP library
 LDLIBS			+= -lltp
