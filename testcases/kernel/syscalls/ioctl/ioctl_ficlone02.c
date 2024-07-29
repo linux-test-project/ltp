@@ -57,6 +57,7 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.skip_filesystems = (const char *[]) {
+		"bcachefs",
 		"btrfs",
 		"overlayfs",
 		"nfs",

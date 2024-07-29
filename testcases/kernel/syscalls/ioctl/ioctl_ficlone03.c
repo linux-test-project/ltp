@@ -110,6 +110,7 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.filesystems = (struct tst_fs []) {
+		{.type = "bcachefs"},
 		{.type = "btrfs"},
 		{
 			.type = "xfs",
