@@ -26,7 +26,7 @@
 #define MNTPOINT "mntpoint"
 #define FILENAME MNTPOINT "/myfile.bin"
 
-static int page_size;
+static int page_size, num_shift;
 static char *page_data;
 static struct cachestat *cs;
 static struct cachestat_range *cs_range;
@@ -67,14 +67,14 @@ static void test_cached_pages(const unsigned int use_sync, const int num_pages)
 
 static void run(unsigned int use_sync)
 {
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < num_shift; i++)
 		test_cached_pages(use_sync, 1 << i);
 }
 
 static void setup(void)
 {
 	page_size = (int)sysconf(_SC_PAGESIZE);
-
+	num_shift = MIN(tst_device->size*1024*2.5/page_size, 15);
 	page_data = SAFE_MALLOC(page_size);
 	memset(page_data, 'a', page_size);
 }
