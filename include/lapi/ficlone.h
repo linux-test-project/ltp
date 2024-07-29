@@ -8,11 +8,7 @@
 #define LAPI_FICLONE_H__
 
 #include "config.h"
-
-#ifdef HAVE_LINUX_FS_H
-# include <linux/fs.h>
-#endif
-
+#include <linux/fs.h>
 #include <stdint.h>
 
 #ifndef HAVE_STRUCT_FILE_CLONE_RANGE

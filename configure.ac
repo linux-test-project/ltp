@@ -51,7 +51,6 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/cryptouser.h \
     linux/close_range.h \
     linux/dccp.h \
-    linux/fs.h \
     linux/futex.h \
     linux/genetlink.h \
     linux/if_alg.h \

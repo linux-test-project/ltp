@@ -11,9 +11,7 @@
 
 #include "config.h"
 #ifndef HAVE_MOUNT_SETATTR
-# ifdef HAVE_LINUX_FS_H
-#  include <linux/fs.h>
-# endif
+# include <linux/fs.h>
 #endif
 
 #include <sys/user.h>
