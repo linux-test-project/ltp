@@ -43,6 +43,8 @@ static void setup(void)
 
 	SAFE_STAT(MNTPOINT, &sb);
 
+	tst_fill_file(SRCPATH, 0x00, sb.st_blksize, 1);
+
 	clone_range->src_offset = 0;
 	clone_range->src_length = sb.st_blksize;
 	clone_range->dest_offset = 0;
