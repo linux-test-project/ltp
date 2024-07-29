@@ -65,7 +65,8 @@ static void clear_signal(void)
 	 * seconds of CPU time has been accumulated for the process and
 	 * thread specific clocks.
 	 */
-	while (!caught_signal);
+	while (!caught_signal)
+		;
 
 	if (caught_signal != SIGALRM) {
 		tst_res(TFAIL, "Received incorrect signal: %s",

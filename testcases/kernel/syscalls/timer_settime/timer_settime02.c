@@ -29,7 +29,7 @@
 #include "tst_timer.h"
 
 static struct tst_its new_set, old_set;
-static struct tst_its *pnew_set = &new_set, *pold_set = &old_set, *null_set = NULL;
+static struct tst_its *pnew_set = &new_set, *pold_set = &old_set, *null_set;
 static void *faulty_set;
 static kernel_timer_t timer;
 static kernel_timer_t timer_inval = (kernel_timer_t)-1;

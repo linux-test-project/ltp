@@ -67,7 +67,7 @@ static void setup(void)
 	SAFE_CLOCK_GETRES(CLOCK_REALTIME, &realtime_resolution);
 
 	tst_res(TINFO, "CLOCK_REALTIME resolution %lins",
-	        (long)realtime_resolution.tv_nsec);
+		(long)realtime_resolution.tv_nsec);
 }
 
 static void run(void)
@@ -93,7 +93,9 @@ static void run(void)
 	spec.it_interval.tv_nsec = realtime_resolution.tv_nsec;
 
 	SAFE_TIMER_SETTIME(timer, TIMER_ABSTIME, &spec, NULL);
-	while (!handler_called);
+	while (!handler_called)
+		;
+
 	errno = saved_errno;
 
 	if (overrun == -1)
