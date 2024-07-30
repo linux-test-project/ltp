@@ -104,6 +104,7 @@ struct tst_cg_opts {
 	 * directory as opposed to the default pid of the calling process.
 	 */
 	int test_pid;
+	int needs_nsdelegate;
 };
 
 /* A Control Group in LTP's aggregated hierarchy */

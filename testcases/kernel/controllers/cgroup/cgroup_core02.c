@@ -121,6 +121,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_cgroup_ctrls = (const char *const[]){"memory",  NULL},
 	.needs_cgroup_ver = TST_CG_V2,
+	.needs_cgroup_nsdelegate = 1,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "e57457641613"},
 		{"CVE", "2021-4197"},

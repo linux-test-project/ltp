@@ -1130,6 +1130,7 @@ static void do_cgroup_requires(void)
 {
 	const struct tst_cg_opts cg_opts = {
 		.needs_ver = tst_test->needs_cgroup_ver,
+		.needs_nsdelegate = tst_test->needs_cgroup_nsdelegate,
 	};
 	const char *const *ctrl_names = tst_test->needs_cgroup_ctrls;
 
