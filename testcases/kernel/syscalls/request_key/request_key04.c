@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Google, Inc.
+ * Copyright (c) Linux Test Project, 2018-2024
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Regression test for commit 4dca6ea1d943 ("KEYS: add missing permission check
  * for request_key() destination"), or CVE-2017-17807.  This bug allowed adding
  * a key to a keyring given only Search permission to that keyring, rather than

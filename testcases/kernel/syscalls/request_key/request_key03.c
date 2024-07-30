@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2018-2024
  */
 
-/*
+/*\
+ * [Description]
+ *
  * Regression test for two related bugs:
  *
- * (1) CVE-2017-15299, fixed by commit 60ff5b2f547a ("KEYS: don't let add_key()
- *     update an uninstantiated key")
- * (2) CVE-2017-15951, fixed by commit 363b02dab09b ("KEYS: Fix race between
- *     updating and finding a negative key")
+ * 1. CVE-2017-15299, fixed by commit 60ff5b2f547a ("KEYS: don't let add_key()
+ *    update an uninstantiated key")
+ * 2. CVE-2017-15951, fixed by commit 363b02dab09b ("KEYS: Fix race between
+ *    updating and finding a negative key")
  *
  * We test for the bugs together because the reproduction steps are essentially
  * the same: repeatedly try to add/update a key with add_key() while requesting

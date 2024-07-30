@@ -2,19 +2,18 @@
 /*
  * Copyright (c) 2016 Fujitsu Ltd.
  * Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
- *
+ * Copyright (c) Linux Test Project, 2017-2024
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Test Name: request_key01
+/*\
+ * [Description]
  *
- * Description:
- * The testcase checks basic functionality of the request_key(2).
+ * Test basic functionality of the request_key(2).
+ *
  * request_key(2) asks the kernel to find a key which matches the
  * specified description. If successful, it attaches it to the
  * nominated keyring and returns its serial number.
- *
  */
 
 #include <errno.h>

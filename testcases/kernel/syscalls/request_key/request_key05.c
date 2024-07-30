@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Richard Palethorpe <rpalethorpe@suse.com>
+ * Copyright (c) Linux Test Project, 2018-2024
  */
-/*
- * Test for CVE-2017-6951, original reproducer can be found here:
+
+/*\
+ * [Description]
+ *
+ * Test for CVE-2017-6951, original reproducer:
  * http://www.spinics.net/lists/keyrings/msg01845.html
  *
  * request_key() is not in glibc, so we just use the syscall directly instead
