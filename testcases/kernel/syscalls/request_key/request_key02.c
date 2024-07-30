@@ -40,19 +40,9 @@ static void verify_request_key(unsigned int n)
 {
 	struct test_case *tc = tcases + n;
 
-	TEST(request_key("keyring", tc->des, NULL, *tc->id));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "request_key() succeed unexpectly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "request_key() failed expectly");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO, "request_key() failed unexpectly, "
-		"expected %s", tst_strerrno(tc->exp_err));
+	TST_EXP_FAIL2(request_key("keyring", tc->des, NULL, *tc->id),
+		      tc->exp_err, "request_key(\"keyring\", %s, NULL, %d)",
+		      tc->des, *tc->id);
 }
 
 static int init_key(char *name, int cmd)
@@ -65,9 +55,8 @@ static int init_key(char *name, int cmd)
 		tst_brk(TBROK | TERRNO, "add_key() failed");
 
 	if (cmd == KEYCTL_REVOKE) {
-		if (keyctl(cmd, n) == -1) {
+		if (keyctl(cmd, n) == -1)
 			tst_brk(TBROK | TERRNO,	"failed to revoke a key");
-		}
 	}
 
 	if (cmd == KEYCTL_SET_TIMEOUT) {
