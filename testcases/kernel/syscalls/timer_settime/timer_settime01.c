@@ -58,8 +58,11 @@ static struct time64_variants variants[] = {
 
 static volatile int caught_signal;
 
-static void clear_signal(void)
+static void clear_signal(clock_t clock, const struct tst_ts *exptime)
 {
+	struct time64_variants *tv = &variants[tst_variant];
+	struct tst_ts curtime = { .type = tv->ts_type };
+
 	/*
 	 * The busy loop is intentional. The signal is sent after X
 	 * seconds of CPU time has been accumulated for the process and
@@ -74,6 +77,17 @@ static void clear_signal(void)
 	}
 
 	caught_signal = 0;
+
+	if (tv->clock_gettime(clock, tst_ts_get(&curtime)) < 0) {
+		tst_res(TFAIL, "clock_gettime(%s) failed",
+			get_clock_str(clock));
+		return;
+	}
+
+	if (tst_ts_lt(curtime, *exptime)) {
+		tst_res(TFAIL, "Timer %s expired too early",
+			get_clock_str(clock));
+	}
 }
 
 static void sighandler(int sig)
@@ -116,22 +130,22 @@ static void run(unsigned int n)
 		memset(&new_set, 0, sizeof(new_set));
 		memset(&old_set, 0, sizeof(old_set));
 
-		new_set.type = old_set.type = tv->ts_type;
+		new_set.type = old_set.type = timenow.type = tv->ts_type;
 		val = tc->it_value_tv_usec;
 
-		if (tc->flag & TIMER_ABSTIME) {
-			timenow.type = tv->ts_type;
-			if (tv->clock_gettime(clock, tst_ts_get(&timenow)) < 0) {
-				tst_res(TFAIL,
-					"clock_gettime(%s) failed - skipping the test",
-					get_clock_str(clock));
-				continue;
-			}
-			tst_ts_add_us(timenow, val);
-			tst_its_set_value_from_ts(&new_set, timenow);
-		} else {
-			tst_its_set_value_from_us(&new_set, val);
+		if (tv->clock_gettime(clock, tst_ts_get(&timenow)) < 0) {
+			tst_res(TFAIL,
+				"clock_gettime(%s) failed - skipping the test",
+				get_clock_str(clock));
+			continue;
 		}
+
+		timenow = tst_ts_add_us(timenow, val);
+
+		if (tc->flag & TIMER_ABSTIME)
+			tst_its_set_value_from_ts(&new_set, timenow);
+		else
+			tst_its_set_value_from_us(&new_set, val);
 
 		tst_its_set_interval_from_us(&new_set, tc->it_interval_tv_usec);
 
@@ -157,11 +171,14 @@ static void run(unsigned int n)
 				tst_its_get_value_nsec(new_set));
 		}
 
-		clear_signal();
+		clear_signal(clock, &timenow);
 
 		/* Wait for another event when interval was set */
-		if (tc->it_interval_tv_usec)
-			clear_signal();
+		if (tc->it_interval_tv_usec) {
+			timenow = tst_ts_add_us(timenow,
+				tc->it_interval_tv_usec);
+			clear_signal(clock, &timenow);
+		}
 
 		tst_res(TPASS, "timer_settime(%s) passed",
 			get_clock_str(clock));
