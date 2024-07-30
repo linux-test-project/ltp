@@ -16,8 +16,6 @@
  * nominated keyring and returns its serial number.
  */
 
-#include <errno.h>
-
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
@@ -26,11 +24,10 @@ static int key;
 static void verify_request_key(void)
 {
 
-	TEST(request_key("keyring", "ltp", NULL, KEY_REQKEY_DEFL_DEFAULT));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "request_key() failed");
+	TST_EXP_POSITIVE(request_key("keyring", "ltp", NULL,
+					KEY_REQKEY_DEFL_DEFAULT));
+	if (!TST_PASS)
 		return;
-	}
 
 	if (TST_RET != key)
 		tst_res(TFAIL, "serial number mismatched");
