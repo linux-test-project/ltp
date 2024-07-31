@@ -251,7 +251,7 @@ struct tst_ulimit_val {
 /**
  * struct tst_fs - A file system type, mkfs and mount options
  *
- * @type A filesystem type to use.
+ * @type: A filesystem type to use.
  *
  * @mkfs_opts: A NULL terminated array of options passed to mkfs in the case
  *             of 'tst_test.format_device'. These options are passed to mkfs
