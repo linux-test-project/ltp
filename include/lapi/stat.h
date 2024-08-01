@@ -229,4 +229,20 @@ static inline int statx(int dirfd, const char *pathname, unsigned int flags,
 # define STATX_ATTR_VERITY	0x00100000
 #endif
 
+#define SAFE_FCHMODAT2(dfd, filename, mode, flags) \
+	safe_fchmodat2(__FILE__, __LINE__, (dfd), (filename), (mode), (flags))
+
+static inline int safe_fchmodat2(const char *file, const int lineno,
+		int dfd, const char *filename, mode_t mode, int flags)
+{
+	int ret;
+
+	ret = tst_syscall(__NR_fchmodat2, dfd, filename, mode, flags);
+	if (ret == -1)
+		tst_brk_(file, lineno, TBROK | TERRNO, "%s(%d,%s,%d,%d) error",
+			__func__, dfd, filename, mode, flags);
+
+	return ret;
+}
+
 #endif /* LAPI_STAT_H__ */
