@@ -11,7 +11,7 @@
 #include "lapi/fcntl.h"
 #include "lapi/landlock.h"
 
-static inline void verify_landlock_is_enabled(void)
+static inline int verify_landlock_is_enabled(void)
 {
 	int abi;
 
@@ -29,6 +29,8 @@ static inline void verify_landlock_is_enabled(void)
 	}
 
 	tst_res(TINFO, "Landlock ABI v%d", abi);
+
+	return abi;
 }
 
 static inline void apply_landlock_rule(
