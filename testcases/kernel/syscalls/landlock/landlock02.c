@@ -120,7 +120,6 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.cleanup = cleanup,
-	.min_kver = "5.13",
 	.needs_root = 1,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_SECURITY_LANDLOCK=y",
