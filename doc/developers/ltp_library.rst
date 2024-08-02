@@ -12,6 +12,8 @@ for :doc:`writing tests <../developers/writing_tests>`
 
 #. LTP library tests must go inside :master:`lib/newlib_tests` directory
 #. LTP documentation has to be updated according to API changes
+#. Do not add new API functions to the old API. Add new functions to
+   ``tst_.[ch]`` files.
 
 Shell API
 ---------
