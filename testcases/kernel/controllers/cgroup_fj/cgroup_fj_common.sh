@@ -77,7 +77,10 @@ common_cleanup()
 
     cgroup_cleanup
 
-    [ "$cgroup_version" = "2" ] && ROD echo "-$subsystem" \> "/sys/fs/cgroup/cgroup.subtree_control"
+    if [ "$cgroup_version" = "2" ] && [ "$subsystem" != "cpu" ] && [ "$subsystem" != "io" ] \
+            && [ "$subsystem" != "memory" ] && [ "$subsystem" != "pids" ]; then
+            ROD echo "-$subsystem" \> "/sys/fs/cgroup/cgroup.subtree_control"
+    fi
 }
 
 . cgroup_lib.sh
