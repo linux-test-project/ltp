@@ -6,9 +6,18 @@
 #ifndef LTP_GETRUSAGE03_H
 #define LTP_GETRUSAGE03_H
 
+#include <sched.h>
 #include "tst_test.h"
 
 #define DELTA_MAX 20480
+
+static void force_context_switches(int iterations)
+{
+	tst_res(TINFO, "Forcing context switch %d times", iterations);
+
+	for (int i = 0; i < iterations; i++)
+		sched_yield();
+}
 
 static void consume_mb(int consume_nr)
 {
@@ -21,6 +30,8 @@ static void consume_mb(int consume_nr)
 	size = consume_nr * 1024 * 1024;
 	ptr = SAFE_MALLOC(size);
 	memset(ptr, 0, size);
+
+	force_context_switches(10);
 
 	SAFE_FILE_LINES_SCANF("/proc/self/status", "VmSwap: %lu", &vmswap_size);
 	if (vmswap_size > 0)
