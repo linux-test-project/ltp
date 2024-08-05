@@ -29,7 +29,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 
-#include "pkey.h"
+#include "lapi/pkey.h"
 
 #define TEST_FILE "pkey_testfile"
 #define STR "abcdefghijklmnopqrstuvwxyz12345\n"

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 Red Hat, Inc.
- * Copyright (c) Linux Test Project, 2019
+ * Copyright (c) 2019-2024 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2019-2024
  */
 
-#ifndef PKEYS_H
-#define PKEYS_H
+#ifndef PKEYS_H__
+#define PKEYS_H__
 
 #include "tst_test.h"
 #include "lapi/syscalls.h"
@@ -53,4 +53,4 @@ static inline void check_pkey_support(void)
 	ltp_pkey_free(pkey);
 }
 
-#endif /* PKEYS_H */
+#endif /* PKEYS_H__ */
