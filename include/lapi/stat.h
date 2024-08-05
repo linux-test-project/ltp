@@ -238,9 +238,15 @@ static inline int safe_fchmodat2(const char *file, const int lineno,
 	int ret;
 
 	ret = tst_syscall(__NR_fchmodat2, dfd, filename, mode, flags);
-	if (ret == -1)
-		tst_brk_(file, lineno, TBROK | TERRNO, "%s(%d,%s,%d,%d) error",
-			__func__, dfd, filename, mode, flags);
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "syscall(__NR_fchmodat2,%d,%s,%d,%d) failed",
+			 dfd, filename, mode, flags);
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid syscall(__NR_fchmodat2,%d,%s,%d,%d) return value %d",
+			 dfd, filename, mode, flags, ret);
+	}
 
 	return ret;
 }
