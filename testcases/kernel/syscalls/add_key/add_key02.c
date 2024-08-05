@@ -23,7 +23,7 @@
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
-struct tcase {
+static struct tcase {
 	const char *type;
 	size_t plen;
 } tcases[] = {
