@@ -53,17 +53,17 @@ static void test_pkey_mprotect(void)
 
 	check_pkey_support();
 
-	pkey = ltp_pkey_alloc(0, 0);
+	pkey = pkey_alloc(0, 0);
 	if (pkey == -1)
 		tst_brk(TBROK | TERRNO, "pkey_alloc failed");
 
-	TST_EXP_FAIL(ltp_pkey_mprotect(
+	TST_EXP_FAIL(pkey_mprotect(
 		mem_addr, mem_size,
 		PROT_NONE,
 		pkey),
 		EPERM);
 
-	if (ltp_pkey_free(pkey) == -1)
+	if (pkey_free(pkey) == -1)
 		tst_brk(TBROK | TERRNO, "pkey_free() error");
 }
 

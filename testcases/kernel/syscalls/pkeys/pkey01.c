@@ -142,12 +142,12 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 
 	buffer = SAFE_MMAP(NULL, size, mpa->prot, mpa->flags, fd, 0);
 
-	pkey = ltp_pkey_alloc(tc->flags, tc->access_rights);
+	pkey = pkey_alloc(tc->flags, tc->access_rights);
 	if (pkey == -1)
 		tst_brk(TBROK | TERRNO, "pkey_alloc failed");
 
 	tst_res(TINFO, "Set %s on (%s) buffer", tc->name, flag_to_str(mpa->flags));
-	if (ltp_pkey_mprotect(buffer, size, mpa->prot, pkey) == -1)
+	if (pkey_mprotect(buffer, size, mpa->prot, pkey) == -1)
 		tst_brk(TBROK | TERRNO, "pkey_mprotect failed");
 
 	pid = SAFE_FORK();
@@ -176,7 +176,7 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
                 tst_res(TFAIL, "Child: %s", tst_strstatus(status));
 
 	tst_res(TINFO, "Remove %s from the buffer", tc->name);
-	if (ltp_pkey_mprotect(buffer, size, mpa->prot, 0x0) == -1)
+	if (pkey_mprotect(buffer, size, mpa->prot, 0x0) == -1)
 		tst_brk(TBROK | TERRNO, "pkey_mprotect failed");
 
 	switch (mpa->prot) {
@@ -199,7 +199,7 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 
 	SAFE_MUNMAP(buffer, size);
 
-	if (ltp_pkey_free(pkey) == -1)
+	if (pkey_free(pkey) == -1)
 		tst_brk(TBROK | TERRNO, "pkey_free failed");
 }
 
