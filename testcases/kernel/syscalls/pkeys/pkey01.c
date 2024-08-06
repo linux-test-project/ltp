@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Red Hat, Inc.
+ */
+
+/*\
+ * [Description]
  *
  * Memory Protection Keys for Userspace (PKU aka PKEYs) is a Skylake-SP
  * server feature that provides a mechanism for enforcing page-based
@@ -10,14 +14,15 @@
  * giving 16 possible keys.
  *
  * Basic method for PKEYs testing:
- *    1. test allocates a pkey(e.g. PKEY_DISABLE_ACCESS) via pkey_alloc()
- *    2. pkey_mprotect() apply this pkey to a piece of memory(buffer)
- *    3. check if access right of the buffer has been changed and take effect
- *    4. remove the access right(pkey) from this buffer via pkey_mprotect()
- *    5. check if buffer area can be read or write after removing pkey
- *    6. pkey_free() releases the pkey after using it
  *
- * Looping around this basic test on diffenrent types of memory.
+ * 1. test allocates a pkey(e.g. PKEY_DISABLE_ACCESS) via pkey_alloc()
+ * 2. pkey_mprotect() apply this pkey to a piece of memory(buffer)
+ * 3. check if access right of the buffer has been changed and take effect
+ * 4. remove the access right(pkey) from this buffer via pkey_mprotect()
+ * 5. check if buffer area can be read or write after removing pkey
+ * 6. pkey_free() releases the pkey after using it
+ *
+ * Looping around this basic test on different types of memory.
  */
 
 #define _GNU_SOURCE
