@@ -7,6 +7,7 @@
 #ifndef PKEYS_H__
 #define PKEYS_H__
 
+#include "config.h"
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 #include "lapi/mmap.h"
