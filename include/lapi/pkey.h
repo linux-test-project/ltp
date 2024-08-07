@@ -17,6 +17,10 @@
 # define PKEY_DISABLE_WRITE  0x2
 #endif
 
+#ifndef PKEY_DISABLE_EXECUTE
+# define PKEY_DISABLE_EXECUTE 0x4
+#endif
+
 #ifndef HAVE_PKEY_MPROTECT
 inline int pkey_mprotect(void *addr, size_t len, int prot, int pkey)
 {

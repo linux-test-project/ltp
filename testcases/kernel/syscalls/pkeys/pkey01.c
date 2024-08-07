@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 Red Hat, Inc.
+ * Copyright (c) 2019-2024 Red Hat, Inc.
  */
 
 /*\
@@ -41,6 +41,7 @@
 #define PATH_VM_NRHPS "/proc/sys/vm/nr_hugepages"
 
 static int size;
+static int execute_supported = 1;
 
 static struct tcase {
 	unsigned long flags;
@@ -49,13 +50,25 @@ static struct tcase {
 } tcases[] = {
 	{0, PKEY_DISABLE_ACCESS, "PKEY_DISABLE_ACCESS"},
 	{0, PKEY_DISABLE_WRITE, "PKEY_DISABLE_WRITE"},
+	{0, PKEY_DISABLE_EXECUTE, "PKEY_DISABLE_EXECUTE"},
 };
 
 static void setup(void)
 {
-	int i, fd;
+	int i, fd, pkey;
 
 	check_pkey_support();
+
+	pkey = pkey_alloc(0, PKEY_DISABLE_EXECUTE);
+	if (pkey == -1) {
+		if (errno == EINVAL) {
+			tst_res(TINFO, "PKEY_DISABLE_EXECUTE not implemented");
+			execute_supported = 0;
+		} else {
+			tst_brk(TBROK | TERRNO, "pkey_alloc failed");
+		}
+	}
+	pkey_free(pkey);
 
 	if (tst_hugepages == test.hugepages.number)
 		size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
@@ -130,12 +143,30 @@ static char *flag_to_str(int flags)
 	}
 }
 
+static size_t function_size(void (*func)(void))
+{
+	unsigned char *start = (unsigned char *)func;
+	unsigned char *end = start;
+
+	while (*end != 0xC3 && *end != 0xC2)
+		end++;
+
+	return (size_t)(end - start + 1);
+}
+
 static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 {
 	pid_t pid;
 	char *buffer;
 	int pkey, status;
 	int fd = mpa->fd;
+	size_t (*func)();
+	size_t func_size = 0;
+
+	if (!execute_supported && (tc->access_rights == PKEY_DISABLE_EXECUTE)) {
+		tst_res(TINFO, "skip PKEY_DISABLE_EXECUTE test");
+		return;
+	}
 
 	if (!tst_hugepages && (mpa->flags & MAP_HUGETLB)) {
 		tst_res(TINFO, "Skip test on (%s) buffer", flag_to_str(mpa->flags));
@@ -146,6 +177,11 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 		fd = SAFE_OPEN(TEST_FILE, O_RDWR | O_CREAT, 0664);
 
 	buffer = SAFE_MMAP(NULL, size, mpa->prot, mpa->flags, fd, 0);
+
+	if (mpa->prot == (PROT_READ | PROT_WRITE | PROT_EXEC)) {
+		func_size = function_size((void (*)(void))function_size);
+		memcpy(buffer, (void *)function_size, func_size);
+	}
 
 	pkey = pkey_alloc(tc->flags, tc->access_rights);
 	if (pkey == -1)
@@ -168,6 +204,10 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 			*buffer = 'a';
 			tst_res(TFAIL | TERRNO,
 				"Write buffer success, buffer[0] = %d", *buffer);
+		break;
+		case PKEY_DISABLE_EXECUTE:
+			func = (size_t (*)())buffer;
+			tst_res(TFAIL | TERRNO, "Execute buffer result = %zi", func(func));
 		break;
 		}
 		exit(0);
@@ -193,9 +233,15 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 		tst_res(TPASS, "Write buffer success, buffer[0] = %d", *buffer);
 	break;
 	case PROT_READ | PROT_WRITE:
-	case PROT_READ | PROT_WRITE | PROT_EXEC:
 		*buffer = 'a';
 		tst_res(TPASS, "Read & Write buffer success, buffer[0] = %d", *buffer);
+	break;
+	case PROT_READ | PROT_WRITE | PROT_EXEC:
+		func = (size_t (*)())buffer;;
+		if (func_size == func(func))
+			tst_res(TPASS, "Execute buffer success, result = %zi", func_size);
+		else
+			tst_res(TFAIL, "Execute buffer with unexpected result: %zi", func(func));
 	break;
 	}
 
