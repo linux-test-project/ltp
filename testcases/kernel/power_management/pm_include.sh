@@ -25,6 +25,13 @@ check_arch() {
 	esac
 }
 
+check_kernel_version() {
+	if tst_kvcmp -ge "3.5"; then
+		tst_brkm TCONF "Kernel version not supported; not " \
+			"running testcases"
+	fi
+}
+
 check_config_options() {
 	if ( ! ${3} "${1}" ${2} | grep -v "#" > /dev/null ) ; then
 		tst_brkm TCONF "NOSUPPORT: current system dosen't support ${1}"

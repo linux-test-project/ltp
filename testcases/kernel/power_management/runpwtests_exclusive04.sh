@@ -26,6 +26,7 @@ export TST_TOTAL=2
 
 # Checking test environment
 check_arch
+check_kernel_version
 
 tst_require_cmds python3
 
