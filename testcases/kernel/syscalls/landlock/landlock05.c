@@ -93,10 +93,6 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,
-	.needs_kconfigs = (const char *[]) {
-		"CONFIG_SECURITY_LANDLOCK=y",
-		NULL
-	},
 	.bufs = (struct tst_buffers []) {
 		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},

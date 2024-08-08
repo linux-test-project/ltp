@@ -76,10 +76,6 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.needs_root = 1,
-	.needs_kconfigs = (const char *[]) {
-		"CONFIG_SECURITY_LANDLOCK=y",
-		NULL
-	},
 	.bufs = (struct tst_buffers []) {
 		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
 		{},

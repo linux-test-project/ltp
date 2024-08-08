@@ -191,10 +191,6 @@ static struct tst_test test = {
 		TESTAPP,
 		NULL,
 	},
-	.needs_kconfigs = (const char *[]) {
-		"CONFIG_SECURITY_LANDLOCK=y",
-		NULL
-	},
 	.bufs = (struct tst_buffers []) {
 		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},
