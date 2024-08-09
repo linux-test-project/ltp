@@ -43,14 +43,15 @@
 static int size;
 static int execute_supported = 1;
 
+#define PERM_NAME(x) .access_rights = x, .name = #x
 static struct tcase {
 	unsigned long flags;
 	unsigned long access_rights;
 	char *name;
 } tcases[] = {
-	{0, PKEY_DISABLE_ACCESS, "PKEY_DISABLE_ACCESS"},
-	{0, PKEY_DISABLE_WRITE, "PKEY_DISABLE_WRITE"},
-	{0, PKEY_DISABLE_EXECUTE, "PKEY_DISABLE_EXECUTE"},
+	{PERM_NAME(PKEY_DISABLE_ACCESS)},
+	{PERM_NAME(PKEY_DISABLE_WRITE)},
+	{PERM_NAME(PKEY_DISABLE_EXECUTE)},
 };
 
 static void setup(void)
