@@ -51,7 +51,7 @@ static struct tcase {
 } tcases[] = {
 	{PERM_NAME(PKEY_DISABLE_ACCESS)},
 	{PERM_NAME(PKEY_DISABLE_WRITE)},
-	{PERM_NAME(PKEY_DISABLE_EXECUTE)},
+	{PERM_NAME(PKEY_DISABLE_EXECUTE)} /* keep it the last */
 };
 
 static void setup(void)
@@ -155,7 +155,11 @@ static size_t function_size(void (*func)(void))
 	return (size_t)(end - start + 1);
 }
 
-static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
+/*
+ * return: 1 if it's safe to quit testing on failure (all following would be
+ * TCONF, O otherwise.
+ */
+static int pkey_test(struct tcase *tc, struct mmap_param *mpa)
 {
 	pid_t pid;
 	char *buffer;
@@ -165,13 +169,13 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 	size_t func_size = 0;
 
 	if (!execute_supported && (tc->access_rights == PKEY_DISABLE_EXECUTE)) {
-		tst_res(TINFO, "skip PKEY_DISABLE_EXECUTE test");
-		return;
+		tst_res(TCONF, "skip PKEY_DISABLE_EXECUTE test");
+		return 1;
 	}
 
 	if (!tst_hugepages && (mpa->flags & MAP_HUGETLB)) {
-		tst_res(TINFO, "Skip test on (%s) buffer", flag_to_str(mpa->flags));
-		return;
+		tst_res(TCONF, "Skip test on (%s) buffer", flag_to_str(mpa->flags));
+		return 0;
 	}
 
 	if (fd == 0)
@@ -253,6 +257,8 @@ static void pkey_test(struct tcase *tc, struct mmap_param *mpa)
 
 	if (pkey_free(pkey) == -1)
 		tst_brk(TBROK | TERRNO, "pkey_free failed");
+
+	return 0;
 }
 
 static void verify_pkey(unsigned int i)
@@ -265,7 +271,8 @@ static void verify_pkey(unsigned int i)
 	for (j = 0; j < ARRAY_SIZE(mmap_params); j++) {
 		mpa = &mmap_params[j];
 
-		pkey_test(tc, mpa);
+		if (pkey_test(tc, mpa))
+			break;
 	}
 }
 
