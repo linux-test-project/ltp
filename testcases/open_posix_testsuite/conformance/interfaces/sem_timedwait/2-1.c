@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <time.h>
+#include <sys/mman.h>
 #include "posixtest.h"
 
 #define TEST "2-1"
@@ -28,12 +29,17 @@
 
 int main(void)
 {
-	sem_t mysemp;
+	sem_t *mysemp;
 	struct timespec ts;
 	int pid;
+	mysemp = mmap(NULL, sizeof(*mysemp), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	if (mysemp == MAP_FAILED) {
+		perror(ERROR_PREFIX "mmap");
+		return PTS_UNRESOLVED;
+	}
 
 	/* Semaphore started out locked */
-	if (sem_init(&mysemp, 0, 0) == -1) {
+	if (sem_init(mysemp, 1, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
@@ -44,19 +50,19 @@ int main(void)
 		ts.tv_sec = time(NULL) + 2;
 		ts.tv_nsec = 0;
 
-		if (sem_timedwait(&mysemp, &ts) == -1) {
+		if (sem_timedwait(mysemp, &ts) == -1) {
 			puts("TEST FAILED");
 			return PTS_FAIL;
 		} else {
 			puts("TEST PASSED");
-			sem_destroy(&mysemp);
+			sem_destroy(mysemp);
 			return PTS_PASS;
 		}
 	} else if (pid > 0)	// parent to unlock semaphore
 	{
 		int i;
 		sleep(1);
-		if (sem_post(&mysemp) == -1) {
+		if (sem_post(mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_post");
 			return PTS_FAIL;
 		}
@@ -65,11 +71,15 @@ int main(void)
 			return PTS_UNRESOLVED;
 		}
 
-		if (!WEXITSTATUS(i)) {
+		if (!WIFEXITED(i) || WEXITSTATUS(i)) {
 			return PTS_FAIL;
 		}
 		puts("TEST PASSED");
-		sem_destroy(&mysemp);
+		sem_destroy(mysemp);
+		if (munmap(mysemp, sizeof(*mysemp)) == -1) {
+			perror(ERROR_PREFIX "munmap");
+			return PTS_UNRESOLVED;
+		}
 		return PTS_PASS;
 	}
 	return PTS_UNRESOLVED;
