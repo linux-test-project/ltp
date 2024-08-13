@@ -28,7 +28,7 @@ static void run(void)
 	if (SAFE_FORK())
 		return;
 
-	int flag;
+	int flag = 0;
 	size_t sz = 0;
 
 	TST_EXP_PASS(ioctl(file_fd, FIONREAD, &sz));
