@@ -186,7 +186,7 @@ static void run(void)
 
 		if (read_bytes != acct_size) {
 			tst_res(TFAIL, "incomplete read %i bytes, expected %i",
-			        read_bytes, acct_size);
+					read_bytes, acct_size);
 			goto exit;
 		}
 
