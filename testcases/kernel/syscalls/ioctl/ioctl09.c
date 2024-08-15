@@ -88,6 +88,7 @@ static void verify_ioctl(void)
 	check_partition(2, true);
 
 	tst_detach_device_by_fd(dev_path, dev_fd);
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	attach_flag = 0;
 }
 

@@ -57,8 +57,10 @@ static void verify_ioctl_loop(unsigned int n)
 
 	if (TST_RET == 0) {
 		tst_res(TFAIL, "Set block size succeed unexpectedly");
-		if (tcases[n].ioctl_flag == LOOP_CONFIGURE)
+		if (tcases[n].ioctl_flag == LOOP_CONFIGURE) {
 			tst_detach_device_by_fd(dev_path, dev_fd);
+			dev_fd = SAFE_OPEN(dev_path, O_RDWR);
+		}
 		return;
 	}
 	if (TST_ERR == EINVAL)
@@ -87,6 +89,7 @@ static void run(unsigned int n)
 	}
 	if (attach_flag) {
 		tst_detach_device_by_fd(dev_path, dev_fd);
+		dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 		attach_flag = 0;
 	}
 	loopconfig.block_size = *(tc->setvalue);

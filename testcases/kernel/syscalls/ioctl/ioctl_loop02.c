@@ -103,6 +103,7 @@ static void verify_ioctl_loop(unsigned int n)
 
 	SAFE_CLOSE(file_fd);
 	tst_detach_device_by_fd(dev_path, dev_fd);
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	attach_flag = 0;
 }
 
