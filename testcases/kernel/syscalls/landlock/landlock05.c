@@ -90,7 +90,6 @@ static void setup(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {
@@ -102,7 +101,6 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_REQ, CAP_SYS_ADMIN),
 		{}
 	},
-	.format_device = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
