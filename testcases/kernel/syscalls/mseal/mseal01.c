@@ -16,7 +16,7 @@
  * - modifying a VMA via mmap(MAP_FIXED)
  * - mprotect() and pkey_mprotect()
  * - destructive madvice() behaviors (e.g. MADV_DONTNEED) for anonymous memory,
- *   when users don’t have write permission to the memory
+ *   when users don't have write permission to the memory
  *
  * Any of the described actions is recognized via EPERM errno.
  *
