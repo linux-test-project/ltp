@@ -15,6 +15,7 @@
  *   - getdents() fails with EINVAL if result buffer is too small
  *   - getdents() fails with ENOTDIR if file descriptor does not refer to a directory
  *   - getdents() fails with ENOENT if directory was unlinked()
+ *   - getdents() fails with EFAULT if argument points outside the calling process's address space
  */
 
 #define _GNU_SOURCE
@@ -34,6 +35,7 @@ static size_t size;
 
 static char dirp1_arr[1];
 static char *dirp1 = dirp1_arr;
+static char *dirp_bad;
 static size_t size1 = 1;
 
 static int fd_inv = -5;
@@ -51,6 +53,7 @@ static struct tcase {
 	{ &fd, &dirp1, &size1, EINVAL },
 	{ &fd_file, &dirp, &size, ENOTDIR },
 	{ &fd_unlinked, &dirp, &size, ENOENT },
+	{ &fd, &dirp_bad, &size, EFAULT },
 };
 
 static void setup(void)
@@ -62,6 +65,8 @@ static void setup(void)
 
 	fd = SAFE_OPEN(".", O_RDONLY);
 	fd_file = SAFE_OPEN("test", O_CREAT | O_RDWR, 0644);
+
+	dirp_bad = tst_get_bad_addr(NULL);
 
 	SAFE_MKDIR(TEST_DIR, DIR_MODE);
 	fd_unlinked = SAFE_OPEN(TEST_DIR, O_DIRECTORY);
