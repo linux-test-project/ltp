@@ -188,7 +188,7 @@ space as default value is used. Of course, it's possible to use separate functio
 1.2 Library environment variables and functions for shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Similarily to the C library various checks and preparations can be requested
+Similarly to the C library various checks and preparations can be requested
 simply by setting right '$TST_FOO'.
 
 [options="header"]

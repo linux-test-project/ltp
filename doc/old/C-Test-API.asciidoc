@@ -2019,9 +2019,8 @@ static struct tst_test test = {
 --------------------------------------------------------------------------------
 
 Above is a minimal template for a test using fuzzy-sync. In a simple case, you
-just need to put the bits you want to race inbetween 'start_race' and
-'end_race'. Meanwhile, any setup you need to do per-iteration goes outside the
-windows.
+just need to put the bits you want to race between 'start_race' and 'end_race'.
+Meanwhile, any setup you need to do per-iteration goes outside the windows.
 
 Fuzzy sync synchronises 'run_a' and 'run_b', which act as barriers, so that
 neither thread can progress until the other has caught up with it. There is
@@ -2339,7 +2338,7 @@ Some tests require at least size(MB) of free RAM or Swap.
 To make sure that test will run only on systems with more than minimal
 required amount of RAM set `.min_mem_avail = N`.
 
-Similarily for tests that require certain amount of free Swap use
+Similarly for tests that require certain amount of free Swap use
 `.min_swap_avail = N`.
 
 1.40 Test tags
