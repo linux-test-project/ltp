@@ -4,25 +4,22 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Test Description :
- *   1) readlink(2) returns -1 and sets errno to EACCES if search/write
- *	permission is denied in the directory where the symbolic link
- *	resides.
- *   2) readlink(2) returns -1 and sets errno to EINVAL if the buffer size
- *	is not positive.
- *   3) readlink(2) returns -1 and sets errno to EINVAL if the specified
- *	file is not a symbolic link file.
- *   4) readlink(2) returns -1 and sets errno to ENAMETOOLONG if the
- *	pathname component of symbolic link is too long (ie, > PATH_MAX).
- *   5) readlink(2) returns -1 and sets errno to ENOENT if the component of
- *	symbolic link points to an empty string.
- *   6) readlink(2) returns -1 and sets errno to ENOTDIR if a component of
- *	the path prefix is not a directory.
- *   7) readlink(2) returns -1 and sets errno to ELOOP if too many symbolic
- *	links were encountered in translating the pathname.
- *   8) readlink(2) returns -1 and sets errno to EFAULT if buf outside the
- *	process allocated address space.
+/*\
+ * [Description]
+ *
+ * Verify that, readlink(2) returns -1 and sets errno to
+ *
+ * 1. EACCES if search/write permission is denied in the directory where the
+ * symbolic link esides.
+ * 2. EINVAL if the buffer size is not positive.
+ * 3. EINVAL if the specified file is not a symbolic link file.
+ * 4. ENAMETOOLONG if the pathname component of symbolic link is too long
+ * (ie, > PATH_MAX).
+ * 5. ENOENT if the component of symbolic link points to an empty string.
+ * 6. ENOTDIR if a component of the path prefix is not a directory.
+ * 7. ELOOP if too many symbolic links were encountered in translating the
+ * pathname.
+ * 8. EFAULT if buf outside the process allocated address space.
  */
 
 #include <pwd.h>
