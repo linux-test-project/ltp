@@ -20,7 +20,7 @@ command as following:
 
     cd doc
 
-    # prepare virtual enviroment
+    # prepare virtual environment
     python3 -m virtualenv .venv
     . .venv/bin/activate
 
