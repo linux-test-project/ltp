@@ -128,7 +128,7 @@ jobs:
         INSTALL=${{ matrix.container }}
         INSTALL="${INSTALL%%:*}"
         INSTALL="${INSTALL%%/*}"
-        ./ci/$INSTALL.sh
+        ACTION="$VARIANT" ./ci/$INSTALL.sh
         if [ "$VARIANT" ]; then ./ci/$INSTALL.$VARIANT.sh; fi
 
     - name: Compiler version
