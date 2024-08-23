@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2016 Fujitsu Ltd.
-* Author: Jinbao Huang <huangjb.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2016 Fujitsu Ltd.
+ * Author: Jinbao Huang <huangjb.jy@cn.fujitsu.com>
+ */
 
-/*
-* Test Name: lgetxattr01
-*
-* Description:
-* The testcase checks the basic functionality of the lgetxattr(2).
-* In the case of a symbolic link, we only get the value of the
-* extended attribute related to the link itself by name.
-*
-*/
+/*\
+ * [Description]
+ *
+ * Check the basic functionality of the lgetxattr(2).
+ *
+ * In the case of a symbolic link, lgetxattr(2) only gets the value of the
+ * extended attribute related to the link itself by name.
+ */
 
 #include "config.h"
 #include <errno.h>
