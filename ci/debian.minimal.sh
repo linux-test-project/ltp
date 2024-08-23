@@ -5,7 +5,7 @@
 apt="apt remove -y"
 
 $apt \
-	asciidoc \
+	asciidoc-base \
 	asciidoctor \
 	libacl1-dev \
 	libaio-dev \
@@ -16,4 +16,5 @@ $apt \
 	libsepol-dev \
 	libssl-dev
 
-$apt asciidoc-base ruby-asciidoctor || true
+# Missing on Ubuntu 18.04 LTS (Bionic Beaver)
+$apt ruby-asciidoctor-pdf || true

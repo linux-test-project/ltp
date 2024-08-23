@@ -15,7 +15,8 @@ apt="apt install -y --no-install-recommends"
 
 $apt \
 	acl-dev \
-	asciidoc \
+	asciidoc-base \
+	asciidoc-dblatex \
 	asciidoctor \
 	autoconf \
 	automake \
@@ -29,7 +30,6 @@ $apt \
 	libacl1-dev \
 	libaio-dev \
 	libcap-dev \
-	libc6 \
 	libc6-dev \
 	libjson-perl \
 	libkeyutils-dev \
@@ -43,7 +43,7 @@ $apt \
 	lsb-release \
 	pkg-config
 
+# Missing on Ubuntu 18.04 LTS (Bionic Beaver)
 $apt ruby-asciidoctor-pdf || true
-$apt asciidoc-dblatex || true
 
 df -hT
