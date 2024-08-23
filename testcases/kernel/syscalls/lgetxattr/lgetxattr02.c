@@ -1,23 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2016 Fujitsu Ltd.
-* Author: Jinbao Huang <huangjb.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2016 Fujitsu Ltd.
+ * Author: Jinbao Huang <huangjb.jy@cn.fujitsu.com>
+ */
 
-/*
-* Test Name: lgetxattr02
-*
-* Description:
-* 1) lgetxattr(2) fails if the named attribute does not exist.
-* 2) lgetxattr(2) fails if the size of the value buffer is too small
-*    to hold the result.
-* 3) lgetxattr(2) fails when attemptes to read from a invalid address.
-*
-* Expected Result:
-* 1) lgetxattr(2) should return -1 and set errno to ENODATA.
-* 2) lgetxattr(2) should return -1 and set errno to ERANGE.
-* 3) lgetxattr(2) should return -1 and set errno to EFAULT.
-*/
+/*\
+ * [Description]
+ *
+ * Verify that, lgetxattr(2) returns -1 and sets errno to
+ *
+ * 1. ENODATA if the named attribute does not exist.
+ * 2. ERANGE if the size of the value buffer is too small to hold the result.
+ * 3. EFAULT when reading from an invalid address.
+ */
 
 #include "config.h"
 #include <errno.h>
