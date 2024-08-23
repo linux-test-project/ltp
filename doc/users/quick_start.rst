@@ -17,7 +17,7 @@ Basics requirements to build LTP are the following:
 
 .. code-block:: console
 
-   $ git clone https://github.com/linux-test-project/ltp.git
+   $ git clone --recurse-submodules https://github.com/linux-test-project/ltp.git
    $ cd ltp
    $ make autotools
    $ ./configure
