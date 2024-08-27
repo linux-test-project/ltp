@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015 Cedric Hnyda <chnyda@suse.com>
+ * Copyright (c) Linux Test Project, 2015-2024
  */
 
- /* Description:
- *   Verify that:
- *		1) kcmp returns 0 with two process and two fd refering to the
- *			same open file
- *		2) kcmp doesn't return 0 with two process and two fd not
- *		   refering to the same open file
+/*\
+ * [Description]
+ *
+ * Verify that
+ *
+ * 1. kcmp() returns 0 with two process and two file descriptors refering to the
+ * same open file
+ * 2. kcmp() doesn't return 0 with two process and two file descriptors not
+ * refering to the same open file
  */
 
 #define _GNU_SOURCE

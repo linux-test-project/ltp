@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2016 Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2016-2024
  */
 
- /*
- * Testname: kcmp03.c
+/*\
+ * [Description]
  *
- * Description:
- * 1) kcmp() returns 0 if the processes share the same file system information.
- * 2) kcmp() returns 0 if the processes share I/O context.
- * 3) kcmp() returns 0 if the processes share the same list of System V
- *    semaphore undo operations.
- * 4) kcmp() returns 0 if the processes share the same address space.
+ * Verify that, kcmp() returns 0 if the processes
+ *
+ * 1. share the same file system information
+ * 2. share I/O context
+ * 3. share the same list of System V semaphore undo operations
+ * 4. share the same address space
  */
 
 #define _GNU_SOURCE

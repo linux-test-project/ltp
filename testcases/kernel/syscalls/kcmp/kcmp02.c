@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015 Cedric Hnyda <chnyda@suse.com>
+ * Copyright (c) Linux Test Project, 2015-2024
  */
 
- /* Description:
- *   Verify that:
- *		1) kcmp fails with bad pid
- *		2) kcmp fails with invalid flag
- *		3) kcmp fails with invalid flag
- *		4) kcmp fails with invalid flag
- *		5) kcmp fails with invalid flag
- *		6) kcmp fails with invalid fd
+/*\
+ * [Description]
+ *
+ * Verify that, kcmp() returns -1 and sets errno to
+ *
+ * 1. ESRCH if pid does not exist
+ * 2. EINVAL if type is invalid (KCMP_TYPES + 1)
+ * 3. EINVAL if type is invalid (-1)
+ * 4. EINVAL if type is invalid (INT_MIN)
+ * 5. EINVAL if type is invalid (INT_MAX)
+ * 6. EBADF if file descriptor is invalid
  */
 
 #define _GNU_SOURCE
