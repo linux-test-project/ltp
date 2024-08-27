@@ -31,7 +31,6 @@
 #include "tst_pid.h"
 #include "tst_cmd.h"
 #include "tst_cpu.h"
-#include "tst_clone.h"
 #include "old_device.h"
 #include "old_tmpdir.h"
 #include "tst_minmax.h"

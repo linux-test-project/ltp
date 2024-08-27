@@ -5,6 +5,8 @@
 #ifndef TST_CLONE_H__
 #define TST_CLONE_H__
 
+#include <sched.h>
+
 #ifdef TST_TEST_H__
 
 /* The parts of clone3's clone_args we support */
