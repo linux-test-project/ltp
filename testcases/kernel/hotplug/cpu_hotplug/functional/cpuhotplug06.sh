@@ -53,7 +53,7 @@ if tst_virt_hyperv; then
 	tst_brkm TCONF "Microsoft Hyper-V detected, no support for CPU hotplug"
 fi
 
-if top -v | grep -q htop; then
+if top -h | grep -q htop; then
 	tst_brkm TCONF "htop is used instead of top (workaround: alias top='/path/to/real/top')"
 fi
 
