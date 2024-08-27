@@ -274,7 +274,7 @@ struct tst_fs {
 	const char *const *mkfs_opts;
 	const char *mkfs_size_opt;
 
-	const unsigned int mnt_flags;
+	unsigned int mnt_flags;
 	const void *mnt_data;
 };
 

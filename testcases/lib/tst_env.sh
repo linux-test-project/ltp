@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# This is a minimal test environment for a shell scripts executed from C by
+# tst_run_shell() function. Shell tests must use the tst_loader.sh instead!
+#
 
 tst_script_name=$(basename $0)
 
