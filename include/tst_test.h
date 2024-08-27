@@ -331,6 +331,8 @@ struct tst_fs {
  * @child_needs_reinit: Has to be set if the test needs to call tst_reinit()
  *                      from a process started by exec().
  *
+ * @runs_script: Implies child_needs_reinit and forks_child at the moment.
+ *
  * @needs_devfs: If set the devfs is mounted at tst_test.mntpoint. This is
  *               needed for tests that need to create device files since tmpfs
  *               at /tmp is usually mounted with 'nodev' option.
@@ -521,6 +523,7 @@ struct tst_fs {
 	unsigned int mount_device:1;
 	unsigned int needs_rofs:1;
 	unsigned int child_needs_reinit:1;
+	unsigned int runs_script:1;
 	unsigned int needs_devfs:1;
 	unsigned int restore_wallclock:1;
 
@@ -529,6 +532,8 @@ struct tst_fs {
 	unsigned int skip_in_lockdown:1;
 	unsigned int skip_in_secureboot:1;
 	unsigned int skip_in_compat:1;
+
+
 	int needs_abi_bits;
 
 	unsigned int needs_hugetlbfs:1;
@@ -615,6 +620,38 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
  * @important The LTP_IPC_PATH variable must be passed to the program environment.
  */
 void tst_reinit(void);
+
+/**
+ * tst_run_script() - Prepare the environment and execute a (shell) script.
+ *
+ * @script_name: A filename of the script.
+ * @params: A NULL terminated array of (shell) script parameters, pass NULL if
+ *          none are needed. This what is passed starting from argv[1].
+ *
+ * The (shell) script is executed with LTP_IPC_PATH in environment so that the
+ * binary helpers such as tst_res_ or tst_checkpoint work properly when executed
+ * from the script. This also means that the tst_test.runs_script flag needs to
+ * be set.
+ *
+ * A shell script has to source the tst_env.sh shell script at the start and
+ * after that it's free to use tst_res in the same way C code would use.
+ *
+ * Example shell script that reports success::
+ *
+ *   #!/bin/sh
+ *   . tst_env.sh
+ *
+ *   tst_res TPASS "Example test works"
+ *
+ * The call returns a pid in a case that you want to examine the return value
+ * of the script yourself. If you do not need to check the return value
+ * yourself you can use tst_reap_children() to wait for the completion. Or let
+ * the test library collect the child automatically, just be wary that the
+ * script and the test both runs concurently at the same time in this case.
+ *
+ * Return: A pid of the (shell) script process.
+ */
+int tst_run_script(const char *script_name, char *const params[]);
 
 unsigned int tst_multiply_timeout(unsigned int timeout);
 
