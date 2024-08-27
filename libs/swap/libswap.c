@@ -244,7 +244,8 @@ bool is_swap_supported(const char *filename)
 int tst_max_swapfiles(void)
 {
 	unsigned int swp_migration_num = 0, swp_hwpoison_num = 0,
-		     swp_device_num = 0, swp_pte_marker_num = 0;
+		     swp_device_num = 0, swp_pte_marker_num = 0,
+		     swp_swapin_error_num = 0;
 	struct tst_kconfig_var migration = TST_KCONFIG_INIT("CONFIG_MIGRATION");
 	struct tst_kconfig_var memory = TST_KCONFIG_INIT("CONFIG_MEMORY_FAILURE");
 	struct tst_kconfig_var device = TST_KCONFIG_INIT("CONFIG_DEVICE_PRIVATE");
@@ -295,8 +296,11 @@ int tst_max_swapfiles(void)
 		swp_pte_marker_num = 1;
 	}
 
+	if ((tst_kvercmp(5, 19, 0) >= 0) && (tst_kvercmp(6, 2, 0) < 0))
+		swp_swapin_error_num = 1;
+
 	return DEFAULT_MAX_SWAPFILE - swp_migration_num - swp_hwpoison_num
-		- swp_device_num - swp_pte_marker_num;
+		- swp_device_num - swp_pte_marker_num - swp_swapin_error_num;
 }
 
 int tst_count_swaps(void)
