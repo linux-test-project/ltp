@@ -162,6 +162,7 @@ foreach my $file (@ARGV) {
                                               "<td><p><strong>$termination_id_value[1]</strong></p></td>\n"  .
                                               "<td><p><strong>$corefile_value[1]</strong></p></td>\n";
                                   $row_line =~ s/<tr>/<tr\ bgcolor=$background_colour>/;
+                                  $flag4++;
                              }
                              if ( $flag4 == 3 ) {
                                   @variable_value_pair    = split(/\ /, $line);
@@ -170,7 +171,6 @@ foreach my $file (@ARGV) {
                                   $row_line = $row_line . "<td><p><strong>$cutime_value[1]</strong></p></td>\n" .
                                               "<td><p><strong>$cstime_value[1]</strong></p></td></tr>\n";
                              }
-                             $flag4++;
                         }
                         if ( $line =~ /$execution_tag/ ) {
                              $flag2 = 0;
@@ -186,18 +186,23 @@ foreach my $file (@ARGV) {
 			 	 if ($line =~ "termination_id=1" ) {
 					 $detected_fail = 1;
 					 $failed_test_counter++;
+					 $flag4 = 2;
 				 } elsif ($line =~ "termination_id=2" ) {
 					 $detected_brok = 1;
 					 $brok_test_counter++;
+					 $flag4 = 2;
 				 } elsif ($line =~ "termination_id=4" ) {
 					 $detected_warn = 1;
 					 $warn_test_counter++;
+					 $flag4 = 2;
 				 } elsif ($line =~ "termination_id=32" ) {
 					 $detected_conf = 1;
 					 $conf_test_counter++;
+					 $flag4 = 2;
 				 } elsif ($line =~ "termination_id=0" ) {
 					 $detected_pass = 1;
 					 $test_passed++;
+					 $flag4 = 2;
 				 }
 			 }
                         if ( $line =~ /$output_tag/ ) {
