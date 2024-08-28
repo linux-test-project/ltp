@@ -3,8 +3,19 @@
 # Copyright (c) 2016-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 
+TST_SETUP="nfsstat_setup"
 TST_TESTFUNC="do_test"
 TST_NEEDS_CMDS="nfsstat"
+NS_STAT_RHOST=0
+
+nfsstat_setup()
+{
+	nfs_setup
+
+	if tst_net_use_netns && [ -z "$LTP_NFS_NETNS_USE_LO" ]; then
+		tst_rhost_run -c "test -r /proc/net/rpc/nfs" && NS_STAT_RHOST=1
+	fi
+}
 
 get_calls()
 {
@@ -15,15 +26,22 @@ get_calls()
 	local calls opt
 
 	[ "$name" = "rpc" ] && opt="r" || opt="n"
-	! tst_net_use_netns && [ "$nfs_f" != "nfs" ] && type="rhost"
+	[ "$nfs_f" = "nfsd" ] && opt="-s$opt" || opt="-c$opt"
+
+	if tst_net_use_netns; then
+		# In netns setup, rhost is the client
+		[ "$nfs_f" = "nfs" ] && [ $NS_STAT_RHOST -ne 0 ] && type="rhost"
+	else
+		[ "$nfs_f" != "nfs" ] && type="rhost"
+	fi
 
 	if [ "$type" = "lhost" ]; then
 		calls="$(grep $name /proc/net/rpc/$nfs_f | cut -d' ' -f$field)"
-		ROD nfsstat -c$opt | grep -q "$calls"
+		ROD nfsstat $opt | grep -q "$calls"
 	else
 		calls=$(tst_rhost_run -c "grep $name /proc/net/rpc/$nfs_f" | \
 			cut -d' ' -f$field)
-		tst_rhost_run -s -c "nfsstat -s$opt" | grep -q "$calls"
+		tst_rhost_run -s -c "nfsstat $opt" | grep -q "$calls"
 	fi
 
 	if ! tst_is_int "$calls"; then
