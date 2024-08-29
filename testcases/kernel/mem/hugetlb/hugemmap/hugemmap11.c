@@ -23,7 +23,7 @@
 
 #define P0 "ffffffff"
 #define IOSZ 4096
-#define NORMAL_PATH ""
+#define NORMAL_PATH "./"
 #define MNTPOINT "hugetlbfs/"
 
 static long hpage_size;
