@@ -22,6 +22,7 @@ get_calls()
 	local name=$1
 	local field=$2
 	local nfs_f=$3
+	local netns=${4:-rhost}
 	local type="lhost"
 	local calls opt
 
@@ -30,7 +31,8 @@ get_calls()
 
 	if tst_net_use_netns; then
 		# In netns setup, rhost is the client
-		[ "$nfs_f" = "nfs" ] && [ $NS_STAT_RHOST -ne 0 ] && type="rhost"
+		[ "$nfs_f" = "nfs" ] && [ $NS_STAT_RHOST -ne 0 ] && \
+			type="$netns"
 	else
 		[ "$nfs_f" != "nfs" ] && type="rhost"
 	fi
@@ -64,13 +66,14 @@ get_calls()
 do_test()
 {
 	local client_calls server_calls new_server_calls new_client_calls
-	local client_field server_field
+	local client_field server_field root_calls new_root_calls
 	local client_v=$VERSION server_v=$VERSION
 
 	tst_res TINFO "checking RPC calls for server/client"
 
 	server_calls="$(get_calls rpc 2 nfsd)"
 	client_calls="$(get_calls rpc 2 nfs)"
+	root_calls="$(get_calls rpc 2 nfs lhost)"
 
 	tst_res TINFO "calls $server_calls/$client_calls"
 
@@ -79,6 +82,7 @@ do_test()
 
 	new_server_calls="$(get_calls rpc 2 nfsd)"
 	new_client_calls="$(get_calls rpc 2 nfs)"
+	new_root_calls="$(get_calls rpc 2 nfs lhost)"
 	tst_res TINFO "new calls $new_server_calls/$new_client_calls"
 
 	if [ "$new_server_calls" -le "$server_calls" ]; then
@@ -91,6 +95,16 @@ do_test()
 		tst_res TFAIL "client RPC calls not increased"
 	else
 		tst_res TPASS "client RPC calls increased"
+	fi
+
+	if [ $NS_STAT_RHOST -ne 0 ]; then
+		tst_res TINFO "Root NS client RPC calls: $root_calls => $new_root_calls"
+
+		if [ $root_calls -ne $new_root_calls ]; then
+			tst_res TFAIL "RPC stats leaked between net namespaces"
+		else
+			tst_res TPASS "RPC stats stay within net namespaces"
+		fi
 	fi
 
 	tst_res TINFO "checking NFS calls for server/client"
