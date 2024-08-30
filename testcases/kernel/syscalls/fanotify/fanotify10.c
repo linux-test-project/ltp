@@ -515,6 +515,8 @@ static void drop_caches(void)
 	if (syncfs(fd_syncfs) < 0)
 		tst_brk(TBROK | TERRNO, "Unexpected error when syncing filesystem");
 
+	/* Need to drop twice to ensure the inode is evicted. */
+	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
 	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
 }
 
