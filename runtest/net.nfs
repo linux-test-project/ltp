@@ -116,6 +116,8 @@ nfsstat01_v40_ip6t nfsstat01.sh -6 -v 4 -t tcp
 nfsstat01_v41_ip6t nfsstat01.sh -6 -v 4.1 -t tcp
 nfsstat01_v42_ip6t nfsstat01.sh -6 -v 4.2 -t tcp
 
+nfsstat02 nfsstat02.sh
+
 fsx_v30_ip4u fsx.sh -v 3 -t udp
 fsx_v30_ip4t fsx.sh -v 3 -t tcp
 fsx_v40_ip4t fsx.sh -v 4 -t tcp
