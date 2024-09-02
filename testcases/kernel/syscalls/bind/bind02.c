@@ -6,9 +6,10 @@
  *   Copyright (c) 2019 Martin Doucha <mdoucha@suse.cz>
  */
 
-/*
- * Test Description:
- *  Make sure bind() of privileged port gives EACCESS error for non-root users.
+/*\
+ * [Description]
+ *
+ * Make sure bind() of privileged port gives EACCESS error for non-root users.
  */
 
 #include <string.h>
