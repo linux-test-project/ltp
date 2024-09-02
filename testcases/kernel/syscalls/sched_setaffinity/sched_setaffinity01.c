@@ -6,13 +6,15 @@
  * Author: Stanislav Kholmanskikh <stanislav.kholmanskikh@oracle.com>
  */
 
-/*
- * Description:
+/*\
+ * [Description]
+ *
  * Check various errnos for sched_setaffinity():
- * 1) EFAULT, if the supplied memory address is invalid.
- * 2) EINVAL, if the mask doesn't contain at least one permitted cpu.
- * 3) ESRCH, if the process whose id is pid could not be found.
- * 4) EPERM, if the calling process doesn't have appropriate privileges.
+ *
+ * 1. EFAULT, if the supplied memory address is invalid.
+ * 2. EINVAL, if the mask doesn't contain at least one permitted cpu.
+ * 3. ESRCH, if the process whose id is pid could not be found.
+ * 4. EPERM, if the calling process doesn't have appropriate privileges.
  */
 
 #define _GNU_SOURCE
