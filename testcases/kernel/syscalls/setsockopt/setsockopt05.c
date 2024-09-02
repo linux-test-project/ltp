@@ -3,18 +3,16 @@
  * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * CVE-2017-1000112
  *
  * Check that UDP fragmentation offload doesn't cause memory corruption
  * if the userspace process turns off UFO in between two send() calls.
- * Kernel crash fixed in:
  *
- *  commit 85f1bd9a7b5a79d5baa8bf44af19658f7bf77bfa
- *  Author: Willem de Bruijn <willemb@google.com>
- *  Date:   Thu Aug 10 12:29:19 2017 -0400
- *
- *  udp: consistently apply ufo or fragmentation
+ * Kernel crash fixed in 4.13
+ * 85f1bd9a7b5a ("udp: consistently apply ufo or fragmentation")
  */
 
 #include <sys/types.h>

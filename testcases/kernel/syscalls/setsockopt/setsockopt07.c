@@ -3,20 +3,18 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * CVE-2017-1000111
  *
  * Check for race condition between packet_set_ring() and tp_reserve.
  * The race allows you to set tp_reserve bigger than ring buffer size.
  * While this will cause truncation of all incoming packets to 0 bytes,
  * sanity checks in tpacket_rcv() prevent any exploitable buffer overflows.
- * Race fixed in:
  *
- *  commit c27927e372f0785f3303e8fad94b85945e2c97b7 (HEAD)
- *  Author: Willem de Bruijn <willemb@google.com>
- *  Date:   Thu Aug 10 12:41:58 2017 -0400
- *
- *  packet: fix tp_reserve race in packet_set_ring
+ * Race fixed in v4.13
+ * c27927e372f0 ("packet: fix tp_reserve race in packet_set_ring")
  */
 
 #include <unistd.h>

@@ -3,7 +3,10 @@
  * Copyright (c) 2019 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
  */
-/* Test for CVE-2016-9793
+/*\
+ * [Description]
+ *
+ * CVE-2016-9793
  *
  * With kernels between version 3.11 and 4.8 missing commit b98b0bc8 it
  * is possible to pass a very high unsigned integer as send buffer size

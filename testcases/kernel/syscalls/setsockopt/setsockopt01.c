@@ -1,13 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *   Copyright (c) International Business Machines  Corp., 2001
- *	07/2001 John George
- *   Copyright (c) 2020 Martin Doucha <mdoucha@suse.cz>
+ * Copyright (c) International Business Machines Corp., 2001
+ * Author: John George
+ * Copyright (c) 2020 Martin Doucha <mdoucha@suse.cz>
  */
 
-/*
- * Test Description:
- *  Verify that setsockopt() returns the proper errno for various failure cases
+/*\
+ * [Description]
+ *
+ * Verify that setsockopt() fails and set errno:
+ *
+ * - EBADF on invalid file descriptor
+ * - ENOTSOCK on non-socket file descriptor
+ * - EFAULT on invalid option buffer
+ * - EINVAL on invalid optlen
+ * - ENOPROTOOPT on invalid level
+ * - ENOPROTOOPT on invalid option name (UDP)
+ * - ENOPROTOOPT on invalid option name (IP)
+ * - ENOPROTOOPT on invalid option name (TCP)
  */
 
 #include <unistd.h>

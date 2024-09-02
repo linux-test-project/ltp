@@ -2,7 +2,11 @@
 /*
  * Copyright (c) 2017 Richard Palethorpe <rpalethorpe@suse.com>
  */
-/* Test for CVE-2017-7308 on a raw socket's ring buffer
+
+/*\
+ * [Description]
+ *
+ * Test for CVE-2017-7308 on a raw socket's ring buffer
  *
  * Try to set tpacket_req3.tp_sizeof_priv to a value with the high bit set. So
  * that tp_block_size < tp_sizeof_priv. If the vulnerability is present then

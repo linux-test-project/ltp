@@ -3,17 +3,16 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
+ * [Description]
+ *
  * CVE-2016-8655
  *
  * Check for race condition between packet_set_ring() and tp_version. On some
- * kernels, this may lead to use-after-free. Kernel crash fixed in:
+ * kernels, this may lead to use-after-free.
  *
- *  commit 84ac7260236a49c79eede91617700174c2c19b0c
- *  Author: Philip Pettersson <philip.pettersson@gmail.com>
- *  Date:   Wed Nov 30 14:55:36 2016 -0800
- *
- *  packet: fix race condition in packet_set_ring
+ * Kernel crash fixed in 4.9
+ * 84ac7260236a ("packet: fix race condition in packet_set_ring")
  */
 
 #include <unistd.h>
