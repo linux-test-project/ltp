@@ -1,14 +1,26 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
 * Copyright (c) International Business Machines Corp., 2001
+* Copyright (c) Linux Test Project, 2003-2022
 */
 
-/*
-* Test Name: socketpair01
-*
-* Test Description:
-* Verify that socketpair() returns the proper errno for various failure cases
-*/
+/*\
+ * [Description]
+ *
+ * Verify that socketpair(2) fails and set proper errno
+ *
+ * - EAFNOSUPPORT on invalid domain
+ * - EINVAL on invalid type
+ * - EPROTONOSUPPORT on raw open as non-root
+ * - EFAULT on bad aligned pointer
+ * - EFAULT on bad unaligned pointer
+ * - EOPNOTSUPP on UDP socket
+ * - EPROTONOSUPPORT on TCP dgram
+ * - EOPNOTSUPP on TCP socket
+ * - EPROTONOSUPPORT on ICMP stream
+ *
+ * Also test creating UNIX domain dgram.
+ */
 
 #include <stdio.h>
 #include <unistd.h>

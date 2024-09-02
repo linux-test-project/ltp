@@ -2,15 +2,14 @@
 /*
 * Copyright (c) Ulrich Drepper <drepper@redhat.com>
 * Copyright (c) International Business Machines Corp., 2009
+* Copyright (c) Linux Test Project, 2010-2022
 */
 
-/*
-* Test Name:	socket02
-*
-* Description:
-* This program tests the new flag SOCK_CLOEXEC and SOCK_NONBLOCK introduced
-* in socket() in kernel 2.6.27.
-*/
+/*\
+ * [Description]
+ *
+ * Test socket() with SOCK_CLOEXEC and SOCK_NONBLOCK flags.
+ */
 
 #include <stdio.h>
 #include <unistd.h>

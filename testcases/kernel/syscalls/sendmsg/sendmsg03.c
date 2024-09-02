@@ -1,20 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2020 SUSE LLC <mdoucha@suse.cz>
+ */
+
+/*\
+ * [Description]
  *
  * CVE-2017-17712
  *
  * Test for race condition vulnerability in sendmsg() on SOCK_RAW sockets.
  * Changing the value of IP_HDRINCL socket option in parallel with sendmsg()
  * call may lead to uninitialized stack pointer usage, allowing arbitrary code
- * execution or privilege escalation. Fixed in:
+ * execution or privilege escalation.
  *
- *  commit 8f659a03a0ba9289b9aeb9b4470e6fb263d6f483
- *  Author: Mohamed Ghannam <simo.ghannam@gmail.com>
- *  Date:   Sun Dec 10 03:50:58 2017 +0000
- *
- *  net: ipv4: fix for a race condition in raw_sendmsg
+ * Fixed in 4.15
+ * 8f659a03a0ba ("net: ipv4: fix for a race condition in raw_sendmsg")
  */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

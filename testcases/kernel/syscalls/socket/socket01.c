@@ -1,15 +1,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
 * Copyright (c) International Business Machines Corp., 2001
+* Copyright (c) Linux Test Project, 2003-2024
 */
 
-/*
-* Test Name: socket01
-*
-* Test Description:
-* Verify that socket() returns the proper errno for various failure cases
-*
-*/
+/*\
+ * [Description]
+ *
+ * Test creating TCP, UDP, and Unix doman dgram sockets with socket() syscall.
+ *
+ * Also verify that socket() fails and set proper errno
+ *
+ * - EAFNOSUPPORT on invalid domain
+ * - EINVAL on invalid type
+ * - EPROTONOSUPPORT on raw open as non-root
+ * - EPROTONOSUPPORT on UDP stream
+ * - EPROTONOSUPPORT on TCP dgram
+ * - EPROTONOSUPPORT on ICMP stream
+ */
 
 #include <stdio.h>
 #include <unistd.h>

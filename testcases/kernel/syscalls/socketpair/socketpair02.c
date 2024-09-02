@@ -2,15 +2,14 @@
 /*
 * Copyright (c) Ulrich Drepper <drepper@redhat.com>
 * Copyright (c) International Business Machines Corp., 2009
+* Copyright (c) Linux Test Project, 2010-2022
 */
 
-/*
-* Test Name:	socketpair02
-*
-* Description:
-* This Program tests the new flag SOCK_CLOEXEC and SOCK_NONBLOCK introduced
-* in socketpair() in kernel 2.6.27.
-*/
+/*\
+ * [Description]
+ *
+ * Test socket() with SOCK_CLOEXEC and SOCK_NONBLOCK flags.
+ */
 
 #include <errno.h>
 #include <pthread.h>

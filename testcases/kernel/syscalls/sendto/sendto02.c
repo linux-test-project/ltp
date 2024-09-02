@@ -2,19 +2,18 @@
 /*
  * Copyright(c) 2016 Fujitsu Ltd.
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2017-2019
  */
 
-/*
- * Test Name: sendto02
+/*\
+ * [Description]
  *
- * Description:
- * When sctp protocol is selected in socket(2) and buffer is invalid,
+ * When SCTP protocol created wih socket(2) and buffer is invalid,
  * sendto(2) should fail and set errno to EFAULT, but it sets errno
  * to ENOMEM.
  *
- * This is a regression test and has been fixed by kernel commit:
- * 6e51fe7572590d8d86e93b547fab6693d305fd0d (sctp: fix -ENOMEM result
- * with invalid user space pointer in sendto() syscall)
+ * This is a regression test fixed by kernel 3.7
+ * 6e51fe757259 (sctp: fix -ENOMEM result with invalid user space pointer in sendto() syscall)
  */
 
 #include <errno.h>
