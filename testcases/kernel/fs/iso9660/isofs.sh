@@ -13,9 +13,18 @@ TST_NEEDS_CMDS="mount umount"
 TST_NEEDS_TMPDIR=1
 TST_TESTFUNC=do_test
 TST_CNT=3
+TST_SETUP="setup"
 
 MAX_DEPTH=3
 MAX_DIRS=4
+
+TEST_USER='nobody'
+
+setup()
+{
+	TEST_GROUP="$(id -g -n $TEST_USER)"
+	[ "$TEST_GROUP" ] || TEST_GROUP="$TEST_USER"
+}
 
 gen_fs_tree()
 {
@@ -92,8 +101,8 @@ do_test()
 			"loop,block=512,unhide" \
 			"loop,block=1024,cruft" \
 			"loop,block=2048,nocompress" \
-			"loop,check=strict,map=off,gid=bin,uid=bin" \
-			"loop,check=strict,map=acorn,gid=bin,uid=bin" \
+			"loop,check=strict,map=off,gid=$TEST_GROUP,uid=$TEST_USER" \
+			"loop,check=strict,map=acorn,gid=$TEST_GROUP,uid=$TEST_USER" \
 			"loop,check=relaxed,map=normal" \
 			"loop,block=512,unhide,session=2"
 		do
