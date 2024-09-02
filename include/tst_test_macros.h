@@ -344,29 +344,71 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
        tst_res_(__FILE__, __LINE__, (EXPR) ? TPASS : TFAIL, "Expect: "       \
                 TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, #EXPR), __VA_ARGS__));
 
-#define TST_EXP_EQ_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS) do {\
-	TYPE tst_tmp_a__ = VAL_A; \
-	TYPE tst_tmp_b__ = VAL_B; \
-	if (tst_tmp_a__ == tst_tmp_b__) { \
-		tst_res_(__FILE__, __LINE__, TPASS, \
-			SVAL_A " == " SVAL_B " (" PFS ")", tst_tmp_a__); \
-	} else { \
-		tst_res_(__FILE__, __LINE__, TFAIL, \
-			SVAL_A " (" PFS ") != " SVAL_B " (" PFS ")", \
-			tst_tmp_a__, tst_tmp_b__); \
-	} \
+#define TST_EXP_EQ_SILENT_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS) do {       \
+	TYPE tst_tmp_a__ = VAL_A;                                              \
+	TYPE tst_tmp_b__ = VAL_B;                                              \
+                                                                               \
+	TST_PASS = 0;                                                          \
+                                                                               \
+	if (tst_tmp_a__ != tst_tmp_b__) {                                      \
+		tst_res_(__FILE__, __LINE__, TFAIL,                            \
+			SVAL_A " (" PFS ") != " SVAL_B " (" PFS ")",           \
+			tst_tmp_a__, tst_tmp_b__);                             \
+	} else {                                                               \
+		TST_PASS = 1;                                                  \
+	}                                                                      \
 } while (0)
 
-#define TST_EXP_EQ_LI(VAL_A, VAL_B) \
-		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli")
+#define TST_EXP_EQ_LI(VAL_A, VAL_B) do {                                       \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli");   \
+								               \
+	if (TST_PASS) {                                                        \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			#VAL_A " == " #VAL_B " (%lli)",                        \
+			(long long)VAL_A);                                     \
+	}                                                                      \
+} while (0)
 
-#define TST_EXP_EQ_LU(VAL_A, VAL_B) \
-		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
+#define TST_EXP_EQ_LI_SILENT(VAL_A, VAL_B) \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli")
 
-#define TST_EXP_EQ_SZ(VAL_A, VAL_B) \
-		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu")
+#define TST_EXP_EQ_LU(VAL_A, VAL_B) do {                                       \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu"); \
+								               \
+	if (TST_PASS) {                                                        \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			#VAL_A " == " #VAL_B " (%llu)",                        \
+			(unsigned long long)VAL_A);                            \
+	}                                                                      \
+} while (0)
 
-#define TST_EXP_EQ_SSZ(VAL_A, VAL_B) \
-		TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, ssize_t, "%zi")
+#define TST_EXP_EQ_LU_SILENT(VAL_A, VAL_B) \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
+
+#define TST_EXP_EQ_SZ(VAL_A, VAL_B) do {                                       \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu");       \
+								               \
+	if (TST_PASS) {                                                        \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			#VAL_A " == " #VAL_B " (%zu)",                         \
+			(size_t)VAL_A);                                        \
+	}                                                                      \
+} while (0)
+
+#define TST_EXP_EQ_SZ_SILENT(VAL_A, VAL_B) \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu")
+
+#define TST_EXP_EQ_SSZ(VAL_A, VAL_B) do {                                      \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zi");       \
+								               \
+	if (TST_PASS) {                                                        \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			#VAL_A " == " #VAL_B " (%zi)",                         \
+			(ssize_t)VAL_A);                                        \
+	}                                                                      \
+} while (0)
+
+#define TST_EXP_EQ_SSZ_SILENT(VAL_A, VAL_B) \
+	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, ssize_t, "%zi")
 
 #endif	/* TST_TEST_MACROS_H__ */
