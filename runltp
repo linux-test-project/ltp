@@ -70,10 +70,10 @@
 
 deprecated()
 {
-    echo "-------------------------------------------"
-    echo "INFO: runltp script is deprecated, try kirk"
-    echo "https://github.com/linux-test-project/kirk"
-    echo "-------------------------------------------"
+    echo "-------------------------------------------" >&2
+    echo "INFO: runltp script is deprecated, try kirk" >&2
+    echo "https://github.com/linux-test-project/kirk" >&2
+    echo "-------------------------------------------" >&2
 }
 
 
