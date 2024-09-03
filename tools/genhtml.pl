@@ -87,6 +87,11 @@ sub get_background_colour_column() {
     }
 }
 
+print STDERR "-------------------------------------------------\n";
+print STDERR "INFO: genhtml.pl script is deprecated, try kirk\n";
+print STDERR "(new LTP runner which also generates JSON output)\n";
+print STDERR "https://github.com/linux-test-project/kirk\n";
+print STDERR "-------------------------------------------------\n";
 
 if ($start_tag eq "" || $end_tag eq "" || $output_tag eq "" || $execution_tag eq "") {
 	syntax();
