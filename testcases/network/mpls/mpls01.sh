@@ -21,7 +21,7 @@ cleanup()
 
 setup()
 {
-	ROD modprobe mpls_router
+	mpls_setup_driver
 }
 
 test1()
@@ -66,5 +66,5 @@ test3()
 	tst_res TPASS "created and removed mpls routes"
 }
 
-. tst_net.sh
+. mpls_lib.sh
 tst_run
