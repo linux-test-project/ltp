@@ -24,7 +24,7 @@ tst_cmd_run()
 {
 	local cmd="$1"
 	shift
-	tst_cmd_available $cmd && eval "$cmd $@"
+	tst_cmd_available $cmd && eval "$cmd $*"
 }
 
 is_enabled()
