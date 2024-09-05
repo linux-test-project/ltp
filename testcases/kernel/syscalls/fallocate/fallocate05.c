@@ -114,7 +114,8 @@ static void run(void)
 	tst_res(TPASS, "fallocate() on full FS");
 
 	/* Btrfs deallocates only complete extents, not individual blocks */
-	if (!strcmp(tst_device->fs_type, "btrfs"))
+	if (!strcmp(tst_device->fs_type, "btrfs") ||
+		!strcmp(tst_device->fs_type, "bcachefs"))
 		holesize = bufsize + extsize;
 	else
 		holesize = DEALLOCATE_BLOCKS * blocksize;
