@@ -55,7 +55,7 @@ static void setup(void)
 static void run(void)
 {
 	int fd;
-	long extsize, tmp;
+	long extsize, holesize, tmp;
 
 	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT | O_TRUNC,
 		0644);
@@ -115,11 +115,12 @@ static void run(void)
 
 	/* Btrfs deallocates only complete extents, not individual blocks */
 	if (!strcmp(tst_device->fs_type, "btrfs"))
-		tmp = bufsize + extsize;
+		holesize = bufsize + extsize;
 	else
-		tmp = DEALLOCATE_BLOCKS * blocksize;
+		holesize = DEALLOCATE_BLOCKS * blocksize;
 
-	TEST(fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, tmp));
+	TEST(fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0,
+		holesize));
 
 	if (TST_RET == -1) {
 		if (TST_ERR == ENOTSUP)
@@ -134,6 +135,31 @@ static void run(void)
 		tst_res(TFAIL | TTERRNO, "write()");
 	else
 		tst_res(TPASS, "write()");
+
+	/* Check that the deallocated file range is marked as a hole */
+	TEST(lseek(fd, 0, SEEK_HOLE));
+
+	if (TST_RET == 0) {
+		tst_res(TPASS, "Test file contains hole at offset 0");
+	} else if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "lseek(SEEK_HOLE) failed");
+	} else {
+		tst_res(TFAIL | TTERRNO,
+			"Unexpected lseek(SEEK_HOLE) return value %ld",
+			TST_RET);
+	}
+
+	TEST(lseek(fd, 0, SEEK_DATA));
+
+	if (TST_RET == holesize) {
+		tst_res(TPASS, "Test file data start at offset %ld", TST_RET);
+	} else if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "lseek(SEEK_DATA) failed");
+	} else {
+		tst_res(TFAIL | TTERRNO,
+			"Unexpected lseek(SEEK_DATA) return value %ld",
+			TST_RET);
+	}
 
 	SAFE_CLOSE(fd);
 	tst_purge_dir(MNTPOINT);
