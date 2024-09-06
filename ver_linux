@@ -91,9 +91,9 @@ pppd --version 2>&1| grep version | awk \
 isdnctrl 2>&1 | grep version | awk \
 'NR==1{print "isdn4k-utils          ", $NF}'
 
-ls -l `ldd /bin/sh | awk '/libc/{print $3}'` | sed \
--e 's/\.so$//' | awk -F'[.-]'   '{print "Linux C Library        " \
-$(NF-2)"."$(NF-1)"."$NF}'
+printf "Linux C Library        $($(ldd /bin/sh | \
+awk '/libc/{print $3}') 2>&1 | \
+grep -i -e libc.*version -e musl.*libc -e ^version)\n"
 
 ldd -v > /dev/null 2>&1 && ldd -v || ldd --version |head -n 1 | awk \
 'NR==1{print "Dynamic linker (ldd)  ", $NF}'
