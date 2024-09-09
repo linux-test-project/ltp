@@ -14,6 +14,8 @@
 #include <linux/proc_fs.h>
 #include <linux/kernel.h>
 
+#define DIRNAME "dummy_delmod"
+
 /* Dummy function called by dependent module */
 int dummy_func_test(void)
 {
@@ -25,13 +27,13 @@ static int __init dummy_init(void)
 {
 	struct proc_dir_entry *proc_dummy;
 
-	proc_dummy = proc_mkdir("dummy", 0);
+	proc_dummy = proc_mkdir(DIRNAME, 0);
 	return 0;
 }
 
 static void __exit dummy_exit(void)
 {
-	remove_proc_entry("dummy", 0);
+	remove_proc_entry(DIRNAME, 0);
 }
 
 module_init(dummy_init);

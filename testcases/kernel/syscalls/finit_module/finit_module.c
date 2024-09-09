@@ -13,6 +13,8 @@
 #include <linux/proc_fs.h>
 #include <linux/kernel.h>
 
+#define DIRNAME "dummy_finit"
+
 static char status[20];
 module_param_string(status, status, 20, 0444);
 
@@ -23,14 +25,14 @@ static int dummy_init(void)
 	if (!strcmp(status, "invalid"))
 		return -EINVAL;
 
-	proc_dummy = proc_mkdir("dummy", 0);
+	proc_dummy = proc_mkdir(DIRNAME, 0);
 	return 0;
 }
 module_init(dummy_init);
 
 static void dummy_exit(void)
 {
-	remove_proc_entry("dummy", 0);
+	remove_proc_entry(DIRNAME, 0);
 }
 module_exit(dummy_exit);
 
