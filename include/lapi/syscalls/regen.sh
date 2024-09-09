@@ -33,7 +33,6 @@ cat << EOF > "${output_pid}"
 #include <errno.h>
 #include <sys/syscall.h>
 #include <asm/unistd.h>
-#include "cleanup.c"
 
 #ifdef TST_TEST_H__
 #define TST_SYSCALL_BRK__(NR, SNR) ({ \\
@@ -41,8 +40,10 @@ cat << EOF > "${output_pid}"
 		"syscall(%d) " SNR " not supported on your arch", NR); \\
 })
 #else
+inline static void dummy_cleanup(void) {}
+
 #define TST_SYSCALL_BRK__(NR, SNR) ({ \\
-	tst_brkm(TCONF, CLEANUP, \\
+	tst_brkm(TCONF, dummy_cleanup, \\
 		"syscall(%d) " SNR " not supported on your arch", NR); \\
 })
 #endif
