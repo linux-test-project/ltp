@@ -51,5 +51,6 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.test_all = verify_swapon,
+	.max_runtime = 60,
 	.setup = setup
 };
