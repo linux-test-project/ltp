@@ -2,9 +2,12 @@
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Author: Wayne Boyer and William Roske
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- * fchmod() will succeed to change the mode permissions of a file specified
+ * Verify that fchmod() can succeed to change the mode permissions of a file specified
  * by file descriptor.
  */
 
