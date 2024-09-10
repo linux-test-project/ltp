@@ -29,7 +29,7 @@ static void setup(void)
 {
 	int fd;
 
-	mntpoint = tst_tmpdir_mkpath("mnt");
+	mntpoint = tst_tmpdir_genpath("mnt");
 
 	fd = SAFE_OPEN(tst_device->dev, O_RDONLY);
 

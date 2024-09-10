@@ -43,10 +43,10 @@ static void setup(void)
 	SAFE_MOUNT(tmppath, tmppath, "none", MS_BIND, NULL);
 	SAFE_MOUNT("none", tmppath, "none", MS_PRIVATE, NULL);
 
-	mntpoint_src = tst_tmpdir_mkpath(MNTPOINT_SRC);
-	mntpoint_dst = tst_tmpdir_mkpath(MNTPOINT_DST);
-	tstfiles_src = tst_tmpdir_mkpath("%s/testfile", MNTPOINT_SRC);
-	tstfiles_dst = tst_tmpdir_mkpath("%s/testfile", MNTPOINT_DST);
+	mntpoint_src = tst_tmpdir_genpath(MNTPOINT_SRC);
+	mntpoint_dst = tst_tmpdir_genpath(MNTPOINT_DST);
+	tstfiles_src = tst_tmpdir_genpath("%s/testfile", MNTPOINT_SRC);
+	tstfiles_dst = tst_tmpdir_genpath("%s/testfile", MNTPOINT_DST);
 
 	SAFE_MKDIR(mntpoint_dst, 0750);
 }

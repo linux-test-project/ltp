@@ -49,8 +49,8 @@ static void setup(void)
 	int pagesize;
 	int fd;
 
-	file_path = tst_tmpdir_mkpath(FILENAME);
-	symb_path = tst_tmpdir_mkpath(SYMBNAME);
+	file_path = tst_tmpdir_genpath(FILENAME);
+	symb_path = tst_tmpdir_genpath(SYMBNAME);
 
 	/* change st_blksize / st_dev */
 	SAFE_STAT(".", &sb);

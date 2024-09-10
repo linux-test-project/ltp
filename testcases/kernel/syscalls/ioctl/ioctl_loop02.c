@@ -121,8 +121,8 @@ static void setup(void)
 	tst_fill_file("test2.img", 0, 2048, 20);
 
 	sprintf(backing_path, "/sys/block/loop%d/loop/backing_file", dev_num);
-	backing_file_path = tst_tmpdir_mkpath("test.img");
-	backing_file_change_path = tst_tmpdir_mkpath("test1.img");
+	backing_file_path = tst_tmpdir_genpath("test.img");
+	backing_file_change_path = tst_tmpdir_genpath("test1.img");
 	sprintf(loop_ro_path, "/sys/block/loop%d/ro", dev_num);
 
 	file_change_fd = SAFE_OPEN("test1.img", O_RDWR);

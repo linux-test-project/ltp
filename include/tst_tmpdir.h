@@ -29,7 +29,7 @@ void tst_purge_dir(const char *path);
 char *tst_tmpdir_path(void);
 
 /**
- * tst_tmpdir_mkpath - Construct an absolute path pointing to a file inside tmpdir.
+ * tst_tmpdir_genpath - Construct an absolute path pointing to a file inside tmpdir.
  *
  * Constructs a path inside tmpdir i.e. adds a prefix pointing to the current
  * test tmpdir to the string build by the printf-like format.
@@ -41,7 +41,7 @@ char *tst_tmpdir_path(void);
  * of the test. If allocation fails the function calls tst_brk() and exits the
  * test.
  */
-char *tst_tmpdir_mkpath(const char *fmt, ...)
+char *tst_tmpdir_genpath(const char *fmt, ...)
 	__attribute__((format(printf, 1, 2)));
 
 /*

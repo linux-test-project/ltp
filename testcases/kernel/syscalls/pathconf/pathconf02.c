@@ -70,7 +70,7 @@ static void setup(void)
 
 	SAFE_TOUCH("testfile", 0777, NULL);
 
-	abs_path = tst_tmpdir_mkpath(FILEPATH);
+	abs_path = tst_tmpdir_genpath(FILEPATH);
 
 	SAFE_CHMOD(tst_tmpdir_path(), 0);
 

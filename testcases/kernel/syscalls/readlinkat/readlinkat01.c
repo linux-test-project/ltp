@@ -66,7 +66,7 @@ static void verify_readlinkat(unsigned int i)
 
 static void setup(void)
 {
-	abspath = tst_tmpdir_mkpath(TEST_SYMLINK);
+	abspath = tst_tmpdir_genpath(TEST_SYMLINK);
 
 	file_fd = SAFE_OPEN(TEST_FILE, O_CREAT, 0600);
 	SAFE_SYMLINK(TEST_FILE, TEST_SYMLINK);

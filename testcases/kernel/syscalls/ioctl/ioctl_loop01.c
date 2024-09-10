@@ -126,7 +126,7 @@ static void setup(void)
 	sprintf(autoclear_path, "/sys/block/loop%d/loop/autoclear", dev_num);
 	sprintf(backing_path, "/sys/block/loop%d/loop/backing_file", dev_num);
 	sprintf(sys_loop_partpath, "/sys/block/loop%d/loop%dp1", dev_num, dev_num);
-	backing_file_path = tst_tmpdir_mkpath("test.img");
+	backing_file_path = tst_tmpdir_genpath("test.img");
 	sprintf(loop_partpath, "%sp1", dev_path);
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 }

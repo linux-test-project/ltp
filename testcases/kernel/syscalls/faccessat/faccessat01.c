@@ -55,7 +55,7 @@ static void verify_faccessat(unsigned int i)
 
 static void setup(void)
 {
-	abs_path = tst_tmpdir_mkpath(FILEPATH);
+	abs_path = tst_tmpdir_genpath(FILEPATH);
 
 	SAFE_MKDIR(TESTDIR, 0700);
 	dir_fd = SAFE_OPEN(TESTDIR, O_DIRECTORY);

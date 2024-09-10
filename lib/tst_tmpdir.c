@@ -372,7 +372,7 @@ char *tst_tmpdir_path(void)
 	return tmpdir;
 }
 
-char *tst_tmpdir_mkpath(const char *fmt, ...)
+char *tst_tmpdir_genpath(const char *fmt, ...)
 {
 	size_t testdir_len, path_len;
 	va_list va, vac;
