@@ -22,6 +22,9 @@
 
 #include <stdlib.h>
 
+#define MNTPOINT "mntpoint"
+#define WORKDIR MNTPOINT "/workdir"
+
 static void reset_flags(void);
 static void check_flags(void);
 static void set_flag(const char *name);
@@ -61,7 +64,7 @@ static void run(void)
 {
 	int rval;
 
-	fd = SAFE_OPEN(".", O_RDONLY|O_DIRECTORY);
+	fd = SAFE_OPEN(WORKDIR, O_RDONLY|O_DIRECTORY);
 
 	rval = tst_getdents(fd, dirp, BUFSIZE);
 
@@ -147,31 +150,37 @@ static void set_flag(const char *name)
 static void setup(void)
 {
 	size_t i;
+	char path[255];
 
 	getdents_info();
 
-	if (!tst_variant) {
-		for (i = 0; i < ARRAY_SIZE(testcases); i++) {
-			if (!testcases[i].create)
-				continue;
+	/*
+	 * Work in a subdirectory because some filesystems add special files
+	 * or directories to their root.
+	 */
+	SAFE_MKDIR(WORKDIR, 0777);
 
-			switch (testcases[i].type) {
-			case ENTRY_DIR:
-				SAFE_MKDIR(testcases[i].name, 0777);
-			break;
-			case ENTRY_FILE:
-				SAFE_FILE_PRINTF(testcases[i].name, " ");
-			break;
-			case ENTRY_SYMLINK:
-				SAFE_SYMLINK("nonexistent", testcases[i].name);
-			break;
-			}
+	for (i = 0; i < ARRAY_SIZE(testcases); i++) {
+		if (!testcases[i].create)
+			continue;
+
+		sprintf(path, "%s/%s", WORKDIR, testcases[i].name);
+
+		switch (testcases[i].type) {
+		case ENTRY_DIR:
+			SAFE_MKDIR(path, 0777);
+		break;
+		case ENTRY_FILE:
+			SAFE_FILE_PRINTF(path, " ");
+		break;
+		case ENTRY_SYMLINK:
+			SAFE_SYMLINK("nonexistent", path);
+		break;
 		}
 	}
 }
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.test_all = run,
 	.setup = setup,
 	.bufs = (struct tst_buffers []) {
@@ -179,4 +188,13 @@ static struct tst_test test = {
 		{},
 	},
 	.test_variants = TEST_VARIANTS,
+	.needs_root = 1,
+	.all_filesystems = 1,
+	.mount_device = 1,
+	.mntpoint = MNTPOINT,
+	.skip_filesystems = (const char *const[]) {
+		"vfat",
+		"exfat",
+		NULL
+	}
 };
