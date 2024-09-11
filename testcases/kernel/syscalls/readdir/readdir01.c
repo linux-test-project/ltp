@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include "tst_test.h"
 
+#define MNTPOINT "mntpoint"
+
 static const char prefix[] = "readdirfile";
 static int nfiles = 10;
 
@@ -32,7 +34,7 @@ static void setup(void)
 	int fd;
 
 	for (i = 0; i < nfiles; i++) {
-		sprintf(fname, "%s_%d", prefix, i);
+		sprintf(fname, "%s/%s_%d", MNTPOINT, prefix, i);
 		fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 		SAFE_WRITE(SAFE_WRITE_ALL, fd, "hello\n", 6);
 		SAFE_CLOSE(fd);
@@ -45,7 +47,7 @@ static void verify_readdir(void)
 	DIR *test_dir;
 	struct dirent *ent;
 
-	test_dir = SAFE_OPENDIR(".");
+	test_dir = SAFE_OPENDIR(MNTPOINT);
 	while ((ent = SAFE_READDIR(test_dir))) {
 		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue;
@@ -66,5 +68,8 @@ static void verify_readdir(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_readdir,
-	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.all_filesystems = 1,
+	.mount_device = 1,
+	.mntpoint = MNTPOINT
 };
