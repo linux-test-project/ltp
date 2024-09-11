@@ -20,9 +20,10 @@
 #include "lapi/syscalls.h"
 #include "lapi/readdir.h"
 
-#define TEST_DIR	"test_dir"
-#define TEST_DIR4	"test_dir4"
-#define TEST_FILE	"test_file"
+#define MNTPOINT	"mntpoint"
+#define TEST_DIR	MNTPOINT "/test_dir"
+#define TEST_DIR4	MNTPOINT "/test_dir4"
+#define TEST_FILE	MNTPOINT "/test_file"
 #define DIR_MODE	0755
 
 static unsigned int del_dir_fd, file_fd;
@@ -75,5 +76,8 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
 	.test = verify_readdir,
-	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.all_filesystems = 1,
+	.mount_device = 1,
+	.mntpoint = MNTPOINT
 };
