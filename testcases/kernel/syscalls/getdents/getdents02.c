@@ -26,7 +26,9 @@
 
 #define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
 			 S_IXGRP|S_IROTH|S_IXOTH)
-#define TEST_DIR	"test_dir"
+#define MNTPOINT	"mntpoint"
+#define TEST_DIR	MNTPOINT "/test_dir"
+#define TEST_FILE	MNTPOINT "/test"
 
 static char *dirp;
 static size_t size;
@@ -61,8 +63,8 @@ static void setup(void)
 	size = tst_dirp_size();
 	dirp = tst_alloc(size);
 
-	fd = SAFE_OPEN(".", O_RDONLY);
-	fd_file = SAFE_OPEN("test", O_CREAT | O_RDWR, 0644);
+	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
+	fd_file = SAFE_OPEN(TEST_FILE, O_CREAT | O_RDWR, 0644);
 
 	dirp_bad = tst_get_bad_addr(NULL);
 
@@ -92,9 +94,12 @@ static void run(unsigned int i)
 }
 
 static struct tst_test test = {
-	.needs_tmpdir = 1,
 	.test = run,
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test_variants = TEST_VARIANTS,
+	.needs_root = 1,
+	.all_filesystems = 1,
+	.mount_device = 1,
+	.mntpoint = MNTPOINT
 };
