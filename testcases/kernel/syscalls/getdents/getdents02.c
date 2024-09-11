@@ -28,8 +28,6 @@
 			 S_IXGRP|S_IROTH|S_IXOTH)
 #define TEST_DIR	"test_dir"
 
-char *TCID = "getdents02";
-
 static char *dirp;
 static size_t size;
 
