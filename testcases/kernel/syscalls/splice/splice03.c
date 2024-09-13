@@ -3,23 +3,19 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Xing Gu <gux.fnst@cn.fujitsu.com>
  */
-/*
- * Description:
- *   Verify that,
- *   1) splice() returns -1 and sets errno to EBADF if the file
- *      descriptor fd_in is not valid.
- *   2) splice() returns -1 and sets errno to EBADF if the file
- *      descriptor fd_out is not valid.
- *   3) splice() returns -1 and sets errno to EBADF if the file
- *      descriptor fd_in does not have proper read-write mode.
- *   4) splice() returns -1 and sets errno to EINVAL if target
- *      file is opened in append mode.
- *   5) splice() returns -1 and sets errno to EINVAL if neither
- *      of the descriptors refer to a pipe.
- *   6) splice() returns -1 and sets errno to ESPIPE if off_in is
- *      not NULL when the file descriptor fd_in refers to a pipe.
- *   7) splice() returns -1 and sets errno to ESPIPE if off_out is
- *      not NULL when the file descriptor fd_out refers to a pipe.
+
+/*\
+ * [Description]
+ *
+ * Verify that, splice(2) returns -1 and sets errno to
+ *
+ * 1. EBADF if the file descriptor fd_in is not valid
+ * 2. EBADF if the file descriptor fd_out is not valid
+ * 3. EBADF if the file descriptor fd_in does not have proper read-write mode
+ * 4. EINVAL if target file is opened in append mode
+ * 5. EINVAL if neither of the descriptors refer to a pipe
+ * 6. ESPIPE if off_in is not NULL when the file descriptor fd_in refers to a pipe
+ * 7. ESPIPE if off_out is not NULL when the file descriptor fd_out refers to a pipe
  */
 
 #define _GNU_SOURCE
