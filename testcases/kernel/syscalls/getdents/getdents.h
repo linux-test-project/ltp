@@ -64,9 +64,9 @@ tst_dirp_size(void)
 {
 	switch (tst_variant) {
 	case 0:
-		return sizeof(struct linux_dirent);
+		return sizeof(struct linux_dirent) + NAME_MAX;
 	case 1:
-		return sizeof(struct linux_dirent64);
+		return sizeof(struct linux_dirent64) + NAME_MAX;
 #if HAVE_GETDENTS
 	case 2:
 		return sizeof(struct dirent);
