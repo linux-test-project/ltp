@@ -899,6 +899,8 @@ static void print_failure_hint(const char *tag, const char *hint,
 	}
 }
 
+static int show_failure_hints;
+
 /* update also docparse/testinfo.pl */
 static void print_failure_hints(void)
 {
@@ -919,7 +921,8 @@ static void do_exit(int ret)
 
 		if (results->failed) {
 			ret |= TFAIL;
-			print_failure_hints();
+			if (show_failure_hints)
+				print_failure_hints();
 		}
 
 		if (results->skipped && !results->passed)
@@ -930,7 +933,8 @@ static void do_exit(int ret)
 
 		if (results->broken) {
 			ret |= TBROK;
-			print_failure_hints();
+			if (show_failure_hints)
+				print_failure_hints();
 		}
 
 		fprintf(stderr, "\nSummary:\n");
@@ -1722,6 +1726,8 @@ static int fork_testrun(void)
 	SAFE_SIGNAL(SIGTERM, sigint_handler);
 
 	alarm(results->timeout);
+
+	show_failure_hints = 1;
 
 	test_pid = fork();
 	if (test_pid < 0)
