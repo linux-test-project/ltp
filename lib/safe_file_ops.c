@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <utime.h>
+#include <errno.h>
 
 #include "test.h"
 #include "safe_file_ops_fn.h"
@@ -182,6 +183,9 @@ int file_lines_scanf(const char *file, const int lineno,
 
 	fp = fopen(path, "r");
 	if (fp == NULL) {
+		if (strict == 0 && errno == ENOENT)
+			return 1;
+
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
 			"Failed to open FILE '%s' for reading", path);
 		return 1;
