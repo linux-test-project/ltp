@@ -10,3 +10,4 @@
 /.built-in.a.cmd
 /Module.symvers
 /modules.order
+modules.livepatch

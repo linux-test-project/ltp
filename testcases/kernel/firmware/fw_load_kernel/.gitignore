@@ -4,3 +4,4 @@
 /Module.symvers
 /ltp_fw_load.mod.c
 /.tmp_versions/
+modules.livepatch

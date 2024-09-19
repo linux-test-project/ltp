@@ -1,3 +1,4 @@
 /finit_module01
 /finit_module02
 /*.ko
+modules.livepatch
