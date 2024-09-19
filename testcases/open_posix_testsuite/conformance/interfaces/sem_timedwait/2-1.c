@@ -24,6 +24,7 @@
 #include "posixtest.h"
 
 #define TEST "2-1"
+#define SHM_NAME "/posixtest_2-1"
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
@@ -31,8 +32,25 @@ int main(void)
 {
 	sem_t *mysemp;
 	struct timespec ts;
-	int pid;
-	mysemp = mmap(NULL, sizeof(*mysemp), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	int fd, pid;
+
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		perror(ERROR_PREFIX "shm_open()");
+		return PTS_UNRESOLVED;
+	}
+
+	if (ftruncate(fd, sizeof(*mysemp)) == -1) {
+		perror(ERROR_PREFIX "ftruncate()");
+		return PTS_UNRESOLVED;
+	}
+
+	if (shm_unlink(SHM_NAME) != 0) {
+		perror(ERROR_PREFIX "shm_unlink()");
+		return PTS_UNRESOLVED;
+	}
+
+	mysemp = mmap(NULL, sizeof(*mysemp), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (mysemp == MAP_FAILED) {
 		perror(ERROR_PREFIX "mmap");
 		return PTS_UNRESOLVED;
@@ -82,5 +100,7 @@ int main(void)
 		}
 		return PTS_PASS;
 	}
+
+	close(fd);
 	return PTS_UNRESOLVED;
 }
