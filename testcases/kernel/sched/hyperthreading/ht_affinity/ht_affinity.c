@@ -67,7 +67,7 @@ int HT_SetAffinity(void)
 		tst_resm(TINFO, "Set test process affinity.");
 		printf("mask: %x\n", mask);
 
-		sched_setaffinity(pid, sizeof(unsigned long), &mask);
+		sched_setaffinity(pid, sizeof(mask), &mask);
 
 		for (j = 0; j < 10; j++) {
 			for (k = 0; k < 10; k++) {
@@ -95,7 +95,7 @@ int HT_SetAffinity(void)
 		tst_resm(TINFO, "Set test process affinity.");
 		printf("mask: %x\n", mask);
 
-		sched_setaffinity(pid, sizeof(unsigned long), &mask);
+		sched_setaffinity(pid, sizeof(mask), &mask);
 
 		for (j = 0; j < 10; j++) {
 			for (k = 0; k < 10; k++) {
