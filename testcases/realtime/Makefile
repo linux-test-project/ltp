@@ -28,6 +28,9 @@ LIBDIR			:= lib
 FILTER_OUT_DIRS		:= $(LIBDIR)
 LIB			:= $(LIBDIR)/librealtime.a
 
+INSTALL_DIR             := $(srcdir)
+INSTALL_TARGETS         := run.sh
+
 $(LIBDIR):
 	mkdir -p "$@"
 
