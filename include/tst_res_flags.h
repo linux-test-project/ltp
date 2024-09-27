@@ -9,11 +9,26 @@
 /**
  * enum tst_res_flags - Test result reporting flags.
  *
- * @TPASS: Reports a single success.
- * @TFAIL: Reports a single failure.
- * @TBROK: Reports a single breakage.
+ * @TPASS: Reports a single success. Successes increment passed counter and
+ *         show up in the test results.
+ *
+ * @TFAIL: Reports a single failure. Failures increment failure counter and
+ *         show up in the test results. A failure occurs when test assertion
+ *         is broken.
+ *
+ * @TBROK: Reports a single breakage. Breakages increment breakage counter and
+ *         show up in the test results. Breakages are reported in cases where a
+ *         test couldn't be executed due to an unexpected failure during the
+ *         test setup. The TBROK status is mostly used with tst_brk() which
+ *         exit the test immediately. The difference between TBROK and TCONF is
+ *         that TCONF is used in cases where optional functionality is missing
+ *         while TBROK is used in cases where something that is supposed to
+ *         work is broken unexpectedly.
+ *
  * @TWARN: Reports a single warning. Warnings increment a warning counter and
- *         show up in test results.
+ *         show up in test results. Warnings are somewhere in the middle between
+ *         TBROK and TCONF. Warnings usually appear when something that is
+ *         supposed to be working is broken but the test can somehow continue.
  *
  * @TDEBUG: Prints additional debugging messages, it does not change the test result counters and
  *          the message is not displayed unless debugging is enabled with -D
