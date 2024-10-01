@@ -270,6 +270,9 @@ struct tst_ulimit_val {
  *
  * @mnt_data: The data passed to mount(2) when the test library mounts a device
  *            in the case of 'tst_test.mount_device'.
+ *
+ * @min_kver: A minimum kernel version supporting the filesystem which has been
+ *            created with mkfs.
  */
 struct tst_fs {
 	const char *type;
@@ -280,6 +283,8 @@ struct tst_fs {
 
 	unsigned int mnt_flags;
 	const void *mnt_data;
+
+	const char *min_kver;
 };
 
 /**

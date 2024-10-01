@@ -151,6 +151,7 @@ static const char *const *parse_strarr(ujson_reader *reader, ujson_val *val)
 }
 
 enum fs_ids {
+	FS_MIN_KVER,
 	MKFS_OPTS,
 	MKFS_SIZE_OPT,
 	MKFS_VER,
@@ -159,6 +160,7 @@ enum fs_ids {
 };
 
 static ujson_obj_attr fs_attrs[] = {
+	UJSON_OBJ_ATTR_IDX(FS_MIN_KVER, "min_kver", UJSON_STR),
 	UJSON_OBJ_ATTR_IDX(MKFS_OPTS, "mkfs_opts", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(MKFS_SIZE_OPT, "mkfs_size_opt", UJSON_STR),
 	UJSON_OBJ_ATTR_IDX(MKFS_VER, "mkfs_ver", UJSON_STR),
@@ -234,6 +236,9 @@ static struct tst_fs *parse_filesystems(ujson_reader *reader, ujson_val *val)
 			break;
 			case TYPE:
 				ret[i].type = strdup(val->val_str);
+			break;
+			case FS_MIN_KVER:
+				ret[i].min_kver = strdup(val->val_str);
 			break;
 			}
 

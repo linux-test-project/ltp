@@ -950,20 +950,29 @@ static void do_exit(int ret)
 	exit(ret);
 }
 
-void check_kver(void)
+int check_kver(const char *min_kver, const int brk_nosupp)
 {
+	char *msg;
 	int v1, v2, v3;
 
-	if (tst_parse_kver(tst_test->min_kver, &v1, &v2, &v3)) {
+	if (tst_parse_kver(min_kver, &v1, &v2, &v3)) {
 		tst_res(TWARN,
 			"Invalid kernel version %s, expected %%d.%%d.%%d",
-			tst_test->min_kver);
+			min_kver);
 	}
 
 	if (tst_kvercmp(v1, v2, v3) < 0) {
-		tst_brk(TCONF, "The test requires kernel %s or newer",
-			tst_test->min_kver);
+		msg = "The test requires kernel %s or newer";
+
+		if (brk_nosupp)
+			tst_brk(TCONF, msg, min_kver);
+		else
+			tst_res(TCONF, msg, min_kver);
+
+		return 1;
 	}
+
+	return 0;
 }
 
 static int results_equal(struct results *a, struct results *b)
@@ -1288,7 +1297,7 @@ static void do_setup(int argc, char *argv[])
 		tst_brk(TCONF, "Test needs to be run as root");
 
 	if (tst_test->min_kver)
-		check_kver();
+		check_kver(tst_test->min_kver, 1);
 
 	if (tst_test->supported_archs && !tst_is_on_arch(tst_test->supported_archs))
 		tst_brk(TCONF, "This arch '%s' is not supported for test!", tst_arch.name);
@@ -1418,6 +1427,9 @@ static void do_setup(int argc, char *argv[])
 		if (!tst_test->all_filesystems && count_fs_descs() <= 1) {
 			if (tst_test->filesystems->mkfs_ver)
 				tst_check_cmd(tst_test->filesystems->mkfs_ver, 1);
+
+			if (tst_test->filesystems->min_kver)
+				check_kver(tst_test->filesystems->min_kver, 1);
 
 			prepare_device(tst_test->filesystems);
 		}
@@ -1810,6 +1822,9 @@ static int run_tcase_on_fs(struct tst_fs *fs, const char *fs_type)
 	tdev.fs_type = fs_type;
 
 	if (fs->mkfs_ver && tst_check_cmd(fs->mkfs_ver, 0))
+		return TCONF;
+
+	if (fs->min_kver && check_kver(fs->min_kver, 0))
 		return TCONF;
 
 	prepare_device(fs);
