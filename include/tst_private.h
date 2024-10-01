@@ -40,11 +40,11 @@ char tst_kconfig_get(const char *confname);
 
 /*
  * If cmd argument is a single command, this function just checks command
- * whether exists. If not, case skips.
+ * whether exists. If not, case breaks if brk_nosupp is defined.
  * If cmd argument is a complex string ie 'mkfs.ext4 >= 1.43.0', this
  * function checks command version whether meets this requirement.
- * If not, case skips.
+ * If not, case breaks if brk_nosupp is defined.
  */
-void tst_check_cmd(const char *cmd);
+int tst_check_cmd(const char *cmd, const int brk_nosupp);
 
 #endif

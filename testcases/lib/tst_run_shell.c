@@ -153,6 +153,7 @@ static const char *const *parse_strarr(ujson_reader *reader, ujson_val *val)
 enum fs_ids {
 	MKFS_OPTS,
 	MKFS_SIZE_OPT,
+	MKFS_VER,
 	MNT_FLAGS,
 	TYPE,
 };
@@ -160,6 +161,7 @@ enum fs_ids {
 static ujson_obj_attr fs_attrs[] = {
 	UJSON_OBJ_ATTR_IDX(MKFS_OPTS, "mkfs_opts", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(MKFS_SIZE_OPT, "mkfs_size_opt", UJSON_STR),
+	UJSON_OBJ_ATTR_IDX(MKFS_VER, "mkfs_ver", UJSON_STR),
 	UJSON_OBJ_ATTR_IDX(MNT_FLAGS, "mnt_flags", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(TYPE, "type", UJSON_STR),
 };
@@ -223,6 +225,9 @@ static struct tst_fs *parse_filesystems(ujson_reader *reader, ujson_val *val)
 			break;
 			case MKFS_SIZE_OPT:
 				ret[i].mkfs_size_opt = strdup(val->val_str);
+			break;
+			case MKFS_VER:
+				ret[i].mkfs_ver = strdup(val->val_str);
 			break;
 			case MNT_FLAGS:
 				ret[i].mnt_flags = parse_mnt_flags(reader, val);
