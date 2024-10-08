@@ -40,8 +40,7 @@
  *         -ENOENT. Note that kernels >= 4.3 [1] and < 6.12 [2] wrongly returned
  *         -EFAULT by accident.
  *      3. Check if the corresponding status for "shared zero page" is set to:
- *         -ENOENT for kernels < 4.3
- *         -EFAULT for kernels >= 4.3 [1]
+ *         -EFAULT. Note that kernels < 4.3 [1] wrongly returned -ENOENT.
  *      4. Check if the corresponding status for "invalid memory area" is set
  *         to -EFAULT.
  *
@@ -102,12 +101,7 @@ int main(int argc, char **argv)
 	int lc;
 	unsigned int from_node;
 	unsigned int to_node;
-	int ret, exp_zero_page_status;
-
-	if ((tst_kvercmp(4, 3, 0)) >= 0)
-		exp_zero_page_status = -EFAULT;
-	else
-		exp_zero_page_status = -ENOENT;
+	int ret;
 
 	ret = get_allowed_nodes(NH_MEMS, 2, &from_node, &to_node);
 	if (ret < 0)
@@ -189,14 +183,14 @@ int main(int argc, char **argv)
 				tst_strerrno(ENOENT));
 		}
 
-		if (status[ZERO_PAGE] == exp_zero_page_status) {
+		if (status[ZERO_PAGE] == -EFAULT) {
 			tst_resm(TPASS, "status[%d] has expected value",
 				 ZERO_PAGE);
 		} else {
 			tst_resm(TFAIL, "status[%d] is %s, expected %s",
 				ZERO_PAGE,
 				tst_strerrno(-status[ZERO_PAGE]),
-				tst_strerrno(-exp_zero_page_status));
+				tst_strerrno(EFAULT));
 		}
 
 		if (status[INVALID_PAGE] == -EFAULT) {
