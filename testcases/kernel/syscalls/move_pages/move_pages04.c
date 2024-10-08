@@ -26,18 +26,29 @@
  *	move_pages04.c
  *
  * DESCRIPTION
- *      Failure when page does not exit.
+ *      Failure when the memory area is not valid, no page is mapped yet or
+ *      the shared zero page is mapped.
  *
  * ALGORITHM
  *
- *      1. Pass zero page (allocated, but not written to) as one of the
- *         page addresses to move_pages().
- *      2. Check if the corresponding status is set to:
+ *      1. Pass the address of a valid memory area where no page is
+ *         mapped yet (not read/written), the address of a valid memory area
+ *         where the shared zero page is mapped (read, but not written to)
+ *         and the address of an invalid memory area as page addresses to
+ *         move_pages().
+ *      2. Check if the corresponding status for "no page mapped" is set to
+ *         -ENOENT. Note that kernels >= 4.3 [1] and < 6.12 [2] wrongly returned
+ *         -EFAULT by accident.
+ *      3. Check if the corresponding status for "shared zero page" is set to:
  *         -ENOENT for kernels < 4.3
  *         -EFAULT for kernels >= 4.3 [1]
+ *      4. Check if the corresponding status for "invalid memory area" is set
+ *         to -EFAULT.
  *
  * [1]
  * d899844e9c98 "mm: fix status code which move_pages() returns for zero page"
+ * [2]
+ * 7dff875c9436 "mm/migrate: convert add_page_for_migration() from follow_page() to folio_walk"
  *
  * USAGE:  <for command-line>
  *      move_pages04 [-c n] [-i n] [-I x] [-P x] [-t]
@@ -64,10 +75,12 @@
 #include "test.h"
 #include "move_pages_support.h"
 
-#define TEST_PAGES 2
+#define TEST_PAGES 4
 #define TEST_NODES 2
 #define TOUCHED_PAGES 1
-#define UNTOUCHED_PAGE (TEST_PAGES - 1)
+#define NO_PAGE TOUCHED_PAGES
+#define ZERO_PAGE (NO_PAGE + 1)
+#define INVALID_PAGE (ZERO_PAGE + 1)
 
 void setup(void);
 void cleanup(void);
@@ -89,12 +102,12 @@ int main(int argc, char **argv)
 	int lc;
 	unsigned int from_node;
 	unsigned int to_node;
-	int ret, exp_status;
+	int ret, exp_zero_page_status;
 
 	if ((tst_kvercmp(4, 3, 0)) >= 0)
-		exp_status = -EFAULT;
+		exp_zero_page_status = -EFAULT;
 	else
-		exp_status = -ENOENT;
+		exp_zero_page_status = -ENOENT;
 
 	ret = get_allowed_nodes(NH_MEMS, 2, &from_node, &to_node);
 	if (ret < 0)
@@ -106,6 +119,7 @@ int main(int argc, char **argv)
 		int nodes[TEST_PAGES];
 		int status[TEST_PAGES];
 		unsigned long onepage = get_page_size();
+		char tmp;
 
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
@@ -114,13 +128,43 @@ int main(int argc, char **argv)
 		if (ret == -1)
 			continue;
 
-		/* Allocate page and do not touch it. */
-		pages[UNTOUCHED_PAGE] = numa_alloc_onnode(onepage, from_node);
-		if (pages[UNTOUCHED_PAGE] == NULL) {
-			tst_resm(TBROK, "failed allocating page on node %d",
+		/*
+		 * Allocate memory and do not touch it. Consequently, no
+		 * page will be faulted in / mapped into the page tables.
+		 */
+		pages[NO_PAGE] = numa_alloc_onnode(onepage, from_node);
+		if (pages[NO_PAGE] == NULL) {
+			tst_resm(TBROK, "failed allocating memory on node %d",
 				 from_node);
 			goto err_free_pages;
 		}
+
+		/*
+		 * Allocate memory, read from it, but do not write to it. This
+		 * will populate the shared zeropage.
+		 */
+		pages[ZERO_PAGE] = numa_alloc_onnode(onepage, from_node);
+		if (pages[ZERO_PAGE] == NULL) {
+			tst_resm(TBROK, "failed allocating memory on node %d",
+				 from_node);
+			goto err_free_pages;
+		}
+		/* Make the compiler not optimize-out the read. */
+		tmp = *((char *)pages[ZERO_PAGE]);
+		asm volatile("" : "+r" (tmp));
+
+		/*
+		 * Temporarily allocate memory and free it immediately. Do this
+		 * as the last step so the area won't get reused before we're
+		 * done.
+		 */
+		pages[INVALID_PAGE] = numa_alloc_onnode(onepage, from_node);
+		if (pages[INVALID_PAGE] == NULL) {
+			tst_resm(TBROK, "failed allocating memory on node %d",
+				 from_node);
+			goto err_free_pages;
+		}
+		numa_free(pages[INVALID_PAGE], onepage);
 
 		for (i = 0; i < TEST_PAGES; i++)
 			nodes[i] = to_node;
@@ -135,20 +179,40 @@ int main(int argc, char **argv)
 			tst_resm(TINFO, "move_pages() returned %d", ret);
 		}
 
-		if (status[UNTOUCHED_PAGE] == exp_status) {
+		if (status[NO_PAGE] == -ENOENT) {
 			tst_resm(TPASS, "status[%d] has expected value",
-				 UNTOUCHED_PAGE);
+				 NO_PAGE);
 		} else {
 			tst_resm(TFAIL, "status[%d] is %s, expected %s",
-				UNTOUCHED_PAGE,
-				tst_strerrno(-status[UNTOUCHED_PAGE]),
-				tst_strerrno(-exp_status));
+				NO_PAGE,
+				tst_strerrno(-status[NO_PAGE]),
+				tst_strerrno(ENOENT));
+		}
+
+		if (status[ZERO_PAGE] == exp_zero_page_status) {
+			tst_resm(TPASS, "status[%d] has expected value",
+				 ZERO_PAGE);
+		} else {
+			tst_resm(TFAIL, "status[%d] is %s, expected %s",
+				ZERO_PAGE,
+				tst_strerrno(-status[ZERO_PAGE]),
+				tst_strerrno(-exp_zero_page_status));
+		}
+
+		if (status[INVALID_PAGE] == -EFAULT) {
+			tst_resm(TPASS, "status[%d] has expected value",
+				 INVALID_PAGE);
+		} else {
+			tst_resm(TFAIL, "status[%d] is %s, expected %s",
+				INVALID_PAGE,
+				tst_strerrno(-status[INVALID_PAGE]),
+				tst_strerrno(EFAULT));
 		}
 
 err_free_pages:
-		/* This is capable of freeing both the touched and
-		 * untouched pages.
-		 */
+		/* Memory for the invalid page was already freed. */
+		pages[INVALID_PAGE] = NULL;
+		/* This is capable of freeing all memory we allocated. */
 		free_pages(pages, TEST_PAGES);
 	}
 #else
