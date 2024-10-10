@@ -29,8 +29,8 @@ run_configure()
 	export CC CFLAGS LDFLAGS PKG_CONFIG_LIBDIR
 	echo "CC='$CC' CFLAGS='$CFLAGS' LDFLAGS='$LDFLAGS' PKG_CONFIG_LIBDIR='$PKG_CONFIG_LIBDIR'"
 
-	echo "=== configure $configure $@ ==="
-	if ! $configure $@; then
+	echo "=== configure ${configure} ${*} ==="
+	if ! $configure "$@"; then
 		echo "== ERROR: configure failed, config.log =="
 		cat config.log
 		exit 1
@@ -42,14 +42,14 @@ run_configure()
 
 configure_in_tree()
 {
-	run_configure ./configure $CONFIGURE_OPTS_IN_TREE --prefix=$prefix $@
+	run_configure ./configure $CONFIGURE_OPTS_IN_TREE --prefix="$prefix" "$@"
 }
 
 configure_out_tree()
 {
 	mkdir -p $BUILD_DIR
 	cd $BUILD_DIR
-	run_configure $SRC_DIR/configure $CONFIGURE_OPTS_OUT_TREE $@
+	run_configure $SRC_DIR/configure $CONFIGURE_OPTS_OUT_TREE "$@"
 }
 
 configure_32()
