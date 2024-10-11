@@ -47,7 +47,7 @@ mmapstress03 mmapstress03
 mmapstress04 mmapstress04
 mmapstress05 mmapstress05
 mmapstress06 mmapstress06 20
-mmapstress07 TMPFILE=`mktemp /tmp/example.XXXXXXXXXXXX`; mmapstress07 $TMPFILE
+mmapstress07 TMPFILE=`mktemp $TMPDIR/example.XXXXXXXXXXXX`; mmapstress07 $TMPFILE
 mmapstress08 mmapstress08
 mmapstress09 mmapstress09 -p 20 -t 0.2
 mmapstress10 mmapstress10 -p 20 -t 0.2
