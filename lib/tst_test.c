@@ -1425,10 +1425,10 @@ static void do_setup(int argc, char *argv[])
 		tdev.fs_type = default_fs_type();
 
 		if (!tst_test->all_filesystems && count_fs_descs() <= 1) {
-			if (tst_test->filesystems->mkfs_ver)
+			if (tst_test->filesystems && tst_test->filesystems->mkfs_ver)
 				tst_check_cmd(tst_test->filesystems->mkfs_ver, 1);
 
-			if (tst_test->filesystems->min_kver)
+			if (tst_test->filesystems && tst_test->filesystems->min_kver)
 				check_kver(tst_test->filesystems->min_kver, 1);
 
 			prepare_device(tst_test->filesystems);
