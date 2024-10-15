@@ -20,10 +20,10 @@
 static struct statmount *st_mount;
 static struct statmount *st_mount_null;
 static struct statmount *st_mount_small;
+static struct statmount *st_mount_bad;
 static uint64_t mnt_id;
 static uint64_t mnt_id_dont_exist = -1;
 static size_t buff_size;
-static size_t buff_size_invalid = -1;
 
 struct tcase {
 	int exp_errno;
@@ -90,12 +90,12 @@ struct tcase {
 	},
 	{
 		EFAULT,
-		"invalid buffer size",
+		"buffer crosses to PROT_NONE",
 		&mnt_id,
 		0,
 		0,
-		&buff_size_invalid,
-		&st_mount
+		&buff_size,
+		&st_mount_bad
 	},
 	{
 		EFAULT,
@@ -139,6 +139,7 @@ static struct tst_test test = {
 	.bufs = (struct tst_buffers []) {
 		{&st_mount, .size = sizeof(struct statmount)},
 		{&st_mount_small, .size = sizeof(struct statmount)},
+		{&st_mount_bad, .size = 1},
 		{}
 	}
 };
