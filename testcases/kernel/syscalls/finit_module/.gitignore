@@ -1,4 +1,8 @@
 /finit_module01
 /finit_module02
 /*.ko
+/*.cmd
+/*.order
+/*.mod.c
+/Module.symvers
 modules.livepatch

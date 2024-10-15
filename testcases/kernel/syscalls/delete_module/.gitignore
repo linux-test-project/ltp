@@ -3,11 +3,7 @@
 /delete_module03
 /*.ko
 /*.mod.c
-/*.ko.cmd
-/*.mod.cmd
-/*.mod.o.cmd
-/*.o.cmd
-/.built-in.a.cmd
+/*.cmd
 /Module.symvers
 /modules.order
 modules.livepatch
