@@ -60,3 +60,5 @@ patches/
 logfile.*
 
 /utils/benchmark/ebizzy-0.3/ebizzy
+
+.idea
