@@ -49,7 +49,7 @@ static void churn(void)
 	char path[10];
 	int i;
 
-	for (i = 0; i <= CHURN_FILES; ++i) {
+	for (i = 0; i < CHURN_FILES; ++i) {
 		snprintf(path, sizeof(path), "%d", i);
 		SAFE_FILE_PRINTF(path, "1");
 		SAFE_UNLINK(path);
