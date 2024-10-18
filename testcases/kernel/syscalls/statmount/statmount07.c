@@ -31,80 +31,60 @@ struct tcase {
 	uint64_t *mnt_id;
 	uint64_t mask;
 	unsigned int flags;
-	size_t *buff_size;
 	struct statmount **buff;
 } tcases[] = {
 	{
-		ENOENT,
-		"mount id doesn't exist'",
-		&mnt_id_dont_exist,
-		0,
-		0,
-		&buff_size,
-		&st_mount
+		.exp_errno = ENOENT,
+		.msg = "mount id doesn't exist'",
+		.mnt_id = &mnt_id_dont_exist,
+		.buff = &st_mount
 	},
 	{
-		EOVERFLOW,
-		"invalid mask",
-		&mnt_id,
-		-1,
-		0,
-		&buff_size,
-		&st_mount
+		.exp_errno = EOVERFLOW,
+		.msg = "invalid mask",
+		.mnt_id = &mnt_id,
+		.mask = -1,
+		.buff = &st_mount
 	},
 	{
-		EOVERFLOW,
-		"small buffer for fs type",
-		&mnt_id,
-		STATMOUNT_FS_TYPE,
-		0,
-		&buff_size,
-		&st_mount_small
+		.exp_errno = EOVERFLOW,
+		.msg = "small buffer for fs type",
+		.mnt_id = &mnt_id,
+		.mask = STATMOUNT_FS_TYPE,
+		.buff = &st_mount_small,
 	},
 	{
-		EOVERFLOW,
-		"small buffer for mnt root",
-		&mnt_id,
-		STATMOUNT_MNT_ROOT,
-		0,
-		&buff_size,
-		&st_mount_small
+		.exp_errno = EOVERFLOW,
+		.msg = "small buffer for mnt root",
+		.mnt_id = &mnt_id,
+		.mask = STATMOUNT_MNT_ROOT,
+		.buff = &st_mount_small,
 	},
 	{
-		EOVERFLOW,
-		"small buffer for mnt point",
-		&mnt_id,
-		STATMOUNT_MNT_POINT,
-		0,
-		&buff_size,
-		&st_mount_small
+		.exp_errno = EOVERFLOW,
+		.msg = "small buffer for mnt point",
+		.mnt_id = &mnt_id,
+		.mask = STATMOUNT_MNT_POINT,
+		.buff = &st_mount_small,
 	},
 	{
-		EINVAL,
-		"flags must be zero",
-		&mnt_id,
-		0,
-		1,
-		&buff_size,
-		&st_mount
+		.exp_errno = EINVAL,
+		.msg = "flags must be zero",
+		.mnt_id = &mnt_id,
+		.flags = 1,
+		.buff = &st_mount,
 	},
 	{
-		EFAULT,
-		"buffer crosses to PROT_NONE",
-		&mnt_id,
-		0,
-		0,
-		&buff_size,
-		&st_mount_bad
+		.exp_errno = EFAULT,
+		.msg = "buffer crosses to PROT_NONE",
+		.mnt_id = &mnt_id,
+		.buff = &st_mount_bad,
 	},
 	{
-		EFAULT,
-		"invalid buffer pointer",
-		&mnt_id,
-		0,
-		0,
-		&buff_size,
-		&st_mount_null
+		.exp_errno = EFAULT,
+		.msg = "invalid buffer pointer",
+		.mnt_id = &mnt_id,
+		.buff = &st_mount_null,
 	},
 };
 
@@ -115,7 +95,7 @@ static void run(unsigned int n)
 	memset(st_mount, 0, sizeof(struct statmount));
 
 	TST_EXP_FAIL(statmount(*tc->mnt_id, tc->mask,
-		*tc->buff, *tc->buff_size, tc->flags),
+		*tc->buff, buff_size, tc->flags),
 		tc->exp_errno, "%s", tc->msg);
 }
 
