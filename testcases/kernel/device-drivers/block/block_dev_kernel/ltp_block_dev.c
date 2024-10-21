@@ -12,8 +12,10 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/fs.h>
-#include <linux/genhd.h>
 #include <linux/blkdev.h>
+#ifndef DISK_NAME_LEN
+# include <linux/genhd.h>
+#endif
 
 MODULE_AUTHOR("Márton Németh <nm127@freemail.hu>");
 MODULE_AUTHOR("Copyright (c) 2013 Oracle and/or its affiliates");
