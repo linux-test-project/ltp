@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2003-2021
  * Author: Vatsal Avasthi
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- *  This test verifies that flock() behavior with different locking
- *  combinations along with LOCK_SH and LOCK_EX:
- *	1) flock() succeeded in acquiring shared lock on shared lock file.
- *	2) flock() failed to acquire exclusive lock on shared lock file.
- *	3) flock() failed to acquire shared lock on exclusive lock file.
- *	4) flock() failed to acquire exclusive lock on exclusive lock file.
+ * Test verifies that flock() behavior with different locking combinations along
+ * with LOCK_SH and LOCK_EX:
+ *
+ * - flock() succeeded in acquiring shared lock on shared lock file.
+ * - flock() failed to acquire exclusive lock on shared lock file.
+ * - flock() failed to acquire shared lock on exclusive lock file.
+ * - flock() failed to acquire exclusive lock on exclusive lock file.
  */
 
 #include <errno.h>

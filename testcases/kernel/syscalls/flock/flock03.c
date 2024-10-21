@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2002
- * Author: Cyril Hrubis
+ * Copyright (c) 2012-2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2002-2018
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- *  This test verifies that flock() cannot unlock a file locked by another
- *  task.
+ * Verify that flock(2) cannot unlock a file locked by another task.
  *
- * Test Steps:
- *  Fork a child processes The parent flocks a file with LOCK_EX Child waits
- *  for that to happen, then checks to make sure it is locked.  Child then
- *  tries to unlock the file. If the unlock succeeds, the child attempts to
- *  lock the file with LOCK_EX. The test passes if the child is able to lock
- *  the file.
+ * Fork a child processes. The parent flocks a file with LOCK_EX. Child waits
+ * for that to happen, then checks to make sure it is locked.  Child then
+ * tries to unlock the file. If the unlock succeeds, the child attempts to
+ * lock the file with LOCK_EX. The test passes if the child is able to lock
+ * the file.
  */
 
 #include <errno.h>

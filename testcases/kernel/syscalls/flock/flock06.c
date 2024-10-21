@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) Matthew Wilcox for Hewlett Packard 2003
+ * Copyright (c) Linux Test Project, 2007-2018
  * Author: Matthew Wilcox
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- *  This test verifies that flock locks held on one fd conflict with flock
- *  locks held on a different fd.
+ * Test verifies that flock locks held on one file descriptor conflict with
+ * flock locks held on a different file descriptor.
  *
- * Test Steps:
- *  The process opens two file descriptors on the same file.  It acquires
- *  an exclusive flock on the first descriptor, checks that attempting to
- *  acquire an flock on the second descriptor fails.  Then it removes the
- *  first descriptor's lock and attempts to acquire an exclusive lock on
- *  the second descriptor.
+ * The process opens two file descriptors on the same file.  It acquires
+ * an exclusive flock on the first descriptor, checks that attempting to
+ * acquire an flock on the second descriptor fails.  Then it removes the
+ * first descriptor's lock and attempts to acquire an exclusive lock on
+ * the second descriptor.
  */
 
 #include <errno.h>

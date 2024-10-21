@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2007-2018
  * Author: Vatsal Avasthi
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- *  This test verifies that flock() succeeds with all kind of locks.
+ * Basic test for flock(2), uses LOCK_SH, LOCK_UN, LOCK_EX locks.
  */
 
 #include <errno.h>

@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2002-2018
  * Author: Vatsal Avasthi
+ */
+
+/*\
+ * [Description]
  *
- * Test Description:
- *  1) flock() returns -1 and sets error number to EBADF if the file descriptor
- *     is invalid.
- *  2) flock() returns -1 and sets error number to EINVAL if the argument
- *     operation does not include LOCK_SH,LOCK_EX,LOCK_UN.
- *  3) flock() returns -1 and sets error number to EINVAL if an invalid
- *     combination of locking modes is used i.e LOCK_SH with LOCK_EX
+ * Verify flock(2) returns -1 and set proper errno:
+ *
+ * - EBADF if the file descriptor is invalid
+ * - EINVAL if the argument operation does not include LOCK_SH,LOCK_EX,LOCK_UN
+ * - EINVAL if an invalid combination of locking modes is used i.e LOCK_SH with LOCK_EX
  */
 
 #include <errno.h>
