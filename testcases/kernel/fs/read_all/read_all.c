@@ -94,11 +94,17 @@ static int worker_timeout;
 static int timeout_warnings_left = 15;
 
 static char *blacklist[] = {
-	NULL, /* reserved for -e parameter */
+	"/reserved/", /* reserved for -e parameter */
 	"/sys/kernel/debug/*",
 	"/sys/devices/platform/*/eeprom",
 	"/sys/devices/platform/*/nvmem",
 	"/sys/*/cpu??*(?)/*",	/* cpu* entries with 2 or more digits */
+	NULL
+};
+
+static char *ratelimit_list[] = {
+	"/sys/devices/*/tpm*",
+	NULL,
 };
 
 static long long epoch;
@@ -193,19 +199,43 @@ static void sanitize_str(char *buf, ssize_t count)
 		strcpy(buf + MAX_DISPLAY, "...");
 }
 
-static int is_blacklisted(const char *path)
+static int is_onlist(const char *path, char *list[])
 {
-	unsigned int i;
+	unsigned int i = 0;
 
-	for (i = 0; i < ARRAY_SIZE(blacklist); i++) {
-		if (blacklist[i] && !fnmatch(blacklist[i], path, FNM_EXTMATCH)) {
-			if (verbose)
-				tst_res(TINFO, "Ignoring %s", path);
+	while (1) {
+		const char *pattern = list[i++];
+
+		if (!pattern)
+			break;
+		if (!fnmatch(pattern, path, FNM_EXTMATCH))
 			return 1;
-		}
 	}
 
 	return 0;
+
+}
+
+static int is_blacklisted(const char *path)
+{
+	int ret;
+
+	ret = is_onlist(path, blacklist);
+	if (ret && verbose)
+		tst_res(TINFO, "Ignoring %s", path);
+
+	return ret;
+}
+
+static int is_ratelimitted(const char *path)
+{
+	int ret;
+
+	ret = is_onlist(path, ratelimit_list);
+	if (ret && verbose)
+		tst_res(TINFO, "Limiting to single worker %s", path);
+
+	return ret;
 }
 
 static void worker_heartbeat(const int worker)
@@ -502,6 +532,9 @@ static int sched_work(const int first_worker,
 	int i, j;
 	int min_ttl = worker_timeout, sleep_time = 1;
 	int pushed, workers_pushed = 0;
+
+	if (is_ratelimitted(path))
+		repetitions = 1;
 
 	for (i = 0, j = first_worker; i < repetitions; j++) {
 		if (j >= worker_count)
