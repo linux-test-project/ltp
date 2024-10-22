@@ -66,6 +66,13 @@ int main(int argn, char *argc[])
 	    //First of all, create client using top level API
 	    clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
+	if (clnt == NULL) {
+		clnt_pcreateerror("err");
+		printf("%d\n", rpc_createerr.cf_stat);
+
+		return 1;
+	}
+
 	//Then call remote procedure
 	rslt = clnt_call((CLIENT *) clnt, PROCNUM, (xdrproc_t) xdr_void, NULL,	// xdr_in
 			 (xdrproc_t) xdr_int, (char *)&recVar,	// xdr_out

@@ -62,6 +62,13 @@ int main(int argn, char *argc[])
 
 	client = clnt_create(argc[1], progNum, VERSNUM, nettype);	/* Call AuthErr RP */
 
+	if (client == NULL) {
+		clnt_pcreateerror("err");
+		printf("%d\n", rpc_createerr.cf_stat);
+
+		return 1;
+	}
+
 	cs = clnt_call(client, PROCNUM,
 		       (xdrproc_t) xdr_int, (char *)&var_snd,
 		       (xdrproc_t) xdr_int, (char *)&var_snd, tv);

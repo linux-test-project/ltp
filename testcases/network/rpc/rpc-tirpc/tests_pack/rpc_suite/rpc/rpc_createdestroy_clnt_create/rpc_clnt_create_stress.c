@@ -57,8 +57,14 @@ int main(int argn, char *argc[])
 	for (i = 0; i < nbCall; i++) {
 		clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
 
-		if (clnt != NULL)
-			nbOk++;
+		if (clnt == NULL) {
+			clnt_pcreateerror("err");
+			printf("%d\n", rpc_createerr.cf_stat);
+
+			return 1;
+		}
+
+		nbOk++;
 	}
 
 	if (run_mode == 1) {
