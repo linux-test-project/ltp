@@ -24,6 +24,7 @@
 
 #if HAVE_LIBCRYPTO
 #include <openssl/sha.h>
+#include <openssl/evp.h>
 
 #define MAX_EVENT_SIZE (1024*1024)
 #define EVENT_HEADER_SIZE 32
@@ -61,7 +62,11 @@ static void display_sha1_digest(unsigned char *pcr)
 static void do_test(void)
 {
 	FILE *fp;
+#if OPENSSL_VERSION_NUMBER > 0x030000000L
+	EVP_MD_CTX *c = NULL;
+#else
 	SHA_CTX c;
+#endif
 	int i;
 
 	if (!file)
@@ -85,12 +90,24 @@ static void do_test(void)
 		}
 
 		if (event.header.pcr < NUM_PCRS) {
+#if OPENSSL_VERSION_NUMBER > 0x030000000L
+			if ((c = EVP_MD_CTX_new()) == NULL)
+				tst_brk(TBROK, "can't get new context");
+
+			EVP_DigestInit_ex(c, EVP_sha1(), NULL);
+			EVP_DigestUpdate(c, pcr[event.header.pcr].digest,
+					 SHA_DIGEST_LENGTH);
+			EVP_DigestUpdate(c, event.header.digest, SHA_DIGEST_LENGTH);
+			EVP_DigestFinal_ex(c, pcr[event.header.pcr].digest, NULL);
+			EVP_MD_CTX_free(c);
+#else
 			SHA1_Init(&c);
 			SHA1_Update(&c, pcr[event.header.pcr].digest,
 				    SHA_DIGEST_LENGTH);
 			SHA1_Update(&c, event.header.digest,
 				    SHA_DIGEST_LENGTH);
 			SHA1_Final(pcr[event.header.pcr].digest, &c);
+#endif
 		}
 
 #if MAX_EVENT_DATA_SIZE < USHRT_MAX
@@ -107,15 +124,30 @@ static void do_test(void)
 
 	/* Extend the boot aggregate with the pseudo PCR digest values */
 	memset(&boot_aggregate, 0, SHA_DIGEST_LENGTH);
+
+#if OPENSSL_VERSION_NUMBER > 0x030000000L
+	EVP_DigestInit_ex(c, EVP_sha1(), NULL);
+#else
 	SHA1_Init(&c);
+#endif
+
 	for (i = 0; i < NUM_PCRS; i++) {
 		if (debug) {
 			printf("PCR-%2.2x: ", i);
 			display_sha1_digest(pcr[i].digest);
 		}
+#if OPENSSL_VERSION_NUMBER > 0x030000000L
+		EVP_DigestUpdate(c, pcr[i].digest, SHA_DIGEST_LENGTH);
+#else
 		SHA1_Update(&c, pcr[i].digest, SHA_DIGEST_LENGTH);
+#endif
 	}
+
+#if OPENSSL_VERSION_NUMBER > 0x030000000L
+	EVP_MD_CTX_free(c);
+#else
 	SHA1_Final(boot_aggregate, &c);
+#endif
 
 	printf("sha1:");
 	display_sha1_digest(boot_aggregate);
