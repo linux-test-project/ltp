@@ -116,7 +116,8 @@ static void do_test(void)
 			break;
 		}
 #endif
-		fread(event.data, event.header.len, 1, fp);
+		if (fread(event.data, event.header.len, 1, fp) != 1)
+			tst_brk(TBROK, "failed to read 1 byte");
 	}
 
 	SAFE_FCLOSE(fp);
