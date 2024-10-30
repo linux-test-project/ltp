@@ -911,6 +911,8 @@ static void print_failure_hints(void)
 	print_failure_hint("musl-git", "missing musl fixes", MUSL_GIT_URL);
 	print_failure_hint("CVE", "vulnerable to CVE(s)", CVE_DB_URL);
 	print_failure_hint("known-fail", "hit by known kernel failures", NULL);
+
+	show_failure_hints = 0;
 }
 
 static void do_exit(int ret)
