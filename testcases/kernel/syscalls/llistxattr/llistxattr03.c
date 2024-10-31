@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2016 Fujitsu Ltd.
-* Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2016 Fujitsu Ltd.
+ * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ */
 
-/*
-* Test Name: llistxattr03
-*
-* Description:
-* llistxattr is identical to listxattr. an empty buffer of size zero
-* can return the current size of the list of extended attribute names,
-* which can be used to estimate a suitable buffer.
-*/
+/*\
+ * [Description]
+ *
+ * Verify that llistxattr(2) call with zero size returns the current size of the
+ * list of extended attribute names, which can be used to determine the size of
+ * the buffer that should be supplied in a subsequent llistxattr(2) call.
+ */
 
 #include "config.h"
 #include <errno.h>
