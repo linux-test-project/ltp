@@ -1,25 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2016 Fujitsu Ltd.
-* Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2016 Fujitsu Ltd.
+ * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ */
 
-/*
-* Test Name: llistxattr02
-*
-* Description:
-* 1) llistxattr(2) fails if the size of the list buffer is too small
-* to hold the result.
-* 2) llistxattr(2) fails if path is an empty string.
-* 3) llistxattr(2) fails when attempted to read from a invalid address.
-* 4) llistxattr(2) fails if path is longer than allowed.
-*
-* Expected Result:
-* 1) llistxattr(2) should return -1 and set errno to ERANGE.
-* 2) llistxattr(2) should return -1 and set errno to ENOENT.
-* 3) llistxattr(2) should return -1 and set errno to EFAULT.
-* 4) llistxattr(2) should return -1 and set errno to ENAMETOOLONG.
-*/
+/*\
+ * [Description]
+ *
+ * Verify llistxattr(2) returns -1 and set proper errno:
+ *
+ * - ERANGE if the size of the list buffer is too small to hold the result
+ * - ENOENT if path is an empty string
+ * - EFAULT when attempted to read from a invalid address
+ * - ENAMETOOLONG if path is longer than allowed
+ */
 
 #include "config.h"
 #include <errno.h>
