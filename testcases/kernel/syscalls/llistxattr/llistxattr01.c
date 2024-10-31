@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2016 Fujitsu Ltd.
-* Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2016 Fujitsu Ltd.
+ * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ */
 
-/*
-* Test Name: llistxattr01
-*
-* Description:
-* The testcase checks the basic functionality of the llistxattr(2).
-* llistxattr(2) retrieves the list of extended attribute names
-* associated with the link itself in the filesystem.
-*
-*/
+/*\
+ * [Description]
+ *
+ * Basic test for llistxattr(2), retrieves the list of extended attribute names
+ * associated with the link itself in the filesystem.
+ */
 
 #include "config.h"
 #include <errno.h>
