@@ -302,24 +302,27 @@ for a distribution's C library version to be older than its kernel or it may use
 cut down C library in comparison to the GNU one. So we must call ``statx()``
 using the general ``syscall()`` interface.
 
-The LTP contains a library for dealing with the ``syscall`` interface, which is
+LTP contains a library for dealing with the ``syscall`` interface, which is
 located in :master:`include/lapi`. System call numbers are listed against the relevant
 call in the ``*.in`` files (e.g. ``x86_64.in``) which are used to generate
-``syscalls.h``, which is the header you should include. On rare occasions you
-may find the system call number is missing from the ``*.in`` files and will need
-to add it (see :master:`include/lapi/syscalls/strip_syscall.awk`).
-
+``syscalls.h``, the header you should include.
 System call numbers vary between architectures, hence there are multiple
-``*.in`` files for each architecture. You can find the various values for the
-``statx`` system call across a number of ``unistd.h`` files in the Linux kernel.
+``*.in`` files for each architecture.
 
-Note that we don't use the system-call-identifier value available in
-``/usr/include/linux/uinstd.h`` because the kernel might be much newer than the
-user land development packages.
+On rare occasions, you may find that system call number is missing from ``*.in``
+files. In these cases, they will need to be updated using
+:master:`include/lapi/syscalls/generate_arch.sh` script as following:
 
-For ``statx`` we had to add ``statx 332`` to :master:`include/lapi/syscalls/x86_64.in`,
-``statx 383`` to :master:`include/lapi/syscalls/powerpc.in`, etc.  Now lets look at
-the code, which I will explain in more detail further down.
+.. code-block:: bash
+
+    $ include/lapi/syscalls/generate_arch.sh /path/to/Linux/sources
+
+The script will generate all the needed ``*.in`` files accordingly to the Linux
+source code which has been used. Make sure that your Linux source code has
+been updated to the latest version.
+
+Once the new syscalls files have been updated, to rebuild our ``syscalls.h``
+file, please re-run ``./configure`` script.
 
 .. code-block:: c
 
