@@ -20,6 +20,7 @@
  * huge page-only segment -- resulting in bugs.
  */
 
+#include "lapi/mmap.h"
 #include "hugetlb.h"
 #include <errno.h>
 
