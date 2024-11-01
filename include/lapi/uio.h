@@ -7,6 +7,7 @@
 #ifndef LAPI_PREADV2_H__
 #define LAPI_PREADV2_H__
 
+#include <sys/uio.h>
 #include "config.h"
 #include "lapi/syscalls.h"
 

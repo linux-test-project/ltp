@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/vfs.h>
 #include <sys/sysinfo.h>
+#include <sys/uio.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <signal.h>
@@ -514,5 +515,17 @@ int safe_symlinkat(const char *file, const int lineno,
 
 #define SAFE_SYMLINKAT(oldpath, newdirfd, newpath) \
 	safe_symlinkat(__FILE__, __LINE__, (oldpath), (newdirfd), (newpath))
+
+ssize_t safe_readv(const char *file, const int lineno, char len_strict,
+	int fildes, const struct iovec *iov, int iovcnt);
+#define SAFE_READV(len_strict, fildes, iov, iovcnt) \
+	safe_readv(__FILE__, __LINE__, (len_strict), (fildes), \
+		(iov), (iovcnt))
+
+ssize_t safe_writev(const char *file, const int lineno, char len_strict,
+	int fildes, const struct iovec *iov, int iovcnt);
+#define SAFE_WRITEV(len_strict, fildes, iov, iovcnt) \
+	safe_writev(__FILE__, __LINE__, (len_strict), (fildes), \
+		(iov), (iovcnt))
 
 #endif /* TST_SAFE_MACROS_H__ */

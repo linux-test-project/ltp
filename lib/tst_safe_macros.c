@@ -732,6 +732,29 @@ int safe_prctl(const char *file, const int lineno,
 	return rval;
 }
 
+ssize_t safe_readv(const char *file, const int lineno, char len_strict,
+	int fildes, const struct iovec *iov, int iovcnt)
+{
+	ssize_t rval, nbyte;
+	int i;
+
+	for (i = 0, nbyte = 0; i < iovcnt; i++)
+		nbyte += iov[i].iov_len;
+
+	rval = readv(fildes, iov, iovcnt);
+
+	if (rval == -1 || (len_strict && rval != nbyte)) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"readv(%d,%p,%d) failed", fildes, iov, iovcnt);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid readv(%d,%p,%d) return value %zd",
+			fildes, iov, iovcnt, rval);
+	}
+
+	return rval;
+}
+
 int safe_symlinkat(const char *file, const int lineno,
                  const char *oldpath, const int newdirfd, const char *newpath)
 {
@@ -751,3 +774,25 @@ int safe_symlinkat(const char *file, const int lineno,
 	return rval;
 }
 
+ssize_t safe_writev(const char *file, const int lineno, char len_strict,
+	int fildes, const struct iovec *iov, int iovcnt)
+{
+	ssize_t rval, nbyte;
+	int i;
+
+	for (i = 0, nbyte = 0; i < iovcnt; i++)
+		nbyte += iov[i].iov_len;
+
+	rval = writev(fildes, iov, iovcnt);
+
+	if (rval == -1 || (len_strict && rval != nbyte)) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"writev(%d,%p,%d) failed", fildes, iov, iovcnt);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid writev(%d,%p,%d) return value %zd",
+			fildes, iov, iovcnt, rval);
+	}
+
+	return rval;
+}
