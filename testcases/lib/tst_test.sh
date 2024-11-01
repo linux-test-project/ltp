@@ -687,6 +687,7 @@ tst_run()
 			CHECKPOINT_WAKE2|CHECKPOINT_WAKE_AND_WAIT);;
 			DEV_EXTRA_OPTS|DEV_FS_OPTS|FORMAT_DEVICE|MOUNT_DEVICE);;
 			SKIP_FILESYSTEMS|SKIP_IN_LOCKDOWN|SKIP_IN_SECUREBOOT);;
+			DEVICE_SIZE);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done
@@ -750,7 +751,7 @@ tst_run()
 
 	# needs to be after cd $TST_TMPDIR to keep test_dev.img under $TST_TMPDIR
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
-		TST_DEVICE=$(tst_device acquire)
+		TST_DEVICE=$(tst_device acquire $TST_DEVICE_SIZE)
 
 		if [ ! -b "$TST_DEVICE" -o $? -ne 0 ]; then
 			unset TST_DEVICE

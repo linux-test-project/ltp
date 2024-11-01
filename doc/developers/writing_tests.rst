@@ -390,7 +390,7 @@ LTP C And Shell Test API Comparison
       - TST_FS_TYPE
 
     * - .dev_min_size
-      - not applicable
+      - TST_DEVICE_SIZE
 
     * - .format_device
       - TST_FORMAT_DEVICE
