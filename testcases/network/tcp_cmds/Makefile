@@ -7,13 +7,9 @@ top_srcdir		?= ../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-ifneq ($(WITH_EXPECT),yes)
-FILTER_OUT_SUBDIRS	:= ftp
-endif
+INSTALL_DEPS		:= ../datafiles/ascii.sm
 
-INSTALL_DEPS		:= ../datafiles/bin.sm
-
-../datafiles/bin.sm:
+../datafiles/ascii.sm:
 	$(MAKE) -C .. -f "$(abs_srcdir)/../Makefile" generate
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk

@@ -14,7 +14,6 @@ CLEAN_TARGETS		+= $(DIR)
 INSTALL_DIR		:= testcases/bin
 
 INSTALL_TARGETS		:= $(addprefix $(DIR)/ascii.,sm med lg jmb)
-INSTALL_TARGETS		+= $(addprefix $(DIR)/bin.,sm med lg jmb)
 
 RM			+= -r
 

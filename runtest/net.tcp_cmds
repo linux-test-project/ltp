@@ -5,7 +5,6 @@
 ipneigh01_arp ipneigh01.sh -c arp
 ipneigh01_ip ipneigh01.sh -c ip
 arping01 arping01.sh
-ftp ftp01.sh
 netstat netstat01.sh
 ping01 ping01.sh
 ping02 ping02.sh
