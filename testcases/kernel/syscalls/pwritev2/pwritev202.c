@@ -26,7 +26,7 @@
 #include <unistd.h>
 
 #include "tst_test.h"
-#include "lapi/pwritev2.h"
+#include "lapi/uio.h"
 
 #define CHUNK	64
 

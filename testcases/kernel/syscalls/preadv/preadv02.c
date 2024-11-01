@@ -23,7 +23,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include "tst_test.h"
-#include "preadv.h"
+#include "lapi/uio.h"
 
 #define CHUNK           64
 

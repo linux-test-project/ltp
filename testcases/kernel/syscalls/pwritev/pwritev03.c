@@ -22,7 +22,7 @@
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include "tst_test.h"
-#include "pwritev.h"
+#include "lapi/uio.h"
 #include "tst_safe_prw.h"
 
 #define MNTPOINT	"mntpoint"
