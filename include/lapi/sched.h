@@ -46,6 +46,8 @@ static inline int sched_getattr(pid_t pid, struct sched_attr *attr,
 {
 	return syscall(__NR_sched_getattr, pid, attr, size, flags);
 }
+
+# define SCHED_ATTR_SIZE_VER0 48	/* sizeof first published struct */
 #endif
 
 #ifndef HAVE_CLONE3

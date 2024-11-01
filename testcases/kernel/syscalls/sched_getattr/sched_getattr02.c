@@ -51,7 +51,7 @@ static struct test_case {
 } test_cases[] = {
 	{&unused_pid, &attr_copy, sizeof(struct sched_attr), 0, ESRCH},
 	{&pid, NULL, sizeof(struct sched_attr), 0, EINVAL},
-	{&pid, &attr_copy, sizeof(struct sched_attr) - 1, 0, EINVAL},
+	{&pid, &attr_copy, SCHED_ATTR_SIZE_VER0 - 1, 0, EINVAL},
 	{&pid, &attr_copy, sizeof(struct sched_attr), 1000, EINVAL}
 };
 
