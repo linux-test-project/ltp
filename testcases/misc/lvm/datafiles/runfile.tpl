@@ -29,6 +29,10 @@
 {fsname}_gf28 growfiles -W {fsname}_gf28 -b -D 0 -w -g 16b -C 1 -b -i 1000 -u {tempdir}/{fsname}/gfsparse-2-$$
 {fsname}_gf29 growfiles -W {fsname}_gf29 -b -D 0 -r 1-4096 -R 0-33554432 -i 0 -L 60 -B 805306368 -C 1 -u {tempdir}/{fsname}/gfsparse-3-$$
 {fsname}_gf30 growfiles -W {fsname}_gf30 -D 0 -b -i 0 -L 60 -u -B 1000b -e 1 -o O_RDWR,O_CREAT,O_SYNC -g 20480 -T 10 -t 20480 {tempdir}/{fsname}/gf-sync-$$
+{fsname}_plough01 fsplough -d {tempdir}/{fsname}
+{fsname}_plough02 fsplough -R -d {tempdir}/{fsname}
+{fsname}_plough03 fsplough -W -d {tempdir}/{fsname}
+{fsname}_plough04 fsplough -RW -d {tempdir}/{fsname}
 {fsname}_rwtest01 rwtest -N {fsname}_rwtest01 -c -q -i 60s  -f sync 10%25000:rw-sync-$$ 500b:{tempdir}/{fsname}/rwtest01%f
 {fsname}_rwtest02 rwtest -N {fsname}_rwtest02 -c -q -i 60s  -f buffered 10%25000:rw-buffered-$$ 500b:{tempdir}/{fsname}/rwtest02%f
 {fsname}_rwtest03 rwtest -N {fsname}_rwtest03 -c -q -i 60s -n 2  -f buffered -s mmread,mmwrite -m random -Dv 10%25000:mm-buff-$$ 500b:{tempdir}/{fsname}/rwtest03%f
