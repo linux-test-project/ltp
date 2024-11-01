@@ -111,7 +111,6 @@ olduname 109
 iopl 110
 vhangup 111
 idle 112
-vm86 113
 wait4 114
 swapoff 115
 sysinfo 116
@@ -132,7 +131,6 @@ get_kernel_syms 130
 quotactl 131
 getpgid 132
 fchdir 133
-bdflush 134
 sysfs 135
 personality 136
 afs_syscall 137
@@ -199,7 +197,6 @@ fstat64 197
 pciconfig_read 198
 pciconfig_write 199
 pciconfig_iobase 200
-multiplexer 201
 getdents64 202
 pivot_root 203
 fcntl64 204
@@ -253,7 +250,6 @@ statfs64 252
 fstatfs64 253
 fadvise64_64 254
 rtas 255
-sys_debug_setcontext 256
 migrate_pages 258
 mbind 259
 get_mempolicy 260
@@ -287,7 +283,6 @@ mkdirat 287
 mknodat 288
 fchownat 289
 futimesat 290
-newfstatat 291
 fstatat64 291
 unlinkat 292
 renameat 293
@@ -374,7 +369,6 @@ pkey_free 385
 pkey_mprotect 386
 rseq 387
 io_pgetevents 388
-semtimedop 392
 semget 393
 semctl 394
 shmget 395
@@ -421,14 +415,25 @@ close_range 436
 openat2 437
 pidfd_getfd 438
 faccessat2 439
+process_madvise 440
 epoll_pwait2 441
+mount_setattr 442
 quotactl_fd 443
 landlock_create_ruleset 444
 landlock_add_rule 445
 landlock_restrict_self 446
+process_mrelease 448
 futex_waitv 449
+set_mempolicy_home_node 450
 cachestat 451
 fchmodat2 452
-mseal 462
+map_shadow_stack 453
+futex_wake 454
+futex_wait 455
+futex_requeue 456
 statmount 457
 listmount 458
+lsm_get_self_attr 459
+lsm_set_self_attr 460
+lsm_list_modules 461
+mseal 462

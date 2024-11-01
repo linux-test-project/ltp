@@ -175,7 +175,6 @@ nfsservctl 6173
 getpmsg 6174
 putpmsg 6175
 afs_syscall 6176
-reserved177 6177
 gettid 6178
 readahead 6179
 setxattr 6180
@@ -191,7 +190,6 @@ removexattr 6189
 lremovexattr 6190
 fremovexattr 6191
 tkill 6192
-reserved193 6193
 futex 6194
 sched_setaffinity 6195
 sched_getaffinity 6196
@@ -373,9 +371,18 @@ quotactl_fd 6443
 landlock_create_ruleset 6444
 landlock_add_rule 6445
 landlock_restrict_self 6446
+process_mrelease 6448
 futex_waitv 6449
+set_mempolicy_home_node 6450
 cachestat 6451
 fchmodat2 6452
-mseal 6462
+map_shadow_stack 6453
+futex_wake 6454
+futex_wait 6455
+futex_requeue 6456
 statmount 6457
 listmount 6458
+lsm_get_self_attr 6459
+lsm_set_self_attr 6460
+lsm_list_modules 6461
+mseal 6462

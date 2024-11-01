@@ -16,7 +16,6 @@ mknod 4014
 chmod 4015
 lchown 4016
 break 4017
-unused18 4018
 lseek 4019
 getpid 4020
 mount 4021
@@ -26,7 +25,6 @@ getuid 4024
 stime 4025
 ptrace 4026
 alarm 4027
-unused28 4028
 pause 4029
 utime 4030
 stty 4031
@@ -80,9 +78,7 @@ gettimeofday 4078
 settimeofday 4079
 getgroups 4080
 setgroups 4081
-reserved82 4082
 symlink 4083
-unused84 4084
 readlink 4085
 uselib 4086
 swapon 4087
@@ -111,7 +107,6 @@ unused109 4109
 iopl 4110
 vhangup 4111
 idle 4112
-vm86 4113
 wait4 4114
 swapoff 4115
 sysinfo 4116
@@ -132,7 +127,6 @@ get_kernel_syms 4130
 quotactl 4131
 getpgid 4132
 fchdir 4133
-bdflush 4134
 sysfs 4135
 personality 4136
 afs_syscall 4137
@@ -148,7 +142,6 @@ writev 4146
 cacheflush 4147
 cachectl 4148
 sysmips 4149
-unused150 4150
 getsid 4151
 fdatasync 4152
 _sysctl 4153
@@ -219,7 +212,6 @@ mincore 4217
 madvise 4218
 getdents64 4219
 fcntl64 4220
-reserved221 4221
 gettid 4222
 readahead 4223
 setxattr 4224
@@ -419,9 +411,18 @@ quotactl_fd 4443
 landlock_create_ruleset 4444
 landlock_add_rule 4445
 landlock_restrict_self 4446
+process_mrelease 4448
 futex_waitv 4449
+set_mempolicy_home_node 4450
 cachestat 4451
 fchmodat2 4452
-mseal 4462
+map_shadow_stack 4453
+futex_wake 4454
+futex_wait 4455
+futex_requeue 4456
 statmount 4457
 listmount 4458
+lsm_get_self_attr 4459
+lsm_set_self_attr 4460
+lsm_list_modules 4461
+mseal 4462
