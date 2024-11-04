@@ -15,10 +15,13 @@
 
 static void run(void)
 {
+	int ret;
+
 	tst_require_alg("aead", "rfc7539(chacha20,poly1305)");
 	tst_require_alg("hash", "sha256");
 
-	if (tst_try_alg("aead", "rfc7539(chacha20,sha256)") != ENOENT) {
+	ret = tst_try_alg("aead", "rfc7539(chacha20,sha256)");
+	if (ret != ENOENT && ret != EINVAL) {
 		tst_res(TFAIL,
 			"instantiated rfc7539 template with wrong digest size");
 	} else {
