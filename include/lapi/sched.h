@@ -13,7 +13,6 @@
 #include <inttypes.h>
 #include "config.h"
 #include "lapi/syscalls.h"
-#include "lapi/sched.h"
 
 /* sched_attr is not defined in glibc < 2.41 */
 #ifndef SCHED_ATTR_SIZE_VER0
