@@ -14,7 +14,7 @@ for i in shell_loader.sh shell_loader_all_filesystems.sh shell_loader_no_metadat
 	 shell_loader_wrong_metadata.sh shell_loader_invalid_metadata.sh\
 	 shell_loader_supported_archs.sh shell_loader_filesystems.sh\
 	 shell_loader_tcnt.sh shell_loader_kconfigs.sh shell_loader_tags.sh \
-	 shell_loader_invalid_block.sh; do
+	 shell_loader_invalid_block.sh shell_loader_c_child.sh; do
 	echo
 	echo "*** Running $i ***"
 	echo
