@@ -15,7 +15,7 @@
 #include "landlock_tester.h"
 #include "tst_safe_stdio.h"
 
-static struct landlock_ruleset_attr *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static struct landlock_path_beneath_attr *path_beneath_attr;
 static int ruleset_fd = -1;
 
@@ -153,7 +153,7 @@ static void setup(void)
 	ruleset_attr->handled_access_fs = tester_get_all_fs_rules();
 
 	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr, sizeof(struct landlock_ruleset_attr), 0);
+		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
 
 	/* since our binary is dynamically linked, we need to enable dependences
 	 * to be read and executed
@@ -192,7 +192,7 @@ static struct tst_test test = {
 		NULL,
 	},
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},
 		{},
 	},

@@ -18,7 +18,7 @@
 #define MNTPOINT "sandbox"
 #define FILENAME MNTPOINT"/fifo"
 
-static struct landlock_ruleset_attr *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static struct landlock_path_beneath_attr *path_beneath_attr;
 static int file_fd = -1;
 static int dev_fd = -1;
@@ -42,8 +42,6 @@ static void run(void)
 
 static void setup(void)
 {
-	int ruleset_fd;
-
 	if (verify_landlock_is_enabled() < 5)
 		tst_brk(TCONF, "LANDLOCK_ACCESS_FS_IOCTL_DEV is not supported");
 
@@ -56,17 +54,13 @@ static void setup(void)
 
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_IOCTL_DEV;
 
-	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr, sizeof(struct landlock_ruleset_attr), 0);
-
-	apply_landlock_layer(
+	apply_landlock_fs_layer(
 		ruleset_attr,
+		sizeof(struct tst_landlock_ruleset_attr_abi1),
 		path_beneath_attr,
 		MNTPOINT,
 		LANDLOCK_ACCESS_FS_IOCTL_DEV
 	);
-
-	SAFE_CLOSE(ruleset_fd);
 }
 
 static void cleanup(void)
@@ -85,7 +79,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},
 		{},
 	},

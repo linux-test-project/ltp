@@ -25,7 +25,7 @@
 #include "lapi/prctl.h"
 #include "landlock_common.h"
 
-static struct landlock_ruleset_attr *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static int ruleset_fd;
 
 static pid_t spawn_houdini(void)
@@ -77,7 +77,7 @@ static void setup(void)
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_WRITE_FILE;
 	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
 		ruleset_attr,
-		sizeof(struct landlock_ruleset_attr),
+		sizeof(struct tst_landlock_ruleset_attr_abi1),
 		0);
 }
 
@@ -93,7 +93,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{},
 	},
 	.caps = (struct tst_cap []) {

@@ -33,7 +33,7 @@ static inline int verify_landlock_is_enabled(void)
 	return abi;
 }
 
-static inline void apply_landlock_rule(
+static inline void apply_landlock_fs_rule(
 	struct landlock_path_beneath_attr *path_beneath_attr,
 	const int ruleset_fd,
 	const int access,
@@ -57,21 +57,19 @@ static inline void enforce_ruleset(const int ruleset_fd)
 	SAFE_LANDLOCK_RESTRICT_SELF(ruleset_fd, 0);
 }
 
-static inline void apply_landlock_layer(
-	struct landlock_ruleset_attr *ruleset_attr,
+static inline void apply_landlock_fs_layer(
+	void *ruleset_attr, size_t attr_size,
 	struct landlock_path_beneath_attr *path_beneath_attr,
 	const char *path,
 	const int access)
 {
 	int ruleset_fd;
 
-	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr, sizeof(struct landlock_ruleset_attr), 0);
+	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(ruleset_attr, attr_size, 0);
 
-	apply_landlock_rule(path_beneath_attr, ruleset_fd, access, path);
+	apply_landlock_fs_rule(path_beneath_attr, ruleset_fd, access, path);
 	enforce_ruleset(ruleset_fd);
 
 	SAFE_CLOSE(ruleset_fd);
 }
-
 #endif /* LANDLOCK_COMMON_H__ */

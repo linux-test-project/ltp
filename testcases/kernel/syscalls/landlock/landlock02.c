@@ -20,7 +20,7 @@
 
 #include "landlock_common.h"
 
-static struct landlock_ruleset_attr *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static struct landlock_path_beneath_attr *path_beneath_attr;
 static struct landlock_path_beneath_attr *rule_null;
 static int ruleset_fd;
@@ -93,7 +93,7 @@ static void run(unsigned int n)
 	}
 
 	TST_EXP_FAIL(tst_syscall(__NR_landlock_add_rule,
-			*tc->fd, tc->rule_type, *tc->attr, tc->flags),
+		*tc->fd, tc->rule_type, *tc->attr, tc->flags),
 		tc->exp_errno,
 		"%s",
 		tc->msg);
@@ -106,7 +106,7 @@ static void setup(void)
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
 
 	ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
-		ruleset_attr, sizeof(struct landlock_ruleset_attr), 0));
+		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
 }
 
 static void cleanup(void)
@@ -122,7 +122,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},
 		{},
 	},

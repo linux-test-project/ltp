@@ -20,6 +20,10 @@
 # endif
 #endif
 
+#ifndef CAP_NET_BIND_SERVICE
+# define CAP_NET_BIND_SERVICE 10
+#endif
+
 #ifndef CAP_NET_RAW
 # define CAP_NET_RAW          13
 #endif

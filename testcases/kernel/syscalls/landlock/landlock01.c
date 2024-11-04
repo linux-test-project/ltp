@@ -17,14 +17,14 @@
 
 #include "landlock_common.h"
 
-static struct landlock_ruleset_attr *ruleset_attr;
-static struct landlock_ruleset_attr *null_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *null_attr;
 static size_t rule_size;
 static size_t rule_small_size;
 static size_t rule_big_size;
 
 static struct tcase {
-	struct landlock_ruleset_attr **attr;
+	struct tst_landlock_ruleset_attr_abi1 **attr;
 	uint64_t access_fs;
 	size_t *size;
 	uint32_t flags;
@@ -60,13 +60,8 @@ static void setup(void)
 {
 	verify_landlock_is_enabled();
 
-	rule_size = sizeof(struct landlock_ruleset_attr);
-
-#ifdef HAVE_STRUCT_LANDLOCK_RULESET_ATTR_HANDLED_ACCESS_NET
-	rule_small_size = rule_size - sizeof(uint64_t) - 1;
-#else
+	rule_size = sizeof(struct tst_landlock_ruleset_attr_abi1);
 	rule_small_size = rule_size - 1;
-#endif
 
 	rule_big_size = SAFE_SYSCONF(_SC_PAGESIZE) + 1;
 }
@@ -77,7 +72,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_root = 1,
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{},
 	},
 	.caps = (struct tst_cap []) {

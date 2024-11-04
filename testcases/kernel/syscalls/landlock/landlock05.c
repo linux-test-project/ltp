@@ -28,7 +28,7 @@
 #define FILENAME2 DIR2"/file"
 #define FILENAME3 DIR3"/file"
 
-static struct landlock_ruleset_attr *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static struct landlock_path_beneath_attr *path_beneath_attr;
 
 static void run(void)
@@ -68,15 +68,15 @@ static void setup(void)
 		LANDLOCK_ACCESS_FS_REFER;
 
 	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr, sizeof(struct landlock_ruleset_attr), 0);
+		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
 
-	apply_landlock_rule(
+	apply_landlock_fs_rule(
 		path_beneath_attr,
 		ruleset_fd,
 		LANDLOCK_ACCESS_FS_REFER,
 		DIR1);
 
-	apply_landlock_rule(
+	apply_landlock_fs_rule(
 		path_beneath_attr,
 		ruleset_fd,
 		LANDLOCK_ACCESS_FS_REFER,
@@ -93,7 +93,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},
 		{},
 	},

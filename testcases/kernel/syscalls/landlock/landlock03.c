@@ -21,7 +21,7 @@
 
 #define MAX_STACKED_RULESETS 16
 
-static struct landlock_ruleset_attr *ruleset_attr;
+static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static int ruleset_fd = -1;
 static int ruleset_invalid = -1;
 static int file_fd = -1;
@@ -89,7 +89,7 @@ static void setup(void)
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
 
 	ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
-		ruleset_attr, sizeof(struct landlock_ruleset_attr), 0));
+		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
 
 	file_fd = SAFE_OPEN("junk.bin", O_CREAT, 0777);
 }
@@ -112,7 +112,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {
-		{&ruleset_attr, .size = sizeof(struct landlock_ruleset_attr)},
+		{&ruleset_attr, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{},
 	},
 	.caps = (struct tst_cap []) {
