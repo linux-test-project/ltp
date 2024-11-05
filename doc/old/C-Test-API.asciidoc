@@ -1815,7 +1815,7 @@ fault or EFAULT depending on if the access happened in userspace or the kernel
 respectively. The canary before the buffer will also catch any write access
 outside of the buffer.
 
-The purpose of the patch is to catch off-by-one bugs which happens when
+The purpose of this feature is to catch off-by-one bugs which happens when
 buffers and structures are passed to syscalls. New tests should allocate
 guarded buffers for all data passed to the tested syscall which are passed by
 a pointer.
