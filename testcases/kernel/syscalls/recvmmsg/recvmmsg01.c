@@ -47,7 +47,7 @@ static struct test_case tcase[] = {
 		.desc = "bad message vector address",
 		.fd = &receive_sockfd,
 		.exp_errno = EFAULT,
-		.msg_vec = (void*)&bad_addr,
+		.msg_vec = (void *)&bad_addr,
 	},
 	{
 		.desc = "negative seconds in timeout",
@@ -74,23 +74,54 @@ static struct test_case tcase[] = {
 	}
 };
 
-static void do_test(unsigned int i)
+static void verify_recvmmsg(unsigned int i, void *timeout)
 {
 	struct time64_variants *tv = &variants[tst_variant];
 	struct test_case *tc = &tcase[i];
-	void *timeout;
 
 	ts.type = tv->ts_type;
 	tst_ts_set_sec(&ts, tc->tv_sec);
 	tst_ts_set_nsec(&ts, tc->tv_nsec);
 
-	if (tc->bad_ts_addr)
-		timeout = bad_addr;
-	else
-		timeout = tst_ts_get(&ts);
-
 	TST_EXP_FAIL2(tv->recvmmsg(*tc->fd, *tc->msg_vec, VLEN, 0, timeout),
-	             tc->exp_errno, "recvmmsg() %s", tc->desc);
+		      tc->exp_errno, "recvmmsg() %s", tc->desc);
+}
+
+static void test_bad_addr(unsigned int i)
+{
+	struct time64_variants *tv = &variants[tst_variant];
+	void *timeout = bad_addr;
+	pid_t pid;
+	int status;
+
+	pid = SAFE_FORK();
+	if (!pid) {
+		verify_recvmmsg(i, timeout);
+		_exit(0);
+	}
+
+	SAFE_WAITPID(pid, &status, 0);
+
+	if (WIFEXITED(status) && !WEXITSTATUS(status))
+		return;
+
+	if (tv->ts_type == TST_LIBC_TIMESPEC &&
+		WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV) {
+		tst_res(TPASS, "Child killed by expected signal");
+		return;
+	}
+
+	tst_res(TFAIL, "Child %s", tst_strstatus(status));
+}
+
+static void do_test(unsigned int i)
+{
+	struct test_case *tc = &tcase[i];
+
+	if (tc->bad_ts_addr)
+		test_bad_addr(i);
+	else
+		verify_recvmmsg(i, tst_ts_get(&ts));
 }
 
 static void setup(void)
@@ -139,6 +170,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_variants = ARRAY_SIZE(variants),
+	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {
 		{&iov, .iov_sizes = (int[]){1, -1}},
 		{&msg, .size = VLEN * sizeof(*msg)},
