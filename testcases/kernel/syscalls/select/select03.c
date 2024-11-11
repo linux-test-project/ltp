@@ -77,7 +77,7 @@ static void run(unsigned int n)
 
 	SAFE_WAITPID(pid, &status, 0);
 
-	if (WIFEXITED(status))
+	if (WIFEXITED(status) && !WEXITSTATUS(status))
 		return;
 
 	if (tst_variant == GLIBC_SELECT_VARIANT &&
