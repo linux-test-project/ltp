@@ -37,20 +37,22 @@ static int fd_fake = -1;
 #include <sys/wait.h>
 #include <limits.h>
 
+#define TYPE_DESC(x) .type = x, .desc = #x
 static struct test_case {
 	int *pid1;
 	int *pid2;
 	int type;
+	char *desc;
 	int *fd1;
 	int *fd2;
 	int exp_errno;
 } test_cases[] = {
-	{&pid1, &pid_unused, KCMP_FILE, &fd1, &fd2, ESRCH},
-	{&pid1, &pid1, KCMP_TYPES + 1, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, -1, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, INT_MIN, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, INT_MAX, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, KCMP_FILE, &fd1, &fd_fake, EBADF}
+	{&pid1, &pid_unused, TYPE_DESC(KCMP_FILE), &fd1, &fd2, ESRCH},
+	{&pid1, &pid1, TYPE_DESC(KCMP_TYPES + 1), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(-1), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(INT_MIN), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(INT_MAX), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(KCMP_FILE), &fd1, &fd_fake, EBADF}
 };
 
 static void setup(void)
@@ -73,24 +75,11 @@ static void cleanup(void)
 
 static void verify_kcmp(unsigned int n)
 {
-	struct test_case *test = &test_cases[n];
+	struct test_case *tc = &test_cases[n];
 
-	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
-		  *(test->fd1), *(test->fd2)));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "kcmp() succeeded unexpectedly");
-		return;
-	}
-
-	if (test->exp_errno == TST_ERR) {
-		tst_res(TPASS | TTERRNO, "kcmp() returned the expected value");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO,
-		"kcmp() got unexpected return value: expected: %d - %s",
-			test->exp_errno, tst_strerrno(test->exp_errno));
+	TST_EXP_FAIL(kcmp(*(tc->pid1), *(tc->pid2), tc->type,
+		  *(tc->fd1), *(tc->fd2)), tc->exp_errno, "kcmp(%d,%d,%s,%d,%d)",
+				 *tc->pid1, *tc->pid2, tc->desc, *tc->fd1, *tc->fd2);
 }
 
 static struct tst_test test = {
