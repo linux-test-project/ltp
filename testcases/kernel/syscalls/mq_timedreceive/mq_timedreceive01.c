@@ -183,7 +183,7 @@ static void do_test(unsigned int i)
 		return;
 	}
 
-	if (tc->len != TST_RET) {
+	if ((long)tc->len != TST_RET) {
 		tst_res(TFAIL, "mq_timedreceive() wrong length %ld, expected %u",
 			TST_RET, tc->len);
 		return;
