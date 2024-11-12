@@ -30,14 +30,16 @@ static int pid1;
 static int pid2;
 static void *stack;
 
+#define ARGS(x, y) .clone_type = x, .kcmp_type = y, .desc = #x ", " #y
 static struct tcase {
 	int clone_type;
 	int kcmp_type;
+	char *desc;
 } tcases[] = {
-	{CLONE_VM, KCMP_VM},
-	{CLONE_FS, KCMP_FS},
-	{CLONE_IO, KCMP_IO},
-	{CLONE_SYSVSEM, KCMP_SYSVSEM}
+	{ARGS(CLONE_VM, KCMP_VM)},
+	{ARGS(CLONE_FS, KCMP_FS)},
+	{ARGS(CLONE_IO, KCMP_IO)},
+	{ARGS(CLONE_SYSVSEM, KCMP_SYSVSEM)}
 };
 
 static void setup(void)
@@ -53,28 +55,17 @@ static void cleanup(void)
 static int do_child(void *arg)
 {
 	pid2 = getpid();
-
-	TEST(kcmp(pid1, pid2, *(int *)arg, 0, 0));
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "kcmp() failed unexpectedly");
-		return 0;
-	}
-
-	if (TST_RET == 0)
-		tst_res(TPASS, "kcmp() returned the expected value");
-	else
-		tst_res(TFAIL, "kcmp() returned the unexpected value");
-
+	TST_EXP_PASS(kcmp(pid1, pid2, *(int *)arg, 0, 0));
 	return 0;
 }
 
 static void verify_kcmp(unsigned int n)
 {
 	int res;
-
 	struct tcase *tc = &tcases[n];
 
 	pid1 = getpid();
+	tst_res(TINFO, "Testing %s", tc->desc);
 
 	res = ltp_clone(tc->clone_type | SIGCHLD, do_child, &tc->kcmp_type,
 			STACK_SIZE, stack);
