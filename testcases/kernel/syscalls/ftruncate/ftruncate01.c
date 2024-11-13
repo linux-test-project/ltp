@@ -4,11 +4,13 @@
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Wayne Boyer
  */
-/*
- * Test Description:
- *  Verify that, ftruncate() succeeds to truncate a file to a certain length,
- *  if the file previously is smaller than the truncated size, ftruncate()
- *  shall increase the size of the file.
+
+/*\
+ * [Description]
+ *
+ * Verify that, ftruncate() succeeds to truncate a file to a certain length,
+ * if the file previously is smaller than the truncated size, ftruncate()
+ * shall increase the size of the file.
  */
 
 #include <sys/types.h>
