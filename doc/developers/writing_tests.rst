@@ -397,7 +397,9 @@ LTP C And Shell Test API Comparison
       - TST_FORMAT_DEVICE
 
     * - .max_runtime
-      - \-
+      - TST_TIMEOUT (not exactly the same, a real timeout based on old .timeout
+        concept. .max_runtime has also an extra 30 sec safety margin for
+        teardown of the test.)
 
     * - .min_cpus
       - not applicable
@@ -506,9 +508,6 @@ LTP C And Shell Test API Comparison
 
     * - .test_variants
       - \-
-
-    * - .timeout
-      - TST_TIMEOUT
 
     * - .tst_hugepage
       - not applicable

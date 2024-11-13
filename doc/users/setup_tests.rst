@@ -51,7 +51,9 @@ users.
 
    * - LTP_TIMEOUT_MUL
      - Multiplies timeout, must be number >= 0.1 (> 1 is useful for slow
-       machines to avoid unexpected timeout).
+       machines to avoid unexpected timeout). It's mainly for shell API, which
+       does not have LTP_RUNTIME_MUL. In C API it scales the default 30 sec
+       safety margin, probably LTP_RUNTIME_MUL should be used instead.
 
    * - LTP_RUNTIME_MUL
      - Multiplies maximal test iteration runtime. Tests that run for more than a
