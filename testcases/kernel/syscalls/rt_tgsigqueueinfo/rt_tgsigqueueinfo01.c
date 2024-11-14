@@ -25,12 +25,6 @@
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
-#ifndef __ANDROID__
-#define SI_SIGVAL si_sigval
-#else
-#define SI_SIGVAL _sigval
-#endif
-
 static char sigval_send[] = "rt_tgsigqueueinfo data";
 static volatile int signum_rcv;
 static char *sigval_rcv;
@@ -39,7 +33,7 @@ static void sigusr1_handler(int signum, siginfo_t *uinfo,
 			    void *p LTP_ATTRIBUTE_UNUSED)
 {
 	signum_rcv = signum;
-	sigval_rcv = uinfo->_sifields._rt.SI_SIGVAL.sival_ptr;
+	sigval_rcv = uinfo->si_ptr;
 }
 
 void *send_rcv_func(void *arg)
@@ -51,7 +45,7 @@ void *send_rcv_func(void *arg)
 
 	uinfo.si_errno = 0;
 	uinfo.si_code = SI_QUEUE;
-	uinfo._sifields._rt.SI_SIGVAL.sival_ptr = sigval_send;
+	uinfo.si_ptr = sigval_send;
 
 	TEST(tst_syscall(__NR_rt_tgsigqueueinfo, getpid(),
 			 syscall(__NR_gettid), SIGUSR1, &uinfo));
@@ -113,7 +107,7 @@ static void verify_signal_parent_thread(void)
 
 	uinfo.si_errno = 0;
 	uinfo.si_code = SI_QUEUE;
-	uinfo._sifields._rt.SI_SIGVAL.sival_ptr = sigval_send;
+	uinfo.si_ptr = sigval_send;
 
 	TEST(tst_syscall(__NR_rt_tgsigqueueinfo, getpid(),
 			 tid, SIGUSR1, &uinfo));
@@ -130,7 +124,7 @@ void *sender_func(void *arg)
 
 	uinfo.si_errno = 0;
 	uinfo.si_code = SI_QUEUE;
-	uinfo._sifields._rt.SI_SIGVAL.sival_ptr = sigval_send;
+	uinfo.si_ptr = sigval_send;
 
 	TEST(tst_syscall(__NR_rt_tgsigqueueinfo, getpid(),
 			 *tid, SIGUSR1, &uinfo));
