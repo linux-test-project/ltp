@@ -143,33 +143,14 @@ static void setup(void)
 	setup_common();
 }
 
-static void do_test(unsigned int i)
+static void verify_mqt_send_receive(unsigned int i, pid_t pid)
 {
 	struct time64_variants *tv = &variants[tst_variant];
 	const struct test_case *tc = &tcase[i];
 	unsigned int j;
 	unsigned int prio;
-	size_t len = MAX_MSGSIZE;
-	char rmsg[len];
-	pid_t pid = -1;
+	char rmsg[MAX_MSGSIZE];
 	void *msg_ptr, *abs_timeout;
-
-	tst_ts_set_sec(&ts, tc->tv_sec);
-	tst_ts_set_nsec(&ts, tc->tv_nsec);
-
-	if (tc->signal)
-		pid = set_sig(tc->rq, tv->clock_gettime);
-
-	if (tc->timeout)
-		set_timeout(tc->rq, tv->clock_gettime);
-
-	if (tc->send) {
-		for (j = 0; j < MSG_LENGTH; j++)
-			if (tv->mqt_send(*tc->fd, smsg, tc->len, tc->prio, NULL) < 0) {
-				tst_res(TFAIL | TTERRNO, "mq_timedsend() failed");
-				return;
-			}
-	}
 
 	if (tc->bad_msg_addr)
 		msg_ptr = bad_addr;
@@ -200,7 +181,7 @@ static void do_test(unsigned int i)
 		return;
 	}
 
-	TEST(tv->mqt_receive(*tc->fd, rmsg, len, &prio, tst_ts_get(tc->rq)));
+	TEST(tv->mqt_receive(*tc->fd, rmsg, MAX_MSGSIZE, &prio, tst_ts_get(tc->rq)));
 
 	if (*tc->fd == fd)
 		cleanup_queue(fd);
@@ -241,8 +222,66 @@ static void do_test(unsigned int i)
 		}
 	}
 
-	tst_res(TPASS, "mq_timedreceive() returned %ld, priority %u, length: %zu",
-			TST_RET, prio, len);
+	tst_res(TPASS, "mq_timedreceive() returned %ld, priority %u, length: %i",
+			TST_RET, prio, MAX_MSGSIZE);
+}
+
+static void test_bad_addr(unsigned int i)
+{
+	struct time64_variants *tv = &variants[tst_variant];
+	pid_t pid;
+	int status;
+
+	pid = SAFE_FORK();
+	if (!pid) {
+		verify_mqt_send_receive(i, pid);
+		_exit(0);
+	}
+
+	SAFE_WAITPID(pid, &status, 0);
+
+	if (WIFEXITED(status) && !WEXITSTATUS(status))
+		return;
+
+	if (tv->ts_type == TST_LIBC_TIMESPEC &&
+		WIFSIGNALED(status) && WTERMSIG(status) == SIGSEGV) {
+		tst_res(TPASS, "Child killed by expected signal");
+		return;
+	}
+
+	tst_res(TFAIL, "Child %s", tst_strstatus(status));
+}
+
+static void do_test(unsigned int i)
+{
+	struct time64_variants *tv = &variants[tst_variant];
+	const struct test_case *tc = &tcase[i];
+	unsigned int j;
+	pid_t pid = -1;
+
+	tst_ts_set_sec(&ts, tc->tv_sec);
+	tst_ts_set_nsec(&ts, tc->tv_nsec);
+
+	if (tc->bad_ts_addr || tc->bad_msg_addr) {
+		test_bad_addr(i);
+		return;
+	}
+
+	if (tc->signal)
+		pid = set_sig(tc->rq, tv->clock_gettime);
+
+	if (tc->timeout)
+		set_timeout(tc->rq, tv->clock_gettime);
+
+	if (tc->send) {
+		for (j = 0; j < MSG_LENGTH; j++)
+			if (tv->mqt_send(*tc->fd, smsg, tc->len, tc->prio, NULL) < 0) {
+				tst_res(TFAIL | TTERRNO, "mq_timedsend() failed");
+				return;
+			}
+	}
+
+	verify_mqt_send_receive(i, pid);
 }
 
 static struct tst_test test = {
