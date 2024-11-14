@@ -286,9 +286,7 @@ void test_bad_address(swi_func sigwaitinfo, int signo,
 	/* let's not get interrupted by our dying child */
 	SAFE_SIGADDSET(&sigs, SIGCHLD);
 
-	TEST(sigprocmask(SIG_SETMASK, &sigs, &oldmask));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "sigprocmask() failed");
+	SAFE_SIGPROCMASK(SIG_SETMASK, &sigs, &oldmask);
 
 	/* don't wait on a SIGCHLD */
 	SAFE_SIGDELSET(&sigs, SIGCHLD);
@@ -296,19 +294,8 @@ void test_bad_address(swi_func sigwaitinfo, int signo,
 	/* Run a child that will wake us up */
 	child = create_sig_proc(signo, 1, 0);
 
-	TEST(sigwaitinfo(&sigs, (void *)1, NULL));
-	if (TST_RET == -1) {
-		if (TST_ERR == EFAULT)
-			tst_res(TPASS, "Fault occurred while accessing the buffers");
-		else
-			tst_res(TFAIL | TTERRNO, "Expected error number EFAULT, got");
-	} else {
-		tst_res(TFAIL, "Expected return value -1, got: %ld", TST_RET);
-	}
-
-	TEST(sigprocmask(SIG_SETMASK, &oldmask, NULL));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TTERRNO, "restoring original signal mask failed");
+	TST_EXP_FAIL(sigwaitinfo(&sigs, (void *)1, NULL), EFAULT);
+	SAFE_SIGPROCMASK(SIG_SETMASK, &oldmask, NULL);
 
 	SAFE_KILL(child, SIGTERM);
 	SAFE_WAIT(NULL);
