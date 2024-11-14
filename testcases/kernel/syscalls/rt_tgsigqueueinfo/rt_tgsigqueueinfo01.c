@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Linaro Limited. All rights reserved.
+ * Copyright (c) Linux Test Project, 2019-2024
  * Author: Sumit Garg <sumit.garg@linaro.org>
  */
 
-/*
- * Test rt_tgsigqueueinfo
- *
- * This tests the rt_tgsigqueueinfo() syscall. It sends the signal and data
+/*\
+ * Basic test for rt_tgsigqueueinfo(2) syscall. It sends the signal and data
  * to the single thread specified by the combination of tgid, a thread group
  * ID, and tid, a thread in that thread group.
  *
  * Also this implement 3 tests differing on the basis of signal sender:
+ *
  * - Sender and receiver is the same thread.
  * - Sender is parent of the thread.
  * - Sender is different thread.
