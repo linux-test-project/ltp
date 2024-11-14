@@ -22,28 +22,19 @@ static void *bad_addr;
 static struct test_case tcase[] = {
 	{
 		.fd = &fd,
-		.len = 0,
-		.ret = 0,
-		.err = 0,
 	},
 	{
 		.fd = &fd,
 		.len = 1,
-		.ret = 0,
-		.err = 0,
 	},
 	{
 		.fd = &fd,
 		.len = MAX_MSGSIZE,
-		.ret = 0,
-		.err = 0,
 	},
 	{
 		.fd = &fd,
 		.len = 1,
 		.prio = MQ_PRIO_MAX - 1,
-		.ret = 0,
-		.err = 0,
 	},
 	{
 		.fd = &fd,
@@ -53,19 +44,16 @@ static struct test_case tcase[] = {
 	},
 	{
 		.fd = &fd_invalid,
-		.len = 0,
 		.ret = -1,
 		.err = EBADF,
 	},
 	{
 		.fd = &fd_maxint,
-		.len = 0,
 		.ret = -1,
 		.err = EBADF,
 	},
 	{
 		.fd = &fd_root,
-		.len = 0,
 		.ret = -1,
 		.err = EBADF,
 	},
@@ -86,7 +74,6 @@ static struct test_case tcase[] = {
 		.fd = &fd,
 		.len = 16,
 		.tv_sec = -1,
-		.tv_nsec = 0,
 		.rq = &ts,
 		.send = 1,
 		.ret = -1,
@@ -95,7 +82,6 @@ static struct test_case tcase[] = {
 	{
 		.fd = &fd,
 		.len = 16,
-		.tv_sec = 0,
 		.tv_nsec = -1,
 		.rq = &ts,
 		.send = 1,
@@ -105,7 +91,6 @@ static struct test_case tcase[] = {
 	{
 		.fd = &fd,
 		.len = 16,
-		.tv_sec = 0,
 		.tv_nsec = 1000000000,
 		.rq = &ts,
 		.send = 1,
