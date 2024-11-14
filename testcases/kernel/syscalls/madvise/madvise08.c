@@ -165,7 +165,7 @@ static pid_t run_child(int advice)
 				fmem,
 				FMEMSIZE,
 				advstr);
-			exit(0);
+			exit(1);
 		}
 		abort();
 	}
@@ -173,7 +173,7 @@ static pid_t run_child(int advice)
 	SAFE_WAITPID(pid, &status, 0);
 	if (WIFSIGNALED(status) && WCOREDUMP(status))
 		return pid;
-	if (WIFEXITED(status) && !WEXITSTATUS(status))
+	if (WIFEXITED(status))
 		return 0;
 
 	tst_res(TCONF, "No coredump produced after signal (%d)",
