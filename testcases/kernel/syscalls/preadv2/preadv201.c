@@ -4,15 +4,17 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
- * Testcase to check the basic functionality of the preadv2(2).
- * 1) If the file offset argument is not -1, preadv2() should succeed
- *    in reading the expected content of data and the file offset is
- *    not changed after reading.
- * 2) If the file offset argument is -1, preadv2() should succeed in
- *    reading the expected content of data and the current file offset
- *    is used and changed after reading.
+/*\
+ * [Description]
+ *
+ * Verify the basic functionality of the preadv2(2):
+ *
+ * 1. If the file offset argument is not -1, preadv2() should succeed
+ * in reading the expected content of data and the file offset is not
+ * changed after reading.
+ * 2. If the file offset argument is -1, preadv2() should succeed in
+ * reading the expected content of data and the current file offset
+ * is used and changed after reading.
  */
 
 #define _GNU_SOURCE
