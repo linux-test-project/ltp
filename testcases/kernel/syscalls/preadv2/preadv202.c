@@ -4,20 +4,19 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
- * Check various errnos for preadv2(2).
- * 1) preadv2() fails and sets errno to EINVAL if iov_len is invalid.
- * 2) preadv2() fails and sets errno to EINVAL if the vector count iovcnt
- *    is less than zero.
- * 3) preadv2() fails and sets errno to EOPNOTSUPP if flag is invalid.
- * 4) preadv2() fails and sets errno to EFAULT when attempts to read into
- *    a invalid address.
- * 5) preadv2() fails and sets errno to EBADF if file descriptor is invalid.
- * 6) preadv2() fails and sets errno to EBADF if file descriptor is not
- *    open for reading.
- * 7) preadv2() fails and sets errno to EISDIR when fd refers to a directory.
- * 8) preadv2() fails and sets errno to ESPIPE if fd is associated with a pipe.
+/*\
+ * [Description]
+ *
+ * Verify that, preadv2(2) fails and sets errno to
+ *
+ * 1. EINVAL if iov_len is invalid.
+ * 2. EINVAL if the vector count iovcnt is less than zero.
+ * 3. EOPNOTSUPP if flag is invalid.
+ * 4. EFAULT when attempting to read into an invalid address.
+ * 5. EBADF if file descriptor is invalid.
+ * 6. EBADF if file descriptor is not open for reading.
+ * 7. EISDIR when fd refers to a directory.
+ * 8. ESPIPE if fd is associated with a pipe.
  */
 
 #define _GNU_SOURCE
