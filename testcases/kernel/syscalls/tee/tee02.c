@@ -3,15 +3,15 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Xing Gu <gux.fnst@cn.fujitsu.com>
  */
-/*
- * Description:
- *   Verify that,
- *   1) tee() returns -1 and sets errno to EINVAL if fd_in does
- *      not refer to a pipe.
- *   2) tee() returns -1 and sets errno to EINVAL if fd_out does
- *      not refer to a pipe.
- *   3) tee() returns -1 and sets errno to EINVAL if fd_in and
- *      fd_out refer to the same pipe.
+
+/*\
+ * [Description]
+ *
+ * Verify that, tee(2) returns -1 and sets errno to:
+ *
+ * 1. EINVAL if fd_in does not refer to a pipe.
+ * 2. EINVAL if fd_out does not refer to a pipe.
+ * 3. EINVAL if fd_in and fd_out refer to the same pipe.
  */
 
 #define _GNU_SOURCE
