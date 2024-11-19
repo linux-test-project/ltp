@@ -144,15 +144,9 @@ static char *flag_to_str(int flags)
 	}
 }
 
-static size_t function_size(void (*func)(void))
+static long __attribute__ ((noinline)) dummy_func(void)
 {
-	unsigned char *start = (unsigned char *)func;
-	unsigned char *end = start;
-
-	while (*end != 0xC3 && *end != 0xC2)
-		end++;
-
-	return (size_t)(end - start + 1);
+	return 0xdead;
 }
 
 /*
@@ -165,8 +159,11 @@ static int pkey_test(struct tcase *tc, struct mmap_param *mpa)
 	char *buffer;
 	int pkey, status;
 	int fd = mpa->fd;
-	size_t (*func)();
-	size_t func_size = 0;
+	long (*func)(void) = 0;
+	uintptr_t page_mask = ~(getpagesize() - 1);
+	uintptr_t offset_mask = (getpagesize() - 1);
+	uintptr_t func_page_offset = (uintptr_t)&dummy_func & offset_mask;
+	void *page_to_copy = (void *)((uintptr_t)&dummy_func & page_mask);
 
 	if (!execute_supported && (tc->access_rights == PKEY_DISABLE_EXECUTE)) {
 		tst_res(TCONF, "skip PKEY_DISABLE_EXECUTE test");
@@ -184,8 +181,8 @@ static int pkey_test(struct tcase *tc, struct mmap_param *mpa)
 	buffer = SAFE_MMAP(NULL, size, mpa->prot, mpa->flags, fd, 0);
 
 	if (mpa->prot == (PROT_READ | PROT_WRITE | PROT_EXEC)) {
-		func_size = function_size((void (*)(void))function_size);
-		memcpy(buffer, (void *)function_size, func_size);
+		memcpy(buffer, page_to_copy, getpagesize());
+		func = (long (*)(void))(buffer + func_page_offset);
 	}
 
 	pkey = pkey_alloc(tc->flags, tc->access_rights);
@@ -211,8 +208,7 @@ static int pkey_test(struct tcase *tc, struct mmap_param *mpa)
 				"Write buffer success, buffer[0] = %d", *buffer);
 		break;
 		case PKEY_DISABLE_EXECUTE:
-			func = (size_t (*)())buffer;
-			tst_res(TFAIL | TERRNO, "Execute buffer result = %zi", func(func));
+			tst_res(TFAIL | TERRNO, "Execute buffer result = %ld", func());
 		break;
 		}
 		exit(0);
@@ -242,11 +238,10 @@ static int pkey_test(struct tcase *tc, struct mmap_param *mpa)
 		tst_res(TPASS, "Read & Write buffer success, buffer[0] = %d", *buffer);
 	break;
 	case PROT_READ | PROT_WRITE | PROT_EXEC:
-		func = (size_t (*)())buffer;;
-		if (func_size == func(func))
-			tst_res(TPASS, "Execute buffer success, result = %zi", func_size);
+		if (dummy_func() == func())
+			tst_res(TPASS, "Execute buffer success, result = %ld", dummy_func());
 		else
-			tst_res(TFAIL, "Execute buffer with unexpected result: %zi", func(func));
+			tst_res(TFAIL, "Execute buffer with unexpected result: %ld", func());
 	break;
 	}
 
