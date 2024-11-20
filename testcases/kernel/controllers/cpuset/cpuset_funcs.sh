@@ -195,8 +195,7 @@ cleanup()
 		done < "$subdir/tasks"
 		rmdir "$subdir"
 		if [ $? -ne 0 ]; then
-			tst_brkm TFAIL "Couldn't remove subdir - "
-						"$subdir in the cpuset"
+			tst_brkm TFAIL "Couldn't remove subdir - $subdir in the cpuset"
 		fi
 	done
 
