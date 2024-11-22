@@ -7,9 +7,6 @@ LTPLIBS = uinput
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-FILTER_OUT_MAKE_TARGETS		:= input_helper
-input01 input02 input03 input04 input05: LDLIBS += -lltpuinput
-
-input06: %: input_helper.o
+LDLIBS += -lltpuinput
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
