@@ -23,7 +23,9 @@
 #include "lapi/syscalls.h"
 #include "process_madvise.h"
 
-#define MEM_CHILD	(1 * TST_MB)
+#define MEM_LIMIT   (100 * TST_MB)
+#define MEMSW_LIMIT (200 * TST_MB)
+#define MEM_CHILD   (1   * TST_MB)
 
 static void **data_ptr;
 
@@ -67,6 +69,12 @@ static void child_alloc(void)
 
 static void setup(void)
 {
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%d", MEM_LIMIT);
+	if (SAFE_CG_HAS(tst_cg, "memory.swap.max"))
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%d", MEMSW_LIMIT);
+
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
+
 	data_ptr = SAFE_MMAP(NULL, sizeof(void *),
 			PROT_READ | PROT_WRITE,
 			MAP_SHARED | MAP_ANONYMOUS, -1, 0);
@@ -123,7 +131,9 @@ static struct tst_test test = {
 	.min_kver = "5.10",
 	.needs_checkpoints = 1,
 	.needs_root = 1,
-	.min_swap_avail = MEM_CHILD / TST_MB,
+	.min_mem_avail = 2 * MEM_LIMIT / TST_MB,
+	.min_swap_avail = 2 * MEM_CHILD / TST_MB,
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_SWAP=y",
 		NULL
