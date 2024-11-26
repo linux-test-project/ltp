@@ -97,7 +97,7 @@ static void test_bad_addr(unsigned int i)
 	pid = SAFE_FORK();
 	if (!pid) {
 		verify_recvmmsg(i, timeout);
-		_exit(0);
+		exit(0);
 	}
 
 	SAFE_WAITPID(pid, &status, 0);
