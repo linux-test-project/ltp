@@ -11,6 +11,7 @@
 TST_NEEDS_CMDS="grep kexec sed"
 TST_CNT=3
 TST_SETUP="setup"
+TST_MIN_KVER="5.3"
 
 IMA_KEXEC_IMAGE="${IMA_KEXEC_IMAGE:-/boot/vmlinuz-$(uname -r)}"
 REQUIRED_POLICY='^measure.*func=KEXEC_CMDLINE'
