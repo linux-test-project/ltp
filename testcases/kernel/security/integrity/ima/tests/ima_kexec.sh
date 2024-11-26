@@ -7,6 +7,7 @@
 # Verify that kexec cmdline is measured correctly.
 # Test attempts to kexec the existing running kernel image.
 # To kexec a different kernel image export IMA_KEXEC_IMAGE=<pathname>.
+# Test requires example IMA policy loadable with LTP_IMA_LOAD_POLICY=1.
 
 TST_NEEDS_CMDS="grep kexec sed"
 TST_CNT=3

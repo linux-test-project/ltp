@@ -76,14 +76,20 @@ require_policy_readable()
 	fi
 }
 
+check_policy_writable()
+{
+	[ -f $IMA_POLICY ] || return 1
+	# workaround for kernels < v4.18 without fix
+	# ffb122de9a60b ("ima: Reflect correct permissions for policy")
+	echo "" 2> log > $IMA_POLICY
+	grep -q "Device or resource busy" log && return 1
+	return 0
+}
+
 require_policy_writable()
 {
-	local err="IMA policy already loaded and kernel not configured to enable multiple writes to it (need CONFIG_IMA_WRITE_POLICY=y)"
-
-	[ -f $IMA_POLICY ] || tst_brk TCONF "$err"
-	# CONFIG_IMA_READ_POLICY
-	echo "" 2> log > $IMA_POLICY
-	grep -q "Device or resource busy" log && tst_brk TCONF "$err"
+	check_policy_writable || tst_brk TCONF \
+		"IMA policy already loaded and kernel not configured to enable multiple writes to it (need CONFIG_IMA_WRITE_POLICY=y)"
 }
 
 check_ima_policy_content()
@@ -183,16 +189,58 @@ verify_ima_policy()
 			# check IMA policy content
 			while read line; do
 				if ! grep -q "$line" $IMA_POLICY; then
-					tst_brk TCONF "missing required policy '$line'"
+					tst_res TINFO "WARNING: missing required policy content: '$line'"
+					return 1
 				fi
-				IMA_POLICY_CHECKED=1
 			done < $file
+			IMA_POLICY_CHECKED=1
 		else
 			tst_res TINFO "policy is not readable, failure will be treated as TCONF"
 			IMA_FAIL="TCONF"
 			IMA_BROK="TCONF"
+			return 1
 		fi
 	fi
+	return 0
+}
+
+load_ima_policy()
+{
+	local file="$TST_DATAROOT/$REQUIRED_POLICY_CONTENT"
+
+	if [ "$LTP_IMA_LOAD_POLICY" != 1 -a "$IMA_POLICY_CHECKED" != 1 ]; then
+		tst_res TCONF "missing required policy, example policy can be loaded with LTP_IMA_LOAD_POLICY=1"
+		return 0
+	fi
+
+	if [ "$IMA_POLICY_CHECKED" = 1 ]; then
+		tst_res TINFO "valid policy already loaded, ignore LTP_IMA_LOAD_POLICY=1"
+	fi
+
+	tst_res TINFO "trying to load '$file' policy:"
+	cat $file
+	if ! check_policy_writable; then
+		tst_res TINFO "WARNING: IMA policy already loaded and kernel not configured to enable multiple writes to it (need CONFIG_IMA_WRITE_POLICY=y), reboot required, failures will be treated as TCONF"
+		IMA_FAIL="TCONF"
+		IMA_BROK="TCONF"
+		LTP_IMA_LOAD_POLICY=
+		return
+	fi
+
+	cat "$file" 2> log > $IMA_POLICY
+	if grep -q "Device or resource busy" log; then
+		tst_brk TBROK "loading policy failed"
+	fi
+
+	if grep -q "write error: Permission denied" log; then
+		tst_brk TCONF "loading unsigned policy failed"
+	fi
+
+	IMA_POLICY_LOADED=1
+
+	tst_res TINFO "example policy successfully loaded"
+	IMA_FAIL="TFAIL"
+	IMA_BROK="TBROK"
 }
 
 ima_setup()
@@ -217,7 +265,9 @@ ima_setup()
 		cd "$TST_MNTPOINT"
 	fi
 
-	verify_ima_policy
+	if ! verify_ima_policy; then
+		load_ima_policy
+	fi
 
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
@@ -231,6 +281,10 @@ ima_cleanup()
 	for dir in $UMOUNT; do
 		umount $dir
 	done
+
+	if [ "$IMA_POLICY_LOADED" = 1 ]; then
+		tst_res TINFO "WARNING: policy loaded via LTP_IMA_LOAD_POLICY=1, reboot recommended"
+	fi
 }
 
 set_digest_index()

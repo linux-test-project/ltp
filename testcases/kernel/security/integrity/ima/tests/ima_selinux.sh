@@ -5,6 +5,7 @@
 # Author: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
 #
 # Verify measurement of SELinux policy hash and state.
+# Test requires example IMA policy loadable with LTP_IMA_LOAD_POLICY=1.
 #
 # Relevant kernel commits:
 # * fdd1ffe8a812 ("selinux: include a consumer of the new IMA critical data hook")

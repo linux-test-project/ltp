@@ -5,7 +5,7 @@
 # Author: Mimi Zohar <zohar@linux.ibm.com>
 #
 # Verify that measurements are added to the measurement list based on policy.
-# Test requires ima_policy=tcb.
+# Test requires either ima_policy=tcb or example policy loadable with LTP_IMA_LOAD_POLICY=1.
 
 TST_NEEDS_CMDS="awk cut sed"
 TST_SETUP="setup"

@@ -5,6 +5,7 @@
 # Author: Lachlan Sneff <t-josne@linux.microsoft.com>
 #
 # Verify that keys are measured correctly based on policy.
+# Test requires example IMA policy loadable with LTP_IMA_LOAD_POLICY=1.
 
 TST_NEEDS_CMDS="cmp cut grep sed"
 TST_CNT=2
