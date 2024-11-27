@@ -631,3 +631,41 @@ void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len)
 
 	SAFE_FCLOSE(f);
 }
+
+/*
+ * List of kernel config options that may degrade performance when enabled.
+ */
+static struct tst_kconfig_var slow_kconfigs[] = {
+	TST_KCONFIG_INIT("CONFIG_PROVE_LOCKING"),
+	TST_KCONFIG_INIT("CONFIG_LOCKDEP"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_SPINLOCK"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_RT_MUTEXES"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_MUTEXES"),
+	TST_KCONFIG_INIT("CONFIG_KASAN"),
+	TST_KCONFIG_INIT("CONFIG_SLUB_RCU_DEBUG"),
+	TST_KCONFIG_INIT("CONFIG_TRACE_IRQFLAGS"),
+	TST_KCONFIG_INIT("CONFIG_LATENCYTOP"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_NET"),
+	TST_KCONFIG_INIT("CONFIG_EXT4_DEBUG"),
+	TST_KCONFIG_INIT("CONFIG_QUOTA_DEBUG"),
+	TST_KCONFIG_INIT("CONFIG_FAULT_INJECTION"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_OBJECTS")
+};
+
+int tst_has_slow_kconfig(void)
+{
+	unsigned int i;
+
+	tst_kconfig_read(slow_kconfigs, ARRAY_SIZE(slow_kconfigs));
+
+	for (i = 0; i < ARRAY_SIZE(slow_kconfigs); i++) {
+		if (slow_kconfigs[i].choice == 'y') {
+			tst_res(TINFO,
+				"%s kernel option detected which might slow the execution",
+				slow_kconfigs[i].id);
+			return 1;
+		}
+	}
+
+	return 0;
+}

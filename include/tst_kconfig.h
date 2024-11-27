@@ -98,4 +98,16 @@ struct tst_kcmdline_var {
  */
 void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len);
 
+/*
+ * tst_has_slow_kconfig() - Check if any performance-degrading kernel configs are enabled.
+ *
+ * This function iterates over the list of slow kernel configuration options
+ * (`tst_slow_kconfigs`) and checks if any of them are enabled in the running kernel.
+ *
+ * Return:
+ * - 1 if at least one slow kernel config is enabled.
+ * - 0 if none of the slow kernel configs are enabled.
+ */
+int tst_has_slow_kconfig(void);
+
 #endif	/* TST_KCONFIG_H__ */

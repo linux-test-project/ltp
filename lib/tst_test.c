@@ -555,6 +555,9 @@ static int multiply_runtime(int max_runtime)
 
 	parse_mul(&runtime_mul, "LTP_RUNTIME_MUL", 0.0099, 100);
 
+	if (tst_has_slow_kconfig())
+		max_runtime *= 4;
+
 	return max_runtime * runtime_mul;
 }
 
