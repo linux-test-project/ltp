@@ -5,7 +5,6 @@ ldd01_sh ldd01.sh
 nm01_sh nm01.sh
 file01_sh file01.sh
 tar01_sh  tar_tests.sh
-logrotate_sh export TCdat=$LTPROOT/testcases/bin; logrotate_tests.sh
 cpio01_sh cpio_tests.sh
 unzip01_sh unzip01.sh
 gzip01_sh gzip_tests.sh
