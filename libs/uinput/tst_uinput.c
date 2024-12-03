@@ -13,6 +13,7 @@
 #include "tst_test.h"
 
 #include "tst_uinput.h"
+#include "tst_safe_stdio.h"
 
 #define VIRTUAL_DEVICE "virtual-device-ltp"
 
@@ -127,6 +128,29 @@ void destroy_input_device(int fd)
 	SAFE_CLOSE(fd);
 }
 
+static void check_ui_get_sysname_ioctl(int fd)
+{
+	char sys_name[256];
+	char dev_name[256];
+	char *path;
+
+	SAFE_IOCTL(fd, UI_GET_SYSNAME(sizeof(sys_name)), sys_name, NULL);
+	SAFE_ASPRINTF(&path, "/sys/devices/virtual/input/%s/name", sys_name);
+
+	if (FILE_SCANF(path, "%s", dev_name)) {
+		free(path);
+		tst_brk(TBROK|TERRNO, "Failed to read '%s'", path);
+		return;
+	}
+
+	if (strcmp(VIRTUAL_DEVICE, dev_name)) {
+		free(path);
+		tst_brk(TBROK, "ioctl UI_GET_SYSNAME returned wrong name");
+	}
+
+	free(path);
+}
+
 void create_input_device(int fd)
 {
 	int nb;
@@ -144,8 +168,10 @@ void create_input_device(int fd)
 	SAFE_IOCTL(fd, UI_DEV_CREATE, NULL);
 
 	for (nb = 100; nb > 0; nb--) {
-		if (check_device())
+		if (check_device()) {
+			check_ui_get_sysname_ioctl(fd);
 			return;
+		}
 		usleep(10000);
 	}
 
