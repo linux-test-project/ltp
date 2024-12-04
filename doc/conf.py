@@ -5,9 +5,9 @@
 
 import os
 import re
-import sphinx
 import socket
 import urllib.request
+import sphinx
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -116,19 +116,19 @@ def generate_syscalls_stats(_):
     ]
 
     # fetch syscalls file
+    syscalls_url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/mips/kernel/syscalls"
     error = False
     try:
         socket.setdefaulttimeout(3)
         urllib.request.urlretrieve(
-            "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/mips/kernel/syscalls/syscall_n64.tbl",
-            "syscalls.tbl")
-    except Exception as err:
+            f"{syscalls_url}/syscall_n64.tbl", "syscalls.tbl")
+    except urllib.error.URLError as err:
         error = True
         logger = sphinx.util.logging.getLogger(__name__)
-        msg = "Can't download syscall_n64.tbl from kernel sources"
+        msg = f"Can't download syscall_n64.tbl from kernel sources ({err})"
         logger.warning(msg)
 
-        with open(output, 'w+') as stats:
+        with open(output, 'w+', encoding='utf-8') as stats:
             stats.write(f".. warning::\n\n    {msg}")
 
     if error:
@@ -142,7 +142,7 @@ def generate_syscalls_stats(_):
     # collect all available kernel syscalls
     regexp = re.compile(r'\d+\s+n64\s+(?P<syscall>\w+)\s+\w+')
     ker_syscalls = []
-    with open("syscalls.tbl", 'r') as data:
+    with open("syscalls.tbl", 'r', encoding='utf-8') as data:
         for line in data:
             match = regexp.search(line)
             if match:
@@ -150,7 +150,7 @@ def generate_syscalls_stats(_):
 
     # collect all LTP tested syscalls
     ltp_syscalls = []
-    for root, _, files in os.walk('../testcases/kernel/syscalls'):
+    for _, _, files in os.walk('../testcases/kernel/syscalls'):
         for myfile in files:
             if myfile.endswith('.c'):
                 ltp_syscalls.append(myfile)
@@ -196,41 +196,47 @@ def generate_syscalls_stats(_):
         '    :header-rows: 0\n\n',
     ]
 
+    max_columns = 3
+
     for sysname, tested in syscalls.items():
         if tested:
-            if (index_tested % 3) == 0:
+            if (index_tested % max_columns) == 0:
                 table_tested.append(f'    * - {sysname}\n')
             else:
                 table_tested.append(f'      - {sysname}\n')
 
             index_tested += 1
         else:
-            if (index_untest % 3) == 0:
+            if (index_untest % max_columns) == 0:
                 table_untest.append(f'    * - {sysname}\n')
             else:
                 table_untest.append(f'      - {sysname}\n')
 
             index_untest += 1
 
-    left = index_tested % 3
+    left = index_tested % max_columns
     if left > 0:
-        for index in range(0, 3 - left):
-            table_tested.append(f'      -\n')
+        for _ in range(0, max_columns - left):
+            table_tested.append('      -\n')
 
-    left = index_untest % 3
+    left = index_untest % max_columns
     if left > 0:
-        for index in range(0, 3 - left):
-            table_untest.append(f'      -\n')
+        for _ in range(0, max_columns - left):
+            table_untest.append('      -\n')
 
     text.extend(table_tested)
     text.append('\n')
     text.extend(table_untest)
 
     # write the file
-    with open(output, 'w+') as stats:
+    with open(output, 'w+', encoding='utf-8') as stats:
         stats.writelines(text)
 
 
 def setup(app):
+    """
+    Setup the current documentation, using self generated data and graphics
+    customizations.
+    """
     app.add_css_file('custom.css')
     app.connect('builder-inited', generate_syscalls_stats)
