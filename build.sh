@@ -173,13 +173,14 @@ cross    cross-compile build (requires set compiler via -c switch)
 native   native build
 
 RUN:
-autotools   run only 'make autotools'
-configure   run only 'configure'
-build       run only 'make'
-test        run only 'make test' (not supported for cross-compile build)
-test-c      run only 'make test-c' (not supported for cross-compile build)
-test-shell  run only 'make test-shell' (not supported for cross-compile build)
-install     run only 'make install'
+autotools          run only 'make autotools'
+configure          run only 'configure'
+build              run only 'make'
+test               run only 'make test' (not supported for cross-compile build)
+test-c             run only 'make test-c' (not supported for cross-compile build)
+test-shell         run only 'make test-shell' (not supported for cross-compile build)
+test-shell-loader  run only 'make test-shell-loader' (not supported for cross-compile build)
+install            run only 'make install'
 
 Default configure options:
 in-tree:    $CONFIGURE_OPTS_IN_TREE
@@ -206,7 +207,7 @@ while getopts "c:hio:p:r:t:" opt; do
 		esac;;
 	p) prefix="$OPTARG";;
 	r) case "$OPTARG" in
-		autotools|configure|build|test|test-c|test-shell|install) run="$OPTARG";;
+		autotools|configure|build|test|test-c|test-shell|test-shell-loader|install) run="$OPTARG";;
 		*) echo "Wrong run type '$OPTARG'" >&2; usage; exit 1;;
 		esac;;
 	t) case "$OPTARG" in
@@ -232,7 +233,7 @@ if [ -z "$run" -o "$run" = "build" ]; then
 	eval build_${tree}_tree
 fi
 
-if [ -z "$run" -o "$run" = "test" -o "$run" = "test-c" -o "$run" = "test-shell" ]; then
+if [ -z "$run" -o "$run" = "test" -o "$run" = "test-c" -o "$run" = "test-shell" -o "$run" = "test-shell-loader" ]; then
 	if [ "$build" = "cross" ]; then
 		echo "cross-compile build, skipping running tests" >&2
 	else
