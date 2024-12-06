@@ -13,9 +13,9 @@ apk add \
 	clang \
 	gcc \
 	git \
+	acl-dev \
 	keyutils-dev \
 	libaio-dev \
-	libacl \
 	libcap-dev \
 	libselinux-dev \
 	libsepol-dev \
