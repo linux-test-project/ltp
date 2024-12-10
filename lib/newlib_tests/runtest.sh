@@ -1,14 +1,45 @@
 #!/bin/sh
-# Copyright (c) 2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2021-2024 Petr Vorel <pvorel@suse.cz>
 
-LTP_C_API_TESTS="${LTP_C_API_TESTS:-test05 test07 test09 test15 test_runtime01
-tst_needs_cmds01 tst_needs_cmds02 tst_needs_cmds03 tst_needs_cmds06
-tst_needs_cmds07 tst_bool_expr test_exec test_timer tst_res_hexd tst_strstatus
-tst_fuzzy_sync01 tst_fuzzy_sync02 tst_fuzzy_sync03 test_zero_hugepage.sh
-test_kconfig.sh test_kconfig03 test_children_cleanup.sh}"
+# TODO "unknown failure, exit code": test_assert test08 tst_cgroup01 tst_cgroup02 tst_res_flags variant
+# TODO TFAIL: test_macros0[1-6] test23 test26
+# TODO TBROK: test_exec_child test_kconfig01 test_kconfig02 tst_needs_cmds04 tst_needs_cmds05 test_runtime02 test01 test02 test03 test04 test06 test11 test13 test22 test25 tst_safe_fileops
+# TODO TWARN: test_guarded_buf test14 tst_capability01 tst_print_result
+LTP_C_API_TESTS="${LTP_C_API_TESTS:-
+test_children_cleanup.sh
+test_kconfig.sh
+test_kconfig03
+test_parse_filesize
+test_runtime01
+test_timer
+test_zero_hugepage.sh
+test0[579]
+test1[59]
+test2[04]
+tst_bool_expr
+tst_capability02
+tst_device
+tst_expiration_timer
+tst_fuzzy_sync0[1-3]
+tst_needs_cmds0[1-36-8]
+tst_res_hexd
+tst_safe_sscanf
+tst_strstatus}"
 
-LTP_SHELL_API_TESTS="${LTP_SHELL_API_TESTS:-shell/tst_check_driver.sh
-shell/tst_check_kconfig0[1-5].sh shell/tst_errexit.sh shell/net/*.sh}"
+# TODO "unknown failure, exit code": shell/tst_res_flags.sh shell/timeout03.sh
+# TODO TBROK: shell/test_timeout.sh (sometimes) shell/timeout04.sh
+LTP_SHELL_API_TESTS="${LTP_SHELL_API_TESTS:-
+shell/timeout0[1-2].sh
+shell/tst_all_filesystems.sh
+shell/tst_all_filesystems_skip.sh
+shell/tst_errexit.sh
+shell/tst_format_device.sh
+shell/tst_check_driver.sh
+shell/tst_check_kconfig0[1-5].sh
+shell/tst_mount_device.sh
+shell/tst_mount_device_tmpfs.sh
+shell/tst_skip_filesystems.sh
+shell/net/*.sh}"
 
 cd $(dirname $0)
 PATH="$PWD/../../testcases/lib/:$PATH"

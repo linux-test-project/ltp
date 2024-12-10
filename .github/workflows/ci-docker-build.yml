@@ -114,7 +114,7 @@ jobs:
     container:
       image: ${{ matrix.container }}
       env: ${{ matrix.env }}
-      options: --security-opt seccomp=unconfined
+      options: --privileged
 
     steps:
     - name: Show OS
