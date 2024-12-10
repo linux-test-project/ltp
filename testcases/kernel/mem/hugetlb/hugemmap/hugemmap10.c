@@ -449,8 +449,8 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.needs_hugetlbfs = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_OC_HPAGES, NULL},
-		{PATH_NR_HPAGES, NULL},
+		{PATH_OC_HPAGES, NULL, TST_SR_TCONF},
+		{PATH_NR_HPAGES, NULL, TST_SR_TCONF},
 		{}
 	},
 	.setup = setup,
