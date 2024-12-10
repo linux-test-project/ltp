@@ -114,7 +114,7 @@ jobs:
     container:
       image: ${{ matrix.container }}
       env: ${{ matrix.env }}
-      options: --privileged
+      options: --privileged -v/boot:/boot
 
     steps:
     - name: Show OS
