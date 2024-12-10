@@ -82,6 +82,8 @@ static void run(void)
 static void setup(void)
 {
 	fd_send = open_uinput();
+	if (fd_send == -1)
+		tst_brk(TCONF, "Virtual device is not available");
 
 	setup_mouse_events(fd_send);
 	SAFE_IOCTL(fd_send, UI_SET_EVBIT, EV_KEY);

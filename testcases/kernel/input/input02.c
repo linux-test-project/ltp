@@ -53,6 +53,9 @@ static void run(void)
 static void setup(void)
 {
 	fd_send = open_uinput();
+	if (fd_send == -1)
+		tst_brk(TCONF, "Virtual device is not available");
+
 	setup_mouse_events(fd_send);
 	create_input_device(fd_send);
 

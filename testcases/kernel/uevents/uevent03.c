@@ -27,6 +27,9 @@ static int mouse_fd;
 static void create_uinput_mouse(void)
 {
 	mouse_fd = open_uinput();
+	if (mouse_fd == -1)
+		tst_brk(TCONF, "Virtual device is not available");
+
 	setup_mouse_events(mouse_fd);
 	create_input_device(mouse_fd);
 }
