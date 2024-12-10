@@ -120,7 +120,7 @@ def generate_syscalls_stats(_):
     try:
         socket.setdefaulttimeout(3)
         urllib.request.urlretrieve(
-            "https://raw.githubusercontent.com/torvalds/linux/master/arch/mips/kernel/syscalls/syscall_n64.tbl",
+            "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/mips/kernel/syscalls/syscall_n64.tbl",
             "syscalls.tbl")
     except Exception as err:
         error = True
