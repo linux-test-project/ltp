@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include "config.h"
-#include "syscalls.h"
+#include "lapi/syscalls.h"
 
 #ifndef HAVE_STRUCT_CACHESTAT_RANGE
 struct cachestat_range {
