@@ -33,7 +33,7 @@ static void run_test(void)
 	void *p;
 	unsigned long initial_rsvd, map_rsvd, madvise_rsvd, end_rsvd;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	initial_rsvd = SAFE_READ_MEMINFO(MEMINFO_HPAGE_RSVD);
 	tst_res(TINFO, "Reserve count before map: %lu", initial_rsvd);

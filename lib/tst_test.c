@@ -1101,7 +1101,7 @@ static void prepare_and_mount_hugetlb_fs(void)
 	mntpoint_mounted = 1;
 }
 
-int tst_creat_unlinked(const char *path, int flags)
+int tst_creat_unlinked(const char *path, int flags, mode_t mode)
 {
 	char template[PATH_MAX];
 	int len, c, range;
@@ -1120,7 +1120,7 @@ int tst_creat_unlinked(const char *path, int flags)
 	}
 
 	flags |= O_CREAT|O_EXCL|O_RDWR;
-	fd = SAFE_OPEN(template, flags);
+	fd = SAFE_OPEN(template, flags, mode);
 	SAFE_UNLINK(template);
 	return fd;
 }

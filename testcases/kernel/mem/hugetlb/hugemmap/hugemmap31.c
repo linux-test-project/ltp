@@ -26,7 +26,7 @@ static void run_test(void)
 	unsigned long *pl, *ql;
 	unsigned long i;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE, MAP_SHARED,
 		 fd, 0);
 

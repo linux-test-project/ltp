@@ -197,7 +197,7 @@ static void setup(void)
 	hpage_size = tst_get_hugepage_size();
 	SAFE_SIGACTION(SIGSEGV, &sa, NULL);
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	addr = SAFE_MMAP(NULL, 2*hpage_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 	memset(addr, 0, hpage_size);
 	SAFE_MUNMAP(addr, hpage_size);

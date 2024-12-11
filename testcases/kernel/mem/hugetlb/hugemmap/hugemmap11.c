@@ -34,8 +34,8 @@ static void run_test(void)
 	void *p;
 	char buf[IOSZ] __attribute__((aligned(IOSZ)));
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
-	nfd = tst_creat_unlinked(NORMAL_PATH, O_DIRECT);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
+	nfd = tst_creat_unlinked(NORMAL_PATH, O_DIRECT, 0600);
 	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
 	memcpy(p, P0, 8);
 

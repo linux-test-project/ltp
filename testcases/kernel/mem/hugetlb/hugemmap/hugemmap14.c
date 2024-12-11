@@ -134,7 +134,7 @@ static void setup(void)
 		tst_brk(TCONF, "Machine must be >32 bit");
 	if (hpage_size > FOURGB)
 		tst_brk(TCONF, "Huge page size is too large");
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

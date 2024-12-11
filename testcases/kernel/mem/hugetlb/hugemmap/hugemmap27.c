@@ -99,8 +99,8 @@ cleanup:
 static void setup(void)
 {
 	hpage_size = tst_get_hugepage_size();
-	fd1 = tst_creat_unlinked(MNTPOINT, 0);
-	fd2 = tst_creat_unlinked(MNTPOINT, 0);
+	fd1 = tst_creat_unlinked(MNTPOINT, 0, 0600);
+	fd2 = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

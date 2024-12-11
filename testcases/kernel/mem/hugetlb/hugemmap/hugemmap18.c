@@ -129,7 +129,7 @@ static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:")*1024;
 	page_size = getpagesize();
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

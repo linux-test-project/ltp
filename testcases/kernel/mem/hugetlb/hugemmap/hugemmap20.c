@@ -35,7 +35,7 @@ static void run_test(unsigned int i)
 	void *p;
 	struct tcase *tc = &tcases[i];
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	p = SAFE_MMAP(0, hpage_size, PROT_READ|PROT_WRITE, tc->flags, fd, 0);
 
 	ret = mlock(p, hpage_size);

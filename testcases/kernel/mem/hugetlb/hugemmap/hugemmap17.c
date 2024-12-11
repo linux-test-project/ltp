@@ -79,7 +79,7 @@ static void setup(void)
 		tst_brk(TCONF, "Huge page size is too large");
 	if (TRUNCATE_POINT % hpage_size)
 		tst_brk(TCONF, "Truncation point is not aligned to huge page size");
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

@@ -135,7 +135,7 @@ void setup(void)
 	if (r.rlim_cur != RLIM_INFINITY)
 		tst_brk(TCONF, "Stack rlimit must be 'unlimited'");
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	/* shared memory to pass a (void *) from child process */
 	shared_area = SAFE_MMAP(0, getpagesize(), PROT_READ|PROT_WRITE,

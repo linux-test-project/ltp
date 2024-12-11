@@ -94,7 +94,7 @@ static void run_test(void)
 static void setup(void)
 {
 	hpage_size = tst_get_hugepage_size();
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

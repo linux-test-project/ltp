@@ -36,7 +36,7 @@ static void run_test(void)
 	free_initial = SAFE_READ_MEMINFO(MEMINFO_HPAGE_FREE);
 	max_iterations = MIN(free_initial, MAX_PAGES_TO_USE);
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	/* First preallocate file with max_iterations pages */
 	err = fallocate(fd, 0, 0, hpage_size * max_iterations);

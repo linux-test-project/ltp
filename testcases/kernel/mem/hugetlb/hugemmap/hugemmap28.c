@@ -26,7 +26,7 @@ static void run_test(void)
 
 	initial_resv = SAFE_READ_MEMINFO(MEMINFO_HPAGE_RSVD);
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	p = SAFE_MMAP(NULL, hpage_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	q = SAFE_MMAP(NULL, hpage_size,

@@ -85,7 +85,7 @@ static void run_test(void)
 	long p_size, q_size;
 	int ret;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	ret = init_slice_boundary(fd);
 	if (ret)
 		goto cleanup;

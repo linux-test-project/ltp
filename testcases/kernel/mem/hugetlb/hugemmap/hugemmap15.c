@@ -204,7 +204,7 @@ static void run_test(void)
 	SAFE_SIGACTION(SIGBUS, &sa, NULL);
 	SAFE_SIGACTION(SIGSEGV, &sa, NULL);
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	for (i = 0; i < NUM_REPETITIONS; i++)
 		if (test_once(fd))

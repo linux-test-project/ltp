@@ -76,7 +76,7 @@ static void run_test(void)
 	void *p;
 	int ret;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	p = map_align(3*hpage_size, hpage_size);
 
 	SAFE_MUNMAP(p, hpage_size);

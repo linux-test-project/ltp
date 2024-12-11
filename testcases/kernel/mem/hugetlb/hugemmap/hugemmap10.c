@@ -58,7 +58,7 @@ static int kernel_has_private_reservations(void)
 	void *p;
 
 	read_meminfo_huge(&t, &f, &r, &s);
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
 
@@ -182,7 +182,7 @@ static int map_(int s, int hpages, int flags, char *desc, int line)
 {
 	long et, ef, er, es;
 
-	map_fd[s] = tst_creat_unlinked(MNTPOINT, 0);
+	map_fd[s] = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	map_size[s] = hpages * hpage_size;
 	map_addr[s] = SAFE_MMAP(NULL, map_size[s], PROT_READ|PROT_WRITE, flags,
 				map_fd[s], 0);
