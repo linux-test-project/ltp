@@ -9,9 +9,29 @@ LTP C API
 
 Core LTP API
 ------------
-
 .. kernel-doc:: ../../include/tst_res_flags.h
 .. kernel-doc:: ../../include/tst_test.h
+
+Capabilities
+------------
+.. kernel-doc:: ../../include/tst_capability.h
+
+Checkpoints
+-----------
+
+.. kernel-doc:: ../../include/tst_checkpoint.h
+
+Crypto
+------
+.. kernel-doc:: ../../include/tst_crypto.h
+.. kernel-doc:: ../../include/tst_af_alg.h
+
+Guarded buffers
+---------------
+.. kernel-doc:: ../../include/tst_buffers.h
+
+Kernel
+------
 .. kernel-doc:: ../../include/tst_kernel.h
 
 Option parsing
@@ -19,25 +39,10 @@ Option parsing
 
 .. kernel-doc:: ../../include/tst_parse.h
 
-Guarded buffers
----------------
-
-.. kernel-doc:: ../../include/tst_buffers.h
-
-Checkpoints
------------
-
-.. kernel-doc:: ../../include/tst_checkpoint.h
-
-Capabilities
-------------
-
-.. kernel-doc:: ../../include/tst_capability.h
-
-libltpswap
-----------
-.. kernel-doc:: ../../include/libswap.h
-
 Temporary directory
 -------------------
 .. kernel-doc:: ../../include/tst_tmpdir.h
+
+LTP libraries
+-------------
+.. kernel-doc:: ../../include/libswap.h

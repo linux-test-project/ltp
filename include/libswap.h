@@ -5,7 +5,9 @@
  * Author: Stanislav Kholmanskikh <stanislav.kholmanskikh@oracle.com>
  */
 
-/*
+/**
+ * DOC: libltpswap
+ *
  * Contains common content for all swapon/swapoff tests.
  */
 
