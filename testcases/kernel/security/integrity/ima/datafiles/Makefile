@@ -8,6 +8,6 @@ top_srcdir	?= ../../../../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-SUBDIRS	:= ima_kexec ima_keys ima_measurements ima_policy ima_selinux
+SUBDIRS	:= ima_kexec ima_keys ima_measurements ima_policy ima_selinux ima_violations
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
