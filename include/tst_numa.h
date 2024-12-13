@@ -48,7 +48,7 @@ const char *tst_mempolicy_mode_name(int mode);
  */
 void *tst_numa_map(const char *path, size_t size);
 
-/*
+/**
  * Writes to memory in order to get the pages faulted.
  *
  * @ptr Start of the mapping.
@@ -59,7 +59,7 @@ static inline void tst_numa_fault(void *ptr, size_t size)
 	memset(ptr, 'a', size);
 }
 
-/*
+/**
  * Frees the memory.
  *
  * @ptr Start of the mapping.
