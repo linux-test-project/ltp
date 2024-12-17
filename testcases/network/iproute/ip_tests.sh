@@ -12,7 +12,7 @@ TST_TESTFUNC="test"
 TST_CLEANUP="cleanup"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
-TST_NEEDS_CMDS="cat awk diff"
+TST_NEEDS_CMDS="awk cat diff ip lsmod modprobe"
 TST_NEEDS_DRIVERS="dummy"
 
 
