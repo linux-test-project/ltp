@@ -3,15 +3,15 @@
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Xing Gu <gux.fnst@cn.fujitsu.com>
  */
-/*
- * Description:
- *   Verify that,
- *   1) vmsplice() returns -1 and sets errno to EBADF if fd
- *      is not valid.
- *   2) vmsplice() returns -1 and sets errno to EBADF if fd
- *      doesn't refer to a pipe.
- *   3) vmsplice() returns -1 and sets errno to EINVAL if
- *      nr_segs is greater than IOV_MAX.
+
+/*\
+ * [Description]
+ *
+ * Verify that, vmsplice(2) returns -1 and sets errno to:
+ *
+ * - EBADF if fd is not valid.
+ * - EBADF if fd doesn't refer to a pipe.
+ * - EINVAL if nr_segs is greater than IOV_MAX.
  */
 
 #define _GNU_SOURCE
