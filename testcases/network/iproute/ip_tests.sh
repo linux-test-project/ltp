@@ -179,7 +179,7 @@ test5()
 $ip4_addr via 127.0.0.1 dev lo
 	EOF
 
-	ip route show | grep "$ip4_addr via 127.0.0.1 dev lo" > tst_ip.out 2>&1
+	ip route show | grep "$ip4_addr via 127\.0\.0\.1 dev lo" > tst_ip\.out 2>&1
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "'ip route show' command failed"
 		return
@@ -195,7 +195,7 @@ $ip4_addr via 127.0.0.1 dev lo
 
 	ROD ip route del $ip4_addr via 127.0.0.1
 
-	ip route show | grep 127.0.0.1 > /dev/null
+	ip route show | grep -q "$ip4_addr via 127\.0\.0\.1 dev lo"
 	if [ $? -eq 0 ]; then
 		tst_res TFAIL "route not deleted"
 		return
