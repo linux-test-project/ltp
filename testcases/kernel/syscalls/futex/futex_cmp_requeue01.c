@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2019 Xiao Yang <ice_yangxiao@163.com>
+ */
+
+/*\
+ * [Description]
  *
- * Description:
- * Testcase to check the basic functionality of futex(FUTEX_CMP_REQUEUE).
+ * Verify the basic functionality of futex(FUTEX_CMP_REQUEUE).
+ *
  * futex(FUTEX_CMP_REQUEUE) can wake up the number of waiters specified
  * by val argument and then requeue the number of waiters limited by val2
- * argument(i.e. move some remaining waiters from uaddr to uaddr2 address).
+ * argument (i.e. move some remaining waiters from uaddr to uaddr2 address).
  */
 
 #include <errno.h>
