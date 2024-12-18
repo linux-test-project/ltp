@@ -373,6 +373,7 @@ static int parse_array(FILE *f, struct data_node *node)
 {
 	char *token;
 	char *entry = NULL;
+	int parent_cnt = 0;
 
 	for (;;) {
 		if (!(token = next_token(f, NULL)))
@@ -403,7 +404,7 @@ static int parse_array(FILE *f, struct data_node *node)
 			return 0;
 		}
 
-		if (!strcmp(token, ",")) {
+		if (!strcmp(token, ",") && parent_cnt <= 0) {
 			finalize_array_entry(&entry, node);
 			continue;
 		}
@@ -412,6 +413,12 @@ static int parse_array(FILE *f, struct data_node *node)
 			data_node_array_add(node, data_node_null());
 			continue;
 		}
+
+		if (!strcmp(token, "("))
+			parent_cnt++;
+
+		if (!strcmp(token, ")"))
+			parent_cnt--;
 
 		try_apply_macro(&token);
 		str_append(&entry, token);
