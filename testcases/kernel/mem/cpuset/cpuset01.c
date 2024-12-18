@@ -30,7 +30,8 @@
 #include <numaif.h>
 #endif
 
-#include "mem.h"
+#include "../include/mem.h"
+#include "tst_test.h"
 #include "numa_helper.h"
 
 #ifdef HAVE_NUMA_V2
@@ -164,7 +165,7 @@ static long count_cpu(void)
 {
 	int ncpus = 0;
 
-	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+	while (tst_path_exists(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
 		ncpus++;
 
 	return ncpus;

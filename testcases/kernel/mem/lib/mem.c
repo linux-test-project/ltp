@@ -545,19 +545,19 @@ static void gather_node_cpus(char *cpus, long nd)
 	char buf[BUFSIZ];
 	char path[BUFSIZ], path1[BUFSIZ];
 
-	while (path_exist(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
+	while (tst_path_exists(PATH_SYS_SYSTEM "/cpu/cpu%d", ncpus))
 		ncpus++;
 
 	for (i = 0; i < ncpus; i++) {
 		snprintf(path, BUFSIZ,
 			 PATH_SYS_SYSTEM "/node/node%ld/cpu%d", nd, i);
-		if (path_exist(path)) {
+		if (tst_path_exists("%s", path)) {
 			snprintf(path1, BUFSIZ, "%s/online", path);
 			/*
 			 * if there is no online knob, then the cpu cannot
 			 * be taken offline
 			 */
-			if (path_exist(path1)) {
+			if (tst_path_exists("%s", path1)) {
 				SAFE_FILE_SCANF(path1, "%ld", &online);
 				if (online == 0)
 					continue;
@@ -624,18 +624,6 @@ unsigned int get_a_numa_node(void)
 
 	/* not reached */
 	abort();
-}
-
-int path_exist(const char *path, ...)
-{
-	va_list ap;
-	char pathbuf[PATH_MAX];
-
-	va_start(ap, path);
-	vsnprintf(pathbuf, sizeof(pathbuf), path, ap);
-	va_end(ap);
-
-	return access(pathbuf, F_OK) == 0;
 }
 
 void update_shm_size(size_t * shm_size)
