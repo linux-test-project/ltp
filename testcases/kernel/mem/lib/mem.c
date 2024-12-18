@@ -593,39 +593,6 @@ void write_cpusets(const struct tst_cg_group *cg, long nd)
 
 /* shared */
 
-/* Warning: *DO NOT* use this function in child */
-unsigned int get_a_numa_node(void)
-{
-	unsigned int nd1, nd2;
-	int ret;
-
-	ret = get_allowed_nodes(0, 2, &nd1, &nd2);
-	switch (ret) {
-	case 0:
-		break;
-	case -3:
-		tst_brk(TCONF, "requires a NUMA system.");
-	default:
-		tst_brk(TBROK | TERRNO, "1st get_allowed_nodes");
-	}
-
-	ret = get_allowed_nodes(NH_MEMS | NH_CPUS, 1, &nd1);
-	switch (ret) {
-	case 0:
-		tst_res(TINFO, "get node%u.", nd1);
-		return nd1;
-	case -3:
-		tst_brk(TCONF, "requires a NUMA system that has "
-			 "at least one node with both memory and CPU "
-			 "available.");
-	default:
-		tst_brk(TBROK | TERRNO, "2nd get_allowed_nodes");
-	}
-
-	/* not reached */
-	abort();
-}
-
 void update_shm_size(size_t * shm_size)
 {
 	size_t shmmax;
