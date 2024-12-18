@@ -36,7 +36,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "mem.h"
+#include "tst_test.h"
+#include "thp.h"
 #include "lapi/mmap.h"
 
 static void thp_test(void);
@@ -83,7 +84,7 @@ static void setup(void)
 
 	check_hugepage();
 
-	hugepage_size = SAFE_READ_MEMINFO("Hugepagesize:") * KB;
+	hugepage_size = SAFE_READ_MEMINFO("Hugepagesize:") * TST_KB;
 	unaligned_size = hugepage_size * 4 - 1;
 	page_size = SAFE_SYSCONF(_SC_PAGESIZE);
 }

@@ -52,17 +52,10 @@ void test_ksm_merge_across_nodes(unsigned long nr_pages);
 void ksm_group_check(int run, int pg_shared, int pg_sharing, int pg_volatile,
                      int pg_unshared, int sleep_msecs, int pages_to_scan);
 
-/* THP */
-
-#define PATH_THP		"/sys/kernel/mm/transparent_hugepage/"
-#define PATH_KHPD		PATH_THP "khugepaged/"
-
 /* HUGETLB */
 
-#define PATH_HUGEPAGES		"/sys/kernel/mm/hugepages/"
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
 
-void check_hugepage(void);
 void write_memcg(void);
 
 /* cpuset/memcg - include/tst_cgroup.h */

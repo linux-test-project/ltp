@@ -38,7 +38,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "mem.h"
+#include "tst_test.h"
+#include "thp.h"
 
 static int ps;
 static long hps, size;

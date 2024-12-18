@@ -324,12 +324,6 @@ static void verify(char **memory, char value, int proc,
 	free(s);
 }
 
-void check_hugepage(void)
-{
-	if (access(PATH_HUGEPAGES, F_OK))
-		tst_brk(TCONF, "Huge page is not supported.");
-}
-
 struct ksm_merge_data {
 	char data;
 	unsigned int mergeable_size;
