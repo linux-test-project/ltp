@@ -71,8 +71,6 @@ void write_cpusets(const struct tst_cg_group *cg, long nd);
 /* shared */
 unsigned int get_a_numa_node(void);
 int  path_exist(const char *path, ...);
-void set_sys_tune(char *sys_file, long tune, int check);
-long get_sys_tune(char *sys_file);
 
 void update_shm_size(size_t *shm_size);
 

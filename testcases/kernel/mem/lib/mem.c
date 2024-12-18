@@ -638,35 +638,6 @@ int path_exist(const char *path, ...)
 	return access(pathbuf, F_OK) == 0;
 }
 
-void set_sys_tune(char *sys_file, long tune, int check)
-{
-	long val;
-	char path[BUFSIZ];
-
-	tst_res(TINFO, "set %s to %ld", sys_file, tune);
-
-	snprintf(path, BUFSIZ, PATH_SYSVM "%s", sys_file);
-	SAFE_FILE_PRINTF(path, "%ld", tune);
-
-	if (check) {
-		val = get_sys_tune(sys_file);
-		if (val != tune)
-			tst_brk(TBROK, "%s = %ld, but expect %ld",
-				 sys_file, val, tune);
-	}
-}
-
-long get_sys_tune(char *sys_file)
-{
-	char path[BUFSIZ];
-	long tune;
-
-	snprintf(path, BUFSIZ, PATH_SYSVM "%s", sys_file);
-	SAFE_FILE_SCANF(path, "%ld", &tune);
-
-	return tune;
-}
-
 void update_shm_size(size_t * shm_size)
 {
 	size_t shmmax;

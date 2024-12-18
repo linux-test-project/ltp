@@ -48,10 +48,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/utsname.h>
-#include "mem.h"
+#include "tst_test.h"
 
 #define MAP_COUNT_DEFAULT	1024
-#define MAX_MAP_COUNT		65536L
+#define MAX_MAP_COUNT_MAX	65536L
+
+#define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
+#define MAX_MAP_COUNT "/proc/sys/vm/max_map_count"
 
 /* This is a filter to exclude map entries which aren't accounted
  * for in the vm_area_struct's map_count.
@@ -140,15 +143,15 @@ static void max_map_count_test(void)
 	memfree = SAFE_READ_MEMINFO("CommitLimit:") - SAFE_READ_MEMINFO("Committed_AS:");
 	/* 64 used as a bias to make sure no overflow happen */
 	max_iters = memfree / sysconf(_SC_PAGESIZE) * 1024 - 64;
-	if (max_iters > MAX_MAP_COUNT)
-		max_iters = MAX_MAP_COUNT;
+	if (max_iters > MAX_MAP_COUNT_MAX)
+		max_iters = MAX_MAP_COUNT_MAX;
 
 	max_maps = MAP_COUNT_DEFAULT;
 	if (max_iters < max_maps)
 		tst_brk(TCONF, "test requires more free memory");
 
 	while (max_maps <= max_iters) {
-		set_sys_tune("max_map_count", max_maps, 1);
+		TST_SYS_CONF_LONG_SET(MAX_MAP_COUNT, max_maps, 1);
 
 		switch (pid = SAFE_FORK()) {
 		case 0:
@@ -192,8 +195,8 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = max_map_count_test,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/overcommit_memory", "0", TST_SR_TBROK},
-		{"/proc/sys/vm/max_map_count", NULL, TST_SR_TBROK},
+		{OVERCOMMIT_MEMORY, "0", TST_SR_TBROK},
+		{MAX_MAP_COUNT, NULL, TST_SR_TBROK},
 		{}
 	},
 };

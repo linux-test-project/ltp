@@ -62,11 +62,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "mem.h"
+#include "tst_test.h"
 
 #define DEFAULT_OVER_RATIO	50L
 #define EXPECT_PASS		0
 #define EXPECT_FAIL		1
+
+#define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
+#define OVERCOMMIT_RATIO "/proc/sys/vm/overcommit_ratio"
 
 static char *R_opt;
 static long old_overcommit_ratio = -1;
@@ -93,7 +96,7 @@ static void setup(void)
 	else
 		overcommit_ratio = DEFAULT_OVER_RATIO;
 
-	old_overcommit_ratio = get_sys_tune("overcommit_ratio");
+	old_overcommit_ratio = TST_SYS_CONF_LONG_GET(OVERCOMMIT_RATIO);
 
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	tst_res(TINFO, "MemTotal is %ld kB", mem_total);
@@ -115,7 +118,7 @@ static void setup(void)
 		SAFE_SETRLIMIT(RLIMIT_AS, &lim);
 	}
 
-	set_sys_tune("overcommit_ratio", overcommit_ratio, 1);
+	TST_SYS_CONF_LONG_SET(OVERCOMMIT_RATIO, overcommit_ratio, 1);
 
 	calculate_total_batch_size();
 	tst_res(TINFO, "TotalBatchSize is %ld kB", total_batch_size);
@@ -124,7 +127,7 @@ static void setup(void)
 static void overcommit_memory_test(void)
 {
 	/* start to test overcommit_memory=2 */
-	set_sys_tune("overcommit_memory", 2, 1);
+	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 2, 1);
 
 	update_mem_commit();
 	alloc_and_check(commit_left * 2, EXPECT_FAIL);
@@ -133,14 +136,14 @@ static void overcommit_memory_test(void)
 	alloc_and_check(commit_left / 2, EXPECT_PASS);
 
 	/* start to test overcommit_memory=0 */
-	set_sys_tune("overcommit_memory", 0, 1);
+	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 0, 1);
 
 	update_mem();
 	alloc_and_check(free_total / 2, EXPECT_PASS);
 	alloc_and_check(sum_total * 2, EXPECT_FAIL);
 
 	/* start to test overcommit_memory=1 */
-	set_sys_tune("overcommit_memory", 1, 1);
+	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 1, 1);
 
 	alloc_and_check(sum_total / 2, EXPECT_PASS);
 	alloc_and_check(sum_total, EXPECT_PASS);
@@ -152,7 +155,7 @@ static int heavy_malloc(long size)
 {
 	char *p;
 
-	p = malloc(size * KB);
+	p = malloc(size * TST_KB);
 	if (p != NULL) {
 		tst_res(TINFO, "malloc %ld kB successfully", size);
 		free(p);
@@ -240,7 +243,7 @@ static void calculate_total_batch_size(void)
 	/* there are ncpu separate counters, that can all grow up to
 	 * batch_size. So the maximum error for __vm_enough_memory is
 	 * batch_size * ncpus. */
-	total_batch_size = (batch_size * ncpus * pagesize) / KB;
+	total_batch_size = (batch_size * ncpus * pagesize) / TST_KB;
 }
 
 static struct tst_test test = {
@@ -253,8 +256,8 @@ static struct tst_test test = {
 	.test_all = overcommit_memory_test,
 	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
-		{"/proc/sys/vm/overcommit_ratio", NULL, TST_SR_TBROK},
+		{OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
+		{OVERCOMMIT_RATIO, NULL, TST_SR_TBROK},
 		{}
 	},
 };

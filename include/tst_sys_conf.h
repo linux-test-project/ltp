@@ -30,4 +30,36 @@ void tst_sys_conf_dump(void);
 
 int tst_read_bool_sys_param(const char *filename);
 
+/**
+ * TST_SYS_CONF_LONG_SET() - Writes a long int into a sys or proc file.
+ *
+ * @path: A path to a sysfs or a procfs file.
+ * @val: A long int value to be written to the file.
+ * @check: If non-zero the library reads the file back and checks that the
+ *         value is the one we have written there. If not the library calls
+ *         tst_brk(TBROK, ...).
+ *
+ * Sets a sysfs or procfs file and optionally checks that it was set correctly.
+ */
+#define TST_SYS_CONF_LONG_SET(path, val, check) \
+	tst_sys_conf_long_set_(__FILE__, __LINE__, path, val, check)
+
+void tst_sys_conf_long_set_(const char *file, const int lineno,
+			    const char *path, long val, int check);
+
+
+/**
+ * TST_SYS_CONF_LONG_GET() - Reads a long int from sys or proc file.
+ *
+ * @path: A path to a sysfs or a procfs file.
+ * return: A value read from the file converted into a long.
+ *
+ * Gets a sysfs or procfs file value and converts it to long.
+ */
+#define TST_SYS_CONF_LONG_GET(path) \
+	tst_sys_conf_long_get_(__FILE__, __LINE__, path)
+
+long tst_sys_conf_long_get_(const char *file, const int lineno,
+			    const char *path);
+
 #endif
