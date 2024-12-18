@@ -60,7 +60,7 @@ static void setup(void)
 	if (ret < 0)
 		tst_brk(TBROK, "Failed to get a memory node "
 			      "using get_allowed_nodes()");
-	write_cpusets(tst_cg, memnode);
+	write_node_cpusets(tst_cg, memnode);
 	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 }
 

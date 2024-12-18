@@ -30,7 +30,6 @@
 #include <numaif.h>
 #endif
 
-#include "../include/mem.h"
 #include "tst_test.h"
 #include "numa_helper.h"
 
