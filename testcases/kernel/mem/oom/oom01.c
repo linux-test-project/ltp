@@ -16,7 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "mem.h"
+#include "tst_test.h"
+#include "oom.h"
 
 #define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
 

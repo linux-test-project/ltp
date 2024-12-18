@@ -14,16 +14,6 @@
 #define PATH_SYSVM		"/proc/sys/vm/"
 #define PATH_MEMINFO		"/proc/meminfo"
 
-/* OOM */
-
-#define LENGTH			(3UL<<30)
-#define NORMAL			1
-#define MLOCK			2
-#define KSM			3
-
-void oom(int testcase, int lite, int retcode, int allow_sigkill);
-void testoom(int mempolicy, int lite, int retcode, int allow_sigkill);
-
 /* KSM */
 
 void create_same_memory(int size, int num, int unit);

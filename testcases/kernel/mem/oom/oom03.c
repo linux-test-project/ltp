@@ -16,11 +16,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #if HAVE_NUMA_H
-#include <numa.h>
+# include <numa.h>
 #endif
 
+#include "tst_test.h"
 #include "numa_helper.h"
-#include "mem.h"
+#include "oom.h"
 
 #ifdef HAVE_NUMA_V2
 
@@ -38,12 +39,12 @@ static void verify_oom(void)
 		 *
 		 * To get more opportunities to reach the swap limitation,
 		 * let's scale down the value of 'memory.swap.max' to only
-		 * 1MB for CGroup v2.
+		 * 1TST_MB for CGroup v2.
 		 */
 		if (!TST_CG_VER_IS_V1(tst_cg, "memory"))
-			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", MB);
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TST_MB);
 		else
-			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TESTMEM + MB);
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TESTMEM + TST_MB);
 
 		testoom(0, 1, ENOMEM, 1);
 
