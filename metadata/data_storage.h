@@ -251,6 +251,34 @@ static inline unsigned int data_node_array_len(struct data_node *self)
 	return self->array.array_used;
 }
 
+
+static inline struct data_node *data_node_array_last(struct data_node *self)
+{
+	if (self->type != DATA_ARRAY)
+		return NULL;
+
+	unsigned int array_used = self->array.array_used;
+	if (!array_used)
+		return NULL;
+
+	return self->array.array[array_used-1];
+}
+
+static inline void data_node_array_last_rem(struct data_node *self)
+{
+	if (self->type != DATA_ARRAY)
+		return;
+
+	unsigned int array_used = self->array.array_used;
+	if (!array_used)
+		return;
+
+	data_node_free(self->array.array[array_used-1]);
+
+	self->array.array[array_used-1] = NULL;
+	self->array.array_used--;
+}
+
 static inline void data_print_padd(unsigned int i)
 {
 	while (i-- > 0)
