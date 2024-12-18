@@ -761,6 +761,51 @@ static void parse_include_macros(FILE *f, int level)
 	close_include(inc);
 }
 
+/* pre-defined macros that makes the output cleaner. */
+static const struct macro {
+	char *from;
+	char *to;
+} internal_macros[] = {
+	{"TST_CG_V2", "2"},
+	{"TST_CG_V1", "1"},
+	{"TST_KB", "1024"},
+	{"TST_MB", "1048576"},
+	{"TST_GB", "1073741824"},
+	{"TST_SR_TBROK", "TBROK"},
+	{"TST_SR_TCONF", "TCONF"},
+	{"TST_SR_SKIP", "SKIP"},
+	{"TST_SR_TBROK_MISSING", "TBROK_MISSING"},
+	{"TST_SR_TCONF_MISSING", "TCONF_MISSING"},
+	{"TST_SR_SKIP_MISSING", "SKIP_MISSING"},
+	{"TST_SR_TBROK_RO", "TBROK_RO"},
+	{"TST_SR_TCONF_RO", "TCONF_RO"},
+	{"TST_SR_SKIP_RO", "SKIP_RO"},
+	{}
+};
+
+static void load_internal_macros(void)
+{
+	unsigned int i;
+
+	if (verbose)
+		fprintf(stderr, "PREDEFINED MACROS\n");
+
+	for (i = 0; internal_macros[i].from; i++) {
+		ENTRY e = {
+			.key = internal_macros[i].from,
+			.data = internal_macros[i].to,
+		};
+
+		if (verbose)
+			fprintf(stderr, " MACRO %s=%s\n", e.key, (char*)e.data);
+
+		hsearch(e, ENTER);
+	}
+
+	if (verbose)
+		fprintf(stderr, "END PREDEFINED MACROS\n");
+}
+
 static struct data_node *parse_file(const char *fname)
 {
 	int state = 0, found = 0;
@@ -777,6 +822,8 @@ static struct data_node *parse_file(const char *fname)
 
 	struct data_node *res = data_node_hash();
 	struct data_node *doc = data_node_array();
+
+	load_internal_macros();
 
 	while ((token = next_token(f, doc))) {
 		if (state < 6 && !strcmp(tokens[state], token)) {
