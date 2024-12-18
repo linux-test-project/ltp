@@ -238,6 +238,20 @@ static FILE *open_file(const char *dir, const char *fname)
 	return f;
 }
 
+/**
+ * List of includes to be skipped.
+ *
+ * These define many macros or include many include files that are mostly
+ * useless to values expanded in tst_test structure. Or macros that shouldn't
+ * be expanded at all.
+ */
+static const char *skip_includes[] = {
+	"\"tst_test.h\"",
+	"\"config.h\"",
+	"\"tst_taint.h\"",
+	NULL
+};
+
 static FILE *open_include(FILE *f)
 {
 	char buf[256], *fname;
@@ -249,6 +263,20 @@ static FILE *open_include(FILE *f)
 
 	if (buf[0] != '"')
 		return NULL;
+
+	for (i = 0; skip_includes[i]; i++) {
+		if (!strcmp(skip_includes[i], buf)) {
+			if (verbose)
+				fprintf(stderr, "INCLUDE SKIP %s\n", buf);
+			return NULL;
+		}
+	}
+
+	if (!strncmp(buf, "\"lapi/", 6)) {
+		if (verbose)
+			fprintf(stderr, "INCLUDE SKIP %s\n", buf);
+		return NULL;
+	}
 
 	fname = buf + 1;
 
@@ -642,11 +670,19 @@ static void parse_macro(FILE *f)
 	hsearch(e, ENTER);
 }
 
-static void parse_include_macros(FILE *f)
+static void parse_include_macros(FILE *f, int level)
 {
 	FILE *inc;
 	const char *token;
 	int hash = 0;
+
+	/**
+	 * Allow only three levels of include indirection.
+	 *
+	 * Should be more than enough (TM).
+	 */
+	if (level >= 3)
+		return;
 
 	inc = open_include(f);
 	if (!inc)
@@ -663,6 +699,8 @@ static void parse_include_macros(FILE *f)
 
 		if (!strcmp(token, "define"))
 			parse_macro(inc);
+		else if (!strcmp(token, "include"))
+			parse_include_macros(inc, level+1);
 
 		hash = 0;
 	}
@@ -698,7 +736,7 @@ static struct data_node *parse_file(const char *fname)
 						parse_macro(f);
 
 					if (!strcmp(token, "include"))
-						parse_include_macros(f);
+						parse_include_macros(f, 0);
 				}
 			}
 
