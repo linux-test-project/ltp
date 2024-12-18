@@ -636,35 +636,3 @@ void update_shm_size(size_t * shm_size)
 		*shm_size = shmmax;
 	}
 }
-
-int range_is_mapped(unsigned long low, unsigned long high)
-{
-	FILE *fp;
-
-	fp = fopen("/proc/self/maps", "r");
-	if (fp == NULL)
-		tst_brk(TBROK | TERRNO, "Failed to open /proc/self/maps.");
-
-	while (!feof(fp)) {
-		unsigned long start, end;
-		int ret;
-
-		ret = fscanf(fp, "%lx-%lx %*[^\n]\n", &start, &end);
-		if (ret != 2) {
-			fclose(fp);
-			tst_brk(TBROK | TERRNO, "Couldn't parse /proc/self/maps line.");
-		}
-
-		if ((start >= low) && (start < high)) {
-			fclose(fp);
-			return 1;
-		}
-		if ((end >= low) && (end < high)) {
-			fclose(fp);
-			return 1;
-		}
-	}
-
-	fclose(fp);
-	return 0;
-}

@@ -55,7 +55,7 @@ static void shared_hugepage(void)
 		tst_brk(TBROK | TERRNO, "shmget");
 
 	while (boundary <= BOUNDARY_MAX
-		&& range_is_mapped(boundary, boundary+SIZE))
+		&& tst_mapping_in_range(boundary, boundary+SIZE))
 		boundary += 128*1024*1024;
 	if (boundary > BOUNDARY_MAX)
 		tst_brk(TCONF, "failed to find free unmapped range");

@@ -50,7 +50,7 @@ static void run_test(void)
 		below_start = FOURGB - 256ULL*1024*1024;
 		above_end = FOURGB;
 
-		if (range_is_mapped(below_start, above_end) == 1) {
+		if (tst_mapping_in_range(below_start, above_end) == 1) {
 			tst_res(TINFO|TERRNO, "region (4G-256M)-4G is not free & "
 					"mmap() failed expected");
 			tst_res(TPASS, "Successful but inconclusive");
@@ -73,7 +73,7 @@ static void run_test(void)
 		below_start = FOURGB;
 		above_end = FOURGB + page_size;
 
-		if (range_is_mapped(below_start, above_end) == 1) {
+		if (tst_mapping_in_range(below_start, above_end) == 1) {
 			tst_res(TINFO|TERRNO, "region 4G-(4G+page) is not free & "
 					"mmap() failed expected");
 			tst_res(TPASS, "Successful but inconclusive");
@@ -101,7 +101,7 @@ static void run_test(void)
 		below_start = highaddr;
 		above_end = highaddr + page_size;
 
-		if (range_is_mapped(below_start, above_end) == 1) {
+		if (tst_mapping_in_range(below_start, above_end) == 1) {
 			tst_res(TINFO|TERRNO, "region haddr-(haddr+page) not free & "
 					"mmap() failed unexpected");
 			tst_res(TPASS, "Successful but inconclusive");

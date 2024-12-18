@@ -62,7 +62,7 @@ static void test_hugemmap(void)
 		addrlist[i] = addr;
 	}
 
-	while (range_is_mapped(low_addr, low_addr + map_sz) == 1) {
+	while (tst_mapping_in_range(low_addr, low_addr + map_sz) == 1) {
 		low_addr = low_addr + 0x10000000;
 
 		if (low_addr < LOW_ADDR)
@@ -74,7 +74,7 @@ static void test_hugemmap(void)
 	if (addr == MAP_FAILED)
 		tst_brk(TBROK | TERRNO, "mmap failed on nfildes");
 
-	while (range_is_mapped(low_addr2, low_addr2 + map_sz) == 1) {
+	while (tst_mapping_in_range(low_addr2, low_addr2 + map_sz) == 1) {
 		low_addr2 = low_addr2 + 0x10000000;
 
 		if (low_addr2 < LOW_ADDR2)

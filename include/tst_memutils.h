@@ -60,4 +60,15 @@ void tst_disable_oom_protection(pid_t pid);
 
 #define TST_PRINT_MEMINFO() safe_print_file(__FILE__, __LINE__, "/proc/meminfo")
 
+/**
+ * tst_mapping_in_range() - Returns true if there is a mapping provided range.
+ *
+ * @low: A lower address inside of the processe address space.
+ * @high: A higher address inside of the processe address space.
+ *
+ * return: Returns true if there is a mapping between low and high addresses in
+ *         the process address space.
+ */
+int tst_mapping_in_range(unsigned long low, unsigned long high);
+
 #endif /* TST_MEMUTILS_H__ */

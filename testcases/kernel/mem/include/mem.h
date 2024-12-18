@@ -73,6 +73,4 @@ unsigned int get_a_numa_node(void);
 
 void update_shm_size(size_t *shm_size);
 
-/* MMAP */
-int range_is_mapped(unsigned long low, unsigned long high);
 #endif

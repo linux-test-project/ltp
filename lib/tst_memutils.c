@@ -14,6 +14,7 @@
 #include "tst_test.h"
 #include "tst_memutils.h"
 #include "tst_capability.h"
+#include "tst_safe_stdio.h"
 #include "lapi/syscalls.h"
 
 #define BLOCKSIZE (16 * 1024 * 1024)
@@ -183,4 +184,34 @@ void tst_enable_oom_protection(pid_t pid)
 void tst_disable_oom_protection(pid_t pid)
 {
 	set_oom_score_adj(pid, 0);
+}
+
+int tst_mapping_in_range(unsigned long low, unsigned long high)
+{
+	FILE *fp;
+
+	fp = SAFE_FOPEN("/proc/self/maps", "r");
+
+	while (!feof(fp)) {
+		unsigned long start, end;
+		int ret;
+
+		ret = fscanf(fp, "%lx-%lx %*[^\n]\n", &start, &end);
+		if (ret != 2) {
+			fclose(fp);
+			tst_brk(TBROK | TERRNO, "Couldn't parse /proc/self/maps line.");
+		}
+
+		if ((start >= low) && (start < high)) {
+			fclose(fp);
+			return 1;
+		}
+		if ((end >= low) && (end < high)) {
+			fclose(fp);
+			return 1;
+		}
+	}
+
+	fclose(fp);
+	return 0;
 }
