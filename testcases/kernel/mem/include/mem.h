@@ -68,6 +68,4 @@ void write_memcg(void);
 /* cpuset/memcg - include/tst_cgroup.h */
 void write_cpusets(const struct tst_cg_group *cg, long nd);
 
-void update_shm_size(size_t *shm_size);
-
 #endif

@@ -56,4 +56,7 @@ int getipckey(void);
 int getuserid(char *user);
 void rm_shm(int shm_id);
 int do_readback(void *p, size_t size, char *desc);
+
+void update_shm_size(size_t *shm_size);
+
 #endif /* hugetlb.h */

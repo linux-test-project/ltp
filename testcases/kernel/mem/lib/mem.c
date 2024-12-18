@@ -590,16 +590,3 @@ void write_cpusets(const struct tst_cg_group *cg, long nd)
 		SAFE_CG_PRINT(cg, "cpuset.cpus", "0");
 	}
 }
-
-/* shared */
-
-void update_shm_size(size_t * shm_size)
-{
-	size_t shmmax;
-
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%zu", &shmmax);
-	if (*shm_size > shmmax) {
-		tst_res(TINFO, "Set shm_size to shmmax: %zu", shmmax);
-		*shm_size = shmmax;
-	}
-}
