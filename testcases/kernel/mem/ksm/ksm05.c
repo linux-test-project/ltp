@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "tst_test.h"
-#include "mem.h"
+#include "ksm_helper.h"
 
 #ifdef HAVE_DECL_MADV_MERGEABLE
 

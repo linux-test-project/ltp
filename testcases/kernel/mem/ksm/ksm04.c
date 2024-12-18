@@ -38,7 +38,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "mem.h"
+#include "tst_test.h"
 #include "ksm_common.h"
 
 #ifdef HAVE_NUMA_V2

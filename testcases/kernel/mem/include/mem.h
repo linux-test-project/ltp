@@ -16,11 +16,6 @@
 
 /* KSM */
 
-void create_same_memory(int size, int num, int unit);
-void test_ksm_merge_across_nodes(unsigned long nr_pages);
-void ksm_group_check(int run, int pg_shared, int pg_sharing, int pg_volatile,
-                     int pg_unshared, int sleep_msecs, int pages_to_scan);
-
 /* HUGETLB */
 
 #define PATH_SHMMAX		"/proc/sys/kernel/shmmax"

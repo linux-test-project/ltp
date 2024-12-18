@@ -11,7 +11,9 @@
 #define KSM_COMMON_H__
 
 #include "tst_test.h"
+#include "ksm_helper.h"
 #include "numa_helper.h"
+#include "ksm_test.h"
 
 #define DEFAULT_MEMSIZE 128
 
@@ -66,6 +68,5 @@ static inline unsigned int get_a_numa_node(void)
 	/* not reached */
 	abort();
 }
-
 
 #endif /* KSM_COMMON_H__ */

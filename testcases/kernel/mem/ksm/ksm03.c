@@ -56,7 +56,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "mem.h"
+#include "tst_test.h"
 #include "ksm_common.h"
 
 static void verify_ksm(void)

@@ -33,8 +33,10 @@
 #include <unistd.h>
 #include <limits.h>
 
-#include "mem.h"
+#include "tst_test.h"
 #include "tst_numa.h"
+#include "ksm_helper.h"
+#include "ksm_test.h"
 
 #ifdef HAVE_NUMA_V2
 # include <numa.h>
