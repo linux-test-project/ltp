@@ -337,9 +337,42 @@ static void try_apply_macro(char **res)
 	*res = ret->data;
 }
 
+static void finalize_array_entry(char **entry, struct data_node *node)
+{
+	if (!*entry)
+		return;
+
+	data_node_array_add(node, data_node_string(*entry));
+
+	free(*entry);
+	*entry = NULL;
+}
+
+static void str_append(char **res, char *append)
+{
+	char *cur_str = *res;
+
+	if (!cur_str) {
+		*res = strdup(append);
+		if (!*res)
+			goto err;
+		return;
+	}
+
+	if (asprintf(res, "%s%s", cur_str, append) < 0)
+		goto err;
+
+	free(cur_str);
+	return;
+err:
+	fprintf(stderr, "Allocation failed :(\n");
+	exit(1);
+}
+
 static int parse_array(FILE *f, struct data_node *node)
 {
 	char *token;
+	char *entry = NULL;
 
 	for (;;) {
 		if (!(token = next_token(f, NULL)))
@@ -357,20 +390,31 @@ static int parse_array(FILE *f, struct data_node *node)
 			continue;
 		}
 
-		if (!strcmp(token, "}"))
+		if (!strcmp(token, "}")) {
+			struct data_node *arr_last;
+
+			finalize_array_entry(&entry, node);
+
+			/* Remove NULL terminating entry, if present. */
+			arr_last = data_node_array_last(node);
+			if (arr_last && arr_last->type == DATA_NULL)
+				data_node_array_last_rem(node);
+
 			return 0;
+		}
 
-		if (!strcmp(token, ","))
+		if (!strcmp(token, ",")) {
+			finalize_array_entry(&entry, node);
 			continue;
+		}
 
-		if (!strcmp(token, "NULL"))
+		if (!strcmp(token, "NULL")) {
+			data_node_array_add(node, data_node_null());
 			continue;
+		}
 
 		try_apply_macro(&token);
-
-		struct data_node *str = data_node_string(token);
-
-		data_node_array_add(node, str);
+		str_append(&entry, token);
 	}
 
 	return 0;
