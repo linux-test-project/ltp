@@ -17,7 +17,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "tst_test.h"
-#include "mem.h"
 
 #define PALIGN(p, a) ((void *)LTP_ALIGN((unsigned long)(p), (a)))
 
@@ -28,6 +27,8 @@
 #ifndef SHM_HUGETLB
 #define SHM_HUGETLB	04000	/* segment is mapped via hugetlb */
 #endif
+
+#define PATH_SHMMAX "/proc/sys/kernel/shmmax"
 
 #ifndef barrier
 # ifdef mb

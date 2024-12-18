@@ -34,7 +34,6 @@ static char path_sys_sz_huge[BUFSIZ];
 #define PATH_PROC_VM		"/proc/sys/vm/"
 #define PATH_PROC_OVER		PATH_PROC_VM "nr_overcommit_hugepages"
 #define PATH_PROC_HUGE		PATH_PROC_VM "nr_hugepages"
-#define PATH_SHMMAX		"/proc/sys/kernel/shmmax"
 
 /* Only ia64 requires this */
 #ifdef __ia64__
