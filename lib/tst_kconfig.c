@@ -655,6 +655,10 @@ static struct tst_kconfig_var slow_kconfigs[] = {
 int tst_has_slow_kconfig(void)
 {
 	unsigned int i;
+	char path_buf[1024];
+
+	if (!kconfig_path(path_buf, sizeof(path_buf)))
+		return 0;
 
 	tst_kconfig_read(slow_kconfigs, ARRAY_SIZE(slow_kconfigs));
 
