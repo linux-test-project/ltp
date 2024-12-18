@@ -173,6 +173,10 @@ static char *next_token2(FILE *f, char *buf, size_t buf_len, struct data_node *d
 		case '[':
 		case ']':
 		case '#':
+		case '|':
+		case '+':
+		case '*':
+		case '%':
 			if (i) {
 				ungetc(c, f);
 				goto exit;
