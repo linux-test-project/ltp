@@ -21,6 +21,7 @@
 #include <sched.h>
 
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "tst_safe_clocks.h"
 #include "tst_timer.h"
 
@@ -107,6 +108,9 @@ static void setup(void)
 		tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
 	else
 		timeout = callibrate() / 1000;
+
+	if (tst_has_slow_kconfig())
+		tst_brk(TCONF, "Skip test due to slow kernel configuration");
 
 	tst_set_max_runtime(timeout);
 }
