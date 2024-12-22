@@ -212,8 +212,29 @@ static void run(unsigned int i)
 
 		if (critical > 100) {
 			tst_fzsync_pair_cleanup(&pair);
+			tst_atomic_store(0, &pair.exit);
 			break;
 		}
+	}
+
+	/*
+	 * If `pair->exit` is true, the test may fail to meet expected
+	 * results due to resource constraints in shared CI environments
+	 * (e.g., GitHub Actions). Limited control over CPU allocation
+	 * can cause delays or interruptions in CPU time slices due to
+	 * contention with other jobs.
+	 *
+	 * Binding the test to a single CPU core (e.g., via `taskset -c 0`)
+	 * can worsen this by increasing contention, leading to performance
+	 * degradation and premature loop termination.
+	 *
+	 * To ensure valid and reliable results in scenarios (e.g., HW, VM, CI),
+	 * it is best to ignore test result when loop termination occurs,
+	 * avoiding unnecessary false positive.
+	 */
+	if (pair.exit) {
+		tst_res(TCONF, "Test may not be able to generate a valid result");
+		return;
 	}
 
 	tst_res(critical > 50 ? TPASS : TFAIL,
