@@ -555,9 +555,6 @@ static int multiply_runtime(int max_runtime)
 
 	parse_mul(&runtime_mul, "LTP_RUNTIME_MUL", 0.0099, 100);
 
-	if (tst_has_slow_kconfig())
-		max_runtime *= 4;
-
 	return max_runtime * runtime_mul;
 }
 
@@ -1705,6 +1702,9 @@ unsigned int tst_multiply_timeout(unsigned int timeout)
 
 	if (timeout < 1)
 		tst_brk(TBROK, "timeout must to be >= 1! (%d)", timeout);
+
+	if (tst_has_slow_kconfig())
+		timeout *= 4;
 
 	return timeout * timeout_mul;
 }
