@@ -347,6 +347,7 @@ if [ $? -ne 0 ]; then
 	tst_brkm TFAIL "Creating DATAFILE failed."
 fi
 
+rm -f $FIFO
 mkfifo $FIFO
 if [ $? -ne 0 ]; then
 	rm -f DATAFILE
