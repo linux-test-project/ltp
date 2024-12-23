@@ -28,10 +28,12 @@ static char *mod_path;
 static void setup(void)
 {
 	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
 
 	tst_kcmdline_parse(&params, 1);
-	if (params.found)
-		sig_enforce = atoi(params.value);
+	tst_kconfig_read(&kconfig, 1);
+	if (params.found || kconfig.choice == 'y')
+		sig_enforce = 1;
 
 	tst_module_exists(MODULE_NAME, &mod_path);
 

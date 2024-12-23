@@ -53,9 +53,11 @@ static void do_delete_module(void)
 static void setup(void)
 {
 	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
 
 	tst_kcmdline_parse(&params, 1);
-	if (atoi(params.value) == 1)
+	tst_kconfig_read(&kconfig, 1);
+	if (params.found || kconfig.choice == 'y')
 		tst_brk(TCONF, "module signature is enforced, skip test");
 
 	/* Load first kernel module */
