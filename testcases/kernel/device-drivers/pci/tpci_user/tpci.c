@@ -27,6 +27,7 @@
 #include <errno.h>
 
 #include "test.h"
+#include "tst_kconfig.h"
 #include "safe_macros.h"
 #include "old_module.h"
 
@@ -49,7 +50,15 @@ static void cleanup(void)
 
 void setup(void)
 {
+	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
+
 	tst_require_root();
+
+	tst_kcmdline_parse(&params, 1);
+	tst_kconfig_read(&kconfig, 1);
+	if (params.found || kconfig.choice == 'y')
+		tst_brkm(TCONF, tst_exit, "module signature is enforced, skip test");
 
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 }
