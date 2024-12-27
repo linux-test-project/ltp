@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2016-2024
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,8 +24,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #include "test.h"
+#include "tst_kconfig.h"
 #include "ltp_priv.h"
 #include "old_module.h"
 
@@ -121,4 +124,25 @@ void tst_module_unload_(void (cleanup_fn)(void), const char *mod_name)
 		tst_brkm(TBROK, cleanup_fn,
 			 "could not unload %s module", mod_name);
 	}
+}
+
+bool tst_module_signature_enforced_(void)
+{
+	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
+	int rc;
+
+	tst_kcmdline_parse(&params, 1);
+	tst_kconfig_read(&kconfig, 1);
+
+	rc = params.found || kconfig.choice == 'y';
+	tst_resm(TINFO, "module signature enforcement: %s", rc ? "on" : "off");
+
+	return rc;
+}
+
+void tst_requires_module_signature_disabled_(void)
+{
+	if (tst_module_signature_enforced_())
+		tst_brkm(TCONF, NULL, "module signature is enforced, skip test");
 }
