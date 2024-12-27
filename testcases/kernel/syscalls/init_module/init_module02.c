@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "lapi/init_module.h"
-#include "tst_kconfig.h"
 #include "tst_module.h"
 #include "tst_capability.h"
 
@@ -53,12 +52,8 @@ static void setup(void)
 {
 	struct stat sb;
 	int fd;
-	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
-	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
 
-	tst_kcmdline_parse(&params, 1);
-	tst_kconfig_read(&kconfig, 1);
-	if (params.found || kconfig.choice == 'y')
+	if (tst_module_signature_enforced())
 		sig_enforce = 1;
 
 	tst_module_exists(MODULE_NAME, NULL);

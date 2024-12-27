@@ -22,7 +22,6 @@
 #include <stdlib.h>
 
 #include "test.h"
-#include "tst_kconfig.h"
 #include "old_module.h"
 #include "safe_macros.h"
 
@@ -129,20 +128,12 @@ static void test_run(void)
 int main(int argc, char *argv[])
 {
 	int acpi_disabled;
-	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
-	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
 
 	tst_parse_opts(argc, argv, NULL, NULL);
-
 	tst_require_root();
-
-	tst_kcmdline_parse(&params, 1);
-	tst_kconfig_read(&kconfig, 1);
-	if (params.found || kconfig.choice == 'y')
-		tst_brkm(TCONF, tst_exit, "module signature is enforced, skip test");
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	tst_requires_module_signature_disabled();
 	tst_module_load(NULL, module_name, NULL);
 	module_loaded = 1;
 

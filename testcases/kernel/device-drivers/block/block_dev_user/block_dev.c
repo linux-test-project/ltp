@@ -17,7 +17,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "tst_kconfig.h"
 #include "tst_test.h"
 #include "tst_module.h"
 
@@ -42,13 +41,7 @@ static void cleanup(void)
 
 static void run(unsigned int n)
 {
-	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
-	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
-
-	tst_kcmdline_parse(&params, 1);
-	tst_kconfig_read(&kconfig, 1);
-	if (params.found || kconfig.choice == 'y')
-		tst_brk(TCONF, "module signature is enforced, skip test");
+	tst_requires_module_signature_disabled();
 
 	/*
 	 * test-cases #8 and #9 can crash the kernel.

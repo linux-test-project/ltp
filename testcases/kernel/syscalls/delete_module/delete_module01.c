@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include "tst_test.h"
 #include "tst_module.h"
-#include "tst_kconfig.h"
 #include "lapi/syscalls.h"
 
 #define MODULE_NAME	"dummy_del_mod"
@@ -27,13 +26,7 @@ static int module_loaded;
 
 static void do_delete_module(void)
 {
-	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("module.sig_enforce");
-	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_MODULE_SIG_FORCE");
-
-	tst_kcmdline_parse(&params, 1);
-	tst_kconfig_read(&kconfig, 1);
-	if (params.found || kconfig.choice == 'y')
-		tst_brk(TCONF, "module signature is enforced, skip test");
+	tst_requires_module_signature_disabled();
 
 	if (!module_loaded) {
 		tst_module_load(MODULE_NAME_KO, NULL);
