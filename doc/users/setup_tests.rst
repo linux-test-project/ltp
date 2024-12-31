@@ -80,6 +80,10 @@ users.
    * - LTP_ENABLE_DEBUG
      - Enable debug info (value ``1`` or ``y``). Equivalent of ``-D`` parameter.
 
+Environment variables for network tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+See :master:`testcases/network/README.md`.
+
 Test execution time and timeout
 -------------------------------
 
