@@ -121,7 +121,7 @@ require_ima_policy_cmdline()
 	local policy="$1"
 
 	check_ima_policy_cmdline $policy || \
-		tst_brk TCONF "IMA measurement tests require builtin IMA $policy policy (e.g. ima_policy=$policy kernel parameter)"
+		tst_brk TCONF "test requires builtin IMA $policy policy (e.g. ima_policy=$policy kernel command line parameter)"
 }
 
 mount_helper()
