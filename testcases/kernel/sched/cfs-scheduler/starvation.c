@@ -145,9 +145,9 @@ static void do_test(void)
 	SAFE_KILL(child_pid, SIGTERM);
 
 	if (!tst_remaining_runtime())
-		tst_res(TFAIL, "Scheduller starvation reproduced.");
+		tst_res(TFAIL, "Scheduler starvation reproduced");
 	else
-		tst_res(TPASS, "Haven't reproduced scheduller starvation.");
+		tst_res(TPASS, "Haven't reproduced scheduler starvation");
 
 	TST_EXP_PASS_SILENT(wait_for_pid(child_pid));
 }
