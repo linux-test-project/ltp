@@ -521,6 +521,7 @@ static void extract_metadata(void)
 	char line[4096];
 	char path[4096];
 	enum parser_state state = PAR_NONE;
+	unsigned int lineno = 1;
 
 	if (tst_get_path(shell_filename, path, sizeof(path)) == -1)
 		tst_brk(TBROK, "Failed to find %s in $PATH", shell_filename);
@@ -534,24 +535,40 @@ static void extract_metadata(void)
 				state = PAR_ESC;
 		break;
 		case PAR_ESC:
-			if (!strcmp(line, "# env\n"))
+			if (!strcmp(line, "# env\n")) {
 				state = PAR_ENV;
-			else if (!strcmp(line, "# doc\n"))
+			} else if (!strcmp(line, "# doc\n")) {
 				state = PAR_DOC;
-			else
-				tst_brk(TBROK, "Unknown comment block %s", line);
+			} else {
+				tst_brk(TBROK, "%s: %u: Unknown comment block %s",
+				        path, lineno, line);
+			}
 		break;
 		case PAR_ENV:
+			if (line[0] != '#') {
+				tst_brk(TBROK,
+					"%s: %u: Unexpected end of comment block!",
+					path, lineno);
+			}
+
 			if (!strcmp(line, "# ---\n"))
 				state = PAR_NONE;
 			else
 				metadata_append(line + 2);
 		break;
 		case PAR_DOC:
+			if (line[0] != '#') {
+				tst_brk(TBROK,
+					"%s: %u: Unexpected end of comment block!",
+					path, lineno);
+			}
+
 			if (!strcmp(line, "# ---\n"))
 				state = PAR_NONE;
 		break;
 		}
+
+		lineno++;
 	}
 
 	fclose(f);
