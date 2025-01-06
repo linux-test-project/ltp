@@ -1,6 +1,13 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2017 Red Hat, Inc.
+# Copyright (C) 2024 Cyril Hrubis <chrubis@suse.cz>
+#
+# ---
+# doc
+#
+# [Description]
+#
 # Regression test if the vsyscall and vdso VMA regions are reported correctly.
 #
 # While [vsyscall] is mostly deprecated with newer systems, there is
@@ -15,58 +22,51 @@
 # VM_ALWAYSDUMP)). As a consequence of this bug, VMAs were not included
 # in core dumps which resulted in eg. incomplete backtraces and invalid
 # core dump files created by gdb.
+# ---
+#
+# ---
+# env
+# {
+#  "needs_root": true,
+#  "needs_tmpdir": true,
+#  "needs_cmds": ["gdb", "uname"],
+#  "save_restore": [
+#   ["/proc/sys/kernel/core_pattern", "core", "TBROK"],
+#   ["/proc/sys/kernel/core_uses_pid", "0", "TBROK"]
+#  ],
+#  "tags": [
+#   ["linux-git", "103efcd9aac1"],
+#   ["linux-git", "b6558c4a2378"],
+#   ["linux-git", "e5b97dde514f"]
+#  ]
+# }
+# ---
 
-TST_SETUP=setup
-TST_CLEANUP=cleanup
-TST_TESTFUNC=vma_report_check
-TST_NEEDS_ROOT=1
-TST_NEEDS_TMPDIR=1
-TST_NEEDS_CMDS="gdb"
+. tst_loader.sh
 
-CORE_LIMIT=$(ulimit -c)
-CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)
-CORE_USES_PID=$(cat /proc/sys/kernel/core_uses_pid)
+ulimit -c unlimited
+unset DEBUGINFOD_URLS
 
-setup()
-{
-	ulimit -c unlimited
-	echo "core" > /proc/sys/kernel/core_pattern
-	echo 0 > /proc/sys/kernel/core_uses_pid
-	unset DEBUGINFOD_URLS
-}
-
-cleanup()
-{
-	ulimit -c "$CORE_LIMIT"
-	echo "$CORE_PATTERN" > /proc/sys/kernel/core_pattern
-	echo $CORE_USES_PID > /proc/sys/kernel/core_uses_pid
-}
-
-vma_report_check()
-{
-	if [ $(uname -m) = "x86_64" ]; then
-		if LINE=$(grep "vsyscall" /proc/self/maps); then
-			RIGHT="ffffffffff600000-ffffffffff601000[[:space:]][r-]-xp"
-			if echo "$LINE" | grep -q "$RIGHT"; then
-				tst_res TPASS "[vsyscall] reported correctly"
-			else
-				tst_res TFAIL "[vsyscall] reporting wrong"
-			fi
+if [ $(uname -m) = "x86_64" ]; then
+	if LINE=$(grep "vsyscall" /proc/self/maps); then
+		RIGHT="ffffffffff600000-ffffffffff601000[[:space:]][r-]-xp"
+		if echo "$LINE" | grep -q "$RIGHT"; then
+			tst_res TPASS "[vsyscall] reported correctly"
+		else
+			tst_res TFAIL "[vsyscall] reporting wrong"
 		fi
 	fi
+fi
 
-	rm -rf core*
-	{ vma05_vdso; } > /dev/null 2>&1
-	[ -f core ] || tst_brk TBROK "missing core file"
+rm -rf core*
+{ vma05_vdso; } > /dev/null 2>&1
+[ -f core ] || tst_brk TBROK "missing core file"
 
-	TRACE=$(gdb -silent -ex="thread apply all backtrace" -ex="quit"\
-		vma05_vdso ./core* 2> /dev/null)
-	if echo "$TRACE" | grep -qF "??"; then
-		tst_res TFAIL "[vdso] bug not patched"
-	else
-		tst_res TPASS "[vdso] backtrace complete"
-	fi
-}
+TRACE=$(gdb -silent -ex="thread apply all backtrace" -ex="quit"\
+	vma05_vdso ./core* 2> /dev/null)
 
-. tst_test.sh
-tst_run
+if echo "$TRACE" | grep -qF "??"; then
+	tst_res TFAIL "[vdso] bug not patched"
+else
+	tst_res TPASS "[vdso] backtrace complete"
+fi
