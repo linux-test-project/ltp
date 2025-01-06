@@ -8,28 +8,34 @@
 
 static void print_help(void)
 {
-	printf("Usage: tst_res_ filename lineno [TPASS|TFAIL|TCONF|TINFO|TDEBUG] 'A short description'\n");
+	printf("Usage: tst_{res,brk} filename lineno [TPASS|TBROK|TFAIL|TCONF|TINFO|TDEBUG] 'A short description'\n");
 }
 
 int main(int argc, char *argv[])
 {
 	int type, i;
 
-	if (argc < 5)
+	if (argc < 5) {
+		printf("argc = %i expected 5\n", argc);
 		goto help;
+	}
 
-	if (!strcmp(argv[3], "TPASS"))
+	if (!strcmp(argv[3], "TPASS")) {
 		type = TPASS;
-	else if (!strcmp(argv[3], "TFAIL"))
+	} else if (!strcmp(argv[3], "TFAIL")) {
 		type = TFAIL;
-	else if (!strcmp(argv[3], "TCONF"))
+	} else if (!strcmp(argv[3], "TCONF")) {
 		type = TCONF;
-	else if (!strcmp(argv[3], "TINFO"))
+	} else if (!strcmp(argv[3], "TINFO")) {
 		type = TINFO;
-	else if (!strcmp(argv[3], "TDEBUG"))
+	} else if (!strcmp(argv[3], "TDEBUG")) {
 		type = TDEBUG;
-	else
+	} else if (!strcmp(argv[3], "TBROK")) {
+		type = TBROK;
+	} else {
+		printf("Wrong type '%s'\n", argv[3]);
 		goto help;
+	}
 
 	size_t len = 0;
 
