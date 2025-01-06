@@ -74,6 +74,7 @@ enum test_attr_ids {
 	NEEDS_ROOT,
 	NEEDS_TMPDIR,
 	RESTORE_WALLCLOCK,
+	SAVE_RESTORE,
 	SKIP_FILESYSTEMS,
 	SKIP_IN_COMPAT,
 	SKIP_IN_LOCKDOWN,
@@ -106,6 +107,7 @@ static ujson_obj_attr test_attrs[] = {
 	UJSON_OBJ_ATTR_IDX(NEEDS_ROOT, "needs_root", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(NEEDS_TMPDIR, "needs_tmpdir", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(RESTORE_WALLCLOCK, "restore_wallclock", UJSON_BOOL),
+	UJSON_OBJ_ATTR_IDX(SAVE_RESTORE, "save_restore", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(SKIP_FILESYSTEMS, "skip_filesystems", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(SKIP_IN_COMPAT, "skip_in_compat", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(SKIP_IN_LOCKDOWN, "skip_in_lockdown", UJSON_BOOL),
@@ -299,6 +301,88 @@ static struct tst_tag *parse_tags(ujson_reader *reader, ujson_val *val)
 	return ret;
 }
 
+static struct tst_path_val *parse_save_restore(ujson_reader *reader, ujson_val *val)
+{
+	unsigned int i = 0, cnt = 0;
+	struct tst_path_val *ret;
+
+	ujson_reader_state state = ujson_reader_state_save(reader);
+
+	UJSON_ARR_FOREACH(reader, val) {
+		if (val->type != UJSON_ARR) {
+			ujson_err(reader, "Expected array!");
+			return NULL;
+		}
+		ujson_arr_skip(reader);
+		cnt++;
+	}
+
+	ujson_reader_state_load(reader, state);
+
+	ret = SAFE_MALLOC(sizeof(struct tst_path_val) * (cnt + 1));
+	memset(&ret[cnt], 0, sizeof(ret[cnt]));
+
+	UJSON_ARR_FOREACH(reader, val) {
+		char *path = NULL;
+		char *pval = NULL;
+		int flags_set = 0;
+		int val_set = 0;
+		unsigned int flags = 0;
+
+		UJSON_ARR_FOREACH(reader, val) {
+			if (!path) {
+				if (val->type != UJSON_STR) {
+					ujson_err(reader, "Expected string!");
+					return NULL;
+				}
+
+				path = strdup(val->val_str);
+			} else if (!val_set) {
+				if (val->type == UJSON_STR) {
+					pval = strdup(val->val_str);
+				} else if (val->type != UJSON_NULL) {
+					ujson_err(reader, "Expected string or NULL!");
+					return NULL;
+				}
+				val_set = 1;
+			} else if (!flags_set) {
+				if (val->type != UJSON_STR) {
+					ujson_err(reader, "Expected string!");
+					return NULL;
+				}
+
+				if (!strcmp(val->val_str, "TCONF")) {
+					flags = TST_SR_TCONF;
+				} else if (!strcmp(val->val_str, "TBROK")) {
+					flags = TST_SR_TBROK;
+				} else if (!strcmp(val->val_str, "SKIP")) {
+					flags = TST_SR_SKIP;
+				} else {
+					ujson_err(reader, "Invalid flags!");
+					return NULL;
+				}
+
+				flags_set = 1;
+			} else {
+				ujson_err(reader, "Expected only two members!");
+				return NULL;
+			}
+		}
+
+		if (!path || !flags_set) {
+			ujson_err(reader, "Expected [\"/{proc,sys}/path\", {\"TCONF\", \"TBROK\", \"TSKIP\"}]!");
+			return NULL;
+		}
+
+		ret[i].path = path;
+		ret[i].val = pval;
+		ret[i].flags = flags;
+		i++;
+	}
+
+	return ret;
+}
+
 static void parse_metadata(void)
 {
 	ujson_reader reader = UJSON_READER_INIT(metadata, metadata_used, UJSON_READER_STRICT);
@@ -384,6 +468,9 @@ static void parse_metadata(void)
 		break;
 		case RESTORE_WALLCLOCK:
 			test.restore_wallclock = val.val_bool;
+		break;
+		case SAVE_RESTORE:
+			test.save_restore = parse_save_restore(&reader, &val);
 		break;
 		case SKIP_FILESYSTEMS:
 			test.skip_filesystems = parse_strarr(&reader, &val);
