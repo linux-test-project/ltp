@@ -796,3 +796,17 @@ ssize_t safe_writev(const char *file, const int lineno, char len_strict,
 
 	return rval;
 }
+
+char *safe_ptsname(const char *const file, const int lineno, int masterfd)
+{
+	char *name;
+
+	name = ptsname(masterfd);
+
+	if (!name) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"ptsname(%d) failed", masterfd);
+	}
+
+	return name;
+}

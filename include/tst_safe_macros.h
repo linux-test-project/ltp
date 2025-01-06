@@ -528,4 +528,8 @@ ssize_t safe_writev(const char *file, const int lineno, char len_strict,
 	safe_writev(__FILE__, __LINE__, (len_strict), (fildes), \
 		(iov), (iovcnt))
 
+char *safe_ptsname(const char *const file, const int lineno, int masterfd);
+#define SAFE_PTSNAME(masterfd) \
+	safe_ptsname(__FILE__, __LINE__, (masterfd))
+
 #endif /* TST_SAFE_MACROS_H__ */
