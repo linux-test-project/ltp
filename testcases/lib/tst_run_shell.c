@@ -26,7 +26,7 @@ static void run_shell_tcnt(unsigned int n)
 	tst_run_script(shell_filename, params);
 }
 
-struct tst_test test = {
+static struct tst_test test = {
 	.runs_script = 1,
 };
 
@@ -141,7 +141,7 @@ static const char *const *parse_strarr(ujson_reader *reader, ujson_val *val)
 
 	ujson_reader_state_load(reader, state);
 
-	ret = SAFE_MALLOC(sizeof(char*) * (cnt + 1));
+	ret = SAFE_MALLOC(sizeof(char *) * (cnt + 1));
 
 	UJSON_ARR_FOREACH(reader, val) {
 		ret[i++] = strdup(val->val_str);
