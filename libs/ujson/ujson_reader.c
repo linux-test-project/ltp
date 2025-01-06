@@ -1049,8 +1049,12 @@ void ujson_reader_finish(ujson_reader *self)
 {
 	if (ujson_reader_err(self))
 		ujson_err_print(self);
-	else if (!ujson_reader_consumed(self))
+	else if (!ujson_reader_consumed(self)) {
 		ujson_warn(self, "Garbage after JSON string!");
+
+		if (ujson_reader_err(self))
+			ujson_err_print(self);
+	}
 }
 
 void ujson_reader_free(ujson_reader *buf)
