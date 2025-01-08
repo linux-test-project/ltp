@@ -454,7 +454,7 @@ static void parse_timer_opts(void)
 			runtime_us += tcases[i].usec * tcases[i].samples;
 	}
 
-	tst_set_max_runtime((runtime_us + runtime_us/10)/1000000);
+	tst_set_runtime((runtime_us + runtime_us/10)/1000000);
 }
 
 struct tst_test *tst_timer_test_setup(struct tst_test *timer_test)

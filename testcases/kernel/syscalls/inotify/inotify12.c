@@ -153,7 +153,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 10,
+	.timeout = 10,
 	.needs_tmpdir = 1,
 	.cleanup = cleanup,
 	.test = verify_inotify,

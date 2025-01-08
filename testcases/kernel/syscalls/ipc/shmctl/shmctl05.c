@@ -106,7 +106,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 10,
+	.runtime = 10,
 	.setup = setup,
 	.test_all = do_test,
 	.cleanup = cleanup,

@@ -311,7 +311,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.forks_child = 1,
-	.max_runtime = 180,
+	.runtime = 180,
 	.options = (struct tst_option[]) {
 		{"n:", &str_num_messages, "Number of messages to send (default: 1000)"},
 		{"l:", &str_num_iterations, "Number iterations per message (default: "

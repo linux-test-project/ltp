@@ -87,7 +87,7 @@ static void setup(void)
 	parse_ksm_options(opt_sizestr, &size, opt_numstr, &num, opt_unitstr, &unit);
 
 	if (opt_sizestr && size > DEFAULT_MEMSIZE)
-		tst_set_max_runtime(32 * (size / DEFAULT_MEMSIZE));
+		tst_set_timeout(32 * (size / DEFAULT_MEMSIZE));
 }
 
 static struct tst_test test = {
@@ -116,7 +116,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.test_all = verify_ksm,
-	.max_runtime = 32,
+	.timeout = 32,
 	.needs_cgroup_ctrls = (const char *const []){ "cpuset", NULL },
 };
 

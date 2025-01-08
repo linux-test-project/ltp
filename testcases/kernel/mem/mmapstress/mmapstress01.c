@@ -362,7 +362,7 @@ static struct tst_test test = {
 		{},
 	},
 	.cleanup = cleanup,
-	.max_runtime = 12,
+	.runtime = 12,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 };

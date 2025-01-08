@@ -182,5 +182,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = test_mmap,
-	.max_runtime = 60,
+	.runtime = 60,
 };

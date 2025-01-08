@@ -112,7 +112,7 @@ static void setup(void)
 	if (tst_has_slow_kconfig())
 		tst_brk(TCONF, "Skip test due to slow kernel configuration");
 
-	tst_set_max_runtime(timeout);
+	tst_set_runtime(timeout);
 }
 
 static void handler(int sig LTP_ATTRIBUTE_UNUSED)

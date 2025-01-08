@@ -221,7 +221,7 @@ static void setup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.max_runtime = TST_UNLIMITED_RUNTIME,
+	.timeout = TST_UNLIMITED_TIMEOUT,
 	.setup = setup,
 	.test_all = min_free_kbytes_test,
 	.save_restore = (const struct tst_path_val[]) {

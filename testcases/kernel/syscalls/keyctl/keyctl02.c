@@ -160,7 +160,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 60,
+	.runtime = 60,
 	.test_all = do_test,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "b4a1b4f5047e"},

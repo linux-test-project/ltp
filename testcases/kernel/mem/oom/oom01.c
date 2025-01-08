@@ -36,7 +36,7 @@ static void verify_oom(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.max_runtime = TST_UNLIMITED_RUNTIME,
+	.timeout = TST_UNLIMITED_TIMEOUT,
 	.test_all = verify_oom,
 	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {

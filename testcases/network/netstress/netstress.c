@@ -1024,6 +1024,6 @@ static struct tst_test test = {
 		{"B:", &server_bg, "Run in background, arg is the process directory"},
 		{}
 	},
-	.max_runtime = 300,
+	.timeout = 300,
 	.needs_checkpoints = 1,
 };

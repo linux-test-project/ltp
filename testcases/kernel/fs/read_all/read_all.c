@@ -598,7 +598,7 @@ static void setup(void)
 			worker_timeout);
 	} else {
 		worker_timeout = 10 * tst_remaining_runtime();
-		tst_res(TINFO, "Worker timeout set to 10%% of max_runtime: %dms",
+		tst_res(TINFO, "Worker timeout set to 10%% of runtime: %dms",
 			worker_timeout);
 	}
 	worker_timeout *= 1000;
@@ -746,5 +746,5 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = run,
 	.forks_child = 1,
-	.max_runtime = 100,
+	.runtime = 100,
 };

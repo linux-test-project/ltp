@@ -235,7 +235,7 @@ static struct tst_test test = {
 		{"v",  &verbose,     	"Verbose"},
 		{}
 	},
-	.max_runtime = 300,
+	.runtime = 300,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = mem_test,

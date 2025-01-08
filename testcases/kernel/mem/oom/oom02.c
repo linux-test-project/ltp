@@ -45,7 +45,7 @@ static void setup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.max_runtime = TST_UNLIMITED_RUNTIME,
+	.timeout = TST_UNLIMITED_TIMEOUT,
 	.setup = setup,
 	.test_all = verify_oom,
 	.skip_in_compat = 1,

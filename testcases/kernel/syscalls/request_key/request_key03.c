@@ -215,7 +215,7 @@ static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(testcase_list),
 	.forks_child = 1,
-	.max_runtime = 20,
+	.runtime = 20,
 	.options = (struct tst_option[]) {
 		{"b:", &opt_bug,  "Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
 		{}

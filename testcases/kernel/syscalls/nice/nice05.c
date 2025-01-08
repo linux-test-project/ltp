@@ -154,5 +154,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_nice,
 	.needs_root = 1,
-	.max_runtime = 3,
+	.runtime = 3,
 };

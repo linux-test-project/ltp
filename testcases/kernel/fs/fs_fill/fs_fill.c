@@ -121,7 +121,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 300,
+	.timeout = 300,
 	.needs_root = 1,
 	.dev_min_size = 1024,
 	.mount_device = 1,

@@ -152,7 +152,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.max_runtime = 30,
+	.runtime = 30,
 	.needs_kconfigs = (const char *const[]){
 		"CONFIG_SERIO_SERPORT",
 		NULL

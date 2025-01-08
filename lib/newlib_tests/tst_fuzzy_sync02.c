@@ -225,5 +225,5 @@ static struct tst_test test = {
 	.test = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 150,
+	.runtime = 150,
 };

@@ -204,5 +204,5 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = SANDBOX_FOLDER,
 	.all_filesystems = 1,
-	.max_runtime = 360,
+	.timeout = 360,
 };

@@ -116,7 +116,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 600,
+	.runtime = 600,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.forks_child = 1,

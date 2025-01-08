@@ -71,8 +71,8 @@ struct results {
 	int failed;
 	int warnings;
 	int broken;
-	unsigned int timeout;
-	int max_runtime;
+	unsigned int runtime;
+	unsigned int overall_time;
 };
 
 static struct results *results;
@@ -546,16 +546,13 @@ static void parse_mul(float *mul, const char *env_name, float min, float max)
 	}
 }
 
-static int multiply_runtime(int max_runtime)
+static int multiply_runtime(unsigned int runtime)
 {
 	static float runtime_mul = -1;
 
-	if (max_runtime <= 0)
-		return max_runtime;
-
 	parse_mul(&runtime_mul, "LTP_RUNTIME_MUL", 0.0099, 100);
 
-	return max_runtime * runtime_mul;
+	return runtime * runtime_mul;
 }
 
 static struct option {
@@ -593,21 +590,21 @@ static void print_help(void)
 	fprintf(stderr, "Timeout and runtime\n");
 	fprintf(stderr, "-------------------\n");
 
-	if (tst_test->max_runtime) {
-		runtime = multiply_runtime(tst_test->max_runtime);
+	if (tst_test->timeout == TST_UNLIMITED_TIMEOUT) {
+		fprintf(stderr, "Test timeout is not limited\n");
+	} else {
+		timeout = tst_multiply_timeout(DEFAULT_TIMEOUT + tst_test->timeout);
 
-		if (runtime == TST_UNLIMITED_RUNTIME) {
-			fprintf(stderr, "Test iteration runtime is not limited\n");
-		} else {
-			fprintf(stderr, "Test iteration runtime cap %ih %im %is\n",
-				runtime/3600, (runtime%3600)/60, runtime % 60);
-		}
+		fprintf(stderr, "Test timeout (not including runtime) %ih %im %is\n",
+				timeout/3600, (timeout%3600)/60, timeout % 60);
 	}
 
-	timeout = tst_multiply_timeout(DEFAULT_TIMEOUT);
+	if (tst_test->runtime) {
+		runtime = multiply_runtime(tst_test->runtime);
 
-	fprintf(stderr, "Test timeout (not including runtime) %ih %im %is\n",
-		timeout/3600, (timeout%3600)/60, timeout % 60);
+		fprintf(stderr, "Test iteration runtime cap %ih %im %is\n",
+				runtime/3600, (runtime%3600)/60, runtime % 60);
+	}
 
 	fprintf(stderr, "\n");
 
@@ -740,8 +737,8 @@ static void parse_opts(int argc, char *argv[])
 			iterations = SAFE_STRTOL(optarg, 0, INT_MAX);
 		break;
 		case 'I':
-			if (tst_test->max_runtime > 0)
-				tst_test->max_runtime = SAFE_STRTOL(optarg, 1, INT_MAX);
+			if (tst_test->runtime > 0)
+				tst_test->runtime = SAFE_STRTOL(optarg, 1, INT_MAX);
 			else
 				duration = SAFE_STRTOF(optarg, 0.1, HUGE_VALF);
 		break;
@@ -1265,9 +1262,14 @@ static void do_setup(int argc, char *argv[])
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
 
-	if (tst_test->max_runtime < -1) {
+	if (tst_test->timeout < -1) {
+		tst_brk(TBROK, "Invalid timeout value %i",
+			tst_test->timeout);
+	}
+
+	if (tst_test->runtime < 0) {
 		tst_brk(TBROK, "Invalid runtime value %i",
-			results->max_runtime);
+			results->runtime);
 	}
 
 	if (tst_test->tconf_msg)
@@ -1662,7 +1664,7 @@ static void alarm_handler(int sig LTP_ATTRIBUTE_UNUSED)
 
 static void heartbeat_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
-	alarm(results->timeout);
+	alarm(results->overall_time);
 	sigkill_retries = 0;
 }
 
@@ -1679,18 +1681,15 @@ unsigned int tst_remaining_runtime(void)
 	static struct timespec now;
 	int elapsed;
 
-	if (results->max_runtime == TST_UNLIMITED_RUNTIME)
-		return UINT_MAX;
-
-	if (results->max_runtime == 0)
+	if (results->runtime == 0)
 		tst_brk(TBROK, "Runtime not set!");
 
 	if (tst_clock_gettime(CLOCK_MONOTONIC, &now))
 		tst_res(TWARN | TERRNO, "tst_clock_gettime() failed");
 
 	elapsed = tst_timespec_diff_ms(now, tst_start_time) / 1000;
-	if (results->max_runtime > elapsed)
-		return results->max_runtime - elapsed;
+	if (results->runtime > (unsigned int) elapsed)
+		return results->runtime - elapsed;
 
 	return 0;
 }
@@ -1709,33 +1708,41 @@ unsigned int tst_multiply_timeout(unsigned int timeout)
 	return timeout * timeout_mul;
 }
 
-static void set_timeout(void)
+static void set_overall_timeout(void)
 {
-	unsigned int timeout = DEFAULT_TIMEOUT;
+	unsigned int timeout = DEFAULT_TIMEOUT + tst_test->timeout;
 
-	if (results->max_runtime == TST_UNLIMITED_RUNTIME) {
-		tst_res(TINFO, "Timeout per run is disabled");
+	if (tst_test->timeout == TST_UNLIMITED_TIMEOUT) {
+		tst_res(TINFO, "Test timeout is not limited");
 		return;
 	}
 
-	if (results->max_runtime < 0) {
-		tst_brk(TBROK, "max_runtime must to be >= -1! (%d)",
-			results->max_runtime);
-	}
+	results->overall_time = tst_multiply_timeout(timeout) + results->runtime;
 
-	results->timeout = tst_multiply_timeout(timeout) + results->max_runtime;
-
-	tst_res(TINFO, "Timeout per run is %uh %02um %02us",
-		results->timeout/3600, (results->timeout%3600)/60,
-		results->timeout % 60);
+	tst_res(TINFO, "Overall timeout per run is %uh %02um %02us",
+		results->overall_time/3600, (results->overall_time%3600)/60,
+		results->overall_time % 60);
 }
 
-void tst_set_max_runtime(int max_runtime)
+void tst_set_timeout(int timeout)
 {
-	results->max_runtime = multiply_runtime(max_runtime);
-	tst_res(TINFO, "Updating max runtime to %uh %02um %02us",
-		max_runtime/3600, (max_runtime%3600)/60, max_runtime % 60);
-	set_timeout();
+	int timeout_adj = DEFAULT_TIMEOUT + timeout;
+
+	results->overall_time = tst_multiply_timeout(timeout_adj) + results->runtime;
+
+	tst_res(TINFO, "Overall timeout per run is %uh %02um %02us",
+		results->overall_time/3600, (results->overall_time%3600)/60,
+		results->overall_time % 60);
+
+	heartbeat();
+}
+
+void tst_set_runtime(int runtime)
+{
+	results->runtime = multiply_runtime(runtime);
+	tst_res(TINFO, "Updating runtime to %uh %02um %02us",
+		runtime/3600, (runtime%3600)/60, runtime % 60);
+	set_overall_timeout();
 	heartbeat();
 }
 
@@ -1746,7 +1753,7 @@ static int fork_testrun(void)
 	SAFE_SIGNAL(SIGINT, sigint_handler);
 	SAFE_SIGNAL(SIGTERM, sigint_handler);
 
-	alarm(results->timeout);
+	alarm(results->overall_time);
 
 	show_failure_hints = 1;
 
@@ -1896,10 +1903,10 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	uname(&uval);
 	tst_res(TINFO, "Tested kernel: %s %s %s", uval.release, uval.version, uval.machine);
 
-	if (tst_test->max_runtime)
-		results->max_runtime = multiply_runtime(tst_test->max_runtime);
+	if (tst_test->runtime)
+		results->runtime = multiply_runtime(tst_test->runtime);
 
-	set_timeout();
+	set_overall_timeout();
 
 	if (tst_test->test_variants)
 		test_variants = tst_test->test_variants;

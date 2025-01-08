@@ -174,7 +174,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.max_runtime = 20,
+	.timeout = 20,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_CFS_BANDWIDTH",

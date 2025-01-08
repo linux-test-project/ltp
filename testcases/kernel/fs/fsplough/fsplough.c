@@ -190,7 +190,7 @@ static void setup(void)
 		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	filedata = SAFE_MALLOC(filesize);
 
-	tst_set_max_runtime(bufsize * loop_count / (8 * 1024 * 1024));
+	tst_set_timeout(bufsize * loop_count / (8 * 1024 * 1024));
 }
 
 static void run(void)

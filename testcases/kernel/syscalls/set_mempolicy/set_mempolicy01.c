@@ -41,9 +41,9 @@ static void setup(void)
 	 * has multiple NUMA nodes, the test matrix combination grows exponentially
 	 * and bring about test time to increase extremely fast.
 	 *
-	 * Here reset the maximum runtime according to the NUMA nodes.
+	 * Here reset the entire timeout according to the NUMA nodes.
 	 */
-	tst_set_max_runtime(test.max_runtime * (1 << nodes->cnt/16));
+	tst_set_timeout(test.timeout * (1 << nodes->cnt/16));
 }
 
 static void cleanup(void)
@@ -119,7 +119,7 @@ static struct tst_test test = {
 	.tcnt = 2,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.max_runtime = 600,
+	.timeout = 600,
 };
 
 #else

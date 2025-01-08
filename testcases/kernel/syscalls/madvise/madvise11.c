@@ -432,7 +432,7 @@ static struct tst_test test = {
 		"CONFIG_MEMORY_FAILURE=y",
 		NULL
 	},
-	.max_runtime = 30,
+	.runtime = 30,
 	.needs_checkpoints = 1,
 	.setup = setup,
 	.cleanup = cleanup,

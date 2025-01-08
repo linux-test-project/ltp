@@ -94,26 +94,32 @@ in range of [0, '.tcnt' - 1].
 
 IMPORTANT: Only one of '.test' and '.test_all' can be set at a time.
 
-Each test has a limit on how long it can run and the limit composes of two
-parts max_runtime and timeout. The max_runtime is a limit for how long can the
-'.test_all' or a set of '.test' functions take and the timeout is static part
-that should cover the duration of test setup and cleanup plus some safety.
+Each test has a limit on how long it can run, composed of two parts: 'runtime'
+and 'timeout'. The 'runtime' is the limit for how long the '.test_all' or a set
+of '.test' main functions can execute. The 'timeout', on the other hand, applies
+to the total time for setup, single test function invocation, cleanup, and some
+additional safety margin. If test without an explicit 'runtime', the 'timeout'
+governs the entire test duration.
+
+The timeout timer is also reset on each subsequent iteration with the test -i
+parameter, variants or .all_filesystems.
 
 Any test that runs for more than a second or two has to make sure to:
 
-- set the runtime either by setting the '.max_runtime' in tst_test or by
-  calling 'tst_set_max_runtime()' in the test setup
+- set the runtime by setting '.runtime' in tst_test and calling 'tst_set_runtime()'
+  to monitor the remaining runtime and ensure the test exits when the runtime
+  limit is reached.
 
-- monitor remaning runtime by regular calls to 'tst_remaining_runtime()' and
-  exit when runtime has been used up
+- set the timeout by setting '.timeout' in tst_test to limit the whole test
+  run that does not use 'tst_remaining_runtime()'.
 
-Test is free to exit before max_runtime has been used up for example when
+Test is free to exit before runtime has been used up for example when
 minimal number of iteration was finished.
 
 The limit is applied to a single call of the '.test_all' function that means
 that for example when '.test_variants' or '.all_filesystems' is set the whole
-test will be limited by 'variants * (max_runtime + timeout)' seconds and the
-test runtime will be likely close to 'variants * max_runtime' seconds.
+test will be limited by 'variants * (runtime + timeout)' seconds and the
+test runtime will be likely close to 'variants * runtime' seconds.
 
 [source,c]
 -------------------------------------------------------------------------------
@@ -401,13 +407,25 @@ WARNING: This function is not thread safe.
 
 [source,c]
 -------------------------------------------------------------------------------
-void tst_set_max_runtime(int max_runtime);
+void tst_set_timeout(int timeout);
 -------------------------------------------------------------------------------
 
-Allows for setting max_runtime per test iteration dynamically in the test 'setup()',
-the timeout is specified in seconds. There are a few testcases whose runtime
-can vary arbitrarily, these can disable timeouts by setting it to
-TST_UNLIMITED_RUNTIME.
+Allows for setting the entire timeout dynamically during the test setup(). The
+timeout is specified in seconds and represents the total time allowed for a single
+test iteration, including setup, runtime, and teardown phases.
+
+[source,c]
+-------------------------------------------------------------------------------
+void tst_set_runtime(int runtime);
+-------------------------------------------------------------------------------
+
+Allows for setting the runtime per test iteration dynamically during the test 'setup()'.
+The runtime is specified in seconds and represents the duration the test is allowed
+to execute its main workload, excluding setup and teardown phases.
+
+This function is useful for tests where the duration of the main workload can be
+controlled or needs to be adjusted dynamically. For example, tests that loop until
+the runtime expires can use this function to define how long they should run.
 
 [source,c]
 -------------------------------------------------------------------------------

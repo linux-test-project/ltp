@@ -1347,7 +1347,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
-	.max_runtime = 1800,
+	.timeout = 1800,
 	.options = (struct tst_option[]){
 		{ "a:", &str_iterations, "Total number of ayncs I/O the program will run (default 500)" },
 		{ "b:", &str_max_io_submit, "Max number of iocbs to give io_submit at once" },

@@ -87,14 +87,14 @@ See :master:`testcases/network/README.md`.
 Test execution time and timeout
 -------------------------------
 
-The limit on how long a test can run does compose of two parts: ``max_runtime``
+The limit on how long a test can run does compose of two parts: ``runtime``
 and ``timeout``. The limit does apply to a single test variant. That means, for
 example, that tests which run for all available filesystems will apply this
 limit for a single filesystem only.
 
-The ``max_runtime`` is a cap on how long the ``run()`` function can take and for
+The ``runtime`` is a cap on how long the ``run()`` function can take and for
 most testcases this part is set to zero. For tests that do run for more than a
-second or two the ``max_runtime`` has to be defined and the ``run()`` function
+second or two the ``runtime`` has to be defined and the ``run()`` function
 has to check actively how much runtime is left.
 
 Test runtime can be scaled up and down with ``LTP_RUNTIME_MUL`` environment

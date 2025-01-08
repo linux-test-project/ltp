@@ -135,5 +135,5 @@ static struct tst_test test = {
 		"tmpfs",
 		NULL
 	},
-	.max_runtime = 1800,
+	.runtime = 1800,
 };

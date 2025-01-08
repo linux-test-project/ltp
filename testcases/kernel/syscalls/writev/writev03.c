@@ -145,7 +145,7 @@ static struct tst_test test = {
 	.min_cpus = 2,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 75,
+	.runtime = 75,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "d4690f1e1cda"},
 		{}

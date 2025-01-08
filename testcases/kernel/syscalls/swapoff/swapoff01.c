@@ -53,6 +53,6 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.needs_root = 1,
 	.test_all = verify_swapoff,
-	.max_runtime = 60,
+	.timeout = 60,
 	.setup = setup
 };
