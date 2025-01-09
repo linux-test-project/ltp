@@ -115,7 +115,6 @@ static struct tst_test test = {
 	.min_kver = "6.8",
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
-	.format_device = 1,
 	.bufs = (struct tst_buffers []) {
 		{&st_mount, .size = sizeof(struct statmount)},
 		{&st_mount_small, .size = sizeof(struct statmount)},
