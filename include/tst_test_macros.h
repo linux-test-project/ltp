@@ -455,4 +455,35 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	}                                                                      \
 } while (0)
 
+/**
+ * TST_EXP_EQ_STRN() - Compare two strings, providing length as well.
+ *
+ * @STR_A: string to compare.
+ * @STR_B: string to compare.
+ * @LEN: length of the string.
+ */
+#define TST_EXP_EQ_STRN(STR_A, STR_B, LEN) do {                                \
+	char str_a_cpy[LEN+1];                                                 \
+									       \
+	strncpy(str_a_cpy, STR_A, LEN);                                        \
+	str_a_cpy[LEN] = 0;                                                    \
+									       \
+	TST_PASS = strncmp(STR_A, STR_B, LEN) == 0;                            \
+									       \
+	if (TST_PASS) {                                                        \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			"%s == %s (%s)",                                       \
+			#STR_A, #STR_B, str_a_cpy);                            \
+	} else {                                                               \
+		char str_b_cpy[LEN+1];                                         \
+									       \
+		strncpy(str_b_cpy, STR_B, LEN);                                \
+		str_b_cpy[LEN] = 0;                                            \
+									       \
+		tst_res_(__FILE__, __LINE__, TFAIL,                            \
+			"%s (%s) != %s (%s)",                                  \
+			#STR_A, str_a_cpy, #STR_B, str_b_cpy);                 \
+	}                                                                      \
+} while (0)
+
 #endif	/* TST_TEST_MACROS_H__ */
