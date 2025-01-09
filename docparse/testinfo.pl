@@ -408,7 +408,11 @@ sub content_all_tests
 				# two dimensional array
 				if (ref(@$v[0]) eq 'ARRAY') {
 					for my $v2 (@$v) {
-						$content .= paragraph(table_escape(join(' ', @$v2)));
+						# convert NULL to "NULL" string to be printed
+						for my $v3 (@$v2) {
+							$v3 = "NULL" if (!defined $v3);
+						}
+						$content .= paragraph(table_escape(join(', ', @$v2)));
 					}
 				} else {
 					# one dimensional array
