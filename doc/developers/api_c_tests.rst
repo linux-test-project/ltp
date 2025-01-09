@@ -12,6 +12,10 @@ Core LTP API
 .. kernel-doc:: ../../include/tst_res_flags.h
 .. kernel-doc:: ../../include/tst_test.h
 
+Test macros
+-----------
+.. kernel-doc:: ../../include/tst_test_macros.h
+
 Capabilities
 ------------
 .. kernel-doc:: ../../include/tst_capability.h
