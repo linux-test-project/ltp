@@ -6,18 +6,15 @@
  */
 
 /*\
+ * [Description]
+ *
  * CVE-2023-1829
  *
  * Test for use-after-free after removing tcindex traffic filter with certain
  * parameters.
  *
- * Tcindex filter removed in:
- *
- *  commit 8c710f75256bb3cf05ac7b1672c82b92c43f3d28
- *  Author: Jamal Hadi Salim <jhs@mojatatu.com>
- *  Date:   Tue Feb 14 08:49:14 2023 -0500
- *
- *  net/sched: Retire tcindex classifier
+ * Tcindex filter was removed in kernel v6.3:
+ * 8c710f75256b ("net/sched: Retire tcindex classifier")
  */
 
 #include <linux/netlink.h>

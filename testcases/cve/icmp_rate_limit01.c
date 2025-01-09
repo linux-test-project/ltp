@@ -6,21 +6,16 @@
  */
 
 /*\
- * CVE-2020-25705
+ * [Description]
+ *
+ * Test for CVE-2020-25705 fixed in kernel v5.10:
+ * b38e7819cae9 ("icmp: randomize the global rate limiter").
  *
  * Test of ICMP rate limiting behavior that may be abused for DNS cache
  * poisoning attack. Send a few batches of 100 packets to a closed UDP port
  * and count the ICMP errors. If the number of errors is always the same
  * for each batch (not randomized), the system is vulnerable. Send packets
  * from multiple IP addresses to bypass per-address ICMP throttling.
- *
- * Fixed in:
- *
- *  commit b38e7819cae946e2edf869e604af1e65a5d241c5
- *  Author: Eric Dumazet <edumazet@google.com>
- *  Date:   Thu Oct 15 11:42:00 2020 -0700
- *
- *  icmp: randomize the global rate limiter
  */
 
 #include <time.h>
