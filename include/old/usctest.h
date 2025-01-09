@@ -61,20 +61,6 @@ extern int TEST_ERRNO;
 	} while (0)
 
 /***********************************************************************
- * TEST_VOID: calls a system call
- *
- * parameters:
- *	SCALL = system call and parameters to execute
- *
- * Note: This is IDENTICAL to the TEST() macro except that it is intended
- * for use with syscalls returning no values (void syscall()).  The
- * Typecasting nothing (void) into an unsigned integer causes compilation
- * errors.
- *
- ***********************************************************************/
-#define TEST_VOID(SCALL) do { errno = 0; SCALL; TEST_ERRNO = errno; } while (0)
-
-/***********************************************************************
  * TEST_PAUSE: Pause for SIGUSR1 if the pause flag is set.
  *	       Just continue when signal comes in.
  *
