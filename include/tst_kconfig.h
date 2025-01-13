@@ -7,6 +7,7 @@
 #define TST_KCONFIG_H__
 
 #include <stdbool.h>
+#include <stddef.h>
 
 /**
  * Initialization helper macro for struct tst_kconfig_var. Requires <string.h>
@@ -29,7 +30,7 @@ struct tst_kconfig_var {
  * tst_kconfig_var structures.
  *
  * The path to the kernel config should be autodetected in most of the cases as
- * the code looks for know locations. It can be explicitely set/overrided with
+ * the code looks for know locations. It can be explicitly set/overridden with
  * the KCONFIG_PATH environment variable as well.
  *
  * The caller has to initialize the tst_kconfig_var structure. The id has to be
@@ -47,7 +48,7 @@ struct tst_kconfig_var {
  * In the case that match is set to 'v' the val pointer points to a newly
  * allocated string that holds the value.
  *
- * @param vars An array of caller initalized tst_kconfig_var structures.
+ * @param vars An array of caller initialized tst_kconfig_var structures.
  * @param vars_len Length of the vars array.
  */
 void tst_kconfig_read(struct tst_kconfig_var vars[], size_t vars_len);
