@@ -1,0 +1,6 @@
+# Configuration for the `b4` tool
+# See https://b4.docs.kernel.org/en/latest/config.html
+[b4]
+    send-series-to = Linux Test Project <ltp@lists.linux.it>
+    pw-url = https://patchwork.ozlabs.org/
+    pw-project = ltp
