@@ -11,6 +11,7 @@ TST_NEEDS_CMDS="awk cut sed"
 TST_SETUP="setup"
 TST_CNT=3
 REQUIRED_BUILTIN_POLICY="tcb"
+REQUIRED_POLICY_CONTENT='tcb.policy'
 
 setup()
 {
@@ -70,6 +71,7 @@ test3()
 	local user="nobody"
 	local dir="$PWD/user"
 	local file="$dir/test.txt"
+	local cmd="grep $file $ASCII_MEASUREMENTS"
 
 	# Default policy does not measure user files
 	tst_res TINFO "verify not measuring user files"
@@ -87,7 +89,11 @@ test3()
 	sudo -n -u $user sh -c "echo $(cat /proc/uptime) user file > $file; cat $file > /dev/null"
 	cd ..
 
-	EXPECT_FAIL "grep $file $ASCII_MEASUREMENTS"
+	if tst_rod "$cmd" 2> /dev/null; then
+		tst_res TPASS "$cmd failed as expected"
+	else
+		tst_res $IMA_FAIL "$cmd passed unexpectedly"
+	fi
 }
 
 . ima_setup.sh

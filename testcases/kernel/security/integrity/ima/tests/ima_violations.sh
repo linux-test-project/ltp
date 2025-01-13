@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2009 IBM Corporation
-# Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2025 Petr Vorel <pvorel@suse.cz>
 # Author: Mimi Zohar <zohar@linux.ibm.com>
 #
 # Test whether ToMToU and open_writer violations invalidatethe PCR and are logged.
@@ -9,6 +9,8 @@
 TST_SETUP="setup"
 TST_CLEANUP="cleanup"
 TST_CNT=3
+
+REQUIRED_POLICY_CONTENT='violations.policy'
 
 setup()
 {
@@ -83,11 +85,11 @@ validate()
 				tst_sleep 1s
 			fi
 		else
-			tst_res TFAIL "$search violation not added"
+			tst_res $IMA_FAIL "$search violation not added"
 			return
 		fi
 	done
-	tst_res TFAIL "$search not found in $LOG"
+	tst_res $IMA_FAIL "$search not found in $LOG"
 }
 
 test1()

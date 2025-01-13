@@ -1,6 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2021 Microsoft Corporation
+# Copyright (c) Linux Test Project, 2021-2025
 # Author: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
 #
 # Verify measurement of SELinux policy hash and state.
@@ -14,15 +15,12 @@ TST_CNT=2
 TST_SETUP="setup"
 TST_MIN_KVER="5.12"
 
-FUNC_CRITICAL_DATA='func=CRITICAL_DATA'
-REQUIRED_POLICY="^measure.*$FUNC_CRITICAL_DATA"
+REQUIRED_POLICY_CONTENT='selinux.policy'
 
 setup()
 {
 	SELINUX_DIR=$(tst_get_selinux_dir)
 	[ "$SELINUX_DIR" ] || tst_brk TCONF "SELinux is not enabled"
-
-	require_ima_policy_content "$REQUIRED_POLICY" '-E' > $TST_TMPDIR/policy.txt
 }
 
 # Format of the measured SELinux state data.
@@ -45,7 +43,7 @@ validate_policy_capabilities()
 		measured_value=$(echo $1 | awk -F'[=;]' -v inx="$inx" '{print $inx}')
 		expected_value=$(cat "$SELINUX_DIR/policy_capabilities/$measured_cap")
 		if [ "$measured_value" != "$expected_value" ]; then
-			tst_res TFAIL "$measured_cap: expected: $expected_value, got: $digest"
+			tst_res $IMA_FAIL "$measured_cap: expected: $expected_value, got: $digest"
 			return
 		fi
 
@@ -75,7 +73,7 @@ test1()
 	# in kernel memory for SELinux
 	line=$(grep -E "selinux-policy-hash" $ASCII_MEASUREMENTS | tail -1)
 	if [ -z "$line" ]; then
-		tst_res TFAIL "SELinux policy hash not measured"
+		tst_res $IMA_FAIL "SELinux policy hash not measured"
 		return
 	fi
 
@@ -86,7 +84,7 @@ test1()
 		tst_brk TCONF "cannot compute digest for $algorithm"
 
 	if [ "$policy_digest" != "$expected_policy_digest" ]; then
-		tst_res TFAIL "Digest mismatch: expected: $expected_policy_digest, got: $policy_digest"
+		tst_res $IMA_FAIL "Digest mismatch: expected: $expected_policy_digest, got: $policy_digest"
 		return
 	fi
 
@@ -116,7 +114,7 @@ test2()
 	# state matches that currently set for SELinux
 	line=$(grep -E "selinux-state" $ASCII_MEASUREMENTS | tail -1)
 	if [ -z "$line" ]; then
-		tst_res TFAIL "SELinux state not measured"
+		tst_res $IMA_FAIL "SELinux state not measured"
 		return
 	fi
 
@@ -129,7 +127,7 @@ test2()
 	tst_brk TCONF "cannot compute digest for $algorithm"
 
 	if [ "$digest" != "$expected_digest" ]; then
-		tst_res TFAIL "digest mismatch: expected: $expected_digest, got: $digest"
+		tst_res $IMA_FAIL "digest mismatch: expected: $expected_digest, got: $digest"
 		return
 	fi
 
@@ -146,20 +144,20 @@ test2()
 	enforced_value=$(echo $measured_data | awk -F'[=;]' '{print $4}')
 	expected_enforced_value=$(cat $SELINUX_DIR/enforce)
 	if [ "$expected_enforced_value" != "$enforced_value" ]; then
-		tst_res TFAIL "enforce: expected: $expected_enforced_value, got: $enforced_value"
+		tst_res $IMA_FAIL "enforce: expected: $expected_enforced_value, got: $enforced_value"
 		return
 	fi
 
 	checkreqprot_value=$(echo $measured_data | awk -F'[=;]' '{print $6}')
 	expected_checkreqprot_value=$(cat $SELINUX_DIR/checkreqprot)
 	if [ "$expected_checkreqprot_value" != "$checkreqprot_value" ]; then
-		tst_res TFAIL "checkreqprot: expected: $expected_checkreqprot_value, got: $checkreqprot_value"
+		tst_res $IMA_FAIL "checkreqprot: expected: $expected_checkreqprot_value, got: $checkreqprot_value"
 		return
 	fi
 
 	initialized_value=$(echo $measured_data | awk -F'[=;]' '{print $2}')
 	if [ "$initialized_value" != "1" ]; then
-		tst_res TFAIL "initialized: expected 1, got: $initialized_value"
+		tst_res $IMA_FAIL "initialized: expected 1, got: $initialized_value"
 		return
 	fi
 

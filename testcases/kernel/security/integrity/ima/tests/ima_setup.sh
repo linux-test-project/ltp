@@ -20,6 +20,9 @@ SYSFS="/sys"
 UMOUNT=
 TST_FS_TYPE="ext3"
 
+IMA_FAIL="TFAIL"
+IMA_BROK="TBROK"
+
 # TODO: find support for rmd128 rmd256 rmd320 wp256 wp384 tgr128 tgr160
 compute_digest()
 {
@@ -86,21 +89,9 @@ require_policy_writable()
 check_ima_policy_content()
 {
 	local pattern="$1"
-	local grep_params="${2--q}"
 
 	check_policy_readable || return 1
-	grep $grep_params "$pattern" $IMA_POLICY
-}
-
-require_ima_policy_content()
-{
-	local pattern="$1"
-	local grep_params="${2--q}"
-
-	require_policy_readable
-	if ! grep $grep_params "$pattern" $IMA_POLICY; then
-		tst_brk TCONF "IMA policy does not specify '$pattern'"
-	fi
+	grep -q "$pattern" $IMA_POLICY
 }
 
 check_ima_policy_cmdline()
@@ -159,6 +150,51 @@ print_ima_config()
 	tst_res TINFO "/proc/cmdline: $(cat /proc/cmdline)"
 }
 
+# Check for required
+# 1) IMA builtin policy (based on /proc/cmdline)
+# 2) IMA policy content (actual content of /sys/kernel/security/ima/policy)
+# When missing CONFIG_IMA_READ_POLICY=y on required policy convert: test, but convert TFAIL => TCONF.
+# $REQUIRED_POLICY_CONTENT: file with required IMA policy
+# $REQUIRED_BUILTIN_POLICY: IMA policy specified as kernel cmdline
+verify_ima_policy()
+{
+	local check_content line
+	local file="$TST_DATAROOT/$REQUIRED_POLICY_CONTENT"
+
+	if [ -z "$REQUIRED_POLICY_CONTENT" -a -z "$REQUIRED_BUILTIN_POLICY" ]; then
+		return 0
+	fi
+
+	if [ -n "$REQUIRED_POLICY_CONTENT" ]; then
+		check_content=1
+		if [ -n "$REQUIRED_BUILTIN_POLICY" ] && check_ima_policy_cmdline "$REQUIRED_BUILTIN_POLICY"; then
+			tst_res TINFO "booted with IMA policy: $REQUIRED_BUILTIN_POLICY"
+			return 0
+		fi
+	elif [ -n "$REQUIRED_BUILTIN_POLICY" ]; then
+		require_ima_policy_cmdline "$REQUIRED_BUILTIN_POLICY"
+	fi
+
+	if [ "$check_content" = 1 ]; then
+		[ -e $file ] || tst_brk TBROK "policy file '$file' does not exist (LTPROOT=$LTPROOT)"
+		tst_res TINFO "test requires IMA policy:"
+		cat $file
+		if check_policy_readable; then
+			# check IMA policy content
+			while read line; do
+				if ! grep -q "$line" $IMA_POLICY; then
+					tst_brk TCONF "missing required policy '$line'"
+				fi
+				IMA_POLICY_CHECKED=1
+			done < $file
+		else
+			tst_res TINFO "policy is not readable, failure will be treated as TCONF"
+			IMA_FAIL="TCONF"
+			IMA_BROK="TCONF"
+		fi
+	fi
+}
+
 ima_setup()
 {
 	SECURITYFS="$(mount_helper securityfs $SYSFS/kernel/security)"
@@ -181,9 +217,7 @@ ima_setup()
 		cd "$TST_MNTPOINT"
 	fi
 
-	if [ "$REQUIRED_BUILTIN_POLICY" ]; then
-		require_ima_policy_cmdline "$REQUIRED_BUILTIN_POLICY"
-	fi
+	verify_ima_policy
 
 	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
@@ -291,7 +325,7 @@ ima_check()
 		algorithm=$(cat tmp | cut -d'|' -f1)
 		digest=$(cat tmp | cut -d'|' -f2)
 	else
-		tst_brk TBROK "failed to get algorithm/digest for '$test_file'"
+		tst_brk $IMA_BROK "failed to get algorithm/digest for '$test_file'"
 	fi
 
 	tst_res TINFO "computing digest for $algorithm algorithm"

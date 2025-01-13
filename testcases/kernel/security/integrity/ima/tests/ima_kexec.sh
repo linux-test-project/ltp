@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2020 Microsoft Corporation
-# Copyright (c) 2020 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2025 Petr Vorel <pvorel@suse.cz>
 # Author: Lachlan Sneff <t-josne@linux.microsoft.com>
 #
 # Verify that kexec cmdline is measured correctly.
@@ -14,7 +14,7 @@ TST_SETUP="setup"
 TST_MIN_KVER="5.3"
 
 IMA_KEXEC_IMAGE="${IMA_KEXEC_IMAGE:-/boot/vmlinuz-$(uname -r)}"
-REQUIRED_POLICY='^measure.*func=KEXEC_CMDLINE'
+REQUIRED_POLICY_CONTENT='kexec.policy'
 
 measure()
 {
@@ -46,11 +46,6 @@ setup()
 	if [ ! -f "$IMA_KEXEC_IMAGE" ]; then
 		tst_brk TCONF "kernel image not found, specify path in \$IMA_KEXEC_IMAGE"
 	fi
-
-	if check_policy_readable; then
-		require_ima_policy_content "$REQUIRED_POLICY"
-		policy_readable=1
-	fi
 }
 
 kexec_failure_hint()
@@ -79,7 +74,6 @@ kexec_test()
 {
 	local param="$1"
 	local cmdline="$2"
-	local res=TFAIL
 	local kexec_cmd
 
 	kexec_cmd="$param=$cmdline"
@@ -97,13 +91,10 @@ kexec_test()
 
 	ROD kexec -su
 	if ! measure "$cmdline"; then
-		if [ "$policy_readable" != 1 ]; then
-			tst_res TWARN "policy not readable, it might not contain required policy '$REQUIRED_POLICY'"
-			res=TBROK
-		fi
-		tst_brk $res "unable to find a correct measurement"
+		tst_res $IMA_FAIL "unable to find a correct measurement"
+	else
+		tst_res TPASS "kexec cmdline was measured correctly"
 	fi
-	tst_res TPASS "kexec cmdline was measured correctly"
 }
 
 test()
