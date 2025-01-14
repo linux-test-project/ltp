@@ -278,7 +278,7 @@ ima_check()
 		algorithm=$(echo "$tmp" | cut -d'|' -f1)
 		digest=$(echo "$tmp" | cut -d'|' -f2)
 	else
-		tst_res TBROK "failed to get algorithm/digest for '$test_file': $tmp"
+		tst_brk TBROK "failed to get algorithm/digest for '$test_file': $tmp"
 	fi
 
 	tst_res TINFO "computing digest for $algorithm algorithm"
