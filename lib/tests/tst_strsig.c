@@ -29,6 +29,7 @@ int TST_TOTAL = 1;
 
 int main(void)
 {
+	fprintf(stderr, "0 = %s\n", tst_strsig(0));
 	fprintf(stderr, "SIGKILL = %s\n", tst_strsig(SIGKILL));
 	fprintf(stderr, "SIGALRM = %s\n", tst_strsig(SIGALRM));
 	return 0;
