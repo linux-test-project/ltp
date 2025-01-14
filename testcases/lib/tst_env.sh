@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2024-2025 Cyril Hrubis <chrubis@suse.cz>
 #
 # This is a minimal test environment for a shell scripts executed from C by
 # tst_run_shell() function. Shell tests must use the tst_loader.sh instead!

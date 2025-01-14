@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2024-2025 Cyril Hrubis <chrubis@suse.cz>
 
 . tst_env.sh
 
@@ -20,4 +22,4 @@ if [ "$2" != "param2" ]; then
 	tst_res TFAIL "Second parameter is $2 expected param2"
 else
 	tst_res TPASS "Second parameter is $2"
-fi
+#fi
