@@ -10,6 +10,7 @@ TST_SETUP="setup"
 TST_CLEANUP="cleanup"
 TST_CNT=3
 
+REQUIRED_BUILTIN_POLICY="tcb"
 REQUIRED_POLICY_CONTENT='violations.policy'
 
 setup()
