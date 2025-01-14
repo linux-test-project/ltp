@@ -77,6 +77,11 @@ test3()
 	tst_res TINFO "verify not measuring user files"
 	tst_check_cmds sudo || return
 
+	if [ "$IMA_POLICY_CHECKED" != 1 ]; then
+		tst_res TCONF "test requires specific policy, try load it with LTP_IMA_LOAD_POLICY=1"
+		return
+	fi
+
 	if ! id $user >/dev/null 2>/dev/null; then
 		tst_res TCONF "missing system user $user (wrong installation)"
 		return
