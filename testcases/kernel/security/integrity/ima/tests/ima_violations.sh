@@ -23,8 +23,10 @@ setup()
 		PRINTK_RATE_LIMIT=`sysctl -n kernel.printk_ratelimit`
 		sysctl -wq kernel.printk_ratelimit=0
 	fi
-	[ -f "$LOG" ] || \
-		tst_brk TBROK "log $LOG does not exist (bug in detection?)"
+
+	if [ ! -e "$LOG" ]; then
+		tst_brk TCONF "log file not found, install auditd"
+	fi
 	tst_res TINFO "using log $LOG"
 }
 
