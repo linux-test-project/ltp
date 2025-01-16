@@ -1,23 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Red Hat Inc., 2007
+ * Author: Masatake YAMATO <yamato@redhat.com>
  */
 
-/*
- * NAME
- *	posix_fadvise03.c
- *
- * DESCRIPTION
- *	Check the value that posix_fadvise returns for wrong ADVISE value.
- *
- * USAGE
- *	posix_fadvise03
- *
- * HISTORY
- *	11/2007 Initial version by Masatake YAMATO <yamato@redhat.com>
- *
- * RESTRICTIONS
- *	None
+/*\
+ * Verify that posix_fadvise() returns EINVAL for the ADVISE value not
+ * permissible on the architecture.
  */
 
 #include <fcntl.h>
