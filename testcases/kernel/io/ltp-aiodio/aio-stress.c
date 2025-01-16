@@ -1122,7 +1122,12 @@ restart:
 	while (t->finished_opers) {
 		oper = t->finished_opers;
 		oper_list_del(oper, &t->finished_opers);
-		status = finish_oper(t, oper);
+		status = finish_oper(t, oper) ? : status;
+	}
+	while (t->active_opers) {
+		oper = t->active_opers;
+		oper_list_del(oper, &t->active_opers);
+		status = finish_oper(t, oper) ? : status;
 	}
 
 	if (t->num_global_pending)
