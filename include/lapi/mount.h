@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Linux Test Project, 2015-2022
+ * Copyright (c) Linux Test Project, 2015-2025
  * Copyright (c) 2015 Cui Bixuan <cuibixuan@huawei.com>
  * Copyright (C) 2024 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
@@ -8,9 +8,14 @@
 #ifndef LAPI_MOUNT_H__
 #define LAPI_MOUNT_H__
 
-#include <stdint.h>
-#include <sys/mount.h>
 #include "config.h"
+#include <stdint.h>
+
+/*
+ * NOTE: <linux/mount.h> conflicts with <sys/mount.h>, therefore not added
+ * although some definitions from it are used.
+ */
+#include <sys/mount.h>
 
 #ifndef MS_REC
 # define MS_REC 16384
