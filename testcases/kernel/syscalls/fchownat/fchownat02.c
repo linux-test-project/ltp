@@ -1,135 +1,61 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
- * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program.
+ * Copyright (c) Linux Test Project, 2014-2025
  */
-/*
- * Test Description:
- *   Verify that,
- *   The flag of fchownat() is AT_SYMLINK_NOFOLLOW and the pathname would
- *   not be dereferenced if the pathname is a symbolic link.
+
+/*\
+ * [Description]
+ *
+ * Verify that fchownat() will operate on symbolic links when
+ * AT_SYMLINK_NOFOLLOW is used.
  */
 
 #define _GNU_SOURCE
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
-#include "test.h"
-#include "safe_macros.h"
-#include "lapi/fcntl.h"
+#include "tst_test.h"
 
 #define TESTFILE	"testfile"
 #define TESTFILE_LINK	"testfile_link"
 
-char *TCID = "fchownat02";
-int TST_TOTAL = 1;
-
-static int dir_fd;
 static uid_t set_uid = 1000;
 static gid_t set_gid = 1000;
-static void setup(void);
-static void cleanup(void);
-static void test_verify(void);
-static void fchownat_verify(void);
-
-int main(int ac, char **av)
-{
-	int lc;
-	int i;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-		for (i = 0; i < TST_TOTAL; i++)
-			fchownat_verify();
-	}
-
-	cleanup();
-	tst_exit();
-}
 
 static void setup(void)
 {
 	struct stat c_buf, l_buf;
 
-	tst_require_root();
-
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	tst_tmpdir();
-
-	dir_fd = SAFE_OPEN(cleanup, "./", O_DIRECTORY);
-
-	SAFE_TOUCH(cleanup, TESTFILE, 0600, NULL);
-
-	SAFE_SYMLINK(cleanup, TESTFILE, TESTFILE_LINK);
-
-	SAFE_STAT(cleanup, TESTFILE_LINK, &c_buf);
-
-	SAFE_LSTAT(cleanup, TESTFILE_LINK, &l_buf);
+	SAFE_TOUCH(TESTFILE, 0600, NULL);
+	SAFE_SYMLINK(TESTFILE, TESTFILE_LINK);
+	SAFE_STAT(TESTFILE_LINK, &c_buf);
+	SAFE_LSTAT(TESTFILE_LINK, &l_buf);
 
 	if (l_buf.st_uid == set_uid || l_buf.st_gid == set_gid) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "link_uid(%d) == set_uid(%d) or link_gid(%d) == "
-			 "set_gid(%d)", l_buf.st_uid, set_uid, l_buf.st_gid,
-			 set_gid);
+		tst_brk(TBROK,
+			"uid link(%d) == set(%d) or gid link(%d) == set(%d)",
+			l_buf.st_uid, set_uid, l_buf.st_gid, set_gid);
 	}
 }
 
-static void fchownat_verify(void)
-{
-	TEST(fchownat(dir_fd, TESTFILE_LINK, set_uid, set_gid,
-		      AT_SYMLINK_NOFOLLOW));
-
-	if (TEST_RETURN != 0) {
-		tst_resm(TFAIL | TTERRNO, "fchownat() failed, errno=%d : %s",
-			 TEST_ERRNO, strerror(TEST_ERRNO));
-	} else {
-		test_verify();
-	}
-}
-
-static void test_verify(void)
+static void run(void)
 {
 	struct stat c_buf, l_buf;
 
-	SAFE_STAT(cleanup, TESTFILE_LINK, &c_buf);
+	TST_EXP_PASS(fchownat(AT_FDCWD, TESTFILE_LINK, set_uid, set_gid, AT_SYMLINK_NOFOLLOW),
+		     "fchownat(%d, %s, %d, %d, %d)",
+		     AT_FDCWD, TESTFILE_LINK, set_uid, set_gid, AT_SYMLINK_NOFOLLOW);
 
-	SAFE_LSTAT(cleanup, TESTFILE_LINK, &l_buf);
+	SAFE_STAT(TESTFILE_LINK, &c_buf);
+	SAFE_LSTAT(TESTFILE_LINK, &l_buf);
 
-	if (c_buf.st_uid != set_uid && l_buf.st_uid == set_uid &&
-	    c_buf.st_gid != set_gid && l_buf.st_gid == set_gid) {
-		tst_resm(TPASS, "fchownat() test AT_SYMLINK_NOFOLLOW success");
-	} else {
-		tst_resm(TFAIL,
-			 "fchownat() test AT_SYMLINK_NOFOLLOW fail with uid=%d "
-			 "link_uid=%d set_uid=%d | gid=%d link_gid=%d "
-			 "set_gid=%d", c_buf.st_uid, l_buf.st_uid, set_uid,
-			 c_buf.st_gid, l_buf.st_gid, set_gid);
-	}
+	TST_EXP_EXPR(c_buf.st_uid != set_uid && l_buf.st_uid == set_uid,
+		     "fchownat() correctly operated on symlink user ID");
+	TST_EXP_EXPR(c_buf.st_gid != set_gid && l_buf.st_gid == set_gid,
+		     "fchownat() correctly operated on symlink group ID");
 }
 
-static void cleanup(void)
-{
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.needs_tmpdir = 1,
+	.needs_root = 1,
+	.test_all = run,
+	.setup = setup,
+};
