@@ -288,6 +288,7 @@ fchown05_16 fchown05_16
 #fchownat test case
 fchownat01 fchownat01
 fchownat02 fchownat02
+fchownat03 fchownat03
 
 fcntl01 fcntl01
 fcntl01_64 fcntl01_64
