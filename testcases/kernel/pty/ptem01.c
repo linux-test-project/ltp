@@ -14,9 +14,9 @@
 
 #define _GNU_SOURCE
 
-#include <termio.h>
 #include <termios.h>
 #include "common.h"
+#include "lapi/ioctl.h"
 
 static int masterfd = -1;
 
