@@ -20,12 +20,6 @@
 #include "tst_test.h"
 #include "tst_ns_common.h"
 
-extern struct tst_test *tst_test;
-
-static struct tst_test test = {
-	.forks_child = 1, /* Needed by SAFE_CLONE */
-};
-
 static int ns_fd[NS_TOTAL];
 static int ns_fds;
 
@@ -71,8 +65,6 @@ int main(int argc, char *argv[])
 	int i, status, pid;
 	char *token;
 
-	tst_test = &test;
-
 	if (argc < 4) {
 		print_help();
 		return 1;
@@ -100,7 +92,12 @@ int main(int argc, char *argv[])
 	for (i = 0; i < ns_fds; i++)
 		SAFE_SETNS(ns_fd[i], 0);
 
-	pid = SAFE_CLONE(&args);
+	pid = tst_clone(&args);
+	if (pid < 0) {
+		printf("clone() failed");
+		return 1;
+	}
+
 	if (!pid)
 		SAFE_EXECVP(argv[3], argv+3);
 

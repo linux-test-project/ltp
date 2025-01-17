@@ -23,12 +23,6 @@
 #include "tst_test.h"
 #include "tst_ns_common.h"
 
-extern struct tst_test *tst_test;
-
-static struct tst_test test = {
-	.forks_child = 1, /* Needed by SAFE_CLONE */
-};
-
 static void print_help(void)
 {
 	int i;
@@ -66,8 +60,6 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	tst_test = &test;
-
 	while ((token = strsep(&argv[1], ","))) {
 		struct param *p = get_param(token);
 
@@ -80,7 +72,12 @@ int main(int argc, char *argv[])
 		args.flags |= p->flag;
 	}
 
-	pid = SAFE_CLONE(&args);
+	pid = tst_clone(&args);
+	if (pid < 0) {
+		printf("clone() failed");
+		return 1;
+	}
+
 	if (!pid) {
 		child_fn();
 		return 0;
