@@ -263,7 +263,7 @@ tst_rhost_run()
 	if [ $ret -eq 1 ]; then
 		output=$(echo "$output" | sed 's/RTERR//')
 		[ "$safe" ] && \
-			tst_brk_ TBROK "'$cmd' failed on '$RHOST': '$output'"
+			tst_brk_ TBROK "'$cmd' failed on $use: '$output'"
 	fi
 
 	[ -z "$out" -a -n "$output" ] && echo "$output"
