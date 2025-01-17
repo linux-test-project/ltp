@@ -42,10 +42,29 @@ tst_net_usage()
 	if [ -n "$TST_USAGE_CALLER" ]; then
 		$TST_USAGE_CALLER
 	else
-		echo "Usage: $0 [-6]"
-		echo "OPTIONS"
+	cat << EOF
+Usage: $0 [-6]
+
+OPTIONS (network tests only)
+----------------------------
+EOF
 	fi
-	echo "-6      IPv6 tests"
+
+	cat << EOF
+-6      IPv6 tests
+
+Environment Variables (network tests only)
+------------------------------------------
+TST_NET_RHOST_RUN_DEBUG=1
+Print commands used by tst_rhost_run()
+
+LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1
+Ignore performance failure and test only the network functionality in tests
+which use tst_netload_compare().
+
+OPTIONS
+-------
+EOF
 }
 
 tst_net_remote_tmpdir()
