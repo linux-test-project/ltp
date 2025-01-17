@@ -230,6 +230,7 @@ tst_net_use_netns()
 # Options:
 # -b run in background
 # -c CMD specify command to run (this must be binary, not shell builtin/function)
+# -Q ignore stderr
 # -s safe option, if something goes wrong, will exit with TBROK
 # -u USER for ssh (default root)
 # RETURN: 0 on success, 1 on failure
@@ -239,16 +240,18 @@ tst_rhost_run()
 	local post_cmd=' || echo RTERR'
 	local user="root"
 	local ret=0
+	local stderr='2>&1'
 	local cmd out output pre_cmd rcmd sh_cmd safe use
 
 	local OPTIND
-	while getopts :bc:su: opt; do
+	while getopts :bc:Qsu: opt; do
 		case "$opt" in
 		b) [ "${TST_USE_NETNS:-}" ] && pre_cmd= || pre_cmd="nohup"
-		   post_cmd=" > /dev/null 2>&1 &"
+		   post_cmd=" > /dev/null $stderr &"
 		   out="1> /dev/null"
 		;;
 		c) cmd="$OPTARG" ;;
+		Q) stderr= ;;
 		s) safe=1 ;;
 		u) user="$OPTARG" ;;
 		*) tst_brk_ TBROK "tst_rhost_run: unknown option: $OPTARG" ;;
@@ -275,10 +278,10 @@ tst_rhost_run()
 
 	if [ "$TST_NET_RHOST_RUN_DEBUG" = 1 ]; then
 		tst_res_ TINFO "tst_rhost_run: cmd: $cmd"
-		tst_res_ TINFO "$use: $rcmd \"$sh_cmd\" $out 2>&1"
+		tst_res_ TINFO "$use: $rcmd \"$sh_cmd\" $out $stderr"
 	fi
 
-	output=$($rcmd "$sh_cmd" $out 2>&1 || echo 'RTERR')
+	output=$($rcmd "$sh_cmd" $out $stderr || echo 'RTERR')
 
 	echo "$output" | grep -q 'RTERR$' && ret=1
 	if [ $ret -eq 1 ]; then
@@ -1089,7 +1092,7 @@ tst_net_setup_network()
 	tst_net_use_netns && init_ltp_netspace
 
 	eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
-	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
+	eval $(tst_rhost_run -Q -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
 		|| echo "exit $?")
 	eval $(tst_net_vars $IPV4_LHOST/$IPV4_LPREFIX \
 		$IPV4_RHOST/$IPV4_RPREFIX || echo "exit $?")
@@ -1097,7 +1100,7 @@ tst_net_setup_network()
 	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
 		tst_net_check_ifaces_ipv6
 		eval $(tst_net_iface_prefix $IPV6_LHOST || echo "exit $?")
-		eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
+		eval $(tst_rhost_run -Q -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
 			|| echo "exit $?")
 		eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
 			$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
