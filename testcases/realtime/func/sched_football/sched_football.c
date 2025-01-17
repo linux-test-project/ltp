@@ -140,7 +140,7 @@ static void do_test(void)
 	int i;
 
 	if (players_per_team == 0)
-		players_per_team = sysconf(_SC_NPROCESSORS_ONLN);
+		players_per_team = get_numcpus();
 
 	tst_atomic_store(0, &players_ready);
 
