@@ -355,4 +355,8 @@ int trace_marker_write(char *buf, int len);
  */
 int atrace_marker_write(char *tag, char *msg);
 
+/* get_numcpus: get the number of cpus accessible to the current process
+ */
+int get_numcpus(void);
+
 #endif /* LIBRTTEST_H */
