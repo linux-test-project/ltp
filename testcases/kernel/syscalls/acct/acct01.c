@@ -149,5 +149,6 @@ static struct tst_test test = {
 	},
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_BSD_PROCESS_ACCT=y",
+		NULL,
 	}
 };
