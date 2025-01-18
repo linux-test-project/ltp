@@ -44,7 +44,7 @@ struct cgroup_dir {
 	 */
 	int dir_fd;
 
-	int we_created_it:1;
+	unsigned int we_created_it:1;
 };
 
 /* The root of a CGroup hierarchy/tree */
@@ -71,11 +71,11 @@ struct cgroup_root {
 	/* CGroup for current test. Which may have children. */
 	struct cgroup_dir test_dir;
 
-	int nsdelegate:1;
+	unsigned int nsdelegate:1;
 
-	int we_mounted_it:1;
+	unsigned int we_mounted_it:1;
 	/* cpuset is in compatability mode */
-	int no_cpuset_prefix:1;
+	unsigned int no_cpuset_prefix:1;
 };
 
 /* Controller sub-systems */
@@ -138,7 +138,7 @@ struct cgroup_ctrl {
 	/* Runtime; hierarchy the controller is attached to */
 	struct cgroup_root *ctrl_root;
 	/* Runtime; whether we required the controller */
-	int we_require_it:1;
+	unsigned int we_require_it:1;
 };
 
 struct tst_cg_group {
