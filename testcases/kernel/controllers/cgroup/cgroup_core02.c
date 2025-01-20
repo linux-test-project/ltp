@@ -32,6 +32,8 @@
 #include "tst_safe_file_at.h"
 #include "lapi/sched.h"
 
+#define STACK_SIZE 65536
+
 static struct tst_cg_group *cg_child_a, *cg_child_b;
 static uid_t nobody_uid;
 
@@ -51,7 +53,7 @@ static int lesser_ns_open_thread_fn(void *arg)
 static void test_lesser_ns_open(void)
 {
 	int i;
-	static char stack[65536];
+	char *stack;
 	pid_t pid;
 	int status;
 	struct lesser_ns_open_thread_arg targ = { .fds = {0}, .loops = -1};
@@ -63,14 +65,19 @@ static void test_lesser_ns_open(void)
 		SAFE_CG_PRINT(cg_child_a, "cgroup.procs", "0");
 		SAFE_CG_FCHOWN(cg_child_a, "cgroup.procs",  nobody_uid, -1);
 		SAFE_CG_FCHOWN(cg_child_b, "cgroup.procs",  nobody_uid, -1);
+		stack = SAFE_MMAP(NULL, STACK_SIZE, PROT_READ | PROT_WRITE,
+			MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
 		pid  = ltp_clone(CLONE_NEWCGROUP | CLONE_FILES | CLONE_VM | SIGCHLD,
-					lesser_ns_open_thread_fn, &targ, 65536, stack);
+					lesser_ns_open_thread_fn, &targ, STACK_SIZE, stack);
+
 		if (pid < 0)  {
 			tst_res(TFAIL, "unexpected negative pid %d", pid);
 			exit(1);
 		}
 
 		SAFE_WAITPID(pid, &status, 0);
+		SAFE_MUNMAP(stack, STACK_SIZE);
+
 		for (i = 0; i < targ.loops; i++) {
 			if (targ.fds[i] < 1) {
 				tst_res(TFAIL, "unexpected negative fd %d", targ.fds[i]);
