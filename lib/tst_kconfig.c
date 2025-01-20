@@ -652,13 +652,23 @@ static struct tst_kconfig_var slow_kconfigs[] = {
 	TST_KCONFIG_INIT("CONFIG_DEBUG_OBJECTS")
 };
 
+static bool slow_kconfig_cached;
+static bool slow_kconfig_result;
+
 int tst_has_slow_kconfig(void)
 {
 	unsigned int i;
 	char path_buf[1024];
 
-	if (!kconfig_path(path_buf, sizeof(path_buf)))
+	if (slow_kconfig_cached)
+		return slow_kconfig_result;
+
+	slow_kconfig_cached = 1;
+
+	if (!kconfig_path(path_buf, sizeof(path_buf))) {
+		slow_kconfig_result = 0;
 		return 0;
+	}
 
 	tst_kconfig_read(slow_kconfigs, ARRAY_SIZE(slow_kconfigs));
 
@@ -667,9 +677,11 @@ int tst_has_slow_kconfig(void)
 			tst_res(TINFO,
 				"%s kernel option detected which might slow the execution",
 				slow_kconfigs[i].id);
+			slow_kconfig_result = 1;
 			return 1;
 		}
 	}
 
+	slow_kconfig_result = 0;
 	return 0;
 }
