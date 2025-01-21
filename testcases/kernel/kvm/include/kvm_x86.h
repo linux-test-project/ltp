@@ -178,7 +178,7 @@ struct kvm_cregs {
 };
 
 struct kvm_sregs {
-	uint16_t cs, ds, es, fs, gs, ss;
+	uint16_t cs, ds, es, fs, gs, ss, tr;
 };
 
 struct kvm_regs64 {

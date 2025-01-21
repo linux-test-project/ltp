@@ -319,6 +319,8 @@ kvm_read_sregs:
 	movw %ax, 8(%rdi)
 	mov %ss, %ax
 	movw %ax, 10(%rdi)
+	str %ax
+	movw %ax, 12(%rdi)
 	retq
 
 handle_interrupt:

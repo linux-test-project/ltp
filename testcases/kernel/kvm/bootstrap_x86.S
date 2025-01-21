@@ -215,6 +215,8 @@ kvm_read_sregs:
 	movw %ax, 8(%edi)
 	mov %ss, %ax
 	movw %ax, 10(%edi)
+	str %ax
+	movw %ax, 12(%edi)
 	pop %edi
 	ret
 
