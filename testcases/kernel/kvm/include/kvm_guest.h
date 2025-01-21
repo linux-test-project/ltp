@@ -48,6 +48,8 @@ void *memset(void *dest, int val, size_t size);
 void *memzero(void *dest, size_t size);
 void *memcpy(void *dest, const void *src, size_t size);
 
+int memcmp(const void *a, const void *b, size_t length);
+
 char *strcpy(char *dest, const char *src);
 char *strcat(char *dest, const char *src);
 size_t strlen(const char *str);

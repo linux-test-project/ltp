@@ -45,6 +45,18 @@ void *memcpy(void *dest, const void *src, size_t size)
 	return dest;
 }
 
+int memcmp(const void *a, const void *b, size_t length)
+{
+	const unsigned char *x = a, *y = b;
+
+	for (; length; x++, y++, length--) {
+		if (*x != *y)
+			return (int)*x - (int)*y;
+	}
+
+	return 0;
+}
+
 char *strcpy(char *dest, const char *src)
 {
 	char *ret = dest;
