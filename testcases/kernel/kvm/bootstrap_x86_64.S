@@ -12,6 +12,9 @@
 
 .set MSR_VM_HSAVE_PA, 0xc0010117
 
+.set VMX_VMCS_HOST_RSP, 0x6c14
+.set VMX_VMCS_HOST_RIP, 0x6c16
+
 /*
  * This section will be allocated at address 0x1000 and
  * jumped to from the reset stub provided by kvm_run.
@@ -586,6 +589,57 @@ kvm_svm_vmrun:
 	stgi
 	pop_local
 	retq
+
+.global kvm_vmx_vmlaunch
+kvm_vmx_vmlaunch:
+	push_local
+	pushq %rdi
+
+	mov $VMX_VMCS_HOST_RSP, %rax
+	vmwrite %rsp, %rax
+	jna vmx_vmwrite_error
+	mov $VMX_VMCS_HOST_RIP, %rax
+	lea vmx_vm_exit, %rbx
+	vmwrite %rbx, %rax
+	jna vmx_vmwrite_error
+
+	load_vcpu_regs
+	vmlaunch
+	jmp vmx_vm_exit
+
+.global kvm_vmx_vmresume
+kvm_vmx_vmresume:
+	push_local
+	pushq %rdi
+
+	movq $VMX_VMCS_HOST_RSP, %rax
+	vmwrite %rsp, %rax
+	jna vmx_vmwrite_error
+	movq $VMX_VMCS_HOST_RIP, %rax
+	lea vmx_vm_exit, %rbx
+	vmwrite %rbx, %rax
+	jna vmx_vmwrite_error
+
+	load_vcpu_regs
+	vmresume
+
+vmx_vm_exit:
+	jna vmx_vmentry_error
+	save_vcpu_regs
+	xorq %rax, %rax
+
+vmx_vm_ret:
+	popq %rdi
+	pop_local
+	retq
+
+vmx_vmwrite_error:
+	movq $2, %rax
+	jmp vmx_vm_ret
+
+vmx_vmentry_error:
+	movq $1, %rax
+	jmp vmx_vm_ret
 
 .section .bss.pgtables, "aw", @nobits
 .global kvm_pagetable
