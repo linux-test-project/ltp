@@ -221,6 +221,9 @@ unsigned int kvm_create_stack_descriptor(struct segment_descriptor *table,
 void kvm_get_cpuid(unsigned int eax, unsigned int ecx, struct kvm_cpuid *buf);
 void kvm_read_cregs(struct kvm_cregs *buf);
 void kvm_read_sregs(struct kvm_sregs *buf);
+void kvm_set_cr0(unsigned long val);
+void kvm_set_cr3(unsigned long val);
+void kvm_set_cr4(unsigned long val);
 uint64_t kvm_rdmsr(unsigned int msr);
 void kvm_wrmsr(unsigned int msr, uint64_t value);
 

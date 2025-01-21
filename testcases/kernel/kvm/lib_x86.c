@@ -214,6 +214,33 @@ void kvm_get_cpuid(unsigned int eax, unsigned int ecx, struct kvm_cpuid *buf)
 	);
 }
 
+void kvm_set_cr0(unsigned long val)
+{
+	asm (
+		"mov %0, %%cr0\n"
+		:
+		: "r" (val)
+	);
+}
+
+void kvm_set_cr3(unsigned long val)
+{
+	asm (
+		"mov %0, %%cr3\n"
+		:
+		: "r" (val)
+	);
+}
+
+void kvm_set_cr4(unsigned long val)
+{
+	asm (
+		"mov %0, %%cr4\n"
+		:
+		: "r" (val)
+	);
+}
+
 uint64_t kvm_rdmsr(unsigned int msr)
 {
 	unsigned int ret_lo, ret_hi;
