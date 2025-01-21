@@ -62,12 +62,14 @@
 
 
 /* CPUID constants */
+#define CPUID_GET_MODEL_INFO 0x1
 #define CPUID_GET_INPUT_RANGE 0x80000000
 #define CPUID_GET_EXT_FEATURES 0x80000001
 #define CPUID_GET_SVM_FEATURES 0x8000000a
 
 
 /* Model-specific CPU register constants */
+#define MSR_IA32_FEATURE_CONTROL 0x3a
 #define MSR_SYSENTER_CS 0x174
 #define MSR_SYSENTER_ESP 0x175
 #define MSR_SYSENTER_EIP 0x176
@@ -95,6 +97,18 @@
 #define VM_CR_SVMDIS (1 << 4)
 
 /* Control register constants */
+#define CR0_PE (1 << 0)
+#define CR0_MP (1 << 1)
+#define CR0_EM (1 << 2)
+#define CR0_TS (1 << 3)
+#define CR0_ET (1 << 4)
+#define CR0_NE (1 << 5)
+#define CR0_WP (1 << 16)
+#define CR0_AM (1 << 18)
+#define CR0_NW (1 << 29)
+#define CR0_CD (1 << 30)
+#define CR0_PG (1 << 31)
+
 #define CR4_VME (1 << 0)
 #define CR4_PVI (1 << 1)
 #define CR4_TSD (1 << 2)
