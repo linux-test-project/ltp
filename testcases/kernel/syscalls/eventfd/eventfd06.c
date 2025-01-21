@@ -136,6 +136,8 @@ static void test_poll(void)
 static void setup(void)
 {
 	TEST(io_setup(MAXEVENTS, &ctx));
+	if (TST_RET == -ENOSYS)
+		tst_brk(TCONF | TRERRNO, "io_setup(): AIO not supported by kernel");
 	if (TST_RET < 0)
 		tst_brk(TBROK, "io_setup() failed: %s", tst_strerrno(-TST_RET));
 
