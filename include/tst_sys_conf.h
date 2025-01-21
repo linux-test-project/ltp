@@ -28,4 +28,6 @@ int tst_sys_conf_save(const struct tst_path_val *conf);
 void tst_sys_conf_restore(int verbose);
 void tst_sys_conf_dump(void);
 
+int tst_read_bool_sys_param(const char *filename);
+
 #endif
