@@ -140,6 +140,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_ioctl_loop,

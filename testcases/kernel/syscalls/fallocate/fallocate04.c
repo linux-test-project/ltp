@@ -282,6 +282,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 9,
 	.options = (struct tst_option[]) {
 		{"v", &verbose, "Turns on verbose mode"},
 		{}

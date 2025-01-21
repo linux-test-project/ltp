@@ -196,6 +196,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 40,
 	.test_all = run_leapsec,
 	.setup = setup,
 	.cleanup = cleanup,

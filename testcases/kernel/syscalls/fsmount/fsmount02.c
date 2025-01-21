@@ -68,6 +68,7 @@ static void run(unsigned int n)
 }
 
 static struct tst_test test = {
+	.timeout = 9,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = run,
 	.setup = setup,

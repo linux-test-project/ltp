@@ -74,6 +74,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.test_all = verify_creat,
 	.needs_tmpdir = 1,
 	.setup = setup,

@@ -126,6 +126,7 @@ static void run(void)
 }
 
 static struct tst_test test = {
+	.timeout = 3,
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,

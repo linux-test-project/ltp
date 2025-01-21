@@ -212,6 +212,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 2,
 	.test = do_test,
 	.tcnt = 2,
 	.needs_root = 1,

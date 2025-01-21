@@ -44,6 +44,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 2,
 	.test_all = run,
 	.setup = setup,
 };

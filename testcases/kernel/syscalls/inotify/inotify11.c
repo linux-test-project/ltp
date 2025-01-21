@@ -119,6 +119,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 12,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.cleanup = cleanup,

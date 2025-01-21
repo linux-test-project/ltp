@@ -387,6 +387,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 10,
 	.test = test_fanotify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,

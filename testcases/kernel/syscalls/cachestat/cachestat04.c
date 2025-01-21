@@ -47,6 +47,7 @@ static void run(void)
 }
 
 static struct tst_test test = {
+	.timeout = 2,
 	.test_all = run,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,

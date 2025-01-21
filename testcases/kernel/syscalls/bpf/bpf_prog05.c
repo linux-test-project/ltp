@@ -190,6 +190,7 @@ static void run(void)
 }
 
 static struct tst_test test = {
+	.timeout = 20,
 	.setup = setup,
 	.test_all = run,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,

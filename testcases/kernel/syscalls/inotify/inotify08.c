@@ -176,6 +176,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.needs_root = 1,
 	.mount_device = 1,
 	.needs_overlay = 1,

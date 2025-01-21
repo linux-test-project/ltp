@@ -118,6 +118,7 @@ static void setup(void)
 
 
 static struct tst_test test = {
+	.timeout = 1,
 	.test = verify_ioctl,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
