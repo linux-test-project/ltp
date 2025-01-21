@@ -146,3 +146,31 @@ void tst_requires_module_signature_disabled_(void)
 	if (tst_module_signature_enforced_())
 		tst_brkm(TCONF, NULL, "module signature is enforced, skip test");
 }
+
+void tst_modprobe(const char *mod_name, char *const argv[])
+{
+	const int offset = 2; /* command name & module path */
+	int i, size = 0;
+
+	while (argv && argv[size])
+		++size;
+	size += offset;
+
+	const char *mod_argv[size + 1]; /* + NULL in the end */
+
+	mod_argv[size] = NULL;
+	mod_argv[0] = "modprobe";
+	mod_argv[1] = mod_name;
+
+	for (i = offset; i < size; ++i)
+		mod_argv[i] = argv[i - offset];
+
+	tst_cmd(NULL, mod_argv, NULL, NULL, 0);
+}
+
+void tst_module_reload(const char *mod_name, char *const argv[])
+{
+	tst_resm(TINFO, "Reloading kernel module %s", mod_name);
+	tst_module_unload_(NULL, mod_name);
+	tst_modprobe(mod_name, argv);
+}

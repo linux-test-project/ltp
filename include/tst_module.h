@@ -47,4 +47,7 @@ static inline void tst_requires_module_signature_disabled(void)
 	tst_requires_module_signature_disabled_();
 }
 
+void tst_modprobe(const char *mod_name, char *const argv[]);
+void tst_module_reload(const char *mod_name, char *const argv[]);
+
 #endif /* TST_MODULE_H */
