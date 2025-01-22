@@ -34,12 +34,12 @@
 #include "fanotify.h"
 
 #define PATH_LEN 128
-#define BUF_SIZE 256
+#define BUF_SIZE 1024
 #define DIR_ONE "dir_one"
 #define FILE_ONE "file_one"
 #define FILE_TWO "file_two"
 #define MOUNT_PATH "tstmnt"
-#define EVENT_MAX ARRAY_SIZE(objects)
+#define EVENT_MAX (ARRAY_SIZE(objects)+1)
 #define DIR_PATH_ONE MOUNT_PATH"/"DIR_ONE
 #define FILE_PATH_ONE MOUNT_PATH"/"FILE_ONE
 #define FILE_PATH_TWO MOUNT_PATH"/"FILE_TWO
@@ -130,10 +130,15 @@ static int setup_marks(unsigned int fd, struct test_case_t *tc)
 		SAFE_FANOTIFY_MARK(fd, FAN_MARK_ADD | mark->flag, tc->mask,
 				   AT_FDCWD, objects[i].path);
 
-		/* Setup the expected mask for each generated event */
+		/*
+		 * Setup the expected mask for each generated event.
+		 * No events are expected on directory without FAN_ONDIR.
+		 */
 		event_set[i].expected_mask = tc->mask;
 		if (!objects[i].is_dir)
 			event_set[i].expected_mask &= ~FAN_ONDIR;
+		else if (!(event_set[i].expected_mask & FAN_ONDIR))
+			event_set[i].expected_mask = 0;
 	}
 	return 0;
 }
@@ -163,7 +168,8 @@ static void do_test(unsigned int number)
 		return;
 	}
 
-	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | FAN_REPORT_FID, O_RDONLY);
+	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | FAN_REPORT_FID |
+					 FAN_NONBLOCK, O_RDONLY);
 
 	/*
 	 * Place marks on a set of objects and setup the expected masks
@@ -278,6 +284,16 @@ static void do_test(unsigned int number)
 			FSID_VAL_MEMBER(event_fid->fsid, 0),
 			FSID_VAL_MEMBER(event_fid->fsid, 1),
 			*(unsigned long *) event_file_handle->f_handle);
+	}
+
+	/*
+	 * Verify that we did not get an extra event, for example, that we did
+	 * not get an event on directory without FAN_ONDIR.
+	 */
+	if (event_set[i].expected_mask) {
+		tst_res(TFAIL,
+			"Did not get an expected event (expected: %llx)",
+			event_set[i].expected_mask);
 	}
 out:
 	SAFE_CLOSE(fanotify_fd);
