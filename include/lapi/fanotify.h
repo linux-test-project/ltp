@@ -32,6 +32,10 @@
 #define FAN_REPORT_DFID_NAME_TARGET (FAN_REPORT_DFID_NAME | \
 				     FAN_REPORT_FID | FAN_REPORT_TARGET_FID)
 #endif
+#ifndef FAN_REPORT_FD_ERROR
+#define FAN_REPORT_FD_ERROR	0x00002000
+#endif
+
 
 /* Non-uapi convenience macros */
 #ifndef FAN_REPORT_DFID_NAME_FID

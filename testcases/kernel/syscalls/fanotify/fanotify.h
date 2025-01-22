@@ -213,6 +213,7 @@ static inline int fanotify_mark_supported_on_fs(uint64_t flag, const char *fname
 
 #define TST_FANOTIFY_INIT_KNOWN_FLAGS                                      \
 	(FAN_REPORT_DFID_NAME_TARGET | FAN_REPORT_TID | FAN_REPORT_PIDFD | \
+	 FAN_REPORT_FD_ERROR | \
 	FAN_CLASS_NOTIF | FAN_CLASS_CONTENT | FAN_CLASS_PRE_CONTENT)
 
 /*

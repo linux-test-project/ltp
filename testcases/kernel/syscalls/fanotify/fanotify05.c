@@ -52,6 +52,10 @@ static struct tcase {
 		FAN_CLASS_NOTIF,
 	},
 	{
+		"Limited queue (FAN_REPORT_FD_ERROR)",
+		FAN_CLASS_NOTIF | FAN_REPORT_FD_ERROR,
+	},
+	{
 		"Unlimited queue",
 		FAN_CLASS_NOTIF | FAN_UNLIMITED_QUEUE,
 	},
@@ -62,6 +66,8 @@ static char fname[BUF_SIZE];
 static char symlnk[BUF_SIZE];
 static char fdpath[BUF_SIZE];
 static int fd, fd_notify;
+
+static int fd_error_unsupported;
 
 static struct fanotify_event_metadata event;
 
@@ -110,8 +116,14 @@ static void test_fanotify(unsigned int n)
 	int len, nevents = 0, got_overflow = 0;
 	int num_files = max_events + 1;
 	int expect_overflow = !(tc->init_flags & FAN_UNLIMITED_QUEUE);
+	int nofd_err = tc->init_flags & FAN_REPORT_FD_ERROR ? -EBADF : FAN_NOFD;
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
+
+	if (fd_error_unsupported && (tc->init_flags & FAN_REPORT_FD_ERROR)) {
+		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_FD_ERROR, fd_error_unsupported);
+		return;
+	}
 
 	fd_notify = SAFE_FANOTIFY_INIT(tc->init_flags | FAN_NONBLOCK, O_RDONLY);
 
@@ -142,7 +154,7 @@ static void test_fanotify(unsigned int n)
 				tst_res(expect_overflow ? TFAIL : TPASS, "Overflow event not generated!\n");
 			break;
 		}
-		if (event.fd != FAN_NOFD) {
+		if (event.fd >= 0) {
 			/*
 			 * Verify that events generated on unique files
 			 * are received by the same order they were generated.
@@ -166,7 +178,7 @@ static void test_fanotify(unsigned int n)
 			break;
 		}
 		if (event.mask == FAN_Q_OVERFLOW) {
-			if (got_overflow || event.fd != FAN_NOFD) {
+			if (got_overflow || event.fd != nofd_err) {
 				tst_res(TFAIL,
 					"%s overflow event: mask=%llx pid=%u fd=%d",
 					got_overflow ? "unexpected" : "invalid",
@@ -192,6 +204,8 @@ static void setup(void)
 	/* Check for kernel fanotify support */
 	fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 	SAFE_CLOSE(fd);
+
+	fd_error_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FD_ERROR, ".");
 
 	/* In older kernels this limit is fixed in kernel */
 	if (access(SYSFS_MAX_EVENTS, F_OK) && errno == ENOENT)
