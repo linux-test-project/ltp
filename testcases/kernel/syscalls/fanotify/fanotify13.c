@@ -15,6 +15,15 @@
 /*
  * This is also regression test for:
  *     c285a2f01d69 ("fanotify: update connector fsid cache on add mark")
+ *
+ * The test variants 1-2 are regression tests for:
+ *     bc2473c90fca ("ovl: enable fsnotify events on underlying real files")
+ *
+ * The test variants 3-4 are tests for overlay fid events supprted since v6.6:
+ *     16aac5ad1fa9 ("ovl: support encoding non-decodable file handles")
+ *
+ * The last test case for FAN_DELETE_SELF is a regression test for:
+ *     c45beebfde34a ("ovl: support encoding fid from inode with no alias")
  */
 
 #define _GNU_SOURCE
@@ -86,7 +95,12 @@ static struct test_case_t {
 	{
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 		FAN_OPEN | FAN_CLOSE_NOWRITE | FAN_ONDIR
-	}
+	},
+	/* Keep this test case last because it deletes the test files */
+	{
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_DELETE_SELF | FAN_ONDIR
+	},
 };
 
 static int ovl_mounted;
@@ -108,6 +122,18 @@ static void create_objects(void)
 			SAFE_MKDIR(objects[i].path, 0755);
 		else
 			SAFE_FILE_PRINTF(objects[i].path, "0");
+	}
+}
+
+static void delete_objects(void)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(objects); i++) {
+		if (objects[i].is_dir)
+			SAFE_RMDIR(objects[i].path);
+		else
+			SAFE_UNLINK(objects[i].path);
 	}
 }
 
@@ -155,8 +181,10 @@ static void do_test(unsigned int number)
 	struct fanotify_mark_type *mark = &tc->mark;
 
 	tst_res(TINFO,
-		"Test #%d.%d: FAN_REPORT_FID with mark flag: %s",
-		number, tst_variant, mark->name);
+		"Test #%d.%d: FAN_REPORT_FID of %s events with mark type %s",
+		number, tst_variant,
+		(tc->mask & FAN_DELETE_SELF) ? "delete" : "open/close",
+		mark->name);
 
 	if (tst_variant && !ovl_mounted) {
 		tst_res(TCONF, "overlayfs not supported on %s", tst_device->fs_type);
@@ -184,22 +212,39 @@ static void do_test(unsigned int number)
 			tst_res(TCONF, "overlayfs base fs cannot be watched with mount mark");
 			goto out;
 		}
+		if (tc->mask & FAN_DELETE_SELF) {
+			/* The eviction of base fs inodes is defered due to overlay held reference */
+			tst_res(TCONF, "overlayfs base fs cannot be watched for delete self events");
+			goto out;
+		}
 		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
 	}
 
 	/* Generate sequence of FAN_OPEN events on objects */
-	for (i = 0; i < ARRAY_SIZE(objects); i++)
-		fds[i] = SAFE_OPEN(objects[i].path, O_RDONLY);
+	if (tc->mask & FAN_OPEN) {
+		for (i = 0; i < ARRAY_SIZE(objects); i++)
+			fds[i] = SAFE_OPEN(objects[i].path, O_RDONLY);
+	}
 
 	/*
-	 * Generate sequence of FAN_CLOSE_NOWRITE events on objects. Each
-	 * FAN_CLOSE_NOWRITE event is expected to be merged with its
-	 * respective FAN_OPEN event that was performed on the same object.
+	 * Generate sequence of FAN_CLOSE_NOWRITE events on objects.
+	 * Each FAN_CLOSE_NOWRITE event is expected to be merged with the
+	 * respective FAN_OPEN event that was reported on the same object.
 	 */
-	for (i = 0; i < ARRAY_SIZE(objects); i++) {
-		if (fds[i] > 0)
-			SAFE_CLOSE(fds[i]);
+	if (tc->mask & FAN_CLOSE) {
+		for (i = 0; i < ARRAY_SIZE(objects); i++) {
+			if (fds[i] > 0)
+				SAFE_CLOSE(fds[i]);
+		}
 	}
+
+	/*
+	 * Generate sequence of FAN_DELETE_SELF events on objects.
+	 * Each FAN_DELETE_SELF event is expected to be merged with the
+	 * respective OPEN/CLOSE events that were reported on the same object.
+	 */
+	if (tc->mask & FAN_DELETE_SELF)
+		delete_objects();
 
 	if (tst_variant && !ovl_bind_mounted)
 		SAFE_UMOUNT(MOUNT_PATH);
@@ -392,6 +437,7 @@ static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "c285a2f01d69"},
 		{"linux-git", "bc2473c90fca"},
+		{"linux-git", "c45beebfde34a"},
 		{}
 	}
 };
