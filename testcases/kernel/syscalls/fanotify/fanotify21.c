@@ -21,6 +21,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mount.h>
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_macros.h"
@@ -45,9 +46,11 @@ static struct test_case_t {
 	char *name;
 	int fork;
 	int want_pidfd_err;
+	int remount_ro;
 } test_cases[] = {
 	{
 		"return a valid pidfd for event created by self",
+		0,
 		0,
 		0,
 	},
@@ -55,6 +58,13 @@ static struct test_case_t {
 		"return invalid pidfd for event created by terminated child",
 		1,
 		FAN_NOPIDFD,
+		0,
+	},
+	{
+		"fail to open rw fd for event created on read-only mount",
+		0,
+		0,
+		1,
 	},
 };
 
@@ -122,7 +132,7 @@ static void do_setup(void)
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_PIDFD,
 						    TEST_FILE);
 
-	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_REPORT_PIDFD, O_RDONLY);
+	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_REPORT_PIDFD, O_RDWR);
 	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD, FAN_OPEN, AT_FDCWD,
 			   TEST_FILE);
 
@@ -143,6 +153,16 @@ static void do_test(unsigned int num)
 
 	tst_res(TINFO, "Test #%d: %s", num, tc->name);
 
+	if (tc->remount_ro) {
+		/* SAFE_MOUNT fails to remount FUSE */
+		if (mount(tst_device->dev, MOUNT_PATH, tst_device->fs_type,
+			  MS_REMOUNT|MS_RDONLY, NULL) != 0) {
+			tst_brk(TFAIL,
+				"filesystem %s failed to remount readonly",
+				tst_device->fs_type);
+		}
+	}
+
 	/*
 	 * Generate the event in either self or a child process. Event
 	 * generation in a child process is done so that the FAN_NOPIDFD case
@@ -157,7 +177,16 @@ static void do_test(unsigned int num)
 	 * Read all of the queued events into the provided event
 	 * buffer.
 	 */
-	len = SAFE_READ(0, fanotify_fd, event_buf, sizeof(event_buf));
+	len = read(fanotify_fd, event_buf, sizeof(event_buf));
+	if (len < 0) {
+		if (tc->remount_ro && errno == EROFS) {
+			tst_res(TPASS, "cannot read event with rw fd from a ro fs");
+			return;
+		}
+		tst_brk(TBROK | TERRNO, "reading fanotify events failed");
+	} else if (tc->remount_ro) {
+		tst_res(TFAIL, "got unexpected event with rw fd from a ro fs");
+	}
 	while (i < len) {
 		struct fanotify_event_metadata *event;
 		struct fanotify_event_info_pidfd *info;
@@ -297,6 +326,7 @@ static struct tst_test test = {
 	.cleanup = do_cleanup,
 	.all_filesystems = 1,
 	.needs_root = 1,
+	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
 	.forks_child = 1,
 };
