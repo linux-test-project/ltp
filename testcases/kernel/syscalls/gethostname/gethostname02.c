@@ -16,7 +16,7 @@
 
 static void verify_gethostname(void)
 {
-	char hostname[HOST_NAME_MAX];
+	char hostname[HOST_NAME_MAX + 1];
 	int real_length;
 
 	SAFE_GETHOSTNAME(hostname, sizeof(hostname));
