@@ -35,20 +35,25 @@ static void check_file(void)
 {
 	int i, fildes, buf_len = sizeof(STRING) + 3;
 	char buf[buf_len];
+	ssize_t len;
 
 	fildes = SAFE_OPEN(TEMPFILE, O_RDONLY);
-	SAFE_READ(0, fildes, buf, sizeof(buf));
+	len = SAFE_READ(0, fildes, buf, sizeof(buf));
+	SAFE_CLOSE(fildes);
 
-	for (i = 0; i < buf_len; i++)
+	if (len != strlen(STRING)) {
+		tst_res(TFAIL, "Read %zi expected %zu", len, strlen(STRING));
+		return;
+	}
+
+	for (i = 0; i < len; i++)
 		if (buf[i] == 'X' || buf[i] == 'Y' || buf[i] == 'Z')
 			break;
 
-	if (i == buf_len)
+	if (i == len)
 		tst_res(TPASS, "Specified pattern not found in file");
 	else
 		tst_res(TFAIL, "Specified pattern found in file");
-
-	SAFE_CLOSE(fildes);
 }
 
 static void set_file(void)
