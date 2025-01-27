@@ -72,21 +72,33 @@ ld -v 2>&1 | awk -F\) '{print $1}' | awk \
 
 mkswap -V 2>&1 | awk '{print "util-linux            ", $NF}'
 
-mount --version 2>&1 | awk -F\- '{print "mount                 ", $NF}'
+mount --version 2>&1 | awk '{$1=$2=""; print "mount               ", $0}'
 
 insmod -V  2>&1 | awk 'NR==1 {print "modutils              ",$NF}'
 
-tune2fs 2>&1 | grep "^tune2fs" | sed 's/,//' |  awk \
+bcachefs version 2>&1 | grep "^[0-9]"  | awk \
+'NR==1 {print "bcachefs              ", $1}'
+
+mkfs.btrfs -V 2>&1 | grep "^mkfs.btrfs" | sed 's/,//' | awk \
+'NR==1 {print "btrfs                 ", $5}'
+
+tune2fs 2>&1 | grep "^tune2fs" | sed 's/,//' | awk \
 'NR==1 {print "e2fsprogs             ", $2}'
 
-reiserfsck 2>&1 | grep reiserfsprogs | awk \
-'NR==1{print "reiserfsprogs         ", $NF}'
+mkfs.exfat -V 2>&1 | grep "^exfatprogs" | sed 's/,//' | awk \
+'NR==1 {print "exfat                 ", $4}'
+
+mkfs.ntfs -V 2>&1 | grep "^mkntfs" | sed 's/,//' | awk \
+'NR==1 {$1="";print "ntfs                 ", $0}'
+
+mkfs.vfat 2>&1 | grep "^mkfs\." | sed 's/,//' | awk \
+'NR==1 {print "vfat                  ", $2}'
+
+mkfs.xfs -V 2>&1 | grep "^mkfs.xfs" | sed 's/,//' | awk \
+'NR==1 {print "xfs                   ", $3}'
 
 cardmgr -V 2>&1| grep version | awk \
 'NR==1{print "pcmcia-cs             ", $3}'
-
-pppd --version 2>&1| grep version | awk \
-'NR==1{print "PPP                   ", $3}'
 
 isdnctrl 2>&1 | grep version | awk \
 'NR==1{print "isdn4k-utils          ", $NF}'
@@ -125,6 +137,7 @@ loadkeys -V 2>&1 | awk \
 
 expr --v 2>&1 | awk 'NR==1{print "Sh-utils              ", $NF}'
 
+echo
 if [ -e /proc/modules ]; then
     X=`cat /proc/modules | sed -e "s/ .*$//"`
     echo "Modules Loaded         "$X
