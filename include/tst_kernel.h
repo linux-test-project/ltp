@@ -58,4 +58,13 @@ int tst_check_builtin_driver(const char *driver);
  */
 int tst_check_driver(const char *driver);
 
+/**
+ * tst_check_preempt_rt() - Check if the running kernel is RT.
+ *
+ * Check support for the kernel module (both built-in and loadable).
+ *
+ * Return: -1 if the kernel is RT, 0 otherwise.
+ */
+int tst_check_preempt_rt(void);
+
 #endif	/* TST_KERNEL_H__ */

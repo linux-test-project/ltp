@@ -80,6 +80,9 @@ static void setup(void)
 	int cpu = 0;
 	long ncpus = tst_ncpus_conf();
 
+	if (tst_check_preempt_rt())
+		tst_brk(TCONF, "This test is not designed for the RT kernel");
+
 	CPU_ZERO(&mask);
 
 	/* Restrict test to a single cpu */
