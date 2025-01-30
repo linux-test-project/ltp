@@ -22,4 +22,4 @@ if [ "$2" != "param2" ]; then
 	tst_res TFAIL "Second parameter is $2 expected param2"
 else
 	tst_res TPASS "Second parameter is $2"
-#fi
+fi
