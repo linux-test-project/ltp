@@ -11,6 +11,7 @@
    users/setup_tests
    users/supported_systems
    users/stats
+   users/test_catalog
 
 .. toctree::
    :maxdepth: 3
@@ -53,6 +54,9 @@ For users
 
 :doc:`users/stats`
    Some LTP statistics
+
+:doc:`users/test_catalog`
+   The LTP test catalog
 
 For developers
 --------------
