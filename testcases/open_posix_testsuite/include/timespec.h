@@ -36,8 +36,5 @@ static inline long timespec_nsec_diff(struct timespec *t1, struct timespec *t2)
 	sec_diff  = t1->tv_sec - t2->tv_sec;
 	nsec_diff = t1->tv_nsec - t2->tv_nsec;
 
-	if (sec_diff > 1 || (sec_diff == 1 && nsec_diff >= 0))
-		return NSEC_IN_SEC;
-
 	return labs(nsec_diff + NSEC_IN_SEC * sec_diff);
 }
