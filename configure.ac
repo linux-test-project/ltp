@@ -1,3 +1,6 @@
+# Copyright (c) Linux Test Project, 2008-2025
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 AC_PREREQ(2.64)
 AC_INIT([ltp], [LTP_VERSION], [ltp@lists.linux.it])
 AC_CONFIG_AUX_DIR([.])
