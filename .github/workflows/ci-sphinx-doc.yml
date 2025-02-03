@@ -20,10 +20,15 @@ jobs:
         with:
           path: ltp
 
-      - name: Install sphinx
+      - name: Install sphinx and autotools
         run: |
           sudo apt update
-          sudo apt install python3-sphinx python3-virtualenv
+          sudo apt install autoconf make python3-sphinx python3-virtualenv
+
+      - name: Run configure
+        run: |
+          cd "$GITHUB_WORKSPACE/ltp/"
+          make autotools && ./configure
 
       - name: Install sphinx dependencies
         run: |
