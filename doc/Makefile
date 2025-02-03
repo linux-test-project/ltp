@@ -1,4 +1,11 @@
-all:
+top_srcdir		?= ..
+
+include $(top_srcdir)/include/mk/env_pre.mk
+
+${abs_top_builddir}/metadata/ltp.json:
+	$(MAKE) -C ${abs_top_builddir}/metadata
+
+all: ${abs_top_builddir}/metadata/ltp.json
 	sphinx-build -b html . html
 
 spelling:
