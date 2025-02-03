@@ -11,13 +11,13 @@ and it's built on top of `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
 Building documentation
 ~~~~~~~~~~~~~~~~~~~~~~
 
-First of all, to build the documentation we must be sure that all dependencies
-have been installed (please check :master:`doc/requirements.txt` file). Sometimes the
-Linux distros are providing them, but the best way is to use ``virtualenv``
-command as following:
+Before building, make sure you have python3 ``virtualenv`` module installed.
 
 .. code-block:: bash
 
+    # run configure to be able to compile doc dependencies in metadata/
+    make autotools
+    ./configure
     cd doc
 
     # prepare virtual environment
