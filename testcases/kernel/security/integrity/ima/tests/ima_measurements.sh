@@ -94,7 +94,7 @@ test3()
 	sudo -n -u $user sh -c "echo $(cat /proc/uptime) user file > $file; cat $file > /dev/null"
 	cd ..
 
-	if tst_rod "$cmd" 2> /dev/null; then
+	if ! tst_rod "$cmd" 2> /dev/null; then
 		tst_res TPASS "$cmd failed as expected"
 	else
 		tst_res $IMA_FAIL "$cmd passed unexpectedly"
