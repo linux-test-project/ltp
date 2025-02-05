@@ -162,6 +162,7 @@ print_ima_config()
 # When missing CONFIG_IMA_READ_POLICY=y on required policy convert: test, but convert TFAIL => TCONF.
 # $REQUIRED_POLICY_CONTENT: file with required IMA policy
 # $REQUIRED_BUILTIN_POLICY: IMA policy specified as kernel cmdline
+# return: 1 if need to load policy 0 otherwise
 verify_ima_policy()
 {
 	local check_content line
@@ -194,8 +195,9 @@ verify_ima_policy()
 					return 1
 				fi
 			done < $file
+			tst_res TINFO "SUT has required policy content"
 		else
-			tst_res TINFO "policy is not readable, failure will be treated as TCONF"
+			tst_res TINFO "WARNING: policy is not readable, failure will be treated as TCONF"
 			IMA_FAIL="TCONF"
 			IMA_BROK="TCONF"
 			return 1
