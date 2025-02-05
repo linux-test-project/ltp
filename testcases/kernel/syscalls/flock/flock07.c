@@ -42,7 +42,7 @@ static void cleanup(void)
 
 static void child_do(int fd)
 {
-	struct sigaction sa;
+	struct sigaction sa = {};
 
 	sa.sa_handler = handler;
 	SAFE_SIGEMPTYSET(&sa.sa_mask);
