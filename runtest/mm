@@ -53,10 +53,7 @@ mmapstress09 mmapstress09 -p 20 -t 0.2
 mmapstress10 mmapstress10 -p 20 -t 0.2
 
 mmap10 mmap10
-mmap10_1 mmap10 -a
-mmap10_2 mmap10 -s
-mmap10_3 mmap10 -a -s
-mmap10_4 mmap10 -a -s -i 60
+mmap10_1 mmap10 -i 60
 
 kallsyms kallsyms
 
