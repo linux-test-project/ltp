@@ -209,6 +209,7 @@ verify_ima_policy()
 load_ima_policy()
 {
 	local file="$TST_DATAROOT/$REQUIRED_POLICY_CONTENT"
+	local ret
 
 	if [ "$LTP_IMA_LOAD_POLICY" != 1 ]; then
 		if [ "$IMA_MISSING_POLICY_CONTENT" = 1 ]; then
@@ -228,12 +229,17 @@ load_ima_policy()
 	fi
 
 	cat "$file" 2> log > $IMA_POLICY
+	ret=$?
 	if grep -q "Device or resource busy" log; then
 		tst_brk TBROK "loading policy failed"
 	fi
 
 	if grep -q "write error: Permission denied" log; then
 		tst_brk TCONF "loading unsigned policy failed"
+	fi
+
+	if [ $ret -ne 0 ]; then
+		tst_brk TBROK "loading policy failed"
 	fi
 
 	IMA_POLICY_LOADED=1
