@@ -2,3 +2,8 @@
 .wy-table-responsive table td {
     white-space: normal;
 }
+
+/* remove margin for multiline cells */
+.rst-content table td div.line-block {
+    margin-bottom: 0;
+}
