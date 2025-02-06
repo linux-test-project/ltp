@@ -49,7 +49,10 @@ int bpf_map_create(union bpf_attr *const attr)
 
 int bpf_map_array_create(const uint32_t max_entries)
 {
-	union bpf_attr map_attr = {
+	/* zero-initialize entire struct including padding bits */
+	union bpf_attr map_attr = {};
+
+	map_attr = (union bpf_attr) {
 		.map_type = BPF_MAP_TYPE_ARRAY,
 		.key_size = 4,
 		.value_size = 8,
@@ -64,13 +67,18 @@ void bpf_map_array_get(const int map_fd,
 		       const uint32_t *const array_indx,
 		       uint64_t *const array_val)
 {
-	union bpf_attr elem_attr = {
+	/* zero-initialize entire struct including padding bits */
+	union bpf_attr elem_attr = {};
+	int ret;
+
+	elem_attr = (union bpf_attr) {
 		.map_fd = map_fd,
 		.key = ptr_to_u64(array_indx),
 		.value = ptr_to_u64(array_val),
 		.flags = 0
 	};
-	const int ret = bpf(BPF_MAP_LOOKUP_ELEM, &elem_attr, sizeof(elem_attr));
+
+	ret = bpf(BPF_MAP_LOOKUP_ELEM, &elem_attr, sizeof(elem_attr));
 
 	if (ret) {
 		tst_brk(TBROK | TTERRNO,
