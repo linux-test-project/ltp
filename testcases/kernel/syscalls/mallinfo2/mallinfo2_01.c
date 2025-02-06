@@ -26,7 +26,7 @@ void test_mallinfo2(void)
 	char *buf;
 	size_t size = 2UL * 1024UL * 1024UL * 1024UL;
 
-	buf = malloc(size);
+	LTP_VAR_USED(buf) = malloc(size);
 
 	if (!buf)
 		tst_brk(TCONF, "Current system can not malloc 2G space, skip it");
