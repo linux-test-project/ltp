@@ -571,7 +571,7 @@ static void print_help(void)
 	unsigned int i;
 	int timeout, runtime;
 
-	/* see doc/User-Guidelines.asciidoc, which lists also shell API variables */
+	/* see doc/users/setup_tests.rst, which lists also shell API variables */
 	fprintf(stderr, "Environment Variables\n");
 	fprintf(stderr, "---------------------\n");
 	fprintf(stderr, "KCONFIG_PATH         Specify kernel config file\n");
