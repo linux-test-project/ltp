@@ -5,7 +5,6 @@
 zyp="zypper --non-interactive install --force-resolution --no-recommends"
 
 $zyp \
-	asciidoc \
 	autoconf \
 	automake \
 	clang \
@@ -29,5 +28,3 @@ $zyp \
 	lsb-release \
 	perl-JSON \
 	pkg-config
-
-$zyp ruby2.7-rubygem-asciidoctor || $zyp ruby2.5-rubygem-asciidoctor || true

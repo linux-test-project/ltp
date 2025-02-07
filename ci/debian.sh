@@ -35,9 +35,6 @@ pkg_minimal="
 
 pkg_nonessential="
 	acl-dev
-	asciidoc-base
-	asciidoc-dblatex
-	asciidoctor
 	libacl1-dev
 	libaio-dev
 	libcap-dev
@@ -50,9 +47,6 @@ pkg_nonessential="
 	libssl-dev
 "
 
-# Missing on Ubuntu 18.04 LTS (Bionic Beaver)
-pkg_maybe_nonessential="ruby-asciidoctor-pdf"
-
 case "$ACTION" in
 	minimal)
 		echo "=== Installing only minimal dependencies ==="
@@ -61,12 +55,10 @@ case "$ACTION" in
 	remove-nonessential)
 		echo "=== Make sure devel libraries are removed ==="
 		$remove $pkg_nonessential
-		$remove $pkg_maybe_nonessential || true
 		;;
 	*)
 		echo "=== Installing dependencies ==="
 		$install $pkg_minimal $pkg_nonessential
-		$install $pkg_maybe_nonessential || true
 		;;
 esac
 

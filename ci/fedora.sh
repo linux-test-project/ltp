@@ -5,7 +5,6 @@
 yum="yum -y install --skip-broken"
 
 $yum \
-	asciidoc \
 	autoconf \
 	automake \
 	make \
@@ -24,4 +23,3 @@ $yum \
 
 # CentOS 8 fixes
 $yum libmnl-devel || $yum libmnl
-$yum rubygem-asciidoctor || true
