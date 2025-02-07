@@ -63,12 +63,13 @@ things are done.
 
 Never ever comment the obvious.
 
-In case of LTP testcases, it's customary to add an asciidoc formatted comment
-paragraph with high-level test description at the beginning of the file right
-under the GPL SPDX header. This helps other people to understand the overall
-goal of the test before they dive into the technical details. It's also
-exported into generated documentation hence it should mostly explain what is
-tested.
+In case of LTP testcases, it's customary to add an `RST
+<https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+formatted comment paragraph with high-level test description at the beginning
+of the file right under the GPL SPDX header. This helps other people to
+understand the overall goal of the test before they dive into the technical
+details. It's also exported into generated documentation hence it should mostly
+explain what is tested.
 
 DRY (Code duplication)
 ~~~~~~~~~~~~~~~~~~~~~~

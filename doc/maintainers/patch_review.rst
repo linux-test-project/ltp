@@ -47,7 +47,7 @@ The following are examples and may not be appropriate for all tests.
 * Compare usage of system calls with kernel code
 * Double check commit message
 * Search the LTP library for existing helper functions
-* Check doc formatting, i.e. ``make doc && chromium docparse/metadata.html``
+* Check doc formatting, see :doc:`../developers/documentation`.
 
 How to find subtle errors
 -------------------------
@@ -149,7 +149,7 @@ C tests
 * Use :doc:`../developers/api_c_tests`, implementing :ref:`struct tst_test`
 * Test binaries are added into corresponding ``.gitignore`` files
 * Check coding style with ``make check``
-* Docparse documentation
+* Metadata documentation
 * If a test is a regression test it should include :ref:`.tags<struct tst_tag>` in the
   :ref:`struct tst_test` definition
 
