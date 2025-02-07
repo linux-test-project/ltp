@@ -49,7 +49,6 @@ jobs:
           - container: "alpine:latest"
             env:
               CC: gcc
-              METADATA: asciidoctor
 
           # build with minimal dependencies
           - container: "debian:stable"
@@ -66,13 +65,11 @@ jobs:
           - container: "quay.io/centos/centos:stream9"
             env:
               CC: gcc
-              METADATA: asciidoc-pdf
               TREE: out
 
           - container: "debian:testing"
             env:
               CC: gcc
-              METADATA: asciidoctor-pdf
 
           - container: "debian:oldstable"
             env:
@@ -83,33 +80,27 @@ jobs:
             env:
               CC: clang
               MAKE_INSTALL: 1
-              METADATA: asciidoctor-pdf
 
           - container: "opensuse/leap:latest"
             env:
               CC: gcc
-              METADATA: asciidoc-pdf
 
           - container: "debian:oldstable"
             env:
               CC: gcc
-              METADATA: asciidoctor
 
           - container: "debian:testing"
             env:
               CC: clang
-              METADATA: asciidoctor-pdf
 
           - container: "ubuntu:jammy"
             env:
               CC: gcc
-              METADATA: asciidoctor
               TREE: out
 
           - container: "ubuntu:bionic"
             env:
               CC: gcc
-              METADATA: asciidoc-pdf
 
     container:
       image: ${{ matrix.container }}
@@ -142,11 +133,8 @@ jobs:
 
     - name: Configure
       run: |
-        if [ "$METADATA" = "asciidoc-pdf" ]; then CONFIGURE_OPT_EXTRA="--with-metadata-generator=asciidoc --enable-metadata-pdf"; fi
-        if [ "$METADATA" = "asciidoctor" ]; then CONFIGURE_OPT_EXTRA="--with-metadata-generator=asciidoctor"; fi
-        if [ "$METADATA" = "asciidoctor-pdf" ]; then CONFIGURE_OPT_EXTRA="--with-metadata-generator=asciidoctor --enable-metadata-pdf"; fi
         case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
-        CONFIGURE_OPT_EXTRA="$CONFIGURE_OPT_EXTRA" ./build.sh -r configure -o ${TREE:-in} -t $BUILD -c $CC
+        ./build.sh -r configure -o ${TREE:-in} -t $BUILD -c $CC
 
     - name: Compile
       run: ./build.sh -r build -o ${TREE:-in}
