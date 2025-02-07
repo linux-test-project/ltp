@@ -196,4 +196,4 @@ LDLIBS   - libraries listed after objects during link, e.g. -lc, -lpthread,
 	   -lltp.
 
 For other variables and more info about the build systems see
-doc/Build-System.asciidoc.
+doc/developers/build_system.rst.
