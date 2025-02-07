@@ -5,8 +5,16 @@ build:
   tools:
     python: "3.6"
   apt_packages:
+    - autoconf
     - enchant-2
     - hunspell-en-us
+    - make
+  jobs:
+    # Doc requires to have ltp.json
+    pre_build:
+      - make autotools
+      - ./configure
+      - make -C metadata/
 
 # Build from the doc/ directory with Sphinx
 sphinx:
