@@ -823,7 +823,6 @@ mlock201 mlock201
 mlock202 mlock202
 mlock203 mlock203
 
-qmm01 mmap001 -m 1
 mmap01 mmap01
 mmap02 mmap02
 mmap03 mmap03
@@ -843,6 +842,8 @@ mmap17 mmap17
 mmap18 mmap18
 mmap19 mmap19
 mmap20 mmap20
+mmap21_01 mmap21 -m 1
+mmap21_02 mmap21
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02

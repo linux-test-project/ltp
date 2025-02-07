@@ -1,13 +1,9 @@
 #DESCRIPTION:Memory Mgmt tests
-mm01 mmap001 -m 10000
+mmap21_01 mmap21 -m 10000
 # 40 Mb mmap() test.
 # Creates a 10000 page mmap, touches all of the map, sync's it, and
 # munmap()s it.
-mm02 mmap001
-# simple mmap() test.
-#mm03 mmap001 -i 0 -I 1 -m 100
-# repetitive mmapping test.
-# Creates a one page map repetitively for one minute.
+mmap21_02 mmap21
 
 mtest01 mtest01 -p80
 mtest01w mtest01 -p80 -w
