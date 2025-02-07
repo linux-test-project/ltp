@@ -266,33 +266,6 @@ else
     AC_SUBST([WITH_BASH],["no"])
 fi
 
-# metadata
-AC_ARG_ENABLE([metadata],
-  [AS_HELP_STRING([--disable-metadata],
-	[Disable metadata generation (both HTML and PDF, default no)])],
-  [], [enable_metadata=yes]
-)
-AC_ARG_ENABLE([metadata_html],
-  [AS_HELP_STRING([--disable-metadata-html],
-	[Disable metadata HTML generation (default no)])],
-  [], [enable_metadata_html=yes]
-)
-
-AC_ARG_ENABLE([metadata_pdf],
-  [AS_HELP_STRING([--enable-metadata-pdf],
-	[Enable metadata PDF generation (default no)])],
-  [], [enable_metadata_pdf=no]
-)
-
-AC_ARG_WITH([metadata_generator],
-  [AS_HELP_STRING([--with-metadata-generator=asciidoc|asciidoctor],
-	[Specify metadata generator to use (default autodetect)])],
-  [with_metadata_generator=$withval],
-  [with_metadata_generator=detect]
-)
-
-LTP_DOCPARSE
-
 # Expect
 AC_ARG_WITH([expect],
   [AS_HELP_STRING([--with-expect],
@@ -467,11 +440,6 @@ libmnl: ${have_libmnl:-yes}
 libnuma: ${have_libnuma:-no} (headers: ${have_numa_headers:-yes}, v2 headers: ${have_numa_headers_v2:-no})
 libtirpc: ${have_libtirpc:-no}
 glibc SUN-RPC: ${have_rpc_glibc:-no}
-
-METADATA
-metadata generator: $with_metadata_generator
-HTML metadata: $with_metadata_html
-PDF metadata: $with_metadata_pdf
 EOF
 
 if test "x$with_realtime_testsuite" = xyes; then
