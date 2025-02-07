@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2023 Petr Vorel <pvorel@suse.cz>
-# Create tarballs and metadata for uploading after tagging release.
+# Create tarballs for uploading after tagging release.
 # https://github.com/linux-test-project/ltp/wiki/LTP-Release-Procedure
 
 basedir="$(dirname "$0")"
@@ -46,12 +46,5 @@ for alg in $checksums; do
 		${alg}sum $file > "$file.$alg"
 	done
 done
-
-# metadata documentation
-title "Generate metadata documentation"
-cd $tarball_dir
-rod ./configure --with-metadata-generator=asciidoctor
-rod make -C metadata
-cp -v docparse/metadata.html $dir/metadata.$tag.html
 
 echo "Generated files are in '$dir', upload them to github"
