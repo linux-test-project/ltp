@@ -143,6 +143,15 @@ static struct tcase {
 		{
 		}
 	},
+	{
+		"inode mark, FAN_PRE_ACCESS event allowed",
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_PRE_ACCESS, 1,
+		{
+			/* This allows multiple FAN_PRE_ACCESS events */
+			{FAN_PRE_ACCESS, FAN_ALLOW},
+		}
+	},
 };
 
 static int expected_errno(unsigned int response)
@@ -205,6 +214,21 @@ static void generate_events(struct tcase *tc)
 	exp_errno = expected_errno(event->response);
 	event++;
 
+	/*
+	 * If execve() is allowed by permission events, check if executing a
+	 * file that open for write is allowed.
+	 * HSM needs to be able to write to file during pre-content event, so it
+	 * requires that a file being executed can be open for write, which also
+	 * means that a file open for write can be executed.
+	 * Therefore, ETXTBSY is to be expected when file is not being watched
+	 * at all or being watched but not with pre-content events in mask.
+	 */
+	if (!exp_errno) {
+		fd = SAFE_OPEN(FILE_EXEC_PATH, O_RDWR);
+		if (!tc->event_count)
+			exp_errno = ETXTBSY;
+	}
+
 	exp_ret = exp_errno ? -1 : 0;
 	errno = 0;
 	if (execve(FILE_EXEC_PATH, argv, environ) != exp_ret || errno != exp_errno) {
@@ -213,6 +237,9 @@ static void generate_events(struct tcase *tc)
 	} else if (errno == exp_errno) {
 		tst_res(TINFO, "execve() got errno %d as expected", errno);
 	}
+
+	if (fd >= 0)
+		SAFE_CLOSE(fd);
 }
 
 static void child_handler(int tmp)
@@ -308,8 +335,8 @@ static void test_fanotify(unsigned int n)
 	/*
 	 * Process events
 	 *
-	 * tc->count + 1 is to accommodate for checking the child process
-	 * return value
+	 * tc->count + 1 is to let read() wait for child process to exit
+	 * and to accomodate for extra access events
 	 */
 	while (test_num < tc->event_count + 1 && fd_notify != -1) {
 		struct fanotify_event_metadata *event;
@@ -318,6 +345,7 @@ static void test_fanotify(unsigned int n)
 			/* Get more events */
 			ret = read(fd_notify, event_buf + len,
 				   EVENT_BUF_LEN - len);
+			/* Received SIGCHLD */
 			if (fd_notify == -1)
 				break;
 			if (ret < 0) {
@@ -327,6 +355,17 @@ static void test_fanotify(unsigned int n)
 			}
 			len += ret;
 		}
+
+		/*
+		 * If we got an event after the last event and the last event was
+		 * allowed then assume this is another event of the same type.
+		 * This is to accomodate for the fact that a single read() may
+		 * generate an unknown number of access permission events if they
+		 * are allowed.
+		 */
+		if (test_num > 0 && test_num == tc->event_count &&
+		    event_set[test_num-1].response == FAN_ALLOW)
+			test_num--;
 
 		event = (struct fanotify_event_metadata *)&event_buf[i];
 		/* Permission events cannot be merged, so the event mask
