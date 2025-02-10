@@ -239,6 +239,26 @@ static struct test_case_t {
 		.pfd = pipes,
 		.expected_errno = EINVAL,
 	},
+	/* permission events in mask with priority < FAN_CLASS_CONTENT are not valid */
+	{
+		.init = FLAGS_DESC(FAN_CLASS_NOTIF),
+		.mark = FLAGS_DESC(FAN_MARK_INODE),
+		.mask = FLAGS_DESC(LTP_ALL_PERM_EVENTS),
+		.expected_errno = EINVAL,
+	},
+	/* pre-content events in mask with priority < FAN_CLASS_PRE_CONTENT are not valid */
+	{
+		.init = FLAGS_DESC(FAN_CLASS_NOTIF),
+		.mark = FLAGS_DESC(FAN_MARK_INODE),
+		.mask = FLAGS_DESC(LTP_PRE_CONTENT_EVENTS),
+		.expected_errno = EINVAL,
+	},
+	{
+		.init = FLAGS_DESC(FAN_CLASS_CONTENT),
+		.mark = FLAGS_DESC(FAN_MARK_INODE),
+		.mask = FLAGS_DESC(LTP_PRE_CONTENT_EVENTS),
+		.expected_errno = EINVAL,
+	},
 };
 
 static void do_test(unsigned int number)
