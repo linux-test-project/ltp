@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
+ */
+
+/*\
+ * [Description]
  *
- * Description:
  * Cross verify the _high fields being set to 0 by the kernel.
  */
+
 #include "lapi/sembuf.h"
 #include "lapi/sem.h"
 #include "tst_test.h"
