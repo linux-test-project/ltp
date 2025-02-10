@@ -124,6 +124,13 @@
 #define FAN_EPIDFD		-2
 #endif
 
+/* errno other than EPERM can specified in upper byte of deny response */
+#ifndef FAN_DENY_ERRNO
+#define FAN_ERRNO(err) (((((__u32)(err)) & 0xff) << 24))
+#define FAN_DENY_ERRNO(err) (FAN_DENY | FAN_ERRNO(err))
+#define FAN_RESPONSE_ERRNO(res) ((int)((res) >> 24))
+#endif
+
 /* Flags required for unprivileged user group */
 #define FANOTIFY_REQUIRED_USER_INIT_FLAGS    (FAN_REPORT_FID)
 

@@ -277,6 +277,9 @@ static inline void fanotify_flags_err_msg(const char *flags_str,
 #define FANOTIFY_MARK_FLAGS_ERR_MSG(mark, fail) \
 	fanotify_flags_err_msg((mark)->name, __FILE__, __LINE__, tst_res_, (fail))
 
+#define FANOTIFY_EVENTS_ERR_MSG(event, fail) \
+	fanotify_flags_err_msg(#event, __FILE__, __LINE__, tst_res_, (fail))
+
 #define REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(flags, fname) \
 	fanotify_flags_err_msg(#flags, __FILE__, __LINE__, tst_brk_, \
 		fanotify_init_flags_supported_on_fs(flags, fname))
