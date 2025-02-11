@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of the pwritev(2).
  *
  * pwritev(2) should succeed to write the expected content of data

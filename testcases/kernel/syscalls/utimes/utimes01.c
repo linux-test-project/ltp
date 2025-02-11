@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, utimes(2) returns -1 and sets errno to
  *
  * 1. EACCES if times is NULL, the caller's effective user ID does not match

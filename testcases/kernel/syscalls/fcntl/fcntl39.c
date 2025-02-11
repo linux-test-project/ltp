@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that dnotify DN_RENAME event is reported only on rename inside same parent.
  */
 

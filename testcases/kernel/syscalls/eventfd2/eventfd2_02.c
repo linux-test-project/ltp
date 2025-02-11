@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that eventfd2 correctly set O_NONBLOCK flag on file when
  * EFD_NONBLOCK flag is used.
  */

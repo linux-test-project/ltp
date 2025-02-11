@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Stress test for SysV IPC. We send multiple messages at the same time,
  * checking that we are not loosing any byte once we receive the messages
  * from multiple children.

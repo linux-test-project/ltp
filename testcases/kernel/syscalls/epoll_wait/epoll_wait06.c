@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that edge triggering is correctly handled by epoll, for both EPOLLIN
  * and EPOLLOUT.
  *

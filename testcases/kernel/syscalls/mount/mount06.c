@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for feature MS_MOVE of mount, which moves an existing mount point to
  * a new location.
  */

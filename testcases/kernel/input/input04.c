@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that /dev/input/eventX doesn't receive any event sent from a virtual
  * device, that in our case is a mouse, when relative move is (0, 0)
  */

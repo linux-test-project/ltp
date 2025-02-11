@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, kcmp() returns -1 and sets errno to
  *
  * 1. ESRCH if pid does not exist

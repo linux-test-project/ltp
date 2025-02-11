@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test to correct handling for reserve count. If no reserved mapping is
  * created to reserved file region, it should be considered as reserve
  * mapping. Otherwise, reserve count will be overflowed.

@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for EACCES, EFAULT and EINVAL errors.
  *
  * * EACCES - segment has no read or write permissions

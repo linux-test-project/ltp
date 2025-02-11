@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic mount_setattr() test.
  * Test whether the basic mount attributes are set correctly.
  *

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * A race in pid generation that causes pids to be reused immediately
  *
  * From the mainline commit 5fdee8c4a5e1800489ce61963208f8cc55e42ea1:

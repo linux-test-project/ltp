@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether the kernel properly advertises support for statx() attributes:
  *
  * - STATX_ATTR_COMPRESSED: The file is compressed by the filesystem.

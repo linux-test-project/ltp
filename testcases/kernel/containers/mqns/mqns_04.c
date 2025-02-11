@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test mqueuefs manipulation from child/parent namespaces.
  *
  * [Algorithm]

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify rename() when the newpath file or directory does not exist.
  */
 

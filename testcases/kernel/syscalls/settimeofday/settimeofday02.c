@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that settimeofday() sets errnos correctly.
  */
 

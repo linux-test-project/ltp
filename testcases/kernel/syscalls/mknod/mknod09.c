@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that mknod() fails with -1 and sets errno to EINVAL if the mode is
  * different than a normal file, device special file or FIFO.
  */

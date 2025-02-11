@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the maximum number of nesting allowed inside epoll sets is 5,
  * otherwise epoll_ctl fails with EINVAL.
  */

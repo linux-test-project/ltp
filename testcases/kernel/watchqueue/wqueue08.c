@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if key watch removal is correctly recognized by watch queue.
  */
 

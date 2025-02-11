@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the preadv(2) for the file
  * opened with O_DIRECT in all filesystem.
  *

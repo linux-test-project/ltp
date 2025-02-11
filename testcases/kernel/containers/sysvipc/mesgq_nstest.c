@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test SysV IPC message passing through different namespaces.
  *
  * [Algorithm]

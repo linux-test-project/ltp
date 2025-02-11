@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for EACCES error.
  *
  * Create a shared memory segment without read or write permissions under

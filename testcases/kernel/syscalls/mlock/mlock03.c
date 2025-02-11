@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This case is a regression test on old RHEL5.
  *
  * Stack size mapping is decreased through mlock/munlock call.

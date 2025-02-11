@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test based on Syzkaller reproducer:
  * https://syzkaller.appspot.com/bug?extid=522643ab5729b0421998
  *

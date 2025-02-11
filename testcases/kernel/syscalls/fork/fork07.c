@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that all children inherit parent's file descriptor.
  *
  * Parent opens a file and forks children. Each child reads a byte and checks

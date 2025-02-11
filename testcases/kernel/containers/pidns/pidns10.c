@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and check that killing subprocesses
  * from child namespace will raise ESRCH error.
  */

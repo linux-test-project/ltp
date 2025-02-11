@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that alarm() returns:
  *
  * - zero when there was no previously scheduled alarm

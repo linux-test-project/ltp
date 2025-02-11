@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getrusage() fails with:
  *
  * - EINVAL with invalid who

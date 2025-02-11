@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for kernel commit
  * 5d1f903f75a8 ("attr: block mode changes of symlinks")
  */

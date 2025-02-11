@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * zram: generic RAM based compressed R/W block devices
  * http://lkml.org/lkml/2010/8/9/227
  *

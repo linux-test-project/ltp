@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Appends zeroed data to a file using O_DIRECT while a child processes are
  * doing buffered reads after seeking to the end of the file and checks if the
  * buffer reads always see zero.

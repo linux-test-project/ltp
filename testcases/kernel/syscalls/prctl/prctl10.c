@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test to test behaviour of PR_GET_TSC and PR_SET_TSC.
  *
  * Set the state of the flag determining whether the timestamp counter can

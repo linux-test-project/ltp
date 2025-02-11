@@ -6,8 +6,6 @@
  * CO-PILOT		: Dave Fenner
  */
 /*\
- * [Description]
- *
  * Calls setgid() with current gid and expects success.
  */
 

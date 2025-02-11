@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that unlink(2) fails with EROFS when target file is on a read-only
  * filesystem.
  */

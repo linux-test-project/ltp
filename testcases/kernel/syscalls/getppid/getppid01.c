@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether parent process id that getppid() returns is out of range.
  */
 

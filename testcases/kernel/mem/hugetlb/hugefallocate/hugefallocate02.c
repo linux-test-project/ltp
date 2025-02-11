@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It tests basic fallocate functionality in hugetlbfs. Preallocate huge
  * pages to a file in hugetlbfs, and then remove the pages via hole punch.
  */

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the pread syscall.
  *
  * - ESPIPE when attempted to read from an unnamed pipe

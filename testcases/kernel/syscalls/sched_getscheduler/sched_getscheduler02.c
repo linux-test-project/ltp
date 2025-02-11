@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Pass an unused pid to sched_getscheduler() and test for ESRCH.
  */
 

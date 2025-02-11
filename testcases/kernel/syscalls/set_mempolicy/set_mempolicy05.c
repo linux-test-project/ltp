@@ -4,8 +4,6 @@
  */
 /*\
  *
- * [Description]
- *
  * This will reproduce an information leak in the set_mempolicy 32-bit
  * compat syscall. The catch is that the 32-bit compat syscall is not
  * used in x86_64 upstream. So at the time of writing, 32-bit programs

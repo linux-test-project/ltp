@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll_create returns -1 and set errno to EINVAL if size is not
  * greater than zero.
  */

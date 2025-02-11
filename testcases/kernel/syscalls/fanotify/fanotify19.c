@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * This set of tests is to ensure that the unprivileged listener feature of
  * fanotify is functioning as expected. The objective of this test file is
  * to generate a sequence of events and ensure that the returned events

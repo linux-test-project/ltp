@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that
  *
  * 1. kcmp() returns 0 with two process and two file descriptors refering to the

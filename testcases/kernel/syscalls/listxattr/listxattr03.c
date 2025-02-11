@@ -6,8 +6,6 @@
  */
 
 /*
- * [Description]
- *
  * Test for returning the current size of the list of extended attribute names,
  * with size specified as zero.
  */

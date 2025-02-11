@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tries to set different personalities.
  *
  * We set the personality in a child process since it's not guaranteed that we

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Creates a child process in the new specified namespace(s), child is then
  * daemonized and is running in the background. PID of the daemonized child
  * process is printed on the stdout. As the new namespace(s) is(are) maintained

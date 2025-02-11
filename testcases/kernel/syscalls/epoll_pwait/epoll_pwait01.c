@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for epoll_pwait() and epoll_pwait2().
  *
  * - With a sigmask a signal is ignored and the syscall safely waits until

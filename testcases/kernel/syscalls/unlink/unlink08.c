@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that unlink(2) fails with
  *
  * - EACCES when no write access to the directory containing pathname

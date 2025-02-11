@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that truncating a mmaped file works correctly.
  *
  * Use ftruncate to:

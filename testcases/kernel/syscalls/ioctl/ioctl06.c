@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the BLKRASET and BLKRAGET ioctls.
  *
  * Sets device read-ahead, reads it back and compares the values.

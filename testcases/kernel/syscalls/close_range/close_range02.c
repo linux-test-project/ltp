@@ -3,8 +3,6 @@
  * Copyright (c) 2021 SUSE LLC
  */
 /*\
- * [Description]
- *
  * - First check close_range works on a valid range.
  * - Then check close_range does not accept invalid paramters.
  * - Then check it accepts a large lower fd.

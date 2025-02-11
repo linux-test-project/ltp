@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that inotify get IN_UNMOUNT event and don't block the umount command.
  */
 

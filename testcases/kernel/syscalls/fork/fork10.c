@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies inheritance of file descriptors from parent to child
  * process. We open a file from parent, then we check if file offset changes
  * accordingly with file descriptor usage.

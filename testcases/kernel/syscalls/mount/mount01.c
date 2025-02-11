@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test that checks mount() syscall works on multiple filesystems.
  */
 

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies EINVAL for futex_waitv syscall.
  */
 

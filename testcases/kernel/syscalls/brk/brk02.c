@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Expand brk() by at least 2 pages to ensure there is a newly created VMA
  * and not expanding the original due to multiple anon pages.  mprotect() that
  * new VMA then brk() back to the original address therefore causing a munmap of

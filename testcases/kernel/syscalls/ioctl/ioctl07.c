@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Very basic test for the RND* ioctls.
  *
  * Reads the entropy available from both /proc and the ioctl and compares

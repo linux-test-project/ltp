@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * If the kernel fails to correctly flush the TLB entry, the second mmap
  * will not show the correct data.
  *

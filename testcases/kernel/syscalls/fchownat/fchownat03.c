@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that,
  * - fchownat() returns -1 and sets errno to EACCES if there is no permission
      to access to the file.

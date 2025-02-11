@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that mmap() succeeds when used to map a file where size of the
  * file is not a multiple of the page size, the memory area beyond the end
  * of the file to the end of the page is accessible. Also, verify that

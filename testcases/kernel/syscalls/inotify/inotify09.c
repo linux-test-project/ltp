@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for inotify mark connector destruction race.
  *
  * Kernels prior to 4.17 have a race when the last fsnotify mark on the inode

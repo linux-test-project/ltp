@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, readlink(2) returns -1 and sets errno to
  *
  * 1. EACCES if search/write permission is denied in the directory where the

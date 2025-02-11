@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify overflow event is properly generated.
  *
  * [Algorithm]

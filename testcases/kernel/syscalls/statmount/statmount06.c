@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that statmount() is correctly reading name of the
  * filesystem type using STATMOUNT_FS_TYPE.
  *

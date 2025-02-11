@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a file using buffered writes while other processes are doing
  * O_DIRECT reads and check if the buffer reads always see zero.
  */

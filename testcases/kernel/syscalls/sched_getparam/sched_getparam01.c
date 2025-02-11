@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * sched_getparam(2) gets correct scheduling parameters for

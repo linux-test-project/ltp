@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that waitid() fails with ECHILD with process that is not child of the
  * current process. We fork() one child just to be sure that there are unwaited
  * for children available while the test runs.

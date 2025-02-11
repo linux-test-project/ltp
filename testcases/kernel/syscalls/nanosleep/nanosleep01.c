@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that nanosleep() should return with value 0 and the process should be
  * suspended for time specified by timespec structure.
  */

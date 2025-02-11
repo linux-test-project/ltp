@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for listxattr error.
  *
  * - ERANGE - the size of the list buffer is too small to hold the result.

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that /dev/input/eventX won't receive any event sent from a virtual
  * device, that in our case is a mouse, when the event device has been grabbed
  * by an another process.

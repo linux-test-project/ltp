@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_getevents invoked via syscall(2) with invalid ctx and expects it to
  * return EINVAL.
  */

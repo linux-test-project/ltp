@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * - truncate(2) truncates a file to a specified length successfully.

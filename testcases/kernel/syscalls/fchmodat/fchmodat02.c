@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the fchmodat() syscall.
  *
  * - fchmodat() fails with ENOTDIR if dir_fd is file descriptor

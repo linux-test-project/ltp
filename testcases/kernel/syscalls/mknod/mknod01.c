@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that mknod(2) successfully creates a filesystem node with
  * various modes.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests ioctl() on loopdevice with LOOP_CHANGE_FD flag.
  *
  * Tests whether LOOP_CHANGE_FD can not succeed (get EINVAL error)

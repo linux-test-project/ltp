@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This Test perform mmap, munmap and write operation on hugetlb file
  * based mapping. Mapping can be shared or private. and it checks for
  * Hugetlb counter (Total, Free, Reserve, Surplus) in /proc/meminfo and

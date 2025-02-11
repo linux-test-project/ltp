@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests for setxattr(2) and make sure setxattr(2) handles error
  * conditions correctly.
  *

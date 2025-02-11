@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * 1. Chown() returns -1 and sets errno to EPERM if the effective user id

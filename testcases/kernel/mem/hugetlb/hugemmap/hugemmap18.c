@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Just as normal mmap()s can't have an address, length or offset which
  * is not page aligned, so hugepage mmap()s can't have an address, length
  * or offset with is not hugepage aligned.

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a regression test for the race between getting an existing
  * xattr and setting/removing a large xattr.  This bug leads to that
  * getxattr() fails to get an existing xattr and returns ENOATTR in xfs

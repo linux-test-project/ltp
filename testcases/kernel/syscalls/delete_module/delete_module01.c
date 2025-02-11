@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for delete_module(2).
  *
  * Install dummy_del_mod.ko and delete it with delete_module(2).

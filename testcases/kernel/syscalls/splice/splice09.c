@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for splicing to /dev/zero and /dev/null these two devices discard all
  * data written to them.
  *

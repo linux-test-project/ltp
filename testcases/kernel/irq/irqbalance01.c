@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) 2021 SUSE LLC <rpalethorpe@suse.com> */
 /*\
- * [Description]
- *
  * Check that something (e.g. irqbalance daemon) is performing IRQ
  * load balancing.
  *

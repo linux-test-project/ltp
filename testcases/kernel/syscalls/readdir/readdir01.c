@@ -14,8 +14,6 @@
  */
 
 /*\
- * [Description]
- *
  * The test for the readdir(2) system call.
  * Create n files and check that readdir() finds n files
  */

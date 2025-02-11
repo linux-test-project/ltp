@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for syscall().
  *
  * Compare raw get{g,p,u}id results with their glibc wrappers.

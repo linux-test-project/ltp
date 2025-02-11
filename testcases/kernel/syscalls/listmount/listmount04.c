@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that listmount() raises the correct errors according with
  * invalid data:
  *

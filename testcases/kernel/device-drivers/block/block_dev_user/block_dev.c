@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test checks block device kernel API.
  */
 

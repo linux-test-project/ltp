@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Prerequisites:
  *
  * ksm and ksmtuned daemons need to be disabled. Otherwise, it could

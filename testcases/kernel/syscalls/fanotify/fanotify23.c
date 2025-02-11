@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check evictable fanotify inode marks.
  */
 

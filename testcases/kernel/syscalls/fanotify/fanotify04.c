@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check various fanotify special flags.
  */
 

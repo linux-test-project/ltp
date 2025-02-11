@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, a normal page cannot be mapped into a high memory region,
  * and mmap() call fails with either ENOMEM or EINVAL errno.
  */

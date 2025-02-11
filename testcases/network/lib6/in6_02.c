@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * IPv6 name to index and index to name function tests.
  */
 

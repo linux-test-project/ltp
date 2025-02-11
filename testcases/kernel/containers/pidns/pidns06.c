@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and check that parent process can't
  * be killed from child namespace.
  */

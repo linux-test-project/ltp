@@ -6,8 +6,6 @@
  *          Dinakar Guniguntala <dino@in.ibm.com>
  */
 /*\
- * [Description]
- *
  * Compare running sequential matrix multiplication routines
  * to running them in parallel to judge multiprocessor
  * performance

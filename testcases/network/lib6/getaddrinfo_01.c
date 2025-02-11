@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic getaddrinfo() tests.
  *
  * The test adds LTP specific addresses and names to /etc/hosts to avoid

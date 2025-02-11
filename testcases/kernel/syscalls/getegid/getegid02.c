@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks if getegid() returns the same effective group given by
  * passwd entry via getpwuid().
  */

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This program opens the PID file descriptor of the child process created with
  * fork(). It then uses poll to monitor the file descriptor for process exit, as
  * indicated by an EPOLLIN event.

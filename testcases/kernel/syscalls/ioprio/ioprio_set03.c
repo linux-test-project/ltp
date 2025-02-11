@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Negative ioprio_set() test. Test some non-working priorities to make
  * sure they don't work.
  */

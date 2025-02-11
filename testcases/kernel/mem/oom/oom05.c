@@ -4,8 +4,6 @@
  * Copyright (c) Linux Test Project, 2014-2023
  */
 /*\
- * [Description]
- *
  * Out Of Memory (OOM) test for MEMCG and CPUSET
  */
 

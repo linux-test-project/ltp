@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Sanity check fanotify_init flag FAN_CLOEXEC by fcntl.
  */
 

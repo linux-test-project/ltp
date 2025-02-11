@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that move_pages() properly reports failures when the memory area is
  * not valid, no page is mapped yet or the shared zero page is mapped.
  *

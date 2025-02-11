@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that write/read is properly working when master and slave
  * pseudo terminals communicate with each other.
  */

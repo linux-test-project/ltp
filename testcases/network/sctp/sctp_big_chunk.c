@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for the crash caused by over-sized SCTP chunk,
  * fixed by upstream commit 07f2c7ab6f8d ("sctp: verify size of a new
  * chunk in _sctp_make_chunk()").

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a message queue, write a message to it and
  * read it back.
  */

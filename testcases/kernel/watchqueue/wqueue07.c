@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if keyctl setperm is correctly recognized by watch queue.
  */
 

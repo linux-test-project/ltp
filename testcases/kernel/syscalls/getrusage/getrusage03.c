@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ru_maxrss behaviors in struct rusage.
  *
  * This test program is backported from upstream commit: 1f10206cf8e9, which

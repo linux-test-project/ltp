@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, pipe(2) syscall can open the maximum number of
  * file descriptors permitted.
  */

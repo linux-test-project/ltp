@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Bug reproducer for 7e7757876f25 ("mm/mremap: fix vm_pgoff in vma_merge() case 3")
  */
 

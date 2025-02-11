@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that gethostname(2) fails with
  *
  * - ENAMETOOLONG when len is smaller than the actual size

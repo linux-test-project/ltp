@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify rename(2) functions correctly when the newpath
  * file or directory (empty) exists.
  */

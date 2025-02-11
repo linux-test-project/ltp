@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that auto-repeat is working on a virtual device, that in our case
  * it's a keyboard.
  */

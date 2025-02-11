@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that landlock_create_ruleset syscall fails with the right
  * error codes:
  *

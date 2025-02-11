@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check if setreuid behaves correctly with file permissions.
  * The test creates a file as ROOT with permissions 0644, does a setreuid
  * and then tries to open the file with RDWR permissions.

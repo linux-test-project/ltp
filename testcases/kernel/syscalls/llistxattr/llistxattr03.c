@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that llistxattr(2) call with zero size returns the current size of the
  * list of extended attribute names, which can be used to determine the size of
  * the buffer that should be supplied in a subsequent llistxattr(2) call.

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for dup(2) of a named pipe descriptor.
  */
 

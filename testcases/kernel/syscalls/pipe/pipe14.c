@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, if the write end of a pipe is closed, then a process reading
  * from the pipe will see end-of-file (i.e., read() returns 0) once it has
  * read all remaining data in the pipe.

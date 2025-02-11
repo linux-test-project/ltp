@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the BLKGETSIZE and BLKGETSIZE64 ioctls.
  *
  * - BLKGETSIZE returns size in 512 byte blocks BLKGETSIZE64 in bytes

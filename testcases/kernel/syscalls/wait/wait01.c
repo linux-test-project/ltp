@@ -4,8 +4,6 @@
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
  */
 /*\
- * [Description]
- *
  * Check that if the calling process does not have any unwaited-for children
  * wait() will return ECHILD.
  */

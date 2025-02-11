@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Checks functionality for sched_setparam(2) for pid != 0
  *
  * This test forks a child and changes its parent's scheduling priority.

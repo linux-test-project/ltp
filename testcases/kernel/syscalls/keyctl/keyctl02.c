@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for the race between keyctl_read() and
  * keyctl_revoke(), if the revoke happens between keyctl_read()
  * checking the validity of a key and the key's semaphore being taken,

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Compare the effects of 32-bit div/mod by zero with the "expected"
  * behaviour.
  *

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to test whether chroot(2) sets errno correctly.
  *
  * - to test whether chroot() is setting ENAMETOOLONG if the

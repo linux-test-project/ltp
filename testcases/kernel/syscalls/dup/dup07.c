@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the file descriptor created by dup(2) syscall has the same
  * access mode as the old one.
  */

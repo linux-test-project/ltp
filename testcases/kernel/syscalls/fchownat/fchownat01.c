@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that fchownat() succeeds to change file's ownership if the file
  * descriptor is AT_FDCWD or set by opening a directory.
  */

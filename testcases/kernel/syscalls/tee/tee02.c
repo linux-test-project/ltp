@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, tee(2) returns -1 and sets errno to:
  *
  * 1. EINVAL if fd_in does not refer to a pipe.

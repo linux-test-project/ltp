@@ -5,8 +5,6 @@
  *
  */
 /*\
- * [Description]
- *
  * Verify that dup(2) syscall fails with errno EMFILE when the per-process
  * limit on the number of open file descriptors has been reached.
  */

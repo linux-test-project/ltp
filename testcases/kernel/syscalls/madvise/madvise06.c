@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Page fault occurs in spite that madvise(WILLNEED) system call is called
  * to prefetch the page. This issue is reproduced by running a program
  * which sequentially accesses to a shared memory and calls madvise(WILLNEED)

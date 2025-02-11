@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2017-16995
  *
  * Test for the bug fixed by kernel commit

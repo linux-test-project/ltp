@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that ioctl() FICLONERANGE feature correctly raises
  * EINVAL when:
  * - filesystem does not support overlapping reflink ranges in the same file

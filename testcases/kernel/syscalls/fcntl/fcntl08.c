@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for fcntl(2) using F_SETFL with flags O_NDELAY | O_APPEND | O_NONBLOCK.
  */
 

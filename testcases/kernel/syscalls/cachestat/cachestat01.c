@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that cachestat() syscall is properly counting cached pages
  * written inside a file. If storage device synchronization is requested, test
  * will check if the number of dirty pages is zero.

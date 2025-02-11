@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic request_key(2) failure checking. request_key(2) should return -1 and
  * set expected errno:
  *

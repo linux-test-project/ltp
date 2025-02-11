@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that clone(2) fails with
  *
  * - EINVAL if child stack is set to NULL

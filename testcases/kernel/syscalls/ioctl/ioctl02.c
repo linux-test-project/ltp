@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test TCGETA/TCGETS and TCSETA/TCSETS ioctl implementations for tty driver.
  *
  * In this test, the parent and child open the parentty and the childtty

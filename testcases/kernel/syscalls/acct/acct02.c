@@ -5,8 +5,6 @@
  * Author: Christian Amann <camann@suse.com>
  */
 /*\
- * [Description]
- *
  * This tests if the kernel writes correct data to the
  * process accounting file.
  *

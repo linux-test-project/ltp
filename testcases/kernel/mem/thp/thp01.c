@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a reproducer of CVE-2011-0999, which fixed by mainline commit
  * a7d6e4ecdb76 ("thp: prevent hugepages during args/env copying into the user stack")
  *

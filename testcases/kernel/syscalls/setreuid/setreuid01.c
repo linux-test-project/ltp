@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of setreuid(2) system call when executed
  * as non-root user.
  */

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, epoll_pwait() and epoll_pwait2() return -1 and set errno to
  * EFAULT with a sigmask points outside user's accessible address space.
  */

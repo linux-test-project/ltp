@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * The VT_DISALLOCATE ioctl can free a virtual console while VT_RESIZEX ioctl is
  * still running, causing a use-after-free in vt_ioctl(). Because VT_RESIZEX ioctl
  * have not make sure vc_cons[i].d is not NULL after grabbing console_lock().

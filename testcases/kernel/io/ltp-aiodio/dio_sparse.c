@@ -11,8 +11,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a sparse file using O_DIRECT while other processes are doing
  * buffered reads and check if the buffer reads always see zero.
  */

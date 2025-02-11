@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for EINVAL, EPERM, EFAULT errors.
  *
  * - setgroups() fails with EINVAL if the size argument value is > NGROUPS.

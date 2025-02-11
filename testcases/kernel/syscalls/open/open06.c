@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that open(2) fails with ENXIO when
  * O_NONBLOCK | O_WRONLY is set, the named file is a FIFO,
  * and no process has the FIFO open for reading.

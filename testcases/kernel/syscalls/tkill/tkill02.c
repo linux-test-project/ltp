@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic tests for the tkill() errors.
  *
  * [Algorithm]

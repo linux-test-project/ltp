@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setresgid() will successfully set the expected GID when called
  * by root with the following combinations of arguments:
  *

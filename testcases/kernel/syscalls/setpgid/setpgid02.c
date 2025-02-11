@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setpgid(2) syscall fails with:
  *
  * - EINVAL when given pgid is less than 0.

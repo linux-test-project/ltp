@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that statmount() is correctly reading basic filesystem
  * info using STATMOUNT_SB_BASIC.
  * The btrfs validation is currently skipped due to the lack of support for VFS.

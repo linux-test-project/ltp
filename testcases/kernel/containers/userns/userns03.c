@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that /proc/PID/uid_map and /proc/PID/gid_map contains three values
  * separated by white space:
  *

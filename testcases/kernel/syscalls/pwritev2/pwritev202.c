@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check various errnos for pwritev2(2).
  *
  * - pwritev2() fails and sets errno to EINVAL if iov_len is invalid.

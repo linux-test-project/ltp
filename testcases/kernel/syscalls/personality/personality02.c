@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks if select() timeout is not updated when personality with
  * STICKY_TIMEOUTS is used.
  */

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * An empty buffer of size zero can be passed into getxattr(2) to
  * return the current size of the named extended attribute.
  */

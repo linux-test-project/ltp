@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Simple test on arch_prctl to set and get cpuid instruction of test thread.
  */
 

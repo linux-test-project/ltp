@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * When SCTP protocol created wih socket(2) and buffer is invalid,
  * sendto(2) should fail and set errno to EFAULT, but it sets errno
  * to ENOMEM.

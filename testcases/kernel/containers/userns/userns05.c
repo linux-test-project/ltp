@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that if a process created via fork(2) or clone(2) without the
  * CLONE_NEWUSER flag is a member of the same user namespace as its parent.
  *

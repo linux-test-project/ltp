@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the errnos set by the ioctl(2) system call.
  *
  * - EBADF: Pass an invalid fd to ioctl(fd, ...) and expect EBADF

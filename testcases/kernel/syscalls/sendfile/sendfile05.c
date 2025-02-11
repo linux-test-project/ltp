@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to test that sendfile(2) system call returns EINVAL when passing
  * negative offset.
  *

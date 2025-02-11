@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that /dev/input/eventX receive events sent from a virtual device,
  * that in our case is a mouse.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, mmap() call with PROT_READ and a file descriptor which is
  * open for read only, succeeds to map a file creating mapped memory with
  * read access.

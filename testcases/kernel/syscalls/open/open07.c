@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test functionality and error conditions of open(O_NOFOLLOW) system call.
  */
 

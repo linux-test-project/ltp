@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check out-of-bound/unaligned addresses given to
  *
  *  - {PEEK,POKE}{DATA,TEXT,USER}

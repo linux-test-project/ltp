@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify llistxattr(2) returns -1 and set proper errno:
  *
  * - ERANGE if the size of the list buffer is too small to hold the result

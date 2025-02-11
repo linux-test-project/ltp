@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  *   - getdents() fails with EBADF if file descriptor fd is invalid

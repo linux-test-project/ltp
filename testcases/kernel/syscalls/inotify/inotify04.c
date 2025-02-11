@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for inotify IN_DELETE_SELF event.
  *
  * [Algorithm]

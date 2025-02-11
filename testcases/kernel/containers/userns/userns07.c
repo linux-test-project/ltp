@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the kernel allows at least 32 nested levels of user namespaces.
  */
 

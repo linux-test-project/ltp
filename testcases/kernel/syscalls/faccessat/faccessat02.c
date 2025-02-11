@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * - faccessat() fails with ENOTDIR if dir_fd is file descriptor to the file
  *   and pathname is relative path of the file.
  *

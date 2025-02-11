@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Copy file by using an async I/O state machine.
  *
  * - Start read request

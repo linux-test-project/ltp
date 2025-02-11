@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2020-14386
  *
  * Check for vulnerability in tpacket_rcv() which allows an unprivileged user

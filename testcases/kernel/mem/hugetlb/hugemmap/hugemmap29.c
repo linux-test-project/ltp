@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * The test do mmap() with shared mapping and write. It matches the data
  * with private mmap() and then change it with other data. It checks
  * shared mapping data if data is not contaiminated by private mapping.

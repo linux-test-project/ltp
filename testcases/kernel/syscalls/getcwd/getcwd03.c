@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of the getcwd(2)
  * system call on a symbolic link.
  *

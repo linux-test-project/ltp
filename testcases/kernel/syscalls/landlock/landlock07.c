@@ -4,8 +4,6 @@
  */
 
 /**
- * [Description]
- *
  * CVE-2024-42318
  *
  * Test to check if system is affected by Landlock Houdini bug:

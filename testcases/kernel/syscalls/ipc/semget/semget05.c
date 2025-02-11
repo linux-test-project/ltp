@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for ENOSPC error.
  *
  * ENOSPC - a semaphore set exceed the maximum number of semaphore sets(SEMMNI)

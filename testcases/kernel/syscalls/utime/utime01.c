@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the system call utime() successfully changes the last
  * access and modification times of a file to the current time if the
  * times argument is NULL and the user ID of the process is "root".

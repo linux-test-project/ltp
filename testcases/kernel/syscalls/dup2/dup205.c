@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Negative test for dup2() with max open file descriptors.
  */
 

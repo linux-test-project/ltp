@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that signalfd() works as expected.
  *
  * - signalfd() can create fd, and fd can receive signal.

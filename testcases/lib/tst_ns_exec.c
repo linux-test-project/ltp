@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Enters the namespace(s) of a process specified by a PID and then executes
  * the indicated program inside that namespace(s).
  */

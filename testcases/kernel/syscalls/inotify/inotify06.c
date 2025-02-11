@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for inotify mark destruction race.
  *
  * Kernels prior to 4.2 have a race when inode is being deleted while

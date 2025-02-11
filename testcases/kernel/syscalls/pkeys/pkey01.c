@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Memory Protection Keys for Userspace (PKU aka PKEYs) is a Skylake-SP
  * server feature that provides a mechanism for enforcing page-based
  * protections, but without requiring modification of the page tables

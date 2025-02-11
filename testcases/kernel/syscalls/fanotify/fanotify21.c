@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * A test which verifies whether the returned struct
  * fanotify_event_info_pidfd in FAN_REPORT_PIDFD mode contains the
  * expected set of information.

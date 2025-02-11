@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * When debugging issues with a workload using SysV shmem, Michal Hocko has
  * come up with a reproducer that shows how a series of mprotect()
  * operations can result in an elevated shm_nattch and thus leak of the

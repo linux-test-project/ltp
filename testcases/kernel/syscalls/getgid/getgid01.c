@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Call getgid() and expects that the gid returned correctly.
  */
 

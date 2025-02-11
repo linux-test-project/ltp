@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for a SHM_SET.
  *
  * The test clears the group and others bits from the shm_perm.mode and checks

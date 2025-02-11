@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that the setresuid system call sets the proper errno values when
  * a non-root user attempts to change the real, effective or saved uid
  * to a value other than one of the current uid, the current effective uid

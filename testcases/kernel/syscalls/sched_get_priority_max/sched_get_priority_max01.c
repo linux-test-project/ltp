@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the sched_get_priority_max(2) system call.
  *
  * Obtain different maximum priority for different schedulling policies and

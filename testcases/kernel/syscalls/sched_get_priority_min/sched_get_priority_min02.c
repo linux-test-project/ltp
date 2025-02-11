@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that given an invalid scheduling policy, sched_get_priority_min(2)
  * returns -1 with errno EINVAL.
  */

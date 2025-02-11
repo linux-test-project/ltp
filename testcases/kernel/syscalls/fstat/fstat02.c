@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests if fstat() returns correctly and reports correct file information
  * using the stat structure.
  */

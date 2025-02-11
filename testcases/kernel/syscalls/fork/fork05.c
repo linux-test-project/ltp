@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that LDT is propagated correctly from parent process to
  * the child process.
  *

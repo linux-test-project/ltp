@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that a file opened with O_RDONLY can't be writable
  * and it verifies that a file opened with O_WRONLY can't be readable.
  */

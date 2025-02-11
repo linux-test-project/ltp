@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * access(2) test for errno(s) EFAULT as root and nobody respectively.
  */
 

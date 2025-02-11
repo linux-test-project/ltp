@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check fanotify directory entry modification events, events on child and
  * on self with group init flags:
  *

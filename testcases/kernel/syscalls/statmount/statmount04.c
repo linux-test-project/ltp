@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that statmount() is correctly reading propagation from
  * what mount in current namespace using STATMOUNT_PROPAGATE_FROM.
  *

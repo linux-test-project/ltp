@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that listmount() is properly recognizing a mounted
  * root directory using LSMT_ROOT flag.
  *

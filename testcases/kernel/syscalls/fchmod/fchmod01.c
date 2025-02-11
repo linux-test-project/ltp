@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that fchmod() can succeed to change the mode permissions of a file specified
  * by file descriptor.
  */

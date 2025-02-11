@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that successful madvise(2) MADV_DONTNEED operation will result in
  * zero-fill-on-demand pages for anonymous private mappings.
  */

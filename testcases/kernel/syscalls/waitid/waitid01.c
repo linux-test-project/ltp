@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is checking if waitid() syscall does wait for WEXITED and check for
  * the return value.
  */

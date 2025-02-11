@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * When a task is writing to an fd opened by a different task, the perm check
  * should use the credentials of the latter task.
  *

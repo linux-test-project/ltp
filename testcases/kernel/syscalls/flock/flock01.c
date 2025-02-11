@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for flock(2), uses LOCK_SH, LOCK_UN, LOCK_EX locks.
  */
 

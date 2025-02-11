@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check if gettimeofday() is monotonous during 10s:
  *
  * - Call gettimeofday() to get a t1 (fist value)

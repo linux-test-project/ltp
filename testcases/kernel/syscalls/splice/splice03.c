@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, splice(2) returns -1 and sets errno to
  *
  * 1. EBADF if the file descriptor fd_in is not valid

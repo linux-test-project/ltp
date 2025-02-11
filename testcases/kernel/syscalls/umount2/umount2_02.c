@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for feature MNT_EXPIRE of umount2():
  *
  * - EINVAL when flag is specified with either MNT_FORCE or MNT_DETACH

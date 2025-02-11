@@ -3,8 +3,6 @@
  * Copyright (C) 2023 SUSE LLC Richard Palethorpe <rpalethorpe@suse.com>
  */
 /*\
- * [Description]
- *
  * Reproducer for CVE-2023-0461 which is an exploitable use-after-free
  * in a TLS socket. In fact it is exploitable in any User Level
  * Protocol (ULP) which does not clone its context when accepting a

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone two plain processes, change hostname in the first one then check if
  * hostaname has changed inside the second one as well.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test verifies that chmod() is working correctly on symlink()
  * generated files.
  */

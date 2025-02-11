@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that recvmsg() returns the proper errno for various failure cases.
  */
 

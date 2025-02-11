@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Spawn a child, verify that setitimer() syscall passes and it ends up
  * counting inside expected boundaries. Then verify from the parent that
  * the syscall sent the correct signal to the child.

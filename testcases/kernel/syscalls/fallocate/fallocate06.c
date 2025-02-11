@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests misaligned fallocate()
  *
  * Test scenario:

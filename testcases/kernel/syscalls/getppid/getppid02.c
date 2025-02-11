@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that getppid() in child returns the same pid as getpid() in parent.
  */
 

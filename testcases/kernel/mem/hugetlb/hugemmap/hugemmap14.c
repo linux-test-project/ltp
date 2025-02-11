@@ -5,7 +5,6 @@
  */
 
 /*\
- * [Description]
  * On some old ppc64 kernel, when huge page is mapped at below touching
  * 32 bit boundary (4GB - hpage_size), and normal page is mmaped
  * at just above it, it triggers a bug caused by off-by-one error.

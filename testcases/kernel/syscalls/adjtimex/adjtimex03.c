@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2018-11508: Test 4-byte kernel data leak via adjtimex.
  *
  * On calling the adjtimex() function call with invalid mode (let's say

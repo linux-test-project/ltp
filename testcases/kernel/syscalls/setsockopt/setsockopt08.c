@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This will reproduce the bug on x86_64 in 32bit compatibility
  * mode. It is most reliable with KASAN enabled. Otherwise it relies
  * on the out-of-bounds write corrupting something which leads to a

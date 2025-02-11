@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, fetching and changing the capacity of a pipe works as
  * expected with fcntl(2) syscall using F_GETPIPE_SZ, F_SETPIPE_SZ arguments.
  */

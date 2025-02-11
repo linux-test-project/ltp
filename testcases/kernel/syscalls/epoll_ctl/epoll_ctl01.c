@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the epoll_ctl:
  *
  * - When epoll_ctl succeeds to register fd on the epoll instance and associates

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that any pending alarm() is canceled when seconds is zero.
  */
 

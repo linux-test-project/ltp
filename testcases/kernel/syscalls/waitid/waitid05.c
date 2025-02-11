@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests if waitid() filters children correctly by the group ID.
  *
  * - waitid() with GID + 1 returns ECHILD

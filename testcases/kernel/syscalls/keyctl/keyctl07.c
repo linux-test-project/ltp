@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for commit 37863c43b2c6 ("KEYS: prevent KEYCTL_READ on
  * negative key").  This is CVE-2017-12192.
  */

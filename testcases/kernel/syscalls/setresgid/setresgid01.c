@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setresgid() syscall correctly sets real user ID, effective user
  * ID and the saved set-user ID in the calling process.
  */

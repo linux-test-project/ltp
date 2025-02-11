@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check open() with O_RDWR | O_CREAT.
  */
 

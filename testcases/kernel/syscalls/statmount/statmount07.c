@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that statmount() is raising the correct errors according
  * with invalid input values.
  */

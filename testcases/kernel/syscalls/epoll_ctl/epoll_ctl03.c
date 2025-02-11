@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that epoll_ctl returns zero with different combinations of events on
  * success.
  */

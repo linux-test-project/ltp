@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_PARENT request.
  *
  * Child cloned with the CLONE_NEWPID flag is created in a new pid namespace.

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, preadv2(2) fails and sets errno to
  *
  * 1. EINVAL if iov_len is invalid.

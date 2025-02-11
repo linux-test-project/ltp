@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for detecting mremap bug when THP is enabled.
  *
  * There was a bug in mremap THP support, sometimes causing crash

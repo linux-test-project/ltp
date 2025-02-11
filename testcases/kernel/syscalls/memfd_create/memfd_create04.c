@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Validating memfd_create() with MFD_HUGETLB and MFD_HUGE_x flags.
  *
  * Attempt to create files in the hugetlbfs filesystem using different huge page

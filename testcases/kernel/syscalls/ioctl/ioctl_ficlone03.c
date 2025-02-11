@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that ioctl() FICLONE/FICLONERANGE feature correctly raises
  * exceptions when it's supposed to.
  */

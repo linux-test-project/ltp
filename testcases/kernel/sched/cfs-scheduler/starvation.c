@@ -3,8 +3,6 @@
 /* Copyright 2023 Wei Gao <wegao@suse.com> */
 /*\
  *
- * [Description]
- *
  * Thread starvation test. On fauluty kernel the test timeouts.
  *
  * Original reproducer taken from:

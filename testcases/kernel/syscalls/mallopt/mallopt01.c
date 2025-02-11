@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic mallinfo() and mallopt() testing.
  */
 

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic name_to_handle_at() tests.
  *
  * [Algorithm]

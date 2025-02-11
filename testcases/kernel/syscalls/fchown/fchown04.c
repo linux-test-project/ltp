@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * 1. fchown() returns -1 and sets errno to EPERM if the effective user id

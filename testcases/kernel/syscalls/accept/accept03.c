@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that accept() returns ENOTSOCK or EBADF for non-socket file
  * descriptors. The EBADF is returned in the case that the file descriptor has
  * not a file associated with it, which is for example in the case of O_PATH

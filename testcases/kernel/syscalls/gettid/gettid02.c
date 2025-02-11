@@ -3,8 +3,6 @@
  * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 /*\
- * [Description]
- *
  * This test spawns multiple threads, then check for each one of them if the
  * parent ID is different AND if the thread ID is different from all the other
  * spwaned threads.

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * - readlinkat() fails with EINVAL if the bufsiz is 0.
  *
  * - readlinkat() fails with EINVAL if the named file is not a symbolic link.

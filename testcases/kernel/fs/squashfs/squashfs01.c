@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Kernel commits
  *
  * - f37aa4c7366 (squashfs: add more sanity checks in id lookup)

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2021-3609
  *
  * Test for race condition vulnerability in CAN BCM. Fixed in:

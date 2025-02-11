@@ -13,8 +13,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a complete rewrite of the old fsx-linux tool, created by
  * NeXT Computer, Inc. and Apple Computer, Inc. between 1991 and 2001,
  * then adapted for LTP. Test is actually a file system exerciser: we bring a

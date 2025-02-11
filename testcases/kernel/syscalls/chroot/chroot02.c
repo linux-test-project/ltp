@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic chroot() functionality test.
  *
  * - Create a file in the temporary directory

@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Verify that getsockname() returns the proper errno for various failure cases:
  *
  * - EBADF on a not open file

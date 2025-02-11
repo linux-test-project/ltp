@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test SIGKILL for these items:
  *	1. SIGKILL can not be set to be ignored, errno:EINVAL (POSIX).
  *	2. SIGKILL can not be reset to default, errno:EINVAL (POSIX).

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2017-5754 (Meltdown).
  *
  * https://meltdownattack.com/

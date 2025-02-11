@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for shm_next_id.
  *
  * shm_next_id specifies desired id for next allocated IPC shared memory. By

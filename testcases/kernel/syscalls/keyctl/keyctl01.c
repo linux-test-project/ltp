@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests the keyctl(2) syscall.
  *
  * Manipulate the kernel's key management facility.

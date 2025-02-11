@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  * The pidns13.c testcase checks container init, for async I/O
  * triggered by peer namespace process.
  *

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, sched_getattr(2) returns -1 and sets errno to:
  *
  * 1. ESRCH if pid is unused.

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for ICMP6_FILTER.
  *
  * For ICMP6_FILTER usage, refer to: https://man.openbsd.org/icmp6.

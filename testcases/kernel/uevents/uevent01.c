@@ -5,7 +5,6 @@
  */
 
 /*\
- * [Description]
  * Very simple uevent netlink socket test.
  *
  * We fork a child that listens for a kernel events while parents attaches and

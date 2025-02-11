@@ -4,8 +4,6 @@
  * Author: Christian Amann <camann@suse.com>
  */
 /*\
- * [Description]
- *
  * Test for CVE-2017-8890
  *
  * In Kernels up to 4.10.15 missing commit 657831ff the multicast

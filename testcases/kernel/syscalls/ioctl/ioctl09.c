@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the BLKRRPART ioctl, it is the same as blockdev
  * --rereadpt command.
  */

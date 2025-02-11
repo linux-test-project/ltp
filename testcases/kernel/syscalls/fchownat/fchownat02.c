@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that fchownat() will operate on symbolic links when
  * AT_SYMLINK_NOFOLLOW is used.
  */

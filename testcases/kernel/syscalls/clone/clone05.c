@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Call clone() with CLONE_VFORK flag set. verify that
  * execution of parent is suspended until child finishes
  */

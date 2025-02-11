@@ -5,8 +5,6 @@
 */
 
 /*\
- * [Description]
- *
  * Verify that socketpair(2) fails and set proper errno
  *
  * - EAFNOSUPPORT on invalid domain

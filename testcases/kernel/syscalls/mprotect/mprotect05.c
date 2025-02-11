@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the mprotect(2) system call split and merge.
  *
  * https://bugzilla.kernel.org/show_bug.cgi?id=217061

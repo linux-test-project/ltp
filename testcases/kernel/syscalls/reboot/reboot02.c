@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Test whether libc wrapper of reboot(2) system call returns appropriate
  * error number for invalid cmd parameter or invalid user.
  */

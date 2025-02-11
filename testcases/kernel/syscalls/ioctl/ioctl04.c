@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the BLKROSET and BLKROGET ioctls.
  *
  * - Set the device read only, read the value back.

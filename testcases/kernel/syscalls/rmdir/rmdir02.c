@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, rmdir(2) returns -1 and sets errno to
  *
  * 1. ENOTEMPTY when removing a non-empty directory

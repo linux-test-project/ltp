@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that write(2) fails with errno EAGAIN when attempt to write to fifo
  * opened in O_NONBLOCK mode.
  */

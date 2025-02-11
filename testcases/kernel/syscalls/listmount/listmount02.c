@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that listmount() is properly reading groups of mount IDs,
  * checking that both oneshoot and iterator API for listmount() return the same
  * array.

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that it's possible to open a pseudo-terminal via /dev/ptmx, obtain a
  * slave device and set/get window size.
  */

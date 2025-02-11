@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Checks functionality for sched_setparam(2)
  *
  * This test changes the scheduling priority for current process

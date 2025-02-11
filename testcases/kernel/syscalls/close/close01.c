@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that closing a file/pipe/socket works correctly.
  */
 

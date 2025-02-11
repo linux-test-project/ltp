@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of getpgid(2) syscall.
  */
 

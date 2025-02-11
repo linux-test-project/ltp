@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that eventfd2 correctly set FD_CLOEXEC flag on file when
  * EFD_CLOEXEC flag is used.
  */

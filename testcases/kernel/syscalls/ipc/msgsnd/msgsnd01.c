@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that msgsnd(2) enqueues a message correctly.
  */
 

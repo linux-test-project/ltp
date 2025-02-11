@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether writefd is set by select() when eventfd() counter value is
  * not the maximum value, then check if writefd is not set when eventfd()
  * counter value is maximum value.

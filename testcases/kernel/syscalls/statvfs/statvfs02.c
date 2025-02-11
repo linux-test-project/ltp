@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that statvfs() fails with:
  *
  * - EFAULT when path points to an invalid address.

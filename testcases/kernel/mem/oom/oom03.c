@@ -4,8 +4,6 @@
  * Copyright (c) Linux Test Project, 2011-2023
  */
 /*\
- * [Description]
- *
  * Out Of Memory (OOM) test for Memory Resource Controller
  */
 

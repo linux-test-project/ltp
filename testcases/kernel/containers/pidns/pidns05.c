@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and create many levels of child
  * containers. Then kill container init process from parent and check if all
  * containers have been killed.

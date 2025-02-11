@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the basic functionality of the sendfile() system call:
  *
  * 1. Call sendfile() with offset = 0.

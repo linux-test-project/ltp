@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for epoll_wait. Check that epoll_wait works for EPOLLOUT and
  * EPOLLIN events on an epoll instance and that struct epoll_event is set
  * correctly.

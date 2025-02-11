@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies futex_waitv syscall using shared data.
  */
 

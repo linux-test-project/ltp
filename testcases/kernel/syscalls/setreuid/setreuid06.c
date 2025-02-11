@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setreuid(2) syscall fails with EPERM errno when the calling
  * process is not privileged and a change other than
  * (i) swapping the effective user ID with the real user ID, or

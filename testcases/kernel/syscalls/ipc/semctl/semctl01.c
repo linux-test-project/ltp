@@ -3,8 +3,6 @@
  * Copyright (c) International Business Machines  Corp., 2001
  */
 /*\
- * [Description]
- *
  * Test the 13 possible semctl() commands
  */
 

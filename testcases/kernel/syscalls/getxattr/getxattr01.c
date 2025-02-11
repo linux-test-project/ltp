@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic tests for getxattr(2) and make sure getxattr(2) handles error
  * conditions correctly.
  *

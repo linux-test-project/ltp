@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Restore signals to default behavior.
  */
 

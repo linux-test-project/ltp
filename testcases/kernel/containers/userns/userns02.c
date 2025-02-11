@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the user ID and group ID, which are inside a container,
  * can be modified by its parent process.
  */

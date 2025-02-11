@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that address space layout randomization (ASLR) is sufficiently random.
  * A bug in dynamic library mmapping may reduce ASLR randomness if the library
  * file is larger than hugepage size. In 32bit compat mode, this may

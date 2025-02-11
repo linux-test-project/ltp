@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for STATX_DIOALIGN mask on ext4 and xfs filesystem.
  *
  * - STATX_DIOALIGN   Want stx_dio_mem_align and stx_dio_offset_align value

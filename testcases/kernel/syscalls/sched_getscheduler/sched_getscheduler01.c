@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check sched_getscheduler() returns correct return value.
  *
  * [Algorithm]

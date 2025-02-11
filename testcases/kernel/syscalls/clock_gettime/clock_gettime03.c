@@ -4,8 +4,6 @@
  */
 
 /*
- * [Description]
- *
  * After a call to unshare(CLONE_NEWTIME) a new timer namespace is created, the
  * process that has called the unshare() can adjust offsets for CLOCK_MONOTONIC
  * and CLOCK_BOOTTIME for its children by writing to the '/proc/self/timens_offsets'.

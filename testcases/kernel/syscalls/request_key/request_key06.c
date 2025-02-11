@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that request_key(2) fails with
  *
  * - EFAULT when type points outside the process's accessible address space

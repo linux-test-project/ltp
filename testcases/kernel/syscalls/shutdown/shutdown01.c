@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies the following shutdown() functionalities:
  *
  * - SHUT_RD should enable send() ops but disable recv() ops

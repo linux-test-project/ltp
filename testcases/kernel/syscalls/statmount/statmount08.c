@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that statmount() raises EPERM when mount point is not accessible.
  */
 

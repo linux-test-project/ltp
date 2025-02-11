@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests ioctl() on loopdevice with LOOP_SET_STATUS64 and LOOP_GET_STATUS64 flags.
  *
  * Tests lo_sizelimit field. If lo_sizelimit is 0, it means max

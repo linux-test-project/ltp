@@ -4,8 +4,6 @@
  * Author: Feiyu Zhu <zhufy.jy@cn.fujitsu.com>
  */
 /*\
- * [Description]
- *
  * Call msgctl() with MSG_INFO flag and check that:
  *
  * * The returned index points to a valid MSG by calling MSG_STAT_ANY

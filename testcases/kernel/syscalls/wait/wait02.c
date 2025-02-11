@@ -5,8 +5,6 @@
  *    CO-PILOT		: Dave Fenner
  */
 /*\
- * [Description]
- *
  * For a terminated child, test whether wait(2) can get its pid
  * and exit status correctly.
  */

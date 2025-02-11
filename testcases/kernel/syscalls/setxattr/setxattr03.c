@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * setxattr(2) to immutable and append-only files should get EPERM
  *
  * - Set attribute to a immutable file

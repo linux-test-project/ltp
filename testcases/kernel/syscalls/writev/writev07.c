@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify writev() behaviour with partially valid iovec list.
  * Kernel <4.8 used to shorten write up to first bad invalid
  * iovec. Starting with 4.8, a writev with short data (under

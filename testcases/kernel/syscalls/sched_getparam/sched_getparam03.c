@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * - sched_getparam(2) returns -1 and sets errno to ESRCH if the

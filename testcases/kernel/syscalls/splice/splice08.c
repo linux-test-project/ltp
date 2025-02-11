@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for splicing from /dev/zero and /dev/full.
  *
  * The support for splicing from /dev/zero and /dev/full was removed in:

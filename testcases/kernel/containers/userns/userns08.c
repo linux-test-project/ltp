@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Reproducer of CVE-2018-18955; broken uid/gid mapping for nested
  * user namespaces with >5 ranges
  *

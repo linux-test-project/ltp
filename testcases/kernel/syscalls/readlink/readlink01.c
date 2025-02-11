@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic functionality of readlink(2).
  *
  * - readlink() will succeed to read the contents of the symbolic link

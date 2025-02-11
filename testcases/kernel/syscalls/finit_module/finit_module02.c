@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic finit_module() failure tests.
  *
  * [Algorithm]

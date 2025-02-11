@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify permission events are handled properly on instance destruction.
  */
 

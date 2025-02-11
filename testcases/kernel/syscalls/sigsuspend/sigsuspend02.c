@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that sigsuspend(2) fails with
  *
  * - EFAULT mask points to memory which is not a valid part of the

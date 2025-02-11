@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getsid(2) fails with ESRCH errno when there is no
  * process found with process ID pid.
  */

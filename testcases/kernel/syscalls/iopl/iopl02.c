@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for iopl(2) system call error.
  *
  * - iopl(2) fail with EINVAL when privilege level greater than 3.

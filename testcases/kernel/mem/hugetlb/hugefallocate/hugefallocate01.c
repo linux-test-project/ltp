@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It tests alignment of fallocate arguments. fallocate will take non-huge
  * page aligned offsets and addresses.  However, operations are only
  * performed on huge pages.  This is different that than fallocate

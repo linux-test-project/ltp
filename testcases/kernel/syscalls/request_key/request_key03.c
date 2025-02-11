@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for two related bugs:
  *
  * 1. CVE-2017-15299, fixed by commit 60ff5b2f547a ("KEYS: don't let add_key()

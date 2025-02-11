@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify mlock() causes pre-faulting of PTEs and prevent memory to be swapped out.
  *
  * Find the new mapping in /proc/$pid/smaps and check Rss and Locked fields after

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the fpathconf(2) system call.
  */
 

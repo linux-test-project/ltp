@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that mq_notify() fails with EINVAL when invalid input
  * arguments are given.
  */

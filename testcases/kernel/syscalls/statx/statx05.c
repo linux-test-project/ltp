@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test statx syscall with STATX_ATTR_ENCRYPTED flag, setting a key is required
  * for the file to be encrypted by the filesystem.
  *

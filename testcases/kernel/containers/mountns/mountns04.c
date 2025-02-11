@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests an unbindable mount: unbindable mount is an unbindable
  * private mount.
  *

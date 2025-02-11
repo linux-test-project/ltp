@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the IPC_STAT, IPC_SET and IPC_RMID commands used by shmctl().
  */
 

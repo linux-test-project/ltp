@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that swapoff() succeeds.
  */
 

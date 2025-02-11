@@ -10,8 +10,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a sparse file and write zeroes to it using libaio while other
  * processes are doing buffered reads and check if the buffer reads always see
  * zero.

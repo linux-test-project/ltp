@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the lgetxattr(2).
  *
  * In the case of a symbolic link, lgetxattr(2) only gets the value of the

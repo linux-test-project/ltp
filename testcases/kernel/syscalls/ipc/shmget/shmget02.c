@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for ENOENT, EEXIST, EINVAL, EACCES, EPERM errors.
  *
  * - ENOENT - No segment exists for the given key and IPC_CREAT was not specified.

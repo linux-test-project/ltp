@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_destroy invoked via syscall(2) with an invalid ctx and expects
  * it to return EINVAL.
  */

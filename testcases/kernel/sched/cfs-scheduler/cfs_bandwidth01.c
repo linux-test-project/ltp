@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Creates a multi-level CGroup hierarchy with the cpu controller
  * enabled. The leaf groups are populated with "busy" processes which
  * simulate intermittent cpu load. They spin for some time then sleep

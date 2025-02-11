@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of the getcwd(2) system call.
  *
  * 1. getcwd(2) works fine if buf and size are valid.

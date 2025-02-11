@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that inotify work for an overlayfs file after copy up and
  * drop caches.
  *

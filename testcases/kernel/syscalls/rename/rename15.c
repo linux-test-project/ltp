@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test suite validates the behavior of the `rename()` system call on
  * symbolic links under three scenarios:
  *

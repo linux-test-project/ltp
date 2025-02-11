@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2017-17712
  *
  * Test for race condition vulnerability in sendmsg() on SOCK_RAW sockets.

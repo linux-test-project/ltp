@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that munlockall(2) unlocks all previously locked memory.
  */
 

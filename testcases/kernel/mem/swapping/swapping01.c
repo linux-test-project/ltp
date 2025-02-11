@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Detect heavy swapping during first time swap use.
  *
  * This case is used for testing kernel commit:

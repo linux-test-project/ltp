@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that event is reported to watching parent and watching child
  * based on their interest.
  *

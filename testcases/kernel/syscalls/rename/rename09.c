@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that renaming/moving a file from directory where the current user does
  * not have write permissions fails with EACCES.
  */

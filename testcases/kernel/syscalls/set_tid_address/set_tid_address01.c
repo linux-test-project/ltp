@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of set_tid_address() syscall.
  */
 

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE 2018-18445
  *
  * Check that eBPF verifier correctly handles 32-bit arithmetic, in particular

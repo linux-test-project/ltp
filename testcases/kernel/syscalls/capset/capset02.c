@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Tests basic error handling of the capset syscall.
  *
  * 1. capset() fails with errno set to EFAULT if an invalid address

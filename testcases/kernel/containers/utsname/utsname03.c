@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone two processes using CLONE_NEWUTS, change hostname from the first
  * container and check if hostname didn't change inside the second one.
  */

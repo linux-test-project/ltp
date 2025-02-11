@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This code tests the following flags:
  *
  * - AT_STATX_FORCE_SYNC

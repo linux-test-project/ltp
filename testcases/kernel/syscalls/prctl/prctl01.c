@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for PR_SET_PDEATHSIG/PR_GET_PDEATHSIG
  *
  * Use PR_SET_PDEATHSIG to set SIGUSR2 signal and PR_GET_PDEATHSIG should

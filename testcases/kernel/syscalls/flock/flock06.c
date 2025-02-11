@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test verifies that flock locks held on one file descriptor conflict with
  * flock locks held on a different file descriptor.
  *

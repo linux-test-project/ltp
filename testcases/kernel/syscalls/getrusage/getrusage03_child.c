@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Child program executed by getrusage03.
  */
 

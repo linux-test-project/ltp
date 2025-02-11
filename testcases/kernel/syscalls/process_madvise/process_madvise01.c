@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Allocate anonymous memory pages inside child and reclaim it with
  * MADV_PAGEOUT. Then check if memory pages have been swapped out by looking
  * at smaps information.

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that ioctl() FICLONERANGE feature clones file content from
  * one file to an another.
  *

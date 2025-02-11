@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that landlock_restrict_self syscall fails with the right
  * error codes:
  *

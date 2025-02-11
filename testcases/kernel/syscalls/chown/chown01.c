@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for chown(). Calls chown() on a file and expects it to pass.
  */
 

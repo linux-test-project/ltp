@@ -16,8 +16,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of setregid(2) system call.
  */
 

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * The verifier did not properly restrict some *_OR_NULL pointer
  * types. Including RET_PTR_TO_ALLOC_MEM_OR_NULL which is returned by
  * ringbuf_reserve. Somehow this means they can be used to perform

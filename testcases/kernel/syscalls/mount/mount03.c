@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check mount(2) system call with various flags.
  *
  * Verify that mount(2) syscall passes for each flag setting and validate

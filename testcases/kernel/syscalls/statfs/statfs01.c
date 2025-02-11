@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that statfs() syscall executes successfully on all
  * available filesystems.
  */

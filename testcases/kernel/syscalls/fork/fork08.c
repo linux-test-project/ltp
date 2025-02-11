@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that the parent's file descriptors will not be affected by being
  * closed in the child.
  */

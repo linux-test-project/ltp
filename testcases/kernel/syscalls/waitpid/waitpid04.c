@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test to check the error conditions in waitpid() syscall.
  */
 

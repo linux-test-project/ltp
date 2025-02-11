@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that eventfd2 semaphore-like support is properly working.
  */
 

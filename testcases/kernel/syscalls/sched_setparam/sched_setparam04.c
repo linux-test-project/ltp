@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * 1. sched_setparam(2) returns -1 and sets errno to ESRCH if the

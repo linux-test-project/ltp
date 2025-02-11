@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test shared memory behavior when multiple threads are attached to a
  * segment. A segment is created and then children are spawned which
  * attach, write, read (verify), and detach from the shared memory segment.

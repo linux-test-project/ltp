@@ -10,8 +10,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpagesize(2) returns the number of bytes in a
  * memory page as expected.
  */

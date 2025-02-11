@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that fstatfs() syscall executes successfully for all
  * available filesystems.
  */

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test Description: The kernel has bug for mremap() on some architecture.
  * mremap() can cause crashes on architectures with holes in the address
  * space (like ia64) and on powerpc with it's distinct page size "slices".

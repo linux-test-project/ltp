@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that nanosleep() returns -1 and sets errno to EINVAL when failing to suspend the
  * execution of a process if the specified pause time is invalid.
  */

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of the preadv2(2):
  *
  * 1. If the file offset argument is not -1, preadv2() should succeed

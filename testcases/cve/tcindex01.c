@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2023-1829
  *
  * Test for use-after-free after removing tcindex traffic filter with certain

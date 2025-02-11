@@ -5,8 +5,6 @@
  * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 /*\
- * [Description]
- *
  * This test verifies that:
  * - clockid argument is neither CLOCK_MONOTONIC nor CLOCK_REALTIME,
  * EINVAL would return.

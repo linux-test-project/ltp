@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test mmap(2) with MAP_SHARED_VALIDATE flag.
  *
  * Test expected EOPNOTSUPP errno when testing mmap(2) with MAP_SHARED_VALIDATE

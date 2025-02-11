@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the readlinkat() system call.
  *
  * - readlinkat() passes if dirfd is directory file descriptor

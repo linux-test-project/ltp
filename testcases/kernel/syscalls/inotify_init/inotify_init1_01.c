@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that inotify_init1() returns a file descriptor and sets
  * the close-on-exec (FD_CLOEXEC) flag on the new file descriptor
  * only when called with IN_CLOEXEC.

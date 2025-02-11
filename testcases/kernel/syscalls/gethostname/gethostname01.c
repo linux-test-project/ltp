@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test is checking that gethostname() succeeds.
  */
 

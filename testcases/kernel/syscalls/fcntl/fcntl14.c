@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is checking fcntl() syscall locking mechanism between two
  * processes.
  * The test sets a random starting position on file using lseek(), it randomly

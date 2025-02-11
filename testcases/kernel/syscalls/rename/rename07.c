@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename(2) fails with ENOTDIR, when
  * oldpath is a directory and newpath exists but is not a directory.
  *

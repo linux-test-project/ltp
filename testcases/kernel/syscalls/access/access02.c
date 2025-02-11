@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test access(2) syscall
  *
  * - check the existence or read/write/execute permissions on a file (mode argument: F_OK/R_OK/W_OK/X_OK)

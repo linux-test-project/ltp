@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename(2) fails with ENAMETOOLONG, when
  * oldpath or newpath is too long.
  */

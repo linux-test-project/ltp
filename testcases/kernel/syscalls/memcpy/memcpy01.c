@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * The testcase for buffer copy by check boundary conditions.
  */
 

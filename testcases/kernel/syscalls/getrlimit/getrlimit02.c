@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for checking error conditions for getrlimit(2):
  *
  * 1. getrlimit(2) returns -1 and sets errno to EFAULT if an invalid

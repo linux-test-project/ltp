@@ -3,8 +3,6 @@
  * Copyright (c) 2021 Richard Palethorpe <rpalethorpe@suse.com>
  */
 /*
- * [Description]
- *
  * This verifies Fuzzy Sync's basic ability to reproduce a particular
  * outcome to a data race when the critical sections are not aligned.
  *

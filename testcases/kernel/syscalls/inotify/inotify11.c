@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test opening files after receiving IN_DELETE.
  *
  * Kernel v5.13 has a regression allowing files to be open after IN_DELETE.

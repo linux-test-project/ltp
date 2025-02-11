@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test uses mprotect to change protection of hugepage mapping and
  * perform read/write operation. It checks if the operation results in
  * expected behaviour as per the protection.

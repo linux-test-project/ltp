@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for dup(2) syscall with max open file descriptors.
  */
 

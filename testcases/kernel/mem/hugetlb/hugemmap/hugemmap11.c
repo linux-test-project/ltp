@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This Test perform Direct Write/Read from/To hugetlbfs file
  * which is mapped to process address space. The test is checking if it
  * succeeds and data written or read is not corrupted.

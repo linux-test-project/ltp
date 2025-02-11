@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, chmod(2) returns -1 and sets errno to
  *
  * 1. EPERM if the effective user id of process does not match the owner of the

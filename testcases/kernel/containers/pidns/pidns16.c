@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and verifies that siginfo->si_pid is
  * set to 0 if sender (parent process) sent the signal. Then send signal from
  * container itself and check if siginfo->si_pid is set to 1.

@@ -3,8 +3,6 @@
  * Copyright (c) 2021 SUSE LLC <mdoucha@suse.cz>
  */
 /*\
- * [Description]
- *
  * CVE-2018-13405
  *
  * Check for possible privilege escalation through creating files with setgid

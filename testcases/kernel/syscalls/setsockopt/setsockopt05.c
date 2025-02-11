@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2017-1000112
  *
  * Check that UDP fragmentation offload doesn't cause memory corruption

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for ECHILD errno when call wait4(2) with an invalid pid value.
  */
 

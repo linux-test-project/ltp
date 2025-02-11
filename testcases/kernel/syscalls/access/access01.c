@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for access(2) using F_OK, R_OK, W_OK and X_OK
  */
 

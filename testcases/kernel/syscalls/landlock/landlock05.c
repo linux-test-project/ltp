@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies LANDLOCK_ACCESS_FS_REFER access in the
  * landlock sandbox.
  *

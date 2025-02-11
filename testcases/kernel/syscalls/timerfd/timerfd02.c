@@ -5,8 +5,6 @@
  * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 /*\
- * [Description]
- *
  * This test verifies that:
  * - TFD_CLOEXEC sets the close-on-exec file status flag on the new open  file
  * - TFD_NONBLOCK sets the O_NONBLOCK file status flag on the new open file

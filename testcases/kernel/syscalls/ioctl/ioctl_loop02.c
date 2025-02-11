@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests ioctl() on loopdevice with LO_FLAGS_READ_ONLY (similar as losetup -r) and
  * LOOP_CHANGE_FD flags.
  *

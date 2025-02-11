@@ -7,7 +7,6 @@
  */
 
 /*\
- * [Description]
  * Test file that has been purposely designed to verify FAN_REPORT_FID
  * functionality while using newly defined dirent events.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the functionality of pwrite() by writing known data using pwrite()
  * to the file at various specified offsets and later read from the file from
  * various specified offsets, comparing the data written aganist the data

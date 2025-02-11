@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Total s390 2^31 addr space is 0x80000000.
  *
  * 0x80000000 - 0x10000000 = 0x70000000

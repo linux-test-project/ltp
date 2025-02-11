@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that file locks are removed when a file descriptor is closed, three
  * different tests are implemented.
  *

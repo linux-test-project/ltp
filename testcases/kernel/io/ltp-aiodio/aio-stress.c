@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test creates a series of files and start AIO operations on them.
  * AIO is done in a rotating loop: first file1.bin gets 8 requests, then
  * file2.bin, then file3.bin etc. As each file finishes writing, test switches

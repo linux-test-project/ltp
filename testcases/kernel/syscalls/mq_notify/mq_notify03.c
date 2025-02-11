@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for NULL pointer dereference in mq_notify(CVE-2021-38604)
  *
  * References links:

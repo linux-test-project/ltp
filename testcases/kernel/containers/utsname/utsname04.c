@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Drop root privileges, create a container with CLONE_NEWUTS and verify that
  * we receive a permission error.
  */

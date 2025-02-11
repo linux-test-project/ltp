@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of the setpgrp(2) syscall.
  */
 

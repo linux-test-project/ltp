@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the pidfd_open syscall.
  *
  * - ESRCH the process specified by pid does not exist

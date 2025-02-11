@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that readdir will fail with:
  *
  * - ENOENT when passed a fd to a deleted directory

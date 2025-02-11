@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for msg_next_id.
  * msg_next_id specifies desired id for next allocated IPC message. By
  * default it's equal to -1, which means generic allocation logic.

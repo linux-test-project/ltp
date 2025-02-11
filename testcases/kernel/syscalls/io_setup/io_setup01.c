@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_setup invoked via libaio:
  *
  * - io_setup succeeds if both nr_events and ctxp are valid.

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check various errnos for mseal(2).
  *
  * - mseal() fails with EINVAL if flags is invalid.

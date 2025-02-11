@@ -5,8 +5,6 @@
  *	03/2001 - Written by Wayne Boyer
  */
 /*\
- * [Description]
- *
  * Test for semctl() EACCES error.
  */
 

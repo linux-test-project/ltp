@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests the ioctl functionality to deduplicate fileranges using
  * btrfs filesystem.
  *

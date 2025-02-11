@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Call shmctl() with SHM_INFO flag and check that:
  *
  * * The returned index points to a valid SHM by calling SHM_STAT_ANY

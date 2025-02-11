@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the pathconf(2) system call.
  */
 

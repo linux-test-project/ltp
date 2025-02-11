@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getrlimit(2) call will be successful for all possible resource
  * types.
  */

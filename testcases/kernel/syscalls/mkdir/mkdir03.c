@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check mkdir() with various error conditions that should produce
  * EFAULT, ENAMETOOLONG, EEXIST, ENOENT, ENOTDIR, ELOOP and EROFS.
  *

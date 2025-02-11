@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * - EINVAL when iov_len is invalid.
  * - EINVAL when the vector count iovcnt is less than zero.
  * - EINVAL when offset is negative.

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check various errnos for sched_setaffinity():
  *
  * 1. EFAULT, if the supplied memory address is invalid.

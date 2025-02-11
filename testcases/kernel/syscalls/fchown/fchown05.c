@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, fchown() succeeds to change the owner and group of a file
  * specified by file descriptor to any numeric owner(uid)/group(gid) values
  * when invoked by super-user.

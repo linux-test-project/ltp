@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * In the user.* namespace, only regular files and directories can
  * have extended attributes. Otherwise getxattr(2) will return -1
  * and set errno to ENODATA.

@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case provides a functional validation for mincore system call.
  * We mmap a file of known size (multiple of page size) and lock it in
  * memory. Then we obtain page location information via mincore and compare

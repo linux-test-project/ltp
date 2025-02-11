@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test SysV IPC semaphore usage between namespaces and processes.
  *
  * [Algorithm]

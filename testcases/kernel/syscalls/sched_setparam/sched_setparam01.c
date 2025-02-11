@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for sched_setparam(2)
  *
  * Call sched_setparam(2) with pid=0 so that it will

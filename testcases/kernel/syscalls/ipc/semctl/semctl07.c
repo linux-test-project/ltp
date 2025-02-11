@@ -10,8 +10,6 @@
  *	  to conflict with other instances of the same test.
  */
 /*\
- * [Description]
- *
  * Basic tests for semctl().
  *
  * - semctl() with IPC_STAT where we check the semid_ds buf content

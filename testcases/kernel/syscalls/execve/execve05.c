@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * This tests the functionality of the execve(2) system call by spawning
  * a few children, each of which would execute "execve_child" simultaneously,
  * and finally the parent ensures that they terminated correctly.

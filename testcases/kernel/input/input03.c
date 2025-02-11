@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that /dev/input/mice receive events sent from a virtual device,
  * that in our case is a mouse. The events are a sequence of mouse right click.
  */

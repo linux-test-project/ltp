@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that EPOLLONESHOT is correctly handled by epoll_wait.
  * We open a channel, write in it two times and verify that EPOLLIN has been
  * received only once.

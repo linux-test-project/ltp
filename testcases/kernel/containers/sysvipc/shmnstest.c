@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if SysV IPC shared memory with a specific key is shared between
  * processes and namespaces.
  */

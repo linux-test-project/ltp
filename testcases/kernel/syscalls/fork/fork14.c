@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is a reproducer for kernel 3.5:
  * 7edc8b0ac16c ("mm/fork: fix overflow in vma length when copying mmap on clone")
  *

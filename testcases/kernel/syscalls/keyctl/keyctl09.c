@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that encrypted keys can be instantiated using user-provided decrypted
  * data that is hex-ascii encoded.
  */

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether counter overflow is detected and handled correctly.
  *
  * It is not possible to directly overflow the counter using the

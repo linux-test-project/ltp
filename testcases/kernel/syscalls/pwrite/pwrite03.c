@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests for a special case NULL buffer with size 0 is expected to return 0.
  */
 

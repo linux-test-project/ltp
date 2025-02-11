@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  *  The return value of the alarm system call should be equal to the
  *  amount previously remaining in the alarm clock.
  *  A SIGALRM signal should be received after the specified amount of

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Call close(-1) and expects it to return EBADF.
  */
 

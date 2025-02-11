@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for ENOMEM error.
  *
  * munlock(2) fails with ENOMEM if some of the specified address range

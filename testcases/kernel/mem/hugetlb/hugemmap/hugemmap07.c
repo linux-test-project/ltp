@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Certain kernels have a bug where brk() does not perform the same
  * checks that a MAP_FIXED mmap() will, allowing brk() to create a
  * normal page VMA in a hugepage only address region. This can lead

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that signalfd(2) fails with:
  *
  * - EBADF when fd is invalid

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpeername() returns the proper errno for various failure cases:
  *
  * - EBADF on invalid address.

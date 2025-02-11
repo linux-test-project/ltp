@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that acct() returns proper errno on failure.
  */
 

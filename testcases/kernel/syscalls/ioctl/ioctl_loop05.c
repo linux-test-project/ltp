@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests ioctl() on loopdevice with LOOP_SET_DIRECT_IO flag.
  *
  * Tests whether LOOP_SET_DIRECT_IO can update a live loop device dio mode.

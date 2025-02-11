@@ -10,8 +10,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks base timer_getoverrun() functionality.
  */
 

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test PR_GET_SECCOMP and PR_SET_SECCOMP with both prctl(2) and seccomp(2).
  * The second one is called via __NR_seccomp using tst_syscall().
  *

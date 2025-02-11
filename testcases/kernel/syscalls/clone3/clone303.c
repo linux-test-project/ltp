@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case check clone3 CLONE_INTO_CGROUP flag
  *
  */

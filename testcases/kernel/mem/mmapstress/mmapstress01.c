@@ -6,7 +6,6 @@
  * 10/03/2022	Refactor to LTP framework	edliaw@google.com
  */
 /*\
- * [Description]
  * This test stresses mmaps, without dealing with fragments or anything!
  * It forks a specified number of children,
  * all of whom mmap the same file, make a given number of accesses

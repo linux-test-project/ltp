@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that a symbolic link may point to an existing file or
  * to a nonexistent one.
  */

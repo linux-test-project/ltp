@@ -4,8 +4,6 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  */
 /*\
- * [Description]
- *
  * Verify that:
  *
  * - sched_rr_get_interval() fails with errno set to EINVAL for an

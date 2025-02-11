@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the fcntl syscall.
  *
  * - EFAULT when lock is outside your accessible address space

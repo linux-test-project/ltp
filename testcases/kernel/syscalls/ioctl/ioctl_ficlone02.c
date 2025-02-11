@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that ioctl() FICLONE/FICLONERANGE feature correctly raises
  * EOPNOTSUPP when an unsupported filesystem is used. In particular, filesystems
  * which don't support copy-on-write.

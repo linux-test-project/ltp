@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Some kernel versions after hugepage demand allocation was added used a
  * dubious heuristic to check if there was enough hugepage space available
  * for a given mapping.  The number of not-already-instantiated pages in

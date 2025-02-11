@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test if waitid() syscall leaves the si_pid set to 0 with WNOHANG flag
  * when no child was waited for.
  */

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if keyctl unlink is correctly recognized by watch queue.
  */
 

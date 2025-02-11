@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Stress a possible race condition between memory pages allocation
  * and soft-offline of unrelated pages as explained in the commit:
  *   d4ae9916ea29 (mm: soft-offline: close the race against page allocation)

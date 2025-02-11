@@ -19,8 +19,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the basic functionality of the sethostid() and gethostid() system call.
  */
 

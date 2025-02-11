@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests setpgid(2) errors:
  *
  * - EPERM The process specified by pid must not be a session leader.

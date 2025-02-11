@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_cancel invoked via syscall(2) with one of pointers set to invalid
  * address and expects it to return EFAULT.
  */

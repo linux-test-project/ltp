@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setsockopt() fails and set errno:
  *
  * - EBADF on invalid file descriptor

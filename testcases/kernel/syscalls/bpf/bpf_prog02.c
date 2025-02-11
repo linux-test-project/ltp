@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check if eBPF can do arithmetic with 64bits. This targets a specific
  * regression which only effects unprivileged users who are subject to extra
  * pointer arithmetic checks during verification.

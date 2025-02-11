@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpgrp(2) syscall executes successfully.
  */
 

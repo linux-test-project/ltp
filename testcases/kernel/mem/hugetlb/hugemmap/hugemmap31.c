@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is basic shared mapping test. Two shared mappings are created
  * with same offset on a file. It checks if writing to one mapping can be
  * seen to other mapping or not?

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the faccessat() system call.
  *
  * - faccessat() passes if dir_fd is file descriptor to the directory

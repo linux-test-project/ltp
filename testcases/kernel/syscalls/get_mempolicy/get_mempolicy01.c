@@ -12,8 +12,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that get_mempolicy() returns a proper return value and errno for various cases.
  */
 

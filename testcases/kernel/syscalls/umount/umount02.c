@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for basic errors returned by umount(2) system call.
  *
  * Verify that umount(2) returns -1 and sets errno to

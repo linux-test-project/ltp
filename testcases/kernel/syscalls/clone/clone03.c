@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for equality of getpid() from a child and return value of clone(2)
  */
 

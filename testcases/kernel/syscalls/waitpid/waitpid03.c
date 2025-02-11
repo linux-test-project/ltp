@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that waitpid() returns the exit status of a specific child process
  * and repeated call on the same process will fail with ECHILD.
  */

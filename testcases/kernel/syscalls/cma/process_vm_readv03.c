@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Fork two children, one child mallocs randomly sized trunks of memory
  * and initializes them; the other child calls process_vm_readv with
  * the remote iovecs initialized to the original process memory

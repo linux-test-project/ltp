@@ -4,8 +4,6 @@
  */
 
 /*
- * [Description]
- *
  * Testcases that test if sched_setscheduler with flag
  * SCHED_RESET_ON_FORK restores children policy to
  * SCHED_NORMAL.

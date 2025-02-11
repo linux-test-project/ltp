@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests if waitid() syscall returns ECHILD when the calling process has no
  * child processes.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Scheduler test that uses a football analogy.
  *
  * The premise is that we want to make sure that lower priority threads

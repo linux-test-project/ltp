@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for commit:
  *
  * e645016abc80 ("KEYS: fix writing past end of user-supplied buffer in keyring_read()")

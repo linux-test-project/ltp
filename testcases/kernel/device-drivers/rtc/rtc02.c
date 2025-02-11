@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * RTC device set time function test.
  *
  * [Algorithm]

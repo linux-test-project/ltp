@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_USERNS request.
  *
  * Owning user namespace of process calling ioctl is out of scope,

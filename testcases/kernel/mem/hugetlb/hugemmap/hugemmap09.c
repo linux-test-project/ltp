@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test sanity of cow optimization on page cache. If a page in page cache
  * has only 1 ref count, it is mapped for a private mapping directly and
  * is overwritten freely, so next time we access the page, we can see

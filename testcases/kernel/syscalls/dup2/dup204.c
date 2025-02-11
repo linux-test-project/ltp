@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether the inode number are the same for both file descriptors.
  */
 

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Make sure bind() of privileged port gives EACCESS error for non-root users.
  */
 

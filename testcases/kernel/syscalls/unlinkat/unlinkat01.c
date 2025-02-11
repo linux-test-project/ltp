@@ -7,7 +7,6 @@
  */
 
 /*\
- * [Description]
  * Basic unlinkat() test.
  */
 

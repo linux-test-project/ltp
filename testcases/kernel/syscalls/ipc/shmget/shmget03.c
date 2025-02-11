@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for ENOSPC error.
  *
  * ENOSPC -  All possible shared memory segments have been taken (SHMMNI).

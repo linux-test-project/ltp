@@ -4,8 +4,6 @@
  * Author: Feiyu Zhu <zhufy.jy@cn.fujitsu.com>
  */
 /*\
- * [Description]
- *
  * Call semctl() with SEM_INFO flag and check that:
  *
  * * The returned index points to a valid SEM by calling SEM_STAT_ANY

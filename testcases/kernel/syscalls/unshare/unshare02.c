@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic tests for the unshare(2) errors.
  *
  * - EINVAL on invalid flags

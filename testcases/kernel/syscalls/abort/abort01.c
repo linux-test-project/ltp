@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Checks that process which called abort() gets killed by SIGIOT and dumps core.
  *
  * [Algorithm]

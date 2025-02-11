@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test getsockopt(2) for retrieving peer credentials (SO_PEERCRED).
  */
 

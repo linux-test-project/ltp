@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * If oldfd is a valid file descriptor, and newfd has the same value as oldfd,
  * then dup2() does nothing, and returns newfd.
  */

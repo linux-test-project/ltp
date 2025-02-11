@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of the pwritev2(2).
  *
  * - If the file offset argument is not -1, pwritev2() should succeed

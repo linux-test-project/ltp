@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This basic error handing of the semget syscall.
  *
  * - EACCES - a semaphore set exists for key, but the calling process does not

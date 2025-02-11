@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2016-4997
  *
  * For a full explanation of how the vulnerability works see:

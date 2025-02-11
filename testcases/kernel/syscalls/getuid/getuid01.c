@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the getuid() system call.
  */
 

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that getrusage() with RUSAGE_SELF and RUSAGE_CHILDREN succeeds.
  */
 

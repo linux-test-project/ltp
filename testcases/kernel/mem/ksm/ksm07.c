@@ -3,8 +3,6 @@
  * Copyright (C) 2023  Red Hat, Inc.
  */
 /*\
- * [Description]
- *
  * Kernel Samepage Merging (KSM) for smart scan feature
  *
  * Test allocates a page and fills it with 'a' characters. It captures the

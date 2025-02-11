@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This testcases checks that quotactl(2) on xfs filesystem succeeds to:
  *
  * - turn off xfs quota and get xfs quota off status for project

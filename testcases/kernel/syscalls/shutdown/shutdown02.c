@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies the following shutdown() errors:
  *
  * - EBADF sockfd is not a valid file descriptor

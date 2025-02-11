@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if keyctl revoke is correctly recognized by watch queue.
  */
 

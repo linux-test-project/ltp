@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that SIGALRM signal scheduled by alarm() in the parent process
  * is not delivered to the child process.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a mqueue inside the parent and check if it can be accessed from
  * the child namespace. Isolated and unshared process can't access to parent,
  * but plain process can.

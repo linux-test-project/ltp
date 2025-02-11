@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that cachestat() syscall is properly counting cached pages
  * written inside a shared memory.
  *

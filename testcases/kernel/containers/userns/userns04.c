@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that if a namespace isn't another namespace's ancestor, the process in
  * first namespace does not have the CAP_SYS_ADMIN capability in the second
  * namespace and the setns() call fails.

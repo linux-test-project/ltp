@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is cover splice() on proc files.
  *
  */

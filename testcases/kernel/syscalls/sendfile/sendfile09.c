@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase copied from sendfile02.c to test the basic functionality of
  * the sendfile() system call on large file. There is a kernel bug which
  * introduced by commit 8f9c0119d7ba9 and fixed by commit 5d73320a96fcc.

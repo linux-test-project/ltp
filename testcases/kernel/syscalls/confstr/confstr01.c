@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test confstr(3) 700 (X/Open 7) functionality -- POSIX 2008.
  */
 

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that kernel adds dummy argv[0] if empty argument list was passed to
  * execve(). This fixes at least one CVE where userspace programs start to
  * process argument list blindly from argv[1] such as polkit pkexec

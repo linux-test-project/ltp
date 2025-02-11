@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the following file timestamps of statx syscall:
  *
  * - btime - The time before and after the execution of the create system call is noted.

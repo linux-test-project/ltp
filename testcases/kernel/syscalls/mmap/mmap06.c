@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, mmap() call fails with errno:
  *
  * - EACCES, when a file mapping is requested but the file descriptor is not open for reading.

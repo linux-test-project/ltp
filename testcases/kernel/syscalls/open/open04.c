@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that open(2) fails with EMFILE when per-process limit on the number
  * of open file descriptors has been reached.
  */

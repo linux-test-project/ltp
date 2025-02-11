@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag, register notification on a posix
  * mqueue and send a mqueue message from the parent. Then check if signal
  * notification contains si_pid of the parent.

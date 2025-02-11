@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test mqueuefs from an isolated/forked process namespace.
  *
  * [Algorithm]

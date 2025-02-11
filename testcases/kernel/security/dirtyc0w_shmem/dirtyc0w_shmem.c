@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a regression test for a write race that allowed unprivileged programs
  * to change readonly files located on tmpfs/shmem on the system using
  * userfaultfd "minor fault handling" (CVE-2022-2590).

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that,
  *
  * - pathconf() fails with ENOTDIR if a component used as a directory

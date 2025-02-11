@@ -8,7 +8,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify groups and marks limits are enforced correctly.
  * If user ns is supported, verify that global limit and per user ns
  * limits are both enforced.

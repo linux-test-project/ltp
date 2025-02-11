@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setfsgid() correctly updates the filesystem group ID
  * to the value given in fsgid argument.
  */

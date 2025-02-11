@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for GHOST: glibc vulnerability (CVE-2015-0235).
  *
  * https://www.qualys.com/research/security-advisories/GHOST-CVE-2015-0235.txt

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, fchmod(2) will succeed to change the mode of a directory
  * but fails to set the setgid bit on it if invoked by non-root (uid != 0)
  * process with the following constraints:

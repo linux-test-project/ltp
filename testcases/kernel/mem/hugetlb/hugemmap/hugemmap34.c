@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * On PowerPC, the address space is divided into segments.  These segments can
  * contain either huge pages or normal pages, but not both.  All segments are
  * initially set up to map normal pages.  When a huge page mapping is created

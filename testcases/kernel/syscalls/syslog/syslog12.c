@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that syslog(2) system call fails with appropriate error number:
  *
  * 1. EINVAL -- invalid type/command

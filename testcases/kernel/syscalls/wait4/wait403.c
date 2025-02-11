@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check wait4(INT_MIN, ...) is not allowed. The pid is negated before
  * searching for a group with that pid. Negating INT_MIN is not
  * defined so UBSAN will be triggered if enabled. Also see kill13.

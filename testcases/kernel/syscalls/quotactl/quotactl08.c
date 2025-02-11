@@ -5,7 +5,6 @@
  */
 
 /*\
- * [Description]
  * This testcases checks that quotactl(2) on ext4 filesystem succeeds to:
  *
  * - turn on quota with Q_QUOTAON flag for user

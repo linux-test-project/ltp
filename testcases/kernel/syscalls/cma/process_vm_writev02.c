@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Fork two children, the first one allocates a chunk of memory and the
  * other one call process_vm_writev to write known data into the first
  * child. Then first child verifies that the data is as expected.

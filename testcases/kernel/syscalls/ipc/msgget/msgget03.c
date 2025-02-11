@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for ENOSPC error.
  *
  * ENOSPC -  All possible message queues have been taken (MSGMNI)

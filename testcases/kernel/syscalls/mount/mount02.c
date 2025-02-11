@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for basic errors returned by mount(2) system call.
  *
  * - ENODEV if filesystem type not configured

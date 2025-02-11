@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that all landlock filesystem rules are working properly.
  * The way we do it is to verify that all disabled syscalls are not working but
  * the one we enabled via specifc landlock rules.

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, lgetxattr(2) returns -1 and sets errno to
  *
  * 1. ENODATA if the named attribute does not exist.

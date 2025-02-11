@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * *Test 1*
  *
  * This is a regression test for the race condition between move_pages()

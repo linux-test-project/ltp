@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that shmctl() IPC_STAT and SHM_STAT reports correct data.
  *
  * The shm_nattach is excercised by:

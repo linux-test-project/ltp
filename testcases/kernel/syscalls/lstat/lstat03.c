@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that lstat() provides correct information according
  * with device, access time, block size, ownership, etc.
  * The implementation provides a set of tests which are specific for each one

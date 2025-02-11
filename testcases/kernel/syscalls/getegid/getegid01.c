@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks if getegid() returns the effective group id.
  */
 

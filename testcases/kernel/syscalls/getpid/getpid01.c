@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpid() system call returns process ID in range <2, PID_MAX>.
  */
 

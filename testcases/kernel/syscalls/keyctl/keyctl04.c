@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for commit c9f838d104fe ("KEYS: fix
  * keyctl_set_reqkey_keyring() to not leak thread keyrings"), a.k.a.
  * CVE-2017-7472.  This bug could be used to exhaust kernel memory, though it

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether the file offset are the same for both file descriptors.
  */
 

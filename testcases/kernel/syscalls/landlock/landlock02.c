@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that landlock_add_rule syscall fails with the right
  * error codes:
  *

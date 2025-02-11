@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Reproducer of CVE-2021-26708
  *
  * Based on POC https://github.com/jordan9001/vsock_poc.

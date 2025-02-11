@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify handles events on children correctly when both parent and
  * subdir or mountpoint marks exist.
  */

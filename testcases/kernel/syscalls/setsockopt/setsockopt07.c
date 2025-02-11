@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2017-1000111
  *
  * Check for race condition between packet_set_ring() and tp_reserve.

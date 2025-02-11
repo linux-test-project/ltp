@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify work for children of a directory.
  */
 

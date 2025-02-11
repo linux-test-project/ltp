@@ -8,7 +8,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify properly merges ignore mask of a mount mark
  * with a mask of an inode mark on the same group.  Unlike the
  * prototype test fanotify06, do not use FAN_MODIFY event for the

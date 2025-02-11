@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that open() fails with:
  *
  * - EEXIST when pathname already exists and O_CREAT and O_EXCL were used

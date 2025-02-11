@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that utime() is working correctly on symlink()
  * generated files.
  *

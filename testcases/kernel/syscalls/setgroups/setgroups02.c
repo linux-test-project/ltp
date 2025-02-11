@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that root process can setgroups() supplementary group ID and verify
  * that getgroups() returns the previously set ID.
  */

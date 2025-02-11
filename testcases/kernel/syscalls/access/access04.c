@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  * -  access() fails with -1 return value and sets errno to EINVAL
  *    if the specified access mode argument is invalid.
  * -  access() fails with -1 return value and sets errno to ENOENT

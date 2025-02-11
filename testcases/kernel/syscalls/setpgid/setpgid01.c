@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify basic setpgid() functionality, re-setting group ID inside both parent
  * and child. In the first case, we obtain getpgrp() and set it. In the second
  * case, we use setpgid(0, 0).

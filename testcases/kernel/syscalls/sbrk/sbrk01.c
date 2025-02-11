@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that sbrk() successfully increments or decrements the program's
  * data break.
  */

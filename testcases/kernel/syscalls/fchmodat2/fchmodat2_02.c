@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that fchmodat2() syscall properly raises errors with
  * invalid values.
  */

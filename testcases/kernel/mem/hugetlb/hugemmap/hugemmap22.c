@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This baseline test validates that a mapping of a certain size can be
  * created, correctly. Once created, all the pages are filled with a
  * pattern and rechecked to test for corruption. The mapping is then

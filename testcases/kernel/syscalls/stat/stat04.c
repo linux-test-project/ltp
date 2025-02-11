@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks that stat() executed on file provide the same information
  * of symlink linking to it.
  */

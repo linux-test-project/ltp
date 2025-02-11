@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2017-6951, original reproducer:
  * http://www.spinics.net/lists/keyrings/msg01845.html
  *

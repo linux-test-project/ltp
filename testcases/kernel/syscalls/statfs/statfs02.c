@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests for failures:
  *
  * - ENOTDIR A component of the pathname, which is not a directory.

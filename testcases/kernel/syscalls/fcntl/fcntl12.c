@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the fcntl syscall.
  *
  * - EMFILE when cmd is F_DUPFD and the per-process limit on the number of open

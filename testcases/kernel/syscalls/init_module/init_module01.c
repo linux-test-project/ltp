@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic init_module() tests.
  *
  * [Algorithm]

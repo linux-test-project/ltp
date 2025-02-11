@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests a netlink interface inside a new network namespace.
  *
  * - Unshares a network namespace (so network related actions

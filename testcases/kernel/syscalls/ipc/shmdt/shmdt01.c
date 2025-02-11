@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This case check whether we get SIGSEGV when write a value to a detached
  * shared memory resource.
  */

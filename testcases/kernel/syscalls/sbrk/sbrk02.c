@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that sbrk() on failure sets errno to ENOMEM.
  */
 

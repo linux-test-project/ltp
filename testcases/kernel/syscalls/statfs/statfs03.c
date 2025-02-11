@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that statfs(2) fails with errno EACCES when search permission
  * is denied for a component of the path prefix of path.
  */

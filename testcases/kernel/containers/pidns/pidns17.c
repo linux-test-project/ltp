@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and spawn many children inside the
  * container. Then terminate all children and check if they were signaled.
  */

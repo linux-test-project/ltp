@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a regression test for a silent data corruption for a mmaped file
  * when filesystem gets out of space.
  *

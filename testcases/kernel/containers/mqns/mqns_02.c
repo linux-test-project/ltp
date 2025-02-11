@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a mqueue with the same name in both parent and isolated/forked child,
  * then check namespace isolation.
  */

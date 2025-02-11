@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Set signals to be ignored.
  */
 

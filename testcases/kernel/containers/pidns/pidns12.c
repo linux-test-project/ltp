@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and verifies that siginfo->si_pid is
  * set to 0 if sender (parent process) is not in the receiver's namespace.
  */

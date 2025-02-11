@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2020-25705 fixed in kernel v5.10:
  * b38e7819cae9 ("icmp: randomize the global rate limiter").
  *

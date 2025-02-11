@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that if a user ID has no mapping inside the namespace, user ID and
  * group ID will be the value defined in the file /proc/sys/kernel/overflowuid
  * (defaults to 65534) and /proc/sys/kernel/overflowgid (defaults to 65534). A

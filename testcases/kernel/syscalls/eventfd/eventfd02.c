@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify write operation for eventfd fail with:
  *
  * - EAGAIN when counter is zero on non blocking fd

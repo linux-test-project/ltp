@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * capset() fails with errno set or EPERM if the new_Inheritable is
  * not a subset of old_Inheritable and old_Permitted without CAP_SETPCAP.
  */

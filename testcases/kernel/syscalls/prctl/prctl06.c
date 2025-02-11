@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test PR_GET_NO_NEW_PRIVS and PR_SET_NO_NEW_PRIVS of prctl(2).
  *
  * - Return the value of the no_new_privs bit for the calling thread.

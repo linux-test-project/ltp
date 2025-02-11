@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This testcase creates shared memory segments backed by hugepages,
  * writes specific patterns to each segment, verifies pattern,
  * and detaches a shared memory segments in a loop.

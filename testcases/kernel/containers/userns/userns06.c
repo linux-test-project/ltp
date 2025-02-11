@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that when a process with non-zero user IDs performs an execve(),
  * the process's capability sets are cleared.
  * When a process with zero user IDs performs an execve(), the process's

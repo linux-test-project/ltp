@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify msync() after writing into mmap()-ed file works.
  *
  * Write to mapped region and sync the memory back with file. Check the page

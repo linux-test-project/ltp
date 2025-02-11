@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if SysV IPC shared memory is properly used between two namespaces.
  *
  * [Algorithm]

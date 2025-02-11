@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that flock(2) fails with errno EINTR when waiting to acquire a lock,
  * and the call is interrupted by a signal.
  */

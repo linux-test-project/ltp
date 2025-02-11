@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic clone3() test to check various failures.
  */
 

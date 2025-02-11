@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify basic functionality of mmap(2) with MAP_LOCKED.
  *
  * mmap(2) should succeed returning the address of the mapped region,

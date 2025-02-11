@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether eventfd() counter update in child is reflected in the parent.
  */
 

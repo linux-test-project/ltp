@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that MADV_GUARD_INSTALL is causing SIGSEGV when someone is accessing
  * memory advised with it.
  *

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll_ctl() fails with:
  *
  * - EBADF if epfd is an invalid fd.

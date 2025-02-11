@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, rt_sigqueueinfo(2) sets errno to
  *
  * - EINVAL if sig is invalid

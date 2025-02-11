@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2023-31248
  *
  * Test for use-after-free when adding a new rule to a chain deleted

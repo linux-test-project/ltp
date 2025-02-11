@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * lremovexattr(2) removes the extended attribute identified by a name and
  * associated with a given path in the filesystem. Unlike removexattr(2),
  * lremovexattr(2) removes the attribute from the symbolic link only, and not

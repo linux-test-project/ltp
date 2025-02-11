@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * This source file contains a test case which ensures that the fanotify API
  * returns an expected error code when provided an invalid initialization flag
  * alongside FAN_REPORT_PIDFD. Additionally, it checks that the operability with

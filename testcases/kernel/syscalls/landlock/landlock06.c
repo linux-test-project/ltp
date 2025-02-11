@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies LANDLOCK_ACCESS_FS_IOCTL_DEV access in the
  * landlock sandbox by creating a pipe and testing that ioctl() can be executed
  * on it. The test is also verifying that some of the I/O operations can be

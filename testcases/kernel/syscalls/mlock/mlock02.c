@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for ENOMEM, EPERM errors.
  *
  * 1) mlock(2) fails with ENOMEM if some of the specified address range

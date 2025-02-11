@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a basic test for iopl(2) system call.
  *
  * Test the system call for possible privilege levels.

@@ -4,8 +4,6 @@
  */
 /*\
  *
- * [Description]
- *
  * Perform some I/O on a file and check if at least some of it is
  * recorded by the I/O controller.
  *

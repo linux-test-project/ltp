@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getrandom(2) fails with
  *
  * - EFAULT when buf address is outside the accessible address space

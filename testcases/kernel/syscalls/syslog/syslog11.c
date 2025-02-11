@@ -5,8 +5,6 @@
  */
 
 /*
- * [Description]
- *
  * Verify that, syslog(2) is successful for type ranging from 1 to 8
  */
 

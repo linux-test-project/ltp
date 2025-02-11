@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Utilize kernel's symbol table for unauthorized address access.
  *
  * Access the system symbols with root permission to test whether it's

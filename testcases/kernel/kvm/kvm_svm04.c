@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Functional test for VMSAVE/VMLOAD instructions in KVM environment. Verify
  * that both instructions save/load the CPU state according to CPU
  * documentation.

@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2018-1000001 realpath buffer underflow.
  *
  * Based on glibc test io/tst-getcwd-abspath.c:

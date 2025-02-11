@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the unlink(2):
  *
  * - unlink(2) can delete regular file successfully.

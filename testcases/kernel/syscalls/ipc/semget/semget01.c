@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This case checks that semget() correclty creates a semaphore set.
  */
 

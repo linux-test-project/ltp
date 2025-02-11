@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that dup(2) syscall executes successfully and allocates
  * a new file descriptor which refers to the same open file as oldfd.
  */

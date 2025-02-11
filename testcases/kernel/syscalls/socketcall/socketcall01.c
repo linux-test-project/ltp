@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the socketcall(2) raw syscall.
  *
  * Test creating TCP, UDP, raw socket and unix domain dgram.

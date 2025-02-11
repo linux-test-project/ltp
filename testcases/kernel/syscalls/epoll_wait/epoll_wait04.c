@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that a timeout equal to zero causes epoll_wait() to return immediately.
  */
 

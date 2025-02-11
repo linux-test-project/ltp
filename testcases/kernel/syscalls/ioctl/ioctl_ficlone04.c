@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that ioctl() FICLONE/FICLONERANGE feature raises the right
  * error according with bad file descriptors.
  */

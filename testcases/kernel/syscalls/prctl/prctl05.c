@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test PR_GET_NAME and PR_SET_NAME of prctl(2).
  *
  * - Set the name of the calling thread, the name can be up to 16 bytes

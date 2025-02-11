@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag, block SIGUSR1 signal before sending
  * it from parent and check if it's received once SIGUSR1 signal is unblocked.
  */

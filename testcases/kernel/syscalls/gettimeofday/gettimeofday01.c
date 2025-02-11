@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for gettimeofday error.
  *
  * - EFAULT: tv pointed outside the accessible address space

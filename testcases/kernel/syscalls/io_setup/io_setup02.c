@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_setup invoked via syscall(2):
  *
  * - io_setup fails and returns EFAULT if ctxp is NULL.

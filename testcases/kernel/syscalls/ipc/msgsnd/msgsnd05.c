@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that msgsnd(2) fails and sets correct errno:
  *
  * - EAGAIN if the message can't be sent due to the msg_qbytes limit for the

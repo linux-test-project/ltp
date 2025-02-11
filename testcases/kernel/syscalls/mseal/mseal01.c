@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a smoke test that verifies if mseal() protects specific VMA portions
  * of a process. According to documentation, the syscall should protect memory
  * from the following actions:

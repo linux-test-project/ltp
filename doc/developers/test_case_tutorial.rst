@@ -111,8 +111,6 @@ kernel version if necessary. I will explain what the code does below.
      */
 
     /*\
-     * [Description]
-     *
      * All tests should start with a description of _what_ we are testing.
      * Non-trivial explanations of _how_ the code works should also go here.
      * Include relevant links, Git commit hashes and CVE numbers.

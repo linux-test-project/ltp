@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a reproducer copied from one of LKML patch submission
  * which subject is
  *

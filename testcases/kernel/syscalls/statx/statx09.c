@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This code tests if STATX_ATTR_VERITY flag in the statx attributes is set correctly.
  *
  * The statx() system call sets STATX_ATTR_VERITY if the file has fs-verity

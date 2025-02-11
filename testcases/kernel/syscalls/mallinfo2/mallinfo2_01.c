@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic mallinfo2() test.
  *
  * Test hblkhd member of struct mallinfo2 whether overflow when setting 2G size.

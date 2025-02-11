@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a regression test for hangup on pipe operations. See
  * https://www.spinics.net/lists/linux-api/msg49762.html for
  * additional context. It tests that pipe operations do not block

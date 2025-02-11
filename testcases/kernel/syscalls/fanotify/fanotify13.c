@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Validate that the values returned within an event when FAN_REPORT_FID is
  * specified matches those that are obtained via explicit invocation to system
  * calls statfs(2) and name_to_handle_at(2).

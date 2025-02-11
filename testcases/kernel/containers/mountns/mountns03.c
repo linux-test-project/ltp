@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests a slave mount: slave mount is like a shared mount except that
  * mount and umount events only propagate towards it.
  *

@@ -5,8 +5,6 @@
 */
 
 /*\
- * [Description]
- *
  * Test creating TCP, UDP, and Unix doman dgram sockets with socket() syscall.
  *
  * Also verify that socket() fails and set proper errno

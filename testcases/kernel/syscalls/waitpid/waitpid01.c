@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that when a child kills itself with one of the standard signals,
  * the waiting parent is correctly notified.
  *

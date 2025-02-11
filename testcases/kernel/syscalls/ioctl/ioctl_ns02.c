@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_PARENT request.
  *
  * Test tries to get namespace parent for UTS namespace, which

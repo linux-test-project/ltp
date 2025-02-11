@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, kcmp() returns 0 if the processes
  *
  * 1. share the same file system information

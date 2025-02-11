@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * The test process is affined to a CPU. It then calls getcpu and
  * checks that the CPU and node (if supported) match the expected
  * values.

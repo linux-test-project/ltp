@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to test that sendfile(2) system call returns EAGAIN
  * when passing full out_fd opened with O_NONBLOCK.
  */

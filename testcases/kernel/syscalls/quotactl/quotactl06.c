@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the quotactl syscall with visible quota files
  * (cover two formats, vfsv0 and vfsv1):
  *

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2016-8655
  *
  * Check for race condition between packet_set_ring() and tp_version. On some

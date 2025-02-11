@@ -6,8 +6,6 @@
  *	03/2001 - Written by Wayne Boyer
  */
 /*\
- * [Description]
- *
  * Test for semctl() EPERM error
  *
  * Runs IPC_SET and IPC_RMID from unprivileged child process.

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests copy-on-write semantics of large pages where a number of threads
  * map the same file with the MAP_PRIVATE flag. The threads then write
  * into their copy of the mapping and recheck the contents to ensure they

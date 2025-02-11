@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that dup(2) syscall fails with errno EBADF when called with
  * invalid value for oldfd argument.
  */

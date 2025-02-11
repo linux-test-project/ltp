@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for fcntl(2) using F_DUPFD_CLOEXEC and getting FD_CLOEXEC.
  */
 

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * - link() fails with EPERM if the old path is a directory.

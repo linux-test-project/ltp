@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, an attempt to write to the read end of a pipe fails with EBADF
  * and an attempt to read from the write end of a pipe also fails with EBADF.
  */

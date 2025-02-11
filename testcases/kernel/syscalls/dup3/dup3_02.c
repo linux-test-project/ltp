@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for various EINVAL error.
  *
  * - oldfd is equal to newfd without using O_CLOEXEC flag

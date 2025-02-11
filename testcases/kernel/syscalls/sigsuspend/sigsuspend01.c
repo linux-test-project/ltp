@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic sigsuspend(2) syscall functionality:
  *
  * - sigsuspend(2) can replace process's current signal mask by the specified

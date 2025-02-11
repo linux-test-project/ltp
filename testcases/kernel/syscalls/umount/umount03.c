@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that umount(2) returns -1 and sets errno to EPERM if the user
  * is not the super-user.
  */

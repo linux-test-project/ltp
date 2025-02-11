@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, fchown(2) succeeds to change the group of a file specified
  * by path when called by non-root user with the following constraints:
  *

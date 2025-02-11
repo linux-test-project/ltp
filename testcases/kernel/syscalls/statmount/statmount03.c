@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that statmount() is correctly reading mount information
  * (mount id, parent mount id, mount attributes etc.) using STATMOUNT_MNT_BASIC.
  *

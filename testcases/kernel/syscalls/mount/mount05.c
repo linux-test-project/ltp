@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for feature MS_BIND of mount, which performs a bind mount, making a file
  * or a directory subtree visible at another point within a file system.
  */

@@ -9,8 +9,6 @@
  */
 
 /*\
- * [Description]
- *
  * There is a race condition if we map a same file on different processes.
  * Region tracking is protected by mmap_sem and hugetlb_instantiation_mutex.
  * When we do mmap, we don't grab a hugetlb_instantiation_mutex, but only

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that slave pseudo-terminal fails reading/writing if master has been
  * closed.
  */

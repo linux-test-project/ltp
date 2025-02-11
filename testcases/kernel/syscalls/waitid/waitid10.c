@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is checking if waitid() syscall recognizes a process that ended
  * with division by zero error.
  */

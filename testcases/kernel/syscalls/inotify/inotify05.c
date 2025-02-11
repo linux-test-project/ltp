@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that inotify overflow event is properly generated.
  */
 

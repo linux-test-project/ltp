@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test ptraces itself as per arbitrarily specified signals,
  * over 0 to SIGRTMAX range.
  */

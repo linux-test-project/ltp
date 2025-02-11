@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2016-9604, checks that keys beginning with "." are disallowed.
  *
  * See commit

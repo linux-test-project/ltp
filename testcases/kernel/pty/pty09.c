@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that slave pseudo-terminal can be opened multiple times in parallel.
  */
 

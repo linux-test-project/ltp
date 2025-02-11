@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests a shared mount: shared mount can be replicated to as many
  * mountpoints and all the replicas continue to be exactly same.
  *

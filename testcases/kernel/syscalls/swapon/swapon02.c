@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case checks whether swapon(2) system call returns:
  *
  * - ENOENT when the path does not exist

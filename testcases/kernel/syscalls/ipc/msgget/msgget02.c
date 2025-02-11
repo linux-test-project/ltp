@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for EEXIST, ENOENT, EACCES errors.
  *
  * -  msgget(2) fails if a message queue exists for key and msgflg

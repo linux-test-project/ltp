@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify basic fsetxattr(2) syscall functionality:
  *
  * - Set attribute to a regular file, fsetxattr(2) should succeed.

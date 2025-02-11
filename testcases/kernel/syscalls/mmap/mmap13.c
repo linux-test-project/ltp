@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, mmap() call succeeds to create a file mapping with length
  * argument greater than the file size but any attempt to reference the
  * memory region which does not correspond to the file causes SIGBUS signal.

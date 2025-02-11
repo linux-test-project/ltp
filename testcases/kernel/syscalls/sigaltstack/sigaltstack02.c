@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that sigaltstack() fails with return value -1 and set expected errno:
  *
  * - EINVAL on invalid value.

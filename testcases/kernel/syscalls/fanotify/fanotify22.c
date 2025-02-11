@@ -7,7 +7,6 @@
  */
 
 /*\
- * [Description]
  * Check fanotify FAN_ERROR_FS events triggered by intentionally
  * corrupted filesystems:
  *

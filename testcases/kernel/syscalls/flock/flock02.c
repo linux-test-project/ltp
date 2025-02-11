@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify flock(2) returns -1 and set proper errno:
  *
  * - EBADF if the file descriptor is invalid

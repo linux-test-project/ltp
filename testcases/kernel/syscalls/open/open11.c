@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic tests for open(2) and make sure open(2) works and handles error
  * conditions correctly.
  *

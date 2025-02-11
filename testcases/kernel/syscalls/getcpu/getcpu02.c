@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getcpu(2) fails with EFAULT if cpu_id or node_id points outside
  * the calling process address space.
  */

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the landlock support for bind()/connect() syscalls in IPV4 and IPV6
  * protocols. In particular, check that bind() is assigning the address only on
  * the TCP port enforced by LANDLOCK_ACCESS_NET_BIND_TCP and check that

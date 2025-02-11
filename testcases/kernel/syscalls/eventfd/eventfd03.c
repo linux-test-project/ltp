@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether readfd is set by select() when eventfd() counter value is
  * non-zero, then check if readfd is not set when eventfd() counter value is
  * zero.

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename() fails with EPERM or EACCES when the directory
  * containing oldpath has the sticky bit (S_ISVTX) set and the caller
  * is not privileged.

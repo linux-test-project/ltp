@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is copied from kselftest
  * tools/testing/selftests/cgroup/test_kill.c.
  *

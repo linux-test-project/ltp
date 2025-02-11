@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic open_by_handle_at() tests.
  *
  * [Algorithm]

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for epoll_pwait and epoll_pwait2. Checks if data avaiable in a
  * file descriptor are reported correctly in the syscall return value.
  */

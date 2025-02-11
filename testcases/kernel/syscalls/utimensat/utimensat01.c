@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic utimnsat() test.
  */
 

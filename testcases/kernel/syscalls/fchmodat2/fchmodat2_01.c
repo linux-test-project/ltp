@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that fchmodat2() syscall is properly working with
  * regular files, symbolic links and directories. AT_SYMLINK_NOFOLLOW is a
  * special feature that is blocked by VFS since 5d1f903f75a8 and any of its

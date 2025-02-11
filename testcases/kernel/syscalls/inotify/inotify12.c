@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test special inotify mask flags.
  *
  * Regression test for kernel commit:

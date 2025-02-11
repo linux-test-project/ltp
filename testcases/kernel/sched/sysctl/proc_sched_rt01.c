@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Sanity tests for the /proc/sys/kernel/sched_r* files.
  *
  * - The sched_rt_period_us range is 1 to INT_MAX

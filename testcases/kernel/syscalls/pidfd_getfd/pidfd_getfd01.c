@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic pidfd_getfd() test:
  *
  * - the close-on-exec flag is set on the file descriptor returned by

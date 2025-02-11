@@ -10,8 +10,6 @@
  * Copyright (c) 2021 SUSE LLC, other copyrights may apply.
  */
 /*\
- * [Description]
- *
  * We check that close_range()
  *
  * - closes FDs

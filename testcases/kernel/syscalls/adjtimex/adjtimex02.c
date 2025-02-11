@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests for adjtimex() error conditions:
  *
  * - EPERM with SET_MODE as nobody

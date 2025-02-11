@@ -4,8 +4,6 @@
  * Copyright (C) 2023 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 /*\
- * [Description]
- *
  * This test checks if parent pid is equal to tid in single-threaded
  * application.
  */

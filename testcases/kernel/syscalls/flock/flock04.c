@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test verifies that flock() behavior with different locking combinations along
  * with LOCK_SH and LOCK_EX:
  *

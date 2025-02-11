@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks following conditions:
  *
  * 1. sighold action to turn off the receipt of all signals was done without error.

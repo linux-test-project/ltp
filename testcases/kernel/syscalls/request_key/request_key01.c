@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test basic functionality of the request_key(2).
  *
  * request_key(2) asks the kernel to find a key which matches the

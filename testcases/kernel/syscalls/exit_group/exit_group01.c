@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks if exit_group() correctly ends a spawned child and all its
  * running threads.
  */

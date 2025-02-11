@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that flock(2) cannot unlock a file locked by another task.
  *
  * Fork a child processes. The parent flocks a file with LOCK_EX. Child waits

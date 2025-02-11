@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check time difference between successive readings and report a bug if
  * difference found to be over 5 ms.
  *

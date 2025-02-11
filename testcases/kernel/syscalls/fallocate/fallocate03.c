@@ -8,7 +8,6 @@
  */
 
 /*\
- * [Description]
  * Test fallocate() on sparse file for different offsets, with a total of 8 test cases
  */
 

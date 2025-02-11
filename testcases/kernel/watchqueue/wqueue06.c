@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if keyctl clear is correctly recognized by watch queue.
  */
 

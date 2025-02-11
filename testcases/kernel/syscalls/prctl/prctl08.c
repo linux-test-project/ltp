@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test PR_GET_TIMERSLACK and PR_SET_TIMERSLACK of prctl(2).
  *
  * - Each thread has two associated timer slack values: a "default"

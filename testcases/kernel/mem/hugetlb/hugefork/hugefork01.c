@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This checks copy-on-write semantics, specifically the semantics of a
  * MAP_PRIVATE mapping across a fork().  Some versions of the powerpc
  * kernel had a bug in huge_ptep_set_wrprotect() which would fail to

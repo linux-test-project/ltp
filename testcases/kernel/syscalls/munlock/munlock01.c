@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test munlock with various valid addresses and lengths.
  */
 

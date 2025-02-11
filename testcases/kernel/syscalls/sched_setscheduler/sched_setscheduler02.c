@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to test whether sched_setscheduler(2) sets the errnos
  * correctly.
  *

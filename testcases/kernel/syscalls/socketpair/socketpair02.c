@@ -6,8 +6,6 @@
 */
 
 /*\
- * [Description]
- *
  * Test socket() with SOCK_CLOEXEC and SOCK_NONBLOCK flags.
  */
 

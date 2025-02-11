@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies cachestat() for all the possible file descriptors,
  * checking that cache statistics are always zero, except for unsupported file
  * descriptors which cause EBADF to be raised.

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename(2) fails with EFAULT, when
  * oldpath or newpath points outside of accessible address space.
  */

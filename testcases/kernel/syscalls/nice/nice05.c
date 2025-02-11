@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * 1. Create a high nice thread and a low nice thread, the main
  *    thread wake them at the same time
  * 2. Both threads run on the same CPU

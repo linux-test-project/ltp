@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for commit
  * f05819df10d7 ("KEYS: Fix crash when attempt to garbage collect an uninstantiated keyring")
  */

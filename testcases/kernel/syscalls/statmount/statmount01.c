@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that statmount() is working with no mask flags.
  *
  * [Algorithm]

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * The test checks that mlocking hugetlb areas works with all combinations
  * of MAP_PRIVATE and MAP_SHARED with and without MAP_LOCKED specified.
  */

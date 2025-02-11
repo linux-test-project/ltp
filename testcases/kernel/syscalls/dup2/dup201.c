@@ -5,8 +5,6 @@
  * 01/2002 Removed EMFILE test - Paul Larson
  */
 /*\
- * [Description]
- *
  * Negative tests for dup2() with bad fd (EBADF).
  *
  * - First fd argument is less than 0

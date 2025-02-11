@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Check that fanotify properly merges ignore mask of an inode and mountpoint.
  */
 

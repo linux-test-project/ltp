@@ -4,8 +4,6 @@
  *    AUTHOR		: Saji Kumar.V.R <saji.kumar@wipro.com>
  */
 /*\
- * [Description]
- *
  * Gets round-robin time quantum by calling sched_rr_get_interval() and
  * checks that the value is sane.
  *

@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*\
  *
- * [Description]
- *
  * Conversion of the third kself test in cgroup/test_memcontrol.c.
  *
  * Original description:

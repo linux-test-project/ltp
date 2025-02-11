@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that after updating euid with setresuid(), any file creation
  * also gets the new euid as its owner user ID.
  */

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * - EINVAL when an invalid value is given for option
  * - EINVAL when option is PR_SET_PDEATHSIG & arg2 is not zero or a valid
  *   signal number

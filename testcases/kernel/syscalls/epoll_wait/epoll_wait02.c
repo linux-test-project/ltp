@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that epoll_wait(2) timeouts correctly.
  */
 

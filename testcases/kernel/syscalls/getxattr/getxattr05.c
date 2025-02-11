@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that:
  *
  * - Without a user namespace, getxattr(2) should get same data when

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for inotify events on directory.
  */
 

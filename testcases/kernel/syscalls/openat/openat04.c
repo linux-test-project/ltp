@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check setgid strip logic whether works correctly when creating tmpfile under
  * filesystem without POSIX ACL supported(by using noacl mount option). Test it
  * with umask S_IXGRP and also check file mode whether has filtered S_IXGRP.

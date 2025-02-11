@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Fork two children, one child allocates memory and initializes it;
  * then the other one calls process_vm_readv and reads from the same
  * memory location, it then verifies if process_vm_readv returns

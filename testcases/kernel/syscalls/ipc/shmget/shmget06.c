@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for shm_next_id.
  *
  * When the shared memory segment identifier that shm_next_id stored is already

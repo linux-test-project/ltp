@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for possible double free of rx_owner_map after switching packet
  * interface versions aka CVE-2021-22600.
  *

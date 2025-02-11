@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that chmod(2) succeeds when used to change the mode permissions
  * of a file or directory.
  */

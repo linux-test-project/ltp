@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that open() is working correctly on symlink()
  * generated files. We generate a file via symlink, then we read both from file
  * and symlink, comparing that data has been correctly written.

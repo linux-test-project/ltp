@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, after a successful mmap() call, permission bits of the new
  * mapping in /proc/pid/maps file matches the prot and flags arguments in
  * mmap() call.

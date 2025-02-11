@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is not only a functional test but also a error test for Q_XQUOTARM.
  *
  * It is a regresstion test for kernel commit 3dd4d40b4208

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Before kernel version 5.10-rc7, there was a bug that resulted in a "Bad Page
  * State" error when freeing gigantic hugepages. This happened because the
  * struct page entry compound_nr, which overlapped with page->mapping in the

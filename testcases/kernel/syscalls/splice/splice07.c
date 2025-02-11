@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Iterate over all kinds of file descriptors and feed splice() with all possible
  * combinations where at least one file descriptor is invalid. We do expect the
  * syscall to fail either with EINVAL or EBADF.

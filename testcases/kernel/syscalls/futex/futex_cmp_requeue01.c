@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of futex(FUTEX_CMP_REQUEUE).
  *
  * futex(FUTEX_CMP_REQUEUE) can wake up the number of waiters specified

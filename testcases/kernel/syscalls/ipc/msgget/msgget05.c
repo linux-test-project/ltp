@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for msg_next_id.
  * When the message queue identifier that msg_next_id stored is already in use,
  * call msgget with different key just use another unused value in range

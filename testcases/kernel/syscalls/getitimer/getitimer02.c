@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that getitimer() call fails:
  *
  * 1. EFAULT with invalid itimerval pointer

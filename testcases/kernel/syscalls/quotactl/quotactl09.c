@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the quotactl syscall without visible quota files
  * (use quotactl and quotactl_fd syscall):
  *

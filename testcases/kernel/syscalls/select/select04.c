@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test to check if fd set bits are cleared by select().
  *
  * [Algorithm]

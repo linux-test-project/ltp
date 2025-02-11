@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for fcntl(2) using F_SETLEASE and F_RDLCK argument,
  * testing O_RDWR and O_WRONLY.
  */

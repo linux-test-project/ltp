@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setresuid() behaves correctly with file permissions.
  * The test creates a file as ROOT with permissions 0644, does a setresuid
  * to change euid to a non-root user and tries to open the file with RDWR

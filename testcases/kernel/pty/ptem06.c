@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that it's possible to open a pseudo-terminal via /dev/ptmx, to obtain
  * a slave device and to set baudrate to B0 (which means hang up).
  */

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Program for testing file locking. The original data file consists of
  * characters from 'A' to 'Z'. The data file after running this program
  * would consist of lines with 1's in even lines and 0's in odd lines.

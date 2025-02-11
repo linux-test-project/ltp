@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test basic error handling of faccessat2 syscall:
  *
  * - faccessat2() fails with EFAULT if pathname is a bad pathname point.

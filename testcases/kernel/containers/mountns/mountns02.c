@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests a private mount: private mount does not forward or receive
  * propagation.
  *

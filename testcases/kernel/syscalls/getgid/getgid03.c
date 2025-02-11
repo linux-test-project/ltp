@@ -5,7 +5,6 @@
  */
 
 /*\
- * [Description]
  * Testcase to check the basic functionality of getgid().
  *
  * [Algorithm]

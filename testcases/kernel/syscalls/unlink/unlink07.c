@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that unlink(2) fails with
  *
  * - ENOENT when file does not exist

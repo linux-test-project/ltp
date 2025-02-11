@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_submit invoked via syscall(2):
  *
  * 1. io_submit() returns the number of iocbs submitted.

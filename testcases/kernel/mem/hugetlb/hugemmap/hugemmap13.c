@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * On some old ppc64 kernel, when hpage is mmaped on 32 bit boundary and
  * normal page below it, it triggers the bug caused by off-by-one error.
  *

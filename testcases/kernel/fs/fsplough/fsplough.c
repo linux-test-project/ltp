@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Write data into a test file using various methods and verify that file
  * contents match what was written.
  */

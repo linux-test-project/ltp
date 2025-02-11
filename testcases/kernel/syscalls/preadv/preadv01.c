@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of the preadv(2).
  *
  * Preadv(2) should succeed to read the expected content of data

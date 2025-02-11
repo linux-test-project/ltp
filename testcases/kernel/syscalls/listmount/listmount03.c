@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that listmount() raises EPERM when mount point is not accessible.
  */
 

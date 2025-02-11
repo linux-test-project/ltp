@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for MS_NOSYMFOLLOW mount option and is copied
  * from kernel selftests nosymfollow-test.c.
  *

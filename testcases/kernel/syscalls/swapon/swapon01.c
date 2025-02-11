@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Checks that swapon() succeds with swapfile.
  * Testing on all filesystems which support swap file.
  */

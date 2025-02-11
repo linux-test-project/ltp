@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for llistxattr(2), retrieves the list of extended attribute names
  * associated with the link itself in the filesystem.
  */

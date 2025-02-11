@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that cachestat() syscall is properly failing with relative
  * error codes according to input parameters.
  *

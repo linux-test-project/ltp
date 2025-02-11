@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether all the valid IFF flags are returned properly by implementation
  * of TUNGETFEATURES ioctl.
  */

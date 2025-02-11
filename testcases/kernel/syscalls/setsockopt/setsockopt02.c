@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2017-7308 on a raw socket's ring buffer
  *
  * Try to set tpacket_req3.tp_sizeof_priv to a value with the high bit set. So

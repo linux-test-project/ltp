@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test of libc wrapper of reboot(2) system call.
  *
  * Test LINUX_REBOOT_CMD_CAD_ON, LINUX_REBOOT_CMD_CAD_OFF commands,

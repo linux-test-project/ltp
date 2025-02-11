@@ -17,7 +17,6 @@ Let's start with an example, following code is a simple test for a 'getenv()'.
 [source,c]
 -------------------------------------------------------------------------------
 /*\
- * [Description]
  * Tests basic functionality of getenv().
  *
  *  - create an env variable and verify that getenv() can get it

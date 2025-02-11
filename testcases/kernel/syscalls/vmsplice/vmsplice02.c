@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, vmsplice(2) returns -1 and sets errno to:
  *
  * - EBADF if fd is not valid.

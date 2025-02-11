@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Reproducer of CVE-2018-10124; INT_MIN negation.
  *
  * On most two's complement CPUs negation of INT_MIN will result in

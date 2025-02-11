@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, when a parent process opens a pipe, a child process can
  * read from it.
  */

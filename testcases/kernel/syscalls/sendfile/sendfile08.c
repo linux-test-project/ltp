@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Bug in the splice code has caused the file position on the write side
  * of the sendfile system call to be incorrectly set to the read side file
  * position. This can result in the data being written to an incorrect offset.

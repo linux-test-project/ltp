@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * CVE-2018-1000204
  *
  * Test ioctl(SG_IO) and check that kernel doesn't leak data. Requires

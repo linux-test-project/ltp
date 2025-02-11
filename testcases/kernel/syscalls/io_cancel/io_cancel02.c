@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_cancel invoked via libaio with one of the data structures points
  * to invalid data and expects it to return -EFAULT.
  */

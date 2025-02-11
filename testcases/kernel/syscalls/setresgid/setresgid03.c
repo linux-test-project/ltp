@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setresgid() fails with EPERM if unprivileged user tries to set
  * process group ID which requires higher permissions.
  */

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that if mknod(2) creates a filesystem node in a directory which
  * does not have the set-group-ID bit set, new node will not inherit the
  * group ownership from its parent directory and its group ID will be the

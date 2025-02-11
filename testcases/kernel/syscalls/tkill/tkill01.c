@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic tests for the tkill syscall.
  *
  * [Algorithm]

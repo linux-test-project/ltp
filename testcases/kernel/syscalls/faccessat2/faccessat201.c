@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of faccessat2().
  *
  * Minimum Linux version required is v5.8.

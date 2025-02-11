@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Older ppc64 kernels don't properly flush dcache to icache before
  * giving a cleared page to userspace.  With some exceedingly
  * hairy code, this attempts to test for this bug.

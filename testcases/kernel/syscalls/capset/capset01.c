@@ -10,8 +10,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test capset() with with LINUX_CAPABILITY_VERSION_{1,2,3}.
  */
 

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that mount(2) returns -1 and sets errno to EPERM if the user
  * is not root.
  */

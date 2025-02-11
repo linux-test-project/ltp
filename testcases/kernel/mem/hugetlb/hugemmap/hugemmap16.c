@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * madvise() on some kernels can cause the reservation counter to get
  * corrupted. The problem is that the patches are allocated
  * for the reservation but not faulted in at the time of allocation. The

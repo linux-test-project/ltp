@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case will verify basic function of openat.
  *
  * - pathname is relative, then it is interpreted relative to the directory

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for listxattr(2) system call.
  *
  * listxattr(2) retrieves the list of extended attribute names

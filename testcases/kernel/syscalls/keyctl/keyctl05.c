@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for commit 63a0b0509e70 ("KEYS: fix freeing uninitialized
  * memory in key_update()").  Try to reproduce the crash in two different ways:
  *

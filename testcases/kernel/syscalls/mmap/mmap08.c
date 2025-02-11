@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, mmap() calls fails with errno EBADF when a file mapping
  * is requested but the fd is not a valid file descriptor.
  */

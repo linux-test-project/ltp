@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Creates a semaphore and two processes.  The processes
  * each go through a loop where they semdown, delay for a
  * random amount of time, and semup, so they will almost

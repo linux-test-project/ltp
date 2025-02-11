@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of dup2().
  *
  * - Attempt to dup2() on an open file descriptor.

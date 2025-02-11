@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case checks whether swapoff(2) system call  returns
  *  1. EINVAL when the path does not exist
  *  2. ENOENT when the path exists but is invalid

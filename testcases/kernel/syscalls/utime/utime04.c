@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the system call utime() successfully changes the last
  * access and modification times of a file to the values specified by
  * times argument, under the following constraints:

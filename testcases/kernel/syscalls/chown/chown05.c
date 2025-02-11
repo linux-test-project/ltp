@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, chown(2) succeeds to change the owner and group of a file
  * specified by path to any numeric owner(uid)/group(gid) values when invoked
  * by super-user.

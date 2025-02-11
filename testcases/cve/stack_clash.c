@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a regression test of the Stack Clash [1] vulnerability. This tests
  * that there is at least 256 PAGE_SIZE of stack guard gap which is considered
  * hard to hop above. Code adapted from the Novell's bugzilla [2].

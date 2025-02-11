@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the whether chroot sets errno to EPERM.
  *
  * As a non-root user attempt to perform chroot() to a directory. The

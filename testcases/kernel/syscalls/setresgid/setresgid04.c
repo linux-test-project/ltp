@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setresgid() syscall always sets the file system GID to the same
  * value as the new effective GID.
  */

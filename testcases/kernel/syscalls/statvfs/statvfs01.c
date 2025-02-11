@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that statvfs() executes successfully for all
  * available filesystems. Verify statvfs.f_namemax field
  * by trying to create files of valid and invalid length names.

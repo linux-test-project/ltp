@@ -3,8 +3,6 @@
  * Copyright (C) 2013-2017  Red Hat, Inc.
  */
 /*\
- * [Description]
- *
  * The case is designed to test sysfs boolean knob
  * /sys/kernel/mm/ksm/merge_across_nodes.
  *

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that it's possible to open a pseudo-terminal via /dev/ptmx, to obtain
  * a master + slave pair and to open them multiple times.
  */

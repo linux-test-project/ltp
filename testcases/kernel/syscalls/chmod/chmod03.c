@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, chmod(2) will succeed to change the mode of a file or directory
  * and set the sticky bit on it if invoked by non-root (uid != 0)
  * process with the following constraints:

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Trivial Extended Berkeley Packet Filter (eBPF) test.
  *
  * Sanity check loading and running bytecode.

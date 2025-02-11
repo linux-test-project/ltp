@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * In the user.* namespace, only regular files and directories can
  * have extended attributes. Otherwise setxattr(2) will return -1
  * and set errno to EPERM.

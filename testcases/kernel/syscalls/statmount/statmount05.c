@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies STATMOUNT_MNT_ROOT and STATMOUNT_MNT_POINT functionalities
  * of statmount(). In particular, STATMOUNT_MNT_ROOT will give the mount root
  * (i.e. mount --bind /mnt /bla -> /mnt) and STATMOUNT_MNT_POINT will
