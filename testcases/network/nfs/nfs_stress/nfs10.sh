@@ -25,25 +25,25 @@ nfs10_setup()
 do_test1()
 {
 	tst_res TINFO "Testing buffered write, buffered read"
-	EXPECT_PASS fsplough -c 512 -d "$PWD"
+	EXPECT_PASS fsplough -d "$PWD"
 }
 
 do_test2()
 {
 	tst_res TINFO "Testing buffered write, direct read"
-	EXPECT_PASS fsplough -c 512 -R -d "$PWD"
+	EXPECT_PASS fsplough -R -d "$PWD"
 }
 
 do_test3()
 {
 	tst_res TINFO "Testing direct write, buffered read"
-	EXPECT_PASS fsplough -c 512 -W -d "$PWD"
+	EXPECT_PASS fsplough -W -d "$PWD"
 }
 
 do_test4()
 {
 	tst_res TINFO "Testing direct write, direct read"
-	EXPECT_PASS fsplough -c 512 -RW -d "$PWD"
+	EXPECT_PASS fsplough -RW -d "$PWD"
 }
 
 . nfs_lib.sh
