@@ -25,12 +25,13 @@ static char *workdir_arg;
 static char *directwr_flag;
 static char *directrd_flag;
 static char *loop_arg;
-static int loop_count = 4096;
+static int loop_count;
 
 static int read_fd = -1, write_fd = -1;
 static char *writebuf, *filedata;
 static size_t blocksize, bufsize, filesize;
 
+static struct tst_test test;
 static void do_write(void *buf, size_t offset, size_t size);
 static void do_pwrite(void *buf, size_t offset, size_t size);
 static void do_writev(void *buf, size_t offset, size_t size);
@@ -163,6 +164,7 @@ static void setup(void)
 {
 	struct statvfs statbuf;
 	size_t pagesize;
+	int runtime;
 
 	srand(time(0));
 	pagesize = SAFE_SYSCONF(_SC_PAGESIZE);
@@ -190,7 +192,17 @@ static void setup(void)
 		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	filedata = SAFE_MALLOC(filesize);
 
-	tst_set_timeout(bufsize * loop_count / (8 * 1024 * 1024));
+	if (loop_arg) {
+		/*
+		 * Executing fixed number of loops. Use calculated runtime
+		 * as timeout and apply the timeout multiplier.
+		 */
+		runtime = bufsize * loop_count / (8 * 1024 * 1024);
+		runtime = tst_multiply_timeout(runtime);
+
+		if (runtime > test.runtime)
+			tst_set_runtime(runtime);
+	}
 }
 
 static void run(void)
@@ -199,7 +211,10 @@ static void run(void)
 	int i, f, fails = 0;
 
 	/* Test data consistency between random writes */
-	for (i = 0; i < loop_count; i++) {
+	for (i = 0; !loop_arg || i < loop_count; i++) {
+		if (!tst_remaining_runtime())
+			break;
+
 		length = fill_buffer(writebuf, bufsize);
 		start = rand() % (filesize + 1 - length);
 
@@ -220,6 +235,20 @@ static void run(void)
 				start, start + length);
 			fails++;
 		}
+	}
+
+	if (i < loop_count / 2) {
+		tst_res(TWARN, "Runtime expired, exiting early after %d loops",
+			i);
+		tst_res(TINFO, "If you are running on slow machine, "
+			"try exporting LTP_TIMEOUT_MUL > 1");
+	} else if (i < loop_count) {
+		tst_res(TINFO, "Runtime expired, exiting early after %d loops",
+			i);
+	} else if (!loop_arg && i < 10) {
+		tst_res(TWARN, "Slow system: test performed only %d loops!", i);
+	} else {
+		tst_res(TPASS, "Exiting after %d loops", i);
 	}
 
 	if (!fails)
@@ -269,8 +298,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
+	.runtime = 30,
 	.options = (struct tst_option[]) {
-		{"c:", &loop_arg, "Number of write loops (default: 4096)"},
+		{"c:", &loop_arg,
+			"Number of write loops (default: loop for 30 seconds)"},
 		{"d:", &workdir_arg, "Path to working directory"},
 		{"W", &directwr_flag, "Use direct I/O for writing"},
 		{"R", &directrd_flag, "Use direct I/O for reading"},
