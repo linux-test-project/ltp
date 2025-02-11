@@ -107,17 +107,17 @@ kernel version if necessary. I will explain what the code does below.
 
     // SPDX-License-Identifier: GPL-2.0-or-later
     /*
-    * Copyright (c) 2017 Instruction Ignorer <"can't"@be.bothered.com>
-    */
+     * Copyright (c) 2017 Instruction Ignorer <"can't"@be.bothered.com>
+     */
 
     /*\
-    * [Description]
-    *
-    * All tests should start with a description of _what_ we are testing.
-    * Non-trivial explanations of _how_ the code works should also go here.
-    * Include relevant links, Git commit hashes and CVE numbers.
-    * Inline comments should be avoided.
-    */
+     * [Description]
+     *
+     * All tests should start with a description of _what_ we are testing.
+     * Non-trivial explanations of _how_ the code works should also go here.
+     * Include relevant links, Git commit hashes and CVE numbers.
+     * Inline comments should be avoided.
+     */
 
     #include "tst_test.h"
 
