@@ -435,7 +435,7 @@ def generate_test_catalog(_):
 
     timeout_def = metadata['defaults']['timeout']
 
-    for test_name, conf in metadata['tests'].items():
+    for test_name, conf in sorted(metadata['tests'].items()):
         text.extend([
             f'{test_name}',
             len(test_name) * '-'
