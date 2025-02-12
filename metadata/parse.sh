@@ -42,6 +42,19 @@ EOF
 	fi
 done
 
+for test in `find testcases/ -not -path "testcases/lib/*" -name '*.sh'|sort`; do
+	a=$($top_builddir/metadata/metaparse-sh "$test")
+	if [ -n "$a" ]; then
+		if [ -z "$first" ]; then
+			echo ','
+		fi
+		first=
+		cat <<EOF
+$a
+EOF
+	fi
+done
+
 echo
 echo ' }'
 echo '}'
