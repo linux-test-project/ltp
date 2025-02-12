@@ -212,7 +212,7 @@ static inline int data_node_hash_del(struct data_node *self, const char *id)
 	return 1;
 }
 
-static struct data_node *data_node_hash_get(struct data_node *self, const char *id)
+static inline struct data_node *data_node_hash_get(struct data_node *self, const char *id)
 {
 	unsigned int i;
 	struct data_node_hash *hash = &self->hash;
