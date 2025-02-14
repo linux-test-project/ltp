@@ -89,6 +89,8 @@ run_tests()
 }
 
 run_tests 0 $TESTS_PASS
+run_tests 1 $TESTS_FAIL
+run_tests 2 $TESTS_TBROK
 run_tests 32 $TESTS_TCONF
 
 echo
