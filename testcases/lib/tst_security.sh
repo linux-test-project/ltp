@@ -127,8 +127,7 @@ tst_get_selinux_dir()
 {
 	local dir="/sys/fs/selinux"
 
-	[ -d "$dir" ] || dir="/selinux"
-	[ -d "$dir" ] && echo "$dir"
+	[ -f "$dir/enforce" ] && echo "$dir"
 }
 
 # Get SELinux enforce file path
