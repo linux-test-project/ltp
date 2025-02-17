@@ -17,6 +17,7 @@
 #include <sys/sysmacros.h>
 #include <linux/btrfs.h>
 #include <linux/limits.h>
+#include <sys/statfs.h>
 #include "lapi/syscalls.h"
 #include "test.h"
 #include "safe_macros.h"
@@ -546,9 +547,6 @@ static void btrfs_get_uevent_path(char *tmp_path, char *uevent_path)
 		sprintf(bdev_path,
 			"/sys/fs/btrfs/%s/devices", btrfs_uuid_str);
 	} else {
-		if (errno == ENOTTY)
-			tst_brkm(TBROK | TERRNO, NULL, "BTRFS ioctl failed. Is %s on a tmpfs?", tmp_path);
-
 		tst_brkm(TBROK | TERRNO, NULL, "BTRFS ioctl on %s failed.", tmp_path);
 	}
 	SAFE_CLOSE(NULL, fd);
@@ -576,6 +574,7 @@ __attribute__((nonnull))
 void tst_find_backing_dev(const char *path, char *dev, size_t dev_size)
 {
 	struct stat buf;
+	struct statfs fsbuf;
 	char uevent_path[PATH_MAX+PATH_MAX+10]; //10 is for the static uevent path
 	char dev_name[NAME_MAX];
 	char tmp_path[PATH_MAX];
@@ -593,8 +592,13 @@ void tst_find_backing_dev(const char *path, char *dev, size_t dev_size)
 	dev_minor = minor(buf.st_dev);
 	*dev = '\0';
 
-	if (dev_major == 0) {
+	if (statfs(path, &fsbuf) < 0)
+		tst_brkm(TBROK | TERRNO, NULL, "statfs() failed");
+
+	if (fsbuf.f_type == TST_BTRFS_MAGIC) {
 		btrfs_get_uevent_path(tmp_path, uevent_path);
+	} else if (dev_major == 0) {
+		tst_brkm(TBROK, NULL, "%s resides on an unsupported pseudo-file system", path);
 	} else {
 		tst_resm(TINFO, "Use uevent strategy");
 		sprintf(uevent_path,
