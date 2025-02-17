@@ -245,6 +245,8 @@ load_ima_policy()
 
 ima_setup()
 {
+	local load_policy
+
 	SECURITYFS="$(mount_helper securityfs $SYSFS/kernel/security)"
 
 	IMA_DIR="$SECURITYFS/ima"
@@ -265,11 +267,16 @@ ima_setup()
 		cd "$TST_MNTPOINT"
 	fi
 
-	if ! verify_ima_policy; then
+	verify_ima_policy
+	load_policy=$?
+
+	# Run setup in case of TCONF before loading policy
+	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
+
+	if [ "$load_policy" = 1 ]; then
 		load_ima_policy
 	fi
 
-	[ -n "$TST_SETUP_CALLER" ] && $TST_SETUP_CALLER
 }
 
 ima_cleanup()
