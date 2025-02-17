@@ -38,11 +38,14 @@ cleanup()
 test1()
 {
 	local keycheck_lines i keyrings templates
-	local test_file="file.txt" tmp_file="file2.txt"
+	local pattern='keyrings=[^[:space:]]+'
+	local test_file="file.txt"
 
 	tst_res TINFO "verify key measurement for keyrings and templates specified in IMA policy"
 
-	keycheck_lines=$(cat $tmp_file)
+	keycheck_lines=$(grep -E "$pattern" $IMA_POLICY)
+	tst_res TINFO "keycheck_lines: '$keycheck_lines'"
+
 	keyrings=$(for i in $keycheck_lines; do echo "$i" | grep "keyrings" | \
 		sed "s/\./\\\./g" | cut -d'=' -f2; done | sed ':a;N;$!ba;s/\n/|/g')
 	if [ -z "$keyrings" ]; then
