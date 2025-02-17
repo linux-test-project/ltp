@@ -4,9 +4,6 @@
 #
 # ---
 # doc
-#
-# [Description]
-#
 # This is a simple shell test loader example.
 # ---
 #

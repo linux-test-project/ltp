@@ -4,9 +4,6 @@
 #
 # ---
 # doc
-#
-# [Description]
-#
 # This is an example how to run C child from shell.
 # ---
 #

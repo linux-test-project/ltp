@@ -5,9 +5,6 @@
 #
 # ---
 # doc
-#
-# [Description]
-#
 # Regression test if the vsyscall and vdso VMA regions are reported correctly.
 #
 # While [vsyscall] is mostly deprecated with newer systems, there is
