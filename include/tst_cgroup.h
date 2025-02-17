@@ -256,4 +256,6 @@ int safe_cg_occursin(const char *file, const int lineno,
 			 const char *const file_name,
 			 const char *const needle);
 
+int tst_cg_memory_recursiveprot(struct tst_cg_group *cg);
+
 #endif /* TST_CGROUP_H */

@@ -209,10 +209,14 @@ static void test_memcg_low(void)
 
 		if (i < E) {
 			TST_EXP_EXPR(low > 0,
-				     "(%c low events=%ld) > 0", id, low);
-		} else {
+				"(%c low events=%ld) > 0", id, low);
+		} else if (i == E) {
 			TST_EXP_EXPR(low == 0,
-				     "(%c low events=%ld) == 0", id, low);
+				"(%c low events=%ld) == 0", id, low);
+		} else if (!tst_cg_memory_recursiveprot(leaf_cg[F])) {
+			/* dont not check F when recursive_protection enabled */
+			TST_EXP_EXPR(low == 0,
+				"(%c low events=%ld) == 0", id, low);
 		}
 	}
 
