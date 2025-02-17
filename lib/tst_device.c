@@ -520,20 +520,66 @@ unsigned long tst_dev_bytes_written(const char *dev)
 	return dev_bytes_written;
 }
 
+static void btrfs_get_uevent_path(char *tmp_path, char *uevent_path)
+{
+	int fd;
+	struct btrfs_ioctl_fs_info_args args = {0};
+	char btrfs_uuid_str[UUID_STR_SZ];
+	struct dirent *d;
+	char bdev_path[PATH_MAX];
+	DIR *dir;
+
+	tst_resm(TINFO, "Use BTRFS specific strategy");
+
+	fd = SAFE_OPEN(NULL, tmp_path, O_DIRECTORY);
+	if (!ioctl(fd, BTRFS_IOC_FS_INFO, &args)) {
+		sprintf(btrfs_uuid_str,
+			UUID_FMT,
+			args.fsid[0], args.fsid[1],
+			args.fsid[2], args.fsid[3],
+			args.fsid[4], args.fsid[5],
+			args.fsid[6], args.fsid[7],
+			args.fsid[8], args.fsid[9],
+			args.fsid[10], args.fsid[11],
+			args.fsid[12], args.fsid[13],
+			args.fsid[14], args.fsid[15]);
+		sprintf(bdev_path,
+			"/sys/fs/btrfs/%s/devices", btrfs_uuid_str);
+	} else {
+		if (errno == ENOTTY)
+			tst_brkm(TBROK | TERRNO, NULL, "BTRFS ioctl failed. Is %s on a tmpfs?", tmp_path);
+
+		tst_brkm(TBROK | TERRNO, NULL, "BTRFS ioctl on %s failed.", tmp_path);
+	}
+	SAFE_CLOSE(NULL, fd);
+
+	dir = SAFE_OPENDIR(NULL, bdev_path);
+	while ((d = SAFE_READDIR(NULL, dir))) {
+		if (d->d_name[0] != '.')
+			break;
+	}
+
+	uevent_path[0] = '\0';
+
+	if (d)
+		sprintf(uevent_path, "%s/%s/uevent", bdev_path, d->d_name);
+	else
+		tst_brkm(TBROK | TERRNO, NULL, "No backing device found while looking in %s", bdev_path);
+
+	if (SAFE_READDIR(NULL, dir))
+		tst_resm(TINFO, "Warning: used first of multiple backing device.");
+
+	SAFE_CLOSEDIR(NULL, dir);
+}
+
 __attribute__((nonnull))
 void tst_find_backing_dev(const char *path, char *dev, size_t dev_size)
 {
 	struct stat buf;
-	struct btrfs_ioctl_fs_info_args args = {0};
-	struct dirent *d;
 	char uevent_path[PATH_MAX+PATH_MAX+10]; //10 is for the static uevent path
 	char dev_name[NAME_MAX];
-	char bdev_path[PATH_MAX];
 	char tmp_path[PATH_MAX];
-	char btrfs_uuid_str[UUID_STR_SZ];
-	DIR *dir;
 	unsigned int dev_major, dev_minor;
-	int fd;
 
 	if (stat(path, &buf) < 0)
 		tst_brkm(TWARN | TERRNO, NULL, "stat() failed");
@@ -548,49 +594,7 @@ void tst_find_backing_dev(const char *path, char *dev, size_t dev_size)
 	*dev = '\0';
 
 	if (dev_major == 0) {
-		tst_resm(TINFO, "Use BTRFS specific strategy");
-
-		fd = SAFE_OPEN(NULL, tmp_path, O_DIRECTORY);
-		if (!ioctl(fd, BTRFS_IOC_FS_INFO, &args)) {
-			sprintf(btrfs_uuid_str,
-				UUID_FMT,
-				args.fsid[0], args.fsid[1],
-				args.fsid[2], args.fsid[3],
-				args.fsid[4], args.fsid[5],
-				args.fsid[6], args.fsid[7],
-				args.fsid[8], args.fsid[9],
-				args.fsid[10], args.fsid[11],
-				args.fsid[12], args.fsid[13],
-				args.fsid[14], args.fsid[15]);
-			sprintf(bdev_path,
-				"/sys/fs/btrfs/%s/devices", btrfs_uuid_str);
-		} else {
-			if (errno == ENOTTY)
-				tst_brkm(TBROK | TERRNO, NULL, "BTRFS ioctl failed. Is %s on a tmpfs?", path);
-
-			tst_brkm(TBROK | TERRNO, NULL, "BTRFS ioctl on %s failed.", tmp_path);
-		}
-		SAFE_CLOSE(NULL, fd);
-
-		dir = SAFE_OPENDIR(NULL, bdev_path);
-		while ((d = SAFE_READDIR(NULL, dir))) {
-			if (d->d_name[0] != '.')
-				break;
-		}
-
-		uevent_path[0] = '\0';
-
-		if (d) {
-			sprintf(uevent_path, "%s/%s/uevent",
-				bdev_path, d->d_name);
-		} else {
-			tst_brkm(TBROK | TERRNO, NULL, "No backing device found while looking in %s.", bdev_path);
-		}
-
-		if (SAFE_READDIR(NULL, dir))
-			tst_resm(TINFO, "Warning: used first of multiple backing device.");
-
-		SAFE_CLOSEDIR(NULL, dir);
+		btrfs_get_uevent_path(tmp_path, uevent_path);
 	} else {
 		tst_resm(TINFO, "Use uevent strategy");
 		sprintf(uevent_path,
