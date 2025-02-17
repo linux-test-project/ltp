@@ -6,8 +6,6 @@
  */
 
 /*\
- *[Description]
- *
  * This test verifies that parent process shares environ variables with the
  * child and that child doesn't change parent's environ variables.
  */

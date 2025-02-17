@@ -6,8 +6,6 @@
  */
 
 /*\
- *[Description]
- *
  * - fork returns without error
  * - fork returns the pid of the child
  */

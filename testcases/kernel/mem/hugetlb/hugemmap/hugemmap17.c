@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Descriptiom]
- *
  * At one stage, a misconversion of hugetlb_vmtruncate_list to a prio_tree
  * meant that on 32-bit machines, certain combinations of mapping and
  * truncations could truncate incorrect pages, or overwrite pmds from

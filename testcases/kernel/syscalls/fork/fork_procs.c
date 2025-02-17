@@ -4,8 +4,6 @@
  */
 
 /*\
- *[Description]
- *
  * This test spawns multiple processes using fork() and it checks if wait()
  * returns the right PID once they end up.
  */

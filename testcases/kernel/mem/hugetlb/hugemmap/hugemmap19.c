@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Descripiton]
- *
  * At one stage, a misconversion of hugetlb_vmtruncate_list to a
  * prio_tree meant that on 32-bit machines, truncates at or above 4GB
  * could truncate lower pages, resulting in BUG_ON()s.
