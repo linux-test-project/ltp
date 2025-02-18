@@ -914,14 +914,15 @@ static void setup_ious(struct thread_info *t, int num_files, int depth, int recl
 {
 	int i;
 	size_t bytes = num_files * depth * sizeof(*t->ios);
+	char *buffer = aligned_buffer;
 
 	t->ios = SAFE_MALLOC(bytes);
 
 	memset(t->ios, 0, bytes);
 
 	for (i = 0; i < depth * num_files; i++) {
-		t->ios[i].buf = aligned_buffer;
-		aligned_buffer += padded_reclen;
+		t->ios[i].buf = buffer;
+		buffer += padded_reclen;
 		t->ios[i].buf_size = reclen;
 		if (verify)
 			memset(t->ios[i].buf, 'b', reclen);
@@ -932,7 +933,7 @@ static void setup_ious(struct thread_info *t, int num_files, int depth, int recl
 	}
 
 	if (verify) {
-		verify_buf = aligned_buffer;
+		verify_buf = buffer;
 		memset(verify_buf, 'b', reclen);
 	}
 
@@ -1228,19 +1229,6 @@ static void setup(void)
 			tst_brk(TBROK, "Invalid shm option '%s'", str_use_shm);
 		}
 	}
-}
-
-static void run(void)
-{
-	char files[num_files][265];
-	int first_stage = WRITE;
-	struct io_oper *oper;
-	int status = 0;
-	int open_fds = 0;
-	struct thread_info *t;
-	int rwfd;
-	int i;
-	int j;
 
 	/*
 	 * make sure we don't try to submit more I/O than we have allocated
@@ -1255,6 +1243,22 @@ static void run(void)
 		num_threads = num_files * num_contexts;
 		tst_res(TINFO, "Dropping thread count to the number of contexts %d", num_threads);
 	}
+
+	if (setup_shared_mem(num_threads, num_files * num_contexts, depth, rec_len))
+		tst_brk(TBROK, "error in setup_shared_mem");
+}
+
+static void run(void)
+{
+	char files[num_files][265];
+	int first_stage = WRITE;
+	struct io_oper *oper;
+	int status = 0;
+	int open_fds = 0;
+	struct thread_info *t;
+	int rwfd;
+	int i;
+	int j;
 
 	t = SAFE_MALLOC(num_threads * sizeof(*t));
 	memset(t, 0, num_threads * sizeof(*t));
@@ -1322,8 +1326,6 @@ static void run(void)
 		}
 	}
 
-	if (setup_shared_mem(num_threads, num_files * num_contexts, depth, rec_len))
-		tst_brk(TBROK, "error in setup_shared_mem");
 
 	for (i = 0; i < num_threads; i++)
 		setup_ious(&t[i], t[i].num_files, depth, rec_len, max_io_submit);
@@ -1338,6 +1340,13 @@ static void run(void)
 
 	for (i = 0; i < num_files; i++)
 		SAFE_UNLINK(files[i]);
+
+	for (i = 0; i < num_threads; i++) {
+		free(t[i].ios);
+		free(t[i].iocbs);
+		free(t[i].events);
+	}
+	free(t);
 
 	if (status)
 		tst_res(TFAIL, "Test did not pass");
