@@ -434,6 +434,7 @@ def generate_test_catalog(_):
         metadata = json.load(data)
 
     timeout_def = metadata['defaults']['timeout']
+    regexp = re.compile(r'^\[([A-Za-z][\w\W]+)\]')
 
     for test_name, conf in sorted(metadata['tests'].items()):
         text.extend([
@@ -455,12 +456,8 @@ def generate_test_catalog(_):
         if desc:
             desc_text = []
             for line in desc:
-                if line.startswith("[Description]"):
-                    desc_text.append("**Description**")
-                elif line.startswith("[Algorithm]"):
-                    desc_text.append("**Algorithm**")
-                else:
-                    desc_text.append(line)
+                line = regexp.sub(r'**\1**', line)
+                desc_text.append(line)
 
             text.extend([
                 '\n'.join(desc_text),
