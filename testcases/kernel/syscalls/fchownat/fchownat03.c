@@ -5,26 +5,19 @@
  */
 
 /*\
- * Verify that,
- * - fchownat() returns -1 and sets errno to EACCES if there is no permission
-     to access to the file.
- * - fchownat() returns -1 and sets errno to EBADF if the file descriptor
- *   of the specified file is not valid.
- * - fchownat() returns -1 and sets errno to EFAULT if the filename points
-     outside of accessable address space.
- * - fchownat() returns -1 and sets errno to EINVAL if the flag is invalid.
- * - fchownat() returns -1 and sets errno to ELOOP if too many symbolic links
- *   were encountered in resolving filename.
- * - fchownat() returns -1 and sets errno to ENAMETOOLONG if the filename is
-     too long.
- * - fchownat() returns -1 and sets errno to ENOENT if the specified file does
- *   not exist.
- * - fchownat() returns -1 and sets errno to ENOTDIR if the file descriptor is
- *   a file.
- * - fchownat() returns -1 and sets errno to EPERM if the effective user id
- *   of process does not match the owner of the file and the process is not
- *   super user.
- * - fchownat() returns -1 and sets errno to EROFS if the file is readonly.
+ * Verify that fchownat(2) returns -1 and sets errno to:
+ *
+ * - EACCES if there is no permission to access to the file.
+ * - EBADF if the file descriptor of the specified file is not valid.
+ * - EFAULT if the filename points outside of accessable address space.
+ * - EINVAL if the flag is invalid.
+ * - ELOOP if too many symbolic links were encountered in resolving filename.
+ * - ENAMETOOLONG if the filename is too long.
+ * - ENOENT if the specified file does not exist.
+ * - ENOTDIR if the file descriptor is a file.
+ * - EPERM if the effective user id of process does not match the owner of
+ *   the file and the process is not super user.
+ * - EROFS if the file is readonly.
  */
 
 #define _GNU_SOURCE
