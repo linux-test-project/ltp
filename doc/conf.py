@@ -286,7 +286,7 @@ def _generate_tags_table(tags):
             tag_val = f'`{tag_val} <{tag_url}{tag_val}>`_'
 
         table.extend([
-            f'   * - {tag_key}',
+            f'   * - :c:struct:`{tag_key} <tst_tag>`',
             f'     - {tag_val}',
         ])
 
@@ -331,6 +331,7 @@ def _generate_table_cell(key, values):
     Generate a cell which can be multiline if value is a list.
     """
     cell = []
+    key = f' :c:struct:`{key} <tst_test>`'
 
     if len(values) > 1:
         cell.extend([
