@@ -9,13 +9,13 @@
  * btrfs filesystem.
  *
  * 1. Sets the same contents for two files and deduplicates it.
- *	Deduplicates 3 bytes and set the status to
- *	FILE_DEDUPE_RANGE_SAME.
+ *    Deduplicates 3 bytes and set the status to
+ *    FILE_DEDUPE_RANGE_SAME.
  * 2. Sets different content for two files and tries to
- *	deduplicate it. 0 bytes get deduplicated and status is
- *	set to FILE_DEDUPE_RANGE_DIFFERS.
+ *    deduplicate it. 0 bytes get deduplicated and status is
+ *    set to FILE_DEDUPE_RANGE_DIFFERS.
  * 3. Sets same content for two files but sets the length to
- *	deduplicate to -1. ioctl(FIDEDUPERANGE) fails with EINVAL.
+ *    deduplicate to -1. ioctl(FIDEDUPERANGE) fails with EINVAL.
  */
 
 #include "config.h"
