@@ -13,6 +13,7 @@
  * [Algorithm]
  *
  * Test steps are the following:
+ *
  * - create a file made in three parts -> | aa..a | bb..b | cc..c |
  * - from parent, open the file
  * - from child, move file offset after the first part
