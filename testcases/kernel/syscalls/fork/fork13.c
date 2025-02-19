@@ -7,7 +7,8 @@
 /*\
  * A race in pid generation that causes pids to be reused immediately
  *
- * From the mainline commit 5fdee8c4a5e1800489ce61963208f8cc55e42ea1:
+ * From the mainline commit
+ * 5fdee8c4a5e1 ("pids: fix a race in pid generation that causes pids to be reused immediately")
  *
  * A program that repeatedly forks and waits is susceptible to having
  * the same pid repeated, especially when it competes with another
@@ -15,21 +16,20 @@
  * implementation.  Furthermore, many shell scripts assume that pid
  * numbers will not be used for some length of time.
  *
- * [Race Description]
- * ---------------------------------------------------------------------
- * A                                B
+ * [Race Description] ::
  *
- * // pid == offset == n            // pid == offset == n + 1
- * test_and_set_bit(offset, map->page)
- *                                  test_and_set_bit(offset, map->page);
- *                                  pid_ns->last_pid = pid;
- * pid_ns->last_pid = pid;
- *                                  // pid == n + 1 is freed (wait())
+ *    A                                   B
  *
- *                                  // Next fork()...
- *                                  last = pid_ns->last_pid; // == n
- *                                  pid = last + 1;
- * ---------------------------------------------------------------------
+ *    // pid == offset == n               // pid == offset == n + 1
+ *    test_and_set_bit(offset, map->page)
+ *                                        test_and_set_bit(offset, map->page);
+ *                                        pid_ns->last_pid = pid;
+ *    pid_ns->last_pid = pid;
+ *                                        // pid == n + 1 is freed (wait())
+ *
+ *                                        // Next fork()...
+ *                                        last = pid_ns->last_pid; // == n
+ *                                        pid = last + 1;
  */
 
 #include <sys/types.h>
