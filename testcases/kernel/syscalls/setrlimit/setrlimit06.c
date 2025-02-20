@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
+ * Copyright (c) Linux Test Project, 2019-2025
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
+/*\
  * Set CPU time limit for a process and check its behavior
  * after reaching CPU time limit.
+ *
  * 1) Process got SIGXCPU after reaching soft limit of CPU time.
  * 2) Process got SIGKILL after reaching hard limit of CPU time.
  *
- * Note:
- * This is also a regression test for the following kernel bug:
- * 'c3bca5d450b62 ("posix-cpu-timers: Ensure set_process_cpu_timer is always evaluated")'
+ * Test is also a regression test for kernel bug:
+ * c3bca5d450b62 ("posix-cpu-timers: Ensure set_process_cpu_timer is always evaluated")
  */
 
 #define _GNU_SOURCE
