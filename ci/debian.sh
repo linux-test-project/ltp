@@ -38,7 +38,6 @@ pkg_nonessential="
 	libacl1-dev
 	libaio-dev
 	libcap-dev
-	libjson-perl
 	libkeyutils-dev
 	libnuma-dev
 	libmnl-dev

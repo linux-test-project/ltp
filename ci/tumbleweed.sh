@@ -26,5 +26,4 @@ $zyp \
 	libtirpc-devel \
 	linux-glibc-devel \
 	lsb-release \
-	perl-JSON \
 	pkg-config

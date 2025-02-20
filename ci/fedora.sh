@@ -16,8 +16,6 @@ $yum \
 	numactl-devel \
 	libtirpc \
 	libtirpc-devel \
-	perl-JSON \
-	perl-libwww-perl \
 	pkg-config \
 	redhat-lsb-core
 
