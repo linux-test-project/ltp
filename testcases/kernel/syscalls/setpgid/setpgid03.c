@@ -10,12 +10,10 @@
  * Tests setpgid(2) errors:
  *
  * - EPERM The process specified by pid must not be a session leader.
- *
  * - EPERM The calling process, process specified by pid and the target
- *         process group must be in the same session.
- *
+ *   process group must be in the same session.
  * - EACCESS Proccess cannot change process group ID of a child after child
- *           has performed exec()
+ *   has performed exec()
  */
 
 #include <unistd.h>
