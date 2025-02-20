@@ -8,13 +8,13 @@
 /*\
  * Verify that, chmod(2) returns -1 and sets errno to
  *
- * 1. EPERM if the effective user id of process does not match the owner of the
- * file and the process is not super user
- * 2. EACCES if search permission is denied on a component of the path prefix
- * 3. EFAULT if pathname points outside user's accessible address space
- * 4. ENAMETOOLONG if the pathname component is too long
- * 5. ENOTDIR if the directory component in pathname is not a directory
- * 6. ENOENT if the specified file does not exists
+ * - EPERM if the effective user id of process does not match the owner of the
+ *   file and the process is not super user
+ * - EACCES if search permission is denied on a component of the path prefix
+ * - EFAULT if pathname points outside user's accessible address space
+ * - ENAMETOOLONG if the pathname component is too long
+ * - ENOTDIR if the directory component in pathname is not a directory
+ * - ENOENT if the specified file does not exists
  */
 
 #include <pwd.h>
