@@ -6,8 +6,8 @@
 /*\
  * Tests basic error handing of the shmdt syscall.
  *
- * -EINVAL there is no shared memory segment attached at shmaddr.
- * -EINVAL shmaddr is not aligned on a page boundary.
+ * - EINVAL there is no shared memory segment attached at shmaddr.
+ * - EINVAL shmaddr is not aligned on a page boundary.
  */
 
 #include <sys/types.h>
