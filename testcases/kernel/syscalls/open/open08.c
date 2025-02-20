@@ -9,7 +9,7 @@
  *
  * - EEXIST when pathname already exists and O_CREAT and O_EXCL were used
  * - EISDIR when pathname refers to a directory and the access requested
- * involved writing
+ *   involved writing
  * - ENOTDIR when O_DIRECTORY was specified and pathname was not a directory
  * - ENAMETOOLONG when pathname was too long
  * - EACCES when requested access to the file is not allowed
