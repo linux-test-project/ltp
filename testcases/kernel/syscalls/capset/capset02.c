@@ -6,20 +6,15 @@
  */
 
 /*\
- * Tests basic error handling of the capset syscall.
+ * Verify that, capset(2) fails and sets errno to
  *
- * 1. capset() fails with errno set to EFAULT if an invalid address
- * is given for header.
- * 2. capset() fails with errno set to EFAULT if an invalid address
- * is given for data.
- * 3. capset() fails with errno set to EINVAL if an invalid value
- * is given for header->version.
- * 4. capset() fails with errno set to EPERM if the new_Effective is
- * not a subset of the new_Permitted.
- * 5. capset() fails with errno set to EPERM if the new_Permitted is
- * not a subset of the old_Permitted.
- * 6. capset() fails with errno set ot EPERM if the new_Inheritable is
- * not a subset of  the old_Inheritable and bounding set.
+ * - EFAULT if an invalid address is given for header.
+ * - EFAULT if an invalid address is given for data.
+ * - EINVAL if an invalid value is given for header->version.
+ * - EPERM if the new_Effective is not a subset of the new_Permitted.
+ * - EPERM if the new_Permitted is not a subset of the old_Permitted.
+ * - EPERM if the new_Inheritable is not a subset of the
+ *   old_Inheritable and bounding set.
  */
 
 #include <stdlib.h>
