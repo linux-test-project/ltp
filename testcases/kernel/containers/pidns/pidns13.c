@@ -13,6 +13,7 @@
  * triggered by peer namespace process.
  *
  * [Algorithm]
+ *
  * * create a pipe in parent namespace
  * * create two PID namespace containers(cinit1 and cinit2)
  * * in cinit1, set pipe read end to send SIGUSR1 for asynchronous I/O
