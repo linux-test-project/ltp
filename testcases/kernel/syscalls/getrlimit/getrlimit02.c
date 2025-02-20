@@ -5,13 +5,11 @@
  */
 
 /*\
- * Test for checking error conditions for getrlimit(2):
+ * Verify that, getrlimit(2) returns -1 and sets errno to 
  *
- * 1. getrlimit(2) returns -1 and sets errno to EFAULT if an invalid
- *	  address is given for address parameter.
- * 2. getrlimit(2) returns -1 and sets errno to EINVAL if an invalid
- *	  resource type (RLIM_NLIMITS is a out of range resource type) is
- *	  passed.
+ * - EFAULT if an invalid address is given for address parameter.
+ * - EINVAL if an invalid resource type (RLIM_NLIMITS is a out of
+ *   range resource type) is passed.
  */
 
 #include <sys/resource.h>
