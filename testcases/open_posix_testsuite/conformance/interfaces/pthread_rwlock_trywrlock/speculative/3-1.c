@@ -23,7 +23,7 @@
 int main(void)
 {
 
-	static pthread_rwlock_t rwlock;
+	static pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
 	int rc;
 
 	/* Call without initializing rwlock */
