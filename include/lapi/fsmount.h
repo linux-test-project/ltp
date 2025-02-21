@@ -139,7 +139,7 @@ static inline int mount_setattr(int dirfd, const char *from_pathname, unsigned i
 #define MOVE_MOUNT_T_SYMLINKS		0x00000010 /* Follow symlinks on to path */
 #define MOVE_MOUNT_T_AUTOMOUNTS		0x00000020 /* Follow automounts on to path */
 #define MOVE_MOUNT_T_EMPTY_PATH		0x00000040 /* Empty to path permitted */
-#define MOVE_MOUNT__MASK		0x00000077
+#define MOVE_MOUNT__MASK		0x00000377
 
 /*
  * fsopen() flags.
