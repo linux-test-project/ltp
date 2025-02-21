@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2016-2021
+# Copyright (c) Linux Test Project, 2016-2025
 # Copyright (c) 2015 Fujitsu Ltd.
 # Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
 #
@@ -13,6 +13,10 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="lsmod"
 
 module_inserted=
+
+# lsmod triggers zcrypt refcount increase if it links against libssl
+# which uses hardware acceleration
+whitelist_modules='zcrypt'
 
 setup()
 {
@@ -55,8 +59,8 @@ lsmod_matches_proc_modules()
 	if [ "$lsmod_output" != "$modules_output" ]; then
 		tst_res TINFO "lsmod output different from /proc/modules"
 
-		echo "$lsmod_output" > temp1
-		echo "$modules_output" > temp2
+		echo "$lsmod_output" | grep -v "^$whitelist_modules" > temp1
+		echo "$modules_output" | grep -v "^$whitelist_modules" > temp2
 		if tst_cmd_available diff; then
 			diff temp1 temp2
 		else
