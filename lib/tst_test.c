@@ -200,7 +200,7 @@ int tst_run_script(const char *script_name, char *const params[])
 	if (!tst_test->runs_script)
 		tst_brk(TBROK, "runs_script flag must be set!");
 
-	argv[0] = (char*)script_name;
+	argv[0] = (char *)script_name;
 
 	if (params) {
 		for (i = 0; i < params_len; i++)
