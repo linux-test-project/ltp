@@ -42,11 +42,32 @@ measure()
 
 setup()
 {
-	tst_res TINFO "using kernel $IMA_KEXEC_IMAGE"
+	local arch
+
+	if [ ! -f "$IMA_KEXEC_IMAGE" ]; then
+		for arg in $(cat /proc/cmdline); do
+			if echo "$arg" |grep -q '^BOOT_IMAGE'; then
+				eval "$arg"
+			fi
+		done
+
+		tst_res TINFO "using as kernel BOOT_IMAGE from /proc/cmdline: '$BOOT_IMAGE'"
+
+		# replace grub partition, e.g. (hd0,gpt2) => /boot
+		if echo "$BOOT_IMAGE" |grep -q '(.d[0-9]'; then
+			echo "$BOOT_IMAGE" | sed 's|(.*,.*)/|/boot/|'
+		fi
+
+		if [ -f "$BOOT_IMAGE" ]; then
+			IMA_KEXEC_IMAGE="$BOOT_IMAGE"
+		fi
+	fi
 
 	if [ ! -f "$IMA_KEXEC_IMAGE" ]; then
 		tst_brk TCONF "kernel image not found, specify path in \$IMA_KEXEC_IMAGE"
 	fi
+
+	tst_res TINFO "using kernel $IMA_KEXEC_IMAGE"
 }
 
 kexec_failure_hint()
