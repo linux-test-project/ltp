@@ -5,7 +5,8 @@
 # Author: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
 #
 # Verify measurement of SELinux policy hash and state.
-# Test requires example IMA policy loadable with LTP_IMA_LOAD_POLICY=1.
+# Test requires ima_policy=critical_data kernel command line and example IMA
+# policy loadable with LTP_IMA_LOAD_POLICY=1.
 #
 # Relevant kernel commits:
 # * fdd1ffe8a812 ("selinux: include a consumer of the new IMA critical data hook")
@@ -22,6 +23,8 @@ setup()
 {
 	SELINUX_DIR=$(tst_get_selinux_dir)
 	[ "$SELINUX_DIR" ] || tst_brk TCONF "SELinux is not enabled"
+
+	require_ima_policy_cmdline "critical_data"
 }
 
 # Format of the measured SELinux state data.
