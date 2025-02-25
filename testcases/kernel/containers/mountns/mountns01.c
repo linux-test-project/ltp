@@ -17,14 +17,18 @@
  * - Makes directory DIR_A shared
  * - Clones a new child process with CLONE_NEWNS flag
  * - There are two test cases (where X is parent namespace and Y child namespace):
- *  1. First test case
- *   .. X: bind mounts DIR_B to DIR_A
- *   .. Y: must see DIR_A/"B"
- *   .. X: umounts DIR_A
- *  2. Second test case
- *   .. Y: bind mounts DIR_B to DIR_A
- *   .. X: must see DIR_A/"B"
- *   .. Y: umounts DIR_A
+ *
+ *   1. First test case
+ *
+ *     - X: bind mounts DIR_B to DIR_A
+ *     - Y: must see DIR_A/"B"
+ *     - X: umounts DIR_A
+ *
+ *   2. Second test case
+ *
+ *     - Y: bind mounts DIR_B to DIR_A
+ *     - X: must see DIR_A/"B"
+ *     - Y: umounts DIR_A
  */
 
 #include <sys/wait.h>
