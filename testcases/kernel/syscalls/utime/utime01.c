@@ -31,7 +31,7 @@ static void run(void)
 	struct stat stat_buf;
 	time_t pre_time, post_time;
 
-	utbuf.modtime = tst_get_fs_timestamp() - 5;
+	utbuf.modtime = tst_fs_timestamp_start() - 5;
 	utbuf.actime = utbuf.modtime + 1;
 	TST_EXP_PASS_SILENT(utime(TEMP_FILE, &utbuf));
 	SAFE_STAT(TEMP_FILE, &stat_buf);
@@ -39,11 +39,11 @@ static void run(void)
 	TST_EXP_EQ_LI(stat_buf.st_atime, utbuf.actime);
 	TST_EXP_EQ_LI(stat_buf.st_mtime, utbuf.modtime);
 
-	pre_time = tst_get_fs_timestamp();
+	pre_time = tst_fs_timestamp_start();
 	TST_EXP_PASS(utime(TEMP_FILE, NULL), "utime(%s, NULL)", TEMP_FILE);
 	if (!TST_PASS)
 		return;
-	post_time = tst_get_fs_timestamp();
+	post_time = tst_fs_timestamp_end();
 	SAFE_STAT(TEMP_FILE, &stat_buf);
 
 	if (stat_buf.st_mtime < pre_time || stat_buf.st_mtime > post_time)

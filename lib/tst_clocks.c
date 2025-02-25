@@ -144,15 +144,27 @@ const char *tst_clock_name(clockid_t clk_id)
 	}
 }
 
-time_t tst_get_fs_timestamp(void)
+time_t tst_clock_get_timestamp(clockid_t clk_id)
 {
 	struct timespec ts;
 	int ret;
 
-	ret = tst_clock_gettime(CLOCK_REALTIME_COARSE, &ts);
+	ret = tst_clock_gettime(clk_id, &ts);
 
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clock_gettime(CLOCK_REALTIME_COARSE)");
+	if (ret < 0) {
+		tst_brk(TBROK | TERRNO, "clock_gettime(%s)",
+			tst_clock_name(clk_id));
+	}
 
 	return ts.tv_sec;
+}
+
+time_t tst_fs_timestamp_start(void)
+{
+	return tst_clock_get_timestamp(CLOCK_REALTIME_COARSE);
+}
+
+time_t tst_fs_timestamp_end(void)
+{
+	return tst_clock_get_timestamp(CLOCK_REALTIME);
 }

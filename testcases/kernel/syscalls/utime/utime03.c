@@ -68,9 +68,9 @@ static void run(void)
 	}
 
 	SAFE_SETEUID(user_uid);
-	mintime = tst_get_fs_timestamp();
+	mintime = tst_fs_timestamp_start();
 	TST_EXP_PASS(utime(TEMP_FILE, NULL));
-	maxtime = tst_get_fs_timestamp();
+	maxtime = tst_fs_timestamp_end();
 	SAFE_SETEUID(root_uid);
 	SAFE_STAT(TEMP_FILE, &statbuf);
 
