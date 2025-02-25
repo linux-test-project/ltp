@@ -198,9 +198,9 @@ static void setup(void)
 {
 	tst_sig(NOFORK, DEF_HANDLER, cleanup);
 
-	if (tst_is_virt(VIRT_XEN) || tst_is_virt(VIRT_KVM) || tst_is_virt(VIRT_HYPERV))
-		tst_brkm(TCONF, NULL, "This testcase is not supported on this"
-		        " virtual machine.");
+	if (tst_is_virt(VIRT_ANY))
+		tst_brkm(TCONF, NULL,
+			 "Test is not supported on a virtual machine");
 
 	BIAS_MAX = guess_timer_resolution();
 
