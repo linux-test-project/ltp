@@ -188,7 +188,7 @@ const char **tst_get_supported_fs_types(const char *const *skiplist)
 
 	skip_fuse = tst_fs_in_skiplist("fuse", skiplist);
 
-	if (only_fs) {
+	if (only_fs && only_fs[0] != '\0') {
 		tst_res(TINFO, "WARNING: testing only %s", only_fs);
 		if (fs_could_be_used(only_fs, skiplist, skip_fuse))
 			fs_types[0] = only_fs;
