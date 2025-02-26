@@ -586,6 +586,7 @@ ioctl06      ioctl06
 ioctl07      ioctl07
 ioctl08      ioctl08
 ioctl09      ioctl09
+ioctl10      ioctl10
 
 ioctl_loop01 ioctl_loop01
 ioctl_loop02 ioctl_loop02

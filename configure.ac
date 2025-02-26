@@ -188,6 +188,7 @@ AC_CHECK_TYPES([struct fanotify_event_info_fid, struct fanotify_event_info_error
 		struct fanotify_event_info_range],,,[#include <sys/fanotify.h>])
 AC_CHECK_TYPES([struct file_clone_range],,,[#include <linux/fs.h>])
 AC_CHECK_TYPES([struct file_dedupe_range],,,[#include <linux/fs.h>])
+AC_CHECK_TYPES([struct procmap_query],,,[#include <linux/fs.h>])
 
 AC_CHECK_TYPES([struct file_handle],,,[
 #define _GNU_SOURCE
