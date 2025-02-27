@@ -21,6 +21,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include "posixtest.h"
+#include "proc.h"
 
 #define TEST "9-1"
 #define FUNCTION "sem_timedwait"
@@ -79,7 +80,8 @@ int main(void)
 
 	} else {		// parent to send a signal to child
 		int i;
-		sleep(1);
+
+		tst_process_state_wait3(pid, 'S', 1);
 		(void)kill(pid, SIGABRT);	// send signal to child
 		if (wait(&i) == -1) {
 			perror("Error waiting for child to exit\n");

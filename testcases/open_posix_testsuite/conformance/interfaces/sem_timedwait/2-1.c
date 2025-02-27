@@ -22,6 +22,7 @@
 #include <time.h>
 #include <sys/mman.h>
 #include "posixtest.h"
+#include "proc.h"
 
 #define TEST "2-1"
 #define SHM_NAME "/posixtest_2-1"
@@ -79,7 +80,8 @@ int main(void)
 	} else if (pid > 0)	// parent to unlock semaphore
 	{
 		int i;
-		sleep(1);
+
+		tst_process_state_wait3(pid, 'S', 1);
 		if (sem_post(mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_post");
 			return PTS_FAIL;
