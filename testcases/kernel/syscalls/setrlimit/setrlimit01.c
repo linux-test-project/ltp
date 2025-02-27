@@ -33,6 +33,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
@@ -256,8 +257,7 @@ static void test4(void)
 		tst_brkm(TBROK, cleanup, "fork() failed");
 
 	if (pid == 0) {		/* child */
-		char *testbuf = NULL;
-		strcpy(testbuf, "abcd");
+		raise(SIGSEGV);
 		exit(0);
 	}
 	wait(&status);
