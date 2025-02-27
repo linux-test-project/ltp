@@ -227,4 +227,32 @@ static inline int safe_setrlimit(const char *file, const int lineno,
 #define SAFE_SETRLIMIT(resource, rlim) \
 	safe_setrlimit(__FILE__, __LINE__, (resource), (rlim))
 
+void tst_prot_to_str(const int prot, char *buf);
+
+static inline void *safe_mmap(const char *file, const int lineno,
+	void *addr, size_t length, int prot, int flags, int fd, off_t offset)
+{
+	void *rval;
+	char prot_buf[512];
+
+	tst_prot_to_str(prot, prot_buf);
+
+	tst_res_(file, lineno, TDEBUG,
+		"mmap(%p, %zu, %s(%x), %d, %d, %lld)",
+		addr, length, prot_buf, prot, flags, fd, (long long int)offset);
+
+	rval = mmap(addr, length, prot, flags, fd, offset);
+	if (rval == MAP_FAILED) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mmap(%p,%zu,%s(%x),%d,%d,%ld) failed",
+			addr, length, prot_buf, prot, flags, fd, (long) offset);
+	}
+
+	return rval;
+}
+
+#define SAFE_MMAP(addr, length, prot, flags, fd, offset) \
+	safe_mmap(__FILE__, __LINE__, (addr), (length), (prot), \
+	(flags), (fd), (offset))
+
 #endif /* TST_SAFE_MACROS_INLINE_H__ */
