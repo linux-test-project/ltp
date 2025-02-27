@@ -11,6 +11,7 @@ AR			:= @AR@
 CC			:= @CC@
 LEX			:= @LEX@
 RANLIB			:= @RANLIB@
+OBJCOPY			:= @OBJCOPY@
 STRIP			:= @STRIP@
 YACC			:= @YACC@
 
