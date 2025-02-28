@@ -19,4 +19,4 @@ tst_test()
 	tst_res TFAIL "Fails the test so that tags are shown."
 }
 
-tst_test
+. tst_run.sh

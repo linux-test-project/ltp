@@ -18,11 +18,6 @@ if [ -z "$LINENO" ]; then
 	LINENO=-1
 fi
 
-if [ -z "$LTP_IPC_PATH" ]; then
-	echo "This script has to be executed from a LTP loader!"
-	exit 1
-fi
-
 tst_brk_()
 {
 	tst_res_ "$@"
@@ -35,7 +30,3 @@ tst_brk_()
 
 alias tst_res="tst_res_ $tst_script_name \$LINENO"
 alias tst_brk="tst_brk_ $tst_script_name \$LINENO"
-
-if [ -n "$TST_CLEANUP" ]; then
-	trap $TST_CLEANUP EXIT
-fi

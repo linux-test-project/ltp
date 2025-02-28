@@ -32,4 +32,4 @@ tst_test()
 	fi
 }
 
-tst_test
+. tst_run.sh

@@ -19,4 +19,4 @@ tst_test()
 	tst_res TFAIL "Shell loader should TBROK the test"
 }
 
-tst_test
+. tst_run.sh

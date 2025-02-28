@@ -16,4 +16,4 @@ tst_test()
 	tst_res TPASS "We are running on supported architecture"
 }
 
-tst_test
+. tst_run.sh
