@@ -16,7 +16,7 @@
  * c3bca5d450b62 ("posix-cpu-timers: Ensure set_process_cpu_timer is always evaluated")
  */
 
-#define _GNU_SOURCE
+#define _LARGEFILE64_SOURCE
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>

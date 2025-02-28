@@ -7,7 +7,7 @@
 #ifndef LAPI_RESOURCE_H__
 #define LAPI_RESOURCE_H__
 
-#define _GNU_SOURCE
+#define _LARGEFILE64_SOURCE
 
 #include <sys/resource.h>
 #include "config.h"
