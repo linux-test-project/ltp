@@ -29,7 +29,7 @@ static inline int open_event_device(void)
 			memset(path, 0, sizeof(path));
 			snprintf(path, sizeof(path), "/dev/input/%s", device);
 
-			if (!access(path, F_OK)) {
+			if (!TST_RETRY_FUNC(access(path, F_OK), TST_RETVAL_EQ0)) {
 				tst_res(TINFO, "Found event device: %s", path);
 				break;
 			}
