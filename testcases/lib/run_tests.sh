@@ -10,6 +10,7 @@ shell_loader_kconfigs.sh
 shell_loader_supported_archs.sh
 shell_loader_tcnt.sh
 shell_loader_cleanup.sh
+shell_loader_setup_cleanup.sh
 shell_test01
 shell_test02
 shell_test03
