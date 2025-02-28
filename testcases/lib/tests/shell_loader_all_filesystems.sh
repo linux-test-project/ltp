@@ -14,16 +14,22 @@
 
 . tst_loader.sh
 
-tst_res TINFO "In shell"
+tst_test()
+{
+	local mntpath="$(realpath ltp_mntpoint)"
+	local mounted="$(grep $mntpath /proc/mounts)"
+	local device path
 
-mntpath=$(realpath ltp_mntpoint)
-mounted=$(grep $mntpath /proc/mounts)
+	tst_res TINFO "In shell"
 
-if [ -n "$mounted" ]; then
-	device=$(echo $mounted |cut -d' ' -f 1)
-	path=$(echo $mounted |cut -d' ' -f 2)
+	if [ -n "$mounted" ]; then
+		device=$(echo $mounted |cut -d' ' -f 1)
+		path=$(echo $mounted |cut -d' ' -f 2)
 
-	tst_res TPASS "$device mounted at $path"
-else
-	tst_res TFAIL "Device not mounted!"
-fi
+		tst_res TPASS "$device mounted at $path"
+	else
+		tst_res TFAIL "Device not mounted!"
+	fi
+}
+
+tst_test

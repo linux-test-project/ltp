@@ -41,29 +41,34 @@
 
 . tst_loader.sh
 
-ulimit -c unlimited
-unset DEBUGINFOD_URLS
+tst_test()
+{
+	ulimit -c unlimited
+	unset DEBUGINFOD_URLS
 
-if [ $(uname -m) = "x86_64" ]; then
-	if LINE=$(grep "vsyscall" /proc/self/maps); then
-		RIGHT="ffffffffff600000-ffffffffff601000[[:space:]][r-]-xp"
-		if echo "$LINE" | grep -q "$RIGHT"; then
-			tst_res TPASS "[vsyscall] reported correctly"
-		else
-			tst_res TFAIL "[vsyscall] reporting wrong"
+	if [ $(uname -m) = "x86_64" ]; then
+		if LINE=$(grep "vsyscall" /proc/self/maps); then
+			RIGHT="ffffffffff600000-ffffffffff601000[[:space:]][r-]-xp"
+			if echo "$LINE" | grep -q "$RIGHT"; then
+				tst_res TPASS "[vsyscall] reported correctly"
+			else
+				tst_res TFAIL "[vsyscall] reporting wrong"
+			fi
 		fi
 	fi
-fi
 
-rm -rf core*
-{ vma05_vdso; } > /dev/null 2>&1
-[ -f core ] || tst_brk TBROK "missing core file"
+	rm -rf core*
+	{ vma05_vdso; } > /dev/null 2>&1
+	[ -f core ] || tst_brk TBROK "missing core file"
 
-TRACE=$(gdb -silent -ex="thread apply all backtrace" -ex="quit"\
-	vma05_vdso ./core* 2> /dev/null)
+	TRACE=$(gdb -silent -ex="thread apply all backtrace" -ex="quit"\
+		vma05_vdso ./core* 2> /dev/null)
 
-if echo "$TRACE" | grep -qF "??"; then
-	tst_res TFAIL "[vdso] bug not patched"
-else
-	tst_res TPASS "[vdso] backtrace complete"
-fi
+	if echo "$TRACE" | grep -qF "??"; then
+		tst_res TFAIL "[vdso] bug not patched"
+	else
+		tst_res TPASS "[vdso] backtrace complete"
+	fi
+}
+
+tst_test

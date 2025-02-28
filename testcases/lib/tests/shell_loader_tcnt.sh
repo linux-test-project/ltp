@@ -14,4 +14,9 @@
 
 . tst_loader.sh
 
-tst_res TPASS "Iteration $1"
+tst_test()
+{
+	tst_res TPASS "Iteration $1"
+}
+
+tst_test

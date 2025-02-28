@@ -24,15 +24,20 @@
 
 . tst_loader.sh
 
-tst_res TINFO "In shell"
+tst_test()
+{
+	tst_res TINFO "In shell"
 
-mntpoint=$(realpath ltp_mntpoint)
-mounted=$(grep $mntpoint /proc/mounts)
+	mntpoint=$(realpath ltp_mntpoint)
+	mounted=$(grep $mntpoint /proc/mounts)
 
-if [ -n "$mounted" ]; then
-	fs=$(echo $mounted |cut -d' ' -f 3)
+	if [ -n "$mounted" ]; then
+		fs=$(echo $mounted |cut -d' ' -f 3)
 
-	tst_res TPASS "Mounted device formatted with $fs"
-else
-	tst_res TFAIL "Device not mounted!"
-fi
+		tst_res TPASS "Mounted device formatted with $fs"
+	else
+		tst_res TFAIL "Device not mounted!"
+	fi
+}
+
+tst_test
