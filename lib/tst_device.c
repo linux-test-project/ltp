@@ -3,6 +3,7 @@
  * Copyright (C) 2014 Cyril Hrubis chrubis@suse.cz
  */
 
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
@@ -570,6 +571,131 @@ static void btrfs_get_uevent_path(char *tmp_path, char *uevent_path)
 	SAFE_CLOSEDIR(NULL, dir);
 }
 
+static char *overlay_mount_from_dev(dev_t dev)
+{
+	unsigned int dev_major, dev_minor, mnt_major, mnt_minor;
+	FILE *fp;
+	char line[4096];
+	char *mountpoint;
+	int ret;
+
+	dev_major = major(dev);
+	dev_minor = minor(dev);
+
+	fp = SAFE_FOPEN(NULL, "/proc/self/mountinfo", "r");
+	while (fgets(line, sizeof(line), fp) != NULL) {
+		ret = sscanf(line, "%*d %*d %u:%u %*s %ms",
+			     &mnt_major, &mnt_minor, &mountpoint);
+		if (ret != 3)
+			tst_brkm(TBROK, NULL,
+				 "failed to parse mountinfo line: '%s'",
+				 line);
+		if (mnt_major == dev_major && mnt_minor == dev_minor)
+			break;
+		free(mountpoint);
+		mountpoint = NULL;
+	}
+	SAFE_FCLOSE(NULL, fp);
+	if (!mountpoint)
+		tst_brkm(TBROK, NULL,
+			 "Unable to find mount entry for device %u:%u",
+			 dev_major, dev_minor);
+
+	return mountpoint;
+}
+
+static char *overlay_get_upperdir(char *mountpoint)
+{
+	FILE *mntf;
+	struct mntent *mnt;
+	char *optstr, *optstart, *optend;
+	char *upperdir = NULL;
+
+	mntf = setmntent("/proc/self/mounts", "r");
+	if (!mntf)
+		tst_brkm(TBROK | TERRNO, NULL, "Can't open /proc/self/mounts");
+
+	while ((mnt = getmntent(mntf)) != NULL) {
+		if (strcmp(mnt->mnt_dir, mountpoint))
+			continue;
+
+		if (strcmp(mnt->mnt_type, "overlay"))
+			tst_brkm(TBROK, NULL,
+				 "expected overlayfs on mount point \"%s\", but it is of type %s.",
+				 mountpoint, mnt->mnt_type);
+
+		optstr = hasmntopt(mnt, "upperdir");
+
+		if (optstr) {
+			optstart = strchr(optstr, '=');
+			optstart++;
+			optend = strchrnul(optstr, ',');
+			upperdir = strndup(optstart, optend - optstart);
+			break;
+		}
+
+		tst_brkm(TBROK, NULL,
+			 "mount point %s does not contain an upperdir",
+			 mountpoint);
+	}
+	endmntent(mntf);
+
+	if (!upperdir)
+		tst_brkm(TBROK, NULL,
+			 "Unable to find mount point \"%s\" in mount table",
+			 mountpoint);
+
+	return upperdir;
+}
+
+/*
+ * To get from a file or directory on an overlayfs to a device
+ * for an underlying mountpoint requires the following steps:
+ *
+ * 1. stat() the pathname and pick out st_dev.
+ * 2. use the st_dev to look up the mount point of the file
+ *    system in /proc/self/mountinfo
+ *
+ * Because 'mountinfo' is a much more complicated file format than
+ * 'mounts', we switch to looking up the mount point in /proc/mounts,
+ * and use the mntent.h helpers to parse the entries.
+ *
+ * 3. Using getmntent(), find the entry for the mount point identified
+ *    in step 2.
+ * 4. Call hasmntopt() to find the upperdir option, and parse that
+ *    option to get to the path name for the upper directory.
+ * 5. Call stat on the upper directory.  This should now contain
+ *    the major and minor number for the underlying device (assuming
+ *    that there aren't nested overlay file systems).
+ * 6. Populate the uevent path.
+ *
+ * Example /proc/self/mountinfo line for overlayfs:
+ *    471 69 0:48 / /tmp rw,relatime shared:242 - overlay overlay rw,seclabel,lowerdir=/tmp,upperdir=/mnt/upper/upper,workdir=/mnt/upper/work,uuid=null
+ *
+ * See section 3.5 of the kernel's Documentation/filesystems/proc.rst file
+ * for a detailed explanation of the mountinfo format.
+ */
+static void overlay_get_uevent_path(char *tmp_path, char *uevent_path)
+{
+	struct stat st;
+	char *mountpoint, *upperdir;
+
+	tst_resm(TINFO, "Use OVERLAYFS specific strategy");
+
+	SAFE_STAT(NULL, tmp_path, &st);
+
+	mountpoint = overlay_mount_from_dev(st.st_dev);
+	upperdir = overlay_get_upperdir(mountpoint);
+	free(mountpoint);
+
+	SAFE_STAT(NULL, upperdir, &st);
+	free(upperdir);
+
+	tst_resm(TINFO, "WARNING: used first of multiple backing devices");
+	sprintf(uevent_path, "/sys/dev/block/%d:%d/uevent",
+		major(st.st_dev), minor(st.st_dev));
+}
+
 __attribute__((nonnull))
 void tst_find_backing_dev(const char *path, char *dev, size_t dev_size)
 {
@@ -597,6 +723,8 @@ void tst_find_backing_dev(const char *path, char *dev, size_t dev_size)
 
 	if (fsbuf.f_type == TST_BTRFS_MAGIC) {
 		btrfs_get_uevent_path(tmp_path, uevent_path);
+	} else if (fsbuf.f_type == TST_OVERLAYFS_MAGIC) {
+		overlay_get_uevent_path(tmp_path, uevent_path);
 	} else if (dev_major == 0) {
 		tst_brkm(TBROK, NULL, "%s resides on an unsupported pseudo-file system", path);
 	} else {
