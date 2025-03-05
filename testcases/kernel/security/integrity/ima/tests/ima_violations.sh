@@ -177,6 +177,10 @@ test4()
 {
 	tst_res TINFO "verify limiting single open writer violation"
 
+	if tst_kvcmp -lt 6.14; then
+		tst_brk TCONF "Minimizing violations requires kernel 6.14 or newer"
+	fi
+
 	local search="open_writers"
 	local count num_violations
 
