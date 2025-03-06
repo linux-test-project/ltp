@@ -1,23 +1,18 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  * Copyright (C) 2010-2017  Red Hat, Inc.
+ */
+
+/*\
+ * Out Of Memory when changing cpuset's mems on NUMA.
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * Regression test based on the reproducers posted in:
+ * https://lore.kernel.org/lkml/4BDFFCC4.5000106@cn.fujitsu.com/
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
+ * Fixed in kernel v2.6.35:
  *
- * Out Of Memory when changing cpuset's mems on NUMA. There was a
- * problem reported upstream that the allocator may see an empty
- * nodemask when changing cpuset's mems.
- * http://lkml.org/lkml/2010/5/4/77
- * http://lkml.org/lkml/2010/5/4/79
- * http://lkml.org/lkml/2010/5/4/80
- * This test is based on the reproducers for the above issue.
+ * - 708c1bbc9d0c ("mempolicy: restructure rebinding-mempolicy functions")
+ * - c0ff7453bb5c ("cpuset,mm: fix no node to alloc memory when changing cpuset's mems")
  */
 
 #include "config.h"
