@@ -339,6 +339,7 @@ static void test_fanotify(unsigned int n)
 	 */
 	while (test_num < EVENT_SET_MAX && fd_notify != -1) {
 		struct fanotify_event_metadata *event;
+		struct fanotify_event_info_range *range;
 
 		if (i == len) {
 			/* Get more events */
@@ -367,6 +368,7 @@ static void test_fanotify(unsigned int n)
 			test_num--;
 
 		event = (struct fanotify_event_metadata *)&event_buf[i];
+		range = (struct fanotify_event_info_range *)(event + 1);
 		/* Permission events cannot be merged, so the event mask
 		 * reported should exactly match the event mask within the
 		 * event set.
@@ -386,6 +388,24 @@ static void test_fanotify(unsigned int n)
 				(unsigned int)event->pid,
 				(unsigned int)child_pid,
 				event->fd);
+		} else if (event->mask & LTP_PRE_CONTENT_EVENTS) {
+			if (event->event_len < sizeof(*event) + sizeof(*range) ||
+			    range->hdr.info_type != FAN_EVENT_INFO_TYPE_RANGE) {
+				tst_res(TFAIL,
+					"got event: mask=%llx pid=%u len=%d fd=%d "
+					"(expected range info)",
+					(unsigned long long)event->mask,
+					(unsigned int)event->pid,
+					(unsigned int)event->event_len,
+					event->fd);
+			} else {
+				tst_res(TPASS,
+					"got event: mask=%llx pid=%u fd=%d "
+					"offset=%llu count=%llu",
+					(unsigned long long)event->mask,
+					(unsigned int)event->pid, event->fd,
+					range->offset, range->count);
+			}
 		} else {
 			tst_res(TPASS,
 				"got event: mask=%llx pid=%u fd=%d",

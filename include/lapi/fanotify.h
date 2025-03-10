@@ -178,6 +178,9 @@ typedef struct {
 #ifndef FAN_EVENT_INFO_TYPE_ERROR
 #define FAN_EVENT_INFO_TYPE_ERROR	5
 #endif
+#ifndef FAN_EVENT_INFO_TYPE_RANGE
+#define FAN_EVENT_INFO_TYPE_RANGE	6
+#endif
 
 #ifndef FAN_EVENT_INFO_TYPE_OLD_DFID_NAME
 #define FAN_EVENT_INFO_TYPE_OLD_DFID_NAME	10
@@ -216,6 +219,15 @@ struct fanotify_event_info_error {
 	__u32 error_count;
 };
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_ERROR */
+
+#ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_RANGE
+struct fanotify_event_info_range {
+	struct fanotify_event_info_header hdr;
+	__u32 pad;
+	__u64 offset;
+	__u64 count;
+};
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_RANGE */
 
 /* NOTE: only for struct fanotify_event_info_fid */
 #ifdef HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL
