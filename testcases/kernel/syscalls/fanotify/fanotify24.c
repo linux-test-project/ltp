@@ -46,6 +46,7 @@
 static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static volatile int fd_notify;
+static size_t page_sz;
 
 static pid_t child_pid;
 
@@ -68,7 +69,8 @@ static struct tcase {
 		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
+			{FAN_PRE_ACCESS, FAN_ALLOW},
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
 			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY)}
 		}
@@ -78,6 +80,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
 			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY)}
@@ -89,7 +92,8 @@ static struct tcase {
 		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
+			{FAN_PRE_ACCESS, FAN_ALLOW},
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
 			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY)}
 		}
@@ -99,6 +103,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
 			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY)}
@@ -110,7 +115,8 @@ static struct tcase {
 		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
+			{FAN_PRE_ACCESS, FAN_ALLOW},
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
 			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY)}
 		}
@@ -120,6 +126,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
 			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY)}
@@ -130,6 +137,7 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(PARENT),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM | FAN_EVENT_ON_CHILD,
 		{
+			{FAN_PRE_ACCESS, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_OPEN_EXEC_PERM, FAN_DENY}
@@ -169,6 +177,7 @@ static int expected_errno(unsigned int response)
 static void generate_events(struct tcase *tc)
 {
 	int fd;
+	char *addr;
 	char *const argv[] = {FILE_EXEC_PATH, NULL};
 	struct event *event = tc->event_set;
 	int exp_ret, exp_errno = 0;
@@ -186,8 +195,25 @@ static void generate_events(struct tcase *tc)
 
 	exp_ret = exp_errno ? -1 : 1;
 	errno = 0;
-	/* FAN_PRE_ACCESS events are reported also on write */
-	if (write(fd, fname, 1) != exp_ret || errno != exp_errno) {
+	/*
+	 * FAN_PRE_ACCESS events are reported on map() and write(), but should
+	 * not be reported when faulting in the user page at offset page_sz*100
+	 * that is used as an input buffer to the write() syscall.
+	 */
+	addr = SAFE_MMAP(NULL, page_sz, PROT_READ, MAP_PRIVATE, fd, page_sz*100);
+	if (!addr || errno != exp_errno) {
+		tst_res(TFAIL, "mmap() got errno %d (expected %d)", errno, exp_errno);
+		exit(3);
+	} else if (errno == exp_errno) {
+		tst_res(TINFO, "mmap() got errno %d as expected", errno);
+	}
+
+	exp_errno = expected_errno(event->response);
+	event++;
+
+	exp_ret = exp_errno ? -1 : 1;
+	errno = 0;
+	if (write(fd, addr, 1) != exp_ret || errno != exp_errno) {
 		tst_res(TFAIL, "write() got errno %d (expected %d)", errno, exp_errno);
 		exit(3);
 	} else if (errno == exp_errno) {
@@ -199,7 +225,7 @@ static void generate_events(struct tcase *tc)
 	exp_errno = expected_errno(event->response);
 	event++;
 
-	exp_ret = exp_errno ? -1 : 1;
+	exp_ret = exp_errno ? -1 : BUF_SIZE;
 	errno = 0;
 	if (read(fd, buf, BUF_SIZE) != exp_ret || errno != exp_errno) {
 		tst_res(TFAIL, "read() got errno %d (expected %d)", errno, exp_errno);
@@ -451,8 +477,11 @@ static void test_fanotify(unsigned int n)
 
 static void setup(void)
 {
+	page_sz = getpagesize();
+
 	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
+	SAFE_TRUNCATE(fname, page_sz*101);
 
 	REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(FAN_CLASS_PRE_CONTENT, FAN_MARK_FILESYSTEM,
 						FAN_PRE_ACCESS, fname);
