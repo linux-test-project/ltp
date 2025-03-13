@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Crackerjack Project., 2007
+ * Copyright (c) Linux Test Project, 2009-2025
  * Ported from Crackerjack to LTP by Manas Kumar Nayak maknayak@in.ibm.com>
  */
 
@@ -29,19 +30,20 @@
 
 #ifdef HAVE_UNSHARE
 
+#define FLAG_DESC(x) .mode = x, .desc = #x
+
 static struct test_case_t {
 	int mode;
 	const char *desc;
 } tc[] = {
-	{CLONE_FILES,	"CLONE_FILES"},
-	{CLONE_FS,	"CLONE_FS"},
-	{CLONE_NEWNS,	"CLONE_NEWNS"},
+	{FLAG_DESC(CLONE_FILES)},
+	{FLAG_DESC(CLONE_FS)},
+	{FLAG_DESC(CLONE_NEWNS)},
 };
 
 static void run(unsigned int i)
 {
-	pid_t pid = SAFE_FORK();
-	if (pid == 0)
+	if (!SAFE_FORK())
 		TST_EXP_PASS(unshare(tc[i].mode), "unshare(%s)", tc[i].desc);
 }
 
