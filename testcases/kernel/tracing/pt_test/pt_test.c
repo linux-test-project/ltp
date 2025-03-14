@@ -14,6 +14,7 @@
  */
 
 
+#define _GNU_SOURCE
 #include <sched.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,6 +35,8 @@
 #define INTEL_PT_PMU_TYPE "/sys/devices/intel_pt/type"
 #define INTEL_PT_FORMAT_TSC "/sys/devices/intel_pt/format/tsc"
 #define INTEL_PT_FORMAT_NRT "/sys/devices/intel_pt/format/noretcomp"
+
+#define MSR_IA32_VMX_MISC 0x00000485
 
 //Intel PT event handle
 int fde = -1;
@@ -102,6 +105,36 @@ static void del_map(uint64_t **buf_ev, long bufsize)
 	free(buf_ev);
 }
 
+/* Some versions of Intel PT do not support tracing across VMXON */
+static int is_supported_across_vmxon(void)
+{
+	char msr_path[64];
+	int msr_fd, ret, supported;
+	uint64_t value;
+
+	sprintf(msr_path, "/dev/cpu/%d/msr", sched_getcpu());
+
+	if (access(msr_path, F_OK) != 0) {
+		tst_res(TINFO, "%s not present", msr_path);
+		tst_res(TINFO, "skipping check for INTEL PT support across VMXON");
+		return 1;
+	}
+
+	msr_fd = SAFE_OPEN(msr_path, O_RDONLY);
+	ret = pread(msr_fd, &value, sizeof(value), MSR_IA32_VMX_MISC);
+	SAFE_CLOSE(msr_fd);
+	if (ret == sizeof(value)) {
+		supported = value & (1 << 14);
+
+		tst_res(TINFO, "Intel PT %s supported across VMXON",
+			supported ? "" : "_NOT_");
+		return supported;
+	}
+
+	/* we failed on MSR read, so assume it's supported */
+	return 1;
+}
+
 static void intel_pt_trace_check(void)
 {
 	uint64_t aux_head = 0;
@@ -117,6 +150,11 @@ static void intel_pt_trace_check(void)
 	pmp = (struct perf_event_mmap_page *)bufm[0];
 	aux_head = *(volatile uint64_t *)&pmp->aux_head;
 	if (aux_head == 0) {
+		if ((access("/sys/module/kvm_intel", F_OK) == 0)
+			&& (!is_supported_across_vmxon())) {
+			tst_brk(TCONF, "Intel PT can not run at the same time as virtualization");
+		}
+
 		tst_res(TFAIL, "There is no trace");
 		return;
 	}
