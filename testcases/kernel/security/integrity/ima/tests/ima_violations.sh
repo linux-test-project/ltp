@@ -90,8 +90,7 @@ validate()
 	for i in $(seq 1 $max_attempt); do
 		read num_violations_new < $IMA_VIOLATIONS
 		count2="$(get_count $search)"
-		if [ -z "$expected_violations" ] && \
-		   [ $(($num_violations_new - $num_violations)) -gt 0 ] || \
+		if [ -z "$expected_violations" -a $(($num_violations_new - $num_violations)) -gt 0 ] || \
 		   [ $(($num_violations_new - $num_violations)) -eq $expected_violations ]; then
 			[ -z "$expected_violations" ] && expected_violations=1
 			if [ $count2 -gt $count ]; then
