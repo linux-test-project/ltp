@@ -14,7 +14,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include "lapi/blkdev.h"
 #include "lapi/loop.h"
+#include "tst_fs.h"
 #include "tst_test.h"
 
 static char dev_path[1024];
@@ -31,7 +33,7 @@ static struct tcase {
 	"Using LOOP_SET_BLOCK_SIZE with arg < 512"},
 
 	{&invalid_value, LOOP_SET_BLOCK_SIZE,
-	"Using LOOP_SET_BLOCK_SIZE with arg > PAGE_SIZE"},
+	"Using LOOP_SET_BLOCK_SIZE with arg > BLK_MAX_BLOCK_SIZE"},
 
 	{&unalign_value, LOOP_SET_BLOCK_SIZE,
 	"Using LOOP_SET_BLOCK_SIZE with arg != power_of_2"},
@@ -40,7 +42,7 @@ static struct tcase {
 	"Using LOOP_CONFIGURE with block_size < 512"},
 
 	{&invalid_value, LOOP_CONFIGURE,
-	"Using LOOP_CONFIGURE with block_size > PAGE_SIZE"},
+	"Using LOOP_CONFIGURE with block_size > BLK_MAX_BLOCK_SIZE"},
 
 	{&unalign_value, LOOP_CONFIGURE,
 	"Using LOOP_CONFIGURE with block_size != power_of_2"},
@@ -103,10 +105,12 @@ static void setup(void)
 	if (dev_num < 0)
 		tst_brk(TBROK, "Failed to find free loop device");
 
-	tst_fill_file("test.img", 0, 1024, 1024);
+	size_t bs = (BLK_MAX_BLOCK_SIZE < TST_MB) ? 1024 : 4 * BLK_MAX_BLOCK_SIZE / 1024;
+	tst_fill_file("test.img", 0, bs, 1024);
+
 	half_value = 256;
 	pg_size = getpagesize();
-	invalid_value = pg_size * 2 ;
+	invalid_value = BLK_MAX_BLOCK_SIZE * 2;
 	unalign_value = pg_size - 1;
 
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);

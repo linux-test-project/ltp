@@ -54,6 +54,7 @@ AC_CHECK_HEADERS_ONCE([ \
     emmintrin.h \
     ifaddrs.h \
     keyutils.h \
+    linux/blkdev.h \
     linux/can.h \
     linux/cgroupstats.h \
     linux/cryptouser.h \
