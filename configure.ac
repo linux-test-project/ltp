@@ -427,6 +427,7 @@ AC_OUTPUT
 cat << EOF
 
 TESTSUITES
+kernel modules: $WITH_MODULES (kernel: $LINUX_VERSION)
 KVM testsuite: $have_kvm
 open posix testsuite: ${with_open_posix_testsuite:-no}
 TI-RPC testsuite: ${with_tirpc:-yes}
