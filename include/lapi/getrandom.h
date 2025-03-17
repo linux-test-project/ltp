@@ -10,7 +10,7 @@
 
 #ifdef HAVE_SYS_RANDOM_H
 # include <sys/random.h>
-#elif HAVE_LINUX_RANDOM_H
+#else
 # include <linux/random.h>
 #endif
 
