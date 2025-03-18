@@ -11,6 +11,7 @@
  */
 
 #include "tst_test.h"
+#include "lapi/mmap.h"
 
 static int fd_file1;
 static int fd_file2;
