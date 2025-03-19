@@ -68,11 +68,9 @@ cachestat03 cachestat03
 cachestat04 cachestat04
 
 chdir01 chdir01
-chdir01A symlink01 -T chdir01
 chdir04 chdir04
 
 chmod01 chmod01
-chmod01A symlink01 -T chmod01
 chmod03 chmod03
 chmod05 chmod05
 chmod06 chmod06
@@ -723,7 +721,6 @@ lchown03_16 lchown03_16
 lgetxattr01 lgetxattr01
 lgetxattr02 lgetxattr02
 
-link01 symlink01 -T link01
 link02 link02
 link04 link04
 link05 link05
@@ -1163,7 +1160,6 @@ readahead02 readahead02
 readdir01 readdir01
 readdir21 readdir21
 
-readlink01A symlink01 -T readlink01
 readlink01 readlink01
 readlink03 readlink03
 
@@ -1196,7 +1192,6 @@ removexattr01 removexattr01
 removexattr02 removexattr02
 
 rename01 rename01
-rename01A symlink01 -T rename01
 rename03 rename03
 rename04 rename04
 rename05 rename05
@@ -1227,7 +1222,6 @@ request_key06 request_key06
 rmdir01 rmdir01
 rmdir02 rmdir02
 rmdir03 rmdir03
-rmdir03A symlink01 -T rmdir03
 
 rt_sigaction01 rt_sigaction01
 rt_sigaction02 rt_sigaction02
@@ -1617,7 +1611,6 @@ swapon03 swapon03
 #Exclusive syscall() for POWER6 machines only
 switch01 endian_switch01
 
-symlink01 symlink01
 symlink02 symlink02
 symlink03 symlink03
 symlink04 symlink04
@@ -1707,7 +1700,6 @@ uname01 uname01
 uname02 uname02
 uname04 uname04
 
-unlink01 symlink01 -T unlink01
 unlink05 unlink05
 unlink07 unlink07
 unlink08 unlink08

@@ -7,7 +7,6 @@ fork01 fork01
 time01 time01
 wait02 wait02
 write01 write01
-symlink01 symlink01
 stat04 stat04
 splice02 splice02 -s 20
 df01_sh df01.sh
