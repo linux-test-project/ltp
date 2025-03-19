@@ -60,13 +60,12 @@ static struct tcase {
 	const char *tname;
 	struct fanotify_mark_type mark;
 	unsigned long long mask;
-	int event_count;
 	struct event event_set[EVENT_SET_MAX];
 } tcases[] = {
 	{
 		"inode mark, FAN_OPEN_PERM | FAN_PRE_ACCESS events",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
-		FAN_OPEN_PERM | FAN_PRE_ACCESS, 4,
+		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
@@ -77,7 +76,7 @@ static struct tcase {
 	{
 		"inode mark, FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
-		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM, 3,
+		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
@@ -87,7 +86,7 @@ static struct tcase {
 	{
 		"mount mark, FAN_OPEN_PERM | FAN_PRE_ACCESS events",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
-		FAN_OPEN_PERM | FAN_PRE_ACCESS, 4,
+		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
@@ -98,7 +97,7 @@ static struct tcase {
 	{
 		"mount mark, FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
-		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM, 3,
+		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
@@ -108,7 +107,7 @@ static struct tcase {
 	{
 		"filesystem mark, FAN_OPEN_PERM | FAN_PRE_ACCESS events",
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
-		FAN_OPEN_PERM | FAN_PRE_ACCESS, 4,
+		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
 			{FAN_OPEN_PERM, FAN_ALLOW},
 			{FAN_PRE_ACCESS, FAN_DENY},
@@ -119,7 +118,7 @@ static struct tcase {
 	{
 		"filesystem mark, FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
-		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM, 3,
+		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
@@ -129,7 +128,7 @@ static struct tcase {
 	{
 		"parent watching children, FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(PARENT),
-		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM | FAN_EVENT_ON_CHILD, 3,
+		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM | FAN_EVENT_ON_CHILD,
 		{
 			{FAN_PRE_ACCESS, FAN_DENY},
 			{FAN_PRE_ACCESS, FAN_DENY},
@@ -139,14 +138,14 @@ static struct tcase {
 	{
 		"parent not watching children, FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM events",
 		INIT_FANOTIFY_MARK_TYPE(PARENT),
-		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM, 0,
+		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
 		}
 	},
 	{
 		"inode mark, FAN_PRE_ACCESS event allowed",
 		INIT_FANOTIFY_MARK_TYPE(INODE),
-		FAN_PRE_ACCESS, 1,
+		FAN_PRE_ACCESS,
 		{
 			/* This allows multiple FAN_PRE_ACCESS events */
 			{FAN_PRE_ACCESS, FAN_ALLOW},
@@ -225,7 +224,7 @@ static void generate_events(struct tcase *tc)
 	 */
 	if (!exp_errno) {
 		fd = SAFE_OPEN(FILE_EXEC_PATH, O_RDWR);
-		if (!tc->event_count)
+		if (!tc->event_set[0].mask)
 			exp_errno = ETXTBSY;
 	}
 
@@ -335,10 +334,10 @@ static void test_fanotify(unsigned int n)
 	/*
 	 * Process events
 	 *
-	 * tc->count + 1 is to let read() wait for child process to exit
-	 * and to accomodate for extra access events
+	 * even if we do not expect another event, let read() wait for child
+	 * process to exit and accomodate for multiple access events
 	 */
-	while (test_num < tc->event_count + 1 && fd_notify != -1) {
+	while (test_num < EVENT_SET_MAX && fd_notify != -1) {
 		struct fanotify_event_metadata *event;
 
 		if (i == len) {
@@ -363,7 +362,7 @@ static void test_fanotify(unsigned int n)
 		 * generate an unknown number of access permission events if they
 		 * are allowed.
 		 */
-		if (test_num > 0 && test_num == tc->event_count &&
+		if (test_num > 0 && !event_set[test_num].mask &&
 		    event_set[test_num-1].response == FAN_ALLOW)
 			test_num--;
 
@@ -418,7 +417,7 @@ static void test_fanotify(unsigned int n)
 		test_num++;
 	}
 
-	for (; test_num < tc->event_count; test_num++) {
+	for (; event_set[test_num].mask && test_num < EVENT_SET_MAX; test_num++) {
 		tst_res(TFAIL, "didn't get event: mask=%llx",
 			event_set[test_num].mask);
 
