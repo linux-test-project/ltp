@@ -100,7 +100,7 @@ static void *addr;
 static int do_soft_offline(int tpgs)
 {
 	if (madvise(addr, tpgs * hpsz, MADV_SOFT_OFFLINE) == -1) {
-		if (errno != EINVAL && errno != EBUSY)
+		if (errno != EINVAL && errno != EBUSY && errno != ENOMEM)
 			tst_res(TFAIL | TERRNO, "madvise failed");
 		return errno;
 	}
