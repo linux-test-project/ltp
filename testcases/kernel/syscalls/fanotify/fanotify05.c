@@ -150,7 +150,7 @@ static void test_fanotify(unsigned int n)
 					"read of notification event failed");
 			}
 			if (!got_overflow)
-				tst_res(expect_overflow ? TFAIL : TPASS, "Overflow event not generated!\n");
+				tst_res(expect_overflow ? TFAIL : TPASS, "Overflow event not generated!");
 			break;
 		}
 		if (event.fd >= 0) {

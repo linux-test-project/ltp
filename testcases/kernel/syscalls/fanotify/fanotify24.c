@@ -402,7 +402,7 @@ static void test_fanotify(unsigned int n)
 			resp.fd = event->fd;
 			resp.response = event_set[test_num].response;
 			SAFE_WRITE(SAFE_WRITE_ALL, fd_notify, &resp, sizeof(resp));
-			tst_res(TPASS, "response=%x fd=%d\n", resp.response, resp.fd);
+			tst_res(TPASS, "response=%x fd=%d", resp.response, resp.fd);
 		}
 
 		i += event->event_len;
