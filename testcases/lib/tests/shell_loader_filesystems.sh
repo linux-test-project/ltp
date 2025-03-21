@@ -9,6 +9,9 @@
 #  "mntpoint": "ltp_mntpoint",
 #  "filesystems": [
 #   {
+#    "type": "tmpfs"
+#   },
+#   {
 #    "type": "btrfs"
 #   },
 #   {
