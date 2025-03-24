@@ -15,4 +15,5 @@ spelling:
 	sphinx-build -b spelling -d build/doctree . build/spelling
 
 clean:
-	rm -rf html/ build/ _static/syscalls.rst _static/tests.rst syscalls.tbl
+	rm -rf html/ build/ _static/syscalls.rst _static/tests.rst syscalls.tbl \
+		${abs_top_builddir}/metadata/ltp.json
