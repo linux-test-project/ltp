@@ -115,6 +115,17 @@ static inline void apply_landlock_net_layer(
 	SAFE_CLOSE(ruleset_fd);
 }
 
+static inline void apply_landlock_scoped_layer(
+	void *ruleset_attr, size_t attr_size)
+{
+	int ruleset_fd;
+
+	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(ruleset_attr, attr_size, 0);
+	enforce_ruleset(ruleset_fd);
+
+	SAFE_CLOSE(ruleset_fd);
+}
+
 static inline in_port_t getsocket_port(struct socket_data *socket,
 	const int addr_family)
 {
