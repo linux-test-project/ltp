@@ -15,15 +15,19 @@
 
 #include "lapi/syscalls.h"
 
-struct tst_landlock_ruleset_attr_abi1
-{
+struct tst_landlock_ruleset_attr_abi1 {
 	uint64_t handled_access_fs;
 };
 
-struct tst_landlock_ruleset_attr_abi4
-{
+struct tst_landlock_ruleset_attr_abi4 {
 	uint64_t handled_access_fs;
 	uint64_t handled_access_net;
+};
+
+struct tst_landlock_ruleset_attr_abi6 {
+	uint64_t handled_access_fs;
+	uint64_t handled_access_net;
+	uint64_t scoped;
 };
 
 #ifndef HAVE_STRUCT_LANDLOCK_PATH_BENEATH_ATTR
@@ -43,8 +47,7 @@ struct landlock_path_beneath_attr
 #endif
 
 #ifndef HAVE_STRUCT_LANDLOCK_NET_PORT_ATTR
-struct landlock_net_port_attr
-{
+struct landlock_net_port_attr {
 	uint64_t allowed_access;
 	uint64_t port;
 };
@@ -124,6 +127,14 @@ struct landlock_net_port_attr
 
 #ifndef LANDLOCK_ACCESS_NET_CONNECT_TCP
 # define LANDLOCK_ACCESS_NET_CONNECT_TCP	(1ULL << 1)
+#endif
+
+#ifndef LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET
+# define LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET		(1ULL << 0)
+#endif
+
+#ifndef LANDLOCK_SCOPE_SIGNAL
+# define LANDLOCK_SCOPE_SIGNAL		                (1ULL << 1)
 #endif
 
 static inline int safe_landlock_create_ruleset(const char *file, const int lineno,
