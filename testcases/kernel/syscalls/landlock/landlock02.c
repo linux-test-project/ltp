@@ -20,6 +20,7 @@
 
 static struct tst_landlock_ruleset_attr_abi1 *attr_abi1;
 static struct tst_landlock_ruleset_attr_abi4 *attr_abi4;
+static struct tst_landlock_ruleset_attr_abi6 *attr_abi6;
 static struct landlock_path_beneath_attr *path_beneath_attr;
 static struct landlock_path_beneath_attr *rule_null;
 static struct landlock_net_port_attr *net_port_attr;
@@ -144,15 +145,19 @@ static void setup(void)
 {
 	abi_current = verify_landlock_is_enabled();
 
-	attr_abi1->handled_access_fs =
-		attr_abi4->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
+	attr_abi1->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
+	attr_abi4->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
+	attr_abi6->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
 
 	if (abi_current < 4) {
 		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
 			attr_abi1, sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
-	} else {
+	} else if (abi_current < 6) {
 		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
 			attr_abi4, sizeof(struct tst_landlock_ruleset_attr_abi4), 0));
+	} else {
+		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
+			attr_abi6, sizeof(struct tst_landlock_ruleset_attr_abi6), 0));
 	}
 }
 
@@ -171,6 +176,7 @@ static struct tst_test test = {
 	.bufs = (struct tst_buffers []) {
 		{&attr_abi1, .size = sizeof(struct tst_landlock_ruleset_attr_abi1)},
 		{&attr_abi4, .size = sizeof(struct tst_landlock_ruleset_attr_abi4)},
+		{&attr_abi6, .size = sizeof(struct tst_landlock_ruleset_attr_abi6)},
 		{&path_beneath_attr, .size = sizeof(struct landlock_path_beneath_attr)},
 		{&net_port_attr, .size = sizeof(struct landlock_net_port_attr)},
 		{},
