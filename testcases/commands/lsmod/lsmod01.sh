@@ -46,12 +46,15 @@ lsmod_matches_proc_modules()
 {
 	lsmod_output=$(lsmod \
 			| awk '!/Module/{print $1, $2, ($3==-2) ? "-" : $3}' \
-			| sort)
+			| sort | grep -v "^$whitelist_modules")
+
 	if [ -z "$lsmod_output" ]; then
 		tst_brk TBROK "Failed to parse the output from lsmod"
 	fi
 
-	modules_output=$(awk '{print $1, $2, $3}' /proc/modules | sort)
+	modules_output=$(awk '{print $1, $2, $3}' /proc/modules | sort \
+		| grep -v "^$whitelist_modules")
+
 	if [ -z "$modules_output" ]; then
 		tst_brk TBROK "Failed to parse /proc/modules"
 	fi
@@ -59,8 +62,8 @@ lsmod_matches_proc_modules()
 	if [ "$lsmod_output" != "$modules_output" ]; then
 		tst_res TINFO "lsmod output different from /proc/modules"
 
-		echo "$lsmod_output" | grep -v "^$whitelist_modules" > temp1
-		echo "$modules_output" | grep -v "^$whitelist_modules" > temp2
+		echo "$lsmod_output" > temp1
+		echo "$modules_output" > temp2
 		if tst_cmd_available diff; then
 			diff temp1 temp2
 		else
