@@ -7,6 +7,8 @@ AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_MACRO_DIR([m4])
+
+# Adding files here? Please update include/mk/automake.mk
 AC_CONFIG_FILES([ \
     include/mk/config.mk \
     include/mk/config-openposix.mk \
