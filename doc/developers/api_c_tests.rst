@@ -34,6 +34,10 @@ Kernel
 ------
 .. kernel-doc:: ../../include/tst_kernel.h
 
+NUMA
+----
+.. kernel-doc:: ../../include/tst_numa.h
+
 Option parsing
 --------------
 
