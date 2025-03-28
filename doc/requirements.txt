@@ -1,3 +1,7 @@
+# Use the same sphinx as on readthedocs.org. When updated, make sure
+# sphinx-rtd-theme is compatible with sphinx.
+sphinx==5.3.0
 sphinx-rtd-theme==2.0.0
+
 linuxdoc==20231020
 sphinxcontrib-spelling==7.7.0

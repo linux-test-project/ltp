@@ -23,7 +23,7 @@ jobs:
       - name: Install sphinx and autotools
         run: |
           sudo apt update
-          sudo apt install autoconf make python3-sphinx python3-virtualenv
+          sudo apt install autoconf make python3-virtualenv
 
       - name: Run configure
         run: |

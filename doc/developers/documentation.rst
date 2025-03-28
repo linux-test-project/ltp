@@ -23,8 +23,6 @@ Before building, make sure you have python3 ``virtualenv`` module installed.
     # prepare virtual environment
     python3 -m virtualenv .venv
     . .venv/bin/activate
-
-    pip install sphinx # usually packaged in distros
     pip install -r requirements.txt
 
     # build documentation
