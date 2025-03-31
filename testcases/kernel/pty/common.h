@@ -54,7 +54,8 @@ static inline int open_slave(const int masterfd)
 			st.st_uid, uid);
 	}
 
-	if (st.st_mode != (S_IFCHR | 0620)) {
+	if (st.st_mode != (S_IFCHR | 0620) &&
+	    st.st_mode != (S_IFCHR | 0600)) {
 		tst_brk(TBROK, "unexpected slave device permission: %o",
 			st.st_mode);
 	}
