@@ -128,6 +128,9 @@
 #ifndef FAN_DENY_ERRNO
 #define FAN_ERRNO(err) (((((__u32)(err)) & 0xff) << 24))
 #define FAN_DENY_ERRNO(err) (FAN_DENY | FAN_ERRNO(err))
+#endif
+
+#ifndef FAN_RESPONSE_ERRNO
 #define FAN_RESPONSE_ERRNO(res) ((int)((res) >> 24))
 #endif
 
