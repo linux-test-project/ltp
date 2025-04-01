@@ -9,10 +9,10 @@
  *
  * - pwritev2() fails and sets errno to EINVAL if iov_len is invalid.
  * - pwritev2() fails and sets errno to EINVAL if the vector count iovcnt is
- *    less than zero.
+ *   less than zero.
  * - pwritev2() fails and sets errno to EOPNOTSUPP if flag is invalid.
  * - pwritev2() fails and sets errno to EFAULT when writing data from invalid
- *    address.
+ *   address.
  * - pwritev2() fails and sets errno to EBADF if file descriptor is invalid.
  * - pwritev2() fails and sets errno to EBADF if file descriptor is open for
  *   reading.
