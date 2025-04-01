@@ -10,21 +10,21 @@
  *
  * [Algorithm]
  *
- *      1. Pass the address of a valid memory area where no page is
- *         mapped yet (not read/written), the address of a valid memory area
- *         where the shared zero page is mapped (read, but not written to)
- *         and the address of an invalid memory area as page addresses to
- *         move_pages().
- *      2. Check if the corresponding status for "no page mapped" is set to
- *         -ENOENT. Note that kernels >= 4.3 [1] and < 6.12 [2] wrongly returned
- *         -EFAULT by accident.
- *      3. Check if the corresponding status for "shared zero page" is set to:
- *         -EFAULT. Note that kernels < 4.3 [1] wrongly returned -ENOENT.
- *      4. Check if the corresponding status for "invalid memory area" is set
- *         to -EFAULT.
+ * #. Pass the address of a valid memory area where no page is
+ *    mapped yet (not read/written), the address of a valid memory area
+ *    where the shared zero page is mapped (read, but not written to)
+ *    and the address of an invalid memory area as page addresses to
+ *    move_pages().
+ * #. Check if the corresponding status for "no page mapped" is set to
+ *    -ENOENT. Note that kernels >= 4.3 [1] and < 6.12 [2] wrongly returned
+ *    -EFAULT by accident.
+ * #. Check if the corresponding status for "shared zero page" is set to:
+ *    -EFAULT. Note that kernels < 4.3 [1] wrongly returned -ENOENT.
+ * #. Check if the corresponding status for "invalid memory area" is set
+ *    to -EFAULT.
  *
- *   [1] d899844e9c98 "mm: fix status code which move_pages() returns for zero page"
- *   [2] 7dff875c9436 "mm/migrate: convert add_page_for_migration() from follow_page() to folio_walk"
+ * - [1] d899844e9c98 "mm: fix status code which move_pages() returns for zero page"
+ * - [2] 7dff875c9436 "mm/migrate: convert add_page_for_migration() from follow_page() to folio_walk"
  */
 
 #include <sys/mman.h>
