@@ -5,6 +5,8 @@
 # Author: Mimi Zohar <zohar@linux.ibm.com>
 #
 # Test whether ToMToU and open_writer violations invalidatethe PCR and are logged.
+# test[4-6] test 6.15 commit 5b3cd801155f ("ima: limit the number of open-writers integrity violations")
+# test[7-8] test 6.15 commit a414016218ca ("ima: limit the number of ToMToU integrity violations")
 
 TST_SETUP="setup"
 TST_CLEANUP="cleanup"
@@ -176,8 +178,8 @@ test4()
 {
 	tst_res TINFO "verify limiting single open writer violation"
 
-	if tst_kvcmp -lt 6.14; then
-		tst_brk TCONF "Minimizing violations requires kernel 6.14 or newer"
+	if tst_kvcmp -lt 6.15; then
+		tst_brk TCONF "Minimizing violations requires kernel 6.15 or newer"
 	fi
 
 	local search="open_writers"
