@@ -55,7 +55,7 @@ void tst_res_(const char *file, const int lineno, int ttype,
 /**
  * tst_res() - Reports a test result.
  *
- * @ttype: An enum tst_res_type.
+ * @ttype: An &enum tst_res_flags.
  * @arg_fmt: A printf-like format.
  * @...: A printf-like parameters.
  *
@@ -83,7 +83,7 @@ void tst_resm_hexd_(const char *file, const int lineno, int ttype,
  * This call is the same as tst_res() but includes a pointer and size of the
  * buffer that is going to be printed in the output in a hexadecimal format.
  *
- * @ttype: An enum tst_res_type.
+ * @ttype: An &enum tst_res_flags.
  * @buf: A pointer to a buffer to print in hexadecimal format.
  * @size: A size of the buffer.
  * @arg_fmt: A printf-like format.
@@ -100,7 +100,7 @@ void tst_brk_(const char *file, const int lineno, int ttype,
 /**
  * tst_brk() - Reports a breakage and exits the test.
  *
- * @ttype: An enum tst_res_type.
+ * @ttype: An &enum tst_res_flags.
  * @arg_fmt: A printf-like format.
  * @...: A printf-like parameters.
  *
