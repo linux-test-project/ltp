@@ -1050,6 +1050,16 @@ pipe2_01 pipe2_01
 pipe2_02 pipe2_02
 pipe2_04 pipe2_04
 
+# Interprocess communication stress tests
+pipeio_1 pipeio -T pipeio_1 -c 5 -s 4090 -i 100 -b -f x80
+pipeio_2 pipeio -T pipeio_2 -c 5 -s 4090 -i 100 -f x80
+pipeio_3 pipeio -T pipeio_3 -c 5 -s 4090 -i 100 -u -b -f x80
+pipeio_4 pipeio -T pipeio_4 -c 5 -s 4090 -i 100 -u -f x80
+pipeio_5 pipeio -T pipeio_5 -c 5 -s 5000 -i 10 -b -f x80
+pipeio_6 pipeio -T pipeio_6 -c 5 -s 5000 -i 10 -b -u -f x80
+pipeio_7 pipeio -T pipeio_7 -c 5 -s 5000 -i 10 -f x80
+pipeio_8 pipeio -T pipeio_8 -c 5 -s 5000 -i 10 -u -f x80
+
 pivot_root01 pivot_root01
 
 poll01 poll01
