@@ -98,28 +98,32 @@ void tst_brk_(const char *file, const int lineno, int ttype,
               __attribute__ ((format (printf, 4, 5)));
 
 /**
- * tst_brk() - Reports a breakage and exits the test.
+ * tst_brk() - Reports a breakage and exits the test or test process.
  *
  * @ttype: An &enum tst_res_flags.
  * @arg_fmt: A printf-like format.
  * @...: A printf-like parameters.
  *
- * Reports either TBROK or TCONF and exits the test immediately. When called
- * all children in the same process group as the main test library process are
- * killed. This function, unless in a test cleanup, calls _exit() and does not
- * return.
+ * Reports a single result and exits immediately. The call behaves differently
+ * based on the ttype parameter. For all ttype results but TBROK the call exits
+ * the current test process, i.e. increments test result counters and calls
+ * exit(0).
+ *
+ * The TBROK ttype is special that apart from exiting the current test process
+ * it also tells to the test library to exit immediately. When TBROK is
+ * triggered by any of the test processes the whole process group is killed so
+ * that there are no processes left after the library process exits. This also
+ * means that any subsequent test iterations are not executed, e.g. if a test
+ * runs for all filesystems and tst_brk() with TBROK is called, the test exits
+ * and does not attempt to continue a test iteration for the next filesystem.
  *
  * When test is in cleanup() function TBROK is converted into TWARN by the test
  * library and we attempt to carry on with a cleanup even when tst_brk() was
  * called. This makes it possible to use SAFE_FOO() macros in the test cleanup
  * without interrupting the cleanup process on a failure.
  */
-#define tst_brk(ttype, arg_fmt, ...)						\
-	({									\
-		TST_BRK_SUPPORTS_ONLY_TCONF_TBROK(!((ttype) &			\
-			(TBROK | TCONF | TFAIL)));				\
-		tst_brk_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__);\
-	})
+#define tst_brk(ttype, arg_fmt, ...) \
+		tst_brk_(__FILE__, __LINE__, (ttype), (arg_fmt), ##__VA_ARGS__)
 
 void tst_printf(const char *const fmt, ...)
 		__attribute__((nonnull(1), format (printf, 1, 2)));

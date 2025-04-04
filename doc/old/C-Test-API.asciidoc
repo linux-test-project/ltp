@@ -245,13 +245,13 @@ The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
 void tst_brk(int ttype, char *arg_fmt, ...);
 -------------------------------------------------------------------------------
 
-Printf-like function to report error and exit the test, it can be used with ttype:
+Printf-like function to report result and exits current test. If test uses
+'.all_filesystems', '.test_variants' etc. the 'tst_brk()' exits current test
+iteration e.g. currently running filesystem test or a test variant unless
+'ttype' is set to 'TBROK'.
 
-|============================================================
-| 'TBROK' | Something has failed in test preparation phase.
-| 'TCONF' | Test is not appropriate for current configuration
-            (syscall not implemented, unsupported arch, ...)
-|============================================================
+If 'ttype' is set to 'TBROK' all test processes are killed and the test exits
+immediately with an error.
 
 The 'ttype' can be combined bitwise with 'TERRNO' or 'TTERRNO' to print
 'errno', 'TST_ERR' respectively.
@@ -647,15 +647,15 @@ IMPORTANT: You have to set the '.forks_child' flag in the test structure
 Results reported by 'tst_res()' are propagated to the parent test process via
 block of shared memory.
 
-Calling 'tst_brk()' causes child process to exit with non-zero exit value.
-Which means that it's safe to use 'SAFE_*()' macros in the child processes as
-well.
+Calling 'tst_brk()' causes child process to set the test library abort flag and
+exits the test immediately. Which means that it's safe to use 'SAFE_*()' macros
+in the child processes as well.
 
 Children that outlive the 'test()' function execution are waited for in the
 test library. Unclean child exit (killed by signal, non-zero exit value, etc.)
-will cause the main test process to exit with 'tst_brk()', which especially
-means that 'TBROK' propagated from a child process will cause the whole test
-to exit with 'TBROK'.
+will cause the main test process to exit with 'tst_brk()'. That means that all
+test child processes are supposed to exit with success unless they are
+explicitly waited for.
 
 If a test needs a child that segfaults or does anything else that cause it to
 exit uncleanly all you need to do is to wait for such children from the

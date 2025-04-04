@@ -59,3 +59,9 @@ test_runtime02
 test_children_cleanup
 tst_res_flags
 tst_safe_sscanf
+test_brk_child
+test_brk_fail
+test_brk_parent
+test_brk_pass
+test_brk_variant
+test_fail_variant
