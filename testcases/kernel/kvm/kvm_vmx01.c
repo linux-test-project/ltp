@@ -25,7 +25,7 @@
 struct vmcs_field_table {
 	unsigned long field_id;
 	const char *name;
-	uint64_t value;
+	unsigned long value;
 };
 
 /* Data written into shadow VMCS by the parent VM and read by the nested VM */
@@ -110,7 +110,7 @@ static struct vmcs_field_table guest_data[SHADOW_DATA_LENGTH] = {
 	{VMCS_FIELD(VMX_VMCS_GUEST_LDTR_BASE), 0xb1d72}
 };
 
-static uint64_t vmread_buffer[SHADOW_DATA_LENGTH];
+static unsigned long vmread_buffer[SHADOW_DATA_LENGTH];
 
 int guest_main(void)
 {
@@ -221,7 +221,7 @@ void main(void)
 			continue;
 
 		errors++;
-		tst_res(TFAIL, "Shadow %s guest mismatch: %llx != %llx",
+		tst_res(TFAIL, "Shadow %s guest mismatch: %lx != %lx",
 			host_data[i].name, vmread_buffer[i],
 			host_data[i].value);
 	}
@@ -239,7 +239,7 @@ void main(void)
 			continue;
 
 		errors++;
-		tst_res(TFAIL, "Shadow %s parent mismatch: %llx != %llx",
+		tst_res(TFAIL, "Shadow %s parent mismatch: %llx != %lx",
 			guest_data[i].name, val, guest_data[i].value);
 	}
 
