@@ -152,10 +152,7 @@ void main(void)
 	kvm_set_vmx_state(1);
 
 	/* Check secondary VMCS execctl support */
-	if (kvm_rdmsr(MSR_IA32_VMX_BASIC) & IA32_VMXBASIC_USELESS_CTL_MASKS)
-		val = kvm_rdmsr(MSR_IA32_VMX_EXECCTL_MASK2);
-	else
-		val = kvm_rdmsr(MSR_IA32_VMX_EXECCTL_MASK);
+	val = kvm_vmx_read_vmctl_mask(VMX_CTLMASK_EXECCTL);
 
 	if (!((val >> 32) & VMX_EXECCTL_ENABLE_CTL2))
 		tst_brk(TCONF, "CPU does not support shadow VMCS");
@@ -169,7 +166,7 @@ void main(void)
 	val = kvm_vmx_vmread(VMX_VMCS_VMEXEC_CTL);
 	val |= VMX_EXECCTL_ENABLE_CTL2;
 	kvm_vmx_vmwrite(VMX_VMCS_VMEXEC_CTL, val);
-	val = kvm_rdmsr(MSR_IA32_VMX_EXECCTL2_MASK);
+	val = kvm_vmx_read_vmctl_mask(VMX_CTLMASK_EXECCTL2);
 
 	if (!((val >> 32) & VMX_EXECCTL2_SHADOW_VMCS))
 		tst_brk(TCONF, "CPU does not support shadow VMCS");

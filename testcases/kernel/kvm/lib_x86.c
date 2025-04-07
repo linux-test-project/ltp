@@ -119,6 +119,24 @@ static const char *vmx_error_description[VMX_VMINST_ERR_COUNT] = {
 	"Invalid operand to INVEPT/INVVPID"
 };
 
+static const unsigned int vmx_ctl_masks_old[VMX_CTLMASK_MAX] = {
+	MSR_IA32_VMX_PINX_MASK,
+	MSR_IA32_VMX_EXECCTL_MASK,
+	MSR_IA32_VMX_EXECCTL2_MASK,
+	MSR_IA32_VMX_EXECCTL3_MASK,
+	MSR_IA32_VMX_EXITCTL_MASK,
+	MSR_IA32_VMX_ENTRYCTL_MASK
+};
+
+static const unsigned int vmx_ctl_masks_new[VMX_CTLMASK_MAX] = {
+	MSR_IA32_VMX_PINX_MASK2,
+	MSR_IA32_VMX_EXECCTL_MASK2,
+	MSR_IA32_VMX_EXECCTL2_MASK,
+	MSR_IA32_VMX_EXECCTL3_MASK,
+	MSR_IA32_VMX_EXITCTL_MASK2,
+	MSR_IA32_VMX_ENTRYCTL_MASK2
+};
+
 static void kvm_set_intr_handler(unsigned int id, uintptr_t func)
 {
 	memset(kvm_idt + id, 0, sizeof(kvm_idt[0]));
@@ -711,6 +729,21 @@ void kvm_vmcs_copy_gdt_descriptor(unsigned int gdt_id,
 	kvm_vmx_vmwrite(vmcs_baseaddr, baseaddr);
 }
 
+uint64_t kvm_vmx_read_vmctl_mask(unsigned int ctl_id)
+{
+	unsigned int msr;
+
+	if (ctl_id >= VMX_CTLMASK_MAX)
+		tst_brk(TBROK, "Invalid VMX control ID %u", ctl_id);
+
+	if (kvm_rdmsr(MSR_IA32_VMX_BASIC) & IA32_VMXBASIC_USELESS_CTL_MASKS)
+		msr = vmx_ctl_masks_new[ctl_id];
+	else
+		msr = vmx_ctl_masks_old[ctl_id];
+
+	return kvm_rdmsr(msr);
+}
+
 void kvm_init_vmx_vcpu(struct kvm_vmx_vcpu *cpu, uint16_t ss, void *rsp,
 	int (*guest_main)(void))
 {
@@ -730,17 +763,10 @@ void kvm_init_vmx_vcpu(struct kvm_vmx_vcpu *cpu, uint16_t ss, void *rsp,
 	kvm_vmx_vmptrld(cpu->vmcs);
 
 	/* Configure VM execution control fields */
-	if (kvm_rdmsr(MSR_IA32_VMX_BASIC) & IA32_VMXBASIC_USELESS_CTL_MASKS) {
-		pinxctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_PINX_MASK2);
-		execctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_EXECCTL_MASK2);
-		exitctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_EXITCTL_MASK2);
-		entryctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_ENTRYCTL_MASK2);
-	} else {
-		pinxctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_PINX_MASK);
-		execctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_EXECCTL_MASK);
-		exitctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_EXITCTL_MASK);
-		entryctl = (uint32_t)kvm_rdmsr(MSR_IA32_VMX_ENTRYCTL_MASK);
-	}
+	pinxctl = (uint32_t)kvm_vmx_read_vmctl_mask(VMX_CTLMASK_PINX);
+	execctl = (uint32_t)kvm_vmx_read_vmctl_mask(VMX_CTLMASK_EXECCTL);
+	exitctl = (uint32_t)kvm_vmx_read_vmctl_mask(VMX_CTLMASK_EXITCTL);
+	entryctl = (uint32_t)kvm_vmx_read_vmctl_mask(VMX_CTLMASK_ENTRYCTL);
 
 	execctl |= VMX_INTERCEPT_HLT;
 

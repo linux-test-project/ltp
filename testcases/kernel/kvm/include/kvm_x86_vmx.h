@@ -28,6 +28,15 @@
 #define MSR_IA32_VMX_EXECCTL_MASK2 0x48e
 #define MSR_IA32_VMX_EXITCTL_MASK2 0x48f
 #define MSR_IA32_VMX_ENTRYCTL_MASK2 0x490
+#define MSR_IA32_VMX_EXECCTL3_MASK 0x492
+
+#define VMX_CTLMASK_PINX 0
+#define VMX_CTLMASK_EXECCTL 1
+#define VMX_CTLMASK_EXECCTL2 2
+#define VMX_CTLMASK_EXECCTL3 3
+#define VMX_CTLMASK_EXITCTL 4
+#define VMX_CTLMASK_ENTRYCTL 5
+#define VMX_CTLMASK_MAX 6
 
 #define IA32FC_LOCK (1 << 0)
 #define IA32FC_VMXON_SMX (1 << 1)
@@ -174,6 +183,7 @@ struct kvm_vmcs *kvm_alloc_vmcs(void);
 void kvm_vmcs_copy_gdt_descriptor(unsigned int gdt_id,
 	unsigned long vmcs_selector, unsigned long vmcs_flags,
 	unsigned long vmcs_limit, unsigned long vmcs_baseaddr);
+uint64_t kvm_vmx_read_vmctl_mask(unsigned int ctl_id);
 void kvm_init_vmx_vcpu(struct kvm_vmx_vcpu *cpu, uint16_t ss, void *rsp,
 	int (*guest_main)(void));
 struct kvm_vmx_vcpu *kvm_create_vmx_vcpu(int (*guest_main)(void),
