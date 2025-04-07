@@ -3,5 +3,6 @@ kvm_svm02 kvm_svm02
 kvm_svm03 kvm_svm03
 kvm_svm04 kvm_svm04
 kvm_vmx01 kvm_vmx01
+kvm_vmx02 kvm_vmx02
 # Tests below may interfere with bug reproducibility
 kvm_pagefault01 kvm_pagefault01
