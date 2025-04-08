@@ -1267,10 +1267,8 @@ static void do_setup(int argc, char *argv[])
 			tst_test->timeout);
 	}
 
-	if (tst_test->runtime < 0) {
-		tst_brk(TBROK, "Invalid runtime value %i",
-			results->runtime);
-	}
+	if (tst_test->runtime < 0)
+		tst_brk(TBROK, "Invalid runtime value %i", tst_test->runtime);
 
 	if (tst_test->tconf_msg)
 		tst_brk(TCONF, "%s", tst_test->tconf_msg);
