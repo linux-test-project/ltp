@@ -33,9 +33,9 @@ Once the procedure has been completed, documentation will be visible at
 
 .. warning::
 
-    The current :master:`.readthedocs.yml` workflow is using ``Python 3.6`` because
-    older Python versions were causing issues. No other version has been tested,
-    but it should work anyway.
+    Documentation requires ``Python >= 3.6``.
+    The current :master:`.readthedocs.yml` workflow is using ``Python 3.12``,
+    it is tested in GitHub Actions :master:`.github/workflows/ci-sphinx-doc.yml`.
 
 Validating spelling
 ~~~~~~~~~~~~~~~~~~~
