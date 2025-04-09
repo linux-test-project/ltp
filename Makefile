@@ -96,8 +96,8 @@ $(filter-out include-clean,$(CLEAN_TARGETS))::
 
 # Just like everything depends on include-all / -install, we need to get rid
 # of include last to ensure that things won't be monkey screwed up. Only do
-# this if we're invoking clean or a subclean directly though.
-ifneq ($(filter clean,$(MAKECMDGOALS)),)
+# this if we're invoking clean, distclean or a subclean directly though.
+ifneq ($(filter clean distclean,$(MAKECMDGOALS)),)
 INCLUDE_CLEAN_RDEP_SUBJECT	:= $(CLEAN_TARGETS)
 else
 ifneq ($(filter %clean,$(MAKECMDGOALS)),)
