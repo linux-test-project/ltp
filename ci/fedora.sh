@@ -16,6 +16,8 @@ $yum \
 	make \
 	clang \
 	gawk \
+	curl \
+	jq \
 	gcc \
 	git \
 	findutils \
