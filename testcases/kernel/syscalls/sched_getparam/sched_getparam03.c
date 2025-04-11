@@ -4,14 +4,11 @@
  */
 
 /*\
- * Verify that:
+ * Verify that, sched_getparam(2) returns -1 and sets errno to
  *
- * - sched_getparam(2) returns -1 and sets errno to ESRCH if the
- * process with specified pid could not be found
- * - sched_getparam(2) returns -1 and sets errno to EINVAL if
- * the parameter pid is an invalid value (-1)
- * - sched_getparam(2) returns -1 and sets errno to EINVAL if the
- * parameter p is an invalid address
+ * - ESRCH if the process with specified pid could not be found
+ * - EINVAL if the parameter pid is an invalid value (-1)
+ * - EINVAL if the parameter p is an invalid address
  */
 
 #include <errno.h>
