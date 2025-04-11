@@ -28,18 +28,18 @@
  *
  * Kernel default `stack_guard_gap` size is `256 * getpagesize()`.
  *
- * The stack memory map would look like:
+ * The stack memory map would look like::
  *
- * |  -  -  -   reserved  size   -  -  -  |
+ *   |  -  -  -   reserved  size   -  -  -  |
  *
- * +-- - - - --+------------+-------------+
- * | 256 pages |  unmapped  |   mapped    |
- * +-- - - - --+------------+-------------+
- *                          | mapped size |
- * ^           |  -  -  stack size  -  -  |
- * start
- *             ^                          ^
- *             stack bottom       stack top
+ *   +-- - - - --+------------+-------------+
+ *   | 256 pages |  unmapped  |   mapped    |
+ *   +-- - - - --+------------+-------------+
+ *                            | mapped size |
+ *   ^           |  -  -  stack size  -  -  |
+ *   start
+ *               ^                          ^
+ *               stack bottom       stack top
  *
  * **Test 2**
  *
