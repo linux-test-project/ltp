@@ -12,6 +12,7 @@
  * http://lkml.org/lkml/2009/4/2/55
  *
  * [ALGORITHM]
+ *
  * - create pipe
  * - fork(), child replace stdin with pipe
  * - parent write to pipe
