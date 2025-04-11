@@ -7,17 +7,17 @@
 /*\
  * Verify that, readlink(2) returns -1 and sets errno to
  *
- * 1. EACCES if search/write permission is denied in the directory where the
- * symbolic link esides.
- * 2. EINVAL if the buffer size is not positive.
- * 3. EINVAL if the specified file is not a symbolic link file.
- * 4. ENAMETOOLONG if the pathname component of symbolic link is too long
- * (ie, > PATH_MAX).
- * 5. ENOENT if the component of symbolic link points to an empty string.
- * 6. ENOTDIR if a component of the path prefix is not a directory.
- * 7. ELOOP if too many symbolic links were encountered in translating the
- * pathname.
- * 8. EFAULT if buf outside the process allocated address space.
+ * - EACCES if search/write permission is denied in the directory where the
+ *   symbolic link esides.
+ * - EINVAL if the buffer size is not positive.
+ * - EINVAL if the specified file is not a symbolic link file.
+ * - ENAMETOOLONG if the pathname component of symbolic link is too long
+ *   (ie, > PATH_MAX).
+ * - ENOENT if the component of symbolic link points to an empty string.
+ * - ENOTDIR if a component of the path prefix is not a directory.
+ * - ELOOP if too many symbolic links were encountered in translating the
+ *   pathname.
+ * - EFAULT if buf outside the process allocated address space.
  */
 
 #include <pwd.h>
