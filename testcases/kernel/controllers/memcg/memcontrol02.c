@@ -4,6 +4,7 @@
  * Conversion of second kself test in cgroup/test_memcontrol.c.
  *
  * Original description:
+ *
  * "This test creates a memory cgroup, allocates some anonymous memory
  * and some pagecache and check memory.current and some memory.stat
  * values."
@@ -12,11 +13,11 @@
  * file in V2. Besides error reporting, this test differs from the
  * kselftest in the following ways:
  *
- * . It supports V1.
- * . It writes instead of reads to fill the page cache. Because no
+ * - It supports V1.
+ * - It writes instead of reads to fill the page cache. Because no
  *   pages were allocated on tmpfs.
- * . It runs on most filesystems available
- * . On EXFAT and extN we change the margin of error between all and file
+ * - It runs on most filesystems available
+ * - On EXFAT and extN we change the margin of error between all and file
  *   memory to 50%. Because these allocate non-page-cache memory during writes.
  */
 #define _GNU_SOURCE
