@@ -9,14 +9,14 @@
 /*\
  * Verify that, utimes(2) returns -1 and sets errno to
  *
- * 1. EACCES if times is NULL, the caller's effective user ID does not match
- * the owner of the file, the caller does not have write access to the file,
- * and the caller is not privileged
- * 2. ENOENT if filename does not exist
- * 3. EFAULT if filename is NULL
- * 4. EPERM if times is not NULL, the caller's effective UID does not match
- * the owner of the file, and the caller is not privileged
- * 5. EROFS if path resides on a read-only file system
+ * - EACCES if times is NULL, the caller's effective user ID does not match
+ *   the owner of the file, the caller does not have write access to the file,
+ *   and the caller is not privileged
+ * - ENOENT if filename does not exist
+ * - EFAULT if filename is NULL
+ * - EPERM if times is not NULL, the caller's effective UID does not match
+ *   the owner of the file, and the caller is not privileged
+ * - EROFS if path resides on a read-only file system
  */
 
 #include <sys/types.h>
