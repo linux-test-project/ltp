@@ -119,12 +119,12 @@ cgroup_require()
 	ret=$?
 
 	if [ $ret -eq 32 ]; then
-		tst_brk TCONF "'tst_cgctl require' exited. Controller is probably not available?"
+		tst_brk TCONF "'tst_cgctl require $ctrl' failed. $ctrl controller not available?"
 		return $ret
 	fi
 
 	if [ $ret -ne 0 ]; then
-		tst_brk TBROK "'tst_cgctl require' exited"
+		tst_brk TBROK "'tst_cgctl require $ctrl' failed. LTP missing $ctrl controller support?"
 		return $ret
 	fi
 
