@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <sys/vfs.h>
 #include <sys/sysinfo.h>
 #include <sys/uio.h>
@@ -502,5 +503,10 @@ ssize_t safe_writev(const char *file, const int lineno, char len_strict,
 char *safe_ptsname(const char *const file, const int lineno, int masterfd);
 #define SAFE_PTSNAME(masterfd) \
 	safe_ptsname(__FILE__, __LINE__, (masterfd))
+
+int safe_statvfs(const char *file, const int lineno,
+                              const char *path, struct statvfs *buf);
+#define SAFE_STATVFS(path, buf) \
+	safe_statvfs(__FILE__, __LINE__, (path), (buf))
 
 #endif /* TST_SAFE_MACROS_H__ */

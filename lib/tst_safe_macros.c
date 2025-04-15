@@ -810,3 +810,22 @@ char *safe_ptsname(const char *const file, const int lineno, int masterfd)
 
 	return name;
 }
+
+int safe_statvfs(const char *file, const int lineno,
+                              const char *path, struct statvfs *buf)
+{
+	int rval;
+
+	rval = statvfs(path, buf);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"statvfs(%s,%p) failed", path, buf);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid statvfs(%s,%p) return value %d", path, buf,
+			rval);
+	}
+
+	return rval;
+}
