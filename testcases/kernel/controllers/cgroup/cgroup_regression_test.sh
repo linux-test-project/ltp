@@ -352,7 +352,7 @@ test7()
 		return
 	fi
 
-	subsys=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
+	subsys=$(awk 'END{ print $1 }' /proc/cgroups)
 
 	# remount to add new subsystems to the hierarchy
 	while [ $i -le 2 ]; do
