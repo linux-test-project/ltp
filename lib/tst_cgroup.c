@@ -84,6 +84,7 @@ enum cgroup_ctrl_indx {
 	CTRL_MEMORY = 1,
 	CTRL_CPU,
 	CTRL_CPUSET,
+	CTRL_DMEM,
 	CTRL_IO,
 	CTRL_PIDS,
 	CTRL_HUGETLB,
@@ -207,6 +208,15 @@ static const struct cgroup_file cpuset_ctrl_files[] = {
 	{ }
 };
 
+static const struct cgroup_file dmem_ctrl_files[] = {
+	{ "dmem.capacity", NULL, CTRL_DMEM },
+	{ "dmem.current", NULL, CTRL_DMEM },
+	{ "dmem.min", NULL, CTRL_DMEM },
+	{ "dmem.low", NULL, CTRL_DMEM },
+	{ "dmem.max", NULL, CTRL_DMEM },
+	{ }
+};
+
 static const struct cgroup_file io_ctrl_files[] = {
 	{ "io.stat", NULL, CTRL_IO },
 	{ }
@@ -276,6 +286,7 @@ static struct cgroup_ctrl controllers[] = {
 	CGROUP_CTRL_MEMBER(memory, CTRL_MEMORY),
 	CGROUP_CTRL_MEMBER(cpu, CTRL_CPU),
 	CGROUP_CTRL_MEMBER(cpuset, CTRL_CPUSET),
+	CGROUP_CTRL_MEMBER(dmem, CTRL_DMEM),
 	CGROUP_CTRL_MEMBER(io, CTRL_IO),
 	CGROUP_CTRL_MEMBER(pids, CTRL_PIDS),
 	CGROUP_CTRL_MEMBER(hugetlb, CTRL_HUGETLB),
