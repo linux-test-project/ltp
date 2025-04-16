@@ -15,6 +15,7 @@ $yum \
 	automake \
 	make \
 	clang \
+	gawk \
 	gcc \
 	git \
 	findutils \
