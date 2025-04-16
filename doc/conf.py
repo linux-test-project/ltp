@@ -126,8 +126,18 @@ def generate_syscalls_stats(_):
     error = False
     try:
         socket.setdefaulttimeout(3)
-        urllib.request.urlretrieve(
-            f"{syscalls_url}/syscall_n64.tbl", "syscalls.tbl")
+
+        # kernel.org doesn't always allow to download syscalls file, so we need
+        # to emulate a different client in order to download it. Browser
+        # emulation might fail due to captcha request and for this reason we
+        # use the 'curl' command instead
+        req = urllib.request.Request(
+            f"{syscalls_url}/syscall_n64.tbl",
+            headers={'User-Agent': 'curl/8.6.0'})
+
+        with urllib.request.urlopen(req) as response:
+            with open("syscalls.tbl", 'wb') as out_file:
+                out_file.write(response.read())
     except urllib.error.URLError as err:
         error = True
         logger = sphinx.util.logging.getLogger(__name__)
