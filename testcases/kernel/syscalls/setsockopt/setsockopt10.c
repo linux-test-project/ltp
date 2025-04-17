@@ -145,7 +145,16 @@ static void run(void)
 	TST_CHECKPOINT_WAKE(1);
 
 	tst_res(TINFO, "parent: Disconnect by setting unspec address");
-	SAFE_CONNECT(tcp1_sk, &unspec_addr, sizeof(unspec_addr));
+	TEST(connect(tcp1_sk, &unspec_addr, sizeof(unspec_addr)));
+	if (TST_RET == -1) {
+		if (TST_ERR == EOPNOTSUPP)
+			tst_res(TPASS | TTERRNO, "parent: tls disallows disconnect");
+		else
+			tst_res(TFAIL | TTERRNO, "parent: unexpected errno from connect");
+		TST_CHECKPOINT_WAKE(2);
+		tst_reap_children();
+		return;
+	}
 	SAFE_BIND(tcp1_sk, (struct sockaddr *)&tcp1_addr, sizeof(tcp1_addr));
 
 	TEST(listen(tcp1_sk, 1));
