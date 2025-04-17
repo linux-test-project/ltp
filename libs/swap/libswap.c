@@ -288,6 +288,8 @@ int tst_max_swapfiles(void)
 			swp_device_num = 2;
 		if (tst_kvercmp(5, 14, 0) >= 0)
 			swp_device_num = 4;
+		if (tst_kvercmp(6, 15, 0) >= 0)
+			swp_device_num = 3;
 	}
 
 	if ((marker.choice == 'y' &&
