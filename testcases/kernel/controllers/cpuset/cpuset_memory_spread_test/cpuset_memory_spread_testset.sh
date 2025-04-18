@@ -53,7 +53,7 @@ mems_all="$(seq -s, 0 $((nr_mems-1)))"
 
 nodedir="/sys/devices/system/node"
 
-FIFO="./myfifo"
+FIFO="$CPUSET_TMP/myfifo"
 
 # memsinfo is an array implementation of the form of a multi-line string
 # _0: value0
@@ -347,15 +347,9 @@ if [ $? -ne 0 ]; then
 	tst_brkm TFAIL "Creating DATAFILE failed."
 fi
 
-mkfifo $FIFO
-if [ $? -ne 0 ]; then
-	rm -f DATAFILE
-	tst_brkm TFAIL "failed to mkfifo $FIFO"
-fi
-
 test_spread_page1
 test_spread_page2
 
-rm -f DATAFILE $FIFO
+rm -f DATAFILE
 
 exit $exit_status
