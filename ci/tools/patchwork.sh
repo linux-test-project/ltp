@@ -158,7 +158,7 @@ send_results() {
                         -F "description=$result" \
                         "$PATCHWORK_URL/api/patches/$patch_id/checks/"
 
-                [ $? -eq 0 ] && exit 1
+                [ $? -eq 0 ] || exit 1
         done
 }
 
