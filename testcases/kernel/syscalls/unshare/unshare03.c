@@ -27,7 +27,7 @@ static void run(void)
 		.exit_signal = SIGCHLD,
 	};
 
-	int nr_open = sizeof(long) * 8;
+	int nr_open = sizeof(long long) * 8;
 
 	SAFE_DUP2(2, nr_open + 1);
 
