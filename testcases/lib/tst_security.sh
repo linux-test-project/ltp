@@ -144,7 +144,7 @@ tst_update_selinux_state()
 {
 	local cur_val new_val
 	local dir=$(tst_get_selinux_dir)
-	[ -z "$dir" ] || return 1
+	[ -n "$dir" ] || return 1
 
 	cur_val=$(cat $dir/checkreqprot)
 	[ $cur_val = 1 ] && new_val=0 || new_val=1
