@@ -76,6 +76,11 @@ set_patch_state() {
 }
 
 set_series_state() {
+        if [ $# -ne 2 ]; then
+            echo "'state' command expects 2 parameters ($#)"
+            exit 1
+        fi
+
         local series_id="$1"
         local state="$2"
 
@@ -131,6 +136,11 @@ verify_new_patches() {
 }
 
 send_results() {
+        if [ $# -ne 4 ]; then
+            echo "'check' command expects 4 parameters ($#)"
+            exit 1
+        fi
+
         local series_id="$1"
         local target_url="$2"
 
