@@ -136,8 +136,8 @@ verify_new_patches() {
 }
 
 send_results() {
-        if [ $# -ne 4 ]; then
-            echo "'check' command expects 4 parameters ($#)"
+        if [ $# -ne 4 -a $# -ne 5 ]; then
+            echo "'check' command expects 4 or 5 parameters ($#)"
             exit 1
         fi
 
@@ -154,8 +154,16 @@ send_results() {
         local result="$4"
         [ "$result" = "cancelled" ] && return
 
+        local description="${5:-$result}"
+
         local state="fail"
-        [ "$result" = "success" ] && state="success"
+
+        # patchwork REST API allowed states: pending, success, warning, fail.
+        # https://github.com/getpatchwork/patchwork/blob/main/docs/api/schemas/v1.2/patchwork.yaml#L708
+        # https://patchwork.readthedocs.io/en/latest/api/rest/schemas/v1.2/#get--api-1.2-patches-patch_id-checks
+        case "$result" in
+            success|pending) state=$result;;
+        esac
 
         get_patches "$series_id" | while read -r patch_id; do
                 [ "$patch_id" ] || continue
@@ -165,7 +173,7 @@ send_results() {
                         -F "state=$state" \
                         -F "context=$context" \
                         -F "target_url=$target_url" \
-                        -F "description=$result" \
+                        -F "description=$description" \
                         "$PATCHWORK_URL/api/patches/$patch_id/checks/"
 
                 [ $? -eq 0 ] || exit 1
@@ -177,7 +185,7 @@ state)
         set_series_state "$2" "$3"
         ;;
 check)
-        send_results "$2" "$3" "$4" "$5"
+        send_results "$2" "$3" "$4" "$5" "$6"
         ;;
 verify)
         verify_new_patches
