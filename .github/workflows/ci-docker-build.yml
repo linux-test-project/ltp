@@ -131,7 +131,15 @@ jobs:
         INSTALL=${{ matrix.container }}
         INSTALL="${INSTALL%%:*}"
         INSTALL="${INSTALL%%/*}"
-        ACTION="$VARIANT" ./ci/$INSTALL.sh
+        ACTION="$VARIANT" ./ci/$INSTALL.sh || if [ $? -eq 106 ]; then
+          echo "::warning ::Skipping job due broken repositories"
+          ./ci/tools/patchwork.sh check \
+            "${{ inputs.SERIES_ID }}" \
+            "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "${{ matrix.container }}" \
+            "pending" "Skipping job due broken repositories"
+          exit 0
+        fi
         if [ "$VARIANT" ]; then ./ci/$INSTALL.$VARIANT.sh; fi
 
     - name: Compiler version
