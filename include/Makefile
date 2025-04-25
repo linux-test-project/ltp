@@ -18,8 +18,8 @@ MAKE_TARGETS		:=
 distclean:: clean ac-distclean
 maintainer-clean:: distclean ac-maintainer-clean
 ac-clean ac-distclean::
-	$(RM) -f config.h
-ac-maintainer-clean::
+	$(RM) -f config.h lapi/syscalls.h stamp-h1
+ac-maintainer-clean:: ac-clean
 	$(RM) -f config.h.in
 
 vpath %.h $(abs_srcdir)
