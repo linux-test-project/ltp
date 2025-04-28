@@ -844,6 +844,7 @@ mmap19 mmap19
 mmap20 mmap20
 mmap21_01 mmap21 -m 1
 mmap21_02 mmap21
+mmap22 mmap22
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
