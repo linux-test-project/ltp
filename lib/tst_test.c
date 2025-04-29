@@ -1273,6 +1273,9 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->tconf_msg)
 		tst_brk(TCONF, "%s", tst_test->tconf_msg);
 
+	if (tst_test->supported_archs && !tst_is_on_arch(tst_test->supported_archs))
+		tst_brk(TCONF, "This arch '%s' is not supported for test!", tst_arch.name);
+
 	assert_test_fn();
 
 	TCID = tid = get_tid(argv);
@@ -1300,9 +1303,6 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->min_kver)
 		check_kver(tst_test->min_kver, 1);
-
-	if (tst_test->supported_archs && !tst_is_on_arch(tst_test->supported_archs))
-		tst_brk(TCONF, "This arch '%s' is not supported for test!", tst_arch.name);
 
 	if (tst_test->skip_in_lockdown && tst_lockdown_enabled() > 0)
 		tst_brk(TCONF, "Kernel is locked down, skipping test");
