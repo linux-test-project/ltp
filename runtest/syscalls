@@ -847,7 +847,6 @@ mmap21_02 mmap21
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
-modify_ldt03 modify_ldt03
 
 mount01 mount01
 mount02 mount02
