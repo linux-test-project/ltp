@@ -55,8 +55,7 @@
 
 #if defined(__i386__)
 
-#include "lapi/syscalls.h"
-#include <asm/ldt.h>
+#include "lapi/ldt.h"
 
 static void run(void)
 {
@@ -76,7 +75,7 @@ static void run(void)
 	ldt0.seg_not_present = 0;
 	ldt0.useable = 1;
 
-	tst_syscall(__NR_modify_ldt, 1, &ldt0, sizeof(ldt0));
+	SAFE_MODIFY_LDT(1, &ldt0, sizeof(ldt0));
 
 	asm volatile ("movw %w0, %%fs"::"q" (7));
 	asm volatile ("movl %%fs:0, %0":"=r" (lo));
