@@ -768,6 +768,34 @@ int lio_write_buffer(int fd,		/* open file descriptor */
 		}
 	}
 	/* LIO_IO_ALISTIO */
+	else if (method & LIO_IO_SYNCV) {
+		io_type = "writev(2)";
+
+		sprintf(Lio_SysCall, "writev(%d, &iov, 1) nbyte:%d", fd, size);
+
+		if (Debug_level) {
+			printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__,
+			       Lio_SysCall);
+		}
+		if ((ret = writev(fd, &iov, 1)) == -1) {
+			sprintf(Errormsg,
+				"%s/%d writev(%d, iov, 1) nbyte:%d ret:-1, errno=%d %s",
+				__FILE__, __LINE__, fd, size, errno,
+				strerror(errno));
+			return -errno;
+		}
+
+		if (ret != size) {
+			sprintf(Errormsg,
+				"%s/%d writev(%d, iov, 1) nbyte:%d returned=%d",
+				__FILE__, __LINE__, fd, size, ret);
+		} else if (Debug_level > 1)
+			printf
+			    ("DEBUG %s/%d: writev completed without error (ret %d)\n",
+			     __FILE__, __LINE__, ret);
+
+		return ret;
+	}			/* LIO_IO_SYNCV */
 	else if (method & LIO_IO_SYNCP) {
 		io_type = "pwrite(2)";
 
@@ -1150,6 +1178,34 @@ int lio_read_buffer(int fd,	/* open file descriptor */
 		}
 	}
 	/* LIO_IO_ALISTIO */
+	else if (method & LIO_IO_SYNCV) {
+		io_type = "readv(2)";
+
+		sprintf(Lio_SysCall, "readv(%d, &iov, 1) nbyte:%d", fd, size);
+
+		if (Debug_level) {
+			printf("DEBUG %s/%d: %s\n", __FILE__, __LINE__,
+			       Lio_SysCall);
+		}
+		if ((ret = readv(fd, &iov, 1)) == -1) {
+			sprintf(Errormsg,
+				"%s/%d readv(%d, iov, 1) nbyte:%d ret:-1, errno=%d %s",
+				__FILE__, __LINE__, fd, size, errno,
+				strerror(errno));
+			return -errno;
+		}
+
+		if (ret != size) {
+			sprintf(Errormsg,
+				"%s/%d readv(%d, iov, 1) nbyte:%d returned=%d",
+				__FILE__, __LINE__, fd, size, ret);
+		} else if (Debug_level > 1)
+			printf
+			    ("DEBUG %s/%d: readv completed without error (ret %d)\n",
+			     __FILE__, __LINE__, ret);
+
+		return ret;
+	}			/* LIO_IO_SYNCV */
 	else if (method & LIO_IO_SYNCP) {
 		io_type = "pread(2)";
 
