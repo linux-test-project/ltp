@@ -25,7 +25,7 @@ static char *includepath;
 
 #define WARN(str) fprintf(stderr, "WARNING: " str "\n")
 
-static void oneline_comment(FILE *f)
+static void remove_to_newline(FILE *f)
 {
 	int c;
 
@@ -126,7 +126,7 @@ static void maybe_comment(FILE *f, struct data_node *doc)
 
 	switch (c) {
 	case '/':
-		oneline_comment(f);
+		remove_to_newline(f);
 	break;
 	case '*':
 		maybe_doc_comment(f, doc);
@@ -570,6 +570,11 @@ static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *n
 
 		if (!strcmp(token, "}"))
 			return 0;
+
+		if (!strcmp(token, "#")) {
+			remove_to_newline(f);
+			continue;
+		}
 
 		switch (state) {
 		case 0:
