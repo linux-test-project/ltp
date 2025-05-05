@@ -94,17 +94,23 @@ static void cleanup_sub_groups(void)
 }
 
 static void alloc_anon_in_child(const struct tst_cg_group *const cg,
-				const size_t size, const int expect_oom)
+	size_t size, const int expect_oom)
 {
 	int status;
 	const pid_t pid = SAFE_FORK();
+	size_t cgmem;
 
 	if (!pid) {
 		SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
+		SAFE_CG_SCANF(cg, "memory.current", "%zu", &cgmem);
+		size = size > cgmem ? size - cgmem : 0;
 
 		tst_res(TINFO, "Child %d in %s: Allocating anon: %"PRIdPTR,
 		getpid(), tst_cg_group_name(cg), size);
-		alloc_anon(size);
+
+		if (size)
+			alloc_anon(size);
+
 		exit(0);
 	}
 
@@ -128,9 +134,10 @@ static void alloc_anon_in_child(const struct tst_cg_group *const cg,
 }
 
 static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
-				     const size_t size)
+	size_t size)
 {
 	const pid_t pid = SAFE_FORK();
+	size_t cgmem;
 
 	if (pid) {
 		TST_CHECKPOINT_WAIT(CHILD_IDLE);
@@ -138,10 +145,15 @@ static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
 	}
 
 	SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
+	SAFE_CG_SCANF(cg, "memory.current", "%zu", &cgmem);
+	size = size > cgmem ? size - cgmem : 0;
 
 	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %"PRIdPTR,
 		getpid(), tst_cg_group_name(cg), size);
-	alloc_pagecache(fd, size);
+
+	if (size)
+		alloc_pagecache(fd, size);
+
 	SAFE_FSYNC(fd);
 
 	TST_CHECKPOINT_WAKE(CHILD_IDLE);
