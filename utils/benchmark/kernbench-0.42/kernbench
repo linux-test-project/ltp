@@ -96,9 +96,8 @@ make clean > /dev/null 2>&1
 
 if [[ $fast_run -eq 0 ]] ; then
 	echo Caching kernel source in ram...
-	for i in `find -type f`
-	do
-		cat $i > /dev/null
+	find . -type f -print0 | while IFS= read -r -d '' i; do
+    		cat "$i" > /dev/null
 	done
 fi
 
