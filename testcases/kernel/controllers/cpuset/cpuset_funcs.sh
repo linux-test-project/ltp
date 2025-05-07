@@ -162,6 +162,7 @@ setup()
 
 	mkdir -p "$CPUSET_TMP"
 	mkdir "$CPUSET"
+	mkfifo "$CPUSET_TMP/myfifo"
 	mount -t cgroup -o cpuset cpuset "$CPUSET" 2> /dev/null
 	if [ $? -ne 0 ]; then
 		cleanup
@@ -177,6 +178,7 @@ cleanup()
 {
 	grep "$CPUSET" /proc/mounts >/dev/null 2>&1 || {
 		rm -rf "$CPUSET" >/dev/null 2>&1
+		rm -rf "$CPUSET_TMP" >/dev/null 2>&1
 		return 0
 	}
 
