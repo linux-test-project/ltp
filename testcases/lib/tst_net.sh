@@ -175,7 +175,9 @@ init_ltp_netspace()
 		tst_require_cmds ip tst_ns_create tst_ns_exec tst_ns_ifmove
 		tst_require_root
 
-		tst_require_drivers veth
+		if [ -z "$TST_USE_LEGACY_API" ]; then
+			tst_require_drivers veth
+		fi
 		ROD ip link add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD tst_ns_create net,mnt)"
 		mkdir -p /var/run/netns
