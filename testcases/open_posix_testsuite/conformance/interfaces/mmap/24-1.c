@@ -31,12 +31,42 @@
 #include <stdint.h>
 #include "posixtest.h"
 
+#define MAX_MAP_COUNT_PATH "/proc/sys/vm/max_map_count"
+#define MAP_COUNT_LIMIT 65530
+
+void proc_write_val(const char *path, size_t val)
+{
+	FILE *procfile;
+
+	procfile = fopen(path, "r+");
+
+	if (!procfile) {
+		printf("Warning: Could not open %s\n", path);
+		return;
+	}
+
+	fprintf(procfile, "%zu", val);
+	fclose(procfile);
+}
+
 int main(void)
 {
 	char tmpfname[256];
 	void *pa;
-	size_t len;
+	size_t len, max_map_count = 0;
 	int fd;
+	FILE *procfile;
+
+	/* Change vm.max_map_count to avoid OOM */
+	procfile = fopen(MAX_MAP_COUNT_PATH, "r");
+
+	if (procfile) {
+		fscanf(procfile, "%zu", &max_map_count);
+		fclose(procfile);
+	}
+
+	if (max_map_count > MAP_COUNT_LIMIT)
+		proc_write_val(MAX_MAP_COUNT_PATH, MAP_COUNT_LIMIT);
 
 	/* Size of the shared memory object */
 	size_t shm_size = 1024;
@@ -78,5 +108,10 @@ int main(void)
 
 	close(fd);
 	printf("Test FAILED: Did not get ENOMEM as expected\n");
+
+	/* Restore original vm.max_map_count */
+	if (max_map_count > MAP_COUNT_LIMIT)
+		proc_write_val(MAX_MAP_COUNT_PATH, max_map_count);
+
 	return PTS_FAIL;
 }
