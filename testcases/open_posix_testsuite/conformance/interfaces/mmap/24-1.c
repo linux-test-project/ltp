@@ -9,13 +9,20 @@
  * The mmap() function shall fail if:
  * [ENOMEM] MAP_FIXED was specified, and the range [addr,addr+len)
  * exceeds that allowed for the address space of a process;
- * or, if MAP_FIXED was not specified and
- * there is insufficient room in the address space to effect the mapping.
+ * or, if MAP_FIXED was not specified and there is insufficient room
+ * in the address space to effect the mapping;
+ * or, if the process exceeds the maximum number of allowed memory mappings
+ * (as defined by /proc/sys/vm/max_map_count).
  *
  * Test Steps:
- * 1. In a very long loop, keep mapping a shared memory object,
- *    until there this insufficient room in the address space;
- * 3. Should get ENOMEM.
+ * 1. In a very long loop, continuously map a shared memory object without
+ *    unmapping previous ones.
+ * 2. The loop continues until mmap() fails with ENOMEM.
+ *
+ * Note:
+ * This failure may occur due to either exhausting the process's
+ * virtual address space, or hitting the system-wide limit on
+ * the number of memory mappings (especially on systems with large RAM).
  */
 
 #include <stdio.h>
