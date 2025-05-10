@@ -59,7 +59,7 @@ static const char *tid;
 static int iterations = 1;
 static float duration = -1;
 static float timeout_mul = -1;
-static pid_t main_pid, lib_pid;
+static pid_t lib_pid;
 static int mntpoint_mounted;
 static int ovl_mounted;
 static struct timespec tst_start_time; /* valid only for test pid */
@@ -78,6 +78,8 @@ struct results {
 	int abort_flag;
 	unsigned int runtime;
 	unsigned int overall_time;
+	pid_t lib_pid;
+	pid_t main_pid;
 };
 
 static struct results *results;
@@ -141,6 +143,7 @@ static void setup_ipc(void)
 		tst_futexes = (char *)results + sizeof(struct results);
 		tst_max_futexes = (size - sizeof(struct results))/sizeof(futex_t);
 	}
+	results->lib_pid = lib_pid;
 }
 
 static void cleanup_ipc(void)
@@ -391,7 +394,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype, const char *fmt,
 	 * If tst_brk() is called from some of the C helpers even before the
 	 * library was initialized, just exit.
 	 */
-	if (!lib_pid)
+	if (!results->lib_pid)
 		exit(TTYPE_RESULT(ttype));
 
 	update_results(TTYPE_RESULT(ttype));
@@ -402,13 +405,13 @@ void tst_vbrk_(const char *file, const int lineno, int ttype, const char *fmt,
 	 * specified but CLONE_THREAD is not. Use direct syscall to avoid
 	 * cleanup running in the child.
 	 */
-	if (tst_getpid() == main_pid)
+	if (tst_getpid() == results->main_pid)
 		do_test_cleanup();
 
 	/*
 	 * The test library process reports result statistics and exits.
 	 */
-	if (getpid() == lib_pid)
+	if (getpid() == results->lib_pid)
 		do_exit(TTYPE_RESULT(ttype));
 
 	/*
@@ -426,9 +429,9 @@ void tst_vbrk_(const char *file, const int lineno, int ttype, const char *fmt,
 		 * the main test process. That in turn triggers the code that
 		 * kills leftover children once the main test process did exit.
 		 */
-		if (main_pid && tst_getpid() != main_pid) {
+		if (results->main_pid && tst_getpid() != results->main_pid) {
 			tst_res(TINFO, "Child process reported TBROK killing the test");
-			kill(main_pid, SIGKILL);
+			kill(results->main_pid, SIGKILL);
 		}
 	}
 
@@ -1501,7 +1504,7 @@ static void do_setup(int argc, char *argv[])
 
 static void do_test_setup(void)
 {
-	main_pid = getpid();
+	results->main_pid = getpid();
 
 	if (!tst_test->all_filesystems && tst_test->skip_filesystems) {
 		long fs_type = tst_fs_type(".");
@@ -1521,7 +1524,7 @@ static void do_test_setup(void)
 	if (tst_test->setup)
 		tst_test->setup();
 
-	if (main_pid != tst_getpid())
+	if (results->main_pid != tst_getpid())
 		tst_brk(TBROK, "Runaway child in setup()!");
 
 	if (tst_test->caps)
@@ -1584,7 +1587,7 @@ static void run_tests(void)
 		heartbeat();
 		tst_test->test_all();
 
-		if (tst_getpid() != main_pid)
+		if (tst_getpid() != results->main_pid)
 			exit(0);
 
 		tst_reap_children();
@@ -1600,7 +1603,7 @@ static void run_tests(void)
 		heartbeat();
 		tst_test->test(i);
 
-		if (tst_getpid() != main_pid)
+		if (tst_getpid() != results->main_pid)
 			exit(0);
 
 		tst_reap_children();
@@ -1930,7 +1933,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	tst_test = self;
 
 	do_setup(argc, argv);
-	tst_enable_oom_protection(lib_pid);
+	tst_enable_oom_protection(results->lib_pid);
 
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
