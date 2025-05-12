@@ -31,7 +31,27 @@ struct user_desc {
 static inline int modify_ldt(int func, const struct user_desc *ptr,
 			     unsigned long bytecount)
 {
-	return tst_syscall(__NR_modify_ldt, func, ptr, bytecount);
+	long rval;
+
+	errno = 0;
+	rval = tst_syscall(__NR_modify_ldt, func, ptr, bytecount);
+
+#ifdef __x86_64__
+	/*
+	 * The kernel intentionally casts modify_ldt() return value
+	 * to unsigned int to prevent sign extension to 64 bits. This may
+	 * result in syscall() returning the value as is instead of setting
+	 * errno and returning -1.
+	 */
+	if (rval > 0 && (int)rval < 0) {
+		tst_res(TINFO,
+			"WARNING: Libc mishandled modify_ldt() return value");
+		errno = -(int)errno;
+		rval = -1;
+	}
+#endif /* __x86_64__ */
+
+	return rval;
 }
 
 static inline int safe_modify_ldt(const char *file, const int lineno, int func,
