@@ -154,9 +154,10 @@ Send release announcement
 
 The announcement is sent to:
 
-* ltp at lists.linux.it
+* ltp at lists.linux.it (requires a subscription)
 * linux-kernel at vger.kernel.org
-* libc-alpha at sourceware.org
+* libc-alpha at sourceware.org (requires a subscription)
+* valgrind-developers at lists.sourceforge.net (requires a subscription)
 
 CCed to:
 
