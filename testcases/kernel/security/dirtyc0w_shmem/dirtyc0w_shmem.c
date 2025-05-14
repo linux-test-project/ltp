@@ -104,6 +104,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_checkpoints = 1,
+	.child_needs_reinit =1,
 	.forks_child = 1,
 	.needs_root = 1,
 	.runtime = 120,
