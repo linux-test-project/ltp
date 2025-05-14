@@ -59,7 +59,6 @@ static const char *tid;
 static int iterations = 1;
 static float duration = -1;
 static float timeout_mul = -1;
-static pid_t lib_pid;
 static int mntpoint_mounted;
 static int ovl_mounted;
 static struct timespec tst_start_time; /* valid only for test pid */
@@ -143,7 +142,9 @@ static void setup_ipc(void)
 		tst_futexes = (char *)results + sizeof(struct results);
 		tst_max_futexes = (size - sizeof(struct results))/sizeof(futex_t);
 	}
-	results->lib_pid = lib_pid;
+
+	memset(results, 0 , size);
+	results->lib_pid = getpid();
 }
 
 static void cleanup_ipc(void)
@@ -394,7 +395,7 @@ void tst_vbrk_(const char *file, const int lineno, int ttype, const char *fmt,
 	 * If tst_brk() is called from some of the C helpers even before the
 	 * library was initialized, just exit.
 	 */
-	if (!results->lib_pid)
+	if (!results || !results->lib_pid)
 		exit(TTYPE_RESULT(ttype));
 
 	update_results(TTYPE_RESULT(ttype));
@@ -1334,6 +1335,8 @@ static void do_setup(int argc, char *argv[])
 		tst_test->forks_child = 1;
 	}
 
+	setup_ipc();
+
 	if (tst_test->needs_kconfigs && tst_kconfig_check(tst_test->needs_kconfigs))
 		tst_brk(TCONF, "Aborting due to unsuitable kernel config, see above!");
 
@@ -1392,8 +1395,6 @@ static void do_setup(int argc, char *argv[])
 
 	if (tst_test->hugepages.number)
 		tst_reserve_hugepages(&tst_test->hugepages);
-
-	setup_ipc();
 
 	if (tst_test->bufs)
 		tst_buffers_alloc(tst_test->bufs);
@@ -1929,7 +1930,6 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	unsigned int test_variants = 1;
 	struct utsname uval;
 
-	lib_pid = getpid();
 	tst_test = self;
 
 	do_setup(argc, argv);
@@ -1939,7 +1939,6 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
 
 	tst_res(TINFO, "LTP version: "LTP_VERSION);
-
 
 	uname(&uval);
 	tst_res(TINFO, "Tested kernel: %s %s %s", uval.release, uval.version, uval.machine);
