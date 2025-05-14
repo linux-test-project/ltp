@@ -32,6 +32,10 @@ static void test_mmap(void)
 
 	cg_child = tst_cg_group_mk(tst_cg, "child");
 	SAFE_CG_PRINTF(tst_cg, "memory.max", "%d", MEM_LIMIT);
+	if (!TST_CG_VER_IS_V1(tst_cg, "memory"))
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%d", 0);
+	else
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%d", MEM_LIMIT);
 	SAFE_CG_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
 	alloc = SAFE_MMAP(0, alloc_size, PROT_READ | PROT_WRITE,
