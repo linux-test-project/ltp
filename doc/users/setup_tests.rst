@@ -42,6 +42,10 @@ users.
      - Path to the block device to be used. C Language: ``.needs_device = 1``.
        Shell language: ``TST_NEEDS_DEVICE=1``.
 
+   * - LTP_REPRODUCIBLE_OUTPUT
+     - When set to ``1`` or ``y`` discards the actual content of the messages
+       printed by the test (suitable for a reproducible output).
+
    * - LTP_SINGLE_FS_TYPE
      - Testing only - specifies filesystem instead all supported
        (for tests with ``.all_filesystems``).
