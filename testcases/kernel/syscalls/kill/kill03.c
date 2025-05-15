@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- *
- * 1) kill() fails with errno set to EINVAL if given an invalid signal.
- * 2) kill() fails with errno set to ESRCH if given a non-existent pid.
- * 3) kill() fails with errno set to ESRCH if the given pid is INT_MIN.
- *
- * HISTORY
  *	07/2001 Ported by Wayne Boyer
+ */
+
+/*\
+ * Verify that kill(2) fails with the correct error codes:
+ *
+ * - EINVAL if given an invalid signal.
+ * - ESRCH if given a non-existent pid.
+ * - ESRCH if the given pid is INT_MIN.
  */
 
 #include <sys/types.h>
