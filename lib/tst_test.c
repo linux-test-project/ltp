@@ -55,7 +55,7 @@ const char *TCID __attribute__((weak));
 
 struct tst_test *tst_test;
 
-static const char *tid;
+static const char *tcid;
 static int iterations = 1;
 static float duration = -1;
 static float timeout_mul = -1;
@@ -107,7 +107,7 @@ static void setup_ipc(void)
 
 	if (access("/dev/shm", F_OK) == 0) {
 		snprintf(shm_path, sizeof(shm_path), "/dev/shm/ltp_%s_%d",
-			 tid, getpid());
+			 tcid, getpid());
 	} else {
 		char *tmpdir;
 
@@ -116,7 +116,7 @@ static void setup_ipc(void)
 
 		tmpdir = tst_get_tmpdir();
 		snprintf(shm_path, sizeof(shm_path), "%s/ltp_%s_%d",
-			 tmpdir, tid, getpid());
+			 tmpdir, tcid, getpid());
 		free(tmpdir);
 	}
 
@@ -1055,7 +1055,7 @@ static void copy_resources(void)
 		TST_RESOURCE_COPY(NULL, tst_test->resource_files[i], NULL);
 }
 
-static const char *get_tid(char *argv[])
+static const char *get_tcid(char *argv[])
 {
 	char *p;
 
@@ -1153,7 +1153,7 @@ int tst_creat_unlinked(const char *path, int flags, mode_t mode)
 	int start[3] = {'0', 'a', 'A'};
 
 	snprintf(template, PATH_MAX, "%s/ltp_%.3sXXXXXX",
-			path, tid);
+			path, tcid);
 
 	len = strlen(template) - 1;
 	while (template[len] == 'X') {
@@ -1330,7 +1330,7 @@ static void do_setup(int argc, char *argv[])
 
 	assert_test_fn();
 
-	TCID = tid = get_tid(argv);
+	TCID = tcid = get_tcid(argv);
 
 	if (tst_test->sample)
 		tst_test = tst_timer_test_setup(tst_test);
