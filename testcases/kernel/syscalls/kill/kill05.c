@@ -2,8 +2,6 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  *
- * Test case to check that kill() fails when passed a pid owned by another user.
- *
  * HISTORY
  *	07/2001 Ported by Wayne Boyer
  *
@@ -12,9 +10,10 @@
  *        segfault in case of error with this syscall).
  *      - Fix deletion of IPC memory segment. Segment was not correctly
  *        deleted due to the change of uid during the test.
- *
- * RESTRICTIONS
- *	This test must be run as root.
+ */
+
+/*\
+ * Test case to check that kill() fails when passed a pid owned by another user.
  */
 
 #include <sys/wait.h>
