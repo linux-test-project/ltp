@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- *
+ *	07/2001 Ported by Wayne Boyer
+ */
+
+/*\
  * Test case to check the basic functionality of kill() when killing an
  * entire process group with a negative pid.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
  */
 
 #include <sys/types.h>
