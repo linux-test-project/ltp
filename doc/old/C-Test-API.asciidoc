@@ -1651,7 +1651,7 @@ with 'TBROK'. This behavior can be changed using tst_path_val.flags:
 * 'TST_SR_TBROK_RO' – End test with 'TBROK' if the file is read-only
 * 'TST_SR_TCONF_RO' – End test with 'TCONF' if the file is read-only
 * 'TST_SR_SKIP_RO' – Continue without saving the file if it is read-only
-* 'TST_SR_IGNORE_ERR' – Ignore errors when writing new value into the file
+* 'TST_SR_IGNORE_ERR' – Ignore all errors during reading and writing the file
 
 Common flag combinations also have shortcuts:
 
