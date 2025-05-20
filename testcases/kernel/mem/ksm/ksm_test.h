@@ -74,22 +74,15 @@ static inline void verify(char **memory, char value, int proc,
 		    int start, int end, int start2, int end2)
 {
 	int i, j;
-	void *s = NULL;
-
-	s = SAFE_MALLOC((end - start) * (end2 - start2));
 
 	tst_res(TINFO, "child %d verifies memory content.", proc);
-	memset(s, value, (end - start) * (end2 - start2));
-	if (memcmp(memory[start], s, (end - start) * (end2 - start2))
-	    != 0)
-		for (j = start; j < end; j++)
-			for (i = start2; i < end2; i++)
-				if (memory[j][i] != value)
-					tst_res(TFAIL, "child %d has %c at "
-						 "%d,%d,%d.",
-						 proc, memory[j][i], proc,
-						 j, i);
-	free(s);
+
+	for (j = start; j < end; j++)
+		for (i = start2; i < end2; i++)
+			if (memory[j][i] != value)
+				tst_res(TFAIL, "child %d has %c at "
+					"%d,%d,%d.",
+					proc, memory[j][i], proc, j, i);
 }
 
 struct ksm_merge_data {
