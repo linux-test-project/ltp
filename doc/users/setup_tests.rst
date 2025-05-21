@@ -47,8 +47,11 @@ users.
        printed by the test (suitable for a reproducible output).
 
    * - LTP_SINGLE_FS_TYPE
-     - Testing only - specifies filesystem instead all supported
+     - Specifies single filesystem to run the test on instead all supported
        (for tests with ``.all_filesystems``).
+
+   * - LTP_FORCE_SINGLE_FS_TYPE
+     - Testing only. Behaves like LTP_SINGLE_FS_TYPE but ignores test skiplists.
 
    * - LTP_DEV_FS_TYPE
      - Filesystem used for testing (default: ``ext2``).

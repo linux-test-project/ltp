@@ -482,15 +482,16 @@ tst_usage()
 
 Environment Variables
 ---------------------
-KCONFIG_PATH         Specify kernel config file
-KCONFIG_SKIP_CHECK   Skip kernel config check if variable set (not set by default)
-LTPROOT              Prefix for installed LTP (default: /opt/ltp)
-LTP_COLORIZE_OUTPUT  Force colorized output behaviour (y/1 always, n/0: never)
-LTP_DEV              Path to the block device to be used (for .needs_device)
-LTP_DEV_FS_TYPE      Filesystem used for testing (default: ext2)
-LTP_SINGLE_FS_TYPE   Testing only - specifies filesystem instead all supported (for TST_ALL_FILESYSTEMS=1)
-LTP_TIMEOUT_MUL      Timeout multiplier (must be a number >=1, ceiled to int)
-TMPDIR               Base directory for template directory (for .needs_tmpdir, default: /tmp)
+KCONFIG_PATH             Specify kernel config file
+KCONFIG_SKIP_CHECK       Skip kernel config check if variable set (not set by default)
+LTPROOT                  Prefix for installed LTP (default: /opt/ltp)
+LTP_COLORIZE_OUTPUT      Force colorized output behaviour (y/1 always, n/0: never)
+LTP_DEV                  Path to the block device to be used (for .needs_device)
+LTP_DEV_FS_TYPE          Filesystem used for testing (default: ext2)
+LTP_SINGLE_FS_TYPE       Specifies filesystem instead all supported (for TST_ALL_FILESYSTEMS=1)
+LTP_FORCE_SINGLE_FS_TYPE Testing only. The same as LTP_SINGLE_FS_TYPE but ignores test skiplist
+LTP_TIMEOUT_MUL          Timeout multiplier (must be a number >=1, ceiled to int)
+TMPDIR                   Base directory for template directory (for .needs_tmpdir, default: /tmp)
 EOF
 }
 
