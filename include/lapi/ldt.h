@@ -46,7 +46,7 @@ static inline int modify_ldt(int func, const struct user_desc *ptr,
 	if (rval > 0 && (int)rval < 0) {
 		tst_res(TINFO,
 			"WARNING: Libc mishandled modify_ldt() return value");
-		errno = -(int)errno;
+		errno = -(int)rval;
 		rval = -1;
 	}
 #endif /* __x86_64__ */
