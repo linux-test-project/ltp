@@ -271,6 +271,12 @@ static void setup(void)
 	if (tst_parse_int(str_num_messages, &num_messages, 1, avail_msg))
 		tst_brk(TBROK, "Invalid number of messages '%s'", str_num_messages);
 
+	if (num_messages > avail_msg) {
+		tst_res(avail_msg < num_messages / 2 ? TWARN : TINFO,
+			"Number of messages reduced to %d", avail_msg);
+		num_messages = avail_msg;
+	}
+
 	if (tst_parse_int(str_num_iterations, &num_iterations, 1, MAXNREPS))
 		tst_brk(TBROK, "Invalid number of messages iterations '%s'", str_num_iterations);
 
