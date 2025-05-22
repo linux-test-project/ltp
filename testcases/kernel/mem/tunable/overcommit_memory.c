@@ -62,6 +62,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include "tst_common.h"
 #include "tst_test.h"
 
 #define DEFAULT_OVER_RATIO	50L
@@ -155,7 +156,7 @@ static int heavy_malloc(long size)
 {
 	char *p;
 
-	p = malloc(size * TST_KB);
+	LTP_VAR_USED(p) = malloc(size * TST_KB);
 	if (p != NULL) {
 		tst_res(TINFO, "malloc %ld kB successfully", size);
 		free(p);
