@@ -47,8 +47,6 @@ then
 	IOTHROTTLE_CONTROLLER_VALUE=`grep -w blockio /proc/cgroups | cut -f4`;
 	FREEZER=`grep -w freezer /proc/cgroups | cut -f1`;
 	FREEZER_VALUE=`grep -w freezer /proc/cgroups | cut -f4`;
-	CPUACCOUNT_CONTROLLER=`grep -w cpuacct /proc/cgroups | cut -f1`
-	CPUACCOUNT_CONTROLLER_VALUE=`grep -w cpuacct /proc/cgroups | cut -f4`
 
 	if [ "$CPU_CONTROLLER" = "cpu" ] && [ "$CPU_CONTROLLER_VALUE" = "1" ]
 	then
@@ -100,16 +98,6 @@ then
 		echo "Kernel does not support freezer controller";
 		echo "Skipping all freezer testcases....";
 	fi
-	if [ "$CPUACCOUNT_CONTROLLER" = "cpuacct" ] && [ "$CPUACCOUNT_CONTROLLER_VALUE" = "1" ]
-        then
-                $LTPROOT/testcases/bin/run_cpuacct_test.sh 1;
-                $LTPROOT/testcases/bin/run_cpuacct_test.sh 2;
-        else
-                echo "Could not start cpu accounting controller test";
-		echo "Either Kernel does not support for cpu accounting controller or functionality is not enabled";
-                echo "usage: run_cpuacct_test.sh $TEST_NUM ";
-                echo "Skipping the cpu accounting controller test...";
-        fi
 else
 	echo "CONTROLLERS TESTCASES: WARNING"
 	echo "Kernel does not support any controller";
