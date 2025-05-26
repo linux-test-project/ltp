@@ -37,6 +37,11 @@
 #                                                                                #
 ##################################################################################
 
+if mount | grep -w "type cgroup2" > /dev/null 2>&1; then
+       tst_brkm TCONF "" "test_controllers.sh: V1 controller required, but mounted on V2"
+       exit 32
+fi
+
 if [ -f /proc/cgroups ]
 then
 	CPU_CONTROLLER=`grep -w cpu /proc/cgroups | cut -f1`;
