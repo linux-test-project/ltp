@@ -48,8 +48,6 @@ then
 	CPU_CONTROLLER_VALUE=`grep -w cpu /proc/cgroups | cut -f4`;
 	MEM_CONTROLLER=`grep -w memory /proc/cgroups | cut -f1`;
 	MEM_CONTROLLER_VALUE=`grep -w memory /proc/cgroups | cut -f4`;
-	IOTHROTTLE_CONTROLLER=`grep -w blockio /proc/cgroups | cut -f1`;
-	IOTHROTTLE_CONTROLLER_VALUE=`grep -w blockio /proc/cgroups | cut -f4`;
 	FREEZER=`grep -w freezer /proc/cgroups | cut -f1`;
 	FREEZER_VALUE=`grep -w freezer /proc/cgroups | cut -f4`;
 
@@ -83,15 +81,6 @@ then
 		echo "CONTROLLERS TESTCASES: WARNING";
 		echo "Either Kernel does not support for memory controller or functionality is not enabled";
 		echo "Skipping all memory controller testcases....";
-	fi
-
-	if [ "$IOTHROTTLE_CONTROLLER" = "blockio" ] && [ "$IOTHROTTLE_CONTROLLER_VALUE" = "1" ]
-	then
-		$LTPROOT/testcases/bin/run_io_throttle_test.sh;
-	else
-		echo "CONTROLLERS TESTCASES: WARNING";
-		echo "Either Kernel does not support for io controller or functionality is not enabled";
-		echo "Skipping all block device I/O throttling testcases....";
 	fi
 
 	if [ "$FREEZER" = "freezer" ] && [ "$FREEZER_VALUE" = "1" ]
