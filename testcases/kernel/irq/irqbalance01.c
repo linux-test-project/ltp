@@ -285,9 +285,18 @@ static void evidence_of_change(void)
 		}
 	}
 
-	tst_res(changed ? TPASS : TFAIL,
-		"Heuristic: Detected %zu irq-cpu pairs have been dissallowed",
-		changed);
+	if (changed) {
+		tst_res(TPASS, "IRQs assignments have changed %zu times",
+			changed);
+	} else {
+
+		tst_res(TFAIL, "IRQ balancing has not been detected");
+
+		tst_printf("Please, check that:\n"
+			   "- balancing service is not running\n"
+			   "- balancing service is running but rules didn't change\n"
+			   "- balancing rules have been changed, but CPUs didn't perform any interrupt");
+	}
 }
 
 static void setup(void)
