@@ -57,23 +57,6 @@ int main(void)
 		ret_code = PTS_UNRESOLVED;
 		break;
 	case 0:
-		mq_getattr(mq, &attr);
-		for (i = 0; i < MAX_MSG && ret_code == PTS_PASS; i++) {
-			printf("[%d] s_msg_ptr is '%s' \n", i + 1,
-			       s_msg_ptr[i]);
-			printf("Prepare to send message...\n");
-			if (-1 == mq_send(mq, s_msg_ptr[i], attr.mq_msgsize, 1)) {
-				perror("mq_send doesn't return success \n");
-				ret_code = PTS_UNRESOLVED;
-			} else {
-				printf("Process %ld send message '%s' to "
-				       "process %ld \n",
-				       (long)getpid(), s_msg_ptr[i], (long)pid);
-			}
-		}
-		(void)wait(NULL);
-		break;
-	default:
 		printf("Enter into child process...\n");
 		mq_getattr(mq, &attr);
 		for (i = 0; i < MAX_MSG && ret_code == PTS_PASS; i++) {
@@ -91,7 +74,23 @@ int main(void)
 			}
 		}
 		exit(ret_code);
-
+		break;
+	default:
+		mq_getattr(mq, &attr);
+		for (i = 0; i < MAX_MSG && ret_code == PTS_PASS; i++) {
+			printf("[%d] s_msg_ptr is '%s' \n", i + 1,
+			       s_msg_ptr[i]);
+			printf("Prepare to send message...\n");
+			if (-1 == mq_send(mq, s_msg_ptr[i], strlen(s_msg_ptr[i]) + 1, 1)) {
+				perror("mq_send doesn't return success \n");
+				ret_code = PTS_UNRESOLVED;
+			} else {
+				printf("Process %ld send message '%s' to "
+				       "process %ld \n",
+				       (long)getpid(), s_msg_ptr[i], (long)pid);
+			}
+		}
+		(void)wait(NULL);
 		break;
 	}
 
