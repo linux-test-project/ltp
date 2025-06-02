@@ -254,8 +254,10 @@ AC_CHECK_TYPES([struct mount_attr],,,[
 
 AC_CHECK_TYPES([struct cachestat_range],,,[#include <sys/mman.h>])
 AC_CHECK_TYPES([struct cachestat],,,[#include <sys/mman.h>])
-AC_CHECK_TYPES([struct mnt_id_req],,,[#include <linux/mount.h>])
-AC_CHECK_TYPES([struct statmount],,,[#include <linux/mount.h>])
+
+# Defined in <linux/mount.h>, but include/lapi/mount.h includes <sys/mount.h> */
+AC_CHECK_TYPES([struct mnt_id_req],,,[#include <sys/mount.h>])
+AC_CHECK_TYPES([struct statmount],,,[#include <sys/mount.h>])
 
 # Tools knobs
 
