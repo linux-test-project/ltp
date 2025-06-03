@@ -45,6 +45,7 @@ static void setup(void)
 static void test_append(void)
 {
 	off_t len1, len2;
+	struct stat statbuf;
 
 	tst_res(TINFO, "Testing O_APPEND");
 
@@ -54,14 +55,24 @@ static void test_append(void)
 		return;
 
 	len1 = SAFE_LSEEK(fd, 0, SEEK_CUR);
-	SAFE_WRITE(1, fd, TEST_FILE, strlen(TEST_FILE));
+
+	if (len1)
+		tst_res(TFAIL, "Initial cursor position is not zero");
+
+	SAFE_FSTAT(fd, &statbuf);
+	len1 = strlen(TEST_FILE);
+	SAFE_WRITE(1, fd, TEST_FILE, len1);
 	len2 = SAFE_LSEEK(fd, 0, SEEK_CUR);
 	SAFE_CLOSE(fd);
+	len1 += statbuf.st_size;
 
-	if (len2 > len1)
-		tst_res(TPASS, "O_APPEND works as expected");
-	else
-		tst_res(TFAIL, "O_APPEND did not move write cursor");
+	if (len2 != len1) {
+		tst_res(TFAIL, "Wrong cursor position after write: %ld != %ld",
+			(long)len2, (long)len1);
+		return;
+	}
+
+	tst_res(TPASS, "O_APPEND works as expected");
 }
 
 static void test_noatime(void)
