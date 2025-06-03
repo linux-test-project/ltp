@@ -14,22 +14,20 @@
 #define NSEC_PER_MSEC (1000000L)
 
 static int do_epoll_pwait(int epfd, struct epoll_event *events, int
-	maxevents, int timeout, const sigset_t *sigmask)
+	maxevents, struct timespec *timeout, const sigset_t *sigmask)
 {
-	if (tst_variant == 0)
-		return epoll_pwait(epfd, events, maxevents, timeout, sigmask);
+	if (tst_variant == 1)
+		return epoll_pwait2(epfd, events, maxevents, timeout, sigmask);
 
-	struct timespec ts;
+	int timeout_ms = -1;
 
-	if (timeout < 0) {
-		return epoll_pwait2(epfd, events, maxevents, NULL, sigmask);
-	} else {
-		ts.tv_sec = timeout / MSEC_PER_SEC;
-		ts.tv_nsec = NSEC_PER_MSEC * (timeout % MSEC_PER_SEC);
+	if (timeout) {
+		timeout_ms = timeout->tv_sec * MSEC_PER_SEC;
+		timeout_ms += (timeout->tv_nsec + NSEC_PER_MSEC - 1) /
+			NSEC_PER_MSEC;
 	}
 
-	return epoll_pwait2(epfd, events, maxevents, &ts, sigmask);
-
+	return epoll_pwait(epfd, events, maxevents, timeout_ms, sigmask);
 }
 
 static void epoll_pwait_init(void)

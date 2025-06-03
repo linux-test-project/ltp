@@ -19,7 +19,7 @@ static struct epoll_event e;
 
 static void run(void)
 {
-	TEST(do_epoll_pwait(efd, &e, 1, -1, NULL));
+	TEST(do_epoll_pwait(efd, &e, 1, NULL, NULL));
 
 	if (TST_RET == 1) {
 		tst_res(TPASS, "do_epoll_pwait() succeeded");

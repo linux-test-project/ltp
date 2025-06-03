@@ -30,7 +30,7 @@ static void sighandler(int sig LTP_ATTRIBUTE_UNUSED) {}
 
 static void verify_sigmask(void)
 {
-	TEST(do_epoll_pwait(efd, &e, 1, -1, &signalset));
+	TEST(do_epoll_pwait(efd, &e, 1, NULL, &signalset));
 
 	if (TST_RET != 1) {
 		tst_res(TFAIL, "do_epoll_pwait() returned %li, expected 1",
@@ -43,7 +43,7 @@ static void verify_sigmask(void)
 
 static void verify_nonsigmask(void)
 {
-	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, -1, NULL), EINTR,
+	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, NULL, NULL), EINTR,
 		     "do_epoll_pwait() without sigmask");
 }
 

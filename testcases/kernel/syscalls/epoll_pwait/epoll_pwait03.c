@@ -13,17 +13,20 @@
 #include "tst_timer_test.h"
 #include "epoll_pwait_var.h"
 
-#define USEC_PER_MSEC (1000L)
+#define USEC_PER_NSEC (1000L)
+#define USEC_PER_SEC (1000000L)
 
 static int efd, sfd[2];
 static struct epoll_event e;
 
 int sample_fn(int clk_id, long long usec)
 {
-	unsigned int ms = usec / USEC_PER_MSEC;
+	struct timespec ts;
 
+	ts.tv_sec = usec / USEC_PER_SEC;
+	ts.tv_nsec = (usec % USEC_PER_SEC) * USEC_PER_NSEC;
 	tst_timer_start(clk_id);
-	TEST(do_epoll_pwait(efd, &e, 1, ms, NULL));
+	TEST(do_epoll_pwait(efd, &e, 1, &ts, NULL));
 	tst_timer_stop();
 	tst_timer_sample();
 

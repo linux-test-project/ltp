@@ -20,7 +20,7 @@ static void *bad_addr;
 
 static void run(void)
 {
-	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, -1, bad_addr),
+	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, NULL, bad_addr),
 		     EFAULT, "with an invalid sigmask pointer");
 }
 
