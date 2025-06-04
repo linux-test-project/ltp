@@ -20,7 +20,6 @@
 #include "statmount.h"
 #include "lapi/stat.h"
 #include "lapi/sched.h"
-#include <linux/btrfs.h>
 
 #define MNTPOINT "mntpoint"
 
