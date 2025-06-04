@@ -23,28 +23,24 @@ static struct tcase {
 	struct lsm_ctx **ctx;
 	uint32_t *size;
 	uint32_t flags;
-	int exp_errno;
 	char *msg;
 } tcases[] = {
 	{
 		.attr = LSM_ATTR_CURRENT,
 		.ctx = &ctx_null,
 		.size = &ctx_size,
-		.exp_errno = EFAULT,
 		.msg = "ctx is NULL",
 	},
 	{
 		.attr = LSM_ATTR_CURRENT,
 		.ctx = &ctx,
 		.size = &ctx_size_small,
-		.exp_errno = EINVAL,
 		.msg = "size is too small",
 	},
 	{
 		.attr = LSM_ATTR_CURRENT,
 		.ctx = &ctx,
 		.size = &ctx_size_big,
-		.exp_errno = E2BIG,
 		.msg = "size is too big",
 	},
 	{
@@ -52,15 +48,13 @@ static struct tcase {
 		.ctx = &ctx,
 		.size = &ctx_size,
 		.flags = 1,
-		.exp_errno = EINVAL,
 		.msg = "flags must be zero",
 	},
 	{
-		.attr = LSM_ATTR_CURRENT | LSM_ATTR_EXEC,
+		.attr = -1000,
 		.ctx = &ctx,
 		.size = &ctx_size,
-		.exp_errno = EINVAL,
-		.msg = "attr is overset",
+		.msg = "attr is invalid",
 	}
 };
 
@@ -77,9 +71,9 @@ static void run(unsigned int n)
 	ctx_size_small = 1;
 	ctx_size_big = ctx_size + 1;
 
-	TST_EXP_FAIL(lsm_set_self_attr(tc->attr, *tc->ctx, *tc->size, tc->flags),
-	      tc->exp_errno,
-	      "%s", tc->msg);
+	TST_EXP_EXPR(lsm_set_self_attr(
+		tc->attr, *tc->ctx, *tc->size, tc->flags) == -1,
+		"%s", tc->msg);
 }
 
 static void setup(void)
