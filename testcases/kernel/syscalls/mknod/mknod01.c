@@ -10,6 +10,7 @@
  * various modes.
  */
 
+#include <stdint.h>
 #include <sys/sysmacros.h>
 #include "tst_test.h"
 
@@ -26,7 +27,6 @@ static int tcases[] = {
 	S_IFREG | 06700,
 };
 
-
 static void run(unsigned int i)
 {
 	dev_t dev = 0;
@@ -35,8 +35,8 @@ static void run(unsigned int i)
 		dev = makedev(1, 3);
 
 	TST_EXP_PASS(mknod(PATH, tcases[i], dev),
-				"mknod(PATH, %o, %ld)",
-				tcases[i], dev);
+		     "mknod(PATH, %o, %ju)",
+		     tcases[i], (uintmax_t)dev);
 	SAFE_UNLINK(PATH);
 }
 
