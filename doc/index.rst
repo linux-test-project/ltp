@@ -9,6 +9,7 @@
 
    users/quick_start
    users/setup_tests
+   users/testers_guide
    users/supported_systems
    users/stats
    users/test_catalog
