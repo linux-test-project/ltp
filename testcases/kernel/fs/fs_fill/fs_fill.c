@@ -22,7 +22,7 @@
 
 static volatile int run;
 static unsigned int nthreads;
-static int enospc_cnt;
+static tst_atomic_t enospc_cnt;
 static struct worker *workers;
 
 struct worker {

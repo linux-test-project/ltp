@@ -155,11 +155,11 @@ struct tst_fzsync_pair {
 	float max_dev_ratio;
 
 	/** Internal; Atomic counter used by fzsync_pair_wait() */
-	int a_cntr;
+	tst_atomic_t a_cntr;
 	/** Internal; Atomic counter used by fzsync_pair_wait() */
-	int b_cntr;
+	tst_atomic_t b_cntr;
 	/** Internal; Used by tst_fzsync_pair_exit() and fzsync_pair_wait() */
-	int exit;
+	tst_atomic_t exit;
 	/** Internal; The test time remaining on tst_fzsync_pair_reset() */
 	float exec_time_start;
 	/**

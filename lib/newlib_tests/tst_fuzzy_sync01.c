@@ -88,7 +88,7 @@ struct race {
 	const struct window b;
 };
 
-static int H;
+static tst_atomic_t H;
 static struct tst_fzsync_pair pair;
 
 static const struct race races[] = {

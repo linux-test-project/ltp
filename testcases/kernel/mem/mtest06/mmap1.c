@@ -55,7 +55,7 @@ static unsigned long data_matched;
 static unsigned long repeated_reads;
 
 /* sequence id for each map/unmap performed */
-static int mapcnt, unmapcnt;
+static tst_atomic_t mapcnt, unmapcnt;
 /* stored sequence id before making read attempt */
 static int br_map, br_unmap;
 

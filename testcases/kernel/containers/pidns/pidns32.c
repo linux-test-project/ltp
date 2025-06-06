@@ -21,7 +21,7 @@ static const struct tst_clone_args args = {
 	.flags = CLONE_NEWPID,
 	.exit_signal = SIGCHLD,
 };
-static int *level;
+static tst_atomic_t *level;
 
 static pid_t child_func(void)
 {

@@ -41,10 +41,10 @@
 #define SPIN_TIME_NS 200000000ULL
 #define SLEEP_TIME_NS 50000000ULL
 
-static int the_ball;
+static tst_atomic_t the_ball;
 static int players_per_team = 0;
 static int game_length = DEF_GAME_LENGTH;
-static int players_ready;
+static tst_atomic_t players_ready;
 
 static char *str_game_length;
 static char *str_players_per_team;

@@ -33,7 +33,7 @@
 
 static unsigned char buf[BUF_SIZE], *map_ptr;
 static int mapfd = -1, writefd = -1, readfd = -1;
-static int written;
+static tst_atomic_t written;
 static struct tst_fzsync_pair fzsync_pair;
 struct iovec iov[5];
 

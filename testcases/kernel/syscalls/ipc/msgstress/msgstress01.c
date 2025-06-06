@@ -49,7 +49,7 @@ static int num_messages = 1000;
 static int num_iterations = MAXNREPS;
 static volatile int *stop;
 static volatile int *fail;
-static int *finished;
+static tst_atomic_t *finished;
 static int *flags;
 
 static int get_used_sysvipc(void)

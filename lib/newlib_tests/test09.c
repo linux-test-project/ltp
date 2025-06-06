@@ -13,7 +13,7 @@
 #define THREADS 64
 #define ITERATIONS 100000
 
-static int atomic;
+static tst_atomic_t atomic;
 
 static void *worker(void *id)
 {

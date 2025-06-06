@@ -57,7 +57,7 @@
 
 struct queue {
 	sem_t sem;
-	int front;
+	tst_atomic_t front;
 	int back;
 	char data[QUEUE_SIZE];
 	char popped[BUFFER_SIZE];
@@ -67,7 +67,7 @@ struct worker {
 	int i;
 	pid_t pid;
 	struct queue *q;
-	int last_seen;
+	tst_atomic_t last_seen;
 	unsigned int kill_sent:1;
 };
 

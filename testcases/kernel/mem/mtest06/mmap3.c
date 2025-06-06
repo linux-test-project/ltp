@@ -28,7 +28,7 @@ static int loops = 1000;
 static int threads = 40;
 
 static volatile int sig_caught;
-static int threads_running;
+static tst_atomic_t threads_running;
 
 static int mkfile(int *size)
 {
