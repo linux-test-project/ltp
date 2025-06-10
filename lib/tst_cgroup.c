@@ -16,6 +16,7 @@
 #include "lapi/fcntl.h"
 #include "lapi/mount.h"
 #include "tst_safe_file_at.h"
+#include "tst_kconfig.h"
 
 struct cgroup_root;
 
@@ -1530,4 +1531,15 @@ int tst_cg_memory_recursiveprot(struct tst_cg_group *cg)
 	if (cg && cg->dirs_by_ctrl[0]->dir_root)
 		return cg->dirs_by_ctrl[0]->dir_root->memory_recursiveprot;
 	return 0;
+}
+
+void tst_check_rt_group_sched_support(void)
+{
+	static const char * const kconf[] = {"CONFIG_RT_GROUP_SCHED=y", NULL};
+
+	tst_cg_scan();
+
+	if (cgroup_v2_mounted() && !tst_kconfig_check(kconf)) {
+		tst_brk(TCONF, "CONFIG_RT_GROUP_SCHED not support on cgroupv2");
+	}
 }

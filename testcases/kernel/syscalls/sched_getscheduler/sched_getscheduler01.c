@@ -39,6 +39,8 @@ static void run(unsigned int n)
 	struct test_cases_t *tc = &tcases[n];
 	struct sched_param p = { .sched_priority = tc->priority };
 
+	tst_check_rt_group_sched_support();
+
 	TST_EXP_PASS_SILENT(tv->sched_setscheduler(0, tc->policy, &p));
 
 	if (!TST_PASS)

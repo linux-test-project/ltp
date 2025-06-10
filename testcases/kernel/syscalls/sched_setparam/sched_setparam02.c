@@ -36,6 +36,8 @@ static void run(unsigned int n)
 	struct sched_variant *tv = &sched_variants[tst_variant];
 	struct sched_param p = { .sched_priority = tc->param };
 
+	tst_check_rt_group_sched_support();
+
 	TST_EXP_PASS_SILENT(tv->sched_setscheduler(0, tc->policy, &p));
 
 	p.sched_priority = tc->priority;
