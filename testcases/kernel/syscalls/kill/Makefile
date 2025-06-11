@@ -3,11 +3,10 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ipc newipc
+LTPLIBS = newipc
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-kill07: LTPLDLIBS  = -lltpipc
 kill05: LTPLDLIBS  = -lltpnewipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
