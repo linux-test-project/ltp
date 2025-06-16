@@ -190,7 +190,7 @@ static struct tst_test test = {
 	.all_filesystems = 1,
 	.mntpoint = MNTPOINT,
 	.filesystems = (struct tst_fs[]){
-		{ .type = NULL, .mnt_flags = MS_STRICTATIME },
+		{ .mnt_flags = MS_STRICTATIME },
 		{}
 	}
 };
