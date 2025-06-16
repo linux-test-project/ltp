@@ -476,8 +476,22 @@ void tst_res_(const char *file, const int lineno, int ttype,
 {
 	va_list va;
 
-	if (ttype == TDEBUG && context && !context->tdebug)
-		return;
+	/*
+	 * Suppress TDEBUG output in these cases:
+	 * 1. No context available (e.g., called before IPC initialization)
+	 * 2. Called from the library process, unless explicitly enabled
+	 * 3. Debug output is not enabled (context->tdebug == 0)
+	 */
+	if (ttype == TDEBUG) {
+		if (!context)
+			return;
+
+		if (context->lib_pid == getpid())
+			return;
+
+		if (!context->tdebug)
+			return;
+	}
 
 	va_start(va, fmt);
 	tst_vres_(file, lineno, ttype, fmt, va);
