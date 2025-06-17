@@ -24,7 +24,7 @@ ${abs_top_builddir}/metadata/ltp.json:
 	$(MAKE) -C ${abs_top_builddir}/metadata
 
 all: ${abs_top_builddir}/metadata/ltp.json
-	$(RUN_VENV); sphinx-build -b html . html
+	$(RUN_VENV); sphinx-build -v -b html . html
 
 spelling:
 	$(RUN_VENV); sphinx-build -b spelling -d build/doctree . build/spelling
