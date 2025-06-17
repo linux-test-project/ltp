@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 enum data_type {
 	DATA_ARRAY,
@@ -228,6 +229,13 @@ static inline struct data_node *data_node_hash_get(struct data_node *self, const
 	return hash->elems[i].node;
 }
 
+static inline unsigned int data_node_hash_len(struct data_node *self)
+{
+	struct data_node_hash *hash = &self->hash;
+
+	return hash->elems_used;
+}
+
 static inline int data_node_array_add(struct data_node *self, struct data_node *payload)
 {
 	if (self->type != DATA_ARRAY)
@@ -283,6 +291,18 @@ static inline void data_print_padd(unsigned int i)
 {
 	while (i-- > 0)
 		putchar(' ');
+}
+
+static inline bool data_node_is_empty(struct data_node *self)
+{
+	switch (self->type) {
+	case DATA_ARRAY:
+		return data_node_array_len(self) == 0;
+	case DATA_HASH:
+		return data_node_hash_len(self) == 0;
+	default:
+		return false;
+	}
 }
 
 static inline void data_node_print_(struct data_node *self, unsigned int padd)
