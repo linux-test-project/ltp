@@ -422,7 +422,8 @@ def _generate_setup_table(keys):
             else:
                 values.append(value)
 
-        table.extend(_generate_table_cell(key, values))
+        if values:
+            table.extend(_generate_table_cell(key, values))
 
     return table
 
