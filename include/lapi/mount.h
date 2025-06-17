@@ -51,6 +51,7 @@ struct mnt_id_req {
 	uint32_t spare;
 	uint64_t mnt_id;
 	uint64_t param;
+	uint64_t mnt_ns_id;
 };
 #endif
 
@@ -75,7 +76,18 @@ struct statmount {
 	uint64_t propagate_from;
 	uint32_t mnt_root;
 	uint32_t mnt_point;
-	uint64_t __spare2[50];
+	uint64_t mnt_ns_id;
+	uint32_t fs_subtype;
+	uint32_t sb_source;
+	uint32_t opt_num;
+	uint32_t opt_array;
+	uint32_t opt_sec_num;
+	uint32_t opt_sec_array;
+	uint32_t mnt_uidmap_num;
+	uint32_t mnt_uidmap;
+	uint32_t mnt_gidmap_num;
+	uint32_t mnt_gidmap;
+	uint64_t __spare2[44];
 	char str[];
 };
 #endif
@@ -106,6 +118,10 @@ struct statmount {
 
 #ifndef STATMOUNT_FS_TYPE
 # define STATMOUNT_FS_TYPE 0x00000020U
+#endif
+
+#ifndef STATMOUNT_MNT_NS_ID
+# define STATMOUNT_MNT_NS_ID 0x00000040U
 #endif
 
 #ifndef LSMT_ROOT

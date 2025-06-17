@@ -135,7 +135,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.min_kver = "6.8",
 	.bufs = (struct tst_buffers []) {
-		{ &request, .size = sizeof(struct mnt_id_req) },
+		{ &request, .size = MNT_ID_REQ_SIZE_VER0 },
 		{},
 	},
 };
