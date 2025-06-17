@@ -5,7 +5,8 @@ name: "Test building sphinx doc"
 
 on:
   push:
-    paths: ['doc/**']
+    branches:
+    - master
   pull_request:
     paths: ['doc/**']
 
