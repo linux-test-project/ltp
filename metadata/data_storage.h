@@ -396,14 +396,16 @@ static inline void data_to_json_(struct data_node *self, FILE *f, unsigned int p
 		data_fprintf(f, padd, "null");
 	break;
 	case DATA_HASH:
+		data_fprintf(f, do_padd ? padd : 0, "{\n");
 		for (i = 0; i < self->hash.elems_used; i++) {
-			data_fprintf(f, padd, "\"%s\": ", self->hash.elems[i].id);
+			data_fprintf(f, padd+1, "\"%s\": ", self->hash.elems[i].id);
 			data_to_json_(self->hash.elems[i].node, f, padd+1, 0);
 			if (i < self->hash.elems_used - 1)
 				fprintf(f, ",\n");
 			else
 				fprintf(f, "\n");
 		}
+		data_fprintf(f, padd, "}");
 	break;
 	case DATA_ARRAY:
 		data_fprintf(f, do_padd ? padd : 0, "[\n");
@@ -421,9 +423,7 @@ static inline void data_to_json_(struct data_node *self, FILE *f, unsigned int p
 
 static inline void data_to_json(struct data_node *self, FILE *f, unsigned int padd)
 {
-	fprintf(f, "{\n");
-	data_to_json_(self, f, padd + 1, 1);
-	data_fprintf(f, padd, "}");
+	data_to_json_(self, f, padd, 0);
 }
 
 #endif /* DATA_STORAGE_H__ */
