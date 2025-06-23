@@ -76,4 +76,14 @@ static inline int safe_modify_ldt(const char *file, const int lineno, int func,
 #define SAFE_MODIFY_LDT(func, ptr, bytecount) \
 	safe_modify_ldt(__FILE__, __LINE__, (func), (ptr), (bytecount))
 
+static inline int set_thread_area(const struct user_desc *u_info)
+{
+	return tst_syscall(__NR_set_thread_area, u_info);
+}
+
+static inline int get_thread_area(const struct user_desc *u_info)
+{
+	return tst_syscall(__NR_get_thread_area, u_info);
+}
+
 #endif /* LAPI_LDT_H__ */

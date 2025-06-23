@@ -1361,6 +1361,7 @@ set_mempolicy04 set_mempolicy04
 
 set_robust_list01 set_robust_list01
 set_thread_area01 set_thread_area01
+set_thread_area02 set_thread_area02
 set_tid_address01 set_tid_address01
 
 setdomainname01	setdomainname01
