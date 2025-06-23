@@ -102,7 +102,6 @@ static int ignore_mark_unsupported;
 #define DROP_CACHES_FILE "/proc/sys/vm/drop_caches"
 #define CACHE_PRESSURE_FILE "/proc/sys/vm/vfs_cache_pressure"
 
-static int old_cache_pressure;
 static pid_t child_pid;
 static int bind_mount_created;
 static unsigned int num_classes = NUM_CLASSES;
@@ -925,7 +924,6 @@ static void setup(void)
 	SAFE_MKDIR(MNT2_PATH, 0755);
 	mount_cycle();
 
-	SAFE_FILE_SCANF(CACHE_PRESSURE_FILE, "%d", &old_cache_pressure);
 	/* Set high priority for evicting inodes */
 	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "500");
 }
@@ -938,8 +936,6 @@ static void cleanup(void)
 
 	if (bind_mount_created)
 		SAFE_UMOUNT(MNT2_PATH);
-
-	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "%d", old_cache_pressure);
 
 	for (i = 0; i < max_file_multi; i++) {
 		char path[PATH_MAX];
@@ -971,6 +967,10 @@ static struct tst_test test = {
 	.resource_files = (const char *const []) {
 		TEST_APP,
 		NULL
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{CACHE_PRESSURE_FILE, NULL, TST_SR_TCONF},
+		{}
 	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "9bdda4e9cf2d"},

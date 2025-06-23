@@ -35,7 +35,6 @@
 #define DROP_CACHES_FILE "/proc/sys/vm/drop_caches"
 #define CACHE_PRESSURE_FILE "/proc/sys/vm/vfs_cache_pressure"
 
-static int old_cache_pressure;
 static int fd_notify;
 
 static unsigned long long event_set[EVENT_MAX];
@@ -234,7 +233,6 @@ static void setup(void)
 						FAN_MARK_FILESYSTEM,
 						FAN_ATTRIB, MOUNT_PATH);
 
-	SAFE_FILE_SCANF(CACHE_PRESSURE_FILE, "%d", &old_cache_pressure);
 	/* Set high priority for evicting inodes */
 	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "500");
 }
@@ -243,8 +241,6 @@ static void cleanup(void)
 {
 	if (fd_notify > 0)
 		SAFE_CLOSE(fd_notify);
-
-	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "%d", old_cache_pressure);
 }
 
 static struct tst_test test = {
@@ -257,6 +253,10 @@ static struct tst_test test = {
 	/* Shrinkers on other fs do not work reliably enough to guarantee mark eviction on drop_caches */
 	.filesystems = (struct tst_fs []){
 		{.type = "ext2"},
+		{}
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{CACHE_PRESSURE_FILE, NULL, TST_SR_TCONF},
 		{}
 	},
 };
