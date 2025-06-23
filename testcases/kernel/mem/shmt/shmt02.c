@@ -1,120 +1,47 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2002
+ *	12/20/2002	Port to LTP	robbiew@us.ibm.com
+ *	06/30/2001	Port to Linux	nsharoff@us.ibm.com
+ * Copyright (c) 2025 SUSE LLC Ricardo B. Marlière <rbm@suse.com>
  */
 
-/* 12/20/2002		 Port to LTP		 robbiew@us.ibm.com */
-/* 06/30/2001		 Port to Linux		 nsharoff@us.ibm.com */
-
-/*
- * NAME
- *		 shmt02
- *
- * CALLS
- *		 shmctl(2) shmget(2)
- *
- * ALGORITHM
+/*\
  * Create and attach a shared memory segment, write to it
- * and then remove it.		  Verify that the shared memory segment
+ * and then remove it. Verify that the shared memory segment
  * is accessible as long as the process is still alive.
- *
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/utsname.h>
-#include <errno.h>
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "tst_rand_data.h"
+#include "libnewipc.h"
 
-/** LTP Port **/
-#include "test.h"
+#define SHMSIZE 16
 
-char *TCID = "shmt02";		/* Test program identifier.    */
-int TST_TOTAL = 3;		/* Total number of test cases. */
-
-/**************/
-
-#define K_1 1024
-
-static int rm_shm(int);
-
-int main(void)
+static void run(void)
 {
-	register int shmid;
 	char *cp;
+	int shmid;
 	key_t key;
 
-	errno = 0;
-	key = (key_t) getpid();
+	key = GETIPCKEY();
 
-/*----------------------------------------------------------------*/
+	shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
 
-	if ((shmid = shmget(key, 16 * K_1, IPC_CREAT | 0666)) < 0) {
-		perror("shmget");
-		tst_brkm(TFAIL, NULL,
-			 "shmget Failed: shmid = %d, errno = %d",
-			 shmid, errno);
+	cp = SAFE_SHMAT(shmid, NULL, 0);
+	memcpy(cp, tst_rand_data, SHMSIZE);
+
+	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
+
+	if (memcmp(cp, tst_rand_data, SHMSIZE) != 0) {
+		tst_res(TFAIL, "Copied data changed after IPC_RMID");
+		return;
 	}
 
-	tst_resm(TPASS, "shmget");
-
-/*----------------------------------------------------------------*/
-
-	cp = shmat(shmid, NULL, 0);
-
-	if (cp == (char *)-1) {
-		perror("shmat");
-		tst_resm(TFAIL, "shmat Failed: shmid = %d, errno = %d",
-			 shmid, errno);
-		rm_shm(shmid);
-		tst_exit();
-	}
-
-	*cp = '1';
-	*(cp + 1) = '2';
-
-	tst_resm(TPASS, "shmat");
-
-/*----------------------------------------------------------------*/
-
-	rm_shm(shmid);
-
-	if (*cp != '1' || *(cp + 1) != '2') {
-		tst_resm(TFAIL,
-			 "Error in shared memory contents: shmid = %d",
-			 shmid);
-	}
-
-	tst_resm(TPASS, "Correct shared memory contents");
-
-/*------------------------------------------------------------------*/
-
-	tst_exit();
+	tst_res(TPASS, "Copied data has been read back");
 }
 
-static int rm_shm(int shmid)
-{
-	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-		perror("shmctl");
-		tst_brkm(TFAIL,
-			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d",
-			 shmid, errno);
-	}
-	return (0);
-}
+static struct tst_test test = {
+	.test_all = run,
+};
