@@ -31,7 +31,7 @@
 
 #define TESTFILE	"testfile"
 
-static int path_fd = -1;
+static int path_fd = -1, dup_fd = -1;
 
 static int verify_read(int fd);
 static int verify_write(int fd);
@@ -64,6 +64,7 @@ static void setup(void)
 	path_fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, 0644);
 	SAFE_CLOSE(path_fd);
 	path_fd = SAFE_OPEN(TESTFILE, O_PATH);
+	dup_fd = SAFE_DUP(path_fd);
 }
 
 static void run(void)
@@ -71,8 +72,10 @@ static void run(void)
 	int i;
 
 	for (i = 0; testcases[i].func; i++) {
-		TST_EXP_FAIL(testcases[i].func(path_fd), EBADF, "%s()",
-			testcases[i].name);
+		TST_EXP_FAIL(testcases[i].func(path_fd), EBADF,
+			"%s() on original FD", testcases[i].name);
+		TST_EXP_FAIL(testcases[i].func(dup_fd), EBADF,
+			"%s() on duplicated FD", testcases[i].name);
 	}
 }
 
@@ -129,6 +132,9 @@ static void cleanup(void)
 {
 	if (path_fd >= 0)
 		SAFE_CLOSE(path_fd);
+
+	if (dup_fd >= 0)
+		SAFE_CLOSE(dup_fd);
 }
 
 static struct tst_test test = {
