@@ -460,6 +460,14 @@ struct tst_fs {
  *           (e.g., TIMEOUT_MUL), ensuring consistent test duration across
  *           different environments (e.g., debug vs. stock kernels).
  *
+ * @min_runtime: Optional lower bound (in seconds) applied after runtime is
+ *           scaled by LTP_RUNTIME_MUL. If the scaled runtime is smaller
+ *           than this value, it will be clamped up to min_runtime.
+ *           This is useful for tests that require a minimum execution
+ *           time to gather sufficient samples or trigger events (e.g.,
+ *           probabilistic or fuzzy synchronization tests).
+ *           If not set, a default minimum of 1 second is enforced.
+ *
  * @setup: Setup callback is called once at the start of the test in order to
  *         prepare the test environment.
  *
@@ -584,6 +592,7 @@ struct tst_fs {
 
 	int timeout;
 	int runtime;
+	int min_runtime;
 
 	void (*setup)(void);
 	void (*cleanup)(void);

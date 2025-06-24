@@ -126,6 +126,7 @@ static struct tst_test test = {
 	.min_kver = "4.10.0",
 	.min_cpus = 2,
 	.runtime = 150,
+	.min_runtime = 2,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "ff7b11aa481f"},

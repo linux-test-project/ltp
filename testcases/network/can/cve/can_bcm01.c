@@ -139,7 +139,7 @@ static struct tst_test test = {
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_root = 1,
 	.skip_in_compat = 1,
-	.runtime = 30,
+	.min_runtime = 30,
 	.needs_drivers = (const char *const[]) {
 		"vcan",
 		"can-bcm",

@@ -632,10 +632,14 @@ static void parse_mul(float *mul, const char *env_name, float min, float max)
 static int multiply_runtime(unsigned int runtime)
 {
 	static float runtime_mul = -1;
+	int min_runtime = 1;
+
+	if (tst_test->min_runtime > 0)
+		min_runtime = tst_test->min_runtime;
 
 	parse_mul(&runtime_mul, "LTP_RUNTIME_MUL", 0.0099, 100);
 
-	return runtime * runtime_mul;
+	return MAX(runtime * runtime_mul, min_runtime);
 }
 
 static struct option {
@@ -667,7 +671,7 @@ static void print_help(void)
 	fprintf(stderr, "LTP_SINGLE_FS_TYPE       Specifies filesystem instead all supported (for .all_filesystems)\n");
 	fprintf(stderr, "LTP_FORCE_SINGLE_FS_TYPE Testing only. The same as LTP_SINGLE_FS_TYPE but ignores test skiplist.\n");
 	fprintf(stderr, "LTP_TIMEOUT_MUL          Timeout multiplier (must be a number >=1)\n");
-	fprintf(stderr, "LTP_RUNTIME_MUL          Runtime multiplier (must be a number >=1)\n");
+	fprintf(stderr, "LTP_RUNTIME_MUL          Runtime multiplier (must be a number >0)\n");
 	fprintf(stderr, "LTP_VIRT_OVERRIDE        Overrides virtual machine detection (values: \"\"|kvm|microsoft|xen|zvm)\n");
 	fprintf(stderr, "TMPDIR                   Base directory for template directory (for .needs_tmpdir, default: %s)\n", TEMPDIR);
 	fprintf(stderr, "\n");
@@ -2000,6 +2004,9 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	uname(&uval);
 	tst_res(TINFO, "Tested kernel: %s %s %s", uval.release, uval.version, uval.machine);
+
+	if (tst_test->min_runtime && !tst_test->runtime)
+		tst_test->runtime = tst_test->min_runtime;
 
 	if (tst_test->runtime)
 		context->runtime = multiply_runtime(tst_test->runtime);

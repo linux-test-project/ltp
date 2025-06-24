@@ -278,6 +278,6 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
 	.all_filesystems = 1,
-	.runtime = 60,
+	.min_runtime = 60,
 	.needs_root = 1,
 };
