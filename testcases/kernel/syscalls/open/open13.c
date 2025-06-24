@@ -1,21 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2015 Fujitsu Ltd.
  * Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program.
+ * Copyright (c) 2025 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
- * DESCRIPTION
+/*\
  *  Basic test for O_PATH flag of open(2).
  *  "Obtain a file descriptor that can be used to perform operations
  *   that act purely at the file descriptor level, the file itself is
@@ -25,139 +15,98 @@
  *  The operations include but are not limited to the syscalls above.
  */
 
-#define _GNU_SOURCE
-
 #include "config.h"
 
-#include <errno.h>
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/types.h>
 #include <sys/xattr.h>
 #endif
 
-#include "test.h"
-#include "safe_macros.h"
+#include "tst_test.h"
+#include "tst_safe_macros.h"
 #include "lapi/fcntl.h"
 
 #define TESTFILE	"testfile"
-#define FILE_MODE	(S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID)
 
-static void setup(void);
-static void verify_read(void);
-static void verify_write(void);
-static void verify_fchmod(void);
-static void verify_fchown(void);
+static int path_fd = -1;
+
+static int verify_read(int fd);
+static int verify_write(int fd);
+static int verify_fchmod(int fd);
+static int verify_fchown(int fd);
 #ifdef HAVE_SYS_XATTR_H
-static void verify_fgetxattr(void);
+static int verify_fgetxattr(int fd);
 #endif
-static void check_result(const char *call_name);
-static void cleanup(void);
 
-static int fd;
-
-static void (*test_func[])(void) = {
-	verify_read,
-	verify_write,
-	verify_fchmod,
-	verify_fchown,
+static const struct {
+	int (*func)(int fd);
+	const char *name;
+} testcases[] = {
+	{verify_read, "read"},
+	{verify_write, "write"},
+	{verify_fchmod, "fchmod"},
+	{verify_fchown, "fchown"},
 #ifdef HAVE_SYS_XATTR_H
-	verify_fgetxattr
+	{verify_fgetxattr, "fgetxattr"},
 #endif
+	{}
 };
-
-char *TCID = "open13";
-int TST_TOTAL = ARRAY_SIZE(test_func);
-
-int main(int ac, char **av)
-{
-	int lc;
-	int tc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		tst_count = 0;
-
-		fd = SAFE_OPEN(cleanup, TESTFILE, O_RDWR | O_PATH);
-
-		for (tc = 0; tc < TST_TOTAL; tc++)
-			(*test_func[tc])();
-
-		SAFE_CLOSE(cleanup, fd);
-		fd = 0;
-	}
-
-	cleanup();
-	tst_exit();
-}
 
 static void setup(void)
 {
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	tst_tmpdir();
-
-	SAFE_TOUCH(cleanup, TESTFILE, FILE_MODE, NULL);
-
-	TEST_PAUSE;
+	path_fd = SAFE_OPEN(TESTFILE, O_RDWR | O_CREAT, 0644);
+	SAFE_CLOSE(path_fd);
+	path_fd = SAFE_OPEN(TESTFILE, O_PATH);
 }
 
-static void verify_read(void)
+static void run(void)
+{
+	int i;
+
+	for (i = 0; testcases[i].func; i++) {
+		TST_EXP_FAIL(testcases[i].func(path_fd), EBADF, "%s()",
+			testcases[i].name);
+	}
+}
+
+static int verify_read(int fd)
 {
 	char buf[255];
 
-	TEST(read(fd, buf, sizeof(buf)));
-	check_result("read(2)");
+	return read(fd, buf, sizeof(buf));
 }
 
-static void verify_write(void)
+static int verify_write(int fd)
 {
-	TEST(write(fd, "w", 1));
-	check_result("write(2)");
+	return write(fd, "w", 1);
 }
 
-static void verify_fchmod(void)
+static int verify_fchmod(int fd)
 {
-	TEST(fchmod(fd, 0666));
-	check_result("fchmod(2)");
+	return fchmod(fd, 0666);
 }
 
-static void verify_fchown(void)
+static int verify_fchown(int fd)
 {
-	TEST(fchown(fd, 1000, 1000));
-	check_result("fchown(2)");
+	return fchown(fd, 1000, 1000);
 }
 
 #ifdef HAVE_SYS_XATTR_H
-static void verify_fgetxattr(void)
+static int verify_fgetxattr(int fd)
 {
-	TEST(fgetxattr(fd, "tkey", NULL, 1));
-	check_result("fgetxattr(2)");
+	return fgetxattr(fd, "tkey", NULL, 0);
 }
 #endif
 
-static void check_result(const char *call_name)
-{
-	if (TEST_RETURN == 0) {
-		tst_resm(TFAIL, "%s succeeded unexpectedly", call_name);
-		return;
-	}
-
-	if (TEST_ERRNO != EBADF) {
-		tst_resm(TFAIL | TTERRNO, "%s failed unexpectedly, "
-			"expected EBADF", call_name);
-		return;
-	}
-
-	tst_resm(TPASS, "%s failed with EBADF", call_name);
-}
-
 static void cleanup(void)
 {
-	if (fd > 0 && close(fd))
-		tst_resm(TWARN | TERRNO, "failed to close file");
-
-	tst_rmdir();
+	if (path_fd >= 0)
+		SAFE_CLOSE(path_fd);
 }
+
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.cleanup = cleanup,
+	.needs_tmpdir = 1
+};
