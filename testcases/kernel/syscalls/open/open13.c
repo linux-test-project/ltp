@@ -17,6 +17,9 @@
 
 #include "config.h"
 
+#include <sys/ioctl.h>
+#include <linux/fs.h>
+
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/types.h>
 #include <sys/xattr.h>
@@ -34,6 +37,8 @@ static int verify_read(int fd);
 static int verify_write(int fd);
 static int verify_fchmod(int fd);
 static int verify_fchown(int fd);
+static int verify_ioctl(int fd);
+static int verify_mmap(int fd);
 #ifdef HAVE_SYS_XATTR_H
 static int verify_fgetxattr(int fd);
 #endif
@@ -46,6 +51,8 @@ static const struct {
 	{verify_write, "write"},
 	{verify_fchmod, "fchmod"},
 	{verify_fchown, "fchown"},
+	{verify_ioctl, "ioctl"},
+	{verify_mmap, "mmap"},
 #ifdef HAVE_SYS_XATTR_H
 	{verify_fgetxattr, "fgetxattr"},
 #endif
@@ -89,6 +96,26 @@ static int verify_fchmod(int fd)
 static int verify_fchown(int fd)
 {
 	return fchown(fd, 1000, 1000);
+}
+
+static int verify_ioctl(int fd)
+{
+	int arg;
+
+	return ioctl(fd, FIGETBSZ, &arg);
+}
+
+static int verify_mmap(int fd)
+{
+	void *ptr;
+
+	ptr = mmap(NULL, 1, PROT_READ, MAP_PRIVATE, fd, 0);
+
+	if (ptr == MAP_FAILED)
+		return -1;
+
+	SAFE_MUNMAP(ptr, 1);
+	return 0;
 }
 
 #ifdef HAVE_SYS_XATTR_H
