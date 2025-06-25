@@ -89,7 +89,7 @@ a few interesting ones and run them for some time in order to get an idea of
 their usefulness. If you are feeling adventurous you may try to measure and
 compare actual test coverage with one of the tools such as `gcov
 <https://www.kernel.org/doc/html/latest/dev-tools/gcov.html>`_ and `lcov
-<https://github.com/linux-test-project/lcov>`. If you do so do not fall into a
+<https://github.com/linux-test-project/lcov>`_. If you do so do not fall into a
 trap of attempting to have 100% line coverage. Having 100% of lines executed
 during the test does not mean that your test coverage is 100%.  Good tests
 validate much more than just how much code from the tested binary was executed.
