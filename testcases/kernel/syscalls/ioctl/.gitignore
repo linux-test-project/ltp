@@ -31,3 +31,4 @@
 /ioctl_ficlonerange02
 /ioctl_fiemap01
 /ioctl_pidfd01
+/ioctl_pidfd02
