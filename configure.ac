@@ -261,6 +261,8 @@ AC_CHECK_TYPES([struct cachestat],,,[#include <sys/mman.h>])
 AC_CHECK_TYPES([struct mnt_id_req],,,[#include <sys/mount.h>])
 AC_CHECK_TYPES([struct statmount],,,[#include <sys/mount.h>])
 
+AC_CHECK_TYPES([struct pidfd_info],,,[#include <sys/pidfd.h>])
+
 # Tools knobs
 
 # Bash
