@@ -14,6 +14,7 @@ pid_t tst_clone(const struct tst_clone_args *tst_args)
 {
 	struct clone_args args = {
 		.flags = tst_args->flags,
+		.pidfd = tst_args->pidfd,
 		.exit_signal = tst_args->exit_signal,
 		.cgroup = tst_args->cgroup,
 	};

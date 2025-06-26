@@ -12,6 +12,7 @@
 /* The parts of clone3's clone_args we support */
 struct tst_clone_args {
 	uint64_t flags;
+	uint64_t pidfd;
 	uint64_t exit_signal;
 	uint64_t cgroup;
 };
