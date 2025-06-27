@@ -627,6 +627,7 @@ _tst_init_checkpoints()
 		tst_brk TBROK "tst_getconf PAGESIZE failed"
 	fi
 	ROD_SILENT dd if=/dev/zero of="$LTP_IPC_PATH" bs="$pagesize" count=1
+	ROD_SILENT "printf LTPM | dd of="$LTP_IPC_PATH" bs=1 seek=0 conv=notrunc"
 	ROD_SILENT chmod 600 "$LTP_IPC_PATH"
 	export LTP_IPC_PATH
 }
