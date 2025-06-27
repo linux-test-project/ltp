@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015-2025 Cyril Hrubis <chrubis@suse.cz>
- * Copyright (c) Linux Test Project, 2016-2024
+ * Copyright (c) Linux Test Project, 2016-2025
  */
 
 #define _GNU_SOURCE
@@ -108,7 +108,6 @@ extern unsigned int tst_max_futexes;
 
 static int ipc_fd;
 static char ipc_path[1064];
-const char *tst_ipc_path = ipc_path;
 
 static char shm_path[1024];
 

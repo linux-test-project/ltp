@@ -15,6 +15,9 @@ tst_capability01
 tst_capability02
 tst_cgroup01
 tst_cgroup02
+tst_checkpoint
+tst_checkpoint_wait_timeout
+tst_checkpoint_wake_timeout
 tst_device
 tst_safe_fileops
 tst_res_hexd

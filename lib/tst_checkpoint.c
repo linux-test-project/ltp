@@ -1,24 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Further, this software is distributed without any warranty that it is
- * free of the rightful claim of any third person regarding infringement
- * or the like.  Any license provided herein, whether implied or
- * otherwise, applies only to this software file.  Patent licenses, if
- * any, provided herein do not apply to combinations of this program with
- * other software, or any other product whatsoever.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Copyright (c) 2015 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2016-2025
  */
 
 #include <stdint.h>
@@ -32,53 +15,14 @@
 
 #define DEFAULT_MSEC_TIMEOUT 10000
 
+/*
+ * Global futex array and size for checkpoint synchronization.
+ *
+ * NOTE: These are initialized by setup_ipc()/tst_reinit() in tst_test.c
+ * when .needs_checkpoints is set in the tst_test struct.
+ */
 futex_t *tst_futexes;
 unsigned int tst_max_futexes;
-
-void tst_checkpoint_init(const char *file, const int lineno,
-                         void (*cleanup_fn)(void))
-{
-	int fd;
-	unsigned int page_size;
-
-	if (tst_futexes) {
-		tst_brkm_(file, lineno, TBROK, cleanup_fn,
-			"checkpoints already initialized");
-		return;
-	}
-
-	/*
-	 * The parent test process is responsible for creating the temporary
-	 * directory and therefore must pass non-zero cleanup (to remove the
-	 * directory if something went wrong).
-	 *
-	 * We cannot do this check unconditionally because if we need to init
-	 * the checkpoint from a binary that was started by exec() the
-	 * tst_tmpdir_created() will return false because the tmpdir was
-	 * created by parent. In this case we expect the subprogram can call
-	 * the init as a first function with NULL as cleanup function.
-	 */
-	if (cleanup_fn && !tst_tmpdir_created()) {
-		tst_brkm_(file, lineno, TBROK, cleanup_fn,
-			"You have to create test temporary directory "
-			"first (call tst_tmpdir())");
-		return;
-	}
-
-	page_size = getpagesize();
-
-	fd = SAFE_OPEN(cleanup_fn, "checkpoint_futex_base_file",
-	               O_RDWR | O_CREAT, 0666);
-
-	SAFE_FTRUNCATE(cleanup_fn, fd, page_size);
-
-	tst_futexes = SAFE_MMAP(cleanup_fn, NULL, page_size,
-	                    PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-	tst_max_futexes = page_size / sizeof(uint32_t);
-
-	SAFE_CLOSE(cleanup_fn, fd);
-}
 
 int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
 {

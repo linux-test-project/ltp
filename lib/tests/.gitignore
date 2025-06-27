@@ -1,7 +1,4 @@
 /tst_tmpdir_test
-/tst_checkpoint
-/tst_checkpoint_wait_timeout
-/tst_checkpoint_wake_timeout
 /tst_process_state
 /tst_cleanup_once
 /tst_safe_macros

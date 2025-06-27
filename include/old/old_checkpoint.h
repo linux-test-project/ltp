@@ -32,14 +32,6 @@
 #include "test.h"
 #include "tst_checkpoint_fn.h"
 
-/*
- * Checkpoint initializaton, must be done first.
- *
- * NOTE: tst_tmpdir() must be called beforehand.
- */
-#define TST_CHECKPOINT_INIT(cleanup_fn) \
-	tst_checkpoint_init(__FILE__, __LINE__, cleanup_fn)
-
 #define TST_SAFE_CHECKPOINT_WAIT(cleanup_fn, id) \
         tst_safe_checkpoint_wait(__FILE__, __LINE__, cleanup_fn, id, 0);
 

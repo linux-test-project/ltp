@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2016-2025 Cyril Hrubis <chrubis@suse.cz>
  */
 
 /**
@@ -85,7 +85,5 @@
         tst_safe_checkpoint_wake(__FILE__, __LINE__, NULL, id, 1); \
         tst_safe_checkpoint_wait(__FILE__, __LINE__, NULL, id, 0); \
 } while (0)
-
-extern const char *tst_ipc_path;
 
 #endif /* TST_CHECKPOINT__ */

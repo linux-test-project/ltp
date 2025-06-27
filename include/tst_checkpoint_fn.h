@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later
- * Copyright (c) 2015-2016 Cyril Hrubis <chrubis@suse.cz>
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2015-2025 Cyril Hrubis <chrubis@suse.cz>
  */
 
 #ifndef TST_CHECKPOINT_FN__
 #define TST_CHECKPOINT_FN__
-
-/*
- * Checkpoint initializaton, must be done first.
- *
- * NOTE: tst_tmpdir() must be called beforehand.
- */
-void tst_checkpoint_init(const char *file, const int lineno,
-			 void (*cleanup_fn)(void));
 
 /*
  * Waits for wakeup.
