@@ -52,7 +52,13 @@ const char *TCID __attribute__((weak));
 #define CVE_DB_URL "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-"
 
 #define DEFAULT_TIMEOUT 30
-#define LTP_MAGIC 0x4C54504D /* Magic number is "LTPM" */
+
+/* Magic number is "LTPM" */
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+# define LTP_MAGIC 0x4C54504D
+#else
+# define LTP_MAGIC 0x4D50544C
+#endif
 
 struct tst_test *tst_test;
 
