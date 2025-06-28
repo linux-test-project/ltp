@@ -75,6 +75,7 @@ static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static int fd_notify;
 static int fan_report_fid_unsupported;
+static int tmpfs_report_fid_unsupported;
 static int mount_mark_fid_unsupported;
 static int inode_mark_fid_xdev;
 static int filesystem_mark_unsupported;
@@ -335,9 +336,11 @@ pass:
 	 * When tested fs has zero fsid (e.g. fuse) and events are reported
 	 * with fsid+fid, watching different filesystems is not supported.
 	 */
-	ret = report_fid ? inode_mark_fid_xdev : 0;
-	TST_EXP_FD_OR_FAIL(fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_CLOSE_WRITE,
-					 AT_FDCWD, "."), ret);
+	if (!tmpfs_report_fid_unsupported) {
+		ret = report_fid ? inode_mark_fid_xdev : 0;
+		TST_EXP_FD_OR_FAIL(fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_CLOSE_WRITE,
+						 AT_FDCWD, "."), ret);
+	}
 
 	/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_REMOVE | mark->flag,
@@ -373,8 +376,11 @@ static void setup(void)
 		inode_mark_fid_xdev = EXDEV;
 	}
 
-	if (fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_MOUNT, FAN_OPEN, ".")) {
-		inode_mark_fid_xdev = (errno == ENODEV) ? EXDEV : errno;
+	tmpfs_report_fid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FID, ".");
+	if (!tmpfs_report_fid_unsupported &&
+	    fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_MOUNT, FAN_OPEN, ".") &&
+	    (errno == ENODEV || errno == EXDEV)) {
+		inode_mark_fid_xdev = EXDEV;
 		tst_res(TINFO | TERRNO, "TMPDIR does not support reporting events with fid from multi fs");
 	}
 }
