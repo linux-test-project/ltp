@@ -18,6 +18,10 @@ test1[59]
 test2[04]
 tst_bool_expr
 tst_capability02
+tst_checkpoint
+tst_checkpoint_parent
+tst_checkpoint_wait_timeout
+tst_checkpoint_wake_timeout
 tst_device
 tst_expiration_timer
 tst_fuzzy_sync0[1-3]

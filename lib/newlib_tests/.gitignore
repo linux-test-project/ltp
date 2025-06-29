@@ -16,6 +16,8 @@ tst_capability02
 tst_cgroup01
 tst_cgroup02
 tst_checkpoint
+tst_checkpoint_parent
+tst_checkpoint_child
 tst_checkpoint_wait_timeout
 tst_checkpoint_wake_timeout
 tst_device
