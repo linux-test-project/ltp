@@ -1,131 +1,49 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2002
+ *	12/20/2002	Port to LTP	robbiew@us.ibm.com
+ *	06/30/2001	Port to Linux	nsharoff@us.ibm.com
+ * Copyright (c) 2025 SUSE LLC Ricardo B. Marlière <rbm@suse.com>
  */
 
-/* 12/20/2002   Port to LTP     robbiew@us.ibm.com */
-/* 06/30/2001   Port to Linux   nsharoff@us.ibm.com */
-
-/*
- * NAME
- *	shmt07
- *
- * CALLS
- *	shmctl(2) shmget(2) shmat(2)
- *
- * ALGORITHM
+/*\
  * Create and attach a shared memory segment, write to it
  * and then fork a child. The child verifies that the shared memory segment
  * that it inherited from the parent contains the same data that was originally
  * written to it by the parent.
- *
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/utsname.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "tst_rand_data.h"
+#include "libnewipc.h"
 
-#define		SIZE	16*1024
+#define SHMSIZE 16
 
-/** LTP Port **/
-#include "test.h"
+#include "tst_test.h"
 
-char *TCID = "shmt07";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
-/**************/
-
-int child();
-static int rm_shm(int);
-
-int main(void)
+static void run(void)
 {
-	char *cp = NULL;
-	int shmid, pid, status;
+	char *cp;
+	int shmid;
 	key_t key;
 
-	key = (key_t) getpid();
+	key = GETIPCKEY();
 
-/*---------------------------------------------------------*/
+	shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
+	cp = SAFE_SHMAT(shmid, NULL, 0);
+	memcpy(cp, tst_rand_data, SHMSIZE);
 
-	errno = 0;
-
-	if ((shmid = shmget(key, SIZE, IPC_CREAT | 0666)) < 0) {
-		perror("shmget");
-		tst_brkm(TFAIL, NULL,
-			 "Error: shmget: shmid = %d, errno = %d",
-			 shmid, errno);
-	}
-	cp = shmat(shmid, NULL, 0);
-
-	if (cp == (char *)-1) {
-		perror("shmat");
-		tst_resm(TFAIL,
-			 "Error: shmat: shmid = %d, errno = %d",
-			 shmid, errno);
-		rm_shm(shmid);
-		tst_exit();
+	if (!SAFE_FORK()) {
+		TST_EXP_EQ_LI(memcmp(cp, tst_rand_data, SHMSIZE), 0);
+		_exit(0);
 	}
 
-	*cp = '1';
-	*(cp + 1) = '2';
-
-	tst_resm(TPASS, "shmget,shmat");
-
-/*-------------------------------------------------------*/
-
-	pid = fork();
-	switch (pid) {
-	case -1:
-		tst_brkm(TBROK, NULL, "fork failed");
-
-	case 0:
-		if (*cp != '1') {
-			tst_resm(TFAIL, "Error: not 1");
-		}
-		if (*(cp + 1) != '2') {
-			tst_resm(TFAIL, "Error: not 2");
-		}
-		tst_exit();
-	}
-
-	/* parent */
-	while (wait(&status) < 0 && errno == EINTR) ;
-
-	tst_resm(TPASS, "cp & cp+1 correct");
-
-/*-----------------------------------------------------------*/
-	rm_shm(shmid);
-	tst_exit();
+	SAFE_WAIT(NULL);
+	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
 }
 
-static int rm_shm(int shmid)
-{
-	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-		perror("shmctl");
-		tst_brkm(TFAIL,
-			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d",
-			 shmid, errno);
-	}
-	return (0);
-}
+static struct tst_test test = {
+	.test_all = run,
+	.forks_child = 1,
+};
