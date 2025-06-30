@@ -27,21 +27,31 @@ static void run(void)
 
 	key = GETIPCKEY();
 
-	shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
+	if (!SAFE_FORK()) {
+		shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
 
-	cp = SAFE_SHMAT(shmid, NULL, 0);
-	memcpy(cp, tst_rand_data, SHMSIZE);
+		cp = SAFE_SHMAT(shmid, NULL, 0);
+		memcpy(cp, tst_rand_data, SHMSIZE);
+		SAFE_SHMCTL(shmid, IPC_RMID, NULL);
+		TST_EXP_EQ_LI(memcmp(cp, tst_rand_data, SHMSIZE), 0);
 
-	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
+		TST_CHECKPOINT_WAKE(0);
 
-	if (memcmp(cp, tst_rand_data, SHMSIZE) != 0) {
-		tst_res(TFAIL, "Copied data changed after IPC_RMID");
-		return;
+		_exit(0);
 	}
 
-	tst_res(TPASS, "Copied data has been read back");
+	TST_CHECKPOINT_WAIT(0);
+	tst_reap_children();
+
+	shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
+	cp = SAFE_SHMAT(shmid, NULL, 0);
+	TST_EXP_EXPR(memcmp(cp, tst_rand_data, SHMSIZE) < 0);
+
+	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
 }
 
 static struct tst_test test = {
 	.test_all = run,
+	.needs_checkpoints = 1,
+	.forks_child = 1,
 };
