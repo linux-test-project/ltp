@@ -1,117 +1,42 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines  Corp., 2002
+ *	12/20/2002	Port to LTP	robbiew@us.ibm.com
+ *	06/30/2001	Port to Linux	nsharoff@us.ibm.com
+ * Copyright (c) 2025 SUSE LLC Ricardo B. Marlière <rbm@suse.com>
  */
 
-/* 12/20/2002   Port to LTP     robbiew@us.ibm.com */
-/* 06/30/2001   Port to Linux   nsharoff@us.ibm.com */
-
-/*
- * NAME
- *	shmt08
- *
- * CALLS
- *	shmctl(2) shmget(2) shmat(2) shmdt(2)
- *
- * ALGORITHM
+/*\
  * Create a shared memory segment. Attach it twice at an address
- * that is provided by the system.  Detach the previously attached
+ * that is provided by the system. Detach the previously attached
  * segments from the process.
- *
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
+#include "tst_test.h"
+#include "tst_safe_sysv_ipc.h"
+#include "libnewipc.h"
 
-#define K_1  1024
+#define SHMSIZE 16
 
-/** LTP Port **/
-#include "test.h"
-
-char *TCID = "shmt08";		/* Test program identifier.    */
-int TST_TOTAL = 2;		/* Total number of test cases. */
-/**************/
-
-key_t key;
-
-static int rm_shm(int);
-
-int main(void)
+static void run(void)
 {
-	char *cp = NULL, *cp1 = NULL;
+	char *cp, *cp1;
 	int shmid;
+	key_t key;
 
-	key = (key_t) getpid();
-	errno = 0;
-/*-------------------------------------------------------*/
+	key = GETIPCKEY();
 
-	if ((shmid = shmget(key, 24 * K_1, IPC_CREAT | 0666)) < 0) {
-		perror("shmget");
-		tst_brkm(TFAIL, NULL,
-			 "Error: shmget: shmid = %d, errno = %d\n",
-			 shmid, errno);
-	}
+	shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
+	cp = SAFE_SHMAT(shmid, NULL, 0);
+	cp1 = SAFE_SHMAT(shmid, NULL, 0);
 
-	cp = shmat(shmid, NULL, 0);
-	if (cp == (char *)-1) {
-		tst_resm(TFAIL, "shmat1 Failed");
-		rm_shm(shmid);
-		tst_exit();
-	}
+	SAFE_SHMDT(cp);
+	SAFE_SHMDT(cp1);
+	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
 
-	cp1 = shmat(shmid, NULL, 0);
-	if (cp1 == (char *)-1) {
-		perror("shmat2");
-		rm_shm(shmid);
-		tst_exit();
-	}
-
-	tst_resm(TPASS, "shmget,shmat");
-
-/*--------------------------------------------------------*/
-
-	if (shmdt(cp) < 0) {
-		perror("shmdt2");
-		tst_resm(TFAIL, "shmdt:cp");
-	}
-
-	if (shmdt(cp1) < 0) {
-		perror("shmdt1");
-		tst_resm(TFAIL, "shmdt:cp1");
-	}
-
-	tst_resm(TPASS, "shmdt");
-
-/*---------------------------------------------------------*/
-	rm_shm(shmid);
-	tst_exit();
+	tst_res(TPASS, "Attached and detached twice");
 }
 
-static int rm_shm(int shmid)
-{
-	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-		perror("shmctl");
-		tst_brkm(TFAIL,
-			 NULL,
-			 "shmctl Failed to remove: shmid = %d, errno = %d\n",
-			 shmid, errno);
-	}
-	return (0);
-}
+static struct tst_test test = {
+	.test_all = run,
+};
