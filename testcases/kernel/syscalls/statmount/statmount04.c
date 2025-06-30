@@ -92,10 +92,6 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
-	.skip_filesystems = (const char *const []) {
-		"fuse",
-		NULL
-	},
 	.bufs = (struct tst_buffers []) {
 		{&st_mount, .size = sizeof(struct statmount)},
 		{}
