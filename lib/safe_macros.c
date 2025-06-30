@@ -942,10 +942,19 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	 */
 	if (possibly_fuse(filesystemtype)) {
 		char buf[1024];
+		const char *mount_ro = "";
+
+		if (mountflags & MS_RDONLY)
+			mount_ro = "-o ro";
+
+		if (mountflags & (~MS_RDONLY)) {
+			tst_brkm_(file, lineno, TBROK, cleanup_fn,
+			          "FUSE mount flag(s) not implemented!");
+		}
 
 		tst_resm_(file, lineno, TINFO, "Trying FUSE...");
-		snprintf(buf, sizeof(buf), "mount.%s '%s' '%s'",
-			filesystemtype, source, target);
+		snprintf(buf, sizeof(buf), "mount.%s %s '%s' '%s'",
+			filesystemtype, mount_ro, source, target);
 
 		rval = tst_system(buf);
 		if (WIFEXITED(rval) && WEXITSTATUS(rval) == 0)
