@@ -32,18 +32,29 @@ static void run(void)
 
 	if (!SAFE_FORK()) {
 		TST_CHECKPOINT_WAIT(0);
+
 		shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
 		cp = SAFE_SHMAT(shmid, NULL, 0);
 		TST_EXP_EQ_LI(memcmp(cp, tst_rand_data, SHMSIZE), 0);
-		SAFE_SHMCTL(shmid, IPC_RMID, NULL);
+
+		/*
+		 * Attach the segment to a different address
+		 * and verify it's contents again.
+		 */
+		cp = SAFE_SHMAT(shmid, NULL, 0);
+		TST_EXP_EQ_LI(memcmp(cp, tst_rand_data, SHMSIZE), 0);
+
 		_exit(0);
 	}
 
 	shmid = SAFE_SHMGET(key, SHMSIZE, IPC_CREAT | 0666);
 	cp = SAFE_SHMAT(shmid, NULL, 0);
 	memcpy(cp, tst_rand_data, SHMSIZE);
+
 	TST_CHECKPOINT_WAKE(0);
 	tst_reap_children();
+
+	SAFE_SHMCTL(shmid, IPC_RMID, NULL);
 }
 
 static struct tst_test test = {
