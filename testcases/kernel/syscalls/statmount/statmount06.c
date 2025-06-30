@@ -36,8 +36,10 @@ static void run(void)
 	if (!TST_PASS)
 		return;
 
+	const char *fs_type = tst_device->is_fuse ? "fuseblk" : tst_device->fs_type;
+
 	TST_EXP_EQ_LI(st_mount->mask, STATMOUNT_FS_TYPE);
-	TST_EXP_EQ_STR(st_mount->str + st_mount->fs_type, tst_device->fs_type);
+	TST_EXP_EQ_STR(st_mount->str + st_mount->fs_type, fs_type);
 }
 
 static void setup(void)
@@ -55,10 +57,6 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
-	.skip_filesystems = (const char *const []) {
-		"fuse",
-		NULL
-	},
 	.bufs = (struct tst_buffers []) {
 		{&st_mount, .size = SM_SIZE},
 		{}
