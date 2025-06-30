@@ -617,6 +617,7 @@ ioctl_pidfd01 ioctl_pidfd01
 ioctl_pidfd02 ioctl_pidfd02
 ioctl_pidfd03 ioctl_pidfd03
 ioctl_pidfd04 ioctl_pidfd04
+ioctl_pidfd05 ioctl_pidfd05
 
 inotify_init1_01 inotify_init1_01
 inotify_init1_02 inotify_init1_02
