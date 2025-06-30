@@ -23,15 +23,7 @@
 top_srcdir              ?= ../../../..
 
 LTPLIBS = newipc
+LTPLDLIBS = -lltpnewipc
 
 include $(top_srcdir)/include/mk/testcases.mk
-
-shmt02: LTPLDLIBS = -lltpnewipc
-shmt03: LTPLDLIBS = -lltpnewipc
-shmt04: LTPLDLIBS = -lltpnewipc
-shmt05: LTPLDLIBS = -lltpnewipc
-shmt07: LTPLDLIBS = -lltpnewipc
-shmt08: LTPLDLIBS = -lltpnewipc
-shmt09: LTPLDLIBS = -lltpnewipc
-
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
