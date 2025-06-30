@@ -32,5 +32,6 @@ shmt04: LTPLDLIBS = -lltpnewipc
 shmt05: LTPLDLIBS = -lltpnewipc
 shmt07: LTPLDLIBS = -lltpnewipc
 shmt08: LTPLDLIBS = -lltpnewipc
+shmt09: LTPLDLIBS = -lltpnewipc
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk
