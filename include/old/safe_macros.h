@@ -150,7 +150,7 @@
 #define SAFE_MOUNT(cleanup_fn, source, target, filesystemtype, \
 		   mountflags, data) \
 	safe_mount(__FILE__, __LINE__, (cleanup_fn), (source), (target), \
-		   (filesystemtype), (mountflags), (data))
+		   (filesystemtype), (mountflags), (data), NULL)
 
 #define SAFE_UMOUNT(cleanup_fn, target) \
 	safe_umount(__FILE__, __LINE__, (cleanup_fn), (target))

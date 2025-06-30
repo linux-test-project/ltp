@@ -172,7 +172,7 @@ int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
 int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	       const char *source, const char *target,
 	       const char *filesystemtype, unsigned long mountflags,
-	       const void *data);
+	       const void *data, int *is_fuse);
 
 int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
 		const char *target);

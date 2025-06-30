@@ -15,6 +15,8 @@ struct tst_device {
 	const char *dev;
 	const char *fs_type;
 	uint64_t size;
+	/* If device was mounted by the test library this flag is set for fuse fileystems. */
+	int is_fuse;
 };
 
 /*

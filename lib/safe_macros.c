@@ -907,10 +907,13 @@ static int possibly_fuse(const char *fs_type)
 int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	       const char *source, const char *target,
 	       const char *filesystemtype, unsigned long mountflags,
-	       const void *data)
+	       const void *data, int *is_fuse)
 {
 	int rval = -1;
 	char mpath[PATH_MAX];
+
+	if (is_fuse)
+		*is_fuse = 0;
 
 	if (realpath(target, mpath)) {
 		tst_resm_(file, lineno, TINFO,
@@ -957,8 +960,11 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 			filesystemtype, mount_ro, source, target);
 
 		rval = tst_system(buf);
-		if (WIFEXITED(rval) && WEXITSTATUS(rval) == 0)
+		if (WIFEXITED(rval) && WEXITSTATUS(rval) == 0) {
+			if (is_fuse)
+				*is_fuse = 1;
 			return 0;
+		}
 
 		tst_brkm_(file, lineno, TBROK, cleanup_fn,
 			"mount.%s failed with %i", filesystemtype, rval);

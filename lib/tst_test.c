@@ -1277,8 +1277,8 @@ static void prepare_device(struct tst_fs *fs)
 		mnt_data = limit_tmpfs_mount_size(fs->mnt_data,
 				buf, sizeof(buf), tdev.fs_type);
 
-		SAFE_MOUNT(get_device_name(tdev.fs_type), tst_test->mntpoint,
-				tdev.fs_type, fs->mnt_flags, mnt_data);
+		SAFE_MOUNT2(get_device_name(tdev.fs_type), tst_test->mntpoint,
+				tdev.fs_type, fs->mnt_flags, mnt_data, &tdev.is_fuse);
 		context->mntpoint_mounted = 1;
 	}
 }
