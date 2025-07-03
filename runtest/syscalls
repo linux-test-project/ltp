@@ -752,6 +752,7 @@ listmount04 listmount04
 listxattr01 listxattr01
 listxattr02 listxattr02
 listxattr03 listxattr03
+listxattr04 listxattr04
 
 llistxattr01 llistxattr01
 llistxattr02 llistxattr02
