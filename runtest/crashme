@@ -7,6 +7,6 @@ f00f f00f
 crash01 crash01
 # Generate random code and execute it. Read f00f comment,
 # this test lockup SunOS,WindowsNT,etc. in seconds..
-crash02 crash02 -v 2
+crash02 crash02
 # Fork as many children as possible.  On systems with lots of memory
 # and kernels prior to 2.4.19, this can hang the system by using up all pids
