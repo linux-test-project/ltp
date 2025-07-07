@@ -59,19 +59,17 @@ du_test()
 	fi
 }
 
-block_size=512
-page_size=$(tst_getconf PAGESIZE)
-if [ "$page_size" -lt 1024 ]; then
-	tst_brk TBROK "Page size < 1024"
-fi
-page_size=$((page_size / 1024))
+block_size_default=512
+
+block_size=$(stat -f --format="%s" .)
+block_size=$((block_size / 1024))
 
 # The output could be different in some systems, if we use du to
 # estimate file space usage with the same filesystem and the same size.
 # So we use the approximate value to check.
 check1="^10[2-3][0-9][0-9][[:space:]]\."
 check2="^10[2-3][0-9][0-9][[:space:]]testfile"
-check3="^\(0\|${page_size}\)[[:space:]]\.\/testdir\/testsymlink"
+check3="^\(0\|${block_size}\)[[:space:]]\.\/testdir\/testsymlink"
 check5="^20[4-6][0-9][0-9][[:space:]]\."
 check7="^10[4-5][0-9][0-9]\{4\}[[:space:]]\."
 check9="^10[2-3][0-9][0-9][[:space:]]total"
@@ -88,8 +86,8 @@ do_test()
 	2) du_test "du testfile" ${check2};;
 	3) du_test "du -a" ${check3};;
 	4) du_test "du --all" ${check3};;
-	5) du_test "du -B ${block_size}" ${check5};;
-	6) du_test "du --block-size=${block_size}" ${check5};;
+	5) du_test "du -B ${block_size_default}" ${check5};;
+	6) du_test "du --block-size=${block_size_default}" ${check5};;
 	7) du_test "du -b" ${check7};;
 	8) du_test "du --bytes" ${check7};;
 	9) du_test "du -c" ${check9};;
