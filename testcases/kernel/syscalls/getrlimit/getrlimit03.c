@@ -162,6 +162,12 @@ static void run(unsigned int resource)
 	errno = 0;
 	ret_ul = getrlimit_ulong(resource, &rlim_ul);
 	errno_ul = errno;
+	if (errno_ul == ENOSYS) {
+		tst_res(TCONF | TERRNO,
+			"%s not implemented", __NR_getrlimit_ulong_str);
+		test.tcnt = 1;
+		return;
+	}
 
 	if (compare_retval(resource, ret_u64, errno_u64, ret_ul, errno_ul,
 			   __NR_getrlimit_ulong_str) ||
