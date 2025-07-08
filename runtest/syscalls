@@ -949,7 +949,6 @@ munlock02 munlock02
 munlockall01 munlockall01
 
 munmap01 munmap01
-munmap02 munmap02
 munmap03 munmap03
 
 nanosleep01 nanosleep01
