@@ -5,6 +5,10 @@
 #ifndef TST_SECURITY_H__
 #define TST_SECURITY_H__
 
+#define LSM_SYS_FILE "/sys/kernel/security/lsm"
+
+int tst_lsm_enabled(const char *name);
+
 /*
  * Detect whether FIPS enabled
  * @return 0: FIPS not enabled, 1: FIPS enabled

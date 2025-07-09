@@ -7,7 +7,8 @@
 
 #define PATH_FIPS	"/proc/sys/crypto/fips_enabled"
 #define PATH_LOCKDOWN	"/sys/kernel/security/lockdown"
-#define SELINUX_STATUS_PATH "/sys/fs/selinux/enforce"
+#define SELINUX_PATH "/sys/fs/selinux"
+#define SELINUX_STATUS_PATH (SELINUX_PATH "/enforce")
 
 #if defined(__powerpc64__) || defined(__ppc64__)
 # define SECUREBOOT_VAR "/proc/device-tree/ibm,secure-boot"
@@ -19,6 +20,7 @@
 
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <sys/mount.h>
 
@@ -27,6 +29,32 @@
 #include "tst_safe_stdio.h"
 #include "tst_security.h"
 #include "tst_private.h"
+
+int tst_lsm_enabled(const char *name)
+{
+	int fd;
+	char *ptr;
+	char data[BUFSIZ];
+
+	if (access(LSM_SYS_FILE, F_OK))
+		tst_brk(TCONF, "%s file is not present", LSM_SYS_FILE);
+
+	fd = SAFE_OPEN(LSM_SYS_FILE, O_RDONLY);
+	SAFE_READ(0, fd, data, BUFSIZ);
+	SAFE_CLOSE(fd);
+
+	ptr = strtok(data, ",");
+	while (ptr != NULL) {
+		if (!strcmp(ptr, name)) {
+			tst_res(TINFO, "%s is enabled", name);
+			return 1;
+		}
+
+		ptr = strtok(NULL, ",");
+	}
+
+	return 0;
+}
 
 int tst_fips_enabled(void)
 {
