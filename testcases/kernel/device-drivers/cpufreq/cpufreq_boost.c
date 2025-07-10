@@ -55,10 +55,14 @@ static int id = -1;
 
 static int boost_value;
 
-const char governor[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_governor";
+static int cpu;
+
+static const char governor_fmt[] = SYSFS_CPU_DIR "cpu%d/cpufreq/scaling_governor";
+static char governor[64];
 static char governor_name[16];
 
-const char maxspeed[]	= SYSFS_CPU_DIR "cpu0/cpufreq/scaling_max_freq";
+static const char maxspeed_fmt[] = SYSFS_CPU_DIR "cpu%d/cpufreq/scaling_max_freq";
+static char maxspeed[64];
 
 static void check_set_turbo(char *file, char *off)
 {
@@ -82,6 +86,38 @@ static void cleanup(void)
 
 	if (governor[0] != '\0')
 		FILE_PRINTF(governor, "%s", governor_name);
+}
+
+static int find_boost_cpu(void)
+{
+	char buf[64];
+	int fd, i;
+
+	/*
+	 * The files we're looking for only exist for acpi_cpufreq. Continue
+	 * assuming CPU0 for intel_pstate.
+	 */
+	if (!strcmp(cdrv[id].name, "intel_pstate"))
+		return 0;
+
+	for (i = 0;; i++) {
+		snprintf(buf, sizeof(buf), SYSFS_CPU_DIR "cpu%d", i);
+		fd = open(buf, O_RDONLY);
+		if (fd == -1)
+			break;
+
+		close(fd);
+
+		snprintf(buf, sizeof(buf), SYSFS_CPU_DIR "cpu%d/cpufreq/boost", i);
+		fd = open(buf, O_RDONLY);
+		if (fd == -1)
+			continue;
+
+		close(fd);
+		return i;
+	}
+
+	return -1;
 }
 
 static void setup(void)
@@ -109,6 +145,14 @@ static void setup(void)
 	tst_resm(TINFO, "found '%s' driver, sysfs knob '%s'",
 		cdrv[id].name, cdrv[id].file);
 
+	cpu = find_boost_cpu();
+	if (cpu == -1)
+		tst_brkm(TCONF, NULL, "boost not supported by any CPUs");
+
+	tst_resm(TINFO, "found boost-capable CPU (CPU%d)", cpu);
+	snprintf(governor, sizeof(governor), governor_fmt, cpu);
+	snprintf(maxspeed, sizeof(maxspeed), maxspeed_fmt, cpu);
+
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	SAFE_FILE_SCANF(NULL, cdrv[i].file, "%d", &boost_value);
@@ -120,16 +164,16 @@ static void setup(void)
 	if (!strcmp(cdrv[i].name, "intel_pstate") && boost_value == cdrv[i].off)
 		check_set_turbo(cdrv[i].file, cdrv[i].off_str);
 
-	/* change cpu0 scaling governor */
+	/* change cpu scaling governor */
 	SAFE_FILE_SCANF(NULL, governor, "%s", governor_name);
 	SAFE_FILE_PRINTF(cleanup, governor, "%s", "performance");
 
-	/* use only cpu0 */
+	/* use only a single cpu */
 	cpu_set_t set;
 	CPU_ZERO(&set);
-	CPU_SET(0, &set);
+	CPU_SET(cpu, &set);
 	if (sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "failed to set CPU0");
+		tst_brkm(TBROK | TERRNO, cleanup, "failed to set CPU%d", cpu);
 
 	struct sched_param params;
 	params.sched_priority = sched_get_priority_max(SCHED_FIFO);
@@ -176,12 +220,12 @@ static void test_run(void)
 	/* Enable boost */
 	if (boost_value == cdrv[id].off)
 		SAFE_FILE_PRINTF(cleanup, cdrv[id].file, "%s", cdrv[id].on_str);
-	tst_resm(TINFO, "load CPU0 with boost enabled");
+	tst_resm(TINFO, "load CPU%d with boost enabled", cpu);
 	boost_time = load_cpu(max_freq_khz);
 
 	/* Disable boost */
 	SAFE_FILE_PRINTF(cleanup, cdrv[id].file, "%s", cdrv[id].off_str);
-	tst_resm(TINFO, "load CPU0 with boost disabled");
+	tst_resm(TINFO, "load CPU%d with boost disabled", cpu);
 	boost_off_time = load_cpu(max_freq_khz);
 
 	boost_off_time *= .98;
