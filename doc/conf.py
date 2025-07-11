@@ -406,13 +406,12 @@ def _generate_setup_table(keys):
             else:
                 values.append(f'{value[0]}, {value[1]}')
         elif key == 'filesystems':
-            for v in value:
-                for item in v:
-                    if isinstance(item, list):
-                        continue
-
-                    if item.startswith('.type'):
-                        values.append(item.replace('.type=', ''))
+            for params in value:
+                for pkey, pval in params.items():
+                    if pkey == "type":
+                        values.append(f"- {pval}")
+                    else:
+                        values.append(f" {pkey}: {pval}")
         elif key == "save_restore":
             for item in value:
                 values.append(item[0])
