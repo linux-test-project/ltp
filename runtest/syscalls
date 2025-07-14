@@ -951,6 +951,7 @@ munlockall01 munlockall01
 
 munmap01 munmap01
 munmap03 munmap03
+munmap04 munmap04
 
 nanosleep01 nanosleep01
 nanosleep02 nanosleep02
