@@ -61,7 +61,7 @@ static void trigger_fs_abort(void)
 
 static void do_debugfs_request(const char *dev, char *request)
 {
-	const char *const cmd[] = {"debugfs", "-w", dev, "-R", request, NULL};
+	const char *const cmd[] = {"debugfs", "-w", "-R", request, dev, NULL};
 
 	SAFE_CMD(cmd, NULL, NULL);
 }
