@@ -62,6 +62,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/dccp.h \
     linux/futex.h \
     linux/genetlink.h \
+    linux/genhd.h \
     linux/if_alg.h \
     linux/if_ether.h \
     linux/if_packet.h \

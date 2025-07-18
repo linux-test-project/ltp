@@ -36,9 +36,12 @@
 #include <linux/ioctl.h>
 #include <linux/pm.h>
 #include <linux/acpi.h>
-#include <linux/genhd.h>
+#ifdef HAVE_LINUX_GENHD_H
+# include <linux/genhd.h>
+#endif
 #include <linux/dmi.h>
 #include <linux/nls.h>
+#include <linux/version.h>
 
 #include "ltp_acpi.h"
 
@@ -123,14 +126,20 @@ static void get_crs_object(acpi_handle handle)
 
 static void get_sysfs_path(acpi_handle handle)
 {
-	acpi_status status;
 	struct acpi_device *device;
 
 	kfree(sysfs_path);
 	sysfs_path = NULL;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
+	acpi_status status;
+
 	status = acpi_bus_get_device(handle, &device);
 	if (ACPI_SUCCESS(status))
+#else
+	device = acpi_fetch_acpi_dev(handle);
+	if (device)
+#endif
 		sysfs_path = kobject_get_path(&device->dev.kobj, GFP_KERNEL);
 }
 
@@ -398,9 +407,15 @@ static int acpi_test_bus(void)
 	if (acpi_failure(status, "acpi_get_handle"))
 		return 1;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
 	prk_alert("TEST -- acpi_bus_get_device");
 	status = acpi_bus_get_device(bus_handle, &device);
 	if (acpi_failure(status, "acpi_bus_get_device"))
+#else
+	prk_alert("TEST -- acpi_fetch_acpi_dev");
+	device = acpi_fetch_acpi_dev(bus_handle);
+	if (!device)
+#endif
 		return 1;
 
 	prk_alert("TEST -- acpi_bus_update_power ");
