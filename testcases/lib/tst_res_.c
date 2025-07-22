@@ -8,7 +8,7 @@
 
 static void print_help(void)
 {
-	printf("Usage: tst_{res,brk} filename lineno [TPASS|TBROK|TFAIL|TCONF|TINFO|TDEBUG] 'A short description'\n");
+	printf("Usage: tst_{res,brk} filename lineno [TPASS|TBROK|TFAIL|TWARN|TCONF|TINFO|TDEBUG] 'A short description'\n");
 }
 
 int main(int argc, char *argv[])
@@ -28,6 +28,8 @@ int main(int argc, char *argv[])
 		type = TCONF;
 	} else if (!strcmp(argv[3], "TINFO")) {
 		type = TINFO;
+	} else if (!strcmp(argv[3], "TWARN")) {
+		type = TWARN;
 	} else if (!strcmp(argv[3], "TDEBUG")) {
 		type = TDEBUG;
 	} else if (!strcmp(argv[3], "TBROK")) {
