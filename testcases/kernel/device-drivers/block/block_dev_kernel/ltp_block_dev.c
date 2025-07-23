@@ -13,7 +13,7 @@
 #include <linux/device.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>
-#ifndef DISK_NAME_LEN
+#ifdef HAVE_LINUX_GENHD_H
 # include <linux/genhd.h>
 #endif
 
