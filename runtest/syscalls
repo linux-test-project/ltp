@@ -876,6 +876,7 @@ mount07 mount07
 mount08 mount08
 
 mount_setattr01 mount_setattr01
+mount_setattr02 mount_setattr02
 
 move_mount01 move_mount01
 move_mount02 move_mount02
