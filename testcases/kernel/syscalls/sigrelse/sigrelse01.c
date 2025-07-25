@@ -486,12 +486,13 @@ static void child(void)
 	 * then PASS, otherwise FAIL.
 	 */
 
-	if (exit_val == EXIT_OK) {
-		(void)memcpy(note, (char *)sig_array, sizeof(sig_array));
-	}
-
 	/* send note to parent and exit */
-	if (write_pipe(pipe_fd[1], note) < 0) {
+	if (exit_val == EXIT_OK) {
+		if (write(pipe_fd[1], sig_array, sizeof(sig_array)) < 0) {
+			tst_resm(TBROK | TERRNO, "write() pipe failed");
+			exit(WRITE_BROK);
+		}
+	} else if (write_pipe(pipe_fd[1], note) < 0) {
 		/*
 		 * write_pipe() failed.  Set exit value to WRITE_BROK to let
 		 * parent know what happened
@@ -622,7 +623,7 @@ static int write_pipe(int fd, char *msg)
 	printf("write_pipe: pid=%d, sending %s.\n", getpid(), msg);
 #endif
 
-	if (write(fd, msg, MAXMESG) < 0) {
+	if (write(fd, msg, strlen(msg) + 1) < 0) {
 		(void)sprintf(mesg, "write() pipe failed. error:%d %s.",
 			      errno, strerror(errno));
 
