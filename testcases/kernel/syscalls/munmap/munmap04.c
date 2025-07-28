@@ -40,14 +40,17 @@ static void setup(void)
 			     vma_size, PROT_NONE,
 			     MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE,
 			     -1, 0);
+		if (p == MAP_FAILED && errno == EEXIST)
+			continue;
 		if (p == MAP_FAILED)
 			break;
 		maps[map_count++] = p;
 	}
 
 	if (map_count == MAP_MAX_COUNT)
-		tst_brk(TBROK, "Mapped all %d regions, expected less",
-			map_count);
+		tst_brk(TBROK, "Mapped all %d regions, expected less", map_count);
+	if (map_count == 0)
+		tst_brk(TBROK, "Mapped 0 regions");
 
 	tst_res(TINFO, "Mapped %d regions", map_count);
 }
