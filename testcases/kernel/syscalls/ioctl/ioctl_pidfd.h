@@ -11,9 +11,10 @@
 
 static inline int ioctl_pidfd_info_exit_supported(void)
 {
-	int ret = 0;
+	int ret;
 	pid_t pid;
 	int pidfd;
+	int supported = 0;
 	struct pidfd_info info;
 
 	if (tst_kvercmp(6, 15, 0) >= 0)
@@ -29,13 +30,24 @@ static inline int ioctl_pidfd_info_exit_supported(void)
 	pidfd = SAFE_PIDFD_OPEN(pid, 0);
 	SAFE_WAITPID(pid, NULL, 0);
 
-	SAFE_IOCTL(pidfd, PIDFD_GET_INFO, &info);
+	ret = ioctl(pidfd, PIDFD_GET_INFO, &info);
+	if (ret == -1) {
+		/* - ENOTTY: old kernels not implementing fs/pidfs.c:pidfd_ioctl
+		 * - EINVAL: until v6.13 kernel
+		 * - ESRCH: all kernels between v6.13 and v6.15
+		 */
+		if (errno != ENOTTY &&
+			errno != EINVAL &&
+			errno != ESRCH)
+			tst_brk(TBROK | TERRNO, "ioctl error");
+	} else {
+		if (info.mask & PIDFD_INFO_EXIT)
+			supported = 1;
+	}
+
 	SAFE_CLOSE(pidfd);
 
-	if (info.mask & PIDFD_INFO_EXIT)
-		ret = 1;
-
-	return ret;
+	return supported;
 }
 
 #endif
