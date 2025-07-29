@@ -10,10 +10,12 @@
 
 #include "ioctl_pidfd.h"
 
+static int exp_errnos_num;
 static int exp_errnos[] = {
 	EINVAL,
 	EBADF,
 	ENOTTY,
+	EACCES,
 };
 
 static struct pidfd_info *info;
@@ -26,7 +28,7 @@ static void test_bad_pidfd(struct tst_fd *fd_in)
 	}
 
 	TST_EXP_FAIL_ARR(ioctl(fd_in->fd, PIDFD_GET_INFO, info),
-		  exp_errnos, ARRAY_SIZE(exp_errnos),
+		  exp_errnos, exp_errnos_num,
 		  "ioctl(%s, PIDFD_GET_INFO, info)",
 		  tst_fd_desc(fd_in));
 }
@@ -43,6 +45,11 @@ static void setup(void)
 {
 	if (!ioctl_pidfd_info_exit_supported())
 		tst_brk(TCONF, "PIDFD_INFO_EXIT is not supported by ioctl()");
+
+	exp_errnos_num = ARRAY_SIZE(exp_errnos) - 1;
+
+	if (tst_selinux_enforcing())
+		exp_errnos_num++;
 
 	info->mask = PIDFD_INFO_EXIT;
 }
