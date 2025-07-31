@@ -15,7 +15,7 @@
 #define MEMSIZE 3
 #define MAP_MAX_COUNT 65530
 
-static uintptr_t base = 0x100000000UL;
+static uintptr_t base = 0x10000000UL;
 static size_t page_sz;
 static unsigned long vma_size;
 static int map_count;
