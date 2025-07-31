@@ -28,6 +28,8 @@ static void run(void)
 
 static void setup(void)
 {
+	uintptr_t addr = base;
+
 	page_sz = SAFE_SYSCONF(_SC_PAGESIZE);
 	vma_size = MEMSIZE * page_sz;
 
@@ -36,15 +38,17 @@ static void setup(void)
 		maps[i] = NULL;
 
 	while (1) {
-		void *p = mmap((void *)(base + PAD * vma_size * map_count),
+		void *p = mmap((void *) addr,
 			     vma_size, PROT_NONE,
 			     MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE,
 			     -1, 0);
 		if (p == MAP_FAILED && errno == EEXIST)
-			continue;
+			goto next_addr;
 		if (p == MAP_FAILED)
 			break;
 		maps[map_count++] = p;
+next_addr:
+		addr += PAD * vma_size;
 	}
 
 	if (map_count == MAP_MAX_COUNT)
