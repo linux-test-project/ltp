@@ -133,10 +133,10 @@ Starting with the ``#include`` statement we copy in the main LTP test library
 headers. This includes the most common test API functions and the test harness
 initialization code. It is important to note that this is a completely
 ordinary, independent C program, however ``main()`` is missing because it is
-implemented in ``tst_test.h``.
+implemented in :master:`include/tst_test.h`.
 
-We specify what code we want to run as part of the test using the ``tst_test
-test`` structure. Various callbacks can be set by the test writer, including
+We specify what code we want to run as part of the test using :ref:`struct tst_test`.
+Various callbacks can be set by the test writer, including
 ``test.test_all``, which we have set to ``run()``. The test harness will execute
 this callback in a separate process (using ``fork()``), forcibly terminating it
 if it does not return after ``test.timeout`` seconds.

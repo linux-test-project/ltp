@@ -119,8 +119,8 @@ The following linting code can be found when we run ``make check``:
         errno are overwritten before the test has chance to check them.
 
         The macros which are clearly intended to update these variables. That
-        is ``TEST`` and those in ``tst_test_macros.h``. Are of course allowed to
-        update these variables.
+        is ``TEST`` and those in :master:`include/tst_test_macros.h`. Are of
+        course allowed to update these variables.
 
     * - LTP-003
       - Externally visible library symbols have the ``tst_`` prefix
