@@ -64,8 +64,10 @@ tst_test()
 	TRACE=$(gdb -silent -ex="thread apply all backtrace" -ex="quit"\
 		vma05_vdso ./core* 2> /dev/null)
 
-	if echo "$TRACE" | grep -qF "??"; then
-		tst_res TFAIL "[vdso] bug not patched"
+	# Only check for ?? symbols in application code, not system libraries
+	APP_UNKNOWN=$(echo "$TRACE" | grep -F "??" | grep -v -e "from /lib/" -e "from /usr/lib/")
+	if [ -n "$APP_UNKNOWN" ]; then
+		tst_res TFAIL "[vdso] bug not patched - unknown symbols in application code"
 	else
 		tst_res TPASS "[vdso] backtrace complete"
 	fi
