@@ -36,17 +36,19 @@ guide will refer to files and directories.
     git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 
 There are a number of other repositories which are useful for reference as
-well, including the GNU C library ``glibc`` and the alternative C library
-``musl``. Some system calls are partially or even entirely implemented in user
+well, including the `GNU C library (glibc) <https://www.gnu.org/software/libc/>`_
+and the alternative C library `musl <https://musl.libc.org/>`_.
+Some system calls are partially or even entirely implemented in user
 land as part of the standard C library. So in these cases, the C library is an
-important reference. ``glibc`` is the most common C library for Linux, however
-``musl`` is generally easier to understand.
+important reference. glibc is the most common C library for Linux, however
+musl is generally easier to understand.
 
 How system calls are implemented varies from one architecture to another and
 across kernel and C library versions. To find out whether a system call is
 actually accessing the kernel (whether it is actually a system call) on any
-given machine you can use the ``strace`` utility. This intercepts system calls
-made by an executable and prints them. We will use this later in the tutorial.
+given machine you can use the `strace <https://strace.io/>`_ utility. This
+intercepts system calls made by an executable and prints them. We will use this
+later in the tutorial.
 
 Choose a System Call to test
 ----------------------------
