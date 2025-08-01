@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2009-2024
+# Copyright (c) Linux Test Project, 2009-2025
 # Copyright (c) Cisco Systems Inc., 2009-2010
 # Ngie Cooper, July 2009
 
@@ -211,6 +211,27 @@ endif
 
 test-metadata: metadata-all
 	$(MAKE) -C $(abs_srcdir)/metadata test
+
+MODULE_DIRS :=  $(shell \
+	dirname $$(grep -l 'include.*module\.mk' $$(find testcases/ -type f -name 'Makefile')))
+
+
+.PHONY: modules modules-clean modules-install
+modules:
+	@$(foreach dir,$(MODULE_DIRS),\
+		echo "Build $(dir)";\
+		$(MAKE) -C $(abs_srcdir)/$(dir) || exit $$?; \
+)
+modules-clean:
+	@$(foreach dir,$(MODULE_DIRS),\
+		echo "Build $(dir)";\
+		$(MAKE) -C $(abs_srcdir)/$(dir) clean || exit $$?; \
+)
+modules-install: modules
+	@$(foreach dir,$(MODULE_DIRS),\
+		echo "Build $(dir)";\
+		$(MAKE) -C $(abs_srcdir)/$(dir) install || exit $$?; \
+)
 
 ## Help
 .PHONY: help
