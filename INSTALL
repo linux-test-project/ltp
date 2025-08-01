@@ -137,13 +137,7 @@ contributions are welcome.
 3. Build and install everything, as described above. Note the minimum software
    requirements above before doing so.
 
-4. The disk I/O tests can be run by executing the diskio.sh script.  In order
-   for these tests to successfully operate a writable high-density 3.5" floppy
-   must be in the disk drive and a CD-ROM with more than 100Mb of data must be
-   in the CD-ROM drive.  The corresponding tests will fail if either disk is
-   missing.
-
-5. The network tests related installation see testcases/network/README.md.
+4. The network tests related installation see testcases/network/README.md.
 
 Cross compiling
 ---------------
