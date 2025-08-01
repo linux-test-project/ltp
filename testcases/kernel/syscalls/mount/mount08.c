@@ -6,6 +6,8 @@
 /*\
  * Verify that mount will raise ENOENT if we try to mount on magic links
  * under /proc/<pid>/fd/<nr>.
+ * If SELinux is enabled, the expected error also can be EACCES since
+ * SElinux plicy could be configured to block the operation.
  */
 
 #include "tst_test.h"
@@ -15,6 +17,12 @@
 #define MNTPOINT "mntpoint"
 #define FOO MNTPOINT "/foo"
 #define BAR MNTPOINT "/bar"
+
+static int exp_errnos_num;
+static int exp_errnos[] = {
+	ENOENT,
+	EACCES,
+};
 
 static void run(void)
 {
@@ -29,9 +37,9 @@ static void run(void)
 
 	sprintf(path, "/proc/%d/fd/%d", getpid(), proc_fd);
 
-	TST_EXP_FAIL(
+	TST_EXP_FAIL_ARR(
 		mount(BAR, path, "", MS_BIND, 0),
-		ENOENT,
+		exp_errnos, exp_errnos_num,
 		"mount(%s)", path
 	);
 
@@ -41,6 +49,11 @@ static void run(void)
 
 static void setup(void)
 {
+	exp_errnos_num = ARRAY_SIZE(exp_errnos) - 1;
+
+	if (tst_selinux_enforcing())
+		exp_errnos_num++;
+
 	SAFE_TOUCH(FOO, 0777, NULL);
 	SAFE_TOUCH(BAR, 0777, NULL);
 }
