@@ -112,6 +112,8 @@ AC_CHECK_FUNCS_ONCE([ \
     execveat \
     faccessat2 \
     fallocate \
+    file_getattr \
+    file_setattr \
     fsconfig \
     fsmount \
     fsopen \
@@ -264,6 +266,7 @@ AC_CHECK_TYPES([struct mnt_id_req],,,[#include <sys/mount.h>])
 AC_CHECK_TYPES([struct statmount],,,[#include <sys/mount.h>])
 
 AC_CHECK_TYPES([struct pidfd_info],,,[#include <sys/pidfd.h>])
+AC_CHECK_TYPES([struct file_attr],,,[#include <linux/fs.h>])
 
 AC_CHECK_TYPES([struct fsxattr],,,[#include <linux/fs.h>])
 
