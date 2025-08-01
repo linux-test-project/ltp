@@ -430,3 +430,10 @@ lsm_get_self_attr 459
 lsm_set_self_attr 460
 lsm_list_modules 461
 mseal 462
+setxattrat 463
+getxattrat 464
+listxattrat 465
+removexattrat 466
+open_tree_attr 467
+file_getattr 468
+file_setattr 469

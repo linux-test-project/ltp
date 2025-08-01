@@ -362,3 +362,10 @@ lsm_get_self_attr 5459
 lsm_set_self_attr 5460
 lsm_list_modules 5461
 mseal 5462
+setxattrat 5463
+getxattrat 5464
+listxattrat 5465
+removexattrat 5466
+open_tree_attr 5467
+file_getattr 5468
+file_setattr 5469
