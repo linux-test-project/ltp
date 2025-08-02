@@ -7,7 +7,7 @@
 # REQ_VERSION_MAJOR and REQ_VERSION_PATCH must be defined beforehand.
 
 $(if $(REQ_VERSION_MAJOR),,$(error You must define REQ_VERSION_MAJOR))
-$(if $(REQ_VERSION_PATCH),,$(error You must define REQ_VERSION_MINOR))
+$(if $(REQ_VERSION_PATCH),,$(error You must define REQ_VERSION_PATCH))
 
 ifeq ($(WITH_MODULES),no)
 SKIP := 1
