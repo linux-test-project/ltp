@@ -78,6 +78,7 @@ while IFS= read -r arch; do
 		parisc) echo "#ifdef __hppa__" ;;
 		loongarch64) echo "#ifdef __loongarch__" ;;
 		arm64) echo "#ifdef __aarch64__" ;;
+		powerpc) echo "#if defined(__powerpc__) && !defined(__powerpc64__)" ;;
 		*) echo "#ifdef __${arch}__" ;;
 		esac
 
