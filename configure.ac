@@ -61,6 +61,7 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/cryptouser.h \
     linux/close_range.h \
     linux/dccp.h \
+    linux/fs.h \
     linux/futex.h \
     linux/genetlink.h \
     linux/genhd.h \
@@ -263,6 +264,8 @@ AC_CHECK_TYPES([struct mnt_id_req],,,[#include <sys/mount.h>])
 AC_CHECK_TYPES([struct statmount],,,[#include <sys/mount.h>])
 
 AC_CHECK_TYPES([struct pidfd_info],,,[#include <sys/pidfd.h>])
+
+AC_CHECK_TYPES([struct fsxattr],,,[#include <linux/fs.h>])
 
 # Tools knobs
 
