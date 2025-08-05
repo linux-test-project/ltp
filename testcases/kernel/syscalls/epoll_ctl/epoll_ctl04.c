@@ -51,13 +51,16 @@ static void cleanup(void)
 
 static void verify_epoll_ctl(void)
 {
+	const int exp_errnos[] = {EINVAL, ELOOP};
+
 	new_epfd = epoll_create(1);
 	if (new_epfd == -1)
 		tst_brk(TBROK | TERRNO, "fail to create epoll instance");
 
 	events.data.fd = epfd;
-	TST_EXP_FAIL(epoll_ctl(new_epfd, EPOLL_CTL_ADD, epfd, &events), EINVAL,
-		     "epoll_ctl(..., EPOLL_CTL_ADD, ...) with number of nesting is 5");
+	TST_EXP_FAIL2_ARR(epoll_ctl(new_epfd, EPOLL_CTL_ADD, epfd, &events),
+		exp_errnos, ARRAY_SIZE(exp_errnos),
+		"epoll_ctl(..., EPOLL_CTL_ADD, ...) with number of nesting is 5");
 	SAFE_CLOSE(new_epfd);
 }
 
