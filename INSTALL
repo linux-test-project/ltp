@@ -172,8 +172,14 @@ LTP contains few kernel modules and tests which are using them.
 These require to be built with the same kernel headers as the running kernel (SUT).
 Sometimes the best way to achieve this is to compile them on the SUT.
 
+Due Linux Kernel Driver Interface unstability [1], error during building kernel
+modules does not break the build. Make errors fatal can be done by FORCE_MODULES=1
+make variable.
+
 'modules', 'modules-clean' and 'modules-install' make targets are shortcuts
 to build just these modules and tests.
+
+[1] https://docs.kernel.org/process/stable-api-nonsense.html
 
 Android Users
 -------------

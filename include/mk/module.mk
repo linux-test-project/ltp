@@ -1,13 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) Linux Test Project, 2014-2021
+# Copyright (c) Linux Test Project, 2014-2025
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 #
 # Include it to build kernel modules.
 # REQ_VERSION_MAJOR and REQ_VERSION_PATCH must be defined beforehand.
+#
+# FORCE_MODULES=1: Forcing to fail on error or missing kernel headers (e.g. for CI)).
 
 $(if $(REQ_VERSION_MAJOR),,$(error You must define REQ_VERSION_MAJOR))
 $(if $(REQ_VERSION_PATCH),,$(error You must define REQ_VERSION_PATCH))
+
+define newline
+
+
+endef
+n := $(newline)
 
 ifeq ($(WITH_MODULES),no)
 SKIP := 1
@@ -22,8 +30,18 @@ SKIP ?= $(shell \
 endif
 endif
 
+$(info skip: $(SKIP), FORCE_MODULES: $(FORCE_MODULES))
 ifneq ($(SKIP),0)
 MAKE_TARGETS := $(filter-out %.ko, $(MAKE_TARGETS))
+ifeq ($(FORCE_MODULES),1)
+$(error Kernel modules not built!$(n)\
+Check that package for building kernel modules for $(LINUX_VERSION)\
+is installed and try again.$(n)\
+* openSUSE/SLES: kernel-default-devel$(n)\
+* Fedora/RHEL: kernel-devel/kernel-headers$(n)\
+* Debian/Ubuntu: linux-kbuild$(n)\
+You can build anyway by omitting FORCE_MODULES=1)
+endif
 endif
 
 ifneq ($(filter install clean,$(MAKECMDGOALS)),)
@@ -45,6 +63,10 @@ MODULE_SOURCES := $(patsubst %.ko,%.c,$(filter %.ko, $(MAKE_TARGETS)))
 
 .dep_modules: $(MODULE_SOURCES)
 	@echo "Building modules: $(MODULE_SOURCES)"
+ifneq ($(FORCE_MODULES),1)
 	-$(MAKE) -C $(LINUX_DIR) M=$(abs_srcdir)
+else
+	$(MAKE) -C $(LINUX_DIR) M=$(abs_srcdir)
+endif
 	rm -rf *.mod.c *.o *.ko.unsigned modules.order .tmp* .*.ko .*.cmd Module.symvers
 	@touch .dep_modules
