@@ -44,13 +44,11 @@ static void cleanup(void);
 static void setown_pid_test(void);
 static void setown_pgrp_test(void);
 
-#if defined(HAVE_STRUCT_F_OWNER_EX)
 static void setownex_tid_test(void);
 static void setownex_pid_test(void);
 static void setownex_pgrp_test(void);
 
 static struct f_owner_ex orig_own_ex;
-#endif
 
 static void signal_parent(void);
 static void check_io_signal(char *des);
@@ -68,9 +66,7 @@ static int pipe_fds[2];
 
 static void (*testfunc[])(void) = {
 	setown_pid_test, setown_pgrp_test,
-#if defined(HAVE_STRUCT_F_OWNER_EX)
 	setownex_tid_test, setownex_pid_test, setownex_pgrp_test
-#endif
 };
 
 char *TCID = "fcntl31";
@@ -122,14 +118,12 @@ static void setup(void)
 	if (pgrp_pid < 0)
 		tst_brkm(TBROK | TERRNO, cleanup, "getpgid() failed");
 
-#if defined(HAVE_STRUCT_F_OWNER_EX)
 	/* get original f_owner_ex info */
 	TEST(fcntl(test_fd, F_GETOWN_EX, &orig_own_ex));
 	if (TEST_RETURN < 0) {
 		tst_brkm(TFAIL | TTERRNO, cleanup,
 			 "fcntl get original f_owner_ex info failed");
 	}
-#endif
 
 	/* get original pid info */
 	TEST(fcntl(test_fd, F_GETOWN));
@@ -183,7 +177,6 @@ static void setown_pgrp_test(void)
 	}
 }
 
-#if defined(HAVE_STRUCT_F_OWNER_EX)
 static void setownex_cleanup(void)
 {
 	TEST(fcntl(test_fd, F_SETOWN_EX, &orig_own_ex));
@@ -245,7 +238,6 @@ static void setownex_pgrp_test(void)
 
 	setownex_cleanup();
 }
-#endif
 
 static void test_set_and_get_sig(int sig, char *des)
 {
