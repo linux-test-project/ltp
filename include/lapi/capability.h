@@ -10,14 +10,6 @@
 
 #ifdef HAVE_SYS_CAPABILITY_H
 # include <sys/capability.h>
-/**
- * Some old libcap-devel(1.96~2.16) define _LINUX_TYPES_H in
- * sys/capability.h that makes ltp-lib cann't include linux/types.h
- * essentially. Here undefine it if include such old header-file.
- */
-# ifndef HAVE_NEWER_LIBCAP
-#  undef _LINUX_TYPES_H
-# endif
 #endif
 
 #ifndef CAP_NET_BIND_SERVICE
