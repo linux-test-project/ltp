@@ -107,6 +107,9 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 			"%s not found in $PATH", mkfs);
 	break;
 	default:
+		tst_resm_(file, lineno, TWARN,
+			"mkfs may have failed because the device is busy (e.g., udisks2 probing). "
+			"Consider disabling background probing services.");
 		tst_brkm_(file, lineno, TBROK, cleanup_fn,
 			"%s failed with exit code %i", mkfs, ret);
 	}
