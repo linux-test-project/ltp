@@ -10,12 +10,12 @@
  * that there is at least 256 PAGE_SIZE of stack guard gap which is considered
  * hard to hop above. Code adapted from the Novell's bugzilla [2].
  *
- * The code `mmap(2)`s region close to the stack end. The code then allocates
+ * The code :man2:`mmap` region close to the stack end. The code then allocates
  * memory on stack until it hits guard page and SIGSEGV or SIGBUS is generated
  * by the kernel. The signal handler checks that fault address is further than
  * THRESHOLD from the mmapped area.
  *
- * We read /proc/self/maps to examine exact top of the stack and `mmap(2)`
+ * We read /proc/self/maps to examine exact top of the stack and :man2:`mmap`
  * our region exactly GAP_PAGES * PAGE_SIZE away. We read /proc/cmdline to
  * see if a different stack_guard_gap size is configured. We set stack limit
  * to infinity and preallocate REQ_STACK_SIZE bytes of stack so that no calls

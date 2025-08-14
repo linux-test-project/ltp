@@ -14,7 +14,7 @@
  * larger number of messages may be potentially received on an ICMPv6 socket.
  * Input filters may therefore be used to restrict input to a subset of the
  * incoming ICMPv6 messages so only interesting messages are returned by the
- * recv(2) family of calls to an application.
+ * :man2:`recv` family of calls to an application.
 
  * The icmp6_filter structure may be used to refine the input message set
  * according to the ICMPv6 type. By default, all messages types are allowed
@@ -41,9 +41,10 @@
  * int ICMP6_FILTER_WILLBLOCK(int, const struct icmp6_filter *)
  * &ndash; Determine if the given filter will ignore an ICMPv6 message of the given type.
  *
- * The getsockopt(2) and setsockopt(2) calls may be used to obtain and install
- * the filter on ICMPv6 sockets at option level IPPROTO_ICMPV6 and name ICMP6_FILTER
- * with a pointer to the icmp6_filter structure as the option value.
+ * The :man2:`getsockopt` and :man2:`setsockopt` calls may be used to obtain and
+ * install the filter on ICMPv6 sockets at option level ``IPPROTO_ICMPV6`` and
+ * name ``ICMP6_FILTER`` with a pointer to the icmp6_filter structure as the
+ * option value.
  */
 
 #include <netinet/icmp6.h>

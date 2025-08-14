@@ -35,6 +35,7 @@ extlinks = {
     'repo': (f'{ltp_repo}/%s', '%s'),
     'master': (f'{ltp_repo}/blob/master/%s', '%s'),
     'git_man': ('https://git-scm.com/docs/git-%s', 'git %s'),
+    'man2': ('https://man7.org/linux/man-pages/man2/%s.2.html', '%s(2)'),
     # TODO: allow 2nd parameter to show page description instead of plain URL
     'kernel_doc': ('https://docs.kernel.org/%s.html', 'https://docs.kernel.org/%s.html'),
     'kernel_tree': ('https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/%s', '%s'),

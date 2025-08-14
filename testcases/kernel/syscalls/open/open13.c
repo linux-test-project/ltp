@@ -6,7 +6,7 @@
  */
 
 /*\
- *  Basic test for O_PATH flag of open(2).
+ *  Basic test for O_PATH flag of :man2:`open`:
  *  "Obtain a file descriptor that can be used to perform operations
  *   that act purely at the file descriptor level, the file itself is
  *   not opened, the operations read(2), write(2), fchmod(2), fchown(2)
