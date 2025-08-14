@@ -12,7 +12,7 @@
 # CONFIG_LEGACY_VSYSCALL_EMULATE (see linux/arch/x86/Kconfig for option
 # descriptions). First part of the test will check eligible kernels for
 # regression for a bug fixed by commit 103efcd9aac1 (fix perms/range of
-# vsyscall vma in /proc/*/maps).
+# vsyscall vma in /proc/\*/maps).
 #
 # Second part of test checks [vdso] VMA permissions (fixed with commits
 # b6558c4a2378 (fix [vdso] page permissions) and e5b97dde514f (Add

@@ -6,13 +6,14 @@
  */
 
 /*\
- *  Basic test for O_PATH flag of :man2:`open`:
- *  "Obtain a file descriptor that can be used to perform operations
- *   that act purely at the file descriptor level, the file itself is
- *   not opened, the operations read(2), write(2), fchmod(2), fchown(2)
- *   and fgetxattr(2) fail with the error EBADF."
+ * Basic test for O_PATH flag of :man2:`open`:
  *
- *  The operations include but are not limited to the syscalls above.
+ *    Obtain a file descriptor that can be used to perform operations
+ *    that act purely at the file descriptor level, the file itself is
+ *    not opened, the operations :man2:`read`, :man2:`write`, :man2:`fchmod`,
+ *    :man2:`fchown` and :man2:`fgetxattr` fail with the error EBADF.
+ *
+ * The operations include but are not limited to the syscalls above.
  */
 
 #include "config.h"

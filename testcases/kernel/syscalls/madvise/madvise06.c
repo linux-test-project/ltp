@@ -10,13 +10,8 @@
  * to the next page on a page fault.
  *
  * This bug is present in all RHEL7 versions. It looks like this was fixed in
- * mainline kernel > v3.15 by the following patch:
- *
- *  commit 55231e5c898c5c03c14194001e349f40f59bd300
- *  Author: Johannes Weiner <hannes@cmpxchg.org>
- *  Date:   Thu May 22 11:54:17 2014 -0700
- *
- *     mm: madvise: fix MADV_WILLNEED on shmem swapouts
+ * kernel v3.15 by
+ * 55231e5c898c5 ("mm: madvise: fix MADV_WILLNEED on shmem swapouts")
  *
  * Two checks are performed, the first looks at how SwapCache
  * changes during madvise. When the pages are dirtied, about half
@@ -35,10 +30,10 @@
  * our process.
  *
  * It also can reproduce the MADV_WILLNEED preformance problem.
- * It was introduced since 5.9 kernel with the following commit
- *   e6e88712e43b ("mm: optimise madvise WILLNEED")
- * and fixed since 5.10-rc5 kernel with the following commit
- *   66383800df9c ("mm: fix madvise WILLNEED performance problem").
+ * It was introduced in kernel 5.9 in
+ * e6e88712e43b ("mm: optimise madvise WILLNEED")
+ * and fixed since 5.10-rc5 kernel in
+ * 66383800df9c ("mm: fix madvise WILLNEED performance problem").
  */
 
 #include <errno.h>

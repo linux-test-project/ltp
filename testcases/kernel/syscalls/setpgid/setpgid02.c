@@ -10,9 +10,9 @@
  *
  * - EINVAL when given pgid is less than 0.
  * - ESRCH when pid is not the calling process and not a child of
- * the calling process.
+ *   the calling process.
  * - EPERM when an attempt was made to move a process into a nonexisting
- * process group.
+ *   process group.
  */
 
 #include <errno.h>

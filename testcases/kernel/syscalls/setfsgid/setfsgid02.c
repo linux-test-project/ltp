@@ -10,7 +10,7 @@
  * Testcase for setfsgid() syscall to check that
  *
  * - privileged user can change a filesystem group ID different from saved
- *  value of previous setfsgid() call
+ *   value of previous setfsgid() call
  * - unprivileged user cannot change it
  */
 

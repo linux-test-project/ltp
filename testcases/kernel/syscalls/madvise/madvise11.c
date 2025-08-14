@@ -5,8 +5,8 @@
 
 /*\
  * Stress a possible race condition between memory pages allocation
- * and soft-offline of unrelated pages as explained in the commit:
- *   d4ae9916ea29 (mm: soft-offline: close the race against page allocation)
+ * and soft-offline of unrelated pages as explained in the commit from v4.18:
+ * d4ae9916ea29 (mm: soft-offline: close the race against page allocation)
  *
  * Control that soft-offlined pages get correctly replaced: with the
  * same content and without SIGBUS generation when accessed.

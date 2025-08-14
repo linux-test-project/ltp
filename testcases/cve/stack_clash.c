@@ -6,9 +6,11 @@
  */
 
 /*\
- * This is a regression test of the Stack Clash [1] vulnerability. This tests
- * that there is at least 256 PAGE_SIZE of stack guard gap which is considered
- * hard to hop above. Code adapted from the Novell's bugzilla [2].
+ * This is a regression test of the `Stack Clash
+ * <https://blog.qualys.com/securitylabs/2017/06/19/the-stack-clash>`_
+ * vulnerability. This tests that there is at least 256 PAGE_SIZE of stack guard
+ * gap which is considered hard to hop above. Code is based on a reproducer from
+ * https://bugzilla.suse.com/show_bug.cgi?id=CVE-2017-1000364.
  *
  * The code :man2:`mmap` region close to the stack end. The code then allocates
  * memory on stack until it hits guard page and SIGSEGV or SIGBUS is generated
@@ -19,7 +21,7 @@
  * our region exactly GAP_PAGES * PAGE_SIZE away. We read /proc/cmdline to
  * see if a different stack_guard_gap size is configured. We set stack limit
  * to infinity and preallocate REQ_STACK_SIZE bytes of stack so that no calls
- * after `mmap` are moving stack further.
+ * after mmap() are moving stack further.
  *
  * If the architecture meets certain requirements (only x86_64 is verified)
  * then the test also tests that new mmap()s can't be placed in the stack's
@@ -27,11 +29,8 @@
  * assumptions are that the stack grows down (start gap) and either:
  *
  * 1. The default search is top down, and will switch to bottom up if
- *      space is exhausted.
+ *    space is exhausted.
  * 2. The default search is bottom up and the stack is above mmap base.
- *
- * [1] https://blog.qualys.com/securitylabs/2017/06/19/the-stack-clash
- * [2] https://bugzilla.novell.com/show_bug.cgi?id=CVE-2017-1000364
  */
 
 #include <sys/wait.h>

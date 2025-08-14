@@ -4,7 +4,7 @@
  */
 
 /*\
- * The verifier did not properly restrict some *_OR_NULL pointer
+ * The verifier did not properly restrict some \*_OR_NULL pointer
  * types. Including RET_PTR_TO_ALLOC_MEM_OR_NULL which is returned by
  * ringbuf_reserve. Somehow this means they can be used to perform
  * arbitrary pointer arithmetic.
@@ -18,18 +18,14 @@
  * eBPF if it can. This will result in an instant crash or memory
  * corruption which may later cause a crash.
  *
- * This test is adapted from a full reproducer which can be found here:
- * https://github.com/tr3ee/CVE-2022-23222
+ * This test is adapted from a reproducer from
+ * https://github.com/tr3ee/CVE-2022-23222.
  *
  * It's recommended to disable unprivileged eBPF by setting
- * /proc/sys/kernel/unprivileged_bpf_disabled. Also there is a
- * specific fix for this issue:
+ * /proc/sys/kernel/unprivileged_bpf_disabled.
  *
- * commit 64620e0a1e712a778095bd35cbb277dc2259281f
- * Author: Daniel Borkmann <daniel@iogearbox.net>
- * Date:   Tue Jan 11 14:43:41 2022 +0000
- *
- *  bpf: Fix out of bounds access for ringbuf helpers
+ * Also there is a specific fix for this issue in kernel v5.16
+ * 64620e0a1e712 ("bpf: Fix out of bounds access for ringbuf helpers").
  */
 
 #include <stdint.h>

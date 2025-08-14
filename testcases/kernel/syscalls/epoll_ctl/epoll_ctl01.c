@@ -8,11 +8,11 @@
  * Check the basic functionality of the epoll_ctl:
  *
  * - When epoll_ctl succeeds to register fd on the epoll instance and associates
- * event with fd, epoll_wait will get registered fd and event correctly.
+ *   event with fd, epoll_wait will get registered fd and event correctly.
  * - When epoll_ctl succeeds to change event which is related to fd, epoll_wait
- * will get changed event correctly.
+ *   will get changed event correctly.
  * - When epoll_ctl succeeds to deregister fd from the epoll instance epoll_wait
- * won't get deregistered fd and event.
+ *   won't get deregistered fd and event.
  */
 
 #include <poll.h>

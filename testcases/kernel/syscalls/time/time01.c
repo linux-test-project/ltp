@@ -4,9 +4,9 @@
  */
 
 /*\
- * - Basic test for the time(2) system call. It is intended to provide a
- * limited exposure of the system call.
- * - Verify that time(2) returns the value of time in seconds since the Epoch
+ * Basic test for the time(2) system call.
+ *
+ * Verify that time(2) returns the value of time in seconds since the Epoch
  * and stores this value in the memory pointed to by the parameter.
  */
 
