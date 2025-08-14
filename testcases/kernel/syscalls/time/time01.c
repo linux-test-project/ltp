@@ -15,8 +15,8 @@
 
 #include "tst_test.h"
 
-time_t tlocal;
-time_t *targs[] = {
+static time_t tlocal;
+static time_t *targs[] = {
 	NULL, &tlocal,
 };
 
@@ -31,16 +31,17 @@ static void verify_time(unsigned int i)
 		return;
 	}
 
-	if (!tloc)
+	if (!tloc) {
 		tst_res(TPASS, "time() returned value %ld", TST_RET);
-	else if (*tloc == TST_RET)
+	} else if (*tloc == TST_RET) {
 		tst_res(TPASS,
 			"time() returned value %ld, stored value %jd are same",
 			TST_RET, (intmax_t) *tloc);
-	else
+	} else {
 		tst_res(TFAIL,
 			"time() returned value %ld, stored value %jd are different",
 			TST_RET, (intmax_t) *tloc);
+	}
 }
 
 static struct tst_test test = {
