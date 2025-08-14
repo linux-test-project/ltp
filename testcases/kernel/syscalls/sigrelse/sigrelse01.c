@@ -739,8 +739,10 @@ int choose_sig(int sig)
 
 	}
 
-	return 1;
+	if (sig < 32)
+		return 1;
 
+	return sig >= SIGRTMIN && sig <= SIGRTMAX;
 }
 
 void setup(void)
