@@ -176,15 +176,38 @@ echo 'tainted (/proc/sys/kernel/tainted):'
 cat /proc/sys/kernel/tainted
 
 echo
+printf 'Secure Boot: '
+if tst_cmd_available mokutil; then
+	mokutil --sb-state
+elif [ -f /sys/firmware/efi/efivars/SecureBoot* ]; then
+	val=$(od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot* | awk 'NR==1 {print $5}')
+	if [ "$val" = "0" ]; then
+		echo 'disabled'
+	elif [ "$val" = "1" ]; then
+		echo 'enabled'
+	else
+		echo 'failed to detect, tying dmesg'
+		dmesg | grep -i secure.*boot
+	fi
+elif [ ! -f /sys/firmware/efi/efivars/SecureBoot* ]; then
+	echo 'EFI variables not supported on SUT'
+fi
+tst_cmd_run 'dmesg | grep -i secure.*boot'
+
+echo
+echo 'Lockdown (/sys/kernel/security/lockdown):'
+cat /sys/kernel/security/lockdown
+
+echo
+printf "AppArmor: "
 if is_enabled /sys/module/apparmor/parameters/enabled; then
-	echo 'AppArmor enabled'
+	echo 'enabled'
 	tst_cmd_run aa-status
 else
-	echo 'AppArmor disabled'
+	echo 'disabled'
 fi
 
 echo
-
 if ! tst_cmd_run sestatus; then
 	printf 'SELinux mode: '
 	tst_cmd_run getenforce || echo 'unknown'
