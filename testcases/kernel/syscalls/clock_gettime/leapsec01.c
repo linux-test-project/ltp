@@ -8,7 +8,8 @@
  * Ported to new library:
  * 07/2019	Christian Amann <camann@suse.com>
  */
-/*
+
+/*\
  * Regression test for hrtimer early expiration during and after leap seconds
  *
  * A bug in the hrtimer subsystem caused all TIMER_ABSTIME CLOCK_REALTIME

@@ -3,17 +3,18 @@
  * Copyright (c) 2019 Linaro Limited. All rights reserved.
  * Author: Rafael David Tinoco <rafael.tinoco@linaro.org>
  */
-/*
+
+/*\
  * Basic test for clock_gettime(2) on multiple clocks:
  *
- *  1) CLOCK_REALTIME
- *  2) CLOCK_MONOTONIC
- *  3) CLOCK_PROCESS_CPUTIME_ID
- *  4) CLOCK_THREAD_CPUTIME_ID
- *  5) CLOCK_REALTIME_COARSE
- *  6) CLOCK_MONOTONIC_COARSE
- *  7) CLOCK_MONOTONIC_RAW
- *  8) CLOCK_BOOTTIME
+ * #. CLOCK_REALTIME
+ * #. CLOCK_MONOTONIC
+ * #. CLOCK_PROCESS_CPUTIME_ID
+ * #. CLOCK_THREAD_CPUTIME_ID
+ * #. CLOCK_REALTIME_COARSE
+ * #. CLOCK_MONOTONIC_COARSE
+ * #. CLOCK_MONOTONIC_RAW
+ * #. CLOCK_BOOTTIME
  */
 
 #include "config.h"

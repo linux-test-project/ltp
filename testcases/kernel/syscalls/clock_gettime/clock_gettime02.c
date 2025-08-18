@@ -3,19 +3,20 @@
  * Copyright (c) 2019 Linaro Limited. All rights reserved.
  * Author: Rafael David Tinoco <rafael.tinoco@linaro.org>
  */
-/*
+
+/*\
  * Bad argument tests for clock_gettime(2) on multiple clocks:
  *
- *  1) MAX_CLOCKS
- *  2) MAX_CLOCKS + 1
- *  3) CLOCK_REALTIME
- *  4) CLOCK_MONOTONIC
- *  5) CLOCK_PROCESS_CPUTIME_ID
- *  6) CLOCK_THREAD_CPUTIME_ID
- *  7) CLOCK_REALTIME_COARSE
- *  8) CLOCK_MONOTONIC_COARSE
- *  9) CLOCK_MONOTONIC_RAW
- * 10) CLOCK_BOOTTIME
+ * #. MAX_CLOCKS
+ * #. MAX_CLOCKS + 1
+ * #. CLOCK_REALTIME
+ * #. CLOCK_MONOTONIC
+ * #. CLOCK_PROCESS_CPUTIME_ID
+ * #. CLOCK_THREAD_CPUTIME_ID
+ * #. CLOCK_REALTIME_COARSE
+ * #. CLOCK_MONOTONIC_COARSE
+ * #. CLOCK_MONOTONIC_RAW
+ * #. CLOCK_BOOTTIME
  */
 
 #include "config.h"
