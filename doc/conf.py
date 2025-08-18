@@ -30,7 +30,7 @@ extensions = [
     'sphinx.ext.extlinks',
 ]
 
-exclude_patterns = ["html*", '_static*']
+exclude_patterns = ["html*", '_static*', '.venv*']
 extlinks = {
     'repo': (f'{ltp_repo}/%s', '%s'),
     'master': (f'{ltp_repo}/blob/master/%s', '%s'),
