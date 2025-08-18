@@ -65,7 +65,7 @@ static void run(unsigned int n)
 
 	if (TST_RET != -1 || TST_ERR != tc->error) {
 		tst_res(TFAIL | TTERRNO,
-			"%s idn't fail as expected (%s) - Got",
+			"%s did not fail as expected (%s) - Got",
 			tc->desc, tst_strerrno(tc->error));
 		return;
 	}
