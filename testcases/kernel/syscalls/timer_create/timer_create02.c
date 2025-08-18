@@ -52,7 +52,7 @@ static struct testcase {
 } tcases[] = {
 	{CLOCK_REALTIME, NULL, &timer_id, EFAULT, "invalid sigevent struct"},
 	{CLOCK_REALTIME, &sig_ev, NULL, EFAULT, "invalid timer ID"},
-	{MAX_CLOCKS, &sig_ev, &timer_id, EINVAL, "invalid clock"},
+	{TST_MAX_CLOCKS, &sig_ev, &timer_id, EINVAL, "invalid clock"},
 	{CLOCK_REALTIME, &sig_ev_inv_not, &timer_id, EINVAL, "wrong sigev_notify"},
 	{CLOCK_REALTIME, &sig_ev_inv_sig, &timer_id, EINVAL, "wrong sigev_signo"},
 };

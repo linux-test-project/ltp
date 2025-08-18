@@ -59,11 +59,11 @@ struct test_case tc[] = {
 	 .exp_err = EINVAL,
 	 },
 	{				/* case 06: MAXCLOCK		      */
-	 .type = MAX_CLOCKS,
+	 .type = TST_MAX_CLOCKS,
 	 .exp_err = EINVAL,
 	 },
 	{				/* case 07: MAXCLOCK+1		      */
-	 .type = MAX_CLOCKS + 1,
+	 .type = TST_MAX_CLOCKS + 1,
 	 .exp_err = EINVAL,
 	 },
 	/* Linux specific */
