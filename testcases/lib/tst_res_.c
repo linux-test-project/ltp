@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2024 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2025
  */
 
 #define TST_NO_DEFAULT_MAIN
@@ -13,12 +14,14 @@ static void print_help(void)
 
 int main(int argc, char *argv[])
 {
-	int type, i;
+	int i, lineno, type;
 
 	if (argc < 5) {
-		printf("argc = %i expected 5\n", argc);
+		fprintf(stderr, "%s:%d: invalid argc=%i, expected 5\n", __FILE__, __LINE__, argc);
 		goto help;
 	}
+
+	lineno = atoi(argv[2]);
 
 	if (!strcmp(argv[3], "TPASS")) {
 		type = TPASS;
@@ -35,7 +38,8 @@ int main(int argc, char *argv[])
 	} else if (!strcmp(argv[3], "TBROK")) {
 		type = TBROK;
 	} else {
-		printf("Wrong type '%s'\n", argv[3]);
+		fprintf(stderr, "%s:%d: Wrong type '%s' (invoked by %s:%d)\n", __FILE__,
+				__LINE__, argv[3], argv[1], lineno);
 		goto help;
 	}
 
@@ -57,7 +61,7 @@ int main(int argc, char *argv[])
 
 	tst_reinit();
 
-	tst_res_(argv[1], atoi(argv[2]), type, "%s", msg);
+	tst_res_(argv[1], lineno, type, "%s", msg);
 
 	return 0;
 help:
