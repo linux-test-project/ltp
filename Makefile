@@ -213,24 +213,24 @@ test-metadata: metadata-all
 	$(MAKE) -C $(abs_srcdir)/metadata test
 
 MODULE_DIRS :=  $(shell \
-	dirname $$(grep -l 'include.*module\.mk' $$(find testcases/ -type f -name 'Makefile')))
+	dirname $$(grep -l 'include.*module\.mk' $$(find $(abs_srcdir)/testcases/ -type f -name 'Makefile')))
 
 
 .PHONY: modules modules-clean modules-install
 modules:
 	@$(foreach dir,$(MODULE_DIRS),\
 		echo "Build $(dir)";\
-		$(MAKE) -C $(abs_srcdir)/$(dir) || exit $$?; \
+		$(MAKE) -C $(dir) || exit $$?; \
 )
 modules-clean:
 	@$(foreach dir,$(MODULE_DIRS),\
 		echo "Build $(dir)";\
-		$(MAKE) -C $(abs_srcdir)/$(dir) clean || exit $$?; \
+		$(MAKE) -C $(dir) clean || exit $$?; \
 )
 modules-install: modules
 	@$(foreach dir,$(MODULE_DIRS),\
 		echo "Build $(dir)";\
-		$(MAKE) -C $(abs_srcdir)/$(dir) install || exit $$?; \
+		$(MAKE) -C $(dir) install || exit $$?; \
 )
 
 ## Help
