@@ -473,6 +473,55 @@ int tst_is_mounted_at_tmpdir(const char *path)
 	return tst_is_mounted(mpath);
 }
 
+static int tst_mount_has_opt(const char *path, const char *opt)
+{
+	char line[PATH_MAX];
+	char abspath[PATH_MAX];
+	FILE *file;
+	int ret = 0;
+
+	if (!realpath(path, abspath)) {
+		tst_resm(TWARN | TERRNO, "realpath(%s) failed", path);
+		return 0;
+	}
+
+	file = SAFE_FOPEN(NULL, "/proc/mounts", "r");
+
+	while (fgets(line, sizeof(line), file)) {
+		char mount_point[PATH_MAX], options[PATH_MAX];
+
+		if (sscanf(line, "%*s %s %*s %s", mount_point, options) < 2)
+			continue;
+
+		if (strcmp(mount_point, abspath) != 0)
+			continue;
+
+		char *tok = strtok(options, ",");
+		while (tok) {
+			if (strcmp(tok, opt) == 0) {
+				ret = 1;
+				break;
+			}
+			tok = strtok(NULL, ",");
+		}
+		if (ret)
+			break;
+	}
+
+	SAFE_FCLOSE(NULL, file);
+	return ret;
+}
+
+int tst_is_mounted_ro(const char *path)
+{
+	return tst_mount_has_opt(path, "ro");
+}
+
+int tst_is_mounted_rw(const char *path)
+{
+	return tst_mount_has_opt(path, "rw");
+}
+
 static int find_stat_file(const char *dev, char *path, size_t path_len)
 {
 	const char *devname = strrchr(dev, '/') + 1;
