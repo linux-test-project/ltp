@@ -429,50 +429,6 @@ int tst_umount(const char *path)
 	return -1;
 }
 
-int tst_is_mounted(const char *path)
-{
-	char line[PATH_MAX];
-	FILE *file;
-	int ret = 0;
-
-	file = SAFE_FOPEN(NULL, "/proc/mounts", "r");
-
-	while (fgets(line, sizeof(line), file)) {
-		if (strstr(line, path) != NULL) {
-			ret = 1;
-			break;
-		}
-	}
-
-	SAFE_FCLOSE(NULL, file);
-
-	if (!ret)
-		tst_resm(TINFO, "No device is mounted at %s", path);
-
-	return ret;
-}
-
-int tst_is_mounted_at_tmpdir(const char *path)
-{
-	char cdir[PATH_MAX], mpath[PATH_MAX];
-	int ret;
-
-	if (!getcwd(cdir, PATH_MAX)) {
-		tst_resm(TWARN | TERRNO, "Failed to find current directory");
-		return 0;
-	}
-
-	ret = snprintf(mpath, PATH_MAX, "%s/%s", cdir, path);
-	if (ret < 0 || ret >= PATH_MAX) {
-		tst_resm(TWARN | TERRNO,
-			 "snprintf() should have returned %d instead of %d",
-			 PATH_MAX, ret);
-		return 0;
-	}
-
-	return tst_is_mounted(mpath);
-}
-
 static int tst_mount_has_opt(const char *path, const char *opt)
 {
 	char line[PATH_MAX];
@@ -496,6 +452,11 @@ static int tst_mount_has_opt(const char *path, const char *opt)
 		if (strcmp(mount_point, abspath) != 0)
 			continue;
 
+		if (!opt) {
+			ret = 1;
+			break;
+		}
+
 		char *tok = strtok(options, ",");
 		while (tok) {
 			if (strcmp(tok, opt) == 0) {
@@ -512,6 +473,15 @@ static int tst_mount_has_opt(const char *path, const char *opt)
 	return ret;
 }
 
+int tst_is_mounted(const char *path)
+{
+	int ret = tst_mount_has_opt(path, NULL);
+	if (!ret)
+		tst_resm(TINFO, "No device is mounted at %s", path);
+
+	return ret;
+}
+
 int tst_is_mounted_ro(const char *path)
 {
 	return tst_mount_has_opt(path, "ro");
@@ -520,6 +490,27 @@ int tst_is_mounted_ro(const char *path)
 int tst_is_mounted_rw(const char *path)
 {
 	return tst_mount_has_opt(path, "rw");
+}
+
+int tst_is_mounted_at_tmpdir(const char *path)
+{
+	char cdir[PATH_MAX], mpath[PATH_MAX];
+	int ret;
+
+	if (!getcwd(cdir, PATH_MAX)) {
+		tst_resm(TWARN | TERRNO, "Failed to find current directory");
+		return 0;
+	}
+
+	ret = snprintf(mpath, PATH_MAX, "%s/%s", cdir, path);
+	if (ret < 0 || ret >= PATH_MAX) {
+		tst_resm(TWARN | TERRNO,
+			 "snprintf() should have returned %d instead of %d",
+			 PATH_MAX, ret);
+		return 0;
+	}
+
+	return tst_is_mounted(mpath);
 }
 
 static int find_stat_file(const char *dev, char *path, size_t path_len)
