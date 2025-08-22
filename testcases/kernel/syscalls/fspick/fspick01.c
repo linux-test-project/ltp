@@ -6,6 +6,7 @@
  */
 #include "tst_test.h"
 #include "lapi/fsmount.h"
+#include "tst_safe_stdio.h"
 
 #define MNTPOINT		"mntpoint"
 #define TCASE_ENTRY(_flags)	{.name = "Flag " #_flags, .flags = _flags}
@@ -24,6 +25,8 @@ static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 	int fspick_fd;
+
+	TST_EXP_VAL(tst_is_mounted_rw(MNTPOINT), 1);
 
 	TEST(fspick_fd = fspick(AT_FDCWD, MNTPOINT, tc->flags));
 	if (fspick_fd == -1) {
@@ -49,8 +52,22 @@ static void run(unsigned int n)
 		goto out;
 	}
 
-	tst_res(TPASS, "%s: fspick() passed", tc->name);
+	TST_EXP_VAL(tst_is_mounted_ro(MNTPOINT), 1);
 
+	TEST(fsconfig(fspick_fd, FSCONFIG_SET_FLAG, "rw", NULL, 0));
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "fsconfig(FSCONFIG_SET_FLAG) failed");
+		goto out;
+	}
+
+	TEST(fsconfig(fspick_fd, FSCONFIG_CMD_RECONFIGURE, NULL, NULL, 0));
+	if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "fsconfig(FSCONFIG_CMD_RECONFIGURE) failed");
+		goto out;
+	}
+
+	TST_EXP_VAL(tst_is_mounted_rw(MNTPOINT), 1);
+	tst_res(TPASS, "%s: fspick() passed", tc->name);
 out:
 	SAFE_CLOSE(fspick_fd);
 }
