@@ -123,7 +123,7 @@ static void cleanup(void)
 	if (!access(MQUEUE2, F_OK))
 		SAFE_MQ_UNLINK(MQNAME2);
 
-	if (tst_is_mounted(DEVDIR))
+	if (!access(DEVDIR, F_OK) && tst_is_mounted(DEVDIR))
 		SAFE_UMOUNT(DEVDIR);
 }
 

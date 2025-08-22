@@ -47,7 +47,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (tst_is_mounted(mntpoint))
+	if (!access(mntpoint, F_OK) && tst_is_mounted(mntpoint))
 		SAFE_UMOUNT(mntpoint);
 }
 

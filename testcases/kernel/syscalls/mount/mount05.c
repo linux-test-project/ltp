@@ -35,7 +35,7 @@ static void cleanup(void)
 	if (tst_is_mounted(MNTPOINT1))
 		SAFE_UMOUNT(MNTPOINT1);
 
-	if (tst_is_mounted(MNTPOINT2))
+	if (!access(MNTPOINT2, F_OK) && tst_is_mounted(MNTPOINT2))
 		SAFE_UMOUNT(MNTPOINT2);
 }
 
