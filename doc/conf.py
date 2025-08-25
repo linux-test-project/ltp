@@ -72,6 +72,8 @@ def generate_syscalls_stats(_):
         'fadvise64': f'{ltp_syscalls_path}/fadvise',
         'fanotify_init': f'{ltp_syscalls_path}/fanotify',
         'fanotify_mark': f'{ltp_syscalls_path}/fanotify',
+        'file_getattr': f'{ltp_syscalls_path}/file_attr',
+        'file_setattr': f'{ltp_syscalls_path}/file_attr',
         'futex': f'{ltp_syscalls_path}/futex',
         'getdents64': f'{ltp_syscalls_path}/gettdents',
         'inotify_add_watch': f'{ltp_syscalls_path}/inotify',
