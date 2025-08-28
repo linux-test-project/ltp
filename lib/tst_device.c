@@ -429,7 +429,7 @@ int tst_umount(const char *path)
 	return -1;
 }
 
-static int tst_mount_has_opt(const char *path, const char *opt)
+int tst_mount_has_opt(const char *path, const char *opt)
 {
 	char line[PATH_MAX];
 	char abspath[PATH_MAX];
