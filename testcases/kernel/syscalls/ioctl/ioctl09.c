@@ -64,7 +64,7 @@ static void verify_ioctl(void)
 					      "mklabel", "msdos", "mkpart",
 					      "primary", "ext4", "1M", "10M",
 					      NULL};
-	const char *const cmd_parted_new[] = {"parted", "-s", "test.img",
+	const char *const cmd_parted_new[] = {"parted", "-s", dev_path,
 					      "mklabel", "msdos", "mkpart",
 					      "primary", "ext4", "1M", "10M",
 					      "mkpart", "primary", "ext4",
