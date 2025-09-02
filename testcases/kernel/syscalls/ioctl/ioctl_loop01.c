@@ -59,7 +59,7 @@ static void check_loop_value(int set_flag, int get_flag, int autoclear_field)
 	TST_ASSERT_INT(autoclear_path, autoclear_field);
 
 	if (!parted_sup) {
-		tst_res(TINFO, "Current environment doesn't have parted disk, skip it");
+		tst_res(TCONF, "Current environment doesn't have parted disk, skip it");
 		return;
 	}
 
@@ -78,7 +78,21 @@ static void check_loop_value(int set_flag, int get_flag, int autoclear_field)
 
 static void verify_ioctl_loop(void)
 {
+	int ret;
+	const char *const cmd_parted[] = {"parted", "-s", dev_path, "mklabel", "msdos", "mkpart",
+					"primary", "ext4", "1M", "10M", NULL};
+
+	tst_fill_file("test.img", 0, 1024 * 1024, 10);
 	tst_attach_device(dev_path, "test.img");
+
+	ret = tst_cmd(cmd_parted, NULL, NULL, TST_CMD_PASS_RETVAL);
+	if (!ret)
+		parted_sup = 1;
+	else if (ret == 255)
+		tst_res(TCONF, "parted binary not installed or failed");
+	else
+		tst_res(TCONF, "parted exited with %i", ret);
+
 	attach_flag = 1;
 
 	TST_ASSERT_INT(partscan_path, 0);
@@ -92,33 +106,15 @@ static void verify_ioctl_loop(void)
 
 	tst_detach_device_by_fd(dev_path, dev_fd);
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
+
 	attach_flag = 0;
 }
 
 static void setup(void)
 {
-	int ret;
-	const char *const cmd_parted[] = {"parted", "-s", "test.img", "mklabel", "msdos", "mkpart",
-	                                  "primary", "ext4", "1M", "10M", NULL};
-
 	dev_num = tst_find_free_loopdev(dev_path, sizeof(dev_path));
 	if (dev_num < 0)
 		tst_brk(TBROK, "Failed to find free loop device");
-
-	tst_fill_file("test.img", 0, 1024 * 1024, 10);
-
-	ret = tst_cmd(cmd_parted, NULL, NULL, TST_CMD_PASS_RETVAL);
-	switch (ret) {
-	case 0:
-		parted_sup = 1;
-	break;
-	case 255:
-		tst_res(TCONF, "parted binary not installed or failed");
-	break;
-	default:
-		tst_res(TCONF, "parted exited with %i", ret);
-	break;
-	}
 
 	sprintf(partscan_path, "/sys/block/loop%d/loop/partscan", dev_num);
 	sprintf(autoclear_path, "/sys/block/loop%d/loop/autoclear", dev_num);
