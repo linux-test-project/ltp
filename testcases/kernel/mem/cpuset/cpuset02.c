@@ -121,10 +121,6 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = run_test,
 	.needs_cgroup_ctrls = (const char *const []){ "cpuset", NULL },
-	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/nr_hugepages", NULL, TST_SR_TCONF},
-		{}
-	},
 };
 
 #else
