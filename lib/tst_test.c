@@ -38,6 +38,7 @@
 #include "old_device.h"
 #include "old_tmpdir.h"
 #include "ltp-version.h"
+#include "tst_hugepage.h"
 
 /*
  * Hack to get TCID defined in newlib tests
@@ -1192,6 +1193,9 @@ static void prepare_and_mount_dev_fs(const char *mntpoint)
 
 static void prepare_and_mount_hugetlb_fs(void)
 {
+	if (access(PATH_HUGEPAGES, F_OK))
+		tst_brk(TCONF, "hugetlbfs is not supported");
+
 	SAFE_MOUNT("none", tst_test->mntpoint, "hugetlbfs", 0, NULL);
 	context->mntpoint_mounted = 1;
 }
