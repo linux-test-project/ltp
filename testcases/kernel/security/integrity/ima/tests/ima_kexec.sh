@@ -68,6 +68,13 @@ setup()
 	fi
 
 	tst_res TINFO "using kernel $IMA_KEXEC_IMAGE"
+
+	tst_res TINFO "$(kexec -v)"
+
+	REUSE_CMDLINE_SUPPORTED=
+	if kexec -h 2>&1 | grep -q reuse-cmdline; then
+		REUSE_CMDLINE_SUPPORTED=1
+	fi
 }
 
 kexec_failure_hint()
@@ -100,6 +107,10 @@ kexec_test()
 
 	kexec_cmd="$param=$cmdline"
 	if [ "$param" = '--reuse-cmdline' ]; then
+		if [ "$REUSE_CMDLINE_SUPPORTED" != 1 ]; then
+			tst_res TCONF "--reuse-cmdline not supported"
+			return
+		fi
 		cmdline="$(sed 's/BOOT_IMAGE=[^ ]* //' /proc/cmdline)"
 		kexec_cmd="$param"
 	fi
