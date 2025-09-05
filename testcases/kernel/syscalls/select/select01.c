@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2008-2025
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * http://www.sgi.com
+ * Authors: Richard Logan, William Roske
+ */
+
+/*\
+ * :man2:`select` with no I/O and small timeout to file descriptor of a
  *
- * AUTHOR            : Richard Logan
- * CO-PILOT          : William Roske
- *
- * 1.) select(2) to fd of regular file with no I/O and small timeout
- * 2.) select(2) to fd of system pipe with no I/O and small timeout
- * 3.) select(2) of fd of a named-pipe (FIFO) with no I/O and small timeout value
+ * - regular file
+ * - system pipe
+ * - named-pipe (FIFO)
  */
 
 #include <unistd.h>

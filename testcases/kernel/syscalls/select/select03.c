@@ -1,8 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Linaro Ltd.
+ */
+
+/*\
+ * :man2:`select` failure tests:
  *
- * Failure tests.
+ * - negative nfds (EINVAL)
+ * - invalid readfds (EBADF)
+ * - invalid writefds (EBADF)
+ * - invalid exceptfds (EBADF)
+ * - faulty readfds (EFAULT)
+ * - faulty writefds (EFAULT)
+ * - faulty exceptfds (EFAULT)
+ * - faulty timeout (EFAULT)
  */
 
 #include <unistd.h>
