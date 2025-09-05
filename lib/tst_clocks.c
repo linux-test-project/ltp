@@ -11,6 +11,8 @@
 #include "tst_clocks.h"
 #include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
+#include "lapi/common_timers.h"
+#include "tst_kconfig.h"
 
 typedef int (*mysyscall)(clockid_t clk_id, void *ts);
 
@@ -167,4 +169,14 @@ time_t tst_fs_timestamp_start(void)
 time_t tst_fs_timestamp_end(void)
 {
 	return tst_clock_get_timestamp(CLOCK_REALTIME);
+}
+
+int tst_get_max_clocks(void)
+{
+	static const char * const kconf_aux[] = {"CONFIG_POSIX_AUX_CLOCKS=y", NULL};
+
+	if (!tst_kconfig_check(kconf_aux))
+		return MAX_CLOCKS + MAX_AUX_CLOCKS;
+	else
+		return MAX_CLOCKS;
 }

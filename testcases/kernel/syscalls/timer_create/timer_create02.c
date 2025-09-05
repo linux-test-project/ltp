@@ -25,6 +25,7 @@
 #include <signal.h>
 #include "tst_test.h"
 #include "lapi/common_timers.h"
+#include "tst_safe_clocks.h"
 
 static struct sigevent sig_ev = {
 	.sigev_notify = SIGEV_NONE,
@@ -42,26 +43,28 @@ static struct sigevent sig_ev_inv_sig = {
 };
 
 static kernel_timer_t timer_id;
+static clock_t max_clocks;
+static clock_t clk_realtime = CLOCK_REALTIME;
 
 static struct testcase {
-	clock_t clock;
+	clock_t *clock;
 	struct sigevent	*ev_ptr;
 	kernel_timer_t	*kt_ptr;
 	int		error;
 	char		*desc;
 } tcases[] = {
-	{CLOCK_REALTIME, NULL, &timer_id, EFAULT, "invalid sigevent struct"},
-	{CLOCK_REALTIME, &sig_ev, NULL, EFAULT, "invalid timer ID"},
-	{TST_MAX_CLOCKS, &sig_ev, &timer_id, EINVAL, "invalid clock"},
-	{CLOCK_REALTIME, &sig_ev_inv_not, &timer_id, EINVAL, "wrong sigev_notify"},
-	{CLOCK_REALTIME, &sig_ev_inv_sig, &timer_id, EINVAL, "wrong sigev_signo"},
+	{&clk_realtime, NULL, &timer_id, EFAULT, "invalid sigevent struct"},
+	{&clk_realtime, &sig_ev, NULL, EFAULT, "invalid timer ID"},
+	{&max_clocks, &sig_ev, &timer_id, EINVAL, "invalid clock"},
+	{&clk_realtime, &sig_ev_inv_not, &timer_id, EINVAL, "wrong sigev_notify"},
+	{&clk_realtime, &sig_ev_inv_sig, &timer_id, EINVAL, "wrong sigev_signo"},
 };
 
 static void run(unsigned int n)
 {
 	struct testcase *tc = &tcases[n];
 
-	TEST(tst_syscall(__NR_timer_create, tc->clock, tc->ev_ptr, tc->kt_ptr));
+	TEST(tst_syscall(__NR_timer_create, *tc->clock, tc->ev_ptr, tc->kt_ptr));
 
 	if (TST_RET != -1 || TST_ERR != tc->error) {
 		tst_res(TFAIL | TTERRNO,
@@ -84,6 +87,8 @@ static void setup(void)
 		if (!tcases[i].kt_ptr)
 			tcases[i].kt_ptr = tst_get_bad_addr(NULL);
 	}
+
+	max_clocks = tst_get_max_clocks();
 }
 
 static struct tst_test test = {

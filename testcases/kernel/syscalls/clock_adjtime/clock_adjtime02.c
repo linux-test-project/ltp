@@ -61,11 +61,14 @@ static long hz;
 static struct tst_timex saved, ttxc;
 static int supported;
 static void *bad_addr;
+static clockid_t max_clocks1;
+static clockid_t max_clocks2;
+static clockid_t clk_realtime = CLOCK_REALTIME;
 
 static void cleanup(void);
 
 struct test_case {
-	clockid_t clktype;
+	clockid_t *clktype;
 	unsigned int modes;
 	long lowlimit;
 	long highlimit;
@@ -74,36 +77,36 @@ struct test_case {
 	int droproot;
 };
 
-struct test_case tc[] = {
+static struct test_case tc[] = {
 	{
-	 .clktype = TST_MAX_CLOCKS,
+	 .clktype = &max_clocks1,
 	 .exp_err = EINVAL,
 	},
 	{
-	 .clktype = TST_MAX_CLOCKS + 1,
+	 .clktype = &max_clocks2,
 	 .exp_err = EINVAL,
 	},
 	{
-	 .clktype = CLOCK_REALTIME,
+	 .clktype = &clk_realtime,
 	 .modes = ADJ_ALL,
 	 .exp_err = EFAULT,
 	},
 	{
-	 .clktype = CLOCK_REALTIME,
+	 .clktype = &clk_realtime,
 	 .modes = ADJ_TICK,
 	 .lowlimit = 900000,
 	 .delta = 1,
 	 .exp_err = EINVAL,
 	},
 	{
-	 .clktype = CLOCK_REALTIME,
+	 .clktype = &clk_realtime,
 	 .modes = ADJ_TICK,
 	 .highlimit = 1100000,
 	 .delta = 1,
 	 .exp_err = EINVAL,
 	},
 	{
-	 .clktype = CLOCK_REALTIME,
+	 .clktype = &clk_realtime,
 	 .modes = ADJ_ALL,
 	 .exp_err = EPERM,
 	 .droproot = 1,
@@ -162,9 +165,9 @@ static void verify_clock_adjtime(unsigned int i)
 
 	/* special case: EFAULT for bad addresses */
 	if (tc[i].exp_err == EFAULT) {
-		TEST(tv->clock_adjtime(tc[i].clktype, bad_addr));
+		TEST(tv->clock_adjtime(*tc[i].clktype, bad_addr));
 	} else {
-		TEST(tv->clock_adjtime(tc[i].clktype, tst_timex_get(txcptr)));
+		TEST(tv->clock_adjtime(*tc[i].clktype, tst_timex_get(txcptr)));
 		timex_show("TEST", txcptr);
 	}
 
@@ -223,6 +226,9 @@ static void setup(void)
 			tc[i].lowlimit /= hz;
 		}
 	}
+
+	max_clocks1 = tst_get_max_clocks();
+	max_clocks2 = max_clocks1 + 1;
 }
 
 static void cleanup(void)

@@ -48,4 +48,6 @@ time_t tst_fs_timestamp_start(void);
  */
 time_t tst_fs_timestamp_end(void);
 
+int tst_get_max_clocks(void);
+
 #endif /* TST_CLOCKS__ */

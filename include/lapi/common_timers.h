@@ -33,12 +33,6 @@ static const clock_t clock_list[] = {
 
 #define MAX_AUX_CLOCKS 8
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
-#define TST_MAX_CLOCKS (MAX_CLOCKS + MAX_AUX_CLOCKS)
-#else
-#define TST_MAX_CLOCKS (MAX_CLOCKS)
-#endif
-
 #define CLOCK_TO_STR(def_name)	\
 	case def_name:		\
 		return #def_name;
