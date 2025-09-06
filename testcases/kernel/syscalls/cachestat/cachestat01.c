@@ -72,7 +72,8 @@ static void run(unsigned int use_sync)
 static void setup(void)
 {
 	page_size = (int)sysconf(_SC_PAGESIZE);
-	num_shift = MIN(tst_device->size*1024*2.5/page_size, 15);
+	num_shift = (page_size == 16384) ? 14 : 15;
+	num_shift = MIN(tst_device->size*1024*2.5/page_size, num_shift);
 	page_data = SAFE_MALLOC(page_size);
 	memset(page_data, 'a', page_size);
 }
