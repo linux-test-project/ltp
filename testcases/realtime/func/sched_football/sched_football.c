@@ -44,6 +44,7 @@
 static tst_atomic_t the_ball;
 static int players_per_team = 0;
 static int game_length = DEF_GAME_LENGTH;
+static tst_atomic_t kickoff_flag;
 static tst_atomic_t game_over;
 
 static char *str_game_length;
@@ -80,6 +81,9 @@ void *thread_defense(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	prctl(PR_SET_NAME, "defense", 0, 0, 0);
 	pthread_barrier_wait(&start_barrier);
+	while (!tst_atomic_load(&kickoff_flag))
+		;
+
 	/*keep the ball from being moved */
 	while (!tst_atomic_load(&game_over)) {
 	}
@@ -92,6 +96,9 @@ void *thread_offense(void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	prctl(PR_SET_NAME, "offense", 0, 0, 0);
 	pthread_barrier_wait(&start_barrier);
+	while (!tst_atomic_load(&kickoff_flag))
+		sched_yield();
+
 	while (!tst_atomic_load(&game_over)) {
 		tst_atomic_add_return(1, &the_ball); /* move the ball ahead one yard */
 	}
@@ -115,9 +122,16 @@ void referee(int game_length)
 	now = start;
 
 	/* Start the game! */
-	tst_atomic_store(0, &the_ball);
-	pthread_barrier_wait(&start_barrier);
 	atrace_marker_write("sched_football", "Game_started!");
+	pthread_barrier_wait(&start_barrier);
+	usleep(200000);
+
+	tst_atomic_store(0, &the_ball);
+	tst_atomic_store(1, &kickoff_flag);
+	if (tst_check_preempt_rt())
+		usleep(20000);
+	else
+		usleep(2000000);
 
 	/* Watch the game */
 	while ((now.tv_sec - start.tv_sec) < game_length) {
@@ -125,13 +139,13 @@ void referee(int game_length)
 		gettimeofday(&now, NULL);
 	}
 
-	/* Stop the game! */
-	tst_atomic_store(1, &game_over);
-	atrace_marker_write("sched_football", "Game_Over!");
-
 	/* Blow the whistle */
 	final_ball = tst_atomic_load(&the_ball);
 	tst_res(TINFO, "Final ball position: %d", final_ball);
+
+	/* Stop the game! */
+	tst_atomic_store(1, &game_over);
+	atrace_marker_write("sched_football", "Game_Over!");
 
 	TST_EXP_EXPR(final_ball == 0);
 }
@@ -154,6 +168,7 @@ static void do_test(void)
 	/* We're the ref, so set our priority right */
 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 80;
 	sched_setscheduler(0, SCHED_FIFO, &param);
+	tst_atomic_store(0, &kickoff_flag);
 
 	/*
 	 * Start the offense
