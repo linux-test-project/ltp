@@ -775,6 +775,25 @@ int safe_fchown(const char *file, const int lineno, void (cleanup_fn)(void),
 	return rval;
 }
 
+int safe_lchown(const char *file, const int lineno, void (cleanup_fn)(void),
+			const char *path, uid_t owner, gid_t group)
+{
+	int rval;
+
+	rval = lchown(path, owner, group);
+
+	if (rval == -1) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+			"lchown(%s,%d,%d) failed", path, owner, group);
+	} else if (rval) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+			"Invalid lchown(%s,%d,%d) return value %d", path,
+			owner, group, rval);
+	}
+
+	return rval;
+}
+
 pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
                 int *status)
 {

@@ -151,6 +151,9 @@ int safe_chown(const char *file, const int lineno, void (cleanup_fn)(void),
 int safe_fchown(const char *file, const int lineno, void (cleanup_fn)(void),
                 int fd, uid_t owner, gid_t group);
 
+int safe_lchown(const char *file, const int lineno, void (*cleanup_fn)(void),
+		const char *path, uid_t owner, gid_t group);
+
 pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
                 int *status);
 

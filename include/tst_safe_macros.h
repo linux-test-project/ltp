@@ -220,6 +220,9 @@ int safe_getgroups(const char *file, const int lineno, int size, gid_t list[]);
 #define SAFE_FCHOWN(fd, owner, group) \
 	safe_fchown(__FILE__, __LINE__, NULL, (fd), (owner), (group))
 
+#define SAFE_LCHOWN(path, owner, group) \
+	safe_lchown(__FILE__, __LINE__, NULL, (path), (owner), (group))
+
 #define SAFE_WAIT(status) \
 	safe_wait(__FILE__, __LINE__, NULL, (status))
 
