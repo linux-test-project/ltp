@@ -16,6 +16,8 @@
  * - ENAMETOOLONG, if the pathname component is too long.
  * - ENOTDIR, if the directory component in pathname is not a directory.
  * - ENOENT, if the specified file does not exists.
+ * - ELOOP, if too many symbolic links were encountered in resolving path.
+ * - EROFS, if the file is on a read-only file system.
  */
 
 #include <pwd.h>
@@ -32,6 +34,8 @@
 #define TFILE3 "t_file"
 #define SFILE3 "t_file/sfile"
 #define MAXPATH (PATH_MAX + 2)
+#define EFILE1 "infinite_loop1/eloop"
+#define TEST_EROFS "mntpoint"
 
 static char *sfile1;
 static char *sfile2;
@@ -39,6 +43,8 @@ static char *bad_addr;
 static char *maxpath;
 static char *sfile3;
 static char *empty;
+static char *eloop;
+static char *erofs;
 static struct passwd *ltpuser;
 
 static struct test_case_t {
@@ -52,6 +58,8 @@ static struct test_case_t {
 	{ &maxpath, "Pathname too long", ENAMETOOLONG },
 	{ &sfile3, "Path contains regular file", ENOTDIR },
 	{ &empty, "Pathname is empty", ENOENT },
+	{ &eloop, "Too many symlinks", ELOOP },
+	{ &erofs, "Read-only filesystem", EROFS },
 };
 
 static void run(unsigned int i)
@@ -80,6 +88,9 @@ static void setup(void)
 	SAFE_SYMLINK(TFILE1, SFILE1);
 	SAFE_SETEUID(ltpuser->pw_uid);
 
+	SAFE_SYMLINK("infinite_loop1", "infinite_loop2");
+	SAFE_SYMLINK("infinite_loop2", "infinite_loop1");
+
 	SAFE_MKDIR(DIR_TEMP, 0777);
 	SAFE_TOUCH(TFILE2, 0666, NULL);
 	SAFE_SYMLINK(TFILE2, SFILE2);
@@ -94,12 +105,16 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
+	.mntpoint = TEST_EROFS,
+	.needs_rofs = 1,
 	.bufs = (struct tst_buffers []) {
 		{&maxpath, .size = MAXPATH},
 		{&sfile1, .str = SFILE1},
 		{&sfile2, .str = SFILE2},
 		{&sfile3, .str = SFILE3},
+		{&eloop, .str = EFILE1},
 		{&empty, .str = ""},
+		{ &erofs, .str = TEST_EROFS },
 		{}
 	},
 };

@@ -732,9 +732,7 @@ landlock10 landlock10
 lchown01 lchown01
 lchown01_16 lchown01_16
 lchown02  lchown02
-lchown03  lchown03
 lchown02_16 lchown02_16
-lchown03_16 lchown03_16
 
 lgetxattr01 lgetxattr01
 lgetxattr02 lgetxattr02
