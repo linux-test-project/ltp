@@ -164,7 +164,7 @@ static void verify_clock_settime(unsigned int i)
 		return;
 	}
 
-	tst_res(TFAIL | TTERRNO, "clock_settime(2): clock %s " "expected to fail with %s",
+	tst_res(TFAIL | TTERRNO, "clock_settime(2): clock %s expected to fail with %s",
 		tst_clock_name(*tc[i].type), tst_strerrno(tc[i].exp_err));
 }
 
