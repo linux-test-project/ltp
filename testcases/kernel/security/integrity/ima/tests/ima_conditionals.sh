@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2021 VPI Engineering
-# Copyright (c) 2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2021-2025 Petr Vorel <pvorel@suse.cz>
 # Author: Alex Henrie <alexh@vpitech.com>
 #
 # Verify that conditional rules work.
@@ -10,7 +10,15 @@
 # support") from v5.16.
 
 TST_NEEDS_CMDS="cat chgrp chown id sg sudo"
+TST_SETUP="setup"
 TST_CNT=1
+
+setup()
+{
+	if check_need_signed_policy; then
+		tst_brk TCONF "policy have to be signed"
+	fi
+}
 
 verify_measurement()
 {
@@ -22,6 +30,7 @@ verify_measurement()
 	local value="$(id -u $user)"
 	[ "$request" = 'gid' -o "$request" = 'fgroup' ] && value="$(id -g $user)"
 
+	# needs to be checked each run (not in setup)
 	require_policy_writable
 
 	ROD rm -f $test_file

@@ -449,6 +449,13 @@ require_evmctl()
 	fi
 }
 
+# 56dc986a6b20b ("ima: require signed IMA policy when UEFI secure boot is enabled") # v6.5-rc4
+check_need_signed_policy()
+{
+	tst_secureboot_enabled && tst_kvcmp -ge '6.5' && tst_require_kconfigs \
+		'CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY'
+}
+
 # loop device is needed to use only for tmpfs
 TMPDIR="${TMPDIR:-/tmp}"
 if tst_supported_fs -d $TMPDIR -s "tmpfs"; then
