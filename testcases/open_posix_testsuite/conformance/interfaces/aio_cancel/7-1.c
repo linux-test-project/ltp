@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2004, Bull SA. All rights reserved.
+ * Copyright (c) 2025 SUSE LLC
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
@@ -14,145 +15,176 @@
  *
  * method:
  *
- *	queue a lot of aio_write() to a given file descriptor
- *	then cancel all operation belonging to this file descriptor
+ *	queue multiple aio_write()s to a given socket
+ *	wait for a specific task to start and block on full socket buffer
+ *	then cancel all operations belonging to this socket
  *	check result of each operation:
- *	- if aio_error() is EINPROGRESS and aio_cancel() is not AIO_NOTCANCELED
- *	  result is failed
- *	- if aio_error() is succes (0) and aio_cancel() is AIO_NOTCANCELED
- *	  result is susccess
- *	- otherwise result is unresolved
- *
+ *	- aio_cancel() must return AIO_NOTCANCELED
+ *	- aio_error() must return 0 for writes before the blocked task
+ *	- aio_error() must return EINPROGRESS for the blocked task
+ *	- aio_error() must return ECANCELED for writes after the blocked task
+ *	If any of the above conditions is not met, fail the test.
+ *	Otherwise pass.
  */
 
 #include <stdio.h>
-#include <sys/types.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <time.h>
 #include <aio.h>
+#include <sys/socket.h>
 
 #include "posixtest.h"
-#include "tempfile.h"
 
 #define TNAME "aio_cancel/7-1.c"
 
-#define BUF_NB		128
-#define BUF_SIZE	1024
+#define BUF_NB		8
+#define BLOCKED_TASK	2
+
+static int fds[2];
+static struct aiocb aiocb[BUF_NB];
+
+static void cleanup(void)
+{
+	int i, ret;
+
+	for (i = 0; i < BUF_NB; i++) {
+		if (!aiocb[i].aio_buf)
+			break;
+
+		ret = aio_error(&aiocb[i]);
+
+		/* flush written data from the socket */
+		if (ret == 0 || ret == EINPROGRESS) {
+			read(fds[1], (void *)aiocb[i].aio_buf,
+				aiocb[i].aio_nbytes);
+		}
+
+		free((void *)aiocb[i].aio_buf);
+	}
+
+	close(fds[0]);
+	close(fds[1]);
+}
 
 int main(void)
 {
-	char tmpfname[PATH_MAX];
-	int fd;
-	struct aiocb *aiocb[BUF_NB];
 	int i;
-	int in_progress;
 	int gret;
+	int bufsize;
+	int exp_ret;
+	socklen_t argsize = sizeof(bufsize);
+	const struct timespec sleep_ts = { .tv_sec = 0, .tv_nsec = 10000000 };
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_cancel_7_1");
-	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
-	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n", strerror(errno));
+	gret = socketpair(AF_UNIX, SOCK_DGRAM, 0, fds);
+	if (gret == -1) {
+		printf(TNAME " Error creating sockets(): %s\n",
+			strerror(errno));
 		return PTS_UNRESOLVED;
 	}
 
-	unlink(tmpfname);
+	gret = getsockopt(fds[0], SOL_SOCKET, SO_SNDBUF, &bufsize, &argsize);
+	if (gret == -1) {
+		printf(TNAME " Error reading socket buffer size: %s\n",
+			strerror(errno));
+		cleanup();
+		return PTS_UNRESOLVED;
+	}
+
+	/* Socket buffer size is twice the maximum message size */
+	bufsize /= 2;
 
 	/* create AIO req */
 	for (i = 0; i < BUF_NB; i++) {
-		aiocb[i] = calloc(1, sizeof(struct aiocb));
+		aiocb[i].aio_fildes = fds[0];
+		aiocb[i].aio_buf = malloc(bufsize);
 
-		if (aiocb[i] == NULL) {
+		if (aiocb[i].aio_buf == NULL) {
 			printf(TNAME " Error at malloc(): %s\n",
 			       strerror(errno));
-			close(fd);
+			cleanup();
 			return PTS_UNRESOLVED;
 		}
 
-		aiocb[i]->aio_fildes = fd;
-		aiocb[i]->aio_buf = malloc(BUF_SIZE);
+		aiocb[i].aio_nbytes = bufsize;
+		aiocb[i].aio_offset = 0;
+		aiocb[i].aio_sigevent.sigev_notify = SIGEV_NONE;
 
-		if (aiocb[i]->aio_buf == NULL) {
-			printf(TNAME " Error at malloc(): %s\n",
-			       strerror(errno));
-			close(fd);
-			return PTS_UNRESOLVED;
-		}
-
-		aiocb[i]->aio_nbytes = BUF_SIZE;
-		aiocb[i]->aio_offset = 0;
-		aiocb[i]->aio_sigevent.sigev_notify = SIGEV_NONE;
-
-		if (aio_write(aiocb[i]) == -1) {
+		if (aio_write(&aiocb[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 			       i, strerror(errno));
-			close(fd);
+			cleanup();
 			return PTS_FAIL;
 		}
 	}
 
-	/* try to cancel all
-	 * we hope to have enough time to cancel at least one
-	 */
-	gret = aio_cancel(fd, NULL);
-	if (gret == -1) {
-		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
-		close(fd);
+	/* wait for write #2 to start and get blocked by full socket buffer */
+	for (i = 0; i < 1000; i++) {
+		gret = aio_error(&aiocb[BLOCKED_TASK - 1]);
+		nanosleep(&sleep_ts, NULL);
+
+		if (gret <= 0)
+			break;
+	}
+
+	if (gret) {
+		printf(TNAME " Task #%d failed to complete: %s\n",
+			BLOCKED_TASK - 1, strerror(gret == -1 ? errno : gret));
+		cleanup();
 		return PTS_FAIL;
 	}
 
-	do {
-		in_progress = 0;
-		for (i = 0; i < BUF_NB; i++) {
-			int ret = aio_error(aiocb[i]);
+	/* try to cancel all */
+	gret = aio_cancel(fds[0], NULL);
+	if (gret == -1) {
+		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
+		cleanup();
+		return PTS_FAIL;
+	}
 
-			switch (ret) {
-			case -1:
-				printf(TNAME " Error at aio_error(): %s\n",
-				       strerror(errno));
-				close(fd);
-				return PTS_FAIL;
-				break;
-			case EINPROGRESS:
-				/* at this point, all operations should be:
-				 *    canceled
-				 * or in progress
-				 *    with aio_cancel() == AIO_NOTCANCELED
-				 */
-				if (gret != AIO_NOTCANCELED) {
-					printf(TNAME
-					       " Error at aio_error(): %s\n",
-					       strerror(errno));
-					close(fd);
-					return PTS_FAIL;
-				}
+	if (gret != AIO_NOTCANCELED) {
+		printf(TNAME " Unexpected aio_cancel() return value: %s\n",
+			strerror(gret));
+		cleanup();
+		return PTS_FAIL;
+	}
 
-				in_progress = 1;
-				break;
-			case 0:
-				/* we seek one not canceled and check why.
-				 * (perhaps) it has not been canceled
-				 * because it was in progress
-				 * during the cancel operation
-				 */
-				if (gret == AIO_NOTCANCELED) {
-					printf("Test PASSED\n");
-					close(fd);
-					return PTS_PASS;
-				}
-				break;
+	/*
+	 * check write results, expected values:
+	 * - 0 for the first two writes
+	 * - EINPROGRESS for the third
+	 * - ECANCELED for the rest
+	 */
+	for (i = 0, exp_ret = 0; i < BUF_NB; i++) {
+		int ret = aio_error(&aiocb[i]);
+
+		if (i == BLOCKED_TASK) {
+			if (ret == EINPROGRESS) {
+				exp_ret = ECANCELED;
+				continue;
 			}
+
+			printf(TNAME " Bad task #%d result: %s "
+				"(expected EINPROGRESS)\n",
+				i, strerror(ret));
+			cleanup();
+			return PTS_FAIL;
 		}
-	} while (in_progress);
 
-	close(fd);
+		if (ret != exp_ret) {
+			printf(TNAME " Bad task #%d result: %s (expected %s)\n",
+				i, strerror(ret), strerror(exp_ret));
+			cleanup();
+			return PTS_FAIL;
+		}
+	}
 
-	return PTS_UNRESOLVED;
+	cleanup();
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
