@@ -1,3 +1,4 @@
+.venv/
 html/
 build/
 _static/syscalls.rst
