@@ -3,9 +3,15 @@
  * Copyright (c) International Business Machines Corp., 2001
  * Author: Wayne Boyer
  * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2001-2025
  */
-/*
- * Test that fchmod() fails and sets the proper errno values.
+
+/*\
+ * Verify that :man2:`fchmod` fails and sets the proper errno values:
+ *
+ * - EPERM -- the effective UID does not match the owner of the file, and the process is not privileged
+ * - EBADF -- file descriptor was closed
+ * - EROFS -- file descriptor opened as a read-only
  */
 
 #ifndef _GNU_SOURCE
