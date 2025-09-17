@@ -261,7 +261,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = verify_openat,
 	.tcnt = ARRAY_SIZE(test_cases),
-	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.all_filesystems = 1,
 	.needs_root = 1,
