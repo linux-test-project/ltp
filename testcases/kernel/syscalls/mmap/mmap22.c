@@ -9,26 +9,46 @@
  * Test mmap(2) with MAP_DROPPABLE flag.
  *
  * Test base on kernel selftests/mm/droppable.c
+ *
+ * Ensure that memory allocated with MAP_DROPPABLE can be reclaimed
+ * under memory pressure within a cgroup.
  */
 
 #define _GNU_SOURCE
 #include <errno.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include "tst_test.h"
 #include "lapi/mmap.h"
+#include "tst_safe_macros.h"
 
 #define MEM_LIMIT (256 * TST_MB)
 #define ALLOC_SIZE (128 * TST_MB)
 
 static struct tst_cg_group *cg_child;
+static pid_t child;
+static int page_size;
+
+static void stress_child(void)
+{
+	for (;;) {
+		char *buf = malloc(page_size);
+
+		if (!buf)
+			exit(1);
+		memset(buf, 'B', page_size);
+	}
+}
 
 static void test_mmap(void)
 {
-	size_t alloc_size = ALLOC_SIZE;
-	size_t page_size = getpagesize();
 	char *alloc;
-	pid_t child;
+	unsigned char *vec;
+	size_t npages = ALLOC_SIZE / page_size;
 
 	cg_child = tst_cg_group_mk(tst_cg, "child");
 	SAFE_CG_PRINTF(tst_cg, "memory.max", "%d", MEM_LIMIT);
@@ -38,38 +58,44 @@ static void test_mmap(void)
 		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%d", MEM_LIMIT);
 	SAFE_CG_PRINTF(cg_child, "cgroup.procs", "%d", getpid());
 
-	alloc = SAFE_MMAP(0, alloc_size, PROT_READ | PROT_WRITE,
+	alloc = SAFE_MMAP(0, ALLOC_SIZE, PROT_READ | PROT_WRITE,
 			MAP_ANONYMOUS | MAP_DROPPABLE, -1, 0);
 
-	memset(alloc, 'A', alloc_size);
-	for (size_t i = 0; i < alloc_size; i += page_size) {
-		if (alloc[i]  != 'A')
-			tst_res(TFAIL, "memset failed");
-	}
+	memset(alloc, 'A', ALLOC_SIZE);
+
+	vec = SAFE_MALLOC(npages);
 
 	child = SAFE_FORK();
-	if (!child) {
-		for (;;)
-			*(char *)malloc(page_size) = 'B';
-	}
+	if (!child)
+		stress_child();
 
-	while (1) {
-		for (size_t i = 0; i < alloc_size; i += page_size) {
-			if (!tst_remaining_runtime()) {
-				tst_res(TFAIL, "MAP_DROPPABLE did not drop memory within the timeout period.");
-				goto kill_child;
-			}
-			if (!alloc[i]) {
-				tst_res(TPASS, "MAP_DROPPABLE test pass.");
-				goto kill_child;
+	for (;;) {
+		if (!tst_remaining_runtime()) {
+			tst_res(TFAIL, "MAP_DROPPABLE did not drop pages within timeout");
+			goto cleanup;
+		}
+
+		SAFE_MINCORE(alloc, ALLOC_SIZE, vec);
+
+		for (size_t i = 0; i < npages; i++) {
+			if (!(vec[i] & 1)) {
+				tst_res(TPASS, "MAP_DROPPABLE page reclaimed by kernel");
+				goto cleanup;
 			}
 		}
+
+		usleep(100000);
 	}
 
-kill_child:
-	SAFE_KILL(child, SIGKILL);
-	SAFE_WAITPID(child, NULL, 0);
-	SAFE_MUNMAP(alloc, alloc_size);
+cleanup:
+	if (child > 0) {
+		SAFE_KILL(child, SIGKILL);
+		SAFE_WAITPID(child, NULL, 0);
+	}
+	SAFE_MUNMAP(alloc, ALLOC_SIZE);
+	free(vec);
+	SAFE_CG_PRINTF(tst_cg_drain, "cgroup.procs", "%d", getpid());
+	cg_child = tst_cg_group_rm(cg_child);
 }
 
 static void setup(void)
@@ -84,6 +110,7 @@ static void setup(void)
 		tst_brk(TBROK | TERRNO, "mmap() MAP_DROPPABLE failed");
 
 	SAFE_MUNMAP(addr, 1);
+	page_size = getpagesize();
 }
 
 static void cleanup(void)
