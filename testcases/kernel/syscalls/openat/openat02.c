@@ -47,9 +47,6 @@
 #define STR "abcdefg"
 
 static int dir_fd, fd;
-static int fd_invalid = 100;
-static int fd_atcwd = AT_FDCWD;
-static char glob_path[256];
 
 static void testfunc_append(void);
 static void testfunc_cloexec(void);
