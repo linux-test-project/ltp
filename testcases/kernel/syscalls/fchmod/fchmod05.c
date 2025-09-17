@@ -56,13 +56,8 @@ static void setup(void)
 
 	SAFE_MKDIR(TESTDIR, DIR_MODE);
 
-	if (setgroups(1, &ltpuser->pw_gid) == -1) {
-		tst_brk(TBROK, "Couldn't change supplementary group Id: %s",
-			tst_strerrno(TST_ERR));
-	}
-
+	SAFE_SETGROUPS(1, &ltpuser->pw_gid);
 	SAFE_CHOWN(TESTDIR, ltpuser->pw_uid, free_gid);
-
 	SAFE_SETEGID(ltpuser->pw_gid);
 	SAFE_SETEUID(ltpuser->pw_uid);
 
