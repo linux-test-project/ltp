@@ -105,6 +105,14 @@ static inline int open_tree(int dirfd, const char *pathname, unsigned int flags)
 }
 #endif /* HAVE_OPEN_TREE */
 
+#ifndef HAVE_OPEN_TREE_ATTR
+static inline int open_tree_attr(int dirfd, const char *pathname, unsigned int flags,
+				 struct mount_attr *attr, size_t size)
+{
+	return tst_syscall(__NR_open_tree_attr, dirfd, pathname, flags, attr, size);
+}
+#endif /* HAVE_OPEN_TREE_ATTR */
+
 #ifndef HAVE_MOUNT_SETATTR
 static inline int mount_setattr(int dirfd, const char *from_pathname, unsigned int flags,
 				struct mount_attr *attr, size_t size)

@@ -137,6 +137,7 @@ AC_CHECK_FUNCS_ONCE([ \
     move_mount \
     name_to_handle_at \
     open_tree \
+    open_tree_attr \
     openat \
     openat2 \
     pidfd_getfd \
