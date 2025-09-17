@@ -14,9 +14,8 @@
  * - EROFS -- file descriptor opened as a read-only
  */
 
-#ifndef _GNU_SOURCE
-# define _GNU_SOURCE
-#endif
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -42,22 +41,7 @@ static void verify_fchmod(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TEST(fchmod(*tc->fd, tc->mode));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "fchmod() passed unexpectedly (%li)",
-			TST_RET);
-		return;
-	}
-
-	if (TST_ERR == tcases[i].exp_errno) {
-		tst_res(TPASS | TTERRNO, "fchmod() failed expectedly");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO,
-		"fchmod() failed unexpectedly, expected %i - %s",
-		TST_ERR, tst_strerrno(TST_ERR));
+	TST_EXP_FAIL(fchmod(*tc->fd, tc->mode), tc->exp_errno);
 }
 
 static void setup(void)
