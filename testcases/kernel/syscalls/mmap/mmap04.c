@@ -58,7 +58,8 @@ static void run(unsigned int i)
 
 	addr2 = SAFE_MMAP(addr1 + pagesize, pagesize, tc->prot, tc->flags | MAP_FIXED, -1, 0);
 
-	sprintf(fmt, "%" PRIxPTR "-%%*x %%s", (uintptr_t)addr2);
+	/* A /proc/self/maps address is at least 8 hex (left zero padded) */
+	sprintf(fmt, "%08" PRIxPTR "-%%*x %%s", (uintptr_t)addr2);
 	SAFE_FILE_LINES_SCANF("/proc/self/maps", fmt, perms);
 
 	if (!strcmp(perms, tc->exp_perms)) {
