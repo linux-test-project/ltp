@@ -68,6 +68,7 @@ static int iterations = 1;
 static float duration = -1;
 static float timeout_mul = -1;
 static int reproducible_output;
+static int quiet_output;
 
 struct context {
 	int32_t lib_pid;
@@ -307,15 +308,21 @@ static void print_result(const char *file, const int lineno, int ttype,
 		res = "TBROK";
 	break;
 	case TCONF:
+		if (quiet_output)
+			return;
 		res = "TCONF";
 	break;
 	case TWARN:
 		res = "TWARN";
 	break;
 	case TINFO:
+		if (quiet_output)
+			return;
 		res = "TINFO";
 	break;
 	case TDEBUG:
+		if (quiet_output)
+			return;
 		res = "TDEBUG";
 	break;
 	default:
@@ -670,6 +677,7 @@ static void print_help(void)
 	fprintf(stderr, "LTP_DEV_FS_TYPE          Filesystem used for testing (default: %s)\n", DEFAULT_FS_TYPE);
 	fprintf(stderr, "LTP_ENABLE_DEBUG         Print debug messages (set 1 or y)\n");
 	fprintf(stderr, "LTP_REPRODUCIBLE_OUTPUT  Values 1 or y discard the actual content of the messages printed by the test\n");
+	fprintf(stderr, "LTP_QUIET                Values 1 or y will suppress printing TCONF, TWARN, TINFO, and TDEBUG messages\n");
 	fprintf(stderr, "LTP_SINGLE_FS_TYPE       Specifies filesystem instead all supported (for .all_filesystems)\n");
 	fprintf(stderr, "LTP_FORCE_SINGLE_FS_TYPE Testing only. The same as LTP_SINGLE_FS_TYPE but ignores test skiplist.\n");
 	fprintf(stderr, "LTP_TIMEOUT_MUL          Timeout multiplier (must be a number >=1)\n");
@@ -1361,6 +1369,7 @@ static void do_setup(int argc, char *argv[])
 {
 	char *tdebug_env = getenv("LTP_ENABLE_DEBUG");
 	char *reproducible_env = getenv("LTP_REPRODUCIBLE_OUTPUT");
+	char *quiet_env = getenv("LTP_QUIET");
 
 	if (!tst_test)
 		tst_brk(TBROK, "No tests to run");
@@ -1390,6 +1399,10 @@ static void do_setup(int argc, char *argv[])
 	if (reproducible_env &&
 	    (!strcmp(reproducible_env, "1") || !strcmp(reproducible_env, "y")))
 		reproducible_output = 1;
+
+	if (quiet_env &&
+	    (!strcmp(quiet_env, "1") || !strcmp(quiet_env, "y")))
+		quiet_output = 1;
 
 	assert_test_fn();
 
