@@ -6,12 +6,13 @@
 
  * Test that pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)
  *
- * 	If the Thread Execution Scheduling option is supported,
- *	and the threads involved in the lock are executing with the
- *	scheduling policies SCHED_FIFO or SCHED_RR, the calling thread shall not
- *	acquire the lock if a writer holds the lock or if writers of
- *	higher or equal priority are blocked on the lock;
- *	otherwise, the calling thread shall acquire the lock.
+ *	If the Thread Execution Scheduling option is supported,
+ *	and the threads that hold or are blocked on the lock are
+ *	executing with the scheduling policies SCHED_FIFO or SCHED_RR,
+ *	the calling thread shall not acquire the lock if a writer
+ *	holds the lock or if the calling thread does not already hold
+ *	a read lock and writers of higher or equal priority are blocked
+ *	on the lock; otherwise, the calling thread shall acquire the lock.
  *
  * In this case, we test "equal priority writer block"
  *
