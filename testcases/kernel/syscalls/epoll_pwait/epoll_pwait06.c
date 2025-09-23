@@ -36,6 +36,7 @@ static void run(void)
 		case TST_FD_DIR:
 		case TST_FD_DEV_ZERO:
 		case TST_FD_PROC_MAPS:
+		case TST_FD_BPF_MAP:
 		case TST_FD_FSOPEN:
 		case TST_FD_FSPICK:
 		case TST_FD_OPEN_TREE:
