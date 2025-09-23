@@ -9,6 +9,7 @@
  * currently implementing the features we need.
  */
 
+#include <sys/mount.h>
 #include "tst_test.h"
 #include "lapi/fs.h"
 
@@ -41,9 +42,18 @@ static void run(void)
 
 static void setup(void)
 {
-	int block_size;
+	struct stat statbuf;
 
-	block_size = tst_dev_block_size(MNTPOINT);
+	SAFE_MKDIR(MNTPOINT, 0755);
+	TEST(mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL));
+
+	if (TST_RET == -1 && TST_ERR == EOPNOTSUPP)
+		tst_brk(TCONF, "Kernel does not support XFS reflinks");
+
+	if (TST_RET)
+		tst_brk(TBROK | TTERRNO, "Mount failed");
+
+	SAFE_STAT(MNTPOINT, &statbuf);
 
 	dfd = SAFE_OPEN(MNTPOINT, O_RDONLY);
 	fd = SAFE_CREAT(MNTPOINT "/" FILENAME, 0777);
@@ -52,8 +62,8 @@ static void setup(void)
 
 	xattr.fsx_xflags |= FS_XFLAG_EXTSIZE;
 	xattr.fsx_xflags |= FS_XFLAG_COWEXTSIZE;
-	xattr.fsx_extsize = BLOCKS * block_size;
-	xattr.fsx_cowextsize = BLOCKS * block_size;
+	xattr.fsx_extsize = BLOCKS * statbuf.st_blksize;
+	xattr.fsx_cowextsize = BLOCKS * statbuf.st_blksize;
 	xattr.fsx_projid = PROJID;
 
 	SAFE_IOCTL(fd, FS_IOC_FSSETXATTR, &xattr);
@@ -72,17 +82,24 @@ static void cleanup(void)
 
 	if (dfd != -1)
 		SAFE_CLOSE(dfd);
+
+	if (tst_is_mounted(MNTPOINT))
+		SAFE_UMOUNT(MNTPOINT);
 }
 
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.mount_device = 1,
+	.format_device = 1,
 	.filesystems = (struct tst_fs []) {
-		{.type = "xfs"},
+		{
+			.type = "xfs",
+			.mkfs_opts = (const char *const[]){
+				"-m", "reflink=1", NULL
+			},
+		},
 		{}
 	},
 	.bufs = (struct tst_buffers []) {
