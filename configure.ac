@@ -270,6 +270,11 @@ AC_CHECK_TYPES([struct file_attr],,,[#include <linux/fs.h>])
 
 AC_CHECK_TYPES([struct fsxattr],,,[#include <linux/fs.h>])
 
+AC_CHECK_TYPES([struct sockaddr_vm],,,[
+#include <sys/socket.h>
+#include <linux/vm_sockets.h>
+])
+
 # Tools knobs
 
 # Bash
