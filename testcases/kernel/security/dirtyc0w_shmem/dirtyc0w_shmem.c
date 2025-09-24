@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include <pwd.h>
 
+#include "tst_kvercmp.h"
 #include "tst_test.h"
 
 #define TMP_DIR "tmp_dirtyc0w_shmem"
@@ -41,6 +42,9 @@ static void sighandler(int sig)
 
 static void setup(void)
 {
+	if (tst_kvercmp(5, 16, 0) < 0) {
+		tst_brk(TCONF, "Test requires kernel 5.16.0 or newer for CVE-2022-2590 fix");
+	}
 	struct passwd *pw;
 
 	umask(0);
@@ -99,7 +103,9 @@ static void dirtyc0w_shmem_test(void)
 
 static void cleanup(void)
 {
-	SAFE_UMOUNT(TMP_DIR);
+	if (tst_kvercmp(5, 16, 0) >= 0) {
+		SAFE_UMOUNT(TMP_DIR);
+	}
 }
 
 static struct tst_test test = {
