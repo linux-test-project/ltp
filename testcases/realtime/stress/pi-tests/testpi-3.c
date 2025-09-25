@@ -365,7 +365,6 @@ int main(int argc, char *argv[])
 
 	printf("Start %s\n", argv[0]);
 
-#if HAS_PRIORITY_INHERIT
 	if (!nopi) {
 		pthread_mutexattr_t mutexattr;
 		int protocol;
@@ -386,7 +385,6 @@ int main(int argc, char *argv[])
 			printf("Failed to init mutex: %d\n", retc);
 		}
 	}
-#endif
 
 	startThread(&arg1);
 	startThread(&arg2);
