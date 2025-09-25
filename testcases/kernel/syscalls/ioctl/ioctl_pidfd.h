@@ -9,6 +9,34 @@
 #include "tst_test.h"
 #include "lapi/pidfd.h"
 
+static inline int ioctl_pidfd_get_info_supported(void)
+{
+	pid_t pid;
+	int pidfd, ret;
+	int supported = 0;
+	struct pidfd_info info;
+
+	if (tst_kvercmp(6, 13, 0) >= 0)
+		return 1;
+
+	memset(&info, 0, sizeof(struct pidfd_info));
+
+	pid = SAFE_FORK();
+	if (!pid)
+		exit(100);
+
+	pidfd = SAFE_PIDFD_OPEN(pid, 0);
+
+	ret = ioctl(pidfd, PIDFD_GET_INFO, &info);
+	SAFE_WAITPID(pid, NULL, 0);
+
+	if (ret != -1)
+		supported = 1;
+
+	SAFE_CLOSE(pidfd);
+	return supported;
+}
+
 static inline int ioctl_pidfd_info_exit_supported(void)
 {
 	int ret;
