@@ -39,7 +39,11 @@ static void run(void)
 		return;
 
 	TST_EXP_EQ_LI(st_mount->mask, STATMOUNT_MNT_NS_ID);
+#if !defined(HAVE_STRUCT_STATMOUNT) || defined(HAVE_STRUCT_STATMOUNT_MNT_NS_ID)
 	TST_EXP_EQ_LI(st_mount->mnt_ns_id, mnt_ns_id);
+#else
+	tst_res(TCONF, "statmount.mnt_ns_id not available in current headers");
+#endif
 }
 
 static void setup(void)
