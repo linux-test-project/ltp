@@ -264,6 +264,8 @@ AC_CHECK_TYPES([struct cachestat],,,[#include <sys/mman.h>])
 # Defined in <linux/mount.h>, but include/lapi/mount.h includes <sys/mount.h> */
 AC_CHECK_TYPES([struct mnt_id_req],,,[#include <sys/mount.h>])
 AC_CHECK_TYPES([struct statmount],,,[#include <sys/mount.h>])
+AC_CHECK_MEMBERS([struct statmount.mnt_ns_id],,,[#include <unistd.h>
+#include <linux/mount.h>])
 
 AC_CHECK_TYPES([struct pidfd_info],,,[#include <sys/pidfd.h>])
 AC_CHECK_TYPES([struct file_attr],,,[#include <linux/fs.h>])
