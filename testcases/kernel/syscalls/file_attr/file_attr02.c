@@ -15,7 +15,7 @@
 
 #define MNTPOINT "mntpoint"
 #define FILENAME "ltp_file"
-#define BLOCKS 1024
+#define BLOCKS 128
 #define PROJID 16
 
 static int fd = -1;
