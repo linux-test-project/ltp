@@ -30,6 +30,7 @@
    developers/build_system
    developers/debugging
    developers/documentation
+   developers/todo
 
 .. toctree::
    :maxdepth: 3
@@ -96,6 +97,9 @@ For developers
 
 :doc:`developers/documentation`
    How to use and develop LTP documentation
+
+:doc:`developers/todo`
+   List of tasks maintainers are working on
 
 For maintainers
 ---------------
