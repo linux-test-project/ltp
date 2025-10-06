@@ -13,9 +13,8 @@
  * writing fails with ETXTBSY.
  */
 
-#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>

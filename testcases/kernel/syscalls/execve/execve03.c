@@ -35,9 +35,8 @@
  *		permissions - fails with ENOEXEC.
  */
 
-#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif
+
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
