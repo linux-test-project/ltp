@@ -7,8 +7,8 @@
  */
 
 /*\
- * This tests the functionality of the execve(2) system call by spawning
- * a few children, each of which would execute "execve_child" simultaneously,
+ * This tests the functionality of the execve(2) :man2:`execve` call by spawning
+ * a few children, each of which would execute "execve_child" binary simultaneously,
  * and finally the parent ensures that they terminated correctly.
  */
 

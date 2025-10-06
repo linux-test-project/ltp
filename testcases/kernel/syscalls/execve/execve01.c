@@ -1,21 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2018 Linux Test Project
+ * Copyright (c) 2018-2025 Linux Test Project
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
- *    AUTHOR		: William Roske
- *    CO-PILOT		: Dave Fenner
+ * Authors: William Roske, Dave Fenner
  */
 
-#include <errno.h>
 #include <string.h>
-#include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
 #include "tst_test.h"
+
+/*\
+ * Test :man2:`execve` passes correctly argv[1] and environment variable to the
+ * executed binary.
+ */
 
 static void verify_execve(void)
 {

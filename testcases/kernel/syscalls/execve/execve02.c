@@ -8,10 +8,10 @@
  *  21/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  */
 
-/*
- * Attempt to execve(2) an executable owned by root with no execute permissions
- * for the other users, fails when execve(2) is used as a non-root user, the
- * errno should be EACCES.
+/*\
+ * Attempt to :man2:`execve` an executable owned by root with no execute
+ * permissions for the other users, fails when :man2:`execve` is used as
+ * a non-root user, the errno should be EACCES.
  */
 
 #define _GNU_SOURCE

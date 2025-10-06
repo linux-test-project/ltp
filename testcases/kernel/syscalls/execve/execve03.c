@@ -6,33 +6,15 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- *	Testcase to check execve sets the following errnos correctly:
- *	1.	ENAMETOOLONG
- *	2.	ENOENT
- *	3.	ENOTDIR
- *	4.	EFAULT
- *	5.	EACCES
- *	6.	ENOEXEC
+/*\
+ * Test to check :man2:`execve` sets the following errnos correctly:
  *
- * ALGORITHM
- *	1.	Attempt to execve(2) a file whose name is more than
- *		VFS_MAXNAMLEN fails with ENAMETOOLONG.
- *
- *	2.	Attempt to execve(2) a file which doesn't exist fails with
- *		ENOENT.
- *
- *	3.	Attempt to execve(2) a pathname (executabl) comprising of a
- *		directory, which doesn't exist fails with ENOTDIR.
- *
- *	4.	Attempt to execve(2) a filename not within the address space
- *		of the process fails with EFAULT.
- *
- *	5.	Attempt to execve(2) a filename that does not have executable
- *		permission - fails with EACCES.
- *
- *	6.	Attempt to execve(2) a zero length file with executable
- *		permissions - fails with ENOEXEC.
+ * 1. ENAMETOOLONG -- the file name is greater than VFS_MAXNAMELEN
+ * 2. ENOENT -- the filename does not exist
+ * 3. ENOTDIR -- the path contains a directory name which doesn't exist
+ * 4. EFAULT -- the filename isn't part of the process address space
+ * 5. EACCES -- the filename does not have execute permission
+ * 6. ENOEXEC -- the file is zero length with execute permissions
  */
 
 #define _GNU_SOURCE
@@ -66,11 +48,8 @@ static struct tcase {
 	{no_dir, ENOENT},
 	/* the path contains a directory name which doesn't exist - ENOTDIR */
 	{test_name3, ENOTDIR},
-	/* the filename isn't part of the process address space - EFAULT */
 	{NULL, EFAULT},
-	/* the filename does not have execute permission - EACCES */
 	{test_name5, EACCES},
-	/* the file is zero length with execute permissions - ENOEXEC */
 	{test_name6, ENOEXEC}
 };
 
