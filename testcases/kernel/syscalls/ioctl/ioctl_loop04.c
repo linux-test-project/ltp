@@ -60,7 +60,7 @@ static void verify_ioctl_loop(void)
 	TST_ASSERT_INT(sys_loop_sizepath, NEW_SIZE/512);
 
 	SAFE_CLOSE(file_fd);
-	tst_detach_device_by_fd(dev_path, dev_fd);
+	tst_detach_device_by_fd(dev_path, &dev_fd);
 	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	unlink("test.img");
 	attach_flag = 0;

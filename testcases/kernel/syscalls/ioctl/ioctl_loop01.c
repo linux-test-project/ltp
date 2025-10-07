@@ -99,13 +99,14 @@ static void verify_ioctl_loop(void)
 	TST_ASSERT_INT(autoclear_path, 0);
 	TST_ASSERT_STR(backing_path, backing_file_path);
 
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
+
 	check_loop_value(SET_FLAGS, GET_FLAGS, 1);
 
 	tst_res(TINFO, "Test flag can be clear");
 	check_loop_value(0, LO_FLAGS_PARTSCAN, 0);
 
-	tst_detach_device_by_fd(dev_path, dev_fd);
-	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
+	tst_detach_device_by_fd(dev_path, &dev_fd);
 
 	attach_flag = 0;
 }
@@ -122,7 +123,6 @@ static void setup(void)
 	sprintf(sys_loop_partpath, "/sys/block/loop%d/loop%dp1", dev_num, dev_num);
 	backing_file_path = tst_tmpdir_genpath("test.img");
 	sprintf(loop_partpath, "%sp1", dev_path);
-	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 }
 
 static void cleanup(void)

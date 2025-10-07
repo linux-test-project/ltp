@@ -72,15 +72,17 @@ int tst_attach_device(const char *dev_path, const char *file_path);
 uint64_t tst_get_device_size(const char *dev_path);
 
 /*
- * Detaches a file from a loop device fd. @dev_fd needs to be the
- * last descriptor opened. Call to this function will close it,
- * it is up to caller to open it again for further usage.
+ * Detaches a file from a loop device by a fd.
+ *
+ * The dev_fd needs to be the last file descriptor opened for the device. Call
+ * to this function will close dev_fd and set it to -1 in order to avoid
+ * incorrect usage after it's closed.
  *
  * @dev_path Path to the loop device e.g. /dev/loop0
- * @dev_fd a open fd for the loop device
+ * @dev_fd An open fd for the loop device, set to -1 after the completion.
  * @return Zero on succes, non-zero otherwise.
  */
-int tst_detach_device_by_fd(const char *dev_path, int dev_fd);
+int tst_detach_device_by_fd(const char *dev_path, int *dev_fd);
 
 /*
  * Detaches a file from a loop device.
