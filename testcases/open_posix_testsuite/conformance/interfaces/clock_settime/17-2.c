@@ -16,7 +16,7 @@
  *   unassigned value = -1073743192 (ex. of what gcc will set to)
  *   unassigned value = 1073743192 (ex. of what gcc will set to)
  *   -1
- *   17 (currently not = to any clock)
+ *   50 (hopefully big enough value not to be a valid clock id)
  *
  * The date chosen is Nov 12, 2002 ~11:13am (date when test was first
  * written).
@@ -34,7 +34,7 @@
 
 static int invalid_tests[NUMINVALIDTESTS] = {
 	INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
-	1073743192, -1, 17
+	1073743192, -1, 50
 };
 
 int main(void)

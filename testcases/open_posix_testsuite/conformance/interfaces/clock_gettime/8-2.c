@@ -15,7 +15,7 @@
  *   unassigned value = -1073743192 (ex. of what gcc will set to)
  *   unassigned value = 1073743192 (ex. of what gcc will set to)
  *   -1
- *   17 (currently not = to any clock)
+ *   50 (hopefully big enough value not to be a valid clock id)
  */
 #include <stdio.h>
 #include <time.h>
@@ -27,7 +27,7 @@
 
 static int invalid_tests[NUMINVALIDTESTS] = {
 	INT32_MIN, INT32_MAX, 2147483647, -2147483647, -1073743192,
-	1073743192, -1, 17
+	1073743192, -1, 50
 };
 
 int main(void)
