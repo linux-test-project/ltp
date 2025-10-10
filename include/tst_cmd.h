@@ -1,18 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * Copyright (c) 2015-2016 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2016-2025
  */
 
 #ifndef TST_CMD_H__
 #define TST_CMD_H__
 
+/**
+ * enum tst_cmd_flags - flags for tst_cmd() and tst_cmd_fds().
+ *
+ * @TST_CMD_PASS_RETVAL: return the program exit code, otherwise it will call
+ * cleanup_fn() if the program exit code is not zero.
+ * @TST_CMD_TCONF_ON_MISSING: exit with :c:enum:`TCONF <tst_res_flags>` if
+ * program is not in ``PATH``.
+ */
 enum tst_cmd_flags {
-	/*
-	 * return the program exit code, otherwise it will call cleanup_fn() if the
-	 * program exit code is not zero.
-	 */
 	TST_CMD_PASS_RETVAL = 1,
-
-	/* exit with TCONF if program is not in path */
 	TST_CMD_TCONF_ON_MISSING = 2,
 };
 
@@ -94,8 +97,13 @@ static inline int tst_cmd(void (cleanup_fn)(void),
 }
 #endif
 
-/* Wrapper function for system(3), ignorcing SIGCHLD signal.
- * @param command The command to be run.
+/**
+ * tst_system() - Wrapper function for :man3:`system`, ignorcing ``SIGCHLD``
+ * signal.
+ *
+ * @command: The command to be run.
+ *
+ * Return: The system() return code.
  */
 int tst_system(const char *command);
 

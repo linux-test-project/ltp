@@ -25,6 +25,10 @@ Checkpoints
 
 .. kernel-doc:: ../../include/tst_checkpoint.h
 
+Commands
+--------
+.. kernel-doc:: ../../include/tst_cmd.h
+
 Crypto
 ------
 .. kernel-doc:: ../../include/tst_crypto.h
