@@ -30,7 +30,7 @@
 
 #define MOUNT_POINT "mount_ext"
 #define TEST_FILE MOUNT_POINT"/test_file.txt"
-#define SIZE 2
+#define SIZE 3
 
 static int fd;
 
