@@ -38,6 +38,9 @@ int tst_cmd_fds_(void (cleanup_fn)(void),
 /*
  * Executes tst_cmd_fds() and redirects its output to a file.
  *
+ * @param argv A list of two (at least program name + NULL) or more pointers that
+ * represent the argument list to the new program. The array of pointers
+ * must be terminated by a NULL pointer.
  * @param stdout_path Path where to redirect stdout. Set NULL if redirection is
  * not needed.
  * @param stderr_path Path where to redirect stderr. Set NULL if redirection is
