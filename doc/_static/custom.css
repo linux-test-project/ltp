@@ -4,6 +4,7 @@
 }
 
 /* remove margin for multiline cells */
-.rst-content table td div.line-block {
+.rst-content table td div.line-block,
+.rst-content table td ul {
     margin-bottom: 0;
 }
