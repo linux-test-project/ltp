@@ -152,11 +152,10 @@ static int page_present(void *p)
 
 static void clear_cache(void *start, int len)
 {
-#if HAVE_BUILTIN_CLEAR_CACHE == 1
-	__builtin___clear_cache(start, start + len);
+#ifdef HAVE_CLEAR_CACHE
+	__clear_cache(start, start + len);
 #else
-	tst_brkm(TCONF, cleanup,
-		"compiler doesn't have __builtin___clear_cache()");
+	tst_brkm(TCONF, cleanup, "compiler doesn't have __clear_cache()");
 #endif
 }
 
