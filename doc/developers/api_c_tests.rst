@@ -1,5 +1,5 @@
 .. SPDX-License-Identifier: GPL-2.0-or-later
-.. Copyright (c) Linux Test Project, 2024
+.. Copyright (c) Linux Test Project, 2024-2025
 
 .. Include headers in this file with:
 .. .. kernel-doc:: ../../include/tst_test.h
@@ -41,6 +41,7 @@ Guarded buffers
 Kernel
 ------
 .. kernel-doc:: ../../include/tst_kernel.h
+.. kernel-doc:: ../../include/tst_kvercmp.h
 
 NUMA
 ----
