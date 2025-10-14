@@ -361,7 +361,7 @@ extern int TST_PASS;
  * @...: A printf-like parameters.
  *
  * This macro calls the SCALL with a TESTPTR() macro and additionaly prints
- * pass or fail message after checking the return value against (void *)-1.
+ * pass or fail message after checking the return value against (void \*)-1.
  * Apart from TST_ERR and TST_RET_PTR set by the TESTPTR() macro TST_PASS
  * global variable is set as well based on the outcome.
  *
@@ -560,14 +560,14 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 
 
 /**
- * TST_EXP_FAIL_PTR_VOID() - Test syscall to fail with expected errno and return a (void *)-1 pointer.
+ * TST_EXP_FAIL_PTR_VOID() - Test syscall to fail with expected errno and return a (void \*)-1 pointer.
  *
  * @SCALL: Tested syscall.
  * @EXP_ERR: Expected errno.
  * @...: A printf-like parameters.
  *
  * This macro calls the SCALL with a TESTPTR() macro and additionaly prints
- * pass or fail message after checking the return value against (void *)-1 and
+ * pass or fail message after checking the return value against (void \*)-1 and
  * errno.
  *
  * Apart from TST_ERR and TST_RET_PTR set by the TESTPTR() macro TST_PASS
@@ -585,7 +585,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	} while (0)
 
 /**
- * TST_EXP_FAIL_PTR_VOID_ARR() - Test syscall to fail with expected errnos and return a (void *)-1 pointer.
+ * TST_EXP_FAIL_PTR_VOID_ARR() - Test syscall to fail with expected errnos and return a (void \*)-1 pointer.
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
