@@ -62,13 +62,14 @@ static inline void set_global_mempolicy(int mempolicy)
 static void set_global_mempolicy(int mempolicy LTP_ATTRIBUTE_UNUSED) { }
 #endif
 
-static int alloc_mem(long int length, int testcase)
+static int alloc_mem(size_t length, int testcase)
 {
 	char *s;
-	long i, pagesz = getpagesize();
+	size_t i;
+	long pagesz = getpagesize();
 	int loop = 10;
 
-	tst_res(TINFO, "thread (%lx), allocating %ld bytes.",
+	tst_res(TINFO, "thread (%lx), allocating %zu bytes.",
 		(unsigned long) pthread_self(), length);
 
 	s = mmap(NULL, length, PROT_READ | PROT_WRITE,
@@ -111,7 +112,7 @@ static void child_alloc(int testcase, int lite, int threads)
 	pthread_t *th;
 
 	if (lite) {
-		int ret = alloc_mem(TESTMEM * 2 + TST_MB, testcase);
+		int ret = alloc_mem((size_t)TESTMEM * 2 + TST_MB, testcase);
 		exit(ret);
 	}
 
