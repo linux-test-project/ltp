@@ -8,7 +8,8 @@ TST_TESTFUNC=prepare_lvm
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="mount pvcreate vgcreate lvcreate"
 
-LVM_DIR="${LVM_DIR:-/tmp}"
+TMPDIR="${TMPDIR:-/tmp}"
+LVM_DIR="${LVM_DIR:-$TMPDIR}"
 LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
 LVM_IMGDIR="$LVM_DIR/ltp/imgfiles"
 
