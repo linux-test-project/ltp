@@ -131,24 +131,41 @@ static void overcommit_memory_test(void)
 	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 2, 1);
 
 	update_mem_commit();
-	alloc_and_check(commit_left * 2, EXPECT_FAIL);
-	alloc_and_check(commit_limit + total_batch_size, EXPECT_FAIL);
-	update_mem_commit();
-	alloc_and_check(commit_left / 2, EXPECT_PASS);
+	/* Skip tests that would overflow or exceed 32-bit address space */
+	if (tst_kernel_bits() == 64 || (unsigned long)commit_left <= TST_GB / TST_KB) {
+		alloc_and_check(commit_left * 2, EXPECT_FAIL);
+		alloc_and_check(commit_limit + total_batch_size, EXPECT_FAIL);
+		update_mem_commit();
+		alloc_and_check(commit_left / 2, EXPECT_PASS);
+	} else {
+		tst_res(TCONF, "Skipping large allocation tests due to address space limits");
+	}
 
 	/* start to test overcommit_memory=0 */
 	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 0, 1);
 
 	update_mem();
 	alloc_and_check(free_total / 2, EXPECT_PASS);
-	alloc_and_check(sum_total * 2, EXPECT_FAIL);
+	/* Skip if sum_total * 2 would exceed address space.
+	 * On 32-bit, skip when sum_total > ULONG_MAX/4 (~1GB).
+	 * Most 32-bit systems with <=1GB RAM can map 2x that in 3GB vaddr space.
+	 * Systems with 2GB+ RAM likely cannot fit allocations in vaddr space. */
+	if (tst_kernel_bits() == 64 || (unsigned long)sum_total <= TST_GB / TST_KB) {
+		alloc_and_check(sum_total * 2, EXPECT_FAIL);
+	} else {
+		tst_res(TCONF, "Skipping large allocation test due to address space limits");
+	}
 
 	/* start to test overcommit_memory=1 */
 	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 1, 1);
 
 	alloc_and_check(sum_total / 2, EXPECT_PASS);
-	alloc_and_check(sum_total, EXPECT_PASS);
-	alloc_and_check(sum_total * 2, EXPECT_PASS);
+	if (tst_kernel_bits() == 64 || (unsigned long)sum_total <= TST_GB / TST_KB) {
+		alloc_and_check(sum_total, EXPECT_PASS);
+		alloc_and_check(sum_total * 2, EXPECT_PASS);
+	} else {
+		tst_res(TCONF, "Skipping large allocation tests due to address space limits");
+	}
 
 }
 
