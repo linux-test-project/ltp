@@ -9,6 +9,8 @@
 /*\
  * - Test fanotify pre-content events
  * - Test respond to permission/pre-content events with cutsom error code
+ * - Test count/offset info bug that was fixed by commit
+ *   28bba2c2935e2 "fsnotify: Pass correct offset to fsnotify_mmap_perm()"
  */
 
 #define _GNU_SOURCE
@@ -44,6 +46,8 @@
 #define FILE_EXEC_PATH MOUNT_PATH"/"TEST_APP
 
 static char fname[BUF_SIZE];
+static char symlnk[BUF_SIZE];
+static char fdpath[BUF_SIZE];
 static char buf[BUF_SIZE];
 static volatile int fd_notify;
 static size_t page_sz;
@@ -55,6 +59,8 @@ static char event_buf[EVENT_BUF_LEN];
 struct event {
 	unsigned long long mask;
 	unsigned int response;
+	unsigned long pgcount;
+	unsigned long pgoff;
 };
 
 static struct tcase {
@@ -68,11 +74,11 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
-			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
-			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY)}
+			{FAN_OPEN_PERM, FAN_ALLOW, 0, 0},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 0, 0},
+			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO), 0, 0},
+			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY), 0, 0}
 		}
 	},
 	{
@@ -80,10 +86,10 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(INODE),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
-			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
-			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY)}
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_DENY, 0, 0},
+			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO), 0, 0},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY), 0, 0}
 		}
 	},
 	{
@@ -91,11 +97,11 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
-			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
-			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY)}
+			{FAN_OPEN_PERM, FAN_ALLOW, 0, 0},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 1, 1},
+			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO), 0, 0},
+			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY), 0, 0}
 		}
 	},
 	{
@@ -103,10 +109,10 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(MOUNT),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
-			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
-			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY)}
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_DENY, 0, 0},
+			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO), 0, 0},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY), 0, 0}
 		}
 	},
 	{
@@ -114,11 +120,11 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 		FAN_OPEN_PERM | FAN_PRE_ACCESS,
 		{
-			{FAN_OPEN_PERM, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
-			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY)}
+			{FAN_OPEN_PERM, FAN_ALLOW, 0, 0},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 1, 1},
+			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO), 0, 0},
+			{FAN_OPEN_PERM, FAN_DENY_ERRNO(EBUSY), 0, 0}
 		}
 	},
 	{
@@ -126,10 +132,10 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM,
 		{
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
-			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO)},
-			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY)}
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_DENY, 0, 0},
+			{FAN_PRE_ACCESS, FAN_DENY_ERRNO(EIO), 0, 0},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY_ERRNO(EBUSY), 0, 0}
 		}
 	},
 	{
@@ -137,10 +143,10 @@ static struct tcase {
 		INIT_FANOTIFY_MARK_TYPE(PARENT),
 		FAN_PRE_ACCESS | FAN_OPEN_EXEC_PERM | FAN_EVENT_ON_CHILD,
 		{
-			{FAN_PRE_ACCESS, FAN_ALLOW},
-			{FAN_PRE_ACCESS, FAN_DENY},
-			{FAN_PRE_ACCESS, FAN_DENY},
-			{FAN_OPEN_EXEC_PERM, FAN_DENY}
+			{FAN_PRE_ACCESS, FAN_ALLOW, 2, 100},
+			{FAN_PRE_ACCESS, FAN_DENY, 0, 0},
+			{FAN_PRE_ACCESS, FAN_DENY, 0, 0},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY, 0, 0}
 		}
 	},
 	{
@@ -156,7 +162,7 @@ static struct tcase {
 		FAN_PRE_ACCESS,
 		{
 			/* This allows multiple FAN_PRE_ACCESS events */
-			{FAN_PRE_ACCESS, FAN_ALLOW},
+			{FAN_PRE_ACCESS, FAN_ALLOW, 0, 0},
 		}
 	},
 };
@@ -190,17 +196,19 @@ static void generate_events(struct tcase *tc)
 	 */
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 
-	exp_errno = expected_errno(event->response);
-	event++;
-
+	exp_errno = 0;
+	if (event->mask & FAN_PRE_ACCESS) {
+		exp_errno = expected_errno(event->response);
+		event++;
+	}
 	exp_ret = exp_errno ? -1 : 1;
-	errno = 0;
 	/*
 	 * FAN_PRE_ACCESS events are reported on map() and write(), but should
 	 * not be reported when faulting in the user page at offset page_sz*100
 	 * that is used as an input buffer to the write() syscall.
 	 */
-	addr = SAFE_MMAP(NULL, page_sz, PROT_READ, MAP_PRIVATE, fd, page_sz*100);
+	errno = 0;
+	addr = SAFE_MMAP(NULL, page_sz*2, PROT_READ, MAP_PRIVATE, fd, page_sz*100);
 	if (!addr || errno != exp_errno) {
 		tst_res(TFAIL, "mmap() got errno %d (expected %d)", errno, exp_errno);
 		exit(3);
@@ -208,12 +216,14 @@ static void generate_events(struct tcase *tc)
 		tst_res(TINFO, "mmap() got errno %d as expected", errno);
 	}
 
-	exp_errno = expected_errno(event->response);
-	event++;
-
+	exp_errno = 0;
+	if (event->mask & FAN_PRE_ACCESS) {
+		exp_errno = expected_errno(event->response);
+		event++;
+	}
 	exp_ret = exp_errno ? -1 : 1;
 	errno = 0;
-	if (write(fd, addr, 1) != exp_ret || errno != exp_errno) {
+	if (pwrite(fd, addr, 1, page_sz) != exp_ret || errno != exp_errno) {
 		tst_res(TFAIL, "write() got errno %d (expected %d)", errno, exp_errno);
 		exit(3);
 	} else if (errno == exp_errno) {
@@ -222,12 +232,14 @@ static void generate_events(struct tcase *tc)
 
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 
-	exp_errno = expected_errno(event->response);
-	event++;
-
+	exp_errno = 0;
+	if (event->mask & FAN_PRE_ACCESS) {
+		exp_errno = expected_errno(event->response);
+		event++;
+	}
 	exp_ret = exp_errno ? -1 : BUF_SIZE;
 	errno = 0;
-	if (read(fd, buf, BUF_SIZE) != exp_ret || errno != exp_errno) {
+	if (pread(fd, buf, BUF_SIZE, page_sz*2) != exp_ret || errno != exp_errno) {
 		tst_res(TFAIL, "read() got errno %d (expected %d)", errno, exp_errno);
 		exit(4);
 	} else if (errno == exp_errno) {
@@ -236,9 +248,11 @@ static void generate_events(struct tcase *tc)
 
 	SAFE_CLOSE(fd);
 
-	exp_errno = expected_errno(event->response);
-	event++;
-
+	exp_errno = 0;
+	if (event->mask & (FAN_OPEN_PERM | FAN_OPEN_EXEC_PERM)) {
+		exp_errno = expected_errno(event->response);
+		event++;
+	}
 	/*
 	 * If execve() is allowed by permission events, check if executing a
 	 * file that open for write is allowed.
@@ -346,6 +360,21 @@ static int setup_mark(unsigned int n)
 	return 0;
 }
 
+static char *event_fdpath(struct fanotify_event_metadata *event)
+{
+	int len = 0;
+
+	if (event->fd < 0)
+		return "";
+
+	sprintf(symlnk, "/proc/self/fd/%d", event->fd);
+	len = readlink(symlnk, fdpath, sizeof(fdpath));
+	if (len < 0)
+		len = 0;
+	fdpath[len] = 0;
+	return fdpath;
+}
+
 static void test_fanotify(unsigned int n)
 {
 	int ret, len = 0, i = 0, test_num = 0;
@@ -366,6 +395,7 @@ static void test_fanotify(unsigned int n)
 	while (test_num < EVENT_SET_MAX && fd_notify != -1) {
 		struct fanotify_event_metadata *event;
 		struct fanotify_event_info_range *range;
+		const char *filename;
 
 		if (i == len) {
 			/* Get more events */
@@ -395,6 +425,7 @@ static void test_fanotify(unsigned int n)
 
 		event = (struct fanotify_event_metadata *)&event_buf[i];
 		range = (struct fanotify_event_info_range *)(event + 1);
+		filename = event_fdpath(event);
 		/* Permission events cannot be merged, so the event mask
 		 * reported should exactly match the event mask within the
 		 * event set.
@@ -402,41 +433,53 @@ static void test_fanotify(unsigned int n)
 		if (event->mask != event_set[test_num].mask) {
 			tst_res(TFAIL,
 				"got event: mask=%llx (expected %llx) "
-				"pid=%u fd=%d",
+				"pid=%u fd=%d [%s]",
 				(unsigned long long)event->mask,
 				event_set[test_num].mask,
-				(unsigned int)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd, filename);
 		} else if (event->pid != child_pid) {
 			tst_res(TFAIL,
 				"got event: mask=%llx pid=%u "
-				"(expected %u) fd=%d",
+				"(expected %u) fd=%d [%s]",
 				(unsigned long long)event->mask,
 				(unsigned int)event->pid,
 				(unsigned int)child_pid,
-				event->fd);
+				event->fd, filename);
 		} else if (event->mask & LTP_PRE_CONTENT_EVENTS) {
+			unsigned long long expected_count = event_set[test_num].pgcount * page_sz;
+			unsigned long long expected_offset = event_set[test_num].pgoff * page_sz;
+
 			if (event->event_len < sizeof(*event) + sizeof(*range) ||
 			    range->hdr.info_type != FAN_EVENT_INFO_TYPE_RANGE) {
 				tst_res(TFAIL,
 					"got event: mask=%llx pid=%u len=%d fd=%d "
-					"(expected range info)",
+					"(expected range info) [%s]",
 					(unsigned long long)event->mask,
 					(unsigned int)event->pid,
 					(unsigned int)event->event_len,
-					event->fd);
+					event->fd, filename);
+			} else if (expected_count && (range->count != expected_count ||
+						      range->offset != expected_offset)) {
+				tst_res(TFAIL,
+					"got event: mask=%llx pid=%u fd=%d "
+					"count=%llu offset=%llu (expected %llu@%llu) [%s]",
+					(unsigned long long)event->mask,
+					(unsigned int)event->pid, event->fd,
+					range->count, range->offset,
+					expected_count, expected_offset, filename);
 			} else {
 				tst_res(TPASS,
 					"got event: mask=%llx pid=%u fd=%d "
-					"offset=%llu count=%llu",
+					"count=%llu offset=%llu [%s]",
 					(unsigned long long)event->mask,
 					(unsigned int)event->pid, event->fd,
-					range->offset, range->count);
+					range->count, range->offset, filename);
 			}
 		} else {
 			tst_res(TPASS,
-				"got event: mask=%llx pid=%u fd=%d",
+				"got event: mask=%llx pid=%u fd=%d [%s]",
 				(unsigned long long)event->mask,
-				(unsigned int)event->pid, event->fd);
+				(unsigned int)event->pid, event->fd, filename);
 		}
 
 		/* Write response to the permission event */
@@ -481,7 +524,7 @@ static void setup(void)
 
 	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
-	SAFE_TRUNCATE(fname, page_sz*101);
+	SAFE_TRUNCATE(fname, page_sz*102);
 
 	REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(FAN_CLASS_PRE_CONTENT, FAN_MARK_FILESYSTEM,
 						FAN_PRE_ACCESS, fname);
@@ -511,7 +554,11 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.all_filesystems = 1,
 	.mntpoint = MOUNT_PATH,
-	.resource_files = resource_files
+	.resource_files = resource_files,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "28bba2c2935e2"},
+		{}
+	}
 };
 
 #else
