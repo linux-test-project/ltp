@@ -45,7 +45,7 @@ char tst_kconfig_get(const char *confname);
  * function checks command version whether meets this requirement.
  * If not, case breaks if brk_nosupp is defined.
  */
-int tst_check_cmd(const char *cmd, const int brk_nosupp);
+bool tst_check_cmd(const char *cmd, const int brk_nosupp);
 
 /*
  * Returns NULL-terminated array of kernel-supported filesystems.
