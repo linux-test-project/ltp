@@ -23,24 +23,23 @@ static time_t *targs[] = {
 static void verify_time(unsigned int i)
 {
 	time_t *tloc = targs[i];
+	time_t ret_time = time(tloc);
 
-	TEST(time(tloc));
-
-	if (TST_RET == -1) {
+	if (ret_time == -1) {
 		tst_res(TFAIL | TTERRNO, "time()");
 		return;
 	}
 
 	if (!tloc) {
-		tst_res(TPASS, "time() returned value %ld", TST_RET);
-	} else if (*tloc == TST_RET) {
+		tst_res(TPASS, "time() returned value %jd", (intmax_t) ret_time);
+	} else if (*tloc == ret_time) {
 		tst_res(TPASS,
-			"time() returned value %ld, stored value %jd are same",
-			TST_RET, (intmax_t) *tloc);
+			"time() returned value %jd, stored value %jd are same",
+			(intmax_t) ret_time, (intmax_t) *tloc);
 	} else {
 		tst_res(TFAIL,
-			"time() returned value %ld, stored value %jd are different",
-			TST_RET, (intmax_t) *tloc);
+			"time() returned value %jd, stored value %jd are different",
+			(intmax_t) ret_time, (intmax_t) *tloc);
 	}
 }
 
