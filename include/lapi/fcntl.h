@@ -98,6 +98,10 @@
 # define AT_HANDLE_FID		AT_REMOVEDIR
 #endif
 
+#ifndef AT_HANDLE_CONNECTABLE
+# define AT_HANDLE_CONNECTABLE	0x002
+#endif
+
 #ifndef AT_SYMLINK_FOLLOW
 # define AT_SYMLINK_FOLLOW	0x400
 #endif
