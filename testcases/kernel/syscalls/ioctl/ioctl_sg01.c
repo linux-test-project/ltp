@@ -36,7 +36,7 @@
 #define CMD_SIZE 6
 
 static int devfd = -1;
-static char buffer[BUF_SIZE];
+static char buffer[BUF_SIZE + 1];
 static unsigned char command[CMD_SIZE];
 static struct sg_io_hdr query;
 
@@ -100,6 +100,25 @@ static const char *find_generic_scsi_device(int access_flags, int skip_usb)
 	return NULL;
 }
 
+static void dump_hex(const char *str, size_t size)
+{
+	size_t i;
+
+	for (; size && !str[size - 1]; size--)
+		;
+
+	for (i = 0; i < size; i++) {
+		if (i && (i % 32) == 0)
+			printf("\n");
+		else if (i && (i % 4) == 0)
+			printf(" ");
+
+		printf("%02x", (unsigned int)str[i]);
+	}
+
+	printf("\n");
+}
+
 static void setup(void)
 {
 	const char *devpath = find_generic_scsi_device(O_RDONLY, 1);
@@ -135,6 +154,7 @@ static void run(void)
 
 	for (i = 0; i < 100; i++) {
 		TEST(ioctl(devfd, SG_IO, &query));
+		buffer[BUF_SIZE] = '\0';
 
 		if (TST_RET != 0 && TST_RET != -1)
 			tst_brk(TBROK|TTERRNO, "Invalid ioctl() return value");
@@ -143,6 +163,8 @@ static void run(void)
 		for (j = 0; j < BUF_SIZE; j++) {
 			if (buffer[j]) {
 				tst_res(TFAIL, "Kernel memory leaked");
+				tst_res(TINFO, "Buffer contents: %s", buffer);
+				dump_hex(buffer, BUF_SIZE);
 				return;
 			}
 		}
