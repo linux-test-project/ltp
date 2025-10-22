@@ -29,6 +29,9 @@
 #include "tst_test.h"
 #include "tst_memutils.h"
 
+#define SYSDIR "/sys/block"
+#define BLOCKDIR "/sys/block/%s/device"
+
 #define BUF_SIZE (128 * 4096)
 #define CMD_SIZE 6
 
@@ -38,42 +41,68 @@ static unsigned char command[CMD_SIZE];
 static struct sg_io_hdr query;
 
 /* TODO: split this off to a separate SCSI library? */
-static const char *find_generic_scsi_device(int access_flags)
+static const char *find_generic_scsi_device(int access_flags, int skip_usb)
 {
-	DIR *devdir;
+	DIR *sysdir;
 	struct dirent *ent;
 	int tmpfd;
-	static char devpath[PATH_MAX];
+	ssize_t length;
+	char *filename;
+	static char devpath[PATH_MAX], syspath[PATH_MAX];
 
-	errno = 0;
-	devdir = opendir("/dev");
+	sysdir = opendir(SYSDIR);
 
-	if (!devdir)
+	if (!sysdir)
 		return NULL;
 
-	while ((ent = SAFE_READDIR(devdir))) {
-		/* The bug is most likely reproducible only on /dev/sg* */
-		if (strncmp(ent->d_name, "sg", 2) || !isdigit(ent->d_name[2]))
+	/* Scan block devices */
+	while ((ent = SAFE_READDIR(sysdir))) {
+		if (ent->d_name[0] == '.')
 			continue;
 
-		snprintf(devpath, PATH_MAX, "/dev/%s", ent->d_name);
+		snprintf(syspath, PATH_MAX, BLOCKDIR, ent->d_name);
+		syspath[PATH_MAX - 1] = '\0';
+
+		/* Real device path matches the physical HW bus path */
+		if (!realpath(syspath, devpath))
+			continue;
+
+		strncat(devpath, "/generic", PATH_MAX - strlen(devpath) - 1);
+		devpath[PATH_MAX - 1] = '\0';
+		length = readlink(devpath, syspath, PATH_MAX - 1);
+
+		if (length < 0)
+			continue;
+
+		syspath[length] = '\0';
+		filename = basename(syspath);
+
+		/* USB devices often return HW info in SG_IO response buffer */
+		if (skip_usb && strstr(devpath, "/usb")) {
+			tst_res(TINFO, "Skipping USB device %s", filename);
+			continue;
+		}
+
+		snprintf(devpath, PATH_MAX, "/dev/%s", filename);
 		/* access() makes incorrect assumptions about block devices */
 		tmpfd = open(devpath, access_flags);
 
 		if (tmpfd >= 0) {
 			SAFE_CLOSE(tmpfd);
-			SAFE_CLOSEDIR(devdir);
+			SAFE_CLOSEDIR(sysdir);
 			return devpath;
 		}
+
+		tst_res(TINFO | TERRNO, "Cannot open device %s", devpath);
 	}
 
-	SAFE_CLOSEDIR(devdir);
+	SAFE_CLOSEDIR(sysdir);
 	return NULL;
 }
 
 static void setup(void)
 {
-	const char *devpath = find_generic_scsi_device(O_RDONLY);
+	const char *devpath = find_generic_scsi_device(O_RDONLY, 1);
 
 	if (!devpath)
 		tst_brk(TCONF, "Could not find any usable SCSI device");
