@@ -4,8 +4,8 @@
  */
 
 /*\
- * Verify that ioctl() raises an EINVAL error when PIDFD_GET_INFO is used. This
- * happens when:
+ * Verify that ioctl() raises an EINVAL or ENOTTY (since v6.18-rc1) error when
+ * PIDFD_GET_INFO is used. This happens when:
  *
  * - info parameter is NULL
  * - info parameter is providing the wrong size
@@ -14,6 +14,7 @@
 #include "tst_test.h"
 #include "lapi/pidfd.h"
 #include "lapi/sched.h"
+#include <errno.h>
 #include "ioctl_pidfd.h"
 
 struct pidfd_info_invalid {
@@ -43,7 +44,15 @@ static void run(void)
 		exit(0);
 
 	TST_EXP_FAIL(ioctl(pidfd, PIDFD_GET_INFO, NULL), EINVAL);
-	TST_EXP_FAIL(ioctl(pidfd, PIDFD_GET_INFO_SHORT, info_invalid), EINVAL);
+
+	/*
+	 * Expect ioctl to fail; accept either EINVAL or ENOTTY (v6.18-rc1,
+	 * 3c17001b21b9f ("pidfs: validate extensible ioctls")).
+	 */
+	int exp_errnos[] = {EINVAL, ENOTTY};
+
+	TST_EXP_FAIL_ARR(ioctl(pidfd, PIDFD_GET_INFO_SHORT, info_invalid),
+			exp_errnos, ARRAY_SIZE(exp_errnos));
 
 	SAFE_CLOSE(pidfd);
 }
