@@ -4,126 +4,126 @@
 #
 nfs01_v30_ip4u nfs01.sh -v 3 -t udp
 nfs01_v30_ip4t nfs01.sh -v 3 -t tcp
-nfs01_v40_ip4t nfs01.sh -v 4 -t tcp
+nfs01_v40_ip4t nfs01.sh -v 4.0 -t tcp
 nfs01_v41_ip4t nfs01.sh -v 4.1 -t tcp
 nfs01_v42_ip4t nfs01.sh -v 4.2 -t tcp
 nfs01_v30_ip6u nfs01.sh -6 -v 3 -t udp
 nfs01_v30_ip6t nfs01.sh -6 -v 3 -t tcp
-nfs01_v40_ip6t nfs01.sh -6 -v 4 -t tcp
+nfs01_v40_ip6t nfs01.sh -6 -v 4.0 -t tcp
 nfs01_v41_ip6t nfs01.sh -6 -v 4.1 -t tcp
 nfs01_v42_ip6t nfs01.sh -6 -v 4.2 -t tcp
 
 nfs02_v30_ip4u nfs02.sh -v 3 -t udp
 nfs02_v30_ip4t nfs02.sh -v 3 -t tcp
-nfs02_v40_ip4t nfs02.sh -v 4 -t tcp
+nfs02_v40_ip4t nfs02.sh -v 4.0 -t tcp
 nfs02_v41_ip4t nfs02.sh -v 4.1 -t tcp
 nfs02_v42_ip4t nfs02.sh -v 4.2 -t tcp
 nfs02_v30_ip6u nfs02.sh -6 -v 3 -t udp
 nfs02_v30_ip6t nfs02.sh -6 -v 3 -t tcp
-nfs02_v40_ip6t nfs02.sh -6 -v 4 -t tcp
+nfs02_v40_ip6t nfs02.sh -6 -v 4.0 -t tcp
 nfs02_v41_ip6t nfs02.sh -6 -v 4.1 -t tcp
 nfs02_v42_ip6t nfs02.sh -6 -v 4.2 -t tcp
 
 nfs03_v30_ip4u nfs03.sh -v 3 -t udp
 nfs03_v30_ip4t nfs03.sh -v 3 -t tcp
-nfs03_v40_ip4t nfs03.sh -v 4 -t tcp
+nfs03_v40_ip4t nfs03.sh -v 4.0 -t tcp
 nfs03_v41_ip4t nfs03.sh -v 4.1 -t tcp
 nfs03_v42_ip4t nfs03.sh -v 4.2 -t tcp
 nfs03_v30_ip6u nfs03.sh -6 -v 3 -t udp
 nfs03_v30_ip6t nfs03.sh -6 -v 3 -t tcp
-nfs03_v40_ip6t nfs03.sh -6 -v 4 -t tcp
+nfs03_v40_ip6t nfs03.sh -6 -v 4.0 -t tcp
 nfs03_v41_ip6t nfs03.sh -6 -v 4.1 -t tcp
 nfs03_v42_ip6t nfs03.sh -6 -v 4.2 -t tcp
 
 nfs04_v30_ip4u nfs04.sh -v 3 -t udp
 nfs04_v30_ip4t nfs04.sh -v 3 -t tcp
-nfs04_v40_ip4t nfs04.sh -v 4 -t tcp
+nfs04_v40_ip4t nfs04.sh -v 4.0 -t tcp
 nfs04_v41_ip4t nfs04.sh -v 4.1 -t tcp
 nfs04_v42_ip4t nfs04.sh -v 4.2 -t tcp
 nfs04_v30_ip6u nfs04.sh -6 -v 3 -t udp
 nfs04_v30_ip6t nfs04.sh -6 -v 3 -t tcp
-nfs04_v40_ip6t nfs04.sh -6 -v 4 -t tcp
+nfs04_v40_ip6t nfs04.sh -6 -v 4.0 -t tcp
 nfs04_v41_ip6t nfs04.sh -6 -v 4.1 -t tcp
 nfs04_v42_ip6t nfs04.sh -6 -v 4.2 -t tcp
 
 nfs05_v30_ip4u nfs05.sh -v 3 -t udp
 nfs05_v30_ip4t nfs05.sh -v 3 -t tcp
-nfs05_v40_ip4t nfs05.sh -v 4 -t tcp
+nfs05_v40_ip4t nfs05.sh -v 4.0 -t tcp
 nfs05_v41_ip4t nfs05.sh -v 4.1 -t tcp
 nfs05_v42_ip4t nfs05.sh -v 4.2 -t tcp
 nfs05_v30_ip6u nfs05.sh -6 -v 3 -t udp
 nfs05_v30_ip6t nfs05.sh -6 -v 3 -t tcp
-nfs05_v40_ip6t nfs05.sh -6 -v 4 -t tcp
+nfs05_v40_ip6t nfs05.sh -6 -v 4.0 -t tcp
 nfs05_v41_ip6t nfs05.sh -6 -v 4.1 -t tcp
 nfs05_v42_ip6t nfs05.sh -6 -v 4.2 -t tcp
 
-nfs06_v30_v40_ip4  nfs06.sh -v "3,3,3,4,4,4" -t "udp,udp,tcp,tcp,tcp,tcp"
+nfs06_v30_v40_ip4  nfs06.sh -v "3,3,3,4.0,4.0,4.0" -t "udp,udp,tcp,tcp,tcp,tcp"
 nfs06_vall_ip4t nfs06.sh -v "3,4,4.1,4.2,4.2,4.2" -t "tcp,tcp,tcp,tcp,tcp,tcp"
 nfs06_v4x_ip6t nfs06.sh -6 -v "4,4.1,4.1,4.2,4.2,4.2" -t "tcp,tcp,tcp,tcp,tcp,tcp"
 
 nfs07_v30_ip4u nfs07.sh -v 3 -t udp
 nfs07_v30_ip4t nfs07.sh -v 3 -t tcp
-nfs07_v40_ip4t nfs07.sh -v 4 -t tcp
+nfs07_v40_ip4t nfs07.sh -v 4.0 -t tcp
 nfs07_v41_ip4t nfs07.sh -v 4.1 -t tcp
 nfs07_v42_ip4t nfs07.sh -v 4.2 -t tcp
 nfs07_v30_ip6u nfs07.sh -6 -v 3 -t udp
 nfs07_v30_ip6t nfs07.sh -6 -v 3 -t tcp
-nfs07_v40_ip6t nfs07.sh -6 -v 4 -t tcp
+nfs07_v40_ip6t nfs07.sh -6 -v 4.0 -t tcp
 nfs07_v41_ip6t nfs07.sh -6 -v 4.1 -t tcp
 nfs07_v42_ip6t nfs07.sh -6 -v 4.2 -t tcp
 
 nfs08_v30_ip4u nfs08.sh -v 3 -t udp
 nfs08_v30_ip4t nfs08.sh -v 3 -t tcp
-nfs08_v40_ip4t nfs08.sh -v 4 -t tcp
+nfs08_v40_ip4t nfs08.sh -v 4.0 -t tcp
 nfs08_v41_ip4t nfs08.sh -v 4.1 -t tcp
 nfs08_v42_ip4t nfs08.sh -v 4.2 -t tcp
 nfs08_v30_ip6u nfs08.sh -6 -v 3 -t udp
 nfs08_v30_ip6t nfs08.sh -6 -v 3 -t tcp
-nfs08_v40_ip6t nfs08.sh -6 -v 4 -t tcp
+nfs08_v40_ip6t nfs08.sh -6 -v 4.0 -t tcp
 nfs08_v41_ip6t nfs08.sh -6 -v 4.1 -t tcp
 nfs08_v42_ip6t nfs08.sh -6 -v 4.2 -t tcp
 
 nfs09_v30_ip4u nfs09.sh -v 3 -t udp
 nfs09_v30_ip4t nfs09.sh -v 3 -t tcp
-nfs09_v40_ip4t nfs09.sh -v 4 -t tcp
+nfs09_v40_ip4t nfs09.sh -v 4.0 -t tcp
 nfs09_v41_ip4t nfs09.sh -v 4.1 -t tcp
 nfs09_v42_ip4t nfs09.sh -v 4.2 -t tcp
 nfs09_v30_ip6u nfs09.sh -6 -v 3 -t udp
 nfs09_v30_ip6t nfs09.sh -6 -v 3 -t tcp
-nfs09_v40_ip6t nfs09.sh -6 -v 4 -t tcp
+nfs09_v40_ip6t nfs09.sh -6 -v 4.0 -t tcp
 nfs09_v41_ip6t nfs09.sh -6 -v 4.1 -t tcp
 nfs09_v42_ip6t nfs09.sh -6 -v 4.2 -t tcp
 
 nfs10_v30_ip4u nfs10.sh -v 3 -t udp
 nfs10_v30_ip4t nfs10.sh -v 3 -t tcp
-nfs10_v40_ip4t nfs10.sh -v 4 -t tcp
+nfs10_v40_ip4t nfs10.sh -v 4.0 -t tcp
 nfs10_v41_ip4t nfs10.sh -v 4.1 -t tcp
 nfs10_v42_ip4t nfs10.sh -v 4.2 -t tcp
 nfs10_v30_ip6u nfs10.sh -6 -v 3 -t udp
 nfs10_v30_ip6t nfs10.sh -6 -v 3 -t tcp
-nfs10_v40_ip6t nfs10.sh -6 -v 4 -t tcp
+nfs10_v40_ip6t nfs10.sh -6 -v 4.0 -t tcp
 nfs10_v41_ip6t nfs10.sh -6 -v 4.1 -t tcp
 nfs10_v42_ip6t nfs10.sh -6 -v 4.2 -t tcp
 
 nfslock01_v30_ip4u nfslock01.sh -v 3 -t udp
 nfslock01_v30_ip4t nfslock01.sh -v 3 -t tcp
-nfslock01_v40_ip4t nfslock01.sh -v 4 -t tcp
+nfslock01_v40_ip4t nfslock01.sh -v 4.0 -t tcp
 nfslock01_v41_ip4t nfslock01.sh -v 4.1 -t tcp
 nfslock01_v42_ip4t nfslock01.sh -v 4.2 -t tcp
 nfslock01_v30_ip6u nfslock01.sh -6 -v 3 -t udp
 nfslock01_v30_ip6t nfslock01.sh -6 -v 3 -t tcp
-nfslock01_v40_ip6t nfslock01.sh -6 -v 4 -t tcp
+nfslock01_v40_ip6t nfslock01.sh -6 -v 4.0 -t tcp
 nfslock01_v41_ip6t nfslock01.sh -6 -v 4.1 -t tcp
 nfslock01_v42_ip6t nfslock01.sh -6 -v 4.2 -t tcp
 
 nfsstat01_v30_ip4u nfsstat01.sh -v 3 -t udp
 nfsstat01_v30_ip4t nfsstat01.sh -v 3 -t tcp
-nfsstat01_v40_ip4t nfsstat01.sh -v 4 -t tcp
+nfsstat01_v40_ip4t nfsstat01.sh -v 4.0 -t tcp
 nfsstat01_v41_ip4t nfsstat01.sh -v 4.1 -t tcp
 nfsstat01_v42_ip4t nfsstat01.sh -v 4.2 -t tcp
 nfsstat01_v30_ip6u nfsstat01.sh -6 -v 3 -t udp
 nfsstat01_v30_ip6t nfsstat01.sh -6 -v 3 -t tcp
-nfsstat01_v40_ip6t nfsstat01.sh -6 -v 4 -t tcp
+nfsstat01_v40_ip6t nfsstat01.sh -6 -v 4.0 -t tcp
 nfsstat01_v41_ip6t nfsstat01.sh -6 -v 4.1 -t tcp
 nfsstat01_v42_ip6t nfsstat01.sh -6 -v 4.2 -t tcp
 
@@ -131,11 +131,11 @@ nfsstat02 nfsstat02.sh
 
 fsx_v30_ip4u fsx.sh -v 3 -t udp
 fsx_v30_ip4t fsx.sh -v 3 -t tcp
-fsx_v40_ip4t fsx.sh -v 4 -t tcp
+fsx_v40_ip4t fsx.sh -v 4.0 -t tcp
 fsx_v41_ip4t fsx.sh -v 4.1 -t tcp
 fsx_v42_ip4t fsx.sh -v 4.2 -t tcp
 fsx_v30_ip6u fsx.sh -6 -v 3 -t udp
 fsx_v30_ip6t fsx.sh -6 -v 3 -t tcp
-fsx_v40_ip6t fsx.sh -6 -v 4 -t tcp
+fsx_v40_ip6t fsx.sh -6 -v 4.0 -t tcp
 fsx_v41_ip6t fsx.sh -6 -v 4.1 -t tcp
 fsx_v42_ip6t fsx.sh -6 -v 4.2 -t tcp
