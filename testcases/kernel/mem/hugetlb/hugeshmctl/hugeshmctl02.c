@@ -143,5 +143,5 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.cleanup = cleanup,
-	.hugepages = {128, TST_REQUEST},
+	.hugepages = {2, TST_NEEDS},
 };
