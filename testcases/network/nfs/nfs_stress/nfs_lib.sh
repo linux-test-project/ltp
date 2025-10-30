@@ -11,6 +11,18 @@ NFS_TYPE=${NFS_TYPE:=nfs}
 
 nfs_usage()
 {
+	echo "Test Specific Environment Variables"
+	echo "-----------------------------------"
+
+	cat >&2 << EOF
+LTP_NFS_NETNS_USE_LO=1    NFS traffic will go through loopback interface instead
+                          of ltp_ns_veth* netns interfaces (useful for debugging
+                          whether test failures are related to veth/netns)
+EOF
+
+	echo
+	echo "Options"
+	echo "-------"
 	echo "-t x    Socket type, tcp or udp, default is udp"
 	echo "-v x    NFS version, default is '3'"
 }
