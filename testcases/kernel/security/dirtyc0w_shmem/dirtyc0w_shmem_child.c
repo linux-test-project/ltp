@@ -128,21 +128,8 @@ static void setup_uffd(void)
 {
 	struct uffdio_register uffdio_register;
 	struct uffdio_api uffdio_api;
-	int flags = O_CLOEXEC | O_NONBLOCK;
 
-retry:
-	TEST(tst_syscall(__NR_userfaultfd, flags));
-	if (TST_RET < 0) {
-		if (TST_ERR == EPERM) {
-			if (!(flags & UFFD_USER_MODE_ONLY)) {
-				flags |= UFFD_USER_MODE_ONLY;
-				goto retry;
-			}
-		}
-		tst_brk(TBROK | TTERRNO,
-			"Could not create userfault file descriptor");
-	}
-	uffd = TST_RET;
+	uffd = SAFE_USERFAULTFD(O_CLOEXEC | O_NONBLOCK, true);
 
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = UFFD_FEATURE_MINOR_SHMEM;

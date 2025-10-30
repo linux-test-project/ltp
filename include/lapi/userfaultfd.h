@@ -2,6 +2,7 @@
 /*
  * Copyright (C) 2007 Davide Libenzi <davidel@xmailserver.org>
  * Copyright (C) 2015,2022 Red Hat, Inc.
+ * Copyright (c) Linux Test Project, 2025
  *
  * Mostly copied/adapted from <linux/userfaultfd.h>
  */
@@ -9,6 +10,7 @@
 #ifndef LAPI_USERFAULTFD_H__
 #define LAPI_USERFAULTFD_H__
 
+#include <stdbool.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include "lapi/syscalls.h"
@@ -186,5 +188,36 @@ struct uffdio_continue {
 #ifndef UFFD_FEATURE_MINOR_SHMEM
 #define UFFD_FEATURE_MINOR_SHMEM		(1<<10)
 #endif /* UFFD_FEATURE_MINOR_SHMEM */
+
+#define SAFE_USERFAULTFD(flags, retry) \
+	safe_userfaultfd(__FILE__, __LINE__, (flags), (retry))
+
+static inline int safe_userfaultfd(const char *file, const int lineno, int
+				   flags, bool retry)
+{
+	int ret;
+
+retry:
+	ret = tst_syscall(__NR_userfaultfd, flags);
+	if (ret == -1) {
+		if (errno == EPERM) {
+			if (retry && !(flags & UFFD_USER_MODE_ONLY)) {
+				flags |= UFFD_USER_MODE_ONLY;
+				goto retry;
+			}
+			tst_res_(file, lineno, TINFO,
+				 "Hint: check /proc/sys/vm/unprivileged_userfaultfd");
+			tst_brk_(file, lineno, TCONF | TERRNO,
+				"userfaultfd() requires CAP_SYS_PTRACE on this system");
+		}
+		tst_brk_(file, lineno, TBROK | TERRNO,
+				 "syscall(__NR_userfaultfd, %d) failed", flags);
+	} else if (ret < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid syscall(__NR_userfaultfd, %d) return value %d", flags, ret);
+	}
+
+	return ret;
+}
 
 #endif /* LAPI_USERFAULTFD_H__ */

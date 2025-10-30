@@ -21,11 +21,6 @@ static char *page;
 static void *copy_page;
 static int uffd;
 
-static int sys_userfaultfd(int flags)
-{
-	return tst_syscall(__NR_userfaultfd, flags);
-}
-
 static void set_pages(void)
 {
 	page_size = sysconf(_SC_PAGE_SIZE);
@@ -76,19 +71,8 @@ static void run(void)
 
 	set_pages();
 
-	TEST(sys_userfaultfd(O_CLOEXEC | O_NONBLOCK));
+	uffd = SAFE_USERFAULTFD(O_CLOEXEC | O_NONBLOCK, false);
 
-	if (TST_RET == -1) {
-		if (TST_ERR == EPERM) {
-			tst_res(TCONF, "Hint: check /proc/sys/vm/unprivileged_userfaultfd");
-			tst_brk(TCONF | TTERRNO,
-				"userfaultfd() requires CAP_SYS_PTRACE on this system");
-		} else
-			tst_brk(TBROK | TTERRNO,
-				"Could not create userfault file descriptor");
-	}
-
-	uffd = TST_RET;
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = 0;
 	SAFE_IOCTL(uffd, UFFDIO_API, &uffdio_api);
