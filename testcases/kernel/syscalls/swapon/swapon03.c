@@ -97,7 +97,7 @@ static void clean_swap(void)
 		check_and_swapoff(filename);
 	}
 
-	check_and_swapoff("testfile");
+	check_and_swapoff(TEST_FILE);
 }
 
 static void verify_swapon(void)
