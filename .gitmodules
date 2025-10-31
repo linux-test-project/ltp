@@ -7,3 +7,6 @@
 [submodule "tools/ltx/ltx-src"]
 	path = tools/ltx/ltx-src
 	url = https://github.com/linux-test-project/ltx.git
+[submodule "tools/kirk/kirk-src"]
+	path = tools/kirk/kirk-src
+	url = https://github.com/linux-test-project/kirk.git
