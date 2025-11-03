@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test mmap(2) with MAP_DROPPABLE flag.
  *
  * Test base on kernel selftests/mm/droppable.c
