@@ -146,8 +146,7 @@ int make_swapfile(const char *file, const int lineno,
 	size_t pg_size = sysconf(_SC_PAGESIZE);
 	char mnt_path[PATH_MAX];
 
-	if (statvfs(".", &fs_info) == -1)
-		tst_brk_(file, lineno, TBROK, "statvfs failed");
+	safe_statvfs(file, lineno, ".", &fs_info);
 
 	blk_size = fs_info.f_bsize;
 
@@ -169,8 +168,7 @@ int make_swapfile(const char *file, const int lineno,
 		blk_size = pg_size;
 	}
 
-	if (sscanf(swapfile, "%[^/]", mnt_path) != 1)
-		tst_brk_(file, lineno, TBROK, "sscanf failed");
+	safe_sscanf(file, lineno, swapfile, "%[^/]", mnt_path);
 
 	if (!tst_fs_has_free(mnt_path, blk_size * blocks, TST_BYTES))
 		tst_brk_(file, lineno, TCONF, "Insufficient disk space to create swap file");
