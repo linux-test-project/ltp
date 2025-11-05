@@ -110,13 +110,6 @@ int make_swapfile(const char *file, const int lineno,
 bool is_swap_supported(const char *filename);
 
 /**
- * tst_max_swapfiles() - Get kernel constant MAX_SWAPFILES value.
- *
- * Return: MAX_SWAPFILES value.
- */
-int tst_max_swapfiles(void);
-
-/**
  * tst_count_swaps() - Get the used swapfiles number.
  *
  * Return: used swapfiles number.
