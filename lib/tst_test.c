@@ -1056,7 +1056,12 @@ static void do_exit(int ret)
 	exit(ret);
 }
 
-int check_kver(const char *min_kver, const int brk_nosupp)
+/*
+ * Check for the required kernel version.
+ *
+ * return: true if the kernel version is high enough, false otherwise.
+ */
+static bool check_kver(const char *min_kver, const int brk_nosupp)
 {
 	char *msg;
 	int v1, v2, v3;
@@ -1075,10 +1080,10 @@ int check_kver(const char *min_kver, const int brk_nosupp)
 		else
 			tst_res(TCONF, msg, min_kver);
 
-		return 1;
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
 static int results_equal(struct results *a, struct results *b)
@@ -1963,7 +1968,7 @@ static int run_tcase_on_fs(struct tst_fs *fs, const char *fs_type)
 	if (fs->mkfs_ver && !tst_check_cmd(fs->mkfs_ver, 0))
 		return TCONF;
 
-	if (fs->min_kver && check_kver(fs->min_kver, 0))
+	if (fs->min_kver && !check_kver(fs->min_kver, 0))
 		return TCONF;
 
 	prepare_device(fs);
