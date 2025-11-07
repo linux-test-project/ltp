@@ -1086,21 +1086,26 @@ static bool check_kver(const char *min_kver, const int brk_nosupp)
 	return true;
 }
 
-static int results_equal(struct results *a, struct results *b)
+/*
+ * Checks if the struct results values are equal.
+ *
+ * return: true if results are equal, false otherwise.
+ */
+static bool results_equal(struct results *a, struct results *b)
 {
 	if (a->passed != b->passed)
-		return 0;
+		return false;
 
 	if (a->failed != b->failed)
-		return 0;
+		return false;
 
 	if (a->skipped != b->skipped)
-		return 0;
+		return false;
 
 	if (a->broken != b->broken)
-		return 0;
+		return false;
 
-	return 1;
+	return true;
 }
 
 static int needs_tmpdir(void)
