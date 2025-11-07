@@ -1108,7 +1108,7 @@ static bool results_equal(struct results *a, struct results *b)
 	return true;
 }
 
-static int needs_tmpdir(void)
+static bool needs_tmpdir(void)
 {
 	return tst_test->needs_tmpdir ||
 	       tst_test->needs_device ||
