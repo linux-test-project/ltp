@@ -1960,7 +1960,7 @@ static int run_tcase_on_fs(struct tst_fs *fs, const char *fs_type)
 	tst_res(TINFO, "=== Testing on %s ===", fs_type);
 	tdev.fs_type = fs_type;
 
-	if (fs->mkfs_ver && tst_check_cmd(fs->mkfs_ver, 0))
+	if (fs->mkfs_ver && !tst_check_cmd(fs->mkfs_ver, 0))
 		return TCONF;
 
 	if (fs->min_kver && check_kver(fs->min_kver, 0))

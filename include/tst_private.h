@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2020-2025
  * Copyright (c) 2017-2019 Petr Vorel <pvorel@suse.cz>
  *
  * Internal helper functions for the shell library. Do not use directly
@@ -41,9 +42,13 @@ char tst_kconfig_get(const char *confname);
 /*
  * If cmd argument is a single command, this function just checks command
  * whether exists. If not, case breaks if brk_nosupp is defined.
+ *
  * If cmd argument is a complex string ie 'mkfs.ext4 >= 1.43.0', this
  * function checks command version whether meets this requirement.
  * If not, case breaks if brk_nosupp is defined.
+ *
+ * return: true if command is present, optionally with high enough version, false
+ * otherwise.
  */
 bool tst_check_cmd(const char *cmd, const int brk_nosupp);
 
