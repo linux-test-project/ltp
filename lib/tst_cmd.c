@@ -265,8 +265,14 @@ bool tst_check_cmd(const char *cmd, const int brk_nosupp)
 	version_token = strtok_r(NULL, " ", &next);
 	str = strtok_r(NULL, " ", &next);
 
-	if (tst_get_path(cmd_token, path, sizeof(path)))
-		tst_brkm(TCONF, NULL, "Couldn't find '%s' in $PATH", cmd_token);
+	if (tst_get_path(cmd_token, path, sizeof(path))) {
+		if (brk_nosupp) {
+			tst_brkm(TCONF, NULL, "Couldn't find '%s' in $PATH", cmd_token);
+		} else {
+			tst_resm(TCONF, "Couldn't find '%s' in $PATH", cmd_token);
+			return false;
+		}
+	}
 
 	if (!op_token)
 		return true;
