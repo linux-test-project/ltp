@@ -1988,9 +1988,8 @@ static int run_tcase_on_fs(struct tst_fs *fs, const char *fs_type)
 	return ret;
 }
 
-static int run_tcases_per_fs(void)
+static void run_tcases_per_fs(void)
 {
-	int ret = 0;
 	unsigned int i;
 	bool found_valid_fs = false;
 	const char *const *filesystems = tst_get_supported_fs_types(tst_test->skip_filesystems);
@@ -2013,8 +2012,6 @@ static int run_tcases_per_fs(void)
 
 	if (!found_valid_fs)
 		tst_brk(TCONF, "No required filesystems are available");
-
-	return ret;
 }
 
 unsigned int tst_variant;
