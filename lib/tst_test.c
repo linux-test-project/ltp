@@ -1963,29 +1963,27 @@ ret:
 	return &tst_test->filesystems[0];
 }
 
-static int run_tcase_on_fs(struct tst_fs *fs, const char *fs_type)
+static void run_tcase_on_fs(struct tst_fs *fs, const char *fs_type)
 {
-	int ret;
-
 	tst_res(TINFO, "=== Testing on %s ===", fs_type);
 	tdev.fs_type = fs_type;
 
 	if (fs->mkfs_ver && !tst_check_cmd(fs->mkfs_ver, 0))
-		return TCONF;
+		return;
 
 	if (fs->min_kver && !check_kver(fs->min_kver, 0))
-		return TCONF;
+		return;
 
 	prepare_device(fs);
 
-	ret = fork_testrun();
+	fork_testrun();
 
 	if (context->mntpoint_mounted) {
 		tst_umount(tst_test->mntpoint);
 		context->mntpoint_mounted = 0;
 	}
 
-	return ret;
+	return;
 }
 
 static void run_tcases_per_fs(void)
