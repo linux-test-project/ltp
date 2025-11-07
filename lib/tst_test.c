@@ -1880,7 +1880,7 @@ void tst_set_runtime(int runtime)
 	heartbeat();
 }
 
-static int fork_testrun(void)
+static void fork_testrun(void)
 {
 	int status;
 
@@ -1911,8 +1911,8 @@ static int fork_testrun(void)
 	SAFE_SIGNAL(SIGINT, SIG_DFL);
 
 	if (tst_test->taint_check && tst_taint_check()) {
-		tst_res(TFAIL, "Kernel is now tainted.");
-		return TFAIL;
+		tst_res(TFAIL, "Kernel is now tainted");
+		return;
 	}
 
 	if (tst_test->forks_child && kill(-test_pid, SIGKILL) == 0)
@@ -1922,7 +1922,7 @@ static int fork_testrun(void)
 		tst_brk(TBROK, "Child returned with %i", WEXITSTATUS(status));
 
 	if (context->abort_flag)
-		return 0;
+		return;
 
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL) {
 		tst_res(TINFO, "If you are running on slow machine, "
@@ -1932,8 +1932,6 @@ static int fork_testrun(void)
 
 	if (WIFSIGNALED(status))
 		tst_brk(TBROK, "Test killed by %s!", tst_strsig(WTERMSIG(status)));
-
-	return 0;
 }
 
 static struct tst_fs *lookup_fs_desc(const char *fs_type, int all_filesystems)
