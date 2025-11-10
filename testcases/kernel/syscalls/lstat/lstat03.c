@@ -70,7 +70,7 @@ static void setup(void)
 	SAFE_CLOSE(fd);
 
 	/* change st_atime / st_mtime / st_ctime */
-	usleep(1001000);
+	usleep(1500000);
 
 	SAFE_SYMLINK(FILENAME, SYMBNAME);
 }
