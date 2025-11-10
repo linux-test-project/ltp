@@ -34,6 +34,7 @@ exclude_patterns = ["html*", '_static*', '.venv*']
 extlinks = {
     'repo': (f'{ltp_repo}/%s', '%s'),
     'master': (f'{ltp_repo}/blob/master/%s', '%s'),
+    'shell_lib': (f'{ltp_repo}/blob/master/testcases/lib/%s', '%s'),
     'git_man': ('https://git-scm.com/docs/git-%s', 'git %s'),
     'man2': ('https://man7.org/linux/man-pages/man2/%s.2.html', '%s(2)'),
     'man3': ('https://man7.org/linux/man-pages/man3/%s.3.html', '%s(3)'),
