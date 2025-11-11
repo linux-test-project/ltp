@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_11-1"
+#define SHM_NAME "/posixtest_11-1"
 
 int main(void)
 {

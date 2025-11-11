@@ -30,7 +30,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_9-1"
+#define SHM_NAME "/posixtest_9-1"
 
 int main(void)
 {

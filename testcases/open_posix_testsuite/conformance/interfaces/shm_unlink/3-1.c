@@ -21,7 +21,7 @@
 #include "posixtest.h"
 
 #define BUF_SIZE 8
-#define SHM_NAME "posixtest_3-1"
+#define SHM_NAME "/posixtest_3-1"
 
 int main(void)
 {

@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_6-1"
+#define SHM_NAME "/posixtest_6-1"
 
 int main(void)
 {
