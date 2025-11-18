@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2009-2025
  * Copyright (c) International Business Machines Corp., 2007
  * Created by <rsalveti@linux.vnet.ibm.com>
- *
  */
 
 /*\
@@ -27,12 +27,8 @@ static int swapfiles;
 
 static int setup_swap(void)
 {
-	pid_t pid;
-	int status;
 	int j, max_swapfiles, used_swapfiles;
 	char filename[FILENAME_MAX];
-
-	SAFE_SETEUID(0);
 
 	/* Determine how many more files are to be created */
 	max_swapfiles = tst_max_swapfiles();
@@ -41,24 +37,18 @@ static int setup_swap(void)
 	if (swapfiles > max_swapfiles)
 		swapfiles = max_swapfiles;
 
-	pid = SAFE_FORK();
-	if (pid == 0) {
-		/*create and turn on remaining swapfiles */
-		for (j = 0; j < swapfiles; j++) {
+	/*create and turn on remaining swapfiles */
+	for (j = 0; j < swapfiles; j++) {
 
-			/* Create the swapfile */
-			snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
-			MAKE_SMALL_SWAPFILE(filename);
+		/* Create the swapfile */
+		snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
+		SAFE_MAKE_SMALL_SWAPFILE(filename);
 
-			/* turn on the swap file */
-			TST_EXP_PASS_SILENT(swapon(filename, 0));
-		}
-		exit(0);
-	} else
-		waitpid(pid, &status, 0);
-
-	if (WEXITSTATUS(status))
-		tst_brk(TFAIL, "Failed to setup swap files");
+		/* turn on the swap file */
+		TST_EXP_PASS_SILENT(swapon(filename, 0));
+		if (!TST_PASS)
+			tst_brk(TFAIL, "Failed to setup swap files");
+	}
 
 	tst_res(TINFO, "Successfully created %d swap files", swapfiles);
 	MAKE_SMALL_SWAPFILE(TEST_FILE);
@@ -127,7 +117,6 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.all_filesystems = 1,
 	.needs_root = 1,
-	.forks_child = 1,
 	.test_all = verify_swapon,
 	.setup = setup,
 	.cleanup = cleanup
