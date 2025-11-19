@@ -6,6 +6,7 @@
 # env
 # {
 #  "mount_device": true,
+#  "runtime": 10,
 #  "mntpoint": "ltp_mntpoint",
 #  "filesystems": [
 #   {
@@ -37,6 +38,14 @@ tst_test()
 		tst_res TPASS "Mounted device formatted with $fs"
 	else
 		tst_res TFAIL "Device not mounted!"
+	fi
+
+	RUNTIME=$(tst_remaining_runtime)
+
+	if [ "$RUNTIME" -ge 9 ]; then
+		tst_res TPASS "Remaining runtime $RUNTIME"
+	else
+		tst_res TFAIL "Remaoning runtime $RUNTIME"
 	fi
 }
 

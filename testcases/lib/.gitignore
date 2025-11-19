@@ -25,3 +25,4 @@
 /tst_timeout_kill
 /tst_res_
 /tst_run_shell
+/tst_remaining_runtime

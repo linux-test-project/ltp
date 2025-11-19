@@ -60,6 +60,7 @@ enum test_attr_ids {
 	MIN_CPUS,
 	MIN_MEM_AVAIL,
 	MIN_KVER,
+	MIN_RUNTIME,
 	MIN_SWAP_AVAIL,
 	MNTPOINT,
 	MOUNT_DEVICE,
@@ -74,6 +75,7 @@ enum test_attr_ids {
 	NEEDS_ROOT,
 	NEEDS_TMPDIR,
 	RESTORE_WALLCLOCK,
+	RUNTIME,
 	SAVE_RESTORE,
 	SKIP_FILESYSTEMS,
 	SKIP_IN_COMPAT,
@@ -93,6 +95,7 @@ static ujson_obj_attr test_attrs[] = {
 	UJSON_OBJ_ATTR_IDX(MIN_CPUS, "min_cpus", UJSON_INT),
 	UJSON_OBJ_ATTR_IDX(MIN_MEM_AVAIL, "min_mem_avail", UJSON_INT),
 	UJSON_OBJ_ATTR_IDX(MIN_KVER, "min_kver", UJSON_STR),
+	UJSON_OBJ_ATTR_IDX(MIN_RUNTIME, "min_runtime", UJSON_INT),
 	UJSON_OBJ_ATTR_IDX(MIN_SWAP_AVAIL, "min_swap_avail", UJSON_INT),
 	UJSON_OBJ_ATTR_IDX(MNTPOINT, "mntpoint", UJSON_STR),
 	UJSON_OBJ_ATTR_IDX(MOUNT_DEVICE, "mount_device", UJSON_BOOL),
@@ -107,6 +110,7 @@ static ujson_obj_attr test_attrs[] = {
 	UJSON_OBJ_ATTR_IDX(NEEDS_ROOT, "needs_root", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(NEEDS_TMPDIR, "needs_tmpdir", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(RESTORE_WALLCLOCK, "restore_wallclock", UJSON_BOOL),
+	UJSON_OBJ_ATTR_IDX(RUNTIME, "runtime", UJSON_INT),
 	UJSON_OBJ_ATTR_IDX(SAVE_RESTORE, "save_restore", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(SKIP_FILESYSTEMS, "skip_filesystems", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(SKIP_IN_COMPAT, "skip_in_compat", UJSON_BOOL),
@@ -421,6 +425,12 @@ static void parse_metadata(void)
 		case MIN_KVER:
 			test.min_kver = strdup(val.val_str);
 		break;
+		case MIN_RUNTIME:
+			if (val.val_int <= 0)
+				ujson_err(&reader, "Minimal runtime must be > 0");
+			else
+				test.min_runtime = val.val_int;
+		break;
 		case MIN_SWAP_AVAIL:
 			if (val.val_int <= 0)
 				ujson_err(&reader, "Minimal available swap size must be > 0");
@@ -468,6 +478,12 @@ static void parse_metadata(void)
 		break;
 		case RESTORE_WALLCLOCK:
 			test.restore_wallclock = val.val_bool;
+		break;
+		case RUNTIME:
+			if (val.val_int <= 0)
+				ujson_err(&reader, "Runtime must be > 0");
+			else
+				test.runtime = val.val_int;
 		break;
 		case SAVE_RESTORE:
 			test.save_restore = parse_save_restore(&reader, &val);
