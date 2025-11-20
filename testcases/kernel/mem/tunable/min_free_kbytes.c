@@ -1,31 +1,27 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2012-2025
  * Copyright (C) 2012-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * Description:
- *
- * The case is designed to test min_free_kbytes tunable.
+ */
+
+/*\
+ * Test ``/proc/sys/vm/min_free_kbytes`` tunable file.
  *
  * The tune is used to control free memory, and system always
- * reserve min_free_kbytes memory at least.
+ * reserve ``min_free_kbytes`` memory at least.
  *
  * Since the tune is not too large or too little, which will
- * lead to the system hang, so I choose two cases, and test them
- * on all overcommit_memory policy, at the same time, compare
+ * lead to the system hang, the following cases are tested
+ * on all ``overcommit_memory`` policy, at the same time, compare
  * the current free memory with the tunable value repeatedly.
  *
- * a) default min_free_kbytes with all overcommit memory policy
- * b) 2x default value with all overcommit memory policy
- * c) 5% of MemFree or %2 MemTotal with all overcommit memory policy
+ * 1. default min_free_kbytes with all ``overcommit_memory`` policy
+ * 2. 2x default value with all ``overcommit_memory`` policy
+ * 3. 5% of MemFree or %2 MemTotal with all ``overcommit_memory`` policy
+ *
+ * [References]
+ *
+ * - :kernel_doc:`admin-guide/sysctl/vm`
  */
 
 #include <sys/wait.h>

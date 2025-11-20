@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2012-2023 Linux Test Project
+ * Copyright (c) 2012-2025 Linux Test Project
  * Copyright (c) 2012-2017 Red Hat, Inc.
+ */
+
+/*\
+ * Test for ``overcommit_memory`` and ``overcommit_ratio`` tunables.
  *
  * There are two tunables overcommit_memory and overcommit_ratio under
  * /proc/sys/vm/, which can control memory overcommitment.
  *
  * The overcommit_memory contains a flag that enables memory
  * overcommitment, it has three values:
+ *
  * - When this flag is 0, the kernel attempts to estimate the amount
  *   of free memory left when userspace requests more memory.
  * - When this flag is 1, the kernel pretends there is always enough
@@ -21,41 +26,49 @@
  * percentage added to the amount of actual RAM in a system when
  * considering whether to grant a particular memory request.
  * The general formula for this tunable is:
- * CommitLimit = SwapTotal + MemTotal * overcommit_ratio
- * CommitLimit, SwapTotal and MemTotal can read from /proc/meminfo.
+ *
+ * * CommitLimit = SwapTotal + MemTotal * overcommit_ratio
+ * * CommitLimit, SwapTotal and MemTotal can read from /proc/meminfo.
  *
  * The program is designed to test the two tunables:
  *
  * When overcommit_memory = 0, allocatable memory can't overextend
  * the amount of total memory:
- * a. less than free_total:    free_total / 2, alloc should pass.
- * b. greater than sum_total:   sum_total * 2, alloc should fail.
+ *
+ * 1. less than free_total:    free_total / 2, alloc should pass.
+ * 2. greater than sum_total:   sum_total * 2, alloc should fail.
  *
  * When overcommit_memory = 1, it can alloc enough much memory, I
  * choose the three cases:
- * a. less than sum_total:    sum_total / 2, alloc should pass
- * b. equal to sum_total:     sum_total,     alloc should pass
- * c. greater than sum_total: sum_total * 2, alloc should pass
- * *note: sum_total = SwapTotal + MemTotal
+ *
+ * 1. less than sum_total:    sum_total / 2, alloc should pass
+ * 2. equal to sum_total:     sum_total,     alloc should pass
+ * 3. greater than sum_total: sum_total * 2, alloc should pass
+ *
+ * NOTE: sum_total = SwapTotal + MemTotal
  *
  * When overcommit_memory = 2, the total virtual address space on
  * the system is limited to CommitLimit(Swap+RAM*overcommit_ratio)
  * commit_left(allocatable memory) = CommitLimit - Committed_AS
- * a. less than commit_left:    commit_left / 2, alloc should pass
- * b. overcommit limit:         CommitLimit + TotalBatchSize, should fail
- * c. greater than commit_left: commit_left * 2, alloc should fail
- * *note: CommitLimit is the current overcommit limit.
- *        Committed_AS is the amount of memory that system has used.
- * it couldn't choose 'equal to commit_left' as a case, because
- * commit_left rely on Committed_AS, but the Committed_AS is not stable.
- * *note2: TotalBatchSize is the total number of bytes, that can be
- *         accounted for in the per cpu counters for the vm_committed_as
- *         counter. Since the check used by malloc only looks at the
- *         global counter of vm_committed_as, it can overallocate a bit.
  *
- * References:
- * - Documentation/sysctl/vm.txt
- * - Documentation/vm/overcommit-accounting
+ * 1. less than commit_left:    commit_left / 2, alloc should pass
+ * 2. overcommit limit:         CommitLimit + TotalBatchSize, should fail
+ * 3. greater than commit_left: commit_left * 2, alloc should fail
+ *
+ * NOTE: CommitLimit is the current overcommit limit.
+ * Committed_AS is the amount of memory that system has used.
+ *
+ * It couldn't choose 'equal to commit_left' as a case, because commit_left rely
+ * on Committed_AS, but the Committed_AS is not stable.
+ *
+ * NOTE: TotalBatchSize is the total number of bytes, that can be accounted for
+ * in the per cpu counters for the vm_committed_as counter. Since the check used
+ * by malloc only looks at the global counter of vm_committed_as, it can
+ * overallocate a bit.
+ *
+ * [References]
+ *
+ * - :kernel_doc:`admin-guide/sysctl/vm`
  */
 
 #include <errno.h>

@@ -1,43 +1,43 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2012-2025
  * Copyright (C) 2012-2017  Red Hat, Inc.
+ */
+
+/*\
+ * Test ``/proc/sys/vm/max_map_count`` tunable file.
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * :kernel_doc:`admin-guide/sysctl/vm` claims:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * Description:
- *
- * The program is designed to test max_map_count tunable file
- *
- * The kernel Documentation say that:
- * /proc/sys/vm/max_map_count contains the maximum number of memory map
- * areas a process may have. Memory map areas are used as a side-effect
- * of calling malloc, directly by mmap and mprotect, and also when
- * loading shared libraries.
+ *    /proc/sys/vm/max_map_count contains the maximum number of memory map
+ *    areas a process may have. Memory map areas are used as a side-effect
+ *    of calling malloc, directly by mmap and mprotect, and also when
+ *    loading shared libraries.
  *
  * Each process has his own maps file: /proc/[pid]/maps, and each line
  * indicates a map entry, so it can caculate the amount of maps by reading
  * the file lines' number to check the tunable performance.
  *
- * The program tries to invoke mmap() endlessly until it triggers MAP_FAILED,
- * then reads the process's maps file /proc/[pid]/maps, save the line number to
- * map_count variable, and compare it with /proc/sys/vm/max_map_count,
- * map_count should be greater than max_map_count by 1;
+ * The program tries to invoke :man2:`mmap` endlessly until it triggers
+ * ``MAP_FAILED``, then reads the process's maps file /proc/[pid]/maps, save
+ * the line number to map_count variable, and compare it with
+ * ``/proc/sys/vm/max_map_count``, map_count should be greater than
+ * max_map_count by 1.
  *
- * Note: On some architectures there is a special vma VSYSCALL, which
+ * NOTE: On some architectures there is a special vma VSYSCALL, which
  * is allocated without incrementing mm->map_count variable. On these
  * architectures each /proc/<pid>/maps has at the end:
- * ...
- * ...
- * ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0   [vsyscall]
  *
- * so we ignore this line during /proc/[pid]/maps reading.
+ * ::
+ *
+ *    ...
+ *    ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0   [vsyscall]
+ *
+ * Therefore this line is ignored during /proc/[pid]/maps reading.
+ *
+ * [References]
+ *
+ * - :kernel_doc:`admin-guide/sysctl/vm`
  */
 
 #define _GNU_SOURCE
