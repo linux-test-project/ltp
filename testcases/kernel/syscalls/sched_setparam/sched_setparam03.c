@@ -45,6 +45,7 @@ void setup(void)
 	struct sched_param p = { .sched_priority = 1 };
 
 	tst_res(TINFO, "Testing %s variant", tv->desc);
+	tst_check_rt_group_sched_support();
 
 	if (tv->sched_setscheduler(0, SCHED_FIFO, &p))
 		tst_brk(TBROK | TERRNO, "sched_setscheduler(0, SCHED_FIFO, 1)");
