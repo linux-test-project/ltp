@@ -48,7 +48,7 @@ verify_measurement()
 		chown $user $test_file
 		sh -c "$cmd"
 		;;
-	gid) sudo sg $user "sh -c '$cmd'";;
+	gid) sg $user "sh -c '$cmd'";;
 	uid) sudo -n -u $user sh -c "$cmd";;
 	*) tst_brk TBROK "Invalid res type '$1'";;
 	esac
