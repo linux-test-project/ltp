@@ -39,6 +39,8 @@ static char testfile[PATH_MAX] = "testfile";
 #define MEMINFO_FNAME "/proc/meminfo"
 #define PROC_IO_FNAME "/proc/self/io"
 #define DEFAULT_FILESIZE (64 * 1024 * 1024)
+#define INITIAL_SHORT_SLEEP_US 10000
+#define SHORT_SLEEP_US 5000
 
 static size_t testfile_size = DEFAULT_FILESIZE;
 static char *opt_fsizestr;
@@ -173,8 +175,47 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 
 			i++;
 			offset += readahead_length;
+			/* Wait a bit so that the readahead() has chance to start. */
+			usleep(INITIAL_SHORT_SLEEP_US);
+			/*
+			 * We assume that the worst case I/O speed is around
+			 * 5MB/s which is roughly 5 bytes per 1 us, which gives
+			 * us upper bound for retries that is
+			 * readahead_size/(5 * SHORT_SLEEP_US).
+			 *
+			 * We also monitor the cache size increases before and
+			 * after the sleep. With the same assumption about the
+			 * speed we are supposed to read at least 5 *
+			 * SHORT_SLEEP_US bytes during that time. That amound
+			 * is genreally quite close a page size so that we just
+			 * assume that we sould continue as long as the cache
+			 * increases.
+			 *
+			 * Of course all of this is inprecise on multitasking
+			 * OS however even on a system where there are several
+			 * processes figthing for I/O this loop will wait as
+			 * long a cache is increasing which will gives us high
+			 * chance of waiting for the readahead to happen.
+			 */
+			unsigned long cached_prev, cached_cur = get_cached_size();
+			int retries = readahead_length / (5 * SHORT_SLEEP_US);
+
+			tst_res(TDEBUG, "Readahead cached %lu", cached_cur);
+
+			do {
+				usleep(SHORT_SLEEP_US);
+
+				cached_prev = cached_cur;
+				cached_cur = get_cached_size();
+
+				if (cached_cur <= cached_prev)
+					break;
+			} while (retries-- > 0);
+
 		} while ((size_t)offset < fsize);
+
 		tst_res(TINFO, "readahead calls made: %zu", i);
+
 		*cached = get_cached_size();
 
 		/* offset of file shouldn't change after readahead */
