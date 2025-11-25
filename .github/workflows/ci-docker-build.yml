@@ -125,8 +125,6 @@ jobs:
 
     - name: Git checkout
       uses: actions/checkout@v1
-      with:
-        submodules: 'true'
 
     - name: Install additional packages
       run: |
