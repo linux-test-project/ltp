@@ -62,7 +62,7 @@ static int ranges_size, ranges_len;
 
 static void segv_handler(int sig)
 {
-	if (sig == SIGSEGV)
+	if (sig == SIGSEGV || sig == SIGBUS)
 		segv_caught++;
 	else
 		tst_res(TFAIL, "Unexpected signal %s", strsignal(sig));
@@ -143,6 +143,7 @@ static void setup(void)
 	memset(&sa, 0, sizeof(sa));
 	sa.sa_handler = segv_handler;
 	sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGBUS, &sa, NULL);
 
 	nr_symbols = read_kallsyms(NULL, 0);
 	sym_table = SAFE_CALLOC(nr_symbols, sizeof(*sym_table));
