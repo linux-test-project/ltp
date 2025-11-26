@@ -201,6 +201,8 @@ static void do_test(void)
 
 static void do_setup(void)
 {
+	tst_check_rt_group_sched_support();
+
 	if (tst_parse_int(str_game_length, &game_length, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid game length '%s'", str_game_length);
 
