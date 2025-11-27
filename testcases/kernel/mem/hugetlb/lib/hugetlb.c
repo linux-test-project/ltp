@@ -54,9 +54,7 @@ int getipckey(void)
 	key_t ipc_key;
 	struct timeval time_info;
 
-	curdir = getcwd(curdir, size);
-	if (curdir == NULL)
-		tst_brk(TBROK | TERRNO, "getcwd(curdir)");
+	curdir = SAFE_GETCWD(curdir, size);
 
 	/*
 	 * Get a Sys V IPC key
@@ -87,10 +85,7 @@ int getuserid(char *user)
 {
 	struct passwd *ent;
 
-	ent = getpwnam(user);
-	if (ent == NULL)
-		tst_brk(TBROK | TERRNO, "getpwnam");
-
+	ent = SAFE_GETPWNAM(user);
 	return ent->pw_uid;
 }
 
