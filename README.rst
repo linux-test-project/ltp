@@ -20,7 +20,7 @@ libraries by bringing test automation.
 
 Some references:
 
-* `Documentation <http://linux-test-project.rtfd.io/>`_
+* `Documentation <https://linux-test-project.readthedocs.io/>`_
 * `Source code <https://github.com/linux-test-project/ltp>`_
 * `Releases <https://github.com/linux-test-project/ltp/releases>`_
 * `Mailing List <http://lists.linux.it/listinfo/ltp>`_
