@@ -112,9 +112,7 @@ int main(int argc, char **argv)
 
 		/* /proc/self/maps in the form of
 		   "00400000-00406000 r-xp 00000000". */
-		fp = fopen("/proc/self/maps", "r");
-		if (fp == NULL)
-			tst_brkm(TBROK | TERRNO, NULL, "fopen");
+		fp = SAFE_FOPEN(NULL, "/proc/self/maps", "r");
 
 		while (fgets(buf, BUFSIZ, fp) != NULL) {
 			if (sscanf(buf, "%p-%p ", &start, &end) != 2)

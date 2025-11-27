@@ -21,6 +21,7 @@
 #define _GNU_SOURCE
 #include "lapi/mmap.h"
 #include "hugetlb.h"
+#include "tst_safe_stdio.h"
 #include <errno.h>
 #include <inttypes.h>
 #include <sched.h>
@@ -80,12 +81,9 @@ static void run_test(void)
 }
 
 /* Return start address of next mapping or 0 */
-static uintptr_t  get_next_mapping_start(uintptr_t addr)
+static uintptr_t get_next_mapping_start(uintptr_t addr)
 {
-	FILE *fp = fopen("/proc/self/maps", "r");
-
-	if (fp == NULL)
-		tst_brk(TBROK | TERRNO, "Failed to open /proc/self/maps.");
+	FILE *fp = SAFE_FOPEN("/proc/self/maps", "r");
 
 	while (!feof(fp)) {
 		uintptr_t start, end;
@@ -94,7 +92,7 @@ static uintptr_t  get_next_mapping_start(uintptr_t addr)
 		ret = fscanf(fp, "%"PRIxPTR"-%"PRIxPTR" %*[^\n]\n", &start, &end);
 		if (ret != 2) {
 			fclose(fp);
-			tst_brk(TBROK | TERRNO, "Couldn't parse /proc/self/maps line.");
+			tst_brk(TBROK | TERRNO, "Couldn't parse /proc/self/maps line");
 		}
 
 		if (start > addr) {

@@ -99,9 +99,7 @@ static void read_proc_self_maps(void)
 	FILE *fp;
 
 	ranges_len = 0;
-	fp = fopen("/proc/self/maps", "r");
-	if (fp == NULL)
-		tst_brk(TBROK | TERRNO, "Failed to open /proc/self/maps.");
+	fp = SAFE_FOPEN("/proc/self/maps", "r");
 
 	while (!feof(fp)) {
 		unsigned long start, end;
