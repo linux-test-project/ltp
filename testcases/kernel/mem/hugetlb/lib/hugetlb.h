@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *
- *   Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2004-2025
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
 /*
