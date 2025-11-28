@@ -103,6 +103,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.min_kver = "6.0",
 	.needs_checkpoints = 1,
 	.child_needs_reinit =1,
 	.forks_child = 1,
