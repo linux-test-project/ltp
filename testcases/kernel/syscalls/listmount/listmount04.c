@@ -133,7 +133,7 @@ static void run(unsigned int n)
 static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(tcases),
-	.min_kver = "6.8",
+	.min_kver = "6.11",
 	.bufs = (struct tst_buffers []) {
 		{ &request, .size = MNT_ID_REQ_SIZE_VER0 },
 		{},
