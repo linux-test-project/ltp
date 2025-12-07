@@ -1771,6 +1771,7 @@ umount2_02 umount2_02
 
 userfaultfd01 userfaultfd01
 userfaultfd02 userfaultfd02
+userfaultfd03 userfaultfd03
 
 ustat01 ustat01
 ustat02 ustat02
