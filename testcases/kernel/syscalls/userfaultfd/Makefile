@@ -15,3 +15,4 @@ userfaultfd01: CFLAGS += -pthread
 userfaultfd02: CFLAGS += -pthread
 userfaultfd03: CFLAGS += -pthread
 userfaultfd04: CFLAGS += -pthread
+userfaultfd05: CFLAGS += -pthread
