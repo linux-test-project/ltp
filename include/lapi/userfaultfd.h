@@ -189,6 +189,30 @@ struct uffdio_continue {
 #define UFFD_FEATURE_MINOR_SHMEM		(1<<10)
 #endif /* UFFD_FEATURE_MINOR_SHMEM */
 
+#ifndef HAVE_STRUCT_UFFDIO_MOVE
+#define _UFFDIO_MOVE			(0x05)
+#define UFFDIO_MOVE		_IOWR(UFFDIO, _UFFDIO_MOVE,     \
+				      struct uffdio_move)
+
+struct uffdio_move {
+	__u64 dst;
+	__u64 src;
+	__u64 len;
+	/*
+	 * Especially if used to atomically remove memory from the
+	 * address space the wake on the dst range is not needed.
+	 */
+#define UFFDIO_MOVE_MODE_DONTWAKE		((__u64)1<<0)
+#define UFFDIO_MOVE_MODE_ALLOW_SRC_HOLES	((__u64)1<<1)
+	__u64 mode;
+	/*
+	 * "move" is written by the ioctl and must be at the end: the
+	 * copy_from_user will not read the last 8 bytes.
+	 */
+	__s64 move;
+};
+#endif	/* HAVE_STRUCT_UFFDIO_MOVE */
+
 #define SAFE_USERFAULTFD(flags, retry) \
 	safe_userfaultfd(__FILE__, __LINE__, (flags), (retry))
 

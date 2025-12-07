@@ -277,6 +277,8 @@ AC_CHECK_TYPES([struct sockaddr_vm],,,[
 #include <linux/vm_sockets.h>
 ])
 
+AC_CHECK_TYPES([struct uffdio_move],,,[#include <linux/userfaultfd.h>])
+
 # Tools knobs
 
 # Bash
