@@ -14,3 +14,4 @@ include $(top_srcdir)/include/mk/generic_leaf_target.mk
 userfaultfd01: CFLAGS += -pthread
 userfaultfd02: CFLAGS += -pthread
 userfaultfd03: CFLAGS += -pthread
+userfaultfd04: CFLAGS += -pthread
