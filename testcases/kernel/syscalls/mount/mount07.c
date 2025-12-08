@@ -6,12 +6,12 @@
 
 /*\
  * It is a basic test for MS_NOSYMFOLLOW mount option and is copied
- * from kernel selftests nosymfollow-test.c.
+ * from :kselftest:`mount/nosymfollow-test.c`.
  *
  * It tests to make sure that symlink traversal fails with ELOOP when
  * 'nosymfollow' is set, but symbolic links can still be created, and
- * readlink(2) and realpath(3) still work properly. It also verifies
- * that statfs(2) correctly returns ST_NOSYMFOLLOW.
+ * :man2:`readlink` and :man3:`realpath` still work properly. It also verifies
+ * that :man2:`statfs` correctly returns ST_NOSYMFOLLOW.
  */
 
 #include <limits.h>

@@ -5,10 +5,10 @@
  */
 
 /*\
- * Check the basic functionality of the unlink(2):
+ * Test the basic functionality of :man2:`unlink`:
  *
- * - unlink(2) can delete regular file successfully.
- * - unlink(2) can delete fifo file successfully.
+ * - :man2:`unlink` can delete regular file successfully
+ * - :man2:`unlink` can delete fifo file successfully
  */
 
 #include <errno.h>

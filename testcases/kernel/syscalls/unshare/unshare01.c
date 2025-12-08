@@ -6,12 +6,12 @@
  */
 
 /*\
- * Basic tests for the unshare() syscall.
+ * Basic tests for the :man2:`unshare` syscall.
  *
  * [Algorithm]
  *
- * Calls unshare() for different CLONE_* flags in a child process and expects
- * them to succeed.
+ * Calls :man2:`unshare` for different CLONE_* flags in a child process and
+ * expects them to succeed.
  */
 
 #define _GNU_SOURCE

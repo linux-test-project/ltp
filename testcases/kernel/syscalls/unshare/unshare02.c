@@ -5,7 +5,7 @@
  */
 
 /*\
- * Basic tests for the unshare(2) errors.
+ * Basic tests for the :man2:`unshare` errors.
  *
  * - EINVAL on invalid flags
  * - EPERM when process is missing required privileges
