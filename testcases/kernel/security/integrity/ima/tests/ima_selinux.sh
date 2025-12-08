@@ -18,13 +18,12 @@ TST_SETUP="setup"
 TST_MIN_KVER="5.12"
 
 REQUIRED_POLICY_CONTENT='selinux.policy'
+REQUIRED_BUILTIN_POLICY='critical_data'
 
 setup()
 {
 	SELINUX_DIR=$(tst_get_selinux_dir)
 	[ "$SELINUX_DIR" ] || tst_brk TCONF "SELinux is not enabled"
-
-	require_ima_policy_cmdline "critical_data"
 }
 
 # Format of the measured SELinux state data.
