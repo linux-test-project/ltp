@@ -3,19 +3,14 @@
  * Copyright (C) 2024 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
-/**
+/*\
  * CVE-2024-42318
  *
  * Test to check if system is affected by Landlock Houdini bug:
  * https://www.suse.com/security/cve/CVE-2024-42318.html
  *
  * Kernel bug fixed in:
- *
- *  commit 39705a6c29f8a2b93cf5b99528a55366c50014d1
- *  Author: Jann Horn <jannh@google.com>
- *  Date:   Wed Jul 24 14:49:01 2024 +0200
- *
- *  landlock: Don't lose track of restrictions on cred_transfer
+ * 39705a6c29f8a ("landlock: Don't lose track of restrictions on cred_transfer") # v6.11-rc1
  */
 
 #include "tst_test.h"
