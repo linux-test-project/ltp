@@ -2,18 +2,16 @@
 /*
  * Copyright (c) 2019 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
- *
- * Test userfaultfd
- *
- * Force a pagefault event and handle it using userfaultfd
- * from a different thread
+ */
+
+ /*\
+ * Force a pagefault event and handle it using :man2:`userfaultfd`
+ * from a different thread.
  */
 
 #include "config.h"
-#include "tst_test.h"
-
 #include <poll.h>
-
+#include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "tst_safe_pthread.h"
 #include "lapi/userfaultfd.h"
@@ -49,14 +47,12 @@ static void handle_thread(void)
 	pollfd.events = POLLIN;
 	nready = poll(&pollfd, 1, -1);
 	if (nready == -1)
-		tst_brk(TBROK | TERRNO,
-				"Error on poll");
+		tst_brk(TBROK | TERRNO, "Error on poll");
 
 	SAFE_READ(1, uffd, &msg, sizeof(msg));
 
 	if (msg.event != UFFD_EVENT_PAGEFAULT)
-		tst_brk(TBROK | TERRNO,
-				"Received unexpected UFFD_EVENT");
+		tst_brk(TBROK | TERRNO, "Received unexpected UFFD_EVENT");
 
 	memset(copy_page, 'X', page_size);
 
