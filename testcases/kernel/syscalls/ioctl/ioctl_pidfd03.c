@@ -4,9 +4,9 @@
  */
 
 /*\
- * Verify that ioctl() returns ESRCH when a process attempts to access the
- * exit status of an isolated child using `PIDFD_GET_INFO` and
- * `PIDFD_INFO_EXIT` is not defined in `struct pidfd_info`.
+ * Verify that :man2:`ioctl` returns ESRCH when a process attempts to access the
+ * exit status of an isolated child using PIDFD_GET_INFO and PIDFD_INFO_EXIT
+ * is not defined in struct pidfd_info.
  */
 
 #include "ioctl_pidfd.h"

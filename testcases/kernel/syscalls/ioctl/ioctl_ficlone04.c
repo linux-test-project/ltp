@@ -4,8 +4,8 @@
  */
 
 /*\
- * This test verifies that ioctl() FICLONE/FICLONERANGE feature raises the right
- * error according with bad file descriptors.
+ * This test verifies that :man2:`ioctl` FICLONE/FICLONERANGE feature raises the
+ * right error according with bad file descriptors.
  */
 
 #include "tst_test.h"

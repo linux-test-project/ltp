@@ -4,8 +4,8 @@
  */
 
 /*\
- * This test verifies that ioctl() FICLONE/FICLONERANGE feature correctly raises
- * exceptions when it's supposed to.
+ * This test verifies that :man2:`ioctl` FICLONE/FICLONERANGE feature correctly
+ * raises exceptions when it's supposed to.
  */
 
 #include "tst_test.h"

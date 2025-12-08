@@ -4,8 +4,8 @@
  */
 
 /*\
- * Verify that ioctl() raises the right errors when an application provides
- * the wrong file descriptor.
+ * Verify that :man2:`ioctl` raises the right errors when an application
+ * provides wrong file descriptor.
  */
 
 #include "ioctl_pidfd.h"

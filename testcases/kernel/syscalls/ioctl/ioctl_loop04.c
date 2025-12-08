@@ -6,7 +6,7 @@
  */
 
 /*\
- * Tests ioctl() on loopdevice with LOOP_SET_CAPACITY flag.
+ * Tests :man2:`ioctl` on loopdevice with LOOP_SET_CAPACITY flag.
  *
  * Tests whether LOOP_SET_CAPACITY can update a live
  * loop device size after change the size of the underlying

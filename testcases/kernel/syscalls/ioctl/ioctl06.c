@@ -4,7 +4,7 @@
  */
 
 /*\
- * Basic test for the BLKRASET and BLKRAGET ioctls.
+ * Basic test for :man2:`ioctl` with BLKRASET and BLKRAGET.
  *
  * Sets device read-ahead, reads it back and compares the values.
  *

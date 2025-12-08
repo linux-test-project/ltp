@@ -8,7 +8,7 @@
  */
 
 /*\
- * Testcase to check the errnos set by the ioctl(2) system call.
+ * Testcase to check the errnos set by the :man2:`ioctl` system call.
  *
  * - EBADF: Pass an invalid fd to ioctl(fd, ...) and expect EBADF
  * - EFAULT: Pass an invalid address of arg in ioctl(fd, ..., arg)

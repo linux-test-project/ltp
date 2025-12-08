@@ -4,7 +4,7 @@
  */
 
 /*\
- * Basic test for the BLKGETSIZE and BLKGETSIZE64 ioctls.
+ * Basic test for :man2:`ioctl` with BLKGETSIZE and BLKGETSIZE64.
  *
  * - BLKGETSIZE returns size in 512 byte blocks BLKGETSIZE64 in bytes
  *   compare that they return the same value.

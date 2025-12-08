@@ -4,7 +4,7 @@
  */
 
 /*\
- * Check if the ioctl() function allows retrieval of a child's exit code
+ * Check if the :man2:`ioctl` function allows retrieval of a child's exit code
  * using PIDFD_INFO_EXIT from a process that can be isolated or not from the
  * child.
  */

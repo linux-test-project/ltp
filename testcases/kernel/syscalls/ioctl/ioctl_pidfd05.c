@@ -4,8 +4,8 @@
  */
 
 /*\
- * Verify that ioctl() raises an EINVAL or ENOTTY (since v6.18-rc1) error when
- * PIDFD_GET_INFO is used. This happens when:
+ * Verify that :man2:`ioctl` raises an EINVAL or ENOTTY (since v6.18-rc1) error
+ * when PIDFD_GET_INFO is used. This happens when:
  *
  * - info parameter is NULL
  * - info parameter is providing the wrong size

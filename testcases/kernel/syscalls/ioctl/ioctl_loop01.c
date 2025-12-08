@@ -6,7 +6,8 @@
  */
 
 /*\
- * Tests ioctl() on loopdevice with LO_FLAGS_AUTOCLEAR and LO_FLAGS_PARTSCAN flags.
+ * Tests :man2:`ioctl` on loopdevice with LO_FLAGS_AUTOCLEAR and
+ * LO_FLAGS_PARTSCAN flags.
  *
  * For LO_FLAGS_AUTOCLEAR flag, only checks autoclear field value in sysfs
  * and also gets lo_flags by using LOOP_GET_STATUS.

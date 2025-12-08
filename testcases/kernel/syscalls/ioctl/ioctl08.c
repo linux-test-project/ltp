@@ -5,7 +5,7 @@
  */
 
 /*\
- * Tests the ioctl functionality to deduplicate fileranges using
+ * Tests :man2:`ioctl` functionality to deduplicate fileranges using
  * btrfs filesystem.
  *
  * 1. Sets the same contents for two files and deduplicates it.

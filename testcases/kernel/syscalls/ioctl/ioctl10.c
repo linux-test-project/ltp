@@ -4,7 +4,7 @@
  */
 
 /*\
- * Test PROCMAP_QUERY ioctl() for /proc/$PID/maps.
+ * Test PROCMAP_QUERY :man2:`ioctl` for /proc/$PID/maps.
  *
  * Test based on :kselftest:`proc/proc-pid-vm.c`.
  *

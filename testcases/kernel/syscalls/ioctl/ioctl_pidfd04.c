@@ -4,8 +4,8 @@
  */
 
 /*\
- * Verify that ioctl() permits to obtain the exit code of an isolated signaled
- * child via PIDFD_INFO_EXIT from within a process.
+ * Verify that :man2:`ioctl` permits to obtain the exit code of an isolated
+ * signaled child via PIDFD_INFO_EXIT from within a process.
  */
 
 #include "ioctl_pidfd.h"
