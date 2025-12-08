@@ -85,8 +85,8 @@ static inline key_serial_t wqueue_add_key(int fd)
 	if (key == -1)
 		tst_brk(TBROK, "add_key error: %s", tst_strerrno(errno));
 
-	keyctl(KEYCTL_WATCH_KEY, key, fd, 0x01);
-	keyctl(KEYCTL_WATCH_KEY, KEY_SPEC_SESSION_KEYRING, fd, 0x02);
+	SAFE_KEYCTL(KEYCTL_WATCH_KEY, key, fd, 0x01, 0);
+	SAFE_KEYCTL(KEYCTL_WATCH_KEY, KEY_SPEC_SESSION_KEYRING, fd, 0x02, 0);
 
 	return key;
 }
