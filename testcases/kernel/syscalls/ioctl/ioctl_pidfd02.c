@@ -81,5 +81,10 @@ static struct tst_test test = {
 		{&info0, .size = sizeof(*info0)},
 		{&info1, .size = sizeof(*info1)},
 		{}
+	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		"CONFIG_PID_NS",
+		NULL
 	}
 };
