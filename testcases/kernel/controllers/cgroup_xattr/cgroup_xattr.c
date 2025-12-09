@@ -289,7 +289,6 @@ int mount_cgroup(void)
 
 	int i, any_mounted = 0;
 	for (i = 0; i < cgrp_opt_num; ++i) {
-		char dir[MAX_DIR_NAME];
 		struct cgrp_option *opt = &cgrp_opt[i];
 		tst_resm(TINFO, "mount options %d: %s (hier = %d)",
 			i, opt->str, opt->hier);
@@ -297,7 +296,7 @@ int mount_cgroup(void)
 		SAFE_MKDIR(cleanup, opt->dir, 0755);
 
 		if (mount(opt->dir, opt->dir, "cgroup", 0, opt->str) == -1) {
-			tst_resm(TINFO, "Can't mount: %s", dir);
+			tst_resm(TINFO, "Can't mount: %s", opt->dir);
 			continue;
 		}
 
