@@ -34,6 +34,9 @@ test2()
 
 	if grep -q "$LONG_PATH.*No such file or directory" mkdir.out; then
 		tst_res TPASS "Got correct error message"
+	elif grep -q "mkdir: No such file or directory" mkdir.out; then
+		# mkdir from rust coreutils doesn't print the directory path
+		tst_res TPASS "Got correct error message"
 	else
 		tst_res TFAIL "Got wrong error message"
 		cat mkdir.out
