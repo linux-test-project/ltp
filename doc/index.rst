@@ -19,6 +19,7 @@
    :hidden:
    :caption: For developers
 
+   developers/ground_rules
    developers/setup_mailinglist
    developers/writing_tests
    developers/test_case_tutorial
