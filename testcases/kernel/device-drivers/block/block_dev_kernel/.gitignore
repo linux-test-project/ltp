@@ -5,3 +5,4 @@
 /.*.ko
 /.*.cmd
 /Module.symvers
+/modules.livepatch
