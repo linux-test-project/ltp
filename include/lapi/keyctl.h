@@ -212,7 +212,8 @@ static inline long safe_keyctl(const char *file, const int lineno,
 
 	rval = keyctl(cmd, arg2, arg3, arg4, arg5);
 	if (rval == -1) {
-		tst_brk_(file, lineno, TBROK | TERRNO,
+		tst_brk_(file, lineno,
+			(errno == EOPNOTSUPP ? TCONF : TBROK) | TERRNO,
 			"keyctl(%d, %lu, %lu, %lu, %lu)",
 			cmd, arg2, arg3, arg4, arg5);
 	}
