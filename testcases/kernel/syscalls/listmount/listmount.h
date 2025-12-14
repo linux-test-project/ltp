@@ -15,7 +15,7 @@
 static inline ssize_t listmount(uint64_t mnt_id, uint64_t last_mnt_id,
 			 uint64_t list[], size_t num, unsigned int flags)
 {
-	struct mnt_id_req req = {
+	mnt_id_req req = {
 		.size = MNT_ID_REQ_SIZE_VER0,
 		.mnt_id = mnt_id,
 		.param = last_mnt_id,

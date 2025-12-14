@@ -14,14 +14,18 @@
 
 #define _GNU_SOURCE
 
+#include "config.h"
 #include "tst_test.h"
 #include "lapi/mount.h"
 #include "lapi/syscalls.h"
 
 #define MNT_SIZE 32
+#define BEFORE_6_18 1
+#define AFTER_6_18 2
 
-static struct mnt_id_req *request;
+static mnt_id_req *request;
 static uint64_t mnt_ids[MNT_SIZE];
+static int kver;
 
 static struct tcase {
 	int req_usage;
@@ -34,6 +38,7 @@ static struct tcase {
 	uint64_t flags;
 	int exp_errno;
 	char *msg;
+	int kver;
 } tcases[] = {
 	{
 		.req_usage = 0,
@@ -79,6 +84,18 @@ static struct tcase {
 		.nr_mnt_ids = MNT_SIZE,
 		.exp_errno = EINVAL,
 		.msg = "invalid mnt_id_req.spare",
+		.kver = BEFORE_6_18,
+	},
+	{
+		.req_usage = 1,
+		.size = MNT_ID_REQ_SIZE_VER0,
+		.spare = -1,
+		.mnt_id = LSMT_ROOT,
+		.mnt_ids = mnt_ids,
+		.nr_mnt_ids = MNT_SIZE,
+		.exp_errno = EBADF,
+		.msg = "invalid mnt_id_req.mnt_ns_fd",
+		.kver = AFTER_6_18,
 	},
 	{
 		.req_usage = 1,
@@ -113,7 +130,12 @@ static struct tcase {
 static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
-	struct mnt_id_req *req = NULL;
+	mnt_id_req *req = NULL;
+
+	if (tc->kver && tc->kver != kver) {
+		tst_res(TCONF, "Test not suitable for current kernel version");
+		return;
+	}
 
 	memset(mnt_ids, 0, sizeof(mnt_ids));
 
@@ -122,7 +144,7 @@ static void run(unsigned int n)
 		req->mnt_id = tc->mnt_id;
 		req->param = tc->param;
 		req->size = tc->size;
-		req->spare = tc->spare;
+		req->mnt_ns_fd = tc->spare;
 	}
 
 	TST_EXP_FAIL(tst_syscall(__NR_listmount, req, tc->mnt_ids,
@@ -130,8 +152,17 @@ static void run(unsigned int n)
 		"%s", tc->msg);
 }
 
+static void setup(void)
+{
+	if (tst_kvercmp(6, 18, 0) >= 0)
+		kver = AFTER_6_18;
+	else
+		kver = BEFORE_6_18;
+}
+
 static struct tst_test test = {
 	.test = run,
+	.setup = setup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.min_kver = "6.11",
 	.bufs = (struct tst_buffers []) {

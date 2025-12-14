@@ -45,14 +45,18 @@
 # define MS_NOSYMFOLLOW 256
 #endif
 
-#ifndef HAVE_STRUCT_MNT_ID_REQ
-struct mnt_id_req {
+struct mnt_id_req_fallback {
 	uint32_t size;
-	uint32_t spare;
+	uint32_t mnt_ns_fd;
 	uint64_t mnt_id;
 	uint64_t param;
 	uint64_t mnt_ns_id;
 };
+
+#ifndef HAVE_STRUCT_MNT_ID_REQ_MNT_NS_FD
+typedef struct mnt_id_req_fallback mnt_id_req;
+#else
+typedef struct mnt_id_req mnt_id_req;
 #endif
 
 #ifndef HAVE_STRUCT_STATMOUNT
