@@ -155,7 +155,7 @@ jobs:
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
         git checkout -b review_patch_series_"${{ inputs.SERIES_ID }}"
-        curl -k "${{ inputs.SERIES_MBOX }}" | git am
+        curl -k -L --retry 3 --max-redirs 1 --location-trusted "${{ inputs.SERIES_MBOX }}" | git am
 
         ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-review-ack"
 
