@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2023 Petr Vorel <pvorel@suse.cz>
 # Tag LTP release.
-# https://github.com/linux-test-project/ltp/wiki/LTP-Release-Procedure
+# https://linux-test-project.readthedocs.io/en/latest/maintainers/ltp_release_procedure.html
 
 basedir="$(dirname "$0")"
 cd "$basedir/.."
