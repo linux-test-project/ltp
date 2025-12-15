@@ -15,39 +15,50 @@
 
 #ifdef TST_TEST_H__
 
-/*
- * Waits for process state change.
+/**
+ * TST_PROCESS_STATE_WAIT() - Waits for a process state change.
  *
- * The state is one of the following:
+ * Polls `/proc/$PID/state` for a process state changes.
  *
- * R - process is running
- * S - process is sleeping
- * D - process sleeping uninterruptibly
- * Z - zombie process
- * T - process is traced
+ * @pid: A process pid.
+ * @state: A state to wait for.
+ * @msec_timeout: A timeout for the wait.
+ *
+ * Possible process states (see :manpage:`ps(1)`):
+ *
+ * - **R** Process is running.
+ * - **S** Process is sleeping.
+ * - **D** Process sleeping uninterruptibly.
+ * - **Z** Zombie process.
+ * - **T** Process is traced.
+ * - **t** Tracing stopped.
+ * - **X** Process id dead.
  */
 #define TST_PROCESS_STATE_WAIT(pid, state, msec_timeout) \
 	tst_process_state_wait(__FILE__, __LINE__, NULL, \
 			(pid), (state), (msec_timeout))
 
-/*
- * Check that a given pid is present on the system
+/**
+ * TST_PROCESS_EXIT_WAIT() - Waits while pid is present on the system.
+ *
+ * Loops until `kill($PID, 0)` succeds or timeout is reached.
+ *
+ * @pid: A process pid.
+ * @msec_timeout: A timeout for the wait.
  */
 #define TST_PROCESS_EXIT_WAIT(pid, msec_timeout) \
 	tst_process_exit_wait((pid), (msec_timeout))
 
-/*
- * Waits for thread state change.
+/**
+ * TST_THREAD_STATE_WAIT() - Waits for a thread state change.
  *
- * The state is one of the following:
+ * Polls `/proc/self/task/$TID/state` for a thread state change.
  *
- * R - running
- * S - sleeping
- * D - disk sleep
- * T - stopped
- * t - tracing stopped
- * Z - zombie
- * X - dead
+ * Possible thread states are the same as for TST_PROCESS_STATE_WAIT().
+ *
+ * @tid: A thread tid.
+ * @state: A state to wait for.
+ * @msec_timeout: A timeout for the wait.
  */
 #define TST_THREAD_STATE_WAIT(tid, state, msec_timeout) \
 	tst_thread_state_wait((tid), (state), (msec_timeout))

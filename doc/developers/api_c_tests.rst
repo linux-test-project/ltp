@@ -43,6 +43,11 @@ Kernel
 .. kernel-doc:: ../../include/tst_kernel.h
 .. kernel-doc:: ../../include/tst_kvercmp.h
 
+Process state
+-------------
+
+.. kernel-doc:: ../../include/tst_process_state.h
+
 NUMA
 ----
 .. kernel-doc:: ../../include/tst_numa.h
