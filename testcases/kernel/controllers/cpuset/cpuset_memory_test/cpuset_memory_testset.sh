@@ -344,7 +344,7 @@ talk2memory_test_for_case_12_13()
 	sleep 1
 	echo $1 > "$2/tasks"
 	/bin/kill -s SIGUSR1 $1
-
+	sleep 1
 	echo 0 > "$2/cpuset.mems" || return 1
 	sleep 1
 	/bin/kill -s SIGUSR1 $1
