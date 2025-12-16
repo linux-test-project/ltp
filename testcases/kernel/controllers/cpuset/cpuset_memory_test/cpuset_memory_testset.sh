@@ -63,6 +63,7 @@ simple_getresult()
 
 test1()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -80,6 +81,7 @@ test1()
 
 test2()
 {
+	tst_resm TINFO "$1: Testing file memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -97,6 +99,7 @@ test2()
 
 test3()
 {
+	tst_resm TINFO "$1: Testing SHM memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -114,6 +117,7 @@ test3()
 
 test4()
 {
+	tst_resm TINFO "$1: Testing pre-mlocked anonymous memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -131,6 +135,7 @@ test4()
 
 test5()
 {
+	tst_resm TINFO "$1: Testing mlocked anonymous memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -162,6 +167,7 @@ check_hugetlbfs()
 
 test6()
 {
+	tst_resm TINFO "$1: Testing hugepage SHM memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -201,6 +207,7 @@ test6()
 
 test7()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation on node 0"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -218,6 +225,7 @@ test7()
 
 test8()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation on node 1"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "1" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -254,6 +262,7 @@ talk2memory_test_for_case_10_11()
 
 test9()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation in multiple cpusets"
 	cpuset_set "$CPUSET/1" "$cpus_all" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -292,6 +301,7 @@ test9()
 
 test10()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation in multiple cpusets with migration"
 	cpuset_set "$CPUSET/1" "$cpus_all" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -358,6 +368,7 @@ talk2memory_test_for_case_12_13()
 
 test11()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation on multiple nodes without migration"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "1" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -386,6 +397,7 @@ test11()
 
 test12()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation on multiple nodes with migration"
 	cpuset_set "$CPUSET/0" "$cpu_of_node0" "1" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -442,6 +454,7 @@ get_the_second()
 
 test13()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation in multiple cpusets with threads"
 	cpuset_set "$CPUSET/1" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -490,6 +503,7 @@ test13()
 
 test14()
 {
+	tst_resm TINFO "$1: Testing anonymous memory allocation in multiple cpusets with threads and migration"
 	cpuset_set "$CPUSET/1" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -546,6 +560,7 @@ test14()
 
 test15()
 {
+	tst_resm TINFO "$1: Testing anonymous memory reallocation in multiple cpusets with threads and migration"
 	cpuset_set "$CPUSET/1" "$cpu_of_node0" "0" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -613,6 +628,7 @@ test15()
 
 test16()
 {
+	tst_resm TINFO "$1: Testing anonymous memory reallocation in multiple cpusets with threads and migration"
 	cpuset_set "$CPUSET/1" "$cpu_of_node0" "1" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -688,6 +704,7 @@ test16()
 
 test17()
 {
+	tst_resm TINFO "$1: Testing anonymous memory reallocation in multiple cpusets with threads and migration"
 	cpuset_set "$CPUSET/1" "$cpu_of_node0" "1" "0" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
@@ -774,7 +791,7 @@ do
 	if [ $? -ne 0 ]; then
 		exit_status=1
 	else
-		test$c
+		test$c $c
 		if [ $? -ne 0 ]; then
 			exit_status=1
 			cleanup
