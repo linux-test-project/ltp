@@ -12,6 +12,7 @@ TST_CLEANUP="ima_cleanup"
 TST_NEEDS_ROOT=1
 TST_MOUNT_DEVICE=1
 TST_SKIP_LSM_WARNINGS=1
+TST_USAGE="usage"
 
 # TST_MOUNT_DEVICE can be unset, therefore specify explicitly
 TST_NEEDS_TMPDIR=1
@@ -22,6 +23,21 @@ TST_FS_TYPE="ext3"
 
 IMA_FAIL="TFAIL"
 IMA_BROK="TBROK"
+
+usage()
+{
+	echo "Test Specific Environment Variables"
+	echo "-----------------------------------"
+
+	cat >&2 << EOF
+LTP_IMA_LOAD_POLICY=1     Load IMA example policy which some tests require
+                          NOTE: This requires to reboot SUT unless kernel
+                          configured with CONFIG_IMA_WRITE_POLICY=y
+EOF
+	echo
+	echo "Options"
+	echo "-------"
+}
 
 # TODO: find support for rmd128 rmd256 rmd320 wp256 wp384 tgr128 tgr160
 compute_digest()
