@@ -68,9 +68,6 @@ users.
        both up and down with this multiplier. This is not yet implemented in the
        shell API.
 
-   * - LTP_IMA_LOAD_POLICY
-     - Load IMA example policy, see :master:`testcases/kernel/security/integrity/ima/README.md`.
-
    * - LTP_VIRT_OVERRIDE
      - Overrides virtual machine detection in the test library. Setting it to
        empty string, tells the library that system is not a virtual machine.
@@ -92,9 +89,30 @@ users.
    * - LTP_ENABLE_DEBUG
      - Enable debug info (value ``1`` or ``y``). Equivalent of ``-D`` parameter.
 
-Environment variables for network tests
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-See :master:`testcases/network/README.md`.
+Test specific environment variables
+-----------------------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Tests
+     - Variable
+     - Note
+
+   * - IMA
+     - LTP_IMA_LOAD_POLICY=1
+     - Load IMA example policy, see
+       :master:`testcases/kernel/security/integrity/ima/README.md`.
+
+   * - NFS
+     - LTP_NFS_NETNS_USE_LO=1
+     - NFS traffic will go through loopback interface instead of ltp_ns_veth*
+       netns interfaces (useful for debugging whether test failures are related
+       to veth/netns).
+
+   * - Network
+     - *various*
+     - See :master:`testcases/network/README.md`.
 
 Test execution time and timeout
 -------------------------------
