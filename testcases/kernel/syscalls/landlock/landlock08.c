@@ -102,12 +102,28 @@ static void test_connect(const int addr_family, const in_port_t port,
 	SAFE_CLOSE(socket.fd);
 }
 
+static int check_ipv6_support(void)
+{
+	int fd;
+
+	fd = socket(AF_INET6, SOCK_STREAM, 0);
+	if (fd == -1 && errno == EAFNOSUPPORT) {
+		tst_res(TCONF, "IPv6 not supported in kernel");
+		return 0;
+	}
+	if (fd != -1)
+		close(fd);
+	return 1;
+}
+
 static void run(void)
 {
 	int addr_family = variants[tst_variant];
 
 	tst_res(TINFO, "Using %s protocol",
 		addr_family == AF_INET ? "IPV4" : "IPV6");
+	if (addr_family == AF_INET6 && !check_ipv6_support())
+		return;
 
 	if (!SAFE_FORK()) {
 		create_server(addr_family);
