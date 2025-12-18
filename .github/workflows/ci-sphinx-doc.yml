@@ -9,6 +9,16 @@ on:
     - master
   pull_request:
     paths: ['doc/**']
+  workflow_dispatch:
+    inputs:
+      SERIES_ID:
+        description: LTP patch series ID
+        required: false
+        default: ''
+      SERIES_MBOX:
+        description: LTP patch series URL
+        required: false
+        default: ''
 
 permissions: {}
 
@@ -26,10 +36,35 @@ jobs:
           sudo apt update
           sudo apt install autoconf make python3-virtualenv
 
+      - name: Apply Patchwork series
+        if: inputs.SERIES_ID != '' && inputs.SERIES_MBOX != ''
+        env:
+          PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
+        run: |
+          git config --global user.name 'GitHub CI'
+          git config --global user.email 'github@example.com'
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          git checkout -b review_patch_series_"${{ inputs.SERIES_ID }}"
+          curl -k "${{ inputs.SERIES_MBOX }}" | git am
+
+          ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-review-ack"
+
       - name: Run configure
         run: |
           cd "$GITHUB_WORKSPACE/ltp/"
           make autotools && ./configure
+
+      - name: Send results to Patchwork
+        if: always() && inputs.SERIES_ID != '' && inputs.SERIES_MBOX != ''
+        env:
+          PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
+        run: |
+          ./ci/tools/patchwork.sh check \
+            "${{ inputs.SERIES_ID }}" \
+            "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "${{ matrix.container }}" \
+            "${{ job.status }}"
 
       - name: Install sphinx dependencies
         run: |

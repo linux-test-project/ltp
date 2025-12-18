@@ -43,6 +43,11 @@ jobs:
               return;
             }
 
+            const workflows = [
+              'ci-docker-build.yml',
+              'ci-sphinx-doc.yml'
+            ];
+
             for (const data of lines) {
               const [series_id, series_mbox] = data.split('|');
               if (series_id.length === 0 || series_mbox.length === 0) {
@@ -50,16 +55,18 @@ jobs:
                 continue;
               }
 
-              const response = await github.rest.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: context.ref,
-                workflow_id: 'ci-docker-build.yml',
-                inputs: {
-                  SERIES_ID: series_id,
-                  SERIES_MBOX: series_mbox,
-                }
-              });
+              for (const workflow in workflows) {
+                const response = await github.rest.actions.createWorkflowDispatch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: context.ref,
+                  workflow_id: workflow,
+                  inputs: {
+                    SERIES_ID: series_id,
+                    SERIES_MBOX: series_mbox,
+                  }
+                });
 
-              console.log(response);
+                console.log(response);
+              };
             }
