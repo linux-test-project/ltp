@@ -35,7 +35,7 @@ static void set_pages(void)
 			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
-static void handle_thread(void)
+static void *handle_thread(void)
 {
 	static struct uffd_msg msg;
 	struct uffdio_copy uffdio_copy;
@@ -66,6 +66,7 @@ static void handle_thread(void)
 	SAFE_IOCTL(uffd, UFFDIO_COPY, &uffdio_copy);
 
 	close(uffd);
+	return NULL;
 }
 
 static void run(void)
@@ -99,8 +100,7 @@ static void run(void)
 
 	SAFE_IOCTL(uffd, UFFDIO_REGISTER, &uffdio_register);
 
-	SAFE_PTHREAD_CREATE(&thr, NULL,
-			(void * (*)(void *)) handle_thread, NULL);
+	SAFE_PTHREAD_CREATE(&thr, NULL, (void *) handle_thread, NULL);
 
 	char c = page[0xf];
 
