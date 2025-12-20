@@ -36,7 +36,6 @@
 
 static char testfile[PATH_MAX] = "testfile";
 #define DROP_CACHES_FNAME "/proc/sys/vm/drop_caches"
-#define MEMINFO_FNAME "/proc/meminfo"
 #define PROC_IO_FNAME "/proc/self/io"
 #define DEFAULT_FILESIZE (64 * 1024 * 1024)
 #define INITIAL_SHORT_SLEEP_US 10000
@@ -110,13 +109,45 @@ static unsigned long get_bytes_read(void)
 	return ret;
 }
 
-static unsigned long get_cached_size(void)
+static unsigned long get_file_cached_bytes(const char *path, size_t length)
 {
-	unsigned long ret;
+	size_t pagecnt, resident = 0;
+	size_t map_len;
+	unsigned char *vec;
+	void *addr;
+	int fd;
+	size_t i;
 
-	SAFE_FILE_LINES_SCANF(MEMINFO_FNAME, "Cached: %lu", &ret);
+	if (!length)
+		return 0;
 
-	return ret;
+	fd = SAFE_OPEN(path, O_RDONLY);
+
+	pagecnt = LTP_ALIGN(length, pagesize) / pagesize;
+	map_len = pagecnt * pagesize;
+
+	addr = SAFE_MMAP(NULL, map_len, PROT_NONE, MAP_SHARED, fd, 0);
+	vec = SAFE_MALLOC(pagecnt);
+
+	if (mincore(addr, map_len, vec) == -1)
+		tst_brk(TBROK | TERRNO, "mincore");
+
+	for (i = 0; i < pagecnt; i++) {
+		size_t chunk = pagesize;
+		size_t tail = length % pagesize;
+
+		if (i == pagecnt - 1 && tail)
+			chunk = tail;
+
+		if (vec[i] & 1)
+			resident += chunk;
+	}
+
+	free(vec);
+	SAFE_MUNMAP(addr, map_len);
+	SAFE_CLOSE(fd);
+
+	return resident;
 }
 
 static void create_testfile(int use_overlay)
@@ -150,7 +181,7 @@ static void create_testfile(int use_overlay)
  * @fsize: how many bytes to read/mmap
  * @read_bytes: returns difference of bytes read, parsed from /proc/<pid>/io
  * @usec: returns how many microsecond it took to go over fsize bytes
- * @cached: returns cached kB from /proc/meminfo
+ * @cached: returns cached bytes for @fname via mincore()
  */
 static int read_testfile(struct tcase *tc, int do_readahead,
 			 const char *fname, size_t fsize,
@@ -162,6 +193,7 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 	long read_bytes_start;
 	unsigned char *p, tmp;
 	off_t offset = 0;
+	unsigned long cached_prev = 0, cached_cur = 0;
 
 	fd = SAFE_OPEN(fname, O_RDONLY);
 
@@ -197,16 +229,16 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 			 * long a cache is increasing which will gives us high
 			 * chance of waiting for the readahead to happen.
 			 */
-			unsigned long cached_prev, cached_cur = get_cached_size();
+			cached_cur = get_file_cached_bytes(fname, fsize);
 			int retries = readahead_length / (5 * SHORT_SLEEP_US);
 
-			tst_res(TDEBUG, "Readahead cached %lu", cached_cur);
+			tst_res(TDEBUG, "Per-file cached: %lu kB", cached_cur / 1024);
 
 			do {
 				usleep(SHORT_SLEEP_US);
 
 				cached_prev = cached_cur;
-				cached_cur = get_cached_size();
+				cached_cur = get_file_cached_bytes(fname, fsize);
 
 				if (cached_cur <= cached_prev)
 					break;
@@ -216,7 +248,7 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 
 		tst_res(TINFO, "readahead calls made: %zu", i);
 
-		*cached = get_cached_size();
+		*cached = get_file_cached_bytes(fname, fsize);
 
 		/* offset of file shouldn't change after readahead */
 		offset = SAFE_LSEEK(fd, 0, SEEK_CUR);
@@ -240,7 +272,7 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 		tst_brk(TBROK, "This line should not be reached");
 
 	if (!do_readahead)
-		*cached = get_cached_size();
+		*cached = get_file_cached_bytes(fname, fsize);
 
 	SAFE_MUNMAP(p, fsize);
 
@@ -257,7 +289,7 @@ static void test_readahead(unsigned int n)
 {
 	unsigned long read_bytes, read_bytes_ra;
 	long long usec, usec_ra;
-	unsigned long cached_high, cached_low, cached, cached_ra;
+	unsigned long cached, cached_ra;
 	int ret;
 	struct tcase *tc = &tcases[n];
 
@@ -270,26 +302,20 @@ static void test_readahead(unsigned int n)
 
 	create_testfile(tc->use_overlay);
 
-	/* find out how much can cache hold if we read whole file */
 	read_testfile(tc, 0, testfile, testfile_size, &read_bytes, &usec,
 		      &cached);
-	cached_high = get_cached_size();
+	cached_max = MAX(cached_max, cached);
+
+	/* ensure the measured baseline run starts from cold cache */
 	sync();
 	drop_caches();
-	cached_low = get_cached_size();
-	cached_max = MAX(cached_max, cached_high - cached_low);
-
 	tst_res(TINFO, "read_testfile(0)");
 	read_testfile(tc, 0, testfile, testfile_size, &read_bytes, &usec,
 		      &cached);
-	if (cached > cached_low)
-		cached = cached - cached_low;
-	else
-		cached = 0;
+	cached_max = MAX(cached_max, cached);
 
 	sync();
 	drop_caches();
-	cached_low = get_cached_size();
 	tst_res(TINFO, "read_testfile(1)");
 	ret = read_testfile(tc, 1, testfile, testfile_size, &read_bytes_ra,
 			    &usec_ra, &cached_ra);
@@ -319,11 +345,6 @@ static void test_readahead(unsigned int n)
 		return;
 	}
 
-	if (cached_ra > cached_low)
-		cached_ra = cached_ra - cached_low;
-	else
-		cached_ra = 0;
-
 	tst_res(TINFO, "read_testfile(0) took: %lli usec", usec);
 	tst_res(TINFO, "read_testfile(1) took: %lli usec", usec_ra);
 	if (has_file(PROC_IO_FNAME, 0)) {
@@ -340,16 +361,16 @@ static void test_readahead(unsigned int n)
 			" unable to determine read bytes during test");
 	}
 
-	tst_res(TINFO, "cache can hold at least: %ld kB", cached_max);
-	tst_res(TINFO, "read_testfile(0) used cache: %ld kB", cached);
-	tst_res(TINFO, "read_testfile(1) used cache: %ld kB", cached_ra);
+	tst_res(TINFO, "cache can hold at least: %ld kB", cached_max / 1024);
+	tst_res(TINFO, "read_testfile(0) used cache: %ld kB", cached / 1024);
+	tst_res(TINFO, "read_testfile(1) used cache: %ld kB", cached_ra / 1024);
 
-	if (cached_max * 1024 >= testfile_size) {
+	if (cached_max >= testfile_size) {
 		/*
 		 * if cache can hold ~testfile_size then cache increase
 		 * for readahead should be at least testfile_size/2
 		 */
-		if (cached_ra * 1024 > testfile_size / 2)
+		if (cached_ra > testfile_size / 2)
 			tst_res(TPASS, "using cache as expected");
 		else if (!cached_ra)
 			tst_res(TFAIL, "readahead failed to use any cache");
@@ -416,7 +437,6 @@ static void setup(void)
 		tst_brk(TCONF, "Requires " PROC_IO_FNAME);
 
 	has_file(DROP_CACHES_FNAME, 1);
-	has_file(MEMINFO_FNAME, 1);
 
 	/* check if readahead is supported */
 	tst_syscall(__NR_readahead, 0, 0, 0);
