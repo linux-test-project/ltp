@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 SUSE LLC
+ * Copyright (c) 2025 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
+ * Author: Ricardo Branco <rbranco@suse.com>
  */
 
- /*\
+/*\
  * Force a pagefault event and handle it using :man2:`userfaultfd`
- * from a different thread.
+ * from a different thread using UFFDIO_MOVE
  */
 
 #include "config.h"
@@ -19,7 +20,7 @@
 
 static int page_size;
 static char *page;
-static void *copy_page;
+static void *move_page;
 static int uffd;
 
 static void set_pages(void)
@@ -27,14 +28,14 @@ static void set_pages(void)
 	page_size = sysconf(_SC_PAGE_SIZE);
 	page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	copy_page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
+	move_page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
 static void *handle_thread(void)
 {
 	static struct uffd_msg msg;
-	struct uffdio_copy uffdio_copy;
+	struct uffdio_move uffdio_move;
 
 	struct pollfd pollfd;
 	int nready;
@@ -50,16 +51,16 @@ static void *handle_thread(void)
 	if (msg.event != UFFD_EVENT_PAGEFAULT)
 		tst_brk(TBROK | TERRNO, "Received unexpected UFFD_EVENT");
 
-	memset(copy_page, 'X', page_size);
+	memset(move_page, 'X', page_size);
 
-	uffdio_copy.src = (unsigned long) copy_page;
+	uffdio_move.src = (unsigned long) move_page;
 
-	uffdio_copy.dst = (unsigned long) msg.arg.pagefault.address
+	uffdio_move.dst = (unsigned long) msg.arg.pagefault.address
 			& ~(page_size - 1);
-	uffdio_copy.len = page_size;
-	uffdio_copy.mode = 0;
-	uffdio_copy.copy = 0;
-	SAFE_IOCTL(uffd, UFFDIO_COPY, &uffdio_copy);
+	uffdio_move.len = page_size;
+	uffdio_move.mode = 0;
+	uffdio_move.move = 0;
+	SAFE_IOCTL(uffd, UFFDIO_MOVE, &uffdio_move);
 
 	close(uffd);
 	return NULL;
@@ -91,14 +92,14 @@ static void run(void)
 	char c = page[0xf];
 
 	if (c == 'X')
-		tst_res(TPASS, "Pagefault handled!");
+		tst_res(TPASS, "Pagefault handled via UFFDIO_MOVE");
 	else
-		tst_res(TFAIL, "Pagefault not handled!");
+		tst_res(TFAIL, "Pagefault not handled via UFFDIO_MOVE");
 
 	SAFE_PTHREAD_JOIN(thr, NULL);
 }
 
 static struct tst_test test = {
 	.test_all = run,
-	.min_kver = "4.3",
+	.min_kver = "6.8",
 };

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 SUSE LLC
+ * Copyright (c) 2025 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
+ * Author: Ricardo Branco <rbranco@suse.com>
  */
 
- /*\
+/*\
  * Force a pagefault event and handle it using :man2:`userfaultfd`
- * from a different thread.
+ * from a different thread using UFFDIO_ZEROPAGE
  */
 
 #include "config.h"
@@ -19,7 +20,6 @@
 
 static int page_size;
 static char *page;
-static void *copy_page;
 static int uffd;
 
 static void set_pages(void)
@@ -27,14 +27,12 @@ static void set_pages(void)
 	page_size = sysconf(_SC_PAGE_SIZE);
 	page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	copy_page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
-			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
 static void *handle_thread(void)
 {
 	static struct uffd_msg msg;
-	struct uffdio_copy uffdio_copy;
+	struct uffdio_zeropage uffdio_zeropage;
 
 	struct pollfd pollfd;
 	int nready;
@@ -50,16 +48,12 @@ static void *handle_thread(void)
 	if (msg.event != UFFD_EVENT_PAGEFAULT)
 		tst_brk(TBROK | TERRNO, "Received unexpected UFFD_EVENT");
 
-	memset(copy_page, 'X', page_size);
+	uffdio_zeropage.range.start	= msg.arg.pagefault.address
+					& ~(page_size - 1);
+	uffdio_zeropage.range.len	= page_size;
+	uffdio_zeropage.mode		= 0;
 
-	uffdio_copy.src = (unsigned long) copy_page;
-
-	uffdio_copy.dst = (unsigned long) msg.arg.pagefault.address
-			& ~(page_size - 1);
-	uffdio_copy.len = page_size;
-	uffdio_copy.mode = 0;
-	uffdio_copy.copy = 0;
-	SAFE_IOCTL(uffd, UFFDIO_COPY, &uffdio_copy);
+	SAFE_IOCTL(uffd, UFFDIO_ZEROPAGE, &uffdio_zeropage);
 
 	close(uffd);
 	return NULL;
@@ -88,12 +82,14 @@ static void run(void)
 
 	SAFE_PTHREAD_CREATE(&thr, NULL, (void *) handle_thread, NULL);
 
-	char c = page[0xf];
+	for (int i = 0; i < page_size; i++) {
+		if (page[i] != 0) {
+			tst_res(TFAIL, "page[%d]=0x%x not zero", i, page[i]);
+			return;
+		}
+	}
 
-	if (c == 'X')
-		tst_res(TPASS, "Pagefault handled!");
-	else
-		tst_res(TFAIL, "Pagefault not handled!");
+	tst_res(TPASS, "Pagefault handled with UFFDIO_ZEROPAGE");
 
 	SAFE_PTHREAD_JOIN(thr, NULL);
 }

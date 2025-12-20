@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2019 SUSE LLC
+ * Copyright (c) 2025 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
+ * Author: Ricardo Branco <rbranco@suse.com>
  */
 
- /*\
+/*\
  * Force a pagefault event and handle it using :man2:`userfaultfd`
- * from a different thread.
+ * from a different thread using /dev/userfaultfd instead of syscall,
+ * using USERFAULTFD_IOC_NEW ioctl to create the uffd & UFFDIO_COPY.
  */
 
 #include "config.h"
@@ -15,12 +17,24 @@
 #include "tst_safe_macros.h"
 #include "tst_safe_pthread.h"
 #include "lapi/userfaultfd.h"
-#include "tst_userfaultfd.h"
 
 static int page_size;
 static char *page;
 static void *copy_page;
 static int uffd;
+
+static int open_userfaultfd(int flags)
+{
+	int fd, fd2;
+
+	fd = SAFE_OPEN("/dev/userfaultfd", O_RDWR);
+
+	fd2 = SAFE_IOCTL(fd, USERFAULTFD_IOC_NEW, flags);
+
+	SAFE_CLOSE(fd);
+
+	return fd2;
+}
 
 static void set_pages(void)
 {
@@ -73,7 +87,15 @@ static void run(void)
 
 	set_pages();
 
-	TEST(sys_userfaultfd(O_CLOEXEC | O_NONBLOCK));
+	TEST(open_userfaultfd(O_CLOEXEC | O_NONBLOCK));
+
+	if (TST_RET == -1) {
+		if (TST_ERR == EPERM) {
+			tst_brk(TCONF, "Hint: check /dev/userfaultfd permissions");
+		} else
+			tst_brk(TBROK | TTERRNO,
+				"Could not create userfault file descriptor");
+	}
 
 	uffd = TST_RET;
 	uffdio_api.api = UFFD_API;
@@ -91,14 +113,14 @@ static void run(void)
 	char c = page[0xf];
 
 	if (c == 'X')
-		tst_res(TPASS, "Pagefault handled!");
+		tst_res(TPASS, "Pagefault handled via /dev/userfaultfd");
 	else
-		tst_res(TFAIL, "Pagefault not handled!");
+		tst_res(TFAIL, "Pagefault not handled via /dev/userfaultfd");
 
 	SAFE_PTHREAD_JOIN(thr, NULL);
 }
 
 static struct tst_test test = {
 	.test_all = run,
-	.min_kver = "4.3",
+	.min_kver = "5.11",
 };
