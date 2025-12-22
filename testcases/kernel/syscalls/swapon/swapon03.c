@@ -6,9 +6,12 @@
  */
 
 /*\
- * This test case checks whether swapon(2) system call returns:
+ * Test checks whether :man2:`swapon` system call returns EPERM when the maximum
+ * number of swap files are already in use.
  *
- *  - EPERM when there are more than MAX_SWAPFILES already in use.
+ * NOTE: test does not try to calculate MAX_SWAPFILES from the internal
+ * kernel implementation, instead make sure at least 15 swaps were created
+ * before the maximum of swaps was reached.
  */
 
 #include <stdio.h>
@@ -20,6 +23,13 @@
 #include "lapi/syscalls.h"
 #include "libswap.h"
 
+/*
+ * MAX_SWAPFILES from the internal kernel implementation is currently <23, 29>,
+ * depending on kernel configuration (see man swapon(2)). Chose small enough
+ * value for future changes.
+ */
+#define MIN_SWAP_FILES 15
+
 #define MNTPOINT	"mntpoint"
 #define TEST_FILE	MNTPOINT"/testswap"
 
@@ -27,31 +37,28 @@ static int swapfiles;
 
 static int setup_swap(void)
 {
-	int j, max_swapfiles, used_swapfiles;
+	int used_swapfiles, min_swapfiles;
 	char filename[FILENAME_MAX];
 
-	/* Determine how many more files are to be created */
-	max_swapfiles = tst_max_swapfiles();
 	used_swapfiles = tst_count_swaps();
-	swapfiles = max_swapfiles - used_swapfiles;
-	if (swapfiles > max_swapfiles)
-		swapfiles = max_swapfiles;
+	min_swapfiles = MIN_SWAP_FILES - used_swapfiles;
 
-	/*create and turn on remaining swapfiles */
-	for (j = 0; j < swapfiles; j++) {
-
+	while (true) {
 		/* Create the swapfile */
-		snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
-		SAFE_MAKE_SMALL_SWAPFILE(filename);
+		snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, swapfiles);
+		MAKE_SMALL_SWAPFILE(filename);
 
-		/* turn on the swap file */
-		TST_EXP_PASS_SILENT(swapon(filename, 0));
-		if (!TST_PASS)
-			tst_brk(TFAIL, "Failed to setup swap files");
+		/* Quit on a first swap file over max, check for EPERM */
+		if (swapon(filename, 0) == -1) {
+			if (errno == EPERM && swapfiles > min_swapfiles)
+				break;
+
+			tst_brk(TFAIL | TERRNO, "swapon(%s, 0)", filename);
+		}
+		swapfiles++;
 	}
 
 	tst_res(TINFO, "Successfully created %d swap files", swapfiles);
-	MAKE_SMALL_SWAPFILE(TEST_FILE);
 
 	return 0;
 }
@@ -61,7 +68,7 @@ static int setup_swap(void)
  */
 static int check_and_swapoff(const char *filename)
 {
-	char cmd_buffer[256];
+	char cmd_buffer[FILENAME_MAX+28];
 	int rc = -1;
 
 	snprintf(cmd_buffer, sizeof(cmd_buffer), "grep -q '%s.*file' /proc/swaps", filename);
@@ -83,11 +90,9 @@ static void clean_swap(void)
 	char filename[FILENAME_MAX];
 
 	for (j = 0; j < swapfiles; j++) {
-		snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j + 2);
+		snprintf(filename, sizeof(filename), "%s%02d", TEST_FILE, j);
 		check_and_swapoff(filename);
 	}
-
-	check_and_swapoff(TEST_FILE);
 }
 
 static void verify_swapon(void)
