@@ -39,8 +39,13 @@ cleanup()
 
 setup()
 {
-	local port rc
+	local port rc version
+	local major=0 minor=0
 
+	version=$(sshd -V 2>&1 | sed -nE 's/^.*OpenSSH_([0-9]+)\.([0-9]+).*$/\1 \2/p' | head -n1)
+	set -- $version
+	major=$1
+	minor=$2
 
 	port=$(tst_rhost_run -c "tst_get_unused_port ipv${TST_IPVER} stream")
 
@@ -60,6 +65,11 @@ HostKey $TST_TMPDIR/ssh_host_ecdsa_key
 HostKey $TST_TMPDIR/ssh_host_ed25519_key
 EOF
 
+	if [ "$major" -gt 9 ] || [ "$major" -eq 9 -a "$minor" -ge 8 ]; then
+		cat << EOF >> sshd_config
+PerSourcePenalties no
+EOF
+	fi
 	ssh-keygen -q -N "" -t rsa -b 4096 -f $TST_TMPDIR/ssh_host_rsa_key
 	ssh-keygen -q -N "" -t ecdsa -f $TST_TMPDIR/ssh_host_ecdsa_key
 	ssh-keygen -q -N "" -t ed25519 -f $TST_TMPDIR/ssh_host_ed25519_key
