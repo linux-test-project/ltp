@@ -175,7 +175,9 @@ const char *tst_strsig(int sig);
 /**
  * tst_strstatus() - Returns string describing status as returned by wait().
  *
- * WARNING: Not thread safe.
+ * .. warning::
+ *
+ *   Not thread safe.
  *
  * @status: A status as returned by wait()
  * return: A string description for the status e.g. "killed by SIGKILL".
@@ -653,7 +655,10 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
  * functions, checkpoint library, etc. This function re-initializes the test
  * library so that it can be used again.
  *
- * @important The LTP_IPC_PATH variable must be passed to the program environment.
+ * .. warning::
+ *
+ *   The ``LTP_IPC_PATH`` environment variable must be passed to the program
+ *   environment.
  */
 void tst_reinit(void);
 
