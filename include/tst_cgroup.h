@@ -13,7 +13,7 @@
  * it is not possible unless no CGroups are currently active and
  * almost all of our users will have CGroups active. Even if
  * unmounting the current CGroup hierarchy is a reasonable thing to do
- * to the sytem manager, it is highly unlikely the CGroup hierarchy
+ * to the system manager, it is highly unlikely the CGroup hierarchy
  * will be destroyed. So users would be forced to remove their CGroup
  * configuration and reboot the system.
  *

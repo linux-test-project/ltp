@@ -355,7 +355,7 @@ struct tst_fs {
  *                     Testcases that modify system wallclock use this to
  *                     restore the system to the previous state.
  *
- * @all_filesystems: If set the test is executed for all supported filesytems,
+ * @all_filesystems: If set the test is executed for all supported filesystems,
  *                   i.e. file system that is supported by the kernel and has
  *                   mkfs installed on the system.The file system is mounted at
  *                   tst_test.mntpoint and file system details, e.g. type are set
@@ -432,7 +432,7 @@ struct tst_fs {
  *               and mount options. If tst_test.all_filesystems is not set
  *               the test iterates over file system types defined in the array.
  *               If there is only a single entry in the array with a NULL type,
- *               the test runs just once for the default file sytem i.e.
+ *               the test runs just once for the default file system i.e.
  *               $TST_FS_TYPE.
  *
  * @mntpoint: A mount point where the test library mounts requested file system.
