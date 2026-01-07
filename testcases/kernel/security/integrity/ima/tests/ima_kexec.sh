@@ -44,7 +44,7 @@ setup()
 {
 	local arch
 
-	if [ ! -f "$IMA_KEXEC_IMAGE" ]; then
+	if [ ! -f "$IMA_KEXEC_IMAGE" ] && grep -q '^BOOT_IMAGE' /proc/cmdline; then
 		for arg in $(cat /proc/cmdline); do
 			if echo "$arg" |grep -q '^BOOT_IMAGE'; then
 				eval "$arg"
