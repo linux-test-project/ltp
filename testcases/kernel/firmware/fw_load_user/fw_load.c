@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "test.h"
+#include "tst_security.h"
 #include "safe_macros.h"
 #include "old_module.h"
 
@@ -102,6 +103,9 @@ static void help(void)
 
 void setup(int argc, char *argv[])
 {
+	if (tst_lockdown_enabled() > 0 || tst_secureboot_enabled() > 0)
+		tst_brkm(TCONF, NULL, "Cannot load unsigned modules in Lockdown/Secure Boot");
+
 	tst_parse_opts(argc, argv, options, help);
 
 	if (nflag) {
