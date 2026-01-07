@@ -14,7 +14,6 @@ TST_CNT=3
 TST_SETUP="setup"
 TST_MIN_KVER="5.3"
 
-IMA_KEXEC_IMAGE="${IMA_KEXEC_IMAGE:-/boot/vmlinuz-$(uname -r)}"
 REQUIRED_POLICY_CONTENT='kexec.policy'
 
 measure()
@@ -42,8 +41,9 @@ measure()
 
 setup()
 {
-	local arch
+	local arch f uname
 
+	# detect kernel from BOOT_IMAGE in /proc/cmdline
 	if [ ! -f "$IMA_KEXEC_IMAGE" ] && grep -q '^BOOT_IMAGE' /proc/cmdline; then
 		for arg in $(cat /proc/cmdline); do
 			if echo "$arg" |grep -q '^BOOT_IMAGE'; then
@@ -60,6 +60,31 @@ setup()
 
 		if [ -f "$BOOT_IMAGE" ]; then
 			IMA_KEXEC_IMAGE="$BOOT_IMAGE"
+		fi
+	fi
+
+	# detect kernel in /boot
+	if [ ! -f "$IMA_KEXEC_IMAGE" ]; then
+		uname="$(uname -r)"
+
+		for f in \
+			/boot/vmlinuz-$uname \
+			/boot/vmlinux-$uname \
+			/boot/Image-$uname \
+			/boot/image-$uname \
+		; do
+			if [ -f "$f" ]; then
+				break
+			fi
+		done
+
+		# aarch64 often uses compression
+		if [ ! -f "$f" ]; then
+			f="$(ls /boot/Image-$uname.* || true)"
+		fi
+
+		if [ -f "$f" ]; then
+			IMA_KEXEC_IMAGE="$f"
 		fi
 	fi
 
