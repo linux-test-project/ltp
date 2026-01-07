@@ -39,6 +39,8 @@ int tst_lsm_enabled(const char *name)
 	if (access(LSM_SYS_FILE, F_OK))
 		tst_brk(TCONF, "%s file is not present", LSM_SYS_FILE);
 
+	memset(data, 0, BUFSIZ);
+
 	fd = SAFE_OPEN(LSM_SYS_FILE, O_RDONLY);
 	SAFE_READ(0, fd, data, BUFSIZ);
 	SAFE_CLOSE(fd);
