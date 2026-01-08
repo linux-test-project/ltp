@@ -20,8 +20,9 @@
  * @val: A pointer to integer to store the result to.
  * @min: A lower bound, pass INT_MIN for full range.
  * @max: An upper bound, pass INT_MAX for full range.
- * return: A zero if whole string was consumed and the value was within bounds,
- *         an errno otherwise.
+ *
+ * Return: A zero if whole string was consumed and the value was within bounds,
+ * an errno otherwise.
  */
 int tst_parse_int(const char *str, int *val, int min, int max);
 
@@ -32,8 +33,9 @@ int tst_parse_int(const char *str, int *val, int min, int max);
  * @val: A pointer to long integer to store the result to.
  * @min: A lower bound, pass LONG_MIN for full range.
  * @max: An upper bound, pass LONG_MAX for full range.
- * return: A zero if whole string was consumed and the value was within bounds,
- *         an errno otherwise.
+ *
+ * Return: A zero if whole string was consumed and the value was within bounds,
+ * an errno otherwise.
  */
 int tst_parse_long(const char *str, long *val, long min, long max);
 
@@ -44,8 +46,9 @@ int tst_parse_long(const char *str, long *val, long min, long max);
  * @val: A pointer to float to store the result to.
  * @min: A lower bound.
  * @max: An upper bound.
- * return: A zero if whole string was consumed and the value was within bounds,
- *         an errno otherwise.
+ *
+ * Return: A zero if whole string was consumed and the value was within bounds,
+ * an errno otherwise.
  */
 int tst_parse_float(const char *str, float *val, float min, float max);
 
@@ -57,8 +60,9 @@ int tst_parse_float(const char *str, float *val, float min, float max);
  * @val: A pointer to long long integer to store the size in bytes to.
  * @min: A lower bound.
  * @max: An upper bound.
- * return: A zero if whole string was consumed and the value was within bounds,
- *         an errno otherwise.
+ *
+ * Return: A zero if whole string was consumed and the value was within bounds,
+ * an errno otherwise.
  */
 int tst_parse_filesize(const char *str, long long *val, long long min, long long max);
 
