@@ -7,6 +7,7 @@
  * Verify that listmount() raises the correct errors according with
  * invalid data:
  *
+ * - EBADF: invalid mnt_ns_fd
  * - EFAULT: req or mnt_id are unaccessible memories
  * - EINVAL: invalid flags or mnt_id request
  * - ENOENT: non-existent mount point
@@ -20,8 +21,12 @@
 #include "lapi/syscalls.h"
 
 #define MNT_SIZE 32
-#define BEFORE_6_18 1
-#define AFTER_6_18 2
+/*
+ * For commit 78f0e33cd6c9 ("fs/namespace: correctly handle errors returned
+ * by grab_requested_mnt_ns") from v6.18-rc7 backported to v6.17.9.
+ */
+#define BEFORE_6_17_9 1
+#define AFTER_6_17_9 2
 
 static mnt_id_req *request;
 static uint64_t mnt_ids[MNT_SIZE];
@@ -84,7 +89,7 @@ static struct tcase {
 		.nr_mnt_ids = MNT_SIZE,
 		.exp_errno = EINVAL,
 		.msg = "invalid mnt_id_req.spare",
-		.kver = BEFORE_6_18,
+		.kver = BEFORE_6_17_9,
 	},
 	{
 		.req_usage = 1,
@@ -95,7 +100,7 @@ static struct tcase {
 		.nr_mnt_ids = MNT_SIZE,
 		.exp_errno = EBADF,
 		.msg = "invalid mnt_id_req.mnt_ns_fd",
-		.kver = AFTER_6_18,
+		.kver = AFTER_6_17_9,
 	},
 	{
 		.req_usage = 1,
@@ -154,10 +159,10 @@ static void run(unsigned int n)
 
 static void setup(void)
 {
-	if (tst_kvercmp(6, 18, 0) >= 0)
-		kver = AFTER_6_18;
+	if (tst_kvercmp(6, 17, 9) >= 0)
+		kver = AFTER_6_17_9;
 	else
-		kver = BEFORE_6_18;
+		kver = BEFORE_6_17_9;
 }
 
 static struct tst_test test = {
