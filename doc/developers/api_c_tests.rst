@@ -52,6 +52,10 @@ Option parsing
 
 .. kernel-doc:: ../../include/tst_parse.h
 
+Saving and restoring /proc|sys values
+-------------------------------------
+.. kernel-doc:: ../../include/tst_sys_conf.h
+
 Temporary directory
 -------------------
 .. kernel-doc:: ../../include/tst_tmpdir.h

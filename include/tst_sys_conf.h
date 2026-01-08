@@ -5,21 +5,73 @@
 #ifndef TST_SYS_CONF_H__
 #define TST_SYS_CONF_H__
 
+/**
+ * TST_SR_TCONF_MISSING - End test with :c:enum:`TCONF <tst_res_flags>` if the
+ * file does not exist.
+ */
 #define TST_SR_TCONF_MISSING 0x0
+
+/**
+ * TST_SR_TBROK_MISSING - End test with :c:enum:`TBROK <tst_res_flags>` if the
+ * file does not exist.
+ */
 #define TST_SR_TBROK_MISSING 0x1
+
+/**
+ * TST_SR_SKIP_MISSING - Continue without saving the file if it does not exist.
+ */
 #define TST_SR_SKIP_MISSING 0x2
+
+/**
+ * TST_SR_TCONF_RO - End test with :c:enum:`TCONF <tst_res_flags>` if the file
+ * is read-only.
+ */
 #define TST_SR_TCONF_RO 0x0
+
+/**
+ * TST_SR_TBROK_RO - End test with :c:enum:`TBROK <tst_res_flags>` if the file
+ * is read-only.
+ */
 #define TST_SR_TBROK_RO 0x4
+
+/**
+ * TST_SR_SKIP_RO - Continue without saving the file if it is read-only.
+ */
 #define TST_SR_SKIP_RO 0x8
+
+/**
+ * TST_SR_IGNORE_ERR - Ignore all errors during reading and writing the file.
+ */
 #define TST_SR_IGNORE_ERR 0x10
 
+/**
+ * TST_SR_TCONF - Equivalent to :ref:`TST_SR_TCONF_MISSING` |
+ * :ref:`TST_SR_TCONF_RO`.
+ */
 #define TST_SR_TCONF (TST_SR_TCONF_MISSING | TST_SR_TCONF_RO)
+
+/**
+ * TST_SR_TBROK - Equivalent to :ref:`TST_SR_TBROK_MISSING` |
+ * :ref:`TST_SR_TBROK_RO`.
+ */
 #define TST_SR_TBROK (TST_SR_TBROK_MISSING | TST_SR_TBROK_RO)
+
+/**
+ * TST_SR_SKIP - Equivalent to :ref:`TST_SR_SKIP_MISSING` |
+ * :ref:`TST_SR_SKIP_RO`.
+ */
 #define TST_SR_SKIP (TST_SR_SKIP_MISSING | TST_SR_SKIP_RO)
 
+/**
+ * struct tst_path_val - Saving and restoring /proc|sys values.
+ *
+ * @path: A file in /proc|sys.
+ * @val: If non-NULL string it will be saved to path.
+ * @flags: :ref:`TST_SR_* <TST_SR_TCONF_MISSING>` flags to modify the behavior.
+ */
 struct tst_path_val {
-        const char *path;
-        const char *val;
+	const char *path;
+	const char *val;
 	unsigned int flags;
 };
 
