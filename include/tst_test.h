@@ -298,7 +298,7 @@ struct tst_fs {
  *
  * @tcnt: A number of tests. If set the test() callback is called tcnt times
  *        and each time passed an increasing counter value.
- * @options: An NULL optstr terminated array of struct tst_option.
+ * @options: An NULL optstr terminated array of :ref:`struct tst_option`.
  *
  * @min_kver: A minimal kernel version the test can run on. e.g. "3.10".
  *
@@ -322,7 +322,7 @@ struct tst_fs {
  * @forks_child: Has to be set if the test intends to fork children.
  *
  * @needs_device: If set a block device is prepared for the test, the device
- *                path and size are set in the struct tst_device variable
+ *                path and size are set in the :ref:`struct tst_device` variable
  *                called tst_device. If $LTP_DEV variable exists in the test
  *                environment the test attempts to use that device first and
  *                only if that fails the test falls back to use loop devices.
@@ -361,7 +361,7 @@ struct tst_fs {
  *                   i.e. file system that is supported by the kernel and has
  *                   mkfs installed on the system.The file system is mounted at
  *                   tst_test.mntpoint and file system details, e.g. type are set
- *                   in the struct tst_device. Each execution is independent,
+ *                   in the :ref:`struct tst_device`. Each execution is independent,
  *                   that means that for each iteration tst_test.setup() is
  *                   called at the test start and tst_test.cleanup() is called
  *                   at the end and tst_brk() only exits test for a single
@@ -504,7 +504,7 @@ struct tst_fs {
  *
  * @save_restore: A {} terminated array of /proc or /sys files that should
  *                saved at the start of the test and restored at the end. See
- *                tst_sys_conf_save() and struct tst_path_val for details.
+ *                tst_sys_conf_save() and :ref:`struct tst_path_val` for details.
  *
  * @ulimit: A {} terminated array of process limits RLIMIT_* to be adjusted for
  *          the test.
@@ -519,12 +519,12 @@ struct tst_fs {
  * @bufs: A description of guarded buffers to be allocated for the test. Guarded
  *        buffers are buffers with poisoned page allocated right before the start
  *        of the buffer and canary right after the end of the buffer. See
- *        struct tst_buffers and tst_buffer_alloc() for details.
+ *        :ref:`struct tst_buffers` and tst_buffer_alloc() for details.
  *
  * @caps: A {} terminated array of capabilities to change before the start of
- *        the test. See struct tst_cap and tst_cap_setup() for details.
+ *        the test. See :ref:`struct tst_cap` and tst_cap_setup() for details.
  *
- * @tags: A {} terminated array of test tags. See struct tst_tag for details.
+ * @tags: A {} terminated array of test tags. See :ref:`struct tst_tag` for details.
  *
  * @needs_cmds: A NULL terminated array of commands required for the test to run.
  *
