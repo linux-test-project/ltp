@@ -4,11 +4,12 @@
  * Copyright (c) 2017 Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * DESCRIPTION
- *  1) Test for EPERM when the super-user tries to increase RLIMIT_NOFILE
- *     beyond the system limit.
- *  2) Test for EINVAL when rlim->rlim_cur is greater than rlim->rlim_max.
+/*\
+ * Test :man2:`setrlimit` errnos:
+ *
+ * - EPERM when the super-user tries to increase RLIMIT_NOFILE  beyond the
+ *   system limit.
+ * - EINVAL when rlim->rlim_cur is greater than rlim->rlim_max.
  */
 
 #include <errno.h>

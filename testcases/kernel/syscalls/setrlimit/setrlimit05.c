@@ -4,8 +4,9 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Test for EFAULT when rlim points outside the accessible address space.
+/*\
+ * Test :man2:`setrlimit` for EFAULT when rlim points outside the accessible
+ * address space.
  */
 
 #define _GNU_SOURCE

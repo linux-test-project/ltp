@@ -4,9 +4,11 @@
  * Ported to LTP: Wayne Boyer
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
- * Testcase to test the different errnos set by setrlimit(2) system call.
+
+/*\
+ * Testcase to test the different errnos set by :man2:`setrlimit` system call.
  */
+
 #include <pwd.h>
 #include <errno.h>
 #include "tst_test.h"

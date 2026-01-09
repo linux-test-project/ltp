@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2017 Red Hat, Inc.  All rights reserved.
- *
+ */
+
+/*\
  * Attempt to run a trivial binary with stack < 1MB.
  *
- * Early patches for stack guard gap caused that gap size was
- * contributing to stack limit. This caused failures
- * for new processes (E2BIG) when ulimit was set to anything
- * lower than size of gap. commit 1be7107fbe18 "mm: larger
- * stack guard gap, between vmas" sets default gap size to 1M
- * (for systems with 4k pages), so let's set stack limit to 512kB
- * and confirm we can still run some trivial binary.
+ * Early patches for stack guard gap caused that gap size was contributing to
+ * stack limit. This caused failures for new processes (E2BIG) when ulimit was
+ * set to anything lower than size of gap.
+ *
+ * Kernel commit 1be7107fbe18 ("mm: largerstack guard gap, between vmas")
+ * from v4.12 sets default gap size to 1M (for systems with 4k pages), so let's
+ * set stack limit to 512kB and confirm we can still run some trivial binary.
  */
 
 #define _GNU_SOURCE

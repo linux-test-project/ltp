@@ -12,7 +12,7 @@
  * - Process got SIGXCPU after reaching soft limit of CPU time
  * - Process got SIGKILL after reaching hard limit of CPU time
  *
- * Test is also a regression test for kernel bug:
+ * Test is also a regression test for kernel bug from v4.17:
  * c3bca5d450b62 ("posix-cpu-timers: Ensure set_process_cpu_timer is always evaluated")
  */
 
