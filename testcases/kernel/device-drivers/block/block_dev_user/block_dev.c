@@ -17,6 +17,7 @@
 
 #include "tst_test.h"
 #include "tst_module.h"
+#include "tst_security.h"
 
 #define MODULE_NAME "ltp_block_dev"
 #define MODULE_NAME_KO	MODULE_NAME ".ko"
@@ -31,6 +32,12 @@ static struct tst_option options[] = {
 	{}
 };
 
+static void setup(void)
+{
+	if (tst_lockdown_enabled() > 0 || tst_secureboot_enabled() > 0)
+		tst_brk(TCONF, "Cannot load unsigned modules in Lockdown/Secure Boot");
+}
+
 static void cleanup(void)
 {
 	if (module_loaded)
@@ -39,6 +46,7 @@ static void cleanup(void)
 
 static void run(unsigned int n)
 {
+	setup();
 	tst_requires_module_signature_disabled();
 
 	/*
