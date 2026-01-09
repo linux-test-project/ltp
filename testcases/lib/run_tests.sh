@@ -6,6 +6,7 @@ shell_loader.sh
 shell_loader_all_filesystems.sh
 shell_loader_c_child.sh
 shell_loader_filesystems.sh
+shell_loader_cmd.sh
 shell_loader_kconfigs.sh
 shell_loader_supported_archs.sh
 shell_loader_tcnt.sh
