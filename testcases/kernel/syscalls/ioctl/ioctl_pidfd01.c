@@ -4,7 +4,7 @@
  */
 
 /*\
- * Verify that :man2:`ioctl` raises the right errors when an application
+ * Verify that :manpage:`ioctl(2)` raises the right errors when an application
  * provides wrong file descriptor.
  */
 

@@ -4,7 +4,7 @@
  */
 
 /*\
- * Verify that :man2:`ioctl` doesn't allow to obtain the exit status of an isolated
+ * Verify that :manpage:`ioctl(2)` doesn't allow to obtain the exit status of an isolated
  * process via PIDFD_INFO_EXIT in within an another isolated process, which
  * doesn't have any parent connection.
  */

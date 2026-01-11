@@ -6,7 +6,7 @@
  */
 
 /*\
- * Tests :man2:`ioctl` on loopdevice with LOOP_SET_DIRECT_IO flag.
+ * Tests :manpage:`ioctl(2)` on loopdevice with LOOP_SET_DIRECT_IO flag.
  *
  * Tests whether LOOP_SET_DIRECT_IO can update a live loop device dio mode.
  * It requires the backing file also supports dio mode and the lo_offset is
@@ -16,7 +16,7 @@
  * return error when it coudln't be enabled, some silently fall back to regular
  * buffered I/O.
  *
- * The LOOP_SET_DIRECT_IO :man2:`ioctl` may ignore all checks if it cannot get
+ * The LOOP_SET_DIRECT_IO :manpage:`ioctl(2)` may ignore all checks if it cannot get
  * the logical block size which is the case if the block device pointer in the
  * backing file inode is not set. In this case the direct I/O appears to be
  * enabled but falls back to buffered I/O later on. This is the case at least

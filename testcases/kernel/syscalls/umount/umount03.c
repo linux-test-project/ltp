@@ -6,7 +6,7 @@
  */
 
 /*\
- * Verify that :man2:`umount` returns -1 and sets errno to EPERM if the user
+ * Verify that :manpage:`umount(2)` returns -1 and sets errno to EPERM if the user
  * is not the super-user.
  */
 

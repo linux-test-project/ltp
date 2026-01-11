@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`clone3` fails with EPERM when CAP_SYS_ADMIN
+ * This test verifies that :manpage:`clone3(2)` fails with EPERM when CAP_SYS_ADMIN
  * has been dropped and ``clone_args.set_tid_size`` is greater than zero.
  */
 

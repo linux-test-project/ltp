@@ -6,11 +6,11 @@
  */
 
 /*\
- * Basic tests for the :man2:`unshare` syscall.
+ * Basic tests for the :manpage:`unshare(2)` syscall.
  *
  * [Algorithm]
  *
- * Calls :man2:`unshare` for different CLONE_* flags in a child process and
+ * Calls :manpage:`unshare(2)` for different CLONE_* flags in a child process and
  * expects them to succeed.
  */
 

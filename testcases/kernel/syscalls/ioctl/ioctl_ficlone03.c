@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`ioctl` FICLONE/FICLONERANGE feature correctly
+ * This test verifies that :manpage:`ioctl(2)` FICLONE/FICLONERANGE feature correctly
  * raises exceptions when it's supposed to.
  */
 

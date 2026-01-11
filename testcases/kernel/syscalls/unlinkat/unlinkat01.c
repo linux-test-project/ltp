@@ -7,7 +7,7 @@
  */
 
 /*\
- * Basic :man2:`unlinkat` test.
+ * Basic :manpage:`unlinkat(2)` test.
  */
 
 #include "tst_test.h"

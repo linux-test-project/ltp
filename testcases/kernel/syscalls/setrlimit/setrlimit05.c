@@ -5,7 +5,7 @@
  */
 
 /*\
- * Test :man2:`setrlimit` for EFAULT when rlim points outside the accessible
+ * Test :manpage:`setrlimit(2)` for EFAULT when rlim points outside the accessible
  * address space.
  */
 

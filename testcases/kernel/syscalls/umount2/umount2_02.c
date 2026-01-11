@@ -5,14 +5,14 @@
  */
 
 /*\
- * Test for feature MNT_EXPIRE of :man2:`umount2`:
+ * Test for feature MNT_EXPIRE of :manpage:`umount2(2)`:
  *
  * - EINVAL when flag is specified with either MNT_FORCE or MNT_DETACH
- * - EAGAIN when initial call to :man2:`umount2` with MNT_EXPIRE
- * - EAGAIN when :man2:`umount2` with MNT_EXPIRE after :man2:`access`
- * - succeed when second call to :man2:`umount2` with MNT_EXPIRE
+ * - EAGAIN when initial call to :manpage:`umount2(2)` with MNT_EXPIRE
+ * - EAGAIN when :manpage:`umount2(2)` with MNT_EXPIRE after :manpage:`access(2)`
+ * - succeed when second call to :manpage:`umount2(2)` with MNT_EXPIRE
  *
- * Test for feature UMOUNT_NOFOLLOW of :man2:`umount2`:
+ * Test for feature UMOUNT_NOFOLLOW of :manpage:`umount2(2)`:
  *
  * - EINVAL when target is a symbolic link
  * - succeed when target is a mount point

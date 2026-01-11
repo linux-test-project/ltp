@@ -9,8 +9,8 @@
  */
 
 /*\
- * Attempt to :man2:`execve` an executable owned by root with no execute
- * permissions for the other users, fails when :man2:`execve` is used as
+ * Attempt to :manpage:`execve(2)` an executable owned by root with no execute
+ * permissions for the other users, fails when :manpage:`execve(2)` is used as
  * a non-root user, the errno should be EACCES.
  */
 

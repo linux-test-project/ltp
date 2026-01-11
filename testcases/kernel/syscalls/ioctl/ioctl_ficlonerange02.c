@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`ioctl` FICLONERANGE feature correctly raises
+ * This test verifies that :manpage:`ioctl(2)` FICLONERANGE feature correctly raises
  * EINVAL when:
  *
  * - filesystem does not support overlapping reflink ranges in the same file

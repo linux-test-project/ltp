@@ -6,7 +6,7 @@
  */
 
 /*\
- * Verify that :man2:`unlink`: fails with EROFS when target file is on
+ * Verify that :manpage:`unlink(2)`: fails with EROFS when target file is on
  * a read-only filesystem.
  */
 

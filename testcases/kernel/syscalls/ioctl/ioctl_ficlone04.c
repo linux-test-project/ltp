@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`ioctl` FICLONE/FICLONERANGE feature raises the
+ * This test verifies that :manpage:`ioctl(2)` FICLONE/FICLONERANGE feature raises the
  * right error according with bad file descriptors.
  */
 

@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`ioctl` FICLONERANGE feature clones file
+ * This test verifies that :manpage:`ioctl(2)` FICLONERANGE feature clones file
  * content from one file to an another.
  *
  * [Algorithm]

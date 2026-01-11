@@ -5,7 +5,7 @@
 
 /*\
  * Test that kernel adds dummy argv[0] if empty argument list was passed to
- * :man2:`execve`. This fixes at least one CVE where userspace programs start to
+ * :manpage:`execve(2)`. This fixes at least one CVE where userspace programs start to
  * process argument list blindly from argv[1] such as polkit pkexec
  * CVE-2021-4034.
  *

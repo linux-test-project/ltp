@@ -4,7 +4,7 @@
  */
 
 /*\
- * Check that :man2:`select` timeouts correctly.
+ * Check that :manpage:`select(2)` timeouts correctly.
  */
 
 #include <unistd.h>

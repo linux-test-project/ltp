@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`ioctl` FICLONE feature clones file content
+ * This test verifies that :manpage:`ioctl(2)` FICLONE feature clones file content
  * from one file to an another.
  *
  * [Algorithm]

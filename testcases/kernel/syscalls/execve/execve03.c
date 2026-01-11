@@ -7,7 +7,7 @@
  */
 
 /*\
- * Test to check :man2:`execve` sets the following errnos correctly:
+ * Test to check :manpage:`execve(2)` sets the following errnos correctly:
  *
  * 1. ENAMETOOLONG -- the file name is greater than VFS_MAXNAMELEN
  * 2. ENOENT -- the filename does not exist

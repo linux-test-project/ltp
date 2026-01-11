@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`ioctl` FICLONE/FICLONERANGE feature correctly
+ * This test verifies that :manpage:`ioctl(2)` FICLONE/FICLONERANGE feature correctly
  * raises EOPNOTSUPP when an unsupported filesystem is used. In particular,
  * filesystems which don't support copy-on-write.
  */

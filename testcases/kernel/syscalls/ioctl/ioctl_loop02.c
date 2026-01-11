@@ -6,14 +6,14 @@
  */
 
 /*\
- * Tests :man2:`ioctl` on loopdevice with LO_FLAGS_READ_ONLY (similar as losetup
+ * Tests :manpage:`ioctl(2)` on loopdevice with LO_FLAGS_READ_ONLY (similar as losetup
  * -r) and LOOP_CHANGE_FD flags.
  *
  * For LOOP_CHANGE_FD, this operation is possible only if the loop device
  * is read-only and the new backing store is the same size and type as the
  * old backing store.
  *
- * When using LOOP_CONFIGURE :man2:`ioctl`, it can set LO_FLAGS_READ_ONLY
+ * When using LOOP_CONFIGURE :manpage:`ioctl(2)`, it can set LO_FLAGS_READ_ONLY
  * flag even though backing file with write mode.
  */
 

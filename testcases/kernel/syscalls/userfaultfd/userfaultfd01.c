@@ -5,7 +5,7 @@
  */
 
  /*\
- * Force a pagefault event and handle it using :man2:`userfaultfd`
+ * Force a pagefault event and handle it using :manpage:`userfaultfd(2)`
  * from a different thread.
  */
 

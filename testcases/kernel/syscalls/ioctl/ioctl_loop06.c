@@ -6,7 +6,7 @@
  */
 
 /*\
- * Tests invalid block size of loopdevice by using :man2:`ioctl` with
+ * Tests invalid block size of loopdevice by using :manpage:`ioctl(2)` with
  * LOOP_SET_BLOCK_SIZE and LOOP_CONFIGURE flags.
  */
 

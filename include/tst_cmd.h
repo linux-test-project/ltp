@@ -33,7 +33,7 @@ int tst_cmd_(void (cleanup_fn)(void),
 
 #ifdef TST_TEST_H__
 /**
- * tst_cmd_fds() - :man2:`vfork` + :man3:`execvp` specified program.
+ * tst_cmd_fds() - :manpage:`vfork(2)` + :manpage:`execvp(3)` specified program.
  *
  * @argv: A list of two (at least program name + NULL) or more pointers that
  * represent the argument list to the new program. The array of pointers
@@ -98,7 +98,7 @@ static inline int tst_cmd(void (cleanup_fn)(void),
 #endif
 
 /**
- * tst_system() - Wrapper function for :man3:`system`, ignorcing ``SIGCHLD``
+ * tst_system() - Wrapper function for :manpage:`system(3)`, ignorcing ``SIGCHLD``
  * signal.
  *
  * @command: The command to be run.

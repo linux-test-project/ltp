@@ -4,7 +4,7 @@
  */
 
 /*\
- * Verify that :man2:`ioctl` raises an EINVAL or ENOTTY (since v6.18-rc1) error
+ * Verify that :manpage:`ioctl(2)` raises an EINVAL or ENOTTY (since v6.18-rc1) error
  * when PIDFD_GET_INFO is used. This happens when:
  *
  * - info parameter is NULL

@@ -5,7 +5,7 @@
  */
 
 /*\
- * Basic test for :man2:`ioctl` with BLKRRPART, it is the same as blockdev
+ * Basic test for :manpage:`ioctl(2)` with BLKRRPART, it is the same as blockdev
  * --rereadpt command.
  */
 

@@ -6,7 +6,7 @@
  */
 
 /*\
- * Test checks whether :man2:`swapon` system call returns EPERM when the maximum
+ * Test checks whether :manpage:`swapon(2)` system call returns EPERM when the maximum
  * number of swap files are already in use.
  *
  * NOTE: test does not try to calculate MAX_SWAPFILES from the internal

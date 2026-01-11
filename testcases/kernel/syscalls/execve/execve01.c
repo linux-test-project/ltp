@@ -11,7 +11,7 @@
 #include "tst_test.h"
 
 /*\
- * Test :man2:`execve` passes correctly argv[1] and environment variable to the
+ * Test :manpage:`execve(2)` passes correctly argv[1] and environment variable to the
  * executed binary.
  */
 

@@ -12,12 +12,12 @@
  * gap which is considered hard to hop above. Code is based on a reproducer from
  * https://bugzilla.suse.com/show_bug.cgi?id=CVE-2017-1000364.
  *
- * The code :man2:`mmap` region close to the stack end. The code then allocates
+ * The code :manpage:`mmap(2)` region close to the stack end. The code then allocates
  * memory on stack until it hits guard page and SIGSEGV or SIGBUS is generated
  * by the kernel. The signal handler checks that fault address is further than
  * THRESHOLD from the mmapped area.
  *
- * We read /proc/self/maps to examine exact top of the stack and :man2:`mmap`
+ * We read /proc/self/maps to examine exact top of the stack and :manpage:`mmap(2)`
  * our region exactly GAP_PAGES * PAGE_SIZE away. We read /proc/cmdline to
  * see if a different stack_guard_gap size is configured. We set stack limit
  * to infinity and preallocate REQ_STACK_SIZE bytes of stack so that no calls

@@ -5,7 +5,7 @@
  */
 
 /*\
- * Test :man2:`setrlimit` errnos:
+ * Test :manpage:`setrlimit(2)` errnos:
  *
  * - EPERM when the super-user tries to increase RLIMIT_NOFILE  beyond the
  *   system limit.

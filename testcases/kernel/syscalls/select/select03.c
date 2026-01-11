@@ -4,7 +4,7 @@
  */
 
 /*\
- * :man2:`select` failure tests:
+ * :manpage:`select(2)` failure tests:
  *
  * - negative nfds (EINVAL)
  * - invalid readfds (EBADF)

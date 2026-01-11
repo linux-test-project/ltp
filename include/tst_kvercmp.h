@@ -54,7 +54,7 @@ const char *tst_kvcmp_distname(const char *cur_kver);
  * @tst_exv: The tested kernel version string (struct utsname.release).
  * @cur_kver: The current version in string (struct utsname.release).
  *
- * The return value is similar to the :man3:`strcmp` function, i.e. zero means
+ * The return value is similar to the :manpage:`strcmp(3)` function, i.e. zero means
  * equal, negative value means that the kernel is older than the expected value
  * and positive means that it's newer.
  *
@@ -69,7 +69,7 @@ int tst_kvexcmp(const char *tst_exv, const char *cur_kver);
  * @r2: Minor kernel version.
  * @r3: Kernel patch level.
  *
- * Parse the output from :man2:`uname` and compare it to the passed values.
+ * Parse the output from :manpage:`uname(2)` and compare it to the passed values.
  * This is shortcut for calling tst_kvcmp() with ``uname -r`` as str_kver.
  *
  * Return: Negative if older, 0 if the same and positive if newer.

@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies that :man2:`clone` fails with EPERM when CAP_SYS_ADMIN
+ * This test verifies that :manpage:`clone(2)` fails with EPERM when CAP_SYS_ADMIN
  * has been dropped.
  */
 

@@ -6,7 +6,7 @@
  */
 
 /*\
- * Tests :man2:`ioctl` on loopdevice with LO_FLAGS_AUTOCLEAR and
+ * Tests :manpage:`ioctl(2)` on loopdevice with LO_FLAGS_AUTOCLEAR and
  * LO_FLAGS_PARTSCAN flags.
  *
  * For LO_FLAGS_AUTOCLEAR flag, only checks autoclear field value in sysfs

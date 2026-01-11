@@ -4,7 +4,7 @@
  */
 
 /*\
- * Very basic test for the RND* :man2:`ioctl`.
+ * Very basic test for the RND* :manpage:`ioctl(2)`.
  *
  * Reads the entropy available from both /proc and the ioctl and compares
  * they are similar enough (within a configured fuzz factor).

@@ -4,7 +4,7 @@
  */
 
 /*\
- * Verify that :man2:`ioctl` permits to obtain the exit code of an isolated
+ * Verify that :manpage:`ioctl(2)` permits to obtain the exit code of an isolated
  * signaled child via PIDFD_INFO_EXIT from within a process.
  */
 

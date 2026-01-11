@@ -6,7 +6,7 @@
  */
 
 /*\
- * Testcase to test the different errnos set by :man2:`setrlimit` system call.
+ * Testcase to test the different errnos set by :manpage:`setrlimit(2)` system call.
  */
 
 #include <pwd.h>

@@ -7,7 +7,7 @@
  */
 
 /*\
- * :man2:`select` with no I/O and small timeout to file descriptor of a
+ * :manpage:`select(2)` with no I/O and small timeout to file descriptor of a
  *
  * - regular file
  * - system pipe

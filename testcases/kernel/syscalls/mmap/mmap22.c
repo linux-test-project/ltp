@@ -4,7 +4,7 @@
  */
 
 /*\
- * Test :man2:`mmap` with MAP_DROPPABLE flag.
+ * Test :manpage:`mmap(2)` with MAP_DROPPABLE flag.
  *
  * Test based on :kselftest:`mm/droppable.c`.
  *

@@ -6,7 +6,7 @@
  */
 
 /*\
- * Tests :man2:`ioctl` on loopdevice with LOOP_CHANGE_FD flag.
+ * Tests :manpage:`ioctl(2)` on loopdevice with LOOP_CHANGE_FD flag.
  *
  * Tests whether LOOP_CHANGE_FD can not succeed (get EINVAL error)
  * when loop_dev is not read only.

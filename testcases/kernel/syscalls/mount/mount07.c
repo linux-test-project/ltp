@@ -10,8 +10,8 @@
  *
  * It tests to make sure that symlink traversal fails with ELOOP when
  * 'nosymfollow' is set, but symbolic links can still be created, and
- * :man2:`readlink` and :man3:`realpath` still work properly. It also verifies
- * that :man2:`statfs` correctly returns ST_NOSYMFOLLOW.
+ * :manpage:`readlink(2)` and :manpage:`realpath(3)` still work properly. It also verifies
+ * that :manpage:`statfs(2)` correctly returns ST_NOSYMFOLLOW.
  */
 
 #include <limits.h>
