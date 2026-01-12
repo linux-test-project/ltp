@@ -88,8 +88,7 @@ C coding style
 
 LTP adopted `Linux kernel coding style <https://www.kernel.org/doc/html/latest/process/coding-style.html>`_.
 Run ``make check`` in the test's directory and/or use ``make check-$TCID``, it
-uses (among other checks) our vendoring version of
-`checkpatch.pl <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/scripts/checkpatch.pl>`_
+uses (among other checks) our vendoring version of :kernel_tree:`scripts/checkpatch.pl`
 script from kernel git tree.
 
 .. note::
