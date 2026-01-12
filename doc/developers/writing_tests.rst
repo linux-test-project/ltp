@@ -179,8 +179,8 @@ Here there are some common sense style rules for shell
 * Quote variables
 * Be consistent
 
-3 Backwards compatibility
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Backwards compatibility
+~~~~~~~~~~~~~~~~~~~~~~~
 
 LTP test should be as backward compatible as possible. Think of an enterprise
 distributions with long term support (more than five years since the initial
