@@ -4,13 +4,12 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * 1. creat() a file using 0444 mode, write to the fildes, write
+/*\
+ * 1. :manpage:`creat(2)` a file using 0444 mode, write to the fildes, write
  *    should return a positive count.
  *
- * 2. creat() should truncate a file to 0 bytes if it already
+ * 2. :manpage:`creat(2)` should truncate a file to 0 bytes if it already
  *    exists, and should not fail.
- *
  */
 
 #include <sys/types.h>

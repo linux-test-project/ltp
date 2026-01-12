@@ -1,39 +1,26 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2014-2026
  * Copyright (c) International Business Machines Corp., 2001
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * DESCRIPTION
- *	Testcase to check creat(2) sets the following errnos correctly:
- *	1.	EISDIR
- *	2.	ENAMETOOLONG
- *	3.	ENOENT
- *	4.	ENOTDIR
- *	5.	EFAULT
- *	6.	EACCES
- *	7.	ELOOP
- *	8.	EROFS
+/*\
+ * Check that :manpage:`creat(2)` sets the following errnos correctly:
  *
- *
- * ALGORITHM
- *	1.	Attempt to creat(2) an existing directory, and test for
- *		EISDIR
- *	2.	Attempt to creat(2) a file whose name is more than
- *		VFS_MAXNAMLEN and test for ENAMETOOLONG.
- *	3.	Attempt to creat(2) a file inside a directory which doesn't
- *		exist, and test for ENOENT
- *	4.	Attempt to creat(2) a file, the pathname of which comprises
- *		a component which is a file, test for ENOTDIR.
- *	5.	Attempt to creat(2) a file with a bad address
- *		and test for EFAULT
- *	6.	Attempt to creat(2) a file in a directory with no
- *		execute permission and test for EACCES
- *	7.	Attempt to creat(2) a file which links the other file that
- *		links the former and test for ELOOP
- *	8.	Attempt to creat(2) a file in a Read-only file system
- *		and test for EROFS
+ * 1. EISDIR -- Attempt to :manpage:`creat(2)` an existing directory.
+ * 2. ENAMETOOLONG -- Attempt to :manpage:`creat(2)` a file whose name is more
+ *    than VFS_MAXNAMLEN and test for ENAMETOOLONG.
+ * 3. ENOENT -- Attempt to :manpage:`creat(2)` a file inside a directory which
+ *    doesn't exist.
+ * 4. ENOTDIR -- Attempt to :manpage:`creat(2)` a file, the pathname of which
+ *    comprises a component which is a file.
+ * 5. EFAULT -- Attempt to :manpage:`creat(2)` a file with a bad address.
+ * 6. EACCES -- Attempt to :manpage:`creat(2)` a file in a directory with no
+ *    execute permission.
+ * 7. ELOOP -- Attempt to :manpage:`creat(2)` a file which links the other file
+ *    that links the former.
+ * 8. EROFS -- Attempt to :manpage:`creat(2)` a file in a read-only file system.
  */
 
 #include <errno.h>

@@ -4,8 +4,8 @@
  * Copyright (c) 2012-2016 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * Testcase to check creat(2) sets ETXTBSY correctly.
+/*\
+ * Check that :manpage:`creat(2)` sets ETXTBSY correctly.
  */
 
 #include <sys/types.h>

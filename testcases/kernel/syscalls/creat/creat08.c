@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2002
- *     Ported from SPIE by Airong Zhang <zhanga@us.ibm.com>
+ * Ported from SPIE by Airong Zhang <zhanga@us.ibm.com>
  * Copyright (c) 2021 SUSE LLC <mdoucha@suse.cz>
  */
 
 /*\
  * Verify that the group ID and setgid bit are set correctly when a new file
- * is created.
+ * is created with :manpage:`creat(2)`.
  */
 
 #include <stdlib.h>

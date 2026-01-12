@@ -11,31 +11,12 @@
  *
  * Fixed in:
  *
- *  commit 0fa3ecd87848c9c93c2c828ef4c3a8ca36ce46c7
- *  Author: Linus Torvalds <torvalds@linux-foundation.org>
- *  Date:   Tue Jul 3 17:10:19 2018 -0700
+ * - 0fa3ecd87848 ("Fix up non-directory creation in SGID directories") # v4.18
+ * - 01ea173e103e ("xfs: fix up non-directory creation in SGID directories") # v5.12
  *
- *  Fix up non-directory creation in SGID directories
+ * When use acl or umask, it still has bug. Fixed in:
  *
- * This fix is incomplete if file is on xfs filesystem.
- *
- * Fixed in:
- *
- *  commit 01ea173e103edd5ec41acec65b9261b87e123fc2
- *  Author: Christoph Hellwig <hch@lst.de>
- *  Date:   Fri Jan 22 16:48:18 2021 -0800
- *
- *  xfs: fix up non-directory creation in SGID directories
- *
- * When use acl or umask, it still has bug.
- *
- * Fixed in:
- *
- *  commit 1639a49ccdce58ea248841ed9b23babcce6dbb0b
- *  Author: Yang Xu <xuyang2018.jy@fujitsu.com>
- *  Date:   Thu July 14 14:11:27 2022 +0800
- *
- *  fs: move S_ISGID stripping into the vfs_*() helpers
+ * - 1639a49ccdce ("fs: move S_ISGID stripping into the vfs_*() helpers") # v6.0
  */
 
 #include <stdlib.h>

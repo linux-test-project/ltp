@@ -4,8 +4,8 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Testcase to check creat(2) fails with EACCES
+/*\
+ * Check :manpage:`creat(2)` fails with EACCES.
  */
 
 #include <stdio.h>

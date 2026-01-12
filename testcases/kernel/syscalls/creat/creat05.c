@@ -4,8 +4,8 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Testcase to check that creat(2) system call returns EMFILE.
+/*\
+ * Check that :manpage:`creat(2)` system call returns EMFILE.
  */
 
 #include <stdio.h>
