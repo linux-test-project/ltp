@@ -245,8 +245,8 @@ extern unsigned int tst_variant;
 /**
  * struct tst_ulimit_val - An ulimit resource and value.
  *
- * @resource: Which resource limits should be adjusted. See setrlimit(2) for
- *            the list of the RLIMIT_* constants.
+ * @resource: Which resource limits should be adjusted. See
+ * :manpage:`setrlimit(2)` for the list of the RLIMIT_* constants.
  * @rlim_cur: A limit value.
  */
 struct tst_ulimit_val {
@@ -271,11 +271,11 @@ struct tst_ulimit_val {
  * @mkfs_ver: mkfs tool version. The string format supports relational
  *            operators such as < > <= >= ==.
  *
- * @mnt_flags: MS_* flags passed to mount(2) when the test library mounts a
- *             device in the case of 'tst_test.mount_device'.
+ * @mnt_flags: MS_* flags passed to :manpage:`mount(2)` when the test library
+ *             * mounts a device in the case of 'tst_test.mount_device'.
  *
- * @mnt_data: The data passed to mount(2) when the test library mounts a device
- *            in the case of 'tst_test.mount_device'.
+ * @mnt_data: The data passed to :manpage:`mount(2)` when the test library
+ *            mounts a device in the case of 'tst_test.mount_device'.
  *
  * @min_kver: A minimum kernel version supporting the filesystem which has been
  *            created with mkfs.
