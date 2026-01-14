@@ -83,7 +83,7 @@ for type in $lock_type; do
 		tst_brkm TBROK "failed to unload module"
 
 	# check module status in dmesg
-	result_str=`dmesg | sed -nE '$s/.*End of test: ([A-Z]+):.*/\1/p'`
+	result_str=`dmesg | sed -nE '$s/.*End of test: ([A-Z]+)([[:space:]]+\[debug\])?:.*/\1/p'`
 	if [ "$result_str" = "SUCCESS" ]; then
 		tst_resm TPASS "$type: completed"
 	else
