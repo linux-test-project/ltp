@@ -8,3 +8,9 @@
 .rst-content table td ul {
     margin-bottom: 0;
 }
+
+/* monospace and disable italic for C code, files and man pages */
+a.extlink-master, a.extlink-kernel_tree, a.extlink-kselftest, a.extlink-shell_lib, a.manpage, .std.std-ref {
+    font-style: normal;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", Courier, monospace;
+}
