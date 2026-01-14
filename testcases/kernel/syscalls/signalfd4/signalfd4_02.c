@@ -59,7 +59,7 @@
 
 #include "test.h"
 #include "lapi/syscalls.h"
-#include "ltp_signal.h"
+#include "tso_signal.h"
 
 #define SFD_NONBLOCK O_NONBLOCK
 

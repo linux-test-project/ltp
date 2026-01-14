@@ -53,8 +53,8 @@
 #include <string.h>
 
 #include "test.h"
-#include "safe_macros.h"
-#include "old_module.h"
+#include "tso_safe_macros.h"
+#include "tso_module.h"
 
 #include "../tbio_kernel/tbio.h"
 

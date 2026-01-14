@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Linux Test Project, 2026
+ */
+
 /*
  * Safe macros for commonly used syscalls to reduce code duplication in LTP
  * testcases, and to ensure all errors are caught in said testcases as
@@ -6,7 +11,6 @@
  * Also satiates some versions of gcc/glibc when the warn_unused_result
  * attribute is applied to the function call.
  *
- * Licensed under the GPLv2.
  */
 
 #ifndef __TEST_H__
@@ -17,8 +21,8 @@
 #define __SAFE_MACROS_H__
 
 #include "safe_macros_fn.h"
-#include "old_safe_stdio.h"
-#include "old_safe_net.h"
+#include "tso_safe_stdio.h"
+#include "tso_safe_net.h"
 
 #define SAFE_BASENAME(cleanup_fn, path)	\
 	safe_basename(__FILE__, __LINE__, (cleanup_fn), (path))

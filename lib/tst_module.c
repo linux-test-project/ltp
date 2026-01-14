@@ -28,8 +28,8 @@
 
 #include "test.h"
 #include "tst_kconfig.h"
-#include "ltp_priv.h"
-#include "old_module.h"
+#include "tso_priv.h"
+#include "tso_module.h"
 
 void tst_module_exists_(void (cleanup_fn)(void),
 	const char *mod_name, char **mod_path)

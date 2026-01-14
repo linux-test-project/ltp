@@ -16,7 +16,7 @@
  */
 
 #include "test.h"
-#include "ltp_priv.h"
+#include "tso_priv.h"
 #include "tst_mkfs.h"
 #include "tst_device.h"
 

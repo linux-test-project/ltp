@@ -23,8 +23,8 @@
 
 #include <pthread.h>
 #include "test.h"
-#include "old_resource.h"
-#include "ltp_priv.h"
+#include "tso_resource.h"
+#include "tso_priv.h"
 
 #ifndef PATH_MAX
 #ifdef MAXPATHLEN

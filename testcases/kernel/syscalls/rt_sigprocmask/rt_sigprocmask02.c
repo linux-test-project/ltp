@@ -57,7 +57,7 @@
 
 #include "test.h"
 #include "lapi/syscalls.h"
-#include "ltp_signal.h"
+#include "tso_signal.h"
 
 char *TCID = "rt_sigprocmask02";
 int TST_TOTAL = 2;

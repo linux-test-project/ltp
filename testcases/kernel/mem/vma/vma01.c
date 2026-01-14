@@ -51,7 +51,7 @@
 #include <string.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define MAPS_FILE "/proc/self/maps"
 

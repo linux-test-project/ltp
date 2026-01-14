@@ -72,9 +72,9 @@
 
 #include "test.h"
 #include "tst_buffers.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "tst_tmpdir.h"
-#include "ltp_priv.h"
+#include "tso_priv.h"
 #include "lapi/futex.h"
 
 /*

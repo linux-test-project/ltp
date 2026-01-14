@@ -58,7 +58,7 @@
 #include <sys/syscall.h>
 #include <sched.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "tst_clone.h"
 
 #define FLAG_ALL (CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|SIGCHLD)

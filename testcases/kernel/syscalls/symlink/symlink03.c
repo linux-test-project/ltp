@@ -87,7 +87,7 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define MODE_RWX        S_IRWXU | S_IRWXG | S_IRWXO
 #define FILE_MODE       S_IRUSR | S_IRGRP | S_IROTH

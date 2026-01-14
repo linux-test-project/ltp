@@ -1,22 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2014-2016 Cyril Hrubis <chrubis@suse.cz>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (c) Linux Test Project, 2026
  */
 
-#ifndef OLD_DEVICE_H__
-#define OLD_DEVICE_H__
+#ifndef TSO_DEVICE_H__
+#define TSO_DEVICE_H__
 
 /*
  * Returns filesystem type to be used for the testing. Unless your test is
@@ -81,4 +70,4 @@ int tst_detach_device(const char *dev);
  */
 int tst_umount(const char *path);
 
-#endif	/* OLD_DEVICE_H__ */
+#endif	/* TSO_DEVICE_H__ */

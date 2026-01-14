@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 long tst_ncpus(void)
 {

@@ -33,7 +33,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/fcntl.h"
 
 #define PATHNAME "mknodattestdir"

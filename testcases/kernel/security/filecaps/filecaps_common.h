@@ -1,6 +1,6 @@
 #include <limits.h>
 #include <stdlib.h>
-#include <old_tmpdir.h>
+#include <tso_tmpdir.h>
 
 static char *fifofile;
 

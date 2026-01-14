@@ -23,7 +23,7 @@
 #include <math.h>
 #include "lapi/fcntl.h"
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *safe_basename(const char *file, const int lineno,
 		    void (*cleanup_fn) (void), char *path)

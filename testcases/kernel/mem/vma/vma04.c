@@ -47,7 +47,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "numa_helper.h"
 
 char *TCID = "vma04";

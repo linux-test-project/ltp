@@ -48,9 +48,9 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "safe_macros.h"
-#include "usctest.h"
-#include "ltp_priv.h"
+#include "tso_safe_macros.h"
+#include "tso_usctest.h"
+#include "tso_priv.h"
 #include "tst_ansi_color.h"
 
 long TEST_RETURN;

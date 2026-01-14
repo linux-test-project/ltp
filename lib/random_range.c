@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include "random_range.h"
+#include "tso_random_range.h"
 
 /*
  * Internal format of the range array set up by parse_range()

@@ -18,21 +18,21 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "usctest.h"
+#include "tso_usctest.h"
 
 #include "tst_common.h"
-#include "old_safe_file_ops.h"
-#include "old_checkpoint.h"
+#include "tso_safe_file_ops.h"
+#include "tso_checkpoint.h"
 #include "tst_process_state.h"
-#include "old_resource.h"
+#include "tso_resource.h"
 #include "tst_res_flags.h"
 #include "tst_kvercmp.h"
 #include "tst_fs.h"
 #include "tst_pid.h"
 #include "tst_cmd.h"
 #include "tst_cpu.h"
-#include "old_device.h"
-#include "old_tmpdir.h"
+#include "tso_device.h"
+#include "tso_tmpdir.h"
 #include "tst_minmax.h"
 #include "tst_get_bad_addr.h"
 #include "tst_path_has_mnt_flags.h"
@@ -116,7 +116,7 @@ void tst_brkm__(const char *file, const int lineno, int ttype,
 	__attribute__ ((format (printf, 5, 6))) LTP_ATTRIBUTE_NORETURN;
 
 #ifdef LTPLIB
-# include "ltp_priv.h"
+# include "tso_priv.h"
 # define tst_brkm(flags, cleanup, fmt, ...) do { \
 	if (tst_test) \
 		tst_brk_(__FILE__, __LINE__, flags, fmt, ##__VA_ARGS__); \

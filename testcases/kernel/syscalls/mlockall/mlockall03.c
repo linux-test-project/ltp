@@ -79,7 +79,7 @@
 #include <ctype.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include <sys/resource.h>
 #include <sys/utsname.h>
 

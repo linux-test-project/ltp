@@ -57,7 +57,7 @@
 #include <limits.h>
 #include "test.h"
 #include "lapi/syscalls.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifndef AT_FDCWD
 #define AT_FDCWD -100

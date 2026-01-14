@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #include "test.h"
 
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 static void sighandler(int sig);
 static void cleanup(void);

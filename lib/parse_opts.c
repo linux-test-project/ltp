@@ -43,8 +43,8 @@
 #include <stdint.h>
 
 #include "test.h"
-#include "ltp_priv.h"
-#include "usctest.h"
+#include "tso_priv.h"
+#include "tso_usctest.h"
 #include "tst_clocks.h"
 
 #ifndef UNIT_TEST

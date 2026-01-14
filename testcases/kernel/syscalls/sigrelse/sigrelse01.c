@@ -108,7 +108,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifdef __linux__
 /* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */

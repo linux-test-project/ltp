@@ -63,7 +63,7 @@
 #include "test.h"
 #include "lapi/fcntl.h"
 #include "lapi/syscalls.h"
-#include "ltp_signal.h"
+#include "tso_signal.h"
 
 #define SFD_CLOEXEC O_CLOEXEC
 

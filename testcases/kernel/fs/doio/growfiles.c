@@ -85,7 +85,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include "dataascii.h"
-#include "random_range.h"
+#include "tso_random_range.h"
 #include "databin.h"
 #include "open_flags.h"
 #include "forker.h"
@@ -145,7 +145,7 @@ void myexit(int x)
 			/* Once it is proven tlibio.c functions work properly, */
 			/* only tlibio.c functions will be used */
 #else
-#include "tlibio.h"
+#include "tso_lio.h"
 #endif
 
 #ifndef PATH_MAX
@@ -589,7 +589,7 @@ int main(int argc, char **argv)
 					Progname, TagName);
 				exit(1);
 			}
-			if (io_type == 99)	/* hold-over until tlibio.h */
+			if (io_type == 99)	/* hold-over until tso_lio.h */
 				using_random++;
 #endif
 			break;

@@ -24,7 +24,7 @@
 
 #include "test.h"
 #include "tst_kernel.h"
-#include "old_safe_stdio.h"
+#include "tso_safe_stdio.h"
 #include "lapi/abisize.h"
 
 static int get_kernel_bits_from_uname(struct utsname *buf)

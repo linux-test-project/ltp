@@ -1,35 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2013 Oracle and/or its affiliates. All Rights Reserved.
- * Copyright (c) Linux Test Project, 2016-2024
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software Foundation,
- * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Author:
- * Alexey Kodanev <alexey.kodanev@oracle.com>
- *
- * These functions help to load and unload kernel modules in the tests.
- *
- * tst_module_load function already includes tst_module_exists function,
- * which is checking the following possible module's locations:
- *
- * 1. Current working directory
- *
- * 2. LTP installation path (using env LTPROOT, which is usually /opt/ltp)
- *
- * 3. If tmp directory created, it'll look at the test start working directory
- *
+ * Copyright (c) Linux Test Project, 2026
  */
 
 #ifndef TST_MODULE

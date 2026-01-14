@@ -48,7 +48,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "sendmsg01";
 int testno;

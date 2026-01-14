@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "ltp_signal.h"
+#include "tso_signal.h"
 #include "time64_variants.h"
 #include "tst_sig_proc.h"
 #include "tst_test.h"

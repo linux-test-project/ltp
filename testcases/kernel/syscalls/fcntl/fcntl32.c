@@ -24,7 +24,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 static void setup(void);
 static void verify_fcntl(int);

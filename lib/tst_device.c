@@ -21,7 +21,7 @@
 #include <sys/statfs.h>
 #include "lapi/syscalls.h"
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "tst_device.h"
 
 #ifndef LOOP_CTL_GET_FREE

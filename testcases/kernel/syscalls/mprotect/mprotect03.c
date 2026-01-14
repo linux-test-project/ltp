@@ -46,7 +46,7 @@
 #include <sys/wait.h>
 #include "test.h"
 
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifndef PAGESIZE
 #define PAGESIZE 4096

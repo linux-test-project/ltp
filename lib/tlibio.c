@@ -93,8 +93,8 @@
 #endif
 #include <stdlib.h>		/* atoi, abs */
 
-#include "tlibio.h"		/* defines LIO* macros */
-#include "random_range.h"
+#include "tso_lio.h"		/* defines LIO* macros */
+#include "tso_random_range.h"
 
 #ifndef PATH_MAX
 #define PATH_MAX	MAXPATHLEN

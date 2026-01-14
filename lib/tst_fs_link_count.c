@@ -22,8 +22,8 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "usctest.h"
-#include "safe_macros.h"
+#include "tso_usctest.h"
+#include "tso_safe_macros.h"
 
 #define MAX_SANE_HARD_LINKS	65535
 

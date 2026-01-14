@@ -43,7 +43,7 @@
 #include <limits.h>
 #include "config.h"
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/sem.h"
 
 char *TCID = "sendmsg02";

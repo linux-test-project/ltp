@@ -103,7 +103,7 @@
 #include <sys/mount.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define FILESIZE	(12*1024*1024)
 #define READSIZE	(1024*1024)

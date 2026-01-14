@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "tst_pid.h"
-#include "old_safe_file_ops.h"
+#include "tso_safe_file_ops.h"
 #include "tst_safe_macros.h"
 #include "lapi/syscalls.h"
 

@@ -40,7 +40,7 @@
 #include <net/if.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "sockioctl01";
 int testno;

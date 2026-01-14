@@ -63,8 +63,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "test.h"
-#include "usctest.h"
-#include "safe_macros.h"
+#include "tso_usctest.h"
+#include "tso_safe_macros.h"
 
 char *TCID;			/* Name of the testcase */
 int TST_TOTAL;			/* Total number of testcases */

@@ -34,7 +34,7 @@
 
 #include "test.h"
 #include "lapi/posix_clocks.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "cpufreq_boost";
 

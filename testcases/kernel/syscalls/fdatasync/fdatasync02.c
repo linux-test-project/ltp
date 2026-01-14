@@ -76,7 +76,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define EXP_RET_VAL	-1
 #define SPL_FILE	"/dev/null"

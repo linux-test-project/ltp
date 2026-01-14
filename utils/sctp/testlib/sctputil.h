@@ -50,7 +50,7 @@
 
 #ifdef LTP
 #include <test.h>
-#include <usctest.h>
+#include <tso_usctest.h>
 #endif
 
 #include <string.h>

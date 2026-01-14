@@ -1,5 +1,5 @@
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "test_safe_macros";
 int TST_TOTAL = 1;

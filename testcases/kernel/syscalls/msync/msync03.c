@@ -44,7 +44,7 @@
 #include <sys/resource.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define INV_SYNC	-1
 #define TEMPFILE	"msync_file"

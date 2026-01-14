@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/abisize.h"
 #include "config.h"
 

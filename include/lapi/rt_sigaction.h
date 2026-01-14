@@ -9,7 +9,7 @@
 #ifndef LAPI_RT_SIGACTION_H__
 #define LAPI_RT_SIGACTION_H__
 
-#include "ltp_signal.h"
+#include "tso_signal.h"
 
 #define INVAL_SA_PTR ((void *)-1)
 

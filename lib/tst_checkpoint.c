@@ -10,7 +10,7 @@
 #include <sys/syscall.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/futex.h"
 
 #define DEFAULT_MSEC_TIMEOUT 10000

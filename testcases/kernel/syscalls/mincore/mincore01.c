@@ -43,7 +43,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 static int pagesize;
 static rlim_t STACK_LIMIT = 10485760;

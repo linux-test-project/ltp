@@ -27,8 +27,8 @@
 #include <errno.h>
 
 #include "test.h"
-#include "safe_macros.h"
-#include "old_module.h"
+#include "tso_safe_macros.h"
+#include "tso_module.h"
 #include "tst_security.h"
 
 #include "../tpci_kernel/tpci.h"

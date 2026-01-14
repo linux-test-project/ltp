@@ -46,7 +46,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>

@@ -22,7 +22,7 @@
  */
 
 #include "test.h"
-#include "ltp_priv.h"
+#include "tso_priv.h"
 
 void tst_parse_opts(int argc, char *argv[], const option_t *user_optarg,
                     void (*user_help)(void))

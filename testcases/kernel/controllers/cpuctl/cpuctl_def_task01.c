@@ -57,7 +57,7 @@
 
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs */
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifdef DEBUG
 #define dbg(x...)	printf(x);

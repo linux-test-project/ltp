@@ -64,7 +64,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "libftest.h"
 
 char *TCID = "ftest03";

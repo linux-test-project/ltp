@@ -34,9 +34,9 @@
 #include "tst_sys_conf.h"
 #include "tst_kconfig.h"
 #include "tst_private.h"
-#include "old_resource.h"
-#include "old_device.h"
-#include "old_tmpdir.h"
+#include "tso_resource.h"
+#include "tso_device.h"
+#include "tso_tmpdir.h"
 #include "ltp-version.h"
 #include "tst_hugepage.h"
 

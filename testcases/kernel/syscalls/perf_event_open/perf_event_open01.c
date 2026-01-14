@@ -43,7 +43,7 @@
 
 #include "test.h"
 #include "lapi/syscalls.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "perf_event_open01";
 

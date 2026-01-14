@@ -61,7 +61,7 @@
 
 #include "../libcontrollers/libcontrollers.h"
 #include "test.h"		/* LTP harness APIs */
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define TIME_INTERVAL	100	/* Time interval in seconds */
 #define NUM_INTERVALS	2	/* How many iterations of TIME_INTERVAL */

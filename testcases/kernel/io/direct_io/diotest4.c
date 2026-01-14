@@ -68,7 +68,7 @@
 #include "diotest_routines.h"
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/mmap.h"
 
 char *TCID = "diotest4";	/* Test program identifier.    */

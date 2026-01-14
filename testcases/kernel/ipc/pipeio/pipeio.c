@@ -48,10 +48,10 @@
 #include <signal.h>
 #include <sys/stat.h>
 
-#include "tlibio.h"
+#include "tso_lio.h"
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/sem.h"
 
 char *TCID = "pipeio";

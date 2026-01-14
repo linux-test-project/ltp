@@ -78,7 +78,7 @@
 #include <sys/wait.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "vfork02";
 int TST_TOTAL = 1;

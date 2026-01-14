@@ -41,7 +41,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "mremap05";
 
