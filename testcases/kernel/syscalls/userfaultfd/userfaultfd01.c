@@ -4,7 +4,7 @@
  * Author: Christian Amann <camann@suse.com>
  */
 
- /*\
+/*\
  * Force a pagefault event and handle it using :manpage:`userfaultfd(2)`
  * from a different thread.
  */
