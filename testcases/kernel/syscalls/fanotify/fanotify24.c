@@ -264,7 +264,7 @@ static void generate_events(struct tcase *tc)
 	 */
 	if (!exp_errno) {
 		fd = SAFE_OPEN(FILE_EXEC_PATH, O_RDWR);
-		if (!tc->event_set[0].mask)
+		if (!tc->event_set[0].mask || (tc->mask == FAN_PRE_ACCESS))
 			exp_errno = ETXTBSY;
 	}
 
