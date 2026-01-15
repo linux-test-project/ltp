@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2004, Bull SA. All rights reserved.
+ * Copyright (c) 2025 SUSE LLC
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
@@ -13,30 +14,33 @@
  *
  * method:
  *
- *	- open a file for writing
+ *	- open a socket pair
  *	- submit a list of writes to lio_listio in LIO_NOWAIT mode
  *	- check that upon return some I/Os are still running
+ *	- drain the sockets
+ *	- check that I/O finish signal was received
  *
  */
 
-#include <sys/stat.h>
 #include <aio.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
 
 #include "posixtest.h"
 #include "tempfile.h"
 
 #define TNAME "lio_listio/2-1.c"
 
-#define NUM_AIOCBS	256
-#define BUF_SIZE	1024
+#define NUM_AIOCBS	8
 
+static int fds[2];
+static struct aiocb aiocbs[NUM_AIOCBS];
+static char *bufs;
 static volatile int received_all;
 
 static void sigrt2_handler(int signum PTS_ATTRIBUTE_UNUSED,
@@ -46,54 +50,81 @@ static void sigrt2_handler(int signum PTS_ATTRIBUTE_UNUSED,
 	received_all = 1;
 }
 
+static void read_all(void)
+{
+	int i, ret;
+
+	for (i = 0; i < NUM_AIOCBS; i++) {
+		if (!aiocbs[i].aio_buf)
+			break;
+
+		ret = aio_error(&aiocbs[i]);
+
+		/* flush written data from the socket */
+		if (ret == 0 || ret == EINPROGRESS) {
+			read(fds[1], (void *)aiocbs[i].aio_buf,
+				aiocbs[i].aio_nbytes);
+			aiocbs[i].aio_buf = NULL;
+		}
+	}
+}
+
+static void cleanup(void)
+{
+	read_all();
+	free(bufs);
+	close(fds[0]);
+	close(fds[1]);
+}
+
 int main(void)
 {
-	char tmpfname[PATH_MAX];
-	int fd;
-
-	struct aiocb *aiocbs[NUM_AIOCBS];
-	char *bufs;
+	struct aiocb *liocbs[NUM_AIOCBS];
 	struct sigaction action;
 	struct sigevent event;
 	int errors = 0;
 	int ret;
 	int err;
 	int i;
+	int bufsize;
+	socklen_t argsize = sizeof(bufsize);
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		exit(PTS_UNSUPPORTED);
 
-	PTS_GET_TMP_FILENAME(tmpfname, "pts_lio_listio_2_1");
-	unlink(tmpfname);
-
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
-
-	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n", strerror(errno));
-		exit(PTS_UNRESOLVED);
+	ret = socketpair(AF_UNIX, SOCK_DGRAM, 0, fds);
+	if (ret == -1) {
+		printf(TNAME " Error creating sockets(): %s\n",
+			strerror(errno));
+		return PTS_UNRESOLVED;
 	}
 
-	unlink(tmpfname);
+	ret = getsockopt(fds[0], SOL_SOCKET, SO_SNDBUF, &bufsize, &argsize);
+	if (ret == -1) {
+		printf(TNAME " Error reading socket buffer size: %s\n",
+			strerror(errno));
+		cleanup();
+		return PTS_UNRESOLVED;
+	}
 
-	bufs = malloc(NUM_AIOCBS * BUF_SIZE);
+	/* Socket buffer size is twice the maximum message size */
+	bufsize /= 2;
+	bufs = malloc(NUM_AIOCBS * bufsize);
 
 	if (bufs == NULL) {
 		printf(TNAME " Error at malloc(): %s\n", strerror(errno));
-		close(fd);
+		cleanup();
 		exit(PTS_UNRESOLVED);
 	}
 
 	/* Queue up a bunch of aio writes */
 	for (i = 0; i < NUM_AIOCBS; i++) {
-
-		aiocbs[i] = malloc(sizeof(struct aiocb));
-		memset(aiocbs[i], 0, sizeof(struct aiocb));
-
-		aiocbs[i]->aio_fildes = fd;
-		aiocbs[i]->aio_offset = i * BUF_SIZE;
-		aiocbs[i]->aio_buf = &bufs[i * BUF_SIZE];
-		aiocbs[i]->aio_nbytes = BUF_SIZE;
-		aiocbs[i]->aio_lio_opcode = LIO_WRITE;
+		liocbs[i] = &aiocbs[i];
+		aiocbs[i].aio_fildes = fds[0];
+		aiocbs[i].aio_offset = i * bufsize;
+		aiocbs[i].aio_buf = &bufs[i * bufsize];
+		aiocbs[i].aio_nbytes = bufsize;
+		aiocbs[i].aio_lio_opcode = LIO_WRITE;
 	}
 
 	/* Use SIGRTMIN+2 for list completion */
@@ -108,53 +139,52 @@ int main(void)
 	sigaction(SIGRTMIN + 2, &action, NULL);
 
 	/* Submit request list */
-	ret = lio_listio(LIO_NOWAIT, aiocbs, NUM_AIOCBS, &event);
+	ret = lio_listio(LIO_NOWAIT, liocbs, NUM_AIOCBS, &event);
 
 	if (ret) {
 		printf(TNAME " Error at lio_listio() %d: %s\n", errno,
-		       strerror(errno));
-		for (i = 0; i < NUM_AIOCBS; i++)
-			free(aiocbs[i]);
-		free(bufs);
-		close(fd);
+			strerror(errno));
+		/* Clear the aiocbs or cleanup() will get stuck */
+		memset(aiocbs, 0, NUM_AIOCBS * sizeof(struct aiocb));
+		cleanup();
 		exit(PTS_FAIL);
 	}
 
 	if (received_all != 0) {
 		printf(TNAME
-		       " Error lio_listio() waited for list completion\n");
-		for (i = 0; i < NUM_AIOCBS; i++)
-			free(aiocbs[i]);
-		free(bufs);
-		close(fd);
+			" Error lio_listio() signaled completion too early\n");
+		cleanup();
 		exit(PTS_FAIL);
 	}
 
-	while (received_all == 0)
+	read_all();
+
+	for (i = 0; i < 5 && !received_all; i++)
 		sleep(1);
+
+	if (received_all == 0) {
+		printf(TNAME " Test did not receive I/O completion signal\n");
+		cleanup();
+		exit(PTS_FAIL);
+	}
 
 	/* Check return code and free things */
 	for (i = 0; i < NUM_AIOCBS; i++) {
-		err = aio_error(aiocbs[i]);
-		ret = aio_return(aiocbs[i]);
+		err = aio_error(&aiocbs[i]);
+		ret = aio_return(&aiocbs[i]);
 
-		if ((err != 0) && (ret != BUF_SIZE)) {
+		if ((err != 0) && (ret != bufsize)) {
 			printf(TNAME " req %d: error = %d - return = %d\n", i,
-			       err, ret);
+				err, ret);
 			errors++;
 		}
-
-		free(aiocbs[i]);
 	}
 
-	free(bufs);
-
-	close(fd);
+	cleanup();
 
 	if (errors != 0)
 		exit(PTS_FAIL);
 
 	printf(TNAME " PASSED\n");
-
 	return PTS_PASS;
 }
