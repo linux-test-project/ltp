@@ -17,7 +17,7 @@
 #include <sys/shm.h>
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 static int *queues;
 static int maxshms, queue_cnt, used_cnt;

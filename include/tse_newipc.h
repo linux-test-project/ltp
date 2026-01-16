@@ -1,26 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2016 Xiao Yang <yangx.jy@cn.fujitsu.com>
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.
+ * Copyright (c) Linux Test Project, 2026
  */
 
 /*
  * common definitions for the IPC system calls.
  */
 
-#ifndef __LIBNEWIPC_H
-#define __LIBNEWIPC_H	1
+#ifndef TSE_NEWIPC_H__
+#define TSE_NEWIPC_H__	1
 
 #include <time.h>
 #include <sys/types.h>
@@ -60,4 +49,4 @@ void *probe_free_addr(const char *file, const int lineno);
 #define PROBE_FREE_ADDR() \
 	probe_free_addr(__FILE__, __LINE__)
 
-#endif /* newlibipc.h */
+#endif /* tse_newipc.h */

@@ -7,15 +7,15 @@
 #ifndef SET_MEMPOLICY_H__
 #define SET_MEMPOLICY_H__
 
-static inline void alloc_fault_count(struct tst_nodemap *nodes,
+static inline void alloc_fault_count(struct tse_nodemap *nodes,
                                      const char *file, size_t size)
 {
 	void *ptr;
 
-	ptr = tst_numa_map(file, size);
-	tst_numa_fault(ptr, size);
-	tst_nodemap_count_pages(nodes, ptr, size);
-	tst_numa_unmap(ptr, size);
+	ptr = tse_numa_map(file, size);
+	tse_numa_fault(ptr, size);
+	tse_nodemap_count_pages(nodes, ptr, size);
+	tse_numa_unmap(ptr, size);
 }
 
 #endif /* SET_MEMPOLICY_H__ */

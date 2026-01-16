@@ -26,7 +26,7 @@
 
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 #define ALIGN_DOWN(in_addr) ((void *)(((uintptr_t)in_addr / SHMLBA) * SHMLBA))
 

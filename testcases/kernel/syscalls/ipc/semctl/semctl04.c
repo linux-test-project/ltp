@@ -17,7 +17,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "tst_test.h"
 #include "lapi/sem.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 static uid_t ltp_uid;
 static int sem_id = -1;

@@ -13,7 +13,7 @@
 #include <sys/shm.h>
 #include <setjmp.h>
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "tst_safe_sysv_ipc.h"
 
 static int shm_id = -1, shm_key, pass;

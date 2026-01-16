@@ -3,8 +3,8 @@
  * Copyright (c) 2019 Cyril Hrubis <chrubis@suse.cz>
  */
 
-#ifndef TST_UINPUT_H__
-#define TST_UINPUT_H__
+#ifndef TSE_UINPUT_H__
+#define TSE_UINPUT_H__
 
 /**
  * Tries to open the uinput device.
@@ -44,4 +44,4 @@ void setup_mouse_events(int fd);
  */
 void destroy_input_device(int fd);
 
-#endif	/* TST_UINPUT_H__ */
+#endif	/* TSE_UINPUT_H__ */

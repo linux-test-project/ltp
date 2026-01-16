@@ -53,7 +53,7 @@
 #include <signal.h>
 #include "test.h"
 #include <sys/wait.h>
-#include "ipcsem.h"
+#include "tse_ipcsem.h"
 
 int local_flag = 1;
 

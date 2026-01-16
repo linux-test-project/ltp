@@ -15,7 +15,7 @@
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 #include "tst_rand_data.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 #define SHMSIZE 16
 

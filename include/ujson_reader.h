@@ -14,8 +14,8 @@
  * if error has happened at the end of the sequence.
  */
 
-#ifndef UJSON_READER_H
-#define UJSON_READER_H
+#ifndef UJSON_READER_H__
+#define UJSON_READER_H__
 
 #include <stdio.h>
 #include <ujson_common.h>
@@ -540,4 +540,4 @@ static inline int ujson_reader_consumed(ujson_reader *self)
 	return self->off >= self->len;
 }
 
-#endif /* UJSON_H */
+#endif /* UJSON_H__ */

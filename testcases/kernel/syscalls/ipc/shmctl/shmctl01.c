@@ -20,7 +20,7 @@
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 #include "tst_clocks.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 #define NCHILD 20
 

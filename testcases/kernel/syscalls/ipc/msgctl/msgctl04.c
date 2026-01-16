@@ -14,7 +14,7 @@
 
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "lapi/syscalls.h"
 
 static int msg_id1 = -1;

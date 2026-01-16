@@ -17,7 +17,7 @@
 #define BUFSIZE 200
 
 #include "tst_test.h"
-#include "libswap.h"
+#include "tse_swap.h"
 #include "lapi/syscalls.h"
 #include "tst_kconfig.h"
 #include "tst_kvercmp.h"
@@ -157,7 +157,7 @@ int make_swapfile(const char *file, const int lineno,
 		blocks = num;
 		tst_res_(file, lineno, TINFO, "create a swapfile with %u block numbers", blocks);
 	} else {
-		tst_brk_(file, lineno, TBROK, "Invalid method, please see include/libswap.h");
+		tst_brk_(file, lineno, TBROK, "Invalid method, please see include/tse_swap.h");
 	}
 
 	/* To guarantee at least one page can be swapped out */
@@ -239,7 +239,7 @@ bool is_swap_supported(const char *filename)
 	return true;
 }
 
-int tst_count_swaps(void)
+int tse_count_swaps(void)
 {
 	FILE *fp;
 	int used = -1;

@@ -11,7 +11,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "tst_test.h"
 #include "lapi/sem.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 #define INCVAL 2
 #define NEWMODE 066

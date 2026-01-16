@@ -13,7 +13,7 @@
  */
 
 #include "config.h"
-#include "parse_vdso.h"
+#include "tse_parse_vdso.h"
 #include "time64_variants.h"
 #include "tst_timer.h"
 #include "tst_safe_clocks.h"

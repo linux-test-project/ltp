@@ -2,7 +2,7 @@
 /* Copyright (c) Jiri Palecek<jpalecek@web.de>, 2009 */
 
 #include "time64_variants.h"
-#include "libsigwait.h"
+#include "tse_sigwait.h"
 
 static int my_rt_sigtimedwait(const sigset_t * set, siginfo_t * info,
 			      void *timeout)
@@ -21,24 +21,24 @@ static int my_rt_sigtimedwait_time64(const sigset_t * set, siginfo_t * info,
 #endif
 
 struct sigwait_test_desc tests[] = {
-	{ test_empty_set, SIGUSR1},
-	{ test_unmasked_matching, SIGUSR1},
-	{ test_masked_matching, SIGUSR1},
-	{ test_unmasked_matching_noinfo, SIGUSR1},
-	{ test_masked_matching_noinfo, SIGUSR1},
-	{ test_bad_address, SIGUSR1},
-	{ test_bad_address2, SIGUSR1},
-	{ test_bad_address3, SIGUSR1},
-	{ test_timeout, 0},
+	{ tse_empty_set, SIGUSR1},
+	{ tse_unmasked_matching, SIGUSR1},
+	{ tse_masked_matching, SIGUSR1},
+	{ tse_unmasked_matching_noinfo, SIGUSR1},
+	{ tse_masked_matching_noinfo, SIGUSR1},
+	{ tse_bad_address, SIGUSR1},
+	{ tse_bad_address2, SIGUSR1},
+	{ tse_bad_address3, SIGUSR1},
+	{ tse_timeout, 0},
 	/* Special cases */
 	/* 1: sigwaitinfo does respond to ignored signal */
-	{ test_masked_matching, SIGUSR2},
+	{ tse_masked_matching, SIGUSR2},
 	/* 2: An ignored signal doesn't cause sigwaitinfo to return EINTR */
-	{ test_timeout, SIGUSR2},
+	{ tse_timeout, SIGUSR2},
 	/* 3: The handler is not called when the signal is waited for by sigwaitinfo */
-	{ test_masked_matching, SIGTERM},
+	{ tse_masked_matching, SIGTERM},
 	/* 4: Simultaneous realtime signals are delivered in the order of increasing signal number */
-	{ test_masked_matching_rt, -1},
+	{ tse_masked_matching_rt, -1},
 };
 
 static struct time64_variants variants[] = {
@@ -62,7 +62,7 @@ static void run(unsigned int i)
 static void setup(void)
 {
 	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
-	sigwait_setup();
+	tse_sigwait_setup();
 }
 
 static struct tst_test test = {

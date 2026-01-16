@@ -14,10 +14,10 @@
 
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 #include "lapi/numaif.h"
 
-void tst_nodemap_print_counters(struct tst_nodemap *nodes)
+void tse_nodemap_print_counters(struct tse_nodemap *nodes)
 {
 	unsigned int i;
 
@@ -27,7 +27,7 @@ void tst_nodemap_print_counters(struct tst_nodemap *nodes)
 	}
 }
 
-void tst_nodemap_reset_counters(struct tst_nodemap *nodes)
+void tse_nodemap_reset_counters(struct tse_nodemap *nodes)
 {
 	size_t arr_size = sizeof(unsigned int) * nodes->cnt;
 
@@ -37,7 +37,7 @@ void tst_nodemap_reset_counters(struct tst_nodemap *nodes)
 	memset(nodes->counters, 0, arr_size);
 }
 
-void tst_nodemap_free(struct tst_nodemap *nodes)
+void tse_nodemap_free(struct tse_nodemap *nodes)
 {
 	free(nodes->counters);
 	free(nodes);
@@ -45,7 +45,7 @@ void tst_nodemap_free(struct tst_nodemap *nodes)
 
 #ifdef HAVE_NUMA_V2
 
-const char *tst_mempolicy_mode_name(int mode)
+const char *tse_mempolicy_mode_name(int mode)
 {
 	switch (mode) {
 	case MPOL_DEFAULT:
@@ -64,7 +64,7 @@ const char *tst_mempolicy_mode_name(int mode)
 }
 
 
-static void inc_counter(unsigned int node, struct tst_nodemap *nodes)
+static void inc_counter(unsigned int node, struct tse_nodemap *nodes)
 {
 	unsigned int i;
 
@@ -76,7 +76,7 @@ static void inc_counter(unsigned int node, struct tst_nodemap *nodes)
 	}
 }
 
-void tst_nodemap_count_pages(struct tst_nodemap *nodes,
+void tse_nodemap_count_pages(struct tse_nodemap *nodes,
                              void *ptr, size_t size)
 {
 	size_t page_size = getpagesize();
@@ -100,7 +100,7 @@ void tst_nodemap_count_pages(struct tst_nodemap *nodes,
 	}
 }
 
-void *tst_numa_map(const char *path, size_t size)
+void *tse_numa_map(const char *path, size_t size)
 {
 	char *ptr;
 	int fd = -1;
@@ -178,10 +178,10 @@ static int node_has_enough_memory(int node, size_t min_kb)
 	return 1;
 }
 
-struct tst_nodemap *tst_get_nodemap(int type, size_t min_mem_kb)
+struct tse_nodemap *tse_get_nodemap(int type, size_t min_mem_kb)
 {
 	struct bitmask *membind;
-	struct tst_nodemap *nodes;
+	struct tse_nodemap *nodes;
 	unsigned int i, cnt;
 
 	if (type & ~(TST_NUMA_MEM))
@@ -199,7 +199,7 @@ struct tst_nodemap *tst_get_nodemap(int type, size_t min_mem_kb)
 
 	tst_res(TINFO, "Found %u NUMA memory nodes", cnt);
 
-	nodes = SAFE_MALLOC(sizeof(struct tst_nodemap)
+	nodes = SAFE_MALLOC(sizeof(struct tse_nodemap)
 	                    + sizeof(unsigned int) * cnt);
 	nodes->cnt = cnt;
 	nodes->counters = NULL;

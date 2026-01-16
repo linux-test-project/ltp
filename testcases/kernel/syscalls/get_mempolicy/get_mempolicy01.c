@@ -22,7 +22,7 @@
 #include <numa.h>
 #include <numaif.h>
 #include <errno.h>
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #define MEM_LENGTH	(4 * 1024 * 1024)
 #define PAGES_ALLOCATED 16u
@@ -32,7 +32,7 @@
 #define POLICY_DESC_FLAGS(x, y) .policy = x, .flags = y, .desc = "policy: "#x", flags: "#y
 #define POLICY_DESC_FLAGS_NO_TARGET(x, y) .policy = x, .flags = y, .desc = "policy: "#x", flags: "#y", no target"
 
-static struct tst_nodemap *node;
+static struct tse_nodemap *node;
 static struct bitmask *nodemask, *getnodemask, *empty_nodemask;
 
 struct test_case {
@@ -142,7 +142,7 @@ static void setup(void)
 {
 	unsigned int i;
 
-	node = tst_get_nodemap(TST_NUMA_MEM, PAGES_ALLOCATED * getpagesize() / 1024);
+	node = tse_get_nodemap(TST_NUMA_MEM, PAGES_ALLOCATED * getpagesize() / 1024);
 	if (node->cnt < 1)
 		tst_brk(TCONF, "test requires at least one NUMA memory node");
 
@@ -175,7 +175,7 @@ static void cleanup(void)
 
 	numa_free_nodemask(nodemask);
 	numa_free_nodemask(getnodemask);
-	tst_nodemap_free(node);
+	tse_nodemap_free(node);
 }
 
 static void do_test(unsigned int i)

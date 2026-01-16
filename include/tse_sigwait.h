@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef SIGWAIT_H__
-#define SIGWAIT_H__
+#ifndef TSE_SIGWAIT_H__
+#define TSE_SIGWAIT_H__
 
 #include "tst_test.h"
 #include "tst_timer.h"
@@ -21,24 +21,24 @@ struct sigwait_test_desc {
 	int signo;
 };
 
-void test_empty_set(swi_func sigwaitinfo, int signo,
+void tse_empty_set(swi_func sigwaitinfo, int signo,
 		    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type);
-void test_unmasked_matching(swi_func sigwaitinfo, int signo,
+void tse_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type);
+void tse_unmasked_matching(swi_func sigwaitinfo, int signo,
 			    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
+void tse_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
 				   enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_masked_matching(swi_func sigwaitinfo, int signo,
+void tse_masked_matching(swi_func sigwaitinfo, int signo,
 			  enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
+void tse_masked_matching_rt(swi_func sigwaitinfo, int signo,
 			     enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
+void tse_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
 				 enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_bad_address(swi_func sigwaitinfo, int signo,
+void tse_bad_address(swi_func sigwaitinfo, int signo,
 		      enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
+void tse_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void test_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
+void tse_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED);
-void sigwait_setup(void);
-#endif /* SIGWAIT_H__ */
+void tse_sigwait_setup(void);
+#endif /* TSE_SIGWAIT_H__ */

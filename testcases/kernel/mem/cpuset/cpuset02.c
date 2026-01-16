@@ -18,13 +18,13 @@
 
 #ifdef HAVE_NUMA_V2
 #include <numaif.h>
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #define MNTPOINT "hugetlbfs/"
 #define HUGE_PAGE_FILE MNTPOINT "hugepagefile"
 
 static long hpage_size;
-static struct tst_nodemap *node;
+static struct tse_nodemap *node;
 static int check_node_id;
 static struct tst_cg_group *cg_cpuset_0;
 
@@ -88,7 +88,7 @@ static void run_test(void)
 
 static void setup(void)
 {
-	node = tst_get_nodemap(TST_NUMA_MEM, getpagesize() / 1024);
+	node = tse_get_nodemap(TST_NUMA_MEM, getpagesize() / 1024);
 	if (node->cnt <= 1)
 		tst_brk(TCONF, "test requires at least 2 NUMA memory nodes");
 

@@ -1,5 +1,5 @@
 /*
- * parse_vdso.c: Linux reference vDSO parser
+ * tse_parse_vdso.c: Linux reference vDSO parser
  * Written by Andrew Lutomirski, 2011-2014.
  *
  * This code is meant to be linked in to various programs that run on Linux.

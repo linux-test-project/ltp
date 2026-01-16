@@ -10,7 +10,7 @@
 #include "lapi/sembuf.h"
 #include "lapi/sem.h"
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 #ifdef HAVE_SEMID64_DS_TIME_HIGH
 

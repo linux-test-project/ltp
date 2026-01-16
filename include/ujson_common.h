@@ -8,8 +8,8 @@
  * @brief Common JSON reader/writer definitions.
  */
 
-#ifndef UJSON_COMMON_H
-#define UJSON_COMMON_H
+#ifndef UJSON_COMMON_H__
+#define UJSON_COMMON_H__
 
 /** @brief Maximal error message length. */
 #define UJSON_ERR_MAX 128
@@ -66,4 +66,4 @@ typedef struct ujson_val ujson_val;
 /** @brief An array size macro. */
 #define UJSON_ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
 
-#endif /* UJSON_COMMON_H */
+#endif /* UJSON_COMMON_H__ */

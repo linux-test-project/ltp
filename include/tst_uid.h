@@ -2,8 +2,8 @@
  * Copyright (c) 2021 Linux Test Project
  */
 
-#ifndef TST_UID_H_
-#define TST_UID_H_
+#ifndef TST_UID_H__
+#define TST_UID_H__
 
 #include <sys/types.h>
 
@@ -37,4 +37,4 @@ int tst_check_resgid_(const char *file, const int lineno, const char *callstr,
 #define tst_check_resgid(cstr, rgid, egid, sgid) \
 	tst_check_resgid_(__FILE__, __LINE__, (cstr), (rgid), (egid), (sgid))
 
-#endif /* TST_UID_H_ */
+#endif /* TST_UID_H__ */

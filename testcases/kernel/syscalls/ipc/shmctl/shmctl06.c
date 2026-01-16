@@ -9,7 +9,7 @@
 
 #include <sys/shm.h>
 #include "lapi/shmbuf.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 

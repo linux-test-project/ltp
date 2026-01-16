@@ -20,7 +20,7 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "tst_safe_sysv_ipc.h"
 #include "tst_safe_macros.h"
 #include "tst_uid.h"

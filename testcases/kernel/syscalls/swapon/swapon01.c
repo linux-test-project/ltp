@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "libswap.h"
+#include "tse_swap.h"
 
 #define MNTPOINT	"mntpoint"
 #define SWAP_FILE	MNTPOINT"/swapfile01"

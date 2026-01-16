@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Copyright (c) Jiri Palecek<jpalecek@web.de>, 2009 */
 
-#include "libsigwait.h"
+#include "tse_sigwait.h"
 
 static int my_sigwait(const sigset_t * set,
 		      siginfo_t * info LTP_ATTRIBUTE_UNUSED,
@@ -17,8 +17,8 @@ static int my_sigwait(const sigset_t * set,
 }
 
 struct sigwait_test_desc tests[] = {
-	{ test_unmasked_matching_noinfo, SIGUSR1},
-	{ test_masked_matching_noinfo, SIGUSR1},
+	{ tse_unmasked_matching_noinfo, SIGUSR1},
+	{ tse_masked_matching_noinfo, SIGUSR1},
 };
 
 static void run(unsigned int i)
@@ -31,6 +31,6 @@ static void run(unsigned int i)
 static struct tst_test test = {
 	.test= run,
 	.tcnt = ARRAY_SIZE(tests),
-	.setup = sigwait_setup,
+	.setup = tse_sigwait_setup,
 	.forks_child = 1,
 };

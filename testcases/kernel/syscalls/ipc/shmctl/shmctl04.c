@@ -23,7 +23,7 @@
 #include <pwd.h>
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "lapi/shm.h"
 
 #define SHM_SIZE 2048

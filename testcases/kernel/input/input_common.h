@@ -10,7 +10,7 @@
 #include <poll.h>
 
 #include "tst_test.h"
-#include "tst_uinput.h"
+#include "tse_uinput.h"
 
 static inline int open_event_device(void)
 {

@@ -18,7 +18,7 @@
 # include <numaif.h>
 #endif
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #ifdef HAVE_NUMA_V2
 
@@ -27,20 +27,20 @@
 #define ALLOC_ON_NODE 8
 
 static size_t page_size;
-static struct tst_nodemap *nodes;
+static struct tse_nodemap *nodes;
 
 static void setup(void)
 {
 	page_size = getpagesize();
 
-	nodes = tst_get_nodemap(TST_NUMA_MEM, 2 * ALLOC_ON_NODE * page_size / 1024);
+	nodes = tse_get_nodemap(TST_NUMA_MEM, 2 * ALLOC_ON_NODE * page_size / 1024);
 	if (nodes->cnt <= 1)
 		tst_brk(TCONF, "Test requires at least two NUMA memory nodes");
 }
 
 static void cleanup(void)
 {
-	tst_nodemap_free(nodes);
+	tse_nodemap_free(nodes);
 }
 
 static void alloc_and_check(size_t size, unsigned int *exp_alloc)
@@ -53,7 +53,7 @@ static void alloc_and_check(size_t size, unsigned int *exp_alloc)
 		tst_reap_children();
 	}
 
-	tst_nodemap_reset_counters(nodes);
+	tse_nodemap_reset_counters(nodes);
 	alloc_fault_count(nodes, NULL, size * page_size);
 
 	for (i = 0; i < nodes->cnt; i++) {

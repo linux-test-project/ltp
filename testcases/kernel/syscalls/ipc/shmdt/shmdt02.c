@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/shm.h>
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 static void *non_attched_addr;
 static void *unaligned_addr;

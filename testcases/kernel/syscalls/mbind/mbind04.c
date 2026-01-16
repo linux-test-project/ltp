@@ -18,12 +18,12 @@
 # include "mbind.h"
 #endif
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #ifdef HAVE_NUMA_V2
 
 static size_t page_size;
-static struct tst_nodemap *nodes;
+static struct tse_nodemap *nodes;
 
 #define PAGES_ALLOCATED 16u
 
@@ -31,14 +31,14 @@ static void setup(void)
 {
 	page_size = getpagesize();
 
-	nodes = tst_get_nodemap(TST_NUMA_MEM, 2 * PAGES_ALLOCATED * page_size / 1024);
+	nodes = tse_get_nodemap(TST_NUMA_MEM, 2 * PAGES_ALLOCATED * page_size / 1024);
 	if (nodes->cnt <= 1)
 		tst_brk(TCONF, "Test requires at least two NUMA memory nodes");
 }
 
 static void cleanup(void)
 {
-	tst_nodemap_free(nodes);
+	tse_nodemap_free(nodes);
 }
 
 static void verify_policy(unsigned int node, int mode, unsigned flag)
@@ -51,7 +51,7 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 
 	numa_bitmask_setbit(bm, node);
 
-	ptr = tst_numa_map(NULL, size);
+	ptr = tse_numa_map(NULL, size);
 
 	TEST(mbind(ptr, size, mode, bm->maskp, bm->size + 1, flag));
 
@@ -60,12 +60,12 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 	if (TST_RET) {
 		tst_res(TFAIL | TTERRNO,
 		        "mbind(%s, %s) node %u",
-		        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
+		        tse_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 		return;
 	}
 
 	tst_res(TPASS, "mbind(%s, %s) node %u",
-	        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
+	        tse_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 
 	const char *prefix = "child: ";
 
@@ -75,10 +75,10 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 		tst_reap_children();
 	}
 
-	tst_nodemap_reset_counters(nodes);
-	tst_numa_fault(ptr, size);
-	tst_nodemap_count_pages(nodes, ptr, size);
-	tst_numa_unmap(ptr, size);
+	tse_nodemap_reset_counters(nodes);
+	tse_numa_fault(ptr, size);
+	tse_nodemap_count_pages(nodes, ptr, size);
+	tse_numa_unmap(ptr, size);
 
 	int fail = 0;
 
@@ -104,7 +104,7 @@ static void verify_policy(unsigned int node, int mode, unsigned flag)
 	}
 
 	if (fail)
-		tst_nodemap_print_counters(nodes);
+		tse_nodemap_print_counters(nodes);
 
 	if (!pid)
 		exit(0);

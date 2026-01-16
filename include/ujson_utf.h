@@ -8,8 +8,8 @@
  * @brief Unicode helper macros and functions.
  */
 
-#ifndef UJSON_UTF_H
-#define UJSON_UTF_H
+#ifndef UJSON_UTF_H__
+#define UJSON_UTF_H__
 
 #include <stdint.h>
 #include <stddef.h>
@@ -165,4 +165,4 @@ static inline int ujson_to_utf8(uint32_t unicode, char *buf)
 	return 4;
 }
 
-#endif /* UJSON_UTF_H */
+#endif /* UJSON_UTF_H__ */

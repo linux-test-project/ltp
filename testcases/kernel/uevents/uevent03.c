@@ -18,7 +18,7 @@
 #include <sys/sysmacros.h>
 #include <linux/uinput.h>
 #include "tst_test.h"
-#include "tst_uinput.h"
+#include "tse_uinput.h"
 #include "uevent.h"
 
 static int mouse_fd;

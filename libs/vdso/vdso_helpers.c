@@ -7,7 +7,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 
-#include "parse_vdso.h"
+#include "tse_parse_vdso.h"
 #include "config.h"
 
 #ifdef HAVE_GETAUXVAL

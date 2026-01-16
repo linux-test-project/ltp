@@ -12,7 +12,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 
-#include "tst_uinput.h"
+#include "tse_uinput.h"
 #include "tst_safe_stdio.h"
 
 #define VIRTUAL_DEVICE "virtual-device-ltp"

@@ -8,7 +8,7 @@
  */
 #include <sys/msg.h>
 #include "lapi/msgbuf.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
 

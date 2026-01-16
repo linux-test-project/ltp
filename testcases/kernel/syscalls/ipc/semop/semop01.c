@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "lapi/sem.h"
 #include "semop.h"
 

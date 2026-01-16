@@ -11,8 +11,8 @@
  * Contains common content for all swapon/swapoff tests.
  */
 
-#ifndef __LIBSWAP_H__
-#define __LIBSWAP_H__
+#ifndef TSE_SWAP_H__
+#define TSE_SWAP_H__
 
 enum swapfile_method {
     SWAPFILE_BY_SIZE,
@@ -110,10 +110,10 @@ int make_swapfile(const char *file, const int lineno,
 bool is_swap_supported(const char *filename);
 
 /**
- * tst_count_swaps() - Get the used swapfiles number.
+ * tse_count_swaps() - Get the used swapfiles number.
  *
  * Return: used swapfiles number.
  */
-int tst_count_swaps(void);
+int tse_count_swaps(void);
 
-#endif /* __LIBSWAP_H__ */
+#endif /* TSE_SWAP_H__ */

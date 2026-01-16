@@ -17,7 +17,7 @@
 #include "config.h"
 #include "numa_helper.h"
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 #include "lapi/numaif.h"
 
 #ifdef HAVE_NUMA_V2
@@ -141,7 +141,7 @@ static void check_policy_pref_or_local(int policy)
 	if (policy != MPOL_PREFERRED && policy != MPOL_LOCAL) {
 		tst_res(TFAIL, "Wrong policy: %s(%d), "
 			"expected MPOL_PREFERRED or MPOL_LOCAL",
-			tst_mempolicy_mode_name(policy), policy);
+			tse_mempolicy_mode_name(policy), policy);
 	}
 }
 
@@ -221,8 +221,8 @@ static void do_test(unsigned int i)
 			tc->check_policy(policy);
 		else if (tc->policy != policy) {
 			tst_res(TFAIL, "Wrong policy: %s(%d), expected: %s(%d)",
-				tst_mempolicy_mode_name(policy), policy,
-				tst_mempolicy_mode_name(tc->policy), tc->policy);
+				tse_mempolicy_mode_name(policy), policy,
+				tse_mempolicy_mode_name(tc->policy), tc->policy);
 			fail = 1;
 		}
 		if (tc->exp_nodemask) {

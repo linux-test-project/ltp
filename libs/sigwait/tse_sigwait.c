@@ -5,11 +5,11 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "libsigwait.h"
+#include "tse_sigwait.h"
 #include "tst_sig_proc.h"
 #include "lapi/syscalls.h"
 
-void test_empty_set(swi_func sigwaitinfo, int signo,
+void tse_empty_set(swi_func sigwaitinfo, int signo,
 		    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
@@ -35,7 +35,7 @@ void test_empty_set(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
+void tse_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
 {
 	sigset_t sigs;
 	siginfo_t si;
@@ -68,7 +68,7 @@ void test_timeout(swi_func sigwaitinfo, int signo, enum tst_ts_type type)
 /* Note: sigwait-ing for a signal that is not blocked is unspecified
  * by POSIX; but works for non-ignored signals under Linux
  */
-void test_unmasked_matching(swi_func sigwaitinfo, int signo,
+void tse_unmasked_matching(swi_func sigwaitinfo, int signo,
 			    enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
@@ -96,7 +96,7 @@ void test_unmasked_matching(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
+void tse_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
 				   enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
@@ -118,7 +118,7 @@ void test_unmasked_matching_noinfo(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_masked_matching(swi_func sigwaitinfo, int signo,
+void tse_masked_matching(swi_func sigwaitinfo, int signo,
 			  enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
@@ -166,7 +166,7 @@ void test_masked_matching(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
+void tse_masked_matching_rt(swi_func sigwaitinfo, int signo,
 			     enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
@@ -232,7 +232,7 @@ void test_masked_matching_rt(swi_func sigwaitinfo, int signo,
 			 "sigwaitinfo failed to restore the original mask");
 }
 
-void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
+void tse_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
 				 enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
@@ -274,7 +274,7 @@ void test_masked_matching_noinfo(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_bad_address(swi_func sigwaitinfo, int signo,
+void tse_bad_address(swi_func sigwaitinfo, int signo,
 		      enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs, oldmask;
@@ -301,7 +301,7 @@ void test_bad_address(swi_func sigwaitinfo, int signo,
 	SAFE_WAIT(NULL);
 }
 
-void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
+void tse_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
@@ -342,7 +342,7 @@ void test_bad_address2(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 	}
 }
 
-void test_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
+void tse_bad_address3(swi_func sigwaitinfo, int signo LTP_ATTRIBUTE_UNUSED,
 		       enum tst_ts_type type LTP_ATTRIBUTE_UNUSED)
 {
 	sigset_t sigs;
@@ -373,7 +373,7 @@ static void empty_handler(int sig LTP_ATTRIBUTE_UNUSED)
 {
 }
 
-void sigwait_setup(void)
+void tse_sigwait_setup(void)
 {
 	signal(SIGUSR1, empty_handler);
 	signal(SIGALRM, empty_handler);

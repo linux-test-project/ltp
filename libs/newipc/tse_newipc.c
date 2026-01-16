@@ -20,7 +20,7 @@
 #define	TST_NO_DEFAULT_MAIN
 
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_sysv_ipc.h"
 

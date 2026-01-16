@@ -21,7 +21,7 @@
 #include <sys/shm.h>
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 #define NEXT_ID_PATH "/proc/sys/kernel/shm_next_id"
 static int shm_id, pid;

@@ -21,7 +21,7 @@
 #include <sys/swap.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "libswap.h"
+#include "tse_swap.h"
 
 /*
  * MAX_SWAPFILES from the internal kernel implementation is currently <23, 29>,
@@ -40,7 +40,7 @@ static int setup_swap(void)
 	int used_swapfiles, min_swapfiles;
 	char filename[FILENAME_MAX];
 
-	used_swapfiles = tst_count_swaps();
+	used_swapfiles = tse_count_swaps();
 	min_swapfiles = MIN_SWAP_FILES - used_swapfiles;
 
 	while (true) {

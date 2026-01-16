@@ -4,8 +4,8 @@
  * Author: Viresh Kumar <viresh.kumar@linaro.org>
  */
 
-#ifndef PARSE_VDSO_H__
-#define PARSE_VDSO_H__
+#ifndef TSE_PARSE_VDSO_H__
+#define TSE_PARSE_VDSO_H__
 
 #include <stdint.h>
 
@@ -38,4 +38,4 @@ extern void *vdso_sym(const char *version, const char *name);
 typedef int (*gettime_t)(clockid_t clk_id, void *ts);
 void find_clock_gettime_vdso(gettime_t *ptr_vdso_gettime,
 			     gettime_t *ptr_vdso_gettime64);
-#endif /* PARSE_VDSO_H__ */
+#endif /* TSE_PARSE_VDSO_H__ */

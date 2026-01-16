@@ -16,7 +16,7 @@
 #include <sys/ipc.h>
 #include "lapi/sem.h"
 #include "tst_test.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 #include "tst_safe_sysv_ipc.h"
 
 static int *sem_id_arr;

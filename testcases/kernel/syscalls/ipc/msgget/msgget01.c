@@ -16,7 +16,7 @@
 
 #include "tst_test.h"
 #include "tst_safe_sysv_ipc.h"
-#include "libnewipc.h"
+#include "tse_newipc.h"
 
 static int queue_id = -1;
 static key_t msgkey;
