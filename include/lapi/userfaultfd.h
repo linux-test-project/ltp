@@ -219,6 +219,20 @@ struct uffdio_move {
 };
 #endif	/* HAVE_STRUCT_UFFDIO_MOVE */
 
+#ifndef HAVE_STRUCT_UFFDIO_WRITEPROTECT
+#define UFFD_FEATURE_PAGEFAULT_FLAG_WP		(1<<0)
+#define _UFFDIO_WRITEPROTECT			(0x06)
+#define UFFDIO_WRITEPROTECT	_IOWR(UFFDIO, _UFFDIO_WRITEPROTECT, \
+				      struct uffdio_writeprotect)
+
+struct uffdio_writeprotect {
+	struct uffdio_range range;
+#define UFFDIO_WRITEPROTECT_MODE_WP		((__u64)1<<0)
+#define UFFDIO_WRITEPROTECT_MODE_DONTWAKE	((__u64)1<<1)
+	__u64 mode;
+};
+#endif	/* HAVE_STRUCT_UFFDIO_WRITEPROTECT */
+
 #define SAFE_USERFAULTFD(flags, retry) \
 	safe_userfaultfd(__FILE__, __LINE__, (flags), (retry))
 
