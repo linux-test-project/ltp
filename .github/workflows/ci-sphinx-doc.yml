@@ -27,9 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout LTP
-        uses: actions/checkout@v2
-        with:
-          path: ltp
+        uses: actions/checkout@v1
 
       - name: Install sphinx and autotools
         run: |
@@ -52,7 +50,6 @@ jobs:
 
       - name: Run configure
         run: |
-          cd "$GITHUB_WORKSPACE/ltp/"
           make autotools && ./configure
 
       - name: Send results to Patchwork
@@ -68,13 +65,13 @@ jobs:
 
       - name: Install sphinx dependencies
         run: |
-          cd "$GITHUB_WORKSPACE/ltp/doc/"
+          cd "doc/"
           python3 -m virtualenv .venv
           . .venv/bin/activate
           pip install -r requirements.txt
 
       - name: Build doc
         run: |
-          cd "$GITHUB_WORKSPACE/ltp/doc/"
+          cd "doc/"
           . .venv/bin/activate
           make
