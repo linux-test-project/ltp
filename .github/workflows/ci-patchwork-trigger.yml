@@ -55,7 +55,7 @@ jobs:
                 continue;
               }
 
-              for (const workflow in workflows) {
+              for (const workflow of workflows) {
                 const response = await github.rest.actions.createWorkflowDispatch({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
