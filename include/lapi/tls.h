@@ -17,10 +17,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#if defined(__i386__)
-#include <asm/ldt.h>
-#endif
-
 #include "tst_test.h"
 
 #define TLS_SIZE 4096
@@ -37,7 +33,6 @@ typedef struct {
 #endif
 
 extern void *tls_ptr;
-extern struct user_desc *tls_desc;
 
 static inline void *allocate_tls_area(void)
 {
@@ -59,21 +54,6 @@ static inline void init_tls(void)
 {
 #if defined(__x86_64__) || defined(__aarch64__) || defined(__s390x__)
 	tls_ptr = allocate_tls_area();
-
-#elif defined(__i386__)
-	tls_ptr = allocate_tls_area();
-	tls_desc = SAFE_MALLOC(sizeof(*tls_desc));
-	memset(tls_desc, 0, sizeof(*tls_desc));
-	tls_desc->entry_number = -1;
-	tls_desc->base_addr = (unsigned long)tls_ptr;
-	tls_desc->limit = TLS_SIZE;
-	tls_desc->seg_32bit = 1;
-	tls_desc->contents = 0;
-	tls_desc->read_exec_only = 0;
-	tls_desc->limit_in_pages = 0;
-	tls_desc->seg_not_present = 0;
-	tls_desc->useable = 1;
-
 #else
 	tst_brk(TCONF, "Unsupported architecture for TLS");
 #endif
@@ -86,12 +66,6 @@ static inline void free_tls(void)
 	if (tls_ptr) {
 		free(tls_ptr);
 		tls_ptr = NULL;
-	}
-#elif defined(__i386__)
-	if (tls_desc) {
-		free((void *)(uintptr_t)tls_desc->base_addr);
-		free(tls_desc);
-		tls_desc = NULL;
 	}
 #endif
 }
