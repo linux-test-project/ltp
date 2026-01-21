@@ -1,7 +1,7 @@
 .. SPDX-License-Identifier: GPL-2.0-or-later
 
-Setting up the Mailing list
-===========================
+Setting up git for the LTP mailing list
+=======================================
 
 Before using :manpage:`git-send-email(1)`, you need to set up your email client
 to send emails from the command line. This typically involves configuring an
@@ -48,3 +48,7 @@ For any corner case, please take a look at the
     This method still works in most of the cases, but nowadays we often
     require to setup a two factor authentication. If this is the case, please
     consider setting up Git accordingly.
+
+    Instead of :manpage:`git-send-email(1)` you may want to use
+    `b4 tool <https://b4.docs.kernel.org/en/latest/contributor/send.html>`_.
+    See LTP ``b4`` configuration: :master:`.b4-config`.
