@@ -27,7 +27,7 @@ To test the configuration you can use ``--dry-run`` parameter.
 
 .. code-block:: bash
 
-    git send-email --dry-run --to "ltp@lists.linux.it" --subject "Test Email" --body "This is a test email." HEAD^
+    git send-email --dry-run --to "ltp@lists.linux.it" --subject "Test Email" HEAD^
 
 Depending on your SMTP server's configuration, you may need to authenticate
 before sending emails. If required, configure authentication settings using:
