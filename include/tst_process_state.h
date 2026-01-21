@@ -18,11 +18,11 @@
 /**
  * TST_PROCESS_STATE_WAIT() - Waits for a process state change.
  *
- * Polls `/proc/$PID/state` for a process state changes.
- *
  * @pid: A process pid.
  * @state: A state to wait for.
  * @msec_timeout: A timeout for the wait.
+ *
+ * Polls `/proc/$PID/state` for a process state changes.
  *
  * Possible process states (see :manpage:`ps(1)`):
  *
