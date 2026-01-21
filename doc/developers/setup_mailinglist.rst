@@ -3,9 +3,9 @@
 Setting up the Mailing list
 ===========================
 
-Before using ``git send-email``, you need to set up your email client to send
-emails from the command line. This typically involves configuring an SMTP server
-and authentication details.
+Before using :manpage:`git-send-email(1)`, you need to set up your email client
+to send emails from the command line. This typically involves configuring an
+SMTP server and authentication details.
 
 Open a terminal and configure Git with your email settings using the following
 commands:
@@ -41,7 +41,7 @@ Replace ``your_email@example.com`` with your email address and ``your_password``
 with your email account password.
 
 For any corner case, please take a look at the
-`email + git <https://git-send-email.io/>`_ documentation.
+`email + git <https://git-send-email.io/>`_ tutorial.
 
 .. note::
 
