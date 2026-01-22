@@ -968,11 +968,40 @@ static struct data_node *parse_file(const char *fname)
 	return res;
 }
 
-static struct typemap {
+struct typemap {
 	const char *id;
 	enum data_type type;
-} tst_test_typemap[] = {
+	struct typemap *child;
+};
+
+static struct typemap needs_cmds_typemap[] = {
+	{.id = "optional", .type = DATA_BOOL},
+	{}
+};
+
+static struct typemap tst_test_typemap[] = {
 	{.id = "test_variants", .type = DATA_INT},
+	/* All bitflags in tst_test struct */
+	{.id = "needs_tmpdir", .type = DATA_BOOL},
+	{.id = "needs_root", .type = DATA_BOOL},
+	{.id = "forks_child", .type = DATA_BOOL},
+	{.id = "needs_device", .type = DATA_BOOL},
+	{.id = "needs_checkpoints", .type = DATA_BOOL},
+	{.id = "needs_overlay", .type = DATA_BOOL},
+	{.id = "format_device", .type = DATA_BOOL},
+	{.id = "mount_device", .type = DATA_BOOL},
+	{.id = "needs_rofs", .type = DATA_BOOL},
+	{.id = "child_needs_reinit", .type = DATA_BOOL},
+	{.id = "runs_script", .type = DATA_BOOL},
+	{.id = "needs_devfs", .type = DATA_BOOL},
+	{.id = "restore_wallclock", .type = DATA_BOOL},
+	{.id = "all_filesystems", .type = DATA_BOOL},
+	{.id = "skip_in_lockdown", .type = DATA_BOOL},
+	{.id = "skip_in_secureboot", .type = DATA_BOOL},
+	{.id = "skip_in_compat", .type = DATA_BOOL},
+	{.id = "needs_hugetlbfs", .type = DATA_BOOL},
+	{.id = "needs_cgroup_nsdelegate", .type = DATA_BOOL},
+	{.id = "needs_cmds", .child = needs_cmds_typemap},
 	{}
 };
 
@@ -996,23 +1025,65 @@ static void convert_str2int(struct data_node *res, const char *id, const char *s
 	data_node_hash_add(res, id, data_node_int(val));
 }
 
-static void check_normalize_types(struct data_node *res)
+static void convert_str2bool(struct data_node *res, const char *id, const char *str_val)
+{
+	long val;
+	char *endptr;
+
+	errno = 0;
+	val = strtol(str_val, &endptr, 10);
+
+	if (errno || *endptr) {
+		fprintf(stderr,	"Cannot convert %s value %s to bool!\n", id, str_val);
+		exit(1);
+	}
+
+	if (verbose)
+		fprintf(stderr, "NORMALIZING %s TO BOOL %li\n", id, val);
+
+	data_node_hash_del(res, id);
+	data_node_hash_add(res, id, data_node_bool(val));
+}
+
+static void check_normalize_types(struct data_node *res, const char *id, struct typemap *typemaps)
 {
 	unsigned int i;
 
-	for (i = 0; tst_test_typemap[i].id; i++) {
+	if (res->type == DATA_ARRAY) {
+		for (i = 0; i < res->array.array_used; i++)
+			check_normalize_types(res->array.array[i], id, typemaps);
+
+		return;
+	}
+
+	if (res->type != DATA_HASH) {
+		fprintf(stderr, "Typemap '%s' type %s has no children!\n", id, data_type_name(res->type));
+		exit(1);
+	}
+
+	for (i = 0; typemaps[i].id; i++) {
 		struct data_node *n;
-		struct typemap *typemap = &tst_test_typemap[i];
+		struct typemap *typemap = &typemaps[i];
 
 		n = data_node_hash_get(res, typemap->id);
 		if (!n)
 			continue;
+
+		if (typemap->child) {
+			check_normalize_types(n, typemap->id, typemap->child);
+			continue;
+		}
 
 		if (n->type == typemap->type)
 			continue;
 
 		if (n->type == DATA_STRING && typemap->type == DATA_INT) {
 			convert_str2int(res, typemap->id, n->string.val);
+			continue;
+		}
+
+		if (n->type == DATA_STRING && typemap->type == DATA_BOOL) {
+			convert_str2bool(res, typemap->id, n->string.val);
 			continue;
 		}
 
@@ -1125,14 +1196,14 @@ int main(int argc, char *argv[])
 	}
 
 	/* Normalize types */
-	check_normalize_types(res);
+	check_normalize_types(res, "", tst_test_typemap);
 
 	for (i = 0; implies[i].flag; i++) {
 		if (data_node_hash_get(res, implies[i].flag)) {
 			for (j = 0; implies[i].implies[j]; j++) {
 				if (!data_node_hash_get(res, implies[i].implies[j]))
 					data_node_hash_add(res, implies[i].implies[j],
-							   data_node_string("1"));
+							   data_node_bool(true));
 			}
 		}
 	}
