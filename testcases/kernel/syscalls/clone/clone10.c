@@ -91,4 +91,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_checkpoints = 1,
 	.test_all = verify_tls,
+	.supported_archs = (const char *const []) {
+		"x86_64",
+		"aarch64",
+		"s390x",
+		NULL
+	}
 };
