@@ -16,6 +16,12 @@
  *  Date:   Fri May 18 16:23:18 2018 +0200
  *
  *  scsi: sg: allocate with __GFP_ZERO in sg_build_indirect()
+ *
+ *  commit 41e99fe2005182139b1058db71f0d241f8f0078c
+ *  Author: Desnes Nunes <desnesn@redhat.com>
+ *  Date:   Fri Oct 31 01:34:36 2025 -0300
+ *
+ *  usb: storage: Fix memory leak in USB bulk transport
  */
 
 #include <sys/types.h>
@@ -167,6 +173,7 @@ static struct tst_test test = {
 	.timeout = 3600,
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "a45b599ad808"},
+		{"linux-git", "41e99fe20051"},
 		{"CVE", "2018-1000204"},
 		{}
 	}
