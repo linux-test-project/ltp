@@ -154,6 +154,10 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.needs_drivers = (const char *const []) {
+		"kvm",
+		NULL
+	},
 	.min_cpus = 2,
 	.supported_archs = (const char *const []) {
 		"x86_64",

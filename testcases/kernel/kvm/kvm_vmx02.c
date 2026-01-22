@@ -183,6 +183,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = tst_kvm_cleanup,
 	.needs_root = 1,
+	.needs_drivers = (const char *const []) {
+		"kvm",
+		NULL
+	},
 	.supported_archs = (const char *const []) {
 		"x86_64",
 		"x86",
