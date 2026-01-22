@@ -17,6 +17,7 @@ enum data_type {
 	DATA_HASH,
 	DATA_STRING,
 	DATA_INT,
+	DATA_BOOL,
 	DATA_NULL,
 };
 
@@ -49,6 +50,11 @@ struct data_node_int {
 	long val;
 };
 
+struct data_node_bool {
+	enum data_type type;
+	bool val;
+};
+
 struct data_node {
 	union {
 		enum data_type type;
@@ -56,6 +62,7 @@ struct data_node {
 		struct data_node_array array;
 		struct data_node_string string;
 		struct data_node_int i;
+		struct data_node_bool b;
 	};
 };
 
@@ -70,6 +77,8 @@ static inline const char* data_type_name(enum data_type type)
 		return "string";
 	case DATA_INT:
 		return "int";
+	case DATA_BOOL:
+		return "bool";
 	case DATA_NULL:
 		return "null";
 	default:
@@ -100,6 +109,19 @@ static inline struct data_node *data_node_int(long i)
 
 	node->type = DATA_INT;
 	node->i.val = i;
+
+	return node;
+}
+
+static inline struct data_node *data_node_bool(bool b)
+{
+	struct data_node *node = malloc(sizeof(struct data_node_int));
+
+	if (!node)
+		return NULL;
+
+	node->type = DATA_BOOL;
+	node->b.val = b;
 
 	return node;
 }
@@ -175,6 +197,7 @@ static inline void data_node_free(struct data_node *self)
 	switch (self->type) {
 	case DATA_STRING:
 	case DATA_INT:
+	case DATA_BOOL:
 	case DATA_NULL:
 	break;
 	case DATA_HASH:
@@ -314,6 +337,10 @@ static inline void data_node_print_(struct data_node *self, unsigned int padd)
 		data_print_padd(padd);
 		printf("%li\n", self->i.val);
 	break;
+	case DATA_BOOL:
+		data_print_padd(padd);
+		printf("%s\n", self->b.val ? "true" : "false");
+	break;
 	case DATA_STRING:
 		data_print_padd(padd);
 		printf("'%s'\n", self->string.val);
@@ -406,6 +433,10 @@ static inline void data_to_json_(struct data_node *self, FILE *f, unsigned int p
 	case DATA_INT:
 		padd = do_padd ? padd : 0;
 		data_fprintf(f, padd, "%li", self->i.val);
+	break;
+	case DATA_BOOL:
+		padd = do_padd ? padd : 0;
+		data_fprintf(f, padd, "%s", self->b.val ? "true" : "false");
 	break;
 	case DATA_STRING:
 		padd = do_padd ? padd : 0;
