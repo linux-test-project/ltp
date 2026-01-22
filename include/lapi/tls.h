@@ -52,22 +52,16 @@ static inline void *allocate_tls_area(void)
 
 static inline void init_tls(void)
 {
-#if defined(__x86_64__) || defined(__aarch64__) || defined(__s390x__)
 	tls_ptr = allocate_tls_area();
-#else
-	tst_brk(TCONF, "Unsupported architecture for TLS");
-#endif
 }
 
 static inline void free_tls(void)
 {
 	usleep(10000);
-#if defined(__x86_64__) || defined(__aarch64__) || defined(__s390x__)
 	if (tls_ptr) {
 		free(tls_ptr);
 		tls_ptr = NULL;
 	}
-#endif
 }
 
 #endif /* LAPI_TLS_H__ */
