@@ -92,11 +92,11 @@ static void run(void)
 
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = UFFD_FEATURE_PAGEFAULT_FLAG_WP;
-	SAFE_IOCTL(uffd, UFFDIO_API, &uffdio_api);
+	if (ioctl(uffd, UFFDIO_API, &uffdio_api) < 0) {
+		if (!(uffdio_api.features & UFFD_FEATURE_PAGEFAULT_FLAG_WP))
+			tst_brk(TCONF, "UFFD write-protect unsupported");
 
-	if (!(uffdio_api.features & UFFD_FEATURE_PAGEFAULT_FLAG_WP)) {
-		tst_brk(TCONF, "UFFD write-protect unsupported");
-		return;
+		tst_brk(TBROK | TERRNO, "ioctl() on userfaultfd failed");
 	}
 
 	uffdio_register.range.start = (unsigned long) page;
