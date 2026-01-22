@@ -26,7 +26,14 @@
 # {
 #  "needs_root": true,
 #  "needs_tmpdir": true,
-#  "needs_cmds": ["gdb", "uname"],
+#  "needs_cmds": [
+#     {
+#       "cmd": "gdb"
+#     },
+#     {
+#       "cmd": "uname"
+#     }
+#   ],
 #  "save_restore": [
 #   ["/proc/sys/kernel/core_pattern", "core", "TBROK"],
 #   ["/proc/sys/kernel/core_uses_pid", "0", "TBROK"]
