@@ -186,7 +186,7 @@ enum cmd_ids {
 
 static ujson_obj_attr cmd_attrs[] = {
 	UJSON_OBJ_ATTR_IDX(CMD, "cmd", UJSON_STR),
-	UJSON_OBJ_ATTR_IDX(OPTIONAL, "optional", UJSON_INT),
+	UJSON_OBJ_ATTR_IDX(OPTIONAL, "optional", UJSON_BOOL),
 };
 
 static ujson_obj cmd_obj = {
@@ -299,7 +299,7 @@ static struct tst_cmd *parse_cmds(ujson_reader *reader, ujson_val *val)
 				ret[i].cmd = strdup(val->val_str);
 			break;
 			case OPTIONAL:
-				ret[i].optional = val->val_int;
+				ret[i].optional = val->val_bool;
 			break;
 			}
 		}
