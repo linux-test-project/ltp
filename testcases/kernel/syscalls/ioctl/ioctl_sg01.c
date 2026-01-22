@@ -30,7 +30,7 @@
 #include "tst_memutils.h"
 
 #define SYSDIR "/sys/block"
-#define BLOCKDIR "/sys/block/%s/device"
+#define BLOCKDIR "/sys/block/%s/device/generic"
 
 #define BUF_SIZE (128 * 4096)
 #define CMD_SIZE 6
@@ -41,14 +41,14 @@ static unsigned char command[CMD_SIZE];
 static struct sg_io_hdr query;
 
 /* TODO: split this off to a separate SCSI library? */
-static const char *find_generic_scsi_device(int access_flags, int skip_usb)
+static const char *find_generic_scsi_device(int access_flags)
 {
 	DIR *sysdir;
 	struct dirent *ent;
 	int tmpfd;
 	ssize_t length;
 	char *filename;
-	static char devpath[PATH_MAX], syspath[PATH_MAX];
+	static char devpath[PATH_MAX], genpath[PATH_MAX];
 
 	sysdir = opendir(SYSDIR);
 
@@ -60,28 +60,15 @@ static const char *find_generic_scsi_device(int access_flags, int skip_usb)
 		if (ent->d_name[0] == '.')
 			continue;
 
-		snprintf(syspath, PATH_MAX, BLOCKDIR, ent->d_name);
-		syspath[PATH_MAX - 1] = '\0';
-
-		/* Real device path matches the physical HW bus path */
-		if (!realpath(syspath, devpath))
-			continue;
-
-		strncat(devpath, "/generic", PATH_MAX - strlen(devpath) - 1);
+		snprintf(devpath, PATH_MAX, BLOCKDIR, ent->d_name);
 		devpath[PATH_MAX - 1] = '\0';
-		length = readlink(devpath, syspath, PATH_MAX - 1);
+		length = readlink(devpath, genpath, PATH_MAX - 1);
 
 		if (length < 0)
 			continue;
 
-		syspath[length] = '\0';
-		filename = basename(syspath);
-
-		/* USB devices often return HW info in SG_IO response buffer */
-		if (skip_usb && strstr(devpath, "/usb")) {
-			tst_res(TINFO, "Skipping USB device %s", filename);
-			continue;
-		}
+		genpath[length] = '\0';
+		filename = basename(genpath);
 
 		snprintf(devpath, PATH_MAX, "/dev/%s", filename);
 		/* access() makes incorrect assumptions about block devices */
@@ -121,7 +108,7 @@ static void dump_hex(const char *str, size_t size)
 
 static void setup(void)
 {
-	const char *devpath = find_generic_scsi_device(O_RDONLY, 1);
+	const char *devpath = find_generic_scsi_device(O_RDONLY);
 
 	if (!devpath)
 		tst_brk(TCONF, "Could not find any usable SCSI device");
