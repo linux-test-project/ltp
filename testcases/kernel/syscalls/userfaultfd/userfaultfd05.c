@@ -92,12 +92,8 @@ static void run(void)
 
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = UFFD_FEATURE_PAGEFAULT_FLAG_WP;
-	if (ioctl(uffd, UFFDIO_API, &uffdio_api) < 0) {
-		if (!(uffdio_api.features & UFFD_FEATURE_PAGEFAULT_FLAG_WP))
-			tst_brk(TCONF, "UFFD write-protect unsupported");
 
-		tst_brk(TBROK | TERRNO, "ioctl() on userfaultfd failed");
-	}
+	SAFE_IOCTL(uffd, UFFDIO_API, &uffdio_api);
 
 	uffdio_register.range.start = (unsigned long) page;
 	uffdio_register.range.len = page_size;
@@ -128,4 +124,8 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.min_kver = "5.7",
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_HAVE_ARCH_USERFAULTFD_WP=y",
+		NULL
+	}
 };
