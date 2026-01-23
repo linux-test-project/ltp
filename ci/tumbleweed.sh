@@ -30,6 +30,7 @@ while [ $i != 0 ]; do
 		libtirpc-devel \
 		linux-glibc-devel \
 		lsb-release \
+		e2fsprogs \
 		pkg-config
 
 	ret=$?

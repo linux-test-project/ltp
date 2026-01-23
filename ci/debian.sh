@@ -33,6 +33,7 @@ pkg_minimal="
 	linux-libc-dev
 	lsb-release
 	pkg-config
+	e2fsprogs
 "
 
 pkg_nonessential="

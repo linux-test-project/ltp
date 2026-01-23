@@ -25,6 +25,7 @@ apk add \
 	musl-dev \
 	numactl-dev \
 	openssl-dev \
+	e2fsprogs-extra \
 	pkgconfig
 
 cat /etc/os-release

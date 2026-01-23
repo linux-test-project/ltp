@@ -26,6 +26,7 @@ $yum \
 	libtirpc \
 	libtirpc-devel \
 	pkg-config \
+	e2fsprogs \
 	redhat-lsb-core
 
 # CentOS 8 fixes
