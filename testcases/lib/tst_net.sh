@@ -732,10 +732,15 @@ tst_wait_ipv6_dad()
 	done
 }
 
-tst_netload_brk()
+tst_netload_print_log()
 {
 	tst_rhost_run -c "cat $TST_TMPDIR/netstress.log"
 	cat tst_netload.log
+}
+
+tst_netload_brk()
+{
+	tst_netload_print_log
 	tst_brk_ $1 $2
 }
 
@@ -853,6 +858,7 @@ tst_netload()
 				tst_netload_brk TFAIL "expected '$expect_res' but ret: '$ret'"
 
 			tst_res_ TWARN "netstress failed, ret: $ret"
+			tst_netload_print_log
 			was_failure=1
 			continue
 		fi
