@@ -741,7 +741,12 @@ tst_netload_print_log()
 tst_netload_brk()
 {
 	tst_netload_print_log
-	tst_brk_ $1 $2
+	if [ "$1" != TBROK -a "$1" != TCONF ]; then
+		tst_res_ $1 $2
+		tst_brk_ TBROK "quit due previous failures"
+	else
+		tst_brk_ $1 $2
+	fi
 }
 
 # Run network load test, see 'netstress -h' for option description
@@ -863,8 +868,7 @@ tst_netload()
 			continue
 		fi
 
-		[ ! -f $rfile ] && \
-			tst_netload_brk TFAIL "can't read $rfile"
+		[ ! -f $rfile ] && tst_netload_brk TBROK "can't read $rfile"
 
 		results="$results $(cat $rfile)"
 		passed=$((passed + 1))
