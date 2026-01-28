@@ -13,6 +13,7 @@
 
 #include "config.h"
 #include <poll.h>
+#include <unistd.h>
 #include "tst_test.h"
 #include "tst_safe_macros.h"
 #include "tst_safe_pthread.h"
@@ -22,6 +23,15 @@ static int page_size;
 static char *page;
 static void *copy_page;
 static int uffd;
+
+static void setup(void)
+{
+	if (access("/dev/userfaultfd", F_OK) != 0) {
+		int res = (tst_kvercmp(6, 1, 0) < 0) ? TCONF : TBROK;
+
+		tst_brk(res, "/dev/userfaultfd not found");
+	}
+}
 
 static int open_userfaultfd(int flags)
 {
@@ -117,6 +127,10 @@ static void run(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
+	.setup = setup,
 	.test_all = run,
-	.min_kver = "5.11",
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USERFAULTFD=y",
+		NULL
+	}
 };
