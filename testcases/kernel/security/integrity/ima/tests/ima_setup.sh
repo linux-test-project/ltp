@@ -469,7 +469,7 @@ require_evmctl()
 # d958083a8f640 ("x86/ima: define arch_get_ima_policy() for x86") # v5.0
 check_need_signed_policy()
 {
-	tst_secureboot_enabled && tst_kvcmp -ge '6.5' && tst_require_kconfigs \
+	tst_secureboot_enabled && tst_kvcmp -ge '6.5' && tst_check_kconfigs \
 		'CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY,CONFIG_IMA_ARCH_POLICY'
 }
 
