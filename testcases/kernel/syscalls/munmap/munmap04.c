@@ -75,6 +75,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.min_kver = "4.17",
+	.ulimit = (const struct tst_ulimit_val[]) {
+		{RLIMIT_AS, RLIM_INFINITY},
+		{}
+	},
 	.save_restore = (const struct tst_path_val[]){
 		{ "/proc/sys/vm/max_map_count", TST_TO_STR(MAP_MAX_COUNT), TST_SR_SKIP },
 		{},

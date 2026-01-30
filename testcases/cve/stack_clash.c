@@ -331,6 +331,10 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.test_all = stack_clash_test,
+	.ulimit = (const struct tst_ulimit_val[]) {
+		{RLIMIT_AS, RLIM_INFINITY},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-1000364"},
 		{"linux-git", "58c5d0d6d522"},
