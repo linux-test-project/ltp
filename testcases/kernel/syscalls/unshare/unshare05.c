@@ -41,6 +41,10 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_root = 1,
 	.test_all = run,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 	.bufs = (struct tst_buffers []) {
 		{&args, .size = sizeof(*args)},
 		{},

@@ -69,6 +69,10 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
 		{},
 	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 	.bufs = (struct tst_buffers[]) {
 		{&child_stack, .size = CHILD_STACK_SIZE},
 		{},

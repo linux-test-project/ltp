@@ -80,6 +80,11 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
 		{},
 	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USER_NS",
+		"CONFIG_PID_NS",
+		NULL,
+	},
 	.bufs = (struct tst_buffers[]) {
 		{&args, .size = sizeof(struct clone_args)},
 		{},
