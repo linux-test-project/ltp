@@ -208,8 +208,6 @@ static void do_setup(void)
 
 	if (tst_parse_int(str_players_per_team, &players_per_team, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of players '%s'", str_players_per_team);
-
-	tst_check_rt_group_sched_support();
 }
 
 static struct tst_test test = {
