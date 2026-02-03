@@ -4,6 +4,9 @@
  *
  * openat2() tests with various resolve flags.
  */
+#define _GNU_SOURCE
+#include <fcntl.h>
+
 #include "tst_test.h"
 #include "lapi/openat2.h"
 
