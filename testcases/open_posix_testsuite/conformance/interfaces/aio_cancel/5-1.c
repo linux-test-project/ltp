@@ -25,18 +25,13 @@
  *
  */
 
-#include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
 #include <time.h>
-#include <aio.h>
-#include <sys/socket.h>
 
 #include "posixtest.h"
+#include "aio_test.h"
 
 #define TNAME "aio_cancel/5-1.c"
 
@@ -46,29 +41,6 @@
 static int fds[2];
 static struct aiocb aiocb[BUF_NB];
 
-static void cleanup(void)
-{
-	int i, ret;
-
-	for (i = 0; i < BUF_NB; i++) {
-		if (!aiocb[i].aio_buf)
-			break;
-
-		ret = aio_error(&aiocb[i]);
-
-		/* flush written data from the socket */
-		if (ret == 0 || ret == EINPROGRESS) {
-			read(fds[1], (void *)aiocb[i].aio_buf,
-				aiocb[i].aio_nbytes);
-		}
-
-		free((void *)aiocb[i].aio_buf);
-	}
-
-	close(fds[0]);
-	close(fds[1]);
-}
-
 int main(void)
 {
 	char *buf[BUF_NB];
@@ -76,49 +48,24 @@ int main(void)
 	int ret;
 	int bufsize;
 	int exp_ret;
-	socklen_t argsize = sizeof(bufsize);
 	const struct timespec sleep_ts = { .tv_sec = 0, .tv_nsec = 10000000 };
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	ret = socketpair(AF_UNIX, SOCK_DGRAM, 0, fds);
-	if (ret == -1) {
-		printf(TNAME " Error creating sockets(): %s\n",
-			strerror(errno));
+	if (setup_aio(TNAME, fds, aiocb, BUF_NB))
 		return PTS_UNRESOLVED;
-	}
 
-	ret = getsockopt(fds[0], SOL_SOCKET, SO_SNDBUF, &bufsize, &argsize);
-	if (ret == -1) {
-		printf(TNAME " Error reading socket buffer size: %s\n",
-			strerror(errno));
-		cleanup();
-		return PTS_UNRESOLVED;
-	}
+	bufsize = aiocb[0].aio_nbytes;
 
-	/* Socket buffer size is twice the maximum message size */
-	bufsize /= 2;
-
-	/* create AIO req */
+	/* submit AIO req */
 	for (i = 0; i < BUF_NB; i++) {
-		buf[i] = malloc(bufsize);
-		if (buf[i] == NULL) {
-			printf(TNAME " Error at malloc(): %s\n",
-				strerror(errno));
-			cleanup();
-			return PTS_UNRESOLVED;
-		}
-		aiocb[i].aio_fildes = fds[0];
-		aiocb[i].aio_buf = buf[i];
-		aiocb[i].aio_nbytes = bufsize;
-		aiocb[i].aio_offset = 0;
-		aiocb[i].aio_sigevent.sigev_notify = SIGEV_NONE;
+		buf[i] = (char *)aiocb[i].aio_buf;
 
 		if (aio_write(&aiocb[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
 				i, strerror(errno));
-			cleanup();
+			cleanup_aio(fds, aiocb, BUF_NB);
 			return PTS_FAIL;
 		}
 	}
@@ -135,7 +82,7 @@ int main(void)
 	if (ret) {
 		printf(TNAME " Task #%d failed to complete: %s\n",
 			BLOCKED_TASK - 1, strerror(ret == -1 ? errno : ret));
-		cleanup();
+		cleanup_aio(fds, aiocb, BUF_NB);
 		return PTS_FAIL;
 	}
 
@@ -143,14 +90,14 @@ int main(void)
 	ret = aio_cancel(fds[0], NULL);
 	if (ret == -1) {
 		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
-		cleanup();
+		cleanup_aio(fds, aiocb, BUF_NB);
 		return PTS_FAIL;
 	}
 
 	if (ret != AIO_NOTCANCELED) {
 		printf(TNAME " Unexpected aio_cancel() return value: %s\n",
 			strerror(ret));
-		cleanup();
+		cleanup_aio(fds, aiocb, BUF_NB);
 		return PTS_FAIL;
 	}
 
@@ -162,7 +109,7 @@ int main(void)
 				printf(TNAME " Bad task #%d result: %s "
 					"(expected EINPROGRESS)\n",
 					i, strerror(ret));
-				cleanup();
+				cleanup_aio(fds, aiocb, BUF_NB);
 				return PTS_FAIL;
 			}
 
@@ -175,7 +122,7 @@ int main(void)
 				SIGEV_NONE)) {
 
 				printf(TNAME " aiocbp modified\n");
-				cleanup();
+				cleanup_aio(fds, aiocb, BUF_NB);
 				return PTS_FAIL;
 			}
 
@@ -186,12 +133,12 @@ int main(void)
 		if (ret != exp_ret) {
 			printf(TNAME " Bad task #%d result: %s (expected %s)\n",
 				i, strerror(ret), strerror(exp_ret));
-			cleanup();
+			cleanup_aio(fds, aiocb, BUF_NB);
 			return PTS_FAIL;
 		}
 	}
 
-	cleanup();
+	cleanup_aio(fds, aiocb, BUF_NB);
 	printf("Test PASSED\n");
 	return PTS_PASS;
 }
