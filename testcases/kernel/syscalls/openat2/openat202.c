@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
- *
- * openat2() tests with various resolve flags.
  */
+
+/*\
+ * :manpage:`openat2(2)` tests with various resolve flags.
+ */
+
 #define _GNU_SOURCE
 #include <fcntl.h>
 
