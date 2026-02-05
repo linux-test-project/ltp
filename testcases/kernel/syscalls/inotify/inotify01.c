@@ -72,7 +72,7 @@ void verify_inotify(void)
 
 	if (write(fd, buf, BUF_SIZE) == -1) {
 		tst_brk(TBROK,
-			"write(%d, %s, 1) failed", fd, fname);
+			"write(%d, %s, %d) failed", fd, fname, BUF_SIZE);
 	}
 	event_set[test_cnt] = IN_MODIFY;
 	test_cnt++;
