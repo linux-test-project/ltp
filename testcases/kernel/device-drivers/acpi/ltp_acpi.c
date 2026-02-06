@@ -24,6 +24,7 @@
 #include "test.h"
 #include "tso_module.h"
 #include "tso_safe_macros.h"
+#include "tst_security.h"
 
 #include "ltp_acpi.h"
 
@@ -134,6 +135,10 @@ int main(int argc, char *argv[])
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_requires_module_signature_disabled();
+
+	if (tst_lockdown_enabled() > 0 || tst_secureboot_enabled() > 0)
+		tst_brkm(TCONF, NULL, "Cannot load unsigned modules in Lockdown/Secure Boot");
+
 	tst_module_load(NULL, module_name, NULL);
 	module_loaded = 1;
 
