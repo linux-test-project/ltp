@@ -64,11 +64,7 @@ void verify_inotify(void)
 	strcpy(event_set[test_cnt].name, "");
 	test_cnt++;
 
-	if ((fd = creat(FILE_NAME1, 0755)) == -1) {
-		tst_brk(TBROK | TERRNO,
-			"creat(\"%s\", 755) failed", FILE_NAME1);
-	}
-
+	fd = SAFE_CREAT(FILE_NAME1, 0755);
 	event_set[test_cnt].mask = IN_CREATE;
 	strcpy(event_set[test_cnt].name, FILE_NAME1);
 	test_cnt++;
@@ -89,11 +85,7 @@ void verify_inotify(void)
 	strcpy(event_set[test_cnt].name, FILE_NAME2);
 	test_cnt++;
 
-	if (getcwd(fname1, BUF_SIZE) == NULL) {
-		tst_brk(TBROK | TERRNO,
-			"getcwd(%p, %d) failed", fname1, BUF_SIZE);
-	}
-
+	SAFE_GETCWD(fname1, BUF_SIZE);
 	snprintf(fname2, BUF_SIZE, "%s.rename1", fname1);
 	SAFE_RENAME(fname1, fname2);
 	event_set[test_cnt].mask = IN_MOVE_SELF;
@@ -120,12 +112,7 @@ void verify_inotify(void)
 	test_cnt++;
 
 	int len, i = 0, test_num = 0;
-	if ((len = read(fd_notify, event_buf, EVENT_BUF_LEN)) == -1) {
-		tst_brk(TBROK | TERRNO,
-			"read(%d, buf, %zu) failed",
-			fd_notify, EVENT_BUF_LEN);
-
-	}
+	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	while (i < len) {
 		struct inotify_event *event;
@@ -208,7 +195,7 @@ static void cleanup(void)
 {
 	if (reap_wd && myinotify_rm_watch(fd_notify, wd) < 0) {
 		tst_res(TWARN,
-			"inotify_rm_watch (%d, %d) failed,", fd_notify, wd);
+			"inotify_rm_watch (%d, %d) failed", fd_notify, wd);
 	}
 
 	if (fd_notify > 0)
