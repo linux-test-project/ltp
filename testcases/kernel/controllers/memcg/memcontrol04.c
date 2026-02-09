@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*\
  *
- * Conversion of the forth kself test in cgroup/test_memcontrol.c.
+ * Conversion of the forth kself test in :kselftest:`cgroup/test_memcontrol.c`.
  *
  * Original description:
  * "First, this test creates the following hierarchy:

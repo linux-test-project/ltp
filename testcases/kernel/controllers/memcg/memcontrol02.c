@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2021-2022 Richard Palethorpe <rpalethorpe@suse.com>
+ */
+
 /*\
- *
- * Conversion of second kself test in cgroup/test_memcontrol.c.
+ * Conversion of second kself test in :kselftest:`cgroup/test_memcontrol.c`.
  *
  * Original description:
  *
@@ -20,8 +23,8 @@
  * - On EXFAT and extN we change the margin of error between all and file
  *   memory to 50%. Because these allocate non-page-cache memory during writes.
  */
-#define _GNU_SOURCE
 
+#define _GNU_SOURCE
 #include "memcontrol_common.h"
 
 static size_t page_size;

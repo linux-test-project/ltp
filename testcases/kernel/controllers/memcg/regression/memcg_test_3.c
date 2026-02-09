@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 FUJITSU LIMITED. All rights reserved.
+ * Copyright (c) Linux Test Project, 2017-2026
  * Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
-/*
- * This is a regression test for a crash caused by memcg function
- * reentrant on buggy kernel.  When doing rmdir(), a pending signal can
- * interrupt the execution and lead to cgroup_clear_css_refs()
- * being entered repeatedly, this results in a BUG_ON().
+/*\
+ * Regression test for a crash caused by memcg function reentrant on buggy
+ * kernel.  When doing rmdir(), a pending signal can interrupt the execution and
+ * lead to cgroup_clear_css_refs() being entered repeatedly, this results in a
+ * BUG_ON().
  */
 
 #include <errno.h>
