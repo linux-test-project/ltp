@@ -81,7 +81,7 @@ set_memsinfo_val()
 get_memsinfo_val()
 {
 	local value=
-	value=`echo "$memsinfo" | grep -e "^\_$1\: "`
+	value=`echo "$memsinfo" | grep -e "^_$1: "`
 	value=`echo "$value" | sed -r "s/^.*\: (.*)$/\1/"`
 	echo "$value"
 }
