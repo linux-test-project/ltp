@@ -391,7 +391,7 @@ static const struct tst_kconfig_var *find_var(const struct tst_kconfig_var vars[
 
 /*
  * Fill in the kconfig variables array from the expressions. Also makes sure
- * that each variable is copied to the array exaclty once.
+ * that each variable is copied to the array exactly once.
  */
 static inline unsigned int populate_vars(struct tst_expr *exprs[],
                                          unsigned int expr_cnt,

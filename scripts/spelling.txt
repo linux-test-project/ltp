@@ -653,6 +653,7 @@ evalute||evaluate
 evalutes||evaluates
 evalution||evaluation
 evaulated||evaluated
+exaclty||exactly
 excecutable||executable
 excceed||exceed
 exceded||exceeded
