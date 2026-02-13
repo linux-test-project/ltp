@@ -86,4 +86,9 @@
 #define TST_TO_STR_(s) #s
 #define TST_TO_STR(s) TST_TO_STR_(s)
 
+/*
+ * TST_PTR_TO_UINT - Casts a pointer to a 64-bit unsigned integer.
+ */
+#define TST_PTR_TO_UINT(x) ((uintptr_t)(x))
+
 #endif /* TST_COMMON_H__ */
