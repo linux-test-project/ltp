@@ -87,7 +87,7 @@ To run all the test suites
    $ cd /opt/ltp
 
    $ # run syscalls testing suite
-   $ ./kirk -U ltp -f syscalls
+   $ ./kirk -f syscalls
 
 .. note::
 
