@@ -38,8 +38,8 @@ static char testfile[PATH_MAX] = "testfile";
 #define DROP_CACHES_FNAME "/proc/sys/vm/drop_caches"
 #define PROC_IO_FNAME "/proc/self/io"
 #define DEFAULT_FILESIZE (64 * 1024 * 1024)
-#define INITIAL_SHORT_SLEEP_US 10000
 #define SHORT_SLEEP_US 5000
+#define MIN_RETRY_LIMIT 20
 
 static size_t testfile_size = DEFAULT_FILESIZE;
 static char *opt_fsizestr;
@@ -193,12 +193,20 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 	long read_bytes_start;
 	unsigned char *p, tmp;
 	off_t offset = 0;
-	unsigned long cached_prev = 0, cached_cur = 0;
+	size_t cached_prev;
+	ssize_t cache_diff;
 
 	fd = SAFE_OPEN(fname, O_RDONLY);
 
 	if (do_readahead) {
 		do {
+			cached_prev = get_file_cached_bytes(fname, fsize);
+			tst_res(TDEBUG, "Per-file cached: %zu kB",
+				cached_prev / 1024);
+
+			if (cached_prev >= fsize)
+				break;
+
 			TEST(tc->readahead(fd, offset, fsize - offset));
 			if (TST_RET != 0) {
 				SAFE_CLOSE(fd);
@@ -207,40 +215,27 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 
 			i++;
 			offset += readahead_length;
-			/* Wait a bit so that the readahead() has chance to start. */
-			usleep(INITIAL_SHORT_SLEEP_US);
 			/*
 			 * We assume that the worst case I/O speed is around
-			 * 5MB/s which is roughly 5 bytes per 1 us, which gives
+			 * 5MB/s which is roughly 5 bytes per 1 us and we
+			 * allow additional 25ms for seeks, which gives
 			 * us upper bound for retries that is
-			 * readahead_size/(5 * SHORT_SLEEP_US).
+			 * 5 + readahead_size/(5 * SHORT_SLEEP_US).
 			 *
-			 * We also monitor the cache size increases before and
-			 * after the sleep. With the same assumption about the
-			 * speed we are supposed to read at least 5 *
-			 * SHORT_SLEEP_US bytes during that time. That amound
-			 * is genreally quite close a page size so that we just
-			 * assume that we sould continue as long as the cache
-			 * increases.
-			 *
-			 * Of course all of this is inprecise on multitasking
-			 * OS however even on a system where there are several
-			 * processes figthing for I/O this loop will wait as
-			 * long a cache is increasing which will gives us high
-			 * chance of waiting for the readahead to happen.
+			 * We also monitor the cache size and exit the wait
+			 * loop early if it increases by at least 50%
+			 * of the read ahead size.
 			 */
-			cached_cur = get_file_cached_bytes(fname, fsize);
 			int retries = readahead_length / (5 * SHORT_SLEEP_US);
 
-			tst_res(TDEBUG, "Per-file cached: %lu kB", cached_cur / 1024);
+			retries = MAX(retries + 5, MIN_RETRY_LIMIT);
 
 			do {
 				usleep(SHORT_SLEEP_US);
+				cache_diff = get_file_cached_bytes(fname,
+					fsize) - (ssize_t)cached_prev;
 
-				cached_prev = cached_cur;
-				cached_cur = get_file_cached_bytes(fname, fsize);
-
-				if (cached_cur <= cached_prev)
+				if (cache_diff >= readahead_length / 2)
 					break;
 			} while (retries-- > 0);
 
@@ -381,7 +376,6 @@ static void test_readahead(unsigned int n)
 			"to hold whole testfile.");
 	}
 }
-
 
 /*
  * We try raising bdi readahead limit as much as we can. We write
