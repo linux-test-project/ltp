@@ -22,8 +22,10 @@ static char fname[20];
 static void setup(void)
 {
 	int fd;
+	struct rlimit rlim;
 
-	fds_limit = getdtablesize();
+	SAFE_GETRLIMIT(RLIMIT_NOFILE, &rlim);
+	fds_limit = rlim.rlim_cur;
 	first = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0777);
 
 	fds = SAFE_MALLOC(sizeof(int) * (fds_limit - first));
