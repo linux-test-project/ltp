@@ -14,6 +14,7 @@
 
 static struct tst_clone_args *args;
 static struct pidfd_info *info;
+static int err_nr = ESRCH;
 
 static void run(void)
 {
@@ -41,7 +42,7 @@ static void run(void)
 	args->exit_signal = SIGCHLD;
 
 	if (!SAFE_CLONE(args)) {
-		TST_EXP_FAIL(ioctl(pidfd, PIDFD_GET_INFO, info), ESRCH);
+		TST_EXP_FAIL(ioctl(pidfd, PIDFD_GET_INFO, info), err_nr);
 		exit(0);
 	}
 
@@ -52,6 +53,9 @@ static void setup(void)
 {
 	if (!ioctl_pidfd_info_exit_supported())
 		tst_brk(TCONF, "PIDFD_INFO_EXIT is not supported by ioctl()");
+
+	if (tst_kvercmp(7, 0, 0) >= 0)
+		err_nr = EREMOTE;
 }
 
 static struct tst_test test = {
