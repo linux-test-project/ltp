@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_25-1"
+#define SHM_NAME "/posixtest_25-1"
 #define SHM_SZ 16
 
 int main(void)

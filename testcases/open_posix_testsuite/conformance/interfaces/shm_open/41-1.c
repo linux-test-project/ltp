@@ -18,7 +18,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_41-1"
+#define SHM_NAME "/posixtest_41-1"
 
 int main(void)
 {
