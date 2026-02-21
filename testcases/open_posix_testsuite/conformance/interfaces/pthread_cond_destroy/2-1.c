@@ -298,7 +298,9 @@ static void *child(void *arg PTS_ATTRIBUTE_UNUSED)
 		UNRESOLVED(ret, "Failed to wait for the cond");
 	}
 
-	/* unlock the mutex */
+	td->count2--;
+
+    /* unlock the mutex */
 	ret = pthread_mutex_unlock(&td->mtx2);
 	if (ret != 0) {
 		UNRESOLVED(ret, "Failed to unlock the mutex.");
@@ -603,6 +605,23 @@ int main(void)
 					   p_child);
 		}
 
+		/* Make sure all children have exited the first wait */
+		ch = td->count1;
+		while (ch > 0) {
+				ret = pthread_mutex_unlock(&td->mtx1);
+				if (ret != 0) {
+						UNRESOLVED_KILLALL(
+							ret, "Failed to unlock mutex", p_child);
+				}
+				sched_yield();
+				ret = pthread_mutex_lock(&td->mtx1);
+				if (ret != 0) {
+						UNRESOLVED_KILLALL(ret, "Failed to lock mutex",
+											p_child);
+				}
+				ch = td->count1;
+		}
+
 		ret = pthread_mutex_unlock(&td->mtx1);
 		if (ret != 0) {
 			UNRESOLVED_KILLALL(ret, "Failed to unlock mutex",
@@ -624,35 +643,6 @@ int main(void)
 		output
 		    ("[parent] Condition was broadcasted, and condvar destroyed.\n");
 #endif
-
-		/* Make sure all children have exited the first wait */
-		ret = pthread_mutex_lock(&td->mtx1);
-		if (ret != 0) {
-			UNRESOLVED_KILLALL(ret, "Failed to lock mutex",
-					   p_child);
-		}
-		ch = td->count1;
-		while (ch > 0) {
-			ret = pthread_mutex_unlock(&td->mtx1);
-			if (ret != 0) {
-				UNRESOLVED_KILLALL(ret,
-						   "Failed to unlock mutex",
-						   p_child);
-			}
-			sched_yield();
-			ret = pthread_mutex_lock(&td->mtx1);
-			if (ret != 0) {
-				UNRESOLVED_KILLALL(ret, "Failed to lock mutex",
-						   p_child);
-			}
-			ch = td->count1;
-		}
-
-		ret = pthread_mutex_unlock(&td->mtx1);
-		if (ret != 0) {
-			UNRESOLVED_KILLALL(ret, "Failed to unlock mutex",
-					   p_child);
-		}
 
 		/* Go toward the 2nd pass */
 		/* Now, all children are waiting to lock the 2nd mutex, which we own here. */
@@ -695,6 +685,23 @@ int main(void)
 			UNRESOLVED_KILLALL(ret,
 					   "Failed to signal the condition.",
 					   p_child);
+		}
+
+		/* Make sure all children have exited the second wait */
+		ch = td->count2;
+		while (ch > 0) {
+				ret = pthread_mutex_unlock(&td->mtx2);
+				if (ret != 0) {
+						UNRESOLVED_KILLALL(
+							ret, "Failed to unlock mutex", p_child);
+				}
+				sched_yield();
+				ret = pthread_mutex_lock(&td->mtx2);
+				if (ret != 0) {
+						UNRESOLVED_KILLALL(ret, "Failed to lock mutex",
+											p_child);
+				}
+				ch = td->count2;
 		}
 
 		/* Allow the children to terminate */
