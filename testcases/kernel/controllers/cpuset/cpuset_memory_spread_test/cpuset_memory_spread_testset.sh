@@ -202,6 +202,7 @@ result_check()
 general_memory_spread_test()
 {
 	local cpusetpath="$CPUSET/1"
+        local cpusetpathsys="$CPUSET/sys"
 	local is_spread="$1"
 	local cpu_list="$2"
 	local node_list="$3"
@@ -214,6 +215,12 @@ general_memory_spread_test()
 		tst_resm TFAIL "set general group parameter failed."
 		return 1
 	fi
+	cpuset_set "$cpusetpathsys" "$cpu_list" "$node_list" "0" 2> $CPUSET_TMP/stderr
+	if [ $? -ne 0 ]; then
+		cpuset_log_error $CPUSET_TMP/stderr
+		tst_resm TFAIL "set general group parameter failed for sys."
+		return 1
+	fi
 
 	/bin/echo "$is_spread" > "$cpusetpath/cpuset.memory_spread_page" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
@@ -221,6 +228,19 @@ general_memory_spread_test()
 		tst_resm TFAIL "set spread value failed."
 		return 1
 	fi
+
+	/bin/echo "$is_spread" > "$cpusetpathsys/cpuset.memory_spread_page" 2> $CPUSET_TMP/stderr
+	if [ $? -ne 0 ]; then
+		cpuset_log_error $CPUSET_TMP/stderr
+		tst_resm TFAIL "set spread value failed for sys."
+		return 1
+	fi
+
+        array=`ps -elf |grep -v "\["|awk '{print $4}'|xargs echo`
+        for element in ${array[@]}
+        do
+		/bin/echo $element > "$cpusetpathsys/tasks" 2>  /dev/null #$CPUSET_TMP/stderr
+        done
 
 	/bin/echo "$test_pid" > "$cpusetpath/tasks" 2> $CPUSET_TMP/stderr
 	if [ $? -ne 0 ]; then
@@ -232,6 +252,7 @@ general_memory_spread_test()
 	# we'd better drop the caches before we test page cache.
 	sync
 	/bin/echo 3 > /proc/sys/vm/drop_caches 2> $CPUSET_TMP/stderr
+	sleep 3
 	if [ $? -ne 0 ]; then
 		cpuset_log_error $CPUSET_TMP/stderr
 		tst_resm TFAIL "drop caches failed."
