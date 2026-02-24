@@ -57,8 +57,12 @@ my %ignore_type = ();
 my @ignore = ();
 my $help = 0;
 my $configuration_file = ".checkpatch.conf";
+my $def_configuration_dirs_help = '.:$HOME:.scripts';
+(my $def_configuration_dirs = $def_configuration_dirs_help) =~ s/\$(\w+)/$ENV{$1}/g;
+my $env_config_dir = 'CHECKPATCH_CONFIG_DIR';
 my $max_line_length = 100;
 my $ignore_perl_version = 0;
+my $spdx_cxx_comments = 0;
 my $minimum_perl_version = 5.10.0;
 my $min_conf_desc_length = 4;
 my $spelling_file = "$D/spelling.txt";
@@ -135,6 +139,10 @@ Options:
                              file.  It's your fault if there's no backup or git
   --ignore-perl-version      override checking of perl version.  expect
                              runtime errors.
+  --spdx-cxx-comments        don't force C comments (/* */) for SPDX license
+                             (required by old toolchains), allow also C++
+                             comments (//).
+                             NOTE: it should *not* be used for Linux mainline.
   --codespell                Use the codespell dictionary for spelling/typos
                              (default:$codespellfile)
   --codespellfile            Use this codespell dictionary
@@ -146,6 +154,11 @@ Options:
   -h, --help, --version      display this help and exit
 
 When FILE is - read standard input.
+
+CONFIGURATION FILE
+Default configuration options can be stored in $configuration_file,
+search path: '$def_configuration_dirs_help' or in a directory specified by
+\$$env_config_dir environment variable (fallback to the default search path).
 EOM
 
 	exit($exitcode);
@@ -237,7 +250,7 @@ sub list_types {
 	exit($exitcode);
 }
 
-my $conf = which_conf($configuration_file);
+my $conf = which_conf($configuration_file, $env_config_dir, $def_configuration_dirs);
 if (-f $conf) {
 	my @conf_args;
 	open(my $conffile, '<', "$conf")
@@ -339,6 +352,7 @@ GetOptions(
 	'fix!'		=> \$fix,
 	'fix-inplace!'	=> \$fix_inplace,
 	'ignore-perl-version!' => \$ignore_perl_version,
+	'spdx-cxx-comments!' => \$spdx_cxx_comments,
 	'debug=s'	=> \%debug,
 	'test-only=s'	=> \$tst_only,
 	'codespell!'	=> \$codespell,
@@ -641,6 +655,7 @@ our $signature_tags = qr{(?xi:
 	Reviewed-by:|
 	Reported-by:|
 	Suggested-by:|
+	Assisted-by:|
 	To:|
 	Cc:
 )};
@@ -1102,7 +1117,9 @@ our $declaration_macros = qr{(?x:
 	(?:$Storage\s+)?(?:[A-Z_][A-Z0-9]*_){0,2}(?:DEFINE|DECLARE)(?:_[A-Z0-9]+){1,6}\s*\(|
 	(?:$Storage\s+)?[HLP]?LIST_HEAD\s*\(|
 	(?:SKCIPHER_REQUEST|SHASH_DESC|AHASH_REQUEST)_ON_STACK\s*\(|
-	(?:$Storage\s+)?(?:XA_STATE|XA_STATE_ORDER)\s*\(
+	(?:$Storage\s+)?(?:XA_STATE|XA_STATE_ORDER)\s*\(|
+	__cacheline_group_(?:begin|end)(?:_aligned)?\s*\(|
+	__dma_from_device_group_(?:begin|end)\s*\(
 )};
 
 our %allow_repeated_words = (
@@ -1528,9 +1545,15 @@ sub which {
 }
 
 sub which_conf {
-	my ($conf) = @_;
+	my ($conf, $env_key, $paths) = @_;
+	my $env_dir = $ENV{$env_key};
 
-	foreach my $path (split(/:/, ".:$ENV{HOME}:.scripts")) {
+	if (defined($env_dir) && $env_dir ne "") {
+		return "$env_dir/$conf" if (-e "$env_dir/$conf");
+		warn "$P: Can't find a readable $conf in '$env_dir', falling back to default search paths\n";
+	}
+
+	foreach my $path (split(/:/, $paths)) {
 		if (-e "$path/$conf") {
 			return "$path/$conf";
 		}
@@ -2926,7 +2949,7 @@ sub process {
 			}
 			$checklicenseline = 1;
 
-			if ($realfile !~ /^MAINTAINERS/) {
+			if ($realfile !~ /^(MAINTAINERS|dev\/null)/) {
 				my $last_binding_patch = $is_binding_patch;
 
 				$is_binding_patch = () = $realfile =~ m@^(?:Documentation/devicetree/|include/dt-bindings/)@;
@@ -3033,6 +3056,16 @@ sub process {
 			}
 		}
 
+# Check for invalid patch separator
+		if ($in_commit_log &&
+		    $line =~ /^---.+/) {
+			if (ERROR("BAD_COMMIT_SEPARATOR",
+				  "Invalid commit separator - some tools may have problems applying this\n" . $herecurr) &&
+			    $fix) {
+				$fixed[$fixlinenr] =~ s/-/=/g;
+			}
+		}
+
 # Check for patch separator
 		if ($line =~ /^---$/) {
 			$has_patch_separator = 1;
@@ -3091,6 +3124,15 @@ sub process {
 					$fixed[$fixlinenr] =
 					    "$ucfirst_sign_off $email";
 				}
+			}
+
+			# Assisted-by uses AGENT_NAME:MODEL_VERSION format, not email
+			if ($sign_off =~ /^Assisted-by:/i) {
+				if ($email !~ /^\S+:\S+/) {
+					WARN("BAD_SIGN_OFF",
+					     "Assisted-by expects 'AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]' format\n" . $herecurr);
+				}
+				next;
 			}
 
 			my ($email_name, $name_comment, $email_address, $comment) = parse_email($email);
@@ -3779,26 +3821,33 @@ sub process {
 				$checklicenseline = 2;
 			} elsif ($rawline =~ /^\+/) {
 				my $comment = "";
-				if ($realfile =~ /\.(h|s|S)$/) {
-					$comment = '/*';
-				} elsif ($realfile =~ /\.(c|rs|dts|dtsi)$/) {
+				if ($realfile =~ /\.(c|rs|dts|dtsi)$/) {
 					$comment = '//';
 				} elsif (($checklicenseline == 2) || $realfile =~ /\.(sh|pl|py|awk|tc|yaml)$/) {
 					$comment = '#';
 				} elsif ($realfile =~ /\.rst$/) {
 					$comment = '..';
 				}
+				my $pattern = qr{\Q$comment\E};
+				if ($realfile =~ /\.(h|s|S)$/) {
+					$comment = '/*';
+					$pattern = qr{/\*};
+					if ($spdx_cxx_comments) {
+						$comment = '// or /*';
+						$pattern = qr{//|/\*};
+					}
+				}
 
 # check SPDX comment style for .[chsS] files
 				if ($realfile =~ /\.[chsS]$/ &&
 				    $rawline =~ /SPDX-License-Identifier:/ &&
-				    $rawline !~ m@^\+\s*\Q$comment\E\s*@) {
+				    $rawline !~ m@^\+\s*$pattern\s*@) {
 					WARN("SPDX_LICENSE_TAG",
 					     "Improper SPDX comment style for '$realfile', please use '$comment' instead\n" . $herecurr);
 				}
 
 				if ($comment !~ /^$/ &&
-				    $rawline !~ m@^\+\Q$comment\E SPDX-License-Identifier: @) {
+				    $rawline !~ m@^\+$pattern SPDX-License-Identifier: @) {
 					WARN("SPDX_LICENSE_TAG",
 					     "Missing or malformed SPDX-License-Identifier tag in line $checklicenseline\n" . $herecurr);
 				} elsif ($rawline =~ /(SPDX-License-Identifier: .*)/) {
@@ -3842,6 +3891,14 @@ sub process {
 		    substr($line, @-, @+ - @-) eq "$;" x (@+ - @-)) {
 			WARN("SPDX_LICENSE_TAG",
 			     "Misplaced SPDX-License-Identifier tag - use line $checklicenseline instead\n" . $herecurr);
+		}
+
+# check for disallowed SPDX file tags
+		if ($rawline =~ /\bSPDX-.*:/ &&
+		    $rawline !~ /\bSPDX-License-Identifier:/ &&
+		    $rawline !~ /\bSPDX-FileCopyrightText:/) {
+			WARN("SPDX_LICENSE_TAG",
+			     "Disallowed SPDX tag\n" . $herecurr);
 		}
 
 # line length limit (with some exclusions)
@@ -5648,9 +5705,7 @@ sub process {
 			my $comp = $3;
 			my $to = $4;
 			my $newcomp = $comp;
-
-			if ($const !~ /^\QTST_/ &&
-			    $lead !~ /(?:$Operators|\.)\s*$/ &&
+			if ($lead !~ /(?:$Operators|\.)\s*$/ &&
 			    $to !~ /^(?:Constant|[A-Z_][A-Z0-9_]*)$/ &&
 			    WARN("CONSTANT_COMPARISON",
 				 "Comparisons should place the constant on the right side of the test\n" . $herecurr) &&
@@ -6737,6 +6792,13 @@ sub process {
 			}
 		}
 
+# check for context_unsafe without a comment.
+		if ($line =~ /\bcontext_unsafe\b/ &&
+		    !ctx_has_comment($first_line, $linenr)) {
+			WARN("CONTEXT_UNSAFE",
+			     "context_unsafe without comment\n" . $herecurr);
+		}
+
 # check of hardware specific defines
 		if ($line =~ m@^.\s*\#\s*if.*\b(__i386__|__powerpc64__|__sun__|__s390x__)\b@ && $realfile !~ m@include/asm-@) {
 			CHK("ARCH_DEFINES",
@@ -7142,7 +7204,7 @@ sub process {
 				if ($count == 1 &&
 				    $format =~ /^"\%(?i:ll[udxi]|[udxi]ll|ll|[hl]h?[udxi]|[udxi][hl]h?|[hl]h?|[udxi])"$/) {
 					WARN("SSCANF_TO_KSTRTO",
-					     "Prefer tst_parse_<type> to single variable sscanf\n" . "$here\n$stat_real\n");
+					     "Prefer kstrto<type> to single variable sscanf\n" . "$here\n$stat_real\n");
 				}
 			}
 		}
@@ -7262,17 +7324,42 @@ sub process {
 			    "Prefer $3(sizeof(*$1)...) over $3($4...)\n" . $herecurr);
 		}
 
-# check for (kv|k)[mz]alloc with multiplies that could be kmalloc_array/kvmalloc_array/kvcalloc/kcalloc
+# check for (kv|k)[mz]alloc that could be kmalloc_obj/kvmalloc_obj/kzalloc_obj/kvzalloc_obj
+		if ($perl_version_ok &&
+		    defined $stat &&
+		    $stat =~ /^\+\s*($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*,/) {
+			my $oldfunc = $3;
+			my $a1 = $4;
+			my $newfunc = "kmalloc_obj";
+			$newfunc = "kvmalloc_obj" if ($oldfunc eq "kvmalloc");
+			$newfunc = "kvzalloc_obj" if ($oldfunc eq "kvzalloc");
+			$newfunc = "kzalloc_obj" if ($oldfunc eq "kzalloc");
+
+			if ($a1 =~ s/^sizeof\s*\S\(?([^\)]*)\)?$/$1/) {
+				my $cnt = statement_rawlines($stat);
+				my $herectx = get_stat_here($linenr, $cnt, $here);
+
+				if (WARN("ALLOC_WITH_SIZEOF",
+					 "Prefer $newfunc over $oldfunc with sizeof\n" . $herectx) &&
+				    $cnt == 1 &&
+				    $fix) {
+					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*,/$1 = $newfunc($a1,/;
+				}
+			}
+		}
+
+
+# check for (kv|k)[mz]alloc with multiplies that could be kmalloc_objs/kvmalloc_objs/kzalloc_objs/kvzalloc_objs
 		if ($perl_version_ok &&
 		    defined $stat &&
 		    $stat =~ /^\+\s*($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)\s*,/) {
 			my $oldfunc = $3;
 			my $a1 = $4;
 			my $a2 = $10;
-			my $newfunc = "kmalloc_array";
-			$newfunc = "kvmalloc_array" if ($oldfunc eq "kvmalloc");
-			$newfunc = "kvcalloc" if ($oldfunc eq "kvzalloc");
-			$newfunc = "kcalloc" if ($oldfunc eq "kzalloc");
+			my $newfunc = "kmalloc_objs";
+			$newfunc = "kvmalloc_objs" if ($oldfunc eq "kvmalloc");
+			$newfunc = "kvzalloc_objs" if ($oldfunc eq "kvzalloc");
+			$newfunc = "kzalloc_objs" if ($oldfunc eq "kzalloc");
 			my $r1 = $a1;
 			my $r2 = $a2;
 			if ($a1 =~ /^sizeof\s*\S/) {
@@ -7288,7 +7375,9 @@ sub process {
 					 "Prefer $newfunc over $oldfunc with multiply\n" . $herectx) &&
 				    $cnt == 1 &&
 				    $fix) {
-					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)/$1 . ' = ' . "$newfunc(" . trim($r1) . ', ' . trim($r2)/e;
+					my $sized = trim($r2);
+					$sized =~ s/^sizeof\s*\S\(?([^\)]*)\)?$/$1/;
+					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)/$1 . ' = ' . "$newfunc(" . $sized . ', ' . trim($r1)/e;
 				}
 			}
 		}
@@ -7458,10 +7547,10 @@ sub process {
 		}
 
 # check for various structs that are normally const (ops, kgdb, device_tree)
-# and avoid what seem like struct definitions 'struct foo {'
+# and avoid what seem like struct definitions 'struct foo {' or forward declarations 'struct foo;'
 		if (defined($const_structs) &&
 		    $line !~ /\bconst\b/ &&
-		    $line =~ /\bstruct\s+($const_structs)\b(?!\s*\{)/) {
+		    $line =~ /\bstruct\s+($const_structs)\b(?!\s*[\{;])/) {
 			WARN("CONST_STRUCT",
 			     "struct $1 should normally be const\n" . $herecurr);
 		}
