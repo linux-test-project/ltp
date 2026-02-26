@@ -108,7 +108,7 @@ static int read_file(int fd)
 		SAFE_READ(0, fd, tmp, size);
 
 		if (memcmp(buf, tmp, size)) {
-			tst_res(TFAIL, "got unexepected data");
+			tst_res(TFAIL, "got unexpected data");
 			return 1;
 		}
 	}

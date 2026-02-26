@@ -5,7 +5,7 @@
  *    06/2017 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
-/*
+/*\
  * DESCRIPTION
  *	Open a file with oflag = O_CREAT set, does it set the sticky bit off?
  *	Open a dir with O_DIRECTORY, does it set the S_IFDIR bit on?
@@ -46,7 +46,7 @@ static void verify_open(unsigned int n)
 	struct stat buf;
 
 	TST_EXP_FD_SILENT(open(tc->filename, tc->flag, tc->mode),
-	           "open() with %s", tc->desc);
+		"open() with %s", tc->desc);
 	if (!TST_PASS)
 		return;
 

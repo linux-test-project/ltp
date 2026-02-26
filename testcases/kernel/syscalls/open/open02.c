@@ -29,7 +29,7 @@ static struct tcase {
 	{TEST_FILE2, O_RDONLY | O_NOATIME, EPERM, "unprivileged O_RDONLY | O_NOATIME"},
 };
 
-void setup(void)
+static void setup(void)
 {
 	struct passwd *ltpuser;
 
@@ -45,10 +45,10 @@ static void verify_open(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TST_EXP_FAIL2(open(tc->filename, tc->flag, 0444),
-	             tc->exp_errno, "open() %s", tc->desc);
+			tc->exp_errno, "open() %s", tc->desc);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	SAFE_SETEUID(0);
 }

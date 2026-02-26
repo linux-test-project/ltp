@@ -19,8 +19,6 @@ static void verify_open(void)
 	SAFE_UNLINK(TEST_FILE);
 }
 
-
-
 static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.test_all = verify_open,
