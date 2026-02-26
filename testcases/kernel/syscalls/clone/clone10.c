@@ -20,6 +20,7 @@
 #include "tst_test.h"
 #include "clone_platform.h"
 #include "lapi/syscalls.h"
+#include "tst_atomic.h"
 #include "lapi/tls.h"
 
 #define TLS_EXP 100
@@ -34,21 +35,15 @@ struct user_desc *tls_desc;
 static __thread int tls_var;
 
 static char *child_stack;
-static volatile int child_done;
+static tst_atomic_t child_done;
 
 static int flags = CLONE_THREAD |  CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_SETTLS;
 
 static int touch_tls_in_child(void *arg LTP_ATTRIBUTE_UNUSED)
 {
-#if defined(__x86_64__)
-	if (syscall(SYS_arch_prctl, ARCH_SET_FS, tls_ptr) == -1)
-		exit(EXIT_FAILURE);
-#endif
 	tls_var = TLS_EXP + 1;
-	tst_res(TINFO, "Child (PID: %d, TID: %d): TLS value set to: %d", getpid(), (pid_t)syscall(SYS_gettid), tls_var);
+	tst_atomic_store(1, &child_done);
 
-	TST_CHECKPOINT_WAKE(0);
-	free_tls();
 	tst_syscall(__NR_exit, 0);
 	return 0;
 }
@@ -56,13 +51,16 @@ static int touch_tls_in_child(void *arg LTP_ATTRIBUTE_UNUSED)
 static void verify_tls(void)
 {
 	tls_var = TLS_EXP;
+	tst_atomic_store(0, &child_done);
 
 	TEST(ltp_clone7(flags, touch_tls_in_child, NULL, CHILD_STACK_SIZE, child_stack, NULL, tls_ptr, NULL));
 
 	if (TST_RET == -1)
 		tst_brk(TBROK | TTERRNO, "clone() failed");
 
-	TST_CHECKPOINT_WAIT(0);
+	while (tst_atomic_load(&child_done) == 0) {
+		usleep(10);
+	}
 
 	if (tls_var == TLS_EXP) {
 		tst_res(TPASS,
@@ -84,6 +82,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	free(child_stack);
+	free_tls();
 }
 
 static struct tst_test test = {
