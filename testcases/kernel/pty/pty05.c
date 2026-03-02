@@ -3,17 +3,12 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * CVE-2017-2636
  *
  * Check for race between flush_tx_queue() and n_hdlc_send_frames(). Kernel
- * crash fixed in:
- *
- *  commit 82f2341c94d270421f383641b7cd670e474db56b
- *  Author: Alexander Popov <alex.popov@linux.com>
- *  Date:   Tue Feb 28 19:54:40 2017 +0300
- *
- *  tty: n_hdlc: get rid of racy n_hdlc.tbuf
+ * crash fixed in v4.11:
+ * 82f2341c94d27 ("tty: n_hdlc: get rid of racy n_hdlc.tbuf")
  */
 
 #define _GNU_SOURCE

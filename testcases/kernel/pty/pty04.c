@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 SUSE
- *
+ */
+
+/*\
  * Test transmitting data over a PTY/TTY line discipline and reading from the
  * virtual netdev created by the line discipline. Also hangup the PTY while
  * data is in flight to try to cause a race between the netdev being deleted
@@ -10,7 +12,8 @@
  * For SLCAN we check stack data is not leaked in the frame padding
  * (CVE-2020-11494).
  *
- * Test flow:
+ * [Algorithm]
+ *
  * 1. Create PTY with ldisc X which creates netdev Y
  * 2. Open raw packet socket and bind to netdev Y
  * 3. Send data on ptmx and read packets from socket
@@ -28,6 +31,7 @@
  * concerns choosing the best packet size to cause a race.
  *
  * Note on line discipline encapsulation formats:
+ *
  * - For SLIP frames we just write the data followed by a delimiter char
  * - SLCAN we write some ASCII described in drivers/net/can/slcan.c which is
  *   converted to the actual frame by the kernel
