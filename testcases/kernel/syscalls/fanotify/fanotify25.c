@@ -24,10 +24,10 @@ static const struct traceconfig {
 	const char *filename;
 	const char *wdata;
 } trace_cmds[] = {
-	{EVENTS_SYSFILE, "p:ltp_load_module_0 load_module"},
-	{MNTPOINT "/events/kprobes/ltp_load_module_0/enable", "1"},
-	{MNTPOINT "/events/kprobes/ltp_load_module_0/enable", "0"},
-	{EVENTS_SYSFILE, "-:ltp_load_module_0"},
+	{EVENTS_SYSFILE, "p:ltp_oom_kill_process_0 oom_kill_process"},
+	{MNTPOINT "/events/kprobes/ltp_oom_kill_process_0/enable", "1"},
+	{MNTPOINT "/events/kprobes/ltp_oom_kill_process_0/enable", "0"},
+	{EVENTS_SYSFILE, "-:ltp_oom_kill_process_0"},
 	{}
 };
 
