@@ -1,119 +1,45 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) International Business Machines  Corp., 2002
+ *	ported from SPIE section2/filesuite/stream2.c, by Airong Zhang
  *
- *   Copyright (c) International Business Machines  Corp., 2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) 2026 Andrea Cervesato <andrea.cervesato@suse.com>
  */
-/* ported from SPIE section2/filesuite/stream2.c, by Airong Zhang */
 
-/*======================================================================
-	=================== TESTPLAN SEGMENT ===================
->KEYS:  < fseek() mknod() fopen()
->WHAT:  < 1)
->HOW:   < 1)
->BUGS:  <
-======================================================================*/
+/*\
+ * Verify that it's possible to `fopen()` a file that has been created by
+ * `mknod()` using different modes.
+ */
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include "test.h"
+#include "tst_test.h"
+#include "tst_safe_stdio.h"
 
-char *TCID = "stream02";
-int TST_TOTAL = 1;
-int local_flag;
+#define FILENAME "ltp_file_node"
 
-#define PASSED 1
-#define FAILED 0
+static const char *const modes[] = {
+	"r+",
+	"w+",
+	"a+",
+};
 
-char progname[] = "stream02()";
-char tempfile1[40] = "";
-
-/* XXX: add cleanup + setup. */
-
-/*--------------------------------------------------------------------*/
-int main(int ac, char *av[])
+static void run(void)
 {
 	FILE *stream;
-	int fd;
-	int lc;
 
-	/*
-	 * parse standard options
-	 */
-	tst_parse_opts(ac, av, NULL, NULL);
+	SAFE_MKNOD(FILENAME, (S_IFIFO | 0666), 0);
 
-	local_flag = PASSED;
-	tst_tmpdir();
+	for (size_t i = 0; i < ARRAY_SIZE(modes); i++) {
+		TST_EXP_PASS_PTR_NULL(fopen(FILENAME, modes[i]),
+			"fopen(%s, %s)", FILENAME, modes[i]);
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
+		if (TST_PASS)
+			SAFE_FCLOSE(TST_RET_PTR);
+	}
 
-		sprintf(tempfile1, "stream1.%d", getpid());
-	/*--------------------------------------------------------------------*/
-		//block0:
-		if (mknod(tempfile1, (S_IFIFO | 0666), 0) != 0) {
-			tst_resm(TFAIL, "mknod failed in block0: %s",
-				 strerror(errno));
-			local_flag = FAILED;
-			goto block1;
-		}
-		if ((stream = fopen(tempfile1, "w+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) w+ failed for pipe file: %s",
-				 tempfile1, strerror(errno));
-			local_flag = FAILED;
-		} else {
-			fclose(stream);
-		}
-		if ((stream = fopen(tempfile1, "a+")) == NULL) {
-			tst_resm(TFAIL, "fopen(%s) a+ failed: %s", tempfile1,
-				 strerror(errno));
-			local_flag = FAILED;
-		} else {
-			fclose(stream);
-			unlink(tempfile1);
-		}
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block0.");
-		} else {
-			tst_resm(TFAIL, "Test failed in block0.");
-		}
-		local_flag = PASSED;
-
-	/*--------------------------------------------------------------------*/
-block1:
-		if ((fd = open("/dev/tty", O_WRONLY)) >= 0) {
-			close(fd);
-			if ((stream = fopen("/dev/tty", "w")) == NULL) {
-				tst_resm(TFAIL | TERRNO,
-					 "fopen(/dev/tty) write failed");
-				local_flag = FAILED;
-			} else {
-				fclose(stream);
-			}
-		}
-		if (local_flag == PASSED) {
-			tst_resm(TPASS, "Test passed in block1.");
-		} else {
-			tst_resm(TFAIL, "Test failed in block1.");
-		}
-
-	/*--------------------------------------------------------------------*/
-	}			/* end for */
-	tst_rmdir();
-	tst_exit();
+	SAFE_UNLINK(FILENAME);
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.needs_tmpdir = 1,
+};
