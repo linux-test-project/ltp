@@ -693,6 +693,51 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	}                                                                      \
 } while (0)
 
+#define TST_EXP_LE_SILENT_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS) do {       \
+	TYPE tst_tmp_a__ = VAL_A;                                              \
+	TYPE tst_tmp_b__ = VAL_B;                                              \
+                                                                               \
+	TST_PASS = 0;                                                          \
+                                                                               \
+	if (tst_tmp_a__ > tst_tmp_b__) {                                       \
+		tst_res_(__FILE__, __LINE__, TFAIL,                            \
+			SVAL_A " (" PFS ") > " SVAL_B " (" PFS ")",            \
+			tst_tmp_a__, tst_tmp_b__);                             \
+	} else {                                                               \
+		TST_PASS = 1;                                                  \
+	}                                                                      \
+} while (0)
+
+/**
+ * TST_EXP_LE_LU() - Compare two unsigned long long values, expect A <= B.
+ *
+ * @VAL_A: unsigned long long value A.
+ * @VAL_B: unsigned long long value B.
+ *
+ * Reports a pass if A <= B and a fail otherwise.
+ */
+#define TST_EXP_LE_LU(VAL_A, VAL_B) do {                                              \
+	TST_EXP_LE_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu"); \
+									              \
+	if (TST_PASS) {                                                               \
+		tst_res_(__FILE__, __LINE__, TPASS,                                   \
+			#VAL_A " <= " #VAL_B " (%llu <= %llu)",                       \
+			(unsigned long long)VAL_A, (unsigned long long)VAL_B);        \
+	}                                                                             \
+} while (0)
+
+/**
+ * TST_EXP_LE_LU_SILENT() - Compare two unsigned long long values, silent variant.
+ *
+ * @VAL_A: unsigned long long value A.
+ * @VAL_B: unsigned long long value B.
+ *
+ * Unlike TST_EXP_LE_LU() does not print :c:enum:`TPASS <tst_res_flags>` on
+ * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
+ */
+#define TST_EXP_LE_LU_SILENT(VAL_A, VAL_B) \
+	TST_EXP_LE_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
+
 /**
  * TST_EXP_EQ_LI() - Compare two long long values.
  *
