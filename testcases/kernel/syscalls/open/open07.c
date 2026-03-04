@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2001
- *	07/2001 Ported by Wayne Boyer
+ * 07/2001 Ported by Wayne Boyer
  * Copyright (c) 2024 SUSE LLC <mdoucha@suse.cz>
  */
 
 /*\
- * Test functionality and error conditions of open(O_NOFOLLOW) system call.
+ * Test functionality and error conditions of :manpage:`open(2)` called with
+ * O_NOFOLLOW.
  */
 
 #include "tst_test.h"

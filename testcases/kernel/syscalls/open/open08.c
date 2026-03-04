@@ -5,7 +5,7 @@
  */
 
 /*\
- * Verify that open() fails with:
+ * Verify that :manpage:`open(2)` fails with:
  *
  * - EEXIST when pathname already exists and O_CREAT and O_EXCL were used
  * - EISDIR when pathname refers to a directory and the access requested

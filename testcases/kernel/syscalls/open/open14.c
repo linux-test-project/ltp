@@ -6,7 +6,7 @@
  */
 
 /*\
- * Check the functionality of O_TMPFILE flag for open() syscall:
+ * Check the functionality of O_TMPFILE flag for :manpage:`open(2)` syscall:
  *
  * 1) Creation and linking (naming) of a single temp file
  * 2) Creation of multiple unlinked temp files in a hierarchy of directories

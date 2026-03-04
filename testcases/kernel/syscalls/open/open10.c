@@ -5,7 +5,7 @@
  */
 /*\
  * Verify that the group ID and setgid bit are set correctly when a new file
- * is created.
+ * is created with :manpage:`open(2)`.
  */
 
 #include <stdlib.h>

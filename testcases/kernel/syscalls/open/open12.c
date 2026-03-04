@@ -5,8 +5,8 @@
  * Copyright (c) 2025 SUSE LLC <mdoucha@suse.cz>
  */
 /*\
- * This test case will verify basic function of open(2) with the flags
- * O_APPEND, O_NOATIME, O_CLOEXEC and O_LARGEFILE.
+ * This test case will verify basic function of :manpage:`open(2)` with the
+ * flags O_APPEND, O_NOATIME, O_CLOEXEC and O_LARGEFILE.
  */
 
 #define _GNU_SOURCE

@@ -7,8 +7,10 @@
  */
 
 /*\
- * This test verifies that a file opened with O_RDONLY can't be writable
- * and it verifies that a file opened with O_WRONLY can't be readable.
+ * Basic :manpage:`open(2)` test for O_RDONLY:
+ *
+ * 1. File opened with O_RDONLY can't be writable.
+ * 2. File opened with O_WRONLY can't be readable.
  */
 
 #include "tst_test.h"

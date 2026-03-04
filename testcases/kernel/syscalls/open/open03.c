@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Linux Test Project, 2001-2022
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  */
 
 /*\
- * Testcase to check open() with O_RDWR | O_CREAT.
+ * Test :manpage:`open(2)` with O_RDWR | O_CREAT.
  */
 
 #include "tst_test.h"

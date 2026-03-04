@@ -6,9 +6,13 @@
  */
 
 /*\
- * This test verifies that open() is working correctly on symlink()
- * generated files. We generate a file via symlink, then we read both from file
- * and symlink, comparing that data has been correctly written.
+ * Verify that :manpage:`open(2)` is working correctly on :manpage:`symlink(2)`
+ * generated files.
+ *
+ * [Algorithm]
+ *
+ * Create a file via :manpage:`symlink(2)`, then we read from both the file
+ * and the symlink, comparing that data has been correctly written.
  */
 
 #include "tst_test.h"

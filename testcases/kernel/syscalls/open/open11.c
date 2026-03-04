@@ -5,10 +5,7 @@
  */
 
 /*\
- * Basic tests for open(2) and make sure open(2) works and handles error
- * conditions correctly.
- *
- * There are 28 test cases:
+ * Test if :manpage:`open(2)` handles error * conditions correctly.
  *
  * 1. Open regular file O_RDONLY
  * 2. Open regular file O_WRONLY
