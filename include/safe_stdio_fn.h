@@ -32,4 +32,25 @@ int safe_asprintf(const char *file, const int lineno, void (cleanup_fn)(void),
 FILE *safe_popen(const char *file, const int lineno, void (cleanup_fn)(void),
 		 const char *command, const char *type);
 
+size_t safe_fread(const char *file, const int lineno,
+		  void *ptr, size_t size, size_t n, FILE *stream);
+
+size_t safe_fwrite(const char *file, const int lineno,
+		   const void *ptr, size_t size, size_t n, FILE *stream);
+
+FILE *safe_freopen(const char *file, const int lineno,
+		   const char *path, const char *mode, FILE *stream);
+
+int safe_fseek(const char *file, const int lineno,
+	       FILE *f, long offset, int whence);
+
+long safe_ftell(const char *file, const int lineno,
+		FILE *f);
+
+int safe_fileno(const char *file, const int lineno,
+		FILE *stream);
+
+int safe_fflush(const char *file, const int lineno,
+		FILE *stream);
+
 #endif /* SAFE_STDIO_FN_H__ */
