@@ -1,161 +1,53 @@
-/******************************************************************************/
-/* Copyright (c) Crackerjack Project., 2007                                   */
-/*                                                                            */
-/* This program is free software;  you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by       */
-/* the Free Software Foundation; either version 2 of the License, or          */
-/* (at your option) any later version.                                        */
-/*                                                                            */
-/* This program is distributed in the hope that it will be useful,            */
-/* but WITHOUT ANY WARRANTY;  without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See                  */
-/* the GNU General Public License for more details.                           */
-/*                                                                            */
-/* You should have received a copy of the GNU General Public License          */
-/* along with this program;  if not, write to the Free Software               */
-/* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA    */
-/*                                                                            */
-/******************************************************************************/
-/******************************************************************************/
-/*                                                                            */
-/* File:        newuname01.c                                           */
-/*                                                                            */
-/* Description: This tests the newuname() syscall                      */
-/*                                                                            */
-/* Usage:  <for command-line>                                                 */
-/* newuname01 [-c n] [-e][-i n] [-I x] [-p x] [-t]                     */
-/*      where,  -c n : Run n copies concurrently.                             */
-/*              -e   : Turn on errno logging.                                 */
-/*              -i n : Execute test n times.                                  */
-/*              -I x : Execute test for x seconds.                            */
-/*              -P x : Pause for x seconds between iterations.                */
-/*              -t   : Turn on syscall timing.                                */
-/*                                                                            */
-/* Total Tests: 1                                                             */
-/*                                                                            */
-/* Test Name:   newuname01                                             */
-/* History:     Porting from Crackerjack to LTP is done by                    */
-/*              Manas Kumar Nayak maknayak@in.ibm.com>                        */
-/******************************************************************************/
-#include <unistd.h>
-#include <sys/utsname.h>
-#include <errno.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <stdlib.h>
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) Crackerjack Project., 2007
+ * Copyright (c) Linux Test Project, 2024
+ * Copyright (c) 2026 Cyril Hrubis <chrubis@suse.cz>
+ */
 
-#include "test.h"
+/*\
+ * Verify that :manpage:`uname(2)` succeeds and correctly identifies the system
+ * as Linux.  The rest of the values, when possible, are matched againts the
+ * strings from /proc/sys/kernel/. The only value we cannot easily assert is
+ * the machine field which is the architecture the kernel was compiled for,
+ * which would require special handling per each architecture.
+ */
+
+#define _GNU_SOURCE
+#include <sys/utsname.h>
+#include "tst_test.h"
 #include "lapi/syscalls.h"
 
-char *TCID = "newuname01";
-int testno;
-int TST_TOTAL = 1;
+static struct utsname *name;
 
-/* Extern Global Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    cleanup                                                       */
-/*                                                                            */
-/* Description: Performs all one time clean up for this test on successful    */
-/*              completion,  premature exit or  failure. Closes all temporary */
-/*              files, removes all temporary directories exits the test with  */
-/*              appropriate return code by calling tst_exit() function.       */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits calling tst_exit(). Non '0' return code.   */
-/*              On success - Exits calling tst_exit(). With '0' return code.  */
-/*                                                                            */
-/******************************************************************************/
-void cleanup(void)
+static void run(void)
 {
+	char proc_val[1024] = {};
 
-	tst_rmdir();
+	TST_EXP_PASS(tst_syscall(__NR_uname, name), "uname(name)");
 
-	tst_exit();
+	if (!TST_PASS)
+		return;
+
+	TST_EXP_EQ_STR(name->sysname, "Linux");
+
+	SAFE_FILE_SCANF("/proc/sys/kernel/hostname", "%1023[^\n]", proc_val);
+	TST_EXP_EQ_STR(name->nodename, proc_val);
+
+	SAFE_FILE_SCANF("/proc/sys/kernel/osrelease", "%1023[^\n]", proc_val);
+	TST_EXP_EQ_STR(name->release, proc_val);
+
+	SAFE_FILE_SCANF("/proc/sys/kernel/version", "%1023[^\n]", proc_val);
+	TST_EXP_EQ_STR(name->version, proc_val);
+
+	SAFE_FILE_SCANF("/proc/sys/kernel/domainname", "%1023[^\n]", proc_val);
+	TST_EXP_EQ_STR(name->domainname, proc_val);
 }
 
-/* Local  Functions */
-/******************************************************************************/
-/*                                                                            */
-/* Function:    setup                                                         */
-/*                                                                            */
-/* Description: Performs all one time setup for this test. This function is   */
-/*              typically used to capture signals, create temporary dirs      */
-/*              and temporary files that may be used in the course of this    */
-/*              test.                                                         */
-/*                                                                            */
-/* Input:       None.                                                         */
-/*                                                                            */
-/* Output:      None.                                                         */
-/*                                                                            */
-/* Return:      On failure - Exits by calling cleanup().                      */
-/*              On success - returns 0.                                       */
-/*                                                                            */
-/******************************************************************************/
-void setup(void)
-{
-	/* Capture signals if any */
-	/* Create temporary directories */
-	TEST_PAUSE;
-	tst_tmpdir();
-}
-
-int main(int ac, char **av)
-{
-	struct utsname name;
-	int lc;
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); ++lc) {
-		tst_count = 0;
-		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			TEST(tst_syscall(__NR_uname, &name));
-			if (TEST_RETURN == -1) {
-				tst_brkm(TFAIL, cleanup, "%s failed - errno = %d : %s",
-					 TCID, TEST_ERRNO,
-					 strerror(TEST_ERRNO));
-			} else {
-				tst_resm(TPASS,
-					 "newuname call succeed: return value = %ld ",
-					 TEST_RETURN);
-				TEST(strcmp(name.sysname, "Linux"));	//Linux ?
-				if (TEST_RETURN == 0) {
-					tst_resm(TINFO, "This system is %s",
-						 name.sysname);
-					tst_resm(TINFO,
-						 "The system infomation is :");
-					tst_resm(TINFO,
-						 "System is %s on %s hardware",
-						 name.sysname, name.machine);
-
-					tst_resm(TINFO, "Nodename is %s",
-						 name.nodename);
-					tst_resm(TINFO, "Version is %s, %s",
-						 name.release, name.version);
-					tst_resm(TINFO, "Domainname is %s ",
-						 *(&name.machine + 1));
-					cleanup();
-					tst_exit();
-				} else {
-					tst_resm(TFAIL,
-						 "%s failed - errno = %d : %s",
-						 TCID, TEST_ERRNO,
-						 strerror(TEST_ERRNO));
-					tst_resm(TINFO,
-						 "This system is not Linux");
-					cleanup();
-					tst_exit();
-				}
-
-			}
-
-		}
+static struct tst_test test = {
+	.test_all = run,
+	.bufs = (struct tst_buffers []) {
+		{&name, .size = sizeof(*name)},
+		{}
 	}
-	tst_exit();
-}
+};
