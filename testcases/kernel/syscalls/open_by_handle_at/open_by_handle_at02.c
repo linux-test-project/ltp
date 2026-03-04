@@ -4,8 +4,9 @@
  */
 
 /*\
- * Failure tests for open_by_handle_at().
+ * Failure tests for :manpage:`open_by_handle_at(2)`.
  */
+
 #define _GNU_SOURCE
 #include <linux/capability.h>
 #include "tst_capability.h"

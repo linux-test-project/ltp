@@ -5,7 +5,7 @@
  */
 
 /*\
- *   This test case will verify following scenarios of openat.
+ *   This test case will verify following scenarios of :manpage:`openat(2)`.
  *
  * - openat() succeeds to open a file in append mode, when
  *   'flags' is set to O_APPEND.
