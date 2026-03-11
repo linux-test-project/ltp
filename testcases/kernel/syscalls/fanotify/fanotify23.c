@@ -6,7 +6,7 @@
  */
 
 /*\
- * Check evictable fanotify inode marks.
+ * Check evictable :manpage:`fanotify(7)` inode marks.
  */
 
 #define _GNU_SOURCE

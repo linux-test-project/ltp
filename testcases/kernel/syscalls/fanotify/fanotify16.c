@@ -6,8 +6,8 @@
  */
 
 /*\
- * Check fanotify directory entry modification events, events on child and
- * on self with group init flags:
+ * Check :manpage:`fanotify_init(2)` directory entry modification events, events on
+ * child and on self with group init flags:
  *
  * - FAN_REPORT_DFID_NAME (dir fid + name)
  * - FAN_REPORT_DIR_FID   (dir fid)

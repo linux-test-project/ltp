@@ -6,7 +6,7 @@
  */
 
 /*\
- * Check that fanotify work for children of a directory.
+ * Check that :manpage:`fanotify(7)` works for children of a directory.
  */
 
 #define _GNU_SOURCE

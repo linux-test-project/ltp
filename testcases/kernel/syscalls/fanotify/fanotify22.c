@@ -7,7 +7,7 @@
  */
 
 /*\
- * Check fanotify FAN_ERROR_FS events triggered by intentionally
+ * Check :manpage:`fanotify(7)` FAN_ERROR_FS events triggered by intentionally
  * corrupted filesystems:
  *
  * - Generate a broken filesystem

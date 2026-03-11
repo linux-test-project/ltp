@@ -7,10 +7,10 @@
  */
 
 /*\
- * - Test fanotify pre-content events
+ * - Test :manpage:`fanotify(7)` pre-content events
  * - Test respond to permission/pre-content events with cutsom error code
  * - Test count/offset info bug that was fixed by commit
- *   28bba2c2935e2 "fsnotify: Pass correct offset to fsnotify_mmap_perm()"
+ *   28bba2c2935e2 ("fsnotify: Pass correct offset to fsnotify_mmap_perm()")
  */
 
 #define _GNU_SOURCE

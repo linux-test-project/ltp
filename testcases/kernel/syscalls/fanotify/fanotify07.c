@@ -6,7 +6,8 @@
  */
 
 /*\
- * Check that fanotify permission events are handled properly on instance destruction.
+ * Check that :manpage:`fanotify(7)` permission events are handled properly on
+ * instance destruction.
  */
 
 /*

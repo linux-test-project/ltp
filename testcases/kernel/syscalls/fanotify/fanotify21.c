@@ -6,12 +6,12 @@
  */
 
 /*\
- * A test which verifies whether the returned struct
- * fanotify_event_info_pidfd in FAN_REPORT_PIDFD mode contains the
- * expected set of information.
+ * Test verifies whether the returned struct fanotify_event_info_pidfd in
+ * :manpage:`fanotify(7)` FAN_REPORT_PIDFD mode contains the expected set of
+ * information.
  *
- * NOTE: FAN_REPORT_PIDFD support was added in v5.15-rc1 in af579beb666a
- * ("fanotify: add pidfd support to the fanotify API").
+ * NOTE: FAN_REPORT_PIDFD support was added in v5.15-rc1 in
+ * af579beb666a ("fanotify: add pidfd support to the fanotify API").
  */
 
 #define _GNU_SOURCE

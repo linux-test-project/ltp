@@ -6,7 +6,7 @@
  */
 
 /*\
- * Check that fanotify work for a file.
+ * Check that :manpage:`fanotify(7)` works for a file.
  */
 
 #define _GNU_SOURCE

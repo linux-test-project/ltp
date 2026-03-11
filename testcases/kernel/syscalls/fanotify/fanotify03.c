@@ -6,7 +6,7 @@
  */
 
 /*\
- * Check that fanotify permission events work.
+ * Check that :manpage:`fanotify(7)` permission events work.
  */
 
 #define _GNU_SOURCE

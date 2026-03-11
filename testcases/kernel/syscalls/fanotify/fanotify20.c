@@ -7,13 +7,14 @@
  */
 
 /*\
- * This source file contains a test case which ensures that the fanotify API
- * returns an expected error code when provided an invalid initialization flag
- * alongside FAN_REPORT_PIDFD. Additionally, it checks that the operability with
- * existing FAN_REPORT_* flags is maintained and functioning as intended.
+ * This source file contains a test case which ensures that the
+ * :manpage:`fanotify(7)` API returns an expected error code when provided an
+ * invalid initialization flag alongside FAN_REPORT_PIDFD. Additionally, it
+ * checks that the operability with existing FAN_REPORT_* flags is maintained
+ * and functioning as intended.
  *
- * NOTE: FAN_REPORT_PIDFD support was added in v5.15-rc1 in af579beb666a
- * ("fanotify: add pidfd support to the fanotify API").
+ * NOTE: FAN_REPORT_PIDFD support was added in v5.15-rc1 in
+ * af579beb666a ("fanotify: add pidfd support to the fanotify API").
  */
 
 #define _GNU_SOURCE

@@ -6,7 +6,9 @@
  */
 
 /*\
- * Validate that the newly introduced FAN_OPEN_EXEC mask functions as expected.
+ * Validate that the newly introduced :manpage:`fanotify_mark(2)` FAN_OPEN_EXEC
+ * mask functions as expected.
+ *
  * The idea is to generate a sequence of open related actions to ensure that
  * the correct event flags are being set depending on what event mask was
  * requested when the object was marked.

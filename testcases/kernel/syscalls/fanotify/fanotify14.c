@@ -7,10 +7,10 @@
  */
 
 /*\
- * This test file has been designed to ensure that the fanotify
- * system calls fanotify_init(2) and fanotify_mark(2) return the
- * correct error code to the calling process when an invalid flag or
- * mask value has been specified in conjunction with FAN_REPORT_FID.
+ * This test file has been designed to ensure that :manpage:`fanotify_init(2)`
+ * and :manpage:`fanotify_mark(2)` return the correct error code to the calling
+ * process when an invalid flag or mask value has been specified in conjunction
+ * with FAN_REPORT_FID.
  */
 
 /*

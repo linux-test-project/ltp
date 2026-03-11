@@ -7,13 +7,13 @@
  */
 
 /*\
- * Test file that has been purposely designed to verify FAN_REPORT_FID
- * functionality while using newly defined dirent events.
+ * Verify FAN_REPORT_FID functionality while using newly defined
+ * :manpage:`fanotify_init(2)` dirent events.
  */
 
 /*
- * Test case #1 is a regression test for commit f367a62a7cad:
- *      fanotify: merge duplicate events on parent and child
+ * Test case #1 is a regression test for commit
+ * f367a62a7cad ("fanotify: merge duplicate events on parent and child")
  */
 
 #define _GNU_SOURCE

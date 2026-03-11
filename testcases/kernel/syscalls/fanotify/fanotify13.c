@@ -6,9 +6,10 @@
  */
 
 /*\
- * Validate that the values returned within an event when FAN_REPORT_FID is
- * specified matches those that are obtained via explicit invocation to system
- * calls statfs(2) and name_to_handle_at(2).
+ * Validate that the values returned within an event when
+ * :manpage:`fanotify_init(2)` FAN_REPORT_FID is specified matches those that
+ * are obtained via explicit invocation to system calls :manpage:`statfs(2)` and
+ * :manpage:`name_to_handle_at(2)`.
  */
 
 /*

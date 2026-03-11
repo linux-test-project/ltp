@@ -7,10 +7,10 @@
 
 /*\
  * This set of tests is to ensure that the unprivileged listener feature of
- * fanotify is functioning as expected. The objective of this test file is
- * to generate a sequence of events and ensure that the returned events
- * contain the limited values that an unprivileged listener is expected
- * to receive.
+ * :manpage:`fanotify(7)` is functioning as expected. The objective of this test
+ * file is to generate a sequence of events and ensure that the returned events
+ * contain the limited values that an unprivileged listener is expected to
+ * receive.
  */
 
 #define _GNU_SOURCE

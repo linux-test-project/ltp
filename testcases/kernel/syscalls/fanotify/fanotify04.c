@@ -6,7 +6,7 @@
  */
 
 /*\
- * Check various fanotify special flags.
+ * Check various :manpage:`fanotify(7)` special flags.
  */
 
 #define _GNU_SOURCE

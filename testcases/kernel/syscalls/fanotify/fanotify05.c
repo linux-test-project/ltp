@@ -6,9 +6,10 @@
  */
 
 /*\
- * Check that fanotify overflow event is properly generated.
+ * Check that :manpage:`fanotify(7)` overflow event is properly generated.
  *
  * [Algorithm]
+ *
  * Generate enough events without reading them and check that overflow
  * event is generated.
  */

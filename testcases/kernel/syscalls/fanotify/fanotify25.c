@@ -6,8 +6,8 @@
  */
 
 /*\
- * Verify that fanotify monitoring can be applied to the tracing filesystem
- * and write events will be correctly delivered.
+ * Verify that :manpage:`fanotify(7)` monitoring can be applied to the tracing
+ * filesystem and write events will be correctly delivered.
  */
 
 #define _GNU_SOURCE

@@ -8,10 +8,10 @@
  */
 
 /*\
- * Check that fanotify groups and marks limits are enforced correctly.
- * If user ns is supported, verify that global limit and per user ns
- * limits are both enforced.
- * Otherwise, we only check that global groups limit is enforced.
+ * Check that :manpage:`fanotify(7)` groups and marks limits are enforced
+ * correctly.  If user ns is supported, verify that global limit and per user ns
+ * limits are both enforced.  Otherwise, we only check that global groups limit
+ * is enforced.
  */
 
 #define _GNU_SOURCE

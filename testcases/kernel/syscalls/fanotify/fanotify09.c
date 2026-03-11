@@ -6,8 +6,8 @@
  */
 
 /*\
- * Check that fanotify handles events on children correctly when both parent and
- * subdir or mountpoint marks exist.
+ * Check that :manpage:`fanotify(7)` handles events on children correctly when
+ * both parent and subdir or mountpoint marks exist.
  */
 
 /*
