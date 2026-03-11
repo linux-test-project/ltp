@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/vfs.h>
 
 #include "lapi/syscalls.h"
 #include "lapi/ustat.h"
@@ -50,11 +51,16 @@ void run(unsigned int test)
 static void setup(void)
 {
 	struct stat buf;
+	struct statfs fs_buf;
 
 	/* Find a valid device number */
 	SAFE_STAT("/", &buf);
-
 	root_dev = buf.st_dev;
+
+	statfs("/", &fs_buf);
+	if (fs_buf.f_type == 0x9123683E) {
+		tst_brk(TCONF, "%s", test.tags[0].value);
+	}
 }
 
 static struct tst_test test = {
