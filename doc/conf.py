@@ -90,6 +90,7 @@ def generate_syscalls_stats(_):
         'landlock_restrict_self': f'{ltp_syscalls_path}/landlock',
         'lsetxattr': f'{ltp_syscalls_path}/lgetxattr',
         'newfstatat': f'{ltp_syscalls_path}/fstatat',
+        'open_tree_attr': f'{ltp_syscalls_path}/mount_setattr',
         'pkey_alloc': f'{ltp_syscalls_path}/pkeys',
         'pkey_free': f'{ltp_syscalls_path}/pkeys',
         'pkey_mprotect': f'{ltp_syscalls_path}/pkeys',
