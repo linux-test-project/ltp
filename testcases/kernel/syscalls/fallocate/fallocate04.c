@@ -2,9 +2,15 @@
 /*
  * Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
  * Author: Alexey Kodanev <alexey.kodanev@oracle.com>
+ */
+
+/*\
+ * Test :manpage:`fallocate(2)` a file with specified size then tests
+ * the following modes:
  *
- * Test allocates a file with specified size then tests the following modes:
- * FALLOC_FL_PUNCH_HOLE, FALLOC_FL_ZERO_RANGE and FALLOC_FL_COLLAPSE_RANGE.
+ * - FALLOC_FL_PUNCH_HOLE
+ * - FALLOC_FL_ZERO_RANGE
+ * - FALLOC_FL_COLLAPSE_RANGE
  */
 
 #define _GNU_SOURCE

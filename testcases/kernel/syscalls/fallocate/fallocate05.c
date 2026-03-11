@@ -4,16 +4,18 @@
  * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * Tests that writing to fallocated file works when filesystem is full.
- * Test scenario:
- * - fallocate() some empty blocks
+ *
+ * [Algorithm]
+ *
+ * - :manpage:`fallocate(2)` some empty blocks
  * - fill the filesystem
- * - write() into the preallocated space
- * - try to fallocate() more blocks until we get ENOSPC
- * - write() into the extra allocated space
+ * - :manpage:`write(2)` into the preallocated space
+ * - try to :manpage:`fallocate(2)` more blocks until we get ENOSPC
+ * - :manpage:`write(2)` into the extra allocated space
  * - deallocate part of the file
- * - write() to the end of file to check that some blocks were freed
+ * - :manpage:`write(2)` to the end of file to check that some blocks were freed
  */
 
 #define _GNU_SOURCE

@@ -8,7 +8,7 @@
  */
 
 /*\
- * Test fallocate() on sparse file for different offsets, with a total of 8 test cases
+ * Test :manpage:`fallocate(2)` on sparse file for different offsets.
  */
 
 #define _GNU_SOURCE

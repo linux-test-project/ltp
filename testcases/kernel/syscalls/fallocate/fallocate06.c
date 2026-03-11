@@ -4,17 +4,17 @@
  */
 
 /*\
- * Tests misaligned fallocate()
+ * Tests misaligned :manpage:`fallocate(2)`
  *
- * Test scenario:
+ * [Test scenario]
  *
- * 1. write() several blocks worth of data
- * 2. fallocate() some more space (not aligned to FS blocks)
- * 3. try to write() into the allocated space
+ * 1. :manpage:`write(2)` several blocks worth of data
+ * 2. :manpage:`fallocate(2)` some more space (not aligned to FS blocks)
+ * 3. try to :manpage:`write(2)` into the allocated space
  * 4. deallocate misaligned part of file range written in step 1
- * 5. read() the deallocated range and check that it was zeroed
+ * 5. :manpage:`read(2)` the deallocated range and check that it was zeroed
  *
- * Subtests:
+ * [Subtests]
  *
  * - fill filesystem between step 2 and 3
  * - disable copy-on-write on test file
