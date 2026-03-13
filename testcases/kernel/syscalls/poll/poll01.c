@@ -5,16 +5,16 @@
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * Check that poll() works for POLLOUT and POLLIN and that revents is set
- * correctly.
+/*\
+ * Check that :manpage:`poll(2)` works for POLLOUT and POLLIN and that revents
+ * is set correctly.
  */
+
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
-
 #include "tst_test.h"
 
 #define BUF_SIZE	512
@@ -27,19 +27,12 @@ static void verify_pollout(void)
 		{.fd = fildes[1], .events = POLLOUT},
 	};
 
-	TEST(poll(outfds, 1, -1));
-
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "poll() POLLOUT failed");
+	TST_EXP_VAL(poll(outfds, 1, -1), 1);
+	if (!TST_PASS)
 		return;
-	}
 
-	if (outfds[0].revents != POLLOUT) {
-		tst_res(TFAIL | TTERRNO, "poll() failed to set POLLOUT");
-		return;
-	}
-
-	tst_res(TPASS, "poll() POLLOUT");
+	TST_EXP_EXPR(outfds[0].revents & POLLOUT);
+	TST_EXP_EXPR((outfds[0].revents & ~POLLOUT) == 0);
 }
 
 static void verify_pollin(void)
@@ -53,26 +46,18 @@ static void verify_pollin(void)
 
 	SAFE_WRITE(SAFE_WRITE_ALL, fildes[1], write_buf, sizeof(write_buf));
 
-	TEST(poll(infds, 1, -1));
-
-	if (TST_RET == -1) {
-		tst_res(TFAIL | TTERRNO, "poll() POLLIN failed");
+	TST_EXP_VAL(poll(infds, 1, -1), 1);
+	if (!TST_PASS)
 		goto end;
-	}
 
-	if (infds[0].revents != POLLIN) {
-		tst_res(TFAIL, "poll() failed to set POLLIN");
-		goto end;
-	}
-
-
-	tst_res(TPASS, "poll() POLLIN");
+	TST_EXP_EXPR(infds[0].revents & POLLIN);
+	TST_EXP_EXPR((infds[0].revents & ~POLLIN) == 0);
 
 end:
 	SAFE_READ(1, fildes[0], read_buf, sizeof(write_buf));
 }
 
-void verify_poll(unsigned int n)
+static void verify_poll(unsigned int n)
 {
 	switch (n) {
 	case 0:

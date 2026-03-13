@@ -3,19 +3,19 @@
  * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * Check that poll() timeouts correctly.
+/*\
+ * Check that :manpage:`poll(2)` timeouts correctly.
  */
+
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/poll.h>
-
 #include "tst_timer_test.h"
 
 static int fds[2];
 
-int sample_fn(int clk_id, long long usec)
+static int sample_fn(int clk_id, long long usec)
 {
 	unsigned int sleep_ms = usec / 1000;
 
