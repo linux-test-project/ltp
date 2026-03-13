@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2004, Bull SA. All rights reserved.
+ * Copyright (c) 2026 SUSE LLC
  * Created by:  Laurent.Vivier@bull.net
  * This file is licensed under the GPL license.  For the full content
  * of this license, see the COPYING file at the top level of this
@@ -14,122 +15,83 @@
  *
  * method:
  *
- *	we queue a lot of aio_write() operation to a file descriptor
- *	then we try to cancel all aio operation of this file descriptor
- *	we check with aio_error() state of each operation
- *	if aio_error() is ECANCELED and aio_return() is -1
- *	test is passed
- *	if aio_error() is ECANCELED and aio_return() is NOT -1
- *	test fails
- *	otherwise
- *	test is unresolved
+ *	open a pair of sockets and queue writes to them with aio_write()
+ *	execute aio_cancel() on the socket
+ *	check aio_error() and aio_return() results for writes which should
+ *	have been canceled
+ *	if any aio_error() is not ECANCELED or aio_return() is not -1,
+ *	the test fails
+ *	otherwise the test passes
  *
  */
 
-#include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <aio.h>
 
 #include "posixtest.h"
-#include "tempfile.h"
+#include "aio_test.h"
 
 #define TNAME "aio_cancel/4-1.c"
 
-#define BUF_NB		128
-#define BUF_SIZE	(1024*1024)
+#define WRITE_COUNT	8
+#define MAX_COMPLETE	3
+
+static int fds[2];
+static struct aiocb aiocb[WRITE_COUNT];
 
 int main(void)
 {
-	char tmpfname[PATH_MAX];
-	int fd;
-	struct aiocb *aiocb[BUF_NB];
 	int i;
-	int in_progress;
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)
 		return PTS_UNSUPPORTED;
 
-	PTS_GET_TMP_FILENAME(tmpfname, "pts_aio_cancel_4_1");
-	unlink(tmpfname);
-	fd = open(tmpfname, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
-	if (fd == -1) {
-		printf(TNAME " Error at open(): %s\n", strerror(errno));
+	if (setup_aio(TNAME, fds, aiocb, WRITE_COUNT))
 		return PTS_UNRESOLVED;
-	}
 
-	unlink(tmpfname);
-
-	/* create AIO req */
-
-	for (i = 0; i < BUF_NB; i++) {
-		aiocb[i] = malloc(sizeof(struct aiocb));
-		if (aiocb[i] == NULL) {
-			printf(TNAME " Error at malloc(): %s\n",
-			       strerror(errno));
-			return PTS_UNRESOLVED;
-		}
-		memset(aiocb[i], 0, sizeof(struct aiocb));
-		aiocb[i]->aio_fildes = fd;
-		aiocb[i]->aio_buf = malloc(BUF_SIZE);
-		if (aiocb[i]->aio_buf == NULL) {
-			printf(TNAME " Error at malloc(): %s\n",
-			       strerror(errno));
-			return PTS_UNRESOLVED;
-		}
-		aiocb[i]->aio_nbytes = BUF_SIZE;
-		aiocb[i]->aio_offset = 0;
-		aiocb[i]->aio_sigevent.sigev_notify = SIGEV_NONE;
-	}
-
-	for (i = 0; i < BUF_NB; i++) {
-		if (aio_write(aiocb[i]) == -1) {
+	/* submit AIO req */
+	for (i = 0; i < WRITE_COUNT; i++) {
+		if (aio_write(&aiocb[i]) == -1) {
 			printf(TNAME " loop %d: Error at aio_write(): %s\n",
-			       i, strerror(errno));
+				i, strerror(errno));
+			cleanup_aio(fds, aiocb, WRITE_COUNT);
 			return PTS_FAIL;
 		}
 	}
 
-	/* try to cancel all
-	 * we hope to have enough time to cancel at least one
-	 */
-
-	if (aio_cancel(fd, NULL) == -1) {
+	/* cancel all */
+	if (aio_cancel(fds[0], NULL) == -1) {
 		printf(TNAME " Error at aio_cancel(): %s\n", strerror(errno));
+		cleanup_aio(fds, aiocb, WRITE_COUNT);
 		return PTS_FAIL;
 	}
 
-	close(fd);
+	/* check results of requests that should have been canceled */
+	for (i = MAX_COMPLETE; i < WRITE_COUNT; i++) {
+		int ret = aio_error(&aiocb[i]);
 
-	do {
-		in_progress = 0;
-		for (i = 0; i < BUF_NB; i++) {
-			int ret;
-
-			ret = (aio_error(aiocb[i]));
-
-			if (ret == -1) {
-				printf(TNAME " Error at aio_error(): %s\n",
-				       strerror(errno));
-				return PTS_FAIL;
-			} else if (ret == EINPROGRESS)
-				in_progress = 1;
-			else if (ret == ECANCELED) {
-				if (aio_return(aiocb[i]) == -1) {
-					printf("Test PASSED\n");
-					return PTS_PASS;
-				}
-
-				printf(TNAME " aio_return is not -1\n");
-				return PTS_FAIL;
-			}
+		if (ret == -1) {
+			printf(TNAME " Error at aio_error(): %s\n",
+			       strerror(errno));
+			cleanup_aio(fds, aiocb, WRITE_COUNT);
+			return PTS_FAIL;
+		} else if (ret != ECANCELED) {
+			printf(TNAME " Bad task #%d result: %s "
+				"(expected ECANCELED)\n", i, strerror(ret));
+			cleanup_aio(fds, aiocb, WRITE_COUNT);
+			return PTS_FAIL;
 		}
-	} while (in_progress);
 
-	return PTS_UNRESOLVED;
+		ret = aio_return(&aiocb[i]);
+
+		if (ret != -1) {
+			printf(TNAME " aio_return(): %d (expected -1)\n", ret);
+			cleanup_aio(fds, aiocb, WRITE_COUNT);
+			return PTS_FAIL;
+		}
+	}
+
+	cleanup_aio(fds, aiocb, WRITE_COUNT);
+	printf("Test PASSED\n");
+	return PTS_PASS;
 }
