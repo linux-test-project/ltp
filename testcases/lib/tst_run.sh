@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2025 Cyril Hrubis <chrubis@suse.cz>
-# Copyright (c) 2025 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2025-2026 Petr Vorel <pvorel@suse.cz>
 
 . tst_env.sh
 
@@ -21,4 +21,4 @@ if [ -n "$TST_SETUP" ]; then
 	fi
 fi
 
-tst_test
+tst_test "$@"
