@@ -212,7 +212,17 @@ static void test_memcg_min(void)
 		sleep(1);
 	}
 
+	/*
+	 * On ppc64le with 64KB page size, the 148MB allocation triggers OOM
+	 * due to memory accounting overhead and slower pagecache eviction.
+	 * Use 140MB to provide safety margin while creating sufficient pressure
+	 * to test memory.min protection effectively.
+	 */
+#ifdef __powerpc64__
+	alloc_anon_in_child(trunk_cg[G], MB(140), 0);
+#else
 	alloc_anon_in_child(trunk_cg[G], MB(148), 0);
+#endif
 
 	SAFE_CG_SCANF(trunk_cg[B], "memory.current", "%ld", c);
 	TST_EXP_EXPR(values_close(c[0], MB(50), 5),
