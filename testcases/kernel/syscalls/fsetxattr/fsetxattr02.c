@@ -19,7 +19,10 @@
  * - Set attribute to a block special file, fsetxattr(2) should
  *   return -1 and set errno to EPERM.
  * - Set attribute to a UNIX domain socket, fsetxattr(2) should
- *   return -1 and set errno to EPERM.
+ *   return -1 and set errno to EPERM on kernels < 7.1.0.
+ *   On kernel 7.1.0+ (dc0876b9846d "xattr: support extended
+ *   attributes on sockets"), returns 0 (success) as sockets now
+ *   support user.* xattrs.
  */
 
 /*
@@ -62,6 +65,8 @@
 #define BLK      MNTPOINT"/fsetxattr02blk"
 #define SOCK     "fsetxattr02sock"
 
+static bool socket_xattr_supported;
+
 struct test_case {
 	char *fname;
 	int fd;
@@ -73,7 +78,9 @@ struct test_case {
 	int exp_err;
 	int issocket;
 	int needskeyset;
+	int check_kver;
 };
+
 static struct test_case tc[] = {
 	{			/* case 00, set attr to reg */
 	 .fname = FILENAME,
@@ -82,7 +89,6 @@ static struct test_case tc[] = {
 	 .value = XATTR_TEST_VALUE,
 	 .size = XATTR_TEST_VALUE_SIZE,
 	 .flags = XATTR_CREATE,
-	 .exp_err = 0,
 	 },
 	{			/* case 01, set attr to dir */
 	 .fname = DIRNAME,
@@ -91,7 +97,6 @@ static struct test_case tc[] = {
 	 .value = XATTR_TEST_VALUE,
 	 .size = XATTR_TEST_VALUE_SIZE,
 	 .flags = XATTR_CREATE,
-	 .exp_err = 0,
 	 },
 	{			/* case 02, set attr to symlink */
 	 .fname = SYMLINK,
@@ -139,18 +144,23 @@ static struct test_case tc[] = {
 	 .flags = XATTR_CREATE,
 	 .exp_err = EPERM,
 	 .issocket = 1,
+	 .check_kver = true,
 	 },
 };
 
 static void verify_fsetxattr(unsigned int i)
 {
 	const char *fname = strstr(tc[i].fname, "fsetxattr02") + OFFSET;
+	int exp_err = tc[i].exp_err;
 
 	/* some tests might require existing keys for each iteration */
 	if (tc[i].needskeyset) {
 		SAFE_FSETXATTR(tc[i].fd, tc[i].key, tc[i].value, tc[i].size,
 				XATTR_CREATE);
 	}
+
+	if (tc[i].check_kver && socket_xattr_supported)
+		exp_err = 0;
 
 	TEST(fsetxattr(tc[i].fd, tc[i].key, tc[i].value, tc[i].size,
 			tc[i].flags));
@@ -160,7 +170,7 @@ static void verify_fsetxattr(unsigned int i)
 
 	/* success */
 
-	if (!tc[i].exp_err) {
+	if (!exp_err) {
 		if (TST_RET) {
 			tst_res(TFAIL | TTERRNO,
 				"fsetxattr(2) on %s failed with %li",
@@ -182,10 +192,10 @@ static void verify_fsetxattr(unsigned int i)
 
 	/* fail */
 
-	if (tc[i].exp_err != TST_ERR) {
+	if (exp_err != TST_ERR) {
 		tst_res(TFAIL | TTERRNO,
 				"fsetxattr(2) on %s should have failed with %s",
-				fname, tst_strerrno(tc[i].exp_err));
+				fname, tst_strerrno(exp_err));
 		return;
 	}
 
@@ -233,6 +243,8 @@ static void setup(void)
 		SAFE_BIND(tc[i].fd, (const struct sockaddr *) &sun,
 				sizeof(struct sockaddr_un));
 	}
+
+	socket_xattr_supported = tst_kvercmp(7, 1, 0) >= 0;
 }
 
 static void cleanup(void)
