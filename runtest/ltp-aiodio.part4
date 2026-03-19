@@ -1,38 +1,6 @@
 aio01 aio01
 aio02 aio02
 
-#Running dio_sparse & dirty tests
-DI000 dirty
-DS000 dio_sparse
-DI001 dirty
-DS001 dio_sparse
-DI002 dirty
-DS002 dio_sparse
-DI003 dirty
-DS003 dio_sparse
-DI004 dirty
-DS004 dio_sparse
-DI005 dirty
-DS005 dio_sparse
-DI006 dirty
-DS006 dio_sparse
-DI007 dirty
-DS007 dio_sparse
-DI008 dirty
-DS008 dio_sparse
-DI009 dirty
-DS009 dio_sparse
-#iteration on dio_sparse
-DIO00 dio_sparse
-DIO01 dio_sparse
-DIO02 dio_sparse
-DIO03 dio_sparse
-DIO04 dio_sparse
-DIO05 dio_sparse
-DIO06 dio_sparse
-DIO07 dio_sparse
-DIO08 dio_sparse
-DIO09 dio_sparse
 #Running aiodio_append
 AD000 aiodio_append
 AD001 aiodio_append
