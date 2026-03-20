@@ -58,7 +58,7 @@ static void run(unsigned int n)
 		args.set_tid_size = 1;
 	}
 
-	TST_EXP_FAIL(clone3(&args, sizeof(args)), EPERM,
+	TST_EXP_FAIL(ltp_clone3_raw(&args, sizeof(args)), EPERM,
 			"clone3(%s) set_tid_size=%ld",
 			tc->sflags, args.set_tid_size);
 }

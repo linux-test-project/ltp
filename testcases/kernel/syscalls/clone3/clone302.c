@@ -83,7 +83,7 @@ static void run(unsigned int n)
 		args->tls = tc->tls;
 	}
 
-	TEST(clone3(args, tc->size));
+	TEST(ltp_clone3_raw(args, tc->size));
 
 	if (!TST_RET)
 		exit(EXIT_SUCCESS);

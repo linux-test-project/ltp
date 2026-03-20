@@ -123,7 +123,7 @@ static void run(unsigned int n)
 	parent_received_signal = 0;
 	SAFE_SIGACTION(tc->exit_signal, &psig_action, NULL);
 
-	TEST(pid = clone3(args, sizeof(*args)));
+	TEST(pid = ltp_clone3_raw(args, sizeof(*args)));
 	if (pid < 0) {
 		tst_res(TFAIL | TTERRNO, "clone3() failed (%d)", n);
 		return;
