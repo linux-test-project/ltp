@@ -17,12 +17,12 @@
  * o Write to some of the madvised pages again, these must not be freed
  *
  * o Set memory limits
- *   - limit_in_bytes = 8MB
- *   - memsw.limit_in_bytes = 16MB
+ *   - memory.max = 8MB
+ *   - memory.swap.max = 16MB
  *
- *   The reason for doubling the limit_in_bytes is to have safe margin
+ *   The reason for doubling the memory.max is to have safe margin
  *   for forking the memory hungy child etc. And the reason to setting
- *   memsw.limit_in_bytes to twice of that is to give the system chance
+ *   memory.swap.max to twice of that is to give the system chance
  *   to try to free some memory before cgroup OOM kicks in and kills
  *   the memory hungry child.
  *
@@ -45,13 +45,6 @@
 #include "tst_test.h"
 #include "lapi/mmap.h"
 
-#define MEMCG_PATH "/sys/fs/cgroup/memory/"
-
-static char cgroup_path[PATH_MAX];
-static char tasks_path[PATH_MAX];
-static char limit_in_bytes_path[PATH_MAX];
-static char memsw_limit_in_bytes_path[PATH_MAX];
-
 static size_t page_size;
 static int sleep_between_faults;
 
@@ -60,6 +53,9 @@ static int swap_accounting_enabled;
 #define PAGES 128
 #define TOUCHED_PAGE1 0
 #define TOUCHED_PAGE2 10
+
+#define MEM_LIMIT (8 * 1024 * 1024)
+#define SWAP_LIMIT (2 * MEM_LIMIT)
 
 static void memory_pressure_child(void)
 {
@@ -88,17 +84,6 @@ static void memory_pressure_child(void)
 	}
 
 	abort();
-}
-
-static void setup_cgroup_paths(int pid)
-{
-	snprintf(cgroup_path, sizeof(cgroup_path),
-		 MEMCG_PATH "ltp_madvise09_%i/", pid);
-	snprintf(tasks_path, sizeof(tasks_path), "%s/tasks", cgroup_path);
-	snprintf(limit_in_bytes_path, sizeof(limit_in_bytes_path),
-		 "%s/memory.limit_in_bytes", cgroup_path);
-	snprintf(memsw_limit_in_bytes_path, sizeof(memsw_limit_in_bytes_path),
-		 "%s/memory.memsw.limit_in_bytes", cgroup_path);
 }
 
 static int count_freed(char *ptr)
@@ -157,14 +142,12 @@ static void child(void)
 {
 	size_t i;
 	char *ptr;
-	unsigned int usage, old_limit, old_memsw_limit;
 	int status, pid, retries = 0;
 
-	SAFE_MKDIR(cgroup_path, 0777);
-	SAFE_FILE_PRINTF(tasks_path, "%i", getpid());
+	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 
 	ptr = SAFE_MMAP(NULL, PAGES * page_size, PROT_READ | PROT_WRITE,
-	                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
 	for (i = 0; i < PAGES * page_size; i++)
 		ptr[i] = 'a';
@@ -184,18 +167,15 @@ static void child(void)
 	ptr[TOUCHED_PAGE1 * page_size] = 'b';
 	ptr[TOUCHED_PAGE2 * page_size] = 'b';
 
-	usage = 8 * 1024 * 1024;
-	tst_res(TINFO, "Setting memory limits to %u %u", usage, 2 * usage);
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%d", MEM_LIMIT);
+	tst_res(TINFO, "Setting memory.max to %d bytes", MEM_LIMIT);
 
-	SAFE_FILE_SCANF(limit_in_bytes_path, "%u", &old_limit);
-
-	if (swap_accounting_enabled)
-		SAFE_FILE_SCANF(memsw_limit_in_bytes_path, "%u", &old_memsw_limit);
-
-	SAFE_FILE_PRINTF(limit_in_bytes_path, "%u", usage);
-
-	if (swap_accounting_enabled)
-		SAFE_FILE_PRINTF(memsw_limit_in_bytes_path, "%u", 2 * usage);
+	if (swap_accounting_enabled) {
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%d", SWAP_LIMIT);
+		tst_res(TINFO, "Setting memory.swap.max to %d bytes", SWAP_LIMIT);
+	} else {
+		tst_res(TINFO, "memory.swap.max is unavailable, running without SWAP_LIMIT");
+	}
 
 	do {
 		sleep_between_faults++;
@@ -204,7 +184,7 @@ static void child(void)
 		if (!pid)
 			memory_pressure_child();
 
-		tst_res(TINFO, "Memory hungry child %i started, try %i", pid, retries);
+		tst_res(TINFO, "Memory pressure process %i started, try %i", pid, retries);
 
 		SAFE_WAIT(&status);
 	} while (retries++ < 10 && count_freed(ptr) == 0);
@@ -251,20 +231,9 @@ static void child(void)
 	else
 		tst_res(TPASS, "All pages have expected content");
 
-	if (swap_accounting_enabled)
-		SAFE_FILE_PRINTF(memsw_limit_in_bytes_path, "%u", old_memsw_limit);
-
-	SAFE_FILE_PRINTF(limit_in_bytes_path, "%u", old_limit);
-
-	SAFE_MUNMAP(ptr, PAGES);
+	SAFE_MUNMAP(ptr, PAGES * page_size);
 
 	exit(0);
-}
-
-static void cleanup(void)
-{
-	if (cgroup_path[0] && !access(cgroup_path, F_OK))
-		rmdir(cgroup_path);
 }
 
 static void run(void)
@@ -275,14 +244,10 @@ static void run(void)
 retry:
 	pid = SAFE_FORK();
 
-	if (!pid) {
-		setup_cgroup_paths(getpid());
+	if (!pid)
 		child();
-	}
 
-	setup_cgroup_paths(pid);
 	SAFE_WAIT(&status);
-	cleanup();
 
 	/*
 	 * Rarely cgroup OOM kills both children not only the one that allocates
@@ -302,14 +267,9 @@ retry:
 
 static void setup(void)
 {
-	long int swap_total;
+	long swap_total;
 
-	if (access(MEMCG_PATH, F_OK)) {
-		tst_brk(TCONF, "'" MEMCG_PATH
-			"' not present, CONFIG_MEMCG missing?");
-	}
-
-	if (!access(MEMCG_PATH "memory.memsw.limit_in_bytes", F_OK))
+	if (SAFE_CG_HAS(tst_cg, "memory.swap.max"))
 		swap_accounting_enabled = 1;
 	else
 		tst_res(TINFO, "Swap accounting is disabled");
@@ -323,8 +283,8 @@ static void setup(void)
 
 static struct tst_test test = {
 	.setup = setup,
-	.cleanup = cleanup,
 	.test_all = run,
 	.needs_root = 1,
 	.forks_child = 1,
+	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };
