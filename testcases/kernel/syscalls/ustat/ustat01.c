@@ -44,6 +44,10 @@ static void setup(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
+	.skip_filesystems = (const char *const[]) {
+                "btrfs",
+                NULL
+        },
 	.tags = (const struct tst_tag[]) {
 		{"known-fail", "ustat() is known to fail with EINVAL on Btrfs, see "
 			"https://lore.kernel.org/linux-btrfs/e7e867b8-b57a-7eb2-2432-1627bd3a88fb@toxicpanda.com/"
