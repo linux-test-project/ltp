@@ -29,20 +29,22 @@ static struct tcase {
 	size_t *len;
 	unsigned long flags;
 	int exp_err;
+	int compat_err;
 } tcases[] = {
-	{&start_addr, &page_size, ULONG_MAX, EINVAL},
-	{&unaligned_start_addr, &page_size, 0, EINVAL},
-	{&start_addr, &overflow_size, 0, EINVAL},
-	{&unallocated_start_addr, &twopages_size, 0, ENOMEM},
-	{&unallocated_end_addr, &twopages_size, 0, ENOMEM},
-	{&start_addr, &fourpages_size, 0, ENOMEM},
+	{.addr = &start_addr, .len = &page_size, .flags = ULONG_MAX, .exp_err = EINVAL},
+	{.addr = &unaligned_start_addr, .len = &page_size, .flags = 0, .exp_err = EINVAL},
+	{.addr = &start_addr, .len = &overflow_size, .flags = 0, .exp_err = EINVAL, .compat_err = ENOMEM},
+	{.addr = &unallocated_start_addr, .len = &twopages_size, .flags = 0, .exp_err = ENOMEM},
+	{.addr = &unallocated_end_addr, .len = &twopages_size, .flags = 0, .exp_err = ENOMEM},
+	{.addr = &start_addr, .len = &fourpages_size, .flags = 0, .exp_err = ENOMEM},
 };
 
 static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
+	int exp_err = tc->compat_err && tst_is_compat_mode() ? tc->compat_err : tc->exp_err;
 
-	TST_EXP_FAIL(tst_syscall(__NR_mseal, *tc->addr, *tc->len, tc->flags), tc->exp_err,
+	TST_EXP_FAIL(tst_syscall(__NR_mseal, *tc->addr, *tc->len, tc->flags), exp_err,
 		"mseal(%p, %lu, %lu)", *tc->addr, *tc->len, tc->flags);
 }
 
