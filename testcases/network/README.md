@@ -26,23 +26,9 @@ by default used `ssh`, for details see `testcases/network/stress/README`.
 Tests have various external dependencies, exit with `TCONF` when not installed.
 Some tests require additional setup.
 
-### FTP and telnet setup
-FTP stress tests and telnet server tests require environment variables `RHOST`
-(remote machine), `RUSER` (remote user) and `PASSWD` (remote password). NOTE:
-`RHOST` will imply two host configuration for other tests.
-
-If `RUSER` is set to `root`, either of these steps is required:
-
-* In `/etc/ftpusers` (or `/etc/vsftpd.ftpusers`), comment the line containing
-"root" string. This file lists all those users who are not given access to do ftp
-on the current system.
-
-* If you don’t want to do the previous step, put following entry into `/root/.netrc`:
-```
-machine <remote_server_name>
-login root
-password <remote_root_password>
-```
+### FTP
+FTP stress tests require vsftpd. It will be started with with enabled anonymous
+logins, stopped after testing.
 
 ### HTTP setup
 HTTP stress tests require configured and running web server (Apache2, Nginx, etc.).
