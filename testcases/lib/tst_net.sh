@@ -1144,7 +1144,6 @@ tst_net_detect_ipv6
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
-export PASSWD="${PASSWD:-}"
 # Don't use it in new tests, use tst_rhost_run() from tst_net.sh instead.
 export LTP_RSH="${LTP_RSH:-ssh -nq}"
 
