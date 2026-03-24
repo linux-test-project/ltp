@@ -44,6 +44,7 @@ HUGEPAGESIZE=$(awk '/Hugepagesize/{ print $2 }' /proc/meminfo)
 HUGEPAGESIZE=$((${HUGEPAGESIZE:-0} * 1024))
 
 MEMORY_RESULT="$CPUSET_TMP/memory_result"
+HUGETLB_MNTPOINT="$CPUSET_TMP/hugetlb"
 
 # simple_getresult
 # $1 - cpuset_memory_test's pid
@@ -181,8 +182,8 @@ test6()
 		return 0
 	fi
 
-	mkdir /hugetlb
-	mount -t hugetlbfs none /hugetlb
+	mkdir "$HUGETLB_MNTPOINT"
+	mount -t hugetlbfs none "$HUGETLB_MNTPOINT"
 
 	save_nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
 	echo $((2*$nr_mems)) > /proc/sys/vm/nr_hugepages
@@ -190,8 +191,8 @@ test6()
 	cpuset_memory_test --shm --hugepage -s $HUGEPAGESIZE --key=7 >"$MEMORY_RESULT" &
 	simple_getresult $! "$CPUSET/0"
 
-	umount /hugetlb
-	rmdir /hugetlb
+	umount "$HUGETLB_MNTPOINT"
+	rmdir "$HUGETLB_MNTPOINT"
 
 	echo $save_nr_hugepages > /proc/sys/vm/nr_hugepages
 	if [ $(cat /proc/sys/vm/nr_hugepages) -ne $save_nr_hugepages ]; then
