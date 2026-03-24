@@ -66,20 +66,20 @@ static int do_direct_reads(char *filename, char *bufptr, long long fsize, long l
 	fd = SAFE_OPEN(filename, O_RDONLY | O_DIRECT, 0666);
 
 	while (1) {
+		if (*children_completed >= numchildren) {
+			tst_res(TINFO,
+				"Writers finshed, exiting reader (iteration %i)",
+				iter);
+			goto exit;
+		}
+
+		if (!tst_remaining_runtime()) {
+			tst_res(TINFO, "Test out of runtime, exiting");
+			goto exit;
+		}
+
 		for (offset = 0; offset + rsize < fsize; offset += rsize) {
 			char *bufoff;
-
-			if (*children_completed >= numchildren) {
-				tst_res(TINFO,
-					"Writers finshed, exiting reader (iteration %i)",
-					iter);
-				goto exit;
-			}
-
-			if (!tst_remaining_runtime()) {
-				tst_res(TINFO, "Test out of runtime, exiting");
-				goto exit;
-			}
 
 			w = pread(fd, bufptr, rsize, offset);
 			if (w < 0)
