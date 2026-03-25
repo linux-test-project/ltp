@@ -60,3 +60,6 @@ patches/
 logfile.*
 
 /utils/benchmark/ebizzy-0.3/ebizzy
+
+compile_flags.txt
+compile_commands.json
