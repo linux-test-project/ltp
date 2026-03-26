@@ -91,7 +91,8 @@ users.
        Shell API only.
 
    * - LTP_ENABLE_DEBUG
-     - Enable debug info (value ``1`` or ``y``). Equivalent of ``-D`` parameter.
+     - Enable debug info (value ``1`` (``y``) or ``2`` for more verbose level).
+       Equivalent of ``-D`` parameter.
 
 Test specific environment variables
 -----------------------------------
