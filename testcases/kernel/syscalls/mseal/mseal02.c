@@ -32,11 +32,11 @@ static struct tcase {
 	int compat_err;
 } tcases[] = {
 	{.addr = &start_addr, .len = &page_size, .flags = ULONG_MAX, .exp_err = EINVAL},
-	{.addr = &unaligned_start_addr, .len = &page_size, .flags = 0, .exp_err = EINVAL},
-	{.addr = &start_addr, .len = &overflow_size, .flags = 0, .exp_err = EINVAL, .compat_err = ENOMEM},
-	{.addr = &unallocated_start_addr, .len = &twopages_size, .flags = 0, .exp_err = ENOMEM},
-	{.addr = &unallocated_end_addr, .len = &twopages_size, .flags = 0, .exp_err = ENOMEM},
-	{.addr = &start_addr, .len = &fourpages_size, .flags = 0, .exp_err = ENOMEM},
+	{.addr = &unaligned_start_addr, .len = &page_size, .exp_err = EINVAL},
+	{.addr = &start_addr, .len = &overflow_size, .exp_err = EINVAL, .compat_err = ENOMEM},
+	{.addr = &unallocated_start_addr, .len = &twopages_size, .exp_err = ENOMEM},
+	{.addr = &unallocated_end_addr, .len = &twopages_size, .exp_err = ENOMEM},
+	{.addr = &start_addr, .len = &fourpages_size, .exp_err = ENOMEM},
 };
 
 static void run(unsigned int n)
