@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2018-2026 Cyril Hrubis <chrubis@suse.cz>
  */
 
 #include <stdlib.h>
@@ -15,6 +15,8 @@
 #include "tst_kconfig.h"
 #include "tst_bool_expr.h"
 #include "tst_safe_stdio.h"
+
+#include "tst_kconfig_checks.h"
 
 static int kconfig_skip_check(void)
 {
@@ -110,6 +112,38 @@ static void close_kconfig(FILE *fp)
 		fclose(fp);
 }
 
+static struct runtime_check {
+	const char *config;
+	bool (*runtime_check)(void);
+} runtime_checks[] = {
+	{"CONFIG_USER_NS", tst_user_ns_enabled},
+	{"CONFIG_NET_NS", tst_net_ns_enabled},
+	{"CONFIG_PID_NS", tst_pid_ns_enabled},
+	{"CONFIG_MNT_NS", tst_mnt_ns_enabled},
+	{"CONFIG_IPC_NS", tst_ipc_ns_enabled},
+	{}
+};
+
+static void runtime_check(struct tst_kconfig_var *var)
+{
+	size_t i;
+
+	for (i = 0; runtime_checks[i].config; i++) {
+		if (strcmp(runtime_checks[i].config, var->id))
+			continue;
+
+		tst_res(TDEBUG, "Running runtime check for '%s'", var->id);
+
+		if (!runtime_checks[i].runtime_check()) {
+			tst_res(TINFO,
+				"%s=%c present but disabled at runtime",
+				var->id, var->choice);
+			var->choice = 'n';
+			return;
+		}
+	}
+}
+
 static inline int kconfig_parse_line(const char *line,
                                      struct tst_kconfig_var *vars,
                                      unsigned int vars_len)
@@ -183,9 +217,11 @@ out:
 			switch (val[0]) {
 			case 'y':
 				vars[i].choice = 'y';
+				runtime_check(&vars[i]);
 				return 1;
 			case 'm':
 				vars[i].choice = 'm';
+				runtime_check(&vars[i]);
 				return 1;
 			}
 		}
