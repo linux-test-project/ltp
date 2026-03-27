@@ -15,9 +15,10 @@
 
 #define FNAME "open04"
 
-static int fds_limit, first, i;
+static int fds_limit;
+static int first = -1;
 static int *fds;
-static char fname[20];
+static char fname[PATH_MAX];
 
 static void setup(void)
 {
@@ -29,10 +30,11 @@ static void setup(void)
 	first = SAFE_OPEN(FNAME, O_RDWR | O_CREAT, 0777);
 
 	fds = SAFE_MALLOC(sizeof(int) * (fds_limit - first));
+	memset(fds, -1, sizeof(int) * (fds_limit - first));
 	fds[0] = first;
 
-	for (i = first + 1; i < fds_limit; i++) {
-		sprintf(fname, FNAME ".%d", i);
+	for (int i = first + 1; i < fds_limit; i++) {
+		snprintf(fname, sizeof(fname), FNAME ".%d", i);
 		fd = open(fname, O_RDWR | O_CREAT, 0777);
 		if (fd == -1) {
 			if (errno != EMFILE)
@@ -46,20 +48,22 @@ static void setup(void)
 
 static void run(void)
 {
-	sprintf(fname, FNAME ".%d", fds_limit);
+	snprintf(fname, sizeof(fname), FNAME ".%d", fds_limit);
 	TST_EXP_FAIL2(open(fname, O_RDWR | O_CREAT, 0777), EMFILE);
 }
 
 static void cleanup(void)
 {
-	if (!first || !fds)
-		return;
+	if (first >= 0 && fds) {
+		int limit = fds_limit - first;
 
-	for (i = first; i < fds_limit; i++)
-		SAFE_CLOSE(fds[i - first]);
+		for (int i = 0; i < limit; i++) {
+			if (fds[i] != -1)
+				SAFE_CLOSE(fds[i]);
+		}
+	}
 
-	if (fds)
-		free(fds);
+	free(fds);
 }
 
 static struct tst_test test = {
