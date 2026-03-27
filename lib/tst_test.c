@@ -654,11 +654,11 @@ static struct option {
 	char *optstr;
 	char *help;
 } options[] = {
-	{"h",  "-h       Prints this help"},
-	{"i:", "-i n     Execute test n times"},
-	{"I:", "-I x     Execute test for n seconds"},
-	{"D::", "-D[1,2]  Prints debug information"},
-	{"V",  "-V       Prints LTP version"},
+	{"h",  "-h        Prints this help"},
+	{"i:", "-i n      Execute test n times"},
+	{"I:", "-I x      Execute test for n seconds"},
+	{"D::", "-D[1,2]  Prints debug information (can be overwritten by LTP_DEBUG)"},
+	{"V",  "-V        Prints LTP version"},
 };
 
 static void print_help(void)
@@ -825,13 +825,9 @@ static void parse_opts(int argc, char *argv[])
 			tst_brk(TBROK, "Invalid option");
 		break;
 		case 'D':
-			if (optarg)
-				context->tdebug = SAFE_STRTOL(optarg, 1, 2);
-			else
-				context->tdebug = 1;
-
-			if (context->tdebug)
-				tst_res(TINFO, "Enabling debug info (level %d)", context->tdebug);
+			if (getenv("LTP_DEBUG"))
+				break;
+			context->tdebug = optarg ? SAFE_STRTOL(optarg, 1, 2) : 1;
 		break;
 		case 'h':
 			print_help();
@@ -1453,9 +1449,10 @@ static void do_setup(int argc, char *argv[])
 		else
 			tst_res(TWARN, "Invalid LTP_DEBUG value: '%s'", tdebug_env);
 
-		if (context->tdebug)
-			tst_res(TINFO, "Enabling debug info (level %d)", context->tdebug);
 	}
+
+	if (context->tdebug)
+		tst_res(TINFO, "Enabling debug info (level %d)", context->tdebug);
 
 	if (tst_test->needs_kconfigs && tst_kconfig_check(tst_test->needs_kconfigs))
 		tst_brk(TCONF, "Aborting due to unsuitable kernel config, see above!");

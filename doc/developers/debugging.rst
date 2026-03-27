@@ -19,6 +19,8 @@ The ``-D`` parameter also supports the following verbosity levels:
 
 Suppress all debug logs if no '-D' flag passed (default behavior).
 
+``LTP_DEBUG`` has higher preference than ``-D``.
+
 Tracing and debugging syscalls
 ------------------------------
 
