@@ -92,7 +92,7 @@ users.
 
    * - LTP_DEBUG
      - Enable debug info (value ``1`` (``y``) or ``2`` for more verbose level).
-       Equivalent of ``-D`` parameter.
+       Equivalent of the ``-D`` parameter (see :doc:`../developers/debugging`).
 
 Test specific environment variables
 -----------------------------------

@@ -9,10 +9,10 @@ Debug messages
 --------------
 
 The LTP framework supports ``TDEBUG`` flag test debug messages. These
-messages can be enabled using the ``-D[1,2]`` parameter or setting ``LTP_DEBUG=1,2``
+messages can be enabled using the ``-D`` parameter or setting ``LTP_DEBUG``
 environment variable (see :doc:`../users/setup_tests`).
 
-The ``-D`` parameter also supports the following verbosity levels:
+Both ``-D`` parameter and ``LTP_DEBUG`` support the following verbosity levels:
 
   ``-D1`` (or ``-D``): Enable debug logs for the test process only.
   ``-D2``: Enable verbose debug logs for both the test and library processes.
