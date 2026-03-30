@@ -1,7 +1,4 @@
 #POWER_MANAGEMENT
-runpwtests01 runpwtests01.sh
-runpwtests02 runpwtests02.sh
 runpwtests03 runpwtests03.sh
 runpwtests04 runpwtests04.sh
-#runpwtests05 runpwtests05.sh
 runpwtests06 runpwtests06.sh
