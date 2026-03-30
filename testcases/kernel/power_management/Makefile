@@ -26,4 +26,4 @@ INSTALL_TARGETS 	:= *.py *.sh
 
 MAKE_DEPS		+= $(APICMDS_DIR)/tst_kvercmp
 
-include $(top_srcdir)/include/mk/generic_trunk_target.mk
+include $(top_srcdir)/include/mk/generic_leaf_target.mk

@@ -24,6 +24,16 @@ export TST_TOTAL=4
 . test.sh
 . pm_include.sh
 
+get_supporting_freq() {
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_frequencies \
+		| uniq
+}
+
+get_supporting_govr() {
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_governors \
+		| uniq
+}
+
 check_cpufreq_sysfs_files() {
 	total_cpus=`expr $(tst_ncpus) - 1`
 	RC=0
