@@ -15,13 +15,23 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
+#ifdef _POSIX_MONOTONIC_CLOCK
+#define TEST_CLOCK CLOCK_MONOTONIC
+#else
+#define TEST_CLOCK CLOCK_REALTIME
+#endif
+
 int main(void)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int sleepsec = 30;
 	int pid;
 
-	if (clock_gettime(CLOCK_REALTIME, &tsbefore) == -1) {
+#ifndef _POSIX_MONOTONIC_CLOCK
+	printf("CLOCK_MONOTONIC unavailable, test may fail due to external clock adjustments\n");
+#endif
+
+	if (clock_gettime(TEST_CLOCK, &tsbefore) == -1) {
 		perror("Error in clock_gettime()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -46,7 +56,7 @@ int main(void)
 			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;
 		}
-		if (clock_gettime(CLOCK_REALTIME, &tsafter) == -1) {
+		if (clock_gettime(TEST_CLOCK, &tsafter) == -1) {
 			perror("Error in clock_gettime()\n");
 			return PTS_UNRESOLVED;
 		}

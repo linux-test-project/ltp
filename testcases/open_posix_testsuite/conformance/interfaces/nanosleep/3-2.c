@@ -16,6 +16,12 @@
 #include <stdlib.h>
 #include "posixtest.h"
 
+#ifdef _POSIX_MONOTONIC_CLOCK
+#define TEST_CLOCK CLOCK_MONOTONIC
+#else
+#define TEST_CLOCK CLOCK_REALTIME
+#endif
+
 #define SLEEPSEC 5
 
 #define CHILDPASS 0		//if interrupted, child will return 0
@@ -26,7 +32,11 @@ int main(void)
 	int pid, slepts;
 	struct timespec tsbefore, tsafter;
 
-	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
+#ifndef _POSIX_MONOTONIC_CLOCK
+	printf("CLOCK_MONOTONIC unavailable, test may fail due to external clock adjustments\n");
+#endif
+
+	if (clock_gettime(TEST_CLOCK, &tsbefore) != 0) {
 		perror("clock_gettime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
@@ -74,7 +84,7 @@ int main(void)
 			return PTS_FAIL;
 		}
 
-		if (clock_gettime(CLOCK_REALTIME, &tsafter) == -1) {
+		if (clock_gettime(TEST_CLOCK, &tsafter) == -1) {
 			perror("Error in clock_gettime()\n");
 			return PTS_UNRESOLVED;
 		}

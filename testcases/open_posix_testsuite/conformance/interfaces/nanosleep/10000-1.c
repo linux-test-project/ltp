@@ -19,6 +19,12 @@
 #include <errno.h>
 #include "posixtest.h"
 
+#ifdef _POSIX_MONOTONIC_CLOCK
+#define TEST_CLOCK CLOCK_MONOTONIC
+#else
+#define TEST_CLOCK CLOCK_REALTIME
+#endif
+
 #define NUMVALID 6
 #define NUMINVALID 7
 
@@ -51,18 +57,22 @@ int main(void)
 	int failure = 0;
 	int slepts = 0, sleptns = 0;
 
+#ifndef _POSIX_MONOTONIC_CLOCK
+	printf("CLOCK_MONOTONIC unavailable, test may fail due to external clock adjustments\n");
+#endif
+
 	for (i = 0; i < NUMVALID; i++) {
 		tssleepfor.tv_sec = sleepvalid[i][0];
 		tssleepfor.tv_nsec = sleepvalid[i][1];
 		printf("sleep %d sec %d nsec\n",
 		       (int)tssleepfor.tv_sec, (int)tssleepfor.tv_nsec);
-		if (clock_gettime(CLOCK_REALTIME, &tsbefore) == -1) {
+		if (clock_gettime(TEST_CLOCK, &tsbefore) == -1) {
 			perror("Error in clock_gettime()\n");
 			return PTS_UNRESOLVED;
 		}
 
 		if (nanosleep(&tssleepfor, &tsstorage) == 0) {
-			if (clock_gettime(CLOCK_REALTIME, &tsafter) == -1) {
+			if (clock_gettime(TEST_CLOCK, &tsafter) == -1) {
 				perror("Error in clock_gettime()\n");
 				return PTS_UNRESOLVED;
 			}
