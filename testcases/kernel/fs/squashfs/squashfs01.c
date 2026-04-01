@@ -106,8 +106,8 @@ static struct tst_test test = {
 		{.cmd = "mksquashfs"},
 		{}
 	},
-	.needs_drivers = (const char *const []) {
-		"squashfs",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_SQUASHFS",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
