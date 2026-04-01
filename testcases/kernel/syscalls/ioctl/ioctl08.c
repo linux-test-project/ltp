@@ -129,10 +129,6 @@ static struct tst_test test = {
 		{.type = "btrfs"},
 		{}
 	},
-	.needs_drivers = (const char *const[]) {
-		"btrfs",
-		NULL,
-	},
 };
 #else
 	TST_TEST_TCONF(
