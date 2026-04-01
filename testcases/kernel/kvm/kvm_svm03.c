@@ -154,8 +154,8 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_drivers = (const char *const []) {
-		"kvm",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_KVM",
 		NULL
 	},
 	.min_cpus = 2,

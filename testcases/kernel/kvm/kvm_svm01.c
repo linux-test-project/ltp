@@ -108,8 +108,8 @@ static struct tst_test test = {
 	.test_all = tst_kvm_run,
 	.setup = tst_kvm_setup,
 	.cleanup = tst_kvm_cleanup,
-	.needs_drivers = (const char *const []) {
-		"kvm",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_KVM",
 		NULL
 	},
 	.supported_archs = (const char *const []) {
