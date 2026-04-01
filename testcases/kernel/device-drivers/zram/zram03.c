@@ -236,8 +236,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.needs_drivers = (const char *const []) {
-		"zram",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_ZRAM",
 		NULL
 	},
 	.needs_cmds = (struct tst_cmd[]) {
