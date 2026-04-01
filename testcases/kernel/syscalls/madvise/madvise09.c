@@ -219,15 +219,17 @@ static void child(void)
 	}
 	map[PAGES] = '\0';
 
-	tst_res(TINFO, "Memory map: %s", map);
+	/* Only show memory map if there are issues or for debugging */
+	if (corrupted || freed == 0)
+		tst_res(TINFO, "Memory map: %s (p=present, _=freed, ?=corrupted)", map);
 
 	if (freed)
-		tst_res(TPASS, "Pages MADV_FREE were freed on low memory");
+		tst_res(TPASS, "Pages MADV_FREE were freed on low memory (%u/%u freed)", freed, PAGES);
 	else
 		tst_res(TFAIL, "No MADV_FREE page was freed on low memory");
 
 	if (corrupted)
-		tst_res(TFAIL, "Found corrupted page");
+		tst_res(TFAIL, "Found %u corrupted page(s)", corrupted);
 	else
 		tst_res(TPASS, "All pages have expected content");
 
