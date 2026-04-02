@@ -71,8 +71,8 @@ static struct tst_test test = {
 	.test_all = verify_ioctl_loop,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	}
 };

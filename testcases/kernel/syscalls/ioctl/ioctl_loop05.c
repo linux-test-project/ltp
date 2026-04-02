@@ -154,8 +154,8 @@ static struct tst_test test = {
 		"overlayfs",
 		NULL
 	},
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	}
 };

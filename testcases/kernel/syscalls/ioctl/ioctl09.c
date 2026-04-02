@@ -104,8 +104,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_ioctl,
 	.needs_root = 1,
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	},
 	.needs_cmds = (struct tst_cmd[]) {
