@@ -498,10 +498,6 @@ struct tst_fs {
  *                  to the test temporary directory from the LTP datafiles
  *                  directory.
  *
- * @needs_drivers: A NULL terminated array of kernel modules required to run
- *                 the test. The module has to be build in or present in order
- *                 for the test to run.
- *
  * @save_restore: A {} terminated array of /proc or /sys files that should
  *                saved at the start of the test and restored at the end. See
  *                tst_sys_conf_save() and :ref:`struct tst_path_val` for details.
@@ -605,7 +601,6 @@ struct tst_fs {
 	int (*sample)(int clk_id, long long usec);
 
 	const char *const *resource_files;
-	const char * const *needs_drivers;
 
 	const struct tst_path_val *save_restore;
 

@@ -1487,15 +1487,6 @@ static void do_setup(int argc, char *argv[])
 		}
 	}
 
-	if (tst_test->needs_drivers) {
-		const char *name;
-		int i;
-
-		for (i = 0; (name = tst_test->needs_drivers[i]); ++i)
-			if (tst_check_driver(name))
-				tst_brk(TCONF, "%s driver not available", name);
-	}
-
 	if (tst_test->mount_device)
 		tst_test->format_device = 1;
 
