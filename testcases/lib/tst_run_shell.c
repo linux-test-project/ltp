@@ -68,7 +68,6 @@ enum test_attr_ids {
 	NEEDS_CMDS,
 	NEEDS_DEVFS,
 	NEEDS_DEVICE,
-	NEEDS_DRIVERS,
 	NEEDS_HUGETLBFS,
 	NEEDS_KCONFIGS,
 	NEEDS_ROFS,
@@ -103,7 +102,6 @@ static ujson_obj_attr test_attrs[] = {
 	UJSON_OBJ_ATTR_IDX(NEEDS_CMDS, "needs_cmds", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(NEEDS_DEVFS, "needs_devfs", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(NEEDS_DEVICE, "needs_device", UJSON_BOOL),
-	UJSON_OBJ_ATTR_IDX(NEEDS_DRIVERS, "needs_drivers", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(NEEDS_HUGETLBFS, "needs_hugetlbfs", UJSON_BOOL),
 	UJSON_OBJ_ATTR_IDX(NEEDS_KCONFIGS, "needs_kconfigs", UJSON_ARR),
 	UJSON_OBJ_ATTR_IDX(NEEDS_ROFS, "needs_rofs", UJSON_BOOL),
@@ -511,9 +509,6 @@ static void parse_metadata(void)
 		break;
 		case NEEDS_DEVICE:
 			test.needs_device = val.val_bool;
-		break;
-		case NEEDS_DRIVERS:
-			test.needs_drivers = parse_strarr(&reader, &val);
 		break;
 		case NEEDS_HUGETLBFS:
 			test.needs_hugetlbfs = val.val_bool;
