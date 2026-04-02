@@ -140,9 +140,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.skip_in_compat = 1,
 	.min_runtime = 30,
-	.needs_drivers = (const char *const[]) {
-		"vcan",
-		"can-bcm",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_CAN_VCAN",
+		"CONFIG_CAN_BCM",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {

@@ -183,9 +183,9 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
 		{}
 	},
-	.needs_drivers = (const char *const[]) {
-		"vcan",
-		"can-raw",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_CAN_VCAN",
+		"CONFIG_CAN_RAW",
 		NULL
 	}
 };
