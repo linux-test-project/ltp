@@ -15,6 +15,8 @@
 
 #define DEFAULT_MSEC_TIMEOUT 10000
 
+unsigned int tst_multiply_timeout(unsigned int timeout);
+
 /*
  * Global futex array and size for checkpoint synchronization.
  *
@@ -36,6 +38,8 @@ int tst_checkpoint_wait(unsigned int id, unsigned int msec_timeout)
 		errno = EOVERFLOW;
 		return -1;
 	}
+
+	msec_timeout = tst_multiply_timeout(msec_timeout);
 
 	timeout.tv_sec = msec_timeout/1000;
 	timeout.tv_nsec = (msec_timeout%1000) * 1000000;
@@ -60,6 +64,8 @@ int tst_checkpoint_wake(unsigned int id, unsigned int nr_wake,
 		errno = EOVERFLOW;
 		return -1;
 	}
+
+	msec_timeout = tst_multiply_timeout(msec_timeout);
 
 	for (;;) {
 		waked += syscall(SYS_futex, &tst_futexes[id], FUTEX_WAKE,
