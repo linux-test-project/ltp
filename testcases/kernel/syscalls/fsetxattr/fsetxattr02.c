@@ -265,8 +265,8 @@ static struct tst_test test = {
 	.needs_devfs = 1,
 	.mntpoint = MNTPOINT,
 	.needs_root = 1,
-	.needs_drivers = (const char *const[]) {
-		"brd",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_BLK_DEV_RAM",
 		NULL,
 	},
 };
