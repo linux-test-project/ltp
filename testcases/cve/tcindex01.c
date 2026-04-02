@@ -145,15 +145,12 @@ static struct tst_test test = {
 		"CONFIG_NET_NS=y",
 		"CONFIG_NET_SCH_HTB",
 		"CONFIG_NET_CLS_TCINDEX",
+		"CONFIG_DUMMY",
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
 		{}
-	},
-	.needs_drivers = (const char *const []) {
-		"dummy",
-		NULL
 	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "8c710f75256b"},
