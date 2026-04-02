@@ -144,15 +144,14 @@ struct tst_test test = {
 	/* Indicates that the test is messing with system wall clock */
 	.restore_wallclock = 1,
 
-	/* Tests needs uinput either compiled in or loaded as a module */
-	.needs_drivers = (const char *[]) {
-		"uinput",
-		NULL
-	},
-
 	/* Tests needs enabled kernel config flags */
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_X86_INTEL_UMIP=y",
+		/*
+		 * For config options that enable modules we also check the presence of
+		 * the module if the config option has module mapping set and is set to 'm'.
+		 */
+		"CONFIG_INPUT_UINPUT",
 		NULL
 	},
 
@@ -185,11 +184,9 @@ Which will yield following JSON output:
   "dev_min_size": "1024",
   "dev_fs_type": "ext4",
   "restore_wallclock": "1",
-  "needs_drivers": [
-    "uinput",
-  ],
   "needs_kconfigs": [
     "CONFIG_X86_INTEL_UMIP=y",
+    "CONFIG_INPUT_UINPUT",
   ],
   "tags": [
     [

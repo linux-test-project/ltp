@@ -511,6 +511,13 @@ struct tst_fs {
  *                  and parenthesis are supported, e.g.
  *                  "CONFIG_X86_INTEL_UMIP=y | CONFIG_X86_UIMP=y" is evaluated
  *                  to true if at least one of the options is present.
+ *                  A presence of a config option in the config file does not
+ *                  guarantee that the corresponding functionality is
+ *                  available. For instance, an option might be set to 'm'
+ *                  without the module being installed, or the feature could be
+ *                  disabled via the kernel command line. To address this, the
+ *                  kconfig library implements supplementary runtime checks for
+ *                  specific options required by the tests.
  *
  * @bufs: A description of guarded buffers to be allocated for the test. Guarded
  *        buffers are buffers with poisoned page allocated right before the start

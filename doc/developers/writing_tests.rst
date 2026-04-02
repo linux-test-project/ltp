@@ -435,7 +435,7 @@ LTP C And Shell Test API Comparison
     * - .needs_device
       - TST_NEEDS_DEVICE
 
-    * - .needs_drivers
+    * - removed
       - TST_NEEDS_DRIVERS
 
     * - .needs_kconfigs
