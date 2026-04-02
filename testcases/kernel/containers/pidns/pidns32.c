@@ -27,7 +27,7 @@ static pid_t child_func(void)
 {
 	pid_t cpid = 0;
 
-	if (tst_atomic_inc(level) == MAXNEST)
+	if (tst_atomic_return_add(1, level) == MAXNEST)
 		return cpid;
 
 	cpid = SAFE_CLONE(&args);
@@ -58,7 +58,7 @@ static void run(void)
 	if (!child_func())
 		return;
 
-	TST_EXP_EQ_LI(*level, MAXNEST);
+	TST_EXP_EQ_LI(*level-1, MAXNEST);
 }
 
 static struct tst_test test = {
