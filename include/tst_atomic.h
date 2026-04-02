@@ -30,6 +30,11 @@ static inline void tst_atomic_store(int32_t i, tst_atomic_t *v)
 	__atomic_store_n(v, i, __ATOMIC_SEQ_CST);
 }
 
+static inline int tst_atomic_return_add(int32_t i, tst_atomic_t *v)
+{
+	return __atomic_fetch_add(v, i, __ATOMIC_SEQ_CST);
+}
+
 #elif HAVE_SYNC_ADD_AND_FETCH == 1
 
 /* Use __sync built-ins (GCC >= 4.1), with explicit memory barriers. */
@@ -54,6 +59,11 @@ static inline void tst_atomic_store(int32_t i, tst_atomic_t *v)
 	__sync_synchronize();
 	*v = i;
 	__sync_synchronize();
+}
+
+static inline int tst_atomic_return_add(int32_t i, tst_atomic_t *v)
+{
+	return __sync_fetch_and_add(v, i);
 }
 
 #else
