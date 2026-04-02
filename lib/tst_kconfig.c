@@ -144,6 +144,46 @@ static void runtime_check(struct tst_kconfig_var *var)
 	}
 }
 
+static struct config_module_map {
+	const char *config;
+	const char *module_name;
+} config_module_maps[] = {
+	{"CONFIG_KVM", "kvm"},
+	{"CONFIG_ZRAM", "zram"},
+	{"CONFIG_SQUASHFS", "squashfs"},
+	{"CONFIG_BLK_DEV_LOOP", "loop"},
+	{"CONFIG_TUN", "tun"},
+	{"CONFIG_BLK_DEV_RAM", "brd"},
+	{"CONFIG_HWPOISON_INJECT", "hwpoison_inject"},
+	{"CONFIG_QFMT_V2", "quota_v2"},
+	{"CONFIG_INPUT_UINPUT", "uinput"},
+	{"CONFIG_DUMMY", "dummy"},
+	{"CONFIG_CAN_VCAN", "vcan"},
+	{"CONFIG_CAN_RAW", "can-raw"},
+	{"CONFIG_CAN_BCM", "can-bcm"},
+	{"CONFIG_IP_SCTP", "sctp"},
+	{}
+};
+
+static void kconfig_module_check(struct tst_kconfig_var *var)
+{
+	size_t i;
+
+	for (i = 0; config_module_maps[i].config; i++) {
+		if (strcmp(config_module_maps[i].config, var->id))
+			continue;
+
+		tst_res(TDEBUG, "Running module check for '%s'", var->id);
+
+		if (tst_check_module_driver(config_module_maps[i].module_name)) {
+			tst_res(TINFO, "%s=%c present but module '%s' not installed",
+					var->id, var->choice, config_module_maps[i].module_name);
+			var->choice = 'n';
+			return;
+		}
+	}
+}
+
 static inline int kconfig_parse_line(const char *line,
                                      struct tst_kconfig_var *vars,
                                      unsigned int vars_len)
@@ -222,6 +262,7 @@ out:
 			case 'm':
 				vars[i].choice = 'm';
 				runtime_check(&vars[i]);
+				kconfig_module_check(&vars[i]);
 				return 1;
 			}
 		}
