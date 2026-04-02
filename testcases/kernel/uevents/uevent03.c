@@ -239,8 +239,8 @@ static struct tst_test test = {
 	.test_all = verify_uevent,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.needs_drivers = (const char *const[]) {
-		"uinput",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_INPUT_UINPUT",
 		NULL
 	},
 	.needs_root = 1,
