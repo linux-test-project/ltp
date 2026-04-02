@@ -417,10 +417,6 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_drivers = (const char *const []) {
-		HW_MODULE,
-		NULL
-	},
 	.needs_cmds = (struct tst_cmd[]) {
 		{.cmd = "modprobe"},
 		{.cmd = "rmmod"},
@@ -428,6 +424,7 @@ static struct tst_test test = {
 	},
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_MEMORY_FAILURE=y",
+		"CONFIG_HWPOISON_INJECT",
 		NULL
 	},
 	.runtime = 30,
