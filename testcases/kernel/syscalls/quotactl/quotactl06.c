@@ -211,8 +211,8 @@ static void cleanup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_drivers = (const char *const []) {
-		"quota_v2",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_QFMT_V2",
 		NULL
 	},
 	.tcnt = ARRAY_SIZE(tcases),

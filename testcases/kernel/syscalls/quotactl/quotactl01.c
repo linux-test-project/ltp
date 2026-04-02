@@ -208,8 +208,8 @@ static void verify_quota(unsigned int n)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_drivers = (const char *const []) {
-		"quota_v2",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_QFMT_V2",
 		NULL
 	},
 	.test = verify_quota,
