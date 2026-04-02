@@ -46,6 +46,16 @@ bool tst_abi_bits(int abi);
 int tst_check_builtin_driver(const char *driver);
 
 /**
+ * tst_check_module_driver() - Check if the kernel module is present.
+ *
+ * @driver: the name of the driver.
+ *
+ * Return: 0 if module driver is present or -1 when driver is missing or config file not
+ * available. On Android *always* 0 (always expect the module is present).
+ */
+int tst_check_module_driver(const char *driver);
+
+/**
  * tst_check_driver() - Check support for the kernel module.
  *
  * Check support for the kernel module (both built-in and loadable).

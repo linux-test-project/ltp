@@ -200,16 +200,18 @@ static int tst_search_driver(const char *driver, const char *file)
 
 int tst_check_builtin_driver(const char *driver)
 {
-	if (!tst_search_driver(driver, "modules.builtin"))
-		return 0;
+	return tst_search_driver(driver, "modules.builtin");
+}
 
-	return -1;
+int tst_check_module_driver(const char *driver)
+{
+	return tst_search_driver(driver, "modules.dep");
 }
 
 int tst_check_driver(const char *driver)
 {
-	if (!tst_search_driver(driver, "modules.dep") ||
-		!tst_check_builtin_driver(driver))
+	if (!tst_check_module_driver(driver) ||
+	    !tst_check_builtin_driver(driver))
 		return 0;
 
 	return -1;
