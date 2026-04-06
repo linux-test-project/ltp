@@ -8,10 +8,7 @@
  * Test that closing a file/pipe/socket works correctly.
  */
 
-#include <stdio.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 #include "tst_test.h"
 
 #define FILENAME "close01_testfile"
@@ -24,6 +21,7 @@ static int get_fd_file(void)
 static int get_fd_pipe(void)
 {
 	int pipefildes[2];
+
 	SAFE_PIPE(pipefildes);
 	SAFE_CLOSE(pipefildes[1]);
 	return pipefildes[0];
@@ -34,7 +32,7 @@ static int get_fd_socket(void)
 	return SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
 }
 
-struct test_case_t {
+static struct test_case_t {
 	int (*get_fd) ();
 	char *type;
 } tc[] = {

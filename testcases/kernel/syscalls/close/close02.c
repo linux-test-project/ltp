@@ -8,9 +8,7 @@
  * Call close(-1) and expects it to return EBADF.
  */
 
-#include <stdio.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include "tst_test.h"
 
 static void run(void)
