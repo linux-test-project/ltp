@@ -49,6 +49,8 @@ int main(void)
 	struct itimerspec its;
 	timer_t tid;
 	sigset_t set;
+	int ns_ret;
+	int attempt, ret;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if (getuid() != 0) {
@@ -92,35 +94,55 @@ int main(void)
 	its.it_value.tv_sec = TIMERSEC;
 	its.it_value.tv_nsec = 0;
 
-	if (timer_settime(tid, 0, &its, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
-		return PTS_UNRESOLVED;
+	for (attempt = 0; attempt < PTS_MONO_MAX_RETRIES; attempt++) {
+		if (timer_settime(tid, 0, &its, NULL) != 0) {
+			perror("timer_settime() did not return success\n");
+			return PTS_UNRESOLVED;
+		}
+
+		if (pts_mono_time_start() != 0)
+			return PTS_UNRESOLVED;
+
+		if (clock_gettime(CLOCK_REALTIME, &tsclock) != 0) {
+			printf("clock_gettime() did not return success\n");
+			return PTS_UNRESOLVED;
+		}
+
+		tsclock.tv_sec += CLOCKOFFSET;
+		getBeforeTime(&tsreset);
+		if (clock_settime(CLOCK_REALTIME, &tsclock) != 0) {
+			printf("clock_settime() was not successful\n");
+			return PTS_UNRESOLVED;
+		}
+
+		ts.tv_sec = TIMERSEC + SLEEPDELTA;
+		ts.tv_nsec = 0;
+
+		ns_ret = nanosleep(&ts, &tsleft);
+
+		ret = pts_mono_time_check(TIMERSEC);
+		tsreset.tv_sec += TIMERSEC;
+		setBackTime(tsreset);
+
+		if (ret < 0)
+			return PTS_UNRESOLVED;
+		if (ret == 0)
+			break;
 	}
 
-	if (clock_gettime(CLOCK_REALTIME, &tsclock) != 0) {
-		printf("clock_gettime() did not return success\n");
-		return PTS_UNRESOLVED;
+	if (attempt == PTS_MONO_MAX_RETRIES) {
+		printf("UNTESTED: persistent clock interference after %d attempts\n",
+		       PTS_MONO_MAX_RETRIES);
+		return PTS_UNTESTED;
 	}
 
-	tsclock.tv_sec += CLOCKOFFSET;
-	getBeforeTime(&tsreset);
-	if (clock_settime(CLOCK_REALTIME, &tsclock) != 0) {
-		printf("clock_settime() was not successful\n");
-		return PTS_UNRESOLVED;
-	}
-
-	ts.tv_sec = TIMERSEC + SLEEPDELTA;
-	ts.tv_nsec = 0;
-
-	if (nanosleep(&ts, &tsleft) != -1) {
+	if (ns_ret != -1) {
 		printf("nanosleep() not interrupted\n");
 		return PTS_FAIL;
 	}
 
 	if (labs(tsleft.tv_sec - SLEEPDELTA) <= ACCEPTABLEDELTA) {
 		printf("Test PASSED\n");
-		tsreset.tv_sec += TIMERSEC;
-		setBackTime(tsreset);
 		return PTS_PASS;
 	}
 

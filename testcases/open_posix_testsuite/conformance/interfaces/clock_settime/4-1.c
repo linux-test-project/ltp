@@ -47,7 +47,7 @@ int main(void)
 	int delta;
 	int sig;
 	sigset_t set;
-	int flags = 0;
+	int attempt, ret;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if (geteuid() != 0) {
@@ -77,48 +77,64 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if (clock_gettime(CLOCK_REALTIME, &tpT0) != 0) {
-		perror("clock_gettime() was not successful\n");
-		return PTS_UNRESOLVED;
-	}
-
 	if (timer_create(CLOCK_REALTIME, &ev, &tid) != 0) {
 		perror("timer_create() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
 
-	flags |= TIMER_ABSTIME;
-	its.it_interval.tv_sec = 0;
-	its.it_interval.tv_nsec = 0;
-	its.it_value.tv_sec = tpT0.tv_sec + TIMEROFFSET;
-	its.it_value.tv_nsec = tpT0.tv_nsec;
-	if (timer_settime(tid, flags, &its, NULL) != 0) {
-		perror("timer_settime() did not return success\n");
-		return PTS_UNRESOLVED;
+	for (attempt = 0; attempt < PTS_MONO_MAX_RETRIES; attempt++) {
+		if (clock_gettime(CLOCK_REALTIME, &tpT0) != 0) {
+			perror("clock_gettime() was not successful\n");
+			return PTS_UNRESOLVED;
+		}
+
+		if (pts_mono_time_start() != 0)
+			return PTS_UNRESOLVED;
+
+		its.it_interval.tv_sec = 0;
+		its.it_interval.tv_nsec = 0;
+		its.it_value.tv_sec = tpT0.tv_sec + TIMEROFFSET;
+		its.it_value.tv_nsec = tpT0.tv_nsec;
+		if (timer_settime(tid, TIMER_ABSTIME, &its, NULL) != 0) {
+			perror("timer_settime() did not return success\n");
+			return PTS_UNRESOLVED;
+		}
+
+		sleep(SLEEPTIME);
+		getBeforeTime(&tpreset);
+		if (clock_settime(CLOCK_REALTIME, &tpT0) != 0) {
+			perror("clock_settime() was not successful");
+			return PTS_UNRESOLVED;
+		}
+
+		if (sigwait(&set, &sig) == -1) {
+			perror("sigwait() was not successful\n");
+			return PTS_UNRESOLVED;
+		}
+
+		if (clock_gettime(CLOCK_REALTIME, &tpT2) != 0) {
+			printf("clock_gettime() was not successful\n");
+			return PTS_UNRESOLVED;
+		}
+
+		delta = tpT2.tv_sec - its.it_value.tv_sec;
+
+		// add back time waited to reset value and reset time
+		tpreset.tv_sec += tpT2.tv_sec - tpT0.tv_sec;
+		setBackTime(tpreset);
+
+		ret = pts_mono_time_check(SLEEPTIME + TIMEROFFSET);
+		if (ret < 0)
+			return PTS_UNRESOLVED;
+		if (ret == 0)
+			break;
 	}
 
-	sleep(SLEEPTIME);
-	getBeforeTime(&tpreset);
-	if (clock_settime(CLOCK_REALTIME, &tpT0) != 0) {
-		perror("clock_settime() was not successful");
-		return PTS_UNRESOLVED;
+	if (attempt == PTS_MONO_MAX_RETRIES) {
+		printf("UNTESTED: persistent clock interference after %d attempts\n",
+		       PTS_MONO_MAX_RETRIES);
+		return PTS_UNTESTED;
 	}
-
-	if (sigwait(&set, &sig) == -1) {
-		perror("sigwait() was not successful\n");
-		return PTS_UNRESOLVED;
-	}
-
-	if (clock_gettime(CLOCK_REALTIME, &tpT2) != 0) {
-		printf("clock_gettime() was not successful\n");
-		return PTS_UNRESOLVED;
-	}
-
-	delta = tpT2.tv_sec - its.it_value.tv_sec;
-
-	// add back time waited to reset value and reset time
-	tpreset.tv_sec += tpT2.tv_sec - tpT0.tv_sec;
-	setBackTime(tpreset);
 
 	printf("delta: %d\n", delta);
 	if ((delta <= ACCEPTABLEDELTA) && (delta >= 0)) {

@@ -31,11 +31,14 @@
 
 #define CHILDPASS 1
 #define CHILDFAIL 0
+#define CHILDUNTESTED 2
+#define CHILDUNRESOLVED 3
 
 int main(void)
 {
-	struct timespec tsT0, tsT1, tsT2;
-	int pid;
+	struct timespec tsT0, tsT1, tsT2, tsreset;
+	int pid, child_status;
+	int attempt, ret;
 
 	/* Check that we're root...can't call clock_settime with CLOCK_REALTIME otherwise */
 	if (getuid() != 0) {
@@ -43,53 +46,70 @@ int main(void)
 		return PTS_UNTESTED;
 	}
 
-	if (clock_gettime(CLOCK_REALTIME, &tsT0) != 0) {
-		perror("clock_gettime() did not return success\n");
-		return PTS_UNRESOLVED;
-	}
-
-	tsT1.tv_sec = tsT0.tv_sec + SLEEPOFFSET;
-	tsT1.tv_nsec = tsT0.tv_nsec;
-
-	tsT2.tv_sec = tsT1.tv_sec + SMALLTIME;
-	tsT2.tv_nsec = tsT1.tv_nsec;
-
-	if ((pid = fork()) == 0) {
-		/* child here */
-		int flags = 0;
-		struct timespec tsT3;
-
-		flags |= TIMER_ABSTIME;
-		if (clock_nanosleep(CLOCK_REALTIME, flags, &tsT1, NULL) != 0) {
-			printf("clock_nanosleep() did not return success\n");
-			return CHILDFAIL;
-		}
-
-		if (clock_gettime(CLOCK_REALTIME, &tsT3) != 0) {
+	for (attempt = 0; attempt < PTS_MONO_MAX_RETRIES; attempt++) {
+		if (clock_gettime(CLOCK_REALTIME, &tsT0) != 0) {
 			perror("clock_gettime() did not return success\n");
-			return CHILDFAIL;
+			return PTS_UNRESOLVED;
 		}
 
-		if (tsT3.tv_sec >= tsT2.tv_sec) {
-			if ((tsT3.tv_sec - tsT2.tv_sec) <= ACCEPTABLEDELTA) {
-				return CHILDPASS;
-			} else {
+		tsT1.tv_sec = tsT0.tv_sec + SLEEPOFFSET;
+		tsT1.tv_nsec = tsT0.tv_nsec;
+
+		tsT2.tv_sec = tsT1.tv_sec + SMALLTIME;
+		tsT2.tv_nsec = tsT1.tv_nsec;
+
+		pid = fork();
+		if (pid < 0) {
+			perror("fork() failed");
+			return PTS_UNRESOLVED;
+		}
+		if (pid == 0) {
+			/* child here */
+			int flags = 0;
+			struct timespec tsT3;
+
+			flags |= TIMER_ABSTIME;
+
+			if (pts_mono_time_start() != 0)
+				return CHILDUNRESOLVED;
+
+			if (clock_nanosleep(CLOCK_REALTIME, flags, &tsT1, NULL) != 0) {
+				printf("clock_nanosleep() did not return success\n");
+				return CHILDFAIL;
+			}
+
+			/*
+			 * The parent sleeps 1s before jumping the clock forward.
+			 * If clock_nanosleep returned too quickly, an external
+			 * clock adjustment (NTP, VM sync) woke us instead of the
+			 * parent's clock_settime.
+			 */
+			ret = pts_mono_time_check(1);
+			if (ret < 0)
+				return CHILDUNRESOLVED;
+			if (ret > 0)
+				return CHILDUNTESTED;
+
+			if (clock_gettime(CLOCK_REALTIME, &tsT3) != 0) {
+				perror("clock_gettime() did not return success\n");
+				return CHILDFAIL;
+			}
+
+			if (tsT3.tv_sec >= tsT2.tv_sec) {
+				if ((tsT3.tv_sec - tsT2.tv_sec) <= ACCEPTABLEDELTA)
+					return CHILDPASS;
+
 				printf("Ended too late.  %d >> %d\n",
 				       (int)tsT3.tv_sec, (int)tsT2.tv_sec);
 				return CHILDFAIL;
 			}
-		} else {
+
 			printf("Did not sleep for long enough %d < %d\n",
 			       (int)tsT3.tv_sec, (int)tsT2.tv_sec);
 			return CHILDFAIL;
 		}
 
-		return CHILDFAIL;
-	} else {
 		/* parent here */
-		int i;
-		struct timespec tsreset;
-
 		sleep(1);
 
 		getBeforeTime(&tsreset);
@@ -98,21 +118,34 @@ int main(void)
 			return PTS_UNRESOLVED;
 		}
 
-		if (wait(&i) == -1) {
+		if (wait(&child_status) == -1) {
 			perror("Error waiting for child to exit\n");
 			return PTS_UNRESOLVED;
 		}
 
-		setBackTime(tsreset);	//should be ~= before time
+		setBackTime(tsreset);
 
-		if (WIFEXITED(i) && WEXITSTATUS(i)) {
-			printf("Test PASSED\n");
-			return PTS_PASS;
-		} else {
-			printf("Test FAILED\n");
-			return PTS_FAIL;
-		}
+		if (!WIFEXITED(child_status))
+			break;
+
+		if (WEXITSTATUS(child_status) == CHILDUNRESOLVED)
+			return PTS_UNRESOLVED;
+
+		if (WEXITSTATUS(child_status) != CHILDUNTESTED)
+			break;
 	}
 
-	return PTS_UNRESOLVED;
+	if (attempt == PTS_MONO_MAX_RETRIES) {
+		printf("UNTESTED: persistent clock interference after %d attempts\n",
+		       PTS_MONO_MAX_RETRIES);
+		return PTS_UNTESTED;
+	}
+
+	if (WIFEXITED(child_status) && WEXITSTATUS(child_status) == CHILDPASS) {
+		printf("Test PASSED\n");
+		return PTS_PASS;
+	}
+
+	printf("Test FAILED\n");
+	return PTS_FAIL;
 }
