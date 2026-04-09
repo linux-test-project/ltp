@@ -9,6 +9,7 @@
 
 PATCHWORK_URL="${PATCHWORK_URL:-https://patchwork.ozlabs.org}"
 PATCHWORK_SINCE="${PATCHWORK_SINCE:-3600}"
+PATCHWORK_CI_PREFIX="${PATCHWORK_CI_PREFIX:-github-build}"
 
 command_exists() {
         local cmd
@@ -93,13 +94,20 @@ set_series_state() {
 
 get_checks() {
         local patch_id="$1"
+        local prefix="$2"
         local stdout
 
         stdout="$(curl -k -G $PATCHWORK_URL/api/patches/$patch_id/checks/)"
 
         [ $? -eq 0 ] || exit 1
 
-        echo "$stdout" | jq -r '.[] | "\(.id)"'
+        if [ -n "$prefix" ]; then
+                echo "$stdout" | jq -r \
+                        --arg pfx "$prefix" \
+                        '.[] | select(.context | startswith($pfx)) | "\(.id)"'
+        else
+                echo "$stdout" | jq -r '.[] | "\(.id)"'
+        fi
 }
 
 already_tested() {
@@ -108,7 +116,7 @@ already_tested() {
         get_patches "$series_id" | while read -r patch_id; do
                 [ "$patch_id" ] || continue
 
-                get_checks "$patch_id" | while read -r check_id; do
+                get_checks "$patch_id" "$PATCHWORK_CI_PREFIX" | while read -r check_id; do
                         if [ -n "$check_id" ]; then
                                 echo "$check_id"
                                 return
@@ -146,7 +154,7 @@ send_results() {
 
         verify_token_exists
 
-        local context=$(echo "$3" | sed 's/:/_/g; s/\//-/g; s/\./-/g')
+        local context="$PATCHWORK_CI_PREFIX/$(echo "$3" | sed 's/:/_/g; s/\//-/g; s/\./-/g')"
 
         [ "$CC" ] && context="${context}_${CC}"
         [ "$ARCH" ] && context="${context}_${ARCH}"
