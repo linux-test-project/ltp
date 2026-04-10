@@ -154,7 +154,7 @@ send_results() {
 
         verify_token_exists
 
-        local context="$PATCHWORK_CI_PREFIX/$(echo "$3" | sed 's/:/_/g; s/\//-/g; s/\./-/g')"
+        local context="$PATCHWORK_CI_PREFIX-$(echo "$3" | sed 's/:/_/g; s/\//-/g; s/\./-/g')"
 
         [ "$CC" ] && context="${context}_${CC}"
         [ "$ARCH" ] && context="${context}_${ARCH}"
