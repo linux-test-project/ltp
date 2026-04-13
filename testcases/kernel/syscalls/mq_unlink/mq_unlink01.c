@@ -14,10 +14,9 @@
 #include "tst_test.h"
 #include "tst_safe_posix_ipc.h"
 
-#define QUEUE_NAME	"/test_mqueue"
-
 static uid_t euid;
 static struct passwd *pw;
+static char queue_name[64];
 
 struct test_case {
 	int as_nobody;
@@ -28,13 +27,11 @@ struct test_case {
 
 static struct test_case tcase[] = {
 	{
-		.qname = QUEUE_NAME,
 		.ret = 0,
 		.err = 0,
 	},
 	{
 		.as_nobody = 1,
-		.qname = QUEUE_NAME,
 		.ret = -1,
 		.err = EACCES,
 	},
@@ -64,6 +61,9 @@ static struct test_case tcase[] = {
 
 void setup(void)
 {
+	snprintf(queue_name, sizeof(queue_name), "/test_mqueue_%d", getpid());
+	tcase[0].qname = queue_name;
+	tcase[1].qname = queue_name;
 	euid = geteuid();
 	pw = SAFE_GETPWNAM("nobody");
 }
@@ -79,10 +79,10 @@ static void do_test(unsigned int i)
 	 * When test ended with SIGTERM etc, mq descriptor is left remains.
 	 * So we delete it first.
 	 */
-	mq_unlink(QUEUE_NAME);
+	mq_unlink(queue_name);
 
 	/* prepare */
-	fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
+	fd = SAFE_MQ_OPEN(queue_name, O_CREAT | O_EXCL | O_RDWR, S_IRWXU, NULL);
 
 	if (tc->as_nobody && seteuid(pw->pw_uid)) {
 		tst_res(TFAIL | TERRNO, "seteuid failed");
@@ -107,7 +107,7 @@ EXIT:
 	if (fd > 0 && close(fd))
 		tst_res(TWARN | TERRNO, "close(fd) failed");
 
-	mq_unlink(QUEUE_NAME);
+	mq_unlink(queue_name);
 }
 
 static struct tst_test test = {
