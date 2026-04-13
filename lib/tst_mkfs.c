@@ -50,6 +50,9 @@ void tst_mkfs_(const char *file, const int lineno, void (cleanup_fn)(void),
 		return;
 	}
 
+	if (!strcmp(fs_type, "ntfs3"))
+		fs_type = "ntfs";
+
 	snprintf(mkfs, sizeof(mkfs), "mkfs.%s", fs_type);
 
 	if (fs_opts) {

@@ -30,6 +30,7 @@ static const char *const fs_type_whitelist[] = {
 	"vfat",
 	"exfat",
 	"ntfs",
+	"ntfs3",
 	"tmpfs",
 	NULL
 };
@@ -50,6 +51,9 @@ static int has_mkfs(const char *fs_type)
 		tst_res(TINFO, "mkfs is not needed for tmpfs");
 		return 1;
 	}
+
+	if (!strcmp(fs_type, "ntfs3"))
+		fs_type = "ntfs";
 
 	sprintf(buf, "mkfs.%s >/dev/null 2>&1", fs_type);
 
@@ -87,6 +91,9 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 	char template[PATH_MAX];
 	int ret;
 
+	if (!strcmp(fs_type, "ntfs"))
+		goto check_fuse;
+
 	snprintf(template, sizeof(template), "%s/mountXXXXXX", tmpdir);
 	if (!mkdtemp(template))
 		tst_brk(TBROK | TERRNO, "mkdtemp(%s) failed", template);
@@ -102,6 +109,7 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 
 	SAFE_RMDIR(template);
 
+check_fuse:
 	if (tst_fs_in_skiplist(fs_type, fs_type_fuse_blacklist)) {
 		tst_res(TINFO, "Skipping %s because of FUSE blacklist", fs_type);
 		return TST_FS_UNSUPPORTED;
