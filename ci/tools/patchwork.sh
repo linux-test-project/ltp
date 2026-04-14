@@ -9,6 +9,7 @@
 
 PATCHWORK_URL="${PATCHWORK_URL:-https://patchwork.ozlabs.org}"
 PATCHWORK_SINCE="${PATCHWORK_SINCE:-3600}"
+PATCHWORK_MAX_SINCE="${PATCHWORK_MAX_SINCE:-86400}"
 PATCHWORK_CI_PREFIX="${PATCHWORK_CI_PREFIX:-github-build}"
 
 command_exists() {
@@ -26,8 +27,21 @@ command_exists "curl" "jq"
 
 fetch_series() {
         local current_time=$(date +%s)
-        local since_time=$(expr $current_time - $PATCHWORK_SINCE)
-        local date=$(date -u -d @$since_time +"%Y-%m-%dT%H:%M:%SZ")
+        local since_time
+        local date
+
+        if [ -n "$PATCHWORK_SINCE_DATE" ]; then
+                since_time=$(date -u -d "$PATCHWORK_SINCE_DATE" +%s)
+                local max_since_time=$(expr $current_time - $PATCHWORK_MAX_SINCE)
+
+                if [ "$since_time" -lt "$max_since_time" ]; then
+                        since_time=$max_since_time
+                fi
+        else
+                since_time=$(expr $current_time - $PATCHWORK_SINCE)
+        fi
+
+        date=$(date -u -d @$since_time +"%Y-%m-%dT%H:%M:%SZ")
         local stdout
 
         stdout=$(curl -k -G "$PATCHWORK_URL/api/events/" \
