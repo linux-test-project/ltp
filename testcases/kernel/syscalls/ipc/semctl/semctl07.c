@@ -130,10 +130,9 @@ static void verify_semctl(void)
 
 static void setup(void)
 {
-	key_t key = GETIPCKEY();
 	nsems = 1;
 
-	semid = SAFE_SEMGET(key, nsems, SEM_RA | IPC_CREAT);
+	semid = SAFE_SEMGET(IPC_PRIVATE, nsems, SEM_RA | IPC_CREAT);
 }
 
 static void cleanup(void)

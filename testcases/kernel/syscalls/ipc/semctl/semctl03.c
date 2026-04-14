@@ -84,14 +84,11 @@ static void verify_semctl(unsigned int n)
 
 static void setup(void)
 {
-	static key_t semkey;
 	struct test_variants *tv = &variants[tst_variant];
 
 	tst_res(TINFO, "Testing variant: %s", tv->desc);
 
-	semkey = GETIPCKEY();
-
-	sem_id = SAFE_SEMGET(semkey, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
+	sem_id = SAFE_SEMGET(IPC_PRIVATE, PSEMS, IPC_CREAT | IPC_EXCL | SEM_RA);
 
 	bad_ptr = tst_get_bad_addr(NULL);
 }
