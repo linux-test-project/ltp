@@ -24,7 +24,7 @@ measure()
 	local cmdline="$1"
 	local algorithm digest expected_digest found
 
-	printf "$cmdline" > file1
+	printf "%s" "$cmdline" > file1
 	grep "kexec-cmdline" $ASCII_MEASUREMENTS > file2
 
 	while read found
