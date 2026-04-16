@@ -13,7 +13,7 @@
  *
  * Steps:
  *
- * 1. In main(), lock the mutex then create a thread.
+ * 1. In test_main(), lock the mutex then create a thread.
  * 2. Inside the thread, call pthread_mutex_timedlock.  It should block and return
  *    ETIMEDOUT.
  * 3. Save the return value of pthread_mutex_timedlock() and cleanup mutex stuff.
@@ -42,13 +42,13 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
  * MAIN()
  *
  * *************************/
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 
 	/* Lock the mutex before creating the thread. */
 	if (pthread_mutex_lock(&mutex) != 0) {
-		perror("Error in pthread_mutex_lock in main().\n");
+		perror("Error in pthread_mutex_lock in test_main().\n");
 		return PTS_UNRESOLVED;
 	}
 

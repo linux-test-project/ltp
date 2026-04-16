@@ -135,7 +135,7 @@ static void *customers(void *ID)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t bar, cus[CUS_NUM];
 	int shared = 0;

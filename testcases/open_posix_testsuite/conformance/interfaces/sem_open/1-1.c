@@ -23,7 +23,7 @@
 #define TEST "1-1"
 #define FUNCTION "sem_open"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sem_t *mysemp;
 	char semname[50];

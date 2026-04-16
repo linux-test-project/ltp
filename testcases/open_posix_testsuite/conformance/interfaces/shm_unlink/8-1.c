@@ -33,7 +33,7 @@
 #define SHM_NAME "posixtest_9-1"
 #define BUF_SIZE 8
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd, result;
 	struct passwd *pw;

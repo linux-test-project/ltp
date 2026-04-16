@@ -36,7 +36,7 @@ static int invalid_tests[NUMTESTS] = { -1, INT32_MIN, 1000000000, 1000000001,
 	INT32_MAX
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	char *msgptr = MSGSTR;

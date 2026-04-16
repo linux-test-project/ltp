@@ -17,7 +17,7 @@
 
 #define BOGUSTIMERID 99999
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	timer_t tid;
 	int tval = BOGUSTIMERID;

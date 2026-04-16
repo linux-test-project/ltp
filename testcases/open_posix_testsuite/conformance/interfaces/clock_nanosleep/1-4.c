@@ -18,7 +18,7 @@
 
 #define SLEEPSEC 30
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tssleep, tsbefore, tsafter;
 	int pid;

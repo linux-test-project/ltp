@@ -24,7 +24,7 @@
 
 #define SHM_NAME "posixtest_16-1"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd, result;
 	struct stat stat_buf;

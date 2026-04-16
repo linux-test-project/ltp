@@ -38,7 +38,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	exit(0);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 	if ((pid = fork()) == 0) {

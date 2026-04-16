@@ -38,7 +38,7 @@ struct test_data testdata[] = {
 	{ "non-existent directory", "/abc" }
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	unsigned int i;
 	int fd, result = PTS_PASS;

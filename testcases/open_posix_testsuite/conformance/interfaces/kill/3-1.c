@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	/* this is added incase user is root. If user is normal user, then it
 	 * has no effect on the tests */

@@ -28,7 +28,7 @@
 
 #define STACKSIZE PTHREAD_STACK_MIN - sysconf(_SC_PAGE_SIZE)
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_attr_t attr;
 	void *saddr;

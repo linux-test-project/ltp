@@ -25,7 +25,7 @@
 #define RRPOLICY SCHED_RR
 #define PRIORITY_OFFSET 1000
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_attr_t attr;
 	int rc = 0;

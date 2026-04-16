@@ -9,7 +9,7 @@
  the complement of the set pointed to by set.
 
  Steps:
- 1. Have main create a new thread and wait for its termination.
+ 1. Have test_main create a new thread and wait for its termination.
  2. Inside the new thread, set up the signal mask such that it contains
     both SIGABRT and SIGALRM
  3. Also inside the new thread, using the SIG_UNBLOCK as the value to
@@ -20,7 +20,7 @@
  5. Reset handler_called variable to 0. Raise SIGABRT, and verify that
     handler wasn't called, otherwise test fails.
  6. Make sure that the only pending signal is SIGABRT, otherwise fail.
- 7. Return one of three return codes to the main() function:
+ 7. Return one of three return codes to the test_main() function:
     - A value of -1 if any of failures mentioned above occured.
     - A value of 0 if both SIGALRM was successfully blocked.
     - A value of 1 incase of any UNRESOLVED situation such as an
@@ -123,7 +123,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	int *thread_return_value;

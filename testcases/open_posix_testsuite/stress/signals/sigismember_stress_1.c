@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <posixtest.h>
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sigset_t signalset;
 	int returnval;

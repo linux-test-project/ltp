@@ -26,7 +26,7 @@
 #define TESTTIME 1037128358
 #define ACCEPTABLEDELTA 1
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tpset, tpget, tpreset, tpres;
 	int delta, nsdelta;

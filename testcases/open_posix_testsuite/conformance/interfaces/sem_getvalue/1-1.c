@@ -25,7 +25,7 @@
 #define FUNCTION "sem_getvalue"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char semname[NAME_MAX - 4];
 	sem_t *mysemp;

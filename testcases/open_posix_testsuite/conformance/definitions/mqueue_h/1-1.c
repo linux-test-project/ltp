@@ -35,7 +35,7 @@
 		}						\
 	} while (0)
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct mq_attr mqs;
 

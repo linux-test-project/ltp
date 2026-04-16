@@ -27,7 +27,7 @@
 
 #define TNAME "munmap/8-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	void *pa;

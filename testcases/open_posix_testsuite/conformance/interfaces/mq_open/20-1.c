@@ -34,7 +34,7 @@ static void handler(int signo)
 #endif
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	mqd_t queue;

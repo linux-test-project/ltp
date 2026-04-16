@@ -49,7 +49,7 @@ static void testfailed_handler(int signo PTS_ATTRIBUTE_UNUSED)
 	exit(PTS_FAIL);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char *msgptr = MSGSTR;
 	struct timespec ts;

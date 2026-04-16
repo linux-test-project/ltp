@@ -94,7 +94,7 @@ static int *consumer(buf_t * buf)
 	pthread_exit(0);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int shared = 1;
 	int occupied_value = BUF_SIZE;

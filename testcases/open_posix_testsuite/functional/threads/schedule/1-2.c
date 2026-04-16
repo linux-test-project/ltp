@@ -107,7 +107,7 @@ static void *low_prio_thread(void *tmp)
 	pthread_exit(NULL);
 }
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t high_id, low_id;
 	pthread_attr_t low_attr, high_attr;

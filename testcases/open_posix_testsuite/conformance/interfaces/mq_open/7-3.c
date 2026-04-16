@@ -25,7 +25,7 @@
 
 #define NAMESIZE 50
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	mqd_t roqueue, roqueue2;

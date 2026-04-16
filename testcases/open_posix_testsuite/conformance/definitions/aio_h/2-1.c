@@ -11,8 +11,9 @@
 #include <aio.h>
 #include <stdlib.h>		/* For NULL on non-linux platforms. */
 #include <string.h>
+#include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct aiocb aiocb;
 	struct sigevent sigevent;

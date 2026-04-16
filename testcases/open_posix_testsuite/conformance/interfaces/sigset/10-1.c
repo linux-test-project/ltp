@@ -17,7 +17,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (sigset(SIGKILL, SIG_IGN) == SIG_ERR) {
 		if (errno != EINVAL) {

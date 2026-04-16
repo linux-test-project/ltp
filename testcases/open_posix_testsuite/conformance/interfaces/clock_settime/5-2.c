@@ -41,7 +41,7 @@ static void handler(int signo)
 	printf("Caught signal\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	struct sigaction act;

@@ -24,7 +24,7 @@
 #define BUF_SIZE 8
 #define SHM_NAME "/posixtest_3-6"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	void *page_ptr;
 	size_t page_size;

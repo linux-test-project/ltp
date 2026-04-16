@@ -21,7 +21,7 @@ static void myhandler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("SIGUSR1 called. Inside handler\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction act;
 	act.sa_flags = 0;

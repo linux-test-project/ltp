@@ -41,7 +41,7 @@
 #include "posixtest.h"
 #include "tempfile.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #ifdef _POSIX_MEMORY_PROTECTION
 	char tmpfname[PATH_MAX];

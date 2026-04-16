@@ -34,7 +34,7 @@
 #define CHILDUNTESTED 2
 #define CHILDUNRESOLVED 3
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tsT0, tsT1, tsT2, tsreset;
 	int pid, child_status;

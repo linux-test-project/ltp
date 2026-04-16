@@ -44,7 +44,7 @@ static void exit_handler(int signo PTS_ATTRIBUTE_UNUSED)
 	return;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char mqname[NAMESIZE], msgrv[BUFFER];
 	mqd_t mqdes;

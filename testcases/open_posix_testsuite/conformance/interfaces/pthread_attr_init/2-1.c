@@ -36,21 +36,21 @@ static int sem1;			/* Manual semaphore */
 static void *a_thread_func()
 {
 
-	/* Indicate to main() that the thread was created. */
+	/* Indicate to test_main() that the thread was created. */
 	sem1 = INTHREAD;
 
-	/* Wait for main to detach change the attribute object and try and detach this thread.
+	/* Wait for test_main to detach change the attribute object and try and detach this thread.
 	 * Wait for a timeout value of 10 seconds before timing out if the thread was not able
 	 * to be detached. */
 	sleep(TIMEOUT);
 
 	printf
-	    ("Test FAILED: Did not detach the thread, main still waiting for it to end execution.\n");
+	    ("Test FAILED: Did not detach the thread, test_main still waiting for it to end execution.\n");
 	pthread_exit((void *)PTS_FAIL);
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	pthread_attr_t new_attr;

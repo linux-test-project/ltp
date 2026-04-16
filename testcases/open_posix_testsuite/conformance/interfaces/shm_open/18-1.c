@@ -36,7 +36,7 @@
 #define ALL_MOD_FLAGS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | \
 		       S_IROTH | S_IWOTH)	/* rw?rw?rw? */
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd, result;
 	struct stat stat_buf;

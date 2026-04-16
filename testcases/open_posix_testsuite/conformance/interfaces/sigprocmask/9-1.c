@@ -36,7 +36,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction act;
 	sigset_t blocked_set1;

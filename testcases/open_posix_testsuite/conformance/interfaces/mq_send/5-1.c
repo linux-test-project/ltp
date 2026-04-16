@@ -62,7 +62,7 @@ static int cleanup_for_exit(int gqueue, char *gqname, int ret)
 	return ret;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid;
 	char msgrcd[BUFFER];

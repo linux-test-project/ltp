@@ -30,7 +30,7 @@ static int n;
 static void *producer(void *);
 static void *consumer(void *);
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t prod, cons;
 	int err;

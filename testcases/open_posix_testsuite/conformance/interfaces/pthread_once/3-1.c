@@ -34,7 +34,7 @@ static pthread_once_t once_control = PTHREAD_ONCE_INIT;
 /* The init function that pthread_once calls */
 static void *an_init_func()
 {
-	/* Indicate to main() that the init function has been reached */
+	/* Indicate to test_main() that the init function has been reached */
 	init_flag = 1;
 
 	/* Stay in a continuous loop until the thread that called
@@ -61,12 +61,12 @@ static void *a_thread_func()
 /* 2nd init function used by the 2nd call of pthread_once */
 static void *an_init_func2()
 {
-	/* Indicate to main() that this init function has been reached */
+	/* Indicate to test_main() that this init function has been reached */
 	init_flag = 1;
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	init_flag = 0;

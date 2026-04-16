@@ -37,7 +37,7 @@ static void handler_alrm(int signo)
 	caughtalarm++;
 }
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	struct sigaction act1, act2;
 	struct sigevent ev1, ev2;

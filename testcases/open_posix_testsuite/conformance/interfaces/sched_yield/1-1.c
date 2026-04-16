@@ -62,7 +62,7 @@ static int child_busy(int fd)
 	exit(PTS_UNRESOLVED);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid;
 	int rc;

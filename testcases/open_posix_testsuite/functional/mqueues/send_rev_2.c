@@ -105,7 +105,7 @@ static int *receive_2(void *mq)
 	pthread_exit(NULL);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	mqd_t mq1 = 0, mq2 = 0;

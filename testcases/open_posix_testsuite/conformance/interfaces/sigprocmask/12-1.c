@@ -62,7 +62,7 @@ static int get_rand(void)
 	return r;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	int r = get_rand();

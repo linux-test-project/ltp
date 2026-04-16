@@ -31,7 +31,7 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_28-3"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd;
 	char str[BUF_SIZE] = "qwerty";

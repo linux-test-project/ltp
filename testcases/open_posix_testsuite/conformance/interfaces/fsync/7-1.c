@@ -27,7 +27,7 @@
 
 #define TNAME "fsync/7-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd[2];
 

@@ -24,7 +24,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	static pthread_rwlock_t rwlock;
 	int rc;

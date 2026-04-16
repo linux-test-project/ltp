@@ -28,7 +28,7 @@ static int testtimes[NUMTESTS][2] = {
 	{1049623200, 999999999},	// daylight savings 2003
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tpset, tpget, tsreset;
 	int secdelta, nsecdelta;

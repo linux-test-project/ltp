@@ -9,20 +9,21 @@
  returning.
 
  Steps:
- 1. From the main() function, create a new thread. Give the new thread a
+ 1. From the test_main() function, create a new thread. Give the new thread
     a second to set up for receiving a signal, add SIGTOTEST to its signal
     mask and to suspend itself using sigpause(SIGTOTEST).
- 2. Have main() send the signal indicated by SIGTOTEST to the new thread,
-    using pthread_kill(), and using the concept of semaphores, have the main()
+ 2. Have test_main() send the signal indicated by SIGTOTEST to the new thread,
+    using pthread_kill(), and using the concept of semaphores, have the
+    test_main()
  3. Once the new thread returns from sigpause, have the new thread raise
     SIGTOTEST. At this point, SIGTOTEST should be restored to the signal mask,
     so the signal handler should not be called yet, and the signal should be
     pending.
     If it is not, set the variable return_value to 1, indicating a test failure.
- 4. Now, from the new thread, set sem back to INMAIN to allow main to continue
-    running.
- 5. The PTS exit code that main() will return with will depend on the value of
-    return_value:
+ 4. Now, from the new thread, set sem back to INMAIN to allow test_main to
+    continue running.
+ 5. The PTS exit code that test_main() will return with will depend on the
+    value of return_value:
 	PTS_UNRESOLVED if return value is 2
 	PTS_PASS if return value is 0
 	PTS_FAIL if return value is 1
@@ -83,7 +84,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 

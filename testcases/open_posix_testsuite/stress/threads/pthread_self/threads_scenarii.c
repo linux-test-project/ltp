@@ -510,7 +510,7 @@ static int sc = 0;			/* This might be very dirty... but is much simpler */
 
 extern void *threaded(void *arg);	/* This is the test function */
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret = 0;
 	pthread_t child;

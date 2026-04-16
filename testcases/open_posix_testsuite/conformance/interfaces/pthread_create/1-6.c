@@ -228,7 +228,7 @@ static const char *sched_policy_name(int policy)
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_attr_t attr;
 	pthread_t th;

@@ -26,7 +26,7 @@
 static pthread_barrier_t barrier;
 #define LOOP_NUM 5
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int cnt;
 	int rc;

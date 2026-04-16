@@ -32,7 +32,7 @@
 
 #define NAMESIZE 50
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #ifndef _POSIX_OPEN_MAX
 	printf("_POSIX_OPEN_MAX not defined as expected\n");

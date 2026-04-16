@@ -57,7 +57,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	inside_handler--;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (fork() == 0) {
 		/* child */

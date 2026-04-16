@@ -551,7 +551,7 @@ static int parse_measure(mes_t * measures);
 
 /* Main
  */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret, nth;
 	long dur;

@@ -42,7 +42,7 @@ static void sigbus_handler(int signum)
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #ifndef _POSIX_MEMORY_PROTECTION
 	printf("_POSIX_MEMORY_PROTECTION is not defined\n");

@@ -115,12 +115,15 @@ include \$(top_srcdir)/include/mk/env.mk
 
 INSTALL_DIR=		\$(DESTDIR)/\$(testdir)/\$(subdir)
 LOGFILE?=		logfile
+COMMON_LIB=		\$(top_srcdir)/lib/libcommon.a
 
 # Build variables
 CFLAGS+=		-I\$(top_srcdir)/include
 
 # XXX: for testfrmw.c -- needs to be moved into a library.
 CFLAGS+=		-I\$(srcdir)
+LDFLAGS+=		-L\$(top_srcdir)/lib
+LDLIBS+=		-lcommon
 
 EOF
 
@@ -188,6 +191,9 @@ test: run.sh
 \$(INSTALL_DIR):
 	mkdir -p \$@
 
+\$(COMMON_LIB):
+	\$(MAKE) -C \$(top_srcdir)/lib all
+
 EOF
 
 	fi
@@ -219,6 +225,7 @@ EOF
 
 		c_file="$test_name.c"
 		bin_file="${test_prefix}_$prereq"
+		extra_deps=""
 
 		case "$suffix" in
 		.run-test)
@@ -232,10 +239,11 @@ EOF
 		COMPILE_STR="\$(CC) $compiler_args \$(CFLAGS) \$(LDFLAGS) -o \$@ \$(srcdir)/$c_file"
 		if $link_libs; then
 			COMPILE_STR="$COMPILE_STR \$(LDLIBS)"
+			extra_deps='$(COMMON_LIB)'
 		fi
 
 		cat >> "$makefile.3" <<EOF
-$bin_file: \$(srcdir)/$c_file
+$bin_file: \$(srcdir)/$c_file $extra_deps
 	\$(v)if $COMPILE_STR > logfile.\$\$\$\$ 2>&1; then \\
 		 cat logfile.\$\$\$\$; \\
 		 echo "\$(subdir)/$test_name compile PASSED"; \\

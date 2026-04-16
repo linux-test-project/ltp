@@ -373,7 +373,7 @@ static void sighdl(int sig)
 	*pBoolean = 1;
 }
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret, i, j;
 	struct sigaction sa;

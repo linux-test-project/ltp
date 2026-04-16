@@ -25,7 +25,7 @@ static void *a_thread_func()
 {
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
-	/* Indicate to main() that the thread has been created. */
+	/* Indicate to test_main() that the thread has been created. */
 	sem = 1;
 
 	while (1)
@@ -35,7 +35,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	int ret;

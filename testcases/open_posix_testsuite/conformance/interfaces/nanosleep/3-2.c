@@ -27,7 +27,7 @@
 #define CHILDPASS 0		//if interrupted, child will return 0
 #define CHILDFAIL 1
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid, slepts;
 	struct timespec tsbefore, tsafter;

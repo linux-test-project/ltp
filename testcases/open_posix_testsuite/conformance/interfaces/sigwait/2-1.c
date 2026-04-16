@@ -26,7 +26,7 @@
  *  6) Verify that there are no more instances for SIGRTMIN in the pending list. *
  */
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sigset_t newmask, pendingset;
 	int sig;

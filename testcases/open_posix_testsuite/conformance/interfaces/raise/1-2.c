@@ -44,7 +44,7 @@ static void childhandler(int signo PTS_ATTRIBUTE_UNUSED)
 	exit(0);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction parentact;
 

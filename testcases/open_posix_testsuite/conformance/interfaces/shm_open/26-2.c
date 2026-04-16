@@ -35,7 +35,7 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_26-2"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd;
 	struct stat stat_buf;

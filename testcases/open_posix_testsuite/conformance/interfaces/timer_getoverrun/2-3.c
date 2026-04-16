@@ -41,7 +41,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #ifndef _POSIX_REALTIME_SIGNALS
 	printf("_POSIX_REALTIME_SIGNALS is not defined\n");

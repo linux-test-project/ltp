@@ -77,7 +77,7 @@ static void cleanup(void)
 	close(fds[1]);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct aiocb *liocbs[NUM_AIOCBS];
 	struct sigaction action;

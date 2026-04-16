@@ -40,7 +40,7 @@ static int child_process(char *qname, int read_pipe, int write_pipe);
 static mqd_t open_queue(char *qname, int oflag, int mode);
 static int send_receive(int read_pipe, int write_pipe, char send, char *reply);
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[50];
 	pid_t pid;

@@ -41,7 +41,7 @@ static int timeroffsets[NUMTESTS][2] = { {0, 90000000}, {1, 0},
 {3, 5000}, {4, 5}
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	timer_t tid;

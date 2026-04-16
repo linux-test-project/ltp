@@ -26,7 +26,7 @@
 
 #define INVALIDPOLICY 999
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	pthread_attr_t attr;

@@ -131,7 +131,7 @@ static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 }
 
 /** parent thread function **/
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	int i;

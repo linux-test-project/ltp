@@ -50,7 +50,7 @@ static int sleepinvalid[NUMINVALID][2] = { {-1, -1}, {0, -1},
 {0, 1075002478}
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int i;

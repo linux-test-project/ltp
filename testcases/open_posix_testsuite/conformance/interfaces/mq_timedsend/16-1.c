@@ -56,7 +56,7 @@ static void stopsleep_handler(int signo PTS_ATTRIBUTE_UNUSED)
 	return;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid;
 	struct mq_attr attr;

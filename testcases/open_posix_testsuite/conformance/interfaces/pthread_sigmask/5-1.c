@@ -8,7 +8,7 @@
 The resulting set shall be the signal set pointed to by set
 
 Steps:
-1. Have main create a new thread and wait for its termination.
+1. Have test_main() create a new thread and wait for its termination.
 2. Inside the new thread, set up the signal mask such that it contains
  only SIGABRT (by passing SIG_SETMASK value to pthread_sigmask)
 4. Raise SIGABRT, and make sure that the handler associated with it
@@ -20,7 +20,7 @@ Steps:
 that SIG_SETMASK removed the old signal from the set.
 * /patch *
 
-6. Pass one of three return codes to the main() function:
+6. Pass one of three return codes to the test_main() function:
  - A value of -1 if SIGABRT wasn't found pending or
    causes the handler to be executed.
  - A value of 0 if SIGABRT was in fact pending and the handler
@@ -112,7 +112,7 @@ static void *a_thread_func()
 
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	int *thread_return_value;

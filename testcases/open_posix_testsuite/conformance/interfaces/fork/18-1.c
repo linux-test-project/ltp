@@ -59,7 +59,7 @@ static void notification(union sigval sv)
 	notified = (int)getpid();
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t child, ctl;

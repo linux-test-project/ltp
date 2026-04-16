@@ -18,7 +18,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("Caught SIGCHLD\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	/* Make sure this flag is supported. */

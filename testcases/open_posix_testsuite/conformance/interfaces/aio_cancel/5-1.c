@@ -41,7 +41,7 @@
 static int fds[2];
 static struct aiocb aiocb[BUF_NB];
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char *buf[BUF_NB];
 	int i;

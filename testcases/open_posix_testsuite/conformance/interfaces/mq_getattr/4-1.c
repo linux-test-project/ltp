@@ -31,7 +31,7 @@
 #define MSGSIZE		50
 #define MAXMSG		40
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char mqname[NAMESIZE];
 	const char *msgptr = "test message";

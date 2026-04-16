@@ -31,7 +31,7 @@
 #define CHILDPASS 1
 #define CHILDFAIL 0
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tsT0, tssleep;
 	int pid;

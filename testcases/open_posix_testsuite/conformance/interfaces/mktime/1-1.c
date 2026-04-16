@@ -18,7 +18,7 @@
 static struct tm tm_ptr;
 static time_t tps;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	/* Break down July 4th, 2001 */
 	tm_ptr.tm_year = 2001 - 1900;

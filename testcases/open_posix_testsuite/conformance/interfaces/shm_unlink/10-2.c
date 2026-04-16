@@ -27,7 +27,7 @@
 /* Ensure that each component length is short enough */
 #define COMPONENT_SIZE _POSIX_NAME_MAX
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int result, i, path_max;
 	char *shm_name;

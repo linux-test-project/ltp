@@ -33,7 +33,7 @@
 #define ERR_MSG(f, rc)	printf("Failed: function: %s status: %s(%u)\n", \
 						f, strerror(rc), rc)
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int status;
 	pthread_cond_t cond;

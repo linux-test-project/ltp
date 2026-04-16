@@ -33,7 +33,7 @@
 
 #define NUMREPS 5
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	timer_t tid;

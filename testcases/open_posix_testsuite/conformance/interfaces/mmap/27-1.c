@@ -31,7 +31,7 @@
 #include "posixtest.h"
 #include "tempfile.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	int total_size = 1024;

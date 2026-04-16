@@ -37,7 +37,7 @@
 
 #define TNAME "mq_open/16-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAME_MAX];
 	char fname[PATH_MAX];

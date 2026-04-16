@@ -29,7 +29,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("Caught signal\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #ifdef CLOCK_MONOTONIC
 	if (sysconf(_SC_MONOTONIC_CLOCK) == -1) {

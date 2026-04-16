@@ -32,7 +32,7 @@ static void myhandler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("SIGCHLD called. Inside handler\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sigset_t pendingset;
 	struct sigaction act;

@@ -143,7 +143,7 @@ static int *consumer(void *ID)
 	pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int shared = 1;
 	int full_value = BUF_SIZE;

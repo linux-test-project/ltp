@@ -49,7 +49,7 @@ static void alarm_handler()
 	flag = 0;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	struct itimerval it = {.it_value = {.tv_sec = 0, .tv_usec = 100000}};

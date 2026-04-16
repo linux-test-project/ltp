@@ -15,7 +15,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sched_param param;
 	int result = -1;

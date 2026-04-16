@@ -25,7 +25,7 @@
 #define MSG_SIZE	128
 #define MAX_MSG		3
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct mq_attr mqstat, attr;
 	char r_msg_ptr[MAX_MSG][MSG_SIZE];

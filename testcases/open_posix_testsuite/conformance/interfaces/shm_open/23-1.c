@@ -74,7 +74,7 @@ static int child_func(void)
 	return 0;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int i, pid, result_fd;
 	char semname[20];

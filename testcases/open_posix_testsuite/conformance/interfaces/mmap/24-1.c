@@ -56,7 +56,7 @@ void proc_write_val(const char *path, size_t val)
 	fclose(procfile);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[256];
 	void *pa;

@@ -31,7 +31,7 @@ static void handler2(int signo)
 {
 }
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction act;
 	struct sigaction oact;

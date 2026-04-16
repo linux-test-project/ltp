@@ -30,7 +30,7 @@
  *         *** I need to check to see if these assumptions are always valid.
  */
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int failure = 0;
 

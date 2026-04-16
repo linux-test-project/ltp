@@ -80,7 +80,7 @@ static void *t1_func(void *arg)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t thread1;
 	struct timespec thread_start_ts = {0, 100000};

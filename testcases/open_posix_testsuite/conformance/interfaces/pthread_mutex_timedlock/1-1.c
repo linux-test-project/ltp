@@ -15,11 +15,11 @@
 
  * Steps:
  *
- * 1. Create a mutex in the main() thread and lock it.
+ * 1. Create a mutex in the test_main() thread and lock it.
  * 2. Create a thread, and call pthread_mutex_timedlock inside of it.  It should block for
  *    the set time of (3 secs.).
  * 3. Save the time before and after the thread tried to lock the mutex.
- * 4. After the thread has ended, main() will compare the times before and after the mutex
+ * 4. After the thread has ended, test_main() will compare the times before and after the mutex
  *    tried to lock in the thread.
  */
 
@@ -45,7 +45,7 @@ static struct timeval currsec1, currsec2;	/* Variables for saving time before
  * MAIN()
  *
  * *************************/
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	struct timeval time_diff;

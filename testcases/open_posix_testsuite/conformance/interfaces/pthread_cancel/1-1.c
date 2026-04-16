@@ -52,11 +52,11 @@ static void *a_thread_func()
 
 	pthread_cleanup_push(a_cleanup_func, NULL);
 
-	/* Indicate to main() that the thread has been created. */
+	/* Indicate to test_main() that the thread has been created. */
 	sem1 = INMAIN;
 
-	/* Wait until main() has sent out a cancel request, meaning until it
-	 * sets sem1==0 */
+	/* Wait until test_main() has sent out a cancel request, meaning until
+	 * it sets sem1==0 */
 	while (sem1 == 1)
 		sleep(1);
 
@@ -72,7 +72,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 

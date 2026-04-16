@@ -168,7 +168,7 @@ static void sighdl(int sig)
 }
 
 /******** Parent thread *************/
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	struct sigaction sa;
 	pthread_t threads[N * SCALABILITY_FACTOR];

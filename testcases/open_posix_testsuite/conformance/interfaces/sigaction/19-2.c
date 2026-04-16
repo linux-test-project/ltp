@@ -56,7 +56,7 @@ static void handler(int sig, siginfo_t *info, void *context)
 }
 
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	long rts;

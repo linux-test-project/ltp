@@ -13,8 +13,9 @@
  * - The set of signals pending for the new thread shall be empty.
  *
  * Steps:
- * 1.  In main(), create a signal mask with a few signals in the set (SIGUSR1 and SIGUSR2).
- * 2.  Raise those signals in main.  These signals now should be pending.
+ * 1.  In test_main(), create a signal mask with a few signals in the set
+ *     (SIGUSR1 and SIGUSR2).
+ * 2.  Raise those signals in test_main.  These signals now should be pending.
  * 3.  Create a thread using pthread_create().
  * 4.  The thread should have the same signal mask, but no signals should be pending.
  *
@@ -41,7 +42,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	sigset_t main_sigmask, main_pendingset;

@@ -21,14 +21,14 @@
 #define SIGTOTEST SIGABRT
 
 #if 0 && defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Function definition doesn't match POSIX definition "
 	       "and preceded POSIX definition; interface is obsolete\n");
 	return PTS_UNSUPPORTED;
 }
 #else
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int return_value = 0;
 	int result;

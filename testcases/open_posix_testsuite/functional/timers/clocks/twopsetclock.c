@@ -28,7 +28,7 @@
 #define ACCEPTABLEDELTA 1
 #define LONGTIME 3		//== long enough for both clocks to be set
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	struct timespec tpget, tsreset;
 	int pid, delta;

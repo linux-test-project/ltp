@@ -136,7 +136,7 @@ static void *threaded(void *arg)
 }
 
 /* main routine */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret, i;
 	void *rval;
@@ -266,7 +266,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

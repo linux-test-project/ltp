@@ -34,7 +34,7 @@
 #include "tempfile.h"
 
 #ifdef MAP_FIXED
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	char tmpfname2[PATH_MAX];
@@ -133,7 +133,7 @@ int main(void)
 	return PTS_PASS;
 }
 #else
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	printf("MAP_FIXED was not defined at the time of compilation\n");
 	return PTS_UNRESOLVED;

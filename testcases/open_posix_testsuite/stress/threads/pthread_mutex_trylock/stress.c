@@ -201,7 +201,7 @@ static void *threaded(void *arg)
 	return NULL;
 }
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret;
 	struct sigaction sa;

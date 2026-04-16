@@ -32,7 +32,7 @@
 
 #define LOOP_NUM 100000
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	unsigned long cnt;

@@ -35,7 +35,7 @@
 #define TNAME "aio_return/2-1.c"
 #define BUF_SIZE 111
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	char buf[BUF_SIZE];

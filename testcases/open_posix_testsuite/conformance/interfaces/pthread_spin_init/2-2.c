@@ -44,7 +44,7 @@ static struct shmstruct {
 	int data;
 } *spinlock_data;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	int pshared;

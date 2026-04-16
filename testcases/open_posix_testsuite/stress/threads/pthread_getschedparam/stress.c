@@ -146,7 +146,7 @@ static void *rt_thread(void *arg)
 }
 
 /* Main function */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret = 0, i;
 

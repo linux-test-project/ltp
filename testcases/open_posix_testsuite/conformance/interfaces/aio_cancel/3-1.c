@@ -58,7 +58,7 @@ static void sig_handler(int signum PTS_ATTRIBUTE_UNUSED, siginfo_t *info,
 	countdown--;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction action;
 	struct timespec processing_completion_ts = {0, 10000000};

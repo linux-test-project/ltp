@@ -24,7 +24,7 @@
 
 #define BUF_SIZE 1024
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	char buf[BUF_SIZE];

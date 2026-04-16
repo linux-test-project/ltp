@@ -20,7 +20,7 @@
 #endif
 
 #define NUMINTERVALS 13
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int sleepnsec[NUMINTERVALS] = { 1, 2, 10, 100, 1000, 10000, 1000000,

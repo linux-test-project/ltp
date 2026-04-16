@@ -124,7 +124,7 @@ static sem_t *common()
 }
 
 /* The main test function. */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t p1, p2, p3, ctl;

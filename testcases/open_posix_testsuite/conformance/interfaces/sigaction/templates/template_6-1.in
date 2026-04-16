@@ -25,7 +25,7 @@ static void handler(int signo, siginfo_t *info, void *context)
 	handler_called = 1;
 }
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction act;
 

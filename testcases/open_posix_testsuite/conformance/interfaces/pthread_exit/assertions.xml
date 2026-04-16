@@ -24,7 +24,7 @@
   </assertion>
   <assertion id="5" tag="ref:XSH6:33031:33033">
   An implicit call to pthread_exit() is made when a thread other than the
-  thread in which main() was first invoked returns from the start routine that
+  thread in which test_main() was first invoked returns from the start routine that
   was used to create it.  The function's return value shall serve as the
   thread's exit status.
   </assertion>

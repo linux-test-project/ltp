@@ -30,7 +30,7 @@
 
 #define NUM_OF_KEYS 10
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_key_t keys[NUM_OF_KEYS];
 	int i;

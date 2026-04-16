@@ -273,7 +273,7 @@ static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 }
 
 /* At last (but not least) we need a main */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	pthread_t th_work, th_sig1, th_sig2;

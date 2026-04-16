@@ -38,7 +38,7 @@
 
 #define SIGTOTEST SIGALRM
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	struct timespec tpT0, tpT2, tpreset;

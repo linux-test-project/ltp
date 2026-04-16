@@ -102,7 +102,7 @@ static int parse_measure(mes_t * measures);
 static sem_t *sem_synchro;
 static sem_t *sem_ending;
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret, status;
 	pid_t pidctl;

@@ -105,7 +105,7 @@ static void *th_fn(void *arg PTS_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int cnt;
 	struct timeval wait_time;
@@ -115,12 +115,12 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	printf("main: attempt write lock\n");
+	printf("test_main: attempt write lock\n");
 	if (pthread_rwlock_wrlock(&rwlock) != 0) {
-		printf("main: Error at pthread_rwlock_wrlock()\n");
+		printf("test_main: Error at pthread_rwlock_wrlock()\n");
 		return PTS_UNRESOLVED;
 	}
-	printf("main: acquired write lock\n");
+	printf("test_main: acquired write lock\n");
 
 	thread_state = NOT_CREATED_THREAD;
 	if (pthread_create(&sig_thread, NULL, th_fn, NULL) != 0) {
@@ -128,8 +128,9 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	/* Wait for the thread to get ready for handling signal (the thread should
-	 * be block on rwlock since main() has the write lock at this point) */
+	/* Wait for the thread to get ready for handling signal (the thread
+	 * should be block on rwlock since test_main() has the write lock
+	 * at this point) */
 	cnt = 0;
 	do {
 		sleep(1);
@@ -140,9 +141,9 @@ int main(void)
 		exit(PTS_UNRESOLVED);
 	}
 
-	printf("main: fire SIGUSR1 to thread\n");
+	printf("test_main: fire SIGUSR1 to thread\n");
 	if (pthread_kill(sig_thread, SIGUSR1) != 0) {
-		printf("main: Error at pthread_kill()\n");
+		printf("test_main: Error at pthread_kill()\n");
 		exit(PTS_UNRESOLVED);
 	}
 
@@ -179,14 +180,14 @@ int main(void)
 		exit(PTS_FAIL);
 	}
 
-	printf("main: unlock write lock\n");
+	printf("test_main: unlock write lock\n");
 	if (pthread_rwlock_unlock(&rwlock) != 0) {
-		printf("main: Error at pthread_rwlock_unlock()\n");
+		printf("test_main: Error at pthread_rwlock_unlock()\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (pthread_join(sig_thread, NULL) != 0) {
-		printf("main: Error at pthread_join()\n");
+		printf("test_main: Error at pthread_join()\n");
 		return PTS_UNRESOLVED;
 	}
 

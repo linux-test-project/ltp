@@ -42,7 +42,7 @@ static struct unique {
 	0, 0}
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int policy, invalid_priority, result = PTS_PASS;
 	int old_priority, old_policy, new_policy;

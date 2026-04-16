@@ -43,7 +43,7 @@ static void sigsegv_handler(int signum PTS_ATTRIBUTE_UNUSED)
 	exit(PTS_PASS);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	long file_size;

@@ -38,7 +38,7 @@ static void myhandler(int signo PTS_ATTRIBUTE_UNUSED,
 	counter++;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid, i;
 	union sigval value;

@@ -43,7 +43,7 @@
 static int fds[2];
 static struct aiocb aiocb[WRITE_COUNT];
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int i;
 	int ret;

@@ -36,7 +36,7 @@ static int invalid_tests[NUMINVALIDTESTS] = {
 	1073743192, -1, 1000000000, 1000000001
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tsset, tscurrent, tsreset;
 	int i;

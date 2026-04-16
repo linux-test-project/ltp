@@ -51,7 +51,7 @@ static void handler(int signo)
 	caught++;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	struct sigaction act;

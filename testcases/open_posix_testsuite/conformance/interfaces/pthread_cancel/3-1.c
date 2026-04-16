@@ -62,7 +62,7 @@ static void *thread_func(PTS_ATTRIBUTE_UNUSED void *unused)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t th;
 

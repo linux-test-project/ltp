@@ -40,7 +40,7 @@
 
 static pthread_key_t keys[PTHREAD_KEYS_MAX + 1];
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int i, rc;
 
