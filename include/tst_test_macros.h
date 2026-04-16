@@ -370,7 +370,20 @@ extern int TST_PASS;
  * is converted to a string and used instead.
  */
 #define TST_EXP_PASS_PTR_VOID(SCALL, ...)                                      \
-               TST_EXP_PASS_PTR_(SCALL, #SCALL, (void *)-1, ##__VA_ARGS__);
+	TST_EXP_PASS_PTR_(SCALL, #SCALL, (void *)-1, ##__VA_ARGS__);
+
+/**
+ * TST_EXP_PASS_PTR_NULL() - Test call to return a non-NULL pointer.
+ *
+ * @SCALL: Tested call.
+ * @...: A printf-like parameters.
+ *
+ * This macro works like TST_EXP_PASS_PTR_VOID() but checks the return
+ * value against NULL instead of (void *)-1. Use this for libc functions
+ * such as fopen() that return NULL on failure.
+ */
+#define TST_EXP_PASS_PTR_NULL(SCALL, ...)                                      \
+	TST_EXP_PASS_PTR_(SCALL, #SCALL, NULL, ##__VA_ARGS__)
 
 /*
  * Returns true if err is in the exp_err array.
