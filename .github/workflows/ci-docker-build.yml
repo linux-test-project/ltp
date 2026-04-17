@@ -110,7 +110,7 @@ jobs:
               CC: gcc
               TREE: out
 
-          - container: "ubuntu:bionic"
+          - container: "ubuntu:noble"
             env:
               CC: gcc
 

@@ -34,12 +34,6 @@ Oldest build tested distributions
       - 4.8.5
       - \-
 
-    * - Ubuntu 18.04 LTS bionic
-      - 4.15
-      - 2.27
-      - 7.3.0
-      - \-
-
     * - Debian 11 (bullseye)
       - 5.10
       - 2.31
