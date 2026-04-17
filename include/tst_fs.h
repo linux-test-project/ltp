@@ -80,7 +80,7 @@ int tst_fs_has_free_(void (*cleanup)(void), const char *path, uint64_t size,
  *
  *	long type;
  *
- *	swtich ((type = tst_fs_type(cleanup, "."))) {
+ *	switch ((type = tst_fs_type(cleanup, "."))) {
  *	case TST_NFS_MAGIC:
  *	case TST_TMPFS_MAGIC:
  *	case TST_RAMFS_MAGIC:
