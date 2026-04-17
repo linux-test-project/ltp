@@ -442,9 +442,26 @@ static int test_assign_resources(void)
 
 		if (r->flags & IORESOURCE_MEM &&
 			r->flags & IORESOURCE_PREFETCH) {
+
+			if (dev->hdr_type == PCI_HEADER_TYPE_NORMAL) {
+				if (dev->dev.driver)
+					device_release_driver(&dev->dev);
+			}
+
 			pci_release_resource(dev, i);
 			ret = pci_assign_resource(dev, i);
 			prk_info("assign resource to '%d', ret '%d'", i, ret);
+
+			if (ret == 0) {
+				if (dev->hdr_type == PCI_HEADER_TYPE_NORMAL) {
+					int attach_ret;
+
+					attach_ret = device_attach(&dev->dev);
+					if (attach_ret < 0)
+						prk_info("device_attach failed for endpoint, ret: %d", attach_ret);
+				}
+			}
+
 			rc |= (ret < 0 && ret != -EBUSY) ? TFAIL : TPASS;
 		}
 	}
