@@ -60,7 +60,7 @@ jobs:
           ./ci/tools/patchwork.sh check \
             "${{ inputs.SERIES_ID }}" \
             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            "${{ matrix.container }}" \
+            "doc" \
             "${{ job.status }}"
 
       - name: Install sphinx dependencies
