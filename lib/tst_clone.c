@@ -36,9 +36,9 @@ pid_t tst_clone(const struct tst_clone_args *tst_args)
 	flags = args.exit_signal | args.flags;
 
 #ifdef __s390x__
-	pid = syscall(__NR_clone, NULL, flags);
+	pid = syscall(__NR_clone, NULL, flags, args.pidfd, NULL, NULL);
 #else
-	pid = syscall(__NR_clone, flags, NULL);
+	pid = syscall(__NR_clone, flags, NULL, args.pidfd, NULL, NULL);
 #endif
 
 	if (pid == -1)
