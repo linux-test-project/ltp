@@ -519,7 +519,7 @@ struct tst_fs {
  * @bufs: A description of guarded buffers to be allocated for the test. Guarded
  *        buffers are buffers with poisoned page allocated right before the start
  *        of the buffer and canary right after the end of the buffer. See
- *        :ref:`struct tst_buffers` and tst_buffer_alloc() for details.
+ *        :ref:`struct tst_buffers` and tst_buffers_alloc() for details.
  *
  * @caps: A {} terminated array of capabilities to change before the start of
  *        the test. See :ref:`struct tst_cap` and tst_cap_setup() for details.
