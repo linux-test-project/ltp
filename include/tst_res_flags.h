@@ -30,9 +30,9 @@
  *         TBROK and TCONF. Warnings usually appear when something that is
  *         supposed to be working is broken but the test can somehow continue.
  *
- * @TDEBUG: Prints additional debugging messages, it does not change the test result counters and
- *          the message is not displayed unless debugging is enabled with -D
- *          test command line parameter.
+ * @TDEBUG: Prints additional debugging messages, it does not change the test
+ *          result counters and the message is not displayed unless debugging is
+ *          enabled with -D test command line parameter.
  *
  * @TINFO: Prints an additional information, it does not change the test result
  *         counters but unlike TDEBUG the message is always displayed.
@@ -45,14 +45,15 @@
  * @TERRNO: Combine bitwise with result flags to append errno to the output message.
  *
  * @TTERRNO: Combine bitwise with result flags to append error from TST_ERR to
- *           the message. The TST_TEST() macros store the errno into the
- *           TST_ERR global variable in order to make sure it's not change
- *           between the test is done and results are printed.
+ *           the message. The :c:macro:`TST_*() test macros <TEST()>` store the
+ *           errno into the TST_ERR global variable in order to make sure it's
+ *           not change between the test is done and results are printed.
  *
  * @TRERRNO: Combine bitwise with result flags to errno from TST_RET variable
- *           to the message. The TST_TEST() macros store return value into the
- *           TST_RET global variable and quite a few, e.g. pthread functions,
- *           return the error value directly instead of storing it to the errno.
+ *           to the message. The :c:macro:`TST_*() test macros <TEST()>` store
+ *           return value into the TST_RET global variable and quite a few, e.g.
+ *           pthread functions, return the error value directly instead of
+ *           storing it to the errno.
  *
  * A result flag with optional bitwise combination of errno flag are passed to
  * the tst_res() and tst_brk() functions. Each message counts as a single test
