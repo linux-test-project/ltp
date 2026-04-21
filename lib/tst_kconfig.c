@@ -112,10 +112,10 @@ static void close_kconfig(FILE *fp)
 		fclose(fp);
 }
 
-static struct runtime_check {
+static struct config_runtime_map {
 	const char *config;
 	bool (*runtime_check)(void);
-} runtime_checks[] = {
+} config_runtime_maps[] = {
 	{"CONFIG_USER_NS", tst_user_ns_enabled},
 	{"CONFIG_NET_NS", tst_net_ns_enabled},
 	{"CONFIG_PID_NS", tst_pid_ns_enabled},
@@ -124,17 +124,17 @@ static struct runtime_check {
 	{}
 };
 
-static void runtime_check(struct tst_kconfig_var *var)
+static void kconfig_runtime_check(struct tst_kconfig_var *var)
 {
 	size_t i;
 
-	for (i = 0; runtime_checks[i].config; i++) {
-		if (strcmp(runtime_checks[i].config, var->id))
+	for (i = 0; config_runtime_maps[i].config; i++) {
+		if (strcmp(config_runtime_maps[i].config, var->id))
 			continue;
 
 		tst_res(TDEBUG, "Running runtime check for '%s'", var->id);
 
-		if (!runtime_checks[i].runtime_check()) {
+		if (!config_runtime_maps[i].runtime_check()) {
 			tst_res(TINFO,
 				"%s=%c present but disabled at runtime",
 				var->id, var->choice);
@@ -257,11 +257,11 @@ out:
 			switch (val[0]) {
 			case 'y':
 				vars[i].choice = 'y';
-				runtime_check(&vars[i]);
+				kconfig_runtime_check(&vars[i]);
 				return 1;
 			case 'm':
 				vars[i].choice = 'm';
-				runtime_check(&vars[i]);
+				kconfig_runtime_check(&vars[i]);
 				kconfig_module_check(&vars[i]);
 				return 1;
 			}
