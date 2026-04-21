@@ -4,7 +4,7 @@
  */
 
 /*\
- * Prerequisites:
+ * [Prerequisites]
  *
  * ksm and ksmtuned daemons need to be disabled. Otherwise, it could
  * distrub the testing as they also change some ksm tunables depends

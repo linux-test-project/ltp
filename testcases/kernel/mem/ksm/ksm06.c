@@ -10,13 +10,8 @@
  * node are merged, otherwise pages from all nodes can be merged
  * together.
  *
- * Introduced in commit:
- *
- *  commit 90bd6fd31c8097ee4ddcb74b7e08363134863de5
- *   Author: Petr Holasek <pholasek@redhat.com>
- *   Date:   Fri Feb 22 16:35:00 2013 -0800
- *
- *   ksm: allow trees per NUMA node
+ * Introduced in kernel v3.9 commit:
+ * 90bd6fd31c809 ("ksm: allow trees per NUMA node")
  */
 
 #include "config.h"
