@@ -24,4 +24,4 @@ ac-maintainer-clean:: ac-clean
 
 vpath %.h $(abs_srcdir)
 
-include $(top_srcdir)/include/mk/generic_leaf_target.mk
+include $(top_srcdir)/include/mk/generic_trunk_target.mk
