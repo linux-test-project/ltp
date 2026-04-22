@@ -91,6 +91,10 @@
 # define MAP_DROPPABLE 0x08
 #endif
 
+#ifndef MREMAP_DONTUNMAP
+# define MREMAP_DONTUNMAP 4
+#endif
+
 #ifndef MAP_FIXED_NOREPLACE
 
 #ifdef __alpha__
