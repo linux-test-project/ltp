@@ -43,8 +43,9 @@ users.
        Shell language: ``TST_NEEDS_DEVICE=1``.
 
    * - LTP_REPRODUCIBLE_OUTPUT
-     - When set to ``1`` or ``y`` discards the actual content of the messages
-       printed by the test (suitable for a reproducible output).
+     - When set to ``1`` or ``y`` suppress printing TCONF, TINFO and TDEBUG
+       messages and discards the actual content of the other messages printed
+       by the test (suitable for a reproducible output).
 
    * - LTP_SINGLE_FS_TYPE
      - Specifies single filesystem to run the test on instead all supported
