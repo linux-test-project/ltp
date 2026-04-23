@@ -6,7 +6,7 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/env_pre.mk
 
-INSTALL_TARGETS		:= create_file tst_net_stress.sh
+INSTALL_TARGETS		:= create_file tst_net_stress.sh ns-icmpv4_sender
 
 FILTER_OUT_MAKE_TARGETS	:= ns-common
 

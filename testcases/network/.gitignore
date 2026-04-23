@@ -26,6 +26,7 @@
 /sockets/ltpServer
 /sockets/vsock01
 /stress/ns-tools/ns-icmp_redirector
+/stress/ns-tools/ns-icmpv4_sender
 /stress/ns-tools/ns-icmpv6_sender
 /stress/ns-tools/ns-igmp_querier
 /stress/ns-tools/ns-mcast_join
