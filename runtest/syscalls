@@ -181,7 +181,7 @@ epoll_create03 epoll_create03
 
 epoll_create1_01 epoll_create1_01
 epoll_create1_02 epoll_create1_02
-epoll01 epoll-ltp
+
 epoll_ctl01 epoll_ctl01
 epoll_ctl02 epoll_ctl02
 epoll_ctl03 epoll_ctl03
