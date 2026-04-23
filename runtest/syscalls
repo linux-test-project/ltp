@@ -200,6 +200,7 @@ epoll_wait08 epoll_wait08
 epoll_wait09 epoll_wait09
 epoll_wait10 epoll_wait10
 epoll_wait11 epoll_wait11
+epoll_wait12 epoll_wait12
 
 epoll_pwait01 epoll_pwait01
 epoll_pwait02 epoll_pwait02
