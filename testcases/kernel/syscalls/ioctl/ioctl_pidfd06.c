@@ -54,7 +54,12 @@ static void setup(void)
 	if (!ioctl_pidfd_info_exit_supported())
 		tst_brk(TCONF, "PIDFD_INFO_EXIT is not supported by ioctl()");
 
-	if (tst_kvercmp(7, 0, 0) >= 0)
+	/*
+	 * ab89060fbc92e ("pidfs: return -EREMOTE when PIDFD_GET_INFO is called on another ns")
+	 * from v7.0, backported to v6.18.14 and v6.19.10.
+	 */
+	if (tst_kvercmp(6, 19, 10) >= 0 ||
+	    (tst_kvercmp(6, 18, 14) >= 0 && tst_kvercmp(6, 19, 0) < 0))
 		err_nr = EREMOTE;
 }
 
