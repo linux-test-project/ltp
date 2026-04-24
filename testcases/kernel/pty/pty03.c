@@ -146,7 +146,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.test = do_test,
-	.tcnt = 9,
+	.tcnt = ARRAY_SIZE(ldiscs) - 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
