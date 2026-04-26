@@ -43,7 +43,7 @@ static void verify_mmap(unsigned int nr)
 
 static void setup(void)
 {
-	fd = SAFE_OPEN("/tmp/mmaptest", O_RDWR | O_CREAT, 0666);
+	fd = SAFE_OPEN("mmaptest", O_RDWR | O_CREAT, 0666);
 
 	/* set the file to initial size */
 	SAFE_FTRUNCATE(fd, MAPSIZE);
