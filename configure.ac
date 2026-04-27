@@ -46,6 +46,8 @@ AC_CHECK_DECLS([MADV_MERGEABLE],,,[#include <sys/mman.h>])
 AC_CHECK_DECLS([NFTA_CHAIN_ID, NFTA_VERDICT_CHAIN_ID],,,[#include <linux/netfilter/nf_tables.h>])
 AC_CHECK_DECLS([PR_CAPBSET_DROP, PR_CAPBSET_READ],,,[#include <sys/prctl.h>])
 AC_CHECK_DECLS([SEM_STAT_ANY],,,[#include <sys/sem.h>])
+AC_CHECK_DECLS([IORING_OP_READ],,,[#include <linux/io_uring.h>])
+AC_CHECK_DECLS([IORING_OP_WRITE],,,[#include <linux/io_uring.h>])
 
 AC_CHECK_HEADERS_ONCE([ \
     aio.h \

@@ -253,6 +253,16 @@ struct io_uring_probe {
 	struct io_uring_probe_op ops[0];
 };
 
+#else /* IOSQE_FIXED_FILE */
+
+#if !HAVE_DECL_IORING_OP_READ
+#define IORING_OP_READ 22
+#endif
+
+#if !HAVE_DECL_IORING_OP_WRITE
+#define IORING_OP_WRITE 23
+#endif
+
 #endif /* IOSQE_FIXED_FILE */
 
 #ifndef IOSQE_IO_HADRLINK
