@@ -9,7 +9,6 @@
 
 #include "tst_test.h"
 
-#define SLEEP_AFTER_CLOSE 3
 #define MMAPSIZE 1024
 
 static char *filename;
@@ -35,8 +34,10 @@ static void run(void)
 	file = SAFE_MMAP(NULL, MMAPSIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	SAFE_CLOSE(fd);
 
-	tst_res(TINFO, "sleep %ds", SLEEP_AFTER_CLOSE);
-	sleep(SLEEP_AFTER_CLOSE);
+	tst_reinit();
+	TST_CHECKPOINT_WAIT(0);
+	/* keep running until ima_violations.sh open and close file */
+	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
 	tst_res(TPASS, "test completed");
 }
