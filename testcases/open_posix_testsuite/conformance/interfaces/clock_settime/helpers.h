@@ -13,7 +13,8 @@
  * by those tests.
  */
 
-#include <stdlib.h>
+#ifndef CLOCK_SETTIME_HELPERS_H
+#define CLOCK_SETTIME_HELPERS_H
 
 static int getBeforeTime(struct timespec *tpget)
 {
@@ -35,55 +36,4 @@ static int setBackTime(struct timespec tpset)
 	return PTS_PASS;
 }
 
-#define PTS_MONO_MAX_RETRIES 3
-
-#ifdef _POSIX_MONOTONIC_CLOCK
-static struct timespec _pts_mono_start;
-
-static inline int pts_mono_time_start(void)
-{
-	if (clock_gettime(CLOCK_MONOTONIC, &_pts_mono_start) != 0) {
-		perror("clock_gettime(CLOCK_MONOTONIC) failed");
-		return -1;
-	}
-	return 0;
-}
-
-static inline int pts_mono_time_check(unsigned int expected_secs)
-{
-	struct timespec now;
-	long elapsed;
-
-	if (clock_gettime(CLOCK_MONOTONIC, &now) != 0) {
-		perror("clock_gettime(CLOCK_MONOTONIC) failed");
-		return -1;
-	}
-
-	elapsed = now.tv_sec - _pts_mono_start.tv_sec;
-
-	if (labs(elapsed - (long)expected_secs) > 1) {
-		printf("Clock adjustment detected (elapsed %lds, expected ~%us)\n",
-		       elapsed, expected_secs);
-		return 1;
-	}
-	return 0;
-}
-#else
-static inline int pts_mono_time_start(void)
-{
-	static int warned;
-
-	if (!warned) {
-		printf("CLOCK_MONOTONIC unavailable, test may fail due to clock adjustment\n");
-		warned = 1;
-	}
-	return 0;
-}
-
-static inline int pts_mono_time_check(unsigned int expected_secs)
-{
-	(void)expected_secs;
-	return 0;
-}
-#endif
-
+#endif /* CLOCK_SETTIME_HELPERS_H */

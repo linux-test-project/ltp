@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "posixtest.h"
+#include "clock.h"
 #include "helpers.h"
 
 #define TIMERSEC 5

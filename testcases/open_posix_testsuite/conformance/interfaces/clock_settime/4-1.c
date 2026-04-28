@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "posixtest.h"
+#include "clock.h"
 #include "helpers.h"
 
 // SLEEPTIME < TIMEROFFSET

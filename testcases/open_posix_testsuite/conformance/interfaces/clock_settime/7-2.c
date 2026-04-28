@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "posixtest.h"
+#include "clock.h"
 #include "helpers.h"
 
 #define SLEEPOFFSET 5
