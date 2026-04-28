@@ -157,6 +157,8 @@ test2()
 
 test3()
 {
+	local pid
+
 	tst_res TINFO "verify open_writers using mmapped files"
 
 	local search="open_writers"
@@ -168,6 +170,7 @@ test3()
 	echo 'testing testing' > $FILE
 
 	ima_mmap -f $FILE &
+	pid=$!
 	# wait for violations appear in logs
 	tst_sleep 1s
 
@@ -177,7 +180,10 @@ test3()
 	validate $num_violations $count $search
 
 	# wait for ima_mmap to exit, so we can umount
-	tst_sleep 2s
+	wait $pid
+	if [ $? -ne 0 ]; then
+		tst_brk TBROK "failed to execute ima_mmap"
+	fi
 }
 
 test4()
