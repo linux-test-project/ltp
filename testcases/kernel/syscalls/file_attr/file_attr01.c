@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "lapi/fs.h"
 #include "lapi/fcntl.h"
 
@@ -35,6 +36,7 @@ static size_t small_usize;
 static size_t valid_usize;
 static size_t big_usize;
 static struct file_attr *valid_file_attr;
+static int missing_tmpfs_xattr;
 
 static struct tcase {
 	int *dfd;
@@ -115,20 +117,24 @@ static struct tcase {
 static void run(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
+	int exp_errno = tc->exp_errno;
+
+	if (tc->ufattr == (struct file_attr **)(&null_ptr) && missing_tmpfs_xattr)
+		exp_errno = EOPNOTSUPP;
 
 	if (tst_variant) {
 		TST_EXP_FAIL(file_getattr(
 			*tc->dfd, *tc->filename,
 			*tc->ufattr, *tc->usize,
 			tc->at_flags),
-			tc->exp_errno,
+			exp_errno,
 			"%s", tc->msg);
 	} else {
 		TST_EXP_FAIL(file_setattr(
 			*tc->dfd, *tc->filename,
 			*tc->ufattr, *tc->usize,
 			tc->at_flags),
-			tc->exp_errno,
+			exp_errno,
 			"%s", tc->msg);
 	}
 }
@@ -144,6 +150,11 @@ static void setup(void)
 	valid_usize = FILE_ATTR_SIZE_LATEST;
 	small_usize = FILE_ATTR_SIZE_VER0 - 1;
 	big_usize = SAFE_SYSCONF(_SC_PAGESIZE) + 100;
+
+	if (!strcmp(tst_device->fs_type, "tmpfs")) {
+		const char *const kconfig[] = {"CONFIG_TMPFS_XATTR=y", NULL};
+		missing_tmpfs_xattr = tst_kconfig_check(kconfig);
+	}
 }
 
 static void cleanup(void)
