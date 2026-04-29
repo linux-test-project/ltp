@@ -62,7 +62,12 @@ static void setup(void)
 	/* Do NOT close this FD, or both interfaces will be destroyed */
 	childns = SAFE_OPEN("/proc/self/ns/net", O_RDONLY);
 
-	SAFE_FILE_PRINTF("/proc/sys/net/ipv4/icmp_msgs_burst", "50");
+	/*
+	 * Set namespace local rate limit if needed. The global limit might
+	 * be ignored otherwise.
+	 */
+	if (!access("/proc/sys/net/ipv4/icmp_msgs_burst", F_OK))
+		SAFE_FILE_PRINTF("/proc/sys/net/ipv4/icmp_msgs_burst", "50");
 
 	/* Configure child namespace */
 	CREATE_VETH_PAIR("ltp_veth1", "ltp_veth2");
@@ -250,6 +255,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_kconfigs = (const char *[]) {
+		"CONFIG_INET",
 		"CONFIG_VETH",
 		"CONFIG_USER_NS=y",
 		"CONFIG_NET_NS=y",
@@ -257,6 +263,7 @@ static struct tst_test test = {
 	},
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{"/proc/sys/net/ipv4/icmp_msgs_burst", "50", TST_SR_TBROK},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
