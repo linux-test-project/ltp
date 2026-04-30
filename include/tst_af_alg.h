@@ -167,7 +167,7 @@ struct tst_alg_sendmsg_params {
 	/** If assoclen != 0, send ALG_SET_AEAD_ASSOCLEN */
 	unsigned int assoclen;
 
-	/* Value to use as msghdr::msg_flags */
+	/** Flags to pass to sendmsg() (e.g. MSG_MORE) */
 	uint32_t msg_flags;
 };
 
