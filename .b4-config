@@ -6,5 +6,5 @@
     pw-project = ltp
 
     # other checkpatch.pl options from .checkpatch.conf are used
-    prep-perpatch-check-cmd = ./scripts/checkpatch.pl -q --mailback --showfile
+    prep-perpatch-check-cmd = ./scripts/checkpatch.pl -q --mailback --showfile --no-f
     am-perpatch-check-cmd = ./scripts/checkpatch.pl -q --mailback
