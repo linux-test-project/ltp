@@ -12,3 +12,5 @@ CFLAGS_no_stack_prot := $(filter-out -fstack-clash-protection, $(CFLAGS))
 
 hugemmap06: CFLAGS+=-pthread
 hugemmap34: CFLAGS=$(CFLAGS_no_stack_prot)
+hugemmap36: LDLIBS+=-lpthread
+hugemmap36: CFLAGS+=-pthread
