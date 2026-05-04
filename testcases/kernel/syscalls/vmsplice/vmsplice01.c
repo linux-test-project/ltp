@@ -50,7 +50,6 @@ static void vmsplice_test(void)
 {
 	int pipes[2];
 	long written;
-	int ret;
 	int fd_out;
 	struct iovec v;
 	loff_t offset;
@@ -85,9 +84,7 @@ static void vmsplice_test(void)
 			}
 		}
 
-		ret = splice(pipes[0], NULL, fd_out, &offset, written, 0);
-		if (ret < 0)
-			tst_brk(TBROK | TERRNO, "splice() failed");
+		SAFE_SPLICE(pipes[0], NULL, fd_out, &offset, written, 0);
 		//printf("offset = %lld\n", (long long)offset);
 	}
 

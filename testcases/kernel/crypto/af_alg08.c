@@ -96,13 +96,8 @@ static void try_corrupt(void)
 
 	SAFE_PIPE(pipefd);
 
-	TEST(splice(file_fd, &off_in, pipefd[1], NULL, OVERWRITE_SIZE, 0));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "splice(file -> pipe)");
-
-	TEST(splice(pipefd[0], NULL, reqfd, NULL, OVERWRITE_SIZE, 0));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "splice(pipe -> AF_ALG)");
+	SAFE_SPLICE(file_fd, &off_in, pipefd[1], NULL, OVERWRITE_SIZE, 0);
+	SAFE_SPLICE(pipefd[0], NULL, reqfd, NULL, OVERWRITE_SIZE, 0);
 
 	/* Expected to fail (invalid ciphertext); triggers the scratch write */
 	TST_EXP_FAIL_SILENT(recv(reqfd, recvbuf, sizeof(recvbuf), 0), EBADMSG);
