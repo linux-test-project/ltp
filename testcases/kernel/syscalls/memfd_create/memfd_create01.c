@@ -212,7 +212,6 @@ static void test_share_open(int fd)
 	SAFE_CLOSE(fd2);
 }
 
-
 static const struct tcase {
 	int flags;
 	void (*func)(int fd);

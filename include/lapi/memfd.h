@@ -6,6 +6,9 @@
 #ifndef LAPI_MEMFD_H__
 #define LAPI_MEMFD_H__
 
+#include "tst_test.h"
+#include "lapi/syscalls.h"
+
 /* flags for memfd_create(2) (unsigned int) */
 #ifndef MFD_CLOEXEC
 # define MFD_CLOEXEC             0x0001U
@@ -46,5 +49,10 @@
 #ifndef MFD_HUGE_16GB
 #define MFD_HUGE_16GB (34 << 26)
 #endif
+
+static inline int sys_memfd_create(const char *name, unsigned int flags)
+{
+	return tst_syscall(__NR_memfd_create, name, flags);
+}
 
 #endif /* LAPI_MEMFD_H__ */

@@ -50,7 +50,7 @@
 	check_munmap(__FILE__, __LINE__, (p), (length))
 
 #define CHECK_MFD_HAS_SEALS(fd, seals) \
-	check_mfd_has_seals(__FILE__, __LINE__, (fd), (seals));
+	check_mfd_has_seals(__FILE__, __LINE__, (fd), (seals))
 
 #define CHECK_MFD_ADD_SEALS(fd, seals) \
 	({int r = SAFE_FCNTL((fd), F_ADD_SEALS, (seals)); \
@@ -100,8 +100,6 @@ int mfd_flags_available(const char *filename, const int lineno,
 		unsigned int flags);
 
 int get_mfd_all_available_flags(const char *filename, const int lineno);
-
-int sys_memfd_create(const char *name, unsigned int flags);
 
 int check_fallocate(const char *filename, const int lineno, int fd,
 			int mode, off_t offset, off_t len);

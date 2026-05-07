@@ -24,11 +24,6 @@
 
 #include "memfd_create_common.h"
 
-int sys_memfd_create(const char *name, unsigned int flags)
-{
-	return tst_syscall(__NR_memfd_create, name, flags);
-}
-
 int check_fallocate(const char *filename, const int lineno, int fd,
 			int mode, off_t offset, off_t len)
 {
