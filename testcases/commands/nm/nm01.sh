@@ -83,17 +83,28 @@ test5()
 	EXPECT_PASS $NM -f bsd $TST_DATAROOT/f1 \> nm_bsd.out
 	EXPECT_PASS $NM -f posix $TST_DATAROOT/f1 \> nm_posix.out
 
-	ROD awk '{print gensub(/\y(0+)([0-9a-fA-F]+)\y/, "\\2", "g")}' nm_bsd.out \> trimmed_nm_bsd.out
-	ROD awk '{print gensub(/\y(0+)([0-9a-fA-F]+)\y/, "\\2", "g")}' nm_posix.out \> trimmed_nm_posix.out
+	ROD awk '{
+		if (NF == 2) { val = "0"; type = $1; name = $2; }
+		else { val = $1; type = $2; name = $3; }
+		sub(/^0+/, "", val); if (val == "") val = "0";
+		sub(/^0+/, "", name);
+		print name type val
+	}' nm_bsd.out \> nm1.out
 
-	ROD awk '{print $3 $2 $1}' trimmed_nm_bsd.out \> nm1.out
-	ROD awk '{print $1 $2 $3}' trimmed_nm_posix.out \> nm2.out
+	ROD awk '{
+		val = $3; type = $2; name = $1;
+		sub(/^0+/, "", val); if (val == "") val = "0";
+		sub(/^0+/, "", name);
+		print name type val
+	}' nm_posix.out \> nm2.out
 
 	if diff nm1.out nm2.out > /dev/null; then
 		tst_res TPASS "Got BSD format with -f bsd"
 	else
 		tst_res TFAIL "Got wrong format with -f bsd"
 		cat nm_bsd.out
+		cat nm_posix.out
+		diff -u nm1.out nm2.out
 	fi
 }
 
