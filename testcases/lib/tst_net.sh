@@ -265,6 +265,9 @@ tst_rhost_run()
 		return 1
 	fi
 
+	# go to $TST_TMPDIR before executing the command (once directory created)
+	[ "$TST_TMPDIR_RHOST" = 1 ] && cmd="cd $TST_TMPDIR; $cmd"
+
 	sh_cmd="$pre_cmd $cmd $post_cmd"
 
 	if [ -n "${TST_USE_NETNS:-}" ]; then
