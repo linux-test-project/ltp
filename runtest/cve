@@ -96,3 +96,4 @@ cve-2025-21756 cve-2025-21756
 cve-2026-31431 af_alg08
 cve-2026-43284 xfrm01
 cve-2026-46300 xfrm02
+cve-2026-46300-skb-segment xfrm03
