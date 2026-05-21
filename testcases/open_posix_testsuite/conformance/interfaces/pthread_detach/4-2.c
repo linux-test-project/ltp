@@ -18,7 +18,7 @@
  * 1. Create a thread.
  * 2.Wait 'till the thread exits.
  * 3.Try and detach this thread.
- * 4.Check the return value and make sure it is ESRCH or 0
+ * 4.Check the return value and make sure it is ESRCH
  *
  */
 
@@ -58,10 +58,15 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	/* Detach the non-existant thread. */
 	ret = pthread_detach(new_th);
 
+	if (ret == 0) {
+		printf("Test UNTESTED: Implementation does not return ESRCH\n");
+		return PTS_UNTESTED;
+	}
+
 	/* Check return value of pthread_detach() */
-	if (ret != ESRCH && ret != 0) {
+	if (ret != ESRCH) {
 		printf
-		    ("Test FAILED: Incorrect return code: %d instead of ESRCH or 0\n",
+		    ("Test FAILED: Incorrect return code: %d instead of ESRCH\n",
 		     ret);
 		return PTS_FAIL;
 
