@@ -6,8 +6,10 @@
 /*\
  * Check that:
  *
- * - fork() in parent returns the same pid as getpid() in child
- * - getppid() in child returns the same pid as getpid() in parent
+ * - :manpage:`fork(2)` in parent returns the same pid as
+ *   :manpage:`getpid(2)` in child
+ * - :manpage:`getppid(2)` in child returns the same pid as
+ *   :manpage:`getpid(2)` in parent
  */
 
 #include <errno.h>
