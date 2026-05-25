@@ -45,9 +45,11 @@
 static struct tst_cg_group *trunk_cg[3];
 static struct tst_cg_group *leaf_cg[4];
 static int fd = -1;
+static unsigned int num_children_spawned;
 
 enum checkpoints {
-	CHILD_IDLE
+	CHILD_IDLE,
+	TEST_DONE,
 };
 
 enum trunk_cg {
@@ -66,6 +68,12 @@ enum leaf_cg {
 static void cleanup_sub_groups(void)
 {
 	size_t i;
+
+	if (num_children_spawned > 0) {
+		TST_CHECKPOINT_WAKE2(TEST_DONE, num_children_spawned);
+		tst_reap_children();
+		num_children_spawned = 0;
+	}
 
 	for (i = ARRAY_SIZE(leaf_cg); i > 0; i--) {
 		if (!leaf_cg[i - 1])
@@ -88,7 +96,7 @@ static void alloc_anon_in_child(const struct tst_cg_group *const cg,
 	const pid_t pid = SAFE_FORK();
 
 	if (pid) {
-		tst_reap_children();
+		SAFE_WAITPID(pid, NULL, 0);
 		return;
 	}
 
@@ -107,7 +115,8 @@ static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
 	const pid_t pid = SAFE_FORK();
 
 	if (pid) {
-		tst_reap_children();
+		num_children_spawned++;
+		TST_CHECKPOINT_WAIT(CHILD_IDLE);
 		return;
 	}
 
@@ -117,6 +126,11 @@ static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
 		getpid(), tst_cg_group_name(cg), size);
 	alloc_pagecache(fd, size);
 
+	SAFE_FSYNC(fd);
+
+	TST_CHECKPOINT_WAKE(CHILD_IDLE);
+	TST_CHECKPOINT_WAIT(TEST_DONE);
+
 	exit(0);
 }
 
@@ -125,6 +139,7 @@ static void test_memcg_low(void)
 	long c[4];
 	unsigned int i;
 
+	num_children_spawned = 0;
 	fd = SAFE_OPEN(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600);
 	trunk_cg[A] = tst_cg_group_mk(tst_cg, "trunk_A");
 
