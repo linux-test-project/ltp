@@ -88,7 +88,7 @@ void verify_inotify(void)
 	strcpy(event_set[test_cnt].name, FILE_NAME);
 	test_cnt++;
 
-	int len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	int len = SAFE_READ(SAFE_READ_ANY_EAGAIN, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	int i = 0, test_num = 0;
 	while (i < len) {
