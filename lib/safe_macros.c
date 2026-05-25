@@ -286,14 +286,18 @@ int safe_pipe(const char *file, const int lineno, void (*cleanup_fn) (void),
 	return rval;
 }
 
-ssize_t safe_read(const char *file, const int lineno, void (*cleanup_fn) (void),
-                  char len_strict, int fildes, void *buf, size_t nbyte)
+ssize_t safe_read(const char *file, const int lineno,
+                  void (*cleanup_fn) (void), enum safe_read_opts len_strict,
+                  int fildes, void *buf, size_t nbyte)
 {
 	ssize_t rval;
 
 	rval = read(fildes, buf, nbyte);
 
 	if (rval == -1) {
+		if (len_strict == SAFE_READ_ANY_EAGAIN && errno == EAGAIN)
+			return 0;
+
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
 			"read(%d,%p,%zu) failed, returned %zd", fildes, buf,
 			nbyte, rval);
@@ -301,7 +305,7 @@ ssize_t safe_read(const char *file, const int lineno, void (*cleanup_fn) (void),
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
 			"Invalid read(%d,%p,%zu) return value %zd", fildes,
 			buf, nbyte, rval);
-	} else if (len_strict && (size_t)rval != nbyte) {
+	} else if (len_strict == SAFE_READ_ALL && (size_t)rval != nbyte) {
 		tst_brkm_(file, lineno, TBROK, cleanup_fn,
 			  "Short read(%d,%p,%zu) returned only %zd",
 			  fildes, buf, nbyte, rval);
