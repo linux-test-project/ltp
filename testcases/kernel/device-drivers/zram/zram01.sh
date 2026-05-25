@@ -94,13 +94,15 @@ zram_makefs()
 
 zram_mount()
 {
-	local i
+	local i=$dev_start
+	local fs
 
-	for i in $(seq $dev_start $dev_end); do
-		tst_res TINFO "mount /dev/zram$i"
+	for fs in $zram_filesystems; do
+		tst_res TINFO "mount /dev/zram$i ($fs)"
 		mkdir zram$i
-		ROD mount /dev/zram$i zram$i
+		ROD mount -t "$fs" /dev/zram$i zram$i
 		dev_mounted=$i
+		i=$((i + 1))
 	done
 
 	tst_res TPASS "mount of zram device(s) succeeded"
