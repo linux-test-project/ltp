@@ -70,7 +70,7 @@ make --version 2>&1 | awk -F, '{print $1}' | awk \
 ld -v 2>&1 | awk -F\) '{print $1}' | awk \
       '/BFD/{print "binutils              ",$NF}'
 
-mkswap -V 2>&1 | awk '{print "util-linux            ", $NF}'
+mkswap -V 2>&1 | awk '{$1=$2=$3=""; sub(/^  */, ""); print "util-linux            ", $0}'
 
 mount --version 2>&1 | awk '{$1=$2=""; print "mount               ", $0}'
 
