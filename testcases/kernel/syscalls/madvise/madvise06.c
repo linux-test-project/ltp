@@ -39,7 +39,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <sys/mount.h>
-#include <sys/sysinfo.h>
 #include "tst_test.h"
 
 #define CHUNK_SZ (400*1024*1024L)
@@ -90,22 +89,24 @@ static void meminfo_diag(const char *point)
 
 static void setup(void)
 {
-	struct sysinfo sys_buf_start;
-
 	pg_sz = getpagesize();
 
 	tst_res(TINFO, "dropping caches");
 	sync();
 	SAFE_FILE_PRINTF(drop_caches_fname, "3");
 
-	sysinfo(&sys_buf_start);
-	if (sys_buf_start.freeram < 2 * CHUNK_SZ) {
-		tst_brk(TCONF, "System RAM is too small (%li bytes needed)",
-			2 * CHUNK_SZ);
+	long long avail_mem = tst_available_mem();
+	long long avail_swap = tst_available_swap();
+	long long chunk_kb = 2 * CHUNK_SZ / 1024;
+
+	if (avail_mem < chunk_kb) {
+		tst_brk(TCONF, "System RAM is too small %llikB (%llikB needed)",
+			avail_mem, chunk_kb);
 	}
-	if (sys_buf_start.freeswap < 2 * CHUNK_SZ) {
-		tst_brk(TCONF, "System swap is too small (%li bytes needed)",
-			2 * CHUNK_SZ);
+
+	if (avail_swap < chunk_kb) {
+		tst_brk(TCONF, "System swap is too small %llikB (%llikB needed)",
+			avail_swap, chunk_kb);
 	}
 
 	check_path("/proc/self/oom_score_adj");
