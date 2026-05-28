@@ -54,11 +54,9 @@ static void min_free_kbytes_test(void)
 	struct sigaction sa;
 
 	sa.sa_handler = sighandler;
-	if (sigemptyset(&sa.sa_mask) < 0)
-		tst_brk(TBROK | TERRNO, "sigemptyset");
+	SAFE_SIGEMPTYSET(&sa.sa_mask);
 	sa.sa_flags = 0;
-	if (sigaction(SIGUSR1, &sa, NULL) < 0)
-		tst_brk(TBROK | TERRNO, "sigaction");
+	SAFE_SIGACTION(SIGUSR1, &sa, NULL);
 
 	pid = SAFE_FORK();
 	if (pid == 0) {
@@ -75,8 +73,8 @@ static void min_free_kbytes_test(void)
 	SAFE_WAITPID(pid, &status, WUNTRACED | WCONTINUED);
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		tst_res(TFAIL,
-			 "check_monitor child exit with status: %d", status);
+		tst_res(TFAIL, "check_monitor child exit with status: %s",
+			tst_strstatus(status));
 
 	tst_res(TPASS, "min_free_kbytes test pass");
 }
@@ -109,6 +107,7 @@ static void test_tune(unsigned long overcommit_policy)
 		switch (pid[i] = fork()) {
 		case -1:
 			tst_brk(TBROK | TERRNO, "fork");
+			break;
 		case 0:
 			ret = eatup_mem(overcommit_policy);
 			exit(ret);
@@ -118,18 +117,16 @@ static void test_tune(unsigned long overcommit_policy)
 
 		if (overcommit_policy == 2) {
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-				tst_res(TFAIL,
-					 "child unexpectedly failed: %d",
-					 status);
+				tst_res(TFAIL, "child unexpectedly failed: %s",
+					 tst_strstatus(status));
 		} else if (overcommit_policy == 1) {
 			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
 #ifdef TST_ABI32
 			{
 				if (total_mem < 3145728UL)
 #endif
-					tst_res(TFAIL,
-						 "child unexpectedly failed: %d",
-						 status);
+					tst_res(TFAIL, "child unexpectedly failed: %s",
+						 tst_strstatus(status));
 #ifdef TST_ABI32
 				/* in 32-bit system, a process allocate about 3Gb memory at most */
 				else
@@ -140,14 +137,13 @@ static void test_tune(unsigned long overcommit_policy)
 		} else {
 			if (WIFEXITED(status)) {
 				if (WEXITSTATUS(status) != 0) {
-					tst_res(TFAIL, "child unexpectedly "
-						 "failed: %d", status);
+					tst_res(TFAIL, "child unexpectedly failed: %s",
+						tst_strstatus(status));
 				}
 			} else if (!WIFSIGNALED(status) ||
 				   WTERMSIG(status) != SIGKILL) {
-				tst_res(TFAIL,
-					 "child unexpectedly failed: %d",
-					 status);
+				tst_res(TFAIL, "child unexpectedly failed: %s",
+					tst_strstatus(status));
 			}
 		}
 	}
