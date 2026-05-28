@@ -123,6 +123,9 @@ static void do_setup(void)
 	int pidfd;
 	int init_flags = FAN_REPORT_PIDFD;
 
+	/* Bind mount so remount ro/rw always work */
+	SAFE_MOUNT(MOUNT_PATH, MOUNT_PATH, "none", MS_BIND, NULL);
+
 	if (tst_variant) {
 		fanotify_fd = -1;
 		fd_error_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FD_ERROR, ".");
@@ -171,15 +174,9 @@ static void do_test(unsigned int num)
 		return;
 	}
 
-	if (tc->remount_ro) {
-		/* SAFE_MOUNT fails to remount FUSE */
-		if (mount(tst_device->dev, MOUNT_PATH, tst_device->fs_type,
-			  MS_REMOUNT|MS_RDONLY, NULL) != 0) {
-			tst_brk(TFAIL,
-				"filesystem %s failed to remount readonly",
-				tst_device->fs_type);
-		}
-	}
+	/* remount ro/rw the bind mount */
+	SAFE_MOUNT("none", MOUNT_PATH, "none", MS_BIND | MS_REMOUNT |
+		   (tc->remount_ro ? MS_RDONLY : 0), NULL);
 
 	/*
 	 * Generate the event in either self or a child process. Event
@@ -355,6 +352,9 @@ static void do_cleanup(void)
 
 	if (self_pidfd_fdinfo)
 		free(self_pidfd_fdinfo);
+
+	/* Unmount the bind mount */
+	SAFE_UMOUNT(MOUNT_PATH);
 }
 
 static struct tst_test test = {
