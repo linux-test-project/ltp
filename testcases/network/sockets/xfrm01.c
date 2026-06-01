@@ -27,6 +27,7 @@
 
 #include "tst_test.h"
 #include "tst_net.h"
+#include "tst_netdevice.h"
 #include "lapi/udp.h"
 #include "lapi/splice.h"
 
@@ -72,14 +73,7 @@ static void setup(void)
 	int i, ret;
 
 	tst_setup_netns();
-
-	const char *const lo_cmd[] = {
-		"ip", "link", "set", "lo", "up", NULL
-	};
-
-	ret = tst_cmd(lo_cmd, NULL, NULL, TST_CMD_PASS_RETVAL);
-	if (ret)
-		tst_brk(TBROK, "Failed to bring up loopback interface");
+	NETDEV_SET_STATE("lo", 1);
 
 	keyhex[0] = '0';
 	keyhex[1] = 'x';
