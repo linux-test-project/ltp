@@ -146,7 +146,7 @@ extern int TST_PASS;
  * @SCALL: Tested syscall.
  * @...: A printf-like parameters.
  *
- * This is a variant of the TST_EXP_POSSITIVE() for a more specific case that
+ * This is a variant of the TST_EXP_POSITIVE() for a more specific case that
  * the returned value is a file descriptor.
  */
 #define TST_EXP_FD(SCALL, ...)                                                 \
@@ -200,7 +200,7 @@ extern int TST_PASS;
  * @SCALL: Tested syscall.
  * @...: A printf-like parameters.
  *
- * This is a variant of the TST_EXP_POSSITIVE() for a more specific case that
+ * This is a variant of the TST_EXP_POSITIVE() for a more specific case that
  * the returned value is a pid.
  */
 #define TST_EXP_PID(SCALL, ...)                                                \
@@ -379,8 +379,8 @@ extern int TST_PASS;
  * @...: A printf-like parameters.
  *
  * This macro works like TST_EXP_PASS_PTR_VOID() but checks the return
- * value against NULL instead of (void *)-1. Use this for libc functions
- * such as fopen() that return NULL on failure.
+ * value against NULL instead of ``(void *)-1``. Use this for libc functions
+ * such as :manpage:`fopen(3)` that return NULL on failure.
  */
 #define TST_EXP_PASS_PTR_NULL(SCALL, ...)                                      \
 	TST_EXP_PASS_PTR_(SCALL, #SCALL, NULL, ##__VA_ARGS__)

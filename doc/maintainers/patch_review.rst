@@ -146,12 +146,12 @@ New test should
 C tests
 ~~~~~~~
 
-* Use :doc:`../developers/api_c_tests`, implementing :ref:`struct tst_test`
+* Use :doc:`../developers/api_c_tests`, implementing :c:struct:`tst_test`
 * Test binaries are added into corresponding ``.gitignore`` files
 * Check coding style with ``make check``
 * Metadata documentation
-* If a test is a regression test it should include :ref:`.tags<struct tst_tag>` in the
-  :ref:`struct tst_test` definition
+* If a test is a regression test it should include :c:struct:`.tags <tst_tag>` in the
+  :c:struct:`tst_test` definition
 
 Shell tests
 ~~~~~~~~~~~

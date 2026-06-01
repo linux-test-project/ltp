@@ -137,10 +137,10 @@ initialization code. It is important to note that this is a completely
 ordinary, independent C program, however ``main()`` is missing because it is
 implemented in :master:`include/tst_test.h`.
 
-We specify what code we want to run as part of the test using :ref:`struct tst_test`.
+We specify what code we want to run as part of the test using :c:struct:`tst_test`.
 Various callbacks can be set by the test writer, including
 ``test.test_all``, which we have set to ``run()``. The test harness will execute
-this callback in a separate process (using ``fork()``), forcibly terminating it
+this callback in a separate process (using :manpage:`fork(2)`), forcibly terminating it
 if it does not return after ``test.timeout`` seconds.
 
 We have also set ``test.min_kver`` to the kernel version where ``statx`` was
@@ -205,8 +205,8 @@ please do:
 
 This should build the test and then run it. However, even though the test is
 in :master:`testcases/kernel/syscalls` directory it won't be automatically ran
-as part of the syscalls test group (e.g. not run via ``kirk -r math``.  For
-this we need to add it to the runtest file. So open :master:`runtest/syscalls`
+as part of the syscalls test group (e.g. not run via ``kirk -f math``).
+For this we need to add it to the runtest file. So open :master:`runtest/syscalls`
 and add the lines starting with a ``+``.
 
 .. code-block::
@@ -517,15 +517,14 @@ that should be by setting ``.needs_tmpdir = 1``.
     /*************** statx structure and wrapper goes here ! ***************/
     ...
 
-We have added an extra include :master:`lapi/fcntl.h` which wraps the system header by
+We have added an extra include :master:`include/lapi/fcntl.h` which wraps the system header by
 the same name (``#include <fcntl.h>``). This header ensures we have definitions
 for recently added macros such as ``AT_FDCWD`` by providing fall backs if the
-system header does not have them. The :master:`lapi/` directory contains a number of
+system header does not have them. The :master:`include/lapi/` directory contains a number of
 headers like this.
 
-At some point we may wish to add :master:`lapi/stat.h` to provide a fall back for
-macros such as ``STATX_BASIC_STATS``. However for the time being we have just
-defined it in the test.
+The :master:`include/lapi/stat.h` header provides similar fall backs for
+macros such as ``STATX_BASIC_STATS`` used by this test.
 
 
 .. code-block:: c
@@ -759,9 +758,7 @@ the next section and come back later.
 Submitting the test for review
 ------------------------------
 
-Ignoring the fact we should probably create :master:`lapi/stat.h` along with a bunch
-of fallback logic in the build system. We can now get our test ready for
-submission.
+We can now get our test ready for submission.
 
 The first thing you need to do before considering submitting your test is run
 ``make check-statx01`` or ``make check`` in the test's directory. Again, we use

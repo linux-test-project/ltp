@@ -50,7 +50,7 @@ Process state
 
 NUMA
 ----
-.. kernel-doc:: ../../include/tst_numa.h
+.. kernel-doc:: ../../include/tse_numa.h
 
 Option parsing
 --------------

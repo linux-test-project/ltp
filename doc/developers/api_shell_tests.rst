@@ -30,7 +30,7 @@ documentation at https://linux-test-project.readthedocs.io/en/latest/users/test_
 The shell loader test library uses the :doc:`../developers/api_c_tests`
 internally by parsing a special JSON formatted comment and
 initializing it accordingly. The JSON format is nearly 1:1 serialization of the
-:ref:`struct tst_test` into a JSON. The environment must be always preset even
+:c:struct:`tst_test` into a JSON. The environment must be always preset even
 when it's empty.
 
 .. code-block:: shell

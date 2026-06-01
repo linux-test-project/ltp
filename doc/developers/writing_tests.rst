@@ -138,7 +138,7 @@ The following linting code can be found when we run ``make check``:
 
     * - LTP-005
       - Array must terminate with a sentinel value (i.e. ``NULL`` or ``{}``)
-      - When defining arrays in the :ref:`struct tst_test` structure, we need to
+      - When defining arrays in the :c:struct:`tst_test` structure, we need to
         end the array items with a sentinel ``NULL`` value.
 
 Shell coding style
@@ -361,7 +361,7 @@ LTP C And Shell Test API Comparison
 .. list-table::
     :header-rows: 1
 
-    * - C API :ref:`struct tst_test` members
+    * - C API :c:struct:`tst_test` members
       - Shell API ``$TST_*`` variables
 
     * - .all_filesystems
@@ -531,5 +531,5 @@ LTP C And Shell Test API Comparison
     * - C API other structs
       - Shell API ``$TST_*`` variables
 
-    * - :ref:`struct tst_device`
+    * - ``struct tst_device``
       - TST_DEVICE
