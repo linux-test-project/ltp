@@ -23,4 +23,8 @@
 # define UDP_ENCAP_ESPINUDP 2
 #endif
 
+#ifndef TCP_ENCAP_ESPINTCP
+# define TCP_ENCAP_ESPINTCP 7
+#endif
+
 #endif	/* LAPI_UDP_H__ */
