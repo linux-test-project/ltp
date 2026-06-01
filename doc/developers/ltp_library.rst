@@ -47,8 +47,8 @@ library components follow these naming rules:
 Shell API
 ---------
 
-API source code is in :master:`testcases/lib/tst_test.sh`,
-:master:`testcases/lib/tst_security.sh` and :master:`testcases/lib/tst_net.sh`.
+API source code is in :shell_lib:`tst_test.sh`, :shell_lib:`tst_security.sh`
+and :shell_lib:`tst_net.sh`.
 
 Changes in the shell API should not introduce uncommon dependencies
 (use basic commands installed everywhere by default).

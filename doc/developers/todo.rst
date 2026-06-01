@@ -60,6 +60,6 @@ LTP root folder:
         git --no-pager grep -l -e '^\. .*_lib\.sh' -e '^\. .*test.sh'
 
 LTP also provides a shell loader implementation for plain-C tests inside
-:master:`testcases/lib/tst_run_shell.c` and it permits to run shell tests
-into plain-C LTP API, featuring :ref:`struct tst_test` initializations and a
-direct access to kernel syscalls.
+:shell_lib:`tst_run_shell.c` and it permits to run shell tests into plain-C LTP
+API, featuring :ref:`struct tst_test` initializations and a direct access to
+kernel syscalls.
