@@ -52,7 +52,7 @@ Do not over-comment
 
 Comments can sometimes save your day, but they can easily do more harm than
 good. There has been several cases where comments and actual implementation
-drifted slowly apart which yielded into API misuses and hard to find bugs.
+drifted slowly apart which led to API misuses and hard to find bugs.
 Remember there is only one thing worse than no documentation: wrong
 documentation.
 
@@ -285,7 +285,7 @@ Datafiles
 If your test needs data files, these should be put into a subdirectory
 named ``datafiles`` and installed into the ``testcases/data/$TCID`` directory.
 This will require to add ``INSTALL_DIR := testcases/data/TCID`` into
-correspondent ``datafiles/Makefile``.
+corresponding ``datafiles/Makefile``.
 
 You can obtain path to datafiles via ``$TST_DATAROOT`` provided by ``test.sh``
 or via C function ``tst_dataroot()`` provided by libltp:

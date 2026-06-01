@@ -50,9 +50,9 @@ newly added syscalls, etc. **Trivial fixes/workarounds may be accepted,
 but users are encouraged to move to a newer distro.**
 
 If latest LTP cannot be compiled even with some amount of workarounds,
-you may result to older LTP releases, however these are **not** supported
+you may resort to older LTP releases, however these are **not** supported
 in any way. Also if you are trying to run LTP on more than 10 years old
-distribution you may as well reconsider you life choices.
+distribution you may as well reconsider your life choices.
 
 Build tested architectures
 --------------------------
@@ -91,7 +91,7 @@ Supported C libraries
       - Targeted libc, tested both compilation and actual test results.
 
     * - `uClibc-ng <https://uclibc-ng.org/>`_
-      - Although not being tested, it should work as it attempt to maintain a glibc compatible interface.
+      - Although not being tested, it should work as it attempts to maintain a glibc compatible interface.
 
     * - `uClibc <https://www.uclibc.org/>`_
       - Older uClibc might have problems.

@@ -51,7 +51,7 @@ For users
    How to build and use LTP framework in few steps
 
 :doc:`users/setup_tests`
-   How to setup tests execution
+   How to set up tests execution
 
 :doc:`users/supported_systems`
    A list of supported technologies by the LTP framework

@@ -46,7 +46,7 @@ For any corner case, please take a look at the
 .. note::
 
     This method still works in most of the cases, but nowadays we often
-    require to setup a two factor authentication. If this is the case, please
+    require to set up a two-factor authentication. If this is the case, please
     consider setting up Git accordingly.
 
     Instead of :manpage:`git-send-email(1)` you may want to use

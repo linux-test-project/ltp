@@ -111,7 +111,7 @@ static inline int tst_cmd(void (cleanup_fn)(void),
 #endif
 
 /**
- * tst_system() - Wrapper function for :manpage:`system(3)`, ignorcing ``SIGCHLD``
+ * tst_system() - Wrapper function for :manpage:`system(3)`, ignoring ``SIGCHLD``
  * signal.
  *
  * @command: The command to be run.

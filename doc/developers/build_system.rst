@@ -16,7 +16,7 @@ and including new targets was more difficult than it should have been
 impossible due to the fact that the Makefiles didn't support a prefixing
 system, and the appropriate implicit / static rules hadn't been configured to
 compile into multiple object directories for out-of-tree build support (ease of
-use / functionality). Finally, there wasn't a means to setup dependencies
+use / functionality). Finally, there wasn't a means to set up dependencies
 between components, such that if a component required ``libltp.a`` in order to
 compile, it would go off and compile ``libltp.a`` first (ease of use).
 
@@ -97,9 +97,9 @@ The ``REQ_VERSION_MAJOR`` and ``REQ_VERSION_PATCH`` describe minimal kernel
 version for which the build system tries to build the module.
 
 The build system is also forward compatible with changes in Linux kernel
-internal API so that, if module fails to build, the failure is ignored both on
+internal API so that, if a module fails to build, the failure is ignored both on
 build and installation. If the userspace counterpart of the test fails to load
-the module because the file does not exists, the test is skipped.
+the module because the file does not exist, the test is skipped.
 
 Note the ``ifneq($(KERNELRELEASE),)``. The reason it exists, it is that the
 Makefile is executed twice: once by LTP build system and once by kernel kbuild,

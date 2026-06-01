@@ -95,7 +95,7 @@ metadata documentation:
 
 .. code-block:: bash
 
-    # clone already clonned git repository to new folder
+    # clone already cloned git repository to new folder
     cd ..
     git clone ltp ltp-full-YYYYMMDD
     cd ltp-full-YYYYMMDD

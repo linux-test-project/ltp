@@ -75,7 +75,7 @@ must source the :shell_lib:`tst_run.sh` script.
 
    . tst_run.sh
 
-In order to run a test from a LTP tree a few directories has to be added to the
+In order to run a test from a LTP tree a few directories have to be added to the
 `$PATH`. Note that the number of `../` may depend on the depth of the current
 directory relative to the LTP root.
 

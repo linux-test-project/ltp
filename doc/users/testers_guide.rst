@@ -5,7 +5,7 @@ Testers guide to the Linux test project
 
 While we try to make LTP work out of the box as much as possible there are
 still many things that testers need to consider before the actual testing
-starts. It's advisable to make a test plan in order to asses and formalize the
+starts. It's advisable to make a test plan in order to assess and formalize the
 expected test coverage or even just sit down for a while and consider different
 aspects of the problem at hand.
 
@@ -27,7 +27,7 @@ behavior, even if the upstream kernel is stable.
 For example, backporting patches without their full dependency chain can lead
 to unexpected regressions. Therefore, it’s crucial to test your own kernel
 builds in the environment where they will actually run, using tools like LTP to
-catch issues that does not exists or are not triggered in the upstream
+catch issues that do not exist or are not triggered in the upstream
 configuration.
 
 
@@ -61,7 +61,7 @@ devices for these testcases, that can be changed with environment variables as
 well. Lastly but not least a few testcases repeat the test for all supported
 filesystem, if you are interested in testing on a single filesystem only, you
 can limit these tests to a single filesystem too. See the tests setup for a
-comprehensive list of the `evironment variables
+comprehensive list of the `environment variables
 <setup_tests.html#library-environment-variables>`_.
 
 Then you also have to decide if you are going to run tests in virtual machine

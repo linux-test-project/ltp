@@ -5,7 +5,7 @@ Documentation
 
 This section explains how to use and develop the LTP documentation. The current
 documentation format is written using
-`reStructedText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
+`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
 and it's built on top of `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
 
 Building documentation
@@ -43,8 +43,8 @@ Validating spelling
 To check documentation words spelling, we provide support for
 `aspell <http://aspell.net/>`_, so make sure that it's installed. The
 documentation can be tested via ``make spelling`` command. Output will be
-visible in the ``doc/build`` folder and, if any error will be found, a warning
-message will be shown.
+visible in the ``doc/build`` folder and, if any error is found, a warning
+message is shown.
 
 C API documentation
 ~~~~~~~~~~~~~~~~~~~

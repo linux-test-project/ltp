@@ -3,7 +3,7 @@
 Installation and tests execution
 ================================
 
-Basics requirements to build LTP are the following:
+Basic requirements to build LTP are the following:
 
 * git
 * autoconf
@@ -38,8 +38,8 @@ LTP provides the possibility to build and run single tests:
    $ make
    $ PATH=$PATH:$PWD ./foo01
 
-Shell testcases are a bit more complicated, since they need to setup ``PATH``
-as well as to compiled binary helpers:
+Shell testcases are a bit more complicated, since they need to set up ``PATH``
+as well as to compile binary helpers:
 
 .. code-block:: console
 
@@ -48,7 +48,7 @@ as well as to compiled binary helpers:
    $ cd ../commands/foo
    $ PATH=$PATH:$PWD:$PWD/../../lib/ ./foo01.sh
 
-Open Posix Testsuite has it's own build system which needs Makefiles to be
+Open POSIX Testsuite has its own build system which needs Makefiles to be
 generated first:
 
 .. code-block:: console
@@ -96,7 +96,7 @@ To run all the test suites
 Test suites (e.g. syscalls) are defined in the ``runtest`` directory. Each file
 contains a list of test cases in a simple format.
 
-Each test case has its own executable or script that can directly executed:
+Each test case has its own executable or script that can be executed directly:
 
 .. code-block:: console
 

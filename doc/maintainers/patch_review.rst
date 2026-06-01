@@ -33,14 +33,14 @@ The following are examples and may not be appropriate for all tests.
     various distros/architectures
 
 * Use ``make check``
-* Run effected tests in a VM
+* Run affected tests in a VM
 
   * Use single vCPU
   * Use many vCPUs and enable NUMA
   * Restrict RAM to < 1GB.
 
-* Run effected tests on an embedded device
-* Run effected tests on non-x86 machine in general
+* Run affected tests on an embedded device
+* Run affected tests on non-x86 machine in general
 * Run reproducers on a kernel where the bug is present
 * Run tests with ``-i0`` and ``-i2``
 * Compare usage of system calls with man page descriptions

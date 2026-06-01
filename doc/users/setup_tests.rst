@@ -3,7 +3,7 @@
 Tests setup
 ===========
 
-The internal LTP library provides a set of features that permits to customize
+The internal LTP library provides a set of features that lets you customize
 tests behavior by setting environment variables and using specific tests
 arguments.
 

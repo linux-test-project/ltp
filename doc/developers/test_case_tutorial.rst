@@ -204,7 +204,7 @@ please do:
     ./statx01
 
 This should build the test and then run it. However, even though the test is
-in :master:`testcases/kernel/syscalls` directory it won't be automatically ran
+in :master:`testcases/kernel/syscalls` directory it won't be automatically run
 as part of the syscalls test group (e.g. not run via ``kirk -f math``).
 For this we need to add it to the runtest file. So open :master:`runtest/syscalls`
 and add the lines starting with a ``+``.
@@ -569,7 +569,7 @@ this file in the present working directory. We don't need to create a
 the temporary directory and its contents.
 
 The ``run`` function can be called multiple times by the test harness, however
-``setup`` and ``cleanup`` callbacks will only be ran once.
+``setup`` and ``cleanup`` callbacks will only be run once.
 
 .. warning::
 
