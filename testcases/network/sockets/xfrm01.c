@@ -25,8 +25,10 @@
 
 #define _GNU_SOURCE
 
+#include "lapi/xfrm.h"
 #include "tst_test.h"
 #include "tst_net.h"
+#include "tst_netlink.h"
 #include "tst_netdevice.h"
 #include "lapi/udp.h"
 #include "lapi/splice.h"
@@ -44,13 +46,40 @@
 #define SALT_LEN 4
 #define KEYTOTAL (AES_KEYLEN + SALT_LEN)
 
-#define XFRM_CMD \
-	"ip xfrm state add" \
-	" src 127.0.0.1 dst 127.0.0.1" \
-	" proto esp spi 0x%08x" \
-	" encap espinudp %d %d 0.0.0.0" \
-	" aead 'rfc4106(gcm(aes))' %s 128" \
-	" replay-window 32"
+static struct xfrm_usersa_info xs_payload = {
+	.family = AF_INET,
+	.id.proto = (uint8_t)IPPROTO_ESP,
+	.replay_window = 32,
+	.reqid = 1,
+	.lft = {
+		.soft_byte_limit = XFRM_INF,
+		.hard_byte_limit = XFRM_INF,
+		.soft_packet_limit = XFRM_INF,
+		.hard_packet_limit = XFRM_INF,
+	},
+};
+
+static struct xfrm_encap_tmpl esp_encap = {
+	.encap_type = UDP_ENCAP_ESPINUDP
+};
+
+static struct {
+	struct xfrm_algo_aead alg;
+	char buf[KEYTOTAL];
+} aead_alg_info = {
+	.alg = {
+		.alg_name = "rfc4106(gcm(aes))",
+		.alg_key_len = KEYTOTAL * 8,
+		.alg_icv_len = ICV_SIZE * 8
+	}
+};
+
+static const struct tst_netlink_attr_list alg_config[] = {
+	{XFRMA_ENCAP, &esp_encap, sizeof(esp_encap), NULL},
+	{XFRMA_ALG_AEAD, &aead_alg_info, sizeof(aead_alg_info.alg) + KEYTOTAL,
+		NULL},
+	{0, NULL, -1, NULL}
+};
 
 static const uint8_t original[DATA_SIZE] = { 'T', 'E', 'S', 'T' };
 
@@ -68,23 +97,37 @@ static int pipefd[2] = { -1, -1 };
 
 static void setup(void)
 {
-	char keyhex[KEYTOTAL * 2 + 3];
-	char cmd[512];
-	int i, ret;
+	int ret;
+	struct tst_netlink_context *ctx;
+	struct nlmsghdr header = {
+		.nlmsg_type = XFRM_MSG_NEWSA,
+		.nlmsg_flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL |
+			NLM_F_ACK
+	};
 
 	tst_setup_netns();
 	NETDEV_SET_STATE("lo", 1);
 
-	keyhex[0] = '0';
-	keyhex[1] = 'x';
-	for (i = 0; i < KEYTOTAL; i++)
-		sprintf(keyhex + 2 + i * 2, "%02x", aead_key[i]);
+	memcpy(aead_alg_info.alg.alg_key, aead_key, KEYTOTAL);
+	xs_payload.saddr.a4 = htonl(INADDR_LOOPBACK);
+	xs_payload.id.daddr.a4 = htonl(INADDR_LOOPBACK);
+	xs_payload.id.spi = htonl(SPI);
+	esp_encap.encap_sport = htons(ENC_PORT);
+	esp_encap.encap_dport = htons(ENC_PORT);
 
-	snprintf(cmd, sizeof(cmd), XFRM_CMD, SPI, ENC_PORT, ENC_PORT, keyhex);
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_XFRM);
+	NETLINK_ADD_MESSAGE(ctx, &header, &xs_payload, sizeof(xs_payload));
+	NETLINK_ADD_ATTR_LIST(ctx, alg_config);
+	ret = NETLINK_SEND_VALIDATE(ctx);
+	TST_ERR = tst_netlink_errno;
+	NETLINK_DESTROY_CONTEXT(ctx);
 
-	ret = tst_system(cmd);
-	if (ret)
-		tst_brk(TBROK, "Failed to install xfrm ESP state");
+	if (!ret) {
+		if (TST_ERR == EPROTONOSUPPORT)
+			tst_brk(TCONF, "xfrm ESP is not supported by kernel");
+
+		tst_brk(TBROK | TTERRNO, "Failed to install xfrm ESP state");
+	}
 }
 
 static void try_corrupt(void)
@@ -225,10 +268,6 @@ static struct tst_test test = {
 	},
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
-		{}
-	},
-	.needs_cmds = (struct tst_cmd[]) {
-		{.cmd = "ip"},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
