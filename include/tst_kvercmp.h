@@ -93,7 +93,7 @@ struct tst_kern_exv {
  * @r1: Major kernel version.
  * @r2: Minor kernel version.
  * @r3: Kernel patch level.
- * @vers: A {} terminated array of :ref:`struct tst_kern_exv`.
+ * @vers: A {} terminated array of struct tst_kern_exv.
  *
  * Attempts to look up a distro specific kernel version from the struct
  * tst_kern_exv table first and if no match is found falls back to the version

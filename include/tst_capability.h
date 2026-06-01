@@ -67,7 +67,7 @@ struct tst_cap {
 	char *name;
 };
 
-/**
+/*
  * TST_CAP() - Create a struct tst_cap entry.
  *
  * @action: What should we do, i.e. drop or add capability.
