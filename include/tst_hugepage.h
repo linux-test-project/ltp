@@ -11,6 +11,11 @@
 extern char *nr_opt; /* -s num   Set the number of the been allocated hugepages */
 extern char *Hopt;   /* -H /..   Location of hugetlbfs, i.e.  -H /var/hugetlbfs */
 
+/**
+ * enum tst_hp_policy - Hugepage reservation policy.
+ * @TST_REQUEST: Try to reserve hugepages; tst_hugepages may be 0.
+ * @TST_NEEDS: Fail with TCONF if the requested count cannot be reserved.
+ */
 enum tst_hp_policy {
 	TST_REQUEST,
 	TST_NEEDS,
@@ -18,30 +23,40 @@ enum tst_hp_policy {
 
 #define TST_NO_HUGEPAGES ((unsigned long)-1)
 
+/**
+ * struct tst_hugepage - Hugepage reservation request.
+ * @number: Number of hugepages to reserve.
+ * @policy: Reservation policy (TST_REQUEST or TST_NEEDS).
+ */
 struct tst_hugepage {
 	const unsigned long number;
 	enum  tst_hp_policy policy;
 };
 
-/*
- * Get the default hugepage size. Returns 0 if hugepages are not supported.
+/**
+ * tst_get_hugepage_size() - Get the default hugepage size.
+ *
+ * Return: Hugepage size in bytes, or 0 if hugepages are not supported.
  */
 size_t tst_get_hugepage_size(void);
 
-/*
- * Try the best to request a specified number of huge pages from system,
- * it will store the reserved hpage number in tst_hugepages.
+/**
+ * tst_reserve_hugepages() - Reserve hugepages from the system.
+ * @hp: Hugepage request describing count and policy.
  *
- * Note: this depend on the status of system memory fragmentation.
+ * Stores the number of actually reserved hugepages in tst_hugepages.
+ * The result depends on system memory fragmentation.
+ *
+ * Return: Number of hugepages reserved.
  */
 unsigned long tst_reserve_hugepages(struct tst_hugepage *hp);
 
 /*
- * This variable is used for recording the number of hugepages which system can
- * provides. It will be equal to 'hpages' if tst_reserve_hugepages on success,
- * otherwise set it to a number of hugepages that we were able to reserve.
+ * tst_hugepages - Number of hugepages actually reserved.
  *
- * If system does not support hugetlb, then it will be set to 0.
+ * Set by tst_reserve_hugepages(). Equals the requested count on success,
+ * or fewer if the system could not provide enough. Zero when hugepages
+ * are not supported.
  */
 extern unsigned long tst_hugepages;
 

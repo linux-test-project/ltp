@@ -66,32 +66,24 @@
 #define TST_TAINT_T     (1 << 17) /* kernel was built with the struct randomization plugin */
 #define TST_TAINT_N     (1 << 18) /* an in-kernel test has been run */
 
-/*
- * Initialize and prepare support for checking tainted kernel. Called
- * automatically by LTP library during test setup if tst_test.taint_check
- * is non-zero. The value of tst_test.taint_check will be passed as the mask
- * argument.
+/**
+ * tst_taint_init() - Set up kernel taint checking.
+ * @mask: Bitmask of TST_TAINT_* flags to monitor.
  *
- * supply the mask of TAINT-flags you want to check, for example
- * (TST_TAINT_W | TST_TAINT_D) when you want to check if the kernel issued
- * a warning or even reported it died.
- *
- * This function tests if the requested flags are supported on the
- * locally running kernel. In case the tainted-flags are already set by
- * the kernel, there is no reason to continue and TBROK is generated.
- *
- * The mask must not be zero.
+ * Called automatically by the LTP library during test setup when
+ * tst_test.taint_check is non-zero. Aborts with TBROK if any
+ * requested flags are already set.
  */
 void tst_taint_init(unsigned int mask);
 
 
-/*
- * check if the tainted flags handed to tst_taint_init() are still not set
- * during or after running the test.
- * Calling this function is only allowed after tst_taint_init() was called,
- * otherwise TBROK will be generated.
+/**
+ * tst_taint_check() - Check if monitored taint flags have been set.
  *
- * returns 0 or a bitmask of the flags that currently tainted the kernel.
+ * May only be called after tst_taint_init(). Also called automatically
+ * at the end of testing when tst_test.taint_check is non-zero.
+ *
+ * Return: 0 if clean, or a bitmask of newly set taint flags.
  */
 unsigned int tst_taint_check(void);
 

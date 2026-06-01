@@ -11,123 +11,179 @@
 #include <stdint.h>
 #include <sys/stat.h>
 
+/**
+ * struct tst_device - Block device used by a test.
+ * @dev: Device path (e.g. /dev/loop0).
+ * @fs_type: Filesystem type used to format the device.
+ * @size: Device size in megabytes.
+ * @is_fuse: Set by the library when the mounted filesystem is FUSE-based.
+ */
 struct tst_device {
 	const char *dev;
 	const char *fs_type;
 	uint64_t size;
-	/* If device was mounted by the test library this flag is set for fuse fileystems. */
 	int is_fuse;
 };
 
 /*
- * Automatically initialized if test.needs_device is set.
+ * tst_device - Pointer to the test block device.
+ *
+ * Automatically initialized if tst_test.needs_device is set.
  */
 extern struct tst_device *tst_device;
 
-/*
- * Just like umount() but retries several times on failure.
- * @path: Path to umount
+/**
+ * tst_umount() - Unmount a filesystem, retrying on transient failures.
+ * @path: Mount point to unmount.
+ *
+ * Return: 0 on success, -1 on failure.
  */
 int tst_umount(const char *path);
 
-/*
- * Verifies if an earlier mount is successful or not.
- * @path: Mount path to verify
+/**
+ * tst_mount_has_opt() - Check if a mount point has a specific mount option.
+ * @path: Mount point to check.
+ * @opt: Mount option to look for.
+ *
+ * Return: 1 if found, 0 otherwise.
  */
 int tst_mount_has_opt(const char *path, const char *opt);
+
+/**
+ * tst_is_mounted() - Check if a path is a mount point.
+ * @path: Path to check.
+ *
+ * Return: 1 if mounted, 0 otherwise.
+ */
 int tst_is_mounted(const char *path);
+
+/**
+ * tst_is_mounted_ro() - Check if a path is mounted read-only.
+ * @path: Path to check.
+ *
+ * Return: 1 if mounted read-only, 0 otherwise.
+ */
 int tst_is_mounted_ro(const char *path);
+
+/**
+ * tst_is_mounted_rw() - Check if a path is mounted read-write.
+ * @path: Path to check.
+ *
+ * Return: 1 if mounted read-write, 0 otherwise.
+ */
 int tst_is_mounted_rw(const char *path);
+
+/**
+ * tst_is_mounted_at_tmpdir() - Check if a path is mounted at the test tmpdir.
+ * @path: Path to check.
+ *
+ * Return: 1 if mounted at tmpdir, 0 otherwise.
+ */
 int tst_is_mounted_at_tmpdir(const char *path);
 
-/*
- * Clears a first few blocks of the device. This is needed when device has
- * already been formatted with a filesystems, subset of mkfs.foo utils aborts
- * the operation if it finds a filesystem signature there.
+/**
+ * tst_clear_device() - Wipe filesystem signatures from a block device.
+ * @dev: Device path.
  *
- * Note that this is called from tst_mkfs() automatically, so you probably will
- * not need to use this from the test yourself.
+ * Clears the first few blocks of the device so that mkfs utilities do not
+ * refuse to reformat it. Called automatically by tst_mkfs().
+ *
+ * Return: 0 on success, -1 on failure.
  */
 int tst_clear_device(const char *dev);
 
-/*
- * Finds a free loop device for use and returns the free loopdev minor(-1 for no
- * free loopdev). If path is non-NULL, it will be filled with free loopdev path.
+/**
+ * tst_find_free_loopdev() - Find an unused loop device.
+ * @path: If non-NULL, filled with the loop device path.
+ * @path_len: Size of @path buffer.
  *
+ * Return: The loop device minor number, or -1 if none is free.
  */
 int tst_find_free_loopdev(char *path, size_t path_len);
 
-/*
- * Attaches a file to a loop device.
+/**
+ * tst_attach_device() - Attach a file to a loop device.
+ * @dev_path: Path to the loop device (e.g. /dev/loop0).
+ * @file_path: Path to a file (e.g. disk.img).
  *
- * @dev_path Path to the loop device e.g. /dev/loop0
- * @file_path Path to a file e.g. disk.img
- * @return Zero on success, non-zero otherwise.
+ * Return: Zero on success, non-zero otherwise.
  */
 int tst_attach_device(const char *dev_path, const char *file_path);
 
-/*
- * Get size (in MB) of the given device
+/**
+ * tst_get_device_size() - Get device size in megabytes.
+ * @dev_path: Device path.
+ *
+ * Return: Device size in MB.
  */
 uint64_t tst_get_device_size(const char *dev_path);
 
-/*
- * Detaches a file from a loop device by a fd.
+/**
+ * tst_detach_device_by_fd() - Detach a file from a loop device using an fd.
+ * @dev_path: Path to the loop device (e.g. /dev/loop0).
+ * @dev_fd: Open fd for the loop device; set to -1 on completion.
  *
- * The dev_fd needs to be the last file descriptor opened for the device. Call
- * to this function will close dev_fd and set it to -1 in order to avoid
- * incorrect usage after it's closed.
+ * The @dev_fd must be the last file descriptor opened for the device.
  *
- * @dev_path Path to the loop device e.g. /dev/loop0
- * @dev_fd An open fd for the loop device, set to -1 after the completion.
- * @return Zero on succes, non-zero otherwise.
+ * Return: Zero on success, non-zero otherwise.
  */
 int tst_detach_device_by_fd(const char *dev_path, int *dev_fd);
 
-/*
- * Detaches a file from a loop device.
+/**
+ * tst_detach_device() - Detach a file from a loop device.
+ * @dev_path: Path to the loop device (e.g. /dev/loop0).
  *
- * @dev_path Path to the loop device e.g. /dev/loop0
- * @return Zero on succes, non-zero otherwise.
+ * Opens the device internally and calls tst_detach_device_by_fd(). If the
+ * device fd is already open, use tst_detach_device_by_fd() instead.
  *
- * Internally this function opens the device and calls
- * tst_detach_device_by_fd(). If you keep device file descriptor open you
- * have to call the by_fd() variant since having the device open twice will
- * prevent it from being detached.
+ * Return: Zero on success, non-zero otherwise.
  */
 int tst_detach_device(const char *dev_path);
 
-/*
- * To avoid FS deferred IO metadata/cache interference, so we do syncfs
- * simply before the tst_dev_bytes_written invocation. For easy to use,
- * we create this inline function tst_dev_sync.
+/**
+ * tst_dev_sync() - Sync filesystem to avoid deferred IO interference.
+ * @fd: Open file descriptor on the filesystem to sync.
+ *
+ * Should be called before tst_dev_bytes_written() to flush deferred I/O
+ * and ensure the first measurement is accurate.
+ *
+ * Return: 0 on success, -1 on failure.
  */
 int tst_dev_sync(int fd);
 
-/*
- * Reads test block device stat file and returns the bytes written since the
- * last call of this function.
- * @dev: test block device
+/**
+ * tst_dev_bytes_written() - Get bytes written to a block device since last call.
+ * @dev: Test block device path.
+ *
+ * The call is usually called twice to measure a number of bytes written
+ * during a certain operation. However in order to avoid interference from
+ * deferred I/O the tst_dev_sync() must be called before we take the first
+ * measurement.
+ *
+ * Return: Number of bytes written since the previous invocation.
  */
 unsigned long tst_dev_bytes_written(const char *dev);
 
-/*
- * Find the file or path belongs to which block dev
- * @path       Path to find the backing dev
- * @dev        The buffer to store the block dev in
- * @dev_size   The length of the block dev buffer
+/**
+ * tst_find_backing_dev() - Find the block device backing a path.
+ * @path: Path to look up.
+ * @dev: Buffer to store the block device path.
+ * @dev_size: Size of @dev buffer.
  */
 void tst_find_backing_dev(const char *path, char *dev, size_t dev_size);
 
-/*
- * Stat the device mounted on a given path.
+/**
+ * tst_stat_mount_dev() - Stat the device mounted at a given path.
+ * @mnt_path: Mount point path.
+ * @st: Stat buffer to fill.
  */
 void tst_stat_mount_dev(const char *const mnt_path, struct stat *const st);
 
-/*
- * Returns the size of a physical device block size for the specific path
- * @path   Path to find the block size
- * @return Size of the block size
+/**
+ * tst_dev_block_size() - Get physical block size for a device.
+ * @path: Path on the filesystem to query.
+ *
+ * Return: Physical block size in bytes.
  */
 int tst_dev_block_size(const char *path);
 

@@ -2,8 +2,7 @@
 /*
  * Copyright (c) 2017-2018 Richard Palethorpe <rpalethorpe@suse.com>
  */
-/**
- * @file tst_fuzzy_sync.h
+/*
  * Fuzzy Synchronisation - abbreviated to fzsync
  *
  * This library is intended to help reproduce race conditions by synchronising
@@ -55,8 +54,6 @@
  *
  * For a usage example see testcases/cve/cve-2016-7117.c or just run
  * 'git grep tst_fuzzy_sync.h'
- *
- * @sa tst_fzsync_pair
  */
 
 #include <math.h>
@@ -83,7 +80,37 @@ struct tst_fzsync_stat {
 };
 
 /**
- * The state of a two way synchronisation or race.
+ * struct tst_fzsync_pair - The state of a two way synchronisation or race.
+ * @avg_alpha: Rate at which old diff samples are forgotten (default 0.25).
+ * @a_start: Internal; Thread A start time.
+ * @b_start: Internal; Thread B start time.
+ * @a_end: Internal; Thread A end time.
+ * @b_end: Internal; Thread B end time.
+ * @diff_ss: Internal; Avg. difference between a_start and b_start.
+ * @diff_sa: Internal; Avg. difference between a_start and a_end.
+ * @diff_sb: Internal; Avg. difference between b_start and b_end.
+ * @diff_ab: Internal; Avg. difference between a_end and b_end.
+ * @spins: Internal; Number of spins while waiting for the slower thread.
+ * @spins_avg: Internal; Average spins stat.
+ * @delay: Internal; Number of spins to use in the delay. A negative value
+ *     delays thread A and a positive delays thread B.
+ * @delay_bias: Internal; Bias added to delay.
+ * @sampling: Internal; If positive stores the number of samples left. If zero
+ *     or negative stores sampling state.
+ * @min_samples: Minimum samples before random delays are calculated (default 1024).
+ * @max_dev_ratio: Maximum allowed proportional average deviation, in range
+ *     (0.0, 1.0), before random delays are applied. It's ratio of
+ *     average_deviation / total_time (default 0.1 i.e. avg deviation at
+ *     most 10%).
+ * @a_cntr: Internal; Atomic counter used by fzsync_pair_wait().
+ * @b_cntr: Internal; Atomic counter used by fzsync_pair_wait().
+ * @exit: Internal; Used by tst_fzsync_pair_exit() and fzsync_pair_wait().
+ * @exec_time_start: Internal; Test time remaining on tst_fzsync_pair_reset().
+ * @exec_loops: Maximum number of iterations to execute.
+ * @exec_loop: Internal; Current loop index.
+ * @thread_b: Internal; The second thread or 0.
+ * @yield_in_wait: Yield CPU while waiting, set automatically on single-core
+ *     machines.
  *
  * This contains all the necessary state for approximately synchronising two
  * sections of code in different threads.
@@ -96,89 +123,30 @@ struct tst_fzsync_stat {
  * Internal fields should only be accessed by library functions.
  */
 struct tst_fzsync_pair {
-	/**
-	 * The rate at which old diff samples are forgotten
-	 *
-	 * Defaults to 0.25.
-	 */
 	float avg_alpha;
-	/** Internal; Thread A start time */
 	struct timespec a_start;
-	/** Internal; Thread B start time */
 	struct timespec b_start;
-	/** Internal; Thread A end time */
 	struct timespec a_end;
-	/** Internal; Thread B end time */
 	struct timespec b_end;
-	/** Internal; Avg. difference between a_start and b_start */
 	struct tst_fzsync_stat diff_ss;
-	/** Internal; Avg. difference between a_start and a_end */
 	struct tst_fzsync_stat diff_sa;
-	/** Internal; Avg. difference between b_start and b_end */
 	struct tst_fzsync_stat diff_sb;
-	/** Internal; Avg. difference between a_end and b_end */
 	struct tst_fzsync_stat diff_ab;
-	/** Internal; Number of spins while waiting for the slower thread */
 	int spins;
 	struct tst_fzsync_stat spins_avg;
-	/**
-	 * Internal; Number of spins to use in the delay.
-	 *
-	 * A negative value delays thread A and a positive delays thread B.
-	 */
 	int delay;
 	int delay_bias;
-	/**
-	 *  Internal; The number of samples left or the sampling state.
-	 *
-	 *  A positive value is the number of remaining mandatory
-	 *  samples. Zero or a negative indicate some other state.
-	 */
 	int sampling;
-	/**
-	 * The Minimum number of statistical samples which must be collected.
-	 *
-	 * The minimum number of iterations which must be performed before a
-	 * random delay can be calculated. Defaults to 1024.
-	 */
 	int min_samples;
-	/**
-	 * The maximum allowed proportional average deviation.
-	 *
-	 * A value in the range (0, 1) which gives the maximum average
-	 * deviation which must be attained before random delays can be
-	 * calculated.
-	 *
-	 * It is a ratio of (average_deviation / total_time). The default is
-	 * 0.1, so this allows an average deviation of at most 10%.
-	 */
 	float max_dev_ratio;
 
-	/** Internal; Atomic counter used by fzsync_pair_wait() */
 	tst_atomic_t a_cntr;
-	/** Internal; Atomic counter used by fzsync_pair_wait() */
 	tst_atomic_t b_cntr;
-	/** Internal; Used by tst_fzsync_pair_exit() and fzsync_pair_wait() */
 	tst_atomic_t exit;
-	/** Internal; The test time remaining on tst_fzsync_pair_reset() */
 	float exec_time_start;
-	/**
-	 * The maximum number of iterations to execute during the test
-	 *
-	 * Defaults to a large number, but not too large.
-	 */
 	int exec_loops;
-	/** Internal; The current loop index  */
 	int exec_loop;
-	/** Internal; The second thread or 0 */
 	pthread_t thread_b;
-	/**
-	 * The flag indicates single core machines or not
-	 *
-	 * If running on single core machines, it would take considerable
-	 * amount of time to run fuzzy sync library.
-	 * Thus call sched_yield to give up cpu to decrease the test time.
-	 */
 	bool yield_in_wait;
 
 };
@@ -191,14 +159,11 @@ struct tst_fzsync_pair {
 		tst_brk(TBROK, #param " is more than the upper bound " #hi);  \
 	} while (0)
 /**
- * Ensures that any Fuzzy Sync parameters are properly set
- *
- * @relates tst_fzsync_pair
+ * tst_fzsync_pair_init() - Ensure Fuzzy Sync parameters are properly set.
+ * @pair: Fuzzy sync pair.
  *
  * Usually called from the setup function, it sets default parameter values or
  * validates any existing non-defaults.
- *
- * @sa tst_fzsync_pair_reset()
  */
 static inline void tst_fzsync_pair_init(struct tst_fzsync_pair *pair)
 {
@@ -213,9 +178,8 @@ static inline void tst_fzsync_pair_init(struct tst_fzsync_pair *pair)
 #undef CHK
 
 /**
- * Exit and join thread B if necessary.
- *
- * @relates tst_fzsync_pair
+ * tst_fzsync_pair_cleanup() - Exit and join thread B if necessary.
+ * @pair: Fuzzy sync pair.
  *
  * Call this from your cleanup function.
  */
@@ -231,9 +195,8 @@ static inline void tst_fzsync_pair_cleanup(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Zero some stat fields
- *
- * @relates tst_fzsync_stat
+ * tst_init_stat() - Zero some stat fields.
+ * @s: Stat structure to zero.
  */
 static inline void tst_init_stat(struct tst_fzsync_stat *s)
 {
@@ -242,11 +205,9 @@ static inline void tst_init_stat(struct tst_fzsync_stat *s)
 }
 
 /**
- * Reset or initialise fzsync.
- *
- * @relates tst_fzsync_pair
- * @param pair The state structure initialised with TST_FZSYNC_PAIR_INIT.
- * @param run_b The function defining thread B or NULL.
+ * tst_fzsync_pair_reset() - Reset or initialise fzsync.
+ * @pair: Fuzzy sync pair.
+ * @run_b: Thread B function pointer.
  *
  * Call this from your main test function (thread A), just before entering the
  * main loop. It will (re)set any variables needed by fzsync and (re)start
@@ -256,8 +217,6 @@ static inline void tst_init_stat(struct tst_fzsync_stat *s)
  * you can pass NULL to run_b and handle starting and stopping thread B
  * yourself. You may need to place tst_fzsync_pair in some shared memory as
  * well.
- *
- * @sa tst_fzsync_pair_init()
  */
 static inline void tst_fzsync_pair_reset(struct tst_fzsync_pair *pair,
 				  void *(*run_b)(void *))
@@ -285,9 +244,10 @@ static inline void tst_fzsync_pair_reset(struct tst_fzsync_pair *pair,
 }
 
 /**
- * Print stat
- *
- * @relates tst_fzsync_stat
+ * tst_fzsync_stat_info() - Print stat.
+ * @stat: Stat to print.
+ * @unit: Unit string.
+ * @name: Name string.
  */
 static inline void tst_fzsync_stat_info(struct tst_fzsync_stat stat,
 					char *unit, char *name)
@@ -298,9 +258,8 @@ static inline void tst_fzsync_stat_info(struct tst_fzsync_stat stat,
 }
 
 /**
- * Print some synchronisation statistics
- *
- * @relates tst_fzsync_pair
+ * tst_fzsync_pair_info() - Print some synchronisation statistics.
+ * @pair: Fuzzy sync pair.
  */
 static inline void tst_fzsync_pair_info(struct tst_fzsync_pair *pair)
 {
@@ -313,7 +272,10 @@ static inline void tst_fzsync_pair_info(struct tst_fzsync_pair *pair)
 	tst_fzsync_stat_info(pair->spins_avg, "  ", "spins");
 }
 
-/** Wraps clock_gettime */
+/**
+ * tst_fzsync_time() - Wrap clock_gettime.
+ * @t: Timespec to fill.
+ */
 static inline void tst_fzsync_time(struct timespec *t)
 {
 #ifdef CLOCK_MONOTONIC_RAW
@@ -324,13 +286,12 @@ static inline void tst_fzsync_time(struct timespec *t)
 }
 
 /**
- * Exponential moving average
+ * tst_exp_moving_avg() - Exponential moving average.
+ * @alpha: Smoothing factor.
+ * @sample: New sample value.
+ * @prev_avg: Previous average.
  *
- * @param alpha The preference for recent samples over old ones.
- * @param sample The current sample
- * @param prev_avg The average of the all the previous samples
- *
- * @return The average including the current sample.
+ * Return: New average.
  */
 static inline float tst_exp_moving_avg(float alpha,
 					float sample,
@@ -340,9 +301,10 @@ static inline float tst_exp_moving_avg(float alpha,
 }
 
 /**
- * Update a stat with a new sample
- *
- * @relates tst_fzsync_stat
+ * tst_upd_stat() - Update a stat with a new sample.
+ * @s: Stat structure.
+ * @alpha: Smoothing factor.
+ * @sample: New sample value.
  */
 static inline void tst_upd_stat(struct tst_fzsync_stat *s,
 				 float alpha,
@@ -355,9 +317,11 @@ static inline void tst_upd_stat(struct tst_fzsync_stat *s,
 }
 
 /**
- * Update a stat with a new diff sample
- *
- * @relates tst_fzsync_stat
+ * tst_upd_diff_stat() - Update a stat with a new diff sample.
+ * @s: Stat structure.
+ * @alpha: Smoothing factor.
+ * @t1: First timespec.
+ * @t2: Second timespec.
  */
 static inline void tst_upd_diff_stat(struct tst_fzsync_stat *s,
 				     float alpha,
@@ -368,7 +332,8 @@ static inline void tst_upd_diff_stat(struct tst_fzsync_stat *s,
 }
 
 /**
- * Calculate various statistics and the delay
+ * tst_fzsync_pair_update() - Calculate various statistics and the delay.
+ * @pair: Fuzzy sync pair.
  *
  * This function helps create the fuzz in fuzzy sync. Imagine we have the
  * following timelines in threads A and B:
@@ -452,8 +417,6 @@ static inline void tst_upd_diff_stat(struct tst_fzsync_stat *s,
  * [1] This assumes there is always a significant difference. The algorithm
  * may fail to introduce a delay (when one is needed) in situations where
  * Syscall A and B finish at approximately the same time.
- *
- * @relates tst_fzsync_pair
  */
 static inline void tst_fzsync_pair_update(struct tst_fzsync_pair *pair)
 {
@@ -510,21 +473,17 @@ static inline void tst_fzsync_pair_update(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Wait for the other thread
- *
- * @relates tst_fzsync_pair
- * @param our_cntr The counter for the thread we are on
- * @param other_cntr The counter for the thread we are synchronising with
- * @param spins A pointer to the spin counter or NULL
- * @param exit Exit flag when we need to break out of the wait loop
+ * tst_fzsync_pair_wait() - Wait for the other thread.
+ * @our_cntr: Our atomic counter.
+ * @other_cntr: Other thread's atomic counter.
+ * @spins: Spin counter.
+ * @exit: Exit flag.
+ * @yield_in_wait: Whether to yield while waiting.
  *
  * Used by tst_fzsync_pair_wait_a(), tst_fzsync_pair_wait_b(),
  * tst_fzsync_start_race_a(), etc. If the calling thread is ahead of the other
  * thread, then it will spin wait. Unlike pthread_barrier_wait it will never
  * use futex and can count the number of spins spent waiting.
- *
- * @return A non-zero value if the thread should continue otherwise the
- * calling thread should exit.
  */
 static inline void tst_fzsync_pair_wait(int *our_cntr,
 					int *other_cntr,
@@ -598,10 +557,8 @@ static inline void tst_fzsync_pair_wait(int *our_cntr,
 }
 
 /**
- * Wait in thread A
- *
- * @relates tst_fzsync_pair
- * @sa tst_fzsync_pair_wait
+ * tst_fzsync_wait_a() - Wait in thread A.
+ * @pair: Fuzzy sync pair.
  */
 static inline void tst_fzsync_wait_a(struct tst_fzsync_pair *pair)
 {
@@ -610,10 +567,8 @@ static inline void tst_fzsync_wait_a(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Wait in thread B
- *
- * @relates tst_fzsync_pair
- * @sa tst_fzsync_pair_wait
+ * tst_fzsync_wait_b() - Wait in thread B.
+ * @pair: Fuzzy sync pair.
  */
 static inline void tst_fzsync_wait_b(struct tst_fzsync_pair *pair)
 {
@@ -622,15 +577,13 @@ static inline void tst_fzsync_wait_b(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Decide whether to continue running thread A
+ * tst_fzsync_run_a() - Decide whether to continue running thread A.
+ * @pair: Fuzzy sync pair.
  *
- * @relates tst_fzsync_pair
+ * Return: Non-zero to continue, 0 to stop.
  *
  * Checks some values and decides whether it is time to break the loop of
  * thread A.
- *
- * @return True to continue and false to break.
- * @sa tst_fzsync_run_a
  */
 static inline int tst_fzsync_run_a(struct tst_fzsync_pair *pair)
 {
@@ -667,10 +620,10 @@ static inline int tst_fzsync_run_a(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Decide whether to continue running thread B
+ * tst_fzsync_run_b() - Decide whether to continue running thread B.
+ * @pair: Fuzzy sync pair.
  *
- * @relates tst_fzsync_pair
- * @sa tst_fzsync_run_a
+ * Return: Non-zero to continue, 0 to stop.
  */
 static inline int tst_fzsync_run_b(struct tst_fzsync_pair *pair)
 {
@@ -679,9 +632,8 @@ static inline int tst_fzsync_run_b(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Marks the start of a race region in thread A
- *
- * @relates tst_fzsync_pair
+ * tst_fzsync_start_race_a() - Mark the start of a race region in thread A.
+ * @pair: Fuzzy sync pair.
  *
  * This should be placed just before performing whatever action can cause a
  * race condition. Usually it is placed just before a syscall and
@@ -689,12 +641,6 @@ static inline int tst_fzsync_run_b(struct tst_fzsync_pair *pair)
  *
  * A corresponding call to tst_fzsync_start_race_b() should be made in thread
  * B.
- *
- * @return A non-zero value if the calling thread should continue to loop. If
- * it returns zero then tst_fzsync_exit() has been called and you must exit
- * the thread.
- *
- * @sa tst_fzsync_pair_update
  */
 static inline void tst_fzsync_start_race_a(struct tst_fzsync_pair *pair)
 {
@@ -719,10 +665,8 @@ static inline void tst_fzsync_start_race_a(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Marks the end of a race region in thread A
- *
- * @relates tst_fzsync_pair
- * @sa tst_fzsync_start_race_a
+ * tst_fzsync_end_race_a() - Mark the end of a race region in thread A.
+ * @pair: Fuzzy sync pair.
  */
 static inline void tst_fzsync_end_race_a(struct tst_fzsync_pair *pair)
 {
@@ -732,10 +676,8 @@ static inline void tst_fzsync_end_race_a(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Marks the start of a race region in thread B
- *
- * @relates tst_fzsync_pair
- * @sa tst_fzsync_start_race_a
+ * tst_fzsync_start_race_b() - Mark the start of a race region in thread B.
+ * @pair: Fuzzy sync pair.
  */
 static inline void tst_fzsync_start_race_b(struct tst_fzsync_pair *pair)
 {
@@ -758,10 +700,8 @@ static inline void tst_fzsync_start_race_b(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Marks the end of a race region in thread B
- *
- * @relates tst_fzsync_pair
- * @sa tst_fzsync_start_race_a
+ * tst_fzsync_end_race_b() - Mark the end of a race region in thread B.
+ * @pair: Fuzzy sync pair.
  */
 static inline void tst_fzsync_end_race_b(struct tst_fzsync_pair *pair)
 {
@@ -771,10 +711,9 @@ static inline void tst_fzsync_end_race_b(struct tst_fzsync_pair *pair)
 }
 
 /**
- * Add some amount to the delay bias
- *
- * @relates tst_fzsync_pair
- * @param change The amount to add, can be negative
+ * tst_fzsync_pair_add_bias() - Add some amount to the delay bias.
+ * @pair: Fuzzy sync pair.
+ * @change: Amount to add to bias.
  *
  * A positive change delays thread B and a negative one delays thread
  * A.
