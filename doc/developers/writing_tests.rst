@@ -379,25 +379,16 @@ LTP C And Shell Test API Comparison
     * - .cleanup
       - TST_CLEANUP
 
-    * - .dev_extra_opts
-      - TST_DEV_EXTRA_OPTS
-
-    * - .dev_fs_opts
-      - TST_DEV_FS_OPTS
-
-    * - .dev_fs_type
-      - TST_FS_TYPE
-
     * - .dev_min_size
       - TST_DEVICE_SIZE
 
     * - .format_device
       - TST_FORMAT_DEVICE
 
-    * - .max_runtime
-      - TST_TIMEOUT (not exactly the same, a real timeout based on old .timeout
-        concept. .max_runtime has also an extra 30 sec safety margin for
-        teardown of the test.)
+    * - .runtime
+      - TST_TIMEOUT (not exactly the same, TST_TIMEOUT is a real timeout.
+        .runtime controls the test execution loop duration and has an extra
+        30 sec safety margin for setup and cleanup.)
 
     * - .min_cpus
       - not applicable
@@ -507,7 +498,7 @@ LTP C And Shell Test API Comparison
     * - .test_variants
       - \-
 
-    * - .tst_hugepage
+    * - .hugepages
       - not applicable
 
     * - .ulimit
@@ -524,6 +515,15 @@ LTP C And Shell Test API Comparison
 
     * - not applicable
       - TST_USAGE
+
+    * - not applicable
+      - TST_DEV_EXTRA_OPTS
+
+    * - not applicable
+      - TST_DEV_FS_OPTS
+
+    * - not applicable
+      - TST_FS_TYPE
 
 .. list-table::
     :header-rows: 1

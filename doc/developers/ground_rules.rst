@@ -100,10 +100,10 @@ paths too.
 The test library can simplify cleanup greatly as there are various helpers such as:
 
 - :c:type:`.needs_tmpdir = 1 <tst_test>` that creates and deletes a temporary directory for the test
-- :c:type:`.save_restore = 1 <tst_test>` that saves and restores /sys/ and /proc/ files
+- :c:type:`.save_restore <tst_test>` that saves and restores /sys/ and /proc/ files
 - :c:type:`.needs_device = 1 <tst_test>` sets up and tears down a block device for the test
 - :c:type:`.restore_wallclock = 1 <tst_test>` that restores wall clock after the test
-- :c:type:`.needs_cgroup_ctrls = 1 <tst_test>` sets up and cleans up cgroups for the test
+- :c:type:`.needs_cgroup_ctrls <tst_test>` sets up and cleans up cgroups for the test
 - And many more.
 
 
@@ -115,7 +115,7 @@ Avoid nonstandard libc APIs when a portable equivalent exists; don't assume
 
 If the test is specific to a certain architecture, make sure that it at least
 compiles at the rest of architectures and set the
-:c:type:`.supported_archs = const char *const []){"s390x", ..., NULL} <tst_test>`.
+:c:type:`.supported_archs = (const char *const []){"s390x", ..., NULL} <tst_test>`.
 
 This also applies to shell code where it's easy to use bash features that are
 not available on other shell implementations, e.g. dash or busybox. Make sure
