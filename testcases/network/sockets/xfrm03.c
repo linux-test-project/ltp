@@ -36,9 +36,11 @@
 #include <linux/sockios.h>
 #include <net/if.h>
 
+#include "lapi/xfrm.h"
 #include "tst_test.h"
 #include "tst_net.h"
 #include "tst_netdevice.h"
+#include "lapi/udp.h"
 #include "lapi/tcp.h"
 #include "lapi/splice.h"
 #include "lapi/sched.h"
@@ -60,6 +62,41 @@
 #define MIDDLE_ADDR1  0x0a000102 /* 10.0.1.2 */
 #define MIDDLE_ADDR2  0x0a000201 /* 10.0.2.1 */
 #define RECEIVER_ADDR 0x0a000202 /* 10.0.2.2 */
+
+static struct xfrm_usersa_info xs_payload = {
+	.family = AF_INET,
+	.id.proto = (uint8_t)IPPROTO_ESP,
+	.mode = XFRM_MODE_TRANSPORT,
+	.reqid = 1,
+	.lft = {
+		.soft_byte_limit = XFRM_INF,
+		.hard_byte_limit = XFRM_INF,
+		.soft_packet_limit = XFRM_INF,
+		.hard_packet_limit = XFRM_INF,
+	},
+};
+
+static struct xfrm_encap_tmpl esp_encap = {
+	.encap_type = TCP_ENCAP_ESPINTCP
+};
+
+static struct {
+	struct xfrm_algo_aead alg;
+	char buf[KEYTOTAL];
+} aead_alg_info = {
+	.alg = {
+		.alg_name = "rfc4106(gcm(aes))",
+		.alg_key_len = KEYTOTAL * 8,
+		.alg_icv_len = 128
+	}
+};
+
+static const struct tst_netlink_attr_list alg_config[] = {
+	{XFRMA_ENCAP, &esp_encap, sizeof(esp_encap), NULL},
+	{XFRMA_ALG_AEAD, &aead_alg_info, sizeof(aead_alg_info.alg) + KEYTOTAL,
+		NULL},
+	{0, NULL, -1, NULL}
+};
 
 static const uint8_t aead_key[KEYTOTAL] = {
 	0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
@@ -100,10 +137,13 @@ static void disable_offloads(const char *ifname)
 
 static void setup(void)
 {
-	char keyhex[KEYTOTAL * 2 + 3];
-	char spihex[16];
-	char port_str[8];
 	int i, ret;
+	struct tst_netlink_context *ctx;
+	struct nlmsghdr header = {
+		.nlmsg_type = XFRM_MSG_NEWSA,
+		.nlmsg_flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL |
+			NLM_F_ACK
+	};
 
 	tst_setup_netns();
 	NETDEV_SET_STATE("lo", 1);
@@ -144,27 +184,26 @@ static void setup(void)
 	NETDEV_SET_STATE("veth_r", 1);
 	NETDEV_ADD_ROUTE_INET("veth_r", 0, 0, 0, 0, htonl(MIDDLE_ADDR2));
 
-	keyhex[0] = '0';
-	keyhex[1] = 'x';
-	for (i = 0; i < KEYTOTAL; i++)
-		sprintf(keyhex + 2 + i * 2, "%02x", aead_key[i]);
+	memcpy(aead_alg_info.alg.alg_key, aead_key, KEYTOTAL);
+	xs_payload.id.spi = htonl(SPI);
+	xs_payload.saddr.a4 = htonl(RECEIVER_ADDR);
+	xs_payload.id.daddr.a4 = htonl(RECEIVER_ADDR);
+	esp_encap.encap_sport = htons(TCP_PORT);
+	esp_encap.encap_dport = htons(TCP_PORT);
 
-	snprintf(spihex, sizeof(spihex), "0x%08x", SPI);
-	snprintf(port_str, sizeof(port_str), "%d", TCP_PORT);
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_XFRM);
+	NETLINK_ADD_MESSAGE(ctx, &header, &xs_payload, sizeof(xs_payload));
+	NETLINK_ADD_ATTR_LIST(ctx, alg_config);
+	ret = NETLINK_SEND_VALIDATE(ctx);
+	TST_ERR = tst_netlink_errno;
+	NETLINK_DESTROY_CONTEXT(ctx);
 
-	const char *const xfrm_cmd[] = {
-		"ip", "xfrm", "state", "add",
-		"src", "10.0.2.2", "dst", "10.0.2.2",
-		"proto", "esp", "spi", spihex,
-		"encap", "espintcp", port_str, port_str, "0.0.0.0",
-		"aead", "rfc4106(gcm(aes))", keyhex, "128",
-		"mode", "transport",
-		NULL
-	};
+	if (!ret) {
+		if (TST_ERR == EPROTONOSUPPORT)
+			tst_brk(TCONF, "xfrm ESP is not supported by kernel");
 
-	ret = tst_cmd(xfrm_cmd, NULL, NULL, TST_CMD_PASS_RETVAL);
-	if (ret)
-		tst_brk(TCONF, "Failed to install xfrm ESP-in-TCP state");
+		tst_brk(TBROK | TTERRNO, "Failed to install xfrm ESP state");
+	}
 
 	SAFE_SETNS(middlens, CLONE_NEWNET);
 
@@ -312,10 +351,6 @@ static struct tst_test test = {
 	},
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
-		{}
-	},
-	.needs_cmds = (struct tst_cmd[]) {
-		{.cmd = "ip"},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
