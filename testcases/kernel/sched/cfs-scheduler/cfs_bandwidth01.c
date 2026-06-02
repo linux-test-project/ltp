@@ -35,7 +35,7 @@
 
 static struct tst_cg_group *cg_level2, *cg_level3a, *cg_level3b;
 static struct tst_cg_group *cg_workers[3];
-static int may_have_waiters = 0;
+static int may_have_waiters;
 
 static void set_cpu_quota(const struct tst_cg_group *const cg,
 			  const float quota_percent)
