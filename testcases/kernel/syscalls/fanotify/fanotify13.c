@@ -53,6 +53,9 @@
 #define FILE_PATH_ONE MOUNT_PATH"/"FILE_ONE
 #define FILE_PATH_TWO MOUNT_PATH"/"FILE_TWO
 
+#define TST_VARIANT_OVL_LOWER (tst_variant & 1)
+#define TST_VARIANT_OVL_WATCH (tst_variant > 2)
+
 #if defined(HAVE_NAME_TO_HANDLE_AT)
 struct event_t {
 	unsigned long long expected_mask;
@@ -137,6 +140,22 @@ static void delete_objects(void)
 	}
 }
 
+static void clean_upper_dir(void)
+{
+	unsigned int i;
+
+	SAFE_UMOUNT(MOUNT_PATH);
+	SAFE_UMOUNT(OVL_MNT);
+
+	SAFE_MOUNT(OVL_UPPER, MOUNT_PATH, "none", MS_BIND, NULL);
+	for (i = 0; i < ARRAY_SIZE(objects); i++)
+		SAFE_UNLINK(objects[i].path);
+	SAFE_UMOUNT(MOUNT_PATH);
+
+	SAFE_MOUNT_OVERLAY();
+	SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
+}
+
 static void get_object_stats(void)
 {
 	unsigned int i;
@@ -145,6 +164,17 @@ static void get_object_stats(void)
 		at_handle_fid |=
 			fanotify_save_fid(objects[i].path, &objects[i].fid);
 	}
+}
+
+static void restore_objects(void)
+{
+	if (TST_VARIANT_OVL_LOWER)
+		clean_upper_dir();
+	else
+		create_objects();
+
+	/* Get the re-created object ids */
+	get_object_stats();
 }
 
 static int setup_marks(unsigned int fd, struct test_case_t *tc)
@@ -340,6 +370,10 @@ static void do_test(unsigned int number)
 			"Did not get an expected event (expected: %llx)",
 			event_set[i].expected_mask);
 	}
+
+	/* Restore to state before delete_objects() */
+	if (tc->mask & FAN_DELETE_SELF)
+		restore_objects();
 out:
 	SAFE_CLOSE(fanotify_fd);
 }
@@ -367,14 +401,11 @@ static void do_setup(void)
 	 */
 	if (tst_variant) {
 		REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(AT_HANDLE_FID);
-		ovl_mounted = TST_MOUNT_OVERLAY();
-		if (!ovl_mounted)
-			return;
+		tst_create_overlay_dirs();
 
-		mnt = tst_variant & 1 ? OVL_LOWER : OVL_UPPER;
+		mnt = TST_VARIANT_OVL_LOWER ? OVL_LOWER : OVL_UPPER;
 	} else {
 		mnt = OVL_BASE_MNTPOINT;
-
 	}
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, mnt);
 	SAFE_MKDIR(MOUNT_PATH, 0755);
@@ -386,7 +417,13 @@ static void do_setup(void)
 	/* Create file and directory objects for testing on base fs */
 	create_objects();
 
-	if (tst_variant > 2) {
+	if (tst_variant) {
+		ovl_mounted = TST_MOUNT_OVERLAY();
+		if (!ovl_mounted)
+			return;
+	}
+
+	if (TST_VARIANT_OVL_WATCH) {
 		/* Setup watches on overlayfs */
 		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
 		ovl_bind_mounted = 1;
