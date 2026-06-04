@@ -968,6 +968,33 @@ static struct data_node *parse_file(const char *fname)
 	return res;
 }
 
+static const char *must_includes[] = {
+	"tst_path_defs.h",
+	NULL
+};
+
+static void parse_must_files(void)
+{
+	unsigned int i, j;
+	FILE *f;
+	const char *token;
+
+	for (i = 0; must_includes[i]; i++) {
+		for (j = 0; j < cmdline_includepaths; j++) {
+			f = open_file(cmdline_includepath[j], must_includes[i]);
+			if (!f)
+				continue;
+
+			while ((token = next_token(f, NULL))) {
+				if (!strcmp(token, "define"))
+					parse_macro(f);
+			}
+			fclose(f);
+			break;
+		}
+	}
+}
+
 struct typemap {
 	const char *id;
 	enum data_type type;
@@ -1175,6 +1202,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Failed to initialize hash table\n");
 		return 1;
 	}
+
+	parse_must_files();
 
 	res = parse_file(argv[optind]);
 	if (!res)
