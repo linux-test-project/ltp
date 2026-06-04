@@ -72,6 +72,9 @@ int tst_fs_in_skiplist(const char *fs_type, const char *const *skiplist)
 {
 	unsigned int i;
 
+	if (!strcmp(fs_type, "ntfs3"))
+		fs_type = "ntfs";
+
 	if (!skiplist)
 		return 0;
 
