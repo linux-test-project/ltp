@@ -31,10 +31,6 @@ static char path_sys_sz_resv[BUFSIZ];
 static char path_sys_sz_surp[BUFSIZ];
 static char path_sys_sz_huge[BUFSIZ];
 
-#define PATH_PROC_VM		"/proc/sys/vm/"
-#define PATH_PROC_OVER		PATH_PROC_VM "nr_overcommit_hugepages"
-#define PATH_PROC_HUGE		PATH_PROC_VM "nr_hugepages"
-
 /* Only ia64 requires this */
 #ifdef __ia64__
 #define ADDR (void *)(0x8000000000000000UL)
@@ -171,7 +167,7 @@ static void cleanup(void)
 		tst_umount(MOUNT_DIR);
 
 	if (restore_shmmax)
-		SAFE_FILE_PRINTF(PATH_SHMMAX, "%llu", shmmax);
+		SAFE_FILE_PRINTF(PATH_KERN_SHMMAX, "%llu", shmmax);
 
 	if (restore_overcomm_hgpgs) {
 		tst_res(TINFO, "restore nr_overcommit_hugepages to %ld.",
@@ -191,8 +187,8 @@ static void setup(void)
 		path = path_sys_sz_huge;
 		pathover = path_sys_sz_over;
 	} else {
-		path = PATH_PROC_HUGE;
-		pathover = PATH_PROC_OVER;
+		path = PATH_VM_NR_HPAGES;
+		pathover = PATH_VM_OVERCOMMIT_HPAGES;
 	}
 
 	if (opt_alloc) {
@@ -201,10 +197,10 @@ static void setup(void)
 	}
 
 	if (opt_shmid) {
-		SAFE_FILE_SCANF(PATH_SHMMAX, "%llu", &shmmax);
+		SAFE_FILE_SCANF(PATH_KERN_SHMMAX, "%llu", &shmmax);
 		if (shmmax < (unsigned long long)(length / 2 * hugepagesize)) {
 			restore_shmmax = 1;
-			SAFE_FILE_PRINTF(PATH_SHMMAX, "%ld",
+			SAFE_FILE_PRINTF(PATH_KERN_SHMMAX, "%ld",
 					(length / 2 * hugepagesize));
 		}
 	}

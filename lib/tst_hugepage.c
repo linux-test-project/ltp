@@ -14,7 +14,7 @@ char *Hopt;
 
 size_t tst_get_hugepage_size(void)
 {
-	if (access(PATH_HUGEPAGES, F_OK))
+	if (access(PATH_MM_HUGEPAGES, F_OK))
 		return 0;
 
 	return SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
@@ -24,12 +24,12 @@ unsigned long tst_reserve_hugepages(struct tst_hugepage *hp)
 {
 	unsigned long val, max_hpages;
 	struct tst_path_val pvl = {
-		.path = PATH_NR_HPAGES,
+		.path = PATH_VM_NR_HPAGES,
 		.val = NULL,
 		.flags = TST_SR_SKIP_MISSING | TST_SR_TCONF_RO
 	};
 
-	if (access(PATH_HUGEPAGES, F_OK)) {
+	if (access(PATH_MM_HUGEPAGES, F_OK)) {
 		if (hp->policy == TST_NEEDS)
 			tst_brk(TCONF, "hugetlbfs is not supported");
 		tst_hugepages = 0;
@@ -46,8 +46,8 @@ unsigned long tst_reserve_hugepages(struct tst_hugepage *hp)
 		goto set_hugepages;
 	}
 
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
-	SAFE_FILE_PRINTF("/proc/sys/vm/compact_memory", "1");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
+	SAFE_FILE_PRINTF(PATH_VM_COMPACT_MEMORY, "1");
 	if (hp->policy == TST_NEEDS) {
 		tst_hugepages += SAFE_READ_MEMINFO("HugePages_Total:");
 		goto set_hugepages;
@@ -66,8 +66,8 @@ unsigned long tst_reserve_hugepages(struct tst_hugepage *hp)
 
 set_hugepages:
 	tst_sys_conf_save(&pvl);
-	SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%lu", tst_hugepages);
-	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
+	SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%lu", tst_hugepages);
+	SAFE_FILE_SCANF(PATH_VM_NR_HPAGES, "%lu", &val);
 	if (val != tst_hugepages)
 		tst_brk(TCONF, "nr_hugepages = %lu, but expect %lu. "
 				"Not enough hugepages for testing.",

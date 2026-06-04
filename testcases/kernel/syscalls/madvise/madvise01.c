@@ -24,7 +24,6 @@
 
 #define TMP_DIR "tmp_madvise"
 #define TEST_FILE TMP_DIR"/testfile"
-#define KSM_SYS_DIR "/sys/kernel/mm/ksm"
 #define STR "abcdefghijklmnopqrstuvwxyz12345\n"
 
 static char *sfile;

@@ -34,7 +34,7 @@ static void run(void)
 
 static void setup(void)
 {
-	SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-size", "%d", &max_size_unpriv);
+	SAFE_FILE_SCANF(PATH_FS_PIPE_MAX_SIZE, "%d", &max_size_unpriv);
 }
 
 static void cleanup(void)

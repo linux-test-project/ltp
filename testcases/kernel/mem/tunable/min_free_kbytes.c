@@ -35,10 +35,6 @@
 
 #define MAP_SIZE (1UL<<20)
 
-#define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
-#define MIN_FREE_KBYTES "/proc/sys/vm/min_free_kbytes"
-#define PANIC_ON_OOM "/proc/sys/vm/panic_on_oom"
-
 volatile int end;
 static long default_tune = -1;
 static unsigned long total_mem;
@@ -86,13 +82,13 @@ static void test_tune(unsigned long overcommit_policy)
 	int ret, i;
 	unsigned long tune, memfree, memtotal;
 
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, overcommit_policy, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, overcommit_policy, 1);
 
 	for (i = 0; i < 3; i++) {
 		if (i == 0)
-			TST_SYS_CONF_LONG_SET(MIN_FREE_KBYTES, default_tune, 1);
+			TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, default_tune, 1);
 		else if (i == 1) {
-			TST_SYS_CONF_LONG_SET(MIN_FREE_KBYTES, 2 * default_tune, 1);
+			TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, 2 * default_tune, 1);
 		} else {
 			memfree = SAFE_READ_MEMINFO("MemFree:");
 			memtotal = SAFE_READ_MEMINFO("MemTotal:");
@@ -100,7 +96,7 @@ static void test_tune(unsigned long overcommit_policy)
 			if (tune > (memtotal / 50))
 				tune = memtotal / 50;
 
-			TST_SYS_CONF_LONG_SET(MIN_FREE_KBYTES, tune, 1);
+			TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, tune, 1);
 		}
 
 		fflush(stdout);
@@ -182,7 +178,7 @@ static void check_monitor(void)
 
 	while (!end) {
 		memfree = SAFE_READ_MEMINFO("MemFree:");
-		tune = TST_SYS_CONF_LONG_GET(MIN_FREE_KBYTES);
+		tune = TST_SYS_CONF_LONG_GET(PATH_VM_MIN_FREE_KBYTES);
 
 		if (memfree < tune) {
 			tst_res(TINFO, "MemFree is %lu kB, "
@@ -201,14 +197,14 @@ static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
 
 static void setup(void)
 {
-	if (TST_SYS_CONF_LONG_GET(PANIC_ON_OOM)) {
+	if (TST_SYS_CONF_LONG_GET(PATH_VM_PANIC_ON_OOM)) {
 		tst_brk(TCONF,
 			"panic_on_oom is set, disable it to run these testcases");
 	}
 
 	total_mem = SAFE_READ_MEMINFO("MemTotal:") + SAFE_READ_MEMINFO("SwapTotal:");
 
-	default_tune = TST_SYS_CONF_LONG_GET(MIN_FREE_KBYTES);
+	default_tune = TST_SYS_CONF_LONG_GET(PATH_VM_MIN_FREE_KBYTES);
 }
 
 static struct tst_test test = {
@@ -218,8 +214,8 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = min_free_kbytes_test,
 	.save_restore = (const struct tst_path_val[]) {
-		{OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
-		{MIN_FREE_KBYTES, NULL, TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
+		{PATH_VM_MIN_FREE_KBYTES, NULL, TST_SR_TBROK},
 		{}
 	},
 };

@@ -42,7 +42,7 @@ static void setup(void)
 	 * pid_max would not be in use by another process and guarantees that
 	 * it corresponds to an invalid PGID, generating EPERM.
 	 */
-	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%d\n", &inval_pgid);
+	SAFE_FILE_SCANF(PATH_KERN_PID_MAX, "%d\n", &inval_pgid);
 }
 
 static void run(unsigned int n)

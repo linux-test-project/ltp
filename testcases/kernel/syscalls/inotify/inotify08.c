@@ -146,7 +146,7 @@ static void setup(void)
 			major(buf.st_dev), minor(buf.st_dev));
 
 	/* Drop dentry caches, so overlayfs will allocate a new dentry */
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "2");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "2");
 
 	/* Copy up file */
 	SAFE_CHMOD(FILE_PATH, 0600);

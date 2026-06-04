@@ -35,7 +35,6 @@
 #include "lapi/syscalls.h"
 
 static char testfile[PATH_MAX] = "testfile";
-#define DROP_CACHES_FNAME "/proc/sys/vm/drop_caches"
 #define PROC_IO_FNAME "/proc/self/io"
 #define DEFAULT_FILESIZE (64 * 1024 * 1024)
 #define SHORT_SLEEP_US 5000
@@ -97,7 +96,7 @@ static int has_file(const char *fname, int required)
 
 static void drop_caches(void)
 {
-	SAFE_FILE_PRINTF(DROP_CACHES_FNAME, "1");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "1");
 }
 
 static unsigned long get_bytes_read(void)
@@ -430,7 +429,7 @@ static void setup(void)
 	if (access(PROC_IO_FNAME, F_OK))
 		tst_brk(TCONF, "Requires " PROC_IO_FNAME);
 
-	has_file(DROP_CACHES_FNAME, 1);
+	has_file(PATH_VM_DROP_CACHES, 1);
 
 	/* check if readahead is supported */
 	tst_syscall(__NR_readahead, 0, 0, 0);

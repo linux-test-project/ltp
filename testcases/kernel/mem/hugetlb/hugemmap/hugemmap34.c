@@ -32,7 +32,6 @@
 #define STACK_ALLOCATION_SIZE	(16*1024*1024)
 #endif
 #define MNTPOINT "hugetlbfs/"
-#define PATH_HUGEPAGE "/sys/kernel/mm/hugepages"
 
 #define STACKS_MAX 64
 

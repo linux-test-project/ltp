@@ -66,8 +66,8 @@ static void setup(void)
 	 * Set namespace local rate limit if needed. The global limit might
 	 * be ignored otherwise.
 	 */
-	if (!access("/proc/sys/net/ipv4/icmp_msgs_burst", F_OK))
-		SAFE_FILE_PRINTF("/proc/sys/net/ipv4/icmp_msgs_burst", "50");
+	if (!access(PATH_IPV4_ICMP_MSGS_BURST, F_OK))
+		SAFE_FILE_PRINTF(PATH_IPV4_ICMP_MSGS_BURST, "50");
 
 	/* Configure child namespace */
 	CREATE_VETH_PAIR("ltp_veth1", "ltp_veth2");
@@ -262,8 +262,8 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
-		{"/proc/sys/net/ipv4/icmp_msgs_burst", "50", TST_SR_TBROK},
+		{PATH_IPV4_ICMP_MSGS_BURST, "50", TST_SR_TBROK},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

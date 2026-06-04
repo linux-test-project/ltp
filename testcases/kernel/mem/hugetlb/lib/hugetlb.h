@@ -29,8 +29,6 @@
 #define SHM_HUGETLB	04000	/* segment is mapped via hugetlb */
 #endif
 
-#define PATH_SHMMAX "/proc/sys/kernel/shmmax"
-
 #ifndef barrier
 # ifdef mb
 	/* Redefining the mb() */

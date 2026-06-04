@@ -13,7 +13,7 @@ static inline void check(char *path, long int value)
 	char fullpath[BUFSIZ];
 	long actual_val;
 
-	snprintf(fullpath, BUFSIZ, PATH_KSM "%s", path);
+	snprintf(fullpath, BUFSIZ, PATH_MM_KSM "%s", path);
 	SAFE_FILE_SCANF(fullpath, "%ld", &actual_val);
 
 	if (actual_val != value)
@@ -41,8 +41,8 @@ static inline void final_group_check(int run, int pages_shared, int pages_sharin
 	 * can lead to unexpected false positives where page_volatile
 	 * is elevated and page_unshared is recessed.
 	 */
-	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &ksm_run_orig);
-	SAFE_FILE_PRINTF(PATH_KSM "run", "0");
+	SAFE_FILE_SCANF(PATH_MM_KSM_RUN, "%d", &ksm_run_orig);
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "0");
 
 	check("pages_shared", pages_shared);
 	check("pages_sharing", pages_sharing);
@@ -51,7 +51,7 @@ static inline void final_group_check(int run, int pages_shared, int pages_sharin
 	check("sleep_millisecs", sleep_millisecs);
 	check("pages_to_scan", pages_to_scan);
 
-	SAFE_FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "%d", ksm_run_orig);
 }
 
 static inline void ksm_group_check(int run, int pages_shared, int pages_sharing,
@@ -251,14 +251,14 @@ static inline void create_same_memory(unsigned int size, int num, unsigned int u
 	stop_ksm_children(child, num);
 
 	tst_res(TINFO, "KSM merging...");
-	if (access(PATH_KSM "max_page_sharing", F_OK) == 0) {
-		SAFE_FILE_PRINTF(PATH_KSM "run", "2");
-		SAFE_FILE_PRINTF(PATH_KSM "max_page_sharing", "%ld", size * pages * num);
+	if (access(PATH_MM_KSM_MAX_PAGE_SHARING, F_OK) == 0) {
+		SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "2");
+		SAFE_FILE_PRINTF(PATH_MM_KSM_MAX_PAGE_SHARING, "%ld", size * pages * num);
 	}
 
-	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-	SAFE_FILE_PRINTF(PATH_KSM "pages_to_scan", "%ld", size * pages * num);
-	SAFE_FILE_PRINTF(PATH_KSM "sleep_millisecs", "0");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "1");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_PAGES_TO_SCAN, "%ld", size * pages * num);
+	SAFE_FILE_PRINTF(PATH_MM_KSM_SLEEP_MILLISECS, "0");
 
 	resume_ksm_children(child, num);
 	stop_ksm_children(child, num);
@@ -277,13 +277,13 @@ static inline void create_same_memory(unsigned int size, int num, unsigned int u
 	ksm_group_check(1, 1, size * num * pages - 2, 0, 1, 0, size * pages * num);
 
 	tst_res(TINFO, "KSM unmerging...");
-	SAFE_FILE_PRINTF(PATH_KSM "run", "2");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "2");
 
 	resume_ksm_children(child, num);
 	final_group_check(2, 0, 0, 0, 0, 0, size * pages * num);
 
 	tst_res(TINFO, "stop KSM.");
-	SAFE_FILE_PRINTF(PATH_KSM "run", "0");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "0");
 	final_group_check(0, 0, 0, 0, 0, 0, size * pages * num);
 
 	while (waitpid(-1, &status, 0) > 0)

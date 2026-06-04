@@ -82,8 +82,8 @@ static void setup(void)
 	long hpage_size, orig_hugepages;
 	unsigned long new_shmmax;
 
-	orig_hugepages = TST_SYS_CONF_LONG_GET("/proc/sys/vm/nr_hugepages");
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%lu", &new_shmmax);
+	orig_hugepages = TST_SYS_CONF_LONG_GET(PATH_VM_NR_HPAGES);
+	SAFE_FILE_SCANF(PATH_KERN_SHMMAX, "%lu", &new_shmmax);
 
 	if (new_shmmax < SIZE)
 		tst_brk(TCONF,	"shmmax too low, have: %lu", new_shmmax);
@@ -108,7 +108,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.hugepages = {1, TST_NEEDS},
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_SHMMAX, "1073741824", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
+		{PATH_KERN_SHMMAX, "1073741824", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
 		{}
 	},
 };

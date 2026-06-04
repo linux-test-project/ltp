@@ -25,8 +25,6 @@
 #define PIPE_MAX_INIT_SIZE 65536
 #define DOMAIN_INIT_NAME "LTP_INIT"
 #define DOMAIN_TEST_NAME "LTP_TEST"
-#define INTEGER_PROCFILE "/proc/sys/fs/pipe-max-size"
-#define STRING_PROCFILE "/proc/sys/kernel/domainname"
 static int pipe_max_test_size;
 
 static void format_str(char *str)
@@ -172,14 +170,14 @@ static void splice_test(void)
 	char buf_file[BUF_SIZE];
 	char buf_splice[BUF_SIZE];
 
-	if (file_read_num(INTEGER_PROCFILE) == splice_read_num(INTEGER_PROCFILE))
+	if (file_read_num(PATH_FS_PIPE_MAX_SIZE) == splice_read_num(PATH_FS_PIPE_MAX_SIZE))
 		tst_res(TPASS, "Read num through splice correctly");
 	else
 		tst_brk(TBROK | TERRNO, "Read num through splice failed");
 
-	splice_write_num(INTEGER_PROCFILE, pipe_max_test_size);
+	splice_write_num(PATH_FS_PIPE_MAX_SIZE, pipe_max_test_size);
 
-	if (file_read_num(INTEGER_PROCFILE) == pipe_max_test_size)
+	if (file_read_num(PATH_FS_PIPE_MAX_SIZE) == pipe_max_test_size)
 		tst_res(TPASS, "Write num through splice correctly");
 	else
 		tst_brk(TBROK | TERRNO, "Write num through splice failed");
@@ -187,8 +185,8 @@ static void splice_test(void)
 	memset(buf_file, '\0', sizeof(buf_file));
 	memset(buf_splice, '\0', sizeof(buf_splice));
 
-	file_read_str(STRING_PROCFILE, buf_file);
-	splice_read_str(STRING_PROCFILE, buf_splice);
+	file_read_str(PATH_KERN_DOMAINNAME, buf_file);
+	splice_read_str(PATH_KERN_DOMAINNAME, buf_splice);
 
 	if (!strncmp(buf_file, buf_splice, strlen(buf_file)))
 		tst_res(TPASS, "Read string through splice correctly");
@@ -197,8 +195,8 @@ static void splice_test(void)
 
 	memset(buf_file, '\0', sizeof(buf_file));
 
-	splice_write_str(STRING_PROCFILE, DOMAIN_TEST_NAME);
-	file_read_str(STRING_PROCFILE, buf_file);
+	splice_write_str(PATH_KERN_DOMAINNAME, DOMAIN_TEST_NAME);
+	file_read_str(PATH_KERN_DOMAINNAME, buf_file);
 
 	if (!strncmp(buf_file, DOMAIN_TEST_NAME, strlen(buf_file)))
 		tst_res(TPASS, "Write string through splice correctly");
@@ -209,8 +207,8 @@ static void splice_test(void)
 static void setup(void)
 {
 	pipe_max_test_size = getpagesize();
-	file_write_str(STRING_PROCFILE, DOMAIN_INIT_NAME);
-	file_write_num(STRING_PROCFILE, PIPE_MAX_INIT_SIZE);
+	file_write_str(PATH_KERN_DOMAINNAME, DOMAIN_INIT_NAME);
+	file_write_num(PATH_KERN_DOMAINNAME, PIPE_MAX_INIT_SIZE);
 }
 
 static struct tst_test test = {
@@ -219,8 +217,8 @@ static struct tst_test test = {
 	.test_all = splice_test,
 	.needs_tmpdir = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{INTEGER_PROCFILE, NULL, TST_SR_TCONF},
-		{STRING_PROCFILE, NULL, TST_SR_TCONF},
+		{PATH_FS_PIPE_MAX_SIZE, NULL, TST_SR_TCONF},
+		{PATH_KERN_DOMAINNAME, NULL, TST_SR_TCONF},
 		{}
 	},
 };

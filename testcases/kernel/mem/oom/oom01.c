@@ -17,20 +17,18 @@
 #include "tst_test.h"
 #include "oom.h"
 
-#define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
-
 static void verify_oom(void)
 {
 	/* we expect mmap to fail before OOM is hit */
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 2, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 2, 1);
 	oom(NORMAL, 0, ENOMEM, 0);
 
 	/* with overcommit_memory set to 0 or 1 there's no
 	 * guarantee that mmap fails before OOM */
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 0, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 0, 1);
 	oom(NORMAL, 0, ENOMEM, 1);
 
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 1, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 1, 1);
 	testoom(0, 0, ENOMEM, 1);
 }
 
@@ -41,7 +39,7 @@ static struct tst_test test = {
 	.test_all = verify_oom,
 	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
 		{}
 	},
 };

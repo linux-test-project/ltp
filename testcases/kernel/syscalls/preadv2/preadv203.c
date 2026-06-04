@@ -58,7 +58,7 @@ static volatile int stop;
 
 static void drop_caches(void)
 {
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
 }
 
 /*

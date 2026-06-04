@@ -22,7 +22,7 @@
 #include "tst_safe_sysv_ipc.h"
 #include "tse_newipc.h"
 
-#define NEXT_ID_PATH "/proc/sys/kernel/msg_next_id"
+#define NEXT_ID_PATH PATH_KERN_MSG_NEXT_ID
 static int queue_id, pid;
 static key_t msgkey;
 

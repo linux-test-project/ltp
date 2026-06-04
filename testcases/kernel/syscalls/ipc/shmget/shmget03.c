@@ -37,7 +37,7 @@ static void setup(void)
 	used_cnt = GET_USED_SEGMENTS();
 	tst_res(TINFO, "Current environment %d shared memory segments are already in use",
 		used_cnt);
-	SAFE_FILE_SCANF("/proc/sys/kernel/shmmni", "%i", &maxshms);
+	SAFE_FILE_SCANF(PATH_KERN_SHMMNI, "%i", &maxshms);
 
 	queues = SAFE_MALLOC((maxshms - used_cnt) * sizeof(int));
 	for (num = 0; num < maxshms - used_cnt; num++) {

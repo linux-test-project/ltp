@@ -23,8 +23,6 @@
 # define NR_OPEN (1024*1024)
 #endif
 
-#define NR_OPEN_PATH "/proc/sys/fs/nr_open"
-
 static struct rlimit rlim1, rlim2;
 static unsigned int nr_open = NR_OPEN;
 
@@ -59,8 +57,8 @@ static void verify_setrlimit(unsigned int n)
 
 static void setup(void)
 {
-	if (!access(NR_OPEN_PATH, F_OK))
-		SAFE_FILE_SCANF(NR_OPEN_PATH, "%u", &nr_open);
+	if (!access(PATH_FS_NR_OPEN, F_OK))
+		SAFE_FILE_SCANF(PATH_FS_NR_OPEN, "%u", &nr_open);
 
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &rlim1);
 	rlim2.rlim_max = rlim1.rlim_cur;

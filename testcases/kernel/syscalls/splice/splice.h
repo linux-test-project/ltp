@@ -26,13 +26,13 @@ static inline int get_max_limit(int default_len_data)
 {
 	int pipe_max_unpriv;
 
-	if (!access("/proc/sys/fs/pipe-max-size", F_OK)) {
-		SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-size", "%d", &pipe_max_unpriv);
+	if (!access(PATH_FS_PIPE_MAX_SIZE, F_OK)) {
+		SAFE_FILE_SCANF(PATH_FS_PIPE_MAX_SIZE, "%d", &pipe_max_unpriv);
 		return MIN(pipe_max_unpriv, default_len_data);
 	}
 
-	if (!access("/proc/sys/fs/pipe-max-pages", F_OK)) {
-		SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-pages", "%d", &pipe_max_unpriv);
+	if (!access(PATH_FS_PIPE_MAX_PAGES, F_OK)) {
+		SAFE_FILE_SCANF(PATH_FS_PIPE_MAX_PAGES, "%d", &pipe_max_unpriv);
 		return MIN(pipe_max_unpriv * getpagesize(), default_len_data);
 	}
 

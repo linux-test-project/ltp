@@ -134,7 +134,7 @@ static int set_nr_hugepages_(long count, char *desc, int line)
 	long min_size;
 	long et, ef, er, es;
 
-	SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%lu", count);
+	SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%lu", count);
 
 	/* The code below is based on set_max_huge_pages in mm/hugetlb.c */
 	es = prev_surp;
@@ -433,7 +433,7 @@ static void run_test(void)
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
-	SAFE_FILE_PRINTF(PATH_OC_HPAGES, "%lu", tst_hugepages);
+	SAFE_FILE_PRINTF(PATH_VM_OVERCOMMIT_HPAGES, "%lu", tst_hugepages);
 	private_resv = kernel_has_private_reservations();
 }
 
@@ -447,8 +447,8 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.needs_hugetlbfs = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_OC_HPAGES, NULL, TST_SR_TCONF},
-		{PATH_NR_HPAGES, NULL, TST_SR_TCONF},
+		{PATH_VM_OVERCOMMIT_HPAGES, NULL, TST_SR_TCONF},
+		{PATH_VM_NR_HPAGES, NULL, TST_SR_TCONF},
 		{}
 	},
 	.setup = setup,

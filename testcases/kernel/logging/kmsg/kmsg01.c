@@ -32,8 +32,7 @@
 #define NUM_READ_MSGS 3
 #define NUM_READ_RETRY 10
 #define NUM_OVERWRITE_MSGS 1024
-#define PRINTK "/proc/sys/kernel/printk"
-#define CONSOLE_LOGLEVEL_QUIET   4
+#define CONSOLE_LOGLEVEL_QUIET  4
 
 static int console_loglevel = -1;
 
@@ -556,16 +555,16 @@ static void test_kmsg(void)
 
 static void setup(void)
 {
-	if (access(PRINTK, F_OK) == 0) {
-		SAFE_FILE_SCANF(PRINTK, "%d", &console_loglevel);
-		SAFE_FILE_PRINTF(PRINTK, "%d", CONSOLE_LOGLEVEL_QUIET);
+	if (access(PATH_KERN_PRINTK, F_OK) == 0) {
+		SAFE_FILE_SCANF(PATH_KERN_PRINTK, "%d", &console_loglevel);
+		SAFE_FILE_PRINTF(PATH_KERN_PRINTK, "%d", CONSOLE_LOGLEVEL_QUIET);
 	}
 }
 
 static void cleanup(void)
 {
 	if (console_loglevel != -1)
-		SAFE_FILE_PRINTF(PRINTK, "%d", console_loglevel);
+		SAFE_FILE_PRINTF(PATH_KERN_PRINTK, "%d", console_loglevel);
 }
 
 static struct tst_test test = {

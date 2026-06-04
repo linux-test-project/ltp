@@ -22,9 +22,6 @@
 #include <sys/capability.h>
 #include "lapi/sched.h"
 
-#define OVERFLOWUIDPATH "/proc/sys/kernel/overflowuid"
-#define OVERFLOWGIDPATH "/proc/sys/kernel/overflowgid"
-
 static long overflowuid;
 static long overflowgid;
 
@@ -45,7 +42,7 @@ static void child_fn1(void)
 
 	caps = cap_get_proc();
 
-	SAFE_FILE_SCANF("/proc/sys/kernel/cap_last_cap", "%d", &last_cap);
+	SAFE_FILE_SCANF(PATH_KERN_CAP_LAST_CAP, "%d", &last_cap);
 
 	for (i = 0; i <= last_cap; i++) {
 		cap_get_flag(caps, i, CAP_EFFECTIVE, &flag_val);
@@ -65,8 +62,8 @@ static void child_fn1(void)
 
 static void setup(void)
 {
-	SAFE_FILE_SCANF(OVERFLOWUIDPATH, "%ld", &overflowuid);
-	SAFE_FILE_SCANF(OVERFLOWGIDPATH, "%ld", &overflowgid);
+	SAFE_FILE_SCANF(PATH_KERN_OVERFLOWUID, "%ld", &overflowuid);
+	SAFE_FILE_SCANF(PATH_KERN_OVERFLOWGID, "%ld", &overflowgid);
 }
 
 static void run(void)

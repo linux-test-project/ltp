@@ -38,7 +38,7 @@ static void setup(void)
 	used_cnt = GET_USED_ARRAYS();
 	tst_res(TINFO, "Current environment %d semaphore arrays are already in use",
 		used_cnt);
-	SAFE_FILE_SCANF("/proc/sys/kernel/sem", "%*d %*d %*d %d", &maxsems);
+	SAFE_FILE_SCANF(PATH_KERN_SEM, "%*d %*d %*d %d", &maxsems);
 
 	/* Prevent timeout due to high semaphore array limit */
 	tst_set_runtime(maxsems / 200);
@@ -74,7 +74,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_semget,
 	.save_restore = (const struct tst_path_val[]){
-		{"/proc/sys/kernel/sem", NULL,
+		{PATH_KERN_SEM, NULL,
 			TST_SR_TCONF_MISSING | TST_SR_SKIP_RO},
 		{}
 	}

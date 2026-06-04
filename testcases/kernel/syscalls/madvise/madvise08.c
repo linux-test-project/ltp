@@ -33,7 +33,6 @@
 #include "tst_test.h"
 #include "lapi/mmap.h"
 
-#define CORE_PATTERN "/proc/sys/kernel/core_pattern"
 #define CORE_FILTER "/proc/self/coredump_filter"
 #define YCOUNT 0x500L
 #define FMEMSIZE (YCOUNT + 0x2L)
@@ -71,7 +70,7 @@ static void setup(void)
 	SAFE_GETCWD(cwd, sizeof(cwd));
 	snprintf(tmpcpattern, sizeof(tmpcpattern), "%s/dump-%%p", cwd);
 	tst_res(TINFO, "Temporary core pattern is '%s'", tmpcpattern);
-	SAFE_FILE_PRINTF(CORE_PATTERN, "%s", tmpcpattern);
+	SAFE_FILE_PRINTF(PATH_KERN_CORE_PATTERN, "%s", tmpcpattern);
 
 	fmem = SAFE_MMAP(NULL,
 			 FMEMSIZE,
@@ -212,7 +211,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{CORE_PATTERN, NULL, TST_SR_TCONF},
+		{PATH_KERN_CORE_PATTERN, NULL, TST_SR_TCONF},
 		{}
 	},
 };

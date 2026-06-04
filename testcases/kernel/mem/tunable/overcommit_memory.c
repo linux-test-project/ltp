@@ -82,9 +82,6 @@
 #define EXPECT_PASS		0
 #define EXPECT_FAIL		1
 
-#define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
-#define OVERCOMMIT_RATIO "/proc/sys/vm/overcommit_ratio"
-
 static char *R_opt;
 static long old_overcommit_ratio = -1;
 static long overcommit_ratio;
@@ -110,7 +107,7 @@ static void setup(void)
 	else
 		overcommit_ratio = DEFAULT_OVER_RATIO;
 
-	old_overcommit_ratio = TST_SYS_CONF_LONG_GET(OVERCOMMIT_RATIO);
+	old_overcommit_ratio = TST_SYS_CONF_LONG_GET(PATH_VM_OVERCOMMIT_RATIO);
 
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	tst_res(TINFO, "MemTotal is %ld kB", mem_total);
@@ -132,7 +129,7 @@ static void setup(void)
 		SAFE_SETRLIMIT(RLIMIT_AS, &lim);
 	}
 
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_RATIO, overcommit_ratio, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_RATIO, overcommit_ratio, 1);
 
 	calculate_total_batch_size();
 	tst_res(TINFO, "TotalBatchSize is %ld kB", total_batch_size);
@@ -141,7 +138,7 @@ static void setup(void)
 static void overcommit_memory_test(void)
 {
 	/* start to test overcommit_memory=2 */
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 2, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 2, 1);
 
 	update_mem_commit();
 	/* Skip tests that would overflow or exceed 32-bit address space */
@@ -155,7 +152,7 @@ static void overcommit_memory_test(void)
 	}
 
 	/* start to test overcommit_memory=0 */
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 0, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 0, 1);
 
 	update_mem();
 	alloc_and_check(free_total / 2, EXPECT_PASS);
@@ -170,7 +167,7 @@ static void overcommit_memory_test(void)
 	}
 
 	/* start to test overcommit_memory=1 */
-	TST_SYS_CONF_LONG_SET(OVERCOMMIT_MEMORY, 1, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 1, 1);
 
 	alloc_and_check(sum_total / 2, EXPECT_PASS);
 	if (tst_kernel_bits() == 64 || (unsigned long)sum_total <= TST_GB / TST_KB) {
@@ -287,8 +284,8 @@ static struct tst_test test = {
 	.test_all = overcommit_memory_test,
 	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
-		{OVERCOMMIT_RATIO, NULL, TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_RATIO, NULL, TST_SR_TBROK},
 		{}
 	},
 };

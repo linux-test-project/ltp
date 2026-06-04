@@ -30,13 +30,8 @@
 #define MOUNT_PATH	"fs_mnt"
 #define TEST_FILE	MOUNT_PATH "/testfile"
 #define SELF_USERNS	"/proc/self/ns/user"
-#define MAX_USERNS	"/proc/sys/user/max_user_namespaces"
+#define MAX_USERNS	PATH_USER_MAX_USER_NAMESPACES
 #define UID_MAP		"/proc/self/uid_map"
-
-#define GLOBAL_MAX_GROUPS "/proc/sys/fs/fanotify/max_user_groups"
-#define GLOBAL_MAX_MARKS  "/proc/sys/fs/fanotify/max_user_marks"
-#define USERNS_MAX_GROUPS "/proc/sys/user/max_fanotify_groups"
-#define USERNS_MAX_MARKS  "/proc/sys/user/max_fanotify_marks"
 
 /*
  * In older kernels those limits were fixed in kernel.
@@ -185,12 +180,12 @@ static void test_fanotify(unsigned int n)
 			if (tc->max_user_groups && tc->max_user_groups < groups) {
 				/* Further limit user ns groups */
 				marks = groups = tc->max_user_groups;
-				SAFE_FILE_PRINTF(USERNS_MAX_GROUPS, "%d", groups);
+				SAFE_FILE_PRINTF(PATH_USER_MAX_FANOTIFY_GROUPS, "%d", groups);
 			}
 			if (tc->max_user_marks && tc->max_user_marks < marks) {
 				/* Further limit user ns marks */
 				marks = tc->max_user_marks;
-				SAFE_FILE_PRINTF(USERNS_MAX_MARKS, "%d", marks);
+				SAFE_FILE_PRINTF(PATH_USER_MAX_FANOTIFY_MARKS, "%d", marks);
 			}
 		}
 		verify_user_limits(tc->init_flags, groups, marks);
@@ -230,11 +225,11 @@ static void setup(void)
 	 * In older kernels those limits were fixed in kernel and fanotify is
 	 * not permitted inside user ns.
 	 */
-	if (access(GLOBAL_MAX_GROUPS, F_OK) && errno == ENOENT) {
+	if (access(PATH_FS_MAX_USER_GROUPS, F_OK) && errno == ENOENT) {
 		user_ns_supported = 0;
 	} else {
-		SAFE_FILE_SCANF(GLOBAL_MAX_GROUPS, "%d", &max_groups);
-		SAFE_FILE_SCANF(GLOBAL_MAX_MARKS, "%d", &max_marks);
+		SAFE_FILE_SCANF(PATH_FS_MAX_USER_GROUPS, "%d", &max_groups);
+		SAFE_FILE_SCANF(PATH_FS_MAX_USER_MARKS, "%d", &max_marks);
 	}
 	tst_res(TINFO, "max_fanotify_groups=%d max_fanotify_marks=%d",
 		max_groups, max_marks);

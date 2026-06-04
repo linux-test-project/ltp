@@ -13,11 +13,11 @@
  * - c7fcb99877f9 ( sched/rt: Fix sysctl_sched_rr_timeslice intial value)
  */
 
+#include "tst_test.h"
 #include "time64_variants.h"
 #include "tst_timer.h"
 #include "tst_sched.h"
 
-#define PROC_SCHED_RR_TIMESLICE_MS	"/proc/sys/kernel/sched_rr_timeslice_ms"
 static int proc_flag;
 
 struct tst_ts tp;
@@ -48,7 +48,7 @@ static void setup(void)
 	if ((sys_sched_setscheduler(0, SCHED_RR, &p)) == -1)
 		tst_res(TFAIL | TERRNO, "sched_setscheduler() failed");
 
-	proc_flag = !access(PROC_SCHED_RR_TIMESLICE_MS, F_OK);
+	proc_flag = !access(PATH_KERN_SCHED_RR_TIMESLICE_MS, F_OK);
 }
 
 static void run(void)
@@ -73,7 +73,7 @@ static void run(void)
 	}
 
 	if (proc_flag)
-		TST_ASSERT_INT(PROC_SCHED_RR_TIMESLICE_MS, tst_ts_to_ms(tp));
+		TST_ASSERT_INT(PATH_KERN_SCHED_RR_TIMESLICE_MS, tst_ts_to_ms(tp));
 }
 
 static struct tst_test test = {

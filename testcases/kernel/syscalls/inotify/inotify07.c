@@ -153,7 +153,7 @@ static void setup(void)
 	tst_res(TINFO, DIR_PATH " ino=%lu", buf.st_ino);
 
 	/* Drop dentry caches, so overlayfs will allocate a new dentry */
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "2");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "2");
 
 	/* Copy up directory to make it a merge directory */
 	SAFE_CHMOD(DIR_PATH, 0700);

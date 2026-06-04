@@ -40,7 +40,7 @@ static void setup(void)
 		used_cnt);
 
 	maxmsgs = used_cnt + 32;
-	SAFE_FILE_PRINTF("/proc/sys/kernel/msgmni", "%i", maxmsgs);
+	SAFE_FILE_PRINTF(PATH_KERN_MSGMNI, "%i", maxmsgs);
 
 	queues = SAFE_MALLOC((maxmsgs - used_cnt) * sizeof(int));
 
@@ -74,7 +74,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_msgget,
 	.save_restore = (const struct tst_path_val[]){
-		{"/proc/sys/kernel/msgmni", NULL, TST_SR_TCONF},
+		{PATH_KERN_MSGMNI, NULL, TST_SR_TCONF},
 		{}
 	}
 };

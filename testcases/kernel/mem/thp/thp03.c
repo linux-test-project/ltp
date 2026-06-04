@@ -79,7 +79,7 @@ static void thp_test(void)
 
 static void setup(void)
 {
-	if (access(PATH_THP, F_OK) == -1)
+	if (access(PATH_MM_THP, F_OK) == -1)
 		tst_brk(TCONF, "THP not enabled in kernel?");
 
 	check_hugepage();

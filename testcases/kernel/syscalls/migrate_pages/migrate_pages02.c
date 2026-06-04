@@ -324,7 +324,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/kernel/numa_balancing", "0",
+		{PATH_KERN_NUMA_BALANCING, "0",
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
 		{}
 	},

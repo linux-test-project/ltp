@@ -22,7 +22,7 @@
 #include "tst_safe_stdio.h"
 #include "tst_test.h"
 
-#define SYSVIPC_TOTAL "/proc/sys/kernel/msgmni"
+#define SYSVIPC_TOTAL PATH_KERN_MSGMNI
 #define SYSVIPC_USED "/proc/sysvipc/msg"
 #define MSGTYPE 10
 #define MAXNREPS 100000

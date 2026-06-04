@@ -30,9 +30,9 @@ static void verify_ipcinfo(void)
 	else
 		tst_res(TPASS, "shmmin = 1");
 
-	TST_ASSERT_ULONG("/proc/sys/kernel/shmmax", info.shmmax);
-	TST_ASSERT_ULONG("/proc/sys/kernel/shmmni", info.shmmni);
-	TST_ASSERT_ULONG("/proc/sys/kernel/shmall", info.shmall);
+	TST_ASSERT_ULONG(PATH_KERN_SHMMAX, info.shmmax);
+	TST_ASSERT_ULONG(PATH_KERN_SHMMNI, info.shmmni);
+	TST_ASSERT_ULONG(PATH_KERN_SHMALL, info.shmall);
 }
 
 static struct tst_test test = {

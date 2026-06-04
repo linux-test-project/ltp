@@ -97,13 +97,13 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/sys/kernel/mm/ksm/run", NULL, TST_SR_TBROK},
-		{"/sys/kernel/mm/ksm/sleep_millisecs", NULL, TST_SR_TBROK},
-		{"/sys/kernel/mm/ksm/max_page_sharing", NULL,
+		{PATH_MM_KSM_RUN, NULL, TST_SR_TBROK},
+		{PATH_MM_KSM_SLEEP_MILLISECS, NULL, TST_SR_TBROK},
+		{PATH_MM_KSM_MAX_PAGE_SHARING, NULL,
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
-		{"/sys/kernel/mm/ksm/merge_across_nodes", "1",
+		{PATH_MM_KSM_MERGE_ACROSS_NODES, "1",
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
-		{"/sys/kernel/mm/ksm/smart_scan", "0",
+		{PATH_MM_KSM_SMART_SCAN, "0",
 			TST_SR_SKIP_MISSING | TST_SR_TBROK_RO},
 		{}
 	},

@@ -21,14 +21,12 @@
 #include "tst_safe_sysv_ipc.h"
 #include "tse_newipc.h"
 
-#define NEXT_ID_PATH "/proc/sys/kernel/shm_next_id"
-
 static int shm_id[2], pid;
 static key_t shmkey[2];
 
 static void verify_shmget(void)
 {
-	SAFE_FILE_PRINTF(NEXT_ID_PATH, "%d", shm_id[0]);
+	SAFE_FILE_PRINTF(PATH_KERN_SHM_NEXT_ID, "%d", shm_id[0]);
 
 	shm_id[1] = SAFE_SHMGET(shmkey[1], SHM_SIZE, IPC_CREAT | SHM_RW);
 	if (shm_id[1] == shm_id[0])
@@ -46,7 +44,7 @@ static void setup(void)
 	shmkey[0] = GETIPCKEY();
 	shmkey[1] = GETIPCKEY();
 	pid = getpid();
-	SAFE_FILE_PRINTF(NEXT_ID_PATH, "%d", pid);
+	SAFE_FILE_PRINTF(PATH_KERN_SHM_NEXT_ID, "%d", pid);
 	shm_id[0] = SAFE_SHMGET(shmkey[0], SHM_SIZE, IPC_CREAT | SHM_RW);
 }
 

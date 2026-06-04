@@ -7,10 +7,9 @@
 #define OOM_H_
 
 #include <pthread.h>
+#include "tst_path_defs.h"
 #include "config.h"
 #include "numa_helper.h"
-
-#define PATH_KSM        "/sys/kernel/mm/ksm/"
 
 #define LENGTH			(3UL<<30)
 #define NORMAL			1
@@ -217,15 +216,15 @@ static inline void testoom(int mempolicy, int lite, int retcode, int allow_sigki
 	 * Skip oom(KSM) if lite == 1, since limit_in_bytes may vary from
 	 * run to run, which isn't reliable for oom03 cgroup test.
 	 */
-	if (access(PATH_KSM, F_OK) == -1 || lite == 1) {
+	if (access(PATH_MM_KSM, F_OK) == -1 || lite == 1) {
 		tst_res(TINFO, "KSM is not configed or lite == 1, "
 			 "skip OOM test for KSM pags");
 	} else {
 		tst_res(TINFO, "start OOM testing for KSM pages.");
-		SAFE_FILE_SCANF(PATH_KSM "run", "%d", &ksm_run_orig);
-		SAFE_FILE_PRINTF(PATH_KSM "run", "1");
+		SAFE_FILE_SCANF(PATH_MM_KSM_RUN, "%d", &ksm_run_orig);
+		SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "1");
 		oom(KSM, lite, retcode, allow_sigkill);
-		SAFE_FILE_PRINTF(PATH_KSM "run", "%d", ksm_run_orig);
+		SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "%d", ksm_run_orig);
 	}
 }
 

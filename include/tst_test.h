@@ -21,6 +21,7 @@
 #include "tst_res_flags.h"
 #include "tst_parse.h"
 #include "tst_test_macros.h"
+#include "tst_path_defs.h"
 #include "tst_checkpoint.h"
 #include "tst_device.h"
 #include "tst_mkfs.h"

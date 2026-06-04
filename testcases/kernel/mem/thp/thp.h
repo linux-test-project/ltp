@@ -6,11 +6,11 @@
 #ifndef THP_H
 #define THP_H
 
-#define PATH_THP "/sys/kernel/mm/transparent_hugepage/"
+#include "tst_path_defs.h"
 
 static inline void check_hugepage(void)
 {
-        if (access(PATH_HUGEPAGES, F_OK))
+        if (access(PATH_MM_HUGEPAGES, F_OK))
                 tst_brk(TCONF, "Huge page is not supported.");
 }
 

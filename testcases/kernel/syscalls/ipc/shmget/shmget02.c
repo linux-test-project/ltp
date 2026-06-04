@@ -143,7 +143,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.hugepages = {TST_NO_HUGEPAGES},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/kernel/shmmax", "8192", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
+		{PATH_KERN_SHMMAX, "8192", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
 		{}
 	},
 };

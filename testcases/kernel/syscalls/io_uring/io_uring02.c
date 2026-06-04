@@ -255,7 +255,7 @@ static struct tst_test test = {
 		{}
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/kernel/io_uring_disabled", "0",
+		{PATH_KERN_IO_URING_DISABLED, "0",
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
 		{}
 	},

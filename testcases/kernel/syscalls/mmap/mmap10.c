@@ -40,7 +40,6 @@
 #include "tst_test.h"
 
 #define SIZE (5 * TST_MB)
-#define PATH_KSM "/sys/kernel/mm/ksm/"
 
 static size_t page_sz;
 static char *memory;
@@ -60,7 +59,7 @@ static void run(unsigned int i)
 	int fd = -1;
 
 	if (tc->add_ksm) {
-		if (access(PATH_KSM, F_OK) == -1)
+		if (access(PATH_MM_KSM, F_OK) == -1)
 			tst_brk(TCONF, "KSM configuration is not enabled");
 		else
 			tst_res(TINFO, "Add to KSM regions");

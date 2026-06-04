@@ -16,8 +16,6 @@
 #include "config.h"
 #include "lapi/sched.h"
 
-#define FS_NR_OPEN "/proc/sys/fs/nr_open"
-
 #ifdef HAVE_UNSHARE
 
 static void run(void)
@@ -32,7 +30,7 @@ static void run(void)
 	SAFE_DUP2(2, nr_open + 1);
 
 	if (!SAFE_CLONE(&args)) {
-		SAFE_FILE_PRINTF(FS_NR_OPEN, "%d", nr_open);
+		SAFE_FILE_PRINTF(PATH_FS_NR_OPEN, "%d", nr_open);
 		TST_EXP_FAIL(unshare(CLONE_FILES), EMFILE);
 		exit(0);
 	}
@@ -49,7 +47,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
-		{FS_NR_OPEN, NULL, TST_SR_TCONF},
+		{PATH_FS_NR_OPEN, NULL, TST_SR_TCONF},
 		{}
 	},
 };

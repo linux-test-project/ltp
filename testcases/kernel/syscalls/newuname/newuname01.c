@@ -31,16 +31,16 @@ static void run(void)
 
 	TST_EXP_EQ_STR(name->sysname, "Linux");
 
-	SAFE_FILE_READ_STR("/proc/sys/kernel/hostname", proc_val, sizeof(proc_val));
+	SAFE_FILE_READ_STR(PATH_KERN_HOSTNAME, proc_val, sizeof(proc_val));
 	TST_EXP_EQ_STR(name->nodename, proc_val);
 
-	SAFE_FILE_READ_STR("/proc/sys/kernel/osrelease", proc_val, sizeof(proc_val));
+	SAFE_FILE_READ_STR(PATH_KERN_OSRELEASE, proc_val, sizeof(proc_val));
 	TST_EXP_EQ_STR(name->release, proc_val);
 
-	SAFE_FILE_READ_STR("/proc/sys/kernel/version", proc_val, sizeof(proc_val));
+	SAFE_FILE_READ_STR(PATH_KERN_VERSION, proc_val, sizeof(proc_val));
 	TST_EXP_EQ_STR(name->version, proc_val);
 
-	SAFE_FILE_READ_STR("/proc/sys/kernel/domainname", proc_val, sizeof(proc_val));
+	SAFE_FILE_READ_STR(PATH_KERN_DOMAINNAME, proc_val, sizeof(proc_val));
 	TST_EXP_EQ_STR(name->domainname, proc_val);
 }
 

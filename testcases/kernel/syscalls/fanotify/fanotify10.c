@@ -99,9 +99,6 @@ static int ignore_mark_unsupported;
 #define FILE_EXEC_PATH2 MNT2_PATH"/"TEST_APP
 #define FILE2_EXEC_PATH2 MNT2_PATH"/"TEST_APP2
 
-#define DROP_CACHES_FILE "/proc/sys/vm/drop_caches"
-#define CACHE_PRESSURE_FILE "/proc/sys/vm/vfs_cache_pressure"
-
 static pid_t child_pid;
 static int bind_mount_created;
 static unsigned int num_classes = NUM_CLASSES;
@@ -517,9 +514,9 @@ static void drop_caches(void)
 	 * In order to ensure that the inode can be released in the two-tier
 	 * directory structure, drop_cache is required three times.
 	 */
-	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
-	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
-	SAFE_FILE_PRINTF(DROP_CACHES_FILE, "3");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
 }
 
 static int create_fanotify_groups(unsigned int n)
@@ -925,7 +922,7 @@ static void setup(void)
 	mount_cycle();
 
 	/* Set high priority for evicting inodes */
-	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "500");
+	SAFE_FILE_PRINTF(PATH_VM_VFS_CACHE_PRESSURE, "500");
 }
 
 static void cleanup(void)
@@ -969,7 +966,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{CACHE_PRESSURE_FILE, NULL, TST_SR_TCONF},
+		{PATH_VM_VFS_CACHE_PRESSURE, NULL, TST_SR_TCONF},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {

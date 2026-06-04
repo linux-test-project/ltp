@@ -47,7 +47,7 @@
 #define PASS_THRESHOLD (CHUNK_SZ / 4)
 #define PASS_THRESHOLD_KB (PASS_THRESHOLD / 1024)
 
-static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
+static const char drop_caches_fname[] = PATH_VM_DROP_CACHES;
 static int pg_sz, stat_refresh_sup;
 
 static long init_swap, init_swap_cached, init_cached;

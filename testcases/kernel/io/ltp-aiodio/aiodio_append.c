@@ -106,7 +106,7 @@ static void setup(void)
 	if (tst_parse_int(str_numaio, &numaio, 1, INT_MAX))
 		tst_brk(TBROK, "Number of async IO blocks '%s'", str_numaio);
 
-	SAFE_FILE_SCANF("/proc/sys/fs/aio-max-nr", "%d", &maxaio);
+	SAFE_FILE_SCANF(PATH_FS_NR_AIO_MAX_NR, "%d", &maxaio);
 	tst_res(TINFO, "Maximum AIO blocks: %d", maxaio);
 
 	if (numaio > maxaio)

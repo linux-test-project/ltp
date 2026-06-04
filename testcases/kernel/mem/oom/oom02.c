@@ -49,7 +49,7 @@ static struct tst_test test = {
 	.test_all = verify_oom,
 	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/overcommit_memory", "1", TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_MEMORY, "1", TST_SR_TBROK},
 		{}
 	},
 };

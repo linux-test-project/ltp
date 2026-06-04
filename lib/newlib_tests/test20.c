@@ -16,10 +16,10 @@ static void do_test(void) {
 	unsigned long val, hpages;
 
 	tst_res(TINFO, "tst_hugepages = %lu", tst_hugepages);
-	SAFE_FILE_PRINTF("/proc/sys/kernel/numa_balancing", "1");
+	SAFE_FILE_PRINTF(PATH_KERN_NUMA_BALANCING, "1");
 
 	hpages = test.hugepages.number;
-	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
+	SAFE_FILE_SCANF(PATH_VM_NR_HPAGES, "%lu", &val);
 	if (val != hpages)
 		tst_brk(TBROK, "nr_hugepages = %lu, but expect %lu", val, hpages);
 	else
@@ -28,7 +28,7 @@ static void do_test(void) {
 	struct tst_hugepage hp = { 1000000000000, TST_REQUEST };
 	hpages = tst_reserve_hugepages(&hp);
 
-	SAFE_FILE_SCANF(PATH_NR_HPAGES, "%lu", &val);
+	SAFE_FILE_SCANF(PATH_VM_NR_HPAGES, "%lu", &val);
 	if (val != hpages)
 		tst_brk(TBROK, "nr_hugepages = %lu, but expect %lu", val, hpages);
 	else
@@ -39,7 +39,7 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.hugepages = {2, TST_NEEDS},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/kernel/numa_balancing", "0", TST_SR_TBROK},
+		{PATH_KERN_NUMA_BALANCING, "0", TST_SR_TBROK},
 		{}
 	},
 };

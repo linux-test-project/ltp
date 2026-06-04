@@ -22,6 +22,7 @@
  */
 
 #define LIBIPC
+#include "tst_path_defs.h"
 #include "tse_ipcmsg.h"
 #include "tse_ipcsem.h"
 
@@ -190,7 +191,7 @@ int get_max_msgqueues(void)
 	char buff[BUFSIZE];
 
 	/* Get the max number of message queues allowed on system */
-	f = fopen("/proc/sys/kernel/msgmni", "r");
+	f = fopen(PATH_KERN_MSGMNI, "r");
 	if (!f) {
 		tst_resm(TBROK, "Could not open /proc/sys/kernel/msgmni");
 		return -1;

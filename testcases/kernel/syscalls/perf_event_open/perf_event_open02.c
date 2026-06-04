@@ -211,7 +211,7 @@ static void setup(void)
 	 * knowing if perf_event_open() support is enabled is checking for
 	 * the existence of the file /proc/sys/kernel/perf_event_paranoid.
 	 */
-	if (access("/proc/sys/kernel/perf_event_paranoid", F_OK) == -1)
+	if (access(PATH_KERN_PERF_EVENT_PARANOID, F_OK) == -1)
 		tst_brk(TCONF, "Kernel doesn't have perf_event support");
 
 	bind_to_current_cpu();

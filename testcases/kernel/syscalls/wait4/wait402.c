@@ -25,7 +25,7 @@ static void run(void)
 
 static void setup(void)
 {
-	SAFE_FILE_SCANF("/proc/sys/kernel/pid_max", "%d\n", &pid_max);
+	SAFE_FILE_SCANF(PATH_KERN_PID_MAX, "%d\n", &pid_max);
 }
 
 static struct tst_test test = {

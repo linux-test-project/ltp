@@ -40,8 +40,8 @@ static void run(void)
 		     "io_setup() when nr_events is -1");
 
 	unsigned aio_max = 0;
-	if (!access("/proc/sys/fs/aio-max-nr", F_OK)) {
-		SAFE_FILE_SCANF("/proc/sys/fs/aio-max-nr", "%u", &aio_max);
+	if (!access(PATH_FS_NR_AIO_MAX_NR, F_OK)) {
+		SAFE_FILE_SCANF(PATH_FS_NR_AIO_MAX_NR, "%u", &aio_max);
 		TST_EXP_FAIL(tst_syscall(__NR_io_setup, aio_max + 1, &ctx), EAGAIN,
 			     "io_setup() when nr_events exceeds the limit");
 	} else {

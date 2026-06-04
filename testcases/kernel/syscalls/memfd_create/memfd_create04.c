@@ -46,7 +46,7 @@ static void check_hugepage_support(struct test_flag *test_flags)
 {
 	char pattern[64];
 
-	sprintf(pattern, PATH_HUGEPAGES);
+	sprintf(pattern, PATH_MM_HUGEPAGES);
 	strcat(pattern, "hugepages-");
 	strcat(pattern, test_flags->h_size);
 
@@ -84,7 +84,7 @@ static void memfd_huge_x_controller(unsigned int n)
 
 static void setup(void)
 {
-	if (access(PATH_HUGEPAGES, F_OK))
+	if (access(PATH_MM_HUGEPAGES, F_OK))
 		tst_brk(TCONF, "Huge page is not supported");
 }
 

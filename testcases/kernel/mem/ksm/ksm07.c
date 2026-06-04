@@ -57,24 +57,24 @@ static void verify_ksm(void)
 
 	tst_res(TINFO, "KSM merging");
 
-	if (access(PATH_KSM "max_page_sharing", F_OK) == 0)
-		SAFE_FILE_PRINTF(PATH_KSM "run", "2");
+	if (access(PATH_MM_KSM_MAX_PAGE_SHARING, F_OK) == 0)
+		SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "2");
 
 	/* Set defalut ksm scan values. */
-	SAFE_FILE_PRINTF(PATH_KSM "run", "1");
-	SAFE_FILE_PRINTF(PATH_KSM "pages_to_scan", "%ld", 100l);
-	SAFE_FILE_PRINTF(PATH_KSM "sleep_millisecs", "0");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "1");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_PAGES_TO_SCAN, "%ld", 100l);
+	SAFE_FILE_PRINTF(PATH_MM_KSM_SLEEP_MILLISECS, "0");
 
 	/* Measure pages skipped aka "smart scan". */
-	SAFE_FILE_SCANF(PATH_KSM "full_scans", "%d", &full_scans_begin);
-	SAFE_FILE_SCANF(PATH_KSM "pages_skipped", "%d", &pages_skipped_begin);
+	SAFE_FILE_SCANF(PATH_MM_KSM_FULL_SCANS, "%d", &full_scans_begin);
+	SAFE_FILE_SCANF(PATH_MM_KSM_PAGES_SKIPPED, "%d", &pages_skipped_begin);
 	wait_ksmd_full_scan();
 
 	tst_res(TINFO, "stop KSM");
-	SAFE_FILE_PRINTF(PATH_KSM "run", "0");
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "0");
 
-	SAFE_FILE_SCANF(PATH_KSM "full_scans", "%d", &full_scans_end);
-	SAFE_FILE_SCANF(PATH_KSM "pages_skipped", "%d", &pages_skipped_end);
+	SAFE_FILE_SCANF(PATH_MM_KSM_FULL_SCANS, "%d", &full_scans_end);
+	SAFE_FILE_SCANF(PATH_MM_KSM_PAGES_SKIPPED, "%d", &pages_skipped_end);
 	diff_pages = pages_skipped_end - pages_skipped_begin;
 	diff_scans = full_scans_end - full_scans_begin;
 
@@ -98,10 +98,10 @@ static struct tst_test test = {
 		{}
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_KSM "pages_skipped", NULL, TST_SR_TCONF},
-		{PATH_KSM "run", NULL, TST_SR_TCONF},
-		{PATH_KSM "sleep_millisecs", NULL, TST_SR_TCONF},
-		{PATH_KSM "smart_scan", "1",
+		{PATH_MM_KSM_PAGES_SKIPPED, NULL, TST_SR_TCONF},
+		{PATH_MM_KSM_RUN, NULL, TST_SR_TCONF},
+		{PATH_MM_KSM_SLEEP_MILLISECS, NULL, TST_SR_TCONF},
+		{PATH_MM_KSM_SMART_SCAN, "1",
 			TST_SR_SKIP_MISSING | TST_SR_TCONF},
 		{}
 	},

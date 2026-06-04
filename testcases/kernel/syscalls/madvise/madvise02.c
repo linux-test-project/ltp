@@ -46,7 +46,6 @@
 #define MAP_SIZE (4 * 1024)
 #define TEST_FILE "testfile"
 #define STR "abcdefghijklmnopqrstuvwxyz12345\n"
-#define KSM_SYS_DIR	"/sys/kernel/mm/ksm"
 
 static struct stat st;
 static long pagesize;
@@ -98,7 +97,7 @@ static void tcases_filter(void)
 		case MADV_UNMERGEABLE:
 			/* kernel configured with CONFIG_KSM,
 			 * skip EINVAL test for MADV_MERGEABLE. */
-			if (access(KSM_SYS_DIR, F_OK) == 0)
+			if (access(PATH_MM_KSM, F_OK) == 0)
 				tc->skip = 1;
 		break;
 		case MADV_WILLNEED:

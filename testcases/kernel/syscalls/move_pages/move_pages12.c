@@ -76,8 +76,6 @@
 
 #define LOOPS	10000
 #define PATH_MEMINFO	"/proc/meminfo"
-#define PATH_NR_HUGEPAGES	"/proc/sys/vm/nr_hugepages"
-#define PATH_HUGEPAGES	"/sys/kernel/mm/hugepages/"
 #define TEST_NODES	2
 
 static struct tcase {
@@ -259,7 +257,7 @@ static void setup(void)
 
 	check_config(TEST_NODES);
 
-	if (access(PATH_HUGEPAGES, F_OK))
+	if (access(PATH_MM_HUGEPAGES, F_OK))
 		tst_brk(TCONF, "Huge page not supported");
 
 	ret = get_allowed_nodes(NH_MEMS, TEST_NODES, &node1, &node2);
@@ -269,7 +267,7 @@ static void setup(void)
 	pgsz = (int)get_page_size();
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "Hugepagesize: %d", &hpsz);
 
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "MemFree: %ld", &memfree);
 	tst_res(TINFO, "Free RAM %ld kB", memfree);
 
@@ -307,10 +305,10 @@ static void setup(void)
 	hpsz *= 1024;
 
 	if (orig_hugepages_node1 == -1 || orig_hugepages_node2 == -1) {
-		SAFE_FILE_SCANF(PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
+		SAFE_FILE_SCANF(PATH_VM_NR_HPAGES, "%ld", &orig_hugepages);
 		tst_res(TINFO, "Increasing global hugepages pool to %ld",
 			orig_hugepages + 8);
-		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages + 8);
+		SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%ld", orig_hugepages + 8);
 	}
 
 	alloc_free_huge_on_node(node1, 4L * hpsz);
@@ -320,7 +318,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (orig_hugepages != -1)
-		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
+		SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%ld", orig_hugepages);
 
 	if (orig_hugepages_node1 != -1) {
 		SAFE_FILE_PRINTF(path_hugepages_node1,

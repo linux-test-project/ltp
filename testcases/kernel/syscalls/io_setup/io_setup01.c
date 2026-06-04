@@ -75,11 +75,11 @@ static void verify_io_setup(void)
 	verify_failure(-1, &ctx, 0, EINVAL);
 	verify_failure(1, NULL, 0, EFAULT);
 
-	if (!access("/proc/sys/fs/aio-max-nr", F_OK)) {
-		SAFE_FILE_SCANF("/proc/sys/fs/aio-max-nr", "%u", &aio_max);
+	if (!access(PATH_FS_NR_AIO_MAX_NR, F_OK)) {
+		SAFE_FILE_SCANF(PATH_FS_NR_AIO_MAX_NR, "%u", &aio_max);
 		verify_failure(aio_max + 1, &ctx, 0, EAGAIN);
 	} else {
-		tst_res(TCONF, "the aio-max-nr file did not exist");
+		tst_res(TCONF, "the %s file did not exist", PATH_FS_NR_AIO_MAX_NR);
 	}
 }
 
