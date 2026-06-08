@@ -13,7 +13,7 @@ static inline void check(char *path, long int value)
 	char fullpath[BUFSIZ];
 	long actual_val;
 
-	snprintf(fullpath, BUFSIZ, PATH_MM_KSM "%s", path);
+	snprintf(fullpath, BUFSIZ, PATH_MM_KSM "/%s", path);
 	SAFE_FILE_SCANF(fullpath, "%ld", &actual_val);
 
 	if (actual_val != value)
