@@ -391,6 +391,9 @@ struct tst_fs {
  *
  * @min_cpus: Minimal number of online CPUs the test needs to run.
  *
+ * @needs_cpu_vendor: The test needs a specific CPU vendor e.g. "GenuineIntel"
+ *                    or "AuthenticAMD".
+ *
  * @min_mem_avail: Minimal amount of available RAM memory in megabytes required
  *                 for the test to run.
  *
@@ -581,6 +584,8 @@ struct tst_fs {
 	const char *const *skip_filesystems;
 
 	unsigned long min_cpus;
+	const char *needs_cpu_vendor;
+
 	unsigned long min_mem_avail;
 	unsigned long min_swap_avail;
 

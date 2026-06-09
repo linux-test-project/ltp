@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "tso_safe_macros.h"
+#include "tso_safe_file_ops.h"
 
 long tst_ncpus(void)
 {
@@ -96,4 +97,21 @@ long tst_ncpus_available(void)
 #else
 	return tst_ncpus();
 #endif
+}
+
+const char *tst_cpu_vendor(void)
+{
+	static char cpu_vendor[16];
+	int ret;
+
+	if (cpu_vendor[0])
+		return cpu_vendor;
+
+	ret = FILE_LINES_SCANF(NULL, "/proc/cpuinfo", "vendor_id : %15s", cpu_vendor);
+	if (ret)
+		strcpy(cpu_vendor, "Unknown");
+
+	tst_resm(TDEBUG, "CPU vendor '%s'", cpu_vendor);
+
+	return cpu_vendor;
 }

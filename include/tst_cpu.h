@@ -10,6 +10,13 @@ long tst_ncpus_conf(void);
 long tst_ncpus_max(void);
 long tst_ncpus_available(void);
 
+/**
+ * tst_cpu_vendor() - Returns CPU vendor.
+ *
+ * Return: A CPU vendor e.g. "GenuineIntel" or "AuthenticAMD".
+ */
+const char *tst_cpu_vendor(void);
+
 #define VIRT_ANY	0	/* catch-all argument for tst_is_virt() */
 #define VIRT_XEN	1	/* xen dom0/domU */
 #define VIRT_KVM	2	/* only default virtual CPU */

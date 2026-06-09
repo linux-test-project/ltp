@@ -1416,6 +1416,11 @@ static void do_setup(int argc, char *argv[])
 	if (tst_test->supported_archs && !tst_is_on_arch(tst_test->supported_archs))
 		tst_brk(TCONF, "This arch '%s' is not supported for test!", tst_arch.name);
 
+	if (tst_test->needs_cpu_vendor && strcmp(tst_test->needs_cpu_vendor, tst_cpu_vendor())) {
+		tst_brk(TCONF, "Tests needs '%s' CPU, have '%s'",
+			tst_test->needs_cpu_vendor, tst_cpu_vendor());
+	}
+
 	if (tst_test->sample)
 		tst_test = tst_timer_test_setup(tst_test);
 
