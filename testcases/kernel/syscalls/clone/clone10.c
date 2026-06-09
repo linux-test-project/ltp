@@ -88,7 +88,6 @@ static void cleanup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_checkpoints = 1,
 	.test_all = verify_tls,
 	.supported_archs = (const char *const []) {
 		"x86_64",
