@@ -269,16 +269,10 @@ retry:
 
 static void setup(void)
 {
-	long swap_total;
-
 	if (SAFE_CG_HAS(tst_cg, "memory.swap.max"))
 		swap_accounting_enabled = 1;
 	else
 		tst_res(TINFO, "Swap accounting is disabled");
-
-	SAFE_FILE_LINES_SCANF("/proc/meminfo", "SwapTotal: %ld", &swap_total);
-	if (swap_total <= 0)
-		tst_brk(TCONF, "MADV_FREE does not work without swap");
 
 	page_size = getpagesize();
 }
@@ -288,5 +282,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.forks_child = 1,
+	.min_swap_avail = SWAP_LIMIT / TST_MB,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };

@@ -95,20 +95,6 @@ static void setup(void)
 	sync();
 	SAFE_FILE_PRINTF(drop_caches_fname, "3");
 
-	long long avail_mem = tst_available_mem();
-	long long avail_swap = tst_available_swap();
-	long long chunk_kb = 2 * CHUNK_SZ / 1024;
-
-	if (avail_mem < chunk_kb) {
-		tst_brk(TCONF, "System RAM is too small %llikB (%llikB needed)",
-			avail_mem, chunk_kb);
-	}
-
-	if (avail_swap < chunk_kb) {
-		tst_brk(TCONF, "System swap is too small %llikB (%llikB needed)",
-			avail_swap, chunk_kb);
-	}
-
 	check_path("/proc/self/oom_score_adj");
 	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
 
@@ -243,6 +229,8 @@ static struct tst_test test = {
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
 		{}
 	},
+	.min_mem_avail = 2 * CHUNK_SZ / TST_MB,
+	.min_swap_avail = 2 * CHUNK_SZ / TST_MB,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "55231e5c898c"},
