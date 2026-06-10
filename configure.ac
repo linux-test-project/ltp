@@ -255,6 +255,7 @@ AC_CHECK_TYPES([struct __kernel_old_timeval, struct __kernel_old_timespec, struc
                 struct __kernel_old_itimerval],,,[#include <sys/socket.h>])
 
 AC_CHECK_TYPES([struct futex_waitv],,,[#include <linux/futex.h>])
+AC_CHECK_TYPES([struct io_uring_clone_buffers],,,[#include <linux/io_uring.h>])
 AC_CHECK_TYPES([struct mount_attr],,,[
 #ifdef HAVE_MOUNT_SETATTR
 # include <sys/mount.h>
