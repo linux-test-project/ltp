@@ -14,7 +14,7 @@
 
 static struct tst_clone_args *args;
 static struct pidfd_info *info;
-static int err_nr = ESRCH;
+static int err_nr = EREMOTE;
 
 static void run(void)
 {
