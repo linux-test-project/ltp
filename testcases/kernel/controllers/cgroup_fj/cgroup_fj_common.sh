@@ -57,6 +57,14 @@ create_subgroup()
 
 common_setup()
 {
+    # Check if the controller is already enabled at root before
+    # cgroup_require potentially enables it, so that cleanup does
+    # not disable a controller the system was already using.
+    if [ -f /sys/fs/cgroup/cgroup.subtree_control ] && \
+       grep -qw "$subsystem" /sys/fs/cgroup/cgroup.subtree_control; then
+        ctrl_was_enabled=1
+    fi
+
     cgroup_require "$subsystem"
     mount_point=$(cgroup_get_mountpoint "$subsystem")
     start_path=$(cgroup_get_test_path "$subsystem")
@@ -77,7 +85,7 @@ common_cleanup()
 
     cgroup_cleanup
 
-    if [ "$cgroup_version" = "2" ]; then
+    if [ "$cgroup_version" = "2" ] && [ "$ctrl_was_enabled" != "1" ]; then
         case "$subsystem" in
         cpu|io|memory|pids)
             :;;
