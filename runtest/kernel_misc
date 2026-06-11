@@ -1,6 +1,6 @@
 cn_pec_sh cn_pec.sh
 kmsg01 kmsg01
-fw_load fw_load
+fw_load01 fw_load01
 rtc01 rtc01
 rtc02 rtc02
 block_dev block_dev
