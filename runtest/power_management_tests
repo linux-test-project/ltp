@@ -1,4 +1,5 @@
 #POWER_MANAGEMENT
+cpufreq_intel cpufreq_intel
 high_freq_hwp_cap_cppc high_freq_hwp_cap_cppc
 runpwtests03 runpwtests03.sh
 runpwtests04 runpwtests04.sh
