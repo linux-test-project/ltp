@@ -202,6 +202,9 @@ static void setup(void)
 		if (TST_ERR == EPROTONOSUPPORT)
 			tst_brk(TCONF, "xfrm ESP is not supported by kernel");
 
+		if (tst_is_compat_mode() && TST_ERR == EOPNOTSUPP)
+			tst_brk(TCONF, "xfrm compat mode is not available");
+
 		tst_brk(TBROK | TTERRNO, "Failed to install xfrm ESP state");
 	}
 
