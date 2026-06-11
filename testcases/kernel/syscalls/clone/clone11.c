@@ -21,6 +21,7 @@ static int *child_pid;
 static struct tcase {
 	uint64_t flags;
 	const char *sflags;
+	int skip;
 } tcases[] = {
 	{ DESC(CLONE_NEWPID) },
 	{ DESC(CLONE_NEWCGROUP) },
@@ -36,9 +37,32 @@ static int child_fn(void *arg LTP_ATTRIBUTE_UNUSED)
 	_exit(0);
 }
 
+static void tcases_filter(void)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
+		struct tcase *tc = &tcases[i];
+
+		switch (tc->flags) {
+		case CLONE_NEWCGROUP:
+			if (tst_kvercmp(4, 6, 0) < 0)
+				tc->skip = 1;
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
+
+	if (tc->skip) {
+		tst_res(TCONF, "%s is not supported", tc->sflags);
+		return;
+	}
 
 	TST_EXP_FAIL(ltp_clone(tc->flags, child_fn, NULL, CHILD_STACK_SIZE, child_stack),
 		EPERM, "clone(%s) should fail with EPERM",
@@ -51,6 +75,8 @@ static void setup(void)
 			PROT_READ | PROT_WRITE,
 			MAP_SHARED | MAP_ANONYMOUS,
 			-1, 0);
+
+	tcases_filter();
 }
 
 static void cleanup(void)
