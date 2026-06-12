@@ -394,6 +394,7 @@ def _generate_setup_table(keys):
         'needs_checkpoints',
         'forks_child',
         'tags',
+        'groups',
     ]
     my_keys = {k: v for k, v in keys.items() if k not in exclude}
     if len(my_keys) == 0:
@@ -479,6 +480,15 @@ def generate_test_catalog(_):
             text.extend([
                 '',
                 f"`source <{ltp_repo_base_url}/{test_fname}>`__",
+                ''
+            ])
+
+        # groups information
+        groups = conf.get('groups', None)
+        if groups:
+            text.extend([
+                '',
+                f"**Groups**: {', '.join(groups)}",
                 ''
             ])
 
