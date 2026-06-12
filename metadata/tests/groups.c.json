@@ -1,0 +1,12 @@
+  "groups": {
+   "doc": [
+    "Test for @groups tag parsing.",
+    ""
+   ],
+   "groups": [
+    "stress",
+    "regression",
+    "smoke"
+   ],
+   "fname": "groups.c"
+  }

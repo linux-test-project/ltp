@@ -1,4 +1,6 @@
   "array_size03": {
    "test_variants": 2,
+   "groups": [
+   ],
    "fname": "array_size03.c"
   }

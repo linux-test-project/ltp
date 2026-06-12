@@ -1,4 +1,6 @@
   "macro": {
+   "groups": [
+   ],
    "test_variants": 10,
    "fname": "macro.c"
   }
