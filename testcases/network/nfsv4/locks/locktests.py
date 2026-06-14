@@ -4,6 +4,7 @@
 # Report bugs to Vincent ROQUETA : vincent.roqueta@ext.bull.net
 
 import encodings
+_sp = __import__('subprocess')
 import shutil
 import os, sys
 import getopt, sys
@@ -49,13 +50,12 @@ class Client(Machine):
         self.mountPath=NFS4_PATH
 
     def do(self):
-        self.command="ssh "+user+"@"+self.machine+" "+self.command
-        os.system(self.command)
+        _sp.run(["ssh", user+"@"+self.machine, self.command])
 
     def isomount(self, dir):
         export=NFS4_SERVER
         mntpoint=NFS4_PATH
-        self.command="'mkdir -p "+mntpoint+"; mount -t nfs4 "+export+" "+mntpoint+"'"
+        self.command="mkdir -p "+mntpoint+"; mount -t nfs4 "+export+" "+mntpoint
         self.do()
 
     def umount(self, dir):
@@ -63,15 +63,14 @@ class Client(Machine):
         self.command="umount "+mntpoint
         self.do()
     def install(self, path):
-        self.command="'cd "+path+"; tar xzf "+SRC+"; cd locks;  make'"
+        self.command="cd "+path+"; tar xzf "+SRC+"; cd locks;  make"
         self.do()
 
     def run(self, appli):
         self.command=appli
         self.do()
     def cp(self, fichier, path):
-        command="scp "+fichier+" "+user+"@"+self.machine+":"+path
-        os.system(command)
+        _sp.run(["scp", fichier, user+"@"+self.machine+":"+path])
 
 
 class Serveur(Machine):
@@ -81,8 +80,7 @@ class Serveur(Machine):
         self.exportPath=exportPath
 
     def do(self):
-        self.command="ssh "+self.SERVEUR+" "+self.command
-        os.system(self.command)
+        _sp.run(["ssh", self.SERVEUR, self.command])
 
     def configure(self, dir):
         exportDir=self.exportPath+'/'+dir
@@ -132,8 +130,9 @@ def setup():
         c.isomount(NFS4_PATH)
     #Setup localhost
     print("Setting up localhost")
-    commande="make; mkdir -p "+NFS4_PATH+" ; mount -t nfs4 "+NFS4_SERVER+" "+NFS4_PATH+" &"
-    os.system(commande)
+    _sp.run(["make"])
+    _sp.run(["mkdir", "-p", NFS4_PATH])
+    _sp.run(["mount", "-t", "nfs4", NFS4_SERVER, NFS4_PATH])
 
 
 def run():
@@ -142,8 +141,7 @@ def run():
     hostname=socket.gethostname()
     # Lancement du serveur en local
     # Launch the server locally
-    commande=path+"/"+app+" -n "+nbreProcess+" -f "+filename+" -c "+str(nbreClients)+" &"
-    os.system(commande)
+    _sp.Popen([path+"/"+app, "-n", nbreProcess, "-f", filename, "-c", str(nbreClients)])
     commande=path+"/locks/"+app+" --server "+hostname
     for i in clients:
         c=Client(i)
