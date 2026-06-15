@@ -35,6 +35,7 @@ EOF
 cleanup()
 {
 	killall -9 pids_task2 >/dev/null 2>&1
+	killall -9 pids_task1 >/dev/null 2>&1
 
 	cgroup_cleanup
 }
@@ -79,8 +80,8 @@ stop_pids_tasks_path()
 	path=$1
 
 	for i in $(cat "$path/$task_list"); do
-		ROD kill -9 $i
-		wait $i
+		kill -9 $i 2>/dev/null
+		wait $i 2>/dev/null
 	done
 }
 
