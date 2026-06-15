@@ -142,10 +142,13 @@ tst_get_enforce()
 
 tst_update_selinux_state()
 {
-	local val
+	local val orig_val
 	local dir=$(tst_get_selinux_dir)
 	[ -n "$dir" ] || return 1
 
-	val=$(cat $dir/checkreqprot)
-	echo $val > $dir/checkreqprot
+	# Toggle enforce to trigger SELinux state measurement
+	orig_val=$(cat $dir/enforce)
+	val=$((1 - orig_val))
+	echo $val > $dir/enforce
+	echo $orig_val > $dir/enforce
 }
