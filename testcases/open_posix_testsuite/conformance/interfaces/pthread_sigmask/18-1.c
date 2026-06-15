@@ -293,6 +293,11 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	}
 	while (do_it);
 
+#ifdef WITH_SYNCHRO
+	sem_post(&semsig1);
+	sem_post(&semsig2);
+#endif
+
 	if ((ret = pthread_join(th_sig1, NULL))) {
 		UNRESOLVED(ret, "Signal 1 sender thread join failed");
 	}
