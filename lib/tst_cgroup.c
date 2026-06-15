@@ -974,8 +974,14 @@ static void cgroup_drain(const enum tst_cg_ver ver,
 	for (tok = strtok(pid_list, "\n"); tok; tok = strtok(NULL, "\n")) {
 		ret = dprintf(fd, "%s", tok);
 
-		if (ret < (ssize_t)strlen(tok))
+		if (ret < (ssize_t)strlen(tok)) {
+			if (ret < 0 && errno == ESRCH) {
+				tst_res(TINFO, "Pid %s died during drain", tok);
+				continue;
+			}
+
 			tst_brk(TBROK | TERRNO, "Failed to drain %s", tok);
+		}
 	}
 	SAFE_CLOSE(fd);
 }
