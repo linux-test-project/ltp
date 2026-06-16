@@ -8,13 +8,15 @@
 
 /*\
  * This source file contains a test case which ensures that the
- * :manpage:`fanotify(7)` API returns an expected error code when provided an
- * invalid initialization flag alongside FAN_REPORT_PIDFD. Additionally, it
- * checks that the operability with existing FAN_REPORT_* flags is maintained
- * and functioning as intended.
+ * :manpage:`fanotify(7)` API returns an expected error code when provided
+ * unsupported initialization flags, e.g. FAN_REPORT_PIDFD combined with
+ * FAN_REPORT_TID. Additionally, it checks that the operability with
+ * supported FAN_REPORT_* flags is maintained and functioning as intended.
  *
  * NOTE: FAN_REPORT_PIDFD support was added in v5.15-rc1 in
  * af579beb666a ("fanotify: add pidfd support to the fanotify API").
+ * FAN_REPORT_PIDFD combined with FAN_REPORT_TID is supported since v7.2-rc1
+ * in 17171128513b ("fanotify: report thread pidfds for FAN_REPORT_TID").
  */
 
 #define _GNU_SOURCE
@@ -45,6 +47,9 @@ static struct test_case_t {
 
 static void do_setup(void)
 {
+	if (tst_kvercmp(7, 2, 0) >= 0)
+		tst_brk(TCONF, "FAN_REPORT_PIDFD | FAN_REPORT_TID is supported since v7.2");
+
 	/*
 	 * An explicit check for FAN_REPORT_PIDFD is performed early on in the
 	 * test initialization as it's a prerequisite for all test cases.
