@@ -43,6 +43,10 @@ struct pidfd_info {
 # define PIDFD_NONBLOCK O_NONBLOCK
 #endif
 
+#ifndef PIDFD_THREAD
+# define PIDFD_THREAD O_EXCL
+#endif
+
 #ifndef PIDFS_IOCTL_MAGIC
 # define PIDFS_IOCTL_MAGIC	0xFF
 #endif

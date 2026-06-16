@@ -12,6 +12,8 @@
  *
  * NOTE: FAN_REPORT_PIDFD support was added in v5.15-rc1 in
  * af579beb666a ("fanotify: add pidfd support to the fanotify API").
+ * FAN_REPORT_PIDFD combined with FAN_REPORT_TID is supported since v7.2-rc1
+ * in 17171128513b ("fanotify: report thread pidfds for FAN_REPORT_TID").
  */
 
 #define _GNU_SOURCE
@@ -31,6 +33,9 @@
 #define BUF_SZ		4096
 #define MOUNT_PATH	"fs_mnt"
 #define TEST_FILE	MOUNT_PATH "/testfile"
+
+#define TST_VARIANT_FD_ERROR (tst_variant & 1)
+#define TST_VARIANT_PIDFD_THREAD (tst_variant & 2)
 
 struct pidfd_fdinfo_t {
 	int pos;
@@ -67,6 +72,7 @@ static char event_buf[BUF_SZ];
 static struct pidfd_fdinfo_t exp_pidfd_fdinfo;
 
 static int fd_error_unsupported;
+static int thread_pidfd_unsupported;
 
 static struct tst_clone_args clone_args = {
 	.flags = CLONE_NEWPID,
@@ -90,26 +96,51 @@ static void read_pidfd_fdinfo(int pidfd, struct pidfd_fdinfo_t *pidfd_fdinfo)
 static void generate_event(void)
 {
 	int fd;
+	int pidfd;
+
+	pidfd = TST_VARIANT_PIDFD_THREAD ? SAFE_PIDFD_OPEN(tst_gettid(), PIDFD_THREAD)
+					 : SAFE_PIDFD_OPEN(tst_getpid(), 0);
+	read_pidfd_fdinfo(pidfd, &exp_pidfd_fdinfo);
+	SAFE_CLOSE(pidfd);
 
 	/* Generate a single FAN_OPEN event on the watched object. */
 	fd = SAFE_OPEN(TEST_FILE, O_RDONLY);
 	SAFE_CLOSE(fd);
 }
 
+static const char *test_variant_name(void)
+{
+	switch (tst_variant) {
+	case 0: return "";
+	case 1: return "(FAN_REPORT_FD_ERROR)";
+	case 2: return "(FAN_REPORT_TID)";
+	case 3: return "(FAN_REPORT_FD_ERROR | FAN_REPORT_TID)";
+	}
+	return NULL;
+}
+
 static void do_setup(void)
 {
-	int pidfd;
 	int init_flags = FAN_REPORT_PIDFD;
 
 	/* Bind mount so remount ro/rw always work */
 	SAFE_MOUNT(MOUNT_PATH, MOUNT_PATH, "none", MS_BIND, NULL);
 
-	if (tst_variant) {
+	if (TST_VARIANT_FD_ERROR) {
 		fanotify_fd = -1;
 		fd_error_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FD_ERROR, ".");
 		if (fd_error_unsupported)
 			return;
 		init_flags |= FAN_REPORT_FD_ERROR;
+	}
+
+	if (TST_VARIANT_PIDFD_THREAD) {
+		fanotify_fd = -1;
+		thread_pidfd_unsupported = fanotify_init_flags_supported_on_fs(
+			FAN_REPORT_PIDFD | FAN_REPORT_TID, ".");
+		if (thread_pidfd_unsupported)
+			return;
+		init_flags |= FAN_REPORT_TID;
 	}
 
 	SAFE_TOUCH(TEST_FILE, 0666, NULL);
@@ -125,12 +156,6 @@ static void do_setup(void)
 	fanotify_fd = SAFE_FANOTIFY_INIT(init_flags, O_RDWR);
 	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD, FAN_OPEN, AT_FDCWD,
 			   TEST_FILE);
-
-	pidfd = SAFE_PIDFD_OPEN(getpid(), 0);
-
-	read_pidfd_fdinfo(pidfd, &exp_pidfd_fdinfo);
-
-	SAFE_CLOSE(pidfd);
 }
 
 static void do_test(unsigned int num)
@@ -138,16 +163,22 @@ static void do_test(unsigned int num)
 	int i = 0, len;
 	struct test_case_t *tc = &test_cases[num];
 	int nopidfd_err = tc->want_pidfd_err ?
-			  (tst_variant ? -ESRCH : FAN_NOPIDFD) : 0;
-	int fd_err = (tc->remount_ro && tst_variant) ? -EROFS : 0;
+			  (TST_VARIANT_FD_ERROR ? -ESRCH : FAN_NOPIDFD) : 0;
+	int fd_err = (tc->remount_ro && TST_VARIANT_FD_ERROR) ? -EROFS : 0;
 	pid_t reader_pid;
 	int reader_exit_status;
 
 	tst_res(TINFO, "Test #%d.%d: %s %s", num, tst_variant, tc->name,
-			tst_variant ? "(FAN_REPORT_FD_ERROR)" : "");
+		       test_variant_name());
 
-	if (fd_error_unsupported && tst_variant) {
+	if (fd_error_unsupported && TST_VARIANT_FD_ERROR) {
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_FD_ERROR, fd_error_unsupported);
+		return;
+	}
+
+	if (thread_pidfd_unsupported && TST_VARIANT_PIDFD_THREAD) {
+		FANOTIFY_INIT_FLAGS_ERR_MSG(
+			FAN_REPORT_PIDFD | FAN_REPORT_TID, thread_pidfd_unsupported);
 		return;
 	}
 
@@ -333,7 +364,7 @@ static struct tst_test test = {
 	.setup = do_setup,
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(test_cases),
-	.test_variants = 2,
+	.test_variants = 4,
 	.cleanup = do_cleanup,
 	.all_filesystems = 1,
 	.needs_root = 1,
