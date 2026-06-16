@@ -36,6 +36,13 @@ do_cleanup()
 	fi
 }
 
+mount_named_cgroup()
+{
+	local name="ltp_$$_$1"
+
+	mount -t cgroup -o none,name=$name cgroup cgroup/
+}
+
 check_kernel_bug()
 {
 	local id="$1"
@@ -93,7 +100,7 @@ test1()
 	cgroup_regression_fork_processes &
 	sleep 1
 
-	mount -t cgroup -o none,name=foo cgroup cgroup/
+	mount_named_cgroup 1
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "failed to mount cgroup filesystem"
 		kill -TERM $!
@@ -127,7 +134,7 @@ test2()
 		return
 	fi
 
-	mount -t cgroup -o none,name=foo cgroup cgroup/
+	mount_named_cgroup 2
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "Failed to mount cgroup filesystem"
 		return
@@ -213,7 +220,7 @@ test4()
 		return
 	fi
 
-	mount -t cgroup -o none,name=foo cgroup cgroup/
+	mount_named_cgroup 4
 	mkdir cgroup/0
 	rmdir cgroup/0
 	tst_umount $PWD/cgroup
@@ -318,7 +325,7 @@ test_7_2()
 {
 	local subsys=$1
 
-	mount -t cgroup -o none,name=foo cgroup cgroup/
+	mount_named_cgroup 7_2
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "failed to mount cgroup"
 		return
@@ -379,7 +386,7 @@ test7()
 #---------------------------------------------------------------------------
 test8()
 {
-	mount -t cgroup -o none,name=foo cgroup cgroup/
+	mount_named_cgroup 8
 	if [ $? -ne 0 ]; then
 		tst_res TFAIL "failed to mount cgroup filesystem"
 		return
