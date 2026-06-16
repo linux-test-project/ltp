@@ -42,7 +42,6 @@ struct pidfd_fdinfo_t {
 
 static struct test_case_t {
 	char *name;
-	int fork;
 	int want_pidfd_err;
 	int remount_ro;
 } test_cases[] = {
@@ -50,17 +49,14 @@ static struct test_case_t {
 		"return a valid pidfd for event created by self",
 		0,
 		0,
-		0,
 	},
 	{
-		"return invalid pidfd for event created by terminated child",
-		1,
+		"return invalid pidfd for reader in descendant PID namespace",
 		1,
 		0,
 	},
 	{
 		"fail to open rw fd for event created on read-only mount",
-		0,
 		0,
 		1,
 	},
@@ -71,6 +67,11 @@ static char event_buf[BUF_SZ];
 static struct pidfd_fdinfo_t *self_pidfd_fdinfo;
 
 static int fd_error_unsupported;
+
+static struct tst_clone_args clone_args = {
+	.flags = CLONE_NEWPID,
+	.exit_signal = SIGCHLD,
+};
 
 static struct pidfd_fdinfo_t *read_pidfd_fdinfo(int pidfd)
 {
@@ -98,24 +99,6 @@ static void generate_event(void)
 	/* Generate a single FAN_OPEN event on the watched object. */
 	fd = SAFE_OPEN(TEST_FILE, O_RDONLY);
 	SAFE_CLOSE(fd);
-}
-
-static void do_fork(void)
-{
-	int status;
-	pid_t child;
-
-	child = SAFE_FORK();
-	if (child == 0) {
-		SAFE_CLOSE(fanotify_fd);
-		generate_event();
-		exit(EXIT_SUCCESS);
-	}
-
-	SAFE_WAITPID(child, &status, 0);
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		tst_brk(TBROK,
-			"child process terminated incorrectly");
 }
 
 static void do_setup(void)
@@ -165,6 +148,8 @@ static void do_test(unsigned int num)
 	int nopidfd_err = tc->want_pidfd_err ?
 			  (tst_variant ? -ESRCH : FAN_NOPIDFD) : 0;
 	int fd_err = (tc->remount_ro && tst_variant) ? -EROFS : 0;
+	pid_t reader_pid;
+	int reader_exit_status;
 
 	tst_res(TINFO, "Test #%d.%d: %s %s", num, tst_variant, tc->name,
 			tst_variant ? "(FAN_REPORT_FD_ERROR)" : "");
@@ -178,15 +163,20 @@ static void do_test(unsigned int num)
 	SAFE_MOUNT("none", MOUNT_PATH, "none", MS_BIND | MS_REMOUNT |
 		   (tc->remount_ro ? MS_RDONLY : 0), NULL);
 
+	generate_event();
+
 	/*
-	 * Generate the event in either self or a child process. Event
-	 * generation in a child process is done so that the FAN_NOPIDFD case
-	 * can be verified.
+	 * Read the event in either self or a child process in a descendant
+	 * PID namespace. A reader in a descendant PID namespace cannot obtain
+	 * the pidfd of the event process in the parent PID namespace so that
+	 * the FAN_NOPIDFD case can be verified.
 	 */
-	if (tc->fork)
-		do_fork();
-	else
-		generate_event();
+	if (tc->want_pidfd_err && (reader_pid = SAFE_CLONE(&clone_args))) {
+		SAFE_WAITPID(reader_pid, &reader_exit_status, 0);
+		if (!WIFEXITED(reader_exit_status) || WEXITSTATUS(reader_exit_status))
+			tst_brk(TBROK, "reader process exited incorrectly");
+		return;
+	}
 
 	/*
 	 * Read all of the queued events into the provided event
@@ -274,7 +264,7 @@ static void do_test(unsigned int num)
 			goto next_event;
 		} else if (tc->want_pidfd_err && info->pidfd == nopidfd_err) {
 			tst_res(TPASS,
-				"pid: %u terminated before pidfd was created, "
+				"pid: %u is invisible in reader PID namespace, "
 				"pidfd set to the value of: %d, as expected",
 				(unsigned int)event->pid,
 				nopidfd_err);
@@ -343,6 +333,9 @@ next_event:
 		if (event_pidfd_fdinfo)
 			free(event_pidfd_fdinfo);
 	}
+
+	if (tc->want_pidfd_err)
+		exit(0);
 }
 
 static void do_cleanup(void)
