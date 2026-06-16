@@ -119,7 +119,7 @@ tst_disable_selinux()
 
 	local f="$(tst_get_enforce)"
 
-	[ -f "$f" ] && cat 0 > $f
+	[ -f "$f" ] && echo 0 > $f
 }
 
 # Get SELinux directory path
