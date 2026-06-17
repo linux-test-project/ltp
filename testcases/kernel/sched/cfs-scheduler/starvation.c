@@ -105,10 +105,12 @@ static void setup(void)
 	if (tst_parse_long(str_loop, &loop, 1, LONG_MAX))
 		tst_brk(TBROK, "Invalid number of loop number '%s'", str_loop);
 
-	if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
-		tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
-	else
+	if (str_timeout) {
+		if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
+			tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
+	} else {
 		timeout = callibrate() / 1000;
+	}
 
 	if (tst_has_slow_kconfig())
 		tst_brk(TCONF, "Skip test due to slow kernel configuration");
