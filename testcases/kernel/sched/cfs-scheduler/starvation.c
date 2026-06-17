@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <sched.h>
+#include <string.h>
 
 #include "tst_test.h"
 #include "tst_kconfig.h"
@@ -29,6 +30,15 @@ static char *str_timeout;
 static int timeout;
 
 #define CALLIBRATE_LOOPS 120000000
+
+static int has_preempt_voluntary(void)
+{
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_PREEMPT_VOLUNTARY");
+
+	tst_kconfig_read(&kconfig, 1);
+
+	return kconfig.choice == 'y';
+}
 
 static int callibrate(void)
 {
@@ -80,6 +90,9 @@ static void setup(void)
 
 	if (tst_check_preempt_rt())
 		tst_brk(TCONF, "This test is not designed for the RT kernel");
+
+	if (has_preempt_voluntary())
+		tst_brk(TCONF, "This test is not reliable on voluntary preemption kernels");
 
 	CPU_ZERO(&mask);
 
