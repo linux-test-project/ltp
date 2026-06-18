@@ -108,4 +108,6 @@ static struct tst_test test = {
 		"CONFIG_FW_LOADER=y|CONFIG_FW_LOADER=m",
 		NULL,
 	},
+	.skip_in_lockdown = 1,
+	.skip_in_secureboot = 1,
 };

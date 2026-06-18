@@ -90,4 +90,6 @@ static struct tst_test test = {
 		{FW_PATH, NULL, TST_SR_TCONF},
 		{},
 	},
+	.skip_in_lockdown = 1,
+	.skip_in_secureboot = 1,
 };
