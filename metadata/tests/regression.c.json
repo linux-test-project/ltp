@@ -1,0 +1,15 @@
+  "regression": {
+   "tags": [
+    [
+     "linux-git",
+     "1137b5e2529a"
+    ]
+   ],
+   "doc": [
+    "Test for regression group derived from the linux-git tag."
+   ],
+   "groups": [
+    "regression"
+   ],
+   "fname": "regression.c"
+  }

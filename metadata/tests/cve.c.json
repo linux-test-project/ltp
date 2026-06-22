@@ -1,0 +1,15 @@
+  "cve": {
+   "tags": [
+    [
+     "CVE",
+     "2017-16939"
+    ]
+   ],
+   "doc": [
+    "Test for cve group derived from the CVE tag."
+   ],
+   "groups": [
+    "cve"
+   ],
+   "fname": "cve.c"
+  }

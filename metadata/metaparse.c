@@ -52,12 +52,14 @@ static char *eat_asterisk_space(char *c)
 }
 
 /*
- * Add a group to the groups array, skipping 'kernel' as it's too generic.
- * Returns 0 if no group was added, 1 otherwise.
+ * Add a group to the groups array, skipping path components that are too
+ * generic ('kernel') or assigned from a more reliable source ('cve', which
+ * is derived from the CVE tag instead). Returns 0 if no group was added,
+ * 1 otherwise.
  */
 static int add_group(struct data_node *groups, const char *name)
 {
-	if (name && strcmp(name, "kernel")) {
+	if (name && strcmp(name, "kernel") && strcmp(name, "cve")) {
 		data_node_array_add(groups, data_node_string(name));
 		return 1;
 	}
@@ -971,11 +973,11 @@ static void load_internal_macros(void)
  * Add groups derived from the source file path.
  *
  * Groups are the two nearest parent directories (immediate parent
- * first), skipping 'kernel' as it's too generic:
+ * first), skipping 'kernel' (too generic) and 'cve' (assigned from the
+ * CVE tag instead, see add_tag_groups()):
  *
  *   testcases/kernel/syscalls/clone/clone01.c  -> clone, syscalls
  *   testcases/kernel/kvm/kvm_pagefault01.c     -> kvm
- *   testcases/cve/cve-2017-16939.c             -> cve
  */
 static void add_path_groups(struct data_node *groups, const char *fname)
 {
@@ -1008,6 +1010,38 @@ static void add_path_groups(struct data_node *groups, const char *fname)
 		add_group(groups, dirs[ndirs - 2]);
 
 	free(buf);
+}
+
+/*
+ * Add group to specific test tags.
+ */
+static void add_tag_groups(struct data_node *groups, struct data_node *res)
+{
+	struct data_node *tags = data_node_hash_get(res, "tags");
+	int has_cve = 0, has_regression = 0;
+
+	if (!tags || tags->type != DATA_ARRAY)
+		return;
+
+	for (unsigned int i = 0; i < data_node_array_len(tags); i++) {
+		struct data_node *tag = tags->array.array[i];
+		struct data_node *name;
+
+		if (tag->type != DATA_ARRAY || !data_node_array_len(tag))
+			continue;
+
+		name = tag->array.array[0];
+		if (name->type != DATA_STRING)
+			continue;
+
+		if (!has_cve && !strcmp(name->string.val, "CVE")) {
+			data_node_array_add(groups, data_node_string("cve"));
+			has_cve = 1;
+		} else if (!has_regression && !strcmp(name->string.val, "linux-git")) {
+			data_node_array_add(groups, data_node_string("regression"));
+			has_regression = 1;
+		}
+	}
 }
 
 static struct data_node *parse_file(const char *fname)
@@ -1063,6 +1097,8 @@ static struct data_node *parse_file(const char *fname)
 	} else {
 		data_node_free(doc);
 	}
+
+	add_tag_groups(groups, res);
 
 	/*
 	 * Always emit groups, even when empty: tests outside testcases/
