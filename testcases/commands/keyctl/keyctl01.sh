@@ -2,22 +2,36 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2017 Fujitsu Ltd.
 # Ported: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+# Copyright (c) 2026 Cyril Hrubis <chrubis@suse.cz>
 #
-# This is a regression test about potential uninitialized variable,
-# the test can crash the buggy kernel, and the bug has been fixed in:
+# ---
+# doc
 #
-#   commit 38327424b40bcebe2de92d07312c89360ac9229a
-#   Author: Dan Carpenter <dan.carpenter@oracle.com>
-#   Date:   Thu Jun 16 15:48:57 2016 +0100
+# This is a regression test for a potential uninitialized variable in
+# key_reject_and_link(). The test can crash the buggy kernel.
+# ---
 #
-#   KEYS: potential uninitialized variable
+# ---
+# env
+# {
+#  "needs_root": true,
+#  "needs_tmpdir": true,
+#  "needs_cmds": [
+#   {"cmd": "keyctl"}
+#  ],
+#  "save_restore": [
+#   ["/proc/sys/kernel/keys/root_maxbytes", null, "TCONF"]
+#  ],
+#  "tags": [
+#   ["linux-git", "38327424b40bcebe2de92d07312c89360ac9229a"],
+#   ["CVE", "2016-4470"]
+#  ]
+# }
+# ---
+
+. tst_loader.sh
 
 TST_SETUP=setup
-TST_CLEANUP=cleanup
-TST_TESTFUNC=do_test
-TST_NEEDS_ROOT=1
-TST_NEEDS_TMPDIR=1
-TST_NEEDS_CMDS="keyctl"
 
 check_keyctl()
 {
@@ -53,26 +67,18 @@ setup()
 	check_keyctl negate request2 show unlink
 
 	PATH_KEYSTAT="/proc/key-users"
-	PATH_KEYQUOTA="/proc/sys/kernel/keys/root_maxbytes"
 
-	if [ ! -f "$PATH_KEYSTAT" ] || [ ! -f "$PATH_KEYQUOTA" ]; then
-		tst_brk TCONF "'${PATH_KEYSTAT}' or '${PATH_KEYQUOTA}' \
-			does not exist"
+	if [ ! -f "$PATH_KEYSTAT" ]; then
+		tst_brk TCONF "'${PATH_KEYSTAT}' does not exist"
 	fi
 
 	ORIG_KEYSZ=`awk -F' +|/' '/ 0:/ {print $8}' $PATH_KEYSTAT`
-	ORIG_MAXKEYSZ=`cat $PATH_KEYQUOTA`
 }
 
-cleanup()
+tst_test()
 {
-	if [ -n "$ORIG_MAXKEYSZ" ]; then
-		echo $ORIG_MAXKEYSZ >$PATH_KEYQUOTA
-	fi
-}
+	PATH_KEYQUOTA="/proc/sys/kernel/keys/root_maxbytes"
 
-do_test()
-{
 	local quota_excd=0
 	local maxkeysz=$((ORIG_KEYSZ + 100))
 
@@ -108,5 +114,4 @@ do_test()
 	tst_res TPASS "Bug not reproduced"
 }
 
-. tst_test.sh
-tst_run
+. tst_run.sh
