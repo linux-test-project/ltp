@@ -174,7 +174,7 @@ static struct tst_test test = {
 	.min_mem_avail = 10,
 	.runtime = 600,
 	.test_all = test_swapping,
-	.skip_in_compat = 1,
+	.needs_abi_bits = 64,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_SWAP=y",
 		NULL
