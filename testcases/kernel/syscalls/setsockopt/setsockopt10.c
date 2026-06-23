@@ -77,8 +77,10 @@ static int tcp0_sk, tcp1_sk, tcp2_sk, tcp3_sk;
 
 static void setup(void)
 {
-	tst_init_sockaddr_inet(&tcp0_addr, "127.0.0.1", 0x7c90);
-	tst_init_sockaddr_inet(&tcp1_addr, "127.0.0.1", 0x7c91);
+	tst_init_sockaddr_inet(&tcp0_addr, "127.0.0.1",
+			       TST_GET_UNUSED_PORT(AF_INET, SOCK_STREAM));
+	tst_init_sockaddr_inet(&tcp1_addr, "127.0.0.1",
+			       TST_GET_UNUSED_PORT(AF_INET, SOCK_STREAM));
 }
 
 static void cleanup(void)
