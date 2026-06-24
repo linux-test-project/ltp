@@ -57,15 +57,6 @@ static void test_ksm(void)
 	long ps;
 	pid_t pid;
 	void *ptr;
-	struct sigaction sa;
-
-	memset (&sa, '\0', sizeof(sa));
-	sa.sa_handler = sighandler;
-	sa.sa_flags = 0;
-	TEST(sigaction(SIGSEGV, &sa, NULL));
-	if (TST_RET == -1)
-		tst_brk(TBROK | TRERRNO,
-				"SIGSEGV signal setup failed");
 
 	ps = sysconf(_SC_PAGESIZE);
 
@@ -80,7 +71,20 @@ static void test_ksm(void)
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		tst_brk(TBROK, "invalid signal received: %d", status);
 
-	tst_res(TPASS, "still alive.");
+}
+
+static void run(void)
+{
+	struct sigaction sa = {
+		.sa_handler = sighandler
+	};
+
+	SAFE_SIGACTION(SIGSEGV, &sa, NULL);
+
+	while (tst_remaining_runtime())
+		test_ksm();
+
+	tst_res(TPASS, "Still alive");
 }
 
 static void sighandler(int sig)
@@ -91,7 +95,8 @@ static void sighandler(int sig)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.test_all = test_ksm,
+	.test_all = run,
+	.min_runtime = 10,
 	.save_restore = (const struct tst_path_val[]) {
 		{PATH_MM_KSM_RUN, "1", TST_SR_TBROK},
 		{PATH_MM_KSM_SMART_SCAN, "0",
