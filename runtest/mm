@@ -77,7 +77,7 @@ oom05 oom05
 
 swapping01 swapping01 -i 5
 
-thp01 thp01 -I 120
+thp01 thp01
 thp02 thp02
 thp03 thp03
 thp04 thp04

@@ -1,5 +1,5 @@
 # Tests which check for vulnerabilities by CVE number
-cve-2011-0999 thp01 -I 120
+cve-2011-0999 thp01
 cve-2011-2183 ksm05
 cve-2011-2496 vma03
 cve-2012-0957 uname04
