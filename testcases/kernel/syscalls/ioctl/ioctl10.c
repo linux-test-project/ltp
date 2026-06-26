@@ -17,6 +17,7 @@
 
 #include "config.h"
 #include <stdlib.h>
+#include <inttypes.h>
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <fnmatch.h>
@@ -35,7 +36,7 @@ struct map_entry {
 	unsigned long vm_pgoff;
 	unsigned int vm_major;
 	unsigned int vm_minor;
-	unsigned long vm_inode;
+	uint64_t vm_inode;
 	char vm_name[256];
 	unsigned int vm_flags;
 };
@@ -68,7 +69,7 @@ static void parse_maps_file(const char *filename, const char *keyword, struct ma
 
 	while (fgets(line, sizeof(line), fp) != NULL) {
 		if (fnmatch(keyword, line, 0) == 0) {
-			if (sscanf(line, "%lx-%lx %s %lx %x:%x %lu %s",
+			if (sscanf(line, "%lx-%lx %s %lx %x:%x %" SCNu64 " %s",
 						&entry->vm_start, &entry->vm_end, entry->vm_flags_str,
 						&entry->vm_pgoff, &entry->vm_major, &entry->vm_minor,
 						&entry->vm_inode, entry->vm_name) < 7)
