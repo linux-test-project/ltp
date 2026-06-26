@@ -103,6 +103,10 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_NUMA=y",
+		NULL
+	}
 };
 
 #else
