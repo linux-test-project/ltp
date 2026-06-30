@@ -119,7 +119,7 @@ tst_disable_selinux()
 
 	local f="$(tst_get_enforce)"
 
-	[ -f "$f" ] && echo 0 > $f
+	[ -f "$f" ] && echo 0 > "$f"
 }
 
 # Get SELinux directory path
@@ -147,8 +147,8 @@ tst_update_selinux_state()
 	[ -n "$dir" ] || return 1
 
 	# Toggle enforce to trigger SELinux state measurement
-	orig_val=$(cat $dir/enforce)
+	orig_val=$(cat "$dir/enforce")
 	val=$((1 - orig_val))
-	echo $val > $dir/enforce
-	echo $orig_val > $dir/enforce
+	echo "$val" > "$dir/enforce"
+	echo "$orig_val" > "$dir/enforce"
 }
