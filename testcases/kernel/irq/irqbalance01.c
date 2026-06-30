@@ -41,6 +41,8 @@
 #include "tst_safe_stdio.h"
 #include "tst_safe_file_at.h"
 
+#define PRINT_PROC_INTERRUPTS() safe_print_file(__FILE__, __LINE__, "/proc/interrupts")
+
 enum affinity {
 	ALLOW = '+',
 	DENY = '-',
@@ -304,11 +306,15 @@ static void setup(void)
 	collect_irq_info();
 	print_irq_info();
 
-	if (nr_cpus < 1)
+	if (nr_cpus < 1) {
+		PRINT_PROC_INTERRUPTS();
 		tst_brk(TBROK, "No CPUs found in /proc/interrupts?");
+	}
 
-	if (nr_irqs < 1)
-		tst_brk(TBROK, "No IRQs found in /proc/interrupts?");
+	if (nr_irqs < 1) {
+		PRINT_PROC_INTERRUPTS();
+		tst_brk(TCONF, "No IRQs found in /proc/interrupts?");
+	}
 }
 
 static void run(void)
