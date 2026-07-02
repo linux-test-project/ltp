@@ -95,8 +95,11 @@ static void run(void)
 			break;
 		}
 
-		if (!name)
-			tst_brk(TBROK, "Unsupported LSM: %lu", ids[i]);
+		if (!name) {
+			tst_res(TCONF, "Skipping unrecognized LSM ID: %lu",
+				(unsigned long)ids[i]);
+			continue;
+		}
 
 		for (counter = 0; counter < lsm_names_count; counter++) {
 			if (!strcmp(name, lsm_names[counter].name)) {
