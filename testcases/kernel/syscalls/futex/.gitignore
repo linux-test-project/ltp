@@ -15,3 +15,5 @@
 /futex_waitv03
 /futex_wait06
 /futex_wait07
+/futex_wake05
+/futex_cmp_requeue03
