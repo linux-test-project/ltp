@@ -3,9 +3,9 @@
  * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * 1. Block on a futex and wait for timeout.
- * 2. Check that the futex waited for expected time.
+/*\
+ * 1. Block on a :manpage:`futex(2)` and wait for timeout.
+ * 2. Check that the :manpage:`futex(2)` waited for expected time.
  */
 
 #include <errno.h>

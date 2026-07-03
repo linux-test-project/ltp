@@ -5,7 +5,9 @@
  */
 
 /*\
- * Check that futex(FUTEX_WAIT) returns EINTR when interrupted by a signal.
+ * Check that :manpage:`futex(2)` with FUTEX_WAIT returns EINTR when interrupted
+ * by a signal.
+ *
  * A child process blocks on futex_wait() with a long timeout. The parent
  * waits for the child to enter sleep state, then sends SIGUSR1 to it.
  * The child verifies it received EINTR and exits accordingly.

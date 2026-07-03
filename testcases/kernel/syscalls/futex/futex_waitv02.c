@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies futex_waitv syscall using private data.
+ * This test verifies :manpage:`futex_waitv(2)` using private data.
  */
 
 #define _GNU_SOURCE

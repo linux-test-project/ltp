@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
- * futex_wake() returns 0 (0 woken up processes) when no processes wait on the mutex.
+ */
+
+/*\
+ * :manpage:`futex_wake(2)` returns 0 (0 woken up processes) when no processes
+ * wait on the mutex.
  */
 
 #include <limits.h>

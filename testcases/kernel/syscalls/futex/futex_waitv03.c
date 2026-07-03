@@ -4,7 +4,7 @@
  */
 
 /*\
- * This test verifies futex_waitv syscall using shared data.
+ * This test verifies :manpage:`futex_waitv(2)` using shared data.
  */
 
 #define _GNU_SOURCE

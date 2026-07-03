@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
- * 1. Block on a bitset futex and wait for timeout, the difference between
- *    normal futex and bitset futex is that that the later have absolute timeout.
- * 2. Check that the futex waited for expected time.
+ */
+
+/*\
+ * 1. Block on a bitset :manpage:`futex(2)` and wait for timeout, the difference
+ *    between  normal futex and bitset :manpage:`futex(2)` is that that the later
+ *    have absolute timeout.
+ * 2. Check that :manpage:`futex(2)` waited for expected time.
  */
 
 #include "tst_test.h"

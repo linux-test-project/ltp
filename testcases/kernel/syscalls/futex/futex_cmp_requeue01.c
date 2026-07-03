@@ -4,11 +4,11 @@
  */
 
 /*\
- * Verify the basic functionality of futex(FUTEX_CMP_REQUEUE).
+ * Verify the basic functionality of :manpage:`futex(2)` with FUTEX_CMP_REQUEUE.
  *
- * futex(FUTEX_CMP_REQUEUE) can wake up the number of waiters specified
- * by val argument and then requeue the number of waiters limited by val2
- * argument (i.e. move some remaining waiters from uaddr to uaddr2 address).
+ * :manpage:`futex(2)` with FUTEX_CMP_REQUEUE can wake up the number of waiters
+ * specified by val argument and then requeue the number of waiters limited by
+ * val2 argument (i.e. move some remaining waiters from uaddr to uaddr2 address).
  */
 
 #include <errno.h>

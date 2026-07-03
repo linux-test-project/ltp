@@ -5,11 +5,12 @@
  */
 
 /*\
- * Check that futex(FUTEX_WAIT) returns EFAULT when:
+ * Check that :manpage:`futex(2)` with FUTEX_WAIT returns EFAULT when:
  *
  * 1) uaddr points to unmapped memory
  * 2) timeout points to unmapped memory
  */
+
 #include <errno.h>
 #include <sys/mman.h>
 
