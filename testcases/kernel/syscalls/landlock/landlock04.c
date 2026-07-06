@@ -143,12 +143,26 @@ static void enable_exec_libs(const int ruleset_fd)
 static void setup(void)
 {
 	struct tvariant variant = tvariants[tst_variant];
+	int supported_rules;
 
 	verify_landlock_is_enabled();
 
 	tst_res(TINFO, "Testing %s", variant.desc);
 
-	ruleset_attr->handled_access_fs = tester_get_all_fs_rules();
+	supported_rules = tester_get_all_fs_rules();
+
+	/* Some access rights are only available from a given Landlock ABI
+	 * version (e.g. LANDLOCK_ACCESS_FS_TRUNCATE needs ABI >= 3). Skip the
+	 * variant when the running kernel doesn't support the tested right,
+	 * otherwise landlock_add_rule() fails with EINVAL.
+	 */
+	if (variant.access & ~supported_rules) {
+		tst_brk(TCONF,
+			"%s is not supported by the current Landlock ABI",
+			variant.desc);
+	}
+
+	ruleset_attr->handled_access_fs = supported_rules;
 
 	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
 		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
