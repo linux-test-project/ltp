@@ -74,4 +74,8 @@ static struct tst_test test = {
 		{&cs_range, .size = sizeof(struct cachestat_range)},
 		{}
 	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_COMPACTION=y",
+		NULL
+	}
 };
