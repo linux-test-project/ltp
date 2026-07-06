@@ -6,7 +6,7 @@
 /*\
  * This test verifies that all landlock filesystem rules are working properly.
  * The way we do it is to verify that all disabled syscalls are not working but
- * the one we enabled via specifc landlock rules.
+ * the one we enabled via specific landlock rules.
  */
 
 #include "landlock_common.h"
@@ -104,7 +104,7 @@ static void enable_exec_libs(const int ruleset_fd)
 	fp = SAFE_FOPEN("/proc/self/maps", "r");
 
 	while (fgets(line, sizeof(line), fp)) {
-		if (strstr(line, ".so") == NULL)
+		if (!strstr(line, ".so"))
 			continue;
 
 		SAFE_SSCANF(line, "%*x-%*x %*s %*x %*s %*d %s", path);
@@ -131,8 +131,7 @@ static void enable_exec_libs(const int ruleset_fd)
 			LANDLOCK_ACCESS_FS_EXECUTE;
 		path_beneath_attr->parent_fd = SAFE_OPEN(path, O_PATH | O_CLOEXEC);
 
-		SAFE_LANDLOCK_ADD_RULE(
-			ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,	path_beneath_attr, 0);
+		SAFE_LANDLOCK_ADD_RULE(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,	path_beneath_attr, 0);
 
 		SAFE_CLOSE(path_beneath_attr->parent_fd);
 	}
@@ -164,8 +163,7 @@ static void setup(void)
 
 	ruleset_attr->handled_access_fs = supported_rules;
 
-	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
+	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
 
 	/* since our binary is dynamically linked, we need to enable dependences
 	 * to be read and executed
@@ -177,11 +175,9 @@ static void setup(void)
 		SAFE_MKDIR(SANDBOX_FOLDER, PERM_MODE);
 
 	path_beneath_attr->allowed_access = variant.access;
-	path_beneath_attr->parent_fd = SAFE_OPEN(
-		SANDBOX_FOLDER, O_PATH | O_CLOEXEC);
+	path_beneath_attr->parent_fd = SAFE_OPEN(SANDBOX_FOLDER, O_PATH | O_CLOEXEC);
 
-	SAFE_LANDLOCK_ADD_RULE(
-		ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,	path_beneath_attr, 0);
+	SAFE_LANDLOCK_ADD_RULE(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,	path_beneath_attr, 0);
 
 	SAFE_CLOSE(path_beneath_attr->parent_fd);
 }

@@ -14,22 +14,22 @@
 #define SANDBOX_FOLDER	"sandbox"
 #define TESTAPP			"landlock_exec"
 
-#define FILE_EXEC		SANDBOX_FOLDER"/"TESTAPP
-#define FILE_READ		SANDBOX_FOLDER"/file_read"
-#define FILE_WRITE		SANDBOX_FOLDER"/file_write"
-#define FILE_REMOVE		SANDBOX_FOLDER"/file_remove"
-#define FILE_UNLINK		SANDBOX_FOLDER"/file_unlink"
-#define FILE_UNLINKAT	SANDBOX_FOLDER"/file_unlinkat"
-#define FILE_TRUNCATE	SANDBOX_FOLDER"/file_truncate"
-#define FILE_REGULAR	SANDBOX_FOLDER"/regular0"
-#define FILE_SOCKET		SANDBOX_FOLDER"/socket0"
-#define FILE_FIFO		SANDBOX_FOLDER"/fifo0"
-#define FILE_SYM0		SANDBOX_FOLDER"/symbolic0"
-#define FILE_SYM1		SANDBOX_FOLDER"/symbolic1"
-#define DIR_READDIR		SANDBOX_FOLDER"/dir_readdir"
-#define DIR_RMDIR		SANDBOX_FOLDER"/dir_rmdir"
-#define DEV_CHAR0		SANDBOX_FOLDER"/chardev0"
-#define DEV_BLK0		SANDBOX_FOLDER"/blkdev0"
+#define FILE_EXEC	SANDBOX_FOLDER "/" TESTAPP
+#define FILE_READ	SANDBOX_FOLDER "/file_read"
+#define FILE_WRITE	SANDBOX_FOLDER "/file_write"
+#define FILE_REMOVE	SANDBOX_FOLDER "/file_remove"
+#define FILE_UNLINK	SANDBOX_FOLDER "/file_unlink"
+#define FILE_UNLINKAT	SANDBOX_FOLDER "/file_unlinkat"
+#define FILE_TRUNCATE	SANDBOX_FOLDER "/file_truncate"
+#define FILE_REGULAR	SANDBOX_FOLDER "/regular0"
+#define FILE_SOCKET	SANDBOX_FOLDER "/socket0"
+#define FILE_FIFO	SANDBOX_FOLDER "/fifo0"
+#define FILE_SYM0	SANDBOX_FOLDER "/symbolic0"
+#define FILE_SYM1	SANDBOX_FOLDER "/symbolic1"
+#define DIR_READDIR	SANDBOX_FOLDER "/dir_readdir"
+#define DIR_RMDIR	SANDBOX_FOLDER "/dir_rmdir"
+#define DEV_CHAR0	SANDBOX_FOLDER "/chardev0"
+#define DEV_BLK0	SANDBOX_FOLDER "/blkdev0"
 
 #define ALL_RULES (\
 	LANDLOCK_ACCESS_FS_EXECUTE | \
@@ -50,9 +50,9 @@
 	LANDLOCK_ACCESS_FS_IOCTL_DEV)
 
 static char *readdir_files[] = {
-	DIR_READDIR"/file0",
-	DIR_READDIR"/file1",
-	DIR_READDIR"/file2",
+	DIR_READDIR "/file0",
+	DIR_READDIR "/file1",
+	DIR_READDIR "/file2",
 };
 
 static int dev_chr;
@@ -63,8 +63,7 @@ static int tester_get_all_fs_rules(void)
 	int abi;
 	int all_rules = ALL_RULES;
 
-	abi = SAFE_LANDLOCK_CREATE_RULESET(
-		NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
+	abi = SAFE_LANDLOCK_CREATE_RULESET(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
 
 	if (abi < 2)
 		all_rules &= ~LANDLOCK_ACCESS_FS_REFER;
@@ -227,10 +226,10 @@ static void _test_readdir(const int result)
 			continue;
 
 		for (size_t i = 0; i < ARRAY_SIZE(readdir_files); i++) {
-			if (readdir_files[i] == NULL)
+			if (!readdir_files[i])
 				continue;
 
-			if (strstr(readdir_files[i], de->d_name) != NULL)
+			if (strstr(readdir_files[i], de->d_name))
 				files_counted++;
 		}
 	}
@@ -263,11 +262,7 @@ static void _test_rmfile(const int result)
 	}
 }
 
-static void _test_make(
-	const char *path,
-	const int type,
-	const int dev,
-	const int result)
+static void _test_make(const char *path, const int type, const int dev, const int result)
 {
 	tst_res(TINFO, "Test normal or special files creation");
 
@@ -314,8 +309,7 @@ static void _test_truncate(const int result)
 			SAFE_CLOSE(fd);
 		}
 
-		TST_EXP_FAIL(open(FILE_TRUNCATE, O_WRONLY | O_TRUNC, PERM_MODE),
-			EACCES);
+		TST_EXP_FAIL(open(FILE_TRUNCATE, O_WRONLY | O_TRUNC, PERM_MODE), EACCES);
 
 		if (TST_RET != -1)
 			SAFE_CLOSE(TST_RET);
@@ -346,7 +340,7 @@ static void tester_run_fs_rules(const int rules, const int result)
 		_test_make(FILE_REGULAR, S_IFREG, 0, result);
 
 	if (strcmp(tst_device->fs_type, "vfat") &&
-		strcmp(tst_device->fs_type, "exfat")) {
+	    strcmp(tst_device->fs_type, "exfat")) {
 		if (rules & LANDLOCK_ACCESS_FS_MAKE_CHAR)
 			_test_make(DEV_CHAR0, S_IFCHR, dev_chr, result);
 
@@ -366,9 +360,7 @@ static void tester_run_fs_rules(const int rules, const int result)
 	if (rules & LANDLOCK_ACCESS_FS_TRUNCATE) {
 		int abi;
 
-		abi = SAFE_LANDLOCK_CREATE_RULESET(
-			NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
-
+		abi = SAFE_LANDLOCK_CREATE_RULESET(NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
 		if (abi < 3) {
 			tst_res(TINFO, "Skip truncate test. Minimum ABI version is 3");
 			return;

@@ -58,8 +58,7 @@ static void create_server(const int addr_family)
 	SAFE_CLOSE(socket.fd);
 }
 
-static void test_bind(const int addr_family, const in_port_t port,
-	const int exp_err)
+static void test_bind(const int addr_family, const in_port_t port, const int exp_err)
 {
 	struct socket_data socket;
 	struct sockaddr *addr = NULL;
@@ -68,20 +67,17 @@ static void test_bind(const int addr_family, const in_port_t port,
 	getsocket_addr(&socket, addr_family, &addr);
 
 	if (exp_err) {
-		TST_EXP_FAIL(
-			bind(socket.fd, addr, socket.address_size),
-			exp_err, "bind() access on port %u", port);
+		TST_EXP_FAIL(bind(socket.fd, addr, socket.address_size),
+			     exp_err, "bind() access on port %u", port);
 	} else {
-		TST_EXP_PASS(
-			bind(socket.fd, addr, socket.address_size),
-			"bind() access on port %u", port);
+		TST_EXP_PASS(bind(socket.fd, addr, socket.address_size),
+			     "bind() access on port %u", port);
 	}
 
 	SAFE_CLOSE(socket.fd);
 }
 
-static void test_connect(const int addr_family, const in_port_t port,
-	const int exp_err)
+static void test_connect(const int addr_family, const in_port_t port, const int exp_err)
 {
 	struct socket_data socket;
 	struct sockaddr *addr = NULL;
@@ -90,13 +86,11 @@ static void test_connect(const int addr_family, const in_port_t port,
 	getsocket_addr(&socket, addr_family, &addr);
 
 	if (exp_err) {
-		TST_EXP_FAIL(
-			connect(socket.fd, addr, socket.address_size),
-			exp_err, "connect() on port %u", port);
+		TST_EXP_FAIL(connect(socket.fd, addr, socket.address_size),
+			     exp_err, "connect() on port %u", port);
 	} else {
-		TST_EXP_PASS(
-			connect(socket.fd, addr, socket.address_size),
-			"connect() on port %u", port);
+		TST_EXP_PASS(connect(socket.fd, addr, socket.address_size),
+			     "connect() on port %u", port);
 	}
 
 	SAFE_CLOSE(socket.fd);
@@ -142,12 +136,8 @@ static void run(void)
 		tst_res(TINFO, "Enable bind() access only for port %u",
 			addr_port);
 
-		apply_landlock_net_layer(
-			ruleset_attr,
-			sizeof(struct tst_landlock_ruleset_attr_abi4),
-			net_port_attr,
-			addr_port,
-			LANDLOCK_ACCESS_NET_BIND_TCP);
+		apply_landlock_net_layer(ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi4),
+					 net_port_attr, addr_port, LANDLOCK_ACCESS_NET_BIND_TCP);
 
 		test_bind(addr_family, addr_port, 0);
 		test_bind(addr_family, addr_port + 0x80, EACCES);
@@ -165,12 +155,8 @@ static void run(void)
 		tst_res(TINFO, "Enable connect() access only on port %u",
 			*server_port);
 
-		apply_landlock_net_layer(
-			ruleset_attr,
-			sizeof(struct tst_landlock_ruleset_attr_abi4),
-			net_port_attr,
-			*server_port,
-			LANDLOCK_ACCESS_NET_CONNECT_TCP);
+		apply_landlock_net_layer(ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi4),
+					 net_port_attr, *server_port, LANDLOCK_ACCESS_NET_CONNECT_TCP);
 
 		test_connect(addr_family, *server_port, 0);
 		test_connect(addr_family, *server_port + 0x80, EACCES);
@@ -189,7 +175,7 @@ static void setup(void)
 	addr_port = TST_GET_UNUSED_PORT(AF_INET, SOCK_STREAM);
 
 	server_port = SAFE_MMAP(NULL, sizeof(in_port_t), PROT_READ | PROT_WRITE,
-		MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+				MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 }
 
 static void cleanup(void)

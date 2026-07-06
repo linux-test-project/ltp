@@ -56,15 +56,14 @@ static void run_child(struct tcase *tc)
 	if (tc->exp_errno == E2BIG) {
 		for (int i = 0; i < MAX_STACKED_RULESETS; i++) {
 			TST_EXP_PASS_SILENT(tst_syscall(__NR_landlock_restrict_self,
-				*tc->fd, tc->flags));
+							*tc->fd, tc->flags));
 			if (TST_RET == -1)
 				return;
 		}
 	}
 
 	TST_EXP_FAIL(tst_syscall(__NR_landlock_restrict_self, *tc->fd, tc->flags),
-		tc->exp_errno,
-		"%s", tc->msg);
+		     tc->exp_errno, "%s", tc->msg);
 
 	if (tc->exp_errno == EPERM)
 		tst_cap_action(&needadmin);
@@ -86,8 +85,8 @@ static void setup(void)
 
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
 
-	ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
-		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
+	ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset, ruleset_attr,
+						   sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
 
 	file_fd = SAFE_OPEN("junk.bin", O_CREAT, 0777);
 }

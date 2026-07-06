@@ -44,11 +44,8 @@ static void run(unsigned int n)
 	if (*tc->attr)
 		(*tc->attr)->handled_access_fs = tc->access_fs;
 
-	TST_EXP_FAIL(tst_syscall(__NR_landlock_create_ruleset,
-			*tc->attr, *tc->size, tc->flags),
-		tc->exp_errno,
-		"%s",
-		tc->msg);
+	TST_EXP_FAIL(tst_syscall(__NR_landlock_create_ruleset, *tc->attr, *tc->size, tc->flags),
+		     tc->exp_errno, "%s", tc->msg);
 
 	if (TST_RET >= 0)
 		SAFE_CLOSE(TST_RET);

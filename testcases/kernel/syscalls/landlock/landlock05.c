@@ -19,12 +19,12 @@
 #include "landlock_common.h"
 
 #define MNTPOINT "sandbox"
-#define DIR1 MNTPOINT"/folder1"
-#define DIR2 MNTPOINT"/folder2"
-#define DIR3 MNTPOINT"/folder3"
-#define FILENAME1 DIR1"/file"
-#define FILENAME2 DIR2"/file"
-#define FILENAME3 DIR3"/file"
+#define DIR1 MNTPOINT "/folder1"
+#define DIR2 MNTPOINT "/folder2"
+#define DIR3 MNTPOINT "/folder3"
+#define FILENAME1 DIR1 "/file"
+#define FILENAME2 DIR2 "/file"
+#define FILENAME3 DIR3 "/file"
 
 static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static struct landlock_path_beneath_attr *path_beneath_attr;
@@ -65,20 +65,10 @@ static void setup(void)
 		LANDLOCK_ACCESS_FS_WRITE_FILE |
 		LANDLOCK_ACCESS_FS_REFER;
 
-	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
+	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
 
-	apply_landlock_fs_rule(
-		path_beneath_attr,
-		ruleset_fd,
-		LANDLOCK_ACCESS_FS_REFER,
-		DIR1);
-
-	apply_landlock_fs_rule(
-		path_beneath_attr,
-		ruleset_fd,
-		LANDLOCK_ACCESS_FS_REFER,
-		DIR2);
+	apply_landlock_fs_rule(path_beneath_attr, ruleset_fd, LANDLOCK_ACCESS_FS_REFER, DIR1);
+	apply_landlock_fs_rule(path_beneath_attr, ruleset_fd, LANDLOCK_ACCESS_FS_REFER, DIR2);
 
 	enforce_ruleset(ruleset_fd);
 

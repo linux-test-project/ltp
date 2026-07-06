@@ -14,7 +14,7 @@
 #include <sys/ioctl.h>
 
 #define MNTPOINT "sandbox"
-#define FILENAME MNTPOINT"/fifo"
+#define FILENAME MNTPOINT "/fifo"
 
 static struct tst_landlock_ruleset_attr_abi1 *ruleset_attr;
 static struct landlock_path_beneath_attr *path_beneath_attr;
@@ -52,13 +52,8 @@ static void setup(void)
 
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_IOCTL_DEV;
 
-	apply_landlock_fs_layer(
-		ruleset_attr,
-		sizeof(struct tst_landlock_ruleset_attr_abi1),
-		path_beneath_attr,
-		MNTPOINT,
-		LANDLOCK_ACCESS_FS_IOCTL_DEV
-	);
+	apply_landlock_fs_layer(ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1),
+				path_beneath_attr, MNTPOINT, LANDLOCK_ACCESS_FS_IOCTL_DEV);
 }
 
 static void cleanup(void)

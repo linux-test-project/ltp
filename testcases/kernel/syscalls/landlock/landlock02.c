@@ -136,9 +136,8 @@ static void run(unsigned int n)
 		attr = *tc->net_attr;
 	}
 
-	TST_EXP_FAIL(tst_syscall(__NR_landlock_add_rule,
-		*tc->fd, tc->rule_type, attr, tc->flags),
-		tc->exp_errno, "%s", tc->msg);
+	TST_EXP_FAIL(tst_syscall(__NR_landlock_add_rule, *tc->fd, tc->rule_type, attr, tc->flags),
+		     tc->exp_errno, "%s", tc->msg);
 }
 
 static void setup(void)
@@ -150,14 +149,14 @@ static void setup(void)
 	attr_abi6->handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE;
 
 	if (abi_current < 4) {
-		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
-			attr_abi1, sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
+		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset, attr_abi1,
+							   sizeof(struct tst_landlock_ruleset_attr_abi1), 0));
 	} else if (abi_current < 6) {
-		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
-			attr_abi4, sizeof(struct tst_landlock_ruleset_attr_abi4), 0));
+		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset, attr_abi4,
+							   sizeof(struct tst_landlock_ruleset_attr_abi4), 0));
 	} else {
-		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset,
-			attr_abi6, sizeof(struct tst_landlock_ruleset_attr_abi6), 0));
+		ruleset_fd = TST_EXP_FD_SILENT(tst_syscall(__NR_landlock_create_ruleset, attr_abi6,
+							   sizeof(struct tst_landlock_ruleset_attr_abi6), 0));
 	}
 }
 

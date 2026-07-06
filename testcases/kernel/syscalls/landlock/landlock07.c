@@ -68,10 +68,7 @@ static void setup(void)
 	verify_landlock_is_enabled();
 
 	ruleset_attr->handled_access_fs = LANDLOCK_ACCESS_FS_WRITE_FILE;
-	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(
-		ruleset_attr,
-		sizeof(struct tst_landlock_ruleset_attr_abi1),
-		0);
+	ruleset_fd = SAFE_LANDLOCK_CREATE_RULESET(ruleset_attr, sizeof(struct tst_landlock_ruleset_attr_abi1), 0);
 }
 
 static void cleanup(void)

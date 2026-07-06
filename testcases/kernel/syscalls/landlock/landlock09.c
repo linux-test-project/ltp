@@ -14,7 +14,7 @@
 #include "landlock_common.h"
 
 #define SOCKET_NAME "test.sock"
-#define ABSTRACT_SOCKET_NAME "\0"SOCKET_NAME
+#define ABSTRACT_SOCKET_NAME "\0" SOCKET_NAME
 #define SOCKET_LENGTH (offsetof(struct sockaddr_un, sun_path) + strlen(SOCKET_NAME) + 1)
 
 enum {
