@@ -73,7 +73,7 @@ static void setup(void)
 
 	for (num_shift = 0; num_shift <= 15; num_shift++) {
 		if ((1lu<<num_shift) * page_size / 1024 >= tst_device->size) {
-			tst_res(TINFO, "Limiting num_shift to %i\n", num_shift);
+			tst_res(TINFO, "Limiting num_shift to %i", num_shift);
 			break;
 		}
 	}
