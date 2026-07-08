@@ -42,7 +42,7 @@ static void test_cached_pages(const unsigned int use_sync, const int num_pages)
 		SAFE_WRITE(0, fd, page_data, page_size);
 
 	if (use_sync)
-		fsync(fd);
+		SAFE_FSYNC(fd);
 
 	cs_range->off = 0;
 	cs_range->len = page_size * num_pages;
