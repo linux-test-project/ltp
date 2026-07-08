@@ -15,7 +15,7 @@ TST_NEEDS_ROOT=1
 
 setup()
 {
-	DF_FS_TYPE="$(grep -E "$TST_MNTPOINT ($TST_FS_TYPE|fuseblk|fuse)" /proc/mounts | awk 'NR==1{print $3}')"
+	DF_FS_TYPE="$(grep -E "$TST_MNTPOINT ($TST_FS_TYPE|fuse)" /proc/mounts | awk 'NR==1{print $3}')"
 }
 
 df_test()
