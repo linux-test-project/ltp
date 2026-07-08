@@ -36,8 +36,6 @@ static void test_cached_pages(const unsigned int use_sync, const int num_pages)
 	tst_res(TINFO, "%s file synchronization", use_sync ? "Enable" : "Disable");
 	tst_res(TINFO, "Number of pages: %d", num_pages);
 
-	memset(cs, 0, sizeof(struct cachestat));
-
 	fd = SAFE_OPEN(FILENAME, O_RDWR | O_CREAT, 0600);
 
 	for (int i = 0; i < num_pages; i++)
