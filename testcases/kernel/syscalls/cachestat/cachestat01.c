@@ -15,7 +15,7 @@
  * - monitor file with cachestat()
  * - check if the right amount of pages have been moved into cache
  * - if storage device synchronization is requested, check that dirty pages is
- *    zero
+ *   zero
  */
 
 #include <stdlib.h>
