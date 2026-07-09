@@ -9,18 +9,15 @@
  */
 
 /*\
- * -  access() fails with -1 return value and sets errno to EINVAL
- *    if the specified access mode argument is invalid.
- * -  access() fails with -1 return value and sets errno to ENOENT
- *    if the specified file doesn't exist (or pathname is NULL).
- * -  access() fails with -1 return value and sets errno to ENAMETOOLONG
- *    if the pathname size is > PATH_MAX characters.
- * -  access() fails with -1 return value and sets errno to ENOTDIR
- *    if a component used as a directory in pathname is not a directory.
- * -  access() fails with -1 return value and sets errno to ELOOP
- *    if too many symbolic links were encountered in resolving pathname.
- * -  access() fails with -1 return value and sets errno to EROFS
- *    if write permission was requested for files on a read-only file system.
+ * Test :manpage:`access(2)` fails with -1 return value and sets errno to
+ *
+ * - EINVAL if the specified access mode argument is invalid.
+ * - ENOENT if the specified file doesn't exist (or pathname is NULL).
+ * - ENAMETOOLONG if the pathname size is > PATH_MAX characters.
+ * - ENOTDIR if a component used as a directory in pathname is not a directory.
+ * - ELOOP if too many symbolic links were encountered in resolving pathname.
+ * - EROFS if write permission was requested for files on a read-only file
+ *   system.
  */
 
 #include <errno.h>

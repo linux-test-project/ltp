@@ -7,10 +7,12 @@
  */
 
 /*\
- * Test access(2) syscall
+ * Test :manpage:`access(2)`
  *
- * - check the existence or read/write/execute permissions on a file (mode argument: F_OK/R_OK/W_OK/X_OK)
- * - test the accessibility of the file referred to by symbolic link if the pathname points to a symbolic link
+ * - check the existence or read/write/execute permissions on a file (mode
+ *   argument: F_OK/R_OK/W_OK/X_OK)
+ * - test the accessibility of the file referred to by symbolic link if the
+ *   pathname points to a symbolic link
  * - file can be stat/read/written/executed as root and nobody
  */
 
