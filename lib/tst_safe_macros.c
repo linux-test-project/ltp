@@ -829,3 +829,21 @@ int safe_statvfs(const char *file, const int lineno,
 
 	return rval;
 }
+
+int safe_poll(const char *const file, const int lineno, struct pollfd *fds,
+		nfds_t nfds, int timeout)
+{
+	int rval;
+
+	rval = poll(fds, nfds, timeout);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"poll(%p, %li, %i) failed", fds, (long)nfds, timeout);
+	} else if (rval < -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid poll(%p, %li, %i) return value %i",
+			fds, (long)nfds, timeout, rval);
+	}
+
+	return rval;
+}

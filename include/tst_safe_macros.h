@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <grp.h>
+#include <poll.h>
 
 #include "safe_stdio_fn.h"
 #include "safe_macros_fn.h"
@@ -516,5 +517,10 @@ int safe_statvfs(const char *file, const int lineno,
                               const char *path, struct statvfs *buf);
 #define SAFE_STATVFS(path, buf) \
 	safe_statvfs(__FILE__, __LINE__, (path), (buf))
+
+int safe_poll(const char *const file, const int lineno, struct pollfd *fds,
+		nfds_t nfds, int timeout);
+#define SAFE_POLL(fds, nfds, timeout) \
+	safe_poll(__FILE__, __LINE__, (fds), (nfds), (timeout))
 
 #endif /* TST_SAFE_MACROS_H__ */
