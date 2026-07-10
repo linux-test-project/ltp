@@ -210,6 +210,9 @@ endif
 	$(top_srcdir)/testcases/lib/run_tests.sh -b $(abs_builddir)
 
 test-metadata: metadata-all
+ifneq ($(build),$(host))
+	$(error running tests on cross-compile build not supported)
+endif
 	$(MAKE) -C $(abs_srcdir)/metadata test
 
 MODULE_DIRS :=  $(shell \
