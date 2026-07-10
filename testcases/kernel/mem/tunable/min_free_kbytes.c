@@ -17,7 +17,7 @@
  *
  * 1. default min_free_kbytes with all ``overcommit_memory`` policy
  * 2. 2x default value with all ``overcommit_memory`` policy
- * 3. 5% of MemFree or %2 MemTotal with all ``overcommit_memory`` policy
+ * 3. 5% of MemFree or 2% MemTotal with all ``overcommit_memory`` policy
  *
  * [References]
  *
@@ -114,7 +114,7 @@ static void test_tune(unsigned long overcommit_policy)
 		if (overcommit_policy == 2) {
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 				tst_res(TFAIL, "child unexpectedly failed: %s",
-					 tst_strstatus(status));
+					tst_strstatus(status));
 		} else if (overcommit_policy == 1) {
 			if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
 #ifdef TST_ABI32
@@ -122,20 +122,19 @@ static void test_tune(unsigned long overcommit_policy)
 				if (total_mem < 3145728UL)
 #endif
 					tst_res(TFAIL, "child unexpectedly failed: %s",
-						 tst_strstatus(status));
+						tst_strstatus(status));
 #ifdef TST_ABI32
 				/* in 32-bit system, a process allocate about 3Gb memory at most */
 				else
 					tst_res(TINFO, "Child can't allocate "
-						 ">3Gb memory in 32bit system");
+						">3Gb memory in 32bit system");
 			}
 #endif
 		} else {
 			if (WIFEXITED(status)) {
-				if (WEXITSTATUS(status) != 0) {
+				if (WEXITSTATUS(status) != 0)
 					tst_res(TFAIL, "child unexpectedly failed: %s",
 						tst_strstatus(status));
-				}
 			} else if (!WIFSIGNALED(status) ||
 				   WTERMSIG(status) != SIGKILL) {
 				tst_res(TFAIL, "child unexpectedly failed: %s",
@@ -182,7 +181,7 @@ static void check_monitor(void)
 
 		if (memfree < tune) {
 			tst_res(TINFO, "MemFree is %lu kB, "
-				 "min_free_kbytes is %lu kB", memfree, tune);
+				"min_free_kbytes is %lu kB", memfree, tune);
 			tst_res(TFAIL, "MemFree < min_free_kbytes");
 		}
 
