@@ -178,6 +178,11 @@ jobs:
         case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
         ./build.sh -r test-c -o ${TREE:-in} -t $BUILD
 
+    - name: Test metadata
+      run: |
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        ./build.sh -r test-metadata -o ${TREE:-in} -t $BUILD
+
     - name: Test shell API
       run: |
         case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
