@@ -274,6 +274,7 @@ TST_RTNL_CHK()
 	local msg match
 
 	echo "$output" | grep -q "LTP_ERR" || return 0
+	output=$(echo "$output" | sed 's/LTP_ERR$//')
 
 	for msg in "$msg1" "$msg2" "$msg3" "$msg4"; do
 		match=$(echo "$output" | grep "$msg") && \
