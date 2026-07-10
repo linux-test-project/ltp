@@ -1,6 +1,6 @@
 #!/bin/sh -eux
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) 2018-2025 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2018-2026 Petr Vorel <pvorel@suse.cz>
 
 zyp="zypper --non-interactive install --force-resolution --no-recommends"
 
@@ -11,6 +11,7 @@ while [ $i != 0 ]; do
 		automake \
 		clang \
 		curl \
+		diffutils \
 		jq \
 		findutils \
 		gcc \
