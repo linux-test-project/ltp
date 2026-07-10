@@ -44,9 +44,30 @@ static int eatup_mem(unsigned long overcommit_policy);
 static void check_monitor(void);
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED);
 
+static void set_min_free_kbytes(int i)
+{
+	unsigned long memfree, memtotal, tune;
+
+	switch (i) {
+	case 0:
+		tune = default_tune;
+		break;
+	case 1:
+		tune = 2 * default_tune;
+		break;
+	default:
+		memfree = SAFE_READ_MEMINFO("MemFree:");
+		memtotal = SAFE_READ_MEMINFO("MemTotal:");
+		tune = MIN(memfree / 20, memtotal / 50);
+		break;
+	}
+
+	TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, tune, 1);
+}
+
 static void min_free_kbytes_test(void)
 {
-	int pid, status;
+	pid_t pid;
 	struct sigaction sa;
 
 	sa.sa_handler = sighandler;
@@ -56,7 +77,6 @@ static void min_free_kbytes_test(void)
 
 	pid = SAFE_FORK();
 	if (pid == 0) {
-		/* startup the check monitor */
 		check_monitor();
 		exit(0);
 	}
@@ -66,50 +86,26 @@ static void min_free_kbytes_test(void)
 	test_tune(1);
 
 	SAFE_KILL(pid, SIGUSR1);
-	SAFE_WAITPID(pid, &status, WUNTRACED | WCONTINUED);
-
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		tst_res(TFAIL, "check_monitor child exit with status: %s",
-			tst_strstatus(status));
-
-	tst_res(TPASS, "min_free_kbytes test pass");
 }
 
 static void test_tune(unsigned long overcommit_policy)
 {
 	int status;
-	int pid[3];
-	int ret, i;
-	unsigned long tune, memfree, memtotal;
+	pid_t pid;
+	int i;
 
 	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, overcommit_policy, 1);
 
 	for (i = 0; i < 3; i++) {
-		if (i == 0)
-			TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, default_tune, 1);
-		else if (i == 1) {
-			TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, 2 * default_tune, 1);
-		} else {
-			memfree = SAFE_READ_MEMINFO("MemFree:");
-			memtotal = SAFE_READ_MEMINFO("MemTotal:");
-			tune = memfree / 20;
-			if (tune > (memtotal / 50))
-				tune = memtotal / 50;
-
-			TST_SYS_CONF_LONG_SET(PATH_VM_MIN_FREE_KBYTES, tune, 1);
-		}
+		set_min_free_kbytes(i);
 
 		fflush(stdout);
-		switch (pid[i] = fork()) {
-		case -1:
-			tst_brk(TBROK | TERRNO, "fork");
-			break;
-		case 0:
-			ret = eatup_mem(overcommit_policy);
-			exit(ret);
+		pid = SAFE_FORK();
+		if (pid == 0) {
+			exit(eatup_mem(overcommit_policy));
 		}
 
-		SAFE_WAITPID(pid[i], &status, WUNTRACED | WCONTINUED);
+		SAFE_WAITPID(pid, &status, WUNTRACED | WCONTINUED);
 
 		if (overcommit_policy == 2) {
 			if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
@@ -172,6 +168,7 @@ static int eatup_mem(unsigned long overcommit_policy)
 
 static void check_monitor(void)
 {
+	int violated = 0;
 	unsigned long tune;
 	unsigned long memfree;
 
@@ -183,10 +180,14 @@ static void check_monitor(void)
 			tst_res(TINFO, "MemFree is %lu kB, "
 				"min_free_kbytes is %lu kB", memfree, tune);
 			tst_res(TFAIL, "MemFree < min_free_kbytes");
+			violated = 1;
 		}
 
 		sleep(2);
 	}
+
+	if (!violated)
+		tst_res(TPASS, "min_free_kbytes test pass");
 }
 
 static void sighandler(int signo LTP_ATTRIBUTE_UNUSED)
