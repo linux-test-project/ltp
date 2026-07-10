@@ -16,6 +16,6 @@ ltp.json: metaparse metaparse-sh
 	$(abs_srcdir)/parse.sh > ltp.json
 
 test: metaparse metaparse-sh
-	$(MAKE) -C $(abs_srcdir)/tests/ test
+	METAPARSEDIR=$$METAPARSEDIR $(MAKE) -C tests/ test
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

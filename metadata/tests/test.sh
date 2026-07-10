@@ -2,9 +2,18 @@
 
 fail=0
 
+METAPARSE="${METAPARSEDIR:-..}/metaparse"
+
+cd "${SRCDIR:-.}"
+
+if [ ! -x "$METAPARSE" ]; then
+	echo "Error: $METAPARSE not found (wrong PATH? out-of-tree build without specifying \$METAPARSEDIR?)" >&2
+	exit 1
+fi
+
 for i in *.c; do
 	printf '* %s ' "$i"
-	../metaparse $i > tmp.json
+	$METAPARSE $i > tmp.json
 	if ! diff tmp.json $i.json >/dev/null 2>&1; then
 		echo '[FAIL]'
 		echo "$i output differs!"

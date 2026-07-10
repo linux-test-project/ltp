@@ -213,7 +213,7 @@ test-metadata: metadata-all
 ifneq ($(build),$(host))
 	$(error running tests on cross-compile build not supported)
 endif
-	$(MAKE) -C $(abs_srcdir)/metadata test
+	METAPARSEDIR=$(abs_builddir)/metadata $(MAKE) -C $(abs_srcdir)/metadata test
 
 MODULE_DIRS :=  $(shell \
 	dirname $$(grep -l 'include.*module\.mk' $$(find $(abs_srcdir)/testcases/ -type f -name 'Makefile')))
