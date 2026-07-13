@@ -6,8 +6,12 @@
  */
 
 /*\
+ * CVE-2023-52879
+ *
  * Verify that :manpage:`fanotify(7)` monitoring can be applied to the tracing
- * filesystem and write events will be correctly delivered.
+ * filesystem and write events will be correctly delivered. NULL pointer
+ * dereference fixed in kernel 6.7:
+ * bb32500fb9b7 ("tracing: Have trace_event_file have ref counters")
  */
 
 #define _GNU_SOURCE
@@ -118,6 +122,11 @@ static struct tst_test test = {
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_TRACING",
 		NULL
+	},
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "bb32500fb9b7"},
+		{"CVE", "2023-52879"},
+		{}
 	}
 };
 
