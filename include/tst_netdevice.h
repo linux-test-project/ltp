@@ -146,6 +146,13 @@ int tst_netdev_remove_qdisc(const char *file, const int lineno, int strict,
 #define NETDEV_REMOVE_QDISC(ifname, family, parent, handle, qd_kind) \
 	tst_netdev_remove_qdisc(__FILE__, __LINE__, 1, (ifname), (family), \
 		(parent), (handle), (qd_kind))
+/*
+ * Same as NETDEV_REMOVE_QDISC() but does not fail when the qdisc is
+ * missing (strict=0), so it can be used to clear a possibly absent qdisc.
+ */
+#define NETDEV_MAY_REMOVE_QDISC(ifname, family, parent, handle, qd_kind) \
+	tst_netdev_remove_qdisc(__FILE__, __LINE__, 0, (ifname), (family), \
+		(parent), (handle), (qd_kind))
 
 /*
  * Add traffic class to queueing discipline. Network interface name is
