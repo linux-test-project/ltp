@@ -190,6 +190,12 @@ AC_CHECK_MEMBERS([struct utsname.domainname],,,[
 ])
 
 AC_CHECK_TYPES([enum kcmp_type],,,[#include <linux/kcmp.h>])
+AC_CHECK_TYPES([enum pedit_header_type],,,[#include <linux/tc_act/tc_pedit.h>])
+AC_CHECK_TYPES([enum pedit_cmd],,,[#include <linux/tc_act/tc_pedit.h>])
+AC_CHECK_DECLS([TCA_PEDIT_PARMS_EX, TCA_PEDIT_KEYS_EX, TCA_PEDIT_KEY_EX,
+	TCA_PEDIT_KEY_EX_HTYPE, TCA_PEDIT_KEY_EX_CMD],,,[
+#include <linux/tc_act/tc_pedit.h>
+])
 AC_CHECK_TYPES([struct acct_v3],,,[#include <sys/acct.h>])
 AC_CHECK_TYPES([struct af_alg_iv, struct sockaddr_alg],,,[# include <linux/if_alg.h>])
 AC_CHECK_TYPES([struct clone_args],,,[#include <sched.h>])
