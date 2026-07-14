@@ -50,6 +50,20 @@ do_clean()
 	set_all_cpu_states "$cpu_states"
 }
 
+# check_cpu_migrated()
+#
+#  Returns 0 if at least one cpuhotplug_do_spin_loop process is running
+#  on CPU_TO_TEST, non-zero otherwise.
+#  Since procps v3.3.15, we need to accurately select command name by -C
+#  option, because procps cannot truncate normal command name to 15
+#  characters by default.
+check_cpu_migrated()
+{
+	ps -o psr -o command --no-headers -C cpuhotplug_do_s \
+		| sed -e "s/^ *//" | cut -d' ' -f 1 \
+		| grep -q "^${CPU_TO_TEST}$"
+}
+
 while getopts c:l: OPTION; do
 case $OPTION in
 	c)
@@ -120,21 +134,18 @@ until [ $LOOP_COUNT -gt $HOTPLUG03_LOOPS ]; do
 		tst_brkm TBROK "CPU${CPU_TO_TEST} cannot be onlined"
 	fi
 
-	sleep 1
-
-	# Verify at least one process has migrated to the new CPU
-	# Since procps v3.3.15, we need to accurately select command name
-	# by -C option, because procps cannot trucate normal command name
-	# to 15 characters by default).
-	ps -o psr -o command --no-headers -C cpuhotplug_do_s
-	if [ $? -ne 0 ]; then
-		tst_brkm TBROK "No cpuhotplug_do_spin_loop processes \
-			found on any processor"
-	fi
-	NUM=`ps -o psr -o command --no-headers -C cpuhotplug_do_s \
-		| sed -e "s/^ *//" | cut -d' ' -f 1 | grep "^${CPU_TO_TEST}$" \
-		| wc -l`
-	if [ $NUM -lt 1 ]; then
+	# Verify at least one process has migrated to the new CPU.
+	# Retry the check in a loop instead of blindly sleeping, since the
+	# scheduler may take a while to migrate a task to the freshly
+	# onlined CPU.
+	if ! tst_retry "check_cpu_migrated"; then
+		# Distinguish a broken workload (no spin loop processes running
+		# at all) from a genuine failure (processes running, but none
+		# migrated to the onlined CPU).
+		if ! ps --no-headers -C cpuhotplug_do_s >/dev/null; then
+			tst_brkm TBROK "No cpuhotplug_do_spin_loop processes \
+				found on any processor"
+		fi
 		tst_resm TFAIL "No cpuhotplug_do_spin_loop processes found on \
 			CPU${CPU_TO_TEST}"
 		tst_exit
@@ -145,7 +156,7 @@ until [ $LOOP_COUNT -gt $HOTPLUG03_LOOPS ]; do
 	LOOP_COUNT=$((LOOP_COUNT+1))
 done
 
-tst_resm TPASS "$NUM cpuhotplug_do_spin_loop processes found on \
+tst_resm TPASS "cpuhotplug_do_spin_loop process(es) migrated to \
 	CPU${CPU_TO_TEST}"
 
 tst_exit
