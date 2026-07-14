@@ -14,6 +14,8 @@
 
 static int masterfd = -1;
 
+#define MAX_SLAVE_OPENS 4096
+
 static unsigned int count_avail_pid(void)
 {
 	DIR *dir;
@@ -33,6 +35,12 @@ static unsigned int count_avail_pid(void)
 	max_pid_num = limit.rlim_cur - count;
 
 	tst_res(TINFO, "Available number of pids: %u", max_pid_num);
+
+	if (max_pid_num > MAX_SLAVE_OPENS) {
+		max_pid_num = MAX_SLAVE_OPENS;
+		tst_res(TINFO, "Number of pids is too large, capped at: %u",
+			max_pid_num);
+	}
 
 	return max_pid_num;
 }
