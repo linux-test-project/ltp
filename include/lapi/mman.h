@@ -11,6 +11,10 @@
 #include "config.h"
 #include "lapi/syscalls.h"
 
+#ifndef PROT_MTE
+# define PROT_MTE 0x20
+#endif
+
 #ifndef HAVE_STRUCT_CACHESTAT_RANGE
 struct cachestat_range {
 	uint64_t off;
