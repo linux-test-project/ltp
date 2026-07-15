@@ -14,6 +14,10 @@
 #define EPOLL_CLOEXEC 02000000
 #endif
 
+#ifndef EPOLLEXCLUSIVE
+# define EPOLLEXCLUSIVE (1U << 28)
+#endif
+
 static inline void epoll_pwait_supported(void)
 {
 	/* allow the tests to fail early */
