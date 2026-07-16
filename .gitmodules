@@ -1,9 +1,9 @@
 [submodule "testcases/kernel/mce-test"]
 	path = testcases/kernel/mce-test
-	url = git://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/mce-test.git
+	url = https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/mce-test.git
 [submodule "tools/sparse/sparse-src"]
 	path = tools/sparse/sparse-src
-	url = git://git.kernel.org/pub/scm/devel/sparse/sparse.git
+	url = https://git.kernel.org/pub/scm/devel/sparse/sparse.git
 [submodule "tools/ltx/ltx-src"]
 	path = tools/ltx/ltx-src
 	url = https://github.com/linux-test-project/ltx.git
