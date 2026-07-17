@@ -47,7 +47,7 @@ unsigned long tst_reserve_hugepages(struct tst_hugepage *hp)
 	}
 
 	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
-	SAFE_FILE_PRINTF(PATH_VM_COMPACT_MEMORY, "1");
+	FILE_PRINTF(PATH_VM_COMPACT_MEMORY, "1");
 	if (hp->policy == TST_NEEDS) {
 		tst_hugepages += SAFE_READ_MEMINFO("HugePages_Total:");
 		goto set_hugepages;
