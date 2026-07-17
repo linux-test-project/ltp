@@ -91,6 +91,7 @@ static void fill_flat_vec(const char *path, int verbose)
 	if (fd == -1) {
 		if (errno == ENOSPC) {
 			tst_res(TINFO | TERRNO, "openat()");
+			SAFE_CLOSE(dir);
 			return;
 		}
 		tst_brk(TBROK | TERRNO, "openat(%d, %d, 0600) failed for path %s",
