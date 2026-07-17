@@ -123,7 +123,7 @@ struct iovec *tst_iovec_alloc(int sizes[])
 			iovec[i].iov_len = sizes[i];
 		} else {
 			iovec[i].iov_base = NULL;
-			iovec[i].iov_base = 0;
+			iovec[i].iov_len = 0;
 		}
 	}
 
