@@ -156,6 +156,11 @@ int tst_attach_device(const char *dev, const char *file)
 	int dev_fd, file_fd;
 	struct loop_info loopinfo;
 
+	if (strlen(file) >= LO_NAME_SIZE) {
+		tst_brkm(TBROK, NULL, "Device name can't be longer than %u chars",
+			 LO_NAME_SIZE);
+	}
+
 	dev_fd = open(dev, O_RDWR);
 	if (dev_fd < 0) {
 		tst_resm(TWARN | TERRNO, "open('%s', O_RDWR) failed", dev);
@@ -182,7 +187,7 @@ int tst_attach_device(const char *dev, const char *file)
 	 * LOOP_SET_FD and LOOP_SET_STATUS.
 	 */
 	memset(&loopinfo, 0, sizeof(loopinfo));
-	strcpy(loopinfo.lo_name, file);
+	strncpy(loopinfo.lo_name, file, sizeof(loopinfo.lo_name) - 1);
 
 	if (ioctl(dev_fd, LOOP_SET_STATUS, &loopinfo)) {
 		close(dev_fd);
