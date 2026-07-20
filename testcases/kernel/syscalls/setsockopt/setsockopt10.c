@@ -77,8 +77,8 @@ static int tcp0_sk, tcp1_sk, tcp2_sk, tcp3_sk;
 
 static void setup(void)
 {
-	tst_init_sockaddr_inet(&tcp0_addr, "127.0.0.1", 0x7c90);
-	tst_init_sockaddr_inet(&tcp1_addr, "127.0.0.1", 0x7c91);
+	tst_init_sockaddr_inet(&tcp0_addr, "127.0.0.1", 0);
+	tst_init_sockaddr_inet(&tcp1_addr, "127.0.0.1", 0);
 }
 
 static void cleanup(void)
@@ -95,9 +95,13 @@ static void cleanup(void)
 
 static void child(void)
 {
+	struct sockaddr_storage sockaddr;
+	socklen_t addrlen;
+
+	addrlen = tst_get_connect_address(tcp1_sk, &sockaddr);
+	SAFE_CLOSE(tcp1_sk);
+
 	tst_res(TINFO, "child: Listen for tcp1 connection");
-	tcp0_sk = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
-	SAFE_BIND(tcp0_sk, (struct sockaddr *)&tcp0_addr, sizeof(tcp0_addr));
 	SAFE_LISTEN(tcp0_sk, 1);
 	TST_CHECKPOINT_WAKE(0);
 
@@ -110,7 +114,7 @@ static void child(void)
 	TST_CHECKPOINT_WAIT(2);
 
 	tst_res(TINFO, "child: connect for tcp2 connection");
-	TEST(connect(tcp3_sk, (struct sockaddr *)&tcp1_addr, sizeof(tcp1_addr)));
+	TEST(connect(tcp3_sk, (struct sockaddr *)&sockaddr, addrlen));
 
 	if (TST_RET == -1) {
 		tst_res(TINFO | TTERRNO, "child: could not connect to tcp1");
@@ -122,18 +126,27 @@ static void child(void)
 
 static void run(void)
 {
-	const pid_t child_pid = SAFE_FORK();
+	struct sockaddr_storage sockaddr;
+	socklen_t addrlen;
+	pid_t child_pid;
+
+	tcp0_sk = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
+	tcp1_sk = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
+	SAFE_BIND(tcp0_sk, (struct sockaddr *)&tcp0_addr, sizeof(tcp0_addr));
+	SAFE_BIND(tcp1_sk, (struct sockaddr *)&tcp1_addr, sizeof(tcp1_addr));
+	child_pid = SAFE_FORK();
 
 	if (child_pid == 0) {
 		child();
 		return;
 	}
 
-	tcp1_sk = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
+	addrlen = tst_get_connect_address(tcp0_sk, &sockaddr);
+	SAFE_CLOSE(tcp0_sk);
 	TST_CHECKPOINT_WAIT(0);
 
 	tst_res(TINFO, "parent: Connect for tcp0 connection");
-	SAFE_CONNECT(tcp1_sk, (struct sockaddr *)&tcp0_addr, sizeof(tcp0_addr));
+	SAFE_CONNECT(tcp1_sk, (struct sockaddr *)&sockaddr, addrlen);
 	TEST(setsockopt(tcp1_sk, SOL_TCP, TCP_ULP, "tls", 3));
 
 	if (TST_RET == -1 && TST_ERR == ENOENT)
@@ -145,6 +158,7 @@ static void run(void)
 	TST_CHECKPOINT_WAKE(1);
 
 	tst_res(TINFO, "parent: Disconnect by setting unspec address");
+	addrlen = tst_get_connect_address(tcp1_sk, &sockaddr);
 	TEST(connect(tcp1_sk, &unspec_addr, sizeof(unspec_addr)));
 	if (TST_RET == -1) {
 		if (TST_ERR == EOPNOTSUPP)
@@ -155,7 +169,9 @@ static void run(void)
 		tst_reap_children();
 		return;
 	}
-	SAFE_BIND(tcp1_sk, (struct sockaddr *)&tcp1_addr, sizeof(tcp1_addr));
+
+	/* Rebind the same port as before */
+	SAFE_BIND(tcp1_sk, (struct sockaddr *)&sockaddr, addrlen);
 
 	TEST(listen(tcp1_sk, 1));
 
