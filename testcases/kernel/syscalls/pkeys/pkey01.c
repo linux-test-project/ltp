@@ -141,7 +141,7 @@ static char *flag_to_str(int flags)
 	}
 }
 
-static long __attribute__ ((noinline)) dummy_func(void)
+static long LTP_ATTRIBUTE_NOINLINE dummy_func(void)
 {
 	return 0xdead;
 }

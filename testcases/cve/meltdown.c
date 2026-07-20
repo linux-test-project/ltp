@@ -45,7 +45,7 @@ clflush_target(void)
 extern char failshere[];
 extern char stopspeculate[];
 
-static void __attribute__((noinline))
+static void LTP_ATTRIBUTE_NOINLINE
 speculate(unsigned long addr, char bit)
 {
 	register char mybit asm ("cl") = bit;
