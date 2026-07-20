@@ -167,6 +167,7 @@ static void run(void)
 			tst_res(TFAIL | TTERRNO, "parent: unexpected errno from connect");
 		TST_CHECKPOINT_WAKE(2);
 		tst_reap_children();
+		SAFE_CLOSE(tcp1_sk);
 		return;
 	}
 
@@ -183,6 +184,7 @@ static void run(void)
 
 		TST_CHECKPOINT_WAKE(2);
 		tst_reap_children();
+		SAFE_CLOSE(tcp1_sk);
 		return;
 	}
 
