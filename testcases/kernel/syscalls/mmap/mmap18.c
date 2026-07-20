@@ -54,7 +54,7 @@
 
 static long page_size;
 
-static bool __attribute__((noinline)) check_stackgrow_up(void)
+static bool LTP_ATTRIBUTE_NOINLINE check_stackgrow_up(void)
 {
 	char local_var;
 	static char *addr;
@@ -104,7 +104,7 @@ static void *allocate_stack(size_t stack_size, size_t mapped_size)
 	return stack_bottom;
 }
 
-static __attribute__((noinline)) void *check_depth_recursive(void *limit)
+static LTP_ATTRIBUTE_NOINLINE void *check_depth_recursive(void *limit)
 {
 	if ((off_t) &limit < (off_t) limit) {
 		tst_res(TINFO, "&limit = %p, limit = %p", &limit, limit);

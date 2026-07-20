@@ -9,6 +9,7 @@
 #ifndef TST_COMMON_H__
 #define TST_COMMON_H__
 
+#define LTP_ATTRIBUTE_NOINLINE		__attribute__((noinline))
 #define LTP_ATTRIBUTE_NORETURN		__attribute__((noreturn))
 #define LTP_ATTRIBUTE_UNUSED		__attribute__((unused))
 #define LTP_ATTRIBUTE_UNUSED_RESULT	__attribute__((warn_unused_result))

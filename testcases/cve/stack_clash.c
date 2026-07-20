@@ -179,7 +179,7 @@ void dump_proc_self_maps(void)
 	tst_cmd(cmd, NULL, NULL, 0);
 }
 
-void __attribute__((noinline)) preallocate_stack(unsigned long required)
+void LTP_ATTRIBUTE_NOINLINE preallocate_stack(unsigned long required)
 {
 	volatile char *garbage;
 
