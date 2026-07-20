@@ -1,237 +1,124 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines Corp., 2001
+ * 07/2001 Ported by Wayne Boyer
+ * Copyright (c) Linux Test Project, 2026
  */
 
-/*
- * Test Name: mremap01
+/*\
+ * Verify that :manpage:`mremap(2)` succeeds when used to expand an existing
+ * virtual memory region that was previously mapped to a file with
+ * :manpage:`mmap(2)`.
  *
- * Test Description:
- *  Verify that, mremap() succeeds when used to expand the existing
- *  virtual memory mapped region to the requested size where the
- *  virtual memory area was previously mapped to a file using mmap().
+ * After growing the mapping with ``MREMAP_MAYMOVE``, the expanded region must
+ * be fully accessible and its contents must synchronize to the backing file
+ * with :manpage:`msync(2)`.
  *
- * Expected Result:
- *  mremap() should succeed returning the address of new virtual memory area.
- *  The expanded mapped memory region should be accessible and able to
- *  synchronize with the file.
+ * [Algorithm]
  *
- * Algorithm:
- *  Setup:
- *   Setup signal handling.
- *   Create temporary directory.
- *   Pause for SIGUSR1 if option specified.
- *
- *  Test:
- *   Loop if the proper options are given.
- *   Execute system call
- *   Check return code, if system call failed (return=-1)
- *	Log the errno and Issue a FAIL message.
- *   Otherwise,
- *	Verify the Functionality of system call
- *      if successful,
- *		Issue Functionality-Pass message.
- *      Otherwise,
- *		Issue Functionality-Fail message.
- *  Cleanup:
- *   Print errno log and/or timing stats if options given
- *   Delete the temporary directory created.
- *
- * Usage:  <for command-line>
- *  mremap01 [-c n] [-f] [-i n] [-I x] [-P x] [-t]
- *     where,  -c n : Run n copies concurrently.
- *             -f   : Turn off functionality Testing.
- *	       -i n : Execute test n times.
- *	       -I x : Execute test for x seconds.
- *	       -P x : Pause for x seconds between iterations.
- *	       -t   : Turn on syscall timing.
- *
- * HISTORY
- *	07/2001 Ported by Wayne Boyer
- *
- *      11/09/2001 Manoj Iyer (manjo@austin.ibm.com)
- *	Modified.
- *	- #include <linux/mman.h> should not be included as per man page for
- *	  mremap, #include <sys/mman.h> alone should do the job. But inorder
- *	  to include definition of MREMAP_MAYMOVE defined in bits/mman.h
- *	  (included by sys/mman.h) __USE_GNU needs to be defined.
- *	  There may be a more elegant way of doing this...
- *
- * RESTRICTIONS:
- *  None.
+ * - create a temporary file and stretch it to the initial mapping size
+ * - map the file with ``MAP_SHARED`` and ``PROT_WRITE``
+ * - stretch the file to the new (larger) size before growing the mapping
+ * - grow the mapping with mremap() and ``MREMAP_MAYMOVE``
+ * - write every byte of the grown region to prove it is usable
+ * - synchronize the region to the backing file with ``MS_SYNC``
+ * - read the data back from the backing file to prove it was synchronized
  */
 
 #define _GNU_SOURCE
-#include <unistd.h>
 #include <errno.h>
 #include <sys/mman.h>
-#include <fcntl.h>
-
-#include "test.h"
-#include "tso_safe_macros.h"
+#include "tst_test.h"
+#include "tst_safe_prw.h"
 
 #define TEMPFILE	"mremapfile"
 
-char *TCID = "mremap01";
-int TST_TOTAL = 1;
-char *addr;			/* addr of memory mapped region */
-int memsize;			/* memory mapped size */
-int newsize;			/* new size of virtual memory block */
-int fildes;			/* file descriptor for tempfile */
+static char *addr = MAP_FAILED;
+static size_t memsize;
+static size_t newsize;
+static int fildes = -1;
 
-void setup();			/* Main setup function of test */
-void cleanup();			/* cleanup function for the test */
-
-int main(int ac, char **av)
+static void setup(void)
 {
-	int ind;		/* counter variable */
+	int pagesz = getpagesize();
 
-	tst_parse_opts(ac, av, NULL, NULL);
+	memsize = 1000 * pagesz;
+	newsize = memsize * 2;
 
-	tst_count = 0;
+	fildes = SAFE_OPEN(TEMPFILE, O_RDWR | O_CREAT, 0666);
+}
 
-	setup();
+static void verify_file(void)
+{
+	size_t offsets[3];
+	unsigned int i;
+	char got;
+
+	offsets[0] = 0;
+	offsets[1] = newsize / 2;
+	offsets[2] = newsize - 1;
+
+	for (i = 0; i < ARRAY_SIZE(offsets); i++) {
+		size_t off = offsets[i];
+
+		SAFE_PREAD(1, fildes, &got, 1, (off_t)off);
+
+		if (got != (char)off) {
+			tst_res(TFAIL, "mremap()'d region did not sync to the file. "
+				"file[%zu] == 0x%02x, expected 0x%02x",
+				off, (unsigned char)got, (unsigned char)off);
+			return;
+		}
+	}
+
+	tst_res(TPASS, "Functionality of mremap() is correct");
+}
+
+static void run(void)
+{
+	size_t ind;
 
 	/*
-	 * Call mremap to expand the existing mapped
-	 * memory region (memsize) by newsize limits.
+	 * Establish a fresh memsize mapping for every iteration so mremap()
+	 * always grows a newly created mapping instead of an already-grown one.
 	 */
-	addr = mremap(addr, memsize, newsize, MREMAP_MAYMOVE);
+	SAFE_FTRUNCATE(fildes, 0);
+	SAFE_LSEEK(fildes, (off_t)memsize, SEEK_SET);
+	SAFE_WRITE(SAFE_WRITE_ALL, fildes, "\0", 1);
 
-	/* Check for the return value of mremap() */
+	addr = SAFE_MMAP(0, memsize, PROT_READ | PROT_WRITE, MAP_SHARED,
+			 fildes, 0);
+
+	SAFE_LSEEK(fildes, (off_t)newsize, SEEK_SET);
+	SAFE_WRITE(SAFE_WRITE_ALL, fildes, "\0", 1);
+
+	TESTPTR(mremap(addr, memsize, newsize, MREMAP_MAYMOVE));
+	addr = TST_RET_PTR;
 	if (addr == MAP_FAILED)
-		tst_brkm(TFAIL | TERRNO, cleanup, "mremap failed");
+		tst_brk(TFAIL | TTERRNO, "mremap failed");
 
-	/*
-	 * Attempt to initialize the expanded memory
-	 * mapped region with data. If the map area
-	 * was bad, we'd get SIGSEGV.
-	 */
-	for (ind = 0; ind < newsize; ind++) {
+	for (ind = 0; ind < newsize; ind++)
 		addr[ind] = (char)ind;
-	}
 
-	/*
-	 * Memory mapped area is good. Now, attempt
-	 * to synchronize the mapped memory region
-	 * with the file.
-	 */
-	if (msync(addr, newsize, MS_SYNC) != 0) {
-		tst_resm(TFAIL | TERRNO, "msync failed to synch "
-			 "mapped file");
-	} else {
-		tst_resm(TPASS, "Functionality of "
-			 "mremap() is correct");
-	}
+	SAFE_MSYNC(addr, newsize, MS_SYNC);
 
-	cleanup();
-	tst_exit();
+	verify_file();
+
+	SAFE_MUNMAP(addr, newsize);
 }
 
-/*
- * void
- * setup() - performs all ONE TIME setup for this test.
- *
- * Get system page size, Set the size of virtual memory area and the
- * new size after resize,
- * Creat a temporary directory and a file under it.
- * Stratch the file size to the size of virtual memory area and
- * write 1 byte (\0). Map the temporary file for the length of virtual
- * memory (memsize) into memory.
- */
-void setup(void)
+static void cleanup(void)
 {
-	int pagesz;		/* system's page size */
+	if (addr != MAP_FAILED)
+		SAFE_MUNMAP(addr, newsize);
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
-
-	TEST_PAUSE;
-
-	/* Get the system page size */
-	if ((pagesz = getpagesize()) < 0) {
-		tst_brkm(TFAIL, NULL,
-			 "getpagesize failed to get system page size");
-	}
-
-	/* Get the size of virtual memory area to be mapped */
-	memsize = (1000 * pagesz);
-
-	/* Get the New size of virtual memory block after resize */
-	newsize = (memsize * 2);
-
-	tst_tmpdir();
-
-	/* Creat a temporary file used for mapping */
-	if ((fildes = open(TEMPFILE, O_RDWR | O_CREAT, 0666)) < 0)
-		tst_brkm(TBROK | TERRNO, cleanup, "opening %s failed",
-			 TEMPFILE);
-
-	/* Stretch the file to the size of virtual memory area */
-	if (lseek(fildes, (off_t) memsize, SEEK_SET) != (off_t) memsize) {
-		tst_brkm(TBROK | TERRNO, cleanup,
-			 "lseeking to %d offset pos. failed", memsize);
-	}
-
-	/* Write one byte data into temporary file */
-	if (write(fildes, "\0", 1) != 1) {
-		tst_brkm(TBROK, cleanup, "writing to %s failed", TEMPFILE);
-	}
-
-	/*
-	 * Call mmap to map virtual memory (memsize bytes) from the
-	 * beginning of temporary file (offset is 0) into memory.
-	 */
-	addr = mmap(0, memsize, PROT_WRITE, MAP_SHARED, fildes, 0);
-
-	/* Check for the return value of mmap() */
-	if (addr == (char *)MAP_FAILED) {
-		tst_brkm(TBROK, cleanup, "mmaping Failed on %s", TEMPFILE);
-	}
-
-	/* Stretch the file to newsize of virtual memory block */
-	if (lseek(fildes, (off_t) newsize, SEEK_SET) != (off_t) newsize) {
-		tst_brkm(TBROK, cleanup, "lseek() to %d offset pos. Failed, "
-			 "error=%d : %s", newsize, errno, strerror(errno));
-	}
-
-	/* Write one byte data into temporary file */
-	if (write(fildes, "\0", 1) != 1) {
-		tst_brkm(TBROK | TERRNO, cleanup, "writing to %s failed",
-			 TEMPFILE);
-	}
+	if (fildes != -1)
+		SAFE_CLOSE(fildes);
 }
 
-/*
- * void
- * cleanup() - performs all ONE TIME cleanup for this test at
- *             completion or premature exit.
- *	       Unmap the mapped memory area done in the test.
- *	       Close the temporary file.
- *	       Remove the temporary directory.
- */
-void cleanup(void)
-{
-
-	/* Unmap the mapped memory */
-	if (munmap(addr, newsize) != 0)
-		tst_brkm(TBROK | TERRNO, NULL, "munmap failed");
-
-	/* Close the temporary file */
-	SAFE_CLOSE(NULL, fildes);
-
-	tst_rmdir();
-}
+static struct tst_test test = {
+	.setup = setup,
+	.cleanup = cleanup,
+	.test_all = run,
+	.needs_tmpdir = 1,
+};
