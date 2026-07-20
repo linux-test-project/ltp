@@ -162,6 +162,9 @@ static struct config_module_map {
 	{"CONFIG_CAN_RAW", "can-raw"},
 	{"CONFIG_CAN_BCM", "can-bcm"},
 	{"CONFIG_IP_SCTP", "sctp"},
+	{"CONFIG_NET_SCH_INGRESS", "sch_ingress"},
+	{"CONFIG_NET_CLS_MATCHALL", "cls_matchall"},
+	{"CONFIG_NET_ACT_PEDIT", "act_pedit"},
 	{}
 };
 
