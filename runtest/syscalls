@@ -1524,6 +1524,7 @@ setsockopt07 setsockopt07
 setsockopt08 setsockopt08
 setsockopt09 setsockopt09
 setsockopt10 setsockopt10
+setsockopt11 setsockopt11
 
 settimeofday01 settimeofday01
 settimeofday02 settimeofday02
