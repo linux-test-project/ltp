@@ -22,7 +22,7 @@
 #include "posixtest.h"
 
 #define BUF_SIZE 8
-#define SHM_NAME "posixtest_20-1"
+#define SHM_NAME "/posixtest_20-1"
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
