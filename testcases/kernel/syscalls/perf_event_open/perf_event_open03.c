@@ -77,13 +77,13 @@ static void check_progress(int i)
 
 static void run(void)
 {
-	long diff, diff_total, mem_avail, mem_avail_prev;
+	long diff, diff_total, slab, slab_prev;
 	int i, sample;
 
 	sample = 0;
 	diff_total = 0;
 
-	mem_avail_prev = SAFE_READ_MEMINFO("MemAvailable:");
+	slab_prev = SAFE_READ_MEMINFO("SUnreclaim:");
 	tst_timer_start(CLOCK_MONOTONIC);
 
 	/* leak about 100MB of RAM */
@@ -92,28 +92,34 @@ static void run(void)
 		check_progress(i);
 
 		/*
-		 * Every 1200000 iterations, calculate the difference in memory
-		 * availability. If the difference is greater than 20 * 1024 (20MB),
-		 * increment the sample counter and log the event.
+		 * Every 1200000 iterations, calculate how much the unreclaimable
+		 * slab has grown. If the increase is greater than 20 * 1024
+		 * (20MB), increment the sample counter and log the event.
 		 */
 		if ((i % 1200000) == 0) {
-			mem_avail = SAFE_READ_MEMINFO("MemAvailable:");
-			diff = mem_avail_prev - mem_avail;
+			slab = SAFE_READ_MEMINFO("SUnreclaim:");
+			diff = slab - slab_prev;
 			diff_total += diff;
 
 			if (diff > 20 * 1024) {
 				sample++;
-				tst_res(TINFO, "MemAvailable decreased by %ld kB at iteration %d", diff, i);
+				tst_res(TINFO, "SUnreclaim increased by %ld kB at iteration %d", diff, i);
 			}
 
-			mem_avail_prev = mem_avail;
+			slab_prev = slab;
 		}
 	}
 
-	if ((sample > 5) || (diff_total > 100 * 1024))
-		tst_res(TFAIL, "Likely kernel memory leak detected, total decrease: %ld kB", diff_total);
-	else
+	if ((sample > 5) || (diff_total > 100 * 1024)) {
+		tst_res(TFAIL,
+			"Likely kernel memory leak detected, SUnreclaim increased by %ld kB total",
+			diff_total);
+		tst_res(TINFO,
+			"Unreclaimable slab can also grow due to unrelated reasons as well. "
+			"You can rerun the test with CONFIG_DEBUG_KMEMLEAK to make sure the leak is real");
+	} else {
 		tst_res(TPASS, "No memory leak found");
+	}
 }
 
 static void cleanup(void)
