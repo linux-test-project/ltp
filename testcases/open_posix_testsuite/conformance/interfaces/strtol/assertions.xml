@@ -1,0 +1,60 @@
+<assertions>
+  <assertion id="1" tag="ref:XBD7:66766:66766">
+    This function will convert the initial portion of the string pointed to by
+    nptr to a type long.
+  <assertion>
+  <assertion id="2" tag="ref:XBD7:66788:66790">
+    If the input string is empty or consists entirely of white-space characters,
+    or if the first non-white-space character is other than a sign or a permissible
+    letter or digit:
+        The subject sequence will contain no characters.
+    A subject sequence is interpreted as an integer represented in some radix
+    determined by the value of base.
+  <assertion>
+  <assertion id="3" tag="ref:XBD7:66791:66792">
+    If the subject sequence has the expected form and the value of base is 0:
+        The sequence of characters starting with the first digit will be
+        interpreted as an integer constant.
+  <assertion>
+  <assertion id="4" tag="ref:XBD7:66792:66794">
+    If the subject sequence has the expected form and the value of base is
+    between 2 and 36:
+        It will be used as the base for conversion.
+  <assertion>
+  <assertion id="5" tag="ref:XBD7:66794:66795">
+    If the subject sequence begins with a 'hyphen-minus':
+        The value resulting from the conversion will be negated.
+  <assertion>
+  <assertion id="6" tag="ref:XBD7:66795:66797">
+    A pointer to the final string will be stored in the object pointed
+    to by endptr, provided that endptr is not a null pointer.
+    A final string is one or more unrecognized characters, including the
+    terminating NUL character of the input string.
+  <assertion>
+  <assertion id="7" tag="ref:XBD7:66800:66802">
+    If the subject sequence is empty or does not have the expected form:
+        No conversion is performed and the value of nptr will be stored in
+        the object pointed to by endptr, provided that endptr is not a
+        null pointer.
+  <assertion>
+  <assertion id="8" tag="ref:XBD7:66803:66803">
+    This function will not change the setting of errno if successful.
+  <assertion>
+  <assertion id="9" tag="ref:XBD7:66808:66808">
+    Upon successful completion, this function will return the converted value, if any.
+  <assertion>
+  <assertion id="10" tag="ref:XBD7:66808:66809">
+    If no conversion could be performed:
+        0 will be returned and errno may be set to [EINVAL].
+  <assertion>
+  <assertion id="11" tag="ref:XBD7:66810:66810">
+    If the value of base is not supported:
+        0 will be returned and errno will be set to [EINVAL].
+  <assertion>
+  <assertion id="12" tag="ref:XBD7:66811:66813">
+    If the correct value is outside the range of representable values:
+        {LONG_MIN}, {LONG_MAX}, will be returned (according to the sign
+        of the value), and errno set to [ERANGE].
+  <assertion>
+<assertions>
+
