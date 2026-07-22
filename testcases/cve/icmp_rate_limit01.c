@@ -63,11 +63,16 @@ static void setup(void)
 	childns = SAFE_OPEN("/proc/self/ns/net", O_RDONLY);
 
 	/*
-	 * Set namespace local rate limit if needed. The global limit might
-	 * be ignored otherwise.
+	 * Set namespace local rate limits if needed. The global limits might
+	 * be ignored otherwise. Lower icmp_msgs_per_sec to ensure rate limiting
+	 * engages even on slow debug kernels where the send loop takes long
+	 * enough that the token bucket refills mid-batch at the default 1000/sec.
 	 */
 	if (!access(PATH_IPV4_ICMP_MSGS_BURST, F_OK))
 		SAFE_FILE_PRINTF(PATH_IPV4_ICMP_MSGS_BURST, "50");
+
+	if (!access(PATH_IPV4_ICMP_MSGS_PER_SEC, F_OK))
+		SAFE_FILE_PRINTF(PATH_IPV4_ICMP_MSGS_PER_SEC, "10");
 
 	/* Configure child namespace */
 	CREATE_VETH_PAIR("ltp_veth1", "ltp_veth2");
@@ -263,6 +268,7 @@ static struct tst_test test = {
 	},
 	.save_restore = (const struct tst_path_val[]) {
 		{PATH_IPV4_ICMP_MSGS_BURST, "50", TST_SR_TBROK},
+		{PATH_IPV4_ICMP_MSGS_PER_SEC, "10", TST_SR_SKIP},
 		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},

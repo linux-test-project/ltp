@@ -79,6 +79,7 @@
 #define PATH_IPV4_ICMP_RATEMASK			"/proc/sys/net/ipv4/icmp_ratemask"
 #define PATH_IPV4_ICMP_ECHO_IGNORE_ALL		"/proc/sys/net/ipv4/icmp_echo_ignore_all"
 #define PATH_IPV4_ICMP_MSGS_BURST		"/proc/sys/net/ipv4/icmp_msgs_burst"
+#define PATH_IPV4_ICMP_MSGS_PER_SEC		"/proc/sys/net/ipv4/icmp_msgs_per_sec"
 #define PATH_IPV4_TCP_PROBE_INTERVAL		"/proc/sys/net/ipv4/tcp_probe_interval"
 #define PATH_IPV4_TCP_KEEPALIVE_TIME		"/proc/sys/net/ipv4/tcp_keepalive_time"
 #define PATH_IPV4_TCP_NOTSENT_LOWAT		"/proc/sys/net/ipv4/tcp_notsent_lowat"
