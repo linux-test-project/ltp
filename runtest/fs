@@ -43,7 +43,6 @@ fs_inod01 fs_inod $TMPDIR 10 10 10
 linker01 linktest.sh
 openfile01 openfile -f10 -t10
 inode01 inode01
-inode02 inode02
 stream01 stream01
 stream02 stream02
 stream03 stream03

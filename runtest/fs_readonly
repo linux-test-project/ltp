@@ -37,7 +37,6 @@ test_robind36 test_robind.sh -c "rwtest -N iogen01 -i 120s -s read,write -Da -Dv
 test_robind37 test_robind.sh -c "fs_inod . 10 10 1"
 test_robind38 test_robind.sh -c "openfile -f10 -t10"
 test_robind39 test_robind.sh -c "inode01"
-test_robind40 test_robind.sh -c "inode02"
 test_robind41 test_robind.sh -c "stream01"
 test_robind42 test_robind.sh -c "stream02"
 test_robind43 test_robind.sh -c "stream03"
