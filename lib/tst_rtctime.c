@@ -117,11 +117,12 @@ int tst_rtc_ioctl(const char *rtc_dev, unsigned long request,
 
 	ret = ioctl(rtc_fd, request, rtc_tm);
 
-	if (ret != 0)
-		return -1;
-
-	if (rtc_fd > 0)
+	if (ret != 0) {
 		SAFE_CLOSE(rtc_fd);
+		return -1;
+	}
+
+	SAFE_CLOSE(rtc_fd);
 
 	return 0;
 }
