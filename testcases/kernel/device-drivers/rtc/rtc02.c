@@ -16,6 +16,7 @@
  */
 
 #include <stdio.h>
+#include <errno.h>
 #include "tst_rtctime.h"
 #include "tst_wallclock.h"
 #include "tst_test.h"
@@ -133,9 +134,19 @@ static void set_rtc_test(void)
 static void rtc_setup(void)
 {
 	int exists = access(rtc_dev, F_OK);
+	struct rtc_time probe_tm;
 
 	if (exists < 0)
 		tst_brk(TCONF, "RTC device %s not available", rtc_dev);
+
+	if (tst_rtc_gettime(rtc_dev, &probe_tm))
+		tst_brk(TBROK | TERRNO, "ioctl() RTC_RD_TIME");
+
+	if (tst_rtc_settime(rtc_dev, &probe_tm)) {
+		if (errno == ENODEV)
+			tst_brk(TCONF | TERRNO, "RTC does not support setting the time");
+		tst_brk(TBROK | TERRNO, "ioctl() RTC_SET_TIME");
+	}
 
 	tst_rtc_clock_save(rtc_dev);
 }
