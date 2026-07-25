@@ -7,4 +7,4 @@ linuxdoc==20240924
 sphinxcontrib-spelling==7.7.0
 
 # workaround for linuxdoc <= 20240924
-setuptools==81.0.0
+setuptools==83.0.0
