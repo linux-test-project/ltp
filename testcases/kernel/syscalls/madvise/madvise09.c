@@ -17,11 +17,11 @@
  * o Write to some of the madvised pages again, these must not be freed
  *
  * o Set memory limits
- *   - memory.max = 8MB
- *   - memory.swap.max = 16MB
+ *   - memory.max = 16 * PAGES * page_size (8MB on 4KB page size)
+ *   - memory.swap.max = 2 * memory.max (16MB on 4KB page size)
  *
  *   The reason for doubling the memory.max is to have safe margin
- *   for forking the memory hungy child etc. And the reason to setting
+ *   for forking the memory hungry child etc. And the reason to setting
  *   memory.swap.max to twice of that is to give the system chance
  *   to try to free some memory before cgroup OOM kicks in and kills
  *   the memory hungry child.
@@ -54,8 +54,8 @@ static int swap_accounting_enabled;
 #define TOUCHED_PAGE1 0
 #define TOUCHED_PAGE2 10
 
-#define MEM_LIMIT (8 * 1024 * 1024)
-#define SWAP_LIMIT (2 * MEM_LIMIT)
+static long long mem_limit;
+static long long swap_limit;
 
 static void memory_pressure_child(void)
 {
@@ -176,12 +176,12 @@ static void child(void)
 	ptr[TOUCHED_PAGE1 * page_size] = 'b';
 	ptr[TOUCHED_PAGE2 * page_size] = 'b';
 
-	SAFE_CG_PRINTF(tst_cg, "memory.max", "%d", MEM_LIMIT);
-	tst_res(TINFO, "Setting memory.max to %d bytes", MEM_LIMIT);
+	SAFE_CG_PRINTF(tst_cg, "memory.max", "%lld", mem_limit);
+	tst_res(TINFO, "Setting memory.max to %lld bytes", mem_limit);
 
 	if (swap_accounting_enabled) {
-		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%d", SWAP_LIMIT);
-		tst_res(TINFO, "Setting memory.swap.max to %d bytes", SWAP_LIMIT);
+		SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lld", swap_limit);
+		tst_res(TINFO, "Setting memory.swap.max to %lld bytes", swap_limit);
 	} else {
 		tst_res(TINFO, "memory.swap.max is unavailable, running without SWAP_LIMIT");
 	}
@@ -284,6 +284,14 @@ static void setup(void)
 		tst_res(TINFO, "Swap accounting is disabled");
 
 	page_size = getpagesize();
+
+	mem_limit = 16 * PAGES * page_size;
+	swap_limit = 2 * mem_limit;
+
+	if (tst_available_swap() < swap_limit / 1024) {
+		tst_brk(TCONF, "System needs at least %lldMB free swap to run this test",
+			swap_limit / TST_MB);
+	}
 }
 
 static struct tst_test test = {
@@ -291,6 +299,5 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.forks_child = 1,
-	.min_swap_avail = SWAP_LIMIT / TST_MB,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 };
