@@ -54,8 +54,8 @@ static int swap_accounting_enabled;
 #define TOUCHED_PAGE1 0
 #define TOUCHED_PAGE2 10
 
-static long long mem_limit;
-static long long swap_limit;
+static long long mem_limit, orig_mem_limit;
+static long long swap_limit, orig_swap_limit;
 
 static void memory_pressure_child(void)
 {
@@ -147,13 +147,25 @@ static void child(void)
 	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 
 	/*
-	 * Reset cgroup memory limits to default ("max") in case this is a retry run.
+	 * Reset cgroup memory limits in case this is a retry run.
+	 * For cgroup v2, restore the default "max". For cgroup v1, restore the
+	 * saved numeric limits, raising memsw before memory to keep the v1
+	 * memory <= memsw invariant.
+	 *
 	 * Otherwise, the retried child inherits the strict MEM_LIMIT from the previous
 	 * run, causing MADV_FREE pages to be dropped immediately before we touch them.
 	 */
-	SAFE_CG_PRINT(tst_cg, "memory.max", "max");
-	if (swap_accounting_enabled)
-		SAFE_CG_PRINT(tst_cg, "memory.swap.max", "max");
+	if (TST_CG_VER_IS_V1(tst_cg, "memory")) {
+		if (swap_accounting_enabled)
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lld", orig_swap_limit);
+
+		SAFE_CG_PRINTF(tst_cg, "memory.max", "%lld", orig_mem_limit);
+	} else {
+		SAFE_CG_PRINT(tst_cg, "memory.max", "max");
+
+		if (swap_accounting_enabled)
+			SAFE_CG_PRINT(tst_cg, "memory.swap.max", "max");
+	}
 
 	ptr = SAFE_MMAP(NULL, PAGES * page_size, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -278,10 +290,17 @@ retry:
 
 static void setup(void)
 {
-	if (SAFE_CG_HAS(tst_cg, "memory.swap.max"))
+	if (TST_CG_VER_IS_V1(tst_cg, "memory"))
+		SAFE_CG_SCANF(tst_cg, "memory.max", "%lld", &orig_mem_limit);
+
+	if (SAFE_CG_HAS(tst_cg, "memory.swap.max")) {
 		swap_accounting_enabled = 1;
-	else
+
+		if (TST_CG_VER_IS_V1(tst_cg, "memory"))
+			SAFE_CG_SCANF(tst_cg, "memory.swap.max", "%lld", &orig_swap_limit);
+	} else {
 		tst_res(TINFO, "Swap accounting is disabled");
+	}
 
 	page_size = getpagesize();
 
