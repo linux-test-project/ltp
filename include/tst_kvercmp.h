@@ -19,7 +19,7 @@
  * ignored.
  *
  * The same as tst_kvercmp() but running kernel version is passed as parameter
- * instead of utilizing uname().
+ * instead of utilizing :manpage:`uname(2)`.
  *
  * Return: Negative if older, 0 if the same and positive if newer.
  */
