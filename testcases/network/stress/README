@@ -61,8 +61,8 @@ Attention for HTTP/FTP stress tests
 
 When you run http or ftp stress tests, you have to start http or ftp server
 before running the tests.
-About ssh and dns tests, you don't need to run the ssh or dns server.  Each
-test runs named or sshd automatically.
+About ssh tests, you don't need to run the ssh server.  Each test runs sshd
+automatically.
 
 Those tests requires that the remote host has `curl' command in order to
 upload/download files to/from the local host.
@@ -159,7 +159,7 @@ Optional environment variables
  o NS_TIMES (for the repetition test)
    The number of repetition times for the repetition tests.
    This value affects IP adress add/del testcase, IP address change testcase
-   route add/del testcase and dns query tests.
+   route add/del testcase.
 
  o CONNECTION_TOTAL (for creating a large number of connection test)
    The total number of connection when the testcase requires plural connection.

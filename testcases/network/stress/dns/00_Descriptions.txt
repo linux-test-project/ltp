@@ -1,7 +1,0 @@
-dns-stress01
-	Verify the dns server or the kernel is not down after handling
-	many name lookup queries
-
-dns-stress02
-	Verify the dns server or the kernel is not down after handling
-	many reverse lookup queries
