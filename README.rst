@@ -24,6 +24,6 @@ Some references:
 * `Source code <https://github.com/linux-test-project/ltp>`_
 * `Releases <https://github.com/linux-test-project/ltp/releases>`_
 * `Mailing List <http://lists.linux.it/listinfo/ltp>`_
-* `Working patches (patchwork) <https://patchwork.ozlabs.org/project/ltp/list/>`_
+* `Working patches (patchwork) <https://patchwork.kernel.org/project/ltp/list/>`_
 * `Working patches (lore.kernel.org) <https://lore.kernel.org/ltp>`_
 * `#ltp @ libera chat <https://libera.chat/>`_

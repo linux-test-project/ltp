@@ -126,7 +126,7 @@ Commit messages should have
 * LTP documentation should be kept up to date.
 
 After patch is accepted or rejected, set correct state and archive in the
-`LTP patchwork instance <https://patchwork.ozlabs.org/project/ltp/list/>`_.
+`LTP patchwork instance <https://patchwork.kernel.org/project/ltp/list/>`_.
 
 New tests
 ---------
