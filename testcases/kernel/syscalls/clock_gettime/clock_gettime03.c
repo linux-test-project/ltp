@@ -16,6 +16,7 @@
 #include "time64_variants.h"
 #include "tst_safe_clocks.h"
 #include "tst_timer.h"
+#include "tst_kconfig.h"
 #include "lapi/sched.h"
 
 static struct tcase {
@@ -114,6 +115,11 @@ static void setup(void)
 
 	if (tst_is_virt(VIRT_ANY)) {
 		tst_res(TINFO, "Running in a VM, multiply the delta by 10.");
+		delta *= 10;
+	}
+
+	if (tst_has_slow_kconfig()) {
+		tst_res(TINFO, "Slow kernel config detected, multiply the delta by 10.");
 		delta *= 10;
 	}
 
