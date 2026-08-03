@@ -41,7 +41,7 @@ fetch_series() {
                 since_time=$(expr $current_time - $PATCHWORK_SINCE)
         fi
 
-        date=$(date -u -d @$since_time +"%Y-%m-%dT%H:%M:%SZ")
+        date=$(date -u -d @$since_time +"%Y-%m-%dT%H:%M:%S")
         local stdout
 
         stdout=$(curl -k -G "$PATCHWORK_URL/api/events/" \
