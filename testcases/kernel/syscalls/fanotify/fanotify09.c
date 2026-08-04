@@ -334,19 +334,16 @@ static void verify_event(int group, struct fanotify_event_metadata *event,
 	const char *filename = event_filename(event);
 
 	if (event->mask != expect) {
-		tst_res(TFAIL, "group %d got event: mask %llx (expected %llx) "
-			"pid=%u fd=%d filename=%s", group, (unsigned long long)event->mask,
-			(unsigned long long)expect,
+		tst_res(TFAIL, "group %d got event: mask %llx (expected %llx) pid=%u fd=%d filename=%s",
+			group, (unsigned long long)event->mask, (unsigned long long)expect,
 			(unsigned int)event->pid, event->fd, filename);
 	} else if (event->pid != getpid()) {
-		tst_res(TFAIL, "group %d got event: mask %llx pid=%u "
-			"(expected %u) fd=%d filename=%s", group,
-			(unsigned long long)event->mask, (unsigned int)event->pid,
+		tst_res(TFAIL, "group %d got event: mask %llx pid=%u (expected %u) fd=%d filename=%s",
+			group, (unsigned long long)event->mask, (unsigned int)event->pid,
 			(unsigned int)getpid(), event->fd, filename);
 	} else if (strcmp(filename, expect_filename)) {
-		tst_res(TFAIL, "group %d got event: mask %llx pid=%u "
-			"fd=%d filename='%s' (expected '%s')", group,
-			(unsigned long long)event->mask, (unsigned int)event->pid,
+		tst_res(TFAIL, "group %d got event: mask %llx pid=%u fd=%d filename='%s' (expected '%s')",
+			group, (unsigned long long)event->mask, (unsigned int)event->pid,
 			event->fd, filename, expect_filename);
 	} else {
 		event_res(TPASS, group, event, filename);
@@ -379,8 +376,7 @@ static void test_fanotify(unsigned int n)
 	}
 
 	if (tc->ignore && tst_kvercmp(5, 10, 0) < 0) {
-		tst_res(TCONF, "ignored mask on parent dir has undefined "
-				"behavior on kernel < 5.10");
+		tst_res(TCONF, "ignored mask on parent dir has undefined behavior on kernel < 5.10");
 		return;
 	}
 
