@@ -495,7 +495,7 @@ void tst_res_(const char *file, const int lineno, int ttype,
 	 * 3. Debug output is only for test process (context->tdebug == 1).
 	 * 4. Debug output is enabled for both test and lib processes (context->tdebug == 2).
 	 */
-	if (ttype == TDEBUG) {
+	if (TTYPE_RESULT(ttype) == TDEBUG) {
 		if (!context)
 			return;
 

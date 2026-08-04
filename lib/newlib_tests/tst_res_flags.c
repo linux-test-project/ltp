@@ -22,6 +22,7 @@ static struct tcase {
 	{FLAG(TWARN)},
 	{FLAG(TINFO)},
 	{FLAG(TDEBUG), " (printed only with -D[1,2] or LTP_DEBUG=1(y),2)"},
+	{FLAG(TDEBUG | TERRNO), " (printed only with -D[1,2] or LTP_DEBUG=1(y),2)"},
 };
 
 static void do_cleanup(void)
