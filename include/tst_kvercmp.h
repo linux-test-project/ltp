@@ -10,7 +10,7 @@
 /**
  * tst_kvcmp() - Compare given kernel version with kernel in string.
  *
- * @cur_kver: Kernel version string (struct utsname.release).
+ * @cur_kver: Kernel version string (:manpage:`struct utsname.release <uname(2)>`).
  * @r1: Major kernel version.
  * @r2: Minor kernel version.
  * @r3: Kernel patch level.
@@ -28,7 +28,7 @@ int tst_kvcmp(const char *cur_kver, int r1, int r2, int r3);
 /**
  * tst_parse_kver() - Parses a version string into three integers.
  *
- * @str_kver: Kernel version string (struct utsname.release).
+ * @str_kver: Kernel version string (:manpage:`struct utsname.release <uname(2)>`).
  * @v1: Major kernel version.
  * @v2: Minor kernel version.
  * @v3: Kernel patch level.
@@ -43,7 +43,7 @@ int tst_parse_kver(const char *str_kver, int *v1, int *v2, int *v3);
 /**
  * tst_kvcmp_distname() - Get the distribution name from kernel version string.
  *
- * @cur_kver: Kernel version string (struct utsname.release).
+ * @cur_kver: Kernel version string (:manpage:`struct utsname.release <uname(2)>`).
  *
  * Return: The distribution name parsed from kernel version string or NULL.
  */
@@ -51,8 +51,8 @@ const char *tst_kvcmp_distname(const char *cur_kver);
 
 /**
  * tst_kvexcmp() - Compares versions up to five version numbers long.
- * @tst_exv: The tested kernel version string (struct utsname.release).
- * @cur_kver: The current version in string (struct utsname.release).
+ * @tst_exv: The tested kernel version string (:manpage:`struct utsname.release <uname(2)>`).
+ * @cur_kver: The current version in string (:manpage:`struct utsname.release <uname(2)>`).
  *
  * The return value is similar to the :manpage:`strcmp(3)` function, i.e. zero means
  * equal, negative value means that the kernel is older than the expected value
@@ -70,7 +70,8 @@ int tst_kvexcmp(const char *tst_exv, const char *cur_kver);
  * @r3: Kernel patch level.
  *
  * Parse the output from :manpage:`uname(2)` and compare it to the passed values.
- * This is shortcut for calling tst_kvcmp() with ``uname -r`` as str_kver.
+ * This is shortcut for calling tst_kvcmp() with :manpage:`uname -r <uname(1)>`
+ * as str_kver.
  *
  * Return: Negative if older, 0 if the same and positive if newer.
  */
