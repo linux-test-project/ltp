@@ -338,6 +338,8 @@ static inline void tst_upd_diff_stat(struct tst_fzsync_stat *s,
  * This function helps create the fuzz in fuzzy sync. Imagine we have the
  * following timelines in threads A and B:
  *
+ * .. code-block:: text
+ *
  *  start_race_a
  *      ^                    end_race_a (a)
  *      |                        ^
@@ -364,6 +366,8 @@ static inline void tst_upd_diff_stat(struct tst_fzsync_stat *s,
  * scenario (and others) a randomised delay is introduced before the syscalls
  * in A and B. Given enough time the following should happen where the exit
  * paths are now synchronised:
+ *
+ * .. code-block:: text
  *
  *  start_race_a
  *      ^                    end_race_a (a)
