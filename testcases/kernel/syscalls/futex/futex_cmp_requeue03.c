@@ -5,7 +5,7 @@
  */
 
 /*\
- * Check that :manpage:`futex(2)`" with "``FUTEX_CMP_REQUEUE`` returns EFAULT
+ * Check that :manpage:`futex(2)` with ``FUTEX_CMP_REQUEUE`` returns EFAULT
  * when uaddr or uaddr2 points to unmapped memory, or when uaddr or uaddr2
  * points to memory without read permission (PROT_NONE).
  *
@@ -13,7 +13,7 @@
  * takes the shared-futex path and resolves the physical page; this
  * lookup fails with EFAULT for unmapped and PROT_NONE addresses.
  * get_futex_key() is called for both uaddr and uaddr2 before the
- * *uaddr == val check; futex_var and val are both FUTEX_INITIALIZER.
+ * ``*uaddr == val`` check; futex_var and val are both FUTEX_INITIALIZER.
  */
 
 #include <errno.h>
