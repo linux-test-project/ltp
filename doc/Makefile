@@ -8,6 +8,13 @@ include $(top_srcdir)/include/mk/env_pre.mk
 PYTHON := python3
 VENV_DIR := .venv
 
+ifdef VERBOSE
+OPTS := -v
+else
+# linuxdoc 20260504 is too verbose by default
+OPTS := -q
+endif
+
 # only fish and bash/zsh supported
 VENV_CMD := if [ "x${FISH_VERSION}" != "x" ]; then . $(VENV_DIR)/bin/activate.fish; else . $(VENV_DIR)/bin/activate; fi
 
@@ -24,10 +31,10 @@ ${abs_top_builddir}/metadata/ltp.json:
 	$(MAKE) -C ${abs_top_builddir}/metadata
 
 all: ${abs_top_builddir}/metadata/ltp.json
-	$(RUN_VENV); sphinx-build -v -b html . html
+	$(RUN_VENV); sphinx-build $(OPTS) -b html . html
 
 spelling:
-	$(RUN_VENV); sphinx-build -b spelling -d build/doctree . build/spelling
+	$(RUN_VENV); sphinx-build $(OPTS) -b spelling -d build/doctree . build/spelling
 
 clean:
 	rm -rf html/ build/ _static/syscalls.rst _static/tests.rst syscalls.tbl \
