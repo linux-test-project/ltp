@@ -22,7 +22,7 @@
  */
 
 #define _GNU_SOURCE
-#define FOURGIG ((off64_t)0x100000000ULL)
+#define FOURGIG ((int64_t)0x100000000ULL)
 #define MNTPOINT "hugetlbfs/"
 
 #include <signal.h>
