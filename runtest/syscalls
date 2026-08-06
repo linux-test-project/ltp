@@ -531,7 +531,6 @@ getpgid02 getpgid02
 getpgrp01 getpgrp01
 
 getpid01 getpid01
-getpid02 getpid02
 
 getppid01 getppid01
 getppid02 getppid02
