@@ -465,8 +465,8 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.timeout = 60,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "b833a3660394"},
-		{"linux-git", "5b910bd615ba"},
+		{"linux-git", "b833a3660394876541d2513ce2736debc7c6797a"},
+		{"linux-git", "5b910bd615ba947383e63cd1ed106ffa3060159e"},
 		{}
 	}
 };

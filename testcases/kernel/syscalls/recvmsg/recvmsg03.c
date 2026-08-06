@@ -150,7 +150,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_recvmsg,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "06b6a1cf6e77"},
+		{"linux-git", "06b6a1cf6e776426766298d055bb3991957d90a7"},
 		{}
 	}
 };

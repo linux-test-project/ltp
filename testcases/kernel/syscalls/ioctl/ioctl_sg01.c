@@ -172,8 +172,8 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.timeout = 3600,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a45b599ad808"},
-		{"linux-git", "41e99fe20051"},
+		{"linux-git", "a45b599ad808c3c982fdcdc12b0b8611c2f92824"},
+		{"linux-git", "41e99fe2005182139b1058db71f0d241f8f0078c"},
 		{"CVE", "2018-1000204"},
 		{}
 	}

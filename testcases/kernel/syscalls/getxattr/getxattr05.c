@@ -176,7 +176,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = do_getxattr,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "82c9a927bc5d"},
+		{"linux-git", "82c9a927bc5df6e06b72d206d24a9d10cced4eb5"},
 		{}
 },
 };

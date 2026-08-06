@@ -160,7 +160,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a664bf3d603d"},
+		{"linux-git", "a664bf3d603dc3bdcf9ae47cc21e0daec706d7a5"},
 		{"CVE", "2026-31431"},
 		{}
 	},

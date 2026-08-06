@@ -187,7 +187,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(clks),
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5b43bd184530"},
+		{"linux-git", "5b43bd184530af6b868d8273b0a743a138d37ee8"},
 		{}
 	}
 };

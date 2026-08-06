@@ -77,7 +77,7 @@ static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(hash_algs),
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "af3ff8045bbf"},
+		{"linux-git", "af3ff8045bbf3e32f1a448542e73abb4c8ceb6f1"},
 		{"CVE", "2017-17806"},
 		{}
 	}

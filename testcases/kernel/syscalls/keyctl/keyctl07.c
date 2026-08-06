@@ -106,7 +106,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-12192"},
-		{"linux-git", "37863c43b2c6"},
+		{"linux-git", "37863c43b2c6464f252862bf2e9768264e961678"},
 		{}
 	}
 };

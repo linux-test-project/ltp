@@ -159,7 +159,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "79e5dc59e297"},
+		{"linux-git", "79e5dc59e2974a48764269fa9ff544ae8ffe3338"},
 		{}
 	},
 	.needs_kconfigs = (const char *const []) {

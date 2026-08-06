@@ -177,7 +177,7 @@ static struct tst_test test = {
 	.resource_files = resource,
 	.min_mem_avail = 512,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "1f10206cf8e9"},
+		{"linux-git", "1f10206cf8e945220f7220a809d8bfc15c21f9a5"},
 		{}
 	},
 	.test = run,

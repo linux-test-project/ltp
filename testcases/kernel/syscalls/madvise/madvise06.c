@@ -233,9 +233,9 @@ static struct tst_test test = {
 	.min_swap_avail = 2 * CHUNK_SZ / TST_MB,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "55231e5c898c"},
-		{"linux-git", "8de15e920dc8"},
-		{"linux-git", "66383800df9c"},
+		{"linux-git", "55231e5c898c5c03c14194001e349f40f59bd300"},
+		{"linux-git", "8de15e920dc85d1705ab9c202c95d56845bc2d48"},
+		{"linux-git", "66383800df9cbdbf3b0c34d5a51bf35bcdb72fd2"},
 		{}
 	}
 };

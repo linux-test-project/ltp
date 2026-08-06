@@ -99,7 +99,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_cgroup_ctrls = (const char *const[]){"memory",  NULL},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "1756d7994ad8"},
+		{"linux-git", "1756d7994ad85c2479af6ae5a9750b92324685af"},
 		{"CVE", "2021-4197"},
 		{}
 	},

@@ -154,13 +154,13 @@ static struct tst_test test = {
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "93bc420ed41d"},
-		{"linux-git", "99652ea56a41"},
-		{"linux-git", "04a87e347282"},
-		{"linux-git", "5f955f26f3d4"},
-		{"linux-git", "e408e695f5f1"},
-		{"linux-git", "27e0b573dd4a"},
-		{"linux-git", "c92db2ca726f"},
+		{"linux-git", "93bc420ed41df63a18ae794101f7cbf45226a6ef"},
+		{"linux-git", "99652ea56a4186bc5bf8a3721c5353f41b35ebcb"},
+		{"linux-git", "04a87e3472828f769a93655d7c64a27573bdbc2c"},
+		{"linux-git", "5f955f26f3d42d04aba65590a32eb70eedb7f37d"},
+		{"linux-git", "e408e695f5f1f60d784913afc45ff2c387a5aeb8"},
+		{"linux-git", "27e0b573dd4aa927670fbfd84732e569fde72078"},
+		{"linux-git", "c92db2ca726fe61a66580d30ecff8c192a791935"},
 		{}
 	},
 };

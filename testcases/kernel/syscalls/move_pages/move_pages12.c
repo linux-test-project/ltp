@@ -340,10 +340,10 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.runtime = 240,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "e66f17ff7177"},
-		{"linux-git", "c9d398fa2378"},
-		{"linux-git", "4643d67e8cb0"},
-		{"linux-git", "3f4b815a439a"},
+		{"linux-git", "e66f17ff71772b209eed39de35aaa99ba819c93d"},
+		{"linux-git", "c9d398fa237882ea07167e23bcfc5e6847066518"},
+		{"linux-git", "4643d67e8cb0b3536ef0ab5cddd1cedc73fa14ad"},
+		{"linux-git", "3f4b815a439adfb8f238335612c4b28bc10084d8"},
 		{}
 	}
 };

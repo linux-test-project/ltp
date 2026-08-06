@@ -379,9 +379,9 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "ceaf69f8eadc"},
-		{"linux-git", "8698e3bab4dd"},
-		{"linux-git", "69562eb0bd3e"},
+		{"linux-git", "ceaf69f8eadcafb323392be88e7a5248c415d423"},
+		{"linux-git", "8698e3bab4dd7968666e84e111d0bfd17c040e77"},
+		{"linux-git", "69562eb0bd3e6bb8e522a7b254334e0fb30dff0c"},
 		{}
 	}
 };

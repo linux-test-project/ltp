@@ -111,7 +111,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(testcase_list),
 	.needs_tmpdir = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "19f18459330f"},
+		{"linux-git", "19f18459330f4a65fb0b58e77fc58ceceecb1839"},
 		{}
 	},
 	.bufs = (struct tst_buffers[]) {

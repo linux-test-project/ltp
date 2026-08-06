@@ -233,7 +233,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.test_variants = QUOTACTL_FMT_VARIANTS,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "7e08da50cf70"},
+		{"linux-git", "7e08da50cf706151f324349f9235ebd311226997"},
 		{}
 	}
 };

@@ -556,7 +556,7 @@ static struct tst_test test = {
 	.mntpoint = MOUNT_PATH,
 	.resource_files = resource_files,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "28bba2c2935e2"},
+		{"linux-git", "28bba2c2935e219d6cb6946e16b9a0b7c47913be"},
 		{}
 	}
 };

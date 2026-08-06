@@ -105,7 +105,7 @@ static struct tst_test test = {
 	.test = verify_mbind,
 	.tcnt = ARRAY_SIZE(modes),
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a7f40cfe3b7a"},
+		{"linux-git", "a7f40cfe3b7ada57af9b62fd28430eeb4a7cfcb7"},
 		{}
 	}
 };

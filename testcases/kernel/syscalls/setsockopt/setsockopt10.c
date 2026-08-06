@@ -217,7 +217,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "2c02d41d71f90"},
+		{"linux-git", "2c02d41d71f90a5168391b6a5f2954112ba2307c"},
 		{"CVE", "2023-0461"},
 		{}
 	}

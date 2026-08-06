@@ -95,7 +95,7 @@ static struct tst_test test = {
 	.runtime = 150,
 	.min_runtime = 16,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "82f2341c94d27"},
+		{"linux-git", "82f2341c94d270421f383641b7cd670e474db56b"},
 		{"CVE", "2017-2636"},
 		{}
 	}

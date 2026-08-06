@@ -75,7 +75,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(symm_enc_algs),
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "bb2964810233"},
+		{"linux-git", "bb29648102335586e9a66289a1d98a0cb392b6e5"},
 		{}
 	}
 };

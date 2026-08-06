@@ -75,7 +75,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = verify_sendto,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "6e51fe757259"},
+		{"linux-git", "6e51fe7572590d8d86e93b547fab6693d305fd0d"},
 		{}
 	}
 };

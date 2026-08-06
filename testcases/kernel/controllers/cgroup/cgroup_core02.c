@@ -128,7 +128,7 @@ static struct tst_test test = {
 	.needs_cgroup_ver = TST_CG_V2,
 	.needs_cgroup_nsdelegate = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "e57457641613"},
+		{"linux-git", "e57457641613fef0d147ede8bd6a3047df588b95"},
 		{"CVE", "2021-4197"},
 		{}
 	},

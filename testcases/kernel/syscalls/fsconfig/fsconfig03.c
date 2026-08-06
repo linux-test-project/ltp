@@ -91,7 +91,7 @@ static struct tst_test test = {
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.skip_filesystems = (const char *const []){"fuse", NULL},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "722d94847de29"},
+		{"linux-git", "722d94847de29310e8aa03fcbdb41fc92c521756"},
 		{"CVE", "2022-0185"},
 		{}
 	}

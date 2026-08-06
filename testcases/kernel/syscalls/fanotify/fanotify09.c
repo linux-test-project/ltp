@@ -511,11 +511,11 @@ static struct tst_test test = {
 	.mntpoint = MOUNT_PATH,
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "54a307ba8d3c"},
-		{"linux-git", "b469e7e47c8a"},
-		{"linux-git", "55bf882c7f13"},
-		{"linux-git", "7372e79c9eb9"},
-		{"linux-git", "e730558adffb"},
+		{"linux-git", "54a307ba8d3cd00a3902337ffaae28f436eeb1a4"},
+		{"linux-git", "b469e7e47c8a075cc08bcd1e85d4365134bdcdd5"},
+		{"linux-git", "55bf882c7f13dda8bbe624040c6d5b4fbb812d16"},
+		{"linux-git", "7372e79c9eb9d7034e498721eb2861ae4fdbc618"},
+		{"linux-git", "e730558adffb88a52e562db089e969ee9510184a"},
 		{}
 	}
 };

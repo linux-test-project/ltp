@@ -157,7 +157,7 @@ struct tst_test test = {
 
 	/* Additional array of key value pairs */
 	.tags = (const struct tst_tag[]) {
-                {"linux-git", "43a6684519ab"},
+                {"linux-git", "43a6684519ab0a6c52024b5e25322476cabad893"},
                 {"CVE", "2017-2671"},
                 {NULL, NULL}
         }

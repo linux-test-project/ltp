@@ -112,7 +112,7 @@ static struct tst_test test = {
 	.test_all = verify_getxattr,
 	.setup = setup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5a93790d4e2d"},
+		{"linux-git", "5a93790d4e2df73e30c965ec6e49be82fc3ccfce"},
 		{}
 	}
 };

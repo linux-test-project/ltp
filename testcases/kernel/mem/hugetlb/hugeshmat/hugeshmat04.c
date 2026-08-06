@@ -96,7 +96,7 @@ static void setup(void)
 
 static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "c5c99429fa57"},
+		{"linux-git", "c5c99429fa57dcf6e05203ebe3676db1ec646793"},
 		{}
 	},
 	.needs_root = 1,

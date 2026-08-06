@@ -146,7 +146,7 @@ static struct tst_test test = {
 	.needs_checkpoints = 1,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-8890"},
-		{"linux-git", "657831ff"},
+		{"linux-git", "657831ffc38e30092a2d5f03d385d710eb88b09a"},
 		{},
 	}
 };

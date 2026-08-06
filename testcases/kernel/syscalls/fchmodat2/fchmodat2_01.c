@@ -111,7 +111,7 @@ static struct tst_test test = {
 	.format_device = 1,
 	.all_filesystems = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5d1f903f75a8"},
+		{"linux-git", "5d1f903f75a80daa4dfb3d84e114ec8ecbf29956"},
 		{}
 	}
 };
