@@ -157,7 +157,7 @@ jobs:
         git checkout -b review_patch_series_"${{ inputs.SERIES_ID }}"
         curl -k -L --retry 3 --max-redirs 1 --location-trusted "${{ inputs.SERIES_MBOX }}" | git am
 
-        ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-review-ack"
+        ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-ack"
 
     - name: ver_linux
       run: ./ver_linux
