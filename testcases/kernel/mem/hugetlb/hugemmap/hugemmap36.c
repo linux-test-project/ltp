@@ -10,6 +10,7 @@
  * misconversion of hugetlb_vmtruncate_list to a prio_tree.
  *
  * This test verifies that:
+ *
  * - Pages below 4GB remain accessible after truncation at 4GB
  * - Pages at or above the truncation point correctly trigger SIGBUS
  *

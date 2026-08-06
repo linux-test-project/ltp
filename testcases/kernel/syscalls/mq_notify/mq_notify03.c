@@ -2,14 +2,12 @@
 /*
  * Copyright (c) The GNU Toolchain Authors.
  * Copyright (c) 2023 Wei Gao <wegao@suse.com>
- *
  */
 
 /*\
  * Test for NULL pointer dereference in mq_notify(CVE-2021-38604)
  *
- * References links:
- * - https://sourceware.org/bugzilla/show_bug.cgi?id=28213
+ * https://sourceware.org/bugzilla/show_bug.cgi?id=28213
  */
 
 #include <errno.h>

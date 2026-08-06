@@ -6,6 +6,7 @@
  */
 /*\
  * This test verifies that:
+ *
  * - clockid argument is neither CLOCK_MONOTONIC nor CLOCK_REALTIME,
  * EINVAL would return.
  * - flags is invalid, EINVAL would return.

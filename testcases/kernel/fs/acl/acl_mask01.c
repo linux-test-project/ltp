@@ -11,6 +11,7 @@
  * manipulation.
  *
  * Verify that ACL_MASK correctly restricts permissions for:
+ *
  * - ACL_USER (named user) entries
  * - ACL_GROUP (named group) entries
  * - ACL_GROUP_OBJ (group owner) entries
