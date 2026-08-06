@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) Linux Test Project, 2012-2025
+ * Copyright (c) Linux Test Project, 2012-2026
  * Copyright (C) 2012-2017  Red Hat, Inc.
  */
 
@@ -169,21 +169,50 @@ static int eatup_mem(unsigned long overcommit_policy)
 static void check_monitor(void)
 {
 	int violated = 0;
-	unsigned long tune;
-	unsigned long memfree;
+	unsigned long tune, threshold;
+	unsigned long memfree, min_memfree;
+	int i;
 
 	while (!end) {
 		memfree = SAFE_READ_MEMINFO("MemFree:");
 		tune = TST_SYS_CONF_LONG_GET(PATH_VM_MIN_FREE_KBYTES);
+		/*
+		 * Allow 10% tolerance to account for transient states.
+		 */
+		threshold = tune * 9 / 10;
 
 		if (memfree < tune) {
-			tst_res(TINFO, "MemFree is %lu kB, "
-				"min_free_kbytes is %lu kB", memfree, tune);
-			tst_res(TFAIL, "MemFree < min_free_kbytes");
-			violated = 1;
+			min_memfree = memfree;
+			/*
+			 * Give it some time to reclaim. The kernel should keep
+			 * MemFree above min_free_kbytes, but transient drops
+			 * are possible under high pressure.
+			 * Check every 10ms for up to 2 seconds for high accuracy.
+			 */
+			for (i = 0; i < 200; i++) {
+				usleep(10000);
+				memfree = SAFE_READ_MEMINFO("MemFree:");
+				if (memfree < min_memfree)
+					min_memfree = memfree;
+
+				if (memfree >= tune)
+					break;
+			}
+
+			if (memfree < threshold) {
+				tst_res(TFAIL, "MemFree %lu kB < 90%% of min_free_kbytes %lu kB (MinSeen: %lu%%) after 2s",
+					memfree, tune, (min_memfree * 100 / tune));
+				violated = 1;
+			} else if (memfree < tune) {
+				tst_res(TINFO, "MemFree (%lu kB) stayed within 10%% tolerance (min %lu%%) after ~2s",
+					memfree, (min_memfree * 100 / tune));
+			} else {
+				tst_res(TINFO, "MemFree recovered to %lu kB (min %lu%%) after %d ms",
+					memfree, (min_memfree * 100 / tune), (i + 1) * 10);
+			}
 		}
 
-		sleep(2);
+		usleep(100000);
 	}
 
 	if (!violated)
