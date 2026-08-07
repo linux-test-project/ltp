@@ -35,6 +35,20 @@
  * The first algorithm, that fullfils the criteria is used for the test.
  */
 static const char * const ALGORITHM_CANDIDATES[] = {
+	"hmac(sha1)",
+	"hmac(sha224)",
+	"hmac(sha256)",
+	"hmac(sha384)",
+	"hmac(md5)",
+	"hmac(sm3)",
+	"hmac(sha512)",
+	"hmac(rmd160)",
+	"hmac(sha3-224)",
+	"hmac(sha3-256)",
+	"hmac(sha3-384)",
+	"hmac(sha3-512)",
+	"hmac(streebog256)",
+	"hmac(streebog512)",
 	"hmac(sha1-generic)",
 	"hmac(sha224-generic)",
 	"hmac(sha256-generic)",
