@@ -119,7 +119,7 @@ static void run(unsigned int i)
 	struct tcase *tc = &tcases[i];
 	int exp_errno = tc->exp_errno;
 
-	if (tc->ufattr == (struct file_attr **)(&null_ptr) && missing_tmpfs_xattr)
+	if (tc->ufattr == (struct file_attr **)(&null_ptr) && missing_tmpfs_xattr && tst_variant)
 		exp_errno = EOPNOTSUPP;
 
 	if (tst_variant) {
