@@ -36,7 +36,7 @@ static struct tcase {
 };
 
 struct inode_info {
-	ino_t ino;
+	uint64_t ino;
 	char path[PATH_MAX];
 };
 
@@ -68,13 +68,13 @@ static void create_tree(const struct tcase *tc, const char *parent,
 }
 
 static void record_inode(struct inode_info *inodes, unsigned int idx,
-			 const char *path, ino_t ino)
+			 const char *path, uint64_t ino)
 {
 	inodes[idx].ino = ino;
 	snprintf(inodes[idx].path, sizeof(inodes[idx].path), "%s", path);
 }
 
-static ino_t verify_file(const struct tcase *tc, const char *path)
+static uint64_t verify_file(const struct tcase *tc, const char *path)
 {
 	char buf[PATH_MAX];
 	char extra;
@@ -128,7 +128,7 @@ static void verify_tree(const struct tcase *tc, const char *parent,
 	for (i = 0; i < tc->fanout; i++, create_file = !create_file) {
 		char path[PATH_MAX];
 		unsigned int my_id;
-		ino_t ino;
+		uint64_t ino;
 
 		snprintf(path, sizeof(path), "%s/%08u", parent, ++*id);
 
