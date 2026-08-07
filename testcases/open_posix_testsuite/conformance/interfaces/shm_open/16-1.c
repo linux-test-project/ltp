@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_16-1"
+#define SHM_NAME "/posixtest_16-1"
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
