@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <sched.h>
+#include <string.h>
 
 #include "tst_test.h"
 #include "tst_kconfig.h"
@@ -29,6 +30,15 @@ static char *str_timeout;
 static int timeout;
 
 #define CALLIBRATE_LOOPS 120000000
+
+static int has_preempt_voluntary(void)
+{
+	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_PREEMPT_VOLUNTARY");
+
+	tst_kconfig_read(&kconfig, 1);
+
+	return kconfig.choice == 'y';
+}
 
 static int callibrate(void)
 {
@@ -81,6 +91,9 @@ static void setup(void)
 	if (tst_check_preempt_rt())
 		tst_brk(TCONF, "This test is not designed for the RT kernel");
 
+	if (has_preempt_voluntary())
+		tst_brk(TCONF, "This test is not reliable on voluntary preemption kernels");
+
 	CPU_ZERO(&mask);
 
 	/* Restrict test to a single cpu */
@@ -105,10 +118,12 @@ static void setup(void)
 	if (tst_parse_long(str_loop, &loop, 1, LONG_MAX))
 		tst_brk(TBROK, "Invalid number of loop number '%s'", str_loop);
 
-	if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
-		tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
-	else
+	if (str_timeout) {
+		if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
+			tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
+	} else {
 		timeout = callibrate() / 1000;
+	}
 
 	if (tst_has_slow_kconfig())
 		tst_brk(TCONF, "Skip test due to slow kernel configuration");
