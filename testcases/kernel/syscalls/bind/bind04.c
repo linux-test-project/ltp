@@ -22,10 +22,12 @@ static struct sockaddr_un unix_addr = {
 	.sun_family = AF_UNIX,
 	.sun_path = MAIN_SOCKET_FILE
 };
+
 static struct sockaddr_un abstract_addr = {
 	.sun_family = AF_UNIX,
 	.sun_path = ABSTRACT_SOCKET_PATH
 };
+
 static struct sockaddr_in ipv4_addr;
 static struct sockaddr_in ipv4_any_addr;
 static struct sockaddr_in6 ipv6_addr;
@@ -148,8 +150,8 @@ static void test_bind(unsigned int n)
 	if (!strcmp(buffer, exp_data))
 		tst_res(TPASS, "Communication successful");
 	else
-		tst_res(TFAIL, "Received invalid data. Expected: \"%s\". "
-			"Received: \"%s\"", exp_data, buffer);
+		tst_res(TFAIL, "Received invalid data. Expected: \"%s\". Received: \"%s\"",
+				exp_data, buffer);
 
 	SAFE_CLOSE(sock);
 	SAFE_CLOSE(listen_sock);

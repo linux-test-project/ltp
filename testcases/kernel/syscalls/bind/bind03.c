@@ -6,15 +6,7 @@
  * changed the behavior of bind() for STREAM UNIX domain sockets if
  */
 
-#include <errno.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "tst_kvercmp.h"
 #include "tst_test.h"
-#include "tst_safe_net.h"
 
 #define SNAME_A "socket.1"
 #define SNAME_B "socket.2"
@@ -39,7 +31,7 @@ static void run(void)
 		     EADDRINUSE, "bind() with bound pathname");
 
 	/*
-	 * Kernel is buggy since it creates the node in fileystem first, then
+	 * Kernel is buggy since it creates the node in filesystem first, then
 	 * locks the socket and does all the checks and the node is not removed
 	 * in the error path. For now we will unlink the node here so that the
 	 * test works fine when the run() function is executed in a loop.
@@ -59,12 +51,12 @@ static void setup(void)
 	sun1.sun_family = AF_UNIX;
 	sun2.sun_family = AF_UNIX;
 
-	if (sprintf(sun1.sun_path, "%s", SNAME_A) < (int) strlen(SNAME_A)) {
+	if (sprintf(sun1.sun_path, "%s", SNAME_A) < (int)strlen(SNAME_A)) {
 		tst_res(TFAIL, "sprintf failed");
 		return;
 	}
 
-	if (sprintf(sun2.sun_path, "%s", SNAME_B) < (int) strlen(SNAME_B)) {
+	if (sprintf(sun2.sun_path, "%s", SNAME_B) < (int)strlen(SNAME_B)) {
 		tst_res(TFAIL, "sprintf failed");
 		return;
 	}
