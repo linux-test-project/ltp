@@ -60,6 +60,11 @@ test2()
 {
 	tst_res TINFO "verify that policy file is not opened concurrently and able to loaded multiple times"
 
+	if tst_kvcmp -lt 4.5; then
+		tst_res TCONF "test requires kernel 4.5+"
+		return
+	fi
+
 	local p1 p2 rc1 rc2
 
 	require_policy_writable
