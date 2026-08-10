@@ -168,6 +168,8 @@ from Debian that is used to check for non-portable shell code.
       If ``make check`` does not report any problems the code still may be wrong,
       as ``checkbashisms.pl`` is used for checking only common mistakes.
 
+      For tips how to avoid bashisms see https://mywiki.wooledge.org/Bashism.
+
 Here there are some common sense style rules for shell
 
 * Keep lines under 80 chars
