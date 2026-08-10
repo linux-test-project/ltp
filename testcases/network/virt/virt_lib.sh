@@ -44,10 +44,6 @@ virt_lib_setup()
 {
 	case "$virt_type" in
 	vxlan|geneve)
-		if [ "$TST_IPV6" ] && tst_kvcmp -lt "3.12"; then
-			tst_brk TCONF "test must be run with kernels >= 3.12"
-		fi
-
 		# newer versions of 'ip' complain if this option not set
 		ip link add type vxlan help 2>&1 | grep -q dstport && vxlan_dstport=1
 	;;

@@ -128,13 +128,6 @@ zram_max_streams()
 
 zram_compress_alg()
 {
-	if tst_kvcmp -lt "3.15"; then
-		tst_res TCONF "device attribute comp_algorithm is"\
-			"introduced since kernel v3.15, the running kernel"\
-			"does not support it"
-		return
-	fi
-
 	local i=$dev_start
 
 	tst_res TINFO "test that we can set compression algorithm"
@@ -177,13 +170,6 @@ zram_set_disksizes()
 
 zram_set_memlimit()
 {
-	if tst_kvcmp -lt "3.18"; then
-		tst_res TCONF "device attribute mem_limit is"\
-			"introduced since kernel v3.18, the running kernel"\
-			"does not support it"
-		return
-	fi
-
 	local i=$dev_start
 	local ds
 
