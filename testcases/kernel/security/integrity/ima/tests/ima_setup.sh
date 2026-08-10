@@ -95,10 +95,15 @@ require_policy_readable()
 check_policy_writable()
 {
 	[ -f $IMA_POLICY ] || return 1
-	# workaround for kernels < v4.18 without fix
+
+	# Workaround for kernels < v4.18 without fix
 	# ffb122de9a60b ("ima: Reflect correct permissions for policy")
-	echo "" 2> log > $IMA_POLICY
-	grep -q "Device or resource busy" log && return 1
+	# Require >= 4.5 to write multiple times via CONFIG_IMA_WRITE_POLICY
+	# 38d859f991f3 ("IMA: policy can now be updated multiple times")
+	if tst_kvcmp -ge 4.5; then
+		echo "" 2> log > $IMA_POLICY
+		grep -q "Device or resource busy" log && return 1
+	fi
 	return 0
 }
 
