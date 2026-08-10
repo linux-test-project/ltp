@@ -35,7 +35,7 @@ static void verify_creat(void)
 
 	if (TST_RET != -1) {
 		tst_res(TFAIL, "creat() succeeded unexpectedly");
-		return;
+		goto kill;
 	}
 
 	if (TST_ERR == ETXTBSY)
@@ -43,6 +43,7 @@ static void verify_creat(void)
 	else
 		tst_res(TFAIL | TTERRNO, "creat() failed unexpectedly");
 
+kill:
 	SAFE_KILL(pid, SIGKILL);
 	SAFE_WAITPID(pid, NULL, 0);
 }
