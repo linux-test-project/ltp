@@ -23,14 +23,14 @@
 use strict;
 use warnings;
 use Getopt::Long qw(:config bundling permute no_getopt_compat);
-use File::Temp qw/tempfile/;
+use File::Temp   qw/tempfile/;
 
 sub init_hashes;
 
 (my $progname = $0) =~ s|.*/||;
 
 my $usage = <<"EOF";
-Usage: $progname [-n] [-f] [-x] [-e] script ...
+Usage: $progname [-n] [-f] [-x] [-e] [-l] script ...
    or: $progname --help
    or: $progname --version
 This script performs basic checks for the presence of bashisms
@@ -38,7 +38,7 @@ in /bin/sh scripts and the lack of bashisms in /bin/bash ones.
 EOF
 
 my $version = <<"EOF";
-This is $progname, from the Debian devscripts package, version 2.20.5
+This is $progname, from the Debian devscripts package, version 2.26.10
 This code is copyright 2003 by Julian Gilbey <jdg\@debian.org>,
 based on original code which is copyright 1998 by Richard Braakman
 and copyright 2002 by Josip Rodin.
@@ -47,7 +47,7 @@ You are free to redistribute this code under the terms of the
 GNU General Public License, version 2, or (at your option) any later version.
 EOF
 
-my ($opt_echo, $opt_force, $opt_extra, $opt_posix, $opt_early_fail);
+my ($opt_echo, $opt_force, $opt_extra, $opt_posix, $opt_early_fail, $opt_lint);
 my ($opt_help, $opt_version);
 my @filenames;
 
@@ -65,6 +65,7 @@ GetOptions(
     "help|h"       => \$opt_help,
     "version|v"    => \$opt_version,
     "newline|n"    => \$opt_echo,
+    "lint|l"       => \$opt_lint,
     "force|f"      => \$opt_force,
     "extra|x"      => \$opt_extra,
     "posix|p"      => \$opt_posix,
@@ -543,7 +544,12 @@ sub output_explanation {
         # bashisms present
         $issues = 1;
     } else {
-        warn "possible bashism in $filename line $. ($explanation):\n$line\n";
+        if ($opt_lint) {
+            print "$filename:$.:1: warning: possible bashism; $explanation\n";
+        } else {
+            warn
+              "possible bashism in $filename line $. ($explanation):\n$line\n";
+        }
         if ($opt_early_fail) {
             exit 1;
         }
@@ -641,7 +647,7 @@ sub init_hashes {
         qr'\[\s+[^\]]+\s+==\s'                   => q<should be 'b = a'>,
         qr'\s\|\&'                               => q<pipelining is not POSIX>,
         qr'[^\\\$]\{([^\s\\\}]*?,)+[^\\\}\s]*\}' => q<brace expansion>,
-        qr'\{\d+\.\.\d+(?:\.\.\d+)?\}' =>
+        qr'\{\d+\.\.\d+(?:\.\.\d+)?\}'           =>
           q<brace expansion, {a..b[..c]}should be $(seq a [c] b)>,
         qr'(?i)\{[a-z]\.\.[a-z](?:\.\.\d+)?\}' => q<brace expansion>,
         qr'(?:^|\s+)\w+\[\d+\]='               => q<bash arrays, H[0]>,
@@ -649,7 +655,7 @@ sub init_hashes {
           . qr'read\s+(?:-[a-qs-zA-Z\d-]+)' =>
           q<read with option other than -r>,
         $LEADIN
-          . qr'read\s*(?:-\w+\s*)*(?:\".*?\"|[\'].*?[\'])?\s*(?:;|$)' =>
+          . qr'read(?:\s+(?:-\w+\s*)*(?:\".*?\"|[\'].*?[\'])?)?\s*(?:;|$)' =>
           q<read without variable>,
         $LEADIN . qr'echo\s+(-n\s+)?-n?en?\s' => q<echo -e>,
         $LEADIN . qr'exec\s+-[acl]'           => q<exec -c/-l/-a name>,
@@ -717,7 +723,7 @@ qr'(?:^|\s)(?<func>function\s)?\s*(?:[^<>\(\)\[\]\{\};|\s]*[^<>\(\)\[\]\{\};|\s\
         $LEADIN
           . qr'(?:exit|return)\s+--' =>
           q<'exit --' should be 'exit' (idem for return)>,
-        $LEADIN . qr'hash(\s|\Z)' => q<hash>,
+        $LEADIN . qr'hash(\s|\Z)'                    => q<hash>,
         qr'(?:[:=\s])~(?:[+-]|[+-]?\d+)(?:[/\s]|\Z)' =>
           q<non-standard tilde expansion>,
     );
@@ -726,13 +732,13 @@ qr'(?:^|\s)(?<func>function\s)?\s*(?:[^<>\(\)\[\]\{\};|\s]*[^<>\(\)\[\]\{\};|\s\
         qr'\$\[[^][]+\]' => q<'$[' should be '$(('>,
         qr'\$\{(?:\w+|@|\*)\:(?:\d+|\$\{?\w+\}?)+(?::(?:\d+|\$\{?\w+\}?)+)?\}'
           => q<${foo:3[:1]}>,
-        qr'\$\{!\w+[\@*]\}' => q<${!prefix[*|@]>,
-        qr'\$\{!\w+\}'      => q<${!name}>,
+        qr'\$\{!\w+[\@*]\}'                  => q<${!prefix[*|@]>,
+        qr'\$\{!\w+\}'                       => q<${!name}>,
         qr'\$\{(?:\w+|@|\*)([,^]{1,2}.*?)\}' =>
           q<${parm,[,][pat]} or ${parm^[^][pat]}>,
         qr'\$\{[@*]([#%]{1,2}.*?)\}' => q<${[@|*]#[#]pat} or ${[@|*]%[%]pat}>,
         qr'\$\{#[@*]\}'              => q<${#@} or ${#*}>,
-        qr'\$\{(?:\w+|@|\*)(/.+?){1,2}\}' => q<${parm/?/pat[/str]}>,
+        qr'\$\{(?:\w+|@|\*)(/.+?){1,2}\}'      => q<${parm/?/pat[/str]}>,
         qr'\$\{\#?\w+\[.+\](?:[/,:#%^].+?)?\}' =>
           q<bash arrays, ${name[0|*|@]}>,
         qr'\$\{?RANDOM\}?\b'          => q<$RANDOM>,
