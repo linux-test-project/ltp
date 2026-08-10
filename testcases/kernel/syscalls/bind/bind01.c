@@ -1,7 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 /*
+ * Copyright (c) Linux Test Project, 2002-2026
  * Copyright (c) International Business Machines  Corp., 2001
+ */
+
+/*\
+ * Test :manpage:`bind(2) fails with -1 return value and sets errno to:
+ *
+ * - EINVAL on invalid salen
+ * - ENOTSOCK on invalid socket
+ * - no errno on valid socket call
+ * - EAFNOSUPPORT on UNIX-domain of current directory
+ * - EADDRNOTAVAIL on non-local address
+ * - EBADF when sockfd is not a valid file descriptor
+ * - ENOTDIR on a component of addr prefix is not a directory
  */
 
 #include <stdio.h>

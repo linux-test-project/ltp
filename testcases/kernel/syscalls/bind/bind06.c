@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2020 SUSE LLC <mdoucha@suse.cz>
- *
+ */
+
+/*\
  * CVE-2018-18559
  *
- * Test for race condition vulnerability in bind() on AF_PACKET socket.
- * Fixed in:
+ * Test for race condition vulnerability in :manpage:`bind(2) on AF_PACKET socket.
  *
- *  commit 15fe076edea787807a7cdc168df832544b58eba6
- *  Author: Eric Dumazet <edumazet@google.com>
- *  Date:   Tue Nov 28 08:03:30 2017 -0800
- *
- *  net/packet: fix a race in packet_bind() and packet_notifier()
+ * Fixed in kernel v4.15-rc2:
+ * 15fe076edea7 ("net/packet: fix a race in packet_bind() and packet_notifier()")
  */
 
 #include <sys/socket.h>

@@ -3,9 +3,10 @@
  *   Copyright (c) 2019 Martin Doucha <mdoucha@suse.cz>
  */
 
-/*
- * Create and bind socket for various standard datagram protocols.
- * Then connect to it and send some test data.
+/*\
+ * Create and :manpage:`bind(2) socket for various standard datagram protocols
+ * (UNIX sockets or IPv4/IPv6 sockets over UDP/UDP-Lite).
+ * Connect to the socket and send some test data.
  */
 
 #include <string.h>
