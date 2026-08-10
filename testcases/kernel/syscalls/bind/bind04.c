@@ -4,7 +4,7 @@
  */
 
 /*\
- * Create and :manpage:`bind(2) socket for various standard stream protocols
+ * Create and :manpage:`bind(2)` socket for various standard stream protocols
  * (UNIX sockets, IPv4/IPv6 sockets over TCP/SCTP).
  * Connect to the socket and send some test data.
  */

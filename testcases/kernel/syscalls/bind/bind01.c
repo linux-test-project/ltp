@@ -6,7 +6,7 @@
  */
 
 /*\
- * Test :manpage:`bind(2) fails with -1 return value and sets errno to:
+ * Test :manpage:`bind(2)` fails with -1 return value and sets errno to:
  *
  * - EINVAL on invalid salen
  * - ENOTSOCK on invalid socket

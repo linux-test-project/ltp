@@ -2,8 +2,12 @@
 /*
  * Copyright (c) 2018 Michael Moese <mmoese@suse.com>
  */
-/* The commit 0fb44559ffd6  af_unix: move unix_mknod() out of bindlock
- * changed the behavior of bind() for STREAM UNIX domain sockets if
+
+/*\
+ * Test :manpage:`bind(2)` behavior on kernel change in v4.10-rc6:
+ * 0fb44559ffd6 ("af_unix: move unix_mknod() out of bindlock")
+ *
+ * :manpage:`bind(2)` fails for the new behavior and passes for the old one.
  */
 
 #include "tst_test.h"

@@ -6,7 +6,8 @@
 /*\
  * CVE-2018-18559
  *
- * Test for race condition vulnerability in :manpage:`bind(2) on AF_PACKET socket.
+ * Test for race condition vulnerability in :manpage:`bind(2)` on AF_PACKET
+ * socket.
  *
  * Fixed in kernel v4.15-rc2:
  * 15fe076edea7 ("net/packet: fix a race in packet_bind() and packet_notifier()")

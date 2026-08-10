@@ -4,7 +4,7 @@
  */
 
 /*\
- * Create and :manpage:`bind(2) socket for various standard datagram protocols
+ * Create and :manpage:`bind(2)` socket for various standard datagram protocols
  * (UNIX sockets or IPv4/IPv6 sockets over UDP/UDP-Lite).
  * Connect to the socket and send some test data.
  */
