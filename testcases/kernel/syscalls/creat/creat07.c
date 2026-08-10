@@ -6,6 +6,12 @@
 
 /*\
  * Check that :manpage:`creat(2)` sets ETXTBSY correctly.
+ *
+ * NOTE: write to executed file was allowed in 6.11-rc1:
+ * 2a010c412853 ("fs: don't block i_writecount during exec")
+ * but then reverted in v6.13-rc1:
+ * 3b832035387f ("Revert "fs: don't block i_writecount during exec""),
+ * backported into v6.11.11 and v6.12.2.
  */
 
 #include <sys/types.h>
@@ -48,20 +54,14 @@ kill:
 	SAFE_WAITPID(pid, NULL, 0);
 }
 
-static void setup(void)
-{
-	if ((tst_kvercmp(6, 11, 0)) >= 0) {
-		tst_brk(TCONF, "Skipping test, write to executed file is "
-			"allowed since 6.11-rc1.\n"
-			"2a010c412853 (\"fs: don't block i_writecount during exec\")");
-	}
-}
-
 static struct tst_test test = {
-	.setup = setup,
 	.test_all = verify_creat,
 	.needs_checkpoints = 1,
 	.forks_child = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "3b832035387ff508fdcf0fba66701afc78f79e3d"},
+		{}
+	},
 	.resource_files = (const char *const []) {
 		TEST_APP,
 		NULL
