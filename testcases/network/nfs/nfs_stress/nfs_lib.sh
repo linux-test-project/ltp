@@ -55,17 +55,22 @@ TST_NEEDS_DRIVERS="nfsd"
 # debugging whether test failures are related to veth/netns).
 LTP_NFS_NETNS_USE_LO=${LTP_NFS_NETNS_USE_LO:-}
 
-get_socket_type()
+get_socket_type_bare()
 {
 	local t
 	local k=0
 	for t in $SOCKET_TYPE; do
 		if [ "$k" -eq "$1" ]; then
-			echo "${t}${TST_IPV6}"
+			echo "$t"
 			return
 		fi
 		k=$(( k + 1 ))
 	done
+}
+
+get_socket_type()
+{
+	echo "$(get_socket_type_bare "$1")${TST_IPV6}"
 }
 
 # directory mounted by NFS client
@@ -107,6 +112,49 @@ nfs_server_udp_enabled()
 	config=$(tst_rhost_run -c 'for f in $(grep ^include.*= '/etc/nfs.conf' | cut -d = -f2); do [ -f $f ] && printf "$f "; done')
 
 	tst_rhost_run -c "grep -q \"^[# ]*udp *= *y\" /etc/nfs.conf $config"
+}
+
+# nfs_server_vers_enabled VERS
+# Only returns false (1) when the server explicitly lists "-VERS" in
+# /proc/fs/nfsd/versions. If that file is unavailable or doesn't mention
+# VERS at all, defaults to true so the mount is still attempted.
+nfs_server_vers_enabled()
+{
+	local vers="$1"
+	local versions=" $(tst_rhost_run -c 'cat /proc/fs/nfsd/versions 2>/dev/null') "
+
+	case "$versions" in
+	*" -$vers "*) return 1;;
+	esac
+
+	return 0
+}
+
+# Drops NFS versions the server explicitly disabled from $VERSION, keeping
+# $SOCKET_TYPE entries aligned by position with what remains.
+nfs_filter_versions()
+{
+	local v type new_version new_socket_type
+	local n=0
+
+	for v in $VERSION; do
+		type=$(get_socket_type_bare $n)
+
+		if nfs_server_vers_enabled "$v"; then
+			[ "$new_version" ] && new_version="$new_version $v" || new_version="$v"
+			[ "$new_socket_type" ] && new_socket_type="$new_socket_type $type" || new_socket_type="$type"
+		else
+			tst_res TCONF "NFSv$v disabled on server, skipping"
+		fi
+
+		n=$(( n + 1 ))
+	done
+
+	[ "$new_version" ] || \
+		tst_brk TCONF "none of the requested NFS versions ($VERSION) are enabled on server"
+
+	VERSION="$new_version"
+	SOCKET_TYPE="$new_socket_type"
 }
 
 nfs_setup_server()
@@ -197,6 +245,8 @@ nfs_setup()
 	fi
 
 	tst_res TINFO "$(mount.nfs -V)"
+
+	nfs_filter_versions
 
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
