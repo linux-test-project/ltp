@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2021 zhanglianjie <zhanglianjie@uniontech.com>
+ * Copyright (c) Linux Test Project, 2026
  */
 
 /*
- * Test TST_EXP_VAL and TST_EXP_VAL_SILENT macro.
+ * Test macros:
+ *
+ * - TST_EXP_VAL
+ * - TST_EXP_VAL_SILENT
  */
 
 #include "tst_test.h"
@@ -20,19 +24,23 @@ static int pass_val(void)
 	return 42;
 }
 
+#define TEST_MACRO(macro, fail_fn, pass_fn, pass_val, fail_err) \
+	do { \
+		tst_res(TINFO, "* Testing " #macro "() macro"); \
+		macro(fail_fn(), fail_err, #fail_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(fail_fn(), fail_err); /* skip msg parameter */ \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(pass_fn(), pass_val, #pass_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(fail_fn(), pass_val); /* skip msg parameter */ \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+	} while (0)
+
 static void do_test(void)
 {
-	tst_res(TINFO, "Testing TST_EXP_VAL macro");
-	TST_EXP_VAL(fail_val(), 40, "fail_val()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_VAL(pass_val(), 42, "pass_val()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-
-	tst_res(TINFO, "Testing TST_EXP_VAL_SILENT macro");
-	TST_EXP_VAL_SILENT(fail_val(), 40, "fail_val()");
-	tst_res(TINFO, "TST_PASS = %i from TST_EXP_VAL_SILENT(fail_val, ...)", TST_PASS);
-	TST_EXP_VAL_SILENT(pass_val(), 42, "pass_val()");
-	tst_res(TINFO, "TST_PASS = %i from TST_EXP_VAL_SILENT(pass_val, ...)", TST_PASS);
+	TEST_MACRO(TST_EXP_VAL, fail_val, pass_val, 42, 40);
+	TEST_MACRO(TST_EXP_VAL_SILENT, fail_val, pass_val, 42, 40);
 }
 
 static struct tst_test test = {

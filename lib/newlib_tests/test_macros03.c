@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2026
  */
 
 /*
- * Test TST_EXP_PASS and TST_EXP_PASS_SILENT macro.
+ * Test macros:
+ *
+ * - TST_EXP_PASS_OR_FAIL
+ * - TST_EXP_FD_OR_FAIL
  */
 
 #include "tst_test.h"
@@ -22,33 +26,28 @@ static int pass_fn(void)
 	return 0;
 }
 
-static int inval_ret_fn(void)
+static int pass_fd(void)
 {
 	return 42;
 }
 
+#define TEST_MACRO(macro, fail_fn, pass_fn, fail_err) \
+	do { \
+		tst_res(TINFO, "* Testing " #macro "() macro"); \
+		macro(fail_fn(), fail_err, #fail_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(fail_fn(), fail_err); /* skip msg parameter */ \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(pass_fn(), 0, #pass_fn"()"); \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+		macro(fail_fn(), 0); /* skip msg parameter */ \
+		tst_res(TINFO, "TST_PASS = %i", TST_PASS); \
+	} while (0)
+
 static void do_test(void)
 {
-	tst_res(TINFO, "Testing TST_EXP_PASS macro");
-	TST_EXP_PASS(fail_fn(), "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_PASS(pass_fn(), "pass_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_PASS(inval_ret_fn(), "inval_ret_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-
-	tst_res(TINFO, "Testing TST_EXP_PASS_SILENT macro");
-	TST_EXP_PASS_SILENT(fail_fn(), "fail_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-	TST_EXP_PASS_SILENT(pass_fn(), "pass_fn()");
-	tst_res(TINFO, "TST_PASS = %i from TST_EXP_PASS_SILENT(pass_fn, ...)", TST_PASS);
-	TST_EXP_PASS_SILENT(inval_ret_fn(), "inval_ret_fn()");
-	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
-
-	tst_res(TINFO, "Testing TST_EXP_PASS_OR_FAIL() macro (pass)");
-	TST_EXP_PASS_OR_FAIL(pass_fn(), 0, "pass_fn()");
-	tst_res(TINFO, "Testing TST_EXP_PASS_OR_FAIL() macro (fail)");
-	TST_EXP_PASS_OR_FAIL(fail_fn(), ERR_ERRNO, "fail_fn()");
+	TEST_MACRO(TST_EXP_PASS_OR_FAIL, fail_fn, pass_fn, ERR_ERRNO);
+	TEST_MACRO(TST_EXP_FD_OR_FAIL, fail_fn, pass_fd, ERR_ERRNO);
 }
 
 static struct tst_test test = {
