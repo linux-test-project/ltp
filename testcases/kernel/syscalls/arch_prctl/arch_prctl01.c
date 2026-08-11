@@ -50,10 +50,9 @@ static void setup(void)
 
 static void run(unsigned int index)
 {
-	if (tag)
-		TST_EXP_PASS(arch_prctl_set(ARCH_SET_CPUID, index));
-	else
-		TST_EXP_FAIL(arch_prctl_set(ARCH_SET_CPUID, index), ENODEV);
+	int err = tag ? 0 : ENODEV;
+
+	TST_EXP_PASS_OR_FAIL(arch_prctl_set(ARCH_SET_CPUID, index), err);
 
 	// if cpu has cpuid_fault flag, ARCH_GET_CPUID returns what has been
 	// set: index, otherwise, returns default status: 1
@@ -61,7 +60,7 @@ static void run(unsigned int index)
 
 	TEST(arch_prctl_get(ARCH_GET_CPUID));
 	if (TST_RET == exp)
-		tst_res(TPASS, "get cpuid succeed.");
+		tst_res(TPASS, "get cpuid succeed");
 	else
 		tst_res(TFAIL, "get wrong cpuid status");
 }

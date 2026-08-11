@@ -30,6 +30,8 @@ static void scoped_sandbox(const char *from)
 
 static void run(void)
 {
+	int err = tst_variant == DOMAIN_KILLER ? EPERM : 0;
+
 	/* isolate test inside a process so we won't stack too many
 	 * layers (-E2BIG) when there are multiple test's iterations
 	 */
@@ -62,11 +64,7 @@ static void run(void)
 
 		TST_CHECKPOINT_WAKE(0);
 
-		if (tst_variant == DOMAIN_KILLER)
-			TST_EXP_FAIL(kill(paused_pid, SIGKILL), EPERM);
-		else
-			TST_EXP_PASS(kill(paused_pid, SIGKILL));
-
+		TST_EXP_PASS_OR_FAIL(kill(paused_pid, SIGKILL), err);
 		exit(0);
 	}
 

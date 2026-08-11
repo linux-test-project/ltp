@@ -69,12 +69,9 @@ static void verify_bind(unsigned int nr)
 {
 	struct test_case *tcase = &tcases[nr];
 
-	if (tcase->experrno) {
-		TST_EXP_FAIL(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
-				tcase->experrno, "%s", tcase->desc);
-	} else {
-		TST_EXP_PASS(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
-				"%s", tcase->desc);
+	TST_EXP_PASS_OR_FAIL(bind(*tcase->socket_fd, tcase->sockaddr, tcase->salen),
+			tcase->experrno, "%s", tcase->desc);
+	if (TST_PASS) {
 		SAFE_CLOSE(inet_socket);
 		inet_socket = SAFE_SOCKET(PF_INET, SOCK_STREAM, 0);
 	}

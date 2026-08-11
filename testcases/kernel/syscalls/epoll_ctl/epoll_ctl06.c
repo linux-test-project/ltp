@@ -52,15 +52,9 @@ static void run(void)
 		ev.data.fd = fd.fd;
 		err = exp_errno(fd.type);
 
-		if (err) {
-			TST_EXP_FAIL(epoll_ctl(efd, EPOLL_CTL_ADD,
-				     fd.fd, &ev), err,
-				     "epoll_ctl() on %s", tst_fd_desc(&fd));
-		} else {
-			TST_EXP_PASS(epoll_ctl(efd, EPOLL_CTL_ADD,
-				     fd.fd, &ev),
-				     "epoll_ctl() on %s", tst_fd_desc(&fd));
-		}
+		TST_EXP_PASS_OR_FAIL(epoll_ctl(efd, EPOLL_CTL_ADD,
+				 fd.fd, &ev), err,
+				 "epoll_ctl() on %s", tst_fd_desc(&fd));
 
 		SAFE_CLOSE(efd);
 	}

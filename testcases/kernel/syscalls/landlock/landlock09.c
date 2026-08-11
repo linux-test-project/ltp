@@ -35,6 +35,8 @@ static void scoped_sandbox(const char *from)
 
 static void run_client(void)
 {
+	int err = tst_variant == DOMAIN_CLIENT ? EPERM : 0;
+
 	if (tst_variant == DOMAIN_CLIENT)
 		scoped_sandbox("client");
 
@@ -47,14 +49,8 @@ static void run_client(void)
 	TST_CHECKPOINT_WAIT(0);
 
 	tst_res(TINFO, "Connecting to UNIX socket");
-
 	sendsock = SAFE_SOCKET(AF_UNIX, SOCK_STREAM, 0);
-
-	if (tst_variant != DOMAIN_CLIENT)
-		TST_EXP_PASS(connect(sendsock, (struct sockaddr *)&addr, SOCKET_LENGTH));
-	else
-		TST_EXP_FAIL(connect(sendsock, (struct sockaddr *)&addr, SOCKET_LENGTH), EPERM);
-
+	TST_EXP_PASS_OR_FAIL(connect(sendsock, (struct sockaddr *)&addr, SOCKET_LENGTH), err);
 	SAFE_CLOSE(sendsock);
 
 	TST_CHECKPOINT_WAKE(0);

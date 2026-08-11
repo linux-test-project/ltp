@@ -34,12 +34,9 @@ static void setup(void)
 
 static void run(void)
 {
-	if (sig_enforce == 1) {
-		TST_EXP_FAIL(finit_module(fd, "status=valid", 0), EKEYREJECTED);
-		return;
-	}
+	int err = sig_enforce == 1 ? EKEYREJECTED : 0;
 
-	TST_EXP_PASS(finit_module(fd, "status=valid", 0));
+	TST_EXP_PASS_OR_FAIL(finit_module(fd, "status=valid", 0), err);
 	if (!TST_PASS)
 		return;
 

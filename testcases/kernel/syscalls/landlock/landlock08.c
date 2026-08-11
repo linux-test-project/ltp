@@ -102,13 +102,8 @@ static void test_bind(const struct tcase *tc, const in_port_t port, const int ex
 	create_socket(&socket, tc->family, port, tc->type);
 	getsocket_addr(&socket, tc->family, &addr);
 
-	if (exp_err) {
-		TST_EXP_FAIL(bind(socket.fd, addr, socket.address_size),
-			     exp_err, "bind() access on port %u", port);
-	} else {
-		TST_EXP_PASS(bind(socket.fd, addr, socket.address_size),
-			     "bind() access on port %u", port);
-	}
+	TST_EXP_PASS_OR_FAIL(bind(socket.fd, addr, socket.address_size),
+		exp_err, "bind() access on port %u", port);
 
 	SAFE_CLOSE(socket.fd);
 }
@@ -121,13 +116,8 @@ static void test_connect(const struct tcase *tc, const in_port_t port, const int
 	create_socket(&socket, tc->family, port, tc->type);
 	getsocket_addr(&socket, tc->family, &addr);
 
-	if (exp_err) {
-		TST_EXP_FAIL(connect(socket.fd, addr, socket.address_size),
-			     exp_err, "connect() on port %u", port);
-	} else {
-		TST_EXP_PASS(connect(socket.fd, addr, socket.address_size),
-			     "connect() on port %u", port);
-	}
+	TST_EXP_PASS_OR_FAIL(connect(socket.fd, addr, socket.address_size),
+		exp_err, "connect() on port %u", port);
 
 	SAFE_CLOSE(socket.fd);
 }

@@ -145,7 +145,7 @@ static void tester_cleanup_files(void)
 	_remove_file(FILE_REGULAR);
 }
 
-static void _test_exec(const int result)
+static void _test_exec(const int exp_err)
 {
 	int status;
 	pid_t pid;
@@ -155,16 +155,7 @@ static void _test_exec(const int result)
 
 	pid = SAFE_FORK();
 	if (!pid) {
-		int rval;
-
-		if (result == TPASS) {
-			rval = execve(FILE_EXEC, args, NULL);
-			if (rval == -1)
-				tst_res(TFAIL | TERRNO, "Failed to execute test binary");
-		} else {
-			TST_EXP_FAIL(execve(FILE_EXEC, args, NULL), EACCES);
-		}
-
+		TST_EXP_PASS_OR_FAIL(execve(FILE_EXEC, args, NULL), exp_err);
 		_exit(1);
 	}
 
@@ -172,31 +163,23 @@ static void _test_exec(const int result)
 	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
 		return;
 
-	tst_res(result, "Test binary has been executed");
+	tst_res(exp_err ? TFAIL : TPASS, "Test binary has been executed");
 }
 
-static void _test_write(const int result)
+static void _test_write(const int exp_err)
 {
 	tst_res(TINFO, "Test writing file");
 
-	if (result == TPASS)
-		TST_EXP_FD(open(FILE_WRITE, O_WRONLY, PERM_MODE));
-	else
-		TST_EXP_FAIL(open(FILE_WRITE, O_WRONLY, PERM_MODE), EACCES);
-
+	TST_EXP_FD_OR_FAIL(open(FILE_WRITE, O_WRONLY, PERM_MODE), exp_err);
 	if (TST_RET != -1)
 		SAFE_CLOSE(TST_RET);
 }
 
-static void _test_read(const int result)
+static void _test_read(const int exp_err)
 {
 	tst_res(TINFO, "Test reading file");
 
-	if (result == TPASS)
-		TST_EXP_FD(open(FILE_READ, O_RDONLY, PERM_MODE));
-	else
-		TST_EXP_FAIL(open(FILE_READ, O_RDONLY, PERM_MODE), EACCES);
-
+	TST_EXP_FD_OR_FAIL(open(FILE_READ, O_RDONLY, PERM_MODE), exp_err);
 	if (TST_RET != -1)
 		SAFE_CLOSE(TST_RET);
 }
@@ -239,122 +222,90 @@ static void _test_readdir(const int result)
 	TST_EXP_EQ_LI(files_counted, ARRAY_SIZE(readdir_files));
 }
 
-static void _test_rmdir(const int result)
+static void _test_rmdir(const int exp_err)
 {
 	tst_res(TINFO, "Test removing directory");
-
-	if (result == TPASS)
-		TST_EXP_PASS(rmdir(DIR_RMDIR));
-	else
-		TST_EXP_FAIL(rmdir(DIR_RMDIR), EACCES);
+	TST_EXP_PASS_OR_FAIL(rmdir(DIR_RMDIR), exp_err);
 }
 
-static void _test_rmfile(const int result)
+static void _test_rmfile(const int exp_err)
 {
 	tst_res(TINFO, "Test removing file");
-
-	if (result == TPASS) {
-		TST_EXP_PASS(unlink(FILE_UNLINK));
-		TST_EXP_PASS(remove(FILE_REMOVE));
-	} else {
-		TST_EXP_FAIL(unlink(FILE_UNLINK), EACCES);
-		TST_EXP_FAIL(remove(FILE_REMOVE), EACCES);
-	}
+	TST_EXP_PASS_OR_FAIL(unlink(FILE_UNLINK), exp_err);
+	TST_EXP_PASS_OR_FAIL(remove(FILE_REMOVE), exp_err);
 }
 
-static void _test_make(const char *path, const int type, const int dev, const int result)
+static void _test_make(const char *path, const int type, const int dev, const int exp_err)
 {
 	tst_res(TINFO, "Test normal or special files creation");
-
-	if (result == TPASS)
-		TST_EXP_PASS(mknod(path, type | 0400, dev));
-	else
-		TST_EXP_FAIL(mknod(path, type | 0400, dev), EACCES);
+	TST_EXP_PASS_OR_FAIL(mknod(path, type | 0400, dev), exp_err);
 }
 
-static void _test_symbolic(const int result)
+static void _test_symbolic(const int exp_err)
 {
 	tst_res(TINFO, "Test symbolic links");
-
-	if (result == TPASS)
-		TST_EXP_PASS(symlink(FILE_SYM0, FILE_SYM1));
-	else
-		TST_EXP_FAIL(symlink(FILE_SYM0, FILE_SYM1), EACCES);
+	TST_EXP_PASS_OR_FAIL(symlink(FILE_SYM0, FILE_SYM1), exp_err);
 }
 
-static void _test_truncate(const int result)
+static void _test_truncate(const int exp_err)
 {
 	int fd;
 
 	tst_res(TINFO, "Test truncating file");
 
-	if (result == TPASS) {
-		TST_EXP_PASS(truncate(FILE_TRUNCATE, 10));
-
-		fd = SAFE_OPEN(FILE_TRUNCATE, O_WRONLY, PERM_MODE);
-		if (fd != -1) {
-			TST_EXP_PASS(ftruncate(fd, 10));
-			SAFE_CLOSE(fd);
-		}
-
-		fd = TST_EXP_FD(open(FILE_TRUNCATE, O_WRONLY | O_TRUNC, PERM_MODE));
-		if (fd != -1)
-			SAFE_CLOSE(fd);
-	} else {
-		TST_EXP_FAIL(truncate(FILE_TRUNCATE, 10), EACCES);
-
-		fd = open(FILE_TRUNCATE, O_WRONLY, PERM_MODE);
-		if (fd != -1) {
-			TST_EXP_FAIL(ftruncate(fd, 10), EACCES);
-			SAFE_CLOSE(fd);
-		}
-
-		TST_EXP_FAIL(open(FILE_TRUNCATE, O_WRONLY | O_TRUNC, PERM_MODE), EACCES);
-
-		if (TST_RET != -1)
-			SAFE_CLOSE(TST_RET);
+	TST_EXP_PASS_OR_FAIL(truncate(FILE_TRUNCATE, 10), exp_err);
+	fd = TST_EXP_FD_OR_FAIL(open(FILE_TRUNCATE, O_WRONLY, PERM_MODE), exp_err);
+	if (fd != -1) {
+		TST_EXP_PASS_OR_FAIL(ftruncate(fd, 10), exp_err);
+		SAFE_CLOSE(fd);
 	}
+
+	fd = TST_EXP_FD_OR_FAIL(open(FILE_TRUNCATE, O_WRONLY | O_TRUNC, PERM_MODE), exp_err);
+	if (fd != -1)
+		SAFE_CLOSE(TST_RET);
 }
 
 static void tester_run_fs_rules(const int rules, const int result)
 {
+	int exp_err = result == TPASS ? 0 : EACCES;
+
 	if (rules & LANDLOCK_ACCESS_FS_EXECUTE)
-		_test_exec(result);
+		_test_exec(exp_err);
 
 	if (rules & LANDLOCK_ACCESS_FS_WRITE_FILE)
-		_test_write(result);
+		_test_write(exp_err);
 
 	if (rules & LANDLOCK_ACCESS_FS_READ_FILE)
-		_test_read(result);
+		_test_read(exp_err);
 
 	if (rules & LANDLOCK_ACCESS_FS_READ_DIR)
 		_test_readdir(result);
 
 	if (rules & LANDLOCK_ACCESS_FS_REMOVE_DIR)
-		_test_rmdir(result);
+		_test_rmdir(exp_err);
 
 	if (rules & LANDLOCK_ACCESS_FS_REMOVE_FILE)
-		_test_rmfile(result);
+		_test_rmfile(exp_err);
 
 	if (rules & LANDLOCK_ACCESS_FS_MAKE_REG)
-		_test_make(FILE_REGULAR, S_IFREG, 0, result);
+		_test_make(FILE_REGULAR, S_IFREG, 0, exp_err);
 
 	if (strcmp(tst_device->fs_type, "vfat") &&
 	    strcmp(tst_device->fs_type, "exfat")) {
 		if (rules & LANDLOCK_ACCESS_FS_MAKE_CHAR)
-			_test_make(DEV_CHAR0, S_IFCHR, dev_chr, result);
+			_test_make(DEV_CHAR0, S_IFCHR, dev_chr, exp_err);
 
 		if (rules & LANDLOCK_ACCESS_FS_MAKE_BLOCK)
-			_test_make(DEV_BLK0, S_IFBLK, dev_blk, result);
+			_test_make(DEV_BLK0, S_IFBLK, dev_blk, exp_err);
 
 		if (rules & LANDLOCK_ACCESS_FS_MAKE_SOCK)
-			_test_make(FILE_SOCKET, S_IFSOCK, 0, result);
+			_test_make(FILE_SOCKET, S_IFSOCK, 0, exp_err);
 
 		if (rules & LANDLOCK_ACCESS_FS_MAKE_FIFO)
-			_test_make(FILE_FIFO, S_IFIFO, 0, result);
+			_test_make(FILE_FIFO, S_IFIFO, 0, exp_err);
 
 		if (rules & LANDLOCK_ACCESS_FS_MAKE_SYM)
-			_test_symbolic(result);
+			_test_symbolic(exp_err);
 	}
 
 	if (rules & LANDLOCK_ACCESS_FS_TRUNCATE) {
@@ -366,7 +317,7 @@ static void tester_run_fs_rules(const int rules, const int result)
 			return;
 		}
 
-		_test_truncate(result);
+		_test_truncate(exp_err);
 	}
 }
 
