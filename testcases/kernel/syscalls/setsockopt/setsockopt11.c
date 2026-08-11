@@ -5,7 +5,7 @@
  * Simplified LTP port: Martin Doucha <mdoucha@suse.com>
  */
 
-/*
+/*\
  * CVE 2026-53362
  *
  * Test for vulnerability in socket buffer size calculation for fragmented
