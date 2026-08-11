@@ -9,9 +9,11 @@
 
 #include "tst_test.h"
 
+#define ERR_ERRNO EINVAL
+
 static int fail_fn(void)
 {
-	errno = EINVAL;
+	errno = ERR_ERRNO;
 	return -1;
 }
 
@@ -42,6 +44,11 @@ static void do_test(void)
 	tst_res(TINFO, "TST_PASS = %i from TST_EXP_PASS_SILENT(pass_fn, ...)", TST_PASS);
 	TST_EXP_PASS_SILENT(inval_ret_fn(), "inval_ret_fn()");
 	tst_res(TINFO, "TST_PASS = %i", TST_PASS);
+
+	tst_res(TINFO, "Testing TST_EXP_PASS_OR_FAIL() macro (pass)");
+	TST_EXP_PASS_OR_FAIL(pass_fn(), 0, "pass_fn()");
+	tst_res(TINFO, "Testing TST_EXP_PASS_OR_FAIL() macro (fail)");
+	TST_EXP_PASS_OR_FAIL(fail_fn(), ERR_ERRNO, "fail_fn()");
 }
 
 static struct tst_test test = {
