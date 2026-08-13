@@ -255,6 +255,10 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
 	.all_filesystems = 1,
+	.filesystems = (struct tst_fs[]) {
+		{.type = "exfat", .mkfs_opts = (const char *const[]) {"-c", "4K", NULL}},
+		{}
+	},
 	.needs_root = 1,
 	.dev_min_size = 512,
 	.forks_child = 1,
