@@ -67,7 +67,7 @@ static void setup(void)
 {
 	tst_require_root();
 
-	tst_sig(NOFORK, DEF_HANDLER, NULL);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	tst_tmpdir();
 
