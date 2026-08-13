@@ -313,7 +313,7 @@ ima_cleanup()
 	[ -n "$TST_CLEANUP_CALLER" ] && $TST_CLEANUP_CALLER
 
 	for dir in $UMOUNT; do
-		umount $dir
+		tst_umount $dir
 	done
 
 	if [ "$IMA_POLICY_LOADED" = 1 ]; then
