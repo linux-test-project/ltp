@@ -210,6 +210,7 @@ static struct tst_test test = {
 	.filesystems = (struct tst_fs []) {
 		{
 			.type = "xfs",
+			.mount_check_support = 1,
 			.min_kver = "4.11",
 			.mkfs_ver = "mkfs.xfs >= 1.5.0",
 			.mkfs_opts = (const char *const []) {
