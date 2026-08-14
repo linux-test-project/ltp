@@ -280,6 +280,9 @@ struct tst_ulimit_val {
  *
  * @min_kver: A minimum kernel version supporting the filesystem which has been
  *            created with mkfs.
+ *
+ * @mount_check_support: Skip this filesystem if :manpage:`mount(2)` fails with
+ *                       EOPNOTSUPP.
  */
 struct tst_fs {
 	const char *type;
@@ -292,6 +295,8 @@ struct tst_fs {
 	const void *mnt_data;
 
 	const char *min_kver;
+
+	unsigned int mount_check_support:1;
 };
 
 /**

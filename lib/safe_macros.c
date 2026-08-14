@@ -930,7 +930,7 @@ static int possibly_fuse(const char *fs_type)
 int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	       const char *source, const char *target,
 	       const char *filesystemtype, unsigned long mountflags,
-	       const void *data, int *is_fuse)
+	       const void *data, int *is_fuse, unsigned int check_support)
 {
 	int rval = -1;
 	char mpath[PATH_MAX];
@@ -993,9 +993,15 @@ int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 			"mount.%s failed with %i", filesystemtype, rval);
 		return -1;
 	} else if (rval == -1) {
-		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
-			"mount(%s, %s, %s, %lu, %p) failed", source, target,
-			filesystemtype, mountflags, data);
+		if (check_support && errno == EOPNOTSUPP) {
+			tst_brkm_(file, lineno, TCONF | TERRNO, cleanup_fn,
+				"Kernel does not support required %s features",
+				filesystemtype);
+		} else {
+			tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
+				"mount(%s, %s, %s, %lu, %p) failed", source,
+				target, filesystemtype, mountflags, data);
+		}
 	} else {
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
 			"Invalid mount(%s, %s, %s, %lu, %p) return value %d",

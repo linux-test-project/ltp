@@ -245,12 +245,13 @@ int safe_getgroups(const char *file, const int lineno, int size, gid_t list[]);
 #define SAFE_MOUNT(source, target, filesystemtype, \
 		   mountflags, data) \
 	safe_mount(__FILE__, __LINE__, NULL, (source), (target), \
-		   (filesystemtype), (mountflags), (data), NULL)
+		   (filesystemtype), (mountflags), (data), NULL, 0)
 
 #define SAFE_MOUNT2(source, target, filesystemtype, \
-		    mountflags, data, is_fuse) \
+		    mountflags, data, is_fuse, check_support) \
 	safe_mount(__FILE__, __LINE__, NULL, (source), (target), \
-		   (filesystemtype), (mountflags), (data), (is_fuse))
+		   (filesystemtype), (mountflags), (data), (is_fuse), \
+		   (check_support))
 
 #define SAFE_UMOUNT(target) \
 	safe_umount(__FILE__, __LINE__, NULL, (target))
