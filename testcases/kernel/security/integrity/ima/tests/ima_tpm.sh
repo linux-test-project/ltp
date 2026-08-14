@@ -142,6 +142,8 @@ read_pcr_tpm2()
 get_pcr10_aggregate()
 {
 	local cmd="evmctl -vv ima_measurement $BINARY_MEASUREMENTS"
+	local violations="$IMA_DIR/violations"
+	local num_violations=0
 	local msg="$ERRMSG_EVMCTL"
 	local res=TCONF
 	local pcr ret
@@ -151,16 +153,20 @@ get_pcr10_aggregate()
 		res=TFAIL
 	fi
 
-	$cmd > hash.txt 2>&1
-	ret=$?
-	if [ $ret -ne 0 -a -z "$MISSING_EVMCTL" ]; then
-		tst_res TFAIL "evmctl failed, trying with --ignore-violations"
+	if [ ! -f "$violations" ]; then
+		tst_res TINFO "missing $violations"
+	else
+		num_violations=$(cat "$violations")
+	fi
+
+	if [ "$num_violations" -eq 0 ]; then
+		$cmd > hash.txt 2>&1
+		ret=$?
+	else
+		tst_res TINFO "ignoring $num_violations violations"
 		cmd="$cmd --ignore-violations"
 		$cmd > hash.txt 2>&1
 		ret=$?
-	elif [ $ret -ne 0 -a "$MISSING_EVMCTL" = 1 ]; then
-		tst_res TFAIL "evmctl failed $msg"
-		return
 	fi
 
 	[ $ret -ne 0 ] && tst_res TWARN "evmctl failed, trying to continue $msg"
