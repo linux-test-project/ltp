@@ -9,7 +9,6 @@
  * currently implementing the features we need.
  */
 
-#include <sys/mount.h>
 #include "tst_test.h"
 #include "lapi/fs.h"
 
@@ -44,15 +43,6 @@ static void setup(void)
 {
 	struct stat statbuf;
 
-	SAFE_MKDIR(MNTPOINT, 0755);
-	TEST(mount(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL));
-
-	if (TST_RET == -1 && TST_ERR == EOPNOTSUPP)
-		tst_brk(TCONF, "Kernel does not support XFS reflinks");
-
-	if (TST_RET)
-		tst_brk(TBROK | TTERRNO, "Mount failed");
-
 	SAFE_STAT(MNTPOINT, &statbuf);
 
 	dfd = SAFE_OPEN(MNTPOINT, O_RDONLY);
@@ -82,9 +72,6 @@ static void cleanup(void)
 
 	if (dfd != -1)
 		SAFE_CLOSE(dfd);
-
-	if (tst_is_mounted(MNTPOINT))
-		SAFE_UMOUNT(MNTPOINT);
 }
 
 static struct tst_test test = {
@@ -92,10 +79,12 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.format_device = 1,
+	.mount_device = 1,
+	.mntpoint = MNTPOINT,
 	.filesystems = (struct tst_fs []) {
 		{
 			.type = "xfs",
+			.mount_check_support = 1,
 			.mkfs_opts = (const char *const[]){
 				"-m", "reflink=1", NULL
 			},
