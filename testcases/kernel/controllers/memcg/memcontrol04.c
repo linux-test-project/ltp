@@ -28,7 +28,7 @@
  * The closest thing to memory.low on V1 is soft_limit_in_bytes which
  * uses a different mechanism and has different semantics. So we only
  * test on V2 like the selftest. We do test on more file systems, but
- * not tempfs becaue it can't evict the page cache without swap. Also
+ * not tmpfs because it can't evict the page cache without swap. Also
  * we avoid filesystems which allocate extra memory for buffer heads.
  *
  * The tolerances have been increased from the self tests.
@@ -36,11 +36,7 @@
 
 #define _GNU_SOURCE
 
-#include <inttypes.h>
-
 #include "memcontrol_common.h"
-
-#define TMPDIR "mntdir"
 
 static struct tst_cg_group *trunk_cg[3];
 static struct tst_cg_group *leaf_cg[4];
@@ -102,7 +98,7 @@ static void alloc_anon_in_child(const struct tst_cg_group *const cg,
 
 	SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
 
-	tst_res(TINFO, "Child %d in %s: Allocating anon: %"PRIdPTR,
+	tst_res(TINFO, "Child %d in %s: Allocating anon: %zu",
 		getpid(), tst_cg_group_name(cg), size);
 	alloc_anon(size);
 
@@ -122,7 +118,7 @@ static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
 
 	SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
 
-	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %"PRIdPTR,
+	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %zu",
 		getpid(), tst_cg_group_name(cg), size);
 	alloc_pagecache(fd, size);
 
@@ -227,7 +223,7 @@ static void test_memcg_low(void)
 			TST_EXP_EXPR(low == 0,
 				"(%c low events=%ld) == 0", id, low);
 		} else if (!tst_cg_memory_recursiveprot(leaf_cg[F])) {
-			/* dont not check F when recursive_protection enabled */
+			/* do not check F when recursive_protection enabled */
 			TST_EXP_EXPR(low == 0,
 				"(%c low events=%ld) == 0", id, low);
 		}
