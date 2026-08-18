@@ -29,7 +29,7 @@
 
 static size_t page_size;
 static struct tst_cg_group *cg_child;
-static int fd;
+static int fd = -1;
 static int file_to_all_error = 10;
 
 static void alloc_anon_50M_check(void)
@@ -128,6 +128,8 @@ static void cleanup(void)
 {
 	if (cg_child)
 		cg_child = tst_cg_group_rm(cg_child);
+	if (fd != -1)
+		SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
