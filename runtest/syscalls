@@ -321,6 +321,7 @@ fchroot02 fchroot02
 fchroot03 fchroot03
 fchroot04 fchroot04
 fchroot05 fchroot05
+fchroot06 fchroot06
 
 fcntl01 fcntl01
 fcntl01_64 fcntl01_64
