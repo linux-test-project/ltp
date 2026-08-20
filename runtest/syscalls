@@ -328,6 +328,7 @@ fchroot09 fchroot09
 fchroot10 fchroot10
 fchroot11 fchroot11
 fchroot12 fchroot12
+fchroot13 fchroot13
 
 fcntl01 fcntl01
 fcntl01_64 fcntl01_64
