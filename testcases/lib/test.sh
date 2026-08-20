@@ -331,6 +331,8 @@ tst_virt_hyperv()
 {
 	local v
 
+	command -v systemd-detect-virt > /dev/null 2>&1 || return 1
+
 	v="$(systemd-detect-virt)"
 
 	[ $? -eq 0 ] || return 1
