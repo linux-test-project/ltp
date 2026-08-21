@@ -147,7 +147,11 @@ test2()
 	enforced_value=$(echo $measured_data | awk -F'[=;]' '{print $4}')
 	expected_enforced_value=$(cat $SELINUX_DIR/enforce)
 	if [ "$expected_enforced_value" != "$enforced_value" ]; then
-		tst_res $IMA_FAIL "enforce: expected: $expected_enforced_value, got: $enforced_value"
+		if ! tst_check_kconfigs "CONFIG_IMA_DISABLE_HTABLE=y"; then
+			tst_res TCONF "Duplicate \"selinux-state\" record missing (CONFIG_IMA_DISABLE_HTABLE not set)"
+		else
+			tst_res $IMA_FAIL "enforce: expected: $expected_enforced_value, got: $enforced_value"
+		fi
 		return
 	fi
 
