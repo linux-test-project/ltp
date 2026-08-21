@@ -107,7 +107,8 @@ static void setup(void)
 
 	if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
-	else
+
+	if (!timeout)
 		timeout = callibrate() / 1000;
 
 	if (tst_has_slow_kconfig())
