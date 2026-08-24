@@ -254,7 +254,14 @@ static void _test_truncate(const int exp_err)
 	tst_res(TINFO, "Test truncating file");
 
 	TST_EXP_PASS_OR_FAIL(truncate(FILE_TRUNCATE, 10), exp_err);
-	fd = TST_EXP_FD_OR_FAIL(open(FILE_TRUNCATE, O_WRONLY, PERM_MODE), exp_err);
+
+	if (!exp_err) {
+		fd = SAFE_OPEN(FILE_TRUNCATE, O_WRONLY, PERM_MODE);
+	} else {
+		fd = open(FILE_TRUNCATE, O_WRONLY, PERM_MODE);
+		if (fd == -1 && errno != EACCES)
+			 tst_res(TFAIL | TERRNO, "open(%s, O_WRONLY) failed unexpectedly", FILE_TRUNCATE);
+	}
 	if (fd != -1) {
 		TST_EXP_PASS_OR_FAIL(ftruncate(fd, 10), exp_err);
 		SAFE_CLOSE(fd);
@@ -262,7 +269,7 @@ static void _test_truncate(const int exp_err)
 
 	fd = TST_EXP_FD_OR_FAIL(open(FILE_TRUNCATE, O_WRONLY | O_TRUNC, PERM_MODE), exp_err);
 	if (fd != -1)
-		SAFE_CLOSE(TST_RET);
+		SAFE_CLOSE(fd);
 }
 
 static void tester_run_fs_rules(const int rules, const int result)
