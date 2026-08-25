@@ -62,7 +62,11 @@
 #define ADDR_DUMMY	"127.0.0.254"	/* third path to keep transport_count > 1 */
 #define ADDR_SPOOF	"127.0.0.3"	/* forged ASCONF packet source */
 
-/* Mirror of the uapi struct sctp_paddrparams */
+/*
+ * Mirror of the uapi struct sctp_paddrparams without the spp_ipv6_flowlabel
+ * and spp_dscp tail added in v4.19: older kernels require optlen == 152,
+ * while v4.19 and newer also accept the pre-v4.19 length.
+ */
 struct tst_sctp_paddrparams {
 	int32_t		spp_assoc_id;
 	struct sockaddr_storage	spp_address;
@@ -71,8 +75,6 @@ struct tst_sctp_paddrparams {
 	uint32_t	spp_pathmtu;
 	uint32_t	spp_sackdelay;
 	uint32_t	spp_flags;
-	uint32_t	spp_ipv6_flowlabel;
-	uint8_t		spp_dscp;
 } __attribute__((packed, aligned(4)));
 
 /* Mirror of the uapi struct sctp_paddrinfo */
