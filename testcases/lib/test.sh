@@ -148,6 +148,11 @@ tst_rmdir()
 	fi
 }
 
+tst_cmd_available()
+{
+	command -v $1 >/dev/null 2>&1
+}
+
 #
 # Checks if commands passed as arguments exists
 #
@@ -155,9 +160,7 @@ tst_require_cmds()
 {
 	local cmd
 	for cmd in $*; do
-		if ! command -v $cmd > /dev/null 2>&1; then
-			tst_brkm TCONF "'$cmd' not found"
-		fi
+		tst_cmd_available $cmd || tst_brkm TCONF "'$cmd' not found"
 	done
 }
 
@@ -331,7 +334,7 @@ tst_virt_hyperv()
 {
 	local v
 
-	command -v systemd-detect-virt > /dev/null 2>&1 || return 1
+	tst_cmd_available systemd-detect-virt || return 1
 
 	v="$(systemd-detect-virt)"
 
