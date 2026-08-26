@@ -146,7 +146,7 @@ get_pcr10_aggregate()
 	local num_violations=0
 	local msg="$ERRMSG_EVMCTL"
 	local res=TCONF
-	local pcr ret
+	local lineno pcr ret
 
 	if [ -z "$MISSING_EVMCTL" ]; then
 		msg=
@@ -178,10 +178,13 @@ get_pcr10_aggregate()
 		tst_res $res "failed to find aggregate PCR-10 $msg"
 		tst_res TINFO "hash file:"
 		cat hash.txt >&2
-		return
+		return $ret
 	fi
 
-	echo "$pcr"
+	lineno=$(grep -E "^($ALGORITHM )*PCR(.*10)*: succeed at entry" \
+		 hash.txt | tail -1 | awk '{print $NF}')
+	echo "$pcr $lineno"
+	return $ret
 }
 
 test1_tpm_bypass_mode()
@@ -249,7 +252,9 @@ test1()
 
 test2()
 {
-	local hash pcr_aggregate out ret
+	local hash pcr_aggregate lineno out ret
+	local measurement_count="$IMA_DIR/runtime_measurements_count"
+	local total_measurements
 
 	tst_res TINFO "verify PCR values"
 
@@ -288,7 +293,9 @@ test2()
 	tst_res TINFO "real PCR-10: '$hash'"
 
 	get_pcr10_aggregate > tmp.txt
-	pcr_aggregate="$(cat tmp.txt)"
+	ret=$?
+
+	pcr_aggregate="$(awk '{print $1}' tmp.txt)"
 	if [ -z "$pcr_aggregate" ]; then
 		return
 	fi
@@ -296,6 +303,14 @@ test2()
 
 	if [ "$hash" = "$pcr_aggregate" ]; then
 		tst_res TPASS "aggregate PCR value matches real PCR value"
+	elif [ $ret -eq 0 ]; then
+		lineno="$(awk '{print $2}' tmp.txt)"
+		if [ -z "$lineno" ]; then
+			return
+		fi
+		total_measurements=$(cat "$measurement_count")
+
+		tst_res TPASS "aggregate PCR value matched real PCR value (line: $lineno/$total_measurements)"
 	else
 		tst_res TFAIL "aggregate PCR value does not match real PCR value"
 	fi
