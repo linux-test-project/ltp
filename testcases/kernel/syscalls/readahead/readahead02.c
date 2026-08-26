@@ -47,7 +47,6 @@ static unsigned long cached_max;
 static int ovl_mounted;
 static int readahead_length  = 4096;
 static char sys_bdi_ra_path[PATH_MAX];
-static int orig_bdi_limit;
 
 static const char mntpoint[] = OVL_BASE_MNTPOINT;
 
@@ -388,6 +387,11 @@ static void setup_readahead_length(void)
 	struct stat sbuf;
 	char tmp[PATH_MAX], *backing_dev;
 	int ra_new_limit, ra_limit;
+	struct tst_path_val bdi_ra = {
+		.path = sys_bdi_ra_path,
+		.val = NULL,
+		.flags = TST_SR_TBROK
+	};
 
 	/* Find out backing device name */
 	SAFE_LSTAT(tst_device->dev, &sbuf);
@@ -399,10 +403,16 @@ static void setup_readahead_length(void)
 	backing_dev = basename(tmp);
 	sprintf(sys_bdi_ra_path, "/sys/class/block/%s/bdi/read_ahead_kb",
 		backing_dev);
-	if (access(sys_bdi_ra_path, F_OK))
-		return;
 
-	SAFE_FILE_SCANF(sys_bdi_ra_path, "%d", &orig_bdi_limit);
+	if (access(sys_bdi_ra_path, F_OK)) {
+		/* Partitions use the parent disk's BDI sysfs entry */
+		snprintf(sys_bdi_ra_path, sizeof(sys_bdi_ra_path),
+			"/sys/class/block/%s/../bdi/read_ahead_kb", backing_dev);
+		if (access(sys_bdi_ra_path, F_OK))
+			return;
+	}
+
+	tst_sys_conf_save(&bdi_ra);
 
 	/* raise bdi limit as much as kernel allows */
 	ra_new_limit = testfile_size / 1024;
@@ -446,9 +456,6 @@ static void cleanup(void)
 {
 	if (ovl_mounted)
 		SAFE_UMOUNT(OVL_MNT);
-
-	if (orig_bdi_limit)
-		SAFE_FILE_PRINTF(sys_bdi_ra_path, "%d", orig_bdi_limit);
 }
 
 static struct tst_test test = {
