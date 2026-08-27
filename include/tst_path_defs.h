@@ -92,6 +92,9 @@
 #define MEMINFO_HPAGE_SURP	"HugePages_Surp:"
 #define MEMINFO_HPAGE_SIZE	"Hugepagesize:"
 
+/* SYSFS DEVICES */
+#define PATH_SYS_CLOCKSOURCE			"/sys/devices/system/clocksource"
+
 /* SYSFS */
 #define PATH_SYS_KERNEL				"/sys/kernel"
 #define PATH_SYS_POWER				"/sys/power"
