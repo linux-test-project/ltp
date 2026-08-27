@@ -36,6 +36,7 @@ SUBDIRS			+= connectors \
 			   sched \
 			   security \
 			   sound \
+			   sysfs \
 			   thermal \
 			   tracing \
 			   uevents \
