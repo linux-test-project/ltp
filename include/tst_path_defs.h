@@ -93,6 +93,7 @@
 #define MEMINFO_HPAGE_SIZE	"Hugepagesize:"
 
 /* SYSFS DEVICES */
+#define PATH_SYS_CLOCKEVENTS			"/sys/devices/system/clockevents"
 #define PATH_SYS_CLOCKSOURCE			"/sys/devices/system/clocksource"
 #define PATH_SYS_CPU				"/sys/devices/system/cpu"
 #define PATH_SYS_CPU_SMT			"/sys/devices/system/cpu/smt"
