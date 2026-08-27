@@ -61,6 +61,26 @@ int tst_netdev_remove_address_inet(const char *file, const int lineno,
 #define NETDEV_REMOVE_ADDRESS_INET(ifname, address) \
 	tst_netdev_remove_address_inet(__FILE__, __LINE__, 1, (ifname), \
 		(address))
+/*
+ * Change the link-layer (MAC) address of an existing network device. Most
+ * drivers require the device to be administratively down for this to
+ * succeed.
+ */
+int tst_netdev_set_hwaddr(const char *file, const int lineno, int strict,
+	const char *ifname, const void *addr, size_t addrlen);
+#define NETDEV_SET_HWADDR(ifname, addr, addrlen) \
+	tst_netdev_set_hwaddr(__FILE__, __LINE__, 1, (ifname), (addr), \
+		(addrlen))
+
+/*
+ * Enslave ifname to the master_ifname device, e.g. add it as a bridge or bond
+ * port. Pass NULL as master_ifname to release the device from its current
+ * master.
+ */
+int tst_netdev_set_master(const char *file, const int lineno, int strict,
+	const char *ifname, const char *master_ifname);
+#define NETDEV_SET_MASTER(ifname, master_ifname) \
+	tst_netdev_set_master(__FILE__, __LINE__, 1, (ifname), (master_ifname))
 
 int tst_netdev_change_ns_fd(const char *file, const int lineno, int strict,
 	const char *ifname, int nsfd);

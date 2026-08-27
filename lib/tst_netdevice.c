@@ -287,6 +287,96 @@ static int modify_address(const char *file, const int lineno, int strict,
 	return ret;
 }
 
+int tst_netdev_set_hwaddr(const char *file, const int lineno, int strict,
+	const char *ifname, const void *addr, size_t addrlen)
+{
+	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
+	struct tst_netlink_context *ctx;
+	int ret;
+
+	if (strlen(ifname) >= IFNAMSIZ) {
+		tst_brk_(file, lineno, TBROK,
+			"Network device name \"%s\" too long", ifname);
+		return 0;
+	}
+
+	ctx = create_request(file, lineno, RTM_NEWLINK, 0, &info, sizeof(info));
+
+	if (!ctx)
+		return 0;
+
+	if (!tst_rtnl_add_attr_string(file, lineno, ctx, IFLA_IFNAME, ifname)) {
+		tst_netlink_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	if (!tst_rtnl_add_attr(file, lineno, ctx, IFLA_ADDRESS, addr, addrlen)) {
+		tst_netlink_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
+
+	if (strict && !ret) {
+		tst_brk_(file, lineno, TBROK,
+			"Failed to set hwaddr for %s: %s", ifname,
+			tst_strerrno(tst_netlink_errno));
+	}
+
+	return ret;
+}
+
+int tst_netdev_set_master(const char *file, const int lineno, int strict,
+	const char *ifname, const char *master_ifname)
+{
+	struct ifinfomsg info = { .ifi_family = AF_UNSPEC };
+	struct tst_netlink_context *ctx;
+	int32_t master_index = 0;
+	int ret;
+
+	if (strlen(ifname) >= IFNAMSIZ) {
+		tst_brk_(file, lineno, TBROK,
+			"Network device name \"%s\" too long", ifname);
+		return 0;
+	}
+
+	if (master_ifname) {
+		master_index = tst_netdev_index_by_name(file, lineno,
+			master_ifname);
+
+		if (master_index < 0)
+			return 0;
+	}
+
+	ctx = create_request(file, lineno, RTM_NEWLINK, 0, &info, sizeof(info));
+
+	if (!ctx)
+		return 0;
+
+	if (!tst_rtnl_add_attr_string(file, lineno, ctx, IFLA_IFNAME, ifname)) {
+		tst_netlink_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	if (!tst_rtnl_add_attr(file, lineno, ctx, IFLA_MASTER, &master_index,
+		sizeof(master_index))) {
+		tst_netlink_destroy_context(file, lineno, ctx);
+		return 0;
+	}
+
+	ret = tst_netlink_send_validate(file, lineno, ctx);
+	tst_netlink_destroy_context(file, lineno, ctx);
+
+	if (strict && !ret) {
+		tst_brk_(file, lineno, TBROK,
+			"Failed to set master for %s: %s", ifname,
+			tst_strerrno(tst_netlink_errno));
+	}
+
+	return ret;
+}
+
 int tst_netdev_add_address(const char *file, const int lineno, int strict,
 	const char *ifname, unsigned int family, const void *address,
 	unsigned int prefix, size_t addrlen, unsigned int flags)
