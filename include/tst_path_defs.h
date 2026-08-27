@@ -92,6 +92,9 @@
 #define MEMINFO_HPAGE_SURP	"HugePages_Surp:"
 #define MEMINFO_HPAGE_SIZE	"Hugepagesize:"
 
+/* SYS_BLOCK */
+#define PATH_SYS_BLOCK				"/sys/block"
+
 /* SYSFS CLASS */
 #define PATH_CLASS_ATA_DEVICE			"/sys/class/ata_device"
 #define PATH_CLASS_BDI				"/sys/class/bdi"
