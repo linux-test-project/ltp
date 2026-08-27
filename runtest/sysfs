@@ -24,3 +24,4 @@ sys_block_queue01 sys_block_queue01
 sys_block_size01 sys_block_size01
 sys_hugepages01 sys_hugepages01
 sys_hugepages02 sys_hugepages02
+sys_ksm01 sys_ksm01
