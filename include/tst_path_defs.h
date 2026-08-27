@@ -95,6 +95,7 @@
 /* SYSFS DEVICES */
 #define PATH_SYS_CLOCKSOURCE			"/sys/devices/system/clocksource"
 #define PATH_SYS_CPU				"/sys/devices/system/cpu"
+#define PATH_SYS_CPU_VULN			"/sys/devices/system/cpu/vulnerabilities"
 #define PATH_SYS_NODE				"/sys/devices/system/node"
 
 /* SYSFS */
