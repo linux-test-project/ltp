@@ -92,6 +92,9 @@
 #define MEMINFO_HPAGE_SURP	"HugePages_Surp:"
 #define MEMINFO_HPAGE_SIZE	"Hugepagesize:"
 
+/* SYSFS CLASS */
+#define PATH_CLASS_ATA_DEVICE			"/sys/class/ata_device"
+
 /* SYSFS DEVICES */
 #define PATH_SYS_CLOCKEVENTS			"/sys/devices/system/clockevents"
 #define PATH_SYS_CLOCKSOURCE			"/sys/devices/system/clocksource"
