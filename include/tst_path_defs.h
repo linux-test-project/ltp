@@ -93,6 +93,7 @@
 #define MEMINFO_HPAGE_SIZE	"Hugepagesize:"
 
 /* SYSFS */
+#define PATH_SYS_KERNEL				"/sys/kernel"
 #define PATH_SYS_POWER				"/sys/power"
 
 #endif /* TST_PATH_DEFS__ */
