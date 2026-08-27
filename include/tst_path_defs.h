@@ -95,6 +95,7 @@
 /* SYSFS CLASS */
 #define PATH_CLASS_ATA_DEVICE			"/sys/class/ata_device"
 #define PATH_CLASS_BDI				"/sys/class/bdi"
+#define PATH_CLASS_HWMON			"/sys/class/hwmon"
 
 /* SYSFS DEVICES */
 #define PATH_SYS_CLOCKEVENTS			"/sys/devices/system/clockevents"
