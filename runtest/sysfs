@@ -14,3 +14,4 @@ sys_hwmon01 sys_hwmon01
 sys_leds01 sys_leds01
 sys_wakeup01 sys_wakeup01
 sys_rtc01 sys_rtc01
+sys_thermal01 sys_thermal01
