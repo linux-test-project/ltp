@@ -13,3 +13,4 @@ sys_bdi01 sys_bdi01
 sys_hwmon01 sys_hwmon01
 sys_leds01 sys_leds01
 sys_wakeup01 sys_wakeup01
+sys_rtc01 sys_rtc01

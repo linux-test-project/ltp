@@ -97,6 +97,7 @@
 #define PATH_CLASS_BDI				"/sys/class/bdi"
 #define PATH_CLASS_HWMON			"/sys/class/hwmon"
 #define PATH_CLASS_LEDS			"/sys/class/leds"
+#define PATH_CLASS_RTC				"/sys/class/rtc"
 #define PATH_CLASS_WAKEUP			"/sys/class/wakeup"
 
 /* SYSFS DEVICES */
