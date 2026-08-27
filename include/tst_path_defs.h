@@ -94,6 +94,7 @@
 
 /* SYSFS DEVICES */
 #define PATH_SYS_CLOCKSOURCE			"/sys/devices/system/clocksource"
+#define PATH_SYS_NODE				"/sys/devices/system/node"
 
 /* SYSFS */
 #define PATH_SYS_KERNEL				"/sys/kernel"
