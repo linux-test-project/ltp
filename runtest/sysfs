@@ -11,3 +11,4 @@ sys_clockevents01 sys_clockevents01
 sys_ata01 sys_ata01
 sys_bdi01 sys_bdi01
 sys_hwmon01 sys_hwmon01
+sys_leds01 sys_leds01
