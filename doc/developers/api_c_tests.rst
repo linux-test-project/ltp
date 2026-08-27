@@ -98,6 +98,11 @@ Swap
 ----
 .. kernel-doc:: ../../include/tse_swap.h
 
+Sysfs
+-----
+
+.. kernel-doc:: ../../include/tst_sysfs_assert.h
+
 Temporary directory
 -------------------
 .. kernel-doc:: ../../include/tst_tmpdir.h
