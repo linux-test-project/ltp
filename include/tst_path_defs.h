@@ -92,6 +92,9 @@
 #define MEMINFO_HPAGE_SURP	"HugePages_Surp:"
 #define MEMINFO_HPAGE_SIZE	"Hugepagesize:"
 
+/* SWAP */
+#define PATH_MM_SWAP				"/sys/kernel/mm/swap"
+
 /* SYS_BLOCK */
 #define PATH_SYS_BLOCK				"/sys/block"
 
