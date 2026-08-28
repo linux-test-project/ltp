@@ -94,8 +94,16 @@ static void setup(void)
 		int tmp;
 
 		snprintf(path, sizeof(path), "/sys/devices/system/cpu/cpu%d/online", i);
-		SAFE_FILE_SCANF(path, "%d", &tmp);
-		online[i] = (bool)tmp;
+		if (access(path, F_OK) == 0) {
+			SAFE_FILE_SCANF(path, "%d", &tmp);
+			online[i] = (bool)tmp;
+		} else {
+			/*
+			 * If the 'online' file is missing, the CPU is not
+			 * hotpluggable and is permanently online.
+			 */
+			online[i] = true;
+		}
 	}
 
 	SAFE_FILE_PRINTF("/sys/devices/system/cpu/intel_pstate/status", "active");
