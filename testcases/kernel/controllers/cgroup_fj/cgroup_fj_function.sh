@@ -231,7 +231,10 @@ cleanup()
         wait $pid >/dev/null 2>&1
     fi
 
-    rmdir "$start_path/ltp_1" >/dev/null 2>&1
+    if [ -n "$start_path" ] && [ -d "$start_path/ltp_1" ]; then
+        rmdir "$start_path/ltp_1"
+    fi
+
     common_cleanup
 }
 

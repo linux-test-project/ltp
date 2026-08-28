@@ -79,9 +79,10 @@ common_cleanup()
 {
     killall -9 cgroup_fj_proc >/dev/null 2>&1
 
-    tst_res TINFO "Removing all ltp subgroups..."
-
-    [ -d "$start_path" ] && find "$start_path" -depth -type d -exec rmdir '{}' \;
+    if [ -n "$start_path" ] && [ -d "$start_path" ]; then
+        tst_res TINFO "Removing all ltp subgroups"
+        find "$start_path" -depth -type d -exec rmdir '{}' \;
+    fi
 
     cgroup_cleanup
 
