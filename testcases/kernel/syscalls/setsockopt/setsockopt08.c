@@ -68,7 +68,7 @@
  *
  * That is, the padding gets inserted unconditionally during the transformation,
  * independent of the actual values of ->u.user.match_size or
- * ->u.user.target_size and the result ends up getting layed out with proper
+ * ->u.user.target_size and the result ends up getting laid out with proper
  * alignment only if said values match the expectations.
  *
  * That's not a problem in itself, but this unconditional insertion of padding
@@ -92,7 +92,7 @@
 
 static void *buffer;
 
-void setup(void)
+static void setup(void)
 {
 	if (!tst_is_compat_mode())
 		tst_res(TINFO, "The vulnerability was only present in 32-bit compat mode");
@@ -100,7 +100,7 @@ void setup(void)
 	tst_setup_netns();
 }
 
-void run(void)
+static void run(void)
 {
 	const char *const res_fmt_str =
 		"setsockopt(%d, IPPROTO_IP, IPT_SO_SET_REPLACE, %p, 1)";
@@ -111,7 +111,7 @@ void run(void)
 	const size_t tgt_size = 32;
 	const size_t match_size = 1024 - 64 - 112 - 4 - tgt_size - 4;
 	struct xt_entry_target *xt_entry_tgt =
-		((struct xt_entry_target *) (&ipt_entry->elems[0] + match_size));
+		((struct xt_entry_target *)(&ipt_entry->elems[0] + match_size));
 	int fd = SAFE_SOCKET(AF_INET, SOCK_DGRAM, 0);
 	int result;
 
