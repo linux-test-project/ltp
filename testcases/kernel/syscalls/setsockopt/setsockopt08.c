@@ -82,6 +82,13 @@
  *  * the kernel will insert four bytes of padding
  *    after the match and target entries each.
  *  * sizeof(struct xt_entry_target) = 32
+ *
+ * Since kernel commit ec1806a730a1 ("netfilter: x_tables: disable
+ * 32bit compat interface in user namespaces") in v7.2, the compat
+ * xtables ABI is rejected with EPERM inside a non-init user namespace.
+ * As this test runs isolated via tst_setup_netns(), it can no longer
+ * reach the vulnerable code path on such kernels and reports TCONF
+ * instead.
  */
 
 #include <netinet/in.h>
@@ -135,6 +142,11 @@ static void run(void)
 	if (TST_RET == -1 && TST_ERR == ENOPROTOOPT)
 		tst_brk(TCONF | TTERRNO, res_fmt_str, fd, buffer);
 
+	if (TST_RET == -1 && TST_ERR == EPERM && tst_is_compat_mode()) {
+		tst_res(TINFO, "32bit compat xtables interface is disabled in user namespaces since commit ec1806a730a1");
+		tst_brk(TCONF | TTERRNO, res_fmt_str, fd, buffer);
+	}
+
 	result = (TST_RET == -1 && TST_ERR == EINVAL) ? TPASS : TFAIL;
 	tst_res(result | TTERRNO, res_fmt_str, fd, buffer);
 
@@ -163,6 +175,7 @@ static struct tst_test test = {
 	},
 	.tags = (const struct tst_tag[]) {
 		{"linux-git", "b29c457a6511435960115c0f548c4360d5f4801d"},
+		{"linux-git", "ec1806a730a1c0b3d68a7f9afe81514fb0dd7991"},
 		{"CVE", "2021-22555"},
 		{}
 	}
