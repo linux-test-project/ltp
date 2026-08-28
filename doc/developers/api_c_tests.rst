@@ -7,6 +7,10 @@
 LTP C API
 =========
 
+Assertion
+---------
+.. kernel-doc:: ../../include/tst_assert.h
+
 Capabilities
 ------------
 .. kernel-doc:: ../../include/tst_capability.h
