@@ -19,10 +19,9 @@
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
-	timer_t tid;
 	struct itimerspec its;
-	int tval = BOGUSTID;
-	tid = (timer_t) & tval;
+	timer_t tid = (timer_t)BOGUSTID;
+
 	if (timer_gettime(tid, &its) == -1) {
 		if (EINVAL == errno) {
 			printf("fcn returned -1 and errno==EINVAL\n");

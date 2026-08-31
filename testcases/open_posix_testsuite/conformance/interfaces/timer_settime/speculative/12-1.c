@@ -18,10 +18,8 @@
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
-	timer_t tid;
 	struct itimerspec its;
-	int tval = BOGUSTID;
-	tid = (timer_t) & tval;
+	timer_t tid = (timer_t)BOGUSTID;
 	its.it_interval.tv_sec = 0;
 	its.it_interval.tv_nsec = 0;
 	its.it_value.tv_sec = 0;

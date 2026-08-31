@@ -19,9 +19,7 @@
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
-	timer_t tid;
-	int tval = BOGUSTIMERID;
-	tid = (timer_t) & tval;
+	timer_t tid = (timer_t)BOGUSTIMERID;
 
 	if (timer_delete(tid) == -1) {
 		if (errno == EINVAL) {
