@@ -155,7 +155,9 @@ AC_CHECK_FUNCS_ONCE([ \
     rand_r \
     recvmmsg \
     renameat2 \
+    sched_getattr \
     sched_getcpu \
+    sched_setattr \
     sendmmsg \
     sethostid \
     setns \
@@ -199,6 +201,7 @@ AC_CHECK_DECLS([TCA_PEDIT_PARMS_EX, TCA_PEDIT_KEYS_EX, TCA_PEDIT_KEY_EX,
 AC_CHECK_TYPES([struct acct_v3],,,[#include <sys/acct.h>])
 AC_CHECK_TYPES([struct af_alg_iv, struct sockaddr_alg],,,[# include <linux/if_alg.h>])
 AC_CHECK_TYPES([struct clone_args],,,[#include <sched.h>])
+AC_CHECK_TYPES([struct sched_attr],,,[#include <sched.h>])
 AC_CHECK_TYPES([struct fanotify_event_info_fid, struct fanotify_event_info_error,
 		struct fanotify_event_info_header, struct fanotify_event_info_pidfd,
 		struct fanotify_event_info_range],,,[#include <sys/fanotify.h>])

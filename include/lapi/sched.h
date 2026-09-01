@@ -14,8 +14,8 @@
 #include "config.h"
 #include "lapi/syscalls.h"
 
-/* sched_attr is not defined in glibc < 2.41 */
 #ifndef SCHED_ATTR_SIZE_VER0
+# ifndef HAVE_STRUCT_SCHED_ATTR
 struct sched_attr {
 	uint32_t size;
 
@@ -33,20 +33,24 @@ struct sched_attr {
 	uint64_t sched_deadline;
 	uint64_t sched_period;
 };
+# endif
+# define SCHED_ATTR_SIZE_VER0 48	/* sizeof first published struct */
+#endif
 
-static inline int sched_setattr(pid_t pid, const struct sched_attr *attr,
-                                unsigned int flags)
+#ifndef HAVE_SCHED_SETATTR
+static inline int sched_setattr(pid_t pid, struct sched_attr *attr,
+				unsigned int flags)
 {
 	return syscall(__NR_sched_setattr, pid, attr, flags);
 }
+#endif
 
+#ifndef HAVE_SCHED_GETATTR
 static inline int sched_getattr(pid_t pid, struct sched_attr *attr,
-                                unsigned int size, unsigned int flags)
+				unsigned int size, unsigned int flags)
 {
 	return syscall(__NR_sched_getattr, pid, attr, size, flags);
 }
-
-# define SCHED_ATTR_SIZE_VER0 48	/* sizeof first published struct */
 #endif
 
 struct clone_args_minimal {
