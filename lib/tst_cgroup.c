@@ -180,6 +180,7 @@ static const struct cgroup_file memory_ctrl_files[] = {
 	{ "memory.events", NULL, CTRL_MEMORY },
 	{ "memory.low", NULL, CTRL_MEMORY },
 	{ "memory.min", NULL, CTRL_MEMORY },
+	{ "memory.high", "memory.soft_limit_in_bytes", CTRL_MEMORY },
 	{ "memory.max", "memory.limit_in_bytes", CTRL_MEMORY },
 	{ "memory.stat", "memory.stat", CTRL_MEMORY },
 	{ "memory.swappiness", "memory.swappiness", CTRL_MEMORY },

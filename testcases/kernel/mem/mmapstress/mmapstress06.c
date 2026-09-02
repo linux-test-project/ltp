@@ -37,10 +37,13 @@ static void run_test(void)
 	/* Set memory limit to force swapping of the mapping */
 	SAFE_CG_PRINTF(cg_child, "memory.max", "%lu", (unsigned long)mem_limit);
 
-	if (TST_CG_VER_IS_V1(cg_child, "memory"))
+	if (TST_CG_VER_IS_V1(cg_child, "memory")) {
 		SAFE_CG_PRINT(cg_child, "memory.swap.max", "-1");
-	else
+	} else {
 		SAFE_CG_PRINT(cg_child, "memory.swap.max", "max");
+		SAFE_CG_PRINTF(cg_child, "memory.high", "%lu",
+			       (unsigned long)(mem_limit - mem_limit / 8));
+	}
 
 	child_pid = SAFE_FORK();
 	if (!child_pid) {
