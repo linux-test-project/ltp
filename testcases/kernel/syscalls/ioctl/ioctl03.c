@@ -44,6 +44,10 @@
 #define IFF_NO_CARRIER	0x0040
 #endif
 
+#ifndef IFF_BACKPRESSURE
+#define IFF_BACKPRESSURE	0x0080
+#endif
+
 static struct {
 	unsigned int flag;
 	const char *name;
@@ -56,7 +60,8 @@ static struct {
 	{IFF_MULTI_QUEUE, "MULTI_QUEUE"},
 	{IFF_NAPI, "IFF_NAPI"},
 	{IFF_NAPI_FRAGS, "IFF_NAPI_FRAGS"},
-	{IFF_NO_CARRIER, "IFF_NO_CARRIER"}
+	{IFF_NO_CARRIER, "IFF_NO_CARRIER"},
+	{IFF_BACKPRESSURE, "IFF_BACKPRESSURE"}
 };
 
 static void verify_features(void)
