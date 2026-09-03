@@ -5,10 +5,11 @@
  */
 
 /*\
- * This test case checks whether swapon(2) system call returns:
+ * This test case checks whether :manpage:`swapon(2)` system call returns:
  *
  * - ENOENT when the path does not exist
  * - EINVAL when the path exists but is invalid
+ * - EINVAL when swapflags contains invalid or undefined flag bits
  * - EPERM when user is not a superuser
  * - EBUSY when the specified path is already being used as a swap area
  */
@@ -20,10 +21,10 @@
 #include "tse_swap.h"
 
 #define MNTPOINT	"mntpoint"
-#define TEST_FILE	MNTPOINT"/testswap"
-#define NOTSWAP_FILE	MNTPOINT"/notswap"
-#define SWAP_FILE	MNTPOINT"/swapfile"
-#define USED_FILE	MNTPOINT"/alreadyused"
+#define TEST_FILE	MNTPOINT "/testswap"
+#define NOTSWAP_FILE	MNTPOINT "/notswap"
+#define SWAP_FILE	MNTPOINT "/swapfile"
+#define USED_FILE	MNTPOINT "/alreadyused"
 
 static uid_t nobody_uid;
 static int do_swapoff;
@@ -32,11 +33,40 @@ static struct tcase {
 	char *err_desc;
 	int exp_errno;
 	char *path;
+	int flags;
 } tcases[] = {
-	{"Path does not exist", ENOENT, "./doesnotexist"},
-	{"Invalid path", EINVAL, NOTSWAP_FILE},
-	{"Permission denied", EPERM, SWAP_FILE},
-	{"File already used", EBUSY, USED_FILE},
+	{
+		.err_desc = "Path does not exist",
+		.exp_errno = ENOENT,
+		.path = "./doesnotexist",
+	},
+	{
+		.err_desc = "Invalid path",
+		.exp_errno = EINVAL,
+		.path = NOTSWAP_FILE,
+	},
+	{
+		.err_desc = "Permission denied",
+		.exp_errno = EPERM,
+		.path = SWAP_FILE,
+	},
+	{
+		.err_desc = "File already used",
+		.exp_errno = EBUSY,
+		.path = USED_FILE,
+	},
+	{
+		.err_desc = "Invalid swapflags (undefined flag bits)",
+		.exp_errno = EINVAL,
+		.path = SWAP_FILE,
+		.flags = 0x80000,
+	},
+	{
+		.err_desc = "Invalid swapflags (high bits set)",
+		.exp_errno = EINVAL,
+		.path = SWAP_FILE,
+		.flags = ~0,
+	},
 };
 
 static void setup(void)
@@ -66,20 +96,19 @@ static void cleanup(void)
 
 static void verify_swapon(unsigned int i)
 {
-	struct tcase *tc = tcases + i;
+	struct tcase *tc = &tcases[i];
+
 	if (tc->exp_errno == EPERM)
 		SAFE_SETEUID(nobody_uid);
 
-	TST_EXP_FAIL(tst_syscall(__NR_swapon, tc->path, 0), tc->exp_errno,
+	TST_EXP_FAIL(tst_syscall(__NR_swapon, tc->path, tc->flags), tc->exp_errno,
 		     "swapon(2) fail with %s", tc->err_desc);
 
 	if (tc->exp_errno == EPERM)
 		SAFE_SETEUID(0);
 
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "swapon(2) failed unexpectedly, expected: %s",
-			tst_strerrno(tc->exp_errno));
-	}
+	if (TST_RET == 0 && tst_syscall(__NR_swapoff, tc->path) != 0)
+		tst_res(TWARN | TERRNO, "swapoff(%s) failed", tc->path);
 }
 
 static struct tst_test test = {
