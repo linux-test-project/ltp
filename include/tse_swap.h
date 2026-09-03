@@ -14,6 +14,22 @@
 #ifndef TSE_SWAP_H__
 #define TSE_SWAP_H__
 
+#ifndef SWAP_FLAG_PREFER
+# define SWAP_FLAG_PREFER	0x8000
+#endif
+#ifndef SWAP_FLAG_PRIO_MASK
+# define SWAP_FLAG_PRIO_MASK	0x7fff
+#endif
+#ifndef SWAP_FLAG_DISCARD
+# define SWAP_FLAG_DISCARD	0x10000
+#endif
+#ifndef SWAP_FLAG_DISCARD_ONCE
+# define SWAP_FLAG_DISCARD_ONCE	0x20000
+#endif
+#ifndef SWAP_FLAG_DISCARD_PAGES
+# define SWAP_FLAG_DISCARD_PAGES 0x40000
+#endif
+
 enum swapfile_method {
     SWAPFILE_BY_SIZE,
     SWAPFILE_BY_BLKS
