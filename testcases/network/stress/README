@@ -88,7 +88,6 @@ environment variables:
   NS_TIMES		(for the repetition test)
   CONNECTION_TOTAL	(for creating a large number of connection test)
   IP_TOTAL		(for adding large number of IP address test)
-  IP_TOTAL_FOR_TCPIP	(for multi IP address/alias test in icmp/udp/tcp)
   ROUTE_TOTAL		(for adding large number of route test)
   MTU_CHANGE_TIMES	(for changing mtu test)
   IF_UPDOWN_TIMES	(for interface up/down test)
@@ -159,11 +158,6 @@ Optional environment variables
  o IP_TOTAL		(for adding large number of IP address test)
    The total number of IP address to add an interface.
    This value affect interface tests to add large number of IP address.
-
- o IP_TOTAL_FOR_TCPIP	(for multi IP address/alias test in icmp/udp/tcp)
-   The total number of IP address to add an interface for TCP/IP testcases.
-   This value affects udp/tcp multi-connection to the different IP
-   address/alias testcases.
 
  o ROUTE_TOTAL		(for adding large number of route test)
    The total number of route to add an interface.
