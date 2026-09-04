@@ -1,52 +1,7 @@
-
-NOTE:
-
-Physical Topology
-=================
-
-These tests require two machines. And each machine needs to have 2 or more
-interfaces. These tests assume that they run on the following topology.
-
-                              Control Link
-                +------------------------------------+
-                |                                    |
-        +-------+-------+                    +-------+-------+
-        |               +---- Test Link 0 ---+               |
-        |  Local Host   +          :         +  Remote Host  |
-        |               +---- Test Link n ---+               |
-        +---------------+                    +---------------+
-
-Control Link is used by the local host to control the remote host.
-`control' means, for example, changing the setting of the interfaces that are
-connected to the test links. The setting of the interfaces connected to the
-control link is never changed.
-
-Test Links are the place where the stress tests run. For example, test packets
-flow those links. The number of test links must be at least 1. The setting of
-the interfaces connected to the test links would be changed by the tests.
-Therefore, each test link should not belong to any external network. It is
-recommended to connect each pair of interfaces with the ether cross cables.
-
-Currently, different NIC testcases for ICMP/UDP/TCP/Multicast require plural
-test links.  Other testcases uses only 1 test link. (Test Link 0)
-
-
-
-Installation
-============
-
-Like the other network tests, the remote host must have the LTP installed
-in the same exact location as the local host have. Please refer the `Detailed
-Installation 5.' section in INSTALL.
-
-
-
 Execution
 =========
 
-To run the network stress testcases, use network.sh script, located in
-testscripts directory. For documentation about using network.sh see INSTALL
-and testcases/network/README.md
+To run the network stress testcases see testcases/network/README.md.
 
 The behaviour of network stress tests is configurable with environment
 variables (See `Environment Variable' section).
@@ -71,11 +26,13 @@ specify the environment variable (See `Environment Variable' section).
 Environment Variable
 ====================
 
+For general shell network test variables see testcases/network/README.md.
+All variables have meaningful defaults values.
+
 The nestwork stress testcases require the following environment variables:
 
-  RHOST
-  LHOST_HWADDRS
-  RHOST_HWADDRS
+  LHOST_HWADDRS     (for broken IP stress test)
+  RHOST_HWADDRS     (for broken IP stress test)
   HTTP_DOWNLOAD_DIR	(for http stress test)
   FTP_DOWNLOAD_DIR	(for ftp stress test)
   FTP_UPLOAD_DIR	(for ftp stress test)
@@ -102,9 +59,6 @@ In these value, NS_DURATION is important if you'd like to reduce the test time.
 
 Required environment variables
 ------------------------------
-
- o RHOST
-   The host name of the remote host to access it via the control link.
 
  o LHOST_HWADDRS
    The blank-separated hardware address list of the interfaces which are
