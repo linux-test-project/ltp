@@ -48,10 +48,6 @@ To run the network stress testcases, use network.sh script, located in
 testscripts directory. For documentation about using network.sh see INSTALL
 and testcases/network/README.md
 
-Some stress tests originally designed to be tested with rsh for accessing
-remote host are now using ssh using the current user. Old behavior (using rsh
-can be achieved with setting LTP_RSH variable).
-
 The behaviour of network stress tests is configurable with environment
 variables (See `Environment Variable' section).
 
@@ -88,7 +84,6 @@ The nestwork stress testcases require the following environment variables:
 You are able to configure the behavior of the testcases with the following
 environment variables:
 
-  LTP_RSH
   NS_DURATION		(for the continual test)
   NS_TIMES		(for the repetition test)
   CONNECTION_TOTAL	(for creating a large number of connection test)
@@ -143,11 +138,6 @@ Required environment variables
 
 Optional environment variables
 ------------------------------
-
- o LTP_RSH
-   The name of the remote shell command, namely ssh (the default) or rsh.
-   In ether case, the remote host must accept the login from the local host
-   without password.
 
  o NS_DURATION (for the continual test)
    The duration of the continual test. The time unit is `second'.

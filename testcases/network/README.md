@@ -18,10 +18,6 @@ SSH server needs to be configured to allow root login and use Public Key
 Authentication (`PermitRootLogin yes` and `PubkeyAuthentication yes` in
 `/etc/ssh/sshd_config`).
 
-Some of the network stress tests which hasn't been ported to network API were
-designed to be tested with `rsh` via `LTP_RSH` environment variable. Now it's
-by default used `ssh`, for details see `testcases/network/stress/README`.
-
 ## Server Services Configuration
 Tests have various external dependencies, exit with `TCONF` when not installed.
 Some tests require additional setup.
