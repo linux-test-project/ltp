@@ -1,11 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Copyright (c) 2009-2016 Cyril Hrubis chrubis@suse.cz
- * Copyright (c) Linux Test Project, 2020-2025
+ * Copyright (c) Linux Test Project, 2020-2026
  */
 
 #ifndef TST_KVERCMP_H__
 #define TST_KVERCMP_H__
+
+/**
+ * TST_MIN_KVER - Minimal kernel version supported by LTP.
+ */
+#define TST_MIN_KVER "4.4"
 
 /**
  * tst_kvcmp() - Compare given kernel version with kernel in string.

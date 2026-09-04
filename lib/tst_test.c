@@ -1087,6 +1087,21 @@ static bool check_kver(const char *min_kver, const int brk_nosupp)
 	return true;
 }
 
+static void check_supported_kver(void)
+{
+	int v1, v2, v3;
+
+	if (tst_parse_kver(TST_MIN_KVER, &v1, &v2, &v3)) {
+		tst_res(TWARN,
+			"Invalid minimal kernel version %s, expected %%d.%%d.%%d",
+			TST_MIN_KVER);
+		return;
+	}
+
+	if (tst_kvercmp(v1, v2, v3) < 0)
+		tst_res(TWARN, "Kernel is older than minimal supported %s", TST_MIN_KVER);
+}
+
 /*
  * Checks if the struct results values are equal.
  *
@@ -1454,6 +1469,8 @@ static void do_setup(int argc, char *argv[])
 
 	if (context->tdebug)
 		tst_res(TINFO, "Enabling debug info (level %d)", context->tdebug);
+
+	check_supported_kver();
 
 	if (tst_test->needs_kconfigs && tst_kconfig_check(tst_test->needs_kconfigs))
 		tst_brk(TCONF, "Aborting due to unsuitable kernel config, see above!");

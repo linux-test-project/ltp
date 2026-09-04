@@ -14,7 +14,7 @@ branch is build tested in
 Kernel version
 --------------
 
-Minimal supported kernel version is **4.4**.
+Minimal supported kernel version is |min_kernel_version|.
 
 Oldest build tested distributions
 ---------------------------------
