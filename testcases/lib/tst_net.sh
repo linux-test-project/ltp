@@ -690,7 +690,7 @@ tst_del_ipaddr()
 }
 
 # tst_restore_ipaddr [TYPE] [LINK]
-# Restore default ip addresses defined in network.sh
+# Restore the default ip addresses.
 # TYPE: { lhost | rhost }; Default value is 'lhost'.
 # LINK: link number starting from 0. Default value is '0'.
 tst_restore_ipaddr()
