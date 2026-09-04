@@ -54,14 +54,16 @@ export LTPROOT="/opt/ltp"; export PATH="$LTPROOT/testcases/bin:$PATH"
 ```
 
 ## Running the tests
-The network tests are executed by running the network.sh script:
+
+To run the network testcases, use the official LTP executor kirk:
+https://github.com/linux-test-project/kirk.
+
+To pass environment variables use `--env` with list of key=value separated by `:`
 
 ```sh
-TEST_VARS ./network.sh OPTIONS
+kirk --run-suite net.features \
+     --env 'VIRT_PERF_THRESHOLD=180:LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1'
 ```
-Where
-* `TEST_VARS` - non-default network parameters
-* `OPTIONS` - test group(s), use `-h` to see available ones.
 
 Default values for all LTP network parameters are set in `testcases/lib/tst_net.sh`.
 Network stress parameters are documented in `testcases/network/stress/README`.
