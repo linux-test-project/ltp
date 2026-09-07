@@ -202,7 +202,74 @@ send_results() {
         done
 }
 
+apply_series() {
+        if [ $# -ne 1 ]; then
+                echo "'apply' command expects 1 parameter ($#)" >&2
+                exit 1
+        fi
+
+        local series_id="$1"
+        local stdout
+        local patch_ids
+
+        stdout="$(curl -f -k -s --retry 3 "$PATCHWORK_URL/api/1.2/series/$series_id/")"
+        if [ $? -ne 0 ] || [ -z "$stdout" ]; then
+                echo "Failed to fetch series $series_id from $PATCHWORK_URL" >&2
+                exit 1
+        fi
+
+        patch_ids="$(echo "$stdout" | jq -r '.patches[].id')"
+        if [ -z "$patch_ids" ]; then
+                echo "No patches found for series $series_id" >&2
+                exit 1
+        fi
+
+        local tmp_dir
+        tmp_dir="$(mktemp -d)"
+        trap 'rm -rf "$tmp_dir"' EXIT
+
+        local count=0
+        for patch_id in $patch_ids; do
+                local patch_json
+                patch_json="$(curl -f -k -s --retry 3 "$PATCHWORK_URL/api/1.2/patches/$patch_id/")"
+                if [ $? -ne 0 ] || [ -z "$patch_json" ]; then
+                        echo "Failed to fetch patch $patch_id from $PATCHWORK_URL" >&2
+                        exit 1
+                fi
+
+                count=$((count + 1))
+                local patch_file
+                patch_file="$(printf "%s/%04d-%s.patch" "$tmp_dir" "$count" "$patch_id")"
+
+                echo "$patch_json" | jq -r '
+                        "From " + (.headers["Message-Id"] // .msgid // "patchwork") + " Mon Sep 07 00:00:00 2026",
+                        "From: " + (.headers.From // ((.submitter.name // "Unknown") + " <" + (.submitter.email // "unknown@example.com") + ">")),
+                        "Date: " + (.headers.Date // .date // ""),
+                        "Subject: " + (.headers.Subject // .name // "No subject"),
+                        "Message-Id: " + (.headers["Message-Id"] // .msgid // ""),
+                        "MIME-Version: 1.0",
+                        "Content-Type: text/plain; charset=UTF-8",
+                        "Content-Transfer-Encoding: 8bit",
+                        "",
+                        .content,
+                        "",
+                        .diff,
+                        ""
+                ' > "$patch_file"
+        done
+
+        git am --3way "$tmp_dir"/*.patch
+        local ret=$?
+        if [ $ret -ne 0 ]; then
+                git am --abort 2>/dev/null || true
+                exit $ret
+        fi
+}
+
 case "$1" in
+apply)
+        apply_series "$2"
+        ;;
 state)
         set_series_state "$2" "$3"
         ;;
@@ -213,7 +280,7 @@ verify)
         verify_new_patches
         ;;
 *)
-        echo "Available commands: state, check, verify" >&2
+        echo "Available commands: apply, state, check, verify" >&2
         exit 1
         ;;
 esac

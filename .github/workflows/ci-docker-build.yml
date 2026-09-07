@@ -146,7 +146,7 @@ jobs:
       run: $CC --version
 
     - name: Apply Patchwork series
-      if: inputs.SERIES_ID != '' && inputs.SERIES_MBOX != ''
+      if: inputs.SERIES_ID != ''
       env:
         PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
       run: |
@@ -155,7 +155,7 @@ jobs:
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
         git checkout -b review_patch_series_"${{ inputs.SERIES_ID }}"
-        curl -k -L --retry 3 --max-redirs 1 --location-trusted "${{ inputs.SERIES_MBOX }}" | git am
+        ./ci/tools/patchwork.sh apply "${{ inputs.SERIES_ID }}"
 
         ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-ack"
 
@@ -199,7 +199,7 @@ jobs:
         ./build.sh -r install -o ${TREE:-in} $INSTALL_OPT
 
     - name: Send results to Patchwork
-      if: always() && inputs.SERIES_ID != '' && inputs.SERIES_MBOX != ''
+      if: always() && inputs.SERIES_ID != ''
       env:
         PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
       run: |
