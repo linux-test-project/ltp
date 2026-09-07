@@ -1189,6 +1189,7 @@ preadv203_64 preadv203_64
 profil01 profil01
 
 process_mrelease01 process_mrelease01
+process_mrelease02 process_mrelease02
 
 process_vm_readv01 process_vm01 -r
 process_vm_readv02 process_vm_readv02
