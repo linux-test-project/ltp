@@ -28,12 +28,12 @@ static int init_slice_boundary(int fd)
 	unsigned long slice_size;
 	void *p, *heap;
 	int i;
-#if defined(__LP64__) && !defined(__aarch64__) && !defined(__loongarch__)
+#if defined(__powerpc64__) || (defined(__powerpc__) && defined(__LP64__))
 	/* powerpc: 1TB slices starting at 1 TB */
 	slice_boundary = 0x10000000000;
 	slice_size = 0x10000000000;
 #else
-	/* powerpc: 256MB slices up to 4GB */
+	/* powerpc (32-bit) and other arches: 256MB slices up to 4GB */
 	slice_boundary = 0x00000000;
 	slice_size = 0x10000000;
 #endif
