@@ -51,8 +51,8 @@
 #include "tst_timer.h"
 
 #define QUEUE_SIZE 16384
-#define BUFFER_SIZE 1024
-#define MAX_PATH 4096
+#define BUFFER_SIZE PATH_MAX
+#define MAX_PATH PATH_MAX
 #define MAX_DISPLAY 40
 
 struct queue {
@@ -131,7 +131,7 @@ static int queue_pop(struct queue *q)
 	while (q->data[i]) {
 		q->popped[j] = q->data[i];
 
-		if (++j >= BUFFER_SIZE - 1)
+		if (++j >= BUFFER_SIZE)
 			tst_brk(TBROK, "Buffer is too small for path");
 
 		 i = (i + 1) % QUEUE_SIZE;
