@@ -53,7 +53,7 @@ fetch_series() {
 
         [ $? -eq 0 ] || exit 1
 
-        echo "$stdout" | jq -r '.[] | "\(.payload.series.id) \(.payload.series.mbox)"'
+        printf '%s\n' "$stdout" | jq -r '.[] | "\(.payload.series.id) \(.payload.series.mbox)"'
 }
 
 get_patches() {
@@ -66,7 +66,7 @@ get_patches() {
 
         [ $? -eq 0 ] || exit 1
 
-        echo "$stdout" | jq -r '.[] | "\(.id)"'
+        printf '%s\n' "$stdout" | jq -r '.[] | "\(.id)"'
 }
 
 verify_token_exists() {
@@ -116,11 +116,11 @@ get_checks() {
         [ $? -eq 0 ] || exit 1
 
         if [ -n "$prefix" ]; then
-                echo "$stdout" | jq -r \
+                printf '%s\n' "$stdout" | jq -r \
                         --arg pfx "$prefix" \
                         '.[] | select(.context | startswith($pfx)) | "\(.id)"'
         else
-                echo "$stdout" | jq -r '.[] | "\(.id)"'
+                printf '%s\n' "$stdout" | jq -r '.[] | "\(.id)"'
         fi
 }
 
@@ -218,7 +218,11 @@ apply_series() {
                 exit 1
         fi
 
-        patch_ids="$(echo "$stdout" | jq -r '.patches[].id')"
+        if ! patch_ids="$(printf '%s\n' "$stdout" | jq -r '.patches[].id')"; then
+                echo "Failed to parse series $series_id from $PATCHWORK_URL" >&2
+                exit 1
+        fi
+
         if [ -z "$patch_ids" ]; then
                 echo "No patches found for series $series_id" >&2
                 exit 1
@@ -241,7 +245,7 @@ apply_series() {
                 local patch_file
                 patch_file="$(printf "%s/%04d-%s.patch" "$tmp_dir" "$count" "$patch_id")"
 
-                echo "$patch_json" | jq -r '
+                if ! printf '%s\n' "$patch_json" | jq -r '
                         "From " + (.headers["Message-Id"] // .msgid // "patchwork") + " Mon Sep 07 00:00:00 2026",
                         "From: " + (.headers.From // ((.submitter.name // "Unknown") + " <" + (.submitter.email // "unknown@example.com") + ">")),
                         "Date: " + (.headers.Date // .date // ""),
@@ -255,7 +259,10 @@ apply_series() {
                         "",
                         .diff,
                         ""
-                ' > "$patch_file"
+                ' > "$patch_file"; then
+                        echo "Failed to parse patch $patch_id from $PATCHWORK_URL" >&2
+                        exit 1
+                fi
         done
 
         git am --3way "$tmp_dir"/*.patch
