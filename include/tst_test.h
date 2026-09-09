@@ -160,7 +160,7 @@ pid_t safe_fork(const char *filename, unsigned int lineno);
  * tst_strerrno() - Converts an errno number into a name.
  *
  * @err: An errno number.
- * return: An errno name e.g. "EINVAL".
+ * Return: An errno name e.g. "EINVAL".
  */
 const char *tst_strerrno(int err);
 
@@ -168,7 +168,7 @@ const char *tst_strerrno(int err);
  * tst_strsig() - Converts a signal number into a name.
  *
  * @sig: A signal number.
- * return: A signal name e.g. "SIGINT".
+ * Return: A signal name e.g. "SIGINT".
  */
 const char *tst_strsig(int sig);
 
@@ -181,7 +181,7 @@ const char *tst_strsig(int sig);
  *   Not thread safe.
  *
  * @status: A status as returned by wait()
- * return: A string description for the status e.g. "killed by SIGKILL".
+ * Return: A string description for the status e.g. "killed by SIGKILL".
  */
 const char *tst_strstatus(int status);
 
@@ -436,8 +436,8 @@ struct tst_fs {
  *
  * @filesystems: A NULL type terminated array of per file system type
  *               parameters for mkfs and mount. If the first entry type is NULL
- *               it describes a default parameters for all file system tests.
- *               The rest of the entries the describes per file system type
+ *               it describes default parameters for all file system tests.
+ *               The remaining entries describe per file system type
  *               parameters. If tst_test.all_filesystems is set, the test runs
  *               for all filesystems and uses the array to lookup the mkfs
  *               and mount options. If tst_test.all_filesystems is not set
@@ -546,7 +546,7 @@ struct tst_fs {
  * @needs_cgroup_ctrls: A {} terminated array of cgroup controllers the test
  *                      needs to run.
  *
- * @needs_cgroup_nsdelegate: If set test the will run only if cgroup2 is mounted
+ * @needs_cgroup_nsdelegate: If set the test will run only if cgroup2 is mounted
  *                           with nsdelegate option.
  */
 
@@ -663,7 +663,7 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 /**
  * tst_reinit() - Reinitialize the test library.
  *
- * In a cases where a test child process calls exec() it no longer can access
+ * In cases where a test child process calls exec() it no longer can access
  * the test library shared memory and therefore use the test reporting
  * functions, checkpoint library, etc. This function re-initializes the test
  * library so that it can be used again.
@@ -701,7 +701,7 @@ void tst_reinit(void);
  * of the script yourself. If you do not need to check the return value
  * yourself you can use tst_reap_children() to wait for the completion. Or let
  * the test library collect the child automatically, just be wary that the
- * script and the test both runs concurently at the same time in this case.
+ * script and the test both run concurrently at the same time in this case.
  *
  * Return: A pid of the (shell) script process.
  */
@@ -794,7 +794,7 @@ int tst_creat_unlinked(const char *path, int flags, mode_t mode);
 /**
  * tst_get_tmpdir_root() - Returns path to the test temporary directory root.
  *
- * The path is either hardcoded as /tmp or could be overrided by a TMPDIR
+ * The path is either hardcoded as /tmp or could be overridden by a TMPDIR
  * environment variable.
  *
  * Return: A path to the test temporary directory root.
@@ -840,7 +840,7 @@ int main(int argc, char *argv[])
  *
  * @message: Error message (the reason to skip test).
  *
- * This macro is used in test that couldn't be compiled either because current
+ * This macro is used in tests that couldn't be compiled either because current
  * CPU architecture is unsupported or because of missing development libraries.
  */
 #define TST_TEST_TCONF(message)                                 \

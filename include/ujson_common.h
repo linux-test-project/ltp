@@ -13,7 +13,7 @@
 
 /** @brief Maximal error message length. */
 #define UJSON_ERR_MAX 128
-/** @brief Maximal id string lenght including terminating null element. */
+/** @brief Maximal id string length including terminating null element. */
 #define UJSON_ID_MAX 64
 /** @brief Maximal recursion depth allowed. */
 #define UJSON_RECURSION_MAX 128

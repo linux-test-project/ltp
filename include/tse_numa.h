@@ -39,7 +39,7 @@ void tse_nodemap_print_counters(struct tse_nodemap *nodes);
  *
  * @mode: Numa mempolicy mode.
  *
- * return: a name for a mempolicy/mbind mode.
+ * Return: a name for a mempolicy/mbind mode.
  */
 const char *tse_mempolicy_mode_name(int mode);
 
@@ -49,7 +49,7 @@ const char *tse_mempolicy_mode_name(int mode);
  * @path: Path to a file, if not NULL mapping is file based.
  * @size: Mapping size.
  *
- * return: a pointer to a mapped file.
+ * Return: a pointer to a mapped file.
  */
 void *tse_numa_map(const char *path, size_t size);
 
@@ -76,7 +76,7 @@ static inline void tse_numa_unmap(void *ptr, size_t size)
 }
 
 /**
- * tse_nodemap_count_pages() - Check which numa node resides each page.
+ * tse_nodemap_count_pages() - Check on which NUMA node each page resides.
  *
  * Check on which numa node resides each page of the mapping starting at ptr
  * and continuing pages long and increases nodemap counters accordingly.
@@ -114,8 +114,8 @@ enum tse_numa_types {
  *             requested amount of free+buffers memory it's not included in
  *             the resulting list of nodes.
  *
- * return: On success returns allocated and initialized struct tse_nodemap which contains
- *         array of numa node ids that contains desired resources.
+ * Return: On success returns allocated and initialized struct tse_nodemap which
+ * contains array of numa node ids that contains desired resources.
  */
 struct tse_nodemap *tse_get_nodemap(int type, size_t min_mem_kb);
 

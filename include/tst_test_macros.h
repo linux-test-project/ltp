@@ -115,7 +115,7 @@ extern int TST_PASS;
  * @SCALL: Tested syscall.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TEST() macro and additionaly prints pass
+ * This macro calls the SCALL with a TEST() macro and additionally prints pass
  * or fail message. Apart from TST_ERR and TST_RET set by the TEST() macro
  * TST_PASS global variable is set as well based on the outcome.
  *
@@ -258,8 +258,8 @@ extern int TST_PASS;
  * @VAL: Expected return value.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TEST() macro and additionaly prints pass
- * or fail message after comparing the returned value againts the expected
+ * This macro calls the SCALL with a TEST() macro and additionally prints pass
+ * or fail message after comparing the returned value against the expected
  * value. Apart from TST_ERR and TST_RET set by the TEST() macro TST_PASS
  * global variable is set as well based on the outcome.
  *
@@ -337,8 +337,8 @@ extern int TST_PASS;
  * @SCALL: Tested syscall.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TEST() macro and additionaly prints pass
- * or fail message after checking the return value againts zero. Apart from
+ * This macro calls the SCALL with a TEST() macro and additionally prints pass
+ * or fail message after checking the return value against zero. Apart from
  * TST_ERR and TST_RET set by the TEST() macro TST_PASS global variable is set
  * as well based on the outcome.
  *
@@ -395,7 +395,7 @@ extern int TST_PASS;
  * @SCALL: Tested syscall.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TESTPTR() macro and additionaly prints
+ * This macro calls the SCALL with a TESTPTR() macro and additionally prints
  * pass or fail message after checking the return value against (void \*)-1.
  * Apart from TST_ERR and TST_RET_PTR set by the TESTPTR() macro TST_PASS
  * global variable is set as well based on the outcome.
@@ -509,7 +509,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * @EXP_ERR: Expected errno.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TEST() macro and additionaly prints pass
+ * This macro calls the SCALL with a TEST() macro and additionally prints pass
  * or fail message. The check passes if syscall has returned -1 and failed with
  * the specified errno.
  *
@@ -538,7 +538,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
- * @EXP_ERRS_CNT: Lenght of EXP_ERRS.
+ * @EXP_ERRS_CNT: Length of EXP_ERRS.
  * @...: A printf-like parameters.
  *
  * This is a variant of TST_EXP_FAIL() with an array of possible errors.
@@ -560,7 +560,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
- * @EXP_ERRS_CNT: Lenght of EXP_ERRS.
+ * @EXP_ERRS_CNT: Length of EXP_ERRS.
  * @...: A printf-like parameters.
  *
  * This is a variant of TST_EXP_FAIL2() with an array of possible errors.
@@ -576,7 +576,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * @EXP_ERR: Expected errno.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TESTPTR() macro and additionaly prints
+ * This macro calls the SCALL with a TESTPTR() macro and additionally prints
  * pass or fail message after checking the return value against NULL and errno.
  *
  * Apart from TST_ERR and TST_RET_PTR set by the TESTPTR() macro TST_PASS
@@ -598,7 +598,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
- * @EXP_ERRS_CNT: Lenght of EXP_ERRS.
+ * @EXP_ERRS_CNT: Length of EXP_ERRS.
  * @...: A printf-like parameters.
  *
  * This is a variant of TST_EXP_FAIL_PTR_NULL() with an array of possible
@@ -617,7 +617,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * @EXP_ERR: Expected errno.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TESTPTR() macro and additionaly prints
+ * This macro calls the SCALL with a TESTPTR() macro and additionally prints
  * pass or fail message after checking the return value against (void \*)-1 and
  * errno.
  *
@@ -640,7 +640,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
- * @EXP_ERRS_CNT: Lenght of EXP_ERRS.
+ * @EXP_ERRS_CNT: Length of EXP_ERRS.
  * @...: A printf-like parameters.
  *
  * This is a variant of TST_EXP_FAIL_PTR_VOID() with an array of possible
@@ -657,11 +657,11 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * @EXP_ERR: Expected errno.
  * @...: A printf-like parameters.
  *
- * This macro calls the SCALL with a TEST() macro and additionaly prints pass
+ * This macro calls the SCALL with a TEST() macro and additionally prints pass
  * or fail message. The check passes if syscall has returned -1 and failed with
  * the specified errno.
  *
- * The SCALL is supposed to return possitive number on success e.g. pid or file
+ * The SCALL is supposed to return positive number on success e.g. pid or file
  * descriptor. For syscalls that return zero on success TST_EXP_FAIL() has to
  * be used instead.
  *
@@ -718,7 +718,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
- * @EXP_ERRS_CNT: Lenght of EXP_ERRS.
+ * @EXP_ERRS_CNT: Length of EXP_ERRS.
  * @...: A printf-like parameters.
  *
  * Unlike TST_EXP_FAIL_ARR() does not print :c:enum:`TPASS <tst_res_flags>` on
@@ -733,7 +733,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * @SCALL: Tested syscall.
  * @EXP_ERRS: Array of expected errnos.
- * @EXP_ERRS_CNT: Lenght of EXP_ERRS.
+ * @EXP_ERRS_CNT: Length of EXP_ERRS.
  * @...: A printf-like parameters.
  *
  * Unlike TST_EXP_FAIL2_ARR() does not print :c:enum:`TPASS <tst_res_flags>` on

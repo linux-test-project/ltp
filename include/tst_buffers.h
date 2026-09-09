@@ -22,7 +22,7 @@
 /**
  * struct tst_buffers - A guarded buffer description for allocator.
  *
- * Buffer description consist of a pointer to a pointer and buffer type/size
+ * Buffer description consists of a pointer to a pointer and buffer type/size
  * encoded as a different structure members.
  *
  * @ptr: A pointer to the pointer to buffer. This is dereferenced and set by the
@@ -53,7 +53,7 @@ void tst_buffers_alloc(struct tst_buffers bufs[]);
  * tst_strdup() - Copies a string into a newly allocated guarded buffer.
  *
  * @str: A string to be duplicated.
- * return: A pointer to the string duplicated in a guarded buffer.
+ * Return: A pointer to the string duplicated in a guarded buffer.
  *
  * Allocates a buffer with tst_alloc() and copies the string into it.
  */
@@ -63,7 +63,7 @@ char *tst_strdup(const char *str);
  * tst_alloc() - Allocates a guarded buffer.
  *
  * @size: A size of the buffer.
- * return: A newly allocated guarded buffer.
+ * Return: A newly allocated guarded buffer.
  */
 void *tst_alloc(size_t size);
 
@@ -72,7 +72,7 @@ void *tst_alloc(size_t size);
  *
  * @fmt: A printf-like format.
  * @...: A printf-like parameters.
- * return: A newly allocated buffer.
+ * Return: A newly allocated buffer.
  *
  * Allocates a buffer with tst_alloc() then prints the data into it.
  */
@@ -83,7 +83,7 @@ char *tst_aprintf(const char *fmt, ...)
  * tst_iovec_alloc() - Allocates a complete iovec structure.
  *
  * @sizes: A -1 terminated array of buffer sizes.
- * return: Newly allocated iovec structure.
+ * Return: Newly allocated iovec structure.
  */
 struct iovec *tst_iovec_alloc(int sizes[]);
 

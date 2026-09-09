@@ -6,10 +6,10 @@
 /**
  * DOC: Checkpoints introduction
  *
- * Checkpoints implements a futex based synchronization primitive for threads
+ * Checkpoints implement a futex based synchronization primitive for threads
  * and processes. When a process calls wait function its execution is suspended
  * until wake is called for a corresponding checkpoint. Checkpoints are
- * numbered from 0 and process can use at least hundred of them.
+ * numbered from 0 and process can use at least a hundred of them.
  *
  * In order to use checkpoints the test must set the tst_test.needs_checkpoints
  * flag.
@@ -66,7 +66,7 @@
  * @nr_wake: A number of processes to wake.
  *
  * Wakes up nr_wake processes suspended on a checkpoint and retries if there
- * wasn't enough process suspended on the checkpoint yet. The call does not
+ * were not enough processes suspended on the checkpoint yet. The call does not
  * retry indefinitely but gives up if it does not wake nr_wake processes after
  * 10 seconds. If an error happened or timeout was reached the function calls
  * tst_brk(TBROK, ...) which exits the test.

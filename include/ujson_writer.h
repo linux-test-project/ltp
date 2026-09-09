@@ -46,7 +46,7 @@ struct ujson_writer {
  * @brief An ujson_writer initializer with default values.
  *
  * @param vout A pointer to function to write out the data.
- * @param vout_priv An user pointer passed to the out function.
+ * @param vout_priv A user pointer passed to the out function.
  *
  * @return An ujson_writer initialized with default values.
  */

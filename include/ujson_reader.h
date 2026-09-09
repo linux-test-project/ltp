@@ -24,7 +24,7 @@
  * @brief An ujson_reader initializer with default values.
  *
  * @param buf A pointer to a buffer with JSON data.
- * @param buf_len A JSON data buffer lenght.
+ * @param buf_len A JSON data buffer length.
  * @param rflags enum ujson_reader_flags.
  *
  * @return An ujson_reader initialized with default values.
@@ -96,7 +96,7 @@ struct ujson_val {
 	 */
 	enum ujson_type type;
 
-	/** An user supplied buffer and size to store a string values to. */
+	/** A user supplied buffer and size to store a string values to. */
 	char *buf;
 	size_t buf_size;
 
@@ -108,7 +108,7 @@ struct ujson_val {
 	 */
 	size_t idx;
 
-	/** An union to store the parsed value into. */
+	/** A union to store the parsed value into. */
 	union {
 		/** @brief A boolean value. */
 		int val_bool;
@@ -311,7 +311,7 @@ static inline size_t ujson_obj_lookup(const ujson_obj *obj, const char *key)
 #define UJSON_OBJ_ATTR(keyv, typev) \
 	{.key = keyv, .type = typev}
 
-/** @brief An ujson_obj_attr intializer with an array index. */
+/** @brief An ujson_obj_attr initializer with an array index. */
 #define UJSON_OBJ_ATTR_IDX(key_idx, keyv, typev) \
 	[key_idx] = {.key = keyv, .type = typev}
 

@@ -130,7 +130,7 @@ static inline unsigned int ujson_utf8_bytes(uint32_t unicode)
 }
 
 /**
- * @brief Writes an unicode character into a UTF-8 buffer.
+ * @brief Writes a Unicode character into a UTF-8 buffer.
  *
  * The buffer _must_ be large enough!
  *
