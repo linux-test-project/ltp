@@ -53,6 +53,9 @@ For users
 :doc:`users/setup_tests`
    How to set up tests execution
 
+:doc:`users/testers_guide`
+   Guidelines and considerations when testing the Linux kernel with LTP
+
 :doc:`users/supported_systems`
    A list of supported technologies by the LTP framework
 

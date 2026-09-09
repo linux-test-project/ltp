@@ -360,6 +360,11 @@ check :master:`.github/workflows/ci-docker-build.yml`.
 LTP C And Shell Test API Comparison
 -----------------------------------
 
+This table compares :c:struct:`tst_test` members in the C API with
+corresponding ``$TST_*`` variables in the legacy :shell_lib:`tst_test.sh`
+shell API. For tests using the new shell loader library, see
+:doc:`api_shell_tests`.
+
 .. list-table::
     :header-rows: 1
 
@@ -439,6 +444,9 @@ LTP C And Shell Test API Comparison
 
     * - .needs_cmds
       - TST_NEEDS_CMDS
+
+    * - .needs_cpu_vendor
+      - \-
 
     * - .needs_devfs
       - \-
