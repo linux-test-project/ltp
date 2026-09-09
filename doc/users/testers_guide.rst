@@ -61,8 +61,8 @@ devices for these testcases, that can be changed with environment variables as
 well. Lastly but not least a few testcases repeat the test for all supported
 filesystem, if you are interested in testing on a single filesystem only, you
 can limit these tests to a single filesystem too. See the tests setup for a
-comprehensive list of the `environment variables
-<setup_tests.html#library-environment-variables>`_.
+comprehensive list of the :ref:`environment variables
+<users/setup_tests:Library environment variables>`.
 
 Then you also have to decide if you are going to run tests in virtual machine
 e.g. `qemu-kvm`, on bare metal or both. Testing in virtual machine will give you

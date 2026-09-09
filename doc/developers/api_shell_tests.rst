@@ -41,10 +41,11 @@ when it's empty.
    #  "needs_root": true,
    #  "needs_tmpdir": true,
    #  "needs_kconfigs": ["CONFIG_NUMA=y"],
-   #  "tags": {
-   #   ["linux-git", "432fd03240fa"]
-   #  }
+   #  "tags": [
+   #   ["linux-git", "cf01fb9985e8deb25ccf0ea54d916b8871ae0e62"]
+   #  ]
    # }
+   # ---
 
 After the documentation and environment has been laid out we finally import the
 :shell_lib:`tst_loader.sh`. This will, among other things, start the

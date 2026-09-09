@@ -104,7 +104,7 @@ def generate_supported_syscalls(_):
         'file_getattr': f'{ltp_syscalls_path}/file_attr',
         'file_setattr': f'{ltp_syscalls_path}/file_attr',
         'futex': f'{ltp_syscalls_path}/futex',
-        'getdents64': f'{ltp_syscalls_path}/gettdents',
+        'getdents64': f'{ltp_syscalls_path}/getdents',
         'inotify_add_watch': f'{ltp_syscalls_path}/inotify',
         'inotify_init': f'{ltp_syscalls_path}/inotify',
         'inotify_rm_watch': f'{ltp_syscalls_path}/inotify',
@@ -308,7 +308,7 @@ def _generate_tags_table(tags):
         "linux-git": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=",
         "linux-stable-git": "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=",
         "glibc-git": "https://sourceware.org/git/?p=glibc.git;a=commit;h=",
-        "musl-git": "https://git.musl-libc.org/cgit/musl/commit/src/linux/clone.c?id=",
+        "musl-git": "https://git.musl-libc.org/cgit/musl/commit/?id=",
         "CVE": cve_url + 'CVE-',
     }
 
