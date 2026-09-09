@@ -6,55 +6,51 @@
 #ifndef TST_MEMUTILS_H__
 #define TST_MEMUTILS_H__
 
-/*
- * Fill up to maxsize physical memory with fillchar, then free it for reuse.
- * If maxsize is zero, fill as much memory as possible. This function is
- * intended for data disclosure vulnerability tests to reduce the probability
- * that a vulnerable kernel will leak a block of memory that was full of
- * zeroes by chance.
+/**
+ * tst_pollute_memory() - Fills physical memory with a byte pattern.
  *
- * The function keeps a safety margin to avoid invoking OOM killer and
- * respects the limitations of available address space. (Less than 3GB can be
- * polluted on a 32bit system regardless of available physical RAM.)
+ * @maxsize: Maximum memory size in bytes to fill (0 for maximum possible).
+ * @fillchar: Byte value to write into allocated memory.
+ *
+ * Fills up to maxsize physical memory with fillchar, then frees it for reuse.
+ * Keeps a safety margin to avoid invoking the OOM killer and respects address
+ * space limits.
  */
 void tst_pollute_memory(size_t maxsize, int fillchar);
 
-/*
- * Read the value of MemAvailable from /proc/meminfo, if no support on
- * older kernels, return 'MemFree + Cached' for instead.
+/**
+ * tst_available_mem() - Reads available memory from /proc/meminfo.
+ *
+ * Reads MemAvailable from /proc/meminfo. On older kernels without MemAvailable,
+ * falls back to MemFree + Cached.
+ *
+ * Return: Available memory in KiB.
  */
 long long tst_available_mem(void);
 
-/*
- * Read the value of SwapFree from /proc/meminfo.
+/**
+ * tst_available_swap() - Reads free swap from /proc/meminfo using SwapFree.
+ *
+ * Return: Available swap space in KiB.
  */
 long long tst_available_swap(void);
 
-/*
- * Enable OOM protection to prevent process($PID) being killed by OOM Killer.
- *   echo -1000 >/proc/$PID/oom_score_adj
+/**
+ * tst_enable_oom_protection() - Protects process from OOM killer.
  *
- * If the pid is 0 which means it will set on current(self) process.
+ * @pid: Process PID to protect, or 0 for the calling process.
  *
- * Unless the process has CAP_SYS_RESOURCE this call will be no-op because
- * setting adj value < 0 requires it.
- *
- * CAP_SYS_RESOURCE:
- *   set /proc/[pid]/oom_score_adj to a value lower than the value last set
- *   by a process with CAP_SYS_RESOURCE.
- *
- * Note:
- *  This exported tst_enable_oom_protection function can be used at anywhere
- *  you want to protect, but please remember that if you do enable protection
- *  on a process($PID) that all the children will inherit its score and be
- *  ignored by OOM Killer as well. So that's why tst_disable_oom_protection()
- *  to be used in combination.
+ * Sets /proc/[pid]/oom_score_adj to -1000. Requires CAP_SYS_RESOURCE; no-op
+ * without this capability. Child processes inherit the OOM score.
  */
 void tst_enable_oom_protection(pid_t pid);
 
-/*
- * Disable the OOM protection for the process($PID).
- *   echo 0 >/proc/$PID/oom_score_adj
+/**
+ * tst_disable_oom_protection() - Disables OOM protection for process.
+ *
+ * @pid: Process PID, or 0 for the calling process.
+ *
+ * Sets /proc/[pid]/oom_score_adj to 0.
  */
 void tst_disable_oom_protection(pid_t pid);
 
@@ -63,11 +59,11 @@ void tst_disable_oom_protection(pid_t pid);
 /**
  * tst_mapping_in_range() - Returns true if there is a mapping provided range.
  *
- * @low: A lower address inside of the processe address space.
- * @high: A higher address inside of the processe address space.
+ * @low: A lower address inside of the process address space.
+ * @high: A higher address inside of the process address space.
  *
- * return: Returns true if there is a mapping between low and high addresses in
- *         the process address space.
+ * Return: Returns true if there is a mapping between low and high addresses in
+ * the process address space.
  */
 int tst_mapping_in_range(unsigned long low, unsigned long high);
 
