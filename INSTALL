@@ -113,7 +113,7 @@ groups.  If these IDs do not exist, certain tests will fail. The respective
 user and group IDs should be the same, i.e. if `nobody's' user ID is 99, then
 its group ID should also be 99. The names of the groups are irrelevant.
 - The installation directory is /opt/ltp by default. Please see
-"Using autoconf" above and specify the appropriate path via --prefix.
+"Configuration" above and specify the appropriate path via --prefix.
 DESTDIR= is also honored for install and will install into $DESTDIR/$prefix,
 if you want to install into a chroot or a rootfs for instance.
 
@@ -139,7 +139,7 @@ contributions are welcome.
 3. Build and install everything, as described above. Note the minimum software
    requirements above before doing so.
 
-4. The network tests related installation see testcases/network/README.md.
+4. For network test installation, see testcases/network/README.md.
 
 Cross compiling
 ---------------
@@ -150,7 +150,7 @@ For correct pkgconf / pkg-config detection you need to set
 PKG_CONFIG_SYSROOT_DIR=$SYSROOT
 
 After configure has run, it will generate include/mk/config.mk. You can tweak
-settings in there if need be, but you should not specificy settings on the
+settings in there if need be, but you should not specify settings on the
 command-line when running make.
 
 32 bit build on 64 bit machine
@@ -161,7 +161,7 @@ You need to set CFLAGS=-m32 LDFLAGS=-m32 and PKG_CONFIG_LIBDIR
 * RPM based distributions (openSUSE, Fedora, etc.)
 PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
 
-* Debian / Ubuntu and derivates
+* Debian / Ubuntu and derivatives
 PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
 
 * Arch Linux
@@ -174,7 +174,7 @@ LTP contains few kernel modules and tests which are using them.
 These require to be built with the same kernel headers as the running kernel (SUT).
 Sometimes the best way to achieve this is to compile them on the SUT.
 
-Due Linux Kernel Driver Interface unstability [1], error during building kernel
+Due to Linux Kernel Driver Interface instability [1], an error during building kernel
 modules does not break the build. Make errors fatal can be done by FORCE_MODULES=1
 make variable.
 

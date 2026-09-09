@@ -205,7 +205,7 @@ please do:
 
 This should build the test and then run it. However, even though the test is
 in :master:`testcases/kernel/syscalls` directory it won't be automatically run
-as part of the syscalls test group (e.g. not run via ``kirk -f math``).
+as part of the syscalls test group (e.g. not run via ``kirk -f syscalls``).
 For this we need to add it to the runtest file. So open :master:`runtest/syscalls`
 and add the lines starting with a ``+``.
 
@@ -292,7 +292,7 @@ Check coding style with ``make check``.
 Install the LTP and run the test with runtest
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Run ``statx01`` on its own, also using ``-I0`` amd ``-I10``.
+Run ``statx01`` on its own, also using ``-i0`` and ``-i10``.
 
 Call the system call
 --------------------
@@ -435,7 +435,7 @@ there is a system in place to handle it.
         .min_kver = "4.11",
     };
 
-The ``TEST`` macro sets ``TST_RET`` to the return value of ``tst_statx()`` and
+The ``TEST`` macro sets ``TST_RET`` to the return value of ``sys_statx()`` and
 ``TST_ERR`` to the value of ``errno`` immediately after the functions
 return. This is mainly just for convenience, although it potentially could
 have other uses.
@@ -589,6 +589,9 @@ again on the hard-link, then ``stat`` the file".
 
     #define LNAME "file_to_stat_link"
 
+    static int fd = -1;
+    static int lfd = -1;
+
     ...
 
     static void setup(void)
@@ -600,16 +603,16 @@ again on the hard-link, then ``stat`` the file".
 
     static void cleanup(void)
     {
-        if (lfd != 0)
+        if (lfd != -1)
             SAFE_CLOSE(lfd);
 
-        if (fd != 0)
+        if (fd != -1)
             SAFE_CLOSE(fd);
     }
 
     static void run(void)
     {
-            ...
+        ...
 
         TEST(sys_statx(AT_FDCWD, LNAME, 0, STATX_BASIC_STATS, &statxbuf));
         if (TST_RET == 0)
@@ -646,8 +649,8 @@ Nor do we want to call ``cleanup`` recursively. So during ``cleanup``
 ``tst_brk``, and consequently the ``SAFE`` functions, do not cause the test to
 exit with ``TBROK``. Instead they just print an error message with ``TWARN``.
 
-It is not entirely necessary to check if the file descriptors have a none zero
-value before attempting to close them. However it avoids a bunch of spurious
+It is not entirely necessary to check if the file descriptors are not -1
+before attempting to close them. However it avoids a bunch of spurious
 warning messages if we fail to open ``file_to_stat``. Test case failures can be
 difficult to interpret at the best of times, so avoid filling the log with
 noise.
@@ -804,7 +807,7 @@ branch is ``tutorial-rebase2`` which I just created. I have already done one
 ``tutorial``.
 
 As usual my commit history is starting to look like a bit of mess! There is
-even a commit in there which should not be in the this branch (Remove old API
+even a commit in there which should not be in this branch (Remove old API
 argument), however it can be ignored for now and 'cherry picked' into a new branch
 later.
 
@@ -821,7 +824,7 @@ of all I want to 'squash' (amalgamate) all the commits appended with
 This begins an interactive ``rebase`` where commit ``5ca6427b78`` is the earliest
 commit we want to edit. The ``^`` symbol after the commit hash, specifies the
 commit before this one. The interactive ``rebase`` command takes the last commit
-we want to keep unaltered as it's argument (in other words it takes a
+we want to keep unaltered as its argument (in other words it takes a
 non-inclusive range).
 
 Upon entering a similar command you will be presented with a text file
@@ -993,8 +996,8 @@ Obviously testing the patch is one way of finding errors. You can apply patches
 using :manpage:`git-am(1)`. Then it is just a case of compiling and running the
 tests.
 
-Finally, reading and attempting to comment on other peoples patches, gives
-you a better understanding of the reviewers perspective. This is better for
+Finally, reading and attempting to comment on other people's patches, gives
+you a better understanding of the reviewer's perspective. This is better for
 the project and for you.
 
 Style and organizational issues are best left to after you have found logical

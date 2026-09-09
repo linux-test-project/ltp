@@ -880,10 +880,10 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
 
 /**
- * TST_EXP_EQ_SZ() - Compare two unsigned size_t values.
+ * TST_EXP_EQ_SZ() - Compare two size_t values.
  *
- * @VAL_A: unsigned long long value A.
- * @VAL_B: unsigned long long value B.
+ * @VAL_A: size_t value A.
+ * @VAL_B: size_t value B.
  *
  * Reports a pass if values are equal and a fail otherwise.
  */
@@ -898,10 +898,10 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 } while (0)
 
 /**
- * TST_EXP_EQ_SZ_SILENT() - Compare two unsigned size_t values, silent variant.
+ * TST_EXP_EQ_SZ_SILENT() - Compare two size_t values, silent variant.
  *
- * @VAL_A: unsigned long long value A.
- * @VAL_B: unsigned long long value B.
+ * @VAL_A: size_t value A.
+ * @VAL_B: size_t value B.
  *
  * Unlike TST_EXP_EQ_SZ() does not print :c:enum:`TPASS <tst_res_flags>` on
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
@@ -910,10 +910,10 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu")
 
 /**
- * TST_EXP_EQ_SSZ() - Compare two unsigned ssize_t values.
+ * TST_EXP_EQ_SSZ() - Compare two ssize_t values.
  *
- * @VAL_A: unsigned long long value A.
- * @VAL_B: unsigned long long value B.
+ * @VAL_A: ssize_t value A.
+ * @VAL_B: ssize_t value B.
  *
  * Reports a pass if values are equal and a fail otherwise.
  */
@@ -928,10 +928,10 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
 } while (0)
 
 /**
- * TST_EXP_EQ_SSZ_SILENT() - Compare two unsigned ssize_t values, silent variant.
+ * TST_EXP_EQ_SSZ_SILENT() - Compare two ssize_t values, silent variant.
  *
- * @VAL_A: unsigned long long value A.
- * @VAL_B: unsigned long long value B.
+ * @VAL_A: ssize_t value A.
+ * @VAL_B: ssize_t value B.
  *
  * Unlike TST_EXP_EQ_SSZ() does not print :c:enum:`TPASS <tst_res_flags>` on
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.

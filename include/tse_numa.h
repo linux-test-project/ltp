@@ -109,7 +109,7 @@ enum tse_numa_types {
  * tse_get_nodemap() - Allocates and returns numa node map, which is an array of numa nodes which
  * contain desired resources e.g. memory.
  *
- * @type:       Bitflags of enum tst_numa_types specifying desired resources.
+ * @type:       Bitflags of enum tse_numa_types specifying desired resources.
  * @min_mem_kb: Minimal free RAM on memory nodes, if given node has less than
  *             requested amount of free+buffers memory it's not included in
  *             the resulting list of nodes.

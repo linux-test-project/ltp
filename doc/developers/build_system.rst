@@ -135,7 +135,7 @@ been fulfilled (libraries, headers, etc).
     * - $(CC)
       - The system C compiler
 
-    * - $(CCP)
+    * - $(CPP)
       - The system C preprocessor
 
     * - $(CFLAGS)

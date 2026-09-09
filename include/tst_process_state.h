@@ -22,7 +22,7 @@
  * @state: A state to wait for.
  * @msec_timeout: A timeout for the wait.
  *
- * Polls `/proc/$PID/state` for a process state changes.
+ * Polls `/proc/$PID/stat` for process state changes.
  *
  * Possible process states (see :manpage:`ps(1)`):
  *
@@ -32,7 +32,7 @@
  * - **Z** Zombie process.
  * - **T** Process is traced.
  * - **t** Tracing stopped.
- * - **X** Process id dead.
+ * - **X** Process is dead.
  */
 #define TST_PROCESS_STATE_WAIT(pid, state, msec_timeout) \
 	tst_process_state_wait(__FILE__, __LINE__, NULL, \
@@ -41,7 +41,7 @@
 /**
  * TST_PROCESS_EXIT_WAIT() - Waits while pid is present on the system.
  *
- * Loops until `kill($PID, 0)` succeds or timeout is reached.
+ * Loops until `kill($PID, 0)` fails with `ESRCH`, or timeout is reached.
  *
  * @pid: A process pid.
  * @msec_timeout: A timeout for the wait.
@@ -52,7 +52,7 @@
 /**
  * TST_THREAD_STATE_WAIT() - Waits for a thread state change.
  *
- * Polls `/proc/self/task/$TID/state` for a thread state change.
+ * Polls `/proc/self/task/$TID/stat` for a thread state change.
  *
  * Possible thread states are the same as for TST_PROCESS_STATE_WAIT().
  *
