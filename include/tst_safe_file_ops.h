@@ -10,6 +10,17 @@
 #define FILE_SCANF(path, fmt, ...) \
 	file_scanf(__FILE__, __LINE__, (path), (fmt), ## __VA_ARGS__)
 
+/**
+ * SAFE_FILE_SCANF() - Reads formatted data from a file.
+ *
+ * @path: Path to the file to read.
+ * @fmt: scanf format string.
+ * @...: Pointers to variables to store parsed values into.
+ *
+ * Scans formatted data from path. If opening the file fails or the number of
+ * conversions does not match the format string, exits with
+ * :c:enum:`TBROK <tst_res_flags>`.
+ */
 #define SAFE_FILE_SCANF(path, fmt, ...) \
 	safe_file_scanf(__FILE__, __LINE__, NULL, \
 	                (path), (fmt), ## __VA_ARGS__)
@@ -39,6 +50,17 @@ void safe_file_read_str(const char *file, const int lineno,
 	file_lines_scanf(__FILE__, __LINE__, NULL, 0,\
 			(path), (fmt), ## __VA_ARGS__)
 
+/**
+ * SAFE_FILE_LINES_SCANF() - Searches lines of a file for formatted data.
+ *
+ * @path: Path to the file to read.
+ * @fmt: scanf format string to match against each line.
+ * @...: Pointers to variables to store parsed values into.
+ *
+ * Reads lines from path one by one until a line matches all format
+ * conversions in fmt. If the file cannot be opened or no line matches,
+ * exits with :c:enum:`TBROK <tst_res_flags>`.
+ */
 #define SAFE_FILE_LINES_SCANF(path, fmt, ...) \
 	file_lines_scanf(__FILE__, __LINE__, NULL, 1,\
 			(path), (fmt), ## __VA_ARGS__)
@@ -61,6 +83,16 @@ void safe_file_read_str(const char *file, const int lineno,
 	file_printf(__FILE__, __LINE__, \
 		    (path), (fmt), ## __VA_ARGS__)
 
+/**
+ * SAFE_FILE_PRINTF() - Writes formatted data to a file.
+ *
+ * @path: Path to the file to write.
+ * @fmt: printf format string.
+ * @...: Arguments for the format string.
+ *
+ * Writes formatted output to path. Exits with :c:enum:`TBROK <tst_res_flags>`
+ * if the file cannot be opened or written.
+ */
 #define SAFE_FILE_PRINTF(path, fmt, ...) \
 	safe_file_printf(__FILE__, __LINE__, NULL, \
 	                 (path), (fmt), ## __VA_ARGS__)
@@ -84,9 +116,29 @@ void safe_file_read_str(const char *file, const int lineno,
 	safe_try_file_printf(__FILE__, __LINE__, NULL, \
 		(path), (fmt), ## __VA_ARGS__)
 
+/**
+ * SAFE_CP() - Copies a file from source to destination.
+ *
+ * @src: Source file path.
+ * @dst: Destination file path.
+ *
+ * Copies the file from src to dst. Exits with :c:enum:`TBROK <tst_res_flags>`
+ * on failure.
+ */
 #define SAFE_CP(src, dst) \
 	safe_cp(__FILE__, __LINE__, NULL, (src), (dst))
 
+/**
+ * SAFE_TOUCH() - Creates or updates timestamp on a file.
+ *
+ * @pathname: Path to the file.
+ * @mode: File permissions mode (0 to use default 0666 & ~umask).
+ * @times: Array of two struct timespec for atime and mtime (NULL for current time).
+ *
+ * Creates the file if it does not exist with the specified mode, or updates
+ * its access and modification times. Exits with :c:enum:`TBROK <tst_res_flags>`
+ * on failure.
+ */
 #define SAFE_TOUCH(pathname, mode, times) \
 	safe_touch(__FILE__, __LINE__, NULL, \
 			(pathname), (mode), (times))
@@ -97,6 +149,13 @@ void safe_file_read_str(const char *file, const int lineno,
 void tst_create_overlay_dirs(void);
 int tst_mount_overlay(const char *file, const int lineno, int strict);
 
+/**
+ * SAFE_MOUNT_OVERLAY() - Mounts overlayfs at OVL_MNT mount point.
+ *
+ * Creates lower, upper, work, and mnt directories, then mounts overlayfs
+ * at OVL_MNT. Exits with :c:enum:`TCONF <tst_res_flags>` if overlayfs is not
+ * supported by kernel, or :c:enum:`TBROK <tst_res_flags>` on mount failure.
+ */
 #define SAFE_MOUNT_OVERLAY() \
 	((void) tst_mount_overlay(__FILE__, __LINE__, 1))
 
