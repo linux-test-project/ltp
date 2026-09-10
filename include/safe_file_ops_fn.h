@@ -20,6 +20,7 @@
 
 #include <sys/stat.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include "lapi/utime.h"
 
@@ -61,6 +62,11 @@ void safe_file_printf(const char *file, const int lineno,
                       void (*cleanup_fn)(void),
                       const char *path, const char *fmt, ...)
                       __attribute__ ((format (printf, 5, 6)));
+
+void safe_file_vprintf(const char *file, const int lineno,
+		       void (*cleanup_fn)(void),
+		       const char *path, const char *fmt, va_list va)
+	__attribute__ ((format (printf, 5, 0)));
 
 void safe_try_file_printf(const char *file, const int lineno,
 	void (*cleanup_fn)(void), const char *path, const char *fmt, ...)

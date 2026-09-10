@@ -65,6 +65,20 @@ void safe_file_read_str(const char *file, const int lineno,
 	safe_file_printf(__FILE__, __LINE__, NULL, \
 	                 (path), (fmt), ## __VA_ARGS__)
 
+/**
+ * SAFE_FILE_VPRINTF() - Formats and writes a va_list argument into a file.
+ *
+ * Writes formatted output to the file at @path using the format string @fmt
+ * and variable arguments @va. Aborts the test with TBROK on failure.
+ *
+ * @path: A path to a file.
+ * @fmt: A printf format string.
+ * @va: A variable argument list.
+ */
+#define SAFE_FILE_VPRINTF(path, fmt, va) \
+	safe_file_vprintf(__FILE__, __LINE__, NULL, \
+			  (path), (fmt), (va))
+
 /* Same as SAFE_FILE_PRINTF() but returns quietly if the path doesn't exist */
 #define SAFE_TRY_FILE_PRINTF(path, fmt, ...) \
 	safe_try_file_printf(__FILE__, __LINE__, NULL, \

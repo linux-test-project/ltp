@@ -280,7 +280,7 @@ err:
 	return 1;
 }
 
-static void safe_file_vprintf(const char *file, const int lineno,
+void safe_file_vprintf(const char *file, const int lineno,
 	void (*cleanup_fn)(void), const char *path, const char *fmt,
 	va_list va)
 {
