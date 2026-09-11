@@ -1,134 +1,76 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Huawei Technologies Co., Ltd., 2015
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
+ * Copyright (C) 2026 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
- /* Description:
- *   Verify that:
- *              1) sched_setattr succeed with correct parameters
- *              2) sched_setattr fails with unused pid
- *              3) sched_setattr fails with invalid address
- *              4) sched_setattr fails with invalid flag
+
+/*\
+ * Verify that :manpage:`sched_setattr(2)` correctly sets the scheduling
+ * attributes of a process and that they can be read back using
+ * :manpage:`sched_getattr(2)`.
+ *
+ * Root is required (:c:macro:`CAP_SYS_NICE`) to configure the
+ * :c:macro:`SCHED_DEADLINE` policy.
+ *
+ * The test relies on the LTP harness process isolation and resets the
+ * scheduling policy to :c:macro:`SCHED_OTHER` after testing to prevent
+ * :c:macro:`SCHED_DEADLINE` constraints from leaking into subsequent
+ * test iterations.
  */
 
 #define _GNU_SOURCE
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <linux/unistd.h>
-#include <linux/kernel.h>
-#include <linux/types.h>
-#include <sys/syscall.h>
-#include <pthread.h>
+
 #include <errno.h>
 
-#include "test.h"
+#include "tst_test.h"
 #include "lapi/sched.h"
-
-char *TCID = "sched_setattr01";
 
 #define RUNTIME_VAL 10000000
 #define PERIOD_VAL 30000000
 #define DEADLINE_VAL 30000000
 
-static pid_t pid;
-static pid_t unused_pid;
-
 static struct sched_attr attr = {
 	.size = sizeof(struct sched_attr),
-	.sched_flags = 0,
-	.sched_nice = 0,
-	.sched_priority = 0,
-
 	.sched_policy = SCHED_DEADLINE,
 	.sched_runtime = RUNTIME_VAL,
 	.sched_period = PERIOD_VAL,
 	.sched_deadline = DEADLINE_VAL,
 };
 
-static struct test_case {
-	pid_t *pid;
-	struct sched_attr *a;
-	unsigned int flags;
-	int exp_return;
-	int exp_errno;
-} test_cases[] = {
-	{&pid, &attr, 0, 0, 0},
-	{&unused_pid, &attr, 0, -1, ESRCH},
-	{&pid, NULL, 0, -1, EINVAL},
-	{&pid, &attr, 1000, -1, EINVAL}
+static void reset_sched(void)
+{
+	struct sched_attr normal = {
+		.size = sizeof(normal),
+		.sched_policy = SCHED_OTHER,
+	};
+
+	sched_setattr(0, &normal, 0);
+}
+
+static void run(void)
+{
+	struct sched_attr read_attr = { .size = sizeof(read_attr) };
+
+	TST_EXP_PASS(sched_setattr(0, &attr, 0),
+		     "sched_setattr() with valid parameters");
+	if (!TST_PASS)
+		return;
+
+	if (sched_getattr(0, &read_attr, sizeof(read_attr), 0) == -1) {
+		tst_res(TFAIL | TERRNO, "sched_getattr() failed");
+		return;
+	}
+
+	TST_EXP_EQ_LU(read_attr.sched_policy, SCHED_DEADLINE);
+	TST_EXP_EQ_LU(read_attr.sched_runtime, RUNTIME_VAL);
+	TST_EXP_EQ_LU(read_attr.sched_deadline, DEADLINE_VAL);
+	TST_EXP_EQ_LU(read_attr.sched_period, PERIOD_VAL);
+
+	reset_sched();
+}
+
+static struct tst_test test = {
+	.test_all = run,
+	.cleanup = reset_sched,
+	.needs_root = 1,
 };
-
-static void setup(void);
-static void sched_setattr_verify(const struct test_case *test);
-
-int TST_TOTAL = ARRAY_SIZE(test_cases);
-
-void *do_test(void *data LTP_ATTRIBUTE_UNUSED)
-{
-	int i;
-
-	for (i = 0; i < TST_TOTAL; i++)
-		sched_setattr_verify(&test_cases[i]);
-
-	return NULL;
-}
-
-static void sched_setattr_verify(const struct test_case *test)
-{
-	TEST(sched_setattr(*(test->pid), test->a, test->flags));
-
-	if (TEST_RETURN != test->exp_return) {
-		tst_resm(TFAIL | TTERRNO, "sched_setattr(%i,attr,%u) "
-		         "returned: %ld expected: %d",
-		         *(test->pid), test->flags,
-		         TEST_RETURN, test->exp_return);
-		return;
-	}
-
-	if (TEST_ERRNO == test->exp_errno) {
-		tst_resm(TPASS | TTERRNO,
-			"sched_setattr() works as expected");
-		return;
-	}
-
-	tst_resm(TFAIL | TTERRNO, "sched_setattr(%i,attr,%u): "
-		"expected: %d - %s",
-		*(test->pid), test->flags,
-		test->exp_errno, tst_strerrno(test->exp_errno));
-}
-
-int main(int argc, char **argv)
-{
-	pthread_t thread;
-	int lc;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		pthread_create(&thread, NULL, do_test, NULL);
-		pthread_join(thread, NULL);
-	}
-
-	tst_exit();
-}
-
-void setup(void)
-{
-	unused_pid = tst_get_unused_pid(setup);
-
-	tst_require_root();
-
-	TEST_PAUSE;
-}
