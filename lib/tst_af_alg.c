@@ -249,4 +249,6 @@ void tst_alg_sendmsg(int reqfd, const void *data, size_t datalen,
 	}
 
 	SAFE_SENDMSG(datalen, reqfd, &msg, params->msg_flags);
+
+	free(control);
 }
