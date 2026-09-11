@@ -1,105 +1,76 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Huawei Technologies Co., Ltd., 2015
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * Copyright (C) 2026 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
+ */
+
+/*\
+ * Verify that :manpage:`sched_getattr(2)` correctly reads back the scheduling
+ * attributes of a task configured with :manpage:`sched_setattr(2)`.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
+ * Root is required (:c:macro:`CAP_SYS_NICE`) to configure the
+ * :c:macro:`SCHED_DEADLINE` policy.
+ *
+ * The test relies on the LTP harness process isolation and resets the
+ * scheduling policy to :c:macro:`SCHED_OTHER` after testing to prevent
+ * :c:macro:`SCHED_DEADLINE` constraints from leaking across test iterations.
  */
 
 #define _GNU_SOURCE
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <linux/unistd.h>
-#include <linux/kernel.h>
-#include <linux/types.h>
-#include <sys/syscall.h>
-#include <pthread.h>
-#include <errno.h>
 
-#include "test.h"
+#include "tst_test.h"
 #include "lapi/sched.h"
-
-char *TCID = "sched_getattr01";
-int TST_TOTAL = 1;
 
 #define RUNTIME_VAL 10000000
 #define PERIOD_VAL 30000000
 #define DEADLINE_VAL 30000000
 
-void *run_deadline(void *data LTP_ATTRIBUTE_UNUSED)
+static struct sched_attr *read_attr;
+
+static void reset_sched(void)
 {
-	struct sched_attr attr, attr_copy;
-	int ret;
-	unsigned int flags = 0;
-	unsigned int size;
+	struct sched_attr normal = {
+		.size = sizeof(normal),
+		.sched_policy = SCHED_OTHER,
+	};
 
-	attr.size = sizeof(attr);
-	attr.sched_flags = 0;
-	attr.sched_nice = 0;
-	attr.sched_priority = 0;
-
-	/* This creates a 10ms/30ms reservation */
-	attr.sched_policy = SCHED_DEADLINE;
-	attr.sched_runtime = RUNTIME_VAL;
-	attr.sched_period = PERIOD_VAL;
-	attr.sched_deadline = DEADLINE_VAL;
-
-	ret = sched_setattr(0, &attr, flags);
-	if (ret < 0)
-		tst_brkm(TFAIL | TERRNO, NULL, "sched_setattr() failed");
-
-	size = sizeof(attr_copy);
-	ret = sched_getattr(0, &attr_copy, size, flags);
-	if (ret < 0)
-		tst_brkm(TFAIL | TERRNO, NULL, "sched_getattr() failed");
-
-	int fail = 0;
-
-	if (attr_copy.sched_runtime != RUNTIME_VAL) {
-		tst_resm(TINFO, "sched_runtime is incorrect (%"PRIu64"),"
-			" expected %u", attr.sched_runtime, RUNTIME_VAL);
-		fail++;
-	}
-	if (attr_copy.sched_period != PERIOD_VAL) {
-		tst_resm(TINFO, "sched_period is incorrect (%"PRIu64"),"
-			" expected %u", attr.sched_period, PERIOD_VAL);
-		fail++;
-	}
-	if (attr_copy.sched_deadline != DEADLINE_VAL) {
-		tst_resm(TINFO, "sched_deadline is incorrect (%"PRIu64"),"
-			" expected %u", attr.sched_deadline, DEADLINE_VAL);
-		fail++;
-	}
-
-	if (fail)
-		tst_resm(TFAIL, "attributes were read back incorrectly");
-	else
-		tst_resm(TPASS, "attributes were read back correctly");
-
-	return NULL;
+	sched_setattr(0, &normal, 0);
 }
 
-int main(int argc, char **argv)
+static void run(void)
 {
-	pthread_t thread;
-	int lc;
+	struct sched_attr attr = {
+		.size = sizeof(attr),
+		.sched_policy = SCHED_DEADLINE,
+		.sched_runtime = RUNTIME_VAL,
+		.sched_deadline = DEADLINE_VAL,
+		.sched_period = PERIOD_VAL,
+	};
 
-	tst_parse_opts(argc, argv, NULL, NULL);
+	if (sched_setattr(0, &attr, 0) == -1)
+		tst_brk(TBROK | TERRNO, "sched_setattr() failed");
 
-	tst_require_root();
+	memset((void *)read_attr, 0, sizeof(*read_attr));
 
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		pthread_create(&thread, NULL, run_deadline, NULL);
-		pthread_join(thread, NULL);
-	}
+	TST_EXP_PASS(sched_getattr(0, read_attr, sizeof(*read_attr), 0),
+		     "sched_getattr() with valid parameters");
+	if (!TST_PASS)
+		return;
 
-	tst_exit();
+	TST_EXP_EQ_LU(read_attr->sched_policy, SCHED_DEADLINE);
+	TST_EXP_EQ_LU(read_attr->sched_runtime, RUNTIME_VAL);
+	TST_EXP_EQ_LU(read_attr->sched_deadline, DEADLINE_VAL);
+	TST_EXP_EQ_LU(read_attr->sched_period, PERIOD_VAL);
+
+	reset_sched();
 }
+
+static struct tst_test test = {
+	.test_all = run,
+	.cleanup = reset_sched,
+	.needs_root = 1,
+	.bufs = (struct tst_buffers []) {
+	    {&read_attr, .size = sizeof(*read_attr)},
+	    {},
+	},
+};
