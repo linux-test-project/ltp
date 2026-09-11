@@ -34,7 +34,7 @@ static void reset_sched(void)
 		.sched_policy = SCHED_OTHER,
 	};
 
-	sched_setattr(0, &normal, 0);
+	SAFE_SCHED_SETATTR(0, &normal, 0);
 }
 
 static void run(void)
@@ -47,8 +47,7 @@ static void run(void)
 		.sched_period = PERIOD_VAL,
 	};
 
-	if (sched_setattr(0, &attr, 0) == -1)
-		tst_brk(TBROK | TERRNO, "sched_setattr() failed");
+	SAFE_SCHED_SETATTR(0, &attr, 0);
 
 	memset((void *)read_attr, 0, sizeof(*read_attr));
 

@@ -173,4 +173,40 @@ static inline int getcpu(unsigned *cpu, unsigned *node)
 # define CLONE_INTO_CGROUP 0x200000000ULL
 #endif
 
+static inline int safe_sched_setattr(const char *file, const int lineno,
+				     pid_t pid, struct sched_attr *attr,
+				     unsigned int flags)
+{
+	int ret;
+
+	ret = tst_syscall(__NR_sched_setattr, pid, attr, flags);
+
+	if (ret == -1) {
+		if (attr) {
+			tst_brk_(file, lineno, TBROK | TERRNO,
+				"sched_setattr(%i, {size=%u, policy=%u}, %u) failed",
+				pid, attr->size, attr->sched_policy, flags);
+		} else {
+			tst_brk_(file, lineno, TBROK | TERRNO,
+				"sched_setattr(%i, NULL, %u) failed", pid, flags);
+		}
+	}
+
+	return ret;
+}
+
+/**
+ * SAFE_SCHED_SETATTR() - Safe wrapper for sched_setattr().
+ * @pid: Target process or thread ID (0 for caller).
+ * @attr: Pointer to a sched_attr structure.
+ * @flags: Flags modifying the scheduling behavior.
+ *
+ * Calls sched_setattr() via tst_syscall(). Reports TCONF if unavailable,
+ * otherwise breaks the test with TBROK | TERRNO on failure.
+ *
+ * Return: Zero on success.
+ */
+#define SAFE_SCHED_SETATTR(pid, attr, flags)\
+	safe_sched_setattr(__FILE__, __LINE__, (pid), (attr), (flags))
+
 #endif /* LAPI_SCHED_H__ */

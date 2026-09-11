@@ -44,7 +44,7 @@ static void reset_sched(void)
 		.sched_policy = SCHED_OTHER,
 	};
 
-	sched_setattr(0, &normal, 0);
+	SAFE_SCHED_SETATTR(0, &normal, 0);
 }
 
 static void run(void)
