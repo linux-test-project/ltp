@@ -891,6 +891,7 @@ mmap21_01 mmap21 -m 1
 mmap21_02 mmap21
 mmap22 mmap22
 mmap23 mmap23
+mmap24 mmap24
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
