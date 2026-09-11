@@ -91,6 +91,10 @@
 # define MAP_DROPPABLE 0x08
 #endif
 
+#ifndef MAP_32BIT
+# define MAP_32BIT 0x40
+#endif
+
 #ifndef MREMAP_DONTUNMAP
 # define MREMAP_DONTUNMAP 4
 #endif
