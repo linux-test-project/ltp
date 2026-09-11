@@ -28,7 +28,8 @@ enum tst_cap_act {
 };
 
 /**
- * struct tst_cap_user_header - Kernel capget(), capset() syscall header.
+ * struct tst_cap_user_header - Kernel :manpage:`capget(2)`,
+ * :manpage:`capset(2)` syscall header.
  *
  * @version: A capability API version.
  * @pid: A process to operate on.
@@ -39,7 +40,8 @@ struct tst_cap_user_header {
 };
 
 /**
- * struct tst_cap_user_data - Kernel capset(), capget() syscall payload.
+ * struct tst_cap_user_data - Kernel :manpage:`capget(2)`, :manpage:`capset(2)`
+ * syscall payload.
  *
  * @effective: A capability effective set.
  * @permitted: A capability permitted set.

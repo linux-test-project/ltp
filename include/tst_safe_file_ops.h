@@ -28,9 +28,9 @@
 /**
  * SAFE_FILE_READ_STR() - Reads a string from a file.
  *
- * Unlike scanf("%s") this function works fine with empty files or files that
- * consist only of white spaces. In such case an empty string is stored into
- * the supplied buffer.
+ * Unlike :manpage:`scanf("%s") <scanf(3)>` this function works fine with empty
+ * files or files that consist only of white spaces. In such case an empty
+ * string is stored into the supplied buffer.
  *
  * It's recommended to use this for various sysfs or procfs files that may be
  * empty.

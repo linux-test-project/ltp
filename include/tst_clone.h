@@ -11,7 +11,7 @@
 
 /**
  * struct tst_clone_args - Arguments for tst_clone().
- * @flags: Clone flags (e.g. CLONE_NEWNS, CLONE_NEWPID).
+ * @flags: :manpage:`clone(2)` flags (e.g. CLONE_NEWNS, CLONE_NEWPID).
  * @pidfd: Pointer (cast to u64) where the kernel stores the pidfd when
  *         CLONE_PIDFD is set.
  * @exit_signal: Signal sent to the parent when the child exits.
@@ -28,12 +28,12 @@ struct tst_clone_args {
  * tst_clone() - Create a child process via clone3 with clone fallback.
  * @args: Clone arguments.
  *
- * Without CLONE_VM this acts like fork(); set tst_test.forks_child
+ * Without CLONE_VM this acts like :manpage:`fork(2)`: set tst_test.forks_child
  * accordingly (safe_clone requires it). Set exit_signal to SIGCHLD
- * for tst_reap_children.
+ * for tst_reap_children().
  *
- * Return: Child PID in the parent, 0 in the child, -1 on clone3 failure
- *         (except ENOSYS), -2 on clone failure.
+ * Return: Child PID in the parent, 0 in the child, -1 on clone3 failure (except
+ * ENOSYS), -2 on clone failure.
  */
 pid_t tst_clone(const struct tst_clone_args *args);
 
