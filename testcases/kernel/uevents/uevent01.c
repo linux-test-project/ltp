@@ -57,10 +57,10 @@ static void verify_uevent(void)
 		tst_brk(TBROK, "Failed to find free loop device");
 
 	snprintf(ev_msg, sizeof(ev_msg),
-	         "change@/devices/virtual/block/loop%i", dev_num);
+		"change@/devices/virtual/block/loop%i", dev_num);
 
 	snprintf(ev_dev_path, sizeof(ev_dev_path),
-	         "DEVPATH=/devices/virtual/block/loop%i", dev_num);
+		"DEVPATH=/devices/virtual/block/loop%i", dev_num);
 
 	snprintf(ev_dev_minor, sizeof(ev_dev_minor), "MINOR=%i", dev_num);
 	snprintf(ev_dev_name, sizeof(ev_dev_name), "DEVNAME=loop%i", dev_num);

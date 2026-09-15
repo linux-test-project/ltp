@@ -102,7 +102,7 @@ static void generate_tun_uevents(void)
 		.ifr_name = "ltp-tun0",
 	};
 
-	SAFE_IOCTL(fd, TUNSETIFF, (void*)&ifr);
+	SAFE_IOCTL(fd, TUNSETIFF, (void *)&ifr);
 
 	SAFE_IOCTL(fd, TUNSETPERSIST, 0);
 

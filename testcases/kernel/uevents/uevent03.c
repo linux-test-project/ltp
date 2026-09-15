@@ -209,7 +209,6 @@ static void verify_uevent(void)
 	snprintf(dev_name1, sizeof(dev_name1),
 		"DEVNAME=input/%s", handler1);
 
-
 	snprintf(add_msg_event2, sizeof(add_msg_event2),
 		"add@%s/%s", sysname, handler2);
 
