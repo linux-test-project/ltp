@@ -6,6 +6,8 @@
 #ifndef UEVENT_H__
 #define UEVENT_H__
 
+#include <stdint.h>
+#include <string.h>
 #include "tst_netlink.h"
 
 /*
@@ -119,7 +121,7 @@ static inline int open_uevent_netlink(void)
 
 /*
  * Reads events from uevent netlink socket until all expected events passed in
- * the uevent array are matched.
+ * the uevent array are matched, in the exact order they are listed.
  */
 static inline void wait_for_uevents(int fd, const struct uevent_desc *const uevents[])
 {
@@ -141,6 +143,54 @@ static inline void wait_for_uevents(int fd, const struct uevent_desc *const ueve
 			if (!uevents[++i]) {
 				close(fd);
 				return;
+			}
+		}
+	}
+}
+
+/*
+ * Reads events from uevent netlink socket until all expected events passed in
+ * the uevent array are matched. Unlike wait_for_uevents(), events do not have
+ * to arrive in the order they are listed in the uevents array, since the kernel
+ * is free to reorder unrelated uevents.
+ *
+ * Does not close fd; the caller owns the socket and can call this more
+ * than once on it to keep independent lifecycle phases ordered, e.g.
+ * matching all "add" events before looking for "remove" events.
+ */
+static inline void wait_for_uevents_unordered(int fd, const struct uevent_desc *const uevents[])
+{
+	int i, cnt = 0, remaining;
+
+	while (uevents[cnt])
+		cnt++;
+
+	uint8_t matched[cnt];
+
+	memset(matched, 0, sizeof(matched));
+
+	remaining = cnt;
+
+	while (remaining) {
+		int len;
+		char buf[4096];
+
+		len = recv(fd, &buf, sizeof(buf), 0);
+
+		if (len == 0)
+			continue;
+
+		print_uevent(buf, len);
+
+		for (i = 0; i < cnt; i++) {
+			if (matched[i])
+				continue;
+
+			if (uevent_match(buf, len, uevents[i])) {
+				tst_res(TPASS, "Got expected UEVENT");
+				matched[i] = 1;
+				remaining--;
+				break;
 			}
 		}
 	}

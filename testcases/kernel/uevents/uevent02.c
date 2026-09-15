@@ -25,7 +25,8 @@
 #include "uevent.h"
 
 #define TUN_PATH "/dev/net/tun"
-#define MAX_UEVENTS 7
+#define MAX_ADD_UEVENTS 4
+#define MAX_REM_UEVENTS 4
 
 static struct uevent_desc add = {
 	.msg = "add@/devices/virtual/net/ltp-tun0",
@@ -88,7 +89,9 @@ static struct uevent_desc rem = {
 		"INTERFACE=ltp-tun0",
 	}
 };
-static const struct uevent_desc *uevents[MAX_UEVENTS];
+
+static const struct uevent_desc *add_uevents[MAX_ADD_UEVENTS];
+static const struct uevent_desc *rem_uevents[MAX_REM_UEVENTS];
 
 static void generate_tun_uevents(void)
 {
@@ -114,7 +117,9 @@ static void verify_uevent(void)
 	if (!pid) {
 		fd = open_uevent_netlink();
 		TST_CHECKPOINT_WAKE(0);
-		wait_for_uevents(fd, uevents);
+		wait_for_uevents_unordered(fd, add_uevents);
+		wait_for_uevents_unordered(fd, rem_uevents);
+		close(fd);
 		exit(0);
 	}
 
@@ -128,19 +133,21 @@ static void verify_uevent(void)
 static void setup(void)
 {
 	struct tst_kconfig_var kconfig = TST_KCONFIG_INIT("CONFIG_RPS");
-	int i = 0;
+	int i = 0, j = 0;
 
 	tst_kconfig_read(&kconfig, 1);
 
-	uevents[i++] = &add;
+	add_uevents[i++] = &add;
 	if (kconfig.choice == 'y')
-		uevents[i++] = &add_rx;
-	uevents[i++] = &add_tx;
+		add_uevents[i++] = &add_rx;
+	add_uevents[i++] = &add_tx;
+	add_uevents[i++] = NULL;
+
 	if (kconfig.choice == 'y')
-		uevents[i++] = &rem_rx;
-	uevents[i++] = &rem_tx;
-	uevents[i++] = &rem;
-	uevents[i++] = NULL;
+		rem_uevents[j++] = &rem_rx;
+	rem_uevents[j++] = &rem_tx;
+	rem_uevents[j++] = &rem;
+	rem_uevents[j++] = NULL;
 }
 
 static struct tst_test test = {
