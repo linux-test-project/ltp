@@ -740,6 +740,7 @@ keyctl19 keyctl19
 keyctl20 keyctl20
 keyctl21 keyctl21
 keyctl22 keyctl22
+keyctl23 keyctl23
 
 kcmp01 kcmp01
 kcmp02 kcmp02

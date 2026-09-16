@@ -7,6 +7,7 @@
 #define KEYCTL_COMMON_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "tst_test.h"
@@ -29,5 +30,13 @@
 
 #define SAFE_NEW_USER_KEY(desc, payload, plen, ring) \
 	safe_add_key(__FILE__, __LINE__, "user", (desc), (payload), (plen), (ring))
+
+static inline bool is_asym_supported(key_serial_t ring_builtin)
+{
+	TEST(keyctl(KEYCTL_RESTRICT_KEYRING, ring_builtin,
+		    (unsigned long)"asymmetric", (unsigned long)"bogus", 0));
+
+	return !(TST_RET == -1 && TST_ERR == ENOKEY);
+}
 
 #endif /* KEYCTL_COMMON_H__ */
