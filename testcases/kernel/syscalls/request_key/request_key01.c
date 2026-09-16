@@ -35,9 +35,7 @@ static void verify_request_key(void)
 
 static void setup(void)
 {
-	key = add_key("keyring", "ltp", NULL, 0, KEY_SPEC_THREAD_KEYRING);
-	if (key == -1)
-		tst_brk(TBROK | TERRNO, "add_key() failed");
+	key = SAFE_ADD_KEY("keyring", "ltp", NULL, 0, KEY_SPEC_THREAD_KEYRING);
 }
 
 static struct tst_test test = {

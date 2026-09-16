@@ -48,9 +48,7 @@ static int init_key(char *name, int cmd)
 	int n;
 	int sec = 1;
 
-	n = add_key("keyring", name, NULL, 0, KEY_SPEC_THREAD_KEYRING);
-	if (n == -1)
-		tst_brk(TBROK | TERRNO, "add_key() failed");
+	n = SAFE_ADD_KEY("keyring", name, NULL, 0, KEY_SPEC_THREAD_KEYRING);
 
 	if (cmd == KEYCTL_REVOKE) {
 		if (keyctl(cmd, n) == -1)

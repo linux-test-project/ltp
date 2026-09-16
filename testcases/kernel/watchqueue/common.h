@@ -81,9 +81,7 @@ static inline key_serial_t wqueue_add_key(int fd)
 {
 	key_serial_t key;
 
-	key = add_key("user", "ltptestkey", "a", 1, KEY_SPEC_SESSION_KEYRING);
-	if (key == -1)
-		tst_brk(TBROK, "add_key error: %s", tst_strerrno(errno));
+	key = SAFE_ADD_KEY("user", "ltptestkey", "a", 1, KEY_SPEC_SESSION_KEYRING);
 
 	SAFE_KEYCTL(KEYCTL_WATCH_KEY, key, fd, 0x01, 0);
 	SAFE_KEYCTL(KEYCTL_WATCH_KEY, KEY_SPEC_SESSION_KEYRING, fd, 0x02, 0);

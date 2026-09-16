@@ -21,10 +21,8 @@
 
 static void add_test_key(const char *description)
 {
-	TEST(add_key("user", description, "payload", 7,
-		     KEY_SPEC_PROCESS_KEYRING));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "Failed to add test key");
+	SAFE_ADD_KEY("user", description, "payload", 7,
+		     KEY_SPEC_PROCESS_KEYRING);
 }
 
 static void do_test(void)

@@ -61,10 +61,8 @@ static void do_test(void)
 	pthread_t pth[4];
 
 	for (i = 0; i < LOOPS; i++) {
-		key = add_key("user", "ltptestkey", "foo", 3,
+		key = SAFE_ADD_KEY("user", "ltptestkey", "foo", 3,
 			KEY_SPEC_PROCESS_KEYRING);
-		if (key == -1)
-			tst_brk(TBROK | TERRNO, "Failed to add key");
 
 		SAFE_PTHREAD_CREATE(&pth[0], NULL, do_read,
 			(void *)(unsigned long)key);
@@ -103,10 +101,8 @@ static void do_test(void)
 	 *
 	 * We create extra key here, to remove reference to last revoked key.
 	 */
-	key_inv = add_key("user", "ltptestkey", "foo", 3,
+	key_inv = SAFE_ADD_KEY("user", "ltptestkey", "foo", 3,
 		KEY_SPEC_PROCESS_KEYRING);
-	if (key_inv == -1)
-		tst_brk(TBROK | TERRNO, "Failed to add key");
 
 	/*
 	 * If we have invalidate, we can drop extra key immediately as well,
