@@ -283,8 +283,35 @@ static inline long safe_keyctl(const char *file, const int lineno,
 
 	return rval;
 }
+
 #define SAFE_KEYCTL(cmd, arg2, arg3, arg4, arg5) \
 	safe_keyctl(__FILE__, __LINE__, \
 	     (cmd), (arg2), (arg3), (arg4), (arg5))
 
+static inline key_serial_t safe_add_key(const char *file, const int lineno,
+			  const char *type, const char *desc,
+			  const void *payload, size_t size,
+			  key_serial_t keyring)
+{
+
+	int rval;
+
+	rval = add_key(type, desc, payload, size, keyring);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "add_key(%s, '%s', %p, %ld, %d) failed",
+			 type, desc, payload, size, keyring);
+	} else if (rval < -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid add_key(%s, '%s', %p, %ld, %d) return value %d",
+			 type, desc, payload, size, keyring, rval);
+	}
+
+	return rval;
+}
+
+#define SAFE_ADD_KEY(type, desc, payload, size, keyring) \
+	safe_add_key(__FILE__, __LINE__, \
+                            (type), (desc), (payload), (size), (keyring))
 #endif	/* LAPI_KEYCTL_H__ */
