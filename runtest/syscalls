@@ -743,6 +743,7 @@ keyctl22 keyctl22
 keyctl23 keyctl23
 keyctl24 keyctl24
 keyctl25 keyctl25
+keyctl26 keyctl26
 
 kcmp01 kcmp01
 kcmp02 kcmp02
