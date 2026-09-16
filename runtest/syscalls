@@ -737,6 +737,7 @@ keyctl16 keyctl16
 keyctl17 keyctl17
 keyctl18 keyctl18
 keyctl19 keyctl19
+keyctl20 keyctl20
 
 kcmp01 kcmp01
 kcmp02 kcmp02
