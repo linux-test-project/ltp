@@ -8,6 +8,8 @@
 
 #include "config.h"
 
+#include <stdint.h>
+
 #if defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS)
 # include <keyutils.h>
 #else
@@ -16,7 +18,6 @@
 # endif /* HAVE_LINUX_KEYCTL_H */
 
 # include <stdarg.h>
-# include <stdint.h>
 # include "lapi/syscalls.h"
 typedef int32_t key_serial_t;
 
@@ -59,6 +60,23 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 }
 
 #endif /* defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS) */
+
+#ifndef HAVE_STRUCT_KEYCTL_DH_PARAMS
+struct keyctl_dh_params {
+	int32_t priv;
+	int32_t prime;
+	int32_t base;
+};
+#endif
+
+#ifndef HAVE_STRUCT_KEYCTL_KDF_PARAMS
+struct keyctl_kdf_params {
+	char *hashname;
+	char *otherinfo;
+	uint32_t otherinfolen;
+	uint32_t __spare[8];
+};
+#endif
 
 /* special process keyring shortcut IDs */
 #ifndef KEY_SPEC_THREAD_KEYRING
@@ -124,6 +142,10 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEYCTL_CLEAR 7
 #endif
 
+#ifndef KEYCTL_LINK
+# define KEYCTL_LINK 8
+#endif
+
 #ifndef KEYCTL_UNLINK
 # define KEYCTL_UNLINK 9
 #endif
@@ -166,6 +188,18 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 
 #ifndef KEYCTL_WATCH_KEY
 # define KEYCTL_WATCH_KEY 32
+#endif
+
+#ifndef KEYCTL_RESTRICT_KEYRING
+# define KEYCTL_RESTRICT_KEYRING 29
+#endif
+
+#ifndef KEYCTL_MOVE
+# define KEYCTL_MOVE 30
+#endif
+
+#ifndef KEYCTL_MOVE_EXCL
+# define KEYCTL_MOVE_EXCL 0x00000001 /* do not displace from the to-keyring */
 #endif
 
 /* key permissions */
