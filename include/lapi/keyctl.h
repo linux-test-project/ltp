@@ -78,6 +78,30 @@ struct keyctl_kdf_params {
 };
 #endif
 
+#ifndef HAVE_STRUCT_KEYCTL_PKEY_QUERY
+struct keyctl_pkey_query {
+	uint32_t	supported_ops;
+	uint32_t	key_size;
+	uint16_t	max_data_size;
+	uint16_t	max_sig_size;
+	uint16_t	max_enc_size;
+	uint16_t	max_dec_size;
+	uint32_t	__spare[10];
+};
+#endif
+
+#ifndef HAVE_STRUCT_KEYCTL_PKEY_PARAMS
+struct keyctl_pkey_params {
+	int32_t		key_id;
+	uint32_t	in_len;
+	union {
+		uint32_t	out_len;
+		uint32_t	in2_len;
+	};
+	uint32_t	__spare[7];
+};
+#endif
+
 /* special process keyring shortcut IDs */
 #ifndef KEY_SPEC_THREAD_KEYRING
 # define KEY_SPEC_THREAD_KEYRING -1
@@ -202,6 +226,33 @@ struct keyctl_kdf_params {
 # define KEYCTL_MOVE_EXCL 0x00000001 /* do not displace from the to-keyring */
 #endif
 
+#ifndef KEYCTL_PKEY_QUERY
+# define KEYCTL_PKEY_QUERY 24
+#endif
+
+#ifndef KEYCTL_PKEY_ENCRYPT
+# define KEYCTL_PKEY_ENCRYPT 25
+#endif
+
+#ifndef KEYCTL_PKEY_DECRYPT
+# define KEYCTL_PKEY_DECRYPT 26
+#endif
+
+#ifndef KEYCTL_PKEY_SIGN
+# define KEYCTL_PKEY_SIGN 27
+#endif
+
+#ifndef KEYCTL_PKEY_VERIFY
+# define KEYCTL_PKEY_VERIFY 28
+#endif
+
+#ifndef KEYCTL_SUPPORTS_ENCRYPT
+# define KEYCTL_SUPPORTS_ENCRYPT 0x01
+# define KEYCTL_SUPPORTS_DECRYPT 0x02
+# define KEYCTL_SUPPORTS_SIGN    0x04
+# define KEYCTL_SUPPORTS_VERIFY  0x08
+#endif
+
 /* key permissions */
 #ifndef KEY_POS_VIEW
 # define KEY_POS_VIEW    0x01000000
@@ -262,6 +313,11 @@ static inline long safe_keyctl(const char *file, const int lineno,
 	case KEYCTL_GET_SECURITY:
 	case KEYCTL_GET_PERSISTENT:
 	case KEYCTL_DH_COMPUTE:
+	case KEYCTL_PKEY_QUERY:
+	case KEYCTL_PKEY_ENCRYPT:
+	case KEYCTL_PKEY_DECRYPT:
+	case KEYCTL_PKEY_SIGN:
+	case KEYCTL_PKEY_VERIFY:
 		if (rval < 0)
 			failure = 1;
 		break;
