@@ -727,6 +727,7 @@ keyctl06 keyctl06
 keyctl07 keyctl07
 keyctl08 keyctl08
 keyctl09 keyctl09
+keyctl10 keyctl10
 
 kcmp01 kcmp01
 kcmp02 kcmp02
