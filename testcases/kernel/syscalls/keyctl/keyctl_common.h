@@ -39,4 +39,24 @@ static inline bool is_asym_supported(key_serial_t ring_builtin)
 	return !(TST_RET == -1 && TST_ERR == ENOKEY);
 }
 
+static inline key_serial_t add_asymmetric_key_or_tconf(const char *desc,
+						       const void *payload,
+						       size_t plen,
+						       const char *parser_kconfig)
+{
+	TEST(add_key("asymmetric", desc, payload, plen, KEY_SPEC_PROCESS_KEYRING));
+	if (TST_RET >= 0)
+		return TST_RET;
+
+	if (TST_ERR == ENODEV)
+		tst_brk(TCONF, "kernel does not support asymmetric keys");
+	if (TST_ERR == EBADMSG)
+		tst_brk(TCONF, "missing asymmetric parser (%s)", parser_kconfig);
+	if (TST_ERR == ENOENT)
+		tst_brk(TCONF, "missing crypto RSA / SHA256 algorithms");
+
+	tst_brk(TBROK | TTERRNO, "failed to add asymmetric key '%s'", desc);
+	return -1;
+}
+
 #endif /* KEYCTL_COMMON_H__ */
