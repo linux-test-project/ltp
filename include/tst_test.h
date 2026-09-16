@@ -479,6 +479,9 @@ struct tst_fs {
  *           probabilistic or fuzzy synchronization tests).
  *           If not set, a default minimum of 1 second is enforced.
  *
+ * @iterations: The default value for the number of test iterations, i.e. the
+ *              -i command line parameter.
+ *
  * @setup: Setup callback is called once at the start of the test in order to
  *         prepare the test environment.
  *
@@ -609,6 +612,7 @@ struct tst_fs {
 	int timeout;
 	int runtime;
 	int min_runtime;
+	unsigned int iterations;
 
 	void (*setup)(void);
 	void (*cleanup)(void);

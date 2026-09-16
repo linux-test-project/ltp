@@ -64,7 +64,6 @@ const char *TCID __attribute__((weak));
 struct tst_test *tst_test;
 
 static const char *tcid;
-static int iterations = 1;
 static float duration = -1;
 static float timeout_mul = -1;
 static int reproducible_output;
@@ -834,7 +833,7 @@ static void parse_opts(int argc, char *argv[])
 			print_test_tags();
 			exit(0);
 		case 'i':
-			iterations = SAFE_STRTOL(optarg, 0, INT_MAX);
+			tst_test->iterations = SAFE_STRTOL(optarg, 0, UINT_MAX);
 		break;
 		case 'I':
 			if (tst_test->runtime > 0)
@@ -1502,6 +1501,9 @@ static void do_setup(int argc, char *argv[])
 		}
 	}
 
+	if (tst_test->iterations == 0)
+		tst_test->iterations = 1;
+
 	if (tst_test->mount_device)
 		tst_test->format_device = 1;
 
@@ -1788,7 +1790,7 @@ static void testrun(void)
 	for (;;) {
 		cont = 0;
 
-		if (i < (unsigned int)iterations) {
+		if (i < tst_test->iterations) {
 			i++;
 			cont = 1;
 		}
