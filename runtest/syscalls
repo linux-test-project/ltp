@@ -745,6 +745,7 @@ keyctl24 keyctl24
 keyctl25 keyctl25
 keyctl26 keyctl26
 keyctl27 keyctl27
+keyctl28 keyctl28
 
 kcmp01 kcmp01
 kcmp02 kcmp02
