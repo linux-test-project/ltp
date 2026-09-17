@@ -65,9 +65,6 @@ static void setup(void)
 {
 	int fd = -1;
 
-	if (strcmp(tst_device->fs_type, "xfs") && strcmp(tst_device->fs_type, "ext4"))
-		tst_brk(TCONF, "This test only supports ext4 and xfs");
-
 	SAFE_FILE_PRINTF(TESTFILE, "AAAA");
 	fd = open(TESTFILE, O_RDWR | O_DIRECT);
 	if (fd == -1) {
@@ -87,5 +84,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
-	.all_filesystems = 1,
+	.filesystems = (struct tst_fs []) {
+		{.type = "ext4"},
+		{.type = "xfs"},
+		{}
+	},
 };
