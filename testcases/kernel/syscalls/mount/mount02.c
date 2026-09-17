@@ -29,8 +29,6 @@
 
 static char path[PATH_MAX + 2];
 static const char *long_path = path;
-static const char *device;
-static const char *fs_type;
 static const char *null;
 static const char *wrong_fs_type = "error";
 static const char *mntpoint = MNTPOINT;
@@ -67,12 +65,12 @@ static struct test_case {
 	{.fs_type = &fault, .desc = "fault device type", .exp_errno = EFAULT},
 	{.mntpoint = &long_path, .desc = "long name", .exp_errno = ENAMETOOLONG},
 	{.mntpoint = &nonexistent, .desc = "non existant folder", .exp_errno = ENOENT},
-	{.device = &device, .mntpoint = &file, .desc = "file", .exp_errno = ENOTDIR},
+	{.mntpoint = &file, .desc = "file", .exp_errno = ENOTDIR},
 };
 
 static void pre_mount(void)
 {
-	SAFE_MOUNT(device, mntpoint, fs_type, 0, NULL);
+	SAFE_MOUNT(tst_device->dev, mntpoint, tst_device->fs_type, 0, NULL);
 }
 
 static void post_umount(void)
@@ -97,9 +95,6 @@ static void setup(void)
 {
 	fault = tst_get_bad_addr(NULL);
 
-	device = tst_device->dev;
-	fs_type = tst_device->fs_type;
-
 	memset(path, 'a', PATH_MAX + 1);
 
 	SAFE_MKNOD(char_dev, S_IFCHR | 0777, 0);
@@ -117,13 +112,13 @@ static void run(unsigned int i)
 	struct test_case *tc = &test_cases[i];
 
 	if (!tc->device)
-		tc->device = &device;
+		tc->device = &tst_device->dev;
 
 	if (!tc->mntpoint)
 		tc->mntpoint = &mntpoint;
 
 	if (!tc->fs_type)
-		tc->fs_type = &fs_type;
+		tc->fs_type = &tst_device->fs_type;
 
 	if (tc->setup)
 		tc->setup();
