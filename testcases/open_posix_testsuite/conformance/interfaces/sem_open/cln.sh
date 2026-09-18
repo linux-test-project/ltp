@@ -1,4 +1,4 @@
-
+#!/bin/sh
 rm -f /tmp/mysem >/dev/null 2>&1
 rm -f /tmp/sem_open* >/dev/null 2>&1
 rm -f a.out

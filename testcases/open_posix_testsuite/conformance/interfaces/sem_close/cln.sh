@@ -1,4 +1,4 @@
-
+#!/bin/sh
 rm -f /tmp/sem_* >/dev/null 2>&1
 rm -f a.out >/dev/null 2>&1
 
