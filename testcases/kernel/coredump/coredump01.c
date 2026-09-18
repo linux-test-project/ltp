@@ -31,12 +31,14 @@
 
 #include "coredump_common.h"
 #include "tst_kconfig.h"
+#include "tst_security.h"
 
 #define HELPER "coredump01_helper"
 #define HELPER_TIMEOUT 10
 
 static char helper_path[PATH_MAX];
 static int static_usermodehelper;
+static int selinux_enforcing;
 
 /*
  * e_ident[] and e_type live at the same file offset in ELF32 and ELF64,
@@ -89,6 +91,11 @@ static void verify_pipe_pattern(void)
 		return;
 	}
 
+	if (selinux_enforcing) {
+		tst_res(TCONF, "SELinux is enforcing, skipping pipe core_pattern");
+		return;
+	}
+
 	set_pattern("|%s %%e %%p %%s %s/res.%%p", helper_path, cwd);
 
 	pid = crash_child();
@@ -136,6 +143,8 @@ static void setup(void)
 
 	tst_kconfig_read(&kconfig, 1);
 	static_usermodehelper = (kconfig.choice == 'y');
+
+	selinux_enforcing = tst_selinux_enforcing();
 
 	if (tst_get_path(HELPER, path, sizeof(path)))
 		tst_brk(TCONF, "'%s' not found in $PATH", HELPER);
