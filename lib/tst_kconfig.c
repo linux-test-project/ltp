@@ -165,6 +165,8 @@ static struct config_module_map {
 	{"CONFIG_NET_SCH_INGRESS", "sch_ingress"},
 	{"CONFIG_NET_CLS_MATCHALL", "cls_matchall"},
 	{"CONFIG_NET_ACT_PEDIT", "act_pedit"},
+	{"CONFIG_PKCS8_PRIVATE_KEY_PARSER", "pkcs8_key_parser"},
+	{"CONFIG_X509_CERTIFICATE_PARSER", "x509_key_parser"},
 	{}
 };
 
