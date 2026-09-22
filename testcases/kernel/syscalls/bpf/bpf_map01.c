@@ -82,7 +82,7 @@ void run(unsigned int n)
 					break;
 				}
 			}
-			if (i < VAL_SZ)
+			if (i == VAL_SZ)
 				tst_res(TPASS, "Preallocated array map lookup");
 		} else {
 			tst_res(TFAIL | TTERRNO, "Prellocated array map lookup");
