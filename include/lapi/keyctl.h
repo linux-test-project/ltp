@@ -8,17 +8,14 @@
 
 #include "config.h"
 
+#ifdef HAVE_LINUX_KEYCTL_H
+# include <linux/keyctl.h>
+#endif /* HAVE_LINUX_KEYCTL_H */
+
+#include <stdarg.h>
 #include <stdint.h>
+#include "lapi/syscalls.h"
 
-#if defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS)
-# include <keyutils.h>
-#else
-# ifdef HAVE_LINUX_KEYCTL_H
-#  include <linux/keyctl.h>
-# endif /* HAVE_LINUX_KEYCTL_H */
-
-# include <stdarg.h>
-# include "lapi/syscalls.h"
 typedef int32_t key_serial_t;
 
 static inline key_serial_t add_key(const char *type,
@@ -58,8 +55,6 @@ static inline long keyctl(int cmd, ...)
 static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 	return keyctl(KEYCTL_JOIN_SESSION_KEYRING, name);
 }
-
-#endif /* defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS) */
 
 #ifndef HAVE_STRUCT_KEYCTL_DH_PARAMS
 struct keyctl_dh_params {
