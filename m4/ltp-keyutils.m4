@@ -12,6 +12,4 @@ AC_DEFUN([LTP_CHECK_KEYUTILS_SUPPORT], [
 	AC_CHECK_TYPES([struct keyctl_dh_params, struct keyctl_kdf_params,
 			struct keyctl_pkey_query, struct keyctl_pkey_params],,,
 			[#include <linux/keyctl.h>])
-
-	AC_CHECK_MEMBERS([struct keyctl_dh_params.priv],,,[#include <linux/keyctl.h>])
 ])
