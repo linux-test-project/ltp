@@ -78,7 +78,7 @@ static void setup(void)
 	key_base = SAFE_NEW_USER_KEY("dh_base", dh_base, sizeof(dh_base),
 				KEY_SPEC_PROCESS_KEYRING);
 
-	dh_params->priv = key_priv;
+	dh_params->private = key_priv;
 	dh_params->prime = key_prime;
 	dh_params->base = key_base;
 

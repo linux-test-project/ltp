@@ -22,7 +22,7 @@ static void setup(void)
 {
 	SAFE_KEYCTL(KEYCTL_JOIN_SESSION_KEYRING, 0, 0, 0, 0);
 
-	dh_params->priv = SAFE_NEW_USER_KEY("dh_priv", dh_priv, sizeof(dh_priv),
+	dh_params->private = SAFE_NEW_USER_KEY("dh_priv", dh_priv, sizeof(dh_priv),
 				       KEY_SPEC_PROCESS_KEYRING);
 	dh_params->prime = SAFE_NEW_USER_KEY("dh_prime", dh_prime, sizeof(dh_prime),
 					KEY_SPEC_PROCESS_KEYRING);
