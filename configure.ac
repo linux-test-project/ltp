@@ -56,7 +56,6 @@ AC_CHECK_HEADERS_ONCE([ \
     cpuid.h \
     emmintrin.h \
     ifaddrs.h \
-    keyutils.h \
     linux/blkdev.h \
     linux/can.h \
     linux/cgroupstats.h \
@@ -300,6 +299,10 @@ AC_CHECK_TYPES([struct uffdio_move],,,[#include <linux/userfaultfd.h>])
 AC_CHECK_TYPES([struct uffdio_poison],,,[#include <linux/userfaultfd.h>])
 AC_CHECK_TYPES([struct uffdio_writeprotect],,,[#include <linux/userfaultfd.h>])
 
+AC_CHECK_TYPES([struct keyctl_dh_params, struct keyctl_kdf_params,
+	struct keyctl_pkey_query, struct keyctl_pkey_params],,,
+	[#include <linux/keyctl.h>])
+
 # Tools knobs
 
 # Bash
@@ -422,7 +425,6 @@ LTP_CHECK_CLEAR_CACHE
 LTP_CHECK_CRYPTO
 LTP_CHECK_FORTIFY_SOURCE
 LTP_CHECK_KERNEL_DEVEL
-LTP_CHECK_KEYUTILS_SUPPORT
 LTP_CHECK_LIBMNL
 LTP_CHECK_SELINUX
 LTP_CHECK_SYNC_ADD_AND_FETCH
@@ -478,7 +480,6 @@ open posix testsuite: ${with_open_posix_testsuite:-no}
 TI-RPC testsuite: ${with_tirpc:-yes}
 
 LIBRARIES
-keyutils: ${have_keyutils:-yes}
 libacl: ${have_libacl:-no}
 libaio: ${have_libaio:-no} (aio: ${have_aio:-no})
 libcap: $cap_libs (newer: ${has_newer_libcap:-no})
