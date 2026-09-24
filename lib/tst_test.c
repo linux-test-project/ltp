@@ -1490,7 +1490,7 @@ static void do_setup(int argc, char *argv[])
 		tst_brk(TCONF, "Not supported in 32-bit compat mode");
 
 	if (tst_test->needs_abi_bits && !tst_abi_bits(tst_test->needs_abi_bits))
-		tst_brk(TCONF, "%dbit ABI is not supported", tst_test->needs_abi_bits);
+		tst_brk(TCONF, "Test needs %dbit ABI", tst_test->needs_abi_bits);
 
 	if (tst_test->needs_cmds) {
 		struct tst_cmd *pcmd = tst_test->needs_cmds;
