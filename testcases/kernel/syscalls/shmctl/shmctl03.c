@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2020 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2026
  */
 
 /*\
- * Call shmctl() with IPC_INFO flag and check that the data are consistent with
- * /proc/sys/kernel/shm*.
+ * Call :manpage:`shmctl(2)` with IPC_INFO flag and check that the data are
+ * consistent with /proc/sys/kernel/shm*.
  */
 
 #define _GNU_SOURCE
@@ -18,18 +19,11 @@ static void verify_ipcinfo(void)
 	struct shminfo info;
 	unsigned long shmmax;
 
-	TEST(shmctl(0, IPC_INFO, (struct shmid_ds *)&info));
-
-	if (TST_RET < 0) {
-		tst_res(TFAIL | TTERRNO,
-			"shmctl(0, IPC_INFO, ...) returned %li", TST_RET);
+	TST_EXP_POSITIVE(shmctl(0, IPC_INFO, (struct shmid_ds *)&info));
+	if (!TST_PASS)
 		return;
-	}
 
-	if (info.shmmin != 1)
-		tst_res(TFAIL, "shmmin = %li, expected 1", info.shmmin);
-	else
-		tst_res(TPASS, "shmmin = 1");
+	TST_EXP_EQ_LU(info.shmmin, 1);
 
 	SAFE_FILE_SCANF(PATH_KERN_SHMMAX, "%lu", &shmmax);
 	if (tst_is_compat_mode() && info.shmmax == INT_MAX)
