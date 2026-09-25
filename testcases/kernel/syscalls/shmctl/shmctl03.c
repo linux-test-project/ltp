@@ -16,6 +16,7 @@
 static void verify_ipcinfo(void)
 {
 	struct shminfo info;
+	unsigned long shmmax;
 
 	TEST(shmctl(0, IPC_INFO, (struct shmid_ds *)&info));
 
@@ -30,7 +31,12 @@ static void verify_ipcinfo(void)
 	else
 		tst_res(TPASS, "shmmin = 1");
 
-	TST_ASSERT_ULONG(PATH_KERN_SHMMAX, info.shmmax);
+	SAFE_FILE_SCANF(PATH_KERN_SHMMAX, "%lu", &shmmax);
+	if (tst_is_compat_mode() && info.shmmax == INT_MAX)
+		TST_EXP_LE_LU(INT_MAX, shmmax);
+	else
+		TST_EXP_EQ_LU(info.shmmax, shmmax);
+
 	TST_ASSERT_ULONG(PATH_KERN_SHMMNI, info.shmmni);
 	TST_ASSERT_ULONG(PATH_KERN_SHMALL, info.shmall);
 }
