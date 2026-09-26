@@ -18,9 +18,10 @@
  * memory pressure in it.
  *
  * A/B    memory.current ~= 50M
- * A/B/C  memory.current ~= 33M
- * A/B/D  memory.current ~= 17M
+ * A/B/C  memory.current ~= 29M
+ * A/B/D  memory.current ~= 21M
  * A/B/E  memory.current ~= 0
+ * (for origin of the numbers, see model in memcg_protection.m.)
  *
  * After that it tries to allocate more than there is unprotected
  * memory in A available, and checks that memory.min protects
@@ -217,10 +218,10 @@ static void test_memcg_min(void)
 	for (i = 0; i < ARRAY_SIZE(leaf_cg); i++)
 		SAFE_CG_SCANF(leaf_cg[i], "memory.current", "%ld", c + i);
 
-	TST_EXP_EXPR(values_close(c[0], MB(33), 20),
-		     "(A/B/C memory.current=%ld) ~= %d", c[0], MB(33));
-	TST_EXP_EXPR(values_close(c[1], MB(17), 20),
-		     "(A/B/D memory.current=%ld) ~= %d", c[1], MB(17));
+	TST_EXP_EXPR(values_close(c[0], MB(29), 20),
+		     "(A/B/C memory.current=%ld) ~= %d", c[0], MB(29));
+	TST_EXP_EXPR(values_close(c[1], MB(21), 20),
+		     "(A/B/D memory.current=%ld) ~= %d", c[1], MB(21));
 	TST_EXP_EXPR(values_close(c[2], 0, 1),
 		     "(A/B/E memory.current=%ld) ~= 0", c[2]);
 
