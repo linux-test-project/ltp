@@ -5,7 +5,7 @@
  *
  * Original description:
  * "First, this test creates the following hierarchy:
- * A       memory.min = 50M,  memory.max = 200M
+ * A       memory.min = 0,    memory.max = 200M
  * A/B     memory.min = 50M,  memory.current = 50M
  * A/B/C   memory.min = 75M,  memory.current = 50M
  * A/B/D   memory.min = 25M,  memory.current = 50M
@@ -15,7 +15,7 @@
  * Usages are pagecache, but the test keeps a running
  * process in every leaf cgroup.
  * Then it creates A/G and creates a significant
- * memory pressure in it.
+ * memory pressure in A.
  *
  * A/B    memory.current ~= 50M
  * A/B/C  memory.current ~= 29M
@@ -194,7 +194,6 @@ static void test_memcg_min(void)
 		alloc_pagecache_in_child(leaf_cg[i], MB(50));
 	}
 
-	SAFE_CG_PRINT(trunk_cg[A], "memory.min", "50M");
 	SAFE_CG_PRINT(trunk_cg[B], "memory.min", "50M");
 	SAFE_CG_PRINT(leaf_cg[C], "memory.min", "75M");
 	SAFE_CG_PRINT(leaf_cg[D], "memory.min", "25M");
