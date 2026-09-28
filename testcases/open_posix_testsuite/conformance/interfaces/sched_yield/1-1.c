@@ -82,7 +82,7 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	/* get in FIFO */
 	sp.sched_priority = sched_get_priority_min(SCHED_FIFO);
 	rc = sched_setscheduler(getpid(), SCHED_FIFO, &sp);
-	if (rc) {
+	if (rc == -1) {
 		ERR_LOG("sched_setscheduler", rc);
 		return status;
 	}
