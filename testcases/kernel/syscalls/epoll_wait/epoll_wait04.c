@@ -29,7 +29,7 @@ static void run(void)
 	if (TST_RET != 0)
 		tst_res(TFAIL | TTERRNO, "epoll_wait() returned %li", TST_RET);
 
-	if (tst_timer_elapsed_us() <= USEC_PRECISION)
+	if (tst_timer_elapsed_us() <= tst_multiply_timeout(USEC_PRECISION))
 		tst_res(TPASS, "epoll_wait() returns immediately with a timeout equal to zero");
 	else
 		tst_res(TFAIL, "epoll_wait() waited for %llius with a timeout equal to zero",
