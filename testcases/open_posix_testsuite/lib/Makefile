@@ -1,6 +1,8 @@
 top_srcdir?=		..
 subdir=			lib
 
+include $(top_srcdir)/include/mk/env.mk
+
 AR?=			ar
 RANLIB?=		ranlib
 CFLAGS+=		-I$(top_srcdir)/include
