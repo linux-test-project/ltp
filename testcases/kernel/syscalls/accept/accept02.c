@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include "tst_test.h"
+#include "tst_netdevice.h"
 #include "tst_safe_net.h"
 #include "tst_safe_pthread.h"
 
@@ -112,7 +113,7 @@ static void setup(void)
 	client_addr = tst_alloc(sizeof(*client_addr));
 	mc_group = tst_alloc(sizeof(*mc_group));
 
-	mc_group->gr_interface = 0;
+	mc_group->gr_interface = NETDEV_INDEX_BY_NAME("lo");
 	mc_group_addr = (struct sockaddr_in *) &mc_group->gr_group;
 	mc_group_addr->sin_family = AF_INET;
 	inet_aton(MULTICASTIP, &mc_group_addr->sin_addr);
