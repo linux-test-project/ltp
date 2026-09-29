@@ -30,7 +30,7 @@ static int private_resv;
 #define NR_SLOTS	2
 #define SL_SETUP	0
 #define SL_TEST		1
-static int map_fd[NR_SLOTS];
+static int map_fd[NR_SLOTS] = { -1, -1 };
 static char *map_addr[NR_SLOTS];
 static unsigned long map_size[NR_SLOTS];
 static unsigned int touched[NR_SLOTS];
@@ -376,7 +376,7 @@ static void per_iteration_cleanup(void)
 	for (nr = 0; nr < NR_SLOTS; nr++) {
 		if (map_addr[nr])
 			SAFE_MUNMAP(map_addr[nr], map_size[nr]);
-		if (map_fd[nr] > 0)
+		if (map_fd[nr] != -1)
 			SAFE_CLOSE(map_fd[nr]);
 	}
 }
