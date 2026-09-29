@@ -4,9 +4,7 @@
 # Generate the syscalls.h file, merging all architectures syscalls input file
 # which are in the current folder and defined inside supported-arch.txt file.
 
-SYSCALLS_FILE="$1"
-
-if [ -z "${SYSCALLS_FILE}" ]; then
+if [ $# -eq 0 ]; then
 	echo "Please provide the syscalls.h directory:"
 	echo ""
 	echo "$0 path/of/syscalls.h"
@@ -14,6 +12,7 @@ if [ -z "${SYSCALLS_FILE}" ]; then
 	exit 1
 fi
 
+SYSCALLS_FILE="$1"
 SCRIPT_DIR="$(realpath $(dirname "$0"))"
 SUPPORTED_ARCH="${SCRIPT_DIR}/supported-arch.txt"
 
