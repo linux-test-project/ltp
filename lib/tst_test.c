@@ -2058,16 +2058,16 @@ void tst_run_tcases(int argc, char *argv[], struct tst_test *self)
 
 	tst_test = self;
 
+	tst_res(TINFO, "LTP version: "LTP_VERSION);
+
+	uname(&uval);
+	tst_res(TINFO, "Tested kernel: %s %s %s", uval.release, uval.version, uval.machine);
+
 	do_setup(argc, argv);
 	tst_enable_oom_protection(context->lib_pid);
 
 	SAFE_SIGNAL(SIGALRM, alarm_handler);
 	SAFE_SIGNAL(SIGUSR1, heartbeat_handler);
-
-	tst_res(TINFO, "LTP version: "LTP_VERSION);
-
-	uname(&uval);
-	tst_res(TINFO, "Tested kernel: %s %s %s", uval.release, uval.version, uval.machine);
 
 	if (tst_test->min_runtime && !tst_test->runtime)
 		tst_test->runtime = tst_test->min_runtime;
