@@ -111,6 +111,7 @@ olduname 109
 iopl 110
 vhangup 111
 idle 112
+vm86old 113
 wait4 114
 swapoff 115
 sysinfo 116
@@ -131,6 +132,7 @@ get_kernel_syms 130
 quotactl 131
 getpgid 132
 fchdir 133
+bdflush 134
 sysfs 135
 personality 136
 afs_syscall 137
@@ -162,6 +164,7 @@ nanosleep 162
 mremap 163
 setresuid 164
 getresuid 165
+vm86 166
 query_module 167
 poll 168
 nfsservctl 169
@@ -454,3 +457,6 @@ removexattrat 466
 open_tree_attr 467
 file_getattr 468
 file_setattr 469
+listns 470
+rseq_slice_yield 471
+fchroot 472

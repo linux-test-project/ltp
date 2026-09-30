@@ -55,7 +55,6 @@ fcntl 4055
 mpx 4056
 setpgid 4057
 ulimit 4058
-unused59 4059
 umask 4060
 chroot 4061
 ustat 4062
@@ -103,10 +102,10 @@ getitimer 4105
 stat 4106
 lstat 4107
 fstat 4108
-unused109 4109
 iopl 4110
 vhangup 4111
 idle 4112
+vm86 4113
 wait4 4114
 swapoff 4115
 sysinfo 4116
@@ -127,6 +126,7 @@ get_kernel_syms 4130
 quotactl 4131
 getpgid 4132
 fchdir 4133
+bdflush 4134
 sysfs 4135
 personality 4136
 afs_syscall 4137
@@ -433,3 +433,6 @@ removexattrat 4466
 open_tree_attr 4467
 file_getattr 4468
 file_setattr 4469
+listns 4470
+rseq_slice_yield 4471
+fchroot 4472

@@ -111,6 +111,7 @@ olduname 109
 iopl 110
 vhangup 111
 idle 112
+vm86 113
 wait4 114
 swapoff 115
 sysinfo 116
@@ -131,6 +132,7 @@ get_kernel_syms 130
 quotactl 131
 getpgid 132
 fchdir 133
+bdflush 134
 sysfs 135
 personality 136
 afs_syscall 137
@@ -191,6 +193,7 @@ readahead 191
 pciconfig_read 198
 pciconfig_write 199
 pciconfig_iobase 200
+multiplexer 201
 getdents64 202
 pivot_root 203
 madvise 205
@@ -241,6 +244,7 @@ utimes 251
 statfs64 252
 fstatfs64 253
 rtas 255
+sys_debug_setcontext 256
 migrate_pages 258
 mbind 259
 get_mempolicy 260
@@ -416,3 +420,6 @@ removexattrat 466
 open_tree_attr 467
 file_getattr 468
 file_setattr 469
+listns 470
+rseq_slice_yield 471
+fchroot 472

@@ -204,6 +204,7 @@ create_module 221
 delete_module 222
 get_kernel_syms 223
 getpgid 224
+bdflush 225
 sysfs 226
 afs_syscall 227
 setfsuid 228
@@ -365,6 +366,7 @@ fsconfig 431
 fsmount 432
 fspick 433
 pidfd_open 434
+clone3 435
 close_range 436
 openat2 437
 pidfd_getfd 438
@@ -398,3 +400,6 @@ removexattrat 466
 open_tree_attr 467
 file_getattr 468
 file_setattr 469
+listns 470
+rseq_slice_yield 471
+fchroot 472
