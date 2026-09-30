@@ -54,10 +54,10 @@ void tst_sys_conf_save_str(const char *path, const char *value)
 
 int tst_sys_conf_save(const struct tst_path_val *conf)
 {
-	char line[PATH_MAX];
+	char line[PATH_MAX] = {};
 	int ttype, iret;
+	int read_err = 0, saved_errno = 0;
 	FILE *fp;
-	void *ret;
 
 	if (!conf || !conf->path)
 		tst_brk(TBROK, "path is empty");
@@ -92,13 +92,17 @@ int tst_sys_conf_save(const struct tst_path_val *conf)
 		return 1;
 	}
 
-	ret = fgets(line, sizeof(line), fp);
+	if (!fgets(line, sizeof(line), fp))
+		read_err = ferror(fp);
+
+	saved_errno = errno;
 	fclose(fp);
 
-	if (ret == NULL) {
+	if (read_err) {
 		if (conf->flags & TST_SR_IGNORE_ERR)
 			return 1;
 
+		errno = saved_errno;
 		tst_brk(TBROK | TERRNO, "Failed to read anything from '%s'",
 			conf->path);
 	}
@@ -142,7 +146,14 @@ void tst_sys_conf_restore(int verbose)
 			tst_res(TINFO, "Restoring conf.: %s -> %s\n",
 				i->path, i->value);
 		}
-		FILE_PRINTF(i->path, "%s", i->value);
+		/*
+		 * A zero-length write does not invoke the sysfs store callback.
+		 * Write a NUL byte to restore an empty string module parameter.
+		 */
+		if (!i->value[0])
+			FILE_PRINTF(i->path, "%c", '\0');
+		else
+			FILE_PRINTF(i->path, "%s", i->value);
 	}
 }
 
