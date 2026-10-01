@@ -204,8 +204,7 @@ copy_supported_arch() {
 	done <${SUPPORTED_ARCH}
 }
 
-echo "Temporary directory ${TEMP}"
-echo "Extracting syscalls"
+echo "Extracting syscalls from Linux ${KVER}"
 
 grab_syscall_names_from_tables
 generate_list_syscalls_c
