@@ -91,8 +91,10 @@ static inline int ltp_clone3(struct clone_args *cl_args, size_t size,
 	return clone3(cl_args, size, fn, arg);
 }
 #else
-static inline int ltp_clone3(struct clone_args *cl_args, size_t size,
-                             int (*fn)(void *), void *arg)
+static inline int ltp_clone3(struct clone_args *cl_args LTP_ATTRIBUTE_UNUSED,
+                             size_t size LTP_ATTRIBUTE_UNUSED,
+                             int (*fn)(void *) LTP_ATTRIBUTE_UNUSED,
+                             void *arg LTP_ATTRIBUTE_UNUSED)
 {
 	return -1;
 }
