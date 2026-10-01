@@ -138,7 +138,7 @@ do_all_tables() {
 		case ${arch} in
 		arm)
 			bits=32
-			arch=armoabi extraflags= generate_table
+			arch=armoabi generate_table
 			arch=arm extraflags=-D__ARM_EABI__ generate_table
 			;;
 		loongarch)
