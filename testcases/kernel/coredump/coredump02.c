@@ -40,9 +40,9 @@
  */
 
 #include <link.h>
-#include <sys/procfs.h>
 
 #include "coredump_common.h"
+#include "lapi/procfs.h"
 
 #define NOTE_ALIGN(x) (((x) + 3) & ~3U)
 
