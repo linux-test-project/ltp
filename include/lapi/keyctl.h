@@ -67,6 +67,20 @@ struct keyctl_dh_params {
 };
 #endif
 
+/**
+ * KEYCTL_DH_PRIVATE - Access the private key in struct keyctl_dh_params.
+ * @params: Pointer to struct keyctl_dh_params.
+ *
+ * Uses 'private' if the UAPI headers provide it, 'priv' otherwise. UAPI
+ * headers older than 4.20 provide only 'private'. Bionic renames 'private'
+ * (a C++ keyword) to '__linux_private', so only 'priv' is usable there.
+ */
+#ifdef HAVE_STRUCT_KEYCTL_DH_PARAMS_PRIVATE
+# define KEYCTL_DH_PRIVATE(params) ((params)->private)
+#else
+# define KEYCTL_DH_PRIVATE(params) ((params)->priv)
+#endif
+
 #ifndef HAVE_STRUCT_KEYCTL_KDF_PARAMS
 struct keyctl_kdf_params {
 	char *hashname;

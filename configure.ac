@@ -303,6 +303,7 @@ AC_CHECK_TYPES([struct uffdio_writeprotect],,,[#include <linux/userfaultfd.h>])
 AC_CHECK_TYPES([struct keyctl_dh_params, struct keyctl_kdf_params,
 	struct keyctl_pkey_query, struct keyctl_pkey_params],,,
 	[#include <linux/keyctl.h>])
+AC_CHECK_MEMBERS([struct keyctl_dh_params.private],,,[#include <linux/keyctl.h>])
 
 # Tools knobs
 
