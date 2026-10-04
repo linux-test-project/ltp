@@ -255,8 +255,9 @@ static void gather_node_cpus(char *cpus, long nd)
 			strcat(cpus, buf);
 		}
 	}
-	/* Remove the trailing comma. */
-	cpus[strlen(cpus) - 1] = '\0';
+	/* Remove the trailing comma, if any CPU was found. */
+	if (strlen(cpus) > 0)
+		cpus[strlen(cpus) - 1] = '\0';
 }
 
 void write_node_cpusets(const struct tst_cg_group *cg, long nd)
