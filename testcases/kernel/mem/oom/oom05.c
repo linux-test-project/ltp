@@ -19,6 +19,7 @@
 
 #include "tst_test.h"
 #include "numa_helper.h"
+#include "tse_numa.h"
 #include "oom.h"
 
 #ifdef HAVE_NUMA_V2

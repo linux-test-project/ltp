@@ -13,6 +13,7 @@
 #include "tst_test.h"
 #include "ksm_helper.h"
 #include "numa_helper.h"
+#include "tse_numa.h"
 #include "ksm_test.h"
 
 #define DEFAULT_MEMSIZE 128

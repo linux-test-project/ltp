@@ -119,4 +119,17 @@ enum tse_numa_types {
  */
 struct tse_nodemap *tse_get_nodemap(int type, size_t min_mem_kb);
 
+struct tst_cg_group;
+
+/**
+ * write_node_cpusets() - Sets up the cpuset cgroup controller for a NUMA node.
+ *
+ * Writes the node id to cpuset.mems and the list of the node's online CPUs to
+ * cpuset.cpus. If the node has no CPUs, CPU 0 is used instead.
+ *
+ * @cg: Cgroup to configure.
+ * @nd: NUMA node id.
+ */
+void write_node_cpusets(const struct tst_cg_group *cg, long nd);
+
 #endif /* TSE_NUMA_H__ */

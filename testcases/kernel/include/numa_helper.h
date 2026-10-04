@@ -27,8 +27,6 @@
 # include <numaif.h>
 #endif
 
-struct tst_cg_group;
-
 #define NH_MEMS (1 << 0)
 #define NH_CPUS (1 << 1)
 
@@ -54,7 +52,5 @@ int get_allowed_nodes_arr(int flag, int *num_nodes, int **nodes);
 int get_allowed_nodes(int flag, int count, ...);
 void nh_dump_nodes(void);
 int is_numa(void (*cleanup_fn)(void), int flag, int min_nodes);
-
-void write_node_cpusets(const struct tst_cg_group *cg, long nd);
 
 #endif /* NUMA_HELPER_H */

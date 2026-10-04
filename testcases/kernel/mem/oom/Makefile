@@ -18,6 +18,10 @@
 
 top_srcdir		?= ../../../..
 
+LTPLIBS = numa
+oom04: LTPLDLIBS = -lltpnuma
+oom05: LTPLDLIBS = -lltpnuma
+
 include $(top_srcdir)/include/mk/testcases.mk
 
 include $(top_srcdir)/testcases/kernel/include/lib.mk
