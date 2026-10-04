@@ -4,6 +4,8 @@
 
 top_srcdir		?= ../../../../..
 
+LTPLIBS = hugetlb
+LTPLDLIBS = -lltphugetlb
+
 include $(top_srcdir)/include/mk/testcases.mk
-include $(abs_srcdir)/../Makefile.inc
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

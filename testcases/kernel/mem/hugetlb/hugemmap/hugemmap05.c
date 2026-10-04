@@ -17,7 +17,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "tst_safe_sysv_ipc.h"
 #include "tst_test.h"
 

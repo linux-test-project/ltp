@@ -14,7 +14,7 @@
  */
 
 #define _GNU_SOURCE
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define RANDOM_CONSTANT 0x1234ABCD
 #define MNTPOINT "hugetlbfs/"

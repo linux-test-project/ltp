@@ -27,7 +27,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 #define MAP_LENGTH	(4UL * hpage_size)

@@ -16,7 +16,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "lapi/fallocate.h"
 
 #define MAX_PAGES_TO_USE 5

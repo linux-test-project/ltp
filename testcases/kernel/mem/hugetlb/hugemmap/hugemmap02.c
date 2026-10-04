@@ -29,7 +29,7 @@
 #include <limits.h>
 #include <sys/param.h>
 #include "lapi/abisize.h"
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define LOW_ADDR       0x80000000
 #define LOW_ADDR2      0x90000000

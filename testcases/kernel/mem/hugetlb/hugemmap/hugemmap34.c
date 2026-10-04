@@ -20,7 +20,7 @@
 
 #define _GNU_SOURCE
 #include "lapi/mmap.h"
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "tst_safe_stdio.h"
 #include <errno.h>
 #include <inttypes.h>

@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 static long hpage_size;

@@ -18,7 +18,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "tst_safe_stdio.h"
 
 #define MNTPOINT "hugetlbfs/"

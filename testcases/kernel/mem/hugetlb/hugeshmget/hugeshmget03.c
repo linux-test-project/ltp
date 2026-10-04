@@ -12,7 +12,7 @@
  */
 
 #include <limits.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 /*
  * The MAXIDS value is somewhat arbitrary and may need to be increased

@@ -21,7 +21,7 @@
 
 #include <signal.h>
 #include <setjmp.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 

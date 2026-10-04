@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define C1		0x1234ABCD
 #define C2		~0x1234ABCD

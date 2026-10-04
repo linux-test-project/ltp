@@ -26,7 +26,7 @@
 #include <sys/mount.h>
 #include <limits.h>
 #include <sys/param.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 static long *addr;
 static int  fildes;

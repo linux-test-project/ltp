@@ -11,7 +11,7 @@
  * were not corrupted by the other threads.
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define THREADS 5
 #define NR_HUGEPAGES 6

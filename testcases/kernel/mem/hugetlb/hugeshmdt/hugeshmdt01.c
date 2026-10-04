@@ -30,7 +30,7 @@
 
 #include <setjmp.h>
 #include <limits.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 static size_t shm_size;
 static int shm_id_1 = -1;

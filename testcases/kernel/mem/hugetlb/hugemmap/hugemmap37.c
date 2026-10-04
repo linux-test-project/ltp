@@ -24,7 +24,7 @@
 #include <sys/mman.h>
 #include <errno.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "tst_test.h"
 #include "tst_safe_stdio.h"
 #include "tst_safe_macros.h"

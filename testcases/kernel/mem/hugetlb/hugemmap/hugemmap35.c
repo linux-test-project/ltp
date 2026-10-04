@@ -16,7 +16,7 @@
 #define _GNU_SOURCE
 
 #include "tst_test.h"
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "lapi/mman.h"
 #include "lapi/mmap.h"
 

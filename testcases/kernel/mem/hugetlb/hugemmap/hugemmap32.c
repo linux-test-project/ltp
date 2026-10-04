@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define GIGANTIC_MIN_ORDER 10
 

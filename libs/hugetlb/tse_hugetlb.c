@@ -10,7 +10,7 @@
 #include <sys/shm.h>
 #include <sys/time.h>
 #include <pwd.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 key_t shmkey;
 

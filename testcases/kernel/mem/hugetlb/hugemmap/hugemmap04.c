@@ -28,7 +28,7 @@
 #include <limits.h>
 #include <sys/param.h>
 #include "lapi/abisize.h"
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 static char TEMPFILE[MAXPATHLEN];
 

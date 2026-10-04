@@ -26,7 +26,7 @@
  *
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 static long page_size;
 static long hpage_size;

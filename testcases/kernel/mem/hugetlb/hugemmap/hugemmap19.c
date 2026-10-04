@@ -25,7 +25,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define RANDOM_CONSTANT	0x1234ABCD
 #define MNTPOINT "hugetlbfs/"

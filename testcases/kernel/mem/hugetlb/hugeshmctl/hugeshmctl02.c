@@ -26,7 +26,7 @@
 
 #include <pwd.h>
 #include <limits.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "lapi/syscalls.h"
 
 static size_t shm_size;

@@ -11,7 +11,7 @@
  */
 
 #include "tst_safe_sysv_ipc.h"
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 static int shmid = -1;
 

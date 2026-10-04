@@ -26,7 +26,7 @@
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <stdio.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "lapi/mmap.h"
 
 static long hpage_size;

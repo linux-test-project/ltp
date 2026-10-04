@@ -27,7 +27,7 @@
 #include <sys/wait.h>
 
 #include "tst_test.h"
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define CONST	0xdeadbeefL
 #define MNTPOINT "hugetlbfs/"

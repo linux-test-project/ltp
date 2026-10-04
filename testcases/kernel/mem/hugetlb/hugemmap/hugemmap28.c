@@ -10,7 +10,7 @@
  * mapping. Otherwise, reserve count will be overflowed.
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 static long hpage_size;

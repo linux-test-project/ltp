@@ -12,7 +12,7 @@
  * shared mmap data.
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define C1 0x1234ABCD
 #define C2 0xFEDC9876

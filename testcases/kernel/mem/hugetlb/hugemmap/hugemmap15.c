@@ -22,7 +22,7 @@
 #endif
 
 #define _GNU_SOURCE
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #if defined(__powerpc__) || defined(__powerpc64__) || defined(__ia64__) || \
 	defined(__s390__) || defined(__s390x__) || defined(__sparc__) || \

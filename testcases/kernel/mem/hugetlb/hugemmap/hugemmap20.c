@@ -9,7 +9,7 @@
  * of MAP_PRIVATE and MAP_SHARED with and without MAP_LOCKED specified.
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 #define FLAGS_DESC(x) .flags = x, .flags_str = #x

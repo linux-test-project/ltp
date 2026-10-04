@@ -12,7 +12,7 @@
  * works correctly by validating the data written to segment.
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 #include "tst_safe_sysv_ipc.h"
 
 #define NR_HUGEPAGES 4

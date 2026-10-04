@@ -27,7 +27,7 @@
 
 #include <signal.h>
 #include <setjmp.h>
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 static int page_size;
 static long hpage_size;

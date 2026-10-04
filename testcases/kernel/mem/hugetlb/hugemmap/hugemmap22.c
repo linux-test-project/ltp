@@ -12,7 +12,7 @@
  * iterations.
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define NR_HUGEPAGES 2
 #define MNTPOINT "hugetlbfs/"

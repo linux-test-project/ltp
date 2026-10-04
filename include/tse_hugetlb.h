@@ -1,16 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
- *
  * Copyright (c) Linux Test Project, 2004-2025
  * Copyright (c) International Business Machines Corp., 2001
  */
 
 /*
- * hugetlb.h - common definitions for the hugepage tests
+ * Common definitions for the hugepage tests
  */
 
-#ifndef __HUGETLB_H
-#define __HUGETLB_H
+#ifndef TSE_HUGETLB_H
+#define TSE_HUGETLB_H
 
 #include <stdlib.h>
 #include <sys/ipc.h>
@@ -59,4 +58,4 @@ int do_readback(void *p, size_t size, char *desc);
 
 void update_shm_size(size_t *shm_size);
 
-#endif /* hugetlb.h */
+#endif /* TSE_HUGETLB_H */

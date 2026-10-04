@@ -19,7 +19,7 @@
  * 	test must be run at root
  */
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define SIZE	(1024 * 1024 * 1024)
 #define BOUNDARY (1024 * 1024 * 1024)

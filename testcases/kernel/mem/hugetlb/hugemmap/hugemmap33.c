@@ -27,7 +27,8 @@
 #include <sys/wait.h>
 #include <sys/vfs.h>
 #include <sys/mount.h>
-#include "hugetlb.h"
+
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 

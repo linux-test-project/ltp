@@ -26,7 +26,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 #define WITH_OVERCOMMIT 0

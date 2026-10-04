@@ -17,7 +17,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 
-#include "hugetlb.h"
+#include "tse_hugetlb.h"
 
 #define P0 "ffffffff"
 #define IOSZ 4096
