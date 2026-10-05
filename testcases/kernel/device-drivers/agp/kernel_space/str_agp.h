@@ -18,12 +18,12 @@
  */
 
 /*
- * Remember that you want to seperate your header
+ * Remember that you want to separate your header
  * files between what is needed in kernel space
  * only, and what will also be needed by a user
  * space program that is using this module. For
  * that reason keep all structures that will need
- * kernel space pointers in a seperate header file
+ * kernel space pointers in a separate header file
  * from where ioctl flags aer kept
  *
  * author: Kai Zhao

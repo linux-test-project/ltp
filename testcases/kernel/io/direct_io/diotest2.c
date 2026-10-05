@@ -116,7 +116,7 @@ int runtest(int fd_r, int fd_w, int iter, off_t offset, int action)
 			return (-1);
 		}
 		if (bufcmp(buf1, buf2, bufsize) != 0) {
-			tst_resm(TFAIL, "read/write comparision failed");
+			tst_resm(TFAIL, "read/write comparison failed");
 			return (-1);
 		}
 	}

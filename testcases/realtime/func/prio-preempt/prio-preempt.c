@@ -33,7 +33,7 @@
  *
  *       where Mi is the ith pthread_mutex_t and CVi is the ith conditional
  *       variable.So, at the end of this loop, 26 threads are all waiting on
- *       seperate condvars and mutexes.
+ *       separate condvars and mutexes.
  *     - Wakes up thread at priority 10 (T1) by executing:
  *	   pthread_mutex_lock(M1);
  *	   pthread_cond_signal(CV1);

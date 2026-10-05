@@ -33,7 +33,7 @@
 	< successful.
 	< In the case of valloc, allocate memory and free it (do this for
 	< several iterations). Check if valloc returns unaligned pointers.
-	< If valloc causes a SIGSEGV, that means a failure has occured.
+	< If valloc causes a SIGSEGV, that means a failure has occurred.
 >BUGS:	<
 ======================================================================*/
 

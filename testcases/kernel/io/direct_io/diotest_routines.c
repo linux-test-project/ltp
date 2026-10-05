@@ -47,7 +47,7 @@
 
 #include "diotest_routines.h"
 
-/* **** Routines for buffer actions, comparisions **** */
+/* **** Routines for buffer actions, comparisons **** */
 
 /*
  * fillbuf: Fill buffer of given size with given character value

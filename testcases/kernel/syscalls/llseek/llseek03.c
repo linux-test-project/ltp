@@ -11,11 +11,11 @@
  *   1. llseek() succeeds to set file position in the middle of the data. The
  *      file offset is checked by reading from a file and comparing the data.
  *
- *   2. llseek() succeeds to set file postion to the end of the data, reading
- *      this postion returns 0.
+ *   2. llseek() succeeds to set file position to the end of the data, reading
+ *      this position returns 0.
  *
  *   3. llseek() succeeds to set file position after the end of the data,
- *      reading from this postion returns 0 as well.
+ *      reading from this position returns 0 as well.
  */
 #define _GNU_SOURCE
 

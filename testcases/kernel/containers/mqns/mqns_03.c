@@ -14,12 +14,12 @@
  *
  * - mq_open() /MQ1
  * - mount mqueue inside the temporary folder
- * - check for /MQ1 existance
+ * - check for /MQ1 existence
  * - creat() /MQ2 inside the temporary folder
  * - umount
  * - mount mqueue inside the temporary folder
- * - check /MQ1 existance
- * - check /MQ2 existance
+ * - check /MQ1 existence
+ * - check /MQ2 existence
  * - umount
  */
 

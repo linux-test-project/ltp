@@ -171,8 +171,8 @@ static void sig_handler(int signal,	/* signal number, set to handle SIGALRM     
 			siglongjmp(jmpbuf, 1);
 		} else {
 			fprintf(stderr,
-				"address at which sigfault occured: [%lx]\n"
-				"address at which sigfault occured: [%lx]\n"
+				"address at which sigfault occurred: [%lx]\n"
+				"address at which sigfault occurred: [%lx]\n"
 				"address at which memory was shmat: [%p]\n",
 				(unsigned long)scp->edi,
 				(unsigned long)scp->esi, map_address);

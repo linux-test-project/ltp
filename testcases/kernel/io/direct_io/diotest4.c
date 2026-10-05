@@ -42,7 +42,7 @@
  *	[13] write to file not open for writing
  *	[14] read, write with non-aligned buffer
  *	[15] read, write buffer in read-only space
- *	[16] read, write in non-existant space
+ *	[16] read, write in non-existent space
  *	[17] read, write for file with O_SYNC
  *
  * USAGE
@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
 	close(fd);
 	total++;
 
-	/* Test-16: read, write in non-existant space */
+	/* Test-16: read, write in non-existent space */
 	offset = 4096;
 	count = bufsize;
 	if ((buf1 =
@@ -511,9 +511,9 @@ int main(int argc, char *argv[])
 			 "open(%s, O_DIRECT|O_RDWR) failed", filename);
 	}
 	ret = runtest_f(fd, buf1, offset, count, EFAULT, 16,
-		      " nonexistant space");
+		      " nonexistent space");
 	testcheck_end(ret, &failed, &fail_count,
-				"read, write in non-existant space");
+				"read, write in non-existent space");
 	total++;
 	close(fd);
 

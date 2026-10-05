@@ -800,7 +800,7 @@ master.
     5d93b84d8 Add statx and other syscall numbers
     5ca627b78 tutorial: Add a step-by-step C test tutorial
 
-So we have told git to show all the commits which don't exist in ``master``, but
+So we have told Git to show all the commits which don't exist in ``master``, but
 are in ``HEAD``, where ``HEAD`` is the top of the current branch. The current
 branch is ``tutorial-rebase2`` which I just created. I have already done one
 ``rebase`` and submitted a patch for review, so my original branch was just called

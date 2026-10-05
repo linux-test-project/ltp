@@ -129,7 +129,7 @@ static struct tcase {
 		.mnt_ids = mnt_ids,
 		.nr_mnt_ids = MNT_SIZE,
 		.exp_errno = ENOENT,
-		.msg = "non-existant mnt_id",
+		.msg = "non-existent mnt_id",
 	},
 };
 

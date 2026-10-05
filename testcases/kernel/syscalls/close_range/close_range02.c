@@ -4,7 +4,7 @@
  */
 /*\
  * - First check close_range works on a valid range.
- * - Then check close_range does not accept invalid paramters.
+ * - Then check close_range does not accept invalid parameters.
  * - Then check it accepts a large lower fd.
  * - Finally check CLOEXEC works
  *

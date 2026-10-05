@@ -342,7 +342,7 @@ struct agp_bridge_driver test_driver = {
 };
 
 /*
- * test functions can go here or in a seperate file,
+ * test functions can go here or in a separate file,
  * remember that the makefile will have to be  modified
  * as well as the header file will need the function
  * prototypes if the test calls go in another file

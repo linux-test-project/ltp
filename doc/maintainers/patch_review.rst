@@ -122,7 +122,7 @@ Commit messages should have
 * Check also mailing lists for other reviewers / testers tags, notes and failure
   reports
 * ``Fixes: hash`` if it fixes particular LTP commit
-* ``Fixes: #N`` if it fixes github issue number N, so it's automatically closed
+* ``Fixes: #N`` if it fixes GitHub issue number N, so it's automatically closed
 * LTP documentation should be kept up to date.
 
 After patch is accepted or rejected, set correct state and archive in the

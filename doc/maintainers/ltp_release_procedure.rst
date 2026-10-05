@@ -30,7 +30,7 @@ lists (see below).
 Have a look at `this release letter <https://lore.kernel.org/ltp/ZGNiQ1sMGvPU_ETp@yuki/>`_
 to get the idea how it should look.
 
-Tag the git and push changes to github
+Tag the git and push changes to GitHub
 --------------------------------------
 
 .. code-block:: bash

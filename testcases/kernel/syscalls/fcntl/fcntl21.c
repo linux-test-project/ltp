@@ -377,7 +377,7 @@ int main(int ac, char **av)
 
 		/*
 		 * Add a read lock to the middle of the file and a write
-		 * at the begining
+		 * at the beginning
 		 */
 		if (do_lock(F_SETLK, (short)F_RDLCK, (short)0, 10, 5) < 0) {
 			tst_resm(TFAIL, "fcntl on file failed, errno =%d",

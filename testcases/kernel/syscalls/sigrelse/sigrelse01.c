@@ -347,7 +347,7 @@ static void parent(void)
 		break;
 	case HANDLE_ERR:
 		/* more than one signal tried to be handled at the same time */
-		tst_resm(TBROK, "Error occured in signal handler.");
+		tst_resm(TBROK, "Error occurred in signal handler.");
 		break;
 	default:
 		tst_resm(TBROK, "Unexpected exit code %d from child", rv);
@@ -377,11 +377,11 @@ static void child(void)
 
 	/* set alarm in case something hangs */
 	if (set_timeout() < 0) {
-		/* an error occured - put mesg in note and send it back to parent */
+		/* an error occurred - put mesg in note and send it back to parent */
 		(void)strcpy(note, mesg);
 
 	} else if (setup_sigs() < 0) {
-		/* an error occured - put mesg in note and send it back to parent */
+		/* an error occurred - put mesg in note and send it back to parent */
 		(void)strcpy(note, mesg);
 
 	} else {
@@ -481,7 +481,7 @@ static void child(void)
 
 	/*
 	 * If we are error free so far...
-	 * check the sig_array array for one occurence of
+	 * check the sig_array array for one occurrence of
 	 * each of the catchable signals.  If this is true,
 	 * then PASS, otherwise FAIL.
 	 */
@@ -589,7 +589,7 @@ static char *read_pipe(int fd)
 
 	/* set timeout alarm in case the pipe is blocked */
 	if (set_timeout() < 0) {
-		/* an error occured, message in mesg */
+		/* an error occurred, message in mesg */
 		return NULL;
 	}
 
