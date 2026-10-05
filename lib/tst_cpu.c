@@ -24,6 +24,7 @@
 #include "test.h"
 #include "tso_safe_macros.h"
 #include "tso_safe_file_ops.h"
+#include "tso_safe_stdio.h"
 
 long tst_ncpus(void)
 {
@@ -97,6 +98,29 @@ long tst_ncpus_available(void)
 #else
 	return tst_ncpus();
 #endif
+}
+
+long tst_ncpus_global(void)
+{
+	FILE *fp = SAFE_FOPEN(NULL, "/proc/stat", "r");
+	char line[BUFSIZ];
+	long count = 0;
+
+	while (fgets(line, sizeof(line), fp)) {
+		if (line[0] == 'c' && line[1] == 'p' && line[2] == 'u' &&
+		    line[3] >= '0' && line[3] <= '9')
+			count++;
+	}
+
+	if (ferror(fp))
+		tst_brkm(TBROK | TERRNO, NULL, "fgets(/proc/stat)");
+
+	SAFE_FCLOSE(NULL, fp);
+
+	if (!count)
+		tst_brkm(TBROK, NULL, "No online CPUs found in /proc/stat");
+
+	return count;
 }
 
 const char *tst_cpu_vendor(void)

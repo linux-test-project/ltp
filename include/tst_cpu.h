@@ -11,6 +11,14 @@ long tst_ncpus_max(void);
 long tst_ncpus_available(void);
 
 /**
+ * tst_ncpus_global() - Returns the global online CPU count.
+ *
+ * Return: The global online CPU count reported by /proc/stat, independent of
+ * the calling thread's affinity.
+ */
+long tst_ncpus_global(void);
+
+/**
  * tst_cpu_vendor() - Returns CPU vendor.
  *
  * Return: A CPU vendor e.g. "GenuineIntel" or "AuthenticAMD".
