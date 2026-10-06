@@ -255,7 +255,7 @@ out:
 		while (isspace(*val))
 			val++;
 
-		while (!isspace(val[val_len]))
+		while (val[val_len] && !isspace(val[val_len]))
 			val_len++;
 
 		if (val_len == 1) {
