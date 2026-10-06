@@ -276,7 +276,7 @@ void do_timer_test(long long usec, unsigned int nsamples)
 
 	write_to_file();
 
-	for (i = 0; samples[i] > 10 * usec && i < (int)nsamples; i++) {
+	for (i = 0; i < (int)nsamples && samples[i] > 10 * usec; i++) {
 		if (samples[i] <= 3 * monotonic_resolution)
 			break;
 	}
@@ -286,7 +286,8 @@ void do_timer_test(long long usec, unsigned int nsamples)
 			i, samples[0], samples[i-1]);
 	}
 
-	for (i = nsamples - 1; samples[i] < usec && i > -1; i--);
+	for (i = nsamples - 1; i >= 0 && samples[i] < usec; i--)
+		;
 
 	if (i < (int)nsamples - 1) {
 		tst_res(TFAIL, "%s woken up early %u times range: [%lli,%lli]",
