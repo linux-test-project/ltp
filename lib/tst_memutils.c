@@ -202,11 +202,7 @@ int tst_mapping_in_range(unsigned long low, unsigned long high)
 			tst_brk(TBROK | TERRNO, "Couldn't parse /proc/self/maps line.");
 		}
 
-		if ((start >= low) && (start < high)) {
-			fclose(fp);
-			return 1;
-		}
-		if ((end >= low) && (end < high)) {
+		if (start < high && end > low) {
 			fclose(fp);
 			return 1;
 		}
