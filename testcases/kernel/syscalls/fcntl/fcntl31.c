@@ -344,7 +344,7 @@ static void check_io_signal(char *des)
 				 "signal mechanism work abnormally");
 		}
 
-		SAFE_READ(cleanup, 1, test_fd, &c, 1);
+		SAFE_READ(cleanup, SAFE_READ_ALL, test_fd, &c, 1);
 		wait(NULL);
 	}
 }

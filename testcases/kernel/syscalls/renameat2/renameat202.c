@@ -141,7 +141,7 @@ static void renameat2_verify(void)
 
 	SAFE_STAT(cleanup, emptyfile, &st);
 
-	readn = SAFE_READ(cleanup, 0, fd, str, BUFSIZ);
+	readn = SAFE_READ(cleanup, SAFE_READ_ANY, fd, str, BUFSIZ);
 
 	if (close(fd) < 0)
 		tst_brkm(TERRNO | TFAIL, cleanup, "close fd failed");

@@ -128,7 +128,7 @@ static void umount2_verify(void)
 
 	memset(buf, 0, sizeof(buf));
 
-	SAFE_READ(cleanup, 1, fd, buf, strlen(str));
+	SAFE_READ(cleanup, SAFE_READ_ALL, fd, buf, strlen(str));
 
 	if (strcmp(str, buf)) {
 		tst_resm(TFAIL, "umount2(2) MNT_DETACH flag "

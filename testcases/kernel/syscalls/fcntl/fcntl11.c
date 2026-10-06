@@ -208,7 +208,7 @@ void parent_put(struct flock *l)
 
 void parent_get(struct flock *l)
 {
-	SAFE_READ(cleanup, 1, child_pipe[0], l, sizeof(*l));
+	SAFE_READ(cleanup, SAFE_READ_ALL, child_pipe[0], l, sizeof(*l));
 }
 
 void child_put(struct flock *l)
@@ -218,7 +218,7 @@ void child_put(struct flock *l)
 
 void child_get(struct flock *l)
 {
-	SAFE_READ(NULL, 1, parent_pipe[0], l, sizeof(*l));
+	SAFE_READ(NULL, SAFE_READ_ALL, parent_pipe[0], l, sizeof(*l));
 	if (l->l_type == (short)STOP)
 		exit(0);
 }

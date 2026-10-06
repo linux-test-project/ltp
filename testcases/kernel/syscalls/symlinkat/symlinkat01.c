@@ -181,7 +181,8 @@ static void mysymlinkat_test(struct test_struct *desc)
 			SAFE_CLOSE(cleanup, fd);
 
 			fd = SAFE_OPEN(cleanup, desc->referencefn2, O_RDONLY);
-			SAFE_READ(cleanup, 1, fd, &vnum, sizeof(vnum));
+			SAFE_READ(cleanup, SAFE_READ_ALL, fd, &vnum,
+				  sizeof(vnum));
 			SAFE_CLOSE(cleanup, fd);
 
 			if (tnum == vnum)

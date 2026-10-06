@@ -27,9 +27,9 @@ int main(int argc LTP_ATTRIBUTE_UNUSED, char **argv)
 	printf("%s\n", SAFE_BASENAME(NULL, *argv));
 	printf("%s\n", SAFE_DIRNAME(NULL, *argv));
 	fd = SAFE_OPEN(cleanup, __FILE__ "~", O_RDWR);
-	SAFE_READ(cleanup, 0, fd, buf, 9);
+	SAFE_READ(cleanup, SAFE_READ_ANY, fd, buf, 9);
 	printf("buf: %s\n", buf);
-	SAFE_READ(cleanup, 1, fd, buf, 9);
+	SAFE_READ(cleanup, SAFE_READ_ALL, fd, buf, 9);
 	printf("buf: %s\n", buf);
 	SAFE_WRITE(cleanup, SAFE_WRITE_ANY, -1, buf, 9);
 	SAFE_WRITE(NULL, SAFE_WRITE_ANY, fd, buf, 9);
