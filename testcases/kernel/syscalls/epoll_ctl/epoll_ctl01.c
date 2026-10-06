@@ -115,7 +115,7 @@ static void check_epoll_ctl(int opt, int exp_num)
 	tst_res(TPASS, "epoll_ctl() succeeds with op %i", opt);
 
 end:
-	SAFE_READ(1, fd[0], read_buf, sizeof(write_buf));
+	SAFE_READ(SAFE_READ_ALL, fd[0], read_buf, sizeof(write_buf));
 }
 
 static void opera_epoll_ctl(int opt, int fd, struct epoll_event *epvs)

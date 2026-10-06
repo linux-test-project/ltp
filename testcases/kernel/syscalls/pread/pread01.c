@@ -63,7 +63,7 @@ static void verify_pread(void)
 	SAFE_PREAD(1, fildes, read_buf[3], K1, K3);
 	l_seek(fildes, 0, SEEK_CUR, 0);
 
-	SAFE_READ(1, fildes, read_buf[0], K1);
+	SAFE_READ(SAFE_READ_ALL, fildes, read_buf[0], K1);
 	l_seek(fildes, 0, SEEK_CUR, K1);
 
 	SAFE_PREAD(1, fildes, read_buf[1], K1, K1);

@@ -225,7 +225,7 @@ static void run(void)
 	SAFE_CLOSE(file_fd);
 
 	file_fd = SAFE_OPEN(TESTFILE, O_RDONLY);
-	SAFE_READ(1, file_fd, readback, sizeof(readback));
+	SAFE_READ(SAFE_READ_ALL, file_fd, readback, sizeof(readback));
 	SAFE_CLOSE(file_fd);
 
 	if (memcmp(readback, original, DATA_SIZE) != 0)

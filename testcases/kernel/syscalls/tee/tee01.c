@@ -31,7 +31,7 @@ static void check_file(void)
 	char teebuffer[TEST_BLOCK_SIZE];
 
 	fd_out = SAFE_OPEN(TESTFILE2, O_RDONLY);
-	SAFE_READ(1, fd_out, teebuffer, TEST_BLOCK_SIZE);
+	SAFE_READ(SAFE_READ_ALL, fd_out, teebuffer, TEST_BLOCK_SIZE);
 
 	for (i = 0; i < TEST_BLOCK_SIZE; i++) {
 		if (buffer[i] != teebuffer[i])

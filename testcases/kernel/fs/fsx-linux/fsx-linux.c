@@ -137,7 +137,7 @@ static int op_read(void)
 	memset(temp_buff, 0, file_max_size);
 
 	SAFE_LSEEK(file_desc, (off_t)pos.offset, SEEK_SET);
-	SAFE_READ(0, file_desc, temp_buff, pos.size);
+	SAFE_READ(SAFE_READ_ANY, file_desc, temp_buff, pos.size);
 
 	int ret = memory_compare(
 		file_buff + pos.offset,

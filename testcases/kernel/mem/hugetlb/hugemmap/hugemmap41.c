@@ -89,7 +89,7 @@ static void run_test(void)
 	}
 
 	SAFE_CLOSE(pipefd[1]);
-	SAFE_READ(1, pipefd[0], &p, sizeof(p));
+	SAFE_READ(SAFE_READ_ALL, pipefd[0], &p, sizeof(p));
 	SAFE_CLOSE(pipefd[0]);
 
 	tst_res(TINFO, "Parent received address %p", p);

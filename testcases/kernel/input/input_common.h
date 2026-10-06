@@ -84,7 +84,7 @@ static inline void verify_no_events_queued(const int fd_recv)
 	if (!num_events)
 		return;
 
-	num_bytes = SAFE_READ(0, fd_recv, &ev, sizeof(ev));
+	num_bytes = SAFE_READ(SAFE_READ_ANY, fd_recv, &ev, sizeof(ev));
 	if (!num_bytes)
 		return;
 

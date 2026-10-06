@@ -72,7 +72,7 @@ static void check_file_data(const char exp_buf[], size_t size)
 	tst_res(TINFO, "reading the file, compare with expected buffer");
 
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(1, fd, rbuf, size);
+	SAFE_READ(SAFE_READ_ALL, fd, rbuf, size);
 
 	if (memcmp(exp_buf, rbuf, size)) {
 		if (verbose) {

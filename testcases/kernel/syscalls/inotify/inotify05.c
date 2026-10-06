@@ -48,7 +48,7 @@ void verify_inotify(void)
 
 	for (i = 0; i < max_events; i++) {
 		SAFE_LSEEK(fd, 0, SEEK_SET);
-		SAFE_READ(1, fd, buf, BUF_SIZE);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, BUF_SIZE);
 		SAFE_LSEEK(fd, 0, SEEK_SET);
 		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, BUF_SIZE);
 	}
@@ -60,7 +60,8 @@ void verify_inotify(void)
 		/*
 		 * get list on events
 		 */
-		len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+		len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf,
+				EVENT_BUF_LEN);
 
 		/*
 		 * check events

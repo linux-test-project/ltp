@@ -39,7 +39,7 @@ static void *fault_handler_thread(void *arg LTP_ATTRIBUTE_UNUSED)
 	if (poll(&pollfd, 1, -1) == -1)
 		tst_brk(TBROK | TERRNO, "poll() failed");
 
-	SAFE_READ(1, uffd, &msg, sizeof(msg));
+	SAFE_READ(SAFE_READ_ALL, uffd, &msg, sizeof(msg));
 
 	if (msg.event != UFFD_EVENT_PAGEFAULT)
 		tst_brk(TBROK, "Received unexpected UFFD_EVENT: %d", msg.event);

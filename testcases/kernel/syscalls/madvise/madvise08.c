@@ -113,7 +113,7 @@ static int find_sequence(int pid)
 
 	dfd = SAFE_OPEN(dumpname, O_RDONLY);
 
-	read = SAFE_READ(0, dfd, &rbuf, sizeof(rbuf));
+	read = SAFE_READ(SAFE_READ_ANY, dfd, &rbuf, sizeof(rbuf));
 	while (read) {
 		switch (rbuf[pos]) {
 		case 'x':
@@ -140,7 +140,8 @@ static int find_sequence(int pid)
 			expectc = 'x';
 		}
 		if (++pos >= read) {
-			read = SAFE_READ(0, dfd, &rbuf, sizeof(rbuf));
+			read = SAFE_READ(SAFE_READ_ANY, dfd, &rbuf,
+					 sizeof(rbuf));
 			pos = 0;
 		}
 	}

@@ -76,7 +76,8 @@ static void test01(unsigned int i)
 
 	SAFE_PTHREAD_CREATE(&p_id, NULL, thread_create_file, NULL);
 
-	SAFE_READ(0, fd_notify, &event, sizeof(struct fanotify_event_metadata));
+	SAFE_READ(SAFE_READ_ANY, fd_notify, &event,
+		  sizeof(struct fanotify_event_metadata));
 
 	if ((tcases[i] & FAN_REPORT_TID) && event.pid == tid)
 		tst_res(TPASS, "event.pid == tid");

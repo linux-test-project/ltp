@@ -40,7 +40,7 @@ static void run_test(void)
 	SAFE_WRITE(1, nfd, p, IOSZ);
 	SAFE_LSEEK(nfd, 0, SEEK_SET);
 
-	SAFE_READ(1, nfd, buf, IOSZ);
+	SAFE_READ(SAFE_READ_ALL, nfd, buf, IOSZ);
 	if (memcmp(P0, buf, 8)) {
 		tst_res(TFAIL, "Memory mismatch after Direct-IO write");
 		goto cleanup;
@@ -48,7 +48,7 @@ static void run_test(void)
 	SAFE_LSEEK(nfd, 0, SEEK_SET);
 
 	memset(p, 0, IOSZ);
-	SAFE_READ(1, nfd, p, IOSZ);
+	SAFE_READ(SAFE_READ_ALL, nfd, p, IOSZ);
 
 	if (memcmp(p, P0, 8))
 		tst_res(TFAIL, "Memory mismatch after Direct-IO read");

@@ -36,7 +36,7 @@ static void run(void)
 
 	TST_EXP_EQ_LI(FD_ISSET(fd, &readfds), 1);
 
-	SAFE_READ(0, fd, &val, sizeof(val));
+	SAFE_READ(SAFE_READ_ANY, fd, &val, sizeof(val));
 	TEST(select(fd + 1, &readfds, NULL, NULL, &timeout));
 	if (TST_RET == -1)
 		tst_brk(TBROK | TERRNO, "select");

@@ -131,7 +131,7 @@ static void wqueue_consumer(int fd, wqueue_callback cb)
 
 	tst_res(TINFO, "Reading watch queue events");
 
-	buf_len = SAFE_READ(0, fd, buffer, sizeof(buffer));
+	buf_len = SAFE_READ(SAFE_READ_ANY, fd, buffer, sizeof(buffer));
 
 	p = buffer;
 	end = buffer + buf_len;

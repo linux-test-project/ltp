@@ -31,11 +31,11 @@ static void run(void)
 
 	tst_res(TINFO, "Soft-limited buffer size: %d bytes", buffer_size);
 	SAFE_WRITE(1, pipe[1], buffer, buffer_size);
-	SAFE_READ(1, pipe[0], buffer, buffer_size - 1);
+	SAFE_READ(SAFE_READ_ALL, pipe[0], buffer, buffer_size - 1);
 	SAFE_WRITE(1, pipe[1], buffer, 1);
 	tst_res(TPASS, "Pipe operation did not block");
 
-	SAFE_READ(1, pipe[0], buffer, 2);
+	SAFE_READ(SAFE_READ_ALL, pipe[0], buffer, 2);
 }
 
 static void setup(void)

@@ -36,7 +36,7 @@ static void run(void)
 	char buf[BUFSIZ];
 
 	SAFE_LSEEK(out_fd, 0, SEEK_SET);
-	SAFE_READ(0, out_fd, buf, BUFSIZ);
+	SAFE_READ(SAFE_READ_ANY, out_fd, buf, BUFSIZ);
 
 	if (!strncmp(buf, TEST_MSG_ALL, strlen(TEST_MSG_ALL))) {
 		tst_res(TPASS, "sendfile() copies data correctly");

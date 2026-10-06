@@ -41,7 +41,7 @@ static void run_child(void)
 
 	tst_res(TINFO, "Read data back from mapped file");
 
-	SAFE_READ(0, fdesc, data, page_sz);
+	SAFE_READ(SAFE_READ_ANY, fdesc, data, page_sz);
 	SAFE_LSEEK(fdesc, 0, SEEK_SET);
 
 	TST_EXP_EQ_LI(memcmp(data, tmpdata, page_sz), 0);

@@ -363,7 +363,8 @@ static void do_test(unsigned int number)
 	SAFE_UNLINK(fname2);
 
 	/* Read events on files in subdir */
-	len += SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	len += SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			 EVENT_BUF_LEN - len);
 
 	/*
 	 * FAN_CREATE|FAN_DELETE|FAN_MOVE events with the same name are merged.
@@ -491,7 +492,8 @@ static void do_test(unsigned int number)
 	SAFE_RMDIR(dname2);
 
 	/* Read more events on dirs */
-	len += SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	len += SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			 EVENT_BUF_LEN - len);
 
 	/*
 	 * FAN_RENAME event is independent of MOVED_FROM/MOVED_TO and not merged

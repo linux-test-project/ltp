@@ -223,7 +223,7 @@ static void run(unsigned int n)
 
 	/* Validate that fallocate() cleared the correct file range */
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(1, fd, rbuf, rbuf_size);
+	SAFE_READ(SAFE_READ_ALL, fd, rbuf, rbuf_size);
 
 	for (err = 0, i = offset; i < offset + size; i++) {
 		if (rbuf[i]) {

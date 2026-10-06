@@ -179,7 +179,7 @@ static void do_test(unsigned int n)
 		goto cleanup;
 
 	/* Read available events into buffer */
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	event = (struct fanotify_event_metadata *) event_buf;
 

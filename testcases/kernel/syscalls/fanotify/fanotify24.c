@@ -499,7 +499,7 @@ static void test_fanotify(unsigned int n)
 			char c;
 
 			/* Verify that read from event fd does not generate events */
-			SAFE_READ(0, event->fd, &c, 1);
+			SAFE_READ(SAFE_READ_ANY, event->fd, &c, 1);
 			SAFE_CLOSE(event->fd);
 		}
 

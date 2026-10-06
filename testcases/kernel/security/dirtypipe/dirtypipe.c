@@ -52,7 +52,7 @@ static char *pattern_buf, *read_buf;
 static void check_file_contents(void)
 {
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(1, fd, read_buf, 4096);
+	SAFE_READ(SAFE_READ_ALL, fd, read_buf, 4096);
 
 	if (memcmp(pattern_buf, read_buf, 4096) != 0)
 		tst_res(TFAIL, "read buf data mismatch, bug exists");
@@ -88,7 +88,7 @@ static void prepare_pipe(void)
 	 */
 	for (total = pipe_size; total > 0;) {
 		n = total > sizeof(buffer) ? sizeof(buffer) : total;
-		len = SAFE_READ(1, p[0], buffer, n);
+		len = SAFE_READ(SAFE_READ_ALL, p[0], buffer, n);
 		total -= len;
 	}
 

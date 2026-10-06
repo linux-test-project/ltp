@@ -50,7 +50,7 @@ static void run(void)
 	memset(buff, 0, memory_size);
 
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(0, fd, buff, memory_size);
+	SAFE_READ(SAFE_READ_ANY, fd, buff, memory_size);
 	SAFE_CLOSE(fd);
 
 	for (int i = 0; i < memory_size; i++) {

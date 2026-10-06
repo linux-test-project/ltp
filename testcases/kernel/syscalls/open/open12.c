@@ -89,7 +89,7 @@ static void test_noatime(void)
 	if (!TST_PASS)
 		return;
 
-	SAFE_READ(1, fd, &read_buf, 1);
+	SAFE_READ(SAFE_READ_ALL, fd, &read_buf, 1);
 	SAFE_CLOSE(fd);
 	SAFE_STAT(TEST_FILE, &new_stat);
 

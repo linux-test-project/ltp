@@ -135,7 +135,7 @@ static void setup(void)
 
 	page_size = SAFE_SYSCONF(_SC_PAGESIZE);
 	fd = SAFE_OPEN(LSM_SYS_FILE, O_RDONLY);
-	SAFE_READ(0, fd, data, BUFSIZ);
+	SAFE_READ(SAFE_READ_ANY, fd, data, BUFSIZ);
 	SAFE_CLOSE(fd);
 
 	ptr = strtok(data, ",");

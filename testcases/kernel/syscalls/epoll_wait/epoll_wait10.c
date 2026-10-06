@@ -62,7 +62,7 @@ static void check_epoll_event(const char *desc)
 
 	/* Re-read /proc/self/mounts to clear the notification */
 	SAFE_LSEEK(mnt_fd, 0, SEEK_SET);
-	while (SAFE_READ(0, mnt_fd, buf, sizeof(buf)) > 0)
+	while (SAFE_READ(SAFE_READ_ANY, mnt_fd, buf, sizeof(buf)) > 0)
 		;
 }
 

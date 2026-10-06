@@ -29,7 +29,7 @@ static void run(void)
 
 	tst_reap_children();
 
-	SAFE_READ(0, fd, &val, sizeof(val));
+	SAFE_READ(SAFE_READ_ANY, fd, &val, sizeof(val));
 	TST_EXP_EQ_LI(val, to_parent);
 
 	SAFE_CLOSE(fd);

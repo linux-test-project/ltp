@@ -43,7 +43,7 @@ static void verify_write(void)
 
 	memset(rbuf, 0, BUFSIZ);
 
-	SAFE_READ(0, fd, rbuf, 100);
+	SAFE_READ(SAFE_READ_ANY, fd, rbuf, 100);
 
 	if (memcmp(wbuf, rbuf, 100) == 0)
 		tst_res(TPASS, "failure of write() did not corrupt the file");

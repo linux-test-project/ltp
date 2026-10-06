@@ -61,7 +61,7 @@ static void run(void)
 
 	TST_EXP_EQ_LI(src_stat.st_size, dst_stat.st_size);
 
-	SAFE_READ(0, dst_fd, buff, FILESIZE);
+	SAFE_READ(SAFE_READ_ANY, dst_fd, buff, FILESIZE);
 
 	TST_EXP_EXPR(!strncmp(buff, FILEDATA, FILESIZE),
 		"dst file has the src file content (\"%s\" - %ld bytes)",
@@ -81,7 +81,7 @@ static void run(void)
 
 	TST_EXP_EQ_LI(dst_stat.st_size, src_stat.st_size);
 
-	SAFE_READ(0, src_fd, buff, FILESIZE);
+	SAFE_READ(SAFE_READ_ANY, src_fd, buff, FILESIZE);
 
 	TST_EXP_EXPR(!strncmp(buff, FILEDATA, FILESIZE),
 		"src file content didn't change");

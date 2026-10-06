@@ -170,7 +170,8 @@ static void run(void)
 	acct(NULL);
 
 	do {
-		read_bytes = SAFE_READ(0, fd, &acct_struct, acct_size);
+		read_bytes = SAFE_READ(SAFE_READ_ANY, fd, &acct_struct,
+				       acct_size);
 
 		if (i == 0 && read_bytes == 0) {
 			tst_res(TFAIL, "acct file is empty");

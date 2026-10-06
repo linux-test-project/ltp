@@ -34,7 +34,8 @@ static uint64_t get_dirty_bit(void *data)
 	index = (addr / pagesize) * sizeof(uint64_t);
 	pagemap_fd = SAFE_OPEN("/proc/self/pagemap", O_RDONLY);
 	SAFE_LSEEK(pagemap_fd, index, SEEK_SET);
-	SAFE_READ(1, pagemap_fd, &pagemap_entry, sizeof(pagemap_entry));
+	SAFE_READ(SAFE_READ_ALL, pagemap_fd, &pagemap_entry,
+		  sizeof(pagemap_entry));
 	SAFE_CLOSE(pagemap_fd);
 	pfn = pagemap_entry & ((1ULL << 55) - 1);
 	if (!pfn)
@@ -42,7 +43,8 @@ static uint64_t get_dirty_bit(void *data)
 	pageflags_fd = SAFE_OPEN("/proc/kpageflags", O_RDONLY);
 	index = pfn * sizeof(uint64_t);
 	SAFE_LSEEK(pageflags_fd, index, SEEK_SET);
-	SAFE_READ(1, pageflags_fd, &pageflag_entry, sizeof(pageflag_entry));
+	SAFE_READ(SAFE_READ_ALL, pageflags_fd, &pageflag_entry,
+		  sizeof(pageflag_entry));
 	SAFE_CLOSE(pageflags_fd);
 	return pageflag_entry & (1ULL << 4);
 }
@@ -53,7 +55,7 @@ static void verify_mmaped(void)
 
 	tst_res(TINFO, "Haven't seen dirty bit so we check content of file instead");
 	test_fd = SAFE_OPEN("msync04/testfile", O_RDONLY | O_DIRECT);
-	SAFE_READ(0, test_fd, buffer, getpagesize());
+	SAFE_READ(SAFE_READ_ANY, test_fd, buffer, getpagesize());
 
 	if (buffer[8] == 'B')
 		tst_res(TCONF, "Write was too fast, couldn't test msync()");

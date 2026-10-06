@@ -219,7 +219,7 @@ static void fileokay(char *file, unsigned char *expbuf)
 	mappages = roundup(mapsize, pagesize) / pagesize;
 
 	for (i = 0; i < mappages; i++) {
-		cnt = SAFE_READ(0, fd, readbuf, pagesize);
+		cnt = SAFE_READ(SAFE_READ_ANY, fd, readbuf, pagesize);
 		if ((unsigned int)cnt != pagesize) {
 			/* Okay if at last page in file... */
 			if ((i * pagesize) + cnt != mapsize)

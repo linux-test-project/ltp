@@ -142,7 +142,7 @@ static void do_test(unsigned int number)
 	SAFE_UNLINK(FILE2);
 
 	/* Read file events from the event queue */
-	len = SAFE_READ(0, fanotify_fd, events_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fanotify_fd, events_buf, EVENT_BUF_LEN);
 
 	/*
 	 * Generate a sequence of events on a directory. Subsequent events
@@ -180,7 +180,8 @@ static void do_test(unsigned int number)
 	SAFE_RMDIR(DIR2);
 
 	/* Read dir events from the event queue */
-	len += SAFE_READ(0, fanotify_fd, events_buf + len, EVENT_BUF_LEN - len);
+	len += SAFE_READ(SAFE_READ_ANY, fanotify_fd, events_buf + len,
+			 EVENT_BUF_LEN - len);
 
 	/*
 	 * Cleanup the mark

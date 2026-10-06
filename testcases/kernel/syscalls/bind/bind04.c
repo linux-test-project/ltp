@@ -93,7 +93,7 @@ static void *peer_thread(void *tc_ptr)
 
 	sock = SAFE_SOCKET(tc->address->sa_family, tc->type, tc->protocol);
 	SAFE_CONNECT(sock, tc->address, tc->addrlen);
-	SAFE_READ(1, sock, &request, sizeof(request));
+	SAFE_READ(SAFE_READ_ALL, sock, &request, sizeof(request));
 
 	if (request < ARRAY_SIZE(testcase_list))
 		response = testcase_list[request].description;
@@ -144,7 +144,7 @@ static void test_bind(unsigned int n)
 	rand_index = rand() % ARRAY_SIZE(testcase_list);
 	SAFE_WRITE(SAFE_WRITE_ALL, sock, &rand_index, sizeof(rand_index));
 
-	size = SAFE_READ(0, sock, buffer, BUFFER_SIZE - 1);
+	size = SAFE_READ(SAFE_READ_ANY, sock, buffer, BUFFER_SIZE - 1);
 	buffer[size] = '\0';
 	exp_data = testcase_list[rand_index].description;
 

@@ -83,7 +83,7 @@ static void verify_timerfd(unsigned int n)
 			return;
 		}
 
-		SAFE_READ(1, fd, &exp, sizeof(exp));
+		SAFE_READ(SAFE_READ_ALL, fd, &exp, sizeof(exp));
 
 		if (exp != 1)
 			tst_res(TFAIL, "Got %llu expirations", (long long unsigned)exp);

@@ -36,7 +36,7 @@ static void check_file(void)
 	ssize_t len;
 
 	fildes = SAFE_OPEN(TEMPFILE, O_RDONLY);
-	len = SAFE_READ(0, fildes, buf, sizeof(buf));
+	len = SAFE_READ(SAFE_READ_ANY, fildes, buf, sizeof(buf));
 	SAFE_CLOSE(fildes);
 
 	if (len != strlen(STRING)) {

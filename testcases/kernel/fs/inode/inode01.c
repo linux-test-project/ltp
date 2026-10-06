@@ -102,7 +102,7 @@ static uint64_t verify_file(const struct tcase *tc, const char *path)
 	}
 
 	for (i = 0; i < tc->repetitions; i++) {
-		SAFE_READ(1, fd, buf, len);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, len);
 		if (memcmp(buf, path, len))
 			tst_brk(TFAIL, "%s contains unexpected data at record %u", path, i);
 	}

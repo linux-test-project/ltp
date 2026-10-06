@@ -62,7 +62,7 @@ static void run(unsigned int i)
 	if (tc->flag)
 		SAFE_LSEEK(ofd, tc->offset, SEEK_SET);
 
-	SAFE_READ(1, nfd, read_buf, tc->exp_size);
+	SAFE_READ(SAFE_READ_ALL, nfd, read_buf, tc->exp_size);
 	if (strncmp(read_buf, tc->exp_data, tc->exp_size))
 		tst_res(TFAIL, "Expect %s, but get %s.", tc->exp_data, read_buf);
 	else

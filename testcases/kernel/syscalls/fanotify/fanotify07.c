@@ -61,7 +61,7 @@ static void generate_events(void)
 	/* Run until killed... */
 	while (1) {
 		SAFE_LSEEK(fd, 0, SEEK_SET);
-		SAFE_READ(0, fd, buf, BUF_SIZE);
+		SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	}
 }
 
@@ -129,7 +129,7 @@ static void loose_fanotify_events(void)
 		struct fanotify_response resp;
 
 		/* Get more events */
-		SAFE_READ(1, fd_notify, &event, sizeof(event));
+		SAFE_READ(SAFE_READ_ALL, fd_notify, &event, sizeof(event));
 
 		if (event.mask != FAN_ACCESS_PERM) {
 			tst_res(TFAIL,

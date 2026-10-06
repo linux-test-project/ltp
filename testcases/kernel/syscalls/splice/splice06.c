@@ -57,7 +57,7 @@ static int splice_read_num(const char *file)
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "splice(fd_in, pipe) failed");
 
-	SAFE_READ(0, pipes[0], buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, pipes[0], buf, BUF_SIZE);
 
 	/* Search for the first nonnumeric character and replace it with \0 */
 	format_str(buf);
@@ -85,7 +85,7 @@ static char *splice_read_str(const char *file, char *dest)
 	if (ret < 0)
 		tst_brk(TBROK | TERRNO, "splice(fd_in, pipe) failed");
 
-	SAFE_READ(0, pipes[0], dest, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, pipes[0], dest, BUF_SIZE);
 
 	SAFE_CLOSE(fd_in);
 	SAFE_CLOSE(pipes[0]);

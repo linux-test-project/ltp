@@ -297,7 +297,7 @@ void check_mfd_readable(const char *filename, const int lineno, int fd)
 	char buf[16];
 	void *p;
 
-	safe_read(filename, lineno, NULL, 1, fd, buf, sizeof(buf));
+	safe_read(filename, lineno, NULL, SAFE_READ_ALL, fd, buf, sizeof(buf));
 	tst_res_(filename, lineno, TPASS, "read(%d, %s, %zu) succeeded", fd,
 		buf, sizeof(buf));
 

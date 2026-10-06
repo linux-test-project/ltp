@@ -32,7 +32,8 @@ static void run(void)
 	tst_res(TINFO, "Reading events back");
 
 	for (int i = 0; i < NUM_EVENTS; i++) {
-		SAFE_READ(0, fd_recv, iev, 3 * sizeof(struct input_event));
+		SAFE_READ(SAFE_READ_ANY, fd_recv, iev,
+			  3 * sizeof(struct input_event));
 
 		TST_EXP_EQ_LI(iev[0].type, EV_REL);
 		TST_EXP_EQ_LI(iev[0].code, REL_X);

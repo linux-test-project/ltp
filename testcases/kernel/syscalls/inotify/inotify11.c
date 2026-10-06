@@ -73,7 +73,8 @@ static void verify_inotify(void)
 	while (!opened && nevents < CHURN_FILES) {
 		int i, fd, len;
 
-		len = SAFE_READ(0, inotify_fd, event_buf, EVENT_BUF_LEN);
+		len = SAFE_READ(SAFE_READ_ANY, inotify_fd, event_buf,
+				EVENT_BUF_LEN);
 
 		for (i = 0; i < len; i += EVENT_SIZE + event->len) {
 			event = (struct inotify_event *)&event_buf[i];

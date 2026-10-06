@@ -52,7 +52,7 @@ static void run(void)
 	TST_EXP_EQ_LI(evt_receive.events & EPOLLIN, EPOLLIN);
 	TST_EXP_EQ_LI(evt_receive.data.fd, fds[0]);
 
-	SAFE_READ(1, fds[0], &buff, 1);
+	SAFE_READ(SAFE_READ_ALL, fds[0], &buff, 1);
 	TST_EXP_EQ_LI(SAFE_EPOLL_WAIT(epfd, &evt_receive, 10, 0), 0);
 
 	tst_res(TINFO, "Write channel for the 2nd time. No events expected");

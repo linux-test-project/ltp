@@ -77,7 +77,7 @@ static void test_partially_valid_iovec(int initial_file_offset)
 		tst_res(TINFO, "got EFAULT");
 		/* initial file content remains untouched */
 		SAFE_LSEEK(fd, 0, SEEK_SET);
-		SAFE_READ(1, fd, tmp, BUFSIZE);
+		SAFE_READ(SAFE_READ_ALL, fd, tmp, BUFSIZE);
 		if (memcmp(tmp, fpattern, BUFSIZE))
 			tst_res(TFAIL, "file was written to");
 		else
@@ -104,7 +104,7 @@ static void test_partially_valid_iovec(int initial_file_offset)
 
 	/* file content matches written bytes */
 	SAFE_LSEEK(fd, initial_file_offset, SEEK_SET);
-	SAFE_READ(1, fd, tmp, TST_RET);
+	SAFE_READ(SAFE_READ_ALL, fd, tmp, TST_RET);
 	if (memcmp(tmp, wr_iovec[0].iov_base, TST_RET) == 0) {
 		tst_res(TPASS, "file has expected content");
 	} else {

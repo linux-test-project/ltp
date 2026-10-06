@@ -40,7 +40,7 @@ static void verify_lseek(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	// reset the offset to end of file
-	SAFE_READ(0, fd, read_buf, sizeof(read_buf));
+	SAFE_READ(SAFE_READ_ANY, fd, read_buf, sizeof(read_buf));
 
 	memset(read_buf, 0, sizeof(read_buf));
 
@@ -58,7 +58,7 @@ static void verify_lseek(unsigned int n)
 		return;
 	}
 
-	SAFE_READ(1, fd, read_buf, tc->exp_size);
+	SAFE_READ(SAFE_READ_ALL, fd, read_buf, tc->exp_size);
 
 	if (tc->exp_data && strcmp(read_buf, tc->exp_data)) {
 		tst_res(TFAIL, "lseek(%s, %lld, %s) read incorrect data",

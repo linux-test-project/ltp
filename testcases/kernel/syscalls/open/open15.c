@@ -44,11 +44,11 @@ static void run(void)
 	SAFE_LSEEK(fd_symb, 0, 0);
 
 	tst_res(TINFO, "Read data via file");
-	SAFE_READ(1, fd_file, buff_file, str_size);
+	SAFE_READ(SAFE_READ_ALL, fd_file, buff_file, str_size);
 	SAFE_LSEEK(fd_file, 0, 0);
 
 	tst_res(TINFO, "Read data via symlink");
-	SAFE_READ(1, fd_symb, buff_symb, str_size);
+	SAFE_READ(SAFE_READ_ALL, fd_symb, buff_symb, str_size);
 	SAFE_LSEEK(fd_symb, 0, 0);
 
 	TST_EXP_EXPR(!strncmp(buff_file, BIG_STRING, str_size),

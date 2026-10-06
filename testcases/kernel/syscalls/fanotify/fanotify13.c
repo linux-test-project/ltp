@@ -280,7 +280,7 @@ static void do_test(unsigned int number)
 		SAFE_UMOUNT(MOUNT_PATH);
 
 	/* Read events from event queue */
-	len = SAFE_READ(0, fanotify_fd, events_buf, BUF_SIZE);
+	len = SAFE_READ(SAFE_READ_ANY, fanotify_fd, events_buf, BUF_SIZE);
 
 	/* Iterate over event queue */
 	for (i = 0, metadata = (struct fanotify_event_metadata *) events_buf;

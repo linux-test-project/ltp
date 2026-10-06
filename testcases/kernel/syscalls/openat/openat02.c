@@ -193,7 +193,7 @@ static void testfunc_noatime(void)
 		return;
 	}
 
-	SAFE_READ(1, TST_RET, &buf, 1);
+	SAFE_READ(SAFE_READ_ALL, TST_RET, &buf, 1);
 
 	SAFE_CLOSE(TST_RET);
 

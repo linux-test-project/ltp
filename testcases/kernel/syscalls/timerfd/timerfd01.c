@@ -80,7 +80,7 @@ static void waittmr(int tfd, unsigned int exp_ticks)
 		tst_res(TFAIL, "no ticks happened");
 		return;
 	}
-	SAFE_READ(0, tfd, &ticks, sizeof(ticks));
+	SAFE_READ(SAFE_READ_ANY, tfd, &ticks, sizeof(ticks));
 
 	if (ticks != exp_ticks) {
 		tst_res(TFAIL, "got %u tick(s) expected %u",

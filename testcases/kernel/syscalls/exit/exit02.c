@@ -31,7 +31,7 @@ static void check_file(void)
 	char buf[256];
 
 	fd = SAFE_OPEN(FNAME, O_RDONLY);
-	len = SAFE_READ(0, fd, buf, sizeof(buf));
+	len = SAFE_READ(SAFE_READ_ANY, fd, buf, sizeof(buf));
 
 	if (len != sizeof(FNAME)) {
 		tst_res(TFAIL, "Wrong length %i expected %zu", len, sizeof(buf));

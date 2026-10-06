@@ -143,7 +143,7 @@ static void verify_inotify(unsigned int n)
 		test_cnt++;
 	}
 
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	while (i < len) {
 		struct event_t *expected = &event_set[test_num];

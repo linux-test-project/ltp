@@ -27,7 +27,7 @@ static void run(void)
 
 	fd = TST_EXP_FD(eventfd(EVENT_COUNT, EFD_NONBLOCK));
 
-	SAFE_READ(0, fd, &val, sizeof(val));
+	SAFE_READ(SAFE_READ_ANY, fd, &val, sizeof(val));
 	TST_EXP_EQ_LI(val, EVENT_COUNT);
 
 	TST_EXP_FAIL(read(fd, &val, sizeof(val)), EAGAIN);

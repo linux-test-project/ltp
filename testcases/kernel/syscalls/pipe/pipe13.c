@@ -55,7 +55,7 @@ static void do_child(unsigned int i)
 
 	SAFE_CLOSE(fds[1]);
 	TST_CHECKPOINT_WAKE(i);
-	int ret = SAFE_READ(0, fds[0], &buf, 1);
+	int ret = SAFE_READ(SAFE_READ_ANY, fds[0], &buf, 1);
 	if (ret != 0)
 		tst_res(TFAIL, "Wrong return from read %i", ret);
 	exit(0);

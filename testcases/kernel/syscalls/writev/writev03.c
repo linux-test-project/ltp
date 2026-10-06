@@ -95,8 +95,9 @@ static void run(void)
 		tst_fzsync_start_race_a(&fzsync_pair);
 
 		for (total_read = 0; total_read < tst_atomic_load(&written);) {
-			total_read += SAFE_READ(0, readfd, readbuf+total_read,
-				BUF_SIZE + 1 - total_read);
+			total_read += SAFE_READ(SAFE_READ_ANY, readfd,
+						readbuf + total_read,
+						BUF_SIZE + 1 - total_read);
 		}
 
 		tst_fzsync_end_race_a(&fzsync_pair);

@@ -105,7 +105,7 @@ static int read_file(int fd)
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 
 	for (i = 0; i < blocks_num; ++i) {
-		SAFE_READ(0, fd, tmp, size);
+		SAFE_READ(SAFE_READ_ANY, fd, tmp, size);
 
 		if (memcmp(buf, tmp, size)) {
 			tst_res(TFAIL, "got unexpected data");

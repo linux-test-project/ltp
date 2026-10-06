@@ -69,7 +69,7 @@ static char *read_proc_file(const char *const path, size_t *const len_out)
 			buf = SAFE_REALLOC(buf, total_len);
 		}
 
-		ret = SAFE_READ(0, fd,
+		ret = SAFE_READ(SAFE_READ_ANY, fd,
 				buf + used_len,
 				total_len - used_len - 1);
 		used_len += ret;

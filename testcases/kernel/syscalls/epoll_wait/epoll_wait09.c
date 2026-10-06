@@ -83,7 +83,7 @@ static void run(unsigned int n)
 	tst_res(TPASS, "epoll_wait() with %d nested levels", depth);
 
 end:
-	SAFE_READ(1, fds[0], &buf, 1);
+	SAFE_READ(SAFE_READ_ALL, fds[0], &buf, 1);
 
 	for (i = depth - 1; i >= 0; i--) {
 		if (epfds[i] != -1)

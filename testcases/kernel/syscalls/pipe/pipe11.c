@@ -30,7 +30,7 @@ void do_child(void)
 
 	SAFE_CLOSE(fds[1]);
 
-	nread = SAFE_READ(0, fds[0], rbuf, sizeof(rbuf));
+	nread = SAFE_READ(SAFE_READ_ANY, fds[0], rbuf, sizeof(rbuf));
 
 	if (nread != read_per_child) {
 		tst_res(TFAIL, "Invalid read size child %i size %zu",

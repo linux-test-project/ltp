@@ -49,7 +49,7 @@ static void *handle_thread(void *arg LTP_ATTRIBUTE_UNUSED)
 	static struct uffd_msg msg;
 	struct uffdio_move uffdio_move = {};
 
-	SAFE_READ(1, uffd, &msg, sizeof(msg));
+	SAFE_READ(SAFE_READ_ALL, uffd, &msg, sizeof(msg));
 
 	if (msg.event != UFFD_EVENT_PAGEFAULT)
 		tst_brk(TFAIL, "Received unexpected UFFD_EVENT %d", msg.event);

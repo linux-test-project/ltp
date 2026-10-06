@@ -31,7 +31,7 @@ static void check_file(void)
 	char vmsplicebuffer[TEST_BLOCK_SIZE];
 
 	fd_out = SAFE_OPEN(TESTFILE, O_RDONLY);
-	SAFE_READ(1, fd_out, vmsplicebuffer, TEST_BLOCK_SIZE);
+	SAFE_READ(SAFE_READ_ALL, fd_out, vmsplicebuffer, TEST_BLOCK_SIZE);
 
 	for (i = 0; i < TEST_BLOCK_SIZE; i++) {
 		if (buffer[i] != vmsplicebuffer[i])

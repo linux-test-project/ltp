@@ -137,7 +137,7 @@ static void run(void)
 			seen[idx] = 1;
 			total++;
 
-			SAFE_READ(1, ready_fds[idx][0], &c, 1);
+			SAFE_READ(SAFE_READ_ALL, ready_fds[idx][0], &c, 1);
 		}
 	}
 

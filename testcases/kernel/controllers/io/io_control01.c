@@ -72,7 +72,7 @@ static void run(void)
 	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 
 	fd = SAFE_OPEN("/dev/urandom", O_RDONLY, 0600);
-	SAFE_READ(1, fd, buf, pgsz);
+	SAFE_READ(SAFE_READ_ALL, fd, buf, pgsz);
 	SAFE_CLOSE(fd);
 
 	fd = SAFE_OPEN("mnt/dat", O_WRONLY | O_CREAT, 0600);
@@ -87,7 +87,7 @@ static void run(void)
 	fd = SAFE_OPEN("mnt/dat", O_RDONLY, 0600);
 
 	for (i = 0; i < 4; i++)
-		SAFE_READ(1, fd, buf, pgsz);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, pgsz);
 
 	tst_res(TPASS, "Did some IO in the IO controller");
 

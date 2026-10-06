@@ -133,7 +133,7 @@ static void test_fanotify(void)
 	tst_count++;
 
 	/* Read events so far */
-	ret = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 	len = ret;
 
 	/*
@@ -176,7 +176,8 @@ static void test_fanotify(void)
 	tst_count++;
 
 	/* Read events to verify ATTRIB event was properly generated */
-	ret = SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			EVENT_BUF_LEN - len);
 	len += ret;
 
 	/*

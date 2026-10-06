@@ -43,7 +43,8 @@ static int check_event(struct input_event *iev, int event, int code, int value)
 
 static void read_events(void)
 {
-	int num_bytes = SAFE_READ(0, fd_recv, events, sizeof(events));
+	int num_bytes = SAFE_READ(SAFE_READ_ANY, fd_recv, events,
+				  sizeof(events));
 
 	if (!num_bytes)
 		tst_brk(TBROK, "Failed to read events");

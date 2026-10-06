@@ -104,7 +104,7 @@ static void *peer_thread(void *tc_ptr)
 
 	SAFE_CONNECT(sock, tc->address, tc->addrlen);
 	SAFE_WRITE(SAFE_WRITE_ALL, sock, &request, sizeof(request));
-	SAFE_READ(1, sock, &request, sizeof(request));
+	SAFE_READ(SAFE_READ_ALL, sock, &request, sizeof(request));
 
 	if (request < ARRAY_SIZE(testcase_list))
 		response = testcase_list[request].description;
@@ -163,7 +163,7 @@ static void test_bind(unsigned int n)
 	SAFE_SENDTO(1, sock, &rand_index, sizeof(rand_index), 0,
 		(struct sockaddr *)&remote_addr, remote_len);
 
-	size = SAFE_READ(0, sock, buffer, BUFFER_SIZE - 1);
+	size = SAFE_READ(SAFE_READ_ANY, sock, buffer, BUFFER_SIZE - 1);
 	buffer[size] = '\0';
 	exp_data = testcase_list[rand_index].description;
 

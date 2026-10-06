@@ -122,7 +122,7 @@ static void do_pwritev(void *buf, size_t offset, size_t size)
 static void do_read(void *buf, size_t offset, size_t size)
 {
 	SAFE_LSEEK(read_fd, offset, SEEK_SET);
-	SAFE_READ(1, read_fd, buf, size);
+	SAFE_READ(SAFE_READ_ALL, read_fd, buf, size);
 }
 
 static void do_pread(void *buf, size_t offset, size_t size)
@@ -265,7 +265,7 @@ static void run(void)
 	/* Check final file contents */
 	for (start = 0; start < filesize; start += bufsize) {
 		length = MIN(bufsize, filesize - start);
-		SAFE_READ(1, read_fd, writebuf, length);
+		SAFE_READ(SAFE_READ_ALL, read_fd, writebuf, length);
 
 		if (memcmp(writebuf, filedata + start, length)) {
 			tst_res(TFAIL, "Final data mismatch at [%zu:%zu]",

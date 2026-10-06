@@ -107,7 +107,7 @@ static void generate_events(void)
 	fd = SAFE_OPEN(TEST_FILE, O_RDWR);
 
 	/* FAN_ACCESS */
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 
 	/* FAN_MODIFY */
 	SAFE_WRITE(SAFE_WRITE_ALL, fd, TEST_FILE, 1);
@@ -191,7 +191,8 @@ static void test_fanotify(unsigned int n)
 	}
 
 	/* Read events from queue */
-	len = SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			EVENT_BUF_LEN - len);
 
 	event = event_buf;
 

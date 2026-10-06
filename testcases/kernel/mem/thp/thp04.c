@@ -106,7 +106,7 @@ static void *thread_run(void *arg)
 		madvise(write_thp, thp_size, MADV_DONTNEED);
 		memcpy(&c, write_ptr, sizeof(c));
 		SAFE_LSEEK(readfd, (off_t)write_ptr, SEEK_SET);
-		SAFE_READ(1, readfd, &c, sizeof(int));
+		SAFE_READ(SAFE_READ_ALL, readfd, &c, sizeof(int));
 		tst_fzsync_end_race_b(&fzsync_pair);
 		/* Wait for dirty page handling before next madvise() */
 		usleep(10);

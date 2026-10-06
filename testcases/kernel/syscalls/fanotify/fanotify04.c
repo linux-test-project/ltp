@@ -102,7 +102,7 @@ static void verify_event(int mask)
 	struct stat st;
 
 	/* Read the event */
-	SAFE_READ(0, fd_notify, event_buf, EVENT_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_SIZE);
 	event = (struct fanotify_event_metadata *)&event_buf;
 	if (event->mask != FAN_OPEN) {
 		tst_res(TFAIL, "got unexpected event %llx",

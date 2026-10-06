@@ -50,7 +50,7 @@ static void do_test(void)
 	pts = SAFE_OPEN(ptsname(ptmx), O_RDONLY);
 	/* write newline to ptmx to avoid read() on pts to block */
 	SAFE_WRITE(SAFE_WRITE_ALL, ptmx, "A\n", 2);
-	SAFE_READ(1, pts, &c, 1);
+	SAFE_READ(SAFE_READ_ALL, pts, &c, 1);
 
 	tst_res(TINFO, "Calling FIONREAD, this will hang in n_tty_ioctl() if the bug is present...");
 	SAFE_IOCTL(pts, FIONREAD, &nbytes);

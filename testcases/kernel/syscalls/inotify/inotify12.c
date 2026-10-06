@@ -93,7 +93,7 @@ static void verify_inotify(unsigned int n)
 	/*
 	 * Read the 1st IN_MODIFY event
 	 */
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	if (len < (int)sizeof(*event)) {
 		tst_res(TFAIL, "Got no events");

@@ -100,7 +100,7 @@ static void run(void)
 			break;
 		}
 
-		SAFE_READ(1, fds[0], &c, 1);
+		SAFE_READ(SAFE_READ_ALL, fds[0], &c, 1);
 	}
 
 	if (round == NWAITERS)

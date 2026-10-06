@@ -39,7 +39,7 @@ static int get_writesize(void)
 
 	char read_buf[write_size];
 
-	SAFE_READ(1, fds[0], read_buf, sizeof(read_buf));
+	SAFE_READ(SAFE_READ_ALL, fds[0], read_buf, sizeof(read_buf));
 
 	tst_res(TINFO, "Pipe buffer size is %i bytes", write_size);
 
@@ -164,7 +164,7 @@ static void verify_epollin(void)
 	tst_res(TPASS, "epoll_wait() epollin");
 
 end:
-	SAFE_READ(1, fds[0], read_buf, sizeof(write_buf));
+	SAFE_READ(SAFE_READ_ALL, fds[0], read_buf, sizeof(write_buf));
 }
 
 static void verify_epollio(void)
@@ -211,7 +211,7 @@ static void verify_epollio(void)
 	tst_res(TPASS, "epoll_wait() epollio");
 
 end:
-	SAFE_READ(1, fds[0], read_buf, sizeof(write_buf));
+	SAFE_READ(SAFE_READ_ALL, fds[0], read_buf, sizeof(write_buf));
 }
 
 static void cleanup(void)

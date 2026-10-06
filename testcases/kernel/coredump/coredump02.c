@@ -63,7 +63,7 @@ static void load_core(const char *path)
 	core_buf = SAFE_MALLOC(core_len);
 
 	fd = SAFE_OPEN(path, O_RDONLY);
-	SAFE_READ(1, fd, core_buf, core_len);
+	SAFE_READ(SAFE_READ_ALL, fd, core_buf, core_len);
 	SAFE_CLOSE(fd);
 }
 

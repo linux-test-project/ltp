@@ -67,7 +67,7 @@ static void run(unsigned int n)
 
 	testcase_list[n]();
 
-	SAFE_READ(1, sfd[0], &b, 1);
+	SAFE_READ(SAFE_READ_ALL, sfd[0], &b, 1);
 	tst_reap_children();
 }
 

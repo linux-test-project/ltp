@@ -52,7 +52,7 @@ static void page_check(void)
 		tst_brk(TFAIL | TERRNO, "Reposition offset failed");
 
 	while (i <= num_pages) {
-		SAFE_READ(1, pm, &pagemap, sizeof(uint64_t));
+		SAFE_READ(SAFE_READ_ALL, pm, &pagemap, sizeof(uint64_t));
 
 		/*
 		 * Check if the page is present.

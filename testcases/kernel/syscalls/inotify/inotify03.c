@@ -74,7 +74,7 @@ void verify_inotify(void)
 	}
 	mount_flag = 0;
 
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	/* check events */
 	test_num = 0;

@@ -103,7 +103,7 @@ static void test_select(void)
 
 	TST_EXP_EQ_LI(FD_ISSET(fd, &readfds), 1);
 
-	SAFE_READ(0, evfd, &count, sizeof(count));
+	SAFE_READ(SAFE_READ_ANY, evfd, &count, sizeof(count));
 	TST_EXP_EQ_LI(count, UINT64_MAX);
 }
 
@@ -127,7 +127,7 @@ static void test_poll(void)
 
 	TST_EXP_EQ_LI(pollfd.revents & POLLERR, POLLERR);
 
-	SAFE_READ(0, evfd, &count, sizeof(count));
+	SAFE_READ(SAFE_READ_ANY, evfd, &count, sizeof(count));
 	TST_EXP_EQ_LI(count, UINT64_MAX);
 }
 

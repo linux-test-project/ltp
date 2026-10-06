@@ -72,7 +72,7 @@ static void read_file(void)
 {
 	char data[SIZE];
 
-	SAFE_READ(0, fd, data, sizeof(data));
+	SAFE_READ(SAFE_READ_ANY, fd, data, sizeof(data));
 }
 
 static void change_mode(void)

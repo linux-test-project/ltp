@@ -54,7 +54,7 @@ static void verify_pipe(void)
 
 	memset(rdbuf, 0, SIZE);
 	SAFE_CLOSE(fd[1]);
-	SAFE_READ(1, fd[0], rdbuf, SIZE);
+	SAFE_READ(SAFE_READ_ALL, fd[0], rdbuf, SIZE);
 
 	if (memcmp(wrbuf, rdbuf, SIZE) != 0) {
 		tst_res(TFAIL, "pipe read data and pipe "

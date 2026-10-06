@@ -41,7 +41,7 @@ static void test_splice(unsigned int bytes, int dev_fd)
 		goto ret;
 	}
 
-	SAFE_READ(1, pipefd[0], buf, sizeof(buf));
+	SAFE_READ(SAFE_READ_ALL, pipefd[0], buf, sizeof(buf));
 
 	for (i = 0; i < sizeof(buf); i++) {
 		if (buf[i])

@@ -69,7 +69,7 @@ static void run(void)
 	TST_EXP_EQ_LI(src_stat.st_size, filesize);
 	TST_EXP_EQ_LI(dst_stat.st_size, leftsize);
 
-	SAFE_READ(0, dst_fd, buff, leftsize);
+	SAFE_READ(SAFE_READ_ANY, dst_fd, buff, leftsize);
 
 	TST_EXP_EXPR(!strncmp(buff, data + offset, leftsize),
 		"dst file has been cloned (%d bytes)",
@@ -90,7 +90,7 @@ static void run(void)
 	TST_EXP_EQ_LI(dst_stat.st_size, leftsize);
 
 	SAFE_LSEEK(src_fd, 0, SEEK_SET);
-	SAFE_READ(0, src_fd, buff, filesize);
+	SAFE_READ(SAFE_READ_ANY, src_fd, buff, filesize);
 
 	TST_EXP_EXPR(!strncmp(buff, data, filesize),
 		"src file content didn't change");

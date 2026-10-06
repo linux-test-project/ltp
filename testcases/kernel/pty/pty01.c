@@ -27,7 +27,7 @@ static void run(void)
 
 	memset(buf, 0, BUFSIZ);
 	SAFE_WRITE(SAFE_WRITE_ALL, masterfd, STRING, string_len);
-	SAFE_READ(0, slavefd, buf, string_len);
+	SAFE_READ(SAFE_READ_ANY, slavefd, buf, string_len);
 	TST_EXP_EQ_STRN(STRING, buf, string_len - 1);
 
 	tst_res(TINFO, "Send message to slave and read it from master");
@@ -38,7 +38,7 @@ static void run(void)
 	/* we need to write string_len + 1, because kernel converts newline
 	 * into carriage return + newline
 	 */
-	SAFE_READ(0, masterfd, buf, string_len + 1);
+	SAFE_READ(SAFE_READ_ANY, masterfd, buf, string_len + 1);
 	TST_EXP_EQ_STRN(STRING, buf, string_len - 1);
 }
 

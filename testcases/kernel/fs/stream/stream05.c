@@ -38,7 +38,7 @@ static void run(void)
 
 	SAFE_FSYNC(fd);
 	SAFE_FSEEK(stream, 0, SEEK_SET);
-	SAFE_READ(1, fd, buff, BUFFSIZE);
+	SAFE_READ(SAFE_READ_ALL, fd, buff, BUFFSIZE);
 
 	TST_EXP_EQ_STRN(data, buff, DATASIZE);
 	TST_EXP_EQ_STRN(data, buff + 3, DATASIZE);

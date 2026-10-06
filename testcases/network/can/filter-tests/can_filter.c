@@ -128,7 +128,8 @@ static void run(unsigned int n)
 
 		if (FD_ISSET(s, &rdfs)) {
 			have_rx = 1;
-			SAFE_READ(1, s, &frame, sizeof(struct can_frame));
+			SAFE_READ(SAFE_READ_ALL, s, &frame,
+				  sizeof(struct can_frame));
 
 			if ((frame.can_id & CAN_SFF_MASK) != ID)
 				tst_res(TFAIL, "received wrong can_id!");

@@ -301,8 +301,8 @@ static void run(void)
 	reads = howmany(filesize, buffsize);
 
 	for (i = 0; i < reads; i++) {
-		r = SAFE_READ(0, srcfd, srcbuff, buffsize);
-		SAFE_READ(0, dstfd, dstbuff, buffsize);
+		r = SAFE_READ(SAFE_READ_ANY, srcfd, srcbuff, buffsize);
+		SAFE_READ(SAFE_READ_ANY, dstfd, dstbuff, buffsize);
 		if (memcmp(srcbuff, dstbuff, r)) {
 			tst_res(TFAIL, "Files are not identical");
 			return;

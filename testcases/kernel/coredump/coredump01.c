@@ -51,7 +51,7 @@ static void verify_elf_core(const char *path)
 	int fd;
 
 	fd = SAFE_OPEN(path, O_RDONLY);
-	SAFE_READ(1, fd, hdr, sizeof(hdr));
+	SAFE_READ(SAFE_READ_ALL, fd, hdr, sizeof(hdr));
 	SAFE_CLOSE(fd);
 
 	memcpy(&e_type, hdr + EI_NIDENT, sizeof(e_type));

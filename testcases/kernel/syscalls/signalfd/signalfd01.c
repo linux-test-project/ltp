@@ -25,7 +25,7 @@ static void check_signal(int fd, uint32_t signal)
 	struct signalfd_siginfo siginfo;
 
 	SAFE_KILL(pid, signal);
-	bytes = SAFE_READ(0, fd, &siginfo, sizeof(siginfo));
+	bytes = SAFE_READ(SAFE_READ_ANY, fd, &siginfo, sizeof(siginfo));
 	TST_EXP_EQ_LI(bytes, sizeof(siginfo));
 	TST_EXP_EQ_LI(siginfo.ssi_signo, signal);
 }

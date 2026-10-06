@@ -167,7 +167,7 @@ static void *fn_ofd_r(void *arg)
 
 		/* rlock acquired */
 		SAFE_LSEEK(fd, pa->offset, SEEK_SET);
-		SAFE_READ(1, fd, buf, pa->length);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, pa->length);
 
 		/* Verifying data read */
 		for (i = 0; i < pa->length; i++) {
@@ -227,7 +227,7 @@ static void *fn_posix_r(void *arg)
 
 		/* rlock acquired */
 		SAFE_LSEEK(fd, pa->offset, SEEK_SET);
-		SAFE_READ(1, fd, buf, pa->length);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, pa->length);
 
 		/* Verifying data read */
 		for (i = 0; i < pa->length; i++) {
@@ -332,7 +332,7 @@ static void test_fn(void *f0(void *), void *f1(void *),
 
 	for (i = 0; i < thread_cnt * 4; i++) {
 
-		SAFE_READ(1, fd, buf, write_size/4);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, write_size / 4);
 
 		for (k = 0; k < write_size/4; k++) {
 

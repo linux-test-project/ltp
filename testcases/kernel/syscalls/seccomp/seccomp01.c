@@ -147,7 +147,7 @@ static void check_strict_mode(int val)
 	break;
 	case 2:
 		SAFE_WRITE(SAFE_WRITE_ALL, fd, "a", 1);
-		SAFE_READ(0, fd, buf, 1);
+		SAFE_READ(SAFE_READ_ANY, fd, buf, 1);
 		tst_res(TPASS,
 			"SECCOMP_MODE_STRICT permits read(2) write(2) and _exit(2)");
 	break;

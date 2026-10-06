@@ -34,7 +34,7 @@ static void recv_data(void)
 	while (events < NUM_EVENTS) {
 		memset(buf, 0, sizeof(buf));
 
-		num_bytes = SAFE_READ(0, fd_recv, buf, sizeof(buf));
+		num_bytes = SAFE_READ(SAFE_READ_ANY, fd_recv, buf, sizeof(buf));
 
 		for (int i = 0; i < num_bytes / 3; i++) {
 			if (buf[3*i] & PS2_RIGHT_BTN)

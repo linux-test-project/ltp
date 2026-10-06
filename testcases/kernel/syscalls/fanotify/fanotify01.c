@@ -121,7 +121,7 @@ static void test_fanotify(unsigned int n)
 	event_set[tst_count] = FAN_OPEN;
 	tst_count++;
 
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	event_set[tst_count] = FAN_ACCESS;
 	tst_count++;
 
@@ -133,7 +133,7 @@ static void test_fanotify(unsigned int n)
 	 * Get list of events so far. We get events here to avoid
 	 * merging of following events with the previous ones.
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 	len = ret;
 
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
@@ -151,7 +151,7 @@ static void test_fanotify(unsigned int n)
 	/*
 	 * get another list of events
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -169,12 +169,12 @@ static void test_fanotify(unsigned int n)
 	tst_count++;
 
 	/* This event should be ignored */
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 
 	/*
 	 * get another list of events to verify the last one got ignored
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -188,7 +188,7 @@ static void test_fanotify(unsigned int n)
 	 * This event shouldn't be ignored because previous modification
 	 * should have removed the ignore mask
 	 */
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	event_set[tst_count] = FAN_ACCESS;
 	tst_count++;
 
@@ -197,7 +197,7 @@ static void test_fanotify(unsigned int n)
 	tst_count++;
 
 	/* Read events to verify previous access was properly generated */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -223,7 +223,7 @@ static void test_fanotify(unsigned int n)
 	fd = SAFE_OPEN(fname, O_RDWR);
 
 	/* Read events to verify open & close were ignored */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -237,7 +237,7 @@ static void test_fanotify(unsigned int n)
 	tst_count++;
 
 	/* Read events to verify close was generated */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 

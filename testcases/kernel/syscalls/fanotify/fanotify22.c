@@ -319,7 +319,8 @@ static void do_test(unsigned int i)
 			tst_brk(TBROK, "Insufficient buffer space for next event");
 
 		current_pos = event_buf + read_len;
-		ret = SAFE_READ(0, fd_notify, current_pos, BUF_SIZE - read_len);
+		ret = SAFE_READ(SAFE_READ_ANY, fd_notify, current_pos,
+				BUF_SIZE - read_len);
 
 		m = (struct fanotify_event_metadata *)current_pos;
 		while (FAN_EVENT_OK(m, ret)) {

@@ -54,7 +54,7 @@ static void verify_pollin(void)
 	TST_EXP_EXPR((infds[0].revents & ~POLLIN) == 0);
 
 end:
-	SAFE_READ(1, fildes[0], read_buf, sizeof(write_buf));
+	SAFE_READ(SAFE_READ_ALL, fildes[0], read_buf, sizeof(write_buf));
 }
 
 static void verify_poll(unsigned int n)

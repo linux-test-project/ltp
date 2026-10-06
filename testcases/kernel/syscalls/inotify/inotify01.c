@@ -55,7 +55,7 @@ void verify_inotify(void)
 	event_set[test_cnt] = IN_OPEN;
 	test_cnt++;
 
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	event_set[test_cnt] = IN_ACCESS;
 	test_cnt++;
 
@@ -79,7 +79,7 @@ void verify_inotify(void)
 	 * get list of events
 	 */
 	int len, i = 0, test_num = 0;
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	/*
 	 * check events

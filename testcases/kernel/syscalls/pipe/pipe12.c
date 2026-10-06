@@ -74,7 +74,7 @@ static void verify_pipe(unsigned int n)
 		tst_res(TPASS, "write %d bytes", nbytes);
 
 clean_pipe_buf:
-	SAFE_READ(0, fds[0], rdbuf, max_size);
+	SAFE_READ(SAFE_READ_ANY, fds[0], rdbuf, max_size);
 }
 
 

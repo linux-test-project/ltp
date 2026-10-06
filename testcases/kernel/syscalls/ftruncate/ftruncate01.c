@@ -46,7 +46,7 @@ static void check_and_report(off_t offset, char data, off_t trunc_len)
 	}
 
 	SAFE_LSEEK(fd, offset, SEEK_SET);
-	SAFE_READ(0, fd, buf, sizeof(buf));
+	SAFE_READ(SAFE_READ_ANY, fd, buf, sizeof(buf));
 
 	for (i = 0; i < TRUNC_LEN1; i++) {
 		if (buf[i] != data) {

@@ -48,14 +48,14 @@ static void run(void)
 	SAFE_WAIT(&status);
 
 	memset(buff, 'b', DATASIZE);
-	SAFE_READ(1, fd, data, DATASIZE);
+	SAFE_READ(SAFE_READ_ALL, fd, data, DATASIZE);
 
 	TST_EXP_EXPR(strncmp(buff, data, DATASIZE) == 0,
 		"read first part of data from parent process");
 
 	if (!SAFE_FORK()) {
 		memset(buff, 'c', DATASIZE);
-		SAFE_READ(1, fd, data, DATASIZE);
+		SAFE_READ(SAFE_READ_ALL, fd, data, DATASIZE);
 
 		TST_EXP_EXPR(strncmp(buff, data, DATASIZE) == 0,
 			"read second part of data from child process");
