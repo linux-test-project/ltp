@@ -121,5 +121,4 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = run,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
 };

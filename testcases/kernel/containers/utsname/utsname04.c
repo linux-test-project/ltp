@@ -53,7 +53,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
 	.options = (struct tst_option[]) {
 		{ "m:", &str_op, "Test execution mode <clone|unshare>" },
 		{},

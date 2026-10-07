@@ -108,7 +108,6 @@ static struct tst_test test = {
 	.test = verify_set_mempolicy,
 	.tcnt = 2,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
 	.needs_kconfigs = (const char *const[]){
 		"CONFIG_NUMA=y",
 		NULL
