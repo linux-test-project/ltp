@@ -32,9 +32,6 @@
 /stress/ns-tools/ns-mcast_join
 /stress/ns-tools/ns-mcast_receiver
 /stress/ns-tools/ns-udpsender
-/tcp_cmds/echo/createfile
-/tcp_cmds/echo/echoes
-/tcp_cmds/echo/echoes6
 /tcp_cmds/sendfile/testsf_c
 /tcp_cmds/sendfile/testsf_c6
 /tcp_cmds/sendfile/testsf_s
