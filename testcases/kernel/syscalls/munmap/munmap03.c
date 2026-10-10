@@ -19,38 +19,44 @@
 
 static size_t page_sz;
 static char *map_addr;
-static char *map_addr_out;
+static char *unaligned_addr;
 static size_t map_len;
 static size_t map_len_zero;
+static size_t map_len_too_large;
 
 static struct tcase {
 	int exp_errno;
 	char **addr;
 	size_t *len;
 } tcases[] = {
-	{ EINVAL, &map_addr_out, &map_len },
+	{ EINVAL, &map_addr, &map_len_too_large },
 	{ EINVAL, &map_addr, &map_len_zero },
-	{ EINVAL, &map_addr + 1, &map_len },
+	{ EINVAL, &unaligned_addr, &map_len },
 };
 
 static void run(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TST_EXP_FAIL(munmap(tc->addr, *tc->len), tc->exp_errno);
+	TST_EXP_FAIL(munmap(*tc->addr, *tc->len), tc->exp_errno);
 }
 
 static void setup(void)
 {
-	struct rlimit brkval;
-
 	page_sz = SAFE_SYSCONF(_SC_PAGESIZE);
 	map_len = page_sz * 2;
 	map_addr = SAFE_MMAP(NULL, map_len, PROT_READ | PROT_WRITE,
 			     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	unaligned_addr = map_addr + 1;
 
-	SAFE_GETRLIMIT(RLIMIT_DATA, &brkval);
-	map_addr_out = (char *)brkval.rlim_max;
+	/*
+	 * The range [map_addr, map_addr + map_len_too_large) can never fit
+	 * into the address space of a process, so munmap() has to reject it
+	 * with EINVAL. A length of SIZE_MAX is used instead of a pointer
+	 * derived from RLIMIT_DATA, which is a resource limit and not a
+	 * valid upper bound of the user address space.
+	 */
+	map_len_too_large = SIZE_MAX;
 }
 
 static void cleanup(void)
