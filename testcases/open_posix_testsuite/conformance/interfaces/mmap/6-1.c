@@ -42,7 +42,7 @@
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
-#ifdef _POSIX_MEMORY_PROTECTION
+#if defined(_POSIX_MEMORY_PROTECTION) && _POSIX_MEMORY_PROTECTION != -1
 	char tmpfname[PATH_MAX];
 	void *pa;
 	size_t size = 1024;
@@ -112,7 +112,7 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	printf("Test Unresolved\n");
 	return PTS_UNRESOLVED;
 #else
-	printf("Test Unsupported, _POSIX_MEMORY_PROTECTION not defined\n");
+	printf("Test Unsupported, _POSIX_MEMORY_PROTECTION not supported\n");
 	return PTS_UNSUPPORTED;
 #endif
 }
