@@ -166,7 +166,7 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 
 	if (NAME_MAX > 0) {
 		/* create a semaphore with a name longer than NAME_MAX */
-		sem_name = calloc(NAME_MAX + 2, sizeof(char));
+		sem_name = calloc(NAME_MAX + 3, sizeof(char));
 
 		if (sem_name == NULL) {
 			UNRESOLVED(errno,
@@ -176,9 +176,9 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 		/* the space was allocated */
 		sem_name[0] = '/';
 
-		sem_name[NAME_MAX + 1] = '\0';
+		sem_name[NAME_MAX + 2] = '\0';
 
-		memset(sem_name + 1, 'N', NAME_MAX);
+		memset(sem_name + 1, 'N', NAME_MAX + 1);
 
 		/* Create the semaphore */
 		sem = sem_open(sem_name, O_CREAT, 0777, 1);
