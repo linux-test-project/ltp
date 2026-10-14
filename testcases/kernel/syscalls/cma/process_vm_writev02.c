@@ -23,10 +23,11 @@ static int bufsize = 100000;
 
 static void child_alloc_and_verify(int buffsize)
 {
-	char foo[buffsize];
+	char *foo;
 	int i;
 	int err;
 
+	foo = SAFE_MALLOC(buffsize);
 	tst_res(TINFO, "child 0: allocate memory");
 
 	memset(foo, 'a', buffsize);
@@ -43,13 +44,16 @@ static void child_alloc_and_verify(int buffsize)
 		tst_res(TFAIL, "child 0: found %d differences from expected data", err);
 	else
 		tst_res(TPASS, "child 0: read back expected data");
+
+	free(foo);
 }
 
 static void child_write(int buffsize, pid_t pid_alloc)
 {
-	char lp[buffsize];
+	char *lp;
 	struct iovec local, remote;
 
+	lp = SAFE_MALLOC(buffsize);
 	tst_res(TINFO, "child 1: write to the same memory location");
 
 	memset(lp, 'w', buffsize);
@@ -66,6 +70,8 @@ static void child_write(int buffsize, pid_t pid_alloc)
 		tst_brk(TBROK, "process_vm_writev: expected %d bytes but got %ld",
 			buffsize, TST_RET);
 	}
+
+	free(lp);
 }
 
 static void setup(void)
