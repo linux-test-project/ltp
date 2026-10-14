@@ -208,8 +208,13 @@ static void do_test(unsigned int i)
 	 * the incoming data for add_key() sysdall should be not less than 6
 	 * bytes, because struct dns_server_list_v1_header is 6 bytes.
 	 * The minimum payload will be tested here for boundary testing.
+	 *
+	 * Set status (byte 4) to 0x01 (DNS_LOOKUP_GOOD) so the kernel does
+	 * not treat it as a failed lookup and set a 1s expiry (prep->expiry
+	 * = now + 1), which causes keyctl_update() to fail with EKEYEXPIRED
+	 * on slow systems (e.g., QEMU).
 	 */
-	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00, 0x00 };
+	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x01, 0x00 };
 
 	switch (i) {
 	case 0:
