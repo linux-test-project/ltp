@@ -35,7 +35,6 @@ static void setup(void)
 	newsize = 2 * memsize;
 
 	bad_addr = tst_get_bad_addr(NULL);
-	SAFE_MUNMAP(bad_addr, page_size);
 }
 
 static void run(void)
