@@ -28,6 +28,8 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 
 	char semname[28];
 
+	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
+
 	sem_unlink(semname);
 
 	if (errno == ENOENT) {

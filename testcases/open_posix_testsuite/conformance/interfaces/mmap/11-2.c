@@ -44,8 +44,8 @@ static void sigbus_handler(int signum)
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
-#ifndef _POSIX_MEMORY_PROTECTION
-	printf("_POSIX_MEMORY_PROTECTION is not defined\n");
+#if !defined(_POSIX_MEMORY_PROTECTION) || _POSIX_MEMORY_PROTECTION == -1
+	printf("_POSIX_MEMORY_PROTECTION is not supported\n");
 	return PTS_UNTESTED;
 #endif
 	char tmpfname[PATH_MAX];

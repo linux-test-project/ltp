@@ -59,7 +59,7 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	/* Trie to map file with MAP_PRIVATE */
 	pa = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 	if (pa == MAP_FAILED) {
-		if (errno != ENOTSUP) {
+		if (errno == ENOTSUP) {
 			printf("MAP_PRIVATE is not supported\n");
 		} else {
 			printf("MAP_PRIVATE failed with: %s\n",
@@ -81,7 +81,7 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	pa = mmap(pa, len / 2, PROT_READ, MAP_SHARED | MAP_FIXED, fd, 0);
 
 	if (pa == MAP_FAILED) {
-		if (errno != ENOTSUP) {
+		if (errno == ENOTSUP) {
 			printf("MAP_FIXED is not supported\n");
 		} else {
 			printf("MAP_FIXED failed with: %s\n", strerror(errno));
