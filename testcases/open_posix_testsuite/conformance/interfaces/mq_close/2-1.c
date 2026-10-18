@@ -193,7 +193,7 @@ static int child_process(char *qname, int read_pipe, int write_pipe)
 	}
 	// try notify after parent closed queue - should succeed
 	se.sigev_notify = SIGEV_SIGNAL;
-	se.sigev_signo = 0;
+	se.sigev_signo = SIGUSR1;
 	rval = mq_notify(queue, &se);
 
 	// send 'd' for success and 'e' for failure
