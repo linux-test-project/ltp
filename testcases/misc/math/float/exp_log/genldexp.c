@@ -102,8 +102,8 @@ static int create_Result_file(void)
 
 static int create_Data_file(void)
 {
-	int i, nbVal;
-	double tabDD[20000], tabDI[20000], Inc;
+	int i, nbVal, tabDI[20000];
+	double tabDD[20000], Inc;
 	char *F_named, *F_namei;
 	int fp, fpi;
 
