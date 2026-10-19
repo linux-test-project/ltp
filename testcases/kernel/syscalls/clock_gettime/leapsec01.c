@@ -14,12 +14,16 @@
  *
  * A bug in the hrtimer subsystem caused all TIMER_ABSTIME CLOCK_REALTIME
  * timers to expire one second early during leap second.
- * See http://lwn.net/Articles/504658/.
  *
- * This is a regression test for the bug.
+ * This is a regression test for the bug fixed in kernel v3.5 in
+ * 4873fa070ae84 ("timekeeping: Fix leapsecond triggered load spike issue")
+ *
+ * Based on a reproducer for the kernel fix, see
+ * https://lore.kernel.org/lkml/4FF0C994.2020300@us.ibm.com/
  *
  * Note: running this test simultaneously with a timesync daemon
- * (e.g. systemd-timesyncd) can cause this test to fail.
+ * (e.g. :manpage:`systemd-timesyncd <systemd-timesyncd.service(8)>`)
+ * can cause test to fail.
  */
 
 #include <sys/types.h>
