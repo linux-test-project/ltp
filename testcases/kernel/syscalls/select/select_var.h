@@ -84,13 +84,29 @@ static int do_select_faulty_to(int nfds, fd_set *readfds, fd_set *writefds,
 #endif
 		return ret;
 	}
-	case 4:
+	case 4: {
 #ifdef __NR__newselect
-		return tst_syscall(__NR__newselect, nfds, readfds, writefds, exceptfds, timeout);
+		struct __kernel_old_timeval _tv;
+		void *tv = timeout;
+		int ret;
+
+		if (timeout && !faulty_to) {
+			_tv.tv_sec = timeout->tv_sec;
+			_tv.tv_usec = timeout->tv_usec;
+			tv = &_tv;
+		}
+
+		ret = tst_syscall(__NR__newselect, nfds, readfds, writefds, exceptfds, tv);
+		if (timeout && !faulty_to) {
+			timeout->tv_sec = _tv.tv_sec;
+			timeout->tv_usec = _tv.tv_usec;
+		}
+		return ret;
 #else
 		tst_brk(TCONF, "__NR__newselect not implemented");
 #endif
 	break;
+	}
 	}
 
 	return -1;
