@@ -48,7 +48,7 @@ static int create_Result_file(void)
 	F_name = "rasin";
 	nbVal = 20000;
 
-	Inc = 2 / nbVal;
+	Inc = 2.0 / nbVal;
 
 	for (i = 0; i < nbVal; i++)
 		tabRasin[i] = asin((Inc * i) - 1);
@@ -78,7 +78,7 @@ static int create_Data_file(void)
 	F_name = "dasin";
 	nbVal = 20000;
 
-	Inc = 2 / nbVal;
+	Inc = 2.0 / nbVal;
 
 	for (i = 0; i < nbVal; i++)
 		tabDasin[i] = (Inc * i) - 1;
