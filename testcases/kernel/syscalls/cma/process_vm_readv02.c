@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "cma.h"
 
 static uintptr_t *data_ptr;
 
@@ -28,6 +29,8 @@ static void child_alloc(const char *data)
 	*data_ptr = (uintptr_t)foo;
 
 	tst_res(TINFO, "child 0: memory allocated and initialized");
+
+	cma_allow_parent_ptracer();
 
 	/* wake and wait until child_invoke is done reading from our VM */
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
@@ -63,6 +66,8 @@ static void setup(void)
 {
 	/* Just a sanity check of the existence of syscall */
 	tst_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
+
+	cma_check_ptrace_scope();
 
 	data_ptr = SAFE_MMAP(NULL, sizeof(uintptr_t), PROT_READ | PROT_WRITE,
 						 MAP_SHARED | MAP_ANONYMOUS, -1, 0);

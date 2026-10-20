@@ -16,6 +16,7 @@
 #include <sys/uio.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "cma.h"
 
 static uintptr_t *data_ptr;
 static char *str_buffsize;
@@ -32,6 +33,8 @@ static void child_alloc_and_verify(int buffsize)
 
 	memset(foo, 'a', buffsize);
 	*data_ptr = (uintptr_t)foo;
+
+	cma_allow_parent_ptracer();
 
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
@@ -80,6 +83,8 @@ static void setup(void)
 
 	if (tst_parse_int(str_buffsize, &bufsize, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid buffer size '%s'", str_buffsize);
+
+	cma_check_ptrace_scope();
 
 	data_ptr = SAFE_MMAP(NULL, sizeof(uintptr_t), PROT_READ | PROT_WRITE,
 			     MAP_SHARED | MAP_ANONYMOUS, -1, 0);

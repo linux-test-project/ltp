@@ -20,6 +20,7 @@
 #include <sys/wait.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
+#include "cma.h"
 
 #define MAX_IOVECS 1024
 
@@ -80,6 +81,8 @@ static void child_alloc(const int *sizes, int nr_iovecs)
 
 	tst_res(TINFO, "child_alloc: memory allocated and initialized");
 
+	cma_allow_parent_ptracer();
+
 	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 }
 
@@ -138,6 +141,8 @@ static void child_read(const int *sizes, int local_iovecs, int remote_iovecs,
 static void setup(void)
 {
 	tst_syscall(__NR_process_vm_readv, getpid(), NULL, 0UL, NULL, 0UL, 0UL);
+
+	cma_check_ptrace_scope();
 
 	data_ptr = SAFE_MMAP(NULL, sizeof(void *) * MAX_IOVECS, PROT_READ | PROT_WRITE,
 			     MAP_SHARED | MAP_ANONYMOUS, -1, 0);
