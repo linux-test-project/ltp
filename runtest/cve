@@ -91,6 +91,7 @@ cve-2023-52879 fanotify25
 cve-2026-43499 ghostlock
 cve-2026-53362 setsockopt11
 cve-2026-64600 refluxfs
+cve-2026-99999 pwnescape
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
 cve-2022-0185 fsconfig03
