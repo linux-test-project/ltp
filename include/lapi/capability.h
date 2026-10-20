@@ -28,6 +28,10 @@
 # define CAP_SYS_CHROOT       18
 #endif
 
+#ifndef CAP_SYS_PTRACE
+# define CAP_SYS_PTRACE       19
+#endif
+
 #ifndef CAP_SYS_ADMIN
 # define CAP_SYS_ADMIN        21
 #endif
