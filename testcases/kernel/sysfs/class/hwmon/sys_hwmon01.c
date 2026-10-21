@@ -131,7 +131,7 @@ static void check_hwmon_device(const char *hwmon)
 					PATH_CLASS_HWMON "/%s/update_interval", hwmon);
 
 	/* inN channels are numbered from 0, per the hwmon ABI */
-	for (i = 0; i <= MAX_CHANNELS; i++)
+	for (i = 0; i < MAX_CHANNELS; i++)
 		check_in_channel(hwmon, i);
 
 	for (i = 1; i <= MAX_CHANNELS; i++) {
@@ -147,7 +147,9 @@ static void do_test(void)
 {
 	DIR *d;
 	struct dirent *ent;
-	int found = 0;
+	int devices = 0;
+
+	tst_sysfs_cnt_reset();
 
 	if (!tst_sysfs_exists(PATH_CLASS_HWMON))
 		tst_brk(TCONF, PATH_CLASS_HWMON ": not present");
@@ -158,14 +160,25 @@ static void do_test(void)
 		if (strncmp(ent->d_name, "hwmon", 5))
 			continue;
 
-		found = 1;
+		devices++;
 		check_hwmon_device(ent->d_name);
 	}
 
 	SAFE_CLOSEDIR(d);
 
-	if (!found)
+	if (!devices) {
 		tst_res(TCONF, "No hwmon device found");
+		return;
+	}
+
+	if (!tst_sysfs_cnt_get()) {
+		tst_res(TCONF, "%d hwmon devices present, but no checkable attributes",
+				devices);
+		return;
+	}
+
+	tst_res(TPASS, "Validated %u attributes on %d hwmon devices",
+			tst_sysfs_cnt_get(), devices);
 }
 
 static struct tst_test test = {
