@@ -649,4 +649,15 @@ long tst_sysfs_read_li(const char *file, const int lineno,
 unsigned long tst_sysfs_read_lx(const char *file, const int lineno,
 	const char *fmt, ...);
 
+/**
+ * tst_sysfs_cnt_reset() - Reset the checked-attribute counter.
+ */
+void tst_sysfs_cnt_reset(void);
+
+/**
+ * tst_sysfs_cnt_get() - Number of attributes the *_SILENT assertions
+ * found and checked (pass or fail) since the last reset.
+ */
+unsigned int tst_sysfs_cnt_get(void);
+
 #endif /* TST_SYSFS_ASSERT_H__ */

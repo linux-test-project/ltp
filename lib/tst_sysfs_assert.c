@@ -15,6 +15,8 @@
 #include "tst_test.h"
 #include "tst_sysfs_assert.h"
 
+static unsigned int tst_sysfs_cnt;
+
 static void build_path(char *path, size_t size, const char *fmt, va_list ap)
 {
 	vsnprintf(path, size, fmt, ap);
@@ -98,6 +100,8 @@ void tst_sysfs_assert_rangell_silent(const char *file, const int lineno,
 	if (access(path, F_OK))
 		return;
 
+	tst_sysfs_cnt++;
+
 	range_check(file, lineno, path, min, max);
 }
 
@@ -155,6 +159,8 @@ void tst_sysfs_assert_rangeuu_silent(const char *file, const int lineno,
 
 	if (access(path, F_OK))
 		return;
+
+	tst_sysfs_cnt++;
 
 	range_check_u(file, lineno, path, min, max);
 }
@@ -241,6 +247,8 @@ void tst_sysfs_assert_bool_silent(const char *file, const int lineno,
 
 	if (access(path, F_OK))
 		return;
+
+	tst_sysfs_cnt++;
 
 	bool_check(file, lineno, path);
 }
@@ -684,6 +692,8 @@ void tst_sysfs_assert_cmp_silent(const char *file, const int lineno,
 	if (access(path1, F_OK) || access(path2, F_OK))
 		return;
 
+	tst_sysfs_cnt++;
+
 	tst_sysfs_assert_cmp(file, lineno, path1, op, path2);
 }
 
@@ -868,4 +878,14 @@ unsigned long tst_sysfs_read_lx(const char *file, const int lineno,
 	tst_res(TDEBUG, "Read '%s' = 0x%lx", path, val);
 
 	return val;
+}
+
+void tst_sysfs_cnt_reset(void)
+{
+	tst_sysfs_cnt = 0;
+}
+
+unsigned int tst_sysfs_cnt_get(void)
+{
+	return tst_sysfs_cnt;
 }
