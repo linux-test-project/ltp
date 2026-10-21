@@ -185,15 +185,23 @@ cleanup()
 
 	find "$CPUSET" -type d | sort | sed -n '2,$p' | tac | while read -r subdir
 	do
+		if [ "$subdir" != "/dev/cpuset/sys" ]; then
 		while read pid
-		do
-			/bin/kill -9 $pid > /dev/null 2>&1
-			if [ $? -ne 0 ]; then
-				tst_brkm TFAIL "Couldn't kill task - "\
-							"$pid in the cpuset"
-			fi
-		done < "$subdir/tasks"
-		rmdir "$subdir"
+			do
+				/bin/kill -9 $pid > /dev/null 2>&1
+				if [ $? -ne 0 ]; then
+					tst_brkm TFAIL "Couldn't kill task - "\
+								"$pid in the cpuset 1"
+				fi
+			done < "$subdir/tasks"
+		fi
+
+		if [  "$subdir" == "/dev/cpuset/sys"  ]; then
+			cgdelete -r cpuset:sys
+		else
+			rmdir "$subdir"
+		fi
+
 		if [ $? -ne 0 ]; then
 			tst_brkm TFAIL "Couldn't remove subdir - $subdir in the cpuset"
 		fi
