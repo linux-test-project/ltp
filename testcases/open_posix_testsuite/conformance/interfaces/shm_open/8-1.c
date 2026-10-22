@@ -30,7 +30,7 @@
 #include <fcntl.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_8-1"
+#define SHM_NAME "/posixtest_8-1"
 
 int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
