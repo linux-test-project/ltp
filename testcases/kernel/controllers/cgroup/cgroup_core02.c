@@ -77,8 +77,8 @@ static void test_lesser_ns_open(void)
 		SAFE_MUNMAP(stack, STACK_SIZE);
 
 		for (i = 0; i < targ.loops; i++) {
-			if (targ.fds[i] < 1) {
-				tst_res(TFAIL, "unexpected negative fd %d", targ.fds[i]);
+			if (targ.fds[i] < 0) {
+				tst_res(TFAIL, "unexpected invalid fd %d", targ.fds[i]);
 				exit(1);
 			}
 
