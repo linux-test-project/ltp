@@ -402,7 +402,7 @@ static int unmap_(int s, int hpages, int flags, char *desc, int line)
 	 * reservation.  If those pages were not touched, then they will
 	 * not have been freed by the code above.  Free them here.
 	 */
-	if ((flags & MAP_SHARED) || private_resv) {
+	if (mapping_creates_reservation(flags)) {
 		int unused_surplus = MIN(hpages - touched[s], es);
 
 		et -= unused_surplus;
@@ -417,9 +417,15 @@ static int unmap_(int s, int hpages, int flags, char *desc, int line)
 
 static int touch_(int s, int hpages, int flags, char *desc, int line)
 {
+	unsigned long allowed_free = 0;
 	long et, ef, er, es;
+	int creates_reservation = mapping_creates_reservation(flags);
 	int nr;
 	char *c;
+
+	/* An unreserved private mapping allocates hugepages on fault. */
+	if (!creates_reservation)
+		allowed_free = read_allowed_free_hugepages();
 
 	for (c = map_addr[s], nr = hpages;
 			hpages && c < map_addr[s] + map_size[s];
@@ -442,19 +448,18 @@ static int touch_(int s, int hpages, int flags, char *desc, int line)
 	 * which could elevate total, free, and surplus counts.  resv is
 	 * unchanged but free must be decreased.
 	 */
-	if (flags & MAP_SHARED || private_resv) {
+	if (creates_reservation) {
 		et = prev_total;
 		ef = prev_free - hpages;
 		er = prev_resv - hpages;
 		es = prev_surp;
 	} else {
-		if (hpages + prev_resv > prev_free)
-			et = prev_total + (hpages - prev_free + prev_resv);
-		else
-			et = prev_total;
+		unsigned long shortfall = surplus_pages_needed(hpages, allowed_free);
+
+		et = prev_total + shortfall;
 		er = prev_resv;
-		es = prev_surp + et - prev_total;
-		ef = prev_free - hpages + et - prev_total;
+		es = prev_surp + shortfall;
+		ef = prev_free - hpages + shortfall;
 	}
 	return verify_counters(line, desc, et, ef, er, es);
 }
