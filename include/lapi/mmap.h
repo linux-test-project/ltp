@@ -14,6 +14,10 @@
 # define MAP_SHARED_VALIDATE 0x03
 #endif
 
+#ifndef MAP_TYPE
+# define MAP_TYPE 0x0f
+#endif
+
 #ifndef MAP_HUGETLB
 # define MAP_HUGETLB 0x40000
 #endif

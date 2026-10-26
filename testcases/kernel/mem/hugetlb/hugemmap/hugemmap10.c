@@ -25,6 +25,7 @@
 #include <sys/types.h>
 
 #include "hugetlb.h"
+#include "lapi/mmap.h"
 #include "lapi/syscalls.h"
 
 #define MNTPOINT "hugetlbfs/"
@@ -32,6 +33,7 @@
 
 static long hpage_size;
 static int private_resv;
+static char *private_noreserve_opt;
 
 #define NR_SLOTS	2
 #define SL_SETUP	0
@@ -125,6 +127,16 @@ static int mapping_creates_reservation(int flags)
 	return (flags & MAP_SHARED) || private_resv;
 }
 
+/* Exercise fault-time allocation for unreserved private mappings. */
+static int private_mmap_flags(int flags)
+{
+	if (private_noreserve_opt &&
+	    (flags & MAP_TYPE) == MAP_PRIVATE)
+		return flags | MAP_NORESERVE;
+
+	return flags;
+}
+
 static unsigned long read_allowed_free_hugepages(void)
 {
 	char path[PATH_MAX];
@@ -194,7 +206,8 @@ static int kernel_has_private_reservations(void)
 	read_meminfo_huge(&t, &f, &r, &s);
 	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
-	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE,
+		      private_mmap_flags(MAP_PRIVATE), fd, 0);
 
 	read_meminfo_huge(&nt, &nf, &nr, &ns);
 
@@ -322,8 +335,9 @@ static int map_(int s, int hpages, int flags, char *desc, int line)
 	map_size[s] = hpages * hpage_size;
 	if (creates_reservation)
 		allowed_free = read_allowed_free_hugepages();
-	map_addr[s] = SAFE_MMAP(NULL, map_size[s], PROT_READ|PROT_WRITE, flags,
-				map_fd[s], 0);
+	map_addr[s] = SAFE_MMAP(NULL, map_size[s], PROT_READ|PROT_WRITE,
+			private_mmap_flags(flags),
+			map_fd[s], 0);
 	touched[s] = 0;
 
 	et = prev_total;
@@ -573,6 +587,8 @@ static void setup(void)
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
 	SAFE_FILE_PRINTF(PATH_VM_OVERCOMMIT_HPAGES, "%lu", tst_hugepages);
 	private_resv = kernel_has_private_reservations();
+	tst_res(TDEBUG, "MAP_PRIVATE mmap() %s a hugetlb reservation",
+		private_resv ? "creates" : "does not create");
 }
 
 static void cleanup(void)
@@ -582,6 +598,11 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
+	.options = (struct tst_option[]) {
+		{"n", &private_noreserve_opt,
+		 "Map private VMAs with MAP_NORESERVE"},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.needs_hugetlbfs = 1,
 	.save_restore = (const struct tst_path_val[]) {
