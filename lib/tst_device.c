@@ -249,9 +249,14 @@ uint64_t tst_get_device_size(const char *dev_path)
 	return size/1024/1024;
 }
 
+static int loop_clr_fd_busy(int dev_fd)
+{
+	return !ioctl(dev_fd, LOOP_CLR_FD, 0) || errno == EBUSY;
+}
+
 static int detach_loop_fd(const char *dev, int *dev_fd)
 {
-	int ret, i, retval = 1;
+	int ret, retval = 1;
 
 	/* keep trying to clear LOOPDEV until we get ENXIO, a quick succession
 	 * of attach/detach might not give udev enough time to complete
@@ -259,22 +264,19 @@ static int detach_loop_fd(const char *dev, int *dev_fd)
 	 * Since 18048c1af783 ("loop: Fix a race between loop detach and loop open")
 	 * device is detached only after last close.
 	 */
-	for (i = 0; i < 40; i++) {
-		ret = ioctl(*dev_fd, LOOP_CLR_FD, 0);
+	ret = TST_RETRY_FN_EXP_BACKOFF(loop_clr_fd_busy(*dev_fd),
+				       TST_RETVAL_EQ0, 2);
 
-		if (ret && (errno == ENXIO)) {
-			retval = 0;
-			goto exit;
-		}
+	if (!ret && (errno == ENXIO)) {
+		retval = 0;
+		goto exit;
+	}
 
-		if (ret && (errno != EBUSY)) {
-			tst_resm(TWARN,
-				 "ioctl(%s, LOOP_CLR_FD, 0) unexpectedly failed with: %s",
-				 dev, tst_strerrno(errno));
-			goto exit;
-		}
-
-		usleep(50000);
+	if (!ret) {
+		tst_resm(TWARN,
+			 "ioctl(%s, LOOP_CLR_FD, 0) unexpectedly failed with: %s",
+			 dev, tst_strerrno(errno));
+		goto exit;
 	}
 
 	tst_resm(TWARN,
