@@ -47,6 +47,8 @@
 #define PATH_FS_PIPE_MAX_PAGES			"/proc/sys/fs/pipe-max-pages"
 #define PATH_FS_MAX_USER_GROUPS			"/proc/sys/fs/fanotify/max_user_groups"
 #define PATH_FS_MAX_USER_MARKS			"/proc/sys/fs/fanotify/max_user_marks"
+#define PATH_FS_PROTECTED_REGULAR		"/proc/sys/fs/protected_regular"
+#define PATH_FS_PROTECTED_FIFOS			"/proc/sys/fs/protected_fifos"
 
 /* VM */
 #define PATH_VM_DROP_CACHES			"/proc/sys/vm/drop_caches"
