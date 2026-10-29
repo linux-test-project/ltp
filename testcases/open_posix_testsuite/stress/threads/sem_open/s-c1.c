@@ -111,7 +111,7 @@ typedef struct __test_t {
 } test_t;
 
 /* Test routine */
-int main(int argc, char *argv[])
+int main(void)
 {
 	int ret, status, locerrno;
 	int nsem, i;
